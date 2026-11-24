@@ -1,45 +1,26 @@
 <title>Class Bingo</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Class Bingo. "Call on the board": the board shows each call big (a math fact, a definition), with the answer a tap
    away and every call so far. "Play a card": a random card on a player's own device, tap to mark, five in a row wins.
-   Nothing is sent between devices and nobody is named. Big type, keyboard and clicker keys. */
-:root{--bg:#1d1a3a;--bg2:#2a2552;--ink:#fffaf2;--soft:#d6d0ff;--edge:#0d0b20;--card:#fffaf2;--card-ink:#231f3d;--hot:#ff5fa2;--hot-ink:#ffffff;--mark:#ffcf3f;--good:#5be3a1}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
-body{background:radial-gradient(circle at 20% 10%,var(--bg2),var(--bg) 60%) fixed}
-.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
-.bar{display:flex;align-items:center;gap:10px}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--bg2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:5px solid var(--mark);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--mark);color:var(--card-ink)}
-button:disabled{opacity:.45;cursor:default}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
-.hot{background:var(--hot);color:var(--hot-ink)}
-.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
-[hidden]{display:none!important}
-.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2vmin,20px);min-height:0}
-.card{margin:auto;width:min(100%,800px);background:var(--bg2);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px);text-align:center;box-shadow:0 8px 0 var(--edge)}
-.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6.4vmin,4.2rem)}
-.card p{margin:10px 0;font-size:clamp(1.05rem,2.8vmin,1.8rem);color:var(--soft)}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.count{margin:0;text-align:center;font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem)}
-.call{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:var(--card);color:var(--card-ink);border:5px solid var(--edge);border-radius:32px;padding:16px;box-shadow:0 8px 0 var(--edge);min-height:180px}
-.call .now{font-size:clamp(2.4rem,14vmin,10rem);font-weight:900;line-height:1.05;overflow-wrap:anywhere}
-.call .ans{font-size:clamp(1.4rem,6vmin,4rem);font-weight:900;color:var(--hot)}
+   Nothing is sent between devices and nobody is named. Big type, keyboard and clicker keys.  In the Oomba classroom style (classroom-style.css). */
+.call{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:calc(var(--r) + 8px);padding:16px;box-shadow:var(--lift-hi);min-height:180px;position:relative;overflow:hidden}
+.call::before{content:"";position:absolute;inset:0 0 auto;height:10px;background:linear-gradient(90deg,var(--mint),var(--spark))}
+.call .now{font-size:clamp(2.4rem,13vmin,9.5rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;overflow-wrap:anywhere;animation:oc-pop .4s var(--spring) both}
+.call .ans{font-size:clamp(1.4rem,5.6vmin,3.8rem);font-weight:800;color:var(--leaf);background:var(--mint-soft);padding:.1em .7em;border-radius:var(--r-sm)}
 .called{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0;padding:0;list-style:none}
-.called li{padding:6px 12px;border-radius:999px;background:var(--edge);font-weight:800;font-size:clamp(.9rem,2.2vmin,1.4rem)}
-.grid{margin:auto;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:clamp(5px,1.2vmin,10px);width:min(100%,calc(100dvh - 230px),720px);aspect-ratio:1}
-.cell{aspect-ratio:1;min-width:0;padding:2px;border-radius:14px;background:var(--card);color:var(--card-ink);font-size:clamp(1rem,calc(min(100vw,100dvh) / var(--n) / 3.4),3rem);font-weight:900;overflow-wrap:anywhere;line-height:1.05}
-.cell[aria-pressed="true"]{background:var(--mark);color:var(--card-ink);box-shadow:inset 0 0 0 6px var(--hot),0 4px 0 var(--edge)}
-.cell.free{background:var(--good)}
-.bingo{position:fixed;inset:0;display:grid;place-items:center;background:rgba(13,11,32,.6);z-index:5;pointer-events:none}
-.bingo b{font-size:clamp(3rem,18vmin,12rem);font-weight:900;color:var(--mark);text-shadow:0 8px 0 var(--edge);transform:rotate(-6deg)}
-.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.called li{padding:6px 14px;border-radius:999px;background:var(--tint);font-weight:700;font-size:clamp(.9rem,2.1vmin,1.35rem)}
+.called li:first-child{background:var(--spark);}
+.grid{margin:auto;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:clamp(5px,1.1vmin,10px);width:min(100%,calc(100dvh - 230px),720px);aspect-ratio:1}
+.cell{aspect-ratio:1;min-width:0;padding:2px;border-radius:var(--r-sm);background:var(--card);color:var(--ink);font-size:clamp(1rem,calc(min(100vw,100dvh) / var(--n) / 3.4),3rem);font-weight:800;overflow-wrap:anywhere;line-height:1.05;position:relative}
+.cell[aria-pressed="true"]{background:var(--spark);color:var(--ink);border-color:#E0B51E;box-shadow:inset 0 0 0 4px var(--leaf);animation:oc-bump .35s var(--spring)}
+.cell[aria-pressed="true"]::after{content:"✓";position:absolute;top:4px;inset-inline-end:7px;font-size:clamp(.7rem,1.6vmin,1rem);color:var(--leaf)}
+.cell.free,.cell.free:disabled{opacity:1;background:var(--mint-soft);border-color:var(--leaf);color:var(--leaf);font-size:clamp(.8rem,calc(min(100vw,100dvh) / var(--n) / 5),1.6rem)}
+.bingo{position:fixed;inset:0;display:grid;place-items:center;background:rgba(20,20,20,.35);z-index:5;pointer-events:none}
+.bingo b{font-size:clamp(3rem,16vmin,11rem);font-weight:800;letter-spacing:-.04em;color:var(--ink);background:var(--spark);padding:.1em .5em;border-radius:calc(var(--r) + 10px);box-shadow:var(--lift-hi);transform:rotate(-4deg);animation:oc-pop .5s var(--spring) both}
 </style>
 <main class="app">
-  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
   <section class="screen" id="start">
     <div class="card"><h2 id="startH"></h2><p id="startP"></p>
       <div class="row"><button class="big hot" id="caller"></button><button class="big" id="player"></button></div>
@@ -68,6 +49,7 @@ button:disabled{opacity:.45;cursor:default}
 const CONFIG = {
   title: 'Class Bingo',
   lang: 'en',
+  sound: false,
   size: 5,
   free: true,
   readAloud: true,
@@ -105,7 +87,8 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
 const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 const N = Math.max(3, Math.min(6, CONFIG.size | 0)), FREE = !!CONFIG.free && N % 2 === 1;
@@ -176,7 +159,7 @@ function check() {
 $('caller').onclick = () => { sfx('click'); startCalling(); }; $('player').onclick = () => { sfx('click'); newCard(); };
 $('nextCall').onclick = nextCall; $('undo').onclick = undoCall; $('showAns').onclick = toggleAnswer; $('newCard').onclick = newCard;
 $('read').onclick = () => { if (S.at >= 0) say(S.deck[S.at].call); };
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -193,7 +176,7 @@ addEventListener('keydown', e => {
 document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['startH', 'startH'], ['startP', 'startP'], ['caller', 'caller'], ['player', 'player'], ['callerP', 'callerP'], ['playerP', 'playerP'], ['nextCall', 'next'], ['undo', 'undo'], ['showAns', 'showAns'], ['read', 'read'], ['newCard', 'newCard'], ['callKeys', 'callKeys']]) $(id).textContent = tr(k);
 $('called').setAttribute('aria-label', tr('calledList')); $('read').hidden = !(CONFIG.readAloud && B.speak);
-$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+$('sound').setAttribute('aria-pressed', String(soundOn));
 window.__brbTest = { state: () => ({ screen: S.screen, called: S.at + 1, current: S.at >= 0 ? S.deck[S.at].call : null, marked: S.marked.filter(Boolean).length, bingo: S.bingo, size: N }), start() { startCalling(); nextCall(); },
   // the platform's playthrough (services/playthrough.js): a card with its top row marked, the way a player gets bingo
   win() { if (S.screen !== 'playing') newCard(); for (let i = 0; i < N; i++) S.marked[i] = true; paintCard(); check(); } };

@@ -1,0 +1,58 @@
+/* ---- Oomba classroom style (server/builder/templates/classroom-style.css, put in by loadTemplate) ----------------------
+   One family look for every classroom starter: the Oomba design system (Bricolage Grotesque; page #F4F1E6, cards
+   #FFFDF2, Mint #66C792, Leaf #1F9D63, Ink #141414, Spark #FFD23F; 20px corners). Calm and polished, big type for a
+   projector, small satisfying motion that stops for prefers-reduced-motion. Change the look here: tokens first. */
+@font-face{font-family:"Bricolage Grotesque";src:url(/vendor/oomba-classroom/1.0.0/fonts/bricolage-latin.woff2) format("woff2");font-weight:200 800;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Bricolage Grotesque";src:url(/vendor/oomba-classroom/1.0.0/fonts/bricolage-latin-ext.woff2) format("woff2");font-weight:200 800;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+:root{--page:#F4F1E6;--card:#FFFDF2;--mint:#66C792;--leaf:#1F9D63;--ink:#141414;--spark:#FFD23F;
+  --soft:#57564F;--line:rgba(20,20,20,.14);--tint:#E9E4D3;--mint-soft:#DDF1E4;--spark-soft:#FFF1BF;
+  --coral:#E86F51;--coral-soft:#FADCD3;--sky:#5B9BD5;--sky-soft:#DCE9F6;--lilac:#9B7FD1;--lilac-soft:#E8E0F5;
+  --a0:#66C792;--a1:#FFD23F;--a2:#7FB3E6;--a3:#F2957C;--a4:#B9A0E3;--a5:#F7B267;
+  --r:20px;--r-sm:14px;--lift:0 1px 0 rgba(20,20,20,.06),0 6px 18px -8px rgba(20,20,20,.28);
+  --lift-hi:0 2px 0 rgba(20,20,20,.06),0 14px 30px -12px rgba(20,20,20,.35);
+  --font:"Bricolage Grotesque",ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif;
+  --ease:cubic-bezier(.2,.8,.2,1);--spring:cubic-bezier(.3,1.4,.5,1)}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--page);color:var(--ink);font-family:var(--font);font-optical-sizing:auto;-webkit-font-smoothing:antialiased;line-height:1.25}
+body{background:radial-gradient(1200px 600px at 85% -10%,#FBF8EE 0%,transparent 60%),var(--page) fixed}
+[hidden]{display:none!important}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:clamp(10px,1.8vmin,18px);padding:max(12px,env(safe-area-inset-top)) clamp(12px,2.4vw,32px) max(14px,env(safe-area-inset-bottom));max-width:1600px;margin:0 auto}
+.bar{display:flex;align-items:center;gap:10px}
+.bar h1{flex:1;min-width:0;margin:0;display:flex;align-items:center;gap:.5em;font-size:clamp(1.2rem,3.2vmin,2.3rem);font-weight:800;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar h1::before{content:"";flex:none;width:.62em;height:.62em;border-radius:50%;background:var(--mint);box-shadow:.36em 0 0 var(--spark)}
+button{font:inherit;font-weight:700;letter-spacing:-.01em;min-height:48px;min-width:48px;padding:8px 18px;border-radius:var(--r-sm);border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:var(--lift);transition:transform .15s var(--ease),box-shadow .15s var(--ease),background-color .2s,color .2s}
+button:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--lift-hi)}
+button:active:not(:disabled){transform:translateY(1px) scale(.98);box-shadow:var(--lift)}
+button:focus-visible{outline:4px solid var(--spark);outline-offset:3px;box-shadow:0 0 0 2px var(--ink)}
+button:disabled{opacity:.45;cursor:default}
+button[aria-pressed="true"]{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,1.9vmin,1.15rem)}
+.big{font-size:clamp(1.1rem,3.2vmin,2.1rem);min-height:60px;padding:10px 26px;border-radius:var(--r)}
+.hot{background:var(--leaf);color:#fff;border-color:var(--leaf)}
+.spark{background:var(--spark);color:var(--ink);border-color:#E8BC22}
+.ghost{background:transparent;box-shadow:none}
+.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.card{margin:auto;width:min(100%,820px);background:var(--card);border:1.5px solid var(--line);border-radius:calc(var(--r) + 8px);padding:clamp(20px,4.4vmin,48px);text-align:center;box-shadow:var(--lift-hi)}
+.card h2{margin:0 0 10px;font-size:clamp(1.8rem,6vmin,4rem);line-height:1.08;letter-spacing:-.03em;font-weight:800}
+.card p{margin:10px 0;font-size:clamp(1.05rem,2.7vmin,1.7rem);color:var(--soft)}
+.note{font-weight:600;color:var(--ink)!important;background:var(--mint-soft);border-radius:var(--r-sm);padding:10px 16px}
+.card .row{margin-top:14px}
+.card .keys{margin-top:16px;font-size:clamp(.8rem,1.8vmin,1.1rem)}
+.keys{text-align:center;margin:0;font-size:clamp(.8rem,1.8vmin,1.1rem);font-weight:600;color:var(--soft)}
+.count{margin:0;text-align:center;font-weight:700;color:var(--soft);font-size:clamp(1rem,2.5vmin,1.55rem);font-variant-numeric:tabular-nums}
+.pill{display:inline-flex;align-items:center;gap:.4em;padding:.3em .9em;border-radius:999px;background:var(--tint);font-weight:700}
+.screen{flex:1;display:flex;flex-direction:column;gap:clamp(10px,2.2vmin,22px);min-height:0}
+.q{margin:0;text-align:center;font-size:clamp(1.6rem,6vmin,4.4rem);font-weight:800;line-height:1.12;letter-spacing:-.025em;overflow-wrap:anywhere;text-wrap:balance}
+/* small, satisfying motion */
+@keyframes oc-pop{0%{transform:scale(.9);opacity:0}60%{transform:scale(1.03);opacity:1}100%{transform:scale(1)}}
+@keyframes oc-rise{from{transform:translateY(14px);opacity:0}to{transform:none;opacity:1}}
+@keyframes oc-bump{0%{transform:scale(1)}40%{transform:scale(1.16)}100%{transform:scale(1)}}
+@keyframes oc-nudge{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.oc-pop{animation:oc-pop .38s var(--spring) both}
+.oc-rise{animation:oc-rise .42s var(--ease) both}
+.oc-bump{animation:oc-bump .4s var(--spring)}
+.oc-nudge{animation:oc-nudge .32s ease}
+.screen:not([hidden])>.card,.screen:not([hidden])>.q{animation:oc-rise .42s var(--ease) both}
+@media (max-width:420px){.big{padding:10px 18px}.bar{gap:6px}.bar .small{padding:6px 10px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+/* ---- end of the Oomba classroom style ---- */

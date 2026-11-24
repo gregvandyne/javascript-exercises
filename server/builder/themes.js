@@ -99,9 +99,9 @@ export const tintFor = cover => COVER_TINT[cover] || '';
 const SUFFIX = { quiz: 'Quiz', runner: 'Dash', catch: 'Catch', memory: 'Memory', word: 'Words', duel: 'Duel', board: 'Race', island: 'Island' };
 export function titleFor(kind, theme) {
   const s = SUFFIX[kind] || 'Game';
-  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board', island: 'Star Island', quiet: 'Quiet Stars', categories: 'Category Board', survey: 'Class Survey', bingo: 'Class Bingo', flashcards: 'Flashcards', exitticket: 'Exit Ticket', spinner: 'Team Spinner', scoreboard: 'Team Scoreboard' }[kind] || 'My Game');
+  return theme ? `${theme.name} ${s}` : ({ quiz: 'Super Quiz', runner: 'Super Dash', catch: 'Catch It!', memory: 'Memory Match', word: 'Word Wizard', duel: 'Duel Time', board: 'Race Board', island: 'Star Island', quiet: 'Quiet Stars', categories: 'Category Board', survey: 'Class Survey', bingo: 'Class Bingo', flashcards: 'Flashcards', exitticket: 'Exit Ticket', spinner: 'Team Spinner', scoreboard: 'Team Scoreboard', classquiz: 'Class Quiz', classmemory: 'Memory Match', classword: 'Word Lab' }[kind] || 'My Game');
 }
-export const CATEGORY_FOR = { quiet: 'learning', categories: 'learning', survey: 'learning', bingo: 'learning', flashcards: 'learning', exitticket: 'learning', spinner: 'learning', scoreboard: 'learning', quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board', island: 'adventure' };
+export const CATEGORY_FOR = { quiet: 'learning', categories: 'learning', survey: 'learning', bingo: 'learning', flashcards: 'learning', exitticket: 'learning', spinner: 'learning', scoreboard: 'learning', classquiz: 'learning', classmemory: 'learning', classword: 'words', quiz: 'learning', runner: 'arcade', catch: 'arcade', memory: 'puzzle', word: 'words', duel: 'silly', board: 'board', island: 'adventure' };
 
 // Chips the Builder offers (at most 8).
 export const KIND_CHIPS = ['🏃 A running and jumping game', '🧺 Catch the falling things', '❓ A quiz game', '🏝️ A 3D island adventure', '🔤 A word game', '⚔️ Two players on one phone', '🎲 A board game', '✨ Surprise me!'];

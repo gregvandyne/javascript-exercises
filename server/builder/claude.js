@@ -26,7 +26,7 @@
 import { config } from '../config.js';
 import { anthropic } from './anthropic.js';
 import * as aiBudget from '../services/ai-budget.js';
-import { SYSTEM_PROMPT, TOOLS, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note, ART2D_RULES, wantsArt2d, art2dNote, pickKit2, CANVAS_RULES, FIGURE_RULES, wantsFigures, wantsCanvas } from './prompt.js';
+import { promptFor, KIT_RULES, legacyKit, THREE_D_RULES, KIT_3D_BRIDGE_RULES, usesKit3d, LIVE_RULES, sourceBlock, languageBlock, wants3d, wantsLive, KIT2_RULES, wantsKit2, kit2Note, ART2D_RULES, wantsArt2d, art2dNote, pickKit2, CANVAS_RULES, FIGURE_RULES, wantsFigures, wantsCanvas } from './prompt.js';
 import { tEn } from '../i18n/index.js';
 import { summariseEvents } from './chat.js';
 import { modelBlocks, transcriptNote } from './uploads.js';
@@ -159,6 +159,9 @@ export async function run(ctx) {
   let prev = { c: 'start', fixing: false };
   let cutOff = false;   // a round already ran out of room before using a tool
   // Web search: decided once for the whole build (the tool list never changes partway through one).
+  // The arcade side (config.arcade) decides the fixed prefix for the whole build: the arcade prompt and tools, or the
+  // classroom focus's (prompt.js SYSTEM_PROMPT_FOCUS, TOOLS_FOCUS: no kit, no 3D, no sprites).
+  const arcade = !!config.arcade, { system: SYSTEM, tools: TOOLS } = promptFor(arcade);
   let tools = search.toolsFor(TOOLS), searchOn = tools !== TOOLS;
   const found = { count: 0, blocked: 0, capNoted: false, heldNoted: false };
   const queryById = new Map();  // server tool id -> its query, for results that arrive in a later response
@@ -204,20 +207,27 @@ export async function run(ctx) {
     // in 2D; every other choice of engine is kit2.js's, as before.
     // A build that came from the setup steps (ctx.plan, builder/plan.js): the plan decides the engine and the 2D art,
     // not the words.
-    const st = ctx.state || {}, a2pick = ctx.plan ? null : wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
+    // The classroom focus (arcade off): nothing new goes to Kit 2, the 2D art or a 3D world, whatever the words say; a
+    // game already made on one of them keeps it (legacy: its engine's rules come with its own turns only).
+    const st = ctx.state || {}, legacy = arcade ? null : legacyKit(cur && cur.html);
+    const a2pick = ctx.plan || (!arcade && !(legacy && legacy.art2d)) ? null : wantsArt2d(st, ctx.text, cur, pickKit2(ctx.text));
     if (a2pick && a2pick.force2d) delete st.kit2;
-    const k2 = ctx.plan ? engineFor(st, ctx.plan, ctx.text, cur) : a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
+    const k2 = ctx.plan || !arcade ? engineFor(st, ctx.plan, ctx.text, cur) : a2pick && a2pick.force2d ? null : wantsKit2(st, ctx.text, cur);
     const a2 = k2 ? null : ctx.plan ? art2dFor(st, ctx.plan, cur) : a2pick; if (k2) delete st.art2d;
+    const threeD = arcade ? wants3d(ctx.state || {}, ctx.text, cur) : !!(legacy && legacy.threeD);
+    const live = arcade ? wantsLive(ctx.state || {}, ctx.text, cur) : !!(legacy && legacy.live);
     const system = [
-      { type: 'text', text: SYSTEM_PROMPT, cache_control: { type: 'ephemeral' } },
+      { type: 'text', text: SYSTEM, cache_control: { type: 'ephemeral' } },
       // Fixed, and only while web search is on: it is cached with the block after it.
       ...(searchOn ? [{ type: 'text', text: search.SEARCH_RULES }] : []),
       ...(k2 ? [{ type: 'text', text: KIT2_RULES, cache_control: { type: 'ephemeral' } }]
-        : wants3d(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
+        : threeD ? [{ type: 'text', text: THREE_D_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      // The classroom focus, editing a game made on the Oomba Kit before: the KIT RULES as a block of their own.
+      ...(legacy && legacy.kit ? [{ type: 'text', text: KIT_RULES }] : []),
       // An older 3D game on the kit's 3D bridge: its reference too (no cache point of its own; the game's block caches it).
       ...(cur && usesKit3d(cur.html) ? [{ type: 'text', text: KIT_3D_BRIDGE_RULES }] : []),
       // (Live class games are built on the Oomba Kit's live pack: not for Kit 2 games yet, whose rules say so.)
-      ...(!k2 && wantsLive(ctx.state || {}, ctx.text, cur) ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
+      ...(!k2 && live ? [{ type: 'text', text: LIVE_RULES, cache_control: { type: 'ephemeral' } }] : []),
       // A classroom activity (Oomba Canvas): its fixed rules, only for canvas builds (no cache point of its own: the
       // game's block caches it), so an arcade build's prefix never changes.
       ...(!k2 && wantsCanvas(st, ctx.text, cur) ? [{ type: 'text', text: CANVAS_RULES }] : []),

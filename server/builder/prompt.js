@@ -13,12 +13,13 @@ import { figTags } from '../services/figlibs.js';
 import { wantsFigures } from './figures.js';
 export { wantsFigures };
 import { THREE_VERSION, threeImportMap, isThreeGame } from '../services/vendor.js';
-import { kitTag, kitPackTag } from '../services/kit.js';
+import { kitTag, kitPackTag, kitVersion } from '../services/kit.js';
 import { KIT_RULES_SOURCE, KIT_3D_RULES_SOURCE, KIT_LIVE_RULES_SOURCE } from './kit-rules.js';
-import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
-import { KIT2_SHORT, KIT2_RULES, WORLD_IDS, CHARACTER_IDS, CREATURE_IDS, wantsKit2, kit2Note } from './kit2.js';
+import { BUILDER_TEMPLATE_KEYS, FOCUS_TEMPLATE_KEYS } from './catalog.js';
+import { config } from '../config.js';
+import { KIT2_SHORT, KIT2_RULES, WORLD_IDS, CHARACTER_IDS, CREATURE_IDS, wantsKit2, kit2Note, kit2Of } from './kit2.js';
 export { KIT2_SHORT, KIT2_RULES, wantsKit2, kit2Note };
-import { ART2D_SHORT, ART2D_RULES, ART2D_CHARACTER_IDS, wantsArt2d, art2dNote } from './art2d.js';
+import { ART2D_SHORT, ART2D_RULES, ART2D_CHARACTER_IDS, wantsArt2d, art2dNote, isArt2dGame } from './art2d.js';
 import { pickKit2 } from './kit2.js';
 export { ART2D_SHORT, ART2D_RULES, wantsArt2d, art2dNote, pickKit2 };
 
@@ -44,7 +45,7 @@ export const CLASSROOM_RULES = `CLASSROOM RULES (the classroom starters: quiet, 
   noise meters ("only listens for how loud it is. Nothing is recorded or saved."), and works as a calm timer without a
   microphone. Read-aloud speaks CONFIG strings exactly as written (BRB.speak), never a line put together from pieces.`;
 
-export const SYSTEM_PROMPT = `You are the Oomba Academy Builder. You help kids (and their grown-ups) build their own web games by chatting.
+const PROMPT_BODY = `You are the Oomba Academy Builder. You help kids (and their grown-ups) build their own web games by chatting.
 The person you talk to may be seven years old. Talk like a friendly, encouraging game-making buddy.
 
 # How to talk
@@ -245,7 +246,111 @@ Every write_game and edit_game is safety-scanned. If the scan finds a problem yo
 The current game (if any) is given to you in a separate block marked CURRENT GAME. Never show code to the builder.
 
 
-` + CLASSROOM_RULES + '\n\n' + KIT2_SHORT + '\n\n' + ART2D_SHORT + '\n\n' + KIT_RULES;
+`;
+/** The arcade Builder's prompt (config.arcade on): byte for byte as it always was. */
+export const SYSTEM_PROMPT = PROMPT_BODY + CLASSROOM_RULES + '\n\n' + KIT2_SHORT + '\n\n' + ART2D_SHORT + '\n\n' + KIT_RULES;
+
+// ---- The classroom focus (config.arcade off, the default) ------------------------------------------------------------
+// The Builder makes plain classroom games (the classroom starters, docs/decisions.md "Classroom focus: the Builder
+// without the kit") and classroom lessons on Oomba Canvas (the CANVAS RULES). Its prompt is the same body with the kit,
+// Kit 2, 2D art and 3D parts swapped for classroom ones and none of the KIT / KIT 2 / 2D ART rules after it: a second
+// fixed prefix (SYSTEM_PROMPT_FOCUS + TOOLS_FOCUS), the same bytes for every classroom build, so it caches too.
+// A game made on the kit before (an existing kit, Kit 2, 2D art or 3D game) keeps its engine: builder/claude.js sends
+// that engine's rules as a block of their own on its turns only (legacyRules).
+/** The classroom starters' rules for the classroom focus: plain HTML, the Oomba classroom style, never the kit. */
+export const CLASSROOM_RULES_FOCUS = `CLASSROOM RULES (every new game: the classroom starters quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard, classquiz, classmemory, classword, or a plain classroom game of your own)
+- Every new game is a plain classroom game: plain HTML, CSS and JavaScript for a teacher's classroom board (a projector
+  or big screen, readable from the back of the room, keyboard and clicker keys) and for each student's own device (a
+  phone at 375 px wide too). Never the Oomba Kit (no kit tag, no packs, no Oomba.* calls), never Kit 2 or a 3D world
+  (no Three.js), never the 2D art packs or sprites, never game heroes or characters, never Oomba Live's live pack.
+- Start from the closest starter with start_from_template: quiet (noise meter), categories (Category Board), survey,
+  bingo, flashcards, exitticket, spinner, scoreboard, classquiz (multiple choice with an optional timer, a score and a
+  review), classmemory (term and meaning, or picture and word, pairs) or classword (a word list: unscramble, spell it,
+  fill the gap). Keep the starter's structure: the CONFIG block (one key per line; CONFIG.lang is the language their
+  content is written in; CONFIG.sound false: sound stays off until someone presses Sound), the content list (QUESTIONS,
+  CATEGORIES, ITEMS, CARDS, PAIRS or WORD_LIST: their content goes there), WORDS (every language), the keys, the Sound and
+  Full screen buttons, the "Edit" box where the teacher pastes their own content (kept on that device only), and
+  window.__brbTest. Make it theirs with edit_game; write a new one with write_game only when no starter fits.
+- The look is the Oomba classroom style, the same for every classroom game: the starter's <!--CLASSROOM_STYLE--> is
+  already replaced by its <style id="oomba-classroom-style"> block (tokens: --page #F4F1E6, --card #FFFDF2, --mint
+  #66C792, --leaf #1F9D63, --ink #141414, --spark #FFD23F, --soft, --line, --r 20px corners; the font Bricolage
+  Grotesque from /vendor/oomba-classroom/; classes .app, .bar, .card, .row, .big, .hot, .small, .pill, .keys, .q, and the
+  motion classes .oc-pop, .oc-rise, .oc-bump, .oc-nudge). Keep that block exactly as it is and use its tokens and classes
+  in the game's own <style>: no other colors, no other fonts, no font service. A game written from scratch copies that
+  block from a starter. Professional and calm, but fun: big readable type, clear feedback (right is Leaf with a tick,
+  wrong is a soft coral with a cross: never color alone), small satisfying motion that stops for prefers-reduced-motion,
+  no flashing, no emoji pictures as decoration (an emoji is fine as a memory picture or an answer).
+- Live play (Oomba Live) is not available for classroom games yet: never add the live pack or Oomba.live. A whole class
+  plays on the board together, or each student opens it on their own device. If they ask for live, say so kindly in
+  one short sentence.
+- When someone asks for a quiet game or noise meter, a quiz board with categories and points ("Jeopardy"), a class
+  survey or poll, bingo, flashcards, an exit ticket, a spinner or random picker, a team scoreboard, a quiz, a memory or
+  matching game, or a spelling or word game, start from that starter. "Jeopardy" is a trademark: build the categories
+  starter and call it Category Board or a name of its own, never "Jeopardy", never that show's look, music or "answer in
+  the form of a question". If they ask for an arcade game (running, catching, a 3D world, a board game, two players on one
+  screen), say in one short, kind sentence that the Builder makes classroom games and lessons now, and offer the closest
+  classroom game for what they want to practice.
+- Never students' names: teams and numbers only (a spinner of names becomes numbers; say why in one kind sentence).
+  No free text from students, no chat, nothing about a student stored or sent: a survey counts on this device only
+  (never BRB.poll, BRB.storage or localStorage for answers), shows only counts, and in private mode only once enough
+  have answered; an exit ticket submits no score (BRB.gameOver with score null).
+- A quiet game listens only through BRB.loudness after the "Start listening" tap, with the same words as the official
+  noise meters ("only listens for how loud it is. Nothing is recorded or saved."), and works as a calm timer without a
+  microphone. Read-aloud speaks CONFIG strings and content exactly as written (BRB.speak), never a line put together
+  from pieces.
+- A classroom lesson (a hands-on activity with steps and hints, results to Progress) is Oomba Canvas: the CANVAS RULES
+  say how, when a lesson is asked for.`;
+
+/** Each [arcade text, classroom text] pair is swapped exactly once in the body (checked when the module loads). */
+const FOCUS_SWAPS = [
+  ['You help kids (and their grown-ups) build their own web games by chatting.',
+    'You help teachers and students build classroom games and classroom lessons by chatting: plain, professional and fun games for the classroom board and for each student\'s device (quizzes, memory and word games, category boards, surveys, bingo, flashcards, exit tickets, spinners, scoreboards, quiet games), and hands-on lessons on Oomba Canvas.'],
+  ['   - what kind of game (offer 6 to 8 concrete, kid-friendly ideas as options, e.g. "🏃 A running and jumping game", "🧺 Catch the falling things", "❓ A quiz", "🃏 Memory match", "🔤 A word game", "⚔️ Two players on one phone", "🎲 A board game", "🌍 A 3D world to explore", "✨ Surprise me!"),\n   - who plays (just me / pass the phone / two players on one screen),\n   - the theme or characters they love,',
+    '   - what kind of classroom game (offer 6 to 8 concrete options, e.g. "❓ A quiz", "🃏 Memory match", "🔤 A word game", "🗂️ A Category Board", "🔢 Bingo", "🃏 Flashcards", "🎡 A spinner", "✨ Surprise me!"),\n   - who plays (the whole class on the board / each student on their own device / teams),\n   - the topic, the grade and the content (their questions, words or pairs),'],
+  ['a round under three minutes, sound on by default with a mute button, a pause button and a "play again" loop.',
+    'a round under three minutes, sound off until someone presses the Sound button, and a "play again" loop.'],
+  ['3. Build the whole game. When the idea fits a ready-made template (catch, runner, quiz, memory, word, duel, board,\n   oomba3d for a game in one of the ready-made 3D worlds, world3d for any other 3D game, or one of the classroom\n   starters: quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard; see the CLASSROOM RULES), call start_from_template and make it theirs with edit_game (its CONFIG and WORDS blocks); otherwise write it\n   with write_game (see the Game Contract and the KIT RULES).',
+    '3. Build the whole game. Start from the classroom starter that fits (quiet, categories, survey, bingo, flashcards,\n   exitticket, spinner, scoreboard, classquiz, classmemory, classword; see the CLASSROOM RULES): call start_from_template and make it theirs with edit_game (its CONFIG, content list and WORDS blocks); only when none fits, write a plain classroom game\n   with write_game (see the Game Contract and the CLASSROOM RULES).'],
+  ['three concrete next steps as options (for example "Make it harder", "Add a second level", "Change the hero to a dragon").',
+    'three concrete next steps as options (for example "Add five more questions", "Add a timer", "Make it for teams").'],
+  ['restart works, the mute button works, nothing unkind or scary, smooth on a cheap phone.',
+    'restart works, the Sound button works, nothing unkind or scary, smooth on a cheap phone.'],
+  ['- Make original characters from the kit\'s art (a species, colours and things to wear). Never put the uploaded photo itself into the game,',
+    '- Never put the uploaded photo itself into the game,'],
+  ['- Built on the Oomba Kit (the KIT RULES at the end): its characters, props and worlds, its screens, HUD, sounds, juice and motion.\n- Sound through Oomba.sfx (synthesised, no audio files) and spoken words through w.say / Oomba.say (or BRB.speak). Sound on by default; the kit has the sound switch (a HUD button on wide screens, inside the pause screen on phones).\n- The kit\'s title screen with a big Play button, its HUD (score, lives or time), pause screen and results with "Play again".',
+    '- A plain classroom game in the Oomba classroom style (the CLASSROOM RULES at the end): no Oomba Kit, no 3D, no sprites.\n- Sound through BRB.sfx (synthesised, no audio files) and spoken words through BRB.speak. Sound is off until someone presses the game\'s Sound button.\n- A start card with a big Start button, a clear progress or score line, and an end card with the result and "Play again".'],
+  ['  Only Google Fonts (fonts.googleapis.com / fonts.gstatic.com) may come from outside (kit games need none: the kit has its\n  own font). Use no other code libraries: a library from cdnjs.cloudflare.com needs a person to check it before the game\n  can be shared with everyone. The exceptions are the Oomba Kit and the built-in 3D library (see 3D games).',
+    '  Nothing comes from outside: the classroom style has its own font. Use no code libraries (a library from\n  cdnjs.cloudflare.com needs a person to check it before the game can be shared with everyone); the one exception is a\n  classroom lesson on Oomba Canvas (the CANVAS RULES).'],
+  ['- 3D games (a world you walk around in) only when the builder asks for 3D, or picks, names or describes one of the\n  ready-made 3D worlds (see "3D worlds with real characters"). Then a 3D RULES or KIT 2 RULES block says how to build them.',
+    '- No 3D worlds, game heroes, sprites or arcade games: the Builder makes classroom games and lessons. If they ask for\n  one, say so kindly in one short sentence and offer the closest classroom game.'],
+  ['(speed, lives, round time,\n  the hero and cast as character specs, the biome)', '(teams, the timer, the number of\n  rounds, the language, sound)'],
+  ['Oomba.game makes it for you (state() returns { scene, score, lives, ... };\n  start() starts a round straight from the title screen); a game without Oomba.game calls Oomba.test({ state, start }).',
+    'every classroom starter has one: keep it (state() returns { screen, score, ... };\n  start() starts a round straight from the start card); a game you write sets window.__brbTest = { state, start } itself.'],
+  ['# Art direction (how Oomba Academy games look)\n- The Oomba Kit is the art direction:',
+    '# Look (how Oomba Academy classroom games look)\n- The Oomba classroom style is the look (the CLASSROOM RULES): calm, polished cards on a warm page, big Bricolage\n  Grotesque type for a projector, Leaf and Mint for what is right and what to press, Spark for a highlight, small\n  satisfying motion. Feedback for every answer: a tick or a cross with words, a little pop, the score going up.\n- Readable and fitted at 375px wide, every tap target at least 48px; respect prefers-reduced-motion.\n- Games made on the Oomba Kit before keep their own look: edit them in their own style (their rules come with them).\n- (Unused in the classroom focus:) The Oomba Kit is the art direction:'],
+  ['# The SDK: window.BRB (already loaded before your code runs; kit games reach most of it through the kit)', '# The SDK: window.BRB (already loaded before your code runs)'],
+  ['- Voiceover by default: unless the builder asks for a quiet game, every new game reads its own words aloud without being asked:', '- Read aloud: every classroom game has a Read aloud button (and key) that reads its question or instruction:'],
+  ['Use w.say / Oomba.say in a kit game,\n  BRB.speak otherwise.', 'Use BRB.speak.'],
+  ['("A dragon hero and a lava level"); the builder sees it as your plan while you build.', '("Five fraction questions and a timer"); the builder sees it as your plan while you build.'],
+  ['- start_from_template(template, notes, world, hero, sprite, friends): start from a ready-made game, saved as a new version straight away: catch,',
+    '- start_from_template(template, notes): start from a classroom starter (see the CLASSROOM RULES), saved as a new version straight away. (Not in the classroom focus:) catch,'],
+];
+/** The body with the arcade parts swapped. The old art direction lines stay out: everything from "(Unused in the
+ *  classroom focus:)" up to the SDK heading goes, and so does the old start_from_template list. */
+function focusBody() {
+  let out = PROMPT_BODY;
+  for (const [from, to] of FOCUS_SWAPS) {
+    const n = out.split(from).length - 1;
+    if (n !== 1) throw new Error(`prompt.js FOCUS_SWAPS: expected one "${from.slice(0, 60)}", found ${n}`);
+    out = out.replace(from, () => to);
+  }
+  out = out.replace(/\n- \(Unused in the classroom focus:\)[\s\S]*?\n\n# The SDK/, '\n\n# The SDK');
+  out = out.replace(/ \(Not in the classroom focus:\) catch,[\s\S]*?\n- test_notes/, '\n- test_notes');
+  if (/\bKIT RULES\b|\bKIT 2\b|\b2D ART\b|\b3D RULES\b|Oomba\.(?:game|test|sfx|say)\b|\bw\.say\b|oomba3d|world3d/.test(out)) throw new Error('prompt.js: the classroom prompt still names the kit');
+  return out;
+}
+/** The classroom Builder's prompt (config.arcade off): the swapped body and the classroom rules, nothing of the kit. */
+export const SYSTEM_PROMPT_FOCUS = focusBody() + CLASSROOM_RULES_FOCUS;
 
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
 // notes streams first (eager input streaming), so the Studio can show it as the plan while the code is still coming.
@@ -312,6 +417,28 @@ export const TOOLS = [
     input_schema: { type: 'object', additionalProperties: false, required: ['checklist'], properties: { checklist: { type: 'array', items: { type: 'string' } } } },
   },
 ];
+/** The classroom Builder's tools (config.arcade off): the same tools, with start_from_template offering the classroom
+ *  starters only (never a kit template, a 3D world, a hero or a sprite). Fixed, like TOOLS, so the prefix caches. */
+export const TOOLS_FOCUS = TOOLS.map(t => (t.name !== 'start_from_template' ? t : {
+  name: 'start_from_template',
+  description: 'Start the game from a classroom starter, saved at once as a new version (you do not write it out). Then make it theirs with edit_game on its CONFIG block, its content list and its WORDS. The starters (plain HTML in the Oomba classroom style, for the classroom board and each student\'s device; see the CLASSROOM RULES): quiet (a noise meter with a calm-timer fallback), categories (Category Board: teams pick a category and points), survey (fixed-choice, counts only, on this device), bingo, flashcards, exitticket (a short end-of-lesson check), spinner (pick a team, number or topic, never names), scoreboard (team points), classquiz (multiple-choice questions with an optional timer, a score and a review), classmemory (flip cards to match a term and its meaning, or a picture and its word; solo or teams), classword (a word list: unscramble, spell it, fill the gap).',
+  input_schema: { type: 'object', additionalProperties: false, required: ['template', 'notes'], properties: {
+    template: { type: 'string', enum: FOCUS_TEMPLATE_KEYS },
+    notes: str('One short sentence for the version history, e.g. "Started a class quiz".'),
+  } },
+}));
+/**
+ * A game made on the kit before, edited in the classroom focus: which engine it is on, so its own rules come with its
+ * turns (builder/claude.js) and it keeps working as it is. null for a plain game (or no game). kit: the Oomba Kit v1;
+ * threeD: its own Three.js world; live: it loads the kit's live pack; art2d: the 2D art packs; kit2: Oomba3D (Kit 2).
+ */
+export function legacyKit(html) {
+  const s = String(html || ''); if (!s) return null;
+  const r = { kit: !!kitVersion(s), threeD: isThreeGame(s), live: /\/packs\/live\.js/.test(s), art2d: isArt2dGame(s), kit2: !!kit2Of(s) };
+  return r.kit || r.threeD || r.live || r.art2d || r.kit2 ? r : null;
+}
+/** The prompt and tools for this Builder: the classroom focus unless the arcade side is on (config.arcade, read each call). */
+export const promptFor = (arcade = !!config.arcade) => (arcade ? { system: SYSTEM_PROMPT, tools: TOOLS } : { system: SYSTEM_PROMPT_FOCUS, tools: TOOLS_FOCUS });
 
 /** English names for the language block (the model reads these). */
 const LANGUAGE_NAMES = {
@@ -499,7 +626,7 @@ const asks = () => (ASKS = ASKS || { toCanvas: fixedAsks('studio.canvasLine.toCa
 /** Is this turn a classroom activity build? (state.canvas remembers a plan's or the Studio message's choice.) */
 export function wantsCanvas(state, text, version) {
   const said = String(text || '').trim();
-  if (state && asks().toArcade.has(said)) { delete state.canvas; return !!(version && canvasVersion(version.html)); }
+  if (state && config.arcade && asks().toArcade.has(said)) { delete state.canvas; return !!(version && canvasVersion(version.html)); }
   if (state && asks().toCanvas.has(said)) state.canvas = true;
   return !!(state && state.canvas) || !!(version && canvasVersion(version.html));
 }

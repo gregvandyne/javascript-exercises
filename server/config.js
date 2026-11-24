@@ -231,6 +231,9 @@ export const config = {
   port: num(process.env.PORT, 3000),
   // KIT_PREVIEW=1: the Oomba Kit preview (/kit) for everyone, not only admins (docs/kit.md).
   kitPreview: process.env.KIT_PREVIEW === '1',
+  // ARCADE=1: the arcade side (arcade games, the Oomba Kit in the Builder, 3D worlds). Off by default: the Builder makes
+  // plain classroom games and Oomba Canvas lessons only (docs/decisions.md "Classroom focus: the Builder without the kit").
+  arcade: parseFlag(process.env.ARCADE, 'ARCADE', false).on,
   env: process.env.NODE_ENV || 'development',
   dataDir: process.env.BRB_DATA_DIR || path.resolve(process.cwd(), 'data'),
   db: process.env.BRB_DB || '', // ':memory:' for tests; default <dataDir>/brb.db

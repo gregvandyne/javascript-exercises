@@ -1,38 +1,22 @@
 <title>Team Spinner</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Team Spinner: a big wheel for the board that picks a team, a number or a topic. Never students' names: teams and
-   numbers only (or the teacher's own topics). Space, Enter or a clicker spins it. */
-:root{--bg:#fff3f8;--bg2:#ffe0ee;--ink:#2d1430;--soft:#6c4c6e;--card:#ffffff;--edge:#2d1430;--hot:#8b3dff;--hot-ink:#ffffff}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
-body{background:radial-gradient(circle at 70% 20%,var(--card),var(--bg) 40%,var(--bg2)) fixed}
-.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
-.bar{display:flex;align-items:center;gap:10px}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:5px solid var(--hot);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--ink);color:var(--card)}
-button:disabled{opacity:.45;cursor:default}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
-.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
-.hot{background:var(--hot);color:var(--hot-ink)}
-[hidden]{display:none!important}
+   numbers only (or the teacher's own topics). Space, Enter or a clicker spins it.  In the Oomba classroom style (classroom-style.css). */
 .main{flex:1;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(12px,3vmin,40px);align-items:center;min-height:0}
-.wheelbox{position:relative;width:min(100%,calc(100dvh - 120px));aspect-ratio:1;margin:auto}
+.wheelbox{position:relative;width:min(100%,calc(100dvh - 120px));aspect-ratio:1;margin:auto;filter:drop-shadow(0 18px 26px rgba(20,20,20,.18))}
 #wheel{width:100%;height:100%;display:block}
-.pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:clamp(14px,2.6vmin,26px) solid transparent;border-right:clamp(14px,2.6vmin,26px) solid transparent;border-top:clamp(26px,4.6vmin,46px) solid var(--edge);filter:drop-shadow(0 3px 0 var(--card))}
+.pointer{position:absolute;left:50%;top:-4px;transform:translateX(-50%);width:0;height:0;border-left:clamp(14px,2.6vmin,26px) solid transparent;border-right:clamp(14px,2.6vmin,26px) solid transparent;border-top:clamp(26px,4.6vmin,46px) solid var(--ink);filter:drop-shadow(0 3px 0 var(--spark))}
 .side{display:flex;flex-direction:column;gap:clamp(10px,2vmin,20px);align-items:center;text-align:center}
-.result{min-height:1.2em;font-size:clamp(2.4rem,11vmin,8rem);font-weight:900;line-height:1.05;overflow-wrap:anywhere}
-.hint{margin:0;font-weight:800;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem)}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.result{min-height:1.2em;font-size:clamp(2.4rem,10.5vmin,7.6rem);font-weight:800;letter-spacing:-.04em;line-height:1.05;overflow-wrap:anywhere}
+.result:not(:empty){animation:oc-pop .45s var(--spring) both}
+.hint{margin:0;font-weight:700;color:var(--soft);font-size:clamp(1rem,2.5vmin,1.55rem)}
 .picked{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;list-style:none;margin:0;padding:0}
-.picked li{padding:6px 12px;border-radius:999px;background:var(--card);border:3px solid var(--edge);font-weight:800;font-size:clamp(.9rem,2.2vmin,1.4rem)}
-.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
+.picked li{padding:6px 14px;border-radius:999px;background:var(--tint);font-weight:700;font-size:clamp(.9rem,2.1vmin,1.35rem)}
 @media (max-width:760px),(orientation:portrait){.main{grid-template-columns:1fr}.wheelbox{width:min(100%,62dvh)}}
 </style>
 <main class="app">
-  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
   <div class="main">
     <div class="wheelbox"><canvas id="wheel" role="img"></canvas><div class="pointer" aria-hidden="true"></div></div>
     <div class="side">
@@ -54,6 +38,7 @@ button:disabled{opacity:.45;cursor:default}
 const CONFIG = {
   title: 'Team Spinner',
   lang: 'en',
+  sound: false,
   teams: 4,
   numbers: 0,
   topics: [],
@@ -83,9 +68,11 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
-const COLORS = ['#ff6b6b', '#ffb547', '#ffe066', '#5ad18f', '#4fb6ff', '#8b7bff', '#ff7ad1', '#3fd0c9'];
+const COLORS = ['#66C792', '#FFD23F', '#7FB3E6', '#F2957C', '#B9A0E3', '#F7B267', '#A8DDB9', '#FFE58A'];   // the Oomba classroom accents
+const INK = '#141414', PAPER = '#FFFDF2', FONT = '"Bricolage Grotesque", system-ui, sans-serif';
 /** Everything the wheel can land on: { label, spoken } (spoken is a fixed CONFIG string, or null for team and number labels). */
 function allItems() {
   if (CONFIG.topics.length) return CONFIG.topics.slice(0, 30).map(t => ({ label: String(t), spoken: String(t) }));
@@ -104,22 +91,22 @@ addEventListener('resize', fit);
 function draw() {
   const r = cv.getBoundingClientRect(), w = r.width, h = r.height, R = Math.min(w, h) / 2 - 6, cx = w / 2, cy = h / 2, n = S.left.length;
   ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = '#2d1430'; ctx.beginPath(); ctx.arc(cx, cy + 6, R, 0, 7); ctx.fill();
-  if (!n) { ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill(); }
+  
+  if (!n) { ctx.fillStyle = PAPER; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.fill(); }
   const step = (Math.PI * 2) / Math.max(1, n);
   S.left.forEach((it, i) => {
     const a0 = S.angle + i * step - Math.PI / 2, a1 = a0 + step;
     ctx.fillStyle = COLORS[(S.items.indexOf(it)) % COLORS.length]; ctx.beginPath(); ctx.moveTo(cx, cy); ctx.arc(cx, cy, R, a0, a1); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#2d1430'; ctx.lineWidth = 3; ctx.stroke();
+    ctx.strokeStyle = PAPER; ctx.lineWidth = 3; ctx.stroke();
     const mid = a0 + step / 2, flip = Math.cos(mid) < 0;   // the left half reads the right way up
     ctx.save(); ctx.translate(cx, cy); ctx.rotate(flip ? mid + Math.PI : mid);
     const size = Math.max(11, Math.min(R * 0.14, (R * step) * 0.45, (R * 0.8) / Math.max(4, it.label.length) * 1.7));
-    ctx.font = `800 ${size}px system-ui, sans-serif`; ctx.fillStyle = '#2d1430'; ctx.textAlign = flip ? 'left' : 'right'; ctx.textBaseline = 'middle';
+    ctx.font = `800 ${size}px ${FONT}`; ctx.fillStyle = INK; ctx.textAlign = flip ? 'left' : 'right'; ctx.textBaseline = 'middle';
     let t = it.label; while (ctx.measureText(t).width > R * 0.78 && t.length > 2) t = `${t.slice(0, -2)}…`;
     ctx.fillText(t, flip ? -(R - 14) : R - 14, 0); ctx.restore();
   });
-  ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#2d1430'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, R * 0.12, 0, 7); ctx.fill(); ctx.stroke();
-  ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
+  ctx.fillStyle = PAPER; ctx.strokeStyle = INK; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, R * 0.12, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.strokeStyle = PAPER; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
   cv.setAttribute('aria-label', tr('wheel', { n }));
 }
 const still = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -158,7 +145,7 @@ function resetAll() { if (S.spinning) return; S.left = S.items.slice(); S.out = 
 // ---- buttons and keys ---------------------------------------------------------------------------------------------
 $('spin').onclick = spin; $('reset').onclick = resetAll;
 $('noRepeat').onclick = () => { S.noRepeat = !S.noRepeat; if (!S.noRepeat) S.out = null; $('noRepeat').setAttribute('aria-pressed', String(S.noRepeat)); };
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -170,7 +157,7 @@ addEventListener('keydown', e => {
 
 document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['spin', 'spin'], ['hint', 'hint'], ['noRepeat', 'noRepeat'], ['reset', 'reset'], ['keys', 'keys']]) $(id).textContent = tr(k);
-$('noRepeat').setAttribute('aria-pressed', String(S.noRepeat)); $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+$('noRepeat').setAttribute('aria-pressed', String(S.noRepeat)); $('sound').setAttribute('aria-pressed', String(soundOn));
 window.__brbTest = { state: () => ({ spinning: S.spinning, result: S.last, left: S.left.length - (S.out ? 1 : 0), items: S.items.length, picked: S.picked.slice() }), start() { spin(); } };
 fit();
 </script>

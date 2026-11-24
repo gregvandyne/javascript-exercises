@@ -10886,7 +10886,8 @@
         "board": "Este funciona em uma tela para a sala toda.",
         "survey": "As respostas da pesquisa ficam neste aparelho e nunca são enviadas, então ela não é jogada ao vivo.",
         "exitticket": "Um bilhete de saída fica em um aparelho. Para as respostas de cada aluno, use uma etapa de pergunta em uma aula da turma.",
-        "canvas": "As atividades de sala ainda não podem ser jogadas ao vivo."
+        "canvas": "As atividades de sala ainda não podem ser jogadas ao vivo.",
+        "plain": "O jogo ao vivo ainda não está disponível para jogos de turma. Mostre no quadro ou compartilhe para que cada um jogue no próprio dispositivo."
       }
     },
     "learn": {

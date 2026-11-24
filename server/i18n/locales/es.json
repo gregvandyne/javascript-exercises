@@ -10884,7 +10884,8 @@
         "board": "Este funciona en una pantalla para toda la sala.",
         "survey": "Las respuestas de la encuesta se quedan en este dispositivo y nunca se envían, así que no se juega en vivo.",
         "exitticket": "Un ticket de salida se queda en un dispositivo. Para las respuestas de cada estudiante, usa un paso de pregunta en una lección de clase.",
-        "canvas": "Las actividades de clase aún no se pueden jugar en directo."
+        "canvas": "Las actividades de clase aún no se pueden jugar en directo.",
+        "plain": "El juego en directo aún no está disponible para los juegos de clase. Muéstralo en la pizarra o compártelo para que cada uno juegue en su dispositivo."
       }
     },
     "learn": {

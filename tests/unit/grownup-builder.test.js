@@ -14,6 +14,7 @@ process.env.STRIPE_WEBHOOK_SECRET = 'whsec_fake_gb';
 process.env.STRIPE_API_BASE = fake.url;
 process.env.BILLING_PUBLIC = '1';
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 const { createApp } = await import('../../server/app.js');
 const { q, uid, migrate } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');

@@ -1,50 +1,35 @@
 <title>Category Board</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Category Board: a classroom quiz board for the board. Teams take turns to pick a category and a points value, the
    question opens big, the teacher shows the answer and gives the points. Sticky notes on a chalkboard; big type,
-   keyboard and clicker keys. An original game (no show's name, look or music). */
-:root{--board:#17342e;--board2:#1f4239;--ink:#fffaf0;--soft:#cfe8dc;--edge:#0b1d19;--note-ink:#1e1a14;--hot:#ffd65c;
-  --c0:#ff8f7e;--c1:#7fe0b3;--c2:#8fc9ff;--c3:#ffe27d;--c4:#c9a9ff;--c5:#ffb877}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--board);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
-body{background:radial-gradient(ellipse at 50% 0%,var(--board2),var(--board) 70%) fixed}
-.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(12px,env(safe-area-inset-bottom))}
-.bar{display:flex;align-items:center;gap:10px}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:14px;border:3px solid var(--edge);background:var(--board2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:5px solid var(--hot);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--hot);color:var(--note-ink)}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
-.hot{background:var(--hot);color:var(--note-ink)}
-[hidden]{display:none!important}
-.board{flex:1;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:clamp(6px,1.4vmin,14px);min-height:0}
-.head{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;border-radius:12px;color:var(--note-ink);font-weight:900;font-size:clamp(.9rem,2.8vmin,2rem);line-height:1.1;overflow-wrap:anywhere;box-shadow:0 4px 0 var(--edge);border:3px solid var(--edge);min-height:56px}
-.cell{color:var(--note-ink);font-size:clamp(1.3rem,6vmin,4.4rem);font-weight:900;font-variant-numeric:tabular-nums;border-radius:12px;padding:4px;min-height:56px;transform:rotate(var(--tilt,0deg))}
-.cell.used{background:transparent!important;color:var(--soft);border-style:dashed;box-shadow:none;font-size:clamp(.9rem,2.4vmin,1.6rem)}
+   keyboard and clicker keys. An original game (no show's name, look or music).  In the Oomba classroom style (classroom-style.css). */
+:root{--c0:var(--a0);--c1:var(--a1);--c2:var(--a2);--c3:var(--a3);--c4:var(--a4);--c5:var(--a5)}
+.turnline{text-align:center;margin:0;font-weight:700;font-size:clamp(1rem,2.5vmin,1.6rem);color:var(--soft)}
+.board{flex:1;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:clamp(6px,1.2vmin,14px);min-height:0}
+.head{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;border-radius:var(--r-sm);color:var(--ink);font-weight:800;font-size:clamp(.9rem,2.6vmin,1.9rem);line-height:1.1;overflow-wrap:anywhere;min-height:56px;letter-spacing:-.01em}
+.cell{position:relative;color:var(--leaf);font-size:clamp(1.3rem,5.6vmin,4.2rem);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;border-radius:var(--r-sm);padding:4px;min-height:56px;background:var(--card);overflow:hidden}
+.cell::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--accent,var(--mint))}
+.cell.used{background:transparent;color:var(--soft);border-style:dashed;box-shadow:none;font-size:clamp(.85rem,2.2vmin,1.5rem);font-weight:700;letter-spacing:0}
+.cell.used::before{display:none}
 .teams{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.team{flex:1 1 140px;min-width:0;max-width:300px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px;border-radius:16px;background:var(--edge);border:4px solid transparent;font-weight:900;font-size:clamp(1.1rem,3.4vmin,2.4rem)}
-.team.turn{border-color:var(--hot)}
+.team{flex:1 1 140px;min-width:0;max-width:300px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 18px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);box-shadow:var(--lift);font-weight:800;font-size:clamp(1.1rem,3.2vmin,2.2rem)}
+.team.turn{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .team .pts{font-variant-numeric:tabular-nums}
-.turnline{text-align:center;margin:0;font-weight:800;font-size:clamp(1rem,2.6vmin,1.7rem);color:var(--soft)}
-.clue{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vmin,22px);padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));background:var(--note,var(--c0));color:var(--note-ink);overflow:auto}
-.clue .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:900;font-size:clamp(1.1rem,3.4vmin,2.4rem)}
-.clue .q{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;font-size:clamp(1.7rem,7.5vmin,5.6rem);font-weight:900;line-height:1.15;overflow-wrap:anywhere}
-.clue .a{margin:0;text-align:center;font-size:clamp(1.5rem,6vmin,4.4rem);font-weight:900;background:var(--ink);border:4px solid var(--note-ink);border-radius:20px;padding:10px 16px}
-.clue button{background:var(--ink);color:var(--note-ink);border-color:var(--note-ink);box-shadow:0 4px 0 var(--note-ink)}
-.clue .hot{background:var(--note-ink);color:var(--ink)}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
-.big{font-size:clamp(1.1rem,3.4vmin,2.2rem);min-height:60px;padding:10px 24px}
-.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;opacity:.85}
-.end{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:rgba(11,29,25,.92)}
-.end .card{width:min(100%,760px);text-align:center;background:var(--board2);border:4px solid var(--edge);border-radius:28px;padding:clamp(18px,4vmin,40px)}
-.end h2{margin:0 0 12px;font-size:clamp(2rem,7vmin,4.6rem)}
-.end ol{list-style:none;margin:0 0 16px;padding:0;font-size:clamp(1.2rem,4vmin,2.6rem);font-weight:800}
+.clue{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vmin,22px);padding:max(18px,env(safe-area-inset-top)) clamp(16px,3vw,40px) max(16px,env(safe-area-inset-bottom));background:linear-gradient(var(--note,var(--c0)) 0 12px,var(--page) 12px);color:var(--ink);overflow:auto;animation:oc-rise .35s var(--ease) both}
+.clue .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:clamp(1.1rem,3.2vmin,2.2rem)}
+.clue .top span{padding:.25em .9em;border-radius:999px;background:var(--note,var(--c0))}
+.clue .q{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;font-size:clamp(1.7rem,7vmin,5.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15;overflow-wrap:anywhere;text-wrap:balance}
+.clue .a{margin:0 auto;text-align:center;font-size:clamp(1.5rem,5.6vmin,4.2rem);font-weight:800;background:var(--mint-soft);border:2px solid var(--leaf);border-radius:var(--r);padding:10px 28px;animation:oc-pop .4s var(--spring) both}
+.end{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.end .card{width:min(100%,760px)}
+.end h2{font-size:clamp(2rem,7vmin,4.6rem)}
+.end ol{list-style:none;margin:0 0 16px;padding:0;font-size:clamp(1.2rem,4vmin,2.6rem);font-weight:800;font-variant-numeric:tabular-nums}
+.end ol li:first-child{color:var(--leaf)}
 @media (max-width:600px){.cell{font-size:clamp(1rem,5vmin,2rem)}.head{font-size:.72rem;padding:4px 2px;overflow-wrap:normal;word-break:normal;hyphens:auto}.team{flex-basis:96px;padding:6px 10px;font-size:1rem}.bar h1{font-size:1.1rem}.bar button{padding:6px 10px}}
-@media (prefers-reduced-motion:reduce){.cell{transform:none}}
 </style>
 <main class="app" id="app">
-  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
   <p class="turnline" id="turnline" aria-live="polite"></p>
   <div class="board" id="board" role="grid"></div>
   <div class="teams" id="teams"></div>
@@ -68,6 +53,7 @@ button[aria-pressed="true"]{background:var(--hot);color:var(--note-ink)}
 const CONFIG = {
   title: 'Category Board',
   lang: 'en',
+  sound: false,
   teams: 3,
   points: [100, 200, 300, 400],
   takeTurns: true,
@@ -128,7 +114,8 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const say = text => { try { if (CONFIG.readAloud && B.speak && !(B.sfx && B.sfx.muted)) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
 const TEAMS = Math.max(1, Math.min(9, CONFIG.teams | 0));
 const ROWS = Math.min(CONFIG.points.length, ...CATEGORIES.map(c => c.clues.length));
@@ -150,7 +137,7 @@ function renderBoard() {
     CATEGORIES.forEach((c, i) => {
       const k = keyOf(i, r), used = k in S.used, btn = document.createElement('button');
       btn.className = `cell${used ? ' used' : ''}`; btn.dataset.c = i; btn.dataset.r = r; btn.tabIndex = -1;
-      btn.style.background = `var(--c${i % 6})`; btn.style.setProperty('--tilt', `${((i * 7 + r * 3) % 5) - 2}deg`);
+      btn.style.setProperty('--accent', `var(--c${i % 6})`);
       btn.textContent = used ? (S.used[k] ? tr('usedBy', { n: S.used[k] }) : tr('usedNone')) : String(CONFIG.points[r]);
       btn.setAttribute('aria-label', `${c.name}, ${tr('pts', { pts: CONFIG.points[r] })}${used ? `, ${btn.textContent}` : ''}`);
       btn.disabled = used; btn.onclick = () => openClue(i, r);
@@ -226,7 +213,7 @@ function finish() {
 // ---- buttons and keys ---------------------------------------------------------------------------------------------
 $('reveal').onclick = reveal; $('back').onclick = closeClue; $('again').onclick = reset;
 $('read').onclick = () => { const [c, r] = S.open || []; if (S.open) say(CATEGORIES[c].clues[r].q); };
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -245,7 +232,7 @@ addEventListener('keydown', e => {
 
 document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 $('sound').textContent = tr('sound'); $('full').textContent = tr('full'); $('reveal').textContent = tr('reveal'); $('read').textContent = tr('read'); $('back').textContent = tr('back'); $('again').textContent = tr('again'); $('keys').textContent = tr('keys');
-$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+$('sound').setAttribute('aria-pressed', String(soundOn));
 window.__brbTest = { state: () => ({ screen: S.screen, used: Object.keys(S.used).length, left: left(), scores: S.scores.slice(), turn: S.turn + 1, open: S.open, shown: S.shown }), start() { reset(); } };
 reset();
 </script>
