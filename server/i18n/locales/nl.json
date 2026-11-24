@@ -4527,8 +4527,15 @@
         "painting": "Oomba schildert dit plaatje",
         "lineDone": "Alle plaatjes zijn geschilderd.",
         "lineMissed": "{count, plural, one {# plaatje kon niet worden geschilderd en toont nu de tekening uit het tekenpakket.} other {# plaatjes konden niet worden geschilderd en tonen nu de tekening uit het tekenpakket.}}",
-        "repaint": "Plaatjes opnieuw schilderen"
-      }
+        "repaint": "Plaatjes opnieuw schilderen",
+        "repaintAll": "Alle afbeeldingen opnieuw schilderen",
+        "repaintAllQ": "Alle afbeeldingen in dit boek opnieuw schilderen, vanuit de woorden van het boek zelf? Elke afbeelding telt als een van de afbeeldingen van vandaag.",
+        "asked": "Wat Oomba vroeg",
+        "askedNote": "De woorden die Oomba voor deze afbeelding naar de afbeeldingenmaker stuurde. Namen van leerlingen staan er nooit in.",
+        "askedFail": "Kon het niet laden. Probeer het opnieuw."
+      },
+      "castWhat": "Wat het is",
+      "castWhatPh": "Wat het is: een jongen, een kameleon, een robot..."
     },
     "storybook-read": {
       "pageN": "Pagina {n}",
@@ -14212,7 +14219,8 @@
       "duplicated": "Kopie gemaakt: ‘{title}’",
       "repainting": "Plaatjes om opnieuw te schilderen: {count}. Ze verschijnen zodra ze klaar zijn.",
       "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op).",
-      "painting": "Plaatjes worden geschilderd"
+      "painting": "Plaatjes worden geschilderd",
+      "repaintAll": "Alle afbeeldingen opnieuw schilderen"
     }
   }
 }

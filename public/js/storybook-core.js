@@ -1,16 +1,19 @@
 // The book maker's shared rules (docs/storybook-builder.md): one pure module for the server (services/storybook.js), the
 // book editor (public/js/storybook-edit.js), the reader and the print view. No DOM, no database.
 //
-// A book: { title, kind: 'linear' | 'cyoa', start: pageId, cast: [{ name, art, look }], pages: [page] }
-//   cast look: how the character looks, in words (the picture model's character sheet is drawn from it)
+// A book: { title, kind: 'linear' | 'cyoa', start: pageId, cast: [{ name, what, art, look }], pages: [page] }
+//   cast what: what the character is, in the story's own words ("boy", "chameleon", "grandmother"); look: how the
+//   character looks, in words, starting with what it is (the picture model's character sheet is drawn from both); art:
+//   the art-pack sprite that stands in for them (a fallback drawing only; '' when nothing was picked)
 //   page: { id, title, text, end (cyoa: an ending), choices: [{ text, to: pageId }] (cyoa only, at most 4),
-//           pic: { world, mood, chars: [{ name, pos, flip }], props: [name], scene } | null (a drawn picture: the art packs'
-//                parts, and scene: what the picture shows in words, for the picture model),
+//           pic: { world, mood, chars: [{ name, pos, flip }], props: [name], scene, setting } | null (a drawn picture:
+//                the art packs' parts, and scene and setting: what the picture shows and where, in words, for the
+//                picture model),
 //           upload: pictureId | null (the teacher's own picture, which wins over pic), alt }
 // A linear book is read from its first page to its last: it has no choices and its last page is the end.
 
 export const KINDS = ['linear', 'cyoa'];
-export const LIMITS = Object.freeze({ title: 80, pageTitle: 60, text: 700, choice: 90, choices: 4, pages: 30, cast: 8, castName: 24, chars: 3, props: 3, alt: 200, pagesMin: 1, look: 200, scene: 400 });
+export const LIMITS = Object.freeze({ title: 80, pageTitle: 60, text: 700, choice: 90, choices: 4, pages: 30, cast: 8, castName: 24, chars: 3, props: 3, alt: 200, pagesMin: 1, look: 200, scene: 400, what: 40, setting: 200 });
 export const POSITIONS = ['left', 'center', 'right'];
 export const MOODS = ['bright', 'warm', 'dusk', 'night', 'gloomy', 'magic'];
 
@@ -22,9 +25,11 @@ const idOk = id => typeof id === 'string' && /^[A-Za-z0-9_-]{1,24}$/.test(id);
 /**
  * Any object -> a book of the right shape (never throws): strings trimmed and cut to their limits, unknown fields
  * dropped, ids made unique, at most LIMITS.pages pages. art: { worlds: Set|[], chars: Set|[], props(world) -> [] } to
- * keep only known art (unknown art is dropped, and noted in fixes). -> { book, fixes: [string] }
+ * keep only known art (unknown art is dropped, and noted in fixes). free: the pictures are painted from words (the
+ * picture model), so the art packs are only a fallback: a cast member or a picture with no art (or unknown art) is
+ * kept, with art '' (or world ''), and nothing is noted. -> { book, fixes: [string] }
  */
-export function shapeBook(raw, { kind = null, art = null } = {}) {
+export function shapeBook(raw, { kind = null, art = null, free = false } = {}) {
   const fixes = [];
   const d = raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {};
   const k = KINDS.includes(kind) ? kind : KINDS.includes(d.kind) ? d.kind : 'linear';
@@ -33,9 +38,13 @@ export function shapeBook(raw, { kind = null, art = null } = {}) {
   for (const c of Array.isArray(d.cast) ? d.cast : []) {
     if (!c || typeof c !== 'object' || cast.length >= LIMITS.cast) continue;
     const name = str(c.name, LIMITS.castName); if (!name || cast.some(x => x.name.toLowerCase() === name.toLowerCase())) continue;
-    const a = str(c.art, 40);
-    if (art && !has(art.chars, a)) { fixes.push(`cast "${name}": "${a}" is not a character in the catalog`); continue; }
-    cast.push({ name, art: a, look: str(c.look, LIMITS.look) });
+    let a = str(c.art, 40);
+    if (art && !has(art.chars, a)) {
+      if (!free) { fixes.push(`cast "${name}": "${a}" is not a character in the catalog`); continue; }
+      a = '';
+    }
+    const what = str(c.what, LIMITS.what);
+    cast.push({ name, ...(what ? { what } : {}), art: a, look: str(c.look, LIMITS.look) });
   }
   const seen = new Set(), pages = [];
   for (const p of (Array.isArray(d.pages) ? d.pages : []).slice(0, LIMITS.pages * 2)) {
@@ -54,8 +63,9 @@ export function shapeBook(raw, { kind = null, art = null } = {}) {
     }
     if (typeof p.upload === 'string' && /^[A-Za-z0-9_-]{6,40}$/.test(p.upload)) out.upload = p.upload;
     if (p.pic && typeof p.pic === 'object') {
-      const w = str(p.pic.world, 40);
-      if (!art || has(art.worlds, w)) {
+      let w = str(p.pic.world, 40);
+      if (art && free && !has(art.worlds, w)) w = '';
+      if (!art || free || has(art.worlds, w)) {
         const chars = [];
         for (const c of Array.isArray(p.pic.chars) ? p.pic.chars : []) {
           if (!c || typeof c !== 'object' || chars.length >= LIMITS.chars) continue;
@@ -71,7 +81,8 @@ export function shapeBook(raw, { kind = null, art = null } = {}) {
         for (const c of chars) { if (used.has(c.pos)) c.pos = POSITIONS.find(x => !used.has(x)) || c.pos; used.add(c.pos); }
         const okProps = art && art.props ? art.props(w) : null;
         const props = [...new Set((Array.isArray(p.pic.props) ? p.pic.props : []).map(x => str(x, 40)))].filter(x => !okProps || okProps.includes(x)).slice(0, LIMITS.props);
-        out.pic = { world: w, mood: MOODS.includes(p.pic.mood) ? p.pic.mood : 'bright', chars, props, scene: str(p.pic.scene, LIMITS.scene) };
+        const setting = str(p.pic.setting, LIMITS.setting);
+        out.pic = { world: w, mood: MOODS.includes(p.pic.mood) ? p.pic.mood : 'bright', chars, props, scene: str(p.pic.scene, LIMITS.scene), ...(setting ? { setting } : {}) };
       } else fixes.push(`page ${id}: "${w}" is not a world in the catalog`);
     }
     pages.push(out);
@@ -212,9 +223,9 @@ export function mapLayout(book) {
 /** Every word a reader sees, for the word rules and the classifier: [[where, text]]. */
 export function textsOf(book) {
   const out = [['title', book.title]];
-  for (const c of book.cast) out.push([`cast ${c.name}`, c.name], [`cast ${c.name} look`, c.look]);
+  for (const c of book.cast) out.push([`cast ${c.name}`, c.name], [`cast ${c.name} what`, c.what], [`cast ${c.name} look`, c.look]);
   for (const p of book.pages) {
-    out.push([`page ${p.id} title`, p.title], [`page ${p.id} text`, p.text], [`page ${p.id} alt`, p.alt], [`page ${p.id} scene`, p.pic && p.pic.scene]);
+    out.push([`page ${p.id} title`, p.title], [`page ${p.id} text`, p.text], [`page ${p.id} alt`, p.alt], [`page ${p.id} scene`, p.pic && p.pic.scene], [`page ${p.id} setting`, p.pic && p.pic.setting]);
     p.choices.forEach((c, i) => out.push([`page ${p.id} choice ${i + 1}`, c.text]));
   }
   return out.filter(([, s]) => s);

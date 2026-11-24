@@ -12256,3 +12256,45 @@ now. Put it behind a feature flag for teacher and parent accounts for now." On h
   check card changes it); a grown-up has no Oomba chat, so they get the setup page's steps pre-filled.
 - Tests: `tests/unit/story-picture-books.test.js` (8), `tests/unit/story-picture-books-browser.test.js` (the pages in a
   browser; `PICTURE_BOOK_SHOTS=<dir>` saves sp-1 ... sp-4).
+
+## Book pictures: the story and the pictures are free of the art kit (24 Nov 2026)
+
+The owner, about "Tomas and Coco Help Out" (a boy, Tomas, and his chameleon friend, Coco): "I am worried that the Oomba
+kit is somehow being passed into the prompt sent to Gemini or something because it seems like the book also refer to
+the Dino as coco too if you look at the last photo... and idk why there is a Dino involved at all really". In the chat
+Oomba had said "Coco has no matching animal picture, so the cast uses a green-looking friend drawn as the closest art,
+and the look describes her as a chameleon"; the painted pages showed Coco as an elderly woman in a robe and as a
+dinosaur, while the words said she tugged a kite string with her tail.
+
+The worry was right. What leaked, and where (before this change):
+
+- The writer was told to pick every cast member's `art` from the kit and "an animal character the closest animal id"
+  (`storybook-illustrator.js`), and the book's JSON shape listed only `{"name", "art"}` for the cast (`storybook.js`
+  `systemPrompt`), so a character's `look` was often missing and a character the kit had no sprite for was bent to one.
+- The picture drawer sent the kit sprite's name as the character's kind (`storybook-draw.js` `charOf`:
+  `kind: cat.chars[c.art].name`, e.g. "Triceratops" or "Wizard") and the kit world's name as the page's "Where"
+  (`setting: cat.worlds[p.pic.world].name`, e.g. "Dino Valley"); `storybook-gemini.js` `sheetPrompt` and `pagePrompt`
+  fell back to "a friendly <kind>" whenever the look was empty. So Coco's sheet could be "a friendly Triceratops", her
+  pages were set in "Dino Valley", and a later turn that picked another sprite painted her again as an old wizard.
+
+What changed, when Oomba paints the pictures (`storybook.js paints`: "Oomba paints them" and the picture model there):
+
+- **The writer**: every cast member has `what` (what it is, as the story has it) and a `look` that starts with it; every
+  picture a `setting` (where, in the book's words) beside its `scene`. It is told never to change what a character is,
+  or how they look, to fit any list; the kit's `art` and `world` are optional, only for the stand-in drawing when
+  painting falls back, and never mentioned to the teacher. A missing `what`, a look that doesn't name it, or a picture
+  with no setting is sent back once with the problems listed. The new words pass the same word rules and names check.
+- **The prompts to Google** carry only the book's own words: name, what and look for characters (no kit fallback; no
+  look: "a friendly <what>"), the page's own setting for "Where". The sheet says what the character is and to draw it as
+  exactly that, never as another animal, person or creature. A test checks that no kit sprite or world name reaches any
+  request when the book's words don't use it.
+- **The reply to the teacher** never talks about the kit: the prompt says so, and a sentence that mentions ready-made
+  art, a stand-in, a sprite or the closest match is left out.
+- **An audit trail**: each picture's final prompt (students' names already taken out; no pictures) is kept on its
+  `made_book_draws` row (migration 0113), and the book's owner can open "What Oomba asked for" under the picture.
+- **Books painted before**: nothing is repainted by itself, so their characters keep their sheets. Chosen as the
+  simplest sane option: a teacher-triggered **Paint all pictures again** (the book page's More menu, after a short
+  question, and the chat's `repaintBook` with `all: true`) paints every sheet and page again from the book's own words,
+  counted against the day's pictures like any other. An old book's characters gain `what` on the book's next change by
+  Oomba (the check asks for it); a character whose words change is painted again then, as before.
+- Tests: `tests/unit/storybook-free-cast.test.js` (9).

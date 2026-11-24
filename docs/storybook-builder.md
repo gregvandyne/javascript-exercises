@@ -10,7 +10,7 @@ Library: the book maker".
 |---|---|
 | `server/routes/storybook.js` | Pages and APIs (all listed at the top of the file) |
 | `server/services/storybook.js` | Access, the daily cap, setup scrubbing and screening, books, sharing, pictures, reading places, the AI prompt and answer checks, the chat surface, apply and undo, delete hooks |
-| `server/services/storybook-illustrator.js` | The illustrator interface, the art-pack illustrator (catalog from `public/vendor/art2d`) and the `gemini` one (the same, plus scenes and looks for the picture model) |
+| `server/services/storybook-illustrator.js` | The illustrator interface, the art-pack illustrator (catalog from `public/vendor/art2d`) and the `gemini` one (the story's own words for the picture model: what each character is, looks, scenes and settings; the kit only as an optional stand-in) |
 | `server/services/storybook-gemini.js` | The picture model: the house style, the per-book style seed, the character sheet and page prompts, the Gemini API request and answer |
 | `server/services/storybook-draw.js` | The picture queue and drawer: what to draw, the daily picture count, the picture check, WebP, Redraw, the editor's state |
 | `tests/support/fake-gemini.js` | Google's stand-in for tests and screenshots (paints a placeholder PNG scene) |
@@ -25,6 +25,7 @@ Library: the book maker".
 | Migration `0111_storybook_draws` | `made_book_draws` (the picture queue); `made_book_pics.kind` and `.mime` |
 | `tests/unit/storybook.test.js` | Access, rules, AI checks and retry, screening, the cap, reader, print, pictures, delete lists |
 | `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access; an adventure painted on every page and ending (reader and print); the Pictures choice |
+| `tests/unit/storybook-free-cast.test.js` | Pictures free of the art kit: the writer's `what`, `look` and `setting` with one retry, no kit word in the reply, no kit sprite or world name in any request to Google, "What Oomba asked for" (the owner only), Paint all pictures again |
 | `tests/unit/storybook-painting.test.js` | While painting: the placeholder, never the art pack (editor, page list, story map, cards, reader, print), the progress line, the swap-in on the poll, a real fallback with Paint pictures again, the restart kick |
 | `tests/unit/storybook-books.test.js`, `companion-book-crud.test.js`, `storybook-books-browser.test.js` | Your books: the cards, rename, duplicate, delete, access on every new route and tool, unfinished books, Paint pictures again; the same from the chat |
 | `tests/unit/companion-book.test.js`, `companion-book-browser.test.js` | The chat: cards skip what the request answered, words and files into the book, the check and screening, Start and the cap, teachers only, changes from any page with Undo, books made in the past |
@@ -154,6 +155,11 @@ update and delete").
 - **Paint pictures again** (`storybook-draw.js repaint`, `.../repaint`): every character sheet and page whose picture is
   an art-pack fallback (or was never queued) goes back in the picture queue, at most as many as the pictures left today
   (sheets first; the rest the next time), each counted when drawn, through the AI budget. Painted pictures stay.
+- **Paint all pictures again** (the book page's More menu, after a short "Paint every picture in this book again?";
+  `repaint(u, id, { all: true })`, `POST .../repaint { all: true }`; the chat's `repaintBook` with `all: true`): every
+  character sheet and page picture, painted ones too, from the book's own words, with the same limit and counting. This is
+  how a book painted before the pictures were free of the art kit (24 Nov 2026) is painted again: nothing is repainted
+  by itself.
 - **In the Oomba chat**: `renameBook`, `duplicateBook`, `repaintBook` and `deleteBook` find the book as `changeBook`
   does (the page's book, an id from findMyBooks, or the teacher's words; several that fit: a choice card whose tap does
   it) and call the same functions. `deleteBook` only shows a Delete / Keep card; Delete runs `deleteBook`.
@@ -233,16 +239,29 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   books or games, nothing scary or violent, no weapons. No artist or book series is ever named. **A per-book style
   seed** (`styleOf(book id)`: a palette, a paper and a light, and a style code) is in every prompt of one book, so its
   pictures match.
-- **What Oomba writes for it**: with the `gemini` illustrator, the book AI also gives every `pic` a `scene` (one or two
-  sentences: where, who, what they do, the feeling; never words to write in the picture) and every cast member a `look`
-  (one sentence: kind, colors, clothes, one detail). Both are book words: they pass the same word rules, the names check
-  and the classifier as every other word (`textsOf`), and the teacher can change a character's look in the editor.
+- **What Oomba writes for it** (`storybook.js paints`: "Oomba paints them" and the picture model there): the story and
+  the pictures are free of the art kit (docs/decisions.md "Book pictures: the story and the pictures are free of the art
+  kit"). Every cast member has a `what` (what it is, as the story has it: "boy", "chameleon", "grandmother", "robot")
+  and a `look` that starts with it ("a small green chameleon with a curly tail and big round eyes"); every `pic` has a
+  `scene` (one or two sentences: who, what they do, the feeling; never words to write in the picture) and a `setting`
+  (where it happens, in the book's words). The writer is told never to change what a character is, or how they look, to
+  fit any list. The kit's `art`, `world` and `props` are optional, only for the stand-in drawing when painting falls
+  back (`shapeBook(..., { free: true })` keeps a cast member or picture with no or unknown art, as `''`), and the reply
+  never talks about them (the prompt says so, and `kitFree` leaves out a sentence of the reply that mentions ready-made
+  art, a stand-in, a sprite or the closest match). Checked (`paintProblems`): every cast member has a `what` and a look
+  that names it (`lookNames`), every picture a setting; the answer is sent back once with the problems listed, as with
+  every other problem. All are book words: they pass the same word rules, the names check and the classifier as every
+  other word (`textsOf`), and the teacher can change what a character is and how they look in the editor. Without
+  painting (the art packs, "I'll add my own"), the cast still picks its sprites as before.
 - **Character sheets first**: each cast member gets one reference picture (1:1, neutral pose, plain background) from
-  their look. A page is only drawn once its book's sheets are done, and it sends the sheets of the characters in it as
+  their name, what they are and their look, with "What Coco is: chameleon. Draw Coco as exactly that ..., never as any
+  other animal, person or creature." With no look the prompt says "a friendly <what>" (or "a friendly character" for a
+  character from before `what`); never the kit sprite's name. A page is only drawn once its book's sheets are done, and it sends the sheets of the characters in it as
   reference pictures (inline data after a "Reference picture N: Name" label), so a character looks the same on every
   page. A teacher can redraw a sheet; the pages showing that character then say they changed since, and can be redrawn.
-- **Page pictures** (16:9, like the art-pack drawings): the scene, the setting (the world's name), the mood, who is in it
-  and where (left, middle, right), a composition line (characters clear, a calm uncluttered area kept free), and the
+- **Page pictures** (16:9, like the art-pack drawings): the scene, the setting (the page's own `setting`; never the kit
+  world's name, and no "Where" at all for a page from before `setting`), the mood, who is in it (name, what they are,
+  look) and where (left, middle, right), a composition line (characters clear, a calm uncluttered area kept free), and the
   teacher's Redraw note when there is one.
 - **The request** (`requestBody`, `generate`): `POST https://generativelanguage.googleapis.com/v1beta/models/<model>:generateContent`,
   the key in the `x-goog-api-key` header (never in the address or a log), body `{ contents: [{ role: 'user', parts: [{ text },
@@ -261,7 +280,13 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   with ffmpeg to WebP at most 1600 px wide (a 1K picture is 1024 px wide: the reader and the print copy), served to
   whoever may read the book. The reader and the print copy show a kept picture before the art-pack drawing; the
   teacher's own picture wins over both. Deleted with the book and the account.
-- **Safety**: only the prompt (the house style, the seed, the scene and look words, which passed the word rules and are
+- **What Oomba asked for** (`made_book_draws.prompt`, migration 0113): each picture's final prompt text, as sent (with
+  the labels of the reference pictures sent with it; no pictures), kept on its row when it goes to Google. Students'
+  names were taken out before the prompt was made. The book's owner sees it in the editor, under the picture or the
+  character's reference picture, in a small "What Oomba asked for" disclosure loaded when opened
+  (`GET /api/library/make/:id/asked?target=page:<id>|cast:<name>`, `storybook-draw.js promptOf`); anyone else gets the
+  normal 404. Copied with Duplicate; deleted with the book.
+- **Safety**: only the prompt (the house style, the seed, the scene, setting, what and look words, which passed the word rules and are
   scrubbed of the teacher's students' names once more on the way out) and the book's own sheets go to Google. Never a
   student's name or work, the teacher's name or a class. Every picture that comes back passes **the same picture check
   as the teacher's uploads** (`companion.js screenImage`, as WebP) before it is kept or shown. A refused or blocked
@@ -295,7 +320,8 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   picture its state (waiting, painting, why it fell back with Paint pictures again, changed since) and **Redraw** with an
   optional note ("make it a sunny morning": the word rules and names check, then scrubbed). The editor asks how drawing
   is going every few seconds while anything is queued and swaps in each painted picture as it arrives (the page, the
-  page list and the story map). Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
+  page list and the story map). Characters: what each one is, their look and reference picture, with Redraw and What
+  Oomba asked for. The teacher's own upload works as before.
 
 ## Pictures: requests Google refuses (400, 404)
 
@@ -345,7 +371,7 @@ picture without alt text), the story map (CYOA: pages by depth from the start wi
 outlined, pages nobody reaches dashed; it scrolls inside itself on a phone), the page list with thumbnails, and one
 page: picture (place, mood, who is in it and where; Your picture; No picture), alt text, title, words, and for a CYOA
 page Ending, Make this the start page, and up to 4 choices each with "Leads to" (or "A new page"). Linear books move
-pages earlier or later. Characters: names and looks. Every edit saves a moment later with the version it was made on;
+pages earlier or later. Characters: names, what each one is, and looks. Every edit saves a moment later with the version it was made on;
 an older version is refused (409) and the page reloads Oomba's newer one. The teacher's words pass the same word rules
 and names check. Preview opens the reader "as students will see it"; Print opens the print copy; Share picks classes.
 

@@ -67,17 +67,29 @@ const packs = {
   render(spec, cast, o = {}) { return { kind: 'svg', svg: pictureSvg(spec, cast, catalog(), o) }; },
 };
 
-// 'gemini': the picture model draws every page (services/storybook-draw.js, storybook-gemini.js). The AI still picks the
-// art-pack parts (they are the picture whenever a drawn one is not there: no key, the day's pictures used, a picture
-// refused), and also writes what each picture shows in words ("scene") and how each character looks ("look"), which
-// is all the picture model is told. render() is the art-pack fallback; the reader shows a kept drawn picture first.
+// 'gemini': the picture model paints every page (services/storybook-draw.js, storybook-gemini.js) from words only: what
+// each character is ("what"), how they look ("look"), what each picture shows ("scene") and where ("setting"). Those
+// words are all the picture model is told; the art packs never shape the story or the cast (docs/decisions.md "Book
+// pictures: the story and the pictures are free of the art kit"). The AI may still pick art-pack parts ("art", "world",
+// "props"), used only for the stand-in drawing when a picture can't be painted (no key, the day's pictures used, a
+// picture refused); render() is that fallback, and the reader shows a kept painted picture first.
 const gemini = {
   ...packs,
   id: 'gemini',
   images: true,
   prompt() {
-    return [packs.prompt().replace('drawn by the app from ready-made art (you never draw or describe images)', 'painted by a picture maker in one picture-book style, and also drawn from ready-made art when it cannot paint'),
-      'SCENES AND LOOKS (for the picture maker; only these words are sent to it): give every "pic" a "scene": one or two plain sentences saying what the picture shows (where it is, who is there, what they are doing, the feeling), never any words or letters to write in the picture, and never a real person. Give every cast member a "look": one short sentence on how they look (kind of animal or person, colors, clothes, one special detail), e.g. "a small red fox with a white-tipped tail and a green scarf". Keep the look the same for the whole book. Never name a real person, a brand or a character from films, books or games.',
+    const c = catalog();
+    return [
+      'PICTURES. Every page gets one picture, painted by a picture maker in one picture-book style from your words only. For each page give "pic": {"scene": SCENE, "setting": SETTING, "mood": MOOD, "chars": [{"name": CAST NAME, "pos": "left" | "center" | "right"}], "world"?: WORLD, "props"?: [PROP]} and "alt": one plain sentence saying what the picture shows, for a reader who cannot see it.',
+      '- "scene": one or two plain sentences saying what the picture shows (who is there, what they are doing, the feeling). "setting": a few words saying where it happens, as the story has it ("a sunny backyard with a tall tree", "a busy kitchen"). Never any words or letters to write in the picture, and never a real person.',
+      '- The book has a "cast": [{"name": "Zuri", "what": "girl", "look": "a girl of about seven with curly black hair, a yellow raincoat and red boots"}, {"name": "Bolt", "what": "robot", "look": "a small round robot painted sky blue, with one antenna and kind lamp eyes"}]: each character of the story once. "what" says what the character IS, in a word or two, exactly as the story has it (a boy, a chameleon, a grandmother, a robot). "look" is one short sentence on how they look that STARTS with what they are, then colors, clothes and one special detail. Keep "what" and "look" the same for the whole book; the same name is always painted the same way on every page. At most 8 in the cast, at most 3 in one picture.',
+      '- What a character is comes from the story and the teacher, never from anything else: never change it, or how they look, to fit any list.',
+      '- Keep the setting the same for scenes in the same place; change it when the story moves. Pick the mood that fits the page.',
+      `MOODS: ${MOODS.join(', ')}. SPOTS: ${POSITIONS.join(', ')}.`,
+      'STAND-IN ART (optional, for the app only): when a picture cannot be painted, the app draws a simple stand-in from ready-made parts. You may add "art": CHARACTER to a cast member and "world": WORLD and "props" (0 to 3 from that world\'s list) to a "pic" when one fits; leave them out when nothing fits. They never change the story, the cast, a "what" or a "look", and they are never mentioned to the teacher: your "reply" never talks about ready-made art, stand-ins, sprites, ids or how pictures are matched.',
+      `WORLDS (id: name; its props):\n${Object.entries(c.worlds).map(([id, w]) => `- ${id}: ${w.name}; props ${Object.keys(w.props.items).join(', ')}`).join('\n')}`,
+      `CHARACTERS: ${Object.keys(c.chars).join(', ')}`,
+      'Never name a real person, a brand or a character from films, books or games.',
     ].join('\n');
   },
 };

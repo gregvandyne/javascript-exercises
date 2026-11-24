@@ -14,11 +14,13 @@
 //   POST /api/library/make/:id/rename         { title }      POST .../duplicate -> the copy (and its card)
 //   POST /api/library/make/:id/retry          a book whose first draft never came: Oomba writes it again
 //   POST /api/library/make/:id/repaint        Paint pictures again: every art-pack fallback back in the picture queue
+//                                             ({ all: true }: Paint all pictures again, every picture of the book)
 //   GET|POST /api/library/make/:id/chat       Oomba's chat (services/oomba-chat.js)   POST .../chat/undo { turnId }
 //   POST /api/library/make/:id/pic?name=      a picture for a page          POST .../pic/:pic/remove
 //   GET  /api/library/make/:id/draws          the book's pictures (the picture model: drawing, done, why not)
 //   GET  /api/library/make/:id/card           the book's card again (its cover while Oomba paints the pictures)
 //   POST /api/library/make/:id/draw           { target: 'page:<id>' | 'cast:<name>', note } Redraw one picture
+//   GET  /api/library/make/:id/asked?target=  What Oomba asked for: the prompt sent for one picture (the owner only)
 //   POST /api/library/make/:id/share          { classIds }
 //   GET  /library/made/:id/read               the reader (?p= a page, ?t= the trail; the owner or the class)
 //   GET  /library/made/:id/print              print or save as PDF (the owner, or staff of a class it is shared with)
@@ -222,7 +224,8 @@ router.get('/library/make/:id', teacher, (req, res) => {
         ${SB.canShare(req.user) ? html`<button type="button" class="btn btn-sm" id="sb-share">${ico('📌', { size: 18 })} ${t('storybook.edit.share')}</button>` : ''}
         <details class="sb-bmore sb-emore"><summary class="btn btn-sm btn-ghost sb-bmore-btn" aria-label="${t('storybook.books.more')}" title="${t('storybook.books.more')}"><span aria-hidden="true">⋯</span></summary>
           <div class="sb-bmenu">
-            ${SB.picturesOf(SB.setupOf(row)) === 'ai' ? html`<button type="button" class="sb-bitem" id="sb-repaint">${ico('🎨', { size: 18 })} ${t('storybook.books.repaint')}</button>` : ''}
+            ${SB.picturesOf(SB.setupOf(row)) === 'ai' ? html`<button type="button" class="sb-bitem" id="sb-repaint">${ico('🎨', { size: 18 })} ${t('storybook.books.repaint')}</button>
+            <button type="button" class="sb-bitem" id="sb-repaint-all">${ico('🖌️', { size: 18 })} ${t('storybook.books.repaintAll')}</button>` : ''}
             <button type="button" class="sb-bitem" id="sb-duplicate">${ico('📋', { size: 18 })} ${t('storybook.books.duplicate')}</button>
             <button type="button" class="sb-bitem is-danger" id="sb-delete">${ico('🗑️', { size: 18 })} ${t('storybook.edit.delete')}</button></div></details>
       </div>
@@ -275,7 +278,7 @@ router.post('/api/library/make/:id/retry', teacher, rateLimit('storybook-retry',
   return res.status(409).json({ error: req.t(`js.oomba-chat.err.${['chatBusy', 'otherBusy'].includes(r.code) ? r.code : 'other'}`), code: r.code });
 });
 router.post('/api/library/make/:id/repaint', teacher, rateLimit('storybook-draw', 30, 60e3), (req, res) => {
-  const r = Draw.repaint(req.user, req.params.id);
+  const r = Draw.repaint(req.user, req.params.id, { all: b(req).all === true });
   if (r.code === 'notFound') return nope(req, res);
   if (!r.ok) return res.status(r.code === 'limit' ? 429 : r.code === 'none' || r.code === 'off' ? 409 : 503).json({ error: req.t(`storybook.draw.${r.code}`), code: r.code });
   const row = SB.ownBook(req.user, req.params.id);
@@ -291,6 +294,13 @@ router.post('/api/library/make/:id/pic', teacher, rateLimit('storybook-pic', 20,
 router.get('/api/library/make/:id/draws', teacher, (req, res) => { const row = own(req, res); if (!row) return; res.json(Draw.stateOf(req.user, row)); });
 // A book card while Oomba paints its pictures (public/js/storybook-books.js asks every few seconds and swaps it in).
 router.get('/api/library/make/:id/card', teacher, (req, res) => { const row = own(req, res); if (!row) return; res.json({ card: String(madeCard(req, row)), painting: SB.paintingOf(row).busy > 0 }); });
+// What Oomba asked for: the prompt last sent to the picture maker for one picture (its owner only; nothing for anyone else)
+router.get('/api/library/make/:id/asked', teacher, (req, res) => {
+  const row = own(req, res); if (!row) return;
+  const text = Draw.promptOf(req.user, row.id, String(req.query.target || ''));
+  if (text == null) return nope(req, res);
+  res.json({ text });
+});
 router.post('/api/library/make/:id/draw', teacher, rateLimit('storybook-draw', 30, 60e3), (req, res) => {
   const r = Draw.redraw(req.user, req.params.id, String(b(req).target || ''), typeof b(req).note === 'string' ? b(req).note : '');
   if (r.ok) { const row = SB.ownBook(req.user, req.params.id); return res.json({ ok: true, draws: Draw.stateOf(req.user, row) }); }

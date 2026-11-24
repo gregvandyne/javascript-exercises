@@ -1319,6 +1319,11 @@ export const MIGRATIONS = [
   ['0112_storybook_draw_wait', `
     ALTER TABLE made_book_draws ADD COLUMN not_before INTEGER;
     ALTER TABLE made_book_draws ADD COLUMN wait_since INTEGER;`],
+  // Book pictures: what Oomba asked the picture maker for (services/storybook-draw.js; docs/storybook-builder.md "What
+  // Oomba asked for"): the final prompt text of each picture, as sent to Google (students' names already taken out; no
+  // pictures), so the book's owner can see it under the picture and anyone checking can see no art-kit words went out.
+  ['0113_storybook_draw_prompt', `
+    ALTER TABLE made_book_draws ADD COLUMN prompt TEXT NOT NULL DEFAULT '';`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

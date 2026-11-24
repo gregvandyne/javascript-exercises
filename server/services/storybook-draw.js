@@ -10,6 +10,10 @@
 //     through the AI budget (ai-budget.js recordImage). No key, the budget resting, or the day's pictures used: the page
 //     keeps its art-pack drawing and the row says why (fallback + reason). A picture Google blocks, or that our picture
 //     check (the one teachers' uploads pass: companion.js screenImage) refuses, is never kept: the same fallback.
+//   - Only the book's own words go to the picture model: each character's name, what they are and how they look, and
+//     each page's scene and setting. Never an art-pack sprite or world name (docs/decisions.md "Book pictures: the story
+//     and the pictures are free of the art kit"). The prompt sent is kept on the row (prompt: "What Oomba asked for",
+//     for the book's owner only; students' names were taken out before it was made; no pictures).
 //   - What is kept: the picture as WebP (made_book_pics, kind 'page' | 'sheet'), at most 1600 px wide (the reader and the
 //     print copy), with the fingerprint of what it drew (hash) so the editor can say when a page changed since.
 //   - Google's rate limits (docs/storybook-builder.md "Pictures: rate limits and quota"): a 429 pauses the whole queue
@@ -29,7 +33,6 @@ import { log } from './log.js';
 import * as Alerts from './admin-alerts.js';
 import * as G from './storybook-gemini.js';
 import * as SB from './storybook.js';
-import { catalog } from './storybook-illustrator.js';
 import { register } from './jobs.js';
 
 /** Test hook: screenImage(bytes, mime) for the picture check. */
@@ -55,13 +58,16 @@ export const left = u => (SB.canMake(u) ? Math.max(0, capOf(u) - usedToday(u)) :
 // ---------------------------------------------------------------- fingerprints
 const lower = s => String(s || '').toLowerCase();
 const sheetRow = (bookId, name) => q.get('SELECT * FROM made_book_draws WHERE book_id=? AND target=?', bookId, `cast:${lower(name)}`) || null;
-/** What a character sheet is drawn from. */
-export const castHash = c => JSON.stringify([c.name, c.look || '', c.art]);
-/** What a page's picture is drawn from: its scene and setting, and the characters in it with their current sheets. */
+/** What a character sheet is drawn from: its name, what it is and its look (the art-pack sprite is not drawn from). A
+ *  character from before "what" (24 Nov 2026) keeps its old fingerprint, so its sheet is not painted again by itself. */
+export const castHash = c => (c.what ? JSON.stringify(['v2', c.name, c.what, c.look || '']) : JSON.stringify([c.name, c.look || '', c.art]));
+/** What a page's picture is drawn from: its scene and setting, and the characters in it with their current sheets. A
+ *  page from before "setting" keeps its old fingerprint (with the art-pack world) for the same reason. */
 export function pageHash(bookId, b, p) {
   if (!p || !p.pic) return '';
-  const chars = p.pic.chars.map(c => { const k = b.cast.find(x => x.name === c.name) || {}; const s = sheetRow(bookId, c.name); return [c.name, c.pos, k.look || '', k.art || '', s && s.pic_id]; });
-  return JSON.stringify([p.pic.scene || '', p.alt || '', p.pic.world, p.pic.mood, chars]);
+  const v2 = !!p.pic.setting;
+  const chars = p.pic.chars.map(c => { const k = b.cast.find(x => x.name === c.name) || {}; const s = sheetRow(bookId, c.name); return v2 ? [c.name, c.pos, k.what || '', k.look || '', s && s.pic_id] : [c.name, c.pos, k.look || '', k.art || '', s && s.pic_id]; });
+  return v2 ? JSON.stringify(['v2', p.pic.scene || '', p.alt || '', p.pic.setting, p.pic.mood, chars]) : JSON.stringify([p.pic.scene || '', p.alt || '', p.pic.world, p.pic.mood, chars]);
 }
 
 // ---------------------------------------------------------------- the queue
@@ -128,19 +134,21 @@ export function fallbacks(row, b = SB.bookOf(row)) {
 /**
  * "Paint pictures again" (the book page and the chat): every character sheet and page whose picture is an art-pack
  * fallback goes back in the queue, through the same queue, daily picture count (taken when each is drawn) and AI budget.
- * At most the pictures left today are queued (sheets first); the rest wait for the next Paint pictures again.
+ * all: "Paint all pictures again" (the book page's More menu, the chat): every character sheet and page picture, painted
+ * ones too (a book painted before the pictures were free of the art kit is painted again from its own words). At most
+ * the pictures left today are queued (sheets first); the rest wait for the next Paint pictures again.
  * -> { ok, queued, more } | fail ('notFound' | 'off' | 'nokey' | 'resting' | 'limit' | 'none')
  */
-export function repaint(u, bookId) {
+export function repaint(u, bookId, { all = false } = {}) {
   const row = SB.ownBook(u, bookId); if (!row) return fail('notFound');
   if (SB.picturesOf(SB.setupOf(row)) !== 'ai') return fail('off');
   const st = active(); if (!st.on) return fail(st.reason);
-  const want = fallbacks(row);
+  const want = all ? targets(SB.bookOf(row)) : fallbacks(row);
   if (!want.length) return fail('none');
   const l = left(u); if (l <= 0) return fail('limit');
   let queued = 0;
   for (const tg of want.slice(0, l)) if (upsertQueued(row, tg)) queued++;
-  audit(u.id, 'storybook.repaint', row.id, { queued, more: Math.max(0, want.length - l) });
+  audit(u.id, 'storybook.repaint', row.id, { queued, more: Math.max(0, want.length - l), all });
   if (queued) setImmediate(kick);
   return { ok: true, queued, more: Math.max(0, want.length - l) };
 }
@@ -165,13 +173,23 @@ export function stateOf(u, row, b = SB.bookOf(row)) {
   const rows = new Map(q.all('SELECT * FROM made_book_draws WHERE book_id=?', row.id).map(d => [d.target, d]));
   // a picture waiting in the queue while Google asked us to wait says so ('google': "Waiting for Google")
   const waiting = now() < pace.until;
-  const one = (d, hash) => (d ? { state: d.state, reason: d.state === 'queued' && waiting ? 'google' : d.reason || '', pic: d.pic_id || null, stale: !!(d.pic_id && d.hash && d.hash !== hash && d.state !== 'queued' && d.state !== 'drawing'), note: !!d.note } : null);
+  const one = (d, hash) => (d ? { state: d.state, reason: d.state === 'queued' && waiting ? 'google' : d.reason || '', pic: d.pic_id || null, stale: !!(d.pic_id && d.hash && d.hash !== hash && d.state !== 'queued' && d.state !== 'drawing'), note: !!d.note, asked: !!d.prompt } : null);
   const pages = {}, cast = {};
   for (const p of b.pages) { const x = one(rows.get(`page:${p.id}`), pageHash(row.id, b, p)); if (x) pages[p.id] = x; }
   for (const c of b.cast) { const x = one(rows.get(`cast:${lower(c.name)}`), castHash(c)); if (x) cast[c.name] = x; }
   const all = [...Object.values(pages), ...Object.values(cast)];
   return { on: st.on, reason: st.on ? (l <= 0 ? 'limit' : quotaHeld() ? 'notset' : null) : st.reason, left: l, cap, pages, cast,
     total: all.length, done: all.filter(x => x.state === 'done' || x.state === 'fallback').length, busy: all.filter(x => x.state === 'queued' || x.state === 'drawing').length };
+}
+
+/** "What Oomba asked for": the prompt last sent to the picture maker for one picture of a book (target 'page:<id>' or
+ *  'cast:<name>'), for the book's owner only (anyone else: null, as if there were none). Students' names were taken out
+ *  before it was made; it holds no pictures. -> string | null */
+export function promptOf(u, bookId, target) {
+  const row = SB.ownBook(u, bookId); if (!row) return null;
+  const m = /^(page|cast):(.{1,40})$/.exec(String(target || '')); if (!m) return null;
+  const d = q.get('SELECT prompt FROM made_book_draws WHERE book_id=? AND target=?', row.id, m[1] === 'cast' ? `cast:${lower(m[2])}` : target);
+  return d && d.prompt ? d.prompt : null;
 }
 
 // ---------------------------------------------------------------- the worker
@@ -272,10 +290,11 @@ async function drawJob(job) {
   if (!row) { q.run('DELETE FROM made_book_draws WHERE id=?', job.id); return; }
   const u = getUser(row.owner_id);
   if (!u || !SB.canMake(u)) return end(job, 'fallback', 'nokey');
-  const b = SB.bookOf(row), cat = catalog();
+  const b = SB.bookOf(row);
   const [kind, key] = [job.target.slice(0, 4), job.target.slice(5)];
   const style = G.styleOf(row.id), names = studentNames(u), sc = s => scrub(String(s || ''), names).text;
-  const charOf = c => ({ name: sc(c.name), look: sc(c.look), kind: (cat.chars[c.art] || {}).name || '' });
+  // the book's own words only: never the art-pack sprite's name (c.art) or world (p.pic.world)
+  const charOf = c => ({ name: sc(c.name), what: sc(c.what), look: sc(c.look) });
   let prompt, refs = [], aspect = '16:9', hash, label;
   if (kind === 'cast') {
     const c = b.cast.find(x => lower(x.name) === key);
@@ -293,7 +312,7 @@ async function drawJob(job) {
     // a character with no sheet is described in words only; the references keep the same order as the list
     chars.sort((a, c) => Number(c.ref) - Number(a.ref));
     const scene = sc(p.pic.scene || p.alt || p.text.slice(0, 300));
-    prompt = G.pagePrompt({ scene, setting: (cat.worlds[p.pic.world] || {}).name || '', mood: p.pic.mood, chars, note: sc(job.note) }, style);
+    prompt = G.pagePrompt({ scene, setting: sc(p.pic.setting), mood: p.pic.mood, chars, note: sc(job.note) }, style);
     hash = pageHash(row.id, b, p); label = 'page';
   }
   const st = active(); if (!st.on) return end(job, 'fallback', st.reason);
@@ -305,9 +324,12 @@ async function drawJob(job) {
   // character is described in words only (the prompt already carries its look).
   const sent = [];
   for (const x of refs) { const png = await toPng(x.bytes).catch(() => null); if (png) sent.push({ ...x, mime: 'image/png', bytes: png }); }
+  // What Oomba asked for: the prompt as sent (and the labels of the reference pictures sent with it), kept on the row
+  q.run('UPDATE made_book_draws SET prompt=? WHERE id=?', `${prompt}${sent.length ? `\n${sent.map((x, i) => `Reference picture ${i + 1}: ${x.label}.`).join('\n')}` : ''}`, job.id);
   let r = await G.generate({ prompt, refs: sent, aspect });
   if (!r.ok && r.http === 400 && sent.length && /input image/i.test(`${r.gmsg || ''} ${r.gmsgFull || ''}`)) {
     warn('storybook picture refs refused, drawing from words', { book: row.id, refs: sent.length, sig: sent.map(x => x.bytes.subarray(0, 4).toString('hex')), sizes: sent.map(x => x.bytes.length) });
+    q.run('UPDATE made_book_draws SET prompt=? WHERE id=?', prompt, job.id);
     r = await G.generate({ prompt, refs: [], aspect });
   }
   if (r.ok) log('info', 'storybook picture drawn', { book: row.id, what: label, refs: sent.length });
