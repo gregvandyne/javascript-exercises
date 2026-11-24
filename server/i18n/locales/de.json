@@ -14113,7 +14113,8 @@
     },
     "blocked": {
       "personal": "Bitte entferne persönliche Angaben (Namen, Adressen, Telefonnummern, Links) und versuch es noch einmal.",
-      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal."
+      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal.",
+      "realPeople": "Bücher dürfen nicht von einer echten, namentlich genannten Person handeln. Beschreibe stattdessen eine ausgedachte Figur, z. B. „eine Fußballerin, die nie aufgibt“."
     },
     "firstMessage": "Bitte mach mein Buch.",
     "errors": {

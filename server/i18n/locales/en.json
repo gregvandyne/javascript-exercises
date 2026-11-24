@@ -14828,7 +14828,8 @@
     },
     "blocked": {
       "personal": "Please take out personal details (names, addresses, phone numbers, links) and try again.",
-      "words": "Some of these words can't be used on Oomba Academy. Please change them and try again."
+      "words": "Some of these words can't be used on Oomba Academy. Please change them and try again.",
+      "realPeople": "Books can't be about a real, named person. Describe a made-up character instead, like “a soccer player who never gives up”."
     },
     "firstMessage": "Please make my book.",
     "errors": {

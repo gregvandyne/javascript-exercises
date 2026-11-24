@@ -104,3 +104,16 @@ test('real people: true facts in a quiz are fine; characters, jokes and people t
     'a quiz that makes fun of Taylor Swift', 'make Taylor Swift a character that dances', 'trivia about my teacher Mrs Smith'])
     assert.equal(mockClassify(s), 'real_people', s);
 });
+
+test('made-up characters with a real job are not real people: allowed by the rules, and the model is told so', async () => {
+  const { CLASSIFIER_SYSTEM } = await import('../../server/builder/screen.js');
+  for (const s of ['I want to make a book about a soccer player that shows great perseverance and sportsmanship',
+    'a story about a firefighter who saves a cat', 'a famous singer we make up goes on tour', 'a girl who wants to be an astronaut', 'a game about a basketball player who practices every day']) {
+    assert.equal(prefilter(s), null, s); assert.equal(mockClassify(s), null, s);
+  }
+  assert.match(CLASSIFIER_SYSTEM, /a specific real person/);
+  assert.match(CLASSIFIER_SYSTEM, /made-up characters described only by a role or job, with no real person's name/);
+  assert.match(CLASSIFIER_SYSTEM, /a story about a soccer player who learns sportsmanship/);
+  // A named real athlete is still real people.
+  assert.equal(mockClassify('a book about Messi winning the cup'), 'real_people');
+});

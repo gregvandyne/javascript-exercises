@@ -168,7 +168,9 @@ export async function screenSetup(setup, { t = tEn } = {}) {
   const typed = unplace([setup.about, setup.story.slice(0, 3000)].filter(Boolean).join('\n'));
   if (!typed) return null;
   const r = hooks.screen ? await hooks.screen(typed) : await screenInput(typed, { model: !!config.anthropicKey && aiBudget.ok(), t });
-  return r.ok ? null : { category: r.category, message: r.message || t('storybook.blocked.words') };
+  if (r.ok) return null;
+  // The Builder's refusal speaks of games: a book's says so in its own words.
+  return { category: r.category, message: r.category === 'real_people' ? t('storybook.blocked.realPeople') : r.message || t('storybook.blocked.words') };
 }
 /** What the setup asks for, in the teacher's words, for the check step (and the first message). */
 export function setupProblems(setup) {

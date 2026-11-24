@@ -14113,7 +14113,8 @@
     },
     "blocked": {
       "personal": "Haal persoonlijke gegevens weg (namen, adressen, telefoonnummers, links) en probeer het opnieuw.",
-      "words": "Sommige van deze woorden kunnen niet op Oomba Academy. Verander ze en probeer het opnieuw."
+      "words": "Sommige van deze woorden kunnen niet op Oomba Academy. Verander ze en probeer het opnieuw.",
+      "realPeople": "Boeken mogen niet over een echte persoon met naam gaan. Beschrijf liever een verzonnen personage, zoals ‘een voetballer die nooit opgeeft’."
     },
     "firstMessage": "Maak mijn boek, alsjeblieft.",
     "errors": {

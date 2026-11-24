@@ -14112,7 +14112,8 @@
     },
     "blocked": {
       "personal": "Quita los datos personales (nombres, direcciones, teléfonos, enlaces) y vuelve a intentarlo.",
-      "words": "Algunas de estas palabras no se pueden usar en Oomba Academy. Cámbialas y vuelve a intentarlo."
+      "words": "Algunas de estas palabras no se pueden usar en Oomba Academy. Cámbialas y vuelve a intentarlo.",
+      "realPeople": "Los libros no pueden tratar de una persona real con nombre. Describe un personaje inventado, como «una futbolista que nunca se rinde»."
     },
     "firstMessage": "Por favor, crea mi libro.",
     "errors": {
