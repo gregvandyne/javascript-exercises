@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "In due"
+    },
+    "focus": {
+      "puzzles": "Giochi di parole e rompicapi",
+      "mapsStrategy": "Mappe e strategia",
+      "tools": "Strumenti per la classe",
+      "more": "Altri giochi",
+      "players": "Giochi dei giocatori"
     }
   },
   "search": {
@@ -1210,6 +1217,11 @@
     "grownupBuilder": "Creatore adulto",
     "sets": {
       "copyOf": "Copia di {title}"
+    },
+    "unavailable": {
+      "title": "Questo gioco non è disponibile ora",
+      "text": "Potrebbe tornare più avanti. In Gioca ci sono altri giochi e rompicapi da provare.",
+      "play": "Vai a Gioca"
     }
   },
   "play": {
@@ -9484,7 +9496,8 @@
       "trial": "Prova gratis",
       "trialShort": "Prova gratis",
       "menu": "Menu",
-      "kids": "Creano gli studenti"
+      "kids": "Creano gli studenti",
+      "tools": "Strumenti per insegnare"
     },
     "hero": {
       "kicker": "Per insegnanti · dalla scuola dell’infanzia alla terza media",
@@ -9756,6 +9769,13 @@
       "shotAlt": "Una sessione dal vivo con i blocchi in base dieci sullo schermo dell’insegnante: in alto lo spazio dell’insegnante e sotto i riquadri di quattro studenti, ognuno con piastre delle centinaia e barre delle decine in una tabella del valore posizionale.",
       "plan": "I materiali manipolabili, le loro aule dal vivo, Figures e Oomba fanno parte del piano Insegnante.",
       "testing": "I materiali manipolabili, le loro aule dal vivo, Figures e Oomba sono in prova in alcune classi in questo momento."
+    },
+    "focus": {
+      "manipulatives": "materiali manipolativi virtuali di matematica",
+      "play": "Cruciverba, giochi di matematica e giochi dal vivo con la classe, senza iscrizione.",
+      "freeLi1": "Tutti i giochi pronti, i rompicapi e gli strumenti per la classe",
+      "faqA1": "Una piattaforma per insegnare dalla scuola dell’infanzia alla seconda media: una bacheca di classe per gestire la giornata, materiali manipolativi virtuali di matematica, figure disegnate in scala, creatori di rompicapi come il Cruciverba, giochi dal vivo con la classe e una Biblioteca di storie. Gli insegnanti possono anche trasformare le proprie lezioni in giochi di classe con il Builder IA.",
+      "demoCredit": "Immagine del gioco {title}, uno dei giochi pronti di Oomba."
     }
   },
   "teach": {

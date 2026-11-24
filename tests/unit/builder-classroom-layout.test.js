@@ -14,6 +14,7 @@ import fs from 'node:fs';
 
 const { config } = await import('../../server/config.js');
 config.builderFullForAll = false; config.anthropicKey = '';
+config.arcade = true;   // the Arcade game kind is part of what this file tests (ARCADE is off on the site by default)
 const { createApp } = await import('../../server/app.js');
 const { q, now } = await import('../../server/db.js');
 const auth = await import('../../server/auth.js');

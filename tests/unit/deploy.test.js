@@ -18,6 +18,7 @@ const { ROOT, lines, startServer: start } = await import('./_proc.js');
 /** A server process with its data folder under this test's temp folder. */
 const startServer = (env = {}, opts = {}) => start(env, { tmp: TMP, ...opts });
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 const { createApp, _proxyWarning } = await import('../../server/app.js');
 const health = await import('../../server/services/health.js');
 const { makeShutdown } = await import('../../server/shutdown.js');

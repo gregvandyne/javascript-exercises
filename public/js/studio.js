@@ -232,7 +232,7 @@ function renderActs() {
   box.querySelector('.st-editact').hidden = !S.activity;
   const row = [], cap = [];
   if (C) {
-    row.push(`<button class="btn st-actbtn" type="button" data-act="canvas-switch" data-kind="${esc(C.kind)}"><span>${ico(C.kind === 'activity' ? '🎮' : '🧮')} ${esc(C.button)}</span></button>`);
+    if (C.button) row.push(`<button class="btn st-actbtn" type="button" data-act="canvas-switch" data-kind="${esc(C.kind)}"><span>${ico(C.kind === 'activity' ? '🎮' : '🧮')} ${esc(C.button)}</span></button>`);
     cap.push(`<p class="st-cap" data-kind="${esc(C.kind)}">${ico(C.kind === 'activity' ? '🧮' : '🎮')} ${esc(C.label)}</p>`);
   }
   if (L) {
@@ -1536,7 +1536,7 @@ document.addEventListener('click', e => {
   else if (a.dataset.act === 'limit-publish') $('#st-publish').click();
   else if (a.dataset.act === 'ask-grownup') askGrownup(a);
   else if (a.dataset.act === 'make-live' && S.liveClass) makeLive(a);
-  else if (a.dataset.act === 'canvas-switch' && S.canvasLine) send(S.canvasLine.ask);
+  else if (a.dataset.act === 'canvas-switch' && S.canvasLine && S.canvasLine.ask) send(S.canvasLine.ask);
   else if (a.dataset.act === 'edit-activity' && panel) panel.toggleInline();
   else if (a.dataset.act === 'live-info' && S.liveClass) toast(t('js.studio.liveLine.kidReady'));
   else if (a.dataset.act === 'fix-live' && S.liveClass && S.liveClass.fixAsk) send(S.liveClass.fixAsk);

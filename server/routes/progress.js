@@ -13,6 +13,7 @@ import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as P from '../services/progress.js';
 import * as C from '../services/courses.js';
+import { coursesHidden } from '../services/game-focus.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
 import { classHeader, classBack, studentNotYou } from './schools.js';
@@ -193,8 +194,11 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   // course, for this class's students only (the same roster the gradebook above is built from, and the
   // route's own class gate decides who may look). One panel per course in the shared registry, so a
   // course that joins it later (Number Quest) appears here with no extra plumbing.
-  const coursePanels = gb.students.length ? C.COURSES.map(course => {
-    const rows = C.classCourseProgress(gb.students, C.getCourse(course.slug));
+  // While the courses are hidden (COURSES off, services/game-focus.js) only a course this class has begun keeps its panel.
+  const courseRows = new Map(gb.students.length ? C.COURSES.map(course => [course.slug, C.classCourseProgress(gb.students, C.getCourse(course.slug))]) : []);
+  const shownCourses = C.COURSES.filter(course => courseRows.has(course.slug) && (!coursesHidden() || courseRows.get(course.slug).some(r => r.status !== 'not-started')));
+  const coursePanels = gb.students.length ? shownCourses.map(course => {
+    const rows = courseRows.get(course.slug);
     const dot = s => (s.complete ? '✅' : s.row ? '🟡' : '⚪');
     const started = rows.filter(r => r.status !== 'not-started').length;
     // Each band a student worked in has its own status and count, named (a finished Explorer stays "Completed ·
@@ -238,7 +242,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
   </section>` : '';
   // Jump chips to the sections below the gradebook (only the ones on this page).
-  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...C.COURSES.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
+  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
   page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
 });
 

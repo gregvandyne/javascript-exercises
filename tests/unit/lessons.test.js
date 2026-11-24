@@ -4,6 +4,7 @@ process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_R
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.anthropicKey = '';
 const { q } = await import('../../server/db.js');
 const { createUser, startSession } = await import('../../server/auth.js');

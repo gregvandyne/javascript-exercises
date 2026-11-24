@@ -42,6 +42,9 @@ import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 import { ico } from '../views/icon.js';
 import { leadIcon } from '../../public/js/icons.js';
 import { seeIt } from '../views/see-it.js';
+import * as focus from '../services/game-focus.js';
+import * as games from '../services/games.js';
+import { TOOLS as MANIP_TOOLS } from '../../public/js/manip-data.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
 export const JUST_PLAY_URL = '/play';
@@ -123,7 +126,9 @@ export function renderLanding(req, res) {
   const title = t('landing.meta.title');
   const description = seo.clip(t('landing.meta.description'), 160);
   const langs = seo.langsWithKey('landing.hero.h1');
-  const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(`landing.faq.a${i}${i === 2 ? 'free' : ''}`, { count })]);
+  const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(i === 1 && focus.coursesHidden() ? 'landing.focus.faqA1' : `landing.faq.a${i}${i === 2 ? 'free' : ''}`, { count })]);
+  // The ready-made games on offer: "30+" with the arcade, else the number of official games anyone may open now.
+  const gameCount = focus.arcadeHidden() ? String(games.listVisible(null, { official: true, limit: 200 }).length) : '30+';
   const price = LANDING_SHOW_PRICE ? TEACHER_PRICE.label : null;
   const cta = (href, label, { cls = 'lp-btn-primary', name = 'trial', big = false } = {}) =>
     html`<a class="lp-btn ${cls}${big ? ' lp-btn-big' : ''}" href="${href}" data-cta="${name}">${label}</a>`;
@@ -132,7 +137,11 @@ export function renderLanding(req, res) {
 
   // The page's sections, in the order of the story (docs/decisions.md "Landing: the whole class day"). wide: also in
   // the bar on wide screens; every one is in the menu (phones and narrower screens, where the bar has no room).
-  const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
+  // While the arcade and the courses are hidden (services/game-focus.js; docs/decisions.md "Focus: teaching tools first")
+  // the page leads with the teaching tools: the dashboard, the manipulatives and figures, then live games and the Builder.
+  const arcade = !focus.arcadeHidden(), courseLinks = !focus.coursesHidden();
+  const hasTools = hasFile(`${HOW}tools-room-d-1024.webp`) && hasFile(`${HOW}tools-room-p-390.webp`);
+  const NAV = [['#how', 'how', false], ['#dashboards', 'dashboards', true], ...(!arcade && hasTools ? [['#tools', 'tools', true]] : []), ['#builder', 'builder', true], ...(live ? [['#live', 'live', true]] : []),
     ['#kids', 'kids', false], ['#pricing', 'pricing', true], ['#faq', 'faq', true]];
   const NAV_CTA = { '#how': 'how', '#pricing': 'pricing' };
   const navLink = (href, key) => html`<a href="${href}"${NAV_CTA[href] ? raw(` data-cta="${NAV_CTA[href]}"`) : ''}${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
@@ -174,15 +183,15 @@ export function renderLanding(req, res) {
       <ul class="lp-trust">
         <li>${check}${t('landing.hero.trustCard')}</li><li>${check}${t('landing.hero.trustCancel')}</li><li>${check}${t('landing.hero.trustStudents')}</li>
       </ul>
-      <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${HERO_FAN.map(s => cover(s, { eager: true }))}</span><span><b>30+</b> ${t('landing.facts.games')} ${ARROW}</span></a>
+      <a class="lp-games" href="${JUST_PLAY_URL}" data-cta="play"><span class="lp-fan" aria-hidden="true">${(arcade ? HERO_FAN : FOCUS_FAN).map(s => cover(s, { eager: true }))}</span><span><b>${gameCount}</b> ${t('landing.facts.games')} ${ARROW}</span></a>
     </div>
-    ${heroStage(t, fb, theme)}
+    ${heroStage(t, fb, theme, arcade)}
   </div>
 </section>`;
 
   const facts = html`<section class="lp-facts" aria-label="${t('landing.nav.label')}"><div class="lp-wrap"><ul>
-    <li><b>30+</b><span>${t('landing.facts.games')}</span></li>
-    <li><b>3</b><span>${t('landing.facts.courses')}</span></li>
+    <li><b>${gameCount}</b><span>${t('landing.facts.games')}</span></li>
+    ${courseLinks ? html`<li><b>3</b><span>${t('landing.facts.courses')}</span></li>` : html`<li><b>${MANIP_TOOLS.length}</b><span>${t('landing.focus.manipulatives')}</span></li>`}
     <li><b>${count}</b><span>${t('landing.facts.languages')}</span></li>
     <li><b>0</b><span>${t('landing.facts.installs')}</span></li>
   </ul></div></section>`;
@@ -219,7 +228,7 @@ export function renderLanding(req, res) {
       <ul class="lp-list">${[1, 2, 3, 4, 5].map(i => html`<li>${check}<span>${t(`landing.builder.li${i}`)}</span></li>`)}</ul>
       ${cta(TRIAL_URL, t('landing.hero.cta'))}
     </div>
-    ${demo(t, fb)}
+    ${demo(t, fb, arcade)}
   </div>
 </section>`;
 
@@ -322,7 +331,7 @@ export function renderLanding(req, res) {
   // The teaching tools (#tools): a live math room on the teacher's screen with every student's square, and one student's
   // own square on a phone (real captures, scripts/how-shots.js --only tools). Who may use them: the same rule and words
   // as the videos below (services/teacher-tools.js plansOn).
-  const toolsSec = hasFile(`${HOW}tools-room-d-1024.webp`) && hasFile(`${HOW}tools-room-p-390.webp`) ? html`<section class="lp-sec lp-split" id="tools" aria-labelledby="tools-h">
+  const toolsSec = hasTools ? html`<section class="lp-sec lp-split" id="tools" aria-labelledby="tools-h">
   <div class="lp-glow lp-glow-a" aria-hidden="true" data-depth=".25"></div>
   <div class="lp-wrap lp-split-in">
     <div class="lp-split-text rv">
@@ -376,7 +385,7 @@ export function renderLanding(req, res) {
         <h3 id="plan-free">${t('landing.pricing.free.name')}</h3>
         <p class="lp-price">${t('landing.pricing.free.price')}</p>
         <p class="lp-plan-trial">${t('landing.hero.trustCard')}</p>
-        <ul class="lp-list">${['landing.pricing.free.li1', 'landing.pricing.free.li2', 'landing.pricing.free.li3', 'landing.pricing.free.li4', ...(live ? ['landing.pricing.free.liLive'] : []), 'landing.pricing.teacher.li5'].map(k => html`<li>${check}<span>${t(k)}</span></li>`)}</ul>
+        <ul class="lp-list">${[courseLinks ? 'landing.pricing.free.li1' : 'landing.focus.freeLi1', 'landing.pricing.free.li2', 'landing.pricing.free.li3', 'landing.pricing.free.li4', ...(live ? ['landing.pricing.free.liLive'] : []), 'landing.pricing.teacher.li5'].map(k => html`<li>${check}<span>${t(k)}</span></li>`)}</ul>
         <a class="lp-btn lp-btn-ghost lp-btn-big" href="${lp('/teachers')}#start">${t('teachers.cta.start')}</a>
       </article>
       <article class="lp-card lp-plan lp-plan-hot rv" aria-labelledby="plan-teacher">
@@ -424,7 +433,7 @@ export function renderLanding(req, res) {
     <div class="lp-ctas lp-ctas-c">${cta(TRIAL_URL, t('landing.final.cta'), { big: true })}<a class="lp-btn lp-btn-ghost lp-btn-big" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
   </div>
 </section>`;
-  const playBand = html`<section class="lp-play" id="play" aria-labelledby="play-h"><div class="lp-wrap lp-play-in"><h2 id="play-h">${ico('🎮', { size: 28 })} ${t('landing.play.h')}</h2><p>${t('landing.play.p')}</p><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.play.cta')} ${ARROW}</a></div></section>`;
+  const playBand = html`<section class="lp-play" id="play" aria-labelledby="play-h"><div class="lp-wrap lp-play-in"><h2 id="play-h">${ico('🎮', { size: 28 })} ${t('landing.play.h')}</h2><p>${t(arcade ? 'landing.play.p' : 'landing.focus.play')}</p><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.play.cta')} ${ARROW}</a></div></section>`;
 
   const others = availableLocales().filter(l => langs.includes(l.code));
   const footer = html`<footer class="lp-foot">
@@ -435,9 +444,9 @@ export function renderLanding(req, res) {
       <a class="lp-pref" href="${PREFERRED_SOURCE_URL}" rel="noopener" data-cta="preferred-source">${ico('⭐', { size: 18 })}${t('landing.footer.preferredSource')}</a></div>
     <nav aria-labelledby="ft-t"><h2 id="ft-t">${t('landing.footer.teachers')}</h2><ul>
       <li><a href="${lp('/teachers')}">${t('landing.footer.guide')}</a></li>
-      <li><a href="${lp('/teachers/cs-quest')}">${t('landing.courses.cs.name')}</a></li>
+      ${courseLinks ? html`<li><a href="${lp('/teachers/cs-quest')}">${t('landing.courses.cs.name')}</a></li>
       <li><a href="/teachers/number-quest">${t('landing.courses.nq.name')}</a></li>
-      <li><a href="/teachers/cyber-defenders">${t('landing.courses.cd.name')}</a></li>
+      <li><a href="/teachers/cyber-defenders">${t('landing.courses.cd.name')}</a></li>` : ''}
       ${live ? html`<li><a href="${lp('/teachers/live')}">${t('landing.nav.live')}</a></li>` : ''}
       <li><a href="/plans" data-cta="pricing">${t('landing.footer.plans')}</a></li>
       <li><a href="${lp('/research')}">${t('research.footer')}</a></li>
@@ -474,7 +483,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${builder}${liveSec}${toolsSec}${videosSec}${kidsSec}${loopSec}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
+  const body = html`${sky}${header}<main id="lp-main">${hero}${facts}${how}${dashSec}${dtourSec}${arcade ? html`${builder}${liveSec}${toolsSec}` : html`${toolsSec}${liveSec}${builder}`}${videosSec}${kidsSec}${loopSec}${classroomSec}${why}${safety}${pricing}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}" data-theme="${theme}" class="lp-html${theme === 'light' ? ' lp-light' : ''}">
@@ -502,16 +511,20 @@ ${body}
 
 /** The covers fanned out in the hero. */
 const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
+/** The same while the arcade is hidden: puzzle builders and live class games that stay on Play. */
+const FOCUS_FAN = ['crossword', 'brain-board', 'word-hunt', 'doodle-hoot', 'sudoku'];
+/** The game in the hero's "now a game" card and the Builder demo: Fraction Factory with the arcade, else Question Battle. */
+const demoGame = arcade => (arcade ? { slug: 'fraction-factory', title: 'Fraction Factory' } : { slug: 'question-battle', title: 'Question Battle' });
 
 /** The hero's picture: the class dashboard on the projector (a real capture, scripts/how-shots.js), a student's own screen
  *  on a phone, and around it the rest of the day: a game the Builder just made and a live game starting. The cards move
  *  at their own depth as the page scrolls (data-depth, public/js/landing.js); without script they simply sit there. */
-function heroStage(t, fb, theme) {
+function heroStage(t, fb, theme, arcade = true) {
   return html`<figure class="lp-hstage">
   <div class="lp-screen lp-hs-screen">${shot(theme, 'dash-teacher', t('landing.dash.shotAlt'), { sizes: '(min-width: 1024px) 600px, 92vw', lazy: false, priority: true })}</div>
   <div class="lp-hs-phone" data-depth=".1" aria-hidden="true">${phoneShot(theme, 'dash-student', { sizes: '150px', lazy: false })}</div>
   <div class="lp-glass lp-hs-card lp-hs-build" data-depth="-.14">
-    ${cover('fraction-factory', { eager: true, w: 240, cls: 'lp-hs-cover' })}
+    ${cover(demoGame(arcade).slug, { eager: true, w: 240, cls: 'lp-hs-cover' })}
     <div><p class="lp-d-tag"${fb('landing.hero.cBuildTag')}>${ico('✨', { size: 18 })} ${t('landing.hero.cBuildTag')}</p><p class="lp-hs-t"${fb('landing.hero.cBuild')}>${t('landing.hero.cBuild')}</p></div>
   </div>
   <div class="lp-glass lp-hs-card lp-hs-live" data-depth="-.06">
@@ -524,7 +537,8 @@ function heroStage(t, fb, theme) {
 
 /** The hero's picture: a lesson, the Builder at work, and a game. Without JavaScript (or with reduced motion) all three
  *  show at once; public/js/landing.js plays it as a short loop. */
-function demo(t, fb) {
+function demo(t, fb, arcade = true) {
+  const g = demoGame(arcade);
   return html`<figure class="lp-demo" data-stage="done" aria-labelledby="lp-demo-cap">
   <div class="lp-glass lp-d-lesson">
     <p class="lp-d-tag">${ico('📄', { size: 18 })} ${t('landing.demo.lessonTag')}</p>
@@ -540,11 +554,11 @@ function demo(t, fb) {
   </div>
   <div class="lp-beam lp-beam-2" aria-hidden="true"></div>
   <div class="lp-glass lp-d-game">
-    ${cover('fraction-factory', { eager: true, cls: 'lp-d-cover' })}
-    <div class="lp-d-gtext"><p class="lp-d-tag">${ico('🎮', { size: 18 })} ${t('landing.demo.gameTag')}</p><p class="lp-d-title" lang="en" dir="ltr">Fraction Factory</p><p class="lp-d-meta">${t('landing.demo.gameMeta')}</p>
+    ${cover(g.slug, { eager: true, cls: 'lp-d-cover' })}
+    <div class="lp-d-gtext"><p class="lp-d-tag">${ico('🎮', { size: 18 })} ${t('landing.demo.gameTag')}</p><p class="lp-d-title" lang="en" dir="ltr">${g.title}</p><p class="lp-d-meta">${t('landing.demo.gameMeta')}</p>
     <p class="lp-d-btns" aria-hidden="true"><span>▶ ${t('landing.demo.host')}</span><span>${t('landing.demo.assign')}</span></p></div>
   </div>
-  <figcaption id="lp-demo-cap" class="lp-d-cap">${t('landing.demo.label')}. ${t('landing.demo.credit')}</figcaption>
+  <figcaption id="lp-demo-cap" class="lp-d-cap">${t('landing.demo.label')}. ${arcade ? t('landing.demo.credit') : t('landing.focus.demoCredit', { title: g.title })}</figcaption>
 </figure>`;
 }
 

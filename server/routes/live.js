@@ -52,6 +52,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { audit } from '../db.js';
 import { draftQuestions, draftFromLesson, LESSON, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
+import * as focus from '../services/game-focus.js';
 
 export const router = Router();
 const LOBBY_FILE = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../live/lobby.html');
@@ -149,6 +150,9 @@ router.post('/api/live/report', on, (req, res) => {
 });
 
 // ---------------------------------------------------------------- /live: the host's landing
+/** A built-in mode whose official game is hidden (ARCADE off, services/game-focus.js: Quest Race) is offered only to a
+ *  host whose class has that game assigned, and to the platform admin. */
+const modeOpen = (u, mode) => { const slug = A.MODES[mode]; if (!focus.slugHidden(slug)) return true; return focus.mayOpenHidden(u, games.getGameBySlug(slug)); };
 const officialReady = () => games.listVisible(null, { official: true, limit: 100 }).filter(g => !Object.values(A.MODES).includes(g.slug));
 router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   const t = req.t, u = req.user;
@@ -170,7 +174,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
     // Tug of Math Live is two teams: not offered while teams are switched off (LIVE_TEAMS=0)
     ...(LS.teamsOn() ? [{ id: 'tug', icon: '🪢', title: t('live.mode.tug'), text: t('live.mode.tugText'), own: true }] : []),
     { id: 'doodle', icon: '🦉', title: t('live.mode.doodle'), text: t('live.mode.doodleText'), own: true },
-  ].map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
+  ].filter(m => modeOpen(u, m.id)).map(m => ({ ...m, cap: A.capacityFor({ mode: m.id }) }));
   const starters = STARTERS.map(id => ({ id, title: t(`live.starter.title.${id.replace('-', '')}`) }));
   const q = req.query;
   // P6 (CS Quest): ?starter= fills the form with a platform starter a lesson plan names (unknown ones are ignored).

@@ -14,6 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.builderFullForAll = false; config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const games = await import('../../server/services/games.js');

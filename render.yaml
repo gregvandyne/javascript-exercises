@@ -58,6 +58,12 @@ services:
       # refuses a list it doesn't accept; the server then turns search off by itself and logs why). Set "1" to turn it on.
       - key: BUILDER_WEB_SEARCH
         value: "0"
+      # The focus on teaching tools (docs/decisions.md "Focus: teaching tools first"; server/services/game-focus.js): the
+      # arcade games and the ready-made courses are hidden (never deleted). Set "1" to bring either back.
+      - key: ARCADE
+        value: "0"
+      - key: COURSES
+        value: "0"
       # Speaking instead of typing in the Builder chat (server/services/stt.js; docs/legal-review.md item 38). The mic
       # is hidden until STT_API_KEY is set. Set the key in the dashboard only after the provider has agreed zero data
       # retention for the key's project; never put it in this file. STT_PROVIDER: openai (default) or elevenlabs.

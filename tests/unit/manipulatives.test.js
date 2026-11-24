@@ -11,6 +11,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.anthropicKey = '';
 const { q, MIGRATIONS } = await import('../../server/db.js');
 const { createUser, startSession, getUser } = await import('../../server/auth.js');

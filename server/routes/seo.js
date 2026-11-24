@@ -19,6 +19,7 @@ import { legacyHosts, hostOnly } from '../site.js';
 import { state as domainState } from '../domain.js';
 import { abs, origin, localeUrl, localizable, pageLangs, langsWithKey } from '../seo.js';
 import { COURSES } from '../services/course-catalog.js';
+import { coursesHidden, openHubs } from '../services/game-focus.js';
 import { landingAtRoot } from './landing.js';
 import { TRUST_UPDATED } from './trust.js';
 import { COMPARE_CHECKED } from './compare.js';
@@ -47,6 +48,8 @@ export const launchGames = () => q.all(`SELECT g.slug, g.l10n, g.updated_at, g.p
 /** Every indexable page: { path, langs, lastmod, images }. */
 export function sitemapEntries() {
   const list = launchGames();
+  // The courses only while COURSES is on, and the subject pages that still have a game (services/game-focus.js).
+  const courses = !coursesHidden();
   const newest = list.reduce((m, g) => Math.max(m, g.updated_at || 0, g.published_at || 0), 0);
   const out = [
     // "/" is the teacher landing page for search engines (routes/landing.js); its words are under landing.*.
@@ -54,13 +57,13 @@ export function sitemapEntries() {
     { path: '/teachers', langs: langsWithKey('teachers.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
     ...(liveOn() ? [{ path: '/teachers/live', langs: langsWithKey('teachersLive.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-live.jpg', import.meta.url)) ? '/og/teachers-live.jpg' : '/og/teachers.jpg'] }] : []),
     // The CS Quest program page (routes/cs-quest.js): English-first copy under teachers.cs.*, so hreflang lists only the languages that have it.
-    { path: '/teachers/cs-quest', langs: langsWithKey('teachers.cs.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-cs-quest.jpg', import.meta.url)) ? '/og/teachers-cs-quest.jpg' : '/og/teachers.jpg'] },
+    ...(courses ? [{ path: '/teachers/cs-quest', langs: langsWithKey('teachers.cs.h1'), lastmod: CONTENT_UPDATED, images: [fs.existsSync(new URL('../../public/og/teachers-cs-quest.jpg', import.meta.url)) ? '/og/teachers-cs-quest.jpg' : '/og/teachers.jpg'] }] : []),
     // The Number Quest program page (routes/number-quest.js): English-first copy under teachers.nq.*.
-    { path: '/teachers/number-quest', langs: langsWithKey('teachers.nq.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] },
+    ...(courses ? [{ path: '/teachers/number-quest', langs: langsWithKey('teachers.nq.h1'), lastmod: CONTENT_UPDATED, images: ['/og/teachers.jpg'] }] : []),
     // Courses (services/course-catalog.js): their games have no page of their own, the course page stands for them.
-    ...COURSES.map(c => ({ path: `/courses/${c.slug}`, langs: langsWithKey(`${c.key}.about`), lastmod: CONTENT_UPDATED, images: c.games.map(g => `/covers/${g.slug}.jpg`) })),
+    ...(courses ? COURSES : []).map(c => ({ path: `/courses/${c.slug}`, langs: langsWithKey(`${c.key}.about`), lastmod: CONTENT_UPDATED, images: c.games.map(g => `/covers/${g.slug}.jpg`) })),
     { path: '/learn', langs: langsWithKey('learn.index.h1'), lastmod: CONTENT_UPDATED },
-    ...HUBS.map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
+    ...openHubs(HUBS).map(h => ({ path: `/learn/${h.slug}`, langs: langsWithKey(`learn.hubs.${h.key}.h1`), lastmod: CONTENT_UPDATED })),
     ...list.map(g => {
       let l10n = {}; try { l10n = JSON.parse(g.l10n || '{}') || {}; } catch { /* none */ }
       return { path: `/g/${g.slug}`, langs: Object.keys(l10n), lastmod: day(Math.max(g.updated_at || 0, g.published_at || 0)), images: [`/covers/${g.slug}.jpg`] };

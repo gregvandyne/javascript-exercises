@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "2 players"
+    },
+    "focus": {
+      "puzzles": "Word games and puzzles",
+      "mapsStrategy": "Maps and strategy",
+      "tools": "Classroom tools",
+      "more": "More games",
+      "players": "Games by players"
     }
   },
   "search": {
@@ -1210,6 +1217,11 @@
     "grownupBuilder": "Grown-up builder",
     "sets": {
       "copyOf": "Copy of {title}"
+    },
+    "unavailable": {
+      "title": "This game isn’t available right now",
+      "text": "It may come back later. Play has more games and puzzles to try.",
+      "play": "Go to Play"
     }
   },
   "play": {
@@ -10268,7 +10280,8 @@
       "trial": "Start free trial",
       "trialShort": "Free trial",
       "menu": "Menu",
-      "kids": "Students build"
+      "kids": "Students build",
+      "tools": "Teaching tools"
     },
     "hero": {
       "kicker": "For teachers · grades K–8",
@@ -10540,6 +10553,13 @@
       "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
       "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
       "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
+    },
+    "focus": {
+      "manipulatives": "virtual math manipulatives",
+      "play": "Word puzzles, math games and live class games, with no sign-up.",
+      "freeLi1": "Every ready-made game, puzzle and classroom tool",
+      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class games and a Story Library. Teachers can also turn their own lessons into classroom games with an AI Builder.",
+      "demoCredit": "Game art from {title}, one of Oomba’s ready-made games."
     }
   },
   "rubrics": {

@@ -15,6 +15,8 @@ import { fileURLToPath } from 'node:url';
 
 const { config } = await import('../../server/config.js');
 config.builderFullForAll = false; config.anthropicKey = '';
+// The Arcade game kind and its switch are what this file tests: on here (ARCADE is off on the site by default).
+config.arcade = true;
 const { createApp } = await import('../../server/app.js');
 const games = await import('../../server/services/games.js');
 const S = await import('../../server/services/schools.js');

@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const { seed } = await import('../../scripts/seed.js');

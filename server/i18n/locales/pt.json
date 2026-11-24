@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "2 jogadores"
+    },
+    "focus": {
+      "puzzles": "Jogos de palavras e quebra-cabeças",
+      "mapsStrategy": "Mapas e estratégia",
+      "tools": "Ferramentas de sala de aula",
+      "more": "Mais jogos",
+      "players": "Jogos de jogadores"
     }
   },
   "search": {
@@ -1210,6 +1217,11 @@
     "grownupBuilder": "Criador adulto",
     "sets": {
       "copyOf": "Cópia de {title}"
+    },
+    "unavailable": {
+      "title": "Este jogo não está disponível agora",
+      "text": "Ele pode voltar mais tarde. Em Jogar há mais jogos e quebra-cabeças para experimentar.",
+      "play": "Ir para Jogar"
     }
   },
   "play": {
@@ -9485,7 +9497,8 @@
       "trial": "Teste grátis",
       "trialShort": "Teste grátis",
       "menu": "Menu",
-      "kids": "Alunos criam"
+      "kids": "Alunos criam",
+      "tools": "Ferramentas de ensino"
     },
     "hero": {
       "kicker": "Para professores · da educação infantil ao 8º ano",
@@ -9757,6 +9770,13 @@
       "shotAlt": "Uma sessão ao vivo de material dourado na tela do professor: a área do professor no alto e os quadrados de quatro alunos embaixo, cada um com placas de centenas e barras de dezenas num quadro de valor posicional.",
       "plan": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba fazem parte do plano Professor.",
       "testing": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba estão sendo testados em algumas turmas agora."
+    },
+    "focus": {
+      "manipulatives": "materiais manipuláveis virtuais de matemática",
+      "play": "Palavras cruzadas, jogos de matemática e jogos ao vivo com a turma, sem cadastro.",
+      "freeLi1": "Todos os jogos prontos, quebra-cabeças e ferramentas de sala de aula",
+      "faqA1": "Uma plataforma de ensino do jardim ao 8º ano: um painel da turma para conduzir o dia, materiais manipuláveis virtuais de matemática, figuras desenhadas em escala, criadores de quebra-cabeças como as Palavras cruzadas, jogos ao vivo com a turma e uma Biblioteca de histórias. Professores também podem transformar suas próprias aulas em jogos de sala de aula com o Builder de IA.",
+      "demoCredit": "Arte do jogo {title}, um dos jogos prontos da Oomba."
     }
   },
   "teach": {
