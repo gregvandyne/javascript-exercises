@@ -334,7 +334,7 @@ async function drawJob(job) {
   }
   pace.streak = 0; pace.quotaAt = 0;   // Google answered: the backoff starts small again (and the quota is there)
   let img;
-  try { img = await toWebp(r.bytes); } catch { img = null; }
+  try { img = await toJpeg(r.bytes); } catch { img = null; }
   if (!img) return end(job, 'fallback', 'error', { hash });
   const verdict = hooks.screenImage ? await hooks.screenImage(img.bytes, img.mime) : await companionScreenImage(img.bytes, img.mime);
   if (verdict !== 'allow') {
@@ -344,12 +344,15 @@ async function drawJob(job) {
   if (!q.get('SELECT 1 FROM made_books WHERE id=?', row.id)) return;
   const id = uid(14), old = q.get('SELECT pic_id FROM made_book_draws WHERE id=?', job.id);
   q.run('INSERT INTO made_book_pics(id, owner_id, book_id, name, width, height, bytes, created_at, kind, mime) VALUES (?,?,?,?,?,?,?,?,?,?)',
-    id, u.id, row.id, `${label}.webp`, img.width, img.height, img.bytes, now(), label, img.mime);
+    id, u.id, row.id, `${label}.${img.mime === 'image/png' ? 'png' : 'jpg'}`, img.width, img.height, img.bytes, now(), label, img.mime);
   end(job, 'done', '', { pic_id: id, hash, note: '' });
   if (old && old.pic_id && old.pic_id !== id) q.run("DELETE FROM made_book_pics WHERE id=? AND kind!='upload'", old.pic_id);
 }
 
-// ---------------------------------------------------------------- the file: WebP, at most 1600 px wide
+// ---------------------------------------------------------------- the file: JPEG, at most 1600 px wide
+// Painted pictures were kept as WebP until 24 Nov 2026; on the owner's iPhone they showed as broken images ("?"), so
+// they are now kept as JPEG, which every browser shows. A WebP kept before is turned into a JPEG the first time it is
+// asked for (storeAsJpeg, from the picture route).
 export const MAX_W = 1600;
 /** Image bytes (PNG, JPEG or WebP) -> { bytes, mime: 'image/webp', width, height } through ffmpeg (in the app's image).
  *  Without ffmpeg (a development machine) a PNG is kept as it came. */
@@ -369,6 +372,48 @@ export function toWebp(bytes) {
     ff.stdin.on('error', () => {});
     ff.stdin.end(bytes);
   });
+}
+/** Image bytes (PNG, JPEG or WebP) -> { bytes, mime: 'image/jpeg', width, height } through ffmpeg, at most MAX_W wide.
+ *  Without ffmpeg (a development machine) a PNG is kept as it came. */
+export function toJpeg(bytes) {
+  return new Promise((resolve, reject) => {
+    let ff;
+    try { ff = spawn('ffmpeg', ['-v', 'error', '-i', 'pipe:0', '-frames:v', '1', '-vf', `scale='min(${MAX_W},iw)':-2,format=yuvj420p`, '-c:v', 'mjpeg', '-q:v', '3', '-f', 'image2pipe', 'pipe:1'], { stdio: ['pipe', 'pipe', 'ignore'] }); } catch (e) { reject(e); return; }
+    const out = [];
+    ff.on('error', () => { const s = pngSize(bytes); if (s) resolve({ bytes, mime: 'image/png', ...s }); else reject(new Error('no ffmpeg')); });
+    ff.stdout.on('data', d => out.push(d));
+    ff.on('close', code => {
+      if (code !== 0) return reject(new Error(`ffmpeg ${code}`));
+      const buf = Buffer.concat(out), s = jpegSize(buf);
+      if (!s) return reject(new Error('not jpeg'));
+      resolve({ bytes: buf, mime: 'image/jpeg', ...s });
+    });
+    ff.stdin.on('error', () => {});
+    ff.stdin.end(bytes);
+  });
+}
+/** JPEG bytes -> { width, height } from the first frame header, or null. */
+export function jpegSize(b) {
+  if (!b || b.length < 4 || b[0] !== 0xff || b[1] !== 0xd8) return null;
+  let i = 2;
+  while (i + 9 < b.length) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { height: b.readUInt16BE(i + 5), width: b.readUInt16BE(i + 7) };
+    if (m === 0xd8 || m === 0x01 || (m >= 0xd0 && m <= 0xd7)) { i += 2; continue; }
+    i += 2 + b.readUInt16BE(i + 2);
+  }
+  return null;
+}
+/** A picture row kept as WebP (before 24 Nov 2026): its JPEG, saved in its place so this happens once. -> the row. */
+const converting = new Map();
+export async function storeAsJpeg(p) {
+  if (!p || !webpSize(Buffer.from(p.bytes))) return p;
+  if (!converting.has(p.id)) converting.set(p.id, toJpeg(p.bytes).then(img => {
+    q.run('UPDATE made_book_pics SET bytes=?, mime=?, width=?, height=? WHERE id=?', img.bytes, img.mime, img.width, img.height, p.id);
+    return { ...p, bytes: img.bytes, mime: img.mime, width: img.width, height: img.height };
+  }).catch(() => p).finally(() => setTimeout(() => converting.delete(p.id), 1000)));
+  return converting.get(p.id);
 }
 /** Image bytes (WebP, PNG, JPEG) -> PNG bytes through ffmpeg; a PNG comes back as it is. */
 export function toPng(bytes) {

@@ -149,8 +149,12 @@ test('laptop: a request skips what it answered, the cards, notes and a file, the
     assert.ok(row); assert.equal(row.kind, 'cyoa');
     await page.locator('.oc-change', { hasText: 'A new adventure' }).waitFor({ timeout: 15000 });
     await shot(page, 'cb-5-started');
-    // the book page: the same chat, open beside the book; a change there, with Undo
+    // the book page: Open the book shows the book with the chat closed to its bubble (the owner, 24 Nov 2026); a tap on
+    // the bubble brings back the same chat (one only), and a change there has Undo
     await Promise.all([page.waitForURL(new RegExp(`/library/make/${row.id}`)), openBook.click()]);
+    await page.locator('#oc-bubble:not([hidden])').waitFor({ timeout: 10000 });
+    assert.equal(await page.locator('#oc:not([hidden])').count(), 0, 'the chat is closed: the book shows');
+    await page.click('#oc-bubble');
     await page.locator('#oc:not([hidden])').waitFor({ timeout: 10000 });
     assert.equal(await page.locator('#oc').count(), 1, 'one chat only');
     await page.locator('#oc-log .oc-change', { hasText: 'A new adventure' }).waitFor();
