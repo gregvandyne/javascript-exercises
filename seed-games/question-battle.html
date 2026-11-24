@@ -4,123 +4,179 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Question Battle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); background: #9fd8ff; color: #1d2340; }
+  /* Question Battle in the classroom dashboard's look (as Crossword): cream widget cards with a group color on the top
+     edge and the icon chip, the schedule's dark "Now" bar for the question and the messages, a dotted mint board behind
+     it all, light and dark (BRB.theme, else the device), Bricolage Grotesque. The boss is drawn on its own widget card
+     (the arena), in the boss's color. Tokens: public/css/app.css, public/css/dash.css. */
+  :root {
+    --paper: #E1F1E1; --dots: #66C792; --card: #FFFDF2; --card2: #F9F6EB; --hover: #EFEBDC; --ink: #141414; --line: #E2DDCB; --muted: #5B584F;
+    --green: #1F9D63; --accent: #66C792; --current: #141414; --on-current: #FFFDF2; --coral: #C8432F; --spark: #FFD23F; --focus: #2563EB;
+    --g-time: #5AA9D6; --g-class: #66C792; --g-tools: #FFD23F; --g-show: #F28C6B; --g-check: #9B8CE0; --g-join: #4FB6A8; --boss: var(--g-time);
+    --a0: #D64553; --a1: #2F6BDB; --a2: #B07A00; --a3: #1F9D63;
+    --shadow: 0 1px 0 rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.06); --r: 20px; --r-sm: 12px;
+    --font: 'Bricolage Grotesque', var(--ok-font, ui-rounded), system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --paper: #141414; --dots: #2E5A41; --card: #1E1E1B; --card2: #262622; --hover: #2C2C27; --ink: #FFFDF2; --line: #36352F; --muted: #B8B3A1;
+    --green: #66C792; --accent: #66C792; --current: #66C792; --on-current: #141414; --coral: #FF8A7D; --focus: #8AB4FF;
+    --a0: #FF7A85; --a1: #7FA7FF; --a2: #F2C14E; --a3: #66C792;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.32);
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--font); color: var(--ink); background-color: var(--paper);
+    background-image: radial-gradient(var(--dots) 1.5px, transparent 1.6px); background-size: 22px 22px; -webkit-text-size-adjust: 100%; }
+  button { font: inherit; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
   canvas.full { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
   #fx { pointer-events: none; z-index: 5; }
-  .qb { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: clamp(4px, 1.1vh, 8px); padding: max(8px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); pointer-events: none; }
+  .qb { position: fixed; inset: 0; z-index: 2; display: flex; flex-direction: column; gap: clamp(4px, 1.1vh, 10px); padding: max(8px, env(safe-area-inset-top)) 12px max(10px, env(safe-area-inset-bottom)); pointer-events: none; }
   .qb > * { pointer-events: auto; }
   .qb [hidden], .qb-card[hidden] { display: none !important; }
   .qb-top, .qb-boss, .qb-banner { flex-shrink: 0; }
+  /* a widget: the dashboard's card, its group color on the top edge and the icon chip only (never on text) */
+  .qb-w { --g: var(--g-class); background: var(--card); color: var(--ink); border-radius: var(--r);
+    box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g) 80%, var(--card)), 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent), var(--shadow); }
+  .qb-chip { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: color-mix(in srgb, var(--g, var(--g-class)) 30%, var(--card)); font-size: 1.3rem; line-height: 1; }
   .qb-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; font-weight: 800; min-height: 32px; }
   .qb-top .sp { flex: 1; }
-  .qb-pill { background: rgba(255,255,255,.94); color: #1d2340; border: 3px solid #1d2340; border-radius: 999px; padding: 3px 12px; box-shadow: 0 3px 0 #1d2340; font-size: clamp(13px, 2.4vw, 18px); white-space: nowrap; }
-  .qb-pill.fire { background: linear-gradient(90deg, #ffd23d, #ff7a3d); }
-  .qb-pill.fire.big { animation: qb-pulse .6s ease-in-out infinite alternate; }
+  .qb-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card); color: var(--ink); border-radius: 999px; padding: 4px 14px; box-shadow: 0 0 0 1px var(--line), var(--shadow); font-size: clamp(13px, 2.2vw, 19px); white-space: nowrap; }
+  .qb-pill.fire { background: color-mix(in srgb, var(--spark) 55%, var(--card)); }
+  .qb-pill.fire.big { background: var(--spark); color: #141414; animation: qb-pulse .6s ease-in-out infinite alternate; }
+  #team { box-shadow: inset 0 -5px 0 var(--team, transparent), 0 0 0 1px var(--line), var(--shadow); }
   @keyframes qb-pulse { to { transform: scale(1.08); } }
-  .qb-boss { width: min(560px, 92%); margin: 0 auto; display: flex; align-items: center; gap: 8px; font-weight: 800; color: #1d2340; }
-  .qb-boss .nm { background: #fff; border: 3px solid #1d2340; border-radius: 12px; padding: 2px 10px; font-size: clamp(12px, 2.2vw, 17px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; box-shadow: 0 3px 0 #1d2340; }
-  .qb-hp { flex: 1; height: clamp(16px, 2.6vh, 24px); background: #fff; border: 3px solid #1d2340; border-radius: 999px; overflow: hidden; box-shadow: 0 3px 0 #1d2340; position: relative; }
-  .qb-hp i { position: absolute; inset: 0; transform-origin: 0 50%; background: linear-gradient(180deg, #7ee08a, #2fb35a); border-radius: 999px; }
+  /* the boss's name and energy: the arena widget's head */
+  .qb-boss { --g: var(--boss); width: min(1100px, 100%); margin: 0 auto; display: flex; align-items: center; gap: 10px; padding: 9px 12px 7px; font-weight: 800; color: var(--ink); }
+  .qb-boss .qb-chip { width: clamp(32px, 4.4vh, 44px); height: clamp(32px, 4.4vh, 44px); font-size: clamp(18px, 2.6vh, 26px); }
+  .qb-boss .nm { font-size: clamp(13px, 2.2vw, 20px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 50%; }
+  .qb-hp { flex: 1; height: clamp(16px, 2.6vh, 24px); background: var(--card2); border-radius: 999px; overflow: hidden; box-shadow: inset 0 0 0 2px var(--line); position: relative; }
+  .qb-hp i { position: absolute; inset: 0; transform-origin: 0 50%; background: var(--green); border-radius: 999px; }
   [dir="rtl"] .qb-hp i { transform-origin: 100% 50%; }
-  .qb-hp i.mid { background: linear-gradient(180deg, #ffe066, #f2a91a); }
-  .qb-hp i.low { background: linear-gradient(180deg, #ff9a8a, #e9465c); }
-  .qb-hp b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 12px; color: #1d2340; }
+  .qb-hp i.mid { background: var(--spark); }
+  .qb-hp i.low { background: var(--coral); }
   .qb-stage { flex: 1 1000 var(--stage, 24vh); min-height: 0; pointer-events: none !important; }
-  .qb-banner { margin: 0 auto; background: #1d2340; color: #fff; border-radius: 18px; padding: 8px 20px; font-weight: 800; font-size: clamp(15px, min(4.4vw, 4.6vh), 32px); text-align: center; max-width: 92vw; box-shadow: 0 4px 0 rgba(0,0,0,.25); }
-  .qb-banner.big { font-size: clamp(24px, 6vw, 54px); background: linear-gradient(90deg, #ff6aa8, #ffb03b, #ffe066, #6ee07a, #4fb4ff, #9d7bff); color: #1d2340; border: 4px solid #1d2340; animation: qb-pop .5s cubic-bezier(.2,1.6,.4,1); }
+  body.lobby .qb-stage { flex-grow: 0; }
+  /* messages: the schedule widget's dark "Now" bar; the big ones in the spark color */
+  .qb-banner { margin: 0 auto; background: var(--current); color: var(--on-current); border-radius: var(--r-sm); padding: 8px 22px; font-weight: 800; font-size: clamp(15px, min(4.2vw, 4.4vh), 32px); text-align: center; max-width: min(92vw, 1100px); box-shadow: var(--shadow); }
+  .qb-banner.big { font-size: clamp(24px, 6vw, 56px); background: var(--spark); color: #141414; border-radius: 22px; animation: qb-pop .5s cubic-bezier(.2,1.6,.4,1); }
   @keyframes qb-pop { from { transform: scale(.4); opacity: 0; } }
   .qb-banner:empty { display: none; }
-  .qb-card { flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 10px; justify-content: flex-start; max-width: 1100px; width: 100%; margin: 0 auto; min-height: 0; box-sizing: border-box;
-    background: rgba(255,255,255,.93); border: 4px solid #1d2340; border-radius: 26px; padding: 12px; box-shadow: 0 6px 0 #1d2340; }
-  .qb-qrow { display: flex; align-items: center; gap: 12px; }
-  .qb-q { margin: 0; flex: 1; text-align: center; font-weight: 800; font-size: clamp(16px, min(4.6vw, 4.4vh), 42px); overflow-wrap: break-word; line-height: 1.15; }
+  /* the lobby: the class, as small cards (a team's own widget in team mode) */
+  .qb-crowd { flex: 1 1 auto; min-height: 0; overflow-y: auto; width: min(100%, 1400px); margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 10px; align-content: start; }
+  .qb-crowd.one { display: flex; }
+  .qb-grp { --g: var(--team, var(--g-class)); padding: 12px; display: flex; flex-direction: column; gap: 8px; min-width: 0; flex: 1; }
+  .qb-grp h2 { margin: 0; flex: 1; min-width: 0; font-size: clamp(15px, 1.8vw, 22px); font-weight: 800; overflow-wrap: anywhere; }
+  .qb-wh { display: flex; align-items: center; gap: 10px; }
+  .qb-n { padding: 2px 12px; border-radius: 999px; background: var(--card2); font-weight: 800; font-size: clamp(14px, 1.8vw, 20px); }
+  .qb-ppl { list-style: none; margin: 0; padding: 4px 2px; display: flex; flex-wrap: wrap; justify-content: center; align-content: center; gap: 8px; flex: 1; }
+  .qb-p { position: relative; display: flex; align-items: center; gap: 8px; padding: 4px 12px 4px 4px; border-radius: 14px; background: var(--card2); font-weight: 800; font-size: clamp(14px, 1.5vw, 21px); max-width: 15em; animation: qb-join .4s cubic-bezier(.3,1.5,.5,1) both; }
+  .qb-p canvas { width: clamp(38px, 3.4vw, 58px); height: clamp(38px, 3.4vw, 58px); flex: none; }
+  .qb-p span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .qb-p.me { background: color-mix(in srgb, var(--accent) 30%, var(--card)); }
+  .qb-p i { position: absolute; top: -12px; inset-inline-end: -6px; font-style: normal; font-size: 22px; }
+  .qb-crowd.tight .qb-p { padding: 2px; } .qb-crowd.tight .qb-p span { display: none; } .qb-crowd.tight .qb-p canvas { width: 30px; height: 30px; }
+  @keyframes qb-join { from { transform: scale(.4); opacity: 0; } }
+  /* the question: a widget, the question in the dark bar */
+  .qb-card { --g: var(--boss); flex: 0 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 10px; justify-content: flex-start; max-width: 1100px; width: 100%; margin: 0 auto; padding: 14px 12px 12px; }
+  .qb-qrow { display: flex; align-items: center; gap: 12px; padding: clamp(8px, 1.4vh, 16px) clamp(10px, 1.6vw, 20px); border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
+  .qb-q { margin: 0; flex: 1; text-align: center; font-weight: 800; font-size: clamp(16px, min(4.4vw, 4.4vh), 42px); overflow-wrap: break-word; line-height: 1.15; }
   .qb-ring { width: 58px; height: 58px; flex: none; position: relative; }
   .qb-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .qb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 21px; }
+  .qb-ring .tr { stroke: color-mix(in srgb, var(--on-current) 22%, transparent); }
+  .qb-ring #ring { stroke: var(--spark); transition: stroke .3s; }
+  :root[data-theme="dark"] .qb-ring #ring { stroke: var(--on-current); }
+  .qb-ring.low #ring { stroke: var(--coral); }
+  .qb-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: 21px; font-variant-numeric: tabular-nums; }
   .qb-pad { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .qb-a { position: relative; overflow: hidden; min-height: clamp(46px, 9vh, 72px); border: 4px solid #1d2340; border-radius: 20px; color: #fff; font-family: inherit; font-weight: 800; font-size: clamp(15px, min(4.2vw, 3.6vh), 30px); line-height: 1.15; padding: 10px 12px; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer; box-shadow: 0 7px 0 #1d2340; transition: transform .08s, box-shadow .08s, opacity .2s; text-shadow: 0 2px 0 rgba(0,0,0,.25); touch-action: manipulation; }
-  .qb-a:active:not([disabled]) { transform: translateY(5px); box-shadow: 0 2px 0 #1d2340; }
-  .qb-a .sh { position: relative; z-index: 1; font-size: 1.3em; flex: none; width: 1.4em; text-align: center; }
+  .qb-a { --c: var(--a0); position: relative; overflow: hidden; min-height: clamp(48px, 9vh, 72px); border: 3px solid var(--c); border-radius: 18px; background: color-mix(in srgb, var(--c) 12%, var(--card)); color: var(--ink);
+    font-weight: 800; font-size: clamp(15px, min(4.2vw, 3.6vh), 30px); line-height: 1.15; padding: 8px 12px 8px 8px; display: flex; align-items: center; gap: 12px; text-align: start; cursor: pointer; transition: transform .08s, opacity .2s, background .2s; }
+  .qb-a:hover:not([disabled]) { background: color-mix(in srgb, var(--c) 22%, var(--card)); }
+  .qb-a:active:not([disabled]) { transform: translateY(2px); }
+  .qb-a .sh { position: relative; z-index: 1; display: grid; place-items: center; flex: none; width: 1.8em; height: 1.8em; border-radius: 12px; background: var(--c); color: #fff; font-size: 1em; }
+  :root[data-theme="dark"] .qb-a .sh { color: #141414; }
   .qb-a .tx { position: relative; z-index: 1; flex: 1; min-width: 0; overflow-wrap: break-word; hyphens: auto; }
-  .qb-a .fill { position: absolute; inset: auto 0 0 0; height: 6px; background: rgba(255,255,255,.9); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
+  /* the answer bar: how many picked it, grown across the tile on the projector */
+  .qb-a .fill { position: absolute; inset: 0; background: color-mix(in srgb, var(--c) 26%, transparent); transform-origin: 0 50%; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.9,.3,1); }
   [dir="rtl"] .qb-a .fill { transform-origin: 100% 50%; }
-  .qb-a:focus-visible { outline: 5px solid #ffc83d; outline-offset: 3px; }
-  .qb-a[disabled] { cursor: default; opacity: .45; }
+  .qb-a:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
+  .qb-a[disabled] { cursor: default; opacity: .55; }
   body.host .qb-a[disabled] { opacity: 1; }
-  body.host .qb-a.dim { opacity: .55; }
-  .qb-a.pick { opacity: 1; transform: translateY(3px) scale(.98); box-shadow: 0 3px 0 #1d2340, 0 0 0 5px #ffc83d; }
-  .qb-a.right { opacity: 1; box-shadow: 0 0 0 7px #37c47a, 0 7px 0 #1d2340; animation: qb-glow 1s ease-in-out 2; }
+  body.host .qb-a.dim { opacity: .72; }
+  .qb-a.pick { opacity: 1; box-shadow: 0 0 0 4px var(--ink); }
+  .qb-a.right { opacity: 1; border-color: var(--green); background: color-mix(in srgb, var(--green) 24%, var(--card)); box-shadow: 0 0 0 4px var(--green); animation: qb-glow 1s ease-in-out 2; }
+  .qb-a.right::after { content: '✓'; position: relative; z-index: 1; flex: none; display: grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--green); color: #fff; font-size: .9em; }
+  :root[data-theme="dark"] .qb-a.right::after { color: #10261A; }
   .qb-a.nope { animation: qb-shake .4s; }
-  @keyframes qb-glow { 50% { box-shadow: 0 0 0 12px #8ff0b4, 0 7px 0 #1d2340; } }
+  @keyframes qb-glow { 50% { box-shadow: 0 0 0 9px color-mix(in srgb, var(--green) 45%, transparent); } }
   @keyframes qb-shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
-  .qb-a .n { position: relative; z-index: 1; font-size: .9em; background: #1d2340; border-radius: 99px; padding: 2px 12px; }
-  .c0 { background: #e9465c; } .c1 { background: #2f6bff; } .c2 { background: #b98400; } .c3 { background: #27996a; }
-  .qb-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(17px, 4.2vw, 28px); min-height: 1.2em; }
-  .qb-note.ok { color: #1a8a4a; } .qb-note.bad { color: #b4233a; }
-  .qb-board { flex: 0 1 auto; min-height: 0; overflow-y: auto; background: rgba(255,255,255,.96); color: #1d2340; border: 4px solid #1d2340; border-radius: 24px; padding: 12px 16px; max-width: 620px; width: 100%; margin: 0 auto; box-sizing: border-box; box-shadow: 0 6px 0 #1d2340; overflow-x: hidden; }
-  .qb-board h2 { margin: 0 0 4px; text-align: center; font-size: clamp(18px, min(3.4vw, 4.6vh), 36px); }
-  .qb-mvp { text-align: center; font-weight: 800; margin: 0 0 8px; color: #b46a00; font-size: clamp(15px, 2.6vw, 22px); }
+  .qb-a .n { position: relative; z-index: 1; flex: none; padding: 2px 12px; border-radius: 999px; background: var(--card); box-shadow: 0 0 0 2px var(--c); font-size: .9em; font-variant-numeric: tabular-nums; }
+  .c0 { --c: var(--a0); } .c1 { --c: var(--a1); } .c2 { --c: var(--a2); } .c3 { --c: var(--a3); }
+  .qb-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(17px, 4vw, 28px); min-height: 1.2em; }
+  .qb-note.ok { color: var(--green); } .qb-note.bad { color: var(--coral); }
+  /* the scores: a widget with the trophy chip */
+  .qb-board { --g: var(--g-tools); flex: 0 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; padding: 12px 16px 16px; max-width: 660px; width: 100%; margin: 0 auto; }
+  .qb-board h2 { margin: 0; flex: 1; font-size: clamp(18px, min(3.2vw, 4.4vh), 36px); font-weight: 800; }
+  .qb-board .qb-wh { margin-bottom: 8px; }
+  .qb-mvp { text-align: center; font-weight: 800; margin: 0 0 8px; font-size: clamp(15px, 2.4vw, 22px); }
   .qb-mvp:empty { display: none; }
   .qb-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-  .qb-rows li { display: flex; align-items: center; gap: 10px; padding: 6px 12px; border-radius: 16px; font-weight: 800; font-size: clamp(15px, min(2.8vw, 3.6vh), 30px); background: #f4f1e6; border: 3px solid #1d2340; }
-  .qb-rows li:first-child { background: #ffe58a; }
-  .qb-rows li .r { min-width: 1.3em; text-align: center; }
+  .qb-rows li { display: flex; align-items: center; gap: 10px; padding: 5px 12px; border-radius: var(--r-sm); font-weight: 800; font-size: clamp(15px, min(2.8vw, 3.6vh), 30px); background: var(--card2); }
+  .qb-rows:not([start="4"]) li:first-child { background: color-mix(in srgb, var(--spark) 32%, var(--card)); }
+  .qb-rows li .r { min-width: 1.3em; text-align: center; color: var(--muted); }
   .qb-rows li .nm { flex: 1; overflow-wrap: anywhere; }
   .qb-rows li canvas { width: clamp(26px, 5.4vh, 48px); height: clamp(26px, 5.4vh, 48px); flex: none; }
-  .qb-rows li .up { font-size: .7em; color: #fff; background: #27996a; border-radius: 99px; padding: 1px 8px; }
-  .qb-podium { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 8px; }
-  .qb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30%; max-width: 170px; overflow-wrap: anywhere; }
+  .qb-rows li .up { font-size: .7em; color: #fff; background: var(--green); border-radius: 99px; padding: 1px 8px; }
+  :root[data-theme="dark"] .qb-rows li .up { color: #10261A; }
+  .qb-podium, .qb-tpod { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
+  .qb-step { display: flex; flex-direction: column; align-items: center; gap: 4px; font-weight: 800; text-align: center; width: 30%; max-width: 180px; overflow-wrap: anywhere; font-size: clamp(14px, 2vw, 22px); }
   .qb-step canvas { width: clamp(44px, 11vh, 96px); height: clamp(44px, 11vh, 96px); }
-  .qb-step i { display: grid; place-items: center; width: 100%; border-radius: 14px 14px 0 0; background: #ffc83d; border: 3px solid #1d2340; border-bottom: 0; font-style: normal; font-size: 28px; transform-origin: 50% 100%; animation: qb-rise .8s cubic-bezier(.2,1.4,.4,1) both; }
-  .qb-step:nth-child(1) i { animation-delay: .3s; } .qb-step:nth-child(2) i { animation-delay: .7s; background: #ffe066; } .qb-step:nth-child(3) i { animation-delay: 0s; }
+  .qb-tpod .qb-step canvas { width: 40px; height: 40px; }
+  .qb-step i { --g: var(--g-tools); display: grid; place-items: start center; padding-top: 8px; width: 100%; border-radius: 16px 16px 6px 6px; background: color-mix(in srgb, var(--g) 30%, var(--card2)); box-shadow: inset 0 5px 0 var(--g);
+    font-style: normal; font-size: 28px; transform-origin: 50% 100%; animation: qb-rise .8s cubic-bezier(.2,1.4,.4,1) both; }
+  .qb-step:nth-child(1) i { --g: var(--g-time); animation-delay: .3s; } .qb-step:nth-child(2) i { animation-delay: .7s; } .qb-step:nth-child(3) i { --g: var(--g-show); animation-delay: 0s; }
+  .qb-step i.tm { --g: var(--team); }
   @keyframes qb-rise { from { transform: scaleY(0); } }
   .qb-tlist { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
-  .qb-tlist li { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 14px; font-weight: 800; font-size: clamp(16px, 3vw, 26px); border: 3px solid #1d2340; }
-  .qb-tlist li .r { min-width: 1.4em; text-align: center; }
+  .qb-tlist li { display: flex; align-items: center; gap: 10px; padding: 6px 12px 6px 6px; border-radius: var(--r-sm); font-weight: 800; font-size: clamp(16px, 3vw, 26px); background: var(--card2); }
+  .qb-tlist li .r { min-width: 1.4em; text-align: center; color: var(--muted); }
   .qb-tlist li .nm { flex: 1; overflow-wrap: anywhere; }
+  .qb-tlist li .sw { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 10px; background: var(--team); }
   .qb-tlist li canvas { width: 30px; height: 30px; flex: none; }
-  .qb-tpod { display: flex; justify-content: center; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
-  .qb-tpod canvas { width: 40px; height: 40px; }
   .qb-team { display: inline-flex; align-items: center; gap: 6px; }
   .qb-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* the host's projector: a big boss up top, the question card under it */
   body.host .qb-a { min-height: clamp(48px, 11vh, 96px); font-size: clamp(16px, min(3vw, 4.6vh), 40px); }
   body.host .qb-q { font-size: clamp(18px, min(3.4vw, 5.4vh), 52px); }
   body.host.between .qb-a { min-height: clamp(44px, 8.5vh, 80px); }
-  body.host .qb-card { padding: clamp(8px, 1.6vh, 16px); gap: clamp(6px, 1.4vh, 12px); }
+  body.host .qb-card { padding: clamp(10px, 1.8vh, 18px) clamp(8px, 1.6vh, 16px) clamp(8px, 1.6vh, 16px); gap: clamp(6px, 1.4vh, 12px); }
   body.ended .qb-card { display: none !important; }
-  @media (max-width: 440px) { .qb-a { padding: 8px 8px; gap: 6px; } .qb-a .sh { width: 1.05em; font-size: 1.1em; } .qb-pad { gap: 8px; } .qb-a .tx { hyphens: manual; } }
+  @media (max-width: 440px) { .qb-a { padding: 6px; gap: 6px; } .qb-a .sh { width: 1.5em; height: 1.5em; } .qb-pad { gap: 8px; } .qb-a .tx { hyphens: manual; } .qb-qrow { padding: 8px 10px; } }
   @media (max-height: 600px) { body:not(.host) #score { display: none; } .qb-boss .nm { font-size: 12px; } }
-  @media (max-height: 700px) { .qb-ring { width: 46px; height: 46px; } .qb-ring b { font-size: 17px; } .qb-card { padding: 8px; gap: 6px; border-radius: 20px; } .qb-a { border-radius: 16px; box-shadow: 0 5px 0 #1d2340; } .qb-note { font-size: clamp(15px, 3.4vh, 24px); } }
-  html.dark .qb-card, html.dark .qb-board, html.dark .qb-pill, html.dark .qb-boss .nm { background: rgba(29,35,64,.94); color: #f4f1e6; border-color: #0b0e1c; }
-  html.dark .qb-rows li { background: #2a3050; } html.dark .qb-rows li:first-child { background: #6b5410; }
-  html.dark .qb-note.ok { color: #7ee08a; } html.dark .qb-note.bad { color: #ff9a8a; }
-  @media (prefers-color-scheme: dark) {
-    html.auto .qb-card, html.auto .qb-board, html.auto .qb-pill, html.auto .qb-boss .nm { background: rgba(29,35,64,.94); color: #f4f1e6; border-color: #0b0e1c; }
-    html.auto .qb-rows li { background: #2a3050; } html.auto .qb-rows li:first-child { background: #6b5410; }
-    html.auto .qb-note.ok { color: #7ee08a; } html.auto .qb-note.bad { color: #ff9a8a; }
-  }
-  @media (prefers-reduced-motion: reduce) { .qb-banner.big, .qb-step i, .qb-a.right, .qb-a.nope, .qb-pill.fire.big { animation: none; } }
+  @media (max-height: 700px) { .qb-ring { width: 46px; height: 46px; } .qb-ring b { font-size: 17px; } .qb-card { padding: 10px 8px 8px; gap: 6px; } .qb-a { border-radius: 14px; } .qb-note { font-size: clamp(15px, 3.4vh, 24px); } }
+  @media (prefers-reduced-motion: reduce) { .qb-banner.big, .qb-step i, .qb-a.right, .qb-a.nope, .qb-pill.fire.big, .qb-p { animation: none; } .qb-a .fill { transition: none; } }
 </style>
 </head>
 <body>
 <canvas class="full" id="lobby" aria-hidden="true"></canvas>
 <div class="qb" id="ui">
   <div class="qb-top"><span class="qb-pill" id="qnum" hidden></span><span class="qb-pill qb-team" id="team" hidden></span><span class="sp"></span><span class="qb-pill fire" id="streak" hidden></span><span class="qb-pill" id="score" hidden></span></div>
-  <div class="qb-boss" id="bossbar"><span class="nm" id="bossname"></span><div class="qb-hp" role="meter" id="hpbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="hpfill"></i></div></div>
+  <div class="qb-boss" id="bossbar"><span class="qb-chip" id="bossicon" aria-hidden="true"></span><span class="nm" id="bossname"></span><div class="qb-hp" role="meter" id="hpbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i id="hpfill"></i></div></div>
   <div class="qb-stage" id="stage" aria-hidden="true"></div>
+  <div class="qb-crowd" id="crowd" hidden></div>
   <p class="qb-banner" id="banner" role="status" aria-live="polite"></p>
-  <section class="qb-card" id="card" hidden aria-labelledby="qtext">
+  <section class="qb-card qb-w" id="card" hidden aria-labelledby="qtext">
     <div class="qb-qrow">
-      <div class="qb-ring" aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="rgba(0,0,0,.12)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#2f6bff" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div>
+      <div class="qb-ring" id="ringbox" aria-hidden="true"><svg viewBox="0 0 36 36"><circle class="tr" cx="18" cy="18" r="15" fill="none" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke-width="4" stroke-dasharray="94.25" stroke-dashoffset="0" stroke-linecap="round"/></svg><b id="secs"></b></div>
       <p class="qb-q" id="qtext" dir="auto"></p>
     </div>
     <div class="qb-pad" id="pad" role="group" aria-labelledby="qtext"></div>
     <p class="qb-note" id="note" aria-live="polite"></p>
   </section>
-  <section class="qb-board" id="tboard" hidden><h2 id="tboard-h"></h2><div class="qb-tpod" id="tpodium"></div><ol class="qb-tlist" id="tboard-list"></ol></section>
-  <section class="qb-board" id="board" hidden><h2 id="board-h"></h2><p class="qb-mvp" id="mvp"></p><div class="qb-podium" id="podium"></div><ol class="qb-rows" id="board-list"></ol></section>
+  <section class="qb-board qb-w" id="tboard" hidden aria-labelledby="tboard-h"><div class="qb-wh"><span class="qb-chip" aria-hidden="true">🚩</span><h2 id="tboard-h"></h2></div><div class="qb-tpod" id="tpodium"></div><ol class="qb-tlist" id="tboard-list"></ol></section>
+  <section class="qb-board qb-w" id="board" hidden aria-labelledby="board-h"><div class="qb-wh"><span class="qb-chip" aria-hidden="true">🏆</span><h2 id="board-h"></h2></div><p class="qb-mvp" id="mvp"></p><div class="qb-podium" id="podium"></div><ol class="qb-rows" id="board-list"></ol></section>
 </div>
 <canvas class="full" id="fx" aria-hidden="true"></canvas>
 <p class="qb-sr" id="sr" aria-live="assertive"></p>
@@ -228,7 +284,14 @@ window.SoloBank = (function () {
   var t = function (k, v) { return O.t(k, v); };
   var $ = function (id) { return document.getElementById(id); };
   document.documentElement.dir = O.dir || 'ltr'; document.documentElement.lang = O.lang || 'en';
-  document.documentElement.className = BRB.theme || 'auto';
+  // Light or dark: the site's choice (BRB.theme), else the device's (as Crossword). The arena canvas reads the colors.
+  var darkMq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null, TOK = {};
+  function applyTheme() {
+    var th = BRB.theme === 'light' || BRB.theme === 'dark' ? BRB.theme : (darkMq && darkMq.matches ? 'dark' : 'light');
+    document.documentElement.dataset.theme = th; readTokens();
+  }
+  function readTokens() { var cs = getComputedStyle(document.documentElement); ['card', 'card2', 'line', 'boss', 'ink'].forEach(function (k) { TOK[k] = cs.getPropertyValue('--' + k).trim(); }); }
+  applyTheme(); if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
   document.title = t('title');
   var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, ringTimer = 0, myScore = 0, myStreak = 0, total = 0;
   var REDUCED = !!(O.settings && O.settings.reduced) || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -246,7 +309,9 @@ window.SoloBank = (function () {
   // ---- the boss ----------------------------------------------------------------------------------------------------
   // hp: what the bar shows (eases to hpTo). dealt[i]: the share of energy question i took (from its reveal's counts).
   var boss = { kind: 0, hp: 100, hpTo: 100, hitT: -1e9, hitPow: 0, mood: 'calm', beatT: 0, dealt: {}, said: {} };
-  function setKind(k) { k = ((k | 0) % 3 + 3) % 3; boss.kind = k; $('bossname').textContent = t('boss' + k); $('hpbar').setAttribute('aria-label', t('energy') + ': ' + t('boss' + k)); }
+  var BOSS_G = ['var(--g-time)', 'var(--g-check)', 'var(--g-show)'], BOSS_ICON = ['☁️', '🤖', '🐉'];
+  function setKind(k) { k = ((k | 0) % 3 + 3) % 3; boss.kind = k; $('bossname').textContent = t('boss' + k);
+    document.documentElement.style.setProperty('--boss', BOSS_G[k]); $('bossicon').textContent = BOSS_ICON[k]; readTokens(); $('hpbar').setAttribute('aria-label', t('energy') + ': ' + t('boss' + k)); }
   function moodOf(hp) { return hp <= 0 ? 'beaten' : hp <= 33 ? 'dizzy' : hp <= 66 ? 'angry' : 'calm'; }
   /** The energy a reveal takes: every question has an equal share; how much of it lands depends on how many answered
    *  right (never nothing: a brave try still chips at the boss). The last question takes whatever is left. */
@@ -282,40 +347,42 @@ window.SoloBank = (function () {
 
   // ---- drawing: the arena (sky, the boss, the lobby crowd) and the effects layer -----------------------------------
   var cv = $('lobby'), ctx = cv.getContext('2d'), fx = $('fx'), fctx = fx.getContext('2d');
-  var flat = L.flat({ me: true, px: 72 }), quiet = L.flat({ me: true, px: 48, names: false }), emotes = new Map(), last = now();
+  var flat = L.flat({ me: true, px: 72 }), emotes = new Map(), last = now();
   var EMO = { wave: '👋', cheer: '🎉', jump: '⬆️', dance: '💃', clap: '👏', heart: '❤️' };
-  L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: now() + 2000 }); });
-  var INK = '#1d2340';
+  var INK = '#141414';
   function fit(c, x) {
     var W = c.clientWidth, H = c.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
     if (c.width !== Math.round(W * dpr) || c.height !== Math.round(H * dpr)) { c.width = Math.round(W * dpr); c.height = Math.round(H * dpr); }
     x.setTransform(dpr, 0, 0, dpr, 0, 0); return { W: W, H: H };
   }
-  var SKY = [['#8fd3ff', '#dff4ff', '#a6e07c', '#7cc85a'], ['#3d3a8c', '#9c8cf0', '#5b5bb5', '#45449a'], ['#ffb37a', '#ffe0b8', '#e8a46a', '#c98250']];
-  function drawSky(W, H, ts) {
-    var s = SKY[boss.kind], g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, s[0]); g.addColorStop(0.62, s[1]); g.addColorStop(1, s[1]);
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    // far hills / city / mountains, then a near ground
-    ctx.fillStyle = s[2];
-    ctx.beginPath(); ctx.moveTo(0, H);
-    for (var x = 0; x <= W + 40; x += 40) {
-      var y = boss.kind === 1 ? H * 0.72 - ((x / 40) % 3 === 0 ? 70 : (x / 40) % 2 ? 40 : 20) : boss.kind === 2 ? H * 0.7 - Math.abs(Math.sin(x / 140)) * H * 0.16 : H * 0.74 - Math.sin(x / 170) * H * 0.05;
-      ctx.lineTo(x, y);
+  /** The arena: one widget card (the boss's color on its top edge) behind the boss's name and energy bar and the boss,
+   *  drawn on the canvas so the boss can wobble and flash inside it. A little ground at the bottom in the boss's color. */
+  function arenaBox() {
+    var hb = $('bossbar').getBoundingClientRect(), st = $('stage').getBoundingClientRect();
+    var bottom = st.height > 20 ? st.bottom : hb.bottom;
+    return { x: hb.left, y: hb.top, w: hb.width, h: bottom - hb.top, body: st.height > 20 ? st : null };
+  }
+  function drawArena(W, H, ts) {
+    var a = arenaBox(); if (a.w < 10 || a.h < 10) return;
+    ctx.save();
+    ctx.shadowColor = 'rgba(20,20,20,.10)'; ctx.shadowBlur = 16; ctx.shadowOffsetY = 4;
+    rrect(ctx, a.x, a.y, a.w, a.h, 20); ctx.fillStyle = TOK.card; ctx.fill();
+    ctx.restore(); ctx.save();
+    rrect(ctx, a.x, a.y, a.w, a.h, 20); ctx.clip();
+    if (a.body) {
+      // the ground: a soft hill in the boss's color, and a few dots of the dashboard board
+      ctx.globalAlpha = 0.22; ctx.fillStyle = TOK.boss; ctx.beginPath(); ctx.ellipse(a.x + a.w / 2, a.y + a.h + a.body.height * 0.18, a.w * 0.62, a.body.height * 0.42, 0, 0, 6.3); ctx.fill();
+      ctx.globalAlpha = boss.kind === 1 ? 0.55 : 0.4;
+      for (var i = 0; i < 12; i++) {
+        var px = a.x + ((i * 0.618 + 0.05) % 1) * a.w, py = a.body.top + 10 + ((i * 0.382 + 0.1) % 1) * a.body.height * 0.5, k = Math.min(1, a.w / 900), ph = REDUCED ? 0 : ts / 900 + i;
+        if (boss.kind === 1) { ctx.globalAlpha = 0.3 + 0.3 * Math.sin(ph); star(ctx, px, py, 3 + (i % 3), TOK.boss, null); }
+        else { ctx.fillStyle = TOK.boss; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.arc((px - a.x + (REDUCED ? 0 : ts * 0.01 * (1 + i % 3))) % (a.w + 60) - 30 + a.x, py, (8 + (i % 4) * 5) * k, 0, 6.3); ctx.fill(); }
+      }
+      ctx.globalAlpha = 1;
     }
-    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-    ctx.fillStyle = s[3]; ctx.beginPath(); ctx.moveTo(0, H);
-    for (x = 0; x <= W + 30; x += 30) ctx.lineTo(x, H * 0.84 + Math.sin(x / 90 + 1) * 10);
-    ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-    // a few twinkles or drifting puffs
-    for (var i = 0; i < 14; i++) {
-      var px = ((i * 977) % 1000) / 1000 * W, py = ((i * 613) % 1000) / 1000 * H * 0.6, ph = REDUCED ? 0 : ts / 900 + i;
-      ctx.globalAlpha = boss.kind === 1 ? 0.5 + 0.5 * Math.sin(ph) : 0.35;
-      ctx.fillStyle = '#fff';
-      if (boss.kind === 1) { star(ctx, px, py, 2.5 + (i % 3), '#fff', null); }
-      else { ctx.beginPath(); ctx.arc((px + (REDUCED ? 0 : ts * 0.01 * (1 + i % 3))) % (W + 60) - 30, py, 10 + (i % 4) * 5, 0, 6.3); ctx.fill(); }
-    }
-    ctx.globalAlpha = 1;
+    ctx.fillStyle = TOK.boss; ctx.fillRect(a.x, a.y, a.w, 5);
+    ctx.restore();
+    rrect(ctx, a.x + 0.5, a.y + 0.5, a.w - 1, a.h - 1, 20); ctx.strokeStyle = TOK.line; ctx.lineWidth = 1; ctx.stroke();
   }
   function star(c, x, y, r, fill, stroke, rot) {
     c.beginPath();
@@ -451,13 +518,9 @@ window.SoloBank = (function () {
     if (mood === 'dizzy') orbitStars(c, R, ts);
     if (mood === 'beaten') hearts(c, R, ts);
   }
-  // How many players the lobby crowd shows (drawLobbyCrowd): a big class needs the room, so the boss gets smaller.
-  var crowdN = 0;
   function bossBox() {
     var r = $('stage').getBoundingClientRect(), show = r.height > 20;
-    var R = Math.min(r.height * 0.46, r.width * 0.22, innerHeight * 0.2), y = r.top + r.height * 0.52;
-    var lobbyish = phase === 'lobby' || phase === 'loading' || phase === 'countdown';
-    if (lobbyish && crowdN > (innerWidth < 600 ? 4 : 12)) { R = Math.min(R, innerHeight * (crowdN > 24 ? 0.1 : 0.13)); y = r.top + R * 1.3; }
+    var R = Math.min(r.height * 0.4, r.width * 0.22, innerHeight * 0.2), y = r.top + r.height * 0.5;
     return { x: r.left + r.width / 2, y: y, R: R, show: show };
   }
   function drawBoss(ts) {
@@ -466,6 +529,8 @@ window.SoloBank = (function () {
     var bob = REDUCED ? 0 : Math.sin(ts / 600) * b.R * 0.04, wob = 0, sq = 1;
     if (!REDUCED && since < 600) { var d = 1 - since / 600; wob = Math.sin(since / 30) * 0.18 * d * (0.6 + boss.hitPow); sq = 1 - 0.12 * d * Math.abs(Math.cos(since / 40)); }
     if (mood === 'beaten' && !REDUCED) { bob = Math.sin(ts / 220) * b.R * 0.08; wob = Math.sin(ts / 300) * 0.08; }
+    // dark mode: a soft spotlight, so the boss's dark outlines read on the dark card
+    if (document.documentElement.dataset.theme === 'dark') { var sg = ctx.createRadialGradient(b.x, b.y, b.R * 0.2, b.x, b.y, b.R * 1.7); sg.addColorStop(0, 'rgba(255,253,242,.30)'); sg.addColorStop(1, 'rgba(255,253,242,0)'); ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(b.x, b.y, b.R * 1.7, 0, 6.3); ctx.fill(); }
     // shadow on the ground
     ctx.fillStyle = 'rgba(0,0,0,.14)'; ctx.beginPath(); ctx.ellipse(b.x, b.y + b.R * 1.02, b.R * 0.7, b.R * 0.1, 0, 0, 6.3); ctx.fill();
     // the boss is drawn on its own small canvas, so a hit can flash just the boss white
@@ -479,42 +544,46 @@ window.SoloBank = (function () {
     ctx.drawImage(bossCv, b.x - size / 2, b.y - size / 2, size, size);
   }
   var bossCv = document.createElement('canvas'), bossCtx = bossCv.getContext('2d');
-  function drawLobbyCrowd(W, H, ts) {
+  // ---- the lobby: the class as small cards (their own character and name), one widget per team in team mode ----------
+  var crowdTimer = 0;
+  function portraitOf(seat) {
+    var c = flat.portrait(seat); if (!c) return null;
+    var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); img.setAttribute('aria-hidden', 'true'); return img;
+  }
+  function renderCrowd() {
+    var box = $('crowd'), show = L.active && (phase === 'lobby' || phase === 'loading' || phase === 'countdown');
+    box.hidden = !show; if (!show) return;
     var all = L.players(), tms = L.teamsOn ? L.teams() : [];
     var groups = tms.length ? tms.map(function (tm) { return { tm: tm, list: all.filter(function (p) { return p.team === tm.team; }) }; }) : [{ tm: null, list: all }];
     var loose = tms.length ? all.filter(function (p) { return !p.team; }) : [];
     if (loose.length) groups[groups.length - 1].list = groups[groups.length - 1].list.concat(loose);
-    // The crowd stands between the boss and the banner (never under either), however many players there are.
-    crowdN = all.length;
-    var bb = bossBox(), ban = $('banner'), bannerTop = ban.textContent ? ban.getBoundingClientRect().top : H;
-    var top0 = Math.max(bb.y + bb.R * 1.25, H * 0.2), bottom = Math.max(top0 + 80, bannerTop - 8);
-    var bc = groups.length === 1 ? 1 : W > 700 ? groups.length : Math.min(2, groups.length), br = Math.ceil(groups.length / bc);
-    var bw = W / bc, bh = (bottom - top0) / br, rr = 44;
-    var sqOf = function (n, h) { return Math.ceil(Math.sqrt(Math.max(1, n) * bw / Math.max(1, h))); };
-    var tight = groups.some(function (g) { var h = bh - (g.tm ? 40 : 0), c = Math.max(1, Math.min(10, Math.floor(bw / 96), sqOf(g.list.length, h))); return h / Math.max(1, Math.ceil(g.list.length / c)) < 46; });
-    groups.forEach(function (g, gi) {
-      var col = gi % bc, row = Math.floor(gi / bc), x0 = (RTL ? bc - 1 - col : col) * bw, y0 = top0 + row * bh, head = g.tm ? 40 : 0;
-      if (g.tm) {
-        ctx.globalAlpha = 0.18; ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, bh - 6); ctx.globalAlpha = 1;
-        ctx.fillStyle = g.tm.color; ctx.fillRect(x0 + 4, y0, bw - 8, head); ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x0 + 4, y0, bw - 8, bh - 6);
-        L.drawShape(ctx, g.tm.shape, RTL ? x0 + bw - 26 : x0 + 26, y0 + head / 2, 12, g.tm.ink, null);
-        ctx.fillStyle = g.tm.ink; ctx.font = '800 17px ' + FONT; ctx.textBaseline = 'middle'; ctx.textAlign = RTL ? 'right' : 'left'; try { ctx.direction = RTL ? 'rtl' : 'ltr'; } catch (er) { /* old canvas */ }
-        ctx.fillText(g.tm.icon + ' ' + g.tm.name + ' · ' + g.list.length, RTL ? x0 + bw - 46 : x0 + 46, y0 + head / 2, bw - 60); ctx.textBaseline = 'alphabetic';
-      }
-      // columns: roughly square cells, at most 10, and never narrower than a name tag (about 96 px). When the class is
-      // too big for name tags to fit (a phone, a full room), the crowd shows just the characters, closer together.
-      var n = g.list.length, sq = sqOf(n, bh - head);
-      var cols = tight ? Math.max(1, Math.min(12, Math.floor(bw / 40), sq)) : Math.max(1, Math.min(10, Math.floor(bw / 96), sq)), rows = Math.max(1, Math.ceil(n / cols));
-      var cw = bw / cols, ch = (bh - head) / rows, r = Math.max(12, Math.min(40, Math.min(cw, ch) * 0.3)); rr = Math.min(rr, r);
-      g.list.forEach(function (p, i) {
-        var cx = x0 + (i % cols + 0.5) * cw, cy = y0 + head + (Math.floor(i / cols) + 0.7) * ch;
-        var hop = REDUCED ? 0 : Math.abs(Math.sin(ts / 260 + p.seat * 1.3)) * r * 0.35;
-        (tight ? quiet : flat).place(p.seat, cx, cy - hop, 0);
-        var e = emotes.get(p.seat); if (e && e.until > now()) { ctx.font = Math.round(r) + 'px ' + FONT; ctx.textAlign = 'center'; ctx.fillText(EMO[e.name] || '', cx, cy - hop - r * 1.9); }
+    var had = {}; [].forEach.call(box.querySelectorAll('.qb-p'), function (li) { had[li.dataset.seat] = li; });
+    box.textContent = ''; box.classList.toggle('one', groups.length === 1); box.classList.remove('tight');
+    groups.forEach(function (g) {
+      var sec = document.createElement('section'); sec.className = 'qb-grp qb-w';
+      var wh = document.createElement('div'); wh.className = 'qb-wh';
+      var chip = document.createElement('span'); chip.className = 'qb-chip'; chip.setAttribute('aria-hidden', 'true');
+      var h = document.createElement('h2'), n = document.createElement('span'); n.className = 'qb-n'; n.textContent = '👥 ' + g.list.length; n.setAttribute('aria-hidden', 'true');
+      if (g.tm) { sec.style.setProperty('--team', g.tm.color); chip.style.background = g.tm.color; chip.appendChild(shapeCanvas(g.tm, 24, true)); h.textContent = g.tm.icon + ' ' + g.tm.name; }
+      else { chip.textContent = '👋'; h.textContent = t('ready'); }
+      wh.append(chip, h, n); sec.appendChild(wh);
+      var ul = document.createElement('ul'); ul.className = 'qb-ppl';
+      g.list.forEach(function (p) {
+        var li = had[p.seat] || document.createElement('li');
+        if (!had[p.seat]) { li.className = 'qb-p'; li.dataset.seat = String(p.seat); var img = portraitOf(p.seat); if (img) li.appendChild(img); li.appendChild(document.createElement('span')); }
+        li.classList.toggle('me', !!p.me); li.querySelector('span').textContent = p.name; li.title = p.name;
+        var e = emotes.get(p.seat), em = li.querySelector('i');
+        if (e && e.until > now()) { if (!em) { em = document.createElement('i'); em.setAttribute('aria-hidden', 'true'); li.appendChild(em); } em.textContent = EMO[e.name] || ''; }
+        else if (em) em.remove();
+        ul.appendChild(li);
       });
+      sec.appendChild(ul); box.appendChild(sec);
     });
-    (tight ? quiet : flat).draw(ctx, { scale: 1, r: rr });
+    // a class too big for name cards (a phone, a full room) shows just the characters, closer together
+    if (box.scrollHeight > box.clientHeight + 4) box.classList.add('tight');
   }
+  L.on('emote', function (e) { emotes.set(e.from, { name: e.name, until: now() + 2000 }); renderCrowd(); clearTimeout(crowdTimer); crowdTimer = setTimeout(renderCrowd, 2050); });
+  ['join', 'leave', 'update', 'names', 'teams', 'welcome'].forEach(function (k) { L.on(k, renderCrowd); });
 
   // ---- effects: attack stars, sparks, floating numbers ------------------------------------------------------------
   var shots = [], sparks = [], floats = [];
@@ -575,9 +644,7 @@ window.SoloBank = (function () {
     var d = fit(cv, ctx); ctx.clearRect(0, 0, d.W, d.H);
     // the energy bar eases down (a little faster when far off)
     if (boss.hp !== boss.hpTo) { var step = Math.max(0.15, Math.abs(boss.hp - boss.hpTo) * 0.06); boss.hp = boss.hp > boss.hpTo ? Math.max(boss.hpTo, boss.hp - step) : Math.min(boss.hpTo, boss.hp + step); if (REDUCED) boss.hp = boss.hpTo; hpBar(); }
-    drawSky(d.W, d.H, ts);
-    var lobbyish = phase === 'lobby' || phase === 'loading' || phase === 'countdown';
-    if (lobbyish && L.active) drawLobbyCrowd(d.W, d.H, ts);
+    drawArena(d.W, d.H, ts);
     drawBoss(ts);
     drawFx(ts);
     requestAnimationFrame(frame);
@@ -596,8 +663,11 @@ window.SoloBank = (function () {
     document.body.style.setProperty('--stage', Math.round(H * size) + 'px');
     document.body.classList.toggle('ended', phase === 'ended');
     document.body.classList.toggle('between', phase === 'between');
+    document.body.classList.toggle('lobby', L.active && (phase === 'lobby' || phase === 'loading' || phase === 'countdown'));
+    renderCrowd();
   }
   addEventListener('resize', layout);
+  if (window.ResizeObserver) new ResizeObserver(function () { readTokens(); }).observe(document.documentElement);
 
   // ---- questions ----------------------------------------------------------------------------------------------------
   function showCard(q) {
@@ -627,7 +697,7 @@ window.SoloBank = (function () {
     if (!Q || phase !== 'playing') return;
     var left = L.active ? L.quiz.left() : Math.max(0, practice.deadline - now()), f = Math.max(0, Math.min(1, left / (Q.secs * 1000)));
     $('ring').setAttribute('stroke-dashoffset', String(94.25 * (1 - f))); $('secs').textContent = Math.ceil(left / 1000);
-    $('ring').setAttribute('stroke', f < 0.25 ? '#e9465c' : '#2f6bff');
+    $('ringbox').classList.toggle('low', f < 0.25);
   }
   function choose(i) {
     if (host || !Q || myPick >= 0) return;
@@ -720,15 +790,16 @@ window.SoloBank = (function () {
       var st = document.createElement('div'); st.className = 'qb-step';
       st.appendChild(shapeCanvas(tm, 40));
       var nm = document.createElement('span'); nm.textContent = tm.icon + ' ' + tm.name; st.appendChild(nm);
-      var bar = document.createElement('i'); bar.style.height = Math.round([96, 68, 46][k] * Math.min(1.4, innerHeight / 720)) + 'px'; bar.style.background = tm.color; bar.style.color = tm.ink; bar.textContent = tm.rank; st.appendChild(bar);
+      var bar = document.createElement('i'); bar.className = 'tm'; bar.style.height = Math.round([96, 68, 46][k] * Math.min(1.4, innerHeight / 720)) + 'px'; bar.style.setProperty('--team', tm.color); bar.textContent = tm.rank; st.appendChild(bar);
       pd.appendChild(st);
     });
     ranked.forEach(function (tm) {
-      var li = document.createElement('li'); li.style.background = tm.color; li.style.color = tm.ink;
+      var li = document.createElement('li');
       var r = document.createElement('span'); r.className = 'r'; r.textContent = ranks && tm.rank ? tm.rank : '';
       var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = tm.icon + ' ' + tm.name + (tm.mine ? ' ★' : '');
       var sc = document.createElement('span'); sc.textContent = ranks ? tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '';
-      li.append(r, shapeCanvas(tm, 30, true), nm, sc); ol.appendChild(li);
+      var sw = document.createElement('span'); sw.className = 'sw'; sw.style.setProperty('--team', tm.color); sw.appendChild(shapeCanvas(tm, 30, true));
+      li.append(r, sw, nm, sc); ol.appendChild(li);
     });
     layout();
   }
@@ -839,11 +910,11 @@ window.SoloBank = (function () {
   }
 
   // players see their team on the question card's top bar
-  function myTeamPill() { var mt = L.myTeam, el = $('team'); if (!el) return; el.hidden = !mt; if (mt) { el.textContent = ''; el.style.background = mt.color; el.style.color = mt.ink; el.append(shapeCanvas(mt, 20, true), ' ' + t('yourTeam', { team: mt.name })); } }
+  function myTeamPill() { var mt = L.myTeam, el = $('team'); if (!el) return; el.hidden = !mt; if (mt) { el.textContent = ''; el.style.setProperty('--team', mt.color); el.append(shapeCanvas(mt, 20), ' ' + t('yourTeam', { team: mt.name })); } }
   L.on('teams', myTeamPill); L.on('welcome', myTeamPill);
   // the boss: the host picks one and shares it; everyone else follows the shared state
   L.on('state', function (s) { if (s && typeof s.boss === 'number') { setKind(s.boss); if (phase === 'lobby' && host) banner(t('arrives', { boss: t('boss' + boss.kind) })); } });
-  L.on('welcome', function () { if (L.state && typeof L.state.boss === 'number') setKind(L.state.boss); });
+  L.on('welcome', function () { if (L.state && typeof L.state.boss === 'number') { setKind(L.state.boss); if (phase === 'lobby' && host) banner(t('arrives', { boss: t('boss' + boss.kind) })); } });
   setKind(L.state && typeof L.state.boss === 'number' ? L.state.boss : host || !L.active ? Math.floor(Math.random() * 3) : 0);
   hpBar(); layout();
   L.ready({ lobby: true, quiz: true, hostView: true, teams: true });
