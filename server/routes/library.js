@@ -16,7 +16,7 @@ import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, staffStudentName } from '../views/components.js';
-import { requireUser } from '../auth.js';
+import { requireUser, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
@@ -205,7 +205,7 @@ router.get('/read', (req, res) => {
   const words = String(req.query.q || '').slice(0, 60).trim();
   const list = LIB.search({ grade, q: words });
   const staff = isStaff(u), forClass = classParam(req);
-  const reads = u ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
+  const reads = readerOf(u) ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
   const qs = over => { const p = new URLSearchParams(Object.entries({ grade: grade || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/read${p ? `?${p}` : ''}`; };
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
@@ -233,11 +233,15 @@ router.get('/read', (req, res) => {
 });
 
 // ---------------------------------------------------------------- one book
+/** Who a book's reading is kept for: the person reading, but never a grown-up account (docs/decisions.md "Learn and
+ *  Read": grown-ups read the library, nothing is stored for them, and they see no child's reading here), so a grown-up
+ *  reads exactly as a signed-out visitor does. */
+export const readerOf = u => (u && !isGrownup(u) ? u : null);
 const bookOr404 = (req, res) => { const bk = LIB.getBook(req.params.id); if (!bk) { notFound(req, res); return null; } return bk; };
 router.get('/library/:id', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = req.user, forClass = classParam(req);
-  const rd = u ? LIB.readOf(u.id, bk.id) : null, st = LIB.stateOf(rd, bk);
+  const rd = readerOf(u) ? LIB.readOf(u.id, bk.id) : null, st = LIB.stateOf(rd, bk);
   const go = st.state === 'reading' ? t('library.continue', { page: st.page }) : t('library.read');
   const body = html`<article class="lb-book panel">
     <div class="lb-book-top">
@@ -272,7 +276,7 @@ export const hasTextPages = bk => bk.pages.some(p => !p.image);
 const pageText = text => String(text).split('\n\n').map((para, i) => html`${i ? raw('<span class="rd-para"></span>') : ''}${para.split('\n').map((line, k) => html`${k ? raw('<br>') : ''}${line}`)}`);
 router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
-  const t = req.t, u = req.user;
+  const t = req.t, u = readerOf(req.user);
   const ctx = LIB.assignmentCtx(u, bk, req.query.cl, req.query.step);
   LIB.freshForAssignment(u, bk, ctx);
   const rd = u ? LIB.readOf(u.id, bk.id) : null;
@@ -322,16 +326,16 @@ router.get('/library/:id/read', (req, res) => {
   page(req, res, { title: bk.title, active: 'read', body, head: CSS, scripts: ['/js/library.js'], mid: true });
 });
 
-const ctxOf = (req, bk) => LIB.assignmentCtx(req.user, bk, b(req).cl, b(req).step);
+const ctxOf = (req, bk) => LIB.assignmentCtx(readerOf(req.user), bk, b(req).cl, b(req).step);
 const whole = v => (typeof v === 'number' || (typeof v === 'string' && /^\d{1,4}$/.test(v)) ? +v : NaN);
 router.post('/api/library/:id/progress', rateLimit('library', 600, 60e3), (req, res) => {
   const bk = LIB.getBook(req.params.id); if (!bk) return res.status(404).json({ error: req.t('errors.api.notFound') });
-  const r = LIB.progress(req.user, bk.id, { page: whole(b(req).page), aloud: b(req).aloud === true }, ctxOf(req, bk));
+  const r = LIB.progress(readerOf(req.user), bk.id, { page: whole(b(req).page), aloud: b(req).aloud === true }, ctxOf(req, bk));
   res.json({ ok: r.ok });
 });
 router.post('/api/library/:id/answer', rateLimit('library', 600, 60e3), (req, res) => {
   const bk = LIB.getBook(req.params.id); if (!bk) return res.status(404).json({ error: req.t('errors.api.notFound') });
-  const r = LIB.answer(req.user, bk.id, whole(b(req).i), whole(b(req).c), ctxOf(req, bk));
+  const r = LIB.answer(readerOf(req.user), bk.id, whole(b(req).i), whole(b(req).c), ctxOf(req, bk));
   if (!r.ok) return res.status(400).json({ error: req.t(r.code === 'readFirst' ? 'library.errors.readFirst' : 'errors.api.badRequest'), code: r.code });
   res.json({ ok: true, right: r.right, page: r.page, solved: r.solved, done: r.done, marks: r.marks });
 });

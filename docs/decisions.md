@@ -13040,13 +13040,21 @@ Owner: "Continue to work towards feature parity" (with typing.com).
   Library". The library's pages make Read current; the companion still knows `/read` as the library page.
 - **Nav** (`shellFor`): signed out Learn · Read · Build · Grown-ups · Sign in (top: Learn · Read · Build · Parents ·
   Teachers); platform admin Learn · Read · Build · Schools · Me; student Class · Learn · Read · Build · Me (top + Friends);
-  kid Learn · Read · Build · Friends · Me. **A grown-up has no Read**: Family · Learn · Build · Account, because the
-  Story Library itself is closed to signed-in grown-ups (the family fence, "Picture books"); opening it to them is a
-  separate decision. Staff are unchanged (Classroom · Build · Tools · Live · Me); their account menu's two tiles are
+  kid Learn · Read · Build · Friends · Me; grown-up Family · Learn · Read · Build · Account (top without Account). Staff
+  are unchanged (Classroom · Build · Tools · Live · Me); their account menu's two tiles are
   Learn and Read (they were Play and Learn). Icons: Learn 💡 (the Oomba "idea" icon), Read 📚 (books, the library's own
   heading icon). With STORY_BUILDER on, Stories is after Build in the top bar; where it would make a sixth phone tab
-  (kid, student, platform admin) it is in the account menu on phones (`storiesInMenu`, `.acct-phone`), as staff's
+  (kid, student, platform admin, grown-up) it is in the account menu on phones (`storiesInMenu`, `.acct-phone`), as staff's
   Teaching tools already were. A class tab's "Done for today?" buttons are Learn and Read.
+- **Grown-ups read the library** (the owner: "parents should get a Read tab"). The family fence (routes/family.js)
+  lets a signed-in grown-up open `/read`, `/library` (its redirect), a book (`/library/<id>`), its reader
+  (`/library/<id>/read`) and the reader's calls (`/api/library/<id>/progress` and `/answer`, and the book finder
+  `/api/library/suggest`). They read **as a visitor does** (`routes/library.js readerOf`): nothing is stored for them (no
+  reading row, no answers, no points), a book always starts fresh, a class step's context never applies, and no child's
+  reading (their own linked child's included) shows on any library page. Read to me uses the device's voice (AI voices
+  stay fenced for grown-ups, as in games). Still closed: Assign and a class's results (staff), and the book maker's
+  paths unless STORY_PICTURE_BOOKS names `parent` (then their own books are on their shelf, as before). Tests:
+  family.test.js ("a grown-up reads"), story-picture-books.test.js, nav-roles.test.js.
 - **Words:** `nav.read` in all 13 languages (Leer, Lire, Lesen, Leggi, Ler, Lezen, Чтение, よむ, 閱讀, קריאה, اقرأ);
   `game.unavailable.*` say Learn. Gone with the Play page: `nav.play` and the arcade rows' strings (`home.rails.featured`
   and the rest, `home.categories`, `home.chips.two`, `home.empty.text`, `library.door.title/kids`, `learn.tab.players`).

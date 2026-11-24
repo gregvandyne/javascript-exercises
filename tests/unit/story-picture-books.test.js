@@ -214,8 +214,14 @@ test('a grown-up with parent in the flag: the book maker without classes (no Sha
   assert.equal((await as(gu)(`/api/library/make/${row.id}/share`, { body: { classIds: [] } })).status, 404);
   assert.equal((await as(gu)(`/library/made/${row.id}/read`)).status, 200);
   assert.equal((await as(gu)(`/library/made/${row.id}/print`)).status, 200);
-  assert.equal((await as(gu)('/read')).status, 404, 'the library itself stays closed to grown-ups');
+  // The library itself is open to grown-ups now (the Read tab: docs/decisions.md "Learn and Read"), with their own books on it.
+  const lib = await as(gu)('/read');
+  assert.equal(lib.status, 200, 'grown-ups read the library');
+  assert.match(lib.text, new RegExp(`/library/made/${row.id}/read`), 'their own books on their shelf');
+  assert.match(lib.text, /id="lb-make"/, 'and Make a book');
   // the flag back to teachers: their book maker closes again
   config.storyPictureBooks = ['teacher'];
   assert.equal((await as(gu)(`/library/make/${row.id}`)).status, 404);
+  const off = await as(gu)('/read');
+  assert.equal(off.status, 200, 'the library stays open'); assert.doesNotMatch(off.text, /id="lb-make"|\/library\/make/, 'without the maker');
 });

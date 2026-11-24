@@ -84,8 +84,7 @@ export function landingFor(u) {
  * Plans is in the account menu for grown-ups and staff (accountMenu) and in the footer signed out; School is in a school
  * admin's account menu. The first matching row wins:
  *   signed out or a guest   Learn · Read · Build · Grown-ups · Sign in   (top: Learn · Read · Build · Parents · Teachers)
- *   grown-up                Family · Learn · Build · Account             (top: the same without Account; no Read: the
- *                                                                          library is closed to signed-in grown-ups)
+ *   grown-up                Family · Learn · Read · Build · Account      (top: the same without Account)
  *   school staff            Classroom · Build · (Tools) · (Live) · Me    (top: the same without Me; a school admin's
  *                                                                          School is in the account menu)
  *   platform admin          Learn · Read · Build · Schools · Me
@@ -114,8 +113,8 @@ export function shellFor(u) {
       top: [learn, read, build, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    // No Read: the Story Library itself is closed to signed-in grown-ups (routes/family.js, the fence).
-    const top = [['family', '/family', '👪'], learn, build, ...stories];
+    // Read: grown-ups read the Story Library too (nothing is stored for them: routes/library.js readerOf).
+    const top = [['family', '/family', '👪'], learn, read, build, ...stories];
     return { role: 'grownup', ...phone(top, ['account', '/family/account', '⚙️']), top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {

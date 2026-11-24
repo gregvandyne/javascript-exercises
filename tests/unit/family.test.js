@@ -186,11 +186,10 @@ test('access matrix: a grown-up gets 404 on every kid route group, and can play 
   assert.equal(build.status, 200); assert.match(build.text, /id="newgame"/); // The Start-from template cards left Build in #387 (docs/decisions.md); New game is the way in.
   assert.equal((await go('/api/studio/abc')).json.error, 'Game not found.', 'the Studio API answers, not the fence');
   assert.equal((await go('/api/friends')).status, 200, 'grown-up connections');
-  // Nav: Family, Learn, Build, Account; no Friends, Me or Read tab (the library is closed to grown-ups;
-  // tests/unit/nav-roles.test.js has every role's).
+  // Nav: Family, Learn, Read, Build, Account; no Friends or Me tab (tests/unit/nav-roles.test.js has every role's).
   const home = await go('/learn');
   assert.match(home.text, /class="tab" href="\/family"/); assert.match(home.text, /class="tab" href="\/family\/account"/);
-  assert.match(home.text, /class="tab" href="\/learn" aria-current="page"/); assert.doesNotMatch(home.text, /class="tab" href="\/read"/);
+  assert.match(home.text, /class="tab" href="\/learn" aria-current="page"/); assert.match(home.text, /class="tab" href="\/read"/);
   assert.match(home.text, /class="navlink" href="\/build"/); assert.doesNotMatch(home.text, /class="tab" href="\/me"/);
   assert.doesNotMatch(home.text, /class="tab" href="\/friends"/);
 });
@@ -656,4 +655,49 @@ test('before BILLING_PUBLIC: family pages only for a browser with the preview co
     config.billingPublic = true;
     assert.equal((await call('', '/grown-ups/signup')).status, 302);
   } finally { config.billingPublic = keep.pub; config.billingPreviewToken = keep.tok; }
+});
+
+// ---------------------------------------------------------------- Read: the Story Library for grown-ups
+// docs/decisions.md "Learn and Read": a grown-up has the Read tab and reads the library like a visitor: nothing is stored
+// for them (no progress, no answers, no points) and no child's reading shows anywhere on the library's pages.
+test('a grown-up reads: the Read tab, /read and a book open; nothing is kept for them; their linked child\'s reading never shows', async () => {
+  const LIB = await import('../../server/services/library.js');
+  const { grownupMay } = await import('../../server/routes/family.js');
+  const g = grownup(), child = kid();
+  await linkUp(g, child);
+  const go = as(g);
+  const book = LIB.books()[0];
+  // The tab, current on the library and on a book.
+  const shelf = await go('/read');
+  assert.equal(shelf.status, 200, 'the library opens');
+  assert.match(shelf.text, /<a class="tab" href="\/read" aria-current="page">/);
+  assert.match(shelf.text, new RegExp(`href="/library/${book.id}"`));
+  assert.equal((await go('/library')).location, '/read', 'the old address');
+  const pg = await go(`/library/${book.id}`);
+  assert.equal(pg.status, 200); assert.match(pg.text, /<a class="tab" href="\/read" aria-current="page">/);
+  assert.equal((await go(`/library/${book.id}/read`)).status, 200, 'the reader');
+  // The child reads half the book and answers a question: that is the child's, kept for the child.
+  const half = Math.max(1, Math.floor(book.pages.length / 2));
+  assert.equal((await as(child)(`/api/library/${book.id}/progress`, { method: 'POST', body: { page: half } })).status, 200);
+  assert.ok(LIB.readOf(child.id, book.id), 'the child\'s reading is kept for the child');
+  // The grown-up reads the same book: page turns and answers work (an answer is checked), nothing is stored for them.
+  assert.equal((await go(`/api/library/${book.id}/progress`, { method: 'POST', body: { page: book.pages.length } })).status, 200);
+  const ans = await go(`/api/library/${book.id}/answer`, { method: 'POST', body: { i: 0, c: book.questions[0].answer } });
+  assert.equal(ans.status, 200); assert.equal(ans.json.right, true); assert.equal(ans.json.solved, null, 'nothing kept');
+  assert.equal(q.get('SELECT COUNT(*) n FROM story_reads WHERE user_id=?', g.id).n, 0, 'no reading row for a grown-up');
+  // No child's reading on the grown-up's pages: the shelf, the book page and the reader show a fresh book.
+  const mine = await go(`/library/${book.id}`);
+  assert.doesNotMatch(mine.text, /Continue|lb-state is-done/, 'not the child\'s place in the book');
+  const rd = await go(`/library/${book.id}/read`);
+  const data = JSON.parse(/<script type="application\/json" id="page-data">([^<]*)<\/script>/.exec(rd.text)[1]);
+  assert.equal(data.read, null); assert.equal(data.signedIn, false, 'read as a visitor');
+  assert.doesNotMatch((await go('/read')).text, new RegExp(child.username), 'no child named on the shelf');
+  // Kids-only and staff-only library paths stay closed: Assign, a class's results, and the child's own reading via a class step.
+  for (const [method, path] of [['GET', `/library/${book.id}/assign`], ['POST', '/api/library/assign'], ['GET', `/library/${book.id}/read?cl=x&step=y`]]) {
+    const r = await go(path, { method, body: method === 'POST' ? {} : undefined });
+    if (path.includes('?cl=')) { assert.equal(r.status, 200); assert.equal(JSON.parse(/id="page-data">([^<]*)</.exec(r.text)[1]).ctx, null, 'no class context'); continue; }
+    assert.equal(r.status, 404, `${method} ${path}`);
+  }
+  assert.ok(!grownupMay('GET', '/library/make'), 'the book maker stays behind its flag');
+  assert.ok(!grownupMay('GET', `/library/${book.id}/assign`) && !grownupMay('POST', '/api/library/assign'));
 });

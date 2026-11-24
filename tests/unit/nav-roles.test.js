@@ -56,10 +56,10 @@ const mum = auth.createUser({ username: 'RolesMum', password: 'a-long-password-1
 const guest = auth.createGuest();
 
 // Learn is always /learn ('/' shows the same page to those who land on it: signed out, kids, the platform admin); Read is
-// /read; a grown-up has no Read (the library is closed to them); Search is the top bar's field for everyone, never a tab; Live (hosting) only while Oomba Live is on (it is).
+// /read (grown-ups too: they read, nothing is stored for them); Search is the top bar's field for everyone, never a tab; Live (hosting) only while Oomba Live is on (it is).
 const ON = {
   out: { tabs: ['/learn', '/read', '/build', '/parents', '/login'], top: ['/learn', '/read', '/build', '/parents', '/teachers'] },
-  grownup: { tabs: ['/family', '/learn', '/build', '/family/account'], top: ['/family', '/learn', '/build'] },
+  grownup: { tabs: ['/family', '/learn', '/read', '/build', '/family/account'], top: ['/family', '/learn', '/read', '/build'] },
   schoolAdmin: { tabs: ['/teach', '/build', '/figures', '/live', '/me'], top: ['/teach', '/build', '/figures', '/live'] },
   teacher: { tabs: ['/teach', '/build', '/figures', '/live', '/me'], top: ['/teach', '/build', '/figures', '/live'] },
   admin: { tabs: ['/learn', '/read', '/build', '/admin/schools', '/me'], top: ['/learn', '/read', '/build', '/admin/schools'] },
@@ -68,7 +68,7 @@ const ON = {
 };
 const KEYS = {
   out: ['learn', 'read', 'build', 'grownups', 'signin'],
-  grownup: ['family', 'learn', 'build', 'account'],
+  grownup: ['family', 'learn', 'read', 'build', 'account'],
   schoolAdmin: ['classroom', 'build', 'tools', 'live', 'me'],
   teacher: ['classroom', 'build', 'tools', 'live', 'me'],
   admin: ['learn', 'read', 'build', 'schools', 'me'],
@@ -98,7 +98,7 @@ test('shellFor: every role\'s tab keys, in order, the same with paid-plan pages 
   }
   // Plans off (as now): Classroom · Build · Live · Me for teachers and school admins (Teaching tools needs plans on,
   // or the tester list); five for everyone else. With plans on, staff have five too (above).
-  assert.equal(shellFor(mum, req).tabs.length, 4); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
+  assert.equal(shellFor(mum, req).tabs.length, 5); assert.equal(shellFor(head, req).tabs.length, 4); assert.equal(shellFor(teacher, req).tabs.length, 4);
   assert.equal(shellFor(pupil, req).tabs.length, 5); assert.equal(shellFor(kid, req).tabs.length, 5); assert.equal(shellFor(null, req).tabs.length, 5);
   assert.equal(shellFor(boss, req).tabs.length, 5);
   // Search is never a tab: it is the top bar's field (and round button) for everyone.
@@ -198,7 +198,7 @@ test('the avatar: signed in it opens the account menu (Me, or Account for a grow
 test('labels: the new words in English and in a translated language, and their translated stand-ins (never English) until a language has them', async () => {
   const label = (s, href) => (new RegExp(`class="tab" href="${href}"[^>]*>(?:<span class="emo"[^>]*>[^<]*</span>)<span class="tab-t">([^<]*)</span>`).exec(tabbar(s)) || [])[1];
   const en = (await get(mum, '/learn')).text;
-  assert.equal(label(en, '/learn'), 'Learn'); assert.equal(label(en, '/read'), undefined, 'no Read for a grown-up');
+  assert.equal(label(en, '/learn'), 'Learn'); assert.equal(label(en, '/read'), 'Read', 'a grown-up has Read too');
   assert.equal(label((await get(kid, '/learn')).text, '/read'), 'Read'); assert.equal(label(en, '/family/account'), 'Account'); assert.equal(label(en, '/family'), 'Family');
   const enHead = (await get(head, '/learn')).text;
   assert.equal(label(enHead, '/school'), undefined, 'School is in the account menu'); assert.equal(label(enHead, '/teach'), 'Classroom');
@@ -244,7 +244,7 @@ test('the current tab: Learn on the game pages, search and /learn, Read on the l
   // Read: the Story Library's shelf and its books (/library/<id> stays the book's address).
   const LIB = await import('../../server/services/library.js');
   const book = LIB.books()[0];
-  for (const u of [kid, pupil, boss, null]) {
+  for (const u of [kid, pupil, boss, mum, null]) {
     assert.deepEqual(cur((await get(u, '/read')).text), ['/read'], `${u ? u.username : 'signed out'}: Read on /read`);
     assert.deepEqual(curTop((await get(u, '/read')).text), ['/read']);
   }
@@ -459,19 +459,19 @@ test('the Story Builder on: Stories after Build in the top bar; where a sixth ta
   const menu = s => (/<details class="acctpick" data-acctpick>[\s\S]*?<\/details>/.exec(s) || [''])[0];
   config.storyBuilder = true;
   try {
-    const want = { kid: ['learn', 'read', 'build', 'friends', 'me'], student: ['class', 'learn', 'read', 'build', 'me'], admin: ['learn', 'read', 'build', 'schools', 'me'], grownup: ['family', 'learn', 'build', 'stories', 'account'] };
+    const want = { kid: ['learn', 'read', 'build', 'friends', 'me'], student: ['class', 'learn', 'read', 'build', 'me'], admin: ['learn', 'read', 'build', 'schools', 'me'], grownup: ['family', 'learn', 'read', 'build', 'account'] };
     for (const [role, u] of [['kid', kid], ['student', pupil], ['admin', boss], ['grownup', mum]]) {
       const s = shellFor(u, {});
       assert.deepEqual(s.tabs.map(([k]) => k), want[role], `${role}: five tabs at most`);
       const top = s.top.map(([k]) => k);
       assert.equal(top[top.indexOf('build') + 1], 'stories', `${role}: Stories after Build in the top bar`);
-      assert.equal(s.storiesInMenu, role !== 'grownup', role);
+      assert.equal(s.storiesInMenu, true, role);
     }
     const p = (await get(kid, '/learn')).text;
     assert.doesNotMatch(tabbar(p), /href="\/stories"/);
     assert.match(topnav(p), /class="navlink" href="\/stories"/);
     assert.match(menu(p), /<ul class="acct-list acct-phone"><li><a href="\/stories" [^>]*>[\s\S]*?<span>Stories<\/span><\/a><\/li><\/ul>/, 'on phones, in the account menu');
-    assert.doesNotMatch(menu((await get(mum, '/learn')).text), /acct-phone/, 'a grown-up has room for it in the tab bar');
+    assert.match(menu((await get(mum, '/learn')).text), /<ul class="acct-list acct-phone"><li><a href="\/stories" /, 'a grown-up\'s too (Family · Learn · Read · Build · Account is five)');
   } finally { config.storyBuilder = false; }
   assert.doesNotMatch(menu((await get(kid, '/learn')).text), /href="\/stories"/, 'Story Builder off: nowhere');
 });
