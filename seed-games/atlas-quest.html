@@ -1864,6 +1864,10 @@ function cultureHtml(c) {
 /* ---------- The page: Crossword's widget look (cards, chips, the dark question bar), words in 13 languages ---------- */
 const B = HAS_BRB ? window.BRB : {};
 const USER = B.user || {};
+// "Make your own" (BRB.canMake): the quiz maker (Make, "Quiz on these" from a blank map, "Quiz me on this" in the
+// library) and Your quizzes, for teachers and grown-ups who may host only. A student or a child plays a teacher's link or
+// class code; drafts already in their save stay there, unshown.
+const CAN_MAKE = B.canMake === true;
 // New words (the quiz maker, the library, the cards) are this page's own table, as Crossword's are; the game's older
 // words stay the reviewed packs' (tr). The site language picks the table even when its pack could not load.
 const WT = ATQ_I18N[LANG0] || ATQ_I18N[LANG0.split('-')[0]] || ATQ_I18N.en, WEN = ATQ_I18N.en;
@@ -2098,12 +2102,12 @@ function renderHome() {
   c.appendChild(h('p', 'cw-note', tr('Drag to spin the globe, pinch to zoom, tap a country to read its file.')));
   // Teaching: make a quiz, blank maps, the library, My worksheets, a class code, and this teacher's quizzes.
   const t2 = h('section', 'cw-widget aq-panel aq-teach'); side.appendChild(t2); whead(t2, '🧭', tw('teachH'), 'time', 'h2');
-  t2.appendChild(bigBtn('cw-big cw-go', '✏️', tw('make'), tw('makeSub'), () => { sfx('pick'); edit(null); }, 'aq-make'));
+  if (CAN_MAKE) t2.appendChild(bigBtn('cw-big cw-go', '✏️', tw('make'), tw('makeSub'), () => { sfx('pick'); edit(null); }, 'aq-make'));
   if (B.canPrint && B.print) t2.appendChild(bigBtn('cw-big', '🗺️', tw('blankH'), tw('blankSub'), () => { sfx('pick'); showBlank(); }, 'aq-blank'));
   t2.appendChild(bigBtn('cw-big', '📖', tw('libH'), tw('libSub'), () => { sfx('pick'); showLibrary(); }, 'aq-lib'));
   if (B.canListSets && B.mySets) t2.appendChild(bigBtn('cw-big', '📚', tw('ws'), tw('wsSub'), () => { sfx('pick'); showSheets(); }, 'aq-ws'));
   if (B.canFindSet !== false) drawCode(t2);
-  if (SAVE.mine.length) drawMine(t2); else if (USER.isGuest) t2.appendChild(h('p', 'cw-note', '🔒 ' + tw('guestKeep')));
+  if (CAN_MAKE && SAVE.mine.length) drawMine(t2); else if (CAN_MAKE && USER.isGuest) t2.appendChild(h('p', 'cw-note', '🔒 ' + tw('guestKeep')));
   renderLit();
 }
 function goHome() { game = null; mode = 'home'; clearTags(); closeMenu(); renderHome(); showOnly('home'); if (cam.dist < 2.6) flyCam(cam.lat, cam.lng, 2.9, 700); }
@@ -2600,7 +2604,7 @@ function showBlank(reg, numbered) {
   const row = h('div', 'cw-row cw-wrap cw-acts');
   row.appendChild(btn('cw-btn cw-go', '🖨️ ' + tw('printMap'), () => printIt(it, false, true, '', ''), 'aq-bl-print'));
   if (B.canAssign && ccs.length) row.appendChild(btn('cw-btn', '🔑 ' + tw('printKey'), () => printIt(it, true, true, '', ''), 'aq-bl-key'));
-  if (ccs.length) row.appendChild(btn('cw-btn', '✏️ ' + tw('blankQuiz'), () => { edit(null); const d = S.draft; d.kinds = ['map']; addCountries(d, ccs); d.t = it.t; remember(d); showBuild(); }, 'aq-bl-quiz'));
+  if (CAN_MAKE && ccs.length) row.appendChild(btn('cw-btn', '✏️ ' + tw('blankQuiz'), () => { edit(null); const d = S.draft; d.kinds = ['map']; addCountries(d, ccs); d.t = it.t; remember(d); showBuild(); }, 'aq-bl-quiz'));
   c.appendChild(row);
   focusTop(c);
 }
@@ -2633,7 +2637,7 @@ function drawSheets(box, focusId) {
   const list = SHEETS.list || [];
   if (!list.length) {
     const e = h('div', 'cw-empty-ws'); e.id = 'aq-ws-empty'; e.appendChild(h('p', 'cw-lead', tw('wsEmpty')));
-    e.appendChild(bigBtn('cw-big cw-go', '✏️', tw('make'), tw('makeSub'), () => edit(null), 'aq-ws-make')); box.appendChild(e); focusTop(page); return;
+    if (CAN_MAKE) e.appendChild(bigBtn('cw-big cw-go', '✏️', tw('make'), tw('makeSub'), () => edit(null), 'aq-ws-make')); box.appendChild(e); focusTop(page); return;
   }
   const ul = h('ul', 'cw-list'); box.appendChild(ul);
   list.forEach(s => ul.appendChild(sheetRow(s)));
@@ -2786,7 +2790,7 @@ function drawLib(out) {
         const body = h('div', 'aq-libbody'); body.innerHTML = `${flagImg(c.cc, 'aq-libflag')}${factsDl(c)}<p class="aq-fact"><b>${esc(tr('Did you know?'))}</b> ${esc(c.fact)}</p>`;
         const r2 = h('div', 'cw-row cw-wrap');
         r2.appendChild(btn('cw-btn cw-sm', '🌍 ' + tw('onGlobe'), () => { goHome(); fileCard(c); }));
-        r2.appendChild(btn('cw-btn cw-sm', '✏️ ' + tw('quizThis'), () => { edit(null); addCountries(S.draft, [c.cc]); remember(S.draft); showBuild(); }));
+        if (CAN_MAKE) r2.appendChild(btn('cw-btn cw-sm', '✏️ ' + tw('quizThis'), () => { edit(null); addCountries(S.draft, [c.cc]); remember(S.draft); showBuild(); }));
         body.appendChild(r2); dt.appendChild(body);
       });
       ul.appendChild(dt);

@@ -1468,6 +1468,9 @@
     deleteQuestionSet: function (id) { return setsAsk('delete', id); },
     renameQuestionSet: function (id, title) { return setsAsk('rename', id, title); },
     duplicateQuestionSet: function (id) { return setsAsk('duplicate', id); },
+    // "Make your own" (Crossword, Word Hunt, Atlas Quest): the builder and its drafts, for grown-ups who may host only
+    // (false: a student, a child, a guest, signed out, a preview; hide Make and the drafts list).
+    canMake: INIT.make === true,
     canAssign: INIT.canAssign === true,
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,

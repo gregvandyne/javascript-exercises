@@ -443,6 +443,11 @@ router.get('/frame/:token', (req, res) => {
     // worksheets (canvasSetVersion: Oomba Canvas 1.4.0 for a worksheet or a generator) offers it the same way, in its
     // published version only, and never under the Studio's "As a student".
     ...(!preview && !tok.st && kind && u && !u.is_guest && isStaff(u) && fenceLets(u, 'GET', `/api/games/${g.id}/sets`) ? { mySets: true } : {}),
+    // "Make your own" (BRB.canMake): the builder in Crossword, Word Hunt and Atlas Quest, and the drafts it keeps in the
+    // player's own game save ("Your crosswords", "Your word hunts", "Your quizzes"), for grown-ups who may host (school
+    // staff, the platform admin, a family grown-up: the same people as live games), with AI on or off. Never a student,
+    // a child, a guest or a signed-out player, never in a preview. A student with a link or a class code plays as before.
+    ...(!preview && makeGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`) ? { make: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     // Atlas Quest's "Upload a geography lesson" rides on the same flag and the same document call (BRB.wordsFromDoc).
@@ -508,10 +513,11 @@ function canvasSetVersion(g) {
  *  that keeps worksheets, or null. */
 const setKind = g => (setGame(g) ? g.slug : canvasSetVersion(g) ? gameSets.CANVAS_KIND : null);
 /** What the fence lets this viewer do with a set game's sets: { setSave: false } and/or { setFind: false }, else {}. A
- *  classroom activity's worksheets are saved by school staff only (BRB.canSaveSet false for anyone else). */
+ *  classroom activity's worksheets are saved by school staff only (BRB.canSaveSet false for anyone else); a game with
+ *  "Make your own" (makeGame) by grown-ups who may host only, as its builder is theirs (BRB.canMake). */
 function setRights(g, u, kind = setKind(g)) {
   if (!kind) return {};
-  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u)));
+  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u))) && (!makeGame(g) || mayMake(u));
   return { ...(save ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
 }
 /** INIT.set for a link's chapter. kind: the frame's (a classroom activity's worksheet opens only in its published
@@ -540,6 +546,9 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
   // a teacher's handout), cleaned for the activity's published version.
   const canvas = kind === gameSets.CANVAS_KIND;
   if (canvas && !isStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  // Crossword, Word Hunt and Atlas Quest: "Make your own" is for grown-ups who may host (BRB.canMake), never a student or
+  // a child, so a set is theirs to save too (a student still opens one by its code).
+  if (makeGame(g) && !mayMake(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
   const r = gameSets.save(g.id, req.user.id, b.items, id, kind, { ...(typeof b.title === 'string' ? { title: b.title } : {}), ...(canvas ? { html: canvasSetVersion(g).html } : {}) });
@@ -601,6 +610,10 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
 const huntGame = g => setGame(g) && g.slug === 'word-hunt';
+/** The games with a "Make your own" builder (INIT.make / BRB.canMake): their sets are made by grown-ups who may host. */
+const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest']);
+const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
+const mayMake = u => !!u && liveCanHost(u);
 /** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */

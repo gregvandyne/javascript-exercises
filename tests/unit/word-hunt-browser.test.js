@@ -26,12 +26,12 @@ test.after(async () => { if (browser) await browser.close(); });
 const row = (id, items, title = '', ago = 0) => ({ id, code: G.codeOf(id), title, label: G.labelOf('word-hunt', items), n: G.sizeOf('word-hunt', items), updated: Date.UTC(2026, 10, 20) - ago, items });
 const hunt = (t, w, extra = {}) => G.cleanHuntItems([{ t, w, s: 0, d: 'medium', r: 4, b: true, ...extra }]);
 
-async function openGame({ sets = [], init = {}, set = null, width = 1280, theme } = {}) {
+async function openGame({ sets = [], init = {}, set = null, width = 1280, theme, make = true } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] });
   const ctx = await browser.newContext({ viewport: { width, height: 900 } });
   const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang: 'en', dir: 'ltr' }, game: { id: 'g', title: 'Word Hunt', url: `${HOST}/play/word-hunt` }, save: {}, canSave: true, tts: { langs: [] },
-    ...(set ? { set } : {}), ...(theme ? { theme } : {}), ...init });
+    ...(set ? { set } : {}), ...(theme ? { theme } : {}), ...(make ? { make: true } : {}), ...init });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
 <script>window.__msgs = []; window.__store = ${JSON.stringify(sets)};
 function setsReply(d) {
@@ -221,7 +221,7 @@ test('Word Hunt: a teacher makes a word hunt, previews, saves (code, link, QR, A
 
 test('Word Hunt: a student opens a saved word hunt (hidden list), finds the words, and finishes once; the empty list; dark', { skip, timeout: 180_000 }, async () => {
   const items = hunt('Planets', ['mercury', 'venus', 'earth', 'mars'], { b: false, d: 'easy' });
-  const g = await openGame({ set: { id: 's-planets234', items, mine: false }, theme: 'dark', init: { print: true } });
+  const g = await openGame({ set: { id: 's-planets234', items, mine: false }, theme: 'dark', init: { print: true }, make: false });
   try {
     let s = await g.st();
     assert.equal(s.screen, 'play'); assert.equal(s.custom.set, 's-planets234'); assert.equal(s.custom.b, false);

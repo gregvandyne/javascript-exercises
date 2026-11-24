@@ -903,6 +903,9 @@ var I18N = {
   'use strict';
   var H = window.HuntCore, QR = window.HuntQR, B = window.BRB || {};
   var USER = B.user || {}, LANG = USER.lang || 'en', BASE = LANG.split('-')[0], IS_EN = BASE === 'en';
+  // "Make your own" (BRB.canMake): the builder and Your word hunts, for teachers and grown-ups who may host only. A
+  // student or a child plays a teacher's link or class code; drafts already in their save stay there, unshown.
+  var CAN_MAKE = B.canMake === true;
   var DIR = USER.dir === 'rtl' || USER.dir === 'ltr' ? USER.dir : (BASE === 'he' || BASE === 'ar' ? 'rtl' : 'ltr');
   var PLURAL = (function () { try { return new Intl.PluralRules(LANG); } catch (e) { return { select: function (n) { return n === 1 ? 'one' : 'other'; } }; } })();
   var NUM = (function () { try { return new Intl.NumberFormat(BASE === 'ar' ? 'ar-u-nu-latn' : LANG); } catch (e) { return { format: function (n) { return String(n); } }; } })();
@@ -1150,15 +1153,18 @@ var I18N = {
     pr.appendChild(btn('wh-btn', '🏁 ' + t('race'), function () { sfx('select'); startPuzzle({ theme: S.pickTheme, difficulty: S.difficulty, race: 'new' }); }, 'wh-race'));
     pc.appendChild(pr);
     // Your own words: make a word hunt, My worksheets, a class code, Your word hunts
+    // (Without BRB.canMake the card is the class code alone.)
     var oc = card(grid);
-    head(oc, '📝', t('ownH'), 'join'); oc.appendChild(el('p', 'wh-sub', t('ownSub')));
-    oc.appendChild(bigBtn('wh-big wh-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'wh-make'));
+    if (CAN_MAKE) {
+      head(oc, '📝', t('ownH'), 'join'); oc.appendChild(el('p', 'wh-sub', t('ownSub')));
+      oc.appendChild(bigBtn('wh-big wh-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'wh-make'));
+    } else { head(oc, '🔑', t('code'), 'join'); oc.appendChild(el('p', 'wh-sub', t('codeSub'))); }
     // My worksheets: every word hunt this teacher saved on Oomba (BRB.canListSets: school staff, never a student).
     if (B.canListSets && B.mySets) oc.appendChild(bigBtn('wh-big', '📚', t('ws'), t('wsSub'), function () { sfx('select'); showSheets(); }, 'wh-ws'));
     // A class code (what a teacher hands out): the set straight away. Not where the server would refuse the lookup.
     if (B.canFindSet !== false) drawCode(oc);
-    if (save.mine.length) drawMine(oc);
-    else if (USER.isGuest) oc.appendChild(el('p', 'wh-note', '🔒 ' + t('guestKeep')));
+    if (CAN_MAKE && save.mine.length) drawMine(oc);
+    else if (CAN_MAKE && USER.isGuest) oc.appendChild(el('p', 'wh-note', '🔒 ' + t('guestKeep')));
     refreshPicks();
     if (S.backTo === 'home') { S.backTo = ''; focusTop(); }
   }
@@ -1268,7 +1274,7 @@ var I18N = {
     if (!list.length) {
       var e = el('div', 'wh-empty-ws'); e.id = 'wh-ws-empty';
       e.appendChild(el('p', 'wh-lead', t('wsEmpty')));
-      e.appendChild(bigBtn('wh-big wh-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'wh-ws-make'));
+      if (CAN_MAKE) e.appendChild(bigBtn('wh-big wh-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'wh-ws-make'));
       box.appendChild(e); focusTop(); return;
     }
     var ul = el('ul', 'wh-list'); box.appendChild(ul);
@@ -1858,7 +1864,7 @@ var I18N = {
     var pr = el('span', 'wh-chip', ''); pr.id = 'wh-prog'; hud.appendChild(pr);
     var pz = btn('wh-ibtn wh-pausebtn', null, function () { setPaused(!S.paused); }, 'wh-pause'); pz.innerHTML = ICON.pause; pz.setAttribute('aria-label', t('pause')); pz.title = t('pause');
     hud.appendChild(pz);
-    var back = btn('wh-btn wh-quiet wh-sm', '‹ ' + t(S.P && (S.fromBuild || S.P.mine) ? (S.fromBuild ? 'edit' : 'changeIt') : 'home'), function () { leavePlay(); }, 'wh-back');
+    var back = btn('wh-btn wh-quiet wh-sm', '‹ ' + t(CAN_MAKE && S.P && (S.fromBuild || S.P.mine) ? (S.fromBuild ? 'edit' : 'changeIt') : 'home'), function () { leavePlay(); }, 'wh-back');
     hud.appendChild(back);
     top.appendChild(hud);
     var bar = el('div', 'wh-clue'); bar.id = 'wh-clue'; bar.dir = 'auto'; bar.setAttribute('aria-hidden', 'true');
@@ -1889,8 +1895,8 @@ var I18N = {
   }
   function leavePlay() {
     stopSpeaking(); S.paused = false;
-    if (S.P && S.fromBuild && S.draft) { S.fromBuild = false; return showPreview(); }
-    if (S.P && S.P.mine) {
+    if (CAN_MAKE && S.P && S.fromBuild && S.draft) { S.fromBuild = false; return showPreview(); }
+    if (CAN_MAKE && S.P && S.P.mine) {
       var P = S.P, m = save.mine.filter(function (x) { return (P.id && x.id === P.id) || (P.set && x.set === P.set); })[0];
       return edit(m || { t: P.t, w: P.w, s: P.s, d: P.d, r: P.r, b: P.b, set: P.set });
     }
@@ -2139,7 +2145,7 @@ var I18N = {
       note(box, t('totalPoints', { n: save.total }));
       var custom = !!S.P;
       buttons(box, custom ? '🔁 ' + t('playAgain') : '➡️ ' + t('nextPuzzle'),
-        custom ? (S.fromBuild ? '✏️ ' + t('edit') : S.P.mine ? '✏️ ' + t('changeIt') : '🏠 ' + t('home')) : '🏠 ' + t('changeTheme'));
+        custom ? (CAN_MAKE && S.fromBuild ? '✏️ ' + t('edit') : CAN_MAKE && S.P.mine ? '✏️ ' + t('changeIt') : '🏠 ' + t('home')) : '🏠 ' + t('changeTheme'));
       showResults(box);
       sayT(stars === 3 ? 'saySuper' : 'sayAll');
     };

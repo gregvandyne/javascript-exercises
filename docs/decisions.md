@@ -12619,3 +12619,27 @@ for students to fill in. For small countries, add the ability to build arrows wi
 - Tests: tests/unit/atlas-quiz.test.js (cleanAtlasItems, the routes, the map code and arrows, printing and the key,
   the lesson upload), tests/e2e/atlas-quest-kit.spec.js (Chromium: a mode played, a quiz made, an arrow dragged, saved,
   printed with its key, listed; a student plays the link to one gameOver).
+
+## Make your own: grown-ups who may host only (24 Nov 2026)
+The owner decided that "Make your own" in Crossword, Word Hunt and Atlas Quest (the builder for a teacher's own puzzle
+or quiz) is for teachers and grown-ups, not children or students. Until now Crossword offered Make to everyone, with
+drafts in the player's own game save.
+- **The rule** (`INIT.make`, `BRB.canMake`; routes/games.js, docs/sdk.md): grown-ups who may host, the same people who
+  may host a live game (`classlive-access.js canHost`: school staff, the platform admin and a family grown-up), where
+  the grown-up fence lets them save their game. It does not depend on AI being on (`clues` still does). False for a
+  student, a child, a guest and a signed-out player, and in any preview, as `clues` and `mySets` are.
+- **A family grown-up keeps Make**: they host live games and the owner said "grown-ups", so they make and print their
+  own puzzles from their game save, as before. The fence still keeps them from saving a set, class codes and
+  documents, so their builder has no Save and share (unchanged).
+- **In the games**: without `BRB.canMake` there is no Make button, no "Your crosswords" / "Your word hunts" /
+  "Your quizzes" list (nor its guest note), no "Change it" back into the builder from a puzzle, and in Atlas Quest no
+  "Make it a quiz" on a blank map or "Make a quiz" in the library. Word Hunt's "Your own words" card becomes the class
+  code alone. A link or a class code plays as before. Drafts already in a child's save are left as they are, unshown.
+- **On the server**: AI clues and document uploads already required a host. Saving a set did not: any signed-in
+  non-guest could post one. In these three games `POST /api/games/:id/sets` now refuses anyone who may not host
+  (403 `notAllowed`), and the frame says `setSave: false` for them, so `BRB.canSaveSet` stays true to what the server
+  does. The other set games (Algebra Builder, The Big Divide, Mistake Hunt) keep their rules.
+- Tests: tests/unit/make-gate.test.js (the flag for each kind of account with AI on and off, previews, the save,
+  document and clue routes refusing students, children, guests and the family fence, and in Chromium each game's home
+  with and without Make and drafts, plus a student playing a link); harnesses in crossword, word-hunt-browser and
+  game-my-sets-browser pass `make` for a teacher and leave it off for their student cases.
