@@ -50,7 +50,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
 | `BRB.params` | Lesson parameters, when a lesson step opened the game at a place: a frozen `{ chapter, band, mode, level, lock, style }` (any of them may be missing), `{}` otherwise. See [Lesson parameters](#lesson-parameters). |
-| `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games; other games keep their own colours. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
+| `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games and the Builder's classroom games (they set `data-theme` from it for the classroom look's light and dark); other games keep their own colors. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |
 | `localStorage` / `sessionStorage` | Work as usual. `localStorage` is a shim backed by the same cloud save, pre-filled before the game starts, so older games just work. |
@@ -455,7 +455,7 @@ The AI Builder works with these tools: `ask_user(question, options)`, `write_gam
 changes and the Builder is told why), `set_game(title, icon, description, category, tags, orientation, players)`,
 `playtest_game()`, `start_from_template(template, notes)` (copies a starter in as a new version on the server: the
 classroom starters quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard, classquiz, classmemory
-and classword, plain HTML in the Oomba classroom style; with `ARCADE=1` also the 2D kit templates and the 3D starters)
+and classword, plain HTML in the Oomba classroom style 2, the Crossword look; with `ARCADE=1` also the 2D kit templates and the 3D starters)
 and `test_notes(checklist)`. Every `write_game` / `edit_game` / `start_from_template` makes a new, safety-scanned version.
 With the arcade side off (the default, `config.arcade`), the Builder's fixed prompt and tools are the classroom ones
 (`prompt.js` `SYSTEM_PROMPT_FOCUS`, `TOOLS_FOCUS`): no kit, Kit 2, 2D art or 3D rules, and no kit template to start from;

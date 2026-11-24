@@ -7,25 +7,25 @@
 :root{--c0:var(--a0);--c1:var(--a1);--c2:var(--a2);--c3:var(--a3);--c4:var(--a4);--c5:var(--a5)}
 .turnline{text-align:center;margin:0;font-weight:700;font-size:clamp(1rem,2.5vmin,1.6rem);color:var(--soft)}
 .board{flex:1;display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:clamp(6px,1.2vmin,14px);min-height:0}
-.head{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;border-radius:var(--r-sm);color:var(--ink);font-weight:800;font-size:clamp(.9rem,2.6vmin,1.9rem);line-height:1.1;overflow-wrap:anywhere;min-height:56px;letter-spacing:-.01em}
-.cell{position:relative;color:var(--leaf);font-size:clamp(1.3rem,5.6vmin,4.2rem);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;border-radius:var(--r-sm);padding:4px;min-height:56px;background:var(--card);overflow:hidden}
+.head{display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;border-radius:var(--r-sm);color:var(--on-team);font-weight:800;font-size:clamp(.9rem,2.6vmin,1.9rem);line-height:1.1;overflow-wrap:anywhere;min-height:56px;letter-spacing:-.01em}
+.cell{position:relative;color:var(--accent-ink);border-color:var(--line);box-shadow:var(--shadow);font-size:clamp(1.3rem,5.6vmin,4.2rem);font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;border-radius:var(--r-sm);padding:4px;min-height:56px;background:var(--card);overflow:hidden}
 .cell::before{content:"";position:absolute;inset:0 0 auto;height:6px;background:var(--accent,var(--mint))}
-.cell.used{background:transparent;color:var(--soft);border-style:dashed;box-shadow:none;font-size:clamp(.85rem,2.2vmin,1.5rem);font-weight:700;letter-spacing:0}
+.cell.used{background:color-mix(in srgb,var(--card) 45%,transparent);color:var(--muted);border-style:dashed;box-shadow:none;font-size:clamp(.85rem,2.2vmin,1.5rem);font-weight:700;letter-spacing:0}
 .cell.used::before{display:none}
 .teams{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.team{flex:1 1 140px;min-width:0;max-width:300px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 18px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);box-shadow:var(--lift);font-weight:800;font-size:clamp(1.1rem,3.2vmin,2.2rem)}
-.team.turn{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.team{flex:1 1 140px;min-width:0;max-width:300px;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 18px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-weight:800;font-size:clamp(1.1rem,3.2vmin,2.2rem)}
+.team.turn{background:var(--current);color:var(--on-current)}
 .team .pts{font-variant-numeric:tabular-nums}
-.clue{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vmin,22px);padding:max(18px,env(safe-area-inset-top)) clamp(16px,3vw,40px) max(16px,env(safe-area-inset-bottom));background:linear-gradient(var(--note,var(--c0)) 0 12px,var(--page) 12px);color:var(--ink);overflow:auto;animation:oc-rise .35s var(--ease) both}
+.clue{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;gap:clamp(10px,2vmin,22px);padding:max(18px,env(safe-area-inset-top)) clamp(16px,3vw,40px) max(16px,env(safe-area-inset-bottom));background:var(--paper) radial-gradient(var(--dots) 1.5px,transparent 1.6px) 0 0/22px 22px;box-shadow:inset 0 10px 0 var(--note,var(--c0));color:var(--ink);overflow:auto;animation:oc-rise .35s var(--ease) both}
 .clue .top{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;font-size:clamp(1.1rem,3.2vmin,2.2rem)}
-.clue .top span{padding:.25em .9em;border-radius:999px;background:var(--note,var(--c0))}
-.clue .q{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;font-size:clamp(1.7rem,7vmin,5.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15;overflow-wrap:anywhere;text-wrap:balance}
-.clue .a{margin:0 auto;text-align:center;font-size:clamp(1.5rem,5.6vmin,4.2rem);font-weight:800;background:var(--mint-soft);border:2px solid var(--leaf);border-radius:var(--r);padding:10px 28px;animation:oc-pop .4s var(--spring) both}
-.end{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.clue .top span{padding:.25em .9em;border-radius:999px;background:var(--note,var(--c0));color:var(--on-team)}
+.clue .q{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;margin:0;padding:clamp(16px,3vmin,40px);border-radius:var(--r);background:var(--current);color:var(--on-current);font-size:clamp(1.7rem,7vmin,5.4rem);font-weight:800;letter-spacing:-.025em;line-height:1.15;overflow-wrap:anywhere;text-wrap:balance}
+.clue .a{margin:0 auto;text-align:center;font-size:clamp(1.5rem,5.6vmin,4.2rem);font-weight:800;background:var(--mint-t);color:var(--accent-ink);border:2px solid var(--green);border-radius:999px;padding:10px 28px;animation:oc-pop .4s var(--spring) both}
+.end{position:fixed;inset:0;z-index:6;display:grid;place-items:center;padding:16px;background:var(--scrim)}
 .end .card{width:min(100%,760px)}
 .end h2{font-size:clamp(2rem,7vmin,4.6rem)}
 .end ol{list-style:none;margin:0 0 16px;padding:0;font-size:clamp(1.2rem,4vmin,2.6rem);font-weight:800;font-variant-numeric:tabular-nums}
-.end ol li:first-child{color:var(--leaf)}
+.end ol li:first-child{color:var(--accent-ink)}
 @media (max-width:600px){.cell{font-size:clamp(1rem,5vmin,2rem)}.head{font-size:.72rem;padding:4px 2px;overflow-wrap:normal;word-break:normal;hyphens:auto}.team{flex-basis:96px;padding:6px 10px;font-size:1rem}.bar h1{font-size:1.1rem}.bar button{padding:6px 10px}}
 </style>
 <main class="app" id="app">
@@ -42,7 +42,7 @@
   <div class="row" id="clueBtns"><button class="big" id="read"></button><button class="big hot" id="reveal"></button><button class="big" id="back"></button></div>
   <div class="row" id="award" hidden></div>
 </section>
-<section class="end" id="end" hidden><div class="card" role="dialog" aria-labelledby="endH"><h2 id="endH"></h2><ol id="endList"></ol><div class="row"><button class="big hot" id="again"></button></div></div></section>
+<section class="end" id="end" hidden><div class="card center g-tools" role="dialog" aria-labelledby="endH"><h2 id="endH"></h2><ol id="endList"></ol><div class="row"><button class="big hot" id="again"></button></div></div></section>
 <script>
 // Category Board. Teams take turns: the team whose turn it is picks a category and a points value; the question opens
 // big; Show answer; then the teacher gives the points to a team, or to nobody. The board fills up; the end card lists
@@ -113,6 +113,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

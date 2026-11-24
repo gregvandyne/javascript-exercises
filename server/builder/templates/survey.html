@@ -4,10 +4,11 @@
 /* Class Survey: fixed-choice questions written by the teacher. "Count hands" (the teacher taps how many hands are up)
    or "Pass the device" (each student taps a choice in private). Only counts, only in this page's memory: no names, no
    typing, nothing saved or sent. Big type for the board, keyboard and clicker keys.  In the Oomba classroom style (classroom-style.css). */
-:root{--c0:#2E9E6B;--c1:#C99A0B;--c2:#4F86C6;--c3:#D9614A}
+:root{--c0:var(--g-class);--c1:var(--g-tools);--c2:var(--g-time);--c3:var(--g-show)}
+#askQ,#resQ{text-align:start}
 .choices{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,2vmin,20px);align-content:center}
-.choice{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag lab" "ctl ctl";align-items:center;gap:10px 14px;padding:12px 16px;border:1.5px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--lift);min-height:84px}
-.choice .tag{grid-area:tag;display:grid;place-items:center;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);border-radius:14px;color:#fff;font-weight:800;font-size:clamp(1.2rem,4vmin,2.6rem)}
+.choice{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"tag lab" "ctl ctl";align-items:center;justify-content:stretch;gap:10px 14px;padding:12px 16px;border:2px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:var(--shadow);min-height:84px}
+.choice .tag{grid-area:tag;display:grid;place-items:center;width:clamp(44px,8vmin,72px);height:clamp(44px,8vmin,72px);border-radius:14px;color:var(--on-team);font-weight:800;font-size:clamp(1.2rem,4vmin,2.6rem)}
 .choice .lab{grid-area:lab;min-width:0;font-weight:800;font-size:clamp(1.2rem,3.8vmin,2.7rem);overflow-wrap:anywhere;text-align:start}
 .choice .num{font-weight:800;font-size:clamp(1.8rem,7vmin,5rem);font-variant-numeric:tabular-nums;min-width:1.6em;text-align:center}
 .choice .ctl{grid-area:ctl;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3vmin,32px)}
@@ -17,40 +18,39 @@
 .barrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;align-items:center}
 .barrow .lab{font-weight:800;font-size:clamp(1.1rem,3.4vmin,2.5rem);overflow-wrap:anywhere}
 .barrow .val{font-weight:800;font-size:clamp(1.1rem,3.4vmin,2.5rem);font-variant-numeric:tabular-nums}
-.track{grid-column:1/-1;height:clamp(22px,4.4vmin,46px);border-radius:999px;background:var(--tint);overflow:hidden}
+.track{grid-column:1/-1;height:clamp(22px,4.4vmin,46px);border-radius:999px;background:var(--card);box-shadow:0 0 0 1px var(--line);overflow:hidden}
 .fill{height:100%;width:0;border-radius:999px;transition:width .7s var(--ease)}
 .summary{display:grid;gap:18px;width:min(100%,980px);margin:0 auto}
+.summary>*{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g-show) 75%,var(--card)),var(--shadow)}
 .summary h3{margin:0 0 6px;font-size:clamp(1.2rem,3.4vmin,2.3rem)}
 </style>
 <main class="app">
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
   <section class="screen" id="start">
-    <div class="card"><h2 id="startH"></h2><p id="startP"></p><p class="note" id="privacy"></p>
+    <div class="card g-show"><div class="wh"><span class="wicon" aria-hidden="true">📊</span><h2 class="wt" id="startH"></h2></div><p id="startP"></p><p class="note" id="privacy"></p>
       <div class="row"><button class="big hot" id="hands"></button><button class="big" id="private"></button></div>
       <p id="handsP"></p><p id="privateP"></p></div>
   </section>
 
   <section class="screen" id="ask" hidden>
-    <p class="count" id="askN"></p>
-    <h2 class="q" id="askQ"></h2>
+    <div class="nowbar"><b id="askN"></b><h2 class="q" id="askQ"></h2></div>
     <div class="choices" id="choices"></div>
     <div class="row"><button class="big" id="prev"></button><button class="big hot" id="show"></button></div>
     <p class="keys" id="askKeys"></p>
   </section>
 
   <section class="screen" id="ready" hidden>
-    <div class="card"><p class="count" id="readyN"></p><h2 id="readyH"></h2><p id="readyP"></p>
+    <div class="card center g-show"><p class="count" id="readyN"></p><h2 id="readyH"></h2><p id="readyP"></p>
       <div class="row"><button class="big hot" id="readyBtn"></button><button class="big" id="readyShow"></button></div></div>
   </section>
 
   <section class="screen" id="thanks" hidden>
-    <div class="card" aria-live="polite"><h2 id="thanksH"></h2><p id="thanksP"></p></div>
+    <div class="card center g-show" aria-live="polite"><h2 id="thanksH"></h2><p id="thanksP"></p></div>
   </section>
 
   <section class="screen" id="results" hidden>
-    <p class="count" id="resN"></p>
-    <h2 class="q" id="resQ"></h2>
+    <div class="nowbar"><b id="resN"></b><h2 class="q" id="resQ"></h2></div>
     <div class="bars" id="bars"></div>
     <p class="note" id="tooFew" hidden></p>
     <div class="row"><button class="big" id="resBack"></button><button class="big hot" id="next"></button></div>
@@ -104,6 +104,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

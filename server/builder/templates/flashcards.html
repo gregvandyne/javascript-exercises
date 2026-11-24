@@ -3,24 +3,21 @@
 <style>
 /* Flashcards: one big card at a time. Tap or Space flips it; Got it and Again sort it; the round ends with how many
    were got, and the Again pile can be practised once more. Big type for the board and phones, keyboard and clicker keys.  In the Oomba classroom style (classroom-style.css). */
-.good{background:var(--leaf);color:#fff;border-color:var(--leaf)}
-.again{background:var(--coral);color:#fff;border-color:var(--coral)}
+.good{background:var(--green);color:var(--on-green);border-color:var(--green)}
+.again{background:var(--coral-t);color:var(--ink);border-color:var(--coral)}
 .info{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-weight:700;color:var(--soft);font-size:clamp(1rem,2.5vmin,1.55rem)}
-.info span{padding:.25em .9em;border-radius:999px;background:var(--tint);color:var(--ink)}
+.info span{padding:.25em .9em;border-radius:999px;background:var(--card);box-shadow:var(--shadow);color:var(--ink)}
 .stage{flex:1;display:grid;place-items:center;perspective:1400px;min-height:200px}
-.flip{position:relative;width:min(100%,1000px);height:100%;max-height:560px;min-height:220px;padding:0;border:0;background:none;box-shadow:none;border-radius:calc(var(--r) + 12px)}
-.flip:hover:not(:disabled),.flip:active:not(:disabled){transform:none;box-shadow:none}
+.flip{position:relative;width:min(100%,1000px);height:100%;max-height:560px;min-height:220px;padding:0;border:0;background:none;box-shadow:none;border-radius:var(--r)}
+.flip:hover:not(:disabled),.flip:active:not(:disabled){transform:none;box-shadow:none;background:none}
 .inner{position:absolute;inset:0;transition:transform .55s var(--spring);transform-style:preserve-3d}
 .flip.over .inner{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:clamp(14px,3vmin,32px);border:1.5px solid var(--line);border-radius:calc(var(--r) + 12px);box-shadow:var(--lift-hi);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);text-align:center;overflow:hidden}
-.face.a::before{content:"";position:absolute;inset:0 0 auto;height:10px;background:var(--mint)}
-.face.b{background:var(--spark-soft);transform:rotateY(180deg)}
-.face.b::before{content:"";position:absolute;inset:0 0 auto;height:10px;background:var(--spark)}
+.face{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:clamp(14px,3vmin,32px);border-radius:var(--r);box-shadow:inset 0 6px 0 color-mix(in srgb,var(--g-class) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow-hi);backface-visibility:hidden;-webkit-backface-visibility:hidden;background:var(--card);text-align:center;overflow:hidden}
+.face.b{background:var(--current);color:var(--on-current);transform:rotateY(180deg)}
+.face.b .hint{color:inherit;opacity:.85}
 .face .t{font-size:clamp(2rem,8.6vmin,6.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;overflow-wrap:anywhere;text-wrap:balance}
 .face .hint{font-weight:700;color:var(--soft);font-size:clamp(.9rem,2.3vmin,1.35rem)}
-.end{margin:auto;width:min(100%,760px);text-align:center;background:var(--card);border:1.5px solid var(--line);border-radius:calc(var(--r) + 8px);padding:clamp(20px,4.4vmin,48px);box-shadow:var(--lift-hi);animation:oc-rise .42s var(--ease) both}
-.end h2{margin:0 0 8px;font-size:clamp(1.8rem,7vmin,4.6rem);letter-spacing:-.03em}
-.end p{margin:8px 0 18px;font-size:clamp(1.1rem,3vmin,1.9rem);color:var(--soft);font-weight:600}
+.end{animation:oc-rise .42s var(--ease) both}
 </style>
 <main class="app">
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
@@ -31,7 +28,7 @@
     <div class="row" id="sortRow" hidden><button class="big again" id="againBtn"></button><button class="big good" id="got"></button></div>
     <p class="keys" id="keys"></p>
   </section>
-  <section class="end" id="end" hidden><h2 id="endH"></h2><p id="endP"></p><div class="row"><button class="big again" id="practise"></button><button class="big hot" id="restart"></button></div></section>
+  <section class="card center end" id="end" hidden><h2 id="endH"></h2><p id="endP"></p><div class="row"><button class="big again" id="practise"></button><button class="big hot" id="restart"></button></div></section>
 </main>
 <script>
 // Flashcards. The deck is CARDS (shuffled when CONFIG.shuffle). A card's front shows first; flip it, then sort it into
@@ -77,6 +74,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

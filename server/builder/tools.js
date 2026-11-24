@@ -24,6 +24,7 @@ import { WORLD_IDS, worldById, heroesOf, creaturesOf, creatureFor, heroFor, DEFA
 import { ART2D_TEMPLATES, ART2D_WORLD_IDS, ART2D_CHARACTER_IDS, art2dWorld, art2dCharacter, art2dFriends, art2dMissing } from './art2d.js';
 import { planArt2d, playFor, isActivity, canvasActivity } from './plan.js';
 import { withActivityData } from '../services/canvaskit.js';
+import { withClassroomStyle } from './templates/index.js';
 
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js), and the classroom activity starter "canvas"
@@ -97,6 +98,8 @@ export function toolbox(ctx) {
     if (stopped() && !evenIfStopped) return { ok: false, forModel: 'Stopped.', stop: true };
     const g0 = game(); if (!g0 || g0.status === 'deleted') return { ok: false, forModel: 'The game was deleted.', stop: true };
     if (typeof rawHtml !== 'string' || rawHtml.trim().length < 20) return { ok: false, forModel: 'The game was empty. Send the complete game document.' };
+    // The classroom look (templates/classroom-style.css): a <!--CLASSROOM_STYLE--> marker becomes the current shared block.
+    rawHtml = withClassroomStyle(rawHtml);
     if (Buffer.byteLength(rawHtml) > MAX_GAME_BYTES) return { ok: false, forModel: 'The game is bigger than 2 MB. Make it smaller.' };
     if (planned) {
       const missing = art2dMissing(rawHtml, planned);

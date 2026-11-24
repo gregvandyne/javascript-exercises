@@ -12481,3 +12481,50 @@ but still fun engaging and interactive".
   board) and soft marimba notes with WebAudio into buffers at first use. They play only while `BRB.sfx.muted` is false
   (the site's sound switch, also the game's speaker button). No files, so nothing under `/vendor/chess-sounds/`.
 - Tests: `tests/unit/castle-clash.test.js` (10), `tests/e2e/castle-clash.spec.js`.
+
+## Classroom look 2: every classroom game in the Crossword look, and the Builder told how (24 Nov 2026)
+
+The owner is moving every game to the look of Crossword (hand-written, no Oomba Kit, the classroom dashboard's widgets)
+and asked that the Builder build everything that way from now on, with ten review passes of its prompt.
+
+- **The style** (`server/builder/templates/classroom-style.css`, "Oomba classroom style 2"): Crossword's tokens and
+  pieces as one shared block: the dotted mint board (`--paper`, `--dots`), cream widget cards (`.card`, `.widget`) with
+  the group color `--g` on a 4 px top edge and in the icon chip (`.wh`, `.wicon`, `.wt`; groups `.g-class`, `.g-time`,
+  `.g-tools`, `.g-show`, `.g-check`, `.g-join`), the dark Now bar (`.nowbar`), pill buttons (plain ink outline, `.hot`
+  green, `.ghost`, `.small`, `.big`, `.danger`, pressed toggles dark), menu rows (`.opt`, `.opt.now`), chips (`.pill`),
+  fields, answer tiles (`.answers`, `.answer`, `.tag`), `.progress`, `.big-score`, `.stars`, right and wrong
+  (`.is-right`, `.is-wrong`, `.tick`, `.feedback.good/.bad`), `.scrim`, and `--on-*` tokens for text on colored fills.
+  Light and dark: `:root[data-theme="dark"]`, and the device's dark mode unless `data-theme="light"`; each starter sets
+  `data-theme` from `BRB.theme`. Reduced motion stops all motion. The font stays self-hosted at
+  `/vendor/oomba-classroom/1.0.0/` (Crossword's own page loads a font service; classroom games may not). Style 1's
+  token and class names (`--page`, `--leaf`, `--tint`, `--mint-soft`, `.hot`, `.card`, `.q`...) still resolve, so game
+  code written for style 1 reads right in style 2. Buttons are at least 48 px (44 px for `.small`).
+- **Old games**: the block is copied into each game when it is made, so a game made before keeps its style 1 block and
+  look; nothing is migrated. `templates/index.js classroomLook(html)` says which a game carries (2, 1 or 0).
+- **The marker at save time**: `withClassroomStyle` (run by `tools.js saveVersion` for write_game, edit_game and starters)
+  turns a `<!--CLASSROOM_STYLE-->` line into the current block and drops any older copy. So a game written from scratch
+  gets the exact block without the model retyping 15 KB of CSS, and moving a style 1 game to the new look is one edit
+  (add the marker after `<title>`). The block's own text never contains the marker.
+- **The starters**: all eleven (quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard, classquiz,
+  classmemory, classword) restyled: a widget home card with an icon chip and group color, the question or call in the
+  dark Now bar (classquiz, survey, exitticket, classword's clue, bingo's call, the Category Board clue), results in a
+  centered widget card, hard-coded colors replaced by tokens so dark mode reads right. CONFIG, content lists, WORDS, keys,
+  Sound, Full screen, the Edit box and `window.__brbTest` are unchanged.
+- **The prompt** (classroom focus only; the arcade `SYSTEM_PROMPT` and `TOOLS` keep their hash): a new Look section
+  describes the board, the three screens (home card, play on the board, results card) with their exact markup, cards and
+  group colors, buttons, tokens, right and wrong, type for a projector, 375 px, light and dark, motion, emoji, keys and
+  focus, and a calm teacher UI. `CLASSROOM_RULES_FOCUS` adds content as data (and that printing and question sets are
+  Oomba Canvas lessons, not plain games), the marker, and when to move an old game to the new look (only when someone
+  asks for a new look or a rebuild; a kit game is fixed in its own engine with its own rules block until then). Smaller
+  swaps: US spelling, no device brand names, a classroom-only `BRB.storage` line, `BRB.theme`, a read-aloud line that
+  matches the starters, no 3D line in the SDK list.
+- **Ten review passes** over the assembled `SYSTEM_PROMPT_FOCUS` (correctness, contradictions, precision of the look,
+  child safety, accessibility, teacher experience, brevity, style rules, edge cases, a final read as the model); the
+  log is in the branch's report. A sample game written only from the Look section was rendered to check that it
+  matches the starters.
+- **Oomba Canvas** 1.4.x already shares most of the look (cream widget cards with a colored top edge, pills,
+  Bricolage, light and dark), but its page is a cream square grid, the problem sits in a cream card rather than a dark
+  Now bar, and Check is a raised button. Those versions are frozen; a Canvas 1.5.0 would carry the dotted mint page,
+  the Now bar for the problem line and flat pill buttons. Not built here.
+- Tests: `tests/unit/builder-focus.test.js` (the new look in every starter, the marker at save time, the prompt's look
+  and old-game rules), `tests/unit/builder-classroom.test.js`.
