@@ -61,3 +61,17 @@ licences). Other vendored code (Three.js, Phaser, Rapier, fonts) is listed where
   several sister sites; CC0 figures). Its code was open: Apache 2.0 since its first commit (24 Sep 2026). With the
   owner's confirmed permission it is now ported under that license (above). The rule itself stands for every other
   site: code without an open license is never copied or consulted.
+
+## Castle Clash: chess puzzles, pieces and sounds (24 Nov 2026)
+
+| What | Folder | Licence | Source |
+| --- | --- | --- | --- |
+| 4,160 chess puzzles (PuzzleId, FEN, Moves, Rating, Themes; GameUrl, OpeningTags, plays and popularity dropped) | `public/vendor/data/castle-clash/<version>/p<band>.js` | **CC0 1.0** (public domain dedication) | The Lichess puzzle database, https://database.lichess.org/#puzzles (`lichess_db_puzzle.csv.zst`, 1 Nov 2026 export), selected and checked by `scripts/chess-puzzles.mjs` |
+| The chess pieces (a Staunton-style set), board themes, icons, the robot face | inside `seed-games/castle-clash.html` | (our own) | drawn for Castle Clash as SVG paths |
+| The chess sounds (move, capture, castle, check, promotion, illegal, right, wrong, game end) | inside `seed-games/castle-clash.html` | (our own) | synthesized at run time with WebAudio (wood knocks and marimba notes); no recordings |
+
+- **Lichess puzzles.** The database page says the puzzle data is released under Creative Commons CC0. Only the puzzle
+  columns are kept; the game links are dropped (no links out of a kids' game). Credit is given in the game's About text
+  (home page and settings) and here.
+- **Not used, and why.** The Lichess *sound sets* are AGPLv3+ (Enigmahack) or CC BY-NC-SA (lisp), per lila's
+  `COPYING.md`; the cburnett piece set is GPLv2+; chess.com's pieces and sounds are not open. None of them is copied.
