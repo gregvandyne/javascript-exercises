@@ -10,6 +10,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, LEARN_FUN, CLASS_TOOLS } from '../learn.js';
+import { keepSlugs, openHubs, arcadeHidden } from '../services/game-focus.js';
 import { availableCodes, keepLang } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
@@ -90,7 +91,9 @@ function playPage(req, res, { landing }) {
   // The hero is not repeated in the rails right under it (Featured, Popular, Top rated, New).
   const notHero = list => (hero ? list.filter(g => g.id !== hero.id) : list);
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
-  const fromLearn = LEARN_FUN.map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
+  const fromLearn = keepSlugs(LEARN_FUN).map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
+  // While the arcade is hidden (services/game-focus.js) a genre with no game left has no chip.
+  const chipCats = arcadeHidden() ? PLAY_CATEGORIES.filter(([k]) => games.listVisible(u, { ...play, category: k, limit: 1 }).length) : PLAY_CATEGORIES;
   const rails = [
     u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     u ? rail({ title: t('home.rails.keep'), emoji: '⏯️', games: games.recentlyPlayed(u, 12, play), user: u, id: 'keep' }) : '',
@@ -121,7 +124,7 @@ function playPage(req, res, { landing }) {
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
       ${joinDoor}
-      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${openHubs(HUBS).map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   <div id="play" class="home-play">
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
@@ -137,7 +140,7 @@ function playPage(req, res, { landing }) {
     <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '', { eager: true })}</a>
   </section>` : ''}
   <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
-    ${PLAY_CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
+    ${chipCats.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
     <a class="chip" role="listitem" href="#two">${ico('👥', { size: 18 })}${t('home.chips.two')}</a>
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}

@@ -71,6 +71,11 @@
     "like": "Favourite",
     "stats": {
       "likes": "{count, plural, one {favourite} other {favourites}}"
+    },
+    "unavailable": {
+      "title": "This game isn’t available right now",
+      "text": "It may come back later. Play has more games and puzzles to try.",
+      "play": "Go to Play"
     }
   },
   "friends": {
@@ -905,6 +910,16 @@
       "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
       "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
       "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
+    },
+    "nav": {
+      "tools": "Teaching tools"
+    },
+    "focus": {
+      "manipulatives": "virtual maths manipulatives",
+      "play": "Word puzzles, maths games and live class games, with no sign-up.",
+      "freeLi1": "Every ready-made game, puzzle and classroom tool",
+      "faqA1": "A teaching platform for Reception to Year 9: a class dashboard to run the day, virtual maths manipulatives, figures drawn to scale, puzzle builders like Crossword, live class games and a Story Library. Teachers can also turn their own lessons into classroom games with an AI Builder.",
+      "demoCredit": "Game art from {title}, one of Oomba’s ready-made games."
     }
   },
   "standards": {

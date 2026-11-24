@@ -31,6 +31,7 @@ function setAssign(t, g, raw) {
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
 }
 import { zoneNote } from './lessons.js';
+import { gameHidden, mayOpenHidden } from '../services/game-focus.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/studio.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -123,6 +124,8 @@ router.get('/teach/assign', requireUser, (req, res) => {
   if (!S.isSchoolStaff(u)) return notFound(req, res);
   const g0 = gameOf(req.query.id, req.query.game);
   if (!g0 || g0.status === 'deleted' || !games.canView(u, g0) || g0.course_only) return notFound(req, res);
+  // A hidden official game (ARCADE off, services/game-focus.js) is not assigned anew, except by a teacher whose class has it.
+  if (gameHidden(g0) && !mayOpenHidden(u, g0)) return notFound(req, res);
   const g = g0.source === 'seed' ? games.localizeGame(g0) : g0;
   const lg = g0.source === 'seed' ? liveGameOf(g0) : null, liveOnly = !!(lg && !lg.play);
   const classes = F.assignClasses(u), pre = String(req.query.class || '');
@@ -177,6 +180,7 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   const u = req.user, { game, gameId, classId, dueAt } = b(req);
   if (!S.isSchoolStaff(u)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   const g = gameOf(gameId, game);
+  if (gameHidden(g) && !mayOpenHidden(u, g)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   if (g && g.source === 'seed') { const lg = liveGameOf(g); if (lg && !lg.play) return res.status(400).json({ error: req.t('teach.assign.liveOnly') }); }
   const sa = setAssign(req.t, g, b(req).opts);
   if (sa && !sa.what) return res.status(400).json({ error: req.t('teach.assign.pickFirst') });

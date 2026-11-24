@@ -45,6 +45,7 @@ import { parseParams, packParams, unpackParams, hasParams } from '../services/pl
 import * as ttsGames from '../services/tts-games.js';
 
 import { courseOfSlug } from '../services/course-catalog.js';
+import * as focus from '../services/game-focus.js';
 import * as courses from '../services/courses.js';
 import { isStaff } from '../services/schools.js';
 import { micGame, MIC_POLICY } from '../services/mic-games.js';
@@ -57,6 +58,11 @@ const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);
 export const REPORT_REASONS = reportReasons();
 
+/** An official game hidden while ARCADE is off (services/game-focus.js): a calm page with the way to Play, not an error. */
+export function unavailable(req, res) {
+  const t = req.t;
+  return page(req, res, { title: t('game.unavailable.title'), body: html`<div class="empty" id="game-unavailable"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('game.unavailable.title')}</h1><p>${t('game.unavailable.text')}</p><a class="btn btn-primary" href="/play">${t('game.unavailable.play')}</a></div>` }, 404);
+}
 function loadViewable(req, res) {
   const g = games.getGameBySlug(req.params.slug);
   if (!g || !games.canView(req.user, g)) { notFound(req, res, req.t('game.notShared')); return null; }
@@ -65,8 +71,14 @@ function loadViewable(req, res) {
 
 router.get('/g/:slug', (req, res) => {
   // A course game (services/course-catalog.js) has no page of its own: it lives on its course's page.
+  const hiddenRow = games.getGameBySlug(req.params.slug);
+  if (focus.gameHidden(hiddenRow) && !focus.mayOpenHidden(req.user, hiddenRow)) return unavailable(req, res);
   const course = courseOfSlug(req.params.slug);
-  if (course && !(req.user && req.user.role === 'admin')) return res.redirect(302, `/courses/${course.slug}#${req.params.slug}`);
+  if (course && !(req.user && req.user.role === 'admin')) {
+    // With the courses hidden (COURSES off) a course game's page has nowhere to send a new visitor.
+    if (!focus.mayOpenCourses(req.user)) return notFound(req, res);
+    return res.redirect(302, `/courses/${course.slug}#${req.params.slug}`);
+  }
   const g = loadViewable(req, res); if (!g) return;
   const t = req.t, f = req.fmt;
   const u = req.user;
@@ -188,7 +200,7 @@ function livePanel(req, g, entry) {
       <input class="input lv-code-input" id="lpjc" name="code" inputmode="numeric" autocomplete="off" spellcheck="false" maxlength="9" dir="ltr" placeholder="123 4567" required>
       <button class="btn btn-primary btn-big" type="submit" id="lpjoin">${ico('🎟️', { size: 18 })} ${t('live.entry.joinGo')}</button>
     </form>
-    <div class="row actions">${host}<a class="btn" href="${keepLang(req, `/play/${entry.solo}`)}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a></div>
+    <div class="row actions">${host}${focus.slugHidden(entry.solo) ? '' : html`<a class="btn" href="${keepLang(req, `/play/${entry.solo}`)}" id="playbtn">▶ ${t(entry.play ? entry.playKey || 'live.entry.play' : 'live.entry.solo')}</a>`}</div>
   </section>`;
 }
 
@@ -255,6 +267,14 @@ router.get('/play/:slug', (req, res) => {
   const t = req.t;
   const g = games.localizeGame(games.getGameBySlug(req.params.slug), req.locale);
   if (!g || !games.canView(req.user, g)) return notFound(req, res, t('game.notShared'));
+  // A hidden official game (ARCADE off, services/game-focus.js) still plays for the admin, a class that has it assigned
+  // (a lesson step, Assign), and a step of a course this player may still open.
+  if (focus.gameHidden(g) && !focus.mayOpenHidden(req.user, g)) {
+    const viaCourse = req.user && req.query.course && req.query.cstep && focus.mayOpenCourses(req.user) && (() => {
+      const c = courses.getCourse(String(req.query.course)); return !!(c && courses.playable(req.user, c, String(req.query.cstep), g.slug));
+    })();
+    if (!viaCourse) return unavailable(req, res);
+  }
   // One tap to play: a visitor without a session becomes a guest so progress saves (rate-limited per IP).
   if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && !seo.isBot(req.headers['user-agent']) && allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) {
     const guest = createGuest(); req.sessionId = startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
@@ -299,7 +319,10 @@ router.get('/play/:slug', (req, res) => {
   if (course && !isOwner) {
     const teacher = !!req.query.chapter && isStaff(u);
     const inMatchQ = !!req.query.match && (() => { const m = match.get(req.query.match); return !!m && match.seatOf(m, u) >= 0 && m.gameId === g.id; })();
-    if (!cstep && !lesson && !teacher && !inMatchQ) return res.redirect(302, `/courses/${asked && asked.slug !== course.slug ? asked.slug : course.slug}`);
+    if (!cstep && !lesson && !teacher && !inMatchQ) {
+      if (!focus.mayOpenCourses(u)) return notFound(req, res);   // COURSES off: no course map to send them to
+      return res.redirect(302, `/courses/${asked && asked.slug !== course.slug ? asked.slug : course.slug}`);
+    }
   }
   if (cstep) courses.markPlayed(u, asked, cstep);
   const badge = cstep ? asked : (course && req.query.course === course.slug ? course : null);

@@ -1210,6 +1210,11 @@
     "grownupBuilder": "Volwassen bouwer",
     "sets": {
       "copyOf": "Kopie van {title}"
+    },
+    "unavailable": {
+      "title": "Deze game is nu niet beschikbaar",
+      "text": "Misschien komt hij later terug. Bij Spelen staan meer games en puzzels om te proberen.",
+      "play": "Naar Spelen"
     }
   },
   "play": {
@@ -9478,7 +9483,8 @@
       "trial": "Gratis proberen",
       "trialShort": "Gratis proberen",
       "menu": "Menu",
-      "kids": "Leerlingen bouwen"
+      "kids": "Leerlingen bouwen",
+      "tools": "Lestools"
     },
     "hero": {
       "kicker": "Voor leerkrachten · groep 2 tot en met de tweede klas",
@@ -9750,6 +9756,13 @@
       "shotAlt": "Een live sessie met MAB-blokken op het scherm van de leerkracht: bovenaan het deel van de leerkracht en daaronder de vakken van vier leerlingen, elk met honderdplaten en tienstaven in een plaatswaardekaart.",
       "plan": "Het materiaal, de live lokalen, Figures en Oomba horen bij het Leerkrachtabonnement.",
       "testing": "Het materiaal, de live lokalen, Figures en Oomba worden nu in een paar klassen uitgeprobeerd."
+    },
+    "focus": {
+      "manipulatives": "virtuele rekenmaterialen",
+      "play": "Kruiswoordpuzzels, rekengames en live klassengames, zonder aanmelden.",
+      "freeLi1": "Alle kant-en-klare games, puzzels en klassentools",
+      "faqA1": "Een lesplatform van groep 1 tot de tweede klas: een klassendashboard om de dag te leiden, virtuele rekenmaterialen, figuren op schaal, puzzelmakers zoals de Kruiswoordpuzzel, live klassengames en een Verhalenbibliotheek. Leerkrachten kunnen ook hun eigen lessen met de AI-Builder tot klassengames maken.",
+      "demoCredit": "Beeld uit {title}, een van de kant-en-klare games van Oomba."
     }
   },
   "teach": {

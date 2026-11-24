@@ -10,6 +10,7 @@ import * as funnel from './funnel.js';
 import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 
 import { COURSE_GAME_SLUGS } from './course-catalog.js';
+import { hiddenSql } from './game-focus.js';
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
   ['board', '🎲', 'Board'], ['adventure', '🗺️', 'Adventure'], ['learning', '📚', 'Learning'], ['music', '🎵', 'Music'], ['silly', '🤪', 'Silly']
@@ -160,8 +161,9 @@ const ORDERS = {
 /** Course games are played only inside their course, so open lists leave them out: both the games a course owns
  *  in services/course-catalog.js (unshared entries) and any game flagged course_only on its row (migration 0047:
  *  games built solely as a course's modules, e.g. Cyber Defenders' Trick Inbox and Escape the Post Office).
- *  Every public catalogue surface (rails, search, similar, playing now, the sitemap) must apply this fragment. */
-export const NOT_COURSE = () => ` AND g.course_only=0${COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : ''}`;
+ *  Every public catalogue surface (rails, search, similar, playing now, the sitemap) must apply this fragment. It also
+ *  leaves out the official arcade games hidden while ARCADE is off (services/game-focus.js hiddenSql). */
+export const NOT_COURSE = () => ` AND g.course_only=0${COURSE_GAME_SLUGS.length ? ` AND g.slug NOT IN (${COURSE_GAME_SLUGS.map(x => `'${x.replace(/'/g, '')}'`).join(',')})` : ''}${hiddenSql('g')}`;
 // ---------------------------------------------------------------- the two shelves (docs/decisions.md "Play and Learn")
 export const SHELVES = ['play', 'learn'];
 /** A game's shelf: the one its row carries (official games: seed JSON "shelf"), else 'learn' for a player's game in the
@@ -208,7 +210,7 @@ export function favorites(viewer, userId, limit = 24, offset = 0) {
   // anyone else would learn whose child they are.
   const fam = viewer && (viewer.role === 'admin' || viewer.id === userId) ? '' : ` AND NOT (${OWNERS_CHILD('l.user_id', 'g.owner_id')} AND g.owner_id IS NOT ? AND ${viewer ? `NOT ${OWNERS_CHILD('?', 'g.owner_id')}` : '1'})`;
   const famParams = fam ? (viewer ? [viewer.id, viewer.id] : [null]) : [];
-  return decorate(q.all(`${SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql}${fam} ORDER BY l.created_at DESC LIMIT ? OFFSET ?`, userId, ...v.params, ...famParams, limit, offset));
+  return decorate(q.all(`${SELECT} JOIN likes l ON l.game_id=g.id AND l.user_id=? WHERE ${v.sql}${hiddenSql('g')}${fam} ORDER BY l.created_at DESC LIMIT ? OFFSET ?`, userId, ...v.params, ...famParams, limit, offset));
 }
 /** All of a builder's own games (any status) for "My games". */
 export function myGames(userId, limit = 50) {

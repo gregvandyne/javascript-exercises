@@ -6,6 +6,7 @@
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
 import test from 'node:test';
 import assert from 'node:assert/strict';
+process.env.ARCADE ??= '1'; process.env.COURSES ??= '1';   // the arcade games and courses this file tests (both hidden on the site by default)
 const { createUser, startSession } = await import('../../server/auth.js');
 const S = await import('../../server/services/schools.js');
 const C = await import('../../server/services/courses.js');

@@ -43,6 +43,7 @@ import * as F from './figures.js';
 import { hasProfanity } from './textfilter.js';
 import * as CS from './companion-settings.js';
 import { GAMES_META } from './companion-games.js';
+import { gameHidden, coursesHidden } from './game-focus.js';
 import * as C from './oomba-chat.js';
 import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.js';
 import { allow } from './ratelimit.js';
@@ -245,7 +246,7 @@ export function searchGames({ topic = '', grade = null, subject = '', standard =
   const out = [];
   for (const m of GAMES_META) {
     const row = games.getGameBySlug(m.slug);
-    if (!row || row.status !== 'published') continue;
+    if (!row || row.status !== 'published' || gameHidden(row)) continue;   // hidden while ARCADE is off (game-focus.js)
     let score = 0;
     if (g !== null) { if (g < m.grades[0] - 1 || g > m.grades[1] + 1) continue; score += g >= m.grades[0] && g <= m.grades[1] ? 3 : 1; }
     if (std) { const hit = m.standards.some(x => x.toUpperCase().startsWith(std) || std.startsWith(x.toUpperCase())); if (hit) score += 4; }
@@ -290,7 +291,7 @@ export function searchLessons({ topic = '', grade = null } = {}) {
   const terms = termsOf(topic), g = gradeNum(grade);
   const hit = s => !terms.length || terms.some(t => fold(s).includes(t));
   let lessons = [];
-  try {
+  if (!coursesHidden()) try {
     const fits = l => { if (g === null) return true; const [lo, hi] = String(LT.GRADES[l.band] || '').split('-').map(Number); return !Number.isFinite(lo) || (g >= lo - 1 && g <= (hi || lo) + 1); };
     lessons = LT.templates().filter(l => fits(l) && hit(`${l.title} ${l.summary || ''} ${JSON.stringify(l.iCan || '')}`))
       .slice(0, 4).map(l => ({ id: l.key, title: l.title, grades: LT.GRADES[l.band] || '', minutes: l.duration || null, kind: 'CS Quest lesson' }));

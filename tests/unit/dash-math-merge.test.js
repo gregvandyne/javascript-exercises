@@ -10,6 +10,7 @@ process.env.BRB_DATA_DIR = fs.mkdtempSync(os.tmpdir() + '/brb-dashmerge-');
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.anthropicKey = '';
 const { q } = await import('../../server/db.js');
 const { createUser, startSession, getUser } = await import('../../server/auth.js');

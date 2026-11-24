@@ -1209,6 +1209,11 @@
     "grownupBuilder": "Creador adulto",
     "sets": {
       "copyOf": "Copia de {title}"
+    },
+    "unavailable": {
+      "title": "Este juego no está disponible ahora",
+      "text": "Puede que vuelva más adelante. En Jugar hay más juegos y pasatiempos para probar.",
+      "play": "Ir a Jugar"
     }
   },
   "play": {
@@ -9477,7 +9482,8 @@
       "trial": "Prueba gratis",
       "trialShort": "Prueba gratis",
       "menu": "Menú",
-      "kids": "Crean los estudiantes"
+      "kids": "Crean los estudiantes",
+      "tools": "Herramientas para enseñar"
     },
     "hero": {
       "kicker": "Para docentes · de kínder a 8.º grado",
@@ -9749,6 +9755,13 @@
       "shotAlt": "Una sesión en vivo de bloques de base diez en la pantalla del docente: el área del docente arriba y los cuadros de cuatro estudiantes debajo, cada uno con placas de centenas y barras de decenas en una tabla de valor posicional.",
       "plan": "Los manipulativos, sus salas en vivo, Figures y Oomba son parte del plan Docente.",
       "testing": "Los manipulativos, sus salas en vivo, Figures y Oomba se están probando ahora en algunas aulas."
+    },
+    "focus": {
+      "manipulatives": "materiales manipulativos virtuales de matemáticas",
+      "play": "Crucigramas, juegos de matemáticas y juegos en vivo con la clase, sin registrarse.",
+      "freeLi1": "Todos los juegos listos para usar, pasatiempos y herramientas de clase",
+      "faqA1": "Una plataforma para enseñar desde preescolar hasta 8.º grado: un panel de clase para llevar el día, materiales manipulativos virtuales de matemáticas, figuras dibujadas a escala, creadores de pasatiempos como el Crucigrama, juegos en vivo con la clase y una Biblioteca de cuentos. Los docentes también pueden convertir sus propias lecciones en juegos de clase con el Builder de IA.",
+      "demoCredit": "Imagen del juego {title}, uno de los juegos listos para usar de Oomba."
     }
   },
   "teach": {

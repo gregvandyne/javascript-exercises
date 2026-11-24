@@ -34,6 +34,7 @@ import * as B from '../../public/js/dash-build.js';
 import { lookup } from '../i18n/index.js';
 import * as GC from './gclassroom.js';
 import { fits, MAX_DASH_VERSION } from './qr.js';
+import { gameHidden } from './game-focus.js';
 
 // ---------------------------------------------------------------- the widget registry
 /** Library groups, in order. Groups without a widget yet (stage 2 and later) are not shown. */
@@ -1475,7 +1476,7 @@ export function practiceFor(c) {
   for (const [tool, slugs] of Object.entries(PRACTICE)) {
     const list = [];
     for (const slug of slugs) {
-      if (!seen.has(slug)) { const g = games.getGameBySlug(slug); seen.set(slug, g && isOfficial(g) && pushableGame(c, g) ? { title: g.title, icon: g.icon || '🎮', href: `/play/${g.slug}` } : null); }
+      if (!seen.has(slug)) { const g = games.getGameBySlug(slug); seen.set(slug, g && isOfficial(g) && !gameHidden(g) && pushableGame(c, g) ? { title: g.title, icon: g.icon || '🎮', href: `/play/${g.slug}` } : null); }
       if (seen.get(slug)) list.push(seen.get(slug));
     }
     if (list.length) out[tool] = list.slice(0, 2);

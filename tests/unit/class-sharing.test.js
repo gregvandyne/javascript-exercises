@@ -9,6 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import Database from 'better-sqlite3';
 const { config } = await import('../../server/config.js');
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.anthropicKey = '';
 const { q, MIGRATIONS } = await import('../../server/db.js');
 const { createUser, createGuest, startSession, getUser } = await import('../../server/auth.js');

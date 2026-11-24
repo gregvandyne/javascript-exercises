@@ -129,6 +129,9 @@ const micBuilder = parseFlag(process.env.MIC_BUILDER, 'MIC_BUILDER', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const manipulatives = parseFlag(process.env.MANIPULATIVES, 'MANIPULATIVES', true);
 const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
+// The focus on teaching tools (docs/decisions.md "Focus: teaching tools first"; services/game-focus.js): both off by default.
+const arcade = parseFlag(process.env.ARCADE, 'ARCADE');
+const coursesFlag = parseFlag(process.env.COURSES, 'COURSES');
 const companion = parseFlag(process.env.COMPANION, 'COMPANION', true);
 const companionWebSearch = parseFlag(process.env.COMPANION_WEB_SEARCH, 'COMPANION_WEB_SEARCH', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
@@ -263,7 +266,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, pictureBooks.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error, figures.error, companion.error, companionWebSearch.error,
+    builderWebSearch.error, manipulatives.error, figures.error, arcade.error, coursesFlag.error, companion.error, companionWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -360,6 +363,16 @@ export const config = {
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill
   // switch: it hides Figures (and its "Teaching tools" menu entry) from everyone, the platform admin included.
   figures: figures.on,
+  // The focus on teaching tools (owner, 24 Nov 2026; docs/decisions.md "Focus: teaching tools first"; services/game-focus.js).
+  // ARCADE=1 brings back the arcade: the official games in HIDDEN_GAMES on Play, Learn, search and the sitemap, and the
+  // Arcade game kind on the Builder's "What are you making?" screen. Off (the default), those games are left out of every
+  // list and their pages say "not available right now", except for a class that has one assigned (and the platform admin).
+  // HIDDEN_GAMES (comma separated slugs) replaces the default list in services/game-focus.js. COURSES=1 brings back the
+  // ready-made courses (CS Quest, Number Quest, Cyber Defenders); off, their pages answer the normal 404 except for the
+  // people of a class that has a course lesson assigned (and the platform admin). Nothing is deleted either way.
+  arcade: arcade.on,
+  courses: coursesFlag.on,
+  hiddenGames: process.env.HIDDEN_GAMES ? String(process.env.HIDDEN_GAMES).split(',').map(x => x.trim().toLowerCase()).filter(Boolean) : null,
   // Oomba, the teaching companion (docs/decisions.md "Oomba teaching companion"; services/companion.js): the bubble on
   // teacher pages for Teacher plan staff (services/teacher-tools.js toolAccess). COMPANION=0 hides it from everyone.
   // COMPANION_WEB_SEARCH=0 turns its web search off for everyone (a school can turn it off for its own staff).

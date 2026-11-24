@@ -1209,6 +1209,11 @@
     "grownupBuilder": "Créateur adulte",
     "sets": {
       "copyOf": "Copie de {title}"
+    },
+    "unavailable": {
+      "title": "Ce jeu n’est pas disponible pour le moment",
+      "text": "Il reviendra peut-être plus tard. Jouer propose d’autres jeux et casse-têtes à essayer.",
+      "play": "Aller à Jouer"
     }
   },
   "play": {
@@ -9477,7 +9482,8 @@
       "trial": "Essai gratuit",
       "trialShort": "Essai gratuit",
       "menu": "Menu",
-      "kids": "Les élèves créent"
+      "kids": "Les élèves créent",
+      "tools": "Outils pédagogiques"
     },
     "hero": {
       "kicker": "Pour les enseignants · de la maternelle à la 4e",
@@ -9749,6 +9755,13 @@
       "shotAlt": "Une séance en direct de blocs de base dix sur l’écran de l’enseignant : l’espace de l’enseignant en haut et les carrés de quatre élèves en dessous, chacun avec des plaques de centaines et des barres de dizaines dans un tableau de numération.",
       "plan": "Les manipulables, leurs salles en direct, Figures et Oomba font partie du forfait Enseignant.",
       "testing": "Les manipulables, leurs salles en direct, Figures et Oomba sont en test dans quelques classes en ce moment."
+    },
+    "focus": {
+      "manipulatives": "manipulables de maths virtuels",
+      "play": "Mots croisés, jeux de maths et jeux en direct avec la classe, sans inscription.",
+      "freeLi1": "Tous les jeux prêts à l’emploi, casse-têtes et outils de classe",
+      "faqA1": "Une plateforme pour enseigner de la maternelle à la 4e : un tableau de bord de classe pour mener la journée, des manipulables de maths virtuels, des figures tracées à l’échelle, des créateurs de casse-têtes comme les Mots croisés, des jeux en direct avec la classe et une Bibliothèque d’histoires. Les enseignants peuvent aussi transformer leurs propres leçons en jeux de classe avec le Builder IA.",
+      "demoCredit": "Visuel du jeu {title}, l’un des jeux prêts à l’emploi d’Oomba."
     }
   },
   "teach": {

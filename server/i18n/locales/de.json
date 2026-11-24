@@ -1210,6 +1210,11 @@
     "grownupBuilder": "Von Erwachsenen gebaut",
     "sets": {
       "copyOf": "Kopie von {title}"
+    },
+    "unavailable": {
+      "title": "Dieses Spiel ist gerade nicht verfügbar",
+      "text": "Vielleicht kommt es später zurück. Unter Spielen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
+      "play": "Zu Spielen"
     }
   },
   "play": {
@@ -9478,7 +9483,8 @@
       "trial": "Gratis testen",
       "trialShort": "Gratis testen",
       "menu": "Menü",
-      "kids": "Kinder bauen"
+      "kids": "Kinder bauen",
+      "tools": "Unterrichtswerkzeuge"
     },
     "hero": {
       "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
@@ -9750,6 +9756,13 @@
       "shotAlt": "Eine Live-Sitzung mit Zehnersystem-Blöcken auf dem Bildschirm der Lehrkraft: oben der Bereich der Lehrkraft, darunter die Felder von vier Kindern, jedes mit Hunderterplatten und Zehnerstangen in einer Stellenwerttafel.",
       "plan": "Das Material, seine Live-Räume, Figures und Oomba gehören zum Lehrkräfte-Plan.",
       "testing": "Das Material, seine Live-Räume, Figures und Oomba werden gerade in einigen Klassen ausprobiert."
+    },
+    "focus": {
+      "manipulatives": "virtuelle Mathe-Arbeitsmittel",
+      "play": "Kreuzworträtsel, Mathespiele und Live-Spiele mit der Klasse, ohne Anmeldung.",
+      "freeLi1": "Alle fertigen Spiele, Rätsel und Werkzeuge für die Klasse",
+      "faqA1": "Eine Plattform zum Unterrichten von der Vorschule bis Klasse 8: ein Klassen-Dashboard für den ganzen Tag, virtuelle Mathe-Arbeitsmittel, maßstabsgetreue Figuren, Rätsel-Baukästen wie das Kreuzworträtsel, Live-Spiele mit der Klasse und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Stunden außerdem mit dem KI-Builder zu Klassenspielen machen.",
+      "demoCredit": "Spielbild aus {title}, einem der fertigen Spiele von Oomba."
     }
   },
   "teach": {
