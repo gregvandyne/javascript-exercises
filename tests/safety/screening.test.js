@@ -117,3 +117,10 @@ test('made-up characters with a real job are not real people: allowed by the rul
   // A named real athlete is still real people.
   assert.equal(mockClassify('a book about Messi winning the cup'), 'real_people');
 });
+
+test('a sports story getting hurt is not violence; hurting a person still is', () => {
+  for (const s of ['Maya fell and hurt her knee, but she got back up.', 'He hurt his ankle in the last game.', 'Losing hurt my feelings.', 'She hurt her own knee.'])
+    assert.equal(mockClassify(s), null, s);
+  for (const s of ['hurt her', 'I want to hurt him', 'hurt my brother', 'hurt them all', 'punch her head', 'punch him in the face', 'beat up her sister', 'shoot the teacher'])
+    assert.equal(mockClassify(s), 'violence', s);
+});
