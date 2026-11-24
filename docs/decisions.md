@@ -12569,3 +12569,40 @@ and asked that the Builder build everything that way from now on, with ten revie
   course screenshots use (`#ask`, `#pair .opt`, `.tx`, `.or`) are kept; their pictures will look new when retaken.
 - Tests: `tests/unit/would-you-rather-look.test.js` (both pages in Chromium in the frame wrapper; the live one against a
   fake session over the frame's port), with `would-you-rather-lock` and `live-wyr-atlas` as before.
+## Sudoku and Word Peek in Crossword's look (24 Nov 2026)
+
+Owner: "Let's also update Sudoku and Word Peek to look and feel like Crossword (though you don't have to set up all of
+the behind the scenes stuff like make your own)."
+- **Off the kit, like Crossword.** Both are now hand-written pages with no Oomba Kit tags: the classroom dashboard's
+  tokens (cream cards on a dotted mint board, a group color on each widget's top edge and icon chip), the dark
+  Now-style bar, pill buttons, Bricolage Grotesque from Google Fonts, light and dark from `BRB.theme` (else the
+  device), reduced motion from `BRB.motion` (else the device), a few `BRB.sfx` sounds and Crossword's confetti. No class
+  codes, worksheets or sharing: the owner said that part was not needed.
+- **Sudoku.** The home is the level picker (Continue, three board sizes, best stars, the Pictures switch) with How to
+  play under it. Play: the board's widget (the level, the clock, the dark bar with the level's numbers and the game's
+  messages, the board) and the pad's widget beside it on a wide screen, under it on a phone, everything in view. What
+  the kit did is now the page's own: pause (P, Escape or a button: the board blurs, the clock stops, Keep playing,
+  Start over, Levels), a real-time clock that stops while paused or hidden, the solved card (stars, time, hints,
+  mistakes, points, Play again, Levels) and one `BRB.gameOver` as the puzzle is solved. The picture mode's apple,
+  banana, grapes and carrot are small inline SVGs. The kit's how-to card read aloud on a tap; How to play keeps that as
+  Read it to me, shown only when `BRB.aiVoiceCheck` says the AI voice reads every line (the title and the three
+  lines, already allowed in `tts-lines.js`), read with `ai: 'only'`. Eleven new words in all 13 languages (how to
+  play, sound, pause, paused, keep playing, start over, play again, the solved card's line, stars, Read it to me, stop).
+  `SudokuCore` is byte for byte the same; the save `sudoku-v1` keeps its shape.
+- **Word Peek.** The home is one widget (Pip in the chip, Daily Peek as the dark lead button, Practice, Little Peek,
+  Big Peek, Friend Peek, How to play, Stats, the points). Play: the board's widget (the mode, the try, Stats, Home,
+  Pip talking in the dark bar, the grid) and the keyboard's widget. Pip is drawn in the page as a small SVG owl in his
+  red scarf with the same moods (thinking, happy, cheering, sad, a puzzled tilt) and blinks. Marks: a green tick for the
+  right spot, a spark yellow dot for the wrong spot, a muted tile for not in the word; high contrast stays orange and
+  blue, and every mark keeps its shape. How to play, Stats, Settings, the result and the hand-off are widget cards over
+  the page (Escape and the focus trap as before). The kit's "More settings" (captions, text size) went with the kit.
+  The word lists, the rules (marks, hard mode, the daily word, points), the words in 13 languages (one Russian line lost
+  its dashes), `BRB.score.submit` and `BRB.gameOver`, the speech through `BRB.speak` and the save `word-peek-v1` are
+  unchanged.
+- Tests: `tests/unit/sudoku.test.js` (the file and browser checks now test the new look, pause, the solved card, dark,
+  How to play in es, ja and ar, and Read it to me; the core tests are unchanged), the new
+  `tests/unit/word-peek.test.js` (the rules on their own, the file, a round to a win, the result card, high contrast,
+  hard mode, reduced motion, Arabic, a phone). Sudoku left `kit-howto-voice.test.js` and Word Peek left
+  `tests/e2e/kit-pilots.spec.js`; their checks moved to those files. The cover recipe waits for the new home.
+- **Open:** a native speaker's read of the eleven new Sudoku words; new card covers in the new look when the covers are
+  next made.
