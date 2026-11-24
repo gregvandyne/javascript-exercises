@@ -1,118 +1,182 @@
 <title>Tug of Math</title>
 <style>
-/* Tug of Math on the Oomba Kit: two teams answer maths questions on their own keypads; every right answer pulls the
-   rope one step to that side. Screens: the kit's title (the two crews already tugging behind it) -> the setup card
-   (grade, players, the computer's level, time) -> 3, 2, 1 -> the match -> the kit's results card.
+/* Tug of Math in the look of the classroom dashboard's widgets (as Crossword): cream cards with a group color on the top
+   edge and the icon chip, the schedule's dark "Now" bar for the score strip, a dotted mint board under everything,
+   Bricolage Grotesque, light and dark (BRB.theme). Two teams answer maths questions on their own keypads; every right
+   answer pulls the rope one step to that side. Screens: the setup card (grade, players, the computer's level, time) ->
+   3, 2, 1 -> the match -> the results card; pause (P, Esc or the pause button) opens its own card.
    Layout: landscape (smartboard, tablet on its side, desktop, a phone on its side) is Blue | tug | Red; a portrait
    phone or tablet stacks them, with Red's half turned round for the player across the table (two players) or a small
-   card for the computer (vs Computer). Every key is at least 48px; colours come from the kit (--ok-*) plus the two
-   team colours, and each team also has a shape and a name, so colour is never the only cue. */
+   card for the computer (vs Computer). Every key is at least 44px (36px on the shortest portrait screens); each team
+   has a color, a shape and a name, so color is never the only cue. */
+@font-face{font-family:"Bricolage Grotesque";src:url(/vendor/oomba-classroom/1.0.0/fonts/bricolage-latin.woff2) format("woff2");font-weight:200 800;font-display:swap;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:"Bricolage Grotesque";src:url(/vendor/oomba-classroom/1.0.0/fonts/bricolage-latin-ext.woff2) format("woff2");font-weight:200 800;font-display:swap;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+/* the classroom dashboard's tokens (Crossword's): cream cards on a dotted mint board */
+:root{--paper:#E1F1E1;--dots:#66C792;--card:#FFFDF2;--card2:#F9F6EB;--hover:#EFEBDC;--ink:#141414;--line:#E2DDCB;--muted:#5B584F;
+  --green:#1F9D63;--on-green:#fff;--accent:#66C792;--mint-t:#E1F1E1;--current:#141414;--on-current:#FFFDF2;
+  --coral:#C8432F;--coral-t:#FBE0DA;--spark:#FFD23F;--focus:#2563EB;--g-class:#66C792;
+  --blue:#0B6BB0;--blueTint:#DCEDF7;--red:#C8372D;--redTint:#FBE0DA;--good:#1F9D63;--goodTint:#DDF1E4;--bad:#C8432F;
+  --scrim:rgba(20,20,20,.38);--shadow:0 1px 0 rgba(20,20,20,.04),0 4px 16px rgba(20,20,20,.06);--r:20px;--r-sm:12px;
+  --font:'Bricolage Grotesque',ui-rounded,system-ui,-apple-system,'Segoe UI',sans-serif;color-scheme:light}
+:root[data-theme="dark"]{--paper:#141414;--dots:#2E5A41;--card:#1E1E1B;--card2:#262622;--hover:#2C2C27;--ink:#FFFDF2;--line:#36352F;--muted:#B8B3A1;
+  --green:#66C792;--on-green:#10261A;--mint-t:#1F3A2B;--current:#66C792;--on-current:#141414;--coral:#FF8A7D;--coral-t:#4A2420;--focus:#8AB4FF;
+  --blue:#2F8FD8;--blueTint:#1B3342;--red:#E0574A;--redTint:#4A2420;--good:#66C792;--goodTint:#1F3A2B;--bad:#FF8A7D;
+  --scrim:rgba(0,0,0,.55);--shadow:0 1px 0 rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.32);color-scheme:dark}
 html,body{height:100%}
-html.tm-play .ok-hud{display:none!important}
-body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background-color:var(--paper);background-image:radial-gradient(var(--dots) 1.5px,transparent 1.6px);background-size:22px 22px;color:var(--ink);font-family:var(--font);line-height:1.3;-webkit-text-size-adjust:100%}
+body{overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-.tm,.tm *,.tms,.tms *{box-sizing:border-box}
-.tm{--blue:#0B6BB0;--blueTint:#D7EBFA;--red:#C8372D;--redTint:#FBE0DC;--good:#2FB774;--goodTint:#D8F5E4;--bad:#E8604C;--ink:#1D2340;--key:#FFFFFF;--keyEdge:#1D2340;
-  --sky1:#BFE6FF;--sky2:#E8F6FF;--grass:#7CCB6B;--grass2:#5DAF55;--soil:#C9A36B;
-  position:fixed;inset:0;display:flex;flex-direction:column;background:var(--ok-bg2);color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif);
-  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-.ok-night .tm{--blueTint:#173A5C;--redTint:#55221E;--goodTint:#164A33;--sky1:#26305E;--sky2:#3B3F78;--grass:#2F7445;--grass2:#245C37;--soil:#6B5235;--key:#FFFDF2}
-.tm button{font-family:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.tm,.tm *,.tms,.tms *,.tmo,.tmo *,.tm-head,.tm-head *{box-sizing:border-box}
+:where(.tm,.tms,.tmo,.tm-head) button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:where(.tm,.tms,.tmo,.tm-head) button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .tm svg{display:block}
-.tm-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tm-field{flex:1;min-height:0;display:grid;gap:8px;padding:8px}
+.tm-sr,.tl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* the page head (the setup card's screen): the logo and the sound button, as Crossword's */
+.tm-head{position:fixed;left:0;right:0;top:0;z-index:25;display:flex;align-items:center;gap:10px;padding:max(10px,env(safe-area-inset-top)) 14px 6px;max-width:1100px;margin:0 auto}
+html.tm-play .tm-head{display:none}
+.tm-logo{display:flex;align-items:center;gap:10px;flex:1;min-width:0;font-weight:800;font-size:1.25em;letter-spacing:-.01em}
+.tm-logo svg{width:36px;height:36px;flex:none}
+.tm-icon{width:46px;height:46px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-size:1.15em;flex:none}
+
+/* a widget: the dashboard's card, its color on the top edge and the icon chip only (never on text) */
+.tw{--g:var(--g-class);background:var(--card);color:var(--ink);border-radius:var(--r);
+  box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.tw-chip{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:color-mix(in srgb,var(--g) 26%,var(--card));font-size:1.3rem;line-height:1}
+.tw-chip svg{width:22px;height:22px}
+.tw-wh{display:flex;align-items:center;gap:10px;min-width:0}
+.tw-wh h2{flex:1;min-width:0;margin:0;font-size:1.3rem;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+
+/* buttons: Crossword's pills (ink edge on a cream card; the main one green, a chosen one dark) */
+.tb{min-height:48px;padding:6px 18px;border-radius:999px;border:2px solid var(--ink);background:var(--card);color:var(--ink);font-weight:800;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;line-height:1.1;overflow-wrap:anywhere}
+.tb:hover{background:var(--card2)}
+.tb:active{transform:translateY(1px)}
+.tb svg{width:1.15em;height:1.15em;flex:none}
+.tb.go{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.tb.go:hover{filter:brightness(1.05)}
+.tb.quiet{border-color:var(--line)}
+.tb.main{width:100%;min-height:56px;font-size:1.12em}
+/* an on/off switch (sound, less motion): a pill with a small track */
+.tsw{justify-content:space-between;gap:12px;border-color:var(--line)}
+.tsw i{position:relative;flex:none;width:40px;height:24px;border-radius:999px;background:var(--line);transition:background .15s}
+.tsw i::after{content:'';position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:var(--card);box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+.tsw[aria-checked="true"] i{background:var(--green)}
+.tsw[aria-checked="true"] i::after{transform:translateX(16px)}
+[dir="rtl"] .tsw[aria-checked="true"] i::after{transform:translateX(-16px)}
+[dir="rtl"] .tsw i::after{left:auto;right:3px}
+
+/* ---------- the match ---------- */
+html.tm-play .tm-head{display:none}
+.tm{position:fixed;inset:0;display:flex;flex-direction:column;background:transparent;color:var(--ink);font-family:var(--font);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.tm-field{flex:1;min-height:0;display:grid;gap:10px;padding:10px}
 /* landscape: Blue | tug | Red */
 .tm-field{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);grid-template-areas:"blue mid red"}
-.side{grid-area:blue;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;padding:8px;border-radius:24px;border:3px solid var(--ok-edge);box-shadow:0 5px 0 var(--ok-edge);background:var(--blueTint)}
-.side.red{grid-area:red;background:var(--redTint)}
+.side{--g:var(--blue);grid-area:blue;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px;padding:12px 10px 10px;border-radius:var(--r);background:var(--card);
+  box-shadow:inset 0 5px 0 var(--g),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.side.red{--g:var(--red);grid-area:red}
 .mid{grid-area:mid;min-width:0;min-height:0;display:flex;flex-direction:column;gap:8px}
-.team{display:flex;align-items:center;justify-content:center;gap:8px;min-height:34px;padding:2px 12px;border-radius:999px;background:var(--blue);color:#fff;font-weight:800;font-size:1.05rem;flex:none;
-  border:2.5px solid var(--ok-edge);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.red .team{background:var(--red)}
+/* a team's widget head: its shape in the icon chip, its name */
+.team{display:flex;align-items:center;gap:8px;min-height:34px;flex:none;font-weight:800;font-size:1.05rem;color:var(--ink);white-space:nowrap;overflow:hidden}
+.team .tchip{flex:none;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:color-mix(in srgb,var(--g) 24%,var(--card));color:var(--g)}
 .team .shape{width:18px;height:18px;flex:none}
-.qcard{position:relative;flex:0 1 auto;height:clamp(64px,19vh,170px);min-height:56px;border-radius:20px;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);box-shadow:0 4px 0 var(--ok-edge);
+.team .tn{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.qcard{position:relative;flex:0 1 auto;height:clamp(64px,19vh,170px);min-height:56px;border-radius:var(--r-sm);background:var(--card2);color:var(--ink);
   display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px 8px;overflow:hidden;transition:background .15s}
-.qcard .q{font-weight:800;font-size:clamp(26px,min(4.2vw,6.4vh),64px);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center}
+.qcard .q{font-weight:800;font-size:clamp(26px,min(4.2vw,6.4vh),64px);line-height:1.1;white-space:nowrap;font-variant-numeric:tabular-nums;text-align:center;letter-spacing:-.01em}
 .qcard .q .x{font-style:italic;font-family:Georgia,'Times New Roman',serif;font-weight:700}
 .qcard .q .box{display:inline-block;min-width:1.2em;height:1em;vertical-align:-.1em;border:3px dashed currentColor;border-radius:8px}
-.qcard .sub{font-weight:700;font-size:clamp(14px,min(2vw,2.6vh),24px);opacity:.75;line-height:1.1}
+.qcard .sub{font-weight:700;font-size:clamp(14px,min(2vw,2.6vh),24px);color:var(--muted);line-height:1.1}
 .qcard.right{background:var(--goodTint)}
 .qcard.wrong{background:var(--redTint);animation:tmShake .35s ease}
+.tm-field.counting .qcard .q,.tm-field.counting .qcard .sub{visibility:hidden}
 .arow{display:flex;gap:8px;flex:none}
-.ans{flex:1;min-width:0;height:clamp(48px,7.5vh,72px);border-radius:16px;background:var(--ok-card);border:3px solid var(--ok-edge);display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:clamp(26px,min(3.6vw,5.4vh),52px);font-variant-numeric:tabular-nums;color:var(--ok-text);overflow:hidden}
+.ans{flex:1;min-width:0;height:clamp(48px,7.5vh,72px);border-radius:var(--r-sm);background:var(--card);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:clamp(26px,min(3.6vw,5.4vh),52px);font-variant-numeric:tabular-nums;color:var(--ink);overflow:hidden}
 .ans:empty::after{content:'';width:3px;height:.9em;background:currentColor;opacity:.45;animation:tmBlink 1s steps(2) infinite}
-.ans.ok{background:var(--good);color:#fff}
-.ans.no{background:var(--bad);color:#fff}
+.ans.ok{background:var(--good);border-color:var(--good);color:var(--on-green)}
+.ans.no{background:var(--bad);border-color:var(--bad);color:#fff}
+:root[data-theme="dark"] .ans.no{color:#2A100C}
 .keys{display:grid;gap:8px;flex:1 1 auto;min-height:0;max-height:62vh;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(44px,1fr)}
-.key{position:relative;min-width:0;min-height:44px;border:3px solid var(--keyEdge);border-radius:18px;background:var(--key);color:var(--ink);font-weight:800;font-size:clamp(24px,min(3vw,4.6vh),46px);
-  box-shadow:0 5px 0 var(--keyEdge);display:flex;align-items:center;justify-content:center;padding:0;transition:transform 70ms ease-out,box-shadow 70ms ease-out;font-variant-numeric:tabular-nums}
+/* a key: Crossword's button (an ink edge on the cream card), squared off a little for a keypad */
+.key{position:relative;min-width:0;min-height:44px;border:2px solid var(--ink);border-radius:14px;background:var(--card);color:var(--ink);font-weight:800;font-size:clamp(24px,min(3vw,4.6vh),46px);
+  display:flex;align-items:center;justify-content:center;padding:0;transition:transform 70ms ease-out,background 70ms ease-out;font-variant-numeric:tabular-nums}
 .key svg{width:.9em;height:.9em}
-.key.down,.key:active{transform:translateY(4px);box-shadow:0 1px 0 var(--keyEdge)}
-.key[data-k="ok"]{background:var(--good);color:#fff}
-.key[data-k="back"]{background:#EDE7D6}
+.key:hover{background:var(--card2)}
+.key.down,.key:active{transform:translateY(1px);background:var(--hover)}
+.key[data-k="ok"]{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.key[data-k="ok"].down,.key[data-k="ok"]:active{filter:brightness(.92)}
+.key[data-k="back"]{background:var(--card2);border-color:var(--line)}
 .key[data-k="pm"]{flex:none;width:clamp(56px,7vw,96px);height:auto;font-size:clamp(22px,min(2.6vw,4vh),40px)}
 .key[disabled]{opacity:.45;cursor:default}
-.ok-night .tm .key[data-k="back"]{background:#D9D2BF}
 .tm-field.done .keys,.tm-field.done .arow{opacity:.5;pointer-events:none}
 .side.lock .keys{opacity:.6}
 /* the computer's side: its question, its face and what it answers */
 .bot{flex:1 1 auto;min-height:0;display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800}
 .bot canvas{width:auto;height:min(150px,90%);max-height:150px}
 .think{display:flex;gap:6px}
-.think i{width:12px;height:12px;border-radius:50%;background:var(--ok-text);opacity:.25;animation:tmDot 1.2s infinite}
+.think i{width:12px;height:12px;border-radius:50%;background:var(--ink);opacity:.25;animation:tmDot 1.2s infinite}
 .think i:nth-child(2){animation-delay:.2s}.think i:nth-child(3){animation-delay:.4s}
 .think.off i{animation:none;opacity:.1}
-/* the middle: time and pulls, then the tug */
-.mbar{display:flex;align-items:center;gap:8px;flex:none}
-.mbtn{flex:none;width:var(--bh);height:var(--bh);border-radius:16px;border:3px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);box-shadow:0 4px 0 var(--ok-edge);display:grid;place-items:center;padding:0}
-.mbtn svg{width:50%;height:50%}
-.mbar{--bh:clamp(46px,6.4vh,84px)}
+/* the middle: the dark Now bar (pause, the two scores and the clock, new game), then the tug on the board */
+.mbar{display:flex;align-items:center;gap:8px;flex:none;padding:6px;border-radius:var(--r-sm);background:var(--current);color:var(--on-current)}
+.mbtn{flex:none;width:var(--bh);height:var(--bh);border-radius:50%;border:2px solid color-mix(in srgb,var(--on-current) 40%,transparent);background:transparent;color:var(--on-current);display:grid;place-items:center;padding:0}
+.mbtn:hover{background:color-mix(in srgb,var(--on-current) 14%,transparent)}
+.mbtn svg{width:46%;height:46%}
+.mbar{--bh:clamp(44px,6.4vh,84px)}
 .mid{container-type:inline-size}
 .board{flex:1;min-width:0;display:flex;align-items:stretch;justify-content:center;gap:6px;height:var(--bh)}
-.board .pts{min-width:52px;border-radius:16px;border:3px solid var(--ok-edge);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;color:#fff;font-weight:900;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
+.board .pts{min-width:52px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 12px;color:#fff;font-weight:800;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
 .board .pts svg{width:.55em;height:.55em}
 .board .pb{background:var(--blue)}.board .pr{background:var(--red)}
-.clock{min-width:78px;border-radius:16px;border:3px solid var(--ok-edge);background:var(--ok-card);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;font-weight:900;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
+.clock{min-width:78px;border-radius:999px;background:transparent;display:flex;align-items:center;justify-content:center;gap:5px;padding:0 8px;font-weight:800;font-size:clamp(1.3rem,3.6vh,2.6rem);font-variant-numeric:tabular-nums}
 .clock svg{width:.8em;height:.8em}
-.clock.low{background:#FFE07A;color:#1D2340}
+.clock.low{background:var(--spark);color:#141414}
 /* a narrow middle (a small window on its side): the score board on a row of its own, pause and new game under it */
 @container (max-width:310px){.mbar{flex-wrap:wrap;justify-content:space-between;row-gap:6px}.board{order:-1;flex-basis:100%}.board .pts{min-width:44px}.clock{min-width:0}}
-.scene{position:relative;flex:1 1 auto;min-height:96px;border-radius:24px;border:3px solid var(--ok-edge);overflow:hidden;box-shadow:0 5px 0 var(--ok-edge);container-type:size;background:var(--sky1)}
+/* the tug: a cream frame round a patch of the dotted board, a floor band, the middle line and each team's line */
+.scene{position:relative;flex:1 1 auto;min-height:96px;border-radius:var(--r);overflow:hidden;container-type:size;background:var(--card);
+  box-shadow:0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
 /* The tug's sizes, worked out inside the scene (cq units): --ch a figure's height (its width --cw is .8 of it), --gap
    from the flag to the first figure, --rs how far the rope reaches (in figure widths), and --S how far the whole tug
    moves at the line. The lines are drawn at 50% ± --S, and --S is kept small enough that the outer figure of the
    winning crew (leaning back: .12 of its height wider) stays inside the scene at the line (never slides out of the picture). A tall, narrow scene (the middle
    of a smartboard or a tablet) shows one big figure a side instead of two small ones, standing a little higher. */
-.scene>*{--gy:72cqh;--ch:min(46cqh,22cqw);--cw:calc(var(--ch) * .8);--gap:2cqw;--rs:1.75;
+.scene>*{--gy:74cqh;--ch:min(46cqh,22cqw);--cw:calc(var(--ch) * .8);--gap:2cqw;--rs:1.75;
   --S:clamp(8cqw,calc(46cqw - var(--gap) - var(--cw) * 1.55 - var(--ch) * .12),24cqw)}
 @container (max-aspect-ratio:6/5){
-  .scene>*{--gy:66cqh;--ch:min(40cqh,34cqw);--rs:1.2;--S:clamp(8cqw,calc(46cqw - var(--gap) - var(--cw) - var(--ch) * .12),24cqw)}
+  .scene>*{--gy:68cqh;--ch:min(40cqh,34cqw);--rs:1.2;--S:clamp(8cqw,calc(46cqw - var(--gap) - var(--cw) - var(--ch) * .12),24cqw)}
   .crew.cb canvas:nth-child(1),.crew.cr canvas:nth-child(2){display:none}
 }
-.scene .bg{position:absolute;inset:0;background:linear-gradient(var(--sky1),var(--sky2) var(--gy),var(--grass) var(--gy),var(--grass2))}
-.scene .sun{position:absolute;right:8cqw;top:8cqh;width:min(16cqw,22cqh);aspect-ratio:1;border-radius:50%;background:#FFE07A;box-shadow:0 0 0 min(2cqw,3cqh) rgba(255,224,122,.35)}
-.ok-night .tm .scene .sun{background:#F4F1E6;box-shadow:0 0 0 min(2cqw,3cqh) rgba(244,241,230,.18)}
-.scene .cloud{position:absolute;height:min(7cqw,9cqh);aspect-ratio:3;border-radius:999px;background:rgba(255,255,255,.85);border:2px solid rgba(29,35,64,.25)}
-.ok-night .tm .scene .cloud{background:rgba(255,255,255,.18)}
-.scene .cloud.c1{left:7cqw;top:12cqh}.scene .cloud.c2{left:40cqw;top:26cqh;height:min(5cqw,7cqh)}
-.scene .mark{position:absolute;top:var(--gy);bottom:0;width:0;border-inline-start:4px dashed rgba(29,35,64,.55)}
-.scene .mark.c{left:50%;border-inline-start-style:solid;border-color:rgba(255,255,255,.8)}
+.scene .bg{position:absolute;inset:6px;border-radius:calc(var(--r) - 6px);background-color:var(--paper);background-image:radial-gradient(var(--dots) 1.5px,transparent 1.6px);background-size:22px 22px;background-position:center}
+/* the floor: a band of the board a shade deeper, with an ink edge the figures stand on */
+.scene .floor{position:absolute;left:6px;right:6px;bottom:6px;top:var(--gy);border-radius:0 0 calc(var(--r) - 6px) calc(var(--r) - 6px);border-top:3px solid color-mix(in srgb,var(--ink) 55%,transparent);
+  background:color-mix(in srgb,var(--accent) 22%,transparent)}
+/* (the board's two halves: a tint of each team's color, so the side the flag is on reads at a glance) */
+.scene .half{position:absolute;top:6px;bottom:6px;width:calc(50% - 6px);opacity:.5}
+.scene .half.hb{left:6px;background:linear-gradient(90deg,color-mix(in srgb,var(--blue) 20%,transparent),transparent 70%);border-radius:calc(var(--r) - 6px) 0 0 calc(var(--r) - 6px)}
+.scene .half.hr{right:6px;background:linear-gradient(270deg,color-mix(in srgb,var(--red) 20%,transparent),transparent 70%);border-radius:0 calc(var(--r) - 6px) calc(var(--r) - 6px) 0}
+.scene .mark{position:absolute;top:12%;bottom:6px;width:0;border-inline-start:3px dashed color-mix(in srgb,var(--ink) 45%,transparent)}
+.scene .mark.c{left:50%;border-inline-start-style:solid;border-color:var(--ink);opacity:.55}
 .scene .mark.lb{left:calc(50% - var(--S));border-color:var(--blue)}.scene .mark.lr{left:calc(50% + var(--S));border-color:var(--red)}
-.scene .mark.lb,.scene .mark.lr{border-inline-start-width:6px}
+.scene .mark.lb,.scene .mark.lr{border-inline-start-width:5px}
 .scene .mark.lb,.scene .mark.lr,.scene .mark.c{margin-inline-start:-2px}
+/* each team's line has its shape at the top, so the two lines differ by more than their color */
+.scene .mark .shape{position:absolute;top:-4px;left:50%;width:min(5cqh,22px);height:min(5cqh,22px);transform:translate(-50%,-100%)}
+.scene .mark.lb .shape{color:var(--blue)}.scene .mark.lr .shape{color:var(--red)}
 .tug{position:absolute;inset:0;transform:translateX(calc(var(--p,0) * -1 * var(--S)));transition:transform .35s cubic-bezier(.3,1.25,.5,1)}
 .tug .rope{position:absolute;left:calc(50% - var(--gap) - var(--cw) * var(--rs));right:calc(50% - var(--gap) - var(--cw) * var(--rs));top:calc(var(--gy) - var(--ch) * .42);height:max(6px,1.4cqh);transform:translateY(-50%);visibility:hidden}
-/* the loose ends' room: past the last puller on each side the rope hangs down and lies on the grass, like a real rope */
+/* the loose ends' room: past the last puller on each side the rope hangs down and lies on the floor, like a real rope */
 .tug .tail{position:absolute;top:calc(var(--gy) - var(--ch) * .42);width:min(calc(var(--ch) * .36),calc(50% - var(--gap) - var(--cw) * var(--rs) - 2cqw));height:calc(var(--ch) * .4);visibility:hidden}
 .tug .tail.l{right:calc(50% + var(--gap) + var(--cw) * var(--rs))}
 .tug .tail.r{left:calc(50% + var(--gap) + var(--cw) * var(--rs))}
 /* the rope itself: one line (the middle and both loose ends), so there is no seam where it starts to droop */
 .tug .ropeline{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .tug .ropeline path{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.tug .ropeline .o{stroke:#6B4A1E}.tug .ropeline .i{stroke:#E9C178}.tug .ropeline .s{stroke:#B07A30;stroke-linecap:butt}
-.tug .flag{position:absolute;left:50%;top:calc(var(--gy) - var(--ch) * .42 - var(--ch) * .36);width:4px;height:calc(var(--ch) * .38);margin-left:-2px;background:#1D2340;border-radius:2px}
-.tug .flag::after{content:'';position:absolute;left:4px;top:0;width:calc(var(--ch) * .22);height:calc(var(--ch) * .15);background:#FFC83D;border:2px solid #1D2340;border-radius:0 6px 6px 0}
+.tug .ropeline .o{stroke:#5A3D17}.tug .ropeline .i{stroke:#E9C178}.tug .ropeline .s{stroke:#B07A30;stroke-linecap:butt}
+.tug .flag{position:absolute;left:50%;top:calc(var(--gy) - var(--ch) * .42 - var(--ch) * .36);width:4px;height:calc(var(--ch) * .38);margin-left:-2px;background:var(--ink);border-radius:2px}
+.tug .flag::after{content:'';position:absolute;left:4px;top:0;width:calc(var(--ch) * .22);height:calc(var(--ch) * .15);background:var(--spark);border:2px solid var(--ink);border-radius:0 6px 6px 0}
 .crew{position:absolute;inset:0}
 .crew canvas{position:absolute;top:calc(var(--gy) - var(--ch) * 1.02);height:var(--ch);width:auto;transform-origin:50% 100%}
 .crew.cb canvas{transform:rotate(-8deg)}
@@ -122,9 +186,10 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 .crew.cr canvas:nth-child(1){right:calc(50% - var(--gap) - var(--cw));z-index:1}.crew.cr canvas:nth-child(2){right:calc(50% - var(--gap) - var(--cw) * 1.55)}
 .crew.pull{animation:tmPullL .32s ease-out}
 .crew.cr.pull{animation-name:tmPullR}
-.say{flex:none;min-height:30px;margin:0;text-align:center;font-weight:800;font-size:clamp(15px,min(1.8vw,2.6vh),24px);line-height:1.2}
-.banner{position:absolute;left:50%;top:10%;transform:translateX(-50%);max-width:92%;background:var(--ok-card);border:3px solid var(--ok-edge);border-radius:18px;padding:6px 16px;font-weight:900;
-  font-size:clamp(18px,min(2.6vw,4vh),40px);text-align:center;box-shadow:0 4px 0 var(--ok-edge);pointer-events:none}
+.say{flex:none;min-height:30px;margin:0;text-align:center;font-weight:700;color:var(--muted);font-size:clamp(15px,min(1.8vw,2.6vh),24px);line-height:1.2}
+/* the winner: the dark Now block over the board */
+.banner{position:absolute;left:50%;top:9%;transform:translateX(-50%);max-width:92%;background:var(--current);color:var(--on-current);border-radius:var(--r-sm);padding:8px 18px;font-weight:800;
+  font-size:clamp(18px,min(2.6vw,4vh),40px);text-align:center;box-shadow:var(--shadow);pointer-events:none}
 @keyframes tmShake{0%,100%{transform:translateX(0)}30%{transform:translateX(-7px)}70%{transform:translateX(6px)}}
 @keyframes tmBlink{50%{opacity:0}}
 @keyframes tmDot{0%,100%{opacity:.2;transform:none}50%{opacity:.9;transform:translateY(-4px)}}
@@ -132,7 +197,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 @keyframes tmPullR{40%{transform:translateX(2%)}}
 .tm.rm .tug{transition:transform .25s linear}
 .tm.rm .crew.pull,.tm.rm .qcard.wrong,.tm.rm .think i,.tm.rm .ans:empty::after{animation:none}
-.kbhint{display:none;text-align:center;font-size:.9rem;font-weight:700;opacity:.75;margin:0;flex:none}
+.kbhint{display:none;text-align:center;font-size:.9rem;font-weight:600;color:var(--muted);margin:0;flex:none}
 @media (hover:hover) and (pointer:fine) and (min-height:700px) and (orientation:landscape){.kbhint{display:block}}
 
 /* 4 keys a row: the digits keep the phone's order (1 2 3 / 4 5 6 / 7 8 9), with delete, 0 and the tick on the right */
@@ -144,20 +209,21 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 /* two players, short landscape (a phone on its side): one row less of keys */
 @media (orientation:landscape) and (max-height:560px){
   .tm-field{gap:6px;padding:6px}
-  .side{gap:6px;padding:6px;border-radius:18px}
+  .side{gap:6px;padding:9px 6px 6px;border-radius:16px}
   .team{min-height:28px;font-size:.92rem}
-  .qcard{min-height:56px;border-radius:16px}
+  .team .tchip{width:28px;height:28px;border-radius:8px}
+  .qcard{min-height:56px}
   .keys{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-  .key{border-radius:14px;font-size:24px}
+  .key{border-radius:12px;font-size:24px}
   .ans{height:46px}
-  .mbar{--bh:46px}
+  .mbar{--bh:44px;padding:4px}
   .board .pts,.clock{font-size:1.3rem}
   .say{min-height:22px;font-size:15px}
 }
 /* portrait: stacked. Two players: Red's half turned round at the top; vs Computer: the computer's card on top */
 @media (orientation:portrait){
   .tm-field{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto minmax(0,1fr);grid-template-areas:"red" "mid" "blue";gap:6px;padding:6px}
-  .tm-field.two .side.red{transform:rotate(180deg)}
+  .tm-field.two .side.red{transform:rotate(180deg);box-shadow:inset 0 5px 0 var(--g),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent)}
   .tm-field.cpu{grid-template-rows:auto clamp(170px,30vh,330px) minmax(0,1fr)}
   .key{font-size:clamp(22px,min(5vw,3.6vh),44px)}
   .qcard .q{font-size:clamp(24px,min(7vw,4.6vh),60px)}
@@ -165,7 +231,7 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .mid{min-height:150px}
   .scene{min-height:70px}
   .tm-field.two .mid{height:clamp(150px,20vh,230px)}
-  .side{gap:6px;padding:6px;border-radius:20px}
+  .side{gap:6px;padding:10px 6px 6px;border-radius:18px}
   .qcard{height:clamp(56px,9vh,120px)}
   .tm-field.two .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;max-height:240px}
   .tm-field.cpu .side.red{flex-direction:row;align-items:stretch;flex-wrap:wrap}
@@ -178,14 +244,15 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 }
 @media (orientation:portrait) and (max-height:1000px){
   .tm-field.two .keys{gap:5px}
-  .tm-field.two .key{font-size:24px;border-radius:14px}
+  .tm-field.two .key{font-size:24px;border-radius:12px}
   .tm-field.two .qcard{min-height:58px}
   .tm-field.two .ans{height:48px}
   .tm-field.two .team{min-height:28px;font-size:.92rem}
+  .tm-field.two .team .tchip{width:28px;height:28px;border-radius:8px}
 }
 @media (orientation:portrait) and (max-height:800px){
   .tm-field.cpu .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:5px}
-  .tm-field.cpu .key{font-size:24px;border-radius:14px}
+  .tm-field.cpu .key{font-size:24px;border-radius:12px}
   .tm-field.cpu{grid-template-rows:auto clamp(160px,34vh,330px) minmax(0,1fr)}
   /* question and answer side by side, then the keys fill all the height that is left (up to a comfortable size) */
   .tm-field.cpu .side.blue{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);align-content:start}
@@ -196,11 +263,11 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .tm-field.cpu .side.blue .keys{height:100%;max-height:min(200px,calc((100vw - 40px) * .45));align-self:start}
   .tm-field.cpu .say{display:none}
 }
-@media (orientation:portrait) and (max-width:379px){.tm-field.two .keys{gap:3px}.tm-field.two .side{padding:5px 4px}}
-/* portrait: the keypad always fits above the bottom edge, with room for the keys' shadow; on short screens the
-   keys and the rope scene give up height first (keys stay at least 36px, a comfortable tap) */
+@media (orientation:portrait) and (max-width:379px){.tm-field.two .keys{gap:3px}.tm-field.two .side{padding:8px 4px 5px}}
+/* portrait: the keypad always fits above the bottom edge; on short screens the keys and the rope scene give up height
+   first (keys stay at least 36px, a comfortable tap) */
 @media (orientation:portrait){
-  .tm-field{padding-bottom:14px}
+  .tm-field{padding-bottom:12px}
   .tm-field .keys{grid-auto-rows:minmax(36px,1fr);max-height:none}
   .tm-field .key{min-height:36px}
 }
@@ -222,109 +289,138 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .tm-field.two .qcard .q{font-size:24px}
   .tm-field.two .ans{height:36px;font-size:24px}
   .tm-field.two .team{min-height:24px}
-  .tm-field.two .side{gap:4px;padding:4px}
+  .tm-field.two .side{gap:4px;padding:7px 4px 4px}
   .tm-field.two .keys{gap:4px}
   .tm-field.two{gap:4px}
 }
 @media (orientation:portrait) and (max-height:520px){.tm-field.two .keys{grid-auto-rows:minmax(30px,1fr)}.tm-field.two .key{min-height:30px;font-size:20px}.tm-field.two .mid{height:76px}}
 
-/* ---------- the setup card ---------- */
-.tms{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;padding:max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom));background:var(--ok-scrim)}
-.tms-card{width:min(760px,100%);max-height:100%;overflow:auto;background:var(--ok-card);color:var(--ok-text);border:3px solid var(--ok-edge);border-radius:28px;box-shadow:0 6px 0 var(--ok-edge);
-  padding:14px 16px 16px;display:grid;gap:10px;grid-template-columns:minmax(0,1fr);font-family:var(--ok-font,system-ui,sans-serif)}
-.tms h2{margin:0;text-align:center;font-size:clamp(1.4rem,4vmin,2rem);line-height:1.1}
-.tms fieldset{border:0;margin:0;padding:0;min-width:0;display:flex;flex-direction:column;gap:6px}
-.tms legend{padding:0;font-weight:800;font-size:1rem;margin-bottom:4px}
+/* ---------- the setup card: a widget on the board, each choice in its own section, Crossword's pills ---------- */
+.tms{position:fixed;inset:0;z-index:20;overflow:auto;display:flex;flex-direction:column;align-items:center;padding:calc(66px + env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom))}
+.tms-card{width:min(760px,100%);margin:auto 0;padding:16px;display:grid;gap:12px;grid-template-columns:minmax(0,1fr);font-family:var(--font)}
+.tms h2{font-size:clamp(1.3rem,3.6vmin,1.8rem)}
+.tms fieldset{border:0;margin:0;padding:12px;min-width:0;display:flex;flex-direction:column;gap:8px;border-radius:var(--r-sm);background:var(--card2)}
+.tms legend{float:left;width:100%;padding:0;font-weight:800;font-size:1.02rem}
+.tms legend+*{clear:both}
 .tms .row{display:grid;gap:6px;grid-template-columns:repeat(var(--n,3),minmax(0,1fr))}
-.tms .grades{--n:8}
-.tms .opt{min-height:48px;min-width:0;border:3px solid var(--ok-edge);border-radius:16px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:1.05rem;padding:4px 6px;line-height:1.1;
-  display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
-.tms .opt svg{width:22px;height:22px;flex:none}
-.tms .opt[aria-checked="true"]{background:#FFC83D;color:#1D2340;box-shadow:0 3px 0 var(--ok-edge)}
-.tms .opt:focus-visible{outline:4px solid var(--ok-focus);outline-offset:2px}
-.tms .sample{margin:0;font-weight:700;min-height:1.3em;text-align:center;opacity:.85}
-.tms .sample b{display:inline-block;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tms .grades{--n:8}.tms .lens{--n:4}
+.tms .opt{min-height:48px;min-width:0;padding:4px 10px;font-size:1.02rem}
+.tms .opt svg{width:20px;height:20px}
+.tms .opt[aria-checked="true"]{background:var(--current);border-color:var(--current);color:var(--on-current)}
+.tms .sample{margin:0;font-weight:600;min-height:1.3em;color:var(--muted)}
+.tms .sample b{display:inline-block;white-space:nowrap;font-variant-numeric:tabular-nums;color:var(--ink);font-weight:800}
 .tms .go{display:flex;justify-content:center}
-.tms .go .ok-btn{min-width:min(320px,100%)}
-.tms .note{margin:0;text-align:center;font-size:.9rem;font-weight:600;opacity:.75}
-@media (max-width:520px){.tms .grades{--n:4}}
+.tms .left,.tms .right{display:flex;flex-direction:column;gap:10px;min-width:0}
+.tms .note{margin:0;text-align:center;font-size:.92rem;font-weight:600;color:var(--muted)}
+@media (max-width:520px){.tms .grades{--n:4}.tms .lens{--n:2}.tms-card{padding:14px 12px}}
 @media (hover:none){.tms .note{display:none}}
 @media (orientation:landscape) and (max-height:560px){
-  .tms-card{grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"h h" "l r" "g r";grid-template-rows:auto auto 1fr;gap:8px 14px;padding:10px 14px 12px;width:min(860px,100%)}
-  .tms h2{grid-area:h}.tms .left{grid-area:l}.tms .right{grid-area:r}.tms .go{grid-area:g;align-self:end}
-  .tms h2{font-size:1.3rem}
-  .tms .grades{--n:4}
-  .tms .opt{min-height:44px;font-size:.98rem}
+  .tms{padding-top:max(8px,env(safe-area-inset-top))}
+  .tm-head{display:none}
+  /* two columns: grade and time on the left, players and the computer on the right, Start under both */
+  .tms-card{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"h h" "gr pl" "ti lv" "go go";gap:6px 10px;padding:8px 12px 10px;width:min(900px,100%)}
+  .tms .left,.tms .right{display:contents}
+  .tms .tw-wh{grid-area:h}.tms .fs-grade{grid-area:gr}.tms .fs-time{grid-area:ti}.tms .fs-players{grid-area:pl}.tms .fs-level{grid-area:lv}.tms .go{grid-area:go}
+  .tms h2{font-size:1.2rem}
+  .tms .tw-chip{width:32px;height:32px}
+  .tms .grades{--n:8}
+  .tms fieldset{padding:6px 8px;gap:4px}
+  .tms legend{font-size:.92rem}
+  .tms .sample{font-size:.88rem}
+  .tms .opt{min-height:44px;font-size:.94rem;padding:2px 6px}
+  .tms .go .tb{min-height:46px}
   .tms .note{display:none}
-  .tms .right{display:flex;flex-direction:column;gap:8px}
 }
-.tms .left,.tms .right{display:flex;flex-direction:column;gap:10px;min-width:0}
 /* a smartboard or a big screen: the card and its words grow so the class can read them from their seats */
 @media (min-width:1400px) and (min-height:860px){
-  .tms-card{width:min(1180px,90vw);padding:2.4vmin 2.8vmin 2.8vmin;gap:1.8vmin;border-radius:36px}
-  .tms h2{font-size:clamp(2rem,4.4vmin,3.4rem)}
+  .tms-card{width:min(1180px,90vw);padding:2.4vmin 2.8vmin 2.8vmin;gap:1.8vmin;border-radius:28px}
+  .tms h2{font-size:clamp(2rem,4.4vmin,3.2rem)}
+  .tms .tw-chip{width:clamp(40px,6vmin,72px);height:clamp(40px,6vmin,72px);font-size:clamp(1.3rem,3.4vmin,2.4rem);border-radius:16px}
+  .tms fieldset{padding:1.6vmin}
   .tms legend{font-size:clamp(1rem,2.4vmin,1.9rem)}
   .tms .row{gap:1.1vmin}
-  .tms .opt{min-height:clamp(48px,7vmin,96px);font-size:clamp(1.05rem,2.6vmin,2.1rem);border-radius:22px}
-  .tms .opt svg{width:1.2em;height:1.2em}
+  .tms .opt{min-height:clamp(48px,7vmin,96px);font-size:clamp(1.05rem,2.6vmin,2.1rem)}
+  .tms .opt svg{width:1.1em;height:1.1em}
   .tms .sample,.tms .note{font-size:clamp(1rem,2.1vmin,1.6rem)}
-  .tms .go .ok-btn{min-width:min(460px,100%);font-size:clamp(1.3rem,3vmin,2.4rem)}
+  .tms .go .tb{font-size:clamp(1.3rem,3vmin,2.4rem);min-height:clamp(56px,8vmin,104px)}
   .mbar{--bh:clamp(46px,8.4vh,110px)}
   .board .pts,.clock{font-size:clamp(1.3rem,4.6vh,3.4rem)}
 }
-/* the results card on a phone on its side: the picture beside the words (so Play again is on screen without
-   scrolling), and no extra line of numbers (the score says enough) */
+
+/* ---------- 3, 2, 1, pause and the results: cards over the board ---------- */
+.tmo{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:var(--scrim);overflow:auto}
+.tmo.tmc{background:transparent;pointer-events:none}
+.tmc b{display:grid;place-items:center;min-width:min(34vmin,220px);min-height:min(34vmin,220px);padding:0 24px;border-radius:999px;background:var(--current);color:var(--on-current);
+  font-size:clamp(48px,16vmin,140px);font-weight:800;font-variant-numeric:tabular-nums;box-shadow:var(--shadow);animation:tmPop .5s ease-out}
+.tmo-card{width:min(480px,100%);max-height:100%;overflow:auto;margin:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.tmo-card .acts{display:flex;flex-direction:column;gap:8px}
+.tmo-card .acts2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tmr .tmo-card{text-align:center;align-items:stretch}
+.tmr .tw-wh{justify-content:center}.tmr .tw-wh h2{flex:0 1 auto;font-size:1.5rem}
+.tm-field.done .think i{animation:none;opacity:.1}
+.tmr .pic{display:flex;justify-content:center;align-items:flex-end;min-height:0}
+.tmr .pic canvas{height:clamp(80px,18vh,150px);width:auto}
+.tmr .stars{font-size:2.4em;letter-spacing:6px;color:var(--spark);text-shadow:0 2px 0 rgba(0,0,0,.15);line-height:1}
+.tmr .stars .off{color:var(--line);text-shadow:none}
+.tmr .score{margin:0;font-weight:800;font-size:1.5rem}
+.tm-stats{margin:0;font-weight:700;color:var(--muted)}
+@keyframes tmPop{0%{transform:scale(.7);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:none}}
+.rmo .tmc b{animation:none}
 @media (orientation:landscape) and (max-height:430px){
+  .tmr .tmo-card{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:16px;row-gap:6px;align-items:center;width:min(640px,100%);padding:12px 16px}
+  .tmr .tmo-card>*{grid-column:2}
+  .tmr .tmo-card>.pic{grid-column:1;grid-row:1 / span 6}
+  .tmr .pic canvas{height:min(140px,40vh)}
   .tm-stats{display:none}
-  .ok-modal .ok-card{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:18px;row-gap:4px;align-items:center;align-content:center;width:min(640px,100%);max-width:none;padding:16px 20px}
-  .ok-modal .ok-card>*{grid-column:2;margin-top:0;margin-bottom:0}
-  /* (the picture: the winner's portrait, or the box round the player's face after a loss) */
-  .ok-modal .ok-card>:first-child{grid-column:1;grid-row:1 / span 9;width:auto;height:min(140px,40vh)}
-  .ok-modal .ok-card>:first-child canvas{width:auto;height:100%}
+  .tmr .stars{font-size:1.8em}
 }
+.tm-confetti{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:35}
+.tm-confetti i{position:absolute;top:-12px;width:10px;height:14px;border-radius:2px;animation:tmFall var(--t,1.6s) ease-in var(--d,0s) forwards}
+@keyframes tmFall{to{transform:translate(var(--x,0),105vh) rotate(var(--r,360deg))}}
+@media (prefers-reduced-motion:reduce){.tmc b,.tm-confetti i{animation:none}.tm-confetti{display:none}}
 
 /* ---------- Oomba Live (Tug of Math Live): the projector (role host) and each player's device ---------- */
-.tl{--tb:#0072B2;--tbi:#fff;--tr:#D55E00;--tri:#121528;
-  /* no kit game runs here (no O.game), so its colour words are set here, for light and dark */
-  --ok-card:#FFFDF7;--ok-edge:#1D2340;--ok-text:#1D2340;--ok-bg2:#EAF6FF;--ok-scrim:rgba(29,35,64,.45);--ok-focus:#FFC83D}
-.tl.tl-dark{--ok-card:#262A48;--ok-edge:#0B0D22;--ok-text:#F4F1E6;--ok-bg2:#171A36;--ok-scrim:rgba(5,6,20,.6);
-  --blueTint:#173A5C;--redTint:#55221E;--goodTint:#164A33;--sky1:#26305E;--sky2:#3B3F78;--grass:#2F7445;--grass2:#245C37;--soil:#6B5235;--key:#FFFDF2}
-.tl.tl-dark .scene .sun{background:#F4F1E6;box-shadow:0 0 0 min(2cqw,3cqh) rgba(244,241,230,.18)}
-.tl.tl-dark .scene .cloud{background:rgba(255,255,255,.18)}
-.tl.tl-dark .key[data-k="back"]{background:#D9D2BF}
-.tl .tl-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.tl-band{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:4px 14px;border-radius:999px;border:3px solid var(--ok-edge);font-weight:900;font-size:clamp(16px,min(4.6vw,3vh),26px);
-  background:var(--team,var(--tb));color:var(--teamInk,#fff);flex:none;white-space:nowrap;overflow:hidden}
+.tl{--tb:#0072B2;--tbi:#fff;--tr:#D55E00;--tri:#121528}
+.tl-band{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:4px 8px 4px 6px;border-radius:999px;font-weight:800;font-size:clamp(16px,min(4.6vw,3vh),24px);
+  background:var(--card);color:var(--ink);flex:none;white-space:nowrap;overflow:hidden;box-shadow:inset 0 0 0 3px var(--team,var(--line)),var(--shadow)}
+.tl-band>span:first-child{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--team,var(--line)) 24%,var(--card))}
+.tl-band>span:first-child:empty{display:none}
 .tl-band .shape{width:1em;height:1em;flex:none}
-.tl-band .tn{overflow:hidden;text-overflow:ellipsis}
+.tl-band .tn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:center}
 .tl-mini{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;flex:none}
-.tl-mini .num{min-width:48px;height:40px;border-radius:14px;border:3px solid var(--ok-edge);display:flex;align-items:center;justify-content:center;gap:4px;padding:0 8px;font-weight:900;font-size:20px;font-variant-numeric:tabular-nums}
+.tl-mini .num{min-width:48px;height:40px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:4px;padding:0 10px;font-weight:800;font-size:20px;font-variant-numeric:tabular-nums}
 .tl-mini .num svg{width:.7em;height:.7em}
 .tl-mini .nb{background:var(--tb);color:var(--tbi)}.tl-mini .nr{background:var(--tr);color:var(--tri)}
-.tl-track{position:relative;height:40px;border-radius:14px;border:3px solid var(--ok-edge);background:linear-gradient(90deg,var(--blueTint) 0 50%,var(--redTint) 50% 100%);overflow:hidden}
-.tl-track .ln{position:absolute;top:0;bottom:0;width:4px;margin-left:-2px;background:var(--ok-edge);opacity:.55}
+.tl-track{position:relative;height:40px;border-radius:999px;background-color:var(--paper);background-image:linear-gradient(90deg,color-mix(in srgb,var(--tb) 18%,transparent) 0 50%,color-mix(in srgb,var(--tr) 18%,transparent) 50% 100%);
+  box-shadow:inset 0 0 0 2px var(--line);overflow:hidden}
+.tl-track .ln{position:absolute;top:0;bottom:0;width:4px;margin-left:-2px;background:var(--ink);opacity:.45}
 .tl-track .ln.c{left:50%;opacity:.3}.tl-track .ln.lb{left:10%;background:var(--tb);opacity:1}.tl-track .ln.lr{left:90%;background:var(--tr);opacity:1}
-.tl-track .rp{position:absolute;left:6%;right:6%;top:50%;height:6px;margin-top:-3px;border-radius:3px;background:repeating-linear-gradient(60deg,#C8913E 0 6px,#E9C178 6px 12px);transform:translateX(calc(var(--p,0) * -40cqw));transition:transform .3s ease-out}
-.tl-track .fl{position:absolute;left:50%;top:4px;bottom:4px;width:6px;margin-left:-3px;border-radius:3px;background:#FFC83D;border:2px solid #1D2340;transform:translateX(calc(var(--p,0) * -40cqw));transition:transform .3s ease-out}
+.tl-track .rp{position:absolute;left:6%;right:6%;top:50%;height:6px;margin-top:-3px;border-radius:3px;background:repeating-linear-gradient(60deg,#B07A30 0 6px,#E9C178 6px 12px);transform:translateX(calc(var(--p,0) * -40cqw));transition:transform .3s ease-out}
+.tl-track .fl{position:absolute;left:50%;top:4px;bottom:4px;width:6px;margin-left:-3px;border-radius:3px;background:var(--spark);border:2px solid #141414;transform:translateX(calc(var(--p,0) * -40cqw));transition:transform .3s ease-out}
 .tl-track{container-type:inline-size}
 .tl.rm .tl-track .rp,.tl.rm .tl-track .fl{transition:none}
-.tl-clock{display:flex;align-items:center;justify-content:center;gap:4px;font-weight:900;font-variant-numeric:tabular-nums;border-radius:14px;border:3px solid var(--ok-edge);background:var(--ok-card);color:var(--ok-text);padding:0 10px;min-width:72px}
+/* the clock: the dark Now block */
+.tl-clock{display:flex;align-items:center;justify-content:center;gap:5px;font-weight:800;font-variant-numeric:tabular-nums;border-radius:var(--r-sm);background:var(--current);color:var(--on-current);padding:0 12px;min-width:72px}
 .tl-clock svg{width:.8em;height:.8em}
-.tl-clock.low{background:#FFE07A;color:#1D2340}
-.tl-wait{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:12px}
-.tl-wait .big{--bs:min(40vw,24vh,180px);position:relative;flex:none;width:var(--bs);height:var(--bs);display:flex;align-items:center;justify-content:center}
-.tl-wait .big canvas{height:var(--bs);width:auto;max-width:100%;object-fit:contain}
+.tl-clock.low{background:var(--spark);color:#141414}
+.tl-wait{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;padding:18px;margin:auto;width:min(520px,100%);
+  background:var(--card);border-radius:var(--r);box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g-class) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow);max-height:100%}
+.tl-wait .big{--bs:min(40vw,22vh,170px);position:relative;flex:none;width:var(--bs);height:var(--bs);display:flex;align-items:center;justify-content:center;border-radius:24px;background:var(--card2)}
+.tl-wait .big canvas{height:calc(var(--bs) * .9);width:auto;max-width:100%;object-fit:contain}
 .tl-wait .big .badge{position:absolute;right:4%;bottom:4%;width:30%;height:30%}
 .tl-wait .big.cup{color:#E0A100}
-.tl-wait .big.cup svg{width:90%;height:90%}
-.tl-wait h2{margin:0;font-size:clamp(22px,min(7vw,4.6vh),44px);line-height:1.15}
-.tl-wait p{margin:0;font-weight:700;font-size:clamp(16px,min(4.4vw,2.8vh),26px)}
-.tl-over{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:var(--ok-scrim);pointer-events:none}
-.tl-over b{background:var(--ok-card);color:var(--ok-text);border:4px solid var(--ok-edge);border-radius:24px;box-shadow:0 5px 0 var(--ok-edge);padding:10px 24px;font-size:clamp(28px,min(9vw,8vh),96px);font-weight:900;text-align:center;max-width:90%}
-/* a player's device: their team, a small rope, their own question and keypad */
-.tlp{position:fixed;inset:0;display:flex;flex-direction:column;gap:8px;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(safe-area-inset-bottom));background:var(--ok-bg2);color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif)}
-.tlp .tl-mini .tl-clock{height:40px;font-size:20px}
-.tlp .play{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+.tl-wait .big.cup svg{width:80%;height:80%}
+.tl-wait h2{margin:0;font-size:clamp(22px,min(7vw,4.6vh),40px);line-height:1.15;font-weight:800}
+.tl-wait p{margin:0;font-weight:700;font-size:clamp(16px,min(4.4vw,2.8vh),24px)}
+.tl-wait p:empty{display:none}
+.tl-wait p:last-child{color:var(--muted)}
+.tl-over{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:var(--scrim);pointer-events:none}
+.tl-over b{background:var(--current);color:var(--on-current);border-radius:var(--r);box-shadow:var(--shadow);padding:12px 28px;font-size:clamp(28px,min(9vw,8vh),96px);font-weight:800;text-align:center;max-width:90%}
+/* a player's device: their team, a small rope, their own question and keypad, all on the board */
+.tlp{position:fixed;inset:0;display:flex;flex-direction:column;gap:8px;padding:max(8px,env(safe-area-inset-top)) 10px max(8px,env(safe-area-inset-bottom));background:transparent;color:var(--ink);font-family:var(--font)}
+.tlp .tl-band .tl-clock{height:34px;font-size:18px;min-width:64px}
+.tlp .play{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:var(--r);background:var(--card);
+  box-shadow:inset 0 4px 0 color-mix(in srgb,var(--team,var(--g-class)) 75%,var(--card)),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
 .tlp .qcard{height:clamp(64px,15vh,150px);flex:none}
 .tlp .qcard .q{font-size:clamp(28px,min(9vw,6vh),64px)}
 .tlp .arow .ans{height:clamp(48px,7.5vh,72px)}
@@ -340,8 +436,10 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
 }
 @media (orientation:landscape) and (max-height:500px){
   .tlp{gap:6px;padding-top:6px;padding-bottom:6px}
-  .tlp .tl-band{min-height:32px;font-size:16px}
-  .tlp .tl-mini .num,.tlp .tl-mini .tl-clock,.tl-track{height:34px}
+  .tlp .tl-band{min-height:40px;font-size:16px}
+  .tlp .tl-band>span:first-child{width:30px;height:30px}
+  .tlp .tl-mini .num,.tlp .tl-band .tl-clock,.tl-track{height:32px}
+  .tlp .play{padding:8px}
   .tlp .keys{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
   .tlp .say{display:none}
 }
@@ -349,35 +447,40 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
   .tlp .keys{grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;flex:0 1 auto}
   .tlp .qcard{height:64px}
 }
-/* the projector: both teams, the clock and the big tug */
-.tlh{position:fixed;inset:0;display:flex;flex-direction:column;gap:clamp(6px,1.2vh,14px);padding:clamp(8px,1.4vh,18px);background:var(--ok-bg2);color:var(--ok-text);font-family:var(--ok-font,system-ui,sans-serif)}
+/* the projector: both teams' widgets and the clock, then the big tug on the board */
+.tlh{position:fixed;inset:0;display:flex;flex-direction:column;gap:clamp(6px,1.2vh,14px);padding:clamp(8px,1.4vh,18px);background:transparent;color:var(--ink);font-family:var(--font)}
 .tlh .top{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:clamp(6px,1.2vw,16px);align-items:stretch;flex:none}
-.tlh .tp{border-radius:20px;border:3px solid var(--ok-edge);box-shadow:0 4px 0 var(--ok-edge);padding:6px 12px;display:flex;align-items:center;gap:10px;min-width:0;background:var(--tb);color:var(--tbi)}
-.tlh .tp.r{background:var(--tr);color:var(--tri);flex-direction:row-reverse}
-.tlh .tp .shape{width:clamp(26px,4vh,52px);height:clamp(26px,4vh,52px);flex:none}
+.tlh .tp{--g:var(--tb);border-radius:var(--r);padding:10px 14px 8px;display:flex;align-items:center;gap:12px;min-width:0;background:var(--card);color:var(--ink);
+  box-shadow:inset 0 5px 0 var(--g),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.tlh .tp.r{--g:var(--tr);flex-direction:row-reverse}
+.tlh .tp .shape{width:clamp(26px,4vh,52px);height:clamp(26px,4vh,52px);flex:none;padding:6px;box-sizing:content-box;border-radius:12px;background:color-mix(in srgb,var(--g) 24%,var(--card))}
 .tlh .tp .who{display:flex;flex-direction:column;min-width:0;flex:1}
 .tlh .tp.r .who{text-align:end}
-.tlh .tp .tn{font-weight:900;font-size:clamp(16px,min(2.2vw,3.4vh),40px);line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tlh .tp .sub{font-weight:700;font-size:clamp(12px,min(1.4vw,2.2vh),24px);opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tlh .tp .pull{font-weight:900;font-size:clamp(28px,min(4.4vw,7vh),88px);font-variant-numeric:tabular-nums;line-height:1}
-.tlh .tl-clock{font-size:clamp(26px,min(4vw,6.4vh),80px);min-width:clamp(80px,10vw,200px);box-shadow:0 4px 0 var(--ok-edge)}
+.tlh .tp .tn{font-weight:800;font-size:clamp(16px,min(2.2vw,3.4vh),40px);line-height:1.1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tlh .tp .sub{font-weight:700;font-size:clamp(12px,min(1.4vw,2.2vh),24px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlh .tp .pull{font-weight:800;font-size:clamp(28px,min(4.4vw,7vh),88px);font-variant-numeric:tabular-nums;line-height:1}
+.tlh .tl-clock{font-size:clamp(26px,min(4vw,6.4vh),80px);min-width:clamp(80px,10vw,200px);border-radius:var(--r);box-shadow:var(--shadow)}
 .tlh .scene{flex:1 1 auto;min-height:120px}
 /* the projector's figures are the players' own characters: a team-coloured outline says which side each one pulls for */
 .tlh .crew canvas{filter:drop-shadow(3px 0 0 var(--tc,#fff)) drop-shadow(-3px 0 0 var(--tc,#fff)) drop-shadow(0 3px 0 var(--tc,#fff)) drop-shadow(0 -3px 0 var(--tc,#fff))}
-.tlh .foot{flex:none;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;font-weight:800;font-size:clamp(14px,min(1.8vw,2.6vh),28px);text-align:center;margin:0}
+.tlh .scene .mark.lb{border-color:var(--tb)}.tlh .scene .mark.lr{border-color:var(--tr)}
+.tlh .scene .half.hb{background:linear-gradient(90deg,color-mix(in srgb,var(--tb) 20%,transparent),transparent 70%)}
+.tlh .scene .half.hr{background:linear-gradient(270deg,color-mix(in srgb,var(--tr) 20%,transparent),transparent 70%)}
+.tlh .foot{flex:none;align-self:center;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 16px;font-weight:800;font-size:clamp(14px,min(1.8vw,2.6vh),28px);text-align:center;margin:0;
+  padding:6px 18px;border-radius:999px;background:var(--card);box-shadow:var(--shadow)}
 .tlh .foot span{white-space:nowrap}
 .tlh .lobby{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1.4vw,20px)}
-.tlh .col{min-height:0;display:flex;flex-direction:column;gap:8px;border-radius:22px;border:3px solid var(--ok-edge);background:var(--blueTint);padding:10px;overflow:hidden}
-.tlh .col.r{background:var(--redTint)}
-.tlh .col h2{margin:0;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:4px 12px;background:var(--tb);color:var(--tbi);font-size:clamp(18px,min(2.4vw,3.4vh),40px);border:3px solid var(--ok-edge)}
-.tlh .col.r h2{background:var(--tr);color:var(--tri)}
-.tlh .col h2 .shape{width:1em;height:1em;flex:none}
+.tlh .col{--g:var(--tb);min-height:0;display:flex;flex-direction:column;gap:10px;border-radius:var(--r);background:var(--card);padding:14px 12px 12px;overflow:hidden;
+  box-shadow:inset 0 5px 0 var(--g),0 0 0 1px color-mix(in srgb,var(--line) 70%,transparent),var(--shadow)}
+.tlh .col.r{--g:var(--tr)}
+.tlh .col h2{margin:0;display:flex;align-items:center;justify-content:center;gap:10px;font-size:clamp(18px,min(2.4vw,3.4vh),40px);font-weight:800}
+.tlh .col h2 .shape{width:1em;height:1em;flex:none;padding:.25em;box-sizing:content-box;border-radius:.4em;background:color-mix(in srgb,var(--g) 24%,var(--card))}
 .tlh .col ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:8px;overflow:hidden;flex:1;min-height:0}
 .tlh .col li{display:flex;flex-direction:column;align-items:center;gap:2px;width:var(--cell,120px)}
 .tlh .col li canvas{width:calc(var(--cell,120px) * .55);height:auto}
-.tlh .col li span{font-weight:800;font-size:clamp(11px,calc(var(--cell,120px) * .14),20px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--ok-card);border-radius:999px;padding:0 8px}
+.tlh .col li span{font-weight:800;font-size:clamp(11px,calc(var(--cell,120px) * .14),20px);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:var(--card2);border-radius:999px;padding:0 8px}
 .tlh .col ul.tiny li span{display:none}
-.tlh .col .empty{margin:auto;font-weight:700;opacity:.75;text-align:center}
+.tlh .col .empty{margin:auto;font-weight:700;color:var(--muted);text-align:center}
 .tlh .scene .banner{font-size:clamp(22px,min(3.6vw,6vh),64px)}
 @media (orientation:portrait){
   .tlh .top{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"c c" "b r"}
@@ -606,6 +709,7 @@ var I18N = {
     stats: '{right} right of {n} · best streak {streak}', rightN: '{n} right',
     pause: 'Pause', newGame: 'New game', del: 'Delete', enter: 'Enter', minus: 'Plus or minus', answer: 'Answer',
     wait: 'Waiting for the host to start…', yourTeam: 'Your team', ready: 'Get ready!', go: 'Go!', paused: 'Paused', winner: 'Winner: {team}', youWon: 'Your team won!', youLost: 'Great pulling! The other team won this time.', yourRight: 'You got {n} right.', noOne: 'Nobody yet',
+    resume: 'Keep going', playAgain: 'Play again', sound: 'Sound', lessMotion: 'Less motion',
   },
   'en-GB': {},
   es: {
@@ -623,6 +727,7 @@ var I18N = {
     stats: '{right} de {n} bien · mejor racha {streak}', rightN: '{n} bien',
     pause: 'Pausa', newGame: 'Juego nuevo', del: 'Borrar', enter: 'Intro', minus: 'Más o menos', answer: 'Respuesta',
     wait: 'Esperando a que empiece el anfitrión…', yourTeam: 'Tu equipo', ready: '¡Prepárate!', go: '¡Ya!', paused: 'En pausa', winner: 'Gana: {team}', youWon: '¡Tu equipo ganó!', youLost: '¡Buen tirón! Esta vez ganó el otro equipo.', yourRight: 'Acertaste {n}.', noOne: 'Nadie todavía',
+    resume: 'Seguir', playAgain: 'Jugar otra vez', sound: 'Sonido', lessMotion: 'Menos movimiento',
   },
   fr: {
     title: 'Tug of Math', tag: 'Réponds vite. Tire fort !',
@@ -639,6 +744,7 @@ var I18N = {
     stats: '{right} bonnes sur {n} · meilleure série {streak}', rightN: '{n} bonnes',
     pause: 'Pause', newGame: 'Nouvelle partie', del: 'Effacer', enter: 'Entrée', minus: 'Plus ou moins', answer: 'Réponse',
     wait: 'On attend que l’hôte lance la partie…', yourTeam: 'Ton équipe', ready: 'Prépare-toi !', go: 'C’est parti !', paused: 'En pause', winner: 'Gagnant : {team}', youWon: 'Ton équipe a gagné !', youLost: 'Bien tiré ! L’autre équipe gagne cette fois.', yourRight: 'Bonnes réponses : {n}.', noOne: 'Personne pour l’instant',
+    resume: 'Reprendre', playAgain: 'Rejouer', sound: 'Son', lessMotion: 'Moins d’animations',
   },
   de: {
     title: 'Tug of Math', tag: 'Schnell rechnen. Kräftig ziehen!',
@@ -655,6 +761,7 @@ var I18N = {
     stats: '{right} von {n} richtig · beste Serie {streak}', rightN: '{n} richtig',
     pause: 'Pause', newGame: 'Neues Spiel', del: 'Löschen', enter: 'Enter', minus: 'Plus oder minus', answer: 'Antwort',
     wait: 'Warte, bis die Spielleitung startet…', yourTeam: 'Dein Team', ready: 'Mach dich bereit!', go: 'Los!', paused: 'Pause', winner: 'Gewinner: {team}', youWon: 'Dein Team hat gewonnen!', youLost: 'Gut gezogen! Diesmal hat das andere Team gewonnen.', yourRight: 'Richtig: {n}.', noOne: 'Noch niemand',
+    resume: 'Weiter', playAgain: 'Nochmal spielen', sound: 'Ton', lessMotion: 'Weniger Bewegung',
   },
   it: {
     title: 'Tug of Math', tag: 'Rispondi veloce. Tira forte!',
@@ -671,6 +778,7 @@ var I18N = {
     stats: '{right} giuste su {n} · serie migliore {streak}', rightN: '{n} giuste',
     pause: 'Pausa', newGame: 'Nuova partita', del: 'Cancella', enter: 'Invio', minus: 'Più o meno', answer: 'Risposta',
     wait: 'Aspettiamo che chi conduce inizi…', yourTeam: 'La tua squadra', ready: 'Preparati!', go: 'Via!', paused: 'In pausa', winner: 'Vince: {team}', youWon: 'La tua squadra ha vinto!', youLost: 'Che tirata! Stavolta ha vinto l’altra squadra.', yourRight: 'Risposte giuste: {n}.', noOne: 'Ancora nessuno',
+    resume: 'Riprendi', playAgain: 'Gioca ancora', sound: 'Suono', lessMotion: 'Meno movimento',
   },
   pt: {
     title: 'Tug of Math', tag: 'Responda rápido. Puxe com força!',
@@ -687,6 +795,7 @@ var I18N = {
     stats: '{right} certas de {n} · melhor sequência {streak}', rightN: '{n} certas',
     pause: 'Pausa', newGame: 'Novo jogo', del: 'Apagar', enter: 'Enter', minus: 'Mais ou menos', answer: 'Resposta',
     wait: 'Esperando o anfitrião começar…', yourTeam: 'Seu time', ready: 'Prepare-se!', go: 'Já!', paused: 'Pausado', winner: 'Vencedor: {team}', youWon: 'Seu time venceu!', youLost: 'Boa puxada! Desta vez o outro time venceu.', yourRight: 'Respostas certas: {n}.', noOne: 'Ninguém ainda',
+    resume: 'Continuar', playAgain: 'Jogar de novo', sound: 'Som', lessMotion: 'Menos movimento',
   },
   nl: {
     title: 'Tug of Math', tag: 'Snel rekenen. Hard trekken!',
@@ -703,6 +812,7 @@ var I18N = {
     stats: '{right} van {n} goed · beste reeks {streak}', rightN: '{n} goed',
     pause: 'Pauze', newGame: 'Nieuw spel', del: 'Wissen', enter: 'Enter', minus: 'Plus of min', answer: 'Antwoord',
     wait: 'Wachten tot de spelleider begint…', yourTeam: 'Jouw team', ready: 'Maak je klaar!', go: 'Start!', paused: 'Gepauzeerd', winner: 'Winnaar: {team}', youWon: 'Jouw team heeft gewonnen!', youLost: 'Goed getrokken! Deze keer won het andere team.', yourRight: 'Goed: {n}.', noOne: 'Nog niemand',
+    resume: 'Verder', playAgain: 'Nog een keer', sound: 'Geluid', lessMotion: 'Minder beweging',
   },
   ru: {
     title: 'Tug of Math', tag: 'Отвечай быстро. Тяни сильно!',
@@ -719,6 +829,7 @@ var I18N = {
     stats: 'Верно {right} из {n} · лучшая серия {streak}', rightN: 'верно: {n}',
     pause: 'Пауза', newGame: 'Новая игра', del: 'Стереть', enter: 'Ввод', minus: 'Плюс или минус', answer: 'Ответ',
     wait: 'Ждём, когда ведущий начнёт…', yourTeam: 'Твоя команда', ready: 'Приготовься!', go: 'Вперёд!', paused: 'Пауза', winner: 'Победитель: {team}', youWon: 'Твоя команда победила!', youLost: 'Хорошо тянули! На этот раз победила другая команда.', yourRight: 'Верных ответов: {n}.', noOne: 'Пока никого',
+    resume: 'Продолжить', playAgain: 'Ещё раз', sound: 'Звук', lessMotion: 'Меньше движения',
   },
   ja: {
     title: 'Tug of Math', tag: 'はやく答えて、つなを引こう！',
@@ -735,6 +846,7 @@ var I18N = {
     stats: '{n}問中{right}問正解・最高連続{streak}', rightN: '{n}問正解',
     pause: '一時停止', newGame: '新しいゲーム', del: '消す', enter: '決定', minus: 'プラスかマイナス', answer: '答え',
     wait: 'ホストがはじめるのをまってね…', yourTeam: 'きみのチーム', ready: 'よーい！', go: 'スタート！', paused: '一時停止', winner: '勝ったのは {team}', youWon: 'きみのチームの勝ち！', youLost: 'よく引いたね！今回は相手チームの勝ち。', yourRight: '正解：{n}問', noOne: 'まだだれもいない',
+    resume: 'つづける', playAgain: 'もう一度', sound: 'サウンド', lessMotion: 'うごきを少なく',
   },
   'zh-Hant': {
     title: 'Tug of Math', tag: '答得快，拉得猛！',
@@ -751,6 +863,7 @@ var I18N = {
     stats: '{n} 題答對 {right} 題・最多連對 {streak} 題', rightN: '答對 {n} 題',
     pause: '暫停', newGame: '新遊戲', del: '刪除', enter: '確定', minus: '正負號', answer: '答案',
     wait: '等主持人開始…', yourTeam: '你的隊伍', ready: '準備！', go: '開始！', paused: '暫停', winner: '獲勝：{team}', youWon: '你的隊伍贏了！', youLost: '拉得好！這次是另一隊贏了。', yourRight: '答對 {n} 題。', noOne: '還沒有人',
+    resume: '繼續', playAgain: '再玩一次', sound: '聲音', lessMotion: '減少動態',
   },
   ar: {
     title: 'Tug of Math', tag: 'أجب بسرعة واسحب بقوة!',
@@ -767,6 +880,7 @@ var I18N = {
     stats: '{right} صحيحة من {n} · أفضل سلسلة {streak}', rightN: '{n} صحيحة',
     pause: 'إيقاف مؤقت', newGame: 'لعبة جديدة', del: 'حذف', enter: 'إدخال', minus: 'موجب أو سالب', answer: 'الإجابة',
     wait: 'بانتظار أن يبدأ المضيف…', yourTeam: 'فريقك', ready: 'استعد!', go: 'انطلق!', paused: 'متوقف مؤقتًا', winner: 'الفائز: {team}', youWon: 'فاز فريقك!', youLost: 'شدّ رائع! فاز الفريق الآخر هذه المرة.', yourRight: 'إجابات صحيحة: {n}.', noOne: 'لا أحد بعد',
+    resume: 'متابعة', playAgain: 'العب مرة أخرى', sound: 'الصوت', lessMotion: 'حركة أقل',
   },
   he: {
     title: 'Tug of Math', tag: 'עונים מהר. מושכים חזק!',
@@ -783,6 +897,7 @@ var I18N = {
     stats: '{right} נכונות מתוך {n} · רצף שיא {streak}', rightN: '{n} נכונות',
     pause: 'השהיה', newGame: 'משחק חדש', del: 'מחיקה', enter: 'אישור', minus: 'פלוס או מינוס', answer: 'תשובה',
     wait: 'מחכים שהמנחה יתחיל…', yourTeam: 'הקבוצה שלך', ready: 'היכונו!', go: 'יוצאים!', paused: 'מושהה', winner: 'המנצחים: {team}', youWon: 'הקבוצה שלך ניצחה!', youLost: 'משיכה יפה! הפעם הקבוצה השנייה ניצחה.', yourRight: 'תשובות נכונות: {n}.', noOne: 'עוד אין אף אחד',
+    resume: 'המשך', playAgain: 'שחקו שוב', sound: 'צליל', lessMotion: 'פחות תנועה',
   },
 };
 // en-GB: the same words but UK school years (US grade 1 is Year 2); "Math" in the title is the game's name
@@ -805,9 +920,37 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
    *  in Arabic or Hebrew (an isolate), so "−5" never shows as "5−". */
   function ansNum(a) { return '\u2066' + (a < 0 ? '−' + (-a) : String(a)) + '\u2069'; }
   var reduced = function () { return !!O.settings.reduced; };
-  function sfx(n, o) { try { O.sfx(n, Object.assign({ caption: false }, o || {})); } catch (e) { /* no sound */ } }
+  var B = window.BRB || {};
+  // Sounds: the SDK's own (BRB.sfx, as Crossword), for a few moments only: a right or wrong answer, the computer's pull,
+  // the countdown, the end. (No sound for each digit tapped.) Without the SDK, the kit's own.
+  var SOUND = { select: 'click', correct: 'coin', wrong: 'hit', pop: 'click', count: 'click', win: 'win', whoosh: 'lose' };
+  function sfx(n, o) {
+    try {
+      if (B.sfx && typeof B.sfx.play === 'function') { if (SOUND[n] && !B.sfx.muted) B.sfx.play(SOUND[n]); }
+      else if (n !== 'click' && n !== 'coin') O.sfx(n, Object.assign({ caption: false }, o || {}));
+    } catch (e) { /* no sound */ }
+  }
+  // Light or dark: the site's choice (BRB.theme), else the kit's, else the device's (Crossword's rule).
+  var darkMq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  function applyTheme() {
+    var k = O.theme && O.theme.mode, th = B.theme === 'light' || B.theme === 'dark' ? B.theme : k === 'light' || k === 'dark' ? k : darkMq && darkMq.matches ? 'dark' : 'light';
+    document.documentElement.dataset.theme = th;
+  }
+  applyTheme();
+  if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
+  try { if (O.theme && O.theme.on) O.theme.on('change', applyTheme); } catch (e) { /* no kit theme */ }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(cls, html, fn, id) { var b = el('button', cls); b.type = 'button'; if (html != null) b.innerHTML = html; if (id) b.id = id; if (fn) b.addEventListener('click', fn); return b; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var sayBox = null;
+  /** A polite line for screen readers (the solo game's own; the live view has its own). */
+  function announce(s) { if (!sayBox) return; sayBox.textContent = ''; setTimeout(function () { sayBox.textContent = s; }, 30); }
   var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  // line icons in the text's own color (they read on the dark bar and on a cream button alike)
+  var ICON = {
+    timer: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 2M10 2.5h4"/></svg>',
+    setup: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg>',
+  };
   var SHAPE = {
     circle: '<svg viewBox="0 0 20 20" class="shape" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="currentColor" stroke="#1D2340" stroke-width="2"/></svg>',
     diamond: '<svg viewBox="0 0 20 20" class="shape" aria-hidden="true"><path d="M10 1.5 18.5 10 10 18.5 1.5 10Z" fill="currentColor" stroke="#1D2340" stroke-width="2"/></svg>',
@@ -828,39 +971,131 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
   /* ---------- the crews: the player (or a kid), a penguin and a bunny pull for Blue; a fox, a bear (or Bolt the
      computer, an Oomba) for Red. Kit characters, drawn once as canvases. ---------- */
   function crewSpecs(mode) {
-    var me = mode === 'cpu' ? O.avatar() : O.char({ species: 'kid', skin: 2, hair: { style: 'curls', color: 'brown' }, outfit: { top: 'tee', color: 'sky' } });
+    var kid = function () { return O.char({ species: 'kid', skin: 2, hair: { style: 'curls', color: 'brown' }, outfit: { top: 'tee', color: 'sky' } }); };
+    var me = mode === 'cpu' ? (function () { try { return O.avatar() || kid(); } catch (e) { return kid(); } })() : O.char({ species: 'kid', skin: 2, hair: { style: 'curls', color: 'brown' }, outfit: { top: 'tee', color: 'sky' } });
     var blue = [O.char({ species: 'penguin' }), me];
     var red = mode === 'cpu' ? [O.char({ species: 'oomba', colors: { base: 'coral' } }), O.char({ species: 'fox' })] : [O.char({ species: 'fox' }), O.char({ species: 'bear' })];
     return { blue: blue, red: red };
   }
   function figure(spec, px) { try { var c = O.art.toCanvas(spec, px); c.setAttribute('aria-hidden', 'true'); return c; } catch (e) { return el('canvas'); } }
 
-  /* ---------- the kit game: the title (both crews already tugging), pause, results ---------- */
-  var SET = [
-    '                    ',
-    '                    ',
-    '                    ',
-    '                    ',
-    '                    ',
-    '  u P        f b    ',
-    '####################',
-    '####################',
-  ];
-  var M = null, D = null, game = null, rope = null, ending = false;
-  if (!LIVE) game = O.game({
-    api: 1, title: t('title'), subtitle: t('tag'), theme: 'meadow', titleHue: 'sky',
-    controls: 'none', camera: 'fixed', hero: 'me', heroSize: 1.6, hud: [], countdown: 3,
-    level: O.level.grid(SET, {
-      u: { kind: 'npc', species: 'penguin', tag: 'b2', size: 1.5 },
-      f: { kind: 'npc', species: 'fox', tag: 'r1', size: 1.6, flip: true },
-      b: { kind: 'npc', species: 'bear', tag: 'r2', size: 1.7, flip: true },
-    }),
-    intro: function () { return setupCard(); },
-    setup: function (w) { titleRope(w); },
-    update: function (w, dt) { step(dt); },
-    testState: function () { return testState(); },
-    on: { start: function (w) { begin(w); }, title: function () { hide(); }, results: function () { hide(); } },
-  });
+  /* ---------- the page (no game engine, as Crossword): the setup card, 3, 2, 1, the match, pause and the results are
+     this page's own DOM on the dotted board; the kit only draws the figures (O.art), and gives the icons, the numbers in
+     the player's language and the less-motion setting. The game clock runs on requestAnimationFrame and stops while
+     paused (the questions' timers, the computer and the time left all follow it). ---------- */
+  var M = null, D = null, ending = false, paused = false, gnow = 0, timers = [], lastT = 0, OV = null, CD = 0;
+  /** A timer on the game clock (pause stops it). */
+  function after(ms, fn) { timers.push({ at: gnow + ms, fn: fn }); }
+  function frame(ts) {
+    requestAnimationFrame(frame);
+    var dt = lastT ? Math.min(0.1, Math.max(0, (ts - lastT) / 1000)) : 0; lastT = ts;
+    if (paused || !M) return;
+    gnow += dt * 1000;
+    if (timers.length) {
+      var due = timers.filter(function (x) { return x.at <= gnow; }); timers = timers.filter(function (x) { return x.at > gnow; });
+      due.forEach(function (x) { try { x.fn(); } catch (e) { setTimeout(function () { throw e; }); } });
+    }
+    step(dt);
+  }
+  // the logo: the rope with each team's shape at its ends and the flag in the middle, on a mint tile (as Crossword's)
+  var LOGO = '<svg viewBox="0 0 36 36" aria-hidden="true"><rect x="1" y="1" width="34" height="34" rx="9" fill="var(--accent)"/>' +
+    '<path d="M4 23C11 22 25 22 32 23" fill="none" stroke="#5A3D17" stroke-width="4.5" stroke-linecap="round"/><path d="M4 23C11 22 25 22 32 23" fill="none" stroke="#E9C178" stroke-width="2.2" stroke-linecap="round"/>' +
+    '<path d="M18 22.5V8" stroke="#141414" stroke-width="2" stroke-linecap="round"/><path d="M18.6 8.4h6.6l-1.8 2.6 1.8 2.6h-6.6z" fill="#FFD23F" stroke="#141414" stroke-width="1.4" stroke-linejoin="round"/>' +
+    '<circle cx="7.5" cy="15.5" r="3.4" fill="#0B6BB0" stroke="#141414" stroke-width="1.4"/><path d="M28.5 12 32 15.5 28.5 19 25 15.5Z" fill="#C8372D" stroke="#141414" stroke-width="1.4"/></svg>';
+  function soundOn() { return !(B.sfx && B.sfx.muted); }
+  function showSound() {
+    var b = document.getElementById('tmSound'); if (!b) return;
+    var on = soundOn(); b.textContent = on ? '🔊' : '🔇'; b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', t('sound')); b.title = t('sound');
+  }
+  /** The page head (seen on the setup card): the logo and the sound button. */
+  function buildHead() {
+    var head = el('header', 'tm-head'); head.dir = O.dir || 'ltr';
+    var logo = el('div', 'tm-logo'); logo.innerHTML = LOGO; logo.appendChild(el('span', '', t('title')));
+    var snd = btn('tm-icon', '', function () { if (B.sfx && B.sfx.mute) B.sfx.mute(); showSound(); sfx('select'); }, 'tmSound');
+    head.append(logo, snd); document.body.appendChild(head);
+    sayBox = el('div', 'tm-sr'); sayBox.setAttribute('role', 'status'); sayBox.setAttribute('aria-live', 'polite'); document.body.appendChild(sayBox);
+    showSound();
+  }
+  /** A card over the board (pause, results; the countdown has none): one at a time. */
+  function overlay(cls) { closeOverlay(); OV = el('div', 'tmo ' + cls); OV.dir = O.dir || 'ltr'; document.body.appendChild(OV); return OV; }
+  function closeOverlay() { if (OV) { OV.remove(); OV = null; } untrap(); }
+  function card(box, chip, title, id) {
+    var c = el('div', 'tmo-card tw'); c.setAttribute('role', 'dialog'); c.setAttribute('aria-modal', 'true'); c.setAttribute('aria-labelledby', id);
+    var h = el('div', 'tw-wh'), ic = el('span', 'tw-chip'); ic.innerHTML = chip; ic.setAttribute('aria-hidden', 'true');
+    var h2 = el('h2', '', title); h2.id = id; h.append(ic, h2); c.appendChild(h); box.appendChild(c); return c;
+  }
+  /** Tab stays inside an open card; keys go on to its buttons (and the radio groups' arrows), never to the keypads. */
+  var trapOff = null;
+  function trap(box, onKey2) {
+    untrap();
+    var h = function (e) {
+      if (e.key === 'Tab') {
+        var f = [].slice.call(box.querySelectorAll('button:not([tabindex="-1"])')).filter(function (b) { return b.offsetParent; }), i = f.indexOf(document.activeElement);
+        if (f.length) { e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+      } else if (onKey2) onKey2(e);
+    };
+    document.addEventListener('keydown', h, true); trapOff = function () { document.removeEventListener('keydown', h, true); trapOff = null; };
+  }
+  function untrap() { if (trapOff) trapOff(); }
+  /** An on/off switch on a card (sound, less motion). */
+  function toggle(label, get, set, id) {
+    var b = btn('tb tsw', '<span>' + esc(label) + '</span><i aria-hidden="true"></i>', null, id); b.setAttribute('role', 'switch');
+    var sync = function () { b.setAttribute('aria-checked', String(!!get())); };
+    b.addEventListener('click', function () { set(!get()); sync(); sfx('select'); }); sync(); return b;
+  }
+  /** Pause (P, Esc, the pause button, or the page going out of sight): the game clock stops; a card with Keep going,
+   *  New game, Sound and Less motion. */
+  function pause() {
+    if (!M || !M.running || paused) return;
+    paused = true;
+    var box = overlay('tmp'), c = card(box, O.icon('pause'), t('paused'), 'tmpH');
+    var acts = el('div', 'acts');
+    var res = btn('tb go main', O.icon('play') + '<span>' + esc(t('resume')) + '</span>', resume, 'tmResume');
+    var ng = btn('tb', ICON.setup + '<span>' + esc(t('newGame')) + '</span>', function () { sfx('select'); newGame(); }, 'tmNew');
+    acts.append(res, ng);
+    var two = el('div', 'acts2');
+    two.append(toggle(t('sound'), soundOn, function (on) { if (B.sfx && B.sfx.mute) B.sfx.mute(!on); showSound(); }, 'tmSnd2'),
+      toggle(t('lessMotion'), reduced, function (on) { try { O.settings.patch({ motion: on ? 'reduce' : 'full' }); } catch (e) { /* no kit settings */ } if (D) D.root.classList.toggle('rm', reduced()); }, 'tmMotion'));
+    c.append(acts, two);
+    trap(c, function (e) { if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') { e.preventDefault(); e.stopPropagation(); resume(); } });
+    setTimeout(function () { try { res.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
+    announce(t('paused'));
+  }
+  function pause_() { pause(); }   // (the pause button's own name hides pause() inside build)
+  function resume() { if (!paused) return; paused = false; closeOverlay(); sfx('select'); }
+  /** 3, 2, 1, Go! (real time, over the field with its questions hidden), then the match runs. */
+  function countdown(tok, done) {
+    var box = overlay('tmc'), b = el('b'); b.setAttribute('aria-hidden', 'true'); box.appendChild(b); box.classList.toggle('rmo', reduced());
+    var n = 3; announce(t('ready'));
+    (function tick() {
+      if (tok !== CD || OV !== box) return;
+      b.style.animation = 'none'; void b.offsetWidth; b.style.animation = '';
+      if (n > 0) { b.textContent = O.num(n); sfx('count'); n--; setTimeout(tick, fastEnd ? 20 : 750); }
+      else { b.textContent = t('go'); setTimeout(function () { if (tok !== CD) return; if (OV === box) closeOverlay(); done(); }, fastEnd ? 10 : 450); }
+    })();
+  }
+  /** A match with the setup as it is: the field, the countdown, then play. */
+  function startMatch() {
+    closeOverlay(); paused = false; stopConfetti();
+    begin();
+    var tok = ++CD;
+    countdown(tok, function () {
+      if (!M || !M.counting) return;
+      M.counting = false; M.running = true; D.field.classList.remove('counting');
+      announce(t('pull'));
+    });
+  }
+  /** Back to the setup card (New game): the match stops. */
+  function newGame() {
+    CD++; if (M) M.running = false; paused = false; closeOverlay(); stopConfetti(); hide();
+    setupCard().then(startMatch);
+  }
+  /** The board under the tug: a patch of the dotted board in a cream frame, each team's half tinted, the floor, the
+   *  middle line and each team's line (with its shape on top). */
+  function boardParts(scene) {
+    ['bg', 'half hb', 'half hr', 'floor', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
+    scene.querySelector('.mark.lb').innerHTML = SHAPE.circle; scene.querySelector('.mark.lr').innerHTML = SHAPE.diamond;
+  }
   /** The rope: the hidden .rope box says where the pullers hold it, the hidden .tail boxes how far each loose end
    *  reaches and drops. One path draws it all (taut middle, then each end drooping to the grass and lying there). */
   function ropeEnds(tug) {
@@ -885,42 +1120,23 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     if (typeof ResizeObserver === 'function') new ResizeObserver(draw).observe(tug);
     requestAnimationFrame(draw);
   }
-  /** The rope between the two crews behind the title (drawn over the kit's world). */
-  function titleRope(w) {
-    if (rope) return;
-    rope = w.stage.draw(function (ctx) {
-      var ww = game.world; if (!ww || game.state !== 'title' && game.state !== 'intro' && game.state !== 'boot') return;
-      var a = ww.find('b2'), b = ww.find('r2'); if (!a || !b) return;
-      var y = (ww.hero ? ww.hero.y : a.y) - ww.cell * 0.62, x0 = a.x - ww.cell * 0.6, x1 = b.x + ww.cell * 0.6;
-      ctx.save(); ctx.lineCap = 'round';
-      // the taut middle, then each loose end drooping to the ground (gy) and lying there a little
-      var gy = (ww.hero ? ww.hero.y : a.y) - ww.cell * 0.04, d = ww.cell * 0.62;
-      ctx.beginPath(); ctx.moveTo(x0, y); ctx.quadraticCurveTo((x0 + x1) / 2, y + 6, x1, y);
-      ctx.moveTo(x0, y); ctx.bezierCurveTo(x0 - d * 0.3, y, x0 - d * 0.5, y + (gy - y) * 0.3, x0 - d * 0.58, gy - (gy - y) * 0.3); ctx.quadraticCurveTo(x0 - d * 0.66, gy, x0 - d, gy);
-      ctx.moveTo(x1, y); ctx.bezierCurveTo(x1 + d * 0.3, y, x1 + d * 0.5, y + (gy - y) * 0.3, x1 + d * 0.58, gy - (gy - y) * 0.3); ctx.quadraticCurveTo(x1 + d * 0.66, gy, x1 + d, gy);
-      ctx.strokeStyle = '#6B4A1E'; ctx.lineWidth = 9; ctx.stroke();
-      ctx.strokeStyle = '#E9C178'; ctx.lineWidth = 5; ctx.stroke();
-      var mx = (x0 + x1) / 2; ctx.fillStyle = '#1D2340'; ctx.fillRect(mx - 2, y - 30, 4, 32);
-      ctx.fillStyle = '#FFC83D'; ctx.strokeStyle = '#1D2340'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(mx + 2, y - 30); ctx.lineTo(mx + 22, y - 24); ctx.lineTo(mx + 2, y - 17); ctx.closePath(); ctx.fill(); ctx.stroke();
-      ctx.restore();
-    });
-  }
-
-  /* ---------- the setup card (before every game; the last choice is remembered) ---------- */
+  /* ---------- the setup card (before every game; the last choice is remembered): a widget on the board, each choice
+     in its own section, Crossword's pills (the chosen one dark) and its green main button ---------- */
   var setupOpen = false;
   function setupCard() {
     return new Promise(function (resolve) {
       setupOpen = true;
       var wrap = el('div', 'tms'); wrap.dir = O.dir || 'ltr';
-      var card = el('div', 'tms-card'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'tmsH');
+      var card = el('div', 'tms-card tw'); card.setAttribute('role', 'dialog'); card.setAttribute('aria-modal', 'true'); card.setAttribute('aria-labelledby', 'tmsH');
       wrap.appendChild(card);
-      var h = el('h2', '', t('setup')); h.id = 'tmsH'; card.appendChild(h);
+      var head = el('div', 'tw-wh'), chip = el('span', 'tw-chip', '🪢'); chip.setAttribute('aria-hidden', 'true');
+      var h = el('h2', '', t('setup')); h.id = 'tmsH'; head.append(chip, h); card.appendChild(head);
       var left = el('div', 'left'), right = el('div', 'right'); card.append(left, right);
       function group(label, cls, opts, get, set, into) {
         var fs = el('fieldset'), lg = el('legend', '', label); fs.appendChild(lg);
         var row = el('div', 'row ' + (cls || '')); row.setAttribute('role', 'radiogroup'); row.setAttribute('aria-label', label); if (!cls) row.style.setProperty('--n', opts.length);
         var btns = opts.map(function (o) {
-          var b = el('button', 'opt'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.v = String(o.v);
+          var b = el('button', 'tb opt'); b.type = 'button'; b.setAttribute('role', 'radio'); b.dataset.v = String(o.v);
           if (o.icon) b.innerHTML = O.icon(o.icon);
           b.appendChild(el('span', '', o.label)); if (o.aria) b.setAttribute('aria-label', o.aria);
           b.addEventListener('click', function () { set(o.v); sync(); sfx('select'); });
@@ -930,36 +1146,33 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
           });
           row.appendChild(b); return b;
         });
-        function sync() { btns.forEach(function (b, i) { var on = String(get()) === b.dataset.v; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }
+        function sync() { btns.forEach(function (b) { var on = String(get()) === b.dataset.v; b.setAttribute('aria-checked', String(on)); b.tabIndex = on ? 0 : -1; }); }
         sync(); fs.appendChild(row); (into || card).appendChild(fs);
         return { fs: fs, sync: sync };
       }
       var sample = el('p', 'sample');
       var gg = group(t('grade'), 'grades', G.GRADES.map(function (g) { return { v: g, label: gradeShort(g), aria: gradeLabel(g) }; }), function () { return CFG.grade; }, function (v) { CFG.grade = +v; showSample(); }, left);
-      gg.fs.appendChild(sample);
+      gg.fs.appendChild(sample); gg.fs.classList.add('fs-grade');
       function showSample() {
         sample.textContent = ''; sample.appendChild(document.createTextNode(t('like') + ' '));
         [0, 1, 2].forEach(function (i) { var q = G.sample(CFG.grade, i); if (i) sample.appendChild(document.createTextNode(' · ')); var b = el('b', '', qText(q, true)); b.dir = 'ltr'; sample.appendChild(b); });
       }
       showSample();
       var diffG;
-      group(t('players'), '', [{ v: 'cpu', label: t('vsCpu'), icon: 'gamepad' }, { v: 'two', label: t('two'), icon: 'user' }], function () { return CFG.mode; }, function (v) { CFG.mode = v; diffG.fs.hidden = v !== 'cpu'; note.textContent = keysNote(); }, right);
+      var pg = group(t('players'), '', [{ v: 'cpu', label: t('vsCpu'), icon: 'gamepad' }, { v: 'two', label: t('two'), icon: 'user' }], function () { return CFG.mode; }, function (v) { CFG.mode = v; diffG.fs.hidden = v !== 'cpu'; note.textContent = keysNote(); }, right);
       diffG = group(t('level'), '', DIFFS.map(function (d) { return { v: d, label: t(d) }; }), function () { return CFG.diff; }, function (v) { CFG.diff = v; }, right);
-      diffG.fs.hidden = CFG.mode !== 'cpu';
-      group(t('time'), '', LENS.map(function (n) { return { v: n, label: n === 0 ? t('toLine') : n === 120 ? t('min2') : t('secs', { n: n }) }; }), function () { return CFG.len; }, function (v) { CFG.len = +v; }, right);
+      diffG.fs.hidden = CFG.mode !== 'cpu'; pg.fs.classList.add('fs-players'); diffG.fs.classList.add('fs-level');
+      var tg = group(t('time'), 'lens', LENS.map(function (n) { return { v: n, label: n === 0 ? t('toLine') : n === 120 ? t('min2') : t('secs', { n: n }) }; }), function () { return CFG.len; }, function (v) { CFG.len = +v; }, right);
+      tg.fs.classList.add('fs-time');
       var go = el('div', 'go'); card.appendChild(go);
       var note = el('p', 'note', keysNote()); card.appendChild(note);
-      var start = O.ui.button(t('start'), { kind: 'hot', big: true, icon: 'play', onPress: function () {
-        if (!setupOpen) return; setupOpen = false; save(); wrap.remove(); document.removeEventListener('keydown', keys, true); resolve();
-      } });
-      start.id = 'tmStart'; start.setAttribute('data-start', ''); go.appendChild(start);
-      function keys(e) {
-        if (e.key === 'Tab') { var f = [].slice.call(card.querySelectorAll('button:not([tabindex="-1"])')).filter(function (b) { return b.offsetParent; }), i = f.indexOf(document.activeElement); e.preventDefault(); (f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length] || start).focus(); }
-        e.stopPropagation();
-      }
-      document.addEventListener('keydown', keys, true);
-      O.ui.root().appendChild(wrap);
-      O.time.real.after(30, function () { try { start.focus({ preventScroll: true }); } catch (e) { /* gone */ } });
+      var start = btn('tb go main', O.icon('play') + '<span>' + esc(t('start')) + '</span>', function () {
+        if (!setupOpen) return; setupOpen = false; save(); untrap(); wrap.remove(); sfx('select'); resolve();
+      }, 'tmStart');
+      start.setAttribute('data-start', ''); go.appendChild(start);
+      trap(card);
+      document.body.appendChild(wrap);
+      setTimeout(function () { try { if (setupOpen) start.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
       setupApi = { close: function () { if (setupOpen) start.click(); } };
     });
   }
@@ -985,21 +1198,22 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
   }
 
   /* ---------- the match ---------- */
-  function hide() { if (D) D.root.hidden = true; document.documentElement.classList.remove('tm-play'); M = null; }
-  function begin(w) {
-    hide(); ending = false;
-    var seed = (game.world && game.world.rand ? Math.floor(game.world.rand.float() * 4294967295) : Date.now()) >>> 0;
+  function hide() { if (D) D.root.hidden = true; document.documentElement.classList.remove('tm-play'); M = null; timers = []; }
+  /** A new match, held still under the countdown (its questions hidden, no keys) until startMatch lets it run. */
+  function begin() {
+    hide(); ending = false; points.n = 0;
+    var seed = Math.floor(Math.random() * 4294967295) >>> 0;
     if (pendingSeed != null) { seed = pendingSeed >>> 0; }
     var two = CFG.mode === 'two', line = CFG.len ? LINE_TIMED : LINE_RACE;
-    M = { w: w, seed: seed, two: two, grade: CFG.grade, diff: CFG.diff, len: CFG.len, line: line, left: CFG.len || CAP, pos: 0, running: true, said: {},
+    M = { seed: seed, two: two, grade: CFG.grade, diff: CFG.diff, len: CFG.len, line: line, left: CFG.len || CAP, pos: 0, running: false, counting: true, said: {},
       deck: G.deck(CFG.grade, seed), p: [side0(), side0()], bot: two ? null : { ai: BOT.make(CFG.diff, seed), q: null, phase: 'think', left: 0, res: null } };
     build();
     D.root.hidden = false; document.documentElement.classList.add('tm-play');
     D.root.classList.toggle('rm', reduced());
+    D.field.classList.remove('done'); D.field.classList.add('counting'); D.mid.banner.hidden = true;
     layoutFor();
     next(0); if (two) next(1); else botNext();
     render();
-    O.ui.announce(t('pull'));
   }
   function side0() { return { q: null, typed: '', neg: false, lock: false, right: 0, n: 0, streak: 0, best: 0 }; }
   var pendingSeed = null;
@@ -1013,7 +1227,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     D = { root: root, field: field, side: [] };
     [0, 1].forEach(function (s) {
       var sec = el('section', 'side ' + (s ? 'red' : 'blue')); sec.dataset.side = s; sec.dir = O.dir || 'ltr';
-      var team = el('div', 'team'); team.innerHTML = s ? SHAPE.diamond : SHAPE.circle; var tn = el('span', 'tn'); team.appendChild(tn); sec.appendChild(team);
+      // the team's widget head: its shape in the icon chip, then its name
+      var team = el('div', 'team'), tchip = el('span', 'tchip'); tchip.innerHTML = s ? SHAPE.diamond : SHAPE.circle; team.appendChild(tchip); var tn = el('span', 'tn'); team.appendChild(tn); sec.appendChild(team);
       var qc = el('div', 'qcard'); qc.setAttribute('aria-live', 'polite'); var q = el('div', 'q'); q.dir = 'ltr'; var sub = el('div', 'sub'); sub.dir = 'ltr';
       qc.append(q, sub); sec.appendChild(qc);
       var bot = el('div', 'bot'); var think = el('div', 'think'); think.innerHTML = '<i></i><i></i><i></i>'; think.setAttribute('aria-label', t('thinking')); bot.appendChild(think);
@@ -1030,16 +1245,16 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     var bar = el('div', 'mbar');
     var pause = el('button', 'mbtn'); pause.type = 'button'; pause.innerHTML = O.icon('pause'); pause.setAttribute('aria-label', t('pause'));
     // (both buttons let go of the focus after a click, so Enter goes on answering)
-    pause.addEventListener('click', function (e) { if (e.detail) pause.blur(); if (M && M.running) game.pause(); });
+    pause.addEventListener('click', function (e) { if (e.detail) pause.blur(); if (M && M.running) pause_(); });
     var board = el('div', 'board'); board.dir = 'ltr';
     var pb = el('div', 'pts pb'), clock = el('div', 'clock'), pr = el('div', 'pts pr');
-    pb.innerHTML = SHAPE.circle; pr.innerHTML = SHAPE.diamond; var nb = el('span'), nr = el('span'), nc = el('span'); pb.appendChild(nb); pr.prepend(nr); clock.innerHTML = O.icon('timer'); clock.appendChild(nc);
+    pb.innerHTML = SHAPE.circle; pr.innerHTML = SHAPE.diamond; var nb = el('span'), nr = el('span'), nc = el('span'); pb.appendChild(nb); pr.prepend(nr); clock.innerHTML = ICON.timer; clock.appendChild(nc);
     board.append(pb, clock, pr);
-    var again = el('button', 'mbtn'); again.type = 'button'; again.innerHTML = O.icon('settings'); again.setAttribute('aria-label', t('newGame'));
+    var again = el('button', 'mbtn'); again.type = 'button'; again.innerHTML = ICON.setup; again.setAttribute('aria-label', t('newGame'));
     again.addEventListener('click', function (e) { if (e.detail) again.blur(); if (!M || !M.running) return; newGame(); });
     bar.append(pause, board, again); mid.appendChild(bar);
     var scene = el('div', 'scene'); scene.setAttribute('aria-hidden', 'true'); scene.dir = 'ltr';
-    ['bg', 'sun', 'cloud c1', 'cloud c2', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
+    boardParts(scene);
     var tug = el('div', 'tug'); tug.appendChild(el('div', 'rope')); ropeEnds(tug); tug.appendChild(el('div', 'flag'));
     var cb = el('div', 'crew cb'), cr = el('div', 'crew cr'); tug.append(cb, cr); scene.appendChild(tug);
     var banner = el('div', 'banner'); banner.hidden = true; scene.appendChild(banner);
@@ -1048,7 +1263,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     var kb = el('p', 'kbhint'); mid.appendChild(kb);
     field.appendChild(mid);
     D.mid = { nb: nb, nr: nr, nc: nc, clock: clock, scene: scene, tug: tug, cb: cb, cr: cr, banner: banner, say: say, kb: kb };
-    O.ui.root().appendChild(root);
+    document.body.appendChild(root);
     window.addEventListener('keydown', onKey);
     window.addEventListener('resize', layoutFor);
     O.settings.on('change', function () { root.classList.toggle('rm', reduced()); });
@@ -1078,8 +1293,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
   /** The keyboard. One player: digits, Backspace, Enter (and - in grades 7-8). Two players: Blue on the number row with
    *  Enter and Backspace, Red on the number pad with its Enter, - and . (delete). */
   function onKey(e) {
-    if (!M || !M.running || O.ui.open || setupOpen) return;
+    if (!M || !M.running || setupOpen || OV || paused) return;
     var c = e.code || '', k = e.key, side = 0, act = null;
+    if (k === 'Escape' || ((k === 'p' || k === 'P') && !e.ctrlKey && !e.metaKey && !e.altKey)) { e.preventDefault(); pause(); return; }
     var pad = /^Numpad/.test(c);
     if (M.two && pad) side = 1;
     if (/^(Digit|Numpad)[0-9]$/.test(c)) act = c.slice(-1);
@@ -1094,7 +1310,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     if (!M.two) side = 0;
     e.preventDefault(); e.stopPropagation();
     var b = D.side[side].keys.querySelector('[data-k="' + act + '"]') || (act === 'pm' ? D.side[side].pm : null);
-    if (b && !reduced()) { b.classList.add('down'); O.time.real.after(90, function () { b.classList.remove('down'); }); }
+    if (b && !reduced()) { b.classList.add('down'); setTimeout(function () { b.classList.remove('down'); }, 90); }
     press(side, act);
   }
   function press(s, k) {
@@ -1127,7 +1343,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     if (!ok) { d.q.textContent = solved(q); d.sub.textContent = ''; fitQuestion(s); }   // the right answer, big, for a moment
     say(s, ok ? t('right') : t('wrong', { a: ansNum(q.a) }));
     sfx(ok ? 'correct' : 'wrong', { volume: 0.6 });
-    O.after(ok ? 350 : 1100, function () { if (!M || !M.running || M.p[s] !== P || P.q !== q) return; next(s); });
+    after(ok ? 350 : 1100, function () { if (!M || !M.running || M.p[s] !== P || P.q !== q) return; next(s); });
   }
   function say(s, text) { var st = D.side[s].status; st.textContent = text; }
   function next(s) {
@@ -1140,9 +1356,9 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
   /** Long questions shrink to fit their card (never cut off). */
   function fitQuestion(s) {
     var d = D.side[s]; d.q.style.fontSize = '';
-    O.time.real.after(0, function () {
+    setTimeout(function () {
       var cw = d.qc.clientWidth - 16, w = d.q.scrollWidth; if (w > cw && cw > 0) { var fs = parseFloat(getComputedStyle(d.q).fontSize); d.q.style.fontSize = Math.max(16, Math.floor(fs * cw / w)) + 'px'; }
-    });
+    }, 0);
   }
   /* The computer: thinks (its time grows with the question), types its answer, then pulls (or stumbles). */
   function botNext() {
@@ -1168,24 +1384,28 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     say(1, ok ? t('cpuRight') : t('wrong', { a: ansNum(a) }));
     if (ok) sfx('pop', { volume: 0.4, pitch: 0.8 });
   }
+  /** The player's points against the computer (one a pull, as the kit's w.score(1) was): the score BRB.gameOver
+   *  reports. (Oomba Live's check, services/classlive-lint.js, also looks for a score report in a live game's file;
+   *  in a live room the server keeps the score and a device's own reports are ignored.) */
+  var points = { n: 0, score: function (k) { this.n += k; } };
   /** One step of the rope toward a side; past the line wins at once. */
   function pull(s) {
     M.pos += s ? -1 : 1;
+    if (!M.two && s === 0) points.score(1);
     var c = s ? D.mid.cr : D.mid.cb; c.classList.remove('pull'); if (!reduced()) { void c.offsetWidth; c.classList.add('pull'); }
     if (s === 0 || M.two) sfx('coin', { volume: 0.5 });
-    if (!M.two && s === 0 && M.w) M.w.score(1);
     render();
     if (Math.abs(M.pos) >= M.line) finish();
   }
   function step(dt) {
-    if (!M || !M.running || game.state !== 'play') return;
+    if (!M || !M.running) return;
     var ms = dt * 1000;
     M.left = Math.max(0, M.left - dt);
     if (M.bot) botStep(ms);
     if (!M.running) return;
     var s = Math.ceil(M.left);
     if (s !== M.shownT) { M.shownT = s; renderClock(); }
-    if (M.len) { if (s === 30 && !M.said[30]) { M.said[30] = 1; O.ui.announce(t('left30')); } if (s === 10 && !M.said[10]) { M.said[10] = 1; O.ui.announce(t('left10')); sfx('count', { volume: 0.4 }); } }
+    if (M.len) { if (s === 30 && !M.said[30]) { M.said[30] = 1; announce(t('left30')); } if (s === 10 && !M.said[10]) { M.said[10] = 1; announce(t('left10')); sfx('count', { volume: 0.4 }); } }
     if (M.left <= 0) finish();
   }
   function renderClock() {
@@ -1219,41 +1439,76 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     D.mid.kb.textContent = keysNote();
     D.mid.say.textContent = t('pull');
   }
-  /** The end: past the line, or time is up (the most pulls wins; the same is a draw). */
+  /** The end: past the line, or time is up (the most pulls wins; the same is a draw). The winner shows on the board for
+   *  a moment, then the results card. */
   function finish() {
     if (!M || !M.running) return;
     M.running = false; D.field.classList.add('done');
     var win = M.pos > 0 ? 0 : M.pos < 0 ? 1 : -1, P = M.p[0], two = M.two;
     var title = win < 0 ? t('draw') : two ? (win ? t('redWins') : t('blueWins')) : win ? t('cpuWins') : t('youWin');
-    D.mid.banner.hidden = false; D.mid.banner.textContent = title; O.ui.announce(title);
+    D.mid.banner.hidden = false; D.mid.banner.textContent = title; announce(title);
     sfx(win === 0 || (two && win === 1) ? 'win' : 'whoosh');
-    var w = M.w, m = M, acc = P.n ? P.right / P.n : 0;
+    var m = M, acc = P.n ? P.right / P.n : 0;
     var stats = two ? t('blue') + ' ' + t('rightN', { n: M.p[0].right }) + ' · ' + t('red') + ' ' + t('rightN', { n: M.p[1].right }) : t('stats', { right: P.right, n: P.n, streak: P.best });
     if (!two) { var k = M.grade + ':' + M.diff; BEST[k] = Math.max(BEST[k] || 0, P.right); save(); }
     lastResult = { winner: win, title: title, pos: m.pos, right: [m.p[0].right, m.p[1].right], n: [m.p[0].n, m.p[1].n], stats: stats };
-    O.time.real.after(fastEnd ? 10 : 1300, function () {
-      if (!w || w.ended) return;
-      var specs = crewSpecs(two ? 'two' : 'cpu');
-      if (two) w.win({ title: title, submit: false, score: Math.max(m.p[0].right, m.p[1].right), stars: win < 0 ? 1 : 3, who: win === 1 ? specs.red[0] : specs.blue[1] });
-      else if (win === 0) w.win({ title: title, score: P.right, stars: acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1 });
-      else w.lose({ say: title });
-      addStats(stats);
-    });
+    setTimeout(function () {
+      if (M !== m) return;   // a new game already
+      // vs Computer reports the match (won, and the right answers as the score); two players on one screen submit nothing
+      if (!two) { try { if (B.gameOver) B.gameOver({ won: win === 0, score: Math.max(0, Math.round(points.n)) }); } catch (e) { /* no SDK */ } }
+      showResults(m, win, title, stats, acc);
+    }, fastEnd ? 10 : 1300);
   }
   var lastResult = null, fastEnd = false;
-  /** The results card gets the player's numbers (right answers, best streak) under the score. */
-  function addStats(text) {
-    var tries = 0;
-    (function look() {
-      var card = O.ui.root().querySelector('.ok-modal .ok-card, [class*="ok-win"] .ok-card, [class*="ok-try"] .ok-card');
-      if (card && !card.querySelector('.tm-stats')) { var p = el('p', 'ok-p tm-stats', text); var row = card.querySelector('.ok-row') || card.lastChild; card.insertBefore(p, row && row.parentNode === card ? row : null); return; }
-      if (tries++ < 60) O.time.real.after(100, look);
-    })();
+  /** The results card: the winner's figure (or the player's, or the computer's), the title, stars for a win, the score,
+   *  the player's numbers, Play again (the same setup) and New game (the setup card). */
+  function showResults(m, win, title, stats, acc) {
+    var two = m.two, P = m.p[0], specs = crewSpecs(two ? 'two' : 'cpu');
+    var box = overlay('tmr'), c = card(box, win < 0 ? '🤝' : two || win === 0 ? '🏆' : '🪢', title, 'tmrH');
+    var pic = el('div', 'pic'); pic.setAttribute('aria-hidden', 'true'); pic.appendChild(figure(win === 1 ? specs.red[0] : specs.blue[1], 260)); c.insertBefore(pic, c.firstChild);
+    var stars = two ? (win < 0 ? 1 : 3) : win === 0 ? (acc >= 0.9 ? 3 : acc >= 0.7 ? 2 : 1) : 0;
+    if (stars) {
+      var st = el('div', 'stars'); st.setAttribute('role', 'img'); st.setAttribute('aria-label', '★ ' + O.num(stars) + ' / ' + O.num(3));
+      for (var i = 0; i < 3; i++) { var sp = el('span', i < stars ? '' : 'off', '★'); sp.setAttribute('aria-hidden', 'true'); st.appendChild(sp); }
+      c.appendChild(st);
+    }
+    var sc = el('p', 'score'); sc.dir = 'ltr';
+    if (two) sc.textContent = O.num(m.p[0].right) + ' : ' + O.num(m.p[1].right); else { sc.dir = O.dir || 'ltr'; sc.textContent = t('rightN', { n: P.right }); }
+    c.appendChild(sc);
+    c.appendChild(el('p', 'tm-stats', stats));
+    var acts = el('div', 'acts');
+    var again = btn('tb go main', O.icon('play') + '<span>' + esc(t('playAgain')) + '</span>', function () { sfx('select'); startMatch(); }, 'tmAgain');
+    var ng = btn('tb', ICON.setup + '<span>' + esc(t('newGame')) + '</span>', function () { sfx('select'); newGame(); }, 'tmNew');
+    acts.append(again, ng); c.appendChild(acts);
+    trap(c);
+    if (win === 0 || (two && win === 1)) confetti();
+    setTimeout(function () { try { again.focus({ preventScroll: true }); } catch (e) { /* gone */ } }, 30);
   }
-  function newGame() {
-    M.running = false; hide();
-    setupCard().then(function () { game.restart('play'); });
+  /** Confetti for a win (none with less motion), as Crossword's. */
+  var confettiBox = null;
+  function confetti() {
+    if (reduced()) return;
+    stopConfetti();
+    var box = el('div', 'tm-confetti'), cols = ['var(--green)', 'var(--blue)', 'var(--spark)', 'var(--red)', '#9B8CE0'];
+    box.setAttribute('aria-hidden', 'true');
+    for (var i = 0; i < 70; i++) {
+      var p = el('i'); p.style.left = (Math.random() * 100) + '%'; p.style.background = cols[i % cols.length];
+      p.style.setProperty('--x', ((Math.random() - 0.5) * 240) + 'px'); p.style.setProperty('--r', (Math.random() * 900 - 450) + 'deg');
+      p.style.setProperty('--d', (Math.random() * 0.5) + 's'); p.style.setProperty('--t', (1.4 + Math.random() * 1.2) + 's');
+      box.appendChild(p);
+    }
+    document.body.appendChild(box); confettiBox = box;
+    setTimeout(function () { if (confettiBox === box) stopConfetti(); }, 3500);
   }
+  function stopConfetti() { if (confettiBox) { confettiBox.remove(); confettiBox = null; } }
+  /** The solo game starts on the setup card (no title screen). */
+  function initSolo() {
+    buildHead();
+    document.addEventListener('visibilitychange', function () { if (document.hidden) pause(); });
+    requestAnimationFrame(frame);
+    setupCard().then(startMatch);
+  }
+  if (!LIVE) { if (document.body) initSolo(); else document.addEventListener('DOMContentLoaded', initSolo); }
 
 
   /* ---------- Tug of Math Live (Oomba Live, built-in mode 'tug'; docs/live-protocol.md "Tug of Math") ----------
@@ -1288,11 +1543,10 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     function pulls(v) { return O.num(Math.round((+v || 0) * 100)); }
     root.classList.toggle('rm', reduced());
     O.settings.on('change', function () { root.classList.toggle('rm', reduced()); });
-    function theme() { root.classList.toggle('tl-dark', !!(O.theme && O.theme.mode === 'dark')); }
-    theme(); if (O.theme && O.theme.on) O.theme.on('change', theme);
+    // (light or dark: applyTheme above, the same rule as the solo game)
 
     /* --- the pieces both views use --- */
-    function clockEl() { var c = el('div', 'tl-clock'); c.innerHTML = O.icon('timer'); var n = el('span'); c.appendChild(n); c.n = n; return c; }
+    function clockEl() { var c = el('div', 'tl-clock'); c.innerHTML = ICON.timer; var n = el('span'); c.appendChild(n); c.n = n; return c; }
     var over = el('div', 'tl-over'); over.hidden = true; var overB = el('b'); over.appendChild(overB); root.appendChild(over);
     function overlay(txt) { over.hidden = !txt; overB.textContent = txt || ''; }
 
@@ -1317,7 +1571,7 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
       });
       root.appendChild(lobby); H.lobby = lobby;
       var scene = el('div', 'scene'); scene.setAttribute('aria-hidden', 'true'); scene.dir = 'ltr';
-      ['bg', 'sun', 'cloud c1', 'cloud c2', 'mark lb', 'mark c', 'mark lr'].forEach(function (c) { scene.appendChild(el('div', c)); });
+      boardParts(scene);
       var tg = el('div', 'tug'); tg.appendChild(el('div', 'rope')); ropeEnds(tg); tg.appendChild(el('div', 'flag'));
       var cb = el('div', 'crew cb'), cr = el('div', 'crew cr'); tg.append(cb, cr); scene.appendChild(tg);
       var banner = el('div', 'banner'); banner.hidden = true; scene.appendChild(banner);
@@ -1426,7 +1680,8 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
     function drawPlayer() {
       var x = tug(), k = myTeam(), st = k ? style(k) : null;
       colours();
-      P.band.style.setProperty('--team', st ? st.color : 'var(--ok-card)'); P.band.style.setProperty('--teamInk', st ? st.ink : 'var(--ok-text)');
+      // the team's color on the band's ring and chip and on the top edge of the keypad's card
+      root.style.setProperty('--team', st ? st.color : 'var(--g-class)');
       var holder = P.band.firstChild; holder.innerHTML = ''; if (k) holder.appendChild(shapeEl(k));
       P.tn.textContent = st ? st.name : t('title');
       P.nb.innerHTML = SHAPE.circle; P.nb.appendChild(el('span', '', pulls(x && x.pull ? x.pull[0] : 0)));
@@ -1581,16 +1836,22 @@ I18N['en-GB'] = Object.assign({}, I18N.en, { grade: 'Year', grades: 'Year 2|Year
 
   /* ---------- test hooks (the covers, the e2e tests, the playtest) ---------- */
   function testState() {
-    return { tug: true, screen: setupOpen ? 'setup' : M ? (M.running ? 'play' : 'end') : 'none', mode: M ? (M.two ? 'two' : 'cpu') : CFG.mode, grade: M ? M.grade : CFG.grade, diff: CFG.diff, len: CFG.len,
+    return { tug: true, screen: setupOpen ? 'setup' : M ? (M.counting ? 'count' : M.running ? 'play' : 'end') : 'none', paused: paused, results: !!(OV && OV.classList.contains('tmr')), mode: M ? (M.two ? 'two' : 'cpu') : CFG.mode, grade: M ? M.grade : CFG.grade, diff: CFG.diff, len: CFG.len,
       rope: M ? M.pos : 0, line: M ? M.line : 0, scores: M ? [M.p[0].right, M.p[1].right] : [0, 0], answered: M ? [M.p[0].n, M.p[1].n] : [0, 0],
       q: M ? { A: M.p[0].q && { text: qText(M.p[0].q), k: M.p[0].q.k }, B: M.p[1].q && { text: qText(M.p[1].q), k: M.p[1].q.k } } : null,
       typed: M ? [M.p[0].typed, M.p[1].typed] : null, timeLeft: M ? Math.round(M.left * 10) / 10 : null, winner: lastResult ? lastResult.winner : null, result: lastResult, minusKey: !!(D && !D.side[0].pm.hidden && M), saved: load() };
   }
+  if (!LIVE) {
+    try { O.test({ state: testState }); } catch (e) { /* no kit test hooks */ }
+    if (!window.__brbTest || typeof window.__brbTest !== 'object') window.__brbTest = {};
+  }
   if (!LIVE) Object.assign(window.__brbTest, {
     setup: function (o) { o = o || {}; if (o.grade) CFG.grade = G.grade(o.grade); if (o.mode) CFG.mode = o.mode === 'two' ? 'two' : 'cpu'; if (DIFFS.indexOf(o.diff) >= 0) CFG.diff = o.diff; if (o.len != null && LENS.indexOf(+o.len) >= 0) CFG.len = +o.len; return testState(); },
-    start: function (o) { if (o) window.__brbTest.setup(o); if (o && o.seed != null) pendingSeed = +o.seed; lastResult = null; if (setupApi) setupApi.close(); game.start(); return testState(); },
-    state: function () { return Object.assign(game ? {} : {}, testState()); },
-    answer: function (side, v) { if (!M) return false; var s = side ? 1 : 0, P = M.p[s]; if (P.lock) return false; P.typed = String(Math.abs(v)); P.neg = v < 0; showAnswer(s); submit(s); return true; },
+    start: function (o) { if (o) window.__brbTest.setup(o); if (o && o.seed != null) pendingSeed = +o.seed; lastResult = null; if (setupOpen && setupApi) setupApi.close(); else startMatch(); return testState(); },
+    state: function () { return testState(); },
+    pause: function () { pause(); return testState(); },
+    resume: function () { resume(); return testState(); },
+    answer: function (side, v) { if (!M || !M.running) return false; var s = side ? 1 : 0, P = M.p[s]; if (P.lock) return false; P.typed = String(Math.abs(v)); P.neg = v < 0; showAnswer(s); submit(s); return true; },
     answerOf: function (side) { var P = M && M.p[side ? 1 : 0]; return P && P.q ? P.q.a : null; },
     solve: function (side) { if (!M) return false; var s = side ? 1 : 0, P = M.p[s]; if (!P.q || P.lock) return false; return window.__brbTest.answer(s, P.q.a); },
     press: function (side, k) { press(side ? 1 : 0, String(k)); return testState(); },

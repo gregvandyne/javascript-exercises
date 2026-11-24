@@ -45,9 +45,11 @@ test('the frame: a family grown-up gets Print but no AI clues, no set saving and
   assert.equal(p.clues, undefined); assert.equal(p.setSave, false); assert.equal(p.setFind, false); assert.equal(p.print, true); assert.equal(p.canAssign, undefined);
   const t = (await frameFor(teacher)).init;
   assert.equal(t.clues, true); assert.equal(t.setSave, undefined); assert.equal(t.setFind, undefined); assert.equal(t.print, true); assert.equal(t.canAssign, true);
-  // A kid: no AI (not a host), but the fence is not theirs, so nothing else changes.
+  // A kid: no AI and no Make (not a host), so no set saving either (BRB.canMake; tests/unit/make-gate.test.js); the
+  // fence is not theirs, so a class code still works.
   const k = (await frameFor(kid)).init;
-  assert.equal(k.clues, undefined); assert.equal(k.setSave, undefined); assert.equal(k.setFind, undefined);
+  assert.equal(k.clues, undefined); assert.equal(k.make, undefined); assert.equal(k.setSave, false); assert.equal(k.setFind, undefined);
+  assert.equal(p.make, true, 'a parent makes their own crosswords'); assert.equal(t.make, true);
   // What the server answers matches: the grown-up's calls are refused by the fence, which is why they are hidden.
   assert.equal((await call(`/api/games/${cw.id}/clues`, { method: 'POST', body: { words: ['cat'] }, user: mum })).status, 404);
   assert.equal((await call(`/api/games/${cw.id}/sets`, { method: 'POST', body: { items: [] }, user: mum })).status, 404);

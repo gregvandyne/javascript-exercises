@@ -113,6 +113,21 @@ export const CANVAS_STEPS = ['lesson', 'use', 'help'];
 const USE_ART = { screen: 'devices', worksheet: 'worksheet' };
 /** The Classroom activity card's small picture: a fraction bar (g green, y yellow, e empty parts). */
 const miniBar = (n, parts) => `<span class="su-kbar" style="--n:${n}">${parts.split('').map(c => `<i class="su-kb-${c}"></i>`).join('')}</span>`;
+// "What are you making?": each kind's picture is a small collage of what it makes, in the classroom dashboard's look
+// (cream widget cards with a group colour on the top edge, on the dotted mint board), like Crossword and the games.
+const tileC = (g, cls, inner) => `<span class="su-ct su-ct-${cls}" style="--g:var(--su-g-${g})">${inner}</span>`;
+const LESSON_COLLAGE = [
+  tileC('class', 'bars', miniBar(4, 'ggge') + miniBar(8, 'yyyyeeee')),
+  tileC('time', 'line', '<span class="su-cl"><i></i><i></i><i></i><i></i><i></i><b></b></span>'),
+  tileC('tools', 'digits', '<span class="su-cd">4</span><span class="su-cd">7</span><span class="su-cd su-cd-on">2</span>'),
+  tileC('check', 'sort', '<span class="su-cs"><i class="a"></i><i class="b"></i><i class="a"></i></span><span class="su-cs"><i class="b"></i><i class="a"></i><i class="b"></i></span>'),
+].join('');
+const GAME_COLLAGE = [
+  tileC('class', 'board', [1, 2].map(r => `<span class="su-kbrow">${[0, 1, 2].map(c => `<span class="su-kbt${r === 2 && c === 1 ? ' su-kbt-on' : ''}">${r}00</span>`).join('')}</span>`).join('')),
+  tileC('tools', 'bingo', [...Array(9).keys()].map(i => `<i${i === 4 ? ' class="on"' : [0, 7].includes(i) ? ' class="hit"' : ''}></i>`).join('')),
+  tileC('check', 'quiet', '<span class="su-cm"></span><span class="su-cz">z</span><span class="su-cz su-cz2">z</span>'),
+  tileC('show', 'cards', '<span class="su-cf su-cf1"></span><span class="su-cf su-cf2">3 × 4</span>'),
+].join('');
 const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>`);
 const check = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
 
@@ -264,13 +279,13 @@ router.get('/build/new', requireBuilder, (req, res) => {
       <div class="su-kinds${setupKinds().length === 2 ? ' su-kinds-2' : ''}" role="group" aria-labelledby="su-h-start">
         <button type="button" class="su-kind" data-kind="activity" aria-pressed="${kind === 'activity' ? 'true' : 'false'}">
           ${forClass || teacher ? html`<span class="su-rec" data-rec><span class="su-rtick" aria-hidden="true">✓</span> ${t('buildSetup.kind.forClass')}</span>` : ''}
-          <span class="su-kpic su-kcanvas" aria-hidden="true">${raw(miniBar(4, 'ggge'))}${raw(miniBar(8, 'yyyyeeee'))}<span class="su-kmrow"><span class="su-kmtile"></span><span class="su-kmtile"></span><span class="su-kgrow"></span><span class="su-kmbtn su-kmgo">✓ ${t('buildSetup.kind.check')}</span><span class="su-kmbtn">${t('buildSetup.kind.hint')}</span></span></span>
+          <span class="su-kpic su-kcollage" aria-hidden="true">${raw(LESSON_COLLAGE)}</span>
           <span class="su-kt">${t('buildSetup.kind.activity.title')}</span>
           <span class="su-kd">${t('buildSetup.kind.activity.text')}</span>
           <span class="su-ktags">${['fractions', 'numberline', 'digits', 'tiles'].map(k => html`<span>${t(`buildSetup.kind.tools.${k}`)}</span>`)}</span>
         </button>
         <button type="button" class="su-kind" data-kind="classgame" aria-pressed="${kind === 'classgame' ? 'true' : 'false'}">
-          <span class="su-kpic su-kboard" aria-hidden="true">${[1, 2, 3].map(r => raw(`<span class="su-kbrow">${[0, 1, 2, 3].map(c => `<span class="su-kbt${r === 2 && c === 1 ? ' su-kbt-on' : ''}">${r}00</span>`).join('')}</span>`))}</span>
+          <span class="su-kpic su-kcollage" aria-hidden="true">${raw(GAME_COLLAGE)}</span>
           <span class="su-kt">${t('buildSetup.kind.classgame.title')}</span>
           <span class="su-kd">${t('buildSetup.kind.classgame.text')}</span>
           <span class="su-ktags">${(groups.find(g => g.id === 'class')?.items || []).filter(x => x.starter).slice(0, 4).map(x => html`<span>${t(`buildSetup.types.${x.id}.title`)}</span>`)}</span>

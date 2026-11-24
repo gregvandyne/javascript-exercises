@@ -1,5 +1,5 @@
 // Sudoku's card cover (scripts/covers.js loads every scripts/covers/<slug>.recipe.js): a Small 6x6 puzzle half solved
-// in the meadow, through the game's own test handle (window.__brbTest): a few numbers placed, one box with notes, and a
+// on the dotted board, through the game's own test handle (window.__brbTest): a few numbers placed, one box with notes, and a
 // placed 3 picked so its row, column, box and the other 3s light up. Playwright frame calls only (f is the game frame
 // inside the real sandbox).
 export default {
@@ -8,7 +8,7 @@ export default {
     scale: 1.25,
     touch: true,
     async prep(f) {
-      await f.waitForFunction(() => window.__brbTest && window.__brbTest.pick && document.querySelector('.ok-title-screen .ok-hot'), null, { timeout: 60000 });
+      await f.waitForFunction(() => window.__brbTest && window.__brbTest.pick && document.querySelector('.sd-lv'), null, { timeout: 60000 });
       await f.evaluate(() => window.__brbTest.pick('small-easy', { seed: 2026 }));
       await f.waitForFunction(() => window.__brbTest.state().screen === 'play', null, { timeout: 20000 });
       await f.evaluate(() => {

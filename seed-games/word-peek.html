@@ -1,355 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Word Peek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
 <style>
-/* Word Peek on the Oomba Kit: a daily five-letter word-guessing game with Pip the owl.
-   The kit draws Pip's forest behind the game (day, or night in the dark theme), Pip himself (the kit's owl), the
-   icons, buttons, toggles, captions and the type. This file only lays out the game's own pieces: the HUD row, the
-   letter grid on a card with Pip peeking over its top edge (his speech bubble shows the messages), the on-screen
-   keyboard, and the home, how-to, stats, settings, result and "set a word for a friend" cards.
-   Short wide screens (landscape phones) put the grid on the left and the keyboard on the right.
-   Colours come from the kit (set as --wp-* variables at start): right spot = mint + a tick badge, wrong spot = peach
-   + a dot badge, not in the word = dimmed stone. High contrast swaps to orange + blue. Every mark also has a shape,
-   so colour is never the only clue. No colour codes and no fonts here: the kit's variables and font only. */
-.wp{--tile:56px;--gap:6px;--keyH:52px;--hit:var(--wp-hit);--hitInk:var(--wp-hitInk);--near:var(--wp-near);--nearInk:var(--wp-nearInk);
-  --miss:var(--wp-miss);--missInk:var(--wp-missInk);--rim:var(--wp-ink);--soft:color-mix(in srgb,var(--ok-text) 62%,transparent)}
-.ok-night .wp{--rim:color-mix(in srgb,var(--wp-cream) 38%,transparent)}
-.hc .wp,.wp.hc{--hit:var(--wp-hcHit);--hitInk:var(--wp-hcHitInk);--near:var(--wp-hcNear);--nearInk:var(--wp-hcNearInk);--miss:var(--wp-hcMiss)}
-[hidden]{display:none!important}
-html,body{height:100%}
-body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
-.wp button{font-family:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.wp .ok-btn,.wp .mode .go{color:var(--wp-ink);--ok-icon-card:var(--wp-cream)}
-.wp .ok-btn svg{flex:none}
-.wp svg{display:block}
+  /* Word Peek: a daily five-letter word-guessing game with Pip the owl, in Crossword's look (the classroom dashboard's
+     widgets: cream cards with a group color on the top edge and the icon chip, the dark Now-style bar where Pip talks,
+     a dotted mint board), light and dark, Bricolage Grotesque. No game engine: every screen is this page's own DOM.
+     Marks: right spot = green + a tick badge, wrong spot = spark yellow + a dot badge, not in the word = a muted tile.
+     High contrast swaps to orange + blue. Every mark also has a shape, so color is never the only clue. */
+  :root {
+    --paper: #E1F1E1; --dots: #66C792; --card: #FFFDF2; --card2: #F9F6EB; --hover: #EFEBDC; --ink: #141414; --line: #E2DDCB; --muted: #5B584F;
+    --green: #1F9D63; --accent: #66C792; --mint-t: #E1F1E1; --current: #141414; --on-current: #FFFDF2;
+    --sky: #5AA9D6; --sky-t: #DCEDF7; --coral: #C8432F; --coral-t: #FBE0DA; --grape: #6E56C9; --spark: #FFD23F; --focus: #2563EB;
+    --g-time: #5AA9D6; --g-class: #66C792; --g-tools: #FFD23F; --g-show: #F28C6B; --g-check: #9B8CE0; --g-join: #4FB6A8;
+    --hit: #1F9D63; --hitInk: #FFFFFF; --near: #FFD23F; --nearInk: #141414; --miss: #D9D4C2; --missInk: #4A473F;
+    --hcHit: #E8590C; --hcHitInk: #FFFFFF; --hcNear: #1C6FC4; --hcNearInk: #FFFFFF;
+    --shadow: 0 1px 0 rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.06); --r: 20px; --r-sm: 12px;
+    --font: 'Bricolage Grotesque', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --paper: #141414; --dots: #2E5A41; --card: #1E1E1B; --card2: #262622; --hover: #2C2C27; --ink: #FFFDF2; --line: #36352F; --muted: #B8B3A1;
+    --green: #66C792; --accent: #66C792; --mint-t: #1F3A2B; --current: #66C792; --on-current: #141414;
+    --sky-t: #1B3342; --coral: #FF8A7D; --coral-t: #4A2420; --grape: #B9A2FF; --focus: #8AB4FF;
+    --hit: #66C792; --hitInk: #141414; --near: #FFD23F; --nearInk: #141414; --miss: #3A3934; --missInk: #B8B3A1;
+    --hcHit: #FF8A3D; --hcHitInk: #141414; --hcNear: #6CB4FF; --hcNearInk: #141414;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.32);
+    color-scheme: dark;
+  }
+  .hc { --hit: var(--hcHit); --hitInk: var(--hcHitInk); --near: var(--hcNear); --nearInk: var(--hcNearInk); }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background-color: var(--paper); background-image: radial-gradient(var(--dots) 1.5px, transparent 1.6px); background-size: 22px 22px; color: var(--ink); font-family: var(--font); line-height: 1.3; -webkit-text-size-adjust: 100%; }
+  body { padding: 0 12px calc(12px + env(safe-area-inset-bottom)); touch-action: manipulation; }
+  :where(button) { font: inherit; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+  button { touch-action: manipulation; cursor: pointer; }
+  :where(button, a):focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  [tabindex="-1"]:focus { outline: none; }
+  [hidden] { display: none !important; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  :lang(ja) { word-break: auto-phrase; }
 
-/* ---------- play layout ---------- */
-.app{position:fixed;inset:0;max-width:560px;margin:0 auto;box-sizing:border-box;display:grid;
-  grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"hud" "board" "kb";gap:6px;
-  padding:max(8px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
-.app.side{max-width:1100px;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto minmax(0,1fr);
-  grid-template-areas:"board hud" "board kb";column-gap:16px}
-.app.offstage{visibility:hidden}
-.hud{grid-area:hud;display:flex;align-items:center;gap:6px;min-width:0}
-.hud .ok-btn.ok-icon,.corner .ok-btn.ok-icon{width:46px;min-height:46px;flex:none}
-.pill{flex:1;min-width:0;height:46px;box-sizing:border-box;border-radius:999px;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);
-  display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.05;padding:0 10px}
-.pill .pic{flex:none;display:flex}
-.pill .txt{display:flex;flex-direction:column;align-items:center;min-width:0}
-.pill b{font-weight:800;font-size:clamp(.82rem,3.8vw,1.02rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.pill span{font-size:clamp(.72rem,3.2vw,.86rem);color:var(--soft);font-weight:600;white-space:nowrap;overflow:hidden;max-width:100%;display:flex;align-items:center;gap:3px}
-.pill span svg{width:1.1em;height:1.1em}
+  /* the page head */
+  .wp-head { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 8px; padding: 10px 0; }
+  .wp-logo { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; font-weight: 800; font-size: 1.25em; letter-spacing: -.01em; }
+  .wp-logo .wp-owl { width: 38px; height: 38px; flex: none; }
+  .wp-icon { flex: none; width: 46px; height: 46px; padding: 0; border-radius: 50%; border: 0; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 1.15em; }
+  .wp-icon:hover { background: var(--card2); }
+  .wp-icon svg { width: 22px; height: 22px; }
 
-.boardWrap{grid-area:board;position:relative;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
-.card{position:relative;background:var(--ok-card);border:3px solid var(--rim);border-radius:24px;padding:10px;box-shadow:0 7px 0 var(--wp-ink);
-  margin-top:calc(var(--tile) * .98)}
-.grid{display:grid;gap:var(--gap)}
-.row{display:grid;grid-auto-flow:column;gap:var(--gap)}
-.tile{position:relative;width:var(--tile);height:var(--tile);box-sizing:border-box;border-radius:calc(var(--tile) * .24);display:grid;place-items:center;
-  font-weight:800;font-size:calc(var(--tile) * .56);text-transform:uppercase;background:var(--ok-bg2);border:2.5px dashed var(--ok-line);color:var(--ok-text);
-  transform-style:preserve-3d;line-height:1}
-.tile .ch{transform:translateY(.03em)}
-.tile.filled{border:3px solid var(--rim);background:var(--ok-card);box-shadow:0 3px 0 var(--wp-ink)}
-.tile.hit,.tile.near,.tile.miss{border:3px solid var(--wp-ink);box-shadow:0 3px 0 var(--wp-ink)}
-.tile.hit{background:var(--hit);color:var(--hitInk)}
-.tile.near{background:var(--near);color:var(--nearInk)}
-.tile.miss{background:var(--miss);color:var(--missInk);border-color:color-mix(in srgb,var(--wp-ink) 55%,var(--miss));box-shadow:none;opacity:.86}
-.tile .mk{position:absolute;top:calc(var(--tile) * -.1);inset-inline-end:calc(var(--tile) * -.1);width:calc(var(--tile) * .34);height:calc(var(--tile) * .34);box-sizing:border-box;
-  border-radius:50%;display:none;place-items:center;background:var(--wp-cream);border:2px solid var(--wp-ink);color:var(--wp-ink)}
-.tile .mk svg{width:78%;height:78%;stroke-width:3.4}
-.tile.hit .mk{display:grid}
-.tile.near .mk{display:grid;background:transparent;border:0;top:calc(var(--tile) * .06);inset-inline-end:calc(var(--tile) * .06);width:calc(var(--tile) * .2);height:calc(var(--tile) * .2)}
-.tile.near .mk svg{display:none}
-.tile.near .mk::before{content:"";width:100%;height:100%;border-radius:50%;background:var(--nearInk)}
-.tile.flip{animation:flip var(--flipMs,420ms) ease-in-out}
-.tile.bounce{animation:bounce .5s ease-out}
-.row.shake{animation:shake .4s ease-in-out}
-.tile.cursor{border:3px solid var(--wp-mint);border-style:solid}
-@keyframes flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
-@keyframes bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-34%)}60%{transform:translateY(4%)}80%{transform:translateY(-6%)}}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+  .wp { max-width: 1100px; margin: 0 auto; }
+  /* a widget: the dashboard's card, its group color on the top edge and the icon chip only (never on text) */
+  .wp-widget { --g: var(--g-class); background: var(--card); color: var(--ink); border-radius: var(--r); padding: 16px;
+    box-shadow: inset 0 4px 0 color-mix(in srgb, var(--g) 75%, var(--card)), 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent), var(--shadow); }
+  .wp-wh { display: flex; align-items: center; gap: 8px; min-height: 40px; flex-wrap: wrap; }
+  .wp-wicon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: color-mix(in srgb, var(--g) 26%, var(--card)); font-size: 1.3rem; line-height: 1; }
+  .wp-wicon .wp-owl { width: 34px; height: 34px; }
+  .wp-wt { flex: 1 1 7em; min-width: 0; margin: 0; font-size: 1.2rem; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .wp-sub { margin: -6px 0 0; color: var(--muted); font-weight: 600; }
+  .wp-prog { font-weight: 800; padding: 4px 12px; border-radius: 999px; background: var(--card2); white-space: nowrap; font-size: .92rem; }
+  .wp-ibtn { flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: none; display: grid; place-items: center; font-size: 1.15em; }
+  .wp-ibtn:hover { background: var(--hover); }
+  .wp-btn { min-height: 46px; padding: 6px 18px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center; overflow-wrap: anywhere; }
+  .wp-btn:hover { background: var(--card2); }
+  .wp-btn.wp-go { background: var(--green); border-color: var(--green); color: #fff; }
+  :root[data-theme="dark"] .wp-btn.wp-go { color: #10261A; }
+  .wp-btn.wp-quiet { border-color: var(--line); }
+  .wp-btn:active, .wp-big:active, .key:active { transform: translateY(1px); }
 
-/* Pip (the kit's owl) peeks over the card's top edge: the card's edge hides his feet. */
-.owl{position:absolute;left:50%;bottom:calc(100% + 1px);width:calc(var(--tile) * 3);height:calc(var(--tile) * 1.5);transform:translateX(-50%);
-  z-index:3;pointer-events:none;overflow:hidden}
-.owl .body{position:absolute;left:0;right:0;top:calc(var(--tile) * .1);height:calc(var(--tile) * 1.8);transform-origin:50% 100%;transition:transform .25s ease}
-.owl canvas{position:absolute;left:50%;top:0;height:100%!important;width:auto!important;transform:translateX(-50%)}
-.owl.cheer .body{animation:hop .55s ease-out 3}
-.owl.happy .body{transform:translateY(-3px)}
-.owl.sad .body{transform:translateY(6px)}
-.owl.tilt .body{transform:rotate(-9deg)}
-@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-16%)}}
-.bubble{position:absolute;left:50%;top:14px;transform:translate(-50%,-6px);z-index:4;background:var(--wp-cream);color:var(--wp-ink);border:3px solid var(--wp-ink);
-  border-radius:20px;padding:9px 16px;font-weight:700;font-size:clamp(.98rem,4.2vw,1.12rem);white-space:normal;width:max-content;text-align:center;line-height:1.25;box-shadow:0 4px 0 var(--wp-ink);
-  opacity:0;transition:opacity .2s ease,transform .2s ease;pointer-events:none;max-width:calc(100% - 8px);box-sizing:border-box;overflow:visible}
-.bubble::before{content:"";position:absolute;left:50%;top:-13px;margin-left:-11px;border:11px solid transparent;border-top:0;border-bottom:13px solid var(--wp-ink)}
-.bubble::after{content:"";position:absolute;left:50%;top:-8px;margin-left:-8px;border:8px solid transparent;border-top:0;border-bottom:9px solid var(--wp-cream)}
-.bubble.show{opacity:1;transform:translate(-50%,0)}
-.grid.secret .row:not(:first-child){display:none}
-.secretHelp{margin:0 0 10px;text-align:center;font-weight:700;font-size:1.05rem;line-height:1.3;max-width:calc(var(--tile) * 6.4)}
-.secretHelp .sub{display:block;font-weight:600;font-size:.92rem;color:var(--soft)}
+  /* home */
+  .wp-home { width: min(100%, 640px); margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .wp-big { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 76px; padding: 12px 16px; border-radius: 18px; border: 0; background: var(--card2); text-align: start; }
+  .wp-big:hover { background: var(--hover); }
+  .wp-big .wp-emo { font-size: 1.8em; flex: none; line-height: 1; }
+  .wp-big .wp-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+  .wp-big b { font-size: 1.12em; font-weight: 800; }
+  .wp-big small { font-weight: 600; color: var(--muted); line-height: 1.25; }
+  .wp-big.daily { grid-column: 1 / -1; background: var(--current); color: var(--on-current); min-height: 84px; }
+  .wp-big.daily small { color: inherit; opacity: .85; }
+  .wp-big .go { flex: none; padding: 8px 16px; border-radius: 999px; background: var(--green); color: #fff; font-weight: 800; white-space: nowrap; }
+  :root[data-theme="dark"] .wp-big .go { background: var(--current); color: var(--on-current); box-shadow: inset 0 0 0 2px var(--on-current); }
+  .homeBar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .homeBar .wp-btn { flex: 1 1 10em; }
+  .points { margin: 0; text-align: center; font-weight: 800; color: var(--muted); }
 
-/* ---------- keyboard (kit keys: cream stickers with an Ink edge) ---------- */
-.kb{grid-area:kb;display:flex;flex-direction:column;gap:7px;width:100%;max-width:556px;margin:0 auto;align-self:end;
-  /* a solid card tray in the kit style: keys (and the greyed-out ones) stay readable over any scene */
-  background:var(--ok-card);border:2.5px solid var(--wp-ink);border-radius:22px;box-shadow:0 4px 0 var(--wp-ink);padding:9px 6px 7px;box-sizing:border-box}
-.app.side .kb{align-self:center}
-.krow{display:flex;gap:0;justify-content:center}
-.key{--kbg:var(--ok-card);--kin:var(--ok-text);flex:1 1 0;min-width:0;max-width:57px;height:var(--keyH);border:0;background:transparent;color:var(--kin);font-weight:800;
-  font-size:clamp(1rem,4.6vw,1.3rem);text-transform:uppercase;padding:0 0 4px;position:relative;z-index:0}
-.key::before{content:"";position:absolute;inset:0 2.5px 4px;border-radius:12px;background:var(--kbg);border:2px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);z-index:-1}
-.key:active::before,.key.press::before{transform:translateY(2px);box-shadow:0 1px 0 var(--wp-ink)}
-.key:focus-visible{outline:none}.key:focus-visible::before{outline:3px solid var(--ok-focus);outline-offset:2px}
-.key.wide{flex:1.55 1 0;max-width:86px;font-size:clamp(.78rem,3.4vw,1rem)}
-.key.wide svg{width:1.5em;height:1.5em;margin:auto}
-.key.hit{--kbg:var(--hit);--kin:var(--hitInk)}.key.hit::before{border-color:var(--wp-ink)}
-.key.near{--kbg:var(--near);--kin:var(--nearInk)}.key.near::before{border-color:var(--wp-ink)}
-.key.miss{--kbg:var(--miss);--kin:var(--missInk);opacity:.78}.key.miss::before{box-shadow:none;border-color:color-mix(in srgb,var(--wp-ink) 35%,transparent)}
-/* the win card: a warm glow behind it instead of the grey scrim */
-#resScreen.won.ok-scrim{background:radial-gradient(closest-side,color-mix(in srgb,var(--ok-card) 30%,transparent) 20%,rgba(60,36,10,.42));-webkit-backdrop-filter:saturate(1.05);backdrop-filter:saturate(1.05)}
-.key .km{position:absolute;top:4px;inset-inline-end:7px;width:.62rem;height:.62rem;line-height:1}
-.key .km svg{width:100%;height:100%;stroke-width:4}
-.key:not(.hit) .km svg{display:none}
-.key.near .km::before{content:"";display:block;width:.42rem;height:.42rem;margin:.1rem;border-radius:50%;background:var(--kin)}
-.krow.spacer::before,.krow.spacer::after{content:"";flex:.5 1 0;max-width:28px}
+  /* play */
+  .wp-play { display: flex; gap: 16px; align-items: flex-start; justify-content: center; }
+  .wp-boardw { flex: 0 1 600px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+  .wp-boardw .wp-wh { flex-wrap: nowrap; gap: 6px; }
+  .wp-boardw .wp-wt { flex: 1 1 0; }
+  .wp-kbw { flex: 0 1 520px; min-width: 0; --g: var(--g-tools); padding: 10px 8px; align-self: flex-end; }
+  /* Pip and his messages: the schedule widget's dark "Now" block */
+  .wp-now { width: 100%; min-height: 64px; display: flex; align-items: center; gap: 10px; padding: 6px 14px 6px 8px; border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
+  .wp-now .wp-owl { width: 52px; height: 52px; flex: none; }
+  .wp-now .msg { font-size: clamp(1rem, 2.4vw, 1.3rem); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; min-width: 0; flex: 1; }
+  .secretHelp { margin: 0; text-align: center; font-weight: 700; font-size: 1.05rem; line-height: 1.3; }
+  .secretHelp .sub { display: block; font-weight: 600; font-size: .92rem; color: var(--muted); }
+  .secretHelp > span:first-child { display: none; }   /* Player 1's line is in the dark bar */
+  .boardWrap { display: flex; justify-content: center; }
+  .grid { display: grid; gap: var(--gap, 6px); cursor: default; }
+  .grid.secret .row:not(:first-child) { display: none; }
+  .row { display: grid; grid-auto-flow: column; gap: var(--gap, 6px); }
+  .tile { position: relative; width: var(--tile, 56px); height: var(--tile, 56px); border-radius: calc(var(--tile, 56px) * .2); display: grid; place-items: center;
+    font-weight: 800; font-size: calc(var(--tile, 56px) * .56); text-transform: uppercase; background: var(--card); border: 2px solid var(--line); color: var(--ink); line-height: 1; transform-style: preserve-3d; }
+  .tile .ch { transform: translateY(.04em); }
+  .tile.filled { border: 2px solid var(--ink); }
+  .tile.cursor:not(.filled) { border: 3px solid var(--ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 55%, transparent); }
+  .tile.hit, .tile.near, .tile.miss { border-color: transparent; }
+  .tile.hit { background: var(--hit); color: var(--hitInk); }
+  .tile.near { background: var(--near); color: var(--nearInk); }
+  .tile.miss { background: var(--miss); color: var(--missInk); }
+  .tile .mk { position: absolute; top: calc(var(--tile, 56px) * .06); inset-inline-end: calc(var(--tile, 56px) * .06); width: calc(var(--tile, 56px) * .28); height: calc(var(--tile, 56px) * .28);
+    border-radius: 50%; display: none; place-items: center; background: var(--card); color: var(--ink); }
+  .tile .mk svg { width: 80%; height: 80%; }
+  .tile.hit .mk { display: grid; }
+  .tile.near .mk { display: grid; background: transparent; top: calc(var(--tile, 56px) * .09); inset-inline-end: calc(var(--tile, 56px) * .09); width: calc(var(--tile, 56px) * .18); height: calc(var(--tile, 56px) * .18); }
+  .tile.near .mk svg { display: none; }
+  .tile.near .mk::before { content: ""; width: 100%; height: 100%; border-radius: 50%; background: var(--nearInk); }
+  .tile.flip { animation: flip var(--flipMs, 420ms) ease-in-out; }
+  .tile.bounce { animation: bounce .5s ease-out; }
+  .tile.pop .ch { animation: tpop .16s ease-out; }
+  .row.shake { animation: shake .4s ease-in-out; }
+  @keyframes flip { 0% { transform: rotateX(0); } 50% { transform: rotateX(90deg); } 100% { transform: rotateX(0); } }
+  @keyframes bounce { 0%, 100% { transform: translateY(0); } 35% { transform: translateY(-34%); } 60% { transform: translateY(4%); } 80% { transform: translateY(-6%); } }
+  @keyframes tpop { 0% { transform: scale(.6); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-7px); } 40% { transform: translateX(7px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(4px); } }
 
-/* ---------- cards (the kit's modal + card, with the game's content) ---------- */
-.wp .ok-card{width:min(440px,100%);padding:22px 18px 18px;gap:10px}
-.wp .ok-card .x{position:absolute;top:10px;inset-inline-end:10px}
-.wp .ok-h2{font-size:1.6em}
-.wp .ok-card p{margin:0;line-height:1.38;font-size:1.02rem;font-weight:600}
-.btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;width:100%;margin-top:4px}
-.btns .ok-btn{flex:1 1 auto}
+  /* the keyboard */
+  .kb { display: flex; flex-direction: column; gap: 7px; width: 100%; }
+  .krow { display: flex; gap: 5px; justify-content: center; }
+  .krow.spacer::before, .krow.spacer::after { content: ""; flex: .5 1 0; max-width: 28px; }
+  .key { flex: 1 1 0; min-width: 0; max-width: 60px; height: var(--keyH, 52px); border: 0; border-radius: 10px; background: var(--card2); box-shadow: inset 0 0 0 2px var(--line); color: var(--ink);
+    font-weight: 800; font-size: clamp(1rem, 4.6vw, 1.35rem); text-transform: uppercase; padding: 0; position: relative; display: grid; place-items: center; }
+  .key:hover { box-shadow: inset 0 0 0 2px var(--ink); }
+  .key.press { transform: translateY(1px); background: var(--hover); }
+  .key.wide { flex: 1.6 1 0; max-width: 96px; font-size: clamp(.78rem, 3.4vw, 1rem); }
+  .key.wide svg { width: 1.6em; height: 1.6em; }
+  .key.ready { background: var(--current); color: var(--on-current); box-shadow: none; }
+  .key.hit { background: var(--hit); color: var(--hitInk); box-shadow: none; }
+  .key.near { background: var(--near); color: var(--nearInk); box-shadow: none; }
+  .key.miss { background: var(--miss); color: var(--missInk); box-shadow: none; opacity: .75; }
+  .key .km { position: absolute; top: 4px; inset-inline-end: 5px; width: .62rem; height: .62rem; line-height: 1; }
+  .key .km svg { width: 100%; height: 100%; }
+  .key:not(.hit) .km svg { display: none; }
+  .key.near .km::before { content: ""; display: block; width: .42rem; height: .42rem; margin: .1rem; border-radius: 50%; background: var(--nearInk); }
 
-/* home: the forest stays in view behind the title and the mode cards */
-.home{position:fixed;inset:0;overflow:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:max(14px,env(safe-area-inset-top)) 14px max(14px,env(safe-area-inset-bottom));box-sizing:border-box}
-.homeIn{width:min(460px,100%);display:flex;flex-direction:column;align-items:center;gap:12px}
-.logo{position:relative;display:flex;flex-direction:column;align-items:center}
-.logoOwl{margin-bottom:-14px;position:relative;z-index:0;animation:bob 2.4s ease-in-out infinite}
-.logoOwl canvas{display:block}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.logoTiles{display:flex;gap:6px;position:relative;z-index:1}
-.logoTiles .tile{--tile:50px}
-.logoWord{margin:12px 0 4px;font-weight:800;font-size:clamp(3rem,13vw,4.4rem);line-height:1;display:flex;gap:.28em;--ok-t1:#9BF0B8;--ok-t2:#2FB7E8}
-/* the PEEK tiles flip in one by one; the Enter key lights up when the row is full; bigger mode text and keys */
-.logoTiles .tile{animation:flip 420ms ease-in-out both}.logoTiles .tile:nth-child(2){animation-delay:90ms}.logoTiles .tile:nth-child(3){animation-delay:180ms}.logoTiles .tile:nth-child(4){animation-delay:270ms}
-.key.ready{--kbg:var(--wp-mint);--kin:var(--wp-ink)}.key.ready::before{border-color:var(--wp-ink)}
-.mode .mt{font-size:1.25rem}.mode .md{font-size:.96rem}
-@media (min-width:800px){.key{font-size:1.3rem}.key.wide{font-size:1.05rem}}
-.tag{margin:0;text-align:center;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);border-radius:18px;padding:8px 16px;
-  font-weight:700;font-size:1.02rem;line-height:1.3}
-.tag,.mode .md,.resMsg,.def,.secretHelp{text-wrap:balance}
-:lang(ja){word-break:auto-phrase}
-.tag .practise{display:block;margin-top:3px;font-size:.92rem;font-weight:700;color:var(--soft)}
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:100%}
-.mode{border:3px solid var(--rim);border-radius:22px;background:var(--ok-card);color:var(--ok-text);box-shadow:0 5px 0 var(--wp-ink);padding:10px 12px 10px;text-align:start;
-  display:flex;flex-direction:column;gap:3px;min-height:88px;font:inherit;transition:transform 80ms ease-out,box-shadow 80ms ease-out}
-.mode:active{transform:translateY(4px);box-shadow:0 1px 0 var(--wp-ink)}
-.mode .mt{font-size:1.1rem;font-weight:800;display:flex;align-items:center;gap:8px;line-height:1.1}
-.mode .mt canvas{flex:none}
-.mode .md{font-size:.88rem;color:var(--soft);line-height:1.22;font-weight:600}
-.mode .md svg{display:inline-block;width:1em;height:1em;vertical-align:-.15em}
-.mode.daily{grid-column:1 / -1;min-height:80px;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;column-gap:10px;align-items:center;align-content:center}
-.mode.daily .mt{grid-column:1;grid-row:1}.mode.daily .md{grid-column:1;grid-row:2}
-.mode.daily .md b{color:var(--ok-text)}
-.mode .go{grid-column:2;grid-row:1 / span 2;align-self:center;display:inline-flex;align-items:center;gap:6px;background:var(--wp-hot);color:var(--wp-ink);font-weight:800;font-size:1.05rem;border-radius:999px;
-  border:2.5px solid var(--wp-ink);padding:9px 14px 9px 16px;box-shadow:0 4px 0 var(--wp-hotPress);white-space:nowrap}
-.mode .go svg{width:1em;height:1em}
-.mode.friend{grid-column:1 / -1;min-height:62px;flex-direction:row;align-items:center;gap:10px}
-.homeBar{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
-.points{display:inline-flex;align-items:center;gap:6px;font-weight:800;background:var(--ok-card);color:var(--ok-text);border:2.5px solid var(--rim);box-shadow:0 3px 0 var(--wp-ink);border-radius:999px;padding:6px 14px 6px 8px}
-.points svg{width:24px;height:24px}
-.corner{position:fixed;top:max(10px,env(safe-area-inset-top));inset-inline-end:max(10px,env(safe-area-inset-right));display:flex;gap:8px;z-index:2}
-@media (max-height:700px) and (orientation:portrait){
-  .homeIn{gap:9px}
-  .logoOwl canvas{height:76px!important;width:auto!important}.logoTiles .tile{--tile:44px}.logoWord{font-size:2.4rem}
-  .mode{min-height:74px;padding:8px 10px}.mode.daily{min-height:64px}.mode.friend{min-height:54px}
-}
+  /* Pip the owl (drawn here): moods by class */
+  .wp-owl { display: block; overflow: visible; }
+  .wp-owl .eh, .wp-owl .brow { display: none; }
+  .wp-owl.happy .eo, .wp-owl.cheer .eo { display: none; }
+  .wp-owl.happy .eh, .wp-owl.cheer .eh { display: inline; }
+  .wp-owl.sad .brow { display: inline; }
+  .wp-owl.sad .pupil { transform: translateY(1.5px); }
+  .wp-owl .pupil { transition: transform .2s ease; }
+  .wp-owl.blink .eo { transform: scaleY(.1); transform-origin: 50% 46%; transform-box: view-box; }
+  .wp-owl .body { transform-origin: 50% 100%; transform-box: view-box; transition: transform .25s ease; }
+  .wp-owl.tilt .body { transform: rotate(-9deg); }
+  .wp-owl.sad .body { transform: translateY(2px); }
+  .wp-owl.cheer .body { animation: hop .55s ease-out 3; }
+  @keyframes hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-12%); } }
 
-/* help */
-.ex{display:flex;gap:6px;justify-content:center;margin:8px 0 2px}
-.ex .tile{--tile:42px}
-.exNote{font-size:.95rem!important;color:var(--soft)}
-.help{text-align:start!important;align-items:stretch!important}
-.help h2{text-align:center}
-.help ul{margin:6px 0;padding-inline-start:20px;padding-inline-end:0;line-height:1.4;font-weight:600}
-.help .btns{justify-content:center}
-/* the how-to card scrolls on a short screen (a phone on its side): its button stays in view at the bottom */
-.help .btns{position:sticky;bottom:-2px;z-index:1;background:var(--ok-card);padding:8px 0 4px;margin-bottom:-4px}
-@media (max-height:740px){
-  .help{padding:16px 14px 14px!important;gap:6px!important}.help p{font-size:.95rem!important}
-  .ex{margin:4px 0 0}.ex .tile{--tile:36px}.exNote{font-size:.88rem!important}
-  .help ul{font-size:.9rem;line-height:1.3;margin:4px 0}
-}
-
-/* stats */
-.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
-.tab{min-height:56px;border:2.5px solid var(--rim);border-radius:16px;padding:4px 2px;background:var(--ok-bg2);color:var(--ok-text);font-weight:800;font-size:.86rem;line-height:1.1;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
-
-.tab.on{background:var(--wp-mintTint);color:var(--wp-ink);border-color:var(--wp-ink);box-shadow:0 3px 0 var(--wp-ink)}
-.nums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%}
-.nums div{display:flex;flex-direction:column;align-items:center;line-height:1.1}
-.nums b{font-size:1.7rem;font-weight:800;font-variant-numeric:tabular-nums}
-.nums span{font-size:.8rem;color:var(--soft);font-weight:600}
-.dist{display:flex;flex-direction:column;gap:5px;text-align:start;width:100%}
-.dist>b{text-align:center}
-.bar{display:flex;align-items:center;gap:8px;font-weight:800}
-.bar i{font-style:normal;width:14px;text-align:end}
-.bar b{display:block;min-width:28px;padding:3px 8px;border-radius:9px;background:var(--wp-stone);color:var(--wp-cream);text-align:end;font-size:.9rem;box-sizing:border-box;border:2px solid var(--wp-ink)}
-.bar.last b{background:var(--hit);color:var(--hitInk)}
-.totalPts{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800}
-.totalPts svg{width:22px;height:22px}
-
-/* settings: the kit's rows and switches */
-.wp .ok-set .ok-srow div{display:flex;flex-direction:column;line-height:1.2}
-.wp .ok-set .ok-srow span{font-size:.86rem;color:var(--soft);font-weight:600}
-
-/* result */
-.resPortrait canvas{display:block}
-.resTitle{font-size:1.9em!important}
-.wordCard{display:flex;align-items:center;justify-content:center;gap:10px}
-.wordTiles{display:flex;gap:5px}
-.wordTiles .tile{--tile:40px}
-.say{flex:none}
-.def{font-size:.98rem!important;color:var(--soft)}
-.def svg{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;margin-inline-end:5px}
-.resMid{display:flex;align-items:center;justify-content:center;gap:14px;background:var(--ok-bg2);border:2px solid var(--ok-line);border-radius:18px;padding:10px 12px;width:100%;box-sizing:border-box}
-.mini{display:grid;gap:3px;flex:none}
-.mini div{display:flex;gap:3px}
-.mini i{display:block;width:13px;height:13px;border-radius:4px;border:1.5px solid var(--wp-ink);box-sizing:border-box;background:var(--ok-card)}
-.mini i.hit{background:var(--hit)}.mini i.near{background:var(--near);border-radius:50%}.mini i.miss{background:var(--miss);opacity:.75}
-.resNums{grid-template-columns:repeat(2,minmax(54px,1fr));row-gap:6px;width:auto}
-.resNums b{font-size:1.35rem}
-.ptsLine{display:flex;align-items:center;justify-content:center;gap:6px;font-weight:800!important}
-.ptsLine svg{width:22px;height:22px}
-.countdown{font-weight:700}
-.countdown b{font-variant-numeric:tabular-nums;font-size:1.2rem}
-@media (orientation:landscape) and (max-height:560px){
-  .resPanel{width:min(780px,100%)!important;display:grid!important;grid-template-columns:1fr 1fr;gap:6px 18px!important;align-items:center}
-  .resPanel .resA,.resPanel .resB{display:flex;flex-direction:column;align-items:center;gap:8px}
-  .homeIn{width:min(820px,100%);display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);grid-template-areas:"logo modes" "tag modes" "bar modes" "pts modes";
-    align-items:center;column-gap:20px;row-gap:8px}
-  .logo{grid-area:logo}.tag{grid-area:tag}.modes{grid-area:modes}.homeBar{grid-area:bar}.points{grid-area:pts;justify-self:center}
-  .mode{min-height:64px}.mode.daily{min-height:60px}.mode.friend{min-height:52px}
-  .logoOwl canvas{height:64px!important;width:auto!important}.logoTiles .tile{--tile:42px}.logoWord{font-size:2.3rem}
-}
-.resA,.resB{display:contents}
-
-/* friend */
-.secretRow{display:flex;gap:6px;justify-content:center}
-.secretRow .tile{--tile:44px}
-
-.ok-rm .wp .logoTiles .tile,.ok-rm .wp .tile.flip,.ok-rm .wp .tile.bounce,.ok-rm .wp .row.shake,.ok-rm .wp .owl.cheer .body,.ok-rm .wp .logoOwl{animation:none}
-.ok-rm .wp .owl .body,.ok-rm .wp .bubble{transition:none}
-/* round 2: the cursor cell is unmistakable (an Ink edge and a mint ring), empty cells are soft, and the keyboard tray
-   has room at its edges with wider, slightly shorter keys; on big screens everything is about a fifth bigger */
-.tile:not(.filled):not(.hit):not(.near):not(.miss){border:2px solid color-mix(in srgb,var(--ok-line) 75%,transparent);background:color-mix(in srgb,var(--ok-bg2) 70%,transparent)}
-.tile.cursor:not(.filled){border:3px solid var(--wp-ink)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--wp-mint) 70%,transparent);animation:wpCur 1.4s ease-in-out infinite}
-@keyframes wpCur{50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--wp-mint) 35%,transparent)}}
-.ok-rm .tile.cursor{animation:none}
-.kb{padding:10px 10px 8px;gap:8px}
-.key::before{inset:0 2px 4px;border-radius:11px}
-.key{max-width:62px;font-size:clamp(1.05rem,4.9vw,1.4rem);padding:0 0 6px}
-.app.big{max-width:700px}
-.app.big .kb{max-width:680px;padding:12px 12px 10px;gap:9px}
-.app.side.big{max-width:1180px;column-gap:36px;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);grid-template-areas:"hud hud" "board kb"}
-.app.side.big .hud{max-width:760px;width:100%;justify-self:center}
-.app.side.big .kb{align-self:center;margin-top:calc(var(--tile) * .7)}
-.app.big .key{max-width:66px;font-size:1.55rem}.app.big .key.wide{max-width:104px;font-size:1.1rem}
-.app.big .hud .ok-btn.ok-icon{width:52px;min-height:52px}.app.big .pill{height:52px}
-/* the win: a ring of sparks and paper confetti behind the card (never over its text) */
-.wpCel{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
-.wpCel i{position:absolute;display:block;border-radius:3px;animation:wpFall 2.6s ease-in-out infinite alternate}
-.wpCel svg{position:absolute;width:44px;height:44px;color:var(--wp-ink);--ok-fill:#FFD23F;animation:wpTw 1.6s ease-in-out infinite alternate}
-@keyframes wpFall{to{transform:translateY(14px) rotate(40deg)}}
-@keyframes wpTw{to{transform:scale(.8) rotate(12deg)}}
-.ok-rm .wpCel i,.ok-rm .wpCel svg{animation:none}
-@media (prefers-reduced-motion:reduce){.wpCel i,.wpCel svg,.tile.cursor{animation:none}}
-#resScreen .ok-card{position:relative;z-index:1}
-/* round 3. The "in the word" colour is spark yellow (far from the right-spot green); empty cells have a visible edge;
-   the tick and dot badges sit inside the tile; wider keys (a slimmer tray edge, thinner gaps) */
-.tile:not(.filled):not(.hit):not(.near):not(.miss){border:2.5px solid color-mix(in srgb,var(--wp-ink) 24%,var(--ok-line));background:color-mix(in srgb,var(--ok-card) 80%,transparent)}
-.tile .mk{top:calc(var(--tile) * .05);inset-inline-end:calc(var(--tile) * .05);width:calc(var(--tile) * .28);height:calc(var(--tile) * .28)}
-.tile.near .mk{top:calc(var(--tile) * .08);inset-inline-end:calc(var(--tile) * .08);width:calc(var(--tile) * .18);height:calc(var(--tile) * .18)}
-.kb{padding:8px 5px 7px;gap:7px}
-.key::before{inset:0 1.5px 4px;border-radius:10px}
-.key.wide{flex:1.7 1 0;font-size:clamp(.7rem,3.1vw,1rem);letter-spacing:-.02em}
-.app.big .key.wide{max-width:112px}
-/* big screens: the keyboard lines up with the bottom of the board; the title pill stays a sensible width */
-.app.side.big .kb{align-self:end;margin-top:0;margin-bottom:calc(var(--tile) * .25)}
-.app.side.big .hud{max-width:600px}
-/* the result: the board behind is dimmed, the card is bigger on big screens, Play again leads, bigger numbers */
-#resScreen.won.ok-scrim{background:radial-gradient(closest-side,rgba(40,26,8,.28) 25%,rgba(40,26,8,.55))}
-.resNums b{font-size:1.75rem}
-#resBtns{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;width:100%}
-#resBtns .ok-btn{white-space:nowrap;padding-inline:12px}
-#resBtns #resMain{min-height:62px;font-size:1.2rem}
-#resBtns #resHome{min-height:52px;align-self:center}
-@media (min-width:900px) and (min-height:700px){
-  #resScreen .resPanel{width:min(560px,100%)!important;padding:30px 30px 26px!important;font-size:1.08rem}
-  #resScreen .wordTiles .tile{--tile:50px}
-}
+  /* the cards: How to play, stats, settings, the result and the hand-off (a widget over a soft scrim) */
+  .wp-modal { position: fixed; inset: 0; z-index: 20; display: flex; align-items: center; justify-content: center; padding: 14px; background: rgba(20,20,20,.38); overflow: auto; }
+  :root[data-theme="dark"] .wp-modal { background: rgba(0,0,0,.6); }
+  .wp-dialog { position: relative; width: min(460px, 100%); max-height: calc(100% - 4px); overflow: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center; margin: auto; }
+  .wp-dialog .x { position: absolute; top: 8px; inset-inline-end: 8px; }
+  .wp-dialog h2 { margin: 0; font-size: 1.45em; font-weight: 800; line-height: 1.15; padding: 0 36px; }
+  .wp-dialog p { margin: 0; line-height: 1.38; font-weight: 600; }
+  .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; width: 100%; margin-top: 4px; }
+  .btns .wp-btn { flex: 1 1 auto; }
+  .help { text-align: start; align-items: stretch; --g: var(--g-time); }
+  .help h2 { text-align: center; }
+  .ex { display: flex; gap: 6px; justify-content: center; margin: 6px 0 0; }
+  .ex .tile { --tile: 40px; }
+  .exNote { font-size: .95rem; color: var(--muted); }
+  .help ul { margin: 4px 0; padding-inline-start: 20px; line-height: 1.4; font-weight: 600; }
+  .help .btns { position: sticky; bottom: -16px; background: var(--card); padding: 8px 0 4px; }
+  .stats { --g: var(--g-check); }
+  .tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
+  .tab { min-height: 56px; border: 2px solid var(--line); border-radius: 14px; padding: 4px 2px; background: var(--card2); font-weight: 800; font-size: .86rem; line-height: 1.1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; }
+  .tab .wp-emo { font-size: 1.2rem; }
+  .tab.on { background: var(--current); color: var(--on-current); border-color: var(--current); }
+  .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; }
+  .nums div { display: flex; flex-direction: column; align-items: center; line-height: 1.1; }
+  .nums b { font-size: 1.7rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .nums span { font-size: .8rem; color: var(--muted); font-weight: 600; }
+  .dist { display: flex; flex-direction: column; gap: 5px; text-align: start; width: 100%; }
+  .dist > b { text-align: center; }
+  .bar { display: flex; align-items: center; gap: 8px; font-weight: 800; }
+  .bar i { font-style: normal; width: 14px; text-align: end; }
+  .bar b { display: block; min-width: 28px; padding: 3px 8px; border-radius: 8px; background: var(--miss); color: var(--missInk); text-align: end; font-size: .9rem; }
+  .bar.last b { background: var(--hit); color: var(--hitInk); }
+  .totalPts { font-weight: 800; }
+  .set { --g: var(--g-tools); align-items: stretch; }
+  .srow { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: var(--r-sm); background: var(--card2); text-align: start; }
+  .srow div { flex: 1; display: flex; flex-direction: column; line-height: 1.2; }
+  .srow span { font-size: .86rem; color: var(--muted); font-weight: 600; }
+  .sw { flex: none; width: 52px; height: 30px; border-radius: 999px; border: 0; padding: 0; background: var(--line); position: relative; }
+  .sw::after { content: ''; position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: inset-inline-start .15s; }
+  .sw[aria-checked="true"] { background: var(--green); }
+  .sw[aria-checked="true"]::after { inset-inline-start: 25px; }
+  .resPanel { --g: var(--g-class); }
+  .resPanel.lost { --g: var(--g-show); }
+  .resPortrait .wp-owl { width: 92px; height: 92px; margin: 0 auto; }
+  .resMsg { color: var(--muted); }
+  .wordCard { display: flex; align-items: center; justify-content: center; gap: 10px; }
+  .wordTiles { display: flex; gap: 5px; }
+  .wordTiles .tile { --tile: 42px; }
+  .def { font-size: .98rem; color: var(--muted); }
+  .resMid { display: flex; align-items: center; justify-content: center; gap: 14px; background: var(--card2); border-radius: var(--r-sm); padding: 10px 12px; width: 100%; }
+  .mini { display: grid; gap: 3px; flex: none; }
+  .mini div { display: flex; gap: 3px; }
+  .mini i { display: block; width: 13px; height: 13px; border-radius: 4px; background: var(--card); box-shadow: inset 0 0 0 1.5px var(--line); }
+  .mini i.hit { background: var(--hit); box-shadow: none; } .mini i.near { background: var(--near); border-radius: 50%; box-shadow: none; } .mini i.miss { background: var(--miss); box-shadow: none; }
+  .resNums { grid-template-columns: repeat(2, minmax(54px, 1fr)); row-gap: 6px; width: auto; }
+  .resNums b { font-size: 1.5rem; }
+  .ptsLine { font-weight: 800 !important; }
+  .countdown { font-weight: 700; }
+  .countdown b { font-variant-numeric: tabular-nums; font-size: 1.15rem; }
+  #resBtns { display: grid; grid-template-columns: 1.5fr 1fr; gap: 10px; width: 100%; }
+  #resBtns #resMain { min-height: 56px; font-size: 1.1rem; }
+  .secretRow { display: flex; gap: 6px; justify-content: center; }
+  .secretRow .tile { --tile: 44px; }
+  .wpCel { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 30; }
+  .wpCel i { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 2px; animation: wp-fall var(--t, 1.6s) ease-in var(--d, 0s) forwards; }
+  @keyframes wp-fall { to { transform: translate(var(--x, 0), 105vh) rotate(var(--r, 360deg)); } }
+  .wp-rm .tile, .wp-rm .tile .ch, .wp-rm .row, .wp-rm .wp-owl *, .wp-rm .sw::after { animation: none !important; transition: none !important; }
+  @media (prefers-reduced-motion: reduce) { .tile, .tile .ch, .row, .wp-owl *, .wpCel i { animation: none !important; transition: none !important; } .wpCel { display: none; } }
+  @media (max-width: 899px) {
+    .wp-play { flex-direction: column; align-items: stretch; gap: 10px; }
+    .wp-boardw, .wp-kbw { flex: none; align-self: stretch; }
+    .wp-boardw.wp-widget { padding: 10px; gap: 8px; }
+  }
+  @media (max-width: 420px) { .wp-boardw .wp-ibtn { width: 38px; } .wp-boardw .wp-prog { padding: 4px 9px; font-size: .85rem; } .wp-boardw .wp-wt { font-size: 1.05rem; } }
+  @media (max-width: 520px) { .modes { grid-template-columns: 1fr; } .wp-big { min-height: 64px; } .wp-home { padding: 14px 12px 16px; } }
+  @media (max-height: 700px) { .wp-head { padding: 4px 0; } .wp-now { min-height: 52px; } .wp-now .wp-owl { width: 42px; height: 42px; } }
 </style>
-
-<!-- Every player-visible string comes from the I18N table in the script (registered with Oomba.strings):
-     data-t = text, data-th = text with <b> markup, data-ta = aria-label; data-icon = a kit icon. -->
-<div id="game" class="wp">
-<!-- ======================= play screen ======================= -->
-<div class="app offstage" id="app">
-  <div class="hud">
-    <button class="ok-btn ok-icon" id="homeBtn" data-icon="home" data-ta="a_home"></button>
-    <div class="pill"><span class="pic" id="modePic" aria-hidden="true"></span><div class="txt"><b id="modeName"></b><span id="tryText"></span></div></div>
-    <button class="ok-btn ok-icon" id="statsBtn" data-icon="trophy" data-ta="a_stats"></button>
-    <button class="ok-btn ok-icon" id="setBtn" data-icon="settings" data-ta="a_settings"></button>
-    <button class="ok-btn ok-icon mute" id="muteBtn" data-ta="a_soundOff"></button>
-  </div>
-  <div class="boardWrap" id="boardWrap">
-    <div class="card" id="card">
-      <div class="owl" id="owl" aria-hidden="true"><div class="body"></div></div>
-      <div class="bubble" id="bubble" role="status" aria-live="polite"></div>
-      <p class="secretHelp" id="secretHelp" hidden><span data-t="secret1"></span><span class="sub" data-t="secret2"></span></p>
-      <div class="grid" id="grid" dir="ltr" lang="en" data-ta="a_guesses"></div>
-    </div>
-  </div>
-  <div class="kb" id="kb" dir="ltr" data-ta="a_keyboard"></div>
-</div>
-
+</head>
+<body>
+<div id="game">
+<header class="wp-head">
+  <div class="wp-logo"><span class="pip" aria-hidden="true"></span><span id="wp-apptitle">Word Peek</span></div>
+  <button class="wp-icon" type="button" id="setBtn" data-ta="a_settings">⚙️</button>
+  <button class="wp-icon" type="button" id="muteBtn" data-ta="a_soundOff"></button>
+</header>
+<main class="wp" id="wp">
 <!-- ======================= home ======================= -->
-<section class="home" id="homeScreen">
-  <div class="homeIn">
-    <div class="logo">
-      <div class="logoOwl" id="logoOwl" aria-hidden="true"></div>
-      <div class="logoTiles" dir="ltr" aria-hidden="true">
-        <div class="tile hit"><span class="ch">P</span><span class="mk" data-icon="check"></span></div><div class="tile near"><span class="ch">E</span><span class="mk"></span></div>
-        <div class="tile near"><span class="ch">E</span><span class="mk"></span></div><div class="tile hit"><span class="ch">K</span><span class="mk" data-icon="check"></span></div>
-      </div>
-      <h1 class="logoWord" dir="ltr" aria-label="Word Peek"><span class="ok-title-word" data-w="Word"><i>Word</i></span><span class="ok-title-word" data-w="Peek"><i>Peek</i></span></h1>
-    </div>
-    <p class="tag"><span data-t="tag"></span><span class="practise" id="practiseLine" data-t="practise"></span></p>
-    <div class="modes">
-      <button class="mode daily" id="modeDaily" data-mode="daily"><span class="mt" data-pic="daily"><span data-t="m_daily"></span></span><span class="md" id="dailyNote"></span><span class="go"><span id="dailyGo"></span><span data-icon="play"></span></span></button>
-      <button class="mode" data-mode="practice"><span class="mt" data-pic="practice"><span data-t="m_practice"></span></span><span class="md" data-t="md_practice"></span></button>
-      <button class="mode" data-mode="little"><span class="mt" data-pic="little"><span data-t="m_little"></span></span><span class="md" data-t="md_little"></span></button>
-      <button class="mode" data-mode="big"><span class="mt" data-pic="big"><span data-t="m_big"></span></span><span class="md" data-t="md_big"></span></button>
-      <button class="mode" data-mode="friend" id="modeFriend"><span class="mt" data-pic="friend"><span data-t="m_friend"></span></span><span class="md" data-t="md_friend"></span></button>
-    </div>
-    <div class="homeBar">
-      <button class="ok-btn ok-quiet" id="helpBtnHome" data-icon="question"><span data-t="b_help"></span></button>
-      <button class="ok-btn ok-quiet" id="statsBtnHome" data-icon="trophy"><span data-t="b_stats"></span></button>
-    </div>
-    <div class="corner">
-      <button class="ok-btn ok-icon" id="setBtnHome" data-icon="settings" data-ta="a_settings"></button>
-      <button class="ok-btn ok-icon mute" id="muteBtnHome" data-ta="a_soundOff"></button>
-    </div>
-    <div class="points" id="homePointsBox"><span data-icon="star"></span><span id="homePoints"></span></div>
+<section class="wp-home wp-widget" id="homeScreen">
+  <div class="wp-wh"><span class="wp-wicon pip" aria-hidden="true"></span><h2 class="wp-wt" data-t="tag"></h2></div>
+  <p class="wp-sub" id="practiseLine" data-t="practise"></p>
+  <div class="modes">
+    <button class="wp-big daily" id="modeDaily" data-mode="daily" type="button"><span class="wp-emo" aria-hidden="true">📅</span><span class="wp-txt"><b data-t="m_daily"></b><small id="dailyNote"></small></span><span class="go" id="dailyGo"></span></button>
+    <button class="wp-big" data-mode="practice" type="button"><span class="wp-emo" aria-hidden="true">✏️</span><span class="wp-txt"><b data-t="m_practice"></b><small data-t="md_practice"></small></span></button>
+    <button class="wp-big" data-mode="little" type="button"><span class="wp-emo" aria-hidden="true">🔤</span><span class="wp-txt"><b data-t="m_little"></b><small data-t="md_little"></small></span></button>
+    <button class="wp-big" data-mode="big" type="button"><span class="wp-emo" aria-hidden="true">📖</span><span class="wp-txt"><b data-t="m_big"></b><small data-t="md_big"></small></span></button>
+    <button class="wp-big friend" data-mode="friend" id="modeFriend" type="button"><span class="wp-emo" aria-hidden="true">🎁</span><span class="wp-txt"><b data-t="m_friend"></b><small data-t="md_friend"></small></span></button>
   </div>
+  <div class="homeBar">
+    <button class="wp-btn wp-quiet" id="helpBtnHome" type="button" data-t="b_help"></button>
+    <button class="wp-btn wp-quiet" id="statsBtnHome" type="button" data-t="b_stats"></button>
+  </div>
+  <p class="points" id="homePointsBox"><span id="homePoints"></span></p>
 </section>
 
+<!-- ======================= play screen ======================= -->
+<div class="wp-play" id="app" hidden>
+  <section class="wp-boardw wp-widget" id="boardW">
+    <div class="wp-wh"><span class="wp-wicon" id="modePic" aria-hidden="true"></span><h2 class="wp-wt" id="modeName"></h2><span class="wp-prog" id="tryText"></span>
+      <button class="wp-ibtn" id="statsBtn" type="button" data-ta="a_stats">📊</button><button class="wp-ibtn" id="homeBtn" type="button" data-ta="a_home">🏠</button></div>
+    <div class="wp-now"><span class="pip" id="owl" aria-hidden="true"></span><span class="msg" id="bubble" role="status" aria-live="polite"></span></div>
+    <p class="secretHelp" id="secretHelp" hidden><span data-t="secret1"></span><span class="sub" data-t="secret2"></span></p>
+    <div class="boardWrap" id="boardWrap"><div class="card" id="card"><div class="grid" id="grid" dir="ltr" lang="en" data-ta="a_guesses"></div></div></div>
+  </section>
+  <section class="wp-kbw wp-widget"><div class="kb" id="kb" dir="ltr" data-ta="a_keyboard"></div></section>
+</div>
+</main>
+
 <!-- ======================= how to play ======================= -->
-<section class="ok-modal ok-scrim" id="helpScreen" hidden>
-  <div class="ok-card help" role="dialog" aria-modal="true" data-ta="h_title">
-    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
-    <h2 class="ok-h2" data-t="h_title"></h2>
+<section class="wp-modal" id="helpScreen" hidden>
+  <div class="wp-dialog wp-widget help" role="dialog" aria-modal="true" data-ta="h_title">
+    <button class="wp-ibtn x" type="button" data-close data-ta="a_close">✕</button>
+    <h2 data-t="h_title"></h2>
     <p data-th="h_intro"></p>
     <div class="ex" dir="ltr" lang="en"><div class="tile hit"><span class="ch">P</span><span class="mk" data-icon="check"></span></div><div class="tile filled">L</div><div class="tile filled">A</div><div class="tile filled">N</div><div class="tile filled">T</div></div>
     <p class="exNote" data-th="h_hit"></p>
@@ -363,77 +300,70 @@ body{margin:0;overflow:hidden;touch-action:manipulation;user-select:none;-webkit
       <li data-th="h_li3"></li>
       <li data-th="h_li4"></li>
     </ul>
-    <div class="btns"><button class="ok-btn ok-hot ok-big" data-close data-icon="play"><span data-t="h_go"></span></button></div>
+    <div class="btns"><button class="wp-btn wp-go" type="button" data-close>▶️ <span data-t="h_go"></span></button></div>
   </div>
 </section>
 
 <!-- ======================= stats ======================= -->
-<section class="ok-modal ok-scrim" id="statsScreen" hidden>
-  <div class="ok-card" role="dialog" aria-modal="true" data-ta="a_stats">
-    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
-    <h2 class="ok-h2" data-t="s_title"></h2>
+<section class="wp-modal" id="statsScreen" hidden>
+  <div class="wp-dialog wp-widget stats" role="dialog" aria-modal="true" data-ta="a_stats">
+    <button class="wp-ibtn x" type="button" data-close data-ta="a_close">✕</button>
+    <h2 data-t="s_title"></h2>
     <div class="tabs" id="statTabs"></div>
     <div class="nums" id="statNums"></div>
     <div class="dist" id="statDist"></div>
-    <div class="totalPts"><span data-icon="star"></span><span id="statPts"></span></div>
+    <p class="totalPts" id="statPts"></p>
   </div>
 </section>
 
 <!-- ======================= settings ======================= -->
-<section class="ok-modal ok-scrim" id="setScreen" hidden>
-  <div class="ok-card ok-set" role="dialog" aria-modal="true" data-ta="a_settings">
-    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
-    <h2 class="ok-h2" data-t="set_title"></h2>
-    <div class="ok-srow"><div><b data-t="set_hc"></b><span data-t="set_hc_d"></span></div><button class="ok-switch" id="swContrast" role="switch" aria-checked="false" data-ta="set_hc"></button></div>
-    <div class="ok-srow"><div><b data-t="set_hard"></b><span data-t="set_hard_d"></span></div><button class="ok-switch" id="swHard" role="switch" aria-checked="false" data-ta="set_hard"></button></div>
-    <div class="ok-srow"><div><b data-t="set_sound"></b><span data-t="set_sound_d"></span></div><button class="ok-switch" id="swSound" role="switch" aria-checked="true" data-ta="set_sound"></button></div>
-    <div class="btns"><button class="ok-btn ok-quiet" id="moreSet" data-icon="settings"></button><button class="ok-btn ok-quiet" id="helpBtnSet" data-icon="question"><span data-t="b_help"></span></button><button class="ok-btn ok-go" data-close data-icon="check"><span data-t="done"></span></button></div>
+<section class="wp-modal" id="setScreen" hidden>
+  <div class="wp-dialog wp-widget set" role="dialog" aria-modal="true" data-ta="a_settings">
+    <button class="wp-ibtn x" type="button" data-close data-ta="a_close">✕</button>
+    <h2 data-t="set_title"></h2>
+    <div class="srow"><div><b data-t="set_hc"></b><span data-t="set_hc_d"></span></div><button class="sw" type="button" id="swContrast" role="switch" aria-checked="false" data-ta="set_hc"></button></div>
+    <div class="srow"><div><b data-t="set_hard"></b><span data-t="set_hard_d"></span></div><button class="sw" type="button" id="swHard" role="switch" aria-checked="false" data-ta="set_hard"></button></div>
+    <div class="srow"><div><b data-t="set_sound"></b><span data-t="set_sound_d"></span></div><button class="sw" type="button" id="swSound" role="switch" aria-checked="true" data-ta="set_sound"></button></div>
+    <div class="btns"><button class="wp-btn wp-quiet" type="button" id="helpBtnSet" data-t="b_help"></button><button class="wp-btn wp-go" type="button" data-close>✔️ <span data-t="done"></span></button></div>
   </div>
 </section>
 
 <!-- ======================= result ======================= -->
-<section class="ok-modal ok-scrim" id="resScreen" hidden>
-  <div class="ok-card resPanel" role="dialog" aria-modal="true" data-ta="a_result">
-    <button class="ok-btn ok-icon x" data-close data-icon="cross" data-ta="a_close"></button>
-    <div class="resA">
-      <div class="resPortrait" id="resOwl" aria-hidden="true"></div>
-      <h2 class="ok-h2 resTitle" id="resTitle"></h2>
-      <p class="resMsg" id="resMsg"></p>
-      <div class="wordCard" dir="ltr"><span class="wordTiles" id="resWord" lang="en"></span><button class="ok-btn ok-icon say" id="sayBtn" data-icon="sound" data-ta="a_say"></button></div>
-      <p class="def" id="resDefBox"><span id="resDefIcon" data-icon="book"></span><span id="resDef" lang="en" dir="ltr"></span></p>
-    </div>
-    <div class="resB">
-      <div class="resMid"><div class="mini" id="resEmojis" dir="ltr" role="img" data-ta="a_yourResult"></div><div class="nums resNums" id="resNums"></div></div>
-      <p class="ptsLine" id="resPtsBox"><span data-icon="star"></span><span id="resPts"></span></p>
-      <div class="countdown" id="resCount" hidden><span data-t="r_next"></span> <b id="resTimer" dir="ltr">00:00:00</b></div>
-      <div class="btns" id="resBtns"></div>
-    </div>
+<section class="wp-modal" id="resScreen" hidden>
+  <div class="wp-dialog wp-widget resPanel" role="dialog" aria-modal="true" data-ta="a_result">
+    <button class="wp-ibtn x" type="button" data-close data-ta="a_close">✕</button>
+    <div class="resPortrait" id="resOwl" aria-hidden="true"></div>
+    <h2 class="resTitle" id="resTitle"></h2>
+    <p class="resMsg" id="resMsg"></p>
+    <div class="wordCard" dir="ltr"><span class="wordTiles" id="resWord" lang="en"></span><button class="wp-btn wp-quiet say" type="button" id="sayBtn" data-ta="a_say">🔊</button></div>
+    <p class="def" id="resDefBox"><span id="resDefIcon" aria-hidden="true">📖 </span><span id="resDef" lang="en" dir="ltr"></span></p>
+    <div class="resMid"><div class="mini" id="resEmojis" dir="ltr" role="img" data-ta="a_yourResult"></div><div class="nums resNums" id="resNums"></div></div>
+    <p class="ptsLine" id="resPtsBox"><span id="resPts"></span></p>
+    <div class="countdown" id="resCount" hidden><span data-t="r_next"></span> <b id="resTimer" dir="ltr">00:00:00</b></div>
+    <div class="btns" id="resBtns"></div>
   </div>
 </section>
 
 <!-- ======================= friend hand-off ======================= -->
-<section class="ok-modal ok-scrim" id="passScreen" hidden>
-  <div class="ok-card" role="dialog" aria-modal="true" data-ta="a_pass">
-    <h2 class="ok-h2" data-t="p_title"></h2>
+<section class="wp-modal" id="passScreen" hidden>
+  <div class="wp-dialog wp-widget" role="dialog" aria-modal="true" data-ta="a_pass">
+    <h2 data-t="p_title"></h2>
     <p data-t="p_1"></p>
     <div class="secretRow" id="passRow" dir="ltr"></div>
     <p data-t="p_2"></p>
-    <div class="btns"><button class="ok-btn ok-quiet" id="passBack" data-icon="back"><span data-t="p_back"></span></button><button class="ok-btn ok-hot" id="passGo" data-icon="play"><span data-t="p_go"></span></button></div>
+    <div class="btns"><button class="wp-btn wp-quiet" type="button" id="passBack">✏️ <span data-t="p_back"></span></button><button class="wp-btn wp-go" type="button" id="passGo">▶️ <span data-t="p_go"></span></button></div>
   </div>
 </section>
+<div class="sr" id="wp-say" aria-live="polite"></div>
 </div>
-<script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.6/packs/art-animals.js" integrity="sha384-AkEEw+ya/FaEVyxGO8XslaJBEuViplREiQXUbbMYYVbwcKxZSNQYzaGQQ8KDPagd" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.6/packs/art-school.js" integrity="sha384-9jinyC/87OG+BSf0TLgW7uh4a9WMS5/SH/QrB8Xji1XCK1v704dnxG5KRJE9WKTW" crossorigin="anonymous"></script>
-<script src="/vendor/oomba-kit/1.1.6/packs/dress.js" integrity="sha384-mparmgq1wIeiUwg5wl0iNxyyBr886ZulubzlilnHahyy/KkrRkEFMnyg0Sp0LmYv" crossorigin="anonymous"></script>
 <script>
 /* =====================================================================================
-   Word Peek (on the Oomba Kit)
+   Word Peek (in Crossword's look: its own page, no game engine)
    - Daily Peek: one 5-letter word a day (the same for everyone, picked from the local date), played once a day.
    - Practice (5 letters), Little Peek (4 letters), Big Peek (6 letters): unlimited random words.
    - Friend Peek: one player types a secret word, the other guesses (no points, so nobody can farm the leaderboard).
    Saves in BRB.storage key 'word-peek-v1': settings, points, stats per mode, today's daily board, the round in progress.
-   The kit brings Pip (its owl), his forest, the icons, buttons, sounds, captions, type and the light/dark look.
+   Pip the owl is drawn here (SVG); the look, light and dark, and the buttons are this page's own; sounds are BRB.sfx.
    ===================================================================================== */
 const CONFIG = {
   tries: 6,                         // guesses per round
@@ -446,14 +376,12 @@ const CONFIG = {
   recentAvoid: 40,                  // practice modes don't repeat any of your last 40 words
   maxTile: 66,                      // biggest tile size in px
   speechRate: 0.9,                  // the answer word is read a touch slower than talking (1 = normal) so every sound is clear
-  pip: { species: 'owl', wear: ['scarf'] },   // Pip the owl (a kit character spec)
-  biome: 'forest',                  // Pip's home behind the game (night in the dark theme)
-  modes: {                          // names come from I18N ('m_' + id); icon: a kit prop
-    daily:    { icon: 'clock', length: 5 },
-    practice: { icon: 'pencil', length: 5 },
-    little:   { icon: 'letterblock', length: 4 },
-    big:      { icon: 'book', length: 6 },
-    friend:   { icon: 'gift', length: 5 }
+  modes: {                          // names come from I18N ('m_' + id); icon: its chip; g: the widget's group color
+    daily:    { icon: '📅', g: 'time', length: 5 },
+    practice: { icon: '✏️', g: 'class', length: 5 },
+    little:   { icon: '🔤', g: 'show', length: 4 },
+    big:      { icon: '📖', g: 'check', length: 6 },
+    friend:   { icon: '🎁', g: 'join', length: 5 }
   }
 };
 
@@ -831,7 +759,7 @@ const I18N = {
     h_miss: "<b>O</b> <b>совсем нет в слове</b>.",
     h_li1: "Одна буква может встречаться несколько раз.",
     h_li2: "<b>{daily}</b>: одно слово в день. Побеждай несколько дней подряд, и будет 🔥 серия!",
-    h_li3: "<b>{little}</b> — 4 буквы. <b>{big}</b> — 6 букв.",
+    h_li3: "<b>{little}</b>: 4 буквы. <b>{big}</b>: 6 букв.",
     h_li4: "<b>{hard}</b>: найденные буквы нужно использовать в следующих попытках.",
     h_go: "Играем!",
     s_title: "Твоя статистика", s_played: "Игры", s_win: "% побед", s_streak: "Серия", s_best: "Рекорд", s_dist: "Победы по попыткам",
@@ -992,39 +920,55 @@ const I18N = {
 };
 // ==== I18N END ====
 
-// The table goes to the kit (Oomba.strings) under 'wp.' keys, so the game's words never replace the kit's own button
-// words. Pictures are the kit's icons, not emoji: emoji in the table are left out when it is registered.
-const NS = 'wp.';
-const noEmoji = v => (typeof v === 'string' ? v.replace(/\p{Extended_Pictographic}️?/gu, '').replace(/ {2,}/g, ' ').trim()
-  : Array.isArray(v) ? v.map(noEmoji) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, noEmoji(x)])) : v);
-const STR = {};
-for (const l in I18N) { STR[l] = {}; for (const k in I18N[l]) STR[l][NS + k] = noEmoji(I18N[l][k]); }
-Oomba.strings(STR);
-const LANG = Oomba.lang;
-const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'].filter((l, i, a) => STR[l] && a.indexOf(l) === i);
-const RTL = Oomba.dir === 'rtl';
-const NF = { format: n => Oomba.num(n) };
+// The game's own lookup: the locale, then its base language (en-GB -> en), then en. A plural entry picks its form by
+// vars.n (Intl.PluralRules); {name} placeholders take vars, numbers formatted for the language.
+const B = window.BRB || {};
+const LANG = (B.user && typeof B.user.lang === 'string' && B.user.lang) || 'en';
+const LANG_CHAIN = [LANG, LANG.split('-')[0], 'en'].filter((l, i, a) => I18N[l] && a.indexOf(l) === i);
+const RTL = !!(B.user && B.user.dir === 'rtl');
+const NF = (() => { try { const f = new Intl.NumberFormat(LANG); return { format: n => f.format(n) }; } catch (e) { return { format: n => String(n) }; } })();
+const PLURAL = (() => { try { return new Intl.PluralRules(LANG); } catch (e) { return { select: n => (n === 1 ? 'one' : 'other') }; } })();
 /** The raw entry for a key (a list, like the cheers after a win), following the lookup order. */
-function tRaw(key) { for (const l of LANG_CHAIN) { const v = STR[l][NS + key]; if (v !== undefined) return v; } return key; }
-/** A translated string (the kit picks the plural form by vars.n and fills {name} placeholders with formatted numbers). */
-function t(key, vars) { const s = Oomba.t(NS + key, vars); return s === NS + key ? key : s; }
-/** Puts the static strings into the page (data-t = text, data-th = text with <b>, data-ta = aria-label) and the kit icons (data-icon). */
+function tRaw(key) { for (const l of LANG_CHAIN) { const v = I18N[l][key]; if (v !== undefined) return v; } return key; }
+/** A translated string (the plural form by vars.n; {name} placeholders filled, numbers formatted). */
+function t(key, vars) {
+  let s = tRaw(key);
+  if (s && typeof s === 'object' && !Array.isArray(s)) { const n = vars && +vars.n; const form = isFinite(n) ? PLURAL.select(n) : 'other'; s = s[form] != null ? s[form] : s.other != null ? s.other : ''; }
+  s = String(s);
+  return vars ? s.replace(/\{(\w+)\}/g, (m, k) => (vars[k] == null ? m : typeof vars[k] === 'number' ? NF.format(vars[k]) : String(vars[k]))) : s;
+}
+/** Small line icons drawn here (the tick badge, the delete key, the sound button). */
+const ICON = {
+  check: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  back: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5h11v14H9l-6-7z"/><path d="M12 9l5 6M17 9l-5 6"/></svg>',
+  sound: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>',
+  mute: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 9.5l5 5M21.5 9.5l-5 5"/></svg>',
+};
+/** Pip the owl, drawn here: a round owl in a red scarf. Moods are classes on the svg (happy, cheer, sad, tilt, blink). */
+const PIP_SVG = '<svg class="wp-owl" viewBox="0 0 64 64" aria-hidden="true"><g class="body">' +
+  '<path d="M15 16l3-9 7 6M49 16l-3-9-7 6" fill="#9A6B43" stroke="#141414" stroke-width="2.2" stroke-linejoin="round"/>' +
+  '<ellipse cx="32" cy="35" rx="21" ry="24" fill="#B9875A" stroke="#141414" stroke-width="2.4"/>' +
+  '<ellipse cx="32" cy="45" rx="12.5" ry="12" fill="#F6E7C8"/>' +
+  '<path d="M26 44c2 1.5 4 1.5 6 0M32 44c2 1.5 4 1.5 6 0M29 50c2 1.5 4 1.5 6 0" fill="none" stroke="#C9A77C" stroke-width="1.6" stroke-linecap="round"/>' +
+  '<path d="M14 36c-4 4-4 10-1 14M50 36c4 4 4 10 1 14" fill="none" stroke="#141414" stroke-width="2.2" stroke-linecap="round"/>' +
+  '<circle cx="23.5" cy="27" r="8.5" fill="#FFFDF2" stroke="#141414" stroke-width="2.2"/><circle cx="40.5" cy="27" r="8.5" fill="#FFFDF2" stroke="#141414" stroke-width="2.2"/>' +
+  '<g class="eo"><g class="pupil"><circle cx="24.5" cy="27.5" r="4" fill="#141414"/><circle cx="41.5" cy="27.5" r="4" fill="#141414"/><circle cx="26" cy="26" r="1.3" fill="#FFFDF2"/><circle cx="43" cy="26" r="1.3" fill="#FFFDF2"/></g></g>' +
+  '<g class="eh" fill="none" stroke="#141414" stroke-width="2.6" stroke-linecap="round"><path d="M19 29c2-4 7-4 9 0M36 29c2-4 7-4 9 0"/></g>' +
+  '<g class="brow" fill="none" stroke="#141414" stroke-width="2.4" stroke-linecap="round"><path d="M17 18.5l8 2.5M47 18.5l-8 2.5"/></g>' +
+  '<path d="M29 33l3 5 3-5z" fill="#F28C38" stroke="#141414" stroke-width="1.8" stroke-linejoin="round"/>' +
+  '<path d="M17 52c9 5 21 5 30 0l-1 5c-9 4-19 4-28 0z" fill="#E5484D" stroke="#141414" stroke-width="2" stroke-linejoin="round"/>' +
+  '<path d="M40 55l3 7 4-2-2-6" fill="#E5484D" stroke="#141414" stroke-width="2" stroke-linejoin="round"/>' +
+  '</g></svg>';
+/** Puts the static strings into the page (data-t = text, data-th = text with <b>, data-ta = aria-label) and the icons (data-icon). */
 function applyI18n() {
   const root = document.documentElement; root.lang = LANG; if (RTL) root.dir = 'rtl';
   const vars = { daily: t('m_daily'), little: t('m_little'), big: t('m_big'), hard: t('set_hard') };
   document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
   document.querySelectorAll('[data-th]').forEach(el => { el.innerHTML = t(el.dataset.th, vars); });
-  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); });
-  document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', Oomba.icon(el.dataset.icon)); });
+  document.querySelectorAll('[data-ta]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.ta)); if (el.tagName === 'BUTTON' && !el.title) el.title = t(el.dataset.ta); });
+  document.querySelectorAll('[data-icon]').forEach(el => { el.insertAdjacentHTML('afterbegin', ICON[el.dataset.icon] || ''); });
+  document.querySelectorAll('.pip').forEach(el => { el.innerHTML = PIP_SVG; });
   const pl = document.getElementById('practiseLine'); if (pl) pl.hidden = !pl.textContent;
-}
-/** Shrinks a one-line label until it fits its box (never below minPx). */
-function fitText(el, minPx) {
-  if (!el || !el.clientWidth) return; el.style.fontSize = '';
-  const cs = getComputedStyle(el), avail = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
-  const range = document.createRange(); range.selectNodeContents(el);   // the text's real (unclipped, fractional) width
-  let size = parseFloat(cs.fontSize) || 16;
-  while (range.getBoundingClientRect().width > avail - 1 && size > minPx) { size -= 0.5; el.style.fontSize = size + 'px'; }
 }
 
 
@@ -2697,14 +2641,23 @@ function nextDay(dateStr) { const [y, m, d] = dateStr.split('-').map(Number); co
    ===================================================================================== */
 const SAVE_KEY = 'word-peek-v1';
 const MODE_IDS = ['daily', 'practice', 'little', 'big'];
-// the kit's reduced motion (device, site or the kit's own setting), kept current: "More settings" can turn it on
-// mid-game, and every use below reads it again
-let REDUCED = !!Oomba.settings.reduced;
-Oomba.settings.on('change', () => { REDUCED = !!Oomba.settings.reduced; });
+// reduced motion: the site's choice (BRB.motion), else the device's; read again at every use
+const motionMq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+let REDUCED = B.motion === 'reduce' || (B.motion !== 'full' && !!(motionMq && motionMq.matches));
+if (motionMq && motionMq.addEventListener) motionMq.addEventListener('change', () => { REDUCED = B.motion === 'reduce' || (B.motion !== 'full' && motionMq.matches); document.documentElement.classList.toggle('wp-rm', REDUCED); });
+document.documentElement.classList.toggle('wp-rm', REDUCED);
+// Light or dark: the site's choice (BRB.theme), else the device's.
+const darkMq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+function applyTheme() { document.documentElement.dataset.theme = B.theme === 'light' || B.theme === 'dark' ? B.theme : (darkMq && darkMq.matches ? 'dark' : 'light'); }
+applyTheme(); if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
 const $ = id => document.getElementById(id);
 const blankStats = () => ({ played: 0, wins: 0, streak: 0, best: 0, dist: [0, 0, 0, 0, 0, 0], last: 0, lastWin: '', lastPlayed: '' });
-const later = (ms, fn) => Oomba.time.real.after(ms, fn);   // real clock: menus and reveals keep going while nothing else runs
+/** later(ms, fn) and every(ms, fn) return a function that cancels them. */
+const later = (ms, fn) => { const id = setTimeout(fn, ms); return () => clearTimeout(id); };
+const every = (ms, fn) => { const id = setInterval(fn, ms); return () => clearInterval(id); };
 const noop = () => {};
+const sayBox = $('wp-say');
+function announce(s) { sayBox.textContent = ''; later(30, () => { sayBox.textContent = s; }); }
 
 function loadSave() {
   let s = null;
@@ -2739,32 +2692,16 @@ function dailyStreakNow() {
 // The round being played.
 const S = {
   screen: 'home', mode: 'daily', length: 5, answer: '', guesses: [], typed: '', over: false, won: false, hard: false,
-  busy: false, date: '', seed: null, panel: null, lastPoints: 0, friendSetup: false
+  busy: false, date: '', seed: null, panel: null, lastPoints: 0, friendSetup: false, prompt: ''
 };
 let fast = false;   // skipAnimations()
 
 /* =====================================================================================
-   The kit: Pip's forest behind everything, colours as CSS variables, the game's DOM inside the kit's UI root
-   ===================================================================================== */
-const STAGE = Oomba.stage({ api: 1, biome: CONFIG.biome, size: [960, 540] });
-STAGE.camera.x = 0; STAGE.camera.y = -150;
-for (const [x, s] of [[-430, 150], [420, 170], [-250, 110]]) STAGE.add('tree', { x, y: 30, size: s, variant: 'pine', layer: 'near' });
-for (const x of [-330, 330]) STAGE.add('lantern', { x, y: 28, size: 90, layer: 'near' });
-const C = Oomba.color, cssVars = {
-  ink: C('ink'), cream: C('card'), mint: C('mint'), mintTint: C('mint', 'light'), stone: C('stone'),
-  hit: C('mint', 'shade'), hitInk: C('card'), near: C('spark'), nearInk: C('ink'), miss: C('stone'), missInk: C('card'),
-  hcHit: C('peach', 'shade'), hcHitInk: C('card'), hcNear: C('sky', 'shade'), hcNearInk: C('card'), hcMiss: C('stone', 'shade'),
-  hot: C('hot'), hotPress: C('hot', 'shade'),
-};
-for (const k in cssVars) document.documentElement.style.setProperty('--wp-' + k, cssVars[k]);
-Oomba.ui.root().appendChild($('game'));
-Oomba.scene = 'home';
-
-/* =====================================================================================
    Sound + speech (speech may be unavailable: every use is guarded)
    ===================================================================================== */
-// The kit's sounds (with captions when they are on); the SDK's names (click, coin, hit, powerup, lose) pass through.
-function sfx(name, o) { try { Oomba.sfx(name, Object.assign({ caption: false }, o)); } catch (e) { /* ignore */ } }
+// The SDK's sounds (BRB.sfx), a few moments only: the game's names map onto the SDK's.
+const SOUND = { select: 'click', wrong: 'hit', correct: 'coin', win: 'win', lose: 'lose', spark: 'powerup' };
+function sfx(name) { try { if (SOUND[name] && BRB.sfx && !BRB.sfx.muted) BRB.sfx.play(SOUND[name]); } catch (e) { /* ignore */ } }
 /** Speaks text through BRB.speak only: the platform's shared speech path (the AI voice when Oomba Academy
  *  has it on for this game and language; the SDK's shared device-voice fallback otherwise). A game never
  *  calls the device speech API itself, so there is one voice pick, in the SDK. false: nothing will be said. */
@@ -2780,77 +2717,45 @@ function isMuted() { try { return !!BRB.sfx.muted; } catch (e) { return false; }
 function setMuted(on) { try { BRB.sfx.mute(!!on); } catch (e) { /* ignore */ } save.settings.muted = isMuted(); persist(); refreshMute(); }
 function refreshMute() {
   const m = isMuted();
-  for (const id of ['muteBtn', 'muteBtnHome']) { $(id).innerHTML = Oomba.icon(m ? 'mute' : 'sound'); $(id).setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); }
+  $('muteBtn').innerHTML = ICON[m ? 'mute' : 'sound']; $('muteBtn').setAttribute('aria-label', t(m ? 'a_soundOn' : 'a_soundOff')); $('muteBtn').title = t(m ? 'a_soundOn' : 'a_soundOff');
   $('swSound').setAttribute('aria-checked', String(!m));
 }
 
 /* =====================================================================================
-   Pip the owl (the kit's owl). Moods: idle/think (thinking face), happy, cheer, sad, tilt (a puzzled head tilt).
-   Each face is drawn once by the kit and swapped; he blinks every few seconds.
+   Pip the owl (drawn as SVG). Moods: idle/think, happy, cheer, sad, tilt (a puzzled head tilt); he blinks every few seconds.
    ===================================================================================== */
-const PIP = Oomba.char(CONFIG.pip);
-const FACE = { idle: 'thinking', think: 'thinking', happy: 'happy', cheer: 'cheer', sad: 'sad', tilt: 'surprised', blink: 'sleep' };
-const pipFaces = {};
-function pipFace(mood) {
-  const f = FACE[mood] || 'happy';
-  if (!pipFaces[f]) { const c = pipPortrait(150, f); c.hidden = true; $('owl').firstElementChild.appendChild(c); pipFaces[f] = c; }
-  for (const k in pipFaces) pipFaces[k].hidden = k !== f;
-}
-/** Pip's portrait without the room the kit leaves above his head for hats (the same crop for every face). */
-let pipTop = -1;
-function pipPortrait(px, mood) {
-  const src = Oomba.ui.portrait(PIP, { size: px, mood }), w = src.width, h = src.height;
-  if (pipTop < 0) {
-    const d = src.getContext('2d').getImageData(0, 0, w, h).data; pipTop = 0;
-    find: for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (d[(y * w + x) * 4 + 3] > 20) { pipTop = Math.max(0, y - 3) / h; break find; }
-  }
-  const top = Math.round(pipTop * h), c = document.createElement('canvas'); c.width = w; c.height = h - top;
-  c.getContext('2d').drawImage(src, 0, top, w, h - top, 0, 0, w, h - top);
-  c.setAttribute('aria-hidden', 'true'); c.style.height = Math.round(px * (h - top) / h) + 'px'; c.style.width = 'auto';
-  return c;
-}
-function initOwls() {
-  pipFace('think');
-  $('logoOwl').appendChild(pipPortrait(150, 'happy'));
-}
+const owlSvg = () => $('owl').firstElementChild;
 let moodNow = 'think', moodOff = noop;
 function owlMood(mood, ms) {
-  const el = $('owl'); moodOff();
+  const el = owlSvg(); moodOff();
   el.classList.remove('happy', 'cheer', 'sad', 'tilt');
   if (mood && mood !== 'idle' && mood !== 'think') el.classList.add(mood);
-  moodNow = mood || 'think'; pipFace(moodNow);
+  moodNow = mood || 'think';
   if (ms) moodOff = later(ms, () => owlMood(S.over ? (S.won ? 'happy' : 'sad') : 'think'));
   lookAt();
 }
-/** Pip turns his body a little toward the tile you are typing in (or straight ahead). */
+/** Pip looks toward the tile you are typing in (or straight ahead). */
 function lookAt() {
-  const b = $('owl').firstElementChild; if (!b) return;
+  const p = owlSvg() && owlSvg().querySelector('.pupil'); if (!p) return;
   let x = 0;
-  if (!S.over && S.screen === 'play' && moodNow === 'think') { const col = Math.min(S.typed.length, S.length - 1); x = (col / Math.max(1, S.length - 1) - 0.5) * 10; }
-  b.style.translate = x.toFixed(1) + 'px 0';
+  if (!S.over && S.screen === 'play' && moodNow === 'think') { const col = Math.min(S.typed.length, S.length - 1); x = (col / Math.max(1, S.length - 1) - 0.5) * 3; }
+  p.style.transform = 'translateX(' + x.toFixed(1) + 'px)';
 }
 // Blinks every few seconds (eyelids close for a moment; nothing flashes).
 function blinkLoop() {
   later(2600 + Math.random() * 3200, () => {
-    if (moodNow === 'think' || moodNow === 'idle' || moodNow === 'happy') { const m = moodNow; pipFace('blink'); later(140, () => { if (moodNow === m) pipFace(m); }); }
+    if (!REDUCED) document.querySelectorAll('.wp-owl').forEach(o => { if (!o.classList.contains('happy') && !o.classList.contains('cheer')) { o.classList.add('blink'); later(140, () => o.classList.remove('blink')); } });
     blinkLoop();
   });
 }
 /** The result card's Pip: cheering for a win, sad for a loss. */
-function rebuildResOwl(mood) { $('resOwl').innerHTML = ''; $('resOwl').appendChild(pipPortrait(140, mood === 'happy' ? 'cheer' : 'sad')); }
-/** A kit prop as a small picture (mode icons). */
-function propPic(name, px) {
-  const d = Math.min(2, devicePixelRatio || 1), n = Math.round(px * d), src = Oomba.art.toCanvas(name, n), c = document.createElement('canvas');
-  c.width = c.height = n; const k = Math.min(n / src.width, n / src.height);   // fitted into a square, so a long pencil is as big as a clock
-  c.getContext('2d').drawImage(src, (n - src.width * k) / 2, (n - src.height * k) / 2, src.width * k, src.height * k);
-  c.style.width = c.style.height = px + 'px'; c.setAttribute('aria-hidden', 'true'); return c;
-}
+function rebuildResOwl(mood) { $('resOwl').innerHTML = PIP_SVG; $('resOwl').firstElementChild.classList.add(mood === 'happy' ? 'cheer' : 'sad'); }
 
 /* =====================================================================================
    Building the grid + keyboard
    ===================================================================================== */
 const KB_ROWS = ['qwertyuiop', 'asdfghjkl', '+zxcvbnm-'];
-const CHECK = Oomba.icon('check');
+const CHECK = ICON.check;
 function buildKeyboard() {
   const kb = $('kb'); kb.innerHTML = '';
   KB_ROWS.forEach((r, ri) => {
@@ -2858,7 +2763,7 @@ function buildKeyboard() {
     for (const ch of r) {
       const b = document.createElement('button'); b.className = 'key'; b.type = 'button';
       if (ch === '+') { b.classList.add('wide'); b.textContent = 'Enter'; b.dataset.k = 'enter'; b.setAttribute('aria-label', 'Enter'); }
-      else if (ch === '-') { b.classList.add('wide'); b.innerHTML = Oomba.icon('back'); b.dataset.k = 'back'; b.setAttribute('aria-label', t('a_delete')); }
+      else if (ch === '-') { b.classList.add('wide'); b.innerHTML = ICON.back; b.dataset.k = 'back'; b.setAttribute('aria-label', t('a_delete')); }
       else { b.innerHTML = ch + '<span class="km">' + CHECK + '</span>'; b.dataset.k = ch; b.setAttribute('aria-label', ch.toUpperCase()); }
       row.appendChild(b);
     }
@@ -2877,7 +2782,7 @@ function buildGrid() {
 const rowEl = r => $('grid').children[r];
 function setTile(tile, ch, mark) {
   tile.querySelector('.ch').textContent = ch ? ch.toUpperCase() : '';
-  tile.classList.remove('filled', 'hit', 'near', 'miss', 'cursor', 'flip', 'bounce');
+  tile.classList.remove('filled', 'hit', 'near', 'miss', 'cursor', 'flip', 'bounce', 'pop');
   if (mark) tile.classList.add(mark); else if (ch) tile.classList.add('filled');
   tile.setAttribute('aria-label', ch ? ch.toUpperCase() + (mark ? ' ' + t('mk_' + mark) : '') : t('mk_empty'));
 }
@@ -2902,47 +2807,48 @@ function paintKeyboard() {
 }
 function paintHud() {
   const m = CONFIG.modes[S.mode];
-  $('modePic').innerHTML = ''; $('modePic').appendChild(propPic(m.icon, 26));
+  $('modePic').textContent = m.icon;
+  $('boardW').style.setProperty('--g', 'var(--g-' + m.g + ')');
   $('modeName').textContent = t('m_' + S.mode) + (S.hard ? ' · ' + t('hud_hard') : '');
   const tt = $('tryText');
   if (S.friendSetup) tt.textContent = t('hud_secret');
   else if (S.over) tt.textContent = S.won ? t('hud_solved', { n: S.guesses.length }) : t('hud_over');
   else {
     tt.textContent = t('hud_try', { n: Math.min(S.guesses.length + 1, CONFIG.tries), total: CONFIG.tries });
-    if (S.mode === 'daily' && dailyStreakNow()) tt.insertAdjacentHTML('beforeend', ' · ' + Oomba.icon('spark') + NF.format(dailyStreakNow()));
+    if (S.mode === 'daily' && dailyStreakNow()) tt.textContent += ' · 🔥' + NF.format(dailyStreakNow());
   }
-  fitText($('modeName'), 10); fitText(tt, 9);   // long words (German, Russian) shrink to fit the pill
 }
 
-/** Fits the tiles and keys to the space we have (portrait: stacked; short and wide: side by side). */
+/** Fits the tiles and keys to the window: as big as the width allows, then smaller until the board and the keyboard
+ *  are both in view (a phone in portrait: stacked; a wide screen: side by side). */
 function layout() {
-  const W = innerWidth, H = innerHeight, app = $('app');
-  const side = W > H * 1.2 && (H < 620 || W >= 1000);   // short landscape phones, and laptops and desktops: board beside the keyboard
-  app.classList.toggle('side', side);
-  // big screens (a laptop or desktop): the board and keyboard about a fifth bigger, so the game fills the window
-  const big = W >= 900 && H >= 700; app.classList.toggle('big', big);
-  const keyH = side ? Math.max(44, Math.min(H >= 700 ? 70 : 56, Math.floor((H - 80) / 3.9))) : big ? Math.min(68, Math.floor(H * 0.082)) : Math.max(46, Math.min(54, Math.floor(H * 0.066)));
+  const app = $('app'); if (app.hidden) return;
+  const W = innerWidth, H = innerHeight, wide = W >= 900;
+  const keyH = wide ? Math.max(48, Math.min(64, Math.floor(H * 0.075))) : Math.max(44, Math.min(56, Math.floor(H * 0.064)));
   app.style.setProperty('--keyH', keyH + 'px');
-  const wrap = $('boardWrap'); const bw = wrap.clientWidth, bh = wrap.clientHeight;
-  if (!bw || !bh) return;
-  const gap = side || H < 680 ? 5 : 6; app.style.setProperty('--gap', gap + 'px');
-  const cols = S.length, rows = CONFIG.tries;
-  // width: card padding 10*2 + its 3px edge; height: card padding + edge + drop + room for Pip (1.45 tiles) above the card
-  const byW = (bw - 30 - gap * (cols - 1)) / cols;
-  const byH = (bh - 40 - gap * (rows - 1)) / (rows + 1.45);
-  const tile = Math.max(26, Math.floor(Math.min(byW, byH, big ? CONFIG.maxTile * 1.25 : CONFIG.maxTile)));
-  app.style.setProperty('--tile', tile + 'px');
+  const gap = H < 700 ? 5 : 6; app.style.setProperty('--gap', gap + 'px');
+  const cols = S.length, rows = CONFIG.tries, bw = $('boardWrap').clientWidth;
+  if (!bw) return;
+  let tile = 0;
+  const set = v => { tile = Math.max(26, Math.floor(v)); app.style.setProperty('--tile', tile + 'px'); };
+  set(Math.min((bw - 4 - gap * (cols - 1)) / cols, wide ? CONFIG.maxTile * 1.15 : CONFIG.maxTile));
+  for (let k = 0; k < 3; k++) {
+    let over = document.documentElement.scrollHeight - H;
+    if (wide) over = Math.max(over, $('boardW').getBoundingClientRect().bottom + scrollY + 12 - H);
+    const n = $('grid').classList.contains('secret') ? 1 : rows;
+    if (over > 0 && tile > 26) set(tile - (over + 1) / n); else break;
+  }
 }
 
 /* =====================================================================================
-   Messages (Pip's speech bubble; screen readers hear them too)
+   Messages (Pip's dark bar; screen readers hear them too)
    ===================================================================================== */
 let bubbleOff = noop;
 function toast(msg, ms = 1600) {
-  const b = $('bubble'); b.textContent = msg; b.classList.add('show'); bubbleOff();
-  if (ms) bubbleOff = later(ms, () => b.classList.remove('show'));
+  const b = $('bubble'); b.textContent = msg; bubbleOff();
+  if (ms) bubbleOff = later(ms, () => { b.textContent = S.prompt; });
 }
-function hideToast() { bubbleOff(); $('bubble').classList.remove('show'); }
+function hideToast() { bubbleOff(); $('bubble').textContent = S.prompt; }
 
 /* =====================================================================================
    Starting rounds
@@ -2958,7 +2864,7 @@ function pickAnswer(mode, seed) {
 /** opts: { mode, answer?, seed?, date?, resume? }. Daily: the date's word; if that day is already finished the result shows again. */
 function startRound(opts = {}) {
   const mode = CONFIG.modes[opts.mode] ? opts.mode : 'practice';
-  hideAll(); hideToast();
+  hideAll();
   Object.assign(S, { screen: 'play', mode, guesses: [], typed: '', over: false, won: false, busy: false, seed: opts.seed != null ? opts.seed : null, lastPoints: 0, friendSetup: false });
   S.hard = !!save.settings.hard;
   if (mode === 'daily') {
@@ -2984,16 +2890,15 @@ function startRound(opts = {}) {
       save.round = { mode, answer: S.answer, guesses: [], hard: S.hard }; persist();
     }
   }
-  $('homeScreen').hidden = true; $('app').classList.remove('offstage'); Oomba.scene = 'play';
+  $('homeScreen').hidden = true; $('app').hidden = false; scrollTo(0, 0);
+  S.prompt = S.friendSetup ? t('secret1') : S.over ? (S.won ? tRaw('win')[S.guesses.length - 1] : t('t_lose'))
+    : t(mode === 'little' ? 't_find4' : mode === 'big' ? 't_find6' : mode === 'friend' ? 't_friend' : 't_find');
+  hideToast();
+  $('grid').classList.toggle('secret', S.friendSetup); $('secretHelp').hidden = !S.friendSetup;
   buildGrid(); paintBoard(); paintKeyboard(); paintHud(); lookAt();
   owlMood(S.over ? (S.won ? 'happy' : 'sad') : 'think');
-  $('grid').classList.toggle('secret', S.friendSetup); $('secretHelp').hidden = !S.friendSetup;
   if (S.over) later(fast ? 0 : 450, () => showResult(false));
-  else if (!S.friendSetup) {
-    sfx('whoosh');
-    if (S.guesses.length) toast(t('t_back'), 1600);
-    else toast(t(mode === 'little' ? 't_find4' : mode === 'big' ? 't_find6' : mode === 'friend' ? 't_friend' : 't_find'), 1500);
-  }
+  else if (!S.friendSetup && S.guesses.length) toast(t('t_back'), 1600);
   layout();
 }
 
@@ -3005,8 +2910,8 @@ function typeLetter(ch) {
   if (!canType()) return false;
   const max = S.friendSetup ? 6 : S.length;
   if (S.typed.length >= max) return false;
-  S.typed += ch; sfx('pop');
-  if (!S.friendSetup) hideToast();   // the bubble sits over the grid: get out of the way as soon as you type
+  S.typed += ch;
+  if (!S.friendSetup) hideToast();
   if (S.friendSetup) paintSecret(); else { paintRow(); }
   lookAt(); return true;
 }
@@ -3021,14 +2926,14 @@ function paintRow() {
     const was = t.querySelector('.ch').textContent;
     setTile(t, ch, null);
     if (c === S.typed.length) t.classList.add('cursor');
-    if (ch && !was && !REDUCED && !fast) Oomba.juice.pop(t.querySelector('.ch'));
+    if (ch && !was && !REDUCED && !fast) t.classList.add('pop');
   }
   const ent = document.querySelector('.key[data-k="enter"]'); if (ent) ent.classList.toggle('ready', S.typed.length === S.length && !S.over);   // Enter lights up once the word is full
 }
 function rejectRow(msg) {
   toast(msg, 1700); sfx('wrong'); owlMood('tilt', 900);
   const row = rowEl(S.guesses.length);
-  if (row && !REDUCED && !fast) Oomba.juice.shake(0.45, row);
+  if (row && !REDUCED && !fast) { row.classList.remove('shake'); void row.offsetWidth; row.classList.add('shake'); later(420, () => row.classList.remove('shake')); }
   return msg;
 }
 /** Enter: checks the typed word. Returns the marks, or an error message. */
@@ -3050,7 +2955,7 @@ function submit() {
   reveal(S.guesses.length - 1, () => afterReveal(marks));
   return marks;
 }
-/** Flips the row's tiles one by one, then colours the keyboard. */
+/** Flips the row's tiles one by one, then colors the keyboard. */
 function reveal(r, done) {
   const row = rowEl(r), g = S.guesses[r];
   if (fast) { paintBoard(); paintKeyboard(); paintHud(); done(); return; }
@@ -3060,10 +2965,7 @@ function reveal(r, done) {
   [...row.children].forEach((t, c) => {
     later(c * gap, () => {
       if (!REDUCED) { t.classList.remove('filled', 'cursor'); t.classList.add('flip'); }
-      later(REDUCED ? 0 : flip / 2, () => {
-        setTile(t, g.word[c], g.marks[c]); if (!REDUCED) t.classList.add('flip');
-        const m = g.marks[c]; sfx(m === 'hit' ? 'correct' : m === 'near' ? 'pop' : 'step');
-      });
+      later(REDUCED ? 0 : flip / 2, () => { setTile(t, g.word[c], g.marks[c]); if (!REDUCED) t.classList.add('flip'); });
     });
   });
   later((S.length - 1) * gap + flip + 40, () => { row.querySelectorAll('.tile').forEach(t => t.classList.remove('flip')); S.busy = false; paintBoard(); paintKeyboard(); paintHud(); done(); });
@@ -3071,18 +2973,20 @@ function reveal(r, done) {
 function afterReveal(marks) {
   if (S.over) {
     if (S.won) {
-      owlMood('cheer'); sfx('win', { caption: undefined }); toast(tRaw('win')[S.guesses.length - 1], 2000);
-      try { if (!fast) Oomba.juice.confetti(); } catch (e) { /* ignore */ }
+      S.prompt = tRaw('win')[S.guesses.length - 1];
+      owlMood('cheer'); sfx('win'); toast(S.prompt, 0);
+      if (!fast) confetti();
       const row = rowEl(S.guesses.length - 1);
       if (!REDUCED && !fast) [...row.children].forEach((t, c) => later(c * 90, () => t.classList.add('bounce')));
     } else {
-      owlMood('sad'); sfx('lose'); toast(t('t_lose'), 2000);
+      S.prompt = t('t_lose');
+      owlMood('sad'); sfx('lose'); toast(S.prompt, 0);
     }
     later(fast ? 0 : 1500, () => showResult(true));
     return;
   }
   const hits = marks.filter(m => m === 'hit').length, nears = marks.filter(m => m === 'near').length;
-  if (hits >= S.length - 1) { owlMood('happy', 1300); toast(t('t_near'), 1200); }
+  if (hits >= S.length - 1) { owlMood('happy', 1300); toast(t('t_near'), 1200); sfx('correct'); }
   else if (hits) owlMood('happy', 1100);
   else if (nears) { owlMood('tilt', 900); }
   else { owlMood('sad', 900); }
@@ -3144,11 +3048,11 @@ function statNumsHTML(st) {
   const streak = st === save.stats.daily ? dailyStreakNow() : st.streak;
   return [[st.played, 's_played'], [pct, 's_win'], [streak, 's_streak'], [st.best, 's_best']].map(([n, k]) => `<div><b>${NF.format(n)}</b><span>${t(k)}</span></div>`).join('');
 }
+function btnEl(label, kind, fn, id) { const b = document.createElement('button'); b.type = 'button'; b.className = 'wp-btn ' + (kind === 'hot' ? 'wp-go' : 'wp-quiet'); b.textContent = label; if (id) b.id = id; b.addEventListener('click', () => { sfx('select'); fn(); }); return b; }
 function showResult(fresh) {
   if (S.screen !== 'play' || !S.over) return;
-  hideToast();   // Pip's "Super!" never shows through behind the card
   const word = S.answer.toUpperCase(), tries = S.guesses.length;
-  $('resTitle').textContent = S.won ? tRaw('win')[tries - 1] : t('r_close');
+  $('resTitle').textContent = (S.won ? '🎉 ' : '') + (S.won ? tRaw('win')[tries - 1] : t('r_close'));
   $('resMsg').textContent = S.won ? t(S.mode === 'friend' ? 'r_friend' : 'r_found', { n: tries }) : t('r_lost', { word: '⁦' + word + '⁩' });
   const wt = $('resWord'); wt.innerHTML = ''; wt.setAttribute('aria-label', word);
   for (const ch of word) { const d = document.createElement('div'); d.className = 'tile ' + (S.won ? 'hit' : 'filled'); d.innerHTML = '<span class="ch"></span>'; d.firstChild.textContent = ch; d.setAttribute('aria-hidden', 'true'); wt.appendChild(d); }
@@ -3163,37 +3067,35 @@ function showResult(fresh) {
   $('resPtsBox').hidden = S.mode === 'friend';
   $('resNums').hidden = !st; if (st) $('resNums').innerHTML = statNumsHTML(st);
   rebuildResOwl(S.won ? 'happy' : 'sad');
-  $('resScreen').classList.toggle('won', !!S.won);
-  { // a still celebration behind the card: paper confetti in the margins and a few sparks (the card hides the middle)
-    const rs = $('resScreen'); let cel = rs.querySelector('.wpCel'); if (cel) cel.remove();
-    if (S.won) {
-      cel = document.createElement('div'); cel.className = 'wpCel'; cel.setAttribute('aria-hidden', 'true');
-      const cols = ['#FFD23F', '#FF7A3D', '#3CC37A', '#4FB4F7', '#B07CF0', '#FF5E7E'], rnd = mulberry32(tries * 7919 + word.length);
-      for (let i = 0; i < 34; i++) {
-        const band = i % 4, x = band < 2 ? rnd() * 100 : (band === 2 ? rnd() * 9 : 91 + rnd() * 9), y = band === 0 ? 8 + rnd() * 9 : band === 1 ? 86 + rnd() * 13 : 8 + rnd() * 90;
-        const e = document.createElement('i'); e.style.cssText = `left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${(8 + rnd() * 7).toFixed(0)}px;height:${(5 + rnd() * 4).toFixed(0)}px;background:${cols[i % cols.length]};transform:rotate(${(rnd() * 180).toFixed(0)}deg);animation-delay:-${(rnd() * 2.6).toFixed(2)}s`;
-        cel.appendChild(e);
-      }
-      [[7, 12], [88, 14], [5, 90], [90, 91], [28, 10]].forEach(([x, y], i) => { const w = document.createElement('span'); w.innerHTML = Oomba.icon('spark'); const sv = w.firstChild; sv.style.left = x + '%'; sv.style.top = y + '%'; sv.style.animationDelay = (-i * 0.4) + 's'; cel.appendChild(sv); });
-      rs.prepend(cel);
-    }
-  }
-  // the win moment: confetti as the card opens (the burst at the last tile has faded by then)
-  if (S.won && fresh && !REDUCED && !fast) Oomba.time.real.after(250, () => { try { if (S.screen === 'play' && S.over) Oomba.juice.confetti(); } catch (e) { /* ignore */ } });
+  $('resScreen').querySelector('.resPanel').classList.toggle('lost', !S.won);
   const btns = $('resBtns'); btns.innerHTML = '';
-  const add = (label, kind, icon, fn, id) => { const b = Oomba.ui.button(label, { kind, icon: Oomba.icon(icon), onPress: fn }); if (id) b.id = id; btns.appendChild(b); };
+  const add = (label, kind, fn, id) => btns.appendChild(btnEl(label, kind, fn, id));
   countdownOff();
   if (S.mode === 'daily') {
-    $('resCount').hidden = false; tickCountdown(); countdownOff = Oomba.time.real.every(1000, tickCountdown);
-    add(t('b_practice'), 'hot', 'pencil', () => startRound({ mode: 'practice', resume: true }), 'resMain');
-    add(t('b_home'), 'quiet', 'home', toHome, 'resHome');
+    $('resCount').hidden = false; tickCountdown(); countdownOff = every(1000, tickCountdown);
+    add(t('b_practice'), 'hot', () => startRound({ mode: 'practice', resume: true }), 'resMain');
+    add(t('b_home'), 'quiet', toHome, 'resHome');
   } else {
     $('resCount').hidden = true;
-    if (S.mode === 'friend') add(t('b_newSecret'), 'hot', 'restart', () => startRound({ mode: 'friend' }), 'resMain');
-    else add(t('b_again'), 'hot', 'restart', () => startRound({ mode: S.mode }), 'resMain');
-    add(t('b_home'), 'quiet', 'home', toHome, 'resHome');
+    if (S.mode === 'friend') add(t('b_newSecret'), 'hot', () => startRound({ mode: 'friend' }), 'resMain');
+    else add(t('b_again'), 'hot', () => startRound({ mode: S.mode }), 'resMain');
+    add(t('b_home'), 'quiet', toHome, 'resHome');
   }
   openPanel('res');
+}
+/** Paper confetti falling over the page (none with reduced motion). */
+function confetti() {
+  if (REDUCED) return;
+  const box = document.createElement('div'), cols = ['var(--green)', 'var(--sky)', 'var(--spark)', 'var(--coral)', 'var(--grape)'];
+  box.className = 'wpCel'; box.setAttribute('aria-hidden', 'true');
+  for (let i = 0; i < 70; i++) {
+    const p = document.createElement('i'); p.style.left = (Math.random() * 100) + '%'; p.style.background = cols[i % cols.length];
+    p.style.setProperty('--x', ((Math.random() - 0.5) * 240) + 'px'); p.style.setProperty('--r', (Math.random() * 900 - 450) + 'deg');
+    p.style.setProperty('--d', (Math.random() * 0.5) + 's'); p.style.setProperty('--t', (1.4 + Math.random() * 1.2) + 's');
+    box.appendChild(p);
+  }
+  document.body.appendChild(box);
+  later(3500, () => box.remove());
 }
 /** Time left until the next daily word (local midnight). */
 function msToMidnight() { const n = new Date(), m = new Date(n.getFullYear(), n.getMonth(), n.getDate() + 1); return m - n; }
@@ -3215,8 +3117,8 @@ function openPanel(name) {
   S.panel = name;
   if (name === 'stats') renderStats(S.screen === 'play' && MODE_IDS.includes(S.mode) ? S.mode : statTab);
   if (name === 'set') refreshSettings();
-  Oomba.ui.announce(($(PANELS[name]).querySelector('h2') || {}).textContent || '');
-  later(0, () => { const card = $(PANELS[name]); const f = card.querySelector('.ok-hot, .ok-go') || card.querySelector('button'); if (f && S.panel === name) f.focus({ preventScroll: true }); });
+  announce(($(PANELS[name]).querySelector('h2') || {}).textContent || '');
+  later(0, () => { const card = $(PANELS[name]); const f = card.querySelector('.wp-go') || card.querySelector('button'); if (f && S.panel === name) f.focus({ preventScroll: true }); });
 }
 function closePanel() {
   if (!S.panel) return;
@@ -3227,15 +3129,15 @@ function closePanel() {
 }
 function hideAll() { for (const k in PANELS) $(PANELS[k]).hidden = true; S.panel = null; countdownOff(); }
 function toHome() {
-  hideAll(); hideToast(); S.screen = 'home'; S.friendSetup = false; Oomba.scene = 'home';
-  $('homeScreen').hidden = false; $('app').classList.add('offstage'); refreshHome();
+  hideAll(); bubbleOff(); S.screen = 'home'; S.friendSetup = false;
+  $('homeScreen').hidden = false; $('app').hidden = true; refreshHome(); scrollTo(0, 0);
 }
 function refreshHome() {
   const today = todayStr(), d = save.daily, done = d && d.date === today && d.over, streak = dailyStreakNow();
   const going = !done && d && d.date === today && d.guesses && d.guesses.length;
-  const st = streak ? ' · ' + Oomba.icon('spark') + ' ' + t('hm_streak', { n: streak }) : '';
+  const st = streak ? ' · ' + t('hm_streak', { n: streak }) : '';
   $('dailyGo').textContent = t(done ? 'go_see' : going ? 'go_go' : 'go_play');
-  if (done) $('dailyNote').innerHTML = (d.won ? Oomba.icon('check') + ' ' : '') + t(d.won ? 'hm_solved' : 'hm_done') + ' ' + t('hm_newIn', { time: '<span dir="ltr">' + fmtTime(msToMidnight()) + '</span>' }) + st;
+  if (done) $('dailyNote').innerHTML = t(d.won ? 'hm_solved' : 'hm_done') + ' ' + t('hm_newIn', { time: '<span dir="ltr">' + fmtTime(msToMidnight()) + '</span>' }) + st;
   else if (going) $('dailyNote').innerHTML = t('hm_keep', { n: d.guesses.length + 1, total: CONFIG.tries }) + st;
   else $('dailyNote').innerHTML = t('md_daily') + st;
   $('homePoints').textContent = t('points', { n: save.points });
@@ -3246,7 +3148,8 @@ function renderStats(mode) {
   const tabs = $('statTabs'); tabs.innerHTML = '';
   for (const m of MODE_IDS) {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'tab' + (m === mode ? ' on' : ''); b.dataset.tab = m; b.setAttribute('aria-pressed', String(m === mode));
-    b.appendChild(propPic(CONFIG.modes[m].icon, 22)); b.appendChild(document.createTextNode(t('tab_' + m))); tabs.appendChild(b);
+    const e = document.createElement('span'); e.className = 'wp-emo'; e.setAttribute('aria-hidden', 'true'); e.textContent = CONFIG.modes[m].icon;
+    b.appendChild(e); b.appendChild(document.createTextNode(t('tab_' + m))); tabs.appendChild(b);
   }
   const st = save.stats[mode]; $('statNums').innerHTML = statNumsHTML(st);
   const max = Math.max(1, ...st.dist);
@@ -3282,7 +3185,7 @@ $('kb').addEventListener('click', e => {
   press(b.dataset.k);
 });
 document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.metaKey || e.altKey || Oomba.ui.open) return;
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (S.panel && e.key === 'Tab') {   // keep the keyboard focus inside the open card
     const bs = [...$(PANELS[S.panel]).querySelectorAll('button:not([disabled])')].filter(b => b.offsetParent); if (!bs.length) return;
     const i = bs.indexOf(document.activeElement); e.preventDefault(); bs[(i + (e.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); return;
@@ -3297,22 +3200,19 @@ document.addEventListener('keydown', e => {
   if (key) { key.classList.add('press'); later(110, () => key.classList.remove('press')); }
   press(k);
 });
-document.querySelectorAll('.mode').forEach(b => b.addEventListener('click', () => {
+document.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
   sfx('select'); $('homeScreen').hidden = true;
   startRound({ mode: b.dataset.mode, resume: true });
 }));
 document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => { sfx('select'); closePanel(); }));
-document.querySelectorAll('.ok-modal').forEach(s => s.addEventListener('click', e => { if (e.target === s && s.id !== 'passScreen') closePanel(); }));
+document.querySelectorAll('.wp-modal').forEach(s => s.addEventListener('click', e => { if (e.target === s && s.id !== 'passScreen') closePanel(); }));
 tap('homeBtn', toHome);
 tap('statsBtn', () => openPanel('stats'));
 tap('statsBtnHome', () => openPanel('stats'));
 tap('setBtn', () => openPanel('set'));
-tap('setBtnHome', () => openPanel('set'));
 tap('helpBtnHome', () => openPanel('help'));
 tap('helpBtnSet', () => openPanel('help'));
-tap('moreSet', () => Oomba.ui.settings());   // the kit's settings: motion, captions, read aloud, text size, ...
 $('muteBtn').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
-$('muteBtnHome').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
 $('swSound').addEventListener('click', () => { setMuted(!isMuted()); sfx('select'); });
 $('swContrast').addEventListener('click', () => { setContrast(!save.settings.contrast); sfx('select'); });
 $('swHard').addEventListener('click', () => { setHard(!save.settings.hard); sfx('select'); });
@@ -3321,28 +3221,21 @@ $('sayBtn').addEventListener('click', () => { if (!say(S.answer)) toast(t('t_noV
 tap('passGo', () => { const w = S.pendingSecret; S.pendingSecret = ''; startRound({ mode: 'friend', answer: w }); });
 tap('passBack', () => { closePanel(); S.typed = ''; paintSecret(); });
 addEventListener('resize', layout);
-if (window.ResizeObserver) new ResizeObserver(() => layout()).observe($('boardWrap'));
-Oomba.fonts.ready.then(() => { layout(); if (S.screen === 'play') paintHud(); });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { layout(); });
 
 /* =====================================================================================
    Boot
    ===================================================================================== */
-applyI18n(); initOwls(); buildKeyboard();
-$('moreSet').appendChild(document.createTextNode(Oomba.t('settings') + ' +'));
-document.querySelectorAll('[data-pic]').forEach(el => el.prepend(propPic(CONFIG.modes[el.dataset.pic].icon, 30)));
+applyI18n(); buildKeyboard();
+document.title = 'Word Peek';
 $('game').classList.toggle('hc', !!save.settings.contrast);
 if (typeof save.settings.muted === 'boolean' && save.settings.muted !== isMuted()) { try { BRB.sfx.mute(save.settings.muted); } catch (e) { /* ignore */ } }
 refreshMute(); refreshHome(); blinkLoop();
 if (!save.seenHelp) { save.seenHelp = true; persist(); openPanel('help'); }   // first visit: how to play
-Oomba.time.real.every(1000, () => { if (S.screen === 'home') refreshHome(); });   // the daily countdown on the home screen
-Oomba.on('focus', layout);
-// a turn-based game: clicking the page around it (the site's buttons, full screen) never freezes it; the kit's lost-focus
-// pause is for action games
-Oomba.on('blur', () => Oomba.time.resume('blur'));
+every(1000, () => { if (S.screen === 'home') refreshHome(); });   // the daily countdown on the home screen
 
 /* =====================================================================================
-   window.__brbTest: hooks for automated play tests (harmless in production). Merged into the kit's hooks
-   (setTheme, setLang, setTier, step ...): the game's own names below win and behave as before.
+   window.__brbTest: hooks for automated play tests (harmless in production).
      state()            -> { screen, mode, length, answer, typed, guesses: [{word, marks}], keyboard: {letter: mark}, over, won, hard,
                              busy, panel, date, points, lastPoints, stats (all modes), daily (saved daily state), settings }
      start({ mode, answer?, seed?, date?, resume? }) -> starts a round ('daily' | 'practice' | 'little' | 'big' | 'friend') -> state()
@@ -3385,3 +3278,5 @@ window.__brbTest = Object.assign(window.__brbTest || {}, {
   hardError: w => hardModeError(w, S.guesses)
 });
 </script>
+</body>
+</html>

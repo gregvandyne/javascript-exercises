@@ -27,6 +27,7 @@ const setGameOf = g => !!g && gameSets.SET_GAMES.has(g.slug) && g.source === 'se
 function setAssign(t, g, raw) {
   if (!setGameOf(g)) return null;
   const opts = cleanOptions(String(raw || '')) || '';
+  if (!opts && gameSets.OPEN_SET_GAMES.has(g.slug)) return null;   // Word Hunt with no set: the game as it is
   const what = gameSets.describe(g.id, parseParams(opts), g.slug);
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
@@ -220,7 +221,7 @@ router.post('/api/teach/assign-folder', requireUser, rateLimit('lesson-new', 120
   let done = 0, skipped = 0; const also = [];
   for (const g of F.gamesIn(u, f.id)) {
     const lg = g.source === 'seed' ? liveGameOf(g) : null;
-    if (setGameOf(g) || (lg && !lg.play)) { skipped++; continue; }
+    if ((setGameOf(g) && !gameSets.OPEN_SET_GAMES.has(g.slug)) || (lg && !lg.play)) { skipped++; continue; }
     const r = F.assignGame(u, c.id, g.id, { dueAt });
     if (!r.ok) { skipped++; continue; }
     done++;

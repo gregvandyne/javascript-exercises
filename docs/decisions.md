@@ -12499,6 +12499,375 @@ but still fun engaging and interactive".
   label (the gradebook). The game opens a single lesson for `chapter=l01..l20&lock=1`, but Assign has no lesson picker yet.
 - **Not yet**: the game's words are English only and the keyboard is US QWERTY; other layouts are later work.
 - Tests: `tests/unit/typing.test.js`.
+## Classroom look 2: every classroom game in the Crossword look, and the Builder told how (24 Nov 2026)
+
+The owner is moving every game to the look of Crossword (hand-written, no Oomba Kit, the classroom dashboard's widgets)
+and asked that the Builder build everything that way from now on, with ten review passes of its prompt.
+
+- **The style** (`server/builder/templates/classroom-style.css`, "Oomba classroom style 2"): Crossword's tokens and
+  pieces as one shared block: the dotted mint board (`--paper`, `--dots`), cream widget cards (`.card`, `.widget`) with
+  the group color `--g` on a 4 px top edge and in the icon chip (`.wh`, `.wicon`, `.wt`; groups `.g-class`, `.g-time`,
+  `.g-tools`, `.g-show`, `.g-check`, `.g-join`), the dark Now bar (`.nowbar`), pill buttons (plain ink outline, `.hot`
+  green, `.ghost`, `.small`, `.big`, `.danger`, pressed toggles dark), menu rows (`.opt`, `.opt.now`), chips (`.pill`),
+  fields, answer tiles (`.answers`, `.answer`, `.tag`), `.progress`, `.big-score`, `.stars`, right and wrong
+  (`.is-right`, `.is-wrong`, `.tick`, `.feedback.good/.bad`), `.scrim`, and `--on-*` tokens for text on colored fills.
+  Light and dark: `:root[data-theme="dark"]`, and the device's dark mode unless `data-theme="light"`; each starter sets
+  `data-theme` from `BRB.theme`. Reduced motion stops all motion. The font stays self-hosted at
+  `/vendor/oomba-classroom/1.0.0/` (Crossword's own page loads a font service; classroom games may not). Style 1's
+  token and class names (`--page`, `--leaf`, `--tint`, `--mint-soft`, `.hot`, `.card`, `.q`...) still resolve, so game
+  code written for style 1 reads right in style 2. Buttons are at least 48 px (44 px for `.small`).
+- **Old games**: the block is copied into each game when it is made, so a game made before keeps its style 1 block and
+  look; nothing is migrated. `templates/index.js classroomLook(html)` says which a game carries (2, 1 or 0).
+- **The marker at save time**: `withClassroomStyle` (run by `tools.js saveVersion` for write_game, edit_game and starters)
+  turns a `<!--CLASSROOM_STYLE-->` line into the current block and drops any older copy. So a game written from scratch
+  gets the exact block without the model retyping 15 KB of CSS, and moving a style 1 game to the new look is one edit
+  (add the marker after `<title>`). The block's own text never contains the marker.
+- **The starters**: all eleven (quiet, categories, survey, bingo, flashcards, exitticket, spinner, scoreboard, classquiz,
+  classmemory, classword) restyled: a widget home card with an icon chip and group color, the question or call in the
+  dark Now bar (classquiz, survey, exitticket, classword's clue, bingo's call, the Category Board clue), results in a
+  centered widget card, hard-coded colors replaced by tokens so dark mode reads right. CONFIG, content lists, WORDS, keys,
+  Sound, Full screen, the Edit box and `window.__brbTest` are unchanged.
+- **The prompt** (classroom focus only; the arcade `SYSTEM_PROMPT` and `TOOLS` keep their hash): a new Look section
+  describes the board, the three screens (home card, play on the board, results card) with their exact markup, cards and
+  group colors, buttons, tokens, right and wrong, type for a projector, 375 px, light and dark, motion, emoji, keys and
+  focus, and a calm teacher UI. `CLASSROOM_RULES_FOCUS` adds content as data (and that printing and question sets are
+  Oomba Canvas lessons, not plain games), the marker, and when to move an old game to the new look (only when someone
+  asks for a new look or a rebuild; a kit game is fixed in its own engine with its own rules block until then). Smaller
+  swaps: US spelling, no device brand names, a classroom-only `BRB.storage` line, `BRB.theme`, a read-aloud line that
+  matches the starters, no 3D line in the SDK list.
+- **Ten review passes** over the assembled `SYSTEM_PROMPT_FOCUS` (correctness, contradictions, precision of the look,
+  child safety, accessibility, teacher experience, brevity, style rules, edge cases, a final read as the model); the
+  log is in the branch's report. A sample game written only from the Look section was rendered to check that it
+  matches the starters.
+- **Oomba Canvas** 1.4.x already shares most of the look (cream widget cards with a colored top edge, pills,
+  Bricolage, light and dark), but its page is a cream square grid, the problem sits in a cream card rather than a dark
+  Now bar, and Check is a raised button. Those versions are frozen; a Canvas 1.5.0 would carry the dotted mint page,
+  the Now bar for the problem line and flat pill buttons. Not built here.
+- Tests: `tests/unit/builder-focus.test.js` (the new look in every starter, the marker at save time, the prompt's look
+  and old-game rules), `tests/unit/builder-classroom.test.js`.
+
+## Would You Rather in Crossword's look (24 Nov 2026)
+- **The owner:** "Update the brain board, question battle, and would you rather with the crossword like grid, branding,
+  and feel too." This section covers Would You Rather (solo and live); Brain Board and Question Battle have their own.
+- **Solo** (`seed-games/would-you-rather.html`): a plain page like Crossword, no longer on the Oomba Kit (no meadow
+  stage, no dress pack). The dotted mint board, cream widget cards with a group colour on the top edge and the icon chip
+  (choice A coral, B sky; the option's picture in the chip), the question in the dark Now-style bar with "3 of 10", the
+  home's modes as Crossword's big rows (Play alone in the dark Now style), pill chips and buttons, the end card as a
+  widget with "You're a…" in the Now bar. Light and dark from `BRB.theme` (else the device), reduced motion from
+  `BRB.motion` (else the device), sounds from `BRB.sfx`. The kit's settings button became a sound on or off button (a new
+  `sound` word in `scripts/data/would-you-rather/ui.json`, the same 13 translations as Crossword's; `scripts/wyr-bank.js`
+  rebuilt the data block, the question packs and their version are unchanged).
+- **Live** (`seed-games/would-you-rather-live.html`): still the kit's live pack for the session (ready, the question,
+  answers, reveal, state and end events, `quiz.answer`); only the look changed. The question, which one, how many voted
+  and the timer sit in the dark Now bar; the two choices are widget cards (A/B chips); the class's split is a bar in
+  each card's group colour with the share and how many; everyone on Oomba and the talk question are widgets; the end's
+  most agreed and closest split are widgets. Light and dark from the site's theme as before.
+- **Unchanged:** modes, counts, topics and the topic lock, the poll (`BRB.poll`, both cards), no score, one
+  `BRB.gameOver({ won: true })` at the end card, the save key `would-you-rather-v1` and its shape, the live protocol and
+  state `wyr {i, a, b, n}`, timers, the practice round, one vote per dilemma, never a name, keyboard and screen reader
+  text, tap targets, portrait stacking. Server code and the reviewed question bank are untouched. The element ids the
+  course screenshots use (`#ask`, `#pair .opt`, `.tx`, `.or`) are kept; their pictures will look new when retaken.
+- Tests: `tests/unit/would-you-rather-look.test.js` (both pages in Chromium in the frame wrapper; the live one against a
+  fake session over the frame's port), with `would-you-rather-lock` and `live-wyr-atlas` as before.
+## Sudoku and Word Peek in Crossword's look (24 Nov 2026)
+
+Owner: "Let's also update Sudoku and Word Peek to look and feel like Crossword (though you don't have to set up all of
+the behind the scenes stuff like make your own)."
+- **Off the kit, like Crossword.** Both are now hand-written pages with no Oomba Kit tags: the classroom dashboard's
+  tokens (cream cards on a dotted mint board, a group color on each widget's top edge and icon chip), the dark
+  Now-style bar, pill buttons, Bricolage Grotesque from Google Fonts, light and dark from `BRB.theme` (else the
+  device), reduced motion from `BRB.motion` (else the device), a few `BRB.sfx` sounds and Crossword's confetti. No class
+  codes, worksheets or sharing: the owner said that part was not needed.
+- **Sudoku.** The home is the level picker (Continue, three board sizes, best stars, the Pictures switch) with How to
+  play under it. Play: the board's widget (the level, the clock, the dark bar with the level's numbers and the game's
+  messages, the board) and the pad's widget beside it on a wide screen, under it on a phone, everything in view. What
+  the kit did is now the page's own: pause (P, Escape or a button: the board blurs, the clock stops, Keep playing,
+  Start over, Levels), a real-time clock that stops while paused or hidden, the solved card (stars, time, hints,
+  mistakes, points, Play again, Levels) and one `BRB.gameOver` as the puzzle is solved. The picture mode's apple,
+  banana, grapes and carrot are small inline SVGs. The kit's how-to card read aloud on a tap; How to play keeps that as
+  Read it to me, shown only when `BRB.aiVoiceCheck` says the AI voice reads every line (the title and the three
+  lines, already allowed in `tts-lines.js`), read with `ai: 'only'`. Eleven new words in all 13 languages (how to
+  play, sound, pause, paused, keep playing, start over, play again, the solved card's line, stars, Read it to me, stop).
+  `SudokuCore` is byte for byte the same; the save `sudoku-v1` keeps its shape.
+- **Word Peek.** The home is one widget (Pip in the chip, Daily Peek as the dark lead button, Practice, Little Peek,
+  Big Peek, Friend Peek, How to play, Stats, the points). Play: the board's widget (the mode, the try, Stats, Home,
+  Pip talking in the dark bar, the grid) and the keyboard's widget. Pip is drawn in the page as a small SVG owl in his
+  red scarf with the same moods (thinking, happy, cheering, sad, a puzzled tilt) and blinks. Marks: a green tick for the
+  right spot, a spark yellow dot for the wrong spot, a muted tile for not in the word; high contrast stays orange and
+  blue, and every mark keeps its shape. How to play, Stats, Settings, the result and the hand-off are widget cards over
+  the page (Escape and the focus trap as before). The kit's "More settings" (captions, text size) went with the kit.
+  The word lists, the rules (marks, hard mode, the daily word, points), the words in 13 languages (one Russian line lost
+  its dashes), `BRB.score.submit` and `BRB.gameOver`, the speech through `BRB.speak` and the save `word-peek-v1` are
+  unchanged.
+- Tests: `tests/unit/sudoku.test.js` (the file and browser checks now test the new look, pause, the solved card, dark,
+  How to play in es, ja and ar, and Read it to me; the core tests are unchanged), the new
+  `tests/unit/word-peek.test.js` (the rules on their own, the file, a round to a win, the result card, high contrast,
+  hard mode, reduced motion, Arabic, a phone). Sudoku left `kit-howto-voice.test.js` and Word Peek left
+  `tests/e2e/kit-pilots.spec.js`; their checks moved to those files. The cover recipe waits for the new home.
+- **Open:** a native speaker's read of the eleven new Sudoku words; new card covers in the new look when the covers are
+  next made.
+## Tug of Math in the classroom look (24 Nov 2026)
+
+The owner, about Tug of Math: "update the background to be the grid and also change the buttonology and what not to match
+crossword look and feel."
+
+- **Crossword's look, no game engine.** The solo game (vs Computer and 2 players) is now the page's own DOM on the
+  dotted mint board, as Crossword: cream widget cards with a color on the top edge and the icon chip (each team's side
+  in its team color, with its shape in the chip), Crossword's pill buttons (an ink edge on cream; the chosen choice dark,
+  the main button green), keys in the same style, the score strip (pause, both scores, the clock, new game) as the dark
+  Now bar, the winner as a dark Now block on the board. Bricolage Grotesque comes from the site's own copy
+  (`/vendor/oomba-classroom/`, as the classroom starters), not a font service. Light and dark follow `BRB.theme` (else
+  the device), with Crossword's dark tokens (a mint Now bar). Sounds are `BRB.sfx` for a few moments only (no sound for
+  each digit), with a sound button.
+- **The tug, redrawn simply.** The sky, sun, clouds and grass are gone: the tug stands on a patch of the dotted board in
+  a cream frame, each team's half lightly tinted, a floor band, the middle line and each team's line with its shape on
+  top. The rope, the flag and the kit's figures are as before, so the tug reads the same.
+- **The kit stays for what it still gives.** The pinned kit 1.1.6 tag and its art-animals, dress and live packs still
+  load: the figures (`O.art`), icons, numbers in the player's language, the less-motion setting and, for Oomba Live, the
+  live pack's plumbing (rooms, teams, events, state). `O.game` is no longer used: no title screen (the game opens on its
+  setup card), our own 3, 2, 1 (the questions hidden until Go), our own pause card (P, Esc, the pause button, or the
+  page going out of sight; Keep going, New game, Sound, Less motion) and our own results card (the winner's figure, stars
+  for a win, the score, the player's numbers, Play again with the same setup, New game). The game clock is our own
+  (requestAnimationFrame, stopped while paused), so the computer, the feedback timers and the time left all pause with it.
+- **Every behavior kept.** The questions (`TugGen`), grades, players, the computer's levels (`TugBot`), timing, the
+  line, scoring (`BRB.gameOver({won, score})` for vs Computer only, when the results card opens), the save key
+  `tug-of-math-v1` and its shape, the keyboard, the field that never mirrors, and Oomba Live's protocol and state are
+  unchanged; no server code changed. The player's points are counted with a `score()` tally (as the kit's `w.score(1)`
+  was), which is also what Oomba Live's file check (`services/classlive-lint.js`) looks for.
+- **Fixed on the way.** A second match (Play again) no longer starts with the keypads greyed out and the last winner's
+  banner still up.
+- **Live views restyled, plumbing untouched.** The projector's team panels, lobby columns and footer are widget cards on
+  the board, the clock is the dark Now block; a phone's team band, small rope and keypad card follow the same look.
+- Tests: `tests/e2e/tug-of-math.spec.js` (the setup card without a title screen, the results card, Play again, the look
+  in light and dark, the pause card stopping the clock), `tests/unit/tug-of-math.test.js` (the kit pin is 1.1.6).
+
+## Doodle Hoot in Crossword's look (24 Nov 2026)
+- **The owner:** update several games "with the crossword like grid, branding, and feel", Doodle Hoot among them.
+- **What changed: only the look.** `seed-games/doodle-hoot.html` now wears Crossword's classroom-widget look (its tokens,
+  copied): a dotted mint board behind everything (it covers the kit's meadow scene), the drawing paper as a white card on
+  it (paper white in both themes, the same 1000 x 750 grid), cream widget cards with a group colour on the top edge and
+  an icon chip (the setup card with Pip in its chip; Pens, Your guess or the tiles, Guesses and Scores beside the board;
+  the word cards, covers, lobby and podium as one card on the board; "Who guessed it?"), the dark Now bar for the round,
+  who is drawing, the word (or the host's blanks) and the clock, pill buttons with the green main button, Bricolage
+  Grotesque from Google Fonts, light and dark from BRB.theme through the kit (else the device; the bar is green in dark
+  mode, as Crossword's). The projector (host) view and every phone view use the same pieces.
+- **The Oomba Kit stays as plumbing.** The game loop, Pip and the players' figures, sounds, settings and reduced motion,
+  Oomba Live (the live pack) and the results card with its stars, Play again and BRB.gameOver are the kit's; the results
+  card is restyled in the widget look with a trophy chip. Rewriting them by hand would have risked the live protocol and
+  the score for no visible gain.
+- **Kept exactly:** DoodleCore, DoodleWords and Pip's doodles (byte for byte), colours, sizes, the eraser, undo and clear,
+  pointer handling, the guess check, hints and points, the live messages and state, the save key `doodle-hoot-v1` and its
+  shape, the test hook, and every class and id the tests and the live lint use. Server code is unchanged. Drawings are
+  still never stored or sent to an AI, and there is still no chat.
+- **New words:** three widget names (Pens, Your guess, Scores) in all 13 languages. On a small screen the widgets drop
+  their name row and keep the coloured edge, so the board keeps its room.
+- **Light or dark mid-game keeps every seat** (checked on main and on this branch: a player's scheme switched in the
+  lobby and while picking a word; seats, the drawer and the word cards stayed the same). In Playwright, a `tap()` right
+  after `page.screenshot()` or `emulateMedia()` on a touch context can reach no element at all (no pointer or touch event
+  in the frame); the live pictures spec should take its pictures after the drawer's pick, not before it.
+- Tests: `tests/unit/doodle-hoot-look.test.js` (the look in Chromium, light and dark, desktop and phone, through a full
+  practice game, letter tiles and pass and play; `DOODLE_SHOTS=<dir>` saves pictures); the e2e specs are unchanged.
+
+## Brain Board and Question Battle: the Crossword look (24 Nov 2026)
+- **The owner:** "Update the brain board, question battle, and would you rather with the crossword like grid, branding,
+  and feel too." This section is Brain Board and Question Battle (Would You Rather has its own).
+- **The look** (`seed-games/brain-board.html`, `seed-games/question-battle.html`), on the projector and the phones: the
+  classroom dashboard's tokens as Crossword uses them (cream cards, the dotted mint board, the dark Now bar, light and
+  dark from `BRB.theme`, else the device), Bricolage Grotesque. Group colors go on a card's top edge and its icon chip
+  only, never on text. Brain Board's board is a grid of cards: each column's color on its header and its tiles' top
+  edge, a done tile faded with a check (a star for a played Lucky Star), the open tile flips to the Now color (the spark
+  color on a Lucky Star). Question Battle's boss stands on an arena card painted on the canvas (the boss's group color
+  on the top edge; sky for the cloud, grape for the robot, coral for the dragon; its icon chip, name and energy bar in
+  the head), so the boss can still wobble, flash and take stars; the three boss drawings are kept, with a soft spotlight
+  behind them in dark mode so their dark outlines read. Answers are tinted tiles with the shape in a solid chip (shape
+  and color, never color alone) and ink text; on the projector they stay at full strength (the host never answers)
+  and the answer bars grow across the tiles at the reveal. The lobby is DOM cards (character, name, team color; one
+  widget per team in Question Battle), not a canvas crowd, so names stay crisp at the back of the room; a class too big
+  for name cards shows the characters only. Results, the top five, the team board and the podiums are widget cards.
+- **Kept as it was:** every live message and state shape (`bb`, `pick`, `turns`, `setState({boss})`, `quiz.answer`),
+  `ready()` options and words, scoring (the server's), turns, Lucky Star, timers, reveals, streaks, the boss's energy
+  from the reveals, the solo practice rounds and Number Quest lesson boards, test hooks, reduced motion and screen-reader
+  lines. The kit and its pinned live pack stay: they are the live plumbing (and the live-ready check needs them), and
+  `flat()` still gives each player's character portrait. No server code changed.
+- **Fixed on the way:** the projector's answer tiles no longer fade while a question is open; a host reload in the lobby
+  names the shared boss, not a random one; the question card sits on its own compositing layer above Brain Board's 3D
+  tile flip.
+- Tests: `tests/unit/live-board-battle-look.test.js` (Chromium, through `tests/unit/_live-frame-harness.js`: each game as
+  a real live frame inside the production wrapper, the protocol's messages played into it; the projector's lobby, board
+  or arena, question, counts and podium in light and dark, and a phone's tap sending one answer).
+## Word Hunt in Crossword's look, with your own words (24 Nov 2026)
+Owner: "Let's update word hunt to use a similar kit and set up to Crossword (with the grid background and all of the same
+my worksheets and make your own functionality)."
+- **The look.** `seed-games/word-hunt.html` is now hand-written outside the Oomba Kit, like Crossword: the dashboard
+  widgets' cream cards with a group colour on the top edge and the icon chip, the dark "Now" bar for what to do next
+  (help, "Now tap the last letter", a cheer, a hint), the dotted mint board, light and dark from `BRB.theme`, Bricolage
+  Grotesque, `BRB.sfx`, its own confetti (none with reduced motion). The kit worlds, the lion and the kit's title, pause
+  and results screens are gone; each theme keeps a picture (an emoji) and a widget colour. The letters sit on one framed
+  square with the found words' bands in an SVG under them (colour-blind-safe colours with dark outlines, as before).
+- **The play is the same.** Drag or tap the first and last letter (keyboard: arrows and Enter), the three levels and
+  their directions, 13 themes and Surprise, the daily puzzle, Hint, Read to me (`BRB.speak`, guarded), Relax, pause (P,
+  and it pauses when the page is hidden), Race a friend, `BRB.score.submit` and one `BRB.gameOver` per solve. The themes'
+  generator is copied unchanged into a `word-hunt-core` block, so a seed (and the daily puzzle) gives the same grid as
+  before (a unit test compares). The save key `word-hunt-v1` keeps its shape; `mine` is added (Your word hunts).
+- **Make your own, as Crossword.** The same people and tools as Crossword: anyone may make a word hunt in the game
+  (it stays in their own save); saving it as a set where the fence allows (`BRB.canSaveSet`); PDF or Word upload for
+  grown-ups who may host with AI on (`BRB.canWriteClues`; the frame's `clues` flag for word-hunt checks only the
+  words-from-doc call). Paste or type a list (one word a line or with commas; a "word - definition" line or a
+  spreadsheet's "word, definition" row gives the word), a .txt or .csv file, or a PDF or Word file through Crossword's
+  path (`POST /api/games/:id/words-from-doc`, `services/crossword-doc.js` and `set-ai.js` unchanged: no new prompt, its
+  limits, the 10 files a day and the AI spending cap; the route keeps the words only, 2 to 15 letters, at most 25, and
+  drops the clues). 3 to 25 words; options: grid size (Auto, the smallest that holds them, or 8, 10, 12, 15), directions
+  (Easy across and down, Medium with diagonals, Hard every way and backwards) and whether students see the word list
+  (hidden: they see how many are left and the ones found). The preview shows the answers (a toggle), Try another layout,
+  Play it, Print, the teacher's instructions box, and Save and get a link (the class code, the link, a QR code, Copy
+  and Assign to a class). Drafts save themselves to Your word hunts on the home; My worksheets (school staff) has Open,
+  Print, the answer key, Copy link, Duplicate, Rename and Delete exactly like Crossword's.
+- **Any script.** A teacher's words may be in any script, as Crossword's are. The grid holds each word's letters as
+  capitals (spaces, hyphens and apostrophes left out); the gaps are filled with the game's weighted A-Z for plain
+  English, with the words' own accented letters added for other Latin lists, and with the script's alphabet (Cyrillic,
+  Greek, Hebrew, Arabic, kana, common Traditional Chinese characters) and the words' own letters otherwise. A Hebrew or
+  Arabic list reads right to left ("across" runs that way). The themes' words stay English, as before.
+- **Checks.** The filler never spells a blocked word in any direction (the same internal list), and no word can be read
+  anywhere it wasn't put; a word inside another of the teacher's words (CAT in CATERPILLAR) is fine, and finding it in
+  either place counts. Words that can't fit the chosen grid are listed, never forced in; the editor warns first when a
+  word is longer than the chosen grid.
+- **Server.** `services/game-sets.js cleanHuntItems` (`[{ t, w: [word], s, d, r, b }]`; every word and the title through
+  `cleanText`), registered in `SET_GAMES`; named after its title like Crossword (rename changes the puzzle's title, a
+  copy is "Copy of ..."); `labelOf` "Habitats: word hunt, 12 words"; `sizeOf` its words. No migration.
+- **Still a whole game to assign.** Being a set game would have sent Word Hunt through the Assign page and refused it
+  without a set (as Crossword is), and skipped it in "Assign all". `game-sets.js OPEN_SET_GAMES` ('word-hunt') keeps it
+  assignable as it is, from the class page, a folder and `/api/teach/assign-game`; with a set chosen, the set opens.
+- **Print** (`services/word-hunt-print.js`, registered in `services/game-print.js`): the game sends only the words and
+  options; the server makes the grid itself by running the game's own `word-hunt-core` block with node:vm (read from
+  `seed-games/word-hunt.html`, already copied by the Dockerfile), so every printed letter is the server's and matches
+  the game. The page: title, Name and Date, the teacher's instructions (as Crossword's, `print-note.js`), how the words
+  run, the grid, the word list with tick boxes (or "Words hidden in the grid: 12"), the footer with the class code and
+  link; the answer key (school staff only, the route checks) rings each word. Words in all 13 locales (`play.printHunt.*`).
+- **Words.** The game's own words in all 13 site languages: its play words as before, Crossword's shared teacher words
+  (code box, sharing, My worksheets) and new ones for making a word hunt. AI voices read only the lines it says
+  (`services/tts-lines.js`: the tagline, the praise, a hint, a race's turns), not the teacher tools.
+- **The companion** knows Word Hunt takes your own word list (grades 1-8, `services/companion-games.js`).
+- Tests: tests/unit/word-hunt-sets.test.js (the core, the generator unchanged, any script, the list reader,
+  cleanHuntItems, the routes owner only, the frame's flags, words from a document, print and its route, the page),
+  tests/unit/word-hunt-browser.test.js (Chromium: play with a real drag and tap-tap, make, preview, save, My worksheets,
+  a student's set), tests/e2e/word-hunt.spec.js (rewritten for the new look, the same coverage).
+## Atlas Quest in Crossword's look, with a teacher's geography quizzes and printable maps (24 Nov 2026)
+
+Owner: "Let's do the same to Atlas Quest [as Crossword: its look and its teacher setup], where a teacher could upload a
+geography lesson, make geography quizzes, print off blank maps, etc. with a super comprehensive library of geography
+facts, etc. Students can be assigned and finish these assignments in the app of course but they can also be printed out
+for students to fill in. For small countries, add the ability to build arrows with input lines."
+- **The look.** Every screen is now the page's own DOM in Crossword's widget style (`.cw-*` tokens and classes copied
+  from crossword.html, plus `.aq-*`): the header with the lit count, passport, settings and sound; the 3D globe on a
+  board card (the dotted mint board behind a transparent renderer that follows the board's size, not the window); the
+  panel beside it (or below it on a phone) holds the home (regions, levels, the mode tiles with their group colour on
+  the icon chip), the question (the dark "Now" bar), results (stars, Play again, Home) and the teacher's widget; a
+  country's file, the passport, settings and Captain Skye are widget cards in a scrim (no browser dialogs; Start over
+  asks on the card). Every mode, its scoring, `BRB.score`/`BRB.gameOver` and the save key `atlas-quest-v1` are as
+  before (one field added: `mine`, the teacher's quizzes). **The kit is still loaded** for the reviewed language packs
+  (`Oomba.t`), the map palette, icons, sounds, the clock and read aloud; its title screen, dialogs, win screen and
+  settings modal are no longer used. New words are in a table of the page's own (`ATQ_I18N`, `tw()`), 13 languages; the
+  older words stay `tr()` so the packs' checksums (and tests/unit/atlas-quest.test.js) are untouched.
+- **Make your own geography quiz** (anyone, exactly as Crossword offers it; saving needs `BRB.canSaveSet`): question
+  types (label the country on a map, name the capital, capital to country, flag to country, which continent, famous
+  for, the teacher's own question and answer); a whole region (continents, the Caribbean, the Middle East: the game's
+  own country list), five at random, or hand-picked by search; up to 60 questions. Saved as a question set
+  (`game-sets.js cleanAtlasItems`: one item `{ t, r, q, a, h }`; countries are ISO codes checked against the game's list
+  (`live/atlas.js codes`), never names; the title, questions and answers through the site's text filter; capital
+  questions never about the two countries the game leaves them out for). The set's name is the quiz's title (as
+  Crossword's). Share (class code, link, QR, Copy, Assign), drafts in the game save, and My worksheets with Print, the
+  answer key, a blank map, Play, Copy link, Duplicate, Rename and Delete.
+- **Students** open a link or class code and play it on the globe: map questions are Find it, the others four choices,
+  the teacher's own a typed answer with Check (two tries; case, accents, "the" and punctuation don't count). Finishing
+  sends one `BRB.gameOver({ won: true, score })`.
+- **Printing** (`services/atlas-print.js`, through `BRB.print` and the game printers): the quiz worksheet (the map with
+  its numbered countries and a line for each, then the questions with a line each, flags shown), a blank map of any
+  region (numbered or bare), and the answer key on its own page for school staff only. The outline map is drawn on the
+  server from the game's own map data by the game's own map code: the `atlas-map` block in the page, run as it is with
+  node:vm, so the printed map is exactly the builder's. Black outlines on white, US Letter and A4.
+- **Arrows with answer lines: a leader-line layout** (reworked the same day after review: free-floating lines could
+  cross). A country too small to write on at the map's size (its largest piece under about 26 map units, or no shape at
+  all) gets an answer line in a column in the margin beside the map, left or right (the nearer side), with a straight
+  leader from the line's start to the country and an arrowhead there. The lines keep the countries' order down the
+  column with at least a line's height between them; any two leaders that would cross swap places (always shorter, so
+  it ends), so no two leaders ever cross (unit-tested on the Caribbean, Europe, Africa, Oceania, North America and Asia
+  presets). The number sits at the line's start, right where its leader begins ("12 ____" on the right, "____ 12" on
+  the left). In the builder's preview the teacher drags a line up or down its column or across to the other side
+  (arrow keys too), takes an arrow away or adds one to any map country, and can place them all again; the choice is
+  kept with the quiz (`a: [[code, lng*10, lat*10]]`: the side and the preferred height) and printed as placed. The
+  answer key writes a name on its line only at the normal size when it fits; the key's numbered list always has it.
+  The world map leaves its tiny countries off a blank map (it says how many). Map titles read naturally in each
+  language ("Map of the Caribbean", "Map of the Middle East", "Map of the world": their own keys). The printed page
+  keeps the print area's 0.5 in margins.
+- **US English on screen for `en`.** The game's English words and data were written in British spelling (colour,
+  neighbour, grey, metres...); the page and the printer turn them to US spelling for `en` only (`us()`, a short list of
+  word swaps), leaving en-GB and the frozen language packs as they are.
+- **Upload a geography lesson** (PDF, Word or .txt; grown-ups who may host, the same flag, limits and daily counter as
+  Crossword's word lists, through `BRB.wordsFromDoc`, which now also takes `txt` for Atlas Quest only): one model call
+  (`set-ai.js draftGeoQuiz`, prompt `geoDocPrompt`: the lesson is data, every question must be answerable from it, no
+  sides on disputed borders) returns country questions as kind + ISO code (checked against the game's list) and the
+  teacher's kind as a short question and answer (through the text filter). They land in the list for the teacher to
+  check; nothing is saved by itself; the file is never stored or logged.
+- **The geography library**: every country (flag, capital, continent, population band, languages, neighbours, coast,
+  famous for, fun fact) from `AtlasData`, searchable and by continent; and a facts set (`window.AtlasFacts`, written by
+  hand in English): continents, oceans, 13 major rivers, mountain ranges, deserts and lakes, with only well-established
+  facts and rounded figures, each linked to its countries. The facts set is English only for now (it says so).
+- Tests: tests/unit/atlas-quiz.test.js (cleanAtlasItems, the routes, the map code and arrows, printing and the key,
+  the lesson upload), tests/e2e/atlas-quest-kit.spec.js (Chromium: a mode played, a quiz made, an arrow dragged, saved,
+  printed with its key, listed; a student plays the link to one gameOver).
+
+## Make your own: grown-ups who may host only (24 Nov 2026)
+The owner decided that "Make your own" in Crossword, Word Hunt and Atlas Quest (the builder for a teacher's own puzzle
+or quiz) is for teachers and grown-ups, not children or students. Until now Crossword offered Make to everyone, with
+drafts in the player's own game save.
+- **The rule** (`INIT.make`, `BRB.canMake`; routes/games.js, docs/sdk.md): grown-ups who may host, the same people who
+  may host a live game (`classlive-access.js canHost`: school staff, the platform admin and a family grown-up), where
+  the grown-up fence lets them save their game. It does not depend on AI being on (`clues` still does). False for a
+  student, a child, a guest and a signed-out player, and in any preview, as `clues` and `mySets` are.
+- **A family grown-up keeps Make**: they host live games and the owner said "grown-ups", so they make and print their
+  own puzzles from their game save, as before. The fence still keeps them from saving a set, class codes and
+  documents, so their builder has no Save and share (unchanged).
+- **In the games**: without `BRB.canMake` there is no Make button, no "Your crosswords" / "Your word hunts" /
+  "Your quizzes" list (nor its guest note), no "Change it" back into the builder from a puzzle, and in Atlas Quest no
+  "Make it a quiz" on a blank map or "Make a quiz" in the library. Word Hunt's "Your own words" card becomes the class
+  code alone. A link or a class code plays as before. Drafts already in a child's save are left as they are, unshown.
+- **On the server**: AI clues and document uploads already required a host. Saving a set did not: any signed-in
+  non-guest could post one. In these three games `POST /api/games/:id/sets` now refuses anyone who may not host
+  (403 `notAllowed`), and the frame says `setSave: false` for them, so `BRB.canSaveSet` stays true to what the server
+  does. The other set games (Algebra Builder, The Big Divide, Mistake Hunt) keep their rules.
+- Tests: tests/unit/make-gate.test.js (the flag for each kind of account with AI on and off, previews, the save,
+  document and clue routes refusing students, children, guests and the family fence, and in Chromium each game's home
+  with and without Make and drafts, plus a student playing a link); harnesses in crossword, word-hunt-browser and
+  game-my-sets-browser pass `make` for a teacher and leave it off for their student cases.
+
+## Oomba Canvas 1.5.0: Builder classroom activities in the Crossword look (24 Nov 2026)
+Owner approved 1.5.0: classroom lessons (Builder classroom activities on Oomba Canvas) should match the Crossword look
+the rest of the site is moving to (`seed-games/crossword.html`, the Builder's classroom style 2).
+- **What changed.** A review of 1.4.1 found it already shared most of the look (cream widget cards with a colored top
+  edge, pills, Bricolage Grotesque, light and dark) but differed in three ways, and 1.5.0 fixes those three only:
+  the page is the dotted mint board (`--paper` #E1F1E1 with #66C792 dots every 22 px; dark: #2E5A41 dots on #141414)
+  instead of a cream square grid; the problem line ("Problem 2 of 5" over the task) sits in the dark Now bar (the
+  site's own `--current` / `--on-current`: ink with cream words in light, mint with ink words in dark) instead of a
+  cream card with a pink top edge; and Check is Crossword's green Go pill, flat (`.cw-btn.cw-go`: #1F9D63 with white words;
+  dark #66C792 with #10261A), instead of a raised button (the owner asked for Crossword's green exactly). Small
+  things to match: the band's Hint and Clear and the end card's other buttons take an ink outline, the workspace cards
+  are solid cream on the board (they were see-through over the grid), and the read-aloud button is a cream circle on
+  the bar with a focus ring in the bar's text color.
+- **Style only.** Only `canvas/src/style.js` (and the version in `ui.js`) changed: same data, same behavior, same API,
+  worksheets and 1.4.1's phone layout included; printing does not use the kit's styles, so worksheets print as before.
+  A test checks that 1.5.0's script is 1.4.1's but for the version, a header comment and the styles.
+- **Versions.** As with 1.4.1: new files in `public/vendor/oomba-canvas/1.5.0/`, the pinned hash in `CANVAS_VERSIONS`
+  and `canvas/SHIPPED.json` in the same change, `CANVAS_LATEST` 1.5.0 (the starter's tag, so new activities start on
+  it), and `PANEL_KIT` 1.5.0 (an older activity moves to it only when saved from the Activity panel). 1.0.0 to 1.4.1
+  stay byte for byte (a lock test for 1.4.1's folder joins the others); the scanner admits all seven tags. Worksheets
+  need 1.4.0 or later (`canvasSetVersion`), so 1.5.0 keeps them with no change there. The CANVAS RULES change only in
+  the version line (generated from docs/canvas-api.md); the arcade SYSTEM_PROMPT and TOOLS are untouched. The layout
+  check now treats 1.4.1 activities as an older kit (their kit parts are not the model's to fix), as it did 1.4.0.
+- **Tests.** canvas-kit (the 1.5.0 look: the board, the Now bar, the flat green Check; 1.4.1 locked; no behavior change),
+  builder-layout-check (1.5.0 clean at 390 and 1280, end card included), and the version lines in builder-canvas,
+  builder-figures and builder-activity-panel (a 1.4.1 activity saved from the panel moves to 1.5.0). The 390 px e2e
+  stays on 1.4.1 as the owner saw it.
+
 
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
 
