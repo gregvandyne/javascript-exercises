@@ -12207,3 +12207,29 @@ cards like the rest of the books".
   at most as many as are left today (sheets first; the rest the next time), each counted when drawn, through the AI
   budget. Painted pictures are left alone.
 - Tests: `tests/unit/storybook-books.test.js` (5), `tests/unit/companion-book-crud.test.js` (3), `tests/unit/storybook-books-browser.test.js` (3: laptop and a 390 px phone; `MY_BOOKS_SHOTS=<dir>` saves the pictures).
+
+## Book pictures: a painting placeholder, never the art pack while painting (24 Nov 2026)
+
+The owner: "Just tried the book generator again and it still used the same graphic pack". The production log for that
+book (Render, 24 Nov 04:46 UTC) showed the opposite: the teacher opened the book page at 04:46:03, Google painted both
+character sheets (04:46:06, 04:46:14) and all 6 pages (04:46:24 to 04:46:46, `storybook picture drawn`, `refs:1`), and
+the page fetched the painted pictures (`/library/made/<id>/pic/<picId>` 200). But the teacher deleted the book at
+04:46:44, about 40 seconds in, before painting finished. Painting worked; what the teacher saw while it ran was the
+art-pack drawing ("Oomba kit") in every picture's place, so the book looked made from the kit.
+
+- **While a picture is queued or painting** (and has no earlier painted picture), nobody sees the art-pack drawing for
+  it: a calm "Oomba is painting this picture" placeholder (a soft paper panel, a gentle shimmer that stops with reduced
+  motion, a small brush icon) is shown instead in the editor's page picture, the page list, the story map, the book's
+  card on /library and /library/make, the reader (a student of a class it was shared with too: sharing stays allowed)
+  and the print copy. The chat's book cards show no page pictures, so there is nothing to change there.
+- **A progress line** at the top of the editor: "Painting your pictures: 3 of 8 ready. You can keep editing." (no word
+  about a kit), then "All pictures painted." for a few seconds, and the line hides. The editor's poll swaps in each
+  painted picture as it arrives (page, list and map); the cards ask for themselves again every few seconds while
+  painting ("Painting pictures" in the meta line; Read stays) and swap in the painted cover.
+- **The art pack only as a real fallback** (Google refused, today's pictures used, no key, waited too long): its one-line
+  reason under the picture, with Paint pictures again right there (and in the line: "1 picture couldn't be painted...").
+- **Pictures left queued by a restart** used to wait for the next change of the book; with the placeholder they would
+  wait for ever, so the queue is kicked again 5 seconds after start-up and every 5 minutes when anything waits.
+- Tests: `tests/unit/storybook-painting.test.js` (5: the placeholder, the reader, print copy and card while painting,
+  the fallback, the restart kick; in a browser the editor and the cards while painting, the swap-in and "All pictures
+  painted.", a fallback with Paint pictures again; `PAINT_SHOTS=<dir>` saves the pictures).

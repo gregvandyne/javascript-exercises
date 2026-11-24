@@ -30,6 +30,7 @@ import * as Alerts from './admin-alerts.js';
 import * as G from './storybook-gemini.js';
 import * as SB from './storybook.js';
 import { catalog } from './storybook-illustrator.js';
+import { register } from './jobs.js';
 
 /** Test hook: screenImage(bytes, mime) for the picture check. */
 export const hooks = { screenImage: null, log: null };
@@ -147,6 +148,15 @@ export function repaint(u, bookId) {
 // ---------------------------------------------------------------- what the editor and the reader see
 /** The kept picture of a page (a made_book_pics id), or null. */
 export const drawnPic = (bookId, pageId) => (q.get("SELECT pic_id FROM made_book_draws WHERE book_id=? AND target=? AND pic_id IS NOT NULL", bookId, `page:${pageId}`) || {}).pic_id || null;
+/** Oomba is still painting this page's picture: it is queued or drawing and has no earlier painted picture to show
+ *  meanwhile. The editor, the reader, the print copy and the book's card then show the painting placeholder, never the
+ *  art-pack drawing (docs/decisions.md "Book pictures: a painting placeholder, never the art pack while painting"). */
+export const painting = (bookId, pageId) => !!q.get("SELECT 1 FROM made_book_draws WHERE book_id=? AND target=? AND state IN ('queued','drawing') AND pic_id IS NULL", bookId, `page:${pageId}`);
+/** How a book's painting is going (its card's "Painting pictures"): { busy, total, done } over sheets and pages. */
+export function progressOf(bookId) {
+  const r = q.get("SELECT COUNT(*) total, SUM(state IN ('queued','drawing')) busy, SUM(state IN ('done','fallback')) done FROM made_book_draws WHERE book_id=?", bookId) || {};
+  return { total: r.total || 0, busy: r.busy || 0, done: r.done || 0 };
+}
 /** The book's pictures for the editor (reason 'own' | 'none': the teacher's Pictures choice): { on, reason, left, cap, pages: { id: { state, reason, pic, stale } },
  *  cast: { name: ... }, total, done, busy } */
 export function stateOf(u, row, b = SB.bookOf(row)) {
@@ -384,6 +394,11 @@ export function webpSize(b) {
   if (f === 'VP8L') { const n = b.readUInt32LE(21); return { width: 1 + (n & 0x3fff), height: 1 + ((n >> 14) & 0x3fff) }; }
   return null;
 }
+
+// A deploy or restart leaves pictures queued (or drawing) with nobody to draw them until the next change kicks the
+// queue; with the painting placeholder they would wait for ever. Soon after start-up, and every few minutes, the queue is
+// kicked when anything waits (a picture that can't be painted now falls back to the art pack, with its reason).
+register('storybook-picture-queue', 5 * 60e3, () => { if (q.get("SELECT 1 FROM made_book_draws WHERE state IN ('queued','drawing') LIMIT 1")) kick(); }, { firstAfterMs: 5e3 });
 
 // ---------------------------------------------------------------- deleting
 export const forgetBook = bookId => q.run('DELETE FROM made_book_draws WHERE book_id=?', bookId);

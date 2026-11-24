@@ -25,6 +25,7 @@ Library: the book maker".
 | Migration `0111_storybook_draws` | `made_book_draws` (the picture queue); `made_book_pics.kind` and `.mime` |
 | `tests/unit/storybook.test.js` | Access, rules, AI checks and retry, screening, the cap, reader, print, pictures, delete lists |
 | `tests/unit/storybook-pictures.test.js` | The picture model: request shape, blocks and refusals, the picture count, no key, Redraw, access; an adventure painted on every page and ending (reader and print); the Pictures choice |
+| `tests/unit/storybook-painting.test.js` | While painting: the placeholder, never the art pack (editor, page list, story map, cards, reader, print), the progress line, the swap-in on the poll, a real fallback with Paint pictures again, the restart kick |
 | `tests/unit/storybook-books.test.js`, `companion-book-crud.test.js`, `storybook-books-browser.test.js` | Your books: the cards, rename, duplicate, delete, access on every new route and tool, unfinished books, Paint pictures again; the same from the chat |
 | `tests/unit/companion-book.test.js`, `companion-book-browser.test.js` | The chat: cards skip what the request answered, words and files into the book, the check and screening, Start and the cap, teachers only, changes from any page with Undo, books made in the past |
 
@@ -112,9 +113,11 @@ update and delete").
 
 - **Cards.** The teacher's books on `/library` ("Your books", the newest 8, with All your books) and on `/library/make`
   are the library's own card (`routes/library.js madeCard`: `lb-card` in an `lb-grid`, library.css): the cover is the
-  first page's picture as the reader shows it (painted, the teacher's own, or the art-pack drawing, cut to the card's
-  4:3), a calm placeholder when there is none; chips for the grade and the kind; the title (to the editor); pages, when
-  it changed, the classes it is shared with. Only `storybook.listBooks` rows (the teacher's own) are ever rendered.
+  first page's picture as the reader shows it (painted, the teacher's own, the painting placeholder while Oomba paints
+  it, or the art-pack drawing, cut to the card's 4:3), a calm placeholder when there is none; chips for the grade and the kind; the title (to the editor); pages, when
+  it changed ("Painting pictures" instead while any of its pictures is being painted: the card asks for itself again,
+  `GET /api/library/make/:id/card`, every few seconds and swaps in the painted cover), the classes it is shared with.
+  Only `storybook.listBooks` rows (the teacher's own) are ever rendered.
 - **Actions.** Create: Make a book (as before). Read (the reader, as students see it) and Open (the editor) on the card.
   The More menu (⋯ over the cover): Rename (in place: Enter or leaving the box saves, Escape puts it back), Share with
   classes (the editor's sheet), Duplicate, Delete. The book page's More menu: Paint pictures again (books whose pictures
@@ -266,11 +269,20 @@ a real image generator with a kids' book drawing skill, Google's. The skill is o
   the reader, the print copy and the story map (a picture in each page's box) show them.
 - **When it is not drawn**: no `GEMINI_API_KEY`, the budget resting, or the day's pictures used: the art-pack drawing,
   and the editor says why in one calm line under the warnings.
-- **The editor**: the line under the warnings ("Drawing the pictures: 3 of 12 ready", the pictures left today, or why
-  the art packs are used), an hourglass on each page still waiting in the page list, under the picture its state (waiting,
-  drawing, why it fell back, changed since) and **Redraw** with an optional note ("make it a sunny morning": the word
-  rules and names check, then scrubbed). The editor asks how drawing is going every few seconds while anything is
-  queued. Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
+- **While painting, never the art pack** (docs/decisions.md "Book pictures: a painting placeholder, never the art pack
+  while painting"): a picture that is queued or drawing and has no earlier painted picture shows the painting
+  placeholder (`storybook-art.js paintingHtml`: "Oomba is painting this picture", a soft paper panel with a gentle
+  shimmer, none with reduced motion, and a small brush) in the editor's page picture, the page list, the story map, the
+  book's card, the reader and the print copy (`storybook-draw.js painting`, `storybook.js pictureHtml`). The art-pack
+  drawing is shown only as a real fallback, with its reason and Paint pictures again. Pictures left queued by a restart
+  are drawn again: the queue is kicked 5 seconds after start-up and every 5 minutes when anything waits.
+- **The editor**: the line under the warnings ("Painting your pictures: 3 of 8 ready. You can keep editing.", then "All
+  pictures painted." for a few seconds before it hides; the pictures left today, how many pictures fell back with Paint
+  pictures again, or why the art packs are used), an hourglass on each page still waiting in the page list, under the
+  picture its state (waiting, painting, why it fell back with Paint pictures again, changed since) and **Redraw** with an
+  optional note ("make it a sunny morning": the word rules and names check, then scrubbed). The editor asks how drawing
+  is going every few seconds while anything is queued and swaps in each painted picture as it arrives (the page, the
+  page list and the story map). Characters: each one's look and reference picture, with Redraw. The teacher's own upload works as before.
 
 ## Pictures: requests Google refuses (400, 404)
 

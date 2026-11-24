@@ -4495,7 +4495,7 @@
       "draw": {
         "lineOff": "圖片來自美術包：這個網站還沒有設定繪圖 AI。",
         "lineResting": "繪圖 AI 正在休息，所以新的圖片來自美術包。",
-        "lineBusy": "正在畫圖：{total} 張中已完成 {done} 張。你可以繼續工作。",
+        "lineBusy": "正在畫你的圖：{total} 張中已完成 {done} 張。你可以繼續編輯。",
         "lineLimit": "今天的圖片次數已用完，所以新的圖片來自美術包。明天再來。",
         "lineOn": "圖片會用同一種繪本風格畫出，並在顯示前檢查。今天還剩 {count} 張",
         "queued": "等待繪製",
@@ -4522,7 +4522,11 @@
         "lineOwn": "你選擇自己加入圖片:請在每一頁使用「你的圖片」。",
         "lineNone": "這本書沒有圖畫。",
         "waitGoogle": "正在等待 Google，圖很快就會出現。",
-        "lineNotSet": "繪製的圖還沒有設定好，所以圖來自美術包。"
+        "lineNotSet": "繪製的圖還沒有設定好，所以圖來自美術包。",
+        "painting": "Oomba 正在畫這張圖",
+        "lineDone": "所有圖都畫好了。",
+        "lineMissed": "{count, plural, other {有 # 張圖沒能畫好，暫時顯示美術素材包的圖。}}",
+        "repaint": "重新繪製圖片"
       }
     },
     "storybook-read": {
@@ -14143,7 +14147,8 @@
       "resting": "繪圖 AI 正在休息，請稍後再試。",
       "limit": "你已經用完今天的圖片次數，明天再來。",
       "off": "這本書的圖畫是你自己的(或沒有圖畫),所以 Oomba 不會畫。",
-      "none": "這本書的圖片都已經畫好了。"
+      "none": "這本書的圖片都已經畫好了。",
+      "painting": "Oomba 正在畫這張圖"
     },
     "pictures": {
       "ai": "由 Oomba 畫",
@@ -14188,7 +14193,8 @@
       "renamed": "已重新命名。",
       "duplicated": "已建立副本：「{title}」",
       "repainting": "要重新繪製的圖片：{count} 張。完成後就會出現。",
-      "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。"
+      "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。",
+      "painting": "正在畫圖"
     }
   }
 }

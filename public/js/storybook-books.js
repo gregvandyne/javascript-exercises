@@ -2,7 +2,9 @@
 // (Rename, Share, Duplicate, Delete), Try again on a book whose first draft never came. Every action is a call to the
 // book maker's API (teachers only, own books only, checked on the server). Delete asks in the site's own dialog
 // (app.js ask), then the card goes with an Undo message for a few seconds; the book is deleted on the server when the
-// message ends (or the page is left), so Undo only has to bring the card back.
+// message ends (or the page is left), so Undo only has to bring the card back. A book Oomba is still painting shows the
+// painting placeholder as its cover and "Painting pictures"; its card is asked for again every few seconds and swapped
+// in, so the painted cover arrives without a reload.
 import { api, t, esc, pageData, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 
@@ -98,7 +100,7 @@ async function duplicate(card, btn) {
     const tmp = document.createElement('ul'); tmp.innerHTML = r.card;
     const nc = tmp.firstElementChild; card.parentElement.prepend(nc);
     nc.classList.add('is-new'); nc.querySelector('.lb-title a')?.focus();
-    toast(r.toast);
+    toast(r.toast); watchPainting();
   } catch (er) { toast(er.message, { bad: true }); } finally { btn.disabled = false; }
 }
 
@@ -135,3 +137,24 @@ async function remove(card) {
 }
 // Leaving the page while Undo is still offered: the delete goes now.
 window.addEventListener('pagehide', () => { for (const id of [...pending.keys()]) commit(id, { leaving: true }); });
+
+// ---------------------------------------------------------------- books Oomba is still painting
+let watching = null;
+/** Every few seconds, each card still painting is asked for again (GET .../card) and swapped in when it changed; a card
+ *  with its menu open, being renamed or waiting for Undo waits for the next look. Stops when no card is painting. */
+function watchPainting() {
+  if (watching || !document.querySelector('.sb-bcard[data-painting]')) return;
+  watching = setTimeout(async () => {
+    for (const card of [...document.querySelectorAll('.sb-bcard[data-painting]')]) {
+      if (card.hidden || card.querySelector('.sb-bmore[open], .sb-brename')) continue;
+      try {
+        const r = await api(`/api/library/make/${encodeURIComponent(idOf(card))}/card`, { background: true });
+        const tmp = document.createElement('ul'); tmp.innerHTML = r.card;
+        const nc = tmp.firstElementChild;
+        if (nc && card.isConnected && !card.hidden && nc.outerHTML !== card.outerHTML) card.replaceWith(nc);
+      } catch (er) { if (er && er.status === 404) card.removeAttribute('data-painting'); }
+    }
+    watching = null; watchPainting();
+  }, 4000);
+}
+watchPainting();

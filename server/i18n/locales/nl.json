@@ -4496,7 +4496,7 @@
       "draw": {
         "lineOff": "De plaatjes komen uit de tekenpakketten: de plaatjesmaker is niet ingesteld op deze site.",
         "lineResting": "De plaatjesmaker rust even, dus nieuwe plaatjes komen uit de tekenpakketten.",
-        "lineBusy": "Plaatjes tekenen: {done} van {total} klaar. Je kunt verder werken.",
+        "lineBusy": "Je plaatjes worden geschilderd: {done} van {total} klaar. Je kunt verder bewerken.",
         "lineLimit": "De plaatjes van vandaag zijn op, dus nieuwe plaatjes komen uit de tekenpakketten. Morgen weer nieuwe.",
         "lineOn": "De plaatjes worden in één prentenboekstijl geschilderd en gecontroleerd voordat ze te zien zijn. Plaatjes over vandaag: {count}",
         "queued": "Wacht om getekend te worden",
@@ -4523,7 +4523,11 @@
         "lineOwn": "Je koos voor je eigen plaatjes: gebruik Jouw plaatje op elke pagina.",
         "lineNone": "Dit boek heeft geen plaatjes.",
         "waitGoogle": "Wacht op Google. Het plaatje verschijnt zo.",
-        "lineNotSet": "Geschilderde plaatjes zijn nog niet ingesteld, dus de plaatjes komen uit de pakketten."
+        "lineNotSet": "Geschilderde plaatjes zijn nog niet ingesteld, dus de plaatjes komen uit de pakketten.",
+        "painting": "Oomba schildert dit plaatje",
+        "lineDone": "Alle plaatjes zijn geschilderd.",
+        "lineMissed": "{count, plural, one {# plaatje kon niet worden geschilderd en toont nu de tekening uit het tekenpakket.} other {# plaatjes konden niet worden geschilderd en tonen nu de tekening uit het tekenpakket.}}",
+        "repaint": "Plaatjes opnieuw schilderen"
       }
     },
     "storybook-read": {
@@ -14144,7 +14148,8 @@
       "resting": "De plaatjesmaker rust even. Probeer het later opnieuw.",
       "limit": "Je hebt de plaatjes van vandaag gebruikt. Morgen weer nieuwe.",
       "off": "De plaatjes in dit boek zijn van jou (of er zijn er geen), dus Oomba schildert ze niet.",
-      "none": "Alle plaatjes in dit boek zijn al geschilderd."
+      "none": "Alle plaatjes in dit boek zijn al geschilderd.",
+      "painting": "Oomba schildert dit plaatje"
     },
     "pictures": {
       "ai": "Oomba schildert ze",
@@ -14189,7 +14194,8 @@
       "renamed": "Naam gewijzigd.",
       "duplicated": "Kopie gemaakt: ‘{title}’",
       "repainting": "Plaatjes om opnieuw te schilderen: {count}. Ze verschijnen zodra ze klaar zijn.",
-      "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op)."
+      "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op).",
+      "painting": "Plaatjes worden geschilderd"
     }
   }
 }

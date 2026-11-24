@@ -4496,7 +4496,7 @@
       "draw": {
         "lineOff": "Le immagini vengono dai pacchetti di disegni: il creatore di immagini non è configurato su questo sito.",
         "lineResting": "Il creatore di immagini sta riposando, quindi le nuove immagini vengono dai pacchetti di disegni.",
-        "lineBusy": "Disegno delle immagini: {done} di {total} pronte. Puoi continuare a lavorare.",
+        "lineBusy": "Sto dipingendo le tue immagini: {done} di {total} pronte. Puoi continuare a modificare.",
         "lineLimit": "Le immagini di oggi sono state usate, quindi le nuove vengono dai pacchetti di disegni. Domani ce ne saranno altre.",
         "lineOn": "Le immagini sono dipinte in un unico stile da libro illustrato e controllate prima di essere mostrate. Immagini rimaste oggi: {count}",
         "queued": "In attesa di essere disegnata",
@@ -4523,7 +4523,11 @@
         "lineOwn": "Hai scelto di aggiungere le tue immagini: usa La tua immagine su ogni pagina.",
         "lineNone": "Questo libro non ha immagini.",
         "waitGoogle": "In attesa di Google. L'immagine apparirà presto.",
-        "lineNotSet": "Le immagini dipinte non sono ancora configurate, quindi le immagini vengono dai pacchetti."
+        "lineNotSet": "Le immagini dipinte non sono ancora configurate, quindi le immagini vengono dai pacchetti.",
+        "painting": "Oomba sta dipingendo questa immagine",
+        "lineDone": "Tutte le immagini sono dipinte.",
+        "lineMissed": "{count, plural, one {# immagine non è stata dipinta, quindi per ora mostra il disegno del pacchetto grafico.} other {# immagini non sono state dipinte, quindi per ora mostrano il disegno del pacchetto grafico.}}",
+        "repaint": "Ridipingi le immagini"
       }
     },
     "storybook-read": {
@@ -14144,7 +14148,8 @@
       "resting": "Il creatore di immagini sta riposando. Riprova più tardi.",
       "limit": "Hai usato le immagini di oggi. Domani ce ne saranno altre.",
       "off": "Le immagini di questo libro sono le tue (o non ce ne sono), quindi Oomba non le dipinge.",
-      "none": "Tutte le immagini di questo libro sono già dipinte."
+      "none": "Tutte le immagini di questo libro sono già dipinte.",
+      "painting": "Oomba sta dipingendo questa immagine"
     },
     "pictures": {
       "ai": "Le dipinge Oomba",
@@ -14189,7 +14194,8 @@
       "renamed": "Rinominato.",
       "duplicated": "Copia fatta: «{title}»",
       "repainting": "Immagini da ridipingere: {count}. Compaiono quando sono pronte.",
-      "repaintSome": "Immagini da ridipingere: {count} ora, altre {more} domani (le immagini di oggi sono finite)."
+      "repaintSome": "Immagini da ridipingere: {count} ora, altre {more} domani (le immagini di oggi sono finite).",
+      "painting": "Immagini in pittura"
     }
   }
 }

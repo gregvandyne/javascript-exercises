@@ -75,6 +75,7 @@ export const ART = {
   traffic: () => `${rr(6.5, 1.5, 11, 21, 4.5, T)}${ci(12, 6.4, 2.4, R)}${ci(12, 12, 2.4, Y)}${ci(12, 17.6, 2.4, G)}`,
   // ---- the class dashboard's own tools and passes
   eraser: () => `${shape('M13.6 3.2a2.4 2.4 0 0 1 3.4 0l3.8 3.8a2.4 2.4 0 0 1 0 3.4L11.4 19.8H7.6l-4.4-4.4a2.4 2.4 0 0 1 0-3.4Z', R)}${shape('M3.2 15.4 7.6 19.8h3.8l2.4-2.4-6.8-6.8-3.8 3.8a1.7 1.7 0 0 0 0 1Z', T)}${line('M11 21h10', T, 2.2)}`,
+  brush: () => `${line('M12.3 11.7 20.8 3.2', T, 2.6)}${shape('M10.4 9.8l3.8 3.8-2 2-3.8-3.8Z', T)}${shape('M8.4 11.8l3.8 3.8C11.4 19 7.8 21.4 3.2 21.5 3.2 17 5 13 8.4 11.8Z', G)}${line('M5.6 18.4c1-1.2 2.2-2 3.6-2.4', K, 1.4)}`,
   marker: () => `${shape('M16.4 2.6a2.3 2.3 0 0 1 3.3 0l1.7 1.7a2.3 2.3 0 0 1 0 3.3l-9.8 9.8-5-5Z', R)}${shape('M6.6 12.4l5 5-2.6 2.6H4.6v-4.4Z', T)}${line('M2.5 21.5h5', T, 2.2)}${line('M13.8 5.2l5 5', K, 1.8)}`,
   pointer: () => `${shape('M9 11.5V4.2a1.8 1.8 0 0 1 3.6 0v6.3l5.1.9a2.6 2.6 0 0 1 2.1 2.9l-.8 5.4a2.6 2.6 0 0 1-2.6 2.3h-5.2a2.6 2.6 0 0 1-2.1-1.1L5.2 16a1.8 1.8 0 0 1 2.7-2.4Z', Y)}${line('M12.6 10.5V14M16 11.1V14', K, 1.5)}`,
   restroom: () => `${rr(2, 2, 20, 20, 4.5, G)}${ci(7.6, 6.6, 1.7, K)}${ci(16.4, 6.6, 1.7, K)}${shape('M5.6 9.6h4v4.4H8.7v4.8H6.5V14H5.6Z', K, 1)}${shape('M16.4 9.4l2.6 6h-1.4v3.4h-2.4v-3.4h-1.4Z', K, 1)}${line('M12 5.5v13', K, 1.4)}`,
@@ -226,7 +227,7 @@ export const CONCEPT = {
   'balance-scale': 'scale', 'straight-ruler': 'ruler', 'triangular-ruler': 'figures', abacus: 'manipulatives', 'test-tube': 'science', handshake: 'handshake',
   'thumbs-up': 'like', 'raised-hand': 'hand', 'person-raising-hand': 'hand', plus: 'plus', minus: 'minus', divide: 'divide', 'heavy-equals-sign': 'equals',
   'input-latin-letters': 'letters', 'input-numbers': 'numbers', sun: 'sun', 'crescent-moon': 'moon', 'first-quarter-moon': 'auto', door: 'door',
-  'admission-tickets': 'ticket', seedling: 'sprout', 'vertical-traffic-light': 'traffic', 'slightly-smiling-face': 'me', sponge: 'eraser', crayon: 'marker',
+  'admission-tickets': 'ticket', seedling: 'sprout', 'vertical-traffic-light': 'traffic', 'slightly-smiling-face': 'me', sponge: 'eraser', crayon: 'marker', paintbrush: 'brush',
   'backhand-index-pointing-up': 'pointer', 'index-pointing-up': 'pointer', restroom: 'restroom', 'potable-water': 'water', 'adhesive-bandage': 'bandage',
   'recycling-symbol': 'refresh', footprints: 'steps', brain: 'brain', battery: 'battery', 'white-square-button': 'qr', 'black-square-button': 'area',
   'large-blue-diamond': 'pattern', 'purple-square': 'algebra', 'orange-square': 'rods', 'keycap-10': 'placeval', 'hundred-points': 'hundreds', bubbles: 'breathe',

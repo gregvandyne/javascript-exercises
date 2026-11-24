@@ -4777,11 +4777,11 @@
       "draw": {
         "lineOff": "Pictures come from the art packs: the picture maker isn't set up on this site.",
         "lineResting": "The picture maker is resting for now, so new pictures come from the art packs.",
-        "lineBusy": "Drawing the pictures: {done} of {total} ready. You can keep working.",
+        "lineBusy": "Painting your pictures: {done} of {total} ready. You can keep editing.",
         "lineLimit": "Today's pictures are used, so new pictures come from the art packs. More tomorrow.",
         "lineOn": "Pictures are painted in one picture-book style and checked before they are shown. Pictures left today: {count}",
-        "queued": "Waiting to be drawn",
-        "drawing": "Drawing this picture now",
+        "queued": "Waiting to be painted",
+        "drawing": "Painting this picture now",
         "why": {
           "nokey": "The picture maker isn't set up, so this shows the art-pack drawing.",
           "resting": "The picture maker was resting, so this shows the art-pack drawing.",
@@ -4804,7 +4804,11 @@
         "lineOwn": "You chose to add your own pictures: use Your picture on each page.",
         "lineNone": "This book has no pictures.",
         "waitGoogle": "Waiting for Google. The picture will appear soon.",
-        "lineNotSet": "Painted pictures aren't set up yet, so pictures come from the art packs."
+        "lineNotSet": "Painted pictures aren't set up yet, so pictures come from the art packs.",
+        "painting": "Oomba is painting this picture",
+        "lineDone": "All pictures painted.",
+        "lineMissed": "{count, plural, one {# picture couldn't be painted, so it shows the art-pack drawing for now.} other {# pictures couldn't be painted, so they show the art-pack drawing for now.}}",
+        "repaint": "Paint pictures again"
       }
     },
     "storybook-read": {
@@ -14859,7 +14863,8 @@
       "resting": "The picture maker is resting for now. Please try again later.",
       "limit": "You've used today's pictures. More tomorrow.",
       "off": "This book's pictures are your own (or there are none), so Oomba doesn't paint them.",
-      "none": "Every picture in this book is already painted."
+      "none": "Every picture in this book is already painted.",
+      "painting": "Oomba is painting this picture"
     },
     "pictures": {
       "ai": "Oomba paints them",
@@ -14904,7 +14909,8 @@
       "renamed": "Renamed.",
       "duplicated": "Copy made: “{title}”",
       "repainting": "Pictures to paint again: {count}. They show up as they're ready.",
-      "repaintSome": "Pictures to paint again: {count} now, {more} more tomorrow (today's pictures are used up)."
+      "repaintSome": "Pictures to paint again: {count} now, {more} more tomorrow (today's pictures are used up).",
+      "painting": "Painting pictures"
     }
   }
 }
