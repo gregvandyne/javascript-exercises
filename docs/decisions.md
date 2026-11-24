@@ -12955,7 +12955,8 @@ repo's own scripts, same names, formats and sizes as before:
   for round 3 while the round's numbers now change; it now sets the round's own right mix. No other cover was stale,
   so the other pictures were left as they were.
 - **Redone since (24 Nov 2026):** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`)
-  were recorded again, see "Demo and parents videos in the new look" below. The four "See it in action" videos show only teaching tools.
+  were recorded again, see "Demo and parents videos in the new look" below. The four "See it in action" videos show
+  only teaching tools.
 
 
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
@@ -13006,16 +13007,24 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 
 ## Demo and parents videos in the new look (24 Nov 2026)
 
-Owner: "Yes rebuild those videos". `public/video/oomba-demo.mp4` (/teachers/live) and `oomba-parents.mp4` (/parents)
-showed Atlas Quest and Would You Rather in the look they had before #570.
-- **Every clip recorded again** on the current app with scripts/demo-video (games, Builder, Oomba Live, sign-up, friends,
-  publish), same storyboard, scene order, timings (57.4 s and 49.3 s) and captions. Music as before: the owner's
-  AtlasAudio track (`--hit 101.16 --fade-in 0.5`), no voice-over (the published cuts had none). Posters and captions
-  replaced; no 16x9 or 9x16 extras are kept in the repository.
-- **Recording fixes:** the Builder's preview now gets the kit's Play and Go presses inside the game's page (a pointer click
-  on the preview no longer reached them); Would You Rather and Castle Clash are still between answers in the new look,
-  so a cursor picks a card and moves to Next, and drags each chess move.
-- **Shown although hidden on the site:** the story still has Gulp City (hook and montage), the solo Would You Rather,
-  Quest Race in the live picker and an arcade game made in the Builder, all behind `ARCADE` ("Focus: teaching tools
-  first"); they were recorded with `ARCADE=1` and left for the owner to decide. The publish sheet shows today's choices
-  (Only me, Friends: no Everyone while `PUBLIC_GAMES` is off).
+Owner: "Yes rebuild those videos", then: rework the scenes to use what is on the site now (`ARCADE` off).
+`public/video/oomba-demo.mp4` (/teachers/live) and `oomba-parents.mp4` (/parents) showed Atlas Quest and Would You
+Rather in the look they had before #570, and games the focus on teaching tools has hidden since.
+- **Recorded on the default config** (both servers without `ARCADE`), so every scene shows only what a visitor can find:
+  - Hook (both): Atlas Quest's lit globe instead of Gulp City.
+  - Live (teacher): the teacher picks Question Battle (not Quest Race), Science, Ages 10-11, an open room; a phone joins
+    with a code; a question is answered, revealed, and the top five shows.
+  - Builder (both): MayaMakes describes "A Category Board quiz for my class: animals, space and maps!", the build and the
+    automatic playtest, then a question played on the sideways preview (pick a tile, show the answer, give the points),
+    instead of an arcade game. The replay shows the AI Builder's kind of next steps for a board ("Use our spelling
+    words", "Add a fourth team", "Make it harder") instead of the offline blocks' arcade ones.
+  - Montage (both): Atlas Quest (Find it: a country tapped on the globe), Word Hunt (two words found), Crossword (two
+    words typed), Castle Clash, instead of Gulp City and the solo Would You Rather.
+  - Safety scenes (parents) as before; the publish sheet shows today's choices (Only me, Friends).
+- **Captions:** one changed, the live race line: "Everyone answers. The race is on!" is now "Everyone answers. Who's on
+  top?". The others still fit and are unchanged. The voice-over scripts (`teacher-vo.json`, `parents-vo.json`, not used
+  in these cuts) follow the new scenes.
+- **Same** lengths (57.4 s and 49.3 s), end-card hits (`--hit 101.16 --fade-in 0.5`), the owner's AtlasAudio track, no
+  voice-over (the published cuts had none). Posters and captions replaced; no 16x9 or 9x16 extras in the repository.
+- **Recording fixes:** the Builder presses its preview's keys inside the game's page; a cursor taps, drags and types in
+  the flat games (Atlas Quest, Word Hunt, Crossword, Castle Clash), whose screens are still between moves.

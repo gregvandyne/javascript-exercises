@@ -36,12 +36,12 @@ const CAP = {
   end: 'Screen time you can feel good about. Free to play, no ads: oomba.ai/parents',
 };
 
-// 1. Hook: Gulp City under the title
-seg('1-hook', ['-i', `${C}/gulp-${O}.mp4`, ...img(`${K}/p-hook-${O}.png`)],
+// 1. Hook: Atlas Quest's lit globe under the title
+seg('1-hook', ['-i', `${C}/atlas-${O}.mp4`, ...img(`${K}/p-hook-${O}.png`)],
   `[0:v]${span(0.4, D.hook)},${fit}[v];[1:v]format=rgba,fade=t=in:st=0.5:d=0.5:alpha=1[t];[v][t]overlay=0:0[out]`, D.hook, CAP.hook);
 
 // 2. Learning games montage
-{ const parts = [['atlas', 0.1], ['wyr', 0.35], ['chess', 0.2], ['gulpbig', 0.15]], each = D.learn / parts.length;
+{ const parts = [['wordhunt', 0.1], ['atlasq', 0.15], ['chess', 0.2], ['crossword', 0.15]], each = D.learn / parts.length;
   const ins = parts.flatMap(([g]) => ['-i', `${C}/${g}-${O}.mp4`]);
   const f = parts.map(([, ss], i) => `[${i}:v]${span(ss, each)},${fit},trim=duration=${each.toFixed(3)},setpts=PTS-STARTPTS[m${i}]`).join(';') + ';' + parts.map((_, i) => `[m${i}]`).join('') + `concat=n=${parts.length}:v=1:a=0[mv];` + capF('mv', parts.length, 0.2, D.learn, 'out');
   seg('2-learn', [...ins, ...img(`${K}/p-cap-learn-${O}.png`)], f, D.learn, CAP.learn); }
@@ -55,8 +55,9 @@ let buildCut = 0;
 // 3b. ...and play it (the preview phone, zoomed in)
 { const f = `${C}/builder-${O}.mp4`, a = Math.max(0, bj.end - D.play - 0.15), d = D.play;
   const z = JSON.parse(fs.readFileSync(`${C}/builder-${O}-box.json`, 'utf8'));
-  const body = L ? `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=-2:900:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:165[v];`
-    : `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=-2:1500:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:330[v];`;
+  // the sideways preview (a classroom board), as big as fits under the caption
+  const body = L ? `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=w=1760:h=880:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:170[v];`
+    : `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=w=1040:h=1500:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:(H-h)/2+60[v];`;
   seg('3b-play', ['-i', f, ...img(`${K}/p-cap-play-${O}.png`), ...img(`${K}/bg-${O}.png`)], body + capF('v', 1, 0.15, d, 'out'), d, CAP.play); }
 
 // 4. Safety: sign-up, friends, publishing (zoomed in on landscape)

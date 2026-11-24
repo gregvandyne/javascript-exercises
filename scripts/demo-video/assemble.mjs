@@ -23,10 +23,10 @@ function seg(name, inputs, filter, d) {
 }
 const bj = JSON.parse(fs.readFileSync(`${C}/builder-${O}.json`, 'utf8'));
 const gj = JSON.parse(fs.readFileSync(`${C}/live-game.json`, 'utf8'));
-const D = { hook: 5.2, pick: 5.4, join: 4.8, race: 8.15, build: 15.25, play: 5.0, games: 11.0, end: 5.0 };
+const D = { hook: 5.2, pick: 5.4, join: 4.8, battle: 8.15, build: 15.25, play: 5.0, games: 11.0, end: 5.0 };
 
-// 1. Hook: Gulp City with the title
-seg('1-hook', ['-i', `${C}/gulp-${O}.mp4`, ...img(`${K}/hook-${O}.png`)],
+// 1. Hook: Atlas Quest's lit globe with the title
+seg('1-hook', ['-i', `${C}/atlas-${O}.mp4`, ...img(`${K}/hook-${O}.png`)],
   `[0:v]${span(0.4, D.hook)},${fit}[v];[1:v]format=rgba,fade=t=in:st=0.5:d=0.5:alpha=1[t];[v][t]overlay=0:0[out]`, D.hook);
 
 // 2a. The teacher picks a game, subject and level
@@ -47,7 +47,7 @@ function boardPhone(name, boardF, phoneF, a, d, cap) {
   seg(name, ['-i', boardF, '-i', phoneF, ...img(`${K}/bg-${O}.png`), ...img(`${K}/bezel-${L ? 'a' : 'b'}.png`), ...img(`${K}/cap-${cap}-${O}.png`)], f, d);
 }
 { const len = dur(`${C}/live-lobby-host.mp4`); boardPhone('2b-join', `${C}/live-lobby-host.mp4`, `${C}/live-lobby-phone.mp4`, Math.max(0, len - D.join - 0.02), D.join, 'live2'); }
-{ const a = Math.max(0, gj.q - 0.3); boardPhone('2c-race', `${C}/live-game-host.mp4`, `${C}/live-game-phone.mp4`, a, Math.min(D.race, gj.end - a - 0.05), 'live3'); }
+{ const a = Math.max(0, gj.q - 0.3); boardPhone('2c-battle', `${C}/live-game-host.mp4`, `${C}/live-game-phone.mp4`, a, Math.min(D.battle, gj.end - a - 0.05), 'live3'); }
 
 // 3a. The Builder: type, build, playtest
 { const f = `${C}/builder-${O}.mp4`, a = 0.25, b = bj.done + 0.5, sp = Math.max(1, (b - a) / D.build), cut = Math.min(D.build - 0.5, (bj.send - a) / sp + 1.4);
@@ -56,12 +56,13 @@ function boardPhone(name, boardF, phoneF, a, d, cap) {
 // 3b. ...and play it: the preview phone, zoomed in (landscape)
 { const f = `${C}/builder-${O}.mp4`, a = Math.max(0, bj.end - D.play - 0.15), d = D.play;
   const z = JSON.parse(fs.readFileSync(`${C}/builder-${O}-box.json`, 'utf8'));
-  const body = L ? `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=-2:900:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:165[v];`
-    : `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=-2:1500:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:330[v];`;
+  // the sideways preview (a classroom board), as big as fits under the caption
+  const body = L ? `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=w=1760:h=880:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:170[v];`
+    : `[2:v]scale=${W}:${H}[bg];[0:v]${span(a, d)},crop=${z.w}:${z.h}:${z.x}:${z.y},scale=w=1040:h=1500:force_original_aspect_ratio=decrease:flags=lanczos,setsar=1[g];[bg][g]overlay=(W-w)/2:(H-h)/2+60[v];`;
   seg('3b-play', ['-i', f, ...img(`${K}/cap-build3-${O}.png`), ...img(`${K}/bg-${O}.png`)], body + capF('v', 1, 0.15, d, 'out'), d); }
 
-// 4. Montage of official games (each clip's own smooth motion, 2.75 s each)
-{ const parts = [['gulpbig', 0.15], ['atlas', 0.1], ['wyr', 0.35], ['chess', 0.2]], each = D.games / parts.length;
+// 4. Montage of official games a visitor can find today (each clip's own smooth motion, 2.75 s each)
+{ const parts = [['atlasq', 0.15], ['wordhunt', 0.1], ['crossword', 0.15], ['chess', 0.2]], each = D.games / parts.length;
   const ins = parts.flatMap(([g]) => ['-i', `${C}/${g}-${O}.mp4`]);
   const f = parts.map(([, ss], i) => `[${i}:v]${span(ss, each)},${fit},trim=duration=${each.toFixed(3)},setpts=PTS-STARTPTS[m${i}]`).join(';') + ';' + parts.map((_, i) => `[m${i}]`).join('') + `concat=n=${parts.length}:v=1:a=0[mv];` + capF('mv', parts.length, 0.2, D.games, 'out');
   seg('4-games', [...ins, ...img(`${K}/cap-games-${O}.png`)], f, D.games); }
@@ -82,7 +83,7 @@ ff([...segs.flatMap(s => ['-i', s.out]), '-filter_complex', f.replace(/;$/, ''),
 fs.writeFileSync(path.join(V2, 'timeline.json'), JSON.stringify(segs.map((s, i) => ({ scene: s.name, start: starts[i], dur: s.d })), null, 1));
 console.log(out, dur(out).toFixed(2) + 's', (fs.statSync(out).size / 1e6).toFixed(1) + ' MB', 'end card at', starts[starts.length - 1]);
 // Captions as WebVTT (the same words as on screen)
-const TEXT = ['Live class games your students love, and they can build their own.', 'Pick any subject, any level.', 'Students join with a code and get a safe made-up name.', 'Everyone answers. The race is on!', null, 'Then they play it!', 'Learning games in 13 languages.', 'Live class games your students love, and they can build their own. Free for teachers: oomba.ai/teachers/live'];
+const TEXT = ['Live class games your students love, and they can build their own.', 'Pick any subject, any level.', 'Students join with a code and get a safe made-up name.', 'Everyone answers. Who\'s on top?', null, 'Then they play it!', 'Learning games in 13 languages.', 'Live class games your students love, and they can build their own. Free for teachers: oomba.ai/teachers/live'];
 const ts = x => { const m = Math.floor(x / 60), sec = x - m * 60; return `00:${String(m).padStart(2, '0')}:${sec.toFixed(3).padStart(6, '0')}`; };
 let vtt = 'WEBVTT\n\n';
 segs.forEach((sg, i) => {
