@@ -365,7 +365,11 @@ test('school settings: a school admin saves them within bounds (out of bounds re
     for (let i = 0; i < 5; i++) { const r = await say(tester, { text: `hello ${i}`, page: { type: 'teach' } }); assert.equal(r.status, 200); await C.allSettled(); }
     const r = await say(tester, { text: 'one more', page: { type: 'teach' } });
     assert.equal(r.status, 429); assert.equal(r.json.code, 'slow');
-  } finally { await reset(tester); }
+    // The platform admin: no hourly limit (S.unlimitedAi, from the account only).
+    if (CO.companionFor(boss)) {
+      for (let i = 0; i < 6; i++) { const b = await say(boss, { text: `admin ${i}`, page: { type: 'teach' } }); assert.equal(b.status, 200, `admin message ${i}`); await C.allSettled(); }
+    } else assert.fail('the admin has the companion');
+  } finally { await reset(tester); await reset(boss); }
   // Off for the school.
   setSchool({ on: false });
   try {

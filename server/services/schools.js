@@ -635,6 +635,11 @@ export function mergeSchoolAccount(by, schoolId, schoolAccountId, intoUserId) {
 
 // ---------------------------------------------------------------- permissions
 export const isPlatformAdmin = u => !!u && u.role === 'admin';
+/** No per-person AI caps (the owner, 24 Nov 2026: "Give the admin unlimited use ... and don't count it towards the daily
+ *  limit"): the platform admin only. Read from the user's own row (req.user is loaded from the database for the session's
+ *  user; role is never set from a request: only the seed makes an admin), never from anything a request sends. The
+ *  site-wide AI budget (services/ai-budget.js) still applies to everyone. */
+export const unlimitedAi = u => !!u && u.role === 'admin' && !u.is_guest && !u.banned;
 /** 'admin' | 'teacher' | 'student' | null. Platform admins count as school admins everywhere. */
 export function roleIn(u, schoolId) {
   if (!u) return null;

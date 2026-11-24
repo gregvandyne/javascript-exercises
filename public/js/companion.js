@@ -548,7 +548,8 @@ function start() {
   }
   function bookChangeHtml(x) {
     const c = x.change, l = c.lines || { title: '', items: [] };
-    return `<p class="oc-ch-h"><b>${esc(l.title)}</b></p><ul class="oc-ch-list">${l.items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
+    const warn = l.warn ? `<p class="oc-bnote warn oc-ch-warn" role="status">${ic('⚠️', 16)} ${esc(l.warn)}</p>` : '';
+    return `${warn}<p class="oc-ch-h"><b>${esc(l.title)}</b></p><ul class="oc-ch-list">${l.items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
   }
   // Open the book: the chat steps aside (minimized) so the book is what shows (the owner, 24 Nov 2026).
   document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('#oc a[href^="/library/make/"]'); if (a) { store.set('oc:companion', 'min'); if (ref.chat) ref.chat.setMode('min', { user: true }); } }, true);

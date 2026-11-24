@@ -74,7 +74,13 @@ function drawAll() {
 function busy(d) { return !!d && (d.state === 'queued' || d.state === 'drawing'); }
 /** Pictures that show the art-pack drawing because painting fell back (nothing painted to keep). */
 const fellBack = () => [...Object.values(DR.pages || {}), ...Object.values(DR.cast || {})].filter(d => d.state === 'fallback' && !d.pic).length;
-const repaintBtn = () => `<button type="button" class="btn btn-sm" data-act="repaint">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.draw.repaint'))}</button>`;
+// No pictures left today: the buttons that would paint one are greyed out and say why on hover (aria-disabled, not
+// disabled, so the reason can still be read and heard); a tap shows it too.
+const outOfPics = () => !!DR.on && typeof DR.left === 'number' && DR.left <= 0;
+const offAttrs = () => (outOfPics() ? ` aria-disabled="true" title="${esc(t('js.storybook-edit.draw.noneLeft'))}"` : '');
+const offCls = () => (outOfPics() ? ' is-off' : '');
+const isOff = b => !!b && b.getAttribute('aria-disabled') === 'true';
+const repaintBtn = () => `<button type="button" class="btn btn-sm${offCls()}" data-act="repaint"${offAttrs()}>${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.draw.repaint'))}</button>`;
 // "All pictures painted." shows for a few seconds after the last picture arrives, then the line hides.
 let justDone = false, doneTimer = null, doneHidden = false;
 function drawDrawLine() {
@@ -105,7 +111,7 @@ function drawState(d, { target, has }) {
   else if (d && d.stale) out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t('js.storybook-edit.draw.stale'))}</p>`);
   // a real fallback (the art-pack drawing is shown): Paint pictures again, right there
   if (DR.on && d && d.state === 'fallback' && !d.pic) out.push(repaintBtn());
-  if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm${d && d.state === 'fallback' && !d.pic ? ' btn-ghost' : ''}" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
+  if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm${d && d.state === 'fallback' && !d.pic ? ' btn-ghost' : ''}${offCls()}" data-act="redraw" data-target="${esc(target)}"${offAttrs()}>${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
   if (d && d.asked) out.push(`<details class="sb-asked" data-target="${esc(target)}"><summary class="small">${esc(t('js.storybook-edit.draw.asked'))}</summary><p class="small muted">${esc(t('js.storybook-edit.draw.askedNote'))}</p><p class="sb-asked-t small" dir="auto"></p></details>`);
   return out.join('');
 }
@@ -187,24 +193,13 @@ function drawPage() {
   if (!p) { box.innerHTML = ''; $('sb-page-h').textContent = ''; return; }
   const n = num(), L = D.limits;
   $('sb-page-h').textContent = t('js.storybook-edit.pageN', { n: n.get(p.id) });
-  const pic = p.pic || { world: '', mood: 'bright', chars: [], props: [] };
-  const charRows = (p.pic ? p.pic.chars : []).map((c, i) => `<div class="sb-crow"><label class="sr-only" for="sb-cw${i}">${esc(t('js.storybook-edit.who'))}</label>
-      <select class="input" id="sb-cw${i}" data-f="char-name" data-i="${i}">${B.cast.map(x => opt(x.name, x.name, x.name === c.name)).join('')}</select>
-      <label class="sr-only" for="sb-cp${i}">${esc(t('js.storybook-edit.spot'))}</label>
-      <select class="input" id="sb-cp${i}" data-f="char-pos" data-i="${i}">${POSITIONS.map(x => opt(x, t(`js.storybook-edit.spots.${x}`), x === c.pos)).join('')}</select>
-      <button type="button" class="btn btn-sm btn-ghost" data-act="char-rm" data-i="${i}">${esc(t('js.storybook-edit.remove'))}</button></div>`).join('');
+  // The picture is described by Oomba (its scene); the teacher changes it with Redraw's note or by asking Oomba.
   box.innerHTML = `<div class="sb-pedit">
     <div class="sb-pic-col"><figure class="sb-fig">${artOf(p, { decorative: false })}</figure>
       <div class="sb-dst" id="sb-dst">${pageState(p)}</div>
       <div class="sb-picbtns"><button type="button" class="btn btn-sm" data-act="upload">${iconHtml('🖼️', { size: 16 })} ${esc(t('js.storybook-edit.upload'))}</button>
         ${p.upload ? `<button type="button" class="btn btn-sm" data-act="drawn">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.useDrawn'))}</button>` : ''}
         ${p.pic || p.upload ? `<button type="button" class="btn btn-sm btn-ghost" data-act="nopic">${esc(t('js.storybook-edit.removePic'))}</button>` : `<button type="button" class="btn btn-sm" data-act="drawn">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.addDrawn'))}</button>`}</div>
-      ${p.pic && !p.upload ? `<fieldset class="sb-picset"><legend>${esc(t('js.storybook-edit.drawn'))}</legend>
-        <div class="sb-two"><div class="field"><label for="sb-world">${esc(t('js.storybook-edit.world'))}</label><select class="input" id="sb-world" data-f="world">${D.worlds.map(w => opt(w.id, w.name, w.id === pic.world)).join('')}</select></div>
-        <div class="field"><label for="sb-mood">${esc(t('js.storybook-edit.mood'))}</label><select class="input" id="sb-mood" data-f="mood">${MOODS.map(m => opt(m, t(`js.storybook-edit.moods.${m}`), m === pic.mood)).join('')}</select></div></div>
-        <p class="sb-lbl">${esc(t('js.storybook-edit.inPicture'))}</p>${charRows || `<p class="small muted">${esc(t('js.storybook-edit.nobody'))}</p>`}
-        ${p.pic.chars.length < L.chars && B.cast.length ? `<button type="button" class="btn btn-sm" data-act="char-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addChar'))}</button>` : ''}
-      </fieldset>` : ''}
       ${p.pic || p.upload ? `<div class="field"><label for="sb-alt">${esc(t('js.storybook-edit.alt'))}</label><span class="hint" id="sb-alt-h">${esc(t('js.storybook-edit.altHint'))}</span><input class="input" id="sb-alt" data-f="alt" maxlength="${L.alt}" value="${esc(p.alt)}" aria-describedby="sb-alt-h" dir="auto"></div>` : ''}
     </div>
     <div class="sb-text-col">
@@ -253,7 +248,7 @@ document.addEventListener('click', async e => {
   const a = e.target.closest('[data-act]'); if (!a || !a.closest('#sb-page')) return;
   const p = cur(); if (!p) return;
   const i = +a.dataset.i, act = a.dataset.act;
-  if (act === 'redraw') { openRedraw(a); return; }
+  if (act === 'redraw') { if (isOff(a)) { toast(t('js.storybook-edit.draw.noneLeft')); return; } openRedraw(a); return; }
   if (act === 'repaint') return;   // Paint pictures again: its own listener below (it is in the line too)
   if (act === 'redraw-cancel') { refreshPictures(); return; }
   if (act === 'upload') { $('sb-pagepic').click(); return; }
@@ -374,7 +369,7 @@ if ($('sb-repaint-all')) $('sb-repaint-all').addEventListener('click', async () 
   if (!(await ask({ text: t('js.storybook-edit.draw.repaintAllQ'), ok: t('js.storybook-edit.draw.repaintAll') }))) return;
   try { clearTimeout(timer); await save(); const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST', body: { all: true } }); DR = r.draws; justDone = false; doneHidden = false; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { toast(e.message, { bad: true }); }
 });
-document.addEventListener('click', e => { const b = e.target.closest('#sb-edit [data-act="repaint"]'); if (b) repaintAll(b); });
+document.addEventListener('click', e => { const b = e.target.closest('#sb-edit [data-act="repaint"]'); if (!b) return; if (isOff(b)) { toast(t('js.storybook-edit.draw.noneLeft')); return; } repaintAll(b); });
 $('sb-duplicate').addEventListener('click', async () => {
   closeMenu();
   try { clearTimeout(timer); await save(); const r = await api(`/api/library/make/${D.id}/duplicate`, { method: 'POST' }); toast(r.toast); setTimeout(() => { location.href = r.href; }, 700); } catch (e) { toast(e.message, { bad: true }); }
@@ -425,7 +420,9 @@ const chat = COMPANION ? null : mountChat({
     if (c.kept) parts.push(t('js.storybook-edit.ch.kept', { count: c.kept }));
     if (c.repaired) parts.push(t('js.storybook-edit.ch.repaired'));
     if (!parts.length) parts.push(t('js.storybook-edit.ch.none'));
-    return `<p class="oc-ch-h"><b>${esc(t('js.storybook-edit.ch.title'))}</b></p><ul class="oc-ch-list">${parts.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
+    // Pictures that could not be redrawn today: said first and plainly, so the change never reads as if they were.
+    const warn = c.noPics ? `<p class="oc-bnote warn oc-ch-warn" role="status">${iconHtml('⚠️', { size: 16 })} ${esc(t('js.storybook-edit.ch.noPics', { count: c.noPics }))}</p>` : '';
+    return `${warn}<p class="oc-ch-h"><b>${esc(t('js.storybook-edit.ch.title'))}</b></p><ul class="oc-ch-list">${parts.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
   },
   onAnswer: () => { reload().catch(() => {}); },
   onUndo: () => { reload().catch(() => {}); },
