@@ -5629,7 +5629,13 @@
       "zoneAsk": "A school admin can set it in the school's Settings.",
       "doneHere": "Assigned to {class}. Students see it now.",
       "seeStarted": "See who's started",
-      "doneLater": "Assigned to {class}. Students will see it from {date}."
+      "doneLater": "Assigned to {class}. Students will see it from {date}.",
+      "to": "Assign to",
+      "wholeClass": "Whole class",
+      "someStudents": "Some students",
+      "studentsOf": "Students in {class}",
+      "someHint": "Only the students you check see it, and only they count in the gradebook. You can change this later from the ⋯ menu.",
+      "noStudents": "This class has no students yet."
     },
     "class": {
       "title": "Lessons",
@@ -5658,7 +5664,8 @@
       "late": "Late",
       "removedGroup": "Removed from this class",
       "readyMade": "Use a ready-made lesson",
-      "unitWhy": "Units group the lessons in this class, in the order students see them. Folders only sort your own lesson library."
+      "unitWhy": "Units group the lessons in this class, in the order students see them. Folders only sort your own lesson library.",
+      "someStudents": "{count, plural, one {# student} other {# students}}"
     },
     "view": {
       "teacherPreview": "Student view. Buttons that save work are turned off for you.",
@@ -5697,7 +5704,9 @@
       "topic": "Type what the lesson is about.",
       "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself.",
       "questionText": "Write the question students will answer.",
-      "alreadyAssigned": "This lesson is already in {class}. Change its dates from the ⋯ menu on the class's Lessons tab."
+      "alreadyAssigned": "This lesson is already in {class}. Change its dates from the ⋯ menu on the class's Lessons tab.",
+      "pickStudents": "Check at least one student, or choose Whole class.",
+      "notInClass": "Only students in this class can be picked."
     },
     "editor": {
       "live": "Live in {classes}. {count, plural, =0 {No students have started yet.} one {# student has started.} other {# students have started.}} Changes show up for them right away."
@@ -5729,6 +5738,8 @@
     },
     "typing": {
       "title": "Typing Pets",
+      "unlockH": "To open each next lesson:",
+      "unlockSummary": "next lesson needs {what}",
       "goalMins": "Minutes a day",
       "dailySummary": "daily goal {n} min",
       "thisWeek": "{n} min this week",
@@ -5746,7 +5757,7 @@
       "goalWpm": "Speed (wpm)",
       "goalAcc": "Accuracy (%)",
       "goalSave": "Save goal",
-      "goalHint": "Speed: checked against each student's best timed test. Minutes a day: how many days in the last week they typed that long. Leave both empty to remove the goal.",
+      "goalHint": "Speed: checked against each student's best timed test. Minutes a day: how many days in the last week they typed that long. To open each next lesson: what students need in the lesson before. Leave every box empty to remove the goal.",
       "goalSummary": "goal {wpm} wpm at {acc}%: {met} of {total} met",
       "goalArchived": "This class is archived.",
       "goalSaved": "Goal saved",
@@ -7290,7 +7301,7 @@
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
       "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
       "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it.",
-      "typingPets": "Learn to type one key at a time, with colors for each finger: 28 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
+      "typingPets": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
     },
     "hubs": {
       "math": {
@@ -10971,7 +10982,9 @@
       "open": "Open in Classroom",
       "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
       "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens.",
-      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom."
+      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom.",
+      "someNot": "Assigned to some students, so not posted: in Google Classroom it would go to the whole class.",
+      "somePosted": "Assigned to some students here. It was posted to the whole class in Google Classroom before that, and grades go only to the students it's assigned to."
     },
     "grades": {
       "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
@@ -11040,7 +11053,8 @@
       "emptyNote": "Write your message first.",
       "tooLong": "Announcements can be at most {max} characters.",
       "hasName": "“{name}” in your message matches a student's name. Announcements go to the whole class, so please reword it or take it out.",
-      "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little."
+      "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little.",
+      "someStudents": "This lesson is assigned to some students, so it isn't posted to Google Classroom: there it would go to the whole class."
     },
     "allow": {
       "heading": "What Oomba Academy may do in your Classroom",
@@ -11262,6 +11276,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Typing pass mark",
       "live": "Live game",
       "rubric": "Rubric",
       "marks": "Rubric marks"
@@ -11292,7 +11307,8 @@
       "showNames": "Show class-list names",
       "hideNames": "Hide class-list names",
       "namesHint": "Shows each student's class-list name beside their name in the game, on this screen only. The class screen keeps the game names."
-    }
+    },
+    "notAssigned": "Not assigned"
   },
   "quickLive": {
     "cta": "Host a live game now",

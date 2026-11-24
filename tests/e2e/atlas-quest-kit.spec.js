@@ -1,6 +1,6 @@
 // Atlas Quest in Crossword's look, on the real play page in Chromium (docs/decisions.md "Atlas Quest in Crossword's
-// look"): the globe on its board card beside the widgets, a mode played to its results; a teacher makes a quiz (a
-// region's countries, a question of their own), moves an arrow on the map, saves it (class code), prints it with its
+// look"): the globe on its board card beside the widgets, a mode played to its results; a teacher makes a quiz in the
+// maker's five steps (countries, question types, a question of their own, Check), moves an arrow on the map, saves it (class code), prints it with its
 // answer key (the map's arrows and lines in the print area) and finds it in My worksheets; a student opens the link,
 // plays it with Check and finishes with one BRB.gameOver. window.print is stubbed, so no dialog opens.
 import { test, expect } from '@playwright/test';
@@ -43,19 +43,28 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   for (let i = 0; i < 10; i++) { await f.evaluate(() => window.__brbTest.answer(true)); await f.evaluate(() => window.__brbTest.next()); }
   await expect(f.locator('#side[data-screen="results"] .cw-wt')).toHaveText('10 of 10 right!');
   await f.click('#aq-home');
-  // make a quiz: Europe's map labels, then a question of the teacher's own
+  // make a quiz in five steps: 1 Europe's countries, 2 map labels only, 3 a question of the teacher's own, 4 Check
   await f.click('#aq-make');
   await expect(f.locator('#page[data-screen="build"]')).toBeVisible();
+  await expect(f.locator('#aq-stepof')).toHaveText('Step 1 of 5: Countries');
+  await expect(f.locator('#aq-next')).toBeDisabled();
   await f.fill('#aq-title', 'Western Europe');
-  await f.uncheck('#aq-k-cap');
   await f.click('#aq-find'); await f.fill('#aq-find', 'Luxem');
   await f.click('#aq-found button');
   for (const name of ['France', 'Germany', 'Monaco']) { await f.fill('#aq-find', name); await f.click('#aq-found button >> nth=0'); }
+  await expect(f.locator('#aq-picked .aq-ccchip')).toHaveCount(4);
+  await f.click('#aq-next');
+  await expect(f.locator('#aq-stepof')).toHaveText('Step 2 of 5: Question types');
+  await f.uncheck('#aq-k-cap');
+  await expect(f.locator('#aq-kcount')).toHaveText('That makes 4 questions.');
+  await f.click('#aq-next');
+  await expect(f.locator('#aq-next')).toHaveText(/^Skip/);
   await f.fill('#aq-ownq', 'Which river flows through Paris?'); await f.fill('#aq-owna', 'The Seine');
   await f.click('#aq-ownadd');
+  await f.click('#aq-next');
+  await expect(f.locator('#aq-stepof')).toHaveText('Step 4 of 5: Check');
   await expect(f.locator('.aq-qrow')).toHaveCount(5);
-  await f.click('#aq-makego');
-  // the preview: the map as it prints, Luxembourg and Monaco on arrows to answer lines; drag one
+  // Check: the map as it prints, Luxembourg and Monaco on arrows to answer lines; drag one
   await expect(f.locator('#aq-mapwrap svg [data-co="LU"]')).toBeVisible();
   await expect(f.locator('#aq-mapwrap svg [data-co="MC"]')).toBeVisible();
   const before = await f.evaluate(() => window.__brbTest.arrows().LU);
@@ -64,8 +73,8 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   const x = hit.x + hit.width / 2, y = hit.y + hit.height / 2;
   await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x - 60, y - 40, { steps: 6 }); await page.mouse.up();
   const after = await f.evaluate(() => window.__brbTest.arrows().LU);
-  expect(after[1]).toBeGreaterThan(before[1]);   // up its column (it stays on its side)
-  // leaders never cross, and the lines stand beside the map
+  expect(after[1]).toBeGreaterThan(before[1]);   // up, where it was dropped
+  // leaders never cross
   const leaders = await f.evaluate(() => window.__brbTest.leaders());
   const cross = (a, b) => { const d = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); return d(a.p, a.a, b.p) * d(a.p, a.a, b.a) < 0 && d(b.p, b.a, a.p) * d(b.p, b.a, a.a) < 0; };
   for (let i = 0; i < leaders.length; i++) for (let j = i + 1; j < leaders.length; j++) expect(cross(leaders[i], leaders[j]), `${leaders[i].cc} x ${leaders[j].cc}`).toBe(false);
@@ -74,14 +83,17 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   expect(await f.evaluate(() => !!window.__brbTest.arrows().MC)).toBe(false);
   await f.click('#aq-arrowchips [data-cc="MC"]');
   expect(await f.evaluate(() => !!window.__brbTest.arrows().MC)).toBe(true);
-  // save: the class code and the link
+  // 5 Save and share: the class code and the link
+  await f.click('#aq-next');
+  await expect(f.locator('#aq-stepof')).toHaveText('Step 5 of 5: Save and share');
   await f.click('#aq-save');
   await expect(f.locator('#aq-classcode')).toHaveText(/^[A-Z0-9]{5} [A-Z0-9]{5}$/);
   link = await f.inputValue('#aq-link');
   expect(link).toMatch(/\/play\/atlas-quest\?chapter=s-[a-z0-9]{10}&lock=1$/);
   // print with the answer key: the server's page lands in the print area, arrows and all
+  await f.click('#aq-print');
   await f.fill('#aq-mine-note', 'Use a pencil.');
-  await f.click('#aq-print'); await f.click('#aq-print-key');
+  await f.click('#aq-print-key');
   await expect.poll(() => page.evaluate(() => window.__printed)).toBe(1);
   const area = page.locator('#print-area');
   await expect(area.locator('h1').first()).toHaveText('Western Europe');
@@ -90,7 +102,7 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   await expect(area.locator('.atp-key h1')).toHaveText('Western Europe: Answer key');
   await expect(area.locator('.atp-keylist')).toContainText('The Seine');
   // My worksheets: it is there, with its class code
-  await f.click('#aq-edit'); await f.click('#aq-b-home');
+  await f.click('#aq-done');
   await f.click('#aq-ws');
   await expect(f.locator('.cw-sheet .cw-wstitle')).toHaveText(['Western Europe']);
   expect(errors).toEqual([]);

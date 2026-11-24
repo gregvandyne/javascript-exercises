@@ -5346,7 +5346,13 @@
       "zoneAsk": "學校管理員可以在學校的「設定」中設定。",
       "doneHere": "已指派給 {class}。學生現在就看得到。",
       "seeStarted": "看看誰已經開始",
-      "doneLater": "已指派給 {class}。學生從 {date} 起可以看到。"
+      "doneLater": "已指派給 {class}。學生從 {date} 起可以看到。",
+      "to": "指派給",
+      "wholeClass": "全班",
+      "someStudents": "部分學生",
+      "studentsOf": "{class} 的學生",
+      "someHint": "只有勾選的學生看得到，成績簿中也只計算他們。之後可以從 ⋯ 選單更改。",
+      "noStudents": "這個班級還沒有學生。"
     },
     "class": {
       "title": "課程",
@@ -5375,7 +5381,8 @@
       "late": "逾期",
       "removedGroup": "已從這個班級移除",
       "readyMade": "使用現成的課程",
-      "unitWhy": "單元將這個班級的課程依學生看到的順序分組。資料夾只用來整理你自己的課程庫。"
+      "unitWhy": "單元將這個班級的課程依學生看到的順序分組。資料夾只用來整理你自己的課程庫。",
+      "someStudents": "{count, plural, other {# 位學生}}"
     },
     "view": {
       "teacherPreview": "這是學生畫面。儲存作品的按鈕已為你停用。",
@@ -5414,7 +5421,9 @@
       "topic": "請輸入這堂課程的主題。",
       "aiFailed": "AI 目前無法擬定草稿。請過一分鐘再試一次，或自己建立課程。",
       "questionText": "請寫下學生要回答的問題。",
-      "alreadyAssigned": "這堂課程已經在 {class} 中。請從班級「課程」分頁的 ⋯ 選單變更日期。"
+      "alreadyAssigned": "這堂課程已經在 {class} 中。請從班級「課程」分頁的 ⋯ 選單變更日期。",
+      "pickStudents": "請至少勾選一位學生，或選擇「全班」。",
+      "notInClass": "只能選擇這個班級的學生。"
     },
     "editor": {
       "live": "已在 {classes} 開放。{count, plural, =0 {還沒有學生開始。} other {已有 # 位學生開始。}}修改會立即同步給學生。"
@@ -5517,6 +5526,8 @@
     },
     "typing": {
       "title": "打字寵物",
+      "unlockH": "開啟下一課需要：",
+      "unlockSummary": "下一課需 {what}",
       "goalMins": "每天分鐘數",
       "dailySummary": "每日目標 {n} 分鐘",
       "thisWeek": "本週 {n} 分鐘",
@@ -5534,7 +5545,7 @@
       "goalWpm": "速度（每分鐘字數）",
       "goalAcc": "正確率（%）",
       "goalSave": "儲存目標",
-      "goalHint": "速度：以每位學生最好的計時測驗比較。每天分鐘數：過去一週有幾天打字達到這個時間。兩格都留空即可移除目標。",
+      "goalHint": "速度：以每位學生最好的計時測驗比較。每天分鐘數：過去一週有幾天打字達到這個時間。開啟下一課需要：前一課需達到的成績。全部留空即可移除目標。",
       "goalSummary": "目標每分鐘 {wpm} 字、正確率 {acc}%：{total} 人中 {met} 人達標",
       "goalArchived": "此班級已封存。",
       "goalSaved": "已儲存目標",
@@ -6684,7 +6695,7 @@
       "wordTrail": "最常見的英文常見字，從學前到三年級，和刺蝟布蘭波走在故事書小徑上：聽一個字再點它、完成句子、用字母拼出來，課程短短的，還有每日連續紀錄。",
       "crossword": "把任何詞彙表變成填字遊戲：輸入或上傳詞語，自己寫提示或讓 AI 來寫，再分享給全班。",
       "mistakeHunt": "找出並改正短文裡的錯誤：老師貼上自己的文章，放進拼寫、文法和標點的錯誤，再分享、指派或列印。",
-      "typingPets": "一次學一個鍵，每根手指都有自己的顏色：從基本列到句子共 28 個短課程，每完成一課就能敲開一顆蛋，得到新寵物。"
+      "typingPets": "一次學一個鍵，每根手指都有自己的顏色：從基本列到句子共 40 個短課程，每完成一課就能敲開一顆蛋，得到新寵物。"
     },
     "hubs": {
       "math": {
@@ -10281,7 +10292,9 @@
       "open": "在 Classroom 開啟",
       "noLessons": "這個班級還沒有課程。請在「課程」分頁指派一堂。",
       "doneScheduled": "已在 Google Classroom 排程：學生會在 {date} 課程開放時看到。",
-      "locked": "若要發布課程、傳送成績和分享教材，請允許 Oomba Academy 發布到 Classroom。"
+      "locked": "若要發布課程、傳送成績和分享教材，請允許 Oomba Academy 發布到 Classroom。",
+      "someNot": "已指派給部分學生，因此未發布：在 Google Classroom 會發給全班。",
+      "somePosted": "這裡只指派給部分學生。先前已在 Google Classroom 發布給全班；成績只會傳給被指派的學生。"
     },
     "grades": {
       "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
@@ -10350,7 +10363,8 @@
       "emptyNote": "請先寫下你的訊息。",
       "tooLong": "公告最多 {max} 個字元。",
       "hasName": "訊息裡的「{name}」和學生的名字相同。公告會傳給全班，請改寫或拿掉它。",
-      "tooManyAnnouncements": "這個班級一小時內已有 10 則公告。請稍等一下。"
+      "tooManyAnnouncements": "這個班級一小時內已有 10 則公告。請稍等一下。",
+      "someStudents": "這堂課只指派給部分學生，因此不會發布到 Google Classroom：在那裡會發給全班。"
     },
     "allow": {
       "heading": "Oomba Academy 可以在你的 Classroom 做什麼",
@@ -10572,6 +10586,7 @@
     },
     "kind": {
       "quiz": "測驗",
+      "typing": "打字及格標準",
       "live": "即時遊戲",
       "rubric": "評分量表",
       "marks": "量表評分"
@@ -10602,7 +10617,8 @@
       "showNames": "顯示班級名單上的姓名",
       "hideNames": "隱藏班級名單上的姓名",
       "namesHint": "只在這個畫面上，在遊戲名稱旁顯示班級名單上的姓名。班級螢幕仍顯示遊戲名稱。"
-    }
+    },
+    "notAssigned": "未指派"
   },
   "quickLive": {
     "cta": "立即主持即時遊戲",

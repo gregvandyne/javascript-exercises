@@ -6,7 +6,7 @@ import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { emptyState, gradeLabel, nameFilter, jumpNav, coverArt } from '../views/components.js';
+import { emptyState, gradeLabel, nameFilter, jumpNav, coverArt, staffStudentName } from '../views/components.js';
 import { tHtml, localeInfo } from '../i18n/index.js';
 import { requireUser, requireAccount } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -63,7 +63,35 @@ import { gcAssignField, gcAfterAssign } from './gclassroom.js';
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}"><link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`);
 const b = req => req.body || {};
-const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(`lessons.errors.${code}`), ...(field ? { field } : {}) });
+const err = (req, res, code, status = 400, field) => res.status(status).json({ error: req.t(code === 'badRequest' ? 'errors.api.badRequest' : `lessons.errors.${code}`), ...(field ? { field } : {}) });
+/** "Assign to" from a request (L.studentsInput: who 'all' | 'some' and the ticked students). A bad one is answered here
+ *  (400) and null comes back. -> { students: [ids] | undefined } | null */
+export function studentsFrom(req, res) {
+  const r = L.studentsInput(req.body || {});
+  if (r.ok) return r;
+  err(req, res, r.code);
+  return null;
+}
+/**
+ * "Assign to: Whole class / Some students" (docs/decisions.md "Assign to some students"): two choices, and with Some
+ * students a tick list of the class's students by their roster names (the class's staff only ever see this). classes:
+ * the classes the form can assign to, one list each; with several (a class picker named classId), only the picked
+ * class's list shows and is sent (public/js/app.js [data-as-who]); shown: the class whose list shows first. picked: the
+ * students ticked now ([] = the whole class). idp: an id prefix unique on the page.
+ */
+export function assignToField(t, classes, { idp, picked = [], shown = '' } = {}) {
+  const some = picked.length > 0, first = classes.some(c => c.id === shown) ? shown : (classes[0] || {}).id;
+  return html`<div class="field wide as-who" data-as-who>
+    <fieldset class="choice as-choice"><legend>${t('lessons.assign.to')}</legend>
+      <label><input type="radio" name="who" value="all" id="${idp}-all" ${some ? '' : raw('checked')}> ${t('lessons.assign.wholeClass')}</label>
+      <label><input type="radio" name="who" value="some" id="${idp}-some" ${some ? raw('checked') : ''}> ${t('lessons.assign.someStudents')}</label></fieldset>
+    ${classes.map(c => { const list = S.roster(c.id).filter(p => p.role === 'student');
+      return html`<div class="as-some" data-students-of="${c.id}" ${c.id === first ? '' : raw('hidden')}>
+      ${list.length ? html`<fieldset class="picklist"><legend class="sr-only">${t('lessons.assign.studentsOf', { class: c.name })}</legend>
+        ${list.map(p => html`<label><input type="checkbox" name="students" value="${p.id}" ${picked.includes(p.id) ? raw('checked') : ''}> ${staffStudentName(p)}</label>`)}</fieldset>
+        <p class="small muted">${t('lessons.assign.someHint')}</p>`
+      : html`<p class="small muted">${t('lessons.assign.noStudents')}</p>`}</div>`; })}</div>`;
+}
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400));
 const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('lessons.errors.notFound') }) : notFound(req, res, req.t('lessons.errors.notFound')));
 const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', figures: '📐', proofread: '🔎' };
@@ -352,6 +380,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       <div class="field"><label for="as-c">${t('lessons.assign.class')}</label><select class="input" id="as-c" name="classId">${assignable.map(c => html`<option value="${c.id}" ${c.id === preselect ? raw('selected') : ''}>${c.name}</option>`)}</select></div>
       <div class="field"><label for="as-o">${t('lessons.assign.opens')}</label><input class="input" id="as-o" name="opensAt" type="date"></div>
       <div class="field"><label for="as-d">${t('lessons.assign.due')}</label><input class="input" id="as-d" name="dueAt" type="date"></div>
+      ${assignToField(t, assignable, { idp: 'as-w', shown: preselect })}
       <div class="field end"><button class="btn btn-primary" type="submit">${ico('📌', { size: 18 })} ${t('lessons.assign.button')}</button></div>
       <p class="small muted wide">${t('lessons.assign.note')} ${zoneNote(t, l.school_id, req.user)}</p></form>` : html`<p class="muted">${assigned.length ? t('lessons.assign.allClasses') : t('lessons.assign.noClasses')}</p>`}
   </section>
@@ -446,7 +475,8 @@ function assignReply(req, res, r, also = '') {
 }
 router.post('/api/lessons/:id/assign', requireUser, (req, res) => {
   const { classId, opensAt, dueAt } = b(req);
-  assignReply(req, res, L.assign(req.user, classId, req.params.id, { opensAt, dueAt }));
+  const who = studentsFrom(req, res); if (!who) return;
+  assignReply(req, res, L.assign(req.user, classId, req.params.id, { opensAt, dueAt, students: who.students || [] }));
 });
 
 // ================================================================ class page panels (used by routes/schools.js)
@@ -470,12 +500,15 @@ export function assignedPane(req, c, { tools = '' } = {}) {
       return html`<li class="cl-row" id="cl-${cl.id}">
       <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${iconOf(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
         ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
+        ${cl.picked ? html`<span class="small cl-stats"><span class="chip-s cl-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: sm.students })}</span></span>` : ''}
         ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
       <span class="acts">${i ? html`<form data-api="/api/class-lessons/${cl.id}/up" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.up')}">↑</button></form>` : ''}${i < n - 1 ? html`<form data-api="/api/class-lessons/${cl.id}/down" data-reload><button class="btn btn-sm" type="submit" aria-label="${t('lessons.down')}">↓</button></form>` : ''}
         <details class="inline-menu"><summary class="btn btn-sm" aria-label="${t('school.moreFor', { name: cl.title })}">⋯</summary><div class="menu">
           <form class="formgrid" data-api="/api/class-lessons/${cl.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
             <div class="field"><label for="o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
             <div class="field"><label for="d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
+            ${assignToField(t, [c], { idp: `w-${cl.id}`, picked: cl.picked ? L.studentsOfLesson(cl.id) : [] })}
+            <p class="form-err err wide" role="alert"></p>
             <div class="field end"><button class="btn btn-sm" type="submit">${t('school.save')}</button></div></form>
           <a class="btn btn-sm" href="/class/${c.id}/progress/${cl.id}">${ico('📊', { size: 18 })} ${t('folders.scores')}</a>
           <a class="btn btn-sm" href="/class/${c.id}/lessons/${cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>
@@ -521,6 +554,8 @@ export function assignedPane(req, c, { tools = '' } = {}) {
           <form class="formgrid" data-api="/api/class-lessons/${cl.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>
             <div class="field"><label for="lib-o-${cl.id}">${t('lessons.assign.opens')}</label><input class="input input-sm" id="lib-o-${cl.id}" name="opensAt" type="date" value="${isoDay(cl.opens_at)}"></div>
             <div class="field"><label for="lib-d-${cl.id}">${t('lessons.assign.due')}</label><input class="input input-sm" id="lib-d-${cl.id}" name="dueAt" type="date" value="${isoDay(cl.due_at)}"></div>
+            ${assignToField(t, [c], { idp: `lib-w-${cl.id}`, picked: cl.picked ? L.studentsOfLesson(cl.id) : [] })}
+            <p class="form-err err wide" role="alert"></p>
             <div class="field end"><button class="btn" type="submit">${t('school.save')}</button></div></form>
           <a class="btn" href="/class/${c.id}/progress/${cl.id}">${ico('📊', { size: 18 })} ${t('folders.scores')}</a>
           <a class="btn" href="/class/${c.id}/lessons/${cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>
@@ -534,7 +569,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
       return html`<li class="lib-row${reorder && canMove ? ' is-moving' : ''}" data-id="${cl.id}">
         <a class="lib-cover" href="/class/${c.id}/progress/${cl.id}" tabindex="-1" aria-hidden="true">${thumb}</a>
         <div class="lib-body"><a class="lib-name" href="/class/${c.id}/progress/${cl.id}" dir="auto">${cl.title}</a>
-          <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}</span>
+          <span class="lib-meta">${cl.opens_at && !L.isOpen(cl) ? html`<span class="lib-due is-none">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, { day: 'numeric', month: 'short' }) })}</span>` : ''}${due(cl)}${cl.picked ? html`<span class="lib-due is-none cl-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: sm.students })}</span>` : ''}</span>
           ${sm.students ? html`<span class="lib-done"><progress max="${sm.students}" value="${sm.done}" aria-hidden="true"></progress><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span></span>` : ''}</div>
         ${staff ? acts : ''}</li>`;
     };
@@ -552,7 +587,8 @@ export function assignedPane(req, c, { tools = '' } = {}) {
 /** Student view: open lessons by unit, with how far the student has got in each. */
 export function studentLessonsPanel(req, c) {
   const t = req.t, f = req.fmt;
-  const plan = L.classPlan(c.id, { openOnly: true });
+  // Only the lessons assigned to this student (the whole class's, and those listing them).
+  const plan = L.classPlan(c.id, { openOnly: true, userId: req.user.id });
   const done = P.studentSummary(c.id, req.user.id);
   const doneN = cl => Math.min(done[cl.id] || 0, cl.steps);
   const state = cl => { const d = doneN(cl); return cl.steps && d >= cl.steps ? html`<span class="stepstate is-done">${ico('✅', { size: 18 })} ${t('progress.status.done')}</span>` : d ? html`<span class="stepstate">${t('progress.student.doneOf', { done: d, total: cl.steps })}</span>` : ''; };
@@ -566,7 +602,8 @@ export function studentLessonsPanel(req, c) {
 // ---- class lesson APIs
 router.post('/api/classes/:id/lessons', requireUser, async (req, res) => {
   const { lessonId, unitId, opensAt, dueAt } = b(req);
-  const r = L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt });
+  const who = studentsFrom(req, res); if (!who) return;
+  const r = L.assign(req.user, req.params.id, lessonId, { unitId: unitId || null, opensAt, dueAt, students: who.students || [] });
   // "Also post to Google Classroom" (routes/gclassroom.js): the assignment stands whatever Google says; its line joins the toast.
   assignReply(req, res, r, r.ok ? await gcAfterAssign(req, r.classLesson) : '');
 });
@@ -575,7 +612,11 @@ router.post('/api/class-units/:id', requireUser, (req, res) => send(req, res, L.
 router.post('/api/class-units/:id/up', requireUser, (req, res) => send(req, res, L.reorderUnit(req.user, req.params.id, -1)));
 router.post('/api/class-units/:id/down', requireUser, (req, res) => send(req, res, L.reorderUnit(req.user, req.params.id, 1)));
 router.post('/api/class-units/:id/delete', requireUser, (req, res) => send(req, res, L.deleteUnit(req.user, req.params.id)));
-router.post('/api/class-lessons/:id', requireUser, (req, res) => { const { unitId, opensAt, dueAt } = b(req); send(req, res, L.updateAssignment(req.user, req.params.id, { unitId, opensAt, dueAt })); });
+router.post('/api/class-lessons/:id', requireUser, (req, res) => {
+  const { unitId, opensAt, dueAt } = b(req);
+  const who = studentsFrom(req, res); if (!who) return;
+  send(req, res, L.updateAssignment(req.user, req.params.id, { unitId, opensAt, dueAt, students: who.students }));
+});
 router.post('/api/class-lessons/:id/up', requireUser, (req, res) => send(req, res, L.reorderAssignment(req.user, req.params.id, -1)));
 router.post('/api/class-lessons/:id/down', requireUser, (req, res) => send(req, res, L.reorderAssignment(req.user, req.params.id, 1)));
 router.post('/api/class-lessons/:id/delete', requireUser, (req, res) => send(req, res, L.unassign(req.user, req.params.id)));

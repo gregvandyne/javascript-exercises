@@ -5346,7 +5346,13 @@
       "zoneAsk": "Un administrateur de l'école peut le définir dans les Paramètres de l'école.",
       "doneHere": "Attribué à {class}. Les élèves le voient maintenant.",
       "seeStarted": "Voir qui a commencé",
-      "doneLater": "Attribuée à {class}. Les élèves la verront à partir du {date}."
+      "doneLater": "Attribuée à {class}. Les élèves la verront à partir du {date}.",
+      "to": "Attribuer à",
+      "wholeClass": "Toute la classe",
+      "someStudents": "Certains élèves",
+      "studentsOf": "Élèves de {class}",
+      "someHint": "Seuls les élèves cochés la voient, et seuls eux comptent dans le carnet de notes. Tu peux changer cela plus tard depuis le menu ⋯.",
+      "noStudents": "Cette classe n'a pas encore d'élèves."
     },
     "class": {
       "title": "Leçons",
@@ -5375,7 +5381,8 @@
       "late": "En retard",
       "removedGroup": "Retirées de cette classe",
       "readyMade": "Utiliser une leçon toute prête",
-      "unitWhy": "Les unités regroupent les leçons de cette classe, dans l'ordre où les élèves les voient. Les dossiers servent seulement à ranger votre bibliothèque de leçons."
+      "unitWhy": "Les unités regroupent les leçons de cette classe, dans l'ordre où les élèves les voient. Les dossiers servent seulement à ranger votre bibliothèque de leçons.",
+      "someStudents": "{count, plural, one {# élève} other {# élèves}}"
     },
     "view": {
       "teacherPreview": "Vue élève. Les boutons qui enregistrent le travail sont désactivés pour vous.",
@@ -5414,7 +5421,9 @@
       "topic": "Indiquez le sujet de la leçon.",
       "aiFailed": "L’IA n’a pas pu rédiger cette ébauche pour le moment. Réessayez dans une minute, ou créez la leçon vous-même.",
       "questionText": "Écrivez la question à laquelle les élèves répondront.",
-      "alreadyAssigned": "Cette leçon est déjà dans {class}. Modifiez ses dates depuis le menu ⋯ de l’onglet Leçons de la classe."
+      "alreadyAssigned": "Cette leçon est déjà dans {class}. Modifiez ses dates depuis le menu ⋯ de l’onglet Leçons de la classe.",
+      "pickStudents": "Coche au moins un élève, ou choisis Toute la classe.",
+      "notInClass": "Tu ne peux choisir que des élèves de cette classe."
     },
     "editor": {
       "live": "Utilisée dans {classes}. {count, plural, =0 {Aucun élève n’a encore commencé.} one {# élève a commencé.} other {# élèves ont commencé.}} Les modifications s’affichent pour eux tout de suite."
@@ -5517,6 +5526,8 @@
     },
     "typing": {
       "title": "Animaux Clavier",
+      "unlockH": "Pour ouvrir chaque leçon suivante :",
+      "unlockSummary": "leçon suivante à partir de {what}",
       "goalMins": "Minutes par jour",
       "dailySummary": "objectif quotidien {n} min",
       "thisWeek": "{n} min cette semaine",
@@ -5534,7 +5545,7 @@
       "goalWpm": "Vitesse (mots/min)",
       "goalAcc": "Précision (%)",
       "goalSave": "Enregistrer l’objectif",
-      "goalHint": "Vitesse : comparée au meilleur test chronométré de chaque élève. Minutes par jour : combien de jours de la dernière semaine il a tapé aussi longtemps. Laissez les deux vides pour retirer l’objectif.",
+      "goalHint": "Vitesse : comparée au meilleur test chronométré de chaque élève. Minutes par jour : combien de jours de la dernière semaine il a tapé aussi longtemps. Pour ouvrir chaque leçon suivante : ce qu’il faut dans la leçon d’avant. Laissez tout vide pour retirer l’objectif.",
       "goalSummary": "objectif {wpm} mots/min à {acc} % : {met} sur {total} l’ont atteint",
       "goalArchived": "Cette classe est archivée.",
       "goalSaved": "Objectif enregistré",
@@ -6684,7 +6695,7 @@
       "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
       "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe.",
       "mistakeHunt": "Trouve et corrige les fautes d'un court texte : l'enseignant colle son propre texte, y place des fautes d'orthographe, de grammaire et de ponctuation, puis le partage, l'assigne ou l'imprime.",
-      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 28 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
+      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
     },
     "hubs": {
       "math": {
@@ -10281,7 +10292,9 @@
       "open": "Ouvrir dans Classroom",
       "noLessons": "Pas encore de leçon dans cette classe. Attribuez-en une dans l'onglet Leçons.",
       "doneScheduled": "Programmée dans Google Classroom : les élèves la verront le {date}, à l'ouverture de la leçon.",
-      "locked": "Pour publier des leçons, envoyer des notes et partager des supports, autorisez Oomba Academy à publier dans Classroom."
+      "locked": "Pour publier des leçons, envoyer des notes et partager des supports, autorisez Oomba Academy à publier dans Classroom.",
+      "someNot": "Attribuée à certains élèves, donc non publiée : dans Google Classroom, elle irait à toute la classe.",
+      "somePosted": "Attribuée ici à certains élèves. Elle avait été publiée pour toute la classe dans Google Classroom avant ; les notes ne vont qu'aux élèves concernés."
     },
     "grades": {
       "text": "C'est une note d'achèvement : la part des étapes de la leçon faites par l'élève, sur 100. Elle ne compte pas les bonnes réponses. Les élèves qui ne l'ont pas commencée sont laissés de côté.",
@@ -10350,7 +10363,8 @@
       "emptyNote": "Écrivez d'abord votre message.",
       "tooLong": "Les annonces font au plus {max} caractères.",
       "hasName": "« {name} » dans votre message correspond au nom d'un élève. Les annonces vont à toute la classe : reformulez ou retirez ce mot, s'il vous plaît.",
-      "tooManyAnnouncements": "Cette classe a déjà eu 10 annonces en une heure. Patientez un peu."
+      "tooManyAnnouncements": "Cette classe a déjà eu 10 annonces en une heure. Patientez un peu.",
+      "someStudents": "Cette leçon est attribuée à certains élèves, elle n'est donc pas publiée dans Google Classroom : elle y irait à toute la classe."
     },
     "allow": {
       "heading": "Ce qu'Oomba Academy peut faire dans votre Classroom",
@@ -10572,6 +10586,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Seuil de frappe",
       "live": "Jeu en direct",
       "rubric": "Grille",
       "marks": "Notes de grille"
@@ -10602,7 +10617,8 @@
       "showNames": "Afficher les noms de la liste de classe",
       "hideNames": "Masquer les noms de la liste de classe",
       "namesHint": "Affiche le nom de la liste de classe à côté du nom dans le jeu, sur cet écran seulement. L’écran de la classe garde les noms du jeu."
-    }
+    },
+    "notAssigned": "Non attribuée"
   },
   "quickLive": {
     "cta": "Lancer un jeu en direct maintenant",

@@ -40,19 +40,24 @@ export function hiddenSql(alias = 'g') {
 }
 
 /** Has one of this person's classes (as a student or a teacher) got this game in an assigned lesson, or did they
- *  assign it themselves? Removed assignments don't count. */
+ *  assign it themselves? Removed assignments don't count, nor a lesson assigned to some students that leaves them out. */
+const MINE = `(cl.assigned_by=? OR (cl.class_id IN (SELECT class_id FROM class_members WHERE user_id=? AND status='active')
+    AND (NOT EXISTS (SELECT 1 FROM class_lesson_students x WHERE x.class_lesson_id=cl.id)
+      OR EXISTS (SELECT 1 FROM class_lesson_students x WHERE x.class_lesson_id=cl.id AND x.user_id=?)
+      OR cl.class_id IN (SELECT class_id FROM class_members WHERE user_id=? AND status='active' AND role!='student'))))`;
+const mine = user => [user.id, user.id, user.id, user.id];
 export const assignedToMe = (user, gameId) => !!(user && gameId && q.get(`SELECT 1 FROM class_lessons cl
   JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.game_id=?
-  WHERE cl.removed_at IS NULL AND (cl.assigned_by=? OR cl.class_id IN (SELECT class_id FROM class_members WHERE user_id=? AND status='active')) LIMIT 1`,
-  gameId, user.id, user.id));
+  WHERE cl.removed_at IS NULL AND ${MINE} LIMIT 1`,
+  gameId, ...mine(user)));
 /** May this person open a hidden official game anyway? The platform admin, and a class that has it assigned. */
 export const mayOpenHidden = (user, g) => !!(user && (user.role === 'admin' || assignedToMe(user, g && g.id)));
 
 /** Has one of this person's classes a ready-made course lesson assigned (lessons.kind='course'), or did they assign
  *  one? Those classes keep their course pages while COURSES is off. */
 export const hasCourseLesson = user => !!(user && q.get(`SELECT 1 FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id AND l.kind='course'
-  WHERE cl.removed_at IS NULL AND (cl.assigned_by=? OR cl.class_id IN (SELECT class_id FROM class_members WHERE user_id=? AND status='active')) LIMIT 1`,
-  user.id, user.id));
+  WHERE cl.removed_at IS NULL AND ${MINE} LIMIT 1`,
+  ...mine(user)));
 /** May this person see the courses? Everyone while COURSES is on; else the platform admin and course-lesson classes. */
 export const mayOpenCourses = user => !coursesHidden() || !!(user && (user.role === 'admin' || hasCourseLesson(user)));
 

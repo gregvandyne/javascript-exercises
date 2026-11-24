@@ -111,12 +111,14 @@ test('the server: a student, a child, a guest and a family grown-up may not save
 const HOST = 'http://game.invalid';
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
-async function open(doc) {
+async function open(doc, viewport = { width: 1280, height: 1000 }) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] });
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
+  const ctx = await browser.newContext({ viewport, ...(viewport.width < 500 ? { isMobile: true, hasTouch: true, deviceScaleFactor: 2 } : {}) });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
-<script>addEventListener('message', e => { const d = e.data; if (d && d.brb === 1 && d.type === 'brb:tts' && !d.pre) e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*'); });</script>`;
+<script>addEventListener('message', e => { const d = e.data; if (d && d.brb === 1 && d.type === 'brb:tts' && !d.pre) e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*');
+  // a lesson read by the server (the route has its own tests): Egypt on the map and its capital, and a question of the AI's own
+  if (d && d.brb === 1 && d.type === 'brb:doc') setTimeout(() => e.source.postMessage({ brb: 1, type: 'brb:doc-done', id: d.id, title: 'The Nile', words: [['@map', 'EG'], ['@cap', 'EG'], ['Which way does the Nile flow?', 'North']] }, '*'), 50); });</script>`;
   await ctx.route('**/*', route => {
     const u = route.request().url();
     if (u === HOST + '/') return route.fulfill({ status: 200, contentType: 'text/html; charset=utf-8', body: page });
@@ -162,6 +164,12 @@ for (const slug of SLUGS) {
           await o.frame.waitForFunction(() => !!document.querySelector('.aq-libbody'));
           const quiz = await o.frame.evaluate(() => document.querySelector('.aq-libbody').textContent.includes('Make a quiz'));
           assert.equal(quiz, yes, `${slug} ${who}: Make a quiz in the library`);
+          // Blank maps: everyone prints the blank map; only the grown-ups get "Show answers" and the printed key
+          await o.frame.evaluate(() => window.__brbTest.blank('eu', true, true));
+          await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-print'));
+          assert.deepEqual(await ids(o.frame, ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key']),
+            yes ? ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key'] : ['aq-bl-print', 'aq-bl-zoom'], `${slug} ${who}: the blank map's answers`);
+          if (!yes) assert.equal(await o.frame.evaluate(() => /Luxembourg/.test(document.querySelector('[data-screen="blank"]').textContent + document.getElementById('aq-bl-map').innerHTML)), false, `${who}: no country names anywhere`);
         }
         if (process.env.MAKE_SHOTS && slug === 'crossword' && (who === 'teacher' || who === 'student')) {
           fs.mkdirSync(process.env.MAKE_SHOTS, { recursive: true });
@@ -174,6 +182,113 @@ for (const slug of SLUGS) {
     }
   });
 }
+
+test('Atlas Quest\'s blank map on a phone (390 px): the zoomed map\'s numbers read at 11 px or more; Show answers lists the names', { skip, timeout: 240_000 }, async () => {
+  const { doc, init } = await frameFor('atlas-quest', fresh(mum));
+  assert.equal(init.make, true);
+  const o = await open(doc, { width: 390, height: 844 });
+  try {
+    await o.frame.waitForFunction(GAMES['atlas-quest'].ready, null, { timeout: 90_000 });
+    await o.frame.evaluate(() => window.__brbTest.closeDialog());
+    for (const reg of ['eu', 'car', 'me', 'world']) {
+      await o.frame.evaluate(r => window.__brbTest.blank(r, true, false), reg);
+      await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-map'));
+      assert.equal(await o.frame.evaluate(() => !!document.getElementById('aq-bl-answers')), false, `${reg}: no answers until asked`);
+      await o.frame.click('#aq-bl-showkey');
+      await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-answers'));
+      const list = await o.frame.evaluate(() => [...document.querySelectorAll('#aq-bl-answers li')].map(li => li.textContent));
+      assert.ok(list.length > 10, `${reg}: the numbered list`);
+      const want = { eu: '26Luxembourg', car: 'Barbados', me: 'Bahrain', world: 'France' }[reg];
+      assert.ok(list.some(x => x.includes(want)), `${reg}: ${want} in ${list.slice(0, 5)}`);
+      // the small countries' lines on the map carry their names (a tag's name is in the list)
+      const lines = await o.frame.evaluate(() => [...document.querySelectorAll('#aq-bl-map .atm-co:not(.atm-tag)')].map(gr => [...gr.querySelectorAll('text')].map(t => t.textContent)));
+      if (reg === 'car') assert.ok(lines.filter(t => t.length === 2).length >= 3 && JSON.stringify(lines).includes('Barbados'), `${reg}: ${JSON.stringify(lines)}`);   // a name too long for its line is in the list only
+      // the map full screen: it opens with the numbers at a readable size, lines visible, and + makes them bigger
+      await o.frame.click('#aq-bl-zoom');
+      await o.frame.waitForFunction(() => !!document.getElementById('aq-zoom'));
+      const m = await o.frame.evaluate(() => {
+        const sc = document.getElementById('aq-zoomsc').getBoundingClientRect(), vis = [...document.querySelectorAll('#aq-zoom svg text')].filter(t => /^\d+$/.test(t.textContent)).map(t => t.getBoundingClientRect()).filter(r => r.bottom > sc.top && r.top < sc.bottom && r.right > sc.left && r.left < sc.right);
+        const lead = document.querySelector('#aq-zoom .atm-leader');
+        return { n: vis.length, min: Math.min(...vis.map(r => r.height)), lead: lead ? parseFloat(getComputedStyle(lead).strokeWidth) : 2, w: innerWidth, sx: document.documentElement.scrollWidth };
+      });
+      assert.ok(m.n > 3, `${reg}: numbers in view`); assert.ok(m.min >= 11, `${reg}: numbers ${m.min.toFixed(1)} px tall`);
+      assert.ok(m.lead >= 1, `${reg}: leaders ${m.lead} px`); assert.ok(m.sx <= m.w, `${reg}: no sideways scroll on the page`);
+      const before = await o.frame.evaluate(() => document.querySelector('#aq-zoom svg').getBoundingClientRect().width);
+      await o.frame.click('#aq-zoom-in');
+      assert.ok(await o.frame.evaluate(() => document.querySelector('#aq-zoom svg').getBoundingClientRect().width) > before * 1.3, `${reg}: + zooms in`);
+      await o.frame.press('#aq-zoom', 'Escape');
+      assert.equal(await o.frame.evaluate(() => !!document.getElementById('aq-zoom')), false, `${reg}: Escape closes it`);
+      assert.equal(await o.frame.evaluate(() => document.activeElement.id), 'aq-bl-zoom', `${reg}: focus back on the button`);
+    }
+    // the tiny countries left off the world map are said so
+    await o.frame.evaluate(() => window.__brbTest.blank('world', true, false));
+    assert.match(await o.frame.evaluate(() => document.querySelector('[data-screen="blank"] .cw-note').textContent), /tiny countries are left off/);
+    assert.deepEqual(o.errors, []);
+  } finally { await o.ctx.close(); }
+});
+
+test('Atlas Quest\'s quiz maker is five steps (375 px): Next says why it waits, Skip, Back, a lesson lands on Check, a draft opens on Check', { skip, timeout: 240_000 }, async () => withKey('test-key', async () => {
+  const g = GAME['atlas-quest'];
+  games.putSave(g.id, teacher.id, { 'atlas-quest-v1': JSON.stringify(GAMES['atlas-quest'].save) });
+  const { doc, init } = await frameFor('atlas-quest', fresh(teacher));
+  assert.equal(init.clues, true, 'the lesson upload is on (AI on)');
+  const o = await open(doc, { width: 375, height: 812 });
+  const f = o.frame, step = () => f.evaluate(() => window.__brbTest.stepNow());
+  const fits = async n => assert.ok(await f.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `step ${n}: no sideways scroll at 375 px`);
+  try {
+    await f.waitForFunction(GAMES['atlas-quest'].ready, null, { timeout: 90_000 });
+    await f.evaluate(() => window.__brbTest.closeDialog());
+    // a saved draft opens on Check, with its questions
+    await f.click('#aq-mine .cw-acts2 button >> nth=0');
+    assert.equal(await step(), 4); assert.equal(await f.evaluate(() => document.querySelectorAll('.aq-qrow').length), 2);
+    await f.click('#aq-b-home');
+    // a new quiz: step 1, Next waits with its reason
+    await f.click('#aq-make');
+    assert.equal(await step(), 1);
+    assert.equal(await f.textContent('#aq-stepof'), 'Step 1 of 5: Countries');
+    assert.equal(await f.evaluate(() => document.getElementById('aq-next').disabled), true);
+    assert.match(await f.textContent('#aq-nextwhy'), /Add at least one country, or start from a lesson/);
+    await fits(1);
+    // the lesson is one of the two ways to start; its questions land on Check for the teacher to look over
+    assert.deepEqual(await ids(f, ['aq-way-pick', 'aq-way-lesson']), ['aq-way-pick', 'aq-way-lesson']);
+    await f.click('#aq-way-lesson');
+    await f.setInputFiles('#aq-lessonfile', { name: 'nile.txt', mimeType: 'text/plain', buffer: Buffer.from('The Nile flows north through Egypt.') });
+    await f.waitForFunction(() => window.__brbTest.stepNow() === 4, null, { timeout: 20_000 });
+    assert.equal(await f.evaluate(() => document.querySelectorAll('.aq-qrow').length), 3, 'Egypt on the map, its capital, the AI\'s own question');
+    assert.ok(await f.evaluate(() => !!document.querySelector('.aq-ainote')), 'the AI note asks the teacher to check them');
+    assert.equal(await f.evaluate(() => !!document.getElementById('aq-title')), false, 'Check has no name field (it is on step 1)');
+    await f.click('#aq-b-home');
+    // picking countries, step by step
+    await f.click('#aq-make');
+    await f.fill('#aq-title', 'Western Europe');
+    for (const name of ['Luxembourg', 'France']) { await f.fill('#aq-find', name); await f.click('#aq-found button >> nth=0'); }
+    assert.equal(await f.evaluate(() => document.querySelectorAll('#aq-picked .aq-ccchip').length), 2);
+    assert.equal(await f.evaluate(() => document.getElementById('aq-next').disabled), false);
+    await f.click('#aq-next'); assert.equal(await step(), 2); await fits(2);
+    await f.uncheck('#aq-k-cap'); await f.uncheck('#aq-k-map');
+    assert.equal(await f.evaluate(() => document.getElementById('aq-next').disabled), true, 'no type ticked: Next waits');
+    assert.match(await f.textContent('#aq-nextwhy'), /Tick at least one question type/);
+    await f.check('#aq-k-map'); await f.check('#aq-k-flag');
+    assert.equal(await f.textContent('#aq-kcount'), 'That makes 4 questions.');
+    await f.click('#aq-next'); assert.equal(await step(), 3); await fits(3);
+    assert.match(await f.textContent('#aq-next'), /^Skip/, 'step 3 can be skipped');
+    await f.fill('#aq-ownq', 'Which river flows through Paris?');
+    assert.equal(await f.evaluate(() => document.getElementById('aq-next').disabled), true, 'half a question: Next waits');
+    await f.fill('#aq-owna', 'The Seine');
+    await f.click('#aq-next');   // a whole question typed: Next adds it
+    assert.equal(await step(), 4); await fits(4);
+    assert.equal(await f.evaluate(() => document.querySelectorAll('.aq-qrow').length), 5);
+    assert.ok(await f.evaluate(() => !!document.querySelector('#aq-mapwrap svg [data-co="LU"]')), 'Luxembourg\'s arrow on the map');
+    await f.click('#aq-prev'); assert.equal(await step(), 3);
+    assert.equal(await f.evaluate(() => document.querySelectorAll('.aq-ownlist li').length), 1);
+    await f.click('#aq-next'); await f.click('#aq-next');
+    assert.equal(await step(), 5); await fits(5);
+    assert.deepEqual(await ids(f, ['aq-save', 'aq-playit', 'aq-print', 'aq-done']), ['aq-save', 'aq-playit', 'aq-print', 'aq-done']);
+    // the steps already done are a tap away
+    await f.click('.aq-steps button[data-step="2"]'); assert.equal(await step(), 2);
+    assert.deepEqual(o.errors, []);
+  } finally { await o.ctx.close(); }
+}));
 
 test('a student with a class code or a link still plays the teacher\'s crossword and word hunt', { skip, timeout: 240_000 }, async () => {
   q.run('DELETE FROM game_sets');

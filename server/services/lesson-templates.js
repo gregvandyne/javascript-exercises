@@ -327,7 +327,11 @@ export function resetLesson(u, lessonId) {
   if (!r.ok) return r;
   const moved = [], kept = [];
   tx(() => { for (const cl of q.all('SELECT * FROM class_lessons WHERE lesson_id=? AND removed_at IS NULL ORDER BY position, assigned_at', old.id)) {
-    const a = L.assign(u, cl.class_id, r.lesson.id, { unitId: cl.unit_id, opensAt: cl.opens_at ? isoDay(cl.opens_at) : null, dueAt: cl.due_at ? isoDay(cl.due_at) : null });
+    // Assigned to some students: the new copy goes to the same ones (those still in the class).
+    const was = L.studentsOfLesson(cl.id), inClass = was.length ? new Set(S.roster(cl.class_id).filter(p => p.role === 'student').map(p => p.id)) : null;
+    const students = inClass ? was.filter(id => inClass.has(id)) : [];
+    if (was.length && !students.length) { kept.push(cl.class_id); continue; }
+    const a = L.assign(u, cl.class_id, r.lesson.id, { unitId: cl.unit_id, opensAt: cl.opens_at ? isoDay(cl.opens_at) : null, dueAt: cl.due_at ? isoDay(cl.due_at) : null, students });
     if (!a.ok) { kept.push(cl.class_id); continue; }
     L.unassign(u, cl.id);
     moved.push({ classId: cl.class_id, classLesson: a.classLesson });

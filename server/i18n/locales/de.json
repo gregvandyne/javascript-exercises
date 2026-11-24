@@ -5347,7 +5347,13 @@
       "zoneAsk": "Eine Schuladministration kann sie in den Einstellungen der Schule festlegen.",
       "doneHere": "Zugewiesen an {class}. Die Schüler sehen es jetzt.",
       "seeStarted": "Sehen, wer schon begonnen hat",
-      "doneLater": "Der Klasse {class} zugewiesen. Die Schüler sehen sie ab dem {date}."
+      "doneLater": "Der Klasse {class} zugewiesen. Die Schüler sehen sie ab dem {date}.",
+      "to": "Zuweisen an",
+      "wholeClass": "Ganze Klasse",
+      "someStudents": "Einzelne Schüler",
+      "studentsOf": "Schüler in {class}",
+      "someHint": "Nur die angehakten Schüler sehen es, und nur sie zählen im Notenbuch. Du kannst das später im ⋯-Menü ändern.",
+      "noStudents": "Diese Klasse hat noch keine Schüler."
     },
     "class": {
       "title": "Lektionen",
@@ -5376,7 +5382,8 @@
       "late": "Überfällig",
       "removedGroup": "Aus dieser Klasse entfernt",
       "readyMade": "Eine fertige Stunde nehmen",
-      "unitWhy": "Einheiten gruppieren die Lektionen dieser Klasse, in der Reihenfolge, in der die Schüler sie sehen. Ordner sortieren nur Ihre eigene Lektionsbibliothek."
+      "unitWhy": "Einheiten gruppieren die Lektionen dieser Klasse, in der Reihenfolge, in der die Schüler sie sehen. Ordner sortieren nur Ihre eigene Lektionsbibliothek.",
+      "someStudents": "{count, plural, one {# Schüler} other {# Schüler}}"
     },
     "view": {
       "teacherPreview": "Schüleransicht. Schaltflächen, die Arbeiten speichern, sind für Sie ausgeschaltet.",
@@ -5415,7 +5422,9 @@
       "topic": "Geben Sie ein, worum es in der Lektion geht.",
       "aiFailed": "Die KI kann das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal, oder erstellen Sie die Lektion selbst.",
       "questionText": "Schreiben Sie die Frage auf, die die Schüler beantworten sollen.",
-      "alreadyAssigned": "Diese Lektion ist schon in {class}. Ändern Sie die Termine über das Menü ⋯ auf der Klassenseite unter „Lektionen“."
+      "alreadyAssigned": "Diese Lektion ist schon in {class}. Ändern Sie die Termine über das Menü ⋯ auf der Klassenseite unter „Lektionen“.",
+      "pickStudents": "Hake mindestens einen Schüler an oder wähle Ganze Klasse.",
+      "notInClass": "Du kannst nur Schüler dieser Klasse auswählen."
     },
     "editor": {
       "live": "Aktiv in {classes}. {count, plural, =0 {Noch hat kein Schüler angefangen.} one {# Schüler hat angefangen.} other {# Schüler haben angefangen.}} Die Schüler sehen Änderungen sofort."
@@ -5518,6 +5527,8 @@
     },
     "typing": {
       "title": "Tipp-Tiere",
+      "unlockH": "Für jede nächste Lektion:",
+      "unlockSummary": "nächste Lektion ab {what}",
       "goalMins": "Minuten pro Tag",
       "dailySummary": "Tagesziel {n} Min.",
       "thisWeek": "{n} Min. diese Woche",
@@ -5535,7 +5546,7 @@
       "goalWpm": "Tempo (WpM)",
       "goalAcc": "Genauigkeit (%)",
       "goalSave": "Ziel speichern",
-      "goalHint": "Tempo: gemessen am besten Zeittest jedes Schülers. Minuten pro Tag: an wie vielen Tagen der letzten Woche so lange getippt wurde. Beide leer lassen, um das Ziel zu entfernen.",
+      "goalHint": "Tempo: gemessen am besten Zeittest jedes Schülers. Minuten pro Tag: an wie vielen Tagen der letzten Woche so lange getippt wurde. Für jede nächste Lektion: was in der Lektion davor nötig ist. Alle Felder leer lassen, um das Ziel zu entfernen.",
       "goalSummary": "Ziel {wpm} WpM bei {acc} %: {met} von {total} erreicht",
       "goalArchived": "Diese Klasse ist archiviert.",
       "goalSaved": "Ziel gespeichert",
@@ -6685,7 +6696,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 28 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {
@@ -10282,7 +10293,9 @@
       "open": "In Classroom öffnen",
       "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
       "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet.",
-      "locked": "Um Lektionen zu posten, Noten zu senden und Material zu teilen, erlaube Oomba Academy das Posten in Classroom."
+      "locked": "Um Lektionen zu posten, Noten zu senden und Material zu teilen, erlaube Oomba Academy das Posten in Classroom.",
+      "someNot": "Einzelnen Schülern zugewiesen, deshalb nicht gepostet: In Google Classroom ginge sie an die ganze Klasse.",
+      "somePosted": "Hier einzelnen Schülern zugewiesen. Vorher wurde sie in Google Classroom für die ganze Klasse gepostet; Noten gehen nur an die zugewiesenen Schüler."
     },
     "grades": {
       "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
@@ -10351,7 +10364,8 @@
       "emptyNote": "Schreib zuerst deine Nachricht.",
       "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
       "hasName": "„{name}“ in deiner Nachricht ist auch der Name eines Kindes. Ankündigungen gehen an die ganze Klasse: Formuliere es bitte um oder nimm es heraus.",
-      "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig."
+      "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig.",
+      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse."
     },
     "allow": {
       "heading": "Was Oomba Academy in deinem Classroom darf",
@@ -10573,6 +10587,7 @@
     },
     "kind": {
       "quiz": "Quiz",
+      "typing": "Tipp-Bestehensgrenze",
       "live": "Live-Spiel",
       "rubric": "Bewertungsraster",
       "marks": "Rasterpunkte"
@@ -10603,7 +10618,8 @@
       "showNames": "Namen aus der Klassenliste zeigen",
       "hideNames": "Namen aus der Klassenliste ausblenden",
       "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
-    }
+    },
+    "notAssigned": "Nicht zugewiesen"
   },
   "quickLive": {
     "cta": "Jetzt ein Live-Spiel starten",

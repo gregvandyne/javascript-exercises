@@ -5348,7 +5348,13 @@
       "zoneAsk": "Um administrador da escola pode defini-lo nas Configurações da escola.",
       "doneHere": "Atribuída a {class}. Os alunos já estão vendo.",
       "seeStarted": "Ver quem já começou",
-      "doneLater": "Atribuída a {class}. Os alunos vão vê-la a partir de {date}."
+      "doneLater": "Atribuída a {class}. Os alunos vão vê-la a partir de {date}.",
+      "to": "Atribuir a",
+      "wholeClass": "Turma toda",
+      "someStudents": "Alguns alunos",
+      "studentsOf": "Alunos de {class}",
+      "someHint": "Só os alunos que você marcar veem, e só eles contam no boletim. Você pode mudar isso depois no menu ⋯.",
+      "noStudents": "Esta turma ainda não tem alunos."
     },
     "class": {
       "title": "Aulas",
@@ -5377,7 +5383,8 @@
       "late": "Em atraso",
       "removedGroup": "Removidas desta turma",
       "readyMade": "Usar uma aula pronta",
-      "unitWhy": "As unidades agrupam as aulas desta turma, na ordem em que os alunos as veem. As pastas só organizam a sua própria biblioteca de aulas."
+      "unitWhy": "As unidades agrupam as aulas desta turma, na ordem em que os alunos as veem. As pastas só organizam a sua própria biblioteca de aulas.",
+      "someStudents": "{count, plural, one {# aluno} other {# alunos}}"
     },
     "view": {
       "teacherPreview": "Visão do aluno. Os botões que salvam trabalhos estão desativados para você.",
@@ -5416,7 +5423,9 @@
       "topic": "Digite sobre o que é a aula.",
       "aiFailed": "A IA não conseguiu criar o rascunho agora. Tente de novo daqui a um minuto ou crie a aula você mesmo.",
       "questionText": "Escreva a pergunta que os alunos vão responder.",
-      "alreadyAssigned": "Esta aula já está em {class}. Mude as datas pelo menu ⋯ na aba Aulas da turma."
+      "alreadyAssigned": "Esta aula já está em {class}. Mude as datas pelo menu ⋯ na aba Aulas da turma.",
+      "pickStudents": "Marque pelo menos um aluno ou escolha Turma toda.",
+      "notInClass": "Só é possível escolher alunos desta turma."
     },
     "editor": {
       "live": "Ativa em {classes}. {count, plural, =0 {Nenhum aluno começou ainda.} one {# aluno já começou.} other {# alunos já começaram.}} As mudanças aparecem para eles na hora."
@@ -5519,6 +5528,8 @@
     },
     "typing": {
       "title": "Bichinhos do Teclado",
+      "unlockH": "Para abrir cada próxima lição:",
+      "unlockSummary": "próxima lição com {what}",
       "goalMins": "Minutos por dia",
       "dailySummary": "meta diária {n} min",
       "thisWeek": "{n} min nesta semana",
@@ -5536,7 +5547,7 @@
       "goalWpm": "Velocidade (ppm)",
       "goalAcc": "Precisão (%)",
       "goalSave": "Salvar meta",
-      "goalHint": "Velocidade: comparada com o melhor teste cronometrado de cada aluno. Minutos por dia: em quantos dias da última semana digitou esse tempo. Deixe os dois vazios para remover a meta.",
+      "goalHint": "Velocidade: comparada com o melhor teste cronometrado de cada aluno. Minutos por dia: em quantos dias da última semana digitou esse tempo. Para abrir cada próxima lição: o que é preciso na lição anterior. Deixe tudo vazio para remover a meta.",
       "goalSummary": "meta {wpm} ppm com {acc}%: {met} de {total} atingiram",
       "goalArchived": "Esta turma está arquivada.",
       "goalSaved": "Meta salva",
@@ -6686,7 +6697,7 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 28 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
     },
     "hubs": {
       "math": {
@@ -10283,7 +10294,9 @@
       "open": "Abrir no Classroom",
       "noLessons": "Ainda não há aulas nesta turma. Atribua uma na aba Aulas.",
       "doneScheduled": "Agendada no Google Classroom: os alunos a verão em {date}, quando a aula abrir.",
-      "locked": "Para publicar aulas, enviar notas e compartilhar material, permita que a Oomba Academy publique no Classroom."
+      "locked": "Para publicar aulas, enviar notas e compartilhar material, permita que a Oomba Academy publique no Classroom.",
+      "someNot": "Atribuída a alguns alunos, por isso não publicada: no Google Classroom ela iria para a turma toda.",
+      "somePosted": "Aqui está atribuída a alguns alunos. Antes foi publicada para a turma toda no Google Classroom, e as notas vão só para os alunos atribuídos."
     },
     "grades": {
       "text": "É uma nota de conclusão: a parte das etapas da aula que o aluno fez, de 0 a 100. Não conta respostas certas. Quem ainda não começou fica de fora.",
@@ -10352,7 +10365,8 @@
       "emptyNote": "Escreva sua mensagem primeiro.",
       "tooLong": "Os avisos podem ter no máximo {max} caracteres.",
       "hasName": "“{name}” na sua mensagem é igual ao nome de um aluno. Os avisos vão para a turma toda: reescreva ou tire essa palavra, por favor.",
-      "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco."
+      "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco.",
+      "someStudents": "Esta lição está atribuída a alguns alunos, por isso não é publicada no Google Classroom: lá ela iria para a turma toda."
     },
     "allow": {
       "heading": "O que a Oomba Academy pode fazer no seu Classroom",
@@ -10574,6 +10588,7 @@
     },
     "kind": {
       "quiz": "Questionário",
+      "typing": "Nota de digitação",
       "live": "Jogo ao vivo",
       "rubric": "Rubrica",
       "marks": "Notas da rubrica"
@@ -10604,7 +10619,8 @@
       "showNames": "Mostrar nomes da lista da turma",
       "hideNames": "Ocultar nomes da lista da turma",
       "namesHint": "Mostra o nome da lista da turma ao lado do nome no jogo, só neste ecrã. O ecrã da turma mantém os nomes do jogo."
-    }
+    },
+    "notAssigned": "Não atribuída"
   },
   "quickLive": {
     "cta": "Comece um jogo ao vivo agora",
