@@ -619,6 +619,9 @@ const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-pets']);
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
+/** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
+ *  a family grown-up, the platform admin), the same check as INIT.make. Never a student, a child, a guest or signed out. */
+const printKeyFor = (u, g) => isSchoolStaff(u) || (g.slug === 'atlas-quest' && makeGame(g) && mayMake(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`));
 /** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
@@ -775,7 +778,8 @@ router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;
 // services/crossword-print.js); The Big Divide: an activity's problems as a question set's item (numbers and fixed
 // words only; services/box-by-box-print.js). Anyone who can open the game may print (a student, a guest with the sample,
-// a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check). Words pass the site's text
+// a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check), and in Atlas Quest the grown-ups
+// who may make a quiz (printKeyFor). Words pass the site's text
 // filter as a saved set's do; nothing is kept. Body { doc }.
 router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
@@ -800,7 +804,7 @@ router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.ap
   }
   const r = printer.clean((req.body || {}).doc);
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
-  if (r.doc.key && !isSchoolStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
+  if (r.doc.key && !printKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
   // The footer's class code and link: only for a set of this game that is on Oomba.
   const s = r.doc.set && gameSets.get(g.id, r.doc.set);
   const code = s ? s.id.slice(2).toUpperCase().replace(/^(.{5})/, '$1 ') : '';

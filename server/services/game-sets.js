@@ -366,11 +366,12 @@ useSetCodes('mistake-hunt', 'ccss-ela', id => {
 export const ATLAS = { max: 60, q: 150, a: 60, title: 60, frames: ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'car', 'me'], kinds: ['map', 'cap', 'capc', 'flag', 'cont', 'fam'] };
 let atlasKnown = null;
 const atlasCode = cc => { if (!atlasKnown) atlasKnown = new Set(atlasCodes()); return typeof cc === 'string' && atlasKnown.has(cc); };
-/** The quiz's clean item, or null when it isn't one. opts.empty: a print of a map with no numbers may have no questions. */
+/** The quiz's clean item, or null when it isn't one. opts.empty: a print of a map with no numbers may have no questions;
+ *  opts.maxQ: more questions than a quiz holds (a printed blank map numbers a whole region). */
 export function cleanAtlasItems(raw, opts = {}) {
   if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object' || Array.isArray(raw[0])) return null;
   const it = raw[0];
-  if (!Array.isArray(it.q) || it.q.length > ATLAS.max || (!it.q.length && !opts.empty)) return null;
+  if (!Array.isArray(it.q) || it.q.length > (opts.maxQ || ATLAS.max) || (!it.q.length && !opts.empty)) return null;
   const r = it.r === undefined ? 'world' : it.r;
   if (!ATLAS.frames.includes(r)) return null;
   const q = [], seen = new Set();
