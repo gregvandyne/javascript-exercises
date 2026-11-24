@@ -42,7 +42,7 @@ test('the file: the look\'s tokens and font, the words in every language, and no
   for (const re of [/\bfetch\s*\(/, /XMLHttpRequest/, /sendBeacon/, /toDataURL/, /toBlob/, /getImageData/, /localStorage/, /indexedDB/]) assert.ok(!re.test(game), String(re));
   // no browser dialogs, no em dashes in the look's comments or styles
   assert.ok(!/\b(alert|confirm|prompt)\s*\(/.test(game));
-  assert.ok(!HTML.slice(0, HTML.indexOf('</style>')).includes('—'));
+  assert.ok(!HTML.slice(0, HTML.indexOf('</style>')).includes('\u2014'));
 });
 
 for (const theme of ['light', 'dark']) {
