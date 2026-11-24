@@ -727,15 +727,17 @@ code{overflow-wrap:anywhere}
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
 .gcard .t,.gcard .by,.hero h1,.hero .hero-title,.hero p,.gamehero h1,.nm,.ptitle,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
 
-/* Phones: the featured game's picture fills the hero card, with the words on a dark fade at the bottom. */
+/* Phones: the featured game's picture on top of the hero card, cropped to a band, and the words below it on a solid
+   panel, so no picture (a busy game screen) ever shows through the text. */
 @media (max-width:640px){
-  .hero{position:relative;overflow:hidden;padding:0;min-height:min(132vw,520px);align-content:end;gap:0}
-  .hero .heroart{position:absolute;inset:0;max-width:none;z-index:0}
+  .hero{position:relative;overflow:hidden;padding:0;display:flex;flex-direction:column;gap:0}
+  .hero .heroart{order:-1;position:relative;max-width:none;width:100%;height:min(56vw,240px);overflow:hidden}
   [dir] .hero .heroart .coverart,[dir] .hero .heroart:hover .coverart{width:100%;height:100%;aspect-ratio:auto;border-radius:0;transform:none;box-shadow:none}
-  .hero .coverart:not(.has-shot) .art{align-items:start;padding-top:12%}
+  .hero .heroart .coverart img{object-fit:cover;object-position:top center}
+  .hero .coverart:not(.has-shot) .art{align-items:center;padding-top:0}
   .hero .coverart .shot-icon{display:none}
-  .hero>div:first-child{position:relative;z-index:1;pointer-events:none;padding:96px 20px 20px;background:linear-gradient(to top,rgba(20,20,20,.94) 0,rgba(20,20,20,.82) 55%,rgba(20,20,20,0) 100%)}
-  .hero>div:first-child a,.hero>div:first-child .btn{pointer-events:auto}
+  .hero::before{display:none}
+  .hero>div:first-child{position:relative;z-index:1;padding:18px 20px 20px;background:rgb(20 20 20 / .94)}
   .hero p{margin-bottom:14px}
 }
 

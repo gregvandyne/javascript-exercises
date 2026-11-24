@@ -112,11 +112,14 @@ function pruneDays() {
 }
 export const _resetPrune = () => { pruned = 0; };
 /** Oomba turns left today. */
-export const left = u => (canMake(u) ? Math.max(0, capOf(u) - usedOn(u, today())) : 0);
+// The platform admin (S.unlimitedAi) is never counted: always the whole day's turns left.
+export const left = u => (!canMake(u) ? 0 : S.unlimitedAi(u) ? Math.max(1, capOf(u)) : Math.max(0, capOf(u) - usedOn(u, today())));
 /** Spend one of today's turns: true when one was left. One conditional upsert, synchronous, before any await, so two
  *  requests at once can never both take the last one (it holds across processes too). */
 export function take(u, { key = today(), cap = capOf(u) } = {}) {
-  if (!canMake(u) || cap <= 0) return false;
+  if (!canMake(u)) return false;
+  if (S.unlimitedAi(u)) return true;   // the platform admin: no daily cap, and nothing counted against one
+  if (cap <= 0) return false;
   pruneDays();
   return q.run('INSERT INTO made_book_ai_days(user_id, day, n) VALUES (?,?,1) ON CONFLICT(user_id, day) DO UPDATE SET n=n+1 WHERE n<?', u.id, key, cap).changes === 1;
 }
@@ -168,7 +171,9 @@ export async function screenSetup(setup, { t = tEn } = {}) {
   const typed = unplace([setup.about, setup.story.slice(0, 3000)].filter(Boolean).join('\n'));
   if (!typed) return null;
   const r = hooks.screen ? await hooks.screen(typed) : await screenInput(typed, { model: !!config.anthropicKey && aiBudget.ok(), t });
-  return r.ok ? null : { category: r.category, message: r.message || t('storybook.blocked.words') };
+  if (r.ok) return null;
+  // The Builder's refusal speaks of games: a book's says so in its own words.
+  return { category: r.category, message: r.category === 'real_people' ? t('storybook.blocked.realPeople') : r.message || t('storybook.blocked.words') };
 }
 /** What the setup asks for, in the teacher's words, for the check step (and the first message). */
 export function setupProblems(setup) {
@@ -672,7 +677,12 @@ export async function writeBook(u, row, { text, history = [] }) {
   const unpic = b => { if (noPics) for (const p of b.pages) p.pic = null; return b; };
   const art = illustrator().art();
   const system = systemPrompt(setup);
-  const messages = [{ role: 'user', content: first ? draftMessage(setup) : changeMessage(cur, text, history) }];
+  // Oomba paints the pictures but none are left today: the reply must not say a picture changed (the words change now;
+  // the pictures are redrawn when the book is opened on a day with pictures left).
+  const held = !first && paint && !S.unlimitedAi(u) && Draw.left(u) <= 0
+    ? '\n\nNote: the teacher has no pictures left to paint today. Change the book as asked (scenes included), but in your reply say plainly that the words were changed and the pictures will be redrawn tomorrow; never say a picture now looks different.'
+    : '';
+  const messages = [{ role: 'user', content: (first ? draftMessage(setup) : changeMessage(cur, text, history)) + held }];
   const client = hooks.create ? { messages: { create: hooks.create } } : config.anthropicKey ? anthropic('free') : null;
   if (!client && config.anthropicKey) return { failed: 'resting' };
   let last = null, maxTokens = MAX_TOKENS;
@@ -726,7 +736,13 @@ export async function writeBook(u, row, { text, history = [] }) {
     break;
   }
   if (!last || !last.book) return { failed: 'error' };
-  if (last.safety && last.safety.length) { log('warn', 'storybook answer refused by the word rules', { book: row.id, problems: last.safety.length }); return { failed: 'unsafe' }; }
+  if (last.safety && last.safety.length) {
+    // Which check said no (never the words): a word rule's category, the model classifier's ("model:<category>"), or a
+    // real child's name, so a false refusal can be traced.
+    const kinds = [...new Set(last.safety.map(x => (/real child/.test(x) ? 'name' : /^the book is not suitable/.test(x) ? `model:${(x.match(/\(([a-z_]+)\)/) || [])[1] || '?'}` : (x.match(/\(([a-z_]+)\)/) || [])[1] || 'other')))];
+    log('warn', 'storybook answer refused by the safety checks', { book: row.id, problems: last.safety.length, kinds });
+    return { failed: 'unsafe' };
+  }
   const r = repairBook(last.book);
   if (!r.book.pages.length) return { failed: 'error' };
   return { reply: last.reply, book: unpic(r.book), repaired: r.repaired + (last.problems.length ? 1 : 0) };
@@ -778,6 +794,10 @@ export function applyBook(u, id, base, next, { repaired = 0 } = {}) {
   };
   audit(u.id, 'storybook.change', row.id, { first, added: added.length, changed: changed.length, removed: removed.length, kept, repaired });
   change.drawing = Draw.queueBook(row, final);
+  // More to paint than the teacher has pictures left today: those keep their old drawing until the book is opened on a
+  // day with pictures left (Draw.retryHeld), and the change says so.
+  const picsLeft = S.unlimitedAi(u) ? Infinity : Draw.left(u);
+  if (change.drawing > picsLeft) change.noPics = change.drawing - picsLeft;
   return { change, undo: { before, after, head, order: cur.pages.map(p => p.id) } };
 }
 /** Undo a turn: each page still as Oomba left it goes back (an added page goes, a removed one comes back in its place);

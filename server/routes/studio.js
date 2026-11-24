@@ -239,7 +239,7 @@ export function liveClassState(user, g, cur, t, state = {}) {
 export function canvasLineState(cur, t, state = {}) {
   if (canvasVersion(cur.html)) {
     const board = /"board"\s*:\s*true/.test(cur.html);
-    // (the arcade side off: no "Make it an arcade game"; the line only says what it is)
+    // While the arcade is hidden (ARCADE off, services/game-focus.js) the line has no "Make it an arcade game" switch.
     if (!config.arcade) return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: '', ask: '' };
     return { kind: 'activity', label: t(board ? 'studio.canvasLine.board' : 'studio.canvasLine.activity'), button: t('studio.canvasLine.toArcade'), ask: t('studio.canvasLine.toArcadeAsk') };
   }

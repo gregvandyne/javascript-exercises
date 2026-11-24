@@ -36,6 +36,7 @@ import { ART2D_TEMPLATES, ART2D_WORLD_IDS } from '../builder/art2d.js';
 import { LIMITS as UPLOADS } from '../builder/uploads.js';
 import { MAX_INPUT } from '../builder/agent.js';
 import { ico } from '../views/icon.js';
+import { config } from '../config.js';
 
 export const router = Router();
 
@@ -115,12 +116,23 @@ const miniBar = (n, parts) => `<span class="su-kbar" style="--n:${n}">${parts.sp
 const art = id => raw(`<span class="su-pic su-art">${ART[id] || ART.else}</span>`);
 const check = raw('<span class="su-tick" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>');
 
+/** The kinds on "What are you making?": Classroom lesson, Classroom game, and Arcade game only while ARCADE is on
+ *  (docs/decisions.md "Focus: teaching tools first"). */
+export const setupKinds = () => (config.arcade ? ['activity', 'classgame', 'arcade'] : ['activity', 'classgame']);
+/** The card that starts selected: ?kind= when it is one on offer (an Arcade link falls back to Classroom game while the
+ *  arcade is hidden), else builder/plan.js startKind, which never lands on a hidden Arcade. */
+export function firstKind({ teacher = false, forClass = false, asked = '' } = {}) {
+  const kinds = setupKinds(), want = asked === 'arcade' && !kinds.includes('arcade') ? 'classgame' : asked;
+  if (kinds.includes(want)) return want;
+  const k = startKind({ teacher, forClass: !!forClass });
+  return kinds.includes(k) ? k : 'classgame';
+}
 /** What the page's script needs (ids and facts only; every word comes from the locale files). */
-export function setupData(t, { teacher = false, forClass = null } = {}) {
+export function setupData(t, { teacher = false, forClass = null, kind = null } = {}) {
   return {
     // "What are you making?": the card that starts selected, and the classroom activity's steps (the grade's topic chips
     // with the kit tool each one means, and the class: only a flag and the grade, never an id the plan carries)
-    canvas: { kind: startKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], uses: CANVAS_USES, use: ['screen'], grade: forClass ? forClass.grade : '', forClass: !!forClass },
+    canvas: { kind: kind || firstKind({ teacher, forClass: !!forClass }), supports: SUPPORTS, help: ['guided'], uses: CANVAS_USES, use: ['screen'], grade: forClass ? forClass.grade : '', forClass: !!forClass },
     // "Your lesson": the headings the prompts put in the box (in this language), its limit, and the file the page may
     // send (teachers only: a kid's own work is never uploaded here)
     lesson: { heads: Object.fromEntries(LESSON_HEADS.map(k => [k, t(`buildSetup.lesson.heads.${k}`)])), max: LESSON.text,
@@ -162,7 +174,7 @@ export function setupClass(user, q = {}) {
 
 router.get('/build/new', requireBuilder, (req, res) => {
   const t = req.t, total = STEPS.length, teacher = setupTeacher(req.user), groups = typeGroups({ teacher });
-  const forClass = setupClass(req.user, req.query), kind = startKind({ teacher, forClass: !!forClass });
+  const forClass = setupClass(req.user, req.query), kind = firstKind({ teacher, forClass: !!forClass, asked: String(req.query.kind || '') });
   // One card: a real button (aria-pressed), a picture or drawing, a name of at most two lines and a line under it.
   const card = ({ step, id, pic, title, text = '', extra = '', attrs = '', wrap = '' }) => html`<div class="su-card${extra ? ' has-more' : ''}" data-card="${id}"${raw(wrap)}>
     <button type="button" class="su-pick" data-step="${step}" data-id="${id}" aria-pressed="false"${raw(attrs)}>${pic}<span class="su-name">${title}</span><span class="su-desc">${text}</span>${check}</button>${extra}</div>`;
@@ -249,7 +261,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
     <section class="su-screen su-start" data-screen="start" aria-labelledby="su-h-start" data-kind="${kind}">
       ${forClass ? html`<span class="su-for">${ICON.class} ${forClass.raw ? t('buildSetup.kind.forChip', { name: forClass.name, grade: gradeLabel(t, forClass.raw) }) : t('buildSetup.kind.forChipNoGrade', { name: forClass.name })}</span>` : ''}
       <h1 id="su-h-start" tabindex="-1">${t('buildSetup.kind.heading')}</h1><p class="su-hint">${t('buildSetup.kind.text')}</p>
-      <div class="su-kinds" role="group" aria-labelledby="su-h-start">
+      <div class="su-kinds${setupKinds().length === 2 ? ' su-kinds-2' : ''}" role="group" aria-labelledby="su-h-start">
         <button type="button" class="su-kind" data-kind="activity" aria-pressed="${kind === 'activity' ? 'true' : 'false'}">
           ${forClass || teacher ? html`<span class="su-rec" data-rec><span class="su-rtick" aria-hidden="true">✓</span> ${t('buildSetup.kind.forClass')}</span>` : ''}
           <span class="su-kpic su-kcanvas" aria-hidden="true">${raw(miniBar(4, 'ggge'))}${raw(miniBar(8, 'yyyyeeee'))}<span class="su-kmrow"><span class="su-kmtile"></span><span class="su-kmtile"></span><span class="su-kgrow"></span><span class="su-kmbtn su-kmgo">✓ ${t('buildSetup.kind.check')}</span><span class="su-kmbtn">${t('buildSetup.kind.hint')}</span></span></span>
@@ -257,24 +269,24 @@ router.get('/build/new', requireBuilder, (req, res) => {
           <span class="su-kd">${t('buildSetup.kind.activity.text')}</span>
           <span class="su-ktags">${['fractions', 'numberline', 'digits', 'tiles'].map(k => html`<span>${t(`buildSetup.kind.tools.${k}`)}</span>`)}</span>
         </button>
-        <button type="button" class="su-kind" data-kind="classgame" aria-pressed="false">
+        <button type="button" class="su-kind" data-kind="classgame" aria-pressed="${kind === 'classgame' ? 'true' : 'false'}">
           <span class="su-kpic su-kboard" aria-hidden="true">${[1, 2, 3].map(r => raw(`<span class="su-kbrow">${[0, 1, 2, 3].map(c => `<span class="su-kbt${r === 2 && c === 1 ? ' su-kbt-on' : ''}">${r}00</span>`).join('')}</span>`))}</span>
           <span class="su-kt">${t('buildSetup.kind.classgame.title')}</span>
           <span class="su-kd">${t('buildSetup.kind.classgame.text')}</span>
           <span class="su-ktags">${(groups.find(g => g.id === 'class')?.items || []).filter(x => x.starter).slice(0, 4).map(x => html`<span>${t(`buildSetup.types.${x.id}.title`)}</span>`)}</span>
         </button>
-        <button type="button" class="su-kind" data-kind="arcade" aria-pressed="${kind === 'arcade' ? 'true' : 'false'}">
+        ${setupKinds().includes('arcade') ? html`<button type="button" class="su-kind" data-kind="arcade" aria-pressed="${kind === 'arcade' ? 'true' : 'false'}">
           <span class="su-kpic su-karcade" aria-hidden="true"><span class="su-ksun"></span><span class="su-khill"></span><span class="su-kground"></span><span class="su-kcoin" style="inset-inline-start:58%"></span><span class="su-kcoin" style="inset-inline-start:70%;bottom:110px"></span><span class="su-kp">${ICON.runner}</span></span>
           <span class="su-kt">${t('buildSetup.kind.arcade.title')}</span>
           <span class="su-kd">${t('buildSetup.kind.arcade.text')}</span>
           <span class="su-ktags">${['runner', 'catch', 'quiz', 'worlds'].map(k => html`<span>${t(`buildSetup.kind.games.${k}`)}</span>`)}</span>
-        </button>
+        </button>` : ''}
       </div>
       ${'' /* No topic box here: "Your lesson" (the next step) asks for everything about the lesson (docs/decisions.md "Builder: no topic box on the first step"). */}
       <div class="su-kways">
         <button type="button" class="btn" id="su-direct" data-for="both">${t('buildSetup.start.direct')}</button>
         <button type="button" class="btn btn-primary" id="su-cnext" data-for="activity"${kind === 'activity' ? '' : raw(' hidden')}>${t('buildSetup.canvas.nextLesson')} <span aria-hidden="true">›</span></button>
-        <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade classgame"${kind === 'arcade' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
+        <button type="button" class="btn btn-primary" id="su-guide" data-for="arcade classgame"${kind === 'arcade' || kind === 'classgame' ? '' : raw(' hidden')}>${t('buildSetup.start.guide')} <span aria-hidden="true">›</span></button>
       </div>
     </section>
     ${CANVAS_STEPS.map((k, i) => html`<section class="su-screen su-step su-cstep" data-screen="${k}" aria-labelledby="su-h-${k}" hidden>
@@ -302,7 +314,7 @@ router.get('/build/new', requireBuilder, (req, res) => {
     </section>
     <p class="sr-only" id="su-live" aria-live="polite"></p>
   </div>
-  ${jsonData('page-data', setupData(t, { teacher, forClass }))}`;
+  ${jsonData('page-data', setupData(t, { teacher, forClass, kind }))}`;
   page(req, res, { title: t('buildSetup.title'), active: 'build', back: forClass ? `/class/${forClass.id}` : '/build', backLabel: forClass ? forClass.name : t('nav.build'), body, mid: true, bodyClass: 'setup-page',
     head: raw(`<link rel="stylesheet" href="/css/studio.css?v=${VERSION}"><link rel="stylesheet" href="/css/build-setup.css?v=${VERSION}">`), scripts: ['/js/buildsetup.js'], });
 });

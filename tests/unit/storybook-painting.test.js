@@ -231,3 +231,29 @@ test('editor: a real fallback shows the art-pack drawing with its reason and Pai
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
+
+test('editor: out of pictures, Redraw is greyed out and says why (hover and tap); "Upload a picture"; no "Drawn picture" section', { skip }, async () => {
+  const id = await draft('The Out Of Pictures Book');
+  await settle();
+  q.run('INSERT INTO made_book_ai_days(user_id, day, n) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET n=excluded.n', teach.id, `${new Date().toISOString().slice(0, 10)}:draw`, D.capOf(teach));
+  const { ctx, page, errors } = await open(teach, `/library/make/${id}`, LAPTOP);
+  try {
+    const redraw = page.locator('#sb-dst [data-act="redraw"]');
+    await redraw.waitFor();
+    assert.equal(await redraw.getAttribute('aria-disabled'), 'true');
+    assert.equal(await redraw.getAttribute('title'), 'No pictures left today. You can redraw again tomorrow.');
+    await redraw.click({ force: true });   // aria-disabled: Playwright would wait; a person can still tap it
+    assert.equal(await page.locator('#sb-rnote').count(), 0, 'no Redraw form');
+    await page.locator('.toast', { hasText: 'No pictures left today' }).first().waitFor();
+    assert.ok(await page.locator('[data-act="upload"]', { hasText: 'Upload a picture' }).isVisible());
+    assert.equal(await page.locator('.sb-picset').count(), 0, 'no Drawn picture section');
+    assert.equal(await page.locator('#sb-world').count(), 0);
+    await shot(page, 'pp-out-of-pictures');
+    // a new day: Redraw works again
+    q.run('DELETE FROM made_book_ai_days');
+    await page.reload();
+    await page.locator('#sb-dst [data-act="redraw"]').waitFor();
+    assert.equal(await page.locator('#sb-dst [data-act="redraw"]').getAttribute('aria-disabled'), null);
+    assert.deepEqual(errors, []);
+  } finally { await ctx.close(); }
+});

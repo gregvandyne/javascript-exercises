@@ -36,7 +36,7 @@ import { ownerPlan, planLimits } from '../services/billing.js';
 import { schoolSide } from '../services/school-billing.js';
 import { teacherSide } from '../services/teacher-plan.js';
 import { resting } from './anthropic.js';
-import { isStaff, classesOf } from '../services/schools.js';
+import { isStaff, classesOf, unlimitedAi } from '../services/schools.js';
 import { getUser } from '../auth.js';
 import * as sparks from '../services/sparks.js';
 
@@ -58,6 +58,8 @@ export const dailyTurns = () => Math.max(0, config.builderDailyTurns | 0);
 /** Turns one message uses: PRO_TURN_WEIGHT for "Pro quality", else 1. */
 export const weightOf = pro => (pro ? Math.max(1, config.proTurnWeight | 0) : 1);
 const idOf = user => (user && typeof user === 'object' ? user.id : user);
+/** The platform admin (unlimitedAi), from the user row or, given only an id, the row read from the database. */
+const unlimited = user => !!user && unlimitedAi(typeof user === 'object' ? user : getUser(user));
 /** The first and last calendar day of day's UTC month ('YYYY-MM-01', 'YYYY-MM-31': days are compared as text). */
 const monthRange = day => [day.slice(0, 8) + '01', day.slice(0, 8) + '31'];
 
@@ -121,6 +123,8 @@ const childExtrasOn = (userId, familyId, day) => q.get('SELECT COALESCE(SUM(weig
  */
 export function allowanceFor(user, day = today()) {
   const id = idOf(user), daily = dailyTurns(), proWeight = trustedMaker(user) ? 1 : weightOf(true);
+  // The platform admin: no daily cap (the free pool pays, while the site's AI budget allows); takeTurn counts nothing.
+  if (unlimited(user)) return { source: 'free', pool: 'free', daily, proWeight, left: Math.max(1, daily), freeLeft: Math.max(1, daily), familyId: null, extraLeft: null, extraToday: 0, schoolId: null, classContext: false, sparkFamilyId: null, sparkLeft: null, sparkToday: 0 };
   const used = id ? turnsUsed(id, day) : 0;
   const side = classSide(id, day);
   const classContext = side.student || !!side.school || !!side.teacher;
@@ -195,6 +199,7 @@ export function takeTurn(user, day = today(), { pro = false, turnId = null } = {
   // A Spark Pack message takes its credits now, in the same transaction (never more than are left; turnId: the build,
   // so giving it back returns these very credits).
   if (a.source.startsWith('spark:') && !sparks.take(a.sparkFamilyId, idOf(user), weight, { turnId, day })) return false;
+  if (unlimited(user)) return { source: a.source, pool: a.pool, weight };   // not counted
   q.run('INSERT INTO builder_usage(user_id, day, turns) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET turns=turns+excluded.turns', idOf(user), day, weight);
   return { source: a.source, pool: a.pool, weight };
 }

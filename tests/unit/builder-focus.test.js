@@ -42,8 +42,9 @@ await new Promise(r => fake.listen(0, r));
 process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${fake.address().port}`;
 test.after(() => fake.close());
 
-const { config } = await import('../../server/config.js');
+const { config, parseFlag } = await import('../../server/config.js');
 config.anthropicKey = 'sk-ant-test-fake';
+config.arcade = false;   // the classroom focus (ARCADE off, the site's default; tests/unit/_setup.js turns it on for older tests)
 config.builderFullForAll = true;
 const auth = await import('../../server/auth.js');
 const games = await import('../../server/services/games.js');
@@ -71,7 +72,7 @@ const user = name => auth.createUser({ username: name, password: 'secret1' });
 const streamCalls = () => requests.filter(x => x.body.stream);
 
 test('arcade off is the default, and the classroom prompt and tools name nothing of the kit', () => {
-  assert.equal(config.arcade, false, 'ARCADE is off unless set');
+  assert.equal(parseFlag(undefined, 'ARCADE').on, false, 'ARCADE is off unless set');
   const { system, tools } = P.promptFor();
   assert.equal(system, P.SYSTEM_PROMPT_FOCUS); assert.equal(tools, P.TOOLS_FOCUS);
   noKit(system, 'SYSTEM_PROMPT_FOCUS');

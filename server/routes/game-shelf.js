@@ -22,6 +22,7 @@ import { liveGameOf } from '../live/live-games.js';
 import { gcAssignField } from './gclassroom.js';
 import { SUBJECTS, SHELF_INFO, shelfGrades } from '../learn.js';
 import { liveOn } from '../services/classlive-sessions.js';
+import { slugHidden, openSubjects } from '../services/game-focus.js';
 
 /** A grown-up's or teacher's account (school staff, or signed up as a teacher): "All my games" offers Find Oomba games.
  *  Kids and students keep their own folders on Build as before, without it. */
@@ -200,7 +201,7 @@ function oombaRow(req, ctx, g0, idp) {
     live && !liveOnly(g0) ? (ctx.kind === 'class' ? html`<a class="btn" href="/teach/assign?id=${g0.id}&amp;class=${ctx.c.id}">${ico('📌', { size: 18 })} ${t('folders.assignTo', { class: ctx.c.name })}</a>` : html`<a class="btn" href="/teach/assign?game=${g0.slug}">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>`) : '',
     html`<a class="btn" href="/build/save?id=${g0.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a>`,
   ];
-  const tryHref = `/play/${lg && lg.solo ? lg.solo : g0.slug}`;
+  const tryHref = lg && slugHidden(lg.solo) ? `/g/${g0.slug}` : `/play/${lg && lg.solo ? lg.solo : g0.slug}`;
   return html`<li class="mygame shelf-game oomba-game" data-id="${g0.id}" data-q="${`${g.title} ${meta}`.toLowerCase()}">
     <a class="mg-cover" href="/g/${g0.slug}" tabindex="-1" aria-hidden="true">${coverArt(g, '')}</a>
     <div class="mg-body"><h3><a href="/g/${g0.slug}" dir="auto">${g.title}</a></h3>
@@ -232,7 +233,7 @@ function oombaPane(req, ctx, { idp = 'oo', heading = 'shelf-h' } = {}) {
     </form>
     <div class="chips scroll oomba-subjects" role="group" aria-label="${t('learn.tab.subject')}">
       ${chip(!f.subject, oombaHref(ctx, f, { subject: '' }), t('learn.tab.subjects.all'))}
-      ${SUBJECTS.map(x => chip(f.subject === x.key, oombaHref(ctx, f, { subject: x.key }), t(`learn.tab.subjects.${x.key}`), x.emoji))}
+      ${openSubjects(SUBJECTS, SHELF_INFO).map(x => chip(f.subject === x.key, oombaHref(ctx, f, { subject: x.key }), t(`learn.tab.subjects.${x.key}`), x.emoji))}
     </div>
     ${list.length ? html`<ul class="mygames shelf-games oomba-list">${list.map(g => oombaRow(req, ctx, g, idp))}</ul>` : ''}
     <div class="shelf-empty oomba-none"${list.length ? raw(' hidden') : ''}>${emptyState({ emoji: '🦉', title: t('folders.oomba.none'), text: '' })}</div>`;

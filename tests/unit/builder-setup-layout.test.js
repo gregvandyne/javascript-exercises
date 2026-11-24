@@ -13,7 +13,7 @@ import fs from 'node:fs';
 import { deicon } from '../support/deicon.js';   // icons read back as the emoji they stand for
 
 const { config } = await import('../../server/config.js');
-config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.builderFullForAll = false; config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const { loadChat } = await import('../../server/builder/chat.js');

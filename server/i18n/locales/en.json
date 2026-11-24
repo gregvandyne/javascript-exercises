@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "2 players"
+    },
+    "focus": {
+      "puzzles": "Word games and puzzles",
+      "mapsStrategy": "Maps and strategy",
+      "tools": "Classroom tools",
+      "more": "More games",
+      "players": "Games by players"
     }
   },
   "search": {
@@ -1123,7 +1130,7 @@
         "p2": "Oomba sees only what a teacher has open and safe facts about it (a class's grade and size, a dashboard's widgets, a Figures worksheet's questions, a manipulatives board's items and steps), never students' names, answers or work. It changes a dashboard only after the teacher taps Apply. On a Figures worksheet or a manipulatives board, it makes the change the teacher asks for right away, and the teacher can undo it. When a teacher asks, it can also give a dashboard point to a student or to the whole class, which the teacher can undo.",
         "p3": "When web search is on, Oomba may send short searches to Anthropic's web search. They never include names or a location, sites for adults, gambling, social networks and the like are blocked, and every search is logged for our team without the teacher's name. Pages found on the web are shown as sources Oomba hasn't checked.",
         "p4": "A teacher can speak instead of typing: the sound is streamed to {provider} to turn it into words as they speak, and the audio is never kept, by us or by them. The words go into the message box for the teacher to check.",
-        "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. A teacher can delete the chat with New chat, and it is deleted with the account. A school admin can turn Oomba or its web search off for the school."
+        "p5": "We keep a teacher's chat, with the text of what they attached, for 60 days after it was last used (a school can choose from 7 to 365 days); a picture is deleted once Oomba has answered, and within a day at the latest. New chat keeps the old chat in the teacher's chat history, under the same rule; a teacher can delete any chat there, and every chat is deleted with the account. A school admin can turn Oomba or its web search off for the school."
       },
       "storybook": {
         "h": "The book maker",
@@ -1210,6 +1217,11 @@
     "grownupBuilder": "Grown-up builder",
     "sets": {
       "copyOf": "Copy of {title}"
+    },
+    "unavailable": {
+      "title": "This game isn’t available right now",
+      "text": "It may come back later. Play has more games and puzzles to try.",
+      "play": "Go to Play"
     }
   },
   "play": {
@@ -4324,8 +4336,12 @@
       "sees": "Sees:",
       "dashOf": "{name} dashboard",
       "newChat": "New chat",
-      "newChatAsk": "Start a new chat? This conversation and anything you attached to it will be deleted.",
-      "newChatOk": "Start a new chat",
+      "history": "Chat history",
+      "historyBack": "Back to the chat",
+      "historyEmpty": "No past chats yet. When you start a new chat, the one you had is kept here.",
+      "historyDelete": "Delete this chat",
+      "historyDeleteAsk": "Delete this chat for good? It can't be brought back.",
+      "historyDeleteOk": "Delete",
       "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a change to your dashboard or help with a lesson.",
       "idea": {
         "game": {
@@ -4673,7 +4689,7 @@
         "right": "Right"
       },
       "remove": "Remove",
-      "upload": "Your picture",
+      "upload": "Upload a picture",
       "useDrawn": "Use a drawn picture",
       "removePic": "No picture",
       "addDrawn": "Add a drawn picture",
@@ -4757,6 +4773,7 @@
         "firstCyoa": "A new adventure: {pages} pages, {endings} endings.",
         "added": "New pages: {pages}",
         "changed": "Changed pages: {pages}",
+        "noPics": "{count, plural, one {Today's pictures are used up, so # picture was not redrawn and still shows the old drawing. Open the book again tomorrow and it will be redrawn.} other {Today's pictures are used up, so # pictures were not redrawn and still show the old drawings. Open the book again tomorrow and they will be redrawn.}}",
         "removed": "{count, plural, one {Removed # page.} other {Removed # pages.}}",
         "kept": "{count, plural, one {Kept # page you changed meanwhile.} other {Kept # pages you changed meanwhile.}}",
         "repaired": "Oomba fixed a few links so every page works.",
@@ -4795,6 +4812,7 @@
         "keptOld": "The earlier picture stays.",
         "stale": "This page changed since its picture was drawn.",
         "redraw": "Redraw",
+        "noneLeft": "No pictures left today. You can redraw again tomorrow.",
         "draw": "Draw this picture",
         "note": "What should change? (optional)",
         "notePh": "For example: make it a sunny morning",
@@ -10262,7 +10280,8 @@
       "trial": "Start free trial",
       "trialShort": "Free trial",
       "menu": "Menu",
-      "kids": "Students build"
+      "kids": "Students build",
+      "tools": "Teaching tools"
     },
     "hero": {
       "kicker": "For teachers · grades K–8",
@@ -10534,6 +10553,13 @@
       "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
       "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
       "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
+    },
+    "focus": {
+      "manipulatives": "virtual math manipulatives",
+      "play": "Word puzzles, math games and live class games, with no sign-up.",
+      "freeLi1": "Every ready-made game, puzzle and classroom tool",
+      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class games and a Story Library. Teachers can also turn their own lessons into classroom games with an AI Builder.",
+      "demoCredit": "Game art from {title}, one of Oomba’s ready-made games."
     }
   },
   "rubrics": {
@@ -14825,7 +14851,8 @@
     },
     "blocked": {
       "personal": "Please take out personal details (names, addresses, phone numbers, links) and try again.",
-      "words": "Some of these words can't be used on Oomba Academy. Please change them and try again."
+      "words": "Some of these words can't be used on Oomba Academy. Please change them and try again.",
+      "realPeople": "Books can't be about a real, named person. Describe a made-up character instead, like “a soccer player who never gives up”."
     },
     "firstMessage": "Please make my book.",
     "errors": {
@@ -14899,6 +14926,9 @@
       "fromStory": "Here is your book from the Story Builder. I filled in what you already chose; answer the rest on the card.",
       "hello": "Let's make a book.",
       "noTheme": "No theme",
+      "otherTheme": "Something else",
+      "themeHint": "Type a theme, like pirates or recycling",
+      "useTheme": "Use this theme",
       "contextAi": "Type your ideas in the box below and send them, or attach files and pictures with the paperclip. They go into your book, not to the chat. Oomba then shows you exactly what will be sent.",
       "contextUpload": "Paste your story in the box below and send it, or attach it as a file with the paperclip (pictures too). It goes into your book, not to the chat. Oomba then shows you exactly what will be sent.",
       "added": "Added to your book.",

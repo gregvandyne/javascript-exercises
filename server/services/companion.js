@@ -43,6 +43,7 @@ import * as F from './figures.js';
 import { hasProfanity } from './textfilter.js';
 import * as CS from './companion-settings.js';
 import { GAMES_META } from './companion-games.js';
+import { gameHidden, coursesHidden } from './game-focus.js';
 import * as C from './oomba-chat.js';
 import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.js';
 import { allow } from './ratelimit.js';
@@ -188,7 +189,8 @@ export function setWeb(u, on) {
 
 // ---------------------------------------------------------------- files
 export const IMAGE_KEEP_MS = DAY;
-export const fileOf = (u, id) => (typeof id === 'string' && ID.test(id) ? q.get('SELECT f.* FROM oomba_files f JOIN oomba_chats c ON c.id=f.chat_id WHERE f.id=? AND f.owner_id=? AND c.surface=?', id, u.id, SURFACE) || null : null);
+// Only the open conversation's files (a past chat's come back with it when it is opened again).
+export const fileOf = (u, id) => (typeof id === 'string' && ID.test(id) ? q.get('SELECT f.* FROM oomba_files f JOIN oomba_chats c ON c.id=f.chat_id WHERE f.id=? AND f.owner_id=? AND c.surface=? AND c.ctx_key=?', id, u.id, SURFACE, KEY) || null : null);
 /** What a message (and the page) says about a file: never its text or bytes. */
 export const fileRef = f => (f ? { id: f.id, kind: f.kind, name: f.name, ...parse(f.meta, {}) } : null);
 /** A document's text, read on upload (routes/companion.js through builder/lesson.js readLessonFile), kept with the chat. */
@@ -245,7 +247,7 @@ export function searchGames({ topic = '', grade = null, subject = '', standard =
   const out = [];
   for (const m of GAMES_META) {
     const row = games.getGameBySlug(m.slug);
-    if (!row || row.status !== 'published') continue;
+    if (!row || row.status !== 'published' || gameHidden(row)) continue;   // hidden while ARCADE is off (game-focus.js)
     let score = 0;
     if (g !== null) { if (g < m.grades[0] - 1 || g > m.grades[1] + 1) continue; score += g >= m.grades[0] && g <= m.grades[1] ? 3 : 1; }
     if (std) { const hit = m.standards.some(x => x.toUpperCase().startsWith(std) || std.startsWith(x.toUpperCase())); if (hit) score += 4; }
@@ -290,7 +292,7 @@ export function searchLessons({ topic = '', grade = null } = {}) {
   const terms = termsOf(topic), g = gradeNum(grade);
   const hit = s => !terms.length || terms.some(t => fold(s).includes(t));
   let lessons = [];
-  try {
+  if (!coursesHidden()) try {
     const fits = l => { if (g === null) return true; const [lo, hi] = String(LT.GRADES[l.band] || '').split('-').map(Number); return !Number.isFinite(lo) || (g >= lo - 1 && g <= (hi || lo) + 1); };
     lessons = LT.templates().filter(l => fits(l) && hit(`${l.title} ${l.summary || ''} ${JSON.stringify(l.iCan || '')}`))
       .slice(0, 4).map(l => ({ id: l.key, title: l.title, grades: LT.GRADES[l.band] || '', minutes: l.duration || null, kind: 'CS Quest lesson' }));
@@ -631,7 +633,9 @@ export function bookLines(c, t) {
   if (c.kept) out.push(t('js.storybook-edit.ch.kept', { count: c.kept }));
   if (c.repaired) out.push(t('js.storybook-edit.ch.repaired'));
   if (!out.length) out.push(t('js.storybook-edit.ch.none'));
-  return { title: t('js.storybook-edit.ch.title'), items: out };
+  // Pictures that could not be redrawn today (storybook.js applyBook noPics): said first and plainly, so the change
+  // never reads as if they were.
+  return { title: t('js.storybook-edit.ch.title'), items: out, ...(c.noPics ? { warn: t('js.storybook-edit.ch.noPics', { count: c.noPics }) } : {}) };
 }
 /** A tap on a choice card: the class, the student or the reason. Once the card has all three the point is given (a turn
  *  of its own, with Undo). -> the conversation | fail */
@@ -1349,18 +1353,83 @@ export function send(u, body) {
   if (typeof body.book === 'string' && body.book) { const r = bookWords(u, body); if (r) return r; }
   const per = limitsOf(u).perHour;
   const n = q.get("SELECT COUNT(*) n FROM oomba_turns WHERE owner_id=? AND surface=? AND created_at>?", u.id, SURFACE, now() - 3600e3).n;
-  if (n >= per) return { ok: false, code: 'slow' };
+  if (n >= per && !S.unlimitedAi(u)) return { ok: false, code: 'slow' };
   return C.send(u, SURFACE, KEY, body);
 }
 export const undo = (u, turnId) => C.undo(u, SURFACE, KEY, turnId);
-/** New chat: the conversation and its files go (never while Oomba is answering). */
+// ---------------------------------------------------------------- chat history
+// New chat keeps the conversation (with its files) in the teacher's chat history instead of deleting it: the row stays,
+// under a history key ("h:<its id>"), so the same retention (prune: the school's days after it was last used) and the
+// account delete take it. Opening a past chat puts it back as the one conversation (the open one goes to the history);
+// Delete takes one for good. A chat with nothing said in it is not kept.
+export const HISTORY_PREFIX = 'h:';
+export const HISTORY_MAX = 50;
+const busyChat = id => !!q.get("SELECT 1 FROM oomba_turns WHERE chat_id=? AND status IN ('queued','running','interrupted')", id);
+const histRow = (u, id) => (typeof id === 'string' && /^[A-Za-z0-9_-]{6,40}$/.test(id)
+  ? q.get('SELECT * FROM oomba_chats WHERE id=? AND owner_id=? AND surface=? AND ctx_key LIKE ?', id, u.id, SURFACE, `${HISTORY_PREFIX}%`) || null : null);
+const saidIn = row => (parse(row && row.turns, []) || []).some(x => x.role === 'me' && String(x.text || '').trim());
+/** The open conversation into the history (or gone, when nothing was said in it). Inside a transaction. */
+function shelve(row) {
+  if (!saidIn(row)) { q.run('DELETE FROM oomba_chats WHERE id=?', row.id); return; }
+  const o = optsOf(row);
+  q.run('UPDATE oomba_chats SET ctx_key=?, opts=? WHERE id=?', HISTORY_PREFIX + row.id, JSON.stringify({ ...o, pending: null }), row.id);
+  q.run('UPDATE oomba_turns SET seen_at=? WHERE chat_id=? AND seen_at IS NULL', now(), row.id);   // no "new answer" dot for it
+}
+/** More than HISTORY_MAX past chats: the ones used longest ago go. */
+function trimHistory(u) {
+  const old = q.all('SELECT id FROM oomba_chats WHERE owner_id=? AND surface=? AND ctx_key LIKE ? ORDER BY updated_at DESC LIMIT -1 OFFSET ?', u.id, SURFACE, `${HISTORY_PREFIX}%`, HISTORY_MAX);
+  for (const r of old) if (!busyChat(r.id)) q.run('DELETE FROM oomba_chats WHERE id=?', r.id);
+}
+/** New chat: the conversation goes to the chat history (never while Oomba is answering). */
 export function reset(u) {
   const row = chatRow(u); if (!row) return { ok: true };
-  if (q.get("SELECT 1 FROM oomba_turns WHERE chat_id=? AND status IN ('queued','running','interrupted')", row.id)) return { ok: false, code: 'chatBusy' };
-  const opts = row.opts;
-  q.run('DELETE FROM oomba_chats WHERE id=?', row.id);
-  if (optsOf(row).web === false) { ensureChat(u); q.run('UPDATE oomba_chats SET opts=? WHERE owner_id=? AND surface=? AND ctx_key=?', opts, u.id, SURFACE, KEY); }
+  if (busyChat(row.id)) return { ok: false, code: 'chatBusy' };
+  const o = optsOf(row);
+  db.transaction(() => {
+    shelve(row);
+    // The web search switch stays as the teacher left it.
+    if (o.web === false) { ensureChat(u); q.run('UPDATE oomba_chats SET opts=? WHERE owner_id=? AND surface=? AND ctx_key=?', JSON.stringify({ web: false }), u.id, SURFACE, KEY); }
+    trimHistory(u);
+  })();
   audit(u.id, 'companion.reset', '', {});
+  return { ok: true };
+}
+/** The teacher's past chats, newest first: { id, title, at, n } (the title is their first message, names as they wrote them). */
+export function history(u) {
+  if (!companionFor(u)) return { ok: false, code: 'notFound' };
+  const rows = q.all('SELECT id, turns, updated_at FROM oomba_chats WHERE owner_id=? AND surface=? AND ctx_key LIKE ? ORDER BY updated_at DESC LIMIT ?', u.id, SURFACE, `${HISTORY_PREFIX}%`, HISTORY_MAX);
+  let own = null;
+  const chats = rows.map(r => {
+    const turns = parse(r.turns, []) || [];
+    const mine = turns.filter(x => x.role === 'me' && String(x.text || '').trim());
+    let title = mine.length ? String(mine[0].text).replace(/\s+/g, ' ').trim() : '';
+    if (TOKEN.test(title)) { TOKEN.lastIndex = 0; own ||= ownStudents(u); title = namesIn(title, chatWho(u, r), own); }
+    TOKEN.lastIndex = 0;
+    return { id: r.id, title: clip(title, 90), at: r.updated_at, n: mine.length };
+  });
+  return { ok: true, chats };
+}
+/** Open a past chat: it becomes the conversation again; the open one goes to the history. */
+export function openPast(u, id) {
+  if (!companionFor(u)) return { ok: false, code: 'notFound' };
+  const past = histRow(u, id); if (!past) return { ok: false, code: 'notFound' };
+  const row = chatRow(u);
+  if (row && busyChat(row.id)) return { ok: false, code: 'chatBusy' };
+  db.transaction(() => {
+    if (row) shelve(row);
+    q.run('UPDATE oomba_chats SET ctx_key=? WHERE id=?', KEY, past.id);
+    trimHistory(u);
+  })();
+  audit(u.id, 'companion.history.open', past.id, {});
+  return { ok: true };
+}
+/** Delete a past chat (and its files) for good. */
+export function deletePast(u, id) {
+  if (!companionFor(u)) return { ok: false, code: 'notFound' };
+  const past = histRow(u, id); if (!past) return { ok: false, code: 'notFound' };
+  if (busyChat(past.id)) return { ok: false, code: 'chatBusy' };
+  q.run('DELETE FROM oomba_chats WHERE id=?', past.id);
+  audit(u.id, 'companion.history.delete', past.id, {});
   return { ok: true };
 }
 
@@ -1529,6 +1598,11 @@ async function bookAct(u, row, turn, a, value) {
   const oops = key => save({ ...d, v: (d.v || 1) + 1, error: tt(key) });
   if (a === 'bookPick' || a === 'bookEdit') {
     const n = a === 'bookPick' ? BK.pick(d, value) : BK.edit(d, value);
+    if (n.error) return { ok: false, code: 'notFound' };
+    return save(n.state === 'check' ? await BK.runCheck(u, n) : n);
+  }
+  if (a === 'bookTheme') {
+    const n = BK.ownTheme(d, value);
     if (n.error) return { ok: false, code: 'notFound' };
     return save(n.state === 'check' ? await BK.runCheck(u, n) : n);
   }

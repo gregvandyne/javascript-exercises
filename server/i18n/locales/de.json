@@ -609,6 +609,13 @@
     },
     "chips": {
       "two": "Zu zweit"
+    },
+    "focus": {
+      "puzzles": "Wortspiele und Rätsel",
+      "mapsStrategy": "Karten und Strategie",
+      "tools": "Werkzeuge für die Klasse",
+      "more": "Mehr Spiele",
+      "players": "Spiele von Spielern"
     }
   },
   "search": {
@@ -1123,7 +1130,7 @@
         "p2": "Oomba sieht nur, was eine Lehrkraft geöffnet hat, und sichere Angaben dazu (die Klassenstufe und Größe einer Klasse, die Widgets eines Dashboards, die Fragen eines Figures-Arbeitsblatts, die Elemente und Schritte eines Bretts in den Manipulatives), nie Namen, Antworten oder Arbeiten von Schülerinnen und Schülern. Ein Dashboard ändert Oomba erst, wenn die Lehrkraft auf Übernehmen tippt. Auf einem Figures-Arbeitsblatt oder einem Brett macht Oomba die gewünschte Änderung sofort, und die Lehrkraft kann sie rückgängig machen. Auf Wunsch der Lehrkraft kann Oomba auch einem Kind oder der ganzen Klasse einen Dashboard-Punkt geben; die Lehrkraft kann das rückgängig machen.",
         "p3": "Wenn die Websuche an ist, kann Oomba kurze Suchen an die Websuche von Anthropic senden. Sie enthalten nie Namen oder einen Standort, Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Ähnliches sind gesperrt, und jede Suche wird für unser Team ohne den Namen der Lehrkraft protokolliert. Im Web gefundene Seiten werden als Quellen gezeigt, die Oomba nicht geprüft hat.",
         "p4": "Eine Lehrkraft kann sprechen statt tippen: Der Ton wird an {provider} übertragen, um ihn schon beim Sprechen in Wörter umzuwandeln, und das Audio wird nie gespeichert, weder von uns noch von ihnen. Die Wörter landen im Nachrichtenfeld, damit die Lehrkraft sie prüfen kann.",
-        "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Eine Lehrkraft kann den Chat mit Neuer Chat löschen, und er wird mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
+        "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Mit Neuer Chat kommt der bisherige Chat in den Chatverlauf der Lehrkraft, mit derselben Frist; dort kann sie jeden Chat löschen, und alle Chats werden mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
       },
       "storybook": {
         "h": "Der Buchmacher",
@@ -1210,6 +1217,11 @@
     "grownupBuilder": "Von Erwachsenen gebaut",
     "sets": {
       "copyOf": "Kopie von {title}"
+    },
+    "unavailable": {
+      "title": "Dieses Spiel ist gerade nicht verfügbar",
+      "text": "Vielleicht kommt es später zurück. Unter Spielen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
+      "play": "Zu Spielen"
     }
   },
   "play": {
@@ -4043,8 +4055,12 @@
       "sees": "Sieht:",
       "dashOf": "Dashboard {name}",
       "newChat": "Neuer Chat",
-      "newChatAsk": "Einen neuen Chat beginnen? Dieses Gespräch und alles, was du angehängt hast, wird gelöscht.",
-      "newChatOk": "Neuen Chat beginnen",
+      "history": "Chatverlauf",
+      "historyBack": "Zurück zum Chat",
+      "historyEmpty": "Noch keine früheren Chats. Wenn du einen neuen Chat beginnst, wird der bisherige hier aufbewahrt.",
+      "historyDelete": "Diesen Chat löschen",
+      "historyDeleteAsk": "Diesen Chat endgültig löschen? Er kann nicht wiederhergestellt werden.",
+      "historyDeleteOk": "Löschen",
       "hello": "Hallo! Ich bin Oomba, deine Hilfe beim Unterrichten. Frag mich nach einem Spiel, einem Buch, einer Änderung an deinem Dashboard oder Hilfe bei einer Stunde.",
       "idea": {
         "game": {
@@ -4392,7 +4408,7 @@
         "right": "Rechts"
       },
       "remove": "Entfernen",
-      "upload": "Dein Bild",
+      "upload": "Bild hochladen",
       "useDrawn": "Gezeichnetes Bild nehmen",
       "removePic": "Kein Bild",
       "addDrawn": "Gezeichnetes Bild hinzufügen",
@@ -4476,6 +4492,7 @@
         "firstCyoa": "Ein neues Abenteuer: {pages} Seiten, {endings} Enden.",
         "added": "Neue Seiten: {pages}",
         "changed": "Geänderte Seiten: {pages}",
+        "noPics": "{count, plural, one {Die Bilder für heute sind aufgebraucht, daher wurde # Bild nicht neu gezeichnet und zeigt noch die alte Zeichnung. Öffne das Buch morgen wieder, dann wird es neu gezeichnet.} other {Die Bilder für heute sind aufgebraucht, daher wurden # Bilder nicht neu gezeichnet und zeigen noch die alten Zeichnungen. Öffne das Buch morgen wieder, dann werden sie neu gezeichnet.}}",
         "removed": "{count, plural, one {# Seite entfernt.} other {# Seiten entfernt.}}",
         "kept": "{count, plural, one {# Seite, die du inzwischen geändert hast, wurde behalten.} other {# Seiten, die du inzwischen geändert hast, wurden behalten.}}",
         "repaired": "Oomba hat ein paar Verbindungen repariert, damit jede Seite funktioniert.",
@@ -4514,6 +4531,7 @@
         "keptOld": "Das frühere Bild bleibt.",
         "stale": "Diese Seite hat sich geändert, seit ihr Bild gemalt wurde.",
         "redraw": "Neu malen",
+        "noneLeft": "Für heute sind keine Bilder mehr übrig. Morgen kannst du wieder neu zeichnen lassen.",
         "draw": "Dieses Bild malen",
         "note": "Was soll anders sein? (freiwillig)",
         "notePh": "Zum Beispiel: ein sonniger Morgen",
@@ -9478,7 +9496,8 @@
       "trial": "Gratis testen",
       "trialShort": "Gratis testen",
       "menu": "Menü",
-      "kids": "Kinder bauen"
+      "kids": "Kinder bauen",
+      "tools": "Unterrichtswerkzeuge"
     },
     "hero": {
       "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
@@ -9750,6 +9769,13 @@
       "shotAlt": "Eine Live-Sitzung mit Zehnersystem-Blöcken auf dem Bildschirm der Lehrkraft: oben der Bereich der Lehrkraft, darunter die Felder von vier Kindern, jedes mit Hunderterplatten und Zehnerstangen in einer Stellenwerttafel.",
       "plan": "Das Material, seine Live-Räume, Figures und Oomba gehören zum Lehrkräfte-Plan.",
       "testing": "Das Material, seine Live-Räume, Figures und Oomba werden gerade in einigen Klassen ausprobiert."
+    },
+    "focus": {
+      "manipulatives": "virtuelle Mathe-Arbeitsmittel",
+      "play": "Kreuzworträtsel, Mathespiele und Live-Spiele mit der Klasse, ohne Anmeldung.",
+      "freeLi1": "Alle fertigen Spiele, Rätsel und Werkzeuge für die Klasse",
+      "faqA1": "Eine Plattform zum Unterrichten von der Vorschule bis Klasse 8: ein Klassen-Dashboard für den ganzen Tag, virtuelle Mathe-Arbeitsmittel, maßstabsgetreue Figuren, Rätsel-Baukästen wie das Kreuzworträtsel, Live-Spiele mit der Klasse und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Stunden außerdem mit dem KI-Builder zu Klassenspielen machen.",
+      "demoCredit": "Spielbild aus {title}, einem der fertigen Spiele von Oomba."
     }
   },
   "teach": {
@@ -14110,7 +14136,8 @@
     },
     "blocked": {
       "personal": "Bitte entferne persönliche Angaben (Namen, Adressen, Telefonnummern, Links) und versuch es noch einmal.",
-      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal."
+      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal.",
+      "realPeople": "Bücher dürfen nicht von einer echten, namentlich genannten Person handeln. Beschreibe stattdessen eine ausgedachte Figur, z. B. „eine Fußballerin, die nie aufgibt“."
     },
     "firstMessage": "Bitte mach mein Buch.",
     "errors": {
@@ -14184,6 +14211,9 @@
       "fromStory": "Hier ist dein Buch aus dem Geschichtenmacher. Was du schon gewählt hast, habe ich eingetragen; beantworte den Rest auf der Karte.",
       "hello": "Lass uns ein Buch machen.",
       "noTheme": "Kein Thema",
+      "otherTheme": "Etwas anderes",
+      "themeHint": "Gib ein Thema ein, z. B. Piraten oder Recycling",
+      "useTheme": "Dieses Thema nehmen",
       "contextAi": "Schreib deine Ideen unten ins Feld und schick sie ab, oder hänge mit der Büroklammer Dateien und Bilder an. Sie kommen in dein Buch, nicht in den Chat. Danach zeigt Oomba dir genau, was gesendet wird.",
       "contextUpload": "Füge deine Geschichte unten ins Feld ein und schick sie ab, oder hänge sie mit der Büroklammer als Datei an (Bilder auch). Sie kommt in dein Buch, nicht in den Chat. Danach zeigt Oomba dir genau, was gesendet wird.",
       "added": "Zu deinem Buch hinzugefügt.",

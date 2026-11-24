@@ -240,6 +240,15 @@ test('a change: only the pages Oomba touched change, the teacher\'s edits made m
 });
 
 // ---------------------------------------------------------------- what is sent, screened first
+test('screening a book: real people get the book\'s own words (not the Builder\'s "in games")', async () => {
+  SB.hooks.screen = async () => ({ ok: false, category: 'real_people', message: 'I can’t put real people in games. Let’s invent a brand-new character!' });
+  try {
+    const r = await SB.screenSetup({ source: 'ai', about: 'a book about a soccer player', story: '', files: [] });
+    assert.equal(r.category, 'real_people');
+    assert.match(r.message, /Books can't be about a real, named person/); assert.doesNotMatch(r.message, /games/);
+  } finally { SB.hooks.screen = null; }
+});
+
 test('the check step shows exactly what is sent: names, emails and phones taken out, and the Builder\'s screening before anything is sent', async () => {
   const setup = { ...SETUP, source: 'upload', kind: 'linear', story: 'Mia Pupil went to the park with Leo Pupil. Call 07700 900123 or write to a@b.co. They had a picnic and fed the ducks by the pond.' };
   let r = await call('/api/library/make/check', { method: 'POST', user: teacher, body: { setup } });

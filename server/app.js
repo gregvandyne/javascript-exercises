@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { sessionMiddleware, csrfCheck } from './auth.js';
 import { notFound, page } from './views/layout.js';
+import { mayOpenCourses } from './services/game-focus.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { handler as health, lifecycle } from './services/health.js';
@@ -90,6 +91,8 @@ const NO_INFLATE = { inflate: false };
  *  live frame token, /live/frame/<token>). */
 export const logPath = p => String(p).replace(/^\/join\/[^/]+/, '/join/:code').replace(/^\/live\/frame\/[^/]+/, '/live/frame/:token');
 
+/** The course pages and APIs hidden while COURSES is off (the class lesson pages, gradebook and standards are not here). */
+export const COURSE_PATH = /^\/(courses(\/|$)|teachers\/(cs-quest|number-quest|cyber-defenders)\/?$|teach\/(cs-quest|cyber-defenders)(\/|$)|number-quest\/|api\/(courses|cs-quest|number-quest)\/|api\/lessons\/from-template(\/|$)|api\/classes\/[^/]+\/assign-unit$)/;
 export function createApp() {
   const app = express();
   app.disable('x-powered-by');
@@ -214,6 +217,13 @@ export function createApp() {
   app.use(csrfCheck);
   // Grown-up accounts may only play games and look after their family: everything else is a 404 for them.
   app.use(grownupGuard);
+
+  // The ready-made courses while COURSES is off (services/game-focus.js): the normal 404 for everyone but the platform
+  // admin and the people of a class that has a course lesson assigned (their lessons, gradebook and standards keep working).
+  app.use((req, res, next) => {
+    if (!COURSE_PATH.test(req.path) || mayOpenCourses(req.user)) return next();
+    return req.path.startsWith('/api/') ? res.status(404).json({ error: tReq(req)('errors.api.notFound') }) : notFound(req, res);
+  });
 
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and

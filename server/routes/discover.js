@@ -10,6 +10,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
 import { HUBS, LEARN_FUN, CLASS_TOOLS } from '../learn.js';
+import { keepSlugs, openHubs, arcadeHidden } from '../services/game-focus.js';
 import { availableCodes, keepLang } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
@@ -80,6 +81,7 @@ router.get('/play', (req, res) => playPage(req, res, { landing: false }));
  *  home keeps its heading, doors and structured data there); /play is never indexed ('/' is the page search engines see). */
 function playPage(req, res, { landing }) {
   const t = req.t;
+  if (arcadeHidden()) return focusPlay(req, res, { landing });
   /** Links stay in the language address the page was opened at (/es -> /es/teachers). */
   const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
   const u = req.user;
@@ -90,7 +92,7 @@ function playPage(req, res, { landing }) {
   // The hero is not repeated in the rails right under it (Featured, Popular, Top rated, New).
   const notHero = list => (hero ? list.filter(g => g.id !== hero.id) : list);
   const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
-  const fromLearn = LEARN_FUN.map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
+  const fromLearn = keepSlugs(LEARN_FUN).map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
   const rails = [
     u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
     u ? rail({ title: t('home.rails.keep'), emoji: '⏯️', games: games.recentlyPlayed(u, 12, play), user: u, id: 'keep' }) : '',
@@ -121,7 +123,7 @@ function playPage(req, res, { landing }) {
     : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
       ${homeDoors(req)}
       ${joinDoor}
-      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${HUBS.map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${openHubs(HUBS).map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
   const body = html`${intro}
   <div id="play" class="home-play">
   ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
@@ -141,6 +143,76 @@ function playPage(req, res, { landing }) {
     <a class="chip" role="listitem" href="#two">${ico('👥', { size: 18 })}${t('home.chips.two')}</a>
   </div>
   ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}
+  </div>`;
+  if (!landing) return page(req, res, { title: t('nav.play'), active: 'play', body });
+  page(req, res, { title: '', active: 'play', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {
+    index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
+    jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
+  } });
+}
+
+/** Play while the arcade is hidden (services/game-focus.js; docs/decisions.md "Focus: teaching tools first"): with fewer
+ *  than twenty official games, rails sorted by plays or rating would show the same few games again and again. Instead:
+ *  the hero, then one section per kind of game, each official game on the page once (the hero's not again), then the
+ *  player's own games and games by players (never official, so no repeat). Sections with no game are left out. */
+export const FOCUS_SECTIONS = [
+  { id: 'live', key: 'learn.tab.live', emoji: '📡', has: g => !!liveGameOf(g) },
+  { id: 'puzzles', key: 'home.focus.puzzles', emoji: '🧩', slugs: ['crossword', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek'] },
+  { id: 'math', key: 'learn.hubs.math.name', emoji: '➗', slugs: ['algebra-builder', 'box-by-box'] },
+  { id: 'maps', key: 'home.focus.mapsStrategy', emoji: '🌍', slugs: ['atlas-quest', 'castle-clash'] },
+  { id: 'tools', key: 'home.focus.tools', emoji: '🤫', has: g => CLASS_TOOLS.includes(g.slug) },
+  { id: 'more', key: 'home.focus.more', emoji: '🎮', has: () => true },
+];
+/** The hero while the arcade is hidden: the first of these anyone may open. */
+const FOCUS_HERO = ['crossword', 'brain-board', 'doodle-hoot', 'word-hunt'];
+/** -> { hero, sections: [{ id, key, emoji, games }] } from the official games this viewer may open. */
+export function focusSections(u) {
+  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 });
+  const hero = FOCUS_HERO.map(s => all.find(g => g.slug === s)).find(Boolean) || all.find(g => !CLASS_TOOLS.includes(g.slug)) || null;
+  const seen = new Set(hero ? [hero.id] : []);
+  const sections = FOCUS_SECTIONS.map(sec => {
+    const pick = sec.slugs ? sec.slugs.map(s => all.find(g => g.slug === s)).filter(Boolean) : all.filter(sec.has);
+    const list = pick.filter(g => !seen.has(g.id)); list.forEach(g => seen.add(g.id));
+    return { ...sec, games: list };
+  }).filter(sec => sec.games.length);
+  return { hero, sections };
+}
+function focusPlay(req, res, { landing }) {
+  const t = req.t, u = req.user;
+  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
+  const { hero, sections } = focusSections(u);
+  const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
+  const players = games.listVisible(u, { order: 'popular', limit: 16 }).filter(g => g.source !== 'seed');
+  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
+  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}`
+    : !landing ? html`<h1 class="sr-only">${t('nav.play')}</h1>`
+    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
+      ${homeDoors(req)}
+      ${joinDoor}
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${openHubs(HUBS).map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
+  const body = html`${intro}
+  <div id="play" class="home-play">
+  ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
+    <div>
+      <span class="hero-kicker"><span class="emo">${ico('⭐', { size: 20 })}</span> ${t('home.hero.kicker')}</span>
+      <h2 class="hero-title">${hero.title}</h2>
+      <p>${firstSentence(hero.description)}</p>
+      <div class="row">
+        <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : keepLang(req, `/play/${hero.slug}`)}">▶ ${t('home.hero.play')}</a>
+        <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>
+      </div>
+    </div>
+    <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '', { eager: true })}</a>
+  </section>` : ''}
+  ${sections.length > 1 ? html`<div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
+    ${sections.map(sec => html`<a class="chip" role="listitem" href="#sec-${sec.id}">${ico(sec.emoji, { size: 18 })}${t(sec.key)}</a>`)}
+  </div>` : ''}
+  ${sections.map(sec => rail({ title: t(sec.key), emoji: sec.emoji, games: sec.games, user: u, id: `sec-${sec.id}` }))}
+  ${buildBanner(req)}
+  ${mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : ''}
+  ${rail({ title: t('home.focus.players'), emoji: '✨', games: players, user: u, id: 'players', more: '/search?sort=popular' })}
+  ${!hero && !sections.length ? emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } }) : ''}
   </div>`;
   if (!landing) return page(req, res, { title: t('nav.play'), active: 'play', body });
   page(req, res, { title: '', active: 'play', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {

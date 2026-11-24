@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "2 jugadores"
+    },
+    "focus": {
+      "puzzles": "Juegos de palabras y pasatiempos",
+      "mapsStrategy": "Mapas y estrategia",
+      "tools": "Herramientas de clase",
+      "more": "Más juegos",
+      "players": "Juegos de jugadores"
     }
   },
   "search": {
@@ -1122,7 +1129,7 @@
         "p2": "Oomba solo ve lo que el docente tiene abierto y datos seguros sobre eso (el grado y el tamaño de una clase, los widgets de un panel, las preguntas de una hoja de Figures, los elementos y pasos de un tablero de manipulativos), nunca los nombres, respuestas ni trabajos de los estudiantes. Solo cambia un panel después de que el docente toca Aplicar. En una hoja de Figures o un tablero de manipulativos, hace enseguida el cambio que pide el docente, y el docente puede deshacerlo. Si el docente lo pide, también puede dar un punto del panel a un alumno o a toda la clase, y el docente puede deshacerlo.",
         "p3": "Cuando la búsqueda web está activada, Oomba puede enviar búsquedas cortas a la búsqueda web de Anthropic. Nunca incluyen nombres ni una ubicación; los sitios para adultos, de apuestas, redes sociales y similares están bloqueados, y cada búsqueda queda registrada para nuestro equipo sin el nombre del docente. Las páginas encontradas en la web se muestran como fuentes que Oomba no revisó.",
         "p4": "Un docente puede hablar en lugar de escribir: el sonido se envía a {provider} para convertirlo en palabras mientras habla, y el audio nunca se guarda, ni nosotros ni ellos. Las palabras aparecen en el cuadro del mensaje para que el docente las revise.",
-        "p5": "Guardamos el chat de un docente, con el texto de lo que adjuntó, durante 60 días desde su último uso (una escuela puede elegir de 7 a 365 días); una imagen se borra en cuanto Oomba responde, y como máximo en un día. Un docente puede borrar el chat con Chat nuevo, y se borra con la cuenta. Un administrador de la escuela puede desactivar Oomba o su búsqueda web para la escuela."
+        "p5": "Guardamos el chat de un docente, con el texto de lo que adjuntó, durante 60 días desde su último uso (una escuela puede elegir de 7 a 365 días); una imagen se borra en cuanto Oomba responde, y como máximo en un día. Con Chat nuevo, el chat anterior queda en el historial de chats del docente, con la misma regla; allí puede borrar cualquier chat, y todos se borran con la cuenta. Un administrador de la escuela puede desactivar Oomba o su búsqueda web para la escuela."
       },
       "storybook": {
         "h": "El creador de libros",
@@ -1209,6 +1216,11 @@
     "grownupBuilder": "Creador adulto",
     "sets": {
       "copyOf": "Copia de {title}"
+    },
+    "unavailable": {
+      "title": "Este juego no está disponible ahora",
+      "text": "Puede que vuelva más adelante. En Jugar hay más juegos y pasatiempos para probar.",
+      "play": "Ir a Jugar"
     }
   },
   "play": {
@@ -4042,8 +4054,12 @@
       "sees": "Ve:",
       "dashOf": "Panel de {name}",
       "newChat": "Chat nuevo",
-      "newChatAsk": "¿Empezar un chat nuevo? Se borrarán esta conversación y todo lo que adjuntaste.",
-      "newChatOk": "Empezar un chat nuevo",
+      "history": "Historial de chats",
+      "historyBack": "Volver al chat",
+      "historyEmpty": "Aún no hay chats anteriores. Cuando empieces un chat nuevo, el que tenías se guarda aquí.",
+      "historyDelete": "Borrar este chat",
+      "historyDeleteAsk": "¿Borrar este chat para siempre? No se puede recuperar.",
+      "historyDeleteOk": "Borrar",
       "hello": "¡Hola! Soy Oomba, tu ayudante para enseñar. Pídeme un juego, un libro, un cambio en tu panel o ayuda con una clase.",
       "idea": {
         "game": {
@@ -4391,7 +4407,7 @@
         "right": "Derecha"
       },
       "remove": "Quitar",
-      "upload": "Tu imagen",
+      "upload": "Subir una imagen",
       "useDrawn": "Usar un dibujo",
       "removePic": "Sin imagen",
       "addDrawn": "Añadir un dibujo",
@@ -4475,6 +4491,7 @@
         "firstCyoa": "Una aventura nueva: {pages} páginas, {endings} finales.",
         "added": "Páginas nuevas: {pages}",
         "changed": "Páginas cambiadas: {pages}",
+        "noPics": "{count, plural, one {Ya se usaron las imágenes de hoy, así que # imagen no se volvió a dibujar y sigue mostrando el dibujo anterior. Abre el libro mañana y se volverá a dibujar.} other {Ya se usaron las imágenes de hoy, así que # imágenes no se volvieron a dibujar y siguen mostrando los dibujos anteriores. Abre el libro mañana y se volverán a dibujar.}}",
         "removed": "{count, plural, one {Se quitó # página.} other {Se quitaron # páginas.}}",
         "kept": "{count, plural, one {Se conservó # página que cambiaste mientras tanto.} other {Se conservaron # páginas que cambiaste mientras tanto.}}",
         "repaired": "Oomba arregló algunos enlaces para que todas las páginas funcionen.",
@@ -4513,6 +4530,7 @@
         "keptOld": "Se queda la imagen anterior.",
         "stale": "Esta página cambió desde que se dibujó su imagen.",
         "redraw": "Volver a dibujar",
+        "noneLeft": "Hoy ya no quedan imágenes. Mañana podrás volver a dibujar.",
         "draw": "Dibujar esta imagen",
         "note": "¿Qué debe cambiar? (opcional)",
         "notePh": "Por ejemplo: que sea una mañana soleada",
@@ -9477,7 +9495,8 @@
       "trial": "Prueba gratis",
       "trialShort": "Prueba gratis",
       "menu": "Menú",
-      "kids": "Crean los estudiantes"
+      "kids": "Crean los estudiantes",
+      "tools": "Herramientas para enseñar"
     },
     "hero": {
       "kicker": "Para docentes · de kínder a 8.º grado",
@@ -9749,6 +9768,13 @@
       "shotAlt": "Una sesión en vivo de bloques de base diez en la pantalla del docente: el área del docente arriba y los cuadros de cuatro estudiantes debajo, cada uno con placas de centenas y barras de decenas en una tabla de valor posicional.",
       "plan": "Los manipulativos, sus salas en vivo, Figures y Oomba son parte del plan Docente.",
       "testing": "Los manipulativos, sus salas en vivo, Figures y Oomba se están probando ahora en algunas aulas."
+    },
+    "focus": {
+      "manipulatives": "materiales manipulativos virtuales de matemáticas",
+      "play": "Crucigramas, juegos de matemáticas y juegos en vivo con la clase, sin registrarse.",
+      "freeLi1": "Todos los juegos listos para usar, pasatiempos y herramientas de clase",
+      "faqA1": "Una plataforma para enseñar desde preescolar hasta 8.º grado: un panel de clase para llevar el día, materiales manipulativos virtuales de matemáticas, figuras dibujadas a escala, creadores de pasatiempos como el Crucigrama, juegos en vivo con la clase y una Biblioteca de cuentos. Los docentes también pueden convertir sus propias lecciones en juegos de clase con el Builder de IA.",
+      "demoCredit": "Imagen del juego {title}, uno de los juegos listos para usar de Oomba."
     }
   },
   "teach": {
@@ -14109,7 +14135,8 @@
     },
     "blocked": {
       "personal": "Quita los datos personales (nombres, direcciones, teléfonos, enlaces) y vuelve a intentarlo.",
-      "words": "Algunas de estas palabras no se pueden usar en Oomba Academy. Cámbialas y vuelve a intentarlo."
+      "words": "Algunas de estas palabras no se pueden usar en Oomba Academy. Cámbialas y vuelve a intentarlo.",
+      "realPeople": "Los libros no pueden tratar de una persona real con nombre. Describe un personaje inventado, como «una futbolista que nunca se rinde»."
     },
     "firstMessage": "Por favor, crea mi libro.",
     "errors": {
@@ -14183,6 +14210,9 @@
       "fromStory": "Aquí está tu libro del Creador de cuentos. Ya rellené lo que elegiste; responde el resto en la tarjeta.",
       "hello": "Hagamos un libro.",
       "noTheme": "Sin tema",
+      "otherTheme": "Otra cosa",
+      "themeHint": "Escribe un tema, como piratas o reciclaje",
+      "useTheme": "Usar este tema",
       "contextAi": "Escribe tus ideas en el cuadro de abajo y envíalas, o adjunta archivos y dibujos con el clip. Van a tu libro, no al chat. Después Oomba te muestra exactamente lo que se enviará.",
       "contextUpload": "Pega tu cuento en el cuadro de abajo y envíalo, o adjúntalo como archivo con el clip (también dibujos). Va a tu libro, no al chat. Después Oomba te muestra exactamente lo que se enviará.",
       "added": "Añadido a tu libro.",

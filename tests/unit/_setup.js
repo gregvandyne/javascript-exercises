@@ -8,6 +8,10 @@ process.env.LOG_REQUESTS = '0';
 // test turns it on (tests/unit/teacher-landing.test.js): the older home-page tests describe the signed-out home, which
 // is now /play. Whoever merges the Play/Learn homes moves those tests to /play and drops this line.
 if (process.env.LANDING_AT_ROOT === undefined) process.env.LANDING_AT_ROOT = '0';
+// The arcade games and the courses (ARCADE, COURSES; services/game-focus.js) are hidden by default on the site, but the
+// unit tests describe the whole product: both are on here unless a test turns them off first (tests/unit/focus-hide.test.js).
+if (process.env.ARCADE === undefined) process.env.ARCADE = '1';
+if (process.env.COURSES === undefined) process.env.COURSES = '1';
 // Billing off unless a test turns it on against the fake Stripe: exported STRIPE_* settings never reach a test.
 for (const k of Object.keys(NO_STRIPE_ENV)) delete process.env[k];
 // Email off unless a test turns it on with a fake Resend (services/email.js _hooks): exported keys never reach a test.

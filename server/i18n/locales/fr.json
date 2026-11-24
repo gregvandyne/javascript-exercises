@@ -608,6 +608,13 @@
     },
     "chips": {
       "two": "À deux"
+    },
+    "focus": {
+      "puzzles": "Jeux de mots et casse-têtes",
+      "mapsStrategy": "Cartes et stratégie",
+      "tools": "Outils de classe",
+      "more": "Plus de jeux",
+      "players": "Jeux des joueurs"
     }
   },
   "search": {
@@ -1122,7 +1129,7 @@
         "p2": "Oomba ne voit que ce que l'enseignant a ouvert et des informations sûres à ce sujet (le niveau et l'effectif d'une classe, les widgets d'un tableau de bord, les questions d'une fiche Figures, les éléments et étapes d'un plateau de manipulations), jamais les noms, réponses ou travaux des élèves. Il ne modifie un tableau de bord qu'après que l'enseignant a touché Appliquer. Sur une fiche Figures ou un plateau de manipulations, il fait tout de suite le changement demandé, et l'enseignant peut l'annuler. À la demande de l'enseignant, il peut aussi donner un point du tableau de bord à un élève ou à toute la classe, ce que l'enseignant peut annuler.",
         "p3": "Quand la recherche web est activée, Oomba peut envoyer de courtes recherches à la recherche web d'Anthropic. Elles ne contiennent jamais de noms ni de localisation ; les sites pour adultes, de jeux d'argent, les réseaux sociaux et autres sont bloqués, et chaque recherche est enregistrée pour notre équipe sans le nom de l'enseignant. Les pages trouvées sur le web sont présentées comme des sources qu'Oomba n'a pas vérifiées.",
         "p4": "Un enseignant peut parler au lieu d'écrire : le son est transmis à {provider} pour être transformé en mots pendant qu'il parle, et l'audio n'est jamais conservé, ni par nous ni par eux. Les mots arrivent dans la zone de message pour que l'enseignant les vérifie.",
-        "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Un enseignant peut supprimer la discussion avec Nouvelle discussion, et elle est supprimée avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
+        "p5": "Nous conservons la discussion d'un enseignant, avec le texte de ses pièces jointes, pendant 60 jours après sa dernière utilisation (une école peut choisir de 7 à 365 jours) ; une image est supprimée dès qu'Oomba a répondu, et au plus tard au bout d'un jour. Avec Nouvelle discussion, l'ancienne discussion est gardée dans l'historique de l'enseignant, avec la même règle ; il peut y supprimer n'importe quelle discussion, et toutes sont supprimées avec le compte. Un administrateur de l'école peut désactiver Oomba ou sa recherche web pour l'école."
       },
       "storybook": {
         "h": "Le créateur de livres",
@@ -1209,6 +1216,11 @@
     "grownupBuilder": "Créateur adulte",
     "sets": {
       "copyOf": "Copie de {title}"
+    },
+    "unavailable": {
+      "title": "Ce jeu n’est pas disponible pour le moment",
+      "text": "Il reviendra peut-être plus tard. Jouer propose d’autres jeux et casse-têtes à essayer.",
+      "play": "Aller à Jouer"
     }
   },
   "play": {
@@ -4042,8 +4054,12 @@
       "sees": "Voit :",
       "dashOf": "Tableau de bord {name}",
       "newChat": "Nouvelle discussion",
-      "newChatAsk": "Commencer une nouvelle discussion ? Cette conversation et tout ce que tu y as joint seront supprimés.",
-      "newChatOk": "Commencer une nouvelle discussion",
+      "history": "Historique des discussions",
+      "historyBack": "Retour à la discussion",
+      "historyEmpty": "Pas encore de discussions passées. Quand vous commencez une nouvelle discussion, l'ancienne est gardée ici.",
+      "historyDelete": "Supprimer cette discussion",
+      "historyDeleteAsk": "Supprimer définitivement cette discussion ? Elle ne pourra pas être récupérée.",
+      "historyDeleteOk": "Supprimer",
       "hello": "Bonjour ! Je suis Oomba, ton assistant pour enseigner. Demande-moi un jeu, un livre, un changement sur ton tableau de bord ou de l'aide pour un cours.",
       "idea": {
         "game": {
@@ -4391,7 +4407,7 @@
         "right": "Droite"
       },
       "remove": "Retirer",
-      "upload": "Votre image",
+      "upload": "Importer une image",
       "useDrawn": "Utiliser une image dessinée",
       "removePic": "Pas d'image",
       "addDrawn": "Ajouter une image dessinée",
@@ -4475,6 +4491,7 @@
         "firstCyoa": "Une nouvelle aventure : {pages} pages, {endings} fins.",
         "added": "Nouvelles pages : {pages}",
         "changed": "Pages modifiées : {pages}",
+        "noPics": "{count, plural, one {Les images du jour sont épuisées : # image n'a pas été redessinée et montre encore l'ancien dessin. Rouvrez le livre demain et elle sera redessinée.} other {Les images du jour sont épuisées : # images n'ont pas été redessinées et montrent encore les anciens dessins. Rouvrez le livre demain et elles seront redessinées.}}",
         "removed": "{count, plural, one {# page retirée.} other {# pages retirées.}}",
         "kept": "{count, plural, one {# page que vous avez modifiée entre-temps a été gardée.} other {# pages que vous avez modifiées entre-temps ont été gardées.}}",
         "repaired": "Oomba a réparé quelques liens pour que chaque page fonctionne.",
@@ -4513,6 +4530,7 @@
         "keptOld": "L'image précédente reste.",
         "stale": "Cette page a changé depuis le dessin de son image.",
         "redraw": "Redessiner",
+        "noneLeft": "Plus d'images pour aujourd'hui. Vous pourrez redessiner demain.",
         "draw": "Dessiner cette image",
         "note": "Que faut-il changer ? (facultatif)",
         "notePh": "Par exemple : un matin ensoleillé",
@@ -9477,7 +9495,8 @@
       "trial": "Essai gratuit",
       "trialShort": "Essai gratuit",
       "menu": "Menu",
-      "kids": "Les élèves créent"
+      "kids": "Les élèves créent",
+      "tools": "Outils pédagogiques"
     },
     "hero": {
       "kicker": "Pour les enseignants · de la maternelle à la 4e",
@@ -9749,6 +9768,13 @@
       "shotAlt": "Une séance en direct de blocs de base dix sur l’écran de l’enseignant : l’espace de l’enseignant en haut et les carrés de quatre élèves en dessous, chacun avec des plaques de centaines et des barres de dizaines dans un tableau de numération.",
       "plan": "Les manipulables, leurs salles en direct, Figures et Oomba font partie du forfait Enseignant.",
       "testing": "Les manipulables, leurs salles en direct, Figures et Oomba sont en test dans quelques classes en ce moment."
+    },
+    "focus": {
+      "manipulatives": "manipulables de maths virtuels",
+      "play": "Mots croisés, jeux de maths et jeux en direct avec la classe, sans inscription.",
+      "freeLi1": "Tous les jeux prêts à l’emploi, casse-têtes et outils de classe",
+      "faqA1": "Une plateforme pour enseigner de la maternelle à la 4e : un tableau de bord de classe pour mener la journée, des manipulables de maths virtuels, des figures tracées à l’échelle, des créateurs de casse-têtes comme les Mots croisés, des jeux en direct avec la classe et une Bibliothèque d’histoires. Les enseignants peuvent aussi transformer leurs propres leçons en jeux de classe avec le Builder IA.",
+      "demoCredit": "Visuel du jeu {title}, l’un des jeux prêts à l’emploi d’Oomba."
     }
   },
   "teach": {
@@ -14109,7 +14135,8 @@
     },
     "blocked": {
       "personal": "Merci de retirer les informations personnelles (noms, adresses, numéros de téléphone, liens) et de réessayer.",
-      "words": "Certains de ces mots ne peuvent pas être utilisés sur Oomba Academy. Merci de les changer et de réessayer."
+      "words": "Certains de ces mots ne peuvent pas être utilisés sur Oomba Academy. Merci de les changer et de réessayer.",
+      "realPeople": "Les livres ne peuvent pas parler d'une vraie personne nommée. Décrivez plutôt un personnage inventé, comme « une footballeuse qui n'abandonne jamais »."
     },
     "firstMessage": "Crée mon livre, s'il te plaît.",
     "errors": {
@@ -14183,6 +14210,9 @@
       "fromStory": "Voici ton livre venu du Créateur d’histoires. J’ai rempli ce que tu avais déjà choisi ; réponds au reste sur la carte.",
       "hello": "Faisons un livre.",
       "noTheme": "Sans thème",
+      "otherTheme": "Autre chose",
+      "themeHint": "Écris un thème, comme les pirates ou le recyclage",
+      "useTheme": "Utiliser ce thème",
       "contextAi": "Écrivez vos idées dans la zone ci-dessous et envoyez-les, ou joignez des fichiers et des images avec le trombone. Ils vont dans votre livre, pas dans la discussion. Oomba vous montre ensuite exactement ce qui sera envoyé.",
       "contextUpload": "Collez votre histoire dans la zone ci-dessous et envoyez-la, ou joignez-la en fichier avec le trombone (des images aussi). Elle va dans votre livre, pas dans la discussion. Oomba vous montre ensuite exactement ce qui sera envoyé.",
       "added": "Ajouté à votre livre.",

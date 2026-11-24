@@ -12,7 +12,7 @@ import './_live.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { call, teacher, teacher2, mia, kid, mum, cls, q, RL, config, cookieFor, ctx } from './_live.js';
+import { call, teacher, teacher2, mia, kid, mum, cls, q, RL, config, cookieFor, ctx, boss, S } from './_live.js';
 import * as SB from '../../server/services/storybook.js';
 import * as C from '../../server/services/oomba-chat.js';
 import * as D from '../../server/services/storybook-draw.js';
@@ -194,6 +194,80 @@ test('the daily picture count: in the database, taken at the moment of drawing, 
   q.run('DELETE FROM made_book_ai_days');
   const takes = await Promise.all(Array.from({ length: 20 }, () => Promise.resolve().then(() => SB.take(teacher, { key: `${new Date().toISOString().slice(0, 10)}:draw`, cap: D.capOf(teacher) }))));
   assert.equal(takes.filter(Boolean).length, 3);
+});
+
+test('out of pictures: a change says plainly that pictures were not redrawn; opening the book on a new day redraws them (a refused one is not retried)', async () => {
+  config.storybookPicturesFreePerDay = 40; config.storybookPicturesPlanPerDay = 40;
+  const id = await start();
+  const row = () => q.get('SELECT * FROM made_books WHERE id=?', id);
+  const b = SB.bookOf(row());
+  // the day's pictures are used up; then Oomba changes every page's scene
+  q.run('INSERT INTO made_book_ai_days(user_id, day, n) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET n=excluded.n', teacher.id, `${new Date().toISOString().slice(0, 10)}:draw`, 40);
+  assert.equal(D.left(teacher), 0);
+  const next = JSON.parse(JSON.stringify(b));
+  for (const p of next.pages) p.pic.scene = `${p.pic.scene} Everyone wears a numbered jersey.`;
+  const r = SB.applyBook(teacher, id, b, next);
+  assert.ok(r.change.drawing >= b.pages.length);
+  assert.equal(r.change.noPics, r.change.drawing, 'every picture to redraw is said to be held back');
+  const CO = await import('../../server/services/companion.js');
+  const { tFor } = await import('../../server/i18n/index.js');
+  const lines = CO.bookLines(r.change, tFor('en'));
+  assert.match(lines.warn, /Today's pictures are used up, so \d+ pictures were not redrawn and still show the old drawings/);
+  await settle();
+  assert.ok(draws(id).filter(d => d.target.startsWith('page:')).every(d => d.state === 'fallback' && d.reason === 'limit'), 'nothing was drawn');
+  // one picture was refused (not the limit): never retried by opening the book
+  const refused = draws(id).find(d => d.target.startsWith('page:'));
+  q.run("UPDATE made_book_draws SET reason='refused' WHERE id=?", refused.id);
+  // a new day: opening the book queues the held-back pictures again, and they are drawn
+  q.run('DELETE FROM made_book_ai_days'); RL._reset();
+  const n0 = fake.calls.length;
+  const page = await call(`/library/make/${id}`, { user: teacher });
+  assert.equal(page.status, 200);
+  await waitFor(() => quiet(id));
+  const pages = draws(id).filter(d => d.target.startsWith('page:'));
+  assert.equal(fake.calls.length - n0, pages.length - 1, 'every held-back page redrawn, the refused one not');
+  assert.ok(pages.filter(d => d.id !== refused.id).every(d => d.state === 'done'));
+  assert.equal(q.get('SELECT state, reason FROM made_book_draws WHERE id=?', refused.id).reason, 'refused');
+  // opening it again changes nothing
+  const n1 = fake.calls.length;
+  await call(`/library/make/${id}`, { user: teacher }); await settle();
+  assert.equal(fake.calls.length, n1);
+});
+
+test('out of pictures before a change: Oomba is told, so its reply never says a picture changed', async () => {
+  const id = await start();
+  q.run('INSERT INTO made_book_ai_days(user_id, day, n) VALUES (?,?,?) ON CONFLICT(user_id, day) DO UPDATE SET n=excluded.n', teacher.id, `${new Date().toISOString().slice(0, 10)}:draw`, 40);
+  let sent = '';
+  SB.hooks.create = async p => { sent = JSON.stringify(p.messages); return { content: [{ type: 'text', text: JSON.stringify({ reply: 'Done.' }) }], usage: { input_tokens: 1, output_tokens: 1 }, model: 'test' }; };
+  await SB.writeBook(teacher, q.get('SELECT * FROM made_books WHERE id=?', id), { text: 'make the jerseys red' });
+  assert.match(sent, /no pictures left to paint today/); assert.match(sent, /never say a picture now looks different/);
+  // with pictures left, or for the admin, nothing is added
+  q.run('DELETE FROM made_book_ai_days');
+  await SB.writeBook(teacher, q.get('SELECT * FROM made_books WHERE id=?', id), { text: 'make the jerseys red' });
+  assert.doesNotMatch(sent, /no pictures left to paint today/);
+  SB.hooks.create = null;
+});
+
+test('the platform admin: no daily caps on books or pictures, nothing counted; a teacher still has them; the role comes from the account only', async () => {
+  config.storybookPicturesFreePerDay = 3; config.storybookPicturesPlanPerDay = 3; config.storybookFreePerDay = 1; config.storybookPlanPerDay = 1;
+  assert.equal(S.unlimitedAi(boss), true);
+  assert.equal(S.unlimitedAi(teacher), false);
+  assert.equal(S.unlimitedAi({ ...boss, banned: 1 }), false, 'a banned admin is not');
+  assert.equal(S.unlimitedAi({ ...boss, is_guest: 1 }), false);
+  const id = await start(boss);
+  const b = SB.bookOf(q.get('SELECT * FROM made_books WHERE id=?', id));
+  assert.ok(b.cast.length + b.pages.length > 3);
+  assert.equal(fake.calls.length, b.cast.length + b.pages.length, 'every picture drawn, past the cap of 3');
+  assert.equal(used(boss), 0, 'nothing counted');
+  assert.equal(D.left(boss), 3, 'the counter never goes down');
+  for (let i = 0; i < 5; i++) assert.equal(SB.take(boss), true, 'book turns too');
+  assert.equal(SB.left(boss), 1);
+  // a teacher at the same caps: stopped
+  assert.equal(SB.take(teacher), true); assert.equal(SB.take(teacher), false);
+  // nothing a request sends makes someone the admin: a teacher's request with role fields changes nothing
+  const r = await call('/api/library/make/start', { method: 'POST', user: teacher, body: { setup: SETUP, role: 'admin', unlimited: true } });
+  assert.equal(r.status, 429, 'the teacher is still at their cap');
+  assert.equal(q.get('SELECT role FROM users WHERE id=?', teacher.id).role, teacher.role);
 });
 
 test('no key, or the AI budget resting: the art packs, one calm reason, nothing queued or sent', async () => {

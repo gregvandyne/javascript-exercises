@@ -33,6 +33,7 @@ import { log } from './log.js';
 import * as Alerts from './admin-alerts.js';
 import * as G from './storybook-gemini.js';
 import * as SB from './storybook.js';
+import * as S from './schools.js';
 import { register } from './jobs.js';
 
 /** Test hook: screenImage(bytes, mime) for the picture check. */
@@ -53,7 +54,8 @@ export function active() {
 const dayKey = () => `${today()}:draw`;
 export const capOf = u => (SB.planHolder(u) ? config.storybookPicturesPlanPerDay : config.storybookPicturesFreePerDay);
 export const usedToday = u => (q.get('SELECT n FROM made_book_ai_days WHERE user_id=? AND day=?', u.id, dayKey()) || {}).n || 0;
-export const left = u => (SB.canMake(u) ? Math.max(0, capOf(u) - usedToday(u)) : 0);
+// The platform admin (unlimitedAi) is never counted: always the whole day's pictures left.
+export const left = u => (!SB.canMake(u) ? 0 : S.unlimitedAi(u) ? Math.max(1, capOf(u)) : Math.max(0, capOf(u) - usedToday(u)));
 
 // ---------------------------------------------------------------- fingerprints
 const lower = s => String(s || '').toLowerCase();
@@ -100,6 +102,23 @@ export function queueBook(row, b = SB.bookOf(row)) {
   const due = (target, hash) => { const d = q.get('SELECT state, reason, hash, pic_id FROM made_book_draws WHERE book_id=? AND target=?', row.id, target); return !d || (d.state !== 'queued' && d.state !== 'drawing' && (d.hash !== hash || (d.state === 'fallback' && !d.pic_id && AGAIN.has(d.reason)))); };
   for (const c of b.cast) if (due(`cast:${lower(c.name)}`, castHash(c)) && upsertQueued(row, `cast:${lower(c.name)}`)) n++;
   for (const p of b.pages) if (p.pic && !p.upload && due(`page:${p.id}`, pageHash(row.id, b, p)) && upsertQueued(row, `page:${p.id}`)) n++;
+  if (n) setImmediate(kick);
+  return n;
+}
+/**
+ * The book is opened (its editor): pictures held back because the day's pictures were used, and still not as the book
+ * says, are queued again while the teacher has pictures left today. Other fallbacks (Google busy, an error, a refusal)
+ * keep their own "Paint pictures again" and are not retried here. -> number queued
+ */
+export function retryHeld(u, row, b = SB.bookOf(row)) {
+  if (SB.picturesOf(SB.setupOf(row)) !== 'ai' || !active().on || left(u) <= 0) return 0;
+  const want = new Map([...b.cast.map(c => [`cast:${lower(c.name)}`, castHash(c)]), ...b.pages.filter(p => p.pic && !p.upload).map(p => [`page:${p.id}`, pageHash(row.id, b, p)])]);
+  let n = 0;
+  for (const d of q.all("SELECT target, reason, hash, pic_id FROM made_book_draws WHERE book_id=? AND state='fallback'", row.id)) {
+    if (d.reason !== 'limit' || !want.has(d.target)) continue;
+    if (d.pic_id && d.hash === want.get(d.target)) continue;
+    if (upsertQueued(row, d.target)) n++;
+  }
   if (n) setImmediate(kick);
   return n;
 }

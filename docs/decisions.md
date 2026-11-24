@@ -12299,6 +12299,72 @@ What changed, when Oomba paints the pictures (`storybook.js paints`: "Oomba pain
   Oomba (the check asks for it); a character whose words change is painted again then, as before.
 - Tests: `tests/unit/storybook-free-cast.test.js` (9).
 
+## Focus: teaching tools first (24 Nov 2026)
+
+The owner: "hide the arcade game builder from the app, as well as, the courses... I really want to focus and narrow in on
+things like manipulatives, figures, like the crossword puzzle builder, those types of elements, as well as the
+dashboard... move away from the Oomba kit and the arcade element. This should be a site where teachers can go to learn to
+teach lessons, and students will also be able to build games or build classroom games or classroom lessons that support
+their education." And: "don't delete these games or these elements... just hide for now".
+
+- **Two flags, both off by default** (`server/config.js`): `ARCADE` and `COURSES`. Hiding is decided when a page is read
+  (`server/services/game-focus.js`), never by changing rows: no game, course, lesson or student's work is touched, the
+  seed import on startup can't undo it, and `ARCADE=1` / `COURSES=1` bring everything back at once.
+- **Hidden official games** (`HIDDEN_GAMES`, overridable with the env var of that name): quest-race, shark-plank,
+  word-trail, balance-bridge, crate-stacker, fraction-factory, garden-count, keep-builder, kitchen-rush, lantern-mix,
+  launch-lab, lily-hop, machine-line, rocket-supply, scale-scout, shape-hunt, sky-lines, sub-zero, sum-racer, sum-spotter,
+  robo-route, code-isle, data-detective, packet-post, inside-the-machine, trick-inbox, escape-the-post-office,
+  connect-four, footy-tycoon, gulp-city, munch-maze, ring-rumble, brick-drop, happy-putt, swish-flick, jungle-cup,
+  hero-of-sunvale, beat-lanes, loop-lab, would-you-rather (the solo game).
+- **Kept**: the live class games (Brain Board, Question Battle, Tug of Math, Doodle Hoot, Would You Rather Live, Atlas
+  Quest Live), the class tools (Popcorn Hush, Quiet Bounce, Remi's Quiet Meadow), the word and puzzle builders
+  (Crossword, Mistake Hunt, Word Hunt, Sudoku, Word Peek), Algebra Builder, The Big Divide (box-by-box), Atlas Quest and
+  Castle Clash.
+- **Where hidden games are left out**: every list that goes through `games.js NOT_COURSE` (Play rails and hero, Learn,
+  search, similar games, playing now, the sitemap, the Find with Oomba shelves, the dashboard's push list), favorites,
+  Learn subject pages, age pages, the teachers' and parents' pages (`launchGame`), Play's "From Learn" shelf, Oomba's game
+  search, the dashboard's "Practice it" links, the landing page's covers, Quest Race in the live and quick-live pickers,
+  and new assignments (`/teach/assign`). Subject chips and `/learn/<hub>` pages with no game left (Music, Computer
+  science) are gone too. Play itself is laid out differently while the arcade is hidden: the hero (Crossword), then one
+  section per kind (Live class games, Word games and puzzles, Math games, Maps and strategy, Classroom tools), each
+  official game on the page once, then the viewer's own games and games by players; rails by plays, rating or date
+  would repeat the same few games (routes/discover.js focusPlay).
+- **Direct links**: `/g/<slug>` and `/play/<slug>` of a hidden official game show a calm "This game isn't available right
+  now" page with the way to Play (404, so it is not indexed). **Exceptions**: the platform admin, and anyone in (or
+  teaching, or who assigned) a class whose not-removed lesson has the game as a step; so every existing assignment keeps
+  playing. A step of a course the player may still open also plays. Games built with the Builder are never hidden, even
+  when they use the kit; vendor files stay served.
+- **Courses** (`COURSES` off): `/courses*`, `/teachers/cs-quest`, `/teachers/number-quest`, `/teachers/cyber-defenders`,
+  `/teach/cs-quest*`, `/teach/cyber-defenders`, `/number-quest/*` and the course APIs answer the normal 404 (one
+  middleware in `server/app.js`, `COURSE_PATH`). Gone: the Learn page's course row, the landing footer's course links and
+  its "3 courses" fact, the sitemap entries, Oomba's CS Quest lesson suggestions, and a course's gradebook panel until the
+  class has begun it. **Exception**: the platform admin and the people of a class with a course lesson
+  (`lessons.kind='course'`) assigned keep every course page; class lesson pages, their play links, the gradebook, Google
+  Classroom grades and standards never went through the gate. A guest's course wins still transfer on sign-in.
+- **Builder**: "What are you making?" offers Classroom lesson and Classroom game only, for teachers and students alike;
+  a student starts on Classroom game; `/build/new?kind=arcade` opens on Classroom game. The Studio's "Make it an arcade
+  game" switch is hidden (the activity line stays). `builder/plan.js` is unchanged (`routes/build-setup.js firstKind`
+  wraps `startKind`).
+- **Landing**: leads with the dashboard, then the teaching tools (manipulatives, Figures, Oomba), live games, then the
+  Builder; the cover fan shows Crossword, Brain Board, Word Hunt, Doodle Hoot and Sudoku; the games fact counts the
+  official games anyone may open; the courses fact became the number of virtual manipulatives.
+- Tests: `tests/unit/focus-hide.test.js` (10). The other unit tests and the e2e server describe the whole product, so
+  `tests/unit/_setup.js` and `playwright.config.js` turn both flags on unless a test sets them.
+
+## Oomba chat history (2026-11-24)
+- **The owner:** "We need to include a chat history that users can go back to instead of deleting this all together
+  when you start a new chat."
+- **New chat** (services/companion.js `reset`) keeps the conversation: its row moves from `ctx_key 'main'` to
+  `'h:<its id>'`, with its files, so retention (`prune`: the school's days after it was last used) and the account
+  delete work as before. A chat with nothing said in it is just deleted. No question before New chat any more (nothing
+  is lost). Answers of a chat moved to the history count as seen (no "new answer" dot for it).
+- **Chat history** (🕘 in the panel's header, public/js/companion.js): the past chats in the conversation's place, newest
+  first, each with its first message (names as the teacher wrote them) and when it was last used. Opening one makes it
+  the conversation again (the open one goes to the history); each has Delete (asked first). At most 50 are kept (the
+  oldest go). Routes: `GET /api/companion/chats`, `POST /api/companion/chats/:id/open`, `POST .../delete`.
+- **Files:** a file is only usable from the open conversation (`fileOf`); a past chat's files come back with it.
+- **/privacy:** `info.privacy.companion.p5` says so (docs/legal-review.md "Oomba companion: chat history").
+
 ## Classroom focus: the Builder without the kit (24 Nov 2026)
 
 The owner: "for classroom game and classroom lesson, I don't want it attached to the Oomba kit anymore. And so there

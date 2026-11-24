@@ -30,6 +30,7 @@ import { cleanText } from '../services/textfilter.js';
 import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
 import { pickerFor, SUBJECTS, LEVELS } from '../live/bank/index.js';
 import { ico } from '../views/icon.js';
+import { slugHidden } from '../services/game-focus.js';
 
 export const router = Router();
 export const HOST_URL = '/teachers/host';
@@ -41,6 +42,8 @@ const HEAD = '<link rel="stylesheet" href="/css/quick-live.css">';
 const el = (t, tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${t.own(key) ? '' : ' lang="en" dir="ltr"'}>${tHtml(t, key, vars)}</${tag}>`);
 const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
 const MODE_ICON = { battle: '⚡', 'quest-race': '🏝️' };
+/** The quick modes on offer: Quest Race only while its game is not hidden (ARCADE off, services/game-focus.js). */
+const quickModes = () => ST.QUICK_MODES.filter(m => !slugHidden(A.MODES[m]));
 const MODE_KEY = { battle: 'battle', 'quest-race': 'questRace' };
 
 /** The question bank level that fits a class's grade ("3", "Grade 5", "K"); null when the grade says nothing. */
@@ -55,10 +58,10 @@ export function levelForGrade(grade) {
 /** The quick pick for this host (and class): the last one used, else Question Battle, a bit of everything, the class's level. */
 export function quickPick(u, c = null) {
   const last = (ST.loadPrefs(u.id) || {}).quick || null;
-  const p = last || { mode: ST.QUICK_MODES[0], subject: 'mixed', level: 'a8' };
+  const p = last && quickModes().includes(last.mode) ? last : { ...(last || { subject: 'mixed', level: 'a8' }), mode: quickModes()[0] };
   // A class's own grade wins over the level of the last game (which may have been another class's).
   const level = (c && levelForGrade(c.grade)) || p.level;
-  return { mode: p.mode, subject: p.subject, level, remembered: !!last };
+  return { mode: p.mode, subject: p.subject || 'mixed', level, remembered: !!last };
 }
 /** "Question Battle · Science · Ages 8–9" in the page's language. */
 export function pickLine(req, p) {
@@ -163,7 +166,7 @@ router.get(QUICK_URL, on, hostOnly, (req, res) => {
   <form class="panel ql-form" data-api="/api/live/quick" id="ql-quick" novalidate>
     ${c ? html`<input type="hidden" name="classId" value="${c.id}">` : ''}
     <fieldset class="ql-set"><legend>${el(t, 'span', 'quickLive.quick.mode')}</legend>
-      <div class="ql-opts ql-modes">${ST.QUICK_MODES.map(m => radio('mode', m, html`<span class="ql-ico" aria-hidden="true">${MODE_ICON[m]}</span><b>${t(`live.mode.${MODE_KEY[m]}`)}</b>`, m === pick.mode, html`<span class="small muted">${t(`live.mode.${MODE_KEY[m]}Text`)}</span>`))}</div></fieldset>
+      <div class="ql-opts ql-modes">${quickModes().map(m => radio('mode', m, html`<span class="ql-ico" aria-hidden="true">${MODE_ICON[m]}</span><b>${t(`live.mode.${MODE_KEY[m]}`)}</b>`, m === pick.mode, html`<span class="small muted">${t(`live.mode.${MODE_KEY[m]}Text`)}</span>`))}</div></fieldset>
     <fieldset class="ql-set"><legend>${el(t, 'span', 'quickLive.quick.level')}</legend>
       <div class="ql-opts">${bank.levels.map(l => radio('level', l.id, l.name, l.id === pick.level))}</div></fieldset>
     <fieldset class="ql-set"><legend>${el(t, 'span', 'quickLive.quick.subject')}</legend>
@@ -185,7 +188,7 @@ router.post('/api/live/quick', on, hostOnly, rateLimit('lv-new', 30, 3600e3), (r
   const base = quickPick(u, c);
   // last=1 (a class card's one tap): the remembered pick as it is. Otherwise the form's fields, each checked.
   const pick = b.last ? base : {
-    mode: ST.QUICK_MODES.includes(b.mode) ? b.mode : base.mode,
+    mode: quickModes().includes(b.mode) ? b.mode : base.mode,
     subject: b.subject === 'mixed' || SUBJECTS.includes(String(b.subject)) ? String(b.subject) : base.subject,
     level: LEVELS.includes(String(b.level)) ? String(b.level) : base.level,
   };

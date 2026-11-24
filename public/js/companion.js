@@ -65,7 +65,7 @@ function start() {
     start: () => via('start') || 'closed',
     bubbleHost: dash ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
-    headExtra: `<button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
+    headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
     toolsStart: `<button type="button" class="oc-ibtn" id="oc-attach-btn" aria-label="${esc(L('attach'))}" title="${esc(L('attach'))}">${ic('📎', 22)}</button><input type="file" id="oc-file" accept="${DOC_ACCEPT},${IMG_ACCEPT}" hidden>`,
     toolsEnd: `<button type="button" class="oc-ibtn" id="oc-mic" aria-label="${esc(L('mic.start'))}" title="${esc(L('mic.start'))}" hidden>${ic('🎤', 22)}</button>`,
@@ -142,9 +142,49 @@ function start() {
   $('oc-web').addEventListener('click', async () => {
     try { const r = await api('/api/companion/web', { method: 'POST', body: { on: !S.web } }); S.web = !!r.web; drawWeb(); } catch (e) { chat.showErr(e.message); }
   });
+  // New chat: the one open goes to the chat history (nothing is lost, so no question first).
   $('oc-new').addEventListener('click', async () => {
-    if (!(await ask({ text: L('newChatAsk'), ok: L('newChatOk') }))) return;
-    try { const r = await api('/api/companion/chat/new', { method: 'POST', body: {} }); chat.took(r.chat, { initial: true }); setFile(null); } catch (e) { chat.showErr(e.message); }
+    try { const r = await api('/api/companion/chat/new', { method: 'POST', body: {} }); showHist(false); chat.took(r.chat, { initial: true }); setFile(null); } catch (e) { chat.showErr(e.message); }
+  });
+
+  // ---------------------------------------------------------------- chat history
+  // In the panel, in the conversation's place: the past chats (their first message and when), Open one again, Delete.
+  const hist = document.createElement('section');
+  hist.className = 'oc-hist'; hist.id = 'oc-hist'; hist.hidden = true; hist.setAttribute('aria-labelledby', 'oc-hist-h');
+  $('oc-log').before(hist);
+  const when = at => { const d = new Date(at), today = new Date().toDateString() === d.toDateString(), lang = document.documentElement.lang || undefined;
+    return today ? d.toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' }) : d.toLocaleDateString(lang, { month: 'short', day: 'numeric', ...(d.getFullYear() !== new Date().getFullYear() ? { year: 'numeric' } : {}) }); };
+  function drawHist(list) {
+    const rows = list.map(c => `<li class="oc-hrow"><button type="button" class="oc-hopen" data-h="open" data-id="${esc(c.id)}"><span class="oc-htitle" dir="auto">${esc(c.title || L('history'))}</span><span class="oc-hwhen">${esc(when(c.at))}</span></button>
+      <button type="button" class="oc-hdel" data-h="del" data-id="${esc(c.id)}" aria-label="${esc(L('historyDelete'))}" title="${esc(L('historyDelete'))}">${ic('🗑️', 18)}</button></li>`).join('');
+    hist.innerHTML = `<div class="oc-hhead"><h3 id="oc-hist-h">${esc(L('history'))}</h3><button type="button" class="btn btn-sm" data-h="back">${esc(L('historyBack'))}</button></div>
+      ${list.length ? `<ul class="oc-hlist">${rows}</ul>` : `<p class="oc-hempty">${esc(L('historyEmpty'))}</p>`}`;
+  }
+  async function showHist(on) {
+    hist.hidden = !on; $('oc-log').hidden = on; $('oc-form').hidden = on;
+    $('oc-hist-btn').setAttribute('aria-expanded', String(on)); $('oc-hist-btn').classList.toggle('on', on);
+    if (!on) return;
+    hist.innerHTML = '';
+    try { const r = await api('/api/companion/chats'); drawHist(r.chats || []); hist.querySelector('[data-h="back"]').focus(); }
+    catch (e) { showHist(false); chat.showErr(e.message); }
+  }
+  $('oc-hist-btn').addEventListener('click', () => showHist(hist.hidden));
+  hist.addEventListener('click', async e => {
+    const b = e.target.closest('[data-h]'); if (!b) return;
+    if (b.dataset.h === 'back') { showHist(false); $('oc-in').focus(); return; }
+    const id = b.dataset.id;
+    if (b.dataset.h === 'open') {
+      b.disabled = true;
+      try { const r = await api(`/api/companion/chats/${encodeURIComponent(id)}/open`, { method: 'POST', body: {} }); showHist(false); chat.took(r.chat, { initial: true }); setFile(null); $('oc-in').focus(); }
+      catch (err) { b.disabled = false; showHist(false); chat.showErr(err.message); }
+      return;
+    }
+    if (b.dataset.h === 'del') {
+      if (!(await ask({ text: L('historyDeleteAsk'), ok: L('historyDeleteOk'), danger: true }))) return;
+      try { await api(`/api/companion/chats/${encodeURIComponent(id)}/delete`, { method: 'POST', body: {} }); const li = b.closest('li'), next = li.nextElementSibling || li.previousElementSibling; li.remove();
+        if (!hist.querySelector('.oc-hrow')) drawHist([]); (next && next.querySelector('.oc-hopen') || hist.querySelector('[data-h="back"]')).focus(); }
+      catch (err) { toast(err.message); }
+    }
   });
 
   // ---------------------------------------------------------------- attachments
@@ -402,9 +442,27 @@ function start() {
     const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span dir="auto">${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}${o.kindText ? ` <small>${esc(o.kindText)}${o.at ? ` · ${esc(new Date(o.at).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric' }))}` : ''}</small>` : ''}</button>`).join('');
     return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
   }
+  // "Something else" on the book card's theme: Use this theme sends the teacher's own theme (bookTheme).
+  document.addEventListener('input', e => {
+    const f = e.target.closest && e.target.closest('.oc-btheme');
+    if (f) f.querySelector('button[type="submit"]').disabled = e.target.value.trim().length < 2;
+  });
+  document.addEventListener('submit', async e => {
+    const f = e.target.closest && e.target.closest('.oc-btheme'); if (!f) return;
+    e.preventDefault();
+    const v = f.querySelector('input').value.trim(), go = f.querySelector('button[type="submit"]');
+    if (v.length < 2 || go.disabled) return;
+    go.disabled = true;
+    try { const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: f.dataset.turn, act: 'bookTheme', value: v } }); if (r.chat) chat.took(r.chat); }
+    catch { go.disabled = false; }
+  });
   async function onAct(act, turn, btn) {
     if (!turn) return null;
     if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
+    if (act === 'bookOther') {
+      const f = document.getElementById(`oc-btheme-${turn.id}`); if (!f) return null;
+      f.hidden = false; btn.setAttribute('aria-expanded', 'true'); btn.classList.add('on'); f.querySelector('input').focus(); return null;
+    }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
       const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^book[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
@@ -465,7 +523,10 @@ function start() {
     const stop = btn('bookStop', b.L.stop, { ghost: true });
     if (b.options) {
       const opts = b.options.map(o => `<button type="button" class="btn btn-sm oc-pickb${o.sub ? ' oc-bigb' : ''}" data-c="act" data-act="bookPick" data-turn="${id}" data-v="${esc(o.v)}">${o.icon ? `${ic(o.icon, o.sub ? 28 : 18)} ` : ''}<span>${esc(o.label)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></button>`).join('');
-      return `<div class="oc-ask oc-book" role="group" aria-label="${esc(b.question)}">${known}<p class="oc-askq">${esc(b.question)}</p><div class="oc-acts${b.options.some(o => o.sub) ? ' oc-bigs' : ''}">${opts}</div>${err}<div class="oc-bfoot">${stop}</div></div>`;
+      // The theme: "Something else" opens a box for the teacher's own theme, where the card's foot is.
+      const other = b.ownTheme ? `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="bookOther" data-turn="${id}" aria-expanded="false" aria-controls="oc-btheme-${id}"><span>${esc(b.L.other)}</span></button>` : '';
+      const own = b.ownTheme ? `<form class="oc-btheme" id="oc-btheme-${id}" data-turn="${id}" hidden><label class="sr-only" for="oc-btheme-in-${id}">${esc(b.L.other)}</label><input class="input" id="oc-btheme-in-${id}" maxlength="${b.ownTheme}" placeholder="${esc(b.L.themeHint)}" dir="auto" autocomplete="off"><button type="submit" class="btn btn-sm btn-primary" disabled>${esc(b.L.useTheme)}</button></form>` : '';
+      return `<div class="oc-ask oc-book" role="group" aria-label="${esc(b.question)}">${known}<p class="oc-askq">${esc(b.question)}</p><div class="oc-acts${b.options.some(o => o.sub) ? ' oc-bigs' : ''}">${opts}${other}</div>${err}<div class="oc-bfoot">${own}${stop}</div></div>`;
     }
     if (b.state === 'context') {
       const have = b.have.length ? `<ul class="oc-bhave">${b.have.map(h => `<li>${ic('✓', 14)} <span dir="auto">${esc(h)}</span></li>`).join('')}</ul>` : '';
@@ -487,7 +548,8 @@ function start() {
   }
   function bookChangeHtml(x) {
     const c = x.change, l = c.lines || { title: '', items: [] };
-    return `<p class="oc-ch-h"><b>${esc(l.title)}</b></p><ul class="oc-ch-list">${l.items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
+    const warn = l.warn ? `<p class="oc-bnote warn oc-ch-warn" role="status">${ic('⚠️', 16)} ${esc(l.warn)}</p>` : '';
+    return `${warn}<p class="oc-ch-h"><b>${esc(l.title)}</b></p><ul class="oc-ch-list">${l.items.map(s => `<li>${esc(s)}</li>`).join('')}</ul>`;
   }
   // Open the book: the chat steps aside (minimized) so the book is what shows (the owner, 24 Nov 2026).
   document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('#oc a[href^="/library/make/"]'); if (a) { store.set('oc:companion', 'min'); if (ref.chat) ref.chat.setMode('min', { user: true }); } }, true);

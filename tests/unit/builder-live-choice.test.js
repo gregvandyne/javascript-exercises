@@ -17,7 +17,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const { config } = await import('../../server/config.js');
-config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
+config.arcade = true; config.courses = true;   // the arcade games and courses this file tests (both hidden on the site by default)
 config.builderFullForAll = false; config.anthropicKey = ''; config.liveClassroom = true;
 const { createApp } = await import('../../server/app.js');
 const { q, now } = await import('../../server/db.js');
