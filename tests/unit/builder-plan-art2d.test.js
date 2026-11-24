@@ -43,6 +43,7 @@ process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${fake.address().port}`;
 test.after(() => fake.close());
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false; config.anthropicKey = 'sk-ant-test-fake';
 config.snapshotsOff = true;   // no automatic playtest here: the rounds are the script's
 const auth = await import('../../server/auth.js');

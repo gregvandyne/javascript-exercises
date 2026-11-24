@@ -27,7 +27,8 @@
 // (builder/agent.js): nothing here skips or adds a check.
 import { KIT2_WORLDS, KIT2_CHARACTERS, KIT2_CREATURE_GROUPS, KIT2_GROUP_LIST, WORLD_IDS, DEFAULT_WORLD, worldById, characterById, heroesOf, heroFor, kit2Of, wantsKit2 } from './kit2.js';
 import { ART2D_CHARACTERS, ART2D_WORLD_IDS, ART2D_TEMPLATES, art2dCharacter, art2dFriends, isArt2dGame, wantsArt2d } from './art2d.js';
-import { BUILDER_TEMPLATE_KEYS } from './catalog.js';
+import { BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS } from './catalog.js';
+import { config } from '../config.js';
 import { tEn, lookup, CODES } from '../i18n/index.js';
 import { figureWords, planText } from './figures.js';
 
@@ -41,10 +42,15 @@ export const LIMITS = { idea: 80, notes: 300, characters: 80, learn: 5 };
  *  no 3D world, no world and no characters, so those steps are skipped (skip), and "teaches" too where it makes no sense.
  *  teacher: offered to staff accounts only (a class survey, an exit ticket); every other classroom type is for kids too. */
 const SKIP_SCENE = ['look', 'world', 'chars'], SKIP_ALL = [...SKIP_SCENE, 'learn'];
+/** Is the arcade side on (config.arcade, ARCADE=1)? Off (the default): the Builder never starts a game on the Oomba Kit,
+ *  Kit 2, the 2D art or a 3D world; quiz, memory and word are the plain classroom starters (plain), the other arcade
+ *  types are built as plain classroom games, and nothing new is played live (docs/decisions.md "Classroom focus: the
+ *  Builder without the kit"). Read on every call, so a test can switch it. */
+export const arcadeOn = () => !!config.arcade;
 const TYPES = [
   { id: 'adventure' }, { id: 'runner', template: 'runner' }, { id: 'catch', template: 'catch', flat: true },
-  { id: 'quiz', template: 'quiz', flat: true, class: true }, { id: 'memory', template: 'memory', flat: true, class: true },
-  { id: 'word', template: 'word', flat: true, class: true }, { id: 'duel', template: 'duel', flat: true }, { id: 'board', template: 'board', flat: true },
+  { id: 'quiz', template: 'quiz', plain: 'classquiz', flat: true, class: true }, { id: 'memory', template: 'memory', plain: 'classmemory', flat: true, class: true },
+  { id: 'word', template: 'word', plain: 'classword', flat: true, class: true }, { id: 'duel', template: 'duel', flat: true }, { id: 'board', template: 'board', flat: true },
   // the classroom starters
   { id: 'quiet', template: 'quiet', starter: true, skip: SKIP_ALL },
   { id: 'categories', template: 'categories', starter: true, skip: SKIP_SCENE },
@@ -55,10 +61,15 @@ const TYPES = [
   { id: 'spinner', template: 'spinner', starter: true, skip: SKIP_ALL },
   { id: 'scoreboard', template: 'scoreboard', starter: true, skip: SKIP_ALL },
 ];
-export const GAME_TYPES = TYPES.map(x => ({
-  id: x.id, template: BUILDER_TEMPLATE_KEYS.includes(x.template) ? x.template : '', flat: !!(x.flat || x.starter),
-  class: !!(x.class || x.starter), starter: !!x.starter, teacher: !!x.teacher, skip: x.skip || [],
-}));
+// quiz, memory and word (plain): with the arcade side off, their starter is the plain classroom one and they skip the
+// look, world and characters steps like the other classroom starters (getters: config.arcade is read each time).
+export const GAME_TYPES = TYPES.map(x => {
+  const kit = BUILDER_TEMPLATE_KEYS.includes(x.template) ? x.template : '', plain = CLASSROOM_TEMPLATE_KEYS.includes(x.plain) ? x.plain : '';
+  const t = { id: x.id, flat: !!(x.flat || x.starter), class: !!(x.class || x.starter), starter: !!x.starter, teacher: !!x.teacher, plain };
+  Object.defineProperty(t, 'template', { enumerable: true, get: () => (plain && !arcadeOn() ? plain : kit) });
+  Object.defineProperty(t, 'skip', { enumerable: true, get: () => (x.skip || (plain && !arcadeOn() ? SKIP_SCENE : [])) });
+  return t;
+});
 export const TYPE_IDS = GAME_TYPES.map(t => t.id);
 export const typeById = id => GAME_TYPES.find(x => x.id === id) || null;
 /**
@@ -69,6 +80,11 @@ export const typeById = id => GAME_TYPES.find(x => x.id === id) || null;
  */
 export function typeGroups({ teacher = false } = {}) {
   const starters = GAME_TYPES.filter(x => x.starter), games = GAME_TYPES.filter(x => !x.starter);
+  // The arcade side off: only the classroom group (the starters, then quiz, word and memory as plain classroom games).
+  if (!arcadeOn()) {
+    const classGames = ['quiz', 'word', 'memory'].map(typeById);
+    return [{ id: 'class', items: [...starters.filter(x => teacher || !x.teacher), ...classGames] }];
+  }
   if (teacher) {
     const classGames = ['quiz', 'word', 'memory'].map(typeById);
     return [{ id: 'class', items: [...starters, ...classGames] }, { id: 'games', items: games.filter(x => !classGames.includes(x)) }];
@@ -87,6 +103,16 @@ export const CLASSROOM_WORDS = [
   ['spinner', /\bspinner\b|\bspin(ning)? (the )?wheel\b|\brandom (picker|chooser|team|topic|question)\b|\bpicker wheel\b/i],
   ['scoreboard', /\bscore ?board\b|\bscore ?keeper\b|\bteam (points|scores?)\b|\bpoints tally\b/i],
 ];
+/** Words that ask for a quiz, a memory game or a word game (the plain classroom starters when the arcade side is off). */
+const PLAIN_WORDS = [['classquiz', /\bquiz(zes)?\b|\btrivia\b|\bmultiple[- ]choice\b/i], ['classmemory', /\bmemory\b|\bmatching (game|pairs|cards)\b|\bpairs?\b|\bconcentration\b/i],
+  ['classword', /\bspell(ing)?\b|\bunscramble\b|\bscrambled?\b|\bword (game|list|lab)\b|\bvocabulary\b|\bfill (in )?the (gap|blank)s?\b/i]];
+/** The classroom starter some typed words fit best (a classroom type's starter, or a plain quiz, memory or word game),
+ *  or '' when none does (the Builder picks the closest one or writes a plain classroom game). */
+export function plainTemplateFor(text) {
+  const id = classroomTypeFor(text); if (id) return typeById(id).template;
+  for (const [key, re] of PLAIN_WORDS) if (re.test(String(text || ''))) return key;
+  return '';
+}
 /** The classroom type some typed words ask for, or ''. forKid: a kid's or family's plan (teacher-only types are left out). */
 export function classroomTypeFor(text, { forKid = false } = {}) {
   const s = String(text || '');
@@ -107,6 +133,11 @@ export const LIVE_NOT = { quiet: 'board', spinner: 'board', scoreboard: 'board',
 /** And by engine: the ready-made 3D worlds (Kit 2, Oomba3D) have no live play yet (kit2.js KIT2_RULES say so too), nor
  *  do classroom activities (Oomba Canvas: live canvas runs are a later phase). */
 export const LIVE_NOT_ENGINE = { kit2: 'kit2', canvas: 'canvas' };
+/** With the arcade side off, live play needs the Oomba Kit's live pack, which plain classroom games do not load: every
+ *  new classroom game is played on one screen or on each device, never live (buildSetup.play.why.plain). */
+export const LIVE_NOT_PLAIN = 'plain';
+/** Why a kind of game (a GAME_TYPES id) cannot be live, or '' (LIVE_NOT, and with the arcade side off LIVE_NOT_PLAIN). */
+export const liveNotFor = t => (LIVE_NOT[t] || (!arcadeOn() ? LIVE_NOT_PLAIN : ''));
 /** The default answer by type for a teacher (staff) and for everyone else. A teacher's classroom types that work live
  *  start on Live; the tools for the board start on one screen; everyone else starts on their own, except the types that
  *  are one screen by nature (the board tools, two players on one keyboard). */
@@ -117,7 +148,8 @@ const PLAY_KID = { quiet: 'screen', spinner: 'screen', scoreboard: 'screen', due
 export function liveNot(plan) {
   const t = plan && plan.type && plan.type.from === 'pack' ? plan.type.id : '';
   if (t && LIVE_NOT[t]) return LIVE_NOT[t];
-  return plan ? LIVE_NOT_ENGINE[planEngine(plan).engine] || '' : '';
+  const e = plan ? LIVE_NOT_ENGINE[planEngine(plan).engine] || '' : '';
+  return e || (plan && !arcadeOn() ? LIVE_NOT_PLAIN : '');
 }
 /** The answers this plan may have: [{ id, ok, why }] in step order (a Live that cannot be is listed, not ok, with why). */
 export const playOptions = plan => { const why = liveNot(plan); return PLAYS.map(id => ({ id, ok: id !== 'live' || !why, why: id === 'live' ? why : '' })); };
@@ -125,7 +157,8 @@ export const playOptions = plan => { const why = liveNot(plan); return PLAYS.map
 export function playDefault(plan, { forKid = false } = {}) {
   const t = plan && plan.type && plan.type.from === 'pack' ? plan.type.id : '';
   const want = forKid ? PLAY_KID[t] || 'solo' : t ? PLAY_TEACHER[t] || 'solo' : 'live';
-  return want === 'live' && liveNot(plan) ? (t && LIVE_NOT[t] ? 'screen' : 'solo') : want;
+  // (the arcade side off: what a teacher would have hosted live goes on the board instead)
+  return want === 'live' && liveNot(plan) ? (t && LIVE_NOT[t] ? 'screen' : !arcadeOn() && t ? 'screen' : 'solo') : want;
 }
 export const LEARN = ['math', 'reading', 'science', 'geography', 'fun'];
 
@@ -288,7 +321,8 @@ export function normalisePlan(raw, { forKid = false } = {}) {
   const ids = forKid ? TYPE_IDS.filter(id => !typeById(id).teacher) : TYPE_IDS;
   let type = choice(raw.type, ids);
   if (type && type.from === 'custom') { const id = classroomTypeFor(type.text, { forKid }); if (id) type = { from: 'pack', id }; }
-  const skip = type && type.from === 'pack' ? typeById(type.id).skip : [];
+  // The arcade side off: no look, world or characters in any plan (nothing new is built in a world or with characters).
+  const skip = !arcadeOn() ? SKIP_SCENE.concat(type && type.from === 'pack' && typeById(type.id).skip.includes('learn') ? ['learn'] : []) : type && type.from === 'pack' ? typeById(type.id).skip : [];
   if (skip.length) raw = { ...raw, look: null, world: null, characters: [], ...(skip.includes('learn') ? { learn: [] } : {}) };
   const characters = [], seen = new Set();
   for (const c of Array.isArray(raw.characters) ? raw.characters.slice(0, 200) : []) {
@@ -462,6 +496,10 @@ export function planEngine(plan) {
   const chars = picked.map(characterById).filter(Boolean), only2d = picked.filter(id => !characterById(id));
   const type = plan.type && plan.type.from === 'pack' ? GAME_TYPES.find(x => x.id === plan.type.id) : null;
   if (type && type.starter) return { engine: 'classroom', template: type.template };
+  // The arcade side off: never Kit 2, a 3D world or the 2D art. Quiz, memory and word are their plain starters; any
+  // other kind (an arcade type from an older page, a kind of their own, nothing picked) is a plain classroom game the
+  // Builder makes from the closest starter or from scratch (template '').
+  if (!arcadeOn()) return { engine: 'classroom', template: type ? (type.plain ? type.template : '') : plainTemplateFor(plan.type && plan.type.from === 'custom' ? plan.type.text : '') };
   const packWorld = plan.world && plan.world.from === 'pack' ? plan.world.id : '', customWorld = !!plan.world && plan.world.from === 'custom';
   // 2D: the world's own 2D art and the sprite characters, in the kinds of game that draw them (running, catching):
   // the first one picked is the player, the others are friends who are in the game too.
@@ -494,6 +532,15 @@ export function planEngine(plan) {
  * state: the Builder's saved state (state.kit2 remembers a pick; state.wants3d a 3D world of their own).
  */
 export function engineFor(state, plan, text, version) {
+  // The arcade side off: a game that is already on Kit 2 keeps its engine (its world and hero); nothing new goes there.
+  if (!arcadeOn()) {
+    if (plan) playFor(state, plan);
+    const cur = version ? kit2Of(version.html) : null;
+    if (plan && isActivity(plan)) { if (state) { state.canvas = true; delete state.kit2; delete state.art2d; delete state.wants3d; } return null; }
+    if (cur) return wantsKit2(state, plan ? '' : text, version);
+    if (state) { delete state.kit2; delete state.wants3d; }
+    return null;
+  }
   if (!plan) return wantsKit2(state, text, version);
   playFor(state, plan);
   const e = planEngine(plan), cur = version ? kit2Of(version.html) : null;
@@ -531,6 +578,7 @@ export function playFor(state, plan) {
  */
 export function art2dFor(state, plan, version) {
   if (version) return isArt2dGame(version.html) ? wantsArt2d(state, '', version, {}) : null;
+  if (!arcadeOn()) { if (state) delete state.art2d; return null; }
   const e = planEngine(plan);
   if (e.engine !== '2d' || !e.art) { if (state) delete state.art2d; return null; }
   const friends = e.art.friends.length ? { friends: e.art.friends } : {};
@@ -547,7 +595,7 @@ export function art2dFor(state, plan, version) {
  * own characters.
  */
 export function planArt2d(plan) {
-  if (!plan) return null;
+  if (!plan || !arcadeOn()) return null;
   const e = planEngine(plan);
   if (e.engine !== '2d' || !e.art || !e.template) return null;
   return { template: e.template, world: e.art.world, hero: e.art.sprite, friends: art2dFriends(e.art.friends, e.art.sprite).map(c => c.id) };
@@ -563,6 +611,9 @@ export const CLASSROOM_NOTES = {
   flashcards: 'FLASHCARDS: one big card at a time; tap or Space flips it, the arrows go to the next and back, "Got it" and "Again" sort the cards, and the round ends with how many they got. Put their cards in the CARDS list (each { front, back }).',
   exitticket: 'AN EXIT TICKET: a short fixed-choice check at the end of a lesson (the QUESTIONS list, 3 to 5, each { q, choices, answer: the index of the right choice, or null for a how-do-you-feel question }). One question at a time, no timer, then "Thank you" and how many were right, on this device only. It submits no score (BRB.gameOver with score null) and stores nothing per student; a teacher who wants each student\'s answers uses a question step or question set in a class lesson instead: say so in one short sentence if they ask.',
   spinner: 'A SPINNER (random picker): a big wheel the teacher spins (Space or tap) to pick a team, a question number or a topic. CONFIG.teams makes "Team 1, Team 2...", CONFIG.numbers makes 1 to N, CONFIG.topics lists their own topics; CONFIG.noRepeat takes each pick out until all are picked. It never uses students\' names: if they ask for names, use numbers (like seat or register numbers) and say kindly in one short sentence why.',
+  classquiz: 'A CLASS QUIZ: multiple-choice questions, one at a time (the QUESTIONS list, each { q, choices: [2 to 4], answer: the index of the right choice, why: an optional short line shown after answering }). Keys 1-4 or A-D answer, Enter goes on; CONFIG.timer is 0 (no timer) or seconds per question (the start card cycles Off, 10, 20, 30); the end card shows the score and a review of every answer with a tick or a cross, and "Try the missed ones". The teacher can paste their own questions with Edit questions (one per line: question | right answer | wrong answers), kept on that device only. Put their questions in QUESTIONS, in the builder\'s language.',
+  classmemory: 'A MEMORY MATCH: cards face down; flip two to find a pair (the PAIRS list, each { a: a term or one emoji picture, b: its meaning or word }; up to CONFIG.maxPairs are dealt). Solo counts moves; CONFIG.teams (0, or 2 to 4) makes Team 1, Team 2... take turns, and a team that finds a pair goes again. Arrows and Enter flip cards; the end card lists every pair. Edit pairs: term | meaning, one per line, on that device only. Put their pairs in PAIRS.',
+  classword: 'A WORD LAB for a word list (the WORD_LIST list, each { word, clue: what it means, sentence: a sentence that uses the word }): three ways to practice, chosen on the start card: Unscramble (read the clue, tap or type the letters in order), Spell it (Hear the word reads it aloud with BRB.speak, then spell it from the letters plus CONFIG.extraLetters extra ones) and Fill the gap (pick the word that completes the sentence, from four of the list). Two wrong checks show the word; the end card lists every word. CONFIG.mode is the way it starts on, CONFIG.rounds the words per round. Edit words: word | clue | sentence, on that device only. Put their words in WORD_LIST, in the builder\'s language.',
   scoreboard: 'A TEAM SCOREBOARD for the board: one big column per team (CONFIG.teams, labelled Team 1, Team 2... or CONFIG.labels such as colours or animals, never students\' names), + and - buttons and number keys (1 to 6 add, Shift with a number takes away), Undo and a reset that asks first.',
 };
 const q = s => JSON.stringify(String(s));
@@ -670,7 +721,8 @@ export function planNote(plan) {
   const t = plan.type, w = plan.world, type = t && t.from === 'pack' ? GAME_TYPES.find(x => x.id === t.id) : null;
   lines.push(!t ? (e.engine === '2d' && e.art ? '- Game type: not chosen: a running game ("runner") or a catching game ("catch"), you decide which. Only those two draw the 2D art and the characters they picked.' : '- Game type: not chosen (you decide).')
     : t.from === 'custom' ? `- Game type: CUSTOM ${q(t.text)}. It is outside the packs: there is no ready-made starter for it, so design and build this kind of game from scratch.`
-      : `- Game type: PACK ${q(t.id)}${type && type.template ? ` (the ready-made starter: start_from_template ${q(type.template)})` : ' (explore, collect things and reach the goal)'}.`);
+      : !arcadeOn() && !(type && type.plain) && !(type && type.starter) ? `- Game type: PACK ${q(t.id)}, an arcade kind of game: the Builder makes it as the closest plain classroom game (no starter of its own).`
+        : `- Game type: PACK ${q(t.id)}${type && type.template ? ` (the ready-made starter: start_from_template ${q(type.template)})` : ' (explore, collect things and reach the goal)'}.`);
   if (e.engine === 'classroom') lines.push('- Look, world and characters: none (a classroom starter has no 3D world, no ready-made world and no pack characters; those steps were skipped).');
   else lines.push(`- Look: ${plan.look === '3d' ? '3D' : plan.look === '2d' ? '2D' : 'not chosen (you decide)'}.`);
   if (e.engine === 'classroom') { /* said above */ } else lines.push(!w ? '- World: not chosen (you decide).'
@@ -713,17 +765,22 @@ export function planNote(plan) {
       how.push(`Build it in 2D on the Oomba Kit, exactly as a 2D game is built today${type && type.template ? ` (start_from_template ${q(type.template)})` : ''}. Never start from "oomba3d" or "world3d" in this build.`);
       if (e.plain) how.push(`Only running and catching games draw the ready-made worlds and sprite characters in 2D so far: this kind of game keeps the kit's own look. Use ${w && w.from === 'pack' ? `the world ${q(w.id)} ` : ''}${w && w.from === 'pack' && picked(plan).length ? 'and ' : ''}${picked(plan).length ? 'the characters ' : ''}as the game's idea (its name, questions and words), keep ${w && w.from === 'pack' ? `the id ${q(w.id)}` : 'their ids'} in the game's tags (set_game), and say in one short, kind sentence that this kind of game does not draw them yet.`);
     }
+  } else if (e.engine === 'classroom' && !e.template) {
+    how.push('Build it as a plain classroom game (no Oomba Kit, no 3D world, no sprites or game characters): start from the classroom starter closest to it (start_from_template; see the CLASSROOM RULES) and make it theirs, or write it with write_game in the Oomba classroom style when no starter fits. If they asked for a kind of arcade game (running, catching, a 3D world, a board game, two players), say in one short, kind sentence that the Builder makes classroom games now, and make the closest classroom game that teaches the same thing.');
+    how.push('Classroom rules: never students\' names (teams and numbers only), no free text or typing by students, no chat, nothing about a student stored or sent anywhere.');
   } else if (e.engine === 'classroom') {
-    how.push(`Build it from the classroom starter: start_from_template ${q(e.template)}. It is plain HTML made for the classroom board and for phones (not on the Oomba Kit, never a 3D world): keep its big type (readable from the back of the room), its keyboard and clicker keys (arrows, Page Up / Page Down, Space, Enter, number keys), its Sound and Full screen buttons and its WORDS table in every language. Make it theirs with edit_game on its CONFIG block (teams, numbers, CONFIG.lang set to the builder's language), its content list (QUESTIONS, CATEGORIES, ITEMS or CARDS, written in the builder's language) and its <title>.`);
+    how.push(`Build it from the classroom starter: start_from_template ${q(e.template)}. It is plain HTML made for the classroom board and for phones (not on the Oomba Kit, never a 3D world): keep its big type (readable from the back of the room), its keyboard and clicker keys (arrows, Page Up / Page Down, Space, Enter, number keys), its Sound and Full screen buttons and its WORDS table in every language. Make it theirs with edit_game on its CONFIG block (teams, numbers, CONFIG.lang set to the builder's language), its content list (QUESTIONS, CATEGORIES, ITEMS, CARDS, PAIRS or WORD_LIST, written in the builder's language) and its <title>.`);
     how.push(CLASSROOM_NOTES[e.template]);
     how.push('Classroom rules: never students\' names (teams and numbers only), no free text or typing by students, no chat, nothing about a student stored or sent anywhere. Read-aloud only speaks the fixed lines of the game (BRB.speak with a CONFIG string exactly as written, never a line put together from pieces).');
   } else if (e.engine === 'scratch') {
     how.push('The place is their own idea: decide between 2D on the Oomba Kit and a 3D world of their own ("world3d"), and build the place from scratch. Never use a ready-made 3D world ("oomba3d") for it.');
   }
-  if (plan.play === 'live') {
+  if (plan.play === 'live' && !arcadeOn()) {
+    how.push('They chose LIVE, but live play is not available for classroom games yet (it needs the Oomba Kit\'s live pack): build it for the board and for each device, never with the live pack or Oomba.live, and say so in one short, kind sentence.');
+  } else if (plan.play === 'live') {
     how.push(`They chose to play it LIVE: build the game, then make it live-ready in this same build with the LIVE RULES (the live pack's tag, Oomba.live.ready once, on('start') and on('end'), results with score / item / quiz.answer), so a teacher or grown-up can host it with Oomba Live. It must still work for one player alone.${e.engine === 'classroom' ? ' This classroom starter is plain HTML, not on the kit: add the kit tag and the live pack ONLY for the live connection (no other packs, no kit screens), keep its own look and keys, and let each player do their part on their own device (their own card, their own answers) while the board shows the round.' : ''}${e.engine === 'world3d' || e.engine === 'scratch' || e.engine === 'open' ? ' If it is a 3D world of their own, it is a live world: do not ask "Live or closed world?".' : ''} Never add free text, typing or chat between players, and never show a player's name except from Oomba.live.players(). Tell them in one short sentence that a teacher or grown-up hosts it live once it is published.`);
   } else if (plan.play === 'screen' || plan.play === 'solo') {
-    how.push(`They chose ${plan.play === 'screen' ? 'ON ONE SCREEN' : 'ON MY OWN'}: it is NOT a live game. Do NOT add the live pack or Oomba.live${e.engine === 'world3d' || e.engine === 'scratch' || e.engine === 'open' ? '; a 3D world of their own is a closed world: do not ask "Live or closed world?"' : ''}.${plan.play === 'screen' ? ' Make it work for a room watching one screen: big, readable from the back, simple keys or taps.' : ''} If they ask for a live class game later, make it live then.`);
+    how.push(`They chose ${plan.play === 'screen' ? 'ON ONE SCREEN' : 'ON MY OWN'}: it is NOT a live game. Do NOT add the live pack or Oomba.live${e.engine === 'world3d' || e.engine === 'scratch' || e.engine === 'open' ? '; a 3D world of their own is a closed world: do not ask "Live or closed world?"' : ''}.${plan.play === 'screen' ? ' Make it work for a room watching one screen: big, readable from the back, simple keys or taps.' : ''}${arcadeOn() ? ' If they ask for a live class game later, make it live then.' : ' Live play is not available for classroom games yet: if they ask for it, say so kindly in one short sentence (it works on the board, or on each device from the shared link).'}`);
   }
   const custom = customParts(plan);
   return `SETUP CHOICES (the builder picked these in the setup steps before this chat; their first message says the same in words).

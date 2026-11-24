@@ -10911,7 +10911,8 @@
         "board": "Dit draait op één scherm voor de hele klas.",
         "survey": "Antwoorden van de enquête blijven op dit apparaat en worden nooit verstuurd, dus hij wordt niet live gespeeld.",
         "exitticket": "Een exitkaart blijft op één apparaat. Voor de antwoorden van elke leerling gebruik je een vraagstap in een klasles.",
-        "canvas": "Klasactiviteiten kunnen nog niet live gespeeld worden."
+        "canvas": "Klasactiviteiten kunnen nog niet live gespeeld worden.",
+        "plain": "Live spelen kan nog niet bij klassenspellen. Laat het op het bord zien, of deel het zodat iedereen op een eigen apparaat speelt."
       }
     },
     "learn": {

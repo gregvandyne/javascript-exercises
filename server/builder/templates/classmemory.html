@@ -1,0 +1,277 @@
+<title>Memory Match</title>
+<!--CLASSROOM_STYLE-->
+<style>
+/* Memory Match: flip two cards to find a pair, a term and its meaning (or a picture and its word). Solo, or teams who
+   take turns on the board (a team keeps its turn while it finds pairs). Plain HTML in the Oomba classroom style:
+   arrows and Enter flip cards, nothing is sent anywhere and nobody is named. */
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
+.teams{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.team{display:flex;align-items:center;gap:10px;padding:6px 16px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);font-weight:800;font-size:clamp(1rem,2.8vmin,1.8rem);box-shadow:var(--lift)}
+.team .pts{font-variant-numeric:tabular-nums;min-width:1.2em;text-align:center}
+.team.turn{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.turnline{margin:0;text-align:center;font-weight:700;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem);min-height:1.3em}
+.boardwrap{flex:1;display:grid;place-items:center;min-height:0}
+.grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:clamp(8px,1.4vmin,16px);width:min(100%,calc((100dvh - 230px) * var(--cols) / var(--rows) * 1.32));max-width:1200px;perspective:1400px}
+.mc{position:relative;aspect-ratio:4/3;padding:0;border:0;background:none;box-shadow:none;border-radius:var(--r);min-height:0;min-width:0}
+.mc:hover:not(:disabled){transform:translateY(-2px);box-shadow:none}
+.mc:active:not(:disabled){transform:scale(.98);box-shadow:none}
+.mc .in{position:absolute;inset:0;transition:transform .5s var(--spring);transform-style:preserve-3d}
+.mc.up .in{transform:rotateY(180deg)}
+.mc .f{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;border-radius:var(--r);backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1.5px solid var(--line);box-shadow:var(--lift);overflow:hidden}
+.mc .back{background:var(--leaf);color:#fff;border-color:rgba(0,0,0,.08);background-image:radial-gradient(rgba(255,255,255,.13) 1.5px,transparent 1.6px);background-size:14px 14px}
+.mc .back::before{content:"";position:absolute;inset:7px;border-radius:calc(var(--r) - 6px);border:1.5px solid rgba(255,255,255,.28)}
+.mc .back b{width:clamp(14px,2.6vmin,26px);height:clamp(14px,2.6vmin,26px);border-radius:50%;background:var(--mint);box-shadow:calc(clamp(14px,2.6vmin,26px) * .62) 0 0 var(--spark);margin-inline-end:calc(clamp(14px,2.6vmin,26px) * .62)}
+.mc .face{background:var(--card);transform:rotateY(180deg);color:var(--ink)}
+.mc .face .k{font-size:clamp(.62rem,1.5vmin,.95rem);font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 10px;border-radius:999px;background:var(--mint-soft)}
+.mc .face.mean .k{background:var(--spark-soft)}
+.mc .face .t{font-weight:800;line-height:1.12;text-align:center;overflow-wrap:anywhere;font-size:var(--fs,clamp(.9rem,2.6vmin,1.9rem))}
+.mc .face .t.pic{font-size:clamp(2rem,8vmin,5.4rem);line-height:1}
+.mc.done .face{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
+.mc.done .face::after{content:"✓";position:absolute;top:6px;inset-inline-end:10px;font-weight:800;color:var(--leaf)}
+.mc.miss .face{background:var(--coral-soft)}
+.mc:focus-visible{outline:4px solid var(--spark);outline-offset:4px}
+.mc:disabled{opacity:1;cursor:default}
+.end .card{width:min(100%,900px)}
+.big-score{font-size:clamp(2.6rem,11vmin,7rem);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0;font-variant-numeric:tabular-nums}
+.pairs{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px;text-align:start}
+.pairs li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);background:var(--page);border:1.5px solid var(--line);font-size:clamp(.95rem,2.2vmin,1.3rem)}
+.pairs b{font-weight:800}
+.pairs span{color:var(--soft)}
+.setup .row button[aria-pressed="false"]{background:var(--card)}
+.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.editor .card{width:min(100%,900px);text-align:start;max-height:calc(100dvh - 32px);overflow:auto}
+.editor h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
+.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);color:var(--ink);background:var(--page);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;resize:vertical}
+.editor textarea:focus-visible{outline:4px solid var(--spark);outline-offset:2px}
+.editor .msg{min-height:1.3em;font-weight:700}
+.editor .msg.bad{color:#B4432A}
+.editor .row{justify-content:flex-end}
+@media (max-width:600px){.grid{gap:6px;width:100%}.mc .f{padding:4px;border-radius:12px}.mc .face .k{display:none}.mc{aspect-ratio:3/4}}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
+
+  <section class="screen setup" id="start">
+    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+      <p id="whoP"></p>
+      <div class="row" id="who" role="group"></div>
+      <div class="row"><button class="big hot" id="go"></button></div>
+      <div class="row"><button class="small" id="editBtn"></button></div>
+      <p class="keys" id="startKeys"></p></div>
+  </section>
+
+  <section class="screen" id="play" hidden>
+    <div class="top"><span class="pill" id="found"></span><span class="pill" id="moves"></span><div class="teams" id="teams"></div></div>
+    <p class="turnline" id="turnline" aria-live="polite"></p>
+    <div class="boardwrap"><div class="grid" id="grid" role="grid"></div></div>
+    <p class="keys" id="keys"></p>
+  </section>
+
+  <section class="screen end" id="end" hidden>
+    <div class="card"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p id="endP"></p>
+      <div class="row"><button class="big hot" id="again"></button><button class="big" id="menu"></button></div>
+      <h3 id="pairsH"></h3><ul class="pairs" id="pairs"></ul></div>
+  </section>
+</main>
+<section class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="editH" hidden>
+  <div class="card"><h2 id="editH"></h2><p id="editP"></p>
+    <textarea id="editText" spellcheck="true" dir="auto"></textarea>
+    <p class="msg" id="editMsg" aria-live="polite"></p>
+    <div class="row"><button class="big" id="editCancel"></button><button class="big hot" id="editUse"></button></div></div>
+</section>
+<script>
+// Memory Match. The cards lie face down; flip two (tap, or arrows and Enter or Space). A term and its meaning (or a
+// picture and its word) are a pair: they stay up with a tick. Not a pair: they turn back after a moment. Solo counts
+// the moves; teams (Team 1, Team 2... never names) take turns, and a team that finds a pair goes again. The end card
+// lists every pair, so the class can read them through together. Edit pairs: the teacher pastes one pair per line,
+// "term | meaning", used on this device only (never sent). Sound is off until the Sound button is pressed.
+'use strict';
+const CONFIG = {
+  title: 'Memory Match',
+  lang: 'en',
+  sound: false,
+  teams: 0,
+  maxPairs: 8,
+  flipBackMs: 1100,
+  labels: true,
+  readAloud: true,
+  allowEdit: true,
+};
+// Each pair: a (a term, or a picture: one emoji) and b (its meaning or its word). Up to CONFIG.maxPairs are dealt.
+const PAIRS = [
+  { a: 'Evaporate', b: 'Liquid turns into a gas' },
+  { a: 'Condense', b: 'Gas turns into a liquid' },
+  { a: 'Freeze', b: 'Liquid turns into a solid' },
+  { a: 'Melt', b: 'Solid turns into a liquid' },
+  { a: '🌧️', b: 'Rain' },
+  { a: '❄️', b: 'Snow' },
+  { a: '☁️', b: 'Cloud' },
+  { a: '🌈', b: 'Rainbow' },
+];
+// {n}, {total}, {moves} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startP: 'Find the {total} pairs. Flip two cards at a time.', whoP: 'Who is playing?', solo: 'One player', teamsN: '{n} teams', go: 'Start', edit: 'Edit pairs', found: 'Pairs {n} / {total}', moves: 'Moves {n}', team: 'Team {n}', turn: 'Team {n}, your turn', again2: 'A pair! Team {n} goes again.', pair: 'A pair!', nope: 'Not a pair. Try to remember them.', term: 'Term', mean: 'Meaning', hidden: 'Card {n}, face down', shown: 'Card {n}: {t}', matched: 'matched', endSolo: 'All pairs found!', endMoves: 'In {moves} moves', endTeam: 'Team {n} wins!', endTie: 'It is a tie!', endP: 'Read the pairs through together.', again: 'Play again', menu: 'Change players', pairsH: 'The pairs', keys: 'Keys: arrows move · Enter or Space flips · F full screen', editH: 'Your pairs', editP: 'One pair per line: a term (or one emoji picture), then | and its meaning or word.', use: 'Use these', cancel: 'Cancel', bad: 'Line {n} needs two parts with | between them.', few: 'Add at least 3 pairs.' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startP: 'Encuentra las {total} parejas. Da la vuelta a dos cartas cada vez.', whoP: '¿Quién juega?', solo: 'Un jugador', teamsN: '{n} equipos', go: 'Empezar', edit: 'Editar parejas', found: 'Parejas {n} / {total}', moves: 'Jugadas {n}', team: 'Equipo {n}', turn: 'Equipo {n}, es tu turno', again2: '¡Pareja! El equipo {n} vuelve a jugar.', pair: '¡Pareja!', nope: 'No es pareja. Intenta recordarlas.', term: 'Término', mean: 'Significado', hidden: 'Carta {n}, boca abajo', shown: 'Carta {n}: {t}', matched: 'emparejada', endSolo: '¡Todas las parejas encontradas!', endMoves: 'En {moves} jugadas', endTeam: '¡Gana el equipo {n}!', endTie: '¡Empate!', endP: 'Leed las parejas juntos.', again: 'Jugar otra vez', menu: 'Cambiar jugadores', pairsH: 'Las parejas', keys: 'Teclas: flechas mover · Intro o Espacio girar · F pantalla completa', editH: 'Tus parejas', editP: 'Una pareja por línea: un término (o un emoji), luego | y su significado o palabra.', use: 'Usar estas', cancel: 'Cancelar', bad: 'La línea {n} necesita dos partes separadas por |.', few: 'Añade al menos 3 parejas.' },
+  fr: { sound: 'Son', full: 'Plein écran', startP: 'Trouve les {total} paires. Retourne deux cartes à la fois.', whoP: 'Qui joue ?', solo: 'Un joueur', teamsN: '{n} équipes', go: 'Commencer', edit: 'Modifier les paires', found: 'Paires {n} / {total}', moves: 'Coups {n}', team: 'Équipe {n}', turn: 'Équipe {n}, à toi', again2: 'Une paire ! L’équipe {n} rejoue.', pair: 'Une paire !', nope: 'Pas une paire. Essaie de t’en souvenir.', term: 'Mot', mean: 'Sens', hidden: 'Carte {n}, face cachée', shown: 'Carte {n} : {t}', matched: 'trouvée', endSolo: 'Toutes les paires sont trouvées !', endMoves: 'En {moves} coups', endTeam: 'L’équipe {n} gagne !', endTie: 'Égalité !', endP: 'Relisez les paires ensemble.', again: 'Rejouer', menu: 'Changer de joueurs', pairsH: 'Les paires', keys: 'Touches : flèches bouger · Entrée ou Espace retourner · F plein écran', editH: 'Tes paires', editP: 'Une paire par ligne : un mot (ou un emoji), puis | et son sens ou son mot.', use: 'Utiliser', cancel: 'Annuler', bad: 'La ligne {n} doit avoir deux parties séparées par |.', few: 'Ajoute au moins 3 paires.' },
+  de: { sound: 'Ton', full: 'Vollbild', startP: 'Finde die {total} Paare. Dreh immer zwei Karten um.', whoP: 'Wer spielt?', solo: 'Ein Spieler', teamsN: '{n} Teams', go: 'Los', edit: 'Paare bearbeiten', found: 'Paare {n} / {total}', moves: 'Züge {n}', team: 'Team {n}', turn: 'Team {n}, ihr seid dran', again2: 'Ein Paar! Team {n} ist nochmal dran.', pair: 'Ein Paar!', nope: 'Kein Paar. Merk sie dir gut.', term: 'Begriff', mean: 'Bedeutung', hidden: 'Karte {n}, verdeckt', shown: 'Karte {n}: {t}', matched: 'gefunden', endSolo: 'Alle Paare gefunden!', endMoves: 'In {moves} Zügen', endTeam: 'Team {n} gewinnt!', endTie: 'Unentschieden!', endP: 'Lest die Paare gemeinsam durch.', again: 'Nochmal spielen', menu: 'Spieler ändern', pairsH: 'Die Paare', keys: 'Tasten: Pfeile bewegen · Enter oder Leertaste umdrehen · F Vollbild', editH: 'Deine Paare', editP: 'Ein Paar pro Zeile: ein Begriff (oder ein Emoji), dann | und die Bedeutung oder das Wort.', use: 'Übernehmen', cancel: 'Abbrechen', bad: 'Zeile {n} braucht zwei Teile, getrennt durch |.', few: 'Mindestens 3 Paare.' },
+  it: { sound: 'Suono', full: 'Schermo intero', startP: 'Trova le {total} coppie. Gira due carte alla volta.', whoP: 'Chi gioca?', solo: 'Un giocatore', teamsN: '{n} squadre', go: 'Inizia', edit: 'Modifica le coppie', found: 'Coppie {n} / {total}', moves: 'Mosse {n}', team: 'Squadra {n}', turn: 'Squadra {n}, tocca a te', again2: 'Una coppia! La squadra {n} gioca ancora.', pair: 'Una coppia!', nope: 'Non è una coppia. Prova a ricordarle.', term: 'Termine', mean: 'Significato', hidden: 'Carta {n}, coperta', shown: 'Carta {n}: {t}', matched: 'trovata', endSolo: 'Tutte le coppie trovate!', endMoves: 'In {moves} mosse', endTeam: 'Vince la squadra {n}!', endTie: 'Pareggio!', endP: 'Leggete le coppie insieme.', again: 'Gioca ancora', menu: 'Cambia giocatori', pairsH: 'Le coppie', keys: 'Tasti: frecce muovi · Invio o Spazio gira · F schermo intero', editH: 'Le tue coppie', editP: 'Una coppia per riga: un termine (o un emoji), poi | e il significato o la parola.', use: 'Usa queste', cancel: 'Annulla', bad: 'La riga {n} deve avere due parti separate da |.', few: 'Aggiungi almeno 3 coppie.' },
+  pt: { sound: 'Som', full: 'Tela cheia', startP: 'Encontre os {total} pares. Vire duas cartas de cada vez.', whoP: 'Quem vai jogar?', solo: 'Um jogador', teamsN: '{n} equipes', go: 'Começar', edit: 'Editar pares', found: 'Pares {n} / {total}', moves: 'Jogadas {n}', team: 'Equipe {n}', turn: 'Equipe {n}, sua vez', again2: 'Um par! A equipe {n} joga de novo.', pair: 'Um par!', nope: 'Não é um par. Tente lembrar.', term: 'Termo', mean: 'Significado', hidden: 'Carta {n}, virada para baixo', shown: 'Carta {n}: {t}', matched: 'encontrada', endSolo: 'Todos os pares encontrados!', endMoves: 'Em {moves} jogadas', endTeam: 'A equipe {n} venceu!', endTie: 'Empate!', endP: 'Leiam os pares juntos.', again: 'Jogar de novo', menu: 'Trocar jogadores', pairsH: 'Os pares', keys: 'Teclas: setas mover · Enter ou Espaço virar · F tela cheia', editH: 'Seus pares', editP: 'Um par por linha: um termo (ou um emoji), depois | e o significado ou a palavra.', use: 'Usar estes', cancel: 'Cancelar', bad: 'A linha {n} precisa de duas partes separadas por |.', few: 'Adicione pelo menos 3 pares.' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startP: 'Vind de {total} paren. Draai steeds twee kaarten om.', whoP: 'Wie speelt er?', solo: 'Eén speler', teamsN: '{n} teams', go: 'Start', edit: 'Paren aanpassen', found: 'Paren {n} / {total}', moves: 'Zetten {n}', team: 'Team {n}', turn: 'Team {n}, jullie beurt', again2: 'Een paar! Team {n} mag nog een keer.', pair: 'Een paar!', nope: 'Geen paar. Probeer ze te onthouden.', term: 'Begrip', mean: 'Betekenis', hidden: 'Kaart {n}, omgedraaid', shown: 'Kaart {n}: {t}', matched: 'gevonden', endSolo: 'Alle paren gevonden!', endMoves: 'In {moves} zetten', endTeam: 'Team {n} wint!', endTie: 'Gelijkspel!', endP: 'Lees de paren samen door.', again: 'Nog een keer', menu: 'Andere spelers', pairsH: 'De paren', keys: 'Toetsen: pijlen bewegen · Enter of spatie omdraaien · F volledig scherm', editH: 'Jouw paren', editP: 'Eén paar per regel: een begrip (of één emoji), dan | en de betekenis of het woord.', use: 'Gebruik deze', cancel: 'Annuleren', bad: 'Regel {n} heeft twee delen nodig met | ertussen.', few: 'Voeg minstens 3 paren toe.' },
+  ru: { sound: 'Звук', full: 'Весь экран', startP: 'Найди все пары: {total}. Открывай по две карточки.', whoP: 'Кто играет?', solo: 'Один игрок', teamsN: 'Команд: {n}', go: 'Начать', edit: 'Изменить пары', found: 'Пары {n} / {total}', moves: 'Ходы {n}', team: 'Команда {n}', turn: 'Команда {n}, ваш ход', again2: 'Пара! Команда {n} ходит ещё раз.', pair: 'Пара!', nope: 'Не пара. Постарайся запомнить.', term: 'Термин', mean: 'Значение', hidden: 'Карточка {n}, закрыта', shown: 'Карточка {n}: {t}', matched: 'найдена', endSolo: 'Все пары найдены!', endMoves: 'Ходов: {moves}', endTeam: 'Победила команда {n}!', endTie: 'Ничья!', endP: 'Прочитайте пары вместе.', again: 'Играть снова', menu: 'Сменить игроков', pairsH: 'Пары', keys: 'Клавиши: стрелки ходить · Enter или пробел открыть · F весь экран', editH: 'Твои пары', editP: 'Одна пара в строке: термин (или один эмодзи), затем | и его значение или слово.', use: 'Готово', cancel: 'Отмена', bad: 'В строке {n} нужны две части через |.', few: 'Добавь хотя бы 3 пары.' },
+  he: { sound: 'צליל', full: 'מסך מלא', startP: 'מצאו את {total} הזוגות. הפכו שני קלפים בכל פעם.', whoP: 'מי משחק?', solo: 'שחקן אחד', teamsN: '{n} קבוצות', go: 'מתחילים', edit: 'עריכת זוגות', found: 'זוגות {n} / {total}', moves: 'מהלכים {n}', team: 'קבוצה {n}', turn: 'קבוצה {n}, תורכם', again2: 'זוג! קבוצה {n} משחקת שוב.', pair: 'זוג!', nope: 'לא זוג. נסו לזכור אותם.', term: 'מושג', mean: 'פירוש', hidden: 'קלף {n}, הפוך', shown: 'קלף {n}: {t}', matched: 'נמצא', endSolo: 'כל הזוגות נמצאו!', endMoves: 'ב-{moves} מהלכים', endTeam: 'קבוצה {n} ניצחה!', endTie: 'תיקו!', endP: 'קראו את הזוגות יחד.', again: 'לשחק שוב', menu: 'להחליף שחקנים', pairsH: 'הזוגות', keys: 'מקשים: חיצים לזוז · Enter או רווח להפוך · F מסך מלא', editH: 'הזוגות שלכם', editP: 'זוג אחד בכל שורה: מושג (או אימוג׳י אחד), ואחריו | והפירוש או המילה.', use: 'להשתמש', cancel: 'ביטול', bad: 'בשורה {n} צריכים שני חלקים מופרדים ב-|.', few: 'הוסיפו לפחות 3 זוגות.' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startP: 'اعثر على الأزواج الـ {total}. اقلب بطاقتين في كل مرة.', whoP: 'من يلعب؟', solo: 'لاعب واحد', teamsN: '{n} فرق', go: 'ابدأ', edit: 'تعديل الأزواج', found: 'الأزواج {n} / {total}', moves: 'الحركات {n}', team: 'الفريق {n}', turn: 'الفريق {n}، دورك', again2: 'زوج! الفريق {n} يلعب مرة أخرى.', pair: 'زوج!', nope: 'ليسا زوجًا. حاول أن تتذكرهما.', term: 'المصطلح', mean: 'المعنى', hidden: 'البطاقة {n}، مقلوبة', shown: 'البطاقة {n}: {t}', matched: 'مطابقة', endSolo: 'وجدت كل الأزواج!', endMoves: 'في {moves} حركة', endTeam: 'فاز الفريق {n}!', endTie: 'تعادل!', endP: 'اقرأوا الأزواج معًا.', again: 'العب مرة أخرى', menu: 'تغيير اللاعبين', pairsH: 'الأزواج', keys: 'المفاتيح: الأسهم للتنقل · Enter أو المسافة للقلب · F ملء الشاشة', editH: 'أزواجك', editP: 'زوج واحد في كل سطر: مصطلح (أو رمز تعبيري واحد)، ثم | ومعناه أو كلمته.', use: 'استخدمها', cancel: 'إلغاء', bad: 'السطر {n} يحتاج إلى جزأين بينهما |.', few: 'أضف 3 أزواج على الأقل.' },
+  ja: { sound: 'サウンド', full: '全画面', startP: '{total}くみのペアを見つけよう。2まいずつめくってね。', whoP: 'だれがあそぶ？', solo: 'ひとりで', teamsN: '{n}チーム', go: 'スタート', edit: 'ペアをへんしゅう', found: 'ペア {n} / {total}', moves: 'てかず {n}', team: 'チーム{n}', turn: 'チーム{n}のばん', again2: 'ペア！チーム{n}はもういちど。', pair: 'ペア！', nope: 'ペアじゃないよ。おぼえておこう。', term: 'ことば', mean: 'いみ', hidden: 'カード{n}、うらむき', shown: 'カード{n}：{t}', matched: 'ペアになった', endSolo: 'ぜんぶのペアを見つけた！', endMoves: '{moves}てで', endTeam: 'チーム{n}の勝ち！', endTie: '引き分け！', endP: 'みんなでペアをよみあげよう。', again: 'もういちど', menu: 'プレイヤーをかえる', pairsH: 'ペア', keys: 'キー：矢印でいどう・Enterかスペースでめくる・F 全画面', editH: 'じぶんのペア', editP: '1ぎょうに1くみ：ことば（またはえもじ1つ）、| 、そのいみかことば。', use: 'これをつかう', cancel: 'やめる', bad: '{n}ぎょうめは | で2つにわけてね。', few: '3くみいじょう入れてね。' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startP: '找出 {total} 對卡片。每次翻兩張。', whoP: '誰來玩？', solo: '一位玩家', teamsN: '{n} 隊', go: '開始', edit: '編輯配對', found: '配對 {n} / {total}', moves: '步數 {n}', team: '第 {n} 隊', turn: '第 {n} 隊，輪到你們', again2: '配對成功！第 {n} 隊再來一次。', pair: '配對成功！', nope: '不是一對。試著記住它們。', term: '詞語', mean: '意思', hidden: '第 {n} 張卡，蓋著', shown: '第 {n} 張卡：{t}', matched: '已配對', endSolo: '找到所有配對！', endMoves: '用了 {moves} 步', endTeam: '第 {n} 隊獲勝！', endTie: '平手！', endP: '一起把配對讀一遍。', again: '再玩一次', menu: '換玩家', pairsH: '所有配對', keys: '按鍵：方向鍵移動・Enter 或空白鍵翻牌・F 全螢幕', editH: '你的配對', editP: '每行一對：詞語（或一個表情符號），然後 | 和它的意思或詞語。', use: '使用這些', cancel: '取消', bad: '第 {n} 行需要用 | 分成兩部分。', few: '至少加入 3 對。' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = (text, queue = false) => { try { if (CONFIG.readAloud && B.speak && soundOn) B.speak(text, { lang: CONFIG.lang, queue }); } catch (e) { /* no voice */ } };
+const shuffle = a => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+// One emoji (a picture) is drawn big; anything else is text.
+const isPic = s => /^\p{Extended_Pictographic}(️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*$/u.test(String(s).trim());
+
+let pairs = PAIRS.filter(p => p && p.a && p.b).map(p => ({ a: String(p.a), b: String(p.b) }));
+const S = { screen: 'start', teams: Math.max(0, Math.min(4, CONFIG.teams | 0)), cards: [], open: [], found: 0, moves: 0, turn: 0, scores: [], lock: false, focus: 0, cols: 4, rows: 4, dealt: [] };
+function show(id) { for (const s of ['start', 'play', 'end']) $(s).hidden = s !== id; S.screen = id; }
+function home() {
+  show('start'); $('startP').textContent = tr('startP', { total: Math.min(pairs.length, CONFIG.maxPairs) });
+  const who = $('who'); who.innerHTML = '';
+  for (const n of [0, 2, 3, 4]) { const b = document.createElement('button'); b.className = 'small'; b.textContent = n ? tr('teamsN', { n }) : tr('solo'); b.setAttribute('aria-pressed', String(S.teams === n)); b.onclick = () => { S.teams = n; home(); $('go').focus(); }; who.appendChild(b); }
+  $('go').focus({ preventScroll: true });
+}
+function layout(n) {
+  const wide = innerWidth >= innerHeight;
+  // The columns that fill the rows best for this screen (a gap in the last row costs more than an odd shape).
+  let best = 4, score = 1e9;
+  for (let c = 2; c <= Math.min(n, 10); c++) { const r = Math.ceil(n / c), ratio = c / r, want = wide ? 1.5 : innerWidth < 600 ? 0.8 : 1; const s = Math.abs(Math.log(ratio / want)) + (c * r - n) * 0.6; if (s < score) { score = s; best = c; } }
+  S.cols = best; S.rows = Math.ceil(n / best);
+  $('grid').style.setProperty('--cols', S.cols); $('grid').style.setProperty('--rows', S.rows);
+}
+function begin() {
+  S.dealt = shuffle(pairs).slice(0, Math.max(2, CONFIG.maxPairs));
+  S.cards = shuffle(S.dealt.flatMap((p, i) => [{ pair: i, side: 'a', t: p.a }, { pair: i, side: 'b', t: p.b }])).map(c => ({ ...c, up: false, done: false }));
+  S.open = []; S.found = 0; S.moves = 0; S.turn = 0; S.scores = Array(S.teams).fill(0); S.lock = false; S.focus = 0;
+  show('play'); layout(S.cards.length); render(); paint(); focusCard();
+}
+function render() {
+  const g = $('grid'); g.innerHTML = '';
+  S.cards.forEach((c, i) => {
+    const b = document.createElement('button'); b.className = 'mc oc-pop'; b.style.animationDelay = `${Math.min(i, 24) * 22}ms`; b.dataset.i = i; b.tabIndex = -1;
+    b.innerHTML = '<span class="in"><span class="f back"><b></b></span><span class="f face"><span class="k"></span><span class="t"></span></span></span>';
+    const face = b.querySelector('.face'), t = b.querySelector('.t');
+    if (c.side === 'b') face.classList.add('mean');
+    b.querySelector('.k').textContent = c.side === 'a' ? tr('term') : tr('mean'); b.querySelector('.k').hidden = !CONFIG.labels || isPic(c.t);
+    t.textContent = c.t; if (isPic(c.t)) t.classList.add('pic'); else if (c.t.length > 24) t.style.setProperty('--fs', 'clamp(.78rem,1.9vmin,1.35rem)');
+    b.onclick = () => flip(i); g.appendChild(b);
+  });
+}
+function paint() {
+  const total = S.cards.length / 2;
+  $('found').textContent = tr('found', { n: S.found, total }); $('moves').textContent = tr('moves', { n: S.moves });
+  const tm = $('teams'); tm.innerHTML = '';
+  for (let i = 0; i < S.teams; i++) { const d = document.createElement('div'); d.className = `team${i === S.turn ? ' turn' : ''}`; d.innerHTML = '<span></span><span class="pts"></span>'; d.children[0].textContent = tr('team', { n: i + 1 }); d.children[1].textContent = String(S.scores[i]); tm.appendChild(d); }
+  [...$('grid').children].forEach((b, i) => {
+    const c = S.cards[i]; b.classList.toggle('up', c.up || c.done); b.classList.toggle('done', c.done); b.disabled = c.done;
+    b.setAttribute('aria-label', c.up || c.done ? `${tr('shown', { n: i + 1, t: c.t })}${c.done ? `, ${tr('matched')}` : ''}` : tr('hidden', { n: i + 1 }));
+  });
+}
+function flip(i) {
+  const c = S.cards[i];
+  if (S.screen !== 'play' || S.lock || !c || c.up || c.done) return;
+  c.up = true; S.open.push(i); S.focus = i; sfx('click'); paint();
+  if (S.open.length < 2) { $('turnline').textContent = S.teams ? tr('turn', { n: S.turn + 1 }) : ''; return; }
+  S.moves++;
+  const [x, y] = S.open.map(k => S.cards[k]);
+  if (x.pair === y.pair) {
+    x.done = y.done = true; x.up = y.up = false; S.open = []; S.found++;
+    if (S.teams) S.scores[S.turn]++;
+    $('turnline').textContent = S.teams ? tr('again2', { n: S.turn + 1 }) : tr('pair'); sfx('coin');
+    paint(); for (const k of [i, S.cards.indexOf(x === c ? y : x)]) { const el = $('grid').children[k]; el.classList.remove('oc-bump'); void el.offsetWidth; el.classList.add('oc-bump'); }
+    if (!isPic(S.dealt[x.pair].a)) say(S.dealt[x.pair].a); say(S.dealt[x.pair].b, true);   // each as written, one after the other
+    if (S.found === S.cards.length / 2) setTimeout(finish, 700); else focusCard();
+  } else {
+    S.lock = true; $('turnline').textContent = tr('nope'); sfx('hit');
+    const els = S.open.map(k => $('grid').children[k]); els.forEach(el => el.classList.add('miss'));
+    setTimeout(() => {
+      x.up = y.up = false; S.open = []; S.lock = false; els.forEach(el => el.classList.remove('miss'));
+      if (S.teams) { S.turn = (S.turn + 1) % S.teams; $('turnline').textContent = tr('turn', { n: S.turn + 1 }); } else $('turnline').textContent = '';
+      paint(); focusCard();
+    }, Math.max(400, CONFIG.flipBackMs | 0));
+  }
+}
+function finish() {
+  show('end');
+  if (S.teams) {
+    const top = Math.max(...S.scores), win = S.scores.map((s, i) => (s === top ? i : -1)).filter(i => i >= 0);
+    $('endH').textContent = win.length > 1 ? tr('endTie') : tr('endTeam', { n: win[0] + 1 });
+    $('endScore').textContent = S.scores.map((s, i) => `${tr('team', { n: i + 1 })} ${s}`).join(' · '); $('endScore').style.fontSize = 'clamp(1.4rem,5vmin,3rem)';
+  } else { $('endH').textContent = tr('endSolo'); $('endScore').textContent = tr('endMoves', { moves: S.moves }); $('endScore').style.fontSize = ''; }
+  $('endP').textContent = tr('endP');
+  const ul = $('pairs'); ul.innerHTML = '';
+  for (const p of S.dealt) { const li = document.createElement('li'); li.innerHTML = '<b></b><span aria-hidden="true">→</span><span></span>'; li.children[0].textContent = p.a; li.children[2].textContent = p.b; ul.appendChild(li); }
+  sfx('win'); try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ }
+  try { if (B.gameOver) B.gameOver({ won: true, score: S.teams ? null : Math.max(0, 100 - S.moves) }); } catch (e) { /* preview */ }
+  $('again').focus({ preventScroll: true });
+}
+function focusCard() {
+  const els = [...$('grid').children]; els.forEach(b => { b.tabIndex = -1; });
+  let i = S.focus; if (!S.cards[i] || S.cards[i].done) i = S.cards.findIndex(c => !c.done);
+  if (i < 0) return; S.focus = i; els[i].tabIndex = 0; if (S.screen === 'play') els[i].focus({ preventScroll: true });
+}
+function move(dx, dy) {
+  const n = S.cards.length; let i = S.focus;
+  for (let k = 0; k < n; k++) {
+    let c = i % S.cols, r = Math.floor(i / S.cols);
+    c = (c + dx + S.cols) % S.cols; r = (r + dy + S.rows) % S.rows; i = r * S.cols + c;
+    if (i < n && !S.cards[i].done) break;
+  }
+  if (i < n) { S.focus = i; focusCard(); }
+}
+
+// ---- the teacher's own pairs ----------------------------------------------------------------------------------------
+function fromLines(text) {
+  const out = [], lines = String(text).split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim(); if (!raw) continue;
+    const parts = raw.split('|').map(s => s.trim());
+    if (parts.length < 2 || !parts[0] || !parts[1]) return { error: tr('bad', { n: i + 1 }) };
+    out.push({ a: parts[0].slice(0, 80), b: parts.slice(1).join(' | ').slice(0, 120) });
+  }
+  return out.length >= 3 ? { list: out.slice(0, 40) } : { error: tr('few') };
+}
+function openEditor() { $('editText').value = pairs.map(p => `${p.a} | ${p.b}`).join('\n'); $('editMsg').textContent = ''; $('editMsg').className = 'msg'; $('editor').hidden = false; $('editText').focus(); }
+function closeEditor() { $('editor').hidden = true; $('editBtn').focus(); }
+function useEditor() { const r = fromLines($('editText').value); if (r.error) { $('editMsg').textContent = r.error; $('editMsg').className = 'msg bad'; return; } pairs = r.list; closeEditor(); home(); }
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('go').onclick = begin; $('again').onclick = begin; $('menu').onclick = home;
+$('editBtn').onclick = openEditor; $('editCancel').onclick = closeEditor; $('editUse').onclick = useEditor;
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('resize', () => { if (S.screen === 'play') layout(S.cards.length); });
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!$('editor').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeEditor(); } return; }
+  const k = e.key, rtl = document.documentElement.dir === 'rtl';
+  if (k === 'f' || k === 'F') { $('full').click(); return; }
+  if (S.screen !== 'play') return;
+  const m = { ArrowLeft: [rtl ? 1 : -1, 0], ArrowRight: [rtl ? -1 : 1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[k];
+  if (m) { e.preventDefault(); move(m[0], m[1]); }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title; $('startH').textContent = CONFIG.title;
+$('sound').textContent = tr('sound'); $('full').textContent = tr('full'); $('go').textContent = tr('go'); $('editBtn').textContent = tr('edit'); $('whoP').textContent = tr('whoP');
+$('again').textContent = tr('again'); $('menu').textContent = tr('menu'); $('pairsH').textContent = tr('pairsH'); $('keys').textContent = tr('keys'); $('startKeys').textContent = tr('keys');
+$('editH').textContent = tr('editH'); $('editP').textContent = tr('editP'); $('editText').setAttribute('aria-label', tr('editH')); $('editUse').textContent = tr('use'); $('editCancel').textContent = tr('cancel');
+$('editBtn').hidden = !CONFIG.allowEdit; $('grid').setAttribute('aria-label', CONFIG.title);
+$('sound').setAttribute('aria-pressed', String(soundOn));
+window.__brbTest = { state: () => ({ screen: S.screen, cards: S.cards.length, found: S.found, moves: S.moves, open: S.open.slice(), teams: S.teams, turn: S.turn + 1, scores: S.scores.slice(), pairOf: S.cards.map(c => c.pair) }), start() { begin(); } };
+home();
+</script>

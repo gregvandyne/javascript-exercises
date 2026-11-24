@@ -16,7 +16,7 @@ import * as dress from '../../kit/packs/dress.js';
 
 const KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'island'];
 const ALL = [...KEYS, 'world3d'];
-const CLASSROOM = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard'];   // world3d: the Builder's own 3D starter (no kit), not a "Start from" card
+const CLASSROOM = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard', 'classquiz', 'classmemory', 'classword'];   // world3d: the Builder's own 3D starter (no kit), not a "Start from" card
 const COVERS = ['sunset', 'ocean', 'forest', 'candy', 'night', 'lava', 'mint', 'gold'];
 const CATEGORIES = ['arcade', 'sports', 'puzzle', 'words', 'board', 'adventure', 'learning', 'music', 'silly'];
 

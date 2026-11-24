@@ -1,0 +1,328 @@
+<title>Word Lab</title>
+<!--CLASSROOM_STYLE-->
+<style>
+/* Word Lab: practice a word list three ways. Unscramble (read the clue, put the letters in order), Spell it (hear the
+   word, spell it from the letters, with a few extra letters mixed in) and Fill the gap (pick the word that completes
+   the sentence). For the board or each student's own device. Plain HTML in the Oomba classroom style: letters can be
+   tapped or typed, nothing is sent anywhere and nobody is named. */
+.top{display:flex;align-items:center;gap:12px}
+.progress{flex:1;height:12px;border-radius:999px;background:var(--tint);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--leaf);border-radius:999px;transition:width .45s var(--ease)}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin:16px 0 4px;text-align:start}
+.mode{display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:4px;padding:14px 16px;border-radius:var(--r);min-height:96px}
+.mode b{font-size:clamp(1.1rem,2.8vmin,1.6rem);font-weight:800}
+.mode span{font-weight:500;font-size:clamp(.85rem,1.9vmin,1.1rem);color:var(--soft)}
+.mode[aria-pressed="true"]{background:var(--mint-soft);color:var(--ink);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
+.mode[aria-pressed="true"] span{color:var(--ink)}
+.stage{flex:1;width:min(100%,1100px);margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3vmin,32px);text-align:center}
+.clue{margin:0;font-size:clamp(1.3rem,4.6vmin,3.2rem);font-weight:700;line-height:1.2;text-wrap:balance;overflow-wrap:anywhere}
+.clue small{display:block;font-size:.5em;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--soft);margin-bottom:.4em}
+.slots{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(5px,1vmin,10px)}
+.slot{--s:clamp(40px,min(9vmin,calc((100vw - 60px) / var(--n,6))),96px);width:var(--s);height:calc(var(--s) * 1.15);min-width:0;min-height:0;padding:0;display:grid;place-items:center;border-radius:12px;border:2px dashed rgba(20,20,20,.25);background:transparent;box-shadow:none;font-size:calc(var(--s) * .56);font-weight:800}
+.slot.full{border-style:solid;border-color:var(--line);background:var(--card);box-shadow:var(--lift)}
+.slot.space{border:0;width:calc(var(--s) * .4)}
+.slots.good .slot{background:var(--mint-soft);border-color:var(--leaf);color:var(--ink)}
+.slots.bad .slot.full{background:var(--coral-soft);border-color:var(--coral)}
+.tiles{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(6px,1.2vmin,12px)}
+.tile{--s:clamp(46px,min(9.5vmin,calc((100vw - 70px) / var(--n,6))),100px);width:var(--s);height:var(--s);min-width:0;min-height:44px;padding:0;border-radius:14px;font-size:calc(var(--s) * .5);font-weight:800;background:var(--spark-soft);border-color:#EED27A}
+.tile:disabled{opacity:.18;transform:scale(.9)}
+.sentence{margin:0;font-size:clamp(1.4rem,5vmin,3.4rem);font-weight:700;line-height:1.3;text-wrap:balance;overflow-wrap:anywhere}
+.gap{display:inline-block;min-width:4ch;padding:0 .3em;border-bottom:4px solid var(--leaf);color:var(--leaf)}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:12px;width:100%}
+.choice{font-size:clamp(1.15rem,3.6vmin,2.4rem);min-height:clamp(60px,10vmin,100px);font-weight:800}
+.choice.right{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
+.choice.wrong{background:var(--coral-soft);border-color:var(--coral)}
+.choice:disabled{opacity:1;cursor:default}
+.feedback{margin:0;min-height:1.4em;font-weight:800;font-size:clamp(1.1rem,3vmin,2rem)}
+.feedback.good{color:var(--leaf)}
+.feedback.bad{color:#B4432A}
+.hear{font-size:clamp(1.2rem,3.6vmin,2.2rem)}
+.big-score{font-size:clamp(3rem,13vmin,9rem);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.big-score small{font-size:.4em;color:var(--soft);font-weight:700}
+.review{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:10px;text-align:start}
+.review li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);background:var(--page);border:1.5px solid var(--line);font-size:clamp(1rem,2.4vmin,1.4rem);font-weight:700}
+.review .ok{flex:none;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;color:#fff;background:var(--leaf);font-weight:800}
+.review li.no .ok{background:var(--coral)}
+.end .card{width:min(100%,900px)}
+.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.editor .card{width:min(100%,900px);text-align:start;max-height:calc(100dvh - 32px);overflow:auto}
+.editor h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
+.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);color:var(--ink);background:var(--page);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;resize:vertical}
+.editor textarea:focus-visible{outline:4px solid var(--spark);outline-offset:2px}
+.editor .msg{min-height:1.3em;font-weight:700}
+.editor .msg.bad{color:#B4432A}
+.editor .row{justify-content:flex-end}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
+
+  <section class="screen" id="start">
+    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+      <div class="modes" id="modes" role="group"></div>
+      <div class="row"><button class="big hot" id="go"></button></div>
+      <div class="row"><button class="small" id="editBtn"></button></div>
+      <p class="keys" id="startKeys"></p></div>
+  </section>
+
+  <section class="screen" id="play" hidden>
+    <div class="top"><span class="pill" id="wn"></span><div class="progress" aria-hidden="true"><i id="bar"></i></div><span class="pill" id="score"></span></div>
+    <div class="stage" id="stage">
+      <p class="clue" id="clue"></p>
+      <button class="big hear" id="hear" hidden></button>
+      <p class="sentence" id="sentence" hidden></p>
+      <div class="slots" id="slots" aria-live="polite"></div>
+      <div class="tiles" id="tiles" role="group"></div>
+      <div class="choices" id="choices" role="group" hidden></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </div>
+    <div class="row"><button class="big" id="hint"></button><button class="big" id="clear"></button><button class="big" id="showClue" hidden></button><button class="big hot" id="check"></button><button class="big hot" id="next" hidden></button></div>
+    <p class="keys" id="keys"></p>
+  </section>
+
+  <section class="screen end" id="end" hidden>
+    <div class="card"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p id="endP"></p>
+      <div class="row"><button class="big hot" id="again"></button><button class="big" id="menu"></button></div>
+      <h3 id="reviewH"></h3><ul class="review" id="review"></ul></div>
+  </section>
+</main>
+<section class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="editH" hidden>
+  <div class="card"><h2 id="editH"></h2><p id="editP"></p>
+    <textarea id="editText" spellcheck="true" dir="auto"></textarea>
+    <p class="msg" id="editMsg" aria-live="polite"></p>
+    <div class="row"><button class="big" id="editCancel"></button><button class="big hot" id="editUse"></button></div></div>
+</section>
+<script>
+// Word Lab. Pick a way to practice, then one word at a time:
+//   Unscramble  the clue is shown; tap the letters (or type them) in the right order. Hint puts in the next letter.
+//   Spell it    "Hear the word" reads it aloud (and the clue can be shown); spell it from the letters, which include
+//               a few extra ones (CONFIG.extraLetters).
+//   Fill the gap  a sentence with the word missing; pick it from four words of the list (keys 1-4).
+// Two wrong checks show the word. The end card lists every word with a tick or a cross (never colour alone).
+// Edit words: the teacher pastes one word per line, "word | clue | a sentence with the word", used on this device only
+// (never sent). Sound is off until the Sound button is pressed (Hear the word always speaks: it was asked for).
+'use strict';
+const CONFIG = {
+  title: 'Word Lab',
+  lang: 'en',
+  sound: false,
+  mode: 'unscramble',
+  rounds: 8,
+  extraLetters: 3,
+  hints: true,
+  readAloud: true,
+  allowEdit: true,
+};
+// Each word: the word, a clue (what it means), and a sentence that uses it (for Fill the gap).
+const WORD_LIST = [
+  { word: 'planet', clue: 'A big round world that travels around a star.', sentence: 'Earth is the planet we live on.' },
+  { word: 'forest', clue: 'A large area covered with trees.', sentence: 'We saw deer in the forest.' },
+  { word: 'bridge', clue: 'It lets you cross over a river or a road.', sentence: 'The cars drove over the bridge.' },
+  { word: 'island', clue: 'Land with water all around it.', sentence: 'They sailed to a small island.' },
+  { word: 'thunder', clue: 'The loud sound after lightning.', sentence: 'The thunder made the dog hide.' },
+  { word: 'whisper', clue: 'To speak very quietly.', sentence: 'Please whisper in the library.' },
+  { word: 'gentle', clue: 'Kind and soft, not rough.', sentence: 'Be gentle with the kitten.' },
+  { word: 'journey', clue: 'A long trip from one place to another.', sentence: 'The journey took three days.' },
+];
+const MODES = ['unscramble', 'spell', 'gap'];
+// {n}, {total} are numbers; {w} is a word.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startP: '{total} words. How do you want to practice?', unscramble: 'Unscramble', unscrambleD: 'Read the clue, put the letters in order.', spell: 'Spell it', spellD: 'Hear the word, then spell it.', gap: 'Fill the gap', gapD: 'Pick the word that fits the sentence.', go: 'Start', edit: 'Edit words', wn: 'Word {n} of {total}', score: 'Score {n}', clue: 'Clue', hear: 'Hear the word', showClue: 'Show the clue', hint: 'Hint', clear: 'Clear', check: 'Check', next: 'Next', finish: 'See results', right: 'Yes! Well spelled.', rightGap: 'Yes! That fits.', wrong: 'Not yet. Try again.', reveal: 'The word is {w}.', endAll: 'Every word right. Brilliant!', endGood: 'Great work!', endTry: 'Good practice. Have another go!', endP: '{n} out of {total} words', again: 'Play again', menu: 'Another way', review: 'The words', keys: 'Keys: type letters · Backspace undo · Enter check · 1-4 pick · F full screen', editH: 'Your words', editP: 'One word per line: the word, then | and a clue, then | and a sentence that uses the word.', use: 'Use these', cancel: 'Cancel', bad: 'Line {n} needs a word and a clue, with | between them.', few: 'Add at least 3 words.', noGap: 'Fill the gap needs a sentence with the word in it for at least 4 words.' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startP: '{total} palabras. ¿Cómo quieres practicar?', unscramble: 'Ordenar', unscrambleD: 'Lee la pista y ordena las letras.', spell: 'Deletrear', spellD: 'Escucha la palabra y escríbela.', gap: 'Completar', gapD: 'Elige la palabra que falta en la frase.', go: 'Empezar', edit: 'Editar palabras', wn: 'Palabra {n} de {total}', score: 'Puntos {n}', clue: 'Pista', hear: 'Escuchar la palabra', showClue: 'Ver la pista', hint: 'Ayuda', clear: 'Borrar', check: 'Comprobar', next: 'Siguiente', finish: 'Ver resultados', right: '¡Sí! Muy bien escrita.', rightGap: '¡Sí! Encaja.', wrong: 'Todavía no. Inténtalo otra vez.', reveal: 'La palabra es {w}.', endAll: 'Todas bien. ¡Genial!', endGood: '¡Muy bien!', endTry: 'Buena práctica. ¡Prueba otra vez!', endP: '{n} de {total} palabras', again: 'Jugar otra vez', menu: 'Otra forma', review: 'Las palabras', keys: 'Teclas: escribe letras · Retroceso deshacer · Intro comprobar · 1-4 elegir · F pantalla completa', editH: 'Tus palabras', editP: 'Una palabra por línea: la palabra, luego | y una pista, luego | y una frase con la palabra.', use: 'Usar estas', cancel: 'Cancelar', bad: 'La línea {n} necesita una palabra y una pista separadas por |.', few: 'Añade al menos 3 palabras.', noGap: 'Completar necesita una frase con la palabra para al menos 4 palabras.' },
+  fr: { sound: 'Son', full: 'Plein écran', startP: '{total} mots. Comment veux-tu t’entraîner ?', unscramble: 'Remettre en ordre', unscrambleD: 'Lis l’indice, remets les lettres dans l’ordre.', spell: 'Épeler', spellD: 'Écoute le mot, puis épelle-le.', gap: 'Texte à trou', gapD: 'Choisis le mot qui complète la phrase.', go: 'Commencer', edit: 'Modifier les mots', wn: 'Mot {n} sur {total}', score: 'Score {n}', clue: 'Indice', hear: 'Écouter le mot', showClue: 'Voir l’indice', hint: 'Aide', clear: 'Effacer', check: 'Vérifier', next: 'Suivant', finish: 'Voir les résultats', right: 'Oui ! Bien écrit.', rightGap: 'Oui ! C’est ça.', wrong: 'Pas encore. Essaie encore.', reveal: 'Le mot est {w}.', endAll: 'Tous les mots justes. Génial !', endGood: 'Très bon travail !', endTry: 'Bon entraînement. Recommence !', endP: '{n} mots sur {total}', again: 'Rejouer', menu: 'Autre façon', review: 'Les mots', keys: 'Touches : tape les lettres · Retour arrière annuler · Entrée vérifier · 1-4 choisir · F plein écran', editH: 'Tes mots', editP: 'Un mot par ligne : le mot, puis | et un indice, puis | et une phrase avec le mot.', use: 'Utiliser', cancel: 'Annuler', bad: 'La ligne {n} doit avoir un mot et un indice séparés par |.', few: 'Ajoute au moins 3 mots.', noGap: 'Le texte à trou demande une phrase avec le mot pour au moins 4 mots.' },
+  de: { sound: 'Ton', full: 'Vollbild', startP: '{total} Wörter. Wie möchtest du üben?', unscramble: 'Buchstabensalat', unscrambleD: 'Lies den Hinweis, ordne die Buchstaben.', spell: 'Buchstabieren', spellD: 'Hör das Wort und schreib es.', gap: 'Lückentext', gapD: 'Wähle das Wort, das in den Satz passt.', go: 'Los', edit: 'Wörter bearbeiten', wn: 'Wort {n} von {total}', score: 'Punkte {n}', clue: 'Hinweis', hear: 'Wort anhören', showClue: 'Hinweis zeigen', hint: 'Tipp', clear: 'Löschen', check: 'Prüfen', next: 'Weiter', finish: 'Ergebnis', right: 'Ja! Richtig geschrieben.', rightGap: 'Ja! Das passt.', wrong: 'Noch nicht. Versuch es nochmal.', reveal: 'Das Wort ist {w}.', endAll: 'Alle Wörter richtig. Super!', endGood: 'Toll gemacht!', endTry: 'Gut geübt. Probier es nochmal!', endP: '{n} von {total} Wörtern', again: 'Nochmal spielen', menu: 'Andere Art', review: 'Die Wörter', keys: 'Tasten: Buchstaben tippen · Rücktaste zurück · Enter prüfen · 1-4 wählen · F Vollbild', editH: 'Deine Wörter', editP: 'Ein Wort pro Zeile: das Wort, dann | und ein Hinweis, dann | und ein Satz mit dem Wort.', use: 'Übernehmen', cancel: 'Abbrechen', bad: 'Zeile {n} braucht ein Wort und einen Hinweis, getrennt durch |.', few: 'Mindestens 3 Wörter.', noGap: 'Der Lückentext braucht für mindestens 4 Wörter einen Satz mit dem Wort.' },
+  it: { sound: 'Suono', full: 'Schermo intero', startP: '{total} parole. Come vuoi esercitarti?', unscramble: 'Riordina', unscrambleD: 'Leggi l’indizio, metti in ordine le lettere.', spell: 'Scrivi', spellD: 'Ascolta la parola, poi scrivila.', gap: 'Completa', gapD: 'Scegli la parola che completa la frase.', go: 'Inizia', edit: 'Modifica le parole', wn: 'Parola {n} di {total}', score: 'Punti {n}', clue: 'Indizio', hear: 'Ascolta la parola', showClue: 'Mostra l’indizio', hint: 'Aiuto', clear: 'Cancella', check: 'Controlla', next: 'Avanti', finish: 'Vedi i risultati', right: 'Sì! Scritta bene.', rightGap: 'Sì! È giusta.', wrong: 'Non ancora. Riprova.', reveal: 'La parola è {w}.', endAll: 'Tutte giuste. Fantastico!', endGood: 'Ottimo lavoro!', endTry: 'Bell’esercizio. Riprova!', endP: '{n} parole su {total}', again: 'Gioca ancora', menu: 'Un altro modo', review: 'Le parole', keys: 'Tasti: scrivi le lettere · Backspace annulla · Invio controlla · 1-4 scegli · F schermo intero', editH: 'Le tue parole', editP: 'Una parola per riga: la parola, poi | e un indizio, poi | e una frase con la parola.', use: 'Usa queste', cancel: 'Annulla', bad: 'La riga {n} deve avere una parola e un indizio separati da |.', few: 'Aggiungi almeno 3 parole.', noGap: 'Completa ha bisogno di una frase con la parola per almeno 4 parole.' },
+  pt: { sound: 'Som', full: 'Tela cheia', startP: '{total} palavras. Como você quer praticar?', unscramble: 'Desembaralhar', unscrambleD: 'Leia a dica e ponha as letras em ordem.', spell: 'Soletrar', spellD: 'Ouça a palavra e escreva.', gap: 'Completar', gapD: 'Escolha a palavra que completa a frase.', go: 'Começar', edit: 'Editar palavras', wn: 'Palavra {n} de {total}', score: 'Pontos {n}', clue: 'Dica', hear: 'Ouvir a palavra', showClue: 'Mostrar a dica', hint: 'Ajuda', clear: 'Apagar', check: 'Verificar', next: 'Próxima', finish: 'Ver resultado', right: 'Isso! Bem escrita.', rightGap: 'Isso! Combina.', wrong: 'Ainda não. Tente de novo.', reveal: 'A palavra é {w}.', endAll: 'Todas certas. Incrível!', endGood: 'Ótimo trabalho!', endTry: 'Bom treino. Jogue de novo!', endP: '{n} de {total} palavras', again: 'Jogar de novo', menu: 'Outro jeito', review: 'As palavras', keys: 'Teclas: digite as letras · Backspace desfazer · Enter verificar · 1-4 escolher · F tela cheia', editH: 'Suas palavras', editP: 'Uma palavra por linha: a palavra, depois | e uma dica, depois | e uma frase com a palavra.', use: 'Usar estas', cancel: 'Cancelar', bad: 'A linha {n} precisa de uma palavra e uma dica separadas por |.', few: 'Adicione pelo menos 3 palavras.', noGap: 'Completar precisa de uma frase com a palavra para pelo menos 4 palavras.' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startP: '{total} woorden. Hoe wil je oefenen?', unscramble: 'Husselwoord', unscrambleD: 'Lees de hint, zet de letters op volgorde.', spell: 'Spellen', spellD: 'Luister naar het woord en spel het.', gap: 'Gatentekst', gapD: 'Kies het woord dat in de zin past.', go: 'Start', edit: 'Woorden aanpassen', wn: 'Woord {n} van {total}', score: 'Score {n}', clue: 'Hint', hear: 'Hoor het woord', showClue: 'Toon de hint', hint: 'Hulp', clear: 'Wissen', check: 'Controleer', next: 'Volgende', finish: 'Bekijk de uitslag', right: 'Ja! Goed gespeld.', rightGap: 'Ja! Dat past.', wrong: 'Nog niet. Probeer het nog eens.', reveal: 'Het woord is {w}.', endAll: 'Alle woorden goed. Geweldig!', endGood: 'Goed gedaan!', endTry: 'Goed geoefend. Nog een keer!', endP: '{n} van de {total} woorden', again: 'Nog een keer', menu: 'Andere manier', review: 'De woorden', keys: 'Toetsen: typ letters · Backspace terug · Enter controleer · 1-4 kies · F volledig scherm', editH: 'Jouw woorden', editP: 'Eén woord per regel: het woord, dan | en een hint, dan | en een zin met het woord.', use: 'Gebruik deze', cancel: 'Annuleren', bad: 'Regel {n} heeft een woord en een hint nodig, met | ertussen.', few: 'Voeg minstens 3 woorden toe.', noGap: 'De gatentekst heeft voor minstens 4 woorden een zin met het woord nodig.' },
+  ru: { sound: 'Звук', full: 'Весь экран', startP: 'Слов: {total}. Как будем тренироваться?', unscramble: 'Собери слово', unscrambleD: 'Прочитай подсказку, расставь буквы.', spell: 'Напиши', spellD: 'Послушай слово и напиши его.', gap: 'Вставь слово', gapD: 'Выбери слово, которое подходит в предложение.', go: 'Начать', edit: 'Изменить слова', wn: 'Слово {n} из {total}', score: 'Очки {n}', clue: 'Подсказка', hear: 'Послушать слово', showClue: 'Показать подсказку', hint: 'Подсказка', clear: 'Стереть', check: 'Проверить', next: 'Дальше', finish: 'Результаты', right: 'Да! Написано верно.', rightGap: 'Да! Подходит.', wrong: 'Пока нет. Попробуй ещё.', reveal: 'Это слово: {w}.', endAll: 'Все слова верно. Отлично!', endGood: 'Хорошая работа!', endTry: 'Хорошая тренировка. Попробуй ещё!', endP: 'Верно: {n} из {total}', again: 'Играть снова', menu: 'Другой способ', review: 'Слова', keys: 'Клавиши: вводи буквы · Backspace отмена · Enter проверить · 1-4 выбрать · F весь экран', editH: 'Твои слова', editP: 'Одно слово в строке: слово, затем | и подсказка, затем | и предложение с этим словом.', use: 'Готово', cancel: 'Отмена', bad: 'В строке {n} нужно слово и подсказка через |.', few: 'Добавь хотя бы 3 слова.', noGap: 'Для «Вставь слово» нужны предложения с этим словом хотя бы для 4 слов.' },
+  he: { sound: 'צליל', full: 'מסך מלא', startP: '{total} מילים. איך תרצו לתרגל?', unscramble: 'סדרו את האותיות', unscrambleD: 'קראו את הרמז וסדרו את האותיות.', spell: 'איות', spellD: 'שמעו את המילה ואייתו אותה.', gap: 'השלמת משפט', gapD: 'בחרו את המילה שמתאימה למשפט.', go: 'מתחילים', edit: 'עריכת מילים', wn: 'מילה {n} מתוך {total}', score: 'ניקוד {n}', clue: 'רמז', hear: 'לשמוע את המילה', showClue: 'להראות רמז', hint: 'עזרה', clear: 'ניקוי', check: 'בדיקה', next: 'הבא', finish: 'לתוצאות', right: 'כן! איות נכון.', rightGap: 'כן! זה מתאים.', wrong: 'עוד לא. נסו שוב.', reveal: 'המילה היא {w}.', endAll: 'כל המילים נכונות. מצוין!', endGood: 'עבודה יפה!', endTry: 'תרגול טוב. נסו שוב!', endP: '{n} מתוך {total} מילים', again: 'לשחק שוב', menu: 'דרך אחרת', review: 'המילים', keys: 'מקשים: הקלידו אותיות · Backspace ביטול · Enter בדיקה · 1-4 בחירה · F מסך מלא', editH: 'המילים שלכם', editP: 'מילה אחת בכל שורה: המילה, אחריה | ורמז, ואחריו | ומשפט עם המילה.', use: 'להשתמש', cancel: 'ביטול', bad: 'בשורה {n} צריכים מילה ורמז מופרדים ב-|.', few: 'הוסיפו לפחות 3 מילים.', noGap: 'להשלמת משפט צריך משפט עם המילה לפחות ל-4 מילים.' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startP: '{total} كلمات. كيف تريد أن تتدرب؟', unscramble: 'رتّب الحروف', unscrambleD: 'اقرأ التلميح ورتّب الحروف.', spell: 'تهجَّ الكلمة', spellD: 'استمع إلى الكلمة ثم تهجّها.', gap: 'املأ الفراغ', gapD: 'اختر الكلمة التي تكمل الجملة.', go: 'ابدأ', edit: 'تعديل الكلمات', wn: 'الكلمة {n} من {total}', score: 'النقاط {n}', clue: 'تلميح', hear: 'استمع إلى الكلمة', showClue: 'أظهر التلميح', hint: 'مساعدة', clear: 'مسح', check: 'تحقق', next: 'التالي', finish: 'النتائج', right: 'نعم! تهجئة صحيحة.', rightGap: 'نعم! هذه تناسب.', wrong: 'ليس بعد. حاول مرة أخرى.', reveal: 'الكلمة هي {w}.', endAll: 'كل الكلمات صحيحة. رائع!', endGood: 'عمل رائع!', endTry: 'تدريب جيد. حاول مرة أخرى!', endP: '{n} من {total} كلمات', again: 'العب مرة أخرى', menu: 'طريقة أخرى', review: 'الكلمات', keys: 'المفاتيح: اكتب الحروف · Backspace تراجع · Enter تحقق · 1-4 اختر · F ملء الشاشة', editH: 'كلماتك', editP: 'كلمة واحدة في كل سطر: الكلمة، ثم | وتلميح، ثم | وجملة فيها الكلمة.', use: 'استخدمها', cancel: 'إلغاء', bad: 'السطر {n} يحتاج إلى كلمة وتلميح بينهما |.', few: 'أضف 3 كلمات على الأقل.', noGap: 'املأ الفراغ يحتاج إلى جملة فيها الكلمة لأربع كلمات على الأقل.' },
+  ja: { sound: 'サウンド', full: '全画面', startP: '{total}このことば。どうやってれんしゅうする？', unscramble: 'ならべかえ', unscrambleD: 'ヒントをよんで、もじをならべよう。', spell: 'かきとり', spellD: 'ことばをきいて、もじでつくろう。', gap: 'あなうめ', gapD: 'ぶんにあうことばをえらぼう。', go: 'スタート', edit: 'ことばをへんしゅう', wn: '{n} / {total}', score: 'とくてん {n}', clue: 'ヒント', hear: 'ことばをきく', showClue: 'ヒントを見る', hint: 'ヒント', clear: 'けす', check: 'たしかめる', next: 'つぎへ', finish: 'けっかを見る', right: 'せいかい！', rightGap: 'せいかい！ぴったり。', wrong: 'まだだよ。もういちど。', reveal: 'こたえは {w}。', endAll: 'ぜんぶせいかい。すごい！', endGood: 'よくできました！', endTry: 'よくれんしゅうしたね。もういちど！', endP: '{total}このうち{n}こ', again: 'もういちど', menu: 'ほかのやりかた', review: 'ことば', keys: 'キー：もじをうつ・Backspace もどす・Enter たしかめる・1〜4 えらぶ・F 全画面', editH: 'じぶんのことば', editP: '1ぎょうに1つ：ことば、| とヒント、| とそのことばをつかったぶん。', use: 'これをつかう', cancel: 'やめる', bad: '{n}ぎょうめは ことばとヒントを | でわけてね。', few: '3ついじょう入れてね。', noGap: 'あなうめには ことばの入ったぶんが4ついじょうひつようです。' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startP: '共 {total} 個詞。想怎麼練習？', unscramble: '重組字母', unscrambleD: '看提示，把字母排好。', spell: '拼寫', spellD: '聽這個詞，然後拼出來。', gap: '填空', gapD: '選出能完成句子的詞。', go: '開始', edit: '編輯詞語', wn: '第 {n} 個，共 {total} 個', score: '得分 {n}', clue: '提示', hear: '聽這個詞', showClue: '顯示提示', hint: '提示', clear: '清除', check: '檢查', next: '下一個', finish: '看結果', right: '對了！拼得很好。', rightGap: '對了！很合適。', wrong: '還不對，再試一次。', reveal: '答案是 {w}。', endAll: '全部答對，太棒了！', endGood: '做得好！', endTry: '練習得不錯，再玩一次！', endP: '{total} 個答對 {n} 個', again: '再玩一次', menu: '換個方式', review: '詞語', keys: '按鍵：輸入字母・Backspace 退回・Enter 檢查・1-4 選擇・F 全螢幕', editH: '你的詞語', editP: '每行一個：詞語，然後 | 和提示，再 | 和一個用到這個詞的句子。', use: '使用這些', cancel: '取消', bad: '第 {n} 行需要詞語和提示，用 | 分開。', few: '至少加入 3 個詞語。', noGap: '填空需要至少 4 個詞語有包含該詞的句子。' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const speak = text => { try { if (B.speak) return B.speak(text, { lang: CONFIG.lang, rate: 0.85 }); } catch (e) { /* no voice */ } return false; };
+const shuffle = a => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+const low = s => String(s).toLocaleLowerCase(CONFIG.lang);
+const FIXED = /[\s'’-]/;   // spaces, apostrophes and hyphens are given, never tiles
+const ABC = { en: 'abcdefghijklmnopqrstuvwxyz', es: 'abcdefghijklmnñopqrstuvwxyz', fr: 'abcdefghijklmnopqrstuvwxyz', de: 'abcdefghijklmnopqrstuvwxyzäöü', it: 'abcdefghilmnopqrstuvz', pt: 'abcdefghijlmnopqrstuvxz', nl: 'abcdefghijklmnopqrstuvwxyz', ru: 'абвгдежзиклмнопрстуфхцчшыэюя', he: 'אבגדהוזחטיכלמנסעפצקרשת' };
+
+let list = WORD_LIST.filter(x => x && x.word).map(x => ({ word: String(x.word).trim(), clue: String(x.clue || ''), sentence: String(x.sentence || '') }));
+const hasGap = x => !!x.sentence && low(x.sentence).includes(low(x.word));
+const S = { screen: 'start', mode: MODES.includes(CONFIG.mode) ? CONFIG.mode : 'unscramble', round: [], i: 0, score: 0, tries: 0, placed: [], tiles: [], done: false, log: [], clueShown: false };
+function show(id) { for (const s of ['start', 'play', 'end']) $(s).hidden = s !== id; S.screen = id; }
+function gapOk() { return list.filter(hasGap).length >= 4; }
+function home() {
+  show('start'); if (S.mode === 'gap' && !gapOk()) S.mode = 'unscramble';
+  $('startP').textContent = tr('startP', { total: Math.min(list.length, CONFIG.rounds) });
+  const box = $('modes'); box.innerHTML = '';
+  for (const m of MODES) {
+    const b = document.createElement('button'); b.className = 'mode'; b.setAttribute('aria-pressed', String(S.mode === m));
+    b.innerHTML = '<b></b><span></span>'; b.children[0].textContent = tr(m); b.children[1].textContent = m === 'gap' && !gapOk() ? tr('noGap') : tr(`${m}D`);
+    b.disabled = m === 'gap' && !gapOk(); b.onclick = () => { S.mode = m; home(); $('go').focus(); }; box.appendChild(b);
+  }
+  $('go').focus({ preventScroll: true });
+}
+function begin() {
+  const pool = S.mode === 'gap' ? list.filter(hasGap) : list;
+  S.round = shuffle(pool).slice(0, Math.max(1, CONFIG.rounds)); S.i = 0; S.score = 0; S.log = [];
+  show('play'); word();
+}
+function word() {
+  const x = S.round[S.i]; S.tries = 0; S.done = false; S.clueShown = false;
+  $('wn').textContent = tr('wn', { n: S.i + 1, total: S.round.length }); $('score').textContent = tr('score', { n: S.score });
+  $('bar').style.width = `${(S.i / S.round.length) * 100}%`;
+  $('feedback').textContent = ''; $('feedback').className = 'feedback'; $('next').hidden = true;
+  const gap = S.mode === 'gap', spell = S.mode === 'spell';
+  $('slots').hidden = gap; $('tiles').hidden = gap; $('choices').hidden = !gap; $('sentence').hidden = !gap;
+  $('hint').hidden = gap || !CONFIG.hints; $('clear').hidden = gap; $('check').hidden = gap;
+  $('hear').hidden = !spell || !B.speak; $('showClue').hidden = !spell || !x.clue;
+  $('clue').hidden = spell || (gap && !x.clue) || (!gap && !x.clue);
+  if (!$('clue').hidden) { $('clue').innerHTML = '<small></small><span></span>'; $('clue').children[0].textContent = tr('clue'); $('clue').children[1].textContent = x.clue; }
+  if (spell && !B.speak) { $('clue').hidden = !x.clue; S.clueShown = true; }
+  if (gap) return gapRound(x);
+  const letters = Array.from(x.word);
+  S.placed = letters.map(ch => (FIXED.test(ch) ? ch : null));
+  const need = letters.filter(ch => !FIXED.test(ch));
+  let extra = [];
+  if (spell) { const abc = Array.from(ABC[CONFIG.lang] || ABC[String(CONFIG.lang).split('-')[0]] || '').filter(ch => !need.some(n => low(n) === ch)); extra = shuffle(abc).slice(0, Math.max(0, CONFIG.extraLetters | 0)); }
+  let order = shuffle([...need, ...extra]);
+  if (need.length > 1 && order.join('') === need.join('')) order = order.slice(1).concat(order[0]);
+  S.tiles = order.map(ch => ({ ch, used: false }));
+  paintWord(); $('stage').classList.remove('oc-rise'); void $('stage').offsetWidth; $('stage').classList.add('oc-rise');
+  if (spell) setTimeout(() => { if (S.screen === 'play' && S.round[S.i] === x) $('hear').focus({ preventScroll: true }); }, 50);
+  else { const t = $('tiles').querySelector('button:not(:disabled)'); if (t) t.focus({ preventScroll: true }); }
+}
+function paintWord() {
+  const x = S.round[S.i], letters = Array.from(x.word);
+  const sl = $('slots'); sl.innerHTML = ''; sl.className = 'slots'; sl.style.setProperty('--n', Math.max(6, letters.length));
+  letters.forEach((ch, i) => {
+    const b = document.createElement('button'); const fixed = FIXED.test(ch);
+    b.className = `slot${fixed ? ' space' : S.placed[i] ? ' full' : ''}`; b.textContent = fixed ? (ch.trim() ? ch : '') : S.placed[i] ? S.placed[i].ch : '';
+    b.disabled = fixed || !S.placed[i] || S.done; b.tabIndex = fixed ? -1 : 0;
+    if (!fixed) b.setAttribute('aria-label', S.placed[i] ? S.placed[i].ch : `${i + 1}`);
+    b.onclick = () => unplace(i); sl.appendChild(b);
+  });
+  const tl = $('tiles'); tl.innerHTML = ''; tl.style.setProperty('--n', Math.max(6, S.tiles.length));
+  S.tiles.forEach((t, j) => { const b = document.createElement('button'); b.className = 'tile'; b.textContent = t.ch; b.disabled = t.used || S.done; b.onclick = () => place(j); tl.appendChild(b); });
+}
+function place(j) {
+  const t = S.tiles[j]; if (!t || t.used || S.done) return;
+  const i = S.placed.findIndex(p => p === null); if (i < 0) return;
+  S.placed[i] = { ch: t.ch, tile: j }; t.used = true; sfx('click'); paintWord();
+  const el = $('slots').children[i]; el.classList.add('oc-pop');
+  if (!S.placed.includes(null)) check(); else { const nx = $('tiles').querySelector('button:not(:disabled)'); if (nx && document.activeElement && document.activeElement.classList.contains('tile')) nx.focus({ preventScroll: true }); }
+}
+function unplace(i) { const p = S.placed[i]; if (!p || typeof p === 'string' || S.done) return; S.tiles[p.tile].used = false; S.placed[i] = null; $('slots').className = 'slots'; paintWord(); }
+function clearAll() { if (S.done) return; S.placed = S.placed.map(p => (typeof p === 'string' ? p : null)); S.tiles.forEach(t => { t.used = false; }); paintWord(); }
+function hint() {
+  if (S.done || S.mode === 'gap') return;
+  const x = S.round[S.i], letters = Array.from(x.word);
+  // keep the right letters at the start, then put in the next one
+  let i = 0; while (i < letters.length && (typeof S.placed[i] === 'string' || (S.placed[i] && low(S.placed[i].ch) === low(letters[i])))) i++;
+  if (i >= letters.length) return;
+  for (let k = i; k < letters.length; k++) if (S.placed[k] && typeof S.placed[k] !== 'string') { S.tiles[S.placed[k].tile].used = false; S.placed[k] = null; }
+  const j = S.tiles.findIndex(t => !t.used && low(t.ch) === low(letters[i]));
+  if (j < 0) return;
+  S.placed[i] = { ch: S.tiles[j].ch, tile: j }; S.tiles[j].used = true; S.tries = Math.max(S.tries, 0); S.hinted = true; paintWord();
+  if (!S.placed.includes(null)) check();
+}
+function check() {
+  if (S.done || S.placed.includes(null)) return;
+  const x = S.round[S.i], got = S.placed.map(p => (typeof p === 'string' ? p : p.ch)).join('');
+  if (low(got) === low(x.word)) return settle(true);
+  S.tries++; $('slots').className = 'slots bad'; $('slots').classList.add('oc-nudge'); sfx('hit');
+  if (S.tries >= 2) return settle(false);
+  $('feedback').textContent = tr('wrong'); $('feedback').className = 'feedback bad';
+}
+function settle(ok) {
+  const x = S.round[S.i]; S.done = true; if (ok) S.score++;
+  S.log.push({ word: x.word, ok });
+  if (S.mode !== 'gap') { if (!ok) S.placed = Array.from(x.word).map(ch => (FIXED.test(ch) ? ch : { ch })); paintWord(); $('slots').className = `slots ${ok ? 'good' : 'bad'}`; }
+  $('feedback').textContent = ok ? (S.mode === 'gap' ? tr('rightGap') : tr('right')) : tr('reveal', { w: x.word }); $('feedback').className = `feedback ${ok ? 'good' : 'bad'}`;
+  $('score').textContent = tr('score', { n: S.score }); if (ok) { $('score').classList.remove('oc-bump'); void $('score').offsetWidth; $('score').classList.add('oc-bump'); sfx('coin'); }
+  $('bar').style.width = `${((S.i + 1) / S.round.length) * 100}%`;
+  $('check').hidden = true; $('hint').hidden = true; $('clear').hidden = true;
+  $('next').textContent = S.i + 1 < S.round.length ? tr('next') : tr('finish'); $('next').hidden = false; $('next').focus({ preventScroll: true });
+}
+function gapRound(x) {
+  const at = low(x.sentence).indexOf(low(x.word)), s = $('sentence'); s.innerHTML = '';
+  s.append(x.sentence.slice(0, at)); const g = document.createElement('span'); g.className = 'gap'; g.textContent = ' '; g.setAttribute('aria-label', '___'); s.appendChild(g); s.append(x.sentence.slice(at + x.word.length));
+  const others = shuffle(list.filter(y => low(y.word) !== low(x.word))).slice(0, 3).map(y => y.word);
+  const opts = shuffle([x.word, ...others]), box = $('choices'); box.innerHTML = '';
+  opts.forEach((w, i) => { const b = document.createElement('button'); b.className = 'choice oc-pop'; b.style.animationDelay = `${i * 45}ms`; b.textContent = w; b.onclick = () => pickGap(i); box.appendChild(b); });
+  S.opts = opts; box.querySelector('button').focus({ preventScroll: true });
+}
+function pickGap(i) {
+  if (S.done) return;
+  const x = S.round[S.i], ok = low(S.opts[i]) === low(x.word);
+  [...$('choices').children].forEach((b, j) => { b.disabled = true; if (low(S.opts[j]) === low(x.word)) { b.classList.add('right'); b.textContent = `✓ ${S.opts[j]}`; } else if (j === i) { b.classList.add('wrong', 'oc-nudge'); b.textContent = `✗ ${S.opts[j]}`; } });
+  const g = $('sentence').querySelector('.gap'); g.textContent = x.word; g.classList.add('oc-pop');
+  if (!ok) sfx('hit');
+  settle(ok);
+}
+function next() { if (!S.done) return; if (++S.i < S.round.length) word(); else finish(); }
+function finish() {
+  show('end'); const n = S.score, total = S.round.length, pct = total ? n / total : 0;
+  $('endH').textContent = pct === 1 ? tr('endAll') : pct >= 0.6 ? tr('endGood') : tr('endTry');
+  $('endScore').innerHTML = ''; $('endScore').append(String(n)); const sm = document.createElement('small'); sm.textContent = ` / ${total}`; $('endScore').appendChild(sm);
+  $('endP').textContent = tr('endP', { n, total });
+  const ul = $('review'); ul.innerHTML = '';
+  for (const l of S.log) { const li = document.createElement('li'); li.className = l.ok ? 'yes' : 'no'; li.innerHTML = '<span class="ok" aria-hidden="true"></span><span></span>'; li.children[0].textContent = l.ok ? '✓' : '✗'; li.children[1].textContent = l.word; ul.appendChild(li); }
+  sfx(pct >= 0.6 ? 'win' : 'click'); if (pct === 1) { try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ } }
+  try { if (B.gameOver) B.gameOver({ won: pct >= 0.6, score: n }); } catch (e) { /* preview */ }
+  $('again').focus({ preventScroll: true });
+}
+
+// ---- the teacher's own words ----------------------------------------------------------------------------------------
+function fromLines(text) {
+  const out = [], lines = String(text).split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim(); if (!raw) continue;
+    const parts = raw.split('|').map(s => s.trim());
+    if (!parts[0] || parts[0].length > 30) return { error: tr('bad', { n: i + 1 }) };
+    out.push({ word: parts[0], clue: (parts[1] || '').slice(0, 160), sentence: (parts[2] || '').slice(0, 200) });
+  }
+  return out.length >= 3 ? { list: out.slice(0, 60) } : { error: tr('few') };
+}
+function openEditor() { $('editText').value = list.map(x => [x.word, x.clue, x.sentence].join(' | ')).join('\n'); $('editMsg').textContent = ''; $('editMsg').className = 'msg'; $('editor').hidden = false; $('editText').focus(); }
+function closeEditor() { $('editor').hidden = true; $('editBtn').focus(); }
+function useEditor() { const r = fromLines($('editText').value); if (r.error) { $('editMsg').textContent = r.error; $('editMsg').className = 'msg bad'; return; } list = r.list; closeEditor(); home(); }
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('go').onclick = begin; $('again').onclick = begin; $('menu').onclick = home; $('next').onclick = next;
+$('check').onclick = check; $('clear').onclick = clearAll; $('hint').onclick = hint;
+$('hear').onclick = () => { const x = S.round[S.i]; if (x && !speak(x.word)) { $('clue').hidden = !x.clue; } };
+$('showClue').onclick = () => { const x = S.round[S.i]; if (!x) return; $('clue').innerHTML = '<small></small><span></span>'; $('clue').children[0].textContent = tr('clue'); $('clue').children[1].textContent = x.clue; $('clue').hidden = false; $('showClue').hidden = true; S.clueShown = true; };
+$('editBtn').onclick = openEditor; $('editCancel').onclick = closeEditor; $('editUse').onclick = useEditor;
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!$('editor').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeEditor(); } return; }
+  if (S.screen !== 'play') { if ((e.key === 'f' || e.key === 'F') && S.screen !== 'play') $('full').click(); return; }
+  const k = e.key;
+  if (S.done) { if (k === 'Enter' || k === ' ' || k === 'PageDown' || k === 'ArrowRight') { e.preventDefault(); next(); } return; }
+  if (S.mode === 'gap') { const i = '1234'.indexOf(k); if (k.length === 1 && i >= 0 && i < (S.opts || []).length) { e.preventDefault(); pickGap(i); } return; }
+  if (k === 'Backspace') { e.preventDefault(); for (let i = S.placed.length - 1; i >= 0; i--) if (S.placed[i] && typeof S.placed[i] !== 'string') { unplace(i); break; } return; }
+  if (k === 'Enter' && !(document.activeElement && document.activeElement.tagName === 'BUTTON')) { e.preventDefault(); check(); return; }
+  if (k.length === 1 && !FIXED.test(k)) { const j = S.tiles.findIndex(t => !t.used && low(t.ch) === low(k)); if (j >= 0) { e.preventDefault(); place(j); } }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title; $('startH').textContent = CONFIG.title;
+$('sound').textContent = tr('sound'); $('full').textContent = tr('full'); $('go').textContent = tr('go'); $('editBtn').textContent = tr('edit');
+$('hear').textContent = `🔊 ${tr('hear')}`; $('showClue').textContent = tr('showClue'); $('hint').textContent = tr('hint'); $('clear').textContent = tr('clear'); $('check').textContent = tr('check');
+$('again').textContent = tr('again'); $('menu').textContent = tr('menu'); $('review').setAttribute('aria-label', tr('review')); $('reviewH').textContent = tr('review'); $('keys').textContent = tr('keys'); $('startKeys').textContent = tr('keys');
+$('editH').textContent = tr('editH'); $('editP').textContent = tr('editP'); $('editText').setAttribute('aria-label', tr('editH')); $('editUse').textContent = tr('use'); $('editCancel').textContent = tr('cancel');
+$('editBtn').hidden = !CONFIG.allowEdit;
+$('sound').setAttribute('aria-pressed', String(soundOn));
+window.__brbTest = { state: () => ({ screen: S.screen, mode: S.mode, word: S.i + 1, total: S.round.length, score: S.score, done: S.done, tries: S.tries, target: S.round[S.i] ? S.round[S.i].word : '', placed: S.placed.map(p => (p ? (typeof p === 'string' ? p : p.ch) : '')).join(''), tiles: S.tiles.length }), start() { begin(); }, mode(m) { if (MODES.includes(m)) S.mode = m; } };
+home();
+</script>

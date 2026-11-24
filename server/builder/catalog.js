@@ -16,12 +16,22 @@ export const TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel
 // with a world and a hero.
 // The classroom starters (plain HTML for the classroom board and phones, not on the kit; docs/decisions.md "Classroom
 // activities in the Builder"): the Builder starts from them for the "For your class" types of /build/new (plan.js).
-export const CLASSROOM_TEMPLATE_KEYS = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard'];
+// classquiz, classmemory and classword are the plain classroom formats of quiz, memory and word (no kit): the "For your
+// class" quiz, memory and word types use them whenever the arcade side is off (config.arcade, docs/decisions.md
+// "Classroom focus: the Builder without the kit").
+export const CLASSROOM_TEMPLATE_KEYS = ['quiet', 'categories', 'survey', 'bingo', 'flashcards', 'exitticket', 'spinner', 'scoreboard', 'classquiz', 'classmemory', 'classword'];
+/** The Oomba Kit templates (v1 kit 2D games, and the 3D starters world3d and oomba3d): arcade builds only. */
+export const KIT_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d'];
 // The classroom activity starter (Oomba Canvas, docs/canvas-api.md; docs/decisions.md "Classroom activity vs Arcade
 // game"): only for canvas builds. Kept out of BUILDER_TEMPLATE_KEYS on purpose: that list is in the cached tool
 // definitions (prompt.js TOOLS), which stay byte-identical for every arcade build; the CANVAS RULES name this one.
 export const CANVAS_TEMPLATE_KEYS = ['canvas'];
-export const BUILDER_TEMPLATE_KEYS = ['quiz', 'runner', 'catch', 'memory', 'word', 'duel', 'board', 'world3d', 'oomba3d', ...CLASSROOM_TEMPLATE_KEYS];
+/** The plain classroom formats of quiz, memory and word (the arcade side keeps the kit's own quiz, memory and word). */
+export const PLAIN_GAME_KEYS = ['classquiz', 'classmemory', 'classword'];
+// The arcade Builder's list (in the cached tool definitions, prompt.js TOOLS): exactly as it was before the plain games.
+export const BUILDER_TEMPLATE_KEYS = [...KIT_TEMPLATE_KEYS, ...CLASSROOM_TEMPLATE_KEYS.filter(k => !PLAIN_GAME_KEYS.includes(k))];
+/** What the Builder may start from when the arcade side is off: the classroom starters only (never a kit template). */
+export const FOCUS_TEMPLATE_KEYS = [...CLASSROOM_TEMPLATE_KEYS];
 const DEFAULTS = {
   quiz: { title: 'Quiz Show', icon: '❓', cover: 'sunset', category: 'learning', players: 1, description: 'Quick questions with a timer and a cheering crowd.' },
   runner: { title: 'Runner', icon: '🏃', cover: 'forest', category: 'arcade', players: 1, description: 'Jump over bumps and grab coins as the speed ramps up.' },
@@ -41,6 +51,9 @@ const DEFAULTS = {
   exitticket: { title: 'Exit Ticket', icon: '🎟️', cover: 'forest', category: 'learning', players: 1, description: 'A short check at the end of a lesson.' },
   spinner: { title: 'Team Spinner', icon: '🎡', cover: 'candy', category: 'learning', players: 2, description: 'Spin to pick a team, a number or a topic.' },
   scoreboard: { title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, description: 'Big team scores for the classroom board.' },
+  classquiz: { title: 'Class Quiz', icon: '❓', cover: 'mint', category: 'learning', players: 1, description: 'Multiple-choice questions with an optional timer, a score and a review of every answer.' },
+  classmemory: { title: 'Memory Match', icon: '🃏', cover: 'ocean', category: 'learning', players: 1, description: 'Flip two cards to find the pairs: a term and its meaning, or a picture and its word.' },
+  classword: { title: 'Word Lab', icon: '🔤', cover: 'gold', category: 'words', players: 1, description: 'Practice a word list: unscramble it, fill the gap, or spell it from a clue.' },
   canvas: { title: 'Classroom activity', icon: '🧮', cover: 'mint', category: 'learning', players: 1, description: 'A hands-on canvas: students drag, build and check, one step at a time, with hints.' },
 };
 

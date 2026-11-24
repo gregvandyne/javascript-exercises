@@ -10911,7 +10911,8 @@
         "board": "Questo funziona su un solo schermo per tutta la stanza.",
         "survey": "Le risposte del sondaggio restano su questo dispositivo e non vengono mai inviate, quindi non si gioca dal vivo.",
         "exitticket": "Un biglietto di uscita resta su un solo dispositivo. Per le risposte di ogni studente, usa un passo con domanda in una lezione di classe.",
-        "canvas": "Le attività di classe non si possono ancora giocare dal vivo."
+        "canvas": "Le attività di classe non si possono ancora giocare dal vivo.",
+        "plain": "Il gioco dal vivo non è ancora disponibile per i giochi di classe. Mostralo alla lavagna o condividilo perché ognuno giochi sul proprio dispositivo."
       }
     },
     "learn": {

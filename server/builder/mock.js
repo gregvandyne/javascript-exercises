@@ -26,6 +26,7 @@
 // Live build steps: one "blocks" row (the simple building blocks, never described as an AI); its tool calls add
 // the same name / check / notes / ask rows as Claude's, from tools.js. It never gets AI rows (rounds, playtests).
 import { templateHtml, templateInfo } from './catalog.js';
+import { config } from '../config.js';
 import { detectKind, detectTheme, themeByKey, detectPlayers, detectLearn, detectColor, nextColor, titleFor, CATEGORY_FOR, DEFAULT_KIND,
   KIND_CHIPS, THEME_CHIPS, LEARN_CHIPS, PLAYER_CHIPS, NEXT_CHIPS, THEMES, kitLook, KIT_HUES, KIT_WEAR, KIT_SPECIES, KIT_BIOMES } from './themes.js';
 import { withLayer, readTune, tuneEdits, hasLayer, guessHero, shownTitle, LAYER_ID, kitLayerFor, usesKit } from './layer.js';
@@ -38,7 +39,7 @@ import { kitPackTag } from '../services/kit.js';
 import { wantsKit2, isKit2Game, pickKit2, worldLook } from './kit2.js';
 import { wantsArt2d, isArt2dGame, art2dEdits, art2dWorld, art2dCharacter, ART2D_TEMPLATES } from './art2d.js';
 import { buildKit2, followUpKit2 } from './mock-kit2.js';
-import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES, canvasActivity, topicLabel } from './plan.js';
+import { engineFor, art2dFor, planEngine, customParts, choiceLabel, GAME_TYPES, canvasActivity, topicLabel, plainTemplateFor } from './plan.js';
 import { canvasVersion, activityData, withActivityData } from '../services/canvaskit.js';
 import { figTag } from '../services/figlibs.js';
 import { tFor } from '../i18n/index.js';
@@ -74,6 +75,9 @@ const PLANS = {
   exitticket: 'A short exit ticket: a few fixed-choice questions, one at a time, and a thank-you at the end.',
   spinner: 'A big spinner to pick a team, a number or a topic. Press Space or tap to spin.',
   scoreboard: 'A big team scoreboard: number keys add points, and Undo fixes a slip.',
+  classquiz: 'A class quiz: one question at a time with big answer buttons, a score, and a review of every answer at the end. You can paste your own questions too.',
+  classmemory: 'A memory match: flip two cards to find a term and its meaning. Play alone or in teams, and read the pairs through together at the end.',
+  classword: 'A word lab: unscramble each word from its clue, spell it after hearing it, or fill the gap in a sentence.',
 };
 const CHECK = {
   catch: ['Catch three good things in a row', 'Bump into a bad one and watch a heart go', 'Press ⏸ to pause, then keep going', 'Tap 🔊 to switch the sound off and on'],
@@ -99,6 +103,8 @@ async function acknowledgeUploads(ctx) {
 // ---- No game yet: questions, then build ----------------------------------------------------------
 async function plan(ctx, m) {
   const { text, tools } = ctx; const a = m.answers;
+  // The classroom focus (config.arcade off): no questions about heroes or worlds, a classroom starter straight away.
+  if (!config.arcade) { a.kind = plainTemplateFor(text) || 'classquiz'; a.theme = ''; return build(ctx, m); }
   const kind = detectKind(text), theme = detectTheme(text), players = detectPlayers(text), learn = detectLearn(text);
   if (kind) a.kind = kind; if (theme) a.theme = theme.key; if (players) a.players = players; if (learn) a.learn = learn;
   if (m.pending === 'theme' && !a.theme && /\b(you pick|surprise|anything|dunno|don'?t know)\b/i.test(text)) a.theme = 'fox';
@@ -137,7 +143,7 @@ async function build(ctx, m) {
   const realKind = fallback ? 'catch' : kind;   // 'island' is the 3D template (Star Island)
   const title = aw && !theme ? `${aw.name} ${kind === 'runner' ? 'Dash' : 'Catch'}` : titleFor(kind, theme);
   // "Live with my class or group" in the setup steps (plan.js playFor: state.wantsLive): made live-ready from the start.
-  const plain = personalise(base, title, theme, info.icon), html = (ctx.state && ctx.state.wantsLive && withLive(plain)) || plain;
+  const plain = personalise(base, title, theme, info.icon), html = (config.arcade && ctx.state && ctx.state.wantsLive && withLive(plain)) || plain;
   if (html !== plain) await say(ctx, 'It is a live class game too 📡: a teacher or grown-up can host it once it is published. ');
   if (pick && pick.missing) await say(ctx, 'There is no picture of that animal yet, so one of the game’s own heroes plays for now. ');
   if (pick && !art && art2dWorld(pick.world)) await say(ctx, `The ${art2dWorld(pick.world).name} pictures are for running and catching games so far, so this one keeps the classic look. `);
@@ -179,6 +185,8 @@ async function followUp(ctx, m, cur) {
   const t = text.toLowerCase();
   const tune = readTune(cur.html); const changes = {}; const said = [];
   if (/\b(fix|repair)\b/.test(t) && cur.safety_status === 'fail') return fixSafety(ctx, m, cur);
+  // The classroom focus (config.arcade off): never onto the kit, never the kit's live pack, for a plain game.
+  if (!config.arcade && !usesKit(cur.html) && (UPGRADE.test(t) || asksForLive(text))) { await say(ctx, UPGRADE.test(t) ? 'This one keeps its classroom look: the Builder makes classroom games now.' : 'Live play is not available for classroom games yet. Show it on the board, or share it so everyone plays on their own device.'); return; }
   if (UPGRADE.test(t)) return upgrade(ctx, m, cur);
   if (asksForLive(text)) return makeLive(ctx, m, cur);
   const kit = kitLayerFor(cur.html);
@@ -415,7 +423,7 @@ const PART_WORDS = { type: 'kind of game', world: 'world', character: 'character
 /** What the plan already answers, in the mock's own terms (kind, theme, what to learn), so it asks nothing. */
 function answersFromPlan(p, e) {
   const a = {}, type = p.type && p.type.from === 'pack' ? GAME_TYPES.find(x => x.id === p.type.id) : null;
-  a.kind = e.engine === '2d' && e.art ? e.template : type ? type.template || (e.engine === 'world3d' ? 'island' : 'runner') : (p.type && detectKind(p.type.text)) || (e.engine === 'world3d' ? 'island' : DEFAULT_KIND);
+  a.kind = e.engine === 'classroom' ? e.template || 'classquiz' : e.engine === '2d' && e.art ? e.template : type ? type.template || (e.engine === 'world3d' ? 'island' : 'runner') : (p.type && detectKind(p.type.text)) || (e.engine === 'world3d' ? 'island' : DEFAULT_KIND);
   if (e.engine === '2d' && a.kind === 'island') a.kind = DEFAULT_KIND;
   const names = [...p.characters.map(c => choiceLabel('character', c)), p.world ? choiceLabel('world', p.world) : ''].filter(Boolean);
   let theme = null; for (const n of names) { theme = detectTheme(n); if (theme) break; }
@@ -537,9 +545,11 @@ export async function run(ctx) {
       // running or catching game with a sprite animal the described 3D world does not have is built in 2D.
       // A first message from the setup steps: the plan decides (pack choices as given), and nothing is asked.
       const planned = !!ctx.plan && !cur && pass === 0;
-      const a2 = planned ? null : wantsArt2d(st, text, cur, pickKit2(text));
+      // The classroom focus (config.arcade off): only a game already on the 2D art or Kit 2 keeps it.
+      const focus = !config.arcade;
+      const a2 = planned || (focus && !(cur && isArt2dGame(cur.html))) ? null : wantsArt2d(st, text, cur, pickKit2(text));
       if (a2 && a2.force2d) delete st.kit2;
-      const k2 = planned ? engineFor(st, ctx.plan, text, cur) : a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
+      const k2 = planned ? engineFor(st, ctx.plan, text, cur) : focus ? engineFor(st, null, text, cur) : a2 && a2.force2d ? null : wantsKit2(st, text, cur), c2 = { ...ctx, text };
       m.art2d = k2 ? null : planned ? art2dFor(st, ctx.plan, cur) : a2; if (k2) delete st.art2d;
       if (planned) await buildFromPlan(c2, m, k2);
       else if (cur && canvasVersion(cur.html)) await followUpCanvas(c2, m, cur);

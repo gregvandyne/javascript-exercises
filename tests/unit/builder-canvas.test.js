@@ -14,6 +14,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false; config.anthropicKey = '';
 // The Arcade game kind and its switch are what this file tests: on here (ARCADE is off on the site by default).
 config.arcade = true;
