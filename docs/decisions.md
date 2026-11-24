@@ -12448,3 +12448,27 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+
+## Would You Rather in Crossword's look (24 Nov 2026)
+- **The owner:** "Update the brain board, question battle, and would you rather with the crossword like grid, branding,
+  and feel too." This section covers Would You Rather (solo and live); Brain Board and Question Battle have their own.
+- **Solo** (`seed-games/would-you-rather.html`): a plain page like Crossword, no longer on the Oomba Kit (no meadow
+  stage, no dress pack). The dotted mint board, cream widget cards with a group colour on the top edge and the icon chip
+  (choice A coral, B sky; the option's picture in the chip), the question in the dark Now-style bar with "3 of 10", the
+  home's modes as Crossword's big rows (Play alone in the dark Now style), pill chips and buttons, the end card as a
+  widget with "You're a…" in the Now bar. Light and dark from `BRB.theme` (else the device), reduced motion from
+  `BRB.motion` (else the device), sounds from `BRB.sfx`. The kit's settings button became a sound on or off button (a new
+  `sound` word in `scripts/data/would-you-rather/ui.json`, the same 13 translations as Crossword's; `scripts/wyr-bank.js`
+  rebuilt the data block, the question packs and their version are unchanged).
+- **Live** (`seed-games/would-you-rather-live.html`): still the kit's live pack for the session (ready, the question,
+  answers, reveal, state and end events, `quiz.answer`); only the look changed. The question, which one, how many voted
+  and the timer sit in the dark Now bar; the two choices are widget cards (A/B chips); the class's split is a bar in
+  each card's group colour with the share and how many; everyone on Oomba and the talk question are widgets; the end's
+  most agreed and closest split are widgets. Light and dark from the site's theme as before.
+- **Unchanged:** modes, counts, topics and the topic lock, the poll (`BRB.poll`, both cards), no score, one
+  `BRB.gameOver({ won: true })` at the end card, the save key `would-you-rather-v1` and its shape, the live protocol and
+  state `wyr {i, a, b, n}`, timers, the practice round, one vote per dilemma, never a name, keyboard and screen reader
+  text, tap targets, portrait stacking. Server code and the reviewed question bank are untouched. The element ids the
+  course screenshots use (`#ask`, `#pair .opt`, `.tx`, `.or`) are kept; their pictures will look new when retaken.
+- Tests: `tests/unit/would-you-rather-look.test.js` (both pages in Chromium in the frame wrapper; the live one against a
+  fake session over the frame's port), with `would-you-rather-lock` and `live-wyr-atlas` as before.
