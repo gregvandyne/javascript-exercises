@@ -12448,3 +12448,31 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+
+## Brain Board and Question Battle: the Crossword look (24 Nov 2026)
+- **The owner:** "Update the brain board, question battle, and would you rather with the crossword like grid, branding,
+  and feel too." This section is Brain Board and Question Battle (Would You Rather has its own).
+- **The look** (`seed-games/brain-board.html`, `seed-games/question-battle.html`), on the projector and the phones: the
+  classroom dashboard's tokens as Crossword uses them (cream cards, the dotted mint board, the dark Now bar, light and
+  dark from `BRB.theme`, else the device), Bricolage Grotesque. Group colors go on a card's top edge and its icon chip
+  only, never on text. Brain Board's board is a grid of cards: each column's color on its header and its tiles' top
+  edge, a done tile faded with a check (a star for a played Lucky Star), the open tile flips to the Now color (the spark
+  color on a Lucky Star). Question Battle's boss stands on an arena card painted on the canvas (the boss's group color
+  on the top edge; sky for the cloud, grape for the robot, coral for the dragon; its icon chip, name and energy bar in
+  the head), so the boss can still wobble, flash and take stars; the three boss drawings are kept, with a soft spotlight
+  behind them in dark mode so their dark outlines read. Answers are tinted tiles with the shape in a solid chip (shape
+  and color, never color alone) and ink text; on the projector they stay at full strength (the host never answers)
+  and the answer bars grow across the tiles at the reveal. The lobby is DOM cards (character, name, team color; one
+  widget per team in Question Battle), not a canvas crowd, so names stay crisp at the back of the room; a class too big
+  for name cards shows the characters only. Results, the top five, the team board and the podiums are widget cards.
+- **Kept as it was:** every live message and state shape (`bb`, `pick`, `turns`, `setState({boss})`, `quiz.answer`),
+  `ready()` options and words, scoring (the server's), turns, Lucky Star, timers, reveals, streaks, the boss's energy
+  from the reveals, the solo practice rounds and Number Quest lesson boards, test hooks, reduced motion and screen-reader
+  lines. The kit and its pinned live pack stay: they are the live plumbing (and the live-ready check needs them), and
+  `flat()` still gives each player's character portrait. No server code changed.
+- **Fixed on the way:** the projector's answer tiles no longer fade while a question is open; a host reload in the lobby
+  names the shared boss, not a random one; the question card sits on its own compositing layer above Brain Board's 3D
+  tile flip.
+- Tests: `tests/unit/live-board-battle-look.test.js` (Chromium, through `tests/unit/_live-frame-harness.js`: each game as
+  a real live frame inside the production wrapper, the protocol's messages played into it; the projector's lobby, board
+  or arena, question, counts and podium in light and dark, and a phone's tap sending one answer).
