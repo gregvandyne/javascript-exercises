@@ -200,7 +200,9 @@ test('Atlas Quest\'s blank map on a phone (390 px): the zoomed map\'s numbers re
       assert.ok(list.length > 10, `${reg}: the numbered list`);
       const want = { eu: '26Luxembourg', car: 'Barbados', me: 'Bahrain', world: 'France' }[reg];
       assert.ok(list.some(x => x.includes(want)), `${reg}: ${want} in ${list.slice(0, 5)}`);
-      if (reg === 'eu') assert.ok(await o.frame.evaluate(() => /Luxembourg/.test(document.getElementById('aq-bl-map').innerHTML)), 'the small countries\' lines carry their names');
+      // the small countries' lines on the map carry their names (a tag's name is in the list)
+      const lines = await o.frame.evaluate(() => [...document.querySelectorAll('#aq-bl-map .atm-co:not(.atm-tag)')].map(gr => [...gr.querySelectorAll('text')].map(t => t.textContent)));
+      if (reg === 'car') assert.ok(lines.filter(t => t.length === 2).length >= 3 && JSON.stringify(lines).includes('Barbados'), `${reg}: ${JSON.stringify(lines)}`);   // a name too long for its line is in the list only
       // the map full screen: it opens with the numbers at a readable size, lines visible, and + makes them bigger
       await o.frame.click('#aq-bl-zoom');
       await o.frame.waitForFunction(() => !!document.getElementById('aq-zoom'));

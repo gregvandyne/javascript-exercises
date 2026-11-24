@@ -21,6 +21,8 @@ import { cleanPrintNote } from './print-note.js';
 import { packFor } from '../live/atlas.js';
 
 export const PRINT = { bytes: 20000 };
+/** A blank map numbers every country of its region (the world's: the 68 big enough), more than a quiz's 60 questions. */
+const BLANK_MAX = 200;
 const KEYS = new Set(['t', 'r', 'q', 'a', 'h', 'key', 'set', 'note', 'blank']);
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
 let CORE = null;
@@ -52,7 +54,7 @@ export function cleanAtlasPrintDoc(raw) {
   const note = cleanPrintNote(raw.note);
   if (note === null) return no;
   const blank = raw.blank === true;
-  const items = cleanAtlasItems([{ t: raw.t || '', r: raw.r, q: raw.q, a: raw.a, h: raw.h !== false }], { empty: blank });
+  const items = cleanAtlasItems([{ t: raw.t || '', r: raw.r, q: raw.q, a: raw.a, h: raw.h !== false }], { empty: blank, ...(blank ? { maxQ: BLANK_MAX } : {}) });
   if (!items) return no;
   const it = items[0];
   if (blank && it.q.some(x => x[0] !== 'map')) return no;
@@ -104,7 +106,7 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
   const placed = map.layout(doc.r, co).items;
   const lines = Object.keys(nums).filter(cc => !placed[cc] || placed[cc].tag);
   const foot = `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span>${code ? `<span>${esc(t('play.print.code', { code }))}</span>` : ''}${link ? `<span dir="ltr" class="cwp-link">${esc(link)}</span>` : ''}</footer>`;
-  // many lines (a whole region's blank map): a smaller map and four columns of lines, so the sheet stays one page
+  // many lines (a whole region's blank map): four columns of lines, carried on over the next page when they don't fit
   const many = lines.length > 18 || n > 30;
   const mapPart = showMap ? `<section class="atp-mapsec${many ? ' atp-many' : ''}">
 ${n ? `<h2>${esc(t('play.printAtlas.mapH'))}</h2><p class="atp-how">${esc(t('play.printAtlas.mapHow'))}${Object.keys(co).length ? ' ' + esc(t('play.printAtlas.mapHowCo')) : ''}</p>` : ''}
@@ -121,7 +123,9 @@ ${foot}</section>`;
   if (doc.key) {
     const names = {}; for (const cc of Object.keys(co)) names[cc] = name(cc);
     const all = [...Object.keys(nums).map(cc => [nums[cc], name(cc)]), ...(doc.blank ? [] : others.map((x, i) => [n + 1 + i, answer(x)]))];
-    key = `<section class="cwp-page atp-page atp-key${many ? ' atp-many' : ''}">
+    // the key's map gives up height to its list, so the key stays one page (a longer list: a shorter map)
+    const kh = all.length > 45 ? ' atp-k3' : all.length > 30 ? ' atp-k2' : '';
+    key = `<section class="cwp-page atp-page atp-key${many ? ' atp-many' : ''}${kh}">
 <header class="cwp-head"><h1 dir="auto">${esc(t('play.print.keyTitle', { title }))}</h1></header>
 ${n ? `<div class="atp-map atp-keymap">${svg(names)}</div>` : ''}
 <ol class="atp-keylist">${all.map(([k, v]) => `<li><b class="cwp-num">${k}</b><span dir="auto">${esc(v)}</span></li>`).join('')}</ol>

@@ -156,6 +156,11 @@ test('print: the quiz checked like a saved set; the map with numbers and arrows,
   assert.equal(cleanAtlasPrintDoc({ ...ITEM, note: 5 }).ok, false);
   assert.equal(cleanAtlasPrintDoc({ ...ITEM, blank: true }).ok, false, 'a blank map holds map labels only');
   assert.equal(cleanAtlasPrintDoc({ r: 'car', q: [], blank: true }).ok, true, 'a bare outline map');
+  // the world's blank map numbers its 68 big countries, more than a quiz's 60 questions; a quiz still holds 60
+  const world = M.members('world').filter(cc => !M.small('world', cc)).map(cc => ['map', cc]);
+  assert.ok(world.length > 60);
+  assert.equal(cleanAtlasPrintDoc({ r: 'world', q: world, blank: true, key: true }).ok, true, 'the world\'s blank map prints');
+  assert.equal(cleanAtlasPrintDoc({ r: 'world', q: world }).ok, false, 'a quiz of more than 60 questions does not');
   const r = cleanAtlasPrintDoc({ ...ITEM, note: 'Use a pencil.\nGood luck!', key: true });
   assert.ok(r.ok);
   const html = atlasPrintHtml(r.doc, { t, lang: 'en', code: 'ABCDE 12345', link: 'https://x.test/play/atlas-quest?chapter=s-abcde12345&lock=1' });

@@ -13041,6 +13041,13 @@ answer key." Then: "I also don't find the geography quiz builder super intuitive
   box was cut off at 390 px; "Save draft", "Preview" and "Save and get a link" were three saves; the preview mixed arrow
   editing with sharing and printing; the lesson upload sat inside "Your own questions"; the map preview could not be
   read on a phone; the "Added 1." toast sat over the search box.
+- Follow-ups: the printed map stays as wide as the page (numbers about 9 pt); when the lines don't fit under it they
+  carry on over the next page, and the key's map gives up height to its list so the key stays one page. The world's
+  blank map numbers 68 countries, more than a quiz's 60, so a blank map may hold up to 200 (`cleanAtlasItems` maxQ;
+  the world's printed map failed before). A long leader costs more than its length (Luxembourg's line moved to the
+  North Sea). The maker reports "Added 2." and the like on a line under the control, not a toast; the game's toasts sit
+  at the bottom, never over the header. Check's type menus use short names ("Map", "Capital") so nothing is cut off at
+  375 px. "Start from a lesson" has the AI widget card look (spark stripe, dark "AI" chip, dark upload button).
 - Tests: `tests/unit/atlas-quiz.test.js` (layout, key route), `tests/unit/make-gate.test.js` (key on screen by role, the
   390 px zoom and Show answers, the five steps at 375 px with the lesson landing on Check),
   `tests/e2e/atlas-quest-kit.spec.js` (the stepper end to end).
