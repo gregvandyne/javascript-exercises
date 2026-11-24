@@ -5515,6 +5515,7 @@
       "last": "さいごに練習",
       "lessonN": "レッスン{n}",
       "allDone": "ぜんぶ完了",
+      "stars": "{max}こ中{n}こ の星",
       "wpm": "{n} WPM",
       "minutes": "{n}分",
       "missed": "{pct}%の回でミス",

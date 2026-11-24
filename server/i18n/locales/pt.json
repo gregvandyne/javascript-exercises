@@ -5517,6 +5517,7 @@
       "last": "Última vez",
       "lessonN": "Lição {n}",
       "allDone": "Tudo feito",
+      "stars": "{n} de {max} estrelas",
       "wpm": "{n} ppm",
       "minutes": "{n} min",
       "missed": "Errou {pct}% das vezes",

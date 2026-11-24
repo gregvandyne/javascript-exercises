@@ -5515,6 +5515,7 @@
       "last": "上次練習",
       "lessonN": "第 {n} 課",
       "allDone": "全部完成",
+      "stars": "{max} 顆星中得到 {n} 顆",
       "wpm": "每分鐘 {n} 字",
       "minutes": "{n} 分鐘",
       "missed": "有 {pct}% 的時候打錯",

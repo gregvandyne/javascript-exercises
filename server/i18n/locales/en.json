@@ -5727,6 +5727,7 @@
       "last": "Last typed",
       "lessonN": "Lesson {n}",
       "allDone": "All done",
+      "stars": "{n} of {max} stars",
       "wpm": "{n} wpm",
       "minutes": "{n} min",
       "missed": "Missed {pct}% of the time",

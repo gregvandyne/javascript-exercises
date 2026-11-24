@@ -5516,6 +5516,7 @@
       "last": "Laatst getypt",
       "lessonN": "Les {n}",
       "allDone": "Alles klaar",
+      "stars": "{n} van {max} sterren",
       "wpm": "{n} wpm",
       "minutes": "{n} min",
       "missed": "{pct}% van de keren gemist",
