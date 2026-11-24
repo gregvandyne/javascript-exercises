@@ -88,16 +88,6 @@ const RECIPES = {
     });
     await wait(900);
   } },
-  'word-peek': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f);
-    await f.evaluate(() => {
-      const t = window.__brbTest;   // three coloured rows with CR being typed in the fourth
-      t.skipAnimations(true); t.start({ mode: 'practice', answer: 'crane' });
-      t.guess('stare'); t.guess('plant'); t.guess('cream');
-      t.skipAnimations(false); t.type('cr');
-    });
-    await wait(1600);
-  } },
   'swish-flick': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f);
     await f.evaluate(() => { const T = window.__brbTest; T.start({ mode: 'arcade', seed: 7 }); T.skipAnimations(); for (let i = 0; i < 5; i++) { T.step(300); T.flick(T.solve()); T.step(1600); } });
@@ -123,11 +113,6 @@ const RECIPES = {
     });
     await wait(500);
   } },
-  'word-hunt': { viewport: PORTRAIT, async prep(f) {
-    await hook(f); await f.evaluate(() => window.__brbTest.start({ theme: 'Space', difficulty: 'medium', seed: 3 }));
-    await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations && t.skipAnimations(); const s = t.state(); s.words.slice(0, 4).forEach(w => t.select(w.start, w.end)); });
-    await wait(900);
-  } },
   'sum-racer': { viewport: PORTRAIT, async prep(f) {
     await hook(f); await f.evaluate(() => { const t = window.__brbTest; if (t.cover) t.cover(true); t.start({ track: 2, mode: 'choice', players: 1, seed: 5 }); });
     await f.evaluate(() => window.__brbTest.skipAnimations && window.__brbTest.skipAnimations());
@@ -143,21 +128,6 @@ const RECIPES = {
     await f.evaluate(async () => { const t = window.__brbTest; await t.closeModal(); t.camera({ theta: 0.55, phi: 0.92, dist: 15 }); });
     await wait(2500);
   } },
-  'atlas-quest': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f);
-    // Half the world lit up with flag pins, the dotted trail and the paper plane mid-flight.
-    for (let i = 0; i < 4; i++) { await f.evaluate(() => window.__brbTest.closeDialog()); await wait(500); }   // title, then Captain Skye's hello
-    await f.evaluate(() => window.__brbTest.cover());
-    await wait(2500);
-  } },
-  'would-you-rather': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f);
-    // Two cards with the first one just picked (the glow and the tick), before the next question comes.
-    await f.evaluate(() => window.__brbTest.start('alone', { count: 10, topics: ['powers'] }));
-    await wait(700);
-    await f.evaluate(() => window.__brbTest.pick('a'));
-    await wait(600);
-  } },
   'gulp-city': { viewport: PORTRAIT, touch: true, async prep(f) {
     await f.waitForFunction(() => window.__brbTest && window.__brbTest.state().ready, null, { timeout: 60000 });
     // A middle-sized hole at a downtown crossing, swallowing traffic, a bigger rival and a smaller one close by.
@@ -170,18 +140,6 @@ const RECIPES = {
     // A few questions in, so the runners are spread along the island track.
     for (let i = 0; i < 4; i++) { await until(f, s => s.question && !s.answered); await f.evaluate(i => window.__brbTest.answer(i % 3 ? 0 : 1), i); await wait(i < 3 ? 3800 : 1800); }
   } },
-  'question-battle': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f); await play(f);
-    // The boss already wobbling from a hit, and the next question up with its four answer tiles.
-    await until(f, s => s.question); await f.evaluate(() => window.__brbTest.answer(0)); await wait(4500);
-    await until(f, s => s.question); await wait(1400);
-  } },
-  // Would You Rather Live alone: a dilemma just voted on, with the split showing.
-  'would-you-rather-live': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f); await wait(600);
-    await until(f, s => s.question); await wait(900);
-    await f.evaluate(() => window.__brbTest.answer(0)); await wait(1800);
-  } },
   // Atlas Quest Live alone: the right country found on the map, named in green.
   'atlas-quest-live': { viewport: PORTRAIT, touch: true, async prep(f) {
     await hook(f); await wait(600);
@@ -189,18 +147,11 @@ const RECIPES = {
     await f.evaluate(() => { const s = window.__brbTest.state(); window.__brbTest.pick(s.practiceAnswer); window.__brbTest.lock(); });
     await wait(2000);
   } },
-  'brain-board': { viewport: PORTRAIT, touch: true, async prep(f) {
-    await hook(f); await play(f);
-    // The board of categories with a few tiles already won.
-    for (const [c, r] of [[0, 0], [2, 1], [1, 0]]) {
-      await until(f, s => s.phase === 'between' || s.board || true); await f.evaluate(([c, r]) => window.__brbTest.pick(c, r), [c, r]); await wait(1800);
-      await f.evaluate(() => window.__brbTest.answer(0)); await wait(3800);
-    }
-    await wait(1200);
-  } },
 };
 
 // Game owners keep their cover recipe next to the game: scripts/covers/<slug>.recipe.js exports { '<slug>': recipe }.
+// The games in Crossword's widget look (Word Hunt, Word Peek, Atlas Quest, Brain Board, Question Battle, Would You Rather
+// and its live version, Sudoku, Doodle Hoot, Tug of Math, Crossword) all have theirs there.
 for (const f of fs.existsSync(path.join(ROOT, 'scripts/covers')) ? fs.readdirSync(path.join(ROOT, 'scripts/covers')).filter(n => n.endsWith('.recipe.js')).sort() : []) {
   Object.assign(RECIPES, (await import(path.join(ROOT, 'scripts/covers', f))).default);
 }

@@ -12931,3 +12931,29 @@ or in any pack). New English text is in US spelling. Rules, applied the same way
 - Tests: tests/unit/atlas-facts.test.js (the key corrections, the myths gone in English and in every new pack, tiny
   areas within 5%, `NO_CAP_Q` the same in the game and live, the capital note in the file and the printed key, typed
   answers, far borders, no neighbour counts, the 1.0.1 packs holding every 1.0.0 key while 1.0.0 keeps its checksums).
+## Cover pictures in Crossword's look (24 Nov 2026)
+The owner asked for every cover to follow the games that moved to Crossword's look in #570. New pictures, all from the
+repo's own scripts, same names, formats and sizes as before:
+- **Covers** (`npm run covers`, 540x720; Doodle Hoot and Tug of Math 714x952): Word Hunt, Atlas Quest, Sudoku, Word Peek,
+  Brain Board, Question Battle, Would You Rather, Would You Rather Live, Doodle Hoot, Tug of Math. Each now has its own
+  `scripts/covers/<slug>.recipe.js` (the built-in recipes for these games left `scripts/covers.js`). Several are taken in
+  a 432x576 or 480x640 window at 1.25x or 1.125x so the whole board, keyboard or answer tiles fit on the same 540x720
+  card. Doodle Hoot and Tug of Math waited for the kit's title screen, which they no longer have; they now wait for the
+  game's test handle. Brain Board and Question Battle answer right, so the points and the boss's hit show. Atlas Quest
+  shows the globe over a Flag match question (the game draws the flag itself, so it can change between runs).
+- **Unchanged:** Crossword (its picture comes out byte for byte the same) and Atlas Quest Live (its page did not change
+  in #570, so its cover is still true).
+- **Share pictures** (`node scripts/og-images.js`): the ten games' cards, and the cards that show their covers or the
+  live screens: site, parents, parents-safety-and-screen-time, ages-8-9, ages-10-11, compliance, teachers-live,
+  teachers-host.
+- **Teacher landing covers** (`public/img/landing/<slug>-240.webp` and `-480.webp`): there is no script for these; they
+  are the cover scaled to 240x320 and 480x640 with ImageMagick (`convert <cover> -strip -alpha off -resize 480x640!
+  -quality 80`), plain VP8 WebP like the others: Atlas Quest, Brain Board, Doodle Hoot, Question Battle, Sudoku, Word Hunt.
+- **Live screens on /teachers/live** (`npm run how-shots -- --only live`, light and `--theme dark`): the lobby and
+  the student's question card showed Question Battle's old look; the whole live set was taken again.
+- **Every other cover** was taken again to check it: all recipes ran but Lantern Mix's, which set a fixed 6:9 mix
+  for round 3 while the round's numbers now change; it now sets the round's own right mix. No other cover was stale,
+  so the other pictures were left as they were.
+- **Not redone:** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`) still show Atlas
+  Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
+  scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
