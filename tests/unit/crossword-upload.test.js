@@ -189,9 +189,42 @@ test('route: 10 files a day each (a file turned away for its pages does not coun
   } finally { D.hooks.client = undefined; }
 });
 
+test('route: the teacher\'s focus line goes to the AI cleaned (trimmed, at most 200 characters); a rude or personal one is refused before any AI; none, none sent', async () => {
+  const ai = fakeAi({ title: 'Ecosystems', words: [{ word: 'habitat', clue: 'Where an animal lives' }, { word: 'prey', clue: 'Hunted by others' }] });
+  D.hooks.client = ai.client;
+  const prose = b64(makeDocx(PROSE));
+  try {
+    let r = await post(boss, { kind: 'docx', data: prose, focus: '   Science   words only  ' });
+    assert.equal(r.status, 200, r.text); assert.equal(ai.asked.length, 1);
+    assert.match(ai.asked[0].messages[0].content, /<focus>\nScience words only\n<\/focus>/);
+    assert.doesNotMatch(ai.asked[0].system, /Science words only/, 'never in the system prompt');
+    // refused by the site's text filter: a clear code, no AI, and it does not count towards the day's 10
+    for (const focus of ['only shit words', 'email me at someone@example.com', 'call 555-123-4567 first', 'see www.example.com', 42, ['a']]) {
+      r = await post(boss, { kind: 'docx', data: prose, focus });
+      assert.equal(r.status, 400, JSON.stringify(focus)); assert.equal(r.json.code, 'focusBad', JSON.stringify(focus));
+    }
+    assert.equal(ai.asked.length, 1, 'a refused focus never reaches the AI');
+    // capped at 200 characters
+    r = await post(boss, { kind: 'docx', data: prose, focus: 'Focus on the water cycle ' + 'and rain '.repeat(40) });
+    assert.equal(r.status, 200, r.text);
+    const inner = /<focus>\n(.*)\n<\/focus>/.exec(ai.asked[1].messages[0].content)[1];
+    assert.ok(inner.length <= 200 && inner.startsWith('Focus on the water cycle'), inner);
+    // none (absent, null or blank): no focus tag at all
+    for (const body of [{}, { focus: null }, { focus: '   ' }]) {
+      r = await post(boss, { kind: 'docx', data: prose, ...body });
+      assert.equal(r.status, 200, r.text); assert.doesNotMatch(ai.asked.at(-1).messages[0].content, /<focus>/);
+    }
+    // a plain list needs no AI, so a focus is simply not used
+    D.hooks.client = NO_AI;
+    assert.equal((await post(teacher, { kind: 'docx', data: b64(makeDocx(LIST)), focus: 'Science words only' })).json.ai, false);
+    // the focus is never logged
+    for (const l of q.all("SELECT details FROM audit_log WHERE action='game.doc_words'")) assert.doesNotMatch(l.details, /Science|water cycle|focus/i);
+  } finally { D.hooks.client = undefined; }
+});
+
 test('the editor: the upload button and its limits, every error has words in every language, no em dashes in English', () => {
   const html = fs.readFileSync(path.join(ROOT, 'seed-games/crossword.html'), 'utf8');
-  const keys = ['uploadDoc', 'docLimits', 'docBig', 'docPages', 'docScan', 'docType', 'docLimit', 'docCut', 'docDoneList', 'docBad', 'docNone', 'docOff'];
+  const keys = ['uploadDoc', 'docLimits', 'docBig', 'docPages', 'docScan', 'docType', 'docLimit', 'docCut', 'docDoneList', 'docBad', 'docNone', 'docOff', 'focusL', 'focusPh', 'focusBad', 'aiBoxP'];
   const lines = html.split('\n').filter(l => /^\s*"[A-Za-z-]+": \{"title"/.test(l));
   assert.equal(lines.length, 13);
   for (const l of lines) {
@@ -199,5 +232,5 @@ test('the editor: the upload button and its limits, every error has words in eve
     for (const k of keys) assert.ok(typeof d[k] === 'string' && d[k].length > 5, `${lang} ${k}`);
     if (lang.startsWith('en')) { for (const k of keys) assert.doesNotMatch(d[k], /—/, `${lang} ${k}: no em dash`); assert.equal(d.uploadDoc, 'Upload a word list (PDF or Word)'); }
   }
-  assert.match(html, /\['docBig', 'docBad', 'docNone', 'docType', 'docPages', 'docScan', 'docLimit'\]/, 'each error is shown by its own words');
+  assert.match(html, /\['docBig', 'docBad', 'docNone', 'docType', 'docPages', 'docScan', 'docLimit', 'focusBad'\]/, 'each error is shown by its own words');
 });

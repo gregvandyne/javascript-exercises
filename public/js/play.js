@@ -135,9 +135,11 @@ const TYPES = {
     && (m.op === 'list' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set))) && (m.op !== 'rename' || (typeof m.title === 'string' && m.title.length <= 200)),
   // BRB.findQuestionSet: a class code a student typed (the server reads it).
   'brb:set-find': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.code === 'string' && m.code.length <= 40,
-  // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask).
+  // BRB.wordsFromDoc (Crossword): a PDF or Word file of at most 2 MB, for AI words (the server checks who may ask), and
+  // the teacher's optional focus line for the AI (at most 200 characters; the server filters it).
   'brb:doc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
-    && (m.kind === 'pdf' || m.kind === 'docx' || m.kind === 'txt') && typeof m.level === 'string' && m.level.length <= 60,
+    && (m.kind === 'pdf' || m.kind === 'docx' || m.kind === 'txt') && typeof m.level === 'string' && m.level.length <= 60
+    && (m.focus === undefined || (typeof m.focus === 'string' && m.focus.length <= 200)),
   // BRB.textFromDoc (Mistake Hunt): a PDF or Word file of at most 2 MB, for its text (the server checks who may ask).
   'brb:textdoc': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof Blob === 'function' && m.file instanceof Blob && m.file.size > 0 && m.file.size <= 2 * 1024 * 1024
     && (m.kind === 'pdf' || m.kind === 'docx'),
@@ -391,7 +393,7 @@ async function docForGame(m) {
   try {
     const bytes = new Uint8Array(await m.file.arrayBuffer());
     let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
-    const r = await api(`/api/games/${d.gameId}/words-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin), level: m.level } });
+    const r = await api(`/api/games/${d.gameId}/words-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin), level: m.level, ...(m.focus ? { focus: m.focus } : {}) } });
     out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [], cut: r.cut === true, ai: r.ai !== false };
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:doc-done', id: m.id, ...out });

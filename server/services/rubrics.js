@@ -238,6 +238,9 @@ export function scoreContext(u, clId, stepId, userId) {
   if (stepId && (!step || step.lesson_id !== m.lesson.id)) return fail('notFound');
   const rubric = rubricFor(m.lesson, step); if (!rubric) return fail('notFound');
   const cm = S.classMember(m.c.id, userId); if (!cm || cm.role !== 'student') return fail('notFound');
+  // A lesson assigned to some students: only they are scored.
+  const picked = q.all('SELECT user_id FROM class_lesson_students WHERE class_lesson_id=?', m.cl.id).map(r => r.user_id);
+  if (picked.length && !picked.includes(userId)) return fail('notFound');
   return ok({ cl: m.cl, rubric, step });
 }
 /**
@@ -274,13 +277,14 @@ export function saveScore(u, clId, stepId, userId, { picks, comments, feedback }
 }
 
 /** Rubric points per student and assigned lesson in a class (current assignments, steps still in the lesson, scores that
- *  still count: scoreCounts). Only scores with a level picked add up (max_points > 0).
+ *  still count: scoreCounts; a lesson assigned to some students counts only for them, as lessons.assignedSql says). Only scores with a level picked add up (max_points > 0).
  *  Map 'userId:classLessonId' -> { points, max, n: scores, scored: criteria with a level, of: criteria in those scores }. */
 export function classTotals(classId) {
   const rows = q.all(`SELECT r.user_id u, r.class_lesson_id cl, r.points, r.max_points, r.picks, r.snapshot FROM rubric_scores r
     JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL JOIN lessons l ON l.id=c.lesson_id
     LEFT JOIN lesson_steps s ON r.step_id!='' AND s.id=r.step_id AND s.lesson_id=c.lesson_id
-    WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL)
+    WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL) AND (NOT EXISTS (SELECT 1 FROM class_lesson_students x WHERE x.class_lesson_id=c.id)
+        OR EXISTS (SELECT 1 FROM class_lesson_students x WHERE x.class_lesson_id=c.id AND x.user_id=r.user_id))
       AND COALESCE(CASE WHEN r.step_id='' THEN l.rubric_id WHEN s.kind IN ('question','build') THEN s.rubric_id END, r.rubric_id)=r.rubric_id`, classId);
   const out = new Map();
   for (const row of rows) {

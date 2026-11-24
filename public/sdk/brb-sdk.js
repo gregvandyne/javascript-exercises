@@ -1088,10 +1088,12 @@
     if (Array.isArray(m.clues) && m.clues.every(function (c) { return typeof c === 'string'; })) w({ clues: m.clues.slice() });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
-  // Crossword's "Upload a word list" (the same grown-ups as writeClues): BRB.wordsFromDoc(file, { kind: 'pdf'|'docx', level })
+  // Crossword's "Upload a word list" (the same grown-ups as writeClues): BRB.wordsFromDoc(file, { kind: 'pdf'|'docx', level, focus })
   // (Atlas Quest's "Upload a geography lesson" too, which may also send kind 'txt': its words are [question, answer]).
+  // focus: the teacher's own optional line for the AI ("Science words only"), at most 200 characters; the server runs it
+  // through the site's text filter ('focusBad' when it refuses it, before any AI).
   // -> a Promise of { title, words: [[word, clue]], cut, ai } or { error } ('notAllowed', 'aiOff', 'aiFailed', 'docBad',
-  // 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docNone', 'docLimit', 'offline'). cut: only the first
+  // 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docNone', 'docLimit', 'focusBad', 'offline'). cut: only the first
   // pages were read; ai: the AI took the words out (false: a plain list, read as it is). The file (a Blob, at most
   // 2 MB) goes to the page, which sends it to the server.
   var docWait = {}, docSeq = 0;
@@ -1103,9 +1105,10 @@
       if (!kind || typeof Blob !== 'function' || !(file instanceof Blob)) return res({ error: 'docBad' });
       if (file.size > 2 * 1024 * 1024) return res({ error: 'docBig' });
       var level = opts && typeof opts.level === 'string' ? opts.level.slice(0, 60) : '';
+      var focus = opts && typeof opts.focus === 'string' ? opts.focus.replace(/\s+/g, ' ').trim().slice(0, 200) : '';
       var n = ++docSeq, timer = setTimeout(function () { delete docWait[n]; res({ error: 'offline' }); }, 150000);
       docWait[n] = function (r) { clearTimeout(timer); delete docWait[n]; res(r); };
-      send('brb:doc', { id: n, file: file, kind: kind, level: level });
+      send('brb:doc', { id: n, file: file, kind: kind, level: level, focus: focus });
     });
   }
   window.addEventListener('message', function (e) {
@@ -1408,6 +1411,8 @@
     preview: !!INIT.preview,
     // Lesson parameters ({ chapter, band, mode, level, lock }, see cleanParams above): frozen, {} when there are none.
     params: Object.freeze(cleanParams(INIT.params)),
+    // An official game's rule from the player's teacher (Typing Pets: { acc, wpm } to unlock each next lesson), or null.
+    classRules: INIT.classRules && typeof INIT.classRules === 'object' ? Object.freeze({ acc: Math.max(0, Math.min(100, +INIT.classRules.acc || 0)), wpm: Math.max(0, Math.min(200, +INIT.classRules.wpm || 0)) }) : null,
     // 3D games: what this browser can do ({webgl2, importmap}); null for 2D games. Live class games read it to pick their
     // 2D path (docs/kit-api.md "Live class games").
     device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,

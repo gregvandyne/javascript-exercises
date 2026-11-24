@@ -34,7 +34,7 @@ function setAssign(t, g, raw) {
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
   return { opts, what, label, title: what ? `${g.title}: ${label}` : '' };
 }
-import { zoneNote } from './lessons.js';
+import { zoneNote, assignToField, studentsFrom } from './lessons.js';
 import { gameHidden, mayOpenHidden } from '../services/game-focus.js';
 
 export const router = Router();
@@ -149,6 +149,7 @@ router.get('/teach/assign', requireUser, (req, res) => {
         <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="passWpm" min="${TY.PASS.wpm[0]}" max="${TY.PASS.wpm[1]}" inputmode="numeric" placeholder="20"></label>
         <span class="small muted">${t('progress.typing.passHint')}</span></fieldset>` : ''}
       <div class="field"><label for="ag-d">${t('lessons.assign.due')}</label><input class="input" id="ag-d" name="dueAt" type="date"></div>
+      ${assignToField(t, classes, { idp: 'ag-w', shown: pre })}
       ${gc}
       <div class="field end"><button class="btn btn-primary" type="submit" id="ag-go">${ico('📌', { size: 18 })} ${t('teach.assign.submit')}</button></div>
       <p class="small muted wide">${t('folders.assignNote')}</p>${gc ? html`<p class="small muted wide">${ico('🎓', { size: 18 })} ${t('teach.assign.gcGrades')}</p>` : ''}${classes[0] ? html`<p class="small muted wide">${zoneNote(t, classes[0].school_id, u)}</p>` : ''}<p class="form-err err wide" role="alert"></p></form>` : '';
@@ -200,7 +201,9 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   // A pass mark (mode=a90-w20): the game reports the step done only for a run that reaches it.
   const pass = typing ? TY.passMode(b(req).passAcc, b(req).passWpm) : null;
   if (pass) extra = { options: `${extra.options ? `${extra.options}&` : ''}mode=${pass.mode}`, title: `${extra.title || g.title} (${TY.passLabel(req.t, pass)})`.slice(0, 100) };
-  const r = F.assignGame(u, classId, g && g.id, { dueAt, ...extra });
+  // Assign to: the whole class or some students (routes/lessons.js assignToField).
+  const who = studentsFrom(req, res); if (!who) return;
+  const r = F.assignGame(u, classId, g && g.id, { dueAt, ...extra, students: who.students || [] });
   if (!r.ok) return fail(req, res, r);
   const also = await gcAfterAssign(req, r.classLesson);
   const toast = req.t('lessons.assign.done', { class: r.class.name });

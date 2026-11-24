@@ -195,6 +195,15 @@ if (FIRST && document.querySelector(LIVE_COUNTS)) setInterval(() => { if (!docum
 // server checks it), so due dates end at midnight where the teacher is.
 try { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; if (tz) $$('input[data-browser-tz]').forEach(i => { i.value = tz; }); } catch { /* no zone: set in Settings */ }
 
+// ---- "Assign to: Some students" (server/routes/lessons.js assignToField) ----
+// A form with a class picker has one tick list per class: only the picked class's list shows, and the others' boxes are
+// switched off so they are never sent (ticks in another class would be refused).
+if (FIRST) for (const box of $$('[data-as-who]')) {
+  const sel = box.closest('form')?.querySelector('select[name="classId"]'); if (!sel) continue;
+  const sync = () => { for (const l of $$('[data-students-of]', box)) { const on = l.dataset.studentsOf === sel.value; l.hidden = !on; $$('input', l).forEach(i => { i.disabled = !on; }); } };
+  sel.addEventListener('change', sync); sync();
+}
+
 // ---- Forms with data-api: submit as JSON, show inline errors, then redirect/reload ----
 on(document, 'submit', async e => {
   const f = e.target.closest('form[data-api]'); if (!f) return;

@@ -99,7 +99,7 @@ test('the class\'s teacher sees each student\'s typing, including practice outsi
   const panel = r.text.slice(r.text.indexOf('id="typing"'), r.text.indexOf('</details>', r.text.indexOf('id="typing"')));
   assert.ok(panel.length > 100, 'the typing panel is there');
   assert.match(panel, /1 of 2 students have typed/);
-  assert.match(panel, /Ada Typer[\s\S]*1\/28[\s\S]*Lesson 2[\s\S]*No timed test yet[\s\S]*96%[\s\S]*<kbd[^>]*>j<\/kbd>[\s\S]*4 min/);
+  assert.match(panel, /Ada Typer[\s\S]*1\/40[\s\S]*Lesson 2[\s\S]*No timed test yet[\s\S]*96%[\s\S]*<kbd[^>]*>j<\/kbd>[\s\S]*4 min/);
   assert.match(panel, /Ben Later[\s\S]*Not started yet/);
   assert.doesNotMatch(panel, /Olly Outside|99 wpm/, 'only this class\'s students');
   assert.match(panel, new RegExp(`/teach/assign\\?id=${game.id}&amp;class=${klass.id}`));
@@ -115,8 +115,8 @@ test("a class goal: set by the class's teacher only, measured against each stude
   assert.equal((await post(ada, { wpm: 10 })).status, 404, 'a student');
   assert.equal(TY.getGoal(klass.id), null);
   const r = await post(teacher, { wpm: '20', acc: '90' });
-  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.deepEqual(TY.getGoal(klass.id), { wpm: 20, acc: 90, mins: 0 });
-  assert.deepEqual((await post(teacher, { wpm: 9999, acc: -3 })).json.goal, { wpm: 120, acc: 50, mins: 0 }, 'clamped');
+  assert.equal(r.status, 200, JSON.stringify(r.json)); assert.deepEqual(TY.getGoal(klass.id), { wpm: 20, acc: 90, mins: 0, unlockAcc: 0, unlockWpm: 0 });
+  assert.deepEqual((await post(teacher, { wpm: 9999, acc: -3 })).json.goal, { wpm: 120, acc: 50, mins: 0, unlockAcc: 0, unlockWpm: 0 }, 'clamped');
   await post(teacher, { wpm: 20, acc: 90 });
   putTyping(ben, { v: 1, done: {}, tests: { t1: { w: 24, a: 93, n: 1, t: Date.now() } } });
   const page = (await get(teacher, `/class/${klass.id}/progress`)).text;
@@ -189,7 +189,7 @@ test('pass marks: clamped, either part optional, carried in mode', async () => {
   const { q } = await import('../../server/db.js');
   assert.equal(q.get("SELECT options FROM lesson_steps WHERE game_id=? AND options LIKE 'chapter=l03%'", game.id).options, 'chapter=l03&mode=a95-w12&lock=1');
   assert.match(html, /function readPass\(\)/, 'the game reads it');
-  assert.match(html, /if \(passed && BRBx && BRBx\.score\)/, 'and only reports a run that passed');
+  assert.match(html, /BRBx\.gameOver\(\{ won: passed, score: wpm \}\)/, 'every run is reported; the server decides');
 });
 
 test('a daily practice goal: minutes a day, days met in the last week', async () => {
@@ -200,7 +200,7 @@ test('a daily practice goal: minutes a day, days met in the last week', async ()
   assert.equal(TY.daysMet(sum, { mins: 10 }), 3);
   assert.equal(TY.daysMet(sum, { mins: 0, wpm: 20 }), null, 'no daily goal');
   const r = await post(teacher, `/api/class/${klass.id}/typing-goal`, { wpm: '', mins: '10' });
-  assert.deepEqual(r.json.goal, { wpm: 0, acc: 90, mins: 10 }, 'a daily goal alone');
+  assert.deepEqual(r.json.goal, { wpm: 0, acc: 90, mins: 10, unlockAcc: 0, unlockWpm: 0 }, 'a daily goal alone');
   putTyping(ada, { v: 1, done: { l01: { s: 3, w: 14, a: 96 } }, days: { [day(0)]: 900, [day(1)]: 120 } });
   const page = (await get(teacher, `/class/${klass.id}/progress`)).text;
   const panel = page.slice(page.indexOf('id="typing"'), page.indexOf('</details>', page.indexOf('id="typing"')));
@@ -215,4 +215,77 @@ test('the game: every locked link opens from the map (a lesson, a test, tricky k
   assert.doesNotMatch(html, /if \(locked\) showIntro\(LESSONS\.find/);
   assert.doesNotMatch(html, /window\.confirm/, 'the frame has no confirm box');
   for (const c of ['!', '?', '"', ':', '(', ')']) assert.ok(html.includes(`'${c}':`) || html.includes(`"${c}":`), `Shift for ${c}`);
+});
+
+// ---------------------------------------------------------------- part 4: grades from pass marks, unlock minimums, paragraphs
+const { q: qdb } = await import('../../server/db.js');
+const SC = await import('../../server/services/scores.js');
+
+test('grades: a pass-mark step is done only by a passing run, and graded by its best run', async () => {
+  const pass = { acc: 90, wpm: 20 };
+  assert.equal(TY.gradeOf(pass, 20, 'L1 95% 3* 20 wpm'), 100);
+  assert.equal(TY.gradeOf(pass, 10, 'L1 90% 2* 10 wpm'), 75, 'half each: accuracy met, speed half');
+  assert.equal(TY.gradeOf(pass, 30, 'L1 45% 1* 30 wpm'), 75);
+  assert.equal(TY.gradeOf({ acc: null, wpm: 20 }, 5, 'x'), 25, 'speed only');
+  assert.equal(TY.gradeOf({ acc: 90, wpm: null }, 99, 'no percent'), 0, 'no accuracy in the label: none');
+  assert.equal(TY.gradeOf(null, 20, 'L1 95%'), null);
+
+  const r = await post(teacher, '/api/teach/assign-game', { gameId: game.id, classId: klass.id, opts: 'chapter=l05&lock=1', passAcc: '90', passWpm: '20' });
+  assert.equal(r.status, 200, JSON.stringify(r.json));
+  const step = qdb.get("SELECT s.* FROM lesson_steps s WHERE s.game_id=? AND s.options LIKE 'chapter=l05%'", game.id);
+  const cl = qdb.get('SELECT c.id FROM class_lessons c WHERE c.lesson_id=? AND c.class_id=?', step.lesson_id, klass.id);
+  assert.deepEqual(TY.passOfStep(step), pass);
+  const run = (score, label, event = 'score') => post(ada, `/api/progress/${cl.id}/${step.id}/game`, { event, score, label });
+  const row = () => qdb.get('SELECT status, score, label FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', cl.id, step.id, ada.id);
+  const grade = () => (SC.classItems(klass.id, { userId: ada.id }).get(`${ada.id}:${cl.id}`) || []).find(x => x.kind === 'typing');
+  assert.equal((await run(10, 'L5 90% 2* 10 wpm')).status, 200);
+  assert.notEqual(row().status, 'done', 'below the mark: not done');
+  assert.deepEqual([grade().earned, grade().possible], [7.5, 10]);
+  await run(25, 'L5 60% 1* 25 wpm');    // faster but sloppier: a lower grade (80) wins? 50*.667+50 = 83 > 75
+  assert.equal(row().score, 25, 'the better grade is kept');
+  await run(null, '', 'end');
+  assert.notEqual(row().status, 'done', 'a bare game over never finishes it');
+  await run(21, 'L5 92% 3* 21 wpm');
+  assert.equal(row().status, 'done', 'a passing run does');
+  assert.deepEqual([grade().earned, grade().possible], [10, 10]);
+  await run(30, 'L5 50% 1* 30 wpm');
+  assert.equal(row().status, 'done', 'stays done'); assert.equal(row().score, 21, 'and keeps the best grade');
+  // Without a pass mark nothing changes: any run finishes the step and there is no grade.
+  await post(teacher, '/api/teach/assign-game', { gameId: game.id, classId: klass.id, opts: 'chapter=l06&lock=1' });
+  const plain = qdb.get("SELECT s.* FROM lesson_steps s WHERE s.game_id=? AND s.options='chapter=l06&lock=1'", game.id);
+  const cl2 = qdb.get('SELECT c.id FROM class_lessons c WHERE c.lesson_id=? AND c.class_id=?', plain.lesson_id, klass.id);
+  assert.equal(TY.passOfStep(plain), null);
+  await post(ada, `/api/progress/${cl2.id}/${plain.id}/game`, { event: 'score', score: 3, label: 'L6 40% 1* 3 wpm' });
+  assert.equal(qdb.get('SELECT status FROM step_progress WHERE class_lesson_id=? AND user_id=?', cl2.id, ada.id).status, 'done');
+});
+
+test("unlock minimums: set by the class's teacher, the strictest across a student's classes, sent to the game", async () => {
+  assert.equal(TY.rulesFor(ada.id), null);
+  const r = await post(teacher, `/api/class/${klass.id}/typing-goal`, { unlockAcc: '85', unlockWpm: '' });
+  assert.deepEqual(r.json.goal, { wpm: 0, acc: 90, mins: 0, unlockAcc: 85, unlockWpm: 0 }, 'an unlock rule alone is a goal');
+  assert.deepEqual(TY.rulesFor(ada.id), { acc: 85, wpm: 0 });
+  assert.equal(TY.rulesFor(outsider.id), null, 'not in the class');
+  const k2 = S.createClass(other, school.id, { name: 'Club' }).class; S.addToClass(other, k2.id, ada.id);
+  TY.setGoal(k2.id, { unlockAcc: 80, unlockWpm: 15 });
+  assert.deepEqual(TY.rulesFor(ada.id), { acc: 85, wpm: 15 }, 'the strictest of each');
+  assert.equal(TY.rulesFor(teacher.id), null, 'teachers are never held back');
+  const games = fs.readFileSync('server/routes/games.js', 'utf8'), sdk = fs.readFileSync('public/sdk/brb-sdk.js', 'utf8');
+  assert.match(games, /classRules: r/); assert.match(sdk, /classRules: INIT\.classRules/);
+  assert.match(html, /const unlocked = i => i === 0 \|\| meetsRule\(save\.done\[LESSONS\[i - 1\]\.id\]\)/);
+  const page = (await get(teacher, `/class/${klass.id}/progress`)).text;
+  assert.match(page, /next lesson needs 85%/);
+  assert.match(page, /name="unlockAcc"[^>]*value="85"/);
+  TY.setGoal(klass.id, {}); TY.setGoal(k2.id, {});
+  assert.equal(TY.rulesFor(ada.id), null);
+});
+
+test('units 6 and 7: paragraphs only use typable characters', () => {
+  assert.equal(TY.LESSONS.length, 40);
+  const paras = /const PARAS = \{([\s\S]*?)\n\};/.exec(html)[1];
+  const texts = [...paras.matchAll(/ (l\d\d): ("(?:[^"\\]|\\.)*")/g)].map(m => [m[1], JSON.parse(m[2])]);
+  assert.deepEqual(texts.map(x => x[0]), TY.LESSONS.slice(28));
+  for (const [id, x] of texts) {
+    assert.match(x, /^[A-Za-z0-9 .,;:'"!?()\-]+$/, id);
+    assert.ok(SETS.cleanTypingItems([{ x }]), `${id} passes the same rules as a teacher's lesson`);
+  }
 });
