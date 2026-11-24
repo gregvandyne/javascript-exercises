@@ -12448,3 +12448,38 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+
+## Tug of Math in the classroom look (24 Nov 2026)
+
+The owner, about Tug of Math: "update the background to be the grid and also change the buttonology and what not to match
+crossword look and feel."
+
+- **Crossword's look, no game engine.** The solo game (vs Computer and 2 players) is now the page's own DOM on the
+  dotted mint board, as Crossword: cream widget cards with a color on the top edge and the icon chip (each team's side
+  in its team color, with its shape in the chip), Crossword's pill buttons (an ink edge on cream; the chosen choice dark,
+  the main button green), keys in the same style, the score strip (pause, both scores, the clock, new game) as the dark
+  Now bar, the winner as a dark Now block on the board. Bricolage Grotesque comes from the site's own copy
+  (`/vendor/oomba-classroom/`, as the classroom starters), not a font service. Light and dark follow `BRB.theme` (else
+  the device), with Crossword's dark tokens (a mint Now bar). Sounds are `BRB.sfx` for a few moments only (no sound for
+  each digit), with a sound button.
+- **The tug, redrawn simply.** The sky, sun, clouds and grass are gone: the tug stands on a patch of the dotted board in
+  a cream frame, each team's half lightly tinted, a floor band, the middle line and each team's line with its shape on
+  top. The rope, the flag and the kit's figures are as before, so the tug reads the same.
+- **The kit stays for what it still gives.** The pinned kit 1.1.6 tag and its art-animals, dress and live packs still
+  load: the figures (`O.art`), icons, numbers in the player's language, the less-motion setting and, for Oomba Live, the
+  live pack's plumbing (rooms, teams, events, state). `O.game` is no longer used: no title screen (the game opens on its
+  setup card), our own 3, 2, 1 (the questions hidden until Go), our own pause card (P, Esc, the pause button, or the
+  page going out of sight; Keep going, New game, Sound, Less motion) and our own results card (the winner's figure, stars
+  for a win, the score, the player's numbers, Play again with the same setup, New game). The game clock is our own
+  (requestAnimationFrame, stopped while paused), so the computer, the feedback timers and the time left all pause with it.
+- **Every behavior kept.** The questions (`TugGen`), grades, players, the computer's levels (`TugBot`), timing, the
+  line, scoring (`BRB.gameOver({won, score})` for vs Computer only, when the results card opens), the save key
+  `tug-of-math-v1` and its shape, the keyboard, the field that never mirrors, and Oomba Live's protocol and state are
+  unchanged; no server code changed. The player's points are counted with a `score()` tally (as the kit's `w.score(1)`
+  was), which is also what Oomba Live's file check (`services/classlive-lint.js`) looks for.
+- **Fixed on the way.** A second match (Play again) no longer starts with the keypads greyed out and the last winner's
+  banner still up.
+- **Live views restyled, plumbing untouched.** The projector's team panels, lobby columns and footer are widget cards on
+  the board, the clock is the dark Now block; a phone's team band, small rope and keypad card follow the same look.
+- Tests: `tests/e2e/tug-of-math.spec.js` (the setup card without a title screen, the results card, Play again, the look
+  in light and dark, the pause card stopping the clock), `tests/unit/tug-of-math.test.js` (the kit pin is 1.1.6).

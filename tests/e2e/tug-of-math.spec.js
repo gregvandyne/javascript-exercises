@@ -1,8 +1,9 @@
-// Tug of Math through the real sandboxed frame: the setup card (grade, players, the computer's level, time) and that it
-// is remembered; a game against the computer answered with the keyboard and the keypad, to the results card and
+// Tug of Math through the real sandboxed frame, in Crossword's classroom-widget look (docs/decisions.md "Tug of Math in
+// the classroom look"): the setup card (grade, players, the computer's level, time) and that it is remembered; a game against the computer answered with the keyboard and the keypad, to the results card and
 // BRB.gameOver; two players on one screen (landscape side by side, portrait with Red's half turned round) pulling the
 // rope each way until Blue pulls it past the line; the minus key only from grade 7; and the layout check
-// (tests/e2e/frame-fit.js) on phones, tablets, a desktop and a 1920 × 1080 smartboard, in Hebrew and in dark mode.
+// (tests/e2e/frame-fit.js) on phones, tablets, a desktop and a 1920 × 1080 smartboard, in Hebrew and in dark mode; the
+// look itself (the dotted board, the dark score bar, Crossword's buttons, light and dark) and the pause card.
 import { test, expect } from '@playwright/test';
 import { gameFrame, ownIp } from './helpers.js';
 import { frameProblems, pageScrollsSideways } from './frame-fit.js';
@@ -20,8 +21,8 @@ async function open(page, url = '/play/tug-of-math') {
   await f.evaluate(() => { window.__go = []; const g = BRB.gameOver; BRB.gameOver = o => { window.__go.push(o); return g.call(BRB, o); }; });
   return { f, errors };
 }
+// (no title screen: the game opens on its setup card)
 async function toSetup(f) {
-  await f.locator('.ok-title-screen .ok-hot').click();
   await expect(f.locator('.tms-card')).toBeVisible();
 }
 const radio = (f, v) => f.locator(`.tms [role=radio][data-v="${v}"]`);
@@ -65,9 +66,9 @@ test('vs Computer: the setup card, keyboard and keypad answers, the results card
   await T(f, 'unlock');
   for (let i = 0; i < 4; i++) { await T(f, 'solve', 0); await T(f, 'unlock'); }
   await T(f, 'skipAnimations'); await T(f, 'setTime', 0.1);
-  await expect(f.locator('.ok-modal')).toBeVisible({ timeout: 15000 });
-  await expect(f.locator('.ok-modal')).toContainText('You win!');
-  await expect(f.locator('.ok-modal .tm-stats')).toContainText(/right of/);
+  await expect(f.locator('.tmr .tmo-card')).toBeVisible({ timeout: 15000 });
+  await expect(f.locator('.tmr')).toContainText('You win!');
+  await expect(f.locator('.tmr .tm-stats')).toContainText(/right of/);
   const go = await f.evaluate(() => window.__go);
   expect(go.length).toBe(1);
   expect(go[0].won).toBe(true);
@@ -112,9 +113,17 @@ test('two players on one screen: a keypad each, the rope moves both ways, Blue p
   // Blue pulls 9 times: past the line (8 steps from the middle) wins at once
   for (let i = 0; i < 9; i++) { await T(f, 'unlock'); await T(f, 'solve', 0); }
   await expect.poll(async () => (await state(f)).winner).toBe(0);
-  await expect(f.locator('.ok-modal')).toBeVisible({ timeout: 15000 });
-  await expect(f.locator('.ok-modal')).toContainText('Blue team wins!');
+  await expect(f.locator('.tmr .tmo-card')).toBeVisible({ timeout: 15000 });
+  await expect(f.locator('.tmr')).toContainText('Blue team wins!');
   expect(await f.evaluate(() => window.__go.length)).toBe(0);   // a shared screen submits no score
+  // Play again: the same setup, a fresh match that takes answers (the keypads are not left greyed out)
+  await f.locator('#tmAgain').click();
+  await playing(f);
+  expect(await f.locator('.tm-field').evaluate(e => e.classList.contains('done'))).toBe(false);
+  const r3 = await T(f, 'answerOf', 1);
+  for (const d of String(r3)) await f.locator(`.side.red .key[data-k="${d}"]`).click();
+  await f.locator('.side.red .key[data-k="ok"]').click();
+  await expect.poll(async () => (await state(f)).rope).toBe(-1);
   expect(errors).toEqual([]);
 });
 
@@ -194,4 +203,69 @@ test('Hebrew (right to left) and dark mode: the menus mirror, the field keeps Bl
     }
     await expect(f.locator('.side.blue .team')).toContainText('הקבוצה הכחולה');
   }
+});
+
+test('the look: the dotted board, the dark score bar, Crossword\'s buttons, light and dark; the pause card stops the clock', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const { f, errors } = await open(page);
+  await toSetup(f);
+  const look = () => f.evaluate(() => {
+    const cs = s => getComputedStyle(document.querySelector(s));
+    return { theme: document.documentElement.dataset.theme, board: getComputedStyle(document.body).backgroundImage, font: getComputedStyle(document.body).fontFamily,
+      chosen: cs('.tms .opt[aria-checked="true"]').backgroundColor, start: cs('#tmStart').backgroundColor, startRadius: cs('#tmStart').borderTopLeftRadius,
+      cardEdge: cs('.tms-card').boxShadow };
+  });
+  let l = await look();
+  expect(l.theme).toBe('light');
+  expect(l.board).toMatch(/radial-gradient/);                       // the dotted mint board
+  expect(l.font).toMatch(/Bricolage Grotesque/);
+  expect(l.chosen).toBe('rgb(20, 20, 20)');                         // a chosen pill is the dark "Now" ink
+  expect(l.start).toBe('rgb(31, 157, 99)');                         // the main button is Crossword's green pill
+  expect(parseFloat(l.startRadius)).toBeGreaterThan(100);
+  expect(l.cardEdge).toMatch(/inset/);                              // the widget's colored top edge
+  await T(f, 'start', { mode: 'cpu', grade: 3, diff: 'easy', len: 90, seed: 4 });
+  await playing(f);
+  const play = await f.evaluate(() => {
+    const cs = s => getComputedStyle(document.querySelector(s));
+    return { bar: cs('.mbar').backgroundColor, key: cs('.side.blue .key[data-k="5"]').borderTopWidth, ok: cs('.side.blue .key[data-k="ok"]').backgroundColor,
+      scene: getComputedStyle(document.querySelector('.scene .bg')).backgroundImage, side: cs('.side.blue').boxShadow };
+  });
+  expect(play.bar).toBe('rgb(20, 20, 20)');                         // the score strip is the dark bar
+  expect(play.key).toBe('2px');
+  expect(play.ok).toBe('rgb(31, 157, 99)');
+  expect(play.scene).toMatch(/radial-gradient/);                    // the tug stands on the dotted board
+  expect(play.side).toMatch(/inset/);
+  // pause with P: the card, the clock stops, the keys do nothing; Esc goes on
+  await f.locator('.side.blue .qcard').click();
+  await page.keyboard.press('p');
+  await expect(f.locator('.tmp .tmo-card')).toBeVisible();
+  expect((await state(f)).paused).toBe(true);
+  const t0 = (await state(f)).timeLeft;
+  await page.waitForTimeout(1200);
+  expect((await state(f)).timeLeft).toBe(t0);
+  await page.keyboard.press('5');
+  expect((await state(f)).typed[0]).toBe('');
+  await expect(f.locator('#tmMotion')).toHaveAttribute('role', 'switch');
+  await page.keyboard.press('Escape');
+  await expect(f.locator('.tmp')).toHaveCount(0);
+  await expect.poll(async () => (await state(f)).timeLeft, { timeout: 5000 }).toBeLessThan(t0);
+  // the pause button, then New game: back to the setup card
+  await f.locator('.mbar .mbtn').first().click();
+  await expect(f.locator('.tmp .tmo-card')).toBeVisible();
+  await f.locator('#tmNew').click();
+  await expect(f.locator('.tms-card')).toBeVisible();
+  expect((await state(f)).screen).toBe('setup');
+  expect(errors).toEqual([]);
+});
+
+test("dark mode: the dashboard's dark tokens (dark cards, a mint Now bar)", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.setViewportSize({ width: 1280, height: 800 });
+  const { f } = await open(page);
+  await toSetup(f);
+  expect(await f.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
+  await T(f, 'start', { mode: 'two', grade: 2, len: 60, seed: 2 });
+  await playing(f);
+  const d = await f.evaluate(() => ({ card: getComputedStyle(document.querySelector('.side.blue')).backgroundColor, bar: getComputedStyle(document.querySelector('.mbar')).backgroundColor }));
+  expect(d).toEqual({ card: 'rgb(30, 30, 27)', bar: 'rgb(102, 199, 146)' });
 });
