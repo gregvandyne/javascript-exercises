@@ -92,7 +92,8 @@
   "d.social": "You love being with friends and family.",
   "pct": "{n}% chose this",
   "pctFirst": "You're one of the first to answer this one!",
-  "cat.numbers": "Numbers"
+  "cat.numbers": "Numbers",
+  "sound": "Sound on or off"
  },
  "en-GB": {
   "t.calm": "Cosy dreamer",
@@ -194,7 +195,8 @@
   "d.social": "Du bist am liebsten mit Freunden und Familie zusammen.",
   "pct": "{n} % haben das gewählt",
   "pctFirst": "Du gehörst zu den Ersten, die das beantworten!",
-  "cat.numbers": "Zahlen"
+  "cat.numbers": "Zahlen",
+  "sound": "Ton an oder aus"
  },
  "fr": {
   "title": "Tu préfères ?",
@@ -289,7 +291,8 @@
   "d.social": "Tu adores être avec tes amis et ta famille.",
   "pct": "{n} % ont choisi ça",
   "pctFirst": "Tu es parmi les premiers à répondre à celle-ci !",
-  "cat.numbers": "Nombres"
+  "cat.numbers": "Nombres",
+  "sound": "Son activé ou coupé"
  },
  "es": {
   "title": "¿Qué prefieres?",
@@ -384,7 +387,8 @@
   "d.social": "Te encanta estar con tus amigos y tu familia.",
   "pct": "{n} % eligió esto",
   "pctFirst": "¡Eres de los primeros en responder esta!",
-  "cat.numbers": "Números"
+  "cat.numbers": "Números",
+  "sound": "Sonido sí o no"
  },
  "pt": {
   "title": "O que você prefere?",
@@ -479,7 +483,8 @@
   "d.social": "Você adora estar com amigos e família.",
   "pct": "{n}% escolheram isso",
   "pctFirst": "Você é um dos primeiros a responder esta!",
-  "cat.numbers": "Números"
+  "cat.numbers": "Números",
+  "sound": "Som ligado ou desligado"
  },
  "it": {
   "title": "Preferiresti?",
@@ -574,7 +579,8 @@
   "d.social": "Ami stare con gli amici e la famiglia.",
   "pct": "{n}% ha scelto questo",
   "pctFirst": "Sei tra i primi a rispondere a questa!",
-  "cat.numbers": "Numeri"
+  "cat.numbers": "Numeri",
+  "sound": "Audio sì o no"
  },
  "nl": {
   "title": "Wat heb je liever?",
@@ -669,7 +675,8 @@
   "d.social": "Je bent graag samen met vrienden en familie.",
   "pct": "{n}% koos dit",
   "pctFirst": "Je bent een van de eersten die dit beantwoordt!",
-  "cat.numbers": "Getallen"
+  "cat.numbers": "Getallen",
+  "sound": "Geluid aan of uit"
  },
  "ru": {
   "title": "Что бы ты выбрал?",
@@ -764,7 +771,8 @@
   "d.social": "Ты обожаешь быть с друзьями и семьёй.",
   "pct": "{n}% выбрали это",
   "pctFirst": "Ты один из первых, кто ответил на этот вопрос!",
-  "cat.numbers": "Числа"
+  "cat.numbers": "Числа",
+  "sound": "Звук вкл. или выкл."
  },
  "ja": {
   "title": "どっちがいい？",
@@ -859,7 +867,8 @@
   "d.social": "ともだちやかぞくといっしょにいるのが大すき。",
   "pct": "{n}%の人がこれをえらんだよ",
   "pctFirst": "このしつもんにこたえた、さいしょのひとりだよ！",
-  "cat.numbers": "数字"
+  "cat.numbers": "数字",
+  "sound": "音のオン・オフ"
  },
  "zh-Hant": {
   "title": "你比較想要哪個？",
@@ -954,7 +963,8 @@
   "d.social": "你最喜歡和朋友、家人在一起。",
   "pct": "{n}% 的人選了這個",
   "pctFirst": "你是最早回答這一題的人之一！",
-  "cat.numbers": "數字"
+  "cat.numbers": "數字",
+  "sound": "開關聲音"
  },
  "ar": {
   "title": "ماذا تفضّل؟",
@@ -1049,7 +1059,8 @@
   "d.social": "تحب أن تكون مع أصدقائك وعائلتك.",
   "pct": "{n}% اختاروا هذا",
   "pctFirst": "أنت من أوائل من أجابوا عن هذا السؤال!",
-  "cat.numbers": "الأرقام"
+  "cat.numbers": "الأرقام",
+  "sound": "تشغيل الصوت أو إيقافه"
  },
  "he": {
   "title": "מה הייתם מעדיפים?",
@@ -1144,6 +1155,7 @@
   "d.social": "אתם אוהבים להיות עם חברים ומשפחה.",
   "pct": "{n}% בחרו בזה",
   "pctFirst": "אתם בין הראשונים שעונים על השאלה הזאת!",
-  "cat.numbers": "מספרים"
+  "cat.numbers": "מספרים",
+  "sound": "צליל פועל או כבוי"
  }
 }
