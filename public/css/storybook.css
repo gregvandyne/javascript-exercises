@@ -230,3 +230,5 @@
 .sb-unfinished{max-width:560px;margin:24px auto;padding:20px;border-radius:var(--r);background:var(--warn-bg);color:var(--warn-ink)}
 .sb-unfinished p{margin:0 0 8px}
 .sb-unfinished .muted{color:inherit;opacity:.85}
+/* A picture button with no pictures left today (storybook-edit.js outOfPics): greyed out, its title says why. */
+.sb-edit .btn.is-off{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}

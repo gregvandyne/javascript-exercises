@@ -4396,7 +4396,7 @@
         "right": "Rechts"
       },
       "remove": "Entfernen",
-      "upload": "Dein Bild",
+      "upload": "Bild hochladen",
       "useDrawn": "Gezeichnetes Bild nehmen",
       "removePic": "Kein Bild",
       "addDrawn": "Gezeichnetes Bild hinzufügen",
@@ -4519,6 +4519,7 @@
         "keptOld": "Das frühere Bild bleibt.",
         "stale": "Diese Seite hat sich geändert, seit ihr Bild gemalt wurde.",
         "redraw": "Neu malen",
+        "noneLeft": "Für heute sind keine Bilder mehr übrig. Morgen kannst du wieder neu zeichnen lassen.",
         "draw": "Dieses Bild malen",
         "note": "Was soll anders sein? (freiwillig)",
         "notePh": "Zum Beispiel: ein sonniger Morgen",

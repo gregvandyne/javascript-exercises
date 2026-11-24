@@ -4395,7 +4395,7 @@
         "right": "Derecha"
       },
       "remove": "Quitar",
-      "upload": "Tu imagen",
+      "upload": "Subir una imagen",
       "useDrawn": "Usar un dibujo",
       "removePic": "Sin imagen",
       "addDrawn": "Añadir un dibujo",
@@ -4518,6 +4518,7 @@
         "keptOld": "Se queda la imagen anterior.",
         "stale": "Esta página cambió desde que se dibujó su imagen.",
         "redraw": "Volver a dibujar",
+        "noneLeft": "Hoy ya no quedan imágenes. Mañana podrás volver a dibujar.",
         "draw": "Dibujar esta imagen",
         "note": "¿Qué debe cambiar? (opcional)",
         "notePh": "Por ejemplo: que sea una mañana soleada",

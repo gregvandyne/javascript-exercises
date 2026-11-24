@@ -4677,7 +4677,7 @@
         "right": "Right"
       },
       "remove": "Remove",
-      "upload": "Your picture",
+      "upload": "Upload a picture",
       "useDrawn": "Use a drawn picture",
       "removePic": "No picture",
       "addDrawn": "Add a drawn picture",
@@ -4800,6 +4800,7 @@
         "keptOld": "The earlier picture stays.",
         "stale": "This page changed since its picture was drawn.",
         "redraw": "Redraw",
+        "noneLeft": "No pictures left today. You can redraw again tomorrow.",
         "draw": "Draw this picture",
         "note": "What should change? (optional)",
         "notePh": "For example: make it a sunny morning",

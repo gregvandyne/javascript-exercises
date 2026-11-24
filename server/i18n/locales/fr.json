@@ -4395,7 +4395,7 @@
         "right": "Droite"
       },
       "remove": "Retirer",
-      "upload": "Votre image",
+      "upload": "Importer une image",
       "useDrawn": "Utiliser une image dessinée",
       "removePic": "Pas d'image",
       "addDrawn": "Ajouter une image dessinée",
@@ -4518,6 +4518,7 @@
         "keptOld": "L'image précédente reste.",
         "stale": "Cette page a changé depuis le dessin de son image.",
         "redraw": "Redessiner",
+        "noneLeft": "Plus d'images pour aujourd'hui. Vous pourrez redessiner demain.",
         "draw": "Dessiner cette image",
         "note": "Que faut-il changer ? (facultatif)",
         "notePh": "Par exemple : un matin ensoleillé",

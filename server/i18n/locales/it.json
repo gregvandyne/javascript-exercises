@@ -4396,7 +4396,7 @@
         "right": "Destra"
       },
       "remove": "Togli",
-      "upload": "La tua immagine",
+      "upload": "Carica un'immagine",
       "useDrawn": "Usa un disegno",
       "removePic": "Nessuna immagine",
       "addDrawn": "Aggiungi un disegno",
@@ -4519,6 +4519,7 @@
         "keptOld": "Resta l'immagine di prima.",
         "stale": "Questa pagina è cambiata da quando è stata disegnata la sua immagine.",
         "redraw": "Ridisegna",
+        "noneLeft": "Per oggi le immagini sono finite. Potrai ridisegnare domani.",
         "draw": "Disegna questa immagine",
         "note": "Cosa deve cambiare? (facoltativo)",
         "notePh": "Per esempio: una mattina di sole",

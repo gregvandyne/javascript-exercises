@@ -4396,7 +4396,7 @@
         "right": "Rechts"
       },
       "remove": "Weghalen",
-      "upload": "Jouw plaatje",
+      "upload": "Afbeelding uploaden",
       "useDrawn": "Getekend plaatje gebruiken",
       "removePic": "Geen plaatje",
       "addDrawn": "Getekend plaatje toevoegen",
@@ -4519,6 +4519,7 @@
         "keptOld": "Het eerdere plaatje blijft.",
         "stale": "Deze pagina is veranderd sinds het plaatje is getekend.",
         "redraw": "Opnieuw tekenen",
+        "noneLeft": "Er zijn vandaag geen afbeeldingen meer over. Morgen kun je weer opnieuw laten tekenen.",
         "draw": "Dit plaatje tekenen",
         "note": "Wat moet er anders? (niet verplicht)",
         "notePh": "Bijvoorbeeld: maak er een zonnige ochtend van",
