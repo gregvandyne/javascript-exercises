@@ -13059,3 +13059,35 @@ For parity with typing.com, which lets teachers assign work to individual studen
   lesson posted for the whole class before its list was set stays posted; its grades go only to the students on the
   list. Nothing new goes to Google, so docs/legal-review.md is unchanged.
 - Tests: `tests/unit/assign-students.test.js`.
+
+
+## Word Hunt and Crossword: the AI look and a focus line for the lesson upload (24 Nov 2026)
+
+Owner, on Word Hunt's "Make a word hunt" on a phone: "Typically we have more of a highlight around this when we are
+using AI. Can you update that and then also add the ability to add a prompt for the AI... like 'focus on these types
+of words...' or 'focus on this subject'."
+- **The AI look**: with BRB.canWriteClues (a grown-up who may host, AI on), Word Hunt's step 1 ("Start from a lesson")
+  is a grape panel (the games' own `--grape` / `--grape-t`, as Crossword's "Write clues with AI"), with a small
+  "✨ AI" chip in its heading and the upload button in the AI style. Crossword's paste box stays as it was; its
+  document upload moves into a grape box of its own under it, with the chip and one line on what the AI does. Calm:
+  a tint and a thin line, no glow or motion. Without AI (a plain .txt/.csv list) both stay plain.
+- **The focus line**: an optional one-line field above the upload, "What should the AI focus on? (optional)",
+  placeholder "For example: Science words only", at most 200 characters. BRB.wordsFromDoc passes `focus`; the play page
+  checks it (a string of at most 200) and posts it; `POST /api/games/:id/words-from-doc` collapses spaces, trims, caps it
+  at 200 and runs it through the site's text filter (`cleanText`, as titles are). Refused (rude words, contact details,
+  links): 400 `focusBad` before any AI call, and the file does not count towards the day's 10; the page says "Please
+  reword your focus" and goes back to the field. Atlas Quest's upload does not take it (its lesson upload is being
+  reworked separately).
+- **In the AI request** (services/set-ai.js draftWordsFromDoc): the focus goes in the user message inside its own
+  `<focus>` tag, after the level, with `<` and `>` taken out and as one line. The system prompt (unchanged by the focus,
+  so it stays cached) has one fixed line: the focus only narrows which words are picked from the document (a subject,
+  a type of word, a level) and never overrides the rules (words come from the document, kid-safe, the output format).
+  A plain "word - definition" list is read with no AI, so the focus is not used there.
+- **Privacy**: the field is the teacher's own text, seen only by grown-ups who may host (the same as the upload); no
+  student work or names. Neither the document nor the focus is stored or logged (the audit line keeps the kind and how
+  many words).
+- Words in all 13 languages in each game's own table.
+- Tests: `tests/unit/crossword.test.js` (the prompt and the user message), `tests/unit/crossword-upload.test.js` (the
+  route: cleaned, capped, refused without AI, absent), `tests/unit/word-hunt-sets.test.js`,
+  `tests/unit/word-hunt-browser.test.js` and the Crossword browser tests (the field and the AI look with AI, not
+  without).
