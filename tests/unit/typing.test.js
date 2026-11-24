@@ -153,7 +153,11 @@ test('a teacher\'s own lesson: only what the keyboard can type, through the site
   assert.deepEqual(SETS.cleanTypingItems([{ x: 'hello there class', k: 'other' }]), [{ t: '', x: 'hello there class', k: 'lesson' }]);
   assert.equal(SETS.cleanTypingItems([{ x: 'a test', k: 'test', n: 7 }]), null, 'too short');
   assert.equal(SETS.cleanTypingItems([{ x: 'a fine test here', k: 'test', n: 7 }])[0].n, 1, 'an odd length is a minute');
-  for (const x of ['café au lait please', 'price is 5€ today', '<b>bold</b> words', 'x'.repeat(1501)]) assert.equal(SETS.cleanTypingItems([{ x }]), null, x.slice(0, 20));
+  for (const x of ['price is 5€ today', '<b>bold</b> words', 'x'.repeat(1501), 'tab\there and @ there']) assert.equal(SETS.cleanTypingItems([{ x }]), null, x.slice(0, 20));
+  // Other languages' letters are fine (the game checks them against the teacher's chosen keyboard), and the keyboard rides along.
+  assert.deepEqual(SETS.cleanTypingItems([{ x: 'Die Bäume sind grün.', l: 'de' }]), [{ t: '', x: 'Die Bäume sind grün.', k: 'lesson', l: 'de' }]);
+  assert.deepEqual(SETS.cleanTypingItems([{ x: '¿Dónde está el niño?', l: 'es' }])[0].l, 'es');
+  assert.equal(SETS.cleanTypingItems([{ x: 'hello there class', l: 'klingon' }])[0].l, undefined, 'an unknown keyboard is dropped');
   assert.equal(SETS.cleanTypingItems([{ x: 'call me on 555 123 4567 now' }]), null, 'nothing personal');
   assert.equal(SETS.cleanTypingItems([{ x: 'one' }, { x: 'two' }]), null, 'one lesson a set');
   assert.ok(SETS.SET_GAMES.has('typing-pets') && SETS.OPEN_SET_GAMES.has('typing-pets'));
@@ -164,7 +168,7 @@ test('saving a lesson: teachers only; a student opens it by its code; Assign ope
   assert.equal((await post(ada, `/api/games/${game.id}/sets`, { items })).status, 403, 'not a student');
   const r = await post(teacher, `/api/games/${game.id}/sets`, { items, title: 'Our poem' });
   assert.equal(r.status, 200, JSON.stringify(r.json)); assert.match(r.json.id, SETS.SET_ID);
-  assert.equal((await post(teacher, `/api/games/${game.id}/sets`, { items: [{ x: 'naïve café' }] })).status, 400);
+  assert.equal((await post(teacher, `/api/games/${game.id}/sets`, { items: [{ x: 'price: 5€ <b>' }] })).status, 400);
   const play = (await get(ada, `/play/typing-pets?chapter=${r.json.id}&lock=1`)).status;
   assert.equal(play, 200);
   const page = (await get(teacher, `/teach/assign?id=${game.id}&class=${klass.id}&opts=chapter%3D${r.json.id}%26lock%3D1`)).text;
@@ -214,7 +218,7 @@ test('the game: every locked link opens from the map (a lesson, a test, tricky k
   assert.match(html, /\nshowMap\(\);/);
   assert.doesNotMatch(html, /if \(locked\) showIntro\(LESSONS\.find/);
   assert.doesNotMatch(html, /window\.confirm/, 'the frame has no confirm box');
-  for (const c of ['!', '?', '"', ':', '(', ')']) assert.ok(html.includes(`'${c}':`) || html.includes(`"${c}":`), `Shift for ${c}`);
+  assert.match(html, /function howTo\(ch, kb = KB\)/, 'every character is typed through the layout (Shift and accent keys included)');
 });
 
 // ---------------------------------------------------------------- part 4: grades from pass marks, unlock minimums, paragraphs
@@ -281,11 +285,61 @@ test("unlock minimums: set by the class's teacher, the strictest across a studen
 
 test('units 6 and 7: paragraphs only use typable characters', () => {
   assert.equal(TY.LESSONS.length, 40);
-  const paras = /const PARAS = \{([\s\S]*?)\n\};/.exec(html)[1];
-  const texts = [...paras.matchAll(/ (l\d\d): ("(?:[^"\\]|\\.)*")/g)].map(m => [m[1], JSON.parse(m[2])]);
+  const en = JSON.parse(fs.readFileSync('seed-games/typing-pets-langs/en.json', 'utf8'));
+  const texts = Object.entries(en.paras);
   assert.deepEqual(texts.map(x => x[0]), TY.LESSONS.slice(28));
   for (const [id, x] of texts) {
     assert.match(x, /^[A-Za-z0-9 .,;:'"!?()\-]+$/, id);
     assert.ok(SETS.cleanTypingItems([{ x }]), `${id} passes the same rules as a teacher's lesson`);
   }
+});
+
+// ---------------------------------------------------------------- part 5: other languages and keyboards
+const LANGDIR = 'seed-games/typing-pets-langs';
+const LAYOUTS = JSON.parse(fs.readFileSync(`${LANGDIR}/layouts.json`, 'utf8'));
+const PACKS = fs.readdirSync(LANGDIR).filter(f => f.endsWith('.json') && f !== 'layouts.json').map(f => JSON.parse(fs.readFileSync(`${LANGDIR}/${f}`, 'utf8')));
+/** Everything a layout can type: its keys' normal and Shift characters, the key left of 1, and accented letters. */
+function typableOn(id) {
+  const L = LAYOUTS[id], chars = new Set([' ']);
+  for (const row of L.rows) for (const c of row) if (c !== '¤') chars.add(c);
+  for (const c of L.lead || '') chars.add(c);
+  for (const [d, pairs] of Object.entries(L.dead || {})) { chars.delete(d); [...pairs].forEach((c, i) => { if (i % 2) chars.add(c); }); }
+  return chars;
+}
+
+test('the game holds the language packs exactly as seed-games/typing-pets-langs has them', async () => {
+  const { build } = await import('../../scripts/typing-pets-langs.mjs');
+  assert.equal(build(html), html, 'run node scripts/typing-pets-langs.mjs after changing a pack');
+  const want = ['en', 'de', 'es', 'fr', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'];
+  assert.deepEqual(PACKS.map(p => p.lang).sort(), [...want].sort(), 'a pack for every site language');
+  for (const id of Object.keys(LAYOUTS)) for (const row of LAYOUTS[id].rows) assert.equal([...row].length % 2, 0, `${id}: pairs`);
+});
+
+test('every pack: every string in every language, with the same placeholders, and only typable practice text', () => {
+  const en = PACKS.find(p => p.lang === 'en');
+  const ph = s => [...String(s).matchAll(/\{(\w+)\}/g)].map(m => m[1]).sort().join();
+  for (const p of PACKS) {
+    assert.ok(LAYOUTS[p.layout], `${p.lang}: layout`);
+    assert.deepEqual(Object.keys(p.strings).sort(), Object.keys(en.strings).sort(), `${p.lang}: the same keys`);
+    for (const [k, v] of Object.entries(en.strings)) assert.equal(ph(p.strings[k]), ph(v), `${p.lang}.${k} placeholders`);
+    assert.equal(p.pets.length, 40, `${p.lang}: pets`);
+    const ok = typableOn(p.layout);
+    const all = [...p.words, ...p.sentences, ...p.marks, ...p.apos, ...Object.values(p.paras)];
+    const bad = new Set(all.flatMap(x => [...x].filter(c => !ok.has(c))));
+    assert.deepEqual([...bad], [], `${p.lang}: untypable characters`);
+    assert.deepEqual(Object.keys(p.paras), TY.LESSONS.slice(28), `${p.lang}: paragraphs`);
+    assert.ok(p.words.length >= 150 && p.sentences.length >= 20 && p.marks.length >= 12, `${p.lang}: enough to type`);
+    for (const x of Object.values(p.paras)) assert.ok(SETS.cleanTypingItems([{ x, l: p.layout }]), `${p.lang}: paragraphs pass a teacher lesson's rules`);
+  }
+});
+
+test('the keyboards: a lesson teaches the same finger places on every layout', () => {
+  // QWERTZ swaps Y and Z; AZERTY moves A, Q, Z, W and M; the home row's F and J are F and J everywhere but Arabic, Hebrew and Russian.
+  const at = (id, r, c) => [...LAYOUTS[id].rows[r]][c * 2];
+  assert.equal(at('de', 1, 5), 'z'); assert.equal(at('de', 3, 0), 'y');
+  assert.equal(at('fr', 1, 0), 'a'); assert.equal(at('fr', 2, 0), 'q'); assert.equal(at('fr', 2, 9), 'm');
+  assert.equal(at('ru', 2, 3), 'а'); assert.equal(at('ru', 2, 6), 'о');
+  assert.equal(at('he', 2, 3), 'כ'); assert.equal(at('ar', 2, 3), 'ب');
+  assert.ok(LAYOUTS.fr.dead['^'] && LAYOUTS.es.dead['´'] && LAYOUTS.pt.dead['~'], 'accent keys');
+  assert.ok(LAYOUTS.he.rtl && LAYOUTS.ar.rtl && !LAYOUTS.de.rtl);
 });
