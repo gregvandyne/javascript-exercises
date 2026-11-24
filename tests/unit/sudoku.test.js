@@ -1,17 +1,20 @@
-// Sudoku (seed-games/sudoku.html): a logic puzzle on the Oomba Kit, from a 4x4 with pictures to the classic 9x9.
+// Sudoku (seed-games/sudoku.html): a logic puzzle in Crossword's look (its own page, no Oomba Kit), from a 4x4 with
+// pictures to the classic 9x9.
 // Checked here:
 //   - the puzzle maker (the pure block between sudoku-core:begin and sudoku-core:end), for every level and many seeds:
 //     the full board is valid, the puzzle agrees with it, has exactly one solution (a solver written here, not the
 //     game's), its givens are in the level's range, the human-style grade fits the level, the same seed makes the same
 //     puzzle, and a puzzle is made fast enough for a phone; the grader itself on known puzzles;
 //   - the stars and points, the save format, clashes;
-//   - the file: the kit is pinned and used the kit's way (Oomba.game, controls 'none', a fixed camera, kit screens,
-//     kit roles not color codes, Oomba.sfx), the scanner passes it, it reaches nothing outside the frame;
+//   - the file: its own page outside the Oomba Kit (the dashboard widget look, light and dark, Google Fonts the only
+//     outside address, BRB.sfx, BRB.storage, one BRB.gameOver), the scanner passes it, it reaches nothing else;
 //   - its words: every key in all 13 languages with the same placeholders, no dashes, the spoken lines registered;
 //   - its registration: seeded, on the Learn shelf as thinking for kindergarten to grade 8, a cover and a share picture;
-//   - the game itself in real Chromium inside the production game frame: the picker, a 4x4 played by taps on the pad
-//     (a clash, notes, undo, a hint, the win and its one game-over message), the keyboard, the save and the reload, a
-//     picture puzzle's labels, and the board fitting a 360 px phone with no sideways scroll.
+//   - the game itself in real Chromium inside the production game frame: the home in the widget look (light and dark),
+//     the picker, a 4x4 played by taps on the pad (a clash, notes, undo, a hint, the win, its stars card and its one
+//     game-over message), the keyboard, pause, the save and the reload, a picture puzzle's labels, the board fitting a
+//     360 px phone with no sideways scroll, How to play in Spanish, Japanese and Arabic, and Read it to me only with an
+//     AI voice for every line.
 // The play test needs a local Chromium; it is skipped when there is none.
 import './_setup.js';
 import test from 'node:test';
@@ -160,25 +163,25 @@ test('stars and points: three for a clean solve in time, fewer for help, mistake
   assert.ok(C.score('classic-expert', { time: 0 }) > C.score('tiny-easy', { time: 0 }));
 });
 
-test('the file: the kit pinned and used the kit way, kit colors, the scan passes, nothing from outside', () => {
+test('the file: its own page (no Oomba Kit), the widget look in light and dark, the scan passes, nothing from outside but the font', () => {
   const r = scanVersion(HTML);
   assert.equal(r.status, 'pass', JSON.stringify(r.issues));
-  assert.ok(HTML.startsWith('<title>Sudoku</title>\n<style>'));
-  assert.ok(HTML.includes(kitTag()), 'the kit, pinned with its integrity');
-  for (const p of ['dress', 'art-school']) assert.ok(HTML.includes(kitPackTag(p)), p);
-  assert.match(HTML, /O\.game\(\{\s*api: 1, title: t\('title'\), subtitle: t\('tag'\)/);
-  assert.match(HTML, /controls: 'none', camera: 'fixed'/);
-  for (const k of ['O.ui.root()', 'O.ui.announce', 'O.ui.toast', 'O.sfx(', 'O.color(', 'O.art.toCanvas(', 'O.icon(', 'w.win({ stars: stars, score: points', 'O.settings.reduced', 'O.time.real.after', 'BRB.storage']) assert.ok(HTML.includes(k), k);
-  // no color codes in the game's own CSS or code: kit variables and roles only
-  const own = HTML.replace(/<script src=[^>]+><\/script>/g, '');
-  assert.doesNotMatch(own, /#[0-9a-fA-F]{3,8}\b(?![\w-])|rgba?\(|hsla?\(/, 'no color codes');
-  // the game clock and the kit's: no timers of its own, no Date
-  assert.doesNotMatch(own, /setTimeout|setInterval|Date\.now|new Date/);
+  assert.ok(HTML.startsWith('<!doctype html>'));
+  assert.ok(!HTML.includes('oomba-kit') && !/Oomba\.(game|ui|sfx|color)\b/.test(HTML), 'outside the Oomba Kit');
+  assert.ok(!HTML.includes(kitTag()) && !HTML.includes(kitPackTag('dress')), 'no kit tags');
+  assert.deepEqual([...new Set(HTML.match(/https?:\/\/[a-z0-9.-]+/gi))].sort(), ['https://fonts.googleapis.com']);
+  assert.match(HTML, /family=Bricolage\+Grotesque/);
+  // the classroom dashboard's tokens, light and dark, the dotted board and the dark "Now" bar
+  assert.match(HTML, /:root\[data-theme="dark"\]/); assert.match(HTML, /prefers-reduced-motion/);
+  assert.match(HTML, /radial-gradient\(var\(--dots\)/); assert.match(HTML, /\.sd-now \{[^}]*background: var\(--current\)/);
+  assert.match(HTML, /B\.theme === 'light' \|\| B\.theme === 'dark'/);
+  for (const k of ['B.gameOver({ won: true, score: points })', 'B.storage', 'B.sfx.play(', 'B.aiVoiceCheck(', "ai: 'only'"]) assert.ok(HTML.includes(k), k);
+  const own = HTML.replace(/<link[^>]+>/g, '');
   for (const bad of ['fetch(', 'XMLHttpRequest', 'WebSocket', 'sendBeacon', 'eval(', 'new Function', 'localStorage', 'speechSynthesis', '<img', 'url(']) assert.ok(!own.includes(bad), bad);
   assert.doesNotMatch(own, /\u2014/, 'no em dashes');
   // the board reads left to right in every language; words follow the page
   assert.match(HTML, /board\.dir = 'ltr'/); assert.match(HTML, /\.sd-board \{[^}]*direction: ltr/);
-  assert.match(HTML, /sd\.dir = O\.dir/);
+  assert.match(HTML, /D\.sd\.dir = DIR/);
   // big targets
   assert.match(HTML, /\.sd-key \{[^}]*min-height: var\(--sd-kh, 52px\)/); assert.match(HTML, /\.sd-tool \{[^}]*min-height: 56px/);
 });
@@ -237,13 +240,14 @@ const HOST = 'http://game.invalid';
 let browser;
 test.after(async () => { if (browser) await browser.close(); });
 /** The game in the production frame, on a stand-in for the play page that keeps the SDK's messages (window.__msgs). */
-async function open({ width = 390, height = 844, lang = 'en', save = {}, touch = true } = {}) {
+async function open({ width = 390, height = 844, lang = 'en', save = {}, touch = true, theme = '', tts = { langs: [] }, reply = 'off' } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] });
   const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: touch });
-  const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang, dir: ['ar', 'he'].includes(lang) ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Sudoku' }, save, canSave: true, tts: { langs: [] } });
+  const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang, dir: ['ar', 'he'].includes(lang) ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Sudoku' }, save, canSave: true, tts, ...(theme ? { theme } : {}) });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
 <script>window.__msgs = []; addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);
+  if (d.type === 'brb:tts' && d.check) return e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: ${JSON.stringify(reply)} === 'ok', check: true }, '*');
   if (d.type === 'brb:tts' && !d.pre) e.source.postMessage({ brb: 1, type: 'brb:tts', id: d.id, ok: false, why: 'off' }, '*'); });</script>`;
   const outside = [];
   await ctx.route('**/*', route => {
@@ -252,13 +256,14 @@ async function open({ width = 390, height = 844, lang = 'en', save = {}, touch =
     if (u === HOST + '/frame') return route.fulfill({ status: 200, headers: { 'content-type': 'text/html; charset=utf-8', 'content-security-policy': frameCsp(HOST) }, body: doc });
     const f = u.startsWith(HOST + '/vendor/') && vendorFile(u);
     if (f) return route.fulfill({ status: 200, headers: { 'content-type': f.endsWith('.js') ? 'text/javascript' : f.endsWith('.woff2') ? 'font/woff2' : 'application/octet-stream', 'access-control-allow-origin': '*' }, body: fs.readFileSync(f) });
+    if (/fonts\.(googleapis|gstatic)\.com/.test(u)) return route.abort();   // the look's font (Bricolage Grotesque)
     outside.push(u); return route.abort();
   });
   const p = await ctx.newPage();
   const errors = []; p.on('pageerror', e => errors.push(e.message));
   await p.goto(HOST + '/');
   const frame = p.frames().find(f => f.url() === HOST + '/frame');
-  await frame.waitForFunction(() => window.__brbTest && window.__brbTest.pick && document.querySelector('.ok-title-screen .ok-hot'), null, { timeout: 60_000 });
+  await frame.waitForFunction(() => window.__brbTest && window.__brbTest.pick && document.querySelector('.sd-lv'), null, { timeout: 60_000 });
   const state = () => frame.evaluate(() => window.__brbTest.state());
   const msgs = type => p.evaluate(t => window.__msgs.filter(m => m.type === t), type);
   const until = (fn, arg, timeout = 20_000) => frame.waitForFunction(fn, arg, { timeout });
@@ -269,10 +274,12 @@ const label = (frame, i) => frame.evaluate(i => document.querySelector(`.sd-cell
 test('play: the picker, a 4x4 by taps (a clash, notes, undo, a hint), the win and one game-over message, then a new puzzle', { skip, timeout: 120_000 }, async () => {
   const g = await open();
   try {
-    await g.frame.click('.ok-title-screen .ok-hot');
-    await g.until(() => document.querySelector('.ok-modal .ok-hot, .ok-howto .ok-hot, .ok-card .ok-hot') || window.__brbTest.state().screen === 'pick');
-    const go = await g.frame.$('.ok-modal .ok-hot, .ok-howto .ok-hot, .ok-card .ok-hot'); if (go) await go.click();
-    await g.until(() => window.__brbTest.state().screen === 'pick');
+    // the home: straight to the picker, in the dashboard widget look (light here)
+    assert.equal((await g.state()).screen, 'pick');
+    const look = await g.frame.evaluate(() => { const c = document.querySelector('.sd-card.sd-widget'), cs = getComputedStyle(c), b = getComputedStyle(document.body);
+      return { theme: document.documentElement.dataset.theme, card: cs.backgroundColor, edge: cs.boxShadow.includes('inset'), dots: b.backgroundImage.includes('radial-gradient'), font: b.fontFamily, chip: !!c.querySelector('.sd-wh .sd-wicon'), how: [...document.querySelectorAll('#sd-how li')].length }; });
+    assert.deepEqual(look, { theme: 'light', card: 'rgb(255, 253, 242)', edge: true, dots: true, font: look.font, chip: true, how: 3 });
+    assert.match(look.font, /^"?Bricolage Grotesque/);
     const levels = await g.frame.evaluate(() => [...document.querySelectorAll('.sd-lv')].map(b => b.dataset.level));
     assert.deepEqual(levels, LEVELS.map(L => L.id), 'every level on the picker');
     assert.equal(await g.frame.evaluate(() => document.querySelector('#sd-continue')), null, 'nothing to continue yet');
@@ -313,12 +320,17 @@ test('play: the picker, a 4x4 by taps (a clash, notes, undo, a hint), the win an
     for (const i of empty.slice(1)) { await g.frame.click(`.sd-cell[data-i="${i}"]`); await g.frame.click(`#sd-k${s.solution[i]}`); }
     s = await g.state(); assert.equal(s.screen, 'won'); assert.equal(s.values, s.solution);
     assert.deepEqual({ ...s.lastWin, time: 0, score: 0 }, { id: 'tiny-easy', stars: 2, score: 0, time: 0, hints: 1, mistakes: 1 });
-    await g.until(() => window.__brbTest.state().kit === 'win', null, 30_000);
+    // the stars card: two stars, the time, hints, mistakes and points, Play again and Levels
+    await g.until(() => window.__brbTest.state().done, null, 30_000);
+    const card = await g.frame.evaluate(() => { const c = document.querySelector('#sd-solved'); return { h: c.querySelector('h2').textContent, on: c.querySelectorAll('.sd-stars span:not(.off)').length, say: c.querySelector('.sd-stars').getAttribute('aria-label'), stats: c.querySelector('.sd-stats').textContent, buttons: [...c.querySelectorAll('button')].map(b => b.id) }; });
+    assert.deepEqual({ ...card, stats: '' }, { h: '🎉 Solved!', on: 2, say: '2 of 3 stars', stats: '', buttons: ['sd-again', 'sd-done-levels'] });
+    assert.match(card.stats, new RegExp(`^Time \\d+:\\d\\d · Hints 1 · Mistakes 1 · ${s.lastWin.score} points$`));
     const over = await g.msgs('brb:gameover');
     assert.equal(over.length, 1, 'one game-over message'); assert.equal(over[0].won, true); assert.equal(over[0].score, s.lastWin.score);
     assert.ok(s.best['tiny-easy'] && s.best['tiny-easy'].stars === 2); assert.ok(!s.saved.includes('tiny-easy'), 'a solved puzzle is no longer saved');
     // Play again: a new puzzle at the same level
     await g.frame.getByRole('button', { name: 'Play again' }).click();
+    await g.until(() => window.__brbTest.state().screen === 'making' || window.__brbTest.state().screen === 'play');
     await g.until(() => window.__brbTest.state().screen === 'play');
     const s2 = await g.state(); assert.equal(s2.level, 'tiny-easy'); assert.notEqual(s2.puzzle, s.puzzle);
     assert.deepEqual(g.errors, []); assert.deepEqual(g.outside, []);
@@ -359,9 +371,13 @@ test('play: the keyboard, the save and the reload, a picture puzzle, Arabic, and
     await g.p.waitForTimeout(2200);
     s = await g.state(); assert.ok(s.time >= 1, `the clock runs (${s.time})`);
     await g.p.keyboard.press('p'); await g.p.waitForTimeout(300);
+    assert.ok(await g.frame.evaluate(() => window.__brbTest.state().paused && !!document.querySelector('#sd-paused') && document.querySelector('.sd-board').classList.contains('sd-paused')), 'the pause card, the board hidden');
     const t0 = (await g.state()).time; await g.p.waitForTimeout(1600);
     assert.equal((await g.state()).time, t0, 'paused, the clock stands still');
+    const v0 = (await g.state()).values; await g.p.keyboard.press(String(wrong % 9 + 1)); assert.equal((await g.state()).values, v0, 'no moves while paused');
     await g.p.keyboard.press('Escape'); await g.p.waitForTimeout(400);
+    assert.equal((await g.state()).paused, false);
+    await g.p.waitForTimeout(1300); assert.ok((await g.state()).time > t0, 'the clock runs again');
     // the save: what is on the board is in BRB.storage
     await g.frame.click('#sd-levels');
     await g.until(() => window.__brbTest.state().screen === 'pick');
@@ -372,9 +388,6 @@ test('play: the keyboard, the save and the reload, a picture puzzle, Arabic, and
     await g.ctx.close();
     // the reload: Continue brings back the same board, notes, hints, mistakes and time
     g = await open({ save: { 'sudoku-v1': saved } });
-    await g.frame.evaluate(() => window.__brbTest.picker());
-    await g.until(() => window.__brbTest.state().screen === 'pick' || document.querySelector('.ok-modal .ok-hot'));
-    const go = await g.frame.$('.ok-modal .ok-hot'); if (go) await go.click();
     await g.until(() => window.__brbTest.state().screen === 'pick');
     await g.frame.click('#sd-continue');
     await g.until(() => window.__brbTest.state().screen === 'play');
@@ -397,7 +410,7 @@ test('play: the keyboard, the save and the reload, a picture puzzle, Arabic, and
     await g.until(() => window.__brbTest.state().screen === 'play');
     s = await g.state();
     const given = [...s.puzzle].findIndex(ch => ch !== '0');
-    assert.ok(await g.frame.evaluate(i => !!document.querySelector(`.sd-cell[data-i="${i}"] canvas`), given), 'a picture in the box');
+    assert.ok(await g.frame.evaluate(i => !!document.querySelector(`.sd-cell[data-i="${i}"] svg`), given), 'a picture in the box');
     assert.match(await label(g.frame, given), new RegExp(`, (${['apple', 'banana', 'grapes', 'carrot'].join('|')}), part of the puzzle$`));
     assert.deepEqual(await g.frame.evaluate(() => [1, 2, 3, 4].map(d => document.querySelector('#sd-k' + d).getAttribute('aria-label'))), ['apple', 'banana', 'grapes', 'carrot']);
     const fit4 = await g.frame.evaluate(() => { const b = document.querySelector('.sd-board').getBoundingClientRect(), k = document.querySelector('.sd-tools').getBoundingClientRect(); return { w: b.width, h: b.height, right: b.right, bottom: k.bottom, vw: innerWidth, vh: innerHeight, sw: document.documentElement.scrollWidth }; });
@@ -408,8 +421,50 @@ test('play: the keyboard, the save and the reload, a picture puzzle, Arabic, and
     g = await open({ lang: 'ar' });
     await g.frame.evaluate(() => window.__brbTest.pick('small-easy', { seed: 8 }));
     await g.until(() => window.__brbTest.state().screen === 'play');
-    assert.deepEqual(await g.frame.evaluate(() => [document.querySelector('.sd').dir, getComputedStyle(document.querySelector('.sd-board')).direction, document.querySelector('#sd-undo').textContent]), ['rtl', 'ltr', 'تراجع']);
+    assert.deepEqual(await g.frame.evaluate(() => [document.querySelector('.sd').dir, getComputedStyle(document.querySelector('.sd-board')).direction, document.querySelector('#sd-undo span:last-child').textContent]), ['rtl', 'ltr', 'تراجع']);
     assert.match(await label(g.frame, 0), /^الصف 1، العمود 1، /);
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close().catch(() => {}); }
 });
+
+test('the look: dark from the site theme, How to play in Spanish, Japanese and Arabic, Read it to me only with an AI voice', { skip, timeout: 120_000 }, async () => {
+  // dark: the site's theme (BRB.theme), the dark tokens on the cards, the board and the bar
+  let g = await open({ theme: 'dark', width: 1024, height: 768, touch: false });
+  try {
+    let look = await g.frame.evaluate(() => [document.documentElement.dataset.theme, getComputedStyle(document.querySelector('.sd-card')).backgroundColor, getComputedStyle(document.body).backgroundColor]);
+    assert.deepEqual(look, ['dark', 'rgb(30, 30, 27)', 'rgb(20, 20, 20)']);
+    await g.p.waitForTimeout(300);
+    assert.equal(await g.frame.evaluate(() => document.querySelector('#sd-read').hidden), true, 'no AI voice: no Read it to me');
+    await g.frame.evaluate(() => window.__brbTest.pick('small-easy', { seed: 8 }));
+    await g.until(() => window.__brbTest.state().screen === 'play');
+    look = await g.frame.evaluate(() => [getComputedStyle(document.querySelector('.sd-now')).backgroundColor, getComputedStyle(document.querySelector('.sd-cell.given:not(.peer):not(.same):not(.sel)')).backgroundColor]);
+    assert.deepEqual(look, ['rgb(102, 199, 146)', 'rgb(30, 30, 27)']);
+    // a move: the tap on a box and a number from the pad
+    const s = await g.state(), i = [...s.values].indexOf('0');
+    await g.frame.click(`.sd-cell[data-i="${i}"]`); await g.frame.click(`#sd-k${s.solution[i]}`);
+    assert.equal((await g.state()).values[i], s.solution[i]);
+    assert.deepEqual(g.errors, []); assert.deepEqual(g.outside, []);
+  } finally { await g.ctx.close(); }
+  // How to play in the player's language (the cards the kit used to show)
+  for (const lang of ['es', 'ja', 'ar']) {
+    g = await open({ lang });
+    try {
+      const how = await g.frame.evaluate(() => [document.querySelector('#sd-how-h').textContent, ...[...document.querySelectorAll('#sd-how li')].map(x => x.textContent)]);
+      assert.deepEqual(how, ['💡 ' + I18N_OF(lang).howH, I18N_OF(lang).how1, I18N_OF(lang).how2, I18N_OF(lang).how3].map(x => x), lang);
+      for (let k = 1; k <= 3; k++) assert.notEqual(how[k], I18N.en['how' + k], `${lang}: card ${k} is not the English`);
+    } finally { await g.ctx.close(); }
+  }
+  // Read it to me: shown only when the platform says the AI voice reads every line; a tap reads them with the AI voice only
+  g = await open({ tts: { langs: ['en'], tok: 'x' }, reply: 'ok' });
+  try {
+    await g.until(() => !document.querySelector('#sd-read').hidden);
+    const asked = (await g.msgs('brb:tts')).filter(m => m.check).map(m => m.text);
+    assert.deepEqual(asked, [I18N.en.title, I18N.en.how1, I18N.en.how2, I18N.en.how3]);
+    for (const t of asked) assert.ok(lines.allowedLine('sudoku', 'en', t), `${t}: an AI-voice line`);
+    await g.frame.click('#sd-read');
+    await g.p.waitForTimeout(300);
+    assert.ok((await g.msgs('brb:tts')).some(m => !m.check && m.text === I18N.en.title), 'read through the AI path');
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+});
+const I18N_OF = l => I18N[l];
