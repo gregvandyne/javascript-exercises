@@ -9996,6 +9996,22 @@
     "episodeKicker": "Oomba Breathe & Bend, Episode {n}"
   },
   "stories": {
+    "make": {
+      "h": "What do you want to make?",
+      "video": "Video story",
+      "videoText": "A narrated video in a felt-and-paper world.",
+      "book": "Illustrated picture book",
+      "bookText": "Oomba writes it and paints a picture for every page.",
+      "cyoa": "Choose-your-own-adventure picture book",
+      "cyoaText": "A picture book where readers choose where the story goes next.",
+      "note": "The book maker asks a few more questions, then shows you exactly what will be sent. Nothing is made until you say so.",
+      "go": "Continue in the book maker"
+    },
+    "book": {
+      "feel": "Kind of story: {kind}. Feeling: {feel}.",
+      "who": "Who is in it: {text}",
+      "lesson": "A lesson to learn: {text}"
+    },
     "title": "Story Builder",
     "h": "Bedtime Story Builder",
     "sub": "Type an idea and get a cozy bedtime story video: a felt-and-paper world, a calm voice, music-box music and the words on screen.",
@@ -14872,6 +14888,7 @@
       "none": "No pictures"
     },
     "chat": {
+      "fromStory": "Here is your book from the Story Builder. I filled in what you already chose; answer the rest on the card.",
       "hello": "Let's make a book.",
       "noTheme": "No theme",
       "contextAi": "Type your ideas in the box below and send them, or attach files and pictures with the paperclip. They go into your book, not to the chat. Oomba then shows you exactly what will be sent.",

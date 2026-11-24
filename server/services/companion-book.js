@@ -121,6 +121,41 @@ export function fromInput(u, ctx, input, prev = null) {
   return d;
 }
 
+// ---------------------------------------------------------------- from the Story Builder (docs/story-builder.md "Picture books")
+/** Story Builder age bands -> the book maker's grade bands ('all': not known, the card asks). */
+export const GRADE_OF_AGE = Object.freeze({ '3-5': 'k', '6-8': '2', '9-12': '4-5' });
+/** Story Builder video lengths -> book lengths (a book length the form sent wins). */
+export const LENGTH_OF_SECONDS = Object.freeze({ 45: 'short', 60: 'medium', 90: 'long' });
+/**
+ * What the Story Builder already knows, as makeBook's input (fromInput takes it like a teacher's first message): Have AI
+ * make one, the kind (a picture book or an adventure), the grade when the age band says it, the length, Oomba paints the
+ * pictures, and the teacher's words: the idea, then the kind of story and its feeling, who is in it and a lesson (the
+ * labels in the teacher's language). The words answer "Your words" and the theme (the idea is the topic), so the card asks
+ * only the reading level, the endings of an adventure, and the grade when the age band was "Everyone".
+ * f: { kind: 'linear' | 'cyoa', idea, ageBand, seconds, length, style, tone, characters, lesson } (already checked against
+ * the Story Builder's lists); t: the teacher's strings.
+ */
+export function fromStory(f, t) {
+  const kind = f.kind === 'cyoa' ? 'cyoa' : 'linear';
+  const about = [
+    f.idea,
+    f.style && f.tone ? t('stories.book.feel', { kind: t(`stories.style.${f.style}`), feel: t(`stories.tone.${f.tone}`) }) : '',
+    f.characters ? t('stories.book.who', { text: f.characters }) : '',
+    f.lesson ? t('stories.book.lesson', { text: f.lesson }) : '',
+  ].filter(Boolean).join('\n');
+  return {
+    source: 'ai', kind,
+    ...(GRADE_OF_AGE[f.ageBand] ? { grade: GRADE_OF_AGE[f.ageBand] } : {}),
+    length: SB.LENGTHS.includes(f.length) ? f.length : LENGTH_OF_SECONDS[f.seconds] || 'short',
+    pictures: 'ai', about: clip(about, SB.SETUP_LIMITS.about),
+  };
+}
+/** The same input as the setup page's own state (public/js/storybook-setup.js keeps it in sessionStorage 'sb-setup'), for
+ *  a maker without the Oomba chat: it opens on the choices with these picked. */
+export function pageSetup(i) {
+  return { step: 'options', source: 'ai', kind: i.kind, grade: i.grade || '2', length: i.length, endings: '2', level: 'growing', theme: '', pictures: i.pictures, story: '', about: i.about, files: [], pics: [] };
+}
+
 // ---------------------------------------------------------------- the card's taps
 /** A tap on one of the card's options. -> the new draft | { error } */
 export function pick(d, value) {

@@ -105,6 +105,20 @@ const requireSecret = parseFlag(process.env.REQUIRE_SESSION_SECRET, 'REQUIRE_SES
 const maintenance = parseFlag(process.env.MAINTENANCE_MODE, 'MAINTENANCE_MODE');
 const billingPublic = parseFlag(process.env.BILLING_PUBLIC, 'BILLING_PUBLIC');
 const parentMade = parseFlag(process.env.PARENT_MADE_CHILDREN, 'PARENT_MADE_CHILDREN');
+/** Account kinds STORY_PICTURE_BOOKS may name (docs/story-builder.md "Picture books"). 'parent' is the family grown-up
+ *  account (users.account_type 'grownup'); kids and students are never on the list. */
+export const PICTURE_BOOK_KINDS = ['teacher', 'parent'];
+/** STORY_PICTURE_BOOKS: a comma-separated list of account kinds (unset: 'teacher'; '0', 'off' or 'none': nobody). */
+export function parsePictureBooks(v, name = 'STORY_PICTURE_BOOKS') {
+  if (v === undefined || String(v).trim() === '') return { list: ['teacher'] };
+  const s = String(v).trim().toLowerCase();
+  if (['0', 'off', 'none', 'no', 'false'].includes(s)) return { list: [] };
+  const words = s.split(',').map(x => x.trim()).filter(Boolean).map(x => (x === 'grownup' || x === 'grown-up' || x === 'parents' ? 'parent' : x === 'teachers' ? 'teacher' : x));
+  const list = PICTURE_BOOK_KINDS.filter(k => words.includes(k));
+  // The value isn't echoed (as parseFlag): only what it may be.
+  return words.every(w => PICTURE_BOOK_KINDS.includes(w)) ? { list } : { list, error: `${name} must be teacher, parent or teacher,parent (or 0 for nobody)` };
+}
+const pictureBooks = parsePictureBooks(process.env.STORY_PICTURE_BOOKS);
 const movedPermanently = parseFlag(process.env.MOVED_PERMANENTLY, 'MOVED_PERMANENTLY');
 const builderWebSearch = parseFlag(process.env.BUILDER_WEB_SEARCH, 'BUILDER_WEB_SEARCH');
 const sttLive = parseFlag(process.env.STT_LIVE, 'STT_LIVE', true);
@@ -247,7 +261,7 @@ export const config = {
     classroomBase.url && classroomBase.url !== 'https://classroom.googleapis.com' && (process.env.NODE_ENV || 'development') === 'production' && "CLASSROOM_API_BASE is for tests and can't be used in production",
     ...stripe.errors,
     ...email.errors,
-    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, sttLive.error, liveClassroom.error,
+    publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, pictureBooks.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
     builderWebSearch.error, manipulatives.error, figures.error, companion.error, companionWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
@@ -279,6 +293,11 @@ export const config = {
   // scripts/story-worker.js, running beside the site). STORY_DAILY_LIMIT: new stories a day per kid account (grown-ups
   // and staff get twice as many); STORY_QUEUE_MAX: stories waiting site-wide before new ones are turned away.
   storyBuilder: parseFlag(process.env.STORY_BUILDER, 'STORY_BUILDER').on,
+  // STORY_PICTURE_BOOKS (docs/story-builder.md "Picture books"): who the Story Builder's start offers "Illustrated picture
+  // book" and "Choose-your-own-adventure picture book" (a hand-off to the book maker, docs/storybook-builder.md).
+  // 'teacher' (the default: school staff and the platform admin), 'teacher,parent' (family grown-ups too, who then may
+  // use the book maker without classes to share with), or '0' (nobody: Video story only). Kids and students never.
+  storyPictureBooks: pictureBooks.list,
   storyDailyLimit: Math.max(0, Math.floor(num(process.env.STORY_DAILY_LIMIT, 2))),
   storyQueueMax: Math.max(1, Math.floor(num(process.env.STORY_QUEUE_MAX, 20))),
   // Quick story changes (new words, voice or music: no new pictures) a day per person; grown-ups and staff get twice as many.

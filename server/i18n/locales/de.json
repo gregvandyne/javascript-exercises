@@ -9212,6 +9212,22 @@
     "teachersP": "Die Bewegungspausen gehören zu keinem Kurs, also passen sie zwischen zwei beliebige Unterrichtsstunden. Bei zwei Übungen hält das Video 10 Sekunden lang für „Du bist dran“ an: Die Klasse macht die Übung mit, statt nur zuzusehen."
   },
   "stories": {
+    "make": {
+      "h": "Was möchtest du machen?",
+      "video": "Videogeschichte",
+      "videoText": "Ein erzähltes Video in einer Welt aus Filz und Papier.",
+      "book": "Bilderbuch",
+      "bookText": "Oomba schreibt es und malt zu jeder Seite ein Bild.",
+      "cyoa": "Bilderbuch: Entscheide-selbst-Abenteuer",
+      "cyoaText": "Ein Bilderbuch, in dem die Lesenden entscheiden, wie die Geschichte weitergeht.",
+      "note": "Der Buchmacher stellt noch ein paar Fragen und zeigt dir dann genau, was gesendet wird. Nichts wird gemacht, bevor du es sagst.",
+      "go": "Weiter im Buchmacher"
+    },
+    "book": {
+      "feel": "Art der Geschichte: {kind}. Gefühl: {feel}.",
+      "who": "Wer kommt vor: {text}",
+      "lesson": "Eine Lehre: {text}"
+    },
     "title": "Geschichtenmacher",
     "h": "Gute-Nacht-Geschichtenmacher",
     "sub": "Schreib eine Idee und bekomm ein gemütliches Gute-Nacht-Video: eine Welt aus Filz und Papier, eine ruhige Stimme, Spieluhrmusik und die Wörter im Bild.",
@@ -14157,6 +14173,7 @@
       "none": "Keine Bilder"
     },
     "chat": {
+      "fromStory": "Hier ist dein Buch aus dem Geschichtenmacher. Was du schon gewählt hast, habe ich eingetragen; beantworte den Rest auf der Karte.",
       "hello": "Lass uns ein Buch machen.",
       "noTheme": "Kein Thema",
       "contextAi": "Schreib deine Ideen unten ins Feld und schick sie ab, oder hänge mit der Büroklammer Dateien und Bilder an. Sie kommen in dein Buch, nicht in den Chat. Danach zeigt Oomba dir genau, was gesendet wird.",

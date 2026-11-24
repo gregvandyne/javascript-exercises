@@ -147,7 +147,7 @@ export function madeCard(req, row) {
   const more = html`<details class="sb-bmore"><summary class="btn btn-sm btn-ghost sb-bmore-btn" aria-label="${t('storybook.books.moreFor', { title })}" title="${t('storybook.books.more')}"><span aria-hidden="true">⋯</span></summary>
     <div class="sb-bmenu">
       ${state === 'ready' ? html`<button type="button" class="sb-bitem" data-b="rename">${ico('✏️', { size: 18 })} ${t('storybook.books.rename')}</button>
-      <button type="button" class="sb-bitem" data-b="share">${ico('📌', { size: 18 })} ${t('storybook.books.share')}</button>
+      ${SB.canShare(req.user) ? html`<button type="button" class="sb-bitem" data-b="share">${ico('📌', { size: 18 })} ${t('storybook.books.share')}</button>` : ''}
       <button type="button" class="sb-bitem" data-b="duplicate">${ico('📋', { size: 18 })} ${t('storybook.books.duplicate')}</button>` : ''}
       <button type="button" class="sb-bitem is-danger" data-b="delete">${ico('🗑️', { size: 18 })} ${t('storybook.books.delete')}</button></div></details>`;
   const acts = state === 'ready'

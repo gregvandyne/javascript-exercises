@@ -16,6 +16,17 @@ if (form) {
     const radio = m && $(`input[name="music"][value="${m}"]`, form);
     if (!musicTouched && radio) radio.checked = true;
   }));
+  // What to make (only for someone the server offers the picture books: docs/story-builder.md "Picture books"): a picture
+  // book hides the video's own choices (voice, music, seconds, today's videos) and hands the idea to the book maker.
+  const make = () => picked(form, 'make') || 'video';
+  const showMake = () => {
+    const book = make() !== 'video';
+    $$('[data-video-only]', form).forEach(el => { el.hidden = book; });
+    $$('[data-book-only]', form).forEach(el => { el.hidden = !book; });
+    const go = $('#sb-go'); if (go) go.disabled = !book && go.dataset.left === '0';
+  };
+  $$('input[name="make"]', form).forEach(r => r.addEventListener('change', showMake));
+  if (data.books) showMake();
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const err = $('#sb-err'), go = $('#sb-go'), idea = $('#sb-idea');
@@ -23,6 +34,16 @@ if (form) {
     idea.removeAttribute('aria-invalid');
     if (idea.value.trim().length < 3) { err.textContent = t('js.stories.needIdea'); idea.setAttribute('aria-invalid', 'true'); idea.focus(); return; }
     go.disabled = true;
+    if (make() !== 'video') {
+      try {
+        const body = { make: make(), idea: idea.value, ageBand: $('#sb-age').value, length: $('#sb-blen').value, style: picked(form, 'style'), tone: picked(form, 'tone'), characters: $('#sb-chars').value, lesson: $('#sb-lesson').value };
+        const r = await api('/api/stories/book', { method: 'POST', body });
+        // Without the Oomba chat: the setup page's own state (public/js/storybook-setup.js), with these picked.
+        if (r.setup) try { sessionStorage.setItem('sb-setup', JSON.stringify(r.setup)); } catch { /* no storage: the page starts at the beginning */ }
+        location.href = r.href;
+      } catch (ex) { err.textContent = (ex && ex.message) || t('js.stories.failed'); go.disabled = false; }
+      return;
+    }
     try {
       const body = {
         idea: idea.value, ageBand: $('#sb-age').value, seconds: +$('#sb-len').value,

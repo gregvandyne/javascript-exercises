@@ -90,6 +90,7 @@ On/off settings (`REQUIRE_SESSION_SECRET`, `MAINTENANCE_MODE`, `MOVED_PERMANENTL
 | `STORYBOOK_IMAGE_MODEL` | `gemini-3.1-flash-image` | The Gemini image model the book maker uses (Gemini 3.1 Flash Image, about $0.067 a 1K picture). |
 | `STORYBOOK_PICTURES_FREE_PER_DAY` / `STORYBOOK_PICTURES_PLAN_PER_DAY` | `10` / `40` | Pictures the picture model may draw for a teacher a UTC day (character sheets and Redraws count), without / with the Teacher plan (testers and the admin: the second). Counted in the database. At the limit pages use the art-pack drawings. |
 | `STORYBOOK_DRAW_AT_ONCE` | `2` | How many book pictures are drawn at the same time, site-wide (1 to 8). |
+| `STORY_PICTURE_BOOKS` | `teacher` | Who the Story Builder's start (`/stories/new`) offers "Illustrated picture book" and "Choose-your-own-adventure picture book", a hand-off to the book maker (docs/story-builder.md "Picture books"): a comma-separated list of `teacher` (school staff and the admin) and `parent` (family grown-ups, who then may also use the book maker, without Share with classes); `0` for nobody. Kids and students never get them, whatever it says. Anything else stops start-up. |
 | `BUILDER_DAILY_TURNS` | `60` | Builder messages per user per UTC day (the free allowance; `server/builder/usage.js` `allowanceFor`). |
 | `PRO_TURN_WEIGHT` | `1` | Messages one "Pro quality" message counts as (1 to 10). Paid plans will set `2` (docs/decisions.md "Paid plans", D5). |
 | `BUILDER_MAX_TOKENS` | `64000` | Max output tokens per Builder turn. |

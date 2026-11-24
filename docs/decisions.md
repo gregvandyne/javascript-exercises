@@ -12233,3 +12233,26 @@ art-pack drawing ("Oomba kit") in every picture's place, so the book looked made
 - Tests: `tests/unit/storybook-painting.test.js` (5: the placeholder, the reader, print copy and card while painting,
   the fallback, the restart kick; in a browser the editor and the cards while painting, the swap-in and "All pictures
   painted.", a fallback with Paint pictures again; `PAINT_SHOTS=<dir>` saves the pictures).
+
+## Story Builder: picture books for teachers (24 Nov 2026)
+
+The owner: "Stories should also be able to be illustrative and choose your own journey." (the Story Builder videos at
+/stories). On who gets the painted style: "Let's not give kids the ability to build books. Keep it to just teachers right
+now. Put it behind a feature flag for teacher and parent accounts for now." On how choose-your-own-journey works:
+"Choose your own adventure should just be picture books with different options of where to take the story".
+
+- **Three choices at the start of /stories/new**: Video story (today's felt-world narrated video, unchanged), Illustrated
+  picture book, Choose-your-own-adventure picture book. The two books are not a new renderer: they hand the idea and the
+  choices that map (the kind, the kind of story and feeling as words, the grade from the age band when known, the
+  length) to the teacher book maker (docs/storybook-builder.md), whose card skips what is answered. The book lives in the
+  teacher's books as usual. See docs/story-builder.md "Picture books".
+- **`STORY_PICTURE_BOOKS`**, a list of account kinds: `teacher` by default ("Keep it to just teachers right now"),
+  `teacher,parent` later, `0` for nobody. Kids and students never see the options and are refused on the server on the
+  hand-off and every book maker route and tool, whatever the flag says. With `parent`, grown-ups use the book maker too
+  (`storybook.js canMake`), without Share with classes (they have none). The existing book maker stays open to teachers
+  even if the flag leaves them out: the flag decides only what the Story Builder offers, and grown-ups' access.
+- Choices made here (ask if wrong): the idea becomes the book's topic, so no theme is asked; the reading level and an
+  adventure's endings are always asked (the Story Builder does not know them); Oomba paints the pictures (Edit on the
+  check card changes it); a grown-up has no Oomba chat, so they get the setup page's steps pre-filled.
+- Tests: `tests/unit/story-picture-books.test.js` (8), `tests/unit/story-picture-books-browser.test.js` (the pages in a
+  browser; `PICTURE_BOOK_SHOTS=<dir>` saves sp-1 ... sp-4).

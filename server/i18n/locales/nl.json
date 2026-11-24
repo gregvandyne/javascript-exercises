@@ -9212,6 +9212,22 @@
     "teachersP": "Beweegpauzes staan los van de cursussen, dus je kunt er tussen elke twee lessen een gebruiken. Bij twee houdingen pauzeert de video 10 seconden voor ‘Jouw beurt’, zodat de klas de houding echt doet en niet alleen kijkt."
   },
   "stories": {
+    "make": {
+      "h": "Wat wil je maken?",
+      "video": "Videoverhaal",
+      "videoText": "Een verteld filmpje in een wereld van vilt en papier.",
+      "book": "Prentenboek",
+      "bookText": "Oomba schrijft het en schildert bij elke bladzijde een plaatje.",
+      "cyoa": "Kies-je-eigen-avontuur-prentenboek",
+      "cyoaText": "Een prentenboek waarin lezers kiezen hoe het verhaal verdergaat.",
+      "note": "De boekenmaker stelt nog een paar vragen en laat je dan precies zien wat er wordt verstuurd. Er wordt niets gemaakt tot jij het zegt.",
+      "go": "Verder in de boekenmaker"
+    },
+    "book": {
+      "feel": "Soort verhaal: {kind}. Gevoel: {feel}.",
+      "who": "Wie zit erin: {text}",
+      "lesson": "Een les om te leren: {text}"
+    },
     "title": "Verhalenmaker",
     "h": "Slaapverhalenmaker",
     "sub": "Typ een idee en krijg een knus slaapverhaal als video: een wereld van vilt en papier, een rustige stem, speeldoosmuziek en de woorden in beeld.",
@@ -14157,6 +14173,7 @@
       "none": "Geen plaatjes"
     },
     "chat": {
+      "fromStory": "Hier is je boek uit de Verhalenmaker. Wat je al koos heb ik ingevuld; beantwoord de rest op de kaart.",
       "hello": "Laten we een boek maken.",
       "noTheme": "Geen thema",
       "contextAi": "Typ je ideeën in het vak hieronder en stuur ze, of voeg met de paperclip bestanden en plaatjes toe. Ze gaan in je boek, niet naar de chat. Daarna laat Oomba je precies zien wat er verstuurd wordt.",

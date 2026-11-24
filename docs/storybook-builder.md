@@ -29,10 +29,23 @@ Library: the book maker".
 | `tests/unit/storybook-books.test.js`, `companion-book-crud.test.js`, `storybook-books-browser.test.js` | Your books: the cards, rename, duplicate, delete, access on every new route and tool, unfinished books, Paint pictures again; the same from the chat |
 | `tests/unit/companion-book.test.js`, `companion-book-browser.test.js` | The chat: cards skip what the request answered, words and files into the book, the check and screening, Start and the cap, teachers only, changes from any page with Undo, books made in the past |
 
+## From the Story Builder
+
+`/stories/new` offers "Illustrated picture book" and "Choose-your-own-adventure picture book" next to the video
+(docs/story-builder.md "Picture books"; `STORY_PICTURE_BOOKS`, default `teacher`). Both hand the idea to this book
+maker: `POST /api/stories/book` fills the first answers (`companion-book.js fromStory` into `fromInput`, like the chat's
+`makeBook`): Have AI make one, the kind, the grade (from the age band, when known), the length, Oomba paints the
+pictures, and the idea with the kind of story, feeling, who is in it and a lesson as the teacher's words. With the Oomba
+chat the card opens on `/library?make=1` asking only the rest (`companion.js storyBook`); without it the setup page
+opens on its choices with those picked. The book is an ordinary book in the teacher's cards.
+
 ## Who
 
-- **Make, edit, chat, print, share**: school staff and the platform admin (`canMake`). A guest, a banned account, a
-  family grown-up, a kid or a student gets the normal 404 from every page and API; signed out, the usual sign-in
+- **Make, edit, chat, print, share**: school staff and the platform admin (`canMake`). A family grown-up only while
+  `STORY_PICTURE_BOOKS` names `parent` (the owner: "Put it behind a feature flag for teacher and parent accounts for
+  now"): they make, edit, chat (the editor's own chat), read and print their own books; with no classes, Share with
+  classes is hidden and refused (`canShare`), and the fence opens only the book maker's paths, never `/library`. A guest,
+  a banned account, a grown-up the flag leaves out, a kid or a student gets the normal 404 from every page and API; signed out, the usual sign-in
   (pages) or 401 (APIs). Checked on the server in one middleware (`teacher` in the routes), not by hiding links.
 - **Read**: the book's owner (Preview) and the students and teachers of a class it is shared with (`canRead`). Students
   see shared books on `/library` under "From your teacher". The AI never talks to students: their pages have no chat.
@@ -385,3 +398,4 @@ entry for the lawyer. Nothing a student does is sent to either.
 | `STORYBOOK_PICTURES_PLAN_PER_DAY` / `STORYBOOK_PICTURES_FREE_PER_DAY` | `40` / `10` | Pictures a teacher may have drawn a UTC day, with / without the Teacher plan. |
 | `STORYBOOK_DRAW_AT_ONCE` | `2` | Pictures drawn at the same time, in this process (1 to 8); 1 for 10 minutes after a 429. |
 | `STORYBOOK_ILLUSTRATOR` | unset | `packs` forces the art-pack drawings even with a key. |
+| `STORY_PICTURE_BOOKS` | `teacher` | Who the Story Builder hands picture books to this book maker for (`teacher`, `parent`, `teacher,parent`, `0`); with `parent`, family grown-ups may use the book maker. Kids and students never. |

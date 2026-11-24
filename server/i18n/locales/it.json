@@ -9212,6 +9212,22 @@
     "teachersP": "Le pause attive sono separate dai corsi, quindi può usarne una tra una lezione e l’altra. In due posizioni il video si ferma 10 secondi su «Tocca a te», così la classe fa la posizione invece di guardarla soltanto."
   },
   "stories": {
+    "make": {
+      "h": "Che cosa vuoi creare?",
+      "video": "Storia video",
+      "videoText": "Un video narrato in un mondo di feltro e carta.",
+      "book": "Libro illustrato",
+      "bookText": "Oomba lo scrive e dipinge un’immagine per ogni pagina.",
+      "cyoa": "Libro illustrato: scegli la tua avventura",
+      "cyoaText": "Un libro illustrato in cui chi legge sceglie dove va la storia.",
+      "note": "Il creatore di libri fa ancora qualche domanda, poi ti mostra esattamente cosa verrà inviato. Non si crea nulla finché non lo dici tu.",
+      "go": "Continua nel creatore di libri"
+    },
+    "book": {
+      "feel": "Tipo di storia: {kind}. Atmosfera: {feel}.",
+      "who": "Chi c’è: {text}",
+      "lesson": "Una lezione da imparare: {text}"
+    },
     "title": "Crea storie",
     "h": "Crea storie della buonanotte",
     "sub": "Scrivi un’idea e ricevi un tenero video con una storia della buonanotte: un mondo di feltro e carta, una voce calma, la musica di un carillon e le parole sullo schermo.",
@@ -14157,6 +14173,7 @@
       "none": "Senza immagini"
     },
     "chat": {
+      "fromStory": "Ecco il tuo libro da Crea storie. Ho già inserito quello che hai scelto; rispondi al resto sulla scheda.",
       "hello": "Facciamo un libro.",
       "noTheme": "Nessun tema",
       "contextAi": "Scrivi le tue idee nel riquadro qui sotto e inviale, oppure allega file e immagini con la graffetta. Vanno nel tuo libro, non nella chat. Poi Oomba ti mostra esattamente cosa verrà inviato.",

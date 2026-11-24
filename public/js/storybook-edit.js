@@ -328,7 +328,7 @@ document.addEventListener('submit', async e => {
 $('sb-add').addEventListener('click', () => { const p = addPage(); if (!p) return; sel = p.id; drawAll(); changed(); $('sb-page-h').focus(); });
 
 // ---------------------------------------------------------------- share, delete
-$('sb-share').addEventListener('click', () => {
+$('sb-share')?.addEventListener('click', () => {
   if (!D.classes.length) { toast(t('js.storybook-edit.noClasses'), { bad: true }); return; }
   const s = sheet({ title: `📌 ${t('js.storybook-edit.shareTitle')}`, content: `<p class="muted">${esc(t('js.storybook-edit.shareLead'))}</p>
     <form id="sb-shareform" class="sb-shareform"><fieldset><legend class="sr-only">${esc(t('js.storybook-edit.shareTitle'))}</legend>${D.classes.map(c => `<label class="sb-check"><input type="checkbox" name="c" value="${esc(c.id)}"${shared.includes(c.id) ? ' checked' : ''}> <span dir="auto">${esc(c.name)}</span></label>`).join('')}</fieldset>

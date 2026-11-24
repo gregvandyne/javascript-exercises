@@ -73,3 +73,9 @@ services:
         sync: false
       - key: STORYBOOK_IMAGE_MODEL
         value: gemini-3.1-flash-image
+      # Picture books in the Story Builder (docs/story-builder.md "Picture books"): who /stories/new offers "Illustrated
+      # picture book" and "Choose-your-own-adventure picture book" (a hand-off to the book maker). The owner: "Keep it to
+      # just teachers right now." "teacher,parent" adds family grown-ups (they then may use the book maker, without
+      # classes to share with); "0" offers nobody. Kids and students never, whatever it says.
+      - key: STORY_PICTURE_BOOKS
+        value: teacher

@@ -7,6 +7,9 @@
 //   GET  /api/stories/:id          { status, progress, error, remake } for the progress page
 //   POST /api/stories              { idea, ageBand, seconds, style, tone, voice, music, characters, lesson } -> { id } | 4xx { error, code }
 //   POST /api/stories/voice-sample { voice }  -> { u } a fixed sample line in that narrator voice (cached; AI voice on only)
+//   POST /api/stories/book         { make: 'book' | 'cyoa', idea, ageBand, length, style, tone, characters, lesson }
+//                                  -> { href, setup? } the hand-off to the book maker (docs/story-builder.md "Picture books":
+//                                  STORY_PICTURE_BOOKS; teachers, and grown-ups when the flag says so; never kids or students)
 //   POST /api/stories/:id/remake   { title, lines: [[say per line] per scene], voice, music }   a quick change (no new pictures)
 //   POST /api/stories/:id/rewrite  { note, style, tone }   Claude writes it again (counts like a new story)
 //   POST /api/stories/:id/(share|unshare|approve|decline|retry|delete|remake-retry|remake-dismiss)
@@ -32,6 +35,9 @@ import { STYLES, TONES, MUSIC, NARRATORS, TEXT_LIMITS, DEFAULTS, choiceFields, e
 import { planRemake, cachedClips, clipDir, sceneKey } from '../stories/remake.js';
 import { sceneVisuals, QUALITY } from '../stories/pipeline.js';
 import { log } from '../services/log.js';
+import * as SB from '../services/storybook.js';
+import * as BK from '../services/companion-book.js';
+import * as CO from '../services/companion.js';
 
 export const router = Router();
 const CSS = raw('<link rel="stylesheet" href="/css/stories.css">');
@@ -103,15 +109,29 @@ router.get('/stories', requireBuilder, (req, res) => {
   page(req, res, { active: 'stories', title: t('stories.title'), body, head: CSS, description: t('stories.sub') });
 });
 
+/** What to make (docs/story-builder.md "Picture books"): the video, or a hand-off to the book maker. Only shown to someone
+ *  STORY_PICTURE_BOOKS lets have the picture books (storybook.js pictureBooksFor); everyone else sees the form as before. */
+const MAKES = { video: '🎬', book: '🖼️', cyoa: '🔀' };
+function makeChoice(t) {
+  return html`<fieldset class="sb-choices sb-make" id="sb-make"><legend>${t('stories.make.h')}</legend>
+    <div class="sb-chips">${Object.entries(MAKES).map(([k, e]) => html`<span class="sb-choice">
+      <input type="radio" class="sr-only" name="make" id="sb-make-${k}" value="${k}"${k === 'video' ? raw(' checked') : ''} aria-describedby="sb-make-${k}-s">
+      <label for="sb-make-${k}"><span class="sb-emo" aria-hidden="true">${ico(e, { size: 40 })}</span><span class="sb-lbl">${t(`stories.make.${k}`)}</span>
+        <span class="sb-sub" id="sb-make-${k}-s">${t(`stories.make.${k}Text`)}</span></label>
+    </span>`)}</div></fieldset>`;
+}
+
 router.get('/stories/new', requireBuilder, (req, res) => {
   const t = req.t, u = req.user;
   const left = Math.max(0, J.dailyLimit(u) - J.usedToday(u));
   const samples = samplesOn(req);
+  const books = SB.pictureBooksFor(u);
   const body = html`
   <div class="sb-wrap">
     <h1>${t('stories.new')}</h1>
     <p class="lead">${t('stories.sub')}</p>
-    <form class="panel sb-form" id="sb-form" novalidate>
+    <form class="panel sb-form${books ? ' sb-can-book' : ''}" id="sb-form" novalidate>
+      ${books ? makeChoice(t) : ''}
       <div class="field"><label for="sb-idea">${t('stories.form.idea')}</label>
         <textarea class="input" id="sb-idea" name="idea" maxlength="${LIMITS.idea}" rows="4" required aria-describedby="sb-hint sb-kit"></textarea>
         <span class="hint" id="sb-hint">${t('stories.form.ideaHint')}</span>
@@ -119,9 +139,11 @@ router.get('/stories/new', requireBuilder, (req, res) => {
         <span class="err" id="sb-err" role="alert"></span></div>
       ${choices(t, { name: 'style', legend: t('stories.form.styleH'), list: STYLES, current: DEFAULTS.style, keyOf: styleKey })}
       ${choices(t, { name: 'tone', legend: t('stories.form.toneH'), list: TONES, current: DEFAULTS.tone, keyOf: toneKey })}
+      <div data-video-only>
       ${choices(t, { name: 'voice', legend: t('stories.form.voiceH'), list: NARRATORS, current: DEFAULTS.voice, keyOf: voiceKey, samples })}
       ${samples ? html`<p class="small muted sb-ai">${t('stories.form.voiceAi')}</p>` : ''}
       ${choices(t, { name: 'music', legend: t('stories.form.musicH'), list: MUSIC, current: musicFor(DEFAULTS.style), keyOf: musicKey })}
+      </div>
       <details class="sb-more"><summary>${t('stories.form.more')}</summary>
         <div class="field"><label for="sb-chars">${t('stories.form.charsLabel')}</label>
           <input class="input" id="sb-chars" name="characters" maxlength="${TEXT_LIMITS.characters}" autocomplete="off" aria-describedby="sb-chars-hint">
@@ -132,15 +154,18 @@ router.get('/stories/new', requireBuilder, (req, res) => {
         <div class="row sb-opts">
           <div class="field"><label for="sb-age">${t('stories.form.age')}</label>
             <select class="input" id="sb-age" name="ageBand">${['all', ...AGE_BANDS.filter(a => a !== 'all')].map(a => html`<option value="${a}">${t(AGE_KEYS[a])}</option>`)}</select></div>
-          <div class="field"><label for="sb-len">${t('stories.form.length')}</label>
+          <div class="field" data-video-only><label for="sb-len">${t('stories.form.length')}</label>
             <select class="input" id="sb-len" name="seconds">${LENGTHS.map(n => html`<option value="${n}"${n === 60 ? raw(' selected') : ''}>${t('stories.form.seconds', { n })}</option>`)}</select></div>
+          ${books ? html`<div class="field" data-book-only hidden><label for="sb-blen">${t('stories.form.length')}</label>
+            <select class="input" id="sb-blen" name="length">${SB.LENGTHS.map(l => html`<option value="${l}"${l === 'short' ? raw(' selected') : ''}>${t(`storybook.lengths.${l}`)}</option>`)}</select></div>` : ''}
         </div>
       </details>
       <p class="small muted">${t('stories.form.safety')}</p>
-      <p class="small muted">${left ? t('stories.form.left', { count: left }) : t('stories.form.none')}</p>
-      <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left ? '' : raw(' disabled')}>${ico('✨', { size: 18 })} ${t('stories.form.make')}</button>
+      <p class="small muted" data-video-only>${left ? t('stories.form.left', { count: left }) : t('stories.form.none')}</p>
+      ${books ? html`<p class="small muted sb-booknote" data-book-only hidden>${ico('📚', { size: 18 })} ${t('stories.make.note')}</p>` : ''}
+      <button class="btn btn-primary btn-big" type="submit" id="sb-go"${left || books ? '' : raw(' disabled')} data-left="${left ? '1' : '0'}"><span data-video-only>${ico('✨', { size: 18 })} ${t('stories.form.make')}</span>${books ? html`<span data-book-only hidden>${ico('📚', { size: 18 })} ${t('stories.make.go')}</span>` : ''}</button>
     </form>
-    ${jsonData('page-data', { musicFor: Object.fromEntries(Object.keys(STYLES).map(k => [k, musicFor(k)])) })}
+    ${jsonData('page-data', { musicFor: Object.fromEntries(Object.keys(STYLES).map(k => [k, musicFor(k)])), books })}
   </div>`;
   page(req, res, { active: 'stories', title: t('stories.new'), body, head: CSS, scripts: ['/js/stories.js'], back: '/stories', backLabel: t('stories.mine') });
 });
@@ -316,6 +341,29 @@ router.post('/api/stories', requireBuilder, rateLimit('stories', 12, 3600e3), as
   if (!r.ok) return res.status(r.code === 'limit' ? 429 : 503).json({ code: r.code, error: t(r.code === 'limit' ? 'stories.form.none' : 'stories.busy') });
   log('info', 'story queued', { id: r.story.id, seconds: f.seconds, age: f.ageBand, style: c.style, tone: c.tone, voice: c.voice, music: c.music });
   res.json({ id: r.story.id });
+});
+
+// The hand-off to the book maker (docs/story-builder.md "Picture books"): what the Story Builder knows becomes the book
+// maker's first answers (companion-book.js fromStory). With the Oomba chat, a card in that chat that asks only the rest
+// (companion.js storyBook; the library opens it: /library?make=1); without it, the setup page's own steps with these
+// picked (the page keeps them in sessionStorage). Nothing goes to an AI here: the book maker's check shows exactly what
+// will be sent, after its scrubber and screening, and makes nothing until the teacher says so. Kids and students: 404,
+// whatever STORY_PICTURE_BOOKS says (storybook.js canMake never lets them in).
+router.post('/api/stories/book', requireBuilder, rateLimit('stories-book', 30, 3600e3), (req, res) => {
+  const t = req.t, u = req.user, b = req.body || {};
+  if (!SB.pictureBooksFor(u)) return res.status(404).json({ code: 'notFound', error: t('errors.api.notFound') });
+  const kind = { book: 'linear', cyoa: 'cyoa' }[b.make];
+  if (!kind) return res.status(400).json({ code: 'make', error: t('js.stories.failed') });
+  const f = requestFields(b), c = choiceFields(b), x = extraFields(b);
+  if (f.idea.length < 3) return res.status(422).json({ code: 'empty', error: t('stories.form.needIdea') });
+  const input = BK.fromStory({ kind, ...f, length: b.length, style: c.style, tone: c.tone, ...x }, t);
+  log('info', 'story to book', { kind, age: f.ageBand, length: input.length, chat: !!CO.companionFor(u) });
+  if (CO.companionFor(u)) {
+    const r = CO.storyBook(u, { lang: req.locale || 'en', input });
+    if (!r.ok) return res.status(r.code === 'chatBusy' ? 409 : 404).json({ code: r.code, error: t(r.code === 'chatBusy' ? 'js.companion.err.chatBusy' : 'errors.api.notFound') });
+    return res.json({ href: '/library?make=1' });
+  }
+  res.json({ href: '/library/make', setup: BK.pageSetup(input) });
 });
 
 // A narrator's sample: one fixed line per language (stories.voiceSample), so each voice is made once and then kept
