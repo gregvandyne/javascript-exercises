@@ -74,6 +74,8 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
   const word = (key, en) => (typeof P[key] === 'string' && P[key] ? P[key] : usEn ? usSpelling(en) : en);
   const fill = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
   const name = cc => word(`name.${cc}`, by[cc].name), capital = cc => word(`cap.${cc}`, by[cc].cap), famous = cc => word(`fam.${cc}`, by[cc].fam);
+  // the key gives a capital with its note where the seat of government differs or the status is disputed (D.CAPNOTE)
+  const capKey = cc => (D.CAPNOTE && D.CAPNOTE[cc] ? `${capital(cc)} (${word(`capnote.${cc}`, D.CAPNOTE[cc])})` : capital(cc));
   const cont = cc => word(CONT[by[cc].reg], CONT[by[cc].reg]);
   const region = doc.r === 'world' ? word('Whole world', 'Whole world') : CONT[doc.r] ? word(CONT[doc.r], CONT[doc.r]) : t(`play.printAtlas.region.${doc.r}`);
   // "Map of the Caribbean": the world and the two regions that aren't continents have their own words in each language
@@ -95,7 +97,7 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
     if (x[0] === 'cont') return esc(fill(word('Which continent is {name} in?', 'Which continent is {name} in?'), { name: name(cc) }));
     return esc(t('play.printAtlas.fam', { thing: famous(cc) }));
   };
-  const answer = x => (x[0] === 'own' ? x[2] : x[0] === 'cap' ? capital(x[1]) : x[0] === 'cont' ? cont(x[1]) : name(x[1]));
+  const answer = x => (x[0] === 'own' ? x[2] : x[0] === 'cap' ? capKey(x[1]) : x[0] === 'cont' ? cont(x[1]) : name(x[1]));
   const lines = Object.keys(nums).filter(cc => !co[cc]);
   const foot = `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span>${code ? `<span>${esc(t('play.print.code', { code }))}</span>` : ''}${link ? `<span dir="ltr" class="cwp-link">${esc(link)}</span>` : ''}</footer>`;
   const mapPart = showMap ? `<section class="atp-mapsec">
