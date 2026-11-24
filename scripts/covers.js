@@ -49,9 +49,13 @@ const RECIPES = {
     await wait(800);
   } },
   'happy-putt': { viewport: PORTRAIT, async prep(f) { await hook(f); await f.evaluate(() => window.__brbTest.start({ players: 1 })); await f.evaluate(() => { window.__brbTest.skipAnimations(); window.__brbTest.loadHole(3); }); await wait(1800); } },
-  'castle-clash': { viewport: PORTRAIT, async prep(f) {
-    await hook(f); await f.evaluate(() => window.__brbTest.start({ mode: 'two' })); await f.evaluate(() => window.__brbTest.skipAnimations && window.__brbTest.skipAnimations());
-    for (const m of ['e4', 'e5', 'Nf3', 'Nc6', 'Bc4', 'Bc5', 'c3', 'Nf6']) await f.evaluate(m => window.__brbTest.move(m), m);
+  'castle-clash': { viewport: PORTRAIT, async prep(f) {   // a game against Oomba Bot a few moves in, on the Meadow board
+    await hook(f);
+    await f.evaluate(async () => {
+      const T = window.__brbTest; T.skipAnimations(true); T.seed(4); T.start({ mode: 'robot', level: 'knight', side: 'w' });
+      for (const m of ['e4', 'Nf3', 'Nc3', 'd4']) { const r = await T.move(m, { waitRobot: true }); if (!r.ok) break; }
+      T.skipAnimations(false);
+    });
     await wait(900);
   } },
   'brick-drop': { viewport: PORTRAIT, touch: true, async prep(f) {
