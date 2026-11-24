@@ -5714,6 +5714,26 @@
       "started": "Started",
       "none": "Not started"
     },
+    "typing": {
+      "title": "Typing Pets",
+      "started": "{started} of {total} students have typed",
+      "lessons": "Lessons",
+      "next": "Up next",
+      "speed": "Best speed",
+      "acc": "Accuracy",
+      "tricky": "Tricky keys",
+      "pets": "Pets",
+      "time": "Time typing",
+      "last": "Last typed",
+      "lessonN": "Lesson {n}",
+      "allDone": "All done",
+      "wpm": "{n} wpm",
+      "minutes": "{n} min",
+      "missed": "Missed {pct}% of the time",
+      "notYet": "Not started yet",
+      "note": "From each student's own Typing Pets progress, practice at home included. Speed is words a minute (wpm); accuracy is the average of their best lessons. Tricky keys are the ones they miss most.",
+      "assign": "Assign a typing lesson"
+    },
     "courses": {
       "status": "Status",
       "steps": "Steps done",
@@ -7229,7 +7249,8 @@
       "sumSpotter": "Spot the number that two others add up to (or multiply to make), from sums to 10 to times tables, with a 60-second Rush.",
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
       "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
-      "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it."
+      "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it.",
+      "typingPets": "Learn to type one key at a time, with colors for each finger: 20 short lessons from the home row to sentences, and an egg to crack with a new pet after every lesson."
     },
     "hubs": {
       "math": {
