@@ -1209,3 +1209,6 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .mypoints .mp-list li .fx,.mypoints .mp-list li img{align-self:center}
 .mypoints .mp-list small{font-size:.78rem}
 .mypoints .mp-note{margin:var(--s3) 0 0;display:flex;align-items:center;gap:6px}
+
+/* Class progress, Typing Pets panel: a student's tricky keys drawn as little keycaps. */
+.ty-key { display: inline-block; min-width: 1.7em; padding: .1em .4em; border: 1px solid var(--line, #ddd); border-bottom-width: 3px; border-radius: 6px; background: var(--card, #fff); font: 700 .95em/1.3 ui-monospace, Menlo, Consolas, monospace; text-align: center; text-transform: uppercase; }

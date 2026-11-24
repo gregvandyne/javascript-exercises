@@ -97,7 +97,7 @@ test('Hero of Sunvale speaks every line with the role the warm-up and the server
     'atlas-quest', 'atlas-quest-live', 'balance-bridge', 'beat-lanes', 'brain-board', 'brick-drop', 'castle-clash', 'code-isle',
     'connect-four', 'crate-stacker', 'escape-the-post-office', 'footy-tycoon', 'fraction-factory', 'garden-count', 'gulp-city', 'happy-putt', 'kitchen-rush', 'lantern-mix', 'lily-hop', 'loop-lab', 'machine-line', 'munch-maze',
     'quest-race', 'question-battle', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'ring-rumble', 'rocket-supply', 'scale-scout', 'keep-builder', 'launch-lab', 'shape-hunt', 'shark-plank', 'sky-lines', 'sub-zero', 'sudoku', 'sum-spotter', 'sum-racer', 'swish-flick', 'trick-inbox', 'tug-of-math',
-    'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'word-trail', 'algebra-builder', 'box-by-box', 'crossword', 'mistake-hunt', 'jungle-cup']);
+    'word-hunt', 'word-peek', 'would-you-rather', 'would-you-rather-live', 'doodle-hoot', 'word-trail', 'algebra-builder', 'box-by-box', 'crossword', 'mistake-hunt', 'typing-pets', 'jungle-cup']);
 });
 
 test('the CS Quest games use AI voices for their own language-pack lines only', () => {

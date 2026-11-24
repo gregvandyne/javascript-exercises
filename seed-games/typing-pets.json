@@ -1,0 +1,28 @@
+{
+  "slug": "typing-pets",
+  "title": "Typing Pets",
+  "icon": "🥚",
+  "cover": "meadow",
+  "category": "learning",
+  "shelf": "learn",
+  "tags": "typing,keyboarding,touch typing,keyboard,home row,typing practice,typing lessons,computer skills,fingers,pets,elementary,grade 1,grade 2,grade 3,grade 4,grade 5",
+  "description": "Learn to type one key at a time. Twenty short lessons, starting with F and J on the home row and building up to sentences, with colors that show which finger to use. Finish a lesson and you get an egg to crack, with a new pet inside. Get 3 stars for a golden egg and a shiny pet. There are 40 pets to collect.",
+  "orientation": "any",
+  "players_max": 1,
+  "age_rating": "everyone",
+  "featured": true,
+  "notes": "Plain DOM game (no kit). Twenty lessons in four units (home row, top row, bottom row, big letters and sentences), each adding keys to the ones before; every lesson is 3 lines of 34 characters made from the allowed keys (letter drills, then real words and sentences). The next key is lit on an on-screen US QWERTY keyboard colored by finger, with the finger named under the line; the keys can be tapped, so it also works on a tablet. A wrong key shakes the line and must be fixed before moving on; it counts once per letter. Stars by accuracy: 3 at 95% or better, 2 at 85%, else 1. Speed is words a minute (5 characters a word, capped at 200). Each finished lesson gives an egg to crack (tap it 4 times); a 3-star lesson gives a golden egg and a shiny pet. 40 pets; once all are found, eggs make pets shiny. Lessons unlock in order. Saved in BRB.storage key 'typing-pets-v1': per lesson best stars, best speed, best accuracy, tries and the last result; the pets; hits and misses per key; total seconds typed. Teachers see this in the class progress page (server/services/typing.js reads the saves). BRB.params chapter=l01..l20 with lock=1 opens just that lesson (a class lesson step); a finished lesson submits the speed as the score with the accuracy and stars in the label, then BRB.gameOver. window.__brbTest: lesson, type, typeAll, crackAll, pets, lessons, save.",
+  "l10n": {
+    "es": { "title": "Mascotas Teclado", "description": "Aprende a escribir con el teclado, tecla a tecla. Veinte lecciones cortas, desde la F y la J hasta frases, con colores que muestran qué dedo usar. Al terminar cada lección rompes un huevo con una mascota nueva dentro. Hay 40 mascotas para coleccionar.", "tags": "mecanografía,teclado,escribir,dedos,práctica,mascotas,primaria" },
+    "fr": { "title": "Animaux Clavier", "description": "Apprends à taper au clavier, une touche à la fois. Vingt petites leçons, de F et J jusqu’aux phrases, avec des couleurs qui montrent quel doigt utiliser. À la fin de chaque leçon, tu casses un œuf avec un nouvel animal dedans. 40 animaux à collectionner.", "tags": "dactylographie,clavier,taper,doigts,entraînement,animaux,primaire" },
+    "de": { "title": "Tipp-Tiere", "description": "Lerne Tippen, eine Taste nach der anderen. Zwanzig kurze Lektionen von F und J bis zu Sätzen, mit Farben, die zeigen, welcher Finger dran ist. Nach jeder Lektion knackst du ein Ei mit einem neuen Tier darin. 40 Tiere zum Sammeln.", "tags": "Tippen,Tastatur,Zehnfingersystem,Finger,Üben,Tiere,Grundschule" },
+    "it": { "title": "Cuccioli Tastiera", "description": "Impara a scrivere con la tastiera, un tasto alla volta. Venti brevi lezioni, dalla F e la J fino alle frasi, con i colori che mostrano quale dito usare. Alla fine di ogni lezione rompi un uovo con un nuovo cucciolo dentro. 40 cuccioli da collezionare.", "tags": "dattilografia,tastiera,scrivere,dita,allenamento,cuccioli,scuola primaria" },
+    "pt": { "title": "Bichinhos do Teclado", "description": "Aprenda a digitar, uma tecla de cada vez. Vinte lições curtas, do F e J até frases, com cores que mostram qual dedo usar. No fim de cada lição você quebra um ovo com um bichinho novo dentro. São 40 bichinhos para colecionar.", "tags": "digitação,teclado,digitar,dedos,treino,bichinhos,ensino fundamental" },
+    "nl": { "title": "Typdieren", "description": "Leer typen, één toets tegelijk. Twintig korte lessen, van F en J tot zinnen, met kleuren die laten zien welke vinger je gebruikt. Na elke les tik je een ei open met een nieuw dier erin. 40 dieren om te verzamelen.", "tags": "typen,toetsenbord,blind typen,vingers,oefenen,dieren,basisschool" },
+    "ru": { "title": "Питомцы клавиатуры", "description": "Учись печатать по одной клавише. Двадцать коротких уроков, от F и J до предложений, с цветами, которые показывают, каким пальцем нажимать. После каждого урока разбей яйцо, а внутри новый питомец. 40 питомцев для коллекции.", "tags": "печать,клавиатура,слепая печать,пальцы,тренировка,питомцы,начальная школа" },
+    "ja": { "title": "タイピングペット", "description": "キーをひとつずつおぼえてタイピングを学ぼう。FとJから文まで、20のみじかいレッスン。どのゆびを使うかは色でわかるよ。レッスンが終わるとたまごをわって、新しいペットが生まれます。ペットは40ひき。", "tags": "タイピング,キーボード,ブラインドタッチ,ゆび,れんしゅう,ペット,小学生" },
+    "zh-Hant": { "title": "打字寵物", "description": "一次學一個鍵，學會打字。從 F 和 J 到句子，共二十個短課程，用顏色告訴你該用哪根手指。每完成一課就能敲開一顆蛋，裡面有新寵物。共有 40 隻寵物可以收集。", "tags": "打字,鍵盤,盲打,手指,練習,寵物,小學" },
+    "ar": { "title": "حيوانات الكتابة", "description": "تعلّم الكتابة على لوحة المفاتيح مفتاحًا بعد مفتاح. عشرون درسًا قصيرًا من F وJ حتى الجمل، مع ألوان تبيّن أي إصبع تستخدم. بعد كل درس تكسر بيضة فيها حيوان أليف جديد. هناك 40 حيوانًا لتجمعها.", "tags": "كتابة,لوحة المفاتيح,الكتابة باللمس,أصابع,تدريب,حيوانات,ابتدائي" },
+    "he": { "title": "חיות מקלדת", "description": "לומדים להקליד, מקש אחרי מקש. עשרים שיעורים קצרים, מ-F ו-J ועד משפטים, עם צבעים שמראים באיזו אצבע להשתמש. בסוף כל שיעור שוברים ביצה ובתוכה חיה חדשה. יש 40 חיות לאסוף.", "tags": "הקלדה,מקלדת,הקלדה עיוורת,אצבעות,תרגול,חיות,יסודי" }
+  }
+}

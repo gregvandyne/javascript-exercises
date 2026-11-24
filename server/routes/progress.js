@@ -37,6 +37,7 @@ import { sanitizeGameHtml } from '../services/sanitize.js';
 import * as R from '../services/rubrics.js';
 import { scoreFields, scoreInput, resultView, totalText } from '../views/rubrics.js';
 import * as SC from '../services/scores.js';
+import * as TY from '../services/typing.js';
 import { router as studentRoutes, studentHref } from './student-report.js';
 import { storyResults } from './library.js';
 import * as LIB from '../services/library.js';
@@ -217,6 +218,24 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
+  // Typing Pets: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
+  // free play counts too. Shown once a student in this class has finished a typing lesson.
+  const typing = gb.students.length ? TY.classTyping(gb.students) : null;
+  const typingStarted = typing ? typing.rows.filter(r => r.typing).length : 0;
+  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}</span></summary>
+    <div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.typing.title')}"><table class="tbl gradebook cptable" id="typing-table">
+      <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.typing.lessons')}</th><th scope="col">${t('progress.typing.next')}</th><th scope="col">${t('progress.typing.speed')}</th><th scope="col">${t('progress.typing.acc')}</th><th scope="col">${t('progress.typing.tricky')}</th><th scope="col">${t('progress.typing.pets')}</th><th scope="col">${t('progress.typing.time')}</th><th scope="col">${t('progress.typing.last')}</th></tr></thead>
+      <tbody>${typing.rows.map(({ user, typing: x }) => html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(user, 28)}${staffStudentName(user, { href: studentHref(c, user) })}</span></th>
+        ${x ? html`<td data-label="${t('progress.typing.lessons')}"><span class="gb-num" dir="ltr">${x.done}/${x.total}</span>${bar(x.done, x.total)}<span class="small muted cp-band" dir="ltr">★ ${x.stars}/${x.done * 3}</span></td>
+          <td data-label="${t('progress.typing.next')}">${x.next ? t('progress.typing.lessonN', { n: x.next }) : html`${ico('✅', { size: 18 })} ${t('progress.typing.allDone')}`}</td>
+          <td data-label="${t('progress.typing.speed')}"><span dir="ltr">${t('progress.typing.wpm', { n: x.bestWpm })}</span></td>
+          <td data-label="${t('progress.typing.acc')}"><span dir="ltr">${x.acc}%</span></td>
+          <td data-label="${t('progress.typing.tricky')}">${x.tricky.length ? html`<span dir="ltr">${x.tricky.map((k, i) => html`${i ? ' ' : ''}<kbd class="ty-key" title="${t('progress.typing.missed', { pct: k.pct })}">${k.key}</kbd>`)}</span>` : html`<span class="muted">–</span>`}</td>
+          <td data-label="${t('progress.typing.pets')}"><span dir="ltr">${x.pets}</span></td>
+          <td data-label="${t('progress.typing.time')}"><span dir="ltr">${t('progress.typing.minutes', { n: x.minutes })}</span></td>
+          <td data-label="${t('progress.typing.last')}">${x.last ? f.day(x.last, SHORT) : '–'}</td>`
+          : html`<td colspan="8" class="muted">${t('progress.typing.notYet')}</td>`}</tr>`)}</tbody></table></div>
+    <p class="small muted">${t('progress.typing.note')}${!c.archived_at && S.teaches(req.user, c.id) ? html` <a href="/teach/assign?id=${typing.game.id}&amp;class=${c.id}">${t('progress.typing.assign')}</a>` : ''}</p></details>` : '';
   // Oomba Live: the class's recent live games (results open from here; students' scores are in the saved run).
   // Part 3: a team row for team runs, "Teams for live games" (the class teams editor: live-class-teams.js) and, with
   // LIVE_SAVE_SUPPORT, how many students have saved support (counts only here) with Clear.
@@ -242,8 +261,8 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
       <form class="lv-inline" data-api="/api/live/classes/${c.id}/support" data-method="DELETE" data-reload data-confirm="${t('live.support.clearConfirm')}"><button class="btn btn-sm" type="submit">${t('live.support.clear')}</button><p class="err form-err" aria-live="polite"></p></form></section>` : ''}
   </section>` : '';
   // Jump chips to the sections below the gradebook (only the ones on this page).
-  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
+  const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), typingPanel ? ['typing', `⌨️ ${t('progress.typing.title')}`] : null, livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${typingPanel}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
 });
 
 /** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Work done (the same

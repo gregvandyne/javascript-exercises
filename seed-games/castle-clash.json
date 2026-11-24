@@ -5,57 +5,57 @@
   "cover": "night",
   "category": "board",
   "shelf": "learn",
-  "tags": "chess,strategy,2 player,robot,learn chess,puzzles,board game,sun and moon,owl,online",
-  "description": "Real chess between the Sun Kingdom and the Moon Kingdom, with friendly pieces that blink and cheer. Play Wizard Hoot the owl robot at four levels, play a friend on one screen or online (invite a friend or share a code), learn every piece in short lessons, and solve 24 checkmate puzzles.",
+  "tags": "chess,strategy,2 player,robot,learn chess,puzzles,puzzle rush,daily puzzle,board game,online",
+  "description": "Real chess on a clean, modern board. Play Oomba Bot at four levels, play a friend on one screen or online, learn every piece in short lessons, and train with more than 4,000 rated puzzles from the Lichess database: theme packs, a daily puzzle and Puzzle Rush. Watch your puzzle rating, streaks and skills grow on your own progress page.",
   "orientation": "any",
   "players_max": 2,
   "age_rating": "everyone",
   "featured": true,
-  "notes": "Complete chess rules (castling, en passant, promotion picker, check, checkmate, stalemate, threefold repetition, fifty-move rule, insufficient material) with SAN move list; the move generator matches the standard perft counts (window.__brbTest.perft). The robot searches in short time slices with setTimeout (no Web Worker under the frame CSP) so the page never freezes. Saves settings, robot wins, lesson stars and solved puzzles in localStorage key 'castle-clash-v1' and the game in progress in 'castle-clash-game-v1' (both through the SDK storage shim). Leaderboard: BRB.score.submit(points, 'robot wins') with points = robot wins weighted Pawn 1, Knight 2, Bishop 4, Queen 8. Built on the Oomba Kit 1.1.1 (packs dress, art-biomes-2, art-props, art-animals): the castle theme's world behind the game, the kit's title (with the player's own avatar), pause screen, icons, buttons and font; Wizard Hoot is the kit's owl in a wizard hat and the two-player animals are kit characters, shown as head-and-shoulders busts in round frames tinted gold (Sun Kingdom) or blue (Moon Kingdom) with a sun or moon badge. The game draws its own sun, moon, jigsaw-piece and globe icons and the two-kingdom castles art (title badge, side panel on wide screens) in the kit's sticker style. After a robot win the results card waits 3 s so the site's New best note never covers its buttons. The board and pieces are the game's own canvas drawing. Online (BRB.match, a match frame from /play/castle-clash?match=<id>): the title's Play Online tile calls BRB.match.menu() (shown only when BRB.match exists); a match frame skips the title and waits for the page's 'go' (names, the other player's character, every event so far), then both frames run the same rules and relay numbers only: mv {g, n, f, t, p} (game index, ply, 0x88 from/to, promotion 0-4) and act {g, a} (1 give up, 2 offer a tie, 3 yes, 4 no, 5 play again). Seat 0 plays the Sun Kingdom in even games. Online games are never saved locally (the page replays its history), have no undo, hints or clock, and the pause menu offers a tie, giving up and leaving (window.__brbTest.online: state, inject, sent, act).",
+  "notes": "Complete chess rules (castling, en passant, promotion picker, check, checkmate, stalemate, threefold repetition, fifty-move rule, insufficient material) with SAN move list; the move generator matches the standard perft counts (window.__brbTest.perft). Own UI, no kit: a DOM board (64 cells, pieces as elements that slide with CSS transforms), the game's own Staunton-style SVG piece set, three board themes (Meadow, Walnut, Ocean), last-move and check highlights, legal-move dots, drag and drop and tap to move, a hint arrow, rank and file letters, player panels with captured pieces and the material lead, clocks in two-player games. Chrome in the Oomba tokens (Bricolage Grotesque from Google Fonts). Oomba Bot (a drawn robot face) plays at four levels; the robot searches in short time slices with setTimeout (no Web Worker under the frame CSP). Puzzles: the 24 hand-made Beginner path puzzles plus 4,160 puzzles from the Lichess puzzle database (CC0) in eight packs by rating band, public/vendor/data/castle-clash/<version>/p<band>.js, each loaded on demand with a script tag and its sha384 (scripts/chess-puzzles.mjs downloads, filters, replays every puzzle with this file's engine and writes the packs and the checksums between the PUZZLE PACKS markers). Modes: rated puzzles near the player's rating (Elo-like, start 800), 15 theme packs, a daily puzzle, Puzzle Rush (3 minutes, 3 mistakes), hints (piece, then arrow), retry, an animated solution. Sounds: wooden piece sounds (move, capture, castle, check, promotion, illegal, right, wrong, game end) synthesized with WebAudio into buffers, played only while BRB.sfx is not muted (window.__brbTest.sounds()). Saves settings, robot wins, lesson stars, Beginner path stars and puzzle progress (rating history, solved, streaks, rush best, per-theme results, seen puzzle ids) in localStorage key 'castle-clash-v1' (v 2; a version 1 save is migrated) and the game in progress in 'castle-clash-game-v1' (both through the SDK storage shim). Leaderboard: BRB.score.submit(points, 'robot wins') with points = robot wins weighted Pawn 1, Knight 2, Bishop 4, Queen 8 (unchanged; the puzzle rating can go down, so it stays on the progress page). Online (BRB.match, a match frame from /play/castle-clash?match=<id>): the Play Online tile calls BRB.match.menu() (shown only when BRB.match exists); a match frame goes straight to the board and waits for the page's 'go' (names, every event so far), then both frames run the same rules and relay numbers only: mv {g, n, f, t, p} (game index, ply, 0x88 from/to, promotion 0-4) and act {g, a} (1 give up, 2 offer a draw, 3 yes, 4 no, 5 play again). Seat 0 plays White in even games. Online games are never saved locally, have no undo, hints or clock (window.__brbTest.online: state, inject, sent, act).",
   "l10n": {
     "pt": {
-      "description": "Xadrez de verdade entre o Reino do Sol e o Reino da Lua, com peças simpáticas que piscam e comemoram. Jogue contra o Mago Hoot, o robô coruja, em quatro níveis, jogue com um amigo na mesma tela ou online (convide um amigo ou use um código), aprenda cada peça em lições curtinhas e resolva 24 desafios de xeque-mate.",
-      "tags": "xadrez,estratégia,2 jogadores,robô,aprender xadrez,desafios,jogo de tabuleiro,sol e lua,coruja,online"
+      "description": "Xadrez de verdade num tabuleiro limpo e moderno. Jogue contra o Oomba Bot em quatro níveis, jogue com um amigo na mesma tela ou online, aprenda cada peça em lições curtinhas e treine com mais de 4.000 desafios do banco do Lichess: pacotes de temas, desafio do dia e Puzzle Rush. Veja sua pontuação, suas sequências e suas habilidades crescerem na página de progresso.",
+      "tags": "xadrez,estratégia,2 jogadores,robô,aprender xadrez,desafios,puzzle rush,desafio do dia,jogo de tabuleiro,online"
     },
     "fr": {
-      "description": "De vrais échecs entre le Royaume du Soleil et le Royaume de la Lune, avec des pièces sympas qui clignent des yeux et applaudissent. Affronte le magicien Hoot, le robot hibou, sur quatre niveaux, joue avec un ami sur le même écran ou en ligne (invite un ami ou partage un code), découvre chaque pièce en petites leçons et résous 24 énigmes d'échec et mat.",
-      "tags": "échecs,stratégie,2 joueurs,robot,apprendre les échecs,énigmes,jeu de plateau,soleil et lune,hibou,en ligne"
+      "description": "De vrais échecs sur un échiquier clair et moderne. Affronte Oomba Bot sur quatre niveaux, joue avec un ami sur le même écran ou en ligne, découvre chaque pièce en petites leçons et entraîne-toi avec plus de 4 000 énigmes classées de la base Lichess : packs de thèmes, énigme du jour et Puzzle Rush. Suis ton classement, tes séries et tes progrès sur ta page de progrès.",
+      "tags": "échecs,stratégie,2 joueurs,robot,apprendre les échecs,énigmes,puzzle rush,énigme du jour,jeu de plateau,en ligne"
     },
     "es": {
-      "description": "Ajedrez de verdad entre el Reino del Sol y el Reino de la Luna, con piezas simpáticas que parpadean y celebran. Juega contra el Mago Hoot, el robot búho, en cuatro niveles, juega con un amigo en la misma pantalla o en línea (invita a un amigo o comparte un código), aprende cada pieza en lecciones cortas y resuelve 24 problemas de jaque mate.",
-      "tags": "ajedrez,estrategia,2 jugadores,robot,aprender ajedrez,problemas,juego de mesa,sol y luna,búho,en línea"
+      "description": "Ajedrez de verdad en un tablero limpio y moderno. Juega contra Oomba Bot en cuatro niveles, juega con un amigo en la misma pantalla o en línea, aprende cada pieza en lecciones cortas y entrena con más de 4.000 problemas puntuados de la base de Lichess: paquetes de temas, problema del día y Puzzle Rush. Mira crecer tu puntuación, tus rachas y tus habilidades en tu página de progreso.",
+      "tags": "ajedrez,estrategia,2 jugadores,robot,aprender ajedrez,problemas,puzzle rush,problema del día,juego de mesa,en línea"
     },
     "de": {
-      "description": "Echtes Schach zwischen dem Sonnenreich und dem Mondreich, mit freundlichen Figuren, die zwinkern und jubeln. Spiel gegen Zauberer Hoot, den Eulen-Roboter, auf vier Stufen, spiel zu zweit an einem Bildschirm oder online (lade einen Freund ein oder teile einen Code), lerne jede Figur in kurzen Lektionen und löse 24 Schachmatt-Rätsel.",
-      "tags": "Schach,Strategie,2 Spieler,Roboter,Schach lernen,Rätsel,Brettspiel,Sonne und Mond,Eule,online"
+      "description": "Echtes Schach auf einem klaren, modernen Brett. Spiel gegen Oomba Bot auf vier Stufen, spiel zu zweit an einem Bildschirm oder online, lerne jede Figur in kurzen Lektionen und trainiere mit über 4.000 gewerteten Rätseln aus der Lichess-Datenbank: Themenpakete, Rätsel des Tages und Puzzle Rush. Auf deiner Fortschrittsseite siehst du Wertung, Serien und Können wachsen.",
+      "tags": "Schach,Strategie,2 Spieler,Roboter,Schach lernen,Rätsel,Puzzle Rush,Rätsel des Tages,Brettspiel,online"
     },
     "he": {
-      "description": "שחמט אמיתי בין ממלכת השמש לממלכת הירח, עם כלים חמודים שקורצים ומריעים. שחקו נגד הקוסם הוּט, רובוט הינשוף, בארבע רמות, שחקו עם חבר על אותו מסך או ברשת (הזמינו חבר או שתפו קוד), למדו כל כלי בשיעורים קצרים ופתרו 24 חידות מט.",
-      "tags": "שחמט,אסטרטגיה,2 שחקנים,רובוט,ללמוד שחמט,חידות,משחק לוח,שמש וירח,ינשוף,ברשת"
+      "description": "שחמט אמיתי על לוח נקי ומודרני. שחקו נגד Oomba Bot בארבע רמות, שחקו עם חבר על אותו מסך או ברשת, למדו כל כלי בשיעורים קצרים והתאמנו עם יותר מ־4,000 חידות מדורגות ממאגר Lichess: חבילות נושאים, חידה יומית ו־Puzzle Rush. בדף ההתקדמות תראו את הדירוג, הרצפים והכישורים שלכם גדלים.",
+      "tags": "שחמט,אסטרטגיה,2 שחקנים,רובוט,ללמוד שחמט,חידות,puzzle rush,חידה יומית,משחק לוח,ברשת"
     },
     "ja": {
-      "description": "たいようの王国とつきの王国がたたかう、ほんもののチェス。こまたちはまばたきしたり、おうえんしたりします。フクロウのロボット「まほうつかいフート」と4つのレベルでたいせんしたり、ひとつの画面やオンラインでともだちとあそんだり（ともだちをさそうか、コードをつかってね）、みじかいレッスンでぜんぶのこまをおぼえたり、24このチェックメイト・パズルにちょうせんしよう。",
-      "tags": "チェス,せんりゃく,ふたりであそぶ,ロボット,チェスをまなぶ,パズル,ボードゲーム,たいようとつき,フクロウ,オンライン"
+      "description": "すっきりしたモダンなばんで、ほんもののチェス。Oomba Bot と4つのレベルでたいせんしたり、ひとつの画面やオンラインでともだちとあそんだり、みじかいレッスンでこまをおぼえたり。Lichess のデータベースからえらんだ4,000もんいじょうのパズルで、テーマパック、きょうのパズル、Puzzle Rush にちょうせん。レーティングやれんぞくきろくがのびていくのを、きろくのページでたしかめよう。",
+      "tags": "チェス,せんりゃく,ふたりであそぶ,ロボット,チェスをまなぶ,パズル,パズルラッシュ,きょうのパズル,ボードゲーム,オンライン"
     },
     "ar": {
-      "description": "شطرنج حقيقي بين مملكة الشمس ومملكة القمر، مع قطع لطيفة ترمش وتهتف. العب مع الساحر هوت، الروبوت البومة، في أربعة مستويات، والعب مع صديق على شاشة واحدة أو عبر الإنترنت (ادعُ صديقًا أو شارك رمزًا)، وتعلّم كل قطعة في دروس قصيرة، وحلّ 24 لغز كش مات.",
-      "tags": "شطرنج,استراتيجية,لاعبان,روبوت,تعلم الشطرنج,ألغاز,لعبة لوحية,الشمس والقمر,بومة,عبر الإنترنت"
+      "description": "شطرنج حقيقي على لوحة نظيفة وحديثة. العب مع Oomba Bot في أربعة مستويات، والعب مع صديق على شاشة واحدة أو عبر الإنترنت، وتعلّم كل قطعة في دروس قصيرة، وتدرّب بأكثر من 4,000 لغز مقيّم من قاعدة Lichess: حزم مواضيع ولغز اليوم و Puzzle Rush. شاهد تقييمك وسلاسلك ومهاراتك تنمو في صفحة تقدّمك.",
+      "tags": "شطرنج,استراتيجية,لاعبان,روبوت,تعلم الشطرنج,ألغاز,puzzle rush,لغز اليوم,لعبة لوحية,عبر الإنترنت"
     },
     "ru": {
-      "description": "Настоящие шахматы между Солнечным и Лунным королевствами, с весёлыми фигурами, которые моргают и радуются. Играй с совой-роботом Волшебником Хутом на четырёх уровнях, играй с другом на одном экране или онлайн (позови друга или поделись кодом), узнай каждую фигуру на коротких уроках и реши 24 задачи на мат.",
-      "tags": "шахматы,стратегия,2 игрока,робот,учимся шахматам,задачи,настольная игра,солнце и луна,сова,онлайн"
+      "description": "Настоящие шахматы на чистой современной доске. Играй с Оомба Ботом на четырёх уровнях, играй с другом на одном экране или онлайн, изучи каждую фигуру на коротких уроках и тренируйся на более чем 4000 рейтинговых задачах из базы Lichess: темы, задача дня и Puzzle Rush. На странице успехов видно, как растут рейтинг, серии и умения.",
+      "tags": "шахматы,стратегия,2 игрока,робот,учимся шахматам,задачи,puzzle rush,задача дня,настольная игра,онлайн"
     },
     "it": {
-      "description": "Scacchi veri tra il Regno del Sole e il Regno della Luna, con pezzi simpatici che fanno l'occhiolino ed esultano. Sfida il Mago Hoot, il robot gufo, su quattro livelli, gioca con un amico sullo stesso schermo o online (invita un amico o condividi un codice), impara ogni pezzo con lezioni brevi e risolvi 24 enigmi di scacco matto.",
-      "tags": "scacchi,strategia,2 giocatori,robot,imparare gli scacchi,enigmi,gioco da tavolo,sole e luna,gufo,online"
+      "description": "Scacchi veri su una scacchiera pulita e moderna. Sfida Oomba Bot su quattro livelli, gioca con un amico sullo stesso schermo o online, impara ogni pezzo con lezioni brevi e allenati con oltre 4.000 enigmi con punteggio dal database di Lichess: pacchetti a tema, enigma del giorno e Puzzle Rush. Guarda crescere punteggio, serie e abilità nella tua pagina dei progressi.",
+      "tags": "scacchi,strategia,2 giocatori,robot,imparare gli scacchi,enigmi,puzzle rush,enigma del giorno,gioco da tavolo,online"
     },
     "zh-Hant": {
-      "description": "太陽王國和月亮王國之間真正的西洋棋，棋子會眨眼又會歡呼，超可愛！和貓頭鷹機器人「巫師呼特」挑戰四種等級，和朋友在同一個螢幕上或線上對戰（邀請朋友或分享代碼），用簡短的課程認識每一種棋子，還有 24 道將死謎題等你來解。",
-      "tags": "西洋棋,策略,雙人,機器人,學西洋棋,謎題,桌遊,太陽和月亮,貓頭鷹,線上"
+      "description": "在乾淨又現代的棋盤上下真正的西洋棋。和 Oomba Bot 挑戰四種等級,和朋友在同一個螢幕或線上對戰,用簡短的課程認識每一種棋子,還有來自 Lichess 資料庫的 4,000 多道計分謎題:主題包、每日謎題和 Puzzle Rush。在進度頁面看著你的積分、連勝和技巧一起成長。",
+      "tags": "西洋棋,策略,雙人,機器人,學西洋棋,謎題,puzzle rush,每日謎題,桌遊,線上"
     },
     "nl": {
-      "description": "Echt schaken tussen het Zonnerijk en het Maanrijk, met vrolijke stukken die knipogen en juichen. Speel tegen Tovenaar Hoot, de uilrobot, op vier niveaus, speel met een vriend op één scherm of online (nodig een vriend uit of deel een code), leer elk stuk in korte lessen en los 24 schaakmatpuzzels op.",
-      "tags": "schaken,strategie,2 spelers,robot,leren schaken,puzzels,bordspel,zon en maan,uil,online"
+      "description": "Echt schaken op een strak, modern bord. Speel tegen Oomba Bot op vier niveaus, speel met een vriend op één scherm of online, leer elk stuk in korte lessen en train met meer dan 4.000 puzzels met rating uit de Lichess-database: themapakketten, puzzel van de dag en Puzzle Rush. Op je voortgangspagina zie je je rating, reeksen en vaardigheden groeien.",
+      "tags": "schaken,strategie,2 spelers,robot,leren schaken,puzzels,puzzle rush,puzzel van de dag,bordspel,online"
     }
   }
 }
