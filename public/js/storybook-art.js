@@ -6,6 +6,11 @@
 //
 // The same spec always gives the same picture: a page's scenery slice comes from a hash of its page id and world, so a
 // world looks the same on every page that uses it, and a character is always the same sprite (the cast's art).
+//
+// While Oomba is still painting a page's picture (the picture model, services/storybook-draw.js), no art-pack drawing is
+// shown for it: paintingHtml is the calm "Oomba is painting this picture" panel in its place (docs/decisions.md "Book
+// pictures: a painting placeholder, never the art pack while painting").
+import { iconHtml } from './icons.js';
 
 export const W = 800, H = 450, GROUND = 352;
 const SPOT = { left: 0.24, center: 0.5, right: 0.76 };
@@ -99,4 +104,14 @@ export function pictureSvg(spec, cast, cat, o = {}) {
   }
   const a11y = o.decorative ? 'aria-hidden="true" focusable="false"' : `role="img" aria-label="${esc(o.label || '')}"`;
   return `<svg class="sb-art" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" ${a11y} xmlns="http://www.w3.org/2000/svg">${parts.join('')}</svg>`;
+}
+
+/**
+ * The placeholder for a picture Oomba is still painting (queued or drawing, nothing painted before): a soft paper panel
+ * with a gentle shimmer (none with reduced motion), a small brush and the words. text: the translated "Oomba is painting
+ * this picture"; o.decorative: hidden from screen readers (thumbnails, card covers). -> '<div class="sb-painting" ...>'
+ */
+export function paintingHtml(text, o = {}) {
+  const a11y = o.decorative ? 'aria-hidden="true"' : `role="img" aria-label="${esc(text)}"`;
+  return `<div class="sb-art sb-painting" data-painting="1" ${a11y}><span class="sb-painting-in">${iconHtml('🖌️', { size: 28 })}<span class="sb-painting-t">${esc(text)}</span></span></div>`;
 }

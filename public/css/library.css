@@ -59,6 +59,20 @@
 .sb-bkind{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;background:var(--card-2)}
 .sb-bwarn{color:var(--warn-ink)}
 .sb-bcard.is-unfinished .sb-bph{background:var(--warn-bg);color:var(--warn-ink)}
+/* A book picture Oomba is still painting (public/js/storybook-art.js paintingHtml): a soft paper panel, a gentle
+   shimmer (none with reduced motion), a small brush and the words, in place of the art-pack drawing. Here because every
+   page that shows a book's picture loads this file (the cards, the editor, the reader, the print copy). */
+.sb-painting,.sb-art.sb-painting{position:relative;display:flex;align-items:center;justify-content:center;width:100%;height:auto;aspect-ratio:16/9;overflow:hidden;border-radius:var(--r-sm);background:var(--card-2);color:var(--text-2);box-shadow:inset 0 0 0 1px var(--line)}
+.sb-painting::before{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 25%,var(--card) 50%,transparent 75%);background-size:250% 100%;animation:sb-shimmer 2.6s ease-in-out infinite}
+@keyframes sb-shimmer{from{background-position:120% 0}to{background-position:-120% 0}}
+@media (prefers-reduced-motion:reduce){.sb-painting::before{animation:none;background:none}}
+.sb-painting-in{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 12px;text-align:center;font-weight:700;font-size:.95rem;line-height:1.3}
+.sb-painting-in .fx{color:var(--text)}
+.sb-pthumb .sb-painting,.sb-nthumb .sb-painting{border-radius:8px}
+.sb-pthumb .sb-painting-t,.sb-nthumb .sb-painting-t{display:none}
+.sb-pthumb .sb-painting-in,.sb-nthumb .sb-painting-in{padding:0}
+.sb-nthumb .sb-painting svg.fx,.sb-pthumb .sb-painting svg.fx{width:18px;height:18px}
+.sb-bcover .sb-painting{height:100%;aspect-ratio:auto;border-radius:0;box-shadow:none}
 .sb-bmore{position:absolute;top:8px;inset-inline-end:8px;z-index:3}
 .sb-bmore>summary{list-style:none;min-width:40px;min-height:40px;padding:0 10px;justify-content:center;background:var(--card);box-shadow:var(--shadow);font-weight:900;font-size:1.2rem;line-height:1}
 .sb-bmore>summary::-webkit-details-marker{display:none}

@@ -4495,7 +4495,7 @@
       "draw": {
         "lineOff": "Les images viennent des packs de dessins : le créateur d'images n'est pas configuré sur ce site.",
         "lineResting": "Le créateur d'images se repose pour le moment : les nouvelles images viennent des packs de dessins.",
-        "lineBusy": "Dessin des images : {done} sur {total} prêtes. Vous pouvez continuer à travailler.",
+        "lineBusy": "Peinture de vos images : {done} sur {total} prêtes. Vous pouvez continuer à modifier.",
         "lineLimit": "Les images du jour sont utilisées : les nouvelles images viennent des packs de dessins. D'autres demain.",
         "lineOn": "Les images sont peintes dans un même style d'album et vérifiées avant d'être montrées. Images restantes aujourd'hui : {count}",
         "queued": "En attente de dessin",
@@ -4522,7 +4522,11 @@
         "lineOwn": "Vous avez choisi d'ajouter vos propres images : utilisez Votre image sur chaque page.",
         "lineNone": "Ce livre n'a pas d'images.",
         "waitGoogle": "En attente de Google. L'image va bientôt apparaître.",
-        "lineNotSet": "Les images peintes ne sont pas encore configurées : les images viennent des packs."
+        "lineNotSet": "Les images peintes ne sont pas encore configurées : les images viennent des packs.",
+        "painting": "Oomba peint cette image",
+        "lineDone": "Toutes les images sont peintes.",
+        "lineMissed": "{count, plural, one {# image n’a pas pu être peinte : elle montre le dessin du pack d’art pour l’instant.} other {# images n’ont pas pu être peintes : elles montrent le dessin du pack d’art pour l’instant.}}",
+        "repaint": "Repeindre les images"
       }
     },
     "storybook-read": {
@@ -14143,7 +14147,8 @@
       "resting": "Le créateur d'images se repose pour le moment. Réessayez plus tard.",
       "limit": "Vous avez utilisé les images du jour. D'autres demain.",
       "off": "Les images de ce livre sont les vôtres (ou il n'y en a pas), donc Oomba ne les peint pas.",
-      "none": "Toutes les images de ce livre sont déjà peintes."
+      "none": "Toutes les images de ce livre sont déjà peintes.",
+      "painting": "Oomba peint cette image"
     },
     "pictures": {
       "ai": "Oomba les peint",
@@ -14188,7 +14193,8 @@
       "renamed": "Renommé.",
       "duplicated": "Copie faite : « {title} »",
       "repainting": "Images à repeindre : {count}. Elles apparaissent quand elles sont prêtes.",
-      "repaintSome": "Images à repeindre : {count} maintenant, {more} de plus demain (les images du jour sont épuisées)."
+      "repaintSome": "Images à repeindre : {count} maintenant, {more} de plus demain (les images du jour sont épuisées).",
+      "painting": "Peinture des images"
     }
   }
 }

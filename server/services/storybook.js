@@ -47,6 +47,7 @@ import { shapeBook, problemsOf, repairBook, warningsOf, textsOf, pageHash, LIMIT
 import { illustrator, catalog } from './storybook-illustrator.js';
 import { mockDraft, mockChange } from './storybook-mock.js';
 import * as Draw from './storybook-draw.js';
+import { paintingHtml } from '../../public/js/storybook-art.js';
 import { register } from './jobs.js';
 
 export const SURFACE = 'storybook';
@@ -436,9 +437,12 @@ export function removePic(u, bookId, picId) {
   q.run('DELETE FROM made_book_pics WHERE id=?', p.id);
   return ok();
 }
-/** A page's picture as HTML: the teacher's own (an <img>), the picture model's kept picture (an <img>), or the art-pack
- *  drawing (SVG). */
-export function pictureHtml(row, b, page, { decorative = false } = {}) {
+/** A page's picture as HTML: the teacher's own (an <img>), the picture model's kept picture (an <img>), the painting
+ *  placeholder while Oomba is still painting it (never the art pack then), or the art-pack drawing (SVG): a real
+ *  fallback, or a book whose pictures Oomba doesn't paint. t: the reader's translations. */
+/** How Oomba's painting of a book's pictures is going: { busy, total, done } (storybook-draw.js progressOf). */
+export const paintingOf = row => Draw.progressOf(row.id);
+export function pictureHtml(row, b, page, { decorative = false, t = tEn } = {}) {
   const img = p => `<img class="sb-art" src="/library/made/${row.id}/pic/${p.id}" alt="${decorative ? '' : String(page.alt || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;')}" width="${p.width || 800}" height="${p.height || 450}" loading="lazy">`;
   if (page.upload) {
     const p = picOf(page.upload);
@@ -446,6 +450,7 @@ export function pictureHtml(row, b, page, { decorative = false } = {}) {
   }
   if (page.pic) { const d = Draw.drawnPic(row.id, page.id), p = d && picOf(d); if (p && p.book_id === row.id) return img(p); }
   if (!page.pic) return '';
+  if (Draw.painting(row.id, page.id)) return paintingHtml(t('storybook.draw.painting'), { decorative });
   const r = illustrator().render(page.pic, b.cast, { key: `${row.id}:${page.id}`, label: page.alt, decorative });
   return r.kind === 'svg' ? r.svg : `<img class="sb-art" src="${r.src}" alt="${decorative ? '' : page.alt}">`;
 }

@@ -61,6 +61,7 @@ export const FLUENT = {
   "🧭": ["compass", 1],
   "🔄": ["counterclockwise-arrows-button", 0],
   "🖍️": ["crayon", 0],
+  "🖌️": ["paintbrush", 0],
   "💳": ["credit-card", 1],
   "🌙": ["crescent-moon", 1],
   "❌": ["cross-mark", 0],

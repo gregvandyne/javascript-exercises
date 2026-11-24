@@ -9,13 +9,15 @@
 // Each answer is a new version of the book, with Undo. Preview opens the reader as students see it; Print makes the numbered print copy.
 // With the picture model on (services/storybook-draw.js), each page's picture is painted in the background: the line
 // under the warnings says how far it is (or, calmly, why the art-pack drawings are used), each page shows its own state,
-// and Redraw (with an optional note) paints a page or a character's reference picture again.
+// and Redraw (with an optional note) paints a page or a character's reference picture again. While a picture is still
+// being painted, the page, its thumbnails in the page list and the story map show the painting placeholder, never the
+// art-pack drawing; the art-pack drawing appears only as a real fallback, with its reason and Paint pictures again.
 import { api, t, esc, pageData, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
 import { uploadPic } from '/js/storybook-pic.js';
-import { pictureSvg } from '/js/storybook-art.js';
+import { pictureSvg, paintingHtml } from '/js/storybook-art.js';
 import { warningsOf, mapLayout, numbering, LIMITS, MOODS, POSITIONS } from '/js/storybook-core.js';
 
 const D = pageData();
@@ -51,9 +53,12 @@ async function reload() {
 const num = () => numbering(B);
 const pageLabel = (p, n = num()) => `${t('js.storybook-edit.pageN', { n: n.get(p.id) })}${p.title ? `: ${p.title}` : p.text ? `: ${p.text.slice(0, 32)}${p.text.length > 32 ? '…' : ''}` : ''}`;
 const drawnOf = p => (!p.upload && p.pic && DR.pages[p.id] && DR.pages[p.id].pic) || null;
+/** Oomba is still painting this page's picture and has none to show meanwhile: the placeholder, not the art pack. */
+const paintingOf = p => !p.upload && !!p.pic && busy(DR.pages[p.id]) && !drawnOf(p);
 const artOf = (p, { decorative = true } = {}) => {
   if (p.upload) return `<img class="sb-art" src="/library/made/${esc(D.id)}/pic/${esc(p.upload)}" alt="${decorative ? '' : esc(p.alt)}">`;
   if (drawnOf(p)) return `<img class="sb-art" src="/library/made/${esc(D.id)}/pic/${esc(drawnOf(p))}" alt="${decorative ? '' : esc(p.alt)}" width="800" height="450">`;
+  if (paintingOf(p)) return paintingHtml(t('js.storybook-edit.draw.painting'), { decorative });
   return p.pic ? pictureSvg(p.pic, B.cast, D.catalog, { key: `${D.id}:${p.id}`, label: p.alt, decorative }) : `<div class="sb-nopic">${esc(t('js.storybook-edit.noPic'))}</div>`;
 };
 function drawAll() {
@@ -64,17 +69,31 @@ function drawAll() {
   drawWarnings(); drawDrawLine(); drawMap(); drawList(); drawPage();
 }
 // ---------------------------------------------------------------- the picture model's pictures
-const busy = d => !!d && (d.state === 'queued' || d.state === 'drawing');
+function busy(d) { return !!d && (d.state === 'queued' || d.state === 'drawing'); }
+/** Pictures that show the art-pack drawing because painting fell back (nothing painted to keep). */
+const fellBack = () => [...Object.values(DR.pages || {}), ...Object.values(DR.cast || {})].filter(d => d.state === 'fallback' && !d.pic).length;
+const repaintBtn = () => `<button type="button" class="btn btn-sm" data-act="repaint">${iconHtml('🎨', { size: 16 })} ${esc(t('js.storybook-edit.draw.repaint'))}</button>`;
+// "All pictures painted." shows for a few seconds after the last picture arrives, then the line hides.
+let justDone = false, doneTimer = null, doneHidden = false;
 function drawDrawLine() {
   const el = $('sb-drawline'); if (!el) return;
-  let icon = 'ℹ️', text = '';
+  let icon = 'ℹ️', text = '', act = '', cls = '';
+  const missed = fellBack();
   if (!DR.on) text = DR.reason === 'own' ? t('js.storybook-edit.draw.lineOwn') : DR.reason === 'none' ? t('js.storybook-edit.draw.lineNone') : DR.reason === 'resting' ? t('js.storybook-edit.draw.lineResting') : DR.total ? t('js.storybook-edit.draw.lineOff') : '';
-  else if (DR.busy) { icon = '🎨'; text = t('js.storybook-edit.draw.lineBusy', { done: DR.done, total: DR.total }); }
+  else if (DR.busy) { icon = '🖌️'; cls = 'is-busy'; text = t('js.storybook-edit.draw.lineBusy', { done: DR.done, total: DR.total }); }
   else if (DR.reason === 'limit') text = t('js.storybook-edit.draw.lineLimit', { count: DR.cap });
   else if (DR.reason === 'notset') text = t('js.storybook-edit.draw.lineNotSet');
-  else { icon = '✨'; text = t('js.storybook-edit.draw.lineOn', { count: DR.left }); }
+  else if (missed) { text = t('js.storybook-edit.draw.lineMissed', { count: missed }); act = repaintBtn(); }
+  else if (justDone) { icon = '✅'; cls = 'is-done'; text = t('js.storybook-edit.draw.lineDone'); }
+  else if (!doneHidden) { icon = '✨'; text = t('js.storybook-edit.draw.lineOn', { count: DR.left }); }
   el.hidden = !text || !B.pages.length;
-  el.innerHTML = text ? `${iconHtml(icon, { size: 16 })} ${esc(text)}` : '';
+  el.className = `sb-drawline small${cls ? ` ${cls}` : ''}`;
+  el.innerHTML = text ? `${iconHtml(icon, { size: 16 })} <span>${esc(text)}</span>${act}` : '';
+}
+/** The last picture arrived: "All pictures painted." for a moment, then the line hides. */
+function paintedAll() {
+  justDone = true; clearTimeout(doneTimer);
+  doneTimer = setTimeout(() => { justDone = false; doneHidden = true; drawDrawLine(); }, 4000);
 }
 /** One picture's state under it (a page or a character's reference picture), and its Redraw button. */
 function drawState(d, { target, has }) {
@@ -82,7 +101,9 @@ function drawState(d, { target, has }) {
   if (busy(d)) out.push(`<p class="sb-dstate is-busy">${iconHtml(d.state === 'drawing' ? '🎨' : '⏳', { size: 16 })} ${esc(t(d.state === 'queued' && d.reason === 'google' ? 'js.storybook-edit.draw.waitGoogle' : `js.storybook-edit.draw.${d.state}`))}</p>`);
   else if (d && d.state === 'fallback') out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t(`js.storybook-edit.draw.why.${d.reason || 'error'}`))}${d.pic ? ` ${esc(t('js.storybook-edit.draw.keptOld'))}` : ''}</p>`);
   else if (d && d.stale) out.push(`<p class="sb-dstate">${iconHtml('ℹ️', { size: 16 })} ${esc(t('js.storybook-edit.draw.stale'))}</p>`);
-  if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
+  // a real fallback (the art-pack drawing is shown): Paint pictures again, right there
+  if (DR.on && d && d.state === 'fallback' && !d.pic) out.push(repaintBtn());
+  if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm${d && d.state === 'fallback' && !d.pic ? ' btn-ghost' : ''}" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
   return out.join('');
 }
 const pageState = p => (p.upload || !p.pic ? '' : drawState(DR.pages[p.id], { target: `page:${p.id}`, has: !!drawnOf(p) }));
@@ -93,17 +114,19 @@ function watchDraws() {
   if (!DR.busy) return;
   drawTimer = setTimeout(async () => {
     try {
-      const was = JSON.stringify(DR.pages) + JSON.stringify(DR.cast);
+      const was = JSON.stringify(DR.pages) + JSON.stringify(DR.cast), wasBusy = DR.busy;
       DR = await api(`/api/library/make/${D.id}/draws`, { background: true });
+      if (wasBusy && !DR.busy && !fellBack()) paintedAll();
       if (was !== JSON.stringify(DR.pages) + JSON.stringify(DR.cast)) refreshPictures();
       else drawDrawLine();
     } catch { /* try again on the next tick */ }
     watchDraws();
   }, 2500);
 }
-/** New pictures or states: the line, the page list, the open page's picture and state (never the fields being typed in). */
+/** New pictures or states: the line, the page list, the story map, the open page's picture and state (never the fields
+ *  being typed in). Each painted picture replaces its placeholder as it arrives. */
 function refreshPictures() {
-  drawDrawLine(); drawList();
+  drawDrawLine(); drawList(); drawMap();
   const p = cur(); if (!p) return;
   const f = document.querySelector('.sb-fig'); if (f) f.innerHTML = artOf(p, { decorative: false });
   const st = $('sb-dst'); if (st && !st.querySelector('form')) st.innerHTML = pageState(p);
@@ -220,6 +243,7 @@ document.addEventListener('click', async e => {
   const p = cur(); if (!p) return;
   const i = +a.dataset.i, act = a.dataset.act;
   if (act === 'redraw') { openRedraw(a); return; }
+  if (act === 'repaint') return;   // Paint pictures again: its own listener below (it is in the line too)
   if (act === 'redraw-cancel') { refreshPictures(); return; }
   if (act === 'upload') { $('sb-pagepic').click(); return; }
   if (act === 'drawn') { p.upload = null; if (!p.pic) p.pic = { world: D.worlds[0].id, mood: 'bright', chars: [], props: [] }; }
@@ -326,10 +350,13 @@ $('sb-delete').addEventListener('click', async () => {
 // The less-used actions (the More menu, as on the cards): Paint pictures again, Duplicate, and Try again for a book
 // whose first draft never came.
 const closeMenu = () => { const m = document.querySelector('.sb-emore'); if (m) m.open = false; };
-if ($('sb-repaint')) $('sb-repaint').addEventListener('click', async () => {
+async function repaintAll(btn) {
   closeMenu();
-  try { const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST' }); DR = r.draws; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { toast(e.message, { bad: true }); }
-});
+  if (btn) btn.disabled = true;
+  try { const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST' }); DR = r.draws; justDone = false; doneHidden = false; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { if (btn && btn.isConnected) btn.disabled = false; toast(e.message, { bad: true }); }
+}
+if ($('sb-repaint')) $('sb-repaint').addEventListener('click', () => repaintAll());
+document.addEventListener('click', e => { const b = e.target.closest('#sb-edit [data-act="repaint"]'); if (b) repaintAll(b); });
 $('sb-duplicate').addEventListener('click', async () => {
   closeMenu();
   try { clearTimeout(timer); await save(); const r = await api(`/api/library/make/${D.id}/duplicate`, { method: 'POST' }); toast(r.toast); setTimeout(() => { location.href = r.href; }, 700); } catch (e) { toast(e.message, { bad: true }); }

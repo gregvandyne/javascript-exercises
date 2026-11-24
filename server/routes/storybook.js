@@ -17,6 +17,7 @@
 //   GET|POST /api/library/make/:id/chat       Oomba's chat (services/oomba-chat.js)   POST .../chat/undo { turnId }
 //   POST /api/library/make/:id/pic?name=      a picture for a page          POST .../pic/:pic/remove
 //   GET  /api/library/make/:id/draws          the book's pictures (the picture model: drawing, done, why not)
+//   GET  /api/library/make/:id/card           the book's card again (its cover while Oomba paints the pictures)
 //   POST /api/library/make/:id/draw           { target: 'page:<id>' | 'cast:<name>', note } Redraw one picture
 //   POST /api/library/make/:id/share          { classIds }
 //   GET  /library/made/:id/read               the reader (?p= a page, ?t= the trail; the owner or the class)
@@ -286,6 +287,8 @@ router.post('/api/library/make/:id/share', teacher, (req, res) => {
 router.post('/api/library/make/:id/pic', teacher, rateLimit('storybook-pic', 20, 60e3), picBody, (req, res) => takePic(req, res, req.params.id));
 // The picture model's pictures (services/storybook-draw.js): how drawing is going, and Redraw.
 router.get('/api/library/make/:id/draws', teacher, (req, res) => { const row = own(req, res); if (!row) return; res.json(Draw.stateOf(req.user, row)); });
+// A book card while Oomba paints its pictures (public/js/storybook-books.js asks every few seconds and swaps it in).
+router.get('/api/library/make/:id/card', teacher, (req, res) => { const row = own(req, res); if (!row) return; res.json({ card: String(madeCard(req, row)), painting: SB.paintingOf(row).busy > 0 }); });
 router.post('/api/library/make/:id/draw', teacher, rateLimit('storybook-draw', 30, 60e3), (req, res) => {
   const r = Draw.redraw(req.user, req.params.id, String(b(req).target || ''), typeof b(req).note === 'string' ? b(req).note : '');
   if (r.ok) { const row = SB.ownBook(req.user, req.params.id); return res.json({ ok: true, draws: Draw.stateOf(req.user, row) }); }
@@ -346,7 +349,7 @@ router.get('/library/made/:id/read', (req, res) => {
       <h1 class="rd-title" dir="auto">${bk.title}</h1>${owner ? html`<span class="chip-s">${t('storybook.read.preview')}</span>` : ''}</div>
     <div id="sb-read">${raw(readerPage(req, row, bk, at, trail))}</div>
   </div>
-  ${jsonData('page-data', { id: row.id, book: { ...bk, pages: bk.pages.map(p => ({ ...p, art: SB.pictureHtml(row, bk, p) })) }, at, trail, endings: rd ? rd.endings.split(',').filter(Boolean) : [] })}`;
+  ${jsonData('page-data', { id: row.id, book: { ...bk, pages: bk.pages.map(p => ({ ...p, art: SB.pictureHtml(row, bk, p, { t }) })) }, at, trail, endings: rd ? rd.endings.split(',').filter(Boolean) : [] })}`;
   page(req, res, { title: bk.title, active: 'learn', body, head: CSS, scripts: ['/js/storybook-read.js'], mid: true, companion: false });
 });
 /** One page of the reader as HTML (the server's first page; the script draws the same markup). */
@@ -358,7 +361,7 @@ function readerPage(req, row, bk, at, trail) {
   const go = (to, label, cls, tt) => html`<form method="get" class="sb-go"><input type="hidden" name="p" value="${to}"><input type="hidden" name="t" value="${tt}"><button class="btn ${cls}" type="submit">${label}</button></form>`;
   const startId = cyoa ? bk.start : bk.pages[0].id;
   return String(html`<article class="sb-page-r" aria-labelledby="sb-rt">
-    <figure class="rd-pic sb-rpic">${raw(SB.pictureHtml(row, bk, pg))}</figure>
+    <figure class="rd-pic sb-rpic">${raw(SB.pictureHtml(row, bk, pg, { t }))}</figure>
     ${pg.title ? html`<h2 class="sb-rt" id="sb-rt" dir="auto">${pg.title}</h2>` : html`<h2 class="sr-only" id="sb-rt">${t('storybook.read.pageN', { n: cyoa ? numbering(bk).get(pg.id) : i + 1 })}</h2>`}
     <p class="rd-text sb-rtext" dir="auto">${pg.text}</p>
     ${last ? html`<p class="sb-theend">${ico('⭐', { size: 28 })} ${t('storybook.read.theEnd')}</p>` : ''}
@@ -388,7 +391,7 @@ router.get('/library/made/:id/print', teacher, (req, res) => {
       <a class="btn" href="${row.owner_id === req.user.id ? `/library/make/${row.id}` : `/library/made/${row.id}/read`}">${t('storybook.back')}</a>
       <p class="small muted">${t('storybook.print.hint')}</p></div>
     <section class="sb-sheet sb-cover">
-      ${order[0] ? html`<div class="sb-cover-art">${raw(SB.pictureHtml(row, bk, order[0], { decorative: true }))}</div>` : ''}
+      ${order[0] ? html`<div class="sb-cover-art">${raw(SB.pictureHtml(row, bk, order[0], { decorative: true, t }))}</div>` : ''}
       <h1 dir="auto">${bk.title || t('storybook.untitled')}</h1>
       <p class="sb-cover-kind">${kindName(t, bk.kind)}</p>
       ${cyoa ? html`<p class="sb-cover-how">${t('storybook.print.how')}</p>` : ''}
@@ -396,7 +399,7 @@ router.get('/library/made/:id/print', teacher, (req, res) => {
     </section>
     ${order.map(p => html`<section class="sb-sheet" aria-label="${t('storybook.read.pageN', { n: num.get(p.id) })}">
       <p class="sb-folio">${t('storybook.read.pageN', { n: num.get(p.id) })}</p>
-      ${p.pic || p.upload ? html`<figure class="sb-ppic">${raw(SB.pictureHtml(row, bk, p))}</figure>` : ''}
+      ${p.pic || p.upload ? html`<figure class="sb-ppic">${raw(SB.pictureHtml(row, bk, p, { t }))}</figure>` : ''}
       ${p.title ? html`<h2 dir="auto">${p.title}</h2>` : ''}
       <p class="sb-ptext" dir="auto">${p.text}</p>
       ${cyoa && !p.end ? html`<ul class="sb-turns">${p.choices.filter(c => c.to && num.has(c.to)).map(c => html`<li dir="auto">${t('storybook.print.turn', { choice: c.text, page: num.get(c.to) })}</li>`)}</ul>` : ''}

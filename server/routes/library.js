@@ -125,8 +125,9 @@ export function bookCard(t, bk, { read = null, staff = false, forClass = null } 
 }
 
 /** A teacher's own book as a card, the same card as the library's books (cover, grade chip, title, meta line, actions):
- *  the cover is the first page's picture as the reader shows it (painted, the teacher's own, or the art-pack drawing),
- *  a calm placeholder when there is none; chips for the grade and the kind; pages, when it changed, the classes it is
+ *  the cover is the first page's picture as the reader shows it (painted, the teacher's own, the painting placeholder
+ *  while Oomba paints it, or the art-pack drawing), a calm placeholder when there is none; "Painting pictures" while
+ *  any of its pictures is being painted; chips for the grade and the kind; pages, when it changed, the classes it is
  *  shared with; Read and Open, and the less-used actions (Rename, Share, Duplicate, Delete) in a small More menu
  *  (public/js/storybook-books.js). A book whose first draft never came says so, with Try again and Delete; one being
  *  written says that. Only ever called with the teacher's own rows (storybook.js listBooks). */
@@ -136,10 +137,13 @@ export function madeCard(req, row) {
   const g = SB.GRADES.includes(setup.grade) ? setup.grade : '';
   const shared = state === 'ready' ? SB.sharedWith(row.id) : [];
   const first = state !== 'ready' ? null : bk.kind === 'cyoa' ? pageOf(bk, bk.start) || bk.pages[0] : bk.pages[0];
-  let pic = first ? SB.pictureHtml(row, bk, first, { decorative: true }) : '';
+  let pic = first ? SB.pictureHtml(row, bk, first, { decorative: true, t }) : '';
+  // Oomba is still painting the book's pictures: "Painting pictures" in the meta line (the cover is the painting
+  // placeholder until the first page's picture is there); the card's script swaps in the painted card when it is done.
+  const painting = state === 'ready' && SB.paintingOf(row).busy > 0;
   if (pic.startsWith('<svg')) pic = pic.replace('<svg ', '<svg preserveAspectRatio="xMidYMid slice" ');
   const cover = pic ? raw(pic) : html`<span class="sb-bph" aria-hidden="true">${ico(state === 'unfinished' ? '⏳' : state === 'writing' ? '✨' : '📖', { size: 48 })}</span>`;
-  const meta = [t('storybook.pages', { count: bk.pages.length }), req.fmt.ago(row.updated_at), ...(shared.length ? [t('storybook.sharedN', { count: shared.length })] : [])].join(' · ');
+  const meta = [t('storybook.pages', { count: bk.pages.length }), ...(painting ? [t('storybook.books.painting')] : [req.fmt.ago(row.updated_at)]), ...(shared.length ? [t('storybook.sharedN', { count: shared.length })] : [])].join(' · ');
   const more = html`<details class="sb-bmore"><summary class="btn btn-sm btn-ghost sb-bmore-btn" aria-label="${t('storybook.books.moreFor', { title })}" title="${t('storybook.books.more')}"><span aria-hidden="true">⋯</span></summary>
     <div class="sb-bmenu">
       ${state === 'ready' ? html`<button type="button" class="sb-bitem" data-b="rename">${ico('✏️', { size: 18 })} ${t('storybook.books.rename')}</button>
@@ -150,12 +154,12 @@ export function madeCard(req, row) {
     ? html`<a class="btn btn-primary btn-sm" href="/library/made/${row.id}/read">${ico('📖', { size: 18 })} ${t('library.read')}</a><a class="btn btn-sm" href="/library/make/${row.id}">${ico('✏️', { size: 18 })} ${t('storybook.books.open')}</a>`
     : state === 'writing' ? html`<a class="btn btn-sm" href="/library/make/${row.id}">${ico('✏️', { size: 18 })} ${t('storybook.books.open')}</a>`
       : html`<button type="button" class="btn btn-primary btn-sm" data-b="retry">${ico('🔄', { size: 18 })} ${t('storybook.books.tryAgain')}</button><button type="button" class="btn btn-sm" data-b="delete">${ico('🗑️', { size: 18 })} ${t('storybook.books.delete')}</button>`;
-  return html`<li class="lb-card sb-bcard${state !== 'ready' ? ` is-${state}` : ''}" data-book="${row.id}" data-title="${title}" data-shared="${shared.map(c => c.id).join(',')}">
+  return html`<li class="lb-card sb-bcard${state !== 'ready' ? ` is-${state}` : ''}${painting ? ' is-painting' : ''}" data-book="${row.id}" data-title="${title}" data-shared="${shared.map(c => c.id).join(',')}"${painting ? raw(' data-painting="1"') : ''}>
     <a class="lb-cover sb-bcover" href="/library/make/${row.id}" tabindex="-1" aria-hidden="true">${cover}</a>
     ${state === 'ready' ? more : ''}
     <div class="lb-body"><div class="sb-bchips">${g ? html`<span class="lb-lvl lb-g${g.replace('-', '')}">${t(`storybook.grades.${g.replace('-', '')}`)}</span>` : ''}<span class="lb-lvl sb-bkind" title="${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}">${t(row.kind === 'cyoa' ? 'storybook.kind.cyoa' : 'storybook.kind.linear')}</span></div>
       <h3 class="lb-title"><a href="/library/make/${row.id}" dir="auto">${title}</a></h3>
-      ${state === 'ready' ? html`<p class="lb-meta small muted">${meta}</p>`
+      ${state === 'ready' ? html`<p class="lb-meta small muted">${painting ? ico('🖌️', { size: 16 }) : ''}${painting ? ' ' : ''}${meta}</p>`
         : state === 'writing' ? html`<p class="lb-state">${ico('✨', { size: 18 })} ${t('storybook.books.writing')}</p>`
           : html`<p class="lb-state sb-bwarn">${ico('⚠️', { size: 18 })} ${t('storybook.books.unfinished')}</p><p class="lb-meta small muted">${t('storybook.books.unfinishedText')}</p>`}
       <div class="lb-acts">${acts}</div></div></li>`;

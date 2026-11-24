@@ -195,7 +195,11 @@
 }
 /* The picture model's pictures (docs/storybook-builder.md "Pictures"): the line under the warnings, each picture's state
    and Redraw, the characters' reference pictures. */
-.sb-drawline{display:flex;gap:6px;align-items:center;margin:0 0 10px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);color:var(--text)}
+.sb-drawline{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0 0 10px;padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);color:var(--text)}
+.sb-drawline[hidden]{display:none}
+.sb-drawline>span{flex:1 1 200px;min-width:0}
+.sb-drawline.is-busy{background:var(--accent-soft);color:var(--accent-ink);font-weight:700}
+.sb-drawline.is-done{color:var(--ok);font-weight:700}
 .sb-dst{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:0 0 8px}
 .sb-dstate{margin:0;display:flex;gap:6px;align-items:center;font-size:.9rem;color:var(--muted)}
 .sb-dstate.is-busy{color:var(--text);font-weight:700}
