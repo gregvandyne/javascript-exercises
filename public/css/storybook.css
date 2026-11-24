@@ -218,7 +218,8 @@
 .sb-asked{flex-basis:100%;font-size:.9rem}
 .sb-asked summary{cursor:pointer;color:var(--muted)}
 .sb-asked-t{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;max-height:16em;overflow:auto}
-.sb-sheet{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+/* A character's reference sheet in the editor (not the print pages' .sb-sheet). */
+.sb-charsheet{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .sb-sheet-img{width:72px;height:72px;object-fit:cover;border-radius:8px;background:var(--card-2)}
 .sb-sheet-st{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 160px}
 .sb-pitem .sb-pthumb img.sb-art{aspect-ratio:16/9;object-fit:cover}

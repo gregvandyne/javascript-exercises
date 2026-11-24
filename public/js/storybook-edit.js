@@ -229,7 +229,7 @@ function drawPage() {
         <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>
         <label class="sr-only" for="sb-cwh${i}">${esc(t('js.storybook-edit.castWhat'))}</label><input class="input sb-look" id="sb-cwh${i}" data-f="cast-what" data-i="${i}" value="${esc(c.what || '')}" maxlength="${L.what}" placeholder="${esc(t('js.storybook-edit.castWhatPh'))}" dir="auto">
         <label class="sr-only" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
-        ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-sheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
+        ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-charsheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
       ${B.cast.length < L.cast ? `<button type="button" class="btn btn-sm" data-act="cast-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addCast'))}</button>` : ''}
     </details>`;
 }
