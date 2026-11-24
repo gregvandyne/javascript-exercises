@@ -359,6 +359,8 @@ test('school settings: a school admin saves them within bounds (out of bounds re
   // Messages an hour.
   setSchool({ perHour: 5 });
   standIn(() => 'Sure.');
+  // A fresh hour: the tester's messages so far (kept with their past chats) are from before it.
+  q.run("UPDATE oomba_turns SET created_at=? WHERE owner_id=? AND surface='companion'", now() - 2 * 3600e3, tester.id);
   try {
     for (let i = 0; i < 5; i++) { const r = await say(tester, { text: `hello ${i}`, page: { type: 'teach' } }); assert.equal(r.status, 200); await C.allSettled(); }
     const r = await say(tester, { text: 'one more', page: { type: 'teach' } });
@@ -375,10 +377,10 @@ test('school settings: a school admin saves them within bounds (out of bounds re
   assert.equal(CS.settingsFor(createUser({ username: 'CompLoner', password: 'secret123' })).school, false);
 });
 
-test('retention: a chat left longer than the school keeps it goes, with its files; pictures go after a day; New chat and account deletion take everything', async () => {
+test('retention: a chat left longer than the school keeps it goes, with its files; pictures go after a day; New chat keeps it in the history; account deletion takes everything', async () => {
   standIn(() => 'Sure.');
   await say(tester, { text: 'remember this', page: { type: 'teach' } }); await C.allSettled();
-  const row = () => q.get("SELECT * FROM oomba_chats WHERE owner_id=? AND surface='companion'", tester.id);
+  const row = () => q.get("SELECT * FROM oomba_chats WHERE owner_id=? AND surface='companion' AND ctx_key='main'", tester.id);
   const f = CO.addDoc(tester, { name: 'plan.txt', kind: 'txt', pages: 1, words: 3, cut: false, text: 'fractions on a line' });
   const img = CO.addImage(tester, { name: 'p.jpg', bytes: Buffer.from('abc'), width: 1, height: 1 });
   q.run('UPDATE oomba_files SET created_at=? WHERE id=?', now() - 2 * 86400e3, img.id);
@@ -393,20 +395,75 @@ test('retention: a chat left longer than the school keeps it goes, with its file
     assert.equal(row(), undefined, 'eight days: gone');
     assert.equal(q.get('SELECT 1 FROM oomba_files WHERE id=?', f.id), undefined, 'with its files');
   } finally { setSchool({}); }
-  // New chat.
+  // New chat: the conversation goes to the chat history, with its files (and the same retention).
   await say(tester, { text: 'again', page: { type: 'teach' } }); await C.allSettled();
   const g = CO.addDoc(tester, { name: 'b.txt', kind: 'txt', pages: 1, words: 1, cut: false, text: 'x' });
+  const was = row().id;
   assert.equal((await as(tester)('/api/companion/chat/new', { body: {} })).status, 200);
-  assert.equal(row(), undefined); assert.equal(q.get('SELECT 1 FROM oomba_files WHERE id=?', g.id), undefined);
+  const past = q.get('SELECT * FROM oomba_chats WHERE id=?', was);
+  assert.equal(past.ctx_key, `h:${was}`); assert.ok(q.get('SELECT 1 FROM oomba_files WHERE id=?', g.id), 'its file kept with it');
+  assert.equal(CO.fileOf(tester, g.id), null, 'a past chat\'s file is not usable from the new one');
+  setSchool({ retentionDays: 7 });
+  try {
+    q.run('UPDATE oomba_chats SET updated_at=? WHERE id=?', now() - 8 * 86400e3, was);
+    C.prune();
+    assert.equal(q.get('SELECT 1 FROM oomba_chats WHERE id=?', was), undefined, 'a past chat goes after the school\'s days too');
+    assert.equal(q.get('SELECT 1 FROM oomba_files WHERE id=?', g.id), undefined, 'with its files');
+  } finally { setSchool({}); }
   // Account deletion.
   const leaver = staff('Lee Leaver'); config.manipulativesUsers = [tester.username.toLowerCase(), leaver.username.toLowerCase()];
   await say(leaver, { text: 'hello', page: { type: 'teach' } }); await C.allSettled();
   CO.addDoc(leaver, { name: 'c.txt', kind: 'txt', pages: 1, words: 1, cut: false, text: 'y' });
   assert.ok(q.get("SELECT 1 FROM oomba_chats WHERE owner_id=? AND surface='companion'", leaver.id));
+  CO.reset(leaver); await say(leaver, { text: 'and a second chat', page: { type: 'teach' } }); await C.allSettled();
+  assert.equal(q.get("SELECT COUNT(*) n FROM oomba_chats WHERE owner_id=? AND surface='companion'", leaver.id).n, 2, 'one past, one open');
   const del = AD.adminDeleteAccount(boss, leaver.id);
   assert.equal(del.ok, true, JSON.stringify(del));
   assert.equal(q.get('SELECT 1 FROM oomba_chats WHERE owner_id=?', leaver.id), undefined);
   assert.equal(q.get('SELECT 1 FROM oomba_files WHERE owner_id=?', leaver.id), undefined);
+});
+
+test('chat history: New chat keeps the chat; the list (first message, names back); open one again (the open one is kept); delete; only the teacher\'s own', async () => {
+  standIn(() => 'Sure.');
+  await reset(tester);
+  const list = async (u = tester) => (await as(u)('/api/companion/chats')).json.chats;
+  const before = (await list()).length;
+  // A chat with nothing said in it is not kept.
+  CO.addDoc(tester, { name: 'e.txt', kind: 'txt', pages: 1, words: 1, cut: false, text: 'z' });
+  assert.equal((await as(tester)('/api/companion/chat/new', { body: {} })).status, 200);
+  assert.equal((await list()).length, before, 'an empty chat is not kept');
+  // First chat, then New chat: it is in the history with its first message.
+  await say(tester, { text: 'plan a fractions lesson', page: { type: 'teach' } }); await C.allSettled();
+  await say(tester, { text: 'and a quiz', page: { type: 'teach' } }); await C.allSettled();
+  assert.equal((await as(tester)('/api/companion/chat/new', { body: {} })).status, 200);
+  assert.equal((await chatOf(tester)).turns.length, 0, 'a fresh chat');
+  let h = await list();
+  assert.equal(h.length, before + 1); assert.equal(h[0].title, 'plan a fractions lesson'); assert.equal(h[0].n, 2); assert.ok(h[0].at > 0);
+  // Second chat, then open the first again: the second goes to the history, the first is the conversation.
+  await say(tester, { text: 'make a seating chart', page: { type: 'teach' } }); await C.allSettled();
+  const op = await as(tester)(`/api/companion/chats/${h[0].id}/open`, { body: {} });
+  assert.equal(op.status, 200, op.text);
+  assert.match(JSON.stringify(op.json.chat.turns), /plan a fractions lesson/, 'the old chat is back');
+  h = await list();
+  assert.equal(h[0].title, 'make a seating chart', 'the open one went to the history');
+  assert.ok(!h.some(c => /fractions/.test(c.title)), 'the opened one is no longer in the history');
+  // Only the teacher's own, only past chats.
+  const other = staff('Ola Other'); config.manipulativesUsers = [...config.manipulativesUsers, other.username.toLowerCase()];
+  assert.equal((await as(other)(`/api/companion/chats/${h[0].id}/open`, { body: {} })).status, 404);
+  assert.equal((await as(other)(`/api/companion/chats/${h[0].id}/delete`, { body: {} })).status, 404);
+  const open = q.get("SELECT id FROM oomba_chats WHERE owner_id=? AND surface='companion' AND ctx_key='main'", tester.id).id;
+  assert.equal((await as(tester)(`/api/companion/chats/${open}/delete`, { body: {} })).status, 404, 'the open chat is not deleted from here');
+  // Delete.
+  assert.equal((await as(tester)(`/api/companion/chats/${h[0].id}/delete`, { body: {} })).status, 200);
+  assert.ok(!(await list()).some(c => c.id === h[0].id));
+  assert.equal(q.get('SELECT 1 FROM oomba_chats WHERE id=?', h[0].id), undefined);
+  // At most HISTORY_MAX past chats: the oldest go.
+  for (let i = 0; i < CO.HISTORY_MAX + 2; i++) q.run("INSERT INTO oomba_chats(id, owner_id, surface, ctx_key, turns, updated_at) VALUES (?,?,?,?,?,?)", `hx${i}aaaaaa`, tester.id, 'companion', `h:hx${i}aaaaaa`, JSON.stringify([{ id: 'm', role: 'me', text: `old ${i}` }]), now() - (100 - i) * 60e3);
+  await say(tester, { text: 'one more', page: { type: 'teach' } }); await C.allSettled();
+  assert.equal((await as(tester)('/api/companion/chat/new', { body: {} })).status, 200);
+  h = await list();
+  assert.equal(h.length, CO.HISTORY_MAX); assert.ok(!h.some(c => c.title === 'old 0'), 'the oldest went');
+  await reset(tester);
 });
 
 test('the budget resting: a calm failure, nothing changed', async () => {

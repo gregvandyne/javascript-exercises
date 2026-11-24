@@ -1123,7 +1123,7 @@
         "p2": "Oomba sieht nur, was eine Lehrkraft geöffnet hat, und sichere Angaben dazu (die Klassenstufe und Größe einer Klasse, die Widgets eines Dashboards, die Fragen eines Figures-Arbeitsblatts, die Elemente und Schritte eines Bretts in den Manipulatives), nie Namen, Antworten oder Arbeiten von Schülerinnen und Schülern. Ein Dashboard ändert Oomba erst, wenn die Lehrkraft auf Übernehmen tippt. Auf einem Figures-Arbeitsblatt oder einem Brett macht Oomba die gewünschte Änderung sofort, und die Lehrkraft kann sie rückgängig machen. Auf Wunsch der Lehrkraft kann Oomba auch einem Kind oder der ganzen Klasse einen Dashboard-Punkt geben; die Lehrkraft kann das rückgängig machen.",
         "p3": "Wenn die Websuche an ist, kann Oomba kurze Suchen an die Websuche von Anthropic senden. Sie enthalten nie Namen oder einen Standort, Seiten für Erwachsene, Glücksspiel, soziale Netzwerke und Ähnliches sind gesperrt, und jede Suche wird für unser Team ohne den Namen der Lehrkraft protokolliert. Im Web gefundene Seiten werden als Quellen gezeigt, die Oomba nicht geprüft hat.",
         "p4": "Eine Lehrkraft kann sprechen statt tippen: Der Ton wird an {provider} übertragen, um ihn schon beim Sprechen in Wörter umzuwandeln, und das Audio wird nie gespeichert, weder von uns noch von ihnen. Die Wörter landen im Nachrichtenfeld, damit die Lehrkraft sie prüfen kann.",
-        "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Eine Lehrkraft kann den Chat mit Neuer Chat löschen, und er wird mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
+        "p5": "Wir speichern den Chat einer Lehrkraft mit dem Text ihrer Anhänge 60 Tage nach der letzten Nutzung (eine Schule kann 7 bis 365 Tage wählen); ein Bild wird gelöscht, sobald Oomba geantwortet hat, spätestens nach einem Tag. Mit Neuer Chat kommt der bisherige Chat in den Chatverlauf der Lehrkraft, mit derselben Frist; dort kann sie jeden Chat löschen, und alle Chats werden mit dem Konto gelöscht. Eine Schuladministration kann Oomba oder seine Websuche für die Schule ausschalten."
       },
       "storybook": {
         "h": "Der Buchmacher",
@@ -4043,8 +4043,12 @@
       "sees": "Sieht:",
       "dashOf": "Dashboard {name}",
       "newChat": "Neuer Chat",
-      "newChatAsk": "Einen neuen Chat beginnen? Dieses Gespräch und alles, was du angehängt hast, wird gelöscht.",
-      "newChatOk": "Neuen Chat beginnen",
+      "history": "Chatverlauf",
+      "historyBack": "Zurück zum Chat",
+      "historyEmpty": "Noch keine früheren Chats. Wenn du einen neuen Chat beginnst, wird der bisherige hier aufbewahrt.",
+      "historyDelete": "Diesen Chat löschen",
+      "historyDeleteAsk": "Diesen Chat endgültig löschen? Er kann nicht wiederhergestellt werden.",
+      "historyDeleteOk": "Löschen",
       "hello": "Hallo! Ich bin Oomba, deine Hilfe beim Unterrichten. Frag mich nach einem Spiel, einem Buch, einer Änderung an deinem Dashboard oder Hilfe bei einer Stunde.",
       "idea": {
         "game": {
@@ -14109,7 +14113,8 @@
     },
     "blocked": {
       "personal": "Bitte entferne persönliche Angaben (Namen, Adressen, Telefonnummern, Links) und versuch es noch einmal.",
-      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal."
+      "words": "Einige dieser Wörter sind bei Oomba Academy nicht erlaubt. Bitte ändere sie und versuch es noch einmal.",
+      "realPeople": "Bücher dürfen nicht von einer echten, namentlich genannten Person handeln. Beschreibe stattdessen eine ausgedachte Figur, z. B. „eine Fußballerin, die nie aufgibt“."
     },
     "firstMessage": "Bitte mach mein Buch.",
     "errors": {
@@ -14183,6 +14188,9 @@
       "fromStory": "Hier ist dein Buch aus dem Geschichtenmacher. Was du schon gewählt hast, habe ich eingetragen; beantworte den Rest auf der Karte.",
       "hello": "Lass uns ein Buch machen.",
       "noTheme": "Kein Thema",
+      "otherTheme": "Etwas anderes",
+      "themeHint": "Gib ein Thema ein, z. B. Piraten oder Recycling",
+      "useTheme": "Dieses Thema nehmen",
       "contextAi": "Schreib deine Ideen unten ins Feld und schick sie ab, oder hänge mit der Büroklammer Dateien und Bilder an. Sie kommen in dein Buch, nicht in den Chat. Danach zeigt Oomba dir genau, was gesendet wird.",
       "contextUpload": "Füge deine Geschichte unten ins Feld ein und schick sie ab, oder hänge sie mit der Büroklammer als Datei an (Bilder auch). Sie kommt in dein Buch, nicht in den Chat. Danach zeigt Oomba dir genau, was gesendet wird.",
       "added": "Zu deinem Buch hinzugefügt.",

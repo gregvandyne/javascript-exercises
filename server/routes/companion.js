@@ -9,7 +9,10 @@
 //                                          'bookStop' | 'bookStart', pick? | value? })
 //   POST /api/companion/resume             the page loaded: a request carried here by Go there continues ({ page, board? })
 //   POST /api/companion/book/new           Make a book: the book maker's first card in this chat
-//   POST /api/companion/chat/new           New chat (the conversation and its files go)
+//   POST /api/companion/chat/new           New chat (the conversation goes to the chat history; one with nothing said goes)
+//   GET  /api/companion/chats              the chat history: { chats: [{ id, title, at, n }] }, newest first
+//   POST /api/companion/chats/:id/open     a past chat is the conversation again (the open one goes to the history)
+//   POST /api/companion/chats/:id/delete   a past chat (and its files) deleted for good
 //   POST /api/companion/web                web search on or off for this conversation ({ on })
 //   POST /api/companion/file?name=         a lesson plan or document (raw body): its text, scrubbed (builder/lesson.js)
 //   POST /api/companion/image?name=        a picture (raw JPEG, made in the browser): checked (no people) and kept a day
@@ -67,6 +70,13 @@ router.post('/api/companion/book/new', may, rateLimit('companion-act', 300, 3600
   return r.ok ? res.json({ ok: true, chat: shown(req, r.chat) }) : fail(req, res, r);
 });
 router.post('/api/companion/chat/new', may, (req, res) => { const r = CO.reset(req.user); if (!r.ok) return fail(req, res, r); const c = CO.current(req.user); return res.json({ ok: true, ...c, ...(c.chat ? { chat: shown(req, c.chat) } : {}) }); });
+// Chat history (services/companion.js history): the past chats; open one again (the open one goes to the history); delete one.
+router.get('/api/companion/chats', may, (req, res) => { const r = CO.history(req.user); return r.ok ? res.json(r) : fail(req, res, r); });
+router.post('/api/companion/chats/:id/open', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {
+  const r = CO.openPast(req.user, req.params.id); if (!r.ok) return fail(req, res, r);
+  const c = CO.current(req.user); return res.json({ ok: true, ...c, ...(c.chat ? { chat: shown(req, c.chat) } : {}) });
+});
+router.post('/api/companion/chats/:id/delete', may, rateLimit('companion-act', 300, 3600e3), (req, res) => { const r = CO.deletePast(req.user, req.params.id); return r.ok ? res.json({ ok: true }) : fail(req, res, r); });
 router.post('/api/companion/web', may, (req, res) => res.json(CO.setWeb(req.user, !!body(req).on)));
 
 // A lesson plan or worksheet: the Builder's "Your lesson" reader and rules (builder/lesson.js), the same limits (5 MB, a
