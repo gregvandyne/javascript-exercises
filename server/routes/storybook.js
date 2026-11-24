@@ -218,7 +218,6 @@ router.get('/library/make/:id', teacher, (req, res) => {
         <input class="input sb-title" id="sb-title" maxlength="${SB.LIMITS.title}" value="${bk.title}" placeholder="${t('storybook.untitled')}" dir="auto">
         <span class="chip-s sb-kindchip">${kindName(t, row.kind)}</span><span class="small muted" id="sb-saved" role="status" aria-live="polite"></span></div>
       <div class="sb-eacts">
-        <button type="button" class="btn btn-primary btn-sm" id="sb-oomba" aria-controls="oc">${ico('💬', { size: 18 })} ${t('storybook.edit.oomba')}</button>
         <a class="btn btn-sm" id="sb-preview" href="/library/made/${row.id}/read">${ico('👀', { size: 18 })} ${t('storybook.edit.preview')}</a>
         <a class="btn btn-sm" href="/library/made/${row.id}/print">${ico('🖨️', { size: 18 })} ${t('storybook.edit.print')}</a>
         ${SB.canShare(req.user) ? html`<button type="button" class="btn btn-sm" id="sb-share">${ico('📌', { size: 18 })} ${t('storybook.edit.share')}</button>` : ''}

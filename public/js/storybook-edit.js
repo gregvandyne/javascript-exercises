@@ -399,17 +399,16 @@ if (COMPANION) {
     label: () => B.title || document.title.split('·')[0].trim(),
     ready: () => true,
     // The book shows first: the chat waits as the bubble (the owner, 24 Nov 2026: "When you press open the book it
-    // should go to the book and close the chat"). A tap on the bubble or Oomba brings it back.
+    // should go to the book and close the chat"). A tap on the bubble brings it back.
     start: () => 'min',
     hello: () => t('js.storybook-edit.hello'),
     placeholder: () => t('js.storybook-edit.placeholder'),
     onAnswer: x => { if (mine(x) || (x.note && x.note.bookRef && x.note.bookRef.id === D.id)) reload().catch(() => {}); },
     onUndo: () => { reload().catch(() => {}); },
   });
-  BUS.whenChat(c => { $('sb-oomba').addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
 }
 const chat = COMPANION ? null : mountChat({
-  id: `storybook:${D.id}`, url: () => `/api/library/make/${D.id}/chat`, opener: $('sb-oomba'),
+  id: `storybook:${D.id}`, url: () => `/api/library/make/${D.id}/chat`, alwaysBubble: true,
   sub: t('js.storybook-edit.chatSub', { count: left }), privacy: t('js.storybook-edit.chatPrivate'), leave: t('js.storybook-edit.leave'),
   hello: () => t('js.storybook-edit.hello'),
   ideas: () => (B.pages.length ? IDEAS() : []), ideasAfter: () => IDEAS().slice(0, 2),
