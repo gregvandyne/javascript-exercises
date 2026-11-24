@@ -3,6 +3,7 @@
 // (a folder per lesson with games, its assignments soft-removed and listed, other kinds kept), folders, Save to folder,
 // assigning (Oomba, own published, own draft, twice), the class page, the library redirect, and who may do what.
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');

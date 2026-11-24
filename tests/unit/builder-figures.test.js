@@ -4,6 +4,7 @@
 // self-test's answer-key checks; the mock Builder's figure activity end to end; printing (the answer key for the
 // activity's maker and school staff, never a student); the playtest's figure check.
 process.env.BRB_DB = ':memory:';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 process.env.BRB_MOCK_DELAY_MS = '0';

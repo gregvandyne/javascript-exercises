@@ -2,6 +2,7 @@
 // stored with the best score (migration 0090), cleared by an equal score without help, and marked "Teacher showed an
 // answer" on the class's lesson progress page for its staff only; never on the student's own lesson page.
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { config } = await import('../../server/config.js');

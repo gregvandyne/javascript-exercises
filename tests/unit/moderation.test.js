@@ -1,5 +1,6 @@
 // Admin moderation: approve/reject via publish.js, reports, chat reports, bans, audit, and 404 for non-admins.
 process.env.BRB_DB = ':memory:'; process.env.BRB_SILENT = '1'; process.env.LOG_REQUESTS = '0';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 const { q } = await import('../../server/db.js');

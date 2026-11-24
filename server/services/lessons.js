@@ -440,8 +440,16 @@ export function reorderStep(u, stepId, dir) {
 export function playableBy(step, schoolId, classId = null) {
   if (!step.game_id) return true;
   if (step.game_status !== 'published' || !step.game_live || step.game_hidden) return false;
-  if (step.game_visibility === 'public') return true;
-  if (step.game_visibility === 'school') return !!S.membership(schoolId, step.game_owner);
+  if (step.game_visibility === 'public') {
+    // PUBLIC_GAMES off: a player's game left at 'public' reaches the classes its maker is in (services/games.js).
+    const g = { id: step.game_id, visibility: 'public', source: step.game_source, owner_id: step.game_owner };
+    return classId ? games.publicReachesClass(g, classId) : games.openToAll(g) || !!S.membership(schoolId, step.game_owner);
+  }
+  if (step.game_visibility === 'school') {
+    const g = { id: step.game_id, visibility: 'school', source: step.game_source, owner_id: step.game_owner };
+    if (games.legacySchool(g) && classId) return games.publicReachesClass(g, classId);
+    return !!S.membership(schoolId, step.game_owner);
+  }
   if (step.game_visibility === 'class') return !!classId && games.gameLiveInClass(step.game_id, classId);
   return false;
 }
@@ -454,7 +462,7 @@ export function gamesForPicker(u, schoolId) {
     AND g.owner_id IN (SELECT user_id FROM school_members WHERE school_id=? AND status='active') ORDER BY g.published_at DESC LIMIT 100`, u.id, schoolId);
   const classes = games.classGamesForTeacher(u.id, schoolId).map(({ published_at, ...g }) => g);
   const seen = new Set([...mine, ...school, ...classes].map(g => g.id));
-  const site = q.all(`${sel} WHERE g.status='published' AND g.visibility='public' AND g.hidden_reason='' ORDER BY g.featured DESC, g.plays DESC LIMIT 150`).filter(g => !seen.has(g.id));
+  const site = q.all(`${sel} WHERE g.status='published' AND ${games.OPEN_SQL()} AND g.hidden_reason='' ORDER BY g.featured DESC, g.plays DESC LIMIT 150`).filter(g => !seen.has(g.id));
   return { mine, school, classes, site };
 }
 

@@ -12,6 +12,9 @@ if (process.env.LANDING_AT_ROOT === undefined) process.env.LANDING_AT_ROOT = '0'
 // unit tests describe the whole product: both are on here unless a test turns them off first (tests/unit/focus-hide.test.js).
 if (process.env.ARCADE === undefined) process.env.ARCADE = '1';
 if (process.env.COURSES === undefined) process.env.COURSES = '1';
+// Public games (PUBLIC_GAMES; services/games.js openToAll) are off on the site; the older tests publish games for everyone,
+// so they are on here too unless a test turns them off first (tests/unit/play-topics-private.test.js).
+if (process.env.PUBLIC_GAMES === undefined) process.env.PUBLIC_GAMES = '1';
 // Billing off unless a test turns it on against the fake Stripe: exported STRIPE_* settings never reach a test.
 for (const k of Object.keys(NO_STRIPE_ENV)) delete process.env[k];
 // Email off unless a test turns it on with a fake Resend (services/email.js _hooks): exported keys never reach a test.

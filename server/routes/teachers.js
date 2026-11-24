@@ -609,7 +609,7 @@ router.get('/learn', (req, res) => {
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
   let courseMarkup = '';
   // A ?std= filter applies to games only: the course cards (whose codes are by step, not by course) are left out then.
-  if (f.how !== 'two' && f.how !== 'live' && !std && focus.mayOpenCourses(u)) {
+  if (f.how !== 'two' && f.how !== 'live' && !std && !focus.coursesHidden()) {   // courses hidden: never listed here, not even for the admin (the owner, 24 Nov 2026); assigned course lessons still open from the class
     try {
       // Each course card carries the same "Subject · Grades" line as the game cards.
       const courseMeta = c => { const i = COURSE_INFO[c.slug]; return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', { from: i.from === 0 ? 'K' : String(i.from), to: String(i.to) }) }) : null; };
@@ -620,7 +620,8 @@ router.get('/learn', (req, res) => {
     } catch (e) { log('error', 'learn courses', { error: e.message }); }
   }
   // Games other players made for learning: signed in only (an indexed page never carries a child's name or words).
-  const players = out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
+  // Everyone's games only while PUBLIC_GAMES is on (services/games.js openToAll).
+  const players = !config.publicGames || out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
   const subj = SUBJECTS.find(x => x.key === f.subject);
   // While the arcade is hidden (services/game-focus.js), the subject chips and pages with no game left are left out.
   const subjects = focus.openSubjects(SUBJECTS, SHELF_INFO), hubs = focus.openHubs(HUBS);
@@ -648,7 +649,7 @@ router.get('/learn', (req, res) => {
     ${out ? html`<section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
       ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
       ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
-    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('📚', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t('learn.tab.lead')}</p></div>`}
+    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('📚', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t(focus.coursesHidden() ? 'learn.tab.leadGames' : 'learn.tab.lead')}</p></div>`}
     <form class="learn-filters" id="filters" method="get" action="${lp(req, '/learn')}" aria-label="${t('learn.tab.filters')}">
       <div class="chips scroll" role="group" aria-label="${t('learn.tab.subject')}">
         ${chip(!f.subject, href({ subject: '' }), t('learn.tab.subjects.all'))}

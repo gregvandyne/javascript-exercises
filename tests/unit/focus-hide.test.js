@@ -71,6 +71,10 @@ test('Play, Learn and search list no hidden game and keep the others', async () 
   assert.ok(!learn.includes('/learn/music-games') && !learn.includes('/learn/computer-science'));
   assert.ok(learn.includes('/learn/word-games'));
   assert.ok(!learn.includes('id="courses"') && !learn.includes('/teachers/cs-quest'), 'no course row');
+  // not even for the platform admin (the owner, 24 Nov 2026: "The learn page should no longer have the courses on there")
+  const adminLearn = (await get('/learn', boss)).text.replace(/<script[\s\S]*?<\/script>/g, '');
+  { const m = adminLearn.match(/.{120}(CS Quest|Number Quest|Cyber Defenders).{120}/s); assert.ok(!m, 'no courses on Learn for the admin: ' + (m ? m[0] : '')); }
+  assert.ok(!/courses that teach/i.test(adminLearn), 'the lead line no longer mentions courses');
   assert.equal((await get('/learn/music-games')).status, 404);
   assert.equal((await get('/learn/word-games')).status, 200);
   assert.deepEqual(hiddenIn((await get('/learn/math-games')).text), []);
@@ -206,18 +210,15 @@ test('with ARCADE and COURSES on, everything is back', async () => {
   } finally { config.arcade = false; config.courses = false; }
 });
 
-test('Play shows each kept game once, in sections by kind, with the live and puzzle games on it', async () => {
+test('Play shows each kept game once, in sections by topic, with the live and puzzle games on it', async () => {
   for (const who of [null, kid]) {
     const r = await get('/play', who);
     const cards = [...r.text.matchAll(/class="gcard[^"]*" href="\/g\/([a-z0-9-]+)"/g)].map(m => m[1]);
     const official = cards.filter(s => KEPT.includes(s));
     assert.equal(new Set(official).size, official.length, `no repeats: ${official.join()}`);
-    const hero = (/<h2 class="hero-title">([^<]+)</.exec(r.text) || [])[1];
-    assert.equal(hero, 'Crossword');
-    assert.ok(!official.includes('crossword'), 'the hero is not repeated');
-    for (const s of ['brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'box-by-box', 'popcorn-hush'])
+    for (const s of ['crossword', 'brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'box-by-box', 'popcorn-hush'])
       assert.ok(official.includes(s), `${s} is on Play`);
-    for (const id of ['sec-live', 'sec-puzzles', 'sec-math', 'sec-maps', 'sec-tools']) assert.ok(r.text.includes(`id="${id}-h"`), id);
+    for (const id of ['sec-math', 'sec-reading', 'sec-geography', 'sec-live', 'sec-strategy', 'sec-tools']) assert.ok(r.text.includes(`id="${id}-h"`), id);
     assert.ok(!r.text.includes('id="popular-h"') && !r.text.includes('id="rated-h"'));
   }
 });

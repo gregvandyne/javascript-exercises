@@ -132,6 +132,7 @@ const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
 // The focus on teaching tools (docs/decisions.md "Focus: teaching tools first"; services/game-focus.js): both off by default.
 const arcade = parseFlag(process.env.ARCADE, 'ARCADE');
 const coursesFlag = parseFlag(process.env.COURSES, 'COURSES');
+const publicGames = parseFlag(process.env.PUBLIC_GAMES, 'PUBLIC_GAMES');
 const companion = parseFlag(process.env.COMPANION, 'COMPANION', true);
 const companionWebSearch = parseFlag(process.env.COMPANION_WEB_SEARCH, 'COMPANION_WEB_SEARCH', true);
 const liveSaveSupport = parseFlag(process.env.LIVE_SAVE_SUPPORT, 'LIVE_SAVE_SUPPORT');
@@ -266,7 +267,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, pictureBooks.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error, figures.error, arcade.error, coursesFlag.error, companion.error, companionWebSearch.error,
+    builderWebSearch.error, manipulatives.error, figures.error, arcade.error, coursesFlag.error, publicGames.error, companion.error, companionWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -372,6 +373,13 @@ export const config = {
   // people of a class that has a course lesson assigned (and the platform admin). Nothing is deleted either way.
   arcade: arcade.on,
   courses: coursesFlag.on,
+  // No public games (owner, 24 Nov 2026; docs/decisions.md "No public games: share with connections and classes";
+  // services/games.js openToAll). Off (the default): players share a game with their connections and classes only (no
+  // "Everyone" or "My school" option, and publish() refuses 'public' and 'school'); a player's game that was public or
+  // shared with the school before reaches its maker's
+  // connections and classes only, and no list shows it to anyone else. Official games are open to everyone either way.
+  // PUBLIC_GAMES=1 brings back public games as they were. Nothing in the database changes either way.
+  publicGames: publicGames.on,
   hiddenGames: process.env.HIDDEN_GAMES ? String(process.env.HIDDEN_GAMES).split(',').map(x => x.trim().toLowerCase()).filter(Boolean) : null,
   // Oomba, the teaching companion (docs/decisions.md "Oomba teaching companion"; services/companion.js): the bubble on
   // teacher pages for Teacher plan staff (services/teacher-tools.js toolAccess). COMPANION=0 hides it from everyone.

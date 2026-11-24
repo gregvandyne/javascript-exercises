@@ -34,11 +34,16 @@
       "favorites": "My favourites"
     },
     "focus": {
-      "puzzles": "Word games and puzzles",
-      "mapsStrategy": "Maps and strategy",
       "tools": "Classroom tools",
       "more": "More games",
       "players": "Games by players"
+    },
+    "topics": {
+      "label": "Topics",
+      "math": "Maths",
+      "reading": "Reading and words",
+      "geography": "Geography",
+      "strategy": "Strategy"
     }
   },
   "search": {
@@ -83,6 +88,9 @@
       "title": "This game isn’t available right now",
       "text": "It may come back later. Play has more games and puzzles to try.",
       "play": "Go to Play"
+    },
+    "shareText": {
+      "connectionsClasses": "Only the maker's friends and classmates can open this link."
     }
   },
   "friends": {
@@ -102,6 +110,9 @@
     },
     "api": {
       "savedDefault": "my favourite so far"
+    },
+    "shareText": {
+      "connectionsClasses": "Only you, your friends and the people in your classes can play it."
     }
   },
   "builder": {
@@ -136,6 +147,9 @@
       },
       "save": {
         "placeholder": "My favourite so far"
+      },
+      "vis": {
+        "connectionsClasses": "Friends and classes"
       }
     },
     "app": {
@@ -1129,5 +1143,12 @@
     "read": {
       "startOver": "Start again"
     }
+  },
+  "publish": {
+    "noPublic": "Games can be shared with your friends and your classes, not with everyone.",
+    "liveConnectionsClasses": "Shared with your friends and your classes! Only they and you can play it."
+  },
+  "vis": {
+    "connectionsClasses": "Friends and classes"
   }
 }
