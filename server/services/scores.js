@@ -95,7 +95,7 @@ export function classItems(classId, { userId = null } = {}) {
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.score, p.label, s.id, s.kind, s.game_id, s.options, s.title, s.position pos FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
       JOIN games g ON g.id=s.game_id AND g.slug=? AND g.source='seed'
-      WHERE c.class_id=? AND s.kind='game' AND p.score IS NOT NULL AND s.options LIKE '%mode=%' ${userId ? 'AND p.user_id=?' : ''}`, TY.SLUG, classId, ...who)) {
+      WHERE c.class_id=? AND s.kind='game' AND p.score IS NOT NULL AND s.options LIKE '%mode=%' AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, TY.SLUG, classId, ...who)) {
     const pass = TY.passOfStep(r), g = TY.gradeOf(pass, r.score, r.label);
     if (g !== null) add(r.u, r.cl, { kind: 'typing', stepId: r.sid, title: r.title || '', stepKind: 'game', pos: r.pos, earned: (g * TY.GRADE_POINTS) / 100, possible: TY.GRADE_POINTS });
   }
