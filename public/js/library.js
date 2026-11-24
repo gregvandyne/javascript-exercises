@@ -101,6 +101,7 @@ function start() {
       prev.setAttribute('aria-disabled', page <= 1 ? 'true' : 'false'); prev.tabIndex = page <= 1 ? -1 : 0;
       prev.href = `?p=${Math.max(1, page - 1)}`; next.href = `?p=${last + 1}`;
       next.innerHTML = '';
+      next.classList.toggle('rd-peek', !!peek);   // looking back from a question: on phones it takes its own row
       next.append(peek ? `✓ ${t('js.library.backToQuestions')} ` : `${last >= n ? t('js.library.toQuestions') : t('js.library.next')} `);
       if (!peek) { const a = document.createElement('span'); a.className = 'flip'; a.setAttribute('aria-hidden', 'true'); a.textContent = '▶'; next.append(a); }
       for (let k = last + 1; k <= Math.min(n, last + 1); k++) if (bk.pages[k - 1].image) { const pre = new Image(); pre.src = bk.pages[k - 1].image.src; }
