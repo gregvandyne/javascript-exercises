@@ -143,15 +143,15 @@
   .cw-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
   .cw-lhead { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .cw-lhead h3 { flex: 1 1 10em; }
-  .cw-btn.cw-ai { background: var(--grape-t); border-color: var(--grape); }
-  /* The upload with the AI: the site's AI look, calm (a grape panel, a ✨ AI chip, the button in the AI style) */
-  .cw-aibox { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding: 12px; border-radius: var(--r-sm); background: var(--grape-t); box-shadow: inset 0 0 0 2px var(--grape-l); }
-  .cw-aichip { display: inline-block; margin-inline-end: 4px; padding: 1px 10px; border-radius: 999px; border: 2px solid var(--grape); background: var(--card); color: var(--grape);
+  /* AI in the widget look: a dark pill and chip, the AI step a cream card with a Spark top edge */
+  .cw-btn.cw-ai { background: var(--ink); border-color: var(--ink); color: var(--card); }
+  .cw-btn.cw-ai:hover { background: var(--ink); opacity: .88; }
+  /* The upload with the AI: the site's AI look, calm (a cream card with a Spark top edge, a dark ✨ AI chip, the button in the AI style) */
+  .cw-aibox { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; padding: 12px; border-radius: var(--r-sm); background: var(--card); box-shadow: inset 0 4px 0 var(--spark), 0 0 0 1px var(--line), 0 4px 14px rgba(20,20,20,.07); }
+  .cw-aichip { display: inline-block; margin-inline-end: 4px; padding: 1px 10px; border-radius: 999px; border: 0; background: var(--ink); color: var(--card);
     font-size: .85em; font-weight: 800; line-height: 1.5; white-space: nowrap; }
   .cw-aibox .cw-note { color: var(--ink); opacity: .82; }
   .cw-aibox .cw-aihead { opacity: 1; }
-  .cw-aibox .cw-btn.cw-ai { background: var(--card); }
-  .cw-aibox .cw-btn.cw-ai:hover { background: var(--card2); }
   .cw-in[aria-invalid="true"] { border-color: var(--coral); }
   .cw-words { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .cw-wrow { display: grid; grid-template-columns: 2em minmax(7em, 1fr) minmax(10em, 2fr) 44px; gap: 6px; align-items: start; }
@@ -1027,7 +1027,7 @@ var I18N = {
     // A list (.txt, .csv) is read here; a word list or document (PDF of up to 5 pages, or Word; up to 2 MB) goes to
     // the server, which reads its text: a plain list as it is, anything else through the AI, which takes out the
     // vocabulary. Either way the words land in the list below for the teacher to check; nothing is saved by itself.
-    // With the AI the upload sits in its own box in the site's AI look (a grape panel, a ✨ AI chip, the button in the
+    // With the AI the upload sits in its own box in the site's AI look (a cream card with a Spark top edge, a dark ✨ AI chip, the button in the
     // AI style), with an optional line for the AI ("Science words only") sent with the file.
     var aiUp = !!B.canWriteClues;
     var up = el('label', 'cw-btn cw-file' + (aiUp ? ' cw-ai' : '')), file = el('input'), upText = el('span', '', '📄 ' + t(B.canWriteClues ? 'uploadDoc' : 'upload')); file.type = 'file'; file.id = 'cw-file';
