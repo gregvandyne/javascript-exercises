@@ -88,7 +88,10 @@ h3{font-size:17px;font-weight:700}
 .ptile.next{border-color:var(--leaf);box-shadow:0 0 0 2px rgba(31,157,99,.25)}
 
 /* progress */
-.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+@media (max-width:520px){.stats{grid-template-columns:1fr 1fr}}
+.graphBox{position:relative}
+.graphBox .yl{position:absolute;inset-inline-start:0;font-size:12px;font-weight:700;color:var(--muted);background:var(--card);padding:0 4px;border-radius:4px}
 .stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:12px 14px}
 .stat small{display:block;color:var(--muted);font-size:13px;font-weight:600}
 .stat b{display:block;font-size:26px;font-weight:800;margin-top:2px}
@@ -358,7 +361,7 @@ h3{font-size:17px;font-weight:700}
   <div class="backrow"><button class="back" data-go="home" data-icon="back"><span data-i18n="c.back">Back</span></button></div>
   <h1 data-i18n="prog.h">My progress</h1>
   <div class="stats" id="progStats" style="margin-top:14px"></div>
-  <div class="card" style="margin-top:12px"><h3 data-i18n="pz.rating">Puzzle rating</h3><svg class="graph" id="progGraph" role="img" viewBox="0 0 600 180" preserveAspectRatio="none"></svg><p class="sub" id="progGraphNote"></p></div>
+  <div class="card" style="margin-top:12px"><h3 data-i18n="pz.rating">Puzzle rating</h3><div class="graphBox" id="progGraphBox"><svg class="graph" id="progGraph" role="img" viewBox="0 0 600 180" preserveAspectRatio="none"></svg></div><p class="sub" id="progGraphNote"></p></div>
   <div class="section" data-i18n="prog.themes">Theme mastery</div>
   <div class="card mastery" id="progThemes"></div>
   <div class="section" data-i18n="prog.bot">Wins against Oomba Bot</div>
@@ -6665,7 +6668,7 @@ function renderPuzzleHub() {
   for (const th of CONFIG.packs) {
     const v = pz.themes[th] || [0, 0], pct = v[1] ? Math.round(100 * v[0] / v[1]) : 0;
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pack'; b.dataset.theme = th;
-    b.innerHTML = `<b></b><small></small><div class="bar"><i style="width:${v[1] ? Math.max(4, pct) : 0}%"></i></div>`;
+    b.innerHTML = `<b></b><small></small><div class="bar"><i style="width:${pct ? Math.max(4, pct) : 0}%"></i></div>`;
     b.querySelector('b').textContent = t('th.' + th); b.querySelector('small').textContent = v[1] ? t('prog.of', { a: v[0], b: v[1] }) : t('prog.none');
     b.addEventListener('click', () => nextPuzzle('theme', th));
     grid.appendChild(b);
@@ -6699,7 +6702,7 @@ function renderProgress() {
   ].join('');
   // the rating graph: every rated puzzle, with the first day and the last day under it
   const svg = $('#progGraph'), pts = [[pz.hist.length ? pz.hist[0][0] : d, CONFIG.puzzleStart], ...pz.hist];
-  if (pts.length < 2) { svg.innerHTML = `<text x="300" y="95" text-anchor="middle" font-size="16" fill="rgba(20,20,20,.55)">${escapeHTML(t('prog.graphEmpty'))}</text>`; svg.setAttribute('aria-label', t('prog.graphEmpty')); $('#progGraphNote').textContent = ''; }
+  if (pts.length < 2) { for (const y of $('#progGraphBox').querySelectorAll('.yl')) y.remove(); svg.innerHTML = `<text x="300" y="95" text-anchor="middle" font-size="16" fill="rgba(20,20,20,.55)">${escapeHTML(t('prog.graphEmpty'))}</text>`; svg.setAttribute('aria-label', t('prog.graphEmpty')); $('#progGraphNote').textContent = ''; }
   else {
     const vals = pts.map(p => p[1]), lo = Math.min(...vals), hi = Math.max(...vals), span = Math.max(60, hi - lo), W = 600, H = 180, P = 14;
     const xy = vals.map((v, i) => [P + i * (W - 2 * P) / (vals.length - 1), H - P - (v - lo) / span * (H - 2 * P - 10)]);
@@ -6709,10 +6712,12 @@ function renderProgress() {
     svg.innerHTML = `${grid}<path d="${line}L${last[0].toFixed(1)} ${H - P}L${P} ${H - P}Z" fill="rgba(102,199,146,.18)"/><path d="${line}" fill="none" stroke="#1F9D63" stroke-width="3" stroke-linejoin="round" vector-effect="non-scaling-stroke"/><circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="5" fill="#1F9D63"/>`;
     svg.setAttribute('aria-label', t('prog.graphA', { a: fmtN(vals[0]), b: fmtN(vals[vals.length - 1]) }));
     $('#progGraphNote').textContent = `${fmtDay(pts[0][0])} – ${fmtDay(pts[pts.length - 1][0])} · ${t('prog.peak', { n: hi })}`;
+    const box = $('#progGraphBox'); for (const y of box.querySelectorAll('.yl')) y.remove();
+    for (const [v, f] of [[hi, (P + 10) / H], [lo, (H - P) / H]]) { const sp = document.createElement('span'); sp.className = 'yl'; sp.textContent = fmtN(v); sp.style.top = `calc(${(f * 100).toFixed(1)}% - 9px)`; box.appendChild(sp); }
   }
   $('#progThemes').innerHTML = CONFIG.packs.map(th => {
     const v = pz.themes[th] || [0, 0], pct = v[1] ? Math.round(100 * v[0] / v[1]) : 0;
-    return `<div class="mrow"><span>${escapeHTML(t('th.' + th))}</span><small>${v[1] ? escapeHTML(t('prog.of', { a: v[0], b: v[1] })) : escapeHTML(t('prog.none'))}</small><div class="bar"><i style="width:${v[1] ? Math.max(3, pct) : 0}%"></i></div></div>`;
+    return `<div class="mrow"><span>${escapeHTML(t('th.' + th))}</span><small>${v[1] ? escapeHTML(t('prog.of', { a: v[0], b: v[1] })) : escapeHTML(t('prog.none'))}</small><div class="bar"><i style="width:${pct ? Math.max(3, pct) : 0}%"></i></div></div>`;
   }).join('');
   $('#progWins').innerHTML = LEVELS.map(k => `<div class="stat"><span style="display:block;width:40px;height:40px;border-radius:10px;overflow:hidden;margin:0 auto 6px">${botFace(k)}</span><small>${escapeHTML(levelName(k))}</small><b>${fmtN(DATA.wins[k] | 0)}</b></div>`).join('');
   const n = PUZZLES.filter((p, i) => DATA.puzzles[i]).length;
