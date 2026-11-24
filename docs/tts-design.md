@@ -42,7 +42,7 @@ text. Price: about $0.015 a minute or per 1,000 characters (also unverified, so 
 | `seed-games/word-peek.html`, `shark-plank.html` (`speakWith`) | `BRB.speak` on the site. Their own `speechSynthesis` code runs only when the file is opened on its own | site | no |
 | `seed-games/atlas-quest.html` (l.1057) | `Oomba.say(country. Capital: … fact)`, then kit `say()`, then `BRB.speak` | site (data packs) | the kit is frozen, the game is not |
 | `seed-games/hero-of-sunvale.html` | **Silent today.** `UI.say()` (l.8720) shows a typewriter card. `SND3.voice(pitch)` plays a beep "voice". Dialogue comes from `I18N` (`// ==== I18N START/END ====` markers, 13 locales, 472 keys in `en`) | site | no (it pins kit 1.1.0 by SRI, which does not change) |
-| castle-clash, code-isle (`pip.say`) | speech **bubbles** only, never spoken. code-isle's `pip.say` text is the kid's own code output, so it must never be spoken | – | – |
+| code-isle (`pip.say`) | speech **bubbles** only, never spoken (Castle Clash had an owl with bubbles until 24 Nov 2026; it now has none). code-isle's `pip.say` text is the kid's own code output, so it must never be spoken | – | – |
 | `public/js/live-common.js` `speak()`/`voiceFor()` (l.249) | parent page, `speechSynthesis` | teacher (question sets) | no |
 | `public/js/live-play.js` `readQuestion()` (l.352) | Read-aloud button, plus automatic reading when the teacher's "Read questions aloud" (`acc.read`) is on | teacher | no |
 | `public/js/live-quiz-step.js` (lesson homework quiz) | Read button, `speak(q + choices)` | teacher | no |
