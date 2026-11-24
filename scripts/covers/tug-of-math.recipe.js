@@ -3,7 +3,7 @@
 // the computer is thinking. Grade 3 (times tables and adding), a fixed seed so the card never changes by chance.
 export default {
   'tug-of-math': { viewport: { width: 420, height: 560 }, scale: 1.7, touch: true, async prep(f) {
-    await f.waitForFunction(() => window.__brbTest && window.__brbTest.answerOf && document.querySelector('.ok-title-screen .ok-hot'), null, { timeout: 60000 });
+    await f.waitForFunction(() => window.__brbTest && window.__brbTest.answerOf && window.__brbTest.state().screen !== 'none', null, { timeout: 60000 });
     await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations(); t.start({ mode: 'cpu', grade: 3, diff: 'normal', len: 90, seed: 21 }); });
     await f.waitForFunction(() => window.__brbTest.state().screen === 'play', null, { timeout: 15000 });
     await f.evaluate(() => {
