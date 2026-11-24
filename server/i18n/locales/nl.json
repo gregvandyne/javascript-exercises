@@ -1263,6 +1263,17 @@
       "code": "Klascode: {code}",
       "grid": "Kruiswoordpuzzelrooster"
     },
+    "printHunt": {
+      "untitled": "Woordzoeker",
+      "find": "Zoek deze woorden",
+      "hidden": "Verstopte woorden in het rooster: {n}. Vind ze allemaal!",
+      "grid": "Rooster van de woordzoeker",
+      "how": {
+        "easy": "De woorden staan horizontaal en verticaal.",
+        "medium": "De woorden staan horizontaal, verticaal en schuin.",
+        "hard": "De woorden staan alle kanten op, ook achterstevoren."
+      }
+    },
     "printBox": {
       "divide": "Staartdeling",
       "multiply": "Vermenigvuldigen",
@@ -1295,6 +1306,22 @@
       "answer": "Antwoord:",
       "choose": "Omcirkel er één.",
       "figure": "Figuur bij vraag {n}"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "Wereldkaart", "car": "Kaart van het Caribisch gebied", "me": "Kaart van het Midden-Oosten"},
+      "untitled": "Aardrijkskundequiz",
+      "mapTitle": "Kaart: {region}",
+      "mapAlt": "Blinde kaart: {region}",
+      "mapH": "Vul de kaart in",
+      "mapHow": "Schrijf de naam van elk genummerd land op.",
+      "mapHowCo": "Kleine landen hebben een pijl naar hun eigen lijn.",
+      "questions": "Vragen",
+      "capc": "{city} is de hoofdstad van welk land?",
+      "fam": "Welk land is beroemd om {thing}?",
+      "region": {
+        "car": "Caribisch gebied",
+        "me": "Midden-Oosten"
+      }
     }
   },
   "friends": {

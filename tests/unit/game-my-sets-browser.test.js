@@ -47,11 +47,11 @@ function setsReply(d) {
 const CW_HTML = fs.readFileSync(path.join(ROOT, 'seed-games/crossword.html'), 'utf8');
 const HOST = 'http://game.invalid';
 const cwItems = (t, words) => G.cleanCrossItems([{ t, w: words, r: 4, b: true, h: true }]);
-async function openCrossword({ sets = [], mySets = true, width = 1280 } = {}) {
+async function openCrossword({ sets = [], mySets = true, make = mySets, width = 1280 } = {}) {
   const b = await launch();
   const ctx = await b.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: SHOTS ? 2 : 1 });
   const doc = frameDocument(CW_HTML, { user: { displayName: 'T', avatar: 'x', lang: 'en', dir: 'ltr' }, game: { id: 'g', title: 'Crossword', url: `${HOST}/play/crossword` }, save: {}, canSave: true, tts: { langs: [] },
-    canAssign: true, print: true, ...(mySets ? { mySets: true } : {}) });
+    canAssign: true, print: true, ...(mySets ? { mySets: true } : {}), ...(make ? { make: true } : {}) });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
 <script>window.__msgs = []; window.__slug = 'crossword'; window.__store = ${JSON.stringify(sets)};${STORE_JS}
 addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);

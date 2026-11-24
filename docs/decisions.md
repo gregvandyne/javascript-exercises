@@ -12695,3 +12695,147 @@ crossword look and feel."
 - Tests: `tests/unit/live-board-battle-look.test.js` (Chromium, through `tests/unit/_live-frame-harness.js`: each game as
   a real live frame inside the production wrapper, the protocol's messages played into it; the projector's lobby, board
   or arena, question, counts and podium in light and dark, and a phone's tap sending one answer).
+## Word Hunt in Crossword's look, with your own words (24 Nov 2026)
+Owner: "Let's update word hunt to use a similar kit and set up to Crossword (with the grid background and all of the same
+my worksheets and make your own functionality)."
+- **The look.** `seed-games/word-hunt.html` is now hand-written outside the Oomba Kit, like Crossword: the dashboard
+  widgets' cream cards with a group colour on the top edge and the icon chip, the dark "Now" bar for what to do next
+  (help, "Now tap the last letter", a cheer, a hint), the dotted mint board, light and dark from `BRB.theme`, Bricolage
+  Grotesque, `BRB.sfx`, its own confetti (none with reduced motion). The kit worlds, the lion and the kit's title, pause
+  and results screens are gone; each theme keeps a picture (an emoji) and a widget colour. The letters sit on one framed
+  square with the found words' bands in an SVG under them (colour-blind-safe colours with dark outlines, as before).
+- **The play is the same.** Drag or tap the first and last letter (keyboard: arrows and Enter), the three levels and
+  their directions, 13 themes and Surprise, the daily puzzle, Hint, Read to me (`BRB.speak`, guarded), Relax, pause (P,
+  and it pauses when the page is hidden), Race a friend, `BRB.score.submit` and one `BRB.gameOver` per solve. The themes'
+  generator is copied unchanged into a `word-hunt-core` block, so a seed (and the daily puzzle) gives the same grid as
+  before (a unit test compares). The save key `word-hunt-v1` keeps its shape; `mine` is added (Your word hunts).
+- **Make your own, as Crossword.** The same people and tools as Crossword: anyone may make a word hunt in the game
+  (it stays in their own save); saving it as a set where the fence allows (`BRB.canSaveSet`); PDF or Word upload for
+  grown-ups who may host with AI on (`BRB.canWriteClues`; the frame's `clues` flag for word-hunt checks only the
+  words-from-doc call). Paste or type a list (one word a line or with commas; a "word - definition" line or a
+  spreadsheet's "word, definition" row gives the word), a .txt or .csv file, or a PDF or Word file through Crossword's
+  path (`POST /api/games/:id/words-from-doc`, `services/crossword-doc.js` and `set-ai.js` unchanged: no new prompt, its
+  limits, the 10 files a day and the AI spending cap; the route keeps the words only, 2 to 15 letters, at most 25, and
+  drops the clues). 3 to 25 words; options: grid size (Auto, the smallest that holds them, or 8, 10, 12, 15), directions
+  (Easy across and down, Medium with diagonals, Hard every way and backwards) and whether students see the word list
+  (hidden: they see how many are left and the ones found). The preview shows the answers (a toggle), Try another layout,
+  Play it, Print, the teacher's instructions box, and Save and get a link (the class code, the link, a QR code, Copy
+  and Assign to a class). Drafts save themselves to Your word hunts on the home; My worksheets (school staff) has Open,
+  Print, the answer key, Copy link, Duplicate, Rename and Delete exactly like Crossword's.
+- **Any script.** A teacher's words may be in any script, as Crossword's are. The grid holds each word's letters as
+  capitals (spaces, hyphens and apostrophes left out); the gaps are filled with the game's weighted A-Z for plain
+  English, with the words' own accented letters added for other Latin lists, and with the script's alphabet (Cyrillic,
+  Greek, Hebrew, Arabic, kana, common Traditional Chinese characters) and the words' own letters otherwise. A Hebrew or
+  Arabic list reads right to left ("across" runs that way). The themes' words stay English, as before.
+- **Checks.** The filler never spells a blocked word in any direction (the same internal list), and no word can be read
+  anywhere it wasn't put; a word inside another of the teacher's words (CAT in CATERPILLAR) is fine, and finding it in
+  either place counts. Words that can't fit the chosen grid are listed, never forced in; the editor warns first when a
+  word is longer than the chosen grid.
+- **Server.** `services/game-sets.js cleanHuntItems` (`[{ t, w: [word], s, d, r, b }]`; every word and the title through
+  `cleanText`), registered in `SET_GAMES`; named after its title like Crossword (rename changes the puzzle's title, a
+  copy is "Copy of ..."); `labelOf` "Habitats: word hunt, 12 words"; `sizeOf` its words. No migration.
+- **Still a whole game to assign.** Being a set game would have sent Word Hunt through the Assign page and refused it
+  without a set (as Crossword is), and skipped it in "Assign all". `game-sets.js OPEN_SET_GAMES` ('word-hunt') keeps it
+  assignable as it is, from the class page, a folder and `/api/teach/assign-game`; with a set chosen, the set opens.
+- **Print** (`services/word-hunt-print.js`, registered in `services/game-print.js`): the game sends only the words and
+  options; the server makes the grid itself by running the game's own `word-hunt-core` block with node:vm (read from
+  `seed-games/word-hunt.html`, already copied by the Dockerfile), so every printed letter is the server's and matches
+  the game. The page: title, Name and Date, the teacher's instructions (as Crossword's, `print-note.js`), how the words
+  run, the grid, the word list with tick boxes (or "Words hidden in the grid: 12"), the footer with the class code and
+  link; the answer key (school staff only, the route checks) rings each word. Words in all 13 locales (`play.printHunt.*`).
+- **Words.** The game's own words in all 13 site languages: its play words as before, Crossword's shared teacher words
+  (code box, sharing, My worksheets) and new ones for making a word hunt. AI voices read only the lines it says
+  (`services/tts-lines.js`: the tagline, the praise, a hint, a race's turns), not the teacher tools.
+- **The companion** knows Word Hunt takes your own word list (grades 1-8, `services/companion-games.js`).
+- Tests: tests/unit/word-hunt-sets.test.js (the core, the generator unchanged, any script, the list reader,
+  cleanHuntItems, the routes owner only, the frame's flags, words from a document, print and its route, the page),
+  tests/unit/word-hunt-browser.test.js (Chromium: play with a real drag and tap-tap, make, preview, save, My worksheets,
+  a student's set), tests/e2e/word-hunt.spec.js (rewritten for the new look, the same coverage).
+## Atlas Quest in Crossword's look, with a teacher's geography quizzes and printable maps (24 Nov 2026)
+
+Owner: "Let's do the same to Atlas Quest [as Crossword: its look and its teacher setup], where a teacher could upload a
+geography lesson, make geography quizzes, print off blank maps, etc. with a super comprehensive library of geography
+facts, etc. Students can be assigned and finish these assignments in the app of course but they can also be printed out
+for students to fill in. For small countries, add the ability to build arrows with input lines."
+- **The look.** Every screen is now the page's own DOM in Crossword's widget style (`.cw-*` tokens and classes copied
+  from crossword.html, plus `.aq-*`): the header with the lit count, passport, settings and sound; the 3D globe on a
+  board card (the dotted mint board behind a transparent renderer that follows the board's size, not the window); the
+  panel beside it (or below it on a phone) holds the home (regions, levels, the mode tiles with their group colour on
+  the icon chip), the question (the dark "Now" bar), results (stars, Play again, Home) and the teacher's widget; a
+  country's file, the passport, settings and Captain Skye are widget cards in a scrim (no browser dialogs; Start over
+  asks on the card). Every mode, its scoring, `BRB.score`/`BRB.gameOver` and the save key `atlas-quest-v1` are as
+  before (one field added: `mine`, the teacher's quizzes). **The kit is still loaded** for the reviewed language packs
+  (`Oomba.t`), the map palette, icons, sounds, the clock and read aloud; its title screen, dialogs, win screen and
+  settings modal are no longer used. New words are in a table of the page's own (`ATQ_I18N`, `tw()`), 13 languages; the
+  older words stay `tr()` so the packs' checksums (and tests/unit/atlas-quest.test.js) are untouched.
+- **Make your own geography quiz** (anyone, exactly as Crossword offers it; saving needs `BRB.canSaveSet`): question
+  types (label the country on a map, name the capital, capital to country, flag to country, which continent, famous
+  for, the teacher's own question and answer); a whole region (continents, the Caribbean, the Middle East: the game's
+  own country list), five at random, or hand-picked by search; up to 60 questions. Saved as a question set
+  (`game-sets.js cleanAtlasItems`: one item `{ t, r, q, a, h }`; countries are ISO codes checked against the game's list
+  (`live/atlas.js codes`), never names; the title, questions and answers through the site's text filter; capital
+  questions never about the two countries the game leaves them out for). The set's name is the quiz's title (as
+  Crossword's). Share (class code, link, QR, Copy, Assign), drafts in the game save, and My worksheets with Print, the
+  answer key, a blank map, Play, Copy link, Duplicate, Rename and Delete.
+- **Students** open a link or class code and play it on the globe: map questions are Find it, the others four choices,
+  the teacher's own a typed answer with Check (two tries; case, accents, "the" and punctuation don't count). Finishing
+  sends one `BRB.gameOver({ won: true, score })`.
+- **Printing** (`services/atlas-print.js`, through `BRB.print` and the game printers): the quiz worksheet (the map with
+  its numbered countries and a line for each, then the questions with a line each, flags shown), a blank map of any
+  region (numbered or bare), and the answer key on its own page for school staff only. The outline map is drawn on the
+  server from the game's own map data by the game's own map code: the `atlas-map` block in the page, run as it is with
+  node:vm, so the printed map is exactly the builder's. Black outlines on white, US Letter and A4.
+- **Arrows with answer lines: a leader-line layout** (reworked the same day after review: free-floating lines could
+  cross). A country too small to write on at the map's size (its largest piece under about 26 map units, or no shape at
+  all) gets an answer line in a column in the margin beside the map, left or right (the nearer side), with a straight
+  leader from the line's start to the country and an arrowhead there. The lines keep the countries' order down the
+  column with at least a line's height between them; any two leaders that would cross swap places (always shorter, so
+  it ends), so no two leaders ever cross (unit-tested on the Caribbean, Europe, Africa, Oceania, North America and Asia
+  presets). The number sits at the line's start, right where its leader begins ("12 ____" on the right, "____ 12" on
+  the left). In the builder's preview the teacher drags a line up or down its column or across to the other side
+  (arrow keys too), takes an arrow away or adds one to any map country, and can place them all again; the choice is
+  kept with the quiz (`a: [[code, lng*10, lat*10]]`: the side and the preferred height) and printed as placed. The
+  answer key writes a name on its line only at the normal size when it fits; the key's numbered list always has it.
+  The world map leaves its tiny countries off a blank map (it says how many). Map titles read naturally in each
+  language ("Map of the Caribbean", "Map of the Middle East", "Map of the world": their own keys). The printed page
+  keeps the print area's 0.5 in margins.
+- **US English on screen for `en`.** The game's English words and data were written in British spelling (colour,
+  neighbour, grey, metres...); the page and the printer turn them to US spelling for `en` only (`us()`, a short list of
+  word swaps), leaving en-GB and the frozen language packs as they are.
+- **Upload a geography lesson** (PDF, Word or .txt; grown-ups who may host, the same flag, limits and daily counter as
+  Crossword's word lists, through `BRB.wordsFromDoc`, which now also takes `txt` for Atlas Quest only): one model call
+  (`set-ai.js draftGeoQuiz`, prompt `geoDocPrompt`: the lesson is data, every question must be answerable from it, no
+  sides on disputed borders) returns country questions as kind + ISO code (checked against the game's list) and the
+  teacher's kind as a short question and answer (through the text filter). They land in the list for the teacher to
+  check; nothing is saved by itself; the file is never stored or logged.
+- **The geography library**: every country (flag, capital, continent, population band, languages, neighbours, coast,
+  famous for, fun fact) from `AtlasData`, searchable and by continent; and a facts set (`window.AtlasFacts`, written by
+  hand in English): continents, oceans, 13 major rivers, mountain ranges, deserts and lakes, with only well-established
+  facts and rounded figures, each linked to its countries. The facts set is English only for now (it says so).
+- Tests: tests/unit/atlas-quiz.test.js (cleanAtlasItems, the routes, the map code and arrows, printing and the key,
+  the lesson upload), tests/e2e/atlas-quest-kit.spec.js (Chromium: a mode played, a quiz made, an arrow dragged, saved,
+  printed with its key, listed; a student plays the link to one gameOver).
+
+## Make your own: grown-ups who may host only (24 Nov 2026)
+The owner decided that "Make your own" in Crossword, Word Hunt and Atlas Quest (the builder for a teacher's own puzzle
+or quiz) is for teachers and grown-ups, not children or students. Until now Crossword offered Make to everyone, with
+drafts in the player's own game save.
+- **The rule** (`INIT.make`, `BRB.canMake`; routes/games.js, docs/sdk.md): grown-ups who may host, the same people who
+  may host a live game (`classlive-access.js canHost`: school staff, the platform admin and a family grown-up), where
+  the grown-up fence lets them save their game. It does not depend on AI being on (`clues` still does). False for a
+  student, a child, a guest and a signed-out player, and in any preview, as `clues` and `mySets` are.
+- **A family grown-up keeps Make**: they host live games and the owner said "grown-ups", so they make and print their
+  own puzzles from their game save, as before. The fence still keeps them from saving a set, class codes and
+  documents, so their builder has no Save and share (unchanged).
+- **In the games**: without `BRB.canMake` there is no Make button, no "Your crosswords" / "Your word hunts" /
+  "Your quizzes" list (nor its guest note), no "Change it" back into the builder from a puzzle, and in Atlas Quest no
+  "Make it a quiz" on a blank map or "Make a quiz" in the library. Word Hunt's "Your own words" card becomes the class
+  code alone. A link or a class code plays as before. Drafts already in a child's save are left as they are, unshown.
+- **On the server**: AI clues and document uploads already required a host. Saving a set did not: any signed-in
+  non-guest could post one. In these three games `POST /api/games/:id/sets` now refuses anyone who may not host
+  (403 `notAllowed`), and the frame says `setSave: false` for them, so `BRB.canSaveSet` stays true to what the server
+  does. The other set games (Algebra Builder, The Big Divide, Mistake Hunt) keep their rules.
+- Tests: tests/unit/make-gate.test.js (the flag for each kind of account with AI on and off, previews, the save,
+  document and clue routes refusing students, children, guests and the family fence, and in Chromium each game's home
+  with and without Make and drafts, plus a student playing a link); harnesses in crossword, word-hunt-browser and
+  game-my-sets-browser pass `make` for a teacher and leave it off for their student cases.

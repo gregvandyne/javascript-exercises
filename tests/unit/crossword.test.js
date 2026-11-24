@@ -265,12 +265,12 @@ let browser;
 test.after(async () => { if (browser) await browser.close(); });
 const SETID = 's-abcdefghjk';
 /** The game in the production frame, on a stand-in for the play page that answers the SDK (save, find, clues, copy). */
-async function open({ width = 1280, height = 900, lang = 'en', save = {}, set = null, canAssign = true, clues = true } = {}) {
+async function open({ width = 1280, height = 900, lang = 'en', save = {}, set = null, canAssign = true, clues = true, make = true } = {}) {
   const { chromium } = await import('playwright-core');
   browser ||= await chromium.launch({ ...(exe ? { executablePath: exe } : {}), args: ['--no-sandbox'] });
   const ctx = await browser.newContext({ viewport: { width, height }, hasTouch: width < 700 });
   const doc = frameDocument(HTML, { user: { displayName: 'T', avatar: 'x', lang, dir: ['ar', 'he'].includes(lang) ? 'rtl' : 'ltr' }, game: { id: 'g', title: 'Crossword', url: `${HOST}/play/crossword` }, save, canSave: true, tts: { langs: [] },
-    ...(set ? { set } : {}), ...(canAssign ? { canAssign: true } : {}), ...(clues ? { clues: true } : {}) });
+    ...(set ? { set } : {}), ...(canAssign ? { canAssign: true } : {}), ...(clues ? { clues: true } : {}), ...(make ? { make: true } : {}) });
   const page = `<!doctype html><meta charset=utf-8><style>html,body{margin:0;height:100%}iframe{border:0;width:100%;height:100%}</style><iframe sandbox="${SANDBOX}" src="${HOST}/frame"></iframe>
 <script>window.__msgs = []; addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) return; window.__msgs.push(d);
   const back = m => e.source.postMessage(Object.assign({ brb: 1 }, m), '*');
@@ -431,7 +431,7 @@ test('teacher: a PDF or Word document fills the list; an old .doc is turned away
 
 test('student: a link opens the set; typing, Check, Hint, the win and one game-over message', { skip, timeout: 180_000 }, async () => {
   const items = G.cleanCrossItems([{ t: 'Habitats', w: [['habitat', 'where an animal lives'], ['predator', 'it hunts'], ['prey', 'it is hunted'], ['erosion', 'wearing away of land'], ['migrate', 'move with the seasons']], r: 4, b: true, h: true }]);
-  const g = await open({ set: { id: SETID, items, mine: false }, canAssign: false, clues: false });
+  const g = await open({ set: { id: SETID, items, mine: false }, canAssign: false, clues: false, make: false });
   try {
     await g.start('play');
     let s = await g.state();
@@ -467,7 +467,7 @@ test('student: a link opens the set; typing, Check, Hint, the win and one game-o
 
 test('a class code finds the set; a wrong code says so; phone width with no sideways scroll; Hebrew right to left', { skip, timeout: 180_000 }, async () => {
   const items = G.cleanCrossItems([{ t: 'Pets', w: [['rabbit', 'long ears'], ['turtle', 'a shell'], ['parrot', 'it can talk'], ['hamster', 'small, in a cage']], r: 2, h: false }]);
-  const g = await open({ width: 390, height: 844, set: null, canAssign: false, clues: false });
+  const g = await open({ width: 390, height: 844, set: null, canAssign: false, clues: false, make: false });
   try {
     await g.p.evaluate(it => { window.__setItems = it; }, items);
     await g.start('home');

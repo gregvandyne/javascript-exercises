@@ -644,6 +644,9 @@ var I18N = {
   'use strict';
   var C = window.CrosswordCore, QR = window.CrosswordQR, B = window.BRB || {};
   var USER = B.user || {}, LANG = USER.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en;
+  // "Make your own" (BRB.canMake): the builder and Your crosswords, for teachers and grown-ups who may host only. A
+  // student or a child plays a teacher's link or class code and the sample; drafts already in their save stay there.
+  var CAN_MAKE = B.canMake === true;
   /** A word from the table; {x} takes vars.x. */
   function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v && typeof s === 'string') s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
   var DIR = USER.dir === 'rtl' ? 'rtl' : 'ltr';
@@ -709,20 +712,19 @@ var I18N = {
     showHome();
   }
 
-  /* Home: make a crossword (teachers), a class code, or the sample; then the teacher's own crosswords. */
+  /* Home: make a crossword (grown-ups who may host: BRB.canMake), a class code, or the sample; then their own crosswords. */
   function showHome() {
     var c = card(screen('home'));
-    head(c, '🧩', t('homeH'), 'class'); c.appendChild(el('p', 'cw-sub', t('tag')));
-    var make = bigBtn('cw-big cw-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'cw-make');
-    c.appendChild(make);
+    head(c, '🧩', t('homeH'), 'class'); if (CAN_MAKE) c.appendChild(el('p', 'cw-sub', t('tag')));   // "Make a crossword from your own words"
+    if (CAN_MAKE) c.appendChild(bigBtn('cw-big cw-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'cw-make'));
     // My worksheets: every crossword this teacher saved on Oomba (BRB.canListSets: school staff, never a student).
     if (B.canListSets && B.mySets) c.appendChild(bigBtn('cw-big', '📚', t('ws'), t('wsSub'), function () { sfx('select'); showSheets(); }, 'cw-ws'));
     // A class code (what a teacher hands out): the set straight away. Not where the server would refuse the lookup
     // (BRB.canFindSet false: a family grown-up's account).
     if (B.canFindSet !== false) drawCode(c);
     c.appendChild(bigBtn('cw-big', '🧩', t('sample'), t('sampleSub'), function () { sfx('select'); playSample(); }, 'cw-sample'));
-    if (SAVE.mine.length) drawMine(c);
-    else if (USER.isGuest) c.appendChild(el('p', 'cw-note', '🔒 ' + t('guestKeep')));
+    if (CAN_MAKE && SAVE.mine.length) drawMine(c);
+    else if (CAN_MAKE && USER.isGuest) c.appendChild(el('p', 'cw-note', '🔒 ' + t('guestKeep')));
     if (S.backTo === 'home') { S.backTo = ''; focusTop(); }
   }
   function drawCode(c) {
@@ -830,7 +832,7 @@ var I18N = {
     if (!list.length) {
       var e = el('div', 'cw-empty-ws'); e.id = 'cw-ws-empty';
       e.appendChild(el('p', 'cw-lead', t('wsEmpty')));
-      e.appendChild(bigBtn('cw-big cw-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'cw-ws-make'));
+      if (CAN_MAKE) e.appendChild(bigBtn('cw-big cw-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'cw-ws-make'));
       box.appendChild(e); focusTop(); return;
     }
     var ul = el('ul', 'cw-list'); box.appendChild(ul);
@@ -1341,7 +1343,7 @@ var I18N = {
     var gw = el('section', 'cw-gridw'); left.appendChild(gw);
     var top = head(gw, '🧩', P.t || t('title'), 'class');
     var prog = el('span', 'cw-prog'); prog.id = 'cw-prog'; top.appendChild(prog);
-    if (S.fromBuild || P.mine) top.appendChild(btn('cw-btn cw-quiet', '‹ ' + t(P.mine && !S.fromBuild ? 'changeIt' : 'edit'), function () {
+    if (CAN_MAKE && (S.fromBuild || P.mine)) top.appendChild(btn('cw-btn cw-quiet', '‹ ' + t(P.mine && !S.fromBuild ? 'changeIt' : 'edit'), function () {
       saveProgress();
       if (S.fromBuild && S.draft) { S.fromBuild = false; return showPreview(); }
       edit(SAVE.mine.filter(function (m) { return (P.id && m.id === P.id) || (P.set && m.set === P.set); })[0] || { t: P.t, w: P.w, r: P.r, b: P.b, h: P.h, set: P.set });
@@ -1540,7 +1542,7 @@ var I18N = {
     box.appendChild(el('p', 'cw-stats', t('stats', { h: S.hints, c: S.checks, p: points })));
     var row = el('div', 'cw-row cw-wrap cw-acts');
     row.appendChild(btn('cw-btn cw-go', '🔁 ' + t('playAgain'), function () { sfx('select'); play(S.P, { fresh: true }); }, 'cw-again'));
-    if (S.fromBuild || S.P.mine) row.appendChild(btn('cw-btn', '✏️ ' + t(S.fromBuild ? 'edit' : 'changeIt'), function () { var bk = document.getElementById('cw-back'); if (bk) bk.click(); }, 'cw-done-edit'));
+    if (CAN_MAKE && (S.fromBuild || S.P.mine)) row.appendChild(btn('cw-btn', '✏️ ' + t(S.fromBuild ? 'edit' : 'changeIt'), function () { var bk = document.getElementById('cw-back'); if (bk) bk.click(); }, 'cw-done-edit'));
     else row.appendChild(btn('cw-btn cw-quiet', '🏠 ' + t('home'), function () { S.backTo = 'home'; showHome(); }, 'cw-done-home'));
     box.appendChild(row);
     left.insertBefore(box, left.querySelector('.cw-clue'));
