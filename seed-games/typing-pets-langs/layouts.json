@@ -1,0 +1,103 @@
+{
+ "us": {
+  "name": "English (US)",
+  "rows": [
+   "1!2@3#4$5%6^7&8*9(0)-_",
+   "qQwWeErRtTyYuUiIoOpP",
+   "aAsSdDfFgGhHjJkKlL;:'\"",
+   "zZxXcCvVbBnNmM,<.>/?"
+  ]
+ },
+ "de": {
+  "name": "Deutsch (QWERTZ)",
+  "rows": [
+   "1!2\"3§4$5%6&7/8(9)0=ß?",
+   "qQwWeErRtTzZuUiIoOpPüÜ",
+   "aAsSdDfFgGhHjJkKlLöÖäÄ#'",
+   "yYxXcCvVbBnNmM,;.:-_"
+  ]
+ },
+ "fr": {
+  "name": "Français (AZERTY)",
+  "dead": {
+   "^": "aâeêiîoôuû",
+   "¨": "eëiï"
+  },
+  "rows": [
+   "&1é2\"3'4(5-6è7_8ç9à0)°",
+   "aAzZeErRtTyYuUiIoOpP^¨",
+   "qQsSdDfFgGhHjJkKlLmMù%",
+   "wWxXcCvVbBnN,?;.:/!§"
+  ]
+ },
+ "es": {
+  "name": "Español (QWERTY)",
+  "dead": {
+   "´": "aáeéiíoóuúAÁEÉIÍOÓUÚ",
+   "¨": "uüUÜ"
+  },
+  "rows": [
+   "1!2\"3·4$5%6&7/8(9)0='?¡¿",
+   "qQwWeErRtTyYuUiIoOpP`^",
+   "aAsSdDfFgGhHjJkKlLñÑ´¨",
+   "zZxXcCvVbBnNmM,;.:-_"
+  ]
+ },
+ "it": {
+  "name": "Italiano (QWERTY)",
+  "rows": [
+   "1!2\"3£4$5%6&7/8(9)0='?ì^",
+   "qQwWeErRtTyYuUiIoOpPèé",
+   "aAsSdDfFgGhHjJkKlLòçà°",
+   "zZxXcCvVbBnNmM,;.:-_"
+  ]
+ },
+ "pt": {
+  "name": "Português (ABNT2)",
+  "lead": "'\"",
+  "dead": {
+   "´": "aáeéiíoóuúAÁEÉIÍOÓUÚ",
+   "`": "aàAÀ",
+   "~": "aãoõAÃOÕ",
+   "^": "aâeêoôAÂEÊOÔ"
+  },
+  "rows": [
+   "1!2@3#4$5%6¨7&8*9(0)-_",
+   "qQwWeErRtTyYuUiIoOpP´`",
+   "aAsSdDfFgGhHjJkKlLçÇ~^",
+   "zZxXcCvVbBnNmM,<.>;:/?"
+  ]
+ },
+ "ru": {
+  "name": "Русский (ЙЦУКЕН)",
+  "lead": "ёЁ",
+  "rows": [
+   "1!2\"3№4;5%6:7?8*9(0)-_",
+   "йЙцЦуУкКеЕнНгГшШщЩзЗхХъЪ",
+   "фФыЫвВаАпПрРоОлЛдДжЖэЭ",
+   "яЯчЧсСмМиИтТьЬбБюЮ.,"
+  ]
+ },
+ "he": {
+  "name": "עברית",
+  "rtl": true,
+  "lead": ";~",
+  "rows": [
+   "1!2@3#4$5%6^7&8*9(0)-_",
+   "/¤'¤ק¤ר¤א¤ט¤ו¤ן¤ם¤פ¤",
+   "ש¤ד¤ג¤כ¤ע¤י¤ח¤ל¤ך¤ף:,\"",
+   "ז¤ס¤ב¤ה¤נ¤מ¤צ¤ת>ץ<.?"
+  ]
+ },
+ "ar": {
+  "name": "العربية",
+  "rtl": true,
+  "lead": "ذ¤",
+  "rows": [
+   "1!2@3#4$5%6^7&8*9(0)-_",
+   "ض¤ص¤ث¤ق¤ف¤غإع¤ه¤خ¤ح؛ج¤د¤",
+   "ش¤س¤ي¤ب¤ل¤اأت¤ن،م¤ك:ط\"",
+   "ئ¤ء¤ؤ¤ر¤¤¤ىآة¤و,ز.ظ؟"
+  ]
+ }
+}
