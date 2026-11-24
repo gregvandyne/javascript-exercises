@@ -13004,3 +13004,43 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 - **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
+
+## Atlas Quest: blank maps that read on a phone, answer keys for grown-ups, and a five-step quiz maker (24 Nov 2026)
+
+Owner, on a phone: "Make sure the blank maps on mobile are correct. They don't look right to me and make sure there is an
+answer key." Then: "I also don't find the geography quiz builder super intuitive... break it down into steps."
+- **Answer lines near their countries** (the atlas-map block, `autoPlace` / `layout`): a small country's answer line
+  now goes in open sea as near it as it can, its leader crossing as little of other countries as it can (land on the map
+  is a grid of cells with a running sum, so "is this box sea" is four lookups). Where the sea is too tight for the whole
+  line (the Tyrrhenian, the Adriatic, the Gulf) it is a number tag: just the number in a small box at the leader's start,
+  its line under the map with the big countries'. The margin column beside the map is the last resort, and still how a
+  saved quiz's older placements (a choice at the frame's edge) print, so they print as placed. Every line is placed
+  with the others: no two leaders cross, no line covers another, a leader or a number on the map; a number written on a
+  country moves off an arrowhead that lands on it (Italy's, by San Marino's). Teachers still drag lines: a drop on the map
+  puts the line's start there (it turns to face its country), a drop off it goes to that margin. Per preset, leaders are
+  under 60% of the old total length, cross no more land, and none is longer than a fifth of the map
+  (`tests/unit/atlas-quiz.test.js`). Placements are cached (24), about 0.2 to 0.4 s a region the first time.
+- **Readable on a phone**: the map on screen keeps its lines at a screen weight (non-scaling strokes), and "Zoom in on
+  the map" (or a tap on it) opens it full screen at the size where numbers read at about 12 px, with pinch, + and −,
+  Ctrl and the wheel, a double tap and drag. Printing is unchanged in look; a whole region's blank map now fits one page
+  (a smaller map, four columns of lines) on Letter and A4.
+- **Answer keys for grown-ups**: "Show answers" under the blank map (the names on the small countries' lines and a
+  numbered list) and the printed "With answer key" are for the grown-ups who may make a quiz (`BRB.canMake`) and school
+  staff; the print route checks the same (`printKeyFor` in routes/games.js: staff, or in Atlas Quest `INIT.make`'s own
+  check). Students, children, guests and signed-out players print the blank map only and see no names. Other games'
+  keys stay school staff's.
+- **The quiz maker in five steps** (one long scroll before): 1 Countries (the name; pick countries, or "Start from a
+  lesson" where the AI upload is on), 2 Question types (a live count; changing them rebuilds every country's
+  questions), 3 Your own questions (Skip when empty), 4 Check (each question's type and remove, hints, the map with its
+  arrows), 5 Save and share (save, class code, link, QR, Assign, Play it, Print). "Step n of 5" and the five steps on
+  top (steps already reachable are buttons), Back and Next on each, and Next is disabled with its reason beside it. The
+  draft is remembered on every change; the step too (`SAVE.building`), so a reload comes back to the same step, and a
+  saved draft or worksheet opens on Check. A lesson's drafted questions land on Check with the AI note.
+- End-to-end before the change (teacher on a phone and desktop: make, preview, move arrows, save, code, assign, print,
+  student plays): types had to be picked before countries and changing them later did nothing; the own-question answer
+  box was cut off at 390 px; "Save draft", "Preview" and "Save and get a link" were three saves; the preview mixed arrow
+  editing with sharing and printing; the lesson upload sat inside "Your own questions"; the map preview could not be
+  read on a phone; the "Added 1." toast sat over the search box.
+- Tests: `tests/unit/atlas-quiz.test.js` (layout, key route), `tests/unit/make-gate.test.js` (key on screen by role, the
+  390 px zoom and Show answers, the five steps at 375 px with the lesson landing on Check),
+  `tests/e2e/atlas-quest-kit.spec.js` (the stepper end to end).

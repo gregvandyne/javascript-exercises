@@ -3,11 +3,13 @@
 // the printable page. Never HTML from the game: the quiz goes through game-sets.js cleanAtlasItems (countries as ISO
 // codes from the game's list; the teacher's words through the site's text filter), and the map is drawn here from the
 // game's own map data by the game's own map code (the atlas-map block in seed-games/atlas-quest.html, run as it is), so
-// the printed map, its numbers and its arrows are the ones the teacher placed in the quiz maker. Black outlines on white.
+// the printed map, its numbers and its arrows are the ones the teacher placed in the quiz maker. Small countries' lines
+// stand in open sea near them (or, too tight there, a number tag whose line is under the map; or the margin). Black outlines on white.
 //   - a quiz worksheet: the map with its numbered countries (small ones: an arrow to an answer line in open space) and
 //     a line for each, then the other questions with a line each (a flag question shows the flag);
 //   - blank: the map and its lines only (a region's blank map);
-//   - key: the answer key on a page of its own after it (school staff only: the route checks who asks).
+//   - key: the answer key on a page of its own after it (school staff, and in Atlas Quest the grown-ups who may make a
+//     quiz (BRB.canMake); never a student or a child: the route checks who asks).
 // note: the teacher's own instructions, printed at the top (never on the key). Words in the viewer's language: the
 // page's own (play.print*, server/i18n) and the countries', capitals' and continents' from the game's reviewed packs.
 import fs from 'node:fs';
@@ -98,9 +100,13 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
     return esc(t('play.printAtlas.fam', { thing: famous(cc) }));
   };
   const answer = x => (x[0] === 'own' ? x[2] : x[0] === 'cap' ? capKey(x[1]) : x[0] === 'cont' ? cont(x[1]) : name(x[1]));
-  const lines = Object.keys(nums).filter(cc => !co[cc]);
+  // a line under the map for every number that has none on it (a small country's number tag has its line here too)
+  const placed = map.layout(doc.r, co).items;
+  const lines = Object.keys(nums).filter(cc => !placed[cc] || placed[cc].tag);
   const foot = `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span>${code ? `<span>${esc(t('play.print.code', { code }))}</span>` : ''}${link ? `<span dir="ltr" class="cwp-link">${esc(link)}</span>` : ''}</footer>`;
-  const mapPart = showMap ? `<section class="atp-mapsec">
+  // many lines (a whole region's blank map): a smaller map and four columns of lines, so the sheet stays one page
+  const many = lines.length > 18 || n > 30;
+  const mapPart = showMap ? `<section class="atp-mapsec${many ? ' atp-many' : ''}">
 ${n ? `<h2>${esc(t('play.printAtlas.mapH'))}</h2><p class="atp-how">${esc(t('play.printAtlas.mapHow'))}${Object.keys(co).length ? ' ' + esc(t('play.printAtlas.mapHowCo')) : ''}</p>` : ''}
 <div class="atp-map">${svg({})}</div>
 ${lines.length ? `<ol class="atp-lines">${lines.map(cc => `<li><b class="cwp-num">${nums[cc]}</b><i class="atp-blank"></i></li>`).join('')}</ol>` : ''}
@@ -115,7 +121,7 @@ ${foot}</section>`;
   if (doc.key) {
     const names = {}; for (const cc of Object.keys(co)) names[cc] = name(cc);
     const all = [...Object.keys(nums).map(cc => [nums[cc], name(cc)]), ...(doc.blank ? [] : others.map((x, i) => [n + 1 + i, answer(x)]))];
-    key = `<section class="cwp-page atp-page atp-key">
+    key = `<section class="cwp-page atp-page atp-key${many ? ' atp-many' : ''}">
 <header class="cwp-head"><h1 dir="auto">${esc(t('play.print.keyTitle', { title }))}</h1></header>
 ${n ? `<div class="atp-map atp-keymap">${svg(names)}</div>` : ''}
 <ol class="atp-keylist">${all.map(([k, v]) => `<li><b class="cwp-num">${k}</b><span dir="auto">${esc(v)}</span></li>`).join('')}</ol>

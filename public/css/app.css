@@ -2195,6 +2195,12 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .atp-keylist{list-style:none;margin:0;padding:0;columns:3;column-gap:20pt}
 .atp-keylist li{display:flex;gap:6pt;margin:0 0 3pt;break-inside:avoid}
 .atp-keymap svg{max-height:5.6in}
+/* a whole region's blank map (many numbers): a smaller map, four columns of lines, so each page fits Letter and A4 */
+.atp-many .atp-map svg{max-height:5in}
+.atp-many .atp-lines{columns:4;column-gap:14pt}
+.atp-many .atp-lines li{margin:0 0 5pt}
+.atp-key.atp-many .atp-keymap svg{max-height:5in}
+.atp-key.atp-many .atp-keylist li{margin:0 0 1.5pt}
 /* The Big Divide's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
    (0.3in), with room to work under it; the answer key smaller, four to a row. */
 .bbp-mine{margin:0 0 6pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}

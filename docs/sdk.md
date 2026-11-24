@@ -422,7 +422,8 @@ true only for the activity's maker and school staff, from `INIT.printKey`). The 
   (`services/print-note.js`: control characters dropped, line breaks kept, blank is none), printed in bold at the top of
   the sheet and never on the answer key.
 - `POST /api/games/:id/print` `{ doc }` → `{ html }` (the printable page in the viewer's language and direction) or
-  `{ code: 'bad' }` (400), `{ code: 'key' }` (403: the answer key is for school staff only, BRB.canAssign's check). Open
+  `{ code: 'bad' }` (400), `{ code: 'key' }` (403: the answer key is for school staff only, BRB.canAssign's check;
+  in Atlas Quest also for the grown-ups who may make a quiz, `BRB.canMake`'s check, never a student or a child). Open
   to anyone who can open the game, 20 a minute per address. Nothing is kept.
 - The page puts the HTML in `#print-area` (hidden on screen; in print it is all that shows, `public/css/app.css`
   "Printing"), calls `window.print()` and empties it after printing.
