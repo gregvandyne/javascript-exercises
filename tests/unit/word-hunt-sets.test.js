@@ -168,6 +168,10 @@ test('words from a document: Crossword\'s path, the words only (no clues), 2 to 
     assert.equal((await post(kid, { kind: 'docx', data: doc.toString('base64') })).status, 403);
     assert.equal((await post(mum, { kind: 'docx', data: doc.toString('base64') })).status, 404);
     assert.equal((await call(`/api/games/${WH.id}/clues`, { method: 'POST', body: { words: ['cat'] }, user: teacher })).status, 404, 'no AI clues in a word hunt');
+    // the teacher's focus line for the AI: the text filter first (refused: focusBad, no AI); fine with a plain list
+    const bad = await post(teacher, { kind: 'docx', data: doc.toString('base64'), focus: 'words from my email someone@example.com' });
+    assert.equal(bad.status, 400); assert.equal(bad.json.code, 'focusBad');
+    assert.equal((await post(teacher, { kind: 'docx', data: doc.toString('base64'), focus: 'Science words only' })).status, 200);
   } finally { D.hooks.client = undefined; }
 });
 
@@ -233,7 +237,7 @@ test('the page: Crossword\'s look and tools; the save key and its shape; read-al
   // every language has the game's words
   const I18N = vm.runInNewContext(HTML.slice(HTML.indexOf('// ==== I18N START ===='), HTML.indexOf('// ==== I18N END ====')) + '\n;I18N', {});
   assert.deepEqual(Object.keys(I18N).sort(), ['ar', 'de', 'en', 'en-GB', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant'].sort());
-  const need = ['make', 'buildH', 'listH', 'sizeH', 'dirH', 'dir_hard', 'bankShow', 'unplaced', 'ws', 'wsEmpty', 'saved', 'assign', 'printKey', 'pickTheme', 'race', 'daily'];
+  const need = ['make', 'buildH', 'listH', 'sizeH', 'dirH', 'dir_hard', 'bankShow', 'unplaced', 'ws', 'wsEmpty', 'saved', 'assign', 'printKey', 'pickTheme', 'race', 'daily', 'aiChip', 'focusL', 'focusPh', 'focusBad'];
   for (const L of Object.keys(I18N)) if (L !== 'en-GB') for (const k of need) assert.ok(I18N[L][k], `${L}.${k}`);
   for (const L of Object.keys(I18N)) for (const [k, v] of Object.entries(I18N[L])) assert.doesNotMatch(JSON.stringify(v), /crossword|crucigrama|mots croisés|kreuzwort|cruciverba|кроссворд|クロスワード|填字|תשבץ|متقاطعة/i, `${L}.${k}`);
 });
