@@ -1262,6 +1262,17 @@
       "code": "Código de clase: {code}",
       "grid": "Cuadrícula del crucigrama"
     },
+    "printHunt": {
+      "untitled": "Sopa de letras",
+      "find": "Encuentra estas palabras",
+      "hidden": "Palabras escondidas en la cuadrícula: {n}. ¡Encuéntralas todas!",
+      "grid": "Cuadrícula de la sopa de letras",
+      "how": {
+        "easy": "Las palabras van en horizontal y en vertical.",
+        "medium": "Las palabras van en horizontal, en vertical y en diagonal.",
+        "hard": "Las palabras van en todas direcciones, también al revés."
+      }
+    },
     "printBox": {
       "divide": "División larga",
       "multiply": "Multiplicación",

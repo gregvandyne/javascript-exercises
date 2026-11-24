@@ -1262,6 +1262,17 @@
       "code": "Code de classe : {code}",
       "grid": "Grille de mots croisés"
     },
+    "printHunt": {
+      "untitled": "Mots mêlés",
+      "find": "Trouve ces mots",
+      "hidden": "Mots cachés dans la grille : {n}. Trouve-les tous !",
+      "grid": "Grille de mots mêlés",
+      "how": {
+        "easy": "Les mots vont à l’horizontale et à la verticale.",
+        "medium": "Les mots vont à l’horizontale, à la verticale et en diagonale.",
+        "hard": "Les mots vont dans tous les sens, même à l’envers."
+      }
+    },
     "printBox": {
       "divide": "Division posée",
       "multiply": "Multiplication",

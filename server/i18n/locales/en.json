@@ -1263,6 +1263,17 @@
       "code": "Class code: {code}",
       "grid": "Crossword grid"
     },
+    "printHunt": {
+      "untitled": "Word Hunt",
+      "find": "Find these words",
+      "hidden": "Words hidden in the grid: {n}. Find them all!",
+      "grid": "Word search grid",
+      "how": {
+        "easy": "Words go across and down.",
+        "medium": "Words go across, down and diagonally.",
+        "hard": "Words go every way, even backwards."
+      }
+    },
     "printBox": {
       "divide": "Long division",
       "multiply": "Multiplication",

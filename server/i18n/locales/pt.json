@@ -1263,6 +1263,17 @@
       "code": "Código da turma: {code}",
       "grid": "Grade das palavras cruzadas"
     },
+    "printHunt": {
+      "untitled": "Caça-palavras",
+      "find": "Ache estas palavras",
+      "hidden": "Palavras escondidas na grade: {n}. Ache todas!",
+      "grid": "Grade do caça-palavras",
+      "how": {
+        "easy": "As palavras estão na horizontal e na vertical.",
+        "medium": "As palavras estão na horizontal, na vertical e na diagonal.",
+        "hard": "As palavras estão em todas as direções, até de trás para frente."
+      }
+    },
     "printBox": {
       "divide": "Divisão longa",
       "multiply": "Multiplicação",

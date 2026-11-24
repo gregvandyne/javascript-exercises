@@ -445,6 +445,9 @@ router.get('/frame/:token', (req, res) => {
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     ...(!preview && cluesGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/clues`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
+    // Word Hunt's "Upload a word list (PDF or Word)" (BRB.canWriteClues / BRB.wordsFromDoc; no AI clues there): the same
+    // grown-ups and the same path as Crossword's, words only.
+    ...(!preview && huntGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
     // Mistake Hunt's "Upload a passage" (BRB.canReadDocs / BRB.textFromDoc): the text of a PDF or Word file, no AI, for the
     // same grown-ups as Crossword's word lists (who may host), where the fence lets the call through.
     ...(!preview && docTextGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/text-from-doc`) ? { docText: true } : {}),
@@ -594,6 +597,8 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
 // Crossword clues (services/set-ai.js draftClues): Claude writes a clue for each of the teacher's words, for the game's
 // word list only (nothing is saved here). Body { words: [string] (1-30), level }. -> { clues: [string] } | { code }.
 const cluesGame = g => setGame(g) && g.slug === 'crossword';
+/** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
+const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
 const docTextGame = g => setGame(g) && g.slug === 'mistake-hunt';
 /** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
@@ -630,7 +635,7 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
 // The file is never stored or logged (only its kind and how many words).
 router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 20, 60e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
-  if (!cluesGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!cluesGame(g) && !huntGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, max = CW_DOC.bytes;   // 2 MB either way (base64 inside the site's 3 MB JSON limit)
   if (!['pdf', 'docx'].includes(b.kind)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docType' });
@@ -642,8 +647,11 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   // Every file read counts towards the day's 10 (a file turned away for its size, pages or type does not).
   if (r.ok || ['docNone', 'aiFailed'].includes(r.code)) allow(day, CW_DOC.perDay, 864e5);
   if (!r.ok) return res.status(r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
-  audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: r.words.length, ai: r.ai, cut: r.cut });
-  res.json({ title: r.title, words: r.words, cut: r.cut, ai: r.ai });
+  // Word Hunt keeps only the words a word search takes (2 to 15 letters), without their clues.
+  const words = huntGame(g) ? r.words.filter(([w]) => { const n = [...gameSets.crossLetters(w)].length; return n >= 2 && n <= gameSets.HUNT.letters; }).slice(0, gameSets.HUNT.max).map(([w]) => [w, '']) : r.words;
+  if (!words.length) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docNone' });
+  audit(req.user.id, 'game.doc_words', g.id, { kind: b.kind, count: words.length, ai: r.ai, cut: r.cut });
+  res.json({ title: r.title, words, cut: r.cut, ai: r.ai });
 });
 // Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)
 // or a Word file, at most 2 MB, read here with no AI; Crossword's limits and its 10 files a day (the same counter).

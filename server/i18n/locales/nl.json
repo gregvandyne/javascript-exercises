@@ -1263,6 +1263,17 @@
       "code": "Klascode: {code}",
       "grid": "Kruiswoordpuzzelrooster"
     },
+    "printHunt": {
+      "untitled": "Woordzoeker",
+      "find": "Zoek deze woorden",
+      "hidden": "Verstopte woorden in het rooster: {n}. Vind ze allemaal!",
+      "grid": "Rooster van de woordzoeker",
+      "how": {
+        "easy": "De woorden staan horizontaal en verticaal.",
+        "medium": "De woorden staan horizontaal, verticaal en schuin.",
+        "hard": "De woorden staan alle kanten op, ook achterstevoren."
+      }
+    },
     "printBox": {
       "divide": "Staartdeling",
       "multiply": "Vermenigvuldigen",

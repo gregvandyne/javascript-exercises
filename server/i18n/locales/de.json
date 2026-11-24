@@ -1263,6 +1263,17 @@
       "code": "Klassencode: {code}",
       "grid": "Kreuzworträtsel-Gitter"
     },
+    "printHunt": {
+      "untitled": "Suchsel",
+      "find": "Finde diese Wörter",
+      "hidden": "Im Raster versteckte Wörter: {n}. Finde alle!",
+      "grid": "Suchsel-Raster",
+      "how": {
+        "easy": "Die Wörter stehen waagerecht und senkrecht.",
+        "medium": "Die Wörter stehen waagerecht, senkrecht und diagonal.",
+        "hard": "Die Wörter stehen in alle Richtungen, auch rückwärts."
+      }
+    },
     "printBox": {
       "divide": "Schriftliche Division",
       "multiply": "Multiplikation",
