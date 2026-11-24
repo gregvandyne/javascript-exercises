@@ -1305,6 +1305,22 @@
       "answer": "答え：",
       "choose": "1つに○をつけよう。",
       "figure": "問題{n}の図"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "世界地図", "car": "カリブ海の地図", "me": "中東の地図"},
+      "untitled": "地理クイズ",
+      "mapTitle": "地図：{region}",
+      "mapAlt": "白地図：{region}",
+      "mapH": "地図に書きこもう",
+      "mapHow": "番号のついた国の名前を書こう。",
+      "mapHowCo": "小さい国は、矢印の先の線に書こう。",
+      "questions": "問題",
+      "capc": "{city}はどの国の首都？",
+      "fam": "{thing}で有名な国はどこ？",
+      "region": {
+        "car": "カリブ海",
+        "me": "中東"
+      }
     }
   },
   "friends": {

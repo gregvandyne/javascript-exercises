@@ -2176,6 +2176,25 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .whp-words li{display:flex;align-items:center;gap:6pt;margin:0 0 4pt;break-inside:avoid;font-size:12pt}
 .whp-box{display:inline-block;width:9pt;height:9pt;border:1pt solid #000;border-radius:2pt;flex:none}
 .whp-hidden{font-size:12.5pt;font-weight:700;text-align:center;margin:4pt 0 10pt}
+/* Atlas Quest's worksheets (services/atlas-print.js, on the crossword's page frame): the outline map as wide as the page
+   (black on white, drawn on the server from the game's own map), a line for each number, then the questions with a line each. */
+.atp h2{font-size:13pt;margin:0 0 4pt;font-weight:800;break-after:avoid}
+.atp-how{margin:0 0 6pt}
+.atp-map{margin:0 0 10pt;break-inside:avoid}
+.atp-map svg{display:block;width:100%;height:auto;max-height:6.6in}
+.cwp-mine~.atp-mapsec .atp-map svg{max-height:6in}
+.atp-lines{list-style:none;margin:0 0 12pt;padding:0;columns:3;column-gap:20pt}
+.atp-lines li{display:flex;align-items:flex-end;gap:6pt;margin:0 0 10pt;break-inside:avoid}
+.atp-blank{flex:1;border-bottom:1pt solid #000;height:1.1em}
+.atp-qsec{margin:0 0 8pt}
+.atp-qs{margin:0;padding-inline-start:2.2em}
+.atp-qs li{margin:0 0 12pt;break-inside:avoid}
+.atp-q{display:block}
+.atp-ans{display:block;border-bottom:1pt solid #000;height:1.5em;max-width:4.2in}
+.atp-flag{display:block;width:1.1in;height:auto;margin:4pt 0 0;border:0.75pt solid #000}
+.atp-keylist{list-style:none;margin:0;padding:0;columns:3;column-gap:20pt}
+.atp-keylist li{display:flex;gap:6pt;margin:0 0 3pt;break-inside:avoid}
+.atp-keymap svg{max-height:5.6in}
 /* The Big Divide's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
    (0.3in), with room to work under it; the answer key smaller, four to a row. */
 .bbp-mine{margin:0 0 6pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}

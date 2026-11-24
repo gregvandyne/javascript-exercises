@@ -1305,6 +1305,22 @@
       "answer": "答案：",
       "choose": "圈出一個。",
       "figure": "第{n}題的圖"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "世界地圖", "car": "加勒比海地圖", "me": "中東地圖"},
+      "untitled": "地理測驗",
+      "mapTitle": "地圖：{region}",
+      "mapAlt": "空白地圖：{region}",
+      "mapH": "填寫地圖",
+      "mapHow": "寫出每個有編號的國家名稱。",
+      "mapHowCo": "小國家有箭頭指向自己的橫線。",
+      "questions": "問題",
+      "capc": "{city}是哪個國家的首都？",
+      "fam": "哪個國家以{thing}聞名？",
+      "region": {
+        "car": "加勒比海",
+        "me": "中東"
+      }
     }
   },
   "friends": {

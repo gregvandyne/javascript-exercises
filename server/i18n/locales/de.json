@@ -1306,6 +1306,22 @@
       "answer": "Antwort:",
       "choose": "Kreise eine Antwort ein.",
       "figure": "Abbildung zu Aufgabe {n}"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "Weltkarte", "car": "Karte der Karibik", "me": "Karte des Nahen Ostens"},
+      "untitled": "Erdkunde-Quiz",
+      "mapTitle": "Karte: {region}",
+      "mapAlt": "Umrisskarte: {region}",
+      "mapH": "Beschrifte die Karte",
+      "mapHow": "Schreib den Namen jedes nummerierten Landes auf.",
+      "mapHowCo": "Kleine Länder haben einen Pfeil zu ihrer eigenen Linie.",
+      "questions": "Fragen",
+      "capc": "{city} ist die Hauptstadt von welchem Land?",
+      "fam": "Welches Land ist berühmt für {thing}?",
+      "region": {
+        "car": "Karibik",
+        "me": "Naher Osten"
+      }
     }
   },
   "friends": {

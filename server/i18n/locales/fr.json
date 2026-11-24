@@ -1305,6 +1305,22 @@
       "answer": "Réponse :",
       "choose": "Entoure une réponse.",
       "figure": "Figure de la question {n}"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "Carte du monde", "car": "Carte des Caraïbes", "me": "Carte du Moyen-Orient"},
+      "untitled": "Quiz de géographie",
+      "mapTitle": "Carte : {region}",
+      "mapAlt": "Carte muette : {region}",
+      "mapH": "Complète la carte",
+      "mapHow": "Écris le nom de chaque pays numéroté.",
+      "mapHowCo": "Les petits pays ont une flèche vers leur propre ligne.",
+      "questions": "Questions",
+      "capc": "{city} est la capitale de quel pays ?",
+      "fam": "Quel pays est célèbre pour {thing} ?",
+      "region": {
+        "car": "Caraïbes",
+        "me": "Moyen-Orient"
+      }
     }
   },
   "friends": {
