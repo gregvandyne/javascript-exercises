@@ -245,9 +245,22 @@
   .aq-cardbody { display: flex; flex-direction: column; gap: 10px; }
   .aq-cardbody h3 { margin: 4px 0 0; }
   .aq-skye { margin: 0; font-size: 1.12rem; font-weight: 600; line-height: 1.45; }
-  .aq-file .top { display: flex; gap: 14px; align-items: center; }
-  .aq-file .top .aq-flag { width: 116px; flex: none; }
-  .aq-filesub { color: var(--muted); font-weight: 700; margin-top: 4px; }
+  /* A country's file: header, facts, did-you-know, culture finds and the buttons, each with room to breathe. */
+  .aq-file { display: flex; flex-direction: column; gap: 18px; }
+  .aq-file .top { display: flex; gap: 16px; align-items: center; padding-bottom: 16px; border-bottom: 2px solid var(--line); }
+  .aq-file .top .aq-flag { width: 112px; flex: none; }
+  .aq-file .top h2 { margin: 0; }
+  .aq-filesub { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--muted); font-weight: 700; margin-top: 6px; }
+  .aq-file .aq-dl { gap: 0; }
+  .aq-file .aq-dl dt, .aq-file .aq-dl dd { padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .aq-file .aq-dl dd { padding-inline-start: 16px; }
+  .aq-file .aq-dl dt:last-of-type, .aq-file .aq-dl dd:last-of-type { border-bottom: 0; }
+  .aq-file .aq-fact { padding: 14px 16px; }
+  .aq-file .aq-culture { display: flex; flex-direction: column; gap: 8px; } .aq-file .aq-culture:empty { display: none; }
+  .aq-file .aq-ch { margin: 0; }
+  .aq-file .aq-acts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding-top: 4px; }
+  .aq-file .aq-acts .cw-btn { width: 100%; justify-content: center; white-space: nowrap; padding-inline: 12px; }
+  .aq-file .aq-acts .cw-go { grid-column: 1 / -1; order: -1; }
   .aq-dl { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 0; }
   .aq-dl dt { font-weight: 800; color: var(--muted); } .aq-dl dd { margin: 0; font-weight: 700; } .aq-dl small { color: var(--muted); font-weight: 600; }
   .aq-dl .aq-capnote { display: block; margin-top: 2px; font-size: 0.86em; line-height: 1.35; }
@@ -1855,7 +1868,7 @@ function fileCard(c, note) {
     ${note ? `<p class="aq-fact"><b>${esc(note)}</b></p>` : ''}
     ${factsDl(c)}
     <div class="aq-fact"><b>${esc(tr('Did you know?'))}</b> ${esc(c.fact)}</div>
-    ${cultureHtml(c)}
+    <div class="aq-culture">${cultureHtml(c)}</div>
     <div class="aq-acts"></div></div>`;
   const md = openCard(html, () => { if (MARK[c.cc] === 'pick') { delete MARK[c.cc]; drawMap(); } }, { icon: '🌍', g: 'time' });
   const acts = md.querySelector('.aq-acts');
