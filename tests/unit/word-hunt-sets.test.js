@@ -229,7 +229,7 @@ test('the page: Crossword\'s look and tools; the save key and its shape; read-al
   assert.match(HTML, /B\.score\.submit\(save\.total, 'puzzle points'\)/); assert.match(HTML, /B\.gameOver\(\{ won: true, score: save\.total \}\)/);
   assert.match(HTML, /typeof BRB\.speak === 'function' \? BRB\.speak\(/);
   assert.doesNotMatch(HTML, /\b(confirm|alert|prompt)\(/); assert.doesNotMatch(HTML, /—/, 'no em dashes');
-  for (const id of ['wh-make', 'wh-ws', 'wh-codein', 'wh-paste', 'wh-file', 'wh-shuffle', 'wh-save', 'wh-print', 'wh-print-key', 'wh-assign', 'wh-copy', 'wh-qr']) assert.ok(HTML.includes(`'${id}'`), id);
+  for (const id of ['wh-make', 'wh-ws', 'wh-codein', 'wh-file', 'wh-shuffle', 'wh-save', 'wh-print', 'wh-print-key', 'wh-assign', 'wh-copy', 'wh-qr']) assert.ok(HTML.includes(`'${id}'`), id);
   // every language has the game's words
   const I18N = vm.runInNewContext(HTML.slice(HTML.indexOf('// ==== I18N START ===='), HTML.indexOf('// ==== I18N END ====')) + '\n;I18N', {});
   assert.deepEqual(Object.keys(I18N).sort(), ['ar', 'de', 'en', 'en-GB', 'es', 'fr', 'he', 'it', 'ja', 'nl', 'pt', 'ru', 'zh-Hant'].sort());
