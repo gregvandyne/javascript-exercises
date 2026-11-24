@@ -132,8 +132,10 @@ test('Word Hunt: a teacher makes a word hunt, previews, saves (code, link, QR, A
     await g.frame.click('#wh-make');
     await g.until(() => window.__brbTest.whState().screen === 'build');
     await g.frame.fill('#wh-title', 'Ecosystems');
-    await g.frame.fill('#wh-paste', 'habitat - where an animal lives\npredator, prey\nerosion\nc4t');
-    await g.frame.click('#wh-addgo');
+    // no paste box: step 1 is an upload (a lesson for the AI, or a plain list), here a .txt list
+    assert.equal(await g.frame.locator('#wh-paste').count(), 0);
+    await g.frame.setInputFiles('#wh-file', { name: 'words.txt', mimeType: 'text/plain', buffer: Buffer.from('habitat - where an animal lives\npredator, prey\nerosion\nc4t') });
+    await g.until(() => window.__brbTest.whState().draft === 4);
     assert.equal((await g.ws()).draft, 4);
     assert.equal(await g.frame.inputValue('#wh-w1'), 'predator');
     // too few words or a word too long for the chosen grid: the editor says so
