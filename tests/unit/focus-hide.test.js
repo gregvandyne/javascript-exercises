@@ -71,6 +71,10 @@ test('Play, Learn and search list no hidden game and keep the others', async () 
   assert.ok(!learn.includes('/learn/music-games') && !learn.includes('/learn/computer-science'));
   assert.ok(learn.includes('/learn/word-games'));
   assert.ok(!learn.includes('id="courses"') && !learn.includes('/teachers/cs-quest'), 'no course row');
+  // not even for the platform admin (the owner, 24 Nov 2026: "The learn page should no longer have the courses on there")
+  const adminLearn = (await get('/learn', boss)).text.replace(/<script[\s\S]*?<\/script>/g, '');
+  { const m = adminLearn.match(/.{120}(CS Quest|Number Quest|Cyber Defenders).{120}/s); assert.ok(!m, 'no courses on Learn for the admin: ' + (m ? m[0] : '')); }
+  assert.ok(!/courses that teach/i.test(adminLearn), 'the lead line no longer mentions courses');
   assert.equal((await get('/learn/music-games')).status, 404);
   assert.equal((await get('/learn/word-games')).status, 200);
   assert.deepEqual(hiddenIn((await get('/learn/math-games')).text), []);

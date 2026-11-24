@@ -7580,6 +7580,7 @@
     "tab": {
       "h1": "Learn",
       "lead": "Games and courses that teach something. Pick a subject, or just pick a game.",
+      "leadGames": "Games that teach something. Pick a subject, or just pick a game.",
       "leadStaff": "The same library your students see, with buttons to assign and host.",
       "filters": "Filter the games",
       "subject": "Subject",

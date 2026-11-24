@@ -6957,6 +6957,7 @@
     "tab": {
       "h1": "Aprender",
       "lead": "Jogos e cursos que ensinam alguma coisa. Escolha uma matéria ou só um jogo.",
+      "leadGames": "Jogos que ensinam alguma coisa. Escolha uma matéria ou só um jogo.",
       "leadStaff": "A mesma biblioteca que seus alunos veem, com botões para passar atividades e conduzir ao vivo.",
       "filters": "Filtrar os jogos",
       "subject": "Matéria",
