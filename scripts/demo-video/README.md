@@ -21,6 +21,9 @@ The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: 
    scripts: `MayaMakes` / `secret123`, a teacher for Oomba Live).
    Oomba Live is recorded on a second server whose game clock is slowed to the capture speed:
    `LIVE_CLOCK=0.055 PORT=3350 BRB_DATA_DIR=/tmp/claude-0/demo2/data-live node --import ./scripts/demo-video/slowclock.mjs server/index.js`
+   The storyboard shows games now hidden behind the `ARCADE` flag (Gulp City, the solo Would You Rather, Quest Race in
+   the live picker, an arcade game in the Builder), so both servers run with `ARCADE=1` until the story changes.
+   `rec-safety.mjs` opens the studio in `DEMO_STUDIO` (any of MayaMakes's built games, e.g. one `rec-builder.mjs` made).
 2. Record the clips (each takes `land` or `port`):
    - `node scripts/demo-video/rec-games.mjs land` - Gulp City, Atlas Quest, Would You Rather, Castle Clash
    - `node scripts/demo-video/rec-builder.mjs land` - a kid types an idea, the build and the automatic playtest, playing it

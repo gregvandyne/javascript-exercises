@@ -2,7 +2,7 @@
 // node .demo2/rec-games.mjs land|port [only]
 import { chromium } from 'playwright';
 import { launchOptions } from '../chromium.js';
-import { Capture } from './vc.mjs';
+import { Capture, cursorInit, setCursor, glide } from './vc.mjs';
 import { B, login, gameFrame, fullGame } from './lib.mjs';
 const orient = process.argv[2] || 'land', only = process.argv[3];
 const V = orient === 'land' ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
@@ -41,15 +41,31 @@ await run('wyr', async () => {
   const { f, cap } = await open('would-you-rather');
   await T(f, 'start', 'alone', { count: 10 }); await cap.advance(800);
   await f.evaluate(() => { const b = document.getElementById('readyBtn') || document.querySelector('[id*=start i]'); b && b.click(); }); await cap.advance(1200);
-  await cap.seconds(3.2, async i => { if (i === 18) await T(f, 'pick', 'a'); });
+  // Since the restyle (#570) the cards are still between answers, so a cursor picks one and moves on to the next question.
+  await cursorInit(p); await setCursor(p, V.viewport.width * 0.72, V.viewport.height * 0.88);
+  await cap.frames(6);
+  const a = await glide(cap, p, f.locator('#optA'), { sec: 0.6, click: false, dy: 0.55 });
+  await T(f, 'pick', 'a'); await cap.frames(9, i => setCursor(p, a.x, a.y, i / 9)); await setCursor(p, a.x, a.y);
+  await cap.frames(18);
+  const n = await glide(cap, p, f.locator('#nextBtn'), { sec: 0.5, click: false });
+  await f.evaluate(() => document.getElementById('nextBtn').click()); await cap.frames(9, i => setCursor(p, n.x, n.y, i / 9)); await setCursor(p, n.x, n.y);
+  await cap.frames(21);
   out(cap, 'wyr');
 });
 await run('chess', async () => {
   const { f, cap } = await open('castle-clash');
   await T(f, 'start', { mode: 'robot', level: 'pawn' }); await cap.advance(1500);
-  const moves = ['e2e4', 'g1f3', 'f1c4']; let k = 0;
-  // a move at frames 8, 36, 64 (the robot answers on its own clock in between)
-  await cap.seconds(3.2, async i => { if ([8, 36, 64].includes(i) && k < moves.length) { const m = moves[k++]; await f.evaluate(m => { window.__brbTest.move(m, {}); }, m).catch(e => console.log('move', e.message)); } });
+  // The board is still between moves since the restyle (#570): a cursor drags each move (the robot answers on its own clock).
+  const sq = id => f.locator('.sq').nth((8 - +id[1]) * 8 + 'abcdefgh'.indexOf(id[0]));
+  await cursorInit(p); await setCursor(p, V.viewport.width * 0.7, V.viewport.height * 0.85);
+  await cap.frames(4);
+  for (const m of ['e2e4', 'g1f3', 'f1c4']) {
+    await glide(cap, p, sq(m.slice(0, 2)), { sec: 0.35, click: false });
+    const t = await glide(cap, p, sq(m.slice(2, 4)), { sec: 0.3, click: false });
+    await f.evaluate(m => { window.__brbTest.move(m, {}); }, m).catch(e => console.log('move', e.message));
+    await cap.frames(6, i => setCursor(p, t.x, t.y, i / 6)); await setCursor(p, t.x, t.y);
+  }
+  await cap.frames(14);
   out(cap, 'chess');
 });
 await br.close();

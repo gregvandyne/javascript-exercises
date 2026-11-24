@@ -101,10 +101,13 @@ const ifr = p.locator('iframe').first();
 await ifr.scrollIntoViewIfNeeded();
 await glide(cap, p, ifr, { sec: 0.55, click: false, dy: 0.47 }); mark('full');
 let gf = null; for (let i = 0; i < 40 && !gf; i++) { gf = p.frames().find(f => /\/frame\//.test(f.url())); if (!gf) await cap.frame(); }
-await gf.locator('button:has-text("Play")').first().click({ timeout: 8000, noWaitAfter: true }).catch(e => console.log('play click', e.message));
+// A pointer click on the preview no longer reaches the kit's title button (the studio's preview layer takes it), so the
+// buttons are clicked in the game's own page, as the kit's keyboard path does.
+const press = re => gf.evaluate(src => { const r = new RegExp(src, 'i'); const b = [...document.querySelectorAll('button')].find(b => b.getClientRects().length && r.test(b.textContent.trim())); if (b) b.click(); return !!b; }, re.source);
+await gf.locator('button:has-text("Play")').first().waitFor({ timeout: 8000 }).catch(e => console.log('play wait', e.message));
+if (!(await press(/^\W*Play\b/))) console.log('no Play button');
 await cap.seconds(0.8);
-const go = gf.locator('.ok-ui button:visible').filter({ hasText: /^\s*(Go|Let.s go|Start|OK)\b/i }).first();
-if (await go.count()) await go.click({ timeout: 3000, noWaitAfter: true }).catch(e => console.log('go click', e.message));
+await press(/^\W*(Go|Let.s go|Start|OK)\b/);
 await cap.seconds(0.4);
 const fb = await ifr.boundingBox(); const vw = fb.width, cy = fb.y + fb.height * 0.82; let x = fb.x + vw / 2;
 await p.evaluate(() => { document.getElementById('demo-cursor').style.opacity = '0'; });

@@ -12954,9 +12954,8 @@ repo's own scripts, same names, formats and sizes as before:
 - **Every other cover** was taken again to check it: all recipes ran but Lantern Mix's, which set a fixed 6:9 mix
   for round 3 while the round's numbers now change; it now sets the round's own right mix. No other cover was stale,
   so the other pictures were left as they were.
-- **Not redone:** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`) still show Atlas
-  Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
-  scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
+- **Redone since (24 Nov 2026):** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`)
+  were recorded again, see "Demo and parents videos in the new look" below. The four "See it in action" videos show only teaching tools.
 
 
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
@@ -13004,3 +13003,19 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 - **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
+
+## Demo and parents videos in the new look (24 Nov 2026)
+
+Owner: "Yes rebuild those videos". `public/video/oomba-demo.mp4` (/teachers/live) and `oomba-parents.mp4` (/parents)
+showed Atlas Quest and Would You Rather in the look they had before #570.
+- **Every clip recorded again** on the current app with scripts/demo-video (games, Builder, Oomba Live, sign-up, friends,
+  publish), same storyboard, scene order, timings (57.4 s and 49.3 s) and captions. Music as before: the owner's
+  AtlasAudio track (`--hit 101.16 --fade-in 0.5`), no voice-over (the published cuts had none). Posters and captions
+  replaced; no 16x9 or 9x16 extras are kept in the repository.
+- **Recording fixes:** the Builder's preview now gets the kit's Play and Go presses inside the game's page (a pointer click
+  on the preview no longer reached them); Would You Rather and Castle Clash are still between answers in the new look,
+  so a cursor picks a card and moves to Next, and drags each chess move.
+- **Shown although hidden on the site:** the story still has Gulp City (hook and montage), the solo Would You Rather,
+  Quest Race in the live picker and an arcade game made in the Builder, all behind `ARCADE` ("Focus: teaching tools
+  first"); they were recorded with `ARCADE=1` and left for the owner to decide. The publish sheet shows today's choices
+  (Only me, Friends: no Everyone while `PUBLIC_GAMES` is off).
