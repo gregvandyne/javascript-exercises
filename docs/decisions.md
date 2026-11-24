@@ -12448,3 +12448,26 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+
+## Doodle Hoot in Crossword's look (24 Nov 2026)
+- **The owner:** update several games "with the crossword like grid, branding, and feel", Doodle Hoot among them.
+- **What changed: only the look.** `seed-games/doodle-hoot.html` now wears Crossword's classroom-widget look (its tokens,
+  copied): a dotted mint board behind everything (it covers the kit's meadow scene), the drawing paper as a white card on
+  it (paper white in both themes, the same 1000 x 750 grid), cream widget cards with a group colour on the top edge and
+  an icon chip (the setup card with Pip in its chip; Pens, Your guess or the tiles, Guesses and Scores beside the board;
+  the word cards, covers, lobby and podium as one card on the board; "Who guessed it?"), the dark Now bar for the round,
+  who is drawing, the word (or the host's blanks) and the clock, pill buttons with the green main button, Bricolage
+  Grotesque from Google Fonts, light and dark from BRB.theme through the kit (else the device; the bar is green in dark
+  mode, as Crossword's). The projector (host) view and every phone view use the same pieces.
+- **The Oomba Kit stays as plumbing.** The game loop, Pip and the players' figures, sounds, settings and reduced motion,
+  Oomba Live (the live pack) and the results card with its stars, Play again and BRB.gameOver are the kit's; the results
+  card is restyled in the widget look with a trophy chip. Rewriting them by hand would have risked the live protocol and
+  the score for no visible gain.
+- **Kept exactly:** DoodleCore, DoodleWords and Pip's doodles (byte for byte), colours, sizes, the eraser, undo and clear,
+  pointer handling, the guess check, hints and points, the live messages and state, the save key `doodle-hoot-v1` and its
+  shape, the test hook, and every class and id the tests and the live lint use. Server code is unchanged. Drawings are
+  still never stored or sent to an AI, and there is still no chat.
+- **New words:** three widget names (Pens, Your guess, Scores) in all 13 languages. On a small screen the widgets drop
+  their name row and keep the coloured edge, so the board keeps its room.
+- Tests: `tests/unit/doodle-hoot-look.test.js` (the look in Chromium, light and dark, desktop and phone, through a full
+  practice game, letter tiles and pass and play; `DOODLE_SHOTS=<dir>` saves pictures); the e2e specs are unchanged.
