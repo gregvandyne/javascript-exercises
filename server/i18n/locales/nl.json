@@ -1130,7 +1130,7 @@
         "p2": "Oomba ziet alleen wat een leerkracht open heeft en veilige gegevens daarover (het leerjaar en de grootte van een klas, de widgets van een dashboard, de vragen van een Figures-werkblad, de onderdelen en stappen van een bord bij de manipulatieven), nooit namen, antwoorden of werk van leerlingen. Een dashboard wordt pas aangepast nadat de leerkracht op Toepassen tikt. Op een Figures-werkblad of een bord voert Oomba de gevraagde wijziging meteen uit, en de leerkracht kan die ongedaan maken. Als de leerkracht het vraagt, kan Oomba ook een dashboardpunt geven aan een leerling of aan de hele klas, wat de leerkracht ongedaan kan maken.",
         "p3": "Als zoeken op internet aan staat, kan Oomba korte zoekopdrachten naar de webzoekfunctie van Anthropic sturen. Die bevatten nooit namen of een locatie; sites voor volwassenen, gokken, sociale netwerken en dergelijke zijn geblokkeerd, en elke zoekopdracht wordt voor ons team vastgelegd zonder de naam van de leerkracht. Pagina's van internet worden getoond als bronnen die Oomba niet heeft gecontroleerd.",
         "p4": "Een leerkracht kan praten in plaats van typen: het geluid gaat naar {provider} om er al tijdens het praten woorden van te maken, en de audio wordt nooit bewaard, niet door ons en niet door hen. De woorden komen in het berichtvak, zodat de leerkracht ze kan controleren.",
-        "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Een leerkracht kan de chat verwijderen met Nieuwe chat, en hij wordt verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
+        "p5": "We bewaren de chat van een leerkracht, met de tekst van de bijlagen, 60 dagen na het laatste gebruik (een school kan 7 tot 365 dagen kiezen); een afbeelding wordt verwijderd zodra Oomba heeft geantwoord, uiterlijk na een dag. Met Nieuwe chat blijft de vorige chat in de chatgeschiedenis van de leerkracht, met dezelfde termijn; daar kan de leerkracht elke chat verwijderen, en alle chats worden verwijderd met het account. Een schoolbeheerder kan Oomba of het zoeken op internet uitzetten voor de school."
       },
       "storybook": {
         "h": "De boekenmaker",
@@ -4055,8 +4055,12 @@
       "sees": "Ziet:",
       "dashOf": "Dashboard van {name}",
       "newChat": "Nieuwe chat",
-      "newChatAsk": "Een nieuwe chat beginnen? Dit gesprek en alles wat je hebt bijgevoegd, wordt verwijderd.",
-      "newChatOk": "Nieuwe chat beginnen",
+      "history": "Chatgeschiedenis",
+      "historyBack": "Terug naar de chat",
+      "historyEmpty": "Nog geen eerdere chats. Als je een nieuwe chat begint, wordt de vorige hier bewaard.",
+      "historyDelete": "Deze chat verwijderen",
+      "historyDeleteAsk": "Deze chat definitief verwijderen? Hij kan niet worden teruggehaald.",
+      "historyDeleteOk": "Verwijderen",
       "hello": "Hoi! Ik ben Oomba, je hulpje bij het lesgeven. Vraag me om een spel, een boek, een wijziging op je dashboard of hulp bij een les.",
       "idea": {
         "game": {
@@ -14129,7 +14133,8 @@
     },
     "blocked": {
       "personal": "Haal persoonlijke gegevens weg (namen, adressen, telefoonnummers, links) en probeer het opnieuw.",
-      "words": "Sommige van deze woorden kunnen niet op Oomba Academy. Verander ze en probeer het opnieuw."
+      "words": "Sommige van deze woorden kunnen niet op Oomba Academy. Verander ze en probeer het opnieuw.",
+      "realPeople": "Boeken mogen niet over een echte persoon met naam gaan. Beschrijf liever een verzonnen personage, zoals ‘een voetballer die nooit opgeeft’."
     },
     "firstMessage": "Maak mijn boek, alsjeblieft.",
     "errors": {
@@ -14203,6 +14208,9 @@
       "fromStory": "Hier is je boek uit de Verhalenmaker. Wat je al koos heb ik ingevuld; beantwoord de rest op de kaart.",
       "hello": "Laten we een boek maken.",
       "noTheme": "Geen thema",
+      "otherTheme": "Iets anders",
+      "themeHint": "Typ een thema, zoals piraten of recyclen",
+      "useTheme": "Dit thema gebruiken",
       "contextAi": "Typ je ideeën in het vak hieronder en stuur ze, of voeg met de paperclip bestanden en plaatjes toe. Ze gaan in je boek, niet naar de chat. Daarna laat Oomba je precies zien wat er verstuurd wordt.",
       "contextUpload": "Plak je verhaal in het vak hieronder en stuur het, of voeg het met de paperclip toe als bestand (plaatjes ook). Het gaat in je boek, niet naar de chat. Daarna laat Oomba je precies zien wat er verstuurd wordt.",
       "added": "Aan je boek toegevoegd.",

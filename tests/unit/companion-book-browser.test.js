@@ -200,6 +200,40 @@ test('phone (390 px): Make a book on the library opens the chat sheet with the f
   } finally { await settle(); CO.reset(u); await ctx.close(); }
 });
 
+test('the theme: Something else opens a box beside Stop; Use this theme (on from 2 letters) goes on with the teacher\'s own theme', { skip }, async () => {
+  const u = teacher('Theo Theme');
+  ai();
+  for (const [label, opts] of [['laptop', LAPTOP], ['phone', PHONE()]]) {
+    const { ctx, page, errors } = await open(u, '/library', opts);
+    try {
+      await page.click('#lb-make');
+      await bookCard(page).waitFor({ timeout: 15000 });
+      await pick(page, 'Have AI make one'); await pick(page, 'Picture book'); await pick(page, 'Grade 3'); await pick(page, 'Medium'); await pick(page, 'Growing reader');
+      const other = bookCard(page).locator('[data-act="bookOther"]');
+      await other.waitFor({ timeout: 10000 });
+      const form = bookCard(page).locator('.oc-btheme');
+      assert.equal(await form.isVisible(), false, 'the box waits for Something else');
+      await other.click();
+      await form.waitFor({ state: 'visible' });
+      assert.equal(await other.getAttribute('aria-expanded'), 'true');
+      assert.equal(await page.evaluate(() => document.activeElement && document.activeElement.closest('.oc-btheme') !== null), true, 'the box has the focus');
+      const go = form.locator('button[type="submit"]');
+      await page.keyboard.type('P'); assert.equal(await go.isDisabled(), true, 'one letter is not a theme');
+      await page.keyboard.type('irates and treasure'); assert.equal(await go.isDisabled(), false);
+      const fb = await form.boundingBox(), sb = await bookCard(page).locator('[data-act="bookStop"]').boundingBox();
+      assert.ok(fb.y + fb.height <= sb.y + 2, 'in the foot, above Stop');
+      await noSideScroll(page);
+      await shot(page, `cb-11-theme-${label}`);
+      const v0 = await bookCard(page).getAttribute('aria-label');
+      await page.keyboard.press('Enter');
+      await page.waitForFunction(v => { const c = [...document.querySelectorAll('.oc-book:not(.done)')].pop(); return c && c.getAttribute('aria-label') !== v; }, v0, { timeout: 10000 });
+      assert.match(await bookCard(page).textContent(), /Oomba paints them/, 'on to the pictures');
+      assert.deepEqual(errors.filter(e => !/Permissions check failed/i.test(e)), []);
+      await bookCard(page).locator('[data-act="bookStop"]').click();
+    } finally { await settle(); CO.reset(u); await ctx.close(); }
+  }
+});
+
 test('laptop: a book made in the past, changed from another page: a choice card of the teacher\'s books, the change, Open the book', { skip }, async () => {
   const u = teacher('Dana Past');
   ai();

@@ -169,6 +169,20 @@ export function pick(d, value) {
   if (step === 'kind' && v !== 'cyoa') n.setup.endings = 0;
   return next(n);
 }
+/** "Something else" on the theme question: the teacher's own theme, in their words. It is the book's topic (setup.about,
+ *  what the page's "What is it about?" box holds: checked and scrubbed with the rest on Check), so no list theme is set.
+ *  -> the new draft | { error } */
+export const THEME_MAX = 60;
+export function ownTheme(d, text) {
+  if (d.state !== 'theme') return { error: 'notFound' };
+  const v = plain(text).replace(/\s+/g, ' ').trim().slice(0, THEME_MAX);
+  if (v.length < 2) return { error: 'brief' };
+  const n = copy(d);
+  n.setup.theme = '';
+  n.setup.about = clip([v, n.setup.about].filter(Boolean).join('\n\n'), SB.SETUP_LIMITS.about);
+  if (!n.given.includes('theme')) n.given.push('theme');
+  return next(n);
+}
 /** Edit on the check card: that part is asked again (the words: the card waits for them again). */
 export function edit(d, part) {
   const n = copy(d);
@@ -264,10 +278,12 @@ export function viewOf(d, t) {
   const s = d.setup, st = d.state;
   const known = BOOK_STEPS.filter(k => d.given.includes(k) && !(k === 'endings' && s.kind !== 'cyoa') && !(k === 'theme' && s.source !== 'ai')).map(k => labelOf(t, s, k, s[k]));
   const out = { id: d.id, v: d.v, state: st, known, error: d.error || '', L: {
+    other: t('storybook.chat.otherTheme'), themeHint: t('storybook.chat.themeHint'), useTheme: t('storybook.chat.useTheme'),
     stop: t('storybook.chat.stop'), skip: t('storybook.chat.nothingToAdd'), clear: t('storybook.chat.clear'), edit: t('js.storybook-setup.edit'), go: t('storybook.check.go'),
     never: t('storybook.check.never'), privacy: t('storybook.privacy'), checking: t('js.storybook-setup.checking'), stopped: t('storybook.chat.stopped'), started: t('storybook.chat.startedCard'),
   } };
   if (BOOK_STEPS.includes(st)) { out.question = t(QUESTION[st]); out.options = optionsOf(t, s, st); }
+  if (st === 'theme') out.ownTheme = THEME_MAX;   // "Something else": a box for the teacher's own theme
   if (st === 'context') {
     out.question = t(s.source === 'upload' ? 'storybook.context.titleUpload' : 'storybook.context.titleAi');
     out.canSkip = s.source === 'ai';   // Have AI make one may go on with nothing typed; Upload your own book needs its story

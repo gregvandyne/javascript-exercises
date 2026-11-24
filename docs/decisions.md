@@ -12350,3 +12350,17 @@ their education." And: "don't delete these games or these elements... just hide 
   official games anyone may open; the courses fact became the number of virtual manipulatives.
 - Tests: `tests/unit/focus-hide.test.js` (10). The other unit tests and the e2e server describe the whole product, so
   `tests/unit/_setup.js` and `playwright.config.js` turn both flags on unless a test sets them.
+
+## Oomba chat history (2026-11-24)
+- **The owner:** "We need to include a chat history that users can go back to instead of deleting this all together
+  when you start a new chat."
+- **New chat** (services/companion.js `reset`) keeps the conversation: its row moves from `ctx_key 'main'` to
+  `'h:<its id>'`, with its files, so retention (`prune`: the school's days after it was last used) and the account
+  delete work as before. A chat with nothing said in it is just deleted. No question before New chat any more (nothing
+  is lost). Answers of a chat moved to the history count as seen (no "new answer" dot for it).
+- **Chat history** (🕘 in the panel's header, public/js/companion.js): the past chats in the conversation's place, newest
+  first, each with its first message (names as the teacher wrote them) and when it was last used. Opening one makes it
+  the conversation again (the open one goes to the history); each has Delete (asked first). At most 50 are kept (the
+  oldest go). Routes: `GET /api/companion/chats`, `POST /api/companion/chats/:id/open`, `POST .../delete`.
+- **Files:** a file is only usable from the open conversation (`fileOf`); a past chat's files come back with it.
+- **/privacy:** `info.privacy.companion.p5` says so (docs/legal-review.md "Oomba companion: chat history").

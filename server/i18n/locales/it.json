@@ -1130,7 +1130,7 @@
         "p2": "Oomba vede solo ciò che l'insegnante ha aperto e dati sicuri al riguardo (la classe e il numero di studenti, i widget di una bacheca, le domande di una scheda Figures, gli elementi e i passaggi di una tavola dei manipolativi), mai nomi, risposte o lavori degli studenti. Modifica una bacheca solo dopo che l'insegnante ha toccato Applica. Su una scheda Figures o una tavola dei manipolativi fa subito la modifica richiesta, e l'insegnante può annullarla. Se l'insegnante lo chiede, può anche dare un punto della dashboard a un alunno o a tutta la classe, e l'insegnante può annullarlo.",
         "p3": "Quando la ricerca web è attiva, Oomba può inviare brevi ricerche alla ricerca web di Anthropic. Non contengono mai nomi né una posizione; i siti per adulti, di scommesse, i social network e simili sono bloccati, e ogni ricerca viene registrata per il nostro team senza il nome dell'insegnante. Le pagine trovate sul web sono mostrate come fonti che Oomba non ha controllato.",
         "p4": "Un insegnante può parlare invece di scrivere: il suono viene inviato a {provider} per trasformarlo in parole mentre parla, e l'audio non viene mai conservato, né da noi né da loro. Le parole finiscono nella casella del messaggio perché l'insegnante le controlli.",
-        "p5": "Conserviamo la chat di un insegnante, con il testo dei suoi allegati, per 60 giorni dall'ultimo uso (una scuola può scegliere da 7 a 365 giorni); un'immagine viene eliminata appena Oomba ha risposto, al più tardi entro un giorno. Un insegnante può eliminare la chat con Nuova chat, e viene eliminata con l'account. Un amministratore della scuola può spegnere Oomba o la sua ricerca web per la scuola."
+        "p5": "Conserviamo la chat di un insegnante, con il testo dei suoi allegati, per 60 giorni dall'ultimo uso (una scuola può scegliere da 7 a 365 giorni); un'immagine viene eliminata appena Oomba ha risposto, al più tardi entro un giorno. Con Nuova chat, la chat precedente resta nella cronologia dell'insegnante, con la stessa regola; lì può eliminare qualsiasi chat, e tutte vengono eliminate con l'account. Un amministratore della scuola può spegnere Oomba o la sua ricerca web per la scuola."
       },
       "storybook": {
         "h": "Il creatore di libri",
@@ -4055,8 +4055,12 @@
       "sees": "Vede:",
       "dashOf": "Bacheca di {name}",
       "newChat": "Nuova chat",
-      "newChatAsk": "Iniziare una nuova chat? Questa conversazione e tutto ciò che hai allegato verranno eliminati.",
-      "newChatOk": "Inizia una nuova chat",
+      "history": "Cronologia chat",
+      "historyBack": "Torna alla chat",
+      "historyEmpty": "Nessuna chat precedente. Quando inizi una nuova chat, quella di prima viene conservata qui.",
+      "historyDelete": "Elimina questa chat",
+      "historyDeleteAsk": "Eliminare definitivamente questa chat? Non si potrà recuperare.",
+      "historyDeleteOk": "Elimina",
       "hello": "Ciao! Sono Oomba, il tuo aiutante per insegnare. Chiedimi un gioco, un libro, una modifica alla tua bacheca o aiuto con una lezione.",
       "idea": {
         "game": {
@@ -14129,7 +14133,8 @@
     },
     "blocked": {
       "personal": "Togli i dati personali (nomi, indirizzi, numeri di telefono, link) e riprova.",
-      "words": "Alcune di queste parole non si possono usare su Oomba Academy. Cambiale e riprova."
+      "words": "Alcune di queste parole non si possono usare su Oomba Academy. Cambiale e riprova.",
+      "realPeople": "I libri non possono parlare di una persona reale con un nome. Descrivi invece un personaggio inventato, come «una calciatrice che non si arrende mai»."
     },
     "firstMessage": "Per favore, crea il mio libro.",
     "errors": {
@@ -14203,6 +14208,9 @@
       "fromStory": "Ecco il tuo libro da Crea storie. Ho già inserito quello che hai scelto; rispondi al resto sulla scheda.",
       "hello": "Facciamo un libro.",
       "noTheme": "Nessun tema",
+      "otherTheme": "Altro",
+      "themeHint": "Scrivi un tema, come pirati o riciclo",
+      "useTheme": "Usa questo tema",
       "contextAi": "Scrivi le tue idee nel riquadro qui sotto e inviale, oppure allega file e immagini con la graffetta. Vanno nel tuo libro, non nella chat. Poi Oomba ti mostra esattamente cosa verrà inviato.",
       "contextUpload": "Incolla la tua storia nel riquadro qui sotto e inviala, oppure allegala come file con la graffetta (anche immagini). Va nel tuo libro, non nella chat. Poi Oomba ti mostra esattamente cosa verrà inviato.",
       "added": "Aggiunto al tuo libro.",

@@ -170,6 +170,30 @@ test('"make a book": every card; your words and files go into the book, never to
   CO.reset(u);
 });
 
+test('the theme: "Something else" takes the teacher\'s own theme, which becomes the book\'s topic (checked like their words)', async () => {
+  const u = teacher();
+  const calls = standIn(() => null);
+  let c = card((await as(u)('/api/companion/book/new', { body: {} })).json.chat);
+  c = await pickAll(u, ['ai', 'linear', '3', 'medium', 'growing']);
+  assert.equal(c.b.state, 'theme');
+  assert.equal(c.b.ownTheme, 60); assert.equal(c.b.L.other, 'Something else'); assert.equal(c.b.L.useTheme, 'Use this theme');
+  assert.ok(c.b.options.some(o => o.v === 'none'), 'No theme is still there');
+  // too short, or not on the theme question: nothing changes
+  assert.equal((await act(u, c.turn, 'bookTheme', ' x ')).status, 404);
+  const n0 = calls.length;
+  c = card((await act(u, c.turn, 'bookTheme', '  Pirates   and buried treasure ')).json.chat);
+  assert.equal(c.b.state, 'pictures', 'on to the next question');
+  assert.equal((await act(u, c.turn, 'bookTheme', 'Robots')).status, 404, 'only while the theme is asked');
+  c = card((await act(u, c.turn, 'bookPick', c.b.options[0].v)).json.chat);
+  assert.equal(c.b.state, 'context'); assert.ok(c.b.have.length, 'the theme counts as their words');
+  c = card((await act(u, c.turn, 'bookCheck')).json.chat);
+  assert.equal(c.b.state, 'check');
+  assert.equal(c.b.rows.find(x => x.part === 'words' && x.text !== undefined).text, 'Pirates and buried treasure');
+  assert.doesNotMatch(c.b.rows.find(x => x.part === 'options').value, /Animals|Space|No theme/, 'no list theme');
+  assert.equal(calls.length, n0, 'never to the chat\'s AI');
+  CO.reset(u);
+});
+
 test('a picture attached goes on the book\'s first page through the page\'s own picture check; never to the AI', async () => {
   const u = teacher();
   standIn(() => null);

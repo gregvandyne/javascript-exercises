@@ -698,6 +698,18 @@ give a dashboard point to a student or the whole class when the teacher asks, wi
 the Oomba chat"). What is sent to Anthropic is unchanged in kind: no names, no student ids. Question for the lawyer: is
 keeping the mapping from placeholder to student account id with the conversation (same retention as the chat) covered
 by the existing retention wording?
+### Oomba companion: chat history (2026-11-24; owner request; LAWYER REVIEW PENDING)
+
+Addendum to the entries above; LEGAL_UPDATED moved to 2026-11-24. New chat no longer deletes the conversation: it goes
+to the teacher's chat history, where the teacher can open it again or delete it (docs/decisions.md "Oomba chat
+history"). /privacy "Oomba, the teaching companion" (`info.privacy.companion.p5`, 12 languages) changed its sentence "A
+teacher can delete the chat with New chat, and it is deleted with the account." to "New chat keeps the old chat in the
+teacher's chat history, under the same rule; a teacher can delete any chat there, and every chat is deleted with the
+account." Retention is unchanged: each past chat is deleted 60 days after it was last used (the school's 7 to 365 days),
+with its files; at most 50 past chats are kept (the oldest go). Question for the lawyer: does keeping several past
+conversations (each with the placeholder-to-student mapping of its messages) need anything beyond the existing retention
+wording and the school terms?
+
 ### Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review pending (2026-11-22)
 
 `/compare` ("How Oomba compares", server/routes/compare.js) is a public, indexable page for teachers that names three
