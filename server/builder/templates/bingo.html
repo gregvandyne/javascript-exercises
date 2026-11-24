@@ -4,31 +4,30 @@
 /* Class Bingo. "Call on the board": the board shows each call big (a math fact, a definition), with the answer a tap
    away and every call so far. "Play a card": a random card on a player's own device, tap to mark, five in a row wins.
    Nothing is sent between devices and nobody is named. Big type, keyboard and clicker keys.  In the Oomba classroom style (classroom-style.css). */
-.call{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:calc(var(--r) + 8px);padding:16px;box-shadow:var(--lift-hi);min-height:180px;position:relative;overflow:hidden}
-.call::before{content:"";position:absolute;inset:0 0 auto;height:10px;background:linear-gradient(90deg,var(--mint),var(--spark))}
+.call{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;background:var(--current);color:var(--on-current);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);min-height:180px;position:relative;overflow:hidden}
+.call .count{color:inherit;opacity:.9;text-transform:uppercase;letter-spacing:.05em;font-size:clamp(.8rem,1.8vmin,1.05rem)}
 .call .now{font-size:clamp(2.4rem,13vmin,9.5rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;overflow-wrap:anywhere;animation:oc-pop .4s var(--spring) both}
-.call .ans{font-size:clamp(1.4rem,5.6vmin,3.8rem);font-weight:800;color:var(--leaf);background:var(--mint-soft);padding:.1em .7em;border-radius:var(--r-sm)}
+.call .ans{font-size:clamp(1.4rem,5.6vmin,3.8rem);font-weight:800;color:var(--accent-ink);background:var(--mint-t);padding:.1em .7em;border-radius:999px}
 .called{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0;padding:0;list-style:none}
-.called li{padding:6px 14px;border-radius:999px;background:var(--tint);font-weight:700;font-size:clamp(.9rem,2.1vmin,1.35rem)}
-.called li:first-child{background:var(--spark);}
+.called li{padding:6px 14px;border-radius:999px;background:var(--card);box-shadow:var(--shadow);font-weight:700;font-size:clamp(.9rem,2.1vmin,1.35rem)}
+.called li:first-child{background:var(--spark);color:var(--on-spark)}
 .grid{margin:auto;display:grid;grid-template-columns:repeat(var(--n),1fr);gap:clamp(5px,1.1vmin,10px);width:min(100%,calc(100dvh - 230px),720px);aspect-ratio:1}
-.cell{aspect-ratio:1;min-width:0;padding:2px;border-radius:var(--r-sm);background:var(--card);color:var(--ink);font-size:clamp(1rem,calc(min(100vw,100dvh) / var(--n) / 3.4),3rem);font-weight:800;overflow-wrap:anywhere;line-height:1.05;position:relative}
-.cell[aria-pressed="true"]{background:var(--spark);color:var(--ink);border-color:#E0B51E;box-shadow:inset 0 0 0 4px var(--leaf);animation:oc-bump .35s var(--spring)}
-.cell[aria-pressed="true"]::after{content:"✓";position:absolute;top:4px;inset-inline-end:7px;font-size:clamp(.7rem,1.6vmin,1rem);color:var(--leaf)}
-.cell.free,.cell.free:disabled{opacity:1;background:var(--mint-soft);border-color:var(--leaf);color:var(--leaf);font-size:clamp(.8rem,calc(min(100vw,100dvh) / var(--n) / 5),1.6rem)}
-.bingo{position:fixed;inset:0;display:grid;place-items:center;background:rgba(20,20,20,.35);z-index:5;pointer-events:none}
-.bingo b{font-size:clamp(3rem,16vmin,11rem);font-weight:800;letter-spacing:-.04em;color:var(--ink);background:var(--spark);padding:.1em .5em;border-radius:calc(var(--r) + 10px);box-shadow:var(--lift-hi);transform:rotate(-4deg);animation:oc-pop .5s var(--spring) both}
+.cell{aspect-ratio:1;min-width:0;padding:2px;border-radius:var(--r-sm);border-color:var(--line);box-shadow:var(--shadow);background:var(--card);color:var(--ink);font-size:clamp(1rem,calc(min(100vw,100dvh) / var(--n) / 3.4),3rem);font-weight:800;overflow-wrap:anywhere;line-height:1.05;position:relative}
+.cell[aria-pressed="true"]{background:var(--spark);color:var(--on-spark);border-color:var(--on-spark);box-shadow:inset 0 0 0 3px var(--spark),inset 0 0 0 6px var(--on-spark);animation:oc-bump .35s var(--spring)}
+.cell[aria-pressed="true"]::after{content:"✓";position:absolute;top:4px;inset-inline-end:7px;font-size:clamp(.7rem,1.6vmin,1rem);color:var(--on-spark)}
+.cell.free,.cell.free:disabled{opacity:1;background:var(--mint-t);border-color:var(--green);color:var(--accent-ink);font-size:clamp(.8rem,calc(min(100vw,100dvh) / var(--n) / 5),1.6rem)}
+.bingo{position:fixed;inset:0;display:grid;place-items:center;background:var(--scrim);z-index:5;pointer-events:none}
+.bingo b{font-size:clamp(3rem,16vmin,11rem);font-weight:800;letter-spacing:-.04em;color:var(--on-spark);background:var(--spark);padding:.1em .5em;border-radius:calc(var(--r) + 10px);box-shadow:var(--shadow-hi);transform:rotate(-4deg);animation:oc-pop .5s var(--spring) both}
 </style>
 <main class="app">
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
   <section class="screen" id="start">
-    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+    <div class="card g-tools"><div class="wh"><span class="wicon" aria-hidden="true">🔢</span><h2 class="wt" id="startH"></h2></div><p id="startP"></p>
       <div class="row"><button class="big hot" id="caller"></button><button class="big" id="player"></button></div>
       <p id="callerP"></p><p id="playerP"></p></div>
   </section>
   <section class="screen" id="calling" hidden>
-    <p class="count" id="callN"></p>
-    <div class="call" aria-live="polite"><div class="now" id="now"></div><div class="ans" id="ans" hidden></div></div>
+    <div class="call" aria-live="polite"><p class="count" id="callN"></p><div class="now" id="now"></div><div class="ans" id="ans" hidden></div></div>
     <div class="row"><button class="big" id="undo"></button><button class="big" id="showAns"></button><button class="big" id="read"></button><button class="big hot" id="nextCall"></button></div>
     <ul class="called" id="called" aria-label=""></ul>
     <p class="keys" id="callKeys"></p>
@@ -86,6 +85,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

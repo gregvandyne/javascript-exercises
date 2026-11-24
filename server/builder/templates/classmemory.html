@@ -6,9 +6,10 @@
    arrows and Enter flip cards, nothing is sent anywhere and nobody is named. */
 .top{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px}
 .teams{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.team{display:flex;align-items:center;gap:10px;padding:6px 16px;border-radius:999px;background:var(--card);border:1.5px solid var(--line);font-weight:800;font-size:clamp(1rem,2.8vmin,1.8rem);box-shadow:var(--lift)}
+.team{display:flex;align-items:center;gap:10px;padding:6px 16px;border-radius:999px;background:var(--card);font-weight:800;font-size:clamp(1rem,2.8vmin,1.8rem);box-shadow:var(--shadow)}
+.top .pill{background:var(--card);box-shadow:var(--shadow)}
 .team .pts{font-variant-numeric:tabular-nums;min-width:1.2em;text-align:center}
-.team.turn{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.team.turn{background:var(--current);color:var(--on-current)}
 .turnline{margin:0;text-align:center;font-weight:700;color:var(--soft);font-size:clamp(1rem,2.6vmin,1.6rem);min-height:1.3em}
 .boardwrap{flex:1;display:grid;place-items:center;min-height:0}
 .grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:clamp(8px,1.4vmin,16px);width:min(100%,calc((100dvh - 230px) * var(--cols) / var(--rows) * 1.32));max-width:1200px;perspective:1400px}
@@ -17,34 +18,32 @@
 .mc:active:not(:disabled){transform:scale(.98);box-shadow:none}
 .mc .in{position:absolute;inset:0;transition:transform .5s var(--spring);transform-style:preserve-3d}
 .mc.up .in{transform:rotateY(180deg)}
-.mc .f{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;border-radius:var(--r);backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1.5px solid var(--line);box-shadow:var(--lift);overflow:hidden}
-.mc .back{background:var(--leaf);color:#fff;border-color:rgba(0,0,0,.08);background-image:radial-gradient(rgba(255,255,255,.13) 1.5px,transparent 1.6px);background-size:14px 14px}
+.mc .f{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:8px;border-radius:var(--r);backface-visibility:hidden;-webkit-backface-visibility:hidden;border:2px solid var(--line);box-shadow:var(--shadow);overflow:hidden}
+.mc .back{background:var(--green);color:var(--on-green);border-color:transparent;background-image:radial-gradient(rgba(255,255,255,.13) 1.5px,transparent 1.6px);background-size:14px 14px}
 .mc .back::before{content:"";position:absolute;inset:7px;border-radius:calc(var(--r) - 6px);border:1.5px solid rgba(255,255,255,.28)}
 .mc .back b{width:clamp(14px,2.6vmin,26px);height:clamp(14px,2.6vmin,26px);border-radius:50%;background:var(--mint);box-shadow:calc(clamp(14px,2.6vmin,26px) * .62) 0 0 var(--spark);margin-inline-end:calc(clamp(14px,2.6vmin,26px) * .62)}
-.mc .face{background:var(--card);transform:rotateY(180deg);color:var(--ink)}
-.mc .face .k{font-size:clamp(.62rem,1.5vmin,.95rem);font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 10px;border-radius:999px;background:var(--mint-soft)}
-.mc .face.mean .k{background:var(--spark-soft)}
+.mc .face{background:var(--card);transform:rotateY(180deg);color:var(--ink);box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g-class) 75%,var(--card)),var(--shadow)}
+.mc .face.mean{box-shadow:inset 0 4px 0 color-mix(in srgb,var(--g-tools) 75%,var(--card)),var(--shadow)}
+.mc .face .k{font-size:clamp(.62rem,1.5vmin,.95rem);font-weight:800;text-transform:uppercase;letter-spacing:.06em;padding:2px 10px;border-radius:999px;background:var(--card2);color:var(--muted)}
 .mc .face .t{font-weight:800;line-height:1.12;text-align:center;overflow-wrap:anywhere;font-size:var(--fs,clamp(.9rem,2.6vmin,1.9rem))}
 .mc .face .t.pic{font-size:clamp(2rem,8vmin,5.4rem);line-height:1}
-.mc.done .face{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
-.mc.done .face::after{content:"✓";position:absolute;top:6px;inset-inline-end:10px;font-weight:800;color:var(--leaf)}
-.mc.miss .face{background:var(--coral-soft)}
-.mc:focus-visible{outline:4px solid var(--spark);outline-offset:4px}
+.mc.done .face{background:var(--mint-t);border-color:var(--green);box-shadow:0 0 0 3px var(--green)}
+.mc.done .face::after{content:"✓";position:absolute;top:6px;inset-inline-end:10px;font-weight:800;color:var(--accent-ink)}
+.mc.miss .face{background:var(--coral-t);border-color:var(--coral)}
+.mc:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
 .mc:disabled{opacity:1;cursor:default}
 .end .card{width:min(100%,900px)}
 .big-score{font-size:clamp(2.6rem,11vmin,7rem);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0;font-variant-numeric:tabular-nums}
 .pairs{list-style:none;margin:16px 0 0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:10px;text-align:start}
-.pairs li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);background:var(--page);border:1.5px solid var(--line);font-size:clamp(.95rem,2.2vmin,1.3rem)}
+.pairs li{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:var(--r-sm);background:var(--card2);font-size:clamp(.95rem,2.2vmin,1.3rem)}
 .pairs b{font-weight:800}
 .pairs span{color:var(--soft)}
-.setup .row button[aria-pressed="false"]{background:var(--card)}
-.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:var(--scrim)}
 .editor .card{width:min(100%,900px);text-align:start;max-height:calc(100dvh - 32px);overflow:auto}
 .editor h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
-.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);color:var(--ink);background:var(--page);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;resize:vertical}
-.editor textarea:focus-visible{outline:4px solid var(--spark);outline-offset:2px}
+.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);background:var(--card2);padding:12px 14px;resize:vertical}
 .editor .msg{min-height:1.3em;font-weight:700}
-.editor .msg.bad{color:#B4432A}
+.editor .msg.bad{color:var(--coral)}
 .editor .row{justify-content:flex-end}
 @media (max-width:600px){.grid{gap:6px;width:100%}.mc .f{padding:4px;border-radius:12px}.mc .face .k{display:none}.mc{aspect-ratio:3/4}}
 </style>
@@ -52,7 +51,7 @@
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
   <section class="screen setup" id="start">
-    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+    <div class="card g-class"><div class="wh"><span class="wicon" aria-hidden="true">🃏</span><h2 class="wt" id="startH"></h2></div><p id="startP"></p>
       <p id="whoP"></p>
       <div class="row" id="who" role="group"></div>
       <div class="row"><button class="big hot" id="go"></button></div>
@@ -68,7 +67,7 @@
   </section>
 
   <section class="screen end" id="end" hidden>
-    <div class="card"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p id="endP"></p>
+    <div class="card center g-class"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p id="endP"></p>
       <div class="row"><button class="big hot" id="again"></button><button class="big" id="menu"></button></div>
       <h3 id="pairsH"></h3><ul class="pairs" id="pairs"></ul></div>
   </section>
@@ -129,6 +128,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

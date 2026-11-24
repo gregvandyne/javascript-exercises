@@ -9,12 +9,13 @@ body{background:var(--sky-deep)}
 #sky{position:fixed;inset:0;width:100%;height:100%;display:block}
 .bar{position:fixed;inset-inline:0;top:0;padding:max(12px,env(safe-area-inset-top)) clamp(12px,2.4vw,32px) 10px;z-index:3}
 .bar h1{color:var(--sky-ink)}
+.bar .small{border-color:transparent}
 .panel{position:fixed;inset:0;display:grid;place-items:center;padding:80px 16px 16px;z-index:2}
 .panel[hidden]{display:none!important}
 .panel .card{width:min(100%,760px);max-height:100%;overflow:auto}
 .panel .row{margin:16px 0}
-.privacy{font-weight:600;color:var(--ink)!important;background:var(--mint-soft);border-radius:var(--r-sm);padding:10px 16px}
-.notice{color:#B4432A!important;font-weight:700}
+.privacy{font-weight:700;color:var(--ink)!important;background:var(--mint-t);border-radius:var(--r-sm);padding:10px 16px}
+.notice{color:var(--coral)!important;font-weight:700}
 .hud{position:fixed;inset-inline:0;bottom:0;display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;padding:16px clamp(12px,2.4vw,32px) max(16px,env(safe-area-inset-bottom));z-index:2;pointer-events:none;color:var(--sky-ink)}
 .hud>*{pointer-events:auto}
 .clock{font-size:clamp(2.4rem,11vmin,8rem);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 4px 18px rgba(0,0,0,.35)}
@@ -35,8 +36,8 @@ body{background:var(--sky-deep)}
 <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
 <section class="panel" id="setup">
-  <div class="card" role="dialog" aria-labelledby="setupH">
-    <h2 id="setupH"></h2>
+  <div class="card g-time" role="dialog" aria-labelledby="setupH">
+    <div class="wh"><span class="wicon" aria-hidden="true">🌙</span><h2 class="wt" id="setupH"></h2></div>
     <p id="setupP"></p>
     <p id="goalH"></p>
     <div class="row" id="goals" role="group"></div>
@@ -58,7 +59,7 @@ body{background:var(--sky-deep)}
 </div>
 
 <section class="panel" id="done" hidden>
-  <div class="card" role="dialog" aria-labelledby="doneH">
+  <div class="card center g-time" role="dialog" aria-labelledby="doneH">
     <h2 id="doneH"></h2>
     <p id="doneP"></p>
     <div class="row"><button class="big hot" id="again"></button><button class="big" id="change"></button></div>
@@ -105,6 +106,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

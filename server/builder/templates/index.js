@@ -19,6 +19,22 @@ const DIR = path.dirname(fileURLToPath(import.meta.url));
  *  block, put in at each starter's <!--CLASSROOM_STYLE--> marker. */
 let styleCache = null;
 export const classroomStyle = () => (styleCache = styleCache || `<style id="oomba-classroom-style">\n${fs.readFileSync(path.join(DIR, 'classroom-style.css'), 'utf8').trim()}\n</style>`);
+/** The marker a classroom game writes where the shared look goes (the starters, and the Builder's own write_game). */
+export const CLASSROOM_MARKER = '<!--CLASSROOM_STYLE-->';
+const STYLE_BLOCK = /<style id="oomba-classroom-style">[\s\S]*?<\/style>\n?/g;
+/** Which classroom look a game carries: 2 (style 2, the Crossword look), 1 (the flat warm page it replaced: a game made
+ *  before keeps it until someone asks for the new look), 0 (none). */
+export const classroomLook = html => { const s = String(html || ''); return /Oomba classroom style 2\b/.test(s) ? 2 : /<style id="oomba-classroom-style">/.test(s) ? 1 : 0; };
+/** A version the Builder saves: a <!--CLASSROOM_STYLE--> marker becomes the current shared look, and any older copy of
+ *  the block goes (that is how a game moves to the new look). Without the marker the game keeps the block it has. */
+export function withClassroomStyle(html) {
+  const s = String(html);
+  if (!s.includes(CLASSROOM_MARKER)) return s;
+  const out = s.replace(STYLE_BLOCK, '');
+  const at = out.indexOf(CLASSROOM_MARKER);
+  if (at < 0) return s;   // only inside the old block: nothing to do
+  return out.slice(0, at) + classroomStyle() + out.slice(at + CLASSROOM_MARKER.length).replaceAll(CLASSROOM_MARKER, '');
+}
 
 export const TEMPLATES = [
   { key: 'quiz', title: 'Quiz Show', icon: '🦉', cover: 'sunset', category: 'learning', players: 1,

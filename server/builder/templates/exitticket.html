@@ -3,34 +3,34 @@
 <style>
 /* Exit Ticket: a short fixed-choice check at the end of a lesson. One question at a time, no timer, then "Thank you".
    Answers stay on this device: no score is submitted and nothing is saved per student. Big type, keys 1-4.  In the Oomba classroom style (classroom-style.css). */
-:root{--c0:#2E9E6B;--c1:#C99A0B;--c2:#4F86C6;--c3:#9B7FD1}
+:root{--c0:var(--g-class);--c1:var(--g-tools);--c2:var(--g-time);--c3:var(--g-check)}
+#q{text-align:start}
 button:disabled{opacity:1}
 .dots{display:flex;justify-content:center;gap:8px}
-.dots i{width:clamp(12px,2.2vmin,20px);height:clamp(12px,2.2vmin,20px);border-radius:50%;background:var(--tint);transition:background-color .3s,transform .3s var(--spring)}
-.dots i.on{background:var(--leaf);transform:scale(1.15)}
+.dots i{width:clamp(12px,2.2vmin,20px);height:clamp(12px,2.2vmin,20px);border-radius:50%;background:var(--card);box-shadow:0 0 0 1px var(--line);transition:background-color .3s,transform .3s var(--spring)}
+.dots i.on{background:var(--green);box-shadow:none;transform:scale(1.15)}
 .choices{flex:1;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,460px),1fr));gap:clamp(10px,2vmin,20px);align-content:center}
-.choice{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--r);min-height:clamp(64px,12vmin,120px);text-align:start;font-size:clamp(1.2rem,4vmin,2.9rem)}
-.choice .tag{flex:none;display:grid;place-items:center;width:clamp(40px,7vmin,64px);height:clamp(40px,7vmin,64px);border-radius:14px;color:#fff;font-weight:800}
+.choice{display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:12px 16px;border-radius:var(--r);border-color:var(--line);box-shadow:var(--shadow);min-height:clamp(64px,12vmin,120px);text-align:start;font-size:clamp(1.2rem,4vmin,2.9rem)}
+.choice .tag{flex:none;display:grid;place-items:center;width:clamp(40px,7vmin,64px);height:clamp(40px,7vmin,64px);border-radius:14px;color:var(--on-team);font-weight:800}
 .choice .lab{flex:1;min-width:0;overflow-wrap:anywhere}
-.choice[aria-pressed="true"]{background:var(--spark-soft);color:var(--ink);border-color:#E0B51E;box-shadow:0 0 0 3px var(--spark)}
+.choice[aria-pressed="true"]{background:var(--spark-t);color:var(--ink);border-color:var(--ink);box-shadow:0 0 0 3px var(--spark)}
 #feedback{font-size:clamp(1.05rem,2.8vmin,1.8rem);font-weight:700;color:var(--ink);min-height:1.3em}
-.choice.right{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
-.choice.wrong{background:var(--coral-soft);border-color:var(--coral);animation:oc-nudge .32s ease}
+.choice.right{background:var(--mint-t);border-color:var(--green);box-shadow:0 0 0 3px var(--green)}
+.choice.wrong{background:var(--coral-t);border-color:var(--coral);animation:oc-nudge .32s ease}
 .choice.dim{opacity:.5}
-.score{font-size:clamp(2.4rem,10vmin,7rem);font-weight:800;letter-spacing:-.04em;color:var(--leaf);margin:6px 0}
+.score{font-size:clamp(2.4rem,10vmin,7rem);font-weight:800;letter-spacing:-.04em;color:var(--accent-ink);margin:6px 0}
 </style>
 <main class="app">
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
-  <section class="screen" id="start"><div class="card"><h2 id="startH"></h2><p id="startP"></p><p class="note" id="privacy"></p><div class="row"><button class="big hot" id="go"></button></div></div></section>
+  <section class="screen" id="start"><div class="card g-check"><div class="wh"><span class="wicon" aria-hidden="true">🎟️</span><h2 class="wt" id="startH"></h2></div><p id="startP"></p><p class="note" id="privacy"></p><div class="row"><button class="big hot" id="go"></button></div></div></section>
   <section class="screen" id="ask" hidden>
     <div class="dots" id="dots" aria-hidden="true"></div>
-    <p class="keys" id="qn"></p>
-    <h2 class="q" id="q"></h2>
+    <div class="nowbar"><b id="qn"></b><h2 class="q" id="q"></h2></div>
     <div class="choices" id="choices"></div>
     <p class="keys" id="feedback" aria-live="polite"></p>
     <div class="row"><button class="big" id="read"></button><button class="big hot" id="next" hidden></button></div>
   </section>
-  <section class="screen" id="done" hidden><div class="card"><h2 id="doneH"></h2><div class="score" id="score"></div><p id="doneP"></p><p class="note" id="doneNote"></p><div class="row"><button class="big" id="again"></button></div></div></section>
+  <section class="screen" id="done" hidden><div class="card center g-check"><h2 id="doneH"></h2><div class="score" id="score"></div><p id="doneP"></p><p class="note" id="doneNote"></p><div class="row"><button class="big" id="again"></button></div></div></section>
 </main>
 <script>
 // Exit Ticket. QUESTIONS: 3 to 5, each { q, choices (2-4), answer: the index of the right choice, or null when there is
@@ -71,6 +71,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
