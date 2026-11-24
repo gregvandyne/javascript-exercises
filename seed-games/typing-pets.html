@@ -1,0 +1,566 @@
+<title>Typing Pets</title>
+<style>
+  :root {
+    --bg: #fbf7ee; --card: #fffdf7; --ink: #1f2430; --muted: #5d6170; --line: #e6dfcd; --accent: #2f9e6a; --accent-ink: #ffffff;
+    --warn: #c2410c; --good: #2f9e6a; --gold: #e3a008; --soft: #f1ead8;
+    --f-lp: #f4b6c2; --f-lr: #f7d08a; --f-lm: #bfe3a5; --f-li: #a8d8f0; --f-ri: #c9b8f2; --f-rm: #f6c4a3; --f-rr: #b8e6d8; --f-rp: #f2a7a7; --f-th: #e2e2e2;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; min-height: 100vh; }
+  button { font: inherit; cursor: pointer; }
+  .app { max-width: 980px; margin: 0 auto; padding: 14px 14px 40px; }
+  .top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+  .top h1 { font-size: 1.5rem; margin: 0; flex: 1; display: flex; align-items: center; gap: 8px; }
+  .pill { border: 2px solid var(--line); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 14px; font-weight: 700; min-height: 44px; }
+  .pill:hover { border-color: var(--accent); }
+  .btn { border: 0; background: var(--accent); color: var(--accent-ink); border-radius: 14px; padding: 12px 22px; font-weight: 800; font-size: 1.05rem; min-height: 48px; box-shadow: 0 4px 0 rgba(0,0,0,.18); }
+  .btn:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(0,0,0,.18); }
+  .btn.ghost { background: var(--card); color: var(--ink); border: 2px solid var(--line); box-shadow: none; }
+  .card { background: var(--card); border: 2px solid var(--line); border-radius: 20px; padding: 18px; }
+  .muted { color: var(--muted); }
+  .hidden { display: none !important; }
+  .unit { margin: 16px 0 8px; font-size: 1.05rem; color: var(--muted); font-weight: 800; letter-spacing: .02em; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .tile { position: relative; text-align: left; background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 12px; min-height: 96px; display: flex; flex-direction: column; gap: 4px; color: var(--ink); }
+  .tile:hover:not([disabled]) { border-color: var(--accent); }
+  .tile .n { font-size: .8rem; font-weight: 800; color: var(--muted); }
+  .tile .nm { font-weight: 800; font-size: 1.05rem; }
+  .tile .st { margin-top: auto; letter-spacing: 2px; color: var(--gold); font-size: 1.05rem; }
+  .tile .st .off { color: var(--line); }
+  .tile.next { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(47,158,106,.18); }
+  .tile[disabled] { opacity: .55; cursor: not-allowed; }
+  .tile .lock { position: absolute; right: 10px; top: 10px; }
+  .hello { display: flex; gap: 14px; align-items: center; }
+  .hello .big { font-size: 3rem; }
+  /* typing */
+  .lesson-h { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lesson-h h2 { margin: 0; font-size: 1.25rem; flex: 1; }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 12px; height: 12px; border-radius: 50%; background: var(--line); display: inline-block; }
+  .dots i.on { background: var(--accent); }
+  .tip { font-size: 1.05rem; margin: 10px 0; }
+  .line { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: clamp(1.4rem, 3.6vw, 2.2rem); line-height: 1.6; background: var(--card); border: 2px solid var(--line); border-radius: 18px; padding: 16px 18px; min-height: 4.2em; letter-spacing: .04em; }
+  .line span { border-radius: 6px; padding: 0 1px; }
+  .line .w { font-weight: inherit; white-space: nowrap; }
+  .line .done { color: var(--good); }
+  .line .cur { background: var(--ink); color: var(--card); }
+  .line .bad { background: var(--warn); color: #fff; }
+  .line .todo { color: var(--ink); }
+  .line .sp.todo, .line .sp.done { color: var(--line); }
+  .stats { display: flex; gap: 14px; flex-wrap: wrap; margin: 10px 0; font-weight: 700; color: var(--muted); }
+  .finger { font-weight: 800; }
+  .kb { margin: 14px auto 0; display: flex; flex-direction: column; gap: 6px; max-width: 760px; user-select: none; }
+  .row { display: flex; gap: 6px; justify-content: center; }
+  .key { flex: 1 1 0; min-width: 0; max-width: 62px; height: 52px; border-radius: 10px; border: 2px solid rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.05rem; color: var(--ink); position: relative; padding: 0; }
+  .key.wide { max-width: 96px; flex-grow: 1.6; font-size: .8rem; }
+  .key.space { max-width: 360px; flex-grow: 6; }
+  .key.home::after { content: ""; position: absolute; bottom: 7px; width: 12px; height: 3px; border-radius: 2px; background: rgba(0,0,0,.45); }
+  .key.hit { outline: 4px solid var(--ink); outline-offset: 1px; transform: translateY(-2px); }
+  .key.used { opacity: 1; }
+  .key.unused { opacity: .35; }
+  .legend { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 10px; font-size: .85rem; color: var(--muted); }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend i { width: 14px; height: 14px; border-radius: 4px; display: inline-block; border: 1px solid rgba(0,0,0,.15); }
+  .shake { animation: shake .25s; }
+  @keyframes shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+  /* results + egg */
+  .center { text-align: center; }
+  .stars { font-size: 2.6rem; letter-spacing: 6px; color: var(--gold); }
+  .stars .off { color: var(--line); }
+  .nums { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; margin: 10px 0 16px; }
+  .num { background: var(--soft); border-radius: 14px; padding: 10px 16px; min-width: 120px; }
+  .num b { display: block; font-size: 1.6rem; }
+  .eggbox { display: flex; flex-direction: column; align-items: center; gap: 12px; margin: 10px 0; }
+  .egg { width: 150px; height: 190px; border-radius: 50% 50% 46% 46% / 58% 58% 42% 42%; background: radial-gradient(circle at 35% 30%, #ffffff, #f3e9d2 60%, #e2d3ad); border: 3px solid #d9c79c; position: relative; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .egg.gold { background: radial-gradient(circle at 35% 30%, #fff8d6, #f7d56b 60%, #e3a008); border-color: #c98c06; }
+  .egg.wobble { animation: wobble .4s; }
+  @keyframes wobble { 25% { transform: rotate(-9deg); } 75% { transform: rotate(9deg); } }
+  .egg svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .egg .spots { position: absolute; inset: 0; border-radius: inherit; background-image: radial-gradient(circle at 30% 60%, rgba(0,0,0,.06) 0 10px, transparent 11px), radial-gradient(circle at 70% 40%, rgba(0,0,0,.06) 0 14px, transparent 15px), radial-gradient(circle at 55% 78%, rgba(0,0,0,.06) 0 8px, transparent 9px); }
+  .pet { font-size: 7rem; line-height: 1; animation: pop .5s ease-out; }
+  .pet.shiny { filter: drop-shadow(0 0 14px rgba(227,160,8,.85)); }
+  @keyframes pop { 0% { transform: scale(.2) translateY(40px); } 70% { transform: scale(1.15); } 100% { transform: scale(1); } }
+  .actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+  /* pets */
+  .pets { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
+  .petcard { background: var(--card); border: 2px solid var(--line); border-radius: 16px; padding: 10px 6px; text-align: center; min-height: 110px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+  .petcard .e { font-size: 2.6rem; line-height: 1; }
+  .petcard.locked .e { filter: grayscale(1) brightness(.2); opacity: .25; }
+  .petcard.shiny { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(227,160,8,.22); }
+  .petcard small { font-weight: 700; font-size: .78rem; color: var(--muted); }
+  .note { background: var(--soft); border-radius: 14px; padding: 10px 14px; }
+  @media (max-width: 560px) {
+    .key { height: 44px; font-size: .9rem; border-radius: 8px; }
+    .row, .kb { gap: 4px; }
+    .key.wide { font-size: .65rem; }
+    .egg { width: 120px; height: 152px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .pet, .egg.wobble, .shake { animation: none; }
+  }
+</style>
+<div class="app" id="app">
+  <div class="top">
+    <h1><span aria-hidden="true">🥚</span> <span id="title"></span></h1>
+    <button type="button" class="pill" id="petsBtn"></button>
+    <button type="button" class="pill" id="soundBtn"></button>
+  </div>
+  <main id="screen" aria-live="polite"></main>
+</div>
+<script>
+// Typing Pets: short touch-typing lessons (home row first), and at the end of each lesson an egg to crack that
+// hatches a pet for the student's collection. Progress is kept in the player's own save (BRB.storage key SAVE_KEY):
+// teachers see it for their class on the class's progress page (server/services/typing.js reads the same shape;
+// keep LESSONS ids in step with it). A lesson step can open one lesson: ?chapter=l05&lock=1.
+const CONFIG = {
+  linesPerLesson: 3,      // drills in one lesson
+  lineLength: 34,         // characters a drill line aims for
+  crackTaps: 4,           // presses to hatch the egg
+  starsAt: [95, 85],      // accuracy for 3 and 2 stars
+  petsTotal: 40,
+};
+const SAVE_KEY = 'typing-pets-v1';
+
+// ==== I18N START ====
+var I18N = {
+  "en": {
+    "title": "Typing Pets",
+    "tag": "Learn to type, one key at a time, and hatch a pet after every lesson.",
+    "how1": "Put your fingers on the home row: A S D F for your left hand, J K L ; for your right hand.",
+    "how2": "Feel the little bumps on F and J. They help you find home without looking.",
+    "how3": "Type the letter that is lit up. Finish the lesson to crack an egg and hatch a pet.",
+    "hello": "Pick a lesson. Each one ends with an egg to crack!",
+    "unit1": "Home row", "unit2": "Top row", "unit3": "Bottom row", "unit4": "Big letters and sentences",
+    "lessonN": "Lesson {n}", "locked": "Finish the lesson before to open this one.",
+    "pets": "My pets {n}/{total}", "petsH": "My pets", "petsSub": "Finish lessons to hatch more. Get 3 stars for a golden egg and a shiny pet!",
+    "soundOn": "Sound on", "soundOff": "Sound off",
+    "start": "Press Space or tap Start to begin.", "startBtn": "Start", "map": "Lessons", "again": "Try again", "next": "Next lesson",
+    "lineOf": "Line {n} of {total}",
+    "finger": "Use your {finger}.",
+    "f_lp": "left pinky", "f_lr": "left ring finger", "f_lm": "left middle finger", "f_li": "left pointer finger",
+    "f_ri": "right pointer finger", "f_rm": "right middle finger", "f_rr": "right ring finger", "f_rp": "right pinky", "f_th": "thumb",
+    "shiftHint": "Hold Shift with your other hand's pinky for a big letter.",
+    "speed": "Speed", "acc": "Accuracy", "wpm": "{n} words a minute", "pct": "{n}%",
+    "doneH": "Lesson done!", "great": "Great typing!", "keepGoing": "Nice work! Try again for more stars.",
+    "eggReady": "Your egg is ready! Tap it or press any key to crack it.", "goldEgg": "A golden egg for 3 stars!",
+    "hatched": "You hatched a {pet}!", "shinyPet": "A shiny {pet}!", "visit": "Your {pet} came to say hi!",
+    "noKb": "Typing practice works best with a keyboard. You can also tap the keys below.",
+    "tickTip": "Typed wrong? No problem. Find the lit-up key and try again.",
+    "intro_l01": "Rest your left pointer finger on F and your right pointer finger on J. Feel the bumps!",
+    "intro_l02": "Your middle fingers rest on D and K, right next to F and J.",
+    "intro_l03": "Your ring fingers rest on S and L.",
+    "intro_l04": "Your pinkies rest on A and the ; key. That is the whole home row!",
+    "intro_l05": "Now type real words with the home row keys.",
+    "intro_l06": "Reach your pointer fingers to the middle: G and H. Then come back home.",
+    "intro_l07": "Reach up from D to E, and up from K to I.",
+    "intro_l08": "Reach up from F to R, and up from J to U.",
+    "intro_l09": "Reach up and over to T and Y with your pointer fingers.",
+    "intro_l10": "Ring fingers reach up to W and O.",
+    "intro_l11": "Pinkies reach up to Q and P.",
+    "intro_l12": "Words that use the top row and the home row.",
+    "intro_l13": "Reach down from F to V, and down from J to M.",
+    "intro_l14": "Middle fingers reach down to C and the comma.",
+    "intro_l15": "Pointer fingers reach down to B and N.",
+    "intro_l16": "Ring fingers reach down to X and the period. Pinkies reach down to Z.",
+    "intro_l17": "Words that use every row.",
+    "intro_l18": "Big letters: hold Shift with one pinky and press the letter with the other hand.",
+    "intro_l19": "Type whole sentences with big letters and periods.",
+    "intro_l20": "A speed run! Type carefully first, then get faster.",
+    "praise1": "Super!", "praise2": "Awesome typing!", "praise3": "You did it!"
+  }
+};
+// ==== I18N END ====
+// ==== VOICES START ====
+var VOICE_ROLES = { "default": "friendly" };
+// ==== VOICES END ====
+
+const BRBx = window.BRB || null;
+const lang = (BRBx && BRBx.user && BRBx.user.lang) || 'en';
+const T = I18N[lang] || I18N.en;
+function t(k, vars) {
+  let s = (T[k] !== undefined ? T[k] : I18N.en[k]);
+  if (s === undefined) return k;
+  if (vars) for (const v in vars) s = s.split('{' + v + '}').join(String(vars[v]));
+  return s;
+}
+function say(text) { if (!BRBx || !BRBx.speak || (BRBx.sfx && BRBx.sfx.muted)) return; try { BRBx.speak(text, { lang: 'en' }); } catch (e) { /* no voice */ } }
+function sfx(n) { try { if (BRBx && BRBx.sfx) BRBx.sfx.play(n); } catch (e) { /* no audio */ } }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// ---------------------------------------------------------------- the keyboard and the fingers (US QWERTY)
+const ROWS = ['qwertyuiop', 'asdfghjkl;', 'zxcvbnm,./'];
+const FINGER = {};
+'qaz'.split('').forEach(k => { FINGER[k] = 'lp'; });
+'wsx'.split('').forEach(k => { FINGER[k] = 'lr'; });
+'edc'.split('').forEach(k => { FINGER[k] = 'lm'; });
+'rfvtgb'.split('').forEach(k => { FINGER[k] = 'li'; });
+'yhnujm'.split('').forEach(k => { FINGER[k] = 'ri'; });
+'ik,'.split('').forEach(k => { FINGER[k] = 'rm'; });
+'ol.'.split('').forEach(k => { FINGER[k] = 'rr'; });
+'p;/'.split('').forEach(k => { FINGER[k] = 'rp'; });
+FINGER[' '] = 'th';
+const LEFT = new Set('qwertasdfgzxcvb'.split(''));
+
+// ---------------------------------------------------------------- lessons (ids shared with server/services/typing.js)
+const LESSONS = [
+  { id: 'l01', unit: 1, name: 'F and J', keys: 'fj' },
+  { id: 'l02', unit: 1, name: 'D and K', keys: 'dk' },
+  { id: 'l03', unit: 1, name: 'S and L', keys: 'sl' },
+  { id: 'l04', unit: 1, name: 'A and ;', keys: 'a;' },
+  { id: 'l05', unit: 1, name: 'Home row words', keys: '', words: true },
+  { id: 'l06', unit: 1, name: 'G and H', keys: 'gh' },
+  { id: 'l07', unit: 2, name: 'E and I', keys: 'ei' },
+  { id: 'l08', unit: 2, name: 'R and U', keys: 'ru' },
+  { id: 'l09', unit: 2, name: 'T and Y', keys: 'ty' },
+  { id: 'l10', unit: 2, name: 'W and O', keys: 'wo' },
+  { id: 'l11', unit: 2, name: 'Q and P', keys: 'qp' },
+  { id: 'l12', unit: 2, name: 'Top row words', keys: '', words: true },
+  { id: 'l13', unit: 3, name: 'V and M', keys: 'vm' },
+  { id: 'l14', unit: 3, name: 'C and comma', keys: 'c,' },
+  { id: 'l15', unit: 3, name: 'B and N', keys: 'bn' },
+  { id: 'l16', unit: 3, name: 'X, Z and period', keys: 'xz.' },
+  { id: 'l17', unit: 3, name: 'Every row words', keys: '', words: true },
+  { id: 'l18', unit: 4, name: 'Big letters', keys: '', caps: true },
+  { id: 'l19', unit: 4, name: 'Sentences', keys: '', sentences: true },
+  { id: 'l20', unit: 4, name: 'Speed run', keys: '', sentences: true, speed: true },
+];
+// The keys each lesson may use: everything learned so far.
+(function () { let have = ''; for (const L of LESSONS) { have += L.keys; L.allowed = have; } })();
+
+const WORDS = ('a add ads all as ask dad fad fall falls flask glad gas had half hall has lad lads lag lass sad salad shall ' +
+  'flag flags glass hash jag jags ash dash gash lash flash slash ' +
+  'aide ail are ate dear deal dial die dig dish do eat ear easy egg eight else end fair far fat feel feet fire fish fit five fold for fork fresh friend frog fruit fun ' +
+  'gate get gift girl give go goat gold good got great green grow hair hat have head hear heart her here hide hike his hit hold hope hot house how huge ' +
+  'idea it its jar jet joke joy just keep kid kite kiss lake leaf left leg let life light like lit little look lost lot love luck ' +
+  'oak off oil old out owl pear pet pie pig pit play pool poke pot pour pup purple put quiet quit quilt rat read red rest ride right road rope rose round run rug ' +
+  'sail salt sea seed she ship shoe short shout sit sky slide slow soft soup speed spot stop sure tail take tall tea teeth that the their they this tiger tip toe top toy tree true turtle ' +
+  'up us use water we well west wet what wheel white who why wide wild wish with wolf wood word work world yes yet you your yard year ' +
+  'cat cake cup cut cold cool cow crab cloud clap camp candy city corn cube ' +
+  'bag ball bat be bear bed bee best big bike bird blue boat book box boy bread brown bug bus but by ' +
+  'man map me milk mom moon more mouse mud my name nap near nest net new next nice night no nose not now nut ' +
+  'van vest very visit voice view ' +
+  'fox box six wax mix ox zebra zip zoo zero lazy prize size').split(' ').filter(Boolean);
+const SENTENCES = [
+  'The cat sat on a mat.', 'My dog likes to run.', 'We can play in the park.', 'The sun is hot today.', 'I see a red bird.',
+  'Fish swim in the lake.', 'She has a big blue kite.', 'He reads a fun book.', 'The frog can jump far.', 'We made a sand castle.',
+  'My pet is soft and kind.', 'The moon is bright at night.', 'I like green apples.', 'The bus is yellow.', 'Bees make sweet honey.',
+  'A turtle walks slowly.', 'The owl hoots at night.', 'We plant seeds in spring.', 'Snow is cold and white.', 'Ducks swim in a row.',
+];
+const PETS = [
+  ['bunny', '🐰', 'Bunny'], ['puppy', '🐶', 'Puppy'], ['kitten', '🐱', 'Kitten'], ['chick', '🐥', 'Chick'], ['fox', '🦊', 'Fox'],
+  ['panda', '🐼', 'Panda'], ['koala', '🐨', 'Koala'], ['tiger', '🐯', 'Tiger'], ['lion', '🦁', 'Lion'], ['frog', '🐸', 'Frog'],
+  ['monkey', '🐵', 'Monkey'], ['penguin', '🐧', 'Penguin'], ['owl', '🦉', 'Owl'], ['turtle', '🐢', 'Turtle'], ['octopus', '🐙', 'Octopus'],
+  ['unicorn', '🦄', 'Unicorn'], ['dragon', '🐲', 'Dragon'], ['hamster', '🐹', 'Hamster'], ['mouse', '🐭', 'Mouse'], ['bear', '🐻', 'Bear'],
+  ['pig', '🐷', 'Piglet'], ['cow', '🐮', 'Calf'], ['duck', '🦆', 'Duckling'], ['dino', '🦕', 'Dino'], ['trex', '🦖', 'T. rex'],
+  ['whale', '🐳', 'Whale'], ['dolphin', '🐬', 'Dolphin'], ['seal', '🦭', 'Seal'], ['crab', '🦀', 'Crab'], ['fish', '🐠', 'Fish'],
+  ['bee', '🐝', 'Bee'], ['ladybug', '🐞', 'Ladybug'], ['butterfly', '🦋', 'Butterfly'], ['snail', '🐌', 'Snail'], ['hedgehog', '🦔', 'Hedgehog'],
+  ['sloth', '🦥', 'Sloth'], ['otter', '🦦', 'Otter'], ['parrot', '🦜', 'Parrot'], ['flamingo', '🦩', 'Flamingo'], ['peacock', '🦚', 'Peacock'],
+];
+
+// ---------------------------------------------------------------- the save
+function blankSave() { return { v: 1, done: {}, pets: {}, keys: {}, secs: 0, last: 0 }; }
+function loadSave() {
+  let s = null;
+  try { s = BRBx && BRBx.storage ? BRBx.storage.get(SAVE_KEY) : JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { s = null; }
+  if (!s || typeof s !== 'object' || s.v !== 1) return blankSave();
+  const b = blankSave();
+  for (const k of ['done', 'pets', 'keys']) if (s[k] && typeof s[k] === 'object') b[k] = s[k];
+  b.secs = +s.secs || 0; b.last = +s.last || 0;
+  return b;
+}
+let save = loadSave();
+function store() {
+  try { if (BRBx && BRBx.storage) BRBx.storage.set(SAVE_KEY, save); else localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) { /* not saved */ }
+}
+
+// ---------------------------------------------------------------- drills
+const pick = a => a[Math.floor(Math.random() * a.length)];
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function wordsWith(allowed) { const ok = new Set(allowed.split('')); return WORDS.filter(w => w.split('').every(c => ok.has(c))); }
+function fill(make) {
+  let s = '', last = '';
+  while (s.length < CONFIG.lineLength) {
+    let w = make();
+    for (let i = 0; i < 4 && w === last; i++) w = make();   // never the same word twice in a row
+    s += (s ? ' ' : '') + w; last = w;
+  }
+  return s;
+}
+/** The lesson's lines: new keys first, then the new keys mixed with the known ones, then real words. */
+function drillsFor(L) {
+  const allowed = L.allowed.replace(/[^a-z;,.]/g, '');
+  if (L.sentences) return shuffle(SENTENCES.slice()).slice(0, CONFIG.linesPerLesson + (L.speed ? 1 : 0)).map(s => s.length > 44 ? s.slice(0, 44) : s);
+  if (L.caps) {
+    const ws = wordsWith('abcdefghijklmnopqrstuvwxyz');
+    return [0, 1, 2].map(() => fill(() => { const w = pick(ws); return w[0].toUpperCase() + w.slice(1); }));
+  }
+  const fresh = L.keys ? L.keys.split('') : allowed.split('');
+  const known = allowed.split('');
+  const lines = [];
+  // 1. the new keys alone, in little groups ("fff jjj fjf")
+  lines.push(fill(() => { const k = pick(fresh), k2 = pick(fresh); return Math.random() < .5 ? k + k + k : k + k2 + k; }));
+  // 2. new keys mixed with known keys
+  lines.push(fill(() => { let g = ''; const n = 2 + Math.floor(Math.random() * 3); for (let i = 0; i < n; i++) g += Math.random() < .55 ? pick(fresh) : pick(known); return g; }));
+  // 3. real words with only the keys learned so far (made-up groups when there are too few words yet)
+  const ws = wordsWith(allowed).filter(w => !L.keys || w.split('').some(c => fresh.includes(c)) || Math.random() < .3);
+  lines.push(ws.length >= 4 ? fill(() => pick(ws)) : fill(() => { let g = ''; for (let i = 0; i < 3; i++) g += pick(known); return g; }));
+  if (L.words) lines[0] = fill(() => pick(wordsWith(allowed)));
+  return lines;
+}
+
+// ---------------------------------------------------------------- screens
+const $ = id => document.getElementById(id);
+const screen = $('screen');
+const P = (BRBx && BRBx.params) || {};
+const locked = P.lock === 1 && LESSONS.some(L => L.id === P.chapter);
+let cur = null;   // the lesson being typed
+
+function starsHtml(n) { let s = ''; for (let i = 1; i <= 3; i++) s += i <= n ? '★' : '<span class="off">★</span>'; return s; }
+function petCount() { return Object.keys(save.pets).length; }
+function drawTop() {
+  $('title').textContent = t('title');
+  $('petsBtn').textContent = '🐾 ' + t('pets', { n: petCount(), total: PETS.length });
+  const muted = BRBx && BRBx.sfx ? BRBx.sfx.muted : false;
+  $('soundBtn').textContent = (muted ? '🔇 ' : '🔊 ') + t(muted ? 'soundOff' : 'soundOn');
+  $('petsBtn').classList.toggle('hidden', !!locked && !cur);
+}
+const unlocked = i => i === 0 || !!save.done[LESSONS[i - 1].id] || !!save.done[LESSONS[i].id];
+
+function showMap() {
+  cur = null; stopKeys();
+  if (locked) return showIntro(LESSONS.find(L => L.id === P.chapter));
+  const nextI = LESSONS.findIndex(L => !save.done[L.id]);
+  let html = `<div class="card hello"><span class="big" aria-hidden="true">🥚</span><div><b>${esc(t('tag'))}</b><p class="muted" style="margin:.3em 0 0">${esc(t('hello'))}</p></div></div>`;
+  for (let u = 1; u <= 4; u++) {
+    html += `<h2 class="unit">${esc(t('unit' + u))}</h2><div class="grid">`;
+    LESSONS.forEach((L, i) => {
+      if (L.unit !== u) return;
+      const d = save.done[L.id], open = unlocked(i);
+      html += `<button type="button" class="tile${i === nextI ? ' next' : ''}" data-lesson="${L.id}"${open ? '' : ` disabled title="${esc(t('locked'))}"`}>
+        ${open ? '' : '<span class="lock" aria-hidden="true">🔒</span>'}<span class="n">${esc(t('lessonN', { n: i + 1 }))}</span><span class="nm">${esc(L.name)}</span>
+        <span class="st" aria-label="${d ? d.s : 0} / 3">${starsHtml(d ? d.s : 0)}</span></button>`;
+    });
+    html += '</div>';
+  }
+  screen.innerHTML = html;
+  drawTop();
+}
+
+function showIntro(L) {
+  stopKeys();
+  const i = LESSONS.indexOf(L);
+  cur = { L, i, lines: drillsFor(L), line: 0, pos: 0, errs: 0, ok: 0, ms: 0, t0: 0, typed: 0, miss: {}, hit: {}, wrongHere: false };
+  screen.innerHTML = `<div class="card">
+    <div class="lesson-h"><h2>${esc(t('lessonN', { n: i + 1 }))}: ${esc(L.name)}</h2>${locked ? '' : `<button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button>`}</div>
+    <p class="tip">${esc(t('intro_' + L.id))}</p>
+    ${i === 0 ? `<p class="note">${esc(t('how1'))} ${esc(t('how2'))}</p>` : ''}
+    ${L.caps ? `<p class="note">${esc(t('shiftHint'))}</p>` : ''}
+    <div class="actions"><button type="button" class="btn" data-go="type">${esc(t('startBtn'))}</button></div>
+    <p class="muted center">${esc(t('start'))}</p>
+  </div>${keyboardHtml(L)}`;
+  say(t('intro_' + L.id));
+  drawTop();
+  listen(e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); startTyping(); } });
+}
+
+function startTyping() {
+  stopKeys();
+  screen.innerHTML = `<div class="card">
+    <div class="lesson-h"><h2>${esc(t('lessonN', { n: cur.i + 1 }))}: ${esc(cur.L.name)}</h2><span class="dots" id="dots"></span>
+      ${locked ? '' : `<button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button>`}</div>
+    <p class="stats"><span id="lineOf"></span><span id="fingerTip" class="finger"></span></p>
+    <div class="line" id="line" role="textbox" aria-readonly="true" aria-label="${esc(t('lineOf', { n: 1, total: cur.lines.length }))}"></div>
+    <p class="muted" id="hint">${esc(t('tickTip'))}</p>
+  </div>${keyboardHtml(cur.L)}
+  <p class="muted center small">${esc(t('noKb'))}</p>`;
+  drawLine();
+  listen(onKey);
+}
+function keyboardHtml(L) {
+  const allowed = new Set((L ? L.allowed : '').split(''));
+  const k = c => `<button type="button" class="key${'fj'.includes(c) ? ' home' : ''}${L && !L.caps && !L.sentences && !allowed.has(c) ? ' unused' : ''}" data-key="${esc(c)}" style="background:var(--f-${FINGER[c]})" tabindex="-1" aria-label="${esc(c)}">${esc(c.toUpperCase())}</button>`;
+  return `<div class="kb" aria-hidden="true">
+    <div class="row">${ROWS[0].split('').map(k).join('')}</div>
+    <div class="row">${ROWS[1].split('').map(k).join('')}</div>
+    <div class="row"><button type="button" class="key wide" data-key="shiftL" style="background:var(--f-lp)" tabindex="-1">Shift</button>${ROWS[2].split('').map(k).join('')}<button type="button" class="key wide" data-key="shiftR" style="background:var(--f-rp)" tabindex="-1">Shift</button></div>
+    <div class="row"><button type="button" class="key space" data-key=" " style="background:var(--f-th)" tabindex="-1">space</button></div>
+  </div>
+  <div class="legend">${['lp', 'lr', 'lm', 'li', 'ri', 'rm', 'rr', 'rp'].map(f => `<span><i style="background:var(--f-${f})"></i>${esc(t('f_' + f))}</span>`).join('')}</div>`;
+}
+function drawLine() {
+  const s = cur.lines[cur.line];
+  // Each word sits in a no-wrap group, so a line only ever breaks at a space, never inside a word.
+  let h = '', inWord = false;
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i], sp = c === ' ';
+    const cls = i < cur.pos ? 'done' : i === cur.pos ? (cur.wrongHere ? 'bad' : 'cur') : 'todo';
+    if (!sp && !inWord) { h += '<b class="w">'; inWord = true; }
+    if (sp && inWord) { h += '</b>'; inWord = false; }
+    h += `<span class="${cls}${sp ? ' sp' : ''}">${sp ? (i < cur.pos ? '·' : i === cur.pos ? '&nbsp;' : '·') : esc(c)}</span>${sp ? '<wbr>' : ''}`;
+  }
+  if (inWord) h += '</b>';
+  $('line').innerHTML = h;
+  $('lineOf').textContent = t('lineOf', { n: cur.line + 1, total: cur.lines.length });
+  $('dots').innerHTML = cur.lines.map((_, i) => `<i class="${i < cur.line ? 'on' : ''}"></i>`).join('');
+  const want = s[cur.pos];
+  const low = want.toLowerCase();
+  const f = FINGER[low] || 'th';
+  $('fingerTip').textContent = t('finger', { finger: t('f_' + f) });
+  document.querySelectorAll('.key.hit').forEach(el => el.classList.remove('hit'));
+  const key = document.querySelector(`.key[data-key="${CSS.escape(low)}"]`); if (key) key.classList.add('hit');
+  if (want !== low) { const sh = document.querySelector(`.key[data-key="${LEFT.has(low) ? 'shiftR' : 'shiftL'}"]`); if (sh) sh.classList.add('hit'); }
+}
+
+// ---------------------------------------------------------------- typing
+let keyFn = null;
+function listen(fn) { stopKeys(); keyFn = fn; document.addEventListener('keydown', keyFn); }
+function stopKeys() { if (keyFn) document.removeEventListener('keydown', keyFn); keyFn = null; }
+function onKey(e) {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key.length !== 1) return;          // Shift, arrows and the like
+  e.preventDefault();
+  press(e.key);
+}
+function press(ch) {
+  if (!cur) return;
+  const s = cur.lines[cur.line], want = s[cur.pos];
+  const now = performance.now();
+  if (!cur.t0) cur.t0 = now;
+  const k = want.toLowerCase();
+  if (ch === want) {
+    if (!cur.wrongHere) { cur.ok++; if (k !== ' ') cur.hit[k] = (cur.hit[k] || 0) + 1; }
+    cur.wrongHere = false; cur.pos++; cur.typed++;
+    sfx('click');
+    if (cur.pos >= s.length) return lineDone(now);
+  } else {
+    if (!cur.wrongHere) { cur.errs++; if (k !== ' ') cur.miss[k] = (cur.miss[k] || 0) + 1; }
+    cur.wrongHere = true;
+    const line = $('line'); line.classList.remove('shake'); void line.offsetWidth; line.classList.add('shake');
+    sfx('hit');
+  }
+  drawLine();
+}
+function lineDone(now) {
+  cur.ms += now - cur.t0; cur.t0 = 0;
+  cur.line++; cur.pos = 0;
+  if (cur.line >= cur.lines.length) return lessonDone();
+  sfx('coin');
+  drawLine();
+}
+
+function lessonDone() {
+  stopKeys();
+  const L = cur.L;
+  const acc = Math.round((100 * cur.ok) / Math.max(1, cur.ok + cur.errs));
+  const wpm = Math.min(200, Math.round((cur.typed / 5) / Math.max(1 / 60, cur.ms / 60000)));
+  const stars = acc >= CONFIG.starsAt[0] ? 3 : acc >= CONFIG.starsAt[1] ? 2 : 1;
+  const prev = save.done[L.id];
+  save.done[L.id] = { s: Math.max(stars, prev ? prev.s : 0), w: Math.max(wpm, prev ? prev.w : 0), a: Math.max(acc, prev ? prev.a : 0), n: (prev ? prev.n : 0) + 1, t: Date.now(), la: acc, lw: wpm };
+  for (const k in cur.hit) { const r = save.keys[k] || [0, 0]; r[0] += cur.hit[k]; save.keys[k] = r; }
+  for (const k in cur.miss) { const r = save.keys[k] || [0, 0]; r[1] += cur.miss[k]; save.keys[k] = r; }
+  save.secs += Math.round(cur.ms / 1000); save.last = Date.now();
+  store();
+  // For a class lesson step: the speed as the score, with accuracy and stars beside it (the teacher's gradebook).
+  try {
+    if (BRBx && BRBx.score) BRBx.score.submit(wpm, `L${cur.i + 1} ${acc}% ${stars}* ${wpm} wpm`.slice(0, 40));
+    if (BRBx && BRBx.gameOver) BRBx.gameOver({ won: true, score: wpm });
+  } catch (e) { /* preview */ }
+  sfx('win');
+  screen.innerHTML = `<div class="card center">
+    <h2 style="margin:0">${esc(t('doneH'))}</h2>
+    <div class="stars" aria-label="${stars} / 3">${starsHtml(stars)}</div>
+    <p><b>${esc(stars === 3 ? t('great') : t('keepGoing'))}</b></p>
+    <div class="nums"><div class="num">${esc(t('speed'))}<b>${esc(t('wpm', { n: wpm }))}</b></div><div class="num">${esc(t('acc'))}<b>${esc(t('pct', { n: acc }))}</b></div></div>
+    <div class="eggbox">
+      <p><b>${esc(stars === 3 ? t('goldEgg') + ' ' : '')}${esc(t('eggReady'))}</b></p>
+      <button type="button" class="egg${stars === 3 ? ' gold' : ''}" id="egg" aria-label="${esc(t('eggReady'))}"><span class="spots"></span><svg viewBox="0 0 150 190" id="cracks" aria-hidden="true"></svg></button>
+    </div>
+  </div>`;
+  say(t(stars === 3 ? 'great' : 'keepGoing') + ' ' + t('eggReady'));
+  egg = { taps: 0, stars };
+  $('egg').focus();
+  listen(e => { if (e.key.length === 1 || e.key === 'Enter') { e.preventDefault(); crack(); } });
+  drawTop();
+}
+
+// ---------------------------------------------------------------- the egg and the pets
+let egg = null;
+const CRACKS = ['M75 18 L66 46 L82 60 L70 82', 'M70 82 L50 96 L60 116 L40 130', 'M82 60 L104 74 L96 98 L118 112', 'M40 130 L75 120 L110 132'];
+function crack() {
+  if (!egg || egg.done) return;
+  egg.taps++;
+  const el = $('egg'); el.classList.remove('wobble'); void el.offsetWidth; el.classList.add('wobble');
+  $('cracks').innerHTML = CRACKS.slice(0, egg.taps).map(d => `<path d="${d}" fill="none" stroke="#5a4a2a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>`).join('');
+  sfx('jump');
+  if (egg.taps >= CONFIG.crackTaps) hatch();
+}
+function hatch() {
+  egg.done = true; stopKeys();
+  const shiny = egg.stars === 3;
+  const free = PETS.filter(p => !save.pets[p[0]]);
+  let pet, msg;
+  if (free.length) { pet = pick(free); save.pets[pet[0]] = { s: shiny ? 1 : 0, n: 1, t: Date.now() }; msg = t(shiny ? 'shinyPet' : 'hatched', { pet: pet[2] }); }
+  else {
+    // every pet hatched: a golden egg makes one shiny, otherwise a friend visits
+    const plain = PETS.filter(p => !save.pets[p[0]].s);
+    pet = shiny && plain.length ? pick(plain) : pick(PETS);
+    const r = save.pets[pet[0]]; r.n = (r.n || 1) + 1; if (shiny) r.s = 1;
+    msg = shiny ? t('shinyPet', { pet: pet[2] }) : t('visit', { pet: pet[2] });
+  }
+  store();
+  try { if (BRBx && BRBx.fx) BRBx.fx.confetti(); } catch (e) { /* reduced motion */ }
+  sfx('powerup');
+  const L = cur.L, nextL = LESSONS[cur.i + 1];
+  $('egg').parentElement.innerHTML = `<div class="pet${shiny ? ' shiny' : ''}" aria-hidden="true">${pet[1]}</div><p style="font-size:1.3rem"><b>${esc(msg)}</b></p>`;
+  say(msg + ' ' + pick([t('praise1'), t('praise2'), t('praise3')]));
+  const acts = document.createElement('div');
+  acts.className = 'actions';
+  acts.innerHTML = `${!locked && nextL ? `<button type="button" class="btn" data-lesson="${nextL.id}">${esc(t('next'))} →</button>` : ''}
+    <button type="button" class="btn ghost" data-lesson="${L.id}">${esc(t('again'))}</button>
+    ${locked ? '' : `<button type="button" class="btn ghost" data-go="map">${esc(t('map'))}</button>`}
+    <button type="button" class="btn ghost" data-go="pets">🐾 ${esc(t('petsH'))}</button>`;
+  screen.querySelector('.card').appendChild(acts);
+  drawTop();
+}
+function showPets() {
+  stopKeys(); cur = null;
+  screen.innerHTML = `<div class="card"><div class="lesson-h"><h2>🐾 ${esc(t('petsH'))} (${petCount()}/${PETS.length})</h2>
+    <button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button></div>
+    <p class="muted">${esc(t('petsSub'))}</p>
+    <div class="pets">${PETS.map(p => { const r = save.pets[p[0]];
+      return `<div class="petcard${r ? (r.s ? ' shiny' : '') : ' locked'}"><span class="e" aria-hidden="true">${p[1]}</span><small>${r ? esc(p[2]) + (r.s ? ' ✨' : '') : '?'}</small></div>`; }).join('')}</div></div>`;
+  drawTop();
+}
+
+// ---------------------------------------------------------------- clicks
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id === 'soundBtn') { if (BRBx && BRBx.sfx) BRBx.sfx.mute(); drawTop(); return; }
+  if (b.id === 'petsBtn') { showPets(); return; }
+  if (b.id === 'egg') { crack(); return; }
+  if (b.dataset.lesson) { const L = LESSONS.find(x => x.id === b.dataset.lesson); if (L) showIntro(L); return; }
+  if (b.dataset.go === 'map') { showMap(); return; }
+  if (b.dataset.go === 'pets') { showPets(); return; }
+  if (b.dataset.go === 'type') { startTyping(); return; }
+  if (b.dataset.key && cur && keyFn === onKey) {
+    const k = b.dataset.key;
+    if (k === 'shiftL' || k === 'shiftR') { shiftOn = !shiftOn; return; }
+    press(shiftOn ? k.toUpperCase() : k); shiftOn = false;
+  }
+});
+let shiftOn = false;   // tapping Shift on the keyboard below, for a big letter
+
+// For cover pictures and tests (scripts/covers/typing-pets.recipe.js).
+window.__brbTest = {
+  lesson: id => showIntro(LESSONS.find(L => L.id === id) || LESSONS[0]),
+  type: id => { showIntro(LESSONS.find(L => L.id === id) || LESSONS[0]); startTyping(); },
+  typeAll: () => { if (!cur) return; while (cur && cur.line < cur.lines.length && keyFn === onKey) press(cur.lines[cur.line][cur.pos]); },
+  crackAll: () => { while (egg && !egg.done) crack(); },
+  pets: () => showPets(),
+  lessons: LESSONS.map(L => L.id),
+  save: () => save,
+};
+
+drawTop();
+if (locked) showIntro(LESSONS.find(L => L.id === P.chapter)); else showMap();
+</script>

@@ -1324,6 +1324,8 @@ export const MIGRATIONS = [
   // pictures), so the book's owner can see it under the picture and anyone checking can see no art-kit words went out.
   ['0113_storybook_draw_prompt', `
     ALTER TABLE made_book_draws ADD COLUMN prompt TEXT NOT NULL DEFAULT '';`],
+  // Typing Pets (seed-games/typing-pets.json) is a Learn game: its own shelf step, as each new Learn game gets.
+  ['0114_typing_pets_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='typing-pets';"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

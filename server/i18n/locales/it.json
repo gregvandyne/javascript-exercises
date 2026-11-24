@@ -5503,6 +5503,26 @@
       "about": "Su questa lezione",
       "readToMe": "Leggimelo"
     },
+    "typing": {
+      "title": "Cuccioli Tastiera",
+      "started": "{started} studenti su {total} hanno scritto",
+      "lessons": "Lezioni",
+      "next": "Prossima",
+      "speed": "Velocità migliore",
+      "acc": "Precisione",
+      "tricky": "Tasti difficili",
+      "pets": "Cuccioli",
+      "time": "Tempo di scrittura",
+      "last": "Ultima volta",
+      "lessonN": "Lezione {n}",
+      "allDone": "Tutto fatto",
+      "wpm": "{n} parole/min",
+      "minutes": "{n} min",
+      "missed": "Sbagliato il {pct}% delle volte",
+      "notYet": "Non ancora iniziato",
+      "note": "Dai progressi di ogni studente in Cuccioli Tastiera, compresa la pratica a casa. La velocità è in parole al minuto; la precisione è la media delle lezioni migliori. I tasti difficili sono quelli sbagliati più spesso.",
+      "assign": "Assegna una lezione di dattilografia"
+    },
     "courses": {
       "started": "{started} su {total} hanno iniziato"
     },
@@ -6624,7 +6644,8 @@
       "sumSpotter": "Trova il numero che è la somma (o il prodotto) di altri due, dalle somme fino a 10 alle tabelline, con una sfida a tempo di 60 secondi.",
       "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
       "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe.",
-      "mistakeHunt": "Trova e correggi gli errori in un breve testo: l'insegnante incolla il proprio testo, inserisce errori di ortografia, grammatica e punteggiatura, poi lo condivide, lo assegna o lo stampa."
+      "mistakeHunt": "Trova e correggi gli errori in un breve testo: l'insegnante incolla il proprio testo, inserisce errori di ortografia, grammatica e punteggiatura, poi lo condivide, lo assegna o lo stampa.",
+      "typingPets": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 20 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
     },
     "hubs": {
       "math": {
