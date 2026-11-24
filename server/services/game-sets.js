@@ -202,8 +202,8 @@ export function cleanCrossItems(raw) {
 // processor are turned into the plain ones first; runs of spaces become one.
 export const TYPING = { min: 10, max: 1500, title: 60, lines: 40, minutes: [1, 2, 3, 5] };
 // Letters of any script (Typing Pets has keyboards for 11 languages; the game checks the text against the teacher's
-// chosen keyboard), digits, and the punctuation the keyboards share (plus ¿ ¡ and Arabic ، ؟).
-const TYPABLE = /^[\p{L}\p{M}\p{N} .,;:'"!?()\-\n¿¡،؟]+$/u;
+// chosen keyboard), digits, and the punctuation the keyboards share (plus ¿ ¡ and Arabic ، ؛ ؟).
+const TYPABLE = /^[\p{L}\p{M}\p{N} .,;:'"!?()\-\n¿¡،؛؟]+$/u;
 /** The keyboards a teacher's lesson may be for (seed-games/typing-pets-langs/layouts.json). */
 export const TYPING_LAYOUTS = ['us', 'de', 'fr', 'es', 'it', 'pt', 'ru', 'he', 'ar'];
 export function cleanTypingItems(raw) {

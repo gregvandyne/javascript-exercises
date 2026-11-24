@@ -13,6 +13,7 @@ const G = await import('../../server/services/games.js');
 const S = await import('../../server/services/schools.js');
 const TY = await import('../../server/services/typing.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
+const { cleanText } = await import('../../server/services/textfilter.js');
 
 seed({ quiet: true });
 const html = fs.readFileSync('seed-games/typing-pets.html', 'utf8');
@@ -330,6 +331,9 @@ test('every pack: every string in every language, with the same placeholders, an
     assert.deepEqual(Object.keys(p.paras), TY.LESSONS.slice(28), `${p.lang}: paragraphs`);
     assert.ok(p.words.length >= 150 && p.sentences.length >= 20 && p.marks.length >= 12, `${p.lang}: enough to type`);
     for (const x of Object.values(p.paras)) assert.ok(SETS.cleanTypingItems([{ x, l: p.layout }]), `${p.lang}: paragraphs pass a teacher lesson's rules`);
+    // Nothing a child types trips the site's word filter (romaji "shita" would, for one).
+    const flagged = all.filter(x => !cleanText(x, 1500).ok);
+    assert.deepEqual(flagged, [], `${p.lang}: the word filter`);
   }
 });
 
