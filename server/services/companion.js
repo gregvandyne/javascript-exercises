@@ -1532,6 +1532,11 @@ async function bookAct(u, row, turn, a, value) {
     if (n.error) return { ok: false, code: 'notFound' };
     return save(n.state === 'check' ? await BK.runCheck(u, n) : n);
   }
+  if (a === 'bookTheme') {
+    const n = BK.ownTheme(d, value);
+    if (n.error) return { ok: false, code: 'notFound' };
+    return save(n.state === 'check' ? await BK.runCheck(u, n) : n);
+  }
   if (a === 'bookClear') return save(BK.clearWords(d));
   if (a === 'bookCheck') { if (BK.needOf({ ...d, ctxDone: true }) !== 'check') return { ok: false, code: 'notFound' }; return save(await BK.runCheck(u, d)); }
   if (a === 'bookStop') { setOpen(u, null); audit(u.id, 'companion.book.stop', d.id, {}); return save({ ...d, v: (d.v || 1) + 1, state: 'cancelled' }); }

@@ -125,7 +125,12 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-bigs .oc-bigb{display:flex;align-items:center;gap:10px;justify-content:flex-start;text-align:start;min-height:56px;padding:8px 12px;width:100%;white-space:normal}
 .oc-bigb>span{display:flex;flex-direction:column;min-width:0}
 .oc-bigb small{font-size:.78rem;line-height:1.3}
-.oc-bfoot{display:flex;justify-content:flex-end}
+.oc-bfoot{display:flex;justify-content:flex-end;align-items:center;gap:8px;flex-wrap:wrap}
+/* "Something else" on the theme question: the teacher's own theme, in the foot beside Stop. */
+.oc-btheme{flex:1 1 100%;display:flex;gap:8px;align-items:center;min-width:0}
+.oc-btheme[hidden]{display:none}
+.oc-pickb[aria-expanded="true"]{box-shadow:inset 0 0 0 2px var(--accent)}
+.oc-btheme .input{flex:1;min-width:0}
 .oc-bhint{font-size:.88rem;color:var(--text-2)}
 .oc-bhave{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;font-size:.86rem;font-weight:700}
 .oc-bhave li{display:flex;gap:6px;align-items:center;min-width:0;overflow-wrap:anywhere}

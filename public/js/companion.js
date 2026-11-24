@@ -402,9 +402,27 @@ function start() {
     const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span dir="auto">${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}${o.kindText ? ` <small>${esc(o.kindText)}${o.at ? ` · ${esc(new Date(o.at).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric' }))}` : ''}</small>` : ''}</button>`).join('');
     return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
   }
+  // "Something else" on the book card's theme: Use this theme sends the teacher's own theme (bookTheme).
+  document.addEventListener('input', e => {
+    const f = e.target.closest && e.target.closest('.oc-btheme');
+    if (f) f.querySelector('button[type="submit"]').disabled = e.target.value.trim().length < 2;
+  });
+  document.addEventListener('submit', async e => {
+    const f = e.target.closest && e.target.closest('.oc-btheme'); if (!f) return;
+    e.preventDefault();
+    const v = f.querySelector('input').value.trim(), go = f.querySelector('button[type="submit"]');
+    if (v.length < 2 || go.disabled) return;
+    go.disabled = true;
+    try { const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: f.dataset.turn, act: 'bookTheme', value: v } }); if (r.chat) chat.took(r.chat); }
+    catch { go.disabled = false; }
+  });
   async function onAct(act, turn, btn) {
     if (!turn) return null;
     if (act === 'askOther') { const box = $('oc-in'); box.focus(); return null; }
+    if (act === 'bookOther') {
+      const f = document.getElementById(`oc-btheme-${turn.id}`); if (!f) return null;
+      f.hidden = false; btn.setAttribute('aria-expanded', 'true'); btn.classList.add('on'); f.querySelector('input').focus(); return null;
+    }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
       const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^book[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
@@ -465,7 +483,10 @@ function start() {
     const stop = btn('bookStop', b.L.stop, { ghost: true });
     if (b.options) {
       const opts = b.options.map(o => `<button type="button" class="btn btn-sm oc-pickb${o.sub ? ' oc-bigb' : ''}" data-c="act" data-act="bookPick" data-turn="${id}" data-v="${esc(o.v)}">${o.icon ? `${ic(o.icon, o.sub ? 28 : 18)} ` : ''}<span>${esc(o.label)}${o.sub ? `<small>${esc(o.sub)}</small>` : ''}</span></button>`).join('');
-      return `<div class="oc-ask oc-book" role="group" aria-label="${esc(b.question)}">${known}<p class="oc-askq">${esc(b.question)}</p><div class="oc-acts${b.options.some(o => o.sub) ? ' oc-bigs' : ''}">${opts}</div>${err}<div class="oc-bfoot">${stop}</div></div>`;
+      // The theme: "Something else" opens a box for the teacher's own theme, where the card's foot is.
+      const other = b.ownTheme ? `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="bookOther" data-turn="${id}" aria-expanded="false" aria-controls="oc-btheme-${id}"><span>${esc(b.L.other)}</span></button>` : '';
+      const own = b.ownTheme ? `<form class="oc-btheme" id="oc-btheme-${id}" data-turn="${id}" hidden><label class="sr-only" for="oc-btheme-in-${id}">${esc(b.L.other)}</label><input class="input" id="oc-btheme-in-${id}" maxlength="${b.ownTheme}" placeholder="${esc(b.L.themeHint)}" dir="auto" autocomplete="off"><button type="submit" class="btn btn-sm btn-primary" disabled>${esc(b.L.useTheme)}</button></form>` : '';
+      return `<div class="oc-ask oc-book" role="group" aria-label="${esc(b.question)}">${known}<p class="oc-askq">${esc(b.question)}</p><div class="oc-acts${b.options.some(o => o.sub) ? ' oc-bigs' : ''}">${opts}${other}</div>${err}<div class="oc-bfoot">${own}${stop}</div></div>`;
     }
     if (b.state === 'context') {
       const have = b.have.length ? `<ul class="oc-bhave">${b.have.map(h => `<li>${ic('✓', 14)} <span dir="auto">${esc(h)}</span></li>`).join('')}</ul>` : '';
