@@ -59,24 +59,32 @@ export function cleanAtlasPrintDoc(raw) {
 
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const flagSrc = f => (f.startsWith('data:') ? f : 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(f));
+// US English for 'en' (the game's English data is in British spelling; en-GB keeps it), as the game shows it.
+const US_WORDS = [[/colour/g, 'color'], [/Colour/g, 'Color'], [/neighbour/g, 'neighbor'], [/Neighbour/g, 'Neighbor'], [/\bgrey\b/g, 'gray'], [/\bGrey\b/g, 'Gray'],
+  [/favourite/g, 'favorite'], [/Favourite/g, 'Favorite'], [/flavour/g, 'flavor'], [/harbour/g, 'harbor'], [/honour/g, 'honor'], [/Honour/g, 'Honor'], [/metre/g, 'meter'],
+  [/centre/g, 'center'], [/jewellery/g, 'jewelry'], [/theatre/g, 'theater'], [/traveller/g, 'traveler'], [/\bcosy\b/g, 'cozy'], [/\bmould/g, 'mold'], [/\btyre\b/g, 'tire'], [/aeroplane/g, 'airplane']];
+export const usSpelling = s => US_WORDS.reduce((x, [re, to]) => x.replace(re, to), String(s));
 const CONT = { af: 'Africa', as: 'Asia', eu: 'Europe', na: 'North America', sa: 'South America', oc: 'Oceania' };
 
 /** The printable page (a fragment for the play page's print area). t: the viewer's language (req.t); dir: its
  *  direction; lang: its code; code / link: the saved set's class code and link (only for a set that is on Oomba). */
 export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = '' }) {
   const { by, map, D } = core(), P = packFor(lang);
-  const word = (key, en) => (typeof P[key] === 'string' && P[key] ? P[key] : en);
+  const usEn = /^en(-US)?$/i.test(lang);
+  const word = (key, en) => (typeof P[key] === 'string' && P[key] ? P[key] : usEn ? usSpelling(en) : en);
   const fill = (s, v) => s.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
   const name = cc => word(`name.${cc}`, by[cc].name), capital = cc => word(`cap.${cc}`, by[cc].cap), famous = cc => word(`fam.${cc}`, by[cc].fam);
   const cont = cc => word(CONT[by[cc].reg], CONT[by[cc].reg]);
   const region = doc.r === 'world' ? word('Whole world', 'Whole world') : CONT[doc.r] ? word(CONT[doc.r], CONT[doc.r]) : t(`play.printAtlas.region.${doc.r}`);
-  const title = doc.t || (doc.blank ? t('play.printAtlas.mapTitle', { region }) : t('play.printAtlas.untitled'));
+  // "Map of the Caribbean": the world and the two regions that aren't continents have their own words in each language
+  const mapOfKey = `play.printAtlas.mapOf.${doc.r}`, mapOf = ['world', 'car', 'me'].includes(doc.r) && t(mapOfKey) !== mapOfKey ? t(mapOfKey) : t('play.printAtlas.mapTitle', { region });
+  const title = doc.t || (doc.blank ? mapOf : t('play.printAtlas.untitled'));
   // the map: its countries numbered in the order they were added; small ones on an answer line with an arrow
   const nums = {}; let n = 0;
   for (const x of doc.q) if (x[0] === 'map' && nums[x[1]] === undefined) nums[x[1]] = ++n;
   const co = {}; for (const [cc, lng, lat] of doc.a) if (nums[cc] !== undefined) co[cc] = [lng / 10, lat / 10];
   const showMap = doc.blank || n > 0;
-  const svg = names => map.svg(doc.r, { nums, co, names, label: t('play.printAtlas.mapAlt', { region }) });
+  const svg = names => map.svg(doc.r, { nums, co, names, label: ['world', 'car', 'me'].includes(doc.r) ? mapOf : t('play.printAtlas.mapAlt', { region }) });
   const others = doc.q.filter(x => x[0] !== 'map');
   const ask = x => {
     const cc = x[0] === 'own' ? x[3] : x[1];

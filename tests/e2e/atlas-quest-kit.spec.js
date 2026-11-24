@@ -60,7 +60,11 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   const x = hit.x + hit.width / 2, y = hit.y + hit.height / 2;
   await page.mouse.move(x, y); await page.mouse.down(); await page.mouse.move(x - 60, y - 40, { steps: 6 }); await page.mouse.up();
   const after = await f.evaluate(() => window.__brbTest.arrows().LU);
-  expect(after[0]).toBeLessThan(before[0]); expect(after[1]).toBeGreaterThan(before[1]);   // left and up: west and north
+  expect(after[1]).toBeGreaterThan(before[1]);   // up its column (it stays on its side)
+  // leaders never cross, and the lines stand beside the map
+  const leaders = await f.evaluate(() => window.__brbTest.leaders());
+  const cross = (a, b) => { const d = (p, q, r) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]); return d(a.p, a.a, b.p) * d(a.p, a.a, b.a) < 0 && d(b.p, b.a, a.p) * d(b.p, b.a, a.a) < 0; };
+  for (let i = 0; i < leaders.length; i++) for (let j = i + 1; j < leaders.length; j++) expect(cross(leaders[i], leaders[j]), `${leaders[i].cc} x ${leaders[j].cc}`).toBe(false);
   // take Monaco's arrow away, then put it back
   await f.click('#aq-arrowchips [data-cc="MC"]');
   expect(await f.evaluate(() => !!window.__brbTest.arrows().MC)).toBe(false);

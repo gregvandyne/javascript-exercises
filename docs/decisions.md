@@ -12516,13 +12516,23 @@ for students to fill in. For small countries, add the ability to build arrows wi
   region (numbered or bare), and the answer key on its own page for school staff only. The outline map is drawn on the
   server from the game's own map data by the game's own map code: the `atlas-map` block in the page, run as it is with
   node:vm, so the printed map is exactly the builder's. Black outlines on white, US Letter and A4.
-- **Arrows with answer lines.** A country too small to write on at the map's size (its largest piece under about 26 map
-  units, or no shape at all) gets an arrow from the country to an answer line placed in open space: candidates around
-  it, scored by how much land the line would cover, how far it is and whether its arrow crosses another line; failing
-  that, a free spot along the map's edge. In the builder's preview the teacher drags a line (or moves it with the arrow
-  keys), takes an arrow away or adds one to any map country, and can place them all again. Positions are kept with the
-  quiz (`a: [[code, lng*10, lat*10]]`) and printed as placed. The world map leaves its tiny countries off a blank map
-  (it says how many) since a hundred arrows can't fit.
+- **Arrows with answer lines: a leader-line layout** (reworked the same day after review: free-floating lines could
+  cross). A country too small to write on at the map's size (its largest piece under about 26 map units, or no shape at
+  all) gets an answer line in a column in the margin beside the map, left or right (the nearer side), with a straight
+  leader from the line's start to the country and an arrowhead there. The lines keep the countries' order down the
+  column with at least a line's height between them; any two leaders that would cross swap places (always shorter, so
+  it ends), so no two leaders ever cross (unit-tested on the Caribbean, Europe, Africa, Oceania, North America and Asia
+  presets). The number sits at the line's start, right where its leader begins ("12 ____" on the right, "____ 12" on
+  the left). In the builder's preview the teacher drags a line up or down its column or across to the other side
+  (arrow keys too), takes an arrow away or adds one to any map country, and can place them all again; the choice is
+  kept with the quiz (`a: [[code, lng*10, lat*10]]`: the side and the preferred height) and printed as placed. The
+  answer key writes a name on its line only at the normal size when it fits; the key's numbered list always has it.
+  The world map leaves its tiny countries off a blank map (it says how many). Map titles read naturally in each
+  language ("Map of the Caribbean", "Map of the Middle East", "Map of the world": their own keys). The printed page
+  keeps the print area's 0.5 in margins.
+- **US English on screen for `en`.** The game's English words and data were written in British spelling (colour,
+  neighbour, grey, metres...); the page and the printer turn them to US spelling for `en` only (`us()`, a short list of
+  word swaps), leaving en-GB and the frozen language packs as they are.
 - **Upload a geography lesson** (PDF, Word or .txt; grown-ups who may host, the same flag, limits and daily counter as
   Crossword's word lists, through `BRB.wordsFromDoc`, which now also takes `txt` for Atlas Quest only): one model call
   (`set-ai.js draftGeoQuiz`, prompt `geoDocPrompt`: the lesson is data, every question must be answerable from it, no

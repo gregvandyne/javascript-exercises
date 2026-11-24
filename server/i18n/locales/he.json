@@ -1297,6 +1297,7 @@
       "figure": "איור לשאלה {n}"
     },
     "printAtlas": {
+      "mapOf": {"world": "מפת העולם", "car": "מפת האיים הקריביים", "me": "מפת המזרח התיכון"},
       "untitled": "חידון גאוגרפיה",
       "mapTitle": "מפה: {region}",
       "mapAlt": "מפה אילמת: {region}",

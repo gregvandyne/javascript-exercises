@@ -1297,6 +1297,7 @@
       "figure": "Figuur bij vraag {n}"
     },
     "printAtlas": {
+      "mapOf": {"world": "Wereldkaart", "car": "Kaart van het Caribisch gebied", "me": "Kaart van het Midden-Oosten"},
       "untitled": "Aardrijkskundequiz",
       "mapTitle": "Kaart: {region}",
       "mapAlt": "Blinde kaart: {region}",

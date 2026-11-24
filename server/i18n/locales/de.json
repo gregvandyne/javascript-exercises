@@ -1297,6 +1297,7 @@
       "figure": "Abbildung zu Aufgabe {n}"
     },
     "printAtlas": {
+      "mapOf": {"world": "Weltkarte", "car": "Karte der Karibik", "me": "Karte des Nahen Ostens"},
       "untitled": "Erdkunde-Quiz",
       "mapTitle": "Karte: {region}",
       "mapAlt": "Umrisskarte: {region}",

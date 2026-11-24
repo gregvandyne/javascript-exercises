@@ -82,23 +82,42 @@ vm.runInNewContext(/\/\* atlas-map:begin \*\/([\s\S]*?)\/\* atlas-map:end \*\//.
 const D = JSON.parse(HTML.split('\n').find(l => l.startsWith('window.AtlasData = ')).slice('window.AtlasData = '.length).replace(/;\s*$/, ''));
 const M = box.window.AtlasMap.make(D);
 
-test('the map code: frames, small countries, and arrows to answer lines placed in open space, clear of each other', () => {
+test('the map code: frames, small countries, and a leader-line layout whose leaders never cross', () => {
   assert.equal(M.frameFor(['FR', 'DE', 'IT']), 'eu'); assert.equal(M.frameFor(['JM', 'BB']), 'car'); assert.equal(M.frameFor(['FR', 'BR']), 'world');
   assert.equal(M.members('car').length, 13); assert.equal(M.members('world').length, 195);
   for (const cc of ['LU', 'MT', 'AD', 'SM', 'VA', 'MC', 'LI']) assert.ok(M.small('eu', cc), `${cc} is small on Europe's map`);
   for (const cc of ['FR', 'DE', 'PL', 'NO']) assert.ok(!M.small('eu', cc), `${cc} is not`);
-  const need = ['LU', 'MT', 'AD', 'SM', 'VA', 'MC', 'LI'], nums = ['FR', 'DE', 'IT', 'ES', ...need];
-  const co = M.autoPlace('eu', need, { LI: [-20, 60] }, nums);
-  assert.deepEqual(Object.keys(co).sort(), need.slice().sort());
-  assert.deepEqual(co.LI, [-20, 60], 'a line the teacher placed stays where it is');
-  const g = M.geo('eu'), boxes = need.map(cc => { const p = M.xy(g, co[cc][0], co[cc][1]); return [p[0] - M.BOX.w / 2, p[1] - M.BOX.h / 2, p[0] + M.BOX.w / 2, p[1] + M.BOX.h / 2]; });
-  for (const b of boxes) assert.ok(b[0] >= 0 && b[1] >= 0 && b[2] <= g.w && b[3] <= g.h, 'inside the map');
-  for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
-    const a = boxes[i], b = boxes[j];
-    assert.ok(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1], `${need[i]} and ${need[j]} lines don't overlap`);
+  // the blank-map presets: every country of the region numbered, the small ones on answer lines beside the map
+  for (const id of ['car', 'eu', 'af', 'oc', 'na', 'as']) {
+    const mem = M.members(id), need = mem.filter(cc => M.small(id, cc)), g = M.geo(id);
+    const L = M.layout(id, M.autoPlace(id, need, {}, mem)), its = Object.entries(L.items);
+    assert.equal(its.length, need.length, `${id}: every small country has its line`);
+    for (let i = 0; i < its.length; i++) for (let j = i + 1; j < its.length; j++) {
+      const [ca, A] = its[i], [cb, B] = its[j];
+      assert.ok(!M.segsCross(A.p[0], A.p[1], A.a[0], A.a[1], [B.p[0], B.p[1], B.a[0], B.a[1]]), `${id}: the leaders of ${ca} and ${cb} cross`);
+      if (A.side === B.side) assert.ok(Math.abs(A.y - B.y) >= M.BOX.h + 8 - 0.01, `${id}: ${ca} and ${cb} lines are too close`);
+    }
+    for (const [cc, it] of its) {
+      assert.ok(it.side === 'L' ? it.p[0] < 0 : it.p[0] > g.w, `${id}: ${cc}'s line is in the margin, off the map`);
+      assert.ok(it.y >= M.BOX.h / 2 && it.y <= g.h - M.BOX.h / 2, `${id}: ${cc}'s line is on the page`);
+    }
+    // in the drawing, the number sits at the leader's start, at the line's start
+    const svg = M.svg(id, { nums: Object.fromEntries(mem.map((cc, i) => [cc, i + 1])), co: M.autoPlace(id, need, {}, mem) });
+    for (const [cc, it] of its) {
+      const grp = new RegExp(`<g class="atm-co" data-co="${cc}">([\\s\\S]*?)</g>`).exec(svg)[1];
+      const lead = /<line class="atm-leader" x1="([-\d.]+)" y1="([-\d.]+)"/.exec(grp), num = /<text x="([-\d.]+)" y="([-\d.]+)"[^>]*>(\d+)</.exec(grp);
+      assert.ok(Math.abs(+lead[1] - it.p[0]) < 0.2 && Math.abs(+lead[2] - it.y) < 0.2, `${id}: ${cc}'s leader starts at its line`);
+      assert.ok(Math.abs(+num[1] - it.p[0]) <= 6 && Math.abs(+num[2] - (it.y + 6)) < 0.2, `${id}: ${cc}'s number is right at its leader`);
+    }
   }
-  const svg = M.svg('eu', { nums: { FR: 1, LU: 2 }, co: { LU: co.LU } });
-  assert.match(svg, /^<svg[^>]*viewBox="0 0 1000 \d+"/); assert.match(svg, /data-co="LU"/); assert.match(svg, /stroke="#000"/);
+  // the teacher's choice is kept: Liechtenstein's line on the right, up high
+  const co = M.autoPlace('eu', ['LU', 'LI', 'MT'], { LI: [45, 70] });
+  assert.deepEqual(co.LI, [45, 70]);
+  const L2 = M.layout('eu', co); assert.equal(L2.items.LI.side, 'R');
+  assert.equal(M.layout('eu', { ...co, LI: M.dropAt('eu', -50, 300) }).items.LI.side, 'L', 'dropped on the left half: the left column');
+  // black on white; a key's long name never shrinks (the key's numbered list has it)
+  const svg = M.svg('car', { nums: { BB: 1, KN: 2 }, co: M.autoPlace('car', ['BB', 'KN']), names: { BB: 'Barbados', KN: 'Saint Kitts and Nevis' } });
+  assert.match(svg, /^<svg[^>]*viewBox="-?\d+ 0 \d+ \d+"/); assert.match(svg, />Barbados</); assert.doesNotMatch(svg, /Saint Kitts/);
   assert.doesNotMatch(svg, /fill="#(?!fff|000|e6e6e6)/i, 'black on white');
 });
 
@@ -128,6 +147,19 @@ test('print: the quiz checked like a saved set; the map with numbers and arrows,
   const tf = (k, v) => { let s = k.split('.').reduce((o, p) => o && o[p], fr); if (typeof s !== 'string') s = t(k); return v ? s.replace(/\{(\w+)\}/g, (m, x) => (x in v ? v[x] : m)) : s; };
   const frHtml = atlasPrintHtml(cleanAtlasPrintDoc({ ...ITEM, key: true }).doc, { t: tf, lang: 'fr' });
   assert.match(frHtml, /Allemagne/); assert.match(frHtml, /Complète la carte/);
+});
+
+test('print: a blank map\'s title reads naturally (Map of the Caribbean), and en is US English', () => {
+  const r = cleanAtlasPrintDoc({ r: 'car', q: [['map', 'JM']], blank: true });
+  assert.match(atlasPrintHtml(r.doc, { t, lang: 'en' }), /<h1 dir="auto">Map of the Caribbean<\/h1>/);
+  assert.match(atlasPrintHtml(cleanAtlasPrintDoc({ r: 'me', q: [], blank: true }).doc, { t, lang: 'en' }), /Map of the Middle East/);
+  assert.match(atlasPrintHtml(cleanAtlasPrintDoc({ r: 'eu', q: [], blank: true }).doc, { t, lang: 'en' }), /Map of Europe/);
+  const fam = D.C.find(c => /colour/.test(c[7]));
+  if (fam) {
+    const doc = cleanAtlasPrintDoc({ r: 'world', q: [['fam', fam[0]]] }).doc;
+    assert.match(atlasPrintHtml(doc, { t, lang: 'en' }), /color/); assert.doesNotMatch(atlasPrintHtml(doc, { t, lang: 'en' }), /colour/);
+    assert.match(atlasPrintHtml(doc, { t, lang: 'en-GB' }), /colour/, 'en-GB keeps British spelling');
+  }
 });
 
 test('print route: anyone may print the quiz; only school staff get the key', async () => {

@@ -1296,6 +1296,7 @@
       "figure": "問題{n}の図"
     },
     "printAtlas": {
+      "mapOf": {"world": "世界地図", "car": "カリブ海の地図", "me": "中東の地図"},
       "untitled": "地理クイズ",
       "mapTitle": "地図：{region}",
       "mapAlt": "白地図：{region}",

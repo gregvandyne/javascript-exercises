@@ -1297,6 +1297,7 @@
       "figure": "Figure for question {n}"
     },
     "printAtlas": {
+      "mapOf": {"world": "Map of the world", "car": "Map of the Caribbean", "me": "Map of the Middle East"},
       "untitled": "Geography quiz",
       "mapTitle": "Map of {region}",
       "mapAlt": "Outline map of {region}",

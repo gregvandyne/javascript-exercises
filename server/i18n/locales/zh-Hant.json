@@ -1296,6 +1296,7 @@
       "figure": "第{n}題的圖"
     },
     "printAtlas": {
+      "mapOf": {"world": "世界地圖", "car": "加勒比海地圖", "me": "中東地圖"},
       "untitled": "地理測驗",
       "mapTitle": "地圖：{region}",
       "mapAlt": "空白地圖：{region}",

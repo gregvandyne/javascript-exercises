@@ -1296,6 +1296,7 @@
       "figure": "Figura de la pregunta {n}"
     },
     "printAtlas": {
+      "mapOf": {"world": "Mapa del mundo", "car": "Mapa del Caribe", "me": "Mapa de Oriente Medio"},
       "untitled": "Prueba de geografía",
       "mapTitle": "Mapa de {region}",
       "mapAlt": "Mapa mudo de {region}",
