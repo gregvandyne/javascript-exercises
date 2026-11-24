@@ -73,8 +73,8 @@
     "games": "Games",
     "account": "Account",
     "school": "School",
-    "play": "Play",
     "learn": "Learn",
+    "read": "Read",
     "class": "Class",
     "classroom": "Classroom",
     "live": "Live",
@@ -562,17 +562,8 @@
       "start": "Start building"
     },
     "rails": {
-      "featured": "Featured",
-      "playing": "Playing now",
-      "friends": "From your friends",
-      "popular": "Popular",
-      "rated": "Top rated",
-      "new": "New",
       "mine": "My games",
-      "favorites": "My favorites",
-      "keep": "Keep playing",
-      "two": "Two players",
-      "fromLearn": "From Learn: fun ones"
+      "favorites": "My favorites"
     },
     "hero": {
       "label": "Featured game",
@@ -581,10 +572,8 @@
       "more": "More info",
       "about": "About {title}"
     },
-    "categories": "Categories",
     "empty": {
       "title": "No games yet",
-      "text": "Be the first to build one!",
       "action": "Build a game"
     },
     "intro": {
@@ -607,9 +596,6 @@
       "todo": "{count, plural, one {# lesson to do} other {# lessons to do}}",
       "continue": "Continue",
       "open": "Open my class"
-    },
-    "chips": {
-      "two": "2 players"
     },
     "focus": {
       "tools": "Classroom tools",
@@ -1227,8 +1213,8 @@
     },
     "unavailable": {
       "title": "This game isn’t available right now",
-      "text": "It may come back later. Play has more games and puzzles to try.",
-      "play": "Go to Play"
+      "text": "It may come back later. Learn has more games and puzzles to try.",
+      "play": "Go to Learn"
     }
   },
   "play": {
@@ -7690,7 +7676,6 @@
       "games": "Learning games",
       "none": "No games match these filters yet.",
       "clear": "Show all games",
-      "players": "Learning games by players",
       "meta": "{subject} · {grades}",
       "assign": "Assign",
       "assignCourse": "Assign to a class",
@@ -14102,8 +14087,6 @@
     "kindStory": "Story",
     "findStories": "Story Library",
     "door": {
-      "title": "Story Library",
-      "kids": "{count} picture books. Read them, or tap Read to me!",
       "staff": "{count} leveled picture books with questions. Assign one to a class."
     },
     "results": {

@@ -96,7 +96,7 @@ test('a laptop (1280 x 720): an open book for text pages, Next turns both, a pic
 
 test('every view of every Classics book fits a 1280 x 720 laptop and a 1440 x 900 one', { skip }, async () => {
   for (const size of [{ width: 1280, height: 720 }, { width: 1440, height: 900 }]) {
-    const { ctx, page, errors } = await open(null, '/library', { viewport: size });
+    const { ctx, page, errors } = await open(null, '/read', { viewport: size });
     let spreads = 0;
     for (const bk of LIB.books().filter(b => b.source === 'classics' && b.pages.some(p => !p.image))) {
       await page.goto(`${BASE}/library/${bk.id}/read`);
@@ -194,7 +194,7 @@ test('phones show one page at a time; a StoryWeaver picture book is unchanged on
   assert.deepEqual(sw.errors, []);
   await sw.ctx.close();
   // The library shows the Classics label on the cards.
-  const lib = await open(null, '/library?q=kipling');
+  const lib = await open(null, '/read?q=kipling');
   assert.ok((await lib.page.$$eval('.lb-src', els => els.map(e => e.textContent.trim()))).every(t => t === 'Classics'));
   assert.ok((await lib.page.locator('.lb-card').count()) >= 4);
   await shot(lib.page, 'classics-library');

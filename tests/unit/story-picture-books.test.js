@@ -140,7 +140,7 @@ test('the hand-off: the book maker\'s card in the Oomba chat comes pre-filled an
   assert.equal(before.b.state, 'source');
   const r = await as(tch)('/api/stories/book', { body: { make: 'cyoa', idea: IDEA, ageBand: '6-8', length: 'long', style: 'adventure', tone: 'brave', characters: 'Tilly the turtle', lesson: 'asking for help is brave', voice: 'onyx' } });
   assert.equal(r.status, 200, r.text);
-  assert.deepEqual(r.json, { href: '/library?make=1' });
+  assert.deepEqual(r.json, { href: '/read?make=1' });
   const chat = await chatOf(tch);
   assert.equal(chat.turns.find(x => x.id === before.turn.id).note.book.state, 'moved', 'the old card is moved');
   let c = card(chat);
@@ -149,7 +149,7 @@ test('the hand-off: the book maker\'s card in the Oomba chat comes pre-filled an
   assert.deepEqual(c.b.known, ['Have AI make one', 'Choose-your-own-adventure', 'Grade 2', 'Long', 'Oomba paints them']);
   // the opened library page shows this card (make=1 carries the open book on, it does not start another)
   assert.equal((await as(tch)('/api/companion/book/new', { body: {} })).json.chat.turns.filter(x => x.note && x.note.book && x.note.book.state !== 'moved').length, 1);
-  assert.equal((await as(tch)('/library?make=1')).status, 200);
+  assert.equal((await as(tch)('/read?make=1')).status, 200);
   const pick = async v => { const x = await as(tch)('/api/companion/chat/act', { body: { turnId: c.turn.id, act: 'bookPick', value: v } }); assert.equal(x.status, 200, x.text); c = card(x.json.chat); };
   await pick('3');
   assert.equal(c.b.state, 'level', 'then only the reading level');
@@ -214,7 +214,7 @@ test('a grown-up with parent in the flag: the book maker without classes (no Sha
   assert.equal((await as(gu)(`/api/library/make/${row.id}/share`, { body: { classIds: [] } })).status, 404);
   assert.equal((await as(gu)(`/library/made/${row.id}/read`)).status, 200);
   assert.equal((await as(gu)(`/library/made/${row.id}/print`)).status, 200);
-  assert.equal((await as(gu)('/library')).status, 404, 'the library itself stays closed to grown-ups');
+  assert.equal((await as(gu)('/read')).status, 404, 'the library itself stays closed to grown-ups');
   // the flag back to teachers: their book maker closes again
   config.storyPictureBooks = ['teacher'];
   assert.equal((await as(gu)(`/library/make/${row.id}`)).status, 404);

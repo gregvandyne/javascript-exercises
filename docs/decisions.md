@@ -13004,3 +13004,50 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 - **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
+## Learn and Read: Play and Learn are one page, the Story Library is its own tab (24 Nov 2026)
+- **The owner:** "There really isn't a difference between play and learn anymore is there? Why don't we consolidate
+  those into the same page called Learn and then make Books its own page." Then: the tabs read "Learn · Read · Build".
+- **One Learn page** (`/learn`, routes/teachers.js `learnPage`): by default the games by topic (Play's topic chips and
+  sections from `discover.js focusSections`, each official game from either shelf exactly once, My favorites first for a
+  signed-in player, the courses while COURSES is on, the build banner, My games, "Games by players" while PUBLIC_GAMES is
+  on and signed in only). Under the topic chips, one quiet "Filter the games" line (a `<details>`, `.learn-filterbox`)
+  holds Learn's subject chips, grade picker and "how you play" chips; it is open while a filter is in the address, with
+  the choice in its summary ("Math · Grade 2") and Show all games to go back. A subject or a way to play shows Learn's
+  grid instead of the topics (live class games and learning games, each card with its "Subject · Grades" line), so the
+  two kinds of navigation never stack; a grade alone narrows the topic sections (a game with no grades fits every grade),
+  and a student's roster grade is still picked until they choose Any grade. A game's subject in the grid is its topic's
+  (Sudoku is Math, Castle Clash Thinking) else its Learn subject (live games, Coding), so a filter and a topic agree.
+  The kid's Join door, the subject, "Also on Oomba" and (for visitors, staff and grown-ups) age pages follow as before.
+  **Staff** get exactly the Learn they had: always the grid, filters open, Assign, Host live, Try it, Save and `?std=`.
+  The Books door is gone from Learn. Signed out, `/learn` stays the indexed hub (heading, lead, CollectionPage, hreflang).
+- **`/play`** answers 301 to `/learn` with its query string, for everyone; `/<language>/play` to `/<language>/learn`.
+  `/play/<slug>` (playing a game) is another route and unchanged. **`/`** shows the Learn page (not a redirect) to those
+  who land on it (`landingFor` null: guests, kids, the platform admin, and the signed out where the teacher landing page
+  is off), with the home page's title, structured data and, signed out, its heading, three doors (the kid door to
+  `#play`, the games), join door and subject chips. The teacher landing page still answers `/` with no session.
+  "Just Play" on the landing (`JUST_PLAY_URL`) and the signed-out "Play now" go to `/learn` (`#play`). Every page whose
+  `active` was `home`, `play` or `search` makes Learn current; a game page's Back goes to Learn, whichever shelf the game
+  is on. The hidden-game page's button is "Go to Learn". The arcade Play page (hero, Featured, Popular, Top rated, New,
+  Keep playing, Two players, From Learn, Playing now) is gone even with `ARCADE=1`: arcade games then sit in their topic
+  (most under More games). The shelf tag (`games.shelf`, `shelfOf`) stays: search, the subject pages and Learn's grid
+  filters use it.
+- **Read** is the Story Library's tab. **`/read` is its address**; `/library` answers 301 to `/read` with its query
+  (`?grade=`, `?q=`, `?class=`, `?make=1`), and a book keeps its own pages under `/library/<id>` (the reader, Assign, the
+  made-book pages, the APIs), so no saved book link, assignment or lesson step breaks. The heading stays "Story
+  Library". The library's pages make Read current; the companion still knows `/read` as the library page.
+- **Nav** (`shellFor`): signed out Learn · Read · Build · Grown-ups · Sign in (top: Learn · Read · Build · Parents ·
+  Teachers); platform admin Learn · Read · Build · Schools · Me; student Class · Learn · Read · Build · Me (top + Friends);
+  kid Learn · Read · Build · Friends · Me. **A grown-up has no Read**: Family · Learn · Build · Account, because the
+  Story Library itself is closed to signed-in grown-ups (the family fence, "Picture books"); opening it to them is a
+  separate decision. Staff are unchanged (Classroom · Build · Tools · Live · Me); their account menu's two tiles are
+  Learn and Read (they were Play and Learn). Icons: Learn 💡 (the Oomba "idea" icon), Read 📚 (books, the library's own
+  heading icon). With STORY_BUILDER on, Stories is after Build in the top bar; where it would make a sixth phone tab
+  (kid, student, platform admin) it is in the account menu on phones (`storiesInMenu`, `.acct-phone`), as staff's
+  Teaching tools already were. A class tab's "Done for today?" buttons are Learn and Read.
+- **Words:** `nav.read` in all 13 languages (Leer, Lire, Lesen, Leggi, Ler, Lezen, Чтение, よむ, 閱讀, קריאה, اقرأ);
+  `game.unavailable.*` say Learn. Gone with the Play page: `nav.play` and the arcade rows' strings (`home.rails.featured`
+  and the rest, `home.categories`, `home.chips.two`, `home.empty.text`, `library.door.title/kids`, `learn.tab.players`).
+- Tests: tests/unit/nav-roles.test.js (every shell, the kid's bars byte for byte, the redirects, `/` per role, Read
+  current on /read and a book, staff unchanged, Stories on phones), shelves.test.js (one page by topic, a game page's
+  Back and Learn tab, filters, roster grade, players' games), home-doors, nav-doors, focus-hide, play-topics-private,
+  teacher-landing, library.test.js (the /library redirect), and the tests that opened /play or /library.

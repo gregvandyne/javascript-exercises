@@ -1,8 +1,8 @@
-// Play and Learn (docs/decisions.md "Play and Learn"): one game library on two shelves. Every official game's shelf
-// (seed JSON, migration, import), the rule for players' games (SHELF_SQL / shelfOf), the Play page ('/' and /play: no
-// Learn game in its rails, no class tool in its hero or featured row, a "From Learn" shelf), and the Learn tab (/learn:
-// every open Learn game with its subject and grades, filters that work as plain links, the SEO page kept for search
-// engines, no player's game or name signed out, staff-only Assign and Host, and assigning a game to a class).
+// Play and Learn (docs/decisions.md "Play and Learn", "Learn and Read"): one game library, its official games still
+// tagged on two shelves (seed JSON, migration, import; the rule for players' games, SHELF_SQL / shelfOf), shown on one
+// Learn page ('/' and /learn; /play answers 301 there): every open game by topic, each once, and filters that show the
+// grid with each game's subject and grades as plain links, the SEO page kept for search engines, no player's game or
+// name signed out, staff-only Assign and Host, and assigning a game to a class.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -19,6 +19,7 @@ const { COURSE_GAME_SLUGS } = await import('../../server/services/course-catalog
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
 const C = await import('../../server/services/courses.js');
 const { deicon } = await import('../support/deicon.js');  // icons read back as the emoji they stand for
+const { topicOf } = await import('../../server/routes/discover.js');
 
 seed({ quiet: true });
 let server, base;
@@ -109,41 +110,40 @@ test('the migration backfills an older database, and a re-import writes the shel
   assert.equal(G.getGameBySlug('word-trail').shelf, 'learn');
 });
 
-// ---------------------------------------------------------------- Play
-test('Play (\'/\' and /play): only Play games in its rails, Jungle Cup the hero, no class tool in hero or featured, From Learn shelf', async () => {
-  for (const [u, path] of [[null, '/'], [kid, '/'], [null, '/play'], [teacher, '/play'], [mum, '/play'], [pupil, '/play']]) {
+// ---------------------------------------------------------------- one Learn page (Play and Learn merged)
+/** The game slugs in the topic sections of a Learn page, in order. */
+const topicSlugs = s => [...s.matchAll(/id="(sec-[a-z]+)-h"/g)].map(m => m[1]).flatMap(id => slugsIn(section(s, id)));
+test('Learn (\'/\' and /learn) is every open game by topic, from both shelves, each once; no hero or Popular rows; /play answers 301 to /learn', async () => {
+  for (const [u, path] of [[null, '/'], [kid, '/'], [null, '/learn'], [kid, '/learn'], [mum, '/learn'], [pupil, '/learn'], [boss, '/']]) {
     const s = (await get(path, u)).text;
-    assert.equal(hero(s), 'Jungle Cup', `${path} ${u ? u.username : 'signed out'}`);
-    for (const id of ['featured', 'popular', 'rated', 'new', 'two', ...['arcade', 'sports', 'puzzle', 'board', 'adventure', 'music', 'silly'].map(k => `cat-${k}`)]) {
-      for (const slug of slugsIn(section(s, id))) assert.ok(!LEARN.includes(slug), `${path}: ${slug} (Learn) in #${id}`);
-    }
-    assert.ok(slugsIn(section(s, 'featured')).length > 3, 'a featured row');
-    assert.ok(!slugsIn(section(s, 'featured')).includes('remis-quiet-meadow'), 'the noise meter is not featured fun');
-    assert.doesNotMatch(s, /id="courses-h"/, 'no course row on Play');
-    assert.doesNotMatch(s, /id="cat-learning"|id="cat-words"/, 'no learning rails on Play');
-    assert.deepEqual(slugsIn(section(s, 'from-learn')), L.LEARN_FUN, 'From Learn: fun ones');
-    assert.match(section(s, 'from-learn'), /<a class="more" href="\/learn">See all<\/a>/);
-    // The hero is not repeated in the rails right under it.
-    for (const id of ['featured', 'popular', 'rated', 'new']) assert.ok(!slugsIn(section(s, id)).includes('jungle-cup'), `no hero in #${id}`);
-    const two = slugsIn(section(s, 'two'));
-    assert.ok(two.length && two.every(x => G.getGameBySlug(x).players_max >= 2), 'two-player row');
-    assert.match(s, /<a class="chip" role="listitem" href="#two">/, 'the 2 players chip jumps to the row');
+    const who = `${path} ${u ? u.username : 'signed out'}`;
+    const listed = topicSlugs(s);
+    assert.equal(new Set(listed).size, listed.length, `${who}: each game once`);
+    for (const x of PLAY) assert.ok(listed.includes(x), `${who}: ${x} (Play shelf)`);
+    for (const x of openLearn) assert.ok(listed.includes(x), `${who}: ${x} (Learn shelf)`);
+    assert.equal(hero(s), undefined, `${who}: no hero (it would show one game twice)`);
+    for (const id of ['featured', 'popular', 'rated', 'new', 'two', 'from-learn', 'keep', 'playing']) assert.doesNotMatch(s, new RegExp(`id="${id}-h"`), `${who}: no #${id}`);
+    assert.deepEqual(slugsIn(section(s, 'sec-live')).sort(), Object.keys(LIVE_GAMES).sort(), `${who}: the live modes under Live class games`);
+    assert.deepEqual(slugsIn(section(s, 'sec-tools')).sort(), ['popcorn-hush', 'quiet-bounce', 'remis-quiet-meadow'], `${who}: the noise meters under Classroom tools`);
+  }
+  for (const u of [null, kid, mum, teacher]) {
+    const r = await get('/play?subject=math', u);
+    assert.equal(r.status, 301); assert.equal(r.location, '/learn?subject=math');
   }
   // Remi is still in search.
   assert.match((await get('/search?q=quiet', null)).text, /href="\/g\/remis-quiet-meadow"/);
 });
 
-test('Play: Keep playing lists what this player opened last (Play shelf), nothing for the signed out', async () => {
-  const gid = slug => G.getGameBySlug(slug).id;
-  q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', 'p1', gid('brick-drop'), kid.id, Date.now() - 5000);
-  q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', 'p2', gid('swish-flick'), kid.id, Date.now() - 1000);
-  q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', 'p3', gid('sum-racer'), kid.id, Date.now());
-  const s = (await get('/', kid)).text;
-  assert.deepEqual(slugsIn(section(s, 'keep')), ['swish-flick', 'brick-drop']);
-  assert.doesNotMatch((await get('/', null)).text, /id="keep"/);
+test('a game page: the Learn tab is current and Back goes to Learn, for a game from either shelf', async () => {
+  for (const slug of ['jungle-cup', 'sum-racer', 'crossword']) for (const u of [kid, null]) {
+    const s = (await get(`/g/${slug}`, u)).text;
+    assert.match(s, /<a class="backlink" href="\/learn"><span class="flip" aria-hidden="true">←<\/span> Learn<\/a>/, slug);
+    assert.match(s, /<a class="tab" href="\/learn" aria-current="page">/, `${slug}: the Learn tab`);
+    assert.doesNotMatch(s, /href="\/play"/, `${slug}: nothing links to the old /play`);
+  }
 });
 
-test('a player\'s Learning game leaves Play for Learn (signed in only); other players\' games stay on Play', async () => {
+test('players\' games (any kind) are on Learn under Games by players, signed in only; never a child\'s name signed out', async () => {
   const mk = (title, category) => {
     const g = G.createGame(kid.id, { title, description: 'A test game.', icon: '🧪', cover: 'mint', category });
     const v = G.addVersion(g.id, '<!doctype html><p>hi</p>', { createdBy: kid.id });
@@ -151,44 +151,47 @@ test('a player\'s Learning game leaves Play for Learn (signed in only); other pl
     return G.getGame(g.id);
   };
   const quiz = mk('Shelf Quiz Builder', 'learning'), arc = mk('Shelf Arcade Builder', 'arcade'), word = mk('Shelf Word Builder', 'words');
+  assert.equal(G.shelfOf(quiz), 'learn'); assert.equal(G.shelfOf(arc), 'play'); assert.equal(G.shelfOf(word), 'learn', 'the shelf rule stays (search and the subject pages use it)');
   const pal = auth.createUser({ username: 'ShelfPal', password: 'rainbow-77' });
-  const play = (await get('/', pal)).text;
-  assert.ok(slugsIn(section(play, 'popular')).includes(arc.slug)); assert.ok(!slugsIn(play).includes(quiz.slug));
-  assert.ok(!slugsIn(play).includes(word.slug), 'a Words game is on Learn (Play has no Words chip or row)');
   const learn = (await get('/learn', pal)).text;
-  assert.ok(slugsIn(section(learn, 'learn-players')).includes(quiz.slug), 'by players, signed in');
-  assert.ok(slugsIn(section(learn, 'learn-players')).includes(word.slug), 'a player\'s Words game too');
-  assert.match(learn, /<a class="more" href="\/search\?cat=learning" rel="nofollow">See all<\/a>/, 'the rest are one tap away in search');
-  const out = (await get('/learn', null)).text;
-  assert.ok(!slugsIn(out).includes(quiz.slug), 'never on the signed-out (indexed) page');
-  assert.doesNotMatch(out, /ShelfKid|href="\/u\//, 'no child\'s name signed out');
+  for (const g of [quiz, arc, word]) assert.ok(slugsIn(section(learn, 'players')).includes(g.slug), `${g.title}: by players, signed in`);
+  assert.match(section(learn, 'players'), /<a class="more" href="\/search\?sort=popular" rel="nofollow">See all<\/a>/, 'the rest are one tap away in search');
+  assert.ok(!topicSlugs(learn).includes(arc.slug), 'players\' games are never in the official topic sections');
+  for (const out of [(await get('/learn', null)).text, (await get('/', null)).text]) {
+    assert.ok(![quiz, arc, word].some(g => slugsIn(out).includes(g.slug)), 'never on the signed-out (indexed) page');
+    assert.doesNotMatch(out, /ShelfKid|href="\/u\//, 'no child\'s name signed out');
+  }
   assert.match((await get(`/search?q=Shelf+Quiz`, kid)).text, new RegExp(`href="/g/${quiz.slug}"`), 'still in search');
   q.run("UPDATE games SET status='deleted' WHERE id IN (?, ?, ?)", quiz.id, arc.id, word.id);
 });
 
 // ---------------------------------------------------------------- Learn
 const openLearn = LEARN.filter(s => !COURSE_GAME_SLUGS.includes(s) && !G.getGameBySlug(s).course_only);
-test('Learn lists every open Learn game (course games through their course) with its subject and grades; courses; the join door', async () => {
+test('Learn: the filtered grid gives each game its subject and grades; courses first; the join door; the subject and age pages', async () => {
   const s = (await get('/learn', kid)).text;
-  const listed = [...slugsIn(section(s, 'live-games')), ...slugsIn(section(s, 'learn-games'))];
-  assert.deepEqual([...listed].sort(), [...openLearn].sort());
-  assert.deepEqual(slugsIn(section(s, 'live-games')).sort(), Object.keys(LIVE_GAMES).sort(), 'the live modes in their own section');
-  assert.match(s, /href="\/g\/sum-racer"[^>]*>[\s\S]*?<div class="by gmeta">Math · Grades 1–5<\/div>/);
-  assert.match(s, /href="\/g\/atlas-quest"[^>]*>[\s\S]*?<div class="by gmeta">Maps · Grades 3–8<\/div>/);
-  assert.match(s, /href="\/g\/quest-race"[^>]*>[\s\S]*?<div class="by gmeta">Any subject · Grades K–8<\/div>/);
+  // The grid (a filter chosen): the same "Subject · Grades" line on every game with a Learn subject.
+  const solo = (await get('/learn?how=solo', kid)).text;
+  assert.match(solo, /href="\/g\/sum-racer"[^>]*>[\s\S]*?<div class="by gmeta">Math · Grades 1–5<\/div>/);
+  assert.match(solo, /href="\/g\/atlas-quest"[^>]*>[\s\S]*?<div class="by gmeta">Maps · Grades 3–8<\/div>/);
+  assert.match((await get('/learn?how=live', kid)).text, /href="\/g\/quest-race"[^>]*>[\s\S]*?<div class="by gmeta">Any subject · Grades K–8<\/div>/);
   // Courses: compact cards (the whole head opens the course, the units behind a tap); "Courses" until a kid begins one.
   assert.match(s, /<h2 id="courses-h">📚 Courses<\/h2>/); assert.match(s, /id="course-cs-quest-go"/);
   assert.match(s, /<a class="course-head" href="\/courses\/cs-quest">/);
   assert.match(s, /<details class="course-units"><summary>See the 4 games<\/summary>/);
-  assert.ok(s.indexOf('id="course-cs-quest-go"') < s.indexOf('id="learn-games"'), 'courses before the games');
-  // A kid who is not in a class: the learning games first, then the live class games, then the join door.
-  assert.ok(s.indexOf('id="learn-games"') < s.indexOf('id="live-games"'), 'learning games before live games (not in a class)');
-  assert.ok(s.indexOf('id="live-games"') < s.indexOf('id="learn-join"'), 'the join door under the games');
+  assert.ok(s.indexOf('id="course-cs-quest-go"') < s.indexOf('id="sec-'), 'courses before the games');
+  // Topic chips jump to each section's heading; the filters are one quiet line that opens (closed by default).
+  assert.match(s, /<nav class="chips scroll topic-chips" aria-label="Topics">[\s\S]*?href="#sec-math-h"/);
+  assert.match(s, /<details class="learn-filterbox">\s*<summary>/, 'the filters closed until asked for');
+  assert.ok(s.indexOf('topic-chips') < s.indexOf('learn-filterbox') && s.indexOf('learn-filterbox') < s.indexOf('id="sec-'), 'chips, filters, then the games');
+  // A kid who is not in a class: the topics in their order (Live class games after Geography), then the join door.
+  assert.ok(s.indexOf('id="sec-math-h"') < s.indexOf('id="sec-live-h"'), 'learning topics before live games (not in a class)');
+  assert.ok(s.indexOf('id="sec-live-h"') < s.indexOf('id="learn-join"'), 'the join door under the games');
   assert.match(s, /id="learn-join" href="\/join"|href="\/join" id="learn-join"/);
   assert.match(s, /Got a game code from your teacher\?/);
+  assert.doesNotMatch(s, /id="learn-library"|href="\/library"/, 'no Books door: Read is its own tab');
   // A course card has the same "Subject · Grades" line as the game cards (and its description without the grades).
   assert.match(s, /<p>Computer science in four games<\/p><p class="gmeta course-meta">Coding · Grades 3–8<\/p>/);
-  // Subject pages in chip order, named like their chip; brain breaks (Play) and make a game (Build) apart, under "Also on Oomba".
+  // Subject pages in chip order, named like their chip; brain breaks and make a game (Build) apart, under "Also on Oomba".
   const subj = section(s, 'subjects'), also = s.slice(s.indexOf('id="also"'));
   assert.deepEqual([...subj.matchAll(/href="\/learn\/([a-z-]+)"/g)].map(m => m[1]), L.SUBJECTS.filter(x => x.hub).map(x => x.hub));
   assert.match(subj, /Thinking: Chess and strategy games/); assert.match(subj, /Coding: Computer science games/);
@@ -204,7 +207,10 @@ test('Learn lists every open Learn game (course games through their course) with
   const st = (await get('/learn', pupil)).text;
   assert.doesNotMatch(st, /id="ages"|id="who"/, 'nor a student\'s');
   for (const u of [teacher, mum]) assert.match((await get('/learn', u)).text, /id="ages"[\s\S]*id="who"/, 'staff and grown-ups keep them');
-  assert.ok(st.indexOf('id="live-games"') > 0 && st.indexOf('id="live-games"') < st.indexOf('id="learn-games"'), 'live first in a class');
+  assert.ok(st.indexOf('id="sec-live-h"') > 0 && st.indexOf('id="sec-live-h"') < st.indexOf('id="sec-math-h"'), 'live first in a class');
+  assert.ok((await get('/learn?how=solo', pupil)).text.indexOf('id="learn-games"') > 0);
+  const stGrid = (await get('/learn?subject=math', pupil)).text;
+  assert.ok(stGrid.indexOf('id="live-games"') > 0 && stGrid.indexOf('id="live-games"') < stGrid.indexOf('id="learn-games"'), 'live first in a class, filtered too');
   assert.doesNotMatch((await get('/learn', mum)).text, /id="learn-join"/);
   // Signed out: the indexed page keeps its heading, lead, structured data, every subject and age page; "Courses".
   const out = await get('/learn', null);
@@ -222,13 +228,23 @@ test('Learn lists every open Learn game (course games through their course) with
 test('Learn filters: plain links (no script needed), exactly the games that fit, noindex, a link to the subject page', async () => {
   const math = (await get('/learn?subject=math', kid)).text;
   const listed = [...slugsIn(section(math, 'live-games')), ...slugsIn(section(math, 'learn-games'))];
-  assert.deepEqual(listed.sort(), openLearn.filter(s => L.SHELF_INFO[s].subject === 'math').sort());
+  // Every open game whose topic (or, for a live game, Learn subject) is Math: Play's Math section and Learn's Math games.
+  const SUBJ = { math: 'math', reading: 'words', geography: 'maps', strategy: 'thinking' };
+  const subjOf = x => SUBJ[topicOf(G.getGameBySlug(x))] || (L.SHELF_INFO[x] || {}).subject;
+  assert.deepEqual(listed.sort(), [...openLearn, ...PLAY].filter(x => subjOf(x) === 'math').sort());
+  assert.ok(listed.includes('sudoku') || !G.getGameBySlug('sudoku'), 'Sudoku is Math, as on its topic');
+  assert.match(math, /<details class="learn-filterbox" open>/, 'a filter chosen: the filters stay open');
+  assert.match(math, /<p class="learn-clear"><a href="\/learn">[\s\S]*?Show all games<\/a>/, 'and a way back to the topics');
+  assert.doesNotMatch(math, /topic-chips|id="sec-/, 'the filtered grid, not the topics (one navigation at a time)');
   assert.match(math, /<a class="chip on" href="\/learn\?subject=math#filters" rel="nofollow" aria-current="true">/);
   assert.match(math, /<a href="\/learn\/math-games">More about Math games/);
   assert.match(math, /<meta name="robots" content="noindex/);
   assert.match(math, /id="course-number-quest-go"/); assert.doesNotMatch(math, /id="course-cs-quest-go"/, 'only the math course');
+  // A grade alone narrows the topics (a game with no grades fits every grade).
   const g2 = (await get('/learn?grade=K', kid)).text;
-  for (const x of slugsIn(section(g2, 'learn-games'))) assert.equal(L.SHELF_INFO[x].from, 0, `${x} fits Kindergarten`);
+  assert.ok(topicSlugs(g2).length > 3);
+  for (const x of topicSlugs(g2)) assert.ok(!L.SHELF_INFO[x] || L.SHELF_INFO[x].from === 0, `${x} fits Kindergarten`);
+  assert.ok(!topicSlugs(g2).includes('atlas-quest'), 'Atlas Quest (3–8) is not for Kindergarten');
   assert.match(g2, /<option value="K" selected>Kindergarten<\/option>/);
   const two = (await get('/learn?how=two', kid)).text;
   assert.ok(slugsIn(section(two, 'learn-games')).includes('tug-of-math')); assert.doesNotMatch(two, /id="live-games"/);
@@ -246,13 +262,15 @@ test('Learn: a student starts on their roster grade and can clear it (grade=any)
   const g4 = SC.createSchoolAccount(head, school.id, { rosterName: 'Gina Four', grade: 'Grade 4' }).user;
   const s = (await get('/learn', g4)).text;
   assert.match(s, /<option value="4" selected>Grade 4<\/option>/);
-  for (const x of slugsIn(section(s, 'learn-games'))) assert.ok(L.SHELF_INFO[x].from <= 4 && L.SHELF_INFO[x].to >= 4, `${x} fits grade 4`);
+  assert.ok(topicSlugs(s).length > 3);
+  for (const x of topicSlugs(s)) assert.ok(!L.SHELF_INFO[x] || (L.SHELF_INFO[x].from <= 4 && L.SHELF_INFO[x].to >= 4), `${x} fits grade 4`);
+  assert.match(s, /<details class="learn-filterbox">\s*<summary>[\s\S]*?<span class="lf-now">Grade 4<\/span>/, 'the closed filters say the grade picked');
   assert.match(s, /<option value="any">Any grade<\/option>/);
   assert.match(s, /<a class="chip" href="\/learn\?subject=math&amp;grade=4#filters"|href="\/learn\?subject=math&grade=4#filters"/);
   const any = (await get('/learn?grade=any', g4)).text;
   assert.match(any, /<option value="any" selected>Any grade<\/option>/);
   assert.match(any, /href="\/learn\?subject=math&amp;grade=any#filters"|href="\/learn\?subject=math&grade=any#filters"/, 'the choice stays as you filter');
-  assert.deepEqual(slugsIn(section(any, 'learn-games')).sort(), slugsIn(section((await get('/learn', kid)).text, 'learn-games')).sort());
+  assert.deepEqual(topicSlugs(any).sort(), topicSlugs((await get('/learn', kid)).text).sort());
   for (const u of [kid, teacher]) assert.match((await get('/learn', u)).text, /<option value="" selected>Any grade<\/option>/);
 });
 
@@ -278,9 +296,9 @@ test('staff see Assign, Host live and Try it on Learn; kids, students, grown-ups
   }
 });
 
-test('no prices on Play or Learn, for anyone', async () => {
+test('no prices on Learn (or \'/\', or Read), for anyone', async () => {
   const PRICE = /\$\s?\d|\d\.\d\d\b|\bUSD\b|€|£\s?\d|\/mo\b|a month\b|per (month|year)/i;
-  for (const u of [null, kid, pupil, teacher, mum]) for (const p of ['/', '/play', '/learn']) {
+  for (const u of [null, kid, pupil, teacher, mum]) for (const p of ['/', '/learn', '/learn?subject=math', '/read']) {
     const r = await get(p, u); if (r.status !== 200) continue;
     // A standard's published statement, which staff see as the tooltip of its code, is not the site's words: the
     // grade 2 time standard (2.MD.C.7, Kitchen Rush) reads "days in a month". Everything else on the page is checked.

@@ -61,8 +61,12 @@ test('the course card (on Learn): games link to the course map units, Start goes
   assert.deepEqual([...at].sort((a, b) => a - b), at, 'in course order');
   assert.doesNotMatch(card, /href="\/play\//, 'nothing goes straight into a game');
   assert.match(card, /id="course-cs-quest-go" href="\/courses\/cs-quest"|href="\/courses\/cs-quest" id="course-cs-quest-go"/);
-  assert.ok(r.text.indexOf('id="courses-h"') < r.text.indexOf('id="learn-games"'), 'before the learning games');
-  for (const u of [null, newKid()]) for (const p of ['/', '/play']) assert.doesNotMatch((await get(p, u)).text, /id="courses-h"|course-card/, `no course row on Play (${p})`);
+  assert.ok(r.text.indexOf('id="courses-h"') > 0 && r.text.indexOf('id="courses-h"') < r.text.indexOf('id="sec-'), 'before the games by topic');
+  const grid = (await get('/learn?how=solo')).text;
+  assert.ok(grid.indexOf('id="courses-h"') > 0 && grid.indexOf('id="courses-h"') < grid.indexOf('id="learn-games"'), 'filtered: before the learning games');
+  // Play and Learn are one page (docs/decisions.md "Learn and Read"): '/' is Learn, with the same course row; /play is gone.
+  for (const u of [null, newKid()]) assert.match((await get('/', u)).text, /id="courses-h"/, 'the course row on \'/\' (the Learn page)');
+  assert.equal((await get('/play')).status, 301);
 
   const kid = newKid(); C.setBand(kid, course, '1b');
   const home = await get('/learn', kid);

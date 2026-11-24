@@ -1342,7 +1342,7 @@ router.get('/classes', requireUser, (req, res) => {
   ${many ? html`<nav class="chips ajump ct-pick" aria-label="${t('classes.tab.pick')}"><span class="ajump-l" aria-hidden="true">${t('classes.tab.pick')}</span>${mine.map(c => html`<a class="chip" href="#class-${c.id}">${c.name}</a>`)}</nav>` : ''}
   ${mine.length ? mine.map((c, i) => classSection(req, c, i, many))
     : waiting.length ? '' : emptyState({ emoji: '🏫', title: t('classes.none'), text: u.is_guest ? t('classes.guest') : t('classes.noneText') })}
-  ${mine.length ? html`<p class="ct-more">${t('classes.tab.more')} <a class="btn btn-sm" href="/play">${ico('🎮', { size: 18 })} ${t('nav.play')}</a> <a class="btn btn-sm" href="/learn">${ico('📚', { size: 18 })} ${t('nav.learn')}</a></p>` : ''}
+  ${mine.length ? html`<p class="ct-more">${t('classes.tab.more')} <a class="btn btn-sm" href="/learn">${ico('💡', { size: 18 })} ${t('nav.learn')}</a> <a class="btn btn-sm" href="/read">${ico('📚', { size: 18 })} ${t('nav.read')}</a></p>` : ''}
   ${waiting.length || !u.is_guest ? html`<div class="cols2">
   ${waiting.length ? html`<section class="panel"><h2>${ico('⏳', { size: 28 })} ${t('classes.waiting')}</h2><ul class="plain">${waiting.map(w => html`<li>${w.class_name} <span class="muted small">· ${w.school_name}</span></li>`)}</ul></section>` : ''}
   ${u.is_guest ? '' : mine.length && !req.query.code ? html`<details class="panel classes-join-more"><summary>${t('classes.joinAnother')}</summary><p class="small muted">${t('classes.joinText')}</p>

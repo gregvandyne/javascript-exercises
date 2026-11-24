@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
-import { page, notFound, landingFor, signedOut } from '../views/layout.js';
+import { page, notFound, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -59,10 +59,10 @@ const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);
 export const REPORT_REASONS = reportReasons();
 
-/** An official game hidden while ARCADE is off (services/game-focus.js): a calm page with the way to Play, not an error. */
+/** An official game hidden while ARCADE is off (services/game-focus.js): a calm page with the way to Learn, not an error. */
 export function unavailable(req, res) {
   const t = req.t;
-  return page(req, res, { title: t('game.unavailable.title'), body: html`<div class="empty" id="game-unavailable"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('game.unavailable.title')}</h1><p>${t('game.unavailable.text')}</p><a class="btn btn-primary" href="/play">${t('game.unavailable.play')}</a></div>` }, 404);
+  return page(req, res, { title: t('game.unavailable.title'), body: html`<div class="empty" id="game-unavailable"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('game.unavailable.title')}</h1><p>${t('game.unavailable.text')}</p><a class="btn btn-primary" href="/learn">${t('game.unavailable.play')}</a></div>` }, 404);
 }
 function loadViewable(req, res) {
   const g = games.getGameBySlug(req.params.slug);
@@ -178,8 +178,8 @@ router.get('/g/:slug', (req, res) => {
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
   const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
-  const learnShelf = games.shelfOf(g) === 'learn';
-  page(req, res, { title, active: learnShelf ? 'learn' : 'play', back: learnShelf ? '/learn' : landingFor(u) ? '/play' : '/', backLabel: t(learnShelf ? 'nav.learn' : 'nav.play'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
+  // Every game is on Learn now (docs/decisions.md "Learn and Read"): the Learn tab is current and Back goes there.
+  page(req, res, { title, active: 'learn', back: '/learn', backLabel: t('nav.learn'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
 

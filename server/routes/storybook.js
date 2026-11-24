@@ -67,13 +67,13 @@ router.get('/library/make', teacher, (req, res) => {
   // whole workflow there"): Make a book opens the chat on the library with the book maker's first card
   // (public/js/companion.js ?make=1); this page is the teacher's books. Without it, the steps below, as before.
   if (companionFor(u)) {
-    if (req.query.new) return res.redirect('/library?make=1');
+    if (req.query.new) return res.redirect('/read?make=1');
     const body = html`<div class="sb sb-setup">
       <div class="pagehead"><div><h1>${ico('📚', { size: 36 })} ${t('storybook.mine')}</h1><p class="muted">${t('storybook.lead')}</p></div>
         <a class="btn btn-primary" href="/library/make?new=1" data-oc-book>${ico('✨', { size: 18 })} ${t('storybook.makeBook')}</a></div>
       <section class="sb-mine sb-mybooks" aria-label="${t('storybook.mine')}">
         ${mine.length ? madeGrid(req, mine) : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section></div>`;
-    return page(req, res, { title: t('storybook.mine'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-books.js'], back: '/library', backLabel: t('library.title') });
+    return page(req, res, { title: t('storybook.mine'), active: 'read', body, head: CSS, scripts: ['/js/storybook-books.js'], back: '/read', backLabel: t('library.title') });
   }
   const card = (v, emo, title, text) => html`<button type="button" class="sb-card" data-g="source" data-v="${v}" aria-pressed="false"><span class="sb-card-i" aria-hidden="true">${ico(emo, { size: 56 })}</span><span class="sb-card-t">${title}</span><span class="sb-card-s">${text}</span></button>`;
   const kcard = (src, v, emo, title, text) => html`<button type="button" class="sb-card sb-kind" data-src="${src}" data-g="kind" data-v="${v}" aria-pressed="false"><span class="sb-card-i" aria-hidden="true">${ico(emo, { size: 44 })}</span><span class="sb-card-t">${title}</span><span class="sb-card-s">${text}</span></button>`;
@@ -134,7 +134,7 @@ router.get('/library/make', teacher, (req, res) => {
       ${mine.length ? madeGrid(req, mine) : html`<p class="muted">${t('storybook.mineNone')}</p>`}</section>
   </div>
   ${jsonData('page-data', { left, limits: SB.SETUP_LIMITS, file: { bytes: FILE_LIMITS.bytes }, pic: SB.PIC_LIMITS })}`;
-  page(req, res, { title: t('storybook.title'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-setup.js', '/js/storybook-books.js'], ...(SB.canShare(u) ? { back: '/library', backLabel: t('library.title') } : { back: '/stories', backLabel: t('stories.title') }), mid: true, companion: false });
+  page(req, res, { title: t('storybook.title'), active: 'read', body, head: CSS, scripts: ['/js/storybook-setup.js', '/js/storybook-books.js'], ...(SB.canShare(u) ? { back: '/read', backLabel: t('library.title') } : { back: '/stories', backLabel: t('stories.title') }), mid: true, companion: false });
 });
 
 // A document for the setup: read on the server (builder/lesson.js readLessonFile: no AI), scrubbed, never kept.
@@ -245,7 +245,7 @@ router.get('/library/make/:id', teacher, (req, res) => {
     <input type="file" id="sb-pagepic" accept="image/*" hidden>
   </div>
   ${jsonData('page-data', data)}`;
-  page(req, res, { title: bk.title || t('storybook.title'), active: 'learn', body, head: raw(`${CSS}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}">`), scripts: ['/js/storybook-edit.js'], i18n: ['js.oomba-chat'], back: '/library/make', backLabel: t('storybook.title'), bodyClass: 'sb-editor' });
+  page(req, res, { title: bk.title || t('storybook.title'), active: 'read', body, head: raw(`${CSS}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}">`), scripts: ['/js/storybook-edit.js'], i18n: ['js.oomba-chat'], back: '/library/make', backLabel: t('storybook.title'), bodyClass: 'sb-editor' });
 });
 const own = (req, res) => { const row = SB.ownBook(req.user, req.params.id); if (!row) nope(req, res); return row; };
 router.get('/api/library/make/:id', teacher, (req, res) => { const row = own(req, res); if (!row) return; const d = editorData(req, row); delete d.catalog; res.json(d); });
@@ -357,14 +357,14 @@ router.get('/library/made/:id/read', (req, res) => {
   const trail = (fromQ ? String(req.query.t || '') : rd ? rd.trail : '').split('.').join(',').split(',').filter(x => ids.has(x)).slice(-60);
   const at = fromQ || (rd && ids.has(rd.page_id) ? rd.page_id : bk.kind === 'cyoa' ? bk.start : bk.pages[0].id);
   const owner = row.owner_id === u.id;
-  const back = owner ? { href: `/library/make/${row.id}`, label: t('storybook.read.backToEditor') } : { href: '/library', label: t('library.title') };
+  const back = owner ? { href: `/library/make/${row.id}`, label: t('storybook.read.backToEditor') } : { href: '/read', label: t('library.title') };
   const body = html`<div class="rd sb-rd" id="reader" data-book="${row.id}">
     <div class="rd-top"><a class="rd-back" href="${back.href}"><span class="flip" aria-hidden="true">←</span> <span dir="auto">${back.label}</span></a>
       <h1 class="rd-title" dir="auto">${bk.title}</h1>${owner ? html`<span class="chip-s">${t('storybook.read.preview')}</span>` : ''}</div>
     <div id="sb-read">${raw(readerPage(req, row, bk, at, trail))}</div>
   </div>
   ${jsonData('page-data', { id: row.id, book: { ...bk, pages: bk.pages.map(p => ({ ...p, art: SB.pictureHtml(row, bk, p, { t }) })) }, at, trail, endings: rd ? rd.endings.split(',').filter(Boolean) : [] })}`;
-  page(req, res, { title: bk.title, active: 'learn', body, head: CSS, scripts: ['/js/storybook-read.js'], mid: true, companion: false });
+  page(req, res, { title: bk.title, active: 'read', body, head: CSS, scripts: ['/js/storybook-read.js'], mid: true, companion: false });
 });
 /** One page of the reader as HTML (the server's first page; the script draws the same markup). */
 function readerPage(req, row, bk, at, trail) {
@@ -421,5 +421,5 @@ router.get('/library/made/:id/print', teacher, (req, res) => {
       ${cyoa && !reach.has(p.id) ? html`<p class="small muted noprint">${t('storybook.warn.unreachable')}</p>` : ''}
     </section>`)}
   </div>`;
-  page(req, res, { title: bk.title || t('storybook.title'), active: 'learn', body, head: CSS, scripts: ['/js/storybook-read.js'], companion: false, bodyClass: 'sb-printpage' });
+  page(req, res, { title: bk.title || t('storybook.title'), active: 'read', body, head: CSS, scripts: ['/js/storybook-read.js'], companion: false, bodyClass: 'sb-printpage' });
 });

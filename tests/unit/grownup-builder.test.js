@@ -222,7 +222,7 @@ test('connections: two grown-ups connect by code; the page has no chat and no pr
   // The Family tab counts waiting connection requests.
   const C = grownup();
   await as(C)('/api/friends/add', { method: 'POST', body: { code: A.friend_code } });
-  const home = await as(A)('/play');
+  const home = await as(A)('/learn');
   assert.match(home.text, /class="tab" href="\/family"[^>]*>(?:(?!<\/a>)[\s\S])*class="badge"/);
 });
 

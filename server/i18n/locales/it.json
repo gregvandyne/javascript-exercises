@@ -73,8 +73,8 @@
     "games": "Giochi",
     "account": "Account",
     "school": "Scuola",
-    "play": "Gioca",
     "learn": "Impara",
+    "read": "Leggi",
     "class": "Classe",
     "classroom": "La mia classe",
     "live": "Live",
@@ -562,17 +562,8 @@
       "start": "Inizia a creare"
     },
     "rails": {
-      "featured": "In evidenza",
-      "playing": "In gioco adesso",
-      "friends": "Dai tuoi amici",
-      "popular": "Popolari",
-      "rated": "I più votati",
-      "new": "Nuovi",
       "mine": "I miei giochi",
-      "favorites": "I miei preferiti",
-      "keep": "Continua a giocare",
-      "two": "In due",
-      "fromLearn": "Da Impara: i più divertenti"
+      "favorites": "I miei preferiti"
     },
     "hero": {
       "label": "Gioco in evidenza",
@@ -581,10 +572,8 @@
       "more": "Più info",
       "about": "Info su {title}"
     },
-    "categories": "Categorie",
     "empty": {
       "title": "Ancora nessun gioco",
-      "text": "Crea tu il primo!",
       "action": "Crea un gioco"
     },
     "intro": {
@@ -607,9 +596,6 @@
       "todo": "{count, plural, one {# lezione da fare} other {# lezioni da fare}}",
       "continue": "Continua",
       "open": "Apri la mia classe"
-    },
-    "chips": {
-      "two": "In due"
     },
     "focus": {
       "tools": "Strumenti per la classe",
@@ -1227,8 +1213,8 @@
     },
     "unavailable": {
       "title": "Questo gioco non è disponibile ora",
-      "text": "Potrebbe tornare più avanti. In Gioca ci sono altri giochi e rompicapi da provare.",
-      "play": "Vai a Gioca"
+      "text": "Potrebbe tornare più avanti. In Impara ci sono altri giochi e rompicapi da provare.",
+      "play": "Vai a Impara"
     }
   },
   "play": {
@@ -7066,7 +7052,6 @@
       "games": "Giochi per imparare",
       "none": "Nessun gioco corrisponde ancora a questi filtri.",
       "clear": "Mostra tutti i giochi",
-      "players": "Giochi per imparare creati dai giocatori",
       "meta": "{subject} · {grades}",
       "assign": "Assegna",
       "assignCourse": "Assegna a una classe",
@@ -13413,8 +13398,6 @@
     "kindStory": "Storia",
     "findStories": "Biblioteca delle storie",
     "door": {
-      "title": "Biblioteca delle storie",
-      "kids": "{count} libri illustrati. Leggili o tocca Leggimelo!",
       "staff": "{count} libri illustrati per livello, con domande. Assegnane uno a una classe."
     },
     "results": {

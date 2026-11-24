@@ -72,8 +72,8 @@
     "games": "遊戲",
     "account": "帳號",
     "school": "學校",
-    "play": "玩",
     "learn": "學習",
+    "read": "閱讀",
     "class": "班級",
     "classroom": "教室",
     "live": "直播",
@@ -561,17 +561,8 @@
       "start": "開始製作"
     },
     "rails": {
-      "featured": "精選",
-      "playing": "大家正在玩",
-      "friends": "來自你的好友",
-      "popular": "熱門",
-      "rated": "評分最高",
-      "new": "最新",
       "mine": "我的遊戲",
-      "favorites": "我的最愛",
-      "keep": "繼續玩",
-      "two": "雙人",
-      "fromLearn": "來自學習：最好玩的"
+      "favorites": "我的最愛"
     },
     "hero": {
       "label": "精選遊戲",
@@ -580,10 +571,8 @@
       "more": "更多資訊",
       "about": "關於 {title}"
     },
-    "categories": "分類",
     "empty": {
       "title": "還沒有遊戲",
-      "text": "來當第一個做遊戲的人吧！",
       "action": "製作遊戲"
     },
     "intro": {
@@ -606,9 +595,6 @@
       "todo": "{count, plural, other {有 # 堂課要做}}",
       "continue": "繼續",
       "open": "打開我的班級"
-    },
-    "chips": {
-      "two": "雙人"
     },
     "focus": {
       "tools": "課堂工具",
@@ -1226,8 +1212,8 @@
     },
     "unavailable": {
       "title": "這款遊戲目前無法使用",
-      "text": "之後可能會再回來。「玩」裡還有更多遊戲和謎題可以試試。",
-      "play": "前往「玩」"
+      "text": "之後可能會再回來。「學習」裡還有更多遊戲和謎題可以試試。",
+      "play": "前往「學習」"
     }
   },
   "play": {
@@ -7065,7 +7051,6 @@
       "games": "學習遊戲",
       "none": "還沒有符合這些條件的遊戲。",
       "clear": "顯示所有遊戲",
-      "players": "玩家做的學習遊戲",
       "meta": "{subject}・{grades}",
       "assign": "指派",
       "assignCourse": "指派給班級",
@@ -13412,8 +13397,6 @@
     "kindStory": "故事",
     "findStories": "故事圖書館",
     "door": {
-      "title": "故事圖書館",
-      "kids": "{count}本繪本。自己讀，或按「讀給我聽」！",
       "staff": "{count}本分級繪本，附問題。可以指派給班級。"
     },
     "results": {

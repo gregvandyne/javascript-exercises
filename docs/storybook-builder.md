@@ -37,7 +37,7 @@ Library: the book maker".
 maker: `POST /api/stories/book` fills the first answers (`companion-book.js fromStory` into `fromInput`, like the chat's
 `makeBook`): Have AI make one, the kind, the grade (from the age band, when known), the length, Oomba paints the
 pictures, and the idea with the kind of story, feeling, who is in it and a lesson as the teacher's words. With the Oomba
-chat the card opens on `/library?make=1` asking only the rest (`companion.js storyBook`); without it the setup page
+chat the card opens on `/read?make=1` asking only the rest (`companion.js storyBook`); without it the setup page
 opens on its choices with those picked. The book is an ordinary book in the teacher's cards.
 
 ## Who
@@ -45,11 +45,11 @@ opens on its choices with those picked. The book is an ordinary book in the teac
 - **Make, edit, chat, print, share**: school staff and the platform admin (`canMake`). A family grown-up only while
   `STORY_PICTURE_BOOKS` names `parent` (the owner: "Put it behind a feature flag for teacher and parent accounts for
   now"): they make, edit, chat (the editor's own chat), read and print their own books; with no classes, Share with
-  classes is hidden and refused (`canShare`), and the fence opens only the book maker's paths, never `/library`. A guest,
+  classes is hidden and refused (`canShare`), and the fence opens only the book maker's paths, never `/read` (the library). A guest,
   a banned account, a grown-up the flag leaves out, a kid or a student gets the normal 404 from every page and API; signed out, the usual sign-in
   (pages) or 401 (APIs). Checked on the server in one middleware (`teacher` in the routes), not by hiding links.
 - **Read**: the book's owner (Preview) and the students and teachers of a class it is shared with (`canRead`). Students
-  see shared books on `/library` under "From your teacher". The AI never talks to students: their pages have no chat.
+  see shared books on `/read` (the Read tab) under "From your teacher". The AI never talks to students: their pages have no chat.
 - A teacher only sees their own books. Another teacher's book id answers 404.
 
 ## The flow (the Builder's step pattern)
@@ -83,7 +83,7 @@ also in the past". For a teacher with the companion (`companionFor`: the Teacher
 companion chat (`services/companion-book.js`, wired in `services/companion.js`); a teacher without it keeps the page
 steps above and the editor's own chat.
 
-- **Make a book** (`/library`, `/library/make?new=1`, which redirects to `/library?make=1`) opens the chat with the first
+- **Make a book** (`/library`, `/library/make?new=1`, which redirects to `/read?make=1`) opens the chat with the first
   card, without the AI (`POST /api/companion/book/new`). A request in words ("make a choose your own adventure about the
   water cycle for grade 3", "turn this story into a choose-your-own-adventure" with the story pasted or a file attached,
   "make a book") makes the AI call `makeBook` with only what the teacher said. `/library/make` lists their books.

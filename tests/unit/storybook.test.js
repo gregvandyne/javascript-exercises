@@ -66,8 +66,8 @@ test('teachers only: students, kids, grown-ups and signed-out visitors are refus
   assert.equal((await call(`/library/make/${id}`, { user: teacher2 })).status, 404);
   assert.equal((await call(`/api/library/make/${id}`, { user: teacher2 })).status, 404);
   // the library: Make a book only for teachers
-  assert.match((await call('/library', { user: teacher })).text, /id="lb-make"/);
-  for (const who of [mia, kid, mum, null]) assert.doesNotMatch((await call('/library', { user: who })).text, /lb-make|\/library\/make/);
+  assert.match((await call('/read', { user: teacher })).text, /id="lb-make"/);
+  for (const who of [mia, kid, mum, null]) assert.doesNotMatch((await call('/read', { user: who })).text, /lb-make|\/library\/make/);
   assert.ok(SB.canMake(boss) && SB.canMake(teacher) && !SB.canMake(mia) && !SB.canMake(kid) && !SB.canMake(mum) && !SB.canMake(null));
 });
 
@@ -336,7 +336,7 @@ test('reader: a student of a shared class reads with choices, Back, The End and 
   assert.match(r.text, /They became friends\./, 'opens where they stopped');
   assert.equal((await call(`/api/library/made/${id}/progress`, { method: 'POST', user: mia, body: { page: 'nope' } })).status, 400);
   // the student's library shows it under From your teacher; the AI never talks to students (no chat on their pages)
-  const lib = await call('/library', { user: mia });
+  const lib = await call('/read', { user: mia });
   assert.match(lib.text, /From your teacher/); assert.match(lib.text, new RegExp(`/library/made/${id}/read`));
   assert.doesNotMatch(r.text, /oomba-chat|id="oc"/);
   // a linear book: Back and Next, The End on the last page

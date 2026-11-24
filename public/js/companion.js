@@ -554,7 +554,7 @@ function start() {
   // Open the book: the chat steps aside (minimized) so the book is what shows (the owner, 24 Nov 2026).
   document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('#oc a[href^="/library/make/"]'); if (a) { store.set('oc:companion', 'min'); if (ref.chat) ref.chat.setMode('min', { user: true }); } }, true);
   const openBookHtml = x => (PAGE && pageNow().type === 'book' && pageNow().bookId === x.change.bookId ? '' : `<a class="btn btn-sm btn-primary oc-open" href="/library/make/${encodeURIComponent(x.change.bookId)}">${ic('📖', 16)} ${esc(L('book.open'))}</a>`);
-  /** Make a book: the first card in this panel (the library's button, and /library?make=1 after /library/make?new=1). */
+  /** Make a book: the first card in this panel (the library's button, and /read?make=1 after /library/make?new=1). */
   async function makeBook() {
     try { const r = await api('/api/companion/book/new', { method: 'POST', body: {} }); chat.took(r.chat); chat.setMode('open', { focus: false }); } catch (e) { chat.setMode('open', { focus: false }); chat.showErr(e.message); }
   }

@@ -109,8 +109,8 @@ test('/plans and its links: the account menu for adults, the footer signed out, 
   const foot = s => (/<footer class="foot">[\s\S]*?<\/footer>/.exec(s) || [''])[0];
   const bars = s => (/<header class="topbar">[\s\S]*?<\/header>/.exec(s) || [''])[0].replace(acct(s), '') + (/<nav class="tabbar"[\s\S]*?<\/nav>/.exec(s) || [''])[0];
   for (const [who, where] of [[null, 'foot'], [signIn(auth.createGuest()), 'foot'], [signIn(g), 'menu'], [signIn(teacher), 'menu'], [signIn(k), null], [signIn(student), null]]) {
-    // Play: '/' for the signed out and kids, /play for those whose first tab is another one.
-    const home = (await call(who, '/play')).text;
+    // Learn (Play and Learn are one page): every role may open it.
+    const home = (await call(who, '/learn')).text;
     assert.doesNotMatch(bars(home), /href="\/plans"/, 'never in the top bar or the phone tab bar');
     if (where === 'menu') assert.match(acct(home), /<a href="\/plans" ><span class="theme-ico" aria-hidden="true">⭐<\/span><span>Plans<\/span><\/a>/);
     else assert.doesNotMatch(acct(home), /href="\/plans"/);

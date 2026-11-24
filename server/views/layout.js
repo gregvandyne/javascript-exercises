@@ -1,7 +1,7 @@
 // Page layout. Contract for every route:
 //   res.send(layout(req, { title, active, body, scripts, head, back, bodyClass, description, bare, mid, i18n }))
 //   mid: true = a medium-width page (reading pages like lessons)
-//   active: 'home'|'play'|'search'|'learn'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|'live'|null
+//   active: 'home'|'play'|'search'|'learn'|'read'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|'live'|null
 //           (the tab it makes current: shellFor/currentTab)   back: href for the Back link on inner pages
 //   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
@@ -46,7 +46,7 @@ export const parentsLabel = (t, key) => t(parentsKey(t, key));
 export const signedOut = u => !u || !!u.is_guest;
 /** Labels with a translated stand-in until a language has their own: Grown-ups -> Parents (the tab opens the parent
  *  page), Games -> Home (both open /), Account -> Me, School -> Schools. A translated page never shows them in English. */
-const STAND_IN = { grownups: ['parents'], games: ['home'], play: ['games', 'home'], account: ['me'], school: ['schools'], classroom: ['classes'], class: ['classes'] };
+const STAND_IN = { grownups: ['parents'], games: ['home'], account: ['me'], school: ['schools'], classroom: ['classes'], class: ['classes'] };
 /** A menu item's label key (tab bar and top bar). */
 export function tabKey(t, k) {
   if (k === 'parents') return parentsKey(t);
@@ -60,10 +60,10 @@ export function tabKey(t, k) {
 const GROWNUP_PAGES = ['parents', 'teachers', 'grownups'];
 export const legalReader = u => !!u && !u.is_guest && (isGrownup(u) || isPlatformAdmin(u) || isSchoolStaff(u));
 
-/** Where '/' takes a signed-in person whose first tab is not Play (docs/decisions.md "Play and Learn"): a student to
- *  their Class tab, a teacher to their Classroom, a school admin to their School, a grown-up to Family; null for everyone
- *  who lands on Play (signed out, guests, kids, the platform admin). auth.js homeFor uses it too, so sign-in and '/'
- *  agree. */
+/** Where '/' takes a signed-in person whose first tab is not Learn (docs/decisions.md "Play and Learn", "Learn and
+ *  Read"): a student to their Class tab, a teacher to their Classroom, a school admin to their School, a grown-up to
+ *  Family; null for everyone who lands on Learn (signed out, guests, kids, the platform admin). auth.js homeFor uses it
+ *  too, so sign-in and '/' agree. */
 export function landingFor(u) {
   if (signedOut(u)) return null;
   if (isGrownup(u)) return '/family';
@@ -75,42 +75,48 @@ export function landingFor(u) {
 }
 
 /**
- * The menus for one person (docs/decisions.md "Navigation shells", "Play and Learn" and "A quieter top bar": one library
- * on two shelves, Play and Learn, that everyone shares, and a first tab built for each role) -> { role, tabs, top, meHref }.
+ * The menus for one person (docs/decisions.md "Navigation shells", "A quieter top bar" and "Learn and Read": one Learn
+ * page with every game, by topic and by filter, and the Story Library as its own Read tab) -> { role, tabs, top, meHref }.
  * tabs is the phone tab bar, last item the Me / Account / Sign in tab; top is the desktop top bar's links (the avatar
  * button, which opens the account menu signed in, stands for Me or Account there). Each item is [key, href, emoji].
- * Search is the top bar's field (or round 🔎 button) for everyone, not a tab. Play is '/' where '/' shows Play
- * (landingFor null) and /play everywhere else. Neither bar has Plans or School any more: Plans is in the account menu
- * for grown-ups and staff (accountMenu) and in the footer signed out; School is in a school admin's account menu. The
- * first matching row wins:
- *   signed out or a guest   Play · Learn · Build · Grown-ups · Sign in   (top: Play · Learn · Build · Parents · Teachers)
- *   grown-up                Family · Play · Learn · Build · Account      (top: the same without Account)
- *   school staff            Classroom · Build · (Live) · Me              (top: the same without Me; a school admin's
+ * Search is the top bar's field (or round 🔎 button) for everyone, not a tab. Learn is always /learn ('/' shows the same
+ * page to those who land on it: landingFor null); Read is /read (the Story Library). Neither bar has Plans or School:
+ * Plans is in the account menu for grown-ups and staff (accountMenu) and in the footer signed out; School is in a school
+ * admin's account menu. The first matching row wins:
+ *   signed out or a guest   Learn · Read · Build · Grown-ups · Sign in   (top: Learn · Read · Build · Parents · Teachers)
+ *   grown-up                Family · Learn · Build · Account             (top: the same without Account; no Read: the
+ *                                                                          library is closed to signed-in grown-ups)
+ *   school staff            Classroom · Build · (Tools) · (Live) · Me    (top: the same without Me; a school admin's
  *                                                                          School is in the account menu)
- *   platform admin          Play · Learn · Build · Schools · Me
- *   student                 Class · Play · Learn · Build · Me            (top: the same with Friends, without Me)
- *   kid                     Play · Learn · Build · Friends · Me          (top: the same without Me)
+ *   platform admin          Learn · Read · Build · Schools · Me
+ *   student                 Class · Learn · Read · Build · Me            (top: the same with Friends, without Me)
+ *   kid                     Learn · Read · Build · Friends · Me          (top: the same without Me)
  * Live (📡 /live, hosting) is there only while Oomba Live is on (liveOn). With STORY_BUILDER=1 every signed-in shell also
- * has Stories (🌙, /stories) after Build (or after Play where there is no Build).
+ * has Stories (🌙, /stories) after Build in the top bar; the phone's tab bar keeps five tabs at most, so where Stories
+ * would make six it is in the account menu on phones instead (storiesInMenu), as staff's Teaching tools are.
  */
 export function shellFor(u) {
   const [, , build, friends] = NAV;
-  // Signed out, '/' is the teacher landing page (routes/landing.js, on unless LANDING_AT_ROOT=0), so Play goes to /play.
-  const landingAtRoot = !u && process.env.LANDING_AT_ROOT !== '0';
-  const play = ['play', landingFor(u) || landingAtRoot ? '/play' : '/', '🎮'];
-  const learn = ['learn', '/learn', '📚'];
+  const learn = ['learn', '/learn', '💡'];
+  const read = ['read', '/read', '📚'];
   const classroom = ['classroom', '/teach', '🍎'];
   const live = liveOn() ? [['live', '/live', '📡']] : [];
   const me = ['me', '/me', '🙂'];
   // The Story Builder (routes/stories.js) for everyone signed in, only while STORY_BUILDER is on.
   const stories = config.storyBuilder ? [['stories', '/stories', '🌙']] : [];
+  // The phone's tab bar: five tabs at most. Where Stories would make a sixth, it is in the account menu on phones.
+  const phone = (top, last, extra = []) => {
+    const all = [...top, ...extra, last];
+    return all.length <= 5 ? { tabs: all, storiesInMenu: false } : { tabs: all.filter(x => x[0] !== 'stories'), storiesInMenu: stories.length > 0 };
+  };
   if (signedOut(u)) {
-    return { role: 'out', tabs: [play, learn, build, ['grownups', '/parents', '👪'], ['signin', '/login', '🙂']],
-      top: [play, learn, build, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
+    return { role: 'out', tabs: [learn, read, build, ['grownups', '/parents', '👪'], ['signin', '/login', '🙂']],
+      top: [learn, read, build, ['parents', '/parents', '👪'], ['teachers', '/teachers', '🍎']], meHref: '/login' };
   }
   if (isGrownup(u)) {
-    const top = [['family', '/family', '👪'], play, learn, build, ...stories];
-    return { role: 'grownup', tabs: [...top, ['account', '/family/account', '⚙️']], top, meHref: '/family/account' };
+    // No Read: the Story Library itself is closed to signed-in grown-ups (routes/family.js, the fence).
+    const top = [['family', '/family', '👪'], learn, build, ...stories];
+    return { role: 'grownup', ...phone(top, ['account', '/family/account', '⚙️']), top, meHref: '/family/account' };
   }
   if (isSchoolStaff(u)) {
     // Classroom · Build · Teaching tools · Live: no Learn or Play for staff (docs/decisions.md "Teachers' top bar:
@@ -129,25 +135,28 @@ export function shellFor(u) {
   }
   if (isPlatformAdmin(u)) {
     // No Friends tab: the platform admin is staff, and staff have no friends (services/schools.js noFriendsAccount).
-    const top = [play, learn, build, ...stories, ['schools', '/admin/schools', '🏫']];
-    return { role: 'admin', tabs: [...top, me], top, meHref: '/me' };
+    const top = [learn, read, build, ...stories, ['schools', '/admin/schools', '🏫']];
+    return { role: 'admin', ...phone(top, me), top, meHref: '/me' };
   }
   // A teacher who left their school is an ordinary account again, but still has no friends (noFriendsAccount).
   const fr = noFriendsAccount(u) ? [] : [friends];
   if (inAnySchool(u)) {
-    const head = [['class', '/classes', '🏫'], play, learn, build, ...stories];
-    return { role: 'student', tabs: [...head, me], top: [...head, ...fr], meHref: '/me' };
+    const head = [['class', '/classes', '🏫'], learn, read, build, ...stories];
+    return { role: 'student', ...phone(head, me), top: [...head, ...fr], meHref: '/me' };
   }
-  const top = [play, learn, build, ...stories, ...fr];
-  return { role: 'kid', tabs: [...top, me], top, meHref: '/me' };
+  const top = [learn, read, build, ...stories, ...fr];
+  return { role: 'kid', ...phone(top, me), top, meHref: '/me' };
 }
-/** The tab a page's `active` makes current in this shell: the game pages (home, play, search) are Play; the class pages
+/** Where a signed-out visitor's games are: /learn where '/' is the teacher landing page (routes/landing.js, on unless
+ *  LANDING_AT_ROOT=0), else '/' (which shows the Learn page). */
+export const gamesHome = u => (!u && process.env.LANDING_AT_ROOT !== '0' ? '/learn' : '/');
+/** The tab a page's `active` makes current in this shell: the game pages (home, play, search) are Learn; the class pages
  *  are Classroom for staff, Class for students and Schools for the platform admin; hosting (live) is Live where there is
  *  a Live link, else Classroom; the school pages are Me (School is in the account menu); the parent and teacher pages are
  *  Grown-ups. */
 export function currentTab(shell, active) {
   const has = k => shell.tabs.some(([x]) => x === k) || shell.top.some(([x]) => x === k);
-  if (active === 'home' || active === 'search' || active === 'play') return has('play') ? 'play' : active;
+  if (active === 'home' || active === 'search' || active === 'play') return has('learn') ? 'learn' : active;
   if (active === 'classes') return ['classroom', 'class', 'schools'].find(has) || active;
   if (active === 'live') return has('live') ? 'live' : has('classroom') ? 'classroom' : active;
   // A school admin's School is in the account menu behind the avatar: on the school pages, Me is current.
@@ -206,6 +215,7 @@ export const plansInMenu = (u, req) => legalReader(u) && familiesOn(req);
 export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
   const t = tReq(req); const u = req.user;
   if (shell.role === 'teacher' || shell.role === 'schoolAdmin') return staffMenu(req, { name, badge, active, unread, tools: !!shell.toolsInMenu });
+  const storiesKey = tabKey(t, 'stories');
   const grownup = shell.role === 'grownup';
   const settingsHref = grownup ? '/family/account' : '/me/settings';
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
@@ -221,6 +231,7 @@ export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
         ${item('/me', u.photo_at ? '🙂' : u.avatar, t('nav.me'), { extra: badge('me'), avatar: !u.photo_at })}
         ${school ? item('/school', '🏛️', t('me.tiles.school'), { on: req.path === '/school' || req.path.startsWith('/school/') }) : ''}
       </ul>`}
+      ${shell.storiesInMenu ? html`<ul class="acct-list acct-phone">${item('/stories', '🌙', t(storiesKey), { on: req.path === '/stories' || req.path.startsWith('/stories/'), attr: en(storiesKey) })}</ul>` : ''}
       <p class="lang-head" id="acct-set-head">${t('me.settings.title')}</p>
       <p class="acct-sub" id="acct-theme-head">${t('layout.theme.title')}</p>
       ${themeLinks(req, { cls: 'acct-list acct-themes', labelledby: 'acct-theme-head' })}
@@ -234,7 +245,7 @@ export function accountMenu(req, { shell, name, badge, active, unread = 0 }) {
 
 /**
  * School staff's account menu (docs/decisions.md "Teachers' account menu"): a card that opens Me (the avatar, the name,
- * the school, and how many messages are new), Play and Learn as two tiles (a teacher's bars have neither), My school
+ * the school, and how many messages are new), Learn and Read as two tiles (a teacher's bars have neither), My school
  * (a school admin), Plans (plansInMenu), Settings and Sign out, and the theme as one Auto / Light / Dark switch at the
  * bottom (plain links, as in themeLinks, so it works with no JavaScript; app.js switches at once).
  */
@@ -243,7 +254,7 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
   const en = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   const school = (schoolsOf(u.id)[0] || {}).name || '';
   const admin = adminSchools(u).length > 0;
-  const plansKey = tabKey(t, 'plans'), playKey = tabKey(t, 'play'), learnKey = tabKey(t, 'learn');
+  const plansKey = tabKey(t, 'plans'), learnKey = tabKey(t, 'learn'), readKey = tabKey(t, 'read');
   const here = href => req.path === href || req.path.startsWith(`${href}/`);
   const item = (href, emo, label, { on = here(href), attr = '', cls = '' } = {}) => html`<li${cls ? html` class="${cls}"` : ''}><a href="${href}" ${on ? raw('aria-current="page"') : ''}${attr}><span class="theme-ico" aria-hidden="true">${ico(emo, { size: 20 })}</span><span>${label}</span></a></li>`;
   const cur = THEMES.includes(req.theme) ? req.theme : 'system';
@@ -253,8 +264,8 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
     <div class="acct-menu acct-staff">
       <a class="acct-card" href="/me" ${req.path === '/me' ? raw('aria-current="page"') : ''}>${avatar(u, 48)}<span class="acct-card-t"><b dir="auto">${name}</b>${school ? html`<small dir="auto">${school}</small>` : ''}${unread ? html`<span class="acct-card-msg" aria-hidden="true">${ico('💬', { size: 16 })} ${t('layout.acct.newMessages', { count: unread })} ›</span>` : ''}</span></a>
       <div class="acct-tiles">
-        <a href="/play" ${here('/play') ? raw('aria-current="page"') : ''}${en(playKey)}><span class="acct-tile-e" aria-hidden="true">${ico('🎮', { size: 32 })}</span>${t(playKey)}</a>
-        <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">${ico('📚', { size: 32 })}</span>${t(learnKey)}</a>
+        <a href="/learn" ${here('/learn') ? raw('aria-current="page"') : ''}${en(learnKey)}><span class="acct-tile-e" aria-hidden="true">${ico('💡', { size: 32 })}</span>${t(learnKey)}</a>
+        <a href="/read" ${here('/read') ? raw('aria-current="page"') : ''}${en(readKey)}><span class="acct-tile-e" aria-hidden="true">${ico('📚', { size: 32 })}</span>${t(readKey)}</a>
       </div>
       <ul class="acct-list acct-links">
         ${tools ? item('/figures', '🧰', t(tabKey(t, 'tools')), { attr: en(tabKey(t, 'tools')), cls: 'acct-phone' }) : ''}
@@ -292,13 +303,13 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (u && u.role === 'admin' && badges.review) badges.me = (badges.me || 0) + badges.review;
   const badge = k => (badges[k] ? html`<span class="badge" aria-label="${t('layout.badgeNew', { count: badges[k] })}">${badges[k] > 9 ? '9+' : badges[k]}</span>` : '');
   const playKey = t.own('nav.playNow') ? 'nav.playNow' : 'home.hero.play';
-  // Straight to the games: where '/' is the landing (signed out), that is the Play tab's own address, so the landing
-  // never flashes on the way; else the home page's game rows.
-  const playTab = (shell.top.find(([k]) => k === 'play') || [])[1] || '/';
-  const playHref = playTab === '/' ? (req.pathLocale ? localeUrl('/', req.pathLocale) : '/') + '#play' : (req.pathLocale && localizable(playTab) ? localeUrl(playTab, req.pathLocale) : playTab);
-  // The Play pages (/play and search), signed out, where the games have their own page (the landing is at '/'): the bar
-  // is just Play, Learn, Build and Sign in, with no Play now. A games home at '/' is also the front door and keeps every link.
-  const playPage = out && playTab !== '/' && currentTab(shell, active) === 'play';
+  // Straight to the games: where '/' is the landing (signed out), that is the Learn page, so the landing never flashes
+  // on the way; else the home page's game rows.
+  const playTab = gamesHome(u);
+  const playHref = (req.pathLocale && localizable(playTab) ? localeUrl(playTab, req.pathLocale) : playTab) + '#play';
+  // The game pages (Learn and search), signed out, where the games have their own page (the landing is at '/'): no Play
+  // now (they are on the games). Learn is also the indexed hub grown-ups find, so the bar keeps Parents and Teachers.
+  const playPage = out && playTab !== '/' && currentTab(shell, active) === 'learn';
   const playNow = out && !playPage ? html`<a class="btn btn-hot playnow" href="${playHref}" data-count="/go/play"${t.own(playKey) ? '' : raw(' lang="en"')}><span aria-hidden="true">▶</span> <span class="playnow-t">${t(playKey)}</span></a>` : '';
   // Oomba Live: "Join a game" on every page for anyone who might be given a code (not school staff or the platform admin,
   // who host). Signed in
@@ -306,7 +317,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // shows on wide screens only, and phones get the big door on the home page.
   const joinNow = !staff && shell.role !== 'admin' && liveOn() ? html`<a class="btn joinnow${out ? ' joinnow-out' : ''}" href="/join" aria-label="${t('live.entry.join')}">${ico('🎟️', { size: 22 })}<span class="joinnow-t" aria-hidden="true">${t('live.entry.join')}</span></a>` : '';
   const act = currentTab(shell, active);
-  // The sign-in page, signed out: no Play, Learn, Build, Parents, Teachers or Sign in in the top bar (it is the page
+  // The sign-in page, signed out: no Learn, Read, Build, Parents, Teachers or Sign in in the top bar (it is the page
   // they would lead away from); the logo, search, language and Play now stay.
   const quiet = signinPage && out;
   const signIn = t('layout.signIn');
@@ -330,7 +341,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     </form>
     <a class="topsearch-btn" href="/search" aria-label="${t('layout.search.label')}">${ico('🔎', { size: 22 })}</a>
     ${quiet ? '' : html`<nav class="topnav" aria-label="${t('layout.mainNav')}">
-      ${shell.top.filter(([k]) => !playPage || ['play', 'learn', 'build'].includes(k)).map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 28 })}</span>${t(l.key)}${badge(k)}</a>`; })}
+      ${shell.top.map(([k, href, emo]) => { const l = label(k); return html`<a class="navlink" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 28 })}</span>${t(l.key)}${badge(k)}</a>`; })}
     </nav>`}
     ${langPicker(req)}
     ${quiet ? '' : u && !out ? accountMenu(req, { shell, name: myName, badge, active: !!cur(grownup ? 'account' : 'me'), unread: badges.me || 0 }) : html`<a class="me-btn" href="${meHref}" ${cur('me')} aria-label="${u ? t('layout.meLabel', { name: myName }) : signIn}">${u ? avatar(u, 38) : html`<span class="avatar" style="--s:38px;--c:var(--hover)" aria-hidden="true">🙂</span>`}<span class="name">${u ? myName : signIn}</span>${badge('me')}</a>`}
@@ -422,7 +433,7 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
   const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;
-  const type = /^\/library/.test(p) ? 'library' : /^\/teach/.test(p) ? 'teach' : /^\/build/.test(p) ? 'build' : /^\/figures/.test(p) ? 'figures' : /^\/school/.test(p) ? 'school' : /^\/live/.test(p) ? 'live' : 'other';
+  const type = /^\/library|^\/read$/.test(p) ? 'library' : /^\/teach/.test(p) ? 'teach' : /^\/build/.test(p) ? 'build' : /^\/figures/.test(p) ? 'figures' : /^\/school/.test(p) ? 'school' : /^\/live/.test(p) ? 'live' : 'other';
   return { type, ...(cls ? { classId: cls } : {}) };
 }
 /** The one-time "✨ Your game “X” is ready!" note (builder/turns.js notices), marked as told once drawn. */

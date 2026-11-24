@@ -1,5 +1,5 @@
 // The teacher landing page at "/" (server/routes/landing.js, docs/decisions.md "Teacher landing page"): what a visitor
-// with no session (and a search engine) gets at "/", what everyone with a session still gets, "Just Play" (/play), the
+// with no session (and a search engine) gets at "/", what everyone with a session still gets, "Just Play" (/learn), the
 // search tags, the structured data, the sitemap, the click counts, and the honesty rules (no prices on "/", no ratings,
 // reviews or testimonials).
 import './_setup.js';
@@ -66,9 +66,9 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
 test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial button asks who\'s signing up; pricing to /plans', async () => {
   const s = (await call(null, '/')).text;
   const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
-  assert.equal(L.JUST_PLAY_URL, '/play');
+  assert.equal(L.JUST_PLAY_URL, '/learn', 'Just Play opens Learn (every game; /play answers 301 there)');
   assert.equal(L.TRIAL_URL, '/signup?trial=1');
-  assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/play" data-cta="play">Just Play /);
+  assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/learn" data-cta="play">Just Play /);
   // The link has a name of its own: on a phone only its short, aria-hidden words show.
   assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
   assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/signup?trial=1"'), 'Just Play, then the trial, at the right');
@@ -77,7 +77,7 @@ test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial b
   assert.match(s, /href="\/plans" data-cta="pricing"/);
   assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
   assert.match(s, /href="mailto:Greg@oomba\.ai\?subject=/, 'schools: talk to us');
-  assert.match(s, /<section class="lp-play" id="play"[\s\S]*?href="\/play"/, 'old "/#play" links land on a way to the games');
+  assert.match(s, /<section class="lp-play" id="play"[\s\S]*?href="\/learn"/, 'old "/#play" links land on a way to the games');
   for (const p of ['/teachers', '/teachers/cs-quest', '/teachers/number-quest', '/teachers/cyber-defenders', '/parents', '/learn', '/privacy', '/terms']) assert.ok(s.includes(`href="${p}"`), `links ${p}`);
 });
 
@@ -91,17 +91,20 @@ test('under the questions: a box each for /parents and /teachers, in their own w
   assert.ok(faq.indexOf('lp-faq') < faq.indexOf('lp-doors'), 'after the questions');
 });
 
-test('the Play pages, signed out: the bar is Play, Learn, Build and Sign in, no Play now; elsewhere Play now goes straight to /play', async () => {
+test('the game pages (Learn and search), signed out: every link (Learn is the indexed hub grown-ups find too), no Play now; elsewhere Play now goes straight to Learn\'s games', async () => {
   const bar = h => /<header class="topbar">[\s\S]*?<\/header>/.exec(h)[0];
-  for (const p of ['/play', '/search']) {
+  for (const p of ['/learn', '/search']) {
     const b = bar((await call(null, p)).text);
-    assert.deepEqual([...b.matchAll(/class="navlink" href="([^"]+)"/g)].map(m => m[1]), ['/play', '/learn', '/build'], p);
+    assert.deepEqual([...b.matchAll(/class="navlink" href="([^"]+)"/g)].map(m => m[1]), ['/learn', '/read', '/build', '/parents', '/teachers'], p);
     assert.match(b, /class="me-btn" href="\/login"/, p);
     assert.doesNotMatch(b, /playnow/, p);
   }
-  const learn = bar((await call(null, '/learn')).text);
-  assert.match(learn, /class="navlink" href="\/teachers"/, 'other pages keep every link');
-  assert.match(learn, /class="btn btn-hot playnow" href="\/play"/, 'Play now goes to /play, not through the landing');
+  for (const p of ['/read', '/safety']) {
+    const b = bar((await call(null, p)).text);
+    assert.match(b, /class="navlink" href="\/teachers"/, `${p}: every link`);
+    assert.match(b, /class="btn btn-hot playnow" href="\/learn#play"/, `${p}: Play now goes to Learn's games, not through the landing`);
+  }
+  assert.match(bar((await call(null, '/es/teachers')).text), /class="btn btn-hot playnow" href="\/es\/learn#play"/, 'in the page\'s language');
 });
 
 test('honest page: no prices on "/" (LANDING_SHOW_PRICE off), no ratings, reviews, testimonials or user counts', async () => {
@@ -157,18 +160,19 @@ test('everyone with a session keeps the home page they have today: kids, student
   assert.match((await call(auth.createGuest(), '/')).text, /class="doors"/, 'a guest still gets the doors');
 });
 
-test('Just Play: /play is the Play page (the game rows, no doors: the landing is the front door), private to search engines; "/" without the switch is unchanged', async () => {
-  const p = await call(null, '/play');
+test('Just Play: /learn is the games (by topic, no doors: the landing is the front door); /play answers 301 there; "/" without the switch is unchanged', async () => {
+  const p = await call(null, '/learn');
   assert.equal(p.status, 200);
   assert.ok(!isLanding(p.text));
-  assert.doesNotMatch(p.text, /class="doors"/, 'Play has no doors: "/" is the front door'); assert.match(p.text, /<div id="play" class="home-play">/); assert.match(p.text, /class="rail/);
-  assert.match(p.headers.get('x-robots-tag') || '', /noindex/, '/play is never indexed (seo.js PRIVATE_RE)');
-  assert.equal((await call(null, '/play?x=1')).status, 200);
-  assert.equal((await call(kid(), '/play')).status, 200, 'a kid with an account too');
+  assert.doesNotMatch(p.text, /class="doors"/, 'Learn has no doors: "/" is the front door'); assert.match(p.text, /<div id="play" class="learn-games-wrap">/); assert.match(p.text, /class="rail/);
+  const old = await call(null, '/play?x=1');
+  assert.equal(old.status, 301); assert.equal(old.headers.get('location'), '/learn?x=1');
+  assert.equal((await call(kid(), '/play')).headers.get('location'), '/learn', 'a kid with an account too');
+  assert.equal((await call(kid(), '/learn')).status, 200);
   assert.equal((await call(null, '/play/sum-racer')).status, 200, 'game pages under /play/ are untouched');
   process.env.LANDING_AT_ROOT = '0';
-  const old = await call(null, '/');
-  assert.ok(!isLanding(old.text)); assert.match(old.text, /class="doors"/);
+  const root = await call(null, '/');
+  assert.ok(!isLanding(root.text)); assert.match(root.text, /class="doors"/);
 });
 
 test('sitemap: "/" lists the landing in every language with its share picture', async () => {
@@ -263,7 +267,7 @@ test('the story: the class day in five steps that lead to their sections in orde
   const menu = s.slice(s.indexOf('<details class="lp-menu"'), s.indexOf('</details>'));
   assert.ok(menu.length > 100, 'menu');
   for (const id of ['how', 'dashboards', 'builder', 'kids', 'pricing', 'faq']) assert.match(menu, new RegExp(`href="#${id}"`), id);
-  assert.match(menu, /href="\/login"/); assert.match(menu, /href="\/play"/);
+  assert.match(menu, /href="\/login"/); assert.match(menu, /href="\/learn"/);
   // The hero shows the class dashboard (the lesson → game loop is in the Builder section now, still complete before any script).
   const hero = s.slice(0, at('how'));
   assert.match(hero, /class="lp-hstage"/); assert.match(hero, /dash-teacher-d-1024\.webp/);

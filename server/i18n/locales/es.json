@@ -72,8 +72,8 @@
     "games": "Juegos",
     "account": "Cuenta",
     "school": "Escuela",
-    "play": "Jugar",
     "learn": "Aprender",
+    "read": "Leer",
     "class": "Clase",
     "classroom": "Mi aula",
     "live": "En vivo",
@@ -561,17 +561,8 @@
       "start": "Empezar a crear"
     },
     "rails": {
-      "featured": "Destacados",
-      "playing": "Jugando ahora",
-      "friends": "De tus amigos",
-      "popular": "Populares",
-      "rated": "Mejor calificados",
-      "new": "Nuevos",
       "mine": "Mis juegos",
-      "favorites": "Mis favoritos",
-      "keep": "Sigue jugando",
-      "two": "Dos jugadores",
-      "fromLearn": "De Aprender: los más divertidos"
+      "favorites": "Mis favoritos"
     },
     "hero": {
       "label": "Juego destacado",
@@ -580,10 +571,8 @@
       "more": "Más info",
       "about": "Sobre {title}"
     },
-    "categories": "Categorías",
     "empty": {
       "title": "Todavía no hay juegos",
-      "text": "¡Crea el primero!",
       "action": "Crear un juego"
     },
     "intro": {
@@ -606,9 +595,6 @@
       "todo": "{count, plural, one {# lección por hacer} other {# lecciones por hacer}}",
       "continue": "Continuar",
       "open": "Abrir mi clase"
-    },
-    "chips": {
-      "two": "2 jugadores"
     },
     "focus": {
       "tools": "Herramientas de clase",
@@ -1226,8 +1212,8 @@
     },
     "unavailable": {
       "title": "Este juego no está disponible ahora",
-      "text": "Puede que vuelva más adelante. En Jugar hay más juegos y pasatiempos para probar.",
-      "play": "Ir a Jugar"
+      "text": "Puede que vuelva más adelante. En Aprender hay más juegos y pasatiempos para probar.",
+      "play": "Ir a Aprender"
     }
   },
   "play": {
@@ -7065,7 +7051,6 @@
       "games": "Juegos para aprender",
       "none": "Todavía no hay juegos con estos filtros.",
       "clear": "Ver todos los juegos",
-      "players": "Juegos para aprender hechos por jugadores",
       "meta": "{subject} · {grades}",
       "assign": "Asignar",
       "assignCourse": "Asignar a una clase",
@@ -13412,8 +13397,6 @@
     "kindStory": "Cuento",
     "findStories": "Biblioteca de cuentos",
     "door": {
-      "title": "Biblioteca de cuentos",
-      "kids": "{count} libros ilustrados. ¡Léelos o toca Léemelo!",
       "staff": "{count} libros ilustrados por niveles, con preguntas. Asigna uno a una clase."
     },
     "results": {

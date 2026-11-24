@@ -2,17 +2,16 @@
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
-import { page, parentsKey, signedOut, notFound, landingFor } from '../views/layout.js';
-import { rail, cardGrid, emptyState, avatar, coverArt, categoryLabel } from '../views/components.js';
+import { page, parentsKey, notFound } from '../views/layout.js';
+import { cardGrid, emptyState, avatar, categoryLabel } from '../views/components.js';
 import * as games from '../services/games.js';
 import * as presence from '../services/presence.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { requireUser, isGrownup, OFFICIAL } from '../auth.js';
 import * as seo from '../seo.js';
-import { HUBS, LEARN_FUN, CLASS_TOOLS, SHELF_INFO } from '../learn.js';
-import { config } from '../config.js';
-import { keepSlugs, openHubs, arcadeHidden } from '../services/game-focus.js';
-import { availableCodes, keepLang } from '../i18n/index.js';
+import { CLASS_TOOLS, SHELF_INFO } from '../learn.js';
+import { arcadeHidden } from '../services/game-focus.js';
+import { availableCodes } from '../i18n/index.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { liveOn } from '../services/classlive-sessions.js';
@@ -22,7 +21,7 @@ import { toDoFor } from '../services/progress.js';
 import { openForClass } from '../services/classlive-sessions.js';
 /** A student in a class: "Your class" at the top of Home: a live game their teacher just opened, else the next lesson to
  *  do (soonest due) with Continue, so Home never pulls them away from what's assigned. '' for everyone else. */
-function classStrip(req) {
+export function classStrip(req) {
   const t = req.t, f = req.fmt, u = req.user;
   if (!u || u.is_guest || isStaff(u)) return '';
   const mine = classesOf(u.id, 'student'); if (!mine.length) return '';
@@ -43,7 +42,7 @@ function classStrip(req) {
 export const router = Router();
 
 // "Build your own game" lives in its own banner, separate from the featured-game hero.
-function buildBanner(req) {
+export function buildBanner(req) {
   const t = req.t; const u = req.user;
   const mine = u && !u.is_guest;
   return html`<section class="buildbanner" aria-labelledby="bb-h">
@@ -62,101 +61,21 @@ router.get('/favorites', requireUser, (req, res) => {
   page(req, res, { title: t('favorites.title'), active: 'me', body, back: '/me', backLabel: t('nav.me') });
 });
 
-/** A description's first sentence (the hero's line): up to the first full stop, in any script (。 ！ in Japanese and Chinese). */
-export const firstSentence = d => { const m = /^[\s\S]*?(?:[.!?](?=\s|$)|[。！？])/.exec(String(d || '').trim()); return m ? m[0] : String(d || ''); };
-/** The Play shelf's genres: every category but the learning ones (those games are on Learn). */
-export const PLAY_CATEGORIES = games.CATEGORIES.filter(([k]) => k !== 'learning' && k !== 'words');
-
-// '/' is Play for everyone who lands on it (signed out, guests, kids, the platform admin); everyone else goes to their
-// own first tab (layout.js landingFor: Class, Classroom, School, Family). Never cached, so a signed-in redirect is never
-// served to anyone else. /play is the Play page for everyone, always (the Play tab of those who land elsewhere).
-router.get('/', (req, res) => {
-  const to = landingFor(req.user);
-  // The query string goes along (?utm_source=…, a ?code= from a poster); the page they land on reads it or ignores it.
-  if (to) { const qs = req.originalUrl.indexOf('?'); res.set('Cache-Control', 'private, no-store'); return res.redirect(302, to + (qs >= 0 ? req.originalUrl.slice(qs) : '')); }
-  playPage(req, res, { landing: true });
+// '/' is the Learn page for everyone who lands on it (routes/teachers.js learnPage; layout.js landingFor). /play was the
+// Play page until Play and Learn became one page (docs/decisions.md "Learn and Read"): it answers 301 to /learn, with
+// its query string, and /<language>/play to /<language>/learn. /play/<slug> (playing a game) is another route.
+const qsOf = req => { const i = req.originalUrl.indexOf('?'); return i >= 0 ? req.originalUrl.slice(i) : ''; };
+router.get('/play', (req, res) => res.redirect(301, `/learn${qsOf(req)}`));
+router.get(/^\/([a-z]{2}(?:-[a-z]{2,4})?)\/play\/?$/, (req, res, next) => {
+  const code = availableCodes().find(c => seo.segOf(c) === req.params[0]);
+  if (!code) return next();
+  res.redirect(301, `${seo.localeUrl('/learn', code)}${qsOf(req)}`);
 });
-router.get('/play', (req, res) => playPage(req, res, { landing: false }));
 
-/** The Play page (docs/decisions.md "Play and Learn"): the fun shelf of the library. landing: it is '/' (the signed-out
- *  home keeps its heading, doors and structured data there); /play is never indexed ('/' is the page search engines see). */
-function playPage(req, res, { landing }) {
-  const t = req.t;
-  if (arcadeHidden()) return focusPlay(req, res, { landing });
-  /** Links stay in the language address the page was opened at (/es -> /es/teachers). */
-  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
-  const u = req.user;
-  const play = { shelf: 'play' };
-  // Every featured Play game fits; the rail scrolls. Class tools (Remi's noise meter) are never the hero or featured.
-  const featured = games.listVisible(u, { ...play, featured: true, order: 'plays', limit: 48 }).filter(g => !CLASS_TOOLS.includes(g.slug));
-  const hero = featured[0];
-  // The hero is not repeated in the rails right under it (Featured, Popular, Top rated, New).
-  const notHero = list => (hero ? list.filter(g => g.id !== hero.id) : list);
-  const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
-  const fromLearn = keepSlugs(LEARN_FUN).map(s => games.getGameBySlug(s)).filter(g => g && games.canView(u, g)).map(g => games.decorate([g])[0]);
-  const rails = [
-    u ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: games.favorites(u, u.id, 16), user: u, id: 'favorites', more: '/favorites' }) : '',
-    u ? rail({ title: t('home.rails.keep'), emoji: '⏯️', games: games.recentlyPlayed(u, 12, play), user: u, id: 'keep' }) : '',
-    rail({ title: t('home.rails.featured'), emoji: '⭐', games: notHero(featured), user: u, id: 'featured' }),
-    rail({ title: t('home.rails.two'), emoji: '👥', games: games.listVisible(u, { ...play, minPlayers: 2, order: 'plays', limit: 16 }), user: u, id: 'two' }),
-    rail({ title: t('home.rails.fromLearn'), emoji: '📚', games: fromLearn, user: u, id: 'from-learn', more: lp('/learn') }),
-    buildBanner(req),
-    rail({ title: t('home.rails.playing'), emoji: '🟢', games: games.playingNow(u, 12, play), user: u, id: 'playing', more: '/search?sort=playing' }),
-    rail({ title: t('home.rails.friends'), emoji: '👫', games: games.fromFriends(u, 12, play), user: u, id: 'friends' }),
-    rail({ title: t('home.rails.popular'), emoji: '🔥', games: notHero(games.listVisible(u, { ...play, order: 'popular', limit: 17 })).slice(0, 16), user: u, id: 'popular', more: '/search?sort=popular' }),
-    rail({ title: t('home.rails.rated'), emoji: '🏆', games: notHero(games.listVisible(u, { ...play, order: 'rated', limit: 17 })).slice(0, 16), user: u, id: 'rated', more: '/search?sort=rated' }),
-    rail({ title: t('home.rails.new'), emoji: '✨', games: notHero(games.listVisible(u, { ...play, order: 'new', limit: 17 })).slice(0, 16), user: u, id: 'new', more: '/search?sort=new' }),
-    mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : '',
-    ...PLAY_CATEGORIES.map(([k, e]) => rail({ title: categoryLabel(k, t), emoji: e, games: games.listVisible(u, { ...play, category: k, limit: 12 }), user: u, id: `cat-${k}`, more: `/search?cat=${k}` })),
-  ];
-  // The page's heading says what the site is. Signed out on '/' (new visitors, teachers, search engines) it comes with a
-  // one-line promise and three doors: kids down to the featured game and the game rows (#play, no sign-up), parents and teachers to their own page
-  // (docs/decisions.md "Home doors"); the featured game and the rows follow, so it still feels like the app. Signed in,
-  // players know where they are, so the heading is only there for screen readers. A guest (one tap on Play) still counts
-  // as signed out: a parent who tried a game keeps their door.
-  // Text still in English on this language's page is marked so (screen readers, right-to-left pages).
-  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  // "Join a game" (Oomba Live): a code on the class's big screen. Signed out it sits under the doors.
-  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
-  // Signed in, Join is the 🎟️ button in the top bar (and the door on Learn): Play opens straight on its featured game.
-  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}`
-    : !landing ? html`<h1 class="sr-only">${t('nav.play')}</h1>`
-    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
-      ${homeDoors(req)}
-      ${joinDoor}
-      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${openHubs(HUBS).map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
-  const body = html`${intro}
-  <div id="play" class="home-play">
-  ${hero ? html`<section class="hero cover-${hero.cover}" aria-label="${t('home.hero.label')}">
-    <div>
-      <span class="hero-kicker"><span class="emo">${ico('⭐', { size: 20 })}</span> ${t('home.hero.kicker')}</span>
-      <h2 class="hero-title">${hero.title}</h2>
-      <p>${firstSentence(hero.description)}</p>
-      <div class="row">
-        <a class="btn btn-big" href="${liveOn() && liveGameOf(hero) ? `/g/${hero.slug}` : keepLang(req, `/play/${hero.slug}`)}">▶ ${t('home.hero.play')}</a>
-        <a class="btn btn-ghost" href="/g/${hero.slug}">${t('home.hero.more')}</a>
-      </div>
-    </div>
-    <a class="heroart" href="/g/${hero.slug}" aria-label="${t('home.hero.about', { title: hero.title })}">${coverArt(hero, '', { eager: true })}</a>
-  </section>` : ''}
-  <div class="chips scroll" role="list" aria-label="${t('home.categories')}" style="margin-bottom:18px">
-    ${PLAY_CATEGORIES.map(([k, e]) => html`<a class="chip" role="listitem" href="/search?cat=${k}" rel="nofollow"><span aria-hidden="true">${e}</span>${categoryLabel(k, t)}</a>`)}
-    <a class="chip" role="listitem" href="#two">${ico('👥', { size: 18 })}${t('home.chips.two')}</a>
-  </div>
-  ${rails.some(r => r) ? rails : emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } })}
-  </div>`;
-  if (!landing) return page(req, res, { title: t('nav.play'), active: 'play', body });
-  page(req, res, { title: '', active: 'play', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {
-    index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
-    jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
-  } });
-}
-
-/** Play while the arcade is hidden (services/game-focus.js; docs/decisions.md "Play by topic, My favorites"): the owner
- *  asked for no Popular or Top rated rows, just the games by topic ("Math, Reading, Geography, etc."). So: the player's
- *  favorites first (signed in, when they have any), topic chips that jump to the sections, then one section per topic
- *  with each official game in exactly one of them, then making a game and the player's own games. "Games by players"
- *  (everyone's games) only while PUBLIC_GAMES is on. Sections with no game are left out. */
+/** The games by topic (docs/decisions.md "Play by topic, My favorites", "Learn and Read"): the owner asked for no
+ *  Popular or Top rated rows, just the games by topic ("Math, Reading, Geography, etc."). The Learn page (routes/
+ *  teachers.js learnPage) shows topic chips that jump to one section per topic, each official game in exactly one of
+ *  them. Sections with no game are left out. */
 export const TOPICS = [
   { id: 'math', key: 'home.topics.math', emoji: '➗' },
   { id: 'reading', key: 'home.topics.reading', emoji: '📖' },
@@ -189,43 +108,6 @@ export function focusSections(u) {
   const sections = TOPICS.map(sec => ({ ...sec, games: all.filter(g => topicOf(g) === sec.id) })).filter(sec => sec.games.length);
   return { hero: null, sections };
 }
-function focusPlay(req, res, { landing }) {
-  const t = req.t, u = req.user;
-  const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
-  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const { sections } = focusSections(u);
-  const mine = u && !u.is_guest ? games.myGames(u.id, 12) : [];
-  // My favorites: the games this player tapped Favorite on (students too), that they may still open; hidden official
-  // games never (games.favorites leaves them out). No section until there is one.
-  const favs = u && !u.is_guest ? games.favorites(u, u.id, 16) : [];
-  const players = config.publicGames ? games.listVisible(u, { order: 'popular', limit: 16 }).filter(g => g.source !== 'seed') : [];
-  const joinDoor = liveOn() ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : '';
-  const intro = !signedOut(u) ? html`<h1 class="sr-only"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1>${classStrip(req)}`
-    : !landing ? html`<h1 class="sr-only">${t('nav.play')}</h1>`
-    : html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
-      ${homeDoors(req)}
-      ${joinDoor}
-      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${openHubs(HUBS).map(h => html`<li><a class="chip" href="${lp(`/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`;
-  const body = html`${intro}
-  <div id="play" class="home-play home-topics">
-  ${sections.length > 1 ? html`<nav class="chips scroll topic-chips" aria-label="${t('home.topics.label')}" style="margin-bottom:18px">
-    ${favs.length ? html`<a class="chip" href="#favorites">${ico('❤️', { size: 18 })}${t('home.rails.favorites')}</a>` : ''}
-    ${sections.map(sec => html`<a class="chip" href="#sec-${sec.id}">${ico(sec.emoji, { size: 18 })}${t(sec.key)}</a>`)}
-  </nav>` : ''}
-  ${favs.length ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: favs, user: u, id: 'favorites', more: '/favorites' }) : ''}
-  ${sections.map(sec => rail({ title: t(sec.key), emoji: sec.emoji, games: sec.games, user: u, id: `sec-${sec.id}` }))}
-  ${buildBanner(req)}
-  ${mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : ''}
-  ${players.length ? rail({ title: t('home.focus.players'), emoji: '✨', games: players, user: u, id: 'players', more: '/search?sort=popular' }) : ''}
-  ${!sections.length ? emptyState({ emoji: '🎮', title: t('home.empty.title'), text: t('home.empty.text'), action: { href: '/build', label: t('home.empty.action') } }) : ''}
-  </div>`;
-  if (!landing) return page(req, res, { title: t('nav.play'), active: 'play', body });
-  page(req, res, { title: '', active: 'play', body, description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'), seo: {
-    index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
-    jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
-  } });
-}
-
 // ---------------------------------------------------------------------------------------------------- home doors
 /** The three doors on the signed-out home page. The kid door scrolls down this page to the featured game and the game
  *  rows (#play), so a kid picks what to play rather than being sent into one game. The parent and teacher doors link
@@ -234,7 +116,7 @@ function focusPlay(req, res, { landing }) {
  *  /go/<door>, public/js/app.js), no redirect. Until a language has the door labels, the ones it already has stand in
  *  ("Play", "For parents", "For teachers") and the small lines are left out, so a translated home page never shows
  *  English doors (a door with no label in this language at all is English, marked so). */
-function homeDoors(req) {
+export function homeDoors(req) {
   const t = req.t;
   const lp = p => (req.pathLocale ? seo.localeUrl(p, req.pathLocale) : p);
   const label = (key, stand) => (t.own(key) ? key : t.own(stand) ? stand : key);
