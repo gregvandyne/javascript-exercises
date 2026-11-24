@@ -12448,6 +12448,39 @@ but still fun engaging and interactive".
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.
+## Castle Clash: a chess-site UI, 4,000+ puzzles, progress and wood sounds (24 Nov 2026)
+- **The owner:** "You mentioned a while back that there is an open source repo with a ton of puzzles for our Chess
+  game. Can we add those puzzles to our chess game, remove the Oomba kit and make it look more like chess.com ui
+  (obviously not copying). There should be a progress tracker for this and it should be fun and interactive. Make the
+  chess pieces have actual chess piece sounds when sound is on."
+- **No kit.** `seed-games/castle-clash.html` loads no kit script (no world, title, pause, icons, owl or animal busts).
+  Its own UI: a DOM board (64 cells under piece elements that slide with CSS transforms), our own Staunton-style SVG
+  pieces, three board themes (Meadow, Walnut, Ocean; a version 1 save's courtyard/candy become Meadow, wood Walnut, space
+  Ocean), last-move, check and legal-move marks, drag and tap, player panels with captures and the material lead, a
+  two-column move list, flip, undo, hint, draw, resign. Chrome in the Oomba tokens. The robot is **Oomba Bot** (a drawn
+  robot face) at the same four levels; the kingdoms are now White and Black. The rules engine, the robot search, the
+  lessons, the Beginner path (the 24 hand-made puzzles), the online match protocol (mv/act numbers) and the
+  `window.__brbTest` hooks are kept.
+- **Puzzles** come from the Lichess puzzle database (CC0): `scripts/chess-puzzles.mjs` streams the export (curl + Node's
+  zstd; the file is pzstd's format, so the skippable frames are dropped), keeps Popularity >= 90, NbPlays >= 1000,
+  RatingDeviation <= 80, rating 600 to 2199 and at most four moves to find, replays each one with the game's own engine
+  (legal moves; mate puzzles end in mate; others do not lose material), spreads each 200-point band over 16 theme
+  groups (520 per band, 4,160 in all, 435 KB) and writes eight packs plus their sha384 into the game. The frame CSP has no
+  `connect-src` for /vendor, so the packs are scripts under `/vendor/data/castle-clash/` (like every other game's data
+  packs), not JSON fetched from `/vendor/chess-puzzles/`. A checksum that happens to spell a word the content scanner
+  blocks gets a salt line.
+- **Rating.** Elo-like, starting at 800, K from 40 down to 16. A clean solve raises it; a mistake or the solution lowers
+  it once; a solve after a hint leaves it alone (kinder than a loss, no free gain). Rated puzzles, theme packs and the
+  first daily puzzle of the day count; Puzzle Rush (3 minutes, 3 mistakes, harder as you go) and the Beginner path do not.
+- **Progress** (in `castle-clash-v1`, v 2, through the SDK storage shim): rating history, solved total, today, day
+  streak, accuracy, best in a row, best rush, per-theme results, lesson and path stars, robot wins. The leaderboard stays
+  robot points (`BRB.score.submit(points, 'robot wins')`): a puzzle rating goes down as well as up, so it is not a
+  "best score".
+- **Sounds.** No clean-licence recording set was reachable (Lichess's sets are AGPL or CC BY-NC-SA; chess.com's are not
+  open), so the game synthesizes wooden knocks (a band-passed contact click plus the decaying modes of a piece and the
+  board) and soft marimba notes with WebAudio into buffers at first use. They play only while `BRB.sfx.muted` is false
+  (the site's sound switch, also the game's speaker button). No files, so nothing under `/vendor/chess-sounds/`.
+- Tests: `tests/unit/castle-clash.test.js` (10), `tests/e2e/castle-clash.spec.js`.
 
 ## Doodle Hoot in Crossword's look (24 Nov 2026)
 - **The owner:** update several games "with the crossword like grid, branding, and feel", Doodle Hoot among them.
