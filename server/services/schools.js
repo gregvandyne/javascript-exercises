@@ -730,7 +730,7 @@ export function sharingOptions(owner, game = null) {
   if (isGrownup(owner)) return familiesOn() || (game && (game.visibility === 'family' || game.pending_visibility === 'family')) ? ['private', 'family', 'friends', ...pub] : ['private', 'friends', ...pub];
   const opts = ['private', 'friends'];
   if (owner && shareableClasses(owner.id).length) opts.push('class');
-  if (inAnySchool(owner)) opts.push('school');
+  if (pub.length && inAnySchool(owner)) opts.push('school');   // 'My school': only while PUBLIC_GAMES is on
   const rules = accountRules(owner);
   if (pub.length && (!rules || rules.publishing === 'public')) opts.push('public');
   return opts;

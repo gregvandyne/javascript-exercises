@@ -65,7 +65,7 @@ services:
       - key: COURSES
         value: "0"
       # No public games (docs/decisions.md "No public games: share with connections and classes"): players share games
-      # with their connections and classes only; official games stay open to everyone. Set "1" to bring public games back.
+      # with their connections and classes only (no Everyone or My school); official games stay open to everyone. Set "1" to bring public games back.
       - key: PUBLIC_GAMES
         value: "0"
       # Speaking instead of typing in the Builder chat (server/services/stt.js; docs/legal-review.md item 38). The mic

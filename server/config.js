@@ -375,7 +375,8 @@ export const config = {
   courses: coursesFlag.on,
   // No public games (owner, 24 Nov 2026; docs/decisions.md "No public games: share with connections and classes";
   // services/games.js openToAll). Off (the default): players share a game with their connections and classes only (no
-  // "Everyone" option, and publish() refuses 'public'); a player's game that was public before reaches its maker's
+  // "Everyone" or "My school" option, and publish() refuses 'public' and 'school'); a player's game that was public or
+  // shared with the school before reaches its maker's
   // connections and classes only, and no list shows it to anyone else. Official games are open to everyone either way.
   // PUBLIC_GAMES=1 brings back public games as they were. Nothing in the database changes either way.
   publicGames: publicGames.on,

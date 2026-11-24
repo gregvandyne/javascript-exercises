@@ -28,9 +28,9 @@ const VIS = { private: ['🔒', t('js.studio.vis.private')], family: ['🏠', t(
 /** A grown-up builder's 'friends' are their grown-up connections (S.grownup: set by the server for a grown-up's game). */
 const CONNECTIONS = ['🤝', t('js.studio.vis.connections')];
 /** [emoji, label] for a sharing level. 'class' says "My class" for one class and "My classes" for several. */
-/** PUBLIC_GAMES off (S.publicGames false): a game left at 'public' from before is for its maker's connections and classes. */
+/** PUBLIC_GAMES off (S.publicGames false): a game left at 'public' or 'school' from before is for its maker's connections and classes. */
 const LEGACY_PUBLIC = ['🤝', t('js.studio.vis.connectionsClasses')];
-const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : k === 'friends' && S.grownup ? CONNECTIONS : k === 'public' && S.publicGames === false ? LEGACY_PUBLIC : VIS[k] || ['', k]);
+const visOf = (k, count = 1) => (k === 'class' ? ['🎒', t('js.studio.vis.class', { count })] : k === 'friends' && S.grownup ? CONNECTIONS : (k === 'public' || k === 'school') && S.publicGames === false ? LEGACY_PUBLIC : VIS[k] || ['', k]);
 /** A grown-up's share dialog: one line under each choice saying exactly who that is (never their children's names). */
 const grownupHint = k => (!S.grownup ? '' : k === 'family' ? t('js.studio.share.hint.family') : k === 'friends' ? t('js.studio.share.hint.connections')
   : k === 'public' && S.publicGames !== false ? t('js.studio.share.hint.publicGrownup', { name: S.grownup.name }) : '');

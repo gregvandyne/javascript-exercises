@@ -2,7 +2,8 @@
 // share with connections and classes"). With ARCADE and PUBLIC_GAMES off (the site's defaults): Play is laid out by
 // topic (Math, Reading and words, Geography, Live class games, Strategy, Classroom tools) with no Popular / Top rated /
 // New rows, each kept game once; a signed-in player's favorites come first; nobody can share a game with everyone (the
-// server refuses 'public' and the Studio doesn't offer it); a player's game that was public before is on no list for
+// server refuses 'public' and 'school' and the Studio doesn't offer them); a player's game that was public (or shared
+// with the school) before is on no list for
 // anyone else and opens for its maker, their connections and the people in a class with them, never a stranger or a
 // signed-out visitor. PUBLIC_GAMES=1 brings back the old rule.
 process.env.ARCADE = '0'; process.env.COURSES = '0'; process.env.PUBLIC_GAMES = '0';
@@ -77,6 +78,7 @@ function liveGame(owner, vis, title) {
 }
 const oldPublic = liveGame(maker, 'public', 'Mias Old Public Game');
 const kidPublic = liveGame(kidMaker, 'public', 'Kids Old Public Game');
+const oldSchool = liveGame(maker, 'school', 'Mias Old School Game');
 
 // ---------------------------------------------------------------- A. Play by topic
 test('topics come from the subject data, with the small explicit map', () => {
@@ -130,20 +132,22 @@ test('publishing for everyone is refused by the server and not offered in the St
   const g = G.createGame(classmate.id, { title: 'Cal New Game' });
   const v = G.addVersion(g.id, GOOD, { createdBy: classmate.id, safetyStatus: 'pass' });
   q.run("UPDATE game_versions SET playthrough_status='pass', playthrough_report='{}' WHERE id=?", v.id);
-  for (const who of [classmate, teacher, parent, kidMaker]) assert.ok(!S.sharingOptions(who).includes('public'), who.username);
+  for (const who of [classmate, teacher, parent, kidMaker]) for (const lvl of ['public', 'school']) assert.ok(!S.sharingOptions(who).includes(lvl), `${who.username} ${lvl}`);
   assert.ok(S.sharingOptions(classmate).includes('class') && S.sharingOptions(classmate).includes('friends'));
   const r = await pub.publish(classmate, g.id, 'public');
   assert.equal(r.ok, false); assert.equal(r.code, 'noPublic');
+  const rs = await pub.publish(classmate, g.id, 'school');
+  assert.equal(rs.ok, false); assert.equal(rs.code, 'noSchool');
   assert.equal(G.getGame(g.id).visibility, 'private'); assert.equal(G.getGame(g.id).pending_version_id, null);
   const http = await req(`/api/studio/${g.id}/publish`, classmate, { method: 'POST', body: { visibility: 'public' } });
   assert.ok(http.status >= 400, String(http.status));
   const st = studioState(classmate, g.id);
-  assert.ok(!st.shareOptions.includes('public')); assert.equal(st.publicGames, false);
+  assert.ok(!st.shareOptions.includes('public') && !st.shareOptions.includes('school')); assert.equal(st.publicGames, false);
   // Classes and friends still work.
   assert.equal((await pub.publish(classmate, g.id, 'friends')).state, 'live');
 });
 
-test('an older public game: on no list for others; open to its maker, a classmate, a friend and the family; not a stranger or a visitor', async () => {
+test('an older public (or school) game: on no list for others; open to its maker, a classmate, a friend and the family; not a stranger, a schoolmate or a visitor', async () => {
   const slug = oldPublic.slug;
   const listedFor = who => G.listVisible(who, { limit: 500 }).some(g => g.id === oldPublic.id) || G.search(who, { text: 'Mias Old', limit: 50 }).some(g => g.id === oldPublic.id);
   for (const who of [null, stranger, schoolmate]) {
@@ -179,6 +183,12 @@ test('an older public game: on no list for others; open to its maker, a classmat
   assert.equal(up.state, 'live', up.message);
   assert.equal(G.getGame(oldPublic.id).visibility, 'public'); assert.equal(G.getGame(oldPublic.id).published_version_id, v2.id);
   assert.equal(G.canView(stranger, G.getGame(oldPublic.id)), false);
+  // A game shared with 'My school' before: the same rule (a schoolmate outside the maker's classes no longer opens it).
+  for (const who of [null, stranger, schoolmate]) assert.equal(G.canView(who, oldSchool), false, who ? who.username : 'visitor');
+  for (const who of [maker, classmate, friend, teacher, boss]) assert.equal(G.canView(who, oldSchool), true, who.username);
+  for (const who of [maker, classmate, friend, teacher, stranger, schoolmate]) assert.equal(G.listVisible(who, { limit: 500 }).some(g => g.id === oldSchool.id), G.canView(who, oldSchool), who.username);
+  assert.equal((await req(`/g/${oldSchool.slug}`, schoolmate)).status, 404);
+  assert.ok(studioState(maker, oldSchool.id).shareOptions.includes('school'));
   // Official games stay open to everyone.
   assert.equal(G.canView(null, G.getGameBySlug('crossword')), true);
 });
@@ -190,6 +200,8 @@ test('PUBLIC_GAMES on brings back the old rule and the option', async () => {
     assert.equal(G.canView(stranger, oldPublic), true);
     assert.ok(G.listVisible(null, { limit: 500 }).some(g => g.id === oldPublic.id));
     assert.ok(S.sharingOptions(stranger).includes('public'));
+    assert.ok(S.sharingOptions(classmate).includes('school'));
+    assert.equal(G.canView(schoolmate, oldSchool), true);
     assert.ok(studioState(maker, oldPublic.id).publicGames);
     assert.equal((await req(`/g/${oldPublic.slug}`)).status, 200);
     assert.ok((await req('/play', stranger)).text.includes('id="players-h"'), 'Games by players is back');

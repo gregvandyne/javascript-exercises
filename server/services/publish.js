@@ -16,8 +16,8 @@
 //    at once when it finds a problem, and its "allowed" is only a hint for the admin; the version always waits in the
 //    admin review queue (pending_version_id). A game that isn't live yet goes live for the builder's friends at once while
 //    it waits (friends sharing is instant anyway). Only a team approval (or a grandfathered or seed one) covers public.
-//  - PUBLIC_GAMES off (the default; services/games.js openToAll): 'public' is refused, except an official game and a
-//    player's game already live at 'public' from before (now its maker's connections and classes), which updates like a
+//  - PUBLIC_GAMES off (the default; services/games.js openToAll): 'public' and 'school' are refused, except an official
+//    game and a player's game already live at that level from before (now its maker's connections and classes), which updates like a
 //    'class' game.
 //  - games.pending_visibility records what a waiting review is for; approval applies exactly that audience.
 //  - UPDATING a game that is already live: the old published version keeps playing for everyone
@@ -93,10 +93,12 @@ export async function publish(user, gameId, visibility, { versionId = null, t = 
   // PUBLIC_GAMES off (services/games.js openToAll): nobody shares a game with everyone. Two exceptions keep 'public': an
   // official game, and a player's game already live at 'public' from before (now its maker's connections and classes),
   // so its maker can still update it without choosing again. It is then a group of people who didn't opt in, like 'class'.
+  // 'school' (My school) is not offered either while PUBLIC_GAMES is off, with the same exception for a game live at it.
   const asGroup = visibility === 'public' && !config.publicGames && game.source !== 'seed';
-  const keepsPublic = visibility === 'public' && !config.publicGames && (game.source === 'seed' || (game.visibility === 'public' && game.status === 'published' && !!game.published_version_id));
-  if (!sharingOptions(owner, game).includes(visibility) && !keepsPublic) {
-    if (visibility === 'public' && !config.publicGames) return { ok: false, state: 'blocked', code: 'noPublic', message: t('publish.noPublic') };
+  const wide = (visibility === 'public' || visibility === 'school') && !config.publicGames;
+  const keepsLevel = wide && ((visibility === 'public' && game.source === 'seed') || (game.visibility === visibility && game.status === 'published' && !!game.published_version_id));
+  if (!sharingOptions(owner, game).includes(visibility) && !keepsLevel) {
+    if (wide) return { ok: false, state: 'blocked', code: visibility === 'public' ? 'noPublic' : 'noSchool', message: t('publish.noPublic') };
     return { ok: false, state: 'blocked', message: t(visibility === 'public' ? 'publish.schoolOnly' : visibility === 'class' ? 'studio.api.classGone' : 'studio.api.pickWho') };
   }
   let pick = null;   // the new class list (null: keep the current one)
@@ -204,7 +206,7 @@ function liveMessage(visibility, game, t) {
   // A grown-up's 'friends' are their grown-up connections (other grown-ups only), and their Studio says so.
   if (visibility === 'friends') return t(isGrownup(getUser(game.owner_id)) ? 'publish.liveConnections' : 'publish.friends');
   if (visibility === 'family') return t('publish.liveFamily');
-  if (visibility === 'school') return t('publish.school');
+  if (visibility === 'school') return t(config.publicGames ? 'publish.school' : 'publish.liveConnectionsClasses');
   if (visibility === 'class') {
     // The classes it reaches now (none: every chosen class was left or taken off, so in effect only the owner can play it).
     const names = liveClasses(gameId).map(c => c.name);
@@ -221,11 +223,11 @@ function approvedAudience(game) {
   const want = game.pending_visibility || 'public';
   const opts = sharingOptions(getUser(game.owner_id), game);
   if (opts.includes(want)) return want;
-  // PUBLIC_GAMES off: a request for everyone (sent before) never makes a game public. A game already live at 'public'
-  // keeps it (now its maker's connections and classes); any other keeps the level it is live at, else friends.
-  if (want === 'public' && !config.publicGames) {
+  // PUBLIC_GAMES off: a request for everyone or the school (sent before) never widens a game. A game already live at
+  // 'public' or 'school' keeps it (now its maker's connections and classes); any other keeps the level it is live at, else friends.
+  if ((want === 'public' || want === 'school') && !config.publicGames) {
     const live = game.status === 'published' && !!game.published_version_id;
-    if (live && (game.visibility === 'public' || opts.includes(game.visibility))) return game.visibility;
+    if (live && (game.visibility === 'public' || game.visibility === 'school' || opts.includes(game.visibility))) return game.visibility;
     return opts.includes('friends') ? 'friends' : 'private';
   }
   if (want === 'public' && opts.includes('school')) return 'school';

@@ -68,7 +68,7 @@ export const router = Router();
 
 /** What each sharing level means, in the reader's language. grownup: the owner is a grown-up builder, whose 'friends'
  *  are their grown-up connections. */
-export const shareText = (t = tEn, grownup = false) => ({ private: t('studio.shareText.private'), family: t('studio.shareText.family'), friends: t(grownup ? 'studio.shareText.connections' : 'studio.shareText.friends'), class: t('studio.shareText.class'), school: t('studio.shareText.school'), public: t(config.publicGames ? 'studio.shareText.public' : 'studio.shareText.connectionsClasses') });
+export const shareText = (t = tEn, grownup = false) => ({ private: t('studio.shareText.private'), family: t('studio.shareText.family'), friends: t(grownup ? 'studio.shareText.connections' : 'studio.shareText.friends'), class: t('studio.shareText.class'), school: t(config.publicGames ? 'studio.shareText.school' : 'studio.shareText.connectionsClasses'), public: t(config.publicGames ? 'studio.shareText.public' : 'studio.shareText.connectionsClasses') });
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 
 /** One plain-words status for a builder's own game. code: hidden|suspended|in_review|rejected|draft|live */
@@ -170,7 +170,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
     ...counter(user), dailyTurns: allowanceFor(user).daily, provider: providerName(allowanceFor(user).pool), resting: restingUntil(allowanceFor(user).pool), busy: isBusy(g.id),
     // The running build as this viewer sees it (its message and what it said so far), and how the last one ended.
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
-    shareText: shareText(t, grownup), shareUrl: `/g/${g.slug}`, shareOptions: [...sharingOptions(owner, g), ...(games.legacyPublic(g) && g.status === 'published' ? ['public'] : [])], publicGames: config.publicGames, shareDefault: shareDefault(owner), classShare: classShare(g, g.owner_id),
+    shareText: shareText(t, grownup), shareUrl: `/g/${g.slug}`, shareOptions: [...sharingOptions(owner, g), ...(games.legacyWide(g) && g.status === 'published' ? [g.visibility] : [])], publicGames: config.publicGames, shareDefault: shareDefault(owner), classShare: classShare(g, g.owner_id),
     // A grown-up builder's game: "My grown-up connections" for 'friends', a hint under each choice, and the name a public
     // game is credited to (shown to the grown-up only; never their children's names).
     // seePlans: the out-of-messages card links to /plans only while that page is open (family pages on) and this grown-up's

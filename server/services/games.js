@@ -99,11 +99,17 @@ const FAMILY_WHERE = `(g.visibility='family' AND g.owner_id IN (SELECT f.owner_i
 //   connections: accepted friends (a grown-up's are other grown-ups), a family link either way (the grown-up and their
 //   linked child), and the people in a live class with the maker (students and teachers).
 // The maker and the platform admin always open it; anyone else (and a signed-out visitor) gets the normal "not shared"
-// page, and it is on no list for them. PUBLIC_GAMES=1 brings back the old rule (public is everyone) and the option.
+// page, and it is on no list for them. 'My school' follows the same rule (legacySchool below). PUBLIC_GAMES=1 brings back
+// the old rules (public is everyone, school is the school) and both options.
 /** Is this game open to everyone (signed out too)? */
 export const openToAll = g => !!(g && g.visibility === 'public' && (config.publicGames || g.source === 'seed'));
 /** A player's game left at 'public' from before, while PUBLIC_GAMES is off: its maker's connections and classes only. */
 export const legacyPublic = g => !!(g && g.visibility === 'public' && !openToAll(g));
+/** 'My school' is not offered either while PUBLIC_GAMES is off (the owner: "only with your connections and classrooms"):
+ *  a game left at 'school' from before reaches its maker's connections and classes, like an older public game. */
+export const legacySchool = g => !!(g && g.visibility === 'school' && !config.publicGames);
+/** Either of the two: a game left at a level nobody can pick now, read as "Friends and classes". */
+export const legacyWide = g => legacyPublic(g) || legacySchool(g);
 /** SQL: g is open to everyone. */
 export const OPEN_SQL = () => (config.publicGames ? "g.visibility='public'" : "(g.visibility='public' AND g.source='seed')");
 /** SQL: the person (who, e.g. '?') is connected to the person ownerExpr: friends, a family link either way, or in a live
@@ -113,15 +119,16 @@ const CONNECTED_SQL = (ownerExpr, who = '?') => `(${ownerExpr} IN (SELECT friend
     OR ${ownerExpr} IN (SELECT fc.child_id FROM families f JOIN family_children fc ON fc.family_id=f.id WHERE f.owner_id=${who} AND ${LINKED_CHILD})
     OR ${ownerExpr} IN (SELECT y.user_id FROM class_members x JOIN class_members y ON y.class_id=x.class_id JOIN classrooms c ON c.id=x.class_id
       WHERE x.user_id=${who} AND x.status='active' AND y.status='active' AND c.archived_at IS NULL))`;
-/** The 'public' branch of visibleWhere (and canView). Params: viewerId x4 while PUBLIC_GAMES is off, none while on. */
+/** The 'public' branch of visibleWhere (and canView), and while PUBLIC_GAMES is off the 'school' one too. Params:
+ *  viewerId x4 while PUBLIC_GAMES is off, none while on. */
 const publicWhere = () => (config.publicGames ? { sql: "g.visibility='public'", params: 0 }
-  : { sql: `(g.visibility='public' AND (g.source='seed' OR ${CONNECTED_SQL('g.owner_id')}))`, params: 4 });
+  : { sql: `((g.visibility='public' AND g.source='seed') OR (g.visibility IN ('public','school') AND ${CONNECTED_SQL('g.owner_id')}))`, params: 4 });
 /** Is viewerId one of ownerId's connections (friends, family link, a live class together)? */
 export const connected = (ownerId, viewerId) => !!(ownerId && viewerId && ownerId !== viewerId
   && q.get(`SELECT 1 WHERE ${CONNECTED_SQL('?')}`, ownerId, viewerId, ownerId, viewerId, ownerId, viewerId, ownerId, viewerId));
-/** Does a 'public' game reach class classId (the class can play it)? Open to everyone, or (left from before) its maker is
- *  a live member of the class. */
-export const publicReachesClass = (g, classId) => openToAll(g) || (legacyPublic(g) && !!classId
+/** Does a 'public' (or, while PUBLIC_GAMES is off, a 'school') game reach class classId (the class can play it)? Open to
+ *  everyone, or (left from before) its maker is a live member of the class. */
+export const publicReachesClass = (g, classId) => openToAll(g) || (legacyWide(g) && !!classId
   && !!q.get("SELECT 1 FROM class_members m JOIN classrooms c ON c.id=m.class_id AND c.archived_at IS NULL WHERE m.class_id=? AND m.user_id=? AND m.status='active'", classId, g.owner_id));
 
 /** THE visibility rule. Can this user open/play this game's published version?
@@ -139,7 +146,7 @@ export function canView(user, game) {
   if (game.visibility === 'public') return openToAll(game) || (!!user && connected(game.owner_id, user.id));
   if (game.visibility === 'family') return !!user && inFamilyOf(game.owner_id, user.id);
   if (game.visibility === 'friends') return !!user && areFriends(game.owner_id, user.id);
-  if (game.visibility === 'school') return !!user && sameSchool(game.owner_id, user.id);
+  if (game.visibility === 'school') return !!user && (config.publicGames ? sameSchool(game.owner_id, user.id) : connected(game.owner_id, user.id));
   if (game.visibility === 'class') return !!user && classReach(user.id, game.id);
   return false;
 }
@@ -163,7 +170,7 @@ export function visibleWhere(user) {
   const pub = publicWhere();
   return {
     sql: `${base} AND (${pub.sql} OR g.owner_id=? OR (g.visibility='friends' AND g.owner_id IN (SELECT friend_id FROM friends WHERE user_id=? AND status='accepted'))
-      OR (g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active'))
+      OR (${config.publicGames ? '1' : '0'} AND g.visibility='school' AND g.owner_id IN (SELECT a.user_id FROM school_members a JOIN school_members b ON b.school_id=a.school_id WHERE b.user_id=? AND a.status='active' AND b.status='active'))
       OR ${FAMILY_WHERE}
       OR ${CLASS_SQL})`,
     params: [...Array(pub.params).fill(user.id), user.id, user.id, user.id, user.id, user.id, user.id]

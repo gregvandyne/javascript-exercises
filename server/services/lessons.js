@@ -445,7 +445,11 @@ export function playableBy(step, schoolId, classId = null) {
     const g = { id: step.game_id, visibility: 'public', source: step.game_source, owner_id: step.game_owner };
     return classId ? games.publicReachesClass(g, classId) : games.openToAll(g) || !!S.membership(schoolId, step.game_owner);
   }
-  if (step.game_visibility === 'school') return !!S.membership(schoolId, step.game_owner);
+  if (step.game_visibility === 'school') {
+    const g = { id: step.game_id, visibility: 'school', source: step.game_source, owner_id: step.game_owner };
+    if (games.legacySchool(g) && classId) return games.publicReachesClass(g, classId);
+    return !!S.membership(schoolId, step.game_owner);
+  }
   if (step.game_visibility === 'class') return !!classId && games.gameLiveInClass(step.game_id, classId);
   return false;
 }

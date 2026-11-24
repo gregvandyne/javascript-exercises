@@ -12430,19 +12430,21 @@ but still fun engaging and interactive".
 - **The owner:** "Furthermore, users should no longer be able to publish their games publically. You should only be able
   to share with your connections and classrooms."
 - **Flag** `PUBLIC_GAMES` (`config.publicGames`, off by default; `services/games.js` `openToAll`). Off: `sharingOptions`
-  never offers Everyone (students, teachers, kids, grown-ups), `publish()` refuses `public` (`code: 'noPublic'`), the
-  Studio's share sheet has no Everyone choice and the school setting "allowed to go public" is hidden. The choices left:
-  Only me, Friends (a grown-up's grown-up connections), My family (grown-ups), My classes, and My school for people in a
-  school (kept: it is inside the school). Official games (seed-games/, by Oomba Academy) stay open to everyone.
-- **Games that were public before** are not changed in the database. They are read as shared with their maker's
+  never offers Everyone or My school (students, teachers, kids, grown-ups: "only with your connections and classrooms"),
+  `publish()` refuses `public` (`code: 'noPublic'`) and `school` (`code: 'noSchool'`), the Studio's share sheet has
+  neither choice and the school setting "allowed to go public" is hidden. The choices left: Only me, Friends (a grown-up's
+  grown-up connections), My family (grown-ups) and My classes. Official games (seed-games/, by Oomba Academy) stay open
+  to everyone.
+- **Games that were public or shared with the school before** are not changed in the database. They are read as shared with their maker's
   connections and classes: accepted friends, a family link either way (the grown-up and their linked child), and the
   people in a live class with the maker (students and teachers). The maker and the platform admin always open them;
   anyone else (signed out included) gets the normal "not shared" page. `canView` and `visibleWhere` use the same rule, so
   they appear on no list for anyone else (Play, Learn, search, `/u/` profiles, "Games by players", which is gone while the
   flag is off); the sitemap and Oomba's game search were official-only already. Class rooms, pushes, assignments and
-  lesson steps reach such a game only in a class its maker is in. Its maker sees it as "Friends and classes" and can
+  lesson steps reach such a game only in a class its maker is in; a schoolmate outside the maker's classes no longer opens a
+  'school' game. Its maker sees it as "Friends and classes" and can
   still Update it at that level (a clean version goes live at once, a flagged one waits for a person, like a class game).
-  A request for Everyone still waiting in the review queue is approved at the level the game is live at (else Friends).
+  A request for Everyone or My school still waiting in the review queue is approved at the level the game is live at (else Friends).
 - `PUBLIC_GAMES=1` brings back public games exactly as before. Tests: `tests/unit/play-topics-private.test.js`; the older
   unit tests and the e2e server run with `PUBLIC_GAMES=1` (`tests/unit/_setup.js`, `playwright.config.js`) since they
   describe public publishing.

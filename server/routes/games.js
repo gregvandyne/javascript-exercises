@@ -172,7 +172,7 @@ router.get('/g/:slug', (req, res) => {
     </div>
     ${isOwner ? '' : html`<p class="reportline"><button class="linkbtn" type="button" id="reportbtn"><span class="emo">${ico('🚩', { size: 20 })}</span> ${t('game.report.button')}</button></p>`}
   </article>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : games.legacyPublic(g) ? 'connectionsClasses' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, visibility: g.visibility, shareText: t(`game.shareText.${g.visibility === 'friends' && byGrownup ? 'connections' : games.legacyWide(g) ? 'connectionsClasses' : g.visibility}`), reasons: reportReasons(t), signedIn: !!u })}`;
   if (!official) res.set('X-Robots-Tag', 'noindex, nofollow');
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);

@@ -82,6 +82,8 @@ export function hostable(host, game, audience, { classId = null } = {}) {
   if (audience === 'open') return { ok: false, code: 'notPublic' };
   if (audience === 'class') {
     if (vis === 'class' && classId && games.gameLiveInClass(game.id, classId)) return { ok: true, versionId: game.published_version_id };
+    // PUBLIC_GAMES off: a 'school' game left from before reaches the classes its maker is in (services/games.js).
+    if (vis === 'school' && games.legacySchool(game)) return classId && games.publicReachesClass(game, classId) ? { ok: true, versionId: game.published_version_id } : { ok: false, code: 'notShared' };
     if (vis === 'school') {
       const c = classId && S.getClass(classId);
       if (c && S.membership(c.school_id, game.owner_id)) return { ok: true, versionId: game.published_version_id };

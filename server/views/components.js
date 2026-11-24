@@ -27,8 +27,8 @@ const VIS_EMOJI = { private: '🔒', family: '🏠', friends: '👫', class: '�
  *  count: how many classes a 'class' game is shared with ("My class" for one, "My classes" otherwise).
  *  grownup: the game's owner is a grown-up builder, whose 'friends' are "🤝 My grown-up connections". */
 export function visLabel(v, t = current().t, count = 1, { grownup = false, official = false } = {}) {
-  // PUBLIC_GAMES off: a player's game left at 'public' from before reaches its maker's connections and classes only.
-  if (v === 'public' && !official && !config.publicGames) return `🤝 ${t('vis.connectionsClasses')}`;
+  // PUBLIC_GAMES off: a player's game left at 'public' or 'school' from before reaches its maker's connections and classes only.
+  if ((v === 'public' || v === 'school') && !official && !config.publicGames) return `🤝 ${t('vis.connectionsClasses')}`;
   // A class game that reaches no class right now (its builder left, or a teacher took it off): in effect only them.
   if (v === 'class' && count === 0) return `🔒 ${t('vis.onlyYouNow')}`;
   if (v === 'friends' && grownup) return `🤝 ${t('vis.connections')}`;
