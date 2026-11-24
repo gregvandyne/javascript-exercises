@@ -1,0 +1,281 @@
+<title>Class Quiz</title>
+<!--CLASSROOM_STYLE-->
+<style>
+/* Class Quiz: multiple-choice questions, one at a time, for the board or each student's own device. An optional timer,
+   a score, and at the end a review of every answer. The teacher can paste their own questions (Edit questions). Plain
+   HTML in the Oomba classroom style: nothing is sent anywhere and nobody is named. */
+.top{display:flex;align-items:center;gap:12px}
+.progress{flex:1;height:12px;border-radius:999px;background:var(--tint);overflow:hidden}
+.progress i{display:block;height:100%;width:0;background:var(--leaf);border-radius:999px;transition:width .45s var(--ease)}
+.timer{--p:1;flex:none;width:clamp(46px,7vmin,72px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(.95rem,2.4vmin,1.5rem);background:conic-gradient(var(--leaf) calc(var(--p) * 360deg),var(--tint) 0);position:relative}
+.timer::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--card)}
+.timer span{position:relative}
+.timer.low{background:conic-gradient(var(--coral) calc(var(--p) * 360deg),var(--tint) 0)}
+.qcard{width:min(100%,1100px);margin:0 auto;display:flex;flex-direction:column;gap:clamp(12px,2.6vmin,28px);flex:1;justify-content:center}
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,1.8vmin,18px)}
+.choice{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--r);min-height:clamp(64px,11vmin,116px);text-align:start;font-size:clamp(1.15rem,3.8vmin,2.6rem);font-weight:700}
+.choice .tag{flex:none;display:grid;place-items:center;width:clamp(38px,6.4vmin,60px);aspect-ratio:1;border-radius:12px;background:var(--tint);font-weight:800;font-size:.8em}
+.choice:nth-child(1) .tag{background:var(--mint-soft)}.choice:nth-child(2) .tag{background:var(--spark-soft)}.choice:nth-child(3) .tag{background:var(--sky-soft)}.choice:nth-child(4) .tag{background:var(--lilac-soft)}
+.choice .lab{flex:1;min-width:0;overflow-wrap:anywhere}
+.choice .mark{flex:none;font-weight:800}
+.choice.right{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
+.choice.right .tag,.choice.right:nth-child(n) .tag{background:var(--leaf);color:#fff}
+.choice.wrong{background:var(--coral-soft);border-color:var(--coral)}
+.choice.wrong .tag,.choice.wrong:nth-child(n) .tag{background:var(--coral);color:#fff}
+.choice.dim{opacity:.5}
+.choice:disabled{opacity:1;cursor:default}
+.choice.dim:disabled{opacity:.5}
+.feedback{margin:0;text-align:center;min-height:1.4em;font-weight:800;font-size:clamp(1.1rem,3vmin,2rem)}
+.feedback.good{color:var(--leaf)}
+.feedback.bad{color:#B4432A}
+.feedback .why{display:block;margin-top:6px;color:var(--ink);font-weight:600;font-size:.85em}
+.big-score{font-size:clamp(3rem,13vmin,9rem);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0 4px;font-variant-numeric:tabular-nums}
+.big-score small{font-size:.4em;color:var(--soft);font-weight:700}
+.stars{font-size:clamp(1.6rem,5vmin,3rem);letter-spacing:.15em;margin:0}
+.review{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:10px;text-align:start}
+.review li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--page);border:1.5px solid var(--line);font-size:clamp(.95rem,2.2vmin,1.3rem)}
+.review .ok{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-weight:800;color:#fff;background:var(--leaf)}
+.review .no .ok,.review li.no .ok{background:var(--coral)}
+.review b{font-weight:800}
+.review span{color:var(--soft)}
+.end .card{width:min(100%,900px);max-height:none}
+.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.editor .card{width:min(100%,900px);text-align:start;max-height:calc(100dvh - 32px);overflow:auto}
+.editor h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
+.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);color:var(--ink);background:var(--page);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;resize:vertical}
+.editor textarea:focus-visible{outline:4px solid var(--spark);outline-offset:2px}
+.editor .msg{min-height:1.3em;font-weight:700}
+.editor .msg.bad{color:#B4432A}
+.editor .row{justify-content:flex-end}
+@media (max-width:600px){.choice{min-height:58px;padding:10px 12px}.top{gap:8px}}
+</style>
+<main class="app">
+  <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
+
+  <section class="screen" id="start">
+    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+      <div class="row"><button class="big hot" id="go"></button></div>
+      <div class="row"><button class="small" id="timerBtn"></button><button class="small" id="editBtn"></button></div>
+      <p class="keys" id="startKeys"></p></div>
+  </section>
+
+  <section class="screen" id="ask" hidden>
+    <div class="top"><span class="pill" id="qn"></span><div class="progress" aria-hidden="true"><i id="bar"></i></div><span class="pill" id="score"></span><div class="timer" id="timer" hidden><span id="timerN"></span></div></div>
+    <div class="qcard">
+      <h2 class="q" id="q"></h2>
+      <div class="choices" id="choices" role="group"></div>
+      <p class="feedback" id="feedback" aria-live="polite"></p>
+    </div>
+    <div class="row"><button class="big" id="read"></button><button class="big hot" id="next" hidden></button></div>
+    <p class="keys" id="askKeys"></p>
+  </section>
+
+  <section class="screen end" id="end" hidden>
+    <div class="card"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p class="stars" id="stars" aria-hidden="true"></p><p id="endP"></p>
+      <div class="row"><button class="big hot" id="again"></button><button class="big" id="missed"></button></div>
+      <h3 id="reviewH"></h3><ol class="review" id="review"></ol></div>
+  </section>
+</main>
+<section class="editor" id="editor" role="dialog" aria-modal="true" aria-labelledby="editH" hidden>
+  <div class="card"><h2 id="editH"></h2><p id="editP"></p>
+    <label class="sr" for="editText" id="editLabel" hidden></label>
+    <textarea id="editText" spellcheck="true" dir="auto"></textarea>
+    <p class="msg" id="editMsg" aria-live="polite"></p>
+    <div class="row"><button class="big" id="editCancel"></button><button class="big hot" id="editUse"></button></div></div>
+</section>
+<script>
+// Class Quiz. Start, then one question at a time: tap an answer (or press 1-4 or A-D), see right or not, then Next
+// (Enter or Space). An optional timer per question (the Timer button on the start card cycles Off, 10, 20 and 30
+// seconds). The end card shows the score and a review of every question: the answer given and the right one, marked
+// with a tick or a cross (never colour alone). "Try the missed ones" plays only those again.
+// Edit questions: the teacher pastes one question per line, "question | right answer | wrong answer | ...". They are
+// used on this device only (kept in this page's memory, never sent). Sound is off until the Sound button is pressed.
+'use strict';
+const CONFIG = {
+  title: 'Class Quiz',
+  lang: 'en',
+  sound: false,
+  timer: 0,
+  shuffleQuestions: true,
+  shuffleChoices: true,
+  readAloud: true,
+  allowEdit: true,
+};
+// Each question: q, the choices (2 to 4), and answer: the index of the right choice. why (optional): one short line
+// shown after answering.
+const QUESTIONS = [
+  { q: 'Which planet is closest to the Sun?', choices: ['Mercury', 'Venus', 'Earth', 'Mars'], answer: 0, why: 'Mercury is the smallest planet and the closest to the Sun.' },
+  { q: 'What is 9 × 6?', choices: ['54', '56', '45', '63'], answer: 0 },
+  { q: 'Which word is a verb?', choices: ['Happy', 'Run', 'Table', 'Blue'], answer: 1, why: 'A verb is an action word.' },
+  { q: 'What do plants need to make their food?', choices: ['Sunlight', 'Sand', 'Salt', 'Snow'], answer: 0 },
+  { q: 'How many sides does a hexagon have?', choices: ['5', '6', '7', '8'], answer: 1 },
+  { q: 'Which ocean is the largest?', choices: ['Atlantic', 'Indian', 'Arctic', 'Pacific'], answer: 3 },
+  { q: 'What is the past tense of "go"?', choices: ['Goed', 'Gone', 'Went', 'Going'], answer: 2 },
+  { q: 'Water freezes at how many degrees Celsius?', choices: ['0', '10', '32', '100'], answer: 0 },
+];
+// {n}, {total}, {s} are numbers.
+const WORDS = {
+  en: { sound: 'Sound', full: 'Full screen', startP: '{total} questions. Pick the right answer.', go: 'Start', timerOff: 'Timer: off', timerOn: 'Timer: {s} s', edit: 'Edit questions', qn: '{n} of {total}', score: 'Score {n}', read: 'Read aloud', next: 'Next', finish: 'See results', right: 'Right!', wrong: 'Not quite. The right answer is marked.', timeUp: 'Time is up. The right answer is marked.', endH: 'You got {n} out of {total}', endAll: 'Every one right. Brilliant!', endGood: 'Great work!', endTry: 'Good try. Have another go!', again: 'Play again', missed: 'Try the missed ones', review: 'Review', yours: 'Your answer: {a}', answer: 'Right answer: {a}', none: 'No answer', keys: 'Keys: 1-4 answer · Enter next · R read aloud · F full screen', editH: 'Your questions', editP: 'One question per line: the question, then the right answer, then the wrong answers, with | between them.', use: 'Use these', cancel: 'Cancel', bad: 'Line {n} needs a question and at least two answers.', ready: '{n} questions ready.', yes: 'Right', no: 'Not right' },
+  es: { sound: 'Sonido', full: 'Pantalla completa', startP: '{total} preguntas. Elige la respuesta correcta.', go: 'Empezar', timerOff: 'Temporizador: no', timerOn: 'Temporizador: {s} s', edit: 'Editar preguntas', qn: '{n} de {total}', score: 'Puntos {n}', read: 'Leer en voz alta', next: 'Siguiente', finish: 'Ver resultados', right: '¡Correcto!', wrong: 'Casi. La respuesta correcta está marcada.', timeUp: 'Se acabó el tiempo. La respuesta correcta está marcada.', endH: 'Acertaste {n} de {total}', endAll: 'Todas bien. ¡Genial!', endGood: '¡Muy bien!', endTry: 'Buen intento. ¡Prueba otra vez!', again: 'Jugar otra vez', missed: 'Repasar las falladas', review: 'Repaso', yours: 'Tu respuesta: {a}', answer: 'Respuesta correcta: {a}', none: 'Sin respuesta', keys: 'Teclas: 1-4 responder · Intro siguiente · R leer · F pantalla completa', editH: 'Tus preguntas', editP: 'Una pregunta por línea: la pregunta, la respuesta correcta y luego las incorrectas, separadas por |.', use: 'Usar estas', cancel: 'Cancelar', bad: 'La línea {n} necesita una pregunta y al menos dos respuestas.', ready: '{n} preguntas listas.', yes: 'Correcta', no: 'Incorrecta' },
+  fr: { sound: 'Son', full: 'Plein écran', startP: '{total} questions. Choisis la bonne réponse.', go: 'Commencer', timerOff: 'Minuteur : non', timerOn: 'Minuteur : {s} s', edit: 'Modifier les questions', qn: '{n} sur {total}', score: 'Score {n}', read: 'Lire à voix haute', next: 'Suivante', finish: 'Voir les résultats', right: 'Bravo !', wrong: 'Pas tout à fait. La bonne réponse est marquée.', timeUp: 'Temps écoulé. La bonne réponse est marquée.', endH: '{n} bonnes réponses sur {total}', endAll: 'Tout est juste. Génial !', endGood: 'Très bon travail !', endTry: 'Bel essai. Recommence !', again: 'Rejouer', missed: 'Revoir les erreurs', review: 'Révision', yours: 'Ta réponse : {a}', answer: 'Bonne réponse : {a}', none: 'Pas de réponse', keys: 'Touches : 1-4 répondre · Entrée suivante · R lire · F plein écran', editH: 'Tes questions', editP: 'Une question par ligne : la question, la bonne réponse, puis les mauvaises, séparées par |.', use: 'Utiliser', cancel: 'Annuler', bad: 'La ligne {n} doit avoir une question et au moins deux réponses.', ready: '{n} questions prêtes.', yes: 'Juste', no: 'Faux' },
+  de: { sound: 'Ton', full: 'Vollbild', startP: '{total} Fragen. Wähle die richtige Antwort.', go: 'Los', timerOff: 'Zeit: aus', timerOn: 'Zeit: {s} s', edit: 'Fragen bearbeiten', qn: '{n} von {total}', score: 'Punkte {n}', read: 'Vorlesen', next: 'Weiter', finish: 'Ergebnis', right: 'Richtig!', wrong: 'Nicht ganz. Die richtige Antwort ist markiert.', timeUp: 'Die Zeit ist um. Die richtige Antwort ist markiert.', endH: '{n} von {total} richtig', endAll: 'Alles richtig. Super!', endGood: 'Toll gemacht!', endTry: 'Guter Versuch. Probier es nochmal!', again: 'Nochmal spielen', missed: 'Die falschen üben', review: 'Rückblick', yours: 'Deine Antwort: {a}', answer: 'Richtige Antwort: {a}', none: 'Keine Antwort', keys: 'Tasten: 1-4 antworten · Enter weiter · R vorlesen · F Vollbild', editH: 'Deine Fragen', editP: 'Eine Frage pro Zeile: die Frage, dann die richtige Antwort, dann die falschen, getrennt durch |.', use: 'Übernehmen', cancel: 'Abbrechen', bad: 'Zeile {n} braucht eine Frage und mindestens zwei Antworten.', ready: '{n} Fragen bereit.', yes: 'Richtig', no: 'Falsch' },
+  it: { sound: 'Suono', full: 'Schermo intero', startP: '{total} domande. Scegli la risposta giusta.', go: 'Inizia', timerOff: 'Timer: no', timerOn: 'Timer: {s} s', edit: 'Modifica domande', qn: '{n} di {total}', score: 'Punti {n}', read: 'Leggi ad alta voce', next: 'Avanti', finish: 'Vedi i risultati', right: 'Giusto!', wrong: 'Non proprio. La risposta giusta è segnata.', timeUp: 'Tempo scaduto. La risposta giusta è segnata.', endH: '{n} giuste su {total}', endAll: 'Tutte giuste. Fantastico!', endGood: 'Ottimo lavoro!', endTry: 'Bel tentativo. Riprova!', again: 'Gioca ancora', missed: 'Ripassa gli errori', review: 'Ripasso', yours: 'La tua risposta: {a}', answer: 'Risposta giusta: {a}', none: 'Nessuna risposta', keys: 'Tasti: 1-4 rispondi · Invio avanti · R leggi · F schermo intero', editH: 'Le tue domande', editP: 'Una domanda per riga: la domanda, la risposta giusta e poi quelle sbagliate, separate da |.', use: 'Usa queste', cancel: 'Annulla', bad: 'La riga {n} deve avere una domanda e almeno due risposte.', ready: '{n} domande pronte.', yes: 'Giusta', no: 'Sbagliata' },
+  pt: { sound: 'Som', full: 'Tela cheia', startP: '{total} perguntas. Escolha a resposta certa.', go: 'Começar', timerOff: 'Cronômetro: não', timerOn: 'Cronômetro: {s} s', edit: 'Editar perguntas', qn: '{n} de {total}', score: 'Pontos {n}', read: 'Ler em voz alta', next: 'Próxima', finish: 'Ver resultado', right: 'Certo!', wrong: 'Quase. A resposta certa está marcada.', timeUp: 'O tempo acabou. A resposta certa está marcada.', endH: 'Você acertou {n} de {total}', endAll: 'Todas certas. Incrível!', endGood: 'Ótimo trabalho!', endTry: 'Boa tentativa. Jogue de novo!', again: 'Jogar de novo', missed: 'Rever as erradas', review: 'Revisão', yours: 'Sua resposta: {a}', answer: 'Resposta certa: {a}', none: 'Sem resposta', keys: 'Teclas: 1-4 responder · Enter próxima · R ler · F tela cheia', editH: 'Suas perguntas', editP: 'Uma pergunta por linha: a pergunta, a resposta certa e depois as erradas, separadas por |.', use: 'Usar estas', cancel: 'Cancelar', bad: 'A linha {n} precisa de uma pergunta e pelo menos duas respostas.', ready: '{n} perguntas prontas.', yes: 'Certa', no: 'Errada' },
+  nl: { sound: 'Geluid', full: 'Volledig scherm', startP: '{total} vragen. Kies het goede antwoord.', go: 'Start', timerOff: 'Timer: uit', timerOn: 'Timer: {s} s', edit: 'Vragen aanpassen', qn: '{n} van {total}', score: 'Score {n}', read: 'Voorlezen', next: 'Volgende', finish: 'Bekijk de uitslag', right: 'Goed!', wrong: 'Net niet. Het goede antwoord staat gemarkeerd.', timeUp: 'De tijd is op. Het goede antwoord staat gemarkeerd.', endH: '{n} van de {total} goed', endAll: 'Alles goed. Geweldig!', endGood: 'Goed gedaan!', endTry: 'Goed geprobeerd. Nog een keer!', again: 'Nog een keer', missed: 'Oefen de foute', review: 'Terugblik', yours: 'Jouw antwoord: {a}', answer: 'Goed antwoord: {a}', none: 'Geen antwoord', keys: 'Toetsen: 1-4 antwoorden · Enter volgende · R voorlezen · F volledig scherm', editH: 'Jouw vragen', editP: 'Eén vraag per regel: de vraag, dan het goede antwoord, dan de foute, gescheiden door |.', use: 'Gebruik deze', cancel: 'Annuleren', bad: 'Regel {n} heeft een vraag en minstens twee antwoorden nodig.', ready: '{n} vragen klaar.', yes: 'Goed', no: 'Fout' },
+  ru: { sound: 'Звук', full: 'Весь экран', startP: 'Вопросов: {total}. Выбери верный ответ.', go: 'Начать', timerOff: 'Таймер: нет', timerOn: 'Таймер: {s} с', edit: 'Изменить вопросы', qn: '{n} из {total}', score: 'Очки {n}', read: 'Прочитать вслух', next: 'Дальше', finish: 'Результаты', right: 'Верно!', wrong: 'Не совсем. Верный ответ отмечен.', timeUp: 'Время вышло. Верный ответ отмечен.', endH: 'Верно: {n} из {total}', endAll: 'Всё верно. Отлично!', endGood: 'Хорошая работа!', endTry: 'Хорошая попытка. Попробуй ещё!', again: 'Играть снова', missed: 'Повторить ошибки', review: 'Разбор', yours: 'Твой ответ: {a}', answer: 'Верный ответ: {a}', none: 'Нет ответа', keys: 'Клавиши: 1-4 ответ · Enter дальше · R вслух · F весь экран', editH: 'Твои вопросы', editP: 'Один вопрос в строке: вопрос, затем верный ответ, затем неверные, через |.', use: 'Готово', cancel: 'Отмена', bad: 'В строке {n} нужен вопрос и хотя бы два ответа.', ready: 'Вопросов готово: {n}.', yes: 'Верно', no: 'Неверно' },
+  he: { sound: 'צליל', full: 'מסך מלא', startP: '{total} שאלות. בחרו את התשובה הנכונה.', go: 'מתחילים', timerOff: 'טיימר: כבוי', timerOn: 'טיימר: {s} שנ׳', edit: 'עריכת שאלות', qn: '{n} מתוך {total}', score: 'ניקוד {n}', read: 'הקראה', next: 'הבא', finish: 'לתוצאות', right: 'נכון!', wrong: 'לא בדיוק. התשובה הנכונה מסומנת.', timeUp: 'הזמן נגמר. התשובה הנכונה מסומנת.', endH: '{n} נכונות מתוך {total}', endAll: 'הכול נכון. מצוין!', endGood: 'עבודה יפה!', endTry: 'ניסיון יפה. נסו שוב!', again: 'לשחק שוב', missed: 'לתרגל את הטעויות', review: 'סיכום', yours: 'התשובה שלך: {a}', answer: 'התשובה הנכונה: {a}', none: 'אין תשובה', keys: 'מקשים: 1-4 תשובה · Enter הבא · R הקראה · F מסך מלא', editH: 'השאלות שלכם', editP: 'שאלה אחת בכל שורה: השאלה, התשובה הנכונה ואחריה התשובות השגויות, מופרדות ב-|.', use: 'להשתמש', cancel: 'ביטול', bad: 'בשורה {n} צריכים שאלה ולפחות שתי תשובות.', ready: '{n} שאלות מוכנות.', yes: 'נכון', no: 'לא נכון' },
+  ar: { sound: 'الصوت', full: 'ملء الشاشة', startP: '{total} أسئلة. اختر الإجابة الصحيحة.', go: 'ابدأ', timerOff: 'المؤقت: متوقف', timerOn: 'المؤقت: {s} ث', edit: 'تعديل الأسئلة', qn: '{n} من {total}', score: 'النقاط {n}', read: 'اقرأ بصوت عالٍ', next: 'التالي', finish: 'النتائج', right: 'صحيح!', wrong: 'ليس تمامًا. الإجابة الصحيحة مُعلَّمة.', timeUp: 'انتهى الوقت. الإجابة الصحيحة مُعلَّمة.', endH: '{n} صحيحة من {total}', endAll: 'كلها صحيحة. رائع!', endGood: 'عمل رائع!', endTry: 'محاولة جيدة. حاول مرة أخرى!', again: 'العب مرة أخرى', missed: 'راجع الأخطاء', review: 'مراجعة', yours: 'إجابتك: {a}', answer: 'الإجابة الصحيحة: {a}', none: 'لا إجابة', keys: 'المفاتيح: 1-4 للإجابة · Enter التالي · R القراءة · F ملء الشاشة', editH: 'أسئلتك', editP: 'سؤال واحد في كل سطر: السؤال، ثم الإجابة الصحيحة، ثم الإجابات الخاطئة، بينها |.', use: 'استخدمها', cancel: 'إلغاء', bad: 'السطر {n} يحتاج إلى سؤال وإجابتين على الأقل.', ready: '{n} أسئلة جاهزة.', yes: 'صحيحة', no: 'خاطئة' },
+  ja: { sound: 'サウンド', full: '全画面', startP: '{total}もん。ただしいこたえをえらんでね。', go: 'スタート', timerOff: 'タイマー：なし', timerOn: 'タイマー：{s}びょう', edit: 'もんだいをへんしゅう', qn: '{n} / {total}', score: 'とくてん {n}', read: 'よみあげる', next: 'つぎへ', finish: 'けっかを見る', right: 'せいかい！', wrong: 'おしい！ただしいこたえにしるしがついています。', timeUp: 'じかんぎれ。ただしいこたえにしるしがついています。', endH: '{total}もんちゅう{n}もんせいかい', endAll: 'ぜんもんせいかい。すごい！', endGood: 'よくできました！', endTry: 'がんばったね。もういちど！', again: 'もういちど', missed: 'まちがえたもんだいをやる', review: 'ふりかえり', yours: 'あなたのこたえ：{a}', answer: 'ただしいこたえ：{a}', none: 'こたえなし', keys: 'キー：1〜4 こたえる・Enter つぎへ・R よみあげ・F 全画面', editH: 'じぶんのもんだい', editP: '1ぎょうに1もん：もんだい、ただしいこたえ、まちがいのこたえを | でくぎります。', use: 'これをつかう', cancel: 'やめる', bad: '{n}ぎょうめには もんだいと2ついじょうのこたえがひつようです。', ready: '{n}もん じゅんびOK。', yes: 'せいかい', no: 'ふせいかい' },
+  'zh-Hant': { sound: '聲音', full: '全螢幕', startP: '共 {total} 題。選出正確答案。', go: '開始', timerOff: '計時：關', timerOn: '計時：{s} 秒', edit: '編輯題目', qn: '第 {n} 題，共 {total} 題', score: '得分 {n}', read: '朗讀', next: '下一題', finish: '看結果', right: '答對了！', wrong: '差一點。正確答案已標出。', timeUp: '時間到。正確答案已標出。', endH: '{total} 題答對 {n} 題', endAll: '全部答對，太棒了！', endGood: '做得好！', endTry: '不錯的嘗試，再玩一次！', again: '再玩一次', missed: '練習答錯的題目', review: '回顧', yours: '你的答案：{a}', answer: '正確答案：{a}', none: '沒有作答', keys: '按鍵：1-4 作答・Enter 下一題・R 朗讀・F 全螢幕', editH: '你的題目', editP: '每行一題：題目、正確答案，然後是錯誤答案，用 | 分開。', use: '使用這些', cancel: '取消', bad: '第 {n} 行需要一個題目和至少兩個答案。', ready: '{n} 題已準備好。', yes: '正確', no: '不正確' },
+};
+
+const B = window.BRB || {};
+const LANG = (B.user && B.user.lang) || 'en';
+const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
+const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
+document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+const $ = id => document.getElementById(id);
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
+const say = text => { try { if (CONFIG.readAloud && B.speak) B.speak(text, { lang: CONFIG.lang }); } catch (e) { /* no voice */ } };
+const shuffle = a => { const r = a.slice(); for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [r[i], r[j]] = [r[j], r[i]]; } return r; };
+const TIMERS = [0, 10, 20, 30];
+const LETTERS = ['A', 'B', 'C', 'D'];
+
+// ---- the questions in play ------------------------------------------------------------------------------------------
+let bank = QUESTIONS.filter(x => x && x.q && Array.isArray(x.choices) && x.choices.length >= 2).map(x => ({ q: String(x.q), choices: x.choices.slice(0, 4).map(String), answer: Math.max(0, Math.min(x.choices.length - 1, x.answer | 0)), why: x.why ? String(x.why) : '' }));
+const S = { screen: 'start', list: [], i: 0, score: 0, picked: null, log: [], timer: TIMERS.includes(CONFIG.timer) ? CONFIG.timer : 0, left: 0, tick: null };
+function deal(from) {
+  const order = CONFIG.shuffleQuestions ? shuffle(from) : from.slice();
+  return order.map(x => {
+    const idx = x.choices.map((c, i) => i), ord = CONFIG.shuffleChoices ? shuffle(idx) : idx;
+    return { q: x.q, why: x.why, choices: ord.map(i => x.choices[i]), answer: ord.indexOf(x.answer), src: x };
+  });
+}
+function show(id) { for (const s of ['start', 'ask', 'end']) $(s).hidden = s !== id; S.screen = id; }
+function home() { stopTimer(); show('start'); $('startP').textContent = tr('startP', { total: bank.length }); paintTimerBtn(); $('go').focus(); }
+function begin(from) {
+  S.list = deal(from || bank); S.i = 0; S.score = 0; S.log = []; show('ask'); ask();
+}
+function ask() {
+  const x = S.list[S.i]; S.picked = null;
+  $('qn').textContent = tr('qn', { n: S.i + 1, total: S.list.length }); $('score').textContent = tr('score', { n: S.score });
+  $('bar').style.width = `${(S.i / S.list.length) * 100}%`;
+  $('q').textContent = x.q; $('q').classList.remove('oc-rise'); void $('q').offsetWidth; $('q').classList.add('oc-rise');
+  $('feedback').textContent = ''; $('feedback').className = 'feedback'; $('next').hidden = true;
+  const box = $('choices'); box.innerHTML = '';
+  x.choices.forEach((c, i) => {
+    const b = document.createElement('button'); b.className = 'choice oc-pop'; b.style.animationDelay = `${i * 45}ms`;
+    b.innerHTML = '<span class="tag"></span><span class="lab"></span><span class="mark"></span>';
+    b.children[0].textContent = LETTERS[i]; b.children[1].textContent = c;
+    b.onclick = () => pick(i); box.appendChild(b);
+  });
+  $('read').hidden = !(CONFIG.readAloud && B.speak);
+  startTimer(); box.querySelector('button').focus({ preventScroll: true });
+}
+function pick(i) {
+  if (S.screen !== 'ask' || S.picked !== null) return;
+  stopTimer();
+  const x = S.list[S.i], ok = i === x.answer; S.picked = i;
+  if (ok) S.score++;
+  S.log.push({ q: x.q, given: i >= 0 ? x.choices[i] : '', right: x.choices[x.answer], ok, src: x.src });
+  [...$('choices').children].forEach((b, j) => {
+    b.disabled = true;
+    if (j === x.answer) { b.classList.add('right'); b.children[2].textContent = '✓'; b.setAttribute('aria-label', `${x.choices[j]}: ${tr('yes')}`); }
+    else if (j === i) { b.classList.add('wrong', 'oc-nudge'); b.children[2].textContent = '✗'; b.setAttribute('aria-label', `${x.choices[j]}: ${tr('no')}`); }
+    else b.classList.add('dim');
+  });
+  const fb = $('feedback');
+  fb.textContent = ok ? tr('right') : i < 0 ? tr('timeUp') : tr('wrong');
+  if (x.why) { const w = document.createElement('span'); w.className = 'why'; w.textContent = x.why; fb.appendChild(w); }
+  fb.className = `feedback ${ok ? 'good' : 'bad'}`;
+  $('score').textContent = tr('score', { n: S.score }); if (ok) { $('score').classList.remove('oc-bump'); void $('score').offsetWidth; $('score').classList.add('oc-bump'); }
+  sfx(ok ? 'coin' : 'hit');
+  $('bar').style.width = `${((S.i + 1) / S.list.length) * 100}%`;
+  $('next').textContent = S.i + 1 < S.list.length ? tr('next') : tr('finish'); $('next').hidden = false; $('next').focus({ preventScroll: true });
+}
+function next() { if (S.screen !== 'ask' || S.picked === null) return; if (++S.i < S.list.length) ask(); else finish(); }
+function finish() {
+  stopTimer(); show('end');
+  const n = S.score, total = S.list.length, pct = total ? n / total : 0;
+  $('endH').textContent = pct === 1 ? tr('endAll') : pct >= 0.6 ? tr('endGood') : tr('endTry');
+  $('endScore').innerHTML = ''; $('endScore').append(String(n)); const sm = document.createElement('small'); sm.textContent = ` / ${total}`; $('endScore').appendChild(sm);
+  $('stars').textContent = '★'.repeat(pct === 1 ? 3 : pct >= 0.6 ? 2 : pct > 0 ? 1 : 0).padEnd(3, '☆');
+  $('endP').textContent = tr('endH', { n, total });
+  const r = $('review'); r.innerHTML = '';
+  for (const l of S.log) {
+    const li = document.createElement('li'); li.className = l.ok ? 'yes' : 'no';
+    li.innerHTML = '<span class="ok" aria-hidden="true"></span><b></b><span></span>';
+    li.children[0].textContent = l.ok ? '✓' : '✗'; li.children[1].textContent = l.q;
+    li.children[2].textContent = l.ok ? tr('answer', { a: l.right }) : `${tr('yours', { a: l.given || tr('none') })} · ${tr('answer', { a: l.right })}`;
+    li.setAttribute('aria-label', `${l.ok ? tr('yes') : tr('no')}. ${l.q}. ${li.children[2].textContent}`);
+    r.appendChild(li);
+  }
+  $('missed').hidden = S.log.every(l => l.ok);
+  sfx(pct >= 0.6 ? 'win' : 'click'); if (pct === 1) { try { if (B.fx) B.fx.confetti(); } catch (e) { /* reduced motion */ } }
+  try { if (B.gameOver) B.gameOver({ won: pct >= 0.6, score: n }); } catch (e) { /* preview */ }
+  $('again').focus({ preventScroll: true });
+}
+
+// ---- the timer ----------------------------------------------------------------------------------------------------
+function paintTimerBtn() { $('timerBtn').textContent = S.timer ? tr('timerOn', { s: S.timer }) : tr('timerOff'); $('timerBtn').setAttribute('aria-pressed', String(!!S.timer)); }
+function startTimer() {
+  stopTimer(); $('timer').hidden = !S.timer; if (!S.timer) return;
+  const end = Date.now() + S.timer * 1000;
+  const paint = () => { const ms = Math.max(0, end - Date.now()); S.left = Math.ceil(ms / 1000); $('timerN').textContent = String(S.left); $('timer').style.setProperty('--p', String(ms / (S.timer * 1000))); $('timer').classList.toggle('low', ms < 4000); if (!ms) pick(-1); };
+  paint(); S.tick = setInterval(paint, 200);
+}
+function stopTimer() { if (S.tick) { clearInterval(S.tick); S.tick = null; } }
+
+// ---- the teacher's own questions ----------------------------------------------------------------------------------
+const toLines = list => list.map(x => [x.q, x.choices[x.answer], ...x.choices.filter((c, i) => i !== x.answer)].join(' | ')).join('\n');
+function fromLines(text) {
+  const out = [], lines = String(text).split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i].trim(); if (!raw) continue;
+    const parts = raw.split('|').map(s => s.trim()).filter(Boolean);
+    if (parts.length < 3) return { error: tr('bad', { n: i + 1 }) };
+    out.push({ q: parts[0].slice(0, 300), choices: parts.slice(1, 5).map(s => s.slice(0, 120)), answer: 0, why: '' });
+  }
+  return out.length ? { list: out.slice(0, 60) } : { error: tr('bad', { n: 1 }) };
+}
+function openEditor() { $('editText').value = toLines(bank); $('editMsg').textContent = ''; $('editMsg').className = 'msg'; $('editor').hidden = false; $('editText').focus(); }
+function closeEditor() { $('editor').hidden = true; $('editBtn').focus(); }
+function useEditor() {
+  const r = fromLines($('editText').value);
+  if (r.error) { $('editMsg').textContent = r.error; $('editMsg').className = 'msg bad'; return; }
+  bank = r.list; $('editMsg').textContent = tr('ready', { n: bank.length }); closeEditor(); home();
+}
+
+// ---- buttons and keys ---------------------------------------------------------------------------------------------
+$('go').onclick = () => begin(); $('next').onclick = next; $('again').onclick = () => begin();
+$('missed').onclick = () => begin(S.log.filter(l => !l.ok).map(l => l.src));
+$('read').onclick = () => { const x = S.list[S.i]; if (x) say(x.q); };
+$('timerBtn').onclick = () => { S.timer = TIMERS[(TIMERS.indexOf(S.timer) + 1) % TIMERS.length]; paintTimerBtn(); };
+$('editBtn').onclick = openEditor; $('editCancel').onclick = closeEditor; $('editUse').onclick = useEditor;
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
+$('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
+addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  if (!$('editor').hidden) { if (e.key === 'Escape') { e.preventDefault(); closeEditor(); } return; }
+  const k = e.key;
+  if (k === 'f' || k === 'F') { $('full').click(); return; }
+  if (S.screen === 'ask') {
+    const i = '1234'.indexOf(k) >= 0 ? '1234'.indexOf(k) : 'abcd'.indexOf(k.toLowerCase());
+    if (k.length === 1 && i >= 0 && i < S.list[S.i].choices.length && S.picked === null) { e.preventDefault(); pick(i); }
+    else if ((k === 'Enter' || k === ' ' || k === 'PageDown' || k === 'ArrowRight') && S.picked !== null) { e.preventDefault(); next(); }
+    else if (k === 'r' || k === 'R') { $('read').click(); }
+  }
+});
+
+document.title = CONFIG.title; $('title').textContent = CONFIG.title; $('startH').textContent = CONFIG.title;
+$('sound').textContent = tr('sound'); $('full').textContent = tr('full'); $('go').textContent = tr('go'); $('editBtn').textContent = tr('edit');
+$('read').textContent = tr('read'); $('again').textContent = tr('again'); $('missed').textContent = tr('missed'); $('reviewH').textContent = tr('review');
+$('askKeys').textContent = tr('keys'); $('startKeys').textContent = tr('keys');
+$('editH').textContent = tr('editH'); $('editP').textContent = tr('editP'); $('editLabel').textContent = tr('editH'); $('editText').setAttribute('aria-label', tr('editH'));
+$('editUse').textContent = tr('use'); $('editCancel').textContent = tr('cancel');
+$('editBtn').hidden = !CONFIG.allowEdit;
+$('sound').setAttribute('aria-pressed', String(soundOn));
+window.__brbTest = { state: () => ({ screen: S.screen, question: S.i + 1, total: S.list.length || bank.length, score: S.score, answered: S.picked !== null, answer: S.list[S.i] ? S.list[S.i].answer : null, timer: S.timer }), start() { begin(); } };
+home();
+</script>

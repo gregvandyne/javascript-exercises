@@ -1,6 +1,7 @@
 // Studio over HTTP: access rules, the SSE chat, the live stream (builds run on their own: sign-out, expiry and closed
 // pages never stop them), lists and notes, uploads, publishing and updating a live game.
 process.env.BRB_DB = ':memory:';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 process.env.BRB_MOCK_DELAY_MS = '0';
@@ -10,6 +11,7 @@ import assert from 'node:assert/strict';
 import zlib from 'node:zlib';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false;   // a regular maker's caps and limits (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');

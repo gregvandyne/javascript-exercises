@@ -49,6 +49,7 @@ process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${fake.address().port}`;
 test.after(() => fake.close());
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false;   // these tests cover a regular maker's limits (BUILDER_FULL_FOR_ALL: builder-trusted.test.js)
 config.anthropicKey = 'sk-ant-test-fake';
 const fsmod = await import('node:fs');

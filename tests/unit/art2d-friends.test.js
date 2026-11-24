@@ -17,6 +17,8 @@ import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 const S = await import('../../server/services/art2d.js');
 const A = await import('../../server/builder/art2d.js');
 const T = await import('../../server/builder/templates/index.js');

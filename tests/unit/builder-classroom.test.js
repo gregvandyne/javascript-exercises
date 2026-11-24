@@ -16,6 +16,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false; config.anthropicKey = '';
 const { createApp } = await import('../../server/app.js');
 const { q, now } = await import('../../server/db.js');
@@ -26,7 +27,7 @@ const polls = await import('../../server/services/polls.js');
 const { micGame } = await import('../../server/services/mic-games.js');
 const runner = await import('../../server/builder/runner.js');
 const plan = await import('../../server/builder/plan.js');
-const { CLASSROOM_TEMPLATE_KEYS, BUILDER_TEMPLATE_KEYS, templateInfo } = await import('../../server/builder/catalog.js');
+const { CLASSROOM_TEMPLATE_KEYS, BUILDER_TEMPLATE_KEYS, PLAIN_GAME_KEYS, templateInfo } = await import('../../server/builder/catalog.js');
 const { TEMPLATES, loadTemplate } = await import('../../server/builder/templates/index.js');
 const { scanVersion } = await import('../../server/services/scanner.js');
 const { toolbox } = await import('../../server/builder/tools.js');
@@ -69,8 +70,9 @@ test('the game-type step: "For your class" first for teachers, after the games (
     { id: 'class', items: ['quiet', 'categories', 'bingo', 'flashcards', 'spinner', 'scoreboard'] },
   ]);
   assert.deepEqual(plan.GAME_TYPES.filter(x => x.teacher).map(x => x.id), ['survey', 'exitticket']);
-  assert.deepEqual(plan.GAME_TYPES.filter(x => x.starter).map(x => x.template), CLASSROOM_TEMPLATE_KEYS);
-  for (const k of CLASSROOM_TEMPLATE_KEYS) assert.ok(BUILDER_TEMPLATE_KEYS.includes(k), k);
+  // (classquiz, classmemory and classword: the plain quiz, memory and word of the classroom focus, builder-focus.test.js)
+  assert.deepEqual(plan.GAME_TYPES.filter(x => x.starter).map(x => x.template), CLASSROOM_TEMPLATE_KEYS.filter(k => !PLAIN_GAME_KEYS.includes(k)));
+  for (const k of CLASSROOM_TEMPLATE_KEYS.filter(k => !PLAIN_GAME_KEYS.includes(k))) assert.ok(BUILDER_TEMPLATE_KEYS.includes(k), k);
 });
 
 test('/build/new: a teacher sees "For your class" first and shown; a kid sees the games first and no teacher-only types', async () => {
@@ -206,7 +208,7 @@ test('the classroom starters: scanned clean, small, CONFIG one key per line, WOR
     const html = loadTemplate(key), src = scriptOf(html), scan = scanVersion(html);
     assert.equal(scan.status, 'pass', `${key} ${JSON.stringify(scan.issues)}`); assert.deepEqual(scan.lint, []);
     assert.ok(Buffer.byteLength(html) < 60 * 1024, `${key} is small`);
-    assert.match(html, /^<title>[^<]+<\/title>\n<style>/); assert.doesNotMatch(html, /<!doctype|<html\b|<head[\s>]|<body\b|oomba-kit/i);
+    assert.match(html, /^<title>[^<]+<\/title>\n<style id="oomba-classroom-style">\n[\s\S]*?<\/style>\n<style>/, `${key}: the shared classroom style, then its own`); assert.doesNotMatch(html, /<!doctype|<html\b|<head[\s>]|<body\b|oomba-kit/i);
     for (const line of src.match(/const CONFIG = \{\n([\s\S]*?)\n\};/)[1].split('\n')) assert.match(line, /^ {2}\w+: .+,$/, `${key}: "${line}"`);
     assert.match(src, /^ {2}lang: 'en',$/m, `${key}: CONFIG.lang`);
     const en = tableKeys(src, 'en'); assert.ok(en && en.length >= 8, `${key}: WORDS.en`);

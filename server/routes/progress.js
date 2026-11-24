@@ -98,7 +98,7 @@ router.post('/api/progress/:clid/:sid/hand-in', requireUser, rateLimit('progress
   if (!g || g.owner_id !== req.user.id || g.status === 'deleted') return err(req, res, 'noGame');
   if (!g.current_version_id) return err(req, res, 'emptyGame');
   const classId = c.cl.class_id;
-  const reaches = g.status === 'published' && (['school', 'public'].includes(g.visibility) || (g.visibility === 'class' && games.gameLiveInClass(g.id, classId)));
+  const reaches = g.status === 'published' && ((g.visibility === 'school' && !games.legacySchool(g)) || ((g.visibility === 'public' || g.visibility === 'school') && games.publicReachesClass(g, classId)) || (g.visibility === 'class' && games.gameLiveInClass(g.id, classId)));
   if (!reaches) {
     const mine = new Set(S.shareableClasses(req.user.id).map(x => x.id));
     const keep = g.visibility === 'class' ? S.gameClassIds(g.id).filter(id => mine.has(id)) : [];

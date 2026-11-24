@@ -59,7 +59,8 @@ import { tEn } from '../i18n/index.js';
 import { familiesOn, isChildAccount, liveRowOf } from '../services/family.js';
 import { sharingOptions, shareDefault, shareableClasses, gameClassIds, removedClassIds } from '../services/schools.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { LIVE_NOT, LIVE_NOT_ENGINE } from '../builder/plan.js';
+import { LIVE_NOT, LIVE_NOT_ENGINE, LIVE_NOT_PLAIN } from '../builder/plan.js';
+import { kitVersion } from '../services/kit.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady, checkHtml as checkLiveHtml } from '../services/classlive-check.js';
 
@@ -67,7 +68,7 @@ export const router = Router();
 
 /** What each sharing level means, in the reader's language. grownup: the owner is a grown-up builder, whose 'friends'
  *  are their grown-up connections. */
-export const shareText = (t = tEn, grownup = false) => ({ private: t('studio.shareText.private'), family: t('studio.shareText.family'), friends: t(grownup ? 'studio.shareText.connections' : 'studio.shareText.friends'), class: t('studio.shareText.class'), school: t('studio.shareText.school'), public: t('studio.shareText.public') });
+export const shareText = (t = tEn, grownup = false) => ({ private: t('studio.shareText.private'), family: t('studio.shareText.family'), friends: t(grownup ? 'studio.shareText.connections' : 'studio.shareText.friends'), class: t('studio.shareText.class'), school: t(config.publicGames ? 'studio.shareText.school' : 'studio.shareText.connectionsClasses'), public: t(config.publicGames ? 'studio.shareText.public' : 'studio.shareText.connectionsClasses') });
 export const ICONS = ['🎮', '🦈', '🐉', '🦖', '🤖', '🦄', '🚀', '👽', '🐱', '🐶', '🦊', '🐧', '🐰', '🐸', '🐙', '🐝', '🐠', '🐵', '🦁', '🐼', '👻', '🏴‍☠️', '👸', '🧙', '🥷', '🦋', '🐢', '🦉', '🐻', '🍕', '🧁', '🍎', '⚽', '🏀', '🚗', '🚂', '⛄', '⭐', '🌈', '🌸', '🏆', '🎲', '🧩', '🔤', '❓', '🎵', '💎', '🏰'];
 
 /** One plain-words status for a builder's own game. code: hidden|suspended|in_review|rejected|draft|live */
@@ -77,7 +78,7 @@ export function studioStatus(g, t = tEn) {
   if (g.status === 'in_review') return { code: 'in_review', label: `⏳ ${t('status.inReview')}`, tone: 'warn', live: false };
   if (g.status === 'rejected') return { code: 'rejected', label: `✏️ ${t('status.needsChanges')}`, tone: 'warn', live: false };
   if (g.status !== 'published' || !g.published_version_id) return { code: 'draft', label: `📝 ${t('status.draft')}`, tone: '', live: false };
-  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t, g.visibility === 'class' ? games.liveClasses(g.id).length : 1, { grownup: isGrownup(getUser(g.owner_id)) }) }), tone: 'good', live: true };
+  return { code: 'live', label: t('studio.status.live', { who: visLabel(g.visibility, t, g.visibility === 'class' ? games.liveClasses(g.id).length : 1, { grownup: isGrownup(getUser(g.owner_id)), official: g.source === 'seed' }) }), tone: 'good', live: true };
 }
 
 /** The share dialog's class choices for a game's owner (see docs/decisions.md, "Share with my classes"):
@@ -169,7 +170,7 @@ export function studioState(user, gameId, t = tEn, req = null) {
     ...counter(user), dailyTurns: allowanceFor(user).daily, provider: providerName(allowanceFor(user).pool), resting: restingUntil(allowanceFor(user).pool), busy: isBusy(g.id),
     // The running build as this viewer sees it (its message and what it said so far), and how the last one ended.
     turn: publicTurn(g.id, user), lastTurn: lastTurn(g.id, user),
-    shareText: shareText(t, grownup), shareUrl: `/g/${g.slug}`, shareOptions: sharingOptions(owner, g), shareDefault: shareDefault(owner), classShare: classShare(g, g.owner_id),
+    shareText: shareText(t, grownup), shareUrl: `/g/${g.slug}`, shareOptions: [...sharingOptions(owner, g), ...(games.legacyWide(g) && g.status === 'published' ? [g.visibility] : [])], publicGames: config.publicGames, shareDefault: shareDefault(owner), classShare: classShare(g, g.owner_id),
     // A grown-up builder's game: "My grown-up connections" for 'friends', a hint under each choice, and the name a public
     // game is credited to (shown to the grown-up only; never their children's names).
     // seePlans: the out-of-messages card links to /plans only while that page is open (family pages on) and this grown-up's
@@ -219,7 +220,8 @@ export function liveClassState(user, g, cur, t, state = {}) {
   const chk = checkLiveHtml(cur.html), first = chk.issues.find(i => i.level === 'fail');
   const loads = /\/packs\/live\.js/.test(cur.html), published = gameLiveReady(g), canHost = liveCanHost(user);
   const play = (state && state.play) || null;
-  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || '';
+  // (the arcade side off: a plain classroom game has no live play; a game made on the Oomba Kit before still can)
+  const not = kit2Of(cur.html) ? LIVE_NOT_ENGINE.kit2 : canvasVersion(cur.html) ? LIVE_NOT_ENGINE.canvas : (play && play.type && LIVE_NOT[play.type]) || (!config.arcade && !kitVersion(cur.html) ? LIVE_NOT_PLAIN : '');
   const line = chk.ready ? (published ? 'host' : 'publish') : loads ? 'fix' : 'off';
   return {
     line, ready: chk.ready, started: loads, issue: loads && first ? t(`live.check.${first.code}`) : '', published, canHost,
@@ -313,7 +315,7 @@ router.get('/studio/:id', requireBuilder, (req, res) => {
         <form class="st-compose" id="st-compose" autocomplete="off">
           <div class="st-limit" id="st-limit" role="status"${t.own('js.studio.limitCard.heading') ? '' : html` lang="en" dir="ltr"`} hidden></div>
           <div class="st-attach" id="st-attach" hidden></div>
-          ${themePicker(t, state.theme, state.kit2, !!state.current)}
+          ${config.arcade || state.kit2 || state.theme ? themePicker(t, state.theme, state.kit2, !!state.current) : ''}
           <div class="st-row">
             <button class="st-clip" type="button" id="st-clip" aria-label="${t('studio.chat.attach')}" title="${t('studio.chat.attach')}">${ico('📎', { size: 18 })}</button>
             <input type="file" id="st-file" hidden multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf,.txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
@@ -361,6 +363,8 @@ router.post('/api/studio/new', requireBuilder, rateLimit('studio-new', 30, 3600e
   const world = key === 'oomba3d' ? String((req.body || {}).world || '') : '';
   // (the classroom activity starter too: /build/new's "I’ll just describe it" with Classroom activity picked)
   if (key === 'oomba3d' ? !WORLD_IDS.includes(world) : key && !TEMPLATE_KEYS.includes(key) && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
+  // The arcade side off: no new game on a kit template or in a 3D world (an empty game or a classroom lesson only).
+  if (!config.arcade && key && !CANVAS_TEMPLATE_KEYS.includes(key)) return res.status(400).json({ error: t('studio.api.pickStarter') });
   if (!req.user.builder_enabled) return res.status(403).json({ error: t('studio.api.buildingOff') });
   if (!key) {
     const g = games.createGame(req.user.id, { title: t('studio.newGameTitle'), icon: '🎮', cover: games.COVERS[Math.floor(Math.random() * games.COVERS.length)] });

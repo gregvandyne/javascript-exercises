@@ -64,6 +64,10 @@ services:
         value: "0"
       - key: COURSES
         value: "0"
+      # No public games (docs/decisions.md "No public games: share with connections and classes"): players share games
+      # with their connections and classes only (no Everyone or My school); official games stay open to everyone. Set "1" to bring public games back.
+      - key: PUBLIC_GAMES
+        value: "0"
       # Speaking instead of typing in the Builder chat (server/services/stt.js; docs/legal-review.md item 38). The mic
       # is hidden until STT_API_KEY is set. Set the key in the dashboard only after the provider has agreed zero data
       # retention for the key's project; never put it in this file. STT_PROVIDER: openai (default) or elevenlabs.

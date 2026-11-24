@@ -532,7 +532,8 @@
     "public": "所有人",
     "school": "我的學校",
     "family": "我的家人",
-    "connections": "我的大人聯絡人"
+    "connections": "我的大人聯絡人",
+    "connectionsClasses": "朋友和班級"
   },
   "status": {
     "hidden": "已隱藏",
@@ -610,11 +611,16 @@
       "two": "雙人"
     },
     "focus": {
-      "puzzles": "文字遊戲與謎題",
-      "mapsStrategy": "地圖與策略",
       "tools": "課堂工具",
       "more": "更多遊戲",
       "players": "玩家做的遊戲"
+    },
+    "topics": {
+      "label": "主題",
+      "math": "數學",
+      "reading": "閱讀與字詞",
+      "geography": "地理",
+      "strategy": "策略"
     }
   },
   "search": {
@@ -1187,7 +1193,8 @@
       "public": "任何拿到連結的人都能玩這個遊戲。",
       "school": "學校裡的每個人都能找到並玩它。",
       "family": "只有製作這款遊戲的大人和他的家人能打開這個連結。",
-      "connections": "只有製作這款遊戲的大人和他的大人聯絡人能打開這個連結。"
+      "connections": "只有製作這款遊戲的大人和他的大人聯絡人能打開這個連結。",
+      "connectionsClasses": "只有遊戲作者的朋友和同學可以開啟這個連結。"
     },
     "sharedWith": "分享給：",
     "sharedWithMore": "{count, plural, other {和另外 # 個班級}}",
@@ -1533,7 +1540,8 @@
       "public": "經過快速安全檢查後，Oomba Academy 上的所有人都能找到並玩它。",
       "school": "學校裡的每個人都能找到並玩它。",
       "family": "你和連結到你家庭的孩子可以玩。",
-      "connections": "只有你和你的大人聯絡人可以玩。"
+      "connections": "只有你和你的大人聯絡人可以玩。",
+      "connectionsClasses": "只有你、你的朋友和你班上的人可以玩。"
     },
     "status": {
       "hidden": "暫時隱藏",
@@ -1874,7 +1882,9 @@
         "start": "遊戲沒有開始",
         "failed": "遊戲玩到一半當掉了"
       }
-    }
+    },
+    "noPublic": "遊戲只能分享給你的朋友和班級，不能分享給所有人。",
+    "liveConnectionsClasses": "已分享給你的朋友和班級！只有他們和你可以玩。"
   },
   "builder": {
     "kindRefusal": "這個我沒辦法幫忙。我們來做點好玩的東西吧！你想做什麼樣的遊戲？",
@@ -2159,7 +2169,8 @@
         "public": "所有人",
         "school": "我的學校",
         "family": "我的家人",
-        "connections": "我的大人聯絡人"
+        "connections": "我的大人聯絡人",
+        "connectionsClasses": "朋友和班級"
       },
       "top": {
         "inReview": "審核中",
@@ -6944,6 +6955,7 @@
     "tab": {
       "h1": "學習",
       "lead": "能學到東西的遊戲和課程。選一個科目，或直接選一個遊戲。",
+      "leadGames": "能學到東西的遊戲。選一個科目，或直接選一個遊戲。",
       "leadStaff": "和學生看到的是同一個遊戲庫，另有指派和直播主持的按鈕。",
       "filters": "篩選遊戲",
       "subject": "科目",
@@ -10910,7 +10922,8 @@
         "board": "這個是在一個螢幕上給全教室一起用的。",
         "survey": "調查的答案只留在這台裝置上，從不送出，所以不能直播玩。",
         "exitticket": "離場小卡只在一台裝置上用。想看每位學生的答案，請在班級課程裡用問題步驟。",
-        "canvas": "課堂活動暫時還不能即時遊玩。"
+        "canvas": "課堂活動暫時還不能即時遊玩。",
+        "plain": "課堂遊戲還不能進行即時遊玩。可以投影在白板上，或分享出去讓每個人在自己的裝置上玩。"
       }
     },
     "learn": {

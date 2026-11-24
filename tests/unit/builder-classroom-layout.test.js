@@ -13,6 +13,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const { config } = await import('../../server/config.js');
+config.arcade = true;   // the arcade Builder (the kit, Kit 2, the 2D art); the classroom focus (ARCADE off): builder-focus.test.js
 config.builderFullForAll = false; config.anthropicKey = '';
 config.arcade = true;   // the Arcade game kind is part of what this file tests (ARCADE is off on the site by default)
 const { createApp } = await import('../../server/app.js');

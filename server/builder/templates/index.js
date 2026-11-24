@@ -14,6 +14,11 @@ import { kit2Starter } from '../kit2.js';
 import { art2dTags, art2dConfig } from '../art2d.js';
 
 const DIR = path.dirname(fileURLToPath(import.meta.url));
+/** The classroom starters' shared look (classroom-style.css, the Oomba design system, with its self-hosted Bricolage
+ *  Grotesque from /vendor/oomba-classroom/: no font service, nothing to the network but our own font file): one <style>
+ *  block, put in at each starter's <!--CLASSROOM_STYLE--> marker. */
+let styleCache = null;
+export const classroomStyle = () => (styleCache = styleCache || `<style id="oomba-classroom-style">\n${fs.readFileSync(path.join(DIR, 'classroom-style.css'), 'utf8').trim()}\n</style>`);
 
 export const TEMPLATES = [
   { key: 'quiz', title: 'Quiz Show', icon: '🦉', cover: 'sunset', category: 'learning', players: 1,
@@ -63,6 +68,14 @@ export const TEMPLATES = [
     description: 'Spin the wheel to pick a team, a number or a topic. Never names.' },
   { key: 'scoreboard', title: 'Team Scoreboard', icon: '🏆', cover: 'lava', category: 'learning', players: 2, builderOnly: true, classroom: true,
     description: 'Big team scores for the board, with number keys, Undo and Reset.' },
+  // The plain classroom quiz, memory and word games (docs/decisions.md "Classroom focus: the Builder without the kit"):
+  // the classroom formats of the kit's quiz, memory and word templates, which stay for arcade builds and old games.
+  { key: 'classquiz', title: 'Class Quiz', icon: '❓', cover: 'mint', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'Multiple-choice questions, one at a time, with an optional timer, a score and a review of every answer.' },
+  { key: 'classmemory', title: 'Memory Match', icon: '🃏', cover: 'ocean', category: 'learning', players: 1, builderOnly: true, classroom: true,
+    description: 'Flip two cards to find the pairs: a term and its meaning, or a picture and its word.' },
+  { key: 'classword', title: 'Word Lab', icon: '🔤', cover: 'gold', category: 'words', players: 1, builderOnly: true, classroom: true,
+    description: 'Practice a word list three ways: unscramble it, fill the gap in a sentence, or spell it from a clue.' },
   // The classroom activity starter (catalog.js CANVAS_TEMPLATE_KEYS): an Oomba Canvas activity (docs/canvas-api.md), not on
   // the Oomba Kit. The activity is data in its oc-activity block; the kit draws it and owns the maths. builderOnly.
   { key: 'canvas', title: 'Classroom activity', icon: '🧮', cover: 'mint', category: 'learning', players: 1, builderOnly: true, canvas: true,
@@ -81,6 +94,7 @@ export function loadTemplate(key, opts = {}) {
   // are filled in (../art2d.js). With neither, the marker goes and the game is the template as it always was.
   return art2dConfig(cache.get(key), opts || {});
 }
-/** The template source with the pinned tags in place of <!--KIT-->, <!--PACK:name--> and <!--CANVAS--> (Oomba Canvas). */
-export const withKitTags = src => String(src).replace('<!--CANVAS-->', () => canvasTag()).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));
+/** The template source with the pinned tags in place of <!--KIT-->, <!--PACK:name--> and <!--CANVAS--> (Oomba Canvas), and
+ *  the classroom starters' shared look in place of <!--CLASSROOM_STYLE-->. */
+export const withKitTags = src => String(src).replace('<!--CLASSROOM_STYLE-->', () => classroomStyle()).replace('<!--CANVAS-->', () => canvasTag()).replace('<!--KIT-->', () => kitTag()).replace(/<!--PACK:([a-z0-9-]+)-->/g, (m, n) => kitPackTag(n));
 export { art2dTags };

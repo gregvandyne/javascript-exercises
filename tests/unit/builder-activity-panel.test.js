@@ -4,6 +4,7 @@
 // text, a failing self-test saving nothing, the owner only, and older kits moving to 1.3.0 only when saved here. Also the
 // teacher controls' signal (INIT.teach: the maker and staff, never a student or "As a student") and the helped result.
 process.env.BRB_DB = ':memory:';
+process.env.PUBLIC_GAMES = '1';   // public games (off on the site by default: tests/unit/play-topics-private.test.js)
 process.env.BRB_SILENT = '1';
 process.env.LOG_REQUESTS = '0';
 process.env.BRB_DATA_DIR = (await import('node:os')).tmpdir() + '/brb-panel-test-' + process.pid;

@@ -221,9 +221,9 @@ function drawPage() {
     <details class="sb-cast"><summary>${esc(t('js.storybook-edit.cast', { count: B.cast.length }))}</summary>
       <p class="small muted">${esc(t('js.storybook-edit.castNote'))}</p>
       ${B.cast.map((c, i) => `<div class="sb-castrow"><div class="sb-crow"><label class="sr-only" for="sb-cn${i}">${esc(t('js.storybook-edit.castName'))}</label><input class="input" id="sb-cn${i}" data-f="cast-name" data-i="${i}" value="${esc(c.name)}" maxlength="${L.castName}" dir="auto">
-        <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>
-        <label class="sr-only" for="sb-cwh${i}">${esc(t('js.storybook-edit.castWhat'))}</label><input class="input sb-look" id="sb-cwh${i}" data-f="cast-what" data-i="${i}" value="${esc(c.what || '')}" maxlength="${L.what}" placeholder="${esc(t('js.storybook-edit.castWhatPh'))}" dir="auto">
-        <label class="sr-only" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
+        ${DR.on ? '' : `<label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select>`}</div>
+        <label class="sb-clabel small" for="sb-cwh${i}">${esc(t('js.storybook-edit.castWhat'))}</label><input class="input sb-look" id="sb-cwh${i}" data-f="cast-what" data-i="${i}" value="${esc(c.what || '')}" maxlength="${L.what}" placeholder="${esc(t('js.storybook-edit.castWhatPh'))}" dir="auto">
+        <label class="sb-clabel small" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
         ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-charsheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
       ${B.cast.length < L.cast ? `<button type="button" class="btn btn-sm" data-act="cast-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addCast'))}</button>` : ''}
     </details>`;
@@ -260,7 +260,7 @@ document.addEventListener('click', async e => {
   if (act === 'choice-rm') p.choices.splice(i, 1);
   if (act === 'start') B.start = p.id;
   if (act === 'up' || act === 'down') { const k = B.pages.indexOf(p), j = act === 'up' ? k - 1 : k + 1; if (j < 0 || j >= B.pages.length) return; B.pages.splice(k, 1); B.pages.splice(j, 0, p); }
-  if (act === 'cast-add') { let n = B.cast.length + 1; while (B.cast.some(c => c.name === t('js.storybook-edit.castDefault', { n }))) n++; B.cast.push({ name: t('js.storybook-edit.castDefault', { n }), art: D.chars[0].id }); }
+  if (act === 'cast-add') { let n = B.cast.length + 1; while (B.cast.some(c => c.name === t('js.storybook-edit.castDefault', { n }))) n++; B.cast.push({ name: t('js.storybook-edit.castDefault', { n }), art: DR.on ? '' : D.chars[0].id, ...(DR.on ? { what: '', look: '' } : {}) }); }
   if (act === 'del-page') {
     if (!(await ask({ text: t('js.storybook-edit.deletePageQ'), ok: t('js.storybook-edit.deletePage'), danger: true }))) return;
     B.pages = B.pages.filter(x => x.id !== p.id);

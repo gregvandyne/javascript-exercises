@@ -17,6 +17,9 @@ const SDK_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../
 let SDK = fs.readFileSync(SDK_PATH, 'utf8');
 export const reloadSdk = () => { SDK = fs.readFileSync(SDK_PATH, 'utf8'); };
 
+/** The classroom starters' self-hosted Bricolage Grotesque (public/vendor/oomba-classroom/<version>/fonts/, a
+ *  versioned folder that never changes): font-src only. The starters name it in their @font-face (classroom-style.css). */
+export const CLASSROOM_FONT_PATH = '/vendor/oomba-classroom/';
 export const SANDBOX = 'allow-scripts allow-pointer-lock allow-orientation-lock';
 // The `sandbox` directive means a /frame document is opaque-origin with these same limits even if loaded top-level
 // (not just inside the iframe), so a leaked frame URL can never run at the site origin. No allow-same-origin, ever.
@@ -31,7 +34,8 @@ export function frameCsp(origins = '') {
   // The figure libraries (figlibs.js) are named file by file: each pinned script, never their folders.
   const vendor = own.map(o => ` ${o}${VENDOR_PATH} ${o}${KIT_PATH} ${o}${DATA_PATH} ${o}${KIT2_PATH} ${o}${ART2D_PATH} ${o}${CANVAS_PATH}${FIG_SCRIPTS.map(f => ` ${o}${f}`).join('')}`).join('');
   // (Oomba Canvas, the classroom activity kit: its pinned script and its own copy of the font, canvaskit.js.)
-  const fonts = own.map(o => ` ${o}${KIT_PATH} ${o}${CANVAS_PATH}`).join('');
+  // (The classroom starters: their own copy of the font, CLASSROOM_FONT_PATH; fonts only, never scripts.)
+  const fonts = own.map(o => ` ${o}${KIT_PATH} ${o}${CANVAS_PATH} ${o}${CLASSROOM_FONT_PATH}`).join('');
   // Kit 2 theme art (models, textures, sounds) is fetched by the pinned loaders, so only /vendor/themes/ is reachable for
   // connect, img and media: never any other path or host. connect-src also allows blob:, a URL for data the frame already
   // holds (the model loader reads a model's own textures that way), so it reaches no network. 'wasm-unsafe-eval' lets

@@ -1,43 +1,29 @@
 <title>Team Scoreboard</title>
+<!--CLASSROOM_STYLE-->
 <style>
 /* Team Scoreboard: one big column per team for the classroom board. + and - buttons, number keys (1-6 add, Shift
    with a number takes away), Undo, and a reset that asks first. Teams are numbered or named by colour or animal,
-   never by students' names. Nothing is saved or sent. */
-:root{--bg:#151b2e;--bg2:#1f2840;--ink:#ffffff;--soft:#c3cbe6;--edge:#080b16;--hot:#ffd447;--hot-ink:#1b1400;
-  --t0:#ff5d5d;--t1:#3d9bff;--t2:#2fcf7f;--t3:#ffb02e;--t4:#b26bff;--t5:#ff6fc0}
-*{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
-.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;gap:12px;padding:max(10px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom))}
-.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.bar h1{flex:1;min-width:0;margin:0;font-size:clamp(1.2rem,3.4vmin,2.4rem);font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-button{font:inherit;font-weight:800;min-height:48px;min-width:48px;padding:8px 18px;border-radius:16px;border:3px solid var(--edge);background:var(--bg2);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge)}
-button:active{transform:translateY(2px);box-shadow:0 2px 0 var(--edge)}
-button:focus-visible{outline:5px solid var(--hot);outline-offset:3px}
-button[aria-pressed="true"]{background:var(--hot);color:var(--hot-ink)}
-button:disabled{opacity:.45;cursor:default}
-.small{min-height:44px;padding:6px 14px;font-size:clamp(.9rem,2vmin,1.2rem)}
-.hot{background:var(--hot);color:var(--hot-ink)}
-[hidden]{display:none!important}
+   never by students' names. Nothing is saved or sent.  In the Oomba classroom style (classroom-style.css). */
+:root{--t0:var(--a0);--t1:var(--a1);--t2:var(--a2);--t3:var(--a3);--t4:var(--a4);--t5:var(--a5)}
+.bar{flex-wrap:wrap}
 .teams{flex:1;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:clamp(8px,1.6vmin,18px);min-height:0}
-.team{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;padding:clamp(10px,2vmin,22px) 8px;border-radius:24px;background:var(--c);color:var(--edge);border:4px solid var(--edge);box-shadow:0 8px 0 var(--edge);min-width:0;position:relative}
-.team.lead::after{content:"";position:absolute;top:-14px;left:50%;width:44px;height:28px;transform:translateX(-50%);background:var(--hot);border:3px solid var(--edge);clip-path:polygon(0 100%,0 20%,25% 60%,50% 0,75% 60%,100% 20%,100% 100%)}
-.team .name{font-weight:900;font-size:clamp(1.1rem,3.6vmin,2.6rem);text-align:center;overflow-wrap:anywhere}
-.team .pts{font-weight:900;font-size:clamp(3rem,15vmin,12rem);line-height:1;font-variant-numeric:tabular-nums}
-.team .pts.pop{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
-@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+.team{display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:8px;padding:clamp(12px,2vmin,24px) 8px;border-radius:calc(var(--r) + 8px);background:var(--card);color:var(--ink);border:1.5px solid var(--line);box-shadow:var(--lift-hi);min-width:0;position:relative;overflow:hidden}
+.team::before{content:"";position:absolute;inset:0 0 auto;height:clamp(10px,1.6vmin,16px);background:var(--c)}
+.team.lead{border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf),var(--lift-hi)}
+.team.lead::after{content:"";position:absolute;top:clamp(16px,2.4vmin,26px);inset-inline-end:14px;width:34px;height:22px;background:var(--spark);clip-path:polygon(0 100%,0 20%,25% 60%,50% 0,75% 60%,100% 20%,100% 100%)}
+.team .name{margin-top:8px;font-weight:800;font-size:clamp(1.1rem,3.4vmin,2.5rem);text-align:center;overflow-wrap:anywhere;padding:.15em .7em;border-radius:999px;background:color-mix(in srgb,var(--c) 35%,transparent)}
+.team .pts{font-weight:800;letter-spacing:-.05em;font-size:clamp(3rem,15vmin,12rem);line-height:1;font-variant-numeric:tabular-nums}
+.team .pts.pop{animation:oc-bump .4s var(--spring)}
 .team .btns{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.team button{background:var(--ink);color:var(--edge);font-size:clamp(1.1rem,3.2vmin,2rem);min-width:clamp(52px,8vmin,80px)}
-.team .key{font-weight:800;font-size:clamp(.8rem,1.8vmin,1.1rem);opacity:.8}
-.keys{text-align:center;margin:0;font-size:clamp(.85rem,2vmin,1.2rem);font-weight:700;color:var(--soft)}
-.ask{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:rgba(8,11,22,.8);z-index:5}
-.ask .card{width:min(100%,560px);text-align:center;background:var(--bg2);border:4px solid var(--edge);border-radius:24px;padding:24px}
-.ask p{font-size:clamp(1.2rem,3.4vmin,2rem);font-weight:800;margin:0 0 16px}
-.row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.team button{font-size:clamp(1.1rem,3vmin,1.9rem);min-width:clamp(52px,8vmin,80px)}
+.team .key{font-weight:700;font-size:clamp(.8rem,1.8vmin,1.1rem);color:var(--soft)}
+.ask{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45);z-index:5}
+.ask .card{width:min(100%,560px)}
+.ask p{font-size:clamp(1.2rem,3.4vmin,2rem);font-weight:700;margin:0 0 16px;color:var(--ink)}
 @media (max-width:640px){.teams{grid-template-columns:repeat(min(var(--n),2),minmax(0,1fr))}.team .pts{font-size:clamp(2.4rem,14vw,5rem)}}
-@media (prefers-reduced-motion:reduce){.team .pts.pop{animation:none}}
 </style>
 <main class="app">
-  <header class="bar"><h1 id="title"></h1><button class="small" id="undo"></button><button class="small" id="reset"></button><button class="small" id="sound" aria-pressed="true"></button><button class="small" id="full"></button></header>
+  <header class="bar"><h1 id="title"></h1><button class="small" id="undo"></button><button class="small" id="reset"></button><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
   <div class="teams" id="teams"></div>
   <p class="keys" id="keys"></p>
 </main>
@@ -50,6 +36,7 @@ button:disabled{opacity:.45;cursor:default}
 const CONFIG = {
   title: 'Team Scoreboard',
   lang: 'en',
+  sound: false,
   teams: 4,
   labels: [],
   step: 1,
@@ -78,7 +65,8 @@ const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
 const $ = id => document.getElementById(id);
-const sfx = name => { try { if (B.sfx) B.sfx.play(name); } catch (e) { /* no sound */ } };
+let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
+const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };
 const N = Math.max(1, Math.min(6, CONFIG.teams | 0));
 const nameOf = i => (CONFIG.labels[i] ? String(CONFIG.labels[i]) : tr('team', { n: i + 1 }));
 
@@ -123,7 +111,7 @@ function closeAsk(reset) {
 
 // ---- buttons and keys ---------------------------------------------------------------------------------------------
 $('undo').onclick = undo; $('reset').onclick = askReset; $('yes').onclick = () => closeAsk(true); $('no').onclick = () => closeAsk(false);
-$('sound').onclick = () => { try { if (B.sfx) B.sfx.mute(); } catch (e) { /* no sound */ } $('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted))); };
+$('sound').onclick = () => { soundOn = !soundOn; $('sound').setAttribute('aria-pressed', String(soundOn)); sfx('click'); };
 $('full').onclick = () => { try { if (B.fullscreen) B.fullscreen(); } catch (e) { /* not here */ } };
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
@@ -137,7 +125,7 @@ addEventListener('keydown', e => {
 
 document.title = CONFIG.title; $('title').textContent = CONFIG.title;
 for (const [id, k] of [['sound', 'sound'], ['full', 'full'], ['undo', 'undo'], ['reset', 'reset'], ['askP', 'askReset'], ['yes', 'yes'], ['no', 'no'], ['keys', 'keys']]) $(id).textContent = tr(k);
-$('sound').setAttribute('aria-pressed', String(!(B.sfx && B.sfx.muted)));
+$('sound').setAttribute('aria-pressed', String(soundOn));
 window.__brbTest = { state: () => ({ scores: S.scores.slice(), teams: N, undo: S.history.length, asking: S.asking }), start() { S.scores = Array(N).fill(0); S.history = []; paint(); } };
 build();
 </script>

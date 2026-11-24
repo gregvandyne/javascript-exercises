@@ -8,6 +8,7 @@ import { current, tHtml } from '../i18n/index.js';
 import { urlFor } from '../services/shots.js';
 import { photoUrl } from '../services/photos.js';
 import { OFFICIAL, GROWNUP_AVATAR, GROWNUP_COLOR } from '../auth.js';
+import { config } from '../config.js';
 import { faceMark } from './brand.js';
 import { liveGameOf } from '../live/live-games.js';
 import fs from 'node:fs';
@@ -25,7 +26,9 @@ const VIS_EMOJI = { private: '🔒', family: '🏠', friends: '👫', class: '�
 /** "🔒 Only me" / "🏠 My family" / "👫 Friends" / "🎒 My class(es)" / "🏫 My school" / "🌍 Everyone" in the reader's language.
  *  count: how many classes a 'class' game is shared with ("My class" for one, "My classes" otherwise).
  *  grownup: the game's owner is a grown-up builder, whose 'friends' are "🤝 My grown-up connections". */
-export function visLabel(v, t = current().t, count = 1, { grownup = false } = {}) {
+export function visLabel(v, t = current().t, count = 1, { grownup = false, official = false } = {}) {
+  // PUBLIC_GAMES off: a player's game left at 'public' or 'school' from before reaches its maker's connections and classes only.
+  if ((v === 'public' || v === 'school') && !official && !config.publicGames) return `🤝 ${t('vis.connectionsClasses')}`;
   // A class game that reaches no class right now (its builder left, or a teacher took it off): in effect only them.
   if (v === 'class' && count === 0) return `🔒 ${t('vis.onlyYouNow')}`;
   if (v === 'friends' && grownup) return `🤝 ${t('vis.connections')}`;
@@ -110,7 +113,7 @@ export function statusLabel(g, t = current().t, count = 1, grownup = g.owner_typ
   if (g.status === 'rejected') return `✏️ ${t('status.needsChanges')}`;
   if (g.status === 'suspended') return `⛔ ${t('status.suspended')}`;
   if (g.status !== 'published') return `📝 ${t('status.draft')}`;
-  return visLabel(g.visibility, t, count, { grownup });
+  return visLabel(g.visibility, t, count, { grownup, official: g.source === 'seed' });
 }
 /** moreLabel: the words of the "more" link (default "See all"). */
 export function rail({ title, games, more = null, id = null, emoji = '', moreLabel = null }) {

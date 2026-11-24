@@ -5,6 +5,7 @@
 // Each tool starts its live build step (steps.js) before exec() streams its event, so the row comes before its card.
 // Once the build's signal is aborted (time cap, game deleted, ban, a restart hand-off: runner.js), exec() refuses every
 // tool and saveVersion() writes nothing, so no version can land after a build ended or was handed off.
+import { config } from '../config.js';
 import * as games from '../services/games.js';
 import { sanitizeGameHtml, MAX_GAME_BYTES } from '../services/sanitize.js';
 import { upgradeKitPins } from '../services/kit.js';
@@ -14,7 +15,7 @@ import { cleanText } from '../services/textfilter.js';
 import { signToken } from '../auth.js';
 import * as snapshot from '../services/snapshot.js';
 import { localeInfo, tFor } from '../i18n/index.js';
-import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS } from './catalog.js';
+import { templateHtml, templateInfo, BUILDER_TEMPLATE_KEYS, CLASSROOM_TEMPLATE_KEYS, CANVAS_TEMPLATE_KEYS, FOCUS_TEMPLATE_KEYS } from './catalog.js';
 import { NO_STEPS, cleanNote } from './steps.js';
 import { stripLinks } from './search.js';
 import * as autotest from './autotest.js';
@@ -27,7 +28,10 @@ import { withActivityData } from '../services/canvaskit.js';
 // Templates the Builder may start from with start_from_template: the 2D kit templates, world3d (its own 3D starter)
 // and oomba3d (the Kit 2 starter: a ready-made 3D world and hero, kit2.js), and the classroom activity starter "canvas"
 // (Oomba Canvas: not in the cached tool list, the CANVAS RULES name it).
-const STARTERS = [...BUILDER_TEMPLATE_KEYS, ...CANVAS_TEMPLATE_KEYS];
+const STARTERS = [...new Set([...BUILDER_TEMPLATE_KEYS, ...CLASSROOM_TEMPLATE_KEYS, ...CANVAS_TEMPLATE_KEYS])];
+// The classroom focus (config.arcade off): the classroom starters and the lesson starter only, never a kit template.
+const FOCUS_STARTERS = [...FOCUS_TEMPLATE_KEYS, ...CANVAS_TEMPLATE_KEYS];
+const startersNow = () => (config.arcade ? STARTERS : FOCUS_STARTERS);
 
 const CATS = games.CATEGORY_KEYS;
 /** A Studio preview link (signed, short-lived). lang: the builder's language, passed to the game as BRB.user.lang. */
@@ -232,7 +236,7 @@ export function toolbox(ctx) {
     // A ready-made game saved as a new version on the server, so the model does not have to write it out.
     async start_from_template(input) {
       const key = String((input && input.template) || '');
-      if (!STARTERS.includes(key)) return { ok: false, forModel: `Unknown template. Use one of: ${STARTERS.join(', ')}.` };
+      if (!startersNow().includes(key)) return { ok: false, forModel: STARTERS.includes(key) ? `Not available: the Builder makes classroom games now (no Oomba Kit, no 3D, no sprites). Start from one of the classroom starters: ${FOCUS_TEMPLATE_KEYS.join(', ')}.` : `Unknown template. Use one of: ${startersNow().join(', ')}.` };
       // The Kit 2 starter needs a shipped world and one of that world's characters: an invented name is refused with the
       // real names, so the model never guesses.
       let k2 = null;
@@ -283,7 +287,7 @@ export function toolbox(ctx) {
       else if (r.ok && !k2 && input && input.world && !ART2D_TEMPLATES.includes(key) && key !== 'world3d') r.forModel += ` This template does not draw the 2D worlds yet (only ${ART2D_TEMPLATES.join(' and ')} do): tell the builder so in one short sentence and give it the theme with the kit's own looks.`;
       if (r.ok && k2) r.forModel += ` It is the Kit 2 starter in the 3D world ${k2.world} ${worldById(k2.world).version} with the hero ${k2.hero}${k2.companion ? ` and the animal friend ${k2.companion} (CONFIG.companion)` : ''}: a finished game on Oomba3D (not on the Oomba Kit, not world3d). Now, in this same turn, make it theirs with edit_game, following the KIT 2 RULES (they are in your instructions from the next step on): CONFIG (title, hero, companion, outfit, time, weather, steps), QUESTIONS in the builder's language, and LAYOUT / buildWorld() with pieces of ${k2.world} only. This world's pieces: ${worldById(k2.world).pieces.map(p => p.id).join(', ')}. Then playtest.`;
       else if (r.ok && CANVAS_TEMPLATE_KEYS.includes(key)) r.forModel += ' It is the classroom activity starter on Oomba Canvas (not the Oomba Kit: the KIT RULES do not apply). Now make it theirs with edit_game on its oc-activity JSON block only, following the CANVAS RULES: config (lang, support, count), task (title, say), problems or gen for the tool, and steps / hints lines only if they add something. The kit draws it and checks every answer; every version must pass its self-test.';
-      else if (r.ok && CLASSROOM_TEMPLATE_KEYS.includes(key)) r.forModel += ` It is ${info ? info.title : key}, a classroom starter: plain HTML for the classroom board and phones, not on the Oomba Kit (the KIT RULES do not apply to it). Now make it theirs with edit_game: lines of its CONFIG block (teams, numbers; CONFIG.lang is the language their content is written in), its content list (QUESTIONS, CATEGORIES, ITEMS or CARDS), its <title>, and the WORDS table only where a word should change (every language). Keep its big type, its keyboard and clicker keys and its Sound and Full screen buttons, and follow the CLASSROOM RULES.`;
+      else if (r.ok && CLASSROOM_TEMPLATE_KEYS.includes(key)) r.forModel += ` It is ${info ? info.title : key}, a classroom starter: plain HTML for the classroom board and phones, not on the Oomba Kit (the KIT RULES do not apply to it). Now make it theirs with edit_game: lines of its CONFIG block (teams, numbers; CONFIG.lang is the language their content is written in), its content list (QUESTIONS, CATEGORIES, ITEMS, CARDS, PAIRS or WORD_LIST), its <title>, and the WORDS table only where a word should change (every language). Keep its big type, its keyboard and clicker keys and its Sound and Full screen buttons, and follow the CLASSROOM RULES.`;
       else if (r.ok) r.forModel += key === 'world3d'
         ? ' It is the 3D starter (no Oomba Kit). Now, in this same turn, replace its EXAMPLE world with the world the builder asked for (buildWorld, makeHero, SPAWN, onPickup, CONFIG and the I18N words in every language), following the 3D RULES, then playtest.'
         : ` It is ${info ? info.title : key}, an Oomba Kit game. Now make it theirs with edit_game: change lines of its CONFIG block (one key per line: title, the hero and cast as character specs, the biome, numbers, item lists), its content lists, and the WORDS table (every language you change), following the KIT RULES.`;

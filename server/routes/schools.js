@@ -28,6 +28,7 @@ import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
 import * as games from '../services/games.js';
 import { siteHost } from '../site.js';
+import { config } from '../config.js';
 import { billingTabOn, schoolBillingTab } from './school-billing.js';
 import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, googleRosterLine, googleRowMenu, schoolGoogleSettings, staffGoogleInvites } from './google.js';
 import { gcRosterHint, gcLessonsButton } from './gclassroom.js';
@@ -572,7 +573,7 @@ function schoolSettings(req, s) {
     ${st.chatNotice && st.chat === 'off' ? html`<p class="notice warn" id="chat-notice" role="status">${ico('🛡️', { size: 18 })} ${t('school.settings.chatNotice')}
       <button class="btn btn-sm" type="submit" form="chat-notice-seen">${t('school.settings.chatNoticeKeep')}</button></p>` : ''}
     <div class="field"><label for="set-chat">${t('school.settings.chat')}</label><select class="input" id="set-chat" name="chat" data-hint-classmates="${t('school.settings.chatHint')}" data-hint-off="${t('school.settings.chatHintOff')}"><option value="off" ${selected(st.chat === 'off')}>${t('school.settings.chatOff')}</option><option value="classmates" ${selected(st.chat === 'classmates')}>${t('school.settings.chatClassmates')}</option></select><span class="hint" id="set-chat-hint">${t(st.chat === 'off' ? 'school.settings.chatHintOff' : 'school.settings.chatHint')}</span></div>
-    <div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>
+    ${config.publicGames ? html`<div class="field"><label for="set-publishing">${t('school.settings.publishing')}</label><select class="input" id="set-publishing" name="publishing" aria-describedby="set-publishing-hint"><option value="school" ${selected(st.publishing === 'school')}>${t('school.settings.publishSchool')}</option><option value="public" ${selected(st.publishing === 'public')}>${t('school.settings.publishPublic')}</option></select><span class="hint" id="set-publishing-hint">${t('school.settings.publishingHint')}</span></div>` : ''}
     <p class="small muted">${t('school.settings.photos')}</p>
     <div class="savebar"><span class="small unsaved-note" id="set-unsaved" hidden>${ico('⚠️', { size: 18 })} ${t('school.settings.unsaved')}</span><button class="btn btn-primary" type="submit">${t('school.save')}</button></div>
   </form>
