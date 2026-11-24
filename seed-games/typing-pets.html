@@ -98,6 +98,23 @@
   .timer { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 1.3rem; color: var(--ink); background: var(--soft); border-radius: 12px; padding: 4px 12px; }
   .timer.low { color: var(--warn); }
   .live { font-variant-numeric: tabular-nums; }
+  .own { margin-top: 12px; }
+  .own h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .own-list { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+  .own-list li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; border: 2px solid var(--line); border-radius: 14px; padding: 8px 10px; }
+  .own-list .nm { flex: 1; min-width: 160px; font-weight: 700; }
+  .own-list .nm small { display: block; font-weight: 600; color: var(--muted); }
+  .pill.sm { min-height: 36px; padding: 4px 10px; font-size: .9rem; }
+  .codebox { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
+  .codebox input, .editor input[type=text], .editor textarea, .editor select { font: inherit; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--card); color: var(--ink); }
+  .codebox input { text-transform: uppercase; letter-spacing: .08em; width: 12em; }
+  .editor label { display: block; font-weight: 700; margin: 12px 0 4px; }
+  .editor input[type=text], .editor textarea { width: 100%; }
+  .editor textarea { min-height: 180px; font-family: ui-monospace, Menlo, Consolas, monospace; line-height: 1.5; }
+  .editor .row2 { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+  .err { color: var(--warn); font-weight: 700; }
+  .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.6rem; font-weight: 800; letter-spacing: .1em; }
+  .passnote { border: 2px dashed var(--accent); }
   @media (max-width: 560px) {
     .key { height: 44px; font-size: .9rem; border-radius: 8px; }
     .row, .kb { gap: 4px; }
@@ -191,7 +208,24 @@ var I18N = {
     "timeUp": "Time's up!", "liveWpm": "{n} wpm",
     "trickyH": "Practice my tricky keys", "trickySub": "The keys you miss most:", "trickyName": "Tricky keys",
     "intro_tricky": "These are the keys you miss most. Go slowly and get each one right.",
-    "practiceDone": "Practice done!"
+    "practiceDone": "Practice done!",
+    "ownH": "Your own typing lessons", "ownSub": "Write a lesson or a timed test with your own words, then share its class code or assign it.",
+    "writeBtn": "Write a lesson", "writeH": "Write a typing lesson", "editH": "Change your typing lesson",
+    "nameL": "Name (optional)", "textL": "What students type",
+    "textHint": "Letters, numbers, spaces and . , ; : ' \" - ! ? ( ). Each line is typed in turn. 10 to 1,500 characters.",
+    "kindL": "Kind", "kindLesson": "Lesson (type it once)", "kindTest": "Timed test", "minsL": "Minutes",
+    "saveBtn": "Save", "saving": "Saving...", "cancel": "Cancel",
+    "savedH": "Saved!", "codeIs": "Class code: {code}", "codeHow": "Students open Typing Pets and type this code, or you assign it to a class.",
+    "assignBtn": "Assign to a class", "copyBtn": "Copy link", "copied": "Link copied!", "tryBtn": "Try it", "editBtn": "Edit", "delBtn": "Delete",
+    "delAsk": "Delete this lesson? Its class code and links will stop working.", "delSure": "Tap again to delete",
+    "saveErr": "That didn't save. Check the text has only keys from the keyboard and nothing personal or unkind.",
+    "badChars": "These can't be typed in Typing Pets: {chars}", "tooShort": "Type at least 10 characters.", "tooLong": "That's more than 1,500 characters.",
+    "noneYet": "No lessons yet.",
+    "codeH": "Got a code from your teacher?", "codePh": "Class code", "openBtn": "Open",
+    "codeBad": "That code doesn't work. Check it with your teacher.", "missing": "This lesson isn't there anymore. Ask your teacher for a new code.",
+    "myLesson": "Your teacher's lesson", "minTest": "{n}-minute test",
+    "passNeed": "To pass: {what}.", "passNot": "Not passed yet. You need {what}. Try again to crack your egg!", "passOk": "You passed!",
+    "pAcc": "{n}% accuracy", "pWpm": "{n} words a minute", "pAnd": " and "
   }
 };
 // ==== I18N END ====
@@ -227,7 +261,7 @@ const FINGER = {};
 FINGER[' '] = 'th';
 const LEFT = new Set('12345qwertasdfgzxcvb'.split(''));
 // Characters typed with Shift that are not big letters, and the key each one is on.
-const SHIFT_OF = { '!': '1', '?': '/', '"': "'", '_': '-' };
+const SHIFT_OF = { '!': '1', '?': '/', '"': "'", '_': '-', ':': ';', '(': '9', ')': '0' };
 const UP = Object.fromEntries(Object.entries(SHIFT_OF).map(([a, b]) => [b, a]));
 /** The key a character is typed on (A -> a, ? -> /). */
 const baseKey = c => SHIFT_OF[c] || c.toLowerCase();
@@ -305,13 +339,13 @@ const PETS = [
 ];
 
 // ---------------------------------------------------------------- the save
-function blankSave() { return { v: 1, done: {}, pets: {}, keys: {}, tests: {}, practice: { n: 0, t: 0 }, secs: 0, last: 0 }; }
+function blankSave() { return { v: 1, done: {}, pets: {}, keys: {}, tests: {}, practice: { n: 0, t: 0 }, custom: {}, days: {}, secs: 0, last: 0 }; }
 function loadSave() {
   let s = null;
   try { s = BRBx && BRBx.storage ? BRBx.storage.get(SAVE_KEY) : JSON.parse(localStorage.getItem(SAVE_KEY) || 'null'); } catch (e) { s = null; }
   if (!s || typeof s !== 'object' || s.v !== 1) return blankSave();
   const b = blankSave();
-  for (const k of ['done', 'pets', 'keys', 'tests', 'practice']) if (s[k] && typeof s[k] === 'object') b[k] = s[k];
+  for (const k of ['done', 'pets', 'keys', 'tests', 'practice', 'custom', 'days']) if (s[k] && typeof s[k] === 'object') b[k] = s[k];
   b.secs = +s.secs || 0; b.last = +s.last || 0;
   return b;
 }
@@ -338,6 +372,7 @@ function drillsFor(L) {
   const allowed = L.allowed.replace(/[^a-z0-9;,.'\-]/g, '');
   const letters = allowed.replace(/[^a-z]/g, '');
   if (L.sentences) return shuffle(SENTENCES.slice()).slice(0, CONFIG.linesPerLesson + (L.speed ? 1 : 0)).map(s => s.length > 44 ? s.slice(0, 44) : s);
+  if (L.own) return L.own.slice();
   if (L.test) return [testLine(), testLine(), testLine()];
   if (L.marks) return shuffle(MARKS.slice()).slice(0, CONFIG.linesPerLesson + 1);
   if (L.apos) return [0, 1, 2].map(() => fill(() => pick(APOS)));
@@ -385,14 +420,55 @@ function trickyLesson() {
   return keys ? { id: 'tricky', name: t('trickyName'), keys, allowed: keys + 'asdfjkl', tricky: true } : null;
 }
 function testLesson(id) { const x = TESTS.find(T => T.id === id); return x ? { id: x.id, name: t('testN', { n: x.min }), min: x.min, test: true, keys: '', allowed: '' } : null; }
-/** Any lesson by id: the 28 lessons, a test or the tricky keys. */
-function lessonById(id) { return LESSONS.find(L => L.id === id) || testLesson(id) || (id === 'tricky' ? trickyLesson() : null); }
+/** Any lesson by id: the 28 lessons, a test, the tricky keys or the teacher's lesson that is open. */
+function lessonById(id) { return LESSONS.find(L => L.id === id) || testLesson(id) || (id === 'tricky' ? trickyLesson() : null) || (customL && customL.id === id ? customL : null); }
+
+// ---------------------------------------------------------------- a teacher's own lesson (BRB.questionSet)
+// One item { t: name, x: text, k: 'lesson' | 'test', n: minutes }, cleaned by the server (services/game-sets.js
+// cleanTypingItems): only characters this keyboard can type.
+let customL = null;
+function wrapText(x) {
+  const out = [];
+  for (const para of String(x).split('\n')) {
+    let line = '';
+    for (const w of para.split(' ').filter(Boolean)) {
+      if (line && (line + ' ' + w).length > 44) { out.push(line); line = w; } else line = line ? line + ' ' + w : w;
+    }
+    if (line) out.push(line);
+  }
+  return out;
+}
+function customLesson(id, items) {
+  const it = items && items[0];
+  if (!it || typeof it.x !== 'string') return null;
+  const lines = wrapText(it.x);
+  if (!lines.length) return null;
+  const test = it.k === 'test';
+  return { id, name: it.t || (test ? t('minTest', { n: it.n || 1 }) : t('myLesson')), custom: true, own: lines, test, min: test ? (it.n || 1) : 0, keys: '', allowed: '' };
+}
+/** A pass mark from the assignment (BRB.params.mode a90-w20; services/typing.js passMode), only in an assigned lesson. */
+let PASS = null;
+function readPass() {
+  const m = /^(?:a(\d{2,3}))?-?(?:w(\d{1,3}))?$/.exec(locked && typeof P.mode === 'string' ? P.mode : '');
+  if (!m || (!m[1] && !m[2])) return null;
+  return { acc: m[1] ? Math.min(100, +m[1]) : null, wpm: m[2] ? +m[2] : null };
+}
+function passText() {
+  return [PASS.acc !== null ? t('pAcc', { n: PASS.acc }) : '', PASS.wpm !== null ? t('pWpm', { n: PASS.wpm }) : ''].filter(Boolean).join(t('pAnd'));
+}
+const codeOf = id => { const c = String(id).replace(/^s-/, '').toUpperCase(); return `${c.slice(0, 5)} ${c.slice(5)}`; };
+/** Today on the player's own calendar, for the daily practice minutes. */
+function today() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; }
 
 // ---------------------------------------------------------------- screens
 const $ = id => document.getElementById(id);
 const screen = $('screen');
 const P = (BRBx && BRBx.params) || {};
-const locked = P.lock === 1 && !!P.chapter && (LESSONS.some(L => L.id === P.chapter) || TESTS.some(x => x.id === P.chapter) || P.chapter === 'tricky');
+const QS = BRBx && BRBx.questionSet ? BRBx.questionSet : null;   // a teacher's lesson the link opened
+const isSetCode = c => /^s-[a-z0-9]{10}$/.test(c || '');
+const locked = P.lock === 1 && !!P.chapter && (LESSONS.some(L => L.id === P.chapter) || TESTS.some(x => x.id === P.chapter) || P.chapter === 'tricky' || isSetCode(P.chapter));
+PASS = readPass();
+if (QS && QS.items) customL = customLesson(QS.id, QS.items);
 let cur = null;   // the lesson being typed
 
 function starsHtml(n) { let s = ''; for (let i = 1; i <= 3; i++) s += i <= n ? '★' : '<span class="off">★</span>'; return s; }
@@ -408,9 +484,12 @@ const unlocked = i => i === 0 || !!save.done[LESSONS[i - 1].id] || !!save.done[L
 
 function showMap() {
   cur = null; stopKeys();
+  if (locked && isSetCode(P.chapter)) return customL ? showIntro(customL) : showMissing();
   if (locked) return showIntro(lessonById(P.chapter) || trickyLesson() || LESSONS[0]);
+  if (customL && !shownCustom) { shownCustom = true; return showIntro(customL); }   // a link to a teacher's lesson
   const nextI = LESSONS.findIndex(L => !save.done[L.id]);
   let html = `<div class="card hello"><span class="big" aria-hidden="true">🥚</span><div><b>${esc(t('tag'))}</b><p class="muted" style="margin:.3em 0 0">${esc(t('hello'))}</p></div></div>`;
+  html += ownCard();
   const tk = trickyKeys();
   if (tk.length) html += `<div class="card tricky"><span class="big" aria-hidden="true">🎯</span><div><b>${esc(t('trickyH'))}</b><p class="muted" style="margin:.3em 0 0">${esc(t('trickySub'))} ${tk.map(k => `<span class="keycap">${esc(k.toUpperCase())}</span>`).join('')}</p></div><button type="button" class="btn" data-lesson="tricky">${esc(t('startBtn'))}</button></div>`;
   for (let u = 1; u <= UNITS; u++) {
@@ -438,6 +517,85 @@ function showMap() {
   drawTop();
 }
 
+let shownCustom = false;
+function showMissing() {
+  stopKeys(); cur = null;
+  screen.innerHTML = `<div class="card center"><p style="font-size:2.5rem;margin:0" aria-hidden="true">🥚</p><p><b>${esc(t('missing'))}</b></p></div>`;
+  drawTop();
+}
+/** The map's card for teachers' own lessons (BRB.canMake) and for a student's class code (BRB.canFindSet). */
+function ownCard() {
+  let h = '';
+  if (BRBx && BRBx.canMake) {
+    h += `<div class="card own" id="own"><h3>✏️ ${esc(t('ownH'))}</h3><p class="muted" style="margin:0">${esc(t('ownSub'))}</p>
+      <div class="actions" style="justify-content:flex-start"><button type="button" class="btn" data-go="write">${esc(t('writeBtn'))}</button></div>
+      ${BRBx.canListSets ? '<ul class="own-list" id="ownList"></ul>' : ''}</div>`;
+    if (BRBx.canListSets) setTimeout(loadOwn, 0);
+  }
+  if (BRBx && BRBx.findQuestionSet && BRBx.canFindSet !== false && !(BRBx.canMake)) {
+    h += `<div class="card own"><h3>🔑 ${esc(t('codeH'))}</h3><form class="codebox" id="codeForm"><input id="codeIn" autocomplete="off" maxlength="14" placeholder="${esc(t('codePh'))}" aria-label="${esc(t('codePh'))}"><button type="submit" class="btn">${esc(t('openBtn'))}</button></form><p class="err" id="codeErr" aria-live="polite"></p></div>`;
+  }
+  return h;
+}
+let ownSets = [];
+function loadOwn() {
+  const ul = $('ownList'); if (!ul || !BRBx.mySets) return;
+  const p = BRBx.mySets(); if (!p) return;
+  p.then(r => {
+    if (!$('ownList')) return;
+    ownSets = (r && r.sets) || [];
+    $('ownList').innerHTML = ownSets.length ? ownSets.map(x => `<li><span class="nm">${esc(x.title || x.label)}<small>${esc(x.title && x.label.startsWith(x.title + ': ') ? x.label.slice(x.title.length + 2) : x.label)} · <span dir="ltr">${esc(x.code)}</span></small></span>
+      <button type="button" class="pill sm" data-own="try" data-id="${esc(x.id)}">▶ ${esc(t('tryBtn'))}</button>
+      <button type="button" class="pill sm" data-own="edit" data-id="${esc(x.id)}">${esc(t('editBtn'))}</button>
+      ${BRBx.canAssign ? `<button type="button" class="pill sm" data-own="assign" data-id="${esc(x.id)}">📌 ${esc(t('assignBtn'))}</button>` : ''}
+      <button type="button" class="pill sm" data-own="del" data-id="${esc(x.id)}">${esc(t('delBtn'))}</button></li>`).join('') : `<li class="muted">${esc(t('noneYet'))}</li>`;
+  });
+}
+const BAD = /[^A-Za-z0-9 .,;:'"!?()\-\n]/g;
+function plainText(x) { return String(x).replace(/[‘’ʼ]/g, "'").replace(/[“”]/g, '"').replace(/[–—]/g, '-').replace(/…/g, '...'); }
+/** The lesson writer: name, text, lesson or timed test. Saved with BRB.saveQuestionSet (a new code, or the same code). */
+function showWriter(id) {
+  stopKeys(); cur = null;
+  const old = id ? ownSets.find(x => x.id === id) : null, it = old ? old.items[0] : { t: '', x: '', k: 'lesson', n: 1 };
+  screen.innerHTML = `<div class="card editor"><div class="lesson-h"><h2>✏️ ${esc(t(old ? 'editH' : 'writeH'))}</h2><button type="button" class="pill" data-go="map">← ${esc(t('map'))}</button></div>
+    <form id="writer" novalidate>
+      <label for="wName">${esc(t('nameL'))}</label><input type="text" id="wName" maxlength="60" value="${esc(it.t || '')}">
+      <label for="wText">${esc(t('textL'))}</label><textarea id="wText" maxlength="1600" spellcheck="true">${esc(it.x || '')}</textarea>
+      <p class="muted small" style="margin:4px 0 0">${esc(t('textHint'))}</p>
+      <div class="row2"><div><label for="wKind">${esc(t('kindL'))}</label><select id="wKind"><option value="lesson"${it.k !== 'test' ? ' selected' : ''}>${esc(t('kindLesson'))}</option><option value="test"${it.k === 'test' ? ' selected' : ''}>${esc(t('kindTest'))}</option></select></div>
+        <div id="wMinsBox"${it.k === 'test' ? '' : ' class="hidden"'}><label for="wMins">${esc(t('minsL'))}</label><select id="wMins">${[1, 2, 3, 5].map(m => `<option value="${m}"${(it.n || 1) === m ? ' selected' : ''}>${m}</option>`).join('')}</select></div></div>
+      <p class="err" id="wErr" aria-live="polite"></p>
+      <div class="actions" style="justify-content:flex-start"><button type="submit" class="btn" id="wSave">${esc(t('saveBtn'))}</button><button type="button" class="btn ghost" data-go="map">${esc(t('cancel'))}</button></div>
+    </form><div id="wDone"></div></div>`;
+  $('wKind').addEventListener('change', () => $('wMinsBox').classList.toggle('hidden', $('wKind').value !== 'test'));
+  $('wText').addEventListener('input', () => { const bad = [...new Set(plainText($('wText').value).match(BAD) || [])].join(' '); $('wErr').textContent = bad ? t('badChars', { chars: bad }) : ''; });
+  $('writer').addEventListener('submit', e => {
+    e.preventDefault();
+    const x = plainText($('wText').value).replace(/[ \t]+/g, ' ').trim();
+    const bad = [...new Set(x.match(BAD) || [])].join(' ');
+    if (bad) { $('wErr').textContent = t('badChars', { chars: bad }); return; }
+    if (x.replace(/\s/g, '').length < 10) { $('wErr').textContent = t('tooShort'); return; }
+    if (x.length > 1500) { $('wErr').textContent = t('tooLong'); return; }
+    const k = $('wKind').value === 'test' ? 'test' : 'lesson';
+    const item = { t: $('wName').value.trim().slice(0, 60), x, k, ...(k === 'test' ? { n: +$('wMins').value } : {}) };
+    $('wSave').disabled = true; $('wSave').textContent = t('saving'); $('wErr').textContent = '';
+    const p = BRBx.saveQuestionSet([item], old ? old.id : undefined, { title: item.t });
+    if (!p) return;
+    p.then(r => {
+      $('wSave').disabled = false; $('wSave').textContent = t('saveBtn');
+      if (!r || !r.id) { $('wErr').textContent = t('saveErr'); return; }
+      ownSets = ownSets.filter(o => o.id !== r.id).concat([{ id: r.id, title: item.t, label: '', code: codeOf(r.id), items: [item] }]);
+      const link = BRBx.gameUrl ? `${BRBx.gameUrl}?chapter=${r.id}&lock=1` : '';
+      $('wDone').innerHTML = `<div class="note" style="margin-top:14px"><b>${esc(t('savedH'))}</b> <span class="code" dir="ltr">${esc(codeOf(r.id))}</span>
+        <p class="muted" style="margin:.4em 0">${esc(t('codeHow'))}</p>
+        <div class="actions" style="justify-content:flex-start">
+          <button type="button" class="btn" data-own="try" data-id="${esc(r.id)}">▶ ${esc(t('tryBtn'))}</button>
+          ${BRBx.canAssign ? `<button type="button" class="btn ghost" data-own="assign" data-id="${esc(r.id)}">📌 ${esc(t('assignBtn'))}</button>` : ''}
+          ${link && BRBx.copy ? `<button type="button" class="btn ghost" data-own="copy" data-link="${esc(link)}">🔗 ${esc(t('copyBtn'))}</button>` : ''}</div></div>`;
+    });
+  });
+  drawTop();
+}
 function showIntro(L) {
   stopKeys();
   const i = LESSONS.indexOf(L);
@@ -447,6 +605,7 @@ function showIntro(L) {
     <p class="tip">${esc(introText(L))}</p>
     ${i === 0 ? `<p class="note">${esc(t('how1'))} ${esc(t('how2'))}</p>` : ''}
     ${L.caps ? `<p class="note">${esc(t('shiftHint'))}</p>` : ''}
+    ${PASS ? `<p class="note passnote">🎯 ${esc(t('passNeed', { what: passText() }))}</p>` : ''}
     <div class="actions"><button type="button" class="btn" data-go="type">${esc(t('startBtn'))}</button></div>
     <p class="muted center">${esc(t('start'))}</p>
   </div>${keyboardHtml(L)}`;
@@ -482,7 +641,7 @@ function testTick() {
 }
 function keyboardHtml(L) {
   const allowed = new Set((L ? L.allowed : '').split('').map(baseKey));
-  const all = !L || L.caps || L.sentences || L.test || L.marks || L.apos || L.numWords;
+  const all = !L || L.caps || L.sentences || L.test || L.marks || L.apos || L.numWords || L.custom;
   const k = c => `<button type="button" class="key${'fj'.includes(c) ? ' home' : ''}${!all && !allowed.has(c) ? ' unused' : ''}" data-key="${esc(c)}" style="background:var(--f-${FINGER[c]})" tabindex="-1" aria-label="${esc(c)}">${esc(c.toUpperCase())}</button>`;
   return `<div class="kb" aria-hidden="true">
     <div class="row">${ROWS[0].split('').map(k).join('')}</div>
@@ -551,7 +710,7 @@ function press(ch) {
 function lineDone(now) {
   cur.ms += now - cur.t0; cur.t0 = 0;
   cur.line++; cur.pos = 0;
-  if (cur.L.test) cur.lines.push(testLine());
+  if (cur.L.test) cur.lines.push(cur.L.own ? cur.L.own[cur.lines.length % cur.L.own.length] : testLine());
   if (cur.line >= cur.lines.length) return lessonDone();
   sfx('coin');
   drawLine();
@@ -571,6 +730,12 @@ function lessonDone() {
     save.tests.log = (Array.isArray(save.tests.log) ? save.tests.log : []).concat([[L.min, wpm, acc, Date.now()]]).slice(-20);
   } else if (L.tricky) {
     save.practice = { n: ((save.practice && save.practice.n) || 0) + 1, t: Date.now() };
+  } else if (L.custom) {
+    // A teacher's lesson or test: its best run under its code (at most 30 kept, the oldest go).
+    const prev = save.custom[L.id];
+    save.custom[L.id] = { w: Math.max(wpm, prev ? prev.w : 0), a: Math.max(acc, prev ? prev.a : 0), n: (prev ? prev.n : 0) + 1, t: Date.now(), lw: wpm, la: acc, k: L.test ? 't' : 'l' };
+    const ids = Object.keys(save.custom).sort((a, b) => (save.custom[a].t || 0) - (save.custom[b].t || 0));
+    while (ids.length > 30) delete save.custom[ids.shift()];
   } else {
     const prev = save.done[L.id];
     save.done[L.id] = { s: Math.max(stars, prev ? prev.s : 0), w: Math.max(wpm, prev ? prev.w : 0), a: Math.max(acc, prev ? prev.a : 0), n: (prev ? prev.n : 0) + 1, t: Date.now(), la: acc, lw: wpm };
@@ -578,12 +743,17 @@ function lessonDone() {
   for (const k in cur.hit) { const r = save.keys[k] || [0, 0]; r[0] += cur.hit[k]; save.keys[k] = r; }
   for (const k in cur.miss) { const r = save.keys[k] || [0, 0]; r[1] += cur.miss[k]; save.keys[k] = r; }
   save.secs += Math.round(cur.ms / 1000); save.last = Date.now();
+  // Minutes typed per day (the student's own calendar), the last 14 days, for the class's daily goal.
+  const day = today(); save.days[day] = (save.days[day] || 0) + Math.round(cur.ms / 1000);
+  for (const k of Object.keys(save.days).sort().slice(0, -14)) delete save.days[k];
   store();
+  const passed = !PASS || ((PASS.acc === null || acc >= PASS.acc) && (PASS.wpm === null || wpm >= PASS.wpm));
   // For a class lesson step: the speed as the score, with accuracy and stars beside it (the teacher's gradebook).
   try {
-    const what = L.test ? `Test ${L.min}m` : L.tricky ? 'Tricky keys' : `L${cur.i + 1}`;
-    if (BRBx && BRBx.score) BRBx.score.submit(wpm, `${what} ${acc}% ${stars}* ${wpm} wpm`.slice(0, 40));
-    if (BRBx && BRBx.gameOver) BRBx.gameOver({ won: true, score: wpm });
+    // With a pass mark, only a run that reaches it is reported (the step is done when a score arrives).
+    const what = L.custom ? 'Own' : L.test ? `Test ${L.min}m` : L.tricky ? 'Tricky keys' : `L${cur.i + 1}`;
+    if (passed && BRBx && BRBx.score) BRBx.score.submit(wpm, `${what} ${acc}% ${stars}* ${wpm} wpm`.slice(0, 40));
+    if (passed && BRBx && BRBx.gameOver) BRBx.gameOver({ won: true, score: wpm });
   } catch (e) { /* preview */ }
   sfx('win');
   screen.innerHTML = `<div class="card center">
@@ -591,11 +761,13 @@ function lessonDone() {
     <div class="stars" aria-label="${stars} / 3">${starsHtml(stars)}</div>
     <p><b>${esc(stars === 3 ? t('great') : t('keepGoing'))}</b></p>
     <div class="nums"><div class="num">${esc(t('speed'))}<b>${esc(t('wpm', { n: wpm }))}</b></div><div class="num">${esc(t('acc'))}<b>${esc(t('pct', { n: acc }))}</b></div></div>
-    <div class="eggbox">
+    ${passed ? `${PASS ? `<p><b>🎯 ${esc(t('passOk'))}</b></p>` : ''}<div class="eggbox">
       <p><b>${esc(stars === 3 ? t('goldEgg') + ' ' : '')}${esc(t('eggReady'))}</b></p>
       <button type="button" class="egg${stars === 3 ? ' gold' : ''}" id="egg" aria-label="${esc(t('eggReady'))}"><span class="spots"></span><svg viewBox="0 0 150 190" id="cracks" aria-hidden="true"></svg></button>
-    </div>
+    </div>` : `<p class="note passnote"><b>${esc(t('passNot', { what: passText() }))}</b></p>
+      <div class="actions"><button type="button" class="btn" data-lesson="${esc(L.id)}">${esc(t('again'))}</button></div>`}
   </div>`;
+  if (!passed) { say(t('passNot', { what: passText() })); drawTop(); return; }
   say(t(stars === 3 ? 'great' : 'keepGoing') + ' ' + t('eggReady'));
   egg = { taps: 0, stars };
   $('egg').focus();
@@ -662,6 +834,8 @@ document.addEventListener('click', e => {
   if (b.dataset.go === 'map') { showMap(); return; }
   if (b.dataset.go === 'pets') { showPets(); return; }
   if (b.dataset.go === 'type') { startTyping(); return; }
+  if (b.dataset.go === 'write') { showWriter(null); return; }
+  if (b.dataset.own) { ownAction(b); return; }
   if (b.dataset.key && cur && keyFn === onKey) {
     const k = b.dataset.key;
     if (k === 'shiftL' || k === 'shiftR') { shiftOn = !shiftOn; return; }
@@ -669,6 +843,29 @@ document.addEventListener('click', e => {
   }
 });
 let shiftOn = false;   // tapping Shift on the keyboard below, for a big letter
+function ownAction(b) {
+  const id = b.dataset.id, x = ownSets.find(o => o.id === id);
+  if (b.dataset.own === 'try' && x) { customL = customLesson(id, x.items); if (customL) showIntro(customL); }
+  else if (b.dataset.own === 'edit') showWriter(id);
+  else if (b.dataset.own === 'assign' && BRBx.assign) BRBx.assign(`chapter=${id}&lock=1`);
+  else if (b.dataset.own === 'copy' && BRBx.copy) { const p = BRBx.copy(b.dataset.link); if (p) p.then(ok => { if (ok) b.textContent = '✓ ' + t('copied'); }); }
+  else if (b.dataset.own === 'del' && BRBx.deleteQuestionSet) {
+    // The game's frame can't show the browser's confirm box: the first tap asks, a second tap deletes.
+    if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = t('delSure'); b.title = t('delAsk'); return; }
+    const p = BRBx.deleteQuestionSet(id); if (p) p.then(() => loadOwn());
+  }
+}
+document.addEventListener('submit', e => {
+  if (!e.target || e.target.id !== 'codeForm') return;
+  e.preventDefault();
+  const code = $('codeIn').value.trim(); if (!code) return;
+  const p = BRBx.findQuestionSet(code); if (!p) return;
+  p.then(r => {
+    const L = r && r.id && r.items ? customLesson(r.id, r.items) : null;
+    if (!L) { $('codeErr').textContent = t('codeBad'); return; }
+    customL = L; showIntro(L);
+  });
+});
 
 // For cover pictures and tests (scripts/covers/typing-pets.recipe.js).
 window.__brbTest = {
@@ -684,5 +881,5 @@ window.__brbTest = {
 };
 
 drawTop();
-if (locked) showIntro(LESSONS.find(L => L.id === P.chapter)); else showMap();
+showMap();   // a locked link (a lesson, a test, tricky keys or a teacher's lesson) opens it from there
 </script>

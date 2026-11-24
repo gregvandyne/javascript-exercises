@@ -611,7 +611,7 @@ const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
 const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 /** The games with a "Make your own" builder (INIT.make / BRB.canMake): their sets are made by grown-ups who may host. */
-const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest']);
+const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-pets']);
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
 /** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
