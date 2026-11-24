@@ -13028,3 +13028,137 @@ Rather in the look they had before #570, and games the focus on teaching tools h
   voice-over (the published cuts had none). Posters and captions replaced; no 16x9 or 9x16 extras in the repository.
 - **Recording fixes:** the Builder presses its preview's keys inside the game's page; a cursor taps, drags and types in
   the flat games (Atlas Quest, Word Hunt, Crossword, Castle Clash), whose screens are still between moves.
+
+## Atlas Quest: blank maps that read on a phone, answer keys for grown-ups, and a five-step quiz maker (24 Nov 2026)
+
+Owner, on a phone: "Make sure the blank maps on mobile are correct. They don't look right to me and make sure there is an
+answer key." Then: "I also don't find the geography quiz builder super intuitive... break it down into steps."
+- **Answer lines near their countries** (the atlas-map block, `autoPlace` / `layout`): a small country's answer line
+  now goes in open sea as near it as it can, its leader crossing as little of other countries as it can (land on the map
+  is a grid of cells with a running sum, so "is this box sea" is four lookups). Where the sea is too tight for the whole
+  line (the Tyrrhenian, the Adriatic, the Gulf) it is a number tag: just the number in a small box at the leader's start,
+  its line under the map with the big countries'. The margin column beside the map is the last resort, and still how a
+  saved quiz's older placements (a choice at the frame's edge) print, so they print as placed. Every line is placed
+  with the others: no two leaders cross, no line covers another, a leader or a number on the map; a number written on a
+  country moves off an arrowhead that lands on it (Italy's, by San Marino's). Teachers still drag lines: a drop on the map
+  puts the line's start there (it turns to face its country), a drop off it goes to that margin. Per preset, leaders are
+  under 60% of the old total length, cross no more land, and none is longer than a fifth of the map
+  (`tests/unit/atlas-quiz.test.js`). Placements are cached (24), about 0.2 to 0.4 s a region the first time.
+- **Readable on a phone**: the map on screen keeps its lines at a screen weight (non-scaling strokes), and "Zoom in on
+  the map" (or a tap on it) opens it full screen at the size where numbers read at about 12 px, with pinch, + and −,
+  Ctrl and the wheel, a double tap and drag. Printing is unchanged in look; a whole region's blank map now fits one page
+  (a smaller map, four columns of lines) on Letter and A4.
+- **Answer keys for grown-ups**: "Show answers" under the blank map (the names on the small countries' lines and a
+  numbered list) and the printed "With answer key" are for the grown-ups who may make a quiz (`BRB.canMake`) and school
+  staff; the print route checks the same (`printKeyFor` in routes/games.js: staff, or in Atlas Quest `INIT.make`'s own
+  check). Students, children, guests and signed-out players print the blank map only and see no names. Other games'
+  keys stay school staff's.
+- **The quiz maker in five steps** (one long scroll before): 1 Countries (the name; pick countries, or "Start from a
+  lesson" where the AI upload is on), 2 Question types (a live count; changing them rebuilds every country's
+  questions), 3 Your own questions (Skip when empty), 4 Check (each question's type and remove, hints, the map with its
+  arrows), 5 Save and share (save, class code, link, QR, Assign, Play it, Print). "Step n of 5" and the five steps on
+  top (steps already reachable are buttons), Back and Next on each, and Next is disabled with its reason beside it. The
+  draft is remembered on every change; the step too (`SAVE.building`), so a reload comes back to the same step, and a
+  saved draft or worksheet opens on Check. A lesson's drafted questions land on Check with the AI note.
+- End-to-end before the change (teacher on a phone and desktop: make, preview, move arrows, save, code, assign, print,
+  student plays): types had to be picked before countries and changing them later did nothing; the own-question answer
+  box was cut off at 390 px; "Save draft", "Preview" and "Save and get a link" were three saves; the preview mixed arrow
+  editing with sharing and printing; the lesson upload sat inside "Your own questions"; the map preview could not be
+  read on a phone; the "Added 1." toast sat over the search box.
+- Follow-ups: the printed map stays as wide as the page (numbers about 9 pt); when the lines don't fit under it they
+  carry on over the next page, and the key's map gives up height to its list so the key stays one page. The world's
+  blank map numbers 68 countries, more than a quiz's 60, so a blank map may hold up to 200 (`cleanAtlasItems` maxQ;
+  the world's printed map failed before). A long leader costs more than its length (Luxembourg's line moved to the
+  North Sea). The maker reports "Added 2." and the like on a line under the control, not a toast; the game's toasts sit
+  at the bottom, never over the header. Check's type menus use short names ("Map", "Capital") so nothing is cut off at
+  375 px. "Start from a lesson" has the AI widget card look (spark stripe, dark "AI" chip, dark upload button).
+- Tests: `tests/unit/atlas-quiz.test.js` (layout, key route), `tests/unit/make-gate.test.js` (key on screen by role, the
+  390 px zoom and Show answers, the five steps at 375 px with the lesson landing on Check),
+  `tests/e2e/atlas-quest-kit.spec.js` (the stepper end to end).
+
+## Typing Pets, part 4: grades from pass marks, unlock minimums, paragraph units (24 Nov 2026)
+
+Owner: "Build 2 3 4 right now" (grades and course minimums; intermediate and advanced content; assigning to single
+students, which is its own entry).
+- **Grades from a pass mark**: the server now decides. A Typing Pets step assigned with a pass mark
+  (`mode=a90-w20`; `services/typing.js passOfStep`) is done only when a reported run reaches the mark; a bare game
+  over never finishes it. Its grade (`gradeOf`) is how close the best run came: half accuracy, half speed when both
+  are set, each capped at full marks, so a passing run is 100%. It counts in the class Score as a `typing` item worth
+  10 points (`services/scores.js`), and the student report lists it ("Typing pass mark"). The game reports every
+  finished run (`won` = passed) instead of only passing ones. Steps without a pass mark are unchanged.
+- **Minimums to open each next lesson** (typing.com's benchmarks): on the class goal form, accuracy and/or speed a
+  student needs in a lesson before the next opens (`typing_goals.unlock_acc/unlock_wpm`, migration 0117). The game
+  gets them as `BRB.classRules` (`{ acc, wpm }`, the strictest across the student's active classes; never for a
+  guest, a teacher or a preview; documented in docs/sdk.md). A lesson already done stays open; a locked tile says
+  what the teacher asks for, and the lesson's end says so too instead of offering Next.
+- **Units 6 and 7**: Paragraphs (lessons 29–34) and Longer reading (35–40), twelve passages written for the game
+  (animal facts, space, names and places, numbers, dialogue in quotes, science, history, instructions, a story,
+  semicolons and dashes, a final speed run). Only characters the keyboard types; a test runs each through the same
+  cleaner as a teacher's lesson. 40 lessons in all.
+- Tests: `tests/unit/typing.test.js`.
+
+## Assign to some students (24 Nov 2026)
+
+For parity with typing.com, which lets teachers assign work to individual students:
+- **Data** (`class_lesson_students`, migration 0120; 0116-0119 left for the typing branch): one row per student on a
+  class lesson's list. No rows = the whole class, so every assignment made before keeps working unchanged.
+- **Teachers**: "Assign to: Whole class (default) / Some students" with a tick list of the class's students (roster
+  names) on every assign form: the Assign page (`/teach/assign`, after the due date), the lesson page's Assign, the
+  class's Add lesson, and the ⋯ menu of an assigned lesson (desktop and phone), where the list can be changed or set back
+  to Whole class later. A form with a class picker has one list per class; only the picked class's list shows and is
+  sent (`public/js/app.js`). The Assigned list and the gradebook column say "N students".
+- **Rules** (`services/lessons.js` `setStudents`, `assign`, `updateAssignment`, `studentsInput`): only the class's
+  managers set it; every id must be an active student of the class, otherwise 400 and nothing changes (never quietly
+  dropped); "Some students" with none ticked is refused. A lesson removed and assigned again is for whoever the new
+  assign says. A student who leaves keeps their row (removing it could turn the lesson into a whole-class one) and stops
+  seeing the class, as before.
+- **Students** (`assignedTo`, `assignedSql`, `classPlan({ userId })`): the class page's lessons, To do (the Class tab,
+  the home strip), the lesson page and every progress API (`progress.context`: not found, as for another class's
+  lesson), so a live run or a Story Library book can't write their cell either. The class dashboard's push and tiles
+  offer only whole-class lessons (they reach every screen). Hidden games and course pages stay open only through a
+  lesson the student has.
+- **Gradebook** (`progress.classProgress`): a student a lesson leaves out has a `na` cell: an en dash with "Not
+  assigned" for screen readers ("Not assigned" in the CSV), counted nowhere: Work done, Score (`scores.js`), late counts,
+  rubric and quiz figures, standards evidence, answers to review. Work done before the list changed stays stored and
+  counts again if the student goes back on the list. The lesson's own progress page, the per-student report, the
+  Lessons tab counts and the teacher digest follow the same rule. Teachers can't review or rubric-score a student the
+  lesson leaves out.
+- **Google Classroom: the safe option.** A lesson for some students is never posted, shared as a material or announced
+  (`someStudents`; the toast and the Classroom page say why: in Classroom it would reach the whole course). Posting with
+  `assigneeMode: INDIVIDUAL_STUDENTS` was left out: only students linked to a Google account could be named, a later
+  change to the list would need `modifyAssignees` kept in step, and a mismatch would show work to the wrong children. A
+  lesson posted for the whole class before its list was set stays posted; its grades go only to the students on the
+  list. Nothing new goes to Google, so docs/legal-review.md is unchanged.
+- Tests: `tests/unit/assign-students.test.js`.
+
+
+## Word Hunt and Crossword: the AI look and a focus line for the lesson upload (24 Nov 2026)
+
+Owner, on Word Hunt's "Make a word hunt" on a phone: "Typically we have more of a highlight around this when we are
+using AI. Can you update that and then also add the ability to add a prompt for the AI... like 'focus on these types
+of words...' or 'focus on this subject'."
+- **The AI look**: with BRB.canWriteClues (a grown-up who may host, AI on), Word Hunt's step 1 ("Start from a lesson")
+  is a grape panel (the games' own `--grape` / `--grape-t`, as Crossword's "Write clues with AI"), with a small
+  "✨ AI" chip in its heading and the upload button in the AI style. Crossword's paste box stays as it was; its
+  document upload moves into a grape box of its own under it, with the chip and one line on what the AI does. Calm:
+  a tint and a thin line, no glow or motion. Without AI (a plain .txt/.csv list) both stay plain.
+- **The focus line**: an optional one-line field above the upload, "What should the AI focus on? (optional)",
+  placeholder "For example: Science words only", at most 200 characters. BRB.wordsFromDoc passes `focus`; the play page
+  checks it (a string of at most 200) and posts it; `POST /api/games/:id/words-from-doc` collapses spaces, trims, caps it
+  at 200 and runs it through the site's text filter (`cleanText`, as titles are). Refused (rude words, contact details,
+  links): 400 `focusBad` before any AI call, and the file does not count towards the day's 10; the page says "Please
+  reword your focus" and goes back to the field. Atlas Quest's upload does not take it (its lesson upload is being
+  reworked separately).
+- **In the AI request** (services/set-ai.js draftWordsFromDoc): the focus goes in the user message inside its own
+  `<focus>` tag, after the level, with `<` and `>` taken out and as one line. The system prompt (unchanged by the focus,
+  so it stays cached) has one fixed line: the focus only narrows which words are picked from the document (a subject,
+  a type of word, a level) and never overrides the rules (words come from the document, kid-safe, the output format).
+  A plain "word - definition" list is read with no AI, so the focus is not used there.
+- **Privacy**: the field is the teacher's own text, seen only by grown-ups who may host (the same as the upload); no
+  student work or names. Neither the document nor the focus is stored or logged (the audit line keeps the kind and how
+  many words).
+- Words in all 13 languages in each game's own table.
+- Tests: `tests/unit/crossword.test.js` (the prompt and the user message), `tests/unit/crossword-upload.test.js` (the
+  route: cleaned, capped, refused without AI, absent), `tests/unit/word-hunt-sets.test.js`,
+  `tests/unit/word-hunt-browser.test.js` and the Crossword browser tests (the field and the AI look with AI, not
+  without).

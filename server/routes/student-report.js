@@ -21,7 +21,7 @@ export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
 export const studentHref = (c, p) => `/class/${c.id}/student/${p.id}`;
 const SHORT = { month: 'short', day: 'numeric' };
-const KIND_ICON = { quiz: '🧩', live: '📡', rubric: '📏', marks: '📏' };
+const KIND_ICON = { quiz: '🧩', live: '📡', rubric: '📏', marks: '📏', typing: '⌨️' };
 
 router.get('/class/:id/student/:uid', requireUser, (req, res) => {
   const t = req.t, f = req.fmt;
@@ -40,6 +40,8 @@ router.get('/class/:id/student/:uid', requireUser, (req, res) => {
   const stat = (label, value, sub = '') => html`<li class="sp-stat"><span class="sp-stat-v">${value}</span><span class="sp-stat-l">${label}</span>${sub ? html`<span class="small muted">${sub}</span>` : ''}</li>`;
   const itemTitle = it => (it.stepId ? it.title || t(`lessons.kinds.${it.stepKind === 'question' ? 'question' : it.stepKind || 'text'}`) : t('rubrics.attach.lessonTitle'));
   const scored = rep.lessons.filter(({ cell }) => !cell.locked && cell.items.length);
+  // A lesson assigned to some students that leaves this one out (counted nowhere: services/progress.js classProgress).
+  const notAssigned = html`<span class="muted gb-na" aria-hidden="true">–</span><span class="sr-only">${t('gradebook.notAssigned')}</span>`;
   const stepName = a => a.title || t(`lessons.kinds.${a.kind}`);
   const body = html`<div class="noprint">${classHeader(req, c, 'progress')}</div>
   <article class="printdoc sp-page" id="student-report">
@@ -59,8 +61,8 @@ router.get('/class/:id/student/:uid', requireUser, (req, res) => {
       ${rep.lessons.length ? html`<div class="gbwrap" tabindex="0" role="region" aria-labelledby="sp-lessons-h"><table class="tbl sp-table">
         <thead><tr><th scope="col">${t('gradebook.student.lesson')}</th><th scope="col">${t('gradebook.workDone')}</th><th scope="col">${t('gradebook.score')}</th><th scope="col">${t('gradebook.student.due')}</th></tr></thead>
         <tbody>${rep.lessons.map(({ cl, cell: x }) => html`<tr><th scope="row"><a href="/class/${c.id}/progress/${cl.id}#s-${p.id}" dir="auto">${cl.title}</a></th>
-          <td data-label="${t('gradebook.workDone')}">${x.locked ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, SHORT) })}</span>` : html`<span class="gb-num" dir="ltr">${x.done}/${x.total}</span>`}</td>
-          <td data-label="${t('gradebook.score')}">${x.locked ? html`<span class="muted">–</span>` : pts(x.score)}</td>
+          <td data-label="${t('gradebook.workDone')}">${x.na ? notAssigned : x.locked ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at, SHORT) })}</span>` : html`<span class="gb-num" dir="ltr">${x.done}/${x.total}</span>`}</td>
+          <td data-label="${t('gradebook.score')}">${x.na ? notAssigned : x.locked ? html`<span class="muted">–</span>` : pts(x.score)}</td>
           <td data-label="${t('gradebook.student.due')}">${cl.due_at ? html`<span class="nw">${f.day(cl.due_at, SHORT)}</span> ` : html`<span class="muted">–</span>`}${lateChip(x)}</td></tr>`)}</tbody></table></div>`
         : html`<p class="muted">${t('progress.gradebook.noLessons')}</p>`}</section>
     <section class="panel" id="score" aria-labelledby="sp-score-h"><h2 id="sp-score-h">${ico('🎯', { size: 28 })} ${t('gradebook.student.scoreH')}</h2>

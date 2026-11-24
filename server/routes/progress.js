@@ -133,7 +133,7 @@ function dateChips(t, f, cl, { late = false, short = false } = {}) {
   ].filter(Boolean);
 }
 /** Overall for a gradebook row: '–' while none of the class's lessons has opened (nothing to count yet). */
-const overallOf = p => (p.cells.some(x => !x.locked && x.total) ? `${p.overall}%` : null);
+const overallOf = p => (P.hasOpenWork(p) ? `${p.overall}%` : null);
 
 /** A Score cell: the percent with the points under it, linked to what made it up (the student's page, #score); '–' with
  *  nothing scored yet. sc: { earned, possible, pct } | null. */
@@ -166,13 +166,15 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook" id="gb-lessons">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>
       ${gb.lessons.map((l, i) => { const chips = dateChips(t, f, l, { late: anyLate[i], short: true });
-        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}</th>`; })}
+        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}${l.some ? html`<span class="gb-dates"><span class="chip-s gb-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: l.picked })}</span></span>` : ''}</th>`; })}
       <th scope="col" class="gb-sum">${t('gradebook.workDone')}</th><th scope="col" class="gb-sum">${t('gradebook.score')}</th></tr></thead>
     <tbody>${gb.students.map(p => {
       const all = overallOf(p);
       return html`<tr><th scope="row" class="gb-name"><span class="pp">${avatar(p, 28)}${staffStudentName(p, { href: studentHref(c, p) })}</span></th>
         ${p.cells.map((x, i) => {
           const l = gb.lessons[i];
+          // Assigned to some students, not this one: a neutral dash, counted nowhere (services/progress.js classProgress).
+          if (x.na) return html`<td class="gb-na"><span aria-hidden="true">–</span><span class="sr-only">${t('gradebook.notAssigned')}</span></td>`;
           if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.day(l.opens_at, SHORT) })}</span></td>`;
           const full = x.total && x.done >= x.total;
           const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
@@ -236,9 +238,12 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
       <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="wpm" min="${TY.GOAL_LIMITS.wpm[0]}" max="${TY.GOAL_LIMITS.wpm[1]}" inputmode="numeric" value="${typingGoal && typingGoal.wpm ? typingGoal.wpm : ''}"></label>
       <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="acc" min="${TY.GOAL_LIMITS.acc[0]}" max="${TY.GOAL_LIMITS.acc[1]}" inputmode="numeric" value="${typingGoal ? typingGoal.acc : 90}"></label>
       <label>${t('progress.typing.goalMins')} <input class="input" type="number" name="mins" min="${TY.GOAL_LIMITS.mins[0]}" max="${TY.GOAL_LIMITS.mins[1]}" inputmode="numeric" value="${typingGoal && typingGoal.mins ? typingGoal.mins : ''}"></label>
+      <span class="ty-unlock"><b>${t('progress.typing.unlockH')}</b>
+        <label>${t('progress.typing.goalAcc')} <input class="input" type="number" name="unlockAcc" min="0" max="100" inputmode="numeric" value="${typingGoal && typingGoal.unlockAcc ? typingGoal.unlockAcc : ''}"></label>
+        <label>${t('progress.typing.goalWpm')} <input class="input" type="number" name="unlockWpm" min="0" max="120" inputmode="numeric" value="${typingGoal && typingGoal.unlockWpm ? typingGoal.unlockWpm : ''}"></label></span>
       <button class="btn btn-sm" type="submit">${t('progress.typing.goalSave')}</button>
       <span class="small muted">${t('progress.typing.goalHint')}</span><p class="err form-err" aria-live="polite"></p></form>` : '';
-  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}${typingGoal && typingGoal.wpm ? html` · ${t('progress.typing.goalSummary', { wpm: typingGoal.wpm, acc: typingGoal.acc, met: metGoal, total: typing.rows.length })}` : ''}${typingGoal && typingGoal.mins ? html` · ${t('progress.typing.dailySummary', { n: typingGoal.mins })}` : ''}</span></summary>
+  const typingPanel = typingStarted ? html`<details class="panel coursepanel" id="typing" open><summary><h2>${ico('⌨️', { size: 28 })} ${t('progress.typing.title')}</h2><span class="small muted">${t('progress.typing.started', { started: typingStarted, total: typing.rows.length })}${typingGoal && typingGoal.wpm ? html` · ${t('progress.typing.goalSummary', { wpm: typingGoal.wpm, acc: typingGoal.acc, met: metGoal, total: typing.rows.length })}` : ''}${typingGoal && typingGoal.mins ? html` · ${t('progress.typing.dailySummary', { n: typingGoal.mins })}` : ''}${typingGoal && (typingGoal.unlockAcc || typingGoal.unlockWpm) ? html` · ${t('progress.typing.unlockSummary', { what: [typingGoal.unlockAcc ? `${typingGoal.unlockAcc}%` : '', typingGoal.unlockWpm ? t('progress.typing.wpm', { n: typingGoal.unlockWpm }) : ''].filter(Boolean).join(', ') })}` : ''}</span></summary>
     ${goalForm}
     <div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.typing.title')}"><table class="tbl gradebook cptable" id="typing-table">
       <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th><th scope="col">${t('progress.typing.lessons')}</th><th scope="col">${t('progress.typing.next')}</th><th scope="col">${t('progress.typing.bestTest')}</th><th scope="col">${t('progress.typing.acc')}</th><th scope="col">${t('progress.typing.tricky')}</th><th scope="col">${t('progress.typing.pets')}</th><th scope="col">${t('progress.typing.last')}</th></tr></thead>
@@ -287,11 +292,13 @@ router.post('/api/class/:id/typing-goal', requireUser, rateLimit('typing-goal', 
   const c = S.getClass(String(req.params.id));
   if (!c || !S.canManageClass(req.user, c)) return res.status(404).json({ error: req.t('lessons.errors.notFound') });
   if (c.archived_at) return res.status(400).json({ error: req.t('progress.typing.goalArchived') });
-  const goal = TY.setGoal(c.id, { wpm: (req.body || {}).wpm, acc: (req.body || {}).acc, mins: (req.body || {}).mins });
+  const x = req.body || {};
+  const goal = TY.setGoal(c.id, { wpm: x.wpm, acc: x.acc, mins: x.mins, unlockAcc: x.unlockAcc, unlockWpm: x.unlockWpm });
   res.json({ ok: true, goal, toast: req.t(goal ? 'progress.typing.goalSaved' : 'progress.typing.goalCleared') });
 });
 
-/** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens), then Work done (the same
+/** CSV: one row per student, one column per lesson (steps done of total, '–' before it opens, "Not assigned" for a student
+ *  a lesson assigned to some students leaves out: their other columns for it stay empty), then Work done (the same
  *  figure as the page: lessons that haven't opened are left out). The name columns are the roster name and the student's
  *  Oomba Academy name (the one shown in games). */
 router.get('/class/:id/progress.csv', requireUser, (req, res) => {
@@ -322,7 +329,7 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
     ...p.cells.flatMap((x, i) => (helped[i] ? [x.helped || ''] : []))];
   const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('gradebook.workDone'), ...(anyQz ? [t('progress.csv.quizAll')] : []), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : []), ...tail].map(cell).join(',')];
   for (const p of gb.students) {
-    const cols = p.cells.flatMap((x, i) => [x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
+    const cols = p.cells.flatMap((x, i) => [x.na ? t('gradebook.notAssigned') : x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
     lines.push([nameOf(p), p.username, ...cols, overallOf(p) || '', ...(anyQz ? [p.quiz !== null ? `${p.quiz}%` : ''] : []), ...(anyRb ? (p.rubric ? [R.pointsText(p.rubric.points, p.rubric.max), `${p.rubric.pct}%`] : ['', '']) : []), ...tailOf(p)].map(cell).join(','));
   }
   const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-progress.csv`;
@@ -477,7 +484,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const lateN = lp.students.filter(lateFor).length;
   const body = html`${classHeader(req, c, 'progress')}
   <div class="lphead"><div><h2 dir="auto">${l.title}</h2>
-    <p class="muted lp-meta"><span>${t('progress.lesson.finished', { done: doneN, total: lp.students.length })}</span>${dateChips(t, f, lp.cl, { late: lateN > 0 })}</p></div>
+    <p class="muted lp-meta"><span>${t('progress.lesson.finished', { done: doneN, total: lp.students.length })}</span>${dateChips(t, f, lp.cl, { late: lateN > 0 })}${lp.cl.some ? html`<span class="chip-s">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: lp.cl.picked })}</span>` : ''}</p></div>
     <div class="row"><a class="btn" href="/class/${c.id}/lessons/${lp.cl.id}">${ico('👀', { size: 18 })} ${t('progress.lesson.studentView')}</a>${L.canEditLesson(req.user, l) ? html`<a class="btn" href="/teach/lessons/${l.id}?from=${c.id}">${ico('✏️', { size: 18 })} ${t('lessons.class.editLesson')}</a>` : ''}</div></div>
   ${toRead ? html`<p class="notice" id="to-review">${ico('✍️', { size: 18 })} ${t('progress.gradebook.toRead', { count: toRead })} · <a href="#answers">${t('progress.lesson.jump')}</a></p>` : ''}
   ${!lp.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`

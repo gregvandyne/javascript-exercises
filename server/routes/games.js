@@ -27,10 +27,12 @@ import * as proofChat from '../services/proof-chat.js';
 import { characterOf } from '../services/character.js';
 import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
+import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
-import { draftClues } from '../services/set-ai.js';
+import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { quizFromFile } from '../services/atlas-doc.js';
+import { cleanText } from '../services/textfilter.js';
 import { PRINTERS } from '../services/game-print.js';
 import { canvasPrintable, cleanCanvasPrintDoc, canvasPrintHtml } from '../services/canvas-print.js';
 import { canvasVersion, activityData } from '../services/canvaskit.js';
@@ -426,6 +428,9 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
+    // Typing Pets: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
+    // rulesFor, the strictest among their classes), for a signed-in student only, never a preview.
+    ...(!preview && u && !u.is_guest && g.source === 'seed' && g.slug === TY.SLUG ? (r => (r ? { classRules: r } : {}))(TY.rulesFor(u.id)) : {}),
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
@@ -614,6 +619,9 @@ const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-pets']);
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
+/** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
+ *  a family grown-up, the platform admin), the same check as INIT.make. Never a student, a child, a guest or signed out. */
+const printKeyFor = (u, g) => isSchoolStaff(u) || (g.slug === 'atlas-quest' && makeGame(g) && mayMake(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`));
 /** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
@@ -648,8 +656,18 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
 // else one small AI call. Grown-ups who may host only (staff, a signed-in grown-up), never a kid or a guest; 10 a day
-// each. Body { kind: 'pdf'|'docx', data: base64, level }. -> { title, words: [[word, clue]], cut, ai } | { code }.
-// The file is never stored or logged (only its kind and how many words).
+// each. Body { kind: 'pdf'|'docx', data: base64, level, focus }. -> { title, words: [[word, clue]], cut, ai } | { code }.
+// focus: the teacher's own optional line for the AI ("Science words only"), trimmed, at most DOC_FOCUS_MAX characters,
+// through the site's text filter (refused: 400 code 'focusBad', before any AI); Crossword and Word Hunt only.
+// The file is never stored or logged (only its kind and how many words), and nor is the focus.
+function docFocus(v) {
+  if (v === undefined || v === null) return { ok: true, value: '' };
+  if (typeof v !== 'string') return { ok: false };
+  const s = v.replace(/\s+/g, ' ').trim().slice(0, DOC_FOCUS_MAX).trim();
+  if (!s) return { ok: true, value: '' };
+  const c = cleanText(s, DOC_FOCUS_MAX);
+  return c.ok ? { ok: true, value: c.value } : { ok: false };
+}
 router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 20, 60e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const atlas = atlasDocGame(g);
@@ -660,12 +678,14 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   if (!['pdf', 'docx'].includes(b.kind) && !(atlas && b.kind === 'txt')) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docType' });
   if (typeof b.data !== 'string' || !/^[A-Za-z0-9+/]+=*$/.test(b.data)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docBad' });
   if (b.data.length > Math.ceil(max / 3) * 4 + 4) return res.status(413).json({ error: req.t('errors.api.badRequest'), code: 'docBig' });
+  const focus = docFocus(b.focus);
+  if (!focus.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'focusBad' });
   const day = `game-doc-day:${req.user.id}`;
   if (countLimit(day) >= CW_DOC.perDay) return res.status(429).json({ error: req.t('errors.api.slowDown'), code: 'docLimit' });
   // Atlas Quest: the lesson's questions in the same answer ([question, answer], or ['@kind', code] for a question about
   // a country the game asks itself); a file is never stored or logged here either.
   const r = atlas ? await quizFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', locale: req.locale })
-    : await wordsFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', locale: req.locale });
+    : await wordsFromFile({ kind: b.kind, buf: Buffer.from(b.data, 'base64'), level: typeof b.level === 'string' ? b.level : '', focus: focus.value, locale: req.locale });
   // Every file read counts towards the day's 10 (a file turned away for its size, pages or type does not).
   if (r.ok || ['docNone', 'aiFailed'].includes(r.code)) allow(day, CW_DOC.perDay, 864e5);
   if (!r.ok) return res.status(r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
@@ -758,7 +778,8 @@ router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;
 // services/crossword-print.js); The Big Divide: an activity's problems as a question set's item (numbers and fixed
 // words only; services/box-by-box-print.js). Anyone who can open the game may print (a student, a guest with the sample,
-// a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check). Words pass the site's text
+// a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check), and in Atlas Quest the grown-ups
+// who may make a quiz (printKeyFor). Words pass the site's text
 // filter as a saved set's do; nothing is kept. Body { doc }.
 router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
   const g = apiGame(req, res); if (!g) return;
@@ -783,7 +804,7 @@ router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.ap
   }
   const r = printer.clean((req.body || {}).doc);
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
-  if (r.doc.key && !isSchoolStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
+  if (r.doc.key && !printKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
   // The footer's class code and link: only for a set of this game that is on Oomba.
   const s = r.doc.set && gameSets.get(g.id, r.doc.set);
   const code = s ? s.id.slice(2).toUpperCase().replace(/^(.{5})/, '$1 ') : '';

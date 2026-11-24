@@ -85,7 +85,7 @@ export function classStandards(classId, { all = false } = {}) {
   };
   const rows = classId ? q.all(`SELECT p.class_lesson_id cl, p.step_id, p.user_id, p.status, p.marks, p.done_at, p.updated_at, p.reviewed_at FROM step_progress p
     JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-    WHERE c.class_id=?`, classId) : [];
+    WHERE c.class_id=? AND ${L.assignedSql('c.id', 'p.user_id')}`, classId) : [];
   for (const r of rows) {
     if (!sid.has(r.user_id)) continue;
     seen.add(r.user_id);

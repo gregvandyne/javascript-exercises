@@ -89,9 +89,11 @@ export function capText(text) {
  * kind 'pdf' | 'docx'; buf the file's bytes. Codes: docType (not that kind of file), docBig (over 2 MB), docPages (a
  * PDF over 5 pages), docScan (a PDF with no text, such as a scanned page), docBad (damaged or locked), docEmpty (no
  * text), docNone (no vocabulary in it), aiOff / aiFailed (the AI was needed and isn't there or failed).
+ * focus: the teacher's own line for the AI ("Science words only"), already through the text filter (the route); only
+ * the AI reads it (a plain list is used as it is).
  * onAi: called just before the model is asked (the route counts it).
  */
-export async function wordsFromFile({ kind, buf, level = '', locale = 'en', onAi = () => {} }) {
+export async function wordsFromFile({ kind, buf, level = '', focus = '', locale = 'en', onAi = () => {} }) {
   if (!['pdf', 'docx'].includes(kind) || !Buffer.isBuffer(buf) || !buf.length) return { ok: false, code: 'docType' };
   if (buf.length > LIMITS.bytes) return { ok: false, code: 'docBig' };
   let text = null, pdf = null;
@@ -114,7 +116,7 @@ export async function wordsFromFile({ kind, buf, level = '', locale = 'en', onAi
   if (list) return { ok: true, title: list.title, words: list.words, cut, ai: false };
   onAi();
   let r;
-  try { r = await draftWordsFromDoc({ text: text || '', pdf, level, locale, client: hooks.client }); } catch { r = { ok: false, code: 'aiFailed' }; }
+  try { r = await draftWordsFromDoc({ text: text || '', pdf, level, focus, locale, client: hooks.client }); } catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return r;
   const words = cleanWords(r.words);
   if (!words.length) return { ok: false, code: 'docNone' };

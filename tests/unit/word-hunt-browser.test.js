@@ -53,6 +53,7 @@ addEventListener('message', e => { const d = e.data; if (!d || d.brb !== 1) retu
   if (d.type === 'brb:set-find') back({ type: 'brb:set-found', id: d.id, set: 's-habitat234', items: ${JSON.stringify(hunt('Habitats', ['habitat', 'predator', 'prey', 'erosion']))} });
   if (d.type === 'brb:print') back({ type: 'brb:printed', id: d.id, ok: true });
   if (d.type === 'brb:copy') back({ type: 'brb:copied', id: d.id, ok: true });
+  if (d.type === 'brb:doc') back(/rude/.test(d.focus || '') ? { type: 'brb:doc-done', id: d.id, error: 'focusBad' } : { type: 'brb:doc-done', id: d.id, title: 'Water', words: [['evaporation', ''], ['condensation', ''], ['rain', '']] });
 });</script>`;
   await ctx.route('**/*', route => {
     const u = route.request().url();
@@ -219,6 +220,39 @@ test('Word Hunt: a teacher makes a word hunt, previews, saves (code, link, QR, A
     assert.equal(again.set, A); assert.equal(again.items[0].w[0], 'habitats');
     assert.deepEqual(g.errors, []);
   } finally { await g.ctx.close(); }
+});
+
+test('Word Hunt: step 1 has the AI look and a focus line for a grown-up with AI (sent with the lesson); a plain list upload without', { skip, timeout: 120_000 }, async () => {
+  const g = await openGame({ init: { clues: true } });
+  try {
+    await g.frame.click('#wh-make');
+    await g.until(() => window.__brbTest.whState().screen === 'build');
+    assert.equal(await g.frame.locator('section.wh-lesson.wh-aisec h3 .wh-aichip').count(), 1, 'the ✨ AI chip in the heading');
+    assert.equal(await g.frame.locator('.wh-aisec label.wh-file.wh-ai').count(), 1, 'the upload in the AI style');
+    assert.match(await g.frame.textContent('label[for="wh-focus"]'), /What should the AI focus on\? \(optional\)/);
+    assert.equal(await g.frame.getAttribute('#wh-focus', 'maxlength'), '200');
+    assert.ok(await g.frame.evaluate(() => document.getElementById('wh-focus').compareDocumentPosition(document.getElementById('wh-file')) & Node.DOCUMENT_POSITION_FOLLOWING), 'the focus line is above the upload');
+    await g.frame.fill('#wh-focus', 'Focus on the water cycle');
+    const lesson = { name: 'water.pdf', mimeType: 'application/pdf', buffer: Buffer.from('%PDF-1.4 a small test file') };
+    await g.frame.setInputFiles('#wh-file', lesson);
+    await g.until(() => window.__brbTest.whState().draft === 3);
+    assert.equal((await g.msgs('brb:doc')).at(-1).focus, 'Focus on the water cycle');
+    // the server refuses the focus: the page says so and goes back to the field
+    await g.frame.fill('#wh-focus', 'rude words');
+    await g.frame.setInputFiles('#wh-file', lesson);
+    await g.until(() => /reword your focus/.test(document.getElementById('wh-docmsg').textContent));
+    assert.equal(await g.frame.evaluate(() => document.activeElement.id), 'wh-focus');
+    assert.equal(await g.frame.getAttribute('#wh-focus', 'aria-invalid'), 'true');
+    assert.deepEqual(g.errors, []);
+  } finally { await g.ctx.close(); }
+  const p = await openGame();
+  try {
+    await p.frame.click('#wh-make');
+    await p.until(() => window.__brbTest.whState().screen === 'build');
+    assert.equal(await p.frame.locator('#wh-file').count(), 1);
+    assert.equal(await p.frame.locator('.wh-aisec, .wh-aichip, #wh-focus, label.wh-file.wh-ai').count(), 0, 'no AI, no AI look and no focus line');
+    assert.deepEqual(p.errors, []);
+  } finally { await p.ctx.close(); }
 });
 
 test('Word Hunt: a student opens a saved word hunt (hidden list), finds the words, and finishes once; the empty list; dark', { skip, timeout: 180_000 }, async () => {

@@ -39,12 +39,12 @@ const ltr = s => `⁦${s}⁩`;
 /** Codes a result or ?gcerr= may carry; anything else reads as "Google Classroom didn't answer". */
 export const ERRORS = ['notSetUp', 'notConnected', 'reconnect', 'notLinked', 'pickCourse', 'courseNotYours', 'courseGone', 'denied', 'rateLimited',
   'googleDown', 'badRequest', 'tooMany', 'alreadyPosted', 'notPosted', 'badMode', 'scopesMissing', 'noRefresh', 'expired', 'cancelled', 'staffOnly', 'tooManyTries',
-  'needsScope', 'noneAllowed', 'alreadyShared', 'notLeaver', 'badTemplate', 'noLiveGame', 'pickLesson', 'lessonNotOpen', 'emptyNote', 'tooLong', 'hasName', 'tooManyAnnouncements'];
+  'needsScope', 'noneAllowed', 'alreadyShared', 'notLeaver', 'badTemplate', 'noLiveGame', 'pickLesson', 'lessonNotOpen', 'emptyNote', 'tooLong', 'hasName', 'tooManyAnnouncements', 'someStudents'];
 const errKey = code => `gclassroom.errors.${ERRORS.includes(code) ? code : 'googleDown'}`;
 const errText = (t, code, extra = {}) => t(errKey(code), { max: GC.MAX_STUDENTS, ...extra });
 const STATUS = { rateLimited: 429, tooManyTries: 429, tooManyAnnouncements: 429 };
 // Errors about one field of the form: shown under it.
-const FIELD = { hasName: 'note', tooLong: 'note', emptyNote: 'note', pickLesson: 'clId', lessonNotOpen: 'clId' };
+const FIELD = { hasName: 'note', tooLong: 'note', emptyNote: 'note', pickLesson: 'clId', lessonNotOpen: 'clId', someStudents: 'clId' };
 const fail = (req, res, code, r = {}) => res.status(STATUS[code] || 400).json({ error: errText(req.t, code === 'notFound' ? 'courseGone' : code, { name: r.name, max: r.max || GC.MAX_STUDENTS }), code, ...(FIELD[code] ? { field: FIELD[code] } : {}) });
 const notFoundJson = (req, res) => res.status(404).json({ error: req.t('progress.errors.notFound') });
 
@@ -352,6 +352,10 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
   const lessons = L.classPlan(c.id).flatMap(g => g.lessons);
   const lessonRow = cl => {
     const p = posts.get(cl.id); const m = mats.get(cl.id);
+    // Assigned to some students: not posted (it would reach the whole Classroom course); a post made before stays, and
+    // its grades go only to the students on the list.
+    const some = cl.picked > 0;
+    const someNote = some ? html`<p class="small muted gc-some">👥 ${t(p ? 'gclassroom.post.somePosted' : 'gclassroom.post.someNot')}</p>` : '';
     const g = p && p.grades_at ? html`<span class="small muted">${t(p.grades_mode === 'assigned' ? 'gclassroom.grades.lastAssigned' : 'gclassroom.grades.lastDraft', { when: f.ago(p.grades_at) })} · ${gradesText(t, JSON.parse(p.grades_counts || '{}'))}</span>` : '';
     const assignment = !can('coursework') ? '' : p ? html`<div class="gc-lesson-acts">${p.link ? html`<a class="btn btn-sm" href="${p.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.post.open')}</a>` : ''}
           <form class="gc-gradeform" data-api="/api/class-lessons/${cl.id}/google-classroom/grades" data-reload novalidate>
@@ -359,13 +363,13 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
               <label class="gc-mode"><input type="radio" name="mode" value="draft" checked> <span>${t('gclassroom.grades.draft')}</span></label>
               <label class="gc-mode"><input type="radio" name="mode" value="assigned"> <span>${t('gclassroom.grades.assigned')}</span></label></fieldset>
             <button class="btn btn-sm btn-primary" type="submit">📤 ${t('gclassroom.grades.button')}</button></form>${g}</div>`
-      : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/post" data-reload><button class="btn btn-sm" type="submit">📌 ${t('gclassroom.post.button')}</button></form>`;
+      : some ? '' : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/post" data-reload><button class="btn btn-sm" type="submit">📌 ${t('gclassroom.post.button')}</button></form>`;
     const material = !can('materials') ? '' : m ? html`<span class="gc-mat-done"><span class="chip-s good">📎 ${t('gclassroom.material.shared')}</span>${m.link ? html` <a class="btn btn-sm" href="${m.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.material.open')}</a>` : ''}</span>`
-      : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/material" data-reload><button class="btn btn-sm" type="submit">📎 ${t('gclassroom.material.button')}</button></form>`;
+      : some ? '' : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/material" data-reload><button class="btn btn-sm" type="submit">📎 ${t('gclassroom.material.button')}</button></form>`;
     return html`<li class="gc-lesson" id="gc-l-${cl.id}"><div class="gc-lesson-head"><b dir="auto">${cl.title}</b>
       <span class="small muted">${cl.due_at ? t('gclassroom.post.due', { date: f.day(cl.due_at) }) : t('gclassroom.post.noDue')}</span>
       ${p && can('coursework') ? html`<span class="chip-s good">✅ ${t('gclassroom.post.posted')}</span>` : ''}</div>
-      <div class="gc-lesson-side">${assignment}${material}</div></li>`;
+      <div class="gc-lesson-side">${assignment}${material}${someNote}</div></li>`;
   };
   const topicForm = ready && can('topics') ? html`<form class="row gc-topicform" data-api="/api/classes/${c.id}/google-classroom/topic" data-reload novalidate>
       <label class="gc-topic-label" for="gc-topic"><span class="small">${t('gclassroom.topic.label')}</span>
@@ -380,7 +384,7 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
 
   // The class stream: three templates, each its own form. Oomba Academy adds only the fixed words shown.
   const live = LS.liveOn() ? LS.openForClass(c.id) : null;
-  const openLessons = lessons.filter(cl => L.isOpen(cl));
+  const openLessons = lessons.filter(cl => L.isOpen(cl) && !cl.picked);   // never one assigned to some students
   const noteField = (id, max, { required = false } = {}) => html`<label class="gc-note-label" for="${id}"><span class="small">${t(required ? 'gclassroom.announce.message' : 'gclassroom.announce.note')}</span>
     <textarea class="input gc-note" id="${id}" name="note" rows="3" maxlength="${max}" dir="auto" ${required ? raw('required') : ''}></textarea></label><span class="err" id="${id}-err" aria-live="polite"></span>`;
   const liveFixed = live ? GC.announceFixed(t, c, { template: 'live', code: live.code }, origin(req)) : null;
