@@ -1,26 +1,25 @@
-// Word Hunt (seed-games/word-hunt.html) on the Oomba Kit: the kit's title with the game's card, real drag and tap-tap
-// selections through the real frame (CSP), the kit's pause screen, the results card, the daily streak and a race.
+// Word Hunt (seed-games/word-hunt.html) in Crossword's look: the home card (daily, levels, themes, Play, Race), real
+// drag and tap-tap selections through the real frame (CSP), pause, the results card, the daily streak and a race.
 import { test, expect } from '@playwright/test';
 import { gameFrame } from './helpers.js';
 
-test('Word Hunt runs on kit 1.1.6: title, real selections, pause, results, daily and a race', async ({ page }) => {
+test('Word Hunt: home, real selections, pause, results, daily and a race', async ({ page }) => {
   const errors = [];
   page.on('pageerror', e => errors.push(e.message));
-  page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
+  page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errors.push(m.text()); });
   await page.goto('/play/word-hunt');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.select);
-  expect(await f.evaluate(() => [Oomba.version, ['dress', 'art-props', 'art-biomes', 'art-biomes-2'].every(p => Oomba.packs.includes(p))])).toEqual(['1.1.6', true]);
-  // the kit's title with the game's card: daily, three levels, 13 themes + Surprise, Relax, Play and Race
-  await expect(f.locator('.ok-title-screen .wh-tcard')).toBeVisible();
-  await expect(f.locator('.wh-tcard [data-theme]')).toHaveCount(14);
-  await expect(f.locator('.wh-tcard [data-theme] canvas')).toHaveCount(14);
-  await f.locator('.wh-tcard [data-theme="ocean"]').click();
-  await expect(f.locator('.wh-tcard [data-theme="ocean"]')).toHaveAttribute('aria-pressed', 'true');
-  await f.locator('.wh-tcard [data-diff="medium"]').click();
+  expect(await f.evaluate(() => typeof window.Oomba)).toBe('undefined');
+  // the home card: daily, three levels, 13 themes + Surprise, Relax, Play and Race
+  await expect(f.locator('#wh-daily')).toBeVisible();
+  await expect(f.locator('#wh-themes [data-theme]')).toHaveCount(14);
+  await expect(f.locator('[data-diff]')).toHaveCount(3);
+  await f.locator('[data-theme="ocean"]').click();
+  await expect(f.locator('[data-theme="ocean"]')).toHaveAttribute('aria-pressed', 'true');
+  await f.locator('[data-diff="medium"]').click();
   expect(await f.evaluate(() => [BRB.storage.get('word-hunt-v1').theme, BRB.storage.get('word-hunt-v1').difficulty])).toEqual(['ocean', 'medium']);
-  await f.locator('#playBtn').click();
-  await expect(f.locator('.ok-title-screen')).toHaveCount(0);
+  await f.locator('#wh-play').click();
   let st = await f.evaluate(() => window.__brbTest.state());
   expect([st.screen, st.theme, st.difficulty, st.grid.length]).toEqual(['play', 'ocean', 'medium', 10]);
 
@@ -33,7 +32,7 @@ test('Word Hunt runs on kit 1.1.6: title, real selections, pause, results, daily
   await page.mouse.move(a.x, a.y); await page.mouse.down();
   await page.mouse.move((a.x + b.x) / 2, (a.y + b.y) / 2, { steps: 4 }); await page.mouse.move(b.x, b.y, { steps: 4 }); await page.mouse.up();
   expect((await f.evaluate(() => window.__brbTest.state())).found).toBe(1);
-  await expect(f.locator('.wchip.found')).toHaveCount(1);
+  await expect(f.locator('.wh-wchip.wh-found')).toHaveCount(1);
   const c = await at(...w2.start), d = await at(...w2.end);
   await page.mouse.click(c.x, c.y);
   expect((await f.evaluate(() => window.__brbTest.state())).pending).toEqual(w2.start);
@@ -41,26 +40,27 @@ test('Word Hunt runs on kit 1.1.6: title, real selections, pause, results, daily
   expect((await f.evaluate(() => window.__brbTest.state())).found).toBe(2);
   // a hint marks a word's chip; Read to me lists the words left
   const h = await f.evaluate(() => window.__brbTest.hint());
-  await expect(f.locator('.wchip.hinted')).toHaveCount(1);
+  await expect(f.locator('.wh-wchip.wh-hinted')).toHaveCount(1);
   expect(st.words.map(w => w.word)).toContain(h.word);
   expect((await f.evaluate(() => window.__brbTest.readWords())).length).toBe(st.words.length - 2);
 
-  // the kit's pause screen with the game's note (its Quit says "Change theme"); P again resumes
+  // pause (the letters hidden, the game's note; its Quit says "Change theme"); P again resumes
+  await f.locator('#wh-board').focus();
   await page.keyboard.press('p');
-  await expect(f.locator('.ok-pause #pauseInfo')).toBeVisible();
-  await expect(f.locator('.ok-pause #quitBtn')).toContainText('Change theme');
+  await expect(f.locator('#wh-pausecard')).toBeVisible();
+  await expect(f.locator('#wh-quit')).toContainText('Change theme');
   expect((await f.evaluate(() => window.__brbTest.state())).paused).toBe(true);
   await page.keyboard.press('p');
-  await expect(f.locator('.ok-pause')).toHaveCount(0);
+  await expect(f.locator('#wh-pausecard')).toBeHidden();
   expect((await f.evaluate(() => window.__brbTest.state())).screen).toBe('play');
 
   // solve: the results card, stars, chips, points saved and sent
   st = await f.evaluate(() => { const t = window.__brbTest; t.skipAnimations(true); return t.solveAll(); });
   expect([st.screen, st.done, st.stars]).toEqual(['results', true, 2]);
-  await expect(f.locator('#resultsScreen')).toBeVisible();
-  await expect(f.locator('#resStars span')).toHaveCount(3);
-  await expect(f.locator('#resChips .chip')).toHaveCount(3);
-  await expect(f.locator('#resArt canvas')).toHaveCount(1);
+  await expect(f.locator('#wh-res')).toBeVisible();
+  await expect(f.locator('#wh-resstars span')).toHaveCount(3);
+  await expect(f.locator('#wh-reschips .wh-chip')).toHaveCount(3);
+  await expect(f.locator('#wh-resart')).toHaveCount(1);
   const saved = await f.evaluate(() => BRB.storage.get('word-hunt-v1'));
   expect([saved.puzzles, saved.total > 0, saved.solved.space]).toEqual([1, true, 1]);
   st = await f.evaluate(() => window.__brbTest.next());
@@ -71,23 +71,23 @@ test('Word Hunt runs on kit 1.1.6: title, real selections, pause, results, daily
   expect([st.daily, st.save.daily.streak]).toEqual([true, 1]);
   st = await f.evaluate(() => { const t = window.__brbTest; t.today('2026-03-02'); t.start({ daily: true }); return t.solveAll(); });
   expect(st.save.daily.streak).toBe(2);
-  await expect(f.locator('#resNote')).toContainText('2 days in a row');
+  await expect(f.locator('#wh-resnote')).toContainText('2 days in a row');
 
   // race a friend: player 1, then player 2 on the same grid, then the winner card
   st = await f.evaluate(() => { const t = window.__brbTest; t.start({ theme: 'farm', difficulty: 'easy', seed: 9, race: true }); return t.solveAll(); });
   expect(st.race.turn).toBe(0);
-  await expect(f.locator('#nextBtn')).toContainText('Player 2');
+  await expect(f.locator('#wh-next')).toContainText('Player 2');
   const grid = st.grid;
   st = await f.evaluate(() => window.__brbTest.next());
   expect([st.race.turn, st.grid]).toEqual([1, grid]);
   st = await f.evaluate(() => window.__brbTest.solveAll());
   expect(st.race.results.length).toBe(2);
-  await expect(f.locator('#resChips .chip canvas')).toHaveCount(2);
-  await expect(f.locator('#nextBtn')).toContainText('Race again');
+  await expect(f.locator('#wh-reschips .wh-chip')).toHaveCount(2);
+  await expect(f.locator('#wh-next')).toContainText('Race again');
 
-  // back to the title (the kit's title screen again, with the game's card)
+  // back to the home card
   await f.evaluate(() => window.__brbTest.quit());
-  await expect(f.locator('.ok-title-screen .wh-tcard')).toBeVisible();
-  expect((await f.evaluate(() => window.__brbTest.state())).screen).toBe('title');
+  await expect(f.locator('#wh-themes')).toBeVisible();
+  expect((await f.evaluate(() => window.__brbTest.state())).screen).toBe('home');
   expect(errors).toEqual([]);
 });

@@ -1,4 +1,4 @@
-# Oomba Canvas API (1.4.1)
+# Oomba Canvas API (1.5.0)
 
 Oomba Canvas is the kit for **classroom activities**: a hands-on canvas where each student drags, builds and checks,
 one problem at a time, with steps and hints. It is separate from the Oomba Kit (`kit/`, arcade games) and Kit 2
@@ -20,7 +20,7 @@ An activity is one small page: the kit's pinned tag, an `oc-app` element, the ac
 
 ```html
 <title>Equivalent fractions</title>
-<script src="/vendor/oomba-canvas/1.4.1/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
+<script src="/vendor/oomba-canvas/1.5.0/oomba-canvas.js" integrity="sha384-…" crossorigin="anonymous"></script>
 <div id="oc-app"></div>
 <script type="application/json" id="oc-activity">
 { "config": { "lang": "en", "support": "count", "supports": ["count", "guided"], "count": 5, "fresh": true, "board": false },
@@ -73,7 +73,7 @@ CANVAS RULES (Oomba Canvas: this build is a classroom activity, or the builder a
 - What it is: a hands-on canvas where each student builds and checks one problem at a time, with steps and hints, on their own device. It is calm and education first: never add lives, timers, enemies, a title screen with Play, scores that go up by themselves, or the Oomba Kit.
 - Start: start_from_template "canvas" (the classroom activity starter; it is allowed even though the tool list names only the arcade starters). Then make it theirs with edit_game on the oc-activity JSON block only: it must stay valid JSON (double quotes, no comments, no trailing commas). Change the <title> to match task.title.
 - Phones and desktops: it works at 390px phone and 1280px desktop. The kit lays itself out for both; never add fixed widths for buttons (or any CSS that sizes the kit's own parts).
-- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.4.1, the starter's tag: keep that tag exactly as it is.
+- Keep it editable in the Studio's Activity panel: the teacher changes the problems, the help, the set size and what it is for there, and the panel rewrites only the oc-activity JSON block. So everything the activity is lives in that one block: never a second copy of the problems in code, never problems made by a script, and the page calls exactly Oc.activity(JSON.parse(document.getElementById('oc-activity').textContent)). New activities use Oomba Canvas 1.5.0, the starter's tag: keep that tag exactly as it is.
 - The data: config { lang: the language the builder writes in, supports: the help modes the activity offers, a list of "watch" | "count" | "guided" | "own" in that order (exactly the ones the builder chose; with more than one, students switch between them), support: where it starts (the first of supports), count: problems in a set (1 to 12), fresh: true (a new set per student from gen), board: true only when it is played on the board together, purpose: what it is for, exactly the setup's choice, a list of "screen" (practice on screen) | "worksheet" (a printable worksheet) | "generator" (a question generator) (leave it out for practice on screen only) }; task { title (short), say (one short sentence read aloud) }; problems: a list, or gen: one generator for a fresh set per student (use gen whenever the topic suits one); steps / hints: only to replace the kit's own lines for a tool, { "<tool>": ["line", ...] } (up to 6 steps, 1 to 3 hints, short, in the builder's language). The kit writes each problem's own line, question, steps and hints in every language: leave steps and hints empty unless they asked for something special.
 - Tools (values: whole numbers, or fractions as [n, d]):
   fractions.equiv { from: [n, d], to: D } make n/d out of 1/D pieces (D must be a multiple of d); tray: [other piece sizes] optional. gen { dens: [2, 3, 4], mult: [2, 3] }
@@ -157,6 +157,13 @@ a version that could be shared or published, and the automatic playtest (`server
   byte for byte as they shipped; the scanner admits all six tags. An activity moves to 1.4.1 when it is saved from the
   Activity panel (open it in the Studio, Activity, change nothing or anything, Save). It was first made as 1.3.1
   on 1.3.0, which never shipped: it came after 1.4.0, so it is 1.4.1 and has worksheets too.
+- **1.5.0**: 1.4.1 in the Crossword look the rest of the site uses (`seed-games/crossword.html`, the Builder's classroom
+  style), nothing else (same data, same behavior, worksheets and the phone layout included; printing is unchanged).
+  The page is the dotted mint board (dark: dark green dots on near black) instead of cream graph paper; the problem
+  line ("Problem 2 of 5" over the task) sits in the dark Now bar (mint in dark mode) instead of a cream card; Check is
+  Crossword's green Go pill (flat, #1F9D63 with white words; dark: #66C792 with #10261A) instead of a raised button,
+  and the band's Hint and Clear and the end card's other buttons take an ink outline. The workspace cards are solid cream on the board. 1.0.0 to 1.4.1 stay byte for byte as
+  they shipped; the scanner admits all seven tags. An activity moves to 1.5.0 when it is saved from the Activity panel.
 - Read-aloud speaks the fixed `task.say` line only.
 
 ## Teacher controls (1.3.0)
@@ -188,7 +195,7 @@ not a sort into the Builder's own word groups, a figure question with choices, o
 numbers or two of them put together), with three examples and a check of 30 made-up problems), how much help, problems in a set, and what
 it is for. `public/js/activity-panel/` draws it; `POST /api/studio/:id/activity` (`server/routes/activity-panel.js`)
 saves it: only the `oc-activity` block changes (`server/builder/activity-data.js`, problems cleaned by the kit's own
-1.4.1 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no
+1.5.0 file), any text the teacher typed (a question, worked steps) is screened exactly like a Builder message (no
 markup, no students' names, then the Builder's screening), and the kit's self-test and the scanner run before a new
 version is saved ("Activity panel: problem 3 moved up"). Saves by the same person within a minute join into one version.
 It refuses while a Builder turn runs for the game, and when the version changed since the panel loaded.

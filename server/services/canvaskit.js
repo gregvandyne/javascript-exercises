@@ -38,8 +38,13 @@ export const CANVAS_VERSIONS = Object.freeze({
   // cut. Same data, same behaviour as 1.4.0 (worksheets included). Older activities move to it when saved from the
   // Activity panel. (First made as 1.3.1 on 1.3.0; it never shipped, so it became 1.4.1 after 1.4.0.)
   '1.4.1': 'sha384-wzvc0d09Zsgwhy5EGhbOKY8uqE54j+hFLKKY+yYsVUAd9M6oMG+qNCy1j1DXt5mT',
+  // 1.5.0: 1.4.1 in the Crossword look the rest of the site is moving to: the page is the dotted mint board, the problem
+  // line sits in the dark Now bar, and Check is Crossword's flat green Go pill. Style only: same data, same behavior as
+  // 1.4.1 (worksheets and the phone layout included); printing is unchanged. Older activities move to it when saved from
+  // the Activity panel.
+  '1.5.0': 'sha384-pC29UCsCFenEhGEJyPtDdEjcSPAGl1alD09bHQHxNTVEBfPWQYRJNAjpTF2AJvg7',
 });
-export const CANVAS_LATEST = '1.4.1';
+export const CANVAS_LATEST = '1.5.0';
 export const canvasSrc = (v = CANVAS_LATEST) => `${CANVAS_PATH}${v}/oomba-canvas.js`;
 const PUBLIC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../public');
 

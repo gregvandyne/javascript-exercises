@@ -5,47 +5,48 @@
    a score, and at the end a review of every answer. The teacher can paste their own questions (Edit questions). Plain
    HTML in the Oomba classroom style: nothing is sent anywhere and nobody is named. */
 .top{display:flex;align-items:center;gap:12px}
-.progress{flex:1;height:12px;border-radius:999px;background:var(--tint);overflow:hidden}
+.progress{flex:1;height:12px;border-radius:999px;background:var(--card);box-shadow:0 0 0 1px var(--line);overflow:hidden}
 .progress i{display:block;height:100%;width:0;background:var(--leaf);border-radius:999px;transition:width .45s var(--ease)}
 .timer{--p:1;flex:none;width:clamp(46px,7vmin,72px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-weight:800;font-variant-numeric:tabular-nums;font-size:clamp(.95rem,2.4vmin,1.5rem);background:conic-gradient(var(--leaf) calc(var(--p) * 360deg),var(--tint) 0);position:relative}
 .timer::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--card)}
+.top .pill{background:var(--card);box-shadow:var(--shadow)}
 .timer span{position:relative}
 .timer.low{background:conic-gradient(var(--coral) calc(var(--p) * 360deg),var(--tint) 0)}
-.qcard{width:min(100%,1100px);margin:0 auto;display:flex;flex-direction:column;gap:clamp(12px,2.6vmin,28px);flex:1;justify-content:center}
+.qcard{width:min(100%,1100px);margin:0 auto;display:flex;flex-direction:column;gap:clamp(12px,2.6vmin,22px);flex:1;justify-content:center}
+.qcard .q{text-align:start}
 .choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:clamp(10px,1.8vmin,18px)}
-.choice{display:flex;align-items:center;gap:14px;padding:12px 16px;border-radius:var(--r);min-height:clamp(64px,11vmin,116px);text-align:start;font-size:clamp(1.15rem,3.8vmin,2.6rem);font-weight:700}
+.choice{display:flex;align-items:center;justify-content:flex-start;gap:14px;padding:12px 16px;border-radius:var(--r);border-color:var(--line);box-shadow:var(--shadow);min-height:clamp(64px,11vmin,116px);text-align:start;font-size:clamp(1.15rem,3.8vmin,2.6rem);font-weight:700}
 .choice .tag{flex:none;display:grid;place-items:center;width:clamp(38px,6.4vmin,60px);aspect-ratio:1;border-radius:12px;background:var(--tint);font-weight:800;font-size:.8em}
-.choice:nth-child(1) .tag{background:var(--mint-soft)}.choice:nth-child(2) .tag{background:var(--spark-soft)}.choice:nth-child(3) .tag{background:var(--sky-soft)}.choice:nth-child(4) .tag{background:var(--lilac-soft)}
+.choice:nth-child(1) .tag{background:color-mix(in srgb,var(--g-class) 30%,var(--card))}.choice:nth-child(2) .tag{background:color-mix(in srgb,var(--g-tools) 34%,var(--card))}.choice:nth-child(3) .tag{background:color-mix(in srgb,var(--g-time) 30%,var(--card))}.choice:nth-child(4) .tag{background:color-mix(in srgb,var(--g-check) 30%,var(--card))}
 .choice .lab{flex:1;min-width:0;overflow-wrap:anywhere}
 .choice .mark{flex:none;font-weight:800}
-.choice.right{background:var(--mint-soft);border-color:var(--leaf);box-shadow:0 0 0 3px var(--leaf)}
-.choice.right .tag,.choice.right:nth-child(n) .tag{background:var(--leaf);color:#fff}
-.choice.wrong{background:var(--coral-soft);border-color:var(--coral)}
-.choice.wrong .tag,.choice.wrong:nth-child(n) .tag{background:var(--coral);color:#fff}
+.choice.right{background:var(--mint-t);border-color:var(--green);box-shadow:0 0 0 3px var(--green)}
+.choice.right .tag,.choice.right:nth-child(n) .tag{background:var(--green);color:var(--on-green)}
+.choice.wrong{background:var(--coral-t);border-color:var(--coral)}
+.choice.wrong .tag,.choice.wrong:nth-child(n) .tag{background:var(--coral);color:var(--on-coral)}
 .choice.dim{opacity:.5}
 .choice:disabled{opacity:1;cursor:default}
 .choice.dim:disabled{opacity:.5}
 .feedback{margin:0;text-align:center;min-height:1.4em;font-weight:800;font-size:clamp(1.1rem,3vmin,2rem)}
-.feedback.good{color:var(--leaf)}
-.feedback.bad{color:#B4432A}
+.feedback.good{color:var(--accent-ink)}
+.feedback.bad{color:var(--coral)}
 .feedback .why{display:block;margin-top:6px;color:var(--ink);font-weight:600;font-size:.85em}
 .big-score{font-size:clamp(3rem,13vmin,9rem);font-weight:800;letter-spacing:-.04em;line-height:1;margin:6px 0 4px;font-variant-numeric:tabular-nums}
 .big-score small{font-size:.4em;color:var(--soft);font-weight:700}
-.stars{font-size:clamp(1.6rem,5vmin,3rem);letter-spacing:.15em;margin:0}
+.card .stars{font-size:clamp(1.6rem,5vmin,3rem);letter-spacing:.15em;margin:0;color:var(--spark);text-shadow:0 2px 0 rgba(0,0,0,.15)}
 .review{list-style:none;margin:18px 0 0;padding:0;display:grid;gap:10px;text-align:start}
-.review li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--page);border:1.5px solid var(--line);font-size:clamp(.95rem,2.2vmin,1.3rem)}
-.review .ok{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-weight:800;color:#fff;background:var(--leaf)}
-.review .no .ok,.review li.no .ok{background:var(--coral)}
+.review li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;padding:12px 14px;border-radius:var(--r-sm);background:var(--card2);font-size:clamp(.95rem,2.2vmin,1.3rem)}
+.review .ok{grid-row:span 2;display:grid;place-items:center;width:34px;height:34px;border-radius:50%;font-weight:800;color:var(--on-green);background:var(--green)}
+.review .no .ok,.review li.no .ok{background:var(--coral);color:var(--on-coral)}
 .review b{font-weight:800}
 .review span{color:var(--soft)}
 .end .card{width:min(100%,900px);max-height:none}
-.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:rgba(20,20,20,.45)}
+.editor{position:fixed;inset:0;z-index:10;display:grid;place-items:center;padding:16px;background:var(--scrim)}
 .editor .card{width:min(100%,900px);text-align:start;max-height:calc(100dvh - 32px);overflow:auto}
 .editor h2{font-size:clamp(1.4rem,4vmin,2.4rem)}
-.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);color:var(--ink);background:var(--page);border:1.5px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;resize:vertical}
-.editor textarea:focus-visible{outline:4px solid var(--spark);outline-offset:2px}
+.editor textarea{width:100%;min-height:clamp(200px,40dvh,420px);font:600 clamp(.95rem,2vmin,1.15rem)/1.5 var(--font);background:var(--card2);padding:12px 14px;resize:vertical}
 .editor .msg{min-height:1.3em;font-weight:700}
-.editor .msg.bad{color:#B4432A}
+.editor .msg.bad{color:var(--coral)}
 .editor .row{justify-content:flex-end}
 @media (max-width:600px){.choice{min-height:58px;padding:10px 12px}.top{gap:8px}}
 </style>
@@ -53,16 +54,16 @@
   <header class="bar"><h1 id="title"></h1><button class="small" id="sound" aria-pressed="false"></button><button class="small" id="full"></button></header>
 
   <section class="screen" id="start">
-    <div class="card"><h2 id="startH"></h2><p id="startP"></p>
+    <div class="card g-check"><div class="wh"><span class="wicon" aria-hidden="true">❓</span><h2 class="wt" id="startH"></h2></div><p id="startP"></p>
       <div class="row"><button class="big hot" id="go"></button></div>
       <div class="row"><button class="small" id="timerBtn"></button><button class="small" id="editBtn"></button></div>
       <p class="keys" id="startKeys"></p></div>
   </section>
 
   <section class="screen" id="ask" hidden>
-    <div class="top"><span class="pill" id="qn"></span><div class="progress" aria-hidden="true"><i id="bar"></i></div><span class="pill" id="score"></span><div class="timer" id="timer" hidden><span id="timerN"></span></div></div>
+    <div class="top"><div class="progress" aria-hidden="true"><i id="bar"></i></div><span class="pill" id="score"></span><div class="timer" id="timer" hidden><span id="timerN"></span></div></div>
     <div class="qcard">
-      <h2 class="q" id="q"></h2>
+      <div class="nowbar"><b id="qn"></b><h2 class="q" id="q"></h2></div>
       <div class="choices" id="choices" role="group"></div>
       <p class="feedback" id="feedback" aria-live="polite"></p>
     </div>
@@ -71,7 +72,7 @@
   </section>
 
   <section class="screen end" id="end" hidden>
-    <div class="card"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p class="stars" id="stars" aria-hidden="true"></p><p id="endP"></p>
+    <div class="card center g-check"><h2 id="endH"></h2><div class="big-score" id="endScore"></div><p class="stars" id="stars" aria-hidden="true"></p><p id="endP"></p>
       <div class="row"><button class="big hot" id="again"></button><button class="big" id="missed"></button></div>
       <h3 id="reviewH"></h3><ol class="review" id="review"></ol></div>
   </section>
@@ -134,6 +135,7 @@ const LANG = (B.user && B.user.lang) || 'en';
 const W = WORDS[LANG] || WORDS[String(LANG).split('-')[0]] || WORDS.en;
 const tr = (k, v) => String(W[k] != null ? W[k] : WORDS.en[k]).replace(/\{(\w+)\}/g, (m, n) => (v && v[n] != null ? v[n] : m));
 document.documentElement.lang = LANG; document.documentElement.dir = (B.user && B.user.dir) || 'ltr';
+if (B.theme === 'light' || B.theme === 'dark') document.documentElement.dataset.theme = B.theme;   // the site's light or dark (else the device's)
 const $ = id => document.getElementById(id);
 let soundOn = !!CONFIG.sound;   // sound is off until someone presses Sound
 const sfx = name => { try { if (soundOn && B.sfx && !B.sfx.muted) B.sfx.play(name); } catch (e) { /* no sound */ } };

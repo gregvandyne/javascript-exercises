@@ -1263,6 +1263,17 @@
       "code": "Codice classe: {code}",
       "grid": "Griglia del cruciverba"
     },
+    "printHunt": {
+      "untitled": "Crucipuzzle",
+      "find": "Trova queste parole",
+      "hidden": "Parole nascoste nella griglia: {n}. Trovale tutte!",
+      "grid": "Griglia del crucipuzzle",
+      "how": {
+        "easy": "Le parole sono in orizzontale e in verticale.",
+        "medium": "Le parole sono in orizzontale, in verticale e in diagonale.",
+        "hard": "Le parole sono in tutte le direzioni, anche al contrario."
+      }
+    },
     "printBox": {
       "divide": "Divisione in colonna",
       "multiply": "Moltiplicazione",
@@ -1295,6 +1306,22 @@
       "answer": "Risposta:",
       "choose": "Cerchia una risposta.",
       "figure": "Figura della domanda {n}"
+    },
+    "printAtlas": {
+      "mapOf": {"world": "Carta del mondo", "car": "Carta dei Caraibi", "me": "Carta del Medio Oriente"},
+      "untitled": "Quiz di geografia",
+      "mapTitle": "Carta: {region}",
+      "mapAlt": "Carta muta: {region}",
+      "mapH": "Completa la carta",
+      "mapHow": "Scrivi il nome di ogni paese numerato.",
+      "mapHowCo": "I paesi piccoli hanno una freccia verso la loro riga.",
+      "questions": "Domande",
+      "capc": "{city} è la capitale di quale paese?",
+      "fam": "Quale paese è famoso per {thing}?",
+      "region": {
+        "car": "Caraibi",
+        "me": "Medio Oriente"
+      }
     }
   },
   "friends": {

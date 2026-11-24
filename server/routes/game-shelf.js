@@ -46,7 +46,8 @@ export const playHref = g => (g.published_version_id || g.source === 'seed' ? `/
 /** "{name}: {n} of {total}" with its placeholders kept, for public/js/reorder.js to fill in. */
 const movedTpl = t => t('folders.moved', { name: '{name}', n: '{n}', total: '{total}' });
 /** A game that opens at a teacher's problem or question set (Algebra Builder): assigned from its own page, after picking. */
-const setGame = g => !!g && g.source === 'seed' && gameSets.SET_GAMES.has(g.slug);
+/** A game that opens at a teacher's set, so it is assigned from the Assign page (Word Hunt also plays without one). */
+const setGame = g => !!g && g.source === 'seed' && gameSets.SET_GAMES.has(g.slug) && !gameSets.OPEN_SET_GAMES.has(g.slug);
 const liveOnly = g => { if (!g || g.source !== 'seed') return false; const lg = liveGameOf(g); return !!(lg && !lg.play); };
 
 /**

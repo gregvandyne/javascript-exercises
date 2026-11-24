@@ -11,6 +11,7 @@ import { cleanText } from './textfilter.js';
 import { canvasVersion, canvasKit, figureProblems } from './canvaskit.js';
 import { proofCore } from './proof-core.js';
 import { useSetCodes } from '../standards/official-tags.js';
+import { codes as atlasCodes } from '../live/atlas.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -193,6 +194,45 @@ export function cleanCrossItems(raw) {
   return [{ t, w: words, r, b: it.b === true, h: it.h !== false }];
 }
 
+// ---------------------------------------------------------------- Word Hunt: one word search per set
+// [{ t: title ('' allowed), w: [word, ...] (3-25), s: grid size (0: the smallest that holds the words, or 8, 10, 12,
+//    15), d: directions ('easy' across and down, 'medium' and diagonal, 'hard' every way), r: the layout's seed,
+//    b: the word list shown to students }]. As Crossword's, a teacher's own words: every word and the title go
+// through the site's text filter (docs/decisions.md "Word Hunt in Crossword's look, with your own words"). The grid
+// is made in the game (and by the printer) from the words and options, so it is never stored.
+export const HUNT = { min: 3, max: 25, typed: 24, letters: 15, title: 60, sizes: [0, 8, 10, 12, 15], dirs: ['easy', 'medium', 'hard'] };
+export function cleanHuntItems(raw) {
+  if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object') return null;
+  const it = raw[0];
+  if (!Array.isArray(it.w) || it.w.length < HUNT.min || it.w.length > HUNT.max) return null;
+  const words = [], seen = new Set();
+  for (const x of it.w) {
+    if (typeof x !== 'string') return null;
+    const w = x.normalize('NFC').replace(/\s+/g, ' ').trim(), n = [...crossLetters(w)].length;
+    if (!w || w.length > HUNT.typed || !CROSS_WORD.test(w) || n < 2 || n > HUNT.letters) return null;
+    const key = crossLetters(w);
+    if (seen.has(key)) return null;
+    seen.add(key);
+    const cw = cleanText(w, HUNT.typed);
+    if (!cw.ok) return null;
+    words.push(cw.value);
+  }
+  let t = '';
+  if (it.t !== undefined && it.t !== '') {
+    if (typeof it.t !== 'string' || it.t.length > HUNT.title) return null;
+    const ct = cleanText(it.t.replace(/\s+/g, ' '), HUNT.title);
+    if (!ct.ok) return null;
+    t = ct.value;
+  }
+  const s = it.s === undefined ? 0 : it.s;
+  if (!HUNT.sizes.includes(s)) return null;
+  if (s && words.some(w => [...crossLetters(w)].length > s)) return null;
+  const d = it.d === undefined ? 'medium' : it.d;
+  if (!HUNT.dirs.includes(d)) return null;
+  const r = Number.isInteger(it.r) && it.r >= 1 && it.r <= 999999 ? it.r : 1;
+  return [{ t, w: words, s, d, r, b: it.b !== false }];
+}
+
 // ---------------------------------------------------------------- Mistake Hunt: a set of passages to proofread
 // [{ t: the passage's title ('' allowed), x: the teacher's correct text, g: grade 0 (K) to 8,
 //    m: [{ a, b: a token range of x (end exclusive), w: what students see there, k: the mistake type, p?: 1 pinned,
@@ -287,6 +327,64 @@ useSetCodes('mistake-hunt', 'ccss-ela', id => {
 // names) through the site's text filter as Crossword's words are, and the whole set must pass the kit's self-test for
 // that activity (every problem solvable by its worked answer, never right when empty, its figures drawable by the
 // pinned Oomba Figures). Problems only: nothing about who played, nothing a student typed.
+// ---------------------------------------------------------------- Atlas Quest: a teacher's geography quiz
+// [{ t: title ('' allowed), r: the printed map's frame (world, a continent, the Caribbean or the Middle East),
+//    q: [[kind, code]] for the country questions (label it on a map, name its capital, capital to country, flag to
+//       country, which continent, famous for) or ['own', question, answer, code ('' or a country)] for the teacher's own,
+//    a: [[code, lng*10, lat*10]] the arrows from small countries to their answer lines on the printed map,
+//    h: hints allowed }]. One item, 1 to 60 questions (docs/decisions.md "Atlas Quest in Crossword's look").
+// Countries are ISO codes checked against the game's own list (window.AtlasData; services/../live/atlas.js codes),
+// never a name; the teacher's own words (the title, a question and its answer) pass the site's text filter as
+// Crossword's words do. Capital questions are never about the two countries whose capital the game leaves out.
+export const ATLAS = { max: 60, q: 150, a: 60, title: 60, frames: ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'car', 'me'], kinds: ['map', 'cap', 'capc', 'flag', 'cont', 'fam'] };
+const ATLAS_NO_CAP = new Set(['IL', 'PS']);
+let atlasKnown = null;
+const atlasCode = cc => { if (!atlasKnown) atlasKnown = new Set(atlasCodes()); return typeof cc === 'string' && atlasKnown.has(cc); };
+/** The quiz's clean item, or null when it isn't one. opts.empty: a print of a map with no numbers may have no questions. */
+export function cleanAtlasItems(raw, opts = {}) {
+  if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object' || Array.isArray(raw[0])) return null;
+  const it = raw[0];
+  if (!Array.isArray(it.q) || it.q.length > ATLAS.max || (!it.q.length && !opts.empty)) return null;
+  const r = it.r === undefined ? 'world' : it.r;
+  if (!ATLAS.frames.includes(r)) return null;
+  const q = [], seen = new Set();
+  for (const x of it.q) {
+    if (!Array.isArray(x)) return null;
+    if (x[0] === 'own') {
+      if (x.length < 3 || x.length > 4 || typeof x[1] !== 'string' || typeof x[2] !== 'string') return null;
+      const qq = x[1].replace(/\s+/g, ' ').trim(), aa = x[2].replace(/\s+/g, ' ').trim(), cc = x[3] === undefined ? '' : x[3];
+      if (!qq || !aa || qq.length > ATLAS.q || aa.length > ATLAS.a || (cc !== '' && !atlasCode(cc))) return null;
+      const cq = cleanText(qq, ATLAS.q), ca = cleanText(aa, ATLAS.a);
+      if (!cq.ok || !ca.ok) return null;
+      q.push(['own', cq.value, ca.value, cc]);
+      continue;
+    }
+    if (x.length !== 2 || !ATLAS.kinds.includes(x[0]) || !atlasCode(x[1])) return null;
+    if ((x[0] === 'cap' || x[0] === 'capc') && ATLAS_NO_CAP.has(x[1])) return null;
+    const k = `${x[0]}:${x[1]}`;
+    if (seen.has(k)) return null;
+    seen.add(k); q.push([x[0], x[1]]);
+  }
+  const onMap = new Set(q.filter(x => x[0] === 'map').map(x => x[1])), a = [], arrowed = new Set();
+  if (it.a !== undefined) {
+    if (!Array.isArray(it.a) || it.a.length > ATLAS.max) return null;
+    for (const x of it.a) {
+      if (!Array.isArray(x) || x.length !== 3 || !onMap.has(x[0]) || arrowed.has(x[0])) return null;
+      const [, lng, lat] = x;
+      if (!Number.isInteger(lng) || !Number.isInteger(lat) || lng < -1800 || lng > 3600 || lat < -900 || lat > 900) return null;
+      arrowed.add(x[0]); a.push([x[0], lng, lat]);
+    }
+  }
+  let t = '';
+  if (it.t !== undefined && it.t !== '') {
+    if (typeof it.t !== 'string' || it.t.length > ATLAS.title) return null;
+    const ct = cleanText(it.t.replace(/\s+/g, ' '), ATLAS.title);
+    if (!ct.ok) return null;
+    t = ct.value;
+  }
+  return [{ t, r, q, a, h: it.h !== false }];
+}
+
 export const CANVAS_SET = { min: 1, max: 20, chars: 20000, text: 300, kit: '1.4.0' };
 export const CANVAS_KIND = 'canvas';
 const verGe = (v, w) => { const a = String(v).split('.').map(Number), b = w.split('.').map(Number); return (a[0] - b[0] || a[1] - b[1] || a[2] - b[2]) >= 0; };
@@ -324,8 +422,11 @@ export function cleanCanvasItems(raw, html) {
   return JSON.parse(JSON.stringify(out));
 }
 
+/** Set games that are also whole games without a set (Word Hunt's own themes and daily puzzle): a teacher may still
+ *  assign them as they are, from the class page or a folder, as before they kept sets. */
+export const OPEN_SET_GAMES = new Set(['word-hunt']);
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -361,7 +462,7 @@ export function cleanTitle(raw) {
 
 /** Save a set: a new one, or (id given) the owner's own one changed. slug: the game's (its cleaner; Algebra Builder's by
  *  default). opts.title: the set's name (left out: kept as it is; one the text filter refuses is left out the same
- *  way, so the set still saves). Crossword's name is always its puzzle's title (items[0].t). A classroom activity's
+ *  way, so the set still saves). Crossword's and Word Hunt's name is always its puzzle's title (items[0].t). A classroom activity's
  *  worksheet (slug CANVAS_KIND) is cleaned for its activity's page, opts.html.
  *  -> { id } | { error: 'bad'|'notYours'|'full' } */
 export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-builder', opts = {}) {
@@ -369,7 +470,7 @@ export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-build
   const items = clean ? clean(rawItems) : null;
   if (!items) return { error: 'bad' };
   const t = now();
-  const named = slug === 'crossword' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
+  const named = slug === 'crossword' || slug === 'word-hunt' || slug === 'atlas-quest' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
   const title = named && named.ok ? named.value : null;
   if (id) {
     const was = get(gameId, id);
@@ -397,7 +498,8 @@ export const codeOf = id => { const c = String(id).replace(/^s-/, '').toUpperCas
  *  makes), Algebra Builder's questions. */
 export function sizeOf(slug, items) {
   const a = items[0] || {};
-  if (slug === 'crossword') return Array.isArray(a.w) ? a.w.length : 0;
+  if (slug === 'crossword' || slug === 'word-hunt') return Array.isArray(a.w) ? a.w.length : 0;
+  if (slug === 'atlas-quest') return Array.isArray(a.q) ? a.q.length : 0;
   if (slug === 'box-by-box') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
   if (slug === 'mistake-hunt') return items.reduce((n, it) => n + (Array.isArray(it.m) ? it.m.length : 0), 0);
   return items.length;   // Algebra Builder's questions, a classroom activity's problems
@@ -430,15 +532,19 @@ export function remove(gameId, ownerId, id) {
   q.run('DELETE FROM proof_chats WHERE owner_id=? AND set_key=?', ownerId, id);
   return true;
 }
-/** Rename the owner's set ('' takes the name away). Crossword's name is its puzzle's title, so that changes too.
+/** Rename the owner's set ('' takes the name away). Crossword's and Word Hunt's name is its puzzle's title, so that changes too.
  *  -> { ok: true, title } | { error: 'notYours'|'title' } */
 export function rename(gameId, ownerId, id, rawTitle, slug = 'algebra-builder') {
   const s = own(gameId, ownerId, id);
   if (!s) return { error: 'notYours' };
   const c = cleanTitle(rawTitle);
   if (!c.ok) return { error: 'title' };
-  if (slug === 'crossword') {
-    const items = cleanCrossItems([{ ...s.items[0], t: c.value }]);
+  if (slug === 'crossword' || slug === 'word-hunt') {
+    const items = (slug === 'crossword' ? cleanCrossItems : cleanHuntItems)([{ ...s.items[0], t: c.value }]);
+    if (!items) return { error: 'title' };
+    q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), c.value, now(), id);
+  } else if (slug === 'atlas-quest') {   // Atlas Quest's name is its quiz's title too
+    const items = cleanAtlasItems([{ ...s.items[0], t: c.value }]);
     if (!items) return { error: 'title' };
     q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), c.value, now(), id);
   } else q.run('UPDATE game_sets SET title=?, updated_at=? WHERE id=?', c.value, now(), id);
@@ -453,6 +559,8 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') 
   const name = c.ok ? c.value : '';
   let items = s.items;
   if (slug === 'crossword') items = cleanCrossItems([{ ...items[0], t: name }]) || items;
+  if (slug === 'word-hunt') items = cleanHuntItems([{ ...items[0], t: name }]) || items;
+  if (slug === 'atlas-quest') items = cleanAtlasItems([{ ...items[0], t: name }]) || items;
   return insert(gameId, ownerId, items, name);
 }
 
@@ -475,6 +583,8 @@ const BB_LEVEL = { watch: 'Watch', countUp: 'Count up', guided: 'Guided', prompt
 export function labelOf(slug, items) {
   const a = items[0];
   if (slug === 'crossword') return `${a.t ? `${a.t}: ` : ''}crossword, ${a.w.length} words`;
+  if (slug === 'word-hunt') return `${a.t ? `${a.t}: ` : ''}word hunt, ${a.w.length} words`;
+  if (slug === 'atlas-quest') return `${a.t ? `${a.t}: ` : ''}geography quiz, ${a.q.length} question${a.q.length === 1 ? '' : 's'}`;
   if (slug === 'box-by-box') {
     const n = sizeOf(slug, items);
     return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
@@ -495,7 +605,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword' || slug === 'box-by-box' || slug === 'mistake-hunt') return { kind: 'one', label: labelOf(slug, s.items) };
+    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'box-by-box' || slug === 'mistake-hunt' || slug === 'atlas-quest') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

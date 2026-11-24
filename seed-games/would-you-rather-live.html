@@ -4,79 +4,128 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Would You Rather? (Live)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
 <style>
-  :root { --ink: #1d2340; --card: #fffdf7; --bg1: #ffe7b8; --bg2: #ffd0e0; --a: #17a58c; --a2: #d9f7ef; --b: #8a5cf6; --b2: #ece4ff; --muted: rgba(29,35,64,.7); }
-  html.dark { --ink: #f4f1e6; --card: #262a48; --bg1: #2a2552; --bg2: #43255a; --a2: #164a42; --b2: #3a2c6b; --muted: rgba(244,241,230,.75); }
-  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ink); background: linear-gradient(160deg, var(--bg1), var(--bg2)); }
+  /* Crossword's look (seed-games/crossword.html), the classroom dashboard's widgets: cream cards with a group colour on
+     the top edge and the icon chip, the dark Now-style bar, a dotted mint board; light and dark from the site's theme. */
+  :root {
+    --paper: #E1F1E1; --dots: #66C792; --card: #FFFDF2; --card2: #F9F6EB; --ink: #141414; --line: #E2DDCB; --muted: #5B584F;
+    --green: #1F9D63; --accent: #66C792; --mint-t: #E1F1E1; --current: #141414; --on-current: #FFFDF2; --spark: #FFD23F; --focus: #2563EB;
+    --g-time: #5AA9D6; --g-tools: #FFD23F; --g-show: #F28C6B; --g-check: #9B8CE0; --g-join: #4FB6A8;
+    /* the two choices: A the coral group, B the sky group (top edge, icon chip and bars; never on text) */
+    --a: #F28C6B; --b: #5AA9D6;
+    --shadow: 0 1px 0 rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.06); --r: 20px; --r-sm: 12px;
+    --font: 'Bricolage Grotesque', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  html.dark {
+    --paper: #141414; --dots: #2E5A41; --card: #1E1E1B; --card2: #262622; --ink: #FFFDF2; --line: #36352F; --muted: #B8B3A1;
+    --green: #66C792; --mint-t: #1F3A2B; --current: #66C792; --on-current: #141414; --focus: #8AB4FF;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.32);
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--font); color: var(--ink); line-height: 1.25;
+    background-color: var(--paper); background-image: radial-gradient(var(--dots) 1.5px, transparent 1.6px); background-size: 22px 22px; }
   [hidden] { display: none !important; }
-  .wl { position: fixed; inset: 0; display: flex; flex-direction: column; gap: clamp(6px, 1.4vh, 12px); padding: max(10px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); box-sizing: border-box; }
-  .wl-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; min-height: 34px; }
-  .wl-top .sp { flex: 1; }
-  .wl-pill { background: var(--card); border: 3px solid var(--ink); border-radius: 999px; padding: 3px 12px; box-shadow: 0 3px 0 var(--ink); font-weight: 800; font-size: clamp(13px, min(2.6vw, 2.6vh), 22px); white-space: nowrap; }
-  .wl-title { font-size: clamp(15px, min(3.4vw, 3.4vh), 28px); }
-  .wl-ring { width: clamp(40px, 7vh, 64px); height: clamp(40px, 7vh, 64px); position: relative; flex: none; }
+  .wl { position: fixed; inset: 0; display: flex; flex-direction: column; gap: clamp(8px, 1.6vh, 14px); padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left)); }
+  /* the head: the logo and the title, as Crossword */
+  .wl-top { display: flex; align-items: center; gap: 10px; flex-shrink: 0; min-height: 40px; }
+  .wl-logo { width: clamp(30px, 5vh, 44px); height: clamp(30px, 5vh, 44px); flex: none; }
+  .wl-title { flex: 1; min-width: 0; font-weight: 800; font-size: clamp(17px, min(3vw, 3.2vh), 30px); letter-spacing: -.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* the dark Now bar: the question, which one, how many voted, the time */
+  .wl-now { flex-shrink: 0; display: flex; align-items: center; gap: clamp(10px, 1.6vw, 18px); min-height: clamp(56px, 10vh, 110px); padding: clamp(8px, 1.4vh, 14px) clamp(14px, 2vw, 24px);
+    border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
+  .wl-nowtx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .wl-nowtx b { font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: clamp(12px, min(1.8vw, 2.2vh), 20px); opacity: .9; }
+  .wl-nowtx span { font-weight: 800; font-size: clamp(20px, min(4vw, 5.4vh), 56px); line-height: 1.1; overflow-wrap: anywhere; }
+  .wl-pill { flex: none; border-radius: 999px; padding: 4px 14px; font-weight: 800; font-size: clamp(14px, min(2.4vw, 3vh), 30px); white-space: nowrap; background: color-mix(in srgb, var(--on-current) 16%, transparent); }
+  .wl-ring { width: clamp(44px, 8vh, 84px); height: clamp(44px, 8vh, 84px); position: relative; flex: none; }
   .wl-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-  .wl-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(14px, 2.6vh, 22px); }
-  .wl-banner { margin: 0 auto; background: var(--ink); color: var(--card); border-radius: 18px; padding: 8px 18px; font-weight: 800; font-size: clamp(15px, min(4vw, 4vh), 34px); text-align: center; max-width: 92vw; flex-shrink: 0; overflow-wrap: anywhere; }
+  .wl-ring b { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(15px, 3vh, 30px); font-weight: 800; }
+  /* a status line (waiting, get ready, 3 2 1): the dark bar too, on its own */
+  .wl-banner { margin: 0 auto; background: var(--current); color: var(--on-current); border-radius: var(--r-sm); padding: 10px 22px; font-weight: 800; font-size: clamp(18px, min(4vw, 4.6vh), 44px); text-align: center; max-width: 92vw; flex-shrink: 0; overflow-wrap: anywhere; }
   .wl-banner:empty { display: none; }
-  .wl-cards { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: clamp(8px, 1.6vw, 18px); }
-  .wl-or { align-self: center; display: grid; place-items: center; width: clamp(44px, 7vmin, 80px); height: clamp(44px, 7vmin, 80px); border-radius: 50%; background: var(--card); border: 4px solid var(--ink); font-weight: 900; font-size: clamp(14px, 2.6vmin, 26px); box-shadow: 0 4px 0 var(--ink); z-index: 1; }
+  /* a widget: the dashboard's card, its group colour on the top edge and the icon chip only */
+  .wl-w { --g: var(--g-join); background: var(--card); color: var(--ink); border-radius: var(--r);
+    box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g) 80%, var(--card)), 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent), var(--shadow); }
+  .wl-chip { flex: none; display: grid; place-items: center; width: clamp(34px, 5.4vh, 56px); height: clamp(34px, 5.4vh, 56px); border-radius: 12px; background: color-mix(in srgb, var(--g) 28%, var(--card)); font-size: clamp(17px, 3vh, 30px); font-weight: 800; line-height: 1; }
+  .wl-cards { flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; gap: clamp(8px, 1.4vw, 16px); }
+  .wl-or { align-self: center; display: grid; place-items: center; width: clamp(46px, 7.4vmin, 84px); height: clamp(46px, 7.4vmin, 84px); border-radius: 50%; background: var(--current); color: var(--on-current);
+    font-weight: 800; font-size: clamp(14px, 2.6vmin, 26px); letter-spacing: .04em; box-shadow: 0 0 0 5px var(--paper); z-index: 1; margin: 0 calc(-1 * clamp(8px, 1.4vw, 16px)); }
   /* side by side, a card is never more than half again as tall as it is wide */
   .wl-cards > .wl-c { align-self: center; height: 100%; max-height: 62vw; }
-  .wl-c { position: relative; overflow: hidden; border: 4px solid var(--ink); border-radius: 26px; box-shadow: 0 6px 0 var(--ink); background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: clamp(10px, 2vh, 22px); text-align: center; font: inherit; color: inherit; min-height: 0; min-width: 0; }
-  button.wl-c { cursor: pointer; }
-  button.wl-c:active:not([disabled]) { transform: translateY(4px); box-shadow: 0 2px 0 var(--ink); }
-  button.wl-c:focus-visible { outline: 4px solid #ffc83d; outline-offset: 3px; }
-  .wl-c.a { background: var(--a2); } .wl-c.b { background: var(--b2); }
-  .wl-c .tx { position: relative; z-index: 1; font-weight: 900; font-size: clamp(17px, min(4.2vw, 5vh), 52px); line-height: 1.15; overflow-wrap: anywhere; }
-  .wl-c .tag { position: relative; z-index: 1; font-weight: 900; font-size: clamp(13px, 2.2vh, 22px); color: #fff; border-radius: 999px; padding: 2px 14px; }
-  .wl-c.a .tag { background: var(--a); } .wl-c.b .tag { background: var(--b); }
-  .wl-c .fill { position: absolute; inset: auto 0 0 0; height: 0; transition: height 1s cubic-bezier(.2,1,.4,1); opacity: .38; }
-  .wl-c.a .fill { background: var(--a); } .wl-c.b .fill { background: var(--b); }
-  .wl-c .pct { position: relative; z-index: 1; font-weight: 900; font-size: clamp(30px, min(9vw, 11vh), 120px); line-height: 1; }
-  .wl-c .n { position: relative; z-index: 1; font-weight: 800; font-size: clamp(13px, 2.2vh, 22px); color: var(--muted); }
-  .wl-c.win { box-shadow: 0 0 0 5px #ffc83d, 0 6px 0 var(--ink); }
-  .wl-c.mine::after { content: '✓'; position: absolute; top: 8px; inset-inline-end: 12px; font-weight: 900; font-size: 26px; z-index: 2; }
-  .wl-c.dim { opacity: .55; }
-  .wl-foot { flex-shrink: 0; display: flex; flex-direction: column; gap: 6px; align-items: center; }
-  .wl-world { width: min(720px, 100%); background: var(--card); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink); padding: 6px 12px; box-sizing: border-box; font-weight: 800; font-size: clamp(13px, 2vh, 20px); }
-  .wl-world .bar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; border: 2px solid var(--ink); margin-top: 4px; }
+  .wl-c { position: relative; overflow: hidden; border: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(8px, 1.6vh, 16px);
+    padding: clamp(14px, 2.6vh, 30px) clamp(12px, 2vw, 28px); text-align: center; font: inherit; min-height: 0; min-width: 0; transition: background-color .2s ease, box-shadow .2s ease; }
+  .wl-c.a { --g: var(--a); } .wl-c.b { --g: var(--b); }
+  button.wl-c { cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  button.wl-c:not([disabled]):hover { background: var(--card2); }
+  button.wl-c:active:not([disabled]) { transform: translateY(2px); }
+  button.wl-c:focus-visible { outline: 4px solid var(--focus); outline-offset: 3px; }
+  .wl-c .tx { font-weight: 800; font-size: clamp(18px, min(4vw, 5vh), 54px); line-height: 1.15; overflow-wrap: anywhere; letter-spacing: -.005em; }
+  /* the class's split: a bar in the group colour, the share and how many */
+  .wl-c .bar { width: min(100%, 520px); height: clamp(12px, 2vh, 22px); border-radius: 999px; background: var(--card2); box-shadow: inset 0 0 0 1px var(--line); overflow: hidden; }
+  .wl-c .fill { display: block; height: 100%; width: 0; border-radius: 999px; background: var(--g); transition: width 1s cubic-bezier(.2,1,.4,1); }
+  .wl-c .pct { font-weight: 800; font-size: clamp(30px, min(8vw, 10vh), 120px); line-height: 1; letter-spacing: -.02em; }
+  .wl-c .n { font-weight: 800; font-size: clamp(14px, 2.4vh, 26px); color: var(--muted); }
+  .wl-c.win { box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g) 80%, var(--card)), 0 0 0 4px var(--g), var(--shadow); }
+  .wl-c.mine { box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g) 80%, var(--card)), 0 0 0 4px var(--green), var(--shadow); }
+  .wl-c.mine::after { content: '✓'; position: absolute; top: clamp(12px, 2vh, 18px); inset-inline-end: clamp(12px, 2vh, 18px); width: clamp(34px, 5vh, 48px); height: clamp(34px, 5vh, 48px); border-radius: 50%;
+    display: grid; place-items: center; background: var(--green); color: #fff; font-weight: 800; font-size: clamp(18px, 2.8vh, 26px); }
+  html.dark .wl-c.mine::after { color: #10261A; }
+  .wl-c.dim { background: var(--card2); }
+  .wl-c.dim .tx, .wl-c.dim .wl-chip { opacity: .55; }
+  .wl-foot { flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; align-items: center; }
+  .wl-row { display: flex; align-items: center; gap: 12px; padding: 10px 14px; text-align: start; }
+  .wl-world { --g: var(--g-join); width: min(820px, 100%); font-weight: 800; font-size: clamp(14px, 2.2vh, 24px); }
+  .wl-world > div:last-child { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+  .wl-world .bar { display: flex; height: clamp(12px, 1.8vh, 18px); border-radius: 999px; overflow: hidden; background: var(--card2); }
   .wl-world .bar i { display: block; height: 100%; } .wl-world .bar i:first-child { background: var(--a); } .wl-world .bar i:last-child { background: var(--b); }
-  .wl-world .row { display: flex; justify-content: space-between; gap: 8px; }
-  .wl-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(14px, 2.4vh, 24px); min-height: 1.2em; overflow-wrap: anywhere; }
-  .wl-talk { margin: 0; text-align: center; font-weight: 800; font-size: clamp(15px, 2.8vh, 28px); background: var(--card); border: 3px dashed var(--ink); border-radius: 16px; padding: 6px 14px; max-width: 900px; }
-  .wl-sum { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-  .wl-sum h2 { margin: 0; font-size: clamp(22px, 4vh, 42px); text-align: center; }
-  .wl-sum .box { width: min(760px, 100%); box-sizing: border-box; background: var(--card); border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 5px 0 var(--ink); padding: 10px 16px; }
-  .wl-sum .box h3 { margin: 0 0 4px; font-size: clamp(15px, 2.4vh, 22px); }
-  .wl-sum .box p { margin: 0; font-weight: 700; font-size: clamp(14px, 2.2vh, 20px); overflow-wrap: anywhere; }
-  .wl-btn { min-height: 52px; min-width: 52px; border: 3px solid var(--ink); border-radius: 999px; background: #ffc83d; color: #1d2340; font: inherit; font-weight: 900; font-size: 18px; padding: 8px 22px; box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
+  .wl-world .row { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .wl-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(15px, 2.6vh, 26px); min-height: 1.2em; overflow-wrap: anywhere; }
+  .wl-talk { --g: var(--g-tools); margin: 0; font-weight: 800; font-size: clamp(16px, 3vh, 32px); width: min(1000px, 100%); }
+  .wl-talk span:last-child { overflow-wrap: anywhere; }
+  /* the end */
+  .wl-sum { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 6px 4px; }
+  .wl-sum h2 { margin: 0; font-size: clamp(22px, 4.4vh, 46px); font-weight: 800; text-align: center; padding: 10px 22px; border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
+  .wl-sum .box { width: min(1000px, 100%); display: flex; align-items: flex-start; gap: 14px; padding: 16px 18px; }
+  .wl-sum .box.agree { --g: var(--g-join); } .wl-sum .box.close { --g: var(--g-check); }
+  .wl-sum .box > div { flex: 1; min-width: 0; }
+  .wl-sum .box h3 { margin: 0 0 4px; font-size: clamp(17px, 3.4vh, 34px); font-weight: 800; }
+  .wl-sum .box p { margin: 0; font-weight: 600; font-size: clamp(15px, 3vh, 30px); color: var(--muted); overflow-wrap: anywhere; }
+  .wl-btn { min-height: 52px; min-width: 52px; border: 2px solid var(--green); border-radius: 999px; background: var(--green); color: #fff; font: inherit; font-weight: 800; font-size: 18px; padding: 8px 24px; cursor: pointer; }
+  html.dark .wl-btn { color: #10261A; }
+  .wl-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   .wl-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
   /* phones and portrait screens: the two choices one above the other */
   @media (max-aspect-ratio: 1/1) {
     .wl-cards { grid-template-columns: 1fr; grid-template-rows: 1fr auto 1fr; }
     .wl-cards > .wl-c { height: auto; max-height: none; align-self: stretch; }
-    .wl-or { justify-self: center; margin: -10px 0; }
+    .wl-or { justify-self: center; margin: calc(-1 * clamp(8px, 1.4vw, 16px)) 0; }
+    .wl-now { min-height: 56px; }
+    .wl-c .tx { font-size: clamp(20px, min(6vw, 4.4vh), 46px); }
   }
-  @media (prefers-reduced-motion: reduce) { .wl-c .fill { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .wl-c .fill, .wl-c { transition: none; } }
 </style>
 </head>
 <body>
 <div class="wl" id="ui">
-  <div class="wl-top"><span class="wl-pill wl-title" id="title"></span><span class="wl-pill" id="qnum" hidden></span><span class="sp"></span><span class="wl-pill" id="count" hidden></span>
-    <div class="wl-ring" id="ringbox" hidden aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="var(--card)" stroke="rgba(0,0,0,.15)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="#ffc83d" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.25" stroke-dashoffset="0"/></svg><b id="secs"></b></div></div>
+  <div class="wl-top"><svg class="wl-logo" viewBox="0 0 36 36" aria-hidden="true"><rect x="1" y="1" width="34" height="34" rx="9" fill="var(--accent)"/><rect x="6" y="9" width="11" height="18" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><rect x="19" y="9" width="11" height="18" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><rect x="6" y="9" width="11" height="3.5" rx="1.5" fill="var(--a)"/><rect x="19" y="9" width="11" height="3.5" rx="1.5" fill="var(--b)"/></svg><span class="wl-title" id="title"></span></div>
+  <div class="wl-now" id="now" hidden><div class="wl-nowtx"><b id="qnum" hidden></b><span id="ask" dir="auto"></span></div><span class="wl-pill" id="count" hidden></span>
+    <div class="wl-ring" id="ringbox" hidden aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="color-mix(in srgb, var(--on-current) 22%, transparent)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="var(--spark)" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.25" stroke-dashoffset="0"/></svg><b id="secs"></b></div></div>
   <p class="wl-banner" id="banner" role="status" aria-live="polite"></p>
   <section class="wl-cards" id="cards" hidden aria-labelledby="title">
-    <button class="wl-c a" id="ca" type="button"><span class="fill" id="fa"></span><span class="tag" id="taga"></span><span class="tx" id="xa" dir="auto"></span><span class="pct" id="pa" hidden></span><span class="n" id="na" hidden></span></button>
+    <button class="wl-c wl-w a" id="ca" type="button"><span class="wl-chip" id="taga" aria-hidden="true"></span><span class="tx" id="xa" dir="auto"></span><span class="bar" aria-hidden="true" id="ba" hidden><span class="fill" id="fa"></span></span><span class="pct" id="pa" hidden></span><span class="n" id="na" hidden></span></button>
     <span class="wl-or" id="or" aria-hidden="true"></span>
-    <button class="wl-c b" id="cb" type="button"><span class="fill" id="fb"></span><span class="tag" id="tagb"></span><span class="tx" id="xb" dir="auto"></span><span class="pct" id="pb" hidden></span><span class="n" id="nb" hidden></span></button>
+    <button class="wl-c wl-w b" id="cb" type="button"><span class="wl-chip" id="tagb" aria-hidden="true"></span><span class="tx" id="xb" dir="auto"></span><span class="bar" aria-hidden="true" id="bb" hidden><span class="fill" id="fb"></span></span><span class="pct" id="pb" hidden></span><span class="n" id="nb" hidden></span></button>
   </section>
   <div class="wl-foot" id="foot">
-    <div class="wl-world" id="world" hidden><div class="row"><span id="wlab"></span><span id="wnums"></span></div><div class="bar" aria-hidden="true"><i id="wa"></i><i id="wb"></i></div></div>
-    <p class="wl-talk" id="talk" hidden></p>
+    <div class="wl-world wl-w wl-row" id="world" hidden><span class="wl-chip" aria-hidden="true">🌍</span><div><div class="row"><span id="wlab"></span><span id="wnums"></span></div><div class="bar" aria-hidden="true"><i id="wa"></i><i id="wb"></i></div></div></div>
+    <p class="wl-talk wl-w wl-row" id="talk" hidden><span class="wl-chip" aria-hidden="true">💬</span><span id="talkt"></span></p>
     <p class="wl-note" id="note" aria-live="polite"></p>
   </div>
-  <section class="wl-sum" id="sum" hidden><h2 id="sumh"></h2><div class="box" id="agree"><h3 id="agreeh"></h3><p id="agreet" dir="auto"></p></div><div class="box" id="close"><h3 id="closeh"></h3><p id="closet" dir="auto"></p></div><p class="wl-note" id="sumn"></p><button class="wl-btn" id="again" type="button" hidden></button></section>
+  <section class="wl-sum" id="sum" hidden><h2 id="sumh"></h2><div class="box agree wl-w" id="agree"><span class="wl-chip" aria-hidden="true">🤝</span><div><h3 id="agreeh"></h3><p id="agreet" dir="auto"></p></div></div><div class="box close wl-w" id="close"><span class="wl-chip" aria-hidden="true">⚖️</span><div><h3 id="closeh"></h3><p id="closet" dir="auto"></p></div></div><p class="wl-note" id="sumn"></p><button class="wl-btn" id="again" type="button" hidden></button></section>
 </div>
 <p class="wl-sr" id="sr" aria-live="assertive"></p>
 <script src="/vendor/oomba-kit/1.1.6/oomba-kit.js" integrity="sha384-K+IB7HvxeqFjPzDUcxsbkC7FUr1bx5v/Faw9ICjUyTMkE0d0ovHXAEo16E3jRKGC" crossorigin="anonymous"></script>
@@ -118,7 +167,8 @@
   var LANG = (O.lang || 'en'), W = STR[LANG] || STR[LANG.split('-')[0]] || STR.en;
   function t(k, v) { var s = W[k] != null ? W[k] : STR.en[k]; if (v) s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? (typeof v[x] === 'number' ? O.num(v[x]) : v[x]) : m; }); return s; }
   document.documentElement.lang = LANG; document.documentElement.dir = O.dir || 'ltr';
-  function theme() { document.documentElement.classList.toggle('dark', O.theme && O.theme.mode === 'dark'); }
+  // light or dark: the site's theme (the kit reads BRB.theme, else the device's)
+  function theme() { var dark = O.theme ? O.theme.mode === 'dark' : (window.BRB && BRB.theme === 'dark'); document.documentElement.classList.toggle('dark', !!dark); }
   theme(); if (O.theme && O.theme.on) O.theme.on('change', theme);
 
   var host = L.role === 'host', phase = L.phase, Q = null, myPick = -1, total = 0, ringTimer = 0, history = [];
@@ -136,7 +186,7 @@
   function resetCards() {
     ['a', 'b'].forEach(function (k) {
       var c = $('c' + k); c.classList.remove('win', 'mine', 'dim'); c.disabled = host;
-      $('f' + k).style.height = '0'; $('p' + k).hidden = true; $('n' + k).hidden = true;
+      $('f' + k).style.width = '0'; $('b' + k).hidden = true; $('p' + k).hidden = true; $('n' + k).hidden = true;
     });
     $('world').hidden = true; $('talk').hidden = true; $('note').textContent = '';
   }
@@ -144,7 +194,8 @@
     // the same dilemma again (a resume, more time): keep the player's vote
     var same = Q && Q.i === q.i && $('pa').hidden;
     Q = q; if (!same) myPick = -1;
-    $('sum').hidden = true; $('cards').hidden = false; resetCards();
+    $('sum').hidden = true; $('cards').hidden = false; $('now').hidden = false; resetCards();
+    $('ask').textContent = q.q || t('title');
     $('xa').textContent = q.choices[0] || ''; $('xb').textContent = q.choices[1] || '';
     $('ca').setAttribute('aria-label', 'A: ' + (q.choices[0] || '')); $('cb').setAttribute('aria-label', 'B: ' + (q.choices[1] || ''));
     total = q.n || total;
@@ -200,14 +251,15 @@
       var k = x[0];
       $('p' + k).hidden = false; $('p' + k).textContent = n ? x[2] + '%' : '–';
       $('n' + k).hidden = false; $('n' + k).textContent = '👥 ' + O.num(x[1]);
-      var f = $('f' + k); if (REDUCED) f.style.height = x[2] + '%'; else setTimeout(function () { f.style.height = x[2] + '%'; }, 60);
+      $('b' + k).hidden = false;
+      var f = $('f' + k); if (REDUCED) f.style.width = x[2] + '%'; else setTimeout(function () { f.style.width = x[2] + '%'; }, 60);
     });
     if (n && a !== b) $(a > b ? 'ca' : 'cb').classList.add('win');
     banner(n ? '' : t('none'));
     if (myPick >= 0) { $(myPick ? 'cb' : 'ca').classList.add('mine'); $('note').textContent = t('withYou', { pct: myPick ? pb : pa }); }
     else $('note').textContent = n ? '' : t('timeUp');
     world(Q.i);
-    if (host) { $('talk').hidden = false; $('talk').textContent = '💬 ' + t('t' + (talkN++ % 4)); }
+    if (host) { $('talk').hidden = false; $('talkt').textContent = t('t' + (talkN++ % 4)); }
     sfx('spark'); say(t('pctSplit', { a: pa, b: pb }));
   }
   function world(i) {
@@ -223,7 +275,7 @@
 
   // ---- the end: the class's most agreed and closest dilemmas ----------------------------------------------------------
   function summary() {
-    clearInterval(ringTimer); $('ringbox').hidden = true; $('cards').hidden = true; $('foot').hidden = false;
+    clearInterval(ringTimer); $('ringbox').hidden = true; $('cards').hidden = true; $('now').hidden = true; $('foot').hidden = false;
     $('world').hidden = true; $('talk').hidden = true; $('note').textContent = ''; $('count').hidden = true; banner('');
     $('sum').hidden = false; $('sumh').textContent = t('sum');
     var voted = history.filter(function (h) { return h.a + h.b > 0; });
@@ -231,8 +283,8 @@
     var line = function (h) { var n = h.a + h.b, pa = Math.round(h.a * 100 / n); return h.q[0] + ' (' + pa + '%) · ' + h.q[1] + ' (' + (100 - pa) + '%)'; };
     if (voted.length) {
       var most = voted.slice().sort(function (x, y) { return share(y) - share(x); })[0], close = voted.slice().sort(function (x, y) { return share(x) - share(y); })[0];
-      $('agree').hidden = false; $('agreeh').textContent = '🤝 ' + t('agree'); $('agreet').textContent = line(most);
-      $('close').hidden = voted.length < 2; $('closeh').textContent = '⚖️ ' + t('close'); $('closet').textContent = line(close);
+      $('agree').hidden = false; $('agreeh').textContent = t('agree'); $('agreet').textContent = line(most);
+      $('close').hidden = voted.length < 2; $('closeh').textContent = t('close'); $('closet').textContent = line(close);
     } else { $('agree').hidden = true; $('close').hidden = true; }
     $('sumn').textContent = L.active ? t('thanks') : t('host');
     $('again').hidden = L.active; $('again').textContent = t('again');
@@ -243,7 +295,7 @@
   // ---- the session ----------------------------------------------------------------------------------------------------
   L.on('phase', function (e) {
     phase = e.phase;
-    if (phase === 'lobby') { $('cards').hidden = true; banner(host ? t('title') : t('wait')); }
+    if (phase === 'lobby') { $('cards').hidden = true; $('now').hidden = true; banner(host ? t('title') : t('wait')); }
     if (phase === 'loading' || phase === 'countdown') { $('sum').hidden = true; banner(t('ready')); }
     if (phase === 'paused') clearInterval(ringTimer);
   });
@@ -251,7 +303,7 @@
   L.on('countdown', function (e) { var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); if (left > 0) { banner(String(left)); setTimeout(tick, 250); } else { if (!Q || phase !== 'playing') banner(t('go')); setTimeout(function () { if ($('banner').textContent === t('go')) banner(''); }, 900); } }; tick(); });
   L.on('question', show);
   L.on('answers', function (a) { if (host && Q && a.i === Q.i) $('count').textContent = t('voted', { n: a.n, total: Math.max(a.n, connected()) }); });
-  L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); $('cards').hidden = true; return; } reveal(r); });
+  L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); $('cards').hidden = true; $('now').hidden = true; return; } reveal(r); });
   L.on('end', summary);
   L.on('welcome', function () { if (L.quiz.current) show(L.quiz.current); });
 

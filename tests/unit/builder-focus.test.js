@@ -181,6 +181,43 @@ test('the plain starters carry no kit tags, pass the safety scan, and share the 
   assert.ok(!/script-src [^;]*oomba-classroom/.test(csp));
 });
 
+test('classroom look 2 (the Crossword look): every starter carries it, the marker becomes the current block at save time, the prompt describes it', async () => {
+  const T = await import('../../server/builder/templates/index.js');
+  const block = T.classroomStyle();
+  assert.match(block, /Oomba classroom style 2/);
+  assert.ok(!block.includes(T.CLASSROOM_MARKER), 'the block never holds its own marker');
+  for (const tok of ['--paper:#E1F1E1', '--dots:#66C792', '--card:#FFFDF2', '--green:#1F9D63', '--current:#141414', ':root[data-theme="dark"]', 'prefers-color-scheme:dark', 'prefers-reduced-motion:reduce', '.nowbar{', '.wicon{', '.opt{', '.answer{', '.is-right{', '.is-wrong{', 'radial-gradient(var(--dots)'])
+    assert.ok(block.includes(tok), `the block has ${tok}`);
+  for (const old of ['--page:', '--leaf:', '--tint:', '--mint-soft:', '--soft:', '--lift:']) assert.ok(block.includes(old), `style 1 name ${old} still resolves`);
+  assert.doesNotMatch(block, /fonts\.googleapis|https?:\/\//, 'no font service');
+  for (const k of FOCUS_TEMPLATE_KEYS.filter(k => k !== 'canvas')) {
+    const h = loadTemplate(k);
+    assert.equal(T.classroomLook(h), 2, `${k}: style 2`);
+    assert.match(h, /document\.documentElement\.dataset\.theme = B\.theme/, `${k}: follows BRB.theme`);
+    assert.match(h, /class="[^"]*\b(card|widget)\b[^"]*"/, `${k}: a widget card`);
+  }
+  // the marker: a new game gets the current block; an older copy is dropped; without the marker a game keeps its block
+  const oldGame = '<title>Old</title>\n<style id="oomba-classroom-style">\n/* ---- Oomba classroom style */ :root{--page:#F4F1E6}\n</style>\n<style>.x{}</style>';
+  assert.equal(T.classroomLook(oldGame), 1);
+  assert.equal(T.withClassroomStyle(oldGame), oldGame, 'no marker: the game keeps its own block');
+  const moved = T.withClassroomStyle(oldGame.replace('<title>Old</title>', '<title>Old</title>\n<!--CLASSROOM_STYLE-->'));
+  assert.equal(T.classroomLook(moved), 2); assert.ok(!moved.includes('#F4F1E6')); assert.equal(moved.split('id="oomba-classroom-style"').length - 1, 1);
+  assert.equal(T.withClassroomStyle(moved), moved, 'saving again changes nothing');
+  const u = user('FocusLook'), g = games.createGame(u.id, {});
+  const { toolbox } = await import('../../server/builder/tools.js');
+  const tb = toolbox({ user: u, gameId: g.id, emit() {}, state: {} });
+  const r = await tb.exec('write_game', { notes: 'A new quiz', html: '<title>Fractions</title>\n<!--CLASSROOM_STYLE-->\n<style>.b{gap:8px}</style>\n<main class="app"><header class="bar"><h1>Fractions</h1></header></main>\n<script>window.__brbTest = { state: () => ({}), start() {} };</script>' });
+  assert.equal(r.ok, true, r.forModel);
+  const saved = games.getVersion(games.getGame(g.id).current_version_id).html;
+  assert.ok(saved.includes(block), 'write_game: the marker became the block'); assert.ok(!saved.includes('<!--CLASSROOM_STYLE-->'));
+  // the prompt: the look, the screens, old games, never the kit or a font service
+  const sys = P.SYSTEM_PROMPT_FOCUS;
+  for (const s of ['Oomba classroom style 2', 'dotted mint board', 'class="nowbar"', 'class="wicon"', 'class="answers"', 'is-right', '<!--CLASSROOM_STYLE-->', 'BRB.theme', '375 px', 'reduced motion', 'never color alone'])
+    assert.ok(sys.includes(s), `the prompt says ${s}`);
+  assert.match(sys, /only when someone asks\s+for a new look or a rebuild/, 'an old game moves to the new look only when asked');
+  assert.doesNotMatch(sys, /\u2014|practise|maths|colour|synthesised|Chromebook|iPad/, 'US spelling, no em dashes, no device brands');
+});
+
 test('a typed build with the arcade side off: the classroom prompt every round, no kit rules, a kit template is refused, a starter works', async () => {
   const u = user('FocusMaker'), g = games.createGame(u.id, {});
   script.push(

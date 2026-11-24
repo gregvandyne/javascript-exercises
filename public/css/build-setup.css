@@ -179,7 +179,7 @@
 .su-kind[aria-pressed="false"] .su-rtick{display:none}
 /* Every part of the card says its own display: inside a <button> some browsers (Safari) don't turn spans into blocks,
    and the Arcade picture, whose parts are all absolutely placed, then had no size and showed nothing. */
-.su-kpic{position:relative;display:block;width:100%;height:150px;border-radius:var(--r-sm);overflow:hidden}
+.su-kpic{position:relative;display:block;width:100%;height:172px;border-radius:var(--r-sm);overflow:hidden}
 .su-kcanvas{background-color:var(--card);background-image:linear-gradient(color-mix(in srgb,var(--line) 60%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--line) 60%,transparent) 1px,transparent 1px);background-size:18px 18px;box-shadow:inset 0 0 0 2px var(--line);display:flex;flex-direction:column;justify-content:center;gap:10px;padding:14px 18px}
 .su-kbar{display:grid;grid-template-columns:repeat(var(--n),1fr);height:30px;border:2.5px solid var(--text);border-radius:3px;overflow:hidden}
 .su-kbar i{border-inline-end:2px solid var(--text)}.su-kbar i:last-child{border:0}
@@ -218,7 +218,7 @@
 .su-unote{margin:0}
 @media (max-width:640px){
   .su-kinds{grid-template-columns:minmax(0,1fr);grid-auto-rows:1fr;gap:12px}
-  .su-kpic{height:104px}
+  .su-kpic{height:128px}
   .su-kboard{gap:4px;padding:8px 12px}.su-kbrow{gap:4px}.su-kbt{height:24px;font-size:.75rem}
   .su-karcade .su-kcoin[style*="bottom"]{bottom:72px!important}
   .su-kind{padding:14px 14px 16px}
@@ -269,3 +269,45 @@
 /* the line under the message: what the Builder gets from their lesson file */
 .su-lline{margin:0;font-weight:600;color:var(--text-2);overflow-wrap:anywhere}
 .su-lline[hidden]{display:none}
+/* "What are you making?" pictures: a collage of small widget cards (cream, a group colour on the top edge) on the
+   dotted mint board, the classroom dashboard's look that Crossword and the games use. */
+.su-kcollage{--su-g-time:#5AA9D6;--su-g-class:#66C792;--su-g-tools:#FFD23F;--su-g-show:#F28C6B;--su-g-check:#9B8CE0;
+  height:172px;display:grid;grid-template-columns:1.25fr 1fr;grid-template-rows:1fr 1fr;gap:9px;padding:12px;
+  background-color:var(--accent-soft);background-image:radial-gradient(var(--accent) 1.5px,transparent 1.6px);background-size:18px 18px}
+.su-ct{position:relative;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;padding:12px 10px 8px;border-radius:12px;
+  background:var(--card);box-shadow:0 1px 0 rgb(20 20 20 / .05),0 3px 10px rgb(20 20 20 / .08);overflow:hidden}
+.su-ct::before{content:"";position:absolute;inset:0 0 auto;height:5px;background:var(--g)}
+.su-ct-bars{flex-direction:column;align-items:stretch;gap:6px}
+.su-ct-bars .su-kbar{height:18px;border-width:2px}
+.su-cl{position:relative;display:flex;justify-content:space-between;width:100%;height:16px;border-bottom:2.5px solid var(--text)}
+.su-cl i{width:2.5px;height:10px;align-self:flex-end;background:var(--text)}
+.su-cl b{position:absolute;bottom:-7px;left:58%;width:13px;height:13px;border-radius:50%;background:#F28C6B;box-shadow:0 0 0 2px var(--text)}
+.su-cd{display:grid;place-items:center;width:28px;height:32px;border:2px solid var(--text);border-radius:6px;font-weight:800;font-size:1rem;background:var(--card)}
+.su-cd-on{background:#FFD23F;color:#141414}
+.su-ct-sort{gap:10px}
+.su-cs{display:flex;flex-direction:column;gap:4px;padding:4px;border-radius:7px;background:var(--card-2)}
+.su-cs i{display:block;width:26px;height:9px;border-radius:3px}
+.su-cs .a{background:#9B8CE0}.su-cs .b{background:#5AA9D6}
+.su-ct-board{flex-direction:column;align-items:stretch;gap:5px}
+.su-ct-board .su-kbrow{grid-template-columns:repeat(3,1fr);gap:5px}
+.su-ct-board .su-kbt{height:24px;font-size:.8rem;background:var(--card);color:var(--accent-ink);border-radius:6px;box-shadow:inset 0 3px 0 var(--c,#66C792),0 0 0 1.5px var(--line)}
+.su-ct-board .su-kbt:nth-child(2){--c:#FFD23F}.su-ct-board .su-kbt:nth-child(3){--c:#5AA9D6}
+.su-ct-board .su-kbt-on{background:#FFD23F;color:#141414}
+.su-ct-bingo{display:grid;grid-template-columns:repeat(3,18px);grid-auto-rows:18px;gap:3px;place-content:center}
+.su-ct-bingo i{display:block;width:18px;height:18px;border-radius:4px;background:var(--card-2);box-shadow:inset 0 0 0 2px var(--edge)}
+.su-ct-bingo .hit{background:#FFD23F;box-shadow:none}.su-ct-bingo .on{background:#66C792;box-shadow:none}
+.su-cm{width:30px;height:30px;border-radius:50%;box-shadow:inset -8px -4px 0 0 #9B8CE0}
+.su-cz{align-self:flex-start;margin-top:6px;font-weight:800;color:#9B8CE0;font-size:.9rem}.su-cz2{margin-top:0;font-size:.7rem}
+.su-cf{position:absolute;width:52%;height:52%;border-radius:8px;background:var(--card);box-shadow:inset 0 0 0 2px var(--edge);display:grid;place-items:center;font-weight:800;font-size:1rem;color:var(--text)}
+.su-cf1{transform:translate(-14%,6%) rotate(-8deg);background:var(--card-2)}
+.su-cf2{transform:translate(10%,-2%) rotate(4deg);background:#FBE0DA;color:#141414;box-shadow:inset 0 0 0 2px #F28C6B}
+@media (max-width:640px){
+  .su-kcollage{height:128px;gap:6px;padding:8px}
+  .su-ct{padding:9px 6px 5px}
+  .su-ct-bars .su-kbar{height:12px}.su-ct-bars{gap:4px}
+  .su-cd{width:20px;height:24px;font-size:.8rem}
+  .su-ct-board .su-kbt{height:16px;font-size:.6rem}.su-ct-board{gap:3px}.su-ct-board .su-kbrow{gap:3px}
+  .su-ct-bingo{grid-template-columns:repeat(3,12px);grid-auto-rows:12px;gap:2px}.su-ct-bingo i{width:12px;height:12px}
+  .su-cs i{width:18px;height:7px}.su-cm{width:22px;height:22px}
+  .su-cf{font-size:.75rem}
+}
