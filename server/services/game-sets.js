@@ -11,7 +11,7 @@ import { cleanText } from './textfilter.js';
 import { canvasVersion, canvasKit, figureProblems } from './canvaskit.js';
 import { proofCore } from './proof-core.js';
 import { useSetCodes } from '../standards/official-tags.js';
-import { codes as atlasCodes } from '../live/atlas.js';
+import { codes as atlasCodes, NO_CAP_Q as ATLAS_NO_CAP } from '../live/atlas.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -335,9 +335,8 @@ useSetCodes('mistake-hunt', 'ccss-ela', id => {
 //    h: hints allowed }]. One item, 1 to 60 questions (docs/decisions.md "Atlas Quest in Crossword's look").
 // Countries are ISO codes checked against the game's own list (window.AtlasData; services/../live/atlas.js codes),
 // never a name; the teacher's own words (the title, a question and its answer) pass the site's text filter as
-// Crossword's words do. Capital questions are never about the two countries whose capital the game leaves out.
+// Crossword's words do. Capital questions are never about the countries whose capital the game leaves out (NO_CAP_Q).
 export const ATLAS = { max: 60, q: 150, a: 60, title: 60, frames: ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'car', 'me'], kinds: ['map', 'cap', 'capc', 'flag', 'cont', 'fam'] };
-const ATLAS_NO_CAP = new Set(['IL', 'PS']);
 let atlasKnown = null;
 const atlasCode = cc => { if (!atlasKnown) atlasKnown = new Set(atlasCodes()); return typeof cc === 'string' && atlasKnown.has(cc); };
 /** The quiz's clean item, or null when it isn't one. opts.empty: a print of a map with no numbers may have no questions. */

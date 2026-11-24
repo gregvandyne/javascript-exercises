@@ -20,19 +20,22 @@ export const LEVELS = ['easy', 'medium', 'hard'];
 export const KINDS = ['find', 'capital', 'flag', 'famous'];
 export const COUNTS = [5, 8, 10, 15, 20];
 export const SECS = [10, 15, 20, 30];
-/** Capitals some countries disagree about: never asked (as in Atlas Quest). */
-const NO_CAP_Q = new Set(['IL', 'PS']);
+/** Capitals never asked about (as in Atlas Quest's NO_CAP_Q): disputed (Israel, Palestine), held apart from the
+ *  government (Yemen) or not official at all (Nauru). The teacher's quizzes use it too (game-sets.js). */
+export const NO_CAP_Q = new Set(['IL', 'PS', 'YE', 'NR']);
 
 let DATA = null;
 /** Atlas Quest's data: { C: [[cc, en, capEn, capLat, capLng, pop, langs, famEn, factEn, reg, area(k km2), borders,
- *  landlocked, labLat, labLng]], EASY, packVer }. Shapes and flags stay in the game. */
+ *  landlocked, labLat, labLng]], EASY, FAR (borders through an overseas part, both ways: 'FR-BR'), packVer }. Shapes
+ *  and flags stay in the game. */
 export function data() {
   if (DATA) return DATA;
   const html = fs.readFileSync(path.join(ROOT, 'seed-games/atlas-quest.html'), 'utf8');
   const line = html.split('\n').find(l => l.startsWith('window.AtlasData = '));
   const d = JSON.parse(line.slice('window.AtlasData = '.length).replace(/;\s*$/, ''));
   const ver = (/const PACK_VER = '([^']+)'/.exec(html) || [])[1] || '';
-  DATA = { C: d.C, EASY: new Set(String(d.EASY || '').split(',')), packVer: ver };
+  const far = String(d.FAR || '').split(',').filter(Boolean);
+  DATA = { C: d.C, EASY: new Set(String(d.EASY || '').split(',')), FAR: new Set([...far, ...far.map(p => p.split('-').reverse().join('-'))]), packVer: ver };
   return DATA;
 }
 /** Every country's code, in the one order the game and the server share (the choices of every question). */
@@ -68,14 +71,14 @@ export function km(a, b) {
   const h = Math.sin(dLat / 2) ** 2 + Math.cos(a[0] * r) * Math.cos(b[0] * r) * Math.sin(dLng / 2) ** 2;
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
-/** Points for a wrong country close to the right one: a neighbour 150 or more, then less with distance, none from
- *  2,000 km. guess, answer: indexes into codes(). */
+/** Points for a wrong country close to the right one: a neighbour 150 or more (not one that touches only through an
+ *  overseas part: France for Brazil), then less with distance, none from 2,000 km. guess, answer: indexes into codes(). */
 export function closePoints(guess, answer) {
-  const C = data().C, g = C[guess], a = C[answer];
+  const { C, FAR } = data(), g = C[guess], a = C[answer];
   if (!g || !a || guess === answer) return 0;
   const d = km([g[13], g[14]], [a[13], a[14]]);
   let p = d < 2000 ? Math.round(300 * (1 - d / 2000)) : 0;
-  if (String(a[11] || '').split(',').includes(g[0])) p = Math.max(p, 150);
+  if (String(a[11] || '').split(',').includes(g[0]) && !FAR.has(`${a[0]}-${g[0]}`)) p = Math.max(p, 150);
   return p;
 }
 

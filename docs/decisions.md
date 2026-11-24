@@ -12868,6 +12868,95 @@ the rest of the site is moving to (`seed-games/crossword.html`, the Builder's cl
   builder-figures and builder-activity-panel (a 1.4.1 activity saved from the panel moves to 1.5.0). The 390 px e2e
   stays on 1.4.1 as the owner saw it.
 
+## Atlas Quest fact-check (24 Nov 2026)
+Five audits (Africa, Asia, Europe, the Americas, Oceania and the library) checked every country row, culture question
+and library fact against standard references. All "wrong", "outdated" and "misleading" findings are applied in plain
+kid-friendly words, except where one of the rules below says otherwise; "unsure" ones only where the note and its source
+support the change. Two weak claims were softened too: the Rila Monastery's "more than 1,000 wall paintings" (now
+"hundreds of"); Liechtenstein's false teeth keep their fame (the game never gave a share of the world's teeth, in English
+or in any pack). New English text is in US spelling. Rules, applied the same way to every country and kept neutral:
+- **Areas** are the UN Statistics Division / CIA total area, as most commonly published for the country as a UN
+  member: Pakistan 796.1 thousand km² (without Pakistan-administered Kashmir), India as before, Serbia 88.4 (the UN
+  figure; Kosovo is not a country in this game), the Philippines 300.0, the United States 9,833.5. The countries
+  under 1,000 km² store more decimals (Vatican City 0.00044, Monaco 0.002, Nauru 0.021, Tuvalu 0.026, San Marino
+  0.061, Liechtenstein 0.16, and 18 more), so each is within 5% of its total and none is 0. The area is never shown: it sorts the tour and the hints, finds the
+  "tiny" countries (all under 3,000 km² stay tiny) and Atlas Quest Live's "medium" pool (100 thousand km² or more).
+- **Disputed places in facts** are not stated as settled: Pakistan's fact is now "K2, the world's second-highest
+  mountain, stands on Pakistan's border with China"; Lake Malawi says Malawi and Tanzania disagree about their border
+  on the lake; the Danube and the Mekong run "through or along" their countries.
+- **Land borders** list only countries in the game (no Western Sahara, no Kosovo), and include the land borders of a
+  country's overseas parts the same way everywhere: France with Brazil and Suriname (French Guiana), the Netherlands
+  with France (Saint Martin), the United Kingdom with Spain (Gibraltar), Spain with Morocco (Ceuta and Melilla), both
+  ways. DR Congo and Tanzania meet only in Lake Tanganyika, so they are not neighbours. These far borders (`AtlasData.FAR`)
+  are listed in the country file and the library but never used for a hint ("It is next to..."), a daily expedition
+  clue or a neighbour question, and in Atlas Quest Live France is no near miss for Brazil. A daily clue now uses a pair
+  of neighbours that only its country touches, so it has one answer. No question states or asks how many neighbours a
+  country has (a test keeps it so), so Mauritania, Morocco, Algeria, Albania, North Macedonia and Montenegro, which
+  border places not in the game, are never counted.
+- **Capitals**: the field holds the official capital, with a short neutral note (`AtlasData.CAPNOTE`, translated as
+  `capnote.XX` in the packs) wherever the capital is shown in full (the country file and the library, through
+  `factsDl`, and the printed answer key) when the seat of government differs or the status is disputed. Benin
+  Porto-Novo (the government sits in Cotonou), Bolivia Sucre (La Paz), Sri Lanka Sri Jayawardenepura Kotte (Colombo is
+  the biggest city and business capital), the Netherlands Amsterdam (The Hague), Equatorial Guinea Ciudad de la Paz
+  (the January 2026 decree; the new capital is still being built, Malabo was the capital before), Nauru "Yaren (seat of
+  government)" (no official capital); Israel, Palestine and Yemen keep their names with the neutral notes the audit
+  proposed. Capital questions are never asked about Israel, Palestine, Yemen or Nauru: `NO_CAP_Q` in the game and in
+  `server/live/atlas.js` (exported; the teacher's quizzes in `game-sets.js`, the lesson upload in `atlas-doc.js` and the
+  quiz maker use it, and an older quiz with such a question just leaves it out). For Benin, Bolivia, Sri Lanka, the
+  Netherlands and Equatorial Guinea the seat of government (or former capital, `AtlasData.CAPALT`) is no country's
+  capital and no culture question's wrong answer, so it is never a wrong option; a typed answer (a teacher's own
+  question) may give either city, in English or the player's language (`capalt.XX`).
+- **Translations**: the 1.0.0 packs (`public/vendor/data/atlas-quest/1.0.0-b244a5ca/`) stay byte for byte. Every
+  changed text with a translation (fun facts, famous for, capitals, culture questions, answers and whys, the language
+  name Romansh) and the new notes are in 1.0.1 (`1.0.1-9c114c30`), built by `scripts/atlas-pack-build.mjs` from
+  1.0.0 and `scripts/data/atlas-quest/pack-1.0.1.json` the way 1.0.0 was (the same two lines per file; the folder hash
+  is the sha256 of the packs in the game's `PACK_SRI` order). There are 11 packs (ar, de, es, fr, he, it, ja, nl, pt,
+  ru, zh-Hant); English is in the game. The library's facts set stays English only.
+- **Live**: `server/live/atlas.js` reads the corrected data from the game file; `node scripts/atlas-live-data.js`
+  regenerated Atlas Quest Live's copy and its pack pin.
+- **Left as they were** (unsure, or a rule says so): Kosovo borders for Albania, North Macedonia and Montenegro and
+  Western Sahara borders for Mauritania, Algeria and Morocco (countries in the game only); Serbia's area (rule above);
+  Micronesia's population (sources range from about 100,000 to 113,000, and 115,000 is close to the UN figure).
+  Venezuela's lightning fact says "many nights" rather than the audit's "most nights" (its own sources give 140 to 300).
+- **Sources** (the audits link one or more per finding): the CIA World Factbook and the UN Statistics Division
+  (areas, borders, capitals); Britannica (capitals, rivers, lakes, Big Ben, Shona sculpture, the Giant's Causeway);
+  Africanews, 5 Jan 2026 (Equatorial Guinea's capital); NPR, 22 Oct 2025 (Iceland's first mosquitoes); national
+  statistics offices (UAE FCSC, Qatar's Planning Council, Oman's NCSI, Albania's INSTAT 2023 census, Bolivia's INE 2024
+  census); the Swiss Federal Constitution (Romansh) and Singapore's Ministry of Culture (Tamil); Te Aka Māori
+  Dictionary (umu); the Slovenian government (painted beehive panels); RAI/BOVAG (Dutch bicycles); NASA/Albrecht et al.
+  2016 (Lake Maracaibo); ICPDR and the Mekong River Commission. Main links: https://www.cia.gov/the-world-factbook/,
+  https://unstats.un.org/unsd/demographic-social/products/dyb/, https://www.britannica.com/,
+  https://www.africanews.com/2026/01/05/equatorial-guinea-relocates-capital/,
+  https://www.npr.org/2025/10/22/nx-s1-5582748/iceland-mosquitoes-first-time.
+- Tests: tests/unit/atlas-facts.test.js (the key corrections, the myths gone in English and in every new pack, tiny
+  areas within 5%, `NO_CAP_Q` the same in the game and live, the capital note in the file and the printed key, typed
+  answers, far borders, no neighbour counts, the 1.0.1 packs holding every 1.0.0 key while 1.0.0 keeps its checksums).
+## Cover pictures in Crossword's look (24 Nov 2026)
+The owner asked for every cover to follow the games that moved to Crossword's look in #570. New pictures, all from the
+repo's own scripts, same names, formats and sizes as before:
+- **Covers** (`npm run covers`, 540x720; Doodle Hoot and Tug of Math 714x952): Word Hunt, Atlas Quest, Sudoku, Word Peek,
+  Brain Board, Question Battle, Would You Rather, Would You Rather Live, Doodle Hoot, Tug of Math. Each now has its own
+  `scripts/covers/<slug>.recipe.js` (the built-in recipes for these games left `scripts/covers.js`). Several are taken in
+  a 432x576 or 480x640 window at 1.25x or 1.125x so the whole board, keyboard or answer tiles fit on the same 540x720
+  card. Doodle Hoot and Tug of Math waited for the kit's title screen, which they no longer have; they now wait for the
+  game's test handle. Brain Board and Question Battle answer right, so the points and the boss's hit show. Atlas Quest
+  shows the globe over a Flag match question (the game draws the flag itself, so it can change between runs).
+- **Unchanged:** Crossword (its picture comes out byte for byte the same) and Atlas Quest Live (its page did not change
+  in #570, so its cover is still true).
+- **Share pictures** (`node scripts/og-images.js`): the ten games' cards, and the cards that show their covers or the
+  live screens: site, parents, parents-safety-and-screen-time, ages-8-9, ages-10-11, compliance, teachers-live,
+  teachers-host.
+- **Teacher landing covers** (`public/img/landing/<slug>-240.webp` and `-480.webp`): there is no script for these; they
+  are the cover scaled to 240x320 and 480x640 with ImageMagick (`convert <cover> -strip -alpha off -resize 480x640!
+  -quality 80`), plain VP8 WebP like the others: Atlas Quest, Brain Board, Doodle Hoot, Question Battle, Sudoku, Word Hunt.
+- **Live screens on /teachers/live** (`npm run how-shots -- --only live`, light and `--theme dark`): the lobby and
+  the student's question card showed Question Battle's old look; the whole live set was taken again.
+- **Every other cover** was taken again to check it: all recipes ran but Lantern Mix's, which set a fixed 6:9 mix
+  for round 3 while the round's numbers now change; it now sets the round's own right mix. No other cover was stale,
+  so the other pictures were left as they were.
+- **Not redone:** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`) still show Atlas
+  Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
+  scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
 
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
 

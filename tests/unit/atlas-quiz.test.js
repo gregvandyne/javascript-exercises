@@ -225,7 +225,7 @@ test('the frame: the lesson upload rides on the clues flag for Atlas Quest; the 
   const games = fs.readFileSync(path.join(ROOT, 'server/routes/games.js'), 'utf8');
   assert.match(games, /\(cluesGame\(g\) \|\| atlasDocGame\(g\)\) && liveCanHost\(u\) && hasModel\(\)/);
   assert.ok(HTML.split('\n').some(l => l.startsWith('window.AtlasData = ')), 'scripts/atlas-live-data.js and server/live/atlas.js read this line');
-  assert.match(HTML, /const PACK_VER = '1\.0\.0-b244a5ca'/);
+  assert.match(HTML, /const PACK_VER = '1\.0\.1-9c114c30'/);
   assert.ok(!/confirm\(|alert\(/.test(HTML.slice(HTML.indexOf('<script type="module">'))), 'no browser dialogs');
   assert.ok(!HTML.includes('—'), 'no em dashes');
 });

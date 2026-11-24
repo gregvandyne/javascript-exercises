@@ -11,7 +11,7 @@ import { pdfInfo } from './pdf-text.js';
 import { draftGeoQuiz, GEO } from './set-ai.js';
 import { capText, LIMITS } from './crossword-doc.js';
 import { cleanText } from './textfilter.js';
-import { codes } from '../live/atlas.js';
+import { codes, NO_CAP_Q } from '../live/atlas.js';
 
 /** Tests put a stand-in for the model here (undefined: the real one, through builder/anthropic.js). */
 export const hooks = { client: undefined };
@@ -48,7 +48,7 @@ export async function quizFromFile({ kind, buf, level = '', locale = 'en' }) {
   if (!r.ok) return r;
   const words = [];
   for (const it of r.items) {
-    if (it[0] !== 'own') { words.push(['@' + it[0], it[1]]); continue; }
+    if (it[0] !== 'own') { if (!((it[0] === 'cap' || it[0] === 'capc') && NO_CAP_Q.has(it[1]))) words.push(['@' + it[0], it[1]]); continue; }
     const q = cleanText(it[1], GEO.q), a = cleanText(it[2], GEO.a);
     if (q.ok && a.ok && q.value && a.value) words.push([q.value, a.value]);
   }
