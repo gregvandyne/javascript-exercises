@@ -8,14 +8,15 @@
 //     characters from films, books or games, nothing scary or violent), and a per-book style seed (styleOf: one palette,
 //     paper and light picked from the book's id) so every picture of one book matches. No artist or book series is named.
 //   - CHARACTER SHEETS FIRST (sheetPrompt): each cast member once, in a neutral pose on a plain background, from the
-//     words Oomba wrote for how they look. Those pictures go with every page that shows the character, as reference
+//     words Oomba wrote for what they are ("chameleon") and how they look, and told to draw them as exactly that. Those pictures go with every page that shows the character, as reference
 //     images (inline data), so a character looks the same on every page.
-//   - PAGE PICTURES (pagePrompt): the page's scene in words (where, who, what they do, the mood), the composition (a wide
+//   - PAGE PICTURES (pagePrompt): the page's scene in words (its own setting, who, what they do, the mood), the composition (a wide
 //     picture, the characters clear, a calm quiet area kept free), and the teacher's Redraw note.
 //
 // What is sent: these prompts (the house style, the scene and character words, which passed the book's word rules and
-// had the teacher's students' names taken out) and the book's own character sheets. Never a student's name or work,
-// never the teacher's name, never a class. Pictures that come back are checked by the caller (storybook-draw.js).
+// had the teacher's students' names taken out) and the book's own character sheets. Never a name from the art packs (a
+// sprite's "dinosaur", a world's "Busy Kitchen"): those only draw the stand-in when painting falls back. Never a
+// student's name or work, never the teacher's name, never a class. Pictures that come back are checked by the caller (storybook-draw.js).
 import { config } from '../config.js';
 
 /** Test hook: generate(body, { model }) stands in for Google (returns the parsed JSON answer, or throws). */
@@ -48,32 +49,37 @@ const MOOD_WORDS = { bright: 'bright and cheerful', warm: 'warm and cozy', dusk:
 const SPOT_WORDS = { left: 'on the left', center: 'in the middle', right: 'on the right' };
 const clean = s => String(s || '').replace(/\s+/g, ' ').trim();
 
-/** One character's reference sheet. c: { name, look, kind } (kind: what the art-pack sprite is, e.g. "fox"). */
+/** Who a character is, in words: their look, or (no look) what they are; never anything from the art packs. */
+const describe = c => clean(c.look) || (clean(c.what) ? `a friendly ${clean(c.what)}` : 'a friendly character');
+/** One character's reference sheet. c: { name, what, look } (what: what the character is, "chameleon"; look: how they
+ *  look, starting with what they are). Only the book's own words: never an art-pack sprite or world name. */
 export function sheetPrompt(c, style) {
-  const look = clean(c.look) || `a friendly ${clean(c.kind) || 'character'}`;
+  const name = clean(c.name), what = clean(c.what);
   return [
     'Draw a character reference picture for a children\'s picture book.',
     HOUSE_STYLE,
     styleLine(style),
-    `The character, called ${clean(c.name)}: ${look}.`,
+    `The character, called ${name}: ${describe(c)}.`,
+    what ? `What ${name} is: ${what}. Draw ${name} as exactly that (the same kind of animal, person or thing), never as any other animal, person or creature.` : '',
     'Show this one character only, full body, standing in a neutral, relaxed, friendly pose, facing slightly to the side, centered, on a plain, light, empty background with a soft shadow under the feet. No other characters, no scenery, no props unless they are part of how the character looks.',
-  ].join('\n');
+  ].filter(Boolean).join('\n');
 }
 
 /**
- * One page's picture. p: { scene, setting, mood, chars: [{ name, look, kind, pos, ref: bool }], note }.
+ * One page's picture. p: { scene, setting, mood, chars: [{ name, what, look, pos, ref: bool }], note }: the page's own
+ * words only (setting: where it happens, as the book says; never an art-pack world name).
  * The characters with ref: true have a reference picture sent with the prompt, in the same order.
  */
 export function pagePrompt(p, style) {
-  const who = p.chars.map(c => `- ${clean(c.name)}: ${clean(c.look) || `a friendly ${clean(c.kind) || 'character'}`}; ${SPOT_WORDS[c.pos] || 'in the picture'}${c.ref ? ' (draw them exactly as in their reference picture: same shape, colors and clothes)' : ''}.`);
+  const who = p.chars.map(c => `- ${clean(c.name)}${clean(c.what) ? ` (${clean(c.what)})` : ''}: ${describe(c)}; ${SPOT_WORDS[c.pos] || 'in the picture'}${c.ref ? ' (draw them exactly as in their reference picture: same kind, shape, colors and clothes)' : ''}.`);
   return [
     'Draw one illustration for a page of a children\'s picture book.',
     HOUSE_STYLE,
     styleLine(style),
     `What happens: ${clean(p.scene)}`,
-    p.setting ? `Where: ${clean(p.setting)}.` : '',
+    clean(p.setting) ? `Where: ${clean(p.setting)}.` : '',
     `Mood: ${MOOD_WORDS[p.mood] || MOOD_WORDS.bright}.`,
-    who.length ? `Who is in the picture (only these characters):\n${who.join('\n')}` : 'No characters are in this picture: show the place.',
+    who.length ? `Who is in the picture (only these characters, each drawn as what they are):\n${who.join('\n')}` : 'No characters are in this picture: show the place.',
     'Composition: a wide picture, the characters clearly visible and not cut off, simple readable shapes, and a calm, quiet, uncluttered area of sky or ground kept free so the picture feels restful on the page.',
     p.note ? `The teacher asks for this change: ${clean(p.note)}` : '',
   ].filter(Boolean).join('\n');

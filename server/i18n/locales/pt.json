@@ -4527,8 +4527,15 @@
         "painting": "O Oomba está pintando esta imagem",
         "lineDone": "Todas as imagens foram pintadas.",
         "lineMissed": "{count, plural, one {# imagem não pôde ser pintada, então mostra o desenho do pacote de arte por enquanto.} other {# imagens não puderam ser pintadas, então mostram o desenho do pacote de arte por enquanto.}}",
-        "repaint": "Pintar as imagens de novo"
-      }
+        "repaint": "Pintar as imagens de novo",
+        "repaintAll": "Pintar todas as imagens de novo",
+        "repaintAllQ": "Pintar de novo todas as imagens deste livro, a partir das palavras do próprio livro? Cada imagem usa uma das imagens de hoje.",
+        "asked": "O que o Oomba pediu",
+        "askedNote": "As palavras que o Oomba enviou ao criador de imagens para esta imagem. Os nomes dos alunos nunca estão nelas.",
+        "askedFail": "Não foi possível carregar. Tente de novo."
+      },
+      "castWhat": "O que é",
+      "castWhatPh": "O que é: um menino, um camaleão, um robô..."
     },
     "storybook-read": {
       "pageN": "Página {n}",
@@ -14213,7 +14220,8 @@
       "duplicated": "Cópia feita: “{title}”",
       "repainting": "Imagens para pintar de novo: {count}. Elas aparecem quando ficam prontas.",
       "repaintSome": "Imagens para pintar de novo: {count} agora, mais {more} amanhã (as imagens de hoje acabaram).",
-      "painting": "Pintando as imagens"
+      "painting": "Pintando as imagens",
+      "repaintAll": "Pintar todas as imagens de novo"
     }
   }
 }

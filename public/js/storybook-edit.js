@@ -12,6 +12,8 @@
 // and Redraw (with an optional note) paints a page or a character's reference picture again. While a picture is still
 // being painted, the page, its thumbnails in the page list and the story map show the painting placeholder, never the
 // art-pack drawing; the art-pack drawing appears only as a real fallback, with its reason and Paint pictures again.
+// Under a painted picture, "What Oomba asked for" opens the words that were sent to the picture maker for it (the book's
+// owner only; loaded when opened). The More menu's Paint all pictures again paints every picture of the book again.
 import { api, t, esc, pageData, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
@@ -104,8 +106,16 @@ function drawState(d, { target, has }) {
   // a real fallback (the art-pack drawing is shown): Paint pictures again, right there
   if (DR.on && d && d.state === 'fallback' && !d.pic) out.push(repaintBtn());
   if (DR.on && !busy(d)) out.push(`<button type="button" class="btn btn-sm${d && d.state === 'fallback' && !d.pic ? ' btn-ghost' : ''}" data-act="redraw" data-target="${esc(target)}">${iconHtml('🔁', { size: 16 })} ${esc(t(has ? 'js.storybook-edit.draw.redraw' : 'js.storybook-edit.draw.draw'))}</button>`);
+  if (d && d.asked) out.push(`<details class="sb-asked" data-target="${esc(target)}"><summary class="small">${esc(t('js.storybook-edit.draw.asked'))}</summary><p class="small muted">${esc(t('js.storybook-edit.draw.askedNote'))}</p><p class="sb-asked-t small" dir="auto"></p></details>`);
   return out.join('');
 }
+// What Oomba asked for: the words sent to the picture maker, loaded the first time the teacher opens it
+document.addEventListener('toggle', async e => {
+  const d = e.target; if (!d.classList || !d.classList.contains('sb-asked') || !d.open || d.dataset.loaded) return;
+  d.dataset.loaded = '1';
+  const out = d.querySelector('.sb-asked-t');
+  try { const r = await api(`/api/library/make/${D.id}/asked?target=${encodeURIComponent(d.dataset.target)}`, { background: true }); out.textContent = r.text; } catch { delete d.dataset.loaded; out.textContent = t('js.storybook-edit.draw.askedFail'); }
+}, true);
 const pageState = p => (p.upload || !p.pic ? '' : drawState(DR.pages[p.id], { target: `page:${p.id}`, has: !!drawnOf(p) }));
 let drawTimer = null;
 /** While pictures are being drawn, ask how it is going every few seconds and show each one as it arrives. */
@@ -217,6 +227,7 @@ function drawPage() {
       <p class="small muted">${esc(t('js.storybook-edit.castNote'))}</p>
       ${B.cast.map((c, i) => `<div class="sb-castrow"><div class="sb-crow"><label class="sr-only" for="sb-cn${i}">${esc(t('js.storybook-edit.castName'))}</label><input class="input" id="sb-cn${i}" data-f="cast-name" data-i="${i}" value="${esc(c.name)}" maxlength="${L.castName}" dir="auto">
         <label class="sr-only" for="sb-ca${i}">${esc(t('js.storybook-edit.castArt'))}</label><select class="input" id="sb-ca${i}" data-f="cast-art" data-i="${i}">${D.chars.map(x => opt(x.id, x.name, x.id === c.art)).join('')}</select></div>
+        <label class="sr-only" for="sb-cwh${i}">${esc(t('js.storybook-edit.castWhat'))}</label><input class="input sb-look" id="sb-cwh${i}" data-f="cast-what" data-i="${i}" value="${esc(c.what || '')}" maxlength="${L.what}" placeholder="${esc(t('js.storybook-edit.castWhatPh'))}" dir="auto">
         <label class="sr-only" for="sb-cl${i}">${esc(t('js.storybook-edit.draw.look'))}</label><input class="input sb-look" id="sb-cl${i}" data-f="cast-look" data-i="${i}" value="${esc(c.look || '')}" maxlength="${L.look}" placeholder="${esc(t('js.storybook-edit.draw.look'))}" dir="auto">
         ${DR.on || (DR.cast[c.name] && DR.cast[c.name].pic) ? `<div class="sb-sheet" data-sheet="${i}">${sheetHtml(c)}</div>` : ''}</div>`).join('')}
       ${B.cast.length < L.cast ? `<button type="button" class="btn btn-sm" data-act="cast-add">${iconHtml('➕', { size: 16 })} ${esc(t('js.storybook-edit.addCast'))}</button>` : ''}
@@ -276,6 +287,7 @@ document.addEventListener('input', e => {
     case 'text': p.text = v; break;
     case 'alt': p.alt = v; break;
     case 'cast-look': B.cast[i].look = v; break;
+    case 'cast-what': B.cast[i].what = v; break;
     case 'choice-text': p.choices[i].text = v; break;
     case 'cast-name': { const old = B.cast[i].name, nv = v.trim(); if (!nv || B.cast.some((c, k) => k !== i && c.name.toLowerCase() === nv.toLowerCase())) return; B.cast[i].name = nv; for (const pg of B.pages) if (pg.pic) for (const c of pg.pic.chars) if (c.name === old) c.name = nv; break; }
     default: return;
@@ -356,6 +368,12 @@ async function repaintAll(btn) {
   try { const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST' }); DR = r.draws; justDone = false; doneHidden = false; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { if (btn && btn.isConnected) btn.disabled = false; toast(e.message, { bad: true }); }
 }
 if ($('sb-repaint')) $('sb-repaint').addEventListener('click', () => repaintAll());
+// Paint all pictures again: every picture of the book, painted ones too (each one is one of today's pictures)
+if ($('sb-repaint-all')) $('sb-repaint-all').addEventListener('click', async () => {
+  closeMenu();
+  if (!(await ask({ text: t('js.storybook-edit.draw.repaintAllQ'), ok: t('js.storybook-edit.draw.repaintAll') }))) return;
+  try { clearTimeout(timer); await save(); const r = await api(`/api/library/make/${D.id}/repaint`, { method: 'POST', body: { all: true } }); DR = r.draws; justDone = false; doneHidden = false; refreshPictures(); watchDraws(); toast(r.toast); } catch (e) { toast(e.message, { bad: true }); }
+});
 document.addEventListener('click', e => { const b = e.target.closest('#sb-edit [data-act="repaint"]'); if (b) repaintAll(b); });
 $('sb-duplicate').addEventListener('click', async () => {
   closeMenu();

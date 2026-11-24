@@ -328,8 +328,8 @@ export const BOOK_PAGE_TOOLS = Object.freeze([
     bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
   { name: 'deleteBook', description: 'Delete one of the teacher\'s own books ("delete my Milo and Zig book"). Nothing is deleted by this tool: the teacher sees a card with Delete and Keep and decides there. Find the book as for renameBook. Say in one short sentence that they can confirm on the card.', input_schema: { type: 'object', properties: {
     bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
-  { name: 'repaintBook', description: 'Paint again every picture of one of the teacher\'s own books that shows the art-pack drawing because painting did not work earlier ("redraw all the pictures in my Kip book"). Uses the teacher\'s pictures for today; only for books whose pictures Oomba paints. Find the book as for renameBook.', input_schema: { type: 'object', properties: {
-    bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.') } } },
+  { name: 'repaintBook', description: 'Paint again every picture of one of the teacher\'s own books that shows the art-pack drawing because painting did not work earlier ("redraw all the pictures in my Kip book"). With all: true, paint every picture of the book again, painted ones too (the teacher asks for all of them, or a character looks wrong on every page). Uses the teacher\'s pictures for today; only for books whose pictures Oomba paints. Find the book as for renameBook.', input_schema: { type: 'object', properties: {
+    bookId: str('The book id, when you know it.'), which: str('The teacher\'s words for the book, when you do not know the id.'), all: { type: 'boolean', description: 'true: every picture, painted ones too.' } } } },
   { name: 'redrawPicture', description: 'Paint one page\'s picture of a book again, with an optional note like "a sunny morning". Only when Oomba paints that book\'s pictures. Uses one of the teacher\'s pictures for today. On a book\'s page with no other book named, it is that book; otherwise give bookId.', input_schema: { type: 'object', required: ['page'], properties: { page: { type: 'integer', description: 'The page number as the editor shows it.' }, note: str('What to change in the picture, optional.'), bookId: str('The book id, when not on its page.') } } },
 ]);
 const fold = s => String(s || '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^\p{L}\p{N}\s]+/gu, ' ').replace(/\s+/g, ' ').trim();
@@ -370,7 +370,7 @@ export function redrawPage(u, bookId, n, note) {
  *  renameBook, duplicateBook; storybook-draw.js repaint). Delete is never run here: it becomes the Delete / Keep card
  *  (companion.js), and only its Delete runs storybook.js deleteBook. -> { ok, text (for the teacher), ref (a book id), result (for the AI) } | { error } */
 export const BOOK_OPS = Object.freeze(['rename', 'duplicate', 'repaint']);
-export function runOp(u, op, bookId, { title = '', lang = 'en' } = {}) {
+export function runOp(u, op, bookId, { title = '', lang = 'en', all = false } = {}) {
   const t = tFor(lang);
   const row = SB.ownBook(u, bookId); if (!row) return { error: 'That is not one of the teacher\'s books.' };
   if (op === 'rename') {
@@ -384,7 +384,7 @@ export function runOp(u, op, bookId, { title = '', lang = 'en' } = {}) {
     return { ok: true, ref: r.id, text: t('storybook.chat.duplicated', { title: r.title }), result: { done: true, copy: r.title, note: 'The copy is not shared with any class.' } };
   }
   if (op === 'repaint') {
-    const r = Draw.repaint(u, row.id);
+    const r = Draw.repaint(u, row.id, { all });
     if (!r.ok) return { error: { off: 'This book\'s pictures are the teacher\'s own (or none): Oomba does not paint them.', nokey: 'The picture maker is not set up on this site.', resting: 'The picture maker is resting; try later.', limit: 'The teacher has used today\'s pictures.', none: 'Every picture in this book is already painted.' }[r.code] || 'That did not work.' };
     return { ok: true, ref: row.id, text: t(r.more ? 'storybook.books.repaintSome' : 'storybook.books.repainting', { count: r.queued, more: r.more }), result: { done: true, queued: r.queued, waitingForTomorrow: r.more } };
   }

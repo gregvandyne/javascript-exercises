@@ -4808,8 +4808,15 @@
         "painting": "Oomba is painting this picture",
         "lineDone": "All pictures painted.",
         "lineMissed": "{count, plural, one {# picture couldn't be painted, so it shows the art-pack drawing for now.} other {# pictures couldn't be painted, so they show the art-pack drawing for now.}}",
-        "repaint": "Paint pictures again"
-      }
+        "repaint": "Paint pictures again",
+        "repaintAll": "Paint all pictures again",
+        "repaintAllQ": "Paint every picture in this book again, from the book's own words? Each picture uses one of today's pictures.",
+        "asked": "What Oomba asked for",
+        "askedNote": "The words Oomba sent to the picture maker for this picture. Students' names are never in them.",
+        "askedFail": "Couldn't load it. Please try again."
+      },
+      "castWhat": "What they are",
+      "castWhatPh": "What they are: a boy, a chameleon, a robot..."
     },
     "storybook-read": {
       "pageN": "Page {n}",
@@ -14927,7 +14934,8 @@
       "duplicated": "Copy made: “{title}”",
       "repainting": "Pictures to paint again: {count}. They show up as they're ready.",
       "repaintSome": "Pictures to paint again: {count} now, {more} more tomorrow (today's pictures are used up).",
-      "painting": "Painting pictures"
+      "painting": "Painting pictures",
+      "repaintAll": "Paint all pictures again"
     }
   }
 }

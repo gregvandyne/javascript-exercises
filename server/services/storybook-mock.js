@@ -89,10 +89,12 @@ function cyoaBook(s, T, opener = null) {
 
 // How each character looks, in words (for the picture model's character sheets), by the art-pack sprite the cast uses.
 const LOOKS = { fox: 'a small red fox with a white-tipped tail and a green scarf', deer: 'a gentle young deer with big brown eyes and white spots', rogue: 'a curious girl with short dark curls, a yellow raincoat and red boots', 'captain-clank': 'a round, friendly robot painted teal with one antenna and a smiling screen face', dolphin: 'a playful blue-gray dolphin with a bright smile', turtle: 'a calm sea turtle with a green patterned shell', triceratops: 'a friendly little orange triceratops with three short horns', knight: 'a kind boy knight in shiny silver armor with a blue cape', mage: 'a cheerful grandmother with gray hair in a bun, round glasses and a purple shawl', barbarian: 'a sturdy boy with messy red hair, a striped shirt and green shorts', pug: 'a chubby fawn pug with a curly tail and a red collar', 'rogue-hooded': 'a girl in a cozy green hooded cloak with a basket', sheep: 'a fluffy white sheep with a black face' };
-/** The words the picture model would get: a scene on every page, a look for every character. */
+// What each character is (the story's word for them; the look starts with it).
+const WHATS = { fox: 'fox', deer: 'deer', rogue: 'girl', 'captain-clank': 'robot', dolphin: 'dolphin', turtle: 'sea turtle', triceratops: 'triceratops', knight: 'knight', mage: 'grandmother', barbarian: 'boy', pug: 'pug', 'rogue-hooded': 'girl', sheep: 'sheep' };
+/** The words the picture model would get: a scene and a setting on every page, what every character is and a look. */
 function withWords(b, place) {
-  for (const c of b.cast) c.look = LOOKS[c.art] || `a friendly ${c.art.replace(/-/g, ' ')}`;
-  for (const p of b.pages) if (p.pic) p.pic.scene = `${(p.alt || '').replace(/\.$/, '')}, in ${place}. ${(p.text.match(/[^.!?]+[.!?]+/) || [p.text])[0].trim()}`.slice(0, 380);
+  for (const c of b.cast) { c.what = WHATS[c.art] || c.art.replace(/-/g, ' '); c.look = LOOKS[c.art] || `a friendly ${c.what}`; }
+  for (const p of b.pages) if (p.pic) { p.pic.scene = `${(p.alt || '').replace(/\.$/, '')}, in ${place}. ${(p.text.match(/[^.!?]+[.!?]+/) || [p.text])[0].trim()}`.slice(0, 380); p.pic.setting = place; }
   return b;
 }
 
@@ -130,7 +132,7 @@ export function mockChange(book, text) {
     if (host) {
       let n = book.pages.length + 1; while (book.pages.some(p => p.id === `p${n}`)) n++;
       const who = book.cast[0] ? book.cast[0].name : 'Our friend';
-      const page = { id: `p${n}`, title: 'A surprise', text: `${who} found a tiny door in a tree. Inside was a party, just for friends.`, end: true, choices: [], pic: { world: (host.pic && host.pic.world) || 'wild-woods', mood: 'magic', chars: book.cast[0] ? [{ name: book.cast[0].name, pos: 'center' }] : [], props: [], scene: `${who} kneels by a tiny round door in the trunk of a big tree; warm light and a little party glow inside.` }, alt: `${who} by a tiny door in a tree.` };
+      const page = { id: `p${n}`, title: 'A surprise', text: `${who} found a tiny door in a tree. Inside was a party, just for friends.`, end: true, choices: [], pic: { world: (host.pic && host.pic.world) || 'wild-woods', mood: 'magic', chars: book.cast[0] ? [{ name: book.cast[0].name, pos: 'center' }] : [], props: [], scene: `${who} kneels by a tiny round door in the trunk of a big tree; warm light and a little party glow inside.`, setting: 'a big old tree in the woods' }, alt: `${who} by a tiny door in a tree.` };
       const changed = { ...host, choices: [...host.choices, { text: 'Open the tiny door', to: page.id }] };
       return { reply: 'I added a new ending: a surprise party behind a tiny door.', edits: { pages: [changed, page] } };
     }

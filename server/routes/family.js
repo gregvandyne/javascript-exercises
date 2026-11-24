@@ -104,7 +104,7 @@ const GROWNUP_BUILDER_DELETE = [/^\/api\/studio\/[^/]+\/uploads\/[^/]+$/];
 // The book maker (routes/storybook.js), only while STORY_PICTURE_BOOKS names 'parent' (docs/story-builder.md "Picture
 // books"): a grown-up makes, reads and prints their own books. Never Share with classes (grown-ups have no classes;
 // storybook.js canShare) and never /library itself. The routes check storybook.js canMake again.
-const GROWNUP_BOOK_GET = [/^\/library\/make(\/[^/]+)?$/, /^\/api\/library\/make\/pic\/[^/]+$/, /^\/api\/library\/make\/[^/]+(\/(draws|card|chat))?$/, /^\/library\/made\/[^/]+\/(read|print|pic\/[^/]+)$/];
+const GROWNUP_BOOK_GET = [/^\/library\/make(\/[^/]+)?$/, /^\/api\/library\/make\/pic\/[^/]+$/, /^\/api\/library\/make\/[^/]+(\/(draws|card|chat|asked))?$/, /^\/library\/made\/[^/]+\/(read|print|pic\/[^/]+)$/];
 const GROWNUP_BOOK_POST = [/^\/api\/library\/make\/(file|pic|check|start)$/, /^\/api\/library\/make\/pic\/[^/]+\/remove$/,
   /^\/api\/library\/make\/[^/]+\/(save|delete|rename|duplicate|retry|repaint|pic|draw|chat|chat\/undo|pic\/[^/]+\/remove)$/, /^\/api\/library\/made\/[^/]+\/progress$/];
 const booksOn = () => config.storyPictureBooks.includes('parent');

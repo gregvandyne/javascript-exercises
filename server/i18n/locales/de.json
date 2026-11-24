@@ -4527,8 +4527,15 @@
         "painting": "Oomba malt dieses Bild",
         "lineDone": "Alle Bilder sind gemalt.",
         "lineMissed": "{count, plural, one {# Bild konnte nicht gemalt werden und zeigt vorerst die Zeichnung aus dem Grafikpaket.} other {# Bilder konnten nicht gemalt werden und zeigen vorerst die Zeichnung aus dem Grafikpaket.}}",
-        "repaint": "Bilder neu malen"
-      }
+        "repaint": "Bilder neu malen",
+        "repaintAll": "Alle Bilder neu malen",
+        "repaintAllQ": "Alle Bilder dieses Buchs neu malen, nach den Worten des Buchs? Jedes Bild zählt als eines der Bilder von heute.",
+        "asked": "Was Oomba angefragt hat",
+        "askedNote": "Die Worte, die Oomba für dieses Bild an den Bildmacher geschickt hat. Namen von Schülerinnen und Schülern sind nie darin.",
+        "askedFail": "Konnte nicht geladen werden. Bitte versuche es noch einmal."
+      },
+      "castWhat": "Was es ist",
+      "castWhatPh": "Was es ist: ein Junge, ein Chamäleon, ein Roboter..."
     },
     "storybook-read": {
       "pageN": "Seite {n}",
@@ -14212,7 +14219,8 @@
       "duplicated": "Kopie erstellt: „{title}“",
       "repainting": "Neu zu malende Bilder: {count}. Sie erscheinen, sobald sie fertig sind.",
       "repaintSome": "Neu zu malende Bilder: {count} jetzt, {more} weitere morgen (die Bilder für heute sind aufgebraucht).",
-      "painting": "Bilder werden gemalt"
+      "painting": "Bilder werden gemalt",
+      "repaintAll": "Alle Bilder neu malen"
     }
   }
 }

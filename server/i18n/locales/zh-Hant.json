@@ -4526,8 +4526,15 @@
         "painting": "Oomba 正在畫這張圖",
         "lineDone": "所有圖都畫好了。",
         "lineMissed": "{count, plural, other {有 # 張圖沒能畫好，暫時顯示美術素材包的圖。}}",
-        "repaint": "重新繪製圖片"
-      }
+        "repaint": "重新繪製圖片",
+        "repaintAll": "重新畫所有圖片",
+        "repaintAllQ": "要依照這本書自己的文字，重新畫書中的每一張圖嗎？每張圖都會用掉今天的一張圖。",
+        "asked": "Oomba 的請求內容",
+        "askedNote": "Oomba 為這張圖傳給繪圖工具的文字。其中絕不會有學生的名字。",
+        "askedFail": "無法載入，請再試一次。"
+      },
+      "castWhat": "是什麼",
+      "castWhatPh": "是什麼：男孩、變色龍、機器人…"
     },
     "storybook-read": {
       "pageN": "第 {n} 頁",
@@ -14211,7 +14218,8 @@
       "duplicated": "已建立副本：「{title}」",
       "repainting": "要重新繪製的圖片：{count} 張。完成後就會出現。",
       "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。",
-      "painting": "正在畫圖"
+      "painting": "正在畫圖",
+      "repaintAll": "重新畫所有圖片"
     }
   }
 }

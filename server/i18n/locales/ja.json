@@ -4526,8 +4526,15 @@
         "painting": "Oombaがこの絵を描いています",
         "lineDone": "すべての絵ができました。",
         "lineMissed": "{count, plural, other {# 枚の絵を描けなかったため、いまはアートパックの絵を表示しています。}}",
-        "repaint": "絵を描き直す"
-      }
+        "repaint": "絵を描き直す",
+        "repaintAll": "すべての絵をかき直す",
+        "repaintAllQ": "この本の言葉をもとに、すべての絵をかき直しますか？1枚ごとに今日の絵の数を1つ使います。",
+        "asked": "Oombaがお願いしたこと",
+        "askedNote": "この絵のためにOombaが絵をかくAIに送った言葉です。生徒の名前は入りません。",
+        "askedFail": "読み込めませんでした。もう一度お試しください。"
+      },
+      "castWhat": "何のキャラクターか",
+      "castWhatPh": "何か：男の子、カメレオン、ロボット…"
     },
     "storybook-read": {
       "pageN": "{n}ページ",
@@ -14211,7 +14218,8 @@
       "duplicated": "コピーを作りました：「{title}」",
       "repainting": "描き直す絵：{count}枚。できたものから表示されます。",
       "repaintSome": "描き直す絵：今{count}枚、明日あと{more}枚（今日の絵は使い切りました）。",
-      "painting": "絵を描いています"
+      "painting": "絵を描いています",
+      "repaintAll": "すべての絵をかき直す"
     }
   }
 }

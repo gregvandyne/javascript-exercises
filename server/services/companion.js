@@ -971,7 +971,7 @@ export function runTool(name, input, ctx) {
         ctx.out.bookDelete = { id: uid(10), bookId: w.row.id, title: cleanText(u, w.row.title, ctx.names) || tFor(ctx.lang)('storybook.untitled'), state: 'open' };
         return { result: { waitingForTeacher: true, book: ctx.out.bookDelete.title, note: 'Nothing is deleted yet: the teacher sees Delete and Keep on a card. Say so in one short sentence.' }, step: { k: 'bookDelAsk', q: clip(ctx.out.bookDelete.title, 40) } };
       }
-      const r = BK.runOp(u, op, w.row.id, { title, lang: ctx.lang });
+      const r = BK.runOp(u, op, w.row.id, { title, lang: ctx.lang, all: i.all === true });
       if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
       ctx.out.bookOp = true; ctx.out.bookRef = r.ref;
       return { result: r.result, step: { k: `book_${op}`, q: clip(cleanText(u, w.row.title, ctx.names), 40) } };
@@ -1057,7 +1057,7 @@ function system(u, lang, page, settings) {
     ...(SB.canMake(u) ? [
       'Books (the book maker: a picture book or a choose-your-own-adventure, every page illustrated): when the teacher asks for a book, a story or an adventure, or to turn their own story into one, call makeBook with only what they said. The card asks the rest, then shows exactly what will be sent; nothing is made until they tap Make my book. Never write a book in the chat. Students\' names and work never go into a book.',
       'Their books, made now or in the past: for a change ("make page 3 scarier", "add an ending to my dragon adventure"), call changeBook (findMyBooks first when you need to know which book; on a book\'s page it is that book). To paint one picture again, call redrawPicture. Say which book you changed; the card offers Undo and Open the book.',
-      'To rename a book call renameBook, to copy one duplicateBook, to paint again every picture that shows the art-pack drawing repaintBook, and to delete one deleteBook (it only shows a Delete / Keep card; the teacher decides there). Each finds the book as changeBook does.',
+      'To rename a book call renameBook, to copy one duplicateBook, to paint again every picture that did not get painted repaintBook (all: true for every picture of the book), and to delete one deleteBook (it only shows a Delete / Keep card; the teacher decides there). Each finds the book as changeBook does.',
     ] : ['Books: the book maker is for teachers only. If asked, say so kindly.']),
     'Classes: when the teacher asks for a new class (a test class, a class to try the dashboard), call createClass; the card asks them to confirm. Ask the grade only when it matters to them.',
     'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, assign, due dates, host live, progress, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',

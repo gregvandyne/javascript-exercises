@@ -214,6 +214,9 @@
 .sb-castrow{display:grid;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
 .sb-castrow:last-of-type{border-bottom:0}
 .sb-look{width:100%}
+.sb-asked{flex-basis:100%;font-size:.9rem}
+.sb-asked summary{cursor:pointer;color:var(--muted)}
+.sb-asked-t{white-space:pre-wrap;overflow-wrap:anywhere;margin:4px 0 0;max-height:16em;overflow:auto}
 .sb-sheet{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .sb-sheet-img{width:72px;height:72px;object-fit:cover;border-radius:8px;background:var(--card-2)}
 .sb-sheet-st{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 160px}
