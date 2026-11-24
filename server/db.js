@@ -1336,6 +1336,12 @@ export const MIGRATIONS = [
   ['0117_typing_unlock', `
     ALTER TABLE typing_goals ADD COLUMN unlock_acc INTEGER NOT NULL DEFAULT 0;
     ALTER TABLE typing_goals ADD COLUMN unlock_wpm INTEGER NOT NULL DEFAULT 0;`],
+  // A lesson assigned to some students of its class (services/lessons.js setStudents): one row per student. No rows =
+  // the whole class, so every assignment made before this keeps working. (0118-0119 are unused.)
+  ['0120_class_lesson_students', `
+    CREATE TABLE IF NOT EXISTS class_lesson_students (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, PRIMARY KEY (class_lesson_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_class_lesson_students_user ON class_lesson_students(user_id);`],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

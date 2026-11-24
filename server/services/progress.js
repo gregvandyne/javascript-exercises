@@ -42,13 +42,14 @@ export const get = (clId, stepId, userId) => q.get('SELECT * FROM step_progress 
 /** A student's progress on one assigned lesson: { stepId: row }. */
 export const forStudent = (clId, userId) => Object.fromEntries(q.all('SELECT * FROM step_progress WHERE class_lesson_id=? AND user_id=?', clId, userId).map(r => [r.step_id, r]));
 
-/** The student, class lesson and step for a progress action, or a failure code. Only students of the class, open lessons, steps of that lesson. */
+/** The student, class lesson and step for a progress action, or a failure code. Only students of the class the lesson
+ *  is assigned to (the whole class, or a list naming them), open lessons, steps of that lesson. */
 export function context(u, clId, stepId) {
   const cl = L.getClassLesson(clId); const step = L.getStep(stepId);
   if (!u || !cl || !step || step.lesson_id !== cl.lesson_id) return fail('notFound');
   const c = S.getClass(cl.class_id); const m = c && S.classMember(c.id, u.id);
-  // Students of the class who can still see it (not archived, still in the school), on open lessons.
-  if (!m || m.role !== 'student' || !S.canViewClass(u, c) || !L.isOpen(cl)) return fail('notFound');
+  // Students of the class who can still see it (not archived, still in the school), on open lessons assigned to them.
+  if (!m || m.role !== 'student' || !S.canViewClass(u, c) || !L.isOpen(cl) || !L.assignedTo(cl.id, u.id)) return fail('notFound');
   return ok({ cl, step });
 }
 
@@ -312,7 +313,7 @@ export function review(u, clId, stepId, userId, feedback, { marks, alsoMark = []
     }
   }
   // Something to review: an answer, a build row (started or handed in), or marks for a student of the class.
-  const student = id => { const cm = S.classMember(m.c.id, id); return !!cm && cm.role === 'student'; };
+  const student = id => { const cm = S.classMember(m.c.id, id); return !!cm && cm.role === 'student' && L.assignedTo(m.cl.id, id); };
   if (!row && !(clean !== null && student(userId))) return fail('notFound');
   if (row && !row.answer && step.kind === 'question' && clean === null) return fail('notFound');
   const t = now();
@@ -337,10 +338,13 @@ export function review(u, clId, stepId, userId, feedback, { marks, alsoMark = []
 const stepsOf = lessonId => q.all('SELECT id, kind, title, game_id, position, rubric, rubric_id, standards FROM lesson_steps WHERE lesson_id=? ORDER BY position, created_at', lessonId);
 const studentsOf = classId => S.roster(classId).filter(p => p.role === 'student');
 
-/** One assigned lesson: its steps, the class's students, and every student's progress on every step. */
+/** One assigned lesson: its steps, the students it is assigned to (the class's, or those listed: picked > 0), and every
+ *  such student's progress on every step. */
 export function lessonProgress(clId) {
   const cl = L.getClassLesson(clId); if (!cl) return null;
-  const st = stepsOf(cl.lesson_id), students = studentsOf(cl.class_id);
+  const picked = new Set(L.studentsOfLesson(cl.id));
+  const st = stepsOf(cl.lesson_id), students = studentsOf(cl.class_id).filter(p => !picked.size || picked.has(p.id));
+  cl.some = picked.size > 0; cl.picked = cl.some ? students.length : 0;
   const rows = q.all('SELECT * FROM step_progress WHERE class_lesson_id=?', clId);
   const by = new Map(rows.map(r => [`${r.user_id}:${r.step_id}`, r]));
   const ids = new Set(st.map(s => s.id));
@@ -362,15 +366,20 @@ export function lessonProgress(clId) {
 }
 /** The class gradebook: every assigned lesson × every student, as done/total, plus answers waiting to be reviewed.
  *  A lesson that hasn't opened yet is 'locked': never late, and left out of the overall figure. Open / due / late follow
- *  the school's time zone when it has one (the rows carry tz); t is "now" (tests pass an instant). */
+ *  the school's time zone when it has one (the rows carry tz); t is "now" (tests pass an instant). A lesson assigned to
+ *  some students has a 'na' (not assigned) cell for the others: nothing in it, so it counts nowhere (Work done, Score,
+ *  late, rubric and quiz figures), even when the student did work in it before the list changed. */
 export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
-  const students = studentsOf(classId);
+  const students = studentsOf(classId), picks = L.picksIn(classId);
+  const na = (p, cl) => picks.has(cl.id) && !picks.get(cl.id).has(p.id);
+  // some: assigned to some students; picked: how many of the class's students now.
+  for (const cl of lessons) { cl.some = picks.has(cl.id); cl.picked = cl.some ? students.filter(p => picks.get(cl.id).has(p.id)).length : 0; }
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
       AVG(CASE WHEN s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL) quizzes,
       SUM(p.helped) helped
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-    WHERE c.class_id=? GROUP BY p.class_lesson_id, p.user_id`, classId);
+    WHERE c.class_id=? AND ${L.assignedSql('c.id', 'p.user_id')} GROUP BY p.class_lesson_id, p.user_id`, classId);
   const by = new Map(counts.map(r => [`${r.u}:${r.cl}`, r]));
   // Rubric scores (services/rubrics.js): points / most possible per lesson, on lessons with a rubric (hasRubric).
   const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
@@ -381,6 +390,8 @@ export function classProgress(classId, t = now()) {
   // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
   const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons);
   const rows = students.map(p => ({ ...p, cells: lessons.map(cl => {
+    if (na(p, cl)) return { na: true, done: 0, total: 0, toRead: 0, last: null, locked: cl.locked, late: false, lateSteps: 0, lateDone: false, items: [], score: null,
+      quiz: null, quizzes: 0, helped: 0, points: null, maxPoints: null, scored: 0, criteria: 0 };
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
     const sc = pts.get(`${p.id}:${cl.id}`) || null;
     const its = items.get(`${p.id}:${cl.id}`) || [], lateSteps = lateN.get(`${p.id}:${cl.id}`) || 0;
@@ -396,6 +407,8 @@ export function classProgress(classId, t = now()) {
   for (const p of rows) { p.overall = overall(p.cells); p.rubric = rubricOverall(p.cells); p.quiz = quizOverall(p.cells); p.score = scoreOverall(p.cells); p.lateCount = p.cells.filter(x => x.late || x.lateDone).length; }
   return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric), anyQuiz: lessons.some(cl => cl.hasQuiz) };
 }
+/** A gradebook row's open work (lessons open and assigned to the student, with steps): is there any? */
+export const hasOpenWork = p => p.cells.some(x => !x.locked && !x.na && x.total);
 /** "Work done": the percentage of steps done across the lessons that are open (one rule for the page and the CSV).
  *  It says nothing about right answers: that is the Score (scoreOverall). */
 export function overall(cells) {
@@ -433,18 +446,18 @@ export function rubricOverall(cells) {
 export const toReadByClass = classIds => (classIds.length ? Object.fromEntries(q.all(`SELECT c.class_id cid, COUNT(*) n FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id
   JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id AND s.kind='question'
   JOIN class_members m ON m.class_id=c.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
-  WHERE p.answer!='' AND p.reviewed_at IS NULL AND c.removed_at IS NULL AND c.class_id IN (${classIds.map(() => '?').join(',')}) GROUP BY c.class_id`, ...classIds).map(r => [r.cid, r.n])) : {});
+  WHERE p.answer!='' AND p.reviewed_at IS NULL AND c.removed_at IS NULL AND ${L.assignedSql('c.id', 'p.user_id')} AND c.class_id IN (${classIds.map(() => '?').join(',')}) GROUP BY c.class_id`, ...classIds).map(r => [r.cid, r.n])) : {});
 /** Done / total steps per assigned lesson for one student (for their class page). */
 export function studentSummary(classId, userId) {
   const rows = q.all(`SELECT p.class_lesson_id cl, SUM(p.status='done') done FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id
-    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND c.removed_at IS NULL AND p.user_id=? GROUP BY p.class_lesson_id`, classId, userId);
+    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND c.removed_at IS NULL AND p.user_id=? AND ${L.assignedSql('c.id', 'p.user_id')} GROUP BY p.class_lesson_id`, classId, userId);
   return Object.fromEntries(rows.map(r => [r.cl, r.done]));
 }
 
-/** A student's open lessons not finished yet in one class, soonest due first: [{ id, title, due_at, left }]. */
+/** A student's open lessons not finished yet in one class (only those assigned to them), soonest due first: [{ id, title, due_at, left }]. */
 export function toDoFor(classId, userId, t = now()) {
   const done = studentSummary(classId, userId);
-  return L.classLessons(classId).filter(cl => cl.steps > 0 && L.isOpen(cl, t) && (done[cl.id] || 0) < cl.steps)
+  return L.classPlan(classId, { openOnly: true, userId }).flatMap(g => g.lessons).filter(cl => cl.steps > 0 && L.isOpen(cl, t) && (done[cl.id] || 0) < cl.steps)
     .map(cl => ({ id: cl.id, title: cl.title, due_at: cl.due_at || null, left: cl.steps - (done[cl.id] || 0), cl }))
     .sort((a, z) => (a.due_at || Infinity) - (z.due_at || Infinity));
 }
@@ -453,16 +466,17 @@ export function toReadByLesson(classId) {
   return q.all(`SELECT c.id cl, l.title, COUNT(*) n FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
     JOIN lessons l ON l.id=c.lesson_id JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     JOIN class_members m ON m.class_id=c.class_id AND m.user_id=p.user_id AND m.status='active' AND m.role='student'
-    WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL GROUP BY c.id ORDER BY c.position`, classId);
+    WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL AND ${L.assignedSql('c.id', 'p.user_id')} GROUP BY c.id ORDER BY c.position`, classId);
 }
 /** The first answer waiting for review for each student in a class lesson: { 'userId:clId': stepId }. */
 export function firstNewAnswers(classId) {
   const rows = q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id s, s.position pos FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
-    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL ORDER BY s.position, s.created_at`, classId);
+    JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id WHERE c.class_id=? AND s.kind='question' AND p.answer!='' AND p.reviewed_at IS NULL AND ${L.assignedSql('c.id', 'p.user_id')} ORDER BY s.position, s.created_at`, classId);
   const out = {}; for (const r of rows) { const k = `${r.u}:${r.cl}`; if (!out[k]) out[k] = r.s; } return out;
 }
-/** Done / students for each assigned lesson in a class, and answers to review (for the class's Lessons tab rows). */
+/** Done / students for each assigned lesson in a class (students: those it is assigned to; some: assigned to some
+ *  students, not the whole class), and answers to review (for the class's Lessons tab rows). */
 export function lessonSummaries(classId) {
   const gb = classProgress(classId);
-  return Object.fromEntries(gb.lessons.map((cl, i) => [cl.id, { done: gb.students.filter(p => p.cells[i].total && p.cells[i].done >= p.cells[i].total).length, students: gb.students.length, toRead: gb.students.reduce((n, p) => n + (p.cells[i].toRead || 0), 0) }]));
+  return Object.fromEntries(gb.lessons.map((cl, i) => [cl.id, { done: gb.students.filter(p => p.cells[i].total && p.cells[i].done >= p.cells[i].total).length, students: gb.students.filter(p => !p.cells[i].na).length, some: !!cl.some, toRead: gb.students.reduce((n, p) => n + (p.cells[i].toRead || 0), 0) }]));
 }

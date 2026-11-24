@@ -14,6 +14,7 @@
 // yet is not in it (Work done shows that), so nothing scored reads "–", never 0 %. A game played outside a live run
 // reports a bare number with no maximum, so it has no place in a percentage and is left out.
 // Live runs that are not a lesson's step are shown in the gradebook's Live games table and stay out of the Score.
+// Work in a lesson assigned to some students counts only for those students (lessons.assignedSql).
 // Students only ever appear here as account ids: no name leaves this file, and nothing is sent anywhere.
 import { q } from '../db.js';
 import * as L from './lessons.js';
@@ -59,14 +60,14 @@ export function classItems(classId, { userId = null } = {}) {
   for (const r of q.all(`SELECT r.user_id u, r.class_lesson_id cl, r.step_id sid, r.points, r.max_points, s.title, s.kind, s.position pos FROM rubric_scores r
       JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL JOIN lessons l ON l.id=c.lesson_id
       LEFT JOIN lesson_steps s ON r.step_id!='' AND s.id=r.step_id AND s.lesson_id=c.lesson_id
-      WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL) ${userId ? 'AND r.user_id=?' : ''}
+      WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL) AND ${L.assignedSql('c.id', 'r.user_id')} ${userId ? 'AND r.user_id=?' : ''}
         AND COALESCE(CASE WHEN r.step_id='' THEN l.rubric_id WHEN s.kind IN ('question','build') THEN s.rubric_id END, r.rubric_id)=r.rubric_id`, classId, ...who)) {
     lib.add(`${r.u}:${r.cl}:${r.sid}`);
     add(r.u, r.cl, { kind: 'rubric', stepId: r.sid, title: r.title || '', stepKind: r.kind || '', pos: r.sid ? r.pos : 1e9, earned: r.points, possible: r.max_points });
   }
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.marks, p.status, s.title, s.kind, s.position pos, s.rubric FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','figures','proofread','question','build') ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
+      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','figures','proofread','question','build') AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
     const base = { stepId: r.sid, title: r.title || '', stepKind: r.kind, pos: r.pos };
     // A Story Library book's 3 questions (services/library.js): 1 point each, right on the first try.
     if (r.kind === L.QUIZ_KIND || r.kind === 'story' || r.kind === L.FIGURES_KIND || r.kind === L.PROOF_KIND) {
@@ -81,7 +82,7 @@ export function classItems(classId, { userId = null } = {}) {
   const runs = q.all(`SELECT r.id run, r.class_lesson_id cl, r.step_id sid, sc.user_id u, sc.correct, sc.answered, sc.marks, s.title, s.kind, s.position pos FROM live_runs r
       JOIN live_run_scores sc ON sc.run_id=r.id JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL AND c.class_id=r.class_id
       JOIN lesson_steps s ON s.id=r.step_id AND s.lesson_id=c.lesson_id AND s.kind='game'
-      WHERE r.class_id=? ${userId ? 'AND r.id IN (SELECT run_id FROM live_run_scores WHERE user_id=?)' : ''}`, classId, ...who);
+      WHERE r.class_id=? AND ${L.assignedSql('c.id', 'sc.user_id')} ${userId ? 'AND r.id IN (SELECT run_id FROM live_run_scores WHERE user_id=?)' : ''}`, classId, ...who);
   const res = liveResults(runs), best = new Map();
   for (const r of runs) {
     if (userId && r.u !== userId) continue;
@@ -111,7 +112,7 @@ export function lateSteps(classId, lessons, { userId = null } = {}) {
   const first = Math.min(...from.values());
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.done_at t FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
       JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-      WHERE c.class_id=? AND p.status='done' AND p.done_at>=? ${userId ? 'AND p.user_id=?' : ''}`, classId, first, ...(userId ? [userId] : []))) {
+      WHERE c.class_id=? AND p.status='done' AND p.done_at>=? AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, classId, first, ...(userId ? [userId] : []))) {
     const t = from.get(r.cl);
     if (t !== undefined && r.t >= t) { const k = `${r.u}:${r.cl}`; out.set(k, (out.get(k) || 0) + 1); }
   }

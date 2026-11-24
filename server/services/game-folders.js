@@ -158,9 +158,10 @@ export function assignable(u, g, c) {
 export const assignmentOf = (classId, gameId, options = null) => q.get(`SELECT cl.* FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id JOIN lesson_steps s ON s.lesson_id=l.id
   WHERE cl.class_id=? AND cl.removed_at IS NULL AND l.kind='game' AND s.kind='game' AND s.game_id=?${options === null ? '' : ' AND s.options=?'} LIMIT 1`, classId, gameId, ...(options === null ? [] : [options])) || null;
 /** Assign one game to a class (optionally due on a day): a 'game' lesson with the game as its one step. Assigning the same
- *  game to the same class again is refused (alreadyAssigned), so a class never has it twice.
+ *  game to the same class again is refused (alreadyAssigned), so a class never has it twice. students: [] (the whole
+ *  class) or ids of the class's students (lessons.assign checks them; a refused list leaves nothing behind).
  *  -> { ok, classLesson, game } | { ok: false, code, className? } */
-export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '' } = {}) {
+export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '', students = [] } = {}) {
   const c = S.getClass(String(classId || ''));
   if (!c || c.archived_at || !S.canManageClass(u, c)) return fail('notFound');
   const g = games.getGame(String(gameId || ''));
@@ -173,7 +174,7 @@ export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, o
   if (!made.ok) return made;
   const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, options });
   if (!step.ok) { L.deleteLesson(u, made.lesson.id); return step; }
-  const r = L.assign(u, c.id, made.lesson.id, { dueAt, opensAt });
+  const r = L.assign(u, c.id, made.lesson.id, { dueAt, opensAt, students });
   if (!r.ok) { L.deleteLesson(u, made.lesson.id); return r; }
   if (a.share) S.setGameClasses(g.id, [...new Set([...q.all('SELECT class_id FROM game_classes WHERE game_id=? AND removed_at IS NULL', g.id).map(x => x.class_id), c.id])], u.id);
   audit(u.id, 'lesson.assignGame', made.lesson.id, { game: g.slug || g.id, class: c.id });

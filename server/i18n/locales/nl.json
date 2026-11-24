@@ -5361,7 +5361,13 @@
       "zoneAsk": "Een schoolbeheerder kan die instellen bij de Instellingen van de school.",
       "doneHere": "Toegewezen aan {class}. Leerlingen zien het nu.",
       "seeStarted": "Bekijk wie begonnen is",
-      "doneLater": "Toegewezen aan {class}. Leerlingen zien de les vanaf {date}."
+      "doneLater": "Toegewezen aan {class}. Leerlingen zien de les vanaf {date}.",
+      "to": "Toewijzen aan",
+      "wholeClass": "Hele klas",
+      "someStudents": "Een paar leerlingen",
+      "studentsOf": "Leerlingen in {class}",
+      "someHint": "Alleen de leerlingen die je aanvinkt zien het, en alleen zij tellen mee in het cijferoverzicht. Je kunt dit later wijzigen via het ⋯-menu.",
+      "noStudents": "Deze klas heeft nog geen leerlingen."
     },
     "class": {
       "title": "Lessen",
@@ -5390,7 +5396,8 @@
       "late": "Te laat",
       "removedGroup": "Uit deze klas gehaald",
       "readyMade": "Een kant-en-klare les gebruiken",
-      "unitWhy": "Thema's groeperen de lessen van deze klas, in de volgorde waarin leerlingen ze zien. Mappen ordenen alleen je eigen lessenbibliotheek."
+      "unitWhy": "Thema's groeperen de lessen van deze klas, in de volgorde waarin leerlingen ze zien. Mappen ordenen alleen je eigen lessenbibliotheek.",
+      "someStudents": "{count, plural, one {# leerling} other {# leerlingen}}"
     },
     "view": {
       "teacherPreview": "Leerlingweergave. Knoppen die werk opslaan, staan voor jou uit.",
@@ -5429,7 +5436,9 @@
       "topic": "Typ waar de les over gaat.",
       "aiFailed": "De AI kan dit nu niet maken. Probeer het over een minuutje nog eens, of maak de les zelf.",
       "questionText": "Schrijf de vraag op die leerlingen gaan beantwoorden.",
-      "alreadyAssigned": "Deze les staat al in {class}. Wijzig de datums via het menu ⋯ op het tabblad Lessen van de klas."
+      "alreadyAssigned": "Deze les staat al in {class}. Wijzig de datums via het menu ⋯ op het tabblad Lessen van de klas.",
+      "pickStudents": "Vink minstens één leerling aan, of kies Hele klas.",
+      "notInClass": "Je kunt alleen leerlingen uit deze klas kiezen."
     },
     "editor": {
       "live": "In gebruik in {classes}. {count, plural, =0 {Er is nog geen leerling begonnen.} one {# leerling is begonnen.} other {# leerlingen zijn begonnen.}} Leerlingen zien wijzigingen meteen."
@@ -10299,7 +10308,9 @@
       "open": "Openen in Classroom",
       "noLessons": "Nog geen lessen in deze klas. Wijs er een toe op het tabblad Lessen.",
       "doneScheduled": "Ingepland in Google Classroom: leerlingen zien het op {date}, als de les opengaat.",
-      "locked": "Laat Oomba Academy plaatsen in Classroom om lessen te plaatsen, cijfers te versturen en lesmateriaal te delen."
+      "locked": "Laat Oomba Academy plaatsen in Classroom om lessen te plaatsen, cijfers te versturen en lesmateriaal te delen.",
+      "someNot": "Aan een paar leerlingen toegewezen, dus niet geplaatst: in Google Classroom zou ze naar de hele klas gaan.",
+      "somePosted": "Hier aan een paar leerlingen toegewezen. Eerder is ze in Google Classroom voor de hele klas geplaatst; cijfers gaan alleen naar de toegewezen leerlingen."
     },
     "grades": {
       "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
@@ -10368,7 +10379,8 @@
       "emptyNote": "Schrijf eerst je bericht.",
       "tooLong": "Aankondigingen zijn hoogstens {max} tekens lang.",
       "hasName": "‘{name}’ in je bericht is ook de naam van een leerling. Aankondigingen gaan naar de hele klas: formuleer het alsjeblieft anders of haal het eruit.",
-      "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even."
+      "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even.",
+      "someStudents": "Deze les is aan een paar leerlingen toegewezen en wordt daarom niet in Google Classroom geplaatst: daar zou ze naar de hele klas gaan."
     },
     "allow": {
       "heading": "Wat Oomba Academy mag in je Classroom",
@@ -10621,7 +10633,8 @@
       "showNames": "Namen van de klassenlijst tonen",
       "hideNames": "Namen van de klassenlijst verbergen",
       "namesHint": "Toont de naam van de klassenlijst naast de naam in het spel, alleen op dit scherm. Het klassenscherm houdt de spelnamen."
-    }
+    },
+    "notAssigned": "Niet toegewezen"
   },
   "quickLive": {
     "cta": "Start nu een live spel",

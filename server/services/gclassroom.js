@@ -14,7 +14,8 @@
 // unless turned off (students who left Classroom are listed for the teacher, never removed automatically).
 //
 // What goes to Google: the lesson's title, a fixed one-line description, the link to the lesson, its due date, and a
-// score out of 100 for each student who is on the teacher's own Classroom roster; the topic's name; an announcement's
+// score out of 100 for each student who is on the teacher's own Classroom roster (for a lesson assigned to some
+// students, only those students; such a lesson is never posted, shared or announced: someStudents); the topic's name; an announcement's
 // fixed template text (a join code and link, or a lesson's title and link) and the teacher's own words; a dashboard
 // point's fixed sentence with its reason (to the class stream, or to that one student only, by their Google id). Nothing else:
 // no names, no answers, no feedback, no games. What comes back: the teacher's course names, and each student's Google
@@ -404,6 +405,10 @@ export function settleLeaver(u, c, userId, action) {
 
 // ------------------------------------------------------------------ posting a lesson: an assignment or a material
 export const POST_KINDS = ['assignment', 'material'];
+/** Is this class lesson assigned to some students only (lessons.setStudents)? Such a lesson is never posted, shared or
+ *  announced to the Classroom course; a post made before the list was set stays, and its grades go only to the
+ *  students on the list (sendGrades reads progress.lessonProgress, which has only them). */
+export const someStudents = cl => !!cl && L.studentsOfLesson(cl.id).length > 0;
 /** A class lesson's post of this kind in the Classroom class its class is linked to now (a post to another, earlier
  *  linked Classroom class doesn't count: it can't be graded from here and the lesson can be posted again). */
 export const postOf = (clId, kind = 'assignment') => q.get('SELECT p.* FROM gc_posts p JOIN gc_links k ON k.class_id=p.class_id AND k.course_id=p.course_id WHERE p.class_lesson_id=? AND p.kind=?', clId, kind) || null;
@@ -438,6 +443,9 @@ const KIND = {
 async function publish(u, cl, kind, { origin, description, topicName = '' }) {
   const k = KIND[kind];
   const lk = linkOf(cl.class_id); if (!lk) return fail('notLinked');
+  // A lesson assigned to some students is not posted: in Classroom it would reach the whole course (docs/decisions.md
+  // "Assign to some students"). Nothing is sent to Google.
+  if (someStudents(cl)) return fail('someStudents');
   if (!can(u.id, k.scope)) return fail('needsScope');
   if (postOf(cl.id, kind)) return fail(k.already);
   const lesson = L.getLesson(cl.lesson_id);
@@ -573,6 +581,7 @@ export function announceFixed(t, c, { template, code = '', clId = '' }, origin, 
     const cl = L.getClassLesson(String(clId || ''));
     if (!cl || cl.class_id !== c.id) return fail('pickLesson');
     if (!L.isOpen(cl, at)) return fail('lessonNotOpen');
+    if (someStudents(cl)) return fail('someStudents');
     const lesson = L.getLesson(cl.lesson_id);
     return ok({ fixed: t('gclassroom.announce.fixed.lesson', { title: clip(lesson && lesson.title, 120), url: `${origin}/class/${c.id}/lessons/${cl.id}` }) });
   }

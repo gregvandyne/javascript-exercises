@@ -939,8 +939,8 @@ export function pushableGame(c, g) {
 }
 /** The class's open live room (hosted by its teacher): students only ever join, never host. */
 export const liveRoom = c => { const s = liveOn() ? openForClass(c.id) : null; return s && s.phase !== 'ended' ? { title: s.title, code: s.code } : null; };
-/** Lessons of the class open today. */
-export const openLessons = c => L.classLessons(c.id).filter(cl => L.isOpen(cl)).map(cl => ({ id: cl.id, title: cl.title }));
+/** Lessons of the class open today, for the whole class: one assigned to some students is never pushed to every screen. */
+export const openLessons = c => L.classLessons(c.id).filter(cl => L.isOpen(cl) && !cl.picked).map(cl => ({ id: cl.id, title: cl.title }));
 
 /** What the teacher can send right now: games (search), the open live room, open lessons, approved links. */
 export function pushOptions(u, c, text = '') {

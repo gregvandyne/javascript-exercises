@@ -10,6 +10,7 @@
 // by the Standards routes (and anything else that draws the class view).
 import { q } from '../db.js';
 import { registerRubricSource } from './standards-ccss.js';
+import { assignedSql } from './lessons.js';
 
 /** [{ userId, code, score, max, at }] for a class in one framework. studentIds: a Set of the class's students. */
 export function rubricEvidence({ classId, framework, studentIds }) {
@@ -17,7 +18,7 @@ export function rubricEvidence({ classId, framework, studentIds }) {
   const rows = q.all(`SELECT r.user_id u, r.step_id step, c.lesson_id lesson, r.points, r.max_points mx, r.scored_at at FROM rubric_scores r
     JOIN class_lessons c ON c.id=r.class_lesson_id AND c.removed_at IS NULL JOIN lessons l ON l.id=c.lesson_id
     LEFT JOIN lesson_steps s ON r.step_id!='' AND s.id=r.step_id AND s.lesson_id=c.lesson_id
-    WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL)
+    WHERE c.class_id=? AND r.max_points>0 AND (r.step_id='' OR s.id IS NOT NULL) AND ${assignedSql('c.id', 'r.user_id')}
       AND COALESCE(CASE WHEN r.step_id='' THEN l.rubric_id WHEN s.kind IN ('question','build') THEN s.rubric_id END, r.rubric_id)=r.rubric_id`, classId);
   if (!rows.length) return [];
   const lessonIds = [...new Set(rows.map(r => r.lesson))];
