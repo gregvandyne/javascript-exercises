@@ -232,3 +232,7 @@
 .sb-unfinished .muted{color:inherit;opacity:.85}
 /* A picture button with no pictures left today (storybook-edit.js outOfPics): greyed out, its title says why. */
 .sb-edit .btn.is-off{opacity:.5;cursor:not-allowed;box-shadow:none;transform:none}
+
+/* The cast: visible labels over "What they are" and "How they look"; no art-pack picker while Oomba paints
+   (the owner, 24 Nov 2026: characters showed as "Horse"). */
+.sb-clabel{display:block;font-weight:700;margin:8px 0 4px;color:var(--muted)}
