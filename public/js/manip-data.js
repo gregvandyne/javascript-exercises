@@ -24,6 +24,10 @@ export const TOOLS = [
   { slug: 'clock', name: 'Clock', cat: 5, color: '#4527A0', emoji: '🕐', grades: 'K-5', desc: 'Red hour and blue minute hands, a digital time beside the face, a time tracker and a two-clock view for elapsed time.' },
 ];
 export const TOOL_SLUGS = TOOLS.map(x => x.slug);
+/** The tools with a "How it works" video (public/video/manip/manip-<slug>.mp4, with manip-<slug>-poster.jpg and
+ *  manip-<slug>.en.vtt beside it). Only these show the button; add a slug here once its three files are in place. */
+export const TUTORIALS = new Set(['number-lines']);
+export const tutorialOf = slug => (TUTORIALS.has(slug) ? { mp4: `/video/manip/manip-${slug}.mp4`, poster: `/video/manip/manip-${slug}-poster.jpg`, vtt: `/video/manip/manip-${slug}.en.vtt` } : null);
 export const toolOf = slug => TOOLS.find(x => x.slug === slug) || null;
 
 // ---------------------------------------------------------------- pieces (the tools built from draggable pieces)
