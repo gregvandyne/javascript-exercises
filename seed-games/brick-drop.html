@@ -1746,14 +1746,14 @@ function endRound(kind) {
       r.won = true; const secs = E.time / 1000, score = Math.max(0, Math.floor(600 - secs));
       r.best = !save.bestSprintMs || E.time < save.bestSprintMs; if (r.best) save.bestSprintMs = Math.round(E.time);
       r.sprintScore = score;
-      // Sprint times stay on this device (best time above): the one leaderboard is for Marathon points,
-      // so a ~580 Sprint score never competes with (or replaces) a player's Marathon best.
+      // Sprint times stay on this device (best time above): the platform's saved best is for Marathon points,
+      // so a ~580 Sprint score never replaces a player's Marathon best.
       BRB.gameOver({ won: true });
       Oomba.time.real.after(S.fast ? 0 : 200, confetti);
-    } else BRB.gameOver({ won: false });               // no time, so nothing for the leaderboard
+    } else BRB.gameOver({ won: false });               // no time, so no best to save
   } else {
     r.won = true; r.best = E.lines > (save.bestZenLines || 0); if (r.best) save.bestZenLines = E.lines;
-    BRB.gameOver({ won: true });                       // Zen has no leaderboard
+    BRB.gameOver({ won: true });                       // Zen keeps no score
   }
   persist(); S.result = r;
   if (r.best && E.mode === 'marathon') Oomba.time.real.after(S.fast ? 0 : 900, confetti);

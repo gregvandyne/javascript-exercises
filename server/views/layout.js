@@ -278,6 +278,10 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
   </details>`;
 }
 
+/** A feature's script on every full page for the people it is for: fn(req) -> '/js/x.js' or null. Registered by the
+ *  feature's routes (routes/homeroom.js), so this module imports none of them. */
+const everyPage = [];
+export const onEveryPage = fn => { if (!everyPage.includes(fn)) everyPage.push(fn); };
 export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false, companion = null } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
@@ -371,6 +375,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // The greeting uses the name the site already shows this teacher (their own, from the header): the first word.
   if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
   if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
+  // Scripts a feature adds to every page for some people (onEveryPage: Homeroom's "Your class is in Homeroom" prompt).
+  if (u && !u.is_guest && !bare) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
@@ -429,6 +435,9 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   if (/^\/manip/.test(p)) return { type: 'tools' };
   const bk = /^\/library\/make\/([A-Za-z0-9_-]{6,40})$/.exec(p);
   if (bk) return { type: 'book', bookId: bk[1] };
+  // a class's Homeroom: the day plan's tools there (checked again on the server: services/companion.js pageOf)
+  const hr = /^\/class\/([A-Za-z0-9_-]{1,64})\/homeroom\/?$/.exec(p);
+  if (hr) return { type: 'homeroom', classId: hr[1] };
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };
   const cls = typeof (req.query || {}).class === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(req.query.class) ? req.query.class : undefined;
@@ -446,7 +455,27 @@ function buildNews(t, u) {
   const emo = { ready: '✨', question: '💬', stopped: '⚠️' }[one ? one.kind : 'ready'] || '✨';
   return html`<p class="notice ${one && one.kind === 'stopped' ? 'warn' : 'good'} pagenote" role="status">${ico(emo, { size: 20 })} ${msg}</p>`;
 }
-export const page = (req, res, opts, status = 200) => res.status(status).type('html').send(layout(req, opts));
+// One page with views (docs/decisions.md "Homeroom: one page, three views"): a route marks its page as one view of a
+// class (req.classView = { c, view }); the feature that owns the views registers how such a page is wrapped (the shared
+// bar and the view area) and whether this request asks only for the view (the X-View header). The layout imports none
+// of it, as with onEveryPage.
+let viewShell = null;
+export const setViewShell = fn => { viewShell = fn; };
+/** Only what a view needs when it is swapped into a page that is already open: its content, its stylesheets, its
+ *  scripts (the same ?v= addresses the page itself would load), the strings those scripts use, the title and the
+ *  body's classes. No site bar, no Oomba chat (the page already has them). */
+export function viewFragment(req, { title = '', body = '', scripts = [], head = '', bodyClass = '', i18n = [] } = {}) {
+  const t = tReq(req), locale = req.locale || DEFAULT_LOCALE;
+  const prefixes = [...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
+  return { title: title ? t('layout.titleWith', { title }) : t('layout.titleHome'), body: String(body), head: String(head || ''), bodyClass,
+    scripts: scripts.map(s => `${s}?v=${VERSION}`), strings: clientStrings(locale, [...new Set(prefixes)]) };
+}
+export const page = (req, res, opts, status = 200) => {
+  const v = viewShell && req.classView && status === 200 ? viewShell(req, res, opts) : null;
+  if (v) res.vary('X-View');
+  if (v && v.fragment) return res.set('Cache-Control', 'no-store').json({ ...viewFragment(req, v.opts), ...v.extra });
+  return res.status(status).type('html').send(layout(req, v ? v.opts : opts));
+};
 export function notFound(req, res, msg = null) {
   const t = tReq(req);
   return page(req, res, { title: t('errors.notFound.title'), body: html`<div class="empty"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('errors.notFound.heading')}</h1><p>${msg || t('errors.notFound.text')}</p><a class="btn btn-primary" href="/">${t('errors.goHome')}</a></div>` }, 404);

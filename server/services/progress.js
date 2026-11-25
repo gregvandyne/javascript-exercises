@@ -239,7 +239,7 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   if (c.step.kind !== 'game') return fail('notFound');
   const old = get(clId, stepId, u.id);
   const s = score === null || score === undefined || !Number.isFinite(+score) ? null : Math.max(0, Math.min(1e9, Math.floor(+score)));
-  // Typing Pets with a pass mark (services/typing.js): the best run is the one with the best grade, and the step is done
+  // Typing Zoo with a pass mark (services/typing.js): the best run is the one with the best grade, and the step is done
   // only once a run reaches the mark (a bare game-over, with no run, never finishes it).
   const pass = TY.passOfStep(c.step);
   if (pass) {
@@ -250,7 +250,10 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   }
   const better = s !== null && (!old || old.score === null || s > old.score);
   const h = better ? { helped: helped ? 1 : 0 } : s !== null && old && s === old.score && old.helped && !helped ? { helped: 0 } : {};
-  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...done(old) }) });
+  // A game that ended won without a number (Crossword, Algebra Builder: they finish only when everything is right) keeps
+  // label 'won', so a Homeroom lesson can count it (services/scores.js); a score that comes later replaces it.
+  const won = s === null && label === 'won' && !(old && (old.label || old.score !== null)) ? { label: 'won' } : {};
+  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...won, ...done(old) }) });
 }
 /** A build step: the game the student is making (made once, then reopened). */
 export function buildGame(u, clId, stepId, gameId) {
@@ -373,6 +376,10 @@ export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId), picks = L.picksIn(classId);
   const na = (p, cl) => picks.has(cl.id) && !picks.get(cl.id).has(p.id);
+  // How each lesson is graded (services/lessons.js gradeModes; Homeroom handouts): 'none' is practice, never in Work done
+  // or the Score; 'completion' shows done / not done. Every other lesson: grade null, as always.
+  const modes = L.gradeModes(classId);
+  for (const cl of lessons) cl.grade = modes.get(cl.id) || null;
   // some: assigned to some students; picked: how many of the class's students now.
   for (const cl of lessons) { cl.some = picks.has(cl.id); cl.picked = cl.some ? students.filter(p => picks.get(cl.id).has(p.id)).length : 0; }
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
@@ -395,10 +402,12 @@ export function classProgress(classId, t = now()) {
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
     const sc = pts.get(`${p.id}:${cl.id}`) || null;
     const its = items.get(`${p.id}:${cl.id}`) || [], lateSteps = lateN.get(`${p.id}:${cl.id}`) || 0;
-    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !cl.locked && cl.due === 'late' && done < cl.steps,
+    const practice = cl.grade === 'none';
+    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !practice && !cl.locked && cl.due === 'late' && done < cl.steps,
+      ...(practice ? { practice: true } : cl.grade === 'completion' ? { completion: true } : {}),
       // finished, but after the due day (the school's time zone): 'late' above is work still missing after it
-      lateSteps, lateDone: !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
-      items: its, score: SC.total(its),
+      lateSteps, lateDone: !practice && !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
+      items: practice ? [] : its, score: practice ? null : SC.total(its),
       quiz: r && r.quizzes ? Math.round(r.quiz) : null, quizzes: r ? r.quizzes || 0 : 0,
       // game steps whose kept score came after the teacher showed an answer (Oomba Canvas 1.3.0); staff-only
       helped: r ? r.helped || 0 : 0,
@@ -408,11 +417,11 @@ export function classProgress(classId, t = now()) {
   return { lessons, students: rows, toRead: rows.reduce((n, p) => n + p.cells.reduce((m, x) => m + (x.toRead || 0), 0), 0), anyRubric: lessons.some(cl => cl.hasRubric) || rows.some(p => p.rubric), anyQuiz: lessons.some(cl => cl.hasQuiz) };
 }
 /** A gradebook row's open work (lessons open and assigned to the student, with steps): is there any? */
-export const hasOpenWork = p => p.cells.some(x => !x.locked && !x.na && x.total);
+export const hasOpenWork = p => p.cells.some(x => !x.locked && !x.na && !x.practice && x.total);
 /** "Work done": the percentage of steps done across the lessons that are open (one rule for the page and the CSV).
  *  It says nothing about right answers: that is the Score (scoreOverall). */
 export function overall(cells) {
-  const open = cells.filter(x => !x.locked);
+  const open = cells.filter(x => !x.locked && !x.practice);
   const total = open.reduce((n, x) => n + x.total, 0);
   return total ? Math.round((100 * open.reduce((n, x) => n + Math.min(x.done, x.total), 0)) / total) : 0;
 }

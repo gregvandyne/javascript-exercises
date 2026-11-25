@@ -747,7 +747,7 @@
       "heading": "Game-SDK",
       "brb": {
         "p1": "Elke game krijgt een kleine helper die BRB heet. {get} en {set} slaan de voortgang van elke speler op. localStorage werkt ook en wordt in de cloud bewaard.",
-        "p2": "{submit} zet een score op de ranglijst (alleen de beste score telt). {over} beëindigt een ronde.",
+        "p2": "{submit} bewaart de beste score van de speler, die alleen hij zelf ziet. {over} beëindigt een ronde.",
         "p3": "{fx} maken je game levendig.",
         "p4": "{full} en {orient} vragen het netjes aan de pagina.",
         "p5": "{lang} is de taal van de speler (zoals \"fr\" of \"ar\") en {dir} is \"rtl\" voor talen die van rechts naar links gaan, zodat een game de taal van de speler kan spreken."
@@ -1164,11 +1164,6 @@
       "tap": "Tik op een ster.",
       "guest": "Speel als gast om te beoordelen"
     },
-    "leaderboard": {
-      "heading": "Ranglijst",
-      "empty": "Nog geen scores. Wees de eerste!",
-      "signIn": "Log in om de namen van de spelers te zien."
-    },
     "more": {
       "label": "Meer",
       "heading": "Meer zoals deze"
@@ -1215,6 +1210,9 @@
       "title": "Deze game is nu niet beschikbaar",
       "text": "Misschien komt hij later terug. Bij Leren staan meer games en puzzels om te proberen.",
       "play": "Naar Leren"
+    },
+    "best": {
+      "heading": "Jouw beste score"
     }
   },
   "play": {
@@ -1294,7 +1292,11 @@
       "figure": "Figuur bij vraag {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Wereldkaart", "car": "Kaart van het Caribisch gebied", "me": "Kaart van het Midden-Oosten"},
+      "mapOf": {
+        "world": "Wereldkaart",
+        "car": "Kaart van het Caribisch gebied",
+        "me": "Kaart van het Midden-Oosten"
+      },
       "untitled": "Aardrijkskundequiz",
       "mapTitle": "Kaart: {region}",
       "mapAlt": "Blinde kaart: {region}",
@@ -2039,6 +2041,288 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Sleep om deze tekst te verplaatsen",
+      "resize": "Sleep om de grootte van dit vak te wijzigen",
+      "smaller": "Kleinere tekst",
+      "bigger": "Grotere tekst"
+    },
+    "homeroom": {
+      "my": {
+        "label": "Mijn bureau (alleen jij ziet wat erop ligt)",
+        "title": "Mijn bureau",
+        "note": "Alleen jij ziet dit",
+        "empty": "Zet hier een spel neer om het eerst te proberen.",
+        "cardLabel": "{title}, op mijn bureau",
+        "play": "Spelen",
+        "preview": "Voorbeeld",
+        "open": "Openen",
+        "handOut": "Uitdelen",
+        "takeOff": "Van mijn bureau halen",
+        "lead": "Op je bureau om eerst te proberen. Leerlingen zien het pas als je het uitdeelt.",
+        "lessonLead": "Op je bureau. Het voorbeeld opent de opgaven van de les. Leerlingen zien het pas als je het uitdeelt.",
+        "toolLead": "Op je bureau om op elk moment te openen. Hulpmiddelen uitdelen komt hierna.",
+        "tapWhere": "Tik nu op een tafel, een groep, Hele klas of Mijn bureau.",
+        "tapMine": "Tik nu op Mijn bureau om het daar te leggen.",
+        "toolSoon": "Hulpmiddelen uitdelen komt hierna. Leg het op Mijn bureau om het daar te openen.",
+        "pickFirst": "Kies eerst links een spel en tik dan op Mijn bureau."
+      },
+      "wholeClass": "Hele klas · {count}",
+      "editGroups": "Groepen",
+      "groupsTitle": "Groepen",
+      "groupsLead": "Geef je groepen een naam en kies voor elke groep een kleur. De rand van een tafel heeft de kleur van de groep.",
+      "groups": {
+        "stretch": "Verdieping",
+        "onTrack": "Op koers",
+        "building": "Opbouw",
+        "unnamed": "Nieuwe groep"
+      },
+      "groupName": "Naam van groep {n}",
+      "groupColor": "Kleur van groep {n}",
+      "colorN": "Kleur {n}",
+      "removeGroup": "{name} verwijderen",
+      "addGroup": "Groep toevoegen",
+      "whoIsIn": "Wie zit in welke groep",
+      "noGroup": "Geen groep",
+      "save": "Bewaren",
+      "needName": "Geef elke groep een naam.",
+      "groupsSaved": "Groepen bewaard",
+      "deskOf": "Tafel van {name}",
+      "emptyDesk": "Lege tafel",
+      "teacherDesk": "Bureau van de leraar",
+      "noStudents": "Nog geen leerlingen in deze klas.",
+      "addStudents": "Leerlingen toevoegen",
+      "shapes": {
+        "rect": "Vierkant",
+        "circle": "Cirkel",
+        "line": "Lijn"
+      },
+      "shapeDelete": "Deze vorm verwijderen",
+      "hintMove": "Tik op iets in het docentenvak om het te selecteren. Sleep om het te verplaatsen, trek aan een greep om het formaat te wijzigen, tik nog eens om te typen.",
+      "hintDraw": "Teken in het docentenvak. Tik op Selecteren als je klaar bent.",
+      "bt": {
+        "shapes": "Vormen",
+        "lines": "Lijnen",
+        "kinds": {
+          "rect": "Rechthoek",
+          "rrect": "Afgeronde rechthoek",
+          "circle": "Cirkel",
+          "tri": "Driehoek",
+          "rtri": "Rechthoekige driehoek",
+          "diamond": "Ruit",
+          "pent": "Vijfhoek",
+          "hex": "Zeshoek",
+          "oct": "Achthoek",
+          "star": "Ster",
+          "heart": "Hart",
+          "arrow": "Pijl",
+          "darrow": "Dubbele pijl",
+          "chevron": "Punthaak",
+          "speech": "Tekstballon",
+          "cloud": "Denkwolkje",
+          "cross": "Plus",
+          "para": "Parallellogram",
+          "trap": "Trapezium",
+          "cyl": "Cilinder",
+          "line": "Lijn",
+          "aline": "Pijllijn",
+          "dline": "Lijn met twee pijlen",
+          "elbow": "Hoekverbinding",
+          "curve": "Gebogen verbinding"
+        },
+        "redo": "Opnieuw",
+        "paste": "Plakken",
+        "copy": "Kopiëren",
+        "cut": "Knippen",
+        "duplicate": "Dupliceren",
+        "more": "Meer",
+        "front": "Naar voren halen",
+        "back": "Naar achteren sturen",
+        "lock": "Vergrendelen",
+        "unlock": "Ontgrendelen",
+        "selectAll": "Alles selecteren",
+        "outline": "Omtrek",
+        "fill": "Vulling",
+        "textStyle": "Tekststijl",
+        "noteColor": "Kleur van het briefje",
+        "color": "Kleur",
+        "none": "Geen",
+        "weight": "Dikte",
+        "weights": {
+          "S": "Dun",
+          "M": "Middel",
+          "L": "Dik",
+          "XL": "Extra dik"
+        },
+        "style": "Lijnsoort",
+        "dashes": {
+          "solid": "Doorgetrokken",
+          "dash": "Gestreept",
+          "dot": "Gestippeld"
+        },
+        "arrows": "Pijlpunten",
+        "arrowsN": {
+          "none": "Geen pijlpunten",
+          "start": "Aan het begin",
+          "end": "Aan het eind",
+          "both": "Aan beide kanten"
+        },
+        "opacity": "Dekking",
+        "opacityN": "{n}%",
+        "bold": "Vet",
+        "align": "Uitlijning",
+        "alignN": {
+          "l": "Links uitlijnen",
+          "c": "Centreren",
+          "r": "Rechts uitlijnen"
+        },
+        "textColor": "Tekstkleur",
+        "noteColors": {
+          "yellow": "Geel",
+          "pink": "Roze",
+          "green": "Groen",
+          "blue": "Blauw",
+          "purple": "Paars"
+        },
+        "colors": {
+          "black": "Zwart",
+          "gray": "Grijs",
+          "white": "Wit",
+          "red": "Rood",
+          "coral": "Koraal",
+          "orange": "Oranje",
+          "yellow": "Geel",
+          "lime": "Limoen",
+          "green": "Groen",
+          "teal": "Blauwgroen",
+          "sky": "Hemelsblauw",
+          "blue": "Blauw",
+          "purple": "Paars",
+          "pink": "Roze",
+          "brown": "Bruin"
+        },
+        "nothingToPaste": "Kopieer eerst iets op het bord.",
+        "copied": "Gekopieerd.",
+        "cutDone": "Geknipt. Plak het waar je wilt op het bord.",
+        "hintSelect": "Tik iets aan om het te selecteren, of sleep over een lege plek om er meer te selecteren. Sleep om te verplaatsen, trek aan een handgreep om de grootte te veranderen, tik nog eens om te typen.",
+        "hintShape": "Sleep om hem te tekenen. Houd Shift ingedrukt om de verhoudingen te houden.",
+        "nextStyle": "Stijl van de volgende",
+        "pops": {
+          "line": "Omtrek",
+          "fill": "Vulling",
+          "text": "Tekststijl",
+          "note": "Kleur van het briefje",
+          "more": "Meer"
+        }
+      },
+      "tooMany": "Daar is in het lerarendeel geen ruimte meer voor.",
+      "arrange": "Plaatsen indelen",
+      "signin": "Leerlingen inloggen",
+      "loadingSignin": "Code wordt gemaakt…",
+      "seats": {
+        "lead": "Zoals je echte lokaal:",
+        "rows": "Rijen",
+        "pods": "Groepjes van 4",
+        "u": "U-vorm",
+        "circle": "Kring",
+        "hint": "of sleep een tafel naar waar die echt staat",
+        "done": "Klaar",
+        "saved": "Plaatsen bewaard voor {class}"
+      },
+      "everyone": "Iedereen naar Homeroom",
+      "bring": "Iedereen bij mij",
+      "back": "Terug naar de tafels",
+      "pause": "Schermen pauzeren",
+      "resume": "Schermen hervatten",
+      "endClass": "Les beëindigen",
+      "endConfirm": "De les voor iedereen beëindigen? De tafels en het deel van de leraar blijven zoals ze zijn.",
+      "projector": "Beamerweergave openen",
+      "hostLive": "Live-spel starten",
+      "started": "De les is live. Leerlingen zien een melding om naar hun tafel te gaan.",
+      "bringing": "Iedereen kijkt naar het deel van de leraar",
+      "backToDesks": "De leerlingen zijn terug aan hun tafel",
+      "paused": "Schermen gepauzeerd",
+      "resumed": "De schermen zijn terug",
+      "ended": "Les beëindigd",
+      "ho": {
+        "noStudentsYet": "Nog geen leerlingen. Wie erbij komt, krijgt het.",
+        "putClass": "Uitdelen aan de klas",
+        "tapWhere": "Tik nu op een tafel, een groep of Hele klas.",
+        "cancel": "Annuleren",
+        "wholeClass": "Hele klas",
+        "emptyGroup": "Er zit nog niemand in die groep.",
+        "pickFirst": "Kies eerst links een spel en tik dan hier.",
+        "title": "{game} voor {who}",
+        "eyebrow": "Spel · vrij spelen",
+        "lead": "Leerlingen spelen vrij. Voeg instructies toe als je wilt dat ze iets bepaalds doen.",
+        "instructions": "Instructies (optioneel)",
+        "instructionsPh": "Bijvoorbeeld: maak 3 staartdelingen met rest en laat er een zien op je blok.",
+        "left": "{count, plural, one {Nog # teken} other {Nog # tekens}}",
+        "order": "Volgorde op de tafel",
+        "inOrder": "Op volgorde",
+        "anyOrder": "In elke volgorde",
+        "inOrderHint": "Het wacht tot de opdrachten ervoor klaar zijn.",
+        "anyOrderHint": "Leerlingen kunnen het altijd openen.",
+        "grade": "Beoordelen op",
+        "score": "Score",
+        "completion": "Afgerond",
+        "notGraded": "Geen cijfer",
+        "scoreHint": "Het cijferoverzicht toont hun score, zoals bij elke opdracht.",
+        "completionHint": "100% als ze het af hebben.",
+        "notGradedHint": "Oefenen: het staat bij Voortgang, maar nooit als cijfer.",
+        "due": "Inleverdatum (optioneel)",
+        "putOne": "Op de tafel leggen",
+        "putMany": "{count, plural, one {Op # tafel leggen} other {Op # tafels leggen}}",
+        "done": "Klaar",
+        "later": "Later",
+        "pct": "{pct}% klaar",
+        "notStarted": "Niet begonnen",
+        "more": "+{count} meer",
+        "onDesks": "{count, plural, one {# tafel} other {# tafels}}",
+        "best": "Beste score {score}",
+        "removeOne": "Van de tafel van {name} halen",
+        "removeAll": "Van alle tafels halen",
+        "removeAllConfirm": "{title} van alle tafels halen? Het werk van de leerlingen blijft bewaard en komt terug als je het weer uitdeelt.",
+        "lesson": "Les",
+        "version": "Versie: {name}",
+        "gcAlso": "Ook in Google Classroom plaatsen",
+        "gcHint": "Het gaat als opdracht naar je gekoppelde Classroom-klas, met het cijfer dat je hier koos.",
+        "gcWholeOnly": "Alleen opdrachten voor de hele klas gaan naar Google Classroom: daar zouden ze iedereen bereiken."
+      },
+      "team": {
+        "label": "Teamtafel",
+        "deskOf": "Teamtafel: {names}",
+        "doneOf": "{done} van {n} klaar",
+        "split": "Team splitsen",
+        "splitConfirm": "De teamtafel van {names} splitsen? Iedereen gaat terug naar de eigen tafel. Het gedeelde blok van het team wordt leeggemaakt.",
+        "splitDone": "Team gesplitst. Iedereen zit weer aan de eigen tafel.",
+        "makeA": "Team maken",
+        "pickLead": "Tik op de tafels van leerlingen die één tafel delen (tot {max})",
+        "picked": "{count, plural, =0 {Nog niemand gekozen} one {# gekozen} other {# gekozen}}",
+        "make": "Team maken",
+        "made": "Teamtafel gemaakt: {names}",
+        "full": "Een team heeft hoogstens {max} leerlingen.",
+        "forNames": "het team {names}",
+        "sheetLead": "Tik op een leerling om diens opdrachten te zien."
+      },
+      "feedback": {
+        "add": "Opmerking of sticker",
+        "edit": "Opmerking of sticker wijzigen",
+        "comment": "Een korte opmerking (optioneel)",
+        "commentPh": "Bijvoorbeeld: Goed gedaan met de resten!",
+        "sticker": "Een sticker (optioneel)",
+        "noSticker": "Geen",
+        "private": "Alleen deze leerling ziet het, op de eigen tafel en de pagina van de les.",
+        "remove": "Verwijderen"
+      },
+      "select": "Selecteren",
+      "hintPlace": "Tik of sleep in het docentenvak om het te plaatsen. Daarna sta je weer op Selecteren.",
+      "sel": {
+        "tools": "Geselecteerd item",
+        "delete": "Geselecteerd item verwijderen"
+      },
+      "playBack": "Terug naar Homeroom"
+    },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
       "failed": "Er ging iets mis. Probeer het opnieuw.",
@@ -3425,12 +3709,6 @@
         "pieceLocked": "Stuk {label}, vastgezet",
         "objLocked": "{name}, vastgezet"
       },
-      "text": {
-        "move": "Sleep om deze tekst te verplaatsen",
-        "resize": "Sleep om de grootte van dit vak te wijzigen",
-        "smaller": "Kleinere tekst",
-        "bigger": "Grotere tekst"
-      },
       "boards": {
         "title": "Mijn borden",
         "none": "Borden waaraan je werkt, worden vanzelf bewaard en staan hier. Met ‘Bewaren als sjabloon’ houd je een schoon startpunt.",
@@ -4601,6 +4879,392 @@
       "deleteOk": "Verwijderen",
       "deleted": "‘{title}’ verwijderd.",
       "undo": "Ongedaan maken"
+    },
+    "homeroom-signin": {
+      "codeLength": "De code heeft {n} letters en cijfers.",
+      "tapName": "Tik op je naam",
+      "noNames": "Er zit nog niemand in deze klas.",
+      "notThere": "Kun je je naam niet vinden? Vraag het je leraar.",
+      "googleHint": "Gebruik je Google op school?",
+      "otherCode": "Een andere code gebruiken",
+      "hi": "Hoi, {name}!",
+      "notMe": "Dat ben ik niet",
+      "useGoogle": "Log in met je Google-account van school.",
+      "askTeacher": "Vraag je leraar om je inlogkaart.",
+      "typePassword": "Typ je wachtwoord",
+      "show": "Tonen",
+      "hide": "Verbergen",
+      "signIn": "Inloggen",
+      "tapPictures": "Tik je {n} plaatjes op volgorde",
+      "picked": "{n} van {total} plaatjes gekozen",
+      "pictures": "Plaatjes",
+      "undo": "Ongedaan maken",
+      "waitSecs": "Probeer het over {n} seconden opnieuw.",
+      "welcome": "Welkom, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "Inloggen is gesloten",
+      "closedHint": "Het gaat vanzelf open als je de les start met Iedereen naar Homeroom.",
+      "open": "Inloggen openen",
+      "goTo": "Ga naar",
+      "enterCode": "en typ deze code:",
+      "codeIs": "Code: {code}",
+      "until": "Open tot {time}",
+      "longer": "Langer open laten",
+      "close": "Inloggen sluiten",
+      "settings": "Instellingen en inlogkaarten"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mijn tafel",
+      "empty": "Nog niets op je tafel",
+      "emptyText": "Als je leraar iets uitdeelt, komt het hier.",
+      "pad": "Krabbels en rekenwerk",
+      "pens": "Penkleuren",
+      "penColor": "Penkleur {n}",
+      "undo": "Ongedaan maken",
+      "clear": "Wissen",
+      "padLabel": "Blok om te krabbelen en te rekenen. Teken met je vinger, een pen of de muis.",
+      "padFull": "Je blok is vol. Wis het om verder te tekenen.",
+      "teacherArea": "Deel van de leraar",
+      "openArea": "Het deel van de leraar openen",
+      "back": "Terug naar mijn tafel",
+      "showing": "Je leraar laat dit zien",
+      "showingHint": "Je gaat terug naar je tafel als je leraar klaar is.",
+      "eyes": "Ogen naar je leraar",
+      "eyesHint": "Je scherm is even gepauzeerd.",
+      "roomTitle": "Het lokaal",
+      "teacherDesk": "Bureau van de leraar",
+      "you": "jij",
+      "done": "Klaar",
+      "nextUp": "Nu aan de beurt",
+      "later": "Later",
+      "laterHint": "Maak eerst de opdrachten ervoor af.",
+      "freePlay": "Vrij spelen",
+      "notReady": "Nog niet klaar",
+      "notReadyHint": "Deze is nog niet klaar. Vraag het je leraar.",
+      "due": "Inleveren {date}",
+      "teacherSays": "Leraar:",
+      "inOrder": "Doe ze op volgorde",
+      "anyOrder": "In elke volgorde",
+      "newHandout": "Nieuw van je leraar: {title}",
+      "lessonTitle": "Les: {title}",
+      "worksheet": "Werkblad · {count, plural, one {# som} other {# sommen}}",
+      "worksheetWords": "Werkblad · {count, plural, one {# woord} other {# woorden}}",
+      "team": "Team: {names}",
+      "teamPad": "Het blok van ons team",
+      "fromTeacher": "Je leraar:",
+      "stickers": {
+        "star": "Ster",
+        "thumbs": "Duim omhoog",
+        "heart": "Hart",
+        "idea": "Goed idee",
+        "check": "Vinkje",
+        "rocket": "Raket",
+        "trophy": "Trofee",
+        "medal": "Medaille",
+        "crown": "Kroon",
+        "fireworks": "Vuurwerk",
+        "smiley": "Smiley",
+        "rainbow": "Regenboog"
+      },
+      "hand": {
+        "raise": "Hand opsteken",
+        "isUp": "Hand omhoog",
+        "menu": "Steek je hand op",
+        "question": "Ik heb een vraag",
+        "help": "Ik heb hulp nodig",
+        "bathroom": "Wc",
+        "hallPass": "gangpas",
+        "down": "Hand omlaag",
+        "leaveLine": "Uit de rij gaan",
+        "back": "Ik ben terug",
+        "goAhead": "Je mag gaan.",
+        "passLeft": "Gangpas: {time}",
+        "timeUp": "De tijd is om. Kom maar terug.",
+        "next": "Jij bent de volgende voor de gangpas.",
+        "inLine": "{count, plural, one {Je staat in de rij. Er is # persoon voor je.} other {Je staat in de rij. Er zijn # mensen voor je.}}",
+        "lineHint": "Wacht aan je tafel. Je bent zo aan de beurt.",
+        "up": {
+          "question": "Je hand is omhoog: een vraag.",
+          "help": "Je hand is omhoog: je hebt hulp nodig.",
+          "bathroom": "Je hebt om de gangpas gevraagd."
+        },
+        "askedPass": "Je leraar antwoordt zo.",
+        "upHint": "Je leraar ziet het.",
+        "toastPass": "Je hebt om de gangpas gevraagd",
+        "toastUp": "Je leraar ziet dat je hand omhoog is",
+        "toastBack": "Welkom terug",
+        "toastDown": "Hand omlaag",
+        "locked": "Je leraar heeft je tafel even op slot gezet",
+        "lockedHint": "Hij gaat zo weer open. Je werk is bewaard.",
+        "coming": "Je leraar komt naar je toe",
+        "passBtn": "Gangpas"
+      },
+      "playBack": "Terug naar mijn tafel"
+    },
+    "homeroom-area": {
+      "label": "Deel van de leraar",
+      "empty": "Je leraar heeft hier nog niets neergezet."
+    },
+    "homeroom-notify": {
+      "text": "Je klas is in Homeroom.",
+      "go": "Naar mijn tafel",
+      "close": "Sluiten"
+    },
+    "homeroom-lessons": {
+      "build": "Een les maken",
+      "editTitle": "Les bewerken",
+      "pickTitle": "Welk spel of hulpmiddel?",
+      "pickLead": "Kies een spel. Jij bepaalt precies wat leerlingen doen, en daar wordt het werkblad van gemaakt.",
+      "comingLater": "Komt later",
+      "later": {
+        "quiz": "Klassenquizzen en woordspellen",
+        "mine": "Mijn spellen",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Castle Clash-puzzels",
+        "manip": "Materialen",
+        "figures": "Figuren",
+        "reading": "Lezen"
+      },
+      "name": "Naam van de les",
+      "namePh": "Bijvoorbeeld: Staartdelingen oefenen",
+      "op": "Bewerking",
+      "ops": {
+        "add": "Optellen",
+        "subtract": "Aftrekken",
+        "multiply": "Vermenigvuldigen",
+        "divide": "Delen"
+      },
+      "method": "Methode",
+      "methods": {
+        "standard": "Standaard",
+        "ladder": "Ladder",
+        "area": "Oppervlaktemodel",
+        "partial": "Deelproducten"
+      },
+      "size": "Grootte",
+      "sizeEach": "{n} cijfers",
+      "sizeBy": "{a} {op} {b} cijfers",
+      "count": "Sommen",
+      "level": "Hulp tijdens het werken",
+      "levels": {
+        "watch": "Kijken",
+        "countUp": "Optellen tot",
+        "guided": "Begeleid",
+        "onMyOwn": "Zelf"
+      },
+      "newProblems": "Nieuwe sommen",
+      "activity": "Activiteit",
+      "modes": {
+        "solve": "Oplossen",
+        "multiply": "Vermenigvuldigen",
+        "factor": "Ontbinden"
+      },
+      "alLevel": "Niveau",
+      "alLevels": {
+        "easy": "Makkelijk",
+        "medium": "Gemiddeld",
+        "hard": "Moeilijk"
+      },
+      "tiles": "Tegels aan het begin",
+      "tilesAll": "Alle tegels die ze nodig hebben",
+      "tilesNone": "Geen tegels",
+      "words": "Woorden en omschrijvingen",
+      "wordsHint": "{min} tot {max} woorden. Elk woord heeft een omschrijving nodig.",
+      "word": "Woord {n}",
+      "clue": "Omschrijving bij woord {n}",
+      "wordPh": "Woord",
+      "cluePh": "Omschrijving",
+      "addWord": "Woord toevoegen",
+      "removeWord": "Woord {n} weghalen",
+      "bank": "Woordenlijst",
+      "bankShow": "Laten zien",
+      "bankHide": "Verbergen",
+      "bankShown": "woordenlijst",
+      "bankHidden": "geen woordenlijst",
+      "hints": "Hints",
+      "hintsOn": "Toegestaan",
+      "hintsOff": "Uit",
+      "versions": "Een versie voor elke groep?",
+      "versionsYes": "Ja, per groep",
+      "versionsNo": "Eén voor iedereen",
+      "versionsHint": "Elke groep begint met je les en een voorgestelde aanpassing. Je kunt alles veranderen.",
+      "versionsOff": "Iedereen krijgt hetzelfde werkblad.",
+      "noGroups": "Deze klas heeft nog geen groepen. Maak eerst groepen om versies toe te voegen.",
+      "editing": "Versie voor",
+      "noGroup": "Geen groep",
+      "lean": {
+        "easier": "Makkelijker",
+        "same": "Hetzelfde",
+        "harder": "Moeilijker"
+      },
+      "instructions": "Instructies voor leerlingen",
+      "instructionsPh": "Bijvoorbeeld: Laat elke stap zien. Controleer je antwoord door te vermenigvuldigen.",
+      "preview": "Voorbeeld van het werkblad",
+      "previewOf": "Voorbeeld van het werkblad · {who}",
+      "previewNote": "Leerlingen maken het op het scherm, of jij print het.",
+      "previewWords": "Typ minstens {min} woorden om de kruiswoordpuzzel te zien.",
+      "printDraft": "Printen",
+      "ai": "Laat Oomba het invullen",
+      "aiBusy": "Oomba schrijft omschrijvingen…",
+      "aiDone": "{count, plural, one {Oomba schreef # omschrijving.} other {Oomba schreef # omschrijvingen.}} Controleer ze voor je bewaart.",
+      "aiNothing": "Elk woord heeft al een omschrijving.",
+      "aiNeedWords": "Typ eerst een paar woorden. Oomba schrijft bij elk woord een omschrijving.",
+      "aiFailed": "Oomba kon nu geen omschrijvingen schrijven. Probeer het opnieuw.",
+      "save": "Bewaren bij Mijn lessen",
+      "cancel": "Annuleren",
+      "needTitle": "Geef de les een naam.",
+      "problemsN": "{count, plural, one {# som} other {# sommen}}",
+      "wordsN": "{count, plural, one {# woord} other {# woorden}}",
+      "versionsN": "{count, plural, one {# versie} other {# versies}}",
+      "empty": "Lessen die je maakt, staan hier.",
+      "more": "Meer voor {title}",
+      "edit": "Bewerken",
+      "duplicate": "Dupliceren",
+      "print": "Werkblad printen",
+      "delete": "Verwijderen",
+      "deleteConfirm": "{title} verwijderen? Tafels die haar hebben, houden haar.",
+      "versionsFor": "Versies voor {groups}",
+      "printLead": "Het werkblad wordt geprint met de klascode, zodat leerlingen het ook in Oomba kunnen openen.",
+      "printWhich": "Welk werkblad?",
+      "printLesson": "De les",
+      "printKey": "Antwoorden toevoegen",
+      "printGo": "Printen",
+      "full": "Je hebt {count} lessen, het maximum. Verwijder er eerst een.",
+      "giveEyebrow": "Les",
+      "giveTitle": "{lesson} voor {who}",
+      "versionsBy": "Versies per groep",
+      "asBuilt": "De les zoals gemaakt",
+      "scoreHint": "Het cijferoverzicht toont het % goed."
+    },
+    "homeroom-overview": {
+      "title": "Beoordelen op",
+      "score": {
+        "name": "Score",
+        "hint": "Het % goed. Google Classroom krijgt het ook."
+      },
+      "completion": {
+        "name": "Voltooiing",
+        "hint": "100% als het af is."
+      },
+      "none": {
+        "name": "Geen cijfer",
+        "hint": "Oefening: geen cijfer, er wordt niets verstuurd."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Je leraar heeft je tafel even op slot gezet",
+      "lockedHint": "Hij gaat zo weer open. Je werk is bewaard.",
+      "coming": "Je leraar komt naar je toe"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Niet hier",
+        "done": "Klaar",
+        "stuck": "Loopt vast",
+        "typing": "Typt",
+        "working": "Werkt",
+        "here": "Aan tafel"
+      },
+      "hand": {
+        "question": "Vraag",
+        "help": "Heeft hulp nodig",
+        "bathroom": "Wc"
+      },
+      "inGame": "in {title}",
+      "onDesk": "hierna: {title}",
+      "chipLabel": "{name}: {status}. Bekijk de tafel",
+      "handOf": "{name}: {what}",
+      "needsLook": "Even kijken",
+      "close": "Sluiten",
+      "pass": {
+        "title": "Gangpas",
+        "outShort": "Weg met de gangpas",
+        "lineShort": "Wacht op de gangpas",
+        "left": "nog {time}",
+        "over": "{time} over tijd",
+        "isBack": "{name} is terug",
+        "nobody": "Er is nu niemand weg.",
+        "next": "Hierna:",
+        "then": "Daarna:",
+        "removeLine": "{name} uit de rij halen",
+        "length": "Tijd van de pas",
+        "less": "Korter",
+        "more": "Langer",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Weg",
+        "lineTag": "In de rij"
+      },
+      "today": {
+        "title": "Vandaag in één blik",
+        "button": "Vandaag",
+        "doneOf": "{done} van {total} klaar",
+        "barLabel": "{done} klaar, {work} bezig, {stuck} vast, {none} niet begonnen",
+        "nums": "{done} klaar · {work} bezig · {stuck} vast · {none} niet begonnen",
+        "lead": "De opdrachten van vandaag. Start de les om te zien wie werkt of vastloopt.",
+        "leadLive": "De opdrachten van vandaag, terwijl de klas werkt.",
+        "done": "Klaar",
+        "working": "Bezig",
+        "stuck": "Vast",
+        "notStarted": "Niet begonnen",
+        "none": "Vandaag is nog niets uitgedeeld.",
+        "weeks": "Voortgang over weken staat op het tabblad Klas.",
+        "classroom": "Klas openen"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Handen, geen omhoog} one {Handen, # omhoog} other {Handen, # omhoog}}",
+        "button": "Handen",
+        "title": "Handen omhoog",
+        "notNow": "Nu niet",
+        "putInLine": "In de rij zetten",
+        "givePass": "Gangpas geven",
+        "answered": "Beantwoord",
+        "none": "Er zijn nu geen handen omhoog.",
+        "private": "Alleen jij ziet handen en de gangpas. Nooit op de beamer.",
+        "done": {
+          "answer": "Beantwoord",
+          "pass": "Gangpas bijgewerkt",
+          "notNow": "Hand omlaag gezet",
+          "back": "Gangpas bijgewerkt"
+        }
+      },
+      "look": {
+        "title": "Tafel van {name}",
+        "loading": "Laden...",
+        "never": "nog niets",
+        "done": "Klaar",
+        "pct": "{pct}% gedaan",
+        "allDone": "Alles op de tafel is klaar.",
+        "nothing": "Nog niets op de tafel.",
+        "stuckNote": "Al {min} minuten geen stap verder met deze opdracht.",
+        "lastSeen": "Laatst gezien {when}",
+        "whereGame": "In het spel",
+        "whereDesk": "Aan tafel",
+        "activity": "laatst actief {when}",
+        "on": "Werkt aan",
+        "progress": "{done} van {total} opdrachten klaar",
+        "pad": "Kladblok",
+        "teamPad": "Kladblok van het team",
+        "padLabel": "Kladblok van {name}",
+        "padEmpty": "Nog niets getekend",
+        "private": "Een overzicht van wat Homeroom weet. Nooit het scherm of wat er getypt wordt.",
+        "coming": "Ik kom eraan",
+        "comingOn": "Onderweg: tik om weg te halen",
+        "lock": "Tafel op slot",
+        "unlock": "Tafel van slot",
+        "hideCursor": "Cursor verbergen",
+        "showCursor": "Cursor tonen",
+        "handouts": "Opdrachten",
+        "toast": {
+          "lockOn": "De tafel van {name} is op slot",
+          "lockOff": "De tafel van {name} is weer open",
+          "hideOn": "De cursor van {name} is verborgen",
+          "hideOff": "De cursor van {name} is weer zichtbaar",
+          "comingOn": "{name} ziet dat je eraan komt",
+          "comingOff": "Melding van de tafel van {name} gehaald"
+        }
+      }
     }
   },
   "favorites": {
@@ -5526,7 +6190,7 @@
       "readToMe": "Lees het voor"
     },
     "typing": {
-      "title": "Typdieren",
+      "title": "Typdierentuin",
       "unlockH": "Om elke volgende les te openen:",
       "unlockSummary": "volgende les vanaf {what}",
       "goalMins": "Minuten per dag",
@@ -5571,7 +6235,7 @@
       "minutes": "{n} min",
       "missed": "{pct}% van de keren gemist",
       "notYet": "Nog niet begonnen",
-      "note": "Uit de eigen voortgang van elke leerling in Typdieren, oefenen thuis meegerekend. Snelheid is woorden per minuut (wpm); nauwkeurigheid is het gemiddelde van de beste lessen. Lastige toetsen worden het vaakst gemist.",
+      "note": "Uit de eigen voortgang van elke leerling in Typdierentuin, oefenen thuis meegerekend. Snelheid is woorden per minuut (wpm); nauwkeurigheid is het gemiddelde van de beste lessen. Lastige toetsen worden het vaakst gemist.",
       "assign": "Een typles toewijzen"
     },
     "courses": {
@@ -5982,7 +6646,7 @@
         "h": "Voordat je het maakt: wat dit account bewaart",
         "keep": "Wat dit account bewaart: de games die je kind maakt, de chats met de Bouwer, plaatjes en bestanden die je kind uploadt, opgeslagen games, scores, beoordelingen en likes, vrienden en chatberichten met vrienden, een profielfoto als je kind die toevoegt, de instellingen, en inlogcookies met de naam van de browser.",
         "ai": "Wat naar Claude van Anthropic gaat (de AI achter de Bouwer): berichten aan de Bouwer, plaatjes en bestanden, profielfoto's (voor een veiligheidscontrole) en games die voor de openbare controle worden ingestuurd. Er worden geen namen of gebruikersnamen meegestuurd. Vriendenchat gaat nooit naar de AI.",
-        "who": "Wie wat ziet: vrienden die je kind met een vriendcode toevoegt, kunnen met je kind chatten en de games voor alleen vrienden zien. Iedereen kan de games spelen die je kind openbaar maakt. De gebruikersnaam van je kind staat bij openbare games en op scorelijsten.",
+        "who": "Wie wat ziet: vrienden die je kind met een vriendcode toevoegt, kunnen met je kind chatten en de games voor alleen vrienden zien. Iedereen kan de games spelen die je kind openbaar maakt. De gebruikersnaam van je kind staat bij de openbare games van je kind.",
         "howLong": "Hoe lang we het bewaren: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen.",
         "rights": "Wat je kunt doen: zien wat we bewaren en het account verwijderen op je gezinspagina, of contact met ons opnemen.",
         "more": "Lees het volledige privacybeleid"
@@ -6596,7 +7260,7 @@
       "lead": "Koppel je Google Classroom in een paar klikken. Eerst kan Oomba Academy alleen je klassen en hun leerlingen zien. Er wordt niets geplaatst tot jij plaatsen toestaat.",
       "li1": "Importeer je klassenlijst met één klik, daarna ververst die zichzelf elke 6 uur. Leerlingen worden herkend aan hun Google-account.",
       "li2": "Plaats een les als Classroom-opdracht, met de link en de inleverdatum, of deel hem als lesmateriaal.",
-      "li3": "Voltooiingscijfers gaan terug naar Classroom: het cijfer van elke leerling, op 100, is het deel van de stappen van de les dat hij afrondde, niet hoeveel antwoorden goed waren. Stuur ze zelf, of zet automatische cijfers aan.",
+      "li3": "Cijfers gaan op 100 terug naar Classroom: een voltooiingscijfer (het deel van de stappen dat af is, niet de goede antwoorden), of voor Homeroom-opdrachten het cijfer dat je koos: de score, voltooiing of niets bij oefening. Verstuur ze zelf of zet automatische cijfers aan.",
       "li4": "Plaats een bericht in de stream van de klas als een livegame begint of een les klaarstaat, in je eigen woorden.",
       "li5": "Oomba Academy vraagt Classroom niet om e-mailadressen van leerlingen en stuurt Google nooit de naam, antwoorden of games van een leerling.",
       "note": "Opdrachten, lesmateriaal, cijfers en mededelingen werken zodra je plaatsen toestaat, een aparte stap. Elke leerkracht koppelt een eigen Google-account, en misschien moet de Google-beheerder van je school Oomba Academy eerst toestaan.",
@@ -6696,7 +7360,7 @@
       "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
       "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas.",
       "mistakeHunt": "Vind en verbeter de fouten in een korte tekst: leraren plakken hun eigen tekst, zetten er spel-, grammatica- en interpunctiefouten in en delen, geven op of printen hem.",
-      "typingPets": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
+      "typingZoo": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
     },
     "hubs": {
       "math": {
@@ -7371,7 +8035,7 @@
       "li1": "Dit zijn gemiddelden over veel studies, leeftijden, vakken en spellen. Sommige spellen hielpen veel, en sommige helemaal niet.",
       "li2": "Geen van deze studies heeft Oomba Academy getest. Ze beschrijven leerspellen in het algemeen, geen belofte over één spel, klas of leerling.",
       "li3": "Wouters en collega's vonden dat serious games niet meer motiveerden dan gewone lessen, ook al leerden de leerlingen meer.",
-      "li4": "Gamificatie is niet hetzelfde als een leerspel: het voegt spelelementen toe aan gewone lessen. We nemen het mee omdat punten, sterren en ranglijsten in veel leerspellen zitten, ook in de onze."
+      "li4": "Gamificatie is niet hetzelfde als een leerspel: het voegt spelelementen toe aan gewone lessen. We nemen het mee omdat punten en sterren in veel leerspellen zitten, ook in de onze."
     },
     "use": {
       "h": "Spellen gebruiken zoals het onderzoek aanraadt",
@@ -7651,7 +8315,6 @@
       },
       "cancel": "Annuleren",
       "reportThanks": "Bedankt. Iemand van Oomba Academy kijkt ernaar.",
-      "place": "Je bent {rank}e van de {count}!",
       "late": "Je deed mee na de start.",
       "watchHint": "Dit apparaat kan de 3D-wereld niet tonen, dus je ziet een kaart met iedereen.",
       "removed": "De spelleider heeft je uit dit spel gehaald.",
@@ -7671,8 +8334,8 @@
       "moved": "Je zit nu bij {team}",
       "again": "Wachten op je leraar… Misschien start die een nieuw spel met iedereen hier.",
       "aiVoice": "Voorlezen gebruikt een AI-stem van de computer ({provider}).",
-      "placeTied": "{others, plural, one {Je staat gelijk op plek {rank} met # andere speler!} other {Je staat gelijk op plek {rank} met # andere spelers!}}",
-      "placeZero": "Iedereen gelijk! Niemand scoorde deze keer."
+      "mine": "Je had er {right} van de {total} goed!",
+      "myScore": "Jouw score: {score}"
     },
     "emote": {
       "wave": "Zwaaien",
@@ -7765,7 +8428,7 @@
       "questRace": "Questrace",
       "questRaceText": "Beantwoord vragen en race over een 3D-eiland. Goede antwoorden geven edelstenen en een duwtje vooruit!",
       "battle": "Vragenduel",
-      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst.",
+      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag de antwoorden van de klas.",
       "board": "Breinbord",
       "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten.",
       "wyr": "Wat heb je liever? (Live)",
@@ -7979,7 +8642,10 @@
       "playAgainTeams": "Nog eens met deze teams",
       "newGame": "Nieuw spel",
       "homework": "Als huiswerk geven",
-      "votes": "{count, plural, one {# stem} other {# stemmen}}"
+      "votes": "{count, plural, one {# stem} other {# stemmen}}",
+      "classHeading": "De klas",
+      "classPct": "{pct}% van de antwoorden goed",
+      "classRight": "{right} van de {answered} antwoorden goed"
     },
     "sets": {
       "title": "Vragensets",
@@ -8309,10 +8975,6 @@
       "points": "Punten",
       "pointsSpeed": "Snelle antwoorden leveren meer op",
       "pointsAccuracy": "Alleen goede antwoorden (1.000 per stuk)",
-      "board": "Ranglijst op de apparaten",
-      "boardAll": "Tonen",
-      "boardTop5": "Alleen de top 5",
-      "boardOff": "Verbergen",
       "late": "Meedoen na de start mag",
       "names": "Namen op de schermen",
       "namesNames": "Echte namen",
@@ -8736,7 +9398,7 @@
       "join": "Doe je mee aan een spel? Typ hier de code"
     },
     "how": {
-      "h": "Van vragen naar het podium in een paar minuten",
+      "h": "Van vragen naar resultaten in een paar minuten",
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
@@ -8760,8 +9422,8 @@
       },
       "s5": {
         "h": "Zie wie wat weet",
-        "p": "Na elke vraag een ranglijst, en aan het eind een resultatenpagina per vraag en per leerling.",
-        "alt": "Het scherm op het digibord met de ranglijst en de scores van de leerlingen."
+        "p": "Na elke vraag hoe de klas antwoordde, en aan het eind een resultatenpagina per vraag en per leerling.",
+        "alt": "Het scherm van de beamer met de antwoorden van de klas."
       }
     },
     "modes": {
@@ -8772,7 +9434,7 @@
       },
       "battle": {
         "h": "Vragenduel",
-        "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst."
+        "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag de antwoorden van de klas."
       },
       "board": {
         "h": "Breinbord",
@@ -10231,10 +10893,10 @@
         "courses": "deze klas koppelen aan een van je Classroom-klassen",
         "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
         "post": "lessen daar plaatsen, met een link hierheen en de inleverdatum",
-        "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
+        "grades": "het cijfer van elke leerling naar Classroom sturen (een voltooiingscijfer, of de score die je in Homeroom koos)"
       },
       "button": "Google Classroom koppelen",
-      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een les, het voltooiingscijfer van elke leerling op 100, een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of games van leerlingen.",
+      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een les, het cijfer van elke leerling op 100 (een voltooiingscijfer, of de score die je in Homeroom koos), een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of games van leerlingen.",
       "connectedAs": "Gekoppeld als {email}",
       "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
       "connectedToast": "Google Classroom is gekoppeld.",
@@ -10298,17 +10960,25 @@
       "somePosted": "Hier aan een paar leerlingen toegewezen. Eerder is ze in Google Classroom voor de hele klas geplaatst; cijfers gaan alleen naar de toegewezen leerlingen."
     },
     "grades": {
-      "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+      "text": "Elke les verstuurt het cijfer waarop hij beoordeeld wordt, op 100. Lessen die in Classroom zijn toegewezen versturen een voltooiingscijfer: het deel van de stappen dat gedaan is, niet de goede antwoorden. Homeroom-opdrachten versturen wat je koos bij het uitdelen: Score verstuurt het % goed, Voltooiing het voltooiingscijfer en Geen cijfer verstuurt niets. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
       "as": "Versturen als",
       "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
       "assigned": "Toegekend cijfer",
       "button": "Voltooiingscijfers versturen",
-      "lastDraft": "Voorlopige voltooiingscijfers verstuurd {when}",
-      "lastAssigned": "Toegekende voltooiingscijfers verstuurd {when}",
+      "lastDraft": "Voorlopige cijfers verstuurd {when}",
+      "lastAssigned": "Toegekende cijfers verstuurd {when}",
       "resultSent": "{count, plural, one {# voltooiingscijfer verstuurd} other {# voltooiingscijfers verstuurd}}",
       "resultNotStarted": "{count, plural, one {# is nog niet begonnen} other {# zijn nog niet begonnen}}",
       "resultNotMatched": "{count, plural, one {# niet in deze klas} other {# niet in deze klas}}",
-      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}"
+      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}",
+      "buttonScore": "Scores versturen",
+      "resultSentScore": "{count, plural, one {# score verstuurd} other {# scores verstuurd}}",
+      "resultNotScored": "{count, plural, one {# heeft nog geen score} other {# hebben nog geen score}}",
+      "sends": {
+        "completion": "Verstuurt een voltooiingscijfer: het deel van de stappen dat gedaan is.",
+        "score": "In Homeroom beoordeeld op score: verstuurt het % goed.",
+        "none": "Geen cijfer in Homeroom: er gaat geen cijfer naar Classroom."
+      }
     },
     "log": {
       "heading": "Recente synchronisaties",
@@ -10365,7 +11035,8 @@
       "tooLong": "Aankondigingen zijn hoogstens {max} tekens lang.",
       "hasName": "‘{name}’ in je bericht is ook de naam van een leerling. Aankondigingen gaan naar de hele klas: formuleer het alsjeblieft anders of haal het eruit.",
       "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even.",
-      "someStudents": "Deze les is aan een paar leerlingen toegewezen en wordt daarom niet in Google Classroom geplaatst: daar zou ze naar de hele klas gaan."
+      "someStudents": "Deze les is aan een paar leerlingen toegewezen en wordt daarom niet in Google Classroom geplaatst: daar zou ze naar de hele klas gaan.",
+      "notGraded": "Deze opdracht krijgt geen cijfer, dus er gaan geen cijfers naar Google Classroom."
     },
     "allow": {
       "heading": "Wat Oomba Academy mag in je Classroom",
@@ -10398,7 +11069,7 @@
       "roster": "De leerlingen elke 6 uur bijwerken uit Classroom",
       "rosterHint": "Nieuwe leerlingen komen erbij. Wie Classroom verlaat, staat hierboven zodat jij beslist: niemand wordt vanzelf verwijderd.",
       "grades": "Cijfers automatisch versturen",
-      "gradesHint": "Elke 30 minuten gaan gewijzigde voltooiingscijfers naar Classroom voor lessen die je hier hebt geplaatst, tot 30 dagen na elke inleverdatum.",
+      "gradesHint": "Elke 30 minuten gaan gewijzigde cijfers naar Classroom voor lessen die hiervandaan geplaatst zijn (elk zoals het beoordeeld wordt: een voltooiingscijfer of de score), tot 30 dagen na elke inleverdatum.",
       "by": "De cijfers gaan via de Google Classroom-koppeling van {name}.",
       "save": "Opslaan",
       "saved": "Opgeslagen.",
@@ -10619,7 +11290,17 @@
       "hideNames": "Namen van de klassenlijst verbergen",
       "namesHint": "Toont de naam van de klassenlijst naast de naam in het spel, alleen op dit scherm. Het klassenscherm houdt de spelnamen."
     },
-    "notAssigned": "Niet toegewezen"
+    "notAssigned": "Niet toegewezen",
+    "grade": {
+      "score": "Score",
+      "completion": "Afgerond",
+      "notGraded": "Geen cijfer",
+      "practice": "Oefenen",
+      "practiced": "Geoefend",
+      "done": "Klaar",
+      "notDone": "Niet klaar",
+      "practiceCsv": "Oefenen ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Start nu een live spel",
@@ -14338,6 +15019,291 @@
       "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op).",
       "painting": "Plaatjes worden geschilderd",
       "repaintAll": "Alle afbeeldingen opnieuw schilderen"
+    }
+  },
+  "homeroom": {
+    "staged": {
+      "added": "Op je bureau. Leerlingen zien het niet.",
+      "already": "Dat ligt al op je bureau.",
+      "removed": "Van je bureau gehaald."
+    },
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Andere klas",
+    "arrange": "Plaatsen indelen",
+    "more": "Meer",
+    "boardLabel": "Homeroom-bord. Sleep om te bewegen, scrol of knijp om te zoomen.",
+    "loading": "Het lokaal wordt klaargezet…",
+    "noscript": "Homeroom heeft JavaScript nodig.",
+    "tabs": {
+      "label": "Weergaven van de klas",
+      "homeroom": "Homeroom",
+      "classroom": "Klaslokaal",
+      "dashboard": "Dashboard"
+    },
+    "panel": {
+      "label": "Bureau van de leraar",
+      "handOut": "Uitdelen aan",
+      "myLessons": "Mijn lessen",
+      "myGames": "Mijn spellen",
+      "noGames": "Spellen die je bouwt, verschijnen hier.",
+      "oomba": "Oomba-spellen en -hulpmiddelen",
+      "manipulatives": "Manipulatieven",
+      "figures": "Figuren",
+      "reading": "Lezen",
+      "storyLibrary": "Verhalenbibliotheek",
+      "flow": "Verloop van de les",
+      "brainBreak": "Beweegpauze",
+      "note": "Bericht aan de klas",
+      "timer": "Timer",
+      "board": "Bordhulpmiddelen",
+      "handOutHint": "Tik op een spel en dan op een tafel, een groep of Hele klas. Of sleep het erheen.",
+      "comingNext": "Binnenkort"
+    },
+    "errors": {
+      "badStage": "Dat kan niet op je bureau.",
+      "deskFull": "Je bureau is vol. Haal er eerst iets af.",
+      "notStaged": "Dat ligt niet meer op je bureau.",
+      "notFound": "Deze Homeroom is niet beschikbaar.",
+      "badPreset": "Kies Rijen, Groepjes van 4, U-vorm of Kring.",
+      "badSeats": "De plaatsen konden niet worden bewaard. Probeer het opnieuw.",
+      "badGroups": "De groepen konden niet worden bewaard. Probeer het opnieuw.",
+      "groupName": "Geef elke groep een naam.",
+      "words": "Gebruik vriendelijke woorden.",
+      "personal": "Laat persoonlijke gegevens zoals telefoonnummers, e-mailadressen en adressen weg.",
+      "badState": "Dat kon niet worden bewaard. Probeer het opnieuw.",
+      "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw.",
+      "badAction": "Dat lukte niet. Probeer het opnieuw.",
+      "notLive": "Start de les eerst met Iedereen naar Homeroom.",
+      "padFull": "Je blok is vol. Wis het om verder te tekenen.",
+      "pickGame": "Dat spel kan niet uitgedeeld worden. Kies een ander spel.",
+      "publishFirst": "Publiceer dit spel eerst en deel het dan uit.",
+      "badDate": "Kies een echte datum als inleverdatum.",
+      "badTarget": "Zet het op een tafel, een groep of Hele klas.",
+      "noStudents": "Deze klas heeft nog geen leerlingen.",
+      "notInClass": "Die leerling zit niet meer in deze klas.",
+      "emptyGroup": "Er zit nog niemand in die groep.",
+      "badOrder": "Kies Op volgorde of In elke volgorde.",
+      "badGrade": "Kies Score, Afgerond of Geen cijfer.",
+      "tooLong": "Instructies mogen hoogstens 300 tekens lang zijn.",
+      "alreadyOnDesk": "{count, plural, one {# van deze tafels heeft dit spel al.} other {# van deze tafels hebben dit spel al.}} Haal het daar eerst weg of deel het uit aan de anderen.",
+      "tooManyHandouts": "Deze klas heeft veel uitgedeelde opdrachten open. Haal eerst wat oude weg.",
+      "notOnDesk": "Die opdracht ligt niet op deze tafel.",
+      "noLesson": "Die les staat niet meer bij je lessen.",
+      "badGame": "Voorlopig kun je lessen maken voor Arithmetic Lab, Algebra Builder en Kruiswoordpuzzel.",
+      "needTitle": "Geef de les een naam.",
+      "titleLong": "De naam mag hoogstens 60 tekens lang zijn.",
+      "fewWords": "Een kruiswoordpuzzel heeft minstens 3 woorden nodig.",
+      "missingClue": "Elk woord heeft een omschrijving nodig.",
+      "settings": "Die instellingen konden niet worden bewaard. Controleer ze en probeer het opnieuw.",
+      "setsFull": "Je hebt het maximale aantal werkbladen dat dit spel kan bewaren. Verwijder er eerst een paar bij Mijn werkbladen in het spel.",
+      "tooManyLessons": "Je hebt het maximale aantal lessen dat je kunt bewaren. Verwijder er eerst een.",
+      "lessonGone": "Een werkblad van deze les is verwijderd. Open de les, bewaar haar opnieuw en deel haar dan uit.",
+      "lessonOnDesk": "{count, plural, one {# van deze tafels heeft deze les al.} other {# van deze tafels hebben deze les al.}} Haal haar daar eerst weg, of geef haar aan de anderen.",
+      "teamTooSmall": "Kies minstens 2 tafels voor een team.",
+      "teamTooBig": "Een team heeft hoogstens 6 leerlingen.",
+      "alreadyInTeam": "Een van die leerlingen zit al aan een teamtafel. Splits dat team eerst.",
+      "tooManyTeams": "Deze klas heeft al het maximale aantal teamtafels.",
+      "noTeam": "Die teamtafel is er niet meer.",
+      "commentLong": "Een opmerking mag hoogstens 140 tekens hebben.",
+      "badSticker": "Kies een van de stickers.",
+      "notFinished": "Opmerkingen en stickers zijn voor af werk. Dit is nog niet af.",
+      "padChanged": "Iemand uit je team tekende tegelijk. Jouw tekening is erbij gezet.",
+      "badKind": "Kies een vraag, hulp of de wc.",
+      "passAlready": "Je hebt al een plek voor de gangpas.",
+      "badMinutes": "Kies tussen 1 en 20 minuten.",
+      "noHand": "Die hand is al omlaag.",
+      "noPass": "Geen pas en geen plek in de rij."
+    },
+    "live": "Live",
+    "desk": {
+      "pageTitle": "{class} · Mijn tafel",
+      "link": "Mijn tafel",
+      "dock": "Tafelmenu",
+      "myDesk": "Mijn tafel",
+      "teacherArea": "Deel van de leraar",
+      "library": "Bibliotheek",
+      "room": "Bekijk het lokaal",
+      "notYou": "Ben je niet {name}?",
+      "switch": "Wisselen",
+      "backToDesk": "Terug naar mijn tafel",
+      "fromTeacher": "Je leraar zegt",
+      "waitTitle": "Nog niet",
+      "waitText": "Maak eerst de vorige op je tafel af. Dan gaat deze open."
+    },
+    "projector": {
+      "title": "{class} · Beamer"
+    },
+    "signin": {
+      "title": "Leerlingen inloggen",
+      "qrLabel": "QR-code om in te loggen bij deze klas",
+      "goTo": "Ga naar",
+      "enterCode": "en typ de code",
+      "opened": "Inloggen staat open",
+      "closed": "Inloggen is gesloten",
+      "pageTitle": "Log in bij je klas",
+      "signedInAs": "Ingelogd als {name}. Als je hier inlogt, wordt {name} uitgelogd.",
+      "ended": "De les is voorbij. Tot de volgende keer!",
+      "codeHeading": "Log in bij je klas",
+      "codeLead": "Typ de code die je leraar laat zien.",
+      "codeLabel": "Klascode",
+      "go": "Verder",
+      "errors": {
+        "badCode": "Die code werkt niet. Kijk hem na en probeer het opnieuw.",
+        "tooMany": "Te veel pogingen. Wacht even en probeer het dan opnieuw.",
+        "notFound": "Dat lukte niet. Tik nog eens op je naam.",
+        "wrongPassword": "Dat is niet het goede wachtwoord. Probeer het opnieuw.",
+        "wrongPictures": "Dat zijn niet jouw plaatjes. Probeer het opnieuw.",
+        "wait": "Te veel pogingen. Wacht even.",
+        "locked": "Te veel pogingen. Vraag je leraar om je te helpen inloggen.",
+        "badAction": "Dat lukte niet. Probeer het opnieuw.",
+        "badMode": "Kies Wachtwoord of Plaatjeswachtwoord.",
+        "ownAccount": "Deze leerling heeft een eigen account en logt in met het eigen wachtwoord."
+      },
+      "pics": {
+        "bear": "Beer",
+        "lion": "Leeuw",
+        "frog": "Kikker",
+        "owl": "Uil",
+        "rocket": "Raket",
+        "apple": "Appel",
+        "star": "Ster",
+        "rainbow": "Regenboog",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Inloggen",
+        "back": "Terug naar Homeroom",
+        "heading": "Inloggen",
+        "lead": "Op gedeelde apparaten openen leerlingen het inloggen van de klas, tikken op hun naam en typen dan hun wachtwoord of tikken hun plaatjes.",
+        "students": "Leerlingen",
+        "cards": "Inlogkaarten afdrukken",
+        "cardsConfirm": "Zo krijgt iedereen die met plaatjes inlogt een nieuw plaatjeswachtwoord. De oude plaatjes werken dan niet meer.",
+        "early": "Deze klas is groep 1 tot 4, dus leerlingen beginnen met plaatjeswachtwoorden. Je kunt iedereen op Wachtwoord zetten.",
+        "shows": "Staat er als {name}",
+        "modeFor": "Hoe {name} inlogt",
+        "mode": {
+          "password": "Wachtwoord",
+          "picture": "Plaatjeswachtwoord"
+        },
+        "ownAccount": "Eigen account: gebruikt het eigen wachtwoord",
+        "usesPassword": "Gebruikt het eigen wachtwoord",
+        "usesGoogle": "Gebruikt Google",
+        "locked": "Op slot na te veel pogingen",
+        "waiting": "Wacht na foute pogingen",
+        "hasPicture": "Plaatjeswachtwoord klaar",
+        "noPicture": "Nog geen plaatjeswachtwoord",
+        "newConfirm": "Een nieuw plaatjeswachtwoord maken voor {name}? Het oude werkt dan niet meer.",
+        "newPicture": "Nieuw plaatjeswachtwoord",
+        "makePicture": "Plaatjeswachtwoord maken",
+        "unlock": "Van slot halen",
+        "none": "Nog geen leerlingen in deze klas.",
+        "saved": "Opgeslagen",
+        "unlocked": "Van slot gehaald. De leerling kan het opnieuw proberen."
+      },
+      "cards": {
+        "title": "Inlogkaarten",
+        "count": "{count, plural, one {# kaart} other {# kaarten}}",
+        "print": "Afdrukken",
+        "back": "Terug naar Inloggen",
+        "once": "Plaatjeswachtwoorden staan alleen hier en nu. Druk deze kaarten af of bewaar ze voordat je de pagina verlaat.",
+        "tap": "Jouw knop: {name}",
+        "pictures": "Jouw plaatjes, op volgorde",
+        "usesPassword": "Typ je wachtwoord",
+        "usesGoogle": "Gebruik Inloggen met Google"
+      }
+    },
+    "handout": {
+      "forLater": "{title} is uitgedeeld aan de klas. Wie erbij komt, krijgt het.",
+      "done": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
+      "removedOne": "Van die tafel gehaald.",
+      "removedAll": "Van alle tafels gehaald. Het werk van de leerlingen blijft bewaard."
+    },
+    "lessons": {
+      "handedOut": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
+      "handedOutVersions": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}, met een versie voor elke groep.",
+      "saved": "Les bewaard.",
+      "savedNew": "Bewaard bij Mijn lessen. Tik erop en dan op een tafel om haar uit te delen.",
+      "copyOf": "Kopie van {title}",
+      "duplicated": "Les gekopieerd.",
+      "deleted": "Les verwijderd.",
+      "untitled": "Nieuwe les",
+      "print": {
+        "solve": "Los op voor x. Laat je stappen zien.",
+        "multiply": "Vermenigvuldig. Schrijf elk antwoord als één uitdrukking.",
+        "factor": "Ontbind elke uitdrukking in factoren."
+      }
+    },
+    "stickers": {
+      "star": "Ster",
+      "thumbs": "Duim omhoog",
+      "heart": "Hart",
+      "idea": "Goed idee",
+      "check": "Vinkje",
+      "rocket": "Raket",
+      "trophy": "Trofee",
+      "medal": "Medaille",
+      "crown": "Kroon",
+      "fireworks": "Vuurwerk",
+      "smiley": "Smiley",
+      "rainbow": "Regenboog"
+    },
+    "feedback": {
+      "saved": "Opmerking en sticker bewaard",
+      "removed": "Opmerking en sticker verwijderd"
+    },
+    "overview": {
+      "title": "Overzicht van de klas",
+      "lead": "De laatste {weeks} weken. Elke kolom is iets dat je in Homeroom uitdeelde. Leerlingen staan op alfabet, nooit in een rangorde.",
+      "student": "Leerling",
+      "trend": "Trend",
+      "tableLabel": "Overzicht: opdrachten en resultaten",
+      "kind": {
+        "lesson": "Les",
+        "game": "Spel",
+        "mine": "Mijn spel"
+      },
+      "versions": "{count, plural, one {# versie} other {# versies}}",
+      "gradedBy": {
+        "score": "Beoordeeld op score",
+        "completion": "Beoordeeld op voltooiing"
+      },
+      "notGraded": "Geen cijfer",
+      "changeGrade": "{title}: {grade}. Beoordeling wijzigen",
+      "done": "Klaar",
+      "notDone": "Niet klaar",
+      "practice": "Oefening",
+      "locked": "Nog niet open",
+      "notStarted": "Niet begonnen",
+      "trends": {
+        "improving": "Gaat vooruit",
+        "steady": "Stabiel",
+        "support": "Heeft steun nodig",
+        "none": "Nog te weinig scores"
+      },
+      "finished": "van de opdrachten af",
+      "support": "{count, plural, one {leerling heeft steun nodig} other {leerlingen hebben steun nodig}}",
+      "month": "{count, plural, one {opdracht deze maand} other {opdrachten deze maand}}",
+      "keyNames": {
+        "score": "Score",
+        "completion": "Voltooiing",
+        "none": "Geen cijfer"
+      },
+      "keyScore": "% vragen goed",
+      "keyCompletion": "100% als het af is",
+      "keyNone": "oefening, er wordt niets verstuurd",
+      "keyTrend": "Trend, uit de laatste 3 scores van elke leerling: Heeft steun nodig bij een gemiddelde onder 60%, Gaat vooruit als de laatste 10 punten of meer boven de eerste ligt, anders Stabiel.",
+      "more": "Het volledige cijferoverzicht, CSV, standaarden, rubrics en Google Classroom staan hieronder, zoals altijd.",
+      "fullGradebook": "Volledig cijferoverzicht",
+      "noHandouts": "De laatste {weeks} weken is er niets uitgedeeld in Homeroom. Deel een spel of les uit via het tabblad Homeroom.",
+      "gcLinked": "Gekoppeld aan “{course}”",
+      "gcRoster": "lijst gesynchroniseerd {when}",
+      "gcRosterNever": "lijst nog niet gesynchroniseerd",
+      "gcGrades": "cijfers verstuurd {when}",
+      "gcGradesNever": "nog geen cijfers verstuurd",
+      "gcOpen": "Instellingen openen",
+      "gcNotLinked": "Nog niet gekoppeld.",
+      "gcLink": "Een Classroom-klas koppelen",
+      "gradeSaved": "Beoordeling gewijzigd"
     }
   }
 }

@@ -26,9 +26,11 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 /**
  * Where n buttons go around a point (fx, fy) on a w x h screen: a ring (radius 60 for up to 4, 64 for 5, 70 for more)
  * moved inward by up to 36 px near an edge; else a half wheel opening away from the edge; one button: above the point
- * (below it near the top). -> { mode: 'ring' | 'arc' | 'single', pts: [{ x, y }] } (button centers)
+ * (below it near the top). top: the screen's first free row (under the site's sticky header), so no button is ever
+ * under it. -> { mode: 'ring' | 'arc' | 'single', pts: [{ x, y }] } (button centers)
  */
-export function wheelLayout(fx, fy, n, w, h) {
+export function wheelLayout(fx, fy, n, w, h, top = 0) {
+  if (top > 0) { const L = wheelLayout(fx, fy - top, n, w, Math.max(B + 2 * M, h - top)); return { mode: L.mode, pts: L.pts.map(p => ({ x: p.x, y: p.y + top })) }; }
   if (n === 1) { let y = fy - 70; if (y - B / 2 < M) y = fy + 70; return { mode: 'single', pts: [{ x: clamp(fx, M + B / 2, w - M - B / 2), y: clamp(y, M + B / 2, h - M - B / 2) }] }; }
   const R = n <= 4 ? 60 : n <= 5 ? 64 : 70, ext = R + B / 2;
   const sx = Math.max(0, M + ext - fx) - Math.max(0, fx + ext - (w - M)), sy = Math.max(0, M + ext - fy) - Math.max(0, fy + ext - (h - M));
@@ -80,14 +82,17 @@ export const wheelOpen = () => !!W;
 export function openWheel({ x, y, items, label, keyboard = false, onPick, onClose, focusBack }) {
   closeWheel({ focus: false });
   const vw = document.documentElement.clientWidth || window.innerWidth, vh = window.innerHeight;
-  const L = wheelLayout(x, y, items.length, vw, vh);
+  // Never over the site's sticky header (a piece near the board's top), and always inside the window.
+  const bar = document.querySelector('.topbar'), br = bar && bar.getBoundingClientRect();
+  const top = br && br.height && br.bottom > 0 && getComputedStyle(bar).position !== 'static' ? Math.min(vh / 2, Math.round(br.bottom)) : 0;
+  const L = wheelLayout(x, y, items.length, vw, vh, top);
   const el = document.createElement('div');
   el.className = 'mp-wheel'; el.setAttribute('role', 'menu'); el.setAttribute('aria-label', label || ''); el.dataset.mode = L.mode;
   el.innerHTML = items.map((it, i) => `<button type="button" role="menuitem" class="mp-wbtn${it.bad ? ' bad' : ''}" data-wk="${esc(it.k)}" aria-label="${esc(it.label)}" data-name="${esc(it.label)}" style="left:${Math.round(L.pts[i].x)}px;top:${Math.round(L.pts[i].y)}px;animation-delay:${i * 18}ms">${icon(it.k === 'unlock' ? 'unlock' : it.k)}</button>`).join('');
   const tip = document.createElement('div'); tip.className = 'mp-wtip'; tip.hidden = true; tip.setAttribute('aria-hidden', 'true');
   document.body.append(el, tip);
   W = { el, tip, keyboard, focusBack, onClose, at: Date.now() };
-  const show = b => { tip.textContent = b.dataset.name; tip.hidden = false; const r = b.getBoundingClientRect(), tw = tip.offsetWidth; tip.style.left = `${clamp(r.left + r.width / 2, tw / 2 + 6, vw - tw / 2 - 6)}px`; let ty = r.top - 6; if (ty - 30 < 4) ty = r.bottom + 34; tip.style.top = `${ty}px`; };
+  const show = b => { tip.textContent = b.dataset.name; tip.hidden = false; const r = b.getBoundingClientRect(), tw = tip.offsetWidth; tip.style.left = `${clamp(r.left + r.width / 2, tw / 2 + 6, vw - tw / 2 - 6)}px`; let ty = r.top - 6; if (ty - 30 < top + 4) ty = r.bottom + 34; tip.style.top = `${ty}px`; };
   el.addEventListener('pointerover', e => { const b = e.target.closest('.mp-wbtn'); if (b) show(b); });
   el.addEventListener('pointerout', e => { if (e.target.closest('.mp-wbtn')) tip.hidden = true; });
   el.addEventListener('focusin', e => { const b = e.target.closest('.mp-wbtn'); if (b) show(b); });

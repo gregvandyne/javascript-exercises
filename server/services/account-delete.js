@@ -127,6 +127,30 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     forgetGameSets(u.id);
     // 11c. virtual math manipulatives: their saved boards, their work in sessions, the sessions they ran
     forgetManipulatives(u.id);
+    // 11c2. Homeroom: their doodle and working-out pads (one per class desk), their class sign-in settings and picture
+    // passwords
+    q.run('DELETE FROM homeroom_doodles WHERE user_id=?', u.id);
+    q.run('DELETE FROM homeroom_signins WHERE user_id=?', u.id);
+    // their raised hand, hall pass and desk settings in a live class (step 3a)
+    q.run('DELETE FROM homeroom_live WHERE user_id=?', u.id);
+    // the teacher's comments and stickers on their finished handouts (step 2c)
+    q.run('DELETE FROM homeroom_feedback WHERE user_id=?', u.id);
+    // their notebook (docs/decisions.md "Homeroom: the notebook"): every tab and page, their own and their classes'
+    q.run('DELETE FROM notebook_pages WHERE user_id=?', u.id);
+    q.run('DELETE FROM notebook_tabs WHERE user_id=?', u.id);
+    // their Homeroom lessons (step 2b; the lessons' question sets went with 11b)
+    q.run('DELETE FROM homeroom_lessons WHERE owner_id=?', u.id);
+    // the day plans they saved by name (docs/decisions.md "Homeroom: the day plan"; a class's plan of today stays with
+    // the class, as its handouts do)
+    q.run('DELETE FROM homeroom_day_plans WHERE owner_id=?', u.id);
+    // where they helped as an aide (step 3c; the class's sub links and their log stay with the class)
+    q.run('DELETE FROM homeroom_aides WHERE user_id=?', u.id);
+    // what they put on their own desk on a class's board (services/homeroom-staged.js; the class's other teachers keep theirs)
+    for (const r of q.all('SELECT class_id, staged FROM homeroom_rooms WHERE staged LIKE ?', `%${u.id}%`)) {
+      let list = []; try { list = JSON.parse(r.staged) || []; } catch { /* kept as it was */ }
+      const left = Array.isArray(list) ? list.filter(x => !x || x.by !== u.id) : [];
+      q.run('UPDATE homeroom_rooms SET staged=? WHERE class_id=?', JSON.stringify(left), r.class_id);
+    }
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
     // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)

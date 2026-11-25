@@ -48,6 +48,9 @@ export async function runStory(story, deps) {
       onProgress: p => J.progress(story.id, worker, p),
     }).catch(e => { e.stage = stage; throw e; });
     const meta = { ...res.meta, wallSeconds: Math.round((Date.now() - t0) / 1000) };
+    // Checked work: "done" only when the video, its poster and its captions are really there and not empty.
+    const missing = versionMissing(dir);
+    if (missing.length) throw Object.assign(new Error(`not on disk: ${missing.join(', ')}`), { stage: 'assembling' });
     move('done', { progress: 1, meta: JSON.stringify(meta), finished_at: Date.now(), worker: '' });
     log('info', 'story done', { id: story.id, seconds: meta.total, render: meta.render });
     return 'done';
@@ -65,6 +68,12 @@ export async function runStory(story, deps) {
 
 /** The files a finished version is made of (moved from the work folder into the story's folder when it is ready). */
 export const VERSION_FILES = ['story.mp4', 'poster.jpg', 'captions.vtt', 'captions.ass', 'music.wav', 'meta.json'];
+/** Checked work (docs/decisions.md "Builders check their work"): the files a version cannot play without that are not
+ *  in a folder, or are empty. [] when the version is complete. */
+export const NEEDED_FILES = ['story.mp4', 'poster.jpg', 'captions.vtt'];
+export function versionMissing(dir) {
+  return NEEDED_FILES.filter(f => { try { return fs.statSync(path.join(dir, f)).size === 0; } catch { return true; } });
+}
 
 /**
  * Make the change waiting on a finished story (docs/story-builder.md "Changing a story"). The new version is built in
@@ -103,6 +112,15 @@ export async function runRemake(story, { renderer, worker, signal = null, write 
       onStage: s => { stage = s; },
       onProgress: p => J.remakeProgress(story.id, worker, p),
     });
+    // Checked work: the new version is complete before anything is swapped, and the change is still wanted (not
+    // dismissed or taken back meanwhile), so the video on the page always matches the words the row says it has.
+    const missing = versionMissing(next);
+    if (missing.length) throw Object.assign(new Error(`not on disk: ${missing.join(', ')}`), { stage: 'assembling' });
+    if ((J.get(story.id) || {}).remake_status !== 'working') {
+      fs.rmSync(next, { recursive: true, force: true });
+      log('info', 'story change dropped: no longer wanted', { id: story.id });
+      return 'done';
+    }
     // 7. swap in the new version, file by file (the video last), then the row
     for (const f of VERSION_FILES.filter(f => f !== 'story.mp4').concat('story.mp4')) {
       const from = path.join(next, f);
@@ -113,6 +131,9 @@ export async function runRemake(story, { renderer, worker, signal = null, write 
     const meta = { ...res.meta, wallSeconds: Math.round((Date.now() - t0) / 1000), change: { kind: rm.kind, planned: plan.render.length, rendered: res.meta.render.rendered, reused: res.meta.render.reused } };
     const done = J.finishRemake(story.id, { script, options, meta });
     if (done.ok && res.meta.clips && res.meta.clips.length) pruneClips(clipDir(dir), res.meta.clips);
+    // Read back: the row says the new version (its title and words), and the files are there.
+    const after = J.get(story.id);
+    if (!done.ok || !after || after.title !== script.title || versionMissing(dir).length) log('warn', 'story change did not land as made', { id: story.id, finished: !!done.ok });
     log('info', 'story changed', { id: story.id, kind: rm.kind, rendered: res.meta.render.rendered, reused: res.meta.render.reused, share: done.share });
     return 'done';
   } catch (e) {

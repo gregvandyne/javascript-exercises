@@ -438,3 +438,36 @@ test('Build a test with AI off (no key): a starter test from the generators, in 
   const mk = await as(boss)('/api/figures/worksheets', { body: { purpose: 'lesson' } });
   assert.equal(F.ownWorksheet(boss, mk.json.worksheet.id).purpose, 'worksheet');
 });
+
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): the lesson is read back as
+// saved, and the editor says what the checks did to the AI's draft: a figure that could not be drawn (its generator's
+// question instead), a made-up figure left out, a square drawn without the measure it works out, a game not in the list.
+test('Draft with AI: the editor says what the checks did to the draft, from the lesson as saved', async () => {
+  hookAI(async () => reply({ title: 'Shapes', summary: 'S', objectives: 'O', steps: [
+    { kind: 'game', title: 'Play', body: '', minutes: 5, gameId: 'not-a-game', figures: [] },
+    { kind: 'figures', title: 'Shape questions', body: 'Answer each one.', minutes: 15, gameId: '', figures: [
+      { kind: 'rectangle', question: 'What is the name of this shape?', data: JSON.stringify({ AB: 5, BC: 5, square: true }), answerType: 'choice', answerKey: '', choices: ['Square', 'Circle', 'Triangle'], correct: 0 },
+      { kind: 'triangle', question: 'Impossible one', data: JSON.stringify({ AB: 1, BC: 1, CA: 5 }), answerType: 'number', answerKey: 'sides.CA', choices: [], correct: 0 },
+      { kind: 'teapot', question: 'What shape is the spout?', data: '{}', answerType: 'number', answerKey: '', choices: [], correct: 0 },
+    ] },
+  ] }));
+  try {
+    const r = await as(boss)('/api/lessons/draft', { body: { schoolId: oak.id, topic: 'Shapes', grade: '4' } });
+    assert.equal(r.status, 200, r.text);
+    // saved 2 of 2 steps; 1 fixed (the square), 1 replaced (the triangle), 1 dropped (the teapot), 1 game swapped
+    assert.match(r.json.redirect, /[?&]chk=2\.2\.1\.1\.1\.1(&|$)/);
+    const lid = /\/teach\/lessons\/([^?]+)/.exec(r.json.redirect)[1];
+    const items = FS.itemsOf(L.steps(lid)[1]);
+    assert.equal(items[0].question, 'What is the name of this shape?', 'the square keeps its own question');
+    const page = await as(boss)(r.json.redirect);
+    assert.match(page.text, /id="lesson-ai-check"/);
+    assert.match(page.text, /1 figure couldn’t be drawn as written/);
+    assert.match(page.text, /1 figure was left out/);
+    assert.match(page.text, /1 figure was drawn without a measure/);
+    assert.match(page.text, /1 game step became a text step/);
+    assert.doesNotMatch(page.text, /steps were saved/, 'every step was saved');
+    // Nothing to say: no note.
+    const clean = await as(boss)(`/teach/lessons/${lid}?drafted=ai&chk=2.2.0.0.0.0`);
+    assert.doesNotMatch(clean.text, /lesson-ai-check/);
+  } finally { unhook(); }
+});

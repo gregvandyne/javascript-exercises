@@ -51,6 +51,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { audit } from '../db.js';
+import * as VC from '../services/verify-change.js';
 import { draftQuestions, draftFromLesson, LESSON, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
 import * as focus from '../services/game-focus.js';
 
@@ -644,7 +645,7 @@ router.get('/live/results/:id', on, requireAnyAccount, (req, res) => {
   const p = R.persisted(u, id);
   if (!p) return notFound(req, res, t('live.results.gone'));
   const rn = rosterNames(u, p.run.class_id);
-  const players = p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, roster: rn.get(r.user_id) || '', score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
+  const players = p.scores.map(r => ({ name: r.display_name || r.username, roster: rn.get(r.user_id) || '', score: r.score, bonus: r.bonus, team: r.team, marks: r.marks, correct: r.correct, answered: r.answered, help: r.answered >= 3 && r.correct / r.answered < 0.5 ? 'lowScore' : '' }));
   const teams = p.teams ? p.teams.list.map(x => ({ ...x, score: p.teams.scoring === 'sum' ? x.sum : x.avg })) : [];
   page(req, res, { title: t('live.results.title'), head: '<link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-results.js'],
     body: V.resultsBody(req, { ...common, id, title: p.run.title, mode: p.run.mode, players, items: p.items, teams, scoring: p.teams ? p.teams.scoring : null, guests: p.run.guests, saved: true, csv: `/live/results/${id}.csv`, nameMode: 'accounts', guestRun: p.run.audience === 'open',
@@ -703,7 +704,7 @@ function resultsCsv(req, res, id) {
     const p = R.persisted(req.user, id);
     if (!p) return notFound(req, res, req.t('live.results.gone'));
     const list = p.teams ? p.teams.list : [], rn = rosterNames(req.user, p.run.class_id);
-    body = R.csv({ players: p.scores.map(r => ({ rank: r.rank, name: r.display_name || r.username, roster: rn.get(r.user_id) || '', team: teamName(r.team, list), score: r.score, bonus: r.bonus, correct: r.correct, answered: r.answered, marks: r.marks })), items: p.items });
+    body = R.csv({ players: p.scores.map(r => ({ name: r.display_name || r.username, roster: rn.get(r.user_id) || '', team: teamName(r.team, list), score: r.score, bonus: r.bonus, correct: r.correct, answered: r.answered, marks: r.marks })), items: p.items });
   }
   res.set({ 'Content-Type': 'text/csv; charset=utf-8', 'Content-Disposition': `attachment; filename="live-${id}.csv"`, 'Cache-Control': 'no-store' });
   res.send(body);
@@ -736,7 +737,8 @@ router.post('/api/live/sets/draft', on, requireAnyAccount, hostOnly, rateLimit('
   catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return res.status(503).json({ error: req.t(`live.api.set.${r.code}`), code: r.code });
   audit(req.user.id, 'live.set.draft', '', { count: r.items.length });
-  res.json({ title: r.title, items: r.items });
+  // Checked work (services/verify-change.js): how many of the questions asked for came through the checks.
+  res.json({ title: r.title, items: r.items, report: VC.kept({ asked: r.asked || r.items.length, kept: r.items.length, noun: 'questions' }) });
 });
 router.post('/api/live/sets/:id/copy', on, requireAnyAccount, hostOnly, rateLimit('lv-set', 120, 3600e3), (req, res) => {
   const r = SETS.copySet(req.user, req.params.id);
@@ -797,7 +799,7 @@ router.post('/api/teach/make/draft', on, requireAnyAccount, hostOnly, rateLimit(
   if (!r.ok) return apiErr(req, res, r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400, `make.${r.code}`, { limits: { min: LESSON.min, max: LESSON.max } });
   // Only how many: never the lesson or the questions.
   audit(req.user.id, 'live.make.draft', '', { count: r.items.length, pdf: !!pdf });
-  res.json({ title: r.title, items: r.items });
+  res.json({ title: r.title, items: r.items, report: VC.kept({ asked: r.asked || r.items.length, kept: r.items.length, noun: 'questions' }) });
 });
 // Assign the saved set to a class as a lesson with one quiz step (the same as "Set as homework" after a live game).
 router.post('/api/teach/make/assign', on, requireAnyAccount, hostOnly, rateLimit('lv-hw', 60, 3600e3), (req, res) => {

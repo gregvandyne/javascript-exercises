@@ -375,18 +375,15 @@ export function endPlay(playId, userId) {
 }
 /** SQL: is the player `childCol` one of the linked children of the game's (grown-up) owner `ownerCol`? */
 const OWNERS_CHILD = (childCol, ownerCol) => `${childCol} IN (SELECT fc.child_id FROM families f JOIN family_children fc ON fc.family_id=f.id WHERE f.owner_id=${ownerCol} AND ${LINKED_CHILD})`;
-/** May this viewer see which children belong to this game's owner? Only the owner, their own linked children and admins. */
-const seesFamily = (viewer, ownerId) => !!viewer && (viewer.role === 'admin' || viewer.id === ownerId || inFamilyOf(ownerId, viewer.id));
-/** The top scores. A grown-up's game may have been 'family' when their children played it, and moved to connections or
- *  public since: so its own owner's linked children are left off the board for everyone outside that family (an
- *  unrelated adult or another child would otherwise learn which kids are theirs). Pass the viewer. */
-export function leaderboard(gameId, limit = 10, viewer = null) {
-  const g = q.get('SELECT owner_id FROM games WHERE id=?', gameId);
-  const hideKids = g && !seesFamily(viewer, g.owner_id);
-  return q.all(`SELECT s.score, s.label, s.created_at, u.id, u.username, u.display_name, u.avatar, u.color, u.photo_at FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? AND u.banned=0 AND u.account_type!='grownup'${hideKids ? ` AND NOT ${OWNERS_CHILD('s.user_id', '?')}` : ''} ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, ...(hideKids ? [g.owner_id] : []), limit);
+/** A player's own best score for a game ({ score, label } or null). There is no leaderboard: scores are never ranked
+ *  or shown to anyone but the player (docs/decisions.md "No leaderboards"); progress, the gradebook and Homeroom read
+ *  the same rows through services/scores.js. */
+export function myBest(gameId, userId) {
+  return userId ? q.get('SELECT score, label FROM scores WHERE game_id=? AND user_id=? ORDER BY score DESC LIMIT 1', gameId, userId) || null : null;
 }
-/** A score's label ("3 stars", "lap 2") is shown on the public leaderboard, so a game can't use it to publish what a
- *  player typed: anything with blocked words, personal details or a family link code is dropped. */
+/** A score's label ("3 stars", "lap 2") is shown beside the player's own best and in a teacher's progress views, so a
+ *  game can't use it to store what a player typed: anything with blocked words, personal details or a family link code
+ *  is dropped. */
 export function cleanScoreLabel(label) {
   const v = String(label ?? '').replace(/[\u0000-\u001f\u202a-\u202e\u2066-\u2069]/g, '').trim().slice(0, 40);
   if (!v || hasProfanity(v) || personalInfo(v) || looksLikeLinkCode(v)) return '';

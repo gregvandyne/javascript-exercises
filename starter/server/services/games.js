@@ -117,8 +117,9 @@ export function recordPlay(gameId, userId) {
   })();
   return id;
 }
-export function leaderboard(gameId, limit = 10) {
-  return q.all(`SELECT s.score, s.label, s.created_at, u.username, u.display_name, u.avatar, u.color FROM scores s JOIN users u ON u.id=s.user_id WHERE s.game_id=? ORDER BY s.score DESC, s.created_at ASC LIMIT ?`, gameId, limit);
+/** A player's own best score for a game (no leaderboard: scores are never ranked or shown to anyone else). */
+export function myBest(gameId, userId) {
+  return userId ? q.get('SELECT score, label FROM scores WHERE game_id=? AND user_id=? ORDER BY score DESC LIMIT 1', gameId, userId) || null : null;
 }
 export function submitScore(gameId, userId, score, label = '') {
   score = Math.max(0, Math.min(1e9, Math.floor(+score || 0)));

@@ -9,8 +9,8 @@
   html.dark { --ink: #f4f1e6; --card: #262a48; --sea: #1f3d63; --muted: rgba(244,241,230,.75); }
   html, body { margin: 0; height: 100%; overflow: hidden; font-family: var(--ok-font, system-ui, sans-serif); color: var(--ink); background: var(--sea); touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
   button { touch-action: manipulation; }
-  .al-board, .al-end { touch-action: pan-y; }
   [hidden] { display: none !important; }
+  .al-end { touch-action: pan-y; }
   .al { position: fixed; inset: 0; display: flex; flex-direction: column; gap: clamp(4px, 1vh, 10px); padding: max(8px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); box-sizing: border-box; }
   .al-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex-shrink: 0; min-height: 34px; }
   .al-top .sp { flex: 1; }
@@ -32,13 +32,6 @@
   .al-mapbox canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
   .al-zoom { position: absolute; inset-inline-end: 8px; top: 8px; display: flex; flex-direction: column; gap: 6px; }
   .al-zoom button { width: 44px; height: 44px; border-radius: 12px; border: 3px solid var(--ink); background: var(--card); color: var(--ink); font: inherit; font-weight: 900; font-size: 20px; box-shadow: 0 3px 0 var(--ink); cursor: pointer; padding: 0; }
-  .al-board { flex: 0 0 clamp(220px, 24vw, 340px); background: var(--card); border: 4px solid var(--ink); border-radius: 22px; box-shadow: 0 5px 0 var(--ink); padding: 10px 12px; box-sizing: border-box; overflow-y: auto; }
-  .al-board h2 { margin: 0 0 6px; font-size: clamp(16px, 2.4vh, 24px); text-align: center; }
-  .al-board ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
-  .al-board li { display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: clamp(14px, 2.2vh, 21px); background: rgba(0,0,0,.05); border-radius: 12px; padding: 4px 10px; }
-  .al-board li .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .al-board li .rk { width: 1.6em; text-align: center; }
-  .al-board p { margin: 6px 0 0; text-align: center; font-weight: 700; color: var(--muted); }
   .al-bottom { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; min-height: 52px; }
   .al-note { margin: 0; font-weight: 800; font-size: clamp(15px, 2.4vh, 24px); text-align: center; overflow-wrap: anywhere; }
   .al-btn { min-height: 52px; min-width: 52px; border: 3px solid var(--ink); border-radius: 999px; background: var(--go); color: #1d2340; font: inherit; font-weight: 900; font-size: clamp(17px, 2.6vh, 22px); padding: 8px 26px; box-shadow: 0 4px 0 var(--ink); cursor: pointer; }
@@ -48,9 +41,10 @@
   .al-end h2 { margin: 0; font-size: clamp(22px, 4vh, 42px); text-align: center; }
   .al-end ol { list-style: none; margin: 0; padding: 0; width: min(560px, 100%); display: flex; flex-direction: column; gap: 8px; }
   .al-end li { display: flex; align-items: center; gap: 10px; background: var(--card); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 0 3px 0 var(--ink); padding: 6px 12px; font-weight: 800; font-size: clamp(15px, 2.4vh, 24px); }
+  .al-end li.line { justify-content: center; text-align: center; }
   .al-end li .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .al-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-  @media (max-width: 760px), (max-aspect-ratio: 1/1) { .al-main { flex-direction: column; } .al-board { flex: 0 0 auto; max-height: 30%; } }
+  @media (max-width: 760px), (max-aspect-ratio: 1/1) { .al-main { flex-direction: column; } }
 </style>
 </head>
 <body>
@@ -62,7 +56,6 @@
   <div class="al-main" id="main">
     <div class="al-mapbox" id="mapbox"><canvas id="map" role="img"></canvas>
       <div class="al-zoom" id="zoom"><button type="button" id="zin">+</button><button type="button" id="zout">−</button><button type="button" id="zfit">⤢</button></div></div>
-    <aside class="al-board" id="board" hidden><h2 id="boardh"></h2><ol id="rows"></ol><p id="more"></p></aside>
   </div>
   <section class="al-end" id="end" hidden><h2 id="endh"></h2><ol id="endrows"></ol><p class="al-note" id="endn"></p><button class="al-btn" id="again" type="button" hidden></button></section>
   <div class="al-bottom" id="bottom"><p class="al-note" id="note" aria-live="polite"></p><span class="al-pickbar" id="pickbar" hidden><img id="pickflag" alt="" hidden><span id="pickname"></span></span><button class="al-btn" id="lock" type="button" hidden></button></div>
@@ -92,34 +85,34 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   var O = window.Oomba, L = O.live, $ = function (id) { return document.getElementById(id); };
   // ==== I18N START ====
   var STR = {
-    en: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Lock in', tap: 'Tap the country on the map', locked: 'Locked in! Look at the big screen.', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', timeUp: "Time's up!", right: 'Right! +{points}', close: 'So close! +{points}', wrong: 'Not quite!', away: '{km} km away', was: 'It was {name}', top: 'Top five', more: 'and {n} more answered', podium: 'Winners', place: 'You came {rank} of {count}!', practice: 'Practice round: find the countries!', host: 'Host it live with your class to play together.', score: '⭐ {n}', again: 'Play again', zin: 'Zoom in', zout: 'Zoom out', zfit: 'Whole map', map: 'World map', nobody: 'Nobody answered', find: 'Find {name}', picked: 'Your pick' },
+    en: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Lock in', tap: 'Tap the country on the map', locked: 'Locked in! Look at the big screen.', wait: 'Waiting for the host to start…', ready: 'Get ready!', go: 'Go!', timeUp: "Time's up!", right: 'Right! +{points}', close: 'So close! +{points}', wrong: 'Not quite!', away: '{km} km away', was: 'It was {name}', more: 'and {n} more answered', practice: 'Practice round: find the countries!', host: 'Host it live with your class to play together.', score: '⭐ {n}', again: 'Play again', zin: 'Zoom in', zout: 'Zoom out', zfit: 'Whole map', map: 'World map', nobody: 'Nobody answered', find: 'Find {name}', picked: 'Your pick' },
     'en-GB': {},
-    es: { title: 'Atlas Quest', live: 'En vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Confirmar', tap: 'Toca el país en el mapa', locked: '¡Respuesta enviada! Mira la pantalla grande.', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', timeUp: '¡Se acabó el tiempo!', right: '¡Correcto! +{points}', close: '¡Casi! +{points}', wrong: '¡Esta vez no!', away: 'A {km} km', was: 'Era {name}', top: 'Los cinco mejores', more: 'y {n} más respondieron', podium: 'Ganadores', place: '¡Quedaste en el puesto {rank} de {count}!', practice: 'Ronda de práctica: ¡encuentra los países!', host: 'Juega en vivo con tu clase para jugar todos juntos.', score: '⭐ {n}', again: 'Jugar otra vez', zin: 'Acercar', zout: 'Alejar', zfit: 'Todo el mapa', map: 'Mapa del mundo', nobody: 'Nadie respondió', find: 'Encuentra {name}', picked: 'Tu elección' },
-    fr: { title: 'Atlas Quest', live: 'En direct', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Valider', tap: 'Touche le pays sur la carte', locked: 'Réponse envoyée ! Regarde le grand écran.', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', timeUp: 'Temps écoulé !', right: 'Bravo ! +{points}', close: 'Tout près ! +{points}', wrong: 'Pas cette fois !', away: 'À {km} km', was: 'C’était : {name}', top: 'Les cinq premiers', more: 'et {n} autres ont répondu', podium: 'Gagnants', place: 'Tu es {rank} sur {count} !', practice: 'Manche d’essai : trouve les pays !', host: 'Lance-le en direct avec ta classe pour jouer ensemble.', score: '⭐ {n}', again: 'Rejouer', zin: 'Zoomer', zout: 'Dézoomer', zfit: 'Toute la carte', map: 'Carte du monde', nobody: 'Personne n’a répondu', find: 'Trouve ce pays : {name}', picked: 'Ton choix' },
-    de: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Festlegen', tap: 'Tippe das Land auf der Karte an', locked: 'Abgegeben! Schau auf den großen Bildschirm.', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', timeUp: 'Zeit ist um!', right: 'Richtig! +{points}', close: 'Knapp daneben! +{points}', wrong: 'Diesmal nicht!', away: '{km} km entfernt', was: 'Es war {name}', top: 'Die besten fünf', more: 'und {n} weitere haben geantwortet', podium: 'Gewinner', place: 'Du bist Platz {rank} von {count}!', practice: 'Übungsrunde: Finde die Länder!', host: 'Spielt es live in der Klasse, um gemeinsam zu spielen.', score: '⭐ {n}', again: 'Nochmal', zin: 'Vergrößern', zout: 'Verkleinern', zfit: 'Ganze Karte', map: 'Weltkarte', nobody: 'Niemand hat geantwortet', find: 'Finde {name}', picked: 'Deine Wahl' },
-    it: { title: 'Atlas Quest', live: 'Dal vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Conferma', tap: 'Tocca il paese sulla mappa', locked: 'Risposta inviata! Guarda lo schermo grande.', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', timeUp: 'Tempo scaduto!', right: 'Giusto! +{points}', close: 'Quasi! +{points}', wrong: 'Non stavolta!', away: 'A {km} km', was: 'Era {name}', top: 'I primi cinque', more: 'e altri {n} hanno risposto', podium: 'Vincitori', place: 'Sei arrivato {rank} su {count}!', practice: 'Turno di prova: trova i paesi!', host: 'Giocalo dal vivo con la classe per giocare insieme.', score: '⭐ {n}', again: 'Gioca ancora', zin: 'Ingrandisci', zout: 'Rimpicciolisci', zfit: 'Tutta la mappa', map: 'Mappa del mondo', nobody: 'Nessuno ha risposto', find: 'Trova {name}', picked: 'La tua scelta' },
-    pt: { title: 'Atlas Quest', live: 'Ao vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Confirmar', tap: 'Toque no país no mapa', locked: 'Resposta enviada! Olhe para a tela grande.', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', timeUp: 'Acabou o tempo!', right: 'Certo! +{points}', close: 'Quase! +{points}', wrong: 'Não foi dessa vez!', away: 'A {km} km', was: 'Era {name}', top: 'Os cinco melhores', more: 'e mais {n} responderam', podium: 'Vencedores', place: 'Você ficou em {rank} de {count}!', practice: 'Rodada de treino: encontre os países!', host: 'Jogue ao vivo com a turma para jogarem juntos.', score: '⭐ {n}', again: 'Jogar de novo', zin: 'Aproximar', zout: 'Afastar', zfit: 'Mapa inteiro', map: 'Mapa-múndi', nobody: 'Ninguém respondeu', find: 'Encontre {name}', picked: 'Sua escolha' },
-    nl: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Vastzetten', tap: 'Tik het land aan op de kaart', locked: 'Verstuurd! Kijk naar het grote scherm.', wait: 'Wachten tot de spelleider begint…', ready: 'Maak je klaar!', go: 'Start!', timeUp: 'De tijd is om!', right: 'Goed! +{points}', close: 'Bijna! +{points}', wrong: 'Net niet!', away: '{km} km ernaast', was: 'Het was {name}', top: 'De beste vijf', more: 'en nog {n} gaven antwoord', podium: 'Winnaars', place: 'Je werd {rank} van {count}!', practice: 'Oefenronde: vind de landen!', host: 'Speel het live met je klas om samen te spelen.', score: '⭐ {n}', again: 'Nog een keer', zin: 'Inzoomen', zout: 'Uitzoomen', zfit: 'Hele kaart', map: 'Wereldkaart', nobody: 'Niemand antwoordde', find: 'Vind {name}', picked: 'Jouw keuze' },
-    ru: { title: 'Atlas Quest', live: 'Вживую', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Ответить', tap: 'Нажми на страну на карте', locked: 'Ответ принят! Смотри на большой экран.', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', timeUp: 'Время вышло!', right: 'Верно! +{points}', close: 'Почти! +{points}', wrong: 'Не в этот раз!', away: '{km} км мимо', was: 'Это была страна: {name}', top: 'Лучшая пятёрка', more: 'и ещё {n} ответили', podium: 'Победители', place: 'Твоё место: {rank} из {count}!', practice: 'Тренировка: найди страны!', host: 'Сыграйте вживую всем классом, чтобы играть вместе.', score: '⭐ {n}', again: 'Ещё раз', zin: 'Приблизить', zout: 'Отдалить', zfit: 'Вся карта', map: 'Карта мира', nobody: 'Никто не ответил', find: 'Найди страну: {name}', picked: 'Твой выбор' },
-    ja: { title: 'アトラスクエスト', live: 'ライブ', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'これにする', tap: '地図で国をタップしよう', locked: 'こたえをおくったよ！大きな画面を見よう。', wait: 'ホストが始めるのを待っています…', ready: 'よーい！', go: 'スタート！', timeUp: 'じかんぎれ！', right: 'せいかい！ +{points}', close: 'おしい！ +{points}', wrong: 'ざんねん！', away: '{km}kmはなれていた', was: 'こたえは{name}', top: 'トップ5', more: 'ほか{n}人がこたえた', podium: 'ゆうしょう', place: '{count}人中 {rank}位！', practice: 'れんしゅう：国をさがそう！', host: 'クラスでライブであそぶと、みんなでいっしょにあそべるよ。', score: '⭐ {n}', again: 'もういちど', zin: 'ズームイン', zout: 'ズームアウト', zfit: '地図ぜんたい', map: '世界地図', nobody: 'だれもこたえなかった', find: '{name}をさがそう', picked: 'きみのえらんだ国' },
-    'zh-Hant': { title: '地圖探險', live: '即時版', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: '確定', tap: '在地圖上點出國家', locked: '答案已送出！請看大螢幕。', wait: '等待主持人開始…', ready: '準備！', go: '開始！', timeUp: '時間到！', right: '答對了！+{points}', close: '很接近！+{points}', wrong: '這次沒中！', away: '相差 {km} 公里', was: '答案是{name}', top: '前五名', more: '還有 {n} 人作答', podium: '優勝者', place: '你是第 {rank} 名，共 {count} 人！', practice: '練習回合：找出國家！', host: '和全班一起即時玩，大家就能一起玩。', score: '⭐ {n}', again: '再玩一次', zin: '放大', zout: '縮小', zfit: '整張地圖', map: '世界地圖', nobody: '沒有人作答', find: '找出{name}', picked: '你的選擇' },
-    ar: { title: 'أطلس كويست', live: 'مباشرة', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'تأكيد', tap: 'المس البلد على الخريطة', locked: 'تم إرسال إجابتك! انظر إلى الشاشة الكبيرة.', wait: 'ننتظر أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', timeUp: 'انتهى الوقت!', right: 'صحيح! +{points}', close: 'قريب جدًا! +{points}', wrong: 'ليس هذه المرة!', away: 'على بعد {km} كم', was: 'كان البلد: {name}', top: 'أفضل خمسة', more: 'وأجاب {n} آخرون', podium: 'الفائزون', place: 'جئت في المركز {rank} من {count}!', practice: 'جولة تدريب: جد البلدان!', host: 'العبها مباشرة مع صفك لتلعبوا معًا.', score: '⭐ {n}', again: 'العب مرة أخرى', zin: 'تكبير', zout: 'تصغير', zfit: 'الخريطة كلها', map: 'خريطة العالم', nobody: 'لم يجب أحد', find: 'جد {name}', picked: 'اختيارك' },
-    he: { title: 'אטלס קווסט', live: 'בשידור חי', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'אישור', tap: 'געו במדינה במפה', locked: 'התשובה נשלחה! הסתכלו על המסך הגדול.', wait: 'מחכים שהמנחה יתחיל…', ready: 'היכון!', go: 'יוצאים!', timeUp: 'נגמר הזמן!', right: 'נכון! +{points}', close: 'כמעט! +{points}', wrong: 'לא הפעם!', away: 'במרחק {km} ק״מ', was: 'זו הייתה {name}', top: 'חמשת הראשונים', more: 'ועוד {n} ענו', podium: 'המנצחים', place: 'הגעת למקום {rank} מתוך {count}!', practice: 'סבב אימון: מצאו את המדינות!', host: 'שחקו בשידור חי עם הכיתה כדי לשחק יחד.', score: '⭐ {n}', again: 'שחקו שוב', zin: 'הגדלה', zout: 'הקטנה', zfit: 'כל המפה', map: 'מפת העולם', nobody: 'אף אחד לא ענה', find: 'מצאו את {name}', picked: 'הבחירה שלך' }
+    es: { title: 'Atlas Quest', live: 'En vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Confirmar', tap: 'Toca el país en el mapa', locked: '¡Respuesta enviada! Mira la pantalla grande.', wait: 'Esperando a que empiece el anfitrión…', ready: '¡Prepárate!', go: '¡Ya!', timeUp: '¡Se acabó el tiempo!', right: '¡Correcto! +{points}', close: '¡Casi! +{points}', wrong: '¡Esta vez no!', away: 'A {km} km', was: 'Era {name}', more: 'y {n} más respondieron', practice: 'Ronda de práctica: ¡encuentra los países!', host: 'Juega en vivo con tu clase para jugar todos juntos.', score: '⭐ {n}', again: 'Jugar otra vez', zin: 'Acercar', zout: 'Alejar', zfit: 'Todo el mapa', map: 'Mapa del mundo', nobody: 'Nadie respondió', find: 'Encuentra {name}', picked: 'Tu elección' },
+    fr: { title: 'Atlas Quest', live: 'En direct', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Valider', tap: 'Touche le pays sur la carte', locked: 'Réponse envoyée ! Regarde le grand écran.', wait: 'On attend que l’hôte lance la partie…', ready: 'Prépare-toi !', go: 'C’est parti !', timeUp: 'Temps écoulé !', right: 'Bravo ! +{points}', close: 'Tout près ! +{points}', wrong: 'Pas cette fois !', away: 'À {km} km', was: 'C’était : {name}', more: 'et {n} autres ont répondu', practice: 'Manche d’essai : trouve les pays !', host: 'Lance-le en direct avec ta classe pour jouer ensemble.', score: '⭐ {n}', again: 'Rejouer', zin: 'Zoomer', zout: 'Dézoomer', zfit: 'Toute la carte', map: 'Carte du monde', nobody: 'Personne n’a répondu', find: 'Trouve ce pays : {name}', picked: 'Ton choix' },
+    de: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Festlegen', tap: 'Tippe das Land auf der Karte an', locked: 'Abgegeben! Schau auf den großen Bildschirm.', wait: 'Warte, bis die Spielleitung startet…', ready: 'Mach dich bereit!', go: 'Los!', timeUp: 'Zeit ist um!', right: 'Richtig! +{points}', close: 'Knapp daneben! +{points}', wrong: 'Diesmal nicht!', away: '{km} km entfernt', was: 'Es war {name}', more: 'und {n} weitere haben geantwortet', practice: 'Übungsrunde: Finde die Länder!', host: 'Spielt es live in der Klasse, um gemeinsam zu spielen.', score: '⭐ {n}', again: 'Nochmal', zin: 'Vergrößern', zout: 'Verkleinern', zfit: 'Ganze Karte', map: 'Weltkarte', nobody: 'Niemand hat geantwortet', find: 'Finde {name}', picked: 'Deine Wahl' },
+    it: { title: 'Atlas Quest', live: 'Dal vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Conferma', tap: 'Tocca il paese sulla mappa', locked: 'Risposta inviata! Guarda lo schermo grande.', wait: 'Aspettiamo che chi conduce inizi…', ready: 'Preparati!', go: 'Via!', timeUp: 'Tempo scaduto!', right: 'Giusto! +{points}', close: 'Quasi! +{points}', wrong: 'Non stavolta!', away: 'A {km} km', was: 'Era {name}', more: 'e altri {n} hanno risposto', practice: 'Turno di prova: trova i paesi!', host: 'Giocalo dal vivo con la classe per giocare insieme.', score: '⭐ {n}', again: 'Gioca ancora', zin: 'Ingrandisci', zout: 'Rimpicciolisci', zfit: 'Tutta la mappa', map: 'Mappa del mondo', nobody: 'Nessuno ha risposto', find: 'Trova {name}', picked: 'La tua scelta' },
+    pt: { title: 'Atlas Quest', live: 'Ao vivo', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Confirmar', tap: 'Toque no país no mapa', locked: 'Resposta enviada! Olhe para a tela grande.', wait: 'Esperando o anfitrião começar…', ready: 'Prepare-se!', go: 'Já!', timeUp: 'Acabou o tempo!', right: 'Certo! +{points}', close: 'Quase! +{points}', wrong: 'Não foi dessa vez!', away: 'A {km} km', was: 'Era {name}', more: 'e mais {n} responderam', practice: 'Rodada de treino: encontre os países!', host: 'Jogue ao vivo com a turma para jogarem juntos.', score: '⭐ {n}', again: 'Jogar de novo', zin: 'Aproximar', zout: 'Afastar', zfit: 'Mapa inteiro', map: 'Mapa-múndi', nobody: 'Ninguém respondeu', find: 'Encontre {name}', picked: 'Sua escolha' },
+    nl: { title: 'Atlas Quest', live: 'Live', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Vastzetten', tap: 'Tik het land aan op de kaart', locked: 'Verstuurd! Kijk naar het grote scherm.', wait: 'Wachten tot de spelleider begint…', ready: 'Maak je klaar!', go: 'Start!', timeUp: 'De tijd is om!', right: 'Goed! +{points}', close: 'Bijna! +{points}', wrong: 'Net niet!', away: '{km} km ernaast', was: 'Het was {name}', more: 'en nog {n} gaven antwoord', practice: 'Oefenronde: vind de landen!', host: 'Speel het live met je klas om samen te spelen.', score: '⭐ {n}', again: 'Nog een keer', zin: 'Inzoomen', zout: 'Uitzoomen', zfit: 'Hele kaart', map: 'Wereldkaart', nobody: 'Niemand antwoordde', find: 'Vind {name}', picked: 'Jouw keuze' },
+    ru: { title: 'Atlas Quest', live: 'Вживую', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'Ответить', tap: 'Нажми на страну на карте', locked: 'Ответ принят! Смотри на большой экран.', wait: 'Ждём, когда ведущий начнёт…', ready: 'Приготовься!', go: 'Вперёд!', timeUp: 'Время вышло!', right: 'Верно! +{points}', close: 'Почти! +{points}', wrong: 'Не в этот раз!', away: '{km} км мимо', was: 'Это была страна: {name}', more: 'и ещё {n} ответили', practice: 'Тренировка: найди страны!', host: 'Сыграйте вживую всем классом, чтобы играть вместе.', score: '⭐ {n}', again: 'Ещё раз', zin: 'Приблизить', zout: 'Отдалить', zfit: 'Вся карта', map: 'Карта мира', nobody: 'Никто не ответил', find: 'Найди страну: {name}', picked: 'Твой выбор' },
+    ja: { title: 'アトラスクエスト', live: 'ライブ', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'これにする', tap: '地図で国をタップしよう', locked: 'こたえをおくったよ！大きな画面を見よう。', wait: 'ホストが始めるのを待っています…', ready: 'よーい！', go: 'スタート！', timeUp: 'じかんぎれ！', right: 'せいかい！ +{points}', close: 'おしい！ +{points}', wrong: 'ざんねん！', away: '{km}kmはなれていた', was: 'こたえは{name}', more: 'ほか{n}人がこたえた', practice: 'れんしゅう：国をさがそう！', host: 'クラスでライブであそぶと、みんなでいっしょにあそべるよ。', score: '⭐ {n}', again: 'もういちど', zin: 'ズームイン', zout: 'ズームアウト', zfit: '地図ぜんたい', map: '世界地図', nobody: 'だれもこたえなかった', find: '{name}をさがそう', picked: 'きみのえらんだ国' },
+    'zh-Hant': { title: '地圖探險', live: '即時版', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: '確定', tap: '在地圖上點出國家', locked: '答案已送出！請看大螢幕。', wait: '等待主持人開始…', ready: '準備！', go: '開始！', timeUp: '時間到！', right: '答對了！+{points}', close: '很接近！+{points}', wrong: '這次沒中！', away: '相差 {km} 公里', was: '答案是{name}', more: '還有 {n} 人作答', practice: '練習回合：找出國家！', host: '和全班一起即時玩，大家就能一起玩。', score: '⭐ {n}', again: '再玩一次', zin: '放大', zout: '縮小', zfit: '整張地圖', map: '世界地圖', nobody: '沒有人作答', find: '找出{name}', picked: '你的選擇' },
+    ar: { title: 'أطلس كويست', live: 'مباشرة', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'تأكيد', tap: 'المس البلد على الخريطة', locked: 'تم إرسال إجابتك! انظر إلى الشاشة الكبيرة.', wait: 'ننتظر أن يبدأ المضيف…', ready: 'استعد!', go: 'انطلق!', timeUp: 'انتهى الوقت!', right: 'صحيح! +{points}', close: 'قريب جدًا! +{points}', wrong: 'ليس هذه المرة!', away: 'على بعد {km} كم', was: 'كان البلد: {name}', more: 'وأجاب {n} آخرون', practice: 'جولة تدريب: جد البلدان!', host: 'العبها مباشرة مع صفك لتلعبوا معًا.', score: '⭐ {n}', again: 'العب مرة أخرى', zin: 'تكبير', zout: 'تصغير', zfit: 'الخريطة كلها', map: 'خريطة العالم', nobody: 'لم يجب أحد', find: 'جد {name}', picked: 'اختيارك' },
+    he: { title: 'אטלס קווסט', live: 'בשידור חי', qnum: '{n} / {total}', answered: '🗺 {n} / {total}', lock: 'אישור', tap: 'געו במדינה במפה', locked: 'התשובה נשלחה! הסתכלו על המסך הגדול.', wait: 'מחכים שהמנחה יתחיל…', ready: 'היכון!', go: 'יוצאים!', timeUp: 'נגמר הזמן!', right: 'נכון! +{points}', close: 'כמעט! +{points}', wrong: 'לא הפעם!', away: 'במרחק {km} ק״מ', was: 'זו הייתה {name}', more: 'ועוד {n} ענו', practice: 'סבב אימון: מצאו את המדינות!', host: 'שחקו בשידור חי עם הכיתה כדי לשחק יחד.', score: '⭐ {n}', again: 'שחקו שוב', zin: 'הגדלה', zout: 'הקטנה', zfit: 'כל המפה', map: 'מפת העולם', nobody: 'אף אחד לא ענה', find: 'מצאו את {name}', picked: 'הבחירה שלך' }
   };
   // Newer words: a flag question on a phone (the flag is on the big screen only), the picked-country bar, the answer.
   var MORE = {
-    en: { flagBoard: 'Look at the flag on the big screen, then tap its country', picked2: 'Selected: Lock in, or tap another country', mine: 'Your answer: {name}' },
-    es: { flagBoard: 'Mira la bandera en la pantalla grande y toca su país', picked2: 'Seleccionado: confirma o toca otro país', mine: 'Tu respuesta: {name}' },
-    fr: { flagBoard: 'Regarde le drapeau sur le grand écran, puis touche son pays', picked2: 'Sélectionné : valide ou touche un autre pays', mine: 'Ta réponse : {name}' },
-    de: { flagBoard: 'Schau dir die Flagge auf dem großen Bildschirm an und tippe auf ihr Land', picked2: 'Ausgewählt: festlegen oder ein anderes Land antippen', mine: 'Deine Antwort: {name}' },
-    it: { flagBoard: 'Guarda la bandiera sul grande schermo, poi tocca il suo paese', picked2: 'Selezionato: conferma o tocca un altro paese', mine: 'La tua risposta: {name}' },
-    pt: { flagBoard: 'Olhe a bandeira na tela grande e toque no país dela', picked2: 'Selecionado: confirme ou toque em outro país', mine: 'Sua resposta: {name}' },
-    nl: { flagBoard: 'Kijk naar de vlag op het grote scherm en tik op het land', picked2: 'Gekozen: zet vast of tik op een ander land', mine: 'Jouw antwoord: {name}' },
-    ru: { flagBoard: 'Посмотри на флаг на большом экране и нажми на его страну', picked2: 'Выбрано: подтверди или нажми другую страну', mine: 'Твой ответ: {name}' },
-    ja: { flagBoard: 'おおきな がめんの はたを みて、その くにを タップしよう', picked2: 'えらんだよ。けってい するか、ほかの くにを タップしてね', mine: 'きみの こたえ：{name}' },
-    'zh-Hant': { flagBoard: '看大螢幕上的國旗，再點它的國家', picked2: '已選好：按確定，或點其他國家', mine: '你的答案：{name}' },
-    ar: { flagBoard: 'انظر إلى العلم على الشاشة الكبيرة، ثم المس بلده', picked2: 'تم الاختيار: أكّد أو المس بلدًا آخر', mine: 'إجابتك: {name}' },
-    he: { flagBoard: 'הסתכלו על הדגל במסך הגדול, ואז געו בארץ שלו', picked2: 'נבחר: אשרו או געו בארץ אחרת', mine: 'התשובה שלך: {name}' },
+    en: { mineRight: 'You got {right} of {total} right!', classLine: 'The class got {right} of {answered} answers right', well: 'Well played!', flagBoard: 'Look at the flag on the big screen, then tap its country', picked2: 'Selected: Lock in, or tap another country', mine: 'Your answer: {name}' },
+    es: { mineRight: '¡Acertaste {right} de {total}!', classLine: 'La clase acertó {right} de {answered} respuestas', well: '¡Bien jugado!', flagBoard: 'Mira la bandera en la pantalla grande y toca su país', picked2: 'Seleccionado: confirma o toca otro país', mine: 'Tu respuesta: {name}' },
+    fr: { mineRight: 'Tu as eu {right} bonnes réponses sur {total} !', classLine: 'La classe a donné {right} bonnes réponses sur {answered}', well: 'Bien joué !', flagBoard: 'Regarde le drapeau sur le grand écran, puis touche son pays', picked2: 'Sélectionné : valide ou touche un autre pays', mine: 'Ta réponse : {name}' },
+    de: { mineRight: 'Du hattest {right} von {total} richtig!', classLine: 'Die Klasse hatte {right} von {answered} Antworten richtig', well: 'Gut gespielt!', flagBoard: 'Schau dir die Flagge auf dem großen Bildschirm an und tippe auf ihr Land', picked2: 'Ausgewählt: festlegen oder ein anderes Land antippen', mine: 'Deine Antwort: {name}' },
+    it: { mineRight: 'Ne hai indovinate {right} su {total}!', classLine: 'La classe ha dato {right} risposte giuste su {answered}', well: 'Ben giocato!', flagBoard: 'Guarda la bandiera sul grande schermo, poi tocca il suo paese', picked2: 'Selezionato: conferma o tocca un altro paese', mine: 'La tua risposta: {name}' },
+    pt: { mineRight: 'Você acertou {right} de {total}!', classLine: 'A turma acertou {right} de {answered} respostas', well: 'Bem jogado!', flagBoard: 'Olhe a bandeira na tela grande e toque no país dela', picked2: 'Selecionado: confirme ou toque em outro país', mine: 'Sua resposta: {name}' },
+    nl: { mineRight: 'Je had er {right} van de {total} goed!', classLine: 'De klas had {right} van de {answered} antwoorden goed', well: 'Goed gespeeld!', flagBoard: 'Kijk naar de vlag op het grote scherm en tik op het land', picked2: 'Gekozen: zet vast of tik op een ander land', mine: 'Jouw antwoord: {name}' },
+    ru: { mineRight: 'Верных ответов: {right} из {total}!', classLine: 'Верных ответов у класса: {right} из {answered}', well: 'Хорошая игра!', flagBoard: 'Посмотри на флаг на большом экране и нажми на его страну', picked2: 'Выбрано: подтверди или нажми другую страну', mine: 'Твой ответ: {name}' },
+    ja: { mineRight: '{total}もんちゅう {right}もん せいかい！', classLine: 'クラスのせいかい：{answered}こ中 {right}こ', well: 'よくがんばったね！', flagBoard: 'おおきな がめんの はたを みて、その くにを タップしよう', picked2: 'えらんだよ。けってい するか、ほかの くにを タップしてね', mine: 'きみの こたえ：{name}' },
+    'zh-Hant': { mineRight: '你答對了 {total} 題中的 {right} 題！', classLine: '全班答對了 {answered} 個答案中的 {right} 個', well: '玩得好！', flagBoard: '看大螢幕上的國旗，再點它的國家', picked2: '已選好：按確定，或點其他國家', mine: '你的答案：{name}' },
+    ar: { mineRight: 'إجاباتك الصحيحة: {right} من {total}!', classLine: 'إجابات الصف الصحيحة: {right} من {answered}', well: 'أحسنت اللعب!', flagBoard: 'انظر إلى العلم على الشاشة الكبيرة، ثم المس بلده', picked2: 'تم الاختيار: أكّد أو المس بلدًا آخر', mine: 'إجابتك: {name}' },
+    he: { mineRight: 'תשובות נכונות: {right} מתוך {total}!', classLine: 'תשובות נכונות של הכיתה: {right} מתוך {answered}', well: 'כל הכבוד!', flagBoard: 'הסתכלו על הדגל במסך הגדול, ואז געו בארץ שלו', picked2: 'נבחר: אשרו או געו בארץ אחרת', mine: 'התשובה שלך: {name}' },
   };
   Object.keys(MORE).forEach(function (k) { STR[k] = Object.assign(STR[k] || {}, MORE[k]); });
   STR['en-GB'] = STR.en;
@@ -429,7 +422,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     if (!host && meta.k === 'flag') $('qtext').textContent = q.q + ' · ' + t('flagBoard');
     total = q.n || total;
     $('qnum').hidden = !total; $('qnum').textContent = t('qnum', { n: q.i + 1, total: total });
-    banner(''); $('board').hidden = true;
+    banner('');
     if (host) { $('count').hidden = false; $('count').textContent = t('answered', { n: 0, total: connected() }); $('note').textContent = ''; $('lock').hidden = true; }
     else { $('lock').hidden = state.locked; $('lock').disabled = true; $('note').hidden = false; $('note').textContent = state.locked ? t('locked') : t('tap'); }
     $('zoom').hidden = host;
@@ -472,37 +465,33 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     var nm = name(C[r.answer][0]);
     banner(n || !host ? t('was', { name: nm }) : t('nobody'));
     $('flag').hidden = false; $('flag').classList.toggle('big', host); $('flag').src = flagSrc(C[r.answer][0]); $('flag').alt = nm;
-    if (host) { $('count').textContent = t('answered', { n: n, total: Math.max(n, connected()) }); topFive(r.top || [], n); }
+    if (host) $('count').textContent = t('answered', { n: n, total: Math.max(n, connected()) });
     else if (state.pick >= 0 && state.pick !== r.answer && state.locked) $('note').textContent = t('away', { km: Math.round(km(state.pick, r.answer)) });
     else if (!state.locked) $('note').textContent = t('timeUp');
     $('lock').hidden = true; $('pickbar').hidden = true; $('note').hidden = false; dirty = true; flagIm(C[r.answer][0]); sfx('spark'); say(t('was', { name: nm }));
   }
   function result(m) {
     if (host) return;
-    if (m.of) return;   // the final rank comes with the end
+    if (m.of) return;   // the end: theEnd says this player's own result (never a place)
+    if (!m.none) { myAsked++; if (m.ok) myRight++; } else myAsked++;
     if (typeof m.score === 'number') { myScore = m.score; $('score').hidden = false; $('score').textContent = t('score', { n: myScore }); }
     if (m.none) return;
     $('note').textContent = m.ok ? t('right', { points: m.points }) : m.points > 0 ? t('close', { points: m.points }) + ' · ' + t('away', { km: Math.round(km(state.myPick, state.answer)) }) : t('wrong') + (state.myPick >= 0 && state.answer >= 0 ? ' · ' + t('away', { km: Math.round(km(state.myPick, state.answer)) }) : '');
     sfx(m.ok ? 'correct' : 'wrong'); buzz(m.ok ? [20, 40, 20] : 30);
   }
-  /** A row's place: equal scores share a place (and its medal); nobody gets a medal for 0 points. */
-  function place(list, k) {
-    var i = k; while (i > 0 && list[i - 1].score === list[k].score) i--;
-    return !(list[k].score > 0) ? '–' : (['🥇', '🥈', '🥉'][i] || String(i + 1));
-  }
-  function topFive(top, n) {
-    if (!top.length) { $('board').hidden = true; return; }
-    $('board').hidden = false; $('boardh').textContent = '🏆 ' + t('top');
-    var ol = $('rows'); ol.textContent = '';
-    top.slice(0, 5).forEach(function (r, k, list) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = place(list, k); li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
-    var more = Math.max(0, n - Math.min(5, top.length)); $('more').textContent = more ? t('more', { n: more }) : '';
-    size();
-  }
-  function theEnd(top) {
+  var myRight = 0, myAsked = 0;
+  /** The end: a calm card, never a podium or a list of players (docs/decisions.md "No leaderboards"): the class's right
+   *  answers on the projector, this player's own on a phone, the score in practice; teams (never single players) keep
+   *  their totals in a team game. */
+  function theEnd() {
     clearInterval(ringTimer); $('ringbox').hidden = true; $('main').hidden = true; $('qcard').hidden = true; $('bottom').hidden = true; $('count').hidden = true; banner('');
-    $('end').hidden = false; $('endh').textContent = '🏆 ' + t('podium');
+    $('end').hidden = false; $('endh').textContent = '🌍 ' + t('well');
     var ol = $('endrows'); ol.textContent = '';
-    (top || []).slice(0, 5).forEach(function (r, k, list) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = place(list, k); li.children[1].textContent = r.name || ''; li.children[2].textContent = O.num(r.score); ol.appendChild(li); });
+    var line = function (text) { var li = document.createElement('li'); li.className = 'line'; li.textContent = text; ol.appendChild(li); };
+    var cr = 0, ca = 0; history.forEach(function (h) { cr += h.right || 0; ca += h.n || 0; });
+    if (!L.active) line(t('score', { n: practice.score }));
+    else if (host) { if (ca) line(t('classLine', { right: cr, answered: ca })); }
+    else if (myAsked) line(t('mineRight', { right: myRight, total: myAsked }));
     if (L.active && L.teamsOn) L.teams().filter(function (x) { return x.rank; }).slice(0, 3).forEach(function (x) { var li = document.createElement('li'); li.innerHTML = '<span class="rk"></span><span class="nm"></span><span class="sc"></span>'; li.children[0].textContent = x.icon || '★'; li.children[1].textContent = x.name; li.children[2].textContent = O.num(x.score); li.style.background = x.color; li.style.color = x.ink; ol.appendChild(li); });
     $('again').hidden = L.active; $('again').textContent = t('again');
     sfx('win');
@@ -524,7 +513,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   L.on('answers', function (a) { if (host && Q && a.i === Q.i) $('count').textContent = t('answered', { n: a.n, total: Math.max(a.n, connected()) }); });
   L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); return; } reveal(r); });
   L.on('result', result);
-  L.on('end', function (e) { theEnd(e.top || []); });
+  L.on('end', function () { theEnd(); });
   L.on('welcome', function () { if (L.quiz.current) show(L.quiz.current); });
 
   // ---- alone: 5 famous countries, scored like the class game ---------------------------------------------------------
@@ -532,12 +521,12 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   function startPractice() {
     var pool = []; C.forEach(function (c, i) { if (c[6]) pool.push(i); });
     for (var i = pool.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = pool[i]; pool[i] = pool[j]; pool[j] = x; }
-    practice.list = pool.slice(0, 5); practice.i = 0; practice.score = 0; myScore = 0; history = [];
+    practice.list = pool.slice(0, 5); practice.i = 0; practice.score = 0; myScore = 0; history = []; myRight = 0; myAsked = 0;
     $('score').hidden = false; $('score').textContent = t('score', { n: 0 });
     banner(t('practice')); setTimeout(practiceNext, 1200);
   }
   function practiceNext() {
-    if (practice.i >= practice.list.length) return theEnd([{ name: t('picked'), score: practice.score }]);
+    if (practice.i >= practice.list.length) return theEnd();
     var a = practice.list[practice.i];
     practice.at = performance.now();
     show({ i: practice.i, n: practice.list.length, q: t('find', { name: name(C[a][0]) }), choices: CODES, secs: 20, at: practice.at }, { k: 'find', reg: 'world' });
@@ -564,7 +553,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   if (!L.active) { $('zoom').hidden = false; L.on('start', function () { loadNames(startPractice); }); }
   else { $('zoom').hidden = host; if (phase === 'lobby') banner(host ? t('title') : t('wait')); }
   O.test({
-    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q } : null, pick: state.pick, picked: state.pick >= 0 ? CODES[state.pick] : null, locked: state.locked, answer: state.answer >= 0 ? CODES[state.answer] : null, region: state.region, score: myScore, board: !$('board').hidden, end: !$('end').hidden, view: { cx: view.cx, cy: view.cy, k: view.k },
+    state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q } : null, pick: state.pick, picked: state.pick >= 0 ? CODES[state.pick] : null, locked: state.locked, answer: state.answer >= 0 ? CODES[state.answer] : null, region: state.region, score: myScore, board: false, end: !$('end').hidden, view: { cx: view.cx, cy: view.cy, k: view.k },
       // alone only (no class): the practice question's country, for tests and the cover picture
       practiceAnswer: !L.active && Q && practice.list[practice.i] != null ? CODES[practice.list[practice.i]] : null }; },
     start: function () { return true; },

@@ -14,7 +14,10 @@
 //     what is missing (labels dressed by the server in the teacher's language), then waits for the teacher's words (what
 //     they type then, and what they attach, goes into the book, never to the AI: "Adding to your book" above the box),
 //     then shows exactly what will be sent with Edit and Make my book; a book's changes come back with Undo and Open the book.
-import { t, api, esc, toast, ask } from '/js/app.js';
+//   - the day plan on a class's Homeroom (services/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): a card
+//     with the parts and their minutes, what each group gets, Use this plan, Start plan, Save plan, the saved plans and
+//     Copy to another class. A tap tells the board (the 'oomba:plan' event), whose plan pill follows.
+import { t, api, esc, toast, ask, askText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
@@ -33,7 +36,10 @@ const MAX_CLIP_MS = 120e3;   // the longest recording here (the server's own STT
 if (PAGE) start();
 
 function start() {
-  const dash = PAGE.type === 'dashboard';
+  // A Homeroom teacher's class is one page with three views (public/js/class-views.js): the chat stays where it is (never
+  // in the dashboard's footer) and follows the view on screen (the dashboard, or the class).
+  const views = !!document.getElementById('cv');
+  let dash = PAGE.type === 'dashboard';
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
   const label = () => {
     const a = BUS.page(); if (a && a.label) { const x = a.label(); if (x) return String(x).slice(0, 60); }
@@ -63,7 +69,7 @@ function start() {
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
     start: () => via('start') || 'closed',
-    bubbleHost: dash ? document.getElementById('dash-foot') : null,
+    bubbleHost: dash && !views ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
@@ -358,6 +364,7 @@ function start() {
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     if (n.book) parts.push(bookHtml(x, n.book));
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
+    if (n.plan) parts.push(planHtml(x, n.plan));
     if (n.bookNone) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="/library/make?new=1" data-oc-book>${ic('✨', 16)} ${esc(L('book.make'))}</a></div>`);
     if (n.bookRef && !x.change) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(n.bookRef.href)}">${ic('📖', 16)} ${esc(L('book.open'))}</a></div>`);
     return parts.join('');
@@ -442,6 +449,34 @@ function start() {
     const btns = k.options.map((o, i) => same(o) ? '' : `<button type="button" class="btn btn-sm oc-pickb" data-c="act" data-act="askPick" data-turn="${esc(x.id)}" data-v="${i}"><span dir="auto">${esc(o.label)}</span>${o.sub ? ` <small>${esc(t('js.companion.card.grade', { g: o.sub.replace(/^grade /, '') }))}</small>` : ''}${o.kindText ? ` <small>${esc(o.kindText)}${o.at ? ` · ${esc(new Date(o.at).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric' }))}` : ''}</small>` : ''}</button>`).join('');
     return `<div class="oc-ask" role="group"${q ? ` aria-label="${esc(q)}"` : ''}>${q ? `<p class="oc-askq">${esc(q)}</p>` : ''}<div class="oc-acts">${btns}<button type="button" class="btn btn-sm btn-ghost" data-c="act" data-act="askOther" data-turn="${esc(x.id)}">${esc(L('ask.other'))}</button></div></div>`;
   }
+  // ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
+  function planHtml(x, p) {
+    if (p.gone) return `<div class="oc-plan done"><p class="oc-state">${ic('➖', 16)} ${esc(L('plan.gone'))}</p></div>`;
+    const id = esc(x.id);
+    const b = (act, label, { v = '', primary = false, ghost = false, icon = '', off = false } = {}) => `<button type="button" class="btn btn-sm${primary ? ' btn-primary' : ''}${ghost ? ' btn-ghost' : ''}" data-c="act" data-act="${act}" data-turn="${id}"${v !== '' ? ` data-v="${esc(v)}"` : ''}${off ? ' disabled' : ''}>${icon ? `${ic(icon, 16)} ` : ''}${esc(label)}</button>`;
+    const kind = k => L(`plan.kind.${k}`);
+    const parts = p.parts.map(q => `<li class="oc-ppart k-${esc(q.kind)}${q.now ? ' now' : ''}${q.done ? ' done' : ''}"><span class="oc-pmin">${q.done ? ic('✓', 14) : ''}${esc(t('js.companion.plan.min', { count: q.minutes }))}</span><span class="oc-pb"><b>${esc(kind(q.kind))}</b>${q.title ? `<span dir="auto">${esc(q.title)}</span>` : ''}${q.now ? `<span class="oc-tag oc-pnow">${esc(L('plan.nowTag'))}</span>` : ''}</span>
+      ${q.give.length ? `<ul class="plain oc-pgive">${q.give.map(g => `<li>${ic(g.icon || '🎮', 16)} <span>${g.who ? `<b dir="auto">${esc(g.who)}:</b> ` : ''}<span dir="auto">${esc(g.what)}</span>${g.type === 'make' ? ` <small>${esc(L('plan.newLesson'))}</small>` : g.type === 'lesson' ? ` <small>${esc(L('plan.lesson'))}</small>` : ''}</span></li>`).join('')}</ul>` : ''}${q.note ? `<p class="oc-pnote" dir="auto">${esc(q.note)}</p>` : ''}</li>`).join('');
+    const st = p.state;
+    let acts;
+    if (st === 'draft') acts = p.otherRunning ? `<p class="oc-note">${esc(L('plan.otherRunning'))}</p>` : `${b('planUse', L('plan.use'), { primary: true, icon: '🎒' })}${b('planStart', L('plan.useStart'), { icon: '▶️' })}`;
+    else if (st === 'ready') acts = `<p class="oc-state">${ic('✓', 16)} ${esc(L('plan.onDesks'))}</p>${b('planStart', L('plan.start'), { primary: true, icon: '▶️' })}`;
+    else if (st === 'running' || st === 'done') acts = `<p class="oc-state">${ic('▶️', 16)} ${esc(L(st === 'done' ? 'plan.allDone' : 'plan.running'))}</p>`;
+    else if (st === 'finished') acts = `<p class="oc-state">${ic('🏁', 16)} ${esc(L('plan.finished'))}</p>`;
+    else acts = `<p class="oc-state">${ic('➖', 16)} ${esc(L('plan.past'))}</p>`;
+    const saved = p.savedAs ? `<span class="oc-state">${ic('💾', 16)} ${esc(t('js.companion.plan.savedAs', { name: p.savedAs.name }))}</span>` : b('planSave', L('plan.save'), { ghost: true, icon: '💾' });
+    const list = (p.saved || []).filter(s => !p.from || s.id !== p.from.id);
+    const savedList = list.length ? `<details class="oc-pmore"><summary>${ic('📚', 16)} ${esc(L('plan.savedPlans'))}</summary><div class="oc-acts">${list.map(s => b('planPick', `${s.name} · ${t('js.companion.plan.min', { count: s.minutes })}`, { v: s.id })).join('')}</div></details>` : '';
+    const copy = (p.copy || []).length ? `<details class="oc-pmore"><summary>${ic('📋', 16)} ${esc(L('plan.copyTo'))}</summary><div class="oc-acts">${p.copy.map(c => b('planCopy', c.name, { v: c.id })).join('')}</div></details>` : '';
+    return `<div class="oc-plan" role="group" aria-label="${esc(p.name || L('plan.title'))}">
+      <div class="oc-planh">${ic('🗓️', 20)} <b dir="auto">${esc(p.name || L('plan.title'))}</b><span class="oc-tag">${esc(t('js.companion.plan.min', { count: p.total }))}</span></div>
+      <p class="oc-hsub" dir="auto">${esc(p.className)}${p.from ? ` · ${esc(t('js.companion.plan.fromName', { name: p.from.name }))}` : ''}</p>
+      <ol class="plain oc-pparts">${parts}</ol>
+      ${p.changed ? `<p class="oc-note">${esc(t('js.companion.plan.changed', { count: p.changed }))}</p>` : ''}
+      <div class="oc-acts oc-pacts">${acts}</div>
+      <div class="oc-acts oc-pfoot">${saved}</div>${savedList}${copy}
+      ${st === 'draft' ? `<p class="oc-note">${esc(L('plan.askChanges'))}</p>` : ''}</div>`;
+  }
   // "Something else" on the book card's theme: Use this theme sends the teacher's own theme (bookTheme).
   document.addEventListener('input', e => {
     const f = e.target.closest && e.target.closest('.oc-btheme');
@@ -463,9 +498,15 @@ function start() {
       const f = document.getElementById(`oc-btheme-${turn.id}`); if (!f) return null;
       f.hidden = false; btn.setAttribute('aria-expanded', 'true'); btn.classList.add('on'); f.querySelector('input').focus(); return null;
     }
+    if (act === 'planSave') {
+      const p = turn.note && turn.note.plan;
+      const v = await askText({ title: L('plan.saveTitle'), label: L('plan.saveLabel'), value: (p && (p.name || p.topic)) || '', ok: L('plan.save'), max: 60 });
+      if (!v || !v.trim()) return null;
+      btn.dataset.v = v.trim().slice(0, 60);
+    }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^book[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^(book|plan)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
       if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {
@@ -476,6 +517,9 @@ function start() {
       if (act === 'go' && r.href) { chat.took(r.chat); store.set('oc:companion', 'open'); location.href = r.href; return null; }
       // An option without a target: sent as the teacher's answer, as if typed.
       if (act === 'askPick' && r.text) { chat.took(r.chat); setTimeout(() => chat.send(r.text), 0); return null; }
+      // A day plan's card: the board's plan pill follows (public/js/homeroom-plan.js listens).
+      if (r && 'plan' in r) document.dispatchEvent(new CustomEvent('oomba:plan', { detail: { classId: r.classId, plan: r.plan } }));
+      if (r && r.toast) toast(r.toast);
       if (act === 'handoff' && r.handoff) {
         store.set('oomba-handoff', JSON.stringify({ tool: r.handoff.tool, text: handoffText(r.handoff), at: Date.now() }));
         location.href = r.handoff.href;
@@ -568,18 +612,26 @@ function start() {
   }
 
   // ---------------------------------------------------------------- the dashboard: hidden while students can see it
-  if (dash) {
+  if (dash || views) {
     const sync = () => {
       const eyes = document.getElementById('dash-eyes-btn');
-      const hide = document.body.classList.contains('dash-projector') || !!document.fullscreenElement || (eyes && eyes.getAttribute('aria-pressed') === 'true');
+      const hide = !!document.fullscreenElement || (dash && (document.body.classList.contains('dash-projector') || (eyes && eyes.getAttribute('aria-pressed') === 'true')));
       document.body.classList.toggle('oc-hide', hide);
       if (hide && chat.state().mode === 'open') chat.setMode('closed', { focus: false });
     };
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    const eyes = document.getElementById('dash-eyes-btn'); if (eyes) new MutationObserver(sync).observe(eyes, { attributes: true, attributeFilter: ['aria-pressed'] });
+    let watched = null;
+    const watchEyes = () => { const eyes = document.getElementById('dash-eyes-btn'); if (eyes && eyes !== watched) { watched = eyes; new MutationObserver(sync).observe(eyes, { attributes: true, attributeFilter: ['aria-pressed'] }); } };
+    watchEyes();
     document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('cv:view', e => {
+      const v = e.detail && e.detail.view;
+      dash = v === 'dashboard'; PAGE.type = dash ? 'dashboard' : v === 'homeroom' ? 'homeroom' : 'class';
+      watchEyes(); sync();
+      const b = document.getElementById('oc-sees'); if (b) b.textContent = label();
+    });
     sync();
-    const hl = store.get('oc-hl');
+    const hl = dash && store.get('oc-hl');
     if (hl) {
       store.set('oc-hl', null);
       let ids = []; try { ids = JSON.parse(hl); } catch { ids = []; }

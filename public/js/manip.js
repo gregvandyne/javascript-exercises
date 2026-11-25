@@ -7,9 +7,9 @@
 // Hosts (teachers testing it) save boards with share codes, run sessions and draft with AI; students only see their
 // own square in a session's room. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
-import { t, api, toast, esc, pageData, ask } from '/js/app.js';
+import { t, api, toast, esc, pageData, ask, sheet } from '/js/app.js';
 import { iconHtml, toolIconHtml } from '/js/icons.js';
-import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
+import { TOOLS, CATS, toolOf, tutorialOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
 import { answerMatches } from '/js/manip-practice.js';
 import * as ROOM from '/js/manip-room.js';
@@ -17,10 +17,12 @@ import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, textFont, stepTextSize, textResize, textRect, snapBox, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine,
+  rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
-import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
 import * as CHAT from '/js/manip-chat.js';
+import { inkLine, textBoxHtml, textSizeButton, growText, textBoxPointer, snapText } from '/js/board-ann.js';
 
 const ROOT = document.getElementById('manip');
 const ROLE = pageData().role === 'host' ? 'host' : 'student';
@@ -38,9 +40,49 @@ const round3 = n => Math.round(n * 1000) / 1000;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch { return d; } };
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 
+// ---------------------------------------------------------------- number line helpers
+/** Where the next jump starts (the tapped start, then where each jump landed); null: the next tap picks it. */
+const nlFrom = st => (st.jumpFrom === null || st.jumpFrom === undefined || st.jumpFrom === '' ? null : +st.jumpFrom);
+/** The value on the nearest step under clientX. */
+function nlValue(st, svg, clientX) {
+  const r = svg.getBoundingClientRect(), W = 860, min = +st.min, max = +st.max > min ? +st.max : min + 1, step = +st.step || 1;
+  const raw = min + (((clientX - r.left) / r.width) * W - 30) / (W - 60) * (max - min);
+  return round3(Math.min(max, Math.max(min, Math.round((raw - min) / step) * step + min)));
+}
+/** The selected dot or jump, when it is still there. */
+const nlSel = st => { const s = st.sel; if (!s) return null; const list = s.k === 'j' ? st.jumps : st.points; return Number.isInteger(s.i) && s.i >= 0 && s.i < (list || []).length ? s : null; };
+const nlJumpLabel = j => { const d = round3(j.b - j.a); return `${d > 0 ? '+' : ''}${d}`; };
+const nlNum = n => (n < 0 ? `−${-n}` : `${n}`);
+/** The number sentence of the last chain of jumps (each starting where the one before landed): -2 + 4 - 1 = 1. */
+export function nlSentence(st) {
+  const js = st.jumps || []; if (!js.length) return null;
+  const run = [js[js.length - 1]];
+  for (let i = js.length - 2; i >= 0 && js[i].b === run[0].a; i--) run.unshift(js[i]);
+  const parts = run.map(j => { const d = round3(j.b - j.a); return { op: d < 0 ? '−' : '+', n: Math.abs(d) }; });
+  const end = run[run.length - 1].b;
+  return { text: `${nlNum(run[0].a)} ${parts.map(p => `${p.op} ${p.n}`).join(' ')} = ${nlNum(end)}`,
+    html: `<span>${esc(nlNum(run[0].a))}</span> ${parts.map(p => `<span class="mp-nl-j">${p.op} ${p.n}</span>`).join(' ')} = <b>${esc(nlNum(end))}</b>` };
+}
+/** The faint dot (Points) or dashed arc (Jumps) under the pointer: where a tap would go. Drawn into the board's own svg. */
+function nlHover(e) {
+  const svg = e.target && e.target.closest ? e.target.closest('svg.mp-nl[data-mode]') : null;
+  document.querySelectorAll('svg.mp-nl .mp-nl-ghost').forEach(g => { if (!svg || !svg.contains(g)) g.innerHTML = ''; });
+  if (!svg || e.pointerType === 'touch') return;
+  const g = svg.querySelector('.mp-nl-ghost'); if (!g) return;
+  if (e.target.closest('.mp-nl-pt, .mp-nl-jump, .mp-nl-tag')) { g.innerHTML = ''; return; }
+  const st = { min: +svg.dataset.min, max: +svg.dataset.max, step: +svg.dataset.step };
+  const v = nlValue(st, svg, e.clientX), W = 860, x = n => 30 + ((n - st.min) / (st.max - st.min)) * (W - 60);
+  if (svg.dataset.mode === 'jumps' && svg.dataset.from !== undefined) {
+    const a = +svg.dataset.from; if (v === a) { g.innerHTML = ''; return; }
+    const mx = (x(a) + x(v)) / 2, h = Math.min(120, 26 + Math.abs(x(v) - x(a)) / 9), d = round3(v - a);
+    g.innerHTML = `<path d="M ${x(a)} 102 Q ${mx} ${102 - h * 2} ${x(v)} 102" fill="none" stroke="#FF6B4A" stroke-width="3" stroke-dasharray="7 6" opacity=".6"/><text x="${mx}" y="${102 - h - 7}" text-anchor="middle" font-size="14" font-weight="800" fill="#FF6B4A" opacity=".7">${d > 0 ? '+' : ''}${d}</text>`;
+  } else g.innerHTML = `<circle cx="${x(v)}" cy="110" r="11" fill="#00ACC1" opacity=".35"/><text x="${x(v)}" y="92" text-anchor="middle" font-size="12" fill="var(--text)" opacity=".7">${svg.dataset.mode === 'jumps' ? 'start at' : 'add'} ${v}</text>`;
+}
+if (typeof document !== 'undefined') document.addEventListener('pointermove', nlHover, { passive: true });
+
 // ================================================================ tools
 // Each tool: init() its state; total(st) the chip text; palette(st) [{ label, color, run(st) }]; settings(st) HTML with
-// data-set controls; hint and note (help text); board(st, view) the board's HTML; act(st, data, e) a tap on a [data-act]
+// data-set controls; hint (a string, or hint(st) for one that follows the settings) and note (help text); board(st, view) the board's HTML; act(st, data, e) a tap on a [data-act]
 // element (true when the board changed); bind(el) pointer work of its own; pieces: true for the drag-and-drop tools.
 let pid = 1;
 const newId = () => `${Date.now().toString(36)}${(pid++).toString(36)}`;
@@ -53,7 +95,7 @@ const sum = ps => ps.reduce((s, p) => s + (+p.value || 0), 0);
 const count = (ps, k) => ps.filter(p => p.kind === k).length;
 
 /** A drag-and-drop tool: pieces from a palette, Break and Regroup where the tool has them. */
-function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () => '', hint = '', note = '' }) {
+function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () => '', hint = '', note = '', onSet = null }) {
   const defsOf = st => pieceDefs(slug, opts(st));
   const breaks = BREAKS[slug];
   return {
@@ -66,11 +108,11 @@ function piecesTool({ slug, opts = () => ({}), init = {}, total, settings = () =
       ...(breaks ? [{ label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug, WORLD) }] : []),
     ],
     settings,
+    ...(onSet ? { onSet } : {}),
   };
 }
 const SHAPES = { hex: 'polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)', trap: 'polygon(25% 0,75% 0,100% 100%,0 100%)', tri: 'polygon(50% 0,100% 100%,0 100%)',
   para: 'polygon(25% 0,100% 0,75% 100%,0 100%)', rhom: 'polygon(12% 0,100% 0,88% 100%,0 100%)' };
-const ROUND = new Set(['pos', 'neg', 'blue', 'green', 'm', 'hth', 'tth', 'th', 'h', 't', 'o', 'tenth', 'hund', 'thou', 'penny', 'nickel', 'dime', 'quarter']);
 /** A label size that fits the piece: never wider than the piece, never taller than half of it, 9 to 20 pixels. */
 const pieceFont = p => Math.round(Math.min(20, Math.max(9, Math.min(p.w / 3, (p.w - 8) / (Math.max(1, [...String(p.label)].length) * 0.62), p.h * 0.55))));
 /** The parallelogram turned over (the one pattern block that is not its own mirror image): its outline drawn the other
@@ -79,9 +121,10 @@ const SHAPES_FLIPPED = { para: 'polygon(0 0,75% 0,100% 100%,25% 100%)' };
 /** A piece. Its buttons are on the hold-to-edit wheel (manip-wheel.js), which lives outside the piece, so nothing on it
  *  is ever turned or mirrored with it; a piece is never mirrored at all (Flip turns it over: manip.js flipPiece). */
 function pieceHtml(p, view) {
-  const on = !view.readOnly && view.sel === p.id;
+  const on = !view.readOnly && (view.sel === p.id || !!(view.many && view.many.p.has(p.id)));
   const clip = (p.flipped && SHAPES_FLIPPED[p.kind]) || SHAPES[p.kind];
-  const shape = clip ? `clip-path:${clip};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
+  // Round only where the tool's pieces are round (manip-board.js roundPiece: base ten's 'tenth' is a block, a disk's is a disk).
+  const shape = clip ? `clip-path:${clip};` : roundPiece(view.slug, p.kind) ? 'border-radius:50%;' : '';
   const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' || !p.label || p.label === '•' ? '' : `<span class="mp-lab">${esc(p.label)}</span>`}</div>`;
   const lock = p.locked ? `<span class="mp-lockb" aria-hidden="true" style="rotate:${-(+p.rot || 0)}deg">${icon('lock')}</span>` : '';
   const lifted = view.lifted === p.id, flipIn = view.flipIn === p.id;
@@ -167,6 +210,8 @@ const IMPL = {
   'fraction-tiles': piecesTool({ slug: 'fraction-tiles', init: { mode: 'frac' }, opts: st => ({ mode: st.mode }),
     total: st => `Total ${round3(sum(st.pieces))} wholes`,
     settings: st => sel('mode', [['frac', 'Fraction'], ['pct', 'Percent'], ['dec', 'Decimal']], st.mode, 'Labels'),
+    // Labels relabels the tiles already on the board too (as fraction circles do), not only new ones.
+    onSet: (st, key) => { if (key === 'mode') for (const p of st.pieces || []) { const m = /^f(\d+)$/.exec(p.kind || ''); if (m) p.label = fracLabel(+m[1], st.mode); } },
     hint: 'Stack rows by denominator to build a fraction wall. Hold a tile to pull it out of a row, or pick Fill to make it an outline.',
     note: 'Wholes, halves, thirds, fourths, fifths, sixths, eighths, tenths and twelfths. Line them up to show equivalence.' }),
   'algebra-tiles': piecesTool({ slug: 'algebra-tiles',
@@ -229,7 +274,7 @@ const IMPL = {
   'fraction-circles': {
     init: () => ({ placed: [], mode: 'frac', rings: false }),
     total: st => `Placed ${st.placed.reduce((s, p) => s + 1 / p.d, 0).toFixed(2)} wholes`,
-    palette: st => [...FRACTION_DENS.map(([d, c]) => ({ label: `${fracLabel(d, st.mode, '1')} piece`, color: c, run: s => { s.placed.push({ id: newId(), d, rot: 0 }); } })),
+    palette: st => [...FRACTION_DENS.map(([d, c]) => ({ label: `${fracLabel(d, st.mode, '1')} piece`, adds: true, color: c, run: s => { s.placed.push({ id: newId(), d, rot: 0 }); } })),
       { label: st.rings ? 'Single circles' : 'Rings view', color: '#5E35B1', run: s => { s.rings = !s.rings; } }],
     settings: st => sel('mode', [['frac', 'Fraction'], ['pct', 'Percent'], ['dec', 'Decimal']], st.mode, 'Labels'),
     hint: 'Tap a placed piece to turn it. The ✕ takes it away.',
@@ -242,7 +287,7 @@ const IMPL = {
       return `<div class="mp-pad mp-circles">${st.placed.map(p => {
         const a0 = (p.rot * Math.PI) / 180 - Math.PI / 2, lab = fracLabel(p.d, st.mode, '1');
         return `<div class="mp-circle"><button type="button" data-act="turn" data-id="${p.id}" ${view.readOnly ? 'tabindex="-1"' : ''} aria-label="${esc(lab)} piece, tap to turn"><svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="70" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${p.d === 1 ? `<circle cx="75" cy="75" r="68" fill="${col(1)}" fill-opacity=".9" stroke="#fff" stroke-width="2"/>` : `<path d="${pie(75, 75, 68, a0, a0 + (2 * Math.PI) / p.d)}" fill="${col(p.d)}" fill-opacity=".85" stroke="#fff" stroke-width="2"/>`}<text x="75" y="80" text-anchor="middle" font-size="17" font-weight="700" fill="var(--text)">${esc(lab)}</text></svg></button>${view.readOnly ? '' : btn('mp-x', `data-act="remove" data-id="${p.id}" aria-label="Remove ${esc(lab)} piece"`, '✕')}</div>`;
-      }).join('')}${st.placed.length ? '' : '<p class="mp-empty">Add pieces from the palette, then tap them to turn them into a whole.</p>'}</div>`;
+      }).join('')}${st.placed.length ? '' : '<p class="mp-empty">Add pieces from the palette. Tap a piece to turn it.</p>'}</div>`;
     },
     act: (st, d) => {
       if (d.act === 'turn') { const p = st.placed.find(x => x.id === d.id); if (p) p.rot += 360 / p.d; return !!p; }
@@ -252,33 +297,76 @@ const IMPL = {
   },
 
   'number-lines': {
-    init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null }),
-    total: st => `Points ${st.points.join(', ') || 'none'}`,
+    // Two modes (25 Nov 2026, the owner: "whenever I click it adds a blue dot"): Points puts a dot where you tap;
+    // Jumps chains arcs (the first tap picks the start, each next tap lands a jump from where the last one landed) and
+    // writes the number sentence. Tapping a dot or a jump selects it (never a new dot on top of it); Delete takes it away.
+    init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null, mode: 'points' }),
+    total: st => { const s = nlSentence(st); return st.mode === 'jumps' && s ? s.text : `Points ${st.points.join(', ') || 'none'}`; },
     palette: () => [{ label: 'Add a point at 0', color: '#00ACC1', run: s => { s.points.push(0); } },
-      { label: 'Start a jump', color: '#FF6B4A', run: s => { s.jumpFrom = s.points[0] ?? s.min; } },
-      { label: 'Clear jumps', color: '#212121', run: s => { s.jumps = []; } }],
+      { label: 'Clear the line', color: '#212121', run: s => { s.points = []; s.jumps = []; s.jumpFrom = null; } }],
     settings: st => `<label class="mp-set"><span>From</span><input class="input input-sm mp-num" type="number" data-set="min" value="${st.min}"></label><label class="mp-set"><span>To</span><input class="input input-sm mp-num" type="number" data-set="max" value="${st.max}"></label>
       ${sel('step', [['1', '1'], ['0.5', '0.5'], ['0.25', '1/4'], ['0.1', '0.1'], ['5', '5'], ['10', '10']], st.step, 'Step')}${toggle('hide', st.hide, 'Show labels', 'Hide labels')}`,
-    hint: 'Tap the line to drop a point on the nearest step. Start a jump, then tap where it lands.',
-    note: 'Open lines (labels hidden), jump arcs for adding and subtracting, and fraction and decimal steps.',
-    board: st => {
+    // The hint follows the switch (a function of the line's state: renderChrome's hintOf).
+    hint: st => (st && st.mode === 'jumps' ? 'Jumps: tap where to start, then where each jump lands. Tap a jump to select it, then Delete. Switch to Points to put dots on the line.'
+      : 'Points: tap the line to put a dot on it. Tap a dot to select it, then Delete. Switch to Jumps to make jumps.'),
+    note: 'Open lines (labels hidden), jump arcs that write the number sentence, and fraction and decimal steps.',
+    board: (st, view = {}) => {
       const W = 860, min = +st.min, max = +st.max > +st.min ? +st.max : +st.min + 1, step = +st.step || 1;
       const x = v => 30 + ((v - min) / (max - min)) * (W - 60);
       const ticks = []; for (let v = min; v <= max + 1e-4 && ticks.length < 201; v += step) ticks.push(round3(v));
-      return `<div class="mp-pad mp-scrollx"><svg class="mp-nl" data-w="${W}" width="${W}" height="190" viewBox="0 0 ${W} 190" role="img" aria-label="Number line">
+      const jm = st.mode === 'jumps' && !st.ask, edit = !st.ask && !view.readOnly, from = nlFrom(st);
+      const sent = nlSentence(st), sel = nlSel(st), selJ = sel && sel.k === 'j' ? sel.i : -1, selP = sel && sel.k === 'p' ? sel.i : -1;
+      const help = !edit ? '' : jm ? (from === null ? 'Tap the line where the jumps start.' : `Jumping from <b>${from}</b>. Tap where the next jump lands.`) : 'Tap the line to put a dot on it. Tap a dot or a jump to select it.';
+      const tags = []; // each jump's label kept clear of the ones before it: a short jump over a long one goes higher
+      const arc = (j, i) => {
+        const mx = (x(j.a) + x(j.b)) / 2, d = round3(j.b - j.a), dir = d >= 0 ? 1 : -1;
+        let h = Math.min(120, 26 + Math.abs(x(j.b) - x(j.a)) / 9);
+        while (h < 140 && tags.some(t => Math.abs(t.x - mx) < 48 && Math.abs(t.h - h) < 26)) h += 26;
+        tags.push({ x: mx, h });
+        const path = `M ${x(j.a)} 102 Q ${mx} ${102 - h * 2} ${x(j.b)} 102`;
+        const attrs = edit ? ` data-act="nlsel" data-k="j" data-i="${i}" role="button" aria-pressed="${i === selJ}" aria-label="Select the jump ${d > 0 ? '+' : ''}${d}"` : '';
+        // The arc, then (drawn after every arc) its label: no arc ever crosses a label.
+        return [`<g class="mp-nl-jump${i === selJ ? ' on' : ''}"${attrs}>${i === selJ ? `<path d="${path}" fill="none" stroke="var(--text)" stroke-width="9" stroke-opacity=".18" stroke-linecap="round"/>` : ''}<path d="${path}" fill="none" stroke="transparent" stroke-width="18"/><path d="${path}" fill="none" stroke="#FF6B4A" stroke-width="${i === selJ ? 5 : 3.5}"/><polygon points="${x(j.b)},103 ${x(j.b) - 9 * dir},92 ${x(j.b) + 3 * dir},90" fill="#FF6B4A"/></g>`,
+          `<g class="mp-nl-tag${i === selJ ? ' on' : ''}"${attrs.replace(' role="button"', '').replace(/ aria-[a-z]+="[^"]*"/g, '')}><rect x="${mx - 22}" y="${102 - h - 24}" width="44" height="24" rx="12" fill="var(--card, #fff)" stroke="#FF6B4A" stroke-width="${i === selJ ? 3 : 2}"/><text x="${mx}" y="${102 - h - 7}" text-anchor="middle" font-size="14" font-weight="800" fill="#FF6B4A">${d > 0 ? '+' : ''}${d}</text></g>`];
+      };
+      const arcs = st.jumps.map(arc);
+      return `<div class="mp-pad mp-scrollx">${edit ? `<div class="mp-nl-top"><div class="mp-nl-mode" role="group" aria-label="What a tap does">${btn(`mp-nl-m${jm ? '' : ' on'}`, `data-act="nlmode" data-m="points" aria-pressed="${!jm}"`, '● Points')}${btn(`mp-nl-m${jm ? ' on' : ''}`, `data-act="nlmode" data-m="jumps" aria-pressed="${jm}"`, '↷ Jumps')}</div><p class="mp-nl-help">${help}</p></div>` : ''}
+        <svg class="mp-nl" data-w="${W}" data-min="${min}" data-max="${max}" data-step="${step}" data-mode="${jm ? 'jumps' : 'points'}"${from !== null ? ` data-from="${from}"` : ''} width="${W}" height="${jm || st.jumps.length ? 240 : 190}" viewBox="0 ${jm || st.jumps.length ? -50 : 0} ${W} ${jm || st.jumps.length ? 240 : 190}" role="img" aria-label="Number line">
         <line x1="20" y1="110" x2="${W - 20}" y2="110" stroke="var(--text)" stroke-width="3"/><polygon points="${W - 20},110 ${W - 34},102 ${W - 34},118" fill="var(--text)"/><polygon points="20,110 34,102 34,118" fill="var(--text)"/>
         ${ticks.map(v => `<line x1="${x(v)}" y1="100" x2="${x(v)}" y2="120" stroke="var(--text)" stroke-width="2"/>${st.hide ? '' : `<text x="${x(v)}" y="142" text-anchor="middle" font-size="13" fill="var(--text)">${v}</text>`}`).join('')}
-        ${st.jumps.map(j => { const mx = (x(j.a) + x(j.b)) / 2, h = 34 + Math.abs(x(j.b) - x(j.a)) / 9, d = round3(j.b - j.a); return `<path d="M ${x(j.a)} 100 Q ${mx} ${100 - h} ${x(j.b)} 100" fill="none" stroke="#FF6B4A" stroke-width="3"/><text x="${mx}" y="${92 - h / 2}" text-anchor="middle" font-size="13" font-weight="700" fill="#FF6B4A">${d > 0 ? '+' : ''}${d}</text>`; }).join('')}
-        ${st.points.map(p => `<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="${st.ask ? 22 : 14}" font-weight="800" fill="var(--text)">${st.ask ? '?' : p}</text>`).join('')}
-        ${st.jumpFrom !== null && st.jumpFrom !== undefined ? `<text x="${x(st.jumpFrom)}" y="30" font-size="13" font-weight="700" fill="#FF6B4A">Jump from ${st.jumpFrom}: tap where it lands</text>` : ''}</svg>
-        ${st.ask ? '' : `<div class="row mp-chips">${st.points.map((p, i) => btn('chip', `data-act="unpoint" data-i="${i}" aria-label="Remove point ${p}"`, `${p} ✕`)).join('')}</div>`}</div>`;
+        ${arcs.map(a => a[0]).join('')}${arcs.map(a => a[1]).join('')}
+        ${jm && from !== null && !st.jumps.some(j => j.b === from) ? `<g><circle cx="${x(from)}" cy="110" r="9" fill="#FF6B4A" stroke="#fff" stroke-width="2.5"/><text x="${x(from)}" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="#FF6B4A">start</text></g>` : ''}
+        ${st.points.map((p, i) => `<g class="mp-nl-pt${i === selP ? ' on' : ''}"${edit ? ` data-act="nlsel" data-k="p" data-i="${i}" role="button" aria-pressed="${i === selP}" aria-label="Select the point ${p}"` : ''}><circle cx="${x(p)}" cy="110" r="16" fill="transparent"/>${i === selP ? `<circle cx="${x(p)}" cy="110" r="18" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-dasharray="4 3"/>` : ''}<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/>${st.ask ? `<text x="${x(p)}" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="var(--text)">?</text>` : `<rect x="${x(p) - 17}" y="64" width="34" height="22" rx="8" fill="#00ACC1"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${p}</text>`}</g>`).join('')}
+        <g class="mp-nl-ghost"></g></svg>
+        ${edit && jm && sent ? `<div class="mp-nl-sum" aria-live="polite">${sent.html}</div>` : ''}
+        ${edit ? `<div class="row mp-chips">${sel ? btn('chip mp-nl-del', 'data-act="nldel"', `🗑 Delete ${sel.k === 'p' ? `the dot at ${esc(String(st.points[sel.i]))}` : `the ${esc(nlJumpLabel(st.jumps[sel.i]))} jump`}`) : ''}${jm ? `${btn('chip', `data-act="nlundo" ${st.jumps.length ? '' : 'disabled'}`, '↶ Undo jump')}${btn('chip', `data-act="nlnew" ${from === null ? 'disabled' : ''}`, 'Start from a new number')}${btn('chip', `data-act="nlclearj" ${st.jumps.length || from !== null ? '' : 'disabled'}`, 'Clear jumps')}` : `${btn('chip', `data-act="nlundo" ${st.points.length ? '' : 'disabled'}`, '↶ Undo')}${btn('chip', `data-act="nlclearp" ${st.points.length ? '' : 'disabled'}`, 'Clear dots')}`}</div>` : ''}</div>`;
     },
     act: (st, d, e) => {
-      if (d.act === 'unpoint') { st.points.splice(+d.i, 1); return true; }
-      const svg = e.target.closest('svg.mp-nl'); if (!svg) return false;
-      const r = svg.getBoundingClientRect(), W = 860, min = +st.min, max = +st.max > min ? +st.max : min + 1, step = +st.step || 1;
-      const v = round3(Math.round((min + (((e.clientX - r.left) / r.width) * W - 30) / (W - 60) * (max - min)) / step) * step);
-      if (st.jumpFrom !== null && st.jumpFrom !== undefined) { st.jumps.push({ a: st.jumpFrom, b: v }); st.jumpFrom = null; } else st.points.push(v);
+      if (d.act === 'nlsel') { const k = d.k === 'j' ? 'j' : 'p', i = +d.i; st.sel = st.sel && st.sel.k === k && st.sel.i === i ? null : { k, i }; return true; }
+      if (d.act === 'nldel') {
+        const sel = nlSel(st); st.sel = null; if (!sel) return true;
+        if (sel.k === 'p') { st.points.splice(sel.i, 1); return true; }
+        const [j] = st.jumps.splice(sel.i, 1); if (nlFrom(st) === j.b && !st.jumps.some(x => x.b === j.b)) st.jumpFrom = j.a; return true;
+      }
+      if (d.act && d.act.startsWith('nl')) st.sel = null;
+      if (d.act === 'nlmode') { st.mode = d.m === 'jumps' ? 'jumps' : 'points'; return true; }
+      if (d.act === 'nlundo') {
+        if (st.mode === 'jumps') { const j = st.jumps.pop(); if (!j) return false; st.jumpFrom = j.a; return true; }
+        if (!st.points.length) return false; st.points.pop(); return true;
+      }
+      if (d.act === 'nlnew') { st.jumpFrom = null; return true; }
+      if (d.act === 'nlclearj') { st.jumps = []; st.jumpFrom = null; return true; }
+      if (d.act === 'nlclearp') { st.points = []; return true; }
+      const svg = e && e.target && e.target.closest && e.target.closest('svg.mp-nl'); if (!svg) return false;
+      st.sel = null;
+      const v = nlValue(st, svg, e.clientX);
+      if (st.mode === 'jumps') {
+        const from = nlFrom(st);
+        if (from === null) { st.jumpFrom = v; return true; }
+        if (v === from) return false;
+        st.jumps.push({ a: from, b: v }); st.jumpFrom = v; return true;
+      }
+      st.points.push(v);
       return true;
     },
     boardTap: true,
@@ -308,7 +396,7 @@ const IMPL = {
   'xy-coordinate-board': {
     init: () => OBJECTS['xy-coordinate-board'][0].init(),
     total: st => `${st.pts.length} points`,
-    palette: st => [...XY_COLORS.map(c => ({ label: 'Point color', color: c, pressed: st.color === c, run: s => { s.color = c; } })),
+    palette: st => [...XY_COLORS.map(c => ({ label: COLOR_NAME[c], aria: `${COLOR_NAME[c]} points`, color: c, pressed: st.color === c, run: s => { s.color = c; } })),
       { label: st.connect ? 'Lines off' : 'Connect the points', color: '#212121', run: s => { s.connect = !s.connect; } },
       { label: 'Clear points', color: '#616161', run: s => { s.pts = []; } }],
     settings: st => `${sel('four', [['', 'First quadrant'], ['1', 'All four quadrants']], st.four ? '1' : '', 'Quadrants')}${toggle('labels', st.labels, 'Labels on', 'Labels off')}${toggle('arrows', !!st.arrows, 'Line arrows on', 'Line arrows off')}${toggle('table', st.table !== false, 'Table on', 'Table off')}`,
@@ -339,7 +427,7 @@ const IMPL = {
   geoboard: {
     init: () => ({ board: 'square', band: [], bands: [], color: '#E53935', fill: true }),
     total: st => { const all = [...st.bands, ...(st.band.length > 1 ? [{ pts: st.band }] : [])]; return `Bands ${all.length} · Area about ${all.reduce((s, b) => s + area(b.pts), 0).toFixed(1)} square units`; },
-    palette: st => [...['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA'].map(c => ({ label: 'Band color', color: c, pressed: st.color === c, run: s => { s.color = c; } })),
+    palette: st => [...XY_COLORS.map(c => ({ label: COLOR_NAME[c], aria: `${COLOR_NAME[c]} band`, color: c, pressed: st.color === c, run: s => { s.color = c; } })),
       { label: 'Close the band', color: '#212121', run: s => { if (s.band.length > 2) { s.bands.push({ pts: s.band, color: s.color }); s.band = []; } } },
       { label: 'Clear all', color: '#616161', run: s => { s.bands = []; s.band = []; } }],
     settings: st => `${sel('board', [['square', 'Square'], ['iso', 'Isometric'], ['circle', 'Circular']], st.board, 'Board')}${toggle('fill', st.fill, 'Fill on', 'Fill off')}`,
@@ -428,6 +516,8 @@ function bindClocks(el, ctx) {
 }
 
 const XY_COLORS = ['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA'];
+/** The names of the points' and bands' colors (a color button says which color it is). */
+const COLOR_NAME = { '#E53935': 'Red', '#1E88E5': 'Blue', '#43A047': 'Green', '#FB8C00': 'Orange', '#8E24AA': 'Purple' };
 const XY_S = 440, XY_MAX = 60;
 let xyDragEnd = 0;
 /** An arrowhead at (x, y) pointing along (dx, dy) (screen pixels), as a polygon's points. */
@@ -442,6 +532,8 @@ function xySvgInner(st, ro = false) {
   const S = XY_S, { lo, hi } = xyRange(st), px = v => ((v - lo) / (hi - lo)) * S, py = v => S - ((v - lo) / (hi - lo)) * S;
   const ticks = []; for (let v = lo; v <= hi; v++) ticks.push(v);
   const X0 = px(0), Y0 = py(0), A = 12;
+  // The x axis's numbers sit under it; in the first quadrant the axis is the grid's bottom edge, so they go just above it.
+  const xLabY = Y0 + 14 <= S - 2 ? Y0 + 14 : Y0 - 4;
   const axes = `<line x1="${X0}" y1="${A}" x2="${X0}" y2="${S - (lo < 0 ? A : 0)}" stroke="var(--text)" stroke-width="2"/><line x1="${lo < 0 ? A : 0}" y1="${Y0}" x2="${S - A}" y2="${Y0}" stroke="var(--text)" stroke-width="2"/>
     <polygon points="${arrowHead(S - 1, Y0, 1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, 1, 0, -1, 12)}" fill="var(--text)"/>
     ${lo < 0 ? `<polygon points="${arrowHead(1, Y0, -1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, S - 1, 0, 1, 12)}" fill="var(--text)"/>` : ''}
@@ -461,7 +553,7 @@ function xySvgInner(st, ro = false) {
   }).join('') : '';
   const dots = st.pts.map((p, i) => `<circle cx="${px(p.x)}" cy="${py(p.y)}" r="8" fill="${esc(p.color)}" stroke="#fff" stroke-width="2"/>${st.labels ? `<text x="${px(p.x) + 11}" y="${py(p.y) - 8}" font-size="13" font-weight="700" fill="var(--text)" pointer-events="none">(${p.x},${p.y})</text>` : ''}`).join('');
   const hits = ro ? '' : st.pts.map((p, i) => `<circle class="mp-xypt" data-pt="${i}" cx="${px(p.x)}" cy="${py(p.y)}" r="17" fill="transparent"><title>Drag to move this point</title></circle>`).join('');
-  return `${ticks.map(v => `<line x1="${px(v)}" y1="0" x2="${px(v)}" y2="${S}" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="0" y1="${py(v)}" x2="${S}" y2="${py(v)}" stroke="var(--line)" stroke-dasharray="2 4"/>${v && v !== hi ? `<text x="${px(v) + 3}" y="${Y0 + 14}" font-size="11" fill="var(--muted)">${v}</text><text x="${X0 + 4}" y="${py(v) - 3}" font-size="11" fill="var(--muted)">${v}</text>` : ''}`).join('')}
+  return `${ticks.map(v => `<line x1="${px(v)}" y1="0" x2="${px(v)}" y2="${S}" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="0" y1="${py(v)}" x2="${S}" y2="${py(v)}" stroke="var(--line)" stroke-dasharray="2 4"/>${v && v !== hi ? `<text x="${px(v) + 3}" y="${xLabY}" font-size="11" fill="var(--muted)">${v}</text><text x="${X0 + 4}" y="${py(v) - 3}" font-size="11" fill="var(--muted)">${v}</text>` : ''}`).join('')}
     ${axes}${lines}${dots}${hits}`;
 }
 /**
@@ -554,6 +646,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   ROOT.innerHTML = `<div class="mp-tool">
     <div class="mp-head"><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a>
       <div class="mp-title"><h1>${toolIconHtml(tool.slug, { size: 40 })} ${esc(tool.name)}</h1><p class="small muted">${esc(CATS[tool.cat])} · ${esc(t('js.manip.grades', { grades: tool.grades }))}</p></div>
+      ${howButton(tool)}
       <div class="mp-total" id="mp-total" aria-live="polite"></div></div>
     <div class="mp-work">
       <aside class="mp-side" aria-label="${esc(t('js.manip.side.label'))}">
@@ -569,6 +662,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
             <svg class="mp-ink" id="mp-ink" viewBox="0 0 ${WORLD.w} ${WORLD.h}" aria-hidden="true"></svg>
             <div class="mp-texts" id="mp-texts"></div><div class="mp-notes" id="mp-notes"></div><div class="mp-ghost" id="mp-ghost" hidden></div>
           </div>
+          <div class="mp-selbox" id="mp-selbox" hidden></div><div class="mp-selpill" id="mp-selpill" role="group" aria-live="polite" hidden></div>
           <div id="mp-draw"></div>
           <div class="mp-zoom" id="mp-zoom" role="group" aria-label="${esc(t('js.manip.view.zoom'))}">${btn('chip', `data-view="out" aria-label="${esc(t('js.manip.view.out'))}"`, '−')}<span class="mp-pct">100%</span>${btn('chip', `data-view="in" aria-label="${esc(t('js.manip.view.in'))}"`, '+')}${btn('chip', 'data-view="fit"', `⤢ ${esc(t('js.manip.view.fit'))}`)}</div>
         </div>
@@ -586,6 +680,21 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   startAutosave();
   if (HOST) CHAT.attach(chatCtx());
 }
+// ---------------------------------------------------------------- "How it works": a short video per tool
+/** The quiet "▶ How it works" button, for a tool with a video (manip-data.js TUTORIALS); '' otherwise. */
+const howButton = tool => (tutorialOf(tool.slug) ? btn('btn btn-sm mp-howbtn', `data-how="${esc(tool.slug)}"`, `${iconHtml('▶️', { size: 18 })} ${esc(t('js.manip.how.button'))}`) : '');
+/** The tool's video in the site's modal sheet (app.js sheet(): ✕, Escape and a tap outside close it, focus goes back
+ *  to the button), with its poster and English captions on. */
+function openHow(slug) {
+  const tool = toolOf(slug), v = tutorialOf(slug); if (!tool || !v) return;
+  const { el } = sheet({ title: t('js.manip.how.title', { tool: tool.name }), content: `<video class="mp-howvideo" controls playsinline preload="metadata" width="1280" height="720" poster="${esc(v.poster)}" aria-label="${esc(t('js.manip.how.video', { tool: tool.name }))}">
+    <source src="${esc(v.mp4)}" type="video/mp4"><track kind="captions" src="${esc(v.vtt)}" srclang="en" label="English"></video>` });
+  el.querySelector('.sheet').classList.add('mp-vsheet');
+  // Captions on from the start (Safari ignores the default attribute on a track added with the page's HTML).
+  const vid = el.querySelector('video'); if (vid && vid.textTracks[0]) vid.textTracks[0].mode = 'showing';
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-how]'); if (b && ROOT.contains(b)) { e.preventDefault(); openHow(b.dataset.how); } });
+
 /** What Oomba (the companion, with this board's workflow: public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
 const chatCtx = () => ({
   slug: V.tool.slug, name: V.tool.name, layout: () => V && fit(),
@@ -614,9 +723,9 @@ function paletteFor(slug, impl, st, ctx) {
   } }));
   if (objectTool(slug)) {
     const o = target(slug, st, ctx.osel);
-    if (o && !o.st.q) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
+    if (o && !o.st.q) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, aria: p.aria, adds: !!p.adds, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
   } else {
-    for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
+    for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, round: roundPiece(slug, d.kind), adds: true, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
     // Break is on a piece's wheel (hold it); Regroup, which takes ten pieces, stays here.
     if (BREAKS[slug]) out.push({ group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug, ctx.space) });
   }
@@ -637,7 +746,7 @@ function bindTrayDrag(host, ctx) {
     const z = ctx.zoom(), it = d.item, w = it.mini ? it.mini.w * z : 120, h = it.mini ? it.mini.h * z : 70;
     ghost = document.createElement('div'); ghost.className = `mp-trayghost${it.mini ? '' : ' obj'}`; ghost.setAttribute('aria-hidden', 'true');
     Object.assign(ghost.style, { width: `${w}px`, height: `${h}px`, ...(it.mini ? { background: it.color } : {}) });
-    if (it.mini && SHAPES[it.mini.kind]) ghost.style.clipPath = SHAPES[it.mini.kind]; else if (it.mini && ROUND.has(it.mini.kind) && !/^b\d/.test(it.mini.kind)) ghost.style.borderRadius = '50%';
+    if (it.mini && SHAPES[it.mini.kind]) ghost.style.clipPath = SHAPES[it.mini.kind]; else if (it.mini && it.round) ghost.style.borderRadius = '50%';
     ghost.textContent = it.mini ? it.face || '' : it.label.replace(/^Add (a |an )?/, '');
     d.w = w; d.h = h; document.body.appendChild(ghost); place(d.x, d.y);
     try { d.b.setPointerCapture(d.id); } catch { /* gone */ }
@@ -673,10 +782,14 @@ function bindTrayDrag(host, ctx) {
   });
   host.addEventListener('pointercancel', () => { if (d && d.on) delete host.dataset.dragged; end(); });
 }
+/** A palette button's accessible name: a new object or a tool action by its own label ("Lines off", "Close the band",
+ *  "Red points"), a new piece "Add <piece>" (add(label) words it: solo or room). */
+const palAria = (p, add) => p.aria || (p.adds ? add(p.label) : p.label);
 /** One palette button (solo and room): a mini piece with its value inside for pieces, a + for new objects, a color
- *  swatch for an object's actions. aria: its accessible name. */
+ *  swatch for an object's actions. aria: its accessible name, or add(label) for the "Add ..." wording (palAria). */
 function palButton(p, i, aria) {
-  const mini = p.mini ? `<span class="mp-sw mp-swv" style="background:${esc(p.color)};${SHAPES[p.mini.kind] ? `clip-path:${SHAPES[p.mini.kind]};border-radius:0;` : ROUND.has(p.mini.kind) && !/^b\d/.test(p.mini.kind) ? 'border-radius:50%;' : ''}">${esc(p.face || '')}</span>` : '';
+  if (typeof aria === 'function') aria = palAria(p, aria);
+  const mini = p.mini ? `<span class="mp-sw mp-swv" style="background:${esc(p.color)};${SHAPES[p.mini.kind] ? `clip-path:${SHAPES[p.mini.kind]};border-radius:0;` : p.round ? 'border-radius:50%;' : ''}">${esc(p.face || '')}</span>` : '';
   const lead = p.plus ? '<span class="mp-plus" aria-hidden="true">+</span>' : mini || (p.color ? `<span class="mp-sw" style="background:${esc(p.color)}"></span>` : '');
   const text = p.mini ? p.text : p.label;
   return btn(`mp-pal${p.hot ? ' hot' : ''}${p.plus ? ' add' : ''}${p.mini ? ' piece' : ''}`, `data-pal="${i}"${p.pressed ? ' aria-pressed="true"' : ''} aria-label="${esc(aria)}"`, `${lead}${text ? `<span>${esc(text)}</span>` : ''}`);
@@ -764,23 +877,24 @@ function objTotal(slug, impl, o, st) {
 function objName(slug, o) { const K = kindOf(slug, o.k); return o.k === 'mat' && o.st && o.st.label ? o.st.label : `${K ? K.name : ''}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`; }
 function objHtml(slug, impl, o, view, st = {}) {
   const K = kindOf(slug, o.k); if (!K) return '';
-  const z = K.size(o.st), s = +o.s || 1, on = !view.readOnly && view.osel === o.id;
+  // Selected: an outline; selected alone, also the corner that resizes it (never on one of many).
+  const z = K.size(o.st), s = +o.s || 1, one = !view.readOnly && view.osel === o.id, on = one || (!view.readOnly && !!(view.many && view.many.o.has(o.id)));
   // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
   const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view, o.k === 'pv-chart' && impl.pieces ? chartInfo(slug, st, o) : null);
   const name = objName(slug, o);
   const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">${iconHtml('✓', { size: 18 })} ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
-  const bar = on && !o.locked ? `<span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
+  const bar = one && !o.locked ? `<span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
   const lock = o.locked ? `<span class="mp-olock" aria-hidden="true">${icon('lock')}</span>` : '';
   const head = o.locked ? t('js.manip.wheel.objLocked', { name }) : t('js.manip.obj.move', { name });
   return `<div class="mp-obj${on ? ' on' : ''}${o.locked ? ' locked' : ''}${UNDER.has(o.k) ? ' mp-mat' : ''}${view.fresh === o.id ? ' fresh' : ''} k-${esc(o.k)}" data-oid="${esc(o.id)}" style="left:${+o.x}px;top:${+o.y}px;width:${Math.round(z.w * s)}px;height:${Math.round(z.h * s)}px">
     <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead"${view.readOnly ? '' : ' role="button" tabindex="0" aria-haspopup="menu"'} aria-label="${esc(head)}">${lock}<span class="mp-oname">⠿ ${esc(name)}</span>${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
 }
-/** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, readOnly }. */
+/** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, many, readOnly }. */
 function boardHtml(slug, impl, st, view) {
   const objs = [...(st.objects || [])].sort((a, b) => (UNDER.has(a.k) ? 0 : 1) - (UNDER.has(b.k) ? 0 : 1));
   // Blocks in a chart's column that do not belong there yet (waiting for ten to trade) are drawn a little softer.
-  const pv = impl.pieces && objs.some(o => o.k === 'pv-chart') ? { ...view, strays: strayIds(slug, st) } : view;
+  const pv = impl.pieces && objs.some(o => o.k === 'pv-chart') ? { ...view, slug, strays: strayIds(slug, st) } : { ...view, slug };
   return objs.map(o => objHtml(slug, impl, o, pv, st)).join('') + (st.pieces || []).map(p => pieceHtml(p, pv)).join('');
 }
 
@@ -789,7 +903,7 @@ function renderChrome() {
   renderTotal();
   const slug = V.tool.slug, items = paletteFor(slug, V.impl, V.st, { osel: V.osel, region: viewRegion(), space: WORLD, max: OBJ_MAX, place: d => placePiece(V.st, d) });
   const o = target(slug, V.st, V.osel), K = o && kindOf(slug, o.k);
-  const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => palButton(p, i, p.plus ? p.label : t('js.manip.side.add', { label: p.label }))).join('')}</div>` : ''; };
+  const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => palButton(p, i, label => t('js.manip.side.add', { label }))).join('')}</div>` : ''; };
   document.getElementById('mp-palette').innerHTML = group('add', t('js.manip.side.addCap')) + group('obj', K ? t('js.manip.side.forObj', { name: `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` }) : '') + group('piece', t('js.manip.side.objects'));
   document.getElementById('mp-toolsrow').innerHTML = [
     btn('mp-tbtn', `data-tool="undo"${V.hist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })} ${esc(t('js.manip.side.undo'))}`),
@@ -806,9 +920,11 @@ function renderChrome() {
   ].join('');
   const set = document.getElementById('mp-settings');
   const settings = objectTool(slug) ? (o && !o.st.q && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
-  set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(V.impl.hint || '')}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
+  set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(hintOf(V.impl, objectTool(slug) ? o && o.st : V.st))}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
   renderAnnBar(); renderDraft(); renderSteps(); renderStepCard();
 }
+/** A tool's help text under its settings: a string, or a function of the state it describes (the number line's mode). */
+const hintOf = (impl, st) => (typeof impl.hint === 'function' ? impl.hint(st || {}) : impl.hint) || '';
 function renderTotal() {
   const el = document.getElementById('mp-total'); if (!el) return;
   const slug = V.tool.slug;
@@ -816,7 +932,8 @@ function renderTotal() {
   // Objects show their own totals.
   const mats = V.st.objects.filter(x => UNDER.has(x.k)).length;
   const practice = V.st.objects.some(x => x.st && (x.st.q || x.st.key));   // a practice board: no total gives an answer away
-  el.textContent = !practice && !objectTool(slug) && (mats === 0 || (slug === 'money' && mats <= 1)) ? V.impl.total(V.st) : '';
+  // Totals: off hides it too (it hid only the objects' own totals; seen recording, 25 Nov 2026).
+  el.textContent = V.totals !== false && !practice && !objectTool(slug) && (mats === 0 || (slug === 'money' && mats <= 1)) ? V.impl.total(V.st) : '';
   el.hidden = !el.textContent;
 }
 /** The clocks' (and any tool's) own pointer work, on the solo board. */
@@ -827,7 +944,8 @@ function renderBoard() {
   board.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content');
   const slug = V.tool.slug;
-  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn, traded: V.traded });
+  if (V.many) setMany(selKeep(V.st, V.many));   // what a trade, an undo or a delete took away leaves the selection
+  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, many: V.many, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn, traded: V.traded });
   V.fresh = null; V.traded = null;
   // The hint only on a truly empty board, in the middle of the window (never on top of anything).
   const empty = !V.st.objects.length && !(V.st.pieces || []).length && !V.ann.notes.length && !V.ann.texts.length && !V.ann.strokes.length;
@@ -840,12 +958,59 @@ function renderBoard() {
   const draw = document.getElementById('mp-draw');
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
   if (V.annotate) bindDraw(draw.firstChild);
-  applyView();
+  renderSelPill(); applyView(); keepInView();
 }
-/** Pen marks in plane pixels. A mark is drawn once it has two different points: a single point (the moment the pen
- *  touches down) drew, in some browsers, a "dot" as wide as the whole board in the pen's color (a zero-length line
- *  with round caps under a stretched 0..1 viewBox), which is the flash seen on pointerdown. */
-const inkLine = (s, W, H) => { const pts = (s.pts || []).map(p => `${Math.round(+p.x * W * 10) / 10},${Math.round(+p.y * H * 10) / 10}`); return new Set(pts).size < 2 ? '' : `<polyline fill="none" stroke="${esc(s.c)}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" points="${pts.join(' ')}"/>`; };
+// ---------------------------------------------------------------- many at once (owner, 25 Nov 2026: "click and drag your cursor to select a bunch of objects at once")
+/** The selection as one set (a selection box, Shift+click): one thing is the usual single selection (V.sel or V.osel,
+ *  its corner and wheel as before); two or more are V.many (an outline on each, the pill, moved together). */
+function setMany(m) {
+  const n = selCount(m);
+  V.many = n > 1 ? m : null;
+  if (n === 1) { V.sel = m.p.size ? [...m.p][0] : null; V.osel = m.o.size ? [...m.o][0] : null; } else { V.sel = null; V.osel = null; }
+}
+const curSel = () => V.many || { p: new Set(V.sel ? [V.sel] : []), o: new Set(V.osel ? [V.osel] : []) };
+/** Shift+click: a piece (k 'p') or object ('o') joins the selection, or leaves it. Locked: nothing. */
+function toggleSel(k, it) {
+  if (it.locked) return;
+  const m = curSel(), c = { p: new Set(m.p), o: new Set(m.o) };
+  if (c[k].has(it.id)) c[k].delete(it.id); else c[k].add(it.id);
+  setMany(c);
+}
+/** The floating pill over the board: "N selected", Delete, and ✕ to clear (shared with the room: s, its words). */
+const selPillHtml = (n, s) => `<span class="mp-seln">${esc(s.count)}</span>${btn('chip mp-seldel', `data-seldel aria-label="${esc(s.delLabel)}"`, `🗑 ${esc(s.del)}`)}${btn('chip mp-selx', `data-selx aria-label="${esc(s.clear)}"`, '✕')}`;
+function renderSelPill() {
+  const el = document.getElementById('mp-selpill'); if (!el) return;
+  const n = selCount(V.many); el.hidden = !n;
+  el.innerHTML = n ? selPillHtml(n, { count: t('js.manip.sel.count', { n }), del: t('js.manip.sel.delete'), delLabel: t('js.manip.sel.deleteN', { n }), clear: t('js.manip.sel.clear') }) : '';
+}
+function clearMany() { if (!V.many) return; V.many = null; renderBoard(); renderChrome(); }
+/** Delete everything selected: one Undo step (and an Undo on the toast). */
+function deleteMany() {
+  if (!V.many) return;
+  const n = selCount(V.many);
+  change((st, v) => { if (!selDelete(st, v.many)) return false; v.many = null; v.sel = null; v.osel = null; });
+  const mark = V.hist.length;
+  undoToast(t('js.manip.sel.deleted', { n }), t('js.manip.wheel.undo'), () => { if (V && V.hist.length === mark) toolButton('undo'); });
+}
+/** Keys over a board with many selected: Delete or Backspace deletes them, Escape lets go (never while typing). One
+ *  listener for the page (the room has its own in public/js/manip-room.js). */
+const typing = el => !!(el && el.closest && el.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+document.addEventListener('keydown', e => {
+  if (!V || !V.many || !document.getElementById('mp-board') || typing(e.target) || wheelOpen()) return;
+  if (e.key === 'Escape') { e.preventDefault(); clearMany(); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteMany(); }
+});
+/** Space held (with a mouse over the board): a drag pans, wherever it starts. */
+document.addEventListener('keydown', e => {
+  if (e.code !== 'Space' || !V || typing(e.target) || e.target.closest?.('button, a, [role="button"]:not(.mp-piece)')) return;
+  const b = document.getElementById('mp-board'); if (!b || !(b.matches(':hover') || V.spaceDown)) return;
+  e.preventDefault(); V.spaceDown = true; b.classList.add('mp-grab');
+});
+const letGo = () => { if (V) V.pressing = false; };
+window.addEventListener('pointerup', letGo); window.addEventListener('pointercancel', letGo);
+const spaceUp = () => { if (!V) return; V.spaceDown = false; document.getElementById('mp-board')?.classList.remove('mp-grab'); };
+document.addEventListener('keyup', e => { if (e.code === 'Space') spaceUp(); });
+window.addEventListener('blur', spaceUp);
 function renderInk() { document.getElementById('mp-ink').innerHTML = V.ann.strokes.map(s => inkLine(s, WORLD.w, WORLD.h)).join(''); }
 
 // ---------------------------------------------------------------- the view: pan, zoom, fit
@@ -865,14 +1030,63 @@ function applyView() {
   const p = document.querySelector('#mp-zoom .mp-pct'); if (p) p.textContent = `${Math.round(V.view.z * 100)}%`;
 }
 function zoomAt(f, sx, sy) { const z = clamp(V.view.z * f, Z_MIN, Z_MAX), k = z / V.view.z; V.view = { x: sx - (sx - V.view.x) * k, y: sy - (sy - V.view.y) * k, z }; applyView(); }
+/** The board's clear area on screen, in board pixels: the zoom pill (bottom left on a computer, top right on a phone)
+ *  takes a strip off the bottom or the top, so Fit and keepInView never put anything under it (seen recording at
+ *  1280x720: the pill sat on the number line's corner). -> { top, bottom, w, h } */
+function clearArea() {
+  const s = vpSize(), b = document.getElementById('mp-board'), z = document.getElementById('mp-zoom');
+  let top = 0, bottom = s.h;
+  if (b && z && z.offsetHeight) {
+    const br = b.getBoundingClientRect(), zr = z.getBoundingClientRect();
+    if (zr.top - br.top > s.h / 2) bottom = Math.max(s.h / 2, zr.top - br.top); else top = Math.min(s.h / 2, zr.bottom - br.top);
+  }
+  return { top, bottom, w: s.w, h: s.h };
+}
 /** Everything on the board in view (never bigger than life): the objects, pieces, notes, texts and marks. */
 function fit() {
-  const s = vpSize(), st = boardState();
+  const a = clearArea(), st = boardState(), ch = a.bottom - a.top;
   const marks = V.ann.strokes.flatMap(x => (x.pts || []).map(p => ({ x: p.x * WORLD.w, y: p.y * WORLD.h, w: 1, h: 1 })));
   const box = bbox([...boxesOf(V.tool.slug, st, WORLD), ...marks]) || { x: WORLD.w / 2 - 300, y: WORLD.h / 2 - 200, w: 600, h: 400 };
-  const pad = 28, z = clamp(Math.min((s.w - pad * 2) / box.w, (s.h - pad * 2) / box.h), Z_MIN, 1);
-  V.view = { z, x: (s.w - box.w * z) / 2 - box.x * z, y: (s.h - box.h * z) / 2 - box.y * z };
+  const pad = 28, padY = a.top || a.bottom < a.h ? 12 : pad;   // beside the pill its own strip is the gap
+  const z = clamp(Math.min((a.w - pad * 2) / box.w, (ch - padY * 2) / box.h), Z_MIN, 1);
+  V.view = { z, x: (a.w - box.w * z) / 2 - box.x * z, y: a.top + (ch - box.h * z) / 2 - box.y * z };
+  V.sizes = objSizes();
   applyView();
+}
+/** A copy just made (the .fresh piece or object) out of view: the view moves just enough to show it (as keepInView
+ *  does for an object that grew), or fits when it is bigger than the screen. */
+function showFresh() {
+  const el = document.querySelector('#mp-content .mp-obj.fresh, #mp-content .mp-piece.fresh'), board = document.getElementById('mp-board'); if (!el || !board) return;
+  const b = board.getBoundingClientRect(), r = el.getBoundingClientRect(), a = clearArea(), m = 12;
+  if (r.width > a.w - 2 * m || r.height > a.bottom - a.top - 2 * m) { fit(); return; }
+  const L = r.left - b.left, T = r.top - b.top, R = L + r.width, B = T + r.height;
+  let dx = 0, dy = 0;
+  if (R > a.w - m) dx = a.w - m - R; if (L + dx < m) dx = m - L;
+  if (B > a.bottom - m) dy = a.bottom - m - B; if (T + dy < a.top + m) dy = a.top + m - T;
+  if (dx || dy) { V.view = { ...V.view, x: V.view.x + dx, y: V.view.y + dy }; applyView(); }
+}
+/** Each object's size on the plane (what keepInView compares). */
+const objSizes = () => new Map(V.st.objects.map(o => { const r = objRect(V.tool.slug, o); return [o.id, `${r.w}x${r.h}`]; }));
+/**
+ * An object that grew (the number line in Jumps is taller; an answer box with more lines) and now runs past the
+ * board's bottom or right edge: the view moves just enough to show it again, or fits when it no longer fits at this
+ * zoom. Only an object that was on screen, and never while a finger or the mouse is down on the board (V.pressing), so
+ * the view never jumps under a drag; the sizes are taken again when the drag ends, so a resize never nudges either.
+ */
+function keepInView() {
+  const prev = V.sizes || new Map(), now = objSizes(); V.sizes = now;
+  if (V.pressing) return;
+  const a = clearArea(), v = V.view, m = 12;
+  let dx = 0, dy = 0, refit = false;
+  for (const o of V.st.objects) {
+    const was = prev.get(o.id); if (!was || was === now.get(o.id)) continue;
+    const r = objRect(V.tool.slug, o), L = r.x * v.z + v.x, T = r.y * v.z + v.y, R = L + r.w * v.z, B = T + r.h * v.z;
+    if (R < 0 || B < a.top || L > a.w || T > a.bottom) continue;   // not on screen: leave the view alone
+    if (B > a.bottom - m) { if (r.h * v.z > a.bottom - a.top - 2 * m) refit = true; else dy = Math.min(dy, a.bottom - m - B, 0); dy = Math.max(dy, a.top + m - T); }
+    if (R > a.w - m) { if (r.w * v.z > a.w - 2 * m) refit = true; else dx = Math.min(dx, a.w - m - R, 0); dx = Math.max(dx, m - L); }
+  }
+  if (refit) { fit(); return; }
+  if (dx || dy) { V.view = { ...v, x: v.x + dx, y: v.y + dy }; applyView(); }
 }
 
 // ---------------------------------------------------------------- pieces in free spots, notes
@@ -916,79 +1130,6 @@ function renderTexts() {
 function textHtml(x, editing, readOnly = false) {
   return textBoxHtml(x, { editing: editing && !readOnly, ro: readOnly, del: 'data-tx', id: `tx-${x.id}`, label: t('js.manip.text.label'), ph: t('js.manip.text.ph'), delLabel: t('js.manip.text.delete') });
 }
-/**
- * A board text (solo and room). Its font size (S, M, L, XL) and, once its corner was dragged, its box (w x h in pixels of
- * its space: the words wrap inside it, and it grows taller when they need more room). While it is being written: a small
- * bar above it (a grip to drag it, A− and A+ for the size, × to delete it), the field, and a corner to resize it.
- * o: { editing, ro, del (the delete button's attribute), id (the field's id), label, ph, delLabel }
- */
-function textBoxHtml(x, o) {
-  const sized = Number.isFinite(+x.w) && Number.isFinite(+x.h), id = esc(x.id), f = textFont(x);
-  const style = `left:${(+x.x || 0) * 100}%;top:${(+x.y || 0) * 100}%;font-size:${f}px${sized ? `;width:${+x.w}px;min-height:${+x.h}px` : ''}`;
-  const cls = `mp-text${sized ? ' sized' : ''}`;
-  if (o.editing) {
-    const fs = x.fs in TEXT_SIZES ? x.fs : 'M';
-    return `<div class="${cls} editing" data-text="${id}" style="${style}">
-      <div class="mp-textbar"><span class="mp-textgrip" data-tgrip="${id}" role="img" aria-label="${esc(t('js.manip.text.move'))}" title="${esc(t('js.manip.text.move'))}">⠿</span>${btn('mp-tsz', `data-tsz="-1" data-id="${id}" aria-label="${esc(t('js.manip.text.smaller'))}" title="${esc(t('js.manip.text.smaller'))}"${fs === 'S' ? ' disabled' : ''}`, 'A−')}${btn('mp-tsz big', `data-tsz="1" data-id="${id}" aria-label="${esc(t('js.manip.text.bigger'))}" title="${esc(t('js.manip.text.bigger'))}"${fs === 'XL' ? ' disabled' : ''}`, 'A+')}${btn('mp-textx', `${o.del}="${id}" aria-label="${esc(o.delLabel)}"`, '×')}</div>
-      <label class="sr-only" for="${esc(o.id)}">${esc(o.label)}</label><textarea id="${esc(o.id)}" class="mp-textin" rows="1" maxlength="200" placeholder="${esc(o.ph)}" autocomplete="off" enterkeyhint="done">${esc(x.text)}</textarea>
-      <span class="mp-textrz" data-trz="${id}" role="img" aria-label="${esc(t('js.manip.text.resize'))}" title="${esc(t('js.manip.text.resize'))}"></span></div>`;
-  }
-  return `<div class="${cls}${o.ro ? ' ro' : ''}" data-text="${id}" style="${style}">${esc(x.text)}</div>`;
-}
-/** A text's font one size bigger or smaller (dir 1 or -1). -> false when it is already the biggest or smallest. */
-function textSizeButton(x, dir) {
-  const fs = stepTextSize(x.fs, dir); if (fs === (x.fs || 'M')) return false;
-  if (fs === 'M') delete x.fs; else x.fs = fs;
-  return true;
-}
-/** A text's box grown to show all its words while they are typed (sized boxes only; never past TEXT_BOX or the space). */
-function growText(x, ta, space) {
-  if (!ta || !Number.isFinite(+x.w) || !Number.isFinite(+x.h) || ta.scrollHeight <= ta.clientHeight + 1) return;
-  const h = Math.min(800, Math.round(space.h * (1 - (+x.y || 0))), ta.scrollHeight + 4); if (h <= +x.h) return;
-  x.h = h; const el = ta.closest('.mp-text'); if (el) el.style.minHeight = `${h}px`;
-}
-/**
- * A press on a text's grip (move it: the whole box, snapped to things nearby when let go) or its corner (resize it: its
- * words wrap inside). Solo and room. ctx: { x (the text), el (its element), space (its space's size), zoom(),
- * others() (rectangles of everything else in that space), start() (before the first change: undo), done(changed) }.
- * -> true when it was one of them
- */
-function textBoxPointer(e, ctx) {
-  const grip = e.target.closest('[data-tgrip]'), rz = !grip && e.target.closest('[data-trz]'); if (!grip && !rz) return false;
-  e.preventDefault(); e.stopPropagation();
-  const { x, el, space } = ctx, h = grip || rz, z = ctx.zoom();
-  const d = { sx: e.clientX, sy: e.clientY, x0: +x.x || 0, y0: +x.y || 0, w0: Number.isFinite(+x.w) ? +x.w : el.offsetWidth, h0: Number.isFinite(+x.h) ? +x.h : el.offsetHeight, moved: false };
-  try { h.setPointerCapture(e.pointerId); } catch { /* gone */ }
-  const move = ev => {
-    if (ev.pointerId !== e.pointerId) return;
-    const dx = (ev.clientX - d.sx) / z, dy = (ev.clientY - d.sy) / z;
-    if (!d.moved && Math.abs(dx) + Math.abs(dy) < 3) return;
-    if (!d.moved) { ctx.start(); d.moved = true; el.classList.add('dragging'); }
-    if (grip) {
-      x.x = clamp(d.x0 + dx / space.w, 0, Math.max(0, 1 - el.offsetWidth / space.w)); x.y = clamp(d.y0 + dy / space.h, 0, Math.max(0, 1 - el.offsetHeight / space.h));
-      el.style.left = `${x.x * 100}%`; el.style.top = `${x.y * 100}%`;
-    } else {
-      const r = textResize(d.w0, d.h0, dx, dy, (+x.x || 0) * space.w, (+x.y || 0) * space.h, space);
-      x.w = r.w; x.h = r.h; el.classList.add('sized'); el.style.width = `${r.w}px`; el.style.minHeight = `${r.h}px`;
-    }
-  };
-  const up = ev => {
-    if (ev.pointerId !== e.pointerId) return;
-    h.removeEventListener('pointermove', move); h.removeEventListener('pointerup', up); h.removeEventListener('pointercancel', up);
-    el.classList.remove('dragging');
-    if (grip && d.moved) snapText(x, el, space, ctx.others(), SNAP_PX / z);
-    ctx.done(d.moved);
-  };
-  h.addEventListener('pointermove', move); h.addEventListener('pointerup', up); h.addEventListener('pointercancel', up);
-  return true;
-}
-/** A dropped text: magnetic, like a dropped piece (manip-board.js snapBox): lined up with or just beside things nearby. */
-function snapText(x, el, space, others, t) {
-  const b = { x: (+x.x || 0) * space.w, y: (+x.y || 0) * space.h, w: el.offsetWidth, h: el.offsetHeight };
-  const s = snapBox(b, others, t); if (!s.dx && !s.dy) return;
-  x.x = clamp((b.x + s.dx) / space.w, 0, Math.max(0, 1 - b.w / space.w)); x.y = clamp((b.y + s.dy) / space.h, 0, Math.max(0, 1 - b.h / space.h));
-  el.style.left = `${x.x * 100}%`; el.style.top = `${x.y * 100}%`;
-}
 /** Everything in a space but one text, as rectangles (what a dropped text snaps to). */
 const othersThan = (slug, b, space, id) => boxesOf(slug, { ...b, __ann: { ...(b.__ann || {}), notes: [], texts: ((b.__ann || {}).texts || []).filter(n => n.id !== id) } }, space);
 function placeText(e) {
@@ -1016,7 +1157,8 @@ function bindTexts() {
     if (el.classList.contains('editing')) {
       if (e.target.closest('.mp-textbar, [data-trz]')) V.textHold = Date.now();   // its own buttons keep it open
       textBoxPointer(e, { x, el, space: WORLD, zoom: () => V.view.z, others: () => others(x.id), start: textHist,
-        done: moved => { if (moved) el.querySelector('textarea')?.focus({ preventScroll: true }); } });
+        // The click that ends a move or a resize of the open text is not a tap on the board (the room does the same).
+        done: moved => { if (moved) { el.querySelector('textarea')?.focus({ preventScroll: true }); V.justMoved = true; } } });
       return;
     }
     d = { el, x, sx: e.clientX, sy: e.clientY, x0: x.x, y0: x.y, moved: false };
@@ -1033,7 +1175,7 @@ function bindTexts() {
   });
   const up = () => {
     if (!d) return; const x = d; d = null; x.el.classList.remove('dragging');
-    if (x.moved) { snapText(x.x, x.el, WORLD, others(x.x.id), SNAP_PX / V.view.z); return; }
+    if (x.moved) { snapText(x.x, x.el, WORLD, others(x.x.id), SNAP_PX / V.view.z); V.justMoved = true; return; }
     if (V.textEdit) commitText(); V.textEdit = x.x.id; renderTexts();
   };
   box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { if (d) d.el.classList.remove('dragging'); d = null; });
@@ -1085,6 +1227,11 @@ function bindDraw(layer) {
 /** Everything a tap, a drag or typing does on the tool view (one set of listeners, bound once). */
 function bindBoard() {
   const root = ROOT.querySelector('.mp-tool');
+  // A drag's end sets V.justMoved so the click that may follow it (same press) is not a tap. The board draws again on
+  // pointerup and the dragged element is replaced, so Chrome often sends no click at all: the next press clears the
+  // flag, so it never eats a later, real click (a bead, the pill's Delete; seen recording, 25 Nov 2026).
+  root.addEventListener('pointerdown', () => { V.justMoved = false; }, true);
+  root.addEventListener('keydown', () => { V.justMoved = false; }, true);
   root.addEventListener('click', e => {
     if (V.justMoved) { V.justMoved = false; if (e.target.closest('#mp-board')) return; }
     const vw = e.target.closest('[data-view]');
@@ -1104,6 +1251,8 @@ function bindBoard() {
     }
     const tl = e.target.closest('[data-tool]');
     if (tl) return toolButton(tl.dataset.tool);
+    if (e.target.closest('[data-seldel]')) return deleteMany();
+    if (e.target.closest('[data-selx]')) return clearMany();
     const sc = e.target.closest('[data-sc]');
     if (sc) return stepCardButton(sc.dataset.sc);
     const tg = e.target.closest('[data-toggle]');
@@ -1114,8 +1263,8 @@ function bindBoard() {
     if (nb) return noteButton(nb.dataset.nact, nb.dataset.id);
     const objEl = e.target.closest('#mp-content .mp-obj');
     const act = e.target.closest('#mp-content [data-act]');
-    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, act.dataset, e); }); return; }
-    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, {}, e); }); return; }
+    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, act.dataset, e); }); return; }
+    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, {}, e); }); return; }
   });
   root.addEventListener('change', e => {
     const s = e.target.closest('[data-set]'); if (!s) return;
@@ -1170,7 +1319,7 @@ function dropAt(slug, st, v, item, p, space, max, snapT) {
     if ((st.objects || []).length >= max) { toast(t('js.manip.obj.full', { n: max })); return false; }
     const k = kindsOf(slug).find(K => K.add === item.label); if (!k) return false;
     const z = k.size(k.init()), sc = Math.max(S_MIN, Math.min(1, (space.w - 8) / z.w, (space.h - 8) / z.h));
-    const o = { id: newId(), k: k.k, x: Math.round(clamp(p.x - (z.w * sc) / 2, 0, space.w - z.w * sc)), y: Math.round(clamp(p.y - 15 * sc, 0, space.h - z.h * sc)), s: sc, st: k.init() };
+    const o = { id: newId(), k: k.k, x: Math.round(clamp(p.x - (z.w * sc) / 2, 0, space.w - z.w * sc)), y: Math.round(clamp(p.y - 15 * sc, 0, space.h - z.h * sc)), s: sc, st: k.init(), ...startLock(k.k) };   // a backdrop dragged in starts locked, as a tapped one does
     st.objects.push(o); v.fresh = o.id; return true;
   }
   return false;
@@ -1180,7 +1329,7 @@ const settingsTarget = st => (objectTool(V.tool.slug) ? (target(V.tool.slug, st,
 function toolButton(k) {
   if (k === 'undo') {
     const prev = V.hist.pop(); if (!prev) return;
-    if (typeof prev === 'object') V.ann.texts = JSON.parse(prev.texts); else { V.st = JSON.parse(prev); V.sel = null; }
+    if (typeof prev === 'object') V.ann.texts = JSON.parse(prev.texts); else { V.st = JSON.parse(prev); V.sel = null; V.many = null; }
     V.textEdit = null; renderBoard(); renderChrome(); return;
   }
   if (k === 'text') { V.textMode = !V.textMode; if (V.textMode) { V.annotate = false; } renderChrome(); renderBoard(); return; }
@@ -1300,10 +1449,11 @@ function pieceAction(st, k, id, v, place, slug = V && V.tool.slug, space = WORLD
   else return false;
   return true;
 }
-/** A piece leaves its snapped group (a group of one is no group). */
+/** A piece leaves its snapped group (a group of one is no group; the rest regroups by what still touches). */
 function separate(st, p) {
   const g = p.g; if (!g) return; delete p.g;
-  const left = st.pieces.filter(x => x.g === g); if (left.length < 2) for (const x of left) delete x.g;
+  // What is left falls apart where it no longer touches (a cube out of the middle of a stick: two sticks).
+  splitGroup(st.pieces, g);
 }
 /** An object's actions (its wheel; shared with the room): Lock, Unlock, Copy (in the next free spot nearby, unlocked),
  *  Delete (never a locked one). -> false when nothing changed */
@@ -1315,7 +1465,8 @@ function objectAction(slug, st, k, id, v, region, space, max) {
   if (k === 'delete') { st.objects = st.objects.filter(x => x.id !== id); v.osel = null; return true; }
   if (k === 'copy') {
     if (st.objects.length >= max) { toast(t('js.manip.obj.full', { n: max })); return false; }
-    const r = objRect(slug, o), at = spotIn(boxesOf(slug, st, space), r.w, r.h, region);
+    // Beside or under the original in view; else a free spot in view; else beside it anywhere (the page shows it).
+    const r = objRect(slug, o), at = nearSpot(boxesOf(slug, st, space), r, region, space, { gap: 24, order: 'right' });
     const c = { ...JSON.parse(JSON.stringify(o)), id: newId(), x: clamp(at.x, 0, space.w - r.w), y: clamp(at.y, 0, space.h - r.h) };
     delete c.locked; delete c.lockBy;
     st.objects.push(c); v.fresh = c.id; return true;
@@ -1345,6 +1496,7 @@ const objElOf = id => document.querySelector(`#mp-content .mp-obj[data-oid="${CS
 function soloPieceMenu(id, x, y, keyboard = false) {
   const slug = V.tool.slug;
   if (!V.st.pieces.some(q => q.id === id)) return;
+  V.many = null;
   change((st, v) => pieceAction(st, 'lift', id, v, null, slug, WORLD));
   const p = V.st.pieces.find(q => q.id === id);
   V.sel = id; V.osel = null; V.lifted = p.locked ? null : id;
@@ -1354,29 +1506,56 @@ function soloPieceMenu(id, x, y, keyboard = false) {
     onPick: k => {
       const q = V.st.pieces.find(x => x.id === id); if (!q) return closeWheel();
       wheelRun({ k, slug, label: q.label, el: () => pieceElOf(id), mark: () => V.hist.length, undo: () => toolButton('undo'),
-        apply: flip => { if (flip) V.flipIn = id; change((st, v) => pieceAction(st, k, id, v, pp => nearSpot(boxesOf(slug, { ...st, __ann: V.ann }, WORLD), pp, viewRegion()), slug, WORLD)); V.flipIn = null; } });
+        apply: flip => { if (flip) V.flipIn = id; change((st, v) => pieceAction(st, k, id, v, pp => nearSpot(boxesOf(slug, { ...st, __ann: V.ann }, WORLD), pp, viewRegion(), WORLD), slug, WORLD)); V.flipIn = null; if (k === 'copy') showFresh(); } });
     } });
 }
 /** Open an object's wheel on the solo board. */
 function soloObjMenu(id, x, y, keyboard = false) {
   const slug = V.tool.slug, o = V.st.objects.find(q => q.id === id); if (!o) return;
-  V.osel = o.locked ? null : id; V.sel = null; renderBoard(); renderChrome();
+  V.osel = o.locked ? null : id; V.sel = null; V.many = null; renderBoard(); renderChrome();
   openWheel({ x, y, keyboard, items: wheelItems(objWheel(o)), label: t('js.manip.wheel.menu', { label: objName(slug, o) }), focusBack: () => objElOf(id)?.querySelector('.mp-ohead'),
     onPick: k => wheelRun({ k, slug, label: objName(slug, o), el: () => null, mark: () => V.hist.length, undo: () => toolButton('undo'),
-      apply: () => change((st, v) => objectAction(slug, st, k, id, v, viewRegion(), WORLD, OBJ_MAX)) }) });
+      apply: () => { change((st, v) => objectAction(slug, st, k, id, v, viewRegion(), WORLD, OBJ_MAX)); if (k === 'copy') showFresh(); } }) });
 }
 /** What opens a wheel from the keyboard on a focused piece or object handle: Shift+F10, the ContextMenu key, Enter. */
 const wheelKey = e => e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'Enter' && !e.altKey && !e.ctrlKey && !e.metaKey);
 
-/** The plane's pointer work: pan (empty space), pinch, moving and resizing objects, dragging pieces (with their
- *  snapped group, a snap preview, and the snap on release). On a piece or an object: a tap selects it; a drag of 10 px
- *  moves it (a piece with its group; a frame with the counters in its cells); a hold opens its wheel (a piece lifted out
- *  of its group first; sliding on after that drags just that piece); right-click opens the wheel at once. Locked: no
- *  drag (a small shake). */
+/** What an object takes along when it is dragged: an unlocked frame the counters in its cells (owner, 21 Nov 2026), a
+ *  place-value chart the blocks in its columns. Shared with the room. */
+const carried = (slug, o, pieces) => (FRAMES.has(o.k) ? seatedIn(slug, o, pieces) : o.k === 'pv-chart' ? inChart(slug, o, pieces) : []);
+/** The selection box on screen, from (x0, y0) to (x1, y1) (screen points), inside its board element; null hides it. */
+function drawSelBox(el, host, a) {
+  if (!el) return; el.hidden = !a; if (!a) return;
+  const r = host.getBoundingClientRect();
+  Object.assign(el.style, { left: `${Math.min(a.x0, a.x1) - r.left}px`, top: `${Math.min(a.y0, a.y1) - r.top}px`, width: `${Math.abs(a.x1 - a.x0)}px`, height: `${Math.abs(a.y1 - a.y0)}px` });
+}
+/** The wheel over a board: Ctrl or Cmd (and a trackpad's pinch) zooms at the pointer; otherwise it pans (a trackpad's
+ *  two-finger scroll, a mouse wheel; Shift turns a mouse wheel sideways). -> { zoom } or { dx, dy } in screen pixels */
+function wheelMove(e, page) {
+  const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? page : 1;
+  if (e.ctrlKey || e.metaKey) return { zoom: Math.exp(-e.deltaY * k * 0.01) };
+  return e.shiftKey && !e.deltaX ? { dx: -e.deltaY * k, dy: 0 } : { dx: -e.deltaX * k, dy: -e.deltaY * k };
+}
+/** The plane's pointer work (docs/decisions.md "Manipulatives: a selection box"). With a mouse or pen, a drag on empty
+ *  space draws a selection box (Shift adds to what is selected); Space held or the middle button pans; the wheel pans
+ *  (Ctrl or Cmd zooms). With a finger, a drag on empty space pans, a hold there (450 ms) and then a drag draws the box,
+ *  two fingers pinch. On a piece or an object: a tap selects it (Shift+click adds or removes it); a drag of 10 px moves
+ *  it (a piece with its group; a frame with the counters in its cells; one of many selected: all of them); a hold opens
+ *  its wheel (a piece lifted out of its group first; sliding on after that drags just that piece); right-click opens the
+ *  wheel at once. Locked: no drag (a small shake). */
 function bindPlane() {
   const board = document.getElementById('mp-board'), pointers = new Map();
   let g = null;
   const ghost = () => document.getElementById('mp-ghost');
+  const selBox = a => drawSelBox(document.getElementById('mp-selbox'), board, a);
+  // A selection box from here; on a locked backdrop's body (o), a hold still opens its wheel.
+  const boxFrom = (e, o = null) => {
+    const gg = g = { kind: 'box', sx: e.clientX, sy: e.clientY, moved: false, add: e.shiftKey };
+    if (o) gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
+    board.setPointerCapture(e.pointerId);
+  };
+  // A finger or the mouse down on the board: keepInView waits (the board's own pointerup runs first, then this one).
+  board.addEventListener('pointerdown', () => { V.pressing = true; }, true);
   board.addEventListener('contextmenu', e => { if (e.target.closest('.mp-piece, .mp-obj')) e.preventDefault(); });
   board.addEventListener('keydown', e => {
     if (e.target.matches('textarea.mp-answer') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; }   // one line of words: Enter finishes
@@ -1389,10 +1568,13 @@ function bindPlane() {
   board.addEventListener('pointerdown', e => {
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.size === 2) {
-      if (g && g.kind !== 'pan') { cancel(); }
+      if (g && g.kind !== 'pan') { cancel(); } else if (g && g.hold) g.hold.cancel();
       const [a, b] = [...pointers.values()]; g = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return;
     }
-    if (e.target.closest('.mp-zoom, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
+    if (e.target.closest('.mp-zoom, .mp-selpill, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
+    const mouse = e.pointerType !== 'touch';
+    // Space held, or the middle button: a mouse pans from anywhere.
+    if (e.button === 1 || (mouse && V.spaceDown && e.button === 0)) { e.preventDefault(); g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false, grab: true }; board.setPointerCapture(e.pointerId); return; }
     if (V.textMode) return;
     const rz = e.target.closest('[data-oresize]');
     if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, st0: JSON.stringify(o.st), sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
@@ -1402,7 +1584,7 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloPieceMenu(p.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'piece', p, el: pieceEl, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      const gg = g = { kind: 'piece', p, el: pieceEl, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st), shift: e.shiftKey, many: !e.shiftKey && !!V.many && V.many.p.has(p.id) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloPieceMenu(p.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
@@ -1413,11 +1595,16 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      // A locked backdrop's body is the board under the pieces for a mouse: a drag there draws the selection box.
+      if (o.locked && mouse && !e.target.closest('.mp-ohead')) return boxFrom(e, o);
+      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st), shift: e.shiftKey, many: !e.shiftKey && !!V.many && V.many.o.has(o.id) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
-    g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false };
+    if (mouse) { if (e.button === 0) boxFrom(e); return; }
+    // A finger pans; held still for a moment first, it draws the selection box instead.
+    const gg = g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false };
+    gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; g = { kind: 'box', sx: gg.sx, sy: gg.sy, moved: false, add: false }; });
     board.setPointerCapture(e.pointerId);
   });
   board.addEventListener('pointermove', e => {
@@ -1430,6 +1617,11 @@ function bindPlane() {
     }
     const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
     const slug = V.tool.slug;
+    if (g.kind === 'box') {
+      if (g.held || (!g.moved && Math.abs(dx) + Math.abs(dy) < 5)) return;
+      if (g.hold) g.hold.cancel();
+      g.moved = true; g.ex = e.clientX; g.ey = e.clientY; selBox({ x0: g.sx, y0: g.sy, x1: g.ex, y1: g.ey }); return;
+    }
     if ((g.kind === 'piece' || g.kind === 'obj') && !g.moved) {
       // A piece or object starts to move after 10 px; before that it may still become a hold.
       if (Math.hypot(dx, dy) < SLOP) return;
@@ -1439,21 +1631,28 @@ function bindPlane() {
       if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { g = { kind: 'pan', sx: g.sx, sy: g.sy, x0: V.view.x, y0: V.view.y, moved: true }; V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
       if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElOf(g.p.id) : objElOf(g.o.id)); g = { kind: 'dead' }; return; }
       if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify(V.st); }
-      if (g.kind === 'piece') {
+      // One of many selected: all of them move (and what their frames carry), no snapping.
+      if (g.many && !g.held) g.list = selMoving(slug, V.st, V.many, o => carried(slug, o, V.st.pieces)).map(x => ({ ...x, el: x.obj ? objElOf(x.it.id) : pieceElOf(x.it.id) }));
+      else if (g.kind === 'piece') {
         // Held first (it is out of its group now), or counters (they never link): just this piece.
         const members = g.held || !linksPieces(slug) ? [g.p] : groupOf(V.st.pieces, g.p);
         g.members = members.map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
       } else {
         g.el = objElOf(g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
         // An unlocked frame takes the counters seated in its cells along (owner, 21 Nov 2026).
-        g.carry = (FRAMES.has(g.o.k) ? seatedIn(slug, g.o, V.st.pieces) : g.o.k === 'pv-chart' ? inChart(slug, g.o, V.st.pieces) : []).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
+        g.carry = carried(slug, g.o, V.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
       }
       g.moved = true;
     }
     if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
     g.moved = true;
     const z = V.view.z;
-    if (g.kind === 'pan') { V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
+    if (g.kind === 'pan') { if (g.hold) { g.hold.cancel(); g.hold = null; } V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
+    if (g.list) {
+      selMove(g.list, dx / z, dy / z, WORLD);
+      for (const x of g.list) if (x.el) { x.el.style.left = `${x.it.x}px`; x.el.style.top = `${x.it.y}px`; if (!x.obj) x.el.classList.add('dragging'); }
+      return;
+    }
     if (g.kind === 'obj') {
       const r = objRect(slug, g.o);
       g.o.x = Math.round(clamp(g.x0 + dx / z, 0, WORLD.w - r.w)); g.o.y = Math.round(clamp(g.y0 + dy / z, 0, WORLD.h - r.h));
@@ -1480,7 +1679,7 @@ function bindPlane() {
     }
   });
   const snapNow = gg => { const ids = new Set(gg.members.map(x => x.m.id)); return snapFor([gg.p, ...gg.members.map(x => x.m).filter(m => m !== gg.p)], V.st.pieces.filter(q => !ids.has(q.id)), V.st.objects.flatMap(o => slotsOf(V.tool.slug, o)), SNAP_PX / V.view.z, snapOpts(V.tool.slug)); };
-  const cancel = () => { if (g && g.hold) g.hold.cancel(); if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; };
+  const cancel = () => { if (g && g.hold) g.hold.cancel(); if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; selBox(null); };
   const up = e => {
     pointers.delete(e.pointerId);
     if (!g) return;
@@ -1489,13 +1688,26 @@ function bindPlane() {
     if (x.hold) x.hold.cancel();
     if (x.kind === 'dead') { V.justMoved = true; return; }
     if (x.moved) V.justMoved = true;
-    if (x.kind === 'pan') { if (!x.moved && (V.sel || V.osel) && !V.textMode) { V.sel = null; V.osel = null; renderBoard(); renderChrome(); } return; }
+    if (x.kind === 'box') {
+      selBox(null);
+      if (x.held) { V.justMoved = true; return; }
+      if (x.moved) {
+        // Everything unlocked the box touches (Shift: added to what was selected).
+        const m = inRect(slug, V.st, rectFrom(toWorld(x.sx, x.sy), toWorld(x.ex, x.ey)));
+        if (x.add) { const c = curSel(); for (const id of c.p) m.p.add(id); for (const id of c.o) m.o.add(id); }
+        setMany(m); renderBoard(); renderChrome(); return;
+      }
+    }
+    // A tap on empty space lets go of what was selected.
+    if (x.kind === 'pan' || x.kind === 'box') { if (!x.moved && !x.grab && !x.add && (V.sel || V.osel || V.many) && !V.textMode) { V.sel = null; V.osel = null; V.many = null; renderBoard(); renderChrome(); } return; }
     if (x.kind === 'resize') { if (x.o.s !== x.s0 || JSON.stringify(x.o.st) !== x.st0) { scaleWithChart(slug, x.o, x.s0, V.st.pieces); settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); renderBoard(); renderChrome(); } return; }
     // Held: the wheel stays open after the finger lifts.
     if ((x.kind === 'obj' || x.kind === 'piece') && !x.moved && (x.held || e.type === 'pointercancel')) { V.justMoved = true; return; }
+    // Many moved together: one Undo step, the selection kept.
+    if (x.list) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); renderBoard(); renderChrome(); return; }
     if (x.kind === 'obj') {
-      // A tap selects it (a corner to resize it); a drag only moves it.
-      if (x.moved) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); } else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; }
+      // A tap selects it (a corner to resize it; Shift: adds or removes it); a drag only moves it.
+      if (x.moved) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); V.many = null; } else if (x.shift) toggleSel('o', x.o); else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; V.many = null; }
       renderBoard(); renderChrome(); return;
     }
     if (x.kind === 'piece') {
@@ -1514,13 +1726,18 @@ function bindPlane() {
         settleBoard(slug, V.st, V, WORLD);
         pushHistory(x.before);
       }
-      // A tap selects the piece (a green outline, no buttons).
-      if (!x.moved) { V.sel = x.p.id; V.osel = null; } else if (V.sel && V.sel !== x.p.id) V.sel = null;
+      // A tap selects the piece (a green outline, no buttons; Shift: adds or removes it).
+      if (!x.moved) { if (x.shift) toggleSel('p', x.p); else { V.sel = x.p.id; V.osel = null; V.many = null; } } else { V.many = null; if (V.sel && V.sel !== x.p.id) V.sel = null; }
       renderBoard(); renderChrome(); V.snapped = null;
     }
   };
   board.addEventListener('pointerup', up); board.addEventListener('pointercancel', up);
-  board.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); const r = board.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * 0.01), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  board.addEventListener('wheel', e => {
+    if (e.target.closest('textarea')) return;
+    e.preventDefault();
+    const w = wheelMove(e, vpSize().h), r = board.getBoundingClientRect();
+    if (w.zoom) zoomAt(w.zoom, e.clientX - r.left, e.clientY - r.top); else { V.view.x += w.dx; V.view.y += w.dy; applyView(); }
+  }, { passive: false });
 }
 /** Two pieces snapped together: their groups become one. */
 function joinGroup(pieces, a, b) {
@@ -1834,7 +2051,7 @@ async function liveRoom(id, joinFirst) {
   if (HOST) CHAT.attachLive();
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan, selPillHtml, wheelMove, carried, drawSelBox });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 
@@ -1852,7 +2069,7 @@ function home() {
           <label class="mp-set mp-block"><span>${esc(t('js.manip.host.tool'))}</span><select class="input" name="tool">${TOOLS.map(x => `<option value="${x.slug}">${esc(x.name)}</option>`).join('')}</select></label>
           <label class="mp-set mp-block"><span>${esc(t('js.manip.host.name'))}</span><input class="input" name="title" maxlength="80" placeholder="${esc(t('js.manip.host.namePh'))}"></label>
           ${STATE.boards.length ? `<label class="mp-set mp-block"><span>${esc(t('js.manip.host.board'))}</span><select class="input" name="boardId"><option value="">${esc(t('js.manip.host.noBoard'))}</option>${STATE.boards.map(b => { const x = toolOf(b.tool); return `<option value="${esc(b.id)}">${esc(b.code)} · ${esc(x ? x.name : b.tool)} · ${esc(b.title)}</option>`; }).join('')}</select></label>` : ''}
-          <button class="btn btn-primary btn-block" type="submit">${esc(t('js.manip.host.start'))}</button></form><p class="small muted">${esc(t('js.manip.host.who'))}</p>`
+          <button class="btn btn-primary btn-block" type="submit">${esc(t('js.manip.host.start'))}</button></form><p class="small muted mp-host-who">${esc(t('js.manip.host.who'))}</p>`
     : `<p class="small muted">${esc(t('js.manip.host.noClasses'))}</p>`}
         </section>
       <section class="panel"><h2>${iconHtml('🎟️', { size: 28 })} ${esc(t('js.manip.share.haveCode'))}</h2><p class="small muted">${esc(t('js.manip.share.haveCodeText'))}</p>
@@ -1873,7 +2090,8 @@ function home() {
   const drawCat = () => {
     const needle = q.value.trim().toLowerCase();
     const list = TOOLS.filter(x => (cat.value === '' || String(x.cat) === cat.value) && (!needle || `${x.name} ${x.desc} ${CATS[x.cat]}`.toLowerCase().includes(needle)));
-    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 40 })}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`).join('')}</div></section>` : ''; }).join('')
+    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => { const card = `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 40 })}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`;
+      return tutorialOf(x.slug) ? `<div class="mp-toolcell">${card}${howButton(x)}</div>` : card; }).join('')}</div></section>` : ''; }).join('')
       || `<p class="muted">${esc(t('js.manip.home.none'))}</p>`;
   };
   q.oninput = drawCat; cat.onchange = drawCat; drawCat();

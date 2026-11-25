@@ -43,7 +43,7 @@ export const STEPS = {
     // The teaching tools: a Figures worksheet Oomba drafted in the chat (scripts/how-shots.js --only tools).
     { n: 's6', slug: 'tools-figures' },
   ],
-  // /teachers/live: a live game from the host's pick to the leaderboard (scripts/how-shots.js --only live).
+  // /teachers/live: a live game from the host's pick to the results (scripts/how-shots.js --only live).
   teachersLive: [
     { n: 's1', slug: 'live-pick' },
     { n: 's2', slug: 'live-lobby' },

@@ -1,0 +1,1045 @@
+/* Homeroom (public/js/homeroom.js; docs/homeroom.md). Loaded after public/css/manipulatives.css: the board is the live
+   room's (.rm, .rm-world, .rm-area.teach, the zoom pill, the minimap, sticky notes, text and pen), and this file adds the
+   top bar, the teacher's desk panel, the desks, Arrange seats and the groups. The page fills the screen under the site's
+   bar like the live room (main.rm-main). */
+main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.hr{position:relative}
+.hr [hidden]{display:none!important}
+
+/* the top bar: class switcher, Homeroom | Classroom | Dashboard, Arrange seats, ⋯ */
+.hr-top{position:relative;z-index:80;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-top .hr-tabs{margin:0}
+.hr-class{width:auto;min-width:0;max-width:280px;min-height:44px;border-radius:999px;font-weight:800;font-size:1.05rem;padding-inline:16px 36px}
+.hr-grow{flex:1}
+.hr-chunk{min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;white-space:nowrap}
+.hr-chunk:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hr-chunk[aria-pressed="true"],.hr-chunk.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-morewrap{position:relative}
+/* placed by public/js/popover-place.js (fixed, by its button, always inside the screen); this is where it starts */
+.hr-morewrap .rm-menu{position:fixed;right:auto;left:8px;top:8px;width:min(300px,calc(100vw - 16px));max-height:70vh;z-index:90}
+.hr-menusoon{margin:6px 12px 4px;color:var(--muted)}
+
+/* the stage: the board, with the panel, the seat bar, the zoom pill and the minimap floating over it */
+.hr-stage{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.hr-board{flex:1 1 auto}
+.hr-loading{position:absolute;left:24px;top:24px;white-space:nowrap}
+.hr-panel{position:absolute;z-index:60;left:12px;top:12px;bottom:76px;width:240px;padding:12px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;
+  background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:var(--r);box-shadow:var(--shadow-lg);cursor:default}
+.hr-cap{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+.hr-cap:first-child{margin-top:0}
+.hr-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hr-item{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border-radius:14px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:14px;box-shadow:0 2px 0 var(--line);min-width:0}
+.hr-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hr-itemt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-empty{margin:0;color:var(--muted)}
+.hr-soon{margin:2px 0;padding:8px 10px;border-radius:var(--r-sm);background:var(--spark-soft);color:var(--text);font-weight:600}
+.hr-groupchips{display:flex;flex-wrap:wrap;gap:6px}
+.hr-gchip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:800;background:color-mix(in srgb,var(--gc) 16%,var(--card));color:var(--text);white-space:nowrap}
+.hr-gchip.whole{background:var(--card-2);border:2px dashed var(--line)}
+.hr-gchip .rm-dot{width:10px;height:10px}
+.hr-gedit{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--link);font:800 13px var(--font);cursor:pointer;white-space:nowrap}
+.hr-gedit:hover{background:var(--hover)}
+.hr-toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hr-tool{width:100%;padding:0 10px;font-size:.85rem}
+.hr-toolhint{margin:4px 0 0;color:var(--muted)}
+.hr-tools .rm-pens{display:flex;flex-wrap:wrap;align-items:center}
+.rm.inking{cursor:default}
+.hr-area.drawing,.hr-area.drawing *{cursor:crosshair}
+
+.hr-seatbar{position:absolute;z-index:65;left:264px;right:12px;top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 12px;
+  background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:800;cursor:default}
+.hr-seatbar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A}
+.hr-seatbar .hr-chunk.on{background:#141414;color:#FFFDF2;border-color:#141414;box-shadow:0 3px 0 #000}
+.hr-seatbar .hr-done{background:#1F9D63;border-color:#1F9D63;color:#fff;box-shadow:0 3px 0 #146B43}
+.hr-seathint{color:#5D5A50;font-weight:600}
+.hr-zoom{left:12px;bottom:12px}
+.hr-mini{right:96px;bottom:12px}
+
+/* the board's contents */
+.hr-areabody{position:absolute;inset:0}
+.hr-shapes{position:absolute;inset:0;width:100%;height:100%;z-index:24;pointer-events:none;overflow:visible}
+/* Editing the teacher's area (public/js/homeroom-board.js): objects are hit-tested in JS (a generous margin around pen
+   lines and outlines), so the drawings themselves take no presses; a selected object has an outline, handles that keep
+   their size on screen (--iz) and a toolbar over the board; words are typed in place (contenteditable: WebKit needs
+   user-select: text on it inside the board's user-select: none). */
+.hr-shape{pointer-events:none}
+.hr-area:not(.drawing) .hr-obj{cursor:move}
+.hr-area .mp-sticky.hr-obj{display:flex;flex-direction:column;box-sizing:border-box;max-width:none}
+.hr-area .mp-sticky.hr-obj .hr-objtext{flex:1 1 auto;margin:0;min-height:1.3em}
+.hr-area .mp-text.hr-obj{white-space:pre-wrap;overflow-wrap:anywhere;box-sizing:border-box;padding:4px 6px}
+.hr-objtext:empty::before{content:attr(data-ph);color:color-mix(in srgb,currentColor 55%,transparent);font-weight:600}
+.hr-obj.on{box-shadow:none}
+.hr-objtext[contenteditable="true"]{cursor:text;outline:0;-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
+.hr-obj.hr-typing{cursor:text}
+.hr-sel{position:absolute;inset:0;z-index:40;pointer-events:none}
+.hr-selbox{position:absolute;box-sizing:border-box;border:calc(2px * var(--iz,1)) solid var(--focus);border-radius:6px}
+.hr-selbox.editing{border-style:dashed}
+.hr-h{position:absolute;width:14px;height:14px;box-sizing:border-box;border:2px solid var(--focus);background:#fff;border-radius:4px;pointer-events:auto;touch-action:none;
+  transform:translate(-50%,-50%) scale(var(--iz,1))}
+.hr-h::before{content:"";position:absolute;inset:-6px}
+.hr-h-nw,.hr-h-se{cursor:nwse-resize}.hr-h-ne,.hr-h-sw{cursor:nesw-resize}.hr-h-n,.hr-h-s{cursor:ns-resize}.hr-h-e,.hr-h-w{cursor:ew-resize}
+.hr-h-a,.hr-h-b{cursor:move;border-radius:50%}
+.hr-seltools{position:absolute;z-index:58;display:flex;align-items:center;gap:4px;padding:5px;border-radius:999px;background:var(--card);box-shadow:var(--shadow-lg);border:1px solid var(--line);cursor:default;white-space:nowrap}
+.hr-stb{display:inline-flex;align-items:center;gap:4px;min-height:36px;min-width:36px;justify-content:center;padding:0 12px;border:0;border-radius:999px;background:var(--card-2);color:var(--text);font:800 14px var(--font);cursor:pointer}
+.hr-stb:hover{background:var(--hover)}
+.hr-stb:disabled{opacity:.4;cursor:default}
+.hr-stb.big{font-size:16px}
+.hr-stb.bad{background:var(--danger);color:var(--on-danger)}
+.hr-stcolors{display:inline-flex;gap:4px;padding:0 4px}
+.hr-stc{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hr-stc.on{box-shadow:0 0 0 3px var(--focus)}
+@media (pointer:coarse){.hr-h{width:20px;height:20px}.hr-stb{min-height:44px;min-width:44px}.hr-stc{width:34px;height:34px}}
+/* Board tools (docs/decisions.md "Homeroom: board tools"; public/js/homeroom-board-ui.js): sticky note colors, a turned
+   object's handle, many selected, the marquee, the style popovers and the Shapes picker (a sheet on a phone). The
+   desks' and the projector's read-only drawing (public/js/homeroom-area.js) uses the same classes, without presses. */
+.hr-roarea .hr-obj{cursor:default;pointer-events:none}
+.hr-cliptrap{position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.mp-sticky.hr-nc-pink{background:#FFB8CF}.mp-sticky.hr-nc-green{background:#BDE8B2}.mp-sticky.hr-nc-blue{background:#B8DBFF}.mp-sticky.hr-nc-purple{background:#DACBFF}
+.hr-selbox.thin{border-width:calc(1px * var(--iz,1));border-style:solid;opacity:.7}
+.hr-selbox.group{border-style:dashed;border-radius:10px}
+.hr-selbox.locked{border-style:dotted;border-color:var(--muted)}
+.hr-h-rot{border-radius:50%;cursor:grab;background:var(--focus)}
+.hr-h-rot:active{cursor:grabbing}
+.hr-marq{position:absolute;box-sizing:border-box;border:calc(1.5px * var(--iz,1)) dashed var(--focus);background:color-mix(in srgb,var(--focus) 10%,transparent);border-radius:4px}
+.hr-seltools{flex-wrap:wrap;justify-content:center;max-width:calc(100% - 16px);white-space:normal;border-radius:26px}
+.hr-stb.open{background:var(--hover);box-shadow:inset 0 0 0 2px var(--text)}
+.hr-stb.wide{padding:0 8px;gap:2px}
+.hr-gl{flex:none;display:block}
+.hr-chipsw{width:18px;height:18px;border-radius:50%;flex:none;background:var(--sw);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--text) 30%,transparent)}
+.hr-chipsw.none{background:linear-gradient(135deg,transparent 44%,#E53935 44%,#E53935 56%,transparent 56%),var(--card)}
+.hr-chipsw.mixed{background:conic-gradient(#E53935 0 25%,#FFD23F 0 50%,#1F9D63 0 75%,#1E88E5 0)}
+.hr-filli{display:inline-flex}
+.hr-aa{font-weight:900;font-size:15px;color:var(--sw);text-shadow:0 0 1px var(--card)}
+.hr-pop{position:fixed;z-index:95;left:8px;top:8px;width:max-content;max-width:min(360px,calc(100vw - 16px));overflow:auto;overscroll-behavior:contain;padding:12px;border-radius:18px;background:var(--card);color:var(--text);box-shadow:var(--shadow-lg);border:1px solid var(--line);cursor:default}
+.hr-popin{display:flex;flex-direction:column;gap:10px}
+.hr-poprow{display:flex;flex-direction:column;gap:6px}
+.hr-pophead{margin:0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hr-pophint{margin:0;color:var(--muted);max-width:300px}
+.hr-popdone{display:none}
+.hr-pal{display:grid;grid-template-columns:repeat(8,30px);gap:6px}
+.hr-sw2{width:30px;height:30px;padding:0;border-radius:50%;border:2px solid var(--card);background:var(--sw);box-shadow:0 0 0 1px var(--line);cursor:pointer}
+.hr-sw2.light{box-shadow:0 0 0 1px color-mix(in srgb,var(--text) 35%,transparent)}
+.hr-sw2.none{background:linear-gradient(135deg,transparent 44%,#E53935 44%,#E53935 56%,transparent 56%),#fff}
+.hr-sw2.note{border-radius:8px}
+.hr-sw2.on{box-shadow:0 0 0 3px var(--focus)}
+.hr-sw2:disabled{opacity:.35;cursor:default}
+.hr-seg2{display:flex;flex-wrap:wrap;gap:4px}
+.hr-segb2{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:52px;min-height:40px;padding:0 8px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 13px var(--font);cursor:pointer}
+.hr-segb2:hover{background:var(--hover)}
+.hr-segb2.on{border-color:var(--text);background:var(--text);color:var(--card)}
+.hr-segb2.hr-bold b{font-size:17px;font-weight:900}
+.hr-opsw{width:16px;height:16px;border-radius:4px;background:var(--text);opacity:var(--o)}
+.hr-segb2.on .hr-opsw{background:var(--card)}
+.hr-moremenu{gap:2px;min-width:220px}
+.hr-mi{display:flex;align-items:center;gap:10px;width:100%;min-height:42px;padding:0 10px;border:0;border-radius:12px;background:transparent;color:var(--text);font:800 15px var(--font);text-align:start;cursor:pointer}
+.hr-mi:hover{background:var(--hover)}
+.hr-mi:disabled{opacity:.4;cursor:default}
+.hr-pickgrid{display:grid;grid-template-columns:repeat(5,48px);gap:6px}
+.hr-pick{display:grid;place-items:center;width:48px;height:48px;padding:0;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);cursor:pointer}
+.hr-pick:hover{background:var(--hover)}
+.hr-pick.on{border-color:var(--focus);box-shadow:0 0 0 2px var(--focus)}
+.hr-shico{display:block;flex:none}
+.hr-tool .hr-shico{width:20px;height:20px}
+.hr-toolrow{gap:6px;margin-top:6px}
+.hr-toolstyle{display:inline-flex;gap:4px}
+.hr-toolstyle .hr-stb{border:2px solid var(--line)}
+@media (pointer:coarse){.hr-sw2{width:36px;height:36px}.hr-pal{grid-template-columns:repeat(8,36px)}.hr-pick{width:52px;height:52px}.hr-pickgrid{grid-template-columns:repeat(5,52px)}}
+/* a phone: popovers are a sheet along the bottom */
+.hr-pop.hr-popsheet{left:0!important;right:0;top:auto!important;bottom:0;width:auto;max-width:none;max-height:62vh;border-radius:22px 22px 0 0;padding:14px 16px calc(14px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.25)}
+.hr-popsheet .hr-popdone{display:flex;justify-content:flex-end;margin-top:10px}
+.hr-popsheet .hr-pal{grid-template-columns:repeat(auto-fill,36px)}
+.hr-popsheet .hr-pickgrid{grid-template-columns:repeat(auto-fill,52px)}
+.hr-popsheet .hr-pophint{max-width:none}
+@media (max-width:819px){.hr-stl{display:none}.hr-seltools{gap:3px;padding:4px}}
+
+/* the teacher's own desk ("My desk"): staged games, lessons and tools; only the teacher sees what is on it */
+.hr-tdesk{position:absolute;box-sizing:border-box;border-radius:18px;border:3px solid var(--spark-press);background:var(--text);color:var(--card);box-shadow:0 4px 0 var(--spark-press),var(--shadow);padding:8px 12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.hr-tdeskcap{display:flex;align-items:center;gap:8px;min-width:0;font-size:20px;line-height:1.1;white-space:nowrap}
+.hr-tdeskcap b{font-weight:900}
+.hr-tdesknote{margin-inline-start:auto;font-size:14px;font-weight:700;opacity:.75;overflow:hidden;text-overflow:ellipsis}
+.hr-tdeskempty{flex:1;display:grid;place-items:center;text-align:center;border:2px dashed color-mix(in srgb,var(--card) 40%,transparent);border-radius:12px;font-size:16px;font-weight:700;opacity:.85;padding:0 8px}
+.hr-scards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hr-scard{display:flex;align-items:center;gap:6px;min-width:0;height:48px;padding:0 10px;border:0;border-radius:12px;background:var(--card);color:var(--text);font:800 15px var(--font);text-align:start;cursor:grab;touch-action:none;box-shadow:0 2px 0 var(--spark-press)}
+.hr-scard:hover{background:var(--spark-soft)}
+.hr-scard.tool{cursor:pointer;touch-action:manipulation}
+.hr-scard.hr-smore{justify-content:center;cursor:pointer;touch-action:manipulation;background:var(--card-2)}
+.hr-picking:not(.hr-picking-mine) .hr-tdesk{outline:3px dashed var(--spark);outline-offset:3px;cursor:pointer}
+.hr-tdesk.hr-droptarget{outline:4px solid var(--spark)!important}
+.hr-smenu .hr-smenuacts{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hr-smenu .hr-smenuacts .btn{justify-content:center;min-height:48px}
+.hr-slist{display:flex;flex-direction:column;gap:8px;margin:4px 0 0}
+.hr-slist .btn{width:100%;justify-content:flex-start;min-height:48px}
+.hr-givebar .hr-gchip.mine{background:#141414;color:#FFFDF2}
+.hr-emptynote{display:flex;align-items:center;gap:8px;margin:10px 0 4px;padding:10px 12px;border-radius:12px;background:var(--spark-soft);color:var(--text);font-weight:700}
+.hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.hr-desk .rm-dot{flex:none;background:var(--c,var(--line))}
+.hr-desk .hr-empty{font-size:14px}
+.hr-gtag{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;background:color-mix(in srgb,var(--gc) 18%,var(--card));color:var(--text)}
+.hr-seating .hr-desk{cursor:move;box-shadow:0 0 0 3px var(--spark),var(--shadow);touch-action:none}
+.hr-seating .hr-desk.sel,.hr-seating .hr-desk:focus-visible{box-shadow:0 0 0 5px var(--focus),var(--shadow-lg);outline:0}
+.hr-nostudents{position:absolute;margin:0;text-align:center;font-size:22px;font-weight:700;color:var(--muted)}
+
+/* the groups sheet */
+.hr-glist{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hr-glist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.hr-glist input{flex:1 1 120px;min-width:0}
+.hr-swatches{display:flex;flex-wrap:wrap;gap:4px}
+.hr-sw{width:26px;height:26px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hr-sw.on{box-shadow:0 0 0 3px var(--text)}
+.hr-gsub{font-size:1rem;margin:16px 0 8px}
+.hr-gstudents{margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.hr-gstudents li{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.hr-gstudents label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.hr-gstudents select{flex:none;width:auto;max-width:55%}
+.hr-gacts{margin-top:16px;justify-content:flex-end}
+
+/* tablets: a narrower panel */
+@media (max-width:1100px){
+  .hr-panel{width:210px}
+  .hr-seatbar{left:234px}
+}
+/* phones: the panel is one strip along the bottom (scrolls sideways), clear of Oomba's chat button; no minimap */
+@media (max-width:819px){
+  .hr-hidephone{display:none}
+  .hr-top{padding:8px;gap:6px 8px}
+  .hr-top .hr-tabs{order:5;flex:1 1 100%}
+  .hr-top .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+  .hr-class{flex:1 1 0;min-width:0;max-width:none}
+  .hr-top .hr-grow{display:none}
+  .hr-panel{top:auto;left:8px;right:88px;bottom:8px;width:auto;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:8px;gap:8px}
+  .hr-panel .hr-cap,.hr-panel .hr-soon,.hr-panel .hr-empty,.hr-toolhint{display:none}
+  .hr-items,.hr-groupchips{flex-direction:row;flex-wrap:nowrap}
+  .hr-item,.hr-gchip,.hr-gedit{flex:none}
+  .hr-itemt{max-width:180px}
+  .hr-toolgrid{display:flex;flex-wrap:nowrap}
+  .hr-tool{width:auto;flex:none}
+  .hr-tool span{display:none}
+  .hr-tools{display:flex;align-items:center;gap:6px}
+  .hr-tools .rm-pens{flex-wrap:nowrap;margin:0}
+  .hr-seatbar{left:8px;right:8px;top:8px}
+  .hr-seathint{display:none}
+  .hr-zoom{bottom:84px;left:8px}
+  .hr-mini{display:none}
+}
+
+/* ---- live class (step 1b): the Live dot, Everyone to Homeroom / Bring everyone to me, Pause screens, End class */
+.hr-livedot{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ok);white-space:nowrap}
+.hr-livedot::before{content:'';width:10px;height:10px;border-radius:50%;background:#E5483A;box-shadow:0 0 0 3px color-mix(in srgb,#E5483A 22%,transparent)}
+.hr-livebtns{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hr-livebtns:empty{display:none}
+.hr-chunk.hr-spark{background:var(--spark);border-color:var(--spark);color:#141414;box-shadow:0 3px 0 var(--spark-press)}
+.hr-chunk.hr-spark:hover{background:var(--spark-hover)}
+.hr-chunk.hr-pausebtn.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-menu a.rm-mi{text-decoration:none;color:inherit}
+/* live on a laptop: Arrange seats keeps its icon (it is in the ⋯ menu too) so the top bar stays one row */
+@media (max-width:1500px){.hr-islive .hr-top [data-hr="seats"] .hr-hidephone{display:none}.hr-islive .hr-class{max-width:220px}}
+.hr-menu .hr-end{color:var(--danger)}
+
+/* ---- the student desk (public/js/homeroom-desk.js): a dotted board under floating cards, like the live room */
+main.rm-main>#hd{flex:1 1 auto;min-height:0}
+.hd{position:relative;overflow:hidden;background-color:var(--bg);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 1.2px,transparent 1.3px);background-size:28px 28px}
+.hd [hidden]{display:none!important}
+.hd-float{position:absolute;z-index:20;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;box-shadow:var(--shadow-lg)}
+.hd-top{left:12px;right:12px;top:12px;min-height:56px;display:flex;align-items:center;gap:12px;padding:6px 16px}
+.hd-title{margin:0;font-size:clamp(1rem,2.2vw,1.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-body{position:absolute;left:12px;right:12px;top:80px;bottom:84px;overflow-y:auto;overscroll-behavior:contain}
+.hd-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+.hd-desk{position:relative;display:flex;flex-direction:column;gap:12px;min-height:0;padding:14px;border:4px solid var(--gc,var(--edge));border-radius:24px;background:var(--card);box-shadow:var(--shadow)}
+.hd-deskh{display:flex;align-items:center;gap:8px;margin:0;font-size:1.1rem;font-weight:800;min-width:0}
+.hd-deskh span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-deskh .rm-dot{flex:none;background:var(--c,var(--edge))}
+.hd-emptydesk{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px dashed var(--line);border-radius:16px;background:var(--card-2)}
+.hd-emptydesk p{margin:0;display:flex;flex-direction:column}
+.hd-emptydesk span{color:var(--muted);font-size:.9rem}
+.hd-pad{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px}
+.hd-padbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.hd-padcap{margin:0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hd-grow{flex:1}
+.hd-pens{display:inline-flex;gap:0}
+.hd-pen{width:48px;height:48px;display:grid;place-items:center;border:0;background:transparent;border-radius:50%;cursor:pointer;padding:0}
+.hd-pen i{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px var(--card),0 0 0 3px var(--line)}
+.hd-pen.on i{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--text)}
+.hd-tool{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .9rem var(--font);box-shadow:0 2px 0 var(--line);cursor:pointer}
+.hd-tool:disabled{opacity:.45;cursor:default}
+.hd-padbox{flex:1 1 auto;min-height:180px;position:relative}
+.hd-svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
+/* The pad is a sheet of paper in both themes, so every pen color shows. */
+.hd-paper{fill:var(--brand-cream);stroke:var(--edge);stroke-width:2;stroke-dasharray:10 8}
+.hd-side{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px;border:3px solid #141414;border-radius:20px;background:color-mix(in srgb,var(--spark) 22%,var(--card));align-self:start}
+.hd-wintop{display:flex;align-items:center;gap:8px}
+.hd-areah{flex:1;margin:0;font-size:.9rem;font-weight:800;color:var(--warn-ink)}
+.hd-open{width:48px;height:48px;display:grid;place-items:center;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);cursor:pointer}
+.hd-window{cursor:zoom-in;border-radius:14px;overflow:hidden}
+.hd-dock{left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;padding:6px}
+.hd-dockbtn{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:52px;padding:6px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 .95rem var(--font);text-decoration:none;cursor:pointer;white-space:nowrap}
+.hd-dockbtn:hover{background:var(--hover)}
+.hd-dockbtn[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 2px 0 var(--accent-press)}
+
+/* the read-only teacher's area (public/js/homeroom-area.js), scaled to its box */
+.hr-fit{position:relative;width:100%;overflow:hidden}
+.hr-fit.contain{height:100%}
+.hr-fitin{position:absolute;left:0;top:0;transform-origin:0 0}
+.hr-roarea .rm-in{border-radius:var(--r)}
+.hr-roarea .mp-sticky,.hr-roarea .mp-text{cursor:default}
+.hr-rosticky p{margin:0}
+.hr-roempty{position:absolute;inset:0;display:grid;place-items:center;margin:0;font-size:40px;font-weight:700;color:var(--warn-ink);opacity:.75;text-align:center;padding:0 60px}
+
+/* overlays over the desk: the teacher's area, Bring everyone to me, Pause screens, See the room */
+.hd-over{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--bg)}
+.hd-show{background:color-mix(in srgb,var(--bg) 97%,transparent);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.hd-overtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hd-overcap{flex:1;margin:0;font-size:1.15rem;font-weight:800;text-align:start}
+.hd-show>.hd-overcap{flex:none;text-align:center}
+.hd-overarea{flex:1 1 auto;min-height:0;position:relative}
+.hd-overhint{margin:0;text-align:center;color:var(--muted);font-weight:600}
+.hd-back{min-height:48px}
+.hd-pause{align-items:center;justify-content:center;text-align:center;background:var(--accent-soft)}
+.hd-pausein{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:520px}
+.hd-pausein h2{margin:0;font-size:clamp(2rem,6vw,3.4rem);line-height:1.1}
+.hd-pausein p{margin:0;font-size:1.1rem;color:var(--text-2)}
+.hd-room{overflow-y:auto}
+.hd-roombox{position:relative;flex:none;width:100%}
+.hd-front{position:absolute;display:flex;align-items:flex-start;justify-content:flex-end;padding:6px 10px;border-radius:14px;background:color-mix(in srgb,var(--spark) 18%,var(--card));box-shadow:inset 0 0 0 2px var(--spark-press);font-size:.8rem;font-weight:800;color:var(--warn-ink)}
+.hd-tdesk{position:absolute;display:grid;place-items:center;border-radius:10px;background:var(--text);color:var(--card);font-size:.75rem;font-weight:800;overflow:hidden;white-space:nowrap}
+.hd-rdesk{position:absolute;border:3px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.hd-rdesk.me{border-color:var(--gc,var(--text));box-shadow:0 0 0 3px var(--text)}
+.hd-rname{position:absolute;inset-inline-start:2px;bottom:calc(100% + 2px);max-width:calc(100% + 30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}
+/* a phone: the desks in seating order as a grid (the teacher's area across the top) */
+.hd-roombox.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:30px 12px;padding-top:4px}
+.hd-roombox.grid .hd-front{position:static;grid-column:1/-1;order:0;min-height:44px;align-items:center;justify-content:center}
+.hd-roombox.grid .hd-tdesk{position:static;grid-column:1/-1;order:1;justify-self:center;min-height:36px;padding:0 16px}
+.hd-roombox.grid .hd-rdesk{position:relative;min-height:56px}
+
+/* covered by an overlay: the desk underneath can't be drawn on by accident */
+.hd-covered .hd-body{visibility:hidden}
+
+/* portrait tablets and narrow laptops: one column (the teacher's area on top), scrolling up and down inside the desk */
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  .hd-grid{grid-template-columns:minmax(0,1fr);height:auto}
+  .hd-padbox{flex:none;min-height:0;aspect-ratio:3/2;max-height:34vh;max-height:34dvh}
+  /* the teacher's area first: a short strip, so the desk and its pad still fit under it */
+  .hd-side{align-self:stretch;order:-1;padding:8px 12px}
+}
+/* phones: smaller gutters, the dock's four buttons share the width */
+@media (max-width:600px){
+  .hd-top{left:8px;right:8px;top:8px;min-height:48px;padding:4px 12px}
+  .hd-body{left:8px;right:8px;top:64px;bottom:80px}
+  .hd-desk{padding:10px;border-width:3px}
+  .hd-dock{left:8px;right:8px;bottom:8px;gap:4px;padding:4px}
+  .hd-dock .hd-grow{display:none}
+  .hd-dockbtn{flex:1 1 0;min-width:0;flex-direction:column;gap:2px;padding:4px 2px;font-size:.72rem;line-height:1.1;min-height:56px;justify-content:center;white-space:normal;text-align:center}
+  .hd-dockbtn span{max-width:100%;overflow-wrap:anywhere}
+  .hd-tool span{display:none}
+  .hd-tool{padding:0 12px}
+  .hd-pen{width:44px;height:48px}
+  .hd-over{padding:10px}
+}
+
+/* ---- the projector view: the teacher's area as big as the screen, the class's name, the Live dot; nothing else */
+body.hr-projpage{background:var(--bg)}
+.hr-proj{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:16px 24px 24px}
+.hr-projtop{display:flex;align-items:center;gap:16px}
+.hr-projname{margin:0;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-projtop .hr-livedot{font-size:1.2rem}
+.hr-projarea{flex:1 1 auto;min-height:0;position:relative}
+
+/* ---- quick sign-in (step 1c): the class sign-in box, the projector's card, the shared-device sign-in page, the
+   teacher's Sign-in panel and the printed cards */
+.hr-projmain{flex:1 1 auto;min-height:0;display:flex;gap:20px}
+.hr-projmain .hr-projarea{flex:1 1 auto;min-width:0}
+.hr-projsign{flex:none;width:clamp(240px,26vw,380px);display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px;border-radius:24px;background:var(--card);border:3px solid #141414;box-shadow:var(--shadow-lg);text-align:center;overflow:hidden}
+.hr-projsign h2{margin:0;font-size:clamp(1.1rem,2vw,1.6rem);display:flex;align-items:center;gap:8px}
+.hr-projqr{width:100%;max-width:300px;aspect-ratio:1;background:#fff;border-radius:12px}
+.hr-projqr svg,.hs-qr svg{display:block;width:100%;height:100%}
+.hr-projgo,.hr-projcodecap{margin:0;font-size:clamp(1rem,1.6vw,1.3rem);font-weight:700}
+.hr-projgo b{font-size:1.15em}
+.hr-projcode,.hs-code{margin:0;font:800 clamp(2rem,4.4vw,3.6rem)/1.1 var(--font);letter-spacing:.12em;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-aspect-ratio:1/1){.hr-projmain{flex-direction:column}.hr-projsign{width:auto;flex-direction:row;flex-wrap:wrap;justify-content:center}.hr-projqr{width:160px}}
+
+/* the box (Sign-in panel and the board's sheet) */
+.hs-open{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center}
+.hs-qr{flex:none;width:min(240px,100%);aspect-ratio:1;background:#fff;border-radius:14px;padding:4px;box-shadow:0 0 0 2px var(--line)}
+.hs-codecol{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.hs-go,.hs-codecap{margin:0;font-weight:700}
+.hs-go b{font-size:1.15em}
+.hs-code{font-size:clamp(2rem,7vw,3rem)}
+.hs-until{margin:0}
+.hs-codeacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.hs-closedt{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:1.1rem}
+.hs-closed .small{margin:0}
+
+/* the teacher's Sign-in panel */
+.hs-panel{display:flex;flex-direction:column;gap:12px;max-width:980px;margin:0 auto;padding-bottom:24px}
+.hs-panel h1{display:flex;align-items:center;gap:10px;margin:4px 0 0}
+.hs-panel>p{margin:0}
+.hs-panelhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.hs-panelhead .hr-tabs{margin:0}
+.hs-box{padding:16px;border-radius:var(--r);background:var(--card);border:2px solid var(--line);box-shadow:var(--shadow);min-width:0}
+.hs-box h2{margin:0 0 10px;font-size:1.15rem}
+.hs-stuhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.hs-stuhead h2{margin:0}
+.hs-rows{margin:0;padding:0;display:flex;flex-direction:column}
+.hs-row{display:grid;grid-template-columns:minmax(0,1.2fr) 280px minmax(0,1fr) 240px;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid var(--line)}
+.hs-row:first-child{border-top:0}
+.hs-who{display:flex;flex-direction:column;min-width:0}
+.hs-who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-segs{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);box-shadow:0 2px 0 var(--line)}
+.hs-seg{min-height:44px;padding:0 14px;border:0;background:transparent;color:var(--text);font:800 .9rem var(--font);cursor:pointer;white-space:nowrap}
+.hs-seg+.hs-seg{border-inline-start:2px solid var(--line)}
+.hs-seg[aria-pressed="true"]{background:var(--text);color:var(--card);cursor:default;opacity:1}
+.hs-segs,.hs-own{justify-self:start}
+.hs-own{max-width:260px}
+.hs-status{color:var(--text-2)}
+.hs-status.bad{color:var(--danger);font-weight:700}
+.hs-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.hs-acts form{margin:0}
+.hs-sheet{min-width:0}
+@media (max-width:980px){.hs-row{grid-template-columns:minmax(0,1fr) 280px}.hs-row .hs-status{grid-column:1}.hs-row .hs-acts{justify-content:flex-start}}
+@media (max-width:600px){.hs-panelhead .hr-tabs{flex:1 1 100%}.hs-panelhead .hr-tabs a{flex:1;justify-content:center;padding:0 8px}}
+@media (max-width:760px){
+  .hs-row{grid-template-columns:minmax(0,1fr) auto}
+  .hs-row .hs-status{grid-column:1}
+  .hs-row .hs-acts{grid-column:1/-1;justify-content:flex-start}
+  .hs-acts:empty{display:none}
+  .hs-seg{padding:0 10px}
+}
+@media (max-width:420px){.hs-row{grid-template-columns:minmax(0,1fr)}.hs-segs{justify-self:start}}
+
+/* the printed cards: two to a row on paper, nothing else printed */
+.hs-cardsbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+.hs-cardsbar h1{display:flex;align-items:center;gap:10px;margin:0}
+.hs-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.hs-card{break-inside:avoid;padding:14px 16px;border:2px dashed #8a8a8a;border-radius:18px;background:#fff;color:#141414;display:flex;flex-direction:column;gap:6px}
+.hs-cardtop{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;font-weight:700;color:#555}
+.hs-cardtop span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-cardname{font-size:1.5rem;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+.hs-cardshows,.hs-cardcap{margin:0;color:#444}
+.hs-cardpics{display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap}
+.hs-cardpic{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 8px 4px;border:2px solid #d8d8d8;border-radius:14px;min-width:72px}
+.hs-cardn{position:absolute;top:-10px;inset-inline-start:-8px;width:24px;height:24px;border-radius:50%;background:#141414;color:#fff;font:800 13px/24px var(--font);text-align:center}
+.hs-cardpicname{font-size:.75rem;font-weight:700}
+.hs-carduses{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-weight:700}
+@media print{
+  body.hs-teach .nav,body.hs-teach .foot,body.hs-teach .noprint,body.hs-teach .tabbar,body.hs-teach .oc-bubble,body.hs-teach .oc-panel{display:none!important}
+  body.hs-teach{background:#fff}
+  .hs-cards{grid-template-columns:1fr 1fr;gap:10px}
+  .hs-card{border-color:#999}
+}
+
+/* the shared-device sign-in page (/hr): big, calm, one step at a time; tap targets 64 px and up (K-2) */
+body.hs-page{background:var(--bg)}
+body.hs-page main#main{min-height:100vh;min-height:100dvh}
+.hs{max-width:1100px;margin:0 auto;padding:12px 16px 32px;display:flex;flex-direction:column;gap:12px;min-height:100vh;min-height:100dvh}
+.hs [hidden]{display:none!important}
+.hs-top{display:flex;align-items:center;gap:12px;min-height:48px}
+.hs-brand .wordmark{height:30px;width:auto;display:block}
+.hs-grow{flex:1}
+.hs-signedas{max-width:60%;text-align:end}
+.hs-ended{margin:0}
+.hs-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:clamp(8px,4vh,48px)}
+.hs-step{width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.hs-step.hs-busy{opacity:.6;pointer-events:none}
+.hs-h{margin:0;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.15;display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap}
+.hs-lead{margin:0;font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--text-2);display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap}
+.hs-lead.small{font-size:1rem}
+.hs-class{margin:0;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-codeform{max-width:520px}
+.hs-codein{width:100%;max-width:420px;min-height:84px;text-align:center;font:800 clamp(2rem,8vw,3rem)/1 var(--font);letter-spacing:.18em;text-transform:uppercase;border-radius:20px;border-width:3px}
+.hs-err{margin:0;min-height:1.4em;font-size:1.05rem;font-weight:700}
+.hs-big{min-height:64px;min-width:min(320px,100%);font-size:1.3rem;border-radius:999px;box-shadow:0 4px 0 var(--accent-press)}
+.hs-back{min-height:56px;padding:0 20px;font-size:1.05rem;border-radius:999px;border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.hs-names{list-style:none;margin:6px 0;padding:0;width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:12px}
+.hs-name{width:100%;min-height:84px;padding:10px 14px;border:3px solid var(--line);border-radius:22px;background:var(--card);color:var(--text);font:800 clamp(1.2rem,3vw,1.5rem)/1.2 var(--font);box-shadow:0 4px 0 var(--line);cursor:pointer;overflow-wrap:anywhere}
+.hs-name:hover{border-color:var(--accent)}
+.hs-name:active,.hs-pic:active,.hs-big:active,.hs-back:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.hs-gbox{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px}
+.hs-gbox p{margin:0}
+.hs-google{min-height:56px}
+.hs-pwrow{display:flex;gap:8px;width:100%;max-width:520px}
+.hs-pwin{flex:1;min-width:0;min-height:64px;font-size:1.5rem;border-radius:18px;border-width:3px}
+.hs-show{min-height:64px;flex:none}
+.hs-slots{display:flex;gap:12px;justify-content:center}
+.hs-slot{width:76px;height:76px;border-radius:20px;border:3px dashed var(--line);background:var(--card);display:grid;place-items:center}
+.hs-slot.on{border-style:solid;border-color:var(--accent)}
+.hs-slot .fx{width:56px;height:56px}
+.hs-slotn{font-size:1.4rem;font-weight:800;color:var(--muted)}
+.hs-shake{animation:hs-shake .4s}
+@keyframes hs-shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion:reduce){.hs-shake{animation:none}}
+.hs-pics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:460px}
+.hs-pic{aspect-ratio:1;min-height:88px;display:grid;place-items:center;border:3px solid var(--line);border-radius:24px;background:var(--card);box-shadow:0 4px 0 var(--line);cursor:pointer;padding:6px}
+.hs-pic .fx{width:min(72px,70%);height:auto;aspect-ratio:1}
+.hs-pic:hover{border-color:var(--accent)}
+.hs-picacts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hs-undo{min-height:56px;padding:0 20px;border-radius:999px;font-size:1.05rem}
+/* a phone held sideways or a short tablet: the pictures beside the slots */
+@media (min-width:700px) and (max-height:700px){
+  .hs-picstep{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;text-align:center;column-gap:24px}
+  .hs-picstep>:not(.hs-pics){grid-column:1}
+  .hs-picstep .hs-pics{grid-column:2;grid-row:1/span 6;max-width:360px;justify-self:center}
+}
+
+/* the desk on a shared device: Not you? Switch */
+.hd-notyou{display:inline-flex;align-items:center;gap:8px;flex:none;font-weight:700;color:var(--text-2)}
+.hd-switch{min-height:48px}
+@media (max-width:600px){.hd-hidephone{display:none}}
+
+/* ---- handing out (step 2a): the panel's games are buttons; tap one (it stays picked), then a desk, a group or Whole
+   class; or drag it there with a mouse or pen. Desks show their handouts with progress. */
+.hr-give{width:100%;text-align:start;font:inherit;font-weight:800;font-size:14px;color:var(--text);cursor:pointer;touch-action:manipulation}
+.hr-give:hover{background:var(--hover)}
+.hr-give[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 0 0 3px var(--accent-press);background:var(--accent-soft)}
+.hr-later{opacity:.75}
+.hr-soontag{margin-inline-start:auto;flex:none;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--card-2);color:var(--muted);border:1px solid var(--line)}
+button.hr-gchip{border:0;font-family:inherit;cursor:pointer;touch-action:manipulation}
+button.hr-gchip.whole{border:2px dashed var(--line)}
+.hr-picking .hr-gchip,.hr-picking .hr-desk{outline:3px dashed var(--brand-spark);outline-offset:3px;cursor:copy}
+.hr-picking .hr-desk{outline-offset:4px}
+.hr-droptarget{outline:4px solid var(--accent-press)!important;outline-offset:3px}
+.hr-givebar{position:absolute;z-index:66;left:264px;right:12px;top:12px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:600;cursor:default}
+.hr-givebar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A;margin-inline-start:auto;flex:none}
+.hr-givebar .hr-gchip{min-height:40px;background:color-mix(in srgb,var(--gc,#FFFDF2) 22%,#FFFDF2);color:#141414;outline:0}
+.hr-givebar .hr-gchip.whole{background:#FFFDF2;border-color:#E8D88A}
+.hr-giveico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#FFFDF2}
+.hr-givet{min-width:0;flex:1 1 200px}
+.hr-giveto{display:flex;flex-wrap:wrap;gap:6px}
+.hr-givebar{flex-wrap:wrap}
+.hr-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--card);border:2px solid var(--accent-press);box-shadow:var(--shadow-lg);font-weight:800;font-size:14px;max-width:240px;white-space:nowrap;overflow:hidden}
+/* a desk's handouts */
+.hr-desk:has(.hr-cards){justify-content:flex-start;padding:8px}
+.hr-cards{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hr-card{display:flex;align-items:center;gap:6px;width:100%;height:30px;padding:0 6px;border:0;border-radius:9px;background:color-mix(in srgb,var(--gc,var(--line)) 14%,var(--card-2));color:var(--text);font:700 13px var(--font);text-align:start;min-width:0;cursor:pointer}
+.hr-card:hover{background:var(--hover)}
+span.hr-card{cursor:inherit}
+.hr-card.done{opacity:.6}
+.hr-cico{flex:none;display:grid;place-items:center}
+.hr-ct{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-cbar{flex:none;width:32px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hr-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+.hr-cdone{flex:none;font-weight:800;color:var(--accent-press)}
+.hr-clock{flex:none;display:grid;place-items:center;opacity:.7}
+.hr-more{align-self:flex-start;border:0;background:transparent;padding:2px 6px;border-radius:8px;color:var(--link);font:800 12px var(--font);cursor:pointer}
+/* the handout sheet */
+.hr-giveform{display:flex;flex-direction:column;gap:6px}
+.hr-eyebrow{margin:0;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink)}
+.hr-label{margin:10px 0 0;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-ins{width:100%;resize:vertical;min-height:84px}
+.hr-count{margin:0;text-align:end}
+.hr-seg{display:flex;flex-wrap:wrap;gap:6px}
+.hr-segb{min-height:44px;padding:0 16px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .95rem var(--font);box-shadow:0 3px 0 var(--line);cursor:pointer}
+.hr-segb.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-seghint{margin:2px 0 0}
+.hr-due{max-width:220px}
+.hr-giveacts{justify-content:flex-end;margin-top:12px;gap:8px}
+/* a desk's sheet */
+.hr-dlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.hr-ditem{padding:12px;border:2px solid var(--line);border-radius:16px;background:var(--card)}
+.hr-ditem.first{border-color:var(--accent-press)}
+.hr-ditem.done .hr-dhead b{opacity:.7}
+.hr-dhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hr-dstate{margin-inline-start:auto;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-dins{margin:8px 0 4px;padding:8px 10px;border-radius:12px;background:#FFF4C7;color:#141414;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
+.hr-ditem .row{margin-top:8px;gap:8px;flex-wrap:wrap}
+@media (max-width:1100px){.hr-givebar{left:234px}}
+@media (max-width:819px){
+  .hr-givebar{left:8px;right:8px;top:8px}
+  .hr-give{width:auto}
+  .hr-panel .hr-soontag{display:none}
+  .hr-panel .hr-give .hr-itemt{max-width:150px}
+}
+
+/* ---- the student's handout cards (step 2a) */
+.hd-deskrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.hd-deskrow .hd-deskh{flex:1 1 auto}
+.hd-order{flex:none;font-size:.8rem;font-weight:800;border-radius:999px;padding:4px 12px;background:var(--card-2);border:1px solid var(--line);color:var(--text-2)}
+.hd-cards{flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,230px);gap:12px;overflow-x:auto;overscroll-behavior-x:contain;padding:12px 2px 6px;scroll-snap-type:x proximity}
+.hd-card{position:relative;display:flex;flex-direction:column;gap:6px;min-height:150px;padding:14px 12px 12px;border:2px solid var(--line);border-radius:18px;background:var(--card);color:var(--text);text-decoration:none;box-shadow:0 3px 0 var(--line);scroll-snap-align:start;min-width:0}
+a.hd-card:hover{background:var(--hover)}
+a.hd-card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hd-card.next{border:3px solid var(--accent-press);box-shadow:0 3px 0 var(--accent-press)}
+.hd-card.locked,.hd-card.notready{background:var(--card-2);color:var(--muted);box-shadow:none}
+.hd-card.locked .hd-cico{filter:grayscale(.8);opacity:.7}
+.hd-card.done{opacity:.55;box-shadow:none}
+.hd-badge{position:absolute;top:-11px;inset-inline-end:10px;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.hd-badge.next{background:var(--accent-press);color:#fff}
+.hd-badge.later{background:var(--card);color:var(--muted);border:1px solid var(--line)}
+.hd-badge.done{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent-press)}
+.hd-cico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hd-ct{font-size:1rem;line-height:1.2;overflow-wrap:anywhere}
+.hd-csub{font-size:.8rem;color:var(--muted);font-weight:600}
+.hd-cins{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden;padding:6px 8px;border-radius:10px;background:#FFF4C7;color:#141414;font-size:.82rem;font-weight:700;line-height:1.3;overflow-wrap:anywhere;white-space:pre-line}
+.hd-card.locked .hd-cins{opacity:.85}
+.hd-cbar{margin-top:auto;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hd-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+@media (max-width:600px){.hd-cards{grid-auto-columns:minmax(170px,72%)}}
+
+/* ---- lessons (step 2b): My lessons in the panel, the lesson builder, the lesson's hand-out sheet */
+.hr-lessons{display:flex;flex-direction:column;gap:6px}
+.hr-lrow{display:flex;align-items:stretch;gap:4px;min-width:0}
+.hr-lrow .hr-lesson{flex:1 1 auto;min-width:0}
+.hr-lico{background:var(--accent-soft)}
+.hr-lt{display:flex;flex-direction:column;min-width:0}
+.hr-lesson .hr-itemt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.2}
+.hr-lsub{font-size:12px;font-weight:600;color:var(--muted);line-height:1.25}
+.hr-lmore{flex:none;width:32px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 18px var(--font);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hr-lmore:hover{background:var(--hover)}
+.hr-build{border-style:dashed;box-shadow:none;background:transparent}
+.hr-buildico{background:var(--text);color:var(--card);font-weight:800;font-size:18px}
+.hr-lmenu{display:flex;flex-direction:column;gap:8px}
+.hr-lmenu p{margin:0}
+.hr-lmenuacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.hr-lmenuacts .btn{justify-content:center}
+.hr-check{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:700;margin-top:8px}
+.hr-check input{width:22px;height:22px;accent-color:var(--accent-press)}
+.hr-lvers{margin:4px 0 0}
+.hr-lvers ul{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:0;list-style:none}
+.hr-lvers li{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--gc,var(--line)) 12%,var(--card));font-size:14px}
+.hr-lvers li span:last-child{color:var(--text-2)}
+/* the builder: wide on a laptop and a tablet, the whole screen on a phone */
+.sheet.hr-lbsheet{width:min(100%,1180px);max-height:94vh;padding-bottom:0}
+.hr-lb{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hr-lbh{margin:4px 0 0;font-size:1.3rem}
+.hr-lbpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:10px}
+.hr-lbgame{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border:2px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);font:800 15px var(--font);text-align:start;box-shadow:0 3px 0 var(--line);cursor:pointer;min-width:0}
+button.hr-lbgame:hover{background:var(--hover)}
+button.hr-lbgame:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hr-lbgame.later{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:4px;background:var(--card-2);color:var(--muted);box-shadow:none;cursor:default}
+.hr-lbgame.later .hr-ico{grid-row:span 2}
+.hr-lbgame.later .hr-soontag{grid-column:2;justify-self:start;margin:0}
+.hr-lbgame.later .hr-ico{filter:grayscale(.7);opacity:.75}
+.hr-lbgame .hr-ico{width:40px;height:40px;border-radius:12px}
+.hr-lbtitle{width:100%;font:800 1.35rem var(--font);border:0;border-bottom:2px dashed var(--line);border-radius:0;background:transparent;padding:6px 2px;min-height:48px}
+.hr-lbtitle:focus{outline:none;border-bottom-color:var(--accent-press)}
+.hr-lbcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.hr-lbset{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hr-lbprev{position:sticky;top:0;display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:10px}
+.hr-lbprevhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hr-lbprevhead h4{margin:0;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-lbpaperbox{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;max-height:calc(94vh - 300px);min-height:220px;border:2px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 3px 0 var(--line)}
+.hr-lbsizer{position:relative;overflow:hidden}
+.hr-lbpaper{position:absolute;top:0;inset-inline-start:0;width:720px;padding:28px 32px;transform-origin:top left;color:#000;background:#fff}
+[dir="rtl"] .hr-lbpaper{transform-origin:top right}
+.hr-lbpaper .cwp-page+.cwp-page{margin-top:28px;border-top:2px dashed #bbb;padding-top:20px}
+.hr-lbwait{margin:0;padding:12px 0;font-size:22px;color:#555}
+.hr-lbnew{margin-top:8px}
+.hr-vchips{display:flex;flex-wrap:wrap;gap:6px}
+.hr-vchip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 14px;border:2px solid color-mix(in srgb,var(--gc,var(--line)) 50%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--gc,var(--card-2)) 14%,var(--card));color:var(--text);font:800 14px var(--font);cursor:pointer}
+.hr-vchip.on{border-color:var(--text);box-shadow:0 0 0 2px var(--text)}
+.hr-vchip .rm-dot{width:10px;height:10px}
+.hr-vlean{font-size:12px;font-weight:700;color:var(--muted)}
+.hr-words{display:flex;flex-direction:column;gap:6px;margin:4px 0;padding:0;list-style:none}
+.hr-wrow{display:grid;grid-template-columns:22px minmax(0,1fr) minmax(0,1.6fr) 44px;gap:6px;align-items:center}
+.hr-wn{font-weight:800;color:var(--muted);text-align:end}
+.hr-wrow .input{min-height:44px;min-width:0}
+.hr-wdel{width:44px;height:44px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 20px var(--font);cursor:pointer}
+.hr-lbacts{position:sticky;bottom:0;z-index:2;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin:6px -20px 0;padding:12px 20px calc(14px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
+/* phones: My lessons join the panel's strip */
+@media (max-width:819px){
+  .hr-lessons{flex-direction:row;align-items:center}
+  .hr-lrow,.hr-build{flex:none}
+  .hr-panel .hr-lsub{display:none}
+  .hr-panel .hr-lesson .hr-itemt{display:block;white-space:nowrap}
+  .hr-lmore{min-height:44px}
+}
+@media (max-width:899px){
+  .hr-lbcols{grid-template-columns:minmax(0,1fr)}
+  .hr-lbprev{position:static}
+  .hr-lbpaperbox{max-height:70vh}
+}
+@media (max-width:639px){
+  .sheet-bg:has(.hr-lbsheet){align-items:stretch}
+  .sheet.hr-lbsheet{max-height:none;height:100%;border-radius:0}
+  .hr-lbpick{grid-template-columns:minmax(0,1fr)}
+  .hr-lbtitle{font-size:1.15rem}
+  .hr-wrow{grid-template-columns:22px minmax(0,1fr) 44px}
+  .hr-wrow .hr-wc{grid-column:2}
+  .hr-lbacts .btn{flex:1 1 auto;justify-content:center}
+  .hr-lmenuacts{grid-template-columns:1fr}
+}
+/* Algebra Builder's printed sheet (services/homeroom-lessons.js): the problems two to a row with room to work */
+.abp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12pt 24pt;margin:0;padding-inline-start:2em}
+.abp-list li{break-inside:avoid;page-break-inside:avoid}
+.abp-p{display:block;font-size:14pt;font-weight:700}
+.abp-work{display:block;height:1.35in;border-bottom:1pt solid #000}
+
+/* ---------------------------------------------------------------- step 2c: team desks, comments and stickers, Classroom */
+.hr-team{padding:10px 12px;gap:6px;justify-content:flex-start}
+.hr-team .hr-teamcap{max-width:280px}
+.hr-tnames{display:flex;flex-wrap:wrap;gap:4px 6px;min-width:0}
+.hr-tname{display:inline-flex;align-items:center;gap:5px;min-height:30px;padding:0 9px;border:2px solid var(--line);border-radius:999px;background:var(--card-2);color:var(--text);font:800 13px var(--font);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+button.hr-tname{cursor:pointer}
+button.hr-tname:hover{background:var(--hover)}
+.hr-tcount{margin-inline-start:auto;flex:none;font-size:12px;font-weight:800;color:var(--muted)}
+.hr-tcount.all{color:var(--ok)}
+.hr-split{align-self:flex-start;min-height:36px;margin-top:2px}
+.hr-desk.picked{box-shadow:0 0 0 5px var(--accent-press),var(--shadow-lg)}
+.hr-desk.picked::after{content:"✓";position:absolute;inset-inline-end:8px;top:6px;width:28px;height:28px;border-radius:50%;background:var(--accent-press);color:#fff;font-weight:900;display:grid;place-items:center}
+.hr-cfb{flex:none;width:18px;height:18px;object-fit:contain}
+.hr-cfbc{flex:none;display:inline-flex}
+.hr-fbshow{display:flex;align-items:center;gap:10px;margin-top:8px;padding:8px 10px;border-radius:12px;background:var(--spark-soft);color:var(--text)}
+.hr-fbshow img{flex:none;width:48px;height:48px;object-fit:contain}
+.hr-fbshow p{margin:0;font-weight:700;overflow-wrap:anywhere;white-space:pre-line}
+.hr-fbedit{margin-top:8px;padding:10px;border:2px dashed var(--line);border-radius:14px}
+.hr-fbedit .hr-fbc{width:100%;resize:vertical}
+.hr-stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:6px;margin:4px 0 6px}
+.hr-st{display:grid;place-items:center;min-height:56px;padding:4px;border:2px solid var(--line);border-radius:14px;background:var(--card);cursor:pointer;color:var(--text);font:800 12px var(--font)}
+.hr-st img{width:44px;height:44px;object-fit:contain}
+.hr-st.on{border-color:var(--accent-press);box-shadow:0 0 0 3px var(--accent-press)}
+.hr-st:hover{background:var(--hover)}
+.hr-gcalso{display:flex;align-items:center;gap:8px;min-height:48px;margin-top:10px;font-weight:800;cursor:pointer}
+.hr-gcalso input{width:22px;height:22px;flex:none}
+.hr-gcalso.off{color:var(--muted);cursor:default}
+.hr-tlist{display:flex;flex-direction:column;gap:8px;margin:8px 0 0}
+.hr-tmember{width:100%;justify-content:space-between;display:flex;align-items:center;gap:8px}
+/* the student's desk */
+.hd-team{display:flex;align-items:center;gap:6px;margin:2px 0 0;font-weight:800;color:var(--text-2);overflow-wrap:anywhere}
+.hd-fb{display:block;min-width:0}
+/* the sticker sits on the card's corner, a little turned, like a real one */
+.hd-fbsticker{position:absolute;inset-inline-end:8px;top:34px;width:58px;height:58px;object-fit:contain;transform:rotate(8deg);filter:drop-shadow(0 2px 2px rgba(0,0,0,.18))}
+.hd-fbtext{display:block;min-width:0;padding:6px 8px;border-radius:10px;background:var(--spark-soft);color:var(--text);font-size:.82rem;font-weight:700;line-height:1.3;overflow-wrap:anywhere;white-space:pre-line}
+.hd-card.done:has(.hd-fb){opacity:.9}
+.hd-rteam .hd-rname b{white-space:nowrap}
+.hd-rteam .hd-rname{position:static;display:flex;align-items:center;gap:4px;max-width:none;padding:6px 8px;white-space:normal;overflow-wrap:anywhere;line-height:1.2}
+.hd-roombox:not(.grid) .hd-rteam{overflow:hidden}
+.hd-card:has(.hd-fbsticker) .hd-ct,.hd-card:has(.hd-fbsticker) .hd-csub{padding-inline-end:58px}
+
+/* ---- step 3a, live class: watching desks (public/js/homeroom-live.js) and the student's hand (homeroom-desk.js) */
+.hr-lv{position:absolute;left:8px;right:8px;bottom:-15px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:3}
+.hr-lv>*{pointer-events:auto}
+.hr-lvchip,.hr-lvm{display:inline-flex;align-items:center;gap:5px;min-height:28px;max-width:100%;padding:2px 10px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 12px var(--font);white-space:nowrap;cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hr-lvchip.static{cursor:default;box-shadow:none}
+.hr-lvt{overflow:hidden;text-overflow:ellipsis}
+.hr-lvdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.hr,.hr-fl,.sheet{--hr-sky:#3F8FCF;--hr-rose:color-mix(in srgb,var(--danger) 72%,var(--card))}
+.st-working .hr-lvdot,.st-here .hr-lvdot{background:var(--ok);animation:hr-pulse 1.6s infinite}
+.st-typing .hr-lvdot{background:var(--hr-sky);animation:hr-pulse .7s infinite}
+.st-stuck .hr-lvdot{background:var(--hr-rose)}
+.st-done .hr-lvdot{background:var(--spark-press)}
+.st-away{color:var(--muted)}
+.st-stuck.hr-lvchip,.st-stuck.hr-lvm{border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+@keyframes hr-pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.hr-lvdot{animation:none!important}}
+.hr-lvbar{flex:none;display:block;width:40px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hr-lvbar i{display:block;height:100%;background:var(--ok);transition:width .6s}
+.hr-lvbar.big{width:100%;height:8px;margin-top:4px}
+.hr-lvflag{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:var(--bad-bg);color:var(--bad-ink);font:800 11px var(--font);white-space:nowrap}
+.hr-lvteam{display:inline-flex;gap:4px;min-width:0;overflow:hidden}
+.hr-lvm{padding:2px 8px;min-width:0}
+.hr-lvm bdi{overflow:hidden;text-overflow:ellipsis;max-width:70px}
+.hr-lvtop{position:absolute;inset-inline-end:-6px;top:-36px;z-index:4;max-width:calc(100% + 12px);display:flex;justify-content:flex-end}
+.hr-lvhand{display:inline-flex;align-items:center;gap:4px;min-height:30px;max-width:190px;padding:2px 10px;border:0;border-radius:999px;background:var(--spark);color:#141414;font:800 12px var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 3px 10px rgba(0,0,0,.18);cursor:pointer}
+.hr-lvhand.out{background:var(--accent-soft);color:var(--text)}
+.hr-desk.hr-away{opacity:.55;border-style:dashed}
+.hr-desk.hr-stuck{box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 25%,transparent),var(--shadow)}
+.hr-desk:has(>.hr-lvtop) .hr-name{max-width:calc(100% - 84px)}
+.hr-card.on{box-shadow:inset 0 0 0 2px var(--ok)}
+.hr-curs{position:absolute;inset:0;pointer-events:none;z-index:5}
+.hr-cur{position:absolute;left:0;top:0;display:flex;align-items:flex-start;gap:2px;transition:transform .25s linear;will-change:transform}
+.hr-cur span{margin-top:12px;padding:1px 7px;border-radius:999px;color:#fff;font:800 11px var(--font);white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+@media (prefers-reduced-motion:reduce){.hr-cur{transition:none}}
+.hr-count{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-inline-start:6px;padding:0 6px;border-radius:999px;background:var(--spark);color:#141414;font:900 12px var(--font)}
+.hr-chunk.on .hr-count{background:var(--spark);color:#141414}
+/* the floating panels under the top bar: ✋ Hands and 📊 Today */
+.hr-fl{position:absolute;inset-inline-end:12px;top:12px;z-index:60;width:min(340px,calc(100% - 24px));max-height:calc(100% - 100px);overflow:auto;padding:14px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:8px}
+.hr-fl[hidden]{display:none}
+.hr-flhead{display:flex;align-items:center;gap:8px}
+.hr-flhead h2{flex:1;margin:0;font-size:1.05rem;display:flex;align-items:center;gap:6px}
+.hr-flclose{width:44px;height:44px}
+.hr-flsub{margin:6px 0 0;font-size:.95rem;display:flex;align-items:center;gap:6px}
+.hr-flnote{margin:4px 0 0}
+.hr-hlist,.hr-pline,.hr-tglist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.hr-hrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;padding:8px 0;border-top:1px solid var(--line)}
+.hr-hwho{display:flex;flex-direction:column;min-width:0}
+.hr-hkind{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;color:var(--text-2);font-weight:700}
+.hr-hacts{display:flex;gap:6px;flex-wrap:wrap}
+.hr-hacts .btn,.hr-pout .btn,.hr-pline .btn,.hr-pstep{min-height:44px}
+.hr-pout{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;background:var(--accent-soft)}
+.hr-pout.over{background:var(--spark-soft)}
+.hr-pclock{font-variant-numeric:tabular-nums;color:var(--text-2);font-weight:700}
+.hr-pline li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0}
+.hr-pmin{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;font-weight:700}
+.hr-pmin b{min-width:64px;text-align:center}
+.hr-tg{padding:8px 0;border-top:1px solid var(--line)}
+.hr-tgh{display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.hr-tgh b{min-width:0;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.hr-tgh span{color:var(--muted);font-weight:700;white-space:nowrap}
+.hr-tgbar{display:flex;height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:6px}
+.hr-tgbar i,.hr-tgkey i{display:block;height:100%}
+.hr-tgbar .d,.hr-tgkey .d{background:var(--ok)}.hr-tgbar .w,.hr-tgkey .w{background:var(--hr-sky)}.hr-tgbar .s,.hr-tgkey .s{background:var(--hr-rose)}
+.hr-tgnums{margin:4px 0 0;color:var(--muted)}
+.hr-tgkey{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);font-weight:700}
+.hr-tgkey span{display:flex;align-items:center;gap:4px}
+.hr-tgkey i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.hr-tgflag{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;background:var(--bad-bg);color:var(--bad-ink);font-size:.9rem}
+.hr-lookname{min-height:36px;padding:0 10px;border:0;border-radius:999px;background:var(--card);color:var(--text);font:800 .85rem var(--font);cursor:pointer}
+/* look at a student's desk */
+.hr-look{display:flex;flex-direction:column;gap:8px}
+.hr-lkhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.hr-lkstuck{margin:0;padding:8px 10px;border-radius:12px;background:var(--bad-bg);color:var(--bad-ink);font-weight:700}
+.hr-lkon{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:var(--card-2)}
+.hr-lkon>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.hr-lkhand{margin:0;display:flex;align-items:center;gap:6px;font-weight:800}
+.hr-lkpad{position:relative;max-width:min(340px,100%)}
+.hr-lkpad svg{display:block;width:100%;height:auto}
+.hr-lkempty{position:absolute;inset:0;display:grid;place-items:center}
+.hr-lkacts{justify-content:flex-start;flex-wrap:wrap;gap:8px}
+/* the student's hand (top bar), its menu and the note under the bar */
+.hd-handwrap{position:relative;flex:none}
+.hd-handbtn{min-height:48px;padding:0 16px;font-size:1rem}
+.hd-handbtn.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hd-handmenu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:60;display:flex;flex-direction:column;gap:6px;width:min(300px,calc(100vw - 24px));padding:8px;border-radius:18px;background:var(--card);box-shadow:var(--shadow-lg);border:1px solid var(--line)}
+.hd-hmi{display:flex;align-items:center;gap:8px;min-height:56px;padding:0 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 1rem var(--font);text-align:start;cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hd-hmi:hover{background:var(--hover)}
+.hd-hmi.on{border-color:var(--text);box-shadow:0 2px 0 var(--text)}
+.hd-hmi.down{background:var(--card-2)}
+.hd-hmi:disabled{opacity:.45;cursor:default}
+.hd-hmtag{margin-inline-start:auto;font-size:.75rem;color:var(--muted);font-weight:800}
+.hd-notewrap{position:absolute;z-index:30;top:76px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 24px))}
+.hd-note{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;background:var(--card);box-shadow:var(--shadow-lg);border:2px solid var(--spark)}
+.hd-note.go{border-color:var(--ok);background:var(--ok-bg)}
+.hd-note.calm{border-color:var(--accent-press);background:var(--accent-soft)}
+.hd-notet{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
+.hd-notet>span{color:var(--text-2);font-size:.9rem}
+.hd-passclock{font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)!important}
+.hd-noteb{flex:none;min-height:48px}
+.hd-hasnote .hd-body{top:150px}
+.hd-mate text{font:800 22px var(--font);fill:#141414;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.hd-mate{transition:transform .25s linear}
+@media (max-width:819px){
+  .hr-livebtns{display:contents}
+  .hr-livebtns .hr-spark{order:4}
+  .hr-top .hr-class{flex:1 1 200px}
+}
+@media (max-width:600px){
+  .hd-notewrap{top:62px;width:calc(100% - 16px)}
+  .hd-hasnote .hd-body{top:144px}
+  .hd-handbtn{padding:0 12px}
+  .hd-handbtn span{max-width:28vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+/* over a handout's game (public/js/homeroom-pulse.js): the lock, Pause screens, "Your teacher is coming over" */
+.hp-full{position:fixed;z-index:9000}
+.hp-note{position:fixed;z-index:9000;left:50%;top:12px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:10px 16px;border-radius:999px;background:var(--accent-soft);color:var(--text);font-weight:800;box-shadow:var(--shadow-lg)}
+
+/* ---- a game played inside Homeroom (public/js/homeroom-player.js): the teacher's board or a student's desk stays
+   underneath; the game's own play page in a frame, under a bar with the way back */
+.hr-player{position:absolute;inset:0;z-index:95;display:flex;flex-direction:column;background:var(--brand-ink,#141414);animation:hr-playin .16s ease-out}
+.hr-playtop{flex:none;display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-playback{flex:none}
+.hr-playt{display:inline-flex;align-items:center;gap:8px;min-width:0;font-size:1.05rem}
+.hr-playt b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-playframe{flex:1 1 auto;min-height:0;width:100%;border:0;display:block;background:var(--brand-ink,#141414)}
+@keyframes hr-playin{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hr-player{animation:none}}
+/* the desk: the layer sits where the desk is (the top bar with Raise hand and the dock stay); Pause screens, the lock
+   and Bring everyone to me cover it as they cover the desk */
+.hd>.hr-player{left:12px;right:12px;top:80px;bottom:84px;z-index:30;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.hd-playing .hd-body{visibility:hidden}
+@media (max-width:600px){.hd>.hr-player{left:8px;right:8px;top:64px;bottom:80px}}
+@media (max-width:819px){.hr-playtop{min-height:52px;padding:6px 8px}.hr-playt{font-size:.95rem}}
+
+/* ---- the day plan (public/js/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): the plan pill in the shared
+   bar (Now with a countdown and Next; Time's up in yellow; never red), its menu, the Finish class summary, and the
+   projector's and a desk's Now / Next */
+.hr-plan{display:inline-flex;align-items:center;gap:8px;flex:none;min-width:0}
+.hr-plan:empty{display:none}
+.hr-planpill{display:inline-flex;align-items:center;gap:8px;max-width:340px;text-align:start;line-height:1.15}
+.hr-pp-t{display:inline-flex;flex-direction:column;min-width:0;overflow:hidden}
+.hr-pp-t b,.hr-pp-l1,.hr-pp-l2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pp-l1{display:flex;align-items:baseline;gap:6px}
+.hr-pp-l1>.hr-pp-cap,.hr-pp-l1>.hr-pp-clock{flex:none}
+.hr-pp-cap{font-weight:700;color:var(--text-2)}
+.hr-pp-sub{font-size:.78rem;font-weight:700;color:var(--text-2)}
+.hr-pp-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-pp-run{border-color:var(--accent-line)!important;box-shadow:0 3px 0 var(--accent-line)!important;background:var(--accent-soft)!important}
+.hr-pp-run.up{background:var(--spark)!important;border-color:var(--spark-press)!important;color:#141414;box-shadow:0 3px 0 var(--spark-press)!important}
+.hr-pp-run.up .hr-pp-cap,.hr-pp-run.up .hr-pp-sub{color:#141414}
+.hr-pp-run.up>.fx{flex:none;box-sizing:content-box;padding:3px;border-radius:999px;background:#FFFDF2}
+.hr-pp-act{flex:none}
+/* (public/js/class-views.js fit(): cv-short first: Arrange seats' word, which is in the ⋯ menu too; then cv-icons: every
+   button's word, the idle pill's too; cv-fold: the running pill's "Now" word, never its part, clock, Next or Time's up) */
+.cv-bar.cv-short .cv-acts-homeroom [data-hr="seats"] .hr-hidephone,.cv-bar.cv-icons .hr-pp-word,.cv-bar.cv-fold :is(.hr-planpill:not(.up) .hr-pp-cap,.hr-pp-sub:not(.hr-pp-l2)){display:none}
+.cv-bar.cv-fold .hr-planpill{max-width:200px}
+/* phones: the bar has no room left in a live class, so the pill floats over the board's top left corner instead
+   (public/js/homeroom-plan.js moves it there): the part and its clock, or Time's up; Next, +5 min, Start and Finish class
+   are in its menu; planning is the Oomba chat's own button, so no Plan pill */
+.hr-stage>.hr-plan{position:absolute;left:8px;top:8px;z-index:62;max-width:calc(100% - 16px)}
+.hr-stage>.hr-plan .hr-planpill{max-width:min(260px,calc(100vw - 32px));box-shadow:var(--shadow-lg)}
+.hr-stage>.hr-plan :is(.hr-pp-l2,.hr-pp-sub,.hr-pp-act,[data-hrplan="ask"]){display:none}
+#hr-planmenu .hr-planmenu{z-index:90;width:min(340px,calc(100vw - 24px));padding:12px}
+.hr-pm-body{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.hr-pm-h{display:flex;align-items:center;gap:8px;margin:0;font-size:1.05rem;font-weight:800}
+.hr-pm-h>span:first-of-type{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pm-tot{flex:none;padding:2px 10px;border-radius:999px;background:var(--hover);font-size:.8rem}
+.hr-pm-behind{display:flex;align-items:center;gap:6px;margin:0;padding:8px 10px;border-radius:12px;background:var(--accent-soft);font-weight:700;font-size:.9rem}
+.hr-pm-behind.late{background:var(--spark-soft);color:var(--text)}
+.hr-pm-parts{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none}
+.hr-pm-part,.hr-sum-part{display:flex;align-items:center;gap:10px;min-height:40px;padding:4px 10px;border-radius:12px;background:var(--bg)}
+.hr-pm-part.now{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.hr-pm-part.done{opacity:.7}
+.hr-pm-mark{flex:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:900;font-size:.8rem}
+.hr-pm-part.now .hr-pm-mark{background:var(--accent);color:#141414;box-shadow:none}
+.hr-pm-part.done .hr-pm-mark,.hr-sum-part.done .hr-pm-mark{background:var(--accent);color:#141414;box-shadow:none}
+.hr-pm-name{flex:1;min-width:0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pm-min{flex:none;font-weight:700;color:var(--text-2);font-size:.88rem}
+.hr-pm-acts{display:flex;flex-wrap:wrap;gap:8px}
+.hr-pm-acts .btn{min-height:44px;border-radius:999px}
+.hr-pm-foot{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.hr-pm-note{margin:0}
+.hr-sum{display:flex;flex-direction:column;gap:12px}
+.hr-sum-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hr-sum-nums>div{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:20px;background:var(--bg)}
+.hr-sum-nums b{font-size:1.5rem;font-weight:900}
+.hr-sum-parts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.hr-sum-part{align-items:flex-start;padding:8px 12px}
+.hr-sum-b{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.hr-sum-ho{display:flex;align-items:center;gap:8px;margin-top:2px}
+.hr-sum-bar{flex:0 1 140px;height:10px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.hr-sum-bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.hr-sum-home{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border-radius:14px;background:var(--spark-soft);color:var(--text);font-weight:700}
+/* the projector's Now / Next (names of parts and the timer only) */
+.hr-projplan{margin-inline-start:auto;display:flex;align-items:center;gap:14px;padding:8px 18px;border-radius:20px;background:var(--card);border:3px solid #141414;box-shadow:var(--shadow);font-size:clamp(1rem,2vw,1.5rem)}
+.hr-projplan[hidden]{display:none}
+.hr-projplan.up{background:var(--spark);color:#141414}
+.hr-nn-now,.hr-nn-next{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.hr-nn-cap{font-weight:700;opacity:.75}
+.hr-nn-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-projplan .hr-nn-clock{font-size:1.3em}
+.hr-nn-next{opacity:.8}
+/* a desk's Now line (no clock: students are never hurried by it) */
+.hd-now{display:inline-flex;align-items:center;gap:10px;min-width:0;padding:4px 12px;border-radius:999px;background:var(--accent-soft);font-size:.85rem;font-weight:700;overflow:hidden}
+.hd-now[hidden]{display:none}
+.hd-now b,.hd-now span{overflow:hidden;text-overflow:ellipsis}
+@media (max-width:819px){.hd-now .hr-nn-next{display:none}}
+/* the Oomba chat, where the day plan is made: over the board's floating panels (its own sheet on a tablet would
+   otherwise sit under the teacher's desk panel and the minimap), under menus and popovers */
+body.cv-on-homeroom .oc,body.hr-page .oc{z-index:70}
+
+/* ---- step 3c: supports, aides, sub links (docs/decisions.md "Homeroom: supports, aides and sub links") */
+/* the desk's name opens its menu; the small, calm support icon beside it (the teacher's and an aide's board only) */
+.hr-namebtn{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;border-radius:8px}
+.hr-namebtn:hover bdi{text-decoration:underline;text-underline-offset:3px}
+.hr-namebtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.hr-supico{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent-press) 35%,transparent)}
+.hr-tname .hr-supico{width:18px;height:18px;margin-inline-start:2px}
+/* the desk's menu: supports */
+.hr-dmenu{display:flex;flex-direction:column;gap:12px}
+.hr-supbox{display:flex;flex-direction:column;gap:8px}
+.hr-supbox>p{margin:0}
+.hr-suprow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:2px solid var(--line);border-radius:16px;background:var(--card);cursor:pointer}
+.hr-suprow.ro{cursor:default;opacity:.85}
+.hr-suprow input[type="checkbox"]{width:24px;height:24px;flex:none;accent-color:var(--accent-press)}
+.hr-suprow:has(input:checked){border-color:var(--accent-press);background:var(--accent-soft)}
+.hr-suptime{cursor:default;flex-wrap:wrap}
+.hr-suptime .hr-seg{margin-inline-start:auto}
+.hr-suptime .hr-segb{min-height:40px;padding:0 14px}
+.hr-supico2{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--card-2)}
+.hr-supt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 180px}
+.hr-supnote{display:flex;align-items:center;gap:6px}
+.hr-supacts,.hr-dmacts{justify-content:flex-end;gap:8px}
+.hr-dmacts{border-top:1px solid var(--line);padding-top:12px;justify-content:flex-start}
+.hr-dsupbtn{margin:-4px 0 8px}
+.hr-dsimple{margin:4px 0;padding:6px 10px;border-radius:12px;background:var(--accent-soft);font-size:.9rem;white-space:pre-line;overflow-wrap:anywhere}
+/* aides and sub links */
+.hr-aidecan{list-style:none;margin:4px 0 10px;padding:0;display:flex;flex-direction:column;gap:4px;color:var(--text-2)}
+.hr-aidecan li{display:flex;gap:6px;align-items:flex-start}
+.hr-aidelist{margin:6px 0}
+.hr-aiderow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.hr-aidewho{display:flex;align-items:center;gap:10px;min-width:0}
+.hr-aidewho>span{display:flex;flex-direction:column;min-width:0}
+.hr-aidewho b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-linkbox{margin:8px 0 12px;padding:12px;border-radius:16px;background:var(--spark-soft);border:2px solid color-mix(in srgb,var(--spark-press) 40%,transparent)}
+.hr-linkbox .hr-label{margin:0 0 6px;color:var(--text)}
+.hr-linkrow{flex-wrap:nowrap;gap:8px}
+.hr-linkrow .input{flex:1 1 auto;min-width:0;font-size:.9rem}
+.hr-linkrow .btn{flex:none}
+.hr-aideform{flex-wrap:nowrap;gap:8px;margin-top:6px}
+.hr-aideform .input{flex:1 1 auto;min-width:0}
+.hr-aideform .btn{flex:none}
+.hr-subform{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.hr-subfields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.hr-subfields label{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hr-subfields .hr-label{margin:0}
+@media (max-width:540px){.hr-subfields{grid-template-columns:1fr}.hr-linkrow,.hr-aideform{flex-wrap:wrap}}
+/* "While you were out": a calm card over the board, top right, until Got it */
+.hr-outnotes{position:absolute;z-index:65;top:12px;inset-inline-end:12px;width:min(340px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px}
+.hr-outnote{padding:14px 16px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow-lg);border:2px solid var(--spark)}
+.hr-outnote h2{margin:0 0 4px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.hr-outnote p{margin:0 0 6px}
+.hr-outlist{margin:0 0 10px;padding-inline-start:20px;font-size:.92rem;line-height:1.45}
+.hr-outnote .row{justify-content:flex-end}
+@media (max-width:819px){.hr-outnotes{top:auto;bottom:84px}}
+/* an aide's bar: the class's name and the Aide chip where the switcher and tabs would be */
+.hr-aidecls{font-weight:900;font-size:1.1rem;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-aidechip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;white-space:nowrap}
+#cv-aide .cv-acts-homeroom{display:flex}
+
+/* ---- a student's supports: Read to me (its button: public/css/app.css, the game page has it too), Bigger text, their own clock */
+/* Read to me sits in the card's free top corner (beside its icon, under the Next up badge): no height added */
+.hd-cardwrap{position:relative;display:flex;flex-direction:column;min-width:0;scroll-snap-align:start}
+.hd-cardwrap>.hd-card{flex:1 1 auto}
+.hd-cardwrap>.hr-readbtn{position:absolute;top:16px;inset-inline-end:12px;min-height:38px;padding:0 12px;font-size:.85rem}
+.hd.hr-big .hd-padbox{min-height:120px}
+.hd.hr-big{font-size:1.18rem}
+.hd.hr-big .hd-cards{grid-auto-columns:minmax(250px,300px)}
+.hd.hr-big .hd-ct{font-size:1.4rem;line-height:1.2}
+.hd.hr-big .hd-csub{font-size:1.05rem}
+.hd.hr-big .hd-cins{font-size:1.18rem;line-height:1.4;-webkit-line-clamp:7;line-clamp:7}
+.hd.hr-big .hd-badge{font-size:.9rem}
+.hd.hr-big .hd-deskh{font-size:1.6rem}
+.hd.hr-big .hd-now{font-size:1.15rem}
+.hd.hr-big .hd-cardwrap>.hr-readbtn{min-height:42px;font-size:1rem}
+.hd-mytime{display:inline-flex;align-items:center;gap:4px;margin-inline-start:10px;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;white-space:nowrap}
+.hd-mytime b{font-variant-numeric:tabular-nums}
+
+/* ---- the helper pages: an aide's invite, a sub link's PIN, a link that does not work now */
+.hr-helppage{align-items:center}
+.hr-helpcard{width:min(560px,100%);margin:24px auto;padding:28px 24px;border-radius:var(--r-lg);background:var(--card);box-shadow:var(--shadow);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hr-helpico{line-height:1}
+.hr-helpacts{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px}
+.hr-subpin .hs-codein{max-width:220px;text-align:center;letter-spacing:.3em;font-size:1.6rem}
+
+/* ---- the sub's page */
+body.hr-subpage main#main{max-width:none;padding:0}
+.hr-sub{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;background:var(--bg)}
+.hr-sub [hidden]{display:none!important}
+.hr-subtop{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-subcls{font-weight:900;font-size:1.15rem;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-subchip{background:var(--spark-soft);color:var(--text)}
+.hr-subplan{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.hr-subpp{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);font-weight:700;min-width:0}
+.hr-subpp.up{background:var(--spark);border-color:var(--spark-press);color:#141414}
+.hr-subpp .hr-pp-cap{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:inherit;opacity:.75}
+.hr-subpp .hr-pp-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-subpp .hr-pp-sub{font-weight:600;opacity:.8}
+.hr-subtop .hr-livebtns{display:flex;gap:8px;flex-wrap:wrap}
+.hr-submain{flex:1 1 auto;padding:16px}
+.hr-subgrid{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;align-items:start}
+.hr-subside{display:flex;flex-direction:column;gap:12px;position:sticky;top:84px}
+.hr-subnote,.hr-subhands,.hr-subroom{padding:14px 16px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.hr-subnote{border-inline-start:6px solid var(--spark)}
+.hr-subnote>p{margin:6px 0 0;white-space:pre-line;overflow-wrap:anywhere}
+.hr-subh{margin:0 0 6px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.hr-subpriv{display:flex;gap:6px;align-items:flex-start;margin:0 4px}
+.hr-subarea{margin-bottom:12px}
+.hr-subdesks{position:relative}
+.hr-sdesk{position:absolute;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:8px 10px;border:3px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.hr-sdesk.away{opacity:.6;border-style:dashed}
+.hr-sdesk.hand{border-color:var(--spark-press);box-shadow:0 0 0 3px color-mix(in srgb,var(--spark) 55%,transparent),var(--shadow)}
+.hr-sdesk.team{gap:6px}
+.hr-steam{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.hr-sname{font-size:1.05rem;font-weight:900;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-subsup{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:2px 8px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);font-size:.78rem;font-weight:800}
+.hr-subsup>span{display:inline-flex;align-items:center;gap:3px}
+.hr-subdesks.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.hr-subdesks.grid .hr-sdesk{position:static}
+@media (max-width:899px){.hr-subgrid{grid-template-columns:1fr}.hr-subside{position:static}}
+@media (max-width:1279px){.hr-subtop .hr-subt{display:none}}
+@media (max-width:819px){.hr-subtop .hr-hidephone{display:none}.hr-subcls{max-width:150px}}
+/* the notebook (public/js/notebook.js): Notes under a handout card opens its page in the class's tab; the dock's
+   Notebook button is green, like the corner button it stands for on the desk */
+.hd-cardwrap>.hd-notebtn{margin-top:6px;align-self:stretch;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 12px;border:2px solid var(--line);border-radius:14px;background:var(--card-2);color:var(--text);font:800 .9rem var(--font);cursor:pointer}
+.hd-cardwrap>.hd-notebtn:hover{background:var(--hover)}
+.hd-dockbtn.hd-nbbtn{background:var(--accent);border-color:var(--accent-press);color:var(--on-accent);box-shadow:0 2px 0 var(--accent-press)}
+.hd-dockbtn.hd-nbbtn:hover{background:var(--accent-hover)}
+.hd.hr-big .hd-cardwrap>.hd-notebtn{font-size:1.05rem}

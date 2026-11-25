@@ -386,10 +386,12 @@ test('a family game that widens: the owner\'s children\'s scores and likes are n
   games.submitScore(fg.id, k1.id, 900); games.submitScore(fg.id, k2.id, 800);
   games.toggleLike(fg.id, k1.id);
   const secret = /GbBoardChild|Ottoline|Peregrine/;
-  const board = async (u, g) => (await as(u)(`/api/games/${g.id}/leaderboard`)).json.rows;
-  // Inside the family: the board shows the children (to their grown-up and to each other).
-  assert.match((await as(P)(`/g/${fg.slug}`)).text, /Ottoline Board/);
-  assert.equal((await board(k2, fg)).length, 2);
+  const board = async (u, g) => (await as(u)(`/api/games/${g.id}/leaderboard`)).json?.rows || [];   // 410 (or 404 for a game they cannot see)
+  // No leaderboard (docs/decisions.md "No leaderboards"): nobody, not even the family, sees a list of scores; a child
+  // sees only their own best.
+  assert.doesNotMatch((await as(P)(`/g/${fg.slug}`)).text, /Ottoline Board/);
+  assert.equal((await board(k2, fg)).length, 0);
+  assert.match((await as(k2)(`/g/${fg.slug}`)).text, /id="mybest"[\s\S]*>800</);
   // Connections: the connected grown-up sees no child on the board.
   let r = await as(P)(`/api/studio/${fg.id}/visibility`, { method: 'POST', body: { visibility: 'friends' } });
   assert.equal(r.status, 200, r.text);
@@ -406,13 +408,13 @@ test('a family game that widens: the owner\'s children\'s scores and likes are n
   for (const [who, u] of [['other kid', other], ['connection', C], ['another grown-up', grownup()], ['signed out', null]]) {
     assert.doesNotMatch((await as(u)(`/g/${g.slug}`)).text, secret, `${who}: game page`);
     const rows = await board(u, g);
-    assert.equal(rows.length, 1, `${who}: only the outsider's score`);
+    assert.equal(rows.length, 0, `${who}: no leaderboard rows`);
     assert.doesNotMatch(JSON.stringify(rows), secret);
     assert.ok(!ids(games.favorites(u, k1.id)).includes(g.id), `${who}: the child's like on their grown-up's game is not listed`);
   }
   assert.doesNotMatch((await as(other)(`/u/${k1.username}`)).text, /Board family game/, 'kid profile favourites');
   // The family still sees its own.
-  assert.equal((await board(k1, g)).length, 3); assert.equal((await board(P, g)).length, 3);
+  assert.equal((await board(k1, g)).length, 0); assert.equal((await board(P, g)).length, 0);
   assert.ok(ids(games.favorites(k1, k1.id)).includes(g.id), 'the child sees their own like');
   assert.ok(ids(games.favorites(k2, k1.id)).includes(g.id), 'a sibling sees it');
   // A kid's like on an unrelated grown-up's public game is listed as usual.

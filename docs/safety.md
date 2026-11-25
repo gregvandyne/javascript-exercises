@@ -403,8 +403,8 @@ matters.
 
 Games run in a locked sandbox with no network, so a game cannot cheat the website — but a **score** a game reports, and a
 student **marking a game step done**, are things the player's own browser asserts. We bound the abuse (a score only counts
-after the player has actually opened the game, and the login and action rate limits apply), but leaderboard scores and
-self-marked game/build/text completion are **student-reported, not independently verified**. Written answers, feedback and
+after the player has actually opened the game, and the login and action rate limits apply), but game scores (a player's own best;
+there are no leaderboards) and self-marked game/build/text completion are **student-reported, not independently verified**. Written answers, feedback and
 who-can-see-what are enforced on the server and are not self-reported. Teachers reading a gradebook should treat a game
 score the way they would treat a child saying "I got 100".
 

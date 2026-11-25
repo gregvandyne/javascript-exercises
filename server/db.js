@@ -1347,6 +1347,175 @@ export const MIGRATIONS = [
   // folders) and only its slug changes, so the seed import then updates the same row instead of adding a second game.
   // Stored references are by game id; links and QR codes with the old slug are redirected (services/slug-aliases.js).
   ['0121_arithmetic_lab_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'box-by-box', 'arithmetic-lab')],
+  // Homeroom (docs/homeroom.md; services/homeroom.js): one row per class, written by its teachers. preset: the seating
+  // layout last picked (rows, pods, u, circle); seats: {studentId: {x, y}} where each desk sits on the board; groups:
+  // [{id, key, name, color}] the teacher's groups (key: a default group whose name follows the teacher's language until
+  // renamed); members: {studentId: groupId}; area: the teacher's area (notes, text, pen marks and shapes, the
+  // Manipulatives live room's board format, cleaned the same way). A student who leaves the class keeps no desk: the
+  // board only ever draws the current roster. Gone with the class.
+  ['0122_homeroom', `
+    CREATE TABLE IF NOT EXISTS homeroom_rooms (class_id TEXT PRIMARY KEY REFERENCES classrooms(id) ON DELETE CASCADE,
+      preset TEXT NOT NULL DEFAULT 'rows', seats TEXT NOT NULL DEFAULT '{}', groups TEXT NOT NULL DEFAULT '[]',
+      members TEXT NOT NULL DEFAULT '{}', area TEXT NOT NULL DEFAULT '{}', updated_by TEXT,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
+  // Homeroom step 1b (docs/decisions.md "Homeroom, step 1b"): live class and the student desk. On homeroom_rooms, the
+  // class's live state, set only by its teachers: live_at (when Everyone to Homeroom was pressed; NULL: not live; a
+  // class left live ends by itself after services/homeroom.js LIVE_MAX_MS), live_bring (Bring everyone to me: every desk
+  // shows the teacher's area), live_paused (Pause screens: every desk shows "Eyes on your teacher"). homeroom_doodles: a
+  // student's doodle and working-out pad on their desk in one class (pen strokes, cleaned and limited by
+  // services/homeroom.js saveDoodle). Gone with the class, the school, the student leaving the class, or their account.
+  ['0123_homeroom_desk', `
+    ALTER TABLE homeroom_rooms ADD COLUMN live_at INTEGER;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_bring INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_paused INTEGER NOT NULL DEFAULT 0;
+    CREATE TABLE IF NOT EXISTS homeroom_doodles (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_doodles_user ON homeroom_doodles(user_id);`],
+  // Homeroom step 1c (docs/decisions.md "Homeroom, step 1c"): quick sign-in on shared devices. On homeroom_rooms, the
+  // class sign-in code (random, unique while set) and when sign-in closes (signin_until; NULL or past: closed): only the
+  // class's teachers open it, live class opens it, End class closes it. homeroom_signins: how a student of the class
+  // signs in there (mode '' = the class's default, 'password' or 'picture'), their picture password (bcrypt hash of the
+  // three pictures in order, like a password, never the pictures), and the wrong tries and lock for it. Gone with the
+  // class, the school, the student leaving the class, or their account. sessions.class_device: the class whose sign-in
+  // started this session (a shared device): ended when the teacher ends class, and at the sign-in window plus a short
+  // grace; NULL for every normal sign-in.
+  ['0124_homeroom_signin', `
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_code TEXT;
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_until INTEGER;
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_homeroom_signin_code ON homeroom_rooms(signin_code) WHERE signin_code IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS homeroom_signins (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT '', pic_hash TEXT, pic_at INTEGER, fails INTEGER NOT NULL DEFAULT 0,
+      locked_until INTEGER, updated_by TEXT, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_signins_user ON homeroom_signins(user_id);
+    ALTER TABLE sessions ADD COLUMN class_device TEXT;
+    CREATE INDEX IF NOT EXISTS idx_sessions_class_device ON sessions(class_device) WHERE class_device IS NOT NULL;`],
+  // Homeroom step 2a (docs/decisions.md "Homeroom, step 2a"): a game handed out from the teacher's board is an ordinary
+  // game assignment (services/game-folders.js assignGame: a hidden 'game' lesson, a class_lessons row, and
+  // class_lesson_students for the desks it went to; the teacher's instructions are its game step's body). This side
+  // table holds what only Homeroom adds, one row per such class lesson: in_order (1: In order, a later card waits until
+  // the ones before it are done; 0: Any order), grade (how it is graded: 'score', 'completion' or 'none' = not graded,
+  // practice; the Progress gradebook reads it), target (what it was dropped on: 'all', 'group' or 'desk') and when.
+  // Gone with its class lesson, the class or the school.
+  ['0125_homeroom_handouts', `
+    CREATE TABLE IF NOT EXISTS homeroom_handouts (class_lesson_id TEXT PRIMARY KEY REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, in_order INTEGER NOT NULL DEFAULT 1,
+      grade TEXT NOT NULL DEFAULT 'completion', target TEXT NOT NULL DEFAULT 'desk', created_by TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_handouts_class ON homeroom_handouts(class_id, created_at);`],
+  // Homeroom, step 2b (docs/decisions.md "Homeroom, step 2b"; services/homeroom-lessons.js): a teacher's lessons. Each
+  // version of a lesson is a real question set of its game (game_sets); this only links them: the game, the name, the
+  // instructions, the builder's settings and each version's set (base: { s, set }; versions: [{ key, label, s, set }],
+  // key a group's identity: its name, or an unnamed default group's key). Theirs for any of their classes; gone with
+  // their account (services/account-delete.js; their sets go with game_sets). A handout of a lesson keeps which lesson
+  // (hr_lesson), its version's label (shown to teachers only), how many problems (problems, for the Score) and batch
+  // (the versions handed out together, removed together).
+  ['0126_homeroom_lessons', `
+    CREATE TABLE IF NOT EXISTS homeroom_lessons (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      game_id TEXT NOT NULL, slug TEXT NOT NULL, title TEXT NOT NULL, instructions TEXT NOT NULL DEFAULT '', base TEXT NOT NULL DEFAULT '{}',
+      versions TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_lessons_owner ON homeroom_lessons(owner_id, updated_at);
+    ALTER TABLE homeroom_handouts ADD COLUMN hr_lesson TEXT;
+    ALTER TABLE homeroom_handouts ADD COLUMN version TEXT NOT NULL DEFAULT '';
+    ALTER TABLE homeroom_handouts ADD COLUMN problems INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_handouts ADD COLUMN batch TEXT NOT NULL DEFAULT '';`],
+  // Homeroom, step 2c (docs/decisions.md "Homeroom, step 2c"). homeroom_rooms.teams: the team desks, students who share
+  // one desk ([{ id, members: [studentId...], x, y }], at least 2 members, a student in one team at most; written by the
+  // class's teachers in Arrange seats). A team's shared doodle pad is a homeroom_doodles row whose user_id is
+  // 'team:<team id>' (gone with the class, or when the team is split). homeroom_feedback: the teacher's short comment and
+  // one sticker on a student's finished handout (one row per class lesson and student; only that student, their
+  // teachers and later their parents see it). Gone with its class lesson, the class or the school, the student leaving
+  // the class, or their account.
+  ['0127_homeroom_teams_feedback', `
+    ALTER TABLE homeroom_rooms ADD COLUMN teams TEXT NOT NULL DEFAULT '[]';
+    CREATE TABLE IF NOT EXISTS homeroom_feedback (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL, comment TEXT NOT NULL DEFAULT '',
+      sticker TEXT NOT NULL DEFAULT '', created_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+      PRIMARY KEY (class_lesson_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_user ON homeroom_feedback(user_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_class ON homeroom_feedback(class_id);`],
+  // Homeroom, step 3a (docs/decisions.md "Homeroom, step 3a"; services/homeroom-live.js): watching desks during live
+  // class. homeroom_live: one row per class and student while class is live: their raised hand (hand: '' or question,
+  // help, bathroom; hand_at: when, for the order), their place with the hall pass (pass: '' or 'line' waiting for it, or
+  // 'out' with it since out_at; pass_at orders the line) and what the teacher set for their desk (locked: "Your teacher
+  // locked your desk for a moment"; hidden: their cursor isn't shared; coming_at: "Your teacher is coming over"). Only the
+  // class's teachers write the desk settings; a student writes only their own hand and pass. Every row goes with End
+  // class (and with the class, the school, the student leaving the class or their account). homeroom_rooms.pass_minutes:
+  // how long the hall pass lasts in this class (the teacher's choice, 5 by default). Activity, status and cursors are
+  // never stored: they live in the server's memory for the live class only.
+  ['0128_homeroom_live', `
+    CREATE TABLE IF NOT EXISTS homeroom_live (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      hand TEXT NOT NULL DEFAULT '', hand_at INTEGER, pass TEXT NOT NULL DEFAULT '', pass_at INTEGER, out_at INTEGER,
+      locked INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0, coming_at INTEGER, updated_at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_live_user ON homeroom_live(user_id);
+    ALTER TABLE homeroom_rooms ADD COLUMN pass_minutes INTEGER NOT NULL DEFAULT 5;`],
+  // Typing Pets is now Typing Zoo (docs/decisions.md "Typing Zoo: the rename, Noto animals..."), the same way as 0121:
+  // the official row keeps its id (plays, saves under the kept key 'typing-pets-v1', favorites, ratings, assignments,
+  // lesson steps, sets, the teacher's typing panel) and only its slug changes; old links: services/slug-aliases.js.
+  ['0129_typing_zoo_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'typing-pets', 'typing-zoo')],
+  // Homeroom: the teacher's desk (docs/decisions.md "Homeroom: the teacher's desk"; services/homeroom-staged.js).
+  // homeroom_rooms.staged: the games, lessons and tools the class's teachers put on their own desk on the board to try
+  // and hand out later ([{ id, kind: game | lesson | tool, ref, by, at }]). Staged, never assigned: only the class's
+  // teachers read it, no student-facing page or poll does. Gone with the class and the school; a teacher's own items go
+  // with their account.
+  ['0130_homeroom_staged', `
+    ALTER TABLE homeroom_rooms ADD COLUMN staged TEXT NOT NULL DEFAULT '[]';`],
+  // Homeroom: the day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js). homeroom_rooms.day_plan:
+  // today's plan of the class as the teacher chose it in the Oomba chat (its parts, the handouts each part put on desks,
+  // and the running timer: which part, when it began, minutes added), held by the server so it survives a reload and
+  // shows on the projector; '' when there is none. Only the class's teachers write it; the projector and desks read only
+  // the part names and the timer. homeroom_day_plans: the plans a teacher saved by name, to use again in any of their
+  // classes (groups kept by their name or default key, never by a student). Gone with the teacher's account.
+  ['0131_homeroom_day_plan', `
+    ALTER TABLE homeroom_rooms ADD COLUMN day_plan TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS homeroom_day_plans (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name TEXT NOT NULL, topic TEXT NOT NULL DEFAULT '', parts TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_day_plans_owner ON homeroom_day_plans(owner_id, updated_at);`],
+  // Homeroom, step 3c (docs/decisions.md "Homeroom: supports, aides and sub links"). live_support.big_text: Bigger text,
+  // the fourth support beside extra time, read aloud and simpler wording (the table Oomba Live already keeps per class
+  // and student; Homeroom writes it from a desk's menu). homeroom_handouts.simple_body: a handout's instructions in
+  // simpler words, shown instead to a student with Simpler wording. homeroom_aides: adults the class's teacher lets help
+  // in its Homeroom (an invite link, only its hash kept, until it is used or ends; or a teacher of the same school added
+  // at once); removed by the teacher at any time. homeroom_sub_links: a one-day link for a substitute (only the token's
+  // hash and an optional PIN's hash are kept; it works from starts_at until ends_at, at most 24 hours, and stops when
+  // revoked), with the teacher's note for the sub. homeroom_sub_log: every action taken through a sub link (what, when,
+  // which student by id), for the teacher's "While you were out" note. All gone with the class, the school or the account.
+  ['0132_homeroom_helpers', `
+    ALTER TABLE live_support ADD COLUMN big_text INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_handouts ADD COLUMN simple_body TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS homeroom_aides (id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT, status TEXT NOT NULL DEFAULT 'invited', invite_hash TEXT, invite_until INTEGER, email TEXT NOT NULL DEFAULT '',
+      invited_by TEXT, created_at INTEGER NOT NULL, joined_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_aides_class ON homeroom_aides(class_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_aides_user ON homeroom_aides(user_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_homeroom_aides_invite ON homeroom_aides(invite_hash) WHERE invite_hash IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS homeroom_sub_links (id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL UNIQUE, pin_hash TEXT NOT NULL DEFAULT '', pin_fails INTEGER NOT NULL DEFAULT 0, note TEXT NOT NULL DEFAULT '',
+      starts_at INTEGER NOT NULL, ends_at INTEGER NOT NULL, created_by TEXT, created_at INTEGER NOT NULL, revoked_at INTEGER,
+      used_at INTEGER, seen_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_links_class ON homeroom_sub_links(class_id, ends_at);
+    CREATE TABLE IF NOT EXISTS homeroom_sub_log (link_id TEXT NOT NULL REFERENCES homeroom_sub_links(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL, at INTEGER NOT NULL, action TEXT NOT NULL, student TEXT, detail TEXT NOT NULL DEFAULT '');
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_link ON homeroom_sub_log(link_id, at);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_class ON homeroom_sub_log(class_id);`],
+  // Homeroom: the notebook (docs/decisions.md "Homeroom: the notebook"; services/notebook.js). A student's running notes
+  // across sessions. notebook_tabs: their own tabs (kind 'own', the name they gave it) and one per class with Homeroom
+  // (kind 'class', class_id set: that class's handout notes; parents will see only these). notebook_pages: a tab's pages
+  // (an own tab has one; a class tab its Class notes page and a page per handout, class_lesson_id and the handout's
+  // name as title), the cleaned rich text (body) and its plain words for search (text). The student writes them; their
+  // class's teachers read them; no AI ever does. Gone with the account; a class's tab and pages with the class or school.
+  ['0133_notebook', `
+    CREATE TABLE IF NOT EXISTS notebook_tabs (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL DEFAULT 'own', class_id TEXT REFERENCES classrooms(id) ON DELETE CASCADE, name TEXT NOT NULL DEFAULT '',
+      color TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_notebook_tabs_user ON notebook_tabs(user_id, position);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_notebook_tabs_class ON notebook_tabs(user_id, class_id) WHERE class_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_notebook_tabs_classid ON notebook_tabs(class_id) WHERE class_id IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS notebook_pages (id TEXT PRIMARY KEY, tab_id TEXT NOT NULL REFERENCES notebook_tabs(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, class_id TEXT REFERENCES classrooms(id) ON DELETE CASCADE, class_lesson_id TEXT,
+      title TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_user ON notebook_pages(user_id);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_tab ON notebook_pages(tab_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_class ON notebook_pages(class_id) WHERE class_id IS NOT NULL;`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

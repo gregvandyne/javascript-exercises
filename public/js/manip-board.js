@@ -34,8 +34,8 @@ export const OBJECTS = {
     size: () => ({ w: 500, h: OBJ_HEAD + 504 }) }],
   'fraction-circles': [{ k: 'fraction-circles', name: 'Fraction set', add: 'Add a fraction set', start: true, init: () => ({ placed: [], mode: 'frac', rings: false }),
     size: st => ({ w: 540, h: OBJ_HEAD + 24 + (st.rings ? 350 : Math.max(1, Math.ceil(clamp((st.placed || []).length, 1, 24) / 3)) * 172) }) }],
-  'number-lines': [{ k: 'number-lines', name: 'Number line', add: 'Add a number line', start: true, init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null }),
-    size: () => ({ w: 892, h: OBJ_HEAD + 268 }) }],
+  'number-lines': [{ k: 'number-lines', name: 'Number line', add: 'Add a number line', start: true, init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null, mode: 'points' }),
+    size: st => ({ w: 892, h: OBJ_HEAD + (st && st.ask ? 268 : st && (st.mode === 'jumps' || (st.jumps || []).length) ? 460 : 380) }) }],
   'bar-models': [{ k: 'bar-models', name: 'Bar model', add: 'Add a bar model', start: true,
     init: () => ({ bars: [{ name: 'Whole', segs: [{ label: 'Part A', value: 3, color: '#7CB342' }, { label: 'Part B', value: 2, color: '#AED581' }] }, { name: 'Compare', segs: [{ label: 'Red', value: 5, color: '#1E88E5' }] }] }),
     size: st => ({ w: 700, h: OBJ_HEAD + 24 + clamp((st.bars || []).length, 1, 8) * 118 }) }],
@@ -287,9 +287,9 @@ export function bbox(boxes) {
 }
 /** A free place for a w x h thing inside region (a rectangle of the space: the part on screen, or a square). The
  *  region's own free-spot search, shifted; a full region: the least crowded spot. -> { x, y } */
-export function spotIn(boxes, w, h, region) {
+export function spotIn(boxes, w, h, region, { gap = 16 } = {}) {
   const local = boxes.map(b => ({ x: b.x - region.x, y: b.y - region.y, w: b.w, h: b.h }));
-  const at = freeSpot(local, w, h, region.w, region.h, { margin: 16, gap: 16, step: 12 });
+  const at = freeSpot(local, w, h, region.w, region.h, { margin: 16, gap, step: 12 });
   return { x: Math.round(region.x + at.x), y: Math.round(region.y + at.y) };
 }
 /**
@@ -343,6 +343,21 @@ export function nextPieceSpot(slug, b, d, region, last) {
   for (const c of charts) if (at.x < c.x + c.w && at.x + d.w > c.x && at.y < c.y + c.head && at.y + d.h > c.y) at.y = Math.round(c.y + c.h + ROW_GAP);
   return { x: at.x, y: at.y, runX: at.x, ...(full ? { full: true } : {}) };
 }
+/** The free spot for a w x h thing inside region nearest the board's content (the box around boxes), on a 12 px grid,
+ *  the top left first on a tie; nothing there: the region's first free spot. clear(x, y): free of everything (with
+ *  its gap). -> { x, y } | null (no free spot in the region) */
+export function nearContent(boxes, w, h, region, clear, { margin = 16, step = 12 } = {}) {
+  const all = bbox(boxes), x0 = region.x + margin, y0 = region.y + margin, x1 = region.x + region.w - w - margin, y1 = region.y + region.h - h - margin;
+  if (x1 < x0 || y1 < y0) return null;
+  const dist = (x, y) => (all ? Math.hypot(Math.max(0, all.x - (x + w), x - (all.x + all.w)), Math.max(0, all.y - (y + h), y - (all.y + all.h))) : 0);
+  let best = null;
+  for (let y = y0; y <= y1; y += step) for (let x = x0; x <= x1; x += step) {
+    if (!clear(x, y)) continue;
+    const d = dist(x, y); if (!best || d < best.d - 0.5) best = { x: Math.round(x), y: Math.round(y), d };
+    if (!all) return { x: best.x, y: best.y };
+  }
+  return best ? { x: best.x, y: best.y } : null;
+}
 /** A new object in the next free spot of region, made smaller if it does not fit (never below S_MIN). -> object */
 export function placeObject(slug, b, k, region, space) {
   const K = kindOf(slug, k); if (!K) return null;
@@ -354,10 +369,12 @@ export function placeObject(slug, b, k, region, space) {
   const objs = (b.objects || []).map(o => objRect(slug, o));
   const tries = [...objs.map(r => ({ x: r.x + r.w + G, y: r.y })), ...objs.map(r => ({ x: r.x, y: r.y + r.h + G }))];
   const all = { x: 0, y: 0, w: space.w, h: space.h };
-  // In view if there is room; else beside or under an object anywhere (the page then brings it into view); else the
-  // space's first free spot.
-  const inView = spotIn(boxes, w, h, region), viewOk = inside(inView.x, inView.y, region) && clear(inView.x, inView.y);
-  const at = tries.find(p => inside(p.x, p.y, region) && clear(p.x, p.y)) || (viewOk ? inView : null) || tries.find(p => inside(p.x, p.y, all) && clear(p.x, p.y)) || spotIn(boxes, w, h, all);
+  // In view if there is room (the free spot nearest what is already there: a mat added beside loose pieces, never in a
+  // far corner of the view); else beside or under an object anywhere (the page then brings it into view); else the
+  // space's first free spot. One gap for all of them (a spot found with a smaller gap than clear() asks for was turned
+  // down, and the mat went to the plane's top left with a fit that zoomed far out: seen recording, 25 Nov 2026).
+  const inView = nearContent(boxes, w, h, region, clear);
+  const at = tries.find(p => inside(p.x, p.y, region) && clear(p.x, p.y)) || inView || tries.find(p => inside(p.x, p.y, all) && clear(p.x, p.y)) || spotIn(boxes, w, h, all, { gap: G });
   return newObject(slug, k, clamp(at.x, 0, space.w - z.w * s), clamp(at.y, 0, space.h - z.h * s), Math.round(s * 1000) / 1000);
 }
 /**
@@ -418,13 +435,18 @@ export function reframe(slug, b, from, to, pad = 12) { return fitInto(slug, b, f
 // ---------------------------------------------------------------- magnetic drops (pieces snap together and into slots)
 /** How close (screen pixels) a dropped piece must be to snap. The plane's distance is this over the zoom. */
 export const SNAP_PX = 14;
+/** Round pieces, per tool (a piece kind means something only inside its tool: base ten's 'tenth' is a long block, place
+ *  value disks' 'tenth' is a disk). Money's bills (b1, b5...) are not round. */
+const ROUND_KINDS = { 'two-color-counters': /^(pos|neg|blue|green)$/, 'place-value-disks': /^(m|hth|tth|th|h|t|o|tenth|hund|thou)$/, money: /^(penny|nickel|dime|quarter)$/ };
 const ROUNDISH = /^(pos|neg|blue|green|m|hth|tth|th|h|t|o|tenth|hund|thou|penny|nickel|dime|quarter)$/;
+/** Is a piece of this kind drawn round in this tool? (No tool given: any round kind, the old rule.) */
+export const roundPiece = (slug, kind) => (slug ? !!(ROUND_KINDS[slug] && ROUND_KINDS[slug].test(String(kind || ''))) : ROUNDISH.test(String(kind || '')));
 /** A piece's rectangle as it lies (a quarter turn swaps width and height). null when turned at an odd angle (no snap). */
-export function pieceBox(p) {
+export function pieceBox(p, slug = null) {
   const r = ((Math.round(num(p.rot)) % 360) + 360) % 360;
   if (r % 90) return null;
   const turn = r % 180 === 90, w = num(p.w, 40), h = num(p.h, 40);
-  return { id: p.id, x: num(p.x) + (turn ? (w - h) / 2 : 0), y: num(p.y) + (turn ? (h - w) / 2 : 0), w: turn ? h : w, h: turn ? w : h, round: ROUNDISH.test(String(p.kind || '')) };
+  return { id: p.id, x: num(p.x) + (turn ? (w - h) / 2 : 0), y: num(p.y) + (turn ? (h - w) / 2 : 0), w: turn ? h : w, h: turn ? w : h, round: roundPiece(slug, p.kind) };
 }
 /** Places on an object that pieces drop into: a place-value chart's columns, a frame's cells. [{ x, y, w, h, kind }] */
 export function slotsOf(slug, o) {
@@ -452,8 +474,8 @@ const overlap1 = (a0, a1, b0, b1, t) => a0 < b1 + t && b0 < a1 + t;
  * close too; else into a slot (a frame's cell: centered; a chart's column: centered across it). Nothing in reach: null.
  * -> null | { dx, dy, to (the piece id snapped to) | null, slot }
  */
-export function snapFor(moving, others, slots, t, { link = true } = {}) {
-  const boxes = moving.map(pieceBox); if (boxes.some(b => !b)) return null;
+export function snapFor(moving, others, slots, t, { link = true, slug = null } = {}) {
+  const boxes = moving.map(p => pieceBox(p, slug)); if (boxes.some(b => !b)) return null;
   const ids = new Set(moving.map(p => p.id));
   let best = null;
   const offer = (dx, dy, to, slot) => { const d = Math.hypot(dx, dy); if (!best || d < best.d) best = { dx, dy, to, slot, d }; };
@@ -462,7 +484,7 @@ export function snapFor(moving, others, slots, t, { link = true } = {}) {
   const h0 = boxes[0], inColumn = slots.some(s => s.kind === 'column' && h0.x + h0.w / 2 >= s.x && h0.x + h0.w / 2 <= s.x + s.w && h0.y + h0.h / 2 >= s.y && h0.y + h0.h / 2 <= s.y + s.h);
   for (const q0 of link && !inColumn ? others : []) {
     if (ids.has(q0.id)) continue;
-    const q = pieceBox(q0); if (!q) continue;
+    const q = pieceBox(q0, slug); if (!q) continue;
     for (const a of boxes) {
       const cross = (a0, aw, b0, bw, round) => {
         const opts = round ? [b0 + (bw - aw) / 2] : [b0, b0 + (bw - aw) / 2, b0 + bw - aw];
@@ -497,7 +519,7 @@ export const groupOf = (pieces, p) => (p && p.g ? pieces.filter(q => q.g === p.g
  *  an empty frame cell and stays exactly where it is dropped anywhere else, even right beside another counter. */
 export const linksPieces = slug => slug !== 'two-color-counters';
 /** The options snapFor takes for a tool. */
-export const snapOpts = slug => ({ link: linksPieces(slug) });
+export const snapOpts = slug => ({ link: linksPieces(slug), slug });
 /** Frames whose counters move with them when the frame is dragged. */
 export const FRAMES = new Set(['ten-frame', 'five-frame', 'double-ten-frame']);
 /** The pieces seated in an object's cells (a piece's middle inside one of its cell slots), locked pieces left out. */
@@ -505,13 +527,98 @@ export function seatedIn(slug, o, pieces) {
   const cells = slotsOf(slug, o).filter(s => s.kind === 'cell');
   return (pieces || []).filter(p => !p.locked && cells.some(s => { const cx = num(p.x) + num(p.w, 40) / 2, cy = num(p.y) + num(p.h, 40) / 2; return cx >= s.x && cx <= s.x + s.w && cy >= s.y && cy <= s.y + s.h; }));
 }
-/** A copy's place: right beside the piece (under it, right of it, above, left), the first that is free and inside the
- *  region; else the region's free-spot search. boxes: everything on the board. -> { x, y } */
-export function nearSpot(boxes, p, region) {
-  const w = num(p.w, 40), h = num(p.h, 40), x = num(p.x), y = num(p.y), G = 10;
-  const free = (ax, ay) => ax >= region.x && ay >= region.y && ax + w <= region.x + region.w && ay + h <= region.y + region.h && !boxes.some(o => ax < o.x + o.w && ax + w > o.x && ay < o.y + o.h && ay + h > o.y);
-  for (const [dx, dy] of [[0, h + G], [w + G, 0], [0, -h - G], [-w - G, 0], [w + G, h + G]]) if (free(x + dx, y + dy)) return { x: Math.round(x + dx), y: Math.round(y + dy) };
-  return spotIn(boxes, w, h, region);
+// ---------------------------------------------------------------- selecting many at once (a selection box, Shift+click)
+// A selection is { p: Set(piece ids), o: Set(object ids) }; the solo board and the room keep one each (the room's per square).
+/** The rectangle between two corners. */
+export const rectFrom = (a, b) => ({ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) });
+const meets = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/** A piece's box as it lies, at any turn (the box around its turned corners). */
+export function pieceRect(p) {
+  const b = pieceBox(p); if (b) return b;
+  const a = (num(p.rot) * Math.PI) / 180, w = num(p.w, 40), h = num(p.h, 40), c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a)), W = w * c + h * s, H = w * s + h * c;
+  return { x: num(p.x) + (w - W) / 2, y: num(p.y) + (h - H) / 2, w: W, h: H };
+}
+/** What a selection box r takes (owner, 25 Nov 2026): every unlocked piece and object whose box meets it. Locked ones
+ *  (backdrops start locked) never. -> a selection */
+export const inRect = (slug, b, r) => ({ p: new Set((b.pieces || []).filter(p => !p.locked && meets(pieceRect(p), r)).map(p => p.id)), o: new Set((b.objects || []).filter(o => !o.locked && meets(objRect(slug, o), r)).map(o => o.id)) });
+/** How many things a selection holds (null: none). */
+export const selCount = m => (m ? m.p.size + m.o.size : 0);
+/** The selection with what is still on the board and unlocked. */
+export const selKeep = (b, m) => ({ p: new Set((b.pieces || []).filter(p => m.p.has(p.id) && !p.locked).map(p => p.id)), o: new Set((b.objects || []).filter(o => m.o.has(o.id) && !o.locked).map(o => o.id)) });
+/** Everything a drag of the selection moves, at its start: its pieces (with their snapped groups) and objects, and what each object takes along
+ *  (carry(o): an unlocked frame's seated counters, a chart's blocks), each once. -> [{ it, obj, x0, y0, r }] */
+export function selMoving(slug, b, m, carry = () => []) {
+  const objs = (b.objects || []).filter(o => m.o.has(o.id) && !o.locked), ps = new Set((b.pieces || []).filter(p => m.p.has(p.id) && !p.locked));
+  for (const p of [...ps]) for (const q of groupOf(b.pieces, p)) if (!q.locked) ps.add(q);   // a snapped group stays whole
+  for (const o of objs) for (const p of carry(o)) ps.add(p);
+  return [...objs.map(o => ({ it: o, obj: true, x0: num(o.x), y0: num(o.y), r: objRect(slug, o) })), ...[...ps].map(p => ({ it: p, obj: false, x0: num(p.x), y0: num(p.y), r: { x: num(p.x), y: num(p.y), w: num(p.w, 40), h: num(p.h, 40) } }))];
+}
+/** Move a selection by (dx, dy) plane pixels from where it started, all of it kept inside space (no snapping). */
+export function selMove(list, dx, dy, space) {
+  const b = bbox(list.map(x => x.r)); if (!b) return;
+  const ddx = clamp(dx, -b.x, space.w - b.x - b.w), ddy = clamp(dy, -b.y, space.h - b.y - b.h);
+  for (const x of list) { x.it.x = Math.round(x.x0 + ddx); x.it.y = Math.round(x.y0 + ddy); }
+}
+/** Delete a selection's unlocked pieces and objects (a snapped group left with one piece is no group). -> how many went */
+export function selDelete(b, m) {
+  const k = selKeep(b, m), n = selCount(k);
+  b.objects = (b.objects || []).filter(o => !k.o.has(o.id));
+  if (Array.isArray(b.pieces)) {
+    const hit = new Set(b.pieces.filter(p => k.p.has(p.id) && p.g).map(p => p.g));
+    b.pieces = b.pieces.filter(p => !k.p.has(p.id));
+    for (const g of hit) splitGroup(b.pieces, g);
+  }
+  return n;
+}
+/** A free place right beside r (under it, right of it, above, left, then below right), inside region, gap px apart
+ *  from everything in boxes. -> { x, y } | null */
+export function besideSpot(boxes, r, region, gap = 10, order = 'below') {
+  const w = num(r.w, 40), h = num(r.h, 40), x = num(r.x), y = num(r.y), G = gap;
+  const free = (ax, ay) => ax >= region.x && ay >= region.y && ax + w <= region.x + region.w && ay + h <= region.y + region.h && !boxes.some(o => ax < o.x + o.w + G - 1 && ax + w + G - 1 > o.x && ay < o.y + o.h + G - 1 && ay + h + G - 1 > o.y);
+  const below = [0, h + G], right = [w + G, 0], above = [0, -h - G], left = [-w - G, 0], diag = [w + G, h + G];
+  for (const [dx, dy] of order === 'right' ? [right, below, left, above, diag] : [below, right, above, left, diag]) if (free(x + dx, y + dy)) return { x: Math.round(x + dx), y: Math.round(y + dy) };
+  return null;
+}
+/** Is a w x h box at (x, y) clear of everything in boxes (gap px apart)? */
+const clearAt = (boxes, x, y, w, h, gap) => !boxes.some(o => x < o.x + o.w + gap - 1 && x + w + gap - 1 > o.x && y < o.y + o.h + gap - 1 && y + h + gap - 1 > o.y);
+/** A copy's place: right beside the original (under it, right of it, above, left) inside region (the part on screen);
+ *  else a free spot in region; else beside it anywhere in space (the page then shows it); else the region's free-spot
+ *  search. Never on top of the original (seen recording, 25 Nov 2026: a copy 24 px down and right of its original).
+ *  boxes: everything on the board. order: 'below' (pieces) or 'right' (objects) first. -> { x, y } */
+export function nearSpot(boxes, p, region, space = null, { gap = 10, order = 'below' } = {}) {
+  const w = num(p.w, 40), h = num(p.h, 40);
+  const near = besideSpot(boxes, p, region, gap, order); if (near) return near;
+  const inView = spotIn(boxes, w, h, region, { gap });
+  const okView = inView.x >= region.x && inView.y >= region.y && inView.x + w <= region.x + region.w && inView.y + h <= region.y + region.h && clearAt(boxes, inView.x, inView.y, w, h, gap);
+  if (okView) return inView;
+  const far = space && besideSpot(boxes, p, { x: 0, y: 0, w: space.w, h: space.h }, gap, order); if (far) return far;
+  return space ? spotIn(boxes, w, h, { x: 0, y: 0, w: space.w, h: space.h }, { gap }) : inView;
+}
+/** After a piece left a group (lifted, turned, deleted): the pieces still in it that no longer touch one another become
+ *  groups of their own, by adjacency (edges within 2 px, overlapping along the edge); a piece left alone is in no group.
+ *  The largest part keeps the group's id. pieces: the board's pieces (changed in place). */
+export function splitGroup(pieces, g, newGid = i => `${g}.${i}`) {
+  if (!g) return;
+  const m = pieces.filter(p => p.g === g); if (!m.length) return;
+  const box = p => pieceBox(p) || { x: num(p.x), y: num(p.y), w: num(p.w, 40), h: num(p.h, 40) };
+  const bs = m.map(box), T = 2;
+  const touch = (a, b) => a.x <= b.x + b.w + T && b.x <= a.x + a.w + T && a.y <= b.y + b.h + T && b.y <= a.y + a.h + T
+    && (Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x) > T || Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y) > T);
+  const seen = new Array(m.length).fill(false), parts = [];
+  for (let i = 0; i < m.length; i++) {
+    if (seen[i]) continue;
+    const part = [], todo = [i]; seen[i] = true;
+    while (todo.length) { const k = todo.pop(); part.push(k); for (let j = 0; j < m.length; j++) if (!seen[j] && touch(bs[k], bs[j])) { seen[j] = true; todo.push(j); } }
+    parts.push(part);
+  }
+  parts.sort((a, b) => b.length - a.length);
+  let n = 0;
+  parts.forEach((part, pi) => {
+    if (part.length < 2) { for (const k of part) delete m[k].g; return; }
+    if (pi === 0) return;
+    let id; do { id = newGid(++n); } while (pieces.some(p => p.g === id));
+    for (const k of part) m[k].g = id;
+  });
 }
 
 // ---------------------------------------------------------------- the AI draft's layout (the code decides WHERE)

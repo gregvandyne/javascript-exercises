@@ -146,6 +146,22 @@ test('chat: passages the filter refuses are left out; nothing usable leaves the 
   assert.equal(t.change, undefined); assert.equal(t.note, 'notBuilt');
 });
 
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): the reply was written before
+// the server built the set, so what the checks left out is said in the app's own words after it, and on the turn.
+test('chat: a partial or failed change is reported truthfully after Oomba\'s words', async () => {
+  fake(() => answer({ reply: 'I added two passages.', action: { op: 'replace', set: { kinds: TYPES, passages: [{ keep: 1 }, { title: 'x', text: `${X2} This part is shit.` }, { title: 'y', text: 'Too short.' }] } } }));
+  let t = (await turn(teacher, { text: 'Add two passages' })).turns[1];
+  assert.equal(t.text, 'I added two passages. 2 passages were left out: they didn’t pass the checks.');
+  assert.deepEqual(t.verify, { ok: false, landed: 1, notLanded: [{ code: 'filtered', count: 2 }] });
+  wipe();
+  fake(() => answer({ reply: 'Done, I rewrote it.', action: { op: 'replace', set: { kinds: TYPES, passages: [{ title: 'x', text: 'Too short.' }] } } }));
+  t = (await turn(teacher, { text: 'Rewrite it' })).turns[1];
+  assert.equal(t.change, undefined);
+  assert.match(t.text, /^Done, I rewrote it\. Nothing in the set changed: none of the passages passed the checks\./);
+  assert.deepEqual(t.verify, { ok: false, landed: 0, notLanded: [{ code: 'notBuilt' }] });
+  wipe();
+});
+
 test('chat: bad JSON and a timeout fall back calmly, the words kept, Try again; one warn line without the words', async () => {
   fake(() => answer('not json at all'));
   let chat = await turn(teacher, { text: 'Secret request about owls' });

@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, signedOut } from '../views/layout.js';
+import { lessonWaitPage } from '../views/lesson-wait.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -30,6 +31,7 @@ import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
+import * as VC from '../services/verify-change.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { quizFromFile } from '../services/atlas-doc.js';
 import { cleanText } from '../services/textfilter.js';
@@ -94,7 +96,8 @@ router.get('/g/:slug', (req, res) => {
   // every viewer. Nothing on this page leads to contacting them, and nothing says which children are theirs.
   const byGrownup = isGrownup(owner);
   const myStars = games.userRating(g.id, u && u.id), liked = games.userLiked(g.id, u && u.id);
-  const lb = games.leaderboard(g.id, 10, u);
+  // The player's own best only: no leaderboard, nobody's score is shown to anyone else (docs/decisions.md "No leaderboards").
+  const best = u && !grownup ? games.myBest(g.id, u.id) : null;
   // Signed out (search engines too), an official game's page suggests only launch games: a child's game title is
   // free text that may hold their name, and this page is indexed.
   const more = games.similar(u, g, 6, { official: !u && g.source === 'seed' });
@@ -164,10 +167,9 @@ router.get('/g/:slug', (req, res) => {
             <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
-        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">${ico('🏆', { size: 28 })} ${t('game.leaderboard.heading')}</h2>
-          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
-            ${u ? '' : html`<p class="small muted" style="margin:10px 0 0"${fbl('game.leaderboard.signIn')}>${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
-        </section>
+        ${best ? html`<section class="panel" aria-labelledby="best-h" id="mybest"><h2 id="best-h">${ico('⭐', { size: 28 })} ${t('game.best.heading')}</h2>
+          <p class="mybest"><b dir="ltr">${f.int(best.score)}</b>${best.label ? html` <span class="muted" dir="auto">${best.label}</span>` : ''}</p>
+        </section>` : ''}
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
         ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
@@ -307,6 +309,10 @@ router.get('/play/:slug', (req, res) => {
   // gets the step's passages (never the key until it is allowed) instead of a game score.
   const proofStep = !!(lc && lc.ok && lc.step.kind === L.PROOF_KIND && g.slug === PS.SLUG && g.source === 'seed');
   const lesson = lc && lc.ok && ((lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step)) || proofStep) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}`, ...(proofStep ? { proof: true } : {}) } : null;
+  // A lesson that waits for this student (Homeroom: an In order handout behind unfinished ones; services/lessons.js
+  // lessonWait): the calm message and the way back, not the game.
+  const wait = lesson ? L.lessonWait(u, lc.cl, t) : null;
+  if (wait) return lessonWaitPage(req, res, wait);
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
   // The step context is honoured for every signed-in player who arrives with one, the game's owner and
@@ -342,7 +348,11 @@ router.get('/play/:slug', (req, res) => {
   // Lesson parameters (?chapter=&band=&mode=&level=&lock=, services/play-params.js): a lesson step's Play link says where
   // the game opens. Only the five known keys with valid values go into the token (o), nothing else from the URL.
   const o = packParams(parseParams(req.query));
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}) }, 15 * 60);
+  // A game handed out from a class's Homeroom (services/lessons.js playFrame): back to the student's desk, and the
+  // teacher's instructions again at the top of the game (the game itself is unchanged). Its student's supports (Homeroom
+  // step 3c) ride in the token to the frame (BRB.support: extra time, read aloud, simpler wording, bigger text).
+  const frame = lesson ? L.playFrame(u, lc.cl, lc.step, t) : null;
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}), ...(frame && frame.support ? { sp: frame.support } : {}) }, 15 * 60);
   // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that
   // offers that style (Oomba.three's styles) draws it; every other game ignores it. Only the known style names pass.
   const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
@@ -355,13 +365,20 @@ router.get('/play/:slug', (req, res) => {
   // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
   // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
   // escape (the game's own screens offer only Play again / Next).
+  if (frame) lesson.back = frame.backHref;
   const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
-  const backLabel = lesson ? t('progress.play.backToLesson') : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
+  const backLabel = lesson ? (frame ? frame.backLabel : t('progress.play.backToLesson')) : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
   // Loudness (services/mic-games.js): the official noise meters, and any Builder game whose code uses BRB.loudness; never
   // in an online match. This page (not the game frame, which keeps microphone=()) may then open the mic after a tap and
   // pass the game a number.
   const mic = !inMatch && micGame(g, games.getVersion(versionId)?.html);
   if (mic) res.set('Permissions-Policy', MIC_POLICY);
+  // Played inside Homeroom (?in=hr, docs/decisions.md "Homeroom: one page, three views"): the teacher's board and a
+  // student's desk open a game in a layer over themselves instead of leaving. Only then, and only in a frame of this
+  // site, may the page be framed (by this site alone); its own Back links give way to the layer's, and a game's own
+  // "back" asks the layer to close (public/js/play.js).
+  const embed = req.query.in === 'hr' && req.headers['sec-fetch-dest'] === 'iframe';
+  if (embed) { res.set('Content-Security-Policy', String(res.get('Content-Security-Policy') || '').replace("frame-ancestors 'none'", "frame-ancestors 'self'")); res.removeHeader('X-Frame-Options'); }
   const body = html`
   <header class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
@@ -372,14 +389,15 @@ router.get('/play/:slug', (req, res) => {
     ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo">${ico('🔊', { size: 20 })}</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </header>
+  ${frame && frame.note ? html`<details class="playnote"><summary><span class="playnote-h">${ico('📝', { size: 18 })}<span class="lbl-h">${t('homeroom.desk.fromTeacher')}</span></span><span class="playnote-t" dir="auto">${frame.note}</span></summary><p class="playnote-full" dir="auto">${frame.note}</p></details>` : ''}
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
-  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: [...(mic ? ['js.match', 'js.loudness'] : ['js.match']), ...(frame && frame.i18n ? frame.i18n : [])] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
@@ -428,9 +446,11 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
-    // Typing Pets: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
+    // Typing Zoo: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
     // rulesFor, the strictest among their classes), for a signed-in student only, never a preview.
     ...(!preview && u && !u.is_guest && g.source === 'seed' && g.slug === TY.SLUG ? (r => (r ? { classRules: r } : {}))(TY.rulesFor(u.id)) : {}),
+    // A Homeroom student's supports (step 3c; BRB.support and BRB.timeFor in the game): only the four known fields.
+    ...(tok.sp && typeof tok.sp === 'object' ? { support: { time: [150, 200].includes(tok.sp.time) ? tok.sp.time : 100, read: !!tok.sp.read, simple: !!tok.sp.simple, big: !!tok.sp.big } } : {}),
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code
@@ -616,7 +636,7 @@ const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
 const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 /** The games with a "Make your own" builder (INIT.make / BRB.canMake): their sets are made by grown-ups who may host. */
-const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-pets']);
+const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-zoo']);
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
@@ -651,7 +671,9 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
   catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return res.status(r.code === 'words' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.clues', g.id, { count: b.words.length });
-  res.json({ clues: r.clues });
+  // Checked work (services/verify-change.js): what the teacher actually gets, said plainly when it is not everything.
+  const got = r.clues.filter(Boolean).length;
+  res.json({ clues: r.clues, report: VC.kept({ asked: r.asked || b.words.length, kept: got, removed: { 'left blank by the checks': (r.asked || b.words.length) - got }, noun: 'clues' }) });
 });
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
@@ -693,7 +715,10 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   const words = huntGame(g) ? r.words.filter(([w]) => { const n = [...gameSets.crossLetters(w)].length; return n >= 2 && n <= gameSets.HUNT.letters; }).slice(0, gameSets.HUNT.max).map(([w]) => [w, '']) : r.words;
   if (!words.length) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docNone' });
   audit(req.user.id, atlas ? 'game.doc_quiz' : 'game.doc_words', g.id, { kind: b.kind, count: words.length, ai: r.ai, cut: r.cut });
-  res.json({ title: r.title, words, cut: r.cut, ai: r.ai });
+  // Checked work: how many of what the AI (or the list) offered landed in the list after the checks, and why not.
+  const asked = Math.max(r.asked || 0, r.words.length);
+  const report = VC.kept({ asked, kept: words.length, noun: atlas ? 'questions' : 'words', removed: { 'removed by the checks': asked - r.words.length, ...(huntGame(g) ? { 'left out (too long or too short for a word search, or past its limit)': r.words.length - words.length } : {}) } });
+  res.json({ title: r.title, words, cut: r.cut, ai: r.ai, report });
 });
 // Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)
 // or a Word file, at most 2 MB, read here with no AI; Crossword's limits and its 10 files a day (the same counter).
@@ -766,7 +791,7 @@ router.post('/api/games/:id/proof/chat', requireUser, rateLimit('proof-ai', 30, 
   if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const b = req.body || {};
   if (typeof b.text !== 'string' || b.text.length > 4000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'brief' });
-  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry }));
+  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry, lang: req.locale }));
 });
 router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
   const g = apiGame(req, res); if (!g) return;
@@ -863,17 +888,15 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
   const { score, label } = req.body || {};
   if (!Number.isFinite(+score) || +score < 0) return res.status(400).json({ error: req.t('game.api.badScore') });
   // A score only counts after the player actually opened the game (a recorded play in the last 24h): this stops a
-  // script from poisoning a leaderboard without ever loading the game. Scores are still client-reported (see docs/safety.md).
+  // script from filling a child's progress without ever loading the game. Scores are still client-reported (see docs/safety.md).
   if (!games.hasRecentPlay(g.id, req.user.id)) return res.status(400).json({ error: req.t('game.api.badScore') });
-  // Grown-up accounts play, but are on no leaderboard: their scores are never stored.
+  // Grown-up accounts play, but their scores are never stored.
   if (isGrownup(req.user)) return res.json({ ok: true, best: Math.max(0, Math.floor(+score)), improved: false });
   res.json({ ok: true, ...games.submitScore(g.id, req.user.id, +score, label) });
 });
-router.get('/api/games/:id/leaderboard', (req, res) => {
-  const g = apiGame(req, res); if (!g) return;
-  // Children's names only to someone signed in, as on the game page (a signed-out caller may be any scraper).
-  res.json({ rows: games.leaderboard(g.id, 10, req.user).map(r => ({ ...(req.user ? { name: r.display_name } : {}), avatar: r.avatar, score: r.score, label: r.label })) });
-});
+// No leaderboard (docs/decisions.md "No leaderboards"): the old public endpoint answers 410 Gone with nothing in it, so
+// an older page or game that still asks gets no scores. A player's own best comes with the score it submits.
+router.get('/api/games/:id/leaderboard', (req, res) => { const g = apiGame(req, res); if (!g) return; res.status(410).json({ rows: [] }); });
 // Reports: any signed-in player (guests included) can report with a simple reason. N open reports auto-hide the game.
 router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3), (req, res) => {
   const t = req.t;

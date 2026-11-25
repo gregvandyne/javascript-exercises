@@ -18,6 +18,9 @@ const ACTIVE_FOR = 5 * 60e3; let lastInput = 0;
 const ua = navigator.userActivation;
 if (ua) setInterval(() => { if (ua.isActive) lastInput = Date.now(); }, 1000);
 for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { lastInput = Date.now(); }, { capture: true, passive: true });
+// Inside Homeroom's layer (?in=hr, public/js/homeroom-player.js): Escape on this page (not in full screen, and not inside
+// the game, which keeps its own keys) closes the layer, as it does from the layer's own bar.
+if (d.embed && parent !== window) addEventListener('keydown', e => { if (e.key === 'Escape' && !document.fullscreenElement) parent.postMessage({ type: 'hr:close' }, location.origin); });
 const playing = () => Date.now() - lastInput < ACTIVE_FOR;
 // A game that points its own frame somewhere else: this page's CSP (frame-src 'self') refuses any other website before
 // a request leaves, and a reload the game starts itself is refused by the server (no sign-in cookie on it). Either way
@@ -210,7 +213,7 @@ addEventListener('message', e => {
       break;
     }
     case 'brb:gameover': {
-      lessonEvent({ event: 'end', score: m.score, ...(m.helped === true ? { helped: true } : {}) });
+      lessonEvent({ event: 'end', score: m.score, ...(m.won === true ? { won: true } : {}), ...(m.helped === true ? { helped: true } : {}) });
       helpedScore = m.helped === true;   // the SDK sends this set's score next: it goes with the same mark
       // The game ended without the assigned part won (Sum Racer reports every race's end; only 1st place
       // is a win): say so on the page, with the way back — the game's own results screen celebrates any
@@ -253,7 +256,8 @@ addEventListener('message', e => {
     // origin and cannot navigate the page itself, so the page goes back on its behalf. Only a course or
     // lesson launch has somewhere to go back to, and only on a real tap (the retry rule): a game must
     // never be able to yank the student out of a session on its own.
-    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) location.href = d.backHref; break;
+    // (inside Homeroom's layer, public/js/homeroom-player.js: the layer closes instead)
+    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) { if (d.embed && parent !== window) parent.postMessage({ type: 'hr:close' }, location.origin); else location.href = d.backHref; } break;
     case 'brb:fullscreen': m.on ? goFull() : fs.exit(); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
@@ -388,6 +392,12 @@ async function mySetsForGame(m) {
     done({ error: e && e.status === 404 ? 'none' : code === 'title' || code === 'full' ? code : e && e.status === 403 ? 'notAllowed' : 'offline' });
   }
 }
+/** Checked work (services/verify-change.js): when the AI's draft lost some of what it made to the checks, the page says
+ *  how many were kept, so the list in the builder is never taken for the whole draft. */
+function keptNote(r) {
+  if (!r || !(r.asked > r.kept) || !(r.kept > 0)) return;
+  toast(t('js.play.aiKept', { kept: r.kept, asked: r.asked }));
+}
 async function docForGame(m) {
   let out;
   try {
@@ -395,6 +405,7 @@ async function docForGame(m) {
     let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     const r = await api(`/api/games/${d.gameId}/words-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin), level: m.level, ...(m.focus ? { focus: m.focus } : {}) } });
     out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [], cut: r.cut === true, ai: r.ai !== false };
+    keptNote(r.report);
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:doc-done', id: m.id, ...out });
 }
@@ -459,7 +470,7 @@ async function printForGame(m, tapped) {
 }
 async function cluesForGame(m) {
   let out;
-  try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; }
+  try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; keptNote(r.report); }
   catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:clues-done', id: m.id, ...out });
 }

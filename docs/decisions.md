@@ -11182,6 +11182,106 @@ small daily cap and Teacher plan holders without one.
   and iPhone 13: 16 checked, closed by default, the count, needs-help first, no overlap with the switches, a long name
   cut short, End session in reach; nobody checked).
 
+## Manipulatives: a selection box (25 Nov 2026)
+
+The owner: "All manipulative games should allow you to click and drag your cursor to select a bunch of objects at
+once." Every tool's board, solo (`public/js/manip.js bindPlane`) and in the live room (`public/js/manip-room.js`, inside
+one square the viewer may change), with the geometry shared in `public/js/manip-board.js` (`inRect`, `selMoving`,
+`selMove`, `selDelete`).
+
+- **The gesture change.** With a mouse or pen, a left drag on empty space no longer pans: it draws a selection box
+  (dashed, in the accent color). A drag on a locked backdrop's body (a chart, a mat, a locked frame) counts as empty
+  space, since those fill the board under the pieces; a hold there still opens its wheel. A mouse now pans with **Space
+  held and a drag** (from anywhere, even a piece), the **middle button**, or the **wheel / trackpad scroll** (deltaX and
+  deltaY); Ctrl or Cmd with the wheel (and a trackpad pinch) zooms at the pointer. The room's wheel used to zoom: it
+  pans now too, the same as the solo board. In the room a drag outside the viewer's own square still pans.
+- **Touch** is unchanged: one finger on empty space pans, two pinch. A hold of 450 ms on empty space (the wheel's hold
+  ring shows) and then a drag draws the box.
+- **What it takes.** Every unlocked piece and unlocked object whose box meets the rectangle; locked things never (the
+  backdrops start locked), and Shift+click never adds them either. Shift with the drag adds to what was selected.
+- **Showing it.** Each selected thing has the single-tap outline (`.on`); an object's resize corner shows only when it
+  is selected alone. A pill at the top of the board (on a phone under the zoom bar; in the room under the bar): "N
+  selected", 🗑 Delete, ✕. One thing selected is the ordinary single selection.
+- **Moving and deleting.** Dragging any selected thing moves all of them (with their snapped groups, an unlocked frame's
+  seated counters, a chart's blocks), kept inside the board or square, no snapping; one Undo step, then the charts
+  settle. Delete or Backspace (never while typing in a field) deletes them: one Undo step, and the usual "N deleted"
+  message with Undo. Escape, ✕, a tap on empty space or on something outside the selection let go of it; Shift+click
+  adds or removes one. Objects that handle their own taps (the number line, the coordinate grid, clocks, beads, cells,
+  pegs, answer boxes) keep them; a read-only board shows no selection.
+- **Strings** `js.manip.sel.*` and `js.manip-room.sel*`, English only (other locales fall back, as for the rest of the
+  manipulatives while they are tested).
+- **Tests:** `manip-box-select-browser.test.js` (laptop: a box from a locked chart's body selects three units and not the
+  chart or a locked unit, the pill, a group move, Delete and two Undo steps, Escape, a tap, ✕, Shift+click, dark mode;
+  the wheel, Ctrl+wheel, Space+drag and the middle button; a phone's pan and hold-then-drag; the room: a student's box,
+  a group move and Backspace, saved; a drag outside the square pans). `manip-steps-browser.test.js`'s laptop case now
+  pans a locked chart with Space held (a plain drag selects and moves nothing).
+
+## Manipulatives: "How it works" videos and four layout fixes (25 Nov 2026)
+
+Found while recording the number line tutorial at 1280x720.
+
+- **Videos per tool.** `public/js/manip-data.js` `TUTORIALS` (a Set of slugs, `number-lines` for now) says which tools
+  have a video; `tutorialOf(slug)` gives its files, `public/video/manip/manip-<slug>.mp4`, `manip-<slug>-poster.jpg`
+  and `manip-<slug>.en.vtt` (served by the app's plain `express.static` for `public/`, an hour's cache in production;
+  the Dockerfile copies `public/`). A tool with one shows a quiet "▶ How it works" button by its title, and on its All
+  tools card (a button beside the card's link, never inside it). It opens the video in the site's modal sheet
+  (`app.js sheet()`: ✕, Escape, a tap outside, focus back to the button), with poster, controls, `playsinline` and
+  English captions on. Turning on another tool's video: add its three files, then its slug to `TUTORIALS`
+  (`manip-tutorial-browser.test.js` checks every listed slug has its files). Strings `js.manip.how.*`, English only.
+- **The view follows a growing object.** The number line in Jumps (or with its first jump) is taller
+  (`manip-board.js` size()), and its bottom went under the board's frame until Fit. `manip.js keepInView` (after every
+  board render) compares each object's size with the last one; one that grew past the bottom or right of the board's
+  clear area moves the view just enough to show it, or fits when it no longer fits at this zoom. Never while a pointer
+  is down on the board (the sizes are taken again when it lifts, so a resize never jumps the view), and never for an
+  object that was off screen.
+- **Fit leaves the zoom pill clear.** `clearArea()` takes the pill's strip off the bottom (a computer) or the top (a
+  phone, where the pill sits top right); Fit and keepInView use only what is left.
+- **Oomba's chat button off the board.** On screens 821px and wider the tool page keeps a right gutter as wide as the
+  fixed round button (`manipulatives.css`, `body.manip-page .mp-tool`), so the board ends left of it; other pages are
+  unchanged.
+- **The hint follows the mode.** A tool's `hint` may be a function of its state (`hintOf`); the number line's says
+  Points or Jumps to match its switch.
+
+## Manipulatives: fixes from the tutorial play-throughs, all 18 videos on (25 Nov 2026)
+
+Found by recording a "How it works" video for every tool (each recording is a play-through with a check after every
+action). Tests: `tests/unit/manip-playthrough-fixes-browser.test.js`, and the play-through block in
+`manip-board.test.js`.
+
+- **The first click after a drag is a real click.** A drag's pointerup sets `V.justMoved` (room: `R.justPanned`) so
+  the click of that same press is not a tap; the board draws again and replaces the dragged element, so Chrome often
+  sends no click, and the flag ate the next real one (a rekenrek bead after a handle drag, the pill's Delete or ✕
+  after a group drag). Now the next pointerdown or keydown clears it (a capture listener on the tool view, and on the
+  room), so it only ever swallows a click of the same press.
+- **Totals: off hides the header total** of loose pieces too (`renderTotal`), not only the objects' own totals.
+- **The first quadrant's x-axis numbers** were drawn under the grid, outside its viewBox; they now sit just above the
+  axis when it is the grid's bottom edge (`xySvgInner`).
+- **Add a work mat stays in view.** `placeObject` asked for a 24 px gap but took its in-view spot from `spotIn` (16 px),
+  so it turned the spot down and fell back to the plane's top left with a fit that zoomed out to about 40%. One gap now,
+  and the in-view spot is the free one nearest the content (`manip-board.js nearContent`). A backdrop dragged from the
+  palette (`dropAt`) starts locked, as a tapped one does (`startLock`).
+- **Round pieces per tool.** A kind means something only inside its tool: base ten's decimal 'tenth' is a long block,
+  a place value disk's 'tenth' a disk. `manip-board.js roundPiece(slug, kind)` (counters, disks and coins) replaces the
+  shared ROUND / ROUNDISH sets for the piece, its palette swatch, the drag ghost and the snap (`snapOpts` carries the
+  slug).
+- **Copy lands beside the original.** `nearSpot` tries beside it in view (pieces: under first; objects: right first,
+  24 px apart), then a free spot in view, then beside it anywhere on the plane; never 24 px down and right on top of
+  it. The solo board then moves the view just enough to show the copy (`showFresh`, as `keepInView` does).
+- **A cube out of the middle of a stick leaves two sticks.** After a piece leaves a group (lifted, turned, deleted,
+  a selection deleted), `splitGroup` regroups what is left by adjacency; a piece left alone is in no group.
+- **Fraction tiles relabel** the tiles already on the board when Labels changes (`onSet`), as fraction circles do.
+- **Small things.** Palette buttons say what they do: a point or band color by its name ("Red points", "Red band";
+  its visible text is the color), a tool action by itself ("Lines off", "Close the band", "Start the tracker here");
+  only a new piece or object says "Add". The wheel never opens under the site's sticky header (`wheelLayout`'s `top`,
+  from `.topbar`), and stays inside the window. The fraction circles' empty hint says "Tap a piece to turn it."
+- **All 18 videos on.** `TUTORIALS` lists every tool; the files are in `public/video/manip/` (about 30 MB, each under
+  2.5 MB). Re-recorded after these fixes: number lines, base ten blocks (the tenth's shape), fraction tiles (its Labels
+  step now shows the tiles on the board relabel), coordinate grid (x-axis numbers), money (a Totals off step), and the
+  tools whose scenes or pictures changed with the fixes: pattern blocks (the dragged-in mat is locked), geoboard (the
+  color buttons), rekenreks, fraction circles and number rods (Copy), clock, hundred board, bar models and place value
+  disks (the palette's names in their scenes). The rest were played through again and kept.
+- **A text's move or resize** sets the same flag, so its click is not a tap on the board.
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,
@@ -13324,3 +13424,1071 @@ Owner: "Create hundreds of sample passages for Mistake Hunt."
   Use in my set plant at the chosen level; each level keeps its own saved work) and in the builder's "Mistakes to
   plant" card, where they set the kinds, the count and what students are told for the draft's grade (all still
   changeable by hand). Tested on every sample at Easy and Hard against the server's set rules.
+
+## Homeroom, step 1a: the gate, the tabs, the board, seating and groups (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` (with the clickable mockups of the teacher's Homeroom and the student desk).
+This step is the foundation, teacher side only.
+- **Gate** (`services/homeroom.js` canUse / canUseClass): `HOMEROOM` (off by default; off hides it from everyone, the
+  platform admin included, as `MANIPULATIVES=0` does), then the platform admin, or school staff on `HOMEROOM_USERS`
+  (comma separated like `MANIPULATIVES_USERS`; `*` lets every teacher in at launch) **and** on the Teacher plan
+  (`services/teacher-plan.js` teacherPlan: own plan or grant, a trial, a school seat). A class's Homeroom: only its own
+  teachers (and the platform admin), never an archived class. Everyone else (students, other teachers, a school admin
+  who does not teach the class, teachers without the plan) gets the normal 404 and today's class page, unchanged. The
+  preview for teachers without the plan (spec "Who gets it") is not built yet.
+- **Tabs**: for those teachers a class has **Homeroom | Classroom | Dashboard** (`routes/homeroom.js` homeroomTabs, a
+  pill over `classHeader` in `routes/schools.js`). Classroom is today's class page (Games, Progress, Students,
+  Settings, every progress page) untouched; Dashboard is unchanged. Homeroom is `/class/:id/homeroom`. No summary
+  header was added to Progress in this step.
+- **The board is the Manipulatives live room's**: its CSS (`.rm`, `.rm-area.teach`, the zoom pill, the minimap, sticky
+  notes, text, pen), and two pieces moved out of the room so both use one copy, unchanged: `public/js/board-view.js`
+  (zoom around a point, Fit, the world's transform, the zoom pill, the minimap; from `manip-room.js`) and
+  `public/js/board-ann.js` (pen marks and board text with its grip, sizes and snapping; from `manip.js`, its four
+  strings moved from `js.manip.text.*` to `js.board-ann.*` with their translations). The teacher's area is saved like
+  the room's teacher's area (`services/manipulatives.js` cleanState: the word and personal-information rules, limits),
+  plus shapes (square, circle, line). Cursors, the socket and live saving between people wait for live class (step 3).
+- **Desks and seating** (`public/js/homeroom-seats.js`, shared with the server): the teacher's area across the top, the
+  teacher's desk, a desk per student of the roster with their name (roster name, else display name) above it and
+  their group's color as its border. **Arrange seats**: Rows, Tables of 4, U-shape, Circle (no desk on the name of the
+  one in front), then drag any desk (or arrow keys). Saved per class in `homeroom_rooms` (migration
+  `0122_homeroom`; deleted with the class or the school; a student who leaves loses their desk and group). New students
+  get a free desk without moving anyone.
+- **Groups**: Stretch, On track, Building to start (their names follow the teacher's language until renamed), up to 8,
+  a name and one of 8 colors each, students assigned in a simple sheet. **Team desks wait for step 2.**
+- **Left panel and top bar** as in the mockup: class switcher, the tabs, Arrange seats, ⋯ (Arrange seats, Groups);
+  Hand out to (Whole class and the groups), My lessons, Games I built (the teacher's games), Oomba games and tools (the
+  Manipulatives and Figures when the teacher has them, then the visible Oomba learning games), Reading, Class flow and
+  Board tools. Handing out is marked as coming next; handouts, live class, plans, the student desk, quick sign-in and
+  the projector view are later steps. The Oomba chat button is there as on every teacher page.
+- Tests: `tests/unit/homeroom.test.js` (gate, seating, groups, the teacher's area, the class page) and
+  `tests/unit/homeroom-browser.test.js` (1366 x 768, tablet and phone: desks, Fit, no sideways scroll, seats and a
+  note saved).
+
+## Homeroom, step 1b: the student desk, live class, the projector view (25 Nov 2026)
+
+Spec: `docs/homeroom.md` and the owner-approved student desk mockup. Builds on step 1a.
+- **Who gets a desk** (`services/homeroom.js` canUseDesk / classHasHomeroom): `HOMEROOM` on, the class not archived,
+  the person an active student of the class, and at least one of the class's own teachers let into Homeroom (canUse:
+  on `HOMEROOM_USERS` with the Teacher plan, or the platform admin). It is the class that decides, so a student never
+  sees plans or prices; everyone else (another class's students, the class's teachers, signed-out visitors) gets the
+  normal 404. Their class page gets a **My desk** button when the class has Homeroom.
+- **The desk** (`/class/:id/desk`, `public/js/homeroom-desk.js`): top bar (Live dot, class name), the desk with their
+  name and their group's color as its border, "Nothing on your desk yet" (handouts come in step 2), the **doodle and
+  working-out pad**, a small read-only window on the teacher's area, and the dock: My desk, Teacher's area (full
+  screen), Library (`/library`), See the room. Tablet landscape: desk and window side by side; portrait, narrow
+  laptops and phones: one column with the teacher's area on top; Chromebook 1366 x 768 as landscape. Tap targets are
+  48 pixels. No Raise hand, notebook, handouts or cursors yet.
+- **Names on the student side** are the names classmates already see on the class page (display names); the roster's
+  real names stay the teacher's. **Group names never reach students** (Stretch / Building say how a child is doing);
+  a student sees only their own desk's group color, every other desk in See the room is plain.
+- **See the room**: every desk where the teacher seated it (the saved seating), names only, no work, theirs marked;
+  the front of the room as a low band. When that would make desks too small to read (a phone), the same desks as a
+  grid in seating order (front row first).
+- **The pad** (`homeroom_doodles`, one row per class and student; `POST /api/desk/:id/doodle`): pen strokes on a 3:2
+  page (fractions of 900 x 600, so a drawing keeps its shape on every screen), five pen colors, Undo and Clear (Clear
+  can be undone), saved 0.7 s after a stroke and when the page is left. Finger, pencil and mouse are pointer events;
+  once a pencil is used, touches stop drawing (a resting palm). The server keeps at most 150 strokes, 400 points a
+  stroke and 15,000 points in all (`padFull` past that), clamps every point to the page, drops one-point strokes and
+  unknown colors. Only its own student writes it. The paper is cream in both themes so every pen color shows.
+- **Live class** (migration `0123_homeroom_desk`: `homeroom_rooms.live_at`, `live_bring`, `live_paused`;
+  `POST /api/homeroom/:id/live` with start, bring, back, pause, resume, end): only the class's teachers (the Homeroom
+  gate); students only read it. Top bar: **Everyone to Homeroom** (yellow) starts it; then the yellow button is
+  **Bring everyone to me** / **Back to desks** (every desk shows the teacher's area, "Your teacher is showing this")
+  and **Pause screens** / **Unpause screens** ("Eyes on your teacher" on every desk, over everything). **End class** and
+  **Open projector view** (new tab) are in the ⋯ menu. A class left live ends by itself after 6 hours (LIVE_MAX_MS).
+- **How desks hear it: polling, not the Manipulatives socket.** The live room's socket (`services/manip-socket.js`) is
+  tied to a manipulatives session and its memory state, not to a class; bending it to Homeroom would mean a session
+  per class or a second kind of room in it. In this step nothing needs to be faster than a few seconds, so a desk asks
+  `GET /api/desk/:id/state?v=<version>` every 3 s while live and every 6 s otherwise, never while the tab is hidden;
+  the answer is the live state plus the teacher's area only when it changed (the room's `updated_at`). Cursors and
+  hands in step 3 are where a socket per class earns its place.
+- **"Your class is in Homeroom. Go to my desk"** on every page: the site already tells students about live things
+  only on their class page (Oomba Live: `public/js/class-live.js`, polling every 8 s; Manipulatives: a banner when the
+  page is drawn). Homeroom needs every page, so `views/layout.js` gained `onEveryPage(fn)` (a feature adds a script for
+  the people it is for; routes register it, the layout imports none of them). `routes/homeroom.js` adds
+  `public/js/homeroom-notify.js` only for students with a class that has a Homeroom room (one indexed query) and not on
+  the desk itself. It asks `GET /api/homeroom-live` 2 s after the page opens, then backs off by 1.5x from 15 s to a
+  minute while nothing is live, every 30 s while a class is live (the prompt goes when class ends), never while hidden,
+  as background requests (they don't keep a sign-in awake). The prompt is a calm dark card at the bottom (above the tab
+  bar on phones) with the class name, Go to my desk and a close button (closed for that live session only).
+- **Projector view** (`/class/:id/homeroom/projector`, the class's teachers only): bare page (no site bar, no Oomba
+  chat), the class name, the Live dot and the teacher's area as big as the screen, refreshed like a desk. Never a
+  student's name, desk, hand, flag or progress: its page data and `GET /api/homeroom/:id/state` carry only the area
+  and the live state (tested).
+- Shared read-only drawing of the teacher's area: `public/js/homeroom-area.js` (notes, text, pen, shapes, scaled to
+  its box); the teacher's board keeps its own editable drawing.
+- **Deleting**: `homeroom_doodles` goes with the class (`services/school-delete.js` BY_CLASS, the class-leave hook),
+  with the student leaving the class, with their account (`services/account-delete.js`), and moves with a school
+  account merged into the student's own.
+- Tests: `tests/unit/homeroom-desk.test.js` (the gate, live state and who may change it, the prompt's script, the pad
+  and its limits, the projector with no student names) and `tests/unit/homeroom-desk-browser.test.js` (1366 x 768,
+  tablet both ways, phone: layout, no sideways scroll, 48-pixel targets; drawing and saving; See the room; live class
+  from the teacher's bar to a desk and the prompt; the projector).
+
+## Homeroom, step 1c: quick sign-in for a class on shared devices (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Getting everyone in fast", approved). Builds on steps 1a and 1b.
+- **The class sign-in code** (`services/homeroom-signin.js`, `routes/homeroom-signin.js`; migration
+  `0124_homeroom_signin`: `homeroom_rooms.signin_code` / `signin_until`). Six characters from the friend-code letters (no
+  0/O, 1/I/L), random, unique while set, about 887 million codes. Only the class's teachers open it (**Students sign
+  in** in the ⋯ menu, and the Sign-in panel); it stays open 90 minutes (Keep open longer: 90 more from now, same code),
+  opens by itself when live class starts, closes with End class, and the teacher can close it. Closed or expired, the
+  code means nothing. The box shows a big QR code of `/hr#<code>` (the existing `services/qr.js`, as Oomba Live's join
+  QR), the short address and the code in two halves. The projector shows the same card beside the teacher's area while
+  sign-in is open (its poll sends the QR only when the code changed). Desks never get the code.
+- **The short address is `/hr`** (no existing route or file used it). The code travels after `#`, so it never reaches
+  server logs from the QR code, and the page keeps it in the address for "Not you? Switch".
+- **The student flow** (`public/js/homeroom-signin.js`, a bare page): the code, then the class's name and its students
+  as big name buttons (84 px; two columns on a phone), then: their password (typed, Show/Hide), or their three pictures
+  in order from a grid of nine Fluent 3D icons already in the repo (bear, lion, frog, owl, rocket, apple, star, rainbow,
+  cupcake; never photos), or Sign in with Google (the site's own button and flow). Then their desk.
+- **The name grid exposes display names only** (the names classmates see on the class page; for school accounts that
+  is often the generated username, which the class already sees), plus how each signs in (password, picture, Google,
+  or "ask your teacher"). Never an account id, roster name or anything else: each button carries an HMAC of the class,
+  the code and the student, so a grid read under one code is useless under any other. Only while the code is open.
+- **Picture passwords**: only for accounts the class's school made (`users.managed_school`: the accounts a teacher
+  already resets passwords for); own accounts always use their own password. Stored in `homeroom_signins` as a bcrypt
+  hash of the three pictures (cost as passwords), shown once on a printable card kept in memory for a day for the
+  teacher who made it (as login cards are). A new one ends that student's class-device sessions. Grade K to 2 classes
+  (`classrooms.grade`, free text: K, TK, Kindergarten, 1, 2nd, Grade 2, K-2, CP, CE1, 2年生...; `earlyGrade`) give
+  school accounts picture passwords unless the teacher picks Password; a student without one yet sees "Ask your teacher
+  for your sign-in card". Wrong pictures: 5 tries, then a wait of 1 minute that doubles per wrong try (up to 15), and
+  after 10 wrong tries in a row it stays locked until a teacher unlocks it or makes a new one. A bcrypt check runs on
+  every try, so timing never says who has one.
+- **Typed passwords use the sign-in page's own limits and buckets** (`routes/auth.js` LOGIN: per address failures and
+  tries, `loginLockKey` per username), so this door never buys more guesses than `/login`. Staff, grown-up, guest and
+  banned accounts never sign in here. Picture tries also count toward the per-address failure bucket.
+- **Other limits** (in memory, `services/ratelimit.js`): wrong codes 100 per address per 15 minutes (only wrong ones
+  count, so a school behind one address is fine), 1500 code requests per address, 3000 uses per code and 150 wrong
+  picture tries per code per 15 minutes.
+- **Shared devices** (`sessions.class_device`): a session started here (or by Google from this page, through two hooks
+  `routes/google.js` exposes so it imports nothing of Homeroom, and only for an active student of that class while it
+  is open) is a class-device session: it ends at the sign-in window plus 15 minutes (kept open longer: they last
+  longer), with End class, with the student leaving the class or the class going, and with a new picture password. The
+  desk shows **Not you? Switch** (signs out, back to `/hr#<code>`), and a desk whose sign-in ended goes to
+  `/hr?ended=1` ("Class is over"). Normal sign-ins are never marked or touched; `server/auth.js` is unchanged.
+- **The teacher's Sign-in panel** (`/class/:id/homeroom/signin`, the Homeroom gate): the code box, every student with
+  their roster name and "Shows as", Password / Picture password, status (ready, none yet, waiting, locked), New picture
+  password, Unlock, and **Print sign-in cards** (new picture passwords for everyone on pictures, "Type your password" or
+  "Use Sign in with Google" for the rest; two cards a row on paper). Mode changes, resets, unlocks, opening and closing
+  are in the audit log.
+- **Deleting**: `homeroom_signins` goes with the class and the school (`services/school-delete.js` BY_CLASS), the
+  student leaving the class, their account (`services/account-delete.js`), and moves with a merged school account.
+- Tests: `tests/unit/homeroom-signin.test.js` (open, extend, close, expiry, live start and End class; wrong codes and
+  per-address and per-code limits; the grid only while open and only display names; password and picture success,
+  failure, wait and lock; End class, the window and Switch; Google hooks; teacher-only; K-2; cards; projector vs desk;
+  delete paths) and `tests/unit/homeroom-signin-browser.test.js` (the teacher's sheet, panel, cards and projector; the
+  whole shared-tablet flow: code, name, pictures, desk, Switch, the next student's password, End class; phone widths).
+
+## Homeroom, step 2a: handing out games (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Handouts and lessons", "The student desk") and the two owner-approved mockups (the handout
+sheet "Game · free play"; the desk cards with Next up, 🔒 Later and the teacher's words in yellow). Builds on step 1.
+- **A handout is a class assignment, not a second system.** `services/homeroom-handouts.js` handOut calls
+  `services/game-folders.js` assignGame: the hidden lesson of kind `game` with the game as its one step, a
+  `class_lessons` row (with its due day) and `class_lesson_students` for exactly the students it went to (one desk: that
+  student; a group: its students at that moment; Whole class: `[]`, the whole class, so a student who joins later gets
+  it too). So step_progress, the play page's time and scores, the Progress gradebook and its CSV, the lesson page, the
+  Classroom tab's list and the student's To do list on /classes all see it with no change. assignGame gained two
+  options: `body` (the teacher's instructions become the game step's text, so the lesson page shows them too) and
+  `again` (Homeroom checks duplicates itself, below).
+- **What Homeroom adds** (migration `0125_homeroom_handouts`, one row per handout's class lesson, gone with it, the
+  class or the school; in `services/school-delete.js` BY_CLASS): `in_order` (In order / Any order), `grade` (`score`,
+  `completion` or `none`), `target` (all, group, desk), who and when. Defaults from the spec: free play is graded by
+  Completion; In order.
+- **Never the same game twice for a student**: a handout is refused (`alreadyOnDesk`, with how many desks) while any of
+  its students has that game open in the class, from Homeroom or from Classroom's Assign. A teacher can hand a game to
+  one group today and another tomorrow.
+- **Instructions**: plain text, at most 300 characters (`INSTRUCTIONS_MAX`) and 4 lines, control and direction characters
+  removed, spaces tidied, and the site's word and personal-information rules (`services/manipulatives.js` textProblem,
+  as group names and the teacher's area). Shown escaped everywhere.
+- **The teacher's board** (`public/js/homeroom.js`): the panel's Oomba games and Games I built are buttons. Tap one (it
+  stays picked; a yellow bar says what to do and repeats Whole class and the groups, since on a phone the panel strip
+  may be scrolled away from them), then tap a desk, a group chip or Whole class; with a mouse or pen a game can also be
+  dragged there (a finger scrolls the panel, so touch is tap-then-tap). The sheet: instructions, Order on the desk,
+  Grade it by (Score / Completion / Not graded, each with a one-line meaning), an optional due date, then "Put on desk"
+  / "Put on N desks". Live-only games (Quest Race...) are not listed. **Manipulatives and Figures** are not games (no
+  game row, Figures has its own worksheet assign) and stay in the panel marked "Coming next".
+- **Desks on the board** show their handouts (icon, name, a progress bar from play time toward the 2 minutes that count
+  a game as done, ✓ when done, 🔒 while waiting); more than 3 show 2 and "+N more". Tapping one opens the desk's sheet:
+  each handout with its state, instructions, order, grading and best score, **Take off {name}'s desk** and **Remove from
+  every desk**. Off one desk takes the student off its list (a Whole class handout becomes the current roster minus
+  them; the last one off removes it); every desk is the same soft remove as Classroom's (`class_lessons.removed_at`,
+  work kept, comes back if assigned again). The board asks `GET /api/homeroom/:id/handouts` every 20 s (8 s while live)
+  while visible.
+- **The student's desk** (`public/js/homeroom-desk.js`): the cards in the order they were handed out, as a row that
+  scrolls sideways inside the desk (the pad keeps its room). The first unfinished card is **Next up**; an In order card
+  after any unfinished card shows **🔒 Later**, is not a link and says "Finish the ones before it first"; Any order cards
+  always open. The teacher's instructions in yellow on the card ("Teacher: ..."), the due day, and the bar. Done cards
+  fade with "✓ Done". The desk's existing poll (`GET /api/desk/:id/state`) carries the student's own cards only when
+  they changed (`hv`), with a small "New from your teacher" toast. Only their own cards: never a classmate's or a group
+  name. The lock is the desk's; the lesson link in the To do list still opens a waiting handout (open point).
+- **The game**: a card opens `/play/<slug>?lesson=&step=` as any lesson step does. The play page asks
+  `services/lessons.js` playFrame (a hook Homeroom registers, so `routes/games.js` imports nothing of Homeroom): for a
+  student of the class with a desk, **Back** goes to `/class/:id/desk` ("Back to my desk") and the instructions show in
+  a yellow line over the game (tap for all of it; the stage moves down; full screen still covers everything). No game
+  code changed. A teacher trying the link gets the game as before.
+- **Grading in Progress** (`services/progress.js` classProgress via `services/lessons.js` gradeModes): a Not graded
+  handout is **practice**: its cell shows ◐ / ✅ and "Practice" / "Practiced", and it counts in neither Work done, the
+  Score, late counts nor "has open work"; a Completion handout shows "Done" / "Not done"; columns carry a chip (Not
+  graded, Completion, Score). CSV: "Practice (done/total)", "Done" / "Not done". Score handouts are graded as every
+  lesson is (a free-play game has no % right, so in practice it shows its steps done until step 2b's lessons).
+- **Google Classroom**: nothing new is posted (Homeroom has no "Also post" yet; step 2c). One guard in
+  `services/gclassroom.js` sendGrades: a Not graded handout never sends grades (by hand: `notGraded`; the automatic
+  sync skips it quietly), in case one was posted from Classroom.
+- **Who**: `POST /api/homeroom/:id/handouts` and `.../handouts/:clid/remove` behind the Homeroom gate (the class's own
+  teachers with the plan; everyone else the site's 404), sharing the assign routes' limit (`lesson-new`, 120 an hour;
+  removing 600 an hour). Students read only their own desk (the desk gate).
+- Tests: `tests/unit/homeroom-handouts.test.js` (one desk, group, Whole class targets; instructions cleaned; refusals;
+  auth; desk order and locks; the play page; gradebook, CSV and the Classroom guard; remove one and all; the panel) and
+  `tests/unit/homeroom-handouts-browser.test.js` (tap-then-tap on a tablet, drag with a mouse, the phone's bar; the
+  student's desk at tablet, 1366 x 768 and phone, the lock, the game with instructions and back).
+
+## Homeroom, step 2b: lessons and the lesson builder (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Handouts and lessons": a lesson is exact, built in Homeroom with the tool's own settings, a
+worksheet preview and a version per group; lessons are graded by Score by default) and the owner-approved mockup of the
+builder. Builds on step 2a. Arithmetic Lab, Algebra Builder and Crossword first; the rest of the spec's order (class
+quizzes and word games, games the teacher built, Atlas Quest, Sudoku, Castle Clash puzzles, Manipulatives, Figures,
+Reading) is listed in the builder as coming later.
+- **A lesson is the game's own question sets, never a second format.** Each version of a lesson IS a `game_sets` row of
+  its game (`services/game-sets.js` save, so the game's own cleaner checks it: `cleanBoxItems`, `cleanItems`,
+  `cleanCrossItems` with the text filter), owned by the teacher, also listed in the game's My worksheets, opened as every
+  set is (`?chapter=s-xxxxxxxxxx&lock=1`, `BRB.questionSet`). Migration `0126_homeroom_lessons` only links them
+  (`homeroom_lessons`: owner, game, name, instructions, the builder's settings, `base: { s, set }`,
+  `versions: [{ key, label, s, set }]`) and adds to `homeroom_handouts` `hr_lesson`, `version` (the version's label, for
+  the teacher only), `problems` (for the Score) and `batch` (the versions of one hand-out). Lessons are the teacher's,
+  for any of their classes; they go with their account (`services/account-delete.js`; their sets with `game_sets`). Not
+  in the school delete: they are personal, as `game_sets` are.
+- **The settings and the exact problems** (`public/js/homeroom-lesson-make.js`, shared by the builder and the server):
+  Arithmetic Lab: operation, method (the game's own per operation), size (2, 3, 4 digits; 2 × 1 to 3 × 2; 2 ÷ 1 to
+  4 ÷ 2), 5 to 20 problems, help Watch / Count up / Guided / On my own; Algebra Builder: Solve / Multiply / Factor, Easy /
+  Medium / Hard (its own practice maker, ported), 5 / 8 / 10, the tiles it starts with; Crossword: 3 to 30 words and clues,
+  word bank, hints. Problems are made from a seed, so the preview and the saved set are the same problems ("New
+  problems" is a new seed); the server makes them again from the settings and checks every one.
+- **A version for each group**: the class's groups (Homeroom's, step 1a) each get a copy of the lesson with a suggested
+  change by their place (the first harder, the last easier, the middle as built: Stretch, On track, Building): Arithmetic
+  Lab one size and one help level, Algebra Builder one level, Crossword the word bank off or on. Every setting stays
+  editable per version; students without a group (or a group without a version) get the lesson as built. A version is
+  keyed by its group's identity (its name, or an unnamed default group's key), so the same lesson finds Stretch,
+  On track and Building in every class of the teacher. Group names never reach a student or a worksheet.
+- **The worksheet preview and Print** use the games' own printers (`services/game-print.js`: Arithmetic Lab's and
+  Crossword's pages; `boxPrintHtml` gained `heading` for the lesson's name). Crossword's paper grid is laid out by
+  `crossLayout` (longest words first, most crossings, the seed for ties), checked by the crossword printer as any layout.
+  Algebra Builder has no printer, so its sheet is made in `services/homeroom-lessons.js` on the same paper (the problems
+  with room to work). Print worksheet (the lesson's ⋯ menu) prints one version at a time, with its class code and link,
+  and the answer key when asked (Arithmetic Lab, Crossword), on the page's print area as the play page prints.
+- **"Ask Oomba to fill it in"**: only Crossword has an AI filler today (`services/set-ai.js` draftClues, through the
+  game's own `POST /api/games/:id/clues`): a clue for each word that has none. Only the words go, never a student, a
+  class or a name; the teacher reads every clue before saving. Shown only with a model configured and to grown-ups who
+  may host (as in the game). Arithmetic Lab and Algebra Builder have none, so no button.
+- **Handing out** (`services/homeroom-lessons.js` handOutLesson; the 2a sheet and tap-then-tap / drag): each student is
+  put in their version's bucket, one class assignment per bucket through `services/game-folders.js` assignGame with the
+  set in the step's options and exactly those students (Whole class with one version for everyone stays `[]`). Order
+  and grade as in 2a, **Score by default**. A lesson already on any of the students' desks is refused (`lessonOnDesk`);
+  free play of the same game is its own thing (2a's duplicate check now leaves lessons out). Remove from every desk takes
+  all versions handed out together (`batch`). The teacher's desk sheet shows "Lesson · Version: Stretch".
+- **The student's card**: "Lesson: <name>", "Worksheet · N problems" (Crossword: words); it opens the game at that
+  exact set with the instructions on top and Back to my desk (2a's frame).
+- **Scores**: `services/scores.js` adds a `lesson` item for Score-graded lesson handouts: Arithmetic Lab reports how many
+  it got right (`finished(rightCount)`), so earned = right of N; Crossword and Algebra Builder finish only when everything
+  is right and report no number, so the play page's end now carries `won` and `progress.gameScore` keeps label `won`
+  (earned = N of N). Played without finishing (2 minutes, "I played it"): done, not scored ("–", never 0 %).
+- **2a's open point, fixed**: a waiting In order handout opened from the To do list, the lesson page or a saved play link
+  shows a calm "Not yet: finish the one before it on your desk first" with Back to my desk (`services/lessons.js`
+  lessonWait, a hook Homeroom registers; `views/lesson-wait.js`; used by `routes/progress.js` and `routes/games.js`).
+- **Who**: `GET/POST /api/homeroom/:id/lessons`, `.../lessons/preview`, `.../lessons/:lid/duplicate | delete | print`
+  behind the Homeroom gate; only the lesson's owner (everyone else's lesson reads as one that isn't there, 404).
+- **Open**: in the gradebook each version is its own column under the lesson's name (the Classroom tab's merged columns
+  come later); Crossword and Algebra Builder count a finished run as all right, since they never let a wrong answer
+  stand; the builder for the rest of the spec's order; lessons in the day plan (step 3).
+- Tests: `tests/unit/homeroom-lessons.test.js` (settings and versions, create / edit / duplicate / delete / auth, sets in
+  use kept, hand-out set codes per group, Whole class, refusals, scores, print auth, the wait page, remove all, account
+  delete) and `tests/unit/homeroom-lessons-browser.test.js` (build an Arithmetic Lab lesson with group versions at
+  1366 x 768, Algebra Builder and Crossword on a tablet, the phone, hand it out, Print, the student's card and the real
+  game playing that set).
+
+## Homeroom, step 2c: grades to Google Classroom, the Classroom overview, comments and stickers, team desks (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("A class's tabs", "Handouts and lessons": Google Classroom gets the grade the teacher chose;
+"Team desks") and the owner-approved mockup's Classroom view ("Two ways to see progress", "Where results go"). Finishes
+step 2. Migration `0127_homeroom_teams_feedback`.
+- **Google Classroom gets the grade the teacher chose** (`services/gclassroom.js` gradeBasis / gradeOf, used by
+  sendGrades by hand and by the automatic sync, with its retries and log unchanged). A Homeroom handout graded by
+  **Score** sends the % right: the gradebook's Score for that lesson (`services/scores.js`, the same figure as the cell);
+  a student with nothing scored yet (a free-play game played without finishing) gets no grade and is counted "has no
+  score yet" (`notScored`). **Completion** sends the completion grade (steps done of the lesson's steps, so 100 when
+  finished). **Not graded** sends nothing (2a's guard). Every lesson that is not a Homeroom handout keeps the completion
+  grade exactly as before. The Google Classroom page says per lesson what it sends ("Sends a completion grade", "Graded
+  by score in Homeroom: sends the % right", "Not graded in Homeroom: no grade goes to Classroom"; no Send button then),
+  the button reads Send scores for a Score handout, the results and log say "scores sent", and the general text, the
+  automatic sync's hint, the connect list, the privacy line and /teachers' Classroom line say it plainly in 13 languages.
+  `docs/google-classroom.md` is updated.
+- **"Also post to Google Classroom" in the hand-out sheets** (games and lessons), shown when the teacher can post to the
+  class's linked Classroom class (`routes/gclassroom.js` gcCanPost, the condition the assign forms already use). It goes
+  through `gcAfterAssign`, the same path as Classroom's Assign (the sync limit, the class's teachers only), once per
+  class assignment made; `GC.postOf` keeps a lesson from being posted twice. Only Whole class: a handout to some desks
+  is assigned to some students, which Classroom would give the whole course (`someStudents`), so the toggle is off for
+  desks, groups and teams with a line saying why. Unticked by default, as in Classroom's Assign.
+- **The Classroom tab's overview** (`services/homeroom-overview.js`, `routes/homeroom-overview.js`,
+  `public/js/homeroom-overview.js`, `public/css/homeroom-overview.css`) at the top of Progress, for Homeroom teachers of
+  the class only (`canUseClass`); everyone else's Progress page is byte for byte as before, and everything that was there
+  (the full gradebook, CSV, courses, typing, live games; standards, rubrics, student reports, the Google Classroom page)
+  stays below or one tap away, unchanged.
+  - Columns: every Homeroom handout of the last 4 weeks (games, the teacher's own games, lessons; newest first, as in
+    the mockup) with its kind and how it is graded ("Graded by score", "Graded by completion", "Not graded"). Only
+    Homeroom handouts: other assignments have no grading choice, so showing them here would need a grading this page
+    can't honestly state; they stay in the full gradebook. A lesson's versions handed out together (`batch`) are one
+    column; each student's cell is their own version's (the one assigned to them).
+  - Rows: every student, alphabetical by the gradebook's name (roster name, else display name), the teacher's language's
+    collation, case and accents ignored. Never ranked.
+  - Cells: Score the % right (green 80 and up, yellow 60 to 79, rose under 60; finished with nothing to score: Done;
+    not started: –); Completion ✓ Done / Not done; Not graded Practice (✓ when practiced); not assigned to them: a dot;
+    not open yet: 🔒. Tapping a column's name opens the lesson results page; a student opens the student report.
+  - **The trend rule** (`trendOf`, shown under the table): from the student's Score results in this window, oldest to
+    newest, the last 3: none yet: no trend ("Not enough scores yet"); their mean under 60 %: **Needs support** (checked
+    first); 2 or more and the latest at least 10 points above the first of those 3: **Improving**; otherwise **Steady**.
+    A falling score that is still 60 % or more on average reads Steady: the overview flags support, it never ranks.
+  - The three numbers: **handouts finished** (finished cells of every open cell assigned in the window, practice
+    included), **students needing support** (the trend's count) and **handouts this month** (merged handouts since the
+    first of the calendar month, UTC like the stored dates).
+  - **The Google Classroom status line** (school staff while Classroom is on): "Linked to "course" · roster synced
+    {when} · grades sent {when}" (the link's `roster_at`, the newest `gc_posts.grades_at` for that course) and Open
+    settings (the class's Google Classroom page); not linked: "Not linked yet. Link a Classroom class".
+  - **Changing a handout's grading**: its header chip opens a small menu (Score, Completion, Not graded, each with one
+    line) and `POST /api/homeroom/:id/handouts/:clid/grade` changes every version handed out together
+    (`services/homeroom-handouts.js` setGrade); the class's teachers only (the Homeroom gate), audited; the page reloads so
+    the gradebook, the overview and the next Classroom sync all follow.
+- **Comments and stickers on finished work** (`homeroom_feedback`: one row per class lesson and student, comment, sticker,
+  who and when; `setFeedback`, `POST /api/homeroom/:id/handouts/:clid/feedback`). From the desk's sheet on the teacher's
+  board, a finished card gets "Comment or sticker": a comment of at most 140 characters and 2 lines (the instructions'
+  cleaning, blank lines dropped, the site's word and personal-information rules) and/or one of 12 stickers from the
+  owner's sticker library already served at `/img/stickers/` (illustrations without words, so they read in every
+  language: star, thumbs up, heart, bright idea, check, rocket, trophy, medal, crown, fireworks, smiley, rainbow; never a
+  photo). Both empty removes it. Refused on unfinished work (`notFinished`), a handout not on that desk, an unknown
+  sticker, a long or unkind comment. The board shows a small sticker (or 💬) on the card. The student sees their own on
+  their done card (the sticker on its corner, the words in yellow; the desk's fingerprint includes it, so the poll brings
+  it) and on the lesson page ("Your teacher says", `services/lessons.js` lessonNote, a hook Homeroom registers). Never a
+  classmate's; nothing on See the room, the projector or anywhere public. Stored for the parents' view (step 4).
+  Deleted with the class lesson, the class, the school (`BY_CLASS`), the student leaving the class, their account; moved
+  with a merged school account.
+- **Team desks** (`homeroom_rooms.teams`: `[{ id, members, x, y }]`; `services/homeroom.js` saveTeams,
+  `POST /api/homeroom/:id/teams`, the class's teachers only). In Arrange seats, **Make a team**: tap 2 to 6 desks of
+  students in no team (the bar counts them), Make team; the team desk (300 x 150, wider so every name fits) starts where
+  the first one sat and is dragged (or moved with the arrow keys) like a desk; **Split team** is on it. Members keep their
+  own seats, hidden while they are a team, so a split puts everyone back. On the board the team desk shows its members'
+  names (each opens their own desk's sheet) and each handout any member has with "n of m done" (✓ when all are). A game
+  or lesson dropped or tapped onto it goes to every member: target `team`, one class assignment with exactly them
+  (assignments per member as for any handout). A student's desk says "Team: names" (the names classmates see), See the
+  room shows the team desk once with its members' names, and the pad is **the team's pad** (`homeroom_doodles` row with
+  user_id `team:<id>`): any member draws on it. Saves carry the pad version the desk last saw; when a teammate saved
+  since, the server answers 409 with the current pad and the desk adds its own new strokes to it and saves again, so
+  nobody's drawing is lost; the desk's poll brings a teammate's strokes (`pv`). Split removes the team pad; a student
+  leaving the class leaves their team (a team of one is split); a merged account keeps its place.
+- **Who**: every new address is behind the Homeroom gate (the class's own teachers with the plan); students only read
+  their own desk and lesson page. Tests: `tests/unit/homeroom-2c.test.js` (overview columns, merged versions,
+  alphabetical order, cells, the trend rule, the numbers, who sees it; grade change and its auth; comments and stickers
+  saved, cleaned, refused, removed, seen only by their student, desk fingerprint, delete paths; teams make / move /
+  split / refusals / hand-out to a team / See the room / the shared pad and its merge / a leaver),
+  `tests/unit/gclassroom.test.js` (Score, Completion and Not graded by hand and automatically; other lessons
+  unchanged) and `tests/unit/homeroom-2c-browser.test.js` (the overview at 1366 x 768 and on a phone, the Classroom line,
+  the grade chip; comment and sticker from the board to the desk and lesson page on a tablet; a team desk made, moved and
+  handed a game on a tablet, the student's Team line and See the room).
+- **Open**: parents' view of comments and stickers (step 4); the overview's columns are Homeroom handouts only; a team
+  desk shows its first two handouts like any desk, then "+N more" (each member's name opens their full sheet).
+
+## Homeroom, step 3a: live class, watching desks (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Live class", "Calming the room", "Two ways to see progress") and the two owner-approved
+mockups (the teacher's live desks with Working / Typing / Stuck / Done, "Needs a look", named cursors, ✋ and the Hands
+panel, 📊 Today; the student desk's Raise hand with I have a question / I need help / Bathroom, "You're next" and "Go
+ahead"). Builds on steps 1 and 2. Migration `0128_homeroom_live`.
+- **Transport: Homeroom's own polling, not the Manipulatives socket.** Step 1b's reason still holds: the live room's socket
+  (`services/manip-socket.js`) keeps its state per manipulatives session in memory and has no idea of a class, a desk, a
+  hand or a hall pass; carrying a class on it would mean a second kind of room inside it. Polling carries this cleanly:
+  - a desk sends `POST /api/desk/:id/pulse` (`public/js/homeroom-pulse.js`): where it is (desk or game), which handout,
+    seconds since the last input, how many times the game moved forward on this page (it saved or scored; counted from
+    the game frame's own `brb:save` / `brb:score` / `brb:gameover` messages), and up to 8 cursor samples (fractions of
+    the desk and of the pad) taken at most 4 times a second. Every 2 s while the pointer moves, else every 10 s; only
+    while class is live and the page visible. Never keys, words, answers or the screen. A handout's game page pulses too
+    (the play frame Homeroom registers gained `script` and `data`, so `routes/games.js` stays Homeroom-free), using the
+    browser's user-activation flag for input inside the sandboxed game.
+  - the board asks `GET /api/homeroom/:id/pulse` every 2 s while live and visible; the desks' handouts ride along only
+    when their fingerprint changed (`hv`), so the board's own 8 s handouts poll stops while live.
+  - the desk's existing 3 s state poll also carries its own `me` (hand, pass, place in line, lock, "coming over") and, on
+    a team desk, the teammates' pad cursors.
+  - Cursors are replayed with their own timing, about 2 s behind; above 30 students (`CURSORS_MAX`) the board shows
+    presence only and desks stop sending samples.
+  - **Load for 35 students**: cursors are off (over 30), so pulses come every 10 s: 3.5 a second, plus the desks' state
+    polls (11.7 a second, as in step 1b) and the board's one every 2 s: about 16 small requests a second. Pulses touch no
+    disk (memory only); hands and passes are a few indexed rows. With cursors on (30 or fewer) pulses peak at one per
+    student every 2 s (15 a second). Limits: 4000 pulses an hour per student, 5000 board polls an hour.
+- **Status rules** (`services/homeroom-live.js` statusOf, tested on their own), checked in this order:
+  1. **Not here**: no pulse for 30 s (`HERE_MS`; a desk pulses at least every 10 s);
+  2. **Done**: every handout on their desk is done;
+  3. **Stuck** ("Needs a look"): their current handout (open in the game, else the desk's Next up) is unfinished and
+     nothing moved forward on it for **3 minutes** (`STUCK_MS`) since they started on it, came back after being away, or
+     class started. Moving forward is the card turning done, a new score, or the game itself saving or scoring. Time
+     alone is not progress (the card's bar fills with time), and neither is drawing on the pad. 3 minutes is the spec's
+     "stuck for a few minutes": long enough for a hard problem, short enough to matter in a 45-minute class;
+  4. **Typing**: any input in the last 10 s; 5. **Working** (or **At desk** when nothing is on their desk).
+  The board shows a calm chip hanging under each desk (a dot, the word, a small bar for the handout they are on, which is
+  outlined on the desk), "Needs a look" beside a Stuck chip, the desk faded and dashed when they are not here. No ranking,
+  no sounds, no red alarms; the chip and the desk open the look panel.
+- **Hands** (`homeroom_live`, one row per class and student while live): Raise hand on the desk's top bar (big, yellow)
+  opens I have a question / I need help / Bathroom (hall pass); tapping again offers Put my hand down. One hand at a time;
+  a new kind replaces the old one. The board shows ✋ on the desk and a ✋ Hands button with a count; the panel lists hands
+  in the order raised (the roster's names: the teacher's screen) with **Answered**. Raising is refused while not live.
+- **The hall pass**: not `dash_passes`. The dashboard's pass needs a pinned widget with places, asks the teacher to approve
+  each request and only optionally keeps one out; Homeroom's is a queue that moves by itself. Its rules mirror the
+  dashboard's where they meet (fixed buttons and no text; a student sees only their own pass; one row per student; gone
+  at the end of the day there, at End class here). A Bathroom hand shows **Give hall pass** (nobody out: they go now) or
+  **Put in line** (someone out), and **Not now**. One student out at a time, timed (`homeroom_rooms.pass_minutes`, 5 by
+  default, 1 to 20, the − / + in the panel); the desk shows "Go ahead." with a countdown (then "Time's up. Please come
+  back.") and I'm back; the first in line sees "You're next for the hall pass", the others how many are ahead. **"X is
+  back"** (or the student's I'm back) gives the pass to the next in line at once. The teacher can take someone out of
+  the line; a student leaving the line or the class moves it on.
+- **📊 Today** (top bar, live or not): each handout handed out since the start of the teacher's day (or since this live
+  class started) with "n of m done", a stacked bar of Done / Working / Stuck / Not started (Working: started or open now),
+  the counts in words, the Needs a look names (each opens the look panel) and a link to the Classroom tab for progress
+  over weeks. Statuses only while live.
+- **Look at a student's desk** (`GET /api/homeroom/:id/look/:sid`, refreshed every 4 s while open): status, at their desk
+  or in the game, last activity, what they are on and how far, how many handouts are done, their hand or pass, and their
+  pad (or team pad) as a read-only drawing. Never their screen or their keys. From there: **I'm coming over** (the desk
+  shows a calm "Your teacher is coming over" for up to 5 minutes), **Lock desk** ("Your teacher locked your desk for a
+  moment", over the desk and over a handout's game), **Hide cursor** (their cursor is no longer shared with the board or
+  their team), and Their handouts (the desk's sheet from step 2a). Students can't add stickies to the teacher's area yet,
+  so "Remove a sticky" waits for that.
+- **Students' side stays simple**: no cursors on desks, except a team desk's teammates on the shared pad (by the names
+  classmates see).
+- **Who**: the board's poll, hands, desk settings and look are behind the Homeroom gate (the class's own teachers);
+  pulses and hands behind the desk gate (the class's students), always their own row whatever the body says. Locks and
+  hides are audited. **The projector never gets any of it** (its page and poll carry only the area and the live state;
+  tested).
+- **Cleaning up**: End class deletes every `homeroom_live` row of the class and its pulses; so does a new live class
+  (a class left live past 6 hours ends without End class). Rows also go with the student leaving the class (the line moves
+  on), their account, a merged school account, the class and the school (`BY_CLASS`).
+- **Phones and laptops**: on a phone the board's live buttons wrap to icons (📊 ✋ 👀 🔀 ⋯) with Bring everyone to me on
+  its own row; panels span the width. The desk's note sits under its top bar and moves the desk down. Tap targets 48 px.
+- Tests: `tests/unit/homeroom-live.test.js` (the status rules incl. Stuck at 3 minutes, a step forward, Not here at 30 s
+  and a fresh start; pulses only while live, cleaned, cursors off above 30 and when hidden; team pad cursors; hands
+  raise / change / lower / Answered; the hall pass one at a time, the timer's start, You're next, back moves the line,
+  Not now, the pass time; lock / hide / coming and look; auth; the projector without names or hands; End class, a new
+  class, leaving, account delete) and `tests/unit/homeroom-live-browser.test.js` (1366 x 768 board and tablet desks:
+  statuses, a cursor, a question raised and answered, the pass queue with two students, Today with Needs a look, look and
+  lock, a tap on a desk; phones: board, panels, the hand menu and Go ahead with nothing sideways).
+- **Open**: aides and sub links answering hands (step 3, later); supports per student; "Remove a sticky" once students
+  can add them; Needs a look from more signals (several misses in a row, many hints: step 5); a socket per class if
+  polling ever shows lag in the 35-student load test.
+
+## Homeroom: one way to edit the board (25 Nov 2026)
+
+The owner, in Safari on a MacBook: text could not be clicked again to retype, a sticky note resized only in height,
+shapes and pen lines were nearly impossible to click back onto, and the ⋯ menu opened off the left edge when the top
+bar wrapped. Causes: a draw tool stayed on after placing (a click on existing text with Text still on made a new empty
+one), shapes took presses only on their 5 px stroke (about 3 px on screen at Fit's zoom) and pen lines took none, notes
+had no width (the textarea's own `resize: vertical` was the only handle), the board's `user-select: none` stops WebKit
+editing text inside it, and the menu was `right: 0` under its button whatever side of the screen that was.
+- **One model** (`public/js/homeroom-board.js`, used by `homeroom.js`): a **Select** tool (first in Board tools, the
+  default). Tap any object to select it; it is hit-tested in JS in area pixels with a margin of 14 screen pixels, so a pen
+  line or a shape's outline is as easy to catch as a note, and the inside of a rectangle or circle counts too. Selected:
+  an outline, handles (corners and edges; a pen line's corners, which scale it; a line's two ends) and a toolbar over it,
+  kept inside the board: Edit and Done (notes, text), A- A+ (text), the four colors (shapes, pen lines), Delete. Drag to
+  move, a handle to resize. Tap a selected note or text again (so a double-click or double-tap too) to type in it in
+  place: the words become `contenteditable` with `user-select: text`, the caret where it was tapped
+  (`caretPositionFromPoint`, else WebKit's `caretRangeFromPoint`). Escape or a tap elsewhere finishes; Delete or
+  Backspace deletes the selection when nothing is being typed; a tap on the empty board lets go. Pointer events only, so
+  mouse, pen and touch work the same.
+- **Tools go back to Select** after one sticky note, text box or shape is placed (the new one is selected, its handles
+  show it can be resized); a tap with a shape tool puts a middle-sized shape there. The pen stays on until Select or
+  Escape (writing takes many strokes). While a draw tool is on, presses draw; otherwise they never start a new object.
+- **Text is a box** like a note (260 x 40 to start, words wrap, newlines kept); notes and text boxes resize in width and
+  height. Notes now store `w`, `h` (area pixels): the server keeps them within `NOTE_BOX` (`homeroom-seats.js`, 90..600 by
+  60..380); text sizes were already kept (`TEXT_BOX`). The desks' and projector's read-only drawing uses the sizes.
+  Saving is the same debounced POST; undo is the same history.
+- **Popovers stay on screen**: `public/js/popover-place.js` places the ⋯ menu `position: fixed` by its button (right
+  edges lined up, else left edges), under it or over it where there is more room, clamped inside the viewport with its
+  height capped, again on resize and scroll. The Groups, sign-in and hand-out sheets were already fixed and centered.
+- **Manipulatives unchanged**: its live room edits through `manip.js` / `board-ann.js` (textarea text, grip and corner),
+  a different code path; Homeroom no longer uses `textBoxPointer`, `textBoxHtml` editing or `snapText`.
+- Tests: `tests/unit/homeroom-board-browser.test.js` (text written, let go, selected, edited at the caret, double-click,
+  reload; a note resized both ways and moved; an oval selected by its outline, moved, resized, recolored, deleted; a pen
+  line selected near it, scaled, deleted with the key; a tablet by touch; the ⋯ menu inside the screen at 390, 900 x 700,
+  1366 x 768 and live; the server's sizes). Chromium only here: Playwright's WebKit is not installed in this environment.
+
+## Homeroom: the teacher's desk (25 Nov 2026)
+
+The owner: "You should also be able to put games on your desk as a teacher without students necessarily there." The
+board's "Teacher's desk" was only a label, and a new class had nowhere to try or line up anything before students joined
+(Whole class was refused with `noStudents`).
+- **My desk is a real desk** (`public/js/homeroom.js`, `public/js/homeroom-seats.js` TEACHER_DESK, now 640 x 108 at the
+  same place under the middle of the teacher's area, ending above the first row's names): dark with a yellow edge,
+  "My desk" and "Only you see this". A game, lesson or tool goes on it by tap-then-tap (pick in the panel, then My desk,
+  or the yellow bar's My desk chip, which also serves phones) or by dragging it there with a mouse or pen. It works with
+  no students in the class. The Manipulatives and Figures, which can't be handed out yet ("Coming next"), are now
+  pickable for My desk only (tapping a student desk says handing out tools comes next).
+- **Cards**: up to 4 on the desk (3 and "+N more", which lists them all). Tapping one: **Play** (a game: `/play/<slug>`),
+  **Preview** (a lesson: its own question set, `/play/<slug>?chapter=<set>&lock=1`, the route a handout opens), **Open**
+  (a tool: `/manipulatives`, `/figures`); **Hand out** (picks it exactly as the panel does, so the yellow bar and the
+  existing hand-out sheets follow: tap a desk, a group or Whole class); **Take off my desk**. A card can also be dragged
+  (mouse, pen and touch, since it sits on the board rather than in the scrolling panel) onto a student desk, a team
+  desk, a group chip or Whole class: the same sheet. Handing out keeps it on My desk (to hand to another group later).
+- **Staged, never assigned** (`services/homeroom-staged.js`; migration `0130_homeroom_staged`:
+  `homeroom_rooms.staged`, JSON `[{ id, kind: game | lesson | tool, ref, by, at }]`, at most 24). No class lesson is
+  made; nothing reaches a student. Only the class's teachers read or change it (`GET/POST /api/homeroom/:id/staged`
+  behind the Homeroom gate; everyone else the site's 404). A co-teacher sees the shared games and tools; a lesson shows
+  only to its owner (lessons are personal), and a game or lesson that is gone or can no longer be handed out isn't
+  shown. The desk page, its state poll, See the room, the projector page and its poll never read the column (tested).
+  Writing it leaves `updated_at` alone, so desks and the projector don't refetch the teacher's area. Kept per class
+  (switching classes reloads that class's desk). Deleting: with the room row (the class, the school: `BY_CLASS`); a
+  teacher's account takes their own items (`services/account-delete.js` 11c2). A table was not needed: the list is
+  small, per class, and only ever read whole.
+- **Whole class with nobody in the class**: `services/homeroom-handouts.js` studentsFor no longer refuses `all` with an
+  empty roster; it is `assignGame` with `[]` as always, so whoever joins gets it on their desk and To do list (tested
+  with a student added afterwards). A lesson to Whole class with no students is one assignment of the lesson as built.
+  The sheets show a calm "No students yet. Students who join will get it." and the button reads "Hand out to the
+  class"; the toast says "{title} is handed out to the class. Students who join will get it." An empty group is still
+  refused.
+- **Also fixed**: dragging a game from the panel with a mouse could start the browser's own image drag on its icon
+  (pointercancel, nothing dropped); `dragstart` is now cancelled on panel items and My desk cards.
+- Tests: `tests/unit/homeroom-staged.test.js` (stage a game, lesson and tool in an empty class, twice is once, take it
+  off, full desk, per class, links; auth for other teachers, students and guests; a co-teacher; nothing on the desk
+  page, desk state, See the room or projector; Whole class with an empty roster for a game and a lesson, then a student
+  joins and has both; account delete and class delete) and `tests/unit/homeroom-staged-browser.test.js` (tablet: stage
+  by tap-then-tap and the bar's chip in an empty class, Preview and Play, Hand out from the card to Whole class with the
+  note, the late student's desk; 1366 x 768: drag onto My desk, drag a card onto a student desk, take it off, Select
+  still edits the area; phone: My desk and its menu, nothing sideways).
+- **Open**: handing out tools (Manipulatives, Figures) is still to come; on a phone the board's Fit makes My desk small
+  (as every desk), so the bar's My desk chip is the easy way there; a co-teacher's own staged lessons are invisible to
+  the other teacher by design.
+## Typing Zoo: the rename, Noto animals, and a pet that walks with you (25 Nov 2026)
+
+Owner: "The pets should be animated and full body that can move around a bit and follow your cursor", then: rename the
+game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked after a comparison of five open sets).
+- **The rename**: Typing Pets is Typing Zoo, slug `typing-zoo` (files, langs folder, cover and share pictures, scripts,
+  server code, tests, every language's title). It uses the slug-rename mechanism Arithmetic Lab added: migration
+  `0129_typing_zoo_slug` (`renameSeedSlug`) gives the existing game row the new slug, so its id and everything keyed
+  by it (plays, saves, favorites, ratings, assignments, lesson steps, sets, the teacher's typing panel) carries over and
+  the seed then finds it by the new slug; `services/slug-aliases.js` sends the old addresses to the new ones for good
+  (301, 308 for a POST), keeping the rest of the path and the query (`/g`, `/play`, `/<lang>/g`, `/covers`, `/og`), and
+  a lookup by the old slug finds the game.
+  The save key stays `typing-pets-v1`, so players keep their pets and progress. The older sections above keep the old
+  name and paths as they were written. Tests: `tests/unit/typing-zoo-rename.test.js`.
+- **The pictures**: Noto Emoji animals by Google (stills: Apache 2.0; animated loops: CC BY 4.0, credited in the pet
+  collection and `docs/media-credits.md`). They are vendored, never hotlinked: `tools/typing-zoo-art/build.py` makes
+  144 px still WebPs (one `art.js`, about 290 KB) and 112 px animated loops (`a-<pet>.js`, 29 pets, loaded only for
+  the pet out walking or just hatched) under `public/vendor/data/typing-zoo-art/<version>/`, loaded as scripts with
+  their sha384 like the other `/vendor/data` packs (the frame's CSP allows no picture from another host and no fetch).
+  The emoji shows until they arrive. Shiny: a gold glow and sparkles over the same picture.
+- **The roster**: 41 pets, all full body. The eight that were faces only became other animals in place (fox → giraffe,
+  panda → elephant, koala → kangaroo, lion → leopard, frog → lizard, unicorn → pony, hamster → chipmunk, bear → hippo);
+  the save loader reads an old pet as its new one. Stand-ins: the duck for the duckling, the cow for the calf, the llama
+  for the alpaca. The alpaca is new, at the end of PETS, so saved pets keep their places; the pet count comes from PETS
+  (the teacher panel reads the game's list). Names in all 12 game languages.
+- **The walking pet**: the chosen pet ("Walk with me" in the collection, `save.out`) or the latest hatched one walks on
+  its own lane under the top bar, so it never covers the typing line, the keyboard or a button (and takes no clicks).
+  One ground line, left and right only: a little hop-walk toward the pointer (on touch, the last tap), turned to face
+  its way, stopping under it, wandering a little when left alone. While the player types it settles at the end of the
+  line, facing it, bounces on a finished line and wobbles on a wrong key. Idle plays the animated loop where there is
+  one, else a gentle breathing bob. Reduced motion (the device, or `BRB.motion`): it stands still, no loop.
+  "Walking pet: off" in the collection hides it (`save.walkOff`). Both save fields are new and optional.
+- **Tried and dropped**: two rounds of hand-drawn SVG pets (a cartoon rig, then a more natural one); the owner chose the
+  Noto set instead.
+- Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
+  never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.
+
+## No leaderboards (25 Nov 2026)
+
+The owner said: "Remove the leaderboard from all games." Oomba never ranks students: no list of players by score or
+time, no top five, no "#1" or "1st place", no podium of named players. Scores are still kept for what uses them.
+
+- **The game page.** The Leaderboard panel is gone. A signed-in player sees only their own best ("Your best", from
+  `games.myBest`); nobody sees anyone else's score. `games.leaderboard()` is removed and `GET /api/games/:id/leaderboard`
+  answers 410 with `{ rows: [] }`. `POST /api/games/:id/score` still stores the best score per player (progress, the
+  gradebook, Homeroom and a student's own best read it through services/scores.js); grown-ups' scores are still never
+  stored. The score label is still cleaned (it shows beside the player's own best and in teachers' views).
+- **Oomba Live.** The host's "Leaderboard on players' devices" setting (`board`) is removed (an old remembered value is
+  an unknown key and is dropped). The server keeps scoring, marks, teams and the gradebook as before, but `lb`, `rv` and
+  `ph ended` carry `top: []` for everyone (the projector too: it is the class's screen) and `you.rank` is always 0. At
+  the end each player gets their own result (`you: { right, total, score }`: "You got 8 of 10 right!", or "Your score:
+  1200" in a game without questions); the projector's results page adds the class's share of right answers. Teams are
+  not single students, so team totals, team places and the team podium stay. The results page's "Student details" and
+  the CSV list students by name with no Place column; `live_run_scores.rank` is written as 0 (the column stays).
+- **Live games.** Question Battle, Brain Board and Atlas Quest Live end on a calm card (the class's right answers on the
+  projector, the player's own on a phone, the score in practice) with no top five or podium of players; Brain Board's
+  score column shows teams only. Quest Race in a live room has no places, overtakes, leader crown, "takes the lead"
+  banners or podium of runners (team mode keeps the team podium with no runner on it); the solo practice race against
+  the island bots keeps them. Doodle Hoot Live shows players in join order with no points on the projector (each phone
+  shows its own), and ends on "Great drawing, everyone!" with everyone who played instead of a podium. The Watch view
+  (devices without 3D) no longer lists the top five.
+- **Games played alone.** Leaderboard wording is gone from Beat Lanes, Happy Putt (its pass-the-phone ceremony puts
+  everyone side by side in player order; the champion still wears the jacket), Gulp City (no "Biggest holes" list and
+  no "#3 of 9": the biggest hole still wins against the computer), and comments in the others. Personal bests, stars,
+  Castle Clash's progress, puzzle rating graph and records are unchanged. Winning against the computer or a friend in a
+  two-player game is still a win: that is the game, not a ranking.
+- **The AI builder.** The SDK rules say `BRB.score.submit` saves the player's own best and that games never make a
+  leaderboard, high-score table, podium of players or "1st place" text; the live rules (docs/kit-api.md, rebuilt into
+  kit-rules.js) say `top` is always empty and a live game shows each player's own result and the class's totals.
+- **Left as is.** The kit's live pack (kit/packs/live.js, pinned in shipped kit versions) still has its `leaderboard`
+  event and `leaderboard()` accessor; they only ever carry an empty list now. A new pack build is not needed for that.
+## Homeroom: one page, three views (25 Nov 2026)
+
+The owner: "the switch between Dashboard, Homeroom, and Classroom should be seamless like you are on the same page and
+just switching views briefly. Currently it's 3 different pages and setups." Then: "When you choose a game you should be
+able to play from within the homeroom instead of having to navigate away."
+- **One page** (`server/routes/homeroom-views.js`, `public/js/class-views.js`, `public/css/class-views.css`): for a
+  teacher Homeroom lets into the class (`canUseClass`), `/class/:id/homeroom`, `/class/:id` (every Classroom page:
+  Games, Progress, Students, Settings, gradebook and reports) and `/class/:id/dashboard` draw the same page: the site's
+  bar, then one **shared bar** (class switcher, Homeroom | Classroom | Dashboard, the view's own buttons on the right),
+  then the view area. Same place, same height (71 px; two rows under 1024 px, on a tablet and a phone, 119 px), same
+  chunky pill buttons on every view; on a narrow laptop the buttons lose their words before anything wraps. Sticky
+  under the site's bar while Classroom scrolls. Everyone else gets the pages exactly as before.
+  - **Every button whole, 360 to 1440 px** (25 Nov, a fix: at 820 and 1024 px the last buttons were cut off, "what
+    does not fit scrolls inside the bar" hid them). Under 1024 px the pill always takes the second row. Then
+    `class-views.js fit()` measures the view's buttons on screen (after a resize, a view change, and any change to the
+    bar's buttons, such as a live class starting) and, only while one is cut off: icons only (`cv-icons`; each button
+    keeps its name as aria-label), no clock (`cv-noclock`; the clock widget still shows it), Arrange seats steps out
+    (`cv-fold`; it is in the ⋯ menu) with the Live dot without its word, and last the pill on its own row at any width
+    (`cv-two`). Tested at 390, 820, 1024 and 1366 on all three views and a live class (`homeroom-views-browser`).
+  - A route marks its page as a view (`markView(req, c, view, actions)`: the Homeroom page, `routes/schools.js`
+    classHeader for every Classroom page, the teacher's dashboard); `views/layout.js` page() asks the registered shell
+    (`setViewShell`, so the layout imports nothing of Homeroom, as with onEveryPage).
+  - **The buttons moved into the bar**: Homeroom's Live dot, live buttons, Arrange seats and ⋯ (the old `.hr-top` is
+    gone; the ids stay); Classroom's Connections and Host a live game (its Dashboard button is the pill now; the Back
+    link stays at the top of the view); the dashboard's date, clock, Stickers, Projector and Edit screen (its logo and
+    class name are the switcher; edit mode keeps its own bar under the shared one). In Projector the site's bars, the
+    switcher and the pill step aside and the class name shows in the bar. The dashboard gets the site's bar and tab
+    bar like the other two views (its phone footer sits above the tab bar; Oomba's chat button is never moved into
+    its footer on this page).
+- **Switching never loads the page**: the pill items are real links (without script, or with a modifier key, they open
+  the page). With script, a view opened for the first time is fetched with `X-View: 1` (the same address answers JSON:
+  content, the bar's buttons, stylesheets, scripts at the page's own `?v=` addresses and their strings,
+  `views/layout.js` viewFragment; `Vary: X-View`, no-store); its stylesheets load first (placed before
+  class-views.css), its strings join the page's (`i18n.js` addStrings), the content goes in, then its scripts run once
+  (dynamic import, so a module is never evaluated twice). A short fade out and in (110 and 170 ms; none with reduced
+  motion). `history.pushState` keeps the address; Back and Forward move between views; a reload or a link opens the
+  view its address names, drawn by the server. Another class from the switcher opens the same view of it.
+- **Views are kept, not rebuilt**: a view is hidden and shown again. It hears `cv:hide` and `cv:show` on its section.
+  Homeroom keeps its zoom, place and selection (typing ends, the ⋯ menu closes); it stops asking for the desks and the
+  live pulse while hidden and asks at once when shown. The dashboard leaves Projector, edit mode (saved) and the
+  sticker panel when left, stops its live check while hidden, and checks and fits its rows when shown. Keys go to the
+  view on screen only (Homeroom's Delete and the dashboard's Ctrl+Z check). Each view's page data has its id only
+  while shown, so scripts that read it later read their own. Classroom remembers its page and scroll for the tab
+  (sessionStorage), so the pill opens it where it was left; its own tabs and links still load their page (the
+  class page's scripts bind once at load and are not built to be re-run).
+- The page may become the dashboard without loading again, so all three views get the dashboard teacher's frame hosts
+  (the two video hosts) and camera and microphone policy (after a tap, as on the dashboard). Oomba's chat stays where
+  it is and follows the view (`companion.js`: the dashboard's context on the dashboard, the class's elsewhere).
+- **Playing inside Homeroom** (`public/js/homeroom-player.js`): Play / Preview on a My desk card (a game or a lesson;
+  tools still open their page) and a handout card on a student's desk open the game in a layer over the board or the
+  desk, with "Back to Homeroom" / "Back to my desk" (new strings, 12 languages). The layer is the game's own play page
+  in a frame: `/play/<slug>?in=hr` may be framed by this site only when it is asked for in a frame (`Sec-Fetch-Dest:
+  iframe`; `frame-ancestors 'self'`, no X-Frame-Options); anywhere else the page is unchanged and never framable. In
+  the frame its Back links give way to the layer's, and a game's own "back" or Escape on the page asks the layer to
+  close (`play.js`). The address carries the open game (`#play=<card>`): a reload opens it again, Back closes it,
+  Escape closes it. Underneath, nothing stops: the board keeps its zoom, place and live polling; the desk keeps Raise
+  hand, its state poll, Pause screens, Bring everyone to me and the lock, which cover the game as they cover the desk.
+  One pulse per student: the desk's own pulse rests while the game page in the layer pulses (where: game, as before).
+  Closing asks for the cards again, so the card shows its progress. In order still waits: a locked card never opens,
+  and the server's "Finish the one before it first" is unchanged. (`homeroom-handouts-browser` and
+  `homeroom-lessons-browser` test 3 still expected the desk to navigate to the game page and failed on main; they now
+  check the same things through the layer: the instructions above the game inside the frame, the lesson's exact set
+  in the frame's address and on screen, Back to my desk, a locked card never opening the layer.) On a phone the layer fills the board under the
+  shared bar.
+- Tests: `tests/unit/homeroom-views.test.js` (the shell on each address, the X-View JSON, everyone else unchanged, the
+  flag off, Spanish, the play page framed only when asked) and `tests/unit/homeroom-views-browser.test.js` (Homeroom ->
+  Classroom -> Dashboard -> Homeroom with a value on window surviving and one navigation entry, Back and Forward, a
+  reload; zoom and place kept; Delete once deletes one note and never from another view; no dashboard checks while
+  hidden; Classroom's tab and scroll; deep links on every view; the bar's place and height at 1366 x 768, 1000 x 600
+  and a phone with nothing sideways; every button in the bar whole at 390, 820, 1024 and 1366 (a live class too); a teacher without Homeroom; playing from My desk with Escape, Back and a reload;
+  a student playing a handout with one pulse, Pause screens over it and the progress after closing).
+- **Open**: Classroom's own tabs still load their page (Homeroom's board state then starts fresh, its saved state is
+  the server's as always); a game left open in the layer keeps playing while another view is on screen.
+## Builders check their work: verify after every change (25 Nov 2026)
+
+The owner's report. On a Figures test, the companion was asked for "a multiple choice test asking students to name
+different shapes". It said "The app repaired one question so its figure could be drawn"; question 1 on screen was "What
+is the area of the rectangle?". Told "The first question isn't multiple choice", Oomba said it had replaced question 1
+with a "name the square" question (Square, Circle, Triangle, Rectangle); the screen kept the area question; the same
+again after "It is still an area question". The owner: "it needs to check its work and confirm on the screen that it
+has done what it said it has first." Later, the same rule for every AI builder that changes something.
+
+Root cause, in two parts.
+- **The edit did land, as the wrong question.** The model drew its square as `{ AB: 5, BC: 5, square: true }`. OF.check
+  refuses that ("a square is drawn from AB; leave out "BC""), and `repairDraft` (`services/figures.js`) then replaced
+  the WHOLE question with its kind's first generator: the rectangle's number question "What is the area of the
+  rectangle?", the words and the four options thrown away. So the first draft's question 1 was already this swap, and
+  each "replace question 1" swapped it for another dealing of the same area question. Nothing undid anything: the
+  "Change undone." card is shown only after the teacher's own Undo (the engine marks `undone` only in `undo()`).
+- **The model was told "done" before anything was written.** `editWorksheet`'s result was `{ done: true, changes: 1,
+  repaired: 1, note: 'Applied when you answer' }`, made from the plan before the write, and the reply was written from
+  it. "repaired: 1" did not say that the repair had thrown the question away, so the model said what it had sent.
+
+What changed.
+- **Repairs keep the question** (`repairDraft`): when OF.check refuses a figure only for top-level measures it names to
+  leave out (`leave out "X"`, from the shipped kit's own messages; the kit is unchanged), the figure is checked again
+  without them and the question keeps its words, answer type and options (`fixed`). Only after that does the old
+  generator swap happen. Every item gets a note (`kept | fixed | replaced | dropped`, and why) so callers can say what
+  became of it; `repairTestDraft` passes them on. The worksheet's own "Power with AI" draft gets the same fix.
+- **A multiple-choice question is never swapped for a number question** in Oomba's edits (`figures-chat.js`
+  checkItem): when its figure still cannot be drawn, that edit is not applied and the reason goes back to the model,
+  which can send it again in the same answer (a second `editWorksheet` call is merged into the same change, one Undo).
+  A number question still falls back to its generator, reported as "landed other than asked".
+- **Checked work** (`services/verify-change.js`, shared): the tool writes the change in a dry run (a transaction that is
+  always rolled back; better-sqlite3 nests it as a savepoint), reads the worksheet back as the page shows it
+  (`figures-chat.js readBack`: each question's words, number or multiple choice, its options and answer) and returns
+  THAT: `applied`, `landed` (each question as it now reads, with any repair), `notLanded` (with why: its figure cannot be
+  drawn, no such question, the sheet is full, changed by hand meanwhile, the same as before, no figure takes that unit)
+  and `worksheetNow`. New questions get their ids before the dry run, so the real write makes the same questions.
+- **The real write is read back too** (with Oomba's reply, in the engine's one transaction). When it differs from what
+  the model was told (the teacher deleted or edited the question meanwhile), the app's own sentence follows Oomba's
+  words (`correction`, never cut by the reply limit), and the turn's `verify` says what did not land.
+- **The card tells the truth in the app's own words** (`public/js/oomba-chat.js`, shared by every surface): when not
+  everything landed, under "What changed" (or alone, when nothing changed) a yellow note lists each miss ("Question 1
+  stayed as it was: its figure couldn't be drawn that way.") with Try again (sends the same message again). The step
+  line says "Couldn't change the worksheet" when nothing landed; "Changed your worksheet (1 change)" counts what landed.
+  "Change undone." appears only after an Undo (`change.by: 'teacher'`), with a reason when there is one.
+- **On the screen**: after an answer, the Figures page reloads the worksheet and checks that every question the change
+  added or changed is drawn; if not, it loads again once, and says so if it still is not.
+- **The prompts** (the companion's and the Figures and Manipulatives page rules, never the arcade Builder's pinned
+  SYSTEM_PROMPT+TOOLS): `VC.RULE` ("Tell the teacher only what is under landed ... Never say something is done unless
+  the tool result shows it landed"), and the page tools' descriptions say their result is the page read back.
+- **Every page tool, through the shared engine**: Manipulatives' `changeBoard` returns the board read back as the page
+  will show it (`manip-chat.js readBack`) and what the checks left out (`dropped`); the card says "1 item was left out";
+  a board that cannot be built says nothing changed. The page puts the board on itself; if that throws, the board is
+  put back and the card says it could not be put on. Points the companion gives are counted as given (a class or a
+  student gone since gives none), with the app's correction when fewer landed. A new class is made only on the
+  teacher's tap (unchanged: the card shows it made), and dashboard changes only on Apply (unchanged).
+- **The engine** (`services/oomba-chat.js`): a surface's `apply()` may return `verify` (kept on the turn) and
+  `correction` (said after Oomba's words). `kept()` gives drafts without a page tool the same plain report ("12 of 15
+  words kept, 3 removed by the filter").
+- **Every other builder that changes something**, the same rule in its own place:
+  - *Books* (the companion's book writer): the merge keeps a page the teacher changed meanwhile; when nothing of the
+    writer's change landed, or some pages stayed, the reply ends with the app's own words and the card says so.
+  - *Dashboard* (Apply on a proposal card): the layout as saved; a widget removed by hand meanwhile is counted as not
+    landed on the card. A new class (createClass) is made only on Create, and its card shows it made (unchanged).
+  - *Mistake Hunt chat* (`services/proof-chat.js`): its reply is written before the server builds the set, so passages
+    the checks left out, or a set that could not be built, are said after it in the teacher's language
+    (`proof.chatCheck.*`) and kept on the turn (`verify`).
+  - *Crossword, Word Hunt, Atlas Quest drafts* (`set-ai.js`, `crossword-doc.js`, `atlas-doc.js`, `routes/games.js`):
+    each answer carries `report` (`VC.kept`: how many the AI sent, how many landed in the list, why the rest did not),
+    and the page says "12 of 15 kept" when some were left out (`js.play.aiKept`; the games' own frames are unchanged).
+  - *The Builder* (games, classroom activities and Canvas, `builder/claude.js`): the tools already answer the model
+    with what saved ("Saved as version 3", "Not saved: ...", "No changes were made"), and the playtest and safety scan
+    already end with honest lines. New: when the last change the AI tried did not save and nothing saved after it, the
+    reply ends with "my last change didn't save, so your game is still version N" (`builder.lastNotSaved`), whatever
+    the AI wrote. The arcade SYSTEM_PROMPT+TOOLS are unchanged (their hash test passes).
+  - *The lesson drafter* (`lesson-ai.js`, `routes/lessons.js`): `figureStep` counts what the checks did (`tally`:
+    asked, kept, fixed, replaced, dropped, steps that became a question or text) and `draftLesson` returns it with the
+    game steps swapped for text. After saving, the route reads the lesson back (`L.steps`) and hands the editor
+    `chk=saved.planned.fixed.replaced.dropped.games`; the editor shows "Oomba checked the saved lesson" with one line per
+    difference (`lessons.ai.check.*`), and nothing when the draft landed as written.
+  - *Live question-set drafts* (`set-ai.js draftQuestions` and `draftFromLesson`, `routes/live.js`): each returns
+    `asked` and the answer carries `report` (`VC.kept`). The set editor's toast counts what it really took ("Added 8 of
+    the 10 questions you asked for", `js.live-sets.addedOf`), and /teach/make says the same (`js.teach-make.draftedOf`).
+  - *Story Builder* (`stories/worker.js`): a story is "done" only with its video, poster and captions on disk and not
+    empty (`versionMissing`). A change is swapped in only when its new version is complete AND it is still being made:
+    before, a change ended meanwhile (the stall check) swapped in its video while the row kept the old words, so the
+    page showed one story and played another. After the swap the row is read back (title, files) and a mismatch is
+    logged.
+Tests: `tests/unit/companion-verify.test.js` (the owner's flow: question 1 replaced by the name-the-shape question with
+its figure repaired, options kept, the tool's result read back, the reply from it, no "Change undone."; the first draft
+of that test; an edit that cannot land, told to the model and on the card; a second try in one answer; a question deleted
+meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers; the drafts'
+counts; a dashboard change after a widget went), `companion-book.test.js` (a book change that does not land),
+`proof-chat.test.js` (left-out passages and a set that could not be built), `builder-claude.test.js` (the last change
+did not save), `figures-lesson-step.test.js` (the editor's note from the saved lesson), `teach-make.test.js` and
+`live-sets-editor.test.js` (the questions asked for vs kept), `story-pipeline.test.js` (a change ended meanwhile never
+swaps its video in), and the
+owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
+next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).
+
+## Homeroom: board tools (25 Nov 2026)
+
+The owner: "Make the board tools more comprehensive and make sure all of them can be copied and pasted... you should be
+able to fill in shapes, dash the outline, dash lines, different weights, pick from a host of different shapes, etc."
+The teacher's area had Select, Sticky note, Text, Pen, Square, Circle, Line, Undo, 4 colors and A-/A+.
+- **One drawing for everyone** (`public/js/board-shapes.js`, pure, imported by the board, by `homeroom-area.js` for
+  the student desk's window and the projector, and by `services/homeroom.js` for cleaning): shapes, pen lines, notes
+  and text boxes are drawn by the same functions, so students and the projector see exactly what the teacher drew
+  (only the board adds the attributes it selects by). Shapes and pen lines share one SVG layer ordered by `z` (an older
+  board without `z` keeps every pen line under every shape, as before); text boxes sit above them, notes above those.
+- **Shapes picker** (Board tools: Shapes opens a grid; a sheet on a phone): rectangle, rounded rectangle, circle,
+  triangle, right triangle, diamond, pentagon, hexagon, octagon, star, heart, block arrow, double arrow, chevron,
+  speech bubble, thought bubble, plus, parallelogram, trapezoid, cylinder; lines: line, arrow line, double-arrow line,
+  elbow connector, curved connector. Drawn by dragging (Shift keeps a box square, a line at 45 degree steps; a tap
+  puts a middle-sized one there), then back to Select with it selected. Box shapes and text boxes turn with a round
+  handle above them (under them at the area's top edge; Shift: 15 degree steps; 0/90/180/270 snap within 4 degrees);
+  resizing a turned box keeps its far side still. Lines keep their two end handles. Pen lines scale from corners.
+- **Style** (the selected object's toolbar, for one or many; locked ones are skipped): Outline (15 palette colors:
+  black, gray, white, red, coral, orange, yellow, lime, green, teal, sky, blue, purple, pink, brown; "none" only on
+  filled closed shapes; weight thin, medium, thick, extra thick; solid, dashed, dotted; arrowheads none, start, end,
+  both on lines), Fill (none or a palette color, 100/50/25% opacity), Text style (A-/A+, bold, left/center/right, a
+  palette color), Note color (yellow, pink, green, blue, purple). Dots are dashes of 0.01 with round caps (WebKit draws
+  nothing for 0). Arrowheads are drawn polygons, not SVG markers (Safari's marker coloring differs). The last style
+  used is kept per kind (shape, line, pen, text, note) for the next one, in this browser (`localStorage`
+  `oomba-hr-style`, read inside try/catch). The pen's and the shape tool's next style are set from the Board tools'
+  row while the tool is on. Only a stored value that differs from the default is saved.
+- **Copy, cut, paste, duplicate** for every object: Cmd/Ctrl+C, X, V, D; Duplicate in the toolbar, Copy, Cut and
+  Paste in its More menu, Paste in the Board tools (touch). A paste is selected and lands 16 px down and right, 32 px
+  the next time, and so on; once the pointer has moved since the copy, at the pointer. The clip is this browser's
+  (`localStorage` `oomba-hr-clip`), so any Homeroom class in it can paste it. The system clipboard gets the words
+  (text/plain) and the objects (text/html with a `data-oomba-board` attribute); pasting words from elsewhere makes a
+  new text box. Safari copies and pastes only where something is selected or typed, so for those keys the focus goes
+  to a hidden field for a moment (the browser then sends its copy, cut or paste event) and comes back; without a
+  paste event the board's own clip is pasted. Anything pasted is cleaned like a save (`cleanShape`, the style lists,
+  sizes) and gets new ids; counts stay within the limits ("There's no room for more"). The clipboard only ever holds
+  objects from the teacher's own area: students' work is never on it.
+- **Many at once**: Shift, Cmd or Ctrl and a click adds or removes; a drag on the empty area in Select draws a marquee
+  and selects everything it touches (a finger too: two fingers or the desks' part of the board pan); Cmd/Ctrl+A
+  selects everything. A group shows each item's outline and a dashed box, moves together (kept inside the area), is
+  styled, copied, arranged and deleted together; a click on one of them selects just it. More: Bring to front, Send
+  to back (drawings by `z`; notes and text boxes within their own layer), Lock/Unlock (`lk`: no handles, does not
+  move, no style changes or delete; still selectable and copyable). Arrow keys nudge (Shift: 10 px).
+- **Undo and redo**: Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z and Ctrl+Y, and Undo/Redo buttons in the Board tools; every change
+  above is one step (80 kept). Typing keeps the browser's own undo while a note or text box is being edited.
+- **Server** (`services/homeroom.js` saveArea): notes, text and pen lines are still cleaned by the live room's
+  `cleanState` (word rules, counts, sizes), then Homeroom's own fields are added back from strict lists: a pen line's
+  id, weight, dash, `z`, lock (its color from the palette, else black); a text box's color, bold, alignment, rotation,
+  lock; a note's color and lock. Shapes: the kinds above only, corners clamped to the area, palette colors only,
+  numbers clamped (`z` within +-9e6, rotation to -179..180), at most 80 (was 40). Anything else is dropped. A board
+  saved before this is kept exactly as it was and draws as it did (stroke width 5, pen 4, rounded rectangle corners
+  6 px). The Manipulatives live room is unchanged (its own code path; `cleanState` untouched).
+- Toolbar and popovers are chunky (36 px, 44 px on touch), wrap instead of growing past the board, and popovers stay
+  inside the screen; on a phone every popover is a sheet along the bottom with Done. New strings in all 12 languages
+  (`js.homeroom.bt.*`; en-GB only where British spelling differs).
+- Tests: `tests/unit/homeroom-tools.test.js` (every kind and style kept; bad values dropped or clamped; counts; older
+  boards unchanged; the shared drawing) and `tests/unit/homeroom-tools-browser.test.js` (every shape from the picker,
+  Shift square; fill, opacity, dashed, weight, a dashed arrow line, a dotted pen line, the next shape's style; copy,
+  paste, duplicate and cut for a note, a text box, a pen line, a shape and a line by keys and buttons, into another
+  class, words from elsewhere, the copy event's objects; a marquee, Shift-click, group move and style, front and back,
+  Ctrl+A and Delete, undo and redo by keys and buttons; turning a shape and a text box, lock; the student desk's window
+  and the projector drawing exactly what the board draws; the picker and popovers on a phone (sheet), a tablet and a
+  Chromebook with nothing sideways). `homeroom-board-browser.test.js` follows the new picker and Outline popover.
+
+## Homeroom: the day plan (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("The day's plan", the top bar's plan pill), owner-approved: the plan is made through the Oomba
+chat only, and the board has no plan row. Builds on steps 2a, 2b and 3a. Migration `0131_homeroom_day_plan`.
+- **In the chat** (`services/companion.js`; the page type `homeroom`: `views/layout.js` companionPage for
+  `/class/:id/homeroom`, and `public/js/homeroom-plan.js` tells the chat through `public/js/oomba-bus.js` while the
+  Homeroom view is on screen; `pageOf` keeps it only for a class Homeroom lets the teacher into). On that page the AI has
+  two more tools: `draftDayPlan` (the whole plan, parts in order: slides, work time, brain break, exit check, with
+  minutes; work time per group by the groups' names) and `useSavedPlan` ("use my Fractions day plan again"); its page
+  rules ask for the whole plan again for a change ("make work time 20 minutes", "swap the brain break"). Each draft is a
+  card (`note.plan`, drawn in `public/js/companion.js`): the parts with their minutes, what each group gets, Use this plan,
+  Use and start, Save plan, Saved plans and Copy to another class. The card's taps are the companion's `act`
+  (`planUse`, `planStart`, `planSave`, `planPick`, `planCopy`); the board's pill follows them (the `oomba:plan` event).
+- **Checked and clamped** (`services/homeroom-plan.js` cleanPlan): known kinds only; minutes inside each kind's range
+  (slides 1 to 30, work 3 to 60, break 1 to 10, exit check 2 to 15) and 120 in all; at most 8 parts; only the teacher's
+  own lessons, games they may hand out, and the class's own groups; titles without a student's name, a group's name (titles
+  reach the projector) or unkind words. What changed goes back to the AI with the plan read back, so it reports only what
+  landed, and the card says how many things were adjusted.
+- **Without the AI** (no model set up, or it is resting): on a class's Homeroom a request about the plan still gets a card
+  (`fallbackDraft`): a saved plan the words name, a small change to the newest card (minutes of a part, another brain
+  break), or a starting plan from the teacher's own lesson or an Oomba game that fits the topic, with slides, a brain
+  break and an exit check around it. Anything else rests as before.
+- **A lesson that doesn't exist yet**: the AI may ask for one the lesson builder can make without words from anyone
+  (Arithmetic Lab with an operation, Algebra Builder with a mode): Use this plan saves it with `services/homeroom-lessons.js`
+  saveLesson (the builder's defaults and a version per group, as the builder suggests them) and the plan names that lesson
+  from then on. Otherwise a game handout with short instructions. Crossword needs words and clues, so never.
+- **Use this plan** (`usePlan`): each part's handouts go on desks through the existing paths (`handOut` for a game,
+  `handOutLesson` for a lesson; Any order, games graded by completion, lessons by score): one Whole class handout when
+  every group gets the same thing, else one per group, and a student in no group gets the "everyone else" version (else
+  the first) at their own desk. Already on desks is counted, not an error; an empty group is skipped. The plan becomes the
+  class's plan of today (`homeroom_rooms.day_plan`, written without touching `updated_at`, so desks don't refetch the
+  teacher's area). A plan that is running is never replaced (`planRunning`: Finish class first).
+- **The pill** (`public/js/homeroom-plan.js`, in the shared bar after the Live dot): Plan (opens the chat) / Today with
+  Start plan / Now with the part, its countdown and Next, with +5 min and Next beside it / Time's up in Spark yellow /
+  All parts done with Finish class / Class finished. Its menu lists the parts and says calmly how far behind the plan is
+  ("About 4 minutes behind. That's okay..."; also the pill's tooltip); never red. **The timer is the server's** and
+  **never moves on by itself**: `public/js/homeroom-plan-time.js` timing (shared by the server and every page) only says
+  when a part is over; only Next moves on (+5 min adds to the part on now, at most an hour). A reload, another device,
+  the projector and the desks all read the same run. The bar's fit (`public/js/class-views.js`) first drops Arrange
+  seats' word (it is in the ⋯ menu), so the pill keeps its words at 1366 x 768.
+- **Finish class** (the pill's menu, or End class while a plan runs, which offers it): the summary: parts done, minutes
+  used against planned per part and in all, and for each part that handed something out how many of its cards are
+  finished of how many (counts only, never a name or an order of students). Nothing is removed: unfinished handouts stay
+  on desks as homework (the summary says how many).
+- **Saved plans** (`homeroom_day_plans`: the teacher's, by name; the same name again replaces it; at most 50): groups are
+  kept by their identity (a name, or an unnamed default group's key, as lesson versions are), so a saved plan or a copy
+  for another class of the same teacher finds Stretch, On track and Building there; a version whose group the class
+  doesn't have is left out (noted). Gone with the teacher's account. Week plans are step 5.
+- **Privacy**: what the AI sees of the class (`aiContext`): grade, subject, how many students, the group names with how
+  many are in each, the teacher's lesson titles and Oomba game titles (scrubbed of students' names), recent handouts with
+  finished counts, saved plan names. Never a student's name, id or work (tested on everything sent). Oomba never talks to
+  students. The projector's and desks' state carry only `publicView` (the part's kind and title, the next one, the timer);
+  the projector shows Now with its countdown and Next; a desk shows a small Now line without a clock (no Time's up for
+  students).
+- **Who**: `GET/POST /api/homeroom/:id/plan` behind the Homeroom gate (the class's own teachers with the plan); the card's
+  taps check the same gate for the card's class. The Oomba chat sheet sits over the board's panels on Homeroom (it was
+  under the teacher's desk panel on a tablet).
+- Tests: `tests/unit/homeroom-plan.test.js` (the timer: countdown, Time's up that never advances, +5, Next, behind; the
+  checks and clamps; a stand-in AI drafting through the chat with nothing personal sent; Use this plan per group and whole
+  class; Start, +5, Next, Finish class and its summary; handouts kept; the fallback without the AI and its quick changes;
+  Save plan, useSavedPlan, Saved plans, Copy to another class, a lesson the builder makes; who; the projector and desk
+  views; account delete) and `tests/unit/homeroom-plan-browser.test.js` (1366 x 768 and a tablet: the card, a change in
+  the chat, Use this plan, Start, the countdown, Time's up after a reload, the menu, the projector, a desk's Now line,
+  End class offering Finish class, the summary; nothing sideways).
+- **Open**: week plans (step 5); dragging parts around on the card (changes are asked for in the chat, as the spec says);
+  translations of the new strings (English now; the other languages fall back to it).
+
+## Homeroom: supports, aides and sub links (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` step 3c ("Live class": supports, aides and sub links). Migration
+`0132_homeroom_helpers`.
+
+- **Supports** (`services/homeroom-supports.js`): Extra time (1.5x, 2x), Read aloud, Simpler wording, Bigger text, set per
+  student per class from the desk's menu (tap the student's name on their desk; also from a desk's sheet and the live
+  look). Kept in `live_support`, the table Oomba Live already has for the same student's extra time, read aloud and
+  simple view (0132 adds `big_text`), so one setting covers both and no parallel table exists. Live's own save
+  (`classlive-results.js saveSupport`) never drops Bigger text. Only the class's own teachers change them (an aide reads
+  them, a sub sees only what to act on). Every change is audited with what changed, never a reason or a note.
+  - What a student gets, on their own desk only (never See the room, the projector or a classmate's desk): Bigger text
+    (the desk and the teacher's note over a game), Read to me beside the teacher's words (the device's own voice through
+    `public/js/tts.js`, nothing sent; only where the device can speak), the simpler wording in place of the
+    instructions, and with extra time their own longer clock for the plan's part on now ("Your time": the part's start
+    plus its minutes and any +5 min, times their extra time; it never says Time's up, as a desk never does). Shown as
+    tools, never a label.
+  - Simpler wording is per handout (`homeroom_handouts.simple_body`): typed on the desk's sheet (Simpler wording), or
+    written by Oomba in the teacher's chat: the chat opens with the request ready, and the new Homeroom tool
+    `writeSimplerWording` saves it; `aiContext` lists handouts with instructions by id, names scrubbed as everything
+    else the AI sees. Oomba never sees a student's name or who has which support.
+  - Into the game: the play frame (`services/lessons.js playFrame`, Homeroom's hook) carries the supports to the play
+    page (`hrSupport`: `public/js/homeroom-support.js` puts Bigger text and Read to me on the teacher's note over the
+    game) and, through the frame's signed token, to the game itself: `BRB.support` ({ time, read, simple, big }) and
+    `BRB.timeFor(secs)` (docs/sdk.md). **What each game honors today**: every game handed out from Homeroom gets Bigger
+    text and Read to me on the instructions over it and the simpler wording as those instructions (the play page does
+    it, whatever the game). Extra time: the plan's clock on the desk; inside a game only where the game reads
+    `BRB.timeFor` / `BRB.support`, and no shipped game does yet: the Oomba Kit's HUD timer is in pinned kit versions
+    (SRI-locked, `kit/SHIPPED.json`), so honoring it needs the next kit version, and the official games with clocks
+    (Sum Spotter's Rush, races) keep theirs until they adopt the hook. Read aloud inside a game is the game's own
+    (`BRB.speak`) where it has one.
+- **Aides** (`services/homeroom-aides.js`, `homeroom_aides`): the class's teacher invites by link (24 random bytes; only
+  the SHA-256 kept; works once, 7 days; the teacher sends it from their own email, the sheet has Copy and an Email it
+  mailto) or adds a teacher of the same school at once. Reused, not invented: school staff accounts (`accountKind`
+  'staff') are who may be an aide; co-teachers stay what they were (a class's `teacher` members run it). An aide needs no
+  Teacher plan (the class has Homeroom through its own teacher's). They find their classes on My classes ("Classes you
+  help in"). Removed at once by the teacher.
+  - The gate (`routes/homeroom.js`): `canUseClass` stays the class's own teachers; `helperRole(u, c)` ('aide' | 'sub',
+    from hooks the two modules register) lets a helper in only to a listed set of addresses (aide: the page, the
+    projector and its poll, handouts and supports to read, the pulse, look, hands, comments and stickers, "I'm coming
+    over"); every other Homeroom address answers a helper 403, and the services check again (`canHelp`). An aide's page
+    is the board without the hand-out panel, board tools, My desk, Arrange seats, live class's buttons, the plan's
+    buttons, removing handouts or Simpler wording, with an Aide chip where the class switcher and tabs are (no Classroom
+    or Dashboard: the class's pages stay the normal 404 for them).
+- **Sub links** (`services/homeroom-sub.js`, `routes/homeroom-sub.js`, `homeroom_sub_links`, `homeroom_sub_log`): "Sub
+  link for today" in the ⋯ menu. Today (from now) or tomorrow (from its local midnight), until local midnight of that
+  school day or an end time, in the school's time zone (else the teacher's browser's), never more than 24 hours; at most
+  5 open per class. Optional PIN (4 to 8 digits; salted scrypt; 8 wrong tries lock the link, also rate-limited per
+  address and per link). The token: 24 random bytes in the link, only its SHA-256 stored; opening it sets an HttpOnly,
+  SameSite=Lax cookie (the token and the server's signature that the PIN was typed) and redirects to `/sub`, so the token
+  leaves the address bar. Revoke, the end of the window, a locked PIN or the class archived end it at the next request.
+  - The sub sees: the teacher's note, the teacher's area, the desks where the teacher seated them with **first names**
+    (a shared first name gets the last name's initial), a calm live status, hands and the hall pass; runs live class
+    (start, pause, bring everyone, End class: the sub runs the day) and the plan pill (Start, +5 min, Next; never
+    Finish, whose summary counts finished work, or Clear); opens the projector view. "Has supports" with only what to act
+    on ("Reads aloud", "Extra time"). Never grades, progress, handouts, notebooks, Google Classroom, the AI, other
+    classes: the server sends none of it (`subView`), and every other address answers 403.
+  - Every sub action is logged (what, when, which student by id). The teacher's Homeroom shows "While you were out"
+    (counts and times: started class, hands answered, hall passes, plan moved on, minutes added, ended class) until Got
+    it.
+- **Deletion**: the three tables go with the class and the school (`school-delete.js` BY_CLASS); an aide's rows with
+  their account.
+- Tests: `tests/unit/homeroom-helpers.test.js` (supports: values, who, Live's save keeping Bigger text, own desk only,
+  simpler wording, the plan clock, the play frame and page; aides: hashed once-only invites, staff only, what they may do
+  and 403 for every forbidden action, removal; sub links: the day window and 24 hours, hashes only, first names, Start /
+  +5 / Next, hands, 403 everywhere else, no other class, logged and summed up, Got it, revoke, expiry, tomorrow, a forged
+  cookie, the PIN and its lock; deletion) and `tests/unit/homeroom-helpers-browser.test.js` (1366 x 768 and 820 x 1180:
+  the desk's menu and saving supports, the student's desk with Bigger text, Read to me and Your time, a classmate's desk
+  without, an aide's view, the sub-link sheet, the sub's page, While you were out).
+- **Open**: supports from the Classroom view's student row (the desk's menu is the one place for now); extra time inside
+  games until the kit and the official games read `BRB.timeFor`; Read aloud of a game's own questions (the game's own
+  voice); translations of the new strings (English now; the other languages fall back to it); sending the aide invite
+  by email from Oomba (the teacher sends the link themselves).
+
+## A calmer Classroom view on phones (25 Nov 2026)
+
+Owner: the Classroom view looked strange on a phone (the shared bar, then the old class header, four big tiles, the tabs,
+and Oomba's chat button over the Assigned / My library switch); hosting a live game and the class dashboard are now in
+Homeroom. For teachers Homeroom lets into a class only (the Classroom view of "Homeroom: one page, three views");
+everyone else keeps the class page and its tiles exactly as before ("Action tiles on the class page, on phones").
+
+- **No Live button in the shared bar.** Classroom's bar buttons are the Connections chip alone (now as tall as the
+  class switcher beside it, so the row is balanced). Host a live game moved to Homeroom's ⋯ menu (`public/js/homeroom.js`
+  renderMenu, `hostLive` in the page data: `/live?class=<id>`, the address the tile had; only while live games are on,
+  the teacher may host and the class is not archived; never for an aide). Its label reuses each language's
+  `live.entry.host` wording (`js.homeroom.hostLive`).
+- **No Host a live game or Class dashboard tiles** (the Dashboard is a tab of the pill). Build new game and Find Oomba
+  games stay on phones as one row of two small buttons (`.classquick`, under 640 px; wider screens have both in the
+  Games tab's sidebar and chip row, as before).
+- **The header is one small line**: the school (its link, with Invite a teacher), the subject and grade when set, and the
+  student count. The big class title is left to the switcher (an `h1` for screen readers stays). The Back link out of
+  the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
+  its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
+- With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.
+
+## Homeroom: the notebook (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` step 4 ("Student side": the notebook). Migration `0133_notebook`. For
+students, "where there is the Oomba AI chat, let's put the notepad that can be opened up the same way".
+
+- **Where it is** (`public/js/notebook.js`, `public/css/notebook.css`): a green (Mint) round button at the bottom right
+  of every full page a student with a notebook sees, exactly where teachers have the Oomba chat's bubble (above the
+  phone's tab bar). Oomba never talks to students, so the corner is theirs. It opens the way the chat opens: a panel on
+  the right on laptops and wide tablets (1366 x 768: below the site bar, 460 pixels wide), a sheet from the bottom on
+  phones and a tablet in portrait (the tab bar steps aside while it is open, as for the chat). Escape or ✕ closes it.
+  On the desk the corner button gives way to **Notebook**, the dock's last button (bottom right too, green), so it
+  never covers the pad or the dock. The script is added by `routes/notebook.js` through `views/layout.js` onEveryPage,
+  only for a student who keeps a notebook; never on a bare page (a game playing), a teacher's, a grown-up's or a guest's.
+- **Who keeps one** (`services/notebook.js` canUse): `HOMEROOM` on, a student's account (not staff, a grown-up or a
+  guest) in a class that has Homeroom, or one who already has notes (so a plan ending never takes them away). A plain
+  student of a class without Homeroom has none yet.
+- **What it holds** (`notebook_tabs`, `notebook_pages`): tabs the student makes and names ("Fractions", "Reading log";
+  a new notebook starts with "My notes"; up to 30, renamed, or deleted with their pages after a question) and one
+  **class tab** per class with Homeroom, made by itself, named by the class as it is now, never renamed or deleted by
+  the student. Each own tab is one running page. A class tab has its Class notes page and a page per handout the
+  student took notes on, titled with the handout's name: **Notes** under each handout card on the desk opens that page
+  (made the first time; only for a handout on their own desk). The reading routine's "3 notes" in a later step use the
+  same call (`POST /api/notebook/handout`). Each tab stores its kind ('own' or 'class'): parents' view (a later step)
+  shows class tabs only.
+- **Writing**: lined cream paper (the same in both themes, like the pad, so every highlighter shows), Bold, a bullet
+  list, a checklist (tap the box to tick; a ticked line is struck through) and four highlighters (yellow, green, blue,
+  pink) plus Take off highlight, on the words picked; 48-pixel buttons for young hands. Pasting brings plain words
+  only. Saved by itself 0.8 s after typing stops, when the notebook closes, when the tab is hidden and when the page is
+  left; "Saving..." / "Saved" in the header.
+- **Search**: one box over every page of every tab (letters only: no case or accents), each hit with its tab, page and
+  the line around it with the words marked; a tap opens that page with the words picked on it.
+- **Cleaning** (`cleanHtml`): the server never trusts the editor. A small scanner keeps only p, br, b, i, u, ul, ol, li
+  and mark (strong, em and div renamed), and only the classes `hl-y|hl-g|hl-b|hl-p` on mark, `nb-check` on ul and `done`
+  on li; every other attribute, every other tag (its words kept) and script-like elements with their content are
+  dropped, every bit of text is escaped again, what it opened is closed, nesting is capped at 12. The page's plain words
+  are stored beside it for search.
+- **Limits**: a page at most 20,000 characters of cleaned markup (`pageFull`), a notebook 400,000 in all
+  (`notebookFull`), 30 own tabs, 300 pages.
+- **Privacy**: the top of the notebook says plainly "Your teacher can read your notebook." whenever the student is in a
+  class. A teacher of a class the student is in now (class_members role 'teacher', the class not archived) reads the
+  whole notebook, own tabs too, read only (`GET /api/notebook/of/:studentId`; each read is audited as who read whose
+  notebook, never what it says). From Homeroom: a desk's menu (tap the student's name) has **Notebook**, which opens the
+  same panel with the same tabs and search, nothing editable ("Read only. Students can't see that you opened it.").
+  Aides (not class members), subs (no account), other teachers, school admins who don't teach the student, the platform
+  admin and classmates get 403; grown-ups' accounts are kept off student addresses by the site's own guard (404).
+  A student who leaves a class keeps their notes, and that class's teachers can no longer read them. **No AI reads the
+  notebook**: nothing in it reaches services/companion.js or any model (a test checks the prompt-building code never
+  names it).
+- **Deleting**: with the account (`services/account-delete.js`: every tab and page); a class's tab and its pages with the
+  class and the school (`services/school-delete.js` BY_CLASS, the class-leave hook for a deleted class; the student's
+  own tabs stay theirs); moved with a school account merged into the student's own account (a class tab both have is
+  joined).
+- **Layouts**: phone (390), tablet (820, a sheet), Chromebook 1366 x 768 (a panel), every button at least 48 pixels,
+  tabs wrap (two rows before they scroll), nothing sideways. The Classroom view has no student menu yet, so the
+  teacher's way in is the desk's menu for now.
+- Tests: `tests/unit/notebook.test.js` (the cleaner against scripts, attributes, broken and nested markup; who keeps
+  one and where the script loads; tabs, autosave, limits; a handout's page; authorization for the student, their
+  teacher, an aide, a sub, another teacher, a school admin, the platform admin, a parent and classmates; deletion with
+  the account and the school; the merge; no AI code names it) and `tests/unit/notebook-browser.test.js` (390, 820 and
+  1366: the corner button, a new tab, typing, bold, a checklist, a highlighter, saved and kept; search; the desk's
+  Notebook and a handout's Notes; the teacher's read-only view). The desk's dock test now counts 5 buttons.
+- **Open**: parents' view of class tabs (step 4), the reading routine's notes (step 4), the notebook from the Classroom
+  view's student row, more than one page in an own tab, numbered lists in the toolbar (the cleaner already keeps them),
+  translations of the new strings (English now; the other languages fall back to it).

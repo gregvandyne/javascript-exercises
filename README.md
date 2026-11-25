@@ -3,7 +3,7 @@
 A free, kid-safe website where anyone can **play** web games and **build** their own by talking to an AI Builder (Claude).
 Think "Roblox for web games", for a 7-year-old, a 12-year-old and their parent sharing one phone.
 
-- **Play**: one-tap guest play, home rails, search (games and builders), ratings, likes, leaderboards, live "N playing" counts, cloud saves.
+- **Play**: one-tap guest play, home rails, search (games and builders), ratings, likes, your own best scores (no leaderboards), live "N playing" counts, cloud saves.
 - **Build**: the Studio — chat with the Builder (a live **Behind the scenes** card shows each step it takes, with short tips about how AI works that can be switched off), live sandboxed preview, version history with restore, Private / Friends / Everyone sharing, and **updates to games you already published** (players keep the old version while an update is reviewed).
 - **Friends + chat**: add friends by a 6-character code; friends-only, filtered text chat with quick-chat chips, block and report.
 - **Safety**: every game runs in an opaque-origin sandbox with a strict CSP and no network; every version is scanned; public games are reviewed; reports auto-hide games; an admin panel handles review, reports, chat reports, bans and the audit log.

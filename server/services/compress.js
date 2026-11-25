@@ -73,7 +73,11 @@ export function staticAssets(dir, { types = { '.css': 'text/css; charset=utf-8',
   };
 }
 
-/** express.static setHeaders: a ?v= request (the URL changes whenever the file does) is cached for a year. */
-export function versionedCache(res) {
+/** express.static setHeaders: a ?v= request (the URL changes whenever the file does) is cached for a year. A script or
+ *  stylesheet asked for WITHOUT ?v= is one module importing another ('/js/board-view.js'): the browser must check it
+ *  is still current on every load (a cheap 304), or after a deploy it can pair a new page's script with an hour-old
+ *  module it imports, the import fails and the whole page's script never runs (seen in Safari on Homeroom). */
+export function versionedCache(res, file) {
   if (res.req && res.req.query && res.req.query.v) res.set('Cache-Control', YEAR);
+  else if (/\.(m?js|css)$/i.test(String(file || (res.req && res.req.path) || ''))) res.set('Cache-Control', 'no-cache');
 }

@@ -35,6 +35,7 @@ import * as aiBudget from './ai-budget.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { log } from './log.js';
 import * as S from './schools.js';
+import * as VC from './verify-change.js';
 import * as D from './dash.js';
 import * as games from './games.js';
 import * as LIB from './library.js';
@@ -59,6 +60,9 @@ import * as SB from './storybook.js';
 import * as BK from './companion-book.js';
 import { toolOf } from '../../public/js/manip-data.js';
 import { REASON_ICON } from '../../public/js/dash-class5.js';
+import * as HR from './homeroom.js';
+import * as HP from './homeroom-plan.js';
+import * as SUP from './homeroom-supports.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -134,7 +138,7 @@ const wordsProblem = text => (hasProfanity(String(text || '')) ? 'words' : null)
 // figures-sheet: a Figures worksheet, test or lesson set (sheetId); manip: a host's Manipulatives board (tool, boardId);
 // manip-live: the live room's teacher view (tool). These pages have their own workflow (services/figures-chat.js,
 // services/manip-chat.js): the companion offers it there, and only there.
-export const PAGES = Object.freeze(['class', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'book', 'school', 'live', 'other']);
+export const PAGES = Object.freeze(['class', 'homeroom', 'dashboard', 'library', 'teach', 'build', 'figures', 'figures-sheet', 'tools', 'manip', 'manip-live', 'book', 'school', 'live', 'other']);
 const ID = /^[A-Za-z0-9_-]{1,64}$/;
 /** The page context as the browser sent it, checked: only a class this teacher teaches, only their own layout. */
 export function pageOf(u, raw) {
@@ -150,6 +154,9 @@ export function pageOf(u, raw) {
     if (l && l.class_id === out.classId && l.owner_id === u.id) out.layoutId = l.id;
   }
   if (type === 'dashboard' && !out.classId) out.type = 'other';
+  // homeroom: a class's Homeroom (docs/decisions.md "Homeroom: the day plan"): only a class Homeroom lets this teacher
+  // into (services/homeroom.js canUseClass); anyone else is on its class page.
+  if (type === 'homeroom' && !(out.classId && HR.canUseClass(u, S.getClass(out.classId)))) out.type = out.classId ? 'class' : 'other';
   if (type === 'figures-sheet') {
     const w = typeof p.sheetId === 'string' && ID.test(p.sheetId) && F.canMake(u) ? F.ownWorksheet(u, p.sheetId) : null;
     if (w) out.sheetId = w.id; else out.type = 'figures';
@@ -419,7 +426,12 @@ export function applyProposal(u, p) {
   if (r.error) return { code: r.error === 'notFound' ? 'notFound' : 'error' };
   const after = new Map(r.layout.widgets.map(w => [w.id, w]));
   audit(u.id, 'companion.dash.apply', l.id, { classId: c.id, ops: p.ops.map(o => `${o.op}:${o.type}`) });
+  // Checked work: the layout as saved. A widget removed or changed by hand since the card was made is not touched; the
+  // card says how many of the planned changes did not land (the lines list what was planned).
+  const landed = touched.filter(x => (x.before === null ? after.has(x.id) : true)).length, missed = p.ops.length - landed;
+  const verify = { ok: missed === 0, landed, notLanded: missed > 0 ? [{ code: 'meanwhile', count: missed }] : [] };
   return {
+    verify,
     change: { kind: 'dash', classId: c.id, layoutId: l.id, lines: p.lines, ids: touched.map(x => x.id).filter(id => after.has(id)) },
     undo: { kind: 'dash', classId: c.id, layoutId: l.id, items: touched.map(x => ({ id: x.id, before: x.before, index: x.index ?? null, after: wkey(after.get(x.id) || null) })) },
   };
@@ -608,6 +620,8 @@ export function dress(u, chat, t) {
       y = { ...y, note: n };
     }
     if (x.change && x.change.kind === 'book') y = { ...y, change: { ...x.change, lines: bookLines(x.change, t) } };
+    // A day plan's card: what each part hands out, the groups' names, where the class's plan of today stands.
+    if (x.note && x.note.plan) y = { ...y, note: { ...y.note, plan: HP.cardView(u, x.note.plan, t) } };
     const p = x.note && x.note.pick;
     if (p) {
       const need = pickNeeds(p);
@@ -777,15 +791,33 @@ export function undoClass(u, data) {
   return { ok: true, skipped: 0 };
 }
 export const PAGE_TOOLS = Object.freeze({
-  'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['edits'], properties: {
+  'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it. Its result is the worksheet read back after the change (landed, notLanded with why): report only what landed.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
     edits: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['add', 'replace', 'remove'] }, n: { type: 'integer' }, after: { type: ['integer', 'null'] }, item: { type: 'object' } } } } } } },
-  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['items'], properties: {
+  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed.', input_schema: { type: 'object', required: ['items'], properties: {
     title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
 });
+// The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js): on a class's Homeroom only.
+const PLAN_PICK = { type: 'object', description: 'What it hands out: ONE of gameId (a game id from getPageContext or searchGames), lessonId (one of the teacher\'s lessons) or make (a new lesson: { slug: "arithmetic-lab", op: add | subtract | multiply | divide, title } or { slug: "algebra-builder", mode: solve | multiply | factor, title }).', properties: { gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } };
+export const PLAN_TOOLS = Object.freeze([
+  { name: 'draftDayPlan', description: 'Draft (or redraft) the day plan for the class whose Homeroom the teacher has open: the WHOLE plan, parts in order (slides, work time, brain break, exit check), with minutes. The teacher sees it as a card with Use this plan; nothing goes on desks before that. Its result is the plan read back after the app checked it (minutes clamped, unknown games or groups left out): report only that.', input_schema: { type: 'object', required: ['parts'], properties: {
+    name: str('A short name, like "Fractions day".'), topic: str('The topic, a few words.'),
+    parts: { type: 'array', maxItems: HP.PARTS_MAX, items: { type: 'object', required: ['kind', 'minutes'], properties: {
+      kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: what to do, one or two short sentences.'),
+      pick: PLAN_PICK, groups: { type: 'array', description: 'Work time per group: a version for each group, by the group\'s name.', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } },
+  { name: 'useSavedPlan', description: 'Use a day plan the teacher saved before ("use my Fractions day plan again"): it becomes a new card for this class, with Use this plan. Its result lists the saved plans when none fits the name.', input_schema: { type: 'object', required: ['name'], properties: { name: str('Words from the saved plan\'s name.') } } },
+  { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Homeroom supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
+]);
+export const PLAN_TOOL_NAMES = Object.freeze(PLAN_TOOLS.map(x => x.name));
+/** The newest plan card in this teacher's chat for a class (the draft a change is made to), or null. */
+export function latestPlan(u, classId, row = chatRow(u)) {
+  const turns = row ? parse(row.turns, []) || [] : [];
+  for (let k = turns.length - 1; k >= 0; k--) { const p = turns[k].note && turns[k].note.plan; if (p && p.classId === classId && p.plan) return p; }
+  return null;
+}
 /** The tools for a page: the general ones and, on a worksheet or board, that page's own. */
 export function toolsFor(page, u = null) {
-  const base = PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS];
+  const base = page.type === 'homeroom' ? [...TOOLS, ...PLAN_TOOLS] : PAGE_TOOLS[page.type] ? [...TOOLS, PAGE_TOOLS[page.type]] : [...TOOLS];
   // The book maker's tools: teachers only (storybook.canMake), checked again when each one runs.
   return u && SB.canMake(u) ? [...base, ...BOOK_TOOLS()] : base;
 }
@@ -800,6 +832,16 @@ const EXPLAIN = [
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
 
+/** Two editWorksheet calls in one answer, written as one change (one Undo): the second's numbers are the worksheet's
+ *  after the first (its dry run ran on top of the first), and new questions keep the ids chosen for them. */
+function mergePlans(p1, p2) {
+  // An earlier call's edit that did not land and that this call does again (the same question) is no longer news.
+  const again = new Set(p2.report.filter(x => x.n).map(x => `${x.op}:${x.n}`));
+  const stale = x => x.n && again.has(`${x.op}:${x.n}`) && x.at < 0;
+  const shift = p1.ops.length;
+  return { reply: '', title: p2.title || p1.title, grade: p2.grade || p1.grade, units: p2.units || p1.units, ops: [...p1.ops, ...p2.ops],
+    repaired: p1.repaired + p2.repaired, dropped: p1.dropped + p2.dropped, report: [...p1.report.filter(x => !stale(x)), ...p2.report.map(x => ({ ...x, at: x.at < 0 ? -1 : x.at + shift }))] };
+}
 /** Runs one tool call. ctx: { user, page, lang, names, files, seen, cards, out } -> { result (object for the model), step } */
 export function runTool(name, input, ctx) {
   const i = input && typeof input === 'object' ? input : {};
@@ -810,6 +852,7 @@ export function runTool(name, input, ctx) {
       const r = pageContext(u, ctx.page, { lang: ctx.lang, names: ctx.names });
       if (ctx.page.type === 'figures-sheet') { const w = F.ownWorksheet(u, ctx.page.sheetId); if (w) r.worksheet = FC.sheetContext(u, w); }
       if (ctx.page.type === 'manip' && ctx.page.board) r.board = { tool: ctx.page.board.tool, title: ctx.page.board.title, ...ctx.page.board.board };
+      if (ctx.page.type === 'homeroom') { const c = S.getClass(ctx.page.classId), d = latestPlan(u, c.id); r.homeroom = HP.aiContext(u, c, { lang: ctx.lang, draft: d && d.plan }); return { result: r, step: { k: 'page', n: 0 } }; }
       if (ctx.page.type === 'manip-live') r.liveRoom = { tool: ctx.page.tool, note: 'The live room is running: Oomba does not change the room\'s boards.' };
       if (r.worksheet) return { result: r, step: { k: 'sheet', n: r.worksheet.questions.length } };
       return { result: r, step: { k: r.dashboard ? 'dash' : 'page', n: r.dashboard ? r.dashboard.widgets.length : 0, q: r.dashboard ? r.dashboard.name : '' } };
@@ -913,19 +956,45 @@ export function runTool(name, input, ctx) {
       if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };
       const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
       if (!w) return { result: { error: 'There is no worksheet open on this page.' }, step: { k: 'editNo' } };
-      let plan;
-      try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, F.itemsOf(w.id)); } catch { plan = null; }
-      if (!plan || (!plan.ops.length && !plan.title && !plan.grade && !plan.units)) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
-      ctx.out.figures = { sheetId: w.id, plan, first: F.itemsOf(w.id).length === 0 };
-      return { result: { done: true, changes: plan.ops.length, repaired: plan.repaired, dropped: plan.dropped, note: 'Applied when you answer; the teacher can Undo it.' }, step: { k: 'edit', n: plan.ops.length } };
+      // Checked work (services/verify-change.js): the change is written in a dry run on top of this answer's earlier
+      // changes, read back as the page shows it, and THAT is the result; the real write comes with the reply.
+      const prev = ctx.out.figures && ctx.out.figures.sheetId === w.id ? ctx.out.figures : null;
+      const calls = prev ? prev.calls + 1 : 1;
+      const r = VC.dryRun(() => {
+        if (prev) FC.applyPlan(u, w, prev.plan, { first: prev.first });
+        const items = F.itemsOf(w.id), before = FC.readBack(u, w);
+        let plan;
+        try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, items); } catch { return { empty: true }; }
+        if (!plan.ops.length && !plan.title && !plan.grade && !plan.units) return { plan, v: FC.verifyPlan(plan, null, before, before), back: before };
+        const a = FC.applyPlan(u, w, plan, { first: false });
+        const back = FC.readBack(u, w);
+        return { plan, v: FC.verifyPlan(plan, a, before, back), back };
+      });
+      if (r.empty) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
+      const first = prev ? prev.first : F.itemsOf(w.id).length === 0;
+      const merged = prev ? mergePlans(prev.plan, r.plan) : r.plan;
+      if (r.v.nothing) {
+        // Kept for the card (what did not land, and why); nothing new is written.
+        ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told: prev ? prev.told : { landed: [] } };
+        return { result: { ...FC.verifyResult(r.v, r.back), note: `Nothing on the worksheet changed. ${VC.NOTE} You may call editWorksheet again now with data that can be drawn.` }, step: { k: 'editNo' } };
+      }
+      // What the AI is told landed for the whole answer (every call so far), to compare with the real write.
+      const told = VC.dryRun(() => { const before = FC.readBack(u, w); const a = FC.applyPlan(u, w, merged, { first }); return FC.verifyPlan(merged, a, before, FC.readBack(u, w)); });
+      ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told };
+      return { result: { ...FC.verifyResult(r.v, r.back), note: `${VC.NOTE} It is saved with your answer; the teacher can Undo it.` }, step: { k: 'edit', n: r.v.landed.length } };
     }
     case 'changeBoard': {
       const b = ctx.page.type === 'manip' ? ctx.page.board : null;
       if (!b) return { result: { error: 'There is no board open on this page.' }, step: { k: 'boardNo' } };
       const r = MC.buildChange(i, b.tool);
-      if (!r.change) return { result: { error: 'The app could not build that board: nothing was changed.' }, step: { k: 'boardNo' } };
+      if (!r.change) {
+        ctx.out.manipMiss = true;
+        return { result: { applied: false, landed: [], notLanded: [{ why: 'none of the items could be built with this tool\'s settings' }], note: `Nothing on the board changed. ${VC.NOTE}` }, step: { k: 'boardNo' } };
+      }
       ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
-      return { result: { done: true, items: r.change.n, steps: r.change.steps, capped: r.change.capped }, step: { k: 'board', n: r.change.n } };
+      // Checked work: the board as the page will show it, built and read back here (the page puts this exact board on).
+      const notLanded = [...(r.change.dropped ? [{ items: r.change.dropped, why: r.change.capped ? `at most ${MC.PRACTICE_MAX} items, and items that failed this tool's checks were left out` : 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [])];
+      return { result: { applied: true, landed: { board: MC.readBack(b.tool, r.change), items: r.change.n, steps: r.change.steps }, notLanded, note: `${VC.NOTE} The page puts this board on when your answer arrives; the teacher can Undo it.` }, step: { k: 'board', n: r.change.n } };
     }
     // ---------------------------------------------------------------- the book maker (companion-book.js)
     case 'makeBook': {
@@ -987,6 +1056,32 @@ export function runTool(name, input, ctx) {
       if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
       ctx.out.bookRef = id;
       return { result: { done: true, note: 'The picture is being painted again; the book page shows it when it is ready.' }, step: { k: 'redraw', n: Number(i.page) || 0 } };
+    }
+    // ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
+    case 'draftDayPlan': case 'useSavedPlan': {
+      const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Day plans are made on a class\'s Homeroom.' }, step: { k: 'planNo' } };
+      let r;
+      if (name === 'useSavedPlan') {
+        const row = HP.findSaved(u, String(i.name || ''));
+        if (!row) return { result: { error: 'No saved plan has that name.', saved: HP.listSaved(u).slice(0, 10).map(x => x.name) }, step: { k: 'planNo' } };
+        r = HP.fromSaved(u, c, row, { lang: ctx.lang });
+      } else {
+        const d = latestPlan(u, c.id);
+        r = HP.cleanPlan(u, c, i, { lang: ctx.lang, names: ctx.names });
+        if (d && !r.plan.name) r.plan.name = d.plan.name || '';
+      }
+      if (!r.plan.parts.length) return { result: { error: 'No part could be kept. Use the kinds slides, work, break, exit with minutes.', notLanded: r.notes }, step: { k: 'planNo' } };
+      ctx.out.plan = HP.newCard(c, r, ctx.lang, r.savedFrom ? { from: r.savedFrom } : {});
+      return { result: { shownOnCard: true, plan: HP.readBack(u, c, r.plan, ctx.lang), ...(r.notes.length ? { changedByTheApp: r.notes } : {}), note: 'The teacher sees the plan as a card with Use this plan, Save plan and Copy. Nothing is on desks yet. Do not repeat every part in words.' }, step: { k: r.savedFrom ? 'planSaved' : 'plan', n: r.plan.parts.length, q: clip(r.savedFrom ? r.savedFrom.name : r.plan.name, 40) } };
+    }
+    // Simpler wording for a handout (Homeroom supports; services/homeroom-supports.js): the text is checked for names.
+    case 'writeSimplerWording': {
+      const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Simpler wording is written on a class\'s Homeroom.' }, step: { k: 'simplerNo' } };
+      const r = SUP.setSimple(u, c, String(i.handoutId || ''), cleanText(u, String(i.text || '').slice(0, SUP.SIMPLE_MAX), ctx.names), { by: 'oomba' });
+      if (!r.ok) return { result: { error: r.code === 'notFound' ? 'No handout of this class has that id.' : 'That wording could not be saved.' }, step: { k: 'simplerNo' } };
+      return { result: { saved: true, text: r.text, note: 'Students with Simpler wording see this on their desk and over the game. Say so in one sentence.' }, step: { k: 'simpler' } };
     }
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
@@ -1056,6 +1151,7 @@ function system(u, lang, page, settings) {
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
     'Never pretend: if you could not find something on Oomba, say so.',
+    VC.RULE,
     'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
     'Questions: when you need a decision or a missing detail, call askChoice with 2 to 5 short options instead of asking in a long sentence.',
     ...(SB.canMake(u) ? [
@@ -1075,6 +1171,7 @@ function system(u, lang, page, settings) {
 function pageRules(u, page) {
   if (page.type === 'figures-sheet') { const w = F.ownWorksheet(u, page.sheetId); return w ? FC.workflowRules(u, w) : ''; }
   if (page.type === 'manip' && page.board) return MC.workflowRules(page.board);
+  if (page.type === 'homeroom') return HP.workflowRules();
   return '';
 }
 /** The conversation as the AI sees it: earlier turns' words, and the new message with its file and page. */
@@ -1136,7 +1233,7 @@ export function finalText(content, ctx, web) {
     if (it && cards.length < 4 && !cards.some(c => c.kind === kind && c.id === id)) cards.push(it);
     return '';
   });
-  if (!cards.length && ctx.lastList && !ctx.out.proposal && !ctx.out.handoff) for (const k of ctx.lastList.slice(0, 3)) cards.push(ctx.seen.get(k));
+  if (!cards.length && ctx.lastList && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.plan) for (const k of ctx.lastList.slice(0, 3)) cards.push(ctx.seen.get(k));
   if (!sources.length && web.found.size && web.searches) for (const s of [...web.found.values()].slice(0, 3)) sources.push(s);
   // Links: only those a tool gave in this answer (the teacher's own pages, from the help map or a navigation target).
   const kept = [];
@@ -1174,17 +1271,44 @@ async function bookAnswer(user, bookId, { text, history, step, reply0 = '' }) {
     reply: r.reply || reply0,
     apply: () => {
       const a = SB.applyBook(user, bookId, base, r.book, { repaired: r.repaired });
-      if (a.code) return { note: ref };
-      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...a.change }, undo: { kind: 'book', bookId, ...a.undo } };
+      // Checked work: the book as written. Gone meanwhile, or every page the writer changed was changed by the teacher
+      // meanwhile (theirs stays): the app says so after the writer's words, and the card says what did not land.
+      if (a.code) return { note: ref, verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] }, correction: 'The book did not change after all: it is not there anymore.' };
+      const c = a.change, landed = c.added.length + c.changed.length + c.removed + (c.title ? 1 : 0) + (c.first ? c.pages : 0);
+      const verify = { ok: !c.kept && landed > 0, landed, notLanded: c.kept ? [{ code: 'meanwhile', count: c.kept }] : [] };
+      const fix = !landed ? 'The book did not change after all: the pages were changed by hand while Oomba was working, so yours stayed.' : c.kept ? 'Some pages stayed as you left them: they were changed by hand while Oomba was working.' : '';
+      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...c }, undo: { kind: 'book', bookId, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
     },
   };
+}
+/** Room for one step's reply: a dozen worksheet questions with their figures' data fit well inside it. */
+export const MAX_REPLY_TOKENS = 8000;
+export const CUT_OFF_NOTE = '(Your last reply was too long and was cut off, so nothing in it was done. Do it in smaller steps: for a worksheet, at most 6 questions in each editWorksheet call.)';
+/** The last user turn with a note after it (a text block; tool results stay first). */
+function withNote(m, note) {
+  const content = typeof m.content === 'string' ? [{ type: 'text', text: m.content }] : [...m.content];
+  return { ...m, content: [...content, { type: 'text', text: note }] };
+}
+/** The day plan without the AI (it is resting, or no model is set up): on a class's Homeroom, a request about the plan
+ *  still gets a card (services/homeroom-plan.js fallbackDraft: a saved plan named in the words, a small change to the
+ *  newest card, or a starting plan from the teacher's own lessons and games). null: anything else, or another page. */
+export function planFallback(user, meta, text) {
+  const page = pageOf(user, meta && meta.page);
+  if (page.type !== 'homeroom' || !/plan|minute|\bmin\b|break|exit|slides|work ?time|again/i.test(String(text || ''))) return null;
+  const c = S.getClass(page.classId), lang = (meta && meta.lang) || 'en', t = tFor(lang);
+  const d = latestPlan(user, c.id);
+  const r = HP.fallbackDraft(user, c, text, { lang, draft: d && d.plan });
+  if (!r.plan.parts.length) return null;
+  if (d && r.how !== 'saved' && r.how !== 'start') r.plan.name = d.plan.name || r.plan.name;
+  const card = HP.newCard(c, r, lang, { how: r.how, ...(r.savedFrom ? { from: r.savedFrom } : {}) });
+  return { reply: t(`js.companion.plan.fb.${r.how}`, { name: r.savedFrom ? r.savedFrom.name : '' }), apply: () => ({ note: { steps: [{ k: r.how === 'saved' ? 'planSaved' : 'plan', n: r.plan.parts.length, q: clip(r.savedFrom ? r.savedFrom.name : r.plan.name, 40) }], ms: 0, cards: [], plan: card } }) };
 }
 async function answer({ user, text, meta, quote, history, step, turnId }) {
   // A book's first draft (Make my book) or a change the teacher picked the book for on a card: straight to the book's
   // own writer (the teacher's words are the request; nothing else to decide).
   if (meta && (meta._bookFirst || meta._bookTarget)) return bookAnswer(user, meta._bookFirst || meta._bookTarget, { text, history, step });
   const client = aiClient();
-  if (!client) return { failed: 'resting' };
+  if (!client) return planFallback(user, meta, text) || { failed: 'resting' };
   const settings = limitsOf(user), lang = (meta && meta.lang) || 'en';
   const page = pageOf(user, meta && meta.page);
   if (page.type === 'manip' && meta.page && meta.page.board && meta.page.board.tool === page.tool) page.board = meta.page.board;
@@ -1202,17 +1326,25 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const steps = [];
   const model = config.companionModel || config.builderModel;
   const t0 = Date.now();
-  let res = null;
+  let res = null, cutOff = false;
   try {
     for (let n = 0; ; n++) {
       const last = n >= settings.steps;
-      const params = { model, max_tokens: 2500, system: system(user, lang, page, settings), tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
+      const params = { model, max_tokens: MAX_REPLY_TOKENS, system: system(user, lang, page, settings), tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
       try { res = await callAi(client, params); } catch (e) {
         if (useWeb && SR.isToolRefusal(e)) { webBroken = String(e.message || 'refused').slice(0, 200); log('error', 'companion web search turned off', { reason: webBroken }); useWeb = false; res = await callAi(client, { ...params, tools: tools() }); } else throw e;
       }
       if (res && res.usage) aiBudget.recordUsage(res.model || model, res.usage);
       collectWeb(res.content, web);
       if (res.stop_reason === 'pause_turn' && !last) { msgs.push({ role: 'assistant', content: res.content }); continue; }
+      // Cut off (a very long change, like many questions at once): its half-written tool call is never run. Asked once
+      // more for a smaller step, so the teacher gets part of it and a reply, not "couldn't answer" (25 Nov 2026).
+      if (res.stop_reason === 'max_tokens') {
+        log('warn', 'companion reply cut off', { turn: turnId, page: page.type, step: n });
+        if (!last && !cutOff && msgs[msgs.length - 1].role === 'user') { cutOff = true; msgs.push(withNote(msgs.pop(), CUT_OFF_NOTE)); continue; }
+        res = { ...res, content: (res.content || []).filter(b => b.type === 'text') };
+        break;
+      }
       const uses = (res.content || []).filter(b => b.type === 'tool_use');
       if (res.stop_reason !== 'tool_use' || !uses.length || last) break;
       step(2);
@@ -1220,7 +1352,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       const results = [];
       for (const tu of uses) {
         let r;
-        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
         if (r.step && !['unknown'].includes(r.step.k)) steps.push(r.step);
         results.push({ type: 'tool_result', tool_use_id: tu.id, content: JSON.stringify(r.result).slice(0, 20000) });
       }
@@ -1243,11 +1375,11 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
-    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}) };
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -1261,13 +1393,33 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         audit(user.id, 'companion.book.draft', ctx.out.book.id, { asking: ctx.out.book.state });
       }
       // Points: given here, in the engine's transaction with Oomba's turn, with Undo (Google Classroom after it).
-      if (points.length) { const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang); return a ? { note, ...a } : { note }; }
-      if (!fig) return { note };
-      // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it).
-      const w = F.ownWorksheet(user, fig.sheetId); if (!w) return { note };
-      const a = FC.applyPlan(user, w, fig.plan, { first: fig.first });
-      if (a.code || !a.change) return { note };
-      return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo } };
+      // Checked: the points actually given (a class that went, or a student who left, gives none); fewer than Oomba was
+      // told are said in the app's own words after its reply, and on the card.
+      if (points.length) {
+        const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang);
+        const got = a ? a.change.items.length : 0;
+        const verify = { ok: got === points.length, landed: got, notLanded: got < points.length ? [{ code: 'other', count: points.length - got }] : [] };
+        const fix = got === points.length ? '' : got ? 'Not every point was given after all. The card below shows the ones that were.' : 'The point was not given after all: the class or student is not there anymore. Please try again.';
+        return { note, ...(a || {}), verify, ...(fix ? { correction: fix } : {}) };
+      }
+      if (!fig) {
+        // A board: built and read back at the tool; the card says what was left out (the page puts the board on).
+        const m = ctx.out.manip;
+        const verify = m ? { ok: !m.dropped, landed: m.n, notLanded: m.dropped ? [{ code: 'filtered', count: m.dropped }] : [] } : ctx.out.manipMiss ? { ok: false, landed: 0, notLanded: [{ code: 'notBuilt' }] } : null;
+        return verify ? { note, verify } : { note };
+      }
+      // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it),
+      // then read back: the card shows what landed, and the reply is corrected when it differs from what Oomba was told.
+      const w = F.ownWorksheet(user, fig.sheetId);
+      if (!w) return { note, verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] }, correction: 'Nothing changed after all: the worksheet is not there anymore.' };
+      const before = FC.readBack(user, w);
+      const writes = fig.plan.ops.length || fig.plan.title || fig.plan.grade || fig.plan.units;
+      const a = writes ? FC.applyPlan(user, w, fig.plan, { first: fig.first }) : {};
+      const v = FC.verifyPlan(fig.plan, a, before, FC.readBack(user, w));
+      const verify = FC.verifyCard(v), fix = VC.correction(fig.told, v);
+      if (fix) log('warn', 'companion change landed other than told', { turn: turnId, told: fig.told.landed.length, landed: v.landed.length });
+      if (a.code || !a.change) return { note, verify, ...(fix ? { correction: fix } : {}) };
+      return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
     },
   };
 }
@@ -1450,6 +1602,7 @@ export function act(u, turnId, a, value = '') {
     return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...note, proposal: { ...p, state: 'applied' } } } }, apply: () => applyProposal(u, p), text: '' });
   }
   if (a === 'pick') return pickOne(u, row, turn, value);
+  if (/^plan[A-Z]/.test(a)) return planAct(u, row, turn, a, value);
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
@@ -1463,6 +1616,49 @@ export function act(u, turnId, a, value = '') {
     const h = note.handoff; if (!h) return { ok: false, code: 'notFound' };
     audit(u.id, 'companion.handoff', h.id, { tool: h.tool });
     return { ok: true, handoff: h };
+  }
+  return { ok: false, code: 'notFound' };
+}
+/** A tap on a day plan's card (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js): planUse (the
+ *  handouts on desks, and the plan of today), planStart (part 1; Use first when it isn't today's plan yet), planSave
+ *  (value: its name), planPick (value: a saved plan: a new card), planCopy (value: another class of theirs: a new card for
+ *  that class). Only on a class Homeroom lets them into. -> the conversation, and plan (the pill's view), summary, toast */
+function planAct(u, row, turn, a, value) {
+  const card = turn.note.plan;
+  const c = card && S.getClass(card.classId);
+  if (!c || !HR.canUseClass(u, c)) return { ok: false, code: 'notFound' };
+  const lang = card.lang || 'en', t = tFor(lang);
+  const mark = fields => markNote(u, row, turn.id, { ...turn.note, plan: { ...card, ...fields } });
+  const told = (r, extra = {}) => ({ ...r, plan: HP.teacherView(c), classId: c.id, ...extra });
+  if (a === 'planUse' || a === 'planStart') {
+    let used = null;
+    const today = HP.todayOf(c);
+    if (!today || today.id !== card.plan.id) {
+      used = HP.usePlan(u, c, card.plan, { lang });
+      if (!used.ok) return used;
+      card.plan = { ...card.plan, parts: used.plan.parts.map(({ handouts, ...p }) => p) };
+    }
+    const msg = used ? [t('js.companion.plan.used', { count: used.given }), used.already ? t('js.companion.plan.already', { count: used.already }) : '', used.failed.length ? t('js.companion.plan.notGiven', { count: used.failed.length }) : ''].filter(Boolean).join(' ') : '';
+    if (a === 'planUse') return told(mark({ state: 'used', plan: card.plan }), { toast: msg });
+    const r = HP.runAction(u, c, 'start');
+    if (!r.ok) return r;
+    return told(mark({ state: 'used', plan: card.plan }), { toast: [msg, t('js.companion.plan.started')].filter(Boolean).join(' ') });
+  }
+  if (a === 'planSave') {
+    const r = HP.savePlan(u, c, card.plan, value);
+    if (!r.ok) return r;
+    return told(mark({ savedAs: r.saved }), { toast: t('js.companion.plan.savedToast', { name: r.saved.name }) });
+  }
+  if (a === 'planPick') {
+    const s = HP.savedById(u, value); if (!s) return { ok: false, code: 'notFound' };
+    const r = HP.fromSaved(u, c, s, { lang });
+    if (!r.plan.parts.length) return { ok: false, code: 'noPlan' };
+    return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.plan.fromSaved', { name: s.name }), apply: () => ({ note: { plan: HP.newCard(c, r, lang, { from: r.savedFrom }) } }) }));
+  }
+  if (a === 'planCopy') {
+    const r = HP.copyTo(u, c, card.plan, value, { lang });
+    if (!r.ok) return r;
+    return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.plan.copied', { name: r.c.name }), apply: () => ({ note: { plan: HP.newCard(r.c, r, lang, { copiedFrom: c.id }) } }) }));
   }
   return { ok: false, code: 'notFound' };
 }

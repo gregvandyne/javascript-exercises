@@ -250,7 +250,7 @@ test('questions: server timing, the answer never sent early, late and second ans
   b.send({ t: 'an', i: 0, c: wrong, e: 9000 });
   const rv = await a.next('rv');
   assert.equal(rv.answer, right); assert.equal(rv.counts[right], 1); assert.equal(rv.counts[wrong], 1);
-  const youA = await a.next('you'); assert.equal(youA.ok, true); assert.ok(youA.points >= 900, `fast and right: ${youA.points}`); assert.equal(youA.rank, 1);
+  const youA = await a.next('you'); assert.equal(youA.ok, true); assert.ok(youA.points >= 900, `fast and right: ${youA.points}`); assert.equal(youA.rank, 0, 'no place, ever');
   const youB = await b.next('you'); assert.equal(youB.ok, false); assert.equal(youB.points, 0);
   const between = await h.next('ph', m => m.phase === 'between');
   h.send({ t: 'h', a: 'next', at: between.seq });
@@ -271,7 +271,8 @@ test('questions: server timing, the answer never sent early, late and second ans
   await a.next('rv', m => m.i === 1);
   const last = await h.next('ph', m => m.phase === 'between' && m.seq > between.seq);
   h.send({ t: 'h', a: 'next', at: last.seq });
-  assert.equal((await a.next('you', m => m.of !== undefined)).rank, 1);
+  const endA = await a.next('you', m => m.of !== undefined);
+  assert.equal(endA.rank, 0, 'the end tells no place'); assert.equal(endA.total, 2); assert.ok(endA.right >= 1 && endA.right <= 2);
   assert.equal((await a.next('bye')).why, 'ended');
   const sum = s.summary;
   assert.deepEqual(sum.items.map(i => [i.right, i.answered]), [[1, 2], [1, 2]]);
@@ -279,7 +280,7 @@ test('questions: server timing, the answer never sent early, late and second ans
   for (const c of [h, a, b]) c.ws.close();
 });
 
-test('the place a player is told counts only players still in the game: a removed leader takes no place and is not in "of"', async () => {
+test('the end tells each player their own result only, never a place: right answers of the questions asked; a removed player is not in "of"', async () => {
   const s = open(teacher, { mode: 'battle', items: [{ q: 'Two plus two?', choices: ['4', '5', '3'], answer: 0, secs: 10 }], audience: 'open' });
   const h = await hostSocket(s, teacher);
   const a = await player(s), b = await player(s), c = await player(s);
@@ -298,9 +299,10 @@ test('the place a player is told counts only players still in the game: a remove
   assert.equal((await b.next('bye')).why, 'removed');
   h.send({ t: 'h', a: 'next', at: between.seq });
   const ya = await a.next('you', m => m.of !== undefined), yc = await c.next('you', m => m.of !== undefined);
-  assert.deepEqual([ya.rank, ya.of], [1, 2], 'first of the two still playing (it said 2 of 3)');
-  assert.deepEqual([yc.rank, yc.of], [2, 2]);
+  assert.deepEqual([ya.rank, ya.of, ya.right, ya.total], [0, 2, 1, 1], 'a: 1 of 1 right, no place');
+  assert.deepEqual([yc.rank, yc.of, yc.right, yc.total], [0, 2, 0, 1]);
   assert.equal(ya.tied, undefined); assert.equal(ya.zero, undefined);
+  assert.ok(ya.score > 0 && yc.score === 0, 'each player still hears their own score');
   // The saved results still hold the removed player's row (marked as left), for the teacher.
   assert.equal(s.summary.players.length, 3); assert.equal(s.summary.players.find(p => p.seat === b.join.seat).left, true);
   for (const x of [h, a, c]) x.ws.close();
@@ -362,8 +364,9 @@ test('results: a class run saves scores for the class\'s students only, into the
   // Part 3: the question as asked (host-written text and choices, the answer, its time and the counts) for the review.
   const [saved] = JSON.parse(run.items);
   assert.deepEqual({ ...saved, choices: [...saved.choices].sort(), answer: saved.choices[saved.answer] }, { q: 'Pick yes', right: 1, answered: 2, top_wrong: 'no', choices: ['no', 'yes'], answer: 'yes', secs: 10, counts: [1, 1] });
-  const scores = q.all('SELECT user_id, score, rank FROM live_run_scores WHERE run_id=? ORDER BY rank', s.id);
+  const scores = q.all('SELECT user_id, score, rank FROM live_run_scores WHERE run_id=? ORDER BY score DESC', s.id);
   assert.deepEqual(scores.map(r => r.user_id), [mia.id, leo.id]);
+  assert.deepEqual(scores.map(r => r.rank), [0, 0], 'no rank is kept');
   const prog = q.get('SELECT score, label FROM step_progress WHERE class_lesson_id=? AND step_id=? AND user_id=?', cl.id, step.id, mia.id);
   assert.ok(prog.score > 0); assert.equal(prog.label, 'live');
   // The teacher's results page and CSV; another teacher can't see them.
@@ -371,7 +374,7 @@ test('results: a class run saves scores for the class\'s students only, into the
   assert.equal(page.status, 200); assert.ok(page.text.includes(mia.display_name), 'names as shown in the session');
   const csv = await call(`/live/results/${s.id}.csv`, { user: teacher });
   // The class's own teacher also gets the roster name beside the name shown in the game (routes/live.js rosterNames).
-  assert.equal(csv.status, 200); assert.match(csv.text, /^rank,student,roster_name,team,score,bonus,correct,answered,q1\r\n/);
+  assert.equal(csv.status, 200); assert.match(csv.text, /^student,roster_name,team,score,bonus,correct,answered,q1\r\n/);
   assert.ok(csv.text.includes(`${mia.display_name},Mia Pupil,`), 'the name in the game, then the roster name');
   assert.equal((await call(`/live/results/${s.id}`, { user: teacher2 })).status, 404);
   for (const c of [h, a, b]) c.ws.close();

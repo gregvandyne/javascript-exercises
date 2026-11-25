@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
+import { lessonWaitPage } from '../views/lesson-wait.js';
 import { avatar, emptyState, jumpNav, nameFilter, staffStudentName } from '../views/components.js';
 import { requireUser } from '../auth.js';
 import { bandName } from '../views/courses.js';
@@ -42,6 +43,7 @@ import { router as studentRoutes, studentHref } from './student-report.js';
 import { storyResults } from './library.js';
 import * as LIB from '../services/library.js';
 import * as FS from '../services/figures-steps.js';
+import { classroomOverview } from './homeroom-overview.js';
 import { figuresStepHtml } from '../views/figures-step.js';
 import * as PS from '../services/proof-steps.js';
 import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
@@ -85,7 +87,7 @@ router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 
   const c = P.context(u, clid, sid);
   if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
-    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, '', helped) : { ok: false, code: 'notFound' };
+    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, b(req).won === true ? 'won' : '', helped) : { ok: false, code: 'notFound' };
   send(req, res, r);
 });
 /** Hand in a build step: the game is shared with the lesson's class (so the teacher and the class can play it) and the
@@ -132,6 +134,10 @@ function dateChips(t, f, cl, { late = false, short = false } = {}) {
     late ? html`<span class="chip-s bad">${ico('⏰', { size: 18 })} ${t('lessons.class.late')}</span>` : '',
   ].filter(Boolean);
 }
+/** How a column is graded when the teacher chose (a Homeroom handout): a chip under its title. '' for every other lesson. */
+const gradeChip = (t, grade) => (grade === 'none' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('🌱', { size: 18 })} ${t('gradebook.grade.notGraded')}</span></span>`
+  : grade === 'completion' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('✅', { size: 18 })} ${t('gradebook.grade.completion')}</span></span>`
+  : grade === 'score' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('🎯', { size: 18 })} ${t('gradebook.grade.score')}</span></span>` : '');
 /** Overall for a gradebook row: '–' while none of the class's lessons has opened (nothing to count yet). */
 const overallOf = p => (P.hasOpenWork(p) ? `${p.overall}%` : null);
 
@@ -166,7 +172,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook" id="gb-lessons">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>
       ${gb.lessons.map((l, i) => { const chips = dateChips(t, f, l, { late: anyLate[i], short: true });
-        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}${l.some ? html`<span class="gb-dates"><span class="chip-s gb-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: l.picked })}</span></span>` : ''}</th>`; })}
+        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}${l.some ? html`<span class="gb-dates"><span class="chip-s gb-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: l.picked })}</span></span>` : ''}${gradeChip(t, l.grade)}</th>`; })}
       <th scope="col" class="gb-sum">${t('gradebook.workDone')}</th><th scope="col" class="gb-sum">${t('gradebook.score')}</th></tr></thead>
     <tbody>${gb.students.map(p => {
       const all = overallOf(p);
@@ -177,6 +183,10 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
           if (x.na) return html`<td class="gb-na"><span aria-hidden="true">–</span><span class="sr-only">${t('gradebook.notAssigned')}</span></td>`;
           if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.day(l.opens_at, SHORT) })}</span></td>`;
           const full = x.total && x.done >= x.total;
+          // A Homeroom handout graded by completion: done or not done; not graded: practice, shown but never a grade.
+          if (x.practice || x.completion) return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}${x.practice ? ' gb-practice' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#s-${p.id}">
+            <span class="gb-num">${full ? '✅' : x.practice ? (x.last ? '◐' : '–') : '○'}</span><span class="gb-pts">${t(x.practice ? (full ? 'gradebook.grade.practiced' : 'gradebook.grade.practice') : full ? 'gradebook.grade.done' : 'gradebook.grade.notDone')}</span>
+            ${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}${x.lateDone ? html`<span class="chip-s bad gb-latedone">${ico('⏰', { size: 18 })} ${t('gradebook.doneLate')}</span>` : ''}</a></td>`;
           const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
           <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
@@ -220,7 +230,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
-  // Typing Pets: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
+  // Typing Zoo: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
   // free play counts too. Shown once a student in this class has finished a typing lesson.
   const typing = gb.students.length ? TY.classTyping(gb.students) : null;
   const typingStarted = typing ? typing.rows.filter(r => r.typing).length : 0;
@@ -283,10 +293,13 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   </section>` : '';
   // Jump chips to the sections below the gradebook (only the ones on this page).
   const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), typingPanel ? ['typing', `⌨️ ${t('progress.typing.title')}`] : null, livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${typingPanel}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
+  // Homeroom teachers (step 2c): the Classroom tab's calm overview of the last weeks, above everything that was here.
+  const overview = classroomOverview(req, c);
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${overview}${nav}${body}${coursePanels}${typingPanel}${livePanel}`,
+    head: overview ? raw(`${CSS}<link rel="stylesheet" href="/css/homeroom-overview.css?v=${VERSION}">`) : CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(overview ? ['/js/homeroom-overview.js'] : [])] });
 });
 
-/** Typing Pets class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
+/** Typing Zoo class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
  *  admins (canManageClass) only, never an archived class. */
 router.post('/api/class/:id/typing-goal', requireUser, rateLimit('typing-goal', 60, 3600e3), (req, res) => {
   const c = S.getClass(String(req.params.id));
@@ -329,7 +342,7 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
     ...p.cells.flatMap((x, i) => (helped[i] ? [x.helped || ''] : []))];
   const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('gradebook.workDone'), ...(anyQz ? [t('progress.csv.quizAll')] : []), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : []), ...tail].map(cell).join(',')];
   for (const p of gb.students) {
-    const cols = p.cells.flatMap((x, i) => [x.na ? t('gradebook.notAssigned') : x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
+    const cols = p.cells.flatMap((x, i) => [x.na ? t('gradebook.notAssigned') : x.locked ? '–' : x.practice ? t('gradebook.grade.practiceCsv', { done: x.done, total: x.total }) : x.completion ? t(x.total && x.done >= x.total ? 'gradebook.grade.done' : 'gradebook.grade.notDone') : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
     lines.push([nameOf(p), p.username, ...cols, overallOf(p) || '', ...(anyQz ? [p.quiz !== null ? `${p.quiz}%` : ''] : []), ...(anyRb ? (p.rubric ? [R.pointsText(p.rubric.points, p.rubric.max), `${p.rubric.pct}%`] : ['', '']) : []), ...tailOf(p)].map(cell).join(','));
   }
   const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-progress.csv`;
@@ -555,6 +568,9 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   }
   const teacher = S.canManageClass(u, c);
   const student = !teacher && S.classMember(c.id, u.id)?.role === 'student';
+  // Not open to them yet (Homeroom: an In order handout waiting on their desk; services/lessons.js lessonWait).
+  const wait = student ? L.lessonWait(u, cl, t) : null;
+  if (wait) return lessonWaitPage(req, res, wait);
   const mine = student ? P.forStudent(cl.id, u.id) : {};
   // Rubric results (services/rubrics.js): this student's own, never anyone else's.
   // A score left behind when the step or lesson was switched to another rubric is not shown (R.scoreCounts).
@@ -630,6 +646,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
     ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">${ico('📡', { size: 18 })} ${t('live.entry.quizLesson')}</button></form>` : '';
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
+  // Homeroom (step 2c): the teacher's comment and sticker on this student's own finished handout.
+  const note = student ? L.lessonNote(u, cl) : null;
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
     <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
@@ -645,6 +663,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
     ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>
+  ${note ? html`<section class="panel hr-note" id="teacher-note"><h2>${ico('💬', { size: 28 })} ${t('homeroom.desk.fromTeacher')}</h2><div class="hr-notein">${note.src ? html`<img class="hr-notesticker" src="${note.src}" alt="${t(`homeroom.stickers.${note.sticker}`)}" width="88" height="88">` : ''}${note.comment ? html`<p dir="auto">${note.comment}</p>` : ''}</div></section>` : ''}
   ${myScores[R.LESSON] ? html`<section class="panel" id="from-teacher"><h2>${ico('💬', { size: 28 })} ${t('rubrics.student.fromTeacherLesson')}</h2>${myScores[R.LESSON].feedback ? html`<div class="feedback"><p dir="auto">${myScores[R.LESSON].feedback}</p></div>` : ''}${resultView(t, myScores[R.LESSON])}</section>` : ''}`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name, ...(student ? { scripts: ['/js/lesson-read.js', ...(st.some(s => s.kind === 'quiz') ? ['/js/live-quiz-step.js'] : [])] } : {}) });
 });

@@ -283,7 +283,7 @@ export function tmsMsg(s) {
     m: ts.on ? seats(s).filter(x => x.team).map(x => [x.no, x.team]) : [], scoring: ts.scoring, choose: ts.choose, locked: ts.locked,
   };
 }
-/** ts: team scores [[k, score, rank, sum, avg]] by team number. ranks: false -> every rank 0 (leaderboard off). */
+/** ts: team scores [[k, score, rank, sum, avg]] by team number. ranks: false -> every rank 0. Teams keep their places (they are not single students). */
 export function tsMsg(s, { ranks = true, fin = false } = {}) {
   const rows = ranked(s).sort((a, b) => a.k - b.k).map(r => [r.k, r.score, ranks ? r.rank : 0, r.sum, r.avg]);
   return { t: 'ts', s: rows, ...(fin ? { fin: 1 } : {}) };

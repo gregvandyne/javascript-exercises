@@ -129,6 +129,33 @@
     }
   },
   "js": {
+    "homeroom": {
+      "groupsLead": "Name your groups and pick a colour for each. A desk's border shows its group's colour.",
+      "groupColor": "Colour of group {n}",
+      "colorN": "Colour {n}",
+      "select": "Select",
+      "hintMove": "Tap anything in the teacher's area to select it. Drag it to move it, pull a handle to resize it, tap it again to type.",
+      "hintDraw": "Draw in the teacher's area. Tap Select when you've finished.",
+      "bt": {
+        "noteColor": "Note colour",
+        "color": "Colour",
+        "textColor": "Text colour",
+        "alignN": {
+          "c": "Centre"
+        },
+        "colors": {
+          "gray": "Grey"
+        },
+        "pops": {
+          "note": "Note colour"
+        }
+      },
+      "hintPlace": "Tap or drag in the teacher's area to place it. Then you're back on Select.",
+      "sel": {
+        "tools": "Selected item",
+        "delete": "Delete the selected item"
+      }
+    },
     "game": {
       "liked": "Added to your favourites!",
       "unliked": "Removed from your favourites"
@@ -221,6 +248,10 @@
     },
     "storybook-read": {
       "startOver": "Start again"
+    },
+    "homeroom-desk": {
+      "pens": "Pen colours",
+      "penColor": "Pen colour {n}"
     }
   },
   "favorites": {
@@ -980,6 +1011,9 @@
   "gradebook": {
     "student": {
       "standardsLine": "{meets} met · {developing} developing · {practiced} practised"
+    },
+    "grade": {
+      "practiced": "Practised"
     }
   },
   "buildSetup": {

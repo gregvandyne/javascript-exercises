@@ -50,12 +50,14 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
 | `BRB.params` | Lesson parameters, when a lesson step opened the game at a place: a frozen `{ chapter, band, mode, level, lock, style }` (any of them may be missing), `{}` otherwise. See [Lesson parameters](#lesson-parameters). |
-| `BRB.classRules` | Official games only (Typing Pets): a frozen `{ acc, wpm }` the player's teachers ask for before each next lesson opens (the strictest among the player's classes; 0 = no minimum), or `null`. Never a preview, a guest or a signed-out player. |
+| `BRB.classRules` | Official games only (Typing Zoo): a frozen `{ acc, wpm }` the player's teachers ask for before each next lesson opens (the strictest among the player's classes; 0 = no minimum), or `null`. Never a preview, a guest or a signed-out player. |
+| `BRB.support` | A frozen `{ time, read, simple, big }`: the player's supports from their teacher when the game was opened from a Homeroom handout (docs/decisions.md "Homeroom: supports, aides and sub links"). `time` is 1, 1.5 or 2 (extra time on anything timed), `read` (read instructions aloud), `simple` (use simpler wording), `big` (bigger text). All off (`time: 1`) otherwise. |
+| `BRB.timeFor(secs)` | A timed part's seconds with the player's extra time: `BRB.timeFor(60)` is 90 with 1.5x, 60 without. A game with a clock should start it with this. |
 | `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games and the Builder's classroom games (they set `data-theme` from it for the classroom look's light and dark); other games keep their own colors. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |
 | `localStorage` / `sessionStorage` | Work as usual. `localStorage` is a shim backed by the same cloud save, pre-filled before the game starts, so older games just work. |
-| `BRB.score.submit(score, label)` | Leaderboard entry (best score only, whole numbers ≥ 0). |
+| `BRB.score.submit(score, label)` | Saves the player's own best score (whole numbers ≥ 0). Only the player sees it (the game page's "Your best", a "New best!" toast); teachers see it in progress and the gradebook. There are no leaderboards: never rank players in a game either (docs/decisions.md "No leaderboards"). |
 | `BRB.gameOver({ won, score, helped? })` | Call at the end of each round (also submits the score). `helped: true` (optional, Oomba Canvas 1.3.0): a teacher showed an answer in this set; those problems are not in the score. Older pages and servers ignore it. |
 | `BRB.fullscreen()` | Asks the page to go full screen. `element.requestFullscreen()` is routed here too. |
 | `BRB.retry()` | Asks the page to load the game again from scratch, for a "Try again" button when the game could not start (a reload from inside the frame would go without the sign-in). Works only right after a tap. |
@@ -267,7 +269,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 |---|---|---|
 | `brb:ready` | `{ title }` | game loaded |
 | `brb:save` | `{ data: { key: string } }` | saves for signed-in players (not in previews) |
-| `brb:score` | `{ score, label }` | leaderboard |
+| `brb:score` | `{ score, label }` | the player's own best score (no leaderboard) |
 | `brb:gameover` | `{ won, score }` | round finished |
 | `brb:fullscreen` | `{ on }` | toggles full screen on the game area |
 | `brb:orientation` | `{ value }` | orientation hint |

@@ -747,7 +747,7 @@
       "heading": "Spiele-SDK",
       "brb": {
         "p1": "Jedes Spiel bekommt einen kleinen Helfer namens BRB. {get} und {set} speichern den Fortschritt für jeden Spieler. localStorage funktioniert auch und wird in der Cloud gespeichert.",
-        "p2": "{submit} trägt einen Punktestand in die Bestenliste ein (nur der beste zählt). {over} beendet eine Runde.",
+        "p2": "{submit} speichert den besten Punktestand des Spielers, den nur er selbst sieht. {over} beendet eine Runde.",
         "p3": "{fx} bringen Schwung ins Spiel.",
         "p4": "{full} und {orient} fragen die Seite höflich.",
         "p5": "{lang} ist die Sprache des Spielers (zum Beispiel \"fr\" oder \"ar\") und {dir} ist \"rtl\" bei Sprachen, die von rechts nach links geschrieben werden. So kann ein Spiel die Sprache des Spielers sprechen."
@@ -1164,11 +1164,6 @@
       "tap": "Tipp auf einen Stern.",
       "guest": "Als Gast spielen und bewerten"
     },
-    "leaderboard": {
-      "heading": "Bestenliste",
-      "empty": "Noch keine Punkte. Sei der Erste!",
-      "signIn": "Melde dich an, um die Namen der Spieler zu sehen."
-    },
     "more": {
       "label": "Mehr",
       "heading": "Mehr davon"
@@ -1215,6 +1210,9 @@
       "title": "Dieses Spiel ist gerade nicht verfügbar",
       "text": "Vielleicht kommt es später zurück. Unter Lernen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
       "play": "Zu Lernen"
+    },
+    "best": {
+      "heading": "Dein bester Punktestand"
     }
   },
   "play": {
@@ -1294,7 +1292,11 @@
       "figure": "Abbildung zu Aufgabe {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Weltkarte", "car": "Karte der Karibik", "me": "Karte des Nahen Ostens"},
+      "mapOf": {
+        "world": "Weltkarte",
+        "car": "Karte der Karibik",
+        "me": "Karte des Nahen Ostens"
+      },
       "untitled": "Erdkunde-Quiz",
       "mapTitle": "Karte: {region}",
       "mapAlt": "Umrisskarte: {region}",
@@ -2039,6 +2041,288 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Ziehen, um diesen Text zu verschieben",
+      "resize": "Ziehen, um die Größe dieses Felds zu ändern",
+      "smaller": "Kleinere Schrift",
+      "bigger": "Größere Schrift"
+    },
+    "homeroom": {
+      "my": {
+        "label": "Mein Pult (nur Sie sehen, was darauf liegt)",
+        "title": "Mein Pult",
+        "note": "Nur Sie sehen das",
+        "empty": "Legen Sie ein Spiel hierher, um es zuerst auszuprobieren.",
+        "cardLabel": "{title}, auf meinem Pult",
+        "play": "Spielen",
+        "preview": "Vorschau",
+        "open": "Öffnen",
+        "handOut": "Austeilen",
+        "takeOff": "Von meinem Pult nehmen",
+        "lead": "Auf Ihrem Pult zum Ausprobieren. Schüler sehen es erst, wenn Sie es austeilen.",
+        "lessonLead": "Auf Ihrem Pult. Die Vorschau öffnet die Aufgaben der Lektion. Schüler sehen es erst, wenn Sie es austeilen.",
+        "toolLead": "Auf Ihrem Pult, jederzeit zu öffnen. Werkzeuge austeilen kommt bald.",
+        "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe, Ganze Klasse oder Mein Pult.",
+        "tapMine": "Tippen Sie jetzt auf Mein Pult, um es dort abzulegen.",
+        "toolSoon": "Werkzeuge austeilen kommt bald. Legen Sie es auf Mein Pult, um es von dort zu öffnen.",
+        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie auf Mein Pult."
+      },
+      "wholeClass": "Ganze Klasse · {count}",
+      "editGroups": "Gruppen",
+      "groupsTitle": "Gruppen",
+      "groupsLead": "Benennen Sie Ihre Gruppen und wählen Sie für jede eine Farbe. Der Rand eines Tisches zeigt die Farbe seiner Gruppe.",
+      "groups": {
+        "stretch": "Vertiefung",
+        "onTrack": "Im Plan",
+        "building": "Aufbau",
+        "unnamed": "Neue Gruppe"
+      },
+      "groupName": "Name von Gruppe {n}",
+      "groupColor": "Farbe von Gruppe {n}",
+      "colorN": "Farbe {n}",
+      "removeGroup": "{name} entfernen",
+      "addGroup": "Gruppe hinzufügen",
+      "whoIsIn": "Wer ist in welcher Gruppe",
+      "noGroup": "Keine Gruppe",
+      "save": "Speichern",
+      "needName": "Geben Sie jeder Gruppe einen Namen.",
+      "groupsSaved": "Gruppen gespeichert",
+      "deskOf": "Tisch von {name}",
+      "emptyDesk": "Leerer Tisch",
+      "teacherDesk": "Lehrerpult",
+      "noStudents": "Noch keine Schüler in dieser Klasse.",
+      "addStudents": "Schüler hinzufügen",
+      "shapes": {
+        "rect": "Viereck",
+        "circle": "Kreis",
+        "line": "Linie"
+      },
+      "shapeDelete": "Diese Form löschen",
+      "hintMove": "Tippe etwas im Lehrerbereich an, um es auszuwählen. Ziehen verschiebt es, ein Griff ändert die Größe, nochmal tippen zum Schreiben.",
+      "hintDraw": "Zeichne im Lehrerbereich. Tippe auf Auswählen, wenn du fertig bist.",
+      "bt": {
+        "shapes": "Formen",
+        "lines": "Linien",
+        "kinds": {
+          "rect": "Rechteck",
+          "rrect": "Abgerundetes Rechteck",
+          "circle": "Kreis",
+          "tri": "Dreieck",
+          "rtri": "Rechtwinkliges Dreieck",
+          "diamond": "Raute",
+          "pent": "Fünfeck",
+          "hex": "Sechseck",
+          "oct": "Achteck",
+          "star": "Stern",
+          "heart": "Herz",
+          "arrow": "Pfeil",
+          "darrow": "Doppelpfeil",
+          "chevron": "Winkelpfeil",
+          "speech": "Sprechblase",
+          "cloud": "Denkblase",
+          "cross": "Plus",
+          "para": "Parallelogramm",
+          "trap": "Trapez",
+          "cyl": "Zylinder",
+          "line": "Linie",
+          "aline": "Pfeillinie",
+          "dline": "Doppelpfeillinie",
+          "elbow": "Winkelverbinder",
+          "curve": "Bogenverbinder"
+        },
+        "redo": "Wiederholen",
+        "paste": "Einfügen",
+        "copy": "Kopieren",
+        "cut": "Ausschneiden",
+        "duplicate": "Duplizieren",
+        "more": "Mehr",
+        "front": "Nach vorne holen",
+        "back": "Nach hinten stellen",
+        "lock": "Sperren",
+        "unlock": "Entsperren",
+        "selectAll": "Alles auswählen",
+        "outline": "Umriss",
+        "fill": "Füllung",
+        "textStyle": "Textstil",
+        "noteColor": "Zettelfarbe",
+        "color": "Farbe",
+        "none": "Keine",
+        "weight": "Stärke",
+        "weights": {
+          "S": "Dünn",
+          "M": "Mittel",
+          "L": "Dick",
+          "XL": "Extra dick"
+        },
+        "style": "Linienart",
+        "dashes": {
+          "solid": "Durchgehend",
+          "dash": "Gestrichelt",
+          "dot": "Gepunktet"
+        },
+        "arrows": "Pfeilspitzen",
+        "arrowsN": {
+          "none": "Keine Pfeilspitzen",
+          "start": "Am Anfang",
+          "end": "Am Ende",
+          "both": "An beiden Enden"
+        },
+        "opacity": "Deckkraft",
+        "opacityN": "{n} %",
+        "bold": "Fett",
+        "align": "Ausrichtung",
+        "alignN": {
+          "l": "Links",
+          "c": "Mitte",
+          "r": "Rechts"
+        },
+        "textColor": "Textfarbe",
+        "noteColors": {
+          "yellow": "Gelb",
+          "pink": "Rosa",
+          "green": "Grün",
+          "blue": "Blau",
+          "purple": "Lila"
+        },
+        "colors": {
+          "black": "Schwarz",
+          "gray": "Grau",
+          "white": "Weiß",
+          "red": "Rot",
+          "coral": "Koralle",
+          "orange": "Orange",
+          "yellow": "Gelb",
+          "lime": "Hellgrün",
+          "green": "Grün",
+          "teal": "Petrol",
+          "sky": "Himmelblau",
+          "blue": "Blau",
+          "purple": "Lila",
+          "pink": "Pink",
+          "brown": "Braun"
+        },
+        "nothingToPaste": "Kopiere zuerst etwas auf der Tafel.",
+        "copied": "Kopiert.",
+        "cutDone": "Ausgeschnitten. Füge es irgendwo auf der Tafel ein.",
+        "hintSelect": "Tippe etwas an, um es auszuwählen, oder ziehe über eine freie Stelle, um mehreres auszuwählen. Ziehen verschiebt, ein Griff ändert die Größe, nochmal tippen zum Schreiben.",
+        "hintShape": "Ziehe, um sie zu zeichnen. Halte Umschalt gedrückt, damit die Proportionen bleiben.",
+        "nextStyle": "Stil der nächsten",
+        "pops": {
+          "line": "Umriss",
+          "fill": "Füllung",
+          "text": "Textstil",
+          "note": "Zettelfarbe",
+          "more": "Mehr"
+        }
+      },
+      "tooMany": "Im Lehrerbereich ist dafür kein Platz mehr.",
+      "arrange": "Sitzplan einrichten",
+      "signin": "Anmeldung für Schüler",
+      "loadingSignin": "Code wird erstellt…",
+      "seats": {
+        "lead": "Wie in Ihrem echten Raum:",
+        "rows": "Reihen",
+        "pods": "Vierertische",
+        "u": "U-Form",
+        "circle": "Kreis",
+        "hint": "oder ziehen Sie einen Tisch dorthin, wo er wirklich steht",
+        "done": "Fertig",
+        "saved": "Sitzplan für {class} gespeichert"
+      },
+      "everyone": "Alle ins Homeroom",
+      "bring": "Alle zu mir holen",
+      "back": "Zurück an die Plätze",
+      "pause": "Bildschirme pausieren",
+      "resume": "Bildschirme fortsetzen",
+      "endClass": "Stunde beenden",
+      "endConfirm": "Die Stunde für alle beenden? Die Plätze und der Bereich der Lehrkraft bleiben, wie sie sind.",
+      "projector": "Beameransicht öffnen",
+      "hostLive": "Live-Spiel starten",
+      "started": "Die Stunde läuft. Die Schüler sehen einen Hinweis, an ihren Platz zu gehen.",
+      "bringing": "Alle sehen den Bereich der Lehrkraft",
+      "backToDesks": "Die Schüler sind wieder an ihren Plätzen",
+      "paused": "Bildschirme pausiert",
+      "resumed": "Bildschirme sind wieder an",
+      "ended": "Stunde beendet",
+      "ho": {
+        "noStudentsYet": "Noch keine Schüler. Wer der Klasse beitritt, bekommt es.",
+        "putClass": "An die Klasse austeilen",
+        "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe oder Ganze Klasse.",
+        "cancel": "Abbrechen",
+        "wholeClass": "Ganze Klasse",
+        "emptyGroup": "In dieser Gruppe ist noch niemand.",
+        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie hier.",
+        "title": "{game} für {who}",
+        "eyebrow": "Spiel · freies Spielen",
+        "lead": "Die Kinder spielen frei. Geben Sie Hinweise, wenn sie etwas Bestimmtes tun sollen.",
+        "instructions": "Hinweise (optional)",
+        "instructionsPh": "Zum Beispiel: Rechne 3 schriftliche Divisionen mit Rest und zeige eine auf deinem Block.",
+        "left": "{count, plural, one {noch # Zeichen} other {noch # Zeichen}}",
+        "order": "Reihenfolge auf dem Tisch",
+        "inOrder": "Der Reihe nach",
+        "anyOrder": "Beliebige Reihenfolge",
+        "inOrderHint": "Es wartet, bis die Aufgaben davor erledigt sind.",
+        "anyOrderHint": "Die Kinder können es jederzeit öffnen.",
+        "grade": "Bewerten nach",
+        "score": "Punkte",
+        "completion": "Erledigt",
+        "notGraded": "Ohne Bewertung",
+        "scoreHint": "Die Notenübersicht zeigt ihre Punkte wie bei jeder Aufgabe.",
+        "completionHint": "100 %, sobald sie es fertig haben.",
+        "notGradedHint": "Übung: erscheint im Fortschritt, aber nie als Note.",
+        "due": "Fällig am (optional)",
+        "putOne": "Auf den Tisch legen",
+        "putMany": "{count, plural, one {Auf # Tisch legen} other {Auf # Tische legen}}",
+        "done": "Erledigt",
+        "later": "Später",
+        "pct": "{pct} % erledigt",
+        "notStarted": "Nicht begonnen",
+        "more": "+{count} weitere",
+        "onDesks": "{count, plural, one {# Tisch} other {# Tische}}",
+        "best": "Bestes Ergebnis {score}",
+        "removeOne": "Von {name}s Tisch nehmen",
+        "removeAll": "Von allen Tischen entfernen",
+        "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen.",
+        "lesson": "Stunde",
+        "version": "Version: {name}",
+        "gcAlso": "Auch in Google Classroom posten",
+        "gcHint": "Es geht als Aufgabe an Ihre verknüpfte Classroom-Klasse, mit der hier gewählten Bewertung.",
+        "gcWholeOnly": "Nur Aufgaben für die ganze Klasse gehen an Google Classroom: Dort würden sie alle erreichen."
+      },
+      "team": {
+        "label": "Teamtisch",
+        "deskOf": "Teamtisch: {names}",
+        "doneOf": "{done} von {n} fertig",
+        "split": "Team auflösen",
+        "splitConfirm": "Teamtisch von {names} auflösen? Alle gehen zurück an ihren eigenen Tisch. Der gemeinsame Block des Teams wird geleert.",
+        "splitDone": "Team aufgelöst. Alle sind wieder an ihrem eigenen Tisch.",
+        "makeA": "Team bilden",
+        "pickLead": "Tippen Sie auf die Tische der Kinder, die sich einen Tisch teilen (bis zu {max})",
+        "picked": "{count, plural, =0 {Noch keiner gewählt} one {# gewählt} other {# gewählt}}",
+        "make": "Team bilden",
+        "made": "Teamtisch gebildet: {names}",
+        "full": "Ein Team hat höchstens {max} Kinder.",
+        "forNames": "das Team {names}",
+        "sheetLead": "Tippen Sie auf ein Kind, um seine Aufgaben zu sehen."
+      },
+      "feedback": {
+        "add": "Kommentar oder Sticker",
+        "edit": "Kommentar oder Sticker ändern",
+        "comment": "Ein kurzer Kommentar (optional)",
+        "commentPh": "Zum Beispiel: Toll gemacht mit den Resten!",
+        "sticker": "Ein Sticker (optional)",
+        "noSticker": "Keiner",
+        "private": "Nur dieses Kind sieht es, auf seinem Tisch und der Seite der Aufgabe.",
+        "remove": "Entfernen"
+      },
+      "select": "Auswählen",
+      "hintPlace": "Tippe oder ziehe im Lehrerbereich, um es zu platzieren. Danach bist du wieder bei Auswählen.",
+      "sel": {
+        "tools": "Ausgewähltes Element",
+        "delete": "Ausgewähltes Element löschen"
+      },
+      "playBack": "Zurück zu Homeroom"
+    },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
       "failed": "Etwas ist schiefgegangen. Versuch es noch einmal.",
@@ -3425,12 +3709,6 @@
         "pieceLocked": "Teil {label}, gesperrt",
         "objLocked": "{name}, gesperrt"
       },
-      "text": {
-        "move": "Ziehen, um diesen Text zu verschieben",
-        "resize": "Ziehen, um die Größe dieses Felds zu ändern",
-        "smaller": "Kleinere Schrift",
-        "bigger": "Größere Schrift"
-      },
       "boards": {
         "title": "Meine Tafeln",
         "none": "Tafeln, an denen du arbeitest, speichern sich selbst und erscheinen hier. Mit „Als Vorlage speichern“ behältst du einen frischen Startpunkt.",
@@ -4601,6 +4879,392 @@
       "deleteOk": "Löschen",
       "deleted": "„{title}“ gelöscht.",
       "undo": "Rückgängig"
+    },
+    "homeroom-signin": {
+      "codeLength": "Der Code hat {n} Buchstaben und Zahlen.",
+      "tapName": "Tippe auf deinen Namen",
+      "noNames": "In dieser Klasse ist noch niemand.",
+      "notThere": "Du findest deinen Namen nicht? Frag deine Lehrkraft.",
+      "googleHint": "Nutzt du Google in der Schule?",
+      "otherCode": "Anderen Code nutzen",
+      "hi": "Hallo, {name}!",
+      "notMe": "Das bin ich nicht",
+      "useGoogle": "Melde dich mit deinem Google-Konto der Schule an.",
+      "askTeacher": "Frag deine Lehrkraft nach deiner Anmeldekarte.",
+      "typePassword": "Gib dein Passwort ein",
+      "show": "Zeigen",
+      "hide": "Verbergen",
+      "signIn": "Anmelden",
+      "tapPictures": "Tippe deine {n} Bilder der Reihe nach",
+      "picked": "{n} von {total} Bildern gewählt",
+      "pictures": "Bilder",
+      "undo": "Rückgängig",
+      "waitSecs": "Versuche es in {n} Sekunden noch einmal.",
+      "welcome": "Willkommen, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "Die Anmeldung ist geschlossen",
+      "closedHint": "Sie öffnet sich von selbst, wenn Sie die Stunde mit Alle ins Homeroom starten.",
+      "open": "Anmeldung öffnen",
+      "goTo": "Geht auf",
+      "enterCode": "und gebt diesen Code ein:",
+      "codeIs": "Code: {code}",
+      "until": "Offen bis {time}",
+      "longer": "Länger offen lassen",
+      "close": "Anmeldung schließen",
+      "settings": "Anmeldung: Einstellungen und Karten"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mein Platz",
+      "empty": "Noch nichts auf deinem Platz",
+      "emptyText": "Wenn deine Lehrkraft etwas austeilt, landet es hier.",
+      "pad": "Kritzeln und Rechnen",
+      "pens": "Stiftfarben",
+      "penColor": "Stiftfarbe {n}",
+      "undo": "Rückgängig",
+      "clear": "Löschen",
+      "padLabel": "Block zum Kritzeln und Rechnen. Zeichne mit dem Finger, einem Stift oder der Maus.",
+      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen.",
+      "teacherArea": "Bereich der Lehrkraft",
+      "openArea": "Bereich der Lehrkraft öffnen",
+      "back": "Zurück zu meinem Platz",
+      "showing": "Deine Lehrkraft zeigt dir das",
+      "showingHint": "Du kommst an deinen Platz zurück, wenn deine Lehrkraft fertig ist.",
+      "eyes": "Augen zur Lehrkraft",
+      "eyesHint": "Dein Bildschirm ist kurz pausiert.",
+      "roomTitle": "Der Raum",
+      "teacherDesk": "Lehrerpult",
+      "you": "du",
+      "done": "Erledigt",
+      "nextUp": "Als Nächstes",
+      "later": "Später",
+      "laterHint": "Mach zuerst die davor fertig.",
+      "freePlay": "Freies Spielen",
+      "notReady": "Noch nicht bereit",
+      "notReadyHint": "Das ist noch nicht bereit. Frag deine Lehrkraft.",
+      "due": "Fällig {date}",
+      "teacherSays": "Lehrkraft:",
+      "inOrder": "Der Reihe nach",
+      "anyOrder": "Beliebige Reihenfolge",
+      "newHandout": "Neu von deiner Lehrkraft: {title}",
+      "lessonTitle": "Stunde: {title}",
+      "worksheet": "Arbeitsblatt · {count, plural, one {# Aufgabe} other {# Aufgaben}}",
+      "worksheetWords": "Arbeitsblatt · {count, plural, one {# Wort} other {# Wörter}}",
+      "team": "Team: {names}",
+      "teamPad": "Block von unserem Team",
+      "fromTeacher": "Deine Lehrkraft:",
+      "stickers": {
+        "star": "Stern",
+        "thumbs": "Daumen hoch",
+        "heart": "Herz",
+        "idea": "Gute Idee",
+        "check": "Haken",
+        "rocket": "Rakete",
+        "trophy": "Pokal",
+        "medal": "Medaille",
+        "crown": "Krone",
+        "fireworks": "Feuerwerk",
+        "smiley": "Smiley",
+        "rainbow": "Regenbogen"
+      },
+      "hand": {
+        "raise": "Hand heben",
+        "isUp": "Hand oben",
+        "menu": "Heb deine Hand",
+        "question": "Ich habe eine Frage",
+        "help": "Ich brauche Hilfe",
+        "bathroom": "Toilette",
+        "hallPass": "Pass",
+        "down": "Hand runter",
+        "leaveLine": "Aus der Reihe gehen",
+        "back": "Ich bin zurück",
+        "goAhead": "Du kannst gehen.",
+        "passLeft": "Pass: {time}",
+        "timeUp": "Die Zeit ist um. Komm bitte zurück.",
+        "next": "Du bist als Nächstes mit dem Pass dran.",
+        "inLine": "{count, plural, one {Du stehst in der Reihe. # Person ist vor dir.} other {Du stehst in der Reihe. # Personen sind vor dir.}}",
+        "lineHint": "Warte an deinem Tisch. Du kommst bald dran.",
+        "up": {
+          "question": "Deine Hand ist oben: eine Frage.",
+          "help": "Deine Hand ist oben: du brauchst Hilfe.",
+          "bathroom": "Du hast nach dem Pass gefragt."
+        },
+        "askedPass": "Deine Lehrkraft antwortet gleich.",
+        "upHint": "Deine Lehrkraft sieht sie.",
+        "toastPass": "Du hast nach dem Pass gefragt",
+        "toastUp": "Deine Lehrkraft sieht deine Hand",
+        "toastBack": "Willkommen zurück",
+        "toastDown": "Hand unten",
+        "locked": "Deine Lehrkraft hat deinen Tisch kurz gesperrt",
+        "lockedHint": "Er geht gleich wieder auf. Deine Arbeit ist gespeichert.",
+        "coming": "Deine Lehrkraft kommt gleich zu dir",
+        "passBtn": "Toilettenpass"
+      },
+      "playBack": "Zurück zu meinem Tisch"
+    },
+    "homeroom-area": {
+      "label": "Bereich der Lehrkraft",
+      "empty": "Deine Lehrkraft hat hier noch nichts hingelegt."
+    },
+    "homeroom-notify": {
+      "text": "Deine Klasse ist im Homeroom.",
+      "go": "Zu meinem Platz",
+      "close": "Schließen"
+    },
+    "homeroom-lessons": {
+      "build": "Stunde erstellen",
+      "editTitle": "Stunde bearbeiten",
+      "pickTitle": "Welches Spiel oder Werkzeug?",
+      "pickLead": "Wählen Sie ein Spiel. Sie legen genau fest, was die Kinder tun, und daraus entsteht das Arbeitsblatt.",
+      "comingLater": "Kommt später",
+      "later": {
+        "quiz": "Klassenquiz und Wortspiele",
+        "mine": "Meine Spiele",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Castle-Clash-Rätsel",
+        "manip": "Anschauungsmaterial",
+        "figures": "Figuren",
+        "reading": "Lesen"
+      },
+      "name": "Name der Stunde",
+      "namePh": "Zum Beispiel: Schriftliches Dividieren üben",
+      "op": "Rechenart",
+      "ops": {
+        "add": "Addieren",
+        "subtract": "Subtrahieren",
+        "multiply": "Multiplizieren",
+        "divide": "Dividieren"
+      },
+      "method": "Verfahren",
+      "methods": {
+        "standard": "Standard",
+        "ladder": "Leiter",
+        "area": "Flächenmodell",
+        "partial": "Teilprodukte"
+      },
+      "size": "Größe",
+      "sizeEach": "{n} Stellen",
+      "sizeBy": "{a} {op} {b} Stellen",
+      "count": "Aufgaben",
+      "level": "Hilfe beim Rechnen",
+      "levels": {
+        "watch": "Zuschauen",
+        "countUp": "Hochzählen",
+        "guided": "Geführt",
+        "onMyOwn": "Allein"
+      },
+      "newProblems": "Neue Aufgaben",
+      "activity": "Aktivität",
+      "modes": {
+        "solve": "Lösen",
+        "multiply": "Multiplizieren",
+        "factor": "Faktorisieren"
+      },
+      "alLevel": "Stufe",
+      "alLevels": {
+        "easy": "Leicht",
+        "medium": "Mittel",
+        "hard": "Schwer"
+      },
+      "tiles": "Plättchen zu Beginn",
+      "tilesAll": "Alle Plättchen, die sie brauchen",
+      "tilesNone": "Keine Plättchen",
+      "words": "Wörter und Hinweise",
+      "wordsHint": "{min} bis {max} Wörter. Jedes Wort braucht einen Hinweis.",
+      "word": "Wort {n}",
+      "clue": "Hinweis zu Wort {n}",
+      "wordPh": "Wort",
+      "cluePh": "Hinweis",
+      "addWord": "Wort hinzufügen",
+      "removeWord": "Wort {n} entfernen",
+      "bank": "Wortliste",
+      "bankShow": "Zeigen",
+      "bankHide": "Ausblenden",
+      "bankShown": "Wortliste",
+      "bankHidden": "keine Wortliste",
+      "hints": "Tipps",
+      "hintsOn": "Erlaubt",
+      "hintsOff": "Aus",
+      "versions": "Eine Version für jede Gruppe?",
+      "versionsYes": "Ja, nach Gruppe",
+      "versionsNo": "Eine für alle",
+      "versionsHint": "Jede Gruppe beginnt mit Ihrer Stunde und einer vorgeschlagenen Änderung. Sie können alles ändern.",
+      "versionsOff": "Alle bekommen dasselbe Arbeitsblatt.",
+      "noGroups": "Diese Klasse hat noch keine Gruppen. Legen Sie zuerst Gruppen an, um Versionen hinzuzufügen.",
+      "editing": "Version für",
+      "noGroup": "Keine Gruppe",
+      "lean": {
+        "easier": "Leichter",
+        "same": "Gleich",
+        "harder": "Schwerer"
+      },
+      "instructions": "Anleitung für die Kinder",
+      "instructionsPh": "Zum Beispiel: Schreibe jeden Schritt auf. Prüfe dein Ergebnis mit der Multiplikation.",
+      "preview": "Vorschau des Arbeitsblatts",
+      "previewOf": "Vorschau des Arbeitsblatts · {who}",
+      "previewNote": "Die Kinder lösen es am Bildschirm, oder Sie drucken es aus.",
+      "previewWords": "Geben Sie mindestens {min} Wörter ein, um das Kreuzworträtsel zu sehen.",
+      "printDraft": "Drucken",
+      "ai": "Oomba ausfüllen lassen",
+      "aiBusy": "Oomba schreibt Hinweise…",
+      "aiDone": "{count, plural, one {Oomba hat # Hinweis geschrieben.} other {Oomba hat # Hinweise geschrieben.}} Prüfen Sie sie vor dem Speichern.",
+      "aiNothing": "Jedes Wort hat schon einen Hinweis.",
+      "aiNeedWords": "Geben Sie zuerst ein paar Wörter ein. Oomba schreibt zu jedem einen Hinweis.",
+      "aiFailed": "Oomba konnte gerade keine Hinweise schreiben. Versuchen Sie es noch einmal.",
+      "save": "In „Meine Stunden“ speichern",
+      "cancel": "Abbrechen",
+      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "problemsN": "{count, plural, one {# Aufgabe} other {# Aufgaben}}",
+      "wordsN": "{count, plural, one {# Wort} other {# Wörter}}",
+      "versionsN": "{count, plural, one {# Version} other {# Versionen}}",
+      "empty": "Stunden, die Sie erstellen, erscheinen hier.",
+      "more": "Mehr zu {title}",
+      "edit": "Bearbeiten",
+      "duplicate": "Duplizieren",
+      "print": "Arbeitsblatt drucken",
+      "delete": "Löschen",
+      "deleteConfirm": "{title} löschen? Tische, auf denen sie liegt, behalten sie.",
+      "versionsFor": "Versionen für {groups}",
+      "printLead": "Das Arbeitsblatt wird mit seinem Klassencode gedruckt, so können die Kinder es auch in Oomba öffnen.",
+      "printWhich": "Welches Arbeitsblatt?",
+      "printLesson": "Die Stunde",
+      "printKey": "Lösungsblatt dazu",
+      "printGo": "Drucken",
+      "full": "Sie haben {count} Stunden, mehr können Sie nicht speichern. Löschen Sie zuerst eine.",
+      "giveEyebrow": "Stunde",
+      "giveTitle": "{lesson} für {who}",
+      "versionsBy": "Versionen nach Gruppe",
+      "asBuilt": "Die Stunde wie erstellt",
+      "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %."
+    },
+    "homeroom-overview": {
+      "title": "Bewerten nach",
+      "score": {
+        "name": "Punkte",
+        "hint": "Der Anteil richtiger Antworten in %. Google Classroom bekommt ihn auch."
+      },
+      "completion": {
+        "name": "Abschluss",
+        "hint": "100 %, wenn fertig."
+      },
+      "none": {
+        "name": "Ohne Bewertung",
+        "hint": "Übung: keine Note, nichts wird gesendet."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Deine Lehrkraft hat deinen Tisch kurz gesperrt",
+      "lockedHint": "Er geht gleich wieder auf. Deine Arbeit ist gespeichert.",
+      "coming": "Deine Lehrkraft kommt gleich zu dir"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Nicht da",
+        "done": "Fertig",
+        "stuck": "Steckt fest",
+        "typing": "Tippt",
+        "working": "Arbeitet",
+        "here": "Am Tisch"
+      },
+      "hand": {
+        "question": "Frage",
+        "help": "Braucht Hilfe",
+        "bathroom": "Toilette"
+      },
+      "inGame": "in {title}",
+      "onDesk": "als Nächstes: {title}",
+      "chipLabel": "{name}: {status}. Tisch ansehen",
+      "handOf": "{name}: {what}",
+      "needsLook": "Mal nachsehen",
+      "close": "Schließen",
+      "pass": {
+        "title": "Toilettenpass",
+        "outShort": "Mit Pass draußen",
+        "lineShort": "Wartet auf den Pass",
+        "left": "noch {time}",
+        "over": "{time} über der Zeit",
+        "isBack": "{name} ist zurück",
+        "nobody": "Gerade ist niemand draußen.",
+        "next": "Als Nächstes:",
+        "then": "Danach:",
+        "removeLine": "{name} aus der Reihe nehmen",
+        "length": "Passzeit",
+        "less": "Kürzer",
+        "more": "Länger",
+        "minutes": "{count, plural, one {# Min.} other {# Min.}}",
+        "outTag": "Draußen",
+        "lineTag": "In der Reihe"
+      },
+      "today": {
+        "title": "Heute auf einen Blick",
+        "button": "Heute",
+        "doneOf": "{done} von {total} fertig",
+        "barLabel": "{done} fertig, {work} arbeiten, {stuck} stecken fest, {none} noch nicht begonnen",
+        "nums": "{done} fertig · {work} arbeiten · {stuck} stecken fest · {none} nicht begonnen",
+        "lead": "Die Aufgaben von heute. Starte den Unterricht, um zu sehen, wer arbeitet oder feststeckt.",
+        "leadLive": "Die Aufgaben von heute, während die Klasse arbeitet.",
+        "done": "Fertig",
+        "working": "Arbeitet",
+        "stuck": "Steckt fest",
+        "notStarted": "Nicht begonnen",
+        "none": "Heute wurde noch nichts verteilt.",
+        "weeks": "Den Fortschritt über Wochen zeigt der Tab Klassenzimmer.",
+        "classroom": "Klassenzimmer öffnen"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Hände, keine oben} one {Hände, # oben} other {Hände, # oben}}",
+        "button": "Hände",
+        "title": "Hände oben",
+        "notNow": "Jetzt nicht",
+        "putInLine": "In die Reihe",
+        "givePass": "Pass geben",
+        "answered": "Beantwortet",
+        "none": "Gerade ist keine Hand oben.",
+        "private": "Nur du siehst Hände und den Pass. Nie auf dem Beamer.",
+        "done": {
+          "answer": "Beantwortet",
+          "pass": "Pass aktualisiert",
+          "notNow": "Hand runtergenommen",
+          "back": "Pass aktualisiert"
+        }
+      },
+      "look": {
+        "title": "Tisch von {name}",
+        "loading": "Wird geladen...",
+        "never": "noch nichts",
+        "done": "Fertig",
+        "pct": "{pct} % geschafft",
+        "allDone": "Alles auf dem Tisch ist fertig.",
+        "nothing": "Noch nichts auf dem Tisch.",
+        "stuckNote": "Seit {min} Minuten kein Schritt weiter bei dieser Aufgabe.",
+        "lastSeen": "Zuletzt gesehen {when}",
+        "whereGame": "Im Spiel",
+        "whereDesk": "Am Tisch",
+        "activity": "zuletzt aktiv {when}",
+        "on": "Arbeitet an",
+        "progress": "{done} von {total} Aufgaben fertig",
+        "pad": "Notizblock",
+        "teamPad": "Team-Block",
+        "padLabel": "Block von {name}",
+        "padEmpty": "Noch nichts gezeichnet",
+        "private": "Eine Übersicht dessen, was Homeroom weiß. Bildschirm und Eingaben werden nie gezeigt.",
+        "coming": "Ich komme zu dir",
+        "comingOn": "Unterwegs: tippen zum Entfernen",
+        "lock": "Tisch sperren",
+        "unlock": "Tisch entsperren",
+        "hideCursor": "Zeiger verbergen",
+        "showCursor": "Zeiger zeigen",
+        "handouts": "Aufgaben",
+        "toast": {
+          "lockOn": "Tisch von {name} ist gesperrt",
+          "lockOff": "Tisch von {name} ist wieder offen",
+          "hideOn": "Zeiger von {name} ist verborgen",
+          "hideOff": "Zeiger von {name} ist wieder sichtbar",
+          "comingOn": "{name} sieht, dass du kommst",
+          "comingOff": "Hinweis von {name}s Tisch entfernt"
+        }
+      }
     }
   },
   "favorites": {
@@ -5526,7 +6190,7 @@
       "readToMe": "Vorlesen"
     },
     "typing": {
-      "title": "Tipp-Tiere",
+      "title": "Tipp-Zoo",
       "unlockH": "Für jede nächste Lektion:",
       "unlockSummary": "nächste Lektion ab {what}",
       "goalMins": "Minuten pro Tag",
@@ -5571,7 +6235,7 @@
       "minutes": "{n} Min.",
       "missed": "In {pct}% der Fälle verfehlt",
       "notYet": "Noch nicht begonnen",
-      "note": "Aus dem eigenen Tipp-Tiere-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
+      "note": "Aus dem eigenen Tipp-Zoo-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
       "assign": "Eine Tipp-Lektion verteilen"
     },
     "courses": {
@@ -5982,7 +6646,7 @@
         "h": "Bevor Sie es erstellen: Was dieses Konto speichert",
         "keep": "Was dieses Konto speichert: die Spiele, die Ihr Kind baut, seine Chats mit dem Baumeister, Bilder und Dateien, die es hochlädt, Spielstände, Punktestände, Bewertungen und Likes, Freunde und Nachrichten im Freundes-Chat, ein Profilfoto, falls es eines hinzufügt, seine Einstellungen und Anmelde-Cookies mit dem Namen des Browsers.",
         "ai": "Was an Claude von Anthropic geht (die KI hinter dem Baumeister): Nachrichten an den Baumeister, Bilder und Dateien, Profilfotos (für eine Sicherheitsprüfung) und Spiele, die zur öffentlichen Prüfung eingereicht werden. Es werden keine Namen oder Benutzernamen gesendet. Der Freundes-Chat geht nie an die KI.",
-        "who": "Wer was sieht: Freunde, die Ihr Kind mit einem Freundescode hinzufügt, können mit ihm chatten und seine Spiele sehen, die nur für Freunde sind. Alle können die Spiele spielen, die es öffentlich macht. Sein Benutzername steht bei öffentlichen Spielen und in Bestenlisten.",
+        "who": "Wer was sieht: Freunde, die Ihr Kind mit einem Freundescode hinzufügt, können mit ihm chatten und seine Spiele sehen, die nur für Freunde sind. Alle können die Spiele spielen, die es öffentlich macht. Sein Benutzername steht bei seinen öffentlichen Spielen.",
         "howLong": "Wie lange wir es speichern: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht.",
         "rights": "Was Sie tun können: auf Ihrer Familienseite sehen, was wir speichern, und das Konto löschen, oder uns schreiben.",
         "more": "Die ganze Datenschutzerklärung lesen"
@@ -6596,7 +7260,7 @@
       "lead": "Verbinden Sie Ihr Google Classroom mit wenigen Klicks. Zuerst sieht Oomba Academy nur Ihre Kurse und deren Schüler. Es wird nichts gepostet, bis Sie das Posten erlauben.",
       "li1": "Importieren Sie Ihre Schülerliste mit einem Klick, danach aktualisiert sie sich alle 6 Stunden von selbst. Schüler werden über ihr Google-Konto erkannt.",
       "li2": "Posten Sie eine Unterrichtseinheit als Classroom-Aufgabe, mit Link und Abgabetermin, oder teilen Sie sie als Material.",
-      "li3": "Abschlussnoten gehen zurück an Classroom: Die Note jedes Schülers von 100 ist der Anteil der Schritte der Einheit, die er geschafft hat, nicht die Zahl der richtigen Antworten. Senden Sie sie selbst oder schalten Sie automatische Noten ein.",
+      "li3": "Noten gehen von 100 zurück an Classroom: eine Abschlussnote (der Anteil der erledigten Schritte, nicht der richtigen Antworten) oder bei Homeroom-Aufgaben die gewählte Bewertung: Punkte, Abschluss oder nichts bei Übungen. Sende sie selbst oder schalte automatische Noten ein.",
       "li4": "Posten Sie im Kurs-Stream, wenn ein Live-Spiel startet oder eine Einheit bereit ist, in Ihren eigenen Worten.",
       "li5": "Oomba Academy fragt Classroom nicht nach E-Mail-Adressen von Schülern und sendet Google nie den Namen, die Antworten oder die Spiele eines Schülers.",
       "note": "Aufgaben, Materialien, Noten und Ankündigungen funktionieren, sobald Sie das Posten erlauben, ein eigener Schritt. Jede Lehrkraft verbindet ihr eigenes Google-Konto, und der Google-Admin Ihrer Schule muss Oomba Academy eventuell zuerst zulassen.",
@@ -6696,7 +7360,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {
@@ -7371,7 +8035,7 @@
       "li1": "Das sind Durchschnittswerte über viele Studien, Altersstufen, Fächer und Spiele. Manche Spiele halfen viel, manche gar nicht.",
       "li2": "Keine dieser Studien hat Oomba Academy getestet. Sie beschreiben Lernspiele allgemein und sind kein Versprechen für ein bestimmtes Spiel, eine Klasse oder ein Kind.",
       "li3": "Wouters und Kollegen fanden, dass Serious Games nicht stärker motivierten als herkömmlicher Unterricht, obwohl die Kinder mehr lernten.",
-      "li4": "Gamification ist nicht dasselbe wie ein Lernspiel: Sie fügt normalem Unterricht Spielelemente hinzu. Wir führen sie auf, weil Punkte, Sterne und Bestenlisten zu vielen Lernspielen gehören, auch zu unseren."
+      "li4": "Gamification ist nicht dasselbe wie ein Lernspiel: Sie fügt normalem Unterricht Spielelemente hinzu. Wir führen sie auf, weil Punkte und Sterne zu vielen Lernspielen gehören, auch zu unseren."
     },
     "use": {
       "h": "Spiele so einsetzen, wie es die Forschung nahelegt",
@@ -7651,7 +8315,6 @@
       },
       "cancel": "Abbrechen",
       "reportThanks": "Danke. Jemand von Oomba Academy schaut es sich an.",
-      "place": "Du bist auf Platz {rank} von {count}!",
       "late": "Du bist nach dem Start dazugekommen.",
       "watchHint": "Dieses Gerät kann die 3D-Welt nicht zeigen. Du siehst stattdessen eine Karte mit allen.",
       "removed": "Die Spielleitung hat dich aus dem Spiel genommen.",
@@ -7671,8 +8334,8 @@
       "moved": "Du bist jetzt bei {team}",
       "again": "Warte auf deine Lehrkraft … Vielleicht startet sie gleich ein neues Spiel mit allen hier.",
       "aiVoice": "Vorlesen nutzt eine KI-Stimme vom Computer ({provider}).",
-      "placeTied": "{others, plural, one {Du teilst Platz {rank} mit # anderen Spieler!} other {Du teilst Platz {rank} mit # anderen Spielern!}}",
-      "placeZero": "Alle gleichauf! Diesmal hat niemand Punkte."
+      "mine": "Du hattest {right} von {total} richtig!",
+      "myScore": "Deine Punkte: {score}"
     },
     "emote": {
       "wave": "Winken",
@@ -7765,7 +8428,7 @@
       "questRace": "Quest-Rennen",
       "questRaceText": "Beantworte Fragen und renne über eine 3D-Insel. Richtige Antworten bringen Edelsteine und einen Schub!",
       "battle": "Fragen-Duell",
-      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste.",
+      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage die Antworten der Klasse.",
       "board": "Denkbrett",
       "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte.",
       "wyr": "Was wäre dir lieber? (Live)",
@@ -7979,7 +8642,10 @@
       "playAgainTeams": "Nochmal mit diesen Teams",
       "newGame": "Neues Spiel",
       "homework": "Als Hausaufgabe geben",
-      "votes": "{count, plural, one {# Stimme} other {# Stimmen}}"
+      "votes": "{count, plural, one {# Stimme} other {# Stimmen}}",
+      "classHeading": "Die Klasse",
+      "classPct": "{pct} % der Antworten richtig",
+      "classRight": "{right} von {answered} Antworten richtig"
     },
     "sets": {
       "title": "Fragensets",
@@ -8309,10 +8975,6 @@
       "points": "Punkte",
       "pointsSpeed": "Schnelle Antworten bringen mehr",
       "pointsAccuracy": "Nur richtige Antworten (je 1.000)",
-      "board": "Bestenliste auf den Geräten",
-      "boardAll": "Zeigen",
-      "boardTop5": "Nur die Top 5",
-      "boardOff": "Verbergen",
       "late": "Mitspielen nach dem Start erlaubt",
       "names": "Namen auf den Bildschirmen",
       "namesNames": "Echte Namen",
@@ -8736,7 +9398,7 @@
       "join": "Einem Spiel beitreten? Code hier eingeben"
     },
     "how": {
-      "h": "Von den Fragen aufs Siegerpodest in wenigen Minuten",
+      "h": "Von den Fragen zu den Ergebnissen in wenigen Minuten",
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
@@ -8760,8 +9422,8 @@
       },
       "s5": {
         "h": "Sehen, wer was weiß",
-        "p": "Nach jeder Frage eine Bestenliste und am Ende eine Ergebnisseite nach Fragen und nach Schülerinnen und Schülern.",
-        "alt": "Der Beamer-Bildschirm mit der Bestenliste und den Punkten der Schülerinnen und Schüler."
+        "p": "Nach jeder Frage, wie die Klasse geantwortet hat, und am Ende eine Ergebnisseite nach Fragen und nach Schülerinnen und Schülern.",
+        "alt": "Der Beamer-Bildschirm mit den Antworten der Klasse."
       }
     },
     "modes": {
@@ -8772,7 +9434,7 @@
       },
       "battle": {
         "h": "Fragen-Duell",
-        "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste."
+        "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage die Antworten der Klasse."
       },
       "board": {
         "h": "Denkbrett",
@@ -10231,10 +10893,10 @@
         "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
         "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
         "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
-        "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
+        "grades": "die Note jedes Kindes für eine Lektion an Classroom senden (Abschlussnote oder die in Homeroom gewählten Punkte)"
       },
       "button": "Google Classroom verbinden",
-      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Abschlussnote jedes Kindes von 100, einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
+      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Note jedes Kindes von 100 (Abschlussnote oder die in Homeroom gewählten Punkte), einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
       "connectedAs": "Verbunden als {email}",
       "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
       "connectedToast": "Google Classroom ist verbunden.",
@@ -10298,17 +10960,25 @@
       "somePosted": "Hier einzelnen Schülern zugewiesen. Vorher wurde sie in Google Classroom für die ganze Klasse gepostet; Noten gehen nur an die zugewiesenen Schüler."
     },
     "grades": {
-      "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
+      "text": "Jede Lektion sendet die Note, nach der sie bewertet wird, von 100. Im Klassenbereich zugewiesene Lektionen senden eine Abschlussnote: den Anteil der erledigten Schritte, nicht die richtigen Antworten. Homeroom-Aufgaben senden, was du beim Austeilen gewählt hast: Punkte senden den Anteil richtiger Antworten in %, Abschluss die Abschlussnote, Ohne Bewertung sendet nichts. Wer noch nicht angefangen hat, wird ausgelassen.",
       "as": "Senden als",
       "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
       "assigned": "Zugewiesene Note",
       "button": "Abschlussnoten senden",
-      "lastDraft": "Vorläufige Abschlussnoten gesendet {when}",
-      "lastAssigned": "Zugewiesene Abschlussnoten gesendet {when}",
+      "lastDraft": "Vorläufige Noten gesendet {when}",
+      "lastAssigned": "Zugewiesene Noten gesendet {when}",
       "resultSent": "{count, plural, one {# Abschlussnote gesendet} other {# Abschlussnoten gesendet}}",
       "resultNotStarted": "{count, plural, one {# hat noch nicht angefangen} other {# haben noch nicht angefangen}}",
       "resultNotMatched": "{count, plural, one {# nicht in dieser Klasse} other {# nicht in dieser Klasse}}",
-      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}"
+      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}",
+      "buttonScore": "Punkte senden",
+      "resultSentScore": "{count, plural, one {# Punktwert gesendet} other {# Punktwerte gesendet}}",
+      "resultNotScored": "{count, plural, one {# hat noch keine Punkte} other {# haben noch keine Punkte}}",
+      "sends": {
+        "completion": "Sendet eine Abschlussnote: den Anteil der erledigten Schritte.",
+        "score": "In Homeroom nach Punkten bewertet: sendet den Anteil richtiger Antworten in %.",
+        "none": "In Homeroom ohne Bewertung: keine Note geht an Classroom."
+      }
     },
     "log": {
       "heading": "Letzte Synchronisierungen",
@@ -10365,7 +11035,8 @@
       "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
       "hasName": "„{name}“ in deiner Nachricht ist auch der Name eines Kindes. Ankündigungen gehen an die ganze Klasse: Formuliere es bitte um oder nimm es heraus.",
       "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig.",
-      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse."
+      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse.",
+      "notGraded": "Diese Aufgabe wird nicht bewertet, daher gehen keine Noten an Google Classroom."
     },
     "allow": {
       "heading": "Was Oomba Academy in deinem Classroom darf",
@@ -10398,7 +11069,7 @@
       "roster": "Die Kinder alle 6 Stunden aus Classroom aktualisieren",
       "rosterHint": "Neue Kinder kommen dazu. Wer Classroom verlässt, steht oben, damit du entscheidest: Niemand wird von selbst entfernt.",
       "grades": "Noten automatisch senden",
-      "gradesHint": "Alle 30 Minuten gehen geänderte Abschlussnoten an Classroom, für Lektionen, die von hier gepostet wurden, bis 30 Tage nach dem jeweiligen Abgabedatum.",
+      "gradesHint": "Alle 30 Minuten gehen geänderte Noten an Classroom, für Lektionen, die von hier gepostet wurden (jede so, wie sie bewertet wird: Abschlussnote oder Punkte), bis 30 Tage nach jedem Fälligkeitsdatum.",
       "by": "Die Noten gehen über die Google-Classroom-Verbindung von {name}.",
       "save": "Speichern",
       "saved": "Gespeichert.",
@@ -10619,7 +11290,17 @@
       "hideNames": "Namen aus der Klassenliste ausblenden",
       "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
     },
-    "notAssigned": "Nicht zugewiesen"
+    "notAssigned": "Nicht zugewiesen",
+    "grade": {
+      "score": "Punkte",
+      "completion": "Erledigt",
+      "notGraded": "Ohne Bewertung",
+      "practice": "Übung",
+      "practiced": "Geübt",
+      "done": "Erledigt",
+      "notDone": "Nicht erledigt",
+      "practiceCsv": "Übung ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Jetzt ein Live-Spiel starten",
@@ -14338,6 +15019,291 @@
       "repaintSome": "Neu zu malende Bilder: {count} jetzt, {more} weitere morgen (die Bilder für heute sind aufgebraucht).",
       "painting": "Bilder werden gemalt",
       "repaintAll": "Alle Bilder neu malen"
+    }
+  },
+  "homeroom": {
+    "staged": {
+      "added": "Auf Ihrem Pult. Schüler sehen es nicht.",
+      "already": "Das liegt schon auf Ihrem Pult.",
+      "removed": "Von Ihrem Pult genommen."
+    },
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Klasse wechseln",
+    "arrange": "Sitzplan einrichten",
+    "more": "Mehr",
+    "boardLabel": "Homeroom-Tafel. Ziehen zum Verschieben, scrollen oder mit zwei Fingern zoomen.",
+    "loading": "Der Raum wird vorbereitet…",
+    "noscript": "Homeroom braucht JavaScript.",
+    "tabs": {
+      "label": "Ansichten der Klasse",
+      "homeroom": "Homeroom",
+      "classroom": "Klassenraum",
+      "dashboard": "Dashboard"
+    },
+    "panel": {
+      "label": "Lehrerpult",
+      "handOut": "Austeilen an",
+      "myLessons": "Meine Stunden",
+      "myGames": "Meine Spiele",
+      "noGames": "Spiele, die Sie bauen, erscheinen hier.",
+      "oomba": "Oomba-Spiele und -Werkzeuge",
+      "manipulatives": "Arbeitsmittel",
+      "figures": "Figuren",
+      "reading": "Lesen",
+      "storyLibrary": "Geschichtenbibliothek",
+      "flow": "Ablauf der Stunde",
+      "brainBreak": "Bewegungspause",
+      "note": "Notiz an die Klasse",
+      "timer": "Timer",
+      "board": "Tafelwerkzeuge",
+      "handOutHint": "Tippen Sie auf ein Spiel, dann auf einen Tisch, eine Gruppe oder Ganze Klasse. Oder ziehen Sie es dorthin.",
+      "comingNext": "Kommt bald"
+    },
+    "errors": {
+      "badStage": "Das kann nicht auf Ihr Pult.",
+      "deskFull": "Ihr Pult ist voll. Nehmen Sie zuerst etwas herunter.",
+      "notStaged": "Das liegt nicht mehr auf Ihrem Pult.",
+      "notFound": "Dieser Homeroom ist nicht verfügbar.",
+      "badPreset": "Wählen Sie Reihen, Vierertische, U-Form oder Kreis.",
+      "badSeats": "Der Sitzplan konnte nicht gespeichert werden. Bitte erneut versuchen.",
+      "badGroups": "Die Gruppen konnten nicht gespeichert werden. Bitte erneut versuchen.",
+      "groupName": "Geben Sie jeder Gruppe einen Namen.",
+      "words": "Bitte freundliche Worte verwenden.",
+      "personal": "Bitte keine persönlichen Angaben wie Telefonnummern, E-Mail-Adressen oder Anschriften.",
+      "badState": "Das konnte nicht gespeichert werden. Bitte erneut versuchen.",
+      "tooBig": "Der Lehrerbereich ist zu voll. Entfernen Sie etwas und versuchen Sie es erneut.",
+      "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
+      "notLive": "Starte die Stunde zuerst mit „Alle ins Homeroom“.",
+      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen.",
+      "pickGame": "Dieses Spiel kann nicht ausgeteilt werden. Wählen Sie ein anderes.",
+      "publishFirst": "Veröffentlichen Sie dieses Spiel zuerst, dann teilen Sie es aus.",
+      "badDate": "Wählen Sie ein gültiges Fälligkeitsdatum.",
+      "badTarget": "Ziehen Sie es auf einen Tisch, eine Gruppe oder Ganze Klasse.",
+      "noStudents": "In dieser Klasse sind noch keine Schülerinnen und Schüler.",
+      "notInClass": "Dieses Kind ist nicht mehr in dieser Klasse.",
+      "emptyGroup": "In dieser Gruppe ist noch niemand.",
+      "badOrder": "Wählen Sie Der Reihe nach oder Beliebige Reihenfolge.",
+      "badGrade": "Wählen Sie Punkte, Erledigt oder Ohne Bewertung.",
+      "tooLong": "Hinweise dürfen höchstens 300 Zeichen lang sein.",
+      "alreadyOnDesk": "{count, plural, one {# dieser Tische hat dieses Spiel schon.} other {# dieser Tische haben dieses Spiel schon.}} Nehmen Sie es dort zuerst weg oder teilen Sie es den anderen aus.",
+      "tooManyHandouts": "In dieser Klasse ist sehr viel ausgeteilt. Entfernen Sie zuerst ein paar alte Aufgaben.",
+      "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch.",
+      "noLesson": "Diese Stunde ist nicht mehr in Ihren Stunden.",
+      "badGame": "Stunden gibt es vorerst für Arithmetic Lab, Algebra Builder und Kreuzworträtsel.",
+      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "titleLong": "Der Name darf höchstens 60 Zeichen lang sein.",
+      "fewWords": "Ein Kreuzworträtsel braucht mindestens 3 Wörter.",
+      "missingClue": "Jedes Wort braucht einen Hinweis.",
+      "settings": "Diese Einstellungen konnten nicht gespeichert werden. Prüfen Sie sie und versuchen Sie es noch einmal.",
+      "setsFull": "Sie haben so viele Arbeitsblätter, wie dieses Spiel speichern kann. Löschen Sie zuerst einige unter „Meine Arbeitsblätter“ im Spiel.",
+      "tooManyLessons": "Sie haben so viele Stunden, wie Sie speichern können. Löschen Sie zuerst eine.",
+      "lessonGone": "Ein Arbeitsblatt dieser Stunde wurde gelöscht. Öffnen Sie die Stunde, speichern Sie sie noch einmal und teilen Sie sie dann aus.",
+      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diese Stunde schon.} other {# dieser Tische haben diese Stunde schon.}} Nehmen Sie sie dort zuerst weg oder geben Sie sie den anderen.",
+      "teamTooSmall": "Wählen Sie mindestens 2 Tische für ein Team.",
+      "teamTooBig": "Ein Team hat höchstens 6 Kinder.",
+      "alreadyInTeam": "Eines dieser Kinder sitzt schon an einem Teamtisch. Lösen Sie dieses Team zuerst auf.",
+      "tooManyTeams": "Diese Klasse hat schon die meisten möglichen Teamtische.",
+      "noTeam": "Diesen Teamtisch gibt es nicht mehr.",
+      "commentLong": "Ein Kommentar darf höchstens 140 Zeichen haben.",
+      "badSticker": "Wählen Sie einen der Sticker.",
+      "notFinished": "Kommentare und Sticker gibt es für fertige Arbeit. Diese ist noch nicht fertig.",
+      "padChanged": "Jemand aus deinem Team hat gleichzeitig gemalt. Dein Bild wurde dazugelegt.",
+      "badKind": "Wähle Frage, Hilfe oder Toilette.",
+      "passAlready": "Du hast schon einen Platz für den Toilettenpass.",
+      "badMinutes": "Wähle zwischen 1 und 20 Minuten.",
+      "noHand": "Diese Hand ist schon unten.",
+      "noPass": "Kein Pass und kein Platz in der Reihe."
+    },
+    "live": "Live",
+    "desk": {
+      "pageTitle": "{class} · Mein Platz",
+      "link": "Mein Platz",
+      "dock": "Platz-Menü",
+      "myDesk": "Mein Platz",
+      "teacherArea": "Bereich der Lehrkraft",
+      "library": "Bibliothek",
+      "room": "Den Raum ansehen",
+      "notYou": "Nicht {name}?",
+      "switch": "Wechseln",
+      "backToDesk": "Zurück zu meinem Tisch",
+      "fromTeacher": "Deine Lehrkraft sagt",
+      "waitTitle": "Noch nicht",
+      "waitText": "Mach zuerst die Aufgabe davor auf deinem Platz fertig. Dann geht diese auf."
+    },
+    "projector": {
+      "title": "{class} · Beamer"
+    },
+    "signin": {
+      "title": "Anmeldung für Schüler",
+      "qrLabel": "QR-Code zum Anmelden in dieser Klasse",
+      "goTo": "Geh auf",
+      "enterCode": "und gib den Code ein",
+      "opened": "Die Anmeldung ist offen",
+      "closed": "Die Anmeldung ist geschlossen",
+      "pageTitle": "Melde dich in deiner Klasse an",
+      "signedInAs": "Angemeldet als {name}. Wenn du dich hier anmeldest, wird {name} abgemeldet.",
+      "ended": "Die Stunde ist vorbei. Bis zum nächsten Mal!",
+      "codeHeading": "Melde dich in deiner Klasse an",
+      "codeLead": "Gib den Code ein, den deine Lehrkraft zeigt.",
+      "codeLabel": "Klassencode",
+      "go": "Los",
+      "errors": {
+        "badCode": "Dieser Code funktioniert nicht. Prüfe ihn und versuche es noch einmal.",
+        "tooMany": "Zu viele Versuche. Warte kurz und versuche es dann noch einmal.",
+        "notFound": "Das hat nicht geklappt. Tippe noch einmal auf deinen Namen.",
+        "wrongPassword": "Das ist nicht das richtige Passwort. Versuche es noch einmal.",
+        "wrongPictures": "Das sind nicht deine Bilder. Versuche es noch einmal.",
+        "wait": "Zu viele Versuche. Warte einen Moment.",
+        "locked": "Zu viele Versuche. Bitte deine Lehrkraft, dir beim Anmelden zu helfen.",
+        "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
+        "badMode": "Wählen Sie Passwort oder Bilderpasswort.",
+        "ownAccount": "Dieses Kind hat ein eigenes Konto und meldet sich mit seinem Passwort an."
+      },
+      "pics": {
+        "bear": "Bär",
+        "lion": "Löwe",
+        "frog": "Frosch",
+        "owl": "Eule",
+        "rocket": "Rakete",
+        "apple": "Apfel",
+        "star": "Stern",
+        "rainbow": "Regenbogen",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Anmeldung",
+        "back": "Zurück zum Homeroom",
+        "heading": "Anmeldung",
+        "lead": "Auf gemeinsamen Geräten öffnen die Kinder die Anmeldung der Klasse, tippen auf ihren Namen und geben dann ihr Passwort ein oder tippen ihr Bilderpasswort.",
+        "students": "Schüler",
+        "cards": "Anmeldekarten drucken",
+        "cardsConfirm": "Damit bekommen alle, die sich mit Bildern anmelden, ein neues Bilderpasswort. Die alten Bilder funktionieren nicht mehr.",
+        "early": "Diese Klasse ist Vorschule bis Klasse 2, deshalb starten die Kinder mit Bilderpasswörtern. Sie können jedes Kind auf Passwort umstellen.",
+        "shows": "Erscheint als {name}",
+        "modeFor": "So meldet sich {name} an",
+        "mode": {
+          "password": "Passwort",
+          "picture": "Bilderpasswort"
+        },
+        "ownAccount": "Eigenes Konto: nutzt das eigene Passwort",
+        "usesPassword": "Nutzt das eigene Passwort",
+        "usesGoogle": "Nutzt Google",
+        "locked": "Gesperrt nach zu vielen Versuchen",
+        "waiting": "Wartet nach falschen Versuchen",
+        "hasPicture": "Bilderpasswort bereit",
+        "noPicture": "Noch kein Bilderpasswort",
+        "newConfirm": "Ein neues Bilderpasswort für {name} erstellen? Das alte funktioniert dann nicht mehr.",
+        "newPicture": "Neues Bilderpasswort",
+        "makePicture": "Bilderpasswort erstellen",
+        "unlock": "Entsperren",
+        "none": "Noch keine Schüler in dieser Klasse.",
+        "saved": "Gespeichert",
+        "unlocked": "Entsperrt. Das Kind kann es noch einmal versuchen."
+      },
+      "cards": {
+        "title": "Anmeldekarten",
+        "count": "{count, plural, one {# Karte} other {# Karten}}",
+        "print": "Drucken",
+        "back": "Zurück zur Anmeldung",
+        "once": "Bilderpasswörter erscheinen nur hier und jetzt. Drucken oder speichern Sie diese Karten, bevor Sie die Seite verlassen.",
+        "tap": "Dein Knopf: {name}",
+        "pictures": "Deine Bilder, der Reihe nach",
+        "usesPassword": "Gib dein Passwort ein",
+        "usesGoogle": "Nutze Mit Google anmelden"
+      }
+    },
+    "handout": {
+      "forLater": "{title} ist an die Klasse ausgeteilt. Wer der Klasse beitritt, bekommt es.",
+      "done": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
+      "removedOne": "Von diesem Tisch genommen.",
+      "removedAll": "Von allen Tischen entfernt. Die Arbeit der Kinder bleibt erhalten."
+    },
+    "lessons": {
+      "handedOut": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
+      "handedOutVersions": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}, mit einer Version für jede Gruppe.",
+      "saved": "Stunde gespeichert.",
+      "savedNew": "In „Meine Stunden“ gespeichert. Tippen Sie sie an und dann einen Tisch, um sie auszuteilen.",
+      "copyOf": "Kopie von {title}",
+      "duplicated": "Stunde kopiert.",
+      "deleted": "Stunde gelöscht.",
+      "untitled": "Neue Stunde",
+      "print": {
+        "solve": "Löse nach x auf. Schreibe deine Schritte auf.",
+        "multiply": "Multipliziere. Schreibe jede Antwort als einen Ausdruck.",
+        "factor": "Faktorisiere jeden Ausdruck."
+      }
+    },
+    "stickers": {
+      "star": "Stern",
+      "thumbs": "Daumen hoch",
+      "heart": "Herz",
+      "idea": "Gute Idee",
+      "check": "Haken",
+      "rocket": "Rakete",
+      "trophy": "Pokal",
+      "medal": "Medaille",
+      "crown": "Krone",
+      "fireworks": "Feuerwerk",
+      "smiley": "Smiley",
+      "rainbow": "Regenbogen"
+    },
+    "feedback": {
+      "saved": "Kommentar und Sticker gespeichert",
+      "removed": "Kommentar und Sticker entfernt"
+    },
+    "overview": {
+      "title": "Klassenüberblick",
+      "lead": "Die letzten {weeks} Wochen. Jede Spalte ist etwas, das Sie in Homeroom ausgeteilt haben. Die Kinder stehen alphabetisch, nie in einer Rangfolge.",
+      "student": "Kind",
+      "trend": "Tendenz",
+      "tableLabel": "Klassenüberblick: Aufgaben und Ergebnisse",
+      "kind": {
+        "lesson": "Stunde",
+        "game": "Spiel",
+        "mine": "Mein Spiel"
+      },
+      "versions": "{count, plural, one {# Version} other {# Versionen}}",
+      "gradedBy": {
+        "score": "Nach Punkten bewertet",
+        "completion": "Nach Abschluss bewertet"
+      },
+      "notGraded": "Ohne Bewertung",
+      "changeGrade": "{title}: {grade}. Bewertung ändern",
+      "done": "Fertig",
+      "notDone": "Nicht fertig",
+      "practice": "Übung",
+      "locked": "Noch nicht offen",
+      "notStarted": "Nicht angefangen",
+      "trends": {
+        "improving": "Wird besser",
+        "steady": "Gleichmäßig",
+        "support": "Braucht Unterstützung",
+        "none": "Noch zu wenige Punkte"
+      },
+      "finished": "der Aufgaben fertig",
+      "support": "{count, plural, one {Kind braucht Unterstützung} other {Kinder brauchen Unterstützung}}",
+      "month": "{count, plural, one {Aufgabe diesen Monat} other {Aufgaben diesen Monat}}",
+      "keyNames": {
+        "score": "Punkte",
+        "completion": "Abschluss",
+        "none": "Ohne Bewertung"
+      },
+      "keyScore": "% richtige Antworten",
+      "keyCompletion": "100 %, wenn fertig",
+      "keyNone": "Übung, nichts wird gesendet",
+      "keyTrend": "Tendenz aus den letzten 3 Punktwerten jedes Kindes: Braucht Unterstützung bei einem Schnitt unter 60 %, Wird besser, wenn der letzte 10 Punkte oder mehr über dem ersten liegt, sonst Gleichmäßig.",
+      "more": "Das ganze Notenbuch, CSV, Standards, Bewertungsraster und Google Classroom stehen darunter, wie bisher.",
+      "fullGradebook": "Ganzes Notenbuch",
+      "noHandouts": "In den letzten {weeks} Wochen wurde in Homeroom nichts ausgeteilt. Teilen Sie im Tab Homeroom ein Spiel oder eine Lektion aus.",
+      "gcLinked": "Verknüpft mit „{course}“",
+      "gcRoster": "Liste abgeglichen {when}",
+      "gcRosterNever": "Liste noch nicht abgeglichen",
+      "gcGrades": "Noten gesendet {when}",
+      "gcGradesNever": "noch keine Noten gesendet",
+      "gcOpen": "Einstellungen öffnen",
+      "gcNotLinked": "Noch nicht verknüpft.",
+      "gcLink": "Classroom-Klasse verknüpfen",
+      "gradeSaved": "Bewertung geändert"
     }
   }
 }

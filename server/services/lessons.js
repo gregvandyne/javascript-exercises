@@ -536,6 +536,43 @@ export function setStudents(u, clId, students) {
   audit(u.id, 'lesson.students', cl.class_id, { classLesson: cl.id, students: ids.length });
   return ok({ students: ids });
 }
+// ---------------------------------------------------------------- how a class lesson is graded (Homeroom, 0125)
+// A game handed out from Homeroom (services/homeroom-handouts.js) is graded the way the teacher picked: 'score' (as every
+// lesson is), 'completion' (done or not done) or 'none' (not graded: practice). Every other class lesson has no row and
+// is graded as it always was. The gradebook (services/progress.js classProgress) and the Google Classroom grade sync
+// (services/gclassroom.js sendGrades) read it here, so neither needs to know about Homeroom.
+export const GRADE_MODES = ['score', 'completion', 'none'];
+/** Map clId -> 'score' | 'completion' | 'none' for the class's lessons that have a grading choice. */
+export const gradeModes = classId => new Map(q.all('SELECT class_lesson_id id, grade FROM homeroom_handouts WHERE class_id=?', classId).map(r => [r.id, r.grade]));
+/** One class lesson's grading choice, or null (graded as every lesson is). */
+export const gradeModeOf = clId => (clId ? (q.get('SELECT grade FROM homeroom_handouts WHERE class_lesson_id=?', clId) || {}).grade || null : null);
+// The play page (routes/games.js) asks here how a game opened from a class lesson is framed: where Back goes, and a
+// note from the teacher at the top of the game. A feature that hands games out registers fn(u, cl, step) -> { backHref,
+// backLabel, note, script?, data? } | null (Homeroom: "Back to my desk" and the handout's instructions; step 3a: a script
+// for the page and its page data, the desk's pulse); null keeps the lesson's own.
+const frames = [];
+export const onPlayFrame = fn => { if (!frames.includes(fn)) frames.push(fn); };
+export function playFrame(u, cl, step, t) {
+  for (const fn of frames) { const r = fn(u, cl, step, t); if (r) return r; }
+  return null;
+}
+// A class lesson that is not open to this student yet although it is assigned to them (Homeroom: an In order handout
+// waiting for the ones before it on their desk). The lesson page and the play page ask here first; a feature registers
+// fn(u, cl, t) -> { title, text, backHref, backLabel } | null, and the page shows that calm message instead.
+const waits = [];
+export const onLessonWait = fn => { if (!waits.includes(fn)) waits.push(fn); };
+export function lessonWait(u, cl, t) {
+  for (const fn of waits) { const r = fn(u, cl, t); if (r) return r; }
+  return null;
+}
+// The teacher's note on a student's own finished class lesson (Homeroom, step 2c: a short comment and a sticker). The
+// lesson page shows it to that student; a feature registers fn(u, cl) -> { comment, src, sticker } | null.
+const notes = [];
+export const onLessonNote = fn => { if (!notes.includes(fn)) notes.push(fn); };
+export function lessonNote(u, cl) {
+  for (const fn of notes) { const r = fn(u, cl); if (r) return r; }
+  return null;
+}
 // A school account merged into the student's own one (schools.mergeIntoAccount): their place on lists moves with them.
 S.onAccountMerge(({ from, into }) => {
   q.run('UPDATE OR IGNORE class_lesson_students SET user_id=? WHERE user_id=?', into, from);

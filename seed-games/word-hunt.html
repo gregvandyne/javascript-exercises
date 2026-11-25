@@ -2150,7 +2150,7 @@ var I18N = {
       streakN = save.daily.streak;
     }
     persist();
-    try { if (B.score && B.score.submit) B.score.submit(save.total, 'puzzle points'); } catch (e) { /* no SDK */ }   // the leaderboard label stays English
+    try { if (B.score && B.score.submit) B.score.submit(save.total, 'puzzle points'); } catch (e) { /* no SDK */ }   // the score label stays English
     try { if (B.gameOver) B.gameOver({ won: true, score: save.total }); } catch (e) { /* no SDK */ }
     var show = function () {
       var box = resultsCard(stars === 3 ? t('resSuper') : t('resAll'), S.P ? '🎉' : look(S.theme)[0]);

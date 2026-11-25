@@ -44,6 +44,8 @@ import { emailInvitesPanel } from './staff-invites.js';
 import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
+import { deskLink, aidePanel } from './homeroom.js';
+import { markView } from './homeroom-views.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -756,7 +758,7 @@ function classroomHome(req) {
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
     ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
   <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/build">📁 ${t('folders.myGamesFolders')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
-  ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>`}
+  ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : config.teachLoopCard ? html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>` : ''}
   ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>
@@ -778,12 +780,12 @@ router.get('/teach', requireUser, (req, res) => {
   if (['welcome', 'on'].includes(req.query.plan)) return res.redirect(302, `/me/settings?plan=${req.query.plan}#teacher-plan`);
   // One class: My classes is that class. Not when the list is asked for (All classes, New class), with a welcome notice,
   // or with a staff invite to answer (those are said on the list).
-  const one = onlyClass(u);
-  if (one && req.query.all === undefined && req.query.new === undefined && req.query.welcome === undefined && !S.invitesFor(u.id).length) {
+  const one = onlyClass(u), aiding = aidePanel(req);
+  if (one && !aiding && req.query.all === undefined && req.query.new === undefined && req.query.welcome === undefined && !S.invitesFor(u.id).length) {
     res.set('Cache-Control', 'private, no-store');
     return res.redirect(302, `/class/${one.id}`);
   }
-  page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: html`${CSS}${LOOP_CSS}` });
+  page(req, res, { title: t('nav.classroom'), active: 'classes', body: html`${classroomHome(req)}${aiding}`, head: html`${CSS}${LOOP_CSS}` });
 });
 router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
   const t = req.t; const { schoolId, name, subject, grade, teacherId } = b(req);
@@ -874,8 +876,11 @@ function schoolLink(req, s) {
 /** Phones only (public/css/schools.css .classtiles; docs/decisions.md "Action tiles on the class page, on phones"): a
  *  2×2 grid of Host a live game, Class dashboard, Build new game and Find Oomba games, under the class header on every
  *  tab. They stand in for the header's two buttons and the Games tab's Build button and Find chip, which phones hide;
- *  each shows when its button does (Build and Find: the school's staff, the class not archived). Wider screens hide it. */
-function classTiles(req, c, { host, dash }) {
+ *  each shows when its button does (Build and Find: the school's staff, the class not archived). Wider screens hide it.
+ *  Homeroom teachers (the Classroom view, docs/decisions.md "A calmer Classroom view on phones"): hosting and the
+ *  dashboard live in Homeroom's ⋯ menu and the Dashboard tab, so only Build new game and Find Oomba games are left, as
+ *  one row of two small buttons (compact). */
+function classTiles(req, c, { host, dash, compact = false }) {
   const t = req.t;
   const staff = !c.archived_at && S.schoolsOf(req.user.id).some(s => s.id === c.school_id && s.role !== 'student');
   const tiles = [
@@ -886,6 +891,7 @@ function classTiles(req, c, { host, dash }) {
     staff && { href: `/class/${c.id}?tab=lessons&view=oomba`, emoji: '🦉', label: t('folders.findOomba') },
   ].filter(Boolean);
   if (!tiles.length) return '';
+  if (compact) return html`<div class="classquick">${tiles.map(x => html`<a class="btn btn-sm classquick-b" href="${x.href}">${ico(x.emoji, { size: 16 })} <span>${x.label}</span></a>`)}</div>`;
   return html`<div class="classtiles${tiles.length === 1 ? ' is-one' : ''}">${tiles.map(x => html`<a class="classtile${x.hot ? ' is-hot' : ''}" href="${x.href}"><span class="classtile-e">${ico(x.emoji, { size: 40 })}</span><span class="classtile-l">${x.label}</span></a>`)}</div>`;
 }
 export function classHeader(req, c, active) {
@@ -900,14 +906,27 @@ export function classHeader(req, c, active) {
   // The first tab is the class's assigned games (games, not lessons); its key stays 'lessons' (links and ?tab= unchanged).
   const icon = { lessons: '🎮', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
-  return html`
-  <div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
-    ${chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>` : ''}</div>` : ''}</div>
+  // Homeroom teachers: this page is the Classroom view of one page with Homeroom and Dashboard (routes/homeroom-views.js;
+  // docs/decisions.md "Homeroom: one page, three views", "A calmer Classroom view on phones"). The shared bar above it
+  // has the class switcher (with All classes), Homeroom | Classroom | Dashboard and the Connections chip. Hosting a live
+  // game is in Homeroom's ⋯ menu and the dashboard is a tab, so neither is repeated here; the class's name is the
+  // switcher's, so the header is one small line (the school, what the class is, how many students). Nobody else sees
+  // any of it.
+  const hostBtn = host ? html`<a class="btn btn-primary" href="/live?class=${c.id}" aria-label="${t('live.entry.host')}">${ico('📡', { size: 18 })} <span class="cv-btnt">${t('live.entry.host')}</span></a>` : '';
+  const views = markView(req, c, 'classroom', chip ? html`<div class="row classacts">${chip}</div>` : '');
+  const meta = [c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ');
+  if (views) return html`<div class="cv-classhead"><h1 class="sr-only">${c.name}</h1><p class="small muted cv-classmeta"><span class="classschool">${schoolLink(req, s)}</span> · ${meta}</p></div>
+  ${c.archived_at ? html`<div class="notice warn archbanner"><span>${ico('🗄️', { size: 18 })} ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
+  ${classTiles(req, c, { host: false, dash: false, compact: true })}
+  ${classTabs(req, c, active, { href, icon, badge })}`;
+  return html`<div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
+    <p class="muted">${meta}</p></div>
+    ${!views && (chip || host || dash) ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.teacher')}</a>` : ''}${hostBtn}</div>` : ''}</div>
   ${c.archived_at ? html`<div class="notice warn archbanner"><span>${ico('🗄️', { size: 18 })} ${t('school.class.archivedBanner')}</span><form data-api="/api/classes/${c.id}/restore" data-reload data-toast="${t('school.class.restored', { name: c.name })}"><button class="btn btn-sm" type="submit">${t('school.class.restore')}</button></form></div>` : ''}
   ${classTiles(req, c, { host, dash })}
-  <nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${ico(icon[k], { size: 18 })}</span> ${k === 'lessons' ? t('school.classTabs.games') : t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
+  ${classTabs(req, c, active, { href, icon, badge })}`;
 }
+const classTabs = (req, c, active, { href, icon, badge }) => html`<nav class="tabs classtabs" aria-label="${c.name}">${CLASS_TABS.map(k => html`<a href="${href[k]}" ${k === active ? raw('aria-current="page"') : ''}><span aria-hidden="true">${ico(icon[k], { size: 18 })}</span> ${k === 'lessons' ? req.t('school.classTabs.games') : req.t(`school.classTabs.${k}`)}${badge[k] || ''}</a>`)}</nav>`;
 
 function requestsPanel(req, c, s, people) {
   const t = req.t; const requests = S.pendingRequests(c.id);
@@ -1080,7 +1099,7 @@ function studentClass(req, res, c) {
   const teachers = people.filter(p => p.role === 'teacher'), classmates = people.filter(p => p.role === 'student' && p.id !== req.user.id);
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
+    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${deskLink(req, c)}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${classLiveBanner(req, c)}
   ${manipBanner(req, c)}
   ${myPointsPanel(req, c)}

@@ -7,7 +7,8 @@
 //     reads the old slug as the new one (canonicalSlug);
 //   - no new game may take an old slug (games.uniqueSlug), so an old link never lands on someone else's game.
 // Migration 0121 in server/db.js renamed the stored row, so the seed import updates the same game.
-export const SLUG_ALIASES = new Map([['box-by-box', 'arithmetic-lab']]);
+// Typing Pets (typing-pets) is now Typing Zoo (typing-zoo): docs/decisions.md "Typing Zoo"; migration 0127.
+export const SLUG_ALIASES = new Map([['box-by-box', 'arithmetic-lab'], ['typing-pets', 'typing-zoo']]);
 
 /** The slug a game has now: the new one for an old slug, else the slug as given. */
 export const canonicalSlug = slug => SLUG_ALIASES.get(String(slug ?? '')) ?? slug;

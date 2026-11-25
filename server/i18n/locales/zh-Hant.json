@@ -746,7 +746,7 @@
       "heading": "遊戲 SDK",
       "brb": {
         "p1": "每個遊戲都有一個叫做 BRB 的小工具。{get} 和 {set} 可以幫每個玩家儲存進度。localStorage 也能用，而且會存到雲端。",
-        "p2": "{submit} 會把分數加到排行榜（只算最高分）。{over} 會結束一回合。",
+        "p2": "{submit} 會儲存玩家的最佳分數，只有玩家自己看得到。{over} 結束一回合。",
         "p3": "用 {fx} 讓遊戲更熱鬧、更好玩。",
         "p4": "{full} 和 {orient} 會禮貌地請頁面切換成全螢幕或橫向。",
         "p5": "{lang} 是玩家的語言（像是 \"fr\" 或 \"ar\"），遇到由右到左書寫的語言時，{dir} 會是 \"rtl\"，這樣遊戲就能說玩家的語言。"
@@ -1163,11 +1163,6 @@
       "tap": "點一顆星星。",
       "guest": "用訪客身分玩來評分"
     },
-    "leaderboard": {
-      "heading": "排行榜",
-      "empty": "還沒有分數。來當第一名吧！",
-      "signIn": "登入後才能看到玩家的名字。"
-    },
     "more": {
       "label": "更多",
       "heading": "類似的遊戲"
@@ -1214,6 +1209,9 @@
       "title": "這款遊戲目前無法使用",
       "text": "之後可能會再回來。「學習」裡還有更多遊戲和謎題可以試試。",
       "play": "前往「學習」"
+    },
+    "best": {
+      "heading": "你的最佳成績"
     }
   },
   "play": {
@@ -1293,7 +1291,11 @@
       "figure": "第{n}題的圖"
     },
     "printAtlas": {
-      "mapOf": {"world": "世界地圖", "car": "加勒比海地圖", "me": "中東地圖"},
+      "mapOf": {
+        "world": "世界地圖",
+        "car": "加勒比海地圖",
+        "me": "中東地圖"
+      },
       "untitled": "地理測驗",
       "mapTitle": "地圖：{region}",
       "mapAlt": "空白地圖：{region}",
@@ -2038,6 +2040,288 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "拖曳以移動這段文字",
+      "resize": "拖曳以調整這個方框的大小",
+      "smaller": "文字變小",
+      "bigger": "文字變大"
+    },
+    "homeroom": {
+      "my": {
+        "label": "我的桌子（只有你看得到上面的東西）",
+        "title": "我的桌子",
+        "note": "只有你看得到",
+        "empty": "把遊戲放到這裡，先試試看。",
+        "cardLabel": "{title}，在我的桌子上",
+        "play": "玩",
+        "preview": "預覽",
+        "open": "開啟",
+        "handOut": "發下去",
+        "takeOff": "從我的桌子拿走",
+        "lead": "放在你的桌子上先試試。發下去之前學生看不到。",
+        "lessonLead": "放在你的桌子上。預覽會開啟這堂課的題目。發下去之前學生看不到。",
+        "toolLead": "放在你的桌子上，隨時可以開啟。發放工具的功能即將推出。",
+        "tapWhere": "現在點一張桌子、一個小組、全班或我的桌子。",
+        "tapMine": "現在點我的桌子，把它放在那裡。",
+        "toolSoon": "發放工具的功能即將推出。放到我的桌子上，就能從那裡開啟。",
+        "pickFirst": "先在左邊選一個遊戲，再點我的桌子。"
+      },
+      "wholeClass": "全班 · {count}",
+      "editGroups": "分組",
+      "groupsTitle": "分組",
+      "groupsLead": "替各組取名字，並為每一組選一個顏色。座位的外框會顯示該組的顏色。",
+      "groups": {
+        "stretch": "進階",
+        "onTrack": "進度正常",
+        "building": "加強",
+        "unnamed": "新的一組"
+      },
+      "groupName": "第 {n} 組的名稱",
+      "groupColor": "第 {n} 組的顏色",
+      "colorN": "顏色 {n}",
+      "removeGroup": "移除 {name}",
+      "addGroup": "新增一組",
+      "whoIsIn": "每組有誰",
+      "noGroup": "未分組",
+      "save": "儲存",
+      "needName": "請替每一組取名字。",
+      "groupsSaved": "分組已儲存",
+      "deskOf": "{name} 的座位",
+      "emptyDesk": "空座位",
+      "teacherDesk": "老師的桌子",
+      "noStudents": "這個班級還沒有學生。",
+      "addStudents": "新增學生",
+      "shapes": {
+        "rect": "方形",
+        "circle": "圓形",
+        "line": "線條"
+      },
+      "shapeDelete": "刪除這個圖形",
+      "hintMove": "點一下教師區中的任何物件即可選取。拖曳可移動，拉動控點可調整大小，再點一下即可輸入文字。",
+      "hintDraw": "在教師區中繪圖。完成後請點「選取」。",
+      "bt": {
+        "shapes": "圖形",
+        "lines": "線條",
+        "kinds": {
+          "rect": "長方形",
+          "rrect": "圓角長方形",
+          "circle": "圓形",
+          "tri": "三角形",
+          "rtri": "直角三角形",
+          "diamond": "菱形",
+          "pent": "五邊形",
+          "hex": "六邊形",
+          "oct": "八邊形",
+          "star": "星形",
+          "heart": "愛心",
+          "arrow": "箭頭",
+          "darrow": "雙向箭頭",
+          "chevron": "V 形箭頭",
+          "speech": "對話框",
+          "cloud": "思考泡泡",
+          "cross": "加號",
+          "para": "平行四邊形",
+          "trap": "梯形",
+          "cyl": "圓柱",
+          "line": "直線",
+          "aline": "箭頭線",
+          "dline": "雙箭頭線",
+          "elbow": "折線連接線",
+          "curve": "曲線連接線"
+        },
+        "redo": "重做",
+        "paste": "貼上",
+        "copy": "複製",
+        "cut": "剪下",
+        "duplicate": "再製",
+        "more": "更多",
+        "front": "移到最上層",
+        "back": "移到最下層",
+        "lock": "鎖定",
+        "unlock": "解除鎖定",
+        "selectAll": "全選",
+        "outline": "外框",
+        "fill": "填色",
+        "textStyle": "文字樣式",
+        "noteColor": "便利貼顏色",
+        "color": "顏色",
+        "none": "無",
+        "weight": "粗細",
+        "weights": {
+          "S": "細",
+          "M": "中",
+          "L": "粗",
+          "XL": "特粗"
+        },
+        "style": "線條樣式",
+        "dashes": {
+          "solid": "實線",
+          "dash": "虛線",
+          "dot": "點線"
+        },
+        "arrows": "箭頭",
+        "arrowsN": {
+          "none": "沒有箭頭",
+          "start": "在起點",
+          "end": "在終點",
+          "both": "兩端都有"
+        },
+        "opacity": "不透明度",
+        "opacityN": "{n}%",
+        "bold": "粗體",
+        "align": "對齊",
+        "alignN": {
+          "l": "靠左對齊",
+          "c": "置中",
+          "r": "靠右對齊"
+        },
+        "textColor": "文字顏色",
+        "noteColors": {
+          "yellow": "黃色",
+          "pink": "粉紅色",
+          "green": "綠色",
+          "blue": "藍色",
+          "purple": "紫色"
+        },
+        "colors": {
+          "black": "黑色",
+          "gray": "灰色",
+          "white": "白色",
+          "red": "紅色",
+          "coral": "珊瑚色",
+          "orange": "橘色",
+          "yellow": "黃色",
+          "lime": "萊姆綠",
+          "green": "綠色",
+          "teal": "藍綠色",
+          "sky": "天藍色",
+          "blue": "藍色",
+          "purple": "紫色",
+          "pink": "粉紅色",
+          "brown": "咖啡色"
+        },
+        "nothingToPaste": "請先在白板上複製東西。",
+        "copied": "已複製。",
+        "cutDone": "已剪下。可以貼在白板上的任何地方。",
+        "hintSelect": "點一下就能選取，在空白處拖曳可以一次選取很多個。拖曳可以移動，拉動控點可以調整大小，再點一下就能打字。",
+        "hintShape": "拖曳來畫出圖形。按住 Shift 可以保持比例。",
+        "nextStyle": "下一個的樣式",
+        "pops": {
+          "line": "外框",
+          "fill": "填色",
+          "text": "文字樣式",
+          "note": "便利貼顏色",
+          "more": "更多"
+        }
+      },
+      "tooMany": "老師區放不下更多了。",
+      "arrange": "安排座位",
+      "signin": "學生登入",
+      "loadingSignin": "正在準備代碼…",
+      "seats": {
+        "lead": "照真實教室排：",
+        "rows": "排排坐",
+        "pods": "四人一桌",
+        "u": "U 形",
+        "circle": "圓形",
+        "hint": "或把座位拖到它真正的位置",
+        "done": "完成",
+        "saved": "已儲存 {class} 的座位"
+      },
+      "everyone": "大家來 Homeroom",
+      "bring": "大家看過來",
+      "back": "回到座位",
+      "pause": "暫停螢幕",
+      "resume": "恢復螢幕",
+      "endClass": "結束課堂",
+      "endConfirm": "要為大家結束課堂嗎？書桌和老師區都會保持原樣。",
+      "projector": "開啟投影畫面",
+      "hostLive": "主持直播遊戲",
+      "started": "課堂開始了。學生會看到前往自己書桌的提示。",
+      "bringing": "大家都在看老師區",
+      "backToDesks": "學生回到自己的書桌了",
+      "paused": "螢幕已暫停",
+      "resumed": "螢幕恢復了",
+      "ended": "課堂已結束",
+      "ho": {
+        "noStudentsYet": "還沒有學生。之後加入的學生會收到。",
+        "putClass": "發給全班",
+        "tapWhere": "現在點一個座位、一個小組或「全班」。",
+        "cancel": "取消",
+        "wholeClass": "全班",
+        "emptyGroup": "這個小組還沒有人。",
+        "pickFirst": "請先在左邊選一個遊戲，再點這裡。",
+        "title": "{game} · 給 {who}",
+        "eyebrow": "遊戲 · 自由玩",
+        "lead": "學生自由地玩。如果希望他們做某件事，可以加上說明。",
+        "instructions": "說明（選填）",
+        "instructionsPh": "例如：做 3 題有餘數的直式除法，再把其中一題寫在你的手寫板上。",
+        "left": "還剩 {count} 個字",
+        "order": "座位上的順序",
+        "inOrder": "依序",
+        "anyOrder": "不限順序",
+        "inOrderHint": "要等前面的都完成後才能打開。",
+        "anyOrderHint": "學生隨時都能打開。",
+        "grade": "評分方式",
+        "score": "分數",
+        "completion": "完成度",
+        "notGraded": "不評分",
+        "scoreHint": "成績簿會顯示分數，和其他作業一樣。",
+        "completionHint": "完成時就是 100%。",
+        "notGradedHint": "練習：會出現在進度中，但不會變成成績。",
+        "due": "截止日期（選填）",
+        "putOne": "放到座位上",
+        "putMany": "放到 {count} 個座位上",
+        "done": "完成",
+        "later": "稍後",
+        "pct": "已完成 {pct}%",
+        "notStarted": "還沒開始",
+        "more": "另外 {count} 個",
+        "onDesks": "{count} 個座位",
+        "best": "最佳分數 {score}",
+        "removeOne": "從{name}的座位拿走",
+        "removeAll": "從所有座位移除",
+        "removeAllConfirm": "要把 {title} 從所有座位移除嗎？學生的作品會保留，再發一次就會回來。",
+        "lesson": "課程",
+        "version": "版本：{name}",
+        "gcAlso": "同時發布到 Google Classroom",
+        "gcHint": "會以作業形式發布到連結的 Classroom 課程，成績方式依你在這裡的選擇。",
+        "gcWholeOnly": "只有發給全班的作業會發布到 Google Classroom，因為在那裡全班都會收到。"
+      },
+      "team": {
+        "label": "小組桌",
+        "deskOf": "小組桌：{names}",
+        "doneOf": "{n} 人中 {done} 人完成",
+        "split": "拆開小組",
+        "splitConfirm": "要拆開 {names} 的小組桌嗎？每個人都會回到自己的桌子，小組的共用畫板會清空。",
+        "splitDone": "小組已拆開，每個人都回到自己的桌子了。",
+        "makeA": "組成小組",
+        "pickLead": "點選共用一張桌子的學生（最多 {max} 人）",
+        "picked": "{count, plural, =0 {還沒選} other {已選 # 人}}",
+        "make": "組成小組",
+        "made": "已組成小組桌：{names}",
+        "full": "一個小組最多 {max} 人。",
+        "forNames": "小組（{names}）",
+        "sheetLead": "點選學生，看看他的作業。"
+      },
+      "feedback": {
+        "add": "留言或貼紙",
+        "edit": "修改留言或貼紙",
+        "comment": "簡短留言（選填）",
+        "commentPh": "例如：餘數做得很棒！",
+        "sticker": "貼紙（選填）",
+        "noSticker": "不用",
+        "private": "只有這位學生會在自己的桌子和課程頁面看到。",
+        "remove": "移除"
+      },
+      "select": "選取",
+      "hintPlace": "在教師區點一下或拖曳來放置。之後會回到「選取」。",
+      "sel": {
+        "tools": "已選取的項目",
+        "delete": "刪除已選取的項目"
+      },
+      "playBack": "回到 Homeroom"
+    },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
       "failed": "出了點問題。請再試一次。",
@@ -3424,12 +3708,6 @@
         "pieceLocked": "積木 {label}，已鎖定",
         "objLocked": "{name}，已鎖定"
       },
-      "text": {
-        "move": "拖曳以移動這段文字",
-        "resize": "拖曳以調整這個方框的大小",
-        "smaller": "文字變小",
-        "bigger": "文字變大"
-      },
       "boards": {
         "title": "我的白板",
         "none": "你正在使用的白板會自動儲存並顯示在這裡。用「另存為範本」保留一個全新的起點。",
@@ -4600,6 +4878,392 @@
       "deleteOk": "刪除",
       "deleted": "已刪除「{title}」。",
       "undo": "復原"
+    },
+    "homeroom-signin": {
+      "codeLength": "代碼有 {n} 個字母和數字。",
+      "tapName": "點你的名字",
+      "noNames": "這個班級還沒有人。",
+      "notThere": "找不到你的名字？問問老師。",
+      "googleHint": "你在學校用 Google 嗎？",
+      "otherCode": "使用別的代碼",
+      "hi": "嗨，{name}！",
+      "notMe": "這不是我",
+      "useGoogle": "用學校的 Google 帳號登入。",
+      "askTeacher": "向老師拿你的登入卡。",
+      "typePassword": "輸入你的密碼",
+      "show": "顯示",
+      "hide": "隱藏",
+      "signIn": "登入",
+      "tapPictures": "依順序點你的 {n} 個圖案",
+      "picked": "已選 {n} 個，共 {total} 個",
+      "pictures": "圖案",
+      "undo": "復原",
+      "waitSecs": "{n} 秒後再試一次。",
+      "welcome": "歡迎，{name}！"
+    },
+    "homeroom-signin-panel": {
+      "closed": "登入已關閉",
+      "closedHint": "用「大家來 Homeroom」開始上課時會自動開放。",
+      "open": "開放登入",
+      "goTo": "前往",
+      "enterCode": "並輸入這個代碼：",
+      "codeIs": "代碼：{code}",
+      "until": "開放到 {time}",
+      "longer": "延長開放時間",
+      "close": "關閉登入",
+      "settings": "登入設定和登入卡"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · 我的書桌",
+      "empty": "你的書桌上還沒有東西",
+      "emptyText": "老師發下東西時，會出現在這裡。",
+      "pad": "塗鴉和計算",
+      "pens": "筆的顏色",
+      "penColor": "筆的顏色 {n}",
+      "undo": "復原",
+      "clear": "清除",
+      "padLabel": "塗鴉和計算的筆記板。用手指、觸控筆或滑鼠畫。",
+      "padFull": "你的筆記板滿了，清除後才能繼續畫。",
+      "teacherArea": "老師區",
+      "openArea": "開啟老師區",
+      "back": "回到我的書桌",
+      "showing": "老師正在給你看這個",
+      "showingHint": "老師講完後，你就會回到自己的書桌。",
+      "eyes": "眼睛看老師",
+      "eyesHint": "你的螢幕暫停一下。",
+      "roomTitle": "教室",
+      "teacherDesk": "老師的桌子",
+      "you": "你",
+      "done": "完成",
+      "nextUp": "下一個",
+      "later": "稍後",
+      "laterHint": "先完成前面的。",
+      "freePlay": "自由玩",
+      "notReady": "還沒準備好",
+      "notReadyHint": "這個還沒準備好。問問老師吧。",
+      "due": "{date} 截止",
+      "teacherSays": "老師：",
+      "inOrder": "依序完成",
+      "anyOrder": "不限順序",
+      "newHandout": "老師發了新東西：{title}",
+      "lessonTitle": "課程：{title}",
+      "worksheet": "學習單 · {count} 題",
+      "worksheetWords": "學習單 · {count} 個詞",
+      "team": "小組：{names}",
+      "teamPad": "我們小組的畫板",
+      "fromTeacher": "老師：",
+      "stickers": {
+        "star": "星星",
+        "thumbs": "讚",
+        "heart": "愛心",
+        "idea": "好點子",
+        "check": "打勾",
+        "rocket": "火箭",
+        "trophy": "獎盃",
+        "medal": "獎牌",
+        "crown": "皇冠",
+        "fireworks": "煙火",
+        "smiley": "笑臉",
+        "rainbow": "彩虹"
+      },
+      "hand": {
+        "raise": "舉手",
+        "isUp": "已舉手",
+        "menu": "舉手",
+        "question": "我有問題",
+        "help": "我需要幫忙",
+        "bathroom": "上廁所",
+        "hallPass": "通行證",
+        "down": "把手放下",
+        "leaveLine": "離開隊伍",
+        "back": "我回來了",
+        "goAhead": "可以去了。",
+        "passLeft": "通行證：{time}",
+        "timeUp": "時間到了，請回來。",
+        "next": "下一個就輪到你拿通行證。",
+        "inLine": "{count, plural, other {你在隊伍裡，前面有 # 個人。}}",
+        "lineHint": "在座位上等一下，很快就輪到你。",
+        "up": {
+          "question": "你舉手了：有問題。",
+          "help": "你舉手了：需要幫忙。",
+          "bathroom": "你申請了通行證。"
+        },
+        "askedPass": "老師很快就會回覆。",
+        "upHint": "老師看得到。",
+        "toastPass": "你申請了通行證",
+        "toastUp": "老師看到你舉手了",
+        "toastBack": "歡迎回來",
+        "toastDown": "手放下了",
+        "locked": "老師暫時鎖住了你的桌子",
+        "lockedHint": "很快就會打開。你的作品已經存好了。",
+        "coming": "老師正走過來",
+        "passBtn": "通行證"
+      },
+      "playBack": "回到我的座位"
+    },
+    "homeroom-area": {
+      "label": "老師區",
+      "empty": "老師還沒有在這裡放東西。"
+    },
+    "homeroom-notify": {
+      "text": "你的班級在 Homeroom。",
+      "go": "去我的書桌",
+      "close": "關閉"
+    },
+    "homeroom-lessons": {
+      "build": "建立課程",
+      "editTitle": "編輯課程",
+      "pickTitle": "要用哪個遊戲或工具？",
+      "pickLead": "選一個遊戲。你決定學生到底要做什麼，學習單就依此產生。",
+      "comingLater": "即將推出",
+      "later": {
+        "quiz": "班級測驗和文字遊戲",
+        "mine": "我做的遊戲",
+        "atlas": "Atlas Quest",
+        "sudoku": "數獨",
+        "castle": "Castle Clash 謎題",
+        "manip": "操作教具",
+        "figures": "圖形",
+        "reading": "閱讀"
+      },
+      "name": "課程名稱",
+      "namePh": "例如：長除法練習",
+      "op": "運算",
+      "ops": {
+        "add": "加法",
+        "subtract": "減法",
+        "multiply": "乘法",
+        "divide": "除法"
+      },
+      "method": "方法",
+      "methods": {
+        "standard": "標準直式",
+        "ladder": "階梯法",
+        "area": "面積模型",
+        "partial": "部分積"
+      },
+      "size": "大小",
+      "sizeEach": "{n} 位數",
+      "sizeBy": "{a} 位數 {op} {b} 位數",
+      "count": "題數",
+      "level": "作答時的幫助",
+      "levels": {
+        "watch": "看示範",
+        "countUp": "往上數",
+        "guided": "引導",
+        "onMyOwn": "自己來"
+      },
+      "newProblems": "換一組題目",
+      "activity": "活動",
+      "modes": {
+        "solve": "解方程式",
+        "multiply": "展開",
+        "factor": "因式分解"
+      },
+      "alLevel": "程度",
+      "alLevels": {
+        "easy": "簡單",
+        "medium": "中等",
+        "hard": "困難"
+      },
+      "tiles": "一開始的方塊",
+      "tilesAll": "所有需要的方塊",
+      "tilesNone": "沒有方塊",
+      "words": "詞語和提示",
+      "wordsHint": "{min} 到 {max} 個詞。每個詞都需要提示。",
+      "word": "第 {n} 個詞",
+      "clue": "第 {n} 個詞的提示",
+      "wordPh": "詞語",
+      "cluePh": "提示",
+      "addWord": "加一個詞",
+      "removeWord": "移除第 {n} 個詞",
+      "bank": "詞庫",
+      "bankShow": "顯示",
+      "bankHide": "隱藏",
+      "bankShown": "有詞庫",
+      "bankHidden": "沒有詞庫",
+      "hints": "提示功能",
+      "hintsOn": "允許",
+      "hintsOff": "關閉",
+      "versions": "每組各一個版本？",
+      "versionsYes": "好，依小組",
+      "versionsNo": "大家都一樣",
+      "versionsHint": "每組都從你的課程開始，並附上建議的調整。任何地方都可以改。",
+      "versionsOff": "每個人拿到同一張學習單。",
+      "noGroups": "這個班級還沒有小組。請先建立小組，才能加入版本。",
+      "editing": "版本對象",
+      "noGroup": "沒有小組",
+      "lean": {
+        "easier": "簡單一點",
+        "same": "相同",
+        "harder": "難一點"
+      },
+      "instructions": "給學生的指示",
+      "instructionsPh": "例如：寫出每個步驟。用乘法檢查答案。",
+      "preview": "學習單預覽",
+      "previewOf": "學習單預覽 · {who}",
+      "previewNote": "學生在螢幕上作答，或由你印出來。",
+      "previewWords": "至少輸入 {min} 個詞才能看到填字遊戲。",
+      "printDraft": "列印",
+      "ai": "請 Oomba 幫忙填",
+      "aiBusy": "Oomba 正在寫提示…",
+      "aiDone": "Oomba 寫了 {count} 個提示。儲存前請檢查。",
+      "aiNothing": "每個詞都已經有提示了。",
+      "aiNeedWords": "請先輸入一些詞。Oomba 會為每個詞寫提示。",
+      "aiFailed": "Oomba 現在無法寫提示。請再試一次。",
+      "save": "存到「我的課程」",
+      "cancel": "取消",
+      "needTitle": "請幫課程取個名字。",
+      "problemsN": "{count} 題",
+      "wordsN": "{count} 個詞",
+      "versionsN": "{count} 個版本",
+      "empty": "你建立的課程會顯示在這裡。",
+      "more": "{title} 的更多選項",
+      "edit": "編輯",
+      "duplicate": "複製",
+      "print": "列印學習單",
+      "delete": "刪除",
+      "deleteConfirm": "要刪除 {title} 嗎？已經發到座位上的會保留。",
+      "versionsFor": "版本：{groups}",
+      "printLead": "學習單會印上班級代碼，學生也可以在 Oomba 上打開。",
+      "printWhich": "要印哪一張？",
+      "printLesson": "這個課程",
+      "printKey": "加上解答",
+      "printGo": "列印",
+      "full": "你有 {count} 個課程，已達上限。請先刪除一個。",
+      "giveEyebrow": "課程",
+      "giveTitle": "給{who}的{lesson}",
+      "versionsBy": "依小組的版本",
+      "asBuilt": "原本的課程",
+      "scoreHint": "成績簿會顯示答對的百分比。"
+    },
+    "homeroom-overview": {
+      "title": "評分方式",
+      "score": {
+        "name": "分數",
+        "hint": "答對的百分比，也會傳到 Google Classroom。"
+      },
+      "completion": {
+        "name": "完成度",
+        "hint": "完成就是 100%。"
+      },
+      "none": {
+        "name": "不評分",
+        "hint": "練習：不打分數，也不會傳送。"
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "老師暫時鎖住了你的桌子",
+      "lockedHint": "很快就會打開。你的作品已經存好了。",
+      "coming": "老師正走過來"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "不在",
+        "done": "完成",
+        "stuck": "卡住了",
+        "typing": "正在輸入",
+        "working": "進行中",
+        "here": "在座位上"
+      },
+      "hand": {
+        "question": "提問",
+        "help": "需要幫忙",
+        "bathroom": "上廁所"
+      },
+      "inGame": "正在做 {title}",
+      "onDesk": "接下來：{title}",
+      "chipLabel": "{name}：{status}。查看桌面",
+      "handOf": "{name}：{what}",
+      "needsLook": "需要關心",
+      "close": "關閉",
+      "pass": {
+        "title": "通行證",
+        "outShort": "持通行證外出",
+        "lineShort": "等通行證",
+        "left": "剩 {time}",
+        "over": "超過 {time}",
+        "isBack": "{name} 回來了",
+        "nobody": "目前沒有人外出。",
+        "next": "下一位：",
+        "then": "再來：",
+        "removeLine": "把 {name} 移出隊伍",
+        "length": "通行時間",
+        "less": "縮短",
+        "more": "延長",
+        "minutes": "{count, plural, other {# 分鐘}}",
+        "outTag": "外出",
+        "lineTag": "排隊中"
+      },
+      "today": {
+        "title": "今天一覽",
+        "button": "今天",
+        "doneOf": "{total} 人中 {done} 人完成",
+        "barLabel": "完成 {done}，進行中 {work}，卡住 {stuck}，未開始 {none}",
+        "nums": "完成 {done}・進行中 {work}・卡住 {stuck}・未開始 {none}",
+        "lead": "今天的發放內容。開始上課後就能看到誰在進行、誰卡住了。",
+        "leadLive": "今天的發放內容，即時顯示。",
+        "done": "完成",
+        "working": "進行中",
+        "stuck": "卡住",
+        "notStarted": "未開始",
+        "none": "今天還沒有發放任何內容。",
+        "weeks": "幾週來的進度請看「班級」分頁。",
+        "classroom": "開啟班級"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {舉手：沒有} other {舉手：# 人}}",
+        "button": "舉手",
+        "title": "舉手的人",
+        "notNow": "晚點",
+        "putInLine": "排進隊伍",
+        "givePass": "給通行證",
+        "answered": "已回答",
+        "none": "目前沒有人舉手。",
+        "private": "只有你看得到舉手和通行證，投影畫面不會顯示。",
+        "done": {
+          "answer": "已回答",
+          "pass": "通行證已更新",
+          "notNow": "已把手放下",
+          "back": "通行證已更新"
+        }
+      },
+      "look": {
+        "title": "{name} 的桌面",
+        "loading": "載入中...",
+        "never": "尚無活動",
+        "done": "完成",
+        "pct": "完成 {pct}%",
+        "allDone": "桌上的都完成了。",
+        "nothing": "桌上還沒有東西。",
+        "stuckNote": "這份內容已有 {min} 分鐘沒有進展。",
+        "lastSeen": "最後出現：{when}",
+        "whereGame": "在遊戲中",
+        "whereDesk": "在座位上",
+        "activity": "最後活動：{when}",
+        "on": "正在做",
+        "progress": "{total} 份中完成 {done} 份",
+        "pad": "筆記板",
+        "teamPad": "小組筆記板",
+        "padLabel": "{name} 的筆記板",
+        "padEmpty": "還沒有畫任何東西",
+        "private": "這是 Homeroom 知道的摘要，不會顯示螢幕或打的字。",
+        "coming": "我過去找你",
+        "comingOn": "前往中：點一下取消",
+        "lock": "鎖住桌面",
+        "unlock": "解鎖桌面",
+        "hideCursor": "隱藏游標",
+        "showCursor": "顯示游標",
+        "handouts": "發放內容",
+        "toast": {
+          "lockOn": "已鎖住 {name} 的桌面",
+          "lockOff": "{name} 的桌面已重新開啟",
+          "hideOn": "已隱藏 {name} 的游標",
+          "hideOff": "{name} 的游標重新顯示",
+          "comingOn": "{name} 會看到你正過去",
+          "comingOff": "已移除 {name} 桌上的提示"
+        }
+      }
     }
   },
   "favorites": {
@@ -5525,7 +6189,7 @@
       "readToMe": "唸給我聽"
     },
     "typing": {
-      "title": "打字寵物",
+      "title": "打字動物園",
       "unlockH": "開啟下一課需要：",
       "unlockSummary": "下一課需 {what}",
       "goalMins": "每天分鐘數",
@@ -5570,7 +6234,7 @@
       "minutes": "{n} 分鐘",
       "missed": "有 {pct}% 的時候打錯",
       "notYet": "尚未開始",
-      "note": "來自每位學生自己的打字寵物進度，包括在家的練習。速度是每分鐘字數；正確率是最佳課程的平均。難打的鍵是最常打錯的鍵。",
+      "note": "來自每位學生自己的打字動物園進度，包括在家的練習。速度是每分鐘字數；正確率是最佳課程的平均。難打的鍵是最常打錯的鍵。",
       "assign": "指派打字課程"
     },
     "courses": {
@@ -5981,7 +6645,7 @@
         "h": "建立之前：這個帳號保存哪些資料",
         "keep": "這個帳號保存的資料：孩子製作的遊戲、他們的小幫手聊天、他們上傳的圖片和檔案、遊戲存檔、分數、評分和喜歡、好友和好友聊天訊息、個人照片（如果他們有加上）、他們的設定，以及含有瀏覽器名稱的登入 Cookie。",
         "ai": "傳送給 Anthropic 的 Claude（小幫手背後的 AI）的資料：小幫手訊息、圖片和檔案、個人照片（用於安全檢查），以及送去公開審核的遊戲。不會傳送任何名字或使用者名稱。好友聊天絕不會傳送給 AI。",
-        "who": "誰看得到什麼：他們用好友代碼加入的好友可以和他們聊天，也可以看到他們僅限好友的遊戲。任何人都可以玩他們選擇公開的遊戲。他們的使用者名稱會顯示在公開遊戲和排行榜上。",
+        "who": "誰看得到什麼：他們用好友代碼加入的好友可以和他們聊天，也可以看到他們僅限好友的遊戲。任何人都可以玩他們選擇公開的遊戲。他們的使用者名稱會顯示在他們的公開遊戲上。",
         "howLong": "我們保存多久：只要帳號存在就會保存。目前還沒有自動刪除的期限。",
         "rights": "你可以做的事：在家庭頁面上查看我們保存的資料並刪除帳號，或和我們聯絡。",
         "more": "閱讀完整的隱私權政策"
@@ -6595,7 +7259,7 @@
       "lead": "點幾下就能連結你的 Google Classroom。一開始 Oomba Academy 只能看到你的課程和其中的學生。在你允許發布之前，什麼都不會發布。",
       "li1": "點一下就能匯入學生名單，之後每 6 小時自動更新。學生以 Google 帳號比對。",
       "li2": "把課程發布成 Classroom 作業，附上連結和截止日期，或分享為教材。",
-      "li3": "完成度成績會回到 Classroom：每位學生滿分 100 的成績，是他完成課程步驟的比例，不是答對幾題。你可以自己傳送，或開啟自動傳送成績。",
+      "li3": "成績以滿分 100 回到 Classroom：完成度成績（完成課程步驟的比例，不是答對幾題），或 Homeroom 作業依你選的方式：分數、完成度，練習則不傳。你可以自己傳送，或開啟自動傳送。",
       "li4": "在直播遊戲開始或課程準備好時，用你自己的話發布到班級訊息串。",
       "li5": "Oomba Academy 不向 Classroom 索取學生的電子郵件，也絕不會把學生的姓名、答案或遊戲傳給 Google。",
       "note": "作業、教材、成績和公告，要在你允許發布後才能使用，這是另一個步驟。每位老師連結自己的 Google 帳號，學校的 Google 管理員可能需要先允許 Oomba Academy。",
@@ -6695,7 +7359,7 @@
       "wordTrail": "最常見的英文常見字，從學前到三年級，和刺蝟布蘭波走在故事書小徑上：聽一個字再點它、完成句子、用字母拼出來，課程短短的，還有每日連續紀錄。",
       "crossword": "把任何詞彙表變成填字遊戲：輸入或上傳詞語，自己寫提示或讓 AI 來寫，再分享給全班。",
       "mistakeHunt": "找出並改正短文裡的錯誤：老師貼上自己的文章，放進拼寫、文法和標點的錯誤，再分享、指派或列印。",
-      "typingPets": "一次學一個鍵，每根手指都有自己的顏色：從基本列到句子共 40 個短課程，每完成一課就能敲開一顆蛋，得到新寵物。"
+      "typingZoo": "一次學一個鍵，每根手指都有自己的顏色：從基本列到句子共 40 個短課程，每完成一課就能敲開一顆蛋，得到新寵物。"
     },
     "hubs": {
       "math": {
@@ -7370,7 +8034,7 @@
       "li1": "這些是許多研究、年齡、科目和遊戲的平均值。有些遊戲幫助很大，有些完全沒有幫助。",
       "li2": "這些研究都沒有測試 Oomba Academy。它們描述的是一般的學習遊戲，不是對任何一個遊戲、班級或學生的保證。",
       "li3": "Wouters 等人發現，雖然學生學到更多，但嚴肅遊戲並沒有比傳統教學更能提升動機。",
-      "li4": "遊戲化不等於學習遊戲：它是在一般課堂中加入遊戲元素。我們把它列進來，是因為積分、星星和排行榜出現在許多學習遊戲中，包括我們的。"
+      "li4": "遊戲化不等於學習遊戲：它是在一般課堂中加入遊戲元素。我們把它列進來，是因為積分和星星出現在許多學習遊戲中，包括我們的。"
     },
     "use": {
       "h": "照研究的建議使用遊戲",
@@ -7650,7 +8314,6 @@
       },
       "cancel": "取消",
       "reportThanks": "謝謝你。Oomba Academy 的人員會查看。",
-      "place": "你在 {count} 人中得到第 {rank} 名！",
       "late": "你在開始後才加入。",
       "watchHint": "這台裝置無法顯示 3D 世界，所以你會看到一張有所有人的地圖。",
       "removed": "主持人把你移出了這個遊戲。",
@@ -7670,8 +8333,8 @@
       "moved": "你換到了{team}",
       "again": "等老師一下…… 老師可能會和在場的大家再開一局。",
       "aiVoice": "朗讀使用電腦產生的 AI 聲音（{provider}）。",
-      "placeTied": "{others, plural, other {你和另外 # 位玩家並列第 {rank} 名！}}",
-      "placeZero": "大家平手！這次沒有人得分。"
+      "mine": "你答對了 {total} 題中的 {right} 題！",
+      "myScore": "你的分數：{score}"
     },
     "emote": {
       "wave": "揮手",
@@ -7764,7 +8427,7 @@
       "questRace": "任務競賽",
       "questRaceText": "回答問題，在 3D 小島上賽跑。答對可以得到寶石和加速！",
       "battle": "問答大戰",
-      "battleText": "題目顯示在大螢幕上，每台裝置作答，每題之後都有排行榜。",
+      "battleText": "題目在大螢幕上，每台裝置作答，每題之後看看全班怎麼回答。",
       "board": "腦力大板",
       "boardText": "一塊分類大板：選一格，大家一起作答。越大的格子越難、分數越高，還藏著能讓分數加倍的幸運星。",
       "wyr": "你比較想要哪個？ (即時版)",
@@ -7978,7 +8641,10 @@
       "playAgainTeams": "用這些隊伍再玩一次",
       "newGame": "新遊戲",
       "homework": "指派為作業",
-      "votes": "{count} 票"
+      "votes": "{count} 票",
+      "classHeading": "全班",
+      "classPct": "答對率 {pct}%",
+      "classRight": "{answered} 個答案中答對 {right} 個"
     },
     "sets": {
       "title": "題組",
@@ -8308,10 +8974,6 @@
       "points": "計分",
       "pointsSpeed": "答得越快分數越高",
       "pointsAccuracy": "只算答對（每題 1,000 分）",
-      "board": "玩家裝置上的排行榜",
-      "boardAll": "顯示",
-      "boardTop5": "只顯示前 5 名",
-      "boardOff": "隱藏",
       "late": "開始後也能加入",
       "names": "螢幕上的名字",
       "namesNames": "真實姓名",
@@ -8735,7 +9397,7 @@
       "join": "要加入遊戲嗎？在這裡輸入代碼"
     },
     "how": {
-      "h": "從出題到頒獎台，只要幾分鐘",
+      "h": "幾分鐘就能從出題到看結果",
       "lead": "以下是示範學校即時遊戲的真實畫面，名字都是虛構的。",
       "s1": {
         "h": "選擇遊戲和題目",
@@ -8759,8 +9421,8 @@
       },
       "s5": {
         "h": "看看誰懂了什麼",
-        "p": "每題結束後顯示排行榜，最後還有依題目和依學生整理的成績頁面。",
-        "alt": "投影畫面上的排行榜，顯示學生的分數。"
+        "p": "每題之後看全班怎麼回答，最後還有依題目和依學生整理的結果頁。",
+        "alt": "投影畫面顯示全班的回答。"
       }
     },
     "modes": {
@@ -8771,7 +9433,7 @@
       },
       "battle": {
         "h": "問答大戰",
-        "p": "經典玩法：題目在大螢幕上，答案在每台裝置上，每題結束後顯示排行榜。"
+        "p": "經典玩法：題目在大螢幕上，每台裝置作答，每題之後看看全班怎麼回答。"
       },
       "board": {
         "h": "腦力大板",
@@ -10230,10 +10892,10 @@
         "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
         "roster": "匯入該課程的學生，讓他們用 Google 登入",
         "post": "在那裡發布課程，附上回到這裡的連結和繳交期限",
-        "grades": "把每位學生的課程完成度成績傳送到 Classroom"
+        "grades": "把每位學生的課程成績傳到 Classroom（完成度成績，或你在 Homeroom 選的分數）"
       },
       "button": "連結 Google Classroom",
-      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和班上的學生。只有在你允許發布時，它才會把你發布的內容送到 Classroom：課程的標題、連結和截止日期、每位學生的完成度成績（滿分 100）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、答案或遊戲。",
+      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和班上的學生。只有在你允許發布時，它才會把你發布的內容送到 Classroom：課程的標題、連結和截止日期、每位學生的成績（滿分 100：完成度成績，或你在 Homeroom 選的分數）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、答案或遊戲。",
       "connectedAs": "已用 {email} 連結",
       "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
       "connectedToast": "已連結 Google Classroom。",
@@ -10297,17 +10959,25 @@
       "somePosted": "這裡只指派給部分學生。先前已在 Google Classroom 發布給全班；成績只會傳給被指派的學生。"
     },
     "grades": {
-      "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
+      "text": "每份課程依它的評分方式傳送滿分 100 的成績。在班級頁指派的課程傳送完成度成績（完成步驟的比例，不是答對幾題）。Homeroom 的作業依你發下時的選擇傳送：分數傳答對百分比，完成度傳完成度成績，不評分則不傳送。還沒開始的學生不會傳送。",
       "as": "傳送方式",
       "draft": "草稿成績（由你在 Classroom 發還）",
       "assigned": "正式成績",
       "button": "傳送完成度成績",
-      "lastDraft": "草稿完成度成績已傳送：{when}",
-      "lastAssigned": "正式完成度成績已傳送：{when}",
+      "lastDraft": "草稿成績已傳送：{when}",
+      "lastAssigned": "正式成績已傳送：{when}",
       "resultSent": "{count, plural, other {已傳送 # 筆完成度成績}}",
       "resultNotStarted": "{count, plural, other {# 位還沒開始}}",
       "resultNotMatched": "{count, plural, other {# 位不在這個班級}}",
-      "resultFailed": "{count, plural, other {# 筆未能傳送}}"
+      "resultFailed": "{count, plural, other {# 筆未能傳送}}",
+      "buttonScore": "傳送分數",
+      "resultSentScore": "{count, plural, other {已傳送 # 筆分數}}",
+      "resultNotScored": "{count, plural, other {# 人還沒有分數}}",
+      "sends": {
+        "completion": "傳送完成度成績：完成步驟的比例。",
+        "score": "在 Homeroom 依分數評分：傳送答對百分比。",
+        "none": "在 Homeroom 不評分：不會傳成績到 Classroom。"
+      }
     },
     "log": {
       "heading": "最近的同步",
@@ -10364,7 +11034,8 @@
       "tooLong": "公告最多 {max} 個字元。",
       "hasName": "訊息裡的「{name}」和學生的名字相同。公告會傳給全班，請改寫或拿掉它。",
       "tooManyAnnouncements": "這個班級一小時內已有 10 則公告。請稍等一下。",
-      "someStudents": "這堂課只指派給部分學生，因此不會發布到 Google Classroom：在那裡會發給全班。"
+      "someStudents": "這堂課只指派給部分學生，因此不會發布到 Google Classroom：在那裡會發給全班。",
+      "notGraded": "這份發下的東西不評分，所以不會傳送成績到 Google Classroom。"
     },
     "allow": {
       "heading": "Oomba Academy 可以在你的 Classroom 做什麼",
@@ -10397,7 +11068,7 @@
       "roster": "每 6 小時從 Classroom 更新學生",
       "rosterHint": "新學生會加入。離開 Classroom 的學生會列在上方，由你決定是否移除：不會自動移除任何人。",
       "grades": "自動傳送成績",
-      "gradesHint": "每 30 分鐘，從這裡發布的課程中有變動的完成度成績會傳到 Classroom，直到各截止日期後 30 天。",
+      "gradesHint": "每 30 分鐘，從這裡發布的課程中有變動的成績會傳到 Classroom（依各自的評分方式：完成度成績或分數），直到各截止日後 30 天。",
       "by": "成績會透過 {name} 的 Google Classroom 連結傳送。",
       "save": "儲存",
       "saved": "已儲存。",
@@ -10618,7 +11289,17 @@
       "hideNames": "隱藏班級名單上的姓名",
       "namesHint": "只在這個畫面上，在遊戲名稱旁顯示班級名單上的姓名。班級螢幕仍顯示遊戲名稱。"
     },
-    "notAssigned": "未指派"
+    "notAssigned": "未指派",
+    "grade": {
+      "score": "分數",
+      "completion": "完成度",
+      "notGraded": "不評分",
+      "practice": "練習",
+      "practiced": "已練習",
+      "done": "完成",
+      "notDone": "未完成",
+      "practiceCsv": "練習（{done}/{total}）"
+    }
   },
   "quickLive": {
     "cta": "立即主持即時遊戲",
@@ -14337,6 +15018,291 @@
       "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。",
       "painting": "正在畫圖",
       "repaintAll": "重新畫所有圖片"
+    }
+  },
+  "homeroom": {
+    "staged": {
+      "added": "已放在你的桌子上。學生看不到。",
+      "already": "這已經在你的桌子上了。",
+      "removed": "已從你的桌子拿走。"
+    },
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "切換班級",
+    "arrange": "安排座位",
+    "more": "更多",
+    "boardLabel": "Homeroom 白板。拖曳來移動，捲動或雙指縮放。",
+    "loading": "正在布置教室…",
+    "noscript": "Homeroom 需要開啟 JavaScript。",
+    "tabs": {
+      "label": "班級檢視",
+      "homeroom": "Homeroom",
+      "classroom": "班級",
+      "dashboard": "儀表板"
+    },
+    "panel": {
+      "label": "老師的桌子",
+      "handOut": "發給",
+      "myLessons": "我的課程",
+      "myGames": "我做的遊戲",
+      "noGames": "你做的遊戲會顯示在這裡。",
+      "oomba": "Oomba 遊戲與工具",
+      "manipulatives": "操作教具",
+      "figures": "圖形",
+      "reading": "閱讀",
+      "storyLibrary": "故事圖書館",
+      "flow": "上課流程",
+      "brainBreak": "動腦休息",
+      "note": "給全班的便條",
+      "timer": "計時器",
+      "board": "白板工具",
+      "handOutHint": "點一個遊戲，再點一個座位、一個小組或「全班」。也可以直接拖過去。",
+      "comingNext": "即將推出"
+    },
+    "errors": {
+      "badStage": "這個不能放在你的桌子上。",
+      "deskFull": "你的桌子滿了。請先拿走一些東西。",
+      "notStaged": "這已經不在你的桌子上了。",
+      "notFound": "這個 Homeroom 無法使用。",
+      "badPreset": "請選擇排排坐、四人一桌、U 形或圓形。",
+      "badSeats": "無法儲存座位，請再試一次。",
+      "badGroups": "無法儲存分組，請再試一次。",
+      "groupName": "請替每一組取名字。",
+      "words": "請使用友善的字詞。",
+      "personal": "請不要填寫電話、電子郵件或地址等個人資料。",
+      "badState": "無法儲存，請再試一次。",
+      "tooBig": "老師區太滿了。請移除一些東西再試一次。",
+      "badAction": "沒有成功，請再試一次。",
+      "notLive": "請先按「大家來 Homeroom」開始上課。",
+      "padFull": "你的筆記板滿了，清除後才能繼續畫。",
+      "pickGame": "這個遊戲無法發下。請選另一個。",
+      "publishFirst": "請先發布這個遊戲，再發下去。",
+      "badDate": "請選一個正確的截止日期。",
+      "badTarget": "請放到座位、小組或「全班」上。",
+      "noStudents": "這個班級還沒有學生。",
+      "notInClass": "這位學生已不在這個班級。",
+      "emptyGroup": "這個小組還沒有人。",
+      "badOrder": "請選「依序」或「不限順序」。",
+      "badGrade": "請選「分數」、「完成度」或「不評分」。",
+      "tooLong": "說明最多 300 個字。",
+      "alreadyOnDesk": "其中 {count} 個座位已經有這個遊戲了。請先從那裡拿走，或發給其他人。",
+      "tooManyHandouts": "這個班級發下的東西太多了。請先移除一些舊的。",
+      "notOnDesk": "這個座位上沒有這份發下的東西。",
+      "noLesson": "這個課程已不在你的課程中。",
+      "badGame": "目前可以為 Arithmetic Lab、Algebra Builder 和填字遊戲建立課程。",
+      "needTitle": "請幫課程取個名字。",
+      "titleLong": "名字最多 60 個字元。",
+      "fewWords": "填字遊戲至少需要 3 個詞。",
+      "missingClue": "每個詞都需要提示。",
+      "settings": "無法儲存這些設定。請檢查後再試一次。",
+      "setsFull": "你的學習單已達這個遊戲能保存的上限。請先到遊戲的「我的學習單」刪除一些。",
+      "tooManyLessons": "你的課程已達上限。請先刪除一個。",
+      "lessonGone": "這個課程的一張學習單已被刪除。請打開課程，再儲存一次，然後再發下去。",
+      "lessonOnDesk": "其中 {count} 個座位已經有這個課程。請先從那裡拿掉，或發給其他人。",
+      "teamTooSmall": "一個小組至少要選 2 張桌子。",
+      "teamTooBig": "一個小組最多 6 人。",
+      "alreadyInTeam": "其中有學生已經在小組桌了，請先拆開那個小組。",
+      "tooManyTeams": "這個班的小組桌已達上限。",
+      "noTeam": "那張小組桌已經不在了。",
+      "commentLong": "留言最多 140 個字。",
+      "badSticker": "請選一張貼紙。",
+      "notFinished": "留言和貼紙只能給完成的作業，這份還沒完成。",
+      "padChanged": "組員同時在畫，你的畫已經加到他的畫上了。",
+      "badKind": "請選擇提問、求助或上廁所。",
+      "passAlready": "你已經在通行證的隊伍裡了。",
+      "badMinutes": "請選擇 1 到 20 分鐘。",
+      "noHand": "這隻手已經放下了。",
+      "noPass": "沒有通行證，也不在隊伍裡。"
+    },
+    "live": "直播中",
+    "desk": {
+      "pageTitle": "{class} · 我的書桌",
+      "link": "我的書桌",
+      "dock": "書桌選單",
+      "myDesk": "我的書桌",
+      "teacherArea": "老師區",
+      "library": "圖書館",
+      "room": "看看教室",
+      "notYou": "不是 {name}？",
+      "switch": "切換",
+      "backToDesk": "回到我的座位",
+      "fromTeacher": "老師說",
+      "waitTitle": "還不行",
+      "waitText": "先完成你座位上前一個任務，這個才會打開。"
+    },
+    "projector": {
+      "title": "{class} · 投影"
+    },
+    "signin": {
+      "title": "學生登入",
+      "qrLabel": "登入這個班級的 QR 碼",
+      "goTo": "前往",
+      "enterCode": "並輸入代碼",
+      "opened": "登入已開放",
+      "closed": "登入已關閉",
+      "pageTitle": "登入你的班級",
+      "signedInAs": "目前以 {name} 登入。在這裡登入會讓 {name} 登出。",
+      "ended": "下課了。下次見！",
+      "codeHeading": "登入你的班級",
+      "codeLead": "輸入老師顯示的代碼。",
+      "codeLabel": "班級代碼",
+      "go": "繼續",
+      "errors": {
+        "badCode": "這個代碼不能用。檢查一下再試一次。",
+        "tooMany": "嘗試太多次了。等一下再試。",
+        "notFound": "沒有成功。再點一次你的名字。",
+        "wrongPassword": "密碼不對。再試一次。",
+        "wrongPictures": "這些不是你的圖案。再試一次。",
+        "wait": "嘗試太多次了。等一下。",
+        "locked": "嘗試太多次了。請老師幫你登入。",
+        "badAction": "沒有成功。再試一次。",
+        "badMode": "請選擇密碼或圖案密碼。",
+        "ownAccount": "這位學生有自己的帳號，所以用自己的密碼登入。"
+      },
+      "pics": {
+        "bear": "熊",
+        "lion": "獅子",
+        "frog": "青蛙",
+        "owl": "貓頭鷹",
+        "rocket": "火箭",
+        "apple": "蘋果",
+        "star": "星星",
+        "rainbow": "彩虹",
+        "cupcake": "杯子蛋糕"
+      },
+      "panel": {
+        "title": "{class} · 登入",
+        "back": "回到 Homeroom",
+        "heading": "登入",
+        "lead": "在共用裝置上，學生打開班級登入，點自己的名字，再輸入密碼或點選圖案密碼。",
+        "students": "學生",
+        "cards": "列印登入卡",
+        "cardsConfirm": "這會為所有用圖案登入的學生產生新的圖案密碼。舊的圖案會失效。",
+        "early": "這個班級是幼兒園到二年級，所以學生一開始使用圖案密碼。你可以把任何人改成密碼。",
+        "shows": "顯示為 {name}",
+        "modeFor": "{name} 的登入方式",
+        "mode": {
+          "password": "密碼",
+          "picture": "圖案密碼"
+        },
+        "ownAccount": "個人帳號：用自己的密碼",
+        "usesPassword": "用自己的密碼",
+        "usesGoogle": "用 Google",
+        "locked": "嘗試太多次已鎖定",
+        "waiting": "輸錯後等待中",
+        "hasPicture": "圖案密碼已準備好",
+        "noPicture": "還沒有圖案密碼",
+        "newConfirm": "要為 {name} 產生新的圖案密碼嗎？舊的會失效。",
+        "newPicture": "新的圖案密碼",
+        "makePicture": "產生圖案密碼",
+        "unlock": "解除鎖定",
+        "none": "這個班級還沒有學生。",
+        "saved": "已儲存",
+        "unlocked": "已解除鎖定。可以再試一次。"
+      },
+      "cards": {
+        "title": "登入卡",
+        "count": "{count, plural, other {# 張卡}}",
+        "print": "列印",
+        "back": "回到登入",
+        "once": "圖案密碼只會在這裡顯示這一次。離開頁面前請列印或儲存這些卡片。",
+        "tap": "你的按鈕：{name}",
+        "pictures": "你的圖案（依順序）",
+        "usesPassword": "輸入你的密碼",
+        "usesGoogle": "使用「以 Google 登入」"
+      }
+    },
+    "handout": {
+      "forLater": "{title}已發給全班。之後加入的學生會收到。",
+      "done": "{title} 已發到 {count} 個座位。",
+      "removedOne": "已從那個座位拿走。",
+      "removedAll": "已從所有座位移除。學生的作品會保留。"
+    },
+    "lessons": {
+      "handedOut": "{title} 已發到 {count} 個座位。",
+      "handedOutVersions": "{title} 已發到 {count} 個座位，每組各有自己的版本。",
+      "saved": "課程已儲存。",
+      "savedNew": "已存到「我的課程」。點一下課程，再點座位，就能發下去。",
+      "copyOf": "{title} 的副本",
+      "duplicated": "已複製課程。",
+      "deleted": "已刪除課程。",
+      "untitled": "新課程",
+      "print": {
+        "solve": "解出 x。寫出你的步驟。",
+        "multiply": "做乘法。把每個答案寫成一個式子。",
+        "factor": "把每個式子因式分解。"
+      }
+    },
+    "stickers": {
+      "star": "星星",
+      "thumbs": "讚",
+      "heart": "愛心",
+      "idea": "好點子",
+      "check": "打勾",
+      "rocket": "火箭",
+      "trophy": "獎盃",
+      "medal": "獎牌",
+      "crown": "皇冠",
+      "fireworks": "煙火",
+      "smiley": "笑臉",
+      "rainbow": "彩虹"
+    },
+    "feedback": {
+      "saved": "已儲存留言和貼紙",
+      "removed": "已移除留言和貼紙"
+    },
+    "overview": {
+      "title": "班級總覽",
+      "lead": "最近 {weeks} 週。每一欄是你在 Homeroom 發下的作業。學生依字母順序排列，從不排名。",
+      "student": "學生",
+      "trend": "趨勢",
+      "tableLabel": "班級總覽：作業與結果",
+      "kind": {
+        "lesson": "課程",
+        "game": "遊戲",
+        "mine": "我的遊戲"
+      },
+      "versions": "{count, plural, other {# 個版本}}",
+      "gradedBy": {
+        "score": "依分數評分",
+        "completion": "依完成度評分"
+      },
+      "notGraded": "不評分",
+      "changeGrade": "{title}：{grade}。變更評分方式",
+      "done": "完成",
+      "notDone": "未完成",
+      "practice": "練習",
+      "locked": "尚未開放",
+      "notStarted": "還沒開始",
+      "trends": {
+        "improving": "進步中",
+        "steady": "穩定",
+        "support": "需要協助",
+        "none": "分數還不夠"
+      },
+      "finished": "作業完成率",
+      "support": "{count, plural, other {位學生需要協助}}",
+      "month": "{count, plural, other {份（本月作業）}}",
+      "keyNames": {
+        "score": "分數",
+        "completion": "完成度",
+        "none": "不評分"
+      },
+      "keyScore": "答對百分比",
+      "keyCompletion": "完成就是 100%",
+      "keyNone": "練習，不會傳送",
+      "keyTrend": "趨勢依每位學生最近 3 次分數：平均低於 60% 為需要協助，最近一次比第一次高 10 分以上為進步中，其餘為穩定。",
+      "more": "完整成績表、CSV、標準、評分規準和 Google Classroom 都在下方，和以前一樣。",
+      "fullGradebook": "完整成績表",
+      "noHandouts": "最近 {weeks} 週沒有在 Homeroom 發作業。可以從 Homeroom 分頁發遊戲或課程。",
+      "gcLinked": "已連結「{course}」",
+      "gcRoster": "名單同步：{when}",
+      "gcRosterNever": "名單還沒同步",
+      "gcGrades": "成績傳送：{when}",
+      "gcGradesNever": "還沒傳送成績",
+      "gcOpen": "開啟設定",
+      "gcNotLinked": "還沒連結。",
+      "gcLink": "連結 Classroom 課程",
+      "gradeSaved": "已變更評分方式"
     }
   }
 }

@@ -194,17 +194,17 @@ export function cleanCrossItems(raw) {
   return [{ t, w: words, r, b: it.b === true, h: it.h !== false }];
 }
 
-// ---------------------------------------------------------------- Typing Pets: a teacher's own typing lesson or test
+// ---------------------------------------------------------------- Typing Zoo: a teacher's own typing lesson or test
 // [{ t: title ('' allowed), x: the text to type, k: 'lesson' | 'test', n: a test's minutes (1, 2, 3 or 5), l?: its keyboard
 // (a layout id; none = US) }]. The text is
 // the teacher's own words, so it passes the site's text filter (refused, never changed). Only letters (any script),
 // digits, space, newline and . , ; : ' " - ! ? ( ) ¿ ¡ ، ؟; the game checks it against the chosen keyboard. Curly quotes and dashes from a word
 // processor are turned into the plain ones first; runs of spaces become one.
 export const TYPING = { min: 10, max: 1500, title: 60, lines: 40, minutes: [1, 2, 3, 5] };
-// Letters of any script (Typing Pets has keyboards for 11 languages; the game checks the text against the teacher's
+// Letters of any script (Typing Zoo has keyboards for 11 languages; the game checks the text against the teacher's
 // chosen keyboard), digits, and the punctuation the keyboards share (plus ¿ ¡ and Arabic ، ؛ ؟).
 const TYPABLE = /^[\p{L}\p{M}\p{N} .,;:'"!?()\-\n¿¡،؛؟]+$/u;
-/** The keyboards a teacher's lesson may be for (seed-games/typing-pets-langs/layouts.json). */
+/** The keyboards a teacher's lesson may be for (seed-games/typing-zoo-langs/layouts.json). */
 export const TYPING_LAYOUTS = ['us', 'de', 'fr', 'es', 'it', 'pt', 'ru', 'he', 'ar'];
 export function cleanTypingItems(raw) {
   if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object') return null;
@@ -457,9 +457,9 @@ export function cleanCanvasItems(raw, html) {
 
 /** Set games that are also whole games without a set (Word Hunt's own themes and daily puzzle): a teacher may still
  *  assign them as they are, from the class page or a folder, as before they kept sets. */
-export const OPEN_SET_GAMES = new Set(['word-hunt', 'typing-pets']);
+export const OPEN_SET_GAMES = new Set(['word-hunt', 'typing-zoo']);
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['arithmetic-lab', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-pets', cleanTypingItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['arithmetic-lab', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-zoo', cleanTypingItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -533,7 +533,7 @@ export function sizeOf(slug, items) {
   const a = items[0] || {};
   if (slug === 'crossword' || slug === 'word-hunt') return Array.isArray(a.w) ? a.w.length : 0;
   if (slug === 'atlas-quest') return Array.isArray(a.q) ? a.q.length : 0;
-  if (slug === 'typing-pets') return typeof a.x === 'string' ? a.x.length : 0;
+  if (slug === 'typing-zoo') return typeof a.x === 'string' ? a.x.length : 0;
   if (slug === 'arithmetic-lab') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
   if (slug === 'mistake-hunt') return items.reduce((n, it) => n + (Array.isArray(it.m) ? it.m.length : 0), 0);
   return items.length;   // Algebra Builder's questions, a classroom activity's problems
@@ -619,7 +619,7 @@ export function labelOf(slug, items) {
   if (slug === 'crossword') return `${a.t ? `${a.t}: ` : ''}crossword, ${a.w.length} words`;
   if (slug === 'word-hunt') return `${a.t ? `${a.t}: ` : ''}word hunt, ${a.w.length} words`;
   if (slug === 'atlas-quest') return `${a.t ? `${a.t}: ` : ''}geography quiz, ${a.q.length} question${a.q.length === 1 ? '' : 's'}`;
-  if (slug === 'typing-pets') return `${a.t ? `${a.t}: ` : ''}${a.k === 'test' ? `typing test, ${a.n} minute${a.n === 1 ? '' : 's'}` : 'typing lesson'}, ${a.x.length} characters`;
+  if (slug === 'typing-zoo') return `${a.t ? `${a.t}: ` : ''}${a.k === 'test' ? `typing test, ${a.n} minute${a.n === 1 ? '' : 's'}` : 'typing lesson'}, ${a.x.length} characters`;
   if (slug === 'arithmetic-lab') {
     const n = sizeOf(slug, items);
     return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
@@ -640,7 +640,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-pets') return { kind: 'one', label: labelOf(slug, s.items) };
+    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-zoo') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

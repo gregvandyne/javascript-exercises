@@ -1,0 +1,55 @@
+/* The Classroom tab's overview (Homeroom, step 2c; routes/homeroom-overview.js): the owner-approved mockup's calm summary
+   at the top of Progress. Design tokens only, the chunky style of the rest of Homeroom. */
+.hv{display:flex;flex-direction:column;gap:12px;min-width:0}
+.hv h2{margin:0}
+.hv-top{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:flex-start}
+.hv-lead{flex:1 1 320px;min-width:0}
+.hv-lead p{margin:4px 0 0}
+.hv-sum{display:flex;gap:10px;flex-wrap:wrap}
+.hv-sum>div{display:flex;flex-direction:column;min-width:120px;padding:10px 14px;border:2px solid var(--line);border-radius:16px;background:var(--card-2);box-shadow:0 3px 0 var(--line)}
+.hv-sum b{font-size:24px;line-height:1.1;font-variant-numeric:tabular-nums}
+.hv-sum span{font-size:13px;font-weight:700;color:var(--muted)}
+.hv-gc{display:inline-flex;flex-wrap:wrap;gap:4px 6px;align-items:center;margin-top:10px;padding:6px 14px;border-radius:999px;background:var(--ok-bg);color:var(--text);font-size:13px;font-weight:700;max-width:100%}
+.hv-gc b{display:inline-flex;align-items:center;gap:4px}
+.hv-gc.off{background:var(--card-2)}
+.hv-gc a{color:var(--link);font-weight:800}
+.hv-wrap{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:12px}
+.hv-wrap:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.hv-table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.hv-table th,.hv-table td{padding:8px;text-align:start;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
+.hv-table thead th{vertical-align:bottom;white-space:normal;min-width:120px;font-size:13px;position:relative}
+.hv-table thead th.hv-name,.hv-table thead th.hv-trendh{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;min-width:0}
+.hv-title{display:block;font-weight:800;color:var(--text);text-decoration:none;overflow-wrap:anywhere}
+.hv-title:hover{text-decoration:underline}
+.hv-sub{display:flex;align-items:center;gap:4px;margin-top:2px;font-size:12px;font-weight:700;color:var(--muted)}
+.hv-grade{white-space:nowrap;display:inline-flex;align-items:center;gap:4px;min-height:32px;margin-top:6px;padding:0 10px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 12px var(--font);box-shadow:0 2px 0 var(--line);cursor:pointer}
+.hv-grade:hover{background:var(--hover)}
+.hv-grade[aria-expanded="true"]{border-color:var(--text)}
+.hv-name a{font-weight:800;color:var(--text);text-decoration:none}
+.hv-name a:hover{text-decoration:underline}
+tbody .hv-name{position:sticky;inset-inline-start:0;background:var(--card);z-index:1}
+.hv-cell{display:inline-block;padding:2px 10px;border-radius:999px;font-weight:800;font-variant-numeric:tabular-nums}
+.hv-cell.ok{background:var(--ok-bg);color:var(--ok)}
+.hv-cell.mid{background:var(--spark-soft);color:var(--text)}
+.hv-cell.low{background:var(--bad-bg);color:var(--bad-ink)}
+.hv-cell.na{color:var(--muted)}
+.hv-trend{font-weight:700;color:var(--muted)}
+.hv-trend.up{color:var(--ok)}
+.hv-trend.support{color:var(--bad-ink)}
+.hv-key{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0;color:var(--muted)}
+.hv-key b{color:var(--text)}
+.hv-more{margin:0}
+.hv-empty{margin:0}
+.hv-menu{position:fixed;z-index:60;width:260px;max-width:calc(100vw - 32px);padding:8px;border:2px solid var(--text);border-radius:16px;background:var(--card);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:6px;white-space:normal}
+.hv-menucap{margin:2px 4px;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.hv-mi{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:48px;padding:8px 10px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:700 13px var(--font);text-align:start;cursor:pointer}
+.hv-mi b{font-size:14px}
+.hv-mi span{color:var(--muted);font-weight:600}
+.hv-mi.on{border-color:var(--accent-press);background:var(--accent-soft)}
+.hv-mi:hover{background:var(--hover)}
+@media (max-width:640px){
+  .hv-sum{width:100%}
+  .hv-sum>div{flex:1 1 30%;min-width:0;padding:8px 10px}
+  .hv-sum b{font-size:20px}
+  .hv-gc{border-radius:14px}
+}

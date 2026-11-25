@@ -161,18 +161,20 @@ export const assignmentOf = (classId, gameId, options = null) => q.get(`SELECT c
  *  game to the same class again is refused (alreadyAssigned), so a class never has it twice. students: [] (the whole
  *  class) or ids of the class's students (lessons.assign checks them; a refused list leaves nothing behind).
  *  -> { ok, classLesson, game } | { ok: false, code, className? } */
-export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '', students = [] } = {}) {
+/** body: the teacher's words on the game step (Homeroom's instructions; the lesson page shows them). again: the caller
+ *  checked for itself that no student gets the game twice (Homeroom hands a game to one group today, another tomorrow). */
+export function assignGame(u, classId, gameId, { dueAt = null, opensAt = null, options = '', title: named = '', students = [], body = '', again = false } = {}) {
   const c = S.getClass(String(classId || ''));
   if (!c || c.archived_at || !S.canManageClass(u, c)) return fail('notFound');
   const g = games.getGame(String(gameId || ''));
   const a = assignable(u, g, c); if (!a.ok) return a;
   // A game that opens at a teacher's problem or question set (options; Algebra Builder) may be in a class once per
   // problem or set, named after it (named); any other game once.
-  if (assignmentOf(c.id, g.id, options ? options : null)) return { ok: false, code: 'alreadyAssigned', className: c.name };
+  if (!again && assignmentOf(c.id, g.id, options ? options : null)) return { ok: false, code: 'alreadyAssigned', className: c.name };
   const title = String(named || g.title).slice(0, 100);
   const made = L.createLesson(u, c.school_id, { title, kind: 'game' });
   if (!made.ok) return made;
-  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, options });
+  const step = L.addStep(u, made.lesson.id, { kind: 'game', gameId: g.id, title, options, ...(body ? { body } : {}) });
   if (!step.ok) { L.deleteLesson(u, made.lesson.id); return step; }
   const r = L.assign(u, c.id, made.lesson.id, { dueAt, opensAt, students });
   if (!r.ok) { L.deleteLesson(u, made.lesson.id); return r; }

@@ -1,0 +1,144 @@
+/* Homeroom, Classroom and Dashboard as one page (server/routes/homeroom-views.js, public/js/class-views.js; docs/decisions.md
+   "Homeroom: one page, three views"). One shared bar in the same place, at the same height and with the same look over
+   all three views; Homeroom (and the dashboard on a laptop or tablet) fill the screen under it, Classroom scrolls as
+   the class page always did. Loaded on these pages only, after each view's own stylesheet (views swapped in later put
+   theirs before this file), so these rules win over the views' full-page ones. */
+.cv-page main#main{max-width:none;margin:0;padding:0}
+.cv-page main#main>.pagenote{margin:12px 16px}
+.cv-view[hidden]{display:none!important}
+
+/* ---- the shared bar: class switcher, Homeroom | Classroom | Dashboard, then the view's own buttons */
+/* (sticky under the site's bar on a laptop or tablet: Classroom scrolls, and the pill stays at hand) */
+.cv-bar{position:sticky;top:var(--top);z-index:80;display:flex;align-items:center;gap:8px 12px;min-height:71px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.cv-nav{display:flex;align-items:center;gap:8px 12px;flex:none;min-width:0}
+/* (the id: the class page's stylesheet makes every select.input 50px tall) */
+#cv-bar .cv-class{width:auto;min-width:0;max-width:240px;height:46px;min-height:0;border-radius:999px;font-weight:800;font-size:1.05rem;padding-block:6px;padding-inline:16px 36px}
+.cv-bar .hr-tabs{margin:0;flex:none}
+.cv-bar .hr-tabs a[aria-busy="true"]{cursor:progress;opacity:.7}
+.cv-acts{display:none;align-items:center;flex-wrap:nowrap;gap:8px;flex:1 1 auto;min-width:0;
+  /* every button whole, at every width: under 1024 px the pill takes a row of its own (below); on a narrow window the
+     buttons lose their words first, and public/js/class-views.js fit() measures the buttons on screen and, when they
+     still do not fit (a live class, a longer language), drops more words (cv-icons), then the clock (cv-noclock), then a
+     button the ⋯ menu also has (cv-fold), then gives the pill its own row at any width (cv-two). Nothing is ever cut off or scrolls sideways; the scroll below
+     is only a last guard (room for the buttons' shadows) */
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:4px 2px 6px;margin:-4px -2px -6px}
+.cv-acts::-webkit-scrollbar{display:none}
+.cv-acts>:first-child{margin-inline-start:auto}
+.cv-acts .hr-livebtns{flex-wrap:nowrap}
+.cv-acts .hr-grow{flex:1 1 auto}
+.cv[data-view="homeroom"] .cv-acts-homeroom,.cv[data-view="classroom"] .cv-acts-classroom,.cv[data-view="dashboard"] .cv-acts-dashboard{display:flex}
+/* every button in the bar has one shape (Homeroom's chunky pill), whichever view it belongs to */
+.cv-bar .btn{min-height:44px;border-radius:999px;font-weight:800;white-space:nowrap}
+.cv-bar .btn:not(.btn-primary):not(.hr-spark):not(.on):not([aria-pressed="true"]){border:2px solid var(--line);background:var(--card);box-shadow:0 3px 0 var(--line)}
+/* the Connections chip as tall as the class switcher next to it */
+.cv-acts-classroom .cx-chip{min-height:46px;padding-inline:14px;font-size:.9375rem}
+.cv-acts-classroom .classacts{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:8px;margin:0;flex:1 0 auto}
+/* the dashboard's buttons, its date and its clock (its edit mode hides them and shows its own bar under this one) */
+.dash-acts{display:flex;align-items:center;justify-content:flex-end;gap:8px 12px;flex:1 1 auto;min-width:0}
+.dash-acts>*{flex:none}
+.dash-acts[hidden]{display:none}
+.dash-acts .dash-now{font-size:1.5rem;line-height:1;padding:0 4px}
+.dash-acts .dash-date{flex:0 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.dash-acts .dash-grow{flex:1 1 0;min-width:0}
+.cv-projname{display:none}
+@media (max-width:1279px){.dash-acts .dash-date{display:none}}
+@media (max-width:1099px){
+  .cv-acts .hr-hidephone,.dash-acts .dash-btnt{display:none}
+  .cv-bar{gap:8px}
+  #cv-bar .cv-class{max-width:150px}
+  .cv-bar .hr-tabs a{padding:0 10px}
+  .cv-acts .btn{padding-inline:12px}
+}
+/* live on a laptop: Arrange seats keeps its icon (it is in the ⋯ menu too) so the bar stays one row */
+@media (max-width:1500px){.cv-acts-homeroom.hr-islive [data-hr="seats"] .hr-hidephone{display:none}}
+/* fit() (public/js/class-views.js): the buttons on screen still do not fit. Icons only (every button keeps its name in
+   aria-label, and Arrange seats is in the ⋯ menu too), then no clock (the dashboard's clock widget still shows it) */
+.cv-bar.cv-icons .cv-acts :is(.hr-hidephone,.hr-sparkt,.cv-btnt,.dash-btnt,.dash-date,.cx-name){display:none}
+.cv-bar.cv-icons .cv-acts .btn{padding-inline:10px}
+.cv-bar.cv-noclock .dash-acts .dash-now{display:none}
+/* then a button that is in the ⋯ menu too steps out of the bar (Arrange seats), and the switcher gives the buttons room */
+.cv-bar.cv-fold .cv-acts [data-cv-fold]{display:none}
+.cv-bar.cv-fold .cv-acts{max-width:calc(100% - 96px)}
+.cv-bar.cv-fold .cv-acts .btn{padding-inline:8px}
+.cv-bar.cv-fold .hr-livedot{font-size:0;gap:0;padding-inline:4px}   /* the red dot alone (its word is still read out) */
+
+/* ---- Classroom's header (routes/schools.js classHeader; docs/decisions.md "A calmer Classroom view on phones"): the
+   class's name is the switcher's, so one small line (the school, the class, its students); on phones Build new game and
+   Find Oomba games as one row of two small buttons (wider screens have them in the Games tab's sidebar) */
+.cv-classhead{margin:0 0 var(--s3)}
+.cv-classmeta{margin:0;line-height:1.5}
+.cv-classmeta .classschool{display:inline;overflow-wrap:anywhere}
+.classquick{display:none}
+@media (max-width:639px){
+  .classquick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 var(--s3)}
+  .classquick-b{justify-content:center;gap:4px;min-width:0;min-height:44px;padding:6px 8px;font-size:.875rem;line-height:1.2;white-space:normal;text-align:center}
+  .classquick-b>span{min-width:0;overflow-wrap:anywhere}
+}
+
+/* ---- the views */
+.cv-view-homeroom>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.cv-view-dashboard>.dash{min-height:0;height:auto;flex:1 1 auto}
+/* Homeroom always, and the dashboard on a laptop or tablet: the view fills the screen under the bars (as the live room) */
+body.cv-on-homeroom .foot{display:none}
+html:has(body.cv-on-homeroom),body.cv-on-homeroom{overflow:hidden;overscroll-behavior:none}
+body.cv-on-homeroom main#main{display:flex;flex-direction:column;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden}
+body.cv-on-homeroom main#main>*{flex:none}
+body.cv-on-homeroom .cv-bar{position:relative;top:auto}
+body.cv-on-homeroom main#main>.cv,body.cv-on-homeroom .cv-views,body.cv-on-homeroom .cv-view:not([hidden]){flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+@media (min-width:720px){
+  body.cv-on-dashboard .foot{display:none}
+  html:has(body.cv-on-dashboard),body.cv-on-dashboard{overflow:hidden;overscroll-behavior:none}
+  body.cv-on-dashboard main#main{display:flex;flex-direction:column;height:calc(100vh - var(--top));height:calc(100dvh - var(--top));overflow:hidden}
+  body.cv-on-dashboard main#main>*{flex:none}
+  body.cv-on-dashboard .cv-bar{position:relative;top:auto}
+  body.cv-on-dashboard main#main>.cv,body.cv-on-dashboard .cv-views,body.cv-on-dashboard .cv-view:not([hidden]){flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+}
+@media (max-width:820px){
+  body.cv-on-homeroom main#main{height:calc(100vh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom));height:calc(100dvh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom))}
+  body.cv-on-dashboard main#main{height:calc(100vh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom));height:calc(100dvh - var(--top) - var(--tabbar) - env(safe-area-inset-bottom))}
+}
+@media (max-width:719px){
+  body.cv-on-dashboard main#main{height:auto}
+  /* the phone's sticky footer (Eyes up, Push to students) sits above the site's tab bar */
+  .cv-view-dashboard .dash.has-topswitch .dash-foot{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom));padding-bottom:var(--s2)}
+  body[data-oc] .cv-view-dashboard .dash.has-topswitch .dash-foot{padding-inline-end:84px}
+}
+/* Oomba's chat button stays where it is on every view: the dashboard's footer leaves it room */
+@media (min-width:720px){body[data-oc] .cv-view-dashboard .dash-foot{margin-inline-end:76px}}
+
+/* Projector (the dashboard): the screen is the class's; the site's bars, the switcher and the pill step aside */
+body.cv-page.dash-projector{--top:0px;--tabbar:0px;padding-bottom:0}
+body.cv-page.dash-projector .topbar,body.cv-page.dash-projector .tabbar,body.cv-page.dash-projector .cv-nav{display:none}
+body.cv-page.dash-projector .cv-projname{display:block;font-size:1.6rem;margin:0 auto 0 8px}
+body.cv-page.dash-projector .dash-acts .dash-now{font-size:2.2rem}
+
+/* ---- tablets and phones (and cv-two at any width): the switcher and the view's buttons on one row, the pill under
+   them (the same two rows on every view, so the bar keeps its height when the view changes) */
+@media (max-width:1023px){
+  .cv-bar{flex-wrap:wrap;min-height:119px;padding:8px 16px;gap:6px 8px}
+  .cv-nav{display:contents}
+  #cv-bar .cv-class{flex:1 1 0;max-width:320px}
+  .cv-bar .hr-tabs{order:5;flex:1 1 100%}
+  .cv-bar .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+  .cv-acts{flex:0 1 auto;max-width:75%}
+}
+.cv-bar.cv-two{flex-wrap:wrap;min-height:119px;padding:8px 16px;gap:6px 8px}
+.cv-bar.cv-two .cv-nav{display:contents}
+#cv-bar.cv-two .cv-class{flex:1 1 0;max-width:320px}
+.cv-bar.cv-two .hr-tabs{order:5;flex:1 1 100%}
+.cv-bar.cv-two .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+.cv-bar.cv-two .cv-acts{flex:0 1 auto;max-width:75%}
+/* phones */
+@media (max-width:819px){
+  .cv-bar{position:relative;top:auto;padding:8px}
+  #cv-bar .cv-class{max-width:none}
+  .cv-acts{max-width:70%;gap:6px}
+  .cv-acts .btn{padding-inline:10px}
+  .cv-acts .hr-grow{display:none}
+  .cv-acts .hr-sparkt,.cv-acts .cv-btnt{display:none}
+  .cv-acts .hr-livebtns{display:flex}
+  .dash-acts .dash-now{display:none}
+}
+/* the smallest phones: the pill's three words fit (360 px) */
+@media (max-width:400px){.cv-bar .hr-tabs a{padding:0 4px;min-width:0}}
+@media print{.cv-bar{display:none}}
