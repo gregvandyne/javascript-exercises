@@ -37,6 +37,7 @@ import { placePopover } from '/js/popover-place.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
 import { liveBoard } from '/js/homeroom-live.js';
+import { gamePlayer } from '/js/homeroom-player.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -56,10 +57,15 @@ const H = {
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], sel: null, edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
-  teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [],
+  teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [], away: false,
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
+// One page with Classroom and Dashboard (public/js/class-views.js): the top bar is shared, and Homeroom's buttons are in
+// its Homeroom group; while another view is on screen this one is hidden (H.away): it asks for nothing, and keys go to
+// the view on screen.
+const barActs = () => document.querySelector('[data-cv-acts="homeroom"]');
+const viewEl = board ? board.closest('.cv-view') : null;
 
 // ---------------------------------------------------------------- groups and names
 const groupOf = sid => H.groups.find(g => g.id === H.members[sid]) || null;
@@ -159,6 +165,9 @@ function stagedMenu(id) {
       ${btn('btn hr-chunk', 'data-sm="off"', `${iconHtml('↩️', { size: 18 })} ${esc(th('my.takeOff'))}`)}</div></div>` });
   sh.el.querySelector('.hr-smenu').addEventListener('click', async e => {
     const b = e.target.closest('[data-sm]'); if (!b) return;
+    // Play / Preview opens the game over the board (public/js/homeroom-player.js); a tool, or a click for a new tab,
+    // opens its page as the link it is.
+    if (b.dataset.sm === 'play') { if (x.tool || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return; e.preventDefault(); sh.close(); PL.open(x.id); return; }
     if (b.dataset.sm === 'give') { sh.close(); if (H.seatsOpen) openSeats(false); setPick(pickOfStaged(x)); return; }
     if (b.dataset.sm === 'off') { sh.close(); stagedApi({ action: 'remove', id: x.id }); }
   });
@@ -337,10 +346,12 @@ function renderLive() {
   const el = $('hr-livebtns'), dot = $('hr-live'); if (!el) return;
   if (dot) dot.hidden = !H.live;
   $('homeroom')?.classList.toggle('hr-islive', !!H.live);
+  barActs()?.classList.toggle('hr-islive', !!H.live);
   const L = H.live;
-  const html = LV.topButtons() + (!L ? btn('btn hr-chunk hr-spark', 'data-hr="golive"', `${iconHtml('🏫', { size: 18 })} ${esc(th('everyone'))}`)
+  // (the yellow button's words in a span: a phone's shared bar shows its icon only, the button keeps its name)
+  const html = LV.topButtons() + (!L ? btn('btn hr-chunk hr-spark', `data-hr="golive" aria-label="${esc(th('everyone'))}"`, `${iconHtml('🏫', { size: 18 })}<span class="hr-sparkt"> ${esc(th('everyone'))}</span>`)
     : `${btn(`btn hr-chunk hr-pausebtn${L.paused ? ' on' : ''}`, `data-hr="${L.paused ? 'resume' : 'pause'}" aria-pressed="${L.paused}" aria-label="${esc(th(L.paused ? 'resume' : 'pause'))}"`, `${iconHtml('👀', { size: 18 })}<span class="hr-hidephone"> ${esc(th(L.paused ? 'resume' : 'pause'))}</span>`)}
-      ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })} ${esc(th(L.bring ? 'back' : 'bring'))}`)}`);
+      ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}" aria-label="${esc(th(L.bring ? 'back' : 'bring'))}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })}<span class="hr-sparkt"> ${esc(th(L.bring ? 'back' : 'bring'))}</span>`)}`);
   // the poll redraws this every 2 s while live: only when something changed, so the focus stays put
   if (html !== liveHtml) { liveHtml = html; el.innerHTML = html; }
 }
@@ -661,7 +672,7 @@ let pollTimer = null;
 const pollEvery = () => (H.live ? 8000 : 20000);
 async function pollHandouts() {
   clearTimeout(pollTimer); pollTimer = null;
-  if (document.hidden) return;
+  if (document.hidden || H.away) return;
   // while live the board's 2 s pulse brings the handouts whenever they change (public/js/homeroom-live.js)
   if (LV.polling()) { pollTimer = setTimeout(pollHandouts, pollEvery()); return; }
   try {
@@ -829,6 +840,28 @@ const LV = liveBoard({
   setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
 });
 
+/** Another view is on screen: the board keeps its zoom, place and selection; typing ends, menus close, nothing polls. */
+function away() {
+  H.away = true; ed.finishEdit();
+  if (H.menuOpen) { H.menuOpen = false; renderMenu(); }
+  if (H.drag) { H.drag.ghost?.remove(); H.drag = null; for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget'); }
+  H.gesture = null; H.pointers.clear();
+  clearTimeout(pollTimer); pollTimer = null; LV.pause();
+}
+/** Back on screen: the same view of the board, and the desks asked for now. */
+function back() {
+  H.away = false;
+  applyView(); renderMini();
+  pollHandouts(); LV.resume();
+}
+
+// A game from My desk, played over the board (public/js/homeroom-player.js): the board stays as it is underneath.
+const PL = gamePlayer({
+  host: $('hr-stage') || board?.parentElement, path: `/class/${encodeURIComponent(D.classId)}/homeroom`, back: th('playBack'),
+  find: id => { const x = stagedById(id); return x && x.href && !x.tool ? { href: x.href, title: x.title, icon: x.icon } : null; },
+  away: () => H.away,
+});
+
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
@@ -837,7 +870,7 @@ function start() {
   // a game's icon is a picture: the browser's own image drag would cancel ours (pointercancel)
   document.addEventListener('dragstart', e => { if (e.target.closest && e.target.closest('[data-hritem], [data-hrstaged]')) e.preventDefault(); });
   document.addEventListener('pointermove', dragMove); document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) pollHandouts(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !H.away) pollHandouts(); });
   pollTimer = setTimeout(pollHandouts, pollEvery());
   if (H.live) LV.onLive();
   requestAnimationFrame(fit);
@@ -846,12 +879,14 @@ function start() {
   board.addEventListener('pointerup', up); board.addEventListener('pointercancel', up);
   board.addEventListener('wheel', e => { e.preventDefault(); const r = board.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   const root = $('homeroom');
-  root.addEventListener('click', click);
-  root.addEventListener('keydown', keys);
-  document.addEventListener('keydown', ed.key);
+  for (const el of [root, barActs()].filter(Boolean)) { el.addEventListener('click', click); el.addEventListener('keydown', keys); }
+  document.addEventListener('keydown', e => { if (!H.away && !PL.current()) ed.key(e); });
   // The minimap sits outside the board: a press on it moves the view there.
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
-  $('hr-class').addEventListener('change', e => { if (e.target.value && e.target.value !== D.classId) location.href = `/class/${encodeURIComponent(e.target.value)}/homeroom`; });
+  PL.sync();   // a game the address names (#play=<card>): open over the board
+  // (another class: the shared bar's switcher, public/js/class-views.js)
+  viewEl?.addEventListener('cv:hide', away);
+  viewEl?.addEventListener('cv:show', back);
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderMini(); }, 150); });
   window.addEventListener('pagehide', () => { ed.finishEdit(); if (saveTimer) { clearTimeout(saveTimer); saveArea(); } });
 }

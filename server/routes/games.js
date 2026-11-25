@@ -31,6 +31,7 @@ import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
+import * as VC from '../services/verify-change.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { quizFromFile } from '../services/atlas-doc.js';
 import { cleanText } from '../services/textfilter.js';
@@ -371,6 +372,12 @@ router.get('/play/:slug', (req, res) => {
   // pass the game a number.
   const mic = !inMatch && micGame(g, games.getVersion(versionId)?.html);
   if (mic) res.set('Permissions-Policy', MIC_POLICY);
+  // Played inside Homeroom (?in=hr, docs/decisions.md "Homeroom: one page, three views"): the teacher's board and a
+  // student's desk open a game in a layer over themselves instead of leaving. Only then, and only in a frame of this
+  // site, may the page be framed (by this site alone); its own Back links give way to the layer's, and a game's own
+  // "back" asks the layer to close (public/js/play.js).
+  const embed = req.query.in === 'hr' && req.headers['sec-fetch-dest'] === 'iframe';
+  if (embed) { res.set('Content-Security-Policy', String(res.get('Content-Security-Policy') || '').replace("frame-ancestors 'none'", "frame-ancestors 'self'")); res.removeHeader('X-Frame-Options'); }
   const body = html`
   <header class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
@@ -387,9 +394,9 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
-  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
@@ -661,7 +668,9 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
   catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return res.status(r.code === 'words' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.clues', g.id, { count: b.words.length });
-  res.json({ clues: r.clues });
+  // Checked work (services/verify-change.js): what the teacher actually gets, said plainly when it is not everything.
+  const got = r.clues.filter(Boolean).length;
+  res.json({ clues: r.clues, report: VC.kept({ asked: r.asked || b.words.length, kept: got, removed: { 'left blank by the checks': (r.asked || b.words.length) - got }, noun: 'clues' }) });
 });
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
@@ -703,7 +712,10 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   const words = huntGame(g) ? r.words.filter(([w]) => { const n = [...gameSets.crossLetters(w)].length; return n >= 2 && n <= gameSets.HUNT.letters; }).slice(0, gameSets.HUNT.max).map(([w]) => [w, '']) : r.words;
   if (!words.length) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docNone' });
   audit(req.user.id, atlas ? 'game.doc_quiz' : 'game.doc_words', g.id, { kind: b.kind, count: words.length, ai: r.ai, cut: r.cut });
-  res.json({ title: r.title, words, cut: r.cut, ai: r.ai });
+  // Checked work: how many of what the AI (or the list) offered landed in the list after the checks, and why not.
+  const asked = Math.max(r.asked || 0, r.words.length);
+  const report = VC.kept({ asked, kept: words.length, noun: atlas ? 'questions' : 'words', removed: { 'removed by the checks': asked - r.words.length, ...(huntGame(g) ? { 'left out (too long or too short for a word search, or past its limit)': r.words.length - words.length } : {}) } });
+  res.json({ title: r.title, words, cut: r.cut, ai: r.ai, report });
 });
 // Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)
 // or a Word file, at most 2 MB, read here with no AI; Crossword's limits and its 10 files a day (the same counter).
@@ -776,7 +788,7 @@ router.post('/api/games/:id/proof/chat', requireUser, rateLimit('proof-ai', 30, 
   if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const b = req.body || {};
   if (typeof b.text !== 'string' || b.text.length > 4000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'brief' });
-  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry }));
+  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry, lang: req.locale }));
 });
 router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
   const g = apiGame(req, res); if (!g) return;

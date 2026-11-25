@@ -67,10 +67,10 @@ import * as SI from '../services/homeroom-signin.js';
 import { signinView } from './homeroom-signin.js';
 import * as S from '../services/schools.js';
 import * as games from '../services/games.js';
-import * as DASH from '../services/dash.js';
 import { toolAccess } from '../services/teacher-tools.js';
 import { config } from '../config.js';
 import { gcAfterAssign, gcCanPost } from './gclassroom.js';
+import { markView } from './homeroom-views.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413 };
@@ -98,14 +98,9 @@ const deskGate = (req, res, next) => {
 };
 router.use(['/class/:id/desk', '/api/desk/:id'], deskGate);
 
-/** The tabs a Homeroom teacher has on a class: Homeroom | Classroom | Dashboard (also over the class page:
- *  routes/schools.js classHeader). '' for anyone Homeroom does not let into this class. */
-export function homeroomTabs(req, c, active) {
-  if (!H.canUseClass(req.user, c)) return '';
-  const t = req.t;
-  const tabs = [['homeroom', `/class/${c.id}/homeroom`], ['classroom', `/class/${c.id}`], ...(DASH.isTeacher(req.user, c) ? [['dashboard', `/class/${c.id}/dashboard`]] : [])];
-  return html`<nav class="hr-tabs" aria-label="${t('homeroom.tabs.label')}">${tabs.map(([k, href]) => html`<a href="${href}"${k === active ? raw(' aria-current="page"') : ''}>${t(`homeroom.tabs.${k}`)}</a>`)}</nav>`;
-}
+// The tabs a Homeroom teacher has on a class (Homeroom | Classroom | Dashboard) and the one page they are views of:
+// routes/homeroom-views.js (docs/decisions.md "Homeroom: one page, three views").
+export { homeroomTabs } from './homeroom-views.js';
 
 /** What the left panel lists: their own games and the Oomba games, each one a handout (step 2a: tap it, then a desk,
  *  a group or Whole class; or drag it there), and the Manipulatives and Figures, which come next. */
@@ -127,8 +122,13 @@ const row = (t, x) => (x.id
 
 router.get('/class/:id/homeroom', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
-  const room = H.roomOf(c.id), classes = H.switchable(u);
-  if (!classes.some(x => x.id === c.id)) classes.unshift({ id: c.id, name: c.name });
+  const room = H.roomOf(c.id);
+  // The shared bar's Homeroom buttons (routes/homeroom-views.js): the Live dot, live class's buttons, Arrange seats, ⋯.
+  markView(req, c, 'homeroom', html`<span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
+        <span class="hr-grow"></span>
+        <span class="hr-livebtns" id="hr-livebtns"></span>
+        <button class="btn hr-chunk" type="button" data-hr="seats" aria-pressed="false" aria-label="${t('homeroom.arrange')}">${ico('🔀', { size: 18 })}<span class="hr-hidephone"> ${t('homeroom.arrange')}</span></button>
+        <div class="hr-morewrap"><button class="btn hr-chunk" type="button" data-hr="menu" aria-expanded="false" aria-haspopup="true" aria-label="${t('homeroom.more')}">⋯</button><div id="hr-menu"></div></div>`);
   const lists = deskLists(req);
   const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   page(req, res, {
@@ -139,16 +139,6 @@ router.get('/class/:id/homeroom', (req, res) => {
       lessons: HL.listMine(u, req.locale), staged: HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
       pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX } })}
     <div id="homeroom" class="hr">
-      <header class="hr-top">
-        <label class="sr-only" for="hr-class">${t('homeroom.switchClass')}</label>
-        <select class="input hr-class" id="hr-class" data-hr-switch>${classes.map(x => html`<option value="${x.id}"${x.id === c.id ? raw(' selected') : ''}>${x.name}</option>`)}</select>
-        ${homeroomTabs(req, c, 'homeroom')}
-        <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
-        <span class="hr-grow"></span>
-        <span class="hr-livebtns" id="hr-livebtns"></span>
-        <button class="btn hr-chunk" type="button" data-hr="seats" aria-pressed="false" aria-label="${t('homeroom.arrange')}">${ico('🔀', { size: 18 })}<span class="hr-hidephone"> ${t('homeroom.arrange')}</span></button>
-        <div class="hr-morewrap"><button class="btn hr-chunk" type="button" data-hr="menu" aria-expanded="false" aria-haspopup="true" aria-label="${t('homeroom.more')}">⋯</button><div id="hr-menu"></div></div>
-      </header>
       <div class="hr-stage">
         <div class="rm rm-teacher hr-board" id="hr-board" tabindex="-1" aria-label="${t('homeroom.boardLabel')}"><div class="rm-world" id="hr-world"><p class="muted hr-loading">${t('homeroom.loading')}</p></div></div>
         <aside class="hr-panel" id="hr-panel" aria-label="${t('homeroom.panel.label')}">

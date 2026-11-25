@@ -757,3 +757,20 @@ button.hr-tname:hover{background:var(--hover)}
 /* over a handout's game (public/js/homeroom-pulse.js): the lock, Pause screens, "Your teacher is coming over" */
 .hp-full{position:fixed;z-index:9000}
 .hp-note{position:fixed;z-index:9000;left:50%;top:12px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:10px 16px;border-radius:999px;background:var(--accent-soft);color:var(--text);font-weight:800;box-shadow:var(--shadow-lg)}
+
+/* ---- a game played inside Homeroom (public/js/homeroom-player.js): the teacher's board or a student's desk stays
+   underneath; the game's own play page in a frame, under a bar with the way back */
+.hr-player{position:absolute;inset:0;z-index:95;display:flex;flex-direction:column;background:var(--brand-ink,#141414);animation:hr-playin .16s ease-out}
+.hr-playtop{flex:none;display:flex;align-items:center;gap:12px;min-height:60px;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-playback{flex:none}
+.hr-playt{display:inline-flex;align-items:center;gap:8px;min-width:0;font-size:1.05rem}
+.hr-playt b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-playframe{flex:1 1 auto;min-height:0;width:100%;border:0;display:block;background:var(--brand-ink,#141414)}
+@keyframes hr-playin{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hr-player{animation:none}}
+/* the desk: the layer sits where the desk is (the top bar with Raise hand and the dock stay); Pause screens, the lock
+   and Bring everyone to me cover it as they cover the desk */
+.hd>.hr-player{left:12px;right:12px;top:80px;bottom:84px;z-index:30;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-lg)}
+.hd-playing .hd-body{visibility:hidden}
+@media (max-width:600px){.hd>.hr-player{left:8px;right:8px;top:64px;bottom:80px}}
+@media (max-width:819px){.hr-playtop{min-height:52px;padding:6px 8px}.hr-playt{font-size:.95rem}}

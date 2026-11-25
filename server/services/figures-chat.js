@@ -55,7 +55,7 @@ export function workflowRules(u, w, items = F.itemsOf(w.id)) {
     `# This page: a printable ${sheetName(w)} of figure questions in Figures`,
     `The teacher has their ${sheetName(w)} open. To draft it or change it, call editWorksheet. Each question has one figure drawn by Oomba Figures from data. You decide WHAT the questions are; the app draws every figure, checks it can be drawn truthfully to scale, and works out every answer itself. You never work out an answer.`,
     `Write questions, options and titles in ${F.LANG_NAMES[F.genLang(w.lang)]}, plain and clear for ${w.grade ? `grade ${w.grade}` : 'the grade the teacher names'} students. No names of people, no links, no brands or product names.`,
-    'After editWorksheet, say in one to three short sentences what you changed. If what the teacher wants for the worksheet is unclear, ask one short question and change nothing.',
+    'editWorksheet answers with the worksheet read back after the change: "landed" (each question as it now shows: its words, multiple choice or number, its options), "notLanded" (with why) and "worksheetNow". After it, say in one to three short sentences what changed, only from landed. If something is under notLanded (a figure that cannot be drawn, a question that is not there) or a question was repaired other than you asked, say so plainly and either call editWorksheet again now with data that can be drawn, or offer to try again. Never say a question changed unless landed shows it. If what the teacher wants for the worksheet is unclear, ask one short question and change nothing.',
     `- title: a new short title (under 60 characters) only when there is none yet or the teacher asks. grade: "K" or "1" to "12" only when the teacher asks for another grade.`,
     `- units: one of ${UNITS.join(', ')} when the teacher asks for other units. The app then changes the unit of every figure and works every answer out again, so do not replace questions just to change units (only replace a question whose own words name a unit).`,
     '- edits: what changes, in order. n is a question number as it is now (1 is the first). {"op": "replace", "n": 3, "item": ITEM} changes a question (harder, easier, other numbers, other words, another kind): give the whole new question. {"op": "remove", "n": 5}. {"op": "add", "after": 4, "item": ITEM} ("after": 0 for the start, null for the end).',
@@ -71,51 +71,131 @@ export function workflowRules(u, w, items = F.itemsOf(w.id)) {
   ].join('\n');
 }
 // ---------------------------------------------------------------- the answer, checked
-/** One ITEM from the AI, checked and repaired like a draft's. -> { item, repaired, dropped } */
+/** One ITEM from the AI, checked and repaired like a draft's. A multiple-choice question whose figure cannot be drawn
+ *  (even without a measure OF.check says to leave out) is NOT swapped for its kind's number generator: that would turn
+ *  "Which shape is this?" into "What is the area of the rectangle?" and lose its options (the owner's report, 25 Nov
+ *  2026). It is rejected with the reason instead, so the AI can send it again with data that can be drawn.
+ *  -> { item, repaired, dropped, fixed, status: 'ok' | 'fixed' | 'replaced' | 'rejected' | 'dropped', why?, left? } */
 function checkItem(raw, w) {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { item: null, repaired: 0, dropped: 1 };
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { item: null, repaired: 0, dropped: 1, fixed: 0, status: 'dropped', why: 'not a question' };
   const x = { ...raw };
   if (x.data && typeof x.data === 'object') x.data = JSON.stringify(x.data);
   const r = typeof x.gen === 'string' && x.gen.trim()
     ? F.repairTestDraft([x], { max: 1, grade: '', lang: w.lang })
     : F.repairDraft([x], { max: 1, lang: w.lang });
-  return { item: r.items[0] || null, repaired: r.repaired, dropped: r.dropped };
+  const nt = r.notes[0] || { action: r.items.length ? 'kept' : 'dropped' };
+  if (nt.action === 'replaced' && x.answerType === 'choice') return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: nt.why || 'the figure cannot be drawn' };
+  const status = nt.action === 'kept' ? 'ok' : nt.action;
+  return { item: r.items[0] || null, repaired: r.repaired, dropped: r.dropped, fixed: r.fixed || 0, status, ...(nt.why ? { why: nt.why } : {}), ...(nt.left ? { left: nt.left } : {}) };
 }
 /**
- * The model's answer made into a plan: { reply, title, grade, units, ops: [{ op, id?, after?, item? }], repaired, dropped }.
- * Numbers become question ids (as the teacher saw them when the message was sent). Throws SyntaxError when there is
- * neither a reply nor a change.
+ * The model's answer made into a plan: { reply, title, grade, units, ops: [{ op, id?, after?, item? }], repaired, dropped,
+ * report }. Numbers become question ids (as the teacher saw them when the message was sent). report: one line per edit
+ * sent, in order ({ k, at (its op's index in ops, -1 when none), op, n?, status, why?, left? }; status 'ok' | 'fixed' (drawn without a measure) | 'replaced' (by
+ * its kind's generator) | 'rejected' (not applied: the reason) | 'dropped' | 'noSuch' (no question n) | 'full'), so the
+ * tool's result can say what landed and what didn't. Throws SyntaxError when there is neither a reply nor a change.
  */
 export function readAnswer(raw, w, items) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new SyntaxError('not an answer');
   let reply = clip(raw.reply, 600).replace(/\s+/g, ' ').trim();
   if (reply && F.textProblem(reply)) reply = '';
   const idOf = n => (Number.isInteger(+n) && +n >= 1 && +n <= items.length ? items[+n - 1].id : null);
-  const ops = []; let repaired = 0, dropped = 0, adds = 0;
+  const ops = [], report = []; let repaired = 0, dropped = 0, adds = 0;
   const room = () => Math.min(F.LIMITS.draftMax - adds, F.LIMITS.items - items.length - adds + ops.filter(o => o.op === 'remove').length);
   const seen = new Set();
-  for (const e of (Array.isArray(raw.edits) ? raw.edits : []).slice(0, F.LIMITS.items)) {
+  const line = (k, e, c, at = -1) => ({ k, at, op: e.op, ...(e.op !== 'add' ? { n: Number.isInteger(+e.n) ? +e.n : null } : {}), status: c.status, ...(c.why ? { why: c.why } : {}), ...(c.left ? { left: c.left } : {}) });
+  for (const [k, e] of (Array.isArray(raw.edits) ? raw.edits : []).slice(0, F.LIMITS.items).entries()) {
     if (!e || typeof e !== 'object') continue;
-    if (e.op === 'remove') { const id = idOf(e.n); if (id && !seen.has(id)) { seen.add(id); ops.push({ op: 'remove', id }); } continue; }
+    if (e.op === 'remove') { const id = idOf(e.n); if (id && !seen.has(id)) { seen.add(id); report.push(line(k, e, { status: 'ok' }, ops.length)); ops.push({ op: 'remove', id }); } else report.push(line(k, e, { status: 'noSuch' })); continue; }
     if (e.op === 'replace') {
-      const id = idOf(e.n); if (!id || seen.has(id)) continue;
+      const id = idOf(e.n); if (!id || seen.has(id)) { report.push(line(k, e, { status: 'noSuch' })); continue; }
       const c = checkItem(e.item, w); repaired += c.repaired; dropped += c.dropped;
+      report.push(line(k, e, c, c.item ? ops.length : -1));
       if (c.item) { seen.add(id); ops.push({ op: 'replace', id, item: c.item }); }
       continue;
     }
     if (e.op === 'add') {
-      if (room() <= 0) { dropped++; continue; }
+      if (room() <= 0) { dropped++; report.push(line(k, e, { status: 'full', why: `at most ${F.LIMITS.draftMax} added in one answer and ${F.LIMITS.items} on the sheet` })); continue; }
       const c = checkItem(e.item, w); repaired += c.repaired; dropped += c.dropped;
+      report.push(line(k, e, c, c.item ? ops.length : -1));
       if (!c.item) continue;
       const after = e.after === 0 || e.after === '0' ? 0 : idOf(e.after);
-      ops.push({ op: 'add', after: after === 0 ? 'start' : after || 'end', item: c.item }); adds++;
+      // Its id is chosen here, so the check before writing (a dry run) and the write itself make the same question.
+      ops.push({ op: 'add', after: after === 0 ? 'start' : after || 'end', item: c.item, newId: F.newItemId() }); adds++;
     }
   }
   const title = typeof raw.title === 'string' ? S.cleanTitle(raw.title, '') : '';
   const grade = raw.grade !== null && raw.grade !== undefined ? S.cleanGrade(String(raw.grade).toUpperCase() === 'K' ? 'K' : String(raw.grade)) : '';
   const units = UNITS.includes(raw.units) ? raw.units : '';
-  if (!reply && !ops.length && !title && !grade && !units) throw new SyntaxError('no reply');
-  return { reply, title, grade, units, ops, repaired, dropped };
+  if (!reply && !ops.length && !title && !grade && !units && !report.length) throw new SyntaxError('no reply');
+  return { reply, title, grade, units, ops, repaired, dropped, report };
+}
+
+// ---------------------------------------------------------------- reading back what is on the worksheet
+/** One question as the teacher sees it on the page now (numbered from 1): what the tool's result and the check after
+ *  writing compare. */
+export function shownItem(u, it, i) {
+  const q0 = fine(u, it.question) ? clip(it.question, 160) : it.question ? '(left out)' : '';
+  return { n: i + 1, kind: it.kind, question: q0, answerType: it.answerType, ...(it.answerType === 'choice' ? { choices: it.choices.map(o => (fine(u, o) ? o : '(left out)')), correct: it.correct } : {}), answer: clip(it.answer || '', 60) };
+}
+/** The worksheet as it is now: its title, grade and every question as shown, with each question's id (server-side
+ *  only: never sent to the AI). */
+export function readBack(u, w0) {
+  const w = F.ownWorksheet(u, w0.id); if (!w) return null;
+  const items = F.itemsOf(w.id);
+  return { title: fine(u, w.title) ? w.title : '', grade: w.grade || '', count: items.length, items: items.map((it, i) => ({ id: it.id, ...shownItem(u, it, i) })) };
+}
+const sameShown = (a, b) => !!a && !!b && JSON.stringify({ ...a, n: 0, id: 0 }) === JSON.stringify({ ...b, n: 0, id: 0 });
+/**
+ * What landed, checked against the worksheet as it is after writing (back: readBack after applyPlan; before: readBack
+ * before it): every edit's own line (report), each changed or added question as it now shows, and what did not land
+ * with why. -> { landed: [...], notLanded: [...], shown: [...], ok, partial }
+ */
+export function verifyPlan(plan, a, before, back) {
+  const landed = [], notLanded = [];
+  const byId = new Map((back ? back.items : []).map(x => [x.id, x]));
+  const was = new Map((before ? before.items : []).map(x => [x.id, x]));
+  const miss = (code, r, why) => notLanded.push({ code, op: r.op, ...(r.n ? { n: r.n } : {}), why });
+  for (const r of plan.report || []) {
+    const o = r.at >= 0 ? plan.ops[r.at] : null;
+    if (!o) {
+      if (r.status === 'rejected') miss('cannotDraw', r, `not changed: its figure cannot be drawn (${r.why})`);
+      else if (r.status === 'noSuch') miss('noSuch', r, `there is no question ${r.n} (or it was named twice)`);
+      else if (r.status === 'full') miss('full', r, `not added (${r.why})`);
+      else miss('dropped', r, `left out (${r.why || 'not a question the app can draw'})`);
+      continue;
+    }
+    if (o.op === 'remove') {
+      if (!byId.has(o.id) && was.has(o.id)) landed.push({ op: 'remove', n: r.n, removed: was.get(o.id).question });
+      else miss('meanwhile', r, 'it is still on the worksheet (changed by hand while Oomba was working)');
+      continue;
+    }
+    const id = o.op === 'replace' ? o.id : o.newId;
+    const now0 = id ? byId.get(id) : null;
+    if (!now0) { miss('meanwhile', r, 'it is not on the worksheet after saving (edited or deleted by hand while Oomba was working, or the worksheet is full)'); continue; }
+    if (o.op === 'replace' && sameShown(now0, was.get(id))) { miss('same', r, 'the question on the worksheet is the same as before'); continue; }
+    const extra = r.status === 'fixed' ? { repaired: `drawn without ${r.left.join(', ')} (the figure works it out from the other measures)` } : r.status === 'replaced' ? { repaired: `the question sent could not be drawn (${r.why}), so a question from its kind's generator is there instead`, notAsAsked: true } : {};
+    const { id: _i, ...shown } = now0;
+    landed.push({ op: o.op, ...(o.op === 'replace' ? { n: r.n } : {}), now: shown, ...extra });
+  }
+  if (plan.title) (back && back.title === plan.title ? landed.push({ title: plan.title }) : notLanded.push({ code: 'meanwhile', title: plan.title, why: 'the title on the worksheet is different' }));
+  if (plan.grade) (back && back.grade === plan.grade ? landed.push({ grade: plan.grade }) : notLanded.push({ code: 'meanwhile', grade: plan.grade, why: 'the grade on the worksheet is different' }));
+  if (plan.units) (a && a.change && a.change.unitsOn ? landed.push({ units: plan.units, questions: a.change.unitsOn }) : notLanded.push({ code: 'units', units: plan.units, why: 'no figure here takes that unit, or every one already had it' }));
+  const notAsAsked = landed.filter(x => x.notAsAsked).length;
+  return { landed, notLanded, ok: !notLanded.length && !notAsAsked, nothing: !landed.length, notAsAsked };
+}
+/** What the turn's card shows of a check (no question words: those are on the worksheet): how many landed, and each
+ *  thing that did not land or landed other than asked, by code and question number. */
+export function verifyCard(v) {
+  return { ok: v.ok, landed: v.landed.length, notLanded: v.notLanded.map(x => ({ code: x.code, ...(x.n ? { n: x.n } : {}), ...(x.units ? { units: x.units } : {}) })),
+    swapped: v.landed.filter(x => x.notAsAsked).map(x => x.now.n) };
+}
+/** The check as the AI is told it: what landed (each question as it shows now), what did not and why. */
+export function verifyResult(v, back) {
+  return {
+    applied: !v.nothing, landed: v.landed, notLanded: v.notLanded.map(({ code, ...x }) => x),
+    worksheetNow: back ? { count: back.count, questions: back.items.map(x => `${x.n}. ${x.question || '(no words)'} [${x.answerType === 'choice' ? `multiple choice: ${(x.choices || []).join(' / ') || 'no options'}` : 'number'}]`) } : null,
+  };
 }
 
 // ---------------------------------------------------------------- applying and undoing (inside the engine's transaction)
@@ -164,7 +244,7 @@ export function applyPlan(u, w0, plan, { first = false } = {}) {
       if (!adds.has(o.id)) changed.add(o.id);
     } else if (o.op === 'add') {
       if (order.length >= F.LIMITS.items) continue;
-      const id = S.storeItem(w.id, order.length, o.item);
+      const id = S.storeItem(w.id, order.length, o.item, o.newId);
       adds.add(id);
       const at = o.after === 'start' ? 0 : o.after === 'end' || !order.includes(o.after) ? order.length : order.indexOf(o.after) + 1;
       order.splice(at, 0, id);

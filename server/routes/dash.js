@@ -69,6 +69,7 @@ import * as DC from '../services/dash-calendar.js';
 import { qrSvg, fits, MAX_DASH_VERSION } from '../services/qr.js';
 import { origin } from '../seo.js';
 import { dashCsp, DASH_TEACHER_POLICY, siteFrame, siteFrameCsp, SITE_SANDBOX } from '../services/dash-media.js';
+import { markView } from './homeroom-views.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/dash.css?v=${VERSION}">`);
@@ -118,23 +119,34 @@ function dashPage(req, res, c, role) {
   const t = req.t, u = req.user;
   const s = S.getSchool(c.school_id);
   const reg = D.registryFor(t, role);
-  let data, top, foot = '';
+  let data, top, foot = '', views = false;
   if (role === 'teacher') {
     const layouts = D.ensureLayouts(u, c, t);
     const cur = D.currentLayout(u, c, layouts);
     data = { role, classId: c.id, className: c.name, tz: S.zoneOf(s) || D.FALLBACK_TZ, tzSet: !!S.zoneOf(s), registry: reg, practice: D.practiceFor(c), layouts: layouts.map(l => ({ id: l.id, name: l.name, widgets: l.widgets, bg: l.bg })), templates: D.templatesFor(t), current: cur.id, active: D.classState(c.id).layout_id, live: D.liveState(c, u, role), eyesMs: D.EYES_MS, maxStickers: D.MAX_STICKERS };
-    top = html`<header class="dash-top" id="dash-top">
+    // (each label in a span the shared bar can hide on a narrow screen; the button keeps its name)
+    const buttons = html`<button class="btn btn-sm" type="button" id="dash-stickers-btn" aria-expanded="false" aria-controls="dash-stkpanel" aria-label="${t('dash.w.stickers.open')}">${ico('🌟', { size: 18 })} <span class="dash-btnt">${t('dash.w.stickers.open')}</span></button>
+      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false" aria-label="${t('dash.top.projector')}">${ico('📽️', { size: 18 })} <span class="dash-btnt">${t('dash.top.projector')}</span></button>
+      <button class="btn btn-sm" type="button" id="dash-edit" aria-label="${t('dash.top.edit')}">${ico('✏️', { size: 18 })} <span class="dash-btnt">${t('dash.top.edit')}</span></button>`;
+    // A Homeroom teacher: the dashboard is one view of a page with Homeroom and Classroom (routes/homeroom-views.js).
+    // Its top bar's buttons, the date and the clock go into the shared bar (the class switcher there names the class;
+    // the class's name shows again in Projector, where the switcher and the pill are hidden). Edit mode's bar is unchanged.
+    views = markView(req, c, 'dashboard', html`<div class="dash-acts" id="dash-top">
+      <h1 class="dash-class cv-projname">${c.name}</h1>
+      <span class="dash-date" id="dash-date"></span>
+      <span class="dash-grow"></span>
+      <span class="dash-now" id="dash-now" aria-hidden="true"></span>
+      ${buttons}</div>`);
+    top = views ? '' : html`<header class="dash-top" id="dash-top">
       <a class="dash-logo" href="/class/${c.id}" aria-label="${t('dash.top.backClass')}">${wordmark()}</a>
       <span class="dash-sep" aria-hidden="true"></span>
       <h1 class="dash-class">${c.name}</h1>
       <span class="dash-date" id="dash-date"></span>
       <span class="dash-grow"></span>
       <span class="dash-now" id="dash-now" aria-hidden="true"></span>
-      <button class="btn btn-sm" type="button" id="dash-stickers-btn" aria-expanded="false" aria-controls="dash-stkpanel">${ico('🌟', { size: 18 })} ${t('dash.w.stickers.open')}</button>
-      <button class="btn btn-sm" type="button" id="dash-projector" aria-pressed="false">${ico('📽️', { size: 18 })} ${t('dash.top.projector')}</button>
-      <button class="btn btn-sm" type="button" id="dash-edit">${ico('✏️', { size: 18 })} ${t('dash.top.edit')}</button>
-    </header>
-    <header class="dash-top dash-edithead" id="dash-edithead" hidden>
+      ${buttons}
+    </header>`;
+    top = html`${top}<header class="dash-top dash-edithead" id="dash-edithead" hidden>
       ${editTitle(t, cur.name)}
       <span class="small muted dash-hint">${t('dash.top.editHint')}</span>
       <span class="dash-grow"></span>
@@ -181,7 +193,7 @@ function dashPage(req, res, c, role) {
     <div class="dash-bannerslot" id="dash-banner" aria-live="polite"></div>
     <section class="dash-check" id="dash-check" aria-labelledby="dash-check-h" tabindex="-1" hidden></section>`;
   }
-  const bodyHtml = html`<div class="dash dash-${role}" id="dash" data-role="${role}" data-class="${c.id}">
+  const bodyHtml = html`<div class="dash dash-${role}${views ? ' dash-inviews' : ''}" id="dash" data-role="${role}" data-class="${c.id}">
     ${top}
     <div class="dash-body">
       ${library(t)}

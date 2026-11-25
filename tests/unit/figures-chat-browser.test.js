@@ -234,3 +234,54 @@ test('on an iPhone 13: the chat is a sheet that minimizes to the Oomba bubble, w
     await C.allSettled();
   } finally { CO.hooks.create = null; await C.allSettled(); CO.reset(boss); }
 });
+
+// The owner's report, 25 Nov 2026 (docs/decisions.md "Builders check their work: verify after every change"): on a test,
+// "The first question isn't multiple choice"; Oomba said it had replaced question 1 with a "name the square" question
+// while the screen kept "What is the area of the rectangle?". Now: the question on screen is the multiple-choice one
+// with its options, next to a reply made from what was read back; and an edit that cannot land says so on the card with
+// Try again, the screen unchanged.
+test('the owner\'s flow: "The first question isn\'t multiple choice" changes question 1 on screen, and an edit that cannot land says so', { skip }, async () => {
+  const SQUARE = { kind: 'rectangle', data: { AB: 5, BC: 5, square: true, unit: 'cm' }, question: 'What is the name of this shape?', answerType: 'choice', choices: ['Square', 'Circle', 'Triangle', 'Rectangle'], correct: 0 };
+  const BAD = { kind: 'triangle', data: { AB: 1, BC: 2, CA: 10 }, question: 'What kind of triangle is this?', answerType: 'choice', choices: ['Right', 'Equilateral', 'Isosceles'], correct: 0 };
+  CO.hooks.create = async params => {
+    const lastMsg = params.messages.at(-1), res = Array.isArray(lastMsg.content) ? lastMsg.content.find(c => c.type === 'tool_result') : null;
+    const words = [...params.messages].reverse().find(m => m.role === 'user' && typeof m.content === 'string').content;
+    const base = { model: params.model, usage: { input_tokens: 5, output_tokens: 5 } };
+    if (!res) return { ...base, stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'tu1', name: 'editWorksheet', input: { edits: [{ op: 'replace', n: /triangle/.test(words) ? 2 : 1, item: /triangle/.test(words) ? BAD : SQUARE }] } }] };
+    const r = JSON.parse(res.content);
+    const text = r.applied ? `Question ${r.landed[0].now.n} now asks "${r.landed[0].now.question}" as multiple choice: ${r.landed[0].now.choices.join(', ')}.` : `Question ${r.notLanded[0].n} did not change: its figure cannot be drawn that way. Want me to try again with a different triangle?`;
+    return { ...base, stop_reason: 'end_turn', content: [{ type: 'text', text }] };
+  };
+  try {
+    const area = (AB, BC) => ({ kind: 'rectangle', data: { AB, BC, unit: 'cm' }, question: 'What is the area of the rectangle?', answerType: 'number', answerKey: 'area' });
+    const id = F.createWorksheet(boss, { purpose: 'test', title: 'Shapes', items: [area(6, 4), area(3, 5), area(7, 2)] }).id;
+    const { ctx, page, errors } = await open(`/figures/worksheets/${id}?ai=1`);
+    await page.waitForSelector('#oc:not([hidden]) #oc-in');
+    await page.waitForSelector('.fg-item [data-q]');
+    await page.fill('#oc-in', 'The first question isn\'t multiple choice');
+    await page.click('#oc-send');
+    await page.waitForSelector('.oc-change');
+    // On the screen: question 1 is the name-the-shape question, multiple choice, with its four options.
+    await page.waitForFunction(() => document.querySelector('.fg-item [data-q]').value === 'What is the name of this shape?');
+    const q1 = page.locator('.fg-item').first();
+    assert.equal(await q1.locator('[data-atype][value="choice"]').isChecked(), true);
+    assert.deepEqual(await q1.locator('[data-otext]').evaluateAll(xs => xs.map(x => x.value)), ['Square', 'Circle', 'Triangle', 'Rectangle']);
+    assert.match(await page.locator('.oc-msg.bot').last().textContent(), /Question 1 now asks "What is the name of this shape\?"/);
+    assert.match(await page.locator('.oc-change').last().textContent(), /Changed question 1/);
+    assert.doesNotMatch(await page.textContent('#oc-log'), /Change undone/);
+    assert.equal(await page.locator('.oc-verify').count(), 0, 'everything landed');
+    await shot(page, 'owner-flow-after');
+    // An edit that cannot land: the card says nothing changed, with Try again; question 2 on screen is as it was.
+    await page.fill('#oc-in', 'Make question 2 a multiple choice triangle question');
+    await page.click('#oc-send');
+    await page.waitForSelector('.oc-verify');
+    assert.match(await page.textContent('.oc-verify'), /Nothing changed\.[\s\S]*Question 2 stayed as it was/);
+    assert.equal(await page.locator('.oc-verify [data-c="again"]').count(), 1);
+    assert.match(await page.locator('.oc-msg.bot').last().textContent(), /Question 2 did not change/);
+    assert.equal(await page.locator('.fg-item').nth(1).locator('[data-q]').inputValue(), 'What is the area of the rectangle?');
+    await shot(page, 'owner-flow-not-landed');
+    await noSideScroll(page);
+    assert.deepEqual(errors, []);
+    await ctx.close();
+  } finally { CO.hooks.create = null; await C.allSettled(); CO.reset(boss); }
+});

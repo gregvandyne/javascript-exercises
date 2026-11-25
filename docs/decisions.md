@@ -13931,3 +13931,164 @@ time, no top five, no "#1" or "1st place", no podium of named players. Scores ar
   kit-rules.js) say `top` is always empty and a live game shows each player's own result and the class's totals.
 - **Left as is.** The kit's live pack (kit/packs/live.js, pinned in shipped kit versions) still has its `leaderboard`
   event and `leaderboard()` accessor; they only ever carry an empty list now. A new pack build is not needed for that.
+## Homeroom: one page, three views (25 Nov 2026)
+
+The owner: "the switch between Dashboard, Homeroom, and Classroom should be seamless like you are on the same page and
+just switching views briefly. Currently it's 3 different pages and setups." Then: "When you choose a game you should be
+able to play from within the homeroom instead of having to navigate away."
+- **One page** (`server/routes/homeroom-views.js`, `public/js/class-views.js`, `public/css/class-views.css`): for a
+  teacher Homeroom lets into the class (`canUseClass`), `/class/:id/homeroom`, `/class/:id` (every Classroom page:
+  Games, Progress, Students, Settings, gradebook and reports) and `/class/:id/dashboard` draw the same page: the site's
+  bar, then one **shared bar** (class switcher, Homeroom | Classroom | Dashboard, the view's own buttons on the right),
+  then the view area. Same place, same height (71 px; two rows on a phone, 119 px), same chunky pill buttons on every
+  view; on a narrow laptop the buttons lose their words before anything wraps, and what still does not fit scrolls
+  inside the bar. Sticky under the site's bar while Classroom scrolls. Everyone else gets the pages exactly as before.
+  - A route marks its page as a view (`markView(req, c, view, actions)`: the Homeroom page, `routes/schools.js`
+    classHeader for every Classroom page, the teacher's dashboard); `views/layout.js` page() asks the registered shell
+    (`setViewShell`, so the layout imports nothing of Homeroom, as with onEveryPage).
+  - **The buttons moved into the bar**: Homeroom's Live dot, live buttons, Arrange seats and ⋯ (the old `.hr-top` is
+    gone; the ids stay); Classroom's Connections and Host a live game (its Dashboard button is the pill now; the Back
+    link stays at the top of the view); the dashboard's date, clock, Stickers, Projector and Edit screen (its logo and
+    class name are the switcher; edit mode keeps its own bar under the shared one). In Projector the site's bars, the
+    switcher and the pill step aside and the class name shows in the bar. The dashboard gets the site's bar and tab
+    bar like the other two views (its phone footer sits above the tab bar; Oomba's chat button is never moved into
+    its footer on this page).
+- **Switching never loads the page**: the pill items are real links (without script, or with a modifier key, they open
+  the page). With script, a view opened for the first time is fetched with `X-View: 1` (the same address answers JSON:
+  content, the bar's buttons, stylesheets, scripts at the page's own `?v=` addresses and their strings,
+  `views/layout.js` viewFragment; `Vary: X-View`, no-store); its stylesheets load first (placed before
+  class-views.css), its strings join the page's (`i18n.js` addStrings), the content goes in, then its scripts run once
+  (dynamic import, so a module is never evaluated twice). A short fade out and in (110 and 170 ms; none with reduced
+  motion). `history.pushState` keeps the address; Back and Forward move between views; a reload or a link opens the
+  view its address names, drawn by the server. Another class from the switcher opens the same view of it.
+- **Views are kept, not rebuilt**: a view is hidden and shown again. It hears `cv:hide` and `cv:show` on its section.
+  Homeroom keeps its zoom, place and selection (typing ends, the ⋯ menu closes); it stops asking for the desks and the
+  live pulse while hidden and asks at once when shown. The dashboard leaves Projector, edit mode (saved) and the
+  sticker panel when left, stops its live check while hidden, and checks and fits its rows when shown. Keys go to the
+  view on screen only (Homeroom's Delete and the dashboard's Ctrl+Z check). Each view's page data has its id only
+  while shown, so scripts that read it later read their own. Classroom remembers its page and scroll for the tab
+  (sessionStorage), so the pill opens it where it was left; its own tabs and links still load their page (the
+  class page's scripts bind once at load and are not built to be re-run).
+- The page may become the dashboard without loading again, so all three views get the dashboard teacher's frame hosts
+  (the two video hosts) and camera and microphone policy (after a tap, as on the dashboard). Oomba's chat stays where
+  it is and follows the view (`companion.js`: the dashboard's context on the dashboard, the class's elsewhere).
+- **Playing inside Homeroom** (`public/js/homeroom-player.js`): Play / Preview on a My desk card (a game or a lesson;
+  tools still open their page) and a handout card on a student's desk open the game in a layer over the board or the
+  desk, with "Back to Homeroom" / "Back to my desk" (new strings, 12 languages). The layer is the game's own play page
+  in a frame: `/play/<slug>?in=hr` may be framed by this site only when it is asked for in a frame (`Sec-Fetch-Dest:
+  iframe`; `frame-ancestors 'self'`, no X-Frame-Options); anywhere else the page is unchanged and never framable. In
+  the frame its Back links give way to the layer's, and a game's own "back" or Escape on the page asks the layer to
+  close (`play.js`). The address carries the open game (`#play=<card>`): a reload opens it again, Back closes it,
+  Escape closes it. Underneath, nothing stops: the board keeps its zoom, place and live polling; the desk keeps Raise
+  hand, its state poll, Pause screens, Bring everyone to me and the lock, which cover the game as they cover the desk.
+  One pulse per student: the desk's own pulse rests while the game page in the layer pulses (where: game, as before).
+  Closing asks for the cards again, so the card shows its progress. In order still waits: a locked card never opens,
+  and the server's "Finish the one before it first" is unchanged. On a phone the layer fills the board under the
+  shared bar.
+- Tests: `tests/unit/homeroom-views.test.js` (the shell on each address, the X-View JSON, everyone else unchanged, the
+  flag off, Spanish, the play page framed only when asked) and `tests/unit/homeroom-views-browser.test.js` (Homeroom ->
+  Classroom -> Dashboard -> Homeroom with a value on window surviving and one navigation entry, Back and Forward, a
+  reload; zoom and place kept; Delete once deletes one note and never from another view; no dashboard checks while
+  hidden; Classroom's tab and scroll; deep links on every view; the bar's place and height at 1366 x 768, 1000 x 600
+  and a phone with nothing sideways; a teacher without Homeroom; playing from My desk with Escape, Back and a reload;
+  a student playing a handout with one pulse, Pause screens over it and the progress after closing).
+- **Open**: Classroom's own tabs still load their page (Homeroom's board state then starts fresh, its saved state is
+  the server's as always); a game left open in the layer keeps playing while another view is on screen.
+## Builders check their work: verify after every change (25 Nov 2026)
+
+The owner's report. On a Figures test, the companion was asked for "a multiple choice test asking students to name
+different shapes". It said "The app repaired one question so its figure could be drawn"; question 1 on screen was "What
+is the area of the rectangle?". Told "The first question isn't multiple choice", Oomba said it had replaced question 1
+with a "name the square" question (Square, Circle, Triangle, Rectangle); the screen kept the area question; the same
+again after "It is still an area question". The owner: "it needs to check its work and confirm on the screen that it
+has done what it said it has first." Later, the same rule for every AI builder that changes something.
+
+Root cause, in two parts.
+- **The edit did land, as the wrong question.** The model drew its square as `{ AB: 5, BC: 5, square: true }`. OF.check
+  refuses that ("a square is drawn from AB; leave out "BC""), and `repairDraft` (`services/figures.js`) then replaced
+  the WHOLE question with its kind's first generator: the rectangle's number question "What is the area of the
+  rectangle?", the words and the four options thrown away. So the first draft's question 1 was already this swap, and
+  each "replace question 1" swapped it for another dealing of the same area question. Nothing undid anything: the
+  "Change undone." card is shown only after the teacher's own Undo (the engine marks `undone` only in `undo()`).
+- **The model was told "done" before anything was written.** `editWorksheet`'s result was `{ done: true, changes: 1,
+  repaired: 1, note: 'Applied when you answer' }`, made from the plan before the write, and the reply was written from
+  it. "repaired: 1" did not say that the repair had thrown the question away, so the model said what it had sent.
+
+What changed.
+- **Repairs keep the question** (`repairDraft`): when OF.check refuses a figure only for top-level measures it names to
+  leave out (`leave out "X"`, from the shipped kit's own messages; the kit is unchanged), the figure is checked again
+  without them and the question keeps its words, answer type and options (`fixed`). Only after that does the old
+  generator swap happen. Every item gets a note (`kept | fixed | replaced | dropped`, and why) so callers can say what
+  became of it; `repairTestDraft` passes them on. The worksheet's own "Power with AI" draft gets the same fix.
+- **A multiple-choice question is never swapped for a number question** in Oomba's edits (`figures-chat.js`
+  checkItem): when its figure still cannot be drawn, that edit is not applied and the reason goes back to the model,
+  which can send it again in the same answer (a second `editWorksheet` call is merged into the same change, one Undo).
+  A number question still falls back to its generator, reported as "landed other than asked".
+- **Checked work** (`services/verify-change.js`, shared): the tool writes the change in a dry run (a transaction that is
+  always rolled back; better-sqlite3 nests it as a savepoint), reads the worksheet back as the page shows it
+  (`figures-chat.js readBack`: each question's words, number or multiple choice, its options and answer) and returns
+  THAT: `applied`, `landed` (each question as it now reads, with any repair), `notLanded` (with why: its figure cannot be
+  drawn, no such question, the sheet is full, changed by hand meanwhile, the same as before, no figure takes that unit)
+  and `worksheetNow`. New questions get their ids before the dry run, so the real write makes the same questions.
+- **The real write is read back too** (with Oomba's reply, in the engine's one transaction). When it differs from what
+  the model was told (the teacher deleted or edited the question meanwhile), the app's own sentence follows Oomba's
+  words (`correction`, never cut by the reply limit), and the turn's `verify` says what did not land.
+- **The card tells the truth in the app's own words** (`public/js/oomba-chat.js`, shared by every surface): when not
+  everything landed, under "What changed" (or alone, when nothing changed) a yellow note lists each miss ("Question 1
+  stayed as it was: its figure couldn't be drawn that way.") with Try again (sends the same message again). The step
+  line says "Couldn't change the worksheet" when nothing landed; "Changed your worksheet (1 change)" counts what landed.
+  "Change undone." appears only after an Undo (`change.by: 'teacher'`), with a reason when there is one.
+- **On the screen**: after an answer, the Figures page reloads the worksheet and checks that every question the change
+  added or changed is drawn; if not, it loads again once, and says so if it still is not.
+- **The prompts** (the companion's and the Figures and Manipulatives page rules, never the arcade Builder's pinned
+  SYSTEM_PROMPT+TOOLS): `VC.RULE` ("Tell the teacher only what is under landed ... Never say something is done unless
+  the tool result shows it landed"), and the page tools' descriptions say their result is the page read back.
+- **Every page tool, through the shared engine**: Manipulatives' `changeBoard` returns the board read back as the page
+  will show it (`manip-chat.js readBack`) and what the checks left out (`dropped`); the card says "1 item was left out";
+  a board that cannot be built says nothing changed. The page puts the board on itself; if that throws, the board is
+  put back and the card says it could not be put on. Points the companion gives are counted as given (a class or a
+  student gone since gives none), with the app's correction when fewer landed. A new class is made only on the
+  teacher's tap (unchanged: the card shows it made), and dashboard changes only on Apply (unchanged).
+- **The engine** (`services/oomba-chat.js`): a surface's `apply()` may return `verify` (kept on the turn) and
+  `correction` (said after Oomba's words). `kept()` gives drafts without a page tool the same plain report ("12 of 15
+  words kept, 3 removed by the filter").
+- **Every other builder that changes something**, the same rule in its own place:
+  - *Books* (the companion's book writer): the merge keeps a page the teacher changed meanwhile; when nothing of the
+    writer's change landed, or some pages stayed, the reply ends with the app's own words and the card says so.
+  - *Dashboard* (Apply on a proposal card): the layout as saved; a widget removed by hand meanwhile is counted as not
+    landed on the card. A new class (createClass) is made only on Create, and its card shows it made (unchanged).
+  - *Mistake Hunt chat* (`services/proof-chat.js`): its reply is written before the server builds the set, so passages
+    the checks left out, or a set that could not be built, are said after it in the teacher's language
+    (`proof.chatCheck.*`) and kept on the turn (`verify`).
+  - *Crossword, Word Hunt, Atlas Quest drafts* (`set-ai.js`, `crossword-doc.js`, `atlas-doc.js`, `routes/games.js`):
+    each answer carries `report` (`VC.kept`: how many the AI sent, how many landed in the list, why the rest did not),
+    and the page says "12 of 15 kept" when some were left out (`js.play.aiKept`; the games' own frames are unchanged).
+  - *The Builder* (games, classroom activities and Canvas, `builder/claude.js`): the tools already answer the model
+    with what saved ("Saved as version 3", "Not saved: ...", "No changes were made"), and the playtest and safety scan
+    already end with honest lines. New: when the last change the AI tried did not save and nothing saved after it, the
+    reply ends with "my last change didn't save, so your game is still version N" (`builder.lastNotSaved`), whatever
+    the AI wrote. The arcade SYSTEM_PROMPT+TOOLS are unchanged (their hash test passes).
+  - *The lesson drafter* (`lesson-ai.js`, `routes/lessons.js`): `figureStep` counts what the checks did (`tally`:
+    asked, kept, fixed, replaced, dropped, steps that became a question or text) and `draftLesson` returns it with the
+    game steps swapped for text. After saving, the route reads the lesson back (`L.steps`) and hands the editor
+    `chk=saved.planned.fixed.replaced.dropped.games`; the editor shows "Oomba checked the saved lesson" with one line per
+    difference (`lessons.ai.check.*`), and nothing when the draft landed as written.
+  - *Live question-set drafts* (`set-ai.js draftQuestions` and `draftFromLesson`, `routes/live.js`): each returns
+    `asked` and the answer carries `report` (`VC.kept`). The set editor's toast counts what it really took ("Added 8 of
+    the 10 questions you asked for", `js.live-sets.addedOf`), and /teach/make says the same (`js.teach-make.draftedOf`).
+  - *Story Builder* (`stories/worker.js`): a story is "done" only with its video, poster and captions on disk and not
+    empty (`versionMissing`). A change is swapped in only when its new version is complete AND it is still being made:
+    before, a change ended meanwhile (the stall check) swapped in its video while the row kept the old words, so the
+    page showed one story and played another. After the swap the row is read back (title, files) and a mismatch is
+    logged.
+Tests: `tests/unit/companion-verify.test.js` (the owner's flow: question 1 replaced by the name-the-shape question with
+its figure repaired, options kept, the tool's result read back, the reply from it, no "Change undone."; the first draft
+of that test; an edit that cannot land, told to the model and on the card; a second try in one answer; a question deleted
+meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers; the drafts'
+counts; a dashboard change after a widget went), `companion-book.test.js` (a book change that does not land),
+`proof-chat.test.js` (left-out passages and a set that could not be built), `builder-claude.test.js` (the last change
+did not save), `figures-lesson-step.test.js` (the editor's note from the saved lesson), `teach-make.test.js` and
+`live-sets-editor.test.js` (the questions asked for vs kept), `story-pipeline.test.js` (a change ended meanwhile never
+swaps its video in), and the
+owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
+next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).

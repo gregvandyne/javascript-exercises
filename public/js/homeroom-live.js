@@ -34,6 +34,7 @@ export function liveBoard(ctx) {
   // ---------------------------------------------------------------- polling
   async function poll() {
     clearTimeout(LV.timer); LV.timer = null;
+    if (LV.paused) return;
     if (!live()) { LV.data = null; paint(); renderPanel(); return; }
     if (!document.hidden) {
       try {
@@ -46,7 +47,7 @@ export function liveBoard(ctx) {
     }
     if (live()) LV.timer = setTimeout(poll, 2000);
   }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && live()) poll(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && live() && !LV.paused) poll(); });
 
   // ---------------------------------------------------------------- the desks
   const stLabel = (st) => tl(`st.${st}`);
@@ -311,6 +312,9 @@ export function liveBoard(ctx) {
     /** Live class started or ended on this page. */
     onLive() { LV.hv = ''; if (live()) poll(); else { clearTimeout(LV.timer); LV.data = null; if (LV.look) LV.look.sh.close(); paint(); renderPanel(); } },
     polling: () => live(),
+    /** Homeroom is not on screen (public/js/class-views.js): no pulse until it is again. */
+    pause() { LV.paused = true; clearTimeout(LV.timer); LV.timer = null; },
+    resume() { LV.paused = false; if (live()) poll(); },
     escape() { if (LV.open) { openPanel(LV.open); return true; } return false; },
   };
 }

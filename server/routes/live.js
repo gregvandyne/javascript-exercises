@@ -51,6 +51,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { audit } from '../db.js';
+import * as VC from '../services/verify-change.js';
 import { draftQuestions, draftFromLesson, LESSON, KINDS as SET_AI_KINDS } from '../services/set-ai.js';
 import * as focus from '../services/game-focus.js';
 
@@ -736,7 +737,8 @@ router.post('/api/live/sets/draft', on, requireAnyAccount, hostOnly, rateLimit('
   catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return res.status(503).json({ error: req.t(`live.api.set.${r.code}`), code: r.code });
   audit(req.user.id, 'live.set.draft', '', { count: r.items.length });
-  res.json({ title: r.title, items: r.items });
+  // Checked work (services/verify-change.js): how many of the questions asked for came through the checks.
+  res.json({ title: r.title, items: r.items, report: VC.kept({ asked: r.asked || r.items.length, kept: r.items.length, noun: 'questions' }) });
 });
 router.post('/api/live/sets/:id/copy', on, requireAnyAccount, hostOnly, rateLimit('lv-set', 120, 3600e3), (req, res) => {
   const r = SETS.copySet(req.user, req.params.id);
@@ -797,7 +799,7 @@ router.post('/api/teach/make/draft', on, requireAnyAccount, hostOnly, rateLimit(
   if (!r.ok) return apiErr(req, res, r.code === 'aiOff' || r.code === 'aiFailed' ? 503 : 400, `make.${r.code}`, { limits: { min: LESSON.min, max: LESSON.max } });
   // Only how many: never the lesson or the questions.
   audit(req.user.id, 'live.make.draft', '', { count: r.items.length, pdf: !!pdf });
-  res.json({ title: r.title, items: r.items });
+  res.json({ title: r.title, items: r.items, report: VC.kept({ asked: r.asked || r.items.length, kept: r.items.length, noun: 'questions' }) });
 });
 // Assign the saved set to a class as a lesson with one quiz step (the same as "Set as homework" after a live game).
 router.post('/api/teach/make/assign', on, requireAnyAccount, hostOnly, rateLimit('lv-hw', 60, 3600e3), (req, res) => {

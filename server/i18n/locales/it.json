@@ -2204,7 +2204,8 @@
       "sel": {
         "tools": "Elemento selezionato",
         "delete": "Elimina l’elemento selezionato"
-      }
+      },
+      "playBack": "Torna a Homeroom"
     },
     "stories": {
       "needIdea": "Prima scrivi la tua idea (bastano poche parole).",
@@ -4882,7 +4883,8 @@
         "lockedHint": "Si riapre presto. Il tuo lavoro è salvato.",
         "coming": "L’insegnante sta arrivando da te",
         "passBtn": "Permesso di uscita"
-      }
+      },
+      "playBack": "Torna al mio banco"
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",

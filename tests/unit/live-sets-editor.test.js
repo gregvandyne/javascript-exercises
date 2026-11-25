@@ -78,6 +78,7 @@ test('AI drafts: questions at the asked level, the right answer placed and kept,
     assert.equal(r.ok, true);
     assert.match(asked.messages[0].content, /Grade 8 algebra/);
     assert.equal(r.items.length, 2, 'a question without words is dropped');
+    assert.equal(r.asked, 3, 'checked work: the editor says 2 of the 3 asked for');
     const [a, b] = r.items;
     assert.equal(a.choices[a.answer], 'x = 5'); assert.deepEqual([...a.choices].sort(), ['x = 15', 'x = 3', 'x = 5']); assert.equal(a.secs, 45);
     assert.deepEqual(b.choices, ['True', 'False']); assert.equal(b.answer, 0); assert.equal(b.secs, 10);

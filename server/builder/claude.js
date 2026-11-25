@@ -41,6 +41,8 @@ export const MAX_STEPS = 14;  // model calls per build (build, details, playtest
 export const MAX_STEPS_TRUSTED = 20;   // a trusted maker's build (usage.js trustedMaker): more rounds to playtest and fix
 /** Model calls one build may make. trusted: the builder is a trusted maker. */
 export const maxStepsFor = trusted => (trusted ? MAX_STEPS_TRUSTED : MAX_STEPS);
+/** The tools that save a new version of the game (checked at the end: the last one tried must have saved). */
+const CHANGE_TOOLS = new Set(['write_game', 'edit_game', 'start_from_template']);
 const MAX_SCAN_FIXES = 2;     // extra rounds allowed to fix a failed safety scan
 const HISTORY_MESSAGES = 40;  // earlier transcript entries sent to the model
 const FALLBACKS = process.env.BUILDER_FALLBACKS !== '0';
@@ -158,6 +160,7 @@ export async function run(ctx) {
   // Why the next round starts (its step label) and whether its write/edit is a fix of real problems.
   let prev = { c: 'start', fixing: false };
   let cutOff = false;   // a round already ran out of room before using a tool
+  let lastTry = null;   // the newest write_game / edit_game / start_from_template: { saved, v? }
   // Web search: decided once for the whole build (the tool list never changes partway through one).
   // The arcade side (config.arcade) decides the fixed prefix for the whole build: the arcade prompt and tools, or the
   // classroom focus's (prompt.js SYSTEM_PROMPT_FOCUS, TOOLS_FOCUS: no kit, no 3D, no sprites).
@@ -426,6 +429,8 @@ export async function run(ctx) {
       if (r.stop) stop = true;
       if (r.report && r.report.status === 'fail') failedScan = true;
       if (r.version) auto.dirty = true;
+      // Checked work (services/verify-change.js): the newest change the AI tried, saved or not, for the honest last line.
+      if (CHANGE_TOOLS.has(tu.name) && !r.stop) lastTry = r.version ? { saved: true, v: r.version.number } : { saved: false };
       if (r.event && r.event[0] === 'playtest') { playtested = true; probs += +r.event[1].problems || 0; }
       // Mark the row this tool call started (a set_game row may have started in between).
       const row = authorRow.get(tu.id);
@@ -459,6 +464,12 @@ export async function run(ctx) {
   if (auto.dirty && !aborted()) { auto.left = 0; await autoCheck(); }
   const still = !aborted() && auto.left2fix ? auto.left2fix.length : 0;
   if (still) ctx.emit('text', { text: '\n\n' + t('builder.autotestLeft', { count: still }) });
+  // The AI's last change did not save (an edit whose text was not found, a version refused by a check) and nothing saved
+  // after it: whatever the AI wrote, the builder hears it in the app's own words, with the version the game is still on.
+  if (!aborted() && lastTry && !lastTry.saved) {
+    const cur = ctx.tools.current ? ctx.tools.current() : null;
+    ctx.emit('text', { text: '\n\n' + (cur ? t('builder.lastNotSaved', { n: cur.number }) : t('builder.lastNotSavedNone')) });
+  }
   return { model, tokensIn, tokensOut, ...(found.count ? { searches: found.count } : {}), ...(auto.seen.size || auto.left2fix ? { autotest: { left: still } } : {}) };
 }
 

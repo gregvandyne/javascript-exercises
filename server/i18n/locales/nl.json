@@ -2204,7 +2204,8 @@
       "sel": {
         "tools": "Geselecteerd item",
         "delete": "Geselecteerd item verwijderen"
-      }
+      },
+      "playBack": "Terug naar Homeroom"
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -4882,7 +4883,8 @@
         "lockedHint": "Hij gaat zo weer open. Je werk is bewaard.",
         "coming": "Je leraar komt naar je toe",
         "passBtn": "Gangpas"
-      }
+      },
+      "playBack": "Terug naar mijn tafel"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",

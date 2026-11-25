@@ -2203,7 +2203,8 @@
       "sel": {
         "tools": "Elemento seleccionado",
         "delete": "Eliminar el elemento seleccionado"
-      }
+      },
+      "playBack": "Volver a Homeroom"
     },
     "stories": {
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
@@ -4881,7 +4882,8 @@
         "lockedHint": "Se abrirá pronto. Tu trabajo está guardado.",
         "coming": "Tu maestro viene a tu lugar",
         "passBtn": "Pase de pasillo"
-      }
+      },
+      "playBack": "Volver a mi pupitre"
     },
     "homeroom-area": {
       "label": "Zona del docente",

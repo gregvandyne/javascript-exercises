@@ -616,13 +616,14 @@ export function learnPage(req, res, { landing = false } = {}) {
   // Live class games: the Oomba Live modes (while Live is on), in their own section; the rest in the grid.
   const liveList = live && f.how !== 'solo' && f.how !== 'two' ? pass.filter(g => liveGameOf(g)) : [];
   const grid = f.how === 'live' ? [] : pass.filter(g => !liveList.includes(g) && !(live && liveOnly(g))).filter(g => f.how !== 'two' || isTwo(g));
-  // One main action per card for staff (Host live for a live mode, else Assign), and Try it as a smaller link.
+  // One main action per card for staff (Host live for a live mode, else Assign), and Try it as a smaller link (not on
+  // live class games: the owner took it off them, 25 Nov 2026; Host live is their one way in).
   const acts = g => {
     if (!staff) return '';
     const l = liveGameOf(g);
     const main = l && live ? html`<a class="btn btn-sm btn-hot" href="/live?mode=${l.mode}">${ico('📡', { size: 18 })} ${t('learn.tab.host')}</a>`
       : l && !l.play ? '' : html`<a class="btn btn-sm btn-primary" href="/teach/assign?game=${g.slug}">${ico('📌', { size: 18 })} ${t('learn.tab.assign')}</a>`;
-    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}${l && focus.slugHidden(l.solo) ? '' : html`<a class="lcard-try" href="${keepLang(req, `/play/${l ? l.solo : g.slug}`)}">▶ ${t('learn.tab.try')}</a>`}<a class="lcard-try" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a></div>`;
+    return html`${codesOf(g.slug).map(([fw, c]) => codeChips(t, fw, c, { fold: 3 }))}<div class="lcard-acts">${main}${l ? '' : html`<a class="lcard-try" href="${keepLang(req, `/play/${l ? l.solo : g.slug}`)}">▶ ${t('learn.tab.try')}</a>`}<a class="lcard-try" href="/build/save?id=${g.id}">${ico('📁', { size: 18 })} ${t('folders.save')}</a></div>`;
   };
   const cards = list => html`<ul class="cardgrid lcards">${list.map(g => html`<li class="lcard">${gameCard(g, { meta: meta(g) })}${acts(g)}</li>`)}</ul>`;
   // Courses (not in the "two players" or "live" views): progress for players, Assign for staff.
