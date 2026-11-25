@@ -34,6 +34,7 @@ import * as S from './schools.js';
 import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
 import * as HL from './homeroom-lessons.js';
+import * as SUP from './homeroom-supports.js';
 import * as games from './games.js';
 import { textProblem } from './manipulatives.js';
 import { scrub, studentNames } from '../builder/lesson.js';
@@ -220,6 +221,8 @@ export function aiContext(u, c, { lang = 'en', draft = null } = {}) {
     oombaGames: oomba, myGames: mine,
     canBuild: MAKE_SLUGS.filter(s => HL.lessonGame(s)).map(s => (s === 'arithmetic-lab' ? { slug: s, ops: ARITH.ops } : { slug: s, modes: ALGEBRA.modes })),
     recentHandouts: recent,
+    // Simpler wording (step 3c): handouts with instructions, by id, for writeSimplerWording (names taken out).
+    handoutsWithInstructions: board.handouts.filter(h => h.instructions).slice(-12).map(h => ({ handoutId: h.id, title: safe(h.title), instructions: scrub(clip(h.instructions, 300), names).text, ...(SUP.simpleOf(h.id) ? { simplerNow: scrub(SUP.simpleOf(h.id), names).text } : {}) })),
     savedPlans: listSaved(u).slice(0, 10).map(p => ({ name: p.name, minutes: p.minutes })),
     ...(today ? { todaysPlan: { name: today.name, state: stateOf(today) } } : {}),
     ...(draft ? { draftOnCard: readBack(u, c, draft, lang) } : {}),
@@ -233,6 +236,7 @@ export function workflowRules() {
     'Work time: use the class\'s groups by name (getPageContext lists them) when a version per group helps; give each group a lesson of the teacher\'s (lessonId) or a game (gameId) from getPageContext or searchGames. A lesson of the teacher\'s already has its own versions per group: give it to the whole class. When no lesson fits, either build one (make: Arithmetic Lab with an op, Algebra Builder with a mode) or hand out a game with short instructions. Never invent ids.',
     'Changes ("make work time 20 minutes", "swap the brain break"): call draftDayPlan again with the whole plan changed (the draft on the card is in getPageContext). To use a plan the teacher saved ("use my Fractions day plan again"), call useSavedPlan with its name.',
     'Titles are short and never name a group or a student (they show on the projector). After drafting, say in one or two sentences what the plan is and that the teacher can ask for changes or tap Use this plan. Report only what the tool says landed.',
+    'Simpler wording (supports): when the teacher asks for simpler words for a handout\'s instructions, call writeSimplerWording with its handoutId from getPageContext and the simpler text: short sentences, everyday words, the same task.',
   ].join('\n');
 }
 
@@ -455,8 +459,15 @@ export function usePlan(u, c, plan, { lang = 'en' } = {}) {
 /** The timer, by the class's teachers only: start (part 1), more (+5 min), next (the next part; past the last one the
  *  plan is done and waits for Finish class), finish (the summary), clear (no plan of today; handouts stay). Never moves
  *  on by itself. -> { ok, plan, summary? } */
+/** What a sub may do with the plan's timer (docs/decisions.md "Homeroom: supports, aides and sub links"): Start, +5 min
+ *  and Next; never Finish (its summary counts finished work) or Clear. */
+export const SUB_ACTIONS = Object.freeze(['start', 'more', 'next']);
 export function runAction(u, c, action, at = now()) {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  if (!H.canUseClass(u, c)) {
+    const role = H.helperRole(u, c);
+    if (!role) return fail('notFound');
+    if (role !== 'sub' || !SUB_ACTIONS.includes(action)) return fail('forbidden');
+  }
   const p = todayOf(c, at);
   if (!p) return fail('noPlan');
   const st = stateOf(p);
@@ -516,6 +527,16 @@ export function publicView(c, at = now()) {
   if (!p || !p.run || p.finishedAt) return null;
   const tm = timing(p.parts, p.run, at), one = x => (x ? { kind: x.kind, title: x.title || '' } : null);
   return { now: at, done: tm.done, part: one(tm.part), next: one(tm.next), endsAt: tm.endsAt, timesUp: tm.timesUp };
+}
+
+/** A desk's Now / Next (publicView) and, for a student with extra time (services/homeroom-supports.js), their own
+ *  longer clock for the part on now: mine: { endsAt, time } (the part's start plus its minutes and any +5 min, times
+ *  their extra time). Their own only; nobody else's desk shows it. */
+export function deskView(c, sup = null, at = now()) {
+  const v = publicView(c, at);
+  if (!v || v.done || !v.endsAt || !sup || !(sup.time > 100)) return v;
+  const p = todayOf(c, at);
+  return { ...v, mine: { endsAt: p.run.partAt + Math.round((v.endsAt - p.run.partAt) * (sup.time / 100)), time: sup.time } };
 }
 
 // ---------------------------------------------------------------- the card in the chat

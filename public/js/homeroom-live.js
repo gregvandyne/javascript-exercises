@@ -198,7 +198,7 @@ export function liveBoard(ctx) {
       <p class="small muted">${esc(live() ? tl('today.leadLive') : tl('today.lead'))}</p>
       ${rows ? `<ol class="plain hr-tglist">${rows}</ol><div class="hr-tgkey" aria-hidden="true"><span><i class="d"></i>${esc(tl('today.done'))}</span><span><i class="w"></i>${esc(tl('today.working'))}</span><span><i class="s"></i>${esc(tl('today.stuck'))}</span><span><i></i>${esc(tl('today.notStarted'))}</span></div>` : `<p class="muted">${esc(tl('today.none'))}</p>`}
       ${names ? `<div class="hr-tgflag"><b>${esc(tl('needsLook'))}:</b> ${names}</div>` : ''}
-      <p class="small hr-flnote">${esc(tl('today.weeks'))} <a href="/class/${esc(encodeURIComponent(D.classId))}/progress">${esc(tl('today.classroom'))}</a></p>`;
+      ${ctx.aide ? '' : `<p class="small hr-flnote">${esc(tl('today.weeks'))} <a href="/class/${esc(encodeURIComponent(D.classId))}/progress">${esc(tl('today.classroom'))}</a></p>`}`;
   }
   function renderPanel() {
     const el = panelEl();
@@ -256,9 +256,10 @@ export function liveBoard(ctx) {
       <p class="small muted">${esc(tl('look.private'))}</p>
       <div class="row hr-lkacts">
         ${btn(`btn hr-chunk${fl.coming ? ' on' : ''}`, `data-hrflag="coming" aria-pressed="${!!fl.coming}"`, `${iconHtml('🚶', { size: 18 })} ${esc(fl.coming ? tl('look.comingOn') : tl('look.coming'))}`)}
-        ${btn(`btn hr-chunk${fl.locked ? ' on' : ''}`, `data-hrflag="lock" aria-pressed="${!!fl.locked}"`, `${iconHtml(fl.locked ? '🔓' : '🔒', { size: 18 })} ${esc(fl.locked ? tl('look.unlock') : tl('look.lock'))}`)}
-        ${btn(`btn hr-chunk${fl.hidden ? ' on' : ''}`, `data-hrflag="hide" aria-pressed="${!!fl.hidden}"`, `${iconHtml('🙈', { size: 18 })} ${esc(fl.hidden ? tl('look.showCursor') : tl('look.hideCursor'))}`)}
+        ${ctx.aide ? '' : `${btn(`btn hr-chunk${fl.locked ? ' on' : ''}`, `data-hrflag="lock" aria-pressed="${!!fl.locked}"`, `${iconHtml(fl.locked ? '🔓' : '🔒', { size: 18 })} ${esc(fl.locked ? tl('look.unlock') : tl('look.lock'))}`)}
+        ${btn(`btn hr-chunk${fl.hidden ? ' on' : ''}`, `data-hrflag="hide" aria-pressed="${!!fl.hidden}"`, `${iconHtml('🙈', { size: 18 })} ${esc(fl.hidden ? tl('look.showCursor') : tl('look.hideCursor'))}`)}`}
         ${btn('btn hr-chunk', 'data-hrlkdesk', `${iconHtml('🎒', { size: 18 })} ${esc(tl('look.handouts'))}`)}
+        ${ctx.supports ? btn('btn hr-chunk', 'data-hrlksup', `${iconHtml('🧩', { size: 18 })} ${esc(ctx.supportsLabel || '')}`) : ''}
       </div></div>`;
   }
   async function look(sid) {
@@ -285,6 +286,7 @@ export function liveBoard(ctx) {
         return;
       }
       if (e.target.closest('[data-hrlkdesk]')) { sh.close(); ctx.deskSheet(sid); }
+      if (e.target.closest('[data-hrlksup]')) { sh.close(); ctx.supports(sid); }
     });
     await load();
     LV.lookTimer = setInterval(load, 4000);
@@ -308,7 +310,7 @@ export function liveBoard(ctx) {
     look(desk.dataset.sid); return true;
   }
   return {
-    paint, topButtons, click, tapDesk,
+    paint, topButtons, click, tapDesk, look,
     /** Live class started or ended on this page. */
     onLive() { LV.hv = ''; if (live()) poll(); else { clearTimeout(LV.timer); LV.data = null; if (LV.look) LV.look.sh.close(); paint(); renderPanel(); } },
     polling: () => live(),

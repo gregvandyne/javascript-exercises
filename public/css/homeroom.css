@@ -914,3 +914,125 @@ button.hr-tname:hover{background:var(--hover)}
 /* the Oomba chat, where the day plan is made: over the board's floating panels (its own sheet on a tablet would
    otherwise sit under the teacher's desk panel and the minimap), under menus and popovers */
 body.cv-on-homeroom .oc,body.hr-page .oc{z-index:70}
+
+/* ---- step 3c: supports, aides, sub links (docs/decisions.md "Homeroom: supports, aides and sub links") */
+/* the desk's name opens its menu; the small, calm support icon beside it (the teacher's and an aide's board only) */
+.hr-namebtn{border:0;background:none;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;border-radius:8px}
+.hr-namebtn:hover bdi{text-decoration:underline;text-underline-offset:3px}
+.hr-namebtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.hr-supico{display:inline-grid;place-items:center;flex:none;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent-press) 35%,transparent)}
+.hr-tname .hr-supico{width:18px;height:18px;margin-inline-start:2px}
+/* the desk's menu: supports */
+.hr-dmenu{display:flex;flex-direction:column;gap:12px}
+.hr-supbox{display:flex;flex-direction:column;gap:8px}
+.hr-supbox>p{margin:0}
+.hr-suprow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:2px solid var(--line);border-radius:16px;background:var(--card);cursor:pointer}
+.hr-suprow.ro{cursor:default;opacity:.85}
+.hr-suprow input[type="checkbox"]{width:24px;height:24px;flex:none;accent-color:var(--accent-press)}
+.hr-suprow:has(input:checked){border-color:var(--accent-press);background:var(--accent-soft)}
+.hr-suptime{cursor:default;flex-wrap:wrap}
+.hr-suptime .hr-seg{margin-inline-start:auto}
+.hr-suptime .hr-segb{min-height:40px;padding:0 14px}
+.hr-supico2{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:12px;background:var(--card-2)}
+.hr-supt{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 180px}
+.hr-supnote{display:flex;align-items:center;gap:6px}
+.hr-supacts,.hr-dmacts{justify-content:flex-end;gap:8px}
+.hr-dmacts{border-top:1px solid var(--line);padding-top:12px;justify-content:flex-start}
+.hr-dsupbtn{margin:-4px 0 8px}
+.hr-dsimple{margin:4px 0;padding:6px 10px;border-radius:12px;background:var(--accent-soft);font-size:.9rem;white-space:pre-line;overflow-wrap:anywhere}
+/* aides and sub links */
+.hr-aidecan{list-style:none;margin:4px 0 10px;padding:0;display:flex;flex-direction:column;gap:4px;color:var(--text-2)}
+.hr-aidecan li{display:flex;gap:6px;align-items:flex-start}
+.hr-aidelist{margin:6px 0}
+.hr-aiderow{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line)}
+.hr-aidewho{display:flex;align-items:center;gap:10px;min-width:0}
+.hr-aidewho>span{display:flex;flex-direction:column;min-width:0}
+.hr-aidewho b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-linkbox{margin:8px 0 12px;padding:12px;border-radius:16px;background:var(--spark-soft);border:2px solid color-mix(in srgb,var(--spark-press) 40%,transparent)}
+.hr-linkbox .hr-label{margin:0 0 6px;color:var(--text)}
+.hr-linkrow{flex-wrap:nowrap;gap:8px}
+.hr-linkrow .input{flex:1 1 auto;min-width:0;font-size:.9rem}
+.hr-linkrow .btn{flex:none}
+.hr-aideform{flex-wrap:nowrap;gap:8px;margin-top:6px}
+.hr-aideform .input{flex:1 1 auto;min-width:0}
+.hr-aideform .btn{flex:none}
+.hr-subform{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.hr-subfields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.hr-subfields label{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hr-subfields .hr-label{margin:0}
+@media (max-width:540px){.hr-subfields{grid-template-columns:1fr}.hr-linkrow,.hr-aideform{flex-wrap:wrap}}
+/* "While you were out": a calm card over the board, top right, until Got it */
+.hr-outnotes{position:absolute;z-index:65;top:12px;inset-inline-end:12px;width:min(340px,calc(100% - 24px));display:flex;flex-direction:column;gap:8px}
+.hr-outnote{padding:14px 16px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow-lg);border:2px solid var(--spark)}
+.hr-outnote h2{margin:0 0 4px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.hr-outnote p{margin:0 0 6px}
+.hr-outlist{margin:0 0 10px;padding-inline-start:20px;font-size:.92rem;line-height:1.45}
+.hr-outnote .row{justify-content:flex-end}
+@media (max-width:819px){.hr-outnotes{top:auto;bottom:84px}}
+/* an aide's bar: the class's name and the Aide chip where the switcher and tabs would be */
+.hr-aidecls{font-weight:900;font-size:1.1rem;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-aidechip{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;white-space:nowrap}
+#cv-aide .cv-acts-homeroom{display:flex}
+
+/* ---- a student's supports: Read to me (its button: public/css/app.css, the game page has it too), Bigger text, their own clock */
+/* Read to me sits in the card's free top corner (beside its icon, under the Next up badge): no height added */
+.hd-cardwrap{position:relative;display:flex;flex-direction:column;min-width:0;scroll-snap-align:start}
+.hd-cardwrap>.hd-card{flex:1 1 auto}
+.hd-cardwrap>.hr-readbtn{position:absolute;top:16px;inset-inline-end:12px;min-height:38px;padding:0 12px;font-size:.85rem}
+.hd.hr-big .hd-padbox{min-height:120px}
+.hd.hr-big{font-size:1.18rem}
+.hd.hr-big .hd-cards{grid-auto-columns:minmax(250px,300px)}
+.hd.hr-big .hd-ct{font-size:1.4rem;line-height:1.2}
+.hd.hr-big .hd-csub{font-size:1.05rem}
+.hd.hr-big .hd-cins{font-size:1.18rem;line-height:1.4;-webkit-line-clamp:7;line-clamp:7}
+.hd.hr-big .hd-badge{font-size:.9rem}
+.hd.hr-big .hd-deskh{font-size:1.6rem}
+.hd.hr-big .hd-now{font-size:1.15rem}
+.hd.hr-big .hd-cardwrap>.hr-readbtn{min-height:42px;font-size:1rem}
+.hd-mytime{display:inline-flex;align-items:center;gap:4px;margin-inline-start:10px;padding:2px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;white-space:nowrap}
+.hd-mytime b{font-variant-numeric:tabular-nums}
+
+/* ---- the helper pages: an aide's invite, a sub link's PIN, a link that does not work now */
+.hr-helppage{align-items:center}
+.hr-helpcard{width:min(560px,100%);margin:24px auto;padding:28px 24px;border-radius:var(--r-lg);background:var(--card);box-shadow:var(--shadow);text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hr-helpico{line-height:1}
+.hr-helpacts{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:6px}
+.hr-subpin .hs-codein{max-width:220px;text-align:center;letter-spacing:.3em;font-size:1.6rem}
+
+/* ---- the sub's page */
+body.hr-subpage main#main{max-width:none;padding:0}
+.hr-sub{display:flex;flex-direction:column;min-height:100vh;min-height:100dvh;background:var(--bg)}
+.hr-sub [hidden]{display:none!important}
+.hr-subtop{position:sticky;top:0;z-index:20;display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-subcls{font-weight:900;font-size:1.15rem;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-subchip{background:var(--spark-soft);color:var(--text)}
+.hr-subplan{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.hr-subpp{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);font-weight:700;min-width:0}
+.hr-subpp.up{background:var(--spark);border-color:var(--spark-press);color:#141414}
+.hr-subpp .hr-pp-cap{font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:inherit;opacity:.75}
+.hr-subpp .hr-pp-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-subpp .hr-pp-sub{font-weight:600;opacity:.8}
+.hr-subtop .hr-livebtns{display:flex;gap:8px;flex-wrap:wrap}
+.hr-submain{flex:1 1 auto;padding:16px}
+.hr-subgrid{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:16px;align-items:start}
+.hr-subside{display:flex;flex-direction:column;gap:12px;position:sticky;top:84px}
+.hr-subnote,.hr-subhands,.hr-subroom{padding:14px 16px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.hr-subnote{border-inline-start:6px solid var(--spark)}
+.hr-subnote>p{margin:6px 0 0;white-space:pre-line;overflow-wrap:anywhere}
+.hr-subh{margin:0 0 6px;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.hr-subpriv{display:flex;gap:6px;align-items:flex-start;margin:0 4px}
+.hr-subarea{margin-bottom:12px}
+.hr-subdesks{position:relative}
+.hr-sdesk{position:absolute;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:8px 10px;border:3px solid var(--line);border-radius:16px;background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.hr-sdesk.away{opacity:.6;border-style:dashed}
+.hr-sdesk.hand{border-color:var(--spark-press);box-shadow:0 0 0 3px color-mix(in srgb,var(--spark) 55%,transparent),var(--shadow)}
+.hr-sdesk.team{gap:6px}
+.hr-steam{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.hr-sname{font-size:1.05rem;font-weight:900;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-subsup{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:2px 8px;border-radius:10px;background:var(--accent-soft);color:var(--accent-ink);font-size:.78rem;font-weight:800}
+.hr-subsup>span{display:inline-flex;align-items:center;gap:3px}
+.hr-subdesks.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.hr-subdesks.grid .hr-sdesk{position:static}
+@media (max-width:899px){.hr-subgrid{grid-template-columns:1fr}.hr-subside{position:static}}
+@media (max-width:1279px){.hr-subtop .hr-subt{display:none}}
+@media (max-width:819px){.hr-subtop .hr-hidephone{display:none}.hr-subcls{max-width:150px}}

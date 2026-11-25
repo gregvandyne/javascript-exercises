@@ -14292,3 +14292,77 @@ chat only, and the board has no plan row. Builds on steps 2a, 2b and 3a. Migrati
   End class offering Finish class, the summary; nothing sideways).
 - **Open**: week plans (step 5); dragging parts around on the card (changes are asked for in the chat, as the spec says);
   translations of the new strings (English now; the other languages fall back to it).
+
+## Homeroom: supports, aides and sub links (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` step 3c ("Live class": supports, aides and sub links). Migration
+`0132_homeroom_helpers`.
+
+- **Supports** (`services/homeroom-supports.js`): Extra time (1.5x, 2x), Read aloud, Simpler wording, Bigger text, set per
+  student per class from the desk's menu (tap the student's name on their desk; also from a desk's sheet and the live
+  look). Kept in `live_support`, the table Oomba Live already has for the same student's extra time, read aloud and
+  simple view (0132 adds `big_text`), so one setting covers both and no parallel table exists. Live's own save
+  (`classlive-results.js saveSupport`) never drops Bigger text. Only the class's own teachers change them (an aide reads
+  them, a sub sees only what to act on). Every change is audited with what changed, never a reason or a note.
+  - What a student gets, on their own desk only (never See the room, the projector or a classmate's desk): Bigger text
+    (the desk and the teacher's note over a game), Read to me beside the teacher's words (the device's own voice through
+    `public/js/tts.js`, nothing sent; only where the device can speak), the simpler wording in place of the
+    instructions, and with extra time their own longer clock for the plan's part on now ("Your time": the part's start
+    plus its minutes and any +5 min, times their extra time; it never says Time's up, as a desk never does). Shown as
+    tools, never a label.
+  - Simpler wording is per handout (`homeroom_handouts.simple_body`): typed on the desk's sheet (Simpler wording), or
+    written by Oomba in the teacher's chat: the chat opens with the request ready, and the new Homeroom tool
+    `writeSimplerWording` saves it; `aiContext` lists handouts with instructions by id, names scrubbed as everything
+    else the AI sees. Oomba never sees a student's name or who has which support.
+  - Into the game: the play frame (`services/lessons.js playFrame`, Homeroom's hook) carries the supports to the play
+    page (`hrSupport`: `public/js/homeroom-support.js` puts Bigger text and Read to me on the teacher's note over the
+    game) and, through the frame's signed token, to the game itself: `BRB.support` ({ time, read, simple, big }) and
+    `BRB.timeFor(secs)` (docs/sdk.md). **What each game honors today**: every game handed out from Homeroom gets Bigger
+    text and Read to me on the instructions over it and the simpler wording as those instructions (the play page does
+    it, whatever the game). Extra time: the plan's clock on the desk; inside a game only where the game reads
+    `BRB.timeFor` / `BRB.support`, and no shipped game does yet: the Oomba Kit's HUD timer is in pinned kit versions
+    (SRI-locked, `kit/SHIPPED.json`), so honoring it needs the next kit version, and the official games with clocks
+    (Sum Spotter's Rush, races) keep theirs until they adopt the hook. Read aloud inside a game is the game's own
+    (`BRB.speak`) where it has one.
+- **Aides** (`services/homeroom-aides.js`, `homeroom_aides`): the class's teacher invites by link (24 random bytes; only
+  the SHA-256 kept; works once, 7 days; the teacher sends it from their own email, the sheet has Copy and an Email it
+  mailto) or adds a teacher of the same school at once. Reused, not invented: school staff accounts (`accountKind`
+  'staff') are who may be an aide; co-teachers stay what they were (a class's `teacher` members run it). An aide needs no
+  Teacher plan (the class has Homeroom through its own teacher's). They find their classes on My classes ("Classes you
+  help in"). Removed at once by the teacher.
+  - The gate (`routes/homeroom.js`): `canUseClass` stays the class's own teachers; `helperRole(u, c)` ('aide' | 'sub',
+    from hooks the two modules register) lets a helper in only to a listed set of addresses (aide: the page, the
+    projector and its poll, handouts and supports to read, the pulse, look, hands, comments and stickers, "I'm coming
+    over"); every other Homeroom address answers a helper 403, and the services check again (`canHelp`). An aide's page
+    is the board without the hand-out panel, board tools, My desk, Arrange seats, live class's buttons, the plan's
+    buttons, removing handouts or Simpler wording, with an Aide chip where the class switcher and tabs are (no Classroom
+    or Dashboard: the class's pages stay the normal 404 for them).
+- **Sub links** (`services/homeroom-sub.js`, `routes/homeroom-sub.js`, `homeroom_sub_links`, `homeroom_sub_log`): "Sub
+  link for today" in the ⋯ menu. Today (from now) or tomorrow (from its local midnight), until local midnight of that
+  school day or an end time, in the school's time zone (else the teacher's browser's), never more than 24 hours; at most
+  5 open per class. Optional PIN (4 to 8 digits; salted scrypt; 8 wrong tries lock the link, also rate-limited per
+  address and per link). The token: 24 random bytes in the link, only its SHA-256 stored; opening it sets an HttpOnly,
+  SameSite=Lax cookie (the token and the server's signature that the PIN was typed) and redirects to `/sub`, so the token
+  leaves the address bar. Revoke, the end of the window, a locked PIN or the class archived end it at the next request.
+  - The sub sees: the teacher's note, the teacher's area, the desks where the teacher seated them with **first names**
+    (a shared first name gets the last name's initial), a calm live status, hands and the hall pass; runs live class
+    (start, pause, bring everyone, End class: the sub runs the day) and the plan pill (Start, +5 min, Next; never
+    Finish, whose summary counts finished work, or Clear); opens the projector view. "Has supports" with only what to act
+    on ("Reads aloud", "Extra time"). Never grades, progress, handouts, notebooks, Google Classroom, the AI, other
+    classes: the server sends none of it (`subView`), and every other address answers 403.
+  - Every sub action is logged (what, when, which student by id). The teacher's Homeroom shows "While you were out"
+    (counts and times: started class, hands answered, hall passes, plan moved on, minutes added, ended class) until Got
+    it.
+- **Deletion**: the three tables go with the class and the school (`school-delete.js` BY_CLASS); an aide's rows with
+  their account.
+- Tests: `tests/unit/homeroom-helpers.test.js` (supports: values, who, Live's save keeping Bigger text, own desk only,
+  simpler wording, the plan clock, the play frame and page; aides: hashed once-only invites, staff only, what they may do
+  and 403 for every forbidden action, removal; sub links: the day window and 24 hours, hashes only, first names, Start /
+  +5 / Next, hands, 403 everywhere else, no other class, logged and summed up, Got it, revoke, expiry, tomorrow, a forged
+  cookie, the PIN and its lock; deletion) and `tests/unit/homeroom-helpers-browser.test.js` (1366 x 768 and 820 x 1180:
+  the desk's menu and saving supports, the student's desk with Bigger text, Read to me and Your time, a classmate's desk
+  without, an aide's view, the sub-link sheet, the sub's page, While you were out).
+- **Open**: supports from the Classroom view's student row (the desk's menu is the one place for now); extra time inside
+  games until the kit and the official games read `BRB.timeFor`; Read aloud of a game's own questions (the game's own
+  voice); translations of the new strings (English now; the other languages fall back to it); sending the aide invite
+  by email from Oomba (the teacher sends the link themselves).

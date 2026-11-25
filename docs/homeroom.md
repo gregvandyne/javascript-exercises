@@ -89,6 +89,13 @@ can read the whole notebook (students are told); parents see handout notes, not 
 laptop (Chromebook 1366x768) and phone. K-2 mode by grade. Supports per student (extra time, read aloud, simpler
 wording, bigger text) apply to every handout.
 
+Built (docs/decisions.md "Homeroom: supports, aides and sub links"): the teacher taps a student's name on their desk for
+the desk's menu: Extra time (1.5x, 2x), Read aloud, Simpler wording, Bigger text, saved per student per class (the same
+saved support Oomba Live uses). The student sees them as tools on their own desk and over the game: larger text, Read to
+me beside the teacher's words, the simpler wording the teacher typed (or Oomba wrote in the chat, never seeing a name),
+and their own longer clock for the plan's part on now. A small 🧩 on the desk shows the teacher and an aide who has
+supports; classmates never see them. Games get them as `BRB.support` / `BRB.timeFor` (docs/sdk.md).
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their
@@ -96,6 +103,18 @@ password or tap their three pictures (picture passwords: grade K to 2 by default
 teacher sets), or use Google. The code works only while the teacher has sign-in open (90 minutes, opened by starting
 class, closed by End class). Those sign-ins end with class; the desk has "Not you? Switch". Details: docs/decisions.md
 "Homeroom, step 1c".
+
+## Aides and sub links (step 3c)
+
+- **Aides**: the ⋯ menu's Aides: an invite link (sent by the teacher's own email) or a teacher of the same school. An
+  aide opens that class's Homeroom (an Aide chip in the top bar): desks and live status, hands and the hall pass, a look
+  at a student's desk, comments and stickers, students' supports (to read). Never grades or grading, removing handouts,
+  groups or seating, planning with Oomba, billing, End class or notebooks. No Teacher plan needed. Removed anytime.
+- **Sub link for today**: from the ⋯ menu, a link for today or tomorrow, until the end of the school day or a set time
+  (24 hours at most), with an optional PIN and a note for the sub. No account. The sub sees the board, desks with first
+  names, the plan pill (Start, Next, +5 min), hands and the hall pass, the projector view, the note, and "has supports"
+  with what to act on. Never grades, progress, notebooks, Google Classroom, handing out, changing the class, the AI or
+  other classes. Revoke anytime; every sub action is logged and the teacher sees "While you were out" next time.
 
 ## Rules that do not change
 

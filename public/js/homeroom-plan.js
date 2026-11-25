@@ -39,6 +39,8 @@ export function nowNextHtml(v, skew = 0, { clockOn = true } = {}) {
  */
 export function planPill(ctx) {
   const { D } = ctx;
+  // An aide (step 3c) sees the plan and its timer but changes nothing: no Start, +5 min, Next, Finish, Clear or chat.
+  const RO = !!ctx.readOnly;
   const P = { plan: D.plan || null, skew: D.plan ? Date.now() - D.plan.now : 0, menu: false, busy: false, sig: '', timer: null };
   const host = () => document.getElementById('hr-plan');
   const path = `/api/homeroom/${encodeURIComponent(D.classId)}/plan`;
@@ -55,22 +57,23 @@ export function planPill(ctx) {
   // ---------------------------------------------------------------- the pill
   function pillHtml() {
     const p = P.plan, x = tm();
+    if (!p && RO) return '';
     if (!p) return btn('btn hr-chunk hr-planpill', `data-hrplan="ask" aria-label="${esc(tp('askLabel'))}" title="${esc(tp('askLabel'))}"`, `${ic('🗓️')}<span class="hr-pp-word"> ${esc(tp('planToday'))}</span>`);
     const menuAttrs = `data-hrplan="menu" aria-expanded="${P.menu}" aria-haspopup="true"`;
     if (p.state === 'ready') {
       return `${btn('btn hr-chunk hr-planpill', `${menuAttrs} aria-label="${esc(tp('todayLabel', { name: p.name || tp('title'), minutes: x.plannedMin }))}"`, `${ic('🗓️')}<span class="hr-pp-t"><span class="hr-pp-cap">${esc(tp('today'))}</span> <b dir="auto">${esc(p.name || tp('title'))}</b> <span class="hr-pp-sub">${esc(minutes(x.plannedMin))}</span></span>`)}
-        ${btn('btn hr-chunk hr-spark hr-pp-act', `data-hrplan="start" aria-label="${esc(tp('start'))}"`, `${ic('▶️')}<span class="hr-hidephone"> ${esc(tp('start'))}</span>`)}`;
+        ${RO ? '' : btn('btn hr-chunk hr-spark hr-pp-act', `data-hrplan="start" aria-label="${esc(tp('start'))}"`, `${ic('▶️')}<span class="hr-hidephone"> ${esc(tp('start'))}</span>`)}`;
     }
     if (p.state === 'finished') return btn('btn hr-chunk hr-planpill', `${menuAttrs} aria-label="${esc(tp('finishedLabel'))}"`, `${ic('🏁')}<span class="hr-pp-t"><b>${esc(tp('finished'))}</b></span>`);
     if (x.done) {
       return `${btn('btn hr-chunk hr-planpill', `${menuAttrs} title="${esc(behindText(x.behindMin))}" aria-label="${esc(tp('allDone'))}"`, `${ic('✅')}<span class="hr-pp-t"><b>${esc(tp('allDone'))}</b></span>`)}
-        ${btn('btn hr-chunk hr-spark hr-pp-act', `data-hrplan="finish" aria-label="${esc(tp('finish'))}"`, `${ic('🏁')}<span class="hr-hidephone"> ${esc(tp('finish'))}</span>`)}`;
+        ${RO ? '' : btn('btn hr-chunk hr-spark hr-pp-act', `data-hrplan="finish" aria-label="${esc(tp('finish'))}"`, `${ic('🏁')}<span class="hr-hidephone"> ${esc(tp('finish'))}</span>`)}`;
     }
     const up = x.timesUp, tip = `${behindText(x.behindMin)}${x.next ? ` · ${tp('next')} ${partName(x.next)}` : ''}`;
     return `${btn(`btn hr-chunk hr-planpill hr-pp-run${up ? ' up' : ''}`, `${menuAttrs} title="${esc(tip)}" aria-label="${esc(up ? tp('upLabel', { part: partName(x.part) }) : tp('nowLabel', { part: partName(x.part) }))}"`,
       `${ic(up ? '⌛' : '⏱️')}<span class="hr-pp-t"><span class="hr-pp-l1"><span class="hr-pp-cap">${esc(up ? tp('timesUp') : tp('now'))}</span><b dir="auto">${esc(partName(x.part))}</b>${up ? '' : `<span class="hr-pp-clock" data-hrclock>${esc(clock(x.left))}</span>`}</span>${x.next ? `<span class="hr-pp-sub hr-pp-l2">${esc(tp('next'))} <span dir="auto">${esc(partName(x.next))}</span></span>` : `<span class="hr-pp-sub hr-pp-l2">${esc(tp('lastPart'))}</span>`}</span>`)}
-      ${btn('btn hr-chunk hr-pp-act', `data-hrplan="more" aria-label="${esc(tp('moreLabel'))}"`, `<span>${esc(tp('more'))}</span>`)}
-      ${btn(`btn hr-chunk hr-pp-act${up ? ' hr-spark' : ''}`, `data-hrplan="next" aria-label="${esc(x.next ? tp('nextLabel', { part: partName(x.next) }) : tp('endLast'))}"`, `${ic('⏭️')}<span class="hr-hidephone"> ${esc(tp('nextBtn'))}</span>`)}`;
+      ${RO ? '' : `${btn('btn hr-chunk hr-pp-act', `data-hrplan="more" aria-label="${esc(tp('moreLabel'))}"`, `<span>${esc(tp('more'))}</span>`)}
+      ${btn(`btn hr-chunk hr-pp-act${up ? ' hr-spark' : ''}`, `data-hrplan="next" aria-label="${esc(x.next ? tp('nextLabel', { part: partName(x.next) }) : tp('endLast'))}"`, `${ic('⏭️')}<span class="hr-hidephone"> ${esc(tp('nextBtn'))}</span>`)}`}`;
   }
   /** Redraw only when something but the seconds changed (the focus stays put); the seconds are written in place. */
   function render(force = false) {
@@ -98,7 +101,7 @@ export function planPill(ctx) {
       return `<li class="hr-pm-part${now ? ' now' : ''}${done ? ' done' : ''}"><span class="hr-pm-mark" aria-hidden="true">${done ? '✓' : now ? '▶' : i + 1}</span><span class="hr-pm-name" dir="auto">${esc(partName(q))}</span><span class="hr-pm-min">${esc(minutes(q.minutes))}${now && p.run.extra ? ` <small>${esc(tp('added', { count: Math.round(p.run.extra / 60e3) }))}</small>` : ''}</span></li>`;
     }).join('');
     const running = p.state === 'running' && !x.done;
-    const acts = p.state === 'ready' ? btn('btn btn-primary', 'data-hrplan="start"', `${ic('▶️', 16)} ${esc(tp('start'))}`)
+    const acts = RO ? '' : p.state === 'ready' ? btn('btn btn-primary', 'data-hrplan="start"', `${ic('▶️', 16)} ${esc(tp('start'))}`)
       : running ? `${btn('btn', 'data-hrplan="more"', esc(tp('more')))}${btn('btn btn-primary', 'data-hrplan="next"', `${ic('⏭️', 16)} ${esc(x.next ? tp('nextTo', { part: partName(x.next) }) : tp('endLast'))}`)}${btn('btn', 'data-hrplan="finish"', `${ic('🏁', 16)} ${esc(tp('finish'))}`)}`
         : p.state === 'done' ? btn('btn btn-primary', 'data-hrplan="finish"', `${ic('🏁', 16)} ${esc(tp('finish'))}`)
           : p.summary ? btn('btn btn-primary', 'data-hrplan="summary"', `${ic('🏁', 16)} ${esc(tp('showSummary'))}`) : '';
@@ -107,7 +110,7 @@ export function planPill(ctx) {
       ${p.run && p.state !== 'finished' ? `<p class="hr-pm-behind${x.behindMin > 0 ? ' late' : ''}">${ic(x.behindMin > 0 ? '🐢' : '👍', 16)} ${esc(x.behindMin > 0 ? tp('behindLong', { count: x.behindMin }) : tp('onTimeLong'))}</p>` : ''}
       <ol class="plain hr-pm-parts">${rows}</ol>
       <div class="hr-pm-acts">${acts}</div>
-      <div class="hr-pm-foot">${btn('btn btn-sm btn-ghost', 'data-hrplan="ask"', `${ic('💬', 16)} ${esc(tp('change'))}`)}${p.state === 'running' || p.state === 'done' ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="clear"', esc(tp('clear')))}</div>
+      <div class="hr-pm-foot">${RO ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="ask"', `${ic('💬', 16)} ${esc(tp('change'))}`)}${RO || p.state === 'running' || p.state === 'done' ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="clear"', esc(tp('clear')))}</div>
       ${p.state === 'running' && x.timesUp ? `<p class="small muted hr-pm-note">${esc(tp('neverMoves'))}</p>` : ''}</div></div>`;
   }
   function renderMenu() {
@@ -152,6 +155,7 @@ export function planPill(ctx) {
     const b = e.target.closest('[data-hrplan]'); if (!b) { if (P.menu && !e.target.closest('#hr-planmenu')) setMenu(false); return; }
     const k = b.dataset.hrplan;
     if (k === 'menu') setMenu(!P.menu);
+    else if (RO) return;
     else if (k === 'ask') openChat();
     else if (k === 'summary') { setMenu(false); if (P.plan && P.plan.summary) summarySheet(P.plan.summary); }
     else act(k);
@@ -171,7 +175,7 @@ export function planPill(ctx) {
     placeholder: () => tp('placeholder'),
     hello: () => tp('hello'),
   };
-  const onView = on => { if (on) BUS.setPage(adapter); else if (BUS.page() === adapter) BUS.setPage(null); };
+  const onView = on => { if (RO) return; if (on) BUS.setPage(adapter); else if (BUS.page() === adapter) BUS.setPage(null); };
   // A phone: the bar is full in a live class, so the pill floats over the board (public/css/homeroom.css).
   const phone = matchMedia('(max-width: 819px)'), home = { parent: null, next: null };
   function place() {

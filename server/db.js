@@ -1470,6 +1470,33 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS homeroom_day_plans (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       name TEXT NOT NULL, topic TEXT NOT NULL DEFAULT '', parts TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_homeroom_day_plans_owner ON homeroom_day_plans(owner_id, updated_at);`],
+  // Homeroom, step 3c (docs/decisions.md "Homeroom: supports, aides and sub links"). live_support.big_text: Bigger text,
+  // the fourth support beside extra time, read aloud and simpler wording (the table Oomba Live already keeps per class
+  // and student; Homeroom writes it from a desk's menu). homeroom_handouts.simple_body: a handout's instructions in
+  // simpler words, shown instead to a student with Simpler wording. homeroom_aides: adults the class's teacher lets help
+  // in its Homeroom (an invite link, only its hash kept, until it is used or ends; or a teacher of the same school added
+  // at once); removed by the teacher at any time. homeroom_sub_links: a one-day link for a substitute (only the token's
+  // hash and an optional PIN's hash are kept; it works from starts_at until ends_at, at most 24 hours, and stops when
+  // revoked), with the teacher's note for the sub. homeroom_sub_log: every action taken through a sub link (what, when,
+  // which student by id), for the teacher's "While you were out" note. All gone with the class, the school or the account.
+  ['0132_homeroom_helpers', `
+    ALTER TABLE live_support ADD COLUMN big_text INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_handouts ADD COLUMN simple_body TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS homeroom_aides (id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT, status TEXT NOT NULL DEFAULT 'invited', invite_hash TEXT, invite_until INTEGER, email TEXT NOT NULL DEFAULT '',
+      invited_by TEXT, created_at INTEGER NOT NULL, joined_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_aides_class ON homeroom_aides(class_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_aides_user ON homeroom_aides(user_id);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_homeroom_aides_invite ON homeroom_aides(invite_hash) WHERE invite_hash IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS homeroom_sub_links (id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      token_hash TEXT NOT NULL UNIQUE, pin_hash TEXT NOT NULL DEFAULT '', pin_fails INTEGER NOT NULL DEFAULT 0, note TEXT NOT NULL DEFAULT '',
+      starts_at INTEGER NOT NULL, ends_at INTEGER NOT NULL, created_by TEXT, created_at INTEGER NOT NULL, revoked_at INTEGER,
+      used_at INTEGER, seen_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_links_class ON homeroom_sub_links(class_id, ends_at);
+    CREATE TABLE IF NOT EXISTS homeroom_sub_log (link_id TEXT NOT NULL REFERENCES homeroom_sub_links(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL, at INTEGER NOT NULL, action TEXT NOT NULL, student TEXT, detail TEXT NOT NULL DEFAULT '');
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_link ON homeroom_sub_log(link_id, at);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_class ON homeroom_sub_log(class_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

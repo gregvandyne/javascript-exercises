@@ -34,6 +34,7 @@ import * as L from './lessons.js';
 import * as F from './game-folders.js';
 import * as games from './games.js';
 import * as H from './homeroom.js';
+import * as SUP from './homeroom-supports.js';
 import { PLAYED_ENOUGH } from './progress.js';
 import { textProblem } from './manipulatives.js';
 import { liveGameOf } from '../live/live-games.js';
@@ -131,7 +132,7 @@ export function deskView(c, u, locale = 'en') {
   }));
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
-export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}`).join('|');
+export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${String(x.instructions || '').length}`).join('|');
 
 // ---------------------------------------------------------------- comments and stickers (step 2c)
 /** The stickers a teacher can leave on finished work: a small set from the owner's sticker library
@@ -162,7 +163,8 @@ export function feedbackFor(clId, userId) {
  * handout of this class that is on that student's desk and finished. The class's teachers only. -> { ok, feedback }
  */
 export function setFeedback(u, c, clId, studentId, { comment = '', sticker = '' } = {}) {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  // (step 3c: an aide leaves comments and stickers too)
+  if (!H.canHelp(u, c, ['aide'])) return fail(H.helperRole(u, c) ? 'forbidden' : 'notFound');
   const h = handoutOf(c, clId); if (!h) return fail('notFound');
   const sid = String(studentId || '');
   if (!H.studentsOf(c.id).some(s => s.id === sid) || !L.assignedTo(h.class_lesson_id, sid)) return fail('notOnDesk');
@@ -287,8 +289,12 @@ L.onPlayFrame((u, cl, step, t) => {
   if (!H.canUseDesk(u, c)) return null;
   // step 3a: the game page pulses too (public/js/homeroom-pulse.js: which handout, how long since the last input, the
   // game's own steps forward), so the teacher's board knows what the student is on; and it shows a desk lock or Pause.
-  return { backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk'), note: step && step.body ? step.body : '',
-    script: '/js/homeroom-pulse.js', data: { hrPulse: { classId: c.id, on: cl.id } } };
+  // Step 3c: the student's own supports (services/homeroom-supports.js): the simpler wording as the note, and for the
+  // page (bigger text, read aloud on the note: public/js/homeroom-support.js) and the game's frame (BRB.support).
+  const sup = SUP.supportOf(c.id, u.id), simple = sup.simple ? SUP.simpleOf(cl.id) : '';
+  const on = SUP.anySup(sup);
+  return { backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk'), note: simple || (step && step.body ? step.body : ''),
+    script: '/js/homeroom-pulse.js', data: { hrPulse: { classId: c.id, on: cl.id }, ...(on ? { hrSupport: sup } : {}) }, ...(on ? { support: sup, i18n: ['js.homeroom-support'] } : {}) };
 });
 
 // ---------------------------------------------------------------- an In order handout that waits

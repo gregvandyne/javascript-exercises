@@ -13,6 +13,8 @@
 // also shows the desk's lock, Pause screens and "Your teacher is coming over" over the game.
 import { t, api, esc, pageData } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
+// (on a game's page, a Homeroom student's supports over the game: bigger text, Read to me on the teacher's note)
+import '/js/homeroom-support.js';
 
 const tp = (k, v) => t(`js.homeroom-pulse.${k}`, v);
 const SAMPLE_MS = 250, SEND_MS = 2000, BEAT_MS = 10000, SAMPLES = 8;
