@@ -10,6 +10,8 @@
 //   POST /api/sub/live               { action: start | bring | back | pause | resume | end }
 //   POST /api/sub/plan               { action: start | more | next }
 //   POST /api/sub/hands              { action: answer | pass | notNow | back, studentId }
+//   POST /api/sub/attendance         { studentId, status: absent | home | '' (here), tz } for today (step 4c)
+//   POST /api/sub/asks               { id }: a question from home answered
 //   POST /api/sub/leave              forget the link on this device
 // A sub's other Homeroom addresses (the projector view, its poll) are let through by routes/homeroom.js's gate.
 // Tokens are never logged or kept: only their hash is stored, the address bar loses the token after the first open
@@ -134,4 +136,7 @@ const subSend = (req, res, r) => (r.ok ? res.json({ ok: true, state: SB.subView(
 router.post('/api/sub/live', subGate, rateLimit('hr-sub-act', 600, 3600e3, 'errors.api.slowDown', { byIp: true }), (req, res) => subSend(req, res, SB.subLive(req.hrSub, String(body(req).action || ''))));
 router.post('/api/sub/plan', subGate, rateLimit('hr-sub-act', 600, 3600e3, 'errors.api.slowDown', { byIp: true }), (req, res) => subSend(req, res, SB.subPlan(req.hrSub, String(body(req).action || ''))));
 router.post('/api/sub/hands', subGate, rateLimit('hr-sub-act', 600, 3600e3, 'errors.api.slowDown', { byIp: true }), (req, res) => subSend(req, res, SB.subHands(req.hrSub, { action: String(body(req).action || ''), studentId: String(body(req).studentId || '') })));
+// step 4c: the sub takes attendance (Absent, At home, here) and answers questions from home, logged
+router.post('/api/sub/attendance', subGate, rateLimit('hr-sub-act', 600, 3600e3, 'errors.api.slowDown', { byIp: true }), (req, res) => subSend(req, res, SB.subAttend(req.hrSub, { studentId: String(body(req).studentId || ''), status: String(body(req).status ?? ''), tz: String(body(req).tz || '') })));
+router.post('/api/sub/asks', subGate, rateLimit('hr-sub-act', 600, 3600e3, 'errors.api.slowDown', { byIp: true }), (req, res) => subSend(req, res, SB.subAsk(req.hrSub, { id: String(body(req).id || '') })));
 router.post('/api/sub/leave', (req, res) => { quiet(res); cookie(res, '', 0); res.json({ ok: true, redirect: '/' }); });

@@ -9,6 +9,8 @@
 //   - Aides (⋯ menu): invite by link (sent by the teacher's own email) or add a teacher of the school; remove any time;
 //   - Sub link for today (⋯ menu): a link for one day with an optional PIN and a note for the sub; revoke any time;
 //   - "While you were out": what a sub did, in short, the next time the teacher opens Homeroom, until Got it.
+//   - step 4c: a desk's menu marks the student Absent or At home today (an aide sees it, never changes it), and their own
+//     K-2 desk (as the class, on, off); a sub's attendance marks in "While you were out".
 //   - step 4a: Notebook in a desk's menu, the student's notebook read only (public/js/notebook.js; not for an aide)
 import { t, api, toast, esc, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -48,7 +50,14 @@ export function helpers(ctx) {
     let s = { time: 100, read: false, simple: false, big: false, ...(H.sup[sid] || {}) };
     const ro = ctx.aide;
     const toggle = (k, icon) => `<label class="hr-suprow${ro ? ' ro' : ''}"><input type="checkbox" data-sup="${k}"${s[k] ? ' checked' : ''}${ro ? ' disabled' : ''}><span class="hr-supico2" aria-hidden="true">${ic(icon, 22)}</span><span class="hr-supt"><b>${esc(tx(`sup.${k}`))}</b><span class="small muted">${esc(tx(`sup.${k}Hint`))}</span></span></label>`;
-    const draw = () => `<div class="hr-supbox">
+    // today's attendance and their own K-2 desk (step 4c)
+    const attSeg = () => { const a = ctx.att ? ctx.att(sid) : ''; return ro ? `<p class="hr-dmatt"><span class="hr-attchip ${a || 'here'}">${esc(tx(a ? `att.${a}` : 'att.here'))}</span></p>`
+      : `<span class="hr-seg hr-attseg" role="radiogroup" aria-labelledby="hr-dmattl">${[['', '✅'], ['absent', '📅'], ['home', '🏠']].map(([k, icon]) => btn(`hr-segb${a === k ? ' on' : ''}`, `role="radio" aria-checked="${a === k}" data-dmatt="${k}"`, `${ic(icon, 16)} ${esc(tx(k ? `att.${k}` : 'att.here'))}`)).join('')}</span>`; };
+    const k2Of = () => (H.k2Students || {})[sid] || '';
+    const k2Seg = () => `<span class="hr-seg" role="radiogroup" aria-labelledby="hr-dmk2l">${['', 'on', 'off'].map(m => btn(`hr-segb${k2Of() === m ? ' on' : ''}`, `role="radio" aria-checked="${k2Of() === m}" data-dmk2="${m}"`, esc(m ? tx(`k2.${m}`) : tx((H.k2 || {}).on ? 'k2.classOn' : 'k2.classOff')))).join('')}</span>`;
+    const top = () => `<div class="hr-dmtop"><div class="hr-suprow hr-dmrow"><span class="hr-supico2" aria-hidden="true">${ic('📋', 22)}</span><span class="hr-supt"><b id="hr-dmattl">${esc(tx('att.today'))}</b><span class="small muted">${esc(tx('att.hint'))}</span></span>${attSeg()}</div>
+      ${ro ? '' : `<div class="hr-suprow hr-dmrow"><span class="hr-supico2" aria-hidden="true">${ic('🧒', 22)}</span><span class="hr-supt"><b id="hr-dmk2l">${esc(tx('k2.desk'))}</b><span class="small muted">${esc(tx('k2.hint'))}</span></span>${k2Seg()}</div>`}</div>`;
+    const draw = () => `${top()}<div class="hr-supbox">
       <h3 class="hr-flsub">${ic('🧩', 20)} ${esc(tx('supports'))}</h3>
       <p class="small muted">${esc(tx(ro ? 'supLeadAide' : 'supLead', { name }))}</p>
       <div class="hr-suprow hr-suptime${ro ? ' ro' : ''}"><span class="hr-supico2" aria-hidden="true">${ic('⏳', 22)}</span><span class="hr-supt"><b id="hr-suptimel">${esc(tx('sup.time'))}</b><span class="small muted">${esc(tx('sup.timeHint'))}</span></span>
@@ -61,6 +70,14 @@ export function helpers(ctx) {
     const sh = sheet({ title: `🎒 ${name}`, content: `<div class="hr-dmenu">${draw()}</div>` });
     const box = sh.el.querySelector('.hr-dmenu');
     box.addEventListener('click', async e => {
+      const ab = e.target.closest('[data-dmatt]');
+      if (ab && !ro && ctx.markAtt) { if (await ctx.markAtt(sid, ab.dataset.dmatt)) box.querySelector('.hr-dmtop').outerHTML = top(); return; }
+      const kb = e.target.closest('[data-dmk2]');
+      if (kb && !ro) {
+        try { const r = await api(ctx.api2('k2'), { method: 'POST', body: { studentId: sid, mode: kb.dataset.dmk2 } }); H.k2Students = r.k2Students || {}; H.k2 = r.k2 || H.k2; box.querySelector('.hr-dmtop').outerHTML = top(); toast(r.toast); }
+        catch (err) { toast(err.message, { bad: true }); }
+        return;
+      }
       const tb = e.target.closest('[data-suptime]');
       if (tb && !ro) { s.time = +tb.dataset.suptime; for (const b of box.querySelectorAll('[data-suptime]')) { const on = b === tb; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
       const dm = e.target.closest('[data-dm]');
@@ -192,7 +209,7 @@ export function helpers(ctx) {
   }
 
   // ---------------------------------------------------------------- While you were out
-  const LINES = [['live:start', 'out.started'], ['hand:answer', 'out.answered'], ['hand:pass', 'out.passes'], ['hand:notNow', 'out.notNow'], ['plan:start', 'out.planStart'], ['plan:next', 'out.planNext'], ['plan:more', 'out.planMore'], ['live:pause', 'out.paused'], ['live:bring', 'out.brought'], ['live:end', 'out.ended']];
+  const LINES = [['live:start', 'out.started'], ['hand:answer', 'out.answered'], ['hand:pass', 'out.passes'], ['hand:notNow', 'out.notNow'], ['plan:start', 'out.planStart'], ['plan:next', 'out.planNext'], ['plan:more', 'out.planMore'], ['live:pause', 'out.paused'], ['live:bring', 'out.brought'], ['live:end', 'out.ended'], ['attend:absent', 'out.absent'], ['attend:home', 'out.home'], ['hand:ask', 'out.asks']];
   function noteHtml(n) {
     const lines = LINES.filter(([k]) => n.counts[k]).map(([k, key]) => `<li>${esc(tx(key, { count: n.counts[k], time: timeOf(n.times[k] || n.last) }))}</li>`);
     return `<section class="hr-outnote" data-outnote="${esc(n.id)}" aria-labelledby="hr-out-${esc(n.id)}">

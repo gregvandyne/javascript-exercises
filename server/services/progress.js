@@ -373,6 +373,12 @@ export function lessonProgress(clId) {
  *  the school's time zone when it has one (the rows carry tz); t is "now" (tests pass an instant). A lesson assigned to
  *  some students has a 'na' (not assigned) cell for the others: nothing in it, so it counts nowhere (Work done, Score,
  *  late, rubric and quiz figures), even when the student did work in it before the list changed. */
+// Work a student is excused from being late on (Homeroom: a handout given on a day they were marked absent; docs/
+// decisions.md "Homeroom: K-2 mode, absent and at home"): fn(classId) -> ['userId:classLessonId'], registered by the
+// module that knows, so this one imports none of it. Such work is never late or done late by itself, only not done yet.
+const excusedHooks = [];
+export const onExcused = fn => { if (!excusedHooks.includes(fn)) excusedHooks.push(fn); };
+const excusedIn = classId => new Set(excusedHooks.flatMap(fn => fn(classId) || []));
 export function classProgress(classId, t = now()) {
   const lessons = L.classPlan(classId).flatMap(g => g.lessons.map(cl => ({ ...cl, unit: g.unit, locked: !L.isOpen(cl, t), due: L.dueState(cl, t) })));
   const students = studentsOf(classId), picks = L.picksIn(classId);
@@ -396,18 +402,19 @@ export function classProgress(classId, t = now()) {
   const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures','proofread') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
   for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
   // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
-  const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons);
+  const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons), excused = excusedIn(classId);
   const rows = students.map(p => ({ ...p, cells: lessons.map(cl => {
     if (na(p, cl)) return { na: true, done: 0, total: 0, toRead: 0, last: null, locked: cl.locked, late: false, lateSteps: 0, lateDone: false, items: [], score: null,
       quiz: null, quizzes: 0, helped: 0, points: null, maxPoints: null, scored: 0, criteria: 0 };
     const r = by.get(`${p.id}:${cl.id}`); const done = r ? Math.min(r.done, cl.steps) : 0;
     const sc = pts.get(`${p.id}:${cl.id}`) || null;
     const its = items.get(`${p.id}:${cl.id}`) || [], lateSteps = lateN.get(`${p.id}:${cl.id}`) || 0;
-    const practice = cl.grade === 'none';
-    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !practice && !cl.locked && cl.due === 'late' && done < cl.steps,
+    const practice = cl.grade === 'none', exc = excused.has(`${p.id}:${cl.id}`);
+    return { done, total: cl.steps, toRead: r ? r.toread : 0, last: (r && r.last) || null, locked: cl.locked, late: !practice && !exc && !cl.locked && cl.due === 'late' && done < cl.steps,
+      ...(exc ? { excused: true } : {}),
       ...(practice ? { practice: true } : cl.grade === 'completion' ? { completion: true } : {}),
       // finished, but after the due day (the school's time zone): 'late' above is work still missing after it
-      lateSteps, lateDone: !practice && !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
+      lateSteps, lateDone: !practice && !exc && !cl.locked && cl.steps > 0 && done >= cl.steps && lateSteps > 0,
       items: practice ? [] : its, score: practice ? null : SC.total(its),
       quiz: r && r.quizzes ? Math.round(r.quiz) : null, quizzes: r ? r.quizzes || 0 : 0,
       // game steps whose kept score came after the teacher showed an answer (Oomba Canvas 1.3.0); staff-only

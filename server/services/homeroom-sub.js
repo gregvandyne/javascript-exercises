@@ -24,6 +24,7 @@ import * as HO from './homeroom-handouts.js';
 import * as HV from './homeroom-live.js';
 import * as HP from './homeroom-plan.js';
 import * as SUP from './homeroom-supports.js';
+import * as AT from './homeroom-attendance.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -162,13 +163,16 @@ export function subView(x, { v = null } = {}, at = now()) {
   const { c, link } = x, names = firstNames(c.id), room = H.roomOf(c.id), sup = SUP.supportsOf(c.id);
   const lv = HV.liveView(c, HO.boardView(c), at), nm = id => names.get(id) || '';
   const inTeam = new Set(room.teams.flatMap(t => t.members));
-  const desk = id => { const d = lv.desks[id] || {}; return { id, name: nm(id), st: lv.live ? d.st || 'away' : '', hand: d.hand || '', pass: d.pass || '', sup: SUP.subLabels(sup[id]) }; };
+  // today's attendance (Absent, At home: the sub takes attendance, docs/decisions.md "Homeroom: K-2 mode, absent and at home")
+  const att = AT.marksToday(c.id, at);
+  const desk = id => { const d = lv.desks[id] || {}; return { id, name: nm(id), st: lv.live ? d.st || 'away' : '', hand: d.hand || '', pass: d.pass || '', sup: SUP.subLabels(sup[id]), att: att[id] || '' }; };
   const tv = HP.teacherView(c, at);
   return {
     live: lv.live, now: at, endsAt: link.ends_at,
     desks: room.students.filter(s => !inTeam.has(s.id)).map(s => ({ ...desk(s.id), ...room.seats[s.id] })),
     teams: room.teams.map(t => ({ id: t.id, x: t.x, y: t.y, members: t.members.map(desk) })),
     hands: lv.hands.map(h => ({ id: h.id, name: nm(h.id), kind: h.kind, at: h.at })),
+    asks: (lv.asks || []).map(x => ({ id: x.id, sid: x.sid, name: nm(x.sid), kind: x.kind, text: x.text, at: x.at })),
     pass: { minutes: lv.pass.minutes, out: lv.pass.out ? { id: lv.pass.out.id, name: nm(lv.pass.out.id), at: lv.pass.out.at } : null, line: lv.pass.line.map(y => ({ id: y.id, name: nm(y.id) })) },
     plan: tv && tv.state !== 'finished' ? { id: tv.id, name: tv.name, state: tv.state, now: tv.now, parts: tv.parts.map(p => ({ id: p.id, kind: p.kind, title: p.title, minutes: p.minutes })), run: tv.run, behindMin: tv.behindMin } : null,
     ...H.boardState(c.id, v),
@@ -192,6 +196,19 @@ export function subHands(x, { action, studentId } = {}) {
   if (!['answer', 'pass', 'notNow', 'back'].includes(action)) return fail('forbidden');
   const r = HV.teacherHands(x.actor, x.c, { action, studentId });
   if (r.ok) log(x.link, `hand:${action}`, { student: String(studentId || '') });
+  return r;
+}
+
+/** A sub takes attendance: a student Absent or At home today, or here again (''), logged. */
+export function subAttend(x, { studentId, status = '', tz = '' } = {}) {
+  const r = AT.mark(x.actor, x.c, String(studentId || ''), String(status || ''), { tz });
+  if (r.ok) log(x.link, `attend:${r.status || 'here'}`, { student: String(studentId || '') });
+  return r;
+}
+/** A sub answers a question from home, logged. */
+export function subAsk(x, { id } = {}) {
+  const r = AT.answerAsk(x.actor, x.c, id);
+  if (r.ok) log(x.link, 'hand:ask');
   return r;
 }
 

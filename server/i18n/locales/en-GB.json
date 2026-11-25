@@ -252,6 +252,18 @@
     "homeroom-desk": {
       "pens": "Pen colours",
       "penColor": "Pen colour {n}"
+    },
+    "homeroom-reading": {
+      "draw": {
+        "pens": "Pen colours",
+        "pen": "Pen colour {n}"
+      }
+    },
+    "notebook": {
+      "k2": {
+        "pens": "Pen colours",
+        "pen": "Pen colour {n}"
+      }
     }
   },
   "favorites": {

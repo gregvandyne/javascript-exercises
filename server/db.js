@@ -1533,6 +1533,29 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_homeroom_reading_class ON homeroom_reading(class_id);
     CREATE INDEX IF NOT EXISTS idx_homeroom_reading_user ON homeroom_reading(user_id);
     CREATE TABLE IF NOT EXISTS reading_quizzes (book_id TEXT PRIMARY KEY, source TEXT NOT NULL, items TEXT NOT NULL, created_at INTEGER NOT NULL);`],
+  // Homeroom: K-2 mode, absent and at home (docs/decisions.md "Homeroom: K-2 mode, absent and at home";
+  // services/homeroom-attendance.js). homeroom_rooms.k2_mode: the class's K-2 desk ('' by the class's grade, 'on', 'off').
+  // homeroom_k2: one student's own K-2 desk in a class ('on' or 'off' over the class's), set by its teachers.
+  // homeroom_attendance: a student marked Absent ('absent') or At home ('home') on one school day (day: that day's
+  // 00:00 UTC value in zone, the school's time zone or the marker's), by a teacher or a sub (by_kind; set_by: the account
+  // or the sub link). homeroom_asks: a question a student at home sent from their desk (a kind and, past K-2, a few words),
+  // until the teacher, an aide or a sub answers it. notebook_pages.drawing: a page's drawing (pen strokes as the desk's pad
+  // keeps them; K-2 notebooks draw or type). All gone with the class, the school or the account.
+  ['0135_homeroom_k2_attendance', `
+    ALTER TABLE homeroom_rooms ADD COLUMN k2_mode TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS homeroom_k2 (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      mode TEXT NOT NULL, set_by TEXT, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_k2_user ON homeroom_k2(user_id);
+    CREATE TABLE IF NOT EXISTS homeroom_attendance (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      day INTEGER NOT NULL, zone TEXT NOT NULL DEFAULT 'UTC', status TEXT NOT NULL, by_kind TEXT NOT NULL DEFAULT 'teacher', set_by TEXT,
+      at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id, day));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_attendance_user ON homeroom_attendance(user_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_attendance_day ON homeroom_attendance(class_id, day);
+    CREATE TABLE IF NOT EXISTS homeroom_asks (id TEXT PRIMARY KEY, class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, kind TEXT NOT NULL, text TEXT NOT NULL DEFAULT '', at INTEGER NOT NULL, answered_at INTEGER, answered_by TEXT);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_asks_class ON homeroom_asks(class_id, answered_at);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_asks_user ON homeroom_asks(user_id);
+    ALTER TABLE notebook_pages ADD COLUMN drawing TEXT NOT NULL DEFAULT '';`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

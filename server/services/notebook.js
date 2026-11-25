@@ -24,12 +24,17 @@ import { config } from '../config.js';
 import { accountKind } from '../auth.js';
 import * as S from './schools.js';
 import * as H from './homeroom.js';
+import * as AT from './homeroom-attendance.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
 const clip = (s, n) => String(s ?? '').replace(/[\u0000-\u001f\u007f‪-‮⁦-⁩]/g, '').slice(0, n);
 
 export const LIMITS = { page: 20000, total: 400000, tabs: 30, pages: 300, name: 30, title: 80 };
+/** A page's drawing (K-2 notebooks draw or type; docs/decisions.md "Homeroom: K-2 mode, absent and at home"): pen strokes
+ *  as the desk's pad keeps them (services/homeroom.js cleanStrokes), on a 3:2 page. */
+export const DRAWING = Object.freeze({ strokes: 80, points: 400, total: 8000, bytes: 200000 });
+const drawingOf = p => { try { const v = JSON.parse(p.drawing || '[]'); return Array.isArray(v) ? v : []; } catch { return []; } };
 /** The colors a tab can have (its dot): Mint, Sky, Sunny, Coral, Lilac, Leaf. A class tab is Leaf. */
 export const TAB_COLORS = ['#66C792', '#5BA8E8', '#FFD23F', '#FF8A6B', '#A98BE0', '#1F9D63'];
 export const HIGHLIGHTS = ['hl-y', 'hl-g', 'hl-b', 'hl-p'];
@@ -161,15 +166,16 @@ function bookOf(userId) {
   const tabs = q.all(`SELECT t.*, c.name class_name FROM notebook_tabs t LEFT JOIN classrooms c ON c.id=t.class_id WHERE t.user_id=? ORDER BY t.position, t.created_at`, userId);
   const pages = q.all('SELECT * FROM notebook_pages WHERE user_id=? ORDER BY (class_lesson_id IS NOT NULL), created_at', userId);
   const by = new Map(tabs.map(t => [t.id, []]));
-  for (const p of pages) if (by.has(p.tab_id)) by.get(p.tab_id).push({ id: p.id, title: p.title, body: p.body, handout: p.class_lesson_id || null, updatedAt: p.updated_at });
+  for (const p of pages) if (by.has(p.tab_id)) { const d = drawingOf(p); by.get(p.tab_id).push({ id: p.id, title: p.title, body: p.body, ...(d.length ? { drawing: d } : {}), handout: p.class_lesson_id || null, updatedAt: p.updated_at }); }
   return tabs.map(t => ({ id: t.id, kind: t.kind, name: t.kind === 'class' ? (t.class_name || t.name) : t.name, color: t.color, ...(t.class_id ? { classId: t.class_id } : {}), pages: by.get(t.id) }));
 }
-const limits = () => ({ page: LIMITS.page, total: LIMITS.total, tabs: LIMITS.tabs, name: LIMITS.name });
+const limits = () => ({ page: LIMITS.page, total: LIMITS.total, tabs: LIMITS.tabs, name: LIMITS.name, drawing: { strokes: DRAWING.strokes, points: DRAWING.points, total: DRAWING.total } });
 /** The student's own notebook. -> { ok, tabs, used, limits, teacherReads } */
 export function mine(u) {
   if (!canUse(u)) return fail('notFound');
   ensure(u);
-  return ok({ tabs: bookOf(u.id), used: used(u.id).n, limits: limits(), teacherReads: hasTeacher(u.id) });
+  // K-2 mode in a class of theirs: the notebook draws or types, with a simpler toolbar and no tabs to manage
+  return ok({ tabs: bookOf(u.id), used: used(u.id).n, limits: limits(), teacherReads: hasTeacher(u.id), ...(AT.k2Anywhere(u) ? { k2: true } : {}) });
 }
 /** A student's notebook for their teacher, read only (and audited: who read whose notebook, never what it says).
  *  -> { ok, tabs, student } | forbidden */
@@ -220,18 +226,25 @@ export function tabs(u, { action, id, name, dir } = {}) {
   return fail('badAction');
 }
 
-/** Save a page (autosave): the body cleaned, within the page's and the notebook's limits. -> { ok, id, body, updatedAt, used } */
-export function savePage(u, id, body) {
+/** Save a page (autosave): the body cleaned, within the page's and the notebook's limits; drawing (optional): the page's
+ *  pen strokes (DRAWING's limits; left as it was when not sent). -> { ok, id, body, drawing, updatedAt, used } */
+export function savePage(u, id, body, drawing = undefined) {
   if (!canUse(u)) return fail('notFound');
   const p = pageRow(u.id, id); if (!p) return fail('notFound');
   if (typeof body !== 'string') return fail('badState');
   const clean = cleanHtml(body);
   if (clean.length > LIMITS.page) return fail('pageFull');
   if (used(u.id).n - (p.body || '').length + clean.length > LIMITS.total) return fail('notebookFull');
+  let draw = p.drawing || '';
+  if (drawing !== undefined && drawing !== null) {
+    const d = H.cleanStrokes(drawing, DRAWING);
+    if (!d.ok) return fail(d.code === 'padFull' ? 'drawingFull' : 'badState');
+    draw = d.strokes.length ? JSON.stringify(d.strokes) : '';
+  }
   const t = Math.max(now(), p.updated_at + 1);
-  q.run('UPDATE notebook_pages SET body=?, text=?, updated_at=? WHERE id=?', clean, textOf(clean).slice(0, LIMITS.page), t, p.id);
+  q.run('UPDATE notebook_pages SET body=?, text=?, drawing=?, updated_at=? WHERE id=?', clean, textOf(clean).slice(0, LIMITS.page), draw, t, p.id);
   q.run('UPDATE notebook_tabs SET updated_at=? WHERE id=?', t, p.tab_id);
-  return ok({ id: p.id, body: clean, updatedAt: t, used: used(u.id).n });
+  return ok({ id: p.id, body: clean, drawing: drawingOf({ drawing: draw }), updatedAt: t, used: used(u.id).n });
 }
 
 /** A handout's note area on the desk: the page in that class's tab titled with the handout's name (made the first

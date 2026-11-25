@@ -35,6 +35,9 @@
 //     small 🧩 when they have any, a handout's simpler wording (the desk's sheet), Aides and Sub link for today in the ⋯
 //     menu, "While you were out" after a sub. An aide (D.role) gets the board read-only with Hands, Today, a look at a
 //     desk, comments and stickers.
+//   - step 4c (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): today's attendance on the desks (an Absent
+//     desk dimmed with "Absent today", an "At home" chip), marked from the desk's menu and Today; K-2 desks in the ⋯ menu
+//     (by the class's grade, on or off; per student from the desk's menu).
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
@@ -72,6 +75,8 @@ const H = {
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
   teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [], away: false,
+  // step 4c: the class's K-2 setting ({ mode, auto, on }) and each student's own ({ id: 'on' | 'off' })
+  k2: D.k2 || { mode: '', auto: false, on: false }, k2Students: D.k2Students || {},
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -118,17 +123,20 @@ function cardRow(x, sid) {
     ${x.done ? `<span class="hr-cdone" aria-hidden="true">✓</span>${x.fb && x.fb.src ? `<img class="hr-cfb" src="${esc(x.fb.src)}" alt="" width="18" height="18">` : x.fb && x.fb.comment ? `<span class="hr-cfbc" aria-hidden="true">${iconHtml('💬', { size: 12 })}</span>` : ''}` : x.locked ? `<span class="hr-clock" aria-hidden="true">${iconHtml('🔒', { size: 12 })}</span>` : `<span class="hr-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`}<span class="sr-only">, ${esc(state)}</span>`;
   return H.seatsOpen ? `<span class="hr-card${x.done ? ' done' : ''}">${inner}</span>` : btn(`hr-card${x.done ? ' done' : ''}`, `data-hrho="${esc(x.id)}" data-sid="${esc(sid)}"`, inner);
 }
+/** Today's attendance mark of a student ('absent' | 'home' | ''), from the board's handouts view (step 4c). */
+const attOf = sid => ((H.ho && H.ho.att) || {})[sid] || '';
+const attChip = sid => { const a = attOf(sid); return a ? `<span class="hr-attchip ${a}">${iconHtml(a === 'absent' ? '📅' : '🏠', { size: 14 })} ${esc(th(`att.${a}`))}</span>` : ''; };
 function deskInner(s) {
   const g = groupOf(s.id), c = g ? g.color : '', cards = cardsOf(s.id), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
   // (the name opens the desk's menu, step 3c: supports, handouts, a look; a plain name while seats are arranged)
   const nm = `<span class="rm-dot"${c ? ` style="--c:${esc(c)}"` : ''}></span><bdi>${esc(s.name)}</bdi>${HLP ? HLP.supIcon(s.id) : ''}`;
-  return `${H.seatsOpen ? `<span class="hr-name">${nm}</span>` : btn('hr-name hr-namebtn', `data-hrdmenu="${esc(s.id)}" aria-label="${esc(th('helpers.deskMenu', { name: s.name }))}" aria-haspopup="dialog"`, nm)}
+  return `${H.seatsOpen ? `<span class="hr-name">${nm}</span>` : btn('hr-name hr-namebtn', `data-hrdmenu="${esc(s.id)}" aria-label="${esc(th('helpers.deskMenu', { name: s.name }))}" aria-haspopup="dialog"`, nm)}${attChip(s.id)}
     ${cards.length ? `<div class="hr-cards">${shown.map(x => cardRow(x, s.id)).join('')}${many ? (H.seatsOpen ? `<span class="hr-more">${esc(th('ho.more', { count: cards.length - 2 }))}</span>` : btn('hr-more', `data-hrdesk="${esc(s.id)}"`, esc(th('ho.more', { count: cards.length - 2 })))) : ''}</div>`
       : `<span class="hr-empty">${esc(th('emptyDesk'))}</span>${g ? `<span class="hr-gtag">${esc(groupName(g))}</span>` : ''}`}`;
 }
 function deskHtml(s) {
   const p = H.seats[s.id] || { x: 0, y: 0 }, g = groupOf(s.id), c = g ? g.color : '', picked = H.teamPick && H.teamPick.includes(s.id);
-  return `<div class="hr-desk${H.deskSel === s.id ? ' sel' : ''}${picked ? ' picked' : ''}" data-sid="${esc(s.id)}" role="group" aria-label="${esc(th('deskOf', { name: s.name }))}"${H.seatsOpen ? ' tabindex="0"' : ''}${H.teamPick ? ` aria-pressed="${!!picked}"` : ''}
+  return `<div class="hr-desk${H.deskSel === s.id ? ' sel' : ''}${picked ? ' picked' : ''}${attOf(s.id) ? ` hr-att-${attOf(s.id)}` : ''}" data-sid="${esc(s.id)}" role="group" aria-label="${esc(th('deskOf', { name: s.name }))}"${H.seatsOpen ? ' tabindex="0"' : ''}${H.teamPick ? ` aria-pressed="${!!picked}"` : ''}
     style="left:${p.x}px;top:${p.y}px;width:${DESK.w}px;height:${DESK.h}px${c ? `;--gc:${esc(c)}` : ''}">${deskInner(s)}</div>`;
 }
 /** A team desk's handouts: each handout any member has, with how many of them are done (✓ when all are). */
@@ -140,7 +148,7 @@ function teamCards(tm) {
 function teamInner(tm) {
   const cards = teamCards(tm), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
   const names = tm.members.map(sid => { const g = groupOf(sid), sup = HLP ? HLP.supIcon(sid) : ''; return H.seatsOpen || H.teamPick ? `<span class="hr-tname"><span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>${sup}</span>`
-    : btn('hr-tname', `data-hrdesk="${esc(sid)}" aria-label="${esc(th('deskOf', { name: nameOfId(sid) }))}"`, `<span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>${sup}`); }).join('');
+    : btn(`hr-tname${attOf(sid) ? ` hr-att-${attOf(sid)}` : ''}`, `data-hrdesk="${esc(sid)}" aria-label="${esc(th('deskOf', { name: nameOfId(sid) }))}${attOf(sid) ? `, ${esc(th(`att.${attOf(sid)}`))}` : ''}"`, `<span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>${sup}${attOf(sid) ? iconHtml(attOf(sid) === 'absent' ? '📅' : '🏠', { size: 12 }) : ''}`); }).join('');
   const row = e => { const h = handout(e.id); if (!h) return ''; const all = e.done >= e.n;
     const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(h.title)}</span><span class="hr-tcount${all ? ' all' : ''}">${all ? '✓' : esc(th('team.doneOf', { done: e.done, n: e.n }))}</span>`;
     return H.seatsOpen ? `<span class="hr-card${all ? ' done' : ''}">${inner}</span>` : btn(`hr-card${all ? ' done' : ''}`, `data-hrteam="${esc(tm.id)}"`, inner); };
@@ -205,7 +213,11 @@ function stagedList() {
 
 /** Only the desks again (fresh progress, a new handout), leaving the teacher's area and its edits alone. */
 function renderDesks() {
-  for (const s of soloStudents()) { const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (el) el.innerHTML = deskInner(s); }
+  for (const s of soloStudents()) {
+    const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (!el) continue;
+    el.innerHTML = deskInner(s);
+    for (const a of ['absent', 'home']) el.classList.toggle(`hr-att-${a}`, attOf(s.id) === a);
+  }
   for (const tm of H.teams) { const el = worldEl.querySelector(`.hr-team[data-team="${CSS.escape(tm.id)}"]`); if (el) el.innerHTML = teamInner(tm); }
   LV.paint();
 }
@@ -414,12 +426,31 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="groups"', `${iconHtml('🏷️', { size: 18 })} ${esc(th('editGroups'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="signin"', `${iconHtml('🔑', { size: 18 })} ${esc(th('signin'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="aides"', `${iconHtml('🤝', { size: 18 })} ${esc(th('helpers.aides'))}`)}
-    ${btn('rm-mi', 'role="menuitem" data-hr="sublink"', `${iconHtml('🔗', { size: 18 })} ${esc(th('helpers.subMenu'))}`)}`}
+    ${btn('rm-mi', 'role="menuitem" data-hr="sublink"', `${iconHtml('🔗', { size: 18 })} ${esc(th('helpers.subMenu'))}`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="k2"', `${iconHtml('🧒', { size: 18 })} ${esc(th('k2.menu'))}<span class="hr-mitag">${esc(th(H.k2.on ? 'k2.on' : 'k2.off'))}</span>`)}`}
     ${D.hostLive && !AIDE ? `<a class="rm-mi" role="menuitem" href="${esc(D.hostLive)}" data-hr="hostlive">${iconHtml('📡', { size: 18 })} ${esc(th('hostLive'))}</a>` : ''}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
   placePopover(el.firstElementChild, document.querySelector('[data-hr="menu"]'));
   el.querySelector('button')?.focus();
+}
+// K-2 desks (step 4c): by the class's grade (on for K, 1 and 2), on or off for the whole class; one student's own from
+// the desk's menu.
+function k2Sheet() {
+  const draw = () => `<div class="hr-k2box"><p class="small muted">${esc(th('k2.lead'))}</p>
+    <ul class="hr-k2what small">${['big', 'one', 'read', 'hands', 'notes'].map(k => `<li>${esc(th(`k2.what.${k}`))}</li>`).join('')}</ul>
+    <div class="hr-seg hr-k2seg" role="radiogroup" aria-label="${esc(th('k2.menu'))}">${['', 'on', 'off'].map(m => btn(`hr-segb${H.k2.mode === m ? ' on' : ''}`, `role="radio" aria-checked="${H.k2.mode === m}" data-k2mode="${m}"`, esc(m ? th(`k2.mode.${m}`) : th(H.k2.auto ? 'k2.mode.gradeOn' : 'k2.mode.gradeOff')))).join('')}</div>
+    <p class="small muted">${esc(th('k2.perStudent'))}</p></div>`;
+  const sh = sheet({ title: `🧒 ${th('k2.title')}`, content: draw() });
+  const body = sh.el.querySelector('.sheet-body') || sh.el;
+  body.addEventListener('click', async e => {
+    const b = e.target.closest('[data-k2mode]'); if (!b) return;
+    try {
+      const r = await api(api2('k2'), { method: 'POST', body: { mode: b.dataset.k2mode } });
+      H.k2 = r.k2; H.k2Students = r.k2Students || {}; toast(r.toast);
+      const box = body.querySelector('.hr-k2box'); if (box) box.outerHTML = draw();
+    } catch (err) { toast(err.message, { bad: true }); }
+  });
 }
 // Students sign in (step 1c): the class sign-in's QR code and code, open or closed, in a sheet.
 async function signinSheet() {
@@ -743,7 +774,7 @@ async function pollHandouts() {
   if (LV.polling()) { pollTimer = setTimeout(pollHandouts, pollEvery()); return; }
   try {
     const r = await api(api2('handouts'), { background: true });
-    if (JSON.stringify(r) !== JSON.stringify(H.ho)) { H.ho = r; renderDesks(); }
+    if (JSON.stringify(r) !== JSON.stringify(H.ho)) { H.ho = r; renderDesks(); renderLive(); }
   } catch { /* try again later */ }
   pollTimer = setTimeout(pollHandouts, pollEvery());
 }
@@ -877,6 +908,7 @@ function click(e) {
   else if (k === 'signin') signinSheet();
   else if (k === 'aides') { H.menuOpen = false; renderMenu(); HLP.aidesSheet(); }
   else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }
+  else if (k === 'k2') { H.menuOpen = false; renderMenu(); k2Sheet(); }
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }
@@ -907,14 +939,26 @@ function keys(e) {
 }
 
 // ---------------------------------------------------------------- start
+// ---------------------------------------------------------------- attendance (step 4c)
+/** Mark a student Absent or At home today, or here again (''): the desks, Today and the plan's counts follow. */
+async function markAtt(sid, status) {
+  let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* the school's zone, else UTC */ }
+  try {
+    const r = await api(api2('attendance'), { method: 'POST', body: { studentId: sid, status, tz } });
+    if (r.handouts) H.ho = { handouts: r.handouts, desks: r.desks, att: r.att, asks: r.asks || [] };
+    renderDesks(); LV.refresh(); toast(r.toast);
+    return true;
+  } catch (e) { toast(e.message, { bad: true }); return false; }
+}
+
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
-const LV = liveBoard({
+const LV = liveBoard({ att: attOf, markAtt: AIDE ? null : markAtt,
   D, H, th, api2: path => api2(path), worldEl, renderLive: () => renderLive(), deskSheet: sid => deskSheet(sid), groupOf, nameOfId, teamOf, handout, aide: AIDE, supports: sid => HLP.deskMenu(sid), supportsLabel: th('helpers.supports'),
   setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
 });
 
 // Step 3c: supports, simpler wording, aides, sub links, While you were out (public/js/homeroom-helpers.js).
-const HLP = helpersOf({ D, H, api2: path => api2(path), aide: AIDE, nameOfId, renderDesks: () => renderDesks(), deskSheet: sid => deskSheet(sid), look: sid => LV.look(sid), live: () => !!H.live });
+const HLP = helpersOf({ D, H, api2: path => api2(path), aide: AIDE, att: attOf, markAtt, nameOfId, renderDesks: () => renderDesks(), deskSheet: sid => deskSheet(sid), look: sid => LV.look(sid), live: () => !!H.live });
 
 /** Another view is on screen: the board keeps its zoom, place and selection; typing ends, menus close, nothing polls. */
 function away() {

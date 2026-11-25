@@ -14640,3 +14640,78 @@ section). Step 4b. Migration `0134_homeroom_reading`.
   lesson builder's Reading entry still says "coming later" (Reading is handed out from the panel); Oomba-made books
   shared with a class are not in the pickers yet; the retell questions are in English (the library's books are);
   translations of the new strings (English now; the other languages fall back to it).
+
+## Homeroom: K-2 mode, absent and at home (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` ("The student desk": K-2 mode by grade; build order step 4: absent and at-home
+students). Step 4c. Migration `0135_homeroom_k2_attendance`. Service: `services/homeroom-attendance.js`.
+
+- **K-2 mode, by grade** (`classK2`, `k2For`): on by itself when the class's grade box reads K, 1 or 2 (the same
+  `earlyGrade` that gives picture passwords, so TK, Kindergarten, CP, CE1 and the rest count). The class's teachers set
+  it in the ⋯ menu's **K-2 desks** (By grade, On for this class, Off for this class: `homeroom_rooms.k2_mode` '' | 'on' |
+  'off') and for one student in the desk's menu (As the class, On, Off: `homeroom_k2`). An aide and a sub never change
+  it. The desk page has class `hd-k2` and its poll carries `k2`, so a change reaches an open desk.
+  - **The desk** (`public/js/homeroom-desk.js`, `public/css/homeroom.css` `.hd-k2`): bigger text and targets (dock
+    buttons 64 pixels, the hand button 56, pens 56), a picture with every label, fewer words (no "Do these in order"
+    chip). **Next up** is one thing at a time: one big card with the game's icon or the book's cover, its short name,
+    the teacher's words (four lines at most), **Read to me** and a big **Start** (68 pixels); the rest wait under "Then"
+    and "Finished" as big picture tiles (icon or cover and a short name, ✓ or 🔒), each with its own speaker button.
+    Read to me is on by default in K-2 (the device's own voice, `homeroom-support.js`; the student's Read aloud support
+    still turns it on outside K-2). Calm and plain for a second grader: the site's own tokens, no cartoon extras.
+  - **Raise hand** opens three big pictures (Question, Help, Bathroom), no typing; the hall pass works as before. The
+    note under the bar ("Your hand is up") now steps aside while the hand menu is open (it covered the menu's first
+    item on every desk).
+  - **The notebook** (`public/js/notebook.js`, server `mine().k2` when any class of theirs is K-2): draw or type on every
+    page. Each page has a **Draw** button that turns its drawing area into the desk pad's tools (the same five pens,
+    Undo, Clear, palm rejection: `public/js/homeroom-drawpad.js`, shared with the reading notes); Done drawing shows the
+    picture above the typed words. The toolbar is Bold and one highlighter; no search; tabs are their class tabs and My
+    notes only (no new, rename or delete). A page's drawing is `notebook_pages.drawing` (cleaned by
+    `services/homeroom.js` cleanStrokes, the pad's own cleaner, now shared: 80 strokes, 8,000 points); the teacher's
+    read-only view shows it too.
+  - **Reading routine, 3 notes in K-2**: one drawing ("Draw something that happened", required), how they liked the
+    book as three picture choices (Loved it, Liked it, It was OK; required) and a word from the book if they want (40
+    characters). Saved as the same notebook page as the 3 notes (the prompts and their answer as words, the drawing as the
+    page's drawing), finishing the routine the same way. The server takes this form only from a K-2 desk.
+- **Attendance** (`homeroom_attendance`, one row per class, student and school day): **Absent** or **At home**, marked by
+  the class's teachers (the desk's menu: Here / Absent today / At home today; Today at a glance: an Attendance list of
+  every student, alphabetical) and by a **sub** (their page's Attendance list: taking attendance is a sub's job; each mark
+  is in the sub log as `attend:absent` / `attend:home` and in "While you were out"). An **aide** sees the marks (chips
+  on the board, the desk's menu read only) and never changes them (403). The day is the school's (its time zone, else the
+  marker's browser's, else UTC); a mark is kept with its zone, so "today" is read in the same zone. One mark a day; Here
+  removes it. Nothing more: no attendance report, no history page.
+  - **The board**: an Absent desk is dimmed and dashed with "Absent today" at its foot; it shows no live status or cursor,
+    never Stuck, Not here or Needs a look. An At home desk keeps its live status, with "At home" in place of a cursor
+    (no cursor is shared from home). Today's counts per handout leave absent students out and say "N absent" beside
+    them; Finish class's summary counts present students only (its "of" and the homework) and shows "N absent, not
+    counted as unfinished" as its own tile.
+  - **Missed while you were out**: a handout given on a day a student was marked absent (looked up from the marks of the
+    last 60 days, never stored twice) shows on their desk in its own section at the top, with the teacher's words on it
+    (K-2: on the tile), until it is done. In **Progress** it is "not done yet": never late and never "done late" by
+    itself (`progress.js` onExcused: the attendance module registers which student and handout pairs are excused, so
+    progress.js imports nothing of Homeroom); no zero is ever written.
+- **At home** (`homeOf`): marked At home (or Absent, and on their desk anyway), or the desk opened while class isn't live
+  (from home, or before class). The same desk and handouts. No Raise hand or hall pass (the server refuses a hand from a
+  student marked away from the room: `atHome`; marking someone away puts a raised hand down and takes them out of the
+  pass line). Instead **Ask my teacher**: K-2 taps a picture (Question or Help), others pick one and may add a few words
+  (200 characters, the site's word rules). It waits in the teacher's **Hands** under "From home", marked At home, until
+  the teacher, an aide or a sub taps Answered; the desk then says "Your teacher saw it". At most 3 waiting per student.
+  Hands shows in the top bar whenever a question from home waits, even when class isn't live. The desk shows "At home
+  today" beside the class's name when the teacher marked it. Questions are words for the teacher only: no AI sees them.
+- **Who sees what**: marks and questions are on the teacher's and aide's board (the handouts view: `att`, `asks`) and
+  the sub's page (first names); a student's desk carries only their own questions; See the room, the projector and
+  classmates never see attendance.
+- **Deleting**: the three tables go with the class and the school (`school-delete.js` BY_CLASS), the student leaving
+  the class, their account (`account-delete.js`), and are dropped for an account merged away.
+- Tests: `tests/unit/homeroom-k2.test.js` (K-2 by grade, the class and student overrides and who may set them; the
+  notebook's drawing cleaned and kept; marks by the teacher, refused to an aide, another teacher and a student, one a
+  day; an absent desk out of live status and Finish class's counts; at home: hands refused, questions from home in Hands
+  and the pulse, answered by an aide, limits; missed handouts on the desk and never late in Progress; a sub's marks and
+  answers logged and in While you were out; K-2 reading notes saved and refused outside K-2; deletion with the account,
+  the student leaving and the school) and `tests/unit/homeroom-k2-browser.test.js` (820, 1366 and 390: the K-2 desk,
+  Raise hand as pictures, the K-2 notebook with a drawing saved, K-2 reading notes saved, Missed while you were out;
+  at home Ask my teacher; the board's Absent and At home desks, Today's attendance with a mark made there, Hands with
+  a question from home, the desk's menu, the ⋯ menu's K-2 desks, Finish class with "1 absent").
+  `homeroom-reading-browser.test.js` turns K-2 off for its grade 2 class (it tests the standard 3 notes).
+- **Open**: an attendance export or report (on purpose: none); marking a whole group absent at once; K-2 mode inside
+  games (each game's own); the board's K-2 setting is not shown to a sub (the teacher's); translations of the new strings
+  (English now; the other languages fall back to it).

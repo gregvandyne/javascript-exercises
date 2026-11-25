@@ -41,6 +41,7 @@ import { liveGameOf } from '../live/live-games.js';
 import { gameHidden, mayOpenHidden } from './game-focus.js';
 import * as HR from './homeroom-reading.js';
 import * as LIB from './library.js';
+import * as AT from './homeroom-attendance.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -122,7 +123,9 @@ export function boardView(c, locale = 'en') {
       return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: rd ? HR.pctOfInfo(rd) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
     }));
   }
-  return { handouts, desks };
+  // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at
+  // home"): the board dims an absent desk and leaves it out of its counts
+  return { handouts, desks, att: AT.marksToday(c.id), asks: AT.openAsks(c.id) };
 }
 /** One student's desk: their own handouts only, in order, each with what the card shows and where it opens
  *  ({ id, title, icon, instructions, href, done, pct, locked, next, due, ready }). Nothing about anyone else. */
@@ -148,7 +151,7 @@ export function deskView(c, u, locale = 'en') {
   }));
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
-export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');
+export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${x.missed ? 'm' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');
 
 // ---------------------------------------------------------------- comments and stickers (step 2c)
 /** The stickers a teacher can leave on finished work: a small set from the owner's sticker library
