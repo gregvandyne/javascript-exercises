@@ -15,12 +15,15 @@
 //     drag it there with a mouse or pen; a sheet asks for instructions, the order on the desk, how it is graded and a
 //     due day (POST .../handouts). Each desk shows its handouts with progress; tap one to see it or take it off that
 //     desk or every desk (POST .../handouts/<id>/remove). The desks refresh every so often while the page is open.
-// Lessons, plans and cursors come in later steps (docs/homeroom.md "Build order").
+//   - lessons (step 2b; public/js/homeroom-lessons.js): My lessons in the panel, "+ Build a lesson", each lesson handed
+//     out like a game (tap-then-tap or drag) with its own sheet (versions by group, Score by default).
+// Plans and cursors come in later steps (docs/homeroom.md "Build order").
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
+import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
 import { AREA, TEACHER_DESK, DESK, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -39,7 +42,7 @@ const H = {
   ann: { notes: [], texts: [], strokes: [], ...((room.area || {}).__ann || {}) }, shapes: Array.isArray((room.area || {}).shapes) ? room.area.shapes : [],
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], editing: null, textEdit: null, shapeSel: null, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
-  ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false,
+  ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -346,6 +349,18 @@ function renderGivebar() {
     <span class="hr-giveto">${chips}</span>${btn('btn btn-sm hr-chunk', 'data-hr="unpick"', esc(th('ho.cancel')))}` : '';
 }
 const pickFrom = b => ({ id: b.dataset.hritem, icon: b.dataset.icon || '🎮', title: b.querySelector('.hr-itemt')?.textContent || '' });
+// ---------------------------------------------------------------- lessons (step 2b)
+const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id === p.id.slice(2)) || null : null);
+const lessonCtx = {
+  D, H, th, api2: path => api2(path), groupName,
+  onLessons: list => { H.lessons = list; if (H.pick && H.pick.id.startsWith('L:') && !lessonOfPick(H.pick)) setPick(null); renderLessons(lessonCtx); },
+  onHanded: r => { H.ho = { handouts: r.handouts, desks: r.desks }; setPick(null); renderDesks(); toast(r.toast); },
+};
+/** The groups with students in a target, and how many of them have no group (the lesson sheet's versions by group). */
+function groupsIn(to) {
+  const ids = to.kind === 'all' ? H.students.map(s => s.id) : to.kind === 'group' ? H.students.filter(s => H.members[s.id] === to.id).map(s => s.id) : [to.id];
+  return { groupsIn: H.groups.map(g => ({ g, n: ids.filter(id => H.members[id] === g.id).length })).filter(x => x.n), none: ids.filter(id => !H.groups.some(g => g.id === H.members[id])).length };
+}
 /** Where a drop or a tap lands: a desk, a group chip or Whole class. */
 function targetAt(el) {
   if (!el) return null;
@@ -364,7 +379,10 @@ function giveSheet(to) {
   const p = H.pick; if (!p) return;
   const who = whoLabel(to);
   if (!who.n) { toast(th('ho.emptyGroup'), { bad: true }); return; }
+  const lesson = lessonOfPick(p);
+  if (p.id.startsWith('L:') && !lesson) { setPick(null); return; }
   H.giving = true; renderGivebar();
+  if (lesson) { lessonGiveSheet(lessonCtx, lesson, to, who, { ...groupsIn(to), onClose: () => { H.giving = false; renderGivebar(); } }); return; }
   const seg = (name, opts, on) => `<div class="hr-seg" role="radiogroup" aria-labelledby="hrg-${name}">${opts.map(([v, label]) => btn(`hr-segb${v === on ? ' on' : ''}`, `role="radio" aria-checked="${v === on}" data-seg="${name}" data-v="${v}"`, esc(label))).join('')}</div>`;
   const max = D.instructionsMax || 300;
   const sh = sheet({
@@ -411,6 +429,8 @@ function giveClick(e) {
   const item = e.target.closest('[data-hritem]');
   if (item) { if (H.drag && H.drag.dropped) { H.drag = null; return true; } const p = pickFrom(item); setPick(H.pick && H.pick.id === p.id ? null : p); return true; }
   if (e.target.closest('[data-hr="unpick"]')) { setPick(null); return true; }
+  const lm = e.target.closest('[data-hrlmore]'); if (lm) { lessonMenu(lessonCtx, lm.dataset.hrlmore); return true; }
+  if (e.target.closest('[data-hr="build"]')) { openBuilder(lessonCtx); return true; }
   const ho = e.target.closest('[data-hrho]'), more = e.target.closest('[data-hrdesk]');
   if (H.pick && !H.seatsOpen) {
     const to = targetAt(e.target);
@@ -458,7 +478,7 @@ function deskSheet(sid, first = null) {
       <div class="hr-dhead"><span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 20 })}</span><b dir="auto">${esc(h.title)}</b>
         <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}</span></div>
       ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}
-      <p class="small muted">${esc([th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
+      <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
       <div class="row">${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}</div></li>`; }).join('')}</ol>`
       : `<p class="muted">${esc(th('emptyDesk'))}</p>`;
   };
@@ -655,7 +675,7 @@ function keys(e) {
 // ---------------------------------------------------------------- start
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
-  renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar();
+  renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
   $('hr-panel').addEventListener('pointerdown', dragStart);
   document.addEventListener('pointermove', dragMove); document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) pollHandouts(); });

@@ -1294,7 +1294,11 @@
       "figure": "Figura da pergunta {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Mapa-múndi", "car": "Mapa do Caribe", "me": "Mapa do Oriente Médio"},
+      "mapOf": {
+        "world": "Mapa-múndi",
+        "car": "Mapa do Caribe",
+        "me": "Mapa do Oriente Médio"
+      },
       "untitled": "Quiz de geografia",
       "mapTitle": "Mapa: {region}",
       "mapAlt": "Mapa mudo: {region}",
@@ -2143,7 +2147,9 @@
         "best": "Melhor pontuação {score}",
         "removeOne": "Tirar da carteira de {name}",
         "removeAll": "Remover de todas as carteiras",
-        "removeAllConfirm": "Remover {title} de todas as carteiras? O trabalho dos alunos fica guardado e volta se você entregar de novo."
+        "removeAllConfirm": "Remover {title} de todas as carteiras? O trabalho dos alunos fica guardado e volta se você entregar de novo.",
+        "lesson": "Aula",
+        "version": "Versão: {name}"
       }
     },
     "stories": {
@@ -4769,7 +4775,10 @@
       "teacherSays": "Professor:",
       "inOrder": "Faça em ordem",
       "anyOrder": "Qualquer ordem",
-      "newHandout": "Novo do seu professor: {title}"
+      "newHandout": "Novo do seu professor: {title}",
+      "lessonTitle": "Aula: {title}",
+      "worksheet": "Folha · {count, plural, one {# problema} other {# problemas}}",
+      "worksheetWords": "Folha · {count, plural, one {# palavra} other {# palavras}}"
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -4779,6 +4788,133 @@
       "text": "Sua turma está no Homeroom.",
       "go": "Ir para a minha carteira",
       "close": "Fechar"
+    },
+    "homeroom-lessons": {
+      "build": "Criar uma aula",
+      "editTitle": "Editar aula",
+      "pickTitle": "Qual jogo ou ferramenta?",
+      "pickLead": "Escolha um jogo. Você define exatamente o que os alunos fazem, e a folha é feita a partir disso.",
+      "comingLater": "Em breve",
+      "later": {
+        "quiz": "Quizzes e jogos de palavras da turma",
+        "mine": "Jogos que criei",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Desafios do Castle Clash",
+        "manip": "Materiais manipuláveis",
+        "figures": "Figuras",
+        "reading": "Leitura"
+      },
+      "name": "Nome da aula",
+      "namePh": "Por exemplo: Treino de divisão longa",
+      "op": "Operação",
+      "ops": {
+        "add": "Somar",
+        "subtract": "Subtrair",
+        "multiply": "Multiplicar",
+        "divide": "Dividir"
+      },
+      "method": "Método",
+      "methods": {
+        "standard": "Padrão",
+        "ladder": "Escada",
+        "area": "Modelo de área",
+        "partial": "Produtos parciais"
+      },
+      "size": "Tamanho",
+      "sizeEach": "{n} algarismos",
+      "sizeBy": "{a} {op} {b} algarismos",
+      "count": "Problemas",
+      "level": "Ajuda durante o trabalho",
+      "levels": {
+        "watch": "Assistir",
+        "countUp": "Contar para frente",
+        "guided": "Guiado",
+        "onMyOwn": "Sozinho"
+      },
+      "newProblems": "Problemas novos",
+      "activity": "Atividade",
+      "modes": {
+        "solve": "Resolver",
+        "multiply": "Multiplicar",
+        "factor": "Fatorar"
+      },
+      "alLevel": "Nível",
+      "alLevels": {
+        "easy": "Fácil",
+        "medium": "Médio",
+        "hard": "Difícil"
+      },
+      "tiles": "Peças para começar",
+      "tilesAll": "Todas as peças de que precisam",
+      "tilesNone": "Nenhuma peça",
+      "words": "Palavras e dicas",
+      "wordsHint": "De {min} a {max} palavras. Cada palavra precisa de uma dica.",
+      "word": "Palavra {n}",
+      "clue": "Dica da palavra {n}",
+      "wordPh": "Palavra",
+      "cluePh": "Dica",
+      "addWord": "Adicionar uma palavra",
+      "removeWord": "Tirar a palavra {n}",
+      "bank": "Banco de palavras",
+      "bankShow": "Mostrar",
+      "bankHide": "Esconder",
+      "bankShown": "banco de palavras",
+      "bankHidden": "sem banco de palavras",
+      "hints": "Ajudas",
+      "hintsOn": "Permitidas",
+      "hintsOff": "Não",
+      "versions": "Uma versão para cada grupo?",
+      "versionsYes": "Sim, por grupo",
+      "versionsNo": "Uma para todos",
+      "versionsHint": "Cada grupo começa com a sua aula e uma mudança sugerida. Mude o que quiser.",
+      "versionsOff": "Todos recebem a mesma folha.",
+      "noGroups": "Esta turma ainda não tem grupos. Crie grupos primeiro para adicionar versões.",
+      "editing": "Versão para",
+      "noGroup": "Sem grupo",
+      "lean": {
+        "easier": "Mais fácil",
+        "same": "Igual",
+        "harder": "Mais difícil"
+      },
+      "instructions": "Instruções para os alunos",
+      "instructionsPh": "Por exemplo: Mostre cada passo. Confira a resposta multiplicando.",
+      "preview": "Prévia da folha",
+      "previewOf": "Prévia da folha · {who}",
+      "previewNote": "Os alunos fazem na tela, ou você imprime.",
+      "previewWords": "Digite pelo menos {min} palavras para ver as palavras cruzadas.",
+      "printDraft": "Imprimir",
+      "ai": "Pedir ao Oomba para preencher",
+      "aiBusy": "O Oomba está escrevendo dicas…",
+      "aiDone": "{count, plural, one {O Oomba escreveu # dica.} other {O Oomba escreveu # dicas.}} Confira antes de salvar.",
+      "aiNothing": "Todas as palavras já têm dica.",
+      "aiNeedWords": "Digite algumas palavras primeiro. O Oomba escreve uma dica para cada uma.",
+      "aiFailed": "O Oomba não conseguiu escrever dicas agora. Tente de novo.",
+      "save": "Salvar em Minhas aulas",
+      "cancel": "Cancelar",
+      "needTitle": "Dê um nome à aula.",
+      "problemsN": "{count, plural, one {# problema} other {# problemas}}",
+      "wordsN": "{count, plural, one {# palavra} other {# palavras}}",
+      "versionsN": "{count, plural, one {# versão} other {# versões}}",
+      "empty": "As aulas que você criar aparecem aqui.",
+      "more": "Mais para {title}",
+      "edit": "Editar",
+      "duplicate": "Duplicar",
+      "print": "Imprimir folha",
+      "delete": "Apagar",
+      "deleteConfirm": "Apagar {title}? As carteiras que já têm continuam com ela.",
+      "versionsFor": "Versões para {groups}",
+      "printLead": "A folha sai com o código da turma, então os alunos também podem abrir no Oomba.",
+      "printWhich": "Qual folha?",
+      "printLesson": "A aula",
+      "printKey": "Incluir o gabarito",
+      "printGo": "Imprimir",
+      "full": "Você tem {count} aulas, o máximo que pode guardar. Apague uma antes.",
+      "giveEyebrow": "Aula",
+      "giveTitle": "{lesson} para {who}",
+      "versionsBy": "Versões por grupo",
+      "asBuilt": "A aula como foi criada",
+      "scoreHint": "O boletim mostra a % de acertos."
     }
   },
   "favorites": {
@@ -14548,7 +14684,6 @@
       "label": "Mesa do professor",
       "handOut": "Entregar para",
       "myLessons": "Minhas aulas",
-      "noLessons": "As aulas que você criar no Homeroom aparecem aqui.",
       "myGames": "Jogos que criei",
       "noGames": "Os jogos que você cria aparecem aqui.",
       "oomba": "Jogos e ferramentas Oomba",
@@ -14589,7 +14724,18 @@
       "tooLong": "As instruções podem ter no máximo 300 caracteres.",
       "alreadyOnDesk": "{count, plural, one {# destas carteiras já tem este jogo.} other {# destas carteiras já têm este jogo.}} Tire de lá primeiro ou entregue para os outros.",
       "tooManyHandouts": "Esta turma tem muitas entregas abertas. Remova algumas antigas primeiro.",
-      "notOnDesk": "Essa entrega não está nesta carteira."
+      "notOnDesk": "Essa entrega não está nesta carteira.",
+      "noLesson": "Essa aula não está mais nas suas aulas.",
+      "badGame": "Por enquanto, dá para criar aulas para Arithmetic Lab, Algebra Builder e Palavras cruzadas.",
+      "needTitle": "Dê um nome à aula.",
+      "titleLong": "O nome pode ter no máximo 60 caracteres.",
+      "fewWords": "Palavras cruzadas precisam de pelo menos 3 palavras.",
+      "missingClue": "Cada palavra precisa de uma dica.",
+      "settings": "Não foi possível salvar essas configurações. Confira e tente de novo.",
+      "setsFull": "Você já tem o máximo de folhas que este jogo pode guardar. Apague algumas antes em Minhas folhas, no jogo.",
+      "tooManyLessons": "Você já tem o máximo de aulas que pode guardar. Apague uma antes.",
+      "lessonGone": "Uma folha desta aula foi apagada. Abra a aula, salve de novo e depois distribua.",
+      "lessonOnDesk": "{count, plural, one {# destas carteiras já tem esta aula.} other {# destas carteiras já têm esta aula.}} Tire de lá primeiro ou entregue aos outros."
     },
     "live": "Ao vivo",
     "desk": {
@@ -14603,7 +14749,9 @@
       "notYou": "Não é {name}?",
       "switch": "Trocar",
       "backToDesk": "Voltar para minha carteira",
-      "fromTeacher": "Seu professor diz"
+      "fromTeacher": "Seu professor diz",
+      "waitTitle": "Ainda não",
+      "waitText": "Termine primeiro a anterior na sua carteira. Depois esta abre."
     },
     "projector": {
       "title": "{class} · Projetor"
@@ -14691,6 +14839,21 @@
       "done": "{title} está em {count, plural, one {# carteira} other {# carteiras}}.",
       "removedOne": "Tirado dessa carteira.",
       "removedAll": "Removido de todas as carteiras. O trabalho dos alunos fica guardado."
+    },
+    "lessons": {
+      "handedOut": "{title} está em {count, plural, one {# carteira} other {# carteiras}}.",
+      "handedOutVersions": "{title} está em {count, plural, one {# carteira} other {# carteiras}}, com uma versão para cada grupo.",
+      "saved": "Aula salva.",
+      "savedNew": "Salva em Minhas aulas. Toque nela e depois numa carteira para distribuir.",
+      "copyOf": "Cópia de {title}",
+      "duplicated": "Aula copiada.",
+      "deleted": "Aula apagada.",
+      "untitled": "Nova aula",
+      "print": {
+        "solve": "Resolva para x. Mostre os passos.",
+        "multiply": "Multiplique. Escreva cada resposta como uma só expressão.",
+        "factor": "Fatore cada expressão."
+      }
     }
   }
 }
