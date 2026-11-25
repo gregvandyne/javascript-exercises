@@ -13815,3 +13815,38 @@ editing text inside it, and the menu was `right: 0` under its button whatever si
   reload; a note resized both ways and moved; an oval selected by its outline, moved, resized, recolored, deleted; a pen
   line selected near it, scaled, deleted with the key; a tablet by touch; the ⋯ menu inside the screen at 390, 900 x 700,
   1366 x 768 and live; the server's sizes). Chromium only here: Playwright's WebKit is not installed in this environment.
+## Typing Zoo: the rename, Noto animals, and a pet that walks with you (25 Nov 2026)
+
+Owner: "The pets should be animated and full body that can move around a bit and follow your cursor", then: rename the
+game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked after a comparison of five open sets).
+- **The rename**: Typing Pets is Typing Zoo, slug `typing-zoo` (files, langs folder, cover and share pictures, scripts,
+  server code, tests, every language's title). It uses the slug-rename mechanism Arithmetic Lab added: migration
+  `0129_typing_zoo_slug` (`renameSeedSlug`) gives the existing game row the new slug, so its id and everything keyed
+  by it (plays, saves, favorites, ratings, assignments, lesson steps, sets, the teacher's typing panel) carries over and
+  the seed then finds it by the new slug; `services/slug-aliases.js` sends the old addresses to the new ones for good
+  (301, 308 for a POST), keeping the rest of the path and the query (`/g`, `/play`, `/<lang>/g`, `/covers`, `/og`), and
+  a lookup by the old slug finds the game.
+  The save key stays `typing-pets-v1`, so players keep their pets and progress. The older sections above keep the old
+  name and paths as they were written. Tests: `tests/unit/typing-zoo-rename.test.js`.
+- **The pictures**: Noto Emoji animals by Google (stills: Apache 2.0; animated loops: CC BY 4.0, credited in the pet
+  collection and `docs/media-credits.md`). They are vendored, never hotlinked: `tools/typing-zoo-art/build.py` makes
+  144 px still WebPs (one `art.js`, about 290 KB) and 112 px animated loops (`a-<pet>.js`, 29 pets, loaded only for
+  the pet out walking or just hatched) under `public/vendor/data/typing-zoo-art/<version>/`, loaded as scripts with
+  their sha384 like the other `/vendor/data` packs (the frame's CSP allows no picture from another host and no fetch).
+  The emoji shows until they arrive. Shiny: a gold glow and sparkles over the same picture.
+- **The roster**: 41 pets, all full body. The eight that were faces only became other animals in place (fox → giraffe,
+  panda → elephant, koala → kangaroo, lion → leopard, frog → lizard, unicorn → pony, hamster → chipmunk, bear → hippo);
+  the save loader reads an old pet as its new one. Stand-ins: the duck for the duckling, the cow for the calf, the llama
+  for the alpaca. The alpaca is new, at the end of PETS, so saved pets keep their places; the pet count comes from PETS
+  (the teacher panel reads the game's list). Names in all 12 game languages.
+- **The walking pet**: the chosen pet ("Walk with me" in the collection, `save.out`) or the latest hatched one walks on
+  its own lane under the top bar, so it never covers the typing line, the keyboard or a button (and takes no clicks).
+  One ground line, left and right only: a little hop-walk toward the pointer (on touch, the last tap), turned to face
+  its way, stopping under it, wandering a little when left alone. While the player types it settles at the end of the
+  line, facing it, bounces on a finished line and wobbles on a wrong key. Idle plays the animated loop where there is
+  one, else a gentle breathing bob. Reduced motion (the device, or `BRB.motion`): it stands still, no loop.
+  "Walking pet: off" in the collection hides it (`save.walkOff`). Both save fields are new and optional.
+- **Tried and dropped**: two rounds of hand-drawn SVG pets (a cartoon rig, then a more natural one); the owner chose the
+  Noto set instead.
+- Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
+  never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.

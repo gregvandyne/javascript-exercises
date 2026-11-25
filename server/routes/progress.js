@@ -230,7 +230,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
         <td class="cp-steps" data-label="${t('progress.courses.perStep')}">${r.list.length ? html`<span>${r.list.map(s => html`<span title="${s.step.n} ${s.step.title} — ${s.complete ? t('progress.courses.stepDone') : s.row ? t('progress.courses.stepStarted') : t('progress.status.none')}">${dot(s)}</span>`)}</span>` : html`<span class="muted">–</span>`}</td></tr>`)}</tbody></table></div>
     <p class="small muted">${t('progress.courses.note')}</p></details>`;
   }) : '';
-  // Typing Pets: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
+  // Typing Zoo: each student's typing progress from the game's own save (services/typing.js), so practice at home and in
   // free play counts too. Shown once a student in this class has finished a typing lesson.
   const typing = gb.students.length ? TY.classTyping(gb.students) : null;
   const typingStarted = typing ? typing.rows.filter(r => r.typing).length : 0;
@@ -299,7 +299,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
     head: overview ? raw(`${CSS}<link rel="stylesheet" href="/css/homeroom-overview.css?v=${VERSION}">`) : CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(overview ? ['/js/homeroom-overview.js'] : [])] });
 });
 
-/** Typing Pets class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
+/** Typing Zoo class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
  *  admins (canManageClass) only, never an archived class. */
 router.post('/api/class/:id/typing-goal', requireUser, rateLimit('typing-goal', 60, 3600e3), (req, res) => {
   const c = S.getClass(String(req.params.id));

@@ -1,0 +1,8 @@
+Typing Zoo's animal pictures are Google's Noto Emoji animals, resized and converted to WebP.
+
+Still pictures (art.js): Noto Emoji, Copyright Google LLC, Apache License, Version 2.0
+  https://github.com/googlefonts/noto-emoji  (http://www.apache.org/licenses/LICENSE-2.0)
+Animated pictures (a-<id>.js): Noto Animated Emoji, Copyright Google LLC, Creative Commons Attribution 4.0 International
+  https://googlefonts.github.io/noto-emoji-animation/  (https://creativecommons.org/licenses/by/4.0/)
+Changes: resized (144 px still, 112 px animated, every second or third frame kept), converted to WebP, packed as data URLs.
+The game shows the credit "Animal art: Noto Emoji by Google, CC BY 4.0" in the pet collection.

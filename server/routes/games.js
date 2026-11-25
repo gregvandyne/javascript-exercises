@@ -438,7 +438,7 @@ router.get('/frame/:token', (req, res) => {
     save: u && !preview ? games.getSave(g.id, u.id) : {},
     canSave: !!u && !preview,
     preview,
-    // Typing Pets: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
+    // Typing Zoo: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
     // rulesFor, the strictest among their classes), for a signed-in student only, never a preview.
     ...(!preview && u && !u.is_guest && g.source === 'seed' && g.slug === TY.SLUG ? (r => (r ? { classRules: r } : {}))(TY.rulesFor(u.id)) : {}),
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
@@ -626,7 +626,7 @@ const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
 const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 /** The games with a "Make your own" builder (INIT.make / BRB.canMake): their sets are made by grown-ups who may host. */
-const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-pets']);
+const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-zoo']);
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:

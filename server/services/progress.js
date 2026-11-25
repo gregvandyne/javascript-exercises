@@ -239,7 +239,7 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   if (c.step.kind !== 'game') return fail('notFound');
   const old = get(clId, stepId, u.id);
   const s = score === null || score === undefined || !Number.isFinite(+score) ? null : Math.max(0, Math.min(1e9, Math.floor(+score)));
-  // Typing Pets with a pass mark (services/typing.js): the best run is the one with the best grade, and the step is done
+  // Typing Zoo with a pass mark (services/typing.js): the best run is the one with the best grade, and the step is done
   // only once a run reaches the mark (a bare game-over, with no run, never finishes it).
   const pass = TY.passOfStep(c.step);
   if (pass) {

@@ -28,7 +28,7 @@ function setAssign(t, g, raw) {
   if (!setGameOf(g)) return null;
   const opts = cleanOptions(String(raw || '')) || '';
   if (!opts && gameSets.OPEN_SET_GAMES.has(g.slug)) return null;   // Word Hunt with no set: the game as it is
-  // Typing Pets: only a teacher's own lesson (a set code) goes this way; its built-in lessons and tests are the picker's.
+  // Typing Zoo: only a teacher's own lesson (a set code) goes this way; its built-in lessons and tests are the picker's.
   if (g.slug === TY.SLUG && !gameSets.SET_ID.test(parseParams(opts).chapter || '')) return null;
   const what = gameSets.describe(g.id, parseParams(opts), g.slug);
   const label = what ? (what.kind === 'set' ? t('teach.assign.set', { count: what.n }) : what.label) : '';
@@ -194,7 +194,7 @@ router.post('/api/teach/assign-game', requireUser, rateLimit('lesson-new', 120, 
   if (g && g.source === 'seed') { const lg = liveGameOf(g); if (lg && !lg.play) return res.status(400).json({ error: req.t('teach.assign.liveOnly') }); }
   const sa = setAssign(req.t, g, b(req).opts);
   if (sa && !sa.what) return res.status(400).json({ error: req.t('teach.assign.pickFirst') });
-  // Typing Pets: one lesson or test (services/typing.js assignChoices), or the whole game when none is picked.
+  // Typing Zoo: one lesson or test (services/typing.js assignChoices), or the whole game when none is picked.
   const typing = !!g && g.slug === TY.SLUG && g.source === 'seed';
   const tc = typing && !sa ? TY.assignChoice(req.t, b(req).opts) : null;
   let extra = sa ? { options: sa.opts, title: sa.title } : tc ? { options: tc.value, title: `${g.title}: ${tc.label}` } : {};
