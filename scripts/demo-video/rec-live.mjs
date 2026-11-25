@@ -1,5 +1,5 @@
-// Oomba Live, frame by frame: the teacher picks Quest Race + Science / Ages 10-11 and opens a room; a phone types the
-// code and joins (two more join off screen); a question is answered and the race moves. Clips: live-pick, live-lobby(-host,-phone), live-game(-host,-phone).
+// Oomba Live, frame by frame: the teacher picks Question Battle + Science / Ages 10-11 and opens a room; a phone types the
+// code and joins (two more join off screen); a question is answered, revealed, and the top five shows. Clips: live-pick, live-lobby(-host,-phone), live-game(-host,-phone).
 import { chromium } from 'playwright';
 import { launchOptions } from '../chromium.js';
 import fs from 'node:fs';
@@ -29,7 +29,7 @@ await host.goto(B + '/live'); await host.waitForLoadState('networkidle').catch((
 let cap = new Capture([host], `${C}/tmp-pick`);
 await cap.advance(600); await cursorInit(host); await host.evaluate(() => window.scrollTo(0, 0)); await setCursor(host, 1440 * 0.62, 810 * 0.72);
 await cap.seconds(0.4);
-await glide(cap, host, host.locator('label:has(input[value="mode:quest-race"])').first(), { sec: 0.5 }); await cap.seconds(0.25);
+await glide(cap, host, host.locator('label:has(input[value="mode:battle"])').first(), { sec: 0.5 }); await cap.seconds(0.25);
 // The host page is a few steps now (game, questions, who can join, open): Next between them.
 const next = async () => { await glide(cap, host, host.locator('[data-go="next"]:visible').first(), { sec: 0.4 }); await cap.seconds(0.35); };
 await next();
@@ -76,7 +76,7 @@ for (const p of phones.slice(1)) {
 await cap.seconds(1.4);
 cap.encode('live-lobby', { host: [1920, 1080], phone: [780, 1688] }); log('lobby captured');
 
-// C) the game: one question, answered, revealed, the race moves
+// C) the game: one question, answered, revealed, then the top five
 cap = new Capture([host, ph], `${C}/tmp-game`, phones.slice(1));
 await cap.seconds(0.3);
 await host.locator('[data-lv-act="start"]:not([hidden])').click({ noWaitAfter: true });
@@ -84,9 +84,11 @@ await capUntil(cap, async () => { const s = await st(ph); return s && s.phase ==
 const M = { q: cap.n / 30 }; log('question at', M.q);
 await cap.seconds(1.3);
 { const f = frameOf(ph); const ps = await st(ph); const right = ps && ps.question && RIGHT.get(ps.question.q); const ok = right ? ps.question.choices.indexOf(right) : null; log('answer', ok, right);
-  const btns = f.locator('button.qr-a'); if (await btns.count()) await btns.nth(typeof ok === 'number' && ok >= 0 ? ok : 0).click({ noWaitAfter: true }).catch(() => {}); else await f.evaluate(() => window.__brbTest.answer(0)).catch(() => {}); }
+  M.ok = typeof ok === 'number' && ok >= 0 ? ok : 0;
+  await f.evaluate(i => window.__brbTest.answer(i), M.ok).catch(() => {}); }
 await cap.seconds(0.5);
-for (const [i, p] of phones.slice(1).entries()) { await frameOf(p).evaluate(i => window.__brbTest.answer(i === 0 ? 0 : 1), i).catch(() => {}); await cap.seconds(0.3); }
+// one more right answer and one wrong one from the phones off screen
+for (const [i, p] of phones.slice(1).entries()) { await frameOf(p).evaluate(i => window.__brbTest.answer(i), i === 0 ? M.ok : (M.ok + 1) % 4).catch(() => {}); await cap.seconds(0.3); }
 await capUntil(cap, async () => { const s = await st(host); return s && (s.reveal || (s.question && s.question.revealed) || s.phase === 'between'); }, 20);
 M.r = cap.n / 30; log('revealed at', M.r);
 await cap.seconds(5.5);
