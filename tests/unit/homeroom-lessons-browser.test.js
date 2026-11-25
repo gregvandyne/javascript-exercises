@@ -5,7 +5,8 @@
 //     builder full screen on a phone; no sideways scroll anywhere;
 //   - handing it out: tap the lesson, then Whole class; the sheet shows the versions by group and Score; the desks get it;
 //   - Print worksheet from the lesson's ⋯ menu (a version, the print area);
-//   - the student's desk: "Lesson: ..." and "Worksheet · 10 problems"; tapping it plays that exact set in Arithmetic Lab.
+//   - the student's desk: "Lesson: ..." and "Worksheet · 10 problems"; tapping it plays that exact set in Arithmetic Lab in
+//     the desk's player layer, and Back to my desk closes it.
 // HR_SHOTS=<dir> also saves screenshots there (hr2b-*.png). Skipped with no Chromium.
 import './_setup.js';
 import test from 'node:test';
@@ -231,10 +232,17 @@ test('the student\'s desk shows the lesson card; it plays that exact set in Arit
     await settle(page); await shot(page, `student-card-${name}`);
     if (name === 'tablet') {
       await card.tap();
-      await page.waitForSelector('.playnote');
-      assert.match(await page.locator('.playnote-t').innerText(), /Show every step/);
+      // It plays in the desk's player layer (public/js/homeroom-player.js), the play page framed with ?in=hr.
+      await page.waitForSelector('.hr-player iframe');
+      assert.match(await page.locator('.hr-playback').innerText(), /Back to my desk/);
+      const src = await page.locator('.hr-playframe').getAttribute('src');
+      assert.match(src, new RegExp(`chapter=${set}&lock=1`), 'the layer plays the version\'s own set');
+      assert.match(src, /[?&]in=hr(&|$)/);
+      const play = page.frameLocator('.hr-player iframe');
+      await play.locator('.playnote').waitFor();
+      assert.match(await play.locator('.playnote-t').innerText(), /Show every step/);
       // the game frame gets the version's set (BRB.questionSet): the exact problems of the lesson
-      const frame = page.frameLocator('#stage iframe');
+      const frame = play.frameLocator('#stage iframe');
       await frame.locator('body').waitFor();
       await page.waitForTimeout(1500);
       await shot(page, 'lesson-start-tablet');
@@ -245,6 +253,9 @@ test('the student\'s desk shows the lesson card; it plays that exact set in Arit
       assert.ok(said, 'Watch says the first step');
       assert.ok(G.get(LAB.id, set).items[0].p.some(([a, b]) => String(b) === said[1] && String(a).startsWith(said[2])), said[0]);
       await shot(page, 'lesson-playing-tablet');
+      await page.locator('.hr-playback').tap();
+      await page.waitForSelector('.hr-player', { state: 'detached' });
+      assert.match(page.url(), new RegExp(`/class/${cls.id}/desk$`), 'Back to my desk');
     }
     assert.deepEqual(errors, [], name);
     await ctx.close();
