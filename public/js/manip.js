@@ -17,9 +17,10 @@ import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine } from '/js/manip-board.js';
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine,
+  rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
-import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP } from '/js/manip-wheel.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
 import * as CHAT from '/js/manip-chat.js';
 import { inkLine, textBoxHtml, textSizeButton, growText, textBoxPointer, snapText } from '/js/board-ann.js';
 
@@ -120,7 +121,7 @@ const SHAPES_FLIPPED = { para: 'polygon(0 0,75% 0,100% 100%,25% 100%)' };
 /** A piece. Its buttons are on the hold-to-edit wheel (manip-wheel.js), which lives outside the piece, so nothing on it
  *  is ever turned or mirrored with it; a piece is never mirrored at all (Flip turns it over: manip.js flipPiece). */
 function pieceHtml(p, view) {
-  const on = !view.readOnly && view.sel === p.id;
+  const on = !view.readOnly && (view.sel === p.id || !!(view.many && view.many.p.has(p.id)));
   const clip = (p.flipped && SHAPES_FLIPPED[p.kind]) || SHAPES[p.kind];
   const shape = clip ? `clip-path:${clip};` : ROUND.has(p.kind) && !/^b\d/.test(p.kind) ? 'border-radius:50%;' : '';
   const face = `<div class="mp-face" style="${shape}background:${p.filled ? esc(p.color) : 'transparent'};color:${p.filled ? '#fff' : 'var(--text)'};font-size:${pieceFont(p)}px">${SHAPES[p.kind] || p.kind === 'sq' || !p.label || p.label === '•' ? '' : `<span class="mp-lab">${esc(p.label)}</span>`}</div>`;
@@ -651,6 +652,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
             <svg class="mp-ink" id="mp-ink" viewBox="0 0 ${WORLD.w} ${WORLD.h}" aria-hidden="true"></svg>
             <div class="mp-texts" id="mp-texts"></div><div class="mp-notes" id="mp-notes"></div><div class="mp-ghost" id="mp-ghost" hidden></div>
           </div>
+          <div class="mp-selbox" id="mp-selbox" hidden></div><div class="mp-selpill" id="mp-selpill" role="group" aria-live="polite" hidden></div>
           <div id="mp-draw"></div>
           <div class="mp-zoom" id="mp-zoom" role="group" aria-label="${esc(t('js.manip.view.zoom'))}">${btn('chip', `data-view="out" aria-label="${esc(t('js.manip.view.out'))}"`, '−')}<span class="mp-pct">100%</span>${btn('chip', `data-view="in" aria-label="${esc(t('js.manip.view.in'))}"`, '+')}${btn('chip', 'data-view="fit"', `⤢ ${esc(t('js.manip.view.fit'))}`)}</div>
         </div>
@@ -846,19 +848,20 @@ function objTotal(slug, impl, o, st) {
 function objName(slug, o) { const K = kindOf(slug, o.k); return o.k === 'mat' && o.st && o.st.label ? o.st.label : `${K ? K.name : ''}${o.st && o.st.label ? ` · ${o.st.label}` : ''}`; }
 function objHtml(slug, impl, o, view, st = {}) {
   const K = kindOf(slug, o.k); if (!K) return '';
-  const z = K.size(o.st), s = +o.s || 1, on = !view.readOnly && view.osel === o.id;
+  // Selected: an outline; selected alone, also the corner that resizes it (never on one of many).
+  const z = K.size(o.st), s = +o.s || 1, one = !view.readOnly && view.osel === o.id, on = one || (!view.readOnly && !!(view.many && view.many.o.has(o.id)));
   // A practice question is read-only (a clock to read is not a clock to set): its own controls are off for everyone.
   const inner = o.k === slug ? impl.board(o.st, { ...view, oid: o.id, readOnly: view.readOnly || !!o.st.q }) : matHtml(o, view, o.k === 'pv-chart' && impl.pieces ? chartInfo(slug, st, o) : null);
   const name = objName(slug, o);
   const key = view.showKeys && o.st && o.st.key ? `<span class="mp-key">${iconHtml('✓', { size: 18 })} ${esc(o.st.key)}</span>` : '';
   const tot = view.totals ? objTotal(slug, impl, o, st) : '';
-  const bar = on && !o.locked ? `<span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
+  const bar = one && !o.locked ? `<span class="mp-oresize" data-oresize="${esc(o.id)}" role="img" aria-label="${esc(t('js.manip.obj.resize'))}"></span>` : '';
   const lock = o.locked ? `<span class="mp-olock" aria-hidden="true">${icon('lock')}</span>` : '';
   const head = o.locked ? t('js.manip.wheel.objLocked', { name }) : t('js.manip.obj.move', { name });
   return `<div class="mp-obj${on ? ' on' : ''}${o.locked ? ' locked' : ''}${UNDER.has(o.k) ? ' mp-mat' : ''}${view.fresh === o.id ? ' fresh' : ''} k-${esc(o.k)}" data-oid="${esc(o.id)}" style="left:${+o.x}px;top:${+o.y}px;width:${Math.round(z.w * s)}px;height:${Math.round(z.h * s)}px">
     <div class="mp-objin" style="width:${z.w}px;height:${z.h}px;transform:scale(${s})"><div class="mp-ohead"${view.readOnly ? '' : ' role="button" tabindex="0" aria-haspopup="menu"'} aria-label="${esc(head)}">${lock}<span class="mp-oname">⠿ ${esc(name)}</span>${tot ? `<span class="mp-otot">${esc(tot)}</span>` : ''}${key}</div><div class="mp-obody">${inner}</div></div>${bar}</div>`;
 }
-/** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, readOnly }. */
+/** Everything on a board: objects (mats under the rest), then pieces. view: { sel, osel, many, readOnly }. */
 function boardHtml(slug, impl, st, view) {
   const objs = [...(st.objects || [])].sort((a, b) => (UNDER.has(a.k) ? 0 : 1) - (UNDER.has(b.k) ? 0 : 1));
   // Blocks in a chart's column that do not belong there yet (waiting for ten to trade) are drawn a little softer.
@@ -909,7 +912,8 @@ function renderBoard() {
   board.classList.toggle('texting', !!V.textMode);
   const content = document.getElementById('mp-content');
   const slug = V.tool.slug;
-  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn, traded: V.traded });
+  if (V.many) setMany(selKeep(V.st, V.many));   // what a trade, an undo or a delete took away leaves the selection
+  content.innerHTML = boardHtml(slug, V.impl, V.st, { sel: V.sel, osel: V.osel, many: V.many, readOnly: false, snapped: V.snapped, showKeys: V.showKeys, totals: V.totals !== false, fresh: V.fresh, checked: V.checked, lifted: V.lifted, flipIn: V.flipIn, traded: V.traded });
   V.fresh = null; V.traded = null;
   // The hint only on a truly empty board, in the middle of the window (never on top of anything).
   const empty = !V.st.objects.length && !(V.st.pieces || []).length && !V.ann.notes.length && !V.ann.texts.length && !V.ann.strokes.length;
@@ -922,8 +926,57 @@ function renderBoard() {
   const draw = document.getElementById('mp-draw');
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
   if (V.annotate) bindDraw(draw.firstChild);
-  applyView();
+  renderSelPill(); applyView();
 }
+// ---------------------------------------------------------------- many at once (owner, 25 Nov 2026: "click and drag your cursor to select a bunch of objects at once")
+/** The selection as one set (a selection box, Shift+click): one thing is the usual single selection (V.sel or V.osel,
+ *  its corner and wheel as before); two or more are V.many (an outline on each, the pill, moved together). */
+function setMany(m) {
+  const n = selCount(m);
+  V.many = n > 1 ? m : null;
+  if (n === 1) { V.sel = m.p.size ? [...m.p][0] : null; V.osel = m.o.size ? [...m.o][0] : null; } else { V.sel = null; V.osel = null; }
+}
+const curSel = () => V.many || { p: new Set(V.sel ? [V.sel] : []), o: new Set(V.osel ? [V.osel] : []) };
+/** Shift+click: a piece (k 'p') or object ('o') joins the selection, or leaves it. Locked: nothing. */
+function toggleSel(k, it) {
+  if (it.locked) return;
+  const m = curSel(), c = { p: new Set(m.p), o: new Set(m.o) };
+  if (c[k].has(it.id)) c[k].delete(it.id); else c[k].add(it.id);
+  setMany(c);
+}
+/** The floating pill over the board: "N selected", Delete, and ✕ to clear (shared with the room: s, its words). */
+const selPillHtml = (n, s) => `<span class="mp-seln">${esc(s.count)}</span>${btn('chip mp-seldel', `data-seldel aria-label="${esc(s.delLabel)}"`, `🗑 ${esc(s.del)}`)}${btn('chip mp-selx', `data-selx aria-label="${esc(s.clear)}"`, '✕')}`;
+function renderSelPill() {
+  const el = document.getElementById('mp-selpill'); if (!el) return;
+  const n = selCount(V.many); el.hidden = !n;
+  el.innerHTML = n ? selPillHtml(n, { count: t('js.manip.sel.count', { n }), del: t('js.manip.sel.delete'), delLabel: t('js.manip.sel.deleteN', { n }), clear: t('js.manip.sel.clear') }) : '';
+}
+function clearMany() { if (!V.many) return; V.many = null; renderBoard(); renderChrome(); }
+/** Delete everything selected: one Undo step (and an Undo on the toast). */
+function deleteMany() {
+  if (!V.many) return;
+  const n = selCount(V.many);
+  change((st, v) => { if (!selDelete(st, v.many)) return false; v.many = null; v.sel = null; v.osel = null; });
+  const mark = V.hist.length;
+  undoToast(t('js.manip.sel.deleted', { n }), t('js.manip.wheel.undo'), () => { if (V && V.hist.length === mark) toolButton('undo'); });
+}
+/** Keys over a board with many selected: Delete or Backspace deletes them, Escape lets go (never while typing). One
+ *  listener for the page (the room has its own in public/js/manip-room.js). */
+const typing = el => !!(el && el.closest && el.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+document.addEventListener('keydown', e => {
+  if (!V || !V.many || !document.getElementById('mp-board') || typing(e.target) || wheelOpen()) return;
+  if (e.key === 'Escape') { e.preventDefault(); clearMany(); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteMany(); }
+});
+/** Space held (with a mouse over the board): a drag pans, wherever it starts. */
+document.addEventListener('keydown', e => {
+  if (e.code !== 'Space' || !V || typing(e.target) || e.target.closest?.('button, a, [role="button"]:not(.mp-piece)')) return;
+  const b = document.getElementById('mp-board'); if (!b || !(b.matches(':hover') || V.spaceDown)) return;
+  e.preventDefault(); V.spaceDown = true; b.classList.add('mp-grab');
+});
+const spaceUp = () => { if (!V) return; V.spaceDown = false; document.getElementById('mp-board')?.classList.remove('mp-grab'); };
+document.addEventListener('keyup', e => { if (e.code === 'Space') spaceUp(); });
+window.addEventListener('blur', spaceUp);
 function renderInk() { document.getElementById('mp-ink').innerHTML = V.ann.strokes.map(s => inkLine(s, WORLD.w, WORLD.h)).join(''); }
 
 // ---------------------------------------------------------------- the view: pan, zoom, fit
@@ -1109,6 +1162,8 @@ function bindBoard() {
     }
     const tl = e.target.closest('[data-tool]');
     if (tl) return toolButton(tl.dataset.tool);
+    if (e.target.closest('[data-seldel]')) return deleteMany();
+    if (e.target.closest('[data-selx]')) return clearMany();
     const sc = e.target.closest('[data-sc]');
     if (sc) return stepCardButton(sc.dataset.sc);
     const tg = e.target.closest('[data-toggle]');
@@ -1119,8 +1174,8 @@ function bindBoard() {
     if (nb) return noteButton(nb.dataset.nact, nb.dataset.id);
     const objEl = e.target.closest('#mp-content .mp-obj');
     const act = e.target.closest('#mp-content [data-act]');
-    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, act.dataset, e); }); return; }
-    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return V.impl.act(o.st, {}, e); }); return; }
+    if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, act.dataset, e); }); return; }
+    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, {}, e); }); return; }
   });
   root.addEventListener('change', e => {
     const s = e.target.closest('[data-set]'); if (!s) return;
@@ -1185,7 +1240,7 @@ const settingsTarget = st => (objectTool(V.tool.slug) ? (target(V.tool.slug, st,
 function toolButton(k) {
   if (k === 'undo') {
     const prev = V.hist.pop(); if (!prev) return;
-    if (typeof prev === 'object') V.ann.texts = JSON.parse(prev.texts); else { V.st = JSON.parse(prev); V.sel = null; }
+    if (typeof prev === 'object') V.ann.texts = JSON.parse(prev.texts); else { V.st = JSON.parse(prev); V.sel = null; V.many = null; }
     V.textEdit = null; renderBoard(); renderChrome(); return;
   }
   if (k === 'text') { V.textMode = !V.textMode; if (V.textMode) { V.annotate = false; } renderChrome(); renderBoard(); return; }
@@ -1350,6 +1405,7 @@ const objElOf = id => document.querySelector(`#mp-content .mp-obj[data-oid="${CS
 function soloPieceMenu(id, x, y, keyboard = false) {
   const slug = V.tool.slug;
   if (!V.st.pieces.some(q => q.id === id)) return;
+  V.many = null;
   change((st, v) => pieceAction(st, 'lift', id, v, null, slug, WORLD));
   const p = V.st.pieces.find(q => q.id === id);
   V.sel = id; V.osel = null; V.lifted = p.locked ? null : id;
@@ -1365,7 +1421,7 @@ function soloPieceMenu(id, x, y, keyboard = false) {
 /** Open an object's wheel on the solo board. */
 function soloObjMenu(id, x, y, keyboard = false) {
   const slug = V.tool.slug, o = V.st.objects.find(q => q.id === id); if (!o) return;
-  V.osel = o.locked ? null : id; V.sel = null; renderBoard(); renderChrome();
+  V.osel = o.locked ? null : id; V.sel = null; V.many = null; renderBoard(); renderChrome();
   openWheel({ x, y, keyboard, items: wheelItems(objWheel(o)), label: t('js.manip.wheel.menu', { label: objName(slug, o) }), focusBack: () => objElOf(id)?.querySelector('.mp-ohead'),
     onPick: k => wheelRun({ k, slug, label: objName(slug, o), el: () => null, mark: () => V.hist.length, undo: () => toolButton('undo'),
       apply: () => change((st, v) => objectAction(slug, st, k, id, v, viewRegion(), WORLD, OBJ_MAX)) }) });
@@ -1373,15 +1429,40 @@ function soloObjMenu(id, x, y, keyboard = false) {
 /** What opens a wheel from the keyboard on a focused piece or object handle: Shift+F10, the ContextMenu key, Enter. */
 const wheelKey = e => e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey) || (e.key === 'Enter' && !e.altKey && !e.ctrlKey && !e.metaKey);
 
-/** The plane's pointer work: pan (empty space), pinch, moving and resizing objects, dragging pieces (with their
- *  snapped group, a snap preview, and the snap on release). On a piece or an object: a tap selects it; a drag of 10 px
- *  moves it (a piece with its group; a frame with the counters in its cells); a hold opens its wheel (a piece lifted out
- *  of its group first; sliding on after that drags just that piece); right-click opens the wheel at once. Locked: no
- *  drag (a small shake). */
+/** What an object takes along when it is dragged: an unlocked frame the counters in its cells (owner, 21 Nov 2026), a
+ *  place-value chart the blocks in its columns. Shared with the room. */
+const carried = (slug, o, pieces) => (FRAMES.has(o.k) ? seatedIn(slug, o, pieces) : o.k === 'pv-chart' ? inChart(slug, o, pieces) : []);
+/** The selection box on screen, from (x0, y0) to (x1, y1) (screen points), inside its board element; null hides it. */
+function drawSelBox(el, host, a) {
+  if (!el) return; el.hidden = !a; if (!a) return;
+  const r = host.getBoundingClientRect();
+  Object.assign(el.style, { left: `${Math.min(a.x0, a.x1) - r.left}px`, top: `${Math.min(a.y0, a.y1) - r.top}px`, width: `${Math.abs(a.x1 - a.x0)}px`, height: `${Math.abs(a.y1 - a.y0)}px` });
+}
+/** The wheel over a board: Ctrl or Cmd (and a trackpad's pinch) zooms at the pointer; otherwise it pans (a trackpad's
+ *  two-finger scroll, a mouse wheel; Shift turns a mouse wheel sideways). -> { zoom } or { dx, dy } in screen pixels */
+function wheelMove(e, page) {
+  const k = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? page : 1;
+  if (e.ctrlKey || e.metaKey) return { zoom: Math.exp(-e.deltaY * k * 0.01) };
+  return e.shiftKey && !e.deltaX ? { dx: -e.deltaY * k, dy: 0 } : { dx: -e.deltaX * k, dy: -e.deltaY * k };
+}
+/** The plane's pointer work (docs/decisions.md "Manipulatives: a selection box"). With a mouse or pen, a drag on empty
+ *  space draws a selection box (Shift adds to what is selected); Space held or the middle button pans; the wheel pans
+ *  (Ctrl or Cmd zooms). With a finger, a drag on empty space pans, a hold there (450 ms) and then a drag draws the box,
+ *  two fingers pinch. On a piece or an object: a tap selects it (Shift+click adds or removes it); a drag of 10 px moves
+ *  it (a piece with its group; a frame with the counters in its cells; one of many selected: all of them); a hold opens
+ *  its wheel (a piece lifted out of its group first; sliding on after that drags just that piece); right-click opens the
+ *  wheel at once. Locked: no drag (a small shake). */
 function bindPlane() {
   const board = document.getElementById('mp-board'), pointers = new Map();
   let g = null;
   const ghost = () => document.getElementById('mp-ghost');
+  const selBox = a => drawSelBox(document.getElementById('mp-selbox'), board, a);
+  // A selection box from here; on a locked backdrop's body (o), a hold still opens its wheel.
+  const boxFrom = (e, o = null) => {
+    const gg = g = { kind: 'box', sx: e.clientX, sy: e.clientY, moved: false, add: e.shiftKey };
+    if (o) gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
+    board.setPointerCapture(e.pointerId);
+  };
   board.addEventListener('contextmenu', e => { if (e.target.closest('.mp-piece, .mp-obj')) e.preventDefault(); });
   board.addEventListener('keydown', e => {
     if (e.target.matches('textarea.mp-answer') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; }   // one line of words: Enter finishes
@@ -1394,10 +1475,13 @@ function bindPlane() {
   board.addEventListener('pointerdown', e => {
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
     if (pointers.size === 2) {
-      if (g && g.kind !== 'pan') { cancel(); }
+      if (g && g.kind !== 'pan') { cancel(); } else if (g && g.hold) g.hold.cancel();
       const [a, b] = [...pointers.values()]; g = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return;
     }
-    if (e.target.closest('.mp-zoom, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
+    if (e.target.closest('.mp-zoom, .mp-selpill, .mp-drawlayer, .mp-sticky, .mp-text, button, input, select, textarea, a')) return;
+    const mouse = e.pointerType !== 'touch';
+    // Space held, or the middle button: a mouse pans from anywhere.
+    if (e.button === 1 || (mouse && V.spaceDown && e.button === 0)) { e.preventDefault(); g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false, grab: true }; board.setPointerCapture(e.pointerId); return; }
     if (V.textMode) return;
     const rz = e.target.closest('[data-oresize]');
     if (rz) { const o = V.st.objects.find(x => x.id === rz.dataset.oresize); if (o && !o.locked) { const z = objSize(V.tool.slug, o); g = { kind: 'resize', o, nat: z, s0: o.s, st0: JSON.stringify(o.st), sx: e.clientX, sy: e.clientY, before: JSON.stringify(V.st), el: rz.closest('.mp-obj') }; board.setPointerCapture(e.pointerId); e.preventDefault(); } return; }
@@ -1407,7 +1491,7 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloPieceMenu(p.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'piece', p, el: pieceEl, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      const gg = g = { kind: 'piece', p, el: pieceEl, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st), shift: e.shiftKey, many: !e.shiftKey && !!V.many && V.many.p.has(p.id) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloPieceMenu(p.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
@@ -1418,11 +1502,16 @@ function bindPlane() {
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
       if (e.button > 0) return;
-      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st) };
+      // A locked backdrop's body is the board under the pieces for a mouse: a drag there draws the selection box.
+      if (o.locked && mouse && !e.target.closest('.mp-ohead')) return boxFrom(e, o);
+      const gg = g = { kind: 'obj', o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before: JSON.stringify(V.st), shift: e.shiftKey, many: !e.shiftKey && !!V.many && V.many.o.has(o.id) };
       gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
       board.setPointerCapture(e.pointerId); return;
     }
-    g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false };
+    if (mouse) { if (e.button === 0) boxFrom(e); return; }
+    // A finger pans; held still for a moment first, it draws the selection box instead.
+    const gg = g = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: V.view.x, y0: V.view.y, moved: false };
+    gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; g = { kind: 'box', sx: gg.sx, sy: gg.sy, moved: false, add: false }; });
     board.setPointerCapture(e.pointerId);
   });
   board.addEventListener('pointermove', e => {
@@ -1435,6 +1524,11 @@ function bindPlane() {
     }
     const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
     const slug = V.tool.slug;
+    if (g.kind === 'box') {
+      if (g.held || (!g.moved && Math.abs(dx) + Math.abs(dy) < 5)) return;
+      if (g.hold) g.hold.cancel();
+      g.moved = true; g.ex = e.clientX; g.ey = e.clientY; selBox({ x0: g.sx, y0: g.sy, x1: g.ex, y1: g.ey }); return;
+    }
     if ((g.kind === 'piece' || g.kind === 'obj') && !g.moved) {
       // A piece or object starts to move after 10 px; before that it may still become a hold.
       if (Math.hypot(dx, dy) < SLOP) return;
@@ -1444,21 +1538,28 @@ function bindPlane() {
       if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { g = { kind: 'pan', sx: g.sx, sy: g.sy, x0: V.view.x, y0: V.view.y, moved: true }; V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
       if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElOf(g.p.id) : objElOf(g.o.id)); g = { kind: 'dead' }; return; }
       if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify(V.st); }
-      if (g.kind === 'piece') {
+      // One of many selected: all of them move (and what their frames carry), no snapping.
+      if (g.many && !g.held) g.list = selMoving(slug, V.st, V.many, o => carried(slug, o, V.st.pieces)).map(x => ({ ...x, el: x.obj ? objElOf(x.it.id) : pieceElOf(x.it.id) }));
+      else if (g.kind === 'piece') {
         // Held first (it is out of its group now), or counters (they never link): just this piece.
         const members = g.held || !linksPieces(slug) ? [g.p] : groupOf(V.st.pieces, g.p);
         g.members = members.map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
       } else {
         g.el = objElOf(g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
         // An unlocked frame takes the counters seated in its cells along (owner, 21 Nov 2026).
-        g.carry = (FRAMES.has(g.o.k) ? seatedIn(slug, g.o, V.st.pieces) : g.o.k === 'pv-chart' ? inChart(slug, g.o, V.st.pieces) : []).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
+        g.carry = carried(slug, g.o, V.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElOf(m.id) }));
       }
       g.moved = true;
     }
     if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
     g.moved = true;
     const z = V.view.z;
-    if (g.kind === 'pan') { V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
+    if (g.kind === 'pan') { if (g.hold) { g.hold.cancel(); g.hold = null; } V.view.x = g.x0 + dx; V.view.y = g.y0 + dy; applyView(); return; }
+    if (g.list) {
+      selMove(g.list, dx / z, dy / z, WORLD);
+      for (const x of g.list) if (x.el) { x.el.style.left = `${x.it.x}px`; x.el.style.top = `${x.it.y}px`; if (!x.obj) x.el.classList.add('dragging'); }
+      return;
+    }
     if (g.kind === 'obj') {
       const r = objRect(slug, g.o);
       g.o.x = Math.round(clamp(g.x0 + dx / z, 0, WORLD.w - r.w)); g.o.y = Math.round(clamp(g.y0 + dy / z, 0, WORLD.h - r.h));
@@ -1485,7 +1586,7 @@ function bindPlane() {
     }
   });
   const snapNow = gg => { const ids = new Set(gg.members.map(x => x.m.id)); return snapFor([gg.p, ...gg.members.map(x => x.m).filter(m => m !== gg.p)], V.st.pieces.filter(q => !ids.has(q.id)), V.st.objects.flatMap(o => slotsOf(V.tool.slug, o)), SNAP_PX / V.view.z, snapOpts(V.tool.slug)); };
-  const cancel = () => { if (g && g.hold) g.hold.cancel(); if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; };
+  const cancel = () => { if (g && g.hold) g.hold.cancel(); if (g && g.before && g.moved) { V.st = JSON.parse(g.before); renderBoard(); } g = null; ghost().hidden = true; selBox(null); };
   const up = e => {
     pointers.delete(e.pointerId);
     if (!g) return;
@@ -1494,13 +1595,26 @@ function bindPlane() {
     if (x.hold) x.hold.cancel();
     if (x.kind === 'dead') { V.justMoved = true; return; }
     if (x.moved) V.justMoved = true;
-    if (x.kind === 'pan') { if (!x.moved && (V.sel || V.osel) && !V.textMode) { V.sel = null; V.osel = null; renderBoard(); renderChrome(); } return; }
+    if (x.kind === 'box') {
+      selBox(null);
+      if (x.held) { V.justMoved = true; return; }
+      if (x.moved) {
+        // Everything unlocked the box touches (Shift: added to what was selected).
+        const m = inRect(slug, V.st, rectFrom(toWorld(x.sx, x.sy), toWorld(x.ex, x.ey)));
+        if (x.add) { const c = curSel(); for (const id of c.p) m.p.add(id); for (const id of c.o) m.o.add(id); }
+        setMany(m); renderBoard(); renderChrome(); return;
+      }
+    }
+    // A tap on empty space lets go of what was selected.
+    if (x.kind === 'pan' || x.kind === 'box') { if (!x.moved && !x.grab && !x.add && (V.sel || V.osel || V.many) && !V.textMode) { V.sel = null; V.osel = null; V.many = null; renderBoard(); renderChrome(); } return; }
     if (x.kind === 'resize') { if (x.o.s !== x.s0 || JSON.stringify(x.o.st) !== x.st0) { scaleWithChart(slug, x.o, x.s0, V.st.pieces); settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); renderBoard(); renderChrome(); } return; }
     // Held: the wheel stays open after the finger lifts.
     if ((x.kind === 'obj' || x.kind === 'piece') && !x.moved && (x.held || e.type === 'pointercancel')) { V.justMoved = true; return; }
+    // Many moved together: one Undo step, the selection kept.
+    if (x.list) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); renderBoard(); renderChrome(); return; }
     if (x.kind === 'obj') {
-      // A tap selects it (a corner to resize it); a drag only moves it.
-      if (x.moved) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); } else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; }
+      // A tap selects it (a corner to resize it; Shift: adds or removes it); a drag only moves it.
+      if (x.moved) { settleBoard(slug, V.st, V, WORLD); pushHistory(x.before); V.many = null; } else if (x.shift) toggleSel('o', x.o); else { V.osel = x.o.locked ? null : x.o.id; V.sel = null; V.many = null; }
       renderBoard(); renderChrome(); return;
     }
     if (x.kind === 'piece') {
@@ -1519,13 +1633,18 @@ function bindPlane() {
         settleBoard(slug, V.st, V, WORLD);
         pushHistory(x.before);
       }
-      // A tap selects the piece (a green outline, no buttons).
-      if (!x.moved) { V.sel = x.p.id; V.osel = null; } else if (V.sel && V.sel !== x.p.id) V.sel = null;
+      // A tap selects the piece (a green outline, no buttons; Shift: adds or removes it).
+      if (!x.moved) { if (x.shift) toggleSel('p', x.p); else { V.sel = x.p.id; V.osel = null; V.many = null; } } else { V.many = null; if (V.sel && V.sel !== x.p.id) V.sel = null; }
       renderBoard(); renderChrome(); V.snapped = null;
     }
   };
   board.addEventListener('pointerup', up); board.addEventListener('pointercancel', up);
-  board.addEventListener('wheel', e => { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); const r = board.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * 0.01), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  board.addEventListener('wheel', e => {
+    if (e.target.closest('textarea')) return;
+    e.preventDefault();
+    const w = wheelMove(e, vpSize().h), r = board.getBoundingClientRect();
+    if (w.zoom) zoomAt(w.zoom, e.clientX - r.left, e.clientY - r.top); else { V.view.x += w.dx; V.view.y += w.dy; applyView(); }
+  }, { passive: false });
 }
 /** Two pieces snapped together: their groups become one. */
 function joinGroup(pieces, a, b) {
@@ -1839,7 +1958,7 @@ async function liveRoom(id, joinFirst) {
   if (HOST) CHAT.attachLive();
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan, selPillHtml, wheelMove, carried, drawSelBox });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 
