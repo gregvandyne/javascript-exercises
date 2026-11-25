@@ -2081,7 +2081,8 @@
       "hintDraw": "Teken in het lerarendeel. Tik nog een keer op het hulpmiddel als je klaar bent.",
       "tooMany": "Daar is in het lerarendeel geen ruimte meer voor.",
       "arrange": "Plaatsen indelen",
-      "menuSoon": "De deelnamecode en snel inloggen komen hierna.",
+      "signin": "Leerlingen inloggen",
+      "loadingSignin": "Code wordt gemaakt…",
       "seats": {
         "lead": "Zoals je echte lokaal:",
         "rows": "Rijen",
@@ -4663,6 +4664,40 @@
       "deleteOk": "Verwijderen",
       "deleted": "‘{title}’ verwijderd.",
       "undo": "Ongedaan maken"
+    },
+    "homeroom-signin": {
+      "codeLength": "De code heeft {n} letters en cijfers.",
+      "tapName": "Tik op je naam",
+      "noNames": "Er zit nog niemand in deze klas.",
+      "notThere": "Kun je je naam niet vinden? Vraag het je leraar.",
+      "googleHint": "Gebruik je Google op school?",
+      "otherCode": "Een andere code gebruiken",
+      "hi": "Hoi, {name}!",
+      "notMe": "Dat ben ik niet",
+      "useGoogle": "Log in met je Google-account van school.",
+      "askTeacher": "Vraag je leraar om je inlogkaart.",
+      "typePassword": "Typ je wachtwoord",
+      "show": "Tonen",
+      "hide": "Verbergen",
+      "signIn": "Inloggen",
+      "tapPictures": "Tik je {n} plaatjes op volgorde",
+      "picked": "{n} van {total} plaatjes gekozen",
+      "pictures": "Plaatjes",
+      "undo": "Ongedaan maken",
+      "waitSecs": "Probeer het over {n} seconden opnieuw.",
+      "welcome": "Welkom, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "Inloggen is gesloten",
+      "closedHint": "Het gaat vanzelf open als je de les start met Iedereen naar Homeroom.",
+      "open": "Inloggen openen",
+      "goTo": "Ga naar",
+      "enterCode": "en typ deze code:",
+      "codeIs": "Code: {code}",
+      "until": "Open tot {time}",
+      "longer": "Langer open laten",
+      "close": "Inloggen sluiten",
+      "settings": "Instellingen en inlogkaarten"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Mijn tafel",
@@ -14488,10 +14523,91 @@
       "myDesk": "Mijn tafel",
       "teacherArea": "Deel van de leraar",
       "library": "Bibliotheek",
-      "room": "Bekijk het lokaal"
+      "room": "Bekijk het lokaal",
+      "notYou": "Ben je niet {name}?",
+      "switch": "Wisselen"
     },
     "projector": {
       "title": "{class} · Beamer"
+    },
+    "signin": {
+      "title": "Leerlingen inloggen",
+      "qrLabel": "QR-code om in te loggen bij deze klas",
+      "goTo": "Ga naar",
+      "enterCode": "en typ de code",
+      "opened": "Inloggen staat open",
+      "closed": "Inloggen is gesloten",
+      "pageTitle": "Log in bij je klas",
+      "signedInAs": "Ingelogd als {name}. Als je hier inlogt, wordt {name} uitgelogd.",
+      "ended": "De les is voorbij. Tot de volgende keer!",
+      "codeHeading": "Log in bij je klas",
+      "codeLead": "Typ de code die je leraar laat zien.",
+      "codeLabel": "Klascode",
+      "go": "Verder",
+      "errors": {
+        "badCode": "Die code werkt niet. Kijk hem na en probeer het opnieuw.",
+        "tooMany": "Te veel pogingen. Wacht even en probeer het dan opnieuw.",
+        "notFound": "Dat lukte niet. Tik nog eens op je naam.",
+        "wrongPassword": "Dat is niet het goede wachtwoord. Probeer het opnieuw.",
+        "wrongPictures": "Dat zijn niet jouw plaatjes. Probeer het opnieuw.",
+        "wait": "Te veel pogingen. Wacht even.",
+        "locked": "Te veel pogingen. Vraag je leraar om je te helpen inloggen.",
+        "badAction": "Dat lukte niet. Probeer het opnieuw.",
+        "badMode": "Kies Wachtwoord of Plaatjeswachtwoord.",
+        "ownAccount": "Deze leerling heeft een eigen account en logt in met het eigen wachtwoord."
+      },
+      "pics": {
+        "bear": "Beer",
+        "lion": "Leeuw",
+        "frog": "Kikker",
+        "owl": "Uil",
+        "rocket": "Raket",
+        "apple": "Appel",
+        "star": "Ster",
+        "rainbow": "Regenboog",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Inloggen",
+        "back": "Terug naar Homeroom",
+        "heading": "Inloggen",
+        "lead": "Op gedeelde apparaten openen leerlingen het inloggen van de klas, tikken op hun naam en typen dan hun wachtwoord of tikken hun plaatjes.",
+        "students": "Leerlingen",
+        "cards": "Inlogkaarten afdrukken",
+        "cardsConfirm": "Zo krijgt iedereen die met plaatjes inlogt een nieuw plaatjeswachtwoord. De oude plaatjes werken dan niet meer.",
+        "early": "Deze klas is groep 1 tot 4, dus leerlingen beginnen met plaatjeswachtwoorden. Je kunt iedereen op Wachtwoord zetten.",
+        "shows": "Staat er als {name}",
+        "modeFor": "Hoe {name} inlogt",
+        "mode": {
+          "password": "Wachtwoord",
+          "picture": "Plaatjeswachtwoord"
+        },
+        "ownAccount": "Eigen account: gebruikt het eigen wachtwoord",
+        "usesPassword": "Gebruikt het eigen wachtwoord",
+        "usesGoogle": "Gebruikt Google",
+        "locked": "Op slot na te veel pogingen",
+        "waiting": "Wacht na foute pogingen",
+        "hasPicture": "Plaatjeswachtwoord klaar",
+        "noPicture": "Nog geen plaatjeswachtwoord",
+        "newConfirm": "Een nieuw plaatjeswachtwoord maken voor {name}? Het oude werkt dan niet meer.",
+        "newPicture": "Nieuw plaatjeswachtwoord",
+        "makePicture": "Plaatjeswachtwoord maken",
+        "unlock": "Van slot halen",
+        "none": "Nog geen leerlingen in deze klas.",
+        "saved": "Opgeslagen",
+        "unlocked": "Van slot gehaald. De leerling kan het opnieuw proberen."
+      },
+      "cards": {
+        "title": "Inlogkaarten",
+        "count": "{count, plural, one {# kaart} other {# kaarten}}",
+        "print": "Afdrukken",
+        "back": "Terug naar Inloggen",
+        "once": "Plaatjeswachtwoorden staan alleen hier en nu. Druk deze kaarten af of bewaar ze voordat je de pagina verlaat.",
+        "tap": "Jouw knop: {name}",
+        "pictures": "Jouw plaatjes, op volgorde",
+        "usesPassword": "Typ je wachtwoord",
+        "usesGoogle": "Gebruik Inloggen met Google"
+      }
     }
   }
 }

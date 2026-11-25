@@ -48,6 +48,11 @@ export function signupLanding(user, as, next) {
   if (as === 'grownup') return nextFor(user, next) || ADD_AFTER.signup;
   return next && /^\/signup\/teacher\/school(\?|$)/.test(next) ? next : '/signup/teacher/school';
 }
+// Homeroom's class sign-in (routes/homeroom-signin.js sets these, so this file imports nothing of Homeroom): a sign-in
+// started from a class's open sign-in page (?hr=<its code>) is a class-device session when the person who signs in is
+// a student of that class (services/homeroom-signin.js markGoogleDevice), and lands on their desk. Every other Google
+// sign-in is unchanged.
+export const classSignInHooks = { classFor: null, mark: null };
 router.get('/auth/google/start', on, (req, res) => {
   res.set('Cache-Control', 'no-store');
   const intent = ['join', 'link', 'signup'].includes(req.query.intent) ? req.query.intent : 'signin';
@@ -68,7 +73,8 @@ router.get('/auth/google/start', on, (req, res) => {
     userId = req.user.id;
   }
   const f = newFlow(); const redirect = redirectUri(req);
-  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: intent, nx: next, c: intent === 'join' ? code : undefined, u: userId, a: as });
+  const hr = intent === 'signin' && req.query.hr && classSignInHooks.classFor ? classSignInHooks.classFor(req.query.hr) : null;
+  writeFlow(res, { s: f.state, n: f.nonce, v: f.verifier, r: redirect, i: intent, nx: next, c: intent === 'join' ? code : undefined, u: userId, a: as, h: hr ? hr.id : undefined });
   res.redirect(302, authorizationUrl({ ...f, redirect }));
 });
 
@@ -121,7 +127,8 @@ router.get('/auth/google/callback', on, async (req, res) => {
     if (signupAs === 'grownup') { ensureFamily(user); funnel.bump('parent.signup'); }
   }
   if (req.user) auth.endSession(req, res);
-  auth.startSession(res, user.id, req.headers['user-agent'], { method: made ? 'signup' : 'google', teacherWay: made && signupAs === 'teacher' });
+  const sid = auth.startSession(res, user.id, req.headers['user-agent'], { method: made ? 'signup' : 'google', teacherWay: made && signupAs === 'teacher' });
+  const device = !made && flow.i === 'signin' && typeof flow.h === 'string' && classSignInHooks.mark ? classSignInHooks.mark(sid, user, flow.h) : null;
   if (made && req.localeSource === 'cookie') saveUserLang(user, req.locale);
   if (made && req.themeSource === 'cookie') saveUserTheme(user, req.theme);
   const was = auth.endedUser(req); auth.clearEnded(req, res);
@@ -130,7 +137,7 @@ router.get('/auth/google/callback', on, async (req, res) => {
   const next = flow.i === 'signin' && (was === null || was === user.id) ? wantedNext(flow.nx)
     : made ? signupLanding(user, signupAs, wantedNext(flow.nx)) : null;
   G.auditSignIn(user, r.via, claims.hd);
-  res.redirect(303, next || r.landing || homeFor(user));
+  res.redirect(303, device || next || r.landing || homeFor(user));
 });
 
 // ================================================================ Me page: connect / disconnect

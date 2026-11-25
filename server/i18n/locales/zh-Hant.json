@@ -2080,7 +2080,8 @@
       "hintDraw": "在老師區畫畫。完成後再點一次工具。",
       "tooMany": "老師區放不下更多了。",
       "arrange": "安排座位",
-      "menuSoon": "加入代碼和快速登入即將推出。",
+      "signin": "學生登入",
+      "loadingSignin": "正在準備代碼…",
       "seats": {
         "lead": "照真實教室排：",
         "rows": "排排坐",
@@ -4662,6 +4663,40 @@
       "deleteOk": "刪除",
       "deleted": "已刪除「{title}」。",
       "undo": "復原"
+    },
+    "homeroom-signin": {
+      "codeLength": "代碼有 {n} 個字母和數字。",
+      "tapName": "點你的名字",
+      "noNames": "這個班級還沒有人。",
+      "notThere": "找不到你的名字？問問老師。",
+      "googleHint": "你在學校用 Google 嗎？",
+      "otherCode": "使用別的代碼",
+      "hi": "嗨，{name}！",
+      "notMe": "這不是我",
+      "useGoogle": "用學校的 Google 帳號登入。",
+      "askTeacher": "向老師拿你的登入卡。",
+      "typePassword": "輸入你的密碼",
+      "show": "顯示",
+      "hide": "隱藏",
+      "signIn": "登入",
+      "tapPictures": "依順序點你的 {n} 個圖案",
+      "picked": "已選 {n} 個，共 {total} 個",
+      "pictures": "圖案",
+      "undo": "復原",
+      "waitSecs": "{n} 秒後再試一次。",
+      "welcome": "歡迎，{name}！"
+    },
+    "homeroom-signin-panel": {
+      "closed": "登入已關閉",
+      "closedHint": "用「大家來 Homeroom」開始上課時會自動開放。",
+      "open": "開放登入",
+      "goTo": "前往",
+      "enterCode": "並輸入這個代碼：",
+      "codeIs": "代碼：{code}",
+      "until": "開放到 {time}",
+      "longer": "延長開放時間",
+      "close": "關閉登入",
+      "settings": "登入設定和登入卡"
     },
     "homeroom-desk": {
       "deskOf": "{name} · 我的書桌",
@@ -14487,10 +14522,91 @@
       "myDesk": "我的書桌",
       "teacherArea": "老師區",
       "library": "圖書館",
-      "room": "看看教室"
+      "room": "看看教室",
+      "notYou": "不是 {name}？",
+      "switch": "切換"
     },
     "projector": {
       "title": "{class} · 投影"
+    },
+    "signin": {
+      "title": "學生登入",
+      "qrLabel": "登入這個班級的 QR 碼",
+      "goTo": "前往",
+      "enterCode": "並輸入代碼",
+      "opened": "登入已開放",
+      "closed": "登入已關閉",
+      "pageTitle": "登入你的班級",
+      "signedInAs": "目前以 {name} 登入。在這裡登入會讓 {name} 登出。",
+      "ended": "下課了。下次見！",
+      "codeHeading": "登入你的班級",
+      "codeLead": "輸入老師顯示的代碼。",
+      "codeLabel": "班級代碼",
+      "go": "繼續",
+      "errors": {
+        "badCode": "這個代碼不能用。檢查一下再試一次。",
+        "tooMany": "嘗試太多次了。等一下再試。",
+        "notFound": "沒有成功。再點一次你的名字。",
+        "wrongPassword": "密碼不對。再試一次。",
+        "wrongPictures": "這些不是你的圖案。再試一次。",
+        "wait": "嘗試太多次了。等一下。",
+        "locked": "嘗試太多次了。請老師幫你登入。",
+        "badAction": "沒有成功。再試一次。",
+        "badMode": "請選擇密碼或圖案密碼。",
+        "ownAccount": "這位學生有自己的帳號，所以用自己的密碼登入。"
+      },
+      "pics": {
+        "bear": "熊",
+        "lion": "獅子",
+        "frog": "青蛙",
+        "owl": "貓頭鷹",
+        "rocket": "火箭",
+        "apple": "蘋果",
+        "star": "星星",
+        "rainbow": "彩虹",
+        "cupcake": "杯子蛋糕"
+      },
+      "panel": {
+        "title": "{class} · 登入",
+        "back": "回到 Homeroom",
+        "heading": "登入",
+        "lead": "在共用裝置上，學生打開班級登入，點自己的名字，再輸入密碼或點選圖案密碼。",
+        "students": "學生",
+        "cards": "列印登入卡",
+        "cardsConfirm": "這會為所有用圖案登入的學生產生新的圖案密碼。舊的圖案會失效。",
+        "early": "這個班級是幼兒園到二年級，所以學生一開始使用圖案密碼。你可以把任何人改成密碼。",
+        "shows": "顯示為 {name}",
+        "modeFor": "{name} 的登入方式",
+        "mode": {
+          "password": "密碼",
+          "picture": "圖案密碼"
+        },
+        "ownAccount": "個人帳號：用自己的密碼",
+        "usesPassword": "用自己的密碼",
+        "usesGoogle": "用 Google",
+        "locked": "嘗試太多次已鎖定",
+        "waiting": "輸錯後等待中",
+        "hasPicture": "圖案密碼已準備好",
+        "noPicture": "還沒有圖案密碼",
+        "newConfirm": "要為 {name} 產生新的圖案密碼嗎？舊的會失效。",
+        "newPicture": "新的圖案密碼",
+        "makePicture": "產生圖案密碼",
+        "unlock": "解除鎖定",
+        "none": "這個班級還沒有學生。",
+        "saved": "已儲存",
+        "unlocked": "已解除鎖定。可以再試一次。"
+      },
+      "cards": {
+        "title": "登入卡",
+        "count": "{count, plural, other {# 張卡}}",
+        "print": "列印",
+        "back": "回到登入",
+        "once": "圖案密碼只會在這裡顯示這一次。離開頁面前請列印或儲存這些卡片。",
+        "tap": "你的按鈕：{name}",
+        "pictures": "你的圖案（依順序）",
+        "usesPassword": "輸入你的密碼",
+        "usesGoogle": "使用「以 Google 登入」"
+      }
     }
   }
 }

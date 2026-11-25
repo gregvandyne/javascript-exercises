@@ -2081,7 +2081,8 @@
       "hintDraw": "Draw in the teacher's area. Tap the tool again when you're done.",
       "tooMany": "There's no room for more of those in the teacher's area.",
       "arrange": "Arrange seats",
-      "menuSoon": "The join code and quick sign-in come next.",
+      "signin": "Students sign in",
+      "loadingSignin": "Getting the code…",
       "seats": {
         "lead": "Match your real room:",
         "rows": "Rows",
@@ -4946,6 +4947,40 @@
       "deleteOk": "Delete",
       "deleted": "Deleted “{title}”.",
       "undo": "Undo"
+    },
+    "homeroom-signin": {
+      "codeLength": "The code has {n} letters and numbers.",
+      "tapName": "Tap your name",
+      "noNames": "No one is in this class yet.",
+      "notThere": "Can't find your name? Ask your teacher.",
+      "googleHint": "Do you use Google at school?",
+      "otherCode": "Use a different code",
+      "hi": "Hi, {name}!",
+      "notMe": "That's not me",
+      "useGoogle": "Sign in with your school Google account.",
+      "askTeacher": "Ask your teacher for your sign-in card.",
+      "typePassword": "Type your password",
+      "show": "Show",
+      "hide": "Hide",
+      "signIn": "Sign in",
+      "tapPictures": "Tap your {n} pictures in order",
+      "picked": "{n} of {total} pictures picked",
+      "pictures": "Pictures",
+      "undo": "Undo",
+      "waitSecs": "Try again in {n} seconds.",
+      "welcome": "Welcome, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "Sign-in is closed",
+      "closedHint": "It opens by itself when you start class with Everyone to Homeroom.",
+      "open": "Open sign-in",
+      "goTo": "Go to",
+      "enterCode": "and type this code:",
+      "codeIs": "Code: {code}",
+      "until": "Open until {time}",
+      "longer": "Keep open longer",
+      "close": "Close sign-in",
+      "settings": "Sign-in settings and cards"
     },
     "homeroom-desk": {
       "deskOf": "{name} · My desk",
@@ -15205,10 +15240,91 @@
       "myDesk": "My desk",
       "teacherArea": "Teacher's area",
       "library": "Library",
-      "room": "See the room"
+      "room": "See the room",
+      "notYou": "Not {name}?",
+      "switch": "Switch"
     },
     "projector": {
       "title": "{class} · Projector"
+    },
+    "signin": {
+      "title": "Students sign in",
+      "qrLabel": "QR code to sign in to this class",
+      "goTo": "Go to",
+      "enterCode": "and type the code",
+      "opened": "Sign-in is open",
+      "closed": "Sign-in is closed",
+      "pageTitle": "Sign in to your class",
+      "signedInAs": "Signed in as {name}. Signing in here signs them out.",
+      "ended": "Class is over. See you next time!",
+      "codeHeading": "Sign in to your class",
+      "codeLead": "Type the code your teacher shows.",
+      "codeLabel": "Class code",
+      "go": "Go",
+      "errors": {
+        "badCode": "That code doesn't work. Check it and try again.",
+        "tooMany": "Too many tries. Wait a little, then try again.",
+        "notFound": "That didn't work. Tap your name again.",
+        "wrongPassword": "That's not the right password. Try again.",
+        "wrongPictures": "Those aren't your pictures. Try again.",
+        "wait": "Too many tries. Wait a moment.",
+        "locked": "Too many tries. Ask your teacher to help you sign in.",
+        "badAction": "That didn't work. Try again.",
+        "badMode": "Pick Password or Picture password.",
+        "ownAccount": "This student has their own account, so they sign in with their password."
+      },
+      "pics": {
+        "bear": "Bear",
+        "lion": "Lion",
+        "frog": "Frog",
+        "owl": "Owl",
+        "rocket": "Rocket",
+        "apple": "Apple",
+        "star": "Star",
+        "rainbow": "Rainbow",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Sign-in",
+        "back": "Back to Homeroom",
+        "heading": "Sign-in",
+        "lead": "On shared devices, students go to the class sign-in, tap their name, then type their password or tap their picture password.",
+        "students": "Students",
+        "cards": "Print sign-in cards",
+        "cardsConfirm": "This makes new picture passwords for everyone who signs in with pictures. Their old pictures stop working.",
+        "early": "This class is grade K to 2, so students start with picture passwords. You can switch anyone to Password.",
+        "shows": "Shows as {name}",
+        "modeFor": "How {name} signs in",
+        "mode": {
+          "password": "Password",
+          "picture": "Picture password"
+        },
+        "ownAccount": "Own account: uses their password",
+        "usesPassword": "Uses their password",
+        "usesGoogle": "Uses Google",
+        "locked": "Locked after too many tries",
+        "waiting": "Waiting after wrong tries",
+        "hasPicture": "Picture password ready",
+        "noPicture": "No picture password yet",
+        "newConfirm": "Make a new picture password for {name}? The old one stops working.",
+        "newPicture": "New picture password",
+        "makePicture": "Make picture password",
+        "unlock": "Unlock",
+        "none": "No students in this class yet.",
+        "saved": "Saved",
+        "unlocked": "Unlocked. They can try again."
+      },
+      "cards": {
+        "title": "Sign-in cards",
+        "count": "{count, plural, one {# card} other {# cards}}",
+        "print": "Print",
+        "back": "Back to Sign-in",
+        "once": "Picture passwords show only here and now. Print or save these cards before you leave this page.",
+        "tap": "Your button: {name}",
+        "pictures": "Your pictures, in order",
+        "usesPassword": "Type your password",
+        "usesGoogle": "Use Sign in with Google"
+      }
     }
   }
 }

@@ -2081,7 +2081,8 @@
       "hintDraw": "Disegna nell’area dell’insegnante. Tocca di nuovo lo strumento quando hai finito.",
       "tooMany": "Nell’area dell’insegnante non c’è più posto per altri.",
       "arrange": "Disponi i posti",
-      "menuSoon": "Il codice di accesso e l’accesso rapido arrivano presto.",
+      "signin": "Accesso degli alunni",
+      "loadingSignin": "Preparo il codice…",
       "seats": {
         "lead": "Come la tua aula vera:",
         "rows": "File",
@@ -4663,6 +4664,40 @@
       "deleteOk": "Elimina",
       "deleted": "«{title}» eliminato.",
       "undo": "Annulla"
+    },
+    "homeroom-signin": {
+      "codeLength": "Il codice ha {n} lettere e numeri.",
+      "tapName": "Tocca il tuo nome",
+      "noNames": "In questa classe non c’è ancora nessuno.",
+      "notThere": "Non trovi il tuo nome? Chiedi al tuo insegnante.",
+      "googleHint": "A scuola usi Google?",
+      "otherCode": "Usa un altro codice",
+      "hi": "Ciao, {name}!",
+      "notMe": "Non sono io",
+      "useGoogle": "Entra con il tuo account Google della scuola.",
+      "askTeacher": "Chiedi la tua scheda di accesso al tuo insegnante.",
+      "typePassword": "Scrivi la tua password",
+      "show": "Mostra",
+      "hide": "Nascondi",
+      "signIn": "Entra",
+      "tapPictures": "Tocca le tue {n} immagini in ordine",
+      "picked": "{n} immagini su {total} scelte",
+      "pictures": "Immagini",
+      "undo": "Annulla",
+      "waitSecs": "Riprova tra {n} secondi.",
+      "welcome": "Benvenuto, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "L’accesso è chiuso",
+      "closedHint": "Si apre da solo quando inizi la lezione con Tutti in Homeroom.",
+      "open": "Apri l’accesso",
+      "goTo": "Andate su",
+      "enterCode": "e scrivete questo codice:",
+      "codeIs": "Codice: {code}",
+      "until": "Aperto fino alle {time}",
+      "longer": "Tieni aperto più a lungo",
+      "close": "Chiudi l’accesso",
+      "settings": "Impostazioni e schede di accesso"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Il mio banco",
@@ -14488,10 +14523,91 @@
       "myDesk": "Il mio banco",
       "teacherArea": "Area dell’insegnante",
       "library": "Biblioteca",
-      "room": "Guarda l’aula"
+      "room": "Guarda l’aula",
+      "notYou": "Non sei {name}?",
+      "switch": "Cambia"
     },
     "projector": {
       "title": "{class} · Proiettore"
+    },
+    "signin": {
+      "title": "Accesso degli alunni",
+      "qrLabel": "Codice QR per entrare in questa classe",
+      "goTo": "Vai su",
+      "enterCode": "e scrivi il codice",
+      "opened": "L’accesso è aperto",
+      "closed": "L’accesso è chiuso",
+      "pageTitle": "Entra nella tua classe",
+      "signedInAs": "Accesso come {name}. Se entri qui, quell’account esce.",
+      "ended": "La lezione è finita. Alla prossima!",
+      "codeHeading": "Entra nella tua classe",
+      "codeLead": "Scrivi il codice che mostra il tuo insegnante.",
+      "codeLabel": "Codice della classe",
+      "go": "Vai",
+      "errors": {
+        "badCode": "Questo codice non funziona. Controllalo e riprova.",
+        "tooMany": "Troppi tentativi. Aspetta un po’ e riprova.",
+        "notFound": "Non ha funzionato. Tocca di nuovo il tuo nome.",
+        "wrongPassword": "Non è la password giusta. Riprova.",
+        "wrongPictures": "Non sono le tue immagini. Riprova.",
+        "wait": "Troppi tentativi. Aspetta un momento.",
+        "locked": "Troppi tentativi. Chiedi al tuo insegnante di aiutarti a entrare.",
+        "badAction": "Non ha funzionato. Riprova.",
+        "badMode": "Scegli Password o Password a immagini.",
+        "ownAccount": "Questo alunno ha un account suo, quindi entra con la sua password."
+      },
+      "pics": {
+        "bear": "Orso",
+        "lion": "Leone",
+        "frog": "Rana",
+        "owl": "Gufo",
+        "rocket": "Razzo",
+        "apple": "Mela",
+        "star": "Stella",
+        "rainbow": "Arcobaleno",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Accesso",
+        "back": "Torna a Homeroom",
+        "heading": "Accesso",
+        "lead": "Sui dispositivi condivisi, gli alunni aprono l’accesso della classe, toccano il loro nome, poi scrivono la password o toccano le loro immagini.",
+        "students": "Alunni",
+        "cards": "Stampa le schede di accesso",
+        "cardsConfirm": "Così chi entra con le immagini riceve una nuova password a immagini. Le immagini vecchie non funzionano più.",
+        "early": "Questa classe va dall’infanzia alla seconda, quindi gli alunni iniziano con le password a immagini. Puoi passare chiunque a Password.",
+        "shows": "Appare come {name}",
+        "modeFor": "Come entra {name}",
+        "mode": {
+          "password": "Password",
+          "picture": "Password a immagini"
+        },
+        "ownAccount": "Account personale: usa la sua password",
+        "usesPassword": "Usa la sua password",
+        "usesGoogle": "Usa Google",
+        "locked": "Bloccato dopo troppi tentativi",
+        "waiting": "In attesa dopo tentativi sbagliati",
+        "hasPicture": "Password a immagini pronta",
+        "noPicture": "Ancora nessuna password a immagini",
+        "newConfirm": "Creare una nuova password a immagini per {name}? Quella vecchia non funzionerà più.",
+        "newPicture": "Nuova password a immagini",
+        "makePicture": "Crea password a immagini",
+        "unlock": "Sblocca",
+        "none": "Ancora nessun alunno in questa classe.",
+        "saved": "Salvato",
+        "unlocked": "Sbloccato. Può riprovare."
+      },
+      "cards": {
+        "title": "Schede di accesso",
+        "count": "{count, plural, one {# scheda} other {# schede}}",
+        "print": "Stampa",
+        "back": "Torna all’accesso",
+        "once": "Le password a immagini si vedono solo qui e adesso. Stampa o salva queste schede prima di lasciare la pagina.",
+        "tap": "Il tuo pulsante: {name}",
+        "pictures": "Le tue immagini, in ordine",
+        "usesPassword": "Scrivi la tua password",
+        "usesGoogle": "Usa Accedi con Google"
+      }
     }
   }
 }

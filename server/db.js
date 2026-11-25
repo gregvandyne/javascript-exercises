@@ -1371,6 +1371,24 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS homeroom_doodles (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL, strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_homeroom_doodles_user ON homeroom_doodles(user_id);`],
+  // Homeroom step 1c (docs/decisions.md "Homeroom, step 1c"): quick sign-in on shared devices. On homeroom_rooms, the
+  // class sign-in code (random, unique while set) and when sign-in closes (signin_until; NULL or past: closed): only the
+  // class's teachers open it, live class opens it, End class closes it. homeroom_signins: how a student of the class
+  // signs in there (mode '' = the class's default, 'password' or 'picture'), their picture password (bcrypt hash of the
+  // three pictures in order, like a password, never the pictures), and the wrong tries and lock for it. Gone with the
+  // class, the school, the student leaving the class, or their account. sessions.class_device: the class whose sign-in
+  // started this session (a shared device): ended when the teacher ends class, and at the sign-in window plus a short
+  // grace; NULL for every normal sign-in.
+  ['0124_homeroom_signin', `
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_code TEXT;
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_until INTEGER;
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_homeroom_signin_code ON homeroom_rooms(signin_code) WHERE signin_code IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS homeroom_signins (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT '', pic_hash TEXT, pic_at INTEGER, fails INTEGER NOT NULL DEFAULT 0,
+      locked_until INTEGER, updated_by TEXT, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_signins_user ON homeroom_signins(user_id);
+    ALTER TABLE sessions ADD COLUMN class_device TEXT;
+    CREATE INDEX IF NOT EXISTS idx_sessions_class_device ON sessions(class_device) WHERE class_device IS NOT NULL;`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

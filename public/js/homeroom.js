@@ -10,11 +10,13 @@
 //   - live class (step 1b): Everyone to Homeroom starts it (students get a prompt to go to their desks), then Bring
 //     everyone to me (every desk shows the teacher's area) and Pause screens ("Eyes on your teacher" on every desk);
 //     End class and the projector view are in the ⋯ menu (POST .../live; docs/decisions.md "Homeroom, step 1b").
+//   - Students sign in (step 1c), in the ⋯ menu: the class sign-in's QR code and code (public/js/homeroom-signin-panel.js).
 // Handouts, plans and cursors come in later steps (docs/homeroom.md "Build order").
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
+import { signinBox } from '/js/homeroom-signin-panel.js';
 import { AREA, TEACHER_DESK, DESK, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -248,10 +250,18 @@ function renderMenu() {
   el.innerHTML = `<div class="rm-menu panel hr-menu" role="menu"><div class="rm-menu-body">
     ${btn('rm-mi', 'role="menuitem" data-hr="seats"', `${iconHtml('🔀', { size: 18 })} ${esc(th('arrange'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="groups"', `${iconHtml('🏷️', { size: 18 })} ${esc(th('editGroups'))}`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="signin"', `${iconHtml('🔑', { size: 18 })} ${esc(th('signin'))}`)}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
-    ${H.live ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}
-    <p class="hr-menusoon small">${esc(th('menuSoon'))}</p></div></div>`;
+    ${H.live ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
   el.querySelector('button')?.focus();
+}
+// Students sign in (step 1c): the class sign-in's QR code and code, open or closed, in a sheet.
+async function signinSheet() {
+  H.menuOpen = false; renderMenu();
+  const sh = sheet({ title: `🔑 ${th('signin')}`, content: `<div class="hs-sheet" id="hr-signbox"><p class="muted">${esc(th('loadingSignin'))}</p></div>` });
+  const el = sh.el.querySelector('#hr-signbox');
+  try { const r = await api(`/api/homeroom/${encodeURIComponent(D.classId)}/signin`); signinBox(el, D.classId, r.signin, { panelLink: true }); }
+  catch (e) { el.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
 }
 function groupsSheet() {
   H.menuOpen = false; renderMenu();
@@ -431,6 +441,7 @@ function click(e) {
   else if (k === 'seatsdone') openSeats(false);
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
+  else if (k === 'signin') signinSheet();
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }

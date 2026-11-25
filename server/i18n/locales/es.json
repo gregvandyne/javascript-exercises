@@ -2080,7 +2080,8 @@
       "hintDraw": "Dibuja en el área del docente. Toca la herramienta otra vez cuando termines.",
       "tooMany": "No caben más de esos en el área del docente.",
       "arrange": "Organizar los asientos",
-      "menuSoon": "El código para unirse y el acceso rápido llegan pronto.",
+      "signin": "Inicio de sesión de alumnos",
+      "loadingSignin": "Preparando el código…",
       "seats": {
         "lead": "Igual que tu aula real:",
         "rows": "Filas",
@@ -4662,6 +4663,40 @@
       "deleteOk": "Eliminar",
       "deleted": "«{title}» eliminado.",
       "undo": "Deshacer"
+    },
+    "homeroom-signin": {
+      "codeLength": "El código tiene {n} letras y números.",
+      "tapName": "Toca tu nombre",
+      "noNames": "Todavía no hay nadie en esta clase.",
+      "notThere": "¿No encuentras tu nombre? Pregunta a tu docente.",
+      "googleHint": "¿Usas Google en la escuela?",
+      "otherCode": "Usar otro código",
+      "hi": "¡Hola, {name}!",
+      "notMe": "No soy yo",
+      "useGoogle": "Entra con tu cuenta de Google de la escuela.",
+      "askTeacher": "Pide tu tarjeta de inicio de sesión a tu docente.",
+      "typePassword": "Escribe tu contraseña",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "signIn": "Entrar",
+      "tapPictures": "Toca tus {n} imágenes en orden",
+      "picked": "{n} de {total} imágenes elegidas",
+      "pictures": "Imágenes",
+      "undo": "Deshacer",
+      "waitSecs": "Inténtalo de nuevo en {n} segundos.",
+      "welcome": "¡Bienvenido, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "El inicio de sesión está cerrado",
+      "closedHint": "Se abre solo cuando empieza la clase con Todos a Homeroom.",
+      "open": "Abrir inicio de sesión",
+      "goTo": "Vayan a",
+      "enterCode": "y escriban este código:",
+      "codeIs": "Código: {code}",
+      "until": "Abierto hasta las {time}",
+      "longer": "Mantener abierto más tiempo",
+      "close": "Cerrar inicio de sesión",
+      "settings": "Ajustes y tarjetas de inicio de sesión"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Mi pupitre",
@@ -14487,10 +14522,91 @@
       "myDesk": "Mi pupitre",
       "teacherArea": "Zona del docente",
       "library": "Biblioteca",
-      "room": "Ver el salón"
+      "room": "Ver el salón",
+      "notYou": "¿No eres {name}?",
+      "switch": "Cambiar"
     },
     "projector": {
       "title": "{class} · Proyector"
+    },
+    "signin": {
+      "title": "Inicio de sesión de alumnos",
+      "qrLabel": "Código QR para entrar a esta clase",
+      "goTo": "Ve a",
+      "enterCode": "y escribe el código",
+      "opened": "El inicio de sesión está abierto",
+      "closed": "El inicio de sesión está cerrado",
+      "pageTitle": "Entra a tu clase",
+      "signedInAs": "Sesión iniciada como {name}. Si entras aquí, se cerrará su sesión.",
+      "ended": "La clase terminó. ¡Hasta la próxima!",
+      "codeHeading": "Entra a tu clase",
+      "codeLead": "Escribe el código que muestra tu docente.",
+      "codeLabel": "Código de la clase",
+      "go": "Ir",
+      "errors": {
+        "badCode": "Ese código no funciona. Revísalo e inténtalo de nuevo.",
+        "tooMany": "Demasiados intentos. Espera un poco y vuelve a intentarlo.",
+        "notFound": "No funcionó. Toca tu nombre otra vez.",
+        "wrongPassword": "Esa no es la contraseña correcta. Inténtalo de nuevo.",
+        "wrongPictures": "Esas no son tus imágenes. Inténtalo de nuevo.",
+        "wait": "Demasiados intentos. Espera un momento.",
+        "locked": "Demasiados intentos. Pide a tu docente que te ayude a entrar.",
+        "badAction": "No funcionó. Inténtalo de nuevo.",
+        "badMode": "Elija Contraseña o Contraseña con imágenes.",
+        "ownAccount": "Este alumno tiene su propia cuenta, así que entra con su contraseña."
+      },
+      "pics": {
+        "bear": "Oso",
+        "lion": "León",
+        "frog": "Rana",
+        "owl": "Búho",
+        "rocket": "Cohete",
+        "apple": "Manzana",
+        "star": "Estrella",
+        "rainbow": "Arcoíris",
+        "cupcake": "Magdalena"
+      },
+      "panel": {
+        "title": "{class} · Inicio de sesión",
+        "back": "Volver a Homeroom",
+        "heading": "Inicio de sesión",
+        "lead": "En dispositivos compartidos, los alumnos abren el inicio de sesión de la clase, tocan su nombre y escriben su contraseña o tocan sus imágenes.",
+        "students": "Alumnos",
+        "cards": "Imprimir tarjetas de inicio de sesión",
+        "cardsConfirm": "Esto crea contraseñas con imágenes nuevas para todos los que entran con imágenes. Las imágenes anteriores dejan de funcionar.",
+        "early": "Esta clase es de K a 2.º grado, así que los alumnos empiezan con contraseñas con imágenes. Puede cambiar a cualquiera a Contraseña.",
+        "shows": "Se muestra como {name}",
+        "modeFor": "Cómo entra {name}",
+        "mode": {
+          "password": "Contraseña",
+          "picture": "Contraseña con imágenes"
+        },
+        "ownAccount": "Cuenta propia: usa su contraseña",
+        "usesPassword": "Usa su contraseña",
+        "usesGoogle": "Usa Google",
+        "locked": "Bloqueado tras demasiados intentos",
+        "waiting": "En espera tras intentos fallidos",
+        "hasPicture": "Contraseña con imágenes lista",
+        "noPicture": "Aún sin contraseña con imágenes",
+        "newConfirm": "¿Crear una contraseña con imágenes nueva para {name}? La anterior dejará de funcionar.",
+        "newPicture": "Nueva contraseña con imágenes",
+        "makePicture": "Crear contraseña con imágenes",
+        "unlock": "Desbloquear",
+        "none": "Todavía no hay alumnos en esta clase.",
+        "saved": "Guardado",
+        "unlocked": "Desbloqueado. Puede intentarlo de nuevo."
+      },
+      "cards": {
+        "title": "Tarjetas de inicio de sesión",
+        "count": "{count, plural, one {# tarjeta} other {# tarjetas}}",
+        "print": "Imprimir",
+        "back": "Volver a Inicio de sesión",
+        "once": "Las contraseñas con imágenes solo se muestran aquí y ahora. Imprima o guarde estas tarjetas antes de salir de la página.",
+        "tap": "Tu botón: {name}",
+        "pictures": "Tus imágenes, en orden",
+        "usesPassword": "Escribe tu contraseña",
+        "usesGoogle": "Usa Iniciar sesión con Google"
+      }
     }
   }
 }

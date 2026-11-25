@@ -72,6 +72,14 @@ can read the whole notebook (students are told); parents see handout notes, not 
 laptop (Chromebook 1366x768) and phone. K-2 mode by grade. Supports per student (extra time, read aloud, simpler
 wording, bigger text) apply to every handout.
 
+## Quick sign-in (step 1c)
+
+Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their
+password or tap their three pictures (picture passwords: grade K to 2 by default, or any school-account student the
+teacher sets), or use Google. The code works only while the teacher has sign-in open (90 minutes, opened by starting
+class, closed by End class). Those sign-ins end with class; the desk has "Not you? Switch". Details: docs/decisions.md
+"Homeroom, step 1c".
+
 ## Rules that do not change
 
 No rankings of students. Oomba never talks to students. Oomba sees topics, grades, group names and results with names
