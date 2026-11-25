@@ -1526,6 +1526,7 @@
   },
   "build": {
     "title": "製作遊戲",
+    "titleStaff": "製作課程",
     "hero": {
       "heading": "用聊天做出你自己的遊戲！",
       "text": "把你的點子告訴小幫手。它會做出遊戲，你還可以一直修改。"
@@ -5335,7 +5336,6 @@
       "plan": {
         "heading": "學校方案 · {school}"
       },
-      "tools": "教學工具",
       "hostLive": "主持即時遊戲"
     },
     "class": {
@@ -10536,9 +10536,9 @@
       "classesN": "{count, plural, other {# 個班級}}",
       "waitingN": "{count, plural, other {# 個回答待看}}",
       "caughtUp": "都處理好了",
+      "lessonFolder": "課程資料夾",
       "openClass": "開啟班級",
       "openLive": "進入即時遊戲",
-      "make": "把一堂課變成遊戲",
       "schoolReady": "{school} 已準備就緒，你是學校的管理員。請在下方建立第一個班級，再加入學生。我們會在一個上課日內查看你的學校，並寄給你一份簡短指南。",
       "allClasses": "所有班級"
     },
@@ -13942,7 +13942,6 @@
     "newWithGame": "用這個遊戲新增資料夾",
     "savedTo": "已存到 {folder}",
     "already": "已在 {folder}",
-    "assignGame": "指派遊戲",
     "assignMine": "從我的遊戲指派",
     "assigned": "已指派的遊戲",
     "kindGame": "遊戲",

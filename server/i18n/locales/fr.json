@@ -1526,6 +1526,7 @@
   },
   "build": {
     "title": "Créer un jeu",
+    "titleStaff": "Créer des leçons",
     "hero": {
       "heading": "Crée ton propre jeu en discutant !",
       "text": "Dis ton idée au Constructeur. Il construit le jeu, et tu peux continuer à le changer."
@@ -5335,7 +5336,6 @@
       "plan": {
         "heading": "Abonnement école · {school}"
       },
-      "tools": "Outils pour enseigner",
       "hostLive": "Animer un jeu en direct"
     },
     "class": {
@@ -10536,9 +10536,9 @@
       "classesN": "{count, plural, one {# classe} other {# classes}}",
       "waitingN": "{count, plural, one {# réponse en attente} other {# réponses en attente}}",
       "caughtUp": "Tout est à jour",
+      "lessonFolder": "Dossier de leçons",
       "openClass": "Ouvrir la classe",
       "openLive": "Ouvrir le jeu en direct",
-      "make": "Transformer une leçon en jeu",
       "schoolReady": "{school} est prête, et vous en êtes l'administrateur. Créez votre première classe ci-dessous, puis ajoutez vos élèves. Nous examinerons votre école sous 1 jour d'école et vous enverrons un court guide par e-mail.",
       "allClasses": "Toutes les classes"
     },
@@ -13942,7 +13942,6 @@
     "newWithGame": "Nouveau dossier avec ce jeu",
     "savedTo": "Rangé dans {folder}",
     "already": "Déjà dans {folder}",
-    "assignGame": "Attribuer un jeu",
     "assignMine": "Attribuer depuis mes jeux",
     "assigned": "Jeux attribués",
     "kindGame": "Jeu",

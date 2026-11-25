@@ -1526,6 +1526,7 @@
   },
   "build": {
     "title": "ゲームをつくる",
+    "titleStaff": "レッスンをつくる",
     "hero": {
       "heading": "チャットでゲームをつくろう！",
       "text": "ビルダーにアイデアを話してください。ゲームをつくってくれて、何度でもかえられます。"
@@ -5335,7 +5336,6 @@
       "plan": {
         "heading": "学校プラン · {school}"
       },
-      "tools": "授業のツール",
       "hostLive": "ライブゲームを開く"
     },
     "class": {
@@ -10536,9 +10536,9 @@
       "classesN": "{count, plural, other {#クラス}}",
       "waitingN": "{count, plural, other {#件の回答が待っています}}",
       "caughtUp": "すべて完了",
+      "lessonFolder": "レッスンフォルダー",
       "openClass": "クラスを開く",
       "openLive": "開いているライブゲームへ",
-      "make": "授業をゲームにする",
       "schoolReady": "{school} の準備ができました。あなたが学校の管理者です。下で最初のクラスを作り、児童・生徒を追加しましょう。1授業日以内に学校を確認し、短いガイドをメールでお送りします。",
       "allClasses": "すべてのクラス"
     },
@@ -13942,7 +13942,6 @@
     "newWithGame": "このゲームで新しいフォルダー",
     "savedTo": "{folder} に保存しました",
     "already": "すでに {folder} にあります",
-    "assignGame": "ゲームを課題にする",
     "assignMine": "自分のゲームから課題にする",
     "assigned": "課題のゲーム",
     "kindGame": "ゲーム",

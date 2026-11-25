@@ -1527,6 +1527,7 @@
   },
   "build": {
     "title": "Bouw een game",
+    "titleStaff": "Lessen bouwen",
     "hero": {
       "heading": "Maak je eigen game door te chatten!",
       "text": "Vertel de Bouwer je idee. Hij bouwt de game, en jij kunt hem steeds blijven veranderen."
@@ -5336,7 +5337,6 @@
       "plan": {
         "heading": "Schoolabonnement · {school}"
       },
-      "tools": "Hulpmiddelen voor de les",
       "hostLive": "Een live spel leiden"
     },
     "class": {
@@ -10537,9 +10537,9 @@
       "classesN": "{count, plural, one {# klas} other {# klassen}}",
       "waitingN": "{count, plural, one {# antwoord wacht} other {# antwoorden wachten}}",
       "caughtUp": "Alles bijgewerkt",
+      "lessonFolder": "Lessenmap",
       "openClass": "Klas openen",
       "openLive": "Live spel openen",
-      "make": "Van een les een spel maken",
       "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
       "allClasses": "Alle klassen"
     },
@@ -13943,7 +13943,6 @@
     "newWithGame": "Nieuwe map met dit spel",
     "savedTo": "Bewaard in {folder}",
     "already": "Staat al in {folder}",
-    "assignGame": "Een spel toewijzen",
     "assignMine": "Toewijzen uit mijn spellen",
     "assigned": "Toegewezen spellen",
     "kindGame": "Spel",

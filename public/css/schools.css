@@ -821,6 +821,16 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .th-class>.cc-name+.small{margin-bottom:var(--s2)}
 .classgrid>.th-class>.cc-acts{margin-top:auto;padding-top:var(--s3)}
 @media (min-width:601px){.th-class>.cc-acts>.btn{flex:0 1 auto}}
+/* A card's views (docs/decisions.md "A simpler teacher home"): Homeroom, Classroom, Dashboard as one row of equal
+   buttons at every width; on a narrow phone each is its icon over its name, so the row never wraps. */
+.th-class>.cc-views{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:var(--s2)}
+.th-class>.cc-views-2{--n:2}
+.th-class>.cc-views-1{--n:1}
+.th-class>.cc-views>.btn{min-width:0;min-height:44px;justify-content:center;gap:6px}
+.th-class>.cc-views>.btn>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:420px){
+  .th-class>.cc-views-3>.btn{flex-direction:column;gap:2px;padding:6px 4px;min-height:56px;font-size:.85rem}
+}
 /* The next lesson due: title cut short on one line, the date under it; no underline across the whole pill. */
 .classcard a.chip-s.th-due{display:inline-grid;gap:2px;max-width:100%;border-radius:14px;padding:6px 12px;white-space:nowrap}
 .classcard a.chip-s.th-due:hover{text-decoration:none}
@@ -839,7 +849,7 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 /* Courses, live games and brain breaks: small tiles (picture or emoji, name, one line). */
 @media (max-width:600px){
   .th-head>.btn{flex:1 1 100%;justify-content:center;white-space:normal;text-align:center}
-  /* The Classroom home's heading: hello on its own line, then its buttons (This week's summary, Host a live game) side by side. */
+  /* The Classroom home's heading: hello on its own line, then its one button (Lesson Folder) across the page. */
   .th-head>div:first-child{flex:1 1 100%}
   .th-head>.btn{flex:1 1 0;min-width:0;padding-inline:10px}
   .cc-acts>.btn,.teachtools>.btn{min-height:44px}

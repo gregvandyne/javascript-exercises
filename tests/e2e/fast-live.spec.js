@@ -130,12 +130,14 @@ test('after the game: "Make a class to keep scores" -> paste names -> login card
   await s.click('#lv-join button[type=submit]');
   await s.locator('#lv-as-me').click();
   await s.waitForURL(/\/live\/play\//);
-  // The host's room now has one player; while it is open the card offers the way back, not a second room.
+  // The host's room now has one player; while it is open the card's chip leads back to it.
   await expect(t.locator('#lv-count')).toContainText(/1 of/);
   const home = await ctx.newPage();
   await home.goto('/teach?all=1');
   await expect(home.locator('form.cc-quick')).toHaveCount(0);
-  await expect(home.locator('a.cc-live.btn-hot')).toBeVisible();
+  // ("A simpler teacher home": no Host button on the cards; the class's Live game now chip leads back to the room)
+  await expect(home.locator('a.cc-live')).toHaveCount(0);
+  await expect(home.locator('.classcard a.chip-s.good[href^="/live/host/"]')).toBeVisible();
   // "Change" (once the room is ended) opens the chooser for the class with the pick preselected.
   await autoAnswer(t);
   await t.locator('[data-lv-act="end"]:not([hidden])').click();

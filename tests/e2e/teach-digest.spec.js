@@ -1,5 +1,5 @@
 // The weekly class summary (docs/decisions.md "Weekly class summary email"): a teacher opens "This week's summary" from
-// the Classroom (/teach/summary: counts per class, who hasn't started, the lessons due, the answers to review), sees
+// the Me page or the weekly email (/teach/summary: counts per class, who hasn't started, the lessons due, the answers to review), sees
 // the email as it would go (no student names in it), and picks the day, time and time zone, or turns it off, on the
 // Me page. Students get 404 for all of it. The pages at 360, 390 and 1280 px, light and dark, and in Hebrew: no
 // sideways scroll, nothing touches (touching.js), 44 px tap targets on phones. Screenshots go to SHOTS
@@ -56,11 +56,12 @@ const toDigest = async page => { await page.locator('#digest').scrollIntoViewIfN
 
 test.beforeAll(() => { fs.mkdirSync(SHOTS, { recursive: true }); });
 
-test('a teacher opens this week\'s summary from the Classroom: counts per class, names only on the site, the email without names', async ({ browser }) => {
+test('a teacher opens this week\'s summary from the Me page: counts per class, names only on the site, the email without names', async ({ browser }) => {
   const teacher = await stateOf(browser, TEACHER);
   const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: teacher }); const t = await ctx.newPage();
-  await t.goto('/teach?all=1');
-  await Promise.all([t.waitForURL('**/teach/summary'), t.locator('#teach-summary').click()]);
+  // Off the Classroom since "A simpler teacher home": the weekly email links to it, and so does the Me page's summary panel.
+  await t.goto('/me');
+  await Promise.all([t.waitForURL('**/teach/summary'), t.locator('#digest a[href="/teach/summary"]').click()]);
   await expect(t.locator('h1')).toContainText("This week's summary");
   await expect(t.locator('#dg-sched')).toContainText(/goes out every Monday at 7:00 AM|don't have an email address|is off/);
   const card = t.locator('.dg-class', { hasText: 'Demo Class' });

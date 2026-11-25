@@ -14755,3 +14755,32 @@ students). Step 4c. Migration `0135_homeroom_k2_attendance`. Service: `services/
 The place value disks' palette shows each disk as a plain colored circle with its value written beside it, not inside:
 a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
 and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.
+
+## A simpler teacher home (25 Nov 2026)
+
+The owner crossed out every button on the teacher home (/teach) on his phone: "just have the three options on each
+class card (homeroom, classroom, dashboard). At the top just have one option: Lesson Folder." For teachers, games are
+now called lessons (students and kids keep "games"); this change only uses the new word in what it adds.
+
+- **Top**: hello, the class count and one button, Lesson Folder (📁, `/build`). This week's summary, Host a live game,
+  My games and folders, Turn a lesson into a game and Make a game are gone from the page. The teaching loop's card and
+  the staff invites are unchanged.
+- **Class cards**: the school, the class name, the student count and the status chips stay. Open class, Assign a game
+  and Host a live game are replaced by the class's views (routes/homeroom-views.js `cardViews`): Homeroom
+  (`/class/:id/homeroom`, only for a teacher who passes the Homeroom gate: the flag, HOMEROOM_USERS and the Teacher
+  plan, services/homeroom.js `canUseClass`), Classroom (`/class/:id`) and Dashboard (`/class/:id/dashboard`, the class's
+  own teacher). One row of equal buttons at every width; at 420px and narrower each is its icon over its name, so three
+  never wrap. The open-room note on other cards ("You already have a game open") went with the Host button; a class's
+  own card still has its Live game now chip, a link back to the room.
+- **Still reachable**: This week's summary at `/teach/summary` (the weekly email's link, and the button in the Me page's
+  summary settings); hosting from the Live tab and Homeroom's ⋯ menu; assigning from the Classroom view; making a game,
+  and the Lesson Folder, at `/build`; Turn a lesson into a game (`/teach/make`) from the Live tab's question sets. No route
+  was removed. The unused strings (teach.home.make, folders.assignGame, school.teach.tools) were dropped.
+- **Build lessons**: the `/build` heading says "Build lessons" to school staff (`build.titleStaff`) and still "Build a
+  game" to kids and students. The nav tab stays "Build". Left for the later app-wide teacher rename: the rest of the
+  /build page (New game, All my games, the Builder hero), Make a game on the Me page, the class page's Build new game,
+  the "Build a game" lesson step kind, landing and legal copy.
+- Tests: `tests/unit/teach-home-simple.test.js` (the one button; the gate: Homeroom for a gated teacher, not for one on
+  the list without the plan, not for one on neither, not with the flag off; the buttons open their views; the summary,
+  Live tab and /build reachable; the /build heading for staff and for a kid), with classroom-homes, quick-live,
+  nav-roles and teach-make updated to the new layout.
