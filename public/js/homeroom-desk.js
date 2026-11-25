@@ -61,10 +61,13 @@ const dayFmt = due => { try { return new Date(due).toLocaleDateString(document.d
 function cardHtml(x) {
   const cls = `hd-card${x.next ? ' next' : ''}${x.locked ? ' locked' : ''}${x.done ? ' done' : ''}${x.ready ? '' : ' notready'}`;
   const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
-  const sub = [x.ready ? td('freePlay') : td('notReady'), x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
-  const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(x.title)}</b><span class="hd-csub">${esc(sub)}</span>
+  // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
+  const kind = !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
+  const sub = [kind, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
+  const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
+  const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
-  const label = `${x.title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
+  const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
   return x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
 }

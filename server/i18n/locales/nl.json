@@ -1294,7 +1294,11 @@
       "figure": "Figuur bij vraag {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Wereldkaart", "car": "Kaart van het Caribisch gebied", "me": "Kaart van het Midden-Oosten"},
+      "mapOf": {
+        "world": "Wereldkaart",
+        "car": "Kaart van het Caribisch gebied",
+        "me": "Kaart van het Midden-Oosten"
+      },
       "untitled": "Aardrijkskundequiz",
       "mapTitle": "Kaart: {region}",
       "mapAlt": "Blinde kaart: {region}",
@@ -2143,7 +2147,9 @@
         "best": "Beste score {score}",
         "removeOne": "Van de tafel van {name} halen",
         "removeAll": "Van alle tafels halen",
-        "removeAllConfirm": "{title} van alle tafels halen? Het werk van de leerlingen blijft bewaard en komt terug als je het weer uitdeelt."
+        "removeAllConfirm": "{title} van alle tafels halen? Het werk van de leerlingen blijft bewaard en komt terug als je het weer uitdeelt.",
+        "lesson": "Les",
+        "version": "Versie: {name}"
       }
     },
     "stories": {
@@ -4769,7 +4775,10 @@
       "teacherSays": "Leraar:",
       "inOrder": "Doe ze op volgorde",
       "anyOrder": "In elke volgorde",
-      "newHandout": "Nieuw van je leraar: {title}"
+      "newHandout": "Nieuw van je leraar: {title}",
+      "lessonTitle": "Les: {title}",
+      "worksheet": "Werkblad · {count, plural, one {# som} other {# sommen}}",
+      "worksheetWords": "Werkblad · {count, plural, one {# woord} other {# woorden}}"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -4779,6 +4788,133 @@
       "text": "Je klas is in Homeroom.",
       "go": "Naar mijn tafel",
       "close": "Sluiten"
+    },
+    "homeroom-lessons": {
+      "build": "Een les maken",
+      "editTitle": "Les bewerken",
+      "pickTitle": "Welk spel of hulpmiddel?",
+      "pickLead": "Kies een spel. Jij bepaalt precies wat leerlingen doen, en daar wordt het werkblad van gemaakt.",
+      "comingLater": "Komt later",
+      "later": {
+        "quiz": "Klassenquizzen en woordspellen",
+        "mine": "Mijn spellen",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Castle Clash-puzzels",
+        "manip": "Materialen",
+        "figures": "Figuren",
+        "reading": "Lezen"
+      },
+      "name": "Naam van de les",
+      "namePh": "Bijvoorbeeld: Staartdelingen oefenen",
+      "op": "Bewerking",
+      "ops": {
+        "add": "Optellen",
+        "subtract": "Aftrekken",
+        "multiply": "Vermenigvuldigen",
+        "divide": "Delen"
+      },
+      "method": "Methode",
+      "methods": {
+        "standard": "Standaard",
+        "ladder": "Ladder",
+        "area": "Oppervlaktemodel",
+        "partial": "Deelproducten"
+      },
+      "size": "Grootte",
+      "sizeEach": "{n} cijfers",
+      "sizeBy": "{a} {op} {b} cijfers",
+      "count": "Sommen",
+      "level": "Hulp tijdens het werken",
+      "levels": {
+        "watch": "Kijken",
+        "countUp": "Optellen tot",
+        "guided": "Begeleid",
+        "onMyOwn": "Zelf"
+      },
+      "newProblems": "Nieuwe sommen",
+      "activity": "Activiteit",
+      "modes": {
+        "solve": "Oplossen",
+        "multiply": "Vermenigvuldigen",
+        "factor": "Ontbinden"
+      },
+      "alLevel": "Niveau",
+      "alLevels": {
+        "easy": "Makkelijk",
+        "medium": "Gemiddeld",
+        "hard": "Moeilijk"
+      },
+      "tiles": "Tegels aan het begin",
+      "tilesAll": "Alle tegels die ze nodig hebben",
+      "tilesNone": "Geen tegels",
+      "words": "Woorden en omschrijvingen",
+      "wordsHint": "{min} tot {max} woorden. Elk woord heeft een omschrijving nodig.",
+      "word": "Woord {n}",
+      "clue": "Omschrijving bij woord {n}",
+      "wordPh": "Woord",
+      "cluePh": "Omschrijving",
+      "addWord": "Woord toevoegen",
+      "removeWord": "Woord {n} weghalen",
+      "bank": "Woordenlijst",
+      "bankShow": "Laten zien",
+      "bankHide": "Verbergen",
+      "bankShown": "woordenlijst",
+      "bankHidden": "geen woordenlijst",
+      "hints": "Hints",
+      "hintsOn": "Toegestaan",
+      "hintsOff": "Uit",
+      "versions": "Een versie voor elke groep?",
+      "versionsYes": "Ja, per groep",
+      "versionsNo": "Eén voor iedereen",
+      "versionsHint": "Elke groep begint met je les en een voorgestelde aanpassing. Je kunt alles veranderen.",
+      "versionsOff": "Iedereen krijgt hetzelfde werkblad.",
+      "noGroups": "Deze klas heeft nog geen groepen. Maak eerst groepen om versies toe te voegen.",
+      "editing": "Versie voor",
+      "noGroup": "Geen groep",
+      "lean": {
+        "easier": "Makkelijker",
+        "same": "Hetzelfde",
+        "harder": "Moeilijker"
+      },
+      "instructions": "Instructies voor leerlingen",
+      "instructionsPh": "Bijvoorbeeld: Laat elke stap zien. Controleer je antwoord door te vermenigvuldigen.",
+      "preview": "Voorbeeld van het werkblad",
+      "previewOf": "Voorbeeld van het werkblad · {who}",
+      "previewNote": "Leerlingen maken het op het scherm, of jij print het.",
+      "previewWords": "Typ minstens {min} woorden om de kruiswoordpuzzel te zien.",
+      "printDraft": "Printen",
+      "ai": "Laat Oomba het invullen",
+      "aiBusy": "Oomba schrijft omschrijvingen…",
+      "aiDone": "{count, plural, one {Oomba schreef # omschrijving.} other {Oomba schreef # omschrijvingen.}} Controleer ze voor je bewaart.",
+      "aiNothing": "Elk woord heeft al een omschrijving.",
+      "aiNeedWords": "Typ eerst een paar woorden. Oomba schrijft bij elk woord een omschrijving.",
+      "aiFailed": "Oomba kon nu geen omschrijvingen schrijven. Probeer het opnieuw.",
+      "save": "Bewaren bij Mijn lessen",
+      "cancel": "Annuleren",
+      "needTitle": "Geef de les een naam.",
+      "problemsN": "{count, plural, one {# som} other {# sommen}}",
+      "wordsN": "{count, plural, one {# woord} other {# woorden}}",
+      "versionsN": "{count, plural, one {# versie} other {# versies}}",
+      "empty": "Lessen die je maakt, staan hier.",
+      "more": "Meer voor {title}",
+      "edit": "Bewerken",
+      "duplicate": "Dupliceren",
+      "print": "Werkblad printen",
+      "delete": "Verwijderen",
+      "deleteConfirm": "{title} verwijderen? Tafels die haar hebben, houden haar.",
+      "versionsFor": "Versies voor {groups}",
+      "printLead": "Het werkblad wordt geprint met de klascode, zodat leerlingen het ook in Oomba kunnen openen.",
+      "printWhich": "Welk werkblad?",
+      "printLesson": "De les",
+      "printKey": "Antwoorden toevoegen",
+      "printGo": "Printen",
+      "full": "Je hebt {count} lessen, het maximum. Verwijder er eerst een.",
+      "giveEyebrow": "Les",
+      "giveTitle": "{lesson} voor {who}",
+      "versionsBy": "Versies per groep",
+      "asBuilt": "De les zoals gemaakt",
+      "scoreHint": "Het cijferoverzicht toont het % goed."
     }
   },
   "favorites": {
@@ -14547,7 +14683,6 @@
       "label": "Bureau van de leraar",
       "handOut": "Uitdelen aan",
       "myLessons": "Mijn lessen",
-      "noLessons": "Lessen die je in Homeroom maakt, verschijnen hier.",
       "myGames": "Mijn spellen",
       "noGames": "Spellen die je bouwt, verschijnen hier.",
       "oomba": "Oomba-spellen en -hulpmiddelen",
@@ -14588,7 +14723,18 @@
       "tooLong": "Instructies mogen hoogstens 300 tekens lang zijn.",
       "alreadyOnDesk": "{count, plural, one {# van deze tafels heeft dit spel al.} other {# van deze tafels hebben dit spel al.}} Haal het daar eerst weg of deel het uit aan de anderen.",
       "tooManyHandouts": "Deze klas heeft veel uitgedeelde opdrachten open. Haal eerst wat oude weg.",
-      "notOnDesk": "Die opdracht ligt niet op deze tafel."
+      "notOnDesk": "Die opdracht ligt niet op deze tafel.",
+      "noLesson": "Die les staat niet meer bij je lessen.",
+      "badGame": "Voorlopig kun je lessen maken voor Arithmetic Lab, Algebra Builder en Kruiswoordpuzzel.",
+      "needTitle": "Geef de les een naam.",
+      "titleLong": "De naam mag hoogstens 60 tekens lang zijn.",
+      "fewWords": "Een kruiswoordpuzzel heeft minstens 3 woorden nodig.",
+      "missingClue": "Elk woord heeft een omschrijving nodig.",
+      "settings": "Die instellingen konden niet worden bewaard. Controleer ze en probeer het opnieuw.",
+      "setsFull": "Je hebt het maximale aantal werkbladen dat dit spel kan bewaren. Verwijder er eerst een paar bij Mijn werkbladen in het spel.",
+      "tooManyLessons": "Je hebt het maximale aantal lessen dat je kunt bewaren. Verwijder er eerst een.",
+      "lessonGone": "Een werkblad van deze les is verwijderd. Open de les, bewaar haar opnieuw en deel haar dan uit.",
+      "lessonOnDesk": "{count, plural, one {# van deze tafels heeft deze les al.} other {# van deze tafels hebben deze les al.}} Haal haar daar eerst weg, of geef haar aan de anderen."
     },
     "live": "Live",
     "desk": {
@@ -14602,7 +14748,9 @@
       "notYou": "Ben je niet {name}?",
       "switch": "Wisselen",
       "backToDesk": "Terug naar mijn tafel",
-      "fromTeacher": "Je leraar zegt"
+      "fromTeacher": "Je leraar zegt",
+      "waitTitle": "Nog niet",
+      "waitText": "Maak eerst de vorige op je tafel af. Dan gaat deze open."
     },
     "projector": {
       "title": "{class} · Beamer"
@@ -14690,6 +14838,21 @@
       "done": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
       "removedOne": "Van die tafel gehaald.",
       "removedAll": "Van alle tafels gehaald. Het werk van de leerlingen blijft bewaard."
+    },
+    "lessons": {
+      "handedOut": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
+      "handedOutVersions": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}, met een versie voor elke groep.",
+      "saved": "Les bewaard.",
+      "savedNew": "Bewaard bij Mijn lessen. Tik erop en dan op een tafel om haar uit te delen.",
+      "copyOf": "Kopie van {title}",
+      "duplicated": "Les gekopieerd.",
+      "deleted": "Les verwijderd.",
+      "untitled": "Nieuwe les",
+      "print": {
+        "solve": "Los op voor x. Laat je stappen zien.",
+        "multiply": "Vermenigvuldig. Schrijf elk antwoord als één uitdrukking.",
+        "factor": "Ontbind elke uitdrukking in factoren."
+      }
     }
   }
 }

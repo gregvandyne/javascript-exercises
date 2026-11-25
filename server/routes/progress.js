@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
+import { lessonWaitPage } from '../views/lesson-wait.js';
 import { avatar, emptyState, jumpNav, nameFilter, staffStudentName } from '../views/components.js';
 import { requireUser } from '../auth.js';
 import { bandName } from '../views/courses.js';
@@ -85,7 +86,7 @@ router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 
   const c = P.context(u, clid, sid);
   if (!c.ok || hostedLive(c.step)) return no(req, res);
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
-    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, '', helped) : { ok: false, code: 'notFound' };
+    : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, b(req).won === true ? 'won' : '', helped) : { ok: false, code: 'notFound' };
   send(req, res, r);
 });
 /** Hand in a build step: the game is shared with the lesson's class (so the teacher and the class can play it) and the
@@ -563,6 +564,9 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   }
   const teacher = S.canManageClass(u, c);
   const student = !teacher && S.classMember(c.id, u.id)?.role === 'student';
+  // Not open to them yet (Homeroom: an In order handout waiting on their desk; services/lessons.js lessonWait).
+  const wait = student ? L.lessonWait(u, cl, t) : null;
+  if (wait) return lessonWaitPage(req, res, wait);
   const mine = student ? P.forStudent(cl.id, u.id) : {};
   // Rubric results (services/rubrics.js): this student's own, never anyone else's.
   // A score left behind when the step or lesson was switched to another rubric is not shown (R.scoreCounts).

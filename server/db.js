@@ -1401,6 +1401,22 @@ export const MIGRATIONS = [
       class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, in_order INTEGER NOT NULL DEFAULT 1,
       grade TEXT NOT NULL DEFAULT 'completion', target TEXT NOT NULL DEFAULT 'desk', created_by TEXT, created_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_homeroom_handouts_class ON homeroom_handouts(class_id, created_at);`],
+  // Homeroom, step 2b (docs/decisions.md "Homeroom, step 2b"; services/homeroom-lessons.js): a teacher's lessons. Each
+  // version of a lesson is a real question set of its game (game_sets); this only links them: the game, the name, the
+  // instructions, the builder's settings and each version's set (base: { s, set }; versions: [{ key, label, s, set }],
+  // key a group's identity: its name, or an unnamed default group's key). Theirs for any of their classes; gone with
+  // their account (services/account-delete.js; their sets go with game_sets). A handout of a lesson keeps which lesson
+  // (hr_lesson), its version's label (shown to teachers only), how many problems (problems, for the Score) and batch
+  // (the versions handed out together, removed together).
+  ['0126_homeroom_lessons', `
+    CREATE TABLE IF NOT EXISTS homeroom_lessons (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      game_id TEXT NOT NULL, slug TEXT NOT NULL, title TEXT NOT NULL, instructions TEXT NOT NULL DEFAULT '', base TEXT NOT NULL DEFAULT '{}',
+      versions TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_lessons_owner ON homeroom_lessons(owner_id, updated_at);
+    ALTER TABLE homeroom_handouts ADD COLUMN hr_lesson TEXT;
+    ALTER TABLE homeroom_handouts ADD COLUMN version TEXT NOT NULL DEFAULT '';
+    ALTER TABLE homeroom_handouts ADD COLUMN problems INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_handouts ADD COLUMN batch TEXT NOT NULL DEFAULT '';`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

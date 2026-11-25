@@ -210,7 +210,7 @@ addEventListener('message', e => {
       break;
     }
     case 'brb:gameover': {
-      lessonEvent({ event: 'end', score: m.score, ...(m.helped === true ? { helped: true } : {}) });
+      lessonEvent({ event: 'end', score: m.score, ...(m.won === true ? { won: true } : {}), ...(m.helped === true ? { helped: true } : {}) });
       helpedScore = m.helped === true;   // the SDK sends this set's score next: it goes with the same mark
       // The game ended without the assigned part won (Sum Racer reports every race's end; only 1st place
       // is a win): say so on the page, with the way back — the game's own results screen celebrates any

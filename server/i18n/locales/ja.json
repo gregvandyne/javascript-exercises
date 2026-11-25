@@ -1293,7 +1293,11 @@
       "figure": "問題{n}の図"
     },
     "printAtlas": {
-      "mapOf": {"world": "世界地図", "car": "カリブ海の地図", "me": "中東の地図"},
+      "mapOf": {
+        "world": "世界地図",
+        "car": "カリブ海の地図",
+        "me": "中東の地図"
+      },
       "untitled": "地理クイズ",
       "mapTitle": "地図：{region}",
       "mapAlt": "白地図：{region}",
@@ -2142,7 +2146,9 @@
         "best": "ベストスコア {score}",
         "removeOne": "{name}の机から外す",
         "removeAll": "すべての机から外す",
-        "removeAllConfirm": "{title}をすべての机から外しますか？児童・生徒の取り組みは残り、また配布すればもどります。"
+        "removeAllConfirm": "{title}をすべての机から外しますか？児童・生徒の取り組みは残り、また配布すればもどります。",
+        "lesson": "レッスン",
+        "version": "バージョン: {name}"
       }
     },
     "stories": {
@@ -4768,7 +4774,10 @@
       "teacherSays": "先生：",
       "inOrder": "順番にやろう",
       "anyOrder": "好きな順で",
-      "newHandout": "先生から新しいもの：{title}"
+      "newHandout": "先生から新しいもの：{title}",
+      "lessonTitle": "レッスン: {title}",
+      "worksheet": "ワークシート · {count}問",
+      "worksheetWords": "ワークシート · {count}語"
     },
     "homeroom-area": {
       "label": "先生のエリア",
@@ -4778,6 +4787,133 @@
       "text": "あなたのクラスはHomeroomにいます。",
       "go": "自分の机へ",
       "close": "閉じる"
+    },
+    "homeroom-lessons": {
+      "build": "レッスンを作る",
+      "editTitle": "レッスンを編集",
+      "pickTitle": "どのゲームやツールにしますか？",
+      "pickLead": "ゲームを選びます。生徒がやることをあなたが細かく決め、そこからワークシートができます。",
+      "comingLater": "近日公開",
+      "later": {
+        "quiz": "クラスのクイズと言葉のゲーム",
+        "mine": "自分で作ったゲーム",
+        "atlas": "Atlas Quest",
+        "sudoku": "数独",
+        "castle": "Castle Clash のパズル",
+        "manip": "算数ブロック",
+        "figures": "図形",
+        "reading": "読書"
+      },
+      "name": "レッスン名",
+      "namePh": "例: わり算の筆算の練習",
+      "op": "計算の種類",
+      "ops": {
+        "add": "たし算",
+        "subtract": "ひき算",
+        "multiply": "かけ算",
+        "divide": "わり算"
+      },
+      "method": "やり方",
+      "methods": {
+        "standard": "ふつうの筆算",
+        "ladder": "はしご算",
+        "area": "面積モデル",
+        "partial": "部分積"
+      },
+      "size": "大きさ",
+      "sizeEach": "{n}けた",
+      "sizeBy": "{a}けた {op} {b}けた",
+      "count": "問題数",
+      "level": "とき方のヘルプ",
+      "levels": {
+        "watch": "見る",
+        "countUp": "数え上げ",
+        "guided": "ガイドつき",
+        "onMyOwn": "自分で"
+      },
+      "newProblems": "新しい問題",
+      "activity": "活動",
+      "modes": {
+        "solve": "方程式を解く",
+        "multiply": "展開する",
+        "factor": "因数分解する"
+      },
+      "alLevel": "レベル",
+      "alLevels": {
+        "easy": "やさしい",
+        "medium": "ふつう",
+        "hard": "むずかしい"
+      },
+      "tiles": "最初のタイル",
+      "tilesAll": "必要なタイルすべて",
+      "tilesNone": "タイルなし",
+      "words": "言葉とヒント",
+      "wordsHint": "{min}〜{max}語。どの言葉にもヒントが必要です。",
+      "word": "言葉{n}",
+      "clue": "言葉{n}のヒント",
+      "wordPh": "言葉",
+      "cluePh": "ヒント",
+      "addWord": "言葉を追加",
+      "removeWord": "言葉{n}を外す",
+      "bank": "単語リスト",
+      "bankShow": "表示する",
+      "bankHide": "かくす",
+      "bankShown": "単語リストあり",
+      "bankHidden": "単語リストなし",
+      "hints": "ヒント機能",
+      "hintsOn": "使える",
+      "hintsOff": "なし",
+      "versions": "グループごとにバージョンを作りますか？",
+      "versionsYes": "はい、グループごと",
+      "versionsNo": "全員同じ",
+      "versionsHint": "どのグループもあなたのレッスンに変更の提案を加えた形から始まります。どこでも変えられます。",
+      "versionsOff": "全員が同じワークシートです。",
+      "noGroups": "このクラスにはまだグループがありません。バージョンを作るには先にグループを作ってください。",
+      "editing": "対象のバージョン",
+      "noGroup": "グループなし",
+      "lean": {
+        "easier": "やさしく",
+        "same": "同じ",
+        "harder": "むずかしく"
+      },
+      "instructions": "生徒への指示",
+      "instructionsPh": "例: 途中の式をすべて書きましょう。かけ算で答えを確かめましょう。",
+      "preview": "ワークシートのプレビュー",
+      "previewOf": "ワークシートのプレビュー · {who}",
+      "previewNote": "生徒は画面で取り組むか、あなたが印刷します。",
+      "previewWords": "クロスワードを見るには{min}語以上入力してください。",
+      "printDraft": "印刷",
+      "ai": "Oomba に入れてもらう",
+      "aiBusy": "Oomba がヒントを書いています…",
+      "aiDone": "Oomba がヒントを{count}個書きました。保存する前に確認してください。",
+      "aiNothing": "どの言葉にもすでにヒントがあります。",
+      "aiNeedWords": "先に言葉をいくつか入力してください。Oomba がそれぞれにヒントを書きます。",
+      "aiFailed": "Oomba は今ヒントを書けませんでした。もう一度お試しください。",
+      "save": "「マイレッスン」に保存",
+      "cancel": "キャンセル",
+      "needTitle": "レッスンに名前をつけてください。",
+      "problemsN": "{count}問",
+      "wordsN": "{count}語",
+      "versionsN": "{count}バージョン",
+      "empty": "作ったレッスンはここに表示されます。",
+      "more": "{title}のその他の操作",
+      "edit": "編集",
+      "duplicate": "複製",
+      "print": "ワークシートを印刷",
+      "delete": "削除",
+      "deleteConfirm": "{title}を削除しますか？すでに配った机には残ります。",
+      "versionsFor": "バージョン: {groups}",
+      "printLead": "ワークシートにはクラスコードが印刷されるので、生徒は Oomba でも開けます。",
+      "printWhich": "どのワークシートですか？",
+      "printLesson": "このレッスン",
+      "printKey": "解答をつける",
+      "printGo": "印刷",
+      "full": "レッスンが{count}個あり、上限です。先に1つ削除してください。",
+      "giveEyebrow": "レッスン",
+      "giveTitle": "{who}への{lesson}",
+      "versionsBy": "グループごとのバージョン",
+      "asBuilt": "作ったままのレッスン",
+      "scoreHint": "成績表に正答率(%)が表示されます。"
     }
   },
   "favorites": {
@@ -14546,7 +14682,6 @@
       "label": "先生の机",
       "handOut": "配布先",
       "myLessons": "自分のレッスン",
-      "noLessons": "Homeroom で作ったレッスンがここに表示されます。",
       "myGames": "自分で作ったゲーム",
       "noGames": "作ったゲームがここに表示されます。",
       "oomba": "Oomba のゲームとツール",
@@ -14587,7 +14722,18 @@
       "tooLong": "指示は300文字までです。",
       "alreadyOnDesk": "このうち{count}台の机には、すでにこのゲームがあります。先にそこから外すか、ほかの机に配布してください。",
       "tooManyHandouts": "このクラスでは配布物がたくさん開いています。先に古いものを外してください。",
-      "notOnDesk": "この配布物はこの机にありません。"
+      "notOnDesk": "この配布物はこの机にありません。",
+      "noLesson": "そのレッスンはもうあなたのレッスンにありません。",
+      "badGame": "今のところ、レッスンを作れるのは Arithmetic Lab、Algebra Builder、クロスワードです。",
+      "needTitle": "レッスンに名前をつけてください。",
+      "titleLong": "名前は60文字までです。",
+      "fewWords": "クロスワードには3語以上が必要です。",
+      "missingClue": "どの言葉にもヒントが必要です。",
+      "settings": "設定を保存できませんでした。確認してもう一度お試しください。",
+      "setsFull": "このゲームに保存できるワークシートの上限です。先にゲームの「マイワークシート」でいくつか削除してください。",
+      "tooManyLessons": "保存できるレッスンの上限です。先に1つ削除してください。",
+      "lessonGone": "このレッスンのワークシートが削除されました。レッスンを開いてもう一度保存してから配ってください。",
+      "lessonOnDesk": "{count}台の机にはすでにこのレッスンがあります。先にそこから外すか、ほかの人に配ってください。"
     },
     "live": "ライブ",
     "desk": {
@@ -14601,7 +14747,9 @@
       "notYou": "{name} じゃない？",
       "switch": "切りかえる",
       "backToDesk": "自分の机にもどる",
-      "fromTeacher": "先生から"
+      "fromTeacher": "先生から",
+      "waitTitle": "まだです",
+      "waitText": "先に机の上の前の課題を終わらせましょう。そうするとこれが開きます。"
     },
     "projector": {
       "title": "{class} · プロジェクター"
@@ -14689,6 +14837,21 @@
       "done": "{title}を{count}台の机に配りました。",
       "removedOne": "その机から外しました。",
       "removedAll": "すべての机から外しました。児童・生徒の取り組みは残ります。"
+    },
+    "lessons": {
+      "handedOut": "{title}を{count}台の机に配りました。",
+      "handedOutVersions": "{title}を{count}台の机に配りました。グループごとのバージョン付きです。",
+      "saved": "レッスンを保存しました。",
+      "savedNew": "「マイレッスン」に保存しました。タップしてから机をタップすると配れます。",
+      "copyOf": "{title}のコピー",
+      "duplicated": "レッスンをコピーしました。",
+      "deleted": "レッスンを削除しました。",
+      "untitled": "新しいレッスン",
+      "print": {
+        "solve": "xを求めましょう。途中の式も書きましょう。",
+        "multiply": "かけ算をして、答えを1つの式で書きましょう。",
+        "factor": "それぞれの式を因数分解しましょう。"
+      }
     }
   }
 }

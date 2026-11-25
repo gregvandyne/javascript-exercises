@@ -1294,7 +1294,11 @@
       "figure": "Figura della domanda {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Carta del mondo", "car": "Carta dei Caraibi", "me": "Carta del Medio Oriente"},
+      "mapOf": {
+        "world": "Carta del mondo",
+        "car": "Carta dei Caraibi",
+        "me": "Carta del Medio Oriente"
+      },
       "untitled": "Quiz di geografia",
       "mapTitle": "Carta: {region}",
       "mapAlt": "Carta muta: {region}",
@@ -2143,7 +2147,9 @@
         "best": "Punteggio migliore {score}",
         "removeOne": "Togli dal banco di {name}",
         "removeAll": "Togli da tutti i banchi",
-        "removeAllConfirm": "Togliere {title} da tutti i banchi? Il lavoro degli studenti resta salvato e torna se lo consegni di nuovo."
+        "removeAllConfirm": "Togliere {title} da tutti i banchi? Il lavoro degli studenti resta salvato e torna se lo consegni di nuovo.",
+        "lesson": "Lezione",
+        "version": "Versione: {name}"
       }
     },
     "stories": {
@@ -4769,7 +4775,10 @@
       "teacherSays": "Insegnante:",
       "inOrder": "Falli in ordine",
       "anyOrder": "In qualsiasi ordine",
-      "newHandout": "Nuovo dall’insegnante: {title}"
+      "newHandout": "Nuovo dall’insegnante: {title}",
+      "lessonTitle": "Lezione: {title}",
+      "worksheet": "Scheda · {count, plural, one {# esercizio} other {# esercizi}}",
+      "worksheetWords": "Scheda · {count, plural, one {# parola} other {# parole}}"
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",
@@ -4779,6 +4788,133 @@
       "text": "La tua classe è in Homeroom.",
       "go": "Vai al mio banco",
       "close": "Chiudi"
+    },
+    "homeroom-lessons": {
+      "build": "Crea una lezione",
+      "editTitle": "Modifica lezione",
+      "pickTitle": "Quale gioco o strumento?",
+      "pickLead": "Scegli un gioco. Decidi tu esattamente cosa fanno gli alunni, e la scheda nasce da lì.",
+      "comingLater": "In arrivo",
+      "later": {
+        "quiz": "Quiz e giochi di parole della classe",
+        "mine": "I miei giochi",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Enigmi di Castle Clash",
+        "manip": "Materiali manipolativi",
+        "figures": "Figure",
+        "reading": "Lettura"
+      },
+      "name": "Nome della lezione",
+      "namePh": "Per esempio: Esercizi di divisione in colonna",
+      "op": "Operazione",
+      "ops": {
+        "add": "Addizione",
+        "subtract": "Sottrazione",
+        "multiply": "Moltiplicazione",
+        "divide": "Divisione"
+      },
+      "method": "Metodo",
+      "methods": {
+        "standard": "Standard",
+        "ladder": "Scala",
+        "area": "Modello dell'area",
+        "partial": "Prodotti parziali"
+      },
+      "size": "Grandezza",
+      "sizeEach": "{n} cifre",
+      "sizeBy": "{a} {op} {b} cifre",
+      "count": "Esercizi",
+      "level": "Aiuto durante il lavoro",
+      "levels": {
+        "watch": "Guarda",
+        "countUp": "Conta in avanti",
+        "guided": "Guidato",
+        "onMyOwn": "Da solo"
+      },
+      "newProblems": "Nuovi esercizi",
+      "activity": "Attività",
+      "modes": {
+        "solve": "Risolvi",
+        "multiply": "Moltiplica",
+        "factor": "Scomponi"
+      },
+      "alLevel": "Livello",
+      "alLevels": {
+        "easy": "Facile",
+        "medium": "Medio",
+        "hard": "Difficile"
+      },
+      "tiles": "Tessere all'inizio",
+      "tilesAll": "Tutte le tessere che servono",
+      "tilesNone": "Nessuna tessera",
+      "words": "Parole e definizioni",
+      "wordsHint": "Da {min} a {max} parole. Ogni parola ha bisogno di una definizione.",
+      "word": "Parola {n}",
+      "clue": "Definizione della parola {n}",
+      "wordPh": "Parola",
+      "cluePh": "Definizione",
+      "addWord": "Aggiungi una parola",
+      "removeWord": "Togli la parola {n}",
+      "bank": "Elenco di parole",
+      "bankShow": "Mostralo",
+      "bankHide": "Nascondilo",
+      "bankShown": "elenco di parole",
+      "bankHidden": "senza elenco di parole",
+      "hints": "Suggerimenti",
+      "hintsOn": "Consentiti",
+      "hintsOff": "No",
+      "versions": "Una versione per ogni gruppo?",
+      "versionsYes": "Sì, per gruppo",
+      "versionsNo": "Una per tutti",
+      "versionsHint": "Ogni gruppo parte dalla tua lezione con una modifica suggerita. Puoi cambiare tutto.",
+      "versionsOff": "Tutti ricevono la stessa scheda.",
+      "noGroups": "Questa classe non ha ancora gruppi. Crea prima i gruppi per aggiungere versioni.",
+      "editing": "Versione per",
+      "noGroup": "Nessun gruppo",
+      "lean": {
+        "easier": "Più facile",
+        "same": "Uguale",
+        "harder": "Più difficile"
+      },
+      "instructions": "Istruzioni per gli alunni",
+      "instructionsPh": "Per esempio: Mostra ogni passaggio. Controlla la risposta moltiplicando.",
+      "preview": "Anteprima della scheda",
+      "previewOf": "Anteprima della scheda · {who}",
+      "previewNote": "Gli alunni la fanno sullo schermo, oppure la stampi tu.",
+      "previewWords": "Scrivi almeno {min} parole per vedere il cruciverba.",
+      "printDraft": "Stampa",
+      "ai": "Chiedi a Oomba di completarla",
+      "aiBusy": "Oomba sta scrivendo le definizioni…",
+      "aiDone": "{count, plural, one {Oomba ha scritto # definizione.} other {Oomba ha scritto # definizioni.}} Controllale prima di salvare.",
+      "aiNothing": "Ogni parola ha già una definizione.",
+      "aiNeedWords": "Scrivi prima qualche parola. Oomba scrive una definizione per ognuna.",
+      "aiFailed": "Oomba non è riuscito a scrivere le definizioni adesso. Riprova.",
+      "save": "Salva in Le mie lezioni",
+      "cancel": "Annulla",
+      "needTitle": "Dai un nome alla lezione.",
+      "problemsN": "{count, plural, one {# esercizio} other {# esercizi}}",
+      "wordsN": "{count, plural, one {# parola} other {# parole}}",
+      "versionsN": "{count, plural, one {# versione} other {# versioni}}",
+      "empty": "Le lezioni che crei compaiono qui.",
+      "more": "Altro per {title}",
+      "edit": "Modifica",
+      "duplicate": "Duplica",
+      "print": "Stampa la scheda",
+      "delete": "Elimina",
+      "deleteConfirm": "Eliminare {title}? I banchi che la hanno la tengono.",
+      "versionsFor": "Versioni per {groups}",
+      "printLead": "La scheda si stampa con il suo codice classe, così gli alunni possono aprirla anche su Oomba.",
+      "printWhich": "Quale scheda?",
+      "printLesson": "La lezione",
+      "printKey": "Aggiungi le soluzioni",
+      "printGo": "Stampa",
+      "full": "Hai {count} lezioni, il massimo che puoi tenere. Eliminane prima una.",
+      "giveEyebrow": "Lezione",
+      "giveTitle": "{lesson} per {who}",
+      "versionsBy": "Versioni per gruppo",
+      "asBuilt": "La lezione così come l'hai creata",
+      "scoreHint": "Il registro mostra la % di risposte giuste."
     }
   },
   "favorites": {
@@ -14547,7 +14683,6 @@
       "label": "Cattedra",
       "handOut": "Consegna a",
       "myLessons": "Le mie lezioni",
-      "noLessons": "Le lezioni che crei in Homeroom appariranno qui.",
       "myGames": "Giochi che ho creato",
       "noGames": "I giochi che crei appaiono qui.",
       "oomba": "Giochi e strumenti Oomba",
@@ -14588,7 +14723,18 @@
       "tooLong": "Le istruzioni possono avere al massimo 300 caratteri.",
       "alreadyOnDesk": "{count, plural, one {# di questi banchi ha già questo gioco.} other {# di questi banchi hanno già questo gioco.}} Toglilo da lì prima, oppure consegnalo agli altri.",
       "tooManyHandouts": "Questa classe ha molte consegne aperte. Togline prima qualcuna vecchia.",
-      "notOnDesk": "Questa consegna non è su questo banco."
+      "notOnDesk": "Questa consegna non è su questo banco.",
+      "noLesson": "Questa lezione non è più tra le tue lezioni.",
+      "badGame": "Per ora si possono creare lezioni per Arithmetic Lab, Algebra Builder e Cruciverba.",
+      "needTitle": "Dai un nome alla lezione.",
+      "titleLong": "Il nome può avere al massimo 60 caratteri.",
+      "fewWords": "Un cruciverba ha bisogno di almeno 3 parole.",
+      "missingClue": "Ogni parola ha bisogno di una definizione.",
+      "settings": "Non è stato possibile salvare queste impostazioni. Controllale e riprova.",
+      "setsFull": "Hai il numero massimo di schede che questo gioco può tenere. Eliminane prima qualcuna in Le mie schede del gioco.",
+      "tooManyLessons": "Hai il numero massimo di lezioni che puoi tenere. Eliminane prima una.",
+      "lessonGone": "Una scheda di questa lezione è stata eliminata. Apri la lezione, salvala di nuovo e poi distribuiscila.",
+      "lessonOnDesk": "{count, plural, one {# di questi banchi ha già questa lezione.} other {# di questi banchi hanno già questa lezione.}} Toglila prima da lì, oppure dalla agli altri."
     },
     "live": "In diretta",
     "desk": {
@@ -14602,7 +14748,9 @@
       "notYou": "Non sei {name}?",
       "switch": "Cambia",
       "backToDesk": "Torna al mio banco",
-      "fromTeacher": "L’insegnante dice"
+      "fromTeacher": "L’insegnante dice",
+      "waitTitle": "Non ancora",
+      "waitText": "Prima finisci quella precedente sul tuo banco. Poi si apre questa."
     },
     "projector": {
       "title": "{class} · Proiettore"
@@ -14690,6 +14838,21 @@
       "done": "{title} è su {count, plural, one {# banco} other {# banchi}}.",
       "removedOne": "Tolto da quel banco.",
       "removedAll": "Tolto da tutti i banchi. Il lavoro degli studenti resta salvato."
+    },
+    "lessons": {
+      "handedOut": "{title} è su {count, plural, one {# banco} other {# banchi}}.",
+      "handedOutVersions": "{title} è su {count, plural, one {# banco} other {# banchi}}, con una versione per ogni gruppo.",
+      "saved": "Lezione salvata.",
+      "savedNew": "Salvata in Le mie lezioni. Toccala e poi tocca un banco per distribuirla.",
+      "copyOf": "Copia di {title}",
+      "duplicated": "Lezione copiata.",
+      "deleted": "Lezione eliminata.",
+      "untitled": "Nuova lezione",
+      "print": {
+        "solve": "Trova x. Mostra i passaggi.",
+        "multiply": "Moltiplica. Scrivi ogni risposta come un'unica espressione.",
+        "factor": "Scomponi ogni espressione."
+      }
     }
   }
 }

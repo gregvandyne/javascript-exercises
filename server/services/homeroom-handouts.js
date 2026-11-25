@@ -16,6 +16,11 @@
 // again). A student never gets the same game twice at once: a handout is refused while any of its students already has
 // that game open in the class (alreadyOnDesk).
 //
+// Step 2b (services/homeroom-lessons.js): a lesson is handed out the same way, one class assignment per group version,
+// with hr_lesson (the lesson), its version's label (teachers only), how many problems and a batch (the versions of one hand-out, so
+// "Remove from every desk" takes them all). Its card says "Lesson" and how many problems. A waiting In order handout
+// opened from anywhere else (the To do list, a saved link) shows a calm "Finish the one before it first" (lessonWait).
+//
 // Who: only the class's own teachers through the Homeroom gate (services/homeroom.js canUseClass) hand out and remove;
 // a student reads only their own desk (canUseDesk), never another desk or a group's name.
 import { q, now, audit } from '../db.js';
@@ -54,7 +59,7 @@ export function handable(u, g) {
 // ---------------------------------------------------------------- reading
 /** The class's open handouts in the order they were handed out, each with its game step and who it is for. */
 function rowsOf(classId) {
-  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id
+  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id
       FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
       JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind='game'
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
@@ -63,8 +68,10 @@ function gameInfo(cache, id, locale) {
   if (!cache.has(id)) { const g = games.getGame(id); cache.set(id, g ? games.localizeGame(g, locale) : null); }
   return cache.get(id);
 }
-/** Title as students see it: an Oomba game in their language, a teacher's own game by its name. */
-const titleOf = (r, g) => (g && g.source === 'seed' ? g.title : r.title || (g ? g.title : ''));
+/** Title as students see it: an Oomba game in their language, a teacher's own game by its name, a lesson by its own. */
+const titleOf = (r, g) => (r.hl ? r.title : g && g.source === 'seed' ? g.title : r.title || (g ? g.title : ''));
+/** A lesson's card: how many of what ('words' for Crossword, else 'problems'). */
+const lessonOf = (r, g) => (r.hl ? { lesson: true, n: r.problems || 0, unit: g && g.slug === 'crossword' ? 'words' : 'problems' } : {});
 /** step_progress for these handouts: Map 'clId:userId' -> row. */
 function progressOf(rows) {
   if (!rows.length) return new Map();
@@ -92,7 +99,7 @@ export function boardView(c, locale = 'en') {
   const handouts = rows.map(r => {
     const g = gameInfo(cache, r.game_id, locale), who = picks.get(r.id);
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
-      students: who ? ids.filter(id => who.has(id)).length : ids.length };
+      students: who ? ids.filter(id => who.has(id)).length : ids.length, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
   });
   const desks = {};
   for (const sid of ids) {
@@ -112,7 +119,7 @@ export function deskView(c, u, locale = 'en') {
   return deskOrder(rows.map(r => {
     const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id), p = prog.get(`${r.id}:${u.id}`);
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
-    return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready,
+    return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
       done: !!p && p.status === 'done', pct: pctOf(p) };
   }));
@@ -123,7 +130,7 @@ export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${
 // ---------------------------------------------------------------- handing out
 /** Who a drop goes to: { kind: 'all' } (the whole class), { kind: 'group', id } (the group's students now), { kind:
  *  'desk', id } (one student). -> { ok, students: [] (whole class) | [ids], target } */
-function studentsFor(c, to) {
+export function studentsFor(c, to) {
   const kind = to && TARGETS.includes(to.kind) ? to.kind : null;
   if (!kind) return fail('badTarget');
   const room = H.roomOf(c.id), ids = room.students.map(s => s.id);
@@ -134,11 +141,14 @@ function studentsFor(c, to) {
   const list = ids.filter(s => room.members[s] === id);
   return list.length ? ok({ students: list, target: 'group', all: list }) : fail('emptyGroup');
 }
-/** Students of the class who already have this game open in the class (any assignment of it: a handout, or one made in
- *  Classroom), among ids. */
+/** Open handouts of the class (games and lessons' versions). */
+export const openCount = classId => q.get('SELECT COUNT(*) n FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL WHERE h.class_id=?', classId).n;
+/** Students of the class who already have this game open in the class as free play (a handout, or one made in
+ *  Classroom; a Homeroom lesson of the game is its own thing: services/homeroom-lessons.js checks those), among ids. */
 function alreadyHave(c, gameId, ids) {
   const open = q.all(`SELECT cl.id FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id AND l.kind='game' JOIN lesson_steps s ON s.lesson_id=l.id AND s.kind='game'
-    WHERE cl.class_id=? AND cl.removed_at IS NULL AND s.game_id=?`, c.id, gameId);
+    LEFT JOIN homeroom_handouts h ON h.class_lesson_id=cl.id
+    WHERE cl.class_id=? AND cl.removed_at IS NULL AND s.game_id=? AND h.hr_lesson IS NULL`, c.id, gameId);
   if (!open.length) return [];
   const picks = L.picksIn(c.id);
   return ids.filter(id => open.some(r => !picks.has(r.id) || picks.get(r.id).has(id)));
@@ -157,7 +167,7 @@ export function handOut(u, c, { gameId, to, instructions = '', order = 'in', gra
   const g = games.getGame(String(gameId || ''));
   if (!handable(u, g)) return fail('pickGame');
   const who = studentsFor(c, to); if (!who.ok) return who;
-  if (q.get('SELECT COUNT(*) n FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL WHERE h.class_id=?', c.id).n >= HANDOUTS_MAX) return fail('tooManyHandouts');
+  if (openCount(c.id) >= HANDOUTS_MAX) return fail('tooManyHandouts');
   const have = alreadyHave(c, g.id, who.all);
   if (have.length) return fail('alreadyOnDesk', { count: have.length });
   const r = F.assignGame(u, c.id, g.id, { dueAt: dueAt || null, students: who.students, body: text, again: true });
@@ -175,8 +185,11 @@ export function removeHandout(u, c, clId, studentId = null) {
   if (!H.canUseClass(u, c)) return fail('notFound');
   const h = handoutOf(c, clId); if (!h) return fail('notFound');
   if (!studentId) {
-    const r = L.unassign(u, h.class_lesson_id); if (!r.ok) return r;
-    audit(u.id, 'homeroom.handoutRemove', c.id, { classLesson: h.class_lesson_id });
+    // a lesson's versions handed out together go together
+    const all = h.batch ? q.all(`SELECT h.class_lesson_id id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
+      WHERE h.class_id=? AND h.batch=?`, c.id, h.batch).map(x => x.id) : [h.class_lesson_id];
+    for (const id of all) { const r = L.unassign(u, id); if (!r.ok) return r; }
+    audit(u.id, 'homeroom.handoutRemove', c.id, { classLesson: h.class_lesson_id, ...(all.length > 1 ? { versions: all.length } : {}) });
     return ok({ removed: 'all' });
   }
   const current = H.studentsOf(c.id).map(s => s.id), sid = String(studentId);
@@ -198,4 +211,16 @@ L.onPlayFrame((u, cl, step, t) => {
   const c = S.getClass(cl.class_id);
   if (!H.canUseDesk(u, c)) return null;
   return { backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk'), note: step && step.body ? step.body : '' };
+});
+
+// ---------------------------------------------------------------- an In order handout that waits
+// The desk shows a waiting In order card as 🔒 Later and never opens it. Anywhere else it can be opened from (the To do
+// list on /classes, the lesson page, a saved play link) asks here: for the class's own student with a desk, a handout
+// that waits on their desk opens a calm "Finish the one before it first" with the way back to the desk instead.
+L.onLessonWait((u, cl, t) => {
+  if (!u || !cl || !q.get('SELECT 1 FROM homeroom_handouts WHERE class_lesson_id=? AND in_order=1', cl.id)) return null;
+  const c = S.getClass(cl.class_id);
+  if (!H.canUseDesk(u, c)) return null;
+  const card = deskView(c, u).find(x => x.id === cl.id);
+  return card && card.locked ? { title: t('homeroom.desk.waitTitle'), text: t('homeroom.desk.waitText'), backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk') } : null;
 });
