@@ -129,6 +129,8 @@ const micBuilder = parseFlag(process.env.MIC_BUILDER, 'MIC_BUILDER', true);
 const liveTeams = parseFlag(process.env.LIVE_TEAMS, 'LIVE_TEAMS', true);
 const manipulatives = parseFlag(process.env.MANIPULATIVES, 'MANIPULATIVES', true);
 const figures = parseFlag(process.env.FIGURES, 'FIGURES', true);
+// Homeroom (docs/homeroom.md; services/homeroom.js): off until launch.
+const homeroom = parseFlag(process.env.HOMEROOM, 'HOMEROOM');
 // The focus on teaching tools (docs/decisions.md "Focus: teaching tools first"; services/game-focus.js): both off by default.
 const arcade = parseFlag(process.env.ARCADE, 'ARCADE');
 const coursesFlag = parseFlag(process.env.COURSES, 'COURSES');
@@ -267,7 +269,7 @@ export const config = {
     ...email.errors,
     publicUrl.error, movedTo.error, redirectHosts.error, requireSecret.error, maintenance.error, movedPermanently.error, parentMade.error, pictureBooks.error, sttLive.error, liveClassroom.error,
     liveTeams.error, liveSaveSupport.error, liveHomework.error, liveCohost.error, quizSteps.error, micGames.error, micBuilder.error,
-    builderWebSearch.error, manipulatives.error, figures.error, arcade.error, coursesFlag.error, publicGames.error, companion.error, companionWebSearch.error,
+    builderWebSearch.error, manipulatives.error, figures.error, homeroom.error, arcade.error, coursesFlag.error, publicGames.error, companion.error, companionWebSearch.error,
     !STT_PROVIDERS.includes(sttProvider) && `STT_PROVIDER must be one of ${STT_PROVIDERS.filter(p => p !== 'mock').join(', ')}`,
     sttProvider === 'mock' && (process.env.NODE_ENV || 'development') === 'production' && "STT_PROVIDER=mock is for tests and can't be used in production",
     ttsEnabled.error, ttsBuiltGames.error, ttsLocales.error,
@@ -360,6 +362,12 @@ export const config = {
   storybookPicturesPlanPerDay: Math.max(0, Math.floor(+(process.env.STORYBOOK_PICTURES_PLAN_PER_DAY ?? 40)) || 0),
   storybookDrawAtOnce: Math.min(8, Math.max(1, Math.floor(+(process.env.STORYBOOK_DRAW_AT_ONCE ?? 2)) || 2)),
   manipulativesUsers: String(process.env.MANIPULATIVES_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
+  // Homeroom, the teacher's board for running a class (docs/homeroom.md; services/homeroom.js), behind HOMEROOM until
+  // launch (off by default). With it on, a class's Homeroom tab answers the platform admin and the class's own teachers
+  // whose username is in HOMEROOM_USERS (comma separated, like MANIPULATIVES_USERS; '*' lets every teacher in) and who
+  // have the Teacher plan. Everyone else sees today's class page and gets the normal 404 at /class/:id/homeroom.
+  homeroom: homeroom.on,
+  homeroomUsers: String(process.env.HOMEROOM_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
   // Figures, the standalone product (docs/decisions.md "Figures opens to all teachers"; services/figures.js): /figures
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill
   // switch: it hides Figures (and its "Teaching tools" menu entry) from everyone, the platform admin included.

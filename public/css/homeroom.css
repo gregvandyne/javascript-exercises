@@ -1,0 +1,116 @@
+/* Homeroom (public/js/homeroom.js; docs/homeroom.md). Loaded after public/css/manipulatives.css: the board is the live
+   room's (.rm, .rm-world, .rm-area.teach, the zoom pill, the minimap, sticky notes, text and pen), and this file adds the
+   top bar, the teacher's desk panel, the desks, Arrange seats and the groups. The page fills the screen under the site's
+   bar like the live room (main.rm-main). */
+main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.hr{position:relative}
+.hr [hidden]{display:none!important}
+
+/* the top bar: class switcher, Homeroom | Classroom | Dashboard, Arrange seats, ⋯ */
+.hr-top{position:relative;z-index:80;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-top .hr-tabs{margin:0}
+.hr-class{width:auto;min-width:0;max-width:280px;min-height:44px;border-radius:999px;font-weight:800;font-size:1.05rem;padding-inline:16px 36px}
+.hr-grow{flex:1}
+.hr-chunk{min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;white-space:nowrap}
+.hr-chunk:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hr-chunk[aria-pressed="true"],.hr-chunk.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-morewrap{position:relative}
+.hr-morewrap .rm-menu{right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 24px));max-height:70vh;z-index:90}
+.hr-menusoon{margin:6px 12px 4px;color:var(--muted)}
+
+/* the stage: the board, with the panel, the seat bar, the zoom pill and the minimap floating over it */
+.hr-stage{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.hr-board{flex:1 1 auto}
+.hr-loading{position:absolute;left:24px;top:24px;white-space:nowrap}
+.hr-panel{position:absolute;z-index:60;left:12px;top:12px;bottom:76px;width:240px;padding:12px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;
+  background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:var(--r);box-shadow:var(--shadow-lg);cursor:default}
+.hr-cap{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+.hr-cap:first-child{margin-top:0}
+.hr-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hr-item{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border-radius:14px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:14px;box-shadow:0 2px 0 var(--line);min-width:0}
+.hr-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hr-itemt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-empty{margin:0;color:var(--muted)}
+.hr-soon{margin:2px 0;padding:8px 10px;border-radius:var(--r-sm);background:var(--spark-soft);color:var(--text);font-weight:600}
+.hr-groupchips{display:flex;flex-wrap:wrap;gap:6px}
+.hr-gchip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:800;background:color-mix(in srgb,var(--gc) 16%,var(--card));color:var(--text);white-space:nowrap}
+.hr-gchip.whole{background:var(--card-2);border:2px dashed var(--line)}
+.hr-gchip .rm-dot{width:10px;height:10px}
+.hr-gedit{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--link);font:800 13px var(--font);cursor:pointer;white-space:nowrap}
+.hr-gedit:hover{background:var(--hover)}
+.hr-toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hr-tool{width:100%;padding:0 10px;font-size:.85rem}
+.hr-toolhint{margin:4px 0 0;color:var(--muted)}
+.hr-tools .rm-pens{display:flex;flex-wrap:wrap;align-items:center}
+.rm.inking{cursor:default}
+.hr-area.drawing,.hr-area.drawing *{cursor:crosshair}
+
+.hr-seatbar{position:absolute;z-index:65;left:264px;right:12px;top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 12px;
+  background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:800;cursor:default}
+.hr-seatbar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A}
+.hr-seatbar .hr-chunk.on{background:#141414;color:#FFFDF2;border-color:#141414;box-shadow:0 3px 0 #000}
+.hr-seatbar .hr-done{background:#1F9D63;border-color:#1F9D63;color:#fff;box-shadow:0 3px 0 #146B43}
+.hr-seathint{color:#5D5A50;font-weight:600}
+.hr-zoom{left:12px;bottom:12px}
+.hr-mini{right:96px;bottom:12px}
+
+/* the board's contents */
+.hr-areabody{position:absolute;inset:0}
+.hr-shapes{position:absolute;inset:0;width:100%;height:100%;z-index:24;pointer-events:none;overflow:visible}
+.hr-shape,.hr-hit{pointer-events:visibleStroke;cursor:move}
+.hr-hit{stroke:transparent;stroke-width:24}
+.hr-shape.on{filter:drop-shadow(0 0 4px var(--focus))}
+.hr-area.drawing .hr-shape,.hr-area.drawing .hr-hit{pointer-events:none}
+.hr-shapedel{position:absolute;z-index:40;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 22px/1 var(--font);cursor:pointer;box-shadow:var(--shadow)}
+.hr-tdesk{position:absolute;border-radius:14px;background:var(--text);color:var(--card);display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
+.hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.hr-desk .rm-dot{flex:none;background:var(--c,var(--line))}
+.hr-desk .hr-empty{font-size:14px}
+.hr-gtag{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;background:color-mix(in srgb,var(--gc) 18%,var(--card));color:var(--text)}
+.hr-seating .hr-desk{cursor:move;box-shadow:0 0 0 3px var(--spark),var(--shadow);touch-action:none}
+.hr-seating .hr-desk.sel,.hr-seating .hr-desk:focus-visible{box-shadow:0 0 0 5px var(--focus),var(--shadow-lg);outline:0}
+.hr-nostudents{position:absolute;margin:0;text-align:center;font-size:22px;font-weight:700;color:var(--muted)}
+
+/* the groups sheet */
+.hr-glist{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hr-glist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.hr-glist input{flex:1 1 120px;min-width:0}
+.hr-swatches{display:flex;flex-wrap:wrap;gap:4px}
+.hr-sw{width:26px;height:26px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hr-sw.on{box-shadow:0 0 0 3px var(--text)}
+.hr-gsub{font-size:1rem;margin:16px 0 8px}
+.hr-gstudents{margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.hr-gstudents li{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.hr-gstudents label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.hr-gstudents select{flex:none;width:auto;max-width:55%}
+.hr-gacts{margin-top:16px;justify-content:flex-end}
+
+/* tablets: a narrower panel */
+@media (max-width:1100px){
+  .hr-panel{width:210px}
+  .hr-seatbar{left:234px}
+}
+/* phones: the panel is one strip along the bottom (scrolls sideways), clear of Oomba's chat button; no minimap */
+@media (max-width:819px){
+  .hr-hidephone{display:none}
+  .hr-top{padding:8px;gap:6px 8px}
+  .hr-top .hr-tabs{order:5;flex:1 1 100%}
+  .hr-top .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+  .hr-class{flex:1 1 0;min-width:0;max-width:none}
+  .hr-top .hr-grow{display:none}
+  .hr-panel{top:auto;left:8px;right:88px;bottom:8px;width:auto;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:8px;gap:8px}
+  .hr-panel .hr-cap,.hr-panel .hr-soon,.hr-panel .hr-empty,.hr-toolhint,.hr-gchip.whole{display:none}
+  .hr-items,.hr-groupchips{flex-direction:row;flex-wrap:nowrap}
+  .hr-item,.hr-gchip,.hr-gedit{flex:none}
+  .hr-itemt{max-width:180px}
+  .hr-toolgrid{display:flex;flex-wrap:nowrap}
+  .hr-tool{width:auto;flex:none}
+  .hr-tool span{display:none}
+  .hr-tools{display:flex;align-items:center;gap:6px}
+  .hr-tools .rm-pens{flex-wrap:nowrap;margin:0}
+  .hr-seatbar{left:8px;right:8px;top:8px}
+  .hr-seathint{display:none}
+  .hr-zoom{bottom:84px;left:8px}
+  .hr-mini{display:none}
+}

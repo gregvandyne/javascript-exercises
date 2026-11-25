@@ -2039,6 +2039,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Sleep om deze tekst te verplaatsen",
+      "resize": "Sleep om de grootte van dit vak te wijzigen",
+      "smaller": "Kleinere tekst",
+      "bigger": "Grotere tekst"
+    },
+    "homeroom": {
+      "wholeClass": "Hele klas · {count}",
+      "editGroups": "Groepen",
+      "groupsTitle": "Groepen",
+      "groupsLead": "Geef je groepen een naam en kies voor elke groep een kleur. De rand van een tafel heeft de kleur van de groep.",
+      "groups": {
+        "stretch": "Verdieping",
+        "onTrack": "Op koers",
+        "building": "Opbouw",
+        "unnamed": "Nieuwe groep"
+      },
+      "groupName": "Naam van groep {n}",
+      "groupColor": "Kleur van groep {n}",
+      "colorN": "Kleur {n}",
+      "removeGroup": "{name} verwijderen",
+      "addGroup": "Groep toevoegen",
+      "whoIsIn": "Wie zit in welke groep",
+      "noGroup": "Geen groep",
+      "save": "Bewaren",
+      "needName": "Geef elke groep een naam.",
+      "groupsSaved": "Groepen bewaard",
+      "deskOf": "Tafel van {name}",
+      "emptyDesk": "Lege tafel",
+      "teacherDesk": "Bureau van de leraar",
+      "noStudents": "Nog geen leerlingen in deze klas.",
+      "addStudents": "Leerlingen toevoegen",
+      "shapes": {
+        "rect": "Vierkant",
+        "circle": "Cirkel",
+        "line": "Lijn"
+      },
+      "shapeDelete": "Deze vorm verwijderen",
+      "hintMove": "Kies een hulpmiddel en teken of tik dan in het lerarendeel.",
+      "hintDraw": "Teken in het lerarendeel. Tik nog een keer op het hulpmiddel als je klaar bent.",
+      "tooMany": "Daar is in het lerarendeel geen ruimte meer voor.",
+      "arrange": "Plaatsen indelen",
+      "menuSoon": "Deelnamecode, beamerweergave en Les beëindigen komen hierna.",
+      "seats": {
+        "lead": "Zoals je echte lokaal:",
+        "rows": "Rijen",
+        "pods": "Groepjes van 4",
+        "u": "U-vorm",
+        "circle": "Kring",
+        "hint": "of sleep een tafel naar waar die echt staat",
+        "done": "Klaar",
+        "saved": "Plaatsen bewaard voor {class}"
+      }
+    },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
       "failed": "Er ging iets mis. Probeer het opnieuw.",
@@ -3424,12 +3478,6 @@
         "lockedHint": "Vastgezet. Houd het ingedrukt om het los te maken.",
         "pieceLocked": "Stuk {label}, vastgezet",
         "objLocked": "{name}, vastgezet"
-      },
-      "text": {
-        "move": "Sleep om deze tekst te verplaatsen",
-        "resize": "Sleep om de grootte van dit vak te wijzigen",
-        "smaller": "Kleinere tekst",
-        "bigger": "Grotere tekst"
       },
       "boards": {
         "title": "Mijn borden",
@@ -14338,6 +14386,51 @@
       "repaintSome": "Plaatjes om opnieuw te schilderen: {count} nu, morgen nog {more} (de plaatjes van vandaag zijn op).",
       "painting": "Plaatjes worden geschilderd",
       "repaintAll": "Alle afbeeldingen opnieuw schilderen"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Andere klas",
+    "arrange": "Plaatsen indelen",
+    "more": "Meer",
+    "boardLabel": "Homeroom-bord. Sleep om te bewegen, scrol of knijp om te zoomen.",
+    "loading": "Het lokaal wordt klaargezet…",
+    "noscript": "Homeroom heeft JavaScript nodig.",
+    "tabs": {
+      "label": "Weergaven van de klas",
+      "homeroom": "Homeroom",
+      "classroom": "Klaslokaal",
+      "dashboard": "Dashboard"
+    },
+    "panel": {
+      "label": "Bureau van de leraar",
+      "handOut": "Uitdelen aan",
+      "handOutSoon": "Uitdelen op de tafels komt hierna. Deel voor nu de plaatsen en groepen in.",
+      "myLessons": "Mijn lessen",
+      "noLessons": "Lessen die je in Homeroom maakt, verschijnen hier.",
+      "myGames": "Mijn spellen",
+      "noGames": "Spellen die je bouwt, verschijnen hier.",
+      "oomba": "Oomba-spellen en -hulpmiddelen",
+      "manipulatives": "Manipulatieven",
+      "figures": "Figuren",
+      "reading": "Lezen",
+      "storyLibrary": "Verhalenbibliotheek",
+      "flow": "Verloop van de les",
+      "brainBreak": "Beweegpauze",
+      "note": "Bericht aan de klas",
+      "timer": "Timer",
+      "board": "Bordhulpmiddelen"
+    },
+    "errors": {
+      "notFound": "Deze Homeroom is niet beschikbaar.",
+      "badPreset": "Kies Rijen, Groepjes van 4, U-vorm of Kring.",
+      "badSeats": "De plaatsen konden niet worden bewaard. Probeer het opnieuw.",
+      "badGroups": "De groepen konden niet worden bewaard. Probeer het opnieuw.",
+      "groupName": "Geef elke groep een naam.",
+      "words": "Gebruik vriendelijke woorden.",
+      "personal": "Laat persoonlijke gegevens zoals telefoonnummers, e-mailadressen en adressen weg.",
+      "badState": "Dat kon niet worden bewaard. Probeer het opnieuw.",
+      "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw."
     }
   }
 }

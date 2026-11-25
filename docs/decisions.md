@@ -13324,3 +13324,42 @@ Owner: "Create hundreds of sample passages for Mistake Hunt."
   Use in my set plant at the chosen level; each level keeps its own saved work) and in the builder's "Mistakes to
   plant" card, where they set the kinds, the count and what students are told for the draft's grade (all still
   changeable by hand). Tested on every sample at Easy and Hard against the server's set rules.
+
+## Homeroom, step 1a: the gate, the tabs, the board, seating and groups (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` (with the clickable mockups of the teacher's Homeroom and the student desk).
+This step is the foundation, teacher side only.
+- **Gate** (`services/homeroom.js` canUse / canUseClass): `HOMEROOM` (off by default; off hides it from everyone, the
+  platform admin included, as `MANIPULATIVES=0` does), then the platform admin, or school staff on `HOMEROOM_USERS`
+  (comma separated like `MANIPULATIVES_USERS`; `*` lets every teacher in at launch) **and** on the Teacher plan
+  (`services/teacher-plan.js` teacherPlan: own plan or grant, a trial, a school seat). A class's Homeroom: only its own
+  teachers (and the platform admin), never an archived class. Everyone else (students, other teachers, a school admin
+  who does not teach the class, teachers without the plan) gets the normal 404 and today's class page, unchanged. The
+  preview for teachers without the plan (spec "Who gets it") is not built yet.
+- **Tabs**: for those teachers a class has **Homeroom | Classroom | Dashboard** (`routes/homeroom.js` homeroomTabs, a
+  pill over `classHeader` in `routes/schools.js`). Classroom is today's class page (Games, Progress, Students,
+  Settings, every progress page) untouched; Dashboard is unchanged. Homeroom is `/class/:id/homeroom`. No summary
+  header was added to Progress in this step.
+- **The board is the Manipulatives live room's**: its CSS (`.rm`, `.rm-area.teach`, the zoom pill, the minimap, sticky
+  notes, text, pen), and two pieces moved out of the room so both use one copy, unchanged: `public/js/board-view.js`
+  (zoom around a point, Fit, the world's transform, the zoom pill, the minimap; from `manip-room.js`) and
+  `public/js/board-ann.js` (pen marks and board text with its grip, sizes and snapping; from `manip.js`, its four
+  strings moved from `js.manip.text.*` to `js.board-ann.*` with their translations). The teacher's area is saved like
+  the room's teacher's area (`services/manipulatives.js` cleanState: the word and personal-information rules, limits),
+  plus shapes (square, circle, line). Cursors, the socket and live saving between people wait for live class (step 3).
+- **Desks and seating** (`public/js/homeroom-seats.js`, shared with the server): the teacher's area across the top, the
+  teacher's desk, a desk per student of the roster with their name (roster name, else display name) above it and
+  their group's color as its border. **Arrange seats**: Rows, Tables of 4, U-shape, Circle (no desk on the name of the
+  one in front), then drag any desk (or arrow keys). Saved per class in `homeroom_rooms` (migration
+  `0122_homeroom`; deleted with the class or the school; a student who leaves loses their desk and group). New students
+  get a free desk without moving anyone.
+- **Groups**: Stretch, On track, Building to start (their names follow the teacher's language until renamed), up to 8,
+  a name and one of 8 colors each, students assigned in a simple sheet. **Team desks wait for step 2.**
+- **Left panel and top bar** as in the mockup: class switcher, the tabs, Arrange seats, ⋯ (Arrange seats, Groups);
+  Hand out to (Whole class and the groups), My lessons, Games I built (the teacher's games), Oomba games and tools (the
+  Manipulatives and Figures when the teacher has them, then the visible Oomba learning games), Reading, Class flow and
+  Board tools. Handing out is marked as coming next; handouts, live class, plans, the student desk, quick sign-in and
+  the projector view are later steps. The Oomba chat button is there as on every teacher page.
+- Tests: `tests/unit/homeroom.test.js` (gate, seating, groups, the teacher's area, the class page) and
+  `tests/unit/homeroom-browser.test.js` (1366 x 768, tablet and phone: desks, Fit, no sideways scroll, seats and a
+  note saved).

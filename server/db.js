@@ -1347,6 +1347,17 @@ export const MIGRATIONS = [
   // folders) and only its slug changes, so the seed import then updates the same row instead of adding a second game.
   // Stored references are by game id; links and QR codes with the old slug are redirected (services/slug-aliases.js).
   ['0121_arithmetic_lab_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'box-by-box', 'arithmetic-lab')],
+  // Homeroom (docs/homeroom.md; services/homeroom.js): one row per class, written by its teachers. preset: the seating
+  // layout last picked (rows, pods, u, circle); seats: {studentId: {x, y}} where each desk sits on the board; groups:
+  // [{id, key, name, color}] the teacher's groups (key: a default group whose name follows the teacher's language until
+  // renamed); members: {studentId: groupId}; area: the teacher's area (notes, text, pen marks and shapes, the
+  // Manipulatives live room's board format, cleaned the same way). A student who leaves the class keeps no desk: the
+  // board only ever draws the current roster. Gone with the class.
+  ['0122_homeroom', `
+    CREATE TABLE IF NOT EXISTS homeroom_rooms (class_id TEXT PRIMARY KEY REFERENCES classrooms(id) ON DELETE CASCADE,
+      preset TEXT NOT NULL DEFAULT 'rows', seats TEXT NOT NULL DEFAULT '{}', groups TEXT NOT NULL DEFAULT '[]',
+      members TEXT NOT NULL DEFAULT '{}', area TEXT NOT NULL DEFAULT '{}', updated_by TEXT,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

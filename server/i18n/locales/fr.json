@@ -2038,6 +2038,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Glisse pour déplacer ce texte",
+      "resize": "Glisse pour changer la taille de ce cadre",
+      "smaller": "Texte plus petit",
+      "bigger": "Texte plus grand"
+    },
+    "homeroom": {
+      "wholeClass": "Toute la classe · {count}",
+      "editGroups": "Groupes",
+      "groupsTitle": "Groupes",
+      "groupsLead": "Nommez vos groupes et choisissez une couleur pour chacun. La bordure d’un bureau prend la couleur de son groupe.",
+      "groups": {
+        "stretch": "Approfondissement",
+        "onTrack": "Dans les temps",
+        "building": "En consolidation",
+        "unnamed": "Nouveau groupe"
+      },
+      "groupName": "Nom du groupe {n}",
+      "groupColor": "Couleur du groupe {n}",
+      "colorN": "Couleur {n}",
+      "removeGroup": "Supprimer {name}",
+      "addGroup": "Ajouter un groupe",
+      "whoIsIn": "Qui est dans chaque groupe",
+      "noGroup": "Aucun groupe",
+      "save": "Enregistrer",
+      "needName": "Donnez un nom à chaque groupe.",
+      "groupsSaved": "Groupes enregistrés",
+      "deskOf": "Bureau de {name}",
+      "emptyDesk": "Bureau vide",
+      "teacherDesk": "Bureau de l’enseignant",
+      "noStudents": "Aucun élève dans cette classe pour l’instant.",
+      "addStudents": "Ajouter des élèves",
+      "shapes": {
+        "rect": "Carré",
+        "circle": "Cercle",
+        "line": "Ligne"
+      },
+      "shapeDelete": "Supprimer cette forme",
+      "hintMove": "Choisissez un outil, puis dessinez ou touchez l’espace de l’enseignant.",
+      "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez de nouveau l’outil quand vous avez fini.",
+      "tooMany": "Il n’y a plus de place pour en ajouter dans l’espace de l’enseignant.",
+      "arrange": "Placer les élèves",
+      "menuSoon": "Le code pour rejoindre, la vue projecteur et Terminer la classe arrivent bientôt.",
+      "seats": {
+        "lead": "Reproduisez votre vraie salle :",
+        "rows": "Rangées",
+        "pods": "Tables de 4",
+        "u": "En U",
+        "circle": "En cercle",
+        "hint": "ou faites glisser un bureau à sa vraie place",
+        "done": "Terminé",
+        "saved": "Placement enregistré pour {class}"
+      }
+    },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
       "failed": "Quelque chose s’est mal passé. Réessaie.",
@@ -3423,12 +3477,6 @@
         "lockedHint": "Verrouillé. Appuie longuement pour le déverrouiller.",
         "pieceLocked": "Pièce {label}, verrouillée",
         "objLocked": "{name}, verrouillé"
-      },
-      "text": {
-        "move": "Glisse pour déplacer ce texte",
-        "resize": "Glisse pour changer la taille de ce cadre",
-        "smaller": "Texte plus petit",
-        "bigger": "Texte plus grand"
       },
       "boards": {
         "title": "Mes tableaux",
@@ -14337,6 +14385,51 @@
       "repaintSome": "Images à repeindre : {count} maintenant, {more} de plus demain (les images du jour sont épuisées).",
       "painting": "Peinture des images",
       "repaintAll": "Repeindre toutes les images"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Changer de classe",
+    "arrange": "Placer les élèves",
+    "more": "Plus",
+    "boardLabel": "Tableau Homeroom. Faites glisser pour vous déplacer, faites défiler ou pincez pour zoomer.",
+    "loading": "Préparation de la salle…",
+    "noscript": "Homeroom a besoin de JavaScript.",
+    "tabs": {
+      "label": "Vues de la classe",
+      "homeroom": "Homeroom",
+      "classroom": "Classe",
+      "dashboard": "Tableau de bord"
+    },
+    "panel": {
+      "label": "Bureau de l’enseignant",
+      "handOut": "Distribuer à",
+      "handOutSoon": "La distribution sur les bureaux arrive bientôt. Pour l’instant, organisez les places et les groupes.",
+      "myLessons": "Mes leçons",
+      "noLessons": "Les leçons créées dans Homeroom s’afficheront ici.",
+      "myGames": "Mes jeux",
+      "noGames": "Les jeux que vous créez s’affichent ici.",
+      "oomba": "Jeux et outils Oomba",
+      "manipulatives": "Manipulables",
+      "figures": "Figures",
+      "reading": "Lecture",
+      "storyLibrary": "Bibliothèque d’histoires",
+      "flow": "Déroulé de la classe",
+      "brainBreak": "Pause active",
+      "note": "Message à la classe",
+      "timer": "Minuteur",
+      "board": "Outils du tableau"
+    },
+    "errors": {
+      "notFound": "Ce Homeroom n’est pas disponible.",
+      "badPreset": "Choisissez Rangées, Tables de 4, En U ou En cercle.",
+      "badSeats": "Les places n’ont pas pu être enregistrées. Réessayez.",
+      "badGroups": "Les groupes n’ont pas pu être enregistrés. Réessayez.",
+      "groupName": "Donnez un nom à chaque groupe.",
+      "words": "Merci d’utiliser des mots gentils.",
+      "personal": "N’indiquez pas d’informations personnelles comme des numéros de téléphone, des e-mails ou des adresses.",
+      "badState": "Impossible d’enregistrer. Réessayez.",
+      "tooBig": "L’espace de l’enseignant est trop rempli. Retirez quelque chose et réessayez."
     }
   }
 }

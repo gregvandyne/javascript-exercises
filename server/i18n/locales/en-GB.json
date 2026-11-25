@@ -129,6 +129,11 @@
     }
   },
   "js": {
+    "homeroom": {
+      "groupsLead": "Name your groups and pick a colour for each. A desk's border shows its group's colour.",
+      "groupColor": "Colour of group {n}",
+      "colorN": "Colour {n}"
+    },
     "game": {
       "liked": "Added to your favourites!",
       "unliked": "Removed from your favourites"

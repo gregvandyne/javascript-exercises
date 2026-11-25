@@ -2038,6 +2038,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "拖曳以移動這段文字",
+      "resize": "拖曳以調整這個方框的大小",
+      "smaller": "文字變小",
+      "bigger": "文字變大"
+    },
+    "homeroom": {
+      "wholeClass": "全班 · {count}",
+      "editGroups": "分組",
+      "groupsTitle": "分組",
+      "groupsLead": "替各組取名字，並為每一組選一個顏色。座位的外框會顯示該組的顏色。",
+      "groups": {
+        "stretch": "進階",
+        "onTrack": "進度正常",
+        "building": "加強",
+        "unnamed": "新的一組"
+      },
+      "groupName": "第 {n} 組的名稱",
+      "groupColor": "第 {n} 組的顏色",
+      "colorN": "顏色 {n}",
+      "removeGroup": "移除 {name}",
+      "addGroup": "新增一組",
+      "whoIsIn": "每組有誰",
+      "noGroup": "未分組",
+      "save": "儲存",
+      "needName": "請替每一組取名字。",
+      "groupsSaved": "分組已儲存",
+      "deskOf": "{name} 的座位",
+      "emptyDesk": "空座位",
+      "teacherDesk": "老師的桌子",
+      "noStudents": "這個班級還沒有學生。",
+      "addStudents": "新增學生",
+      "shapes": {
+        "rect": "方形",
+        "circle": "圓形",
+        "line": "線條"
+      },
+      "shapeDelete": "刪除這個圖形",
+      "hintMove": "選一個工具，然後在老師區畫畫或點一下。",
+      "hintDraw": "在老師區畫畫。完成後再點一次工具。",
+      "tooMany": "老師區放不下更多了。",
+      "arrange": "安排座位",
+      "menuSoon": "加入代碼、投影畫面和結束課堂即將推出。",
+      "seats": {
+        "lead": "照真實教室排：",
+        "rows": "排排坐",
+        "pods": "四人一桌",
+        "u": "U 形",
+        "circle": "圓形",
+        "hint": "或把座位拖到它真正的位置",
+        "done": "完成",
+        "saved": "已儲存 {class} 的座位"
+      }
+    },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
       "failed": "出了點問題。請再試一次。",
@@ -3423,12 +3477,6 @@
         "lockedHint": "已鎖定。長按即可解鎖。",
         "pieceLocked": "積木 {label}，已鎖定",
         "objLocked": "{name}，已鎖定"
-      },
-      "text": {
-        "move": "拖曳以移動這段文字",
-        "resize": "拖曳以調整這個方框的大小",
-        "smaller": "文字變小",
-        "bigger": "文字變大"
       },
       "boards": {
         "title": "我的白板",
@@ -14337,6 +14385,51 @@
       "repaintSome": "要重新繪製的圖片：現在 {count} 張，明天再 {more} 張（今天的圖片已用完）。",
       "painting": "正在畫圖",
       "repaintAll": "重新畫所有圖片"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "切換班級",
+    "arrange": "安排座位",
+    "more": "更多",
+    "boardLabel": "Homeroom 白板。拖曳來移動，捲動或雙指縮放。",
+    "loading": "正在布置教室…",
+    "noscript": "Homeroom 需要開啟 JavaScript。",
+    "tabs": {
+      "label": "班級檢視",
+      "homeroom": "Homeroom",
+      "classroom": "班級",
+      "dashboard": "儀表板"
+    },
+    "panel": {
+      "label": "老師的桌子",
+      "handOut": "發給",
+      "handOutSoon": "發到座位的功能即將推出。現在先安排座位和分組。",
+      "myLessons": "我的課程",
+      "noLessons": "你在 Homeroom 建立的課程會顯示在這裡。",
+      "myGames": "我做的遊戲",
+      "noGames": "你做的遊戲會顯示在這裡。",
+      "oomba": "Oomba 遊戲與工具",
+      "manipulatives": "操作教具",
+      "figures": "圖形",
+      "reading": "閱讀",
+      "storyLibrary": "故事圖書館",
+      "flow": "上課流程",
+      "brainBreak": "動腦休息",
+      "note": "給全班的便條",
+      "timer": "計時器",
+      "board": "白板工具"
+    },
+    "errors": {
+      "notFound": "這個 Homeroom 無法使用。",
+      "badPreset": "請選擇排排坐、四人一桌、U 形或圓形。",
+      "badSeats": "無法儲存座位，請再試一次。",
+      "badGroups": "無法儲存分組，請再試一次。",
+      "groupName": "請替每一組取名字。",
+      "words": "請使用友善的字詞。",
+      "personal": "請不要填寫電話、電子郵件或地址等個人資料。",
+      "badState": "無法儲存，請再試一次。",
+      "tooBig": "老師區太滿了。請移除一些東西再試一次。"
     }
   }
 }
