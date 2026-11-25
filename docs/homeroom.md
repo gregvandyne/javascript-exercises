@@ -130,6 +130,17 @@ wait under "Missed while you were out" with the teacher's words and are never la
 desk is the same with an "At home" chip on the board instead of a cursor, no hand or hall pass, and Ask my teacher sends a
 question the teacher sees in Hands, marked At home. Marks are per class per day; there is no attendance report.
 
+Built (docs/decisions.md "Homeroom: the parents' view"): a grown-up whose family account is linked to the student's own
+account (the existing family linking: the child's code, typed on /family/link, the child's Yes) opens **Class work** from
+the child's row on /family (`/family/class/<token>`, phones first): for each class with Homeroom, read only, the child's
+handouts (title, the teacher's instructions, given and due dates, done or not yet, the grade as the teacher chose to show
+it: Score's % right, Completion or Practice), the teacher's comments and stickers, "To catch up on" for handouts marked
+Missed while away, the books read with the reading routine and the quiz, and the child's notebook pages in that class's
+tab (K-2 drawings included). Never own tabs, other students, ranks, live class, hands, the hall pass, supports or
+attendance. The ⋯ menu's **Parents' view** turns it off or on per class (on by default). The notebook's top line, and the
+reading notes, add "Your grown-up can see the notes in your class tabs" when a grown-up is linked. Accounts a school made
+can't be linked to a family yet, so their grown-ups have no view.
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their
@@ -163,6 +174,6 @@ removed, never names. No photos of children. Calm UI. US spelling. No em dashes.
 2. Handouts and lessons: game handouts with instructions, lessons and the lesson builder, groups, teams, order, grading
    choice, results into Progress and Google Classroom, comments and stickers.
 3. Live class: live desks and cursors, hands and hall pass, supports, the day plan through the chat, aides and sub links.
-4. Student side: notebook, reading from the desk, K-2 mode, absent and at-home students, parents' view.
+4. Student side: notebook, reading from the desk, K-2 mode, absent and at-home students, parents' view (all built).
 5. Beyond the day: week plans, due dates, copying plans, onboarding, Needs a look and Oomba follow-ups.
 Before launch: privacy policy update and lawyer review, and a 35-student load test.

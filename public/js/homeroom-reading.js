@@ -247,7 +247,7 @@ export function readingLayer(opts) {
       <div class="hd-k2part">${ask('word', '🔤')}<label class="sr-only" for="hd-rdk2word">${esc(k2t('word'))}</label><input class="input hd-k2word" id="hd-rdk2word" name="word" maxlength="40" autocomplete="off" placeholder="${esc(k2t('wordPh'))}"></div>
       <p class="err" id="hd-rdnerr" aria-live="polite"></p>
       <div class="row hd-rdacts"><button class="btn btn-primary btn-big" type="submit">${iconHtml('📒', { size: 22 })} ${esc(k2t('save'))}</button></div>
-      <p class="small muted">${esc(tr('notesPrivacy'))}</p></form>`;
+      <p class="small muted">${esc(tr('notesPrivacy'))}${R.v && R.v.parentsRead ? ` ${esc(tr('parentsRead'))}` : ''}</p></form>`;
     R.pad = drawPad(b, { max: { strokes: 80, points: 400, total: 8000 }, full: () => toast(k2t('padFull'), { bad: true }) });
   }
   async function submitK2(f) {
@@ -272,7 +272,7 @@ export function readingLayer(opts) {
     b.innerHTML = `<form class="hd-rdpad hd-rdnotes" novalidate><h2 class="hd-rdh">${iconHtml('📝', { size: 24 })} ${esc(tr('notesTitle'))}</h2><p class="hd-rdlead">${esc(tr('notesLead', { title: R.book ? R.book.title : '' }))}</p>
       ${['happened', 'word', 'think'].map(field).join('')}<p class="err" id="hd-rdnerr" aria-live="polite"></p>
       <div class="row hd-rdacts"><button class="btn btn-primary btn-big" type="submit">${iconHtml('📒', { size: 18 })} ${esc(tr('saveNotes'))}</button></div>
-      <p class="small muted">${esc(tr('notesPrivacy'))}</p></form>`;
+      <p class="small muted">${esc(tr('notesPrivacy'))}${R.v && R.v.parentsRead ? ` ${esc(tr('parentsRead'))}` : ''}</p></form>`;
     b.querySelector('textarea')?.focus({ preventScroll: true });
   }
   async function submit(e) {

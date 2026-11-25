@@ -14785,3 +14785,48 @@ students). Step 4c. Migration `0135_homeroom_k2_attendance`. Service: `services/
 The place value disks' palette shows each disk as a plain colored circle with its value written beside it, not inside:
 a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
 and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.
+
+## Homeroom: the parents' view (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` ("The student desk": parents see handout notes, not personal tabs; build order
+step 4). Step 4d. Migration `0136_homeroom_parents` (one column). Service `services/homeroom-parents.js`, page
+`routes/homeroom-parents.js`, `public/css/homeroom-parents.css`.
+
+- **Who**: the existing family linking, unchanged (`services/family.js`): a grown-up account whose family has the child
+  **linked** (the child's code on /me, typed on /family/link, the child's Yes; or an account the family made). A pending
+  request is no link. Linking is for own kid accounts only (`isChildAccount`: never a school account the school made), so
+  a student whose account the school made has no parents' view; no new linking flow was added. Families must be on
+  (`familiesOn`, as every family page) and `HOMEROOM` on. Anyone else (a student, a teacher, an aide, a sub, another
+  family, the platform admin) gets the site's 404; signed out, the sign-in.
+- **Where**: the child's row on /family gets **Class work** when the child has a class to show; it opens
+  `/family/class/<token>` (the /family page's keyed token, never the child's id; the grown-up fence lets only this
+  address through). A class is shown when the child is a student there now, the class has Homeroom (one of its teachers
+  passes the gate) and the parents' view is on; a chip per class, `?class=` picks one (any other class: 404).
+- **What** (read only, phones first: one column of cards, two on wider screens): the child's own handouts
+  (`deskView`: title, the teacher's instructions, given and due dates, Done or Not yet, the grade as chosen: Score's % right
+  from `scores.js`, the gradebook's figure, "Graded by completion", or "Practice, not graded"); the teacher's comment and
+  sticker on finished work; **To catch up on**: handouts marked Missed while away (`markMissed`) and not done, first;
+  **Reading**: the books read with the routine, cover, step and the quiz's first-try result; **Class notes**: the child's
+  notebook pages in that class's tab only (kind 'class': Class notes, handout notes, reading notes), on the notebook's
+  lined paper, cleaned again when shown, K-2 drawings drawn as a picture. Empty pages are left out.
+- **Never**: own tabs; other students (no names, handouts, notes, counts or class figures); ranks or comparisons; live
+  status, hands, the hall pass; supports (the teacher's simpler wording is not used: `deskView` gives their own words);
+  version labels; attendance marks or history (only "Missed while away" on a handout). Each read is audited
+  (`homeroom.parents.read`, ids only). No AI reads any of it.
+- **The switch**: the ⋯ menu's **Parents' view** (a sheet saying what grown-ups see and never see, On / Off for this
+  class), `POST /api/homeroom/:id/parents { on }`, `homeroom_rooms.parents_view` (1 by default). The class's teachers only:
+  an aide 403, another teacher 404. Off hides the class at once (and the /family link when no class is left).
+- **Students are told**: the notebook's top line adds "Your grown-up can see the notes in your class tabs." and the
+  reading routine's notes add "Your grown-up can see these notes too." whenever a grown-up is linked and a class of theirs
+  is shown (`grownupSees`). Teachers and students are otherwise unaffected (the teacher still reads the whole notebook).
+- **Deleting**: nothing new to delete (a column on `homeroom_rooms`, which goes with the class); unlinking ends the view at
+  once.
+- Tests: `tests/unit/homeroom-parents.test.js` (what a linked grown-up sees; never own tabs, a classmate's name, handout or
+  notes, supports, attendance; refused to another family, a pending request, the child, a classmate, the teacher, the
+  admin, signed out, other classes, families off; the fence; the switch and who may use it; the /family link; the
+  notebook and reading lines) and `tests/unit/homeroom-parents-browser.test.js` (390, 820, 1366: the page, nothing
+  sideways, 44px chips and links, the sticker, the drawing; the /family link; the notebook's line; the ⋯ menu's switch).
+- **Open**: grown-ups of students whose account the school made (no family linking for school accounts yet); a parent's
+  view after a teacher's plan ends (it follows the Homeroom gate, so it goes with it); notifications to grown-ups; the
+  Classroom view's student reports are not shown to grown-ups; translations of the new strings (English now; the other
+  languages fall back to it).
