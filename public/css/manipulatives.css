@@ -27,6 +27,19 @@
 .mp-toolcard{display:flex;gap:12px;align-items:flex-start;color:var(--text);padding:16px}
 .mp-toolcard:hover{text-decoration:none;box-shadow:inset 0 0 0 2px var(--accent-line),var(--shadow)}
 .mp-toolcard>span:last-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+/* "How it works" (public/js/manip.js openHow): a quiet button by the tool's title, and on the tools' cards that have a
+   video (a button may not sit inside the card's link, so the cell holds both, the button over the card's last line). */
+.mp-howbtn{font-weight:700;color:var(--text-2);gap:6px}
+.mp-howbtn:hover{color:var(--text)}
+.mp-toolcell{position:relative;display:flex}
+.mp-toolcell>.mp-toolcard{flex:1;margin-top:0;padding-bottom:60px}
+.mp-toolcell>.mp-howbtn{position:absolute;inset-inline-start:68px;bottom:14px}
+.sheet.mp-vsheet{width:min(100%,960px,calc((90vh - 120px) * 16 / 9 + 40px))}
+.mp-howvideo{display:block;width:100%;height:auto;aspect-ratio:16/9;border-radius:var(--r-sm);background:#000}
+/* Oomba's round chat button (fixed at the bottom right, public/css/oomba-chat.css) never covers the board on a
+   computer: the tool page keeps a gutter on the right as wide as the button (16px + 64px + 8px from the window's edge,
+   less the space the centered page already leaves; .wrap is 1240px wide with 16px of padding). */
+@media (min-width:821px){body.manip-page .mp-tool{padding-inline-end:clamp(0px,calc(80px - (100vw - 1240px) / 2),80px)}}
 .mp-ico{flex:none;display:grid;place-items:center;width:52px;height:52px;border-radius:var(--r-sm);font-size:1.5rem;background:color-mix(in srgb,var(--tc,#888) var(--tile-tint),var(--card));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--tc,#888) 22%,transparent)}
 .mp-ico.sm{width:34px;height:34px;font-size:1rem}
 .mp-boards{margin-top:24px}

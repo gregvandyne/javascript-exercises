@@ -7,9 +7,9 @@
 // Hosts (teachers testing it) save boards with share codes, run sessions and draft with AI; students only see their
 // own square in a session's room. Chrome strings are i18n keys (js.manip.*); tool names, tool help and the task library are
 // English data (public/js/manip-data.js, public/js/manip-tasks.js).
-import { t, api, toast, esc, pageData, ask } from '/js/app.js';
+import { t, api, toast, esc, pageData, ask, sheet } from '/js/app.js';
 import { iconHtml, toolIconHtml } from '/js/icons.js';
-import { TOOLS, CATS, toolOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
+import { TOOLS, CATS, toolOf, tutorialOf, pieceDefs, allPieceDefs, BREAKS, FRACTION_DENS, fracLabel, hexValue, paletteName } from '/js/manip-data.js';
 import { TASKS } from '/js/manip-tasks.js';
 import { answerMatches } from '/js/manip-practice.js';
 import * as ROOM from '/js/manip-room.js';
@@ -82,7 +82,7 @@ if (typeof document !== 'undefined') document.addEventListener('pointermove', nl
 
 // ================================================================ tools
 // Each tool: init() its state; total(st) the chip text; palette(st) [{ label, color, run(st) }]; settings(st) HTML with
-// data-set controls; hint and note (help text); board(st, view) the board's HTML; act(st, data, e) a tap on a [data-act]
+// data-set controls; hint (a string, or hint(st) for one that follows the settings) and note (help text); board(st, view) the board's HTML; act(st, data, e) a tap on a [data-act]
 // element (true when the board changed); bind(el) pointer work of its own; pieces: true for the drag-and-drop tools.
 let pid = 1;
 const newId = () => `${Date.now().toString(36)}${(pid++).toString(36)}`;
@@ -303,7 +303,9 @@ const IMPL = {
       { label: 'Clear the line', color: '#212121', run: s => { s.points = []; s.jumps = []; s.jumpFrom = null; } }],
     settings: st => `<label class="mp-set"><span>From</span><input class="input input-sm mp-num" type="number" data-set="min" value="${st.min}"></label><label class="mp-set"><span>To</span><input class="input input-sm mp-num" type="number" data-set="max" value="${st.max}"></label>
       ${sel('step', [['1', '1'], ['0.5', '0.5'], ['0.25', '1/4'], ['0.1', '0.1'], ['5', '5'], ['10', '10']], st.step, 'Step')}${toggle('hide', st.hide, 'Show labels', 'Hide labels')}`,
-    hint: 'Points: tap the line to put a dot on it. Jumps: tap where to start, then where each jump lands. Tap a dot or a jump to select it, then Delete.',
+    // The hint follows the switch (a function of the line's state: renderChrome's hintOf).
+    hint: st => (st && st.mode === 'jumps' ? 'Jumps: tap where to start, then where each jump lands. Tap a jump to select it, then Delete. Switch to Points to put dots on the line.'
+      : 'Points: tap the line to put a dot on it. Tap a dot to select it, then Delete. Switch to Jumps to make jumps.'),
     note: 'Open lines (labels hidden), jump arcs that write the number sentence, and fraction and decimal steps.',
     board: (st, view = {}) => {
       const W = 860, min = +st.min, max = +st.max > +st.min ? +st.max : +st.min + 1, step = +st.step || 1;
@@ -637,6 +639,7 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   ROOT.innerHTML = `<div class="mp-tool">
     <div class="mp-head"><a class="btn btn-sm" href="#">${esc(t('js.manip.nav.allTools'))}</a>
       <div class="mp-title"><h1>${toolIconHtml(tool.slug, { size: 40 })} ${esc(tool.name)}</h1><p class="small muted">${esc(CATS[tool.cat])} · ${esc(t('js.manip.grades', { grades: tool.grades }))}</p></div>
+      ${howButton(tool)}
       <div class="mp-total" id="mp-total" aria-live="polite"></div></div>
     <div class="mp-work">
       <aside class="mp-side" aria-label="${esc(t('js.manip.side.label'))}">
@@ -670,6 +673,21 @@ function openTool(slug, { restore = null, boardId = null, title = '' } = {}) {
   startAutosave();
   if (HOST) CHAT.attach(chatCtx());
 }
+// ---------------------------------------------------------------- "How it works": a short video per tool
+/** The quiet "▶ How it works" button, for a tool with a video (manip-data.js TUTORIALS); '' otherwise. */
+const howButton = tool => (tutorialOf(tool.slug) ? btn('btn btn-sm mp-howbtn', `data-how="${esc(tool.slug)}"`, `${iconHtml('▶️', { size: 18 })} ${esc(t('js.manip.how.button'))}`) : '');
+/** The tool's video in the site's modal sheet (app.js sheet(): ✕, Escape and a tap outside close it, focus goes back
+ *  to the button), with its poster and English captions on. */
+function openHow(slug) {
+  const tool = toolOf(slug), v = tutorialOf(slug); if (!tool || !v) return;
+  const { el } = sheet({ title: t('js.manip.how.title', { tool: tool.name }), content: `<video class="mp-howvideo" controls playsinline preload="metadata" width="1280" height="720" poster="${esc(v.poster)}" aria-label="${esc(t('js.manip.how.video', { tool: tool.name }))}">
+    <source src="${esc(v.mp4)}" type="video/mp4"><track kind="captions" src="${esc(v.vtt)}" srclang="en" label="English"></video>` });
+  el.querySelector('.sheet').classList.add('mp-vsheet');
+  // Captions on from the start (Safari ignores the default attribute on a track added with the page's HTML).
+  const vid = el.querySelector('video'); if (vid && vid.textTracks[0]) vid.textTracks[0].mode = 'showing';
+}
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-how]'); if (b && ROOT.contains(b)) { e.preventDefault(); openHow(b.dataset.how); } });
+
 /** What Oomba (the companion, with this board's workflow: public/js/manip-chat.js) reads and changes: the open board, one change at a time (Undo too). */
 const chatCtx = () => ({
   slug: V.tool.slug, name: V.tool.name, layout: () => V && fit(),
@@ -891,9 +909,11 @@ function renderChrome() {
   ].join('');
   const set = document.getElementById('mp-settings');
   const settings = objectTool(slug) ? (o && !o.st.q && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
-  set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(V.impl.hint || '')}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
+  set.innerHTML = `${settings}${btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(hintOf(V.impl, objectTool(slug) ? o && o.st : V.st))}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
   renderAnnBar(); renderDraft(); renderSteps(); renderStepCard();
 }
+/** A tool's help text under its settings: a string, or a function of the state it describes (the number line's mode). */
+const hintOf = (impl, st) => (typeof impl.hint === 'function' ? impl.hint(st || {}) : impl.hint) || '';
 function renderTotal() {
   const el = document.getElementById('mp-total'); if (!el) return;
   const slug = V.tool.slug;
@@ -926,7 +946,7 @@ function renderBoard() {
   const draw = document.getElementById('mp-draw');
   draw.innerHTML = V.annotate ? `<div class="mp-drawlayer" role="application" aria-label="${esc(t('js.manip.ann.surface'))}"></div>` : '';
   if (V.annotate) bindDraw(draw.firstChild);
-  renderSelPill(); applyView();
+  renderSelPill(); applyView(); keepInView();
 }
 // ---------------------------------------------------------------- many at once (owner, 25 Nov 2026: "click and drag your cursor to select a bunch of objects at once")
 /** The selection as one set (a selection box, Shift+click): one thing is the usual single selection (V.sel or V.osel,
@@ -974,6 +994,8 @@ document.addEventListener('keydown', e => {
   const b = document.getElementById('mp-board'); if (!b || !(b.matches(':hover') || V.spaceDown)) return;
   e.preventDefault(); V.spaceDown = true; b.classList.add('mp-grab');
 });
+const letGo = () => { if (V) V.pressing = false; };
+window.addEventListener('pointerup', letGo); window.addEventListener('pointercancel', letGo);
 const spaceUp = () => { if (!V) return; V.spaceDown = false; document.getElementById('mp-board')?.classList.remove('mp-grab'); };
 document.addEventListener('keyup', e => { if (e.code === 'Space') spaceUp(); });
 window.addEventListener('blur', spaceUp);
@@ -996,14 +1018,51 @@ function applyView() {
   const p = document.querySelector('#mp-zoom .mp-pct'); if (p) p.textContent = `${Math.round(V.view.z * 100)}%`;
 }
 function zoomAt(f, sx, sy) { const z = clamp(V.view.z * f, Z_MIN, Z_MAX), k = z / V.view.z; V.view = { x: sx - (sx - V.view.x) * k, y: sy - (sy - V.view.y) * k, z }; applyView(); }
+/** The board's clear area on screen, in board pixels: the zoom pill (bottom left on a computer, top right on a phone)
+ *  takes a strip off the bottom or the top, so Fit and keepInView never put anything under it (seen recording at
+ *  1280x720: the pill sat on the number line's corner). -> { top, bottom, w, h } */
+function clearArea() {
+  const s = vpSize(), b = document.getElementById('mp-board'), z = document.getElementById('mp-zoom');
+  let top = 0, bottom = s.h;
+  if (b && z && z.offsetHeight) {
+    const br = b.getBoundingClientRect(), zr = z.getBoundingClientRect();
+    if (zr.top - br.top > s.h / 2) bottom = Math.max(s.h / 2, zr.top - br.top); else top = Math.min(s.h / 2, zr.bottom - br.top);
+  }
+  return { top, bottom, w: s.w, h: s.h };
+}
 /** Everything on the board in view (never bigger than life): the objects, pieces, notes, texts and marks. */
 function fit() {
-  const s = vpSize(), st = boardState();
+  const a = clearArea(), st = boardState(), ch = a.bottom - a.top;
   const marks = V.ann.strokes.flatMap(x => (x.pts || []).map(p => ({ x: p.x * WORLD.w, y: p.y * WORLD.h, w: 1, h: 1 })));
   const box = bbox([...boxesOf(V.tool.slug, st, WORLD), ...marks]) || { x: WORLD.w / 2 - 300, y: WORLD.h / 2 - 200, w: 600, h: 400 };
-  const pad = 28, z = clamp(Math.min((s.w - pad * 2) / box.w, (s.h - pad * 2) / box.h), Z_MIN, 1);
-  V.view = { z, x: (s.w - box.w * z) / 2 - box.x * z, y: (s.h - box.h * z) / 2 - box.y * z };
+  const pad = 28, padY = a.top || a.bottom < a.h ? 12 : pad;   // beside the pill its own strip is the gap
+  const z = clamp(Math.min((a.w - pad * 2) / box.w, (ch - padY * 2) / box.h), Z_MIN, 1);
+  V.view = { z, x: (a.w - box.w * z) / 2 - box.x * z, y: a.top + (ch - box.h * z) / 2 - box.y * z };
+  V.sizes = objSizes();
   applyView();
+}
+/** Each object's size on the plane (what keepInView compares). */
+const objSizes = () => new Map(V.st.objects.map(o => { const r = objRect(V.tool.slug, o); return [o.id, `${r.w}x${r.h}`]; }));
+/**
+ * An object that grew (the number line in Jumps is taller; an answer box with more lines) and now runs past the
+ * board's bottom or right edge: the view moves just enough to show it again, or fits when it no longer fits at this
+ * zoom. Only an object that was on screen, and never while a finger or the mouse is down on the board (V.pressing), so
+ * the view never jumps under a drag; the sizes are taken again when the drag ends, so a resize never nudges either.
+ */
+function keepInView() {
+  const prev = V.sizes || new Map(), now = objSizes(); V.sizes = now;
+  if (V.pressing) return;
+  const a = clearArea(), v = V.view, m = 12;
+  let dx = 0, dy = 0, refit = false;
+  for (const o of V.st.objects) {
+    const was = prev.get(o.id); if (!was || was === now.get(o.id)) continue;
+    const r = objRect(V.tool.slug, o), L = r.x * v.z + v.x, T = r.y * v.z + v.y, R = L + r.w * v.z, B = T + r.h * v.z;
+    if (R < 0 || B < a.top || L > a.w || T > a.bottom) continue;   // not on screen: leave the view alone
+    if (B > a.bottom - m) { if (r.h * v.z > a.bottom - a.top - 2 * m) refit = true; else dy = Math.min(dy, a.bottom - m - B, 0); dy = Math.max(dy, a.top + m - T); }
+    if (R > a.w - m) { if (r.w * v.z > a.w - 2 * m) refit = true; else dx = Math.min(dx, a.w - m - R, 0); dx = Math.max(dx, m - L); }
+  }
+  if (refit) { fit(); return; }
+  if (dx || dy) { V.view = { ...v, x: v.x + dx, y: v.y + dy }; applyView(); }
 }
 
 // ---------------------------------------------------------------- pieces in free spots, notes
@@ -1463,6 +1522,8 @@ function bindPlane() {
     if (o) gg.hold = startHold(e.clientX, e.clientY, () => { if (g !== gg || gg.moved) return; gg.held = true; soloObjMenu(o.id, gg.sx, gg.sy); });
     board.setPointerCapture(e.pointerId);
   };
+  // A finger or the mouse down on the board: keepInView waits (the board's own pointerup runs first, then this one).
+  board.addEventListener('pointerdown', () => { V.pressing = true; }, true);
   board.addEventListener('contextmenu', e => { if (e.target.closest('.mp-piece, .mp-obj')) e.preventDefault(); });
   board.addEventListener('keydown', e => {
     if (e.target.matches('textarea.mp-answer') && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; }   // one line of words: Enter finishes
@@ -1997,7 +2058,8 @@ function home() {
   const drawCat = () => {
     const needle = q.value.trim().toLowerCase();
     const list = TOOLS.filter(x => (cat.value === '' || String(x.cat) === cat.value) && (!needle || `${x.name} ${x.desc} ${CATS[x.cat]}`.toLowerCase().includes(needle)));
-    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 40 })}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`).join('')}</div></section>` : ''; }).join('')
+    document.getElementById('mp-catalog').innerHTML = CATS.map((c, i) => { const l = list.filter(x => x.cat === i); return l.length ? `<section class="mp-cat"><h2>${esc(c)}</h2><div class="mp-toolgrid">${l.map(x => { const card = `<a class="panel mp-toolcard" href="#${x.slug}"><span class="mp-ico" style="--tc:${x.color}">${toolIconHtml(x.slug, { size: 40 })}</span><span><b>${esc(x.name)}</b><span class="small muted">${esc(t('js.manip.grades', { grades: x.grades }))}</span><span class="small">${esc(x.desc)}</span></span></a>`;
+      return tutorialOf(x.slug) ? `<div class="mp-toolcell">${card}${howButton(x)}</div>` : card; }).join('')}</div></section>` : ''; }).join('')
       || `<p class="muted">${esc(t('js.manip.home.none'))}</p>`;
   };
   q.oninput = drawCat; cat.onchange = drawCat; drawCat();
