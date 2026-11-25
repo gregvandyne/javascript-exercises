@@ -10,7 +10,7 @@ export default ({ txt, count, attr, sel, beside, all }) => {
   };
   const shows = hm => attr(FACE, 'aria-label', `Clock showing ${hm}`);
   const elapsed = re => txt('#mp-content .mp-elapsed', re);
-  const pal = label => `#mp-palette [aria-label="Add ${label}"]`;
+  const pal = label => `#mp-palette [aria-label="${label}"]`;
   const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Time tracker challenge' });
   return {
     clock: {
@@ -51,7 +51,7 @@ export default ({ txt, count, attr, sel, beside, all }) => {
           { wait: 1700 },
         ] },
         { say: 'Add another clock from the palette. Each keeps its own time.', do: [
-          { click: pal('a clock'), expect: count(FACE, 2) },
+          { click: pal('Add a clock'), expect: count(FACE, 2) },
           { wait: 900 },
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [

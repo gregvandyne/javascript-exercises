@@ -59,6 +59,10 @@ export default h => {
           { click: add('Nickel'), expect: all(count(coins('5¢'), 2), total('$0.67')) },
           { spot: '#mp-total', ms: 1800, expect: total('$0.67') },
         ] },
+        { say: 'Turn Totals off so the class counts it themselves.', do: [
+          { click: '#mp-settings [data-view="totals"]', expect: all(txt('#mp-settings [data-view="totals"]', 'Totals: off'), async p => !(await p.locator('#mp-total').isVisible()) || 'the total still shows') },
+          { wait: 900 },
+        ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 16) },
           { scroll: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make 67 cents' }), center: true },

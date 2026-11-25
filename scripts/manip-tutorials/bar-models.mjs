@@ -26,7 +26,7 @@ export default h => {
       top: '#mp-board',
       steps: [
         { say: 'Pick a layout from the palette, like Part-part-whole.', do: [
-          { click: '#mp-palette [aria-label="Add Part-part-whole"]', expect: all(count(`${BAR} .mp-bar`, 1), parts([['Part', '4'], ['Part', '4']]), txt(`${BAR} .mp-barname`, 'Whole · total 8')) },
+          { click: '#mp-palette [aria-label="Part-part-whole"]', expect: all(count(`${BAR} .mp-bar`, 1), parts([['Part', '4'], ['Part', '4']]), txt(`${BAR} .mp-barname`, 'Whole · total 8')) },
         ] },
         { say: 'Today’s task: a pizza of 8 slices, and 3 are eaten.', do: [
           { move: near(`${BAR} .mp-barname`, 120, 0) },
@@ -45,7 +45,7 @@ export default h => {
           { wait: 1500 },
         ] },
         { say: 'Add a part or a new bar from the palette.', do: [
-          { click: '#mp-palette [aria-label="Add Add a bar"]', expect: all(count(`${BAR} .mp-bar`, 2), txt(`${BAR} p.mp-barname >> nth=1`, 'Bar 2 · total 2')) },
+          { click: '#mp-palette [aria-label="Add a bar"]', expect: all(count(`${BAR} .mp-bar`, 2), txt(`${BAR} p.mp-barname >> nth=1`, 'Bar 2 · total 2')) },
           { move: near(`${BAR} .mp-bar >> nth=1`, 0, 40) },
           { wait: 900 },
         ] },

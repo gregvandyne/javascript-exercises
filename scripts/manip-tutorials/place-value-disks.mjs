@@ -65,7 +65,7 @@ export default h => {
         { say: 'Tap one of ten ones, then Regroup makes them one ten.', do: [
           { click: async p => { const ds = (await placesOf(1)(p)).map((d, i) => ({ ...d, i })).filter(d => d.on).sort((a, b) => a.y - b.y || a.x - b.x); return p.locator(disks(1)).nth(ds[2].i); },
             expect: all(count(`${disks(1)}.on`, 1), async p => (await p.locator('#mp-selpill').isHidden()) || 'the pill is still shown') },
-          { click: '#mp-palette [aria-label="Add Regroup 10 → 1"]', expect: all(count(disks(10), 3), count(disks(1), 4), total(34)) },
+          { click: '#mp-palette [aria-label="Regroup 10 → 1"]', expect: all(count(disks(10), 3), count(disks(1), 4), total(34)) },
           { scroll: disk(10, 2), center: true },
           { move: near(disk(10, 2), 70, 10) },
           { wait: 900 },

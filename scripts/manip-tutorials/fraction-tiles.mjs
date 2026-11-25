@@ -63,10 +63,14 @@ export default h => {
           { expect: async p => { before = await at('1/4', 1)(p); return true; } },
           { drag: tile('1/2'), to: near(tile('1/2'), 240, 40), expect: async p => { const w = await at('1/4', 1)(p); return (w.x > before.x + 150 && w.on) || 'the selection did not move'; } },
         ] },
-        { say: 'Labels can show percents or decimals for new tiles.', do: [
-          { type: '#mp-settings select[data-set="mode"]', text: 'Percent', enter: true, expect: all(async p => (await p.locator('#mp-settings select[data-set="mode"]').inputValue()) === 'pct' || 'not set', sel('#mp-palette [aria-label="Add 50% tile"]')) },
-          { move: beside('#mp-palette [aria-label="Add 25% tile"]', -60) },
-          { wait: 1100 },
+        { say: 'Labels can show fractions, percents or decimals.', do: [
+          { type: '#mp-settings select[data-set="mode"]', text: 'Percent', enter: true,
+            expect: all(async p => (await p.locator('#mp-settings select[data-set="mode"]').inputValue()) === 'pct' || 'not set', count(tiles('50%'), 1), count(tiles('25%'), 2), sel('#mp-palette [aria-label="Add 50% tile"]')) },
+          { move: near(tile('25%', 1), 90, 0) },
+          { wait: 700 },
+          { type: '#mp-settings select[data-set="mode"]', text: 'Decimal', enter: true, expect: all(count(tiles('0.5'), 1), count(tiles('0.25'), 2)) },
+          { move: near(tile('0.25', 1), 90, 0) },
+          { wait: 700 },
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 17) },

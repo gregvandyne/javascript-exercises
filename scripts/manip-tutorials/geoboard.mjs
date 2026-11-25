@@ -4,7 +4,7 @@ export default ({ txt, attr, beside, all }) => {
   const peg = (c, r) => `#mp-content .mp-peg[data-i="${r * 6 + c}"]`;
   const band = n => txt('#mp-content .mp-obody p.small', `Current band: ${n} pegs.`);
   const total = want => txt('#mp-content .mp-otot', want);
-  const pal = label => `#mp-palette [aria-label="Add ${label}"]`;
+  const pal = label => `#mp-palette [aria-label="${label}"]`;
   const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Squares of many sizes' });
   return {
     geoboard: {

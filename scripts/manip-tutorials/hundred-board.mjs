@@ -35,7 +35,7 @@ export default ({ txt, count, sel, attr, all }) => {
           { click: cell(56), expect: all(txt(cell(56), '57'), count(`${OBJ} .mp-cell.on`, 0), total('Covered 0 cells')) },
         ] },
         { say: 'Multiples of 6 shades every sixth number.', do: [
-          { click: pal('Multiples of 6'), expect: all(count(`${OBJ} .mp-cell.mult`, 16), attr('#mp-palette .mp-pal[aria-pressed="true"]', 'aria-label', 'Add Multiples of 6')) },
+          { click: pal('Multiples of 6'), expect: all(count(`${OBJ} .mp-cell.mult`, 16), attr('#mp-palette .mp-pal[aria-pressed="true"]', 'aria-label', 'Multiples of 6')) },
           { wait: 1200 },
         ] },
         { say: 'Start at sets the first number, for 101 to 200.', do: [

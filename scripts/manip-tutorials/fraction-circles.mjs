@@ -53,10 +53,10 @@ export default h => {
           { wait: 1000 },
         ] },
         { say: 'Rings view puts every size in one circle to compare.', do: [
-          { click: '#mp-palette [aria-label="Add Rings view"]', expect: sel(`${SET} svg[aria-label="Fraction circle rings"]`) },
+          { click: '#mp-palette [aria-label="Rings view"]', expect: sel(`${SET} svg[aria-label="Fraction circle rings"]`) },
           { move: near(`${SET} svg[aria-label="Fraction circle rings"]`, 200, 0) },
           { wait: 1400 },
-          { click: '#mp-palette [aria-label="Add Single circles"]', expect: count(PIECES, 2) },
+          { click: '#mp-palette [aria-label="Single circles"]', expect: count(PIECES, 2) },
         ] },
         { say: 'Hold the set’s handle to lock, copy or delete it.', do: [
           { scroll: SET, center: true },

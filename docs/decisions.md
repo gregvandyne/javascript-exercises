@@ -11242,6 +11242,43 @@ Found while recording the number line tutorial at 1280x720.
 - **The hint follows the mode.** A tool's `hint` may be a function of its state (`hintOf`); the number line's says
   Points or Jumps to match its switch.
 
+## Manipulatives: fixes from the tutorial play-throughs, all 18 videos on (25 Nov 2026)
+
+Found by recording a "How it works" video for every tool (each recording is a play-through with a check after every
+action). Tests: `tests/unit/manip-playthrough-fixes-browser.test.js`, and the play-through block in
+`manip-board.test.js`.
+
+- **The first click after a drag is a real click.** A drag's pointerup sets `V.justMoved` (room: `R.justPanned`) so
+  the click of that same press is not a tap; the board draws again and replaces the dragged element, so Chrome often
+  sends no click, and the flag ate the next real one (a rekenrek bead after a handle drag, the pill's Delete or ✕
+  after a group drag). Now the next pointerdown or keydown clears it (a capture listener on the tool view, and on the
+  room), so it only ever swallows a click of the same press.
+- **Totals: off hides the header total** of loose pieces too (`renderTotal`), not only the objects' own totals.
+- **The first quadrant's x-axis numbers** were drawn under the grid, outside its viewBox; they now sit just above the
+  axis when it is the grid's bottom edge (`xySvgInner`).
+- **Add a work mat stays in view.** `placeObject` asked for a 24 px gap but took its in-view spot from `spotIn` (16 px),
+  so it turned the spot down and fell back to the plane's top left with a fit that zoomed out to about 40%. One gap now,
+  and the in-view spot is the free one nearest the content (`manip-board.js nearContent`). A backdrop dragged from the
+  palette (`dropAt`) starts locked, as a tapped one does (`startLock`).
+- **Round pieces per tool.** A kind means something only inside its tool: base ten's decimal 'tenth' is a long block,
+  a place value disk's 'tenth' a disk. `manip-board.js roundPiece(slug, kind)` (counters, disks and coins) replaces the
+  shared ROUND / ROUNDISH sets for the piece, its palette swatch, the drag ghost and the snap (`snapOpts` carries the
+  slug).
+- **Copy lands beside the original.** `nearSpot` tries beside it in view (pieces: under first; objects: right first,
+  24 px apart), then a free spot in view, then beside it anywhere on the plane; never 24 px down and right on top of
+  it. The solo board then moves the view just enough to show the copy (`showFresh`, as `keepInView` does).
+- **A cube out of the middle of a stick leaves two sticks.** After a piece leaves a group (lifted, turned, deleted,
+  a selection deleted), `splitGroup` regroups what is left by adjacency; a piece left alone is in no group.
+- **Fraction tiles relabel** the tiles already on the board when Labels changes (`onSet`), as fraction circles do.
+- **Small things.** Palette buttons say what they do: a point or band color by its name ("Red points", "Red band";
+  its visible text is the color), a tool action by itself ("Lines off", "Close the band", "Start the tracker here");
+  only a new piece or object says "Add". The wheel never opens under the site's sticky header (`wheelLayout`'s `top`,
+  from `.topbar`), and stays inside the window. The fraction circles' empty hint says "Tap a piece to turn it."
+- **All 18 videos on.** `TUTORIALS` lists every tool; the files are in `public/video/manip/` (about 30 MB, each under
+  2.5 MB). Re-recorded after these fixes: number lines, base ten blocks (the tenth's shape), fraction tiles (its Labels
+  step now shows the tiles on the board relabel), coordinate grid (x-axis numbers), money (a Totals off step), and the
+  tools whose scenes or pictures changed with the fixes (listed in the branch's report).
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,

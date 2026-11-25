@@ -540,7 +540,7 @@ function renderPal() {
   if (!A || !A.editable || !live) { el.innerHTML = R.role === 'student' ? `<div class="mp-toolsrow">${btn('mp-tbtn', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zout"', '−')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zin"', '+')}</div>` : ''; return; }
   const items = palette(A), o = objectTool(R.room.tool) ? tgt(A) : null, K = o && kindOf(R.room.tool, o.k);
   const where = R.role === 'teacher' ? t('js.manip-room.addTo', { name: A.name }) : t('js.manip-room.addMine');
-  const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => R.deps.palButton(p, i, p.plus ? p.label : t('js.manip-room.add', { label: p.label }))).join('')}</div>` : ''; };
+  const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => R.deps.palButton(p, i, label => t('js.manip-room.add', { label }))).join('')}</div>` : ''; };
   el.innerHTML = `<p class="mp-cap">${esc(where)}</p>${group('add', '')}${group('obj', K ? `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` : '')}${group('piece', '')}
     <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `${iconHtml('🗒️', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
       ${btn(`mp-tbtn${R.textMode ? ' on' : ''}`, `data-rtool="text" aria-pressed="${!!R.textMode}" aria-label="${esc(t('js.manip-room.text'))}"`, `<b class="mp-tglyph">T</b><span class="rm-hidephone"> ${esc(t('js.manip-room.text'))}</span>`)}
@@ -556,6 +556,10 @@ function renderPal() {
 // ---------------------------------------------------------------- input
 function bind() {
   const el = document.getElementById('rm');
+  // A drag's end sets R.justPanned so the click of that same press is not a tap; the next press clears it, so a drag
+  // whose click never came (the board drew again and replaced the dragged element) never eats a later, real click.
+  el.addEventListener('pointerdown', () => { if (R) R.justPanned = false; }, true);
+  el.addEventListener('keydown', () => { if (R) R.justPanned = false; }, true);
   el.addEventListener('pointerdown', down);
   el.addEventListener('pointermove', move);
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
