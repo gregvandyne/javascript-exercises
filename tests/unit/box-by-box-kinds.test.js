@@ -1,4 +1,4 @@
-// The Big Divide in the built game (Chromium), for what came with remainders as fractions and decimals, decimal numbers,
+// Arithmetic Lab in the built game (Chromium), for what came with remainders as fractions and decimals, decimal numbers,
 // addition and subtraction, and the bring-down arrows (docs/decisions.md "The Big Divide: remainders, decimals,
 // addition and subtraction"). Each run works problems in a row on a phone, Guided (every question read) and On my own.
 import test from 'node:test';
@@ -18,7 +18,7 @@ let haveBrowser = false;
 if (chromium) { try { const b = await chromium.launch(exe ? { executablePath: exe } : {}); await b.close(); haveBrowser = true; } catch { haveBrowser = false; } }
 const skip = haveBrowser ? false : 'no Chromium installed';
 
-const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
 let browser = null;
 test.after(async () => { if (browser) await browser.close(); });
 /** The built game opened with a teacher's activity (a question set), as the frame opens it: BRB stubbed, the kit served. */

@@ -1,4 +1,4 @@
-// The Big Divide: how a step's question sounds when the speaker button reads it. The screen writes math ("745 ÷ 6",
+// Arithmetic Lab: how a step's question sounds when the speaker button reads it. The screen writes math ("745 ÷ 6",
 // "7 R 2", "2/3", "0.7"); the voice says it the way a teacher reads it aloud ("745 divided by 6", "7 R 2", "2 over 3",
 // "7 tenths"), in the player's language: every word it adds is one of the table's own w.* words.
 // The same change makes the spoken form of each q.* line (build.mjs writes them into the page's I18N block as say.<key>),

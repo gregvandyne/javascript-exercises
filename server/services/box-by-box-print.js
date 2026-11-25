@@ -1,4 +1,4 @@
-// The Big Divide's worksheet (BRB.print, docs/sdk.md "Printing"; the same pipeline as Crossword's, services/game-print.js):
+// Arithmetic Lab's worksheet (BRB.print, docs/sdk.md "Printing"; the same pipeline as Crossword's, services/game-print.js):
 // the game sends an activity's problems as plain data, as a question set's item ({ k, p, r?, dec?, m? }, checked by
 // cleanBoxItems, so only numbers and fixed words), and this makes the printable page: each problem written the way it is
 // on paper (long division in its bracket, the others in columns, decimals lined up as they are worked) with room to work,

@@ -1,4 +1,4 @@
-// The Big Divide: Save on the activity's own form (not only under Share), the same save as Share's.
+// Arithmetic Lab: Save on the activity's own form (not only under Share), the same save as Share's.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';

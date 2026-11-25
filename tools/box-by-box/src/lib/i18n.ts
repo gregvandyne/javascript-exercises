@@ -1,4 +1,4 @@
-// The Big Divide: the words on every screen, in the player's language. The tables are src/i18n/<locale>.json (English is
+// Arithmetic Lab: the words on every screen, in the player's language. The tables are src/i18n/<locale>.json (English is
 // en.json, the keys and the fallback for a key a language lacks); build.mjs writes them all into the page as the marked
 // `// ==== I18N START ====` block (var I18N), which this reads, and which the server reads for the AI voice's allowlist
 // (server/services/tts-lines.js). English is also bundled, so the sheets and their steps run as they are in Node too.
@@ -91,5 +91,5 @@ export function segments(k: string, n?: number): { s: string; v?: string }[] {
 	if (last < text.length) out.push({ s: text.slice(last) });
 	return out;
 }
-/** The game's name in the player's language ("La Gran División"; the English one is lib/name.ts NAME). */
+/** The game's name in the player's language ("Laboratorio de aritmética"; the English one is lib/name.ts NAME). */
 export const NAME_HERE = t('ui.name');

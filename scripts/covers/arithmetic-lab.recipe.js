@@ -1,7 +1,7 @@
-// The Big Divide's card cover (loaded by scripts/covers.js): a student practising on their own, a long division on the
+// Arithmetic Lab's card cover (loaded by scripts/covers.js): a student practising on their own, a long division on the
 // graph paper (never the "Who's playing?" or activity-list setup screens). Playwright frame calls only.
 export default {
-  'box-by-box': {
+  'arithmetic-lab': {
     viewport: { width: 600, height: 800 },
     scale: 0.9,
     async prep(f) {
