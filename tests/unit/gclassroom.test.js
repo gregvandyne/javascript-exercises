@@ -535,7 +535,7 @@ test('read-only connect works: link and import, and every write control is a not
   assert.match(pg, /Allow Oomba Academy to post to Classroom/);
   assert.match(pg, /name="write" value="1"/);
   for (const hidden of ['google-classroom/post"', 'google-classroom/grades"', 'google-classroom/material"', 'google-classroom/announce"', 'name="autoGrades" value="1" ', 'gc-topicform']) assert.ok(!pg.includes(hidden), `hidden: ${hidden}`);
-  assert.match(pg, /To post lessons, send grades and share materials/);
+  assert.match(pg, /To post lesson plans, send grades and share materials/);
   assert.match(pg, /To post announcements/);
   assert.match(pg, /Update the students from Classroom every 6 hours/, 'the roster refresh only needs the read scope');
   // The assign form has no "Also post" box, and the APIs say what's missing; Google is never asked to write.
@@ -605,8 +605,8 @@ test('full: Connect asks for all six scopes in one consent; all granted, no sepa
   const { c, teacher, tc } = school();
   // Before connecting: the page says Connect allows posting too, and nothing "comes later".
   let pg = await pageOf(c, tc);
-  assert.match(pg, /post lessons there, with a link back here and the due date/);
-  assert.match(pg, /send each student&#39;s lesson grade to Classroom \(a completion grade, or the score you chose in Homeroom\)|send each student's lesson grade to Classroom \(a completion grade, or the score you chose in Homeroom\)/);
+  assert.match(pg, /post lesson plans there, with a link back here and the due date/);
+  assert.match(pg, /send each student&#39;s lesson plan grade to Classroom \(a completion grade, or the score you chose in Homeroom\)|send each student's lesson plan grade to Classroom \(a completion grade, or the score you chose in Homeroom\)/);
   assert.doesNotMatch(pg, /comes later, only if you allow it/);
   // The helper checks that Connect (no write=1) asked for the 2 read + 4 write scopes, with include_granted_scopes.
   const r = await connect(tc, c.id, { write: false });
@@ -904,7 +904,7 @@ test('announcements: only the template\'s fixed words and the teacher\'s note, n
   config.liveClassroom = true;
   try {
     assert.equal((await (await ann({ template: 'live', code: '7654321' })).json()).code, 'noLiveGame');
-    assert.match(await pageOf(c, tc), /No live game is open for this class right now/);
+    assert.match(await pageOf(c, tc), /No live lesson is open for this class right now/);
     const sess = { id: 'gc-test-live', phase: 'lobby', audience: 'class', classId: c.id, code: '1234567', host: { userId: teacher.id }, seats: new Map(), cohosts: new Map() };
     LS._all().set(sess.id, sess);
     try {
@@ -1149,7 +1149,7 @@ test('Algebra Builder: a teacher assigns a problem or a saved question set to a 
   const set = await (await post(`/api/games/${g.id}/sets`, { items }, tc)).json();
   assert.match(set.id, /^s-[a-z0-9]{10}$/);
   const bare = await (await get('/teach/assign?game=algebra-builder', tc)).text();
-  assert.match(bare, /Make and save what your class will open in the game first/);
+  assert.match(bare, /Make and save what your class will open in the lesson first/);
   assert.doesNotMatch(bare, /data-api="\/api\/teach\/assign-game"/, 'no form: the class would land on the teacher gallery');
   const opts = `chapter=${set.id}&lock=1`;
   const pg = await (await get(`/teach/assign?game=algebra-builder&opts=${encodeURIComponent(opts)}`, tc)).text();

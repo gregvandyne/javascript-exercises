@@ -14786,6 +14786,47 @@ The place value disks' palette shows each disk as a plain colored circle with it
 a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
 and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.
 
+## Teachers say lessons (25 Nov 2026)
+
+The owner: "Let's change games to lessons throughout the app", for teachers only. On a teacher's pages a playable thing a
+teacher makes, assigns, hosts or hands out is a **lesson**, and today's step-by-step lessons (read, play and build steps,
+the lesson editor and library, Homeroom's lesson builder, the Lessons tabs, lesson rows in gradebooks) are **lesson
+plans**. Students and kids keep "game" everywhere they see it; parents keep their words. Only visible text changed: no
+URL, route, id, column, API field or CSS class.
+
+- **How**: a string only teachers see is rewritten. A string shared with students, kids or family grown-ups gets a
+  teacher variant, the same key with `ForTeachers` (`folders.allGames` and `folders.allGamesForTeachers`); school staff
+  see the variant wherever the key is used (`server/i18n/index.js` `teacherT` and `useTeacherWords`, switched on for
+  every request of school staff in `server/app.js`; the page's browser strings follow through `clientStrings(..., {
+  teacher })`). `build.titleStaff` became `build.titleForTeachers`. `npm run i18n:check` fails on a variant whose key is
+  gone, and counts a variant as used when its key is. Every locale has the same keys, with "lesson" and "lesson plan"
+  in its own words (Lektion / Unterrichtsplan, leçon / plan de cours, lección / plan de clase, aula / plano de aula,
+  lezione / piano di lezione, les / lesplan, урок / план урока, שיעור / מערך שיעור, درس / خطة درس, レッスン / 授業プラン, 課程 / 教案).
+- **Screens**: the teacher home and the teaching loop; the class page (its tabs are Lessons and Lesson plans; Build new
+  lesson, Find Oomba lessons, Assigned lessons, the Assigned list's count says "N items" because it holds both, and a
+  multi-step row says "Lesson plan · N steps"); Homeroom (Tap a lesson, My lesson plans, + Build a lesson plan, Lessons I
+  built, Oomba lessons and tools, the hand-out sheet's "Lesson · free play" and "Lesson plan", My desk, errors and toasts);
+  the Classroom view's overview; /build for staff (Build lessons, New lesson, All my lessons); the gradebook, progress,
+  rubrics, standards and Google Classroom pages; Oomba Live for teachers (Host a live lesson, the host page's Live lesson,
+  End lesson, Lesson settings and a **Join code**, the words the projector shows students, whose join page says "code");
+  the Oomba chat (its greeting, suggestions, steps, how-to steps and a sentence in its system prompt so its replies use
+  the same words); the site frame (skip link, search box, meta description, the Builder's news banner); and the teacher
+  marketing pages (/teachers, /teachers/live, the landing at "/", the quick live page, the school plan print).
+- **Turn your notes into a lesson**: /teach/make used "lesson" for the teacher's own teaching text. It is now "your
+  notes" ("Paste your notes"), and what Oomba makes is a lesson. On the landing, the Builder turns a lesson plan (an
+  uploaded plan, the word's everyday meaning) into a playable lesson.
+- **Still "game", on purpose**: a game a student built and shared (Games students shared and its count, a class's shared
+  games, the "Build a game" step); the Studio and the Builder chat (the kid Builder; a teacher's New lesson opens it);
+  what students read (Google Classroom announcements a teacher posts, every student page and live player page); family
+  hosting of live games (the base keys); the class dashboard (projected to students, unchanged); the courses' own parts
+  (CS Quest, Number Quest, Cyber Defenders); the Learn library; research and safety copy; /plans' shared copy; billing;
+  emails (the onboarding-email branch); legal pages; the Manipulatives (another session's). The full list, with every
+  changed string: the branch's changes list.
+- Tests: `tests/unit/teachers-say-lessons.test.js` (a teacher's /teach, class page, Homeroom panel and its browser
+  strings, /build and Live host page say "lesson" and have no "game" but the students' own; a student's desk, To do and
+  class page and a kid's /build keep "game"; the mechanism and every locale's variants), with the teacher-facing
+  assertions of the existing tests moved to the new words.
+
 ## A simpler teacher home (25 Nov 2026)
 
 The owner crossed out every button on the teacher home (/teach) on his phone: "just have the three options on each

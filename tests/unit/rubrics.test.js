@@ -191,7 +191,7 @@ test('the editor shows the Rubric select and the step\'s rubric; the lesson page
   assert.match(page.text, /name="rubricId"/);
   assert.match(page.text, /data-for-kinds="question build"/);
   assert.match(page.text, /class="sc-rubric"/);
-  assert.match(page.text, /id="lesson-rubric"|Whole-lesson rubric/);
+  assert.match(page.text, /id="lesson-rubric"|Whole lesson plan rubric/);
   assert.equal((await as(ana)(`/api/lesson-steps/${ask.id}`, { method: 'POST', body: { kind: 'question', body: 'Why?', rubricId: R.rubricsOf(ben.id, oak.id)[0].id } })).json.field, 'rubricId');
 });
 
@@ -238,7 +238,7 @@ test('the gradebook and the CSV carry points and percent per lesson and in total
   const csv = await as(ana)(`/class/${cls.id}/progress.csv`);
   const lines = csv.text.replace(/^﻿/, '').trim().split('\r\n');
   assert.match(lines[0], /Fair play \(rubric points\),Fair play \(rubric %\)/);
-  assert.match(lines[0], /,Work done,Rubric points,Rubric %,Score,Score \(points\),Late lessons,/, 'the rubric total stays where it was; the Score columns follow');
+  assert.match(lines[0], /,Work done,Rubric points,Rubric %,Score,Score \(points\),Late lesson plans,/, 'the rubric total stays where it was; the Score columns follow');
   const row = lines.find(l => l.startsWith('Mia Pupil'));
   const col = name => row.split(',')[lines[0].split(',').indexOf(name)];
   assert.match(row, /,15\/16,94%,/);

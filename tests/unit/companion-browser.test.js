@@ -144,7 +144,7 @@ test('laptop: the bubble on a teacher page; game search cards; a web answer with
     assert.equal(await card.locator('a', { hasText: 'Play' }).getAttribute('href'), '/play/fraction-factory');
     assert.match(await card.locator('a', { hasText: 'Host live' }).getAttribute('href'), /^\/live\?game=.+&class=/);
     assert.match(await card.locator('a', { hasText: 'Assign' }).getAttribute('href'), /^\/teach\/assign\?id=/);
-    assert.match(await page.locator('.oc-did').first().textContent(), /Searched games/);
+    assert.match(await page.locator('.oc-did').first().textContent(), /Searched lessons/);
     await noSideScroll(page);
     await shot(page, 'b_games');
     // A book for a guided reading level: the library's grade bands, said as such, with Read and Assign.

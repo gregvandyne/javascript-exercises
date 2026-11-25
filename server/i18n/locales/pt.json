@@ -4,7 +4,9 @@
     "titleHome": "Jogos educativos para crianças: jogue e crie · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
     "description": "Jogos educativos grátis e divertidos para crianças de 5 a 14 anos. Jogue no navegador e crie seus próprios jogos com o Construtor com IA.",
+    "descriptionForTeachers": "Aulas interativas para 5 a 14 anos no navegador, um painel da turma para o dia todo e um Construtor com IA que cria aulas com você.",
     "skip": "Pular para os jogos",
+    "skipForTeachers": "Pular para o conteúdo",
     "mainNav": "Principal",
     "signIn": "Entrar",
     "meLabel": "Eu: {name}",
@@ -18,7 +20,9 @@
     "badgeNew": "Novos: {count}",
     "search": {
       "label": "Buscar jogos e criadores",
-      "placeholder": "Buscar jogos ou criadores"
+      "labelForTeachers": "Buscar aulas e criadores",
+      "placeholder": "Buscar jogos ou criadores",
+      "placeholderForTeachers": "Buscar aulas ou criadores"
     },
     "lang": {
       "title": "Idioma",
@@ -49,9 +53,11 @@
     },
     "build": {
       "ready": "Seu jogo “{title}” está pronto! <a href=\"{href}\">Abra o jogo</a>",
+      "readyForTeachers": "Sua aula “{title}” está pronta! <a href=\"{href}\">Abrir</a>",
       "question": "O Construtor tem uma pergunta sobre “{title}”. <a href=\"{href}\">Abra o jogo</a>",
       "stopped": "“{title}” parou antes de terminar. <a href=\"{href}\">Abra para continuar</a>",
-      "many": "Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>"
+      "many": "Alguns dos seus jogos têm novidades do Construtor. <a href=\"{href}\">Ver Meus jogos</a>",
+      "manyForTeachers": "O Construtor tem novidades sobre algumas das suas aulas. <a href=\"{href}\">Ver a Pasta de aulas</a>"
     },
     "shortPasswordGrownup": "A senha tem menos de {min} caracteres. Por favor, <a href=\"{href}\">escolha uma senha mais longa</a>."
   },
@@ -574,6 +580,7 @@
     },
     "empty": {
       "title": "Nenhum jogo ainda",
+      "titleForTeachers": "Ainda não há aulas",
       "action": "Criar um jogo"
     },
     "intro": {
@@ -1527,15 +1534,19 @@
   },
   "build": {
     "title": "Criar um jogo",
-    "titleStaff": "Criar aulas",
+    "titleForTeachers": "Criar aulas",
     "hero": {
       "heading": "Crie seu próprio jogo conversando!",
-      "text": "Conte sua ideia ao Construtor. Ele cria o jogo, e você pode continuar mudando."
+      "headingForTeachers": "Crie uma aula conversando!",
+      "text": "Conte sua ideia ao Construtor. Ele cria o jogo, e você pode continuar mudando.",
+      "textForTeachers": "Conte sua ideia ao Construtor. Ele cria a aula, e você pode continuar mudando."
     },
     "newGame": "Novo jogo",
+    "newGameForTeachers": "Nova aula",
     "updateWaiting": "Atualização esperando revisão",
     "changed": "Alterado {when}",
     "empty": "Toque em “Novo jogo” para começar um. Seus jogos vão aparecer aqui.",
+    "emptyForTeachers": "Toque em “Nova aula” para começar uma. Suas aulas vão aparecer aqui.",
     "rename": "Renomear",
     "delete": "Apagar",
     "status": {
@@ -2053,7 +2064,7 @@
         "label": "Minha mesa (só você vê o que está nela)",
         "title": "Minha mesa",
         "note": "Só você vê isto",
-        "empty": "Solte um jogo aqui para testá-lo primeiro.",
+        "empty": "Solte uma aula aqui para testá-la primeiro.",
         "cardLabel": "{title}, na minha mesa",
         "play": "Jogar",
         "preview": "Prévia",
@@ -2061,12 +2072,12 @@
         "handOut": "Distribuir",
         "takeOff": "Tirar da minha mesa",
         "lead": "Na sua mesa para testar primeiro. Os alunos só veem quando você distribuir.",
-        "lessonLead": "Na sua mesa. A prévia abre os exercícios da lição. Os alunos só veem quando você distribuir.",
+        "lessonLead": "Na sua mesa. A prévia abre os exercícios do plano de aula. Os alunos só veem quando você distribuir.",
         "toolLead": "Na sua mesa para abrir quando quiser. Distribuir ferramentas vem em seguida.",
         "tapWhere": "Agora toque em uma carteira, um grupo, Turma toda ou Minha mesa.",
         "tapMine": "Agora toque em Minha mesa para deixá-lo lá.",
         "toolSoon": "Distribuir ferramentas vem em seguida. Coloque na Minha mesa para abrir de lá.",
-        "pickFirst": "Escolha primeiro um jogo à esquerda e depois toque em Minha mesa."
+        "pickFirst": "Escolha primeiro uma aula à esquerda e depois toque em Minha mesa."
       },
       "wholeClass": "Turma toda · {count}",
       "editGroups": "Grupos",
@@ -2238,7 +2249,7 @@
       "endClass": "Encerrar a aula",
       "endConfirm": "Encerrar a aula para todos? As carteiras e a área do professor ficam como estão.",
       "projector": "Abrir a visão de projetor",
-      "hostLive": "Iniciar um jogo ao vivo",
+      "hostLive": "Conduzir uma aula ao vivo",
       "started": "A aula está ao vivo. Os alunos veem um aviso para ir à carteira.",
       "bringing": "Todos estão olhando a área do professor",
       "backToDesks": "Os alunos voltaram às carteiras",
@@ -2252,9 +2263,9 @@
         "cancel": "Cancelar",
         "wholeClass": "Turma toda",
         "emptyGroup": "Ainda não há ninguém nesse grupo.",
-        "pickFirst": "Escolha primeiro um jogo à esquerda e depois toque aqui.",
+        "pickFirst": "Escolha primeiro uma aula à esquerda e depois toque aqui.",
         "title": "{game} para {who}",
-        "eyebrow": "Jogo · jogo livre",
+        "eyebrow": "Aula · jogo livre",
         "lead": "Os alunos jogam livremente. Adicione instruções se quiser que eles façam algo específico.",
         "instructions": "Instruções (opcional)",
         "instructionsPh": "Por exemplo: faça 3 divisões longas com resto e mostre uma no seu bloco.",
@@ -2284,7 +2295,7 @@
         "removeOne": "Tirar da carteira de {name}",
         "removeAll": "Remover de todas as carteiras",
         "removeAllConfirm": "Remover {title} de todas as carteiras? O trabalho dos alunos fica guardado e volta se você entregar de novo.",
-        "lesson": "Aula",
+        "lesson": "Plano de aula",
         "version": "Versão: {name}",
         "gcAlso": "Publicar também no Google Classroom",
         "gcHint": "Vai para a turma do Classroom vinculada como atividade, com a nota que você escolheu aqui.",
@@ -2313,7 +2324,7 @@
         "commentPh": "Por exemplo: Mandou bem nos restos!",
         "sticker": "Um adesivo (opcional)",
         "noSticker": "Nenhum",
-        "private": "Só este aluno vê, na mesa dele e na página da aula.",
+        "private": "Só este aluno vê, na mesa dele e na página do plano de aula.",
         "remove": "Remover"
       },
       "select": "Selecionar",
@@ -2397,15 +2408,19 @@
     "build": {
       "gettingReady": "Preparando…",
       "renameTitle": "Renomear jogo",
+      "renameTitleForTeachers": "Renomear aula",
       "nameLabel": "Nome do jogo",
+      "nameLabelForTeachers": "Nome da aula",
       "save": "Salvar",
       "renamed": "Nome salvo",
       "deleteTitle": "Apagar este jogo?",
+      "deleteTitleForTeachers": "Apagar esta aula?",
       "deleteText": "“{title}” vai sumir para sempre. Não dá para desfazer.",
       "deleteLive": "Os jogadores não vão mais conseguir encontrá-lo.",
       "keep": "Manter",
       "deleteYes": "Apagar",
-      "deleted": "Jogo apagado"
+      "deleted": "Jogo apagado",
+      "deletedForTeachers": "Aula apagada"
     },
     "me": {
       "lookingGood": "Ficou ótimo!",
@@ -2975,6 +2990,7 @@
     },
     "live-sets": {
       "replaceOpen": "Você já tem um jogo ao vivo aberto. Encerrar e abrir este?",
+      "replaceOpenForTeachers": "Você já tem uma aula ao vivo aberta. Encerrar e abrir esta?",
       "edit": "Editar",
       "new": "Novo conjunto de perguntas",
       "title": "Título",
@@ -3037,9 +3053,10 @@
         "lobby": "Ainda está no saguão.",
         "players": "{count, plural, =0 {Nenhum jogador conectado.} one {# jogador conectado.} other {# jogadores conectados.}}",
         "back": "Voltar para ele",
-        "replace": "Encerrar e abrir o jogo novo"
+        "replace": "Encerrar e abrir o jogo novo",
+        "replaceForTeachers": "Encerrar e abrir a nova aula"
       },
-      "why": "Da sua aula:"
+      "why": "Das suas anotações:"
     },
     "match": {
       "title": "Jogar {title} online",
@@ -3094,7 +3111,7 @@
       "pdfReady": "{name} está pronto para enviar.",
       "textLoaded": "O texto de {name} foi carregado.",
       "fileKind": "Escolha um PDF ou um arquivo de texto.",
-      "tooShort": "Cole um pouco mais da sua aula primeiro (pelo menos {n} caracteres).",
+      "tooShort": "Cole primeiro um pouco mais das suas anotações (pelo menos {n} caracteres).",
       "drafted": "{n} perguntas rascunhadas. Confira cada uma.",
       "backConfirm": "Começar de novo? As perguntas rascunhadas nesta página serão perdidas.",
       "assigned": "Atribuído."
@@ -4364,11 +4381,11 @@
       "historyDelete": "Apagar esta conversa",
       "historyDeleteAsk": "Apagar esta conversa para sempre? Ela não poderá ser recuperada.",
       "historyDeleteOk": "Apagar",
-      "hello": "Oi! Eu sou o Oomba, seu ajudante para ensinar. Peça um jogo, um livro, uma mudança no seu painel ou ajuda com uma aula.",
+      "hello": "Oi! Eu sou o Oomba, seu ajudante para ensinar. Peça uma aula, um livro, uma mudança no seu painel ou ajuda com um plano de aula.",
       "idea": {
         "game": {
-          "label": "Encontrar um jogo",
-          "text": "Me dê um jogo de frações para o 3º ano, de uns 10 minutos"
+          "label": "Encontrar uma aula",
+          "text": "Me dê uma aula de frações para o 3º ano, de uns 10 minutos"
         },
         "book": {
           "label": "Encontrar um livro",
@@ -4379,8 +4396,8 @@
           "text": "Adicione ao meu painel um timer de 5 minutos e as tarefas da turma"
         },
         "plan": {
-          "label": "Planejar uma aula",
-          "text": "Me ajude a planejar uma aula de 30 minutos sobre "
+          "label": "Fazer um plano de aula",
+          "text": "Me ajude a fazer um plano de aula de 30 minutos sobre "
         },
         "dashTimer": {
           "label": "Adicionar um timer de 5 minutos",
@@ -4443,10 +4460,10 @@
         "explain": "Consultou como o Oomba Academy funciona",
         "page": "Leu esta página",
         "dash": "Leu seu layout {q} ({n} widgets)",
-        "games": "Buscou jogos: {q}",
+        "games": "Buscou aulas: {q}",
         "books": "Buscou na Story Library",
         "booksLevel": "Relacionou o nível de leitura {q}",
-        "lessons": "Buscou aulas e folhas de atividades",
+        "lessons": "Buscou planos de aula e folhas de atividades",
         "propose": "Preparou uma mudança para você conferir",
         "dashNo": "Não conseguiu planejar essa mudança no painel",
         "brief": "Escreveu uma descrição",
@@ -5013,14 +5030,14 @@
       "close": "Fechar"
     },
     "homeroom-lessons": {
-      "build": "Criar uma aula",
-      "editTitle": "Editar aula",
-      "pickTitle": "Qual jogo ou ferramenta?",
-      "pickLead": "Escolha um jogo. Você define exatamente o que os alunos fazem, e a folha é feita a partir disso.",
+      "build": "Criar um plano de aula",
+      "editTitle": "Editar plano de aula",
+      "pickTitle": "Qual aula ou ferramenta?",
+      "pickLead": "Escolha uma aula. Você define exatamente o que os alunos fazem, e a folha é feita a partir disso.",
       "comingLater": "Em breve",
       "later": {
-        "quiz": "Quizzes e jogos de palavras da turma",
-        "mine": "Jogos que criei",
+        "quiz": "Quizzes e enigmas de palavras da turma",
+        "mine": "Aulas que criei",
         "atlas": "Atlas Quest",
         "sudoku": "Sudoku",
         "castle": "Desafios do Castle Clash",
@@ -5028,7 +5045,7 @@
         "figures": "Figuras",
         "reading": "Leitura"
       },
-      "name": "Nome da aula",
+      "name": "Nome do plano de aula",
       "namePh": "Por exemplo: Treino de divisão longa",
       "op": "Operação",
       "ops": {
@@ -5090,7 +5107,7 @@
       "versions": "Uma versão para cada grupo?",
       "versionsYes": "Sim, por grupo",
       "versionsNo": "Uma para todos",
-      "versionsHint": "Cada grupo começa com a sua aula e uma mudança sugerida. Mude o que quiser.",
+      "versionsHint": "Cada grupo começa pelo seu plano de aula com uma mudança sugerida. Mude o que quiser.",
       "versionsOff": "Todos recebem a mesma folha.",
       "noGroups": "Esta turma ainda não tem grupos. Crie grupos primeiro para adicionar versões.",
       "editing": "Versão para",
@@ -5113,13 +5130,13 @@
       "aiNothing": "Todas as palavras já têm dica.",
       "aiNeedWords": "Digite algumas palavras primeiro. O Oomba escreve uma dica para cada uma.",
       "aiFailed": "O Oomba não conseguiu escrever dicas agora. Tente de novo.",
-      "save": "Salvar em Minhas aulas",
+      "save": "Salvar em Meus planos de aula",
       "cancel": "Cancelar",
-      "needTitle": "Dê um nome à aula.",
+      "needTitle": "Dê um nome ao plano de aula.",
       "problemsN": "{count, plural, one {# problema} other {# problemas}}",
       "wordsN": "{count, plural, one {# palavra} other {# palavras}}",
       "versionsN": "{count, plural, one {# versão} other {# versões}}",
-      "empty": "As aulas que você criar aparecem aqui.",
+      "empty": "Os planos de aula que você cria aparecem aqui.",
       "more": "Mais para {title}",
       "edit": "Editar",
       "duplicate": "Duplicar",
@@ -5129,14 +5146,14 @@
       "versionsFor": "Versões para {groups}",
       "printLead": "A folha sai com o código da turma, então os alunos também podem abrir no Oomba.",
       "printWhich": "Qual folha?",
-      "printLesson": "A aula",
+      "printLesson": "O plano de aula",
       "printKey": "Incluir o gabarito",
       "printGo": "Imprimir",
-      "full": "Você tem {count} aulas, o máximo que pode guardar. Apague uma antes.",
-      "giveEyebrow": "Aula",
+      "full": "Você tem {count} planos de aula, o máximo. Apague um primeiro.",
+      "giveEyebrow": "Plano de aula",
       "giveTitle": "{lesson} para {who}",
       "versionsBy": "Versões por grupo",
-      "asBuilt": "A aula como foi criada",
+      "asBuilt": "O plano de aula como foi criado",
       "scoreHint": "O boletim mostra a % de acertos."
     },
     "homeroom-overview": {
@@ -5240,7 +5257,7 @@
         "nothing": "Nada na mesa ainda.",
         "stuckNote": "Sem avançar nesta atividade há {min} minutos.",
         "lastSeen": "Visto pela última vez {when}",
-        "whereGame": "No jogo",
+        "whereGame": "Na aula",
         "whereDesk": "Na mesa",
         "activity": "última atividade {when}",
         "on": "Trabalhando em",
@@ -5299,7 +5316,8 @@
     "live": {
       "title": "Seu professor começou um jogo ao vivo!",
       "join": "Entrar agora",
-      "chip": "Jogo ao vivo agora"
+      "chip": "Jogo ao vivo agora",
+      "chipForTeachers": "Aula ao vivo agora"
     },
     "tab": {
       "todo": "Para fazer",
@@ -5335,10 +5353,11 @@
       "noneAdmin": "Você ainda não dá aula para nenhuma turma",
       "noneAdminText": "As turmas em que você dá aula aparecem aqui. Todas as turmas de {school} estão em Minha escola.",
       "makeGame": "Criar um jogo",
+      "makeGameForTeachers": "Criar uma aula",
       "plan": {
         "heading": "Plano Escola · {school}"
       },
-      "hostLive": "Conduzir um jogo ao vivo"
+      "hostLive": "Conduzir uma aula ao vivo"
     },
     "class": {
       "new": "Nova turma",
@@ -5376,7 +5395,7 @@
       "removeConfirm": "Remover {name} desta turma? Os trabalhos feitos nesta turma ficam guardados.",
       "noStudentsText": "Digite os nomes abaixo para criar contas da escola e cartões de acesso.",
       "details": "Detalhes da turma",
-      "teachersText": "Outros professores podem cuidar desta turma com você: aulas, alunos e progresso.",
+      "teachersText": "Os coprofessores podem conduzir esta turma com você: aulas, planos de aula, alunos e progresso.",
       "removeTeacher": "Remover {name} desta turma",
       "archiveTitle": "Arquivar esta turma",
       "archiveText": "Turmas arquivadas ficam escondidas dos alunos e vão para Turmas arquivadas, no fim de Minhas turmas. Tudo fica guardado, e você pode restaurar a turma quando quiser.",
@@ -5413,6 +5432,7 @@
       "askNoAdmin": "{school} ainda não tem admin da escola. Peça à equipe da Oomba Academy para nomear um; depois, essa pessoa poderá adicionar membros à equipe na aba Pessoas da escola.",
       "archivedToast": "Turma {name} arquivada",
       "lessons": "Aulas",
+      "lessonsForTeachers": "Planos de aula",
       "lastActivity": "Última atividade",
       "noActivity": "nada ainda",
       "noStudentsPick": "Escolha abaixo alunos que já estão em {school}, ou crie contas e cartões de acesso para alunos novos.",
@@ -5429,7 +5449,7 @@
       "declineConfirm": "Recusar @{name}?",
       "inClass": "Nesta turma",
       "otherAccounts": "Outras contas da escola",
-      "mergeHint": "Se você escolher uma, ela será mesclada com @{name}: a conta da escola deixa de funcionar, e as turmas e os jogos dela são transferidos.",
+      "mergeHint": "Escolher uma a junta com @{name}: a conta da escola para de funcionar, e as turmas e aulas dela passam para lá.",
       "mergeConfirm": "Mesclar @{account} na conta @{name}? A conta @{account} deixa de funcionar.",
       "approved": "@{name} entrou na turma"
     },
@@ -5443,7 +5463,7 @@
       "schoolAccount": "conta da escola",
       "ownAccount": "conta própria",
       "addStaff": "Adicionar um professor ou admin da escola",
-      "addStaffText": "Use o nome real, como alunos e colegas conhecem a pessoa. As contas da escola seguem as regras de segurança da escola; quem quiser compartilhar jogos com todos deve usar a própria conta.",
+      "addStaffText": "Use o nome verdadeiro, como alunos e colegas conhecem. Contas da escola seguem as regras de segurança dela; quem quiser compartilhar aulas publicamente deve usar a própria conta.",
       "realName": "Nome real",
       "existing": "Nome da pessoa na Oomba Academy",
       "existingPlaceholder": "ex.: ProfRibeiro",
@@ -5507,8 +5527,8 @@
       "chatHint": "As contas da escola só conversam com colegas de turma que adicionaram como amigos. As mensagens são filtradas, e professores e funcionários nunca estão no chat.",
       "timeZone": "Fuso horário",
       "timeZoneNone": "Não definido (UTC)",
-      "timeZoneUnset": "Defina o fuso horário da sua escola para que as aulas abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
-      "timeZoneHint": "As aulas abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}.",
+      "timeZoneUnset": "Defina o fuso horário da sua escola para que os planos de aula abram à meia-noite e os prazos terminem à meia-noite onde você está. Até lá, ninguém fica em atraso até 36 horas após o início do dia de entrega.",
+      "timeZoneHint": "Os planos de aula abrem e os prazos terminam à meia-noite neste fuso. Agora lá são {time}.",
       "groupSchool": "Escola",
       "groupClasses": "Turmas e entrada",
       "chatHintOff": "O padrão. Contas escolares não podem conversar com ninguém. Continuam podendo jogar e criar.",
@@ -5534,7 +5554,7 @@
       "later": "No celular? Estes cartões ficam aqui para você (só você) por 24 horas: abra de novo pela aba Alunos da turma num computador da escola e imprima, ou use Compartilhar › Imprimir › Salvar como PDF no celular.",
       "again": "{count, plural, one {Cartão de acesso feito hoje: ainda aqui para imprimir.} other {# cartões de acesso feitos hoje: ainda aqui para imprimir.}}",
       "open": "Abrir os cartões",
-      "next": "Próximo passo: passar um primeiro jogo"
+      "next": "Próximo passo: atribuir uma primeira aula"
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
@@ -5585,8 +5605,10 @@
     },
     "classTabs": {
       "lessons": "Aulas",
+      "lessonsForTeachers": "Planos de aula",
       "progress": "Progresso",
       "games": "Jogos",
+      "gamesForTeachers": "Aulas",
       "students": "Alunos",
       "settings": "Configurações",
       "standards": "Padrões"
@@ -5890,6 +5912,7 @@
     "assignedN": "{count, plural, one {em # turma} other {em # turmas}}",
     "kinds": {
       "game": "Jogar um jogo",
+      "gameForTeachers": "Jogar uma aula",
       "build": "Criar um jogo",
       "text": "Ler ou fazer",
       "question": "Responder a uma pergunta",
@@ -5899,16 +5922,16 @@
       "proofread": "Revisão de texto"
     },
     "library": {
-      "title": "Biblioteca de aulas",
-      "mine": "Minhas aulas",
+      "title": "Biblioteca de planos de aula",
+      "mine": "Meus planos de aula",
       "shared": "Compartilhadas por colegas",
-      "top": "Biblioteca de aulas",
+      "top": "Biblioteca de planos de aula",
       "path": "Pastas",
-      "newLesson": "Nova aula",
-      "newLessonPlaceholder": "Título da aula, ex.: Aquecimento de frações",
-      "empty": "Ainda não há aulas aqui",
-      "emptyText": "Crie uma nova aula, deixe a IA fazer um rascunho ou copie uma aula que um colega compartilhou.",
-      "find": "Procurar uma aula",
+      "newLesson": "Novo plano de aula",
+      "newLessonPlaceholder": "Título do plano de aula, ex.: Aquecimento de frações",
+      "empty": "Ainda não há planos de aula aqui",
+      "emptyText": "Crie um plano de aula novo, deixe a IA fazer um rascunho ou copie um que um colega compartilhou.",
+      "find": "Encontrar um plano de aula",
       "readyMade": "Prontos para usar",
       "numberQuest": "Number Quest (matemática, da educação infantil ao 8º ano)"
     },
@@ -5917,12 +5940,12 @@
       "new": "Nova pasta",
       "newPlaceholder": "Nova pasta, ex.: Frações",
       "delete": "Excluir pasta",
-      "deleteConfirm": "Excluir a pasta {name}? As aulas e pastas que estão dentro dela sobem um nível.",
+      "deleteConfirm": "Apagar a pasta {name}? Os planos de aula e pastas de dentro sobem um nível.",
       "hint": "As pastas são só para você. Os alunos nunca as veem.",
-      "why": "As pastas organizam a sua própria biblioteca de aulas, e as aulas delas podem ir para qualquer turma. As unidades, na página de uma turma, definem a ordem que os alunos veem."
+      "why": "As pastas organizam sua própria biblioteca de planos de aula, e os planos de aula delas podem ir para qualquer turma. As unidades, na página de uma turma, definem a ordem que os alunos veem."
     },
     "lesson": {
-      "title": "Título da aula",
+      "title": "Título do plano de aula",
       "summary": "Resumo",
       "objectives": "Objetivos de aprendizagem",
       "objectivesHint": "Um objetivo por linha",
@@ -5931,66 +5954,66 @@
       "share": "Compartilhar com a minha escola",
       "sharedChip": "Compartilhada",
       "duplicate": "Fazer uma cópia",
-      "delete": "Excluir aula",
-      "deleteConfirm": "Excluir a aula {name}? Isso não pode ser desfeito.",
-      "deleteAssignedConfirm": "Excluir a aula {name}? Ela também será removida de {count, plural, one {# turma} other {# turmas}}. Isso não pode ser desfeito.",
+      "delete": "Apagar plano de aula",
+      "deleteConfirm": "Apagar o plano de aula {name}? Não dá para desfazer.",
+      "deleteAssignedConfirm": "Apagar o plano de aula {name}? Ele também será removido de {count, plural, one {# turma} other {# turmas}}. Não dá para desfazer.",
       "unshare": "Parar de compartilhar",
       "sharedToast": "Compartilhada com a sua escola. Os colegas já podem copiá-la.",
       "unsharedToast": "Não está mais compartilhada.",
       "sharedStatus": "Compartilhada com a sua escola",
       "editDetails": "Editar detalhes",
       "copiedNotice": "Esta é a sua cópia. Mude o nome em Editar detalhes.",
-      "deleteWorkConfirm": "Excluir a aula {name}? {n, plural, one {O trabalho de # aluno nela será excluído.} other {Os trabalhos de # alunos nela serão excluídos.}} Isso não pode ser desfeito.",
-      "deleteLiveConfirm": "Excluir a aula {name}? Ela está em {count, plural, one {# turma} other {# turmas}}, e {n, plural, one {o trabalho de # aluno nela será excluído} other {os trabalhos de # alunos nela serão excluídos}}. Isso não pode ser desfeito. Para manter os trabalhos, remova a aula da turma em vez de excluí-la."
+      "deleteWorkConfirm": "Apagar o plano de aula {name}? {n, plural, one {O trabalho de # aluno} other {O trabalho de # alunos}} nele será apagado. Não dá para desfazer.",
+      "deleteLiveConfirm": "Apagar o plano de aula {name}? Ele está em {count, plural, one {# turma} other {# turmas}}, e {n, plural, one {o trabalho de # aluno} other {o trabalho de # alunos}} nele será apagado. Não dá para desfazer. Para manter o trabalho deles, remova-o da turma."
     },
     "step": {
       "add": "Adicionar uma etapa",
       "addButton": "Adicionar etapa",
       "kind": "Tipo",
       "title": "Título da etapa (opcional)",
-      "game": "Jogo",
-      "myGames": "Meus jogos",
+      "game": "Aula",
+      "myGames": "Minhas aulas",
       "schoolGames": "Compartilhados na minha escola",
       "classGames": "Compartilhados com minhas turmas",
-      "siteGames": "Jogos da Oomba Academy",
+      "siteGames": "Aulas da Oomba Academy",
       "minutes": "Minutos",
       "edit": "Editar etapa",
       "delete": "Excluir etapa",
       "deleteConfirm": "Excluir esta etapa?",
-      "notShared": "Sua turma ainda não pode abrir este jogo",
+      "notShared": "Sua turma ainda não pode abrir esta aula",
       "notSharedHint": "Primeiro compartilhe o jogo com a sua escola, ou abra-o no Estúdio e toque em Publicar.",
       "classOnly": "Só as turmas com quem foi compartilhado podem jogar",
-      "hiddenGame": "Um jogo que você não pode abrir",
+      "hiddenGame": "Uma aula que você não pode abrir",
       "shareGame": "Compartilhar com a minha escola",
       "openStudio": "Abrir no Estúdio",
-      "newGameIdea": "Sua ideia para o jogo",
+      "newGameIdea": "Sua ideia para a aula",
       "newGamePlaceholder": "ex.: um quiz com 10 perguntas sobre frações para o 4º ano",
       "newGameButton": "Abrir o Construtor",
-      "newGameNote": "Uma etapa de jogo é adicionada a esta aula, e o Estúdio abre com a sua ideia pronta. Quando o jogo estiver pronto, publique-o para a sua escola.",
+      "newGameNote": "Um passo de aula é adicionado a este plano de aula, e o Estúdio abre com sua ideia pronta. Publique para a sua escola quando estiver pronta.",
       "bodyText": "O que os alunos leem ou fazem",
       "bodyQuestion": "A pergunta",
       "bodyBuild": "Ideia que os alunos dão ao Construtor",
       "bodyGame": "Instruções (opcional)",
       "buildHint": "ex.: “um quiz com 8 perguntas sobre os planetas”",
-      "newGameLink": "Criar um novo jogo para os alunos jogarem",
+      "newGameLink": "Criar uma aula nova para os alunos jogarem",
       "deleteWorkConfirm": "Excluir esta etapa? {n, plural, one {O trabalho de # aluno nela será excluído.} other {Os trabalhos de # alunos nela serão excluídos.}} Isso não pode ser desfeito.",
-      "liveGames": "Jogos ao vivo para a turma (você conduz)",
-      "otherGames": "Mais jogos",
+      "liveGames": "Aulas ao vivo da turma (você conduz)",
+      "otherGames": "Mais aulas",
       "bodyFigures": "Instruções para os alunos (opcional)",
-      "figuresHint": "Em seguida, o criador de figuras abre: escolha as figuras, ajuste os números e as respostas e depois Salvar na aula.",
+      "figuresHint": "Em seguida, o editor Figures abre: escolha figuras, defina números e respostas e depois Salvar no plano de aula.",
       "editFigures": "Editar questões",
       "printFigures": "Imprimir",
       "figuresStarted": "Os alunos já começaram esta etapa, então as questões ficam como estão.",
       "more": "Mais",
-      "figuresSaved": "Questões com figuras salvas na aula."
+      "figuresSaved": "Perguntas de Figures salvas no plano de aula."
     },
     "ai": {
       "button": "Criar rascunho com IA",
-      "topic": "Sobre o que é a aula?",
+      "topic": "Sobre o que é o plano de aula?",
       "topicPlaceholder": "ex.: O ciclo da água",
       "minutes": "Minutos",
-      "make": "Criar o rascunho da aula",
-      "note": "O Claude cria o rascunho de uma aula com etapas e jogos relacionados. Você pode mudar tudo antes de usar.",
+      "make": "Fazer o rascunho do plano de aula",
+      "note": "O Claude faz o rascunho de um plano de aula com passos e aulas que combinam. Você pode mudar tudo antes de usar.",
       "done": "Aqui está o seu rascunho. Confira cada etapa e mude o que quiser.",
       "template": "A IA não está disponível agora, então aqui está um modelo simples para começar. Mude o que quiser."
     },
@@ -6001,12 +6024,12 @@
       "due": "Prazo (opcional)",
       "button": "Atribuir",
       "noClasses": "Você ainda não dá aula para nenhuma turma nesta escola.",
-      "note": "Os alunos veem a aula a partir do dia em que ela abre. As mudanças que você fizer depois aparecem para todas as turmas.",
+      "note": "Os alunos veem o plano de aula a partir do dia em que ele abre. As mudanças que você fizer depois aparecem em todas as turmas.",
       "done": "Atribuída a {class}",
       "restored": "Atribuída de novo a {class}. Os trabalhos anteriores dos alunos voltaram.",
       "changeDates": "Mudar datas",
-      "allClasses": "Esta aula já está em todas as suas turmas.",
-      "zoneNote": "{zone, select, none {Os dias são contados em UTC e ninguém fica em atraso até 36 horas após o início do dia de entrega. Um admin da escola pode definir o fuso horário da escola nas Configurações.} other {As aulas abrem e os prazos terminam à meia-noite em {zone}.}}",
+      "allClasses": "Este plano de aula está em todas as suas turmas.",
+      "zoneNote": "{zone, select, none {Os dias são contados em UTC e ninguém está atrasado até 36 horas depois do início do dia do prazo. Um administrador da escola pode definir o fuso horário em Configurações.} other {Os planos de aula abrem e os prazos terminam à meia-noite em {zone}.}}",
       "zoneUnset": "Por enquanto, os prazos terminam à meia-noite UTC, porque o fuso horário da sua escola não está definido.",
       "zoneSet": "Definir o fuso horário",
       "zoneAsk": "Um administrador da escola pode defini-lo nas Configurações da escola.",
@@ -6021,33 +6044,34 @@
       "noStudents": "Esta turma ainda não tem alunos."
     },
     "class": {
-      "title": "Aulas",
-      "assign": "Atribuir uma aula",
-      "library": "Biblioteca de aulas",
+      "title": "Planos de aula",
+      "kindPlan": "Plano de aula",
+      "assign": "Atribuir um plano de aula",
+      "library": "Biblioteca de planos de aula",
       "unit": "Unidade",
       "unitName": "Nome da unidade",
       "newUnit": "Nova unidade",
       "newUnitPlaceholder": "Nova unidade, ex.: Frações",
-      "emptyUnit": "Ainda não há aulas nesta unidade.",
+      "emptyUnit": "Ainda não há planos de aula nesta unidade.",
       "deleteUnit": "Excluir unidade",
-      "deleteUnitConfirm": "Excluir a unidade {name}? As aulas dela continuam na turma.",
+      "deleteUnitConfirm": "Apagar a unidade {name}? Os planos de aula dela ficam na turma.",
       "opensOn": "Abre em {date}",
       "dueOn": "Entregar até {date}",
-      "editLesson": "Editar aula",
+      "editLesson": "Editar plano de aula",
       "unassign": "Remover da turma",
       "unassignConfirm": "Remover {name} desta turma? Os alunos não vão mais vê-la. Os trabalhos ficam guardados e voltam se você atribuir a aula de novo.",
-      "empty": "Nenhuma aula ainda",
-      "emptyText": "Crie uma nova aula para esta turma ou deixe a IA fazer um rascunho para você conferir.",
-      "allIn": "Todas as suas aulas já estão nesta turma.",
-      "sharedHint": "Quer usar a aula de um colega? Primeiro faça uma cópia em {tab}.",
-      "unitHint": "As unidades agrupam as aulas desta turma. Os alunos veem as unidades.",
+      "empty": "Ainda não há planos de aula",
+      "emptyText": "Crie um plano de aula novo para esta turma ou deixe a IA fazer um rascunho para você conferir.",
+      "allIn": "Todos os seus planos de aula estão nesta turma.",
+      "sharedHint": "Quer o plano de aula de um colega? Faça primeiro uma cópia em {tab}.",
+      "unitHint": "As unidades agrupam os planos de aula desta turma. Os alunos as veem.",
       "doneOf": "{done} de {students} concluíram",
       "toReview": "{count} para revisar",
       "dueToday": "Entregar hoje",
       "late": "Em atraso",
       "removedGroup": "Removidas desta turma",
-      "readyMade": "Usar uma aula pronta",
-      "unitWhy": "As unidades agrupam as aulas desta turma, na ordem em que os alunos as veem. As pastas só organizam a sua própria biblioteca de aulas.",
+      "readyMade": "Usar um plano de aula pronto",
+      "unitWhy": "As unidades agrupam os planos de aula desta turma, na ordem em que os alunos os veem. As pastas só organizam sua própria biblioteca de planos de aula.",
       "someStudents": "{count, plural, one {# aluno} other {# alunos}}"
     },
     "view": {
@@ -6059,7 +6083,7 @@
     "shared": {
       "copy": "Copiar para a minha biblioteca",
       "empty": "Nada compartilhado por colegas ainda",
-      "emptyText": "As aulas que outros professores compartilham aparecem aqui. As aulas que você compartilha aparecem marcadas como 🏫 Compartilhada em Minhas aulas."
+      "emptyText": "Os planos de aula que outros professores compartilham aparecem aqui. Os que você compartilha ficam marcados com 🏫 Compartilhado em Meus planos de aula."
     },
     "template": {
       "warmup": "Aquecimento",
@@ -6074,20 +6098,20 @@
     },
     "errors": {
       "notFound": "Não encontramos isso, ou não é possível abrir.",
-      "lessonTitle": "Dê um título à aula.",
+      "lessonTitle": "Dê um título ao plano de aula.",
       "folderName": "Dê um nome à pasta.",
       "unitName": "Dê um nome à unidade.",
       "folderLoop": "Uma pasta não pode ficar dentro dela mesma.",
       "stepKind": "Escolha um tipo de etapa.",
-      "pickGame": "Escolha um jogo para esta etapa.",
+      "pickGame": "Escolha uma aula para este passo.",
       "buildPrompt": "Escreva a ideia que os alunos vão dar ao Construtor.",
       "stepText": "Escreva as instruções para esta etapa.",
-      "tooManySteps": "Uma aula pode ter até 40 etapas.",
+      "tooManySteps": "Um plano de aula pode ter até 40 passos.",
       "badDate": "Essa data não parece certa.",
-      "topic": "Digite sobre o que é a aula.",
-      "aiFailed": "A IA não conseguiu criar o rascunho agora. Tente de novo daqui a um minuto ou crie a aula você mesmo.",
+      "topic": "Escreva sobre o que é o plano de aula.",
+      "aiFailed": "A IA não conseguiu fazer o rascunho agora. Tente de novo em um minuto ou crie o plano de aula você mesmo.",
       "questionText": "Escreva a pergunta que os alunos vão responder.",
-      "alreadyAssigned": "Esta aula já está em {class}. Mude as datas pelo menu ⋯ na aba Aulas da turma.",
+      "alreadyAssigned": "Este plano de aula já está em {class}. Mude as datas pelo menu ⋯ na aba Planos de aula da turma.",
       "pickStudents": "Marque pelo menos um aluno ou escolha Turma toda.",
       "notInClass": "Só é possível escolher alunos desta turma."
     },
@@ -6130,18 +6154,18 @@
     },
     "gradebook": {
       "title": "Progresso",
-      "text": "Etapas que cada aluno concluiu em cada aula. Abra uma aula para ver as pontuações e revisar as respostas.",
+      "text": "Passos que cada aluno fez em cada plano de aula. Abra um plano de aula para ver pontuações e revisar respostas.",
       "csv": "Baixar (CSV)",
       "overall": "Geral",
       "toRead": "{count, plural, one {# resposta para revisar} other {# respostas para revisar}}",
-      "noLessons": "Nenhuma aula ainda",
-      "noLessonsText": "Atribua uma aula na aba Aulas para ver aqui como cada aluno está indo.",
+      "noLessons": "Ainda não há planos de aula",
+      "noLessonsText": "Atribua um plano de aula na aba Planos de aula e você verá aqui como cada aluno está indo.",
       "noStudents": "Nenhum aluno ainda",
       "noStudentsText": "Adicione alunos na aba Alunos, e o progresso deles vai aparecer aqui.",
       "toReviewList": "Respostas para revisar:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Nota do quiz: {pct}% de acertos",
-      "quizOverall": "Nota dos quizzes em todas as aulas: {pct}%"
+      "quizOverall": "Pontuação dos questionários em todos os planos de aula: {pct}%"
     },
     "lesson": {
       "finished": "{done} de {total} alunos concluíram",
@@ -6898,7 +6922,7 @@
       "print": {
         "title": "Plano escolar: uma página para a administração da sua escola",
         "heading": "Plano escolar da Oomba Academy",
-        "intro": "Um professor da sua escola gostaria de um plano escolar na Oomba Academy: jogos educativos para 5 a 14 anos e um Construtor em que os alunos criam os próprios jogos. Veja aqui quanto custa e como configurar.",
+        "intro": "Um professor da sua escola gostaria de um plano escolar na Oomba Academy: aulas interativas para 5 a 14 anos e um Construtor em que os alunos criam os próprios jogos. Veja aqui quanto custa e como configurar.",
         "printButton": "Imprimir ou salvar em PDF",
         "back": "Voltar para os planos escolares",
         "cost": "Quanto custa",
@@ -7037,7 +7061,7 @@
       "imageAlt": "Oomba Academy: jogos educativos divertidos para crianças"
     },
     "teachers": {
-      "imageAlt": "Oomba Academy para professores: jogos educativos divertidos e interativos para a sala de aula"
+      "imageAlt": "Oomba Academy para professores: aulas interativas e divertidas para a sala de aula"
     },
     "game": {
       "title": "{title}: {kind} infantil grátis",
@@ -7066,11 +7090,11 @@
     }
   },
   "teachers": {
-    "title": "Jogos educativos interativos para a sala de aula",
-    "description": "Jogos educativos sem anúncios para 5 a 14 anos que rodam em qualquer navegador, inclusive Chromebooks, com materiais manipuláveis de matemática, um painel da turma e um Construtor de jogos com IA.",
+    "title": "Aulas interativas e divertidas para a sala de aula",
+    "description": "Aulas interativas sem anúncios para 5 a 14 anos, em qualquer navegador, inclusive Chromebooks, com materiais manipuláveis de matemática, um painel da turma e um Construtor com IA.",
     "kicker": "🍎 Para professores",
-    "h1": "Jogos educativos divertidos e interativos que a turma vai pedir para jogar",
-    "lead": "Jogos educativos, materiais manipuláveis de matemática para usar ao vivo com a turma e um painel da turma para o dia todo, para crianças de 5 a 14 anos. Tudo roda no navegador, inclusive em Chromebooks, e a turma pode criar os próprios jogos com o nosso Construtor com IA.",
+    "h1": "Aulas divertidas e interativas que a turma vai pedir",
+    "lead": "Aulas interativas, materiais de matemática para usar ao vivo com a turma e um painel da turma para o dia todo, para 5 a 14 anos. Tudo roda no navegador, inclusive em Chromebooks, e a turma pode criar os próprios jogos com nosso Construtor com IA.",
     "badges": {
       "ads": "Sem anúncios",
       "browser": "Funciona em qualquer navegador, até no Chromebook",
@@ -7079,10 +7103,10 @@
     },
     "cta": {
       "start": "Crie uma conta de professor",
-      "try": "Experimente um jogo agora, sem cadastro"
+      "try": "Experimente uma aula agora, sem cadastro"
     },
     "subjects": {
-      "h": "Jogos por disciplina"
+      "h": "Aulas por matéria"
     },
     "how": {
       "h": "Como funciona na sua sala de aula",
@@ -7090,7 +7114,7 @@
       "s1": {
         "h": "Suas turmas em um só lugar",
         "p": "Depois que a sua escola está configurada, o admin da escola adiciona os professores, e cada professor cria as próprias turmas em Minhas turmas.",
-        "alt": "O início da Sala de Aula de Ms. Rivera: três turmas e duas respostas à espera, botões para o resumo da semana e um jogo ao vivo, e o cartão do ciclo de ensino com Planejar, Jogar, Verificar e Comentar."
+        "alt": "O início de Turma da Sra. Rivera: três turmas e duas respostas esperando, botões para o resumo da semana e uma aula ao vivo, e o cartão do ciclo de ensino com Planejar, Jogar, Conferir e Retorno."
       },
       "s2": {
         "h": "Os alunos entram com um código ou com cartões de acesso",
@@ -7099,19 +7123,19 @@
         "alt": "A aba Students de uma turma: um aluno, @StarGecko, pede para entrar com o código da turma, com um campo para o nome verdadeiro dele e os botões Approve e Decline. Abaixo, a lista da turma com 5 alunos e um botão para novos cartões de acesso."
       },
       "s3": {
-        "h": "Planeje uma aula em etapas",
-        "p": "As aulas misturam leituras curtas, um jogo educativo, uma tarefa de criar um jogo e perguntas por escrito. Passe uma aula para uma turma com data de entrega.",
-        "alt": "A lista Steps no editor de aulas: a etapa 1, “Warm-up: slices of pizza”, e a etapa 2, “Keep the bottom, add the top”, cada uma com o seu texto, os seus minutos e um botão Edit step."
+        "h": "Faça um plano de aula em passos",
+        "p": "Os planos de aula misturam leitura curta, uma aula para jogar, uma tarefa de criar um jogo e perguntas escritas. Atribua um a uma turma com prazo.",
+        "alt": "A lista de passos no editor de planos de aula: passo 1, “Aquecimento: fatias de pizza”, e passo 2, “Mantenha o de baixo, some o de cima”, cada um com texto, minutos e um botão Editar passo."
       },
       "s4": {
         "h": "Os alunos jogam, criam e respondem",
-        "p": "Cada aluno faz a aula no próprio ritmo, em qualquer aparelho.",
-        "alt": "A visão de uma aula pelo aluno: a etapa de jogo, Quick-math warm-up, está marcada como Done, com uma melhor pontuação de 47 e um botão Play Sum Racer. Depois vêm uma etapa de criar um jogo com um botão Start building e uma pergunta por escrito, o Exit ticket."
+        "p": "Cada aluno avança pelo plano de aula no próprio ritmo, em qualquer aparelho.",
+        "alt": "A visão de um aluno de um plano de aula: o passo de jogo, Aquecimento de cálculo, está marcado como Feito com melhor pontuação 47 e um botão Jogar Sum Racer. Depois vêm um passo de criar um jogo com o botão Começar a criar e uma pergunta escrita, o bilhete de saída."
       },
       "s5": {
         "h": "Veja o progresso e o boletim de notas",
-        "p": "O boletim de notas mostra o progresso, as pontuações nos jogos e as respostas por escrito de cada aluno. Deixe comentários ou baixe tudo em CSV.",
-        "alt": "A aba Progresso da turma: links para os cursos e para o histórico de jogos ao vivo, um botão Baixar (CSV), as respostas para revisar e o boletim com os passos que cada aluno fez em cada lição."
+        "p": "O diário de notas mostra o progresso, as pontuações das aulas e as respostas escritas de cada aluno. Deixe um retorno ou baixe em CSV.",
+        "alt": "A aba Progresso da turma: links para os cursos e o histórico de aulas ao vivo, um botão Baixar (CSV), as respostas para revisar e a tabela de notas com os passos feitos por cada aluno em cada plano de aula."
       },
       "s6": {
         "h": "Ensine com as ferramentas",
@@ -7130,8 +7154,8 @@
       "li1": "Turmas com código da turma: os alunos que têm conta própria entram com o código, e você aprova a entrada.",
       "li2": "Os alunos não precisam de e-mail: você pode criar contas da escola para a turma inteira e imprimir os cartões de acesso.",
       "li3": "Login com o Google para escolas que usam contas Google e Chromebooks.",
-      "li4": "Aulas em etapas: ler um texto, jogar um jogo, criar um jogo. Você acompanha o progresso, as pontuações e as respostas escritas de cada aluno.",
-      "li5": "Compartilhe um jogo só com as suas turmas, para ele ficar dentro da turma."
+      "li4": "Planos de aula em passos: ler algo, jogar uma aula, criar um jogo. Você vê o progresso, as pontuações e as respostas escritas de cada aluno.",
+      "li5": "Compartilhe uma aula só com suas turmas, para ela ficar dentro da turma."
     },
     "safe": {
       "h": "Seguro desde o início",
@@ -7144,7 +7168,7 @@
     },
     "uses": {
       "h": "Como usar",
-      "p": "Os professores encaixam um jogo no dia sempre que alguns minutos de jogo concentrado ajudam:",
+      "p": "Os professores encaixam uma aula no dia onde alguns minutos de jogo concentrado ajudam:",
       "li1": "Aquecimento no início da aula",
       "li2": "Pausas ativas",
       "li3": "Para quem termina antes",
@@ -7159,7 +7183,7 @@
     },
     "start": {
       "h": "Cadastre a sua escola",
-      "p1": "Os alunos podem experimentar qualquer jogo na hora, sem cadastro.",
+      "p1": "Os alunos podem experimentar qualquer aula na hora, sem cadastro.",
       "plans": "Quer mais para suas turmas? Teste o plano Professor grátis por {days} dias, sem cartão: alunos ilimitados e {daily} criações com IA por dia para a turma.",
       "email": "Escreva para cadastrar a sua escola",
       "subject": "Cadastrar minha escola na Oomba Academy",
@@ -7168,7 +7192,7 @@
     "faq": {
       "h": "Perguntas dos professores",
       "q1": "A Oomba Academy é grátis para professores?",
-      "a1": "Sim. Jogar, as turmas, as aulas e o acompanhamento do progresso são grátis, e toda conta de aluno recebe mensagens grátis para o Construtor todos os dias.",
+      "a1": "Sim. Jogar, turmas, planos de aula e progresso são gratuitos, e cada conta de aluno recebe mensagens grátis ao Construtor todo dia.",
       "q2": "Os alunos precisam de conta ou de e-mail para jogar?",
       "a2": "Não. Qualquer pessoa pode jogar na hora. Para as suas turmas, você pode criar contas da escola sem nenhum e-mail e imprimir cartões de acesso para elas.",
       "q3": "Funciona em Chromebooks e na rede da escola?",
@@ -7176,19 +7200,19 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Aulas como Shark Plank e as primeiras pistas do Sum Racer servem para os menores. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
       "q7": "Os alunos podem criar os próprios jogos? Quem vê esses jogos?",
       "a7": "Sim. Um jogo novo é privado: só o aluno que o criou pode jogar. Ele pode compartilhar o jogo com a turma, e um jogo para todos é revisado antes que outras pessoas possam jogar.",
       "q8": "Posso acompanhar o progresso e as pontuações?",
-      "a8": "Sim. As aulas registram o progresso, as pontuações nos jogos e as respostas escritas de cada aluno. Você vê tudo na aba Progresso da turma e pode baixar o progresso de cada aluno nas aulas como planilha (CSV).",
+      "a8": "Sim. Os planos de aula registram o progresso, as pontuações das aulas e as respostas escritas de cada aluno. Você vê tudo na aba Progresso da turma e pode baixar o progresso de cada aluno num plano de aula como planilha (CSV).",
       "q9": "Quais idiomas existem?",
       "a9": "{count} idiomas, entre eles espanhol, português, francês, alemão, árabe, hebraico e japonês. Cada aluno escolhe o seu.",
       "a4google": "Os alunos nunca digitam um e-mail, e nunca pedimos a idade nem o endereço deles. Se a sua escola usa o login com o Google, guardamos o e-mail Google escolar de cada aluno só para reconhecer a conta dele. Não há anúncios nem cookies de rastreamento. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q1paid": "A Oomba Academy é grátis para professores?",
-      "a1paid": "Jogar, as turmas, as aulas, o progresso e o Oomba Live são grátis, e cada aluno ganha mensagens grátis para o Construtor todos os dias. O plano Professor, opcional, adiciona para as suas turmas uma reserva diária compartilhada de criações com IA, com alunos ilimitados. Teste grátis por 14 dias, sem cartão. Os preços estão na página de planos."
+      "a1paid": "Jogar, turmas, planos de aula, progresso e Oomba Live são gratuitos, e cada aluno recebe mensagens grátis ao Construtor todo dia. O Plano Professor opcional adiciona um saldo diário compartilhado de criações com IA para suas turmas, com alunos ilimitados. Experimente grátis por 14 dias, sem cartão. Os preços estão na página de planos."
     },
     "setup": {
       "lead": "Conte um pouco sobre a sua escola. Vamos configurá-la em até 1 dia letivo e responder ao seu e-mail com os próximos passos.",
@@ -7213,11 +7237,11 @@
       "thanks": {
         "h": "Obrigado! Recebemos o seu pedido.",
         "p1": "Vamos configurar sua escola até o fim do próximo dia letivo e responder ao e-mail que você nos deu, com seu acesso e os próximos passos.",
-        "p2": "Enquanto espera, experimente um jogo com a sua turma: os alunos podem jogar na hora, sem cadastro.",
+        "p2": "Enquanto espera, experimente uma aula com sua turma: os alunos podem jogar na hora, sem cadastro.",
         "todayH": "O que você já pode fazer hoje, enquanto espera",
-        "todayLive": "<a href=\"{href}\">Conduzir um jogo ao vivo com a turma</a>: os alunos entram em qualquer aparelho com um código, sem conta.",
-        "todayPlay": "<a href=\"{href}\">Jogar com sua turma</a>: os alunos podem jogar na hora, sem cadastro.",
-        "todayHow": "<a href=\"{href}\">Ver como funcionam turmas, cartões de acesso e aulas</a>, para estar pronto quando sua escola estiver configurada."
+        "todayLive": "<a href=\"{href}\">Conduzir uma aula ao vivo com a turma</a>: os alunos entram com um código em qualquer aparelho, sem contas.",
+        "todayPlay": "<a href=\"{href}\">Jogar uma aula com sua turma</a>: os alunos podem jogar na hora, sem cadastro.",
+        "todayHow": "<a href=\"{href}\">Ver como funcionam turmas, cartões de acesso e planos de aula</a>, para estar pronto quando sua escola for configurada."
       },
       "errors": {
         "school": "Digite o nome da sua escola (de 2 a 100 caracteres).",
@@ -7244,10 +7268,10 @@
       "signupCta": "Criar minha conta de professor"
     },
     "live": {
-      "h": "Jogos ao vivo em sala de aula",
-      "p1": "Conduza uma corrida de perguntas ao vivo ou qualquer jogo pronto para o modo ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
+      "h": "Aulas ao vivo para a turma",
+      "p1": "Conduza uma corrida de quiz ao vivo ou qualquer aula pronta para o ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
       "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas) e Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil).",
-      "li2": "Use um conjunto pronto, digite um conjunto rápido ou transforme as perguntas de uma aula em um quiz ao vivo.",
+      "li2": "Use um conjunto inicial, digite um rápido ou transforme as perguntas de um plano de aula num quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
     },
@@ -7260,9 +7284,9 @@
       "h": "Funciona com o seu Google Classroom",
       "lead": "Conecte seu Google Classroom em poucos cliques. No início, a Oomba Academy só consegue ver suas turmas e os alunos delas. Nada é publicado até você permitir a publicação.",
       "li1": "Importe sua lista de alunos com um clique, e ela se atualiza sozinha a cada 6 horas. Os alunos são reconhecidos pela conta do Google.",
-      "li2": "Publique uma aula como atividade do Classroom, com o link e a data de entrega, ou compartilhe como material.",
-      "li3": "As notas voltam para o Classroom de 0 a 100: uma nota de conclusão (a parte das etapas terminadas, não as respostas certas) ou, nas tarefas do Homeroom, a nota que você escolheu: a pontuação, a conclusão ou nada para prática. Envie você mesmo ou ative as notas automáticas.",
-      "li4": "Publique no mural da turma quando um jogo ao vivo começar ou uma aula estiver pronta, com suas próprias palavras.",
+      "li2": "Publique um plano de aula como atividade do Classroom, com link e prazo, ou compartilhe como material.",
+      "li3": "As notas voltam ao Classroom de 0 a 100: uma nota de conclusão (a parte dos passos do plano de aula terminados, não as respostas certas) ou, nas atividades do Homeroom, a nota que você escolheu: a pontuação, a conclusão ou nada para praticar. Envie você mesmo ou ligue as notas automáticas.",
+      "li4": "Publique no mural da turma quando uma aula ao vivo começar ou um plano de aula estiver pronto, com suas palavras.",
       "li5": "A Oomba Academy não pede ao Classroom o e-mail dos alunos e nunca envia ao Google o nome, as respostas ou os jogos de um aluno.",
       "note": "Atividades, materiais, notas e avisos funcionam quando você permite a publicação, uma etapa à parte. Cada professor conecta a própria conta do Google, e talvez o administrador do Google da sua escola precise autorizar a Oomba Academy antes.",
       "privacy": "O que vai para o Google"
@@ -7301,7 +7325,7 @@
       "lead": "Telas reais de uma turma de demonstração: um quadro de matemática que a Oomba monta com você, o mesmo quadro ao vivo no aparelho de cada aluno e um painel para o dia todo da turma.",
       "board": {
         "h": "Materiais manipuláveis de matemática com a Oomba",
-        "p": "Material dourado, frações, relógios e mais em um só quadro. Conte a aula para a Oomba, e ela monta o quadro para você.",
+        "p": "Blocos de base dez, peças de frações, relógios e mais num só quadro. Diga à Oomba o que está ensinando e ela monta o quadro para você.",
         "alt": "Os materiais manipuláveis em um notebook: quatro relógios marcando meia hora, cada um com uma caixa de resposta, e ao lado o chat da Oomba dizendo que montou o quadro.",
         "open": "Abrir os materiais manipuláveis"
       },
@@ -8348,7 +8372,9 @@
     },
     "host": {
       "title": "Jogo ao vivo",
+      "titleForTeachers": "Aula ao vivo",
       "code": "Código do jogo",
+      "codeForTeachers": "Código para entrar",
       "joinAt": "Acesse {url} e digite o código",
       "signInFirst": "Entre na sua conta primeiro e depois digite o código.",
       "hideCode": "Esconder código",
@@ -8363,7 +8389,9 @@
       "unlock": "Abrir sala",
       "locked": "Sala fechada",
       "autoLock": "A sala fecha quando o jogo começa.",
+      "autoLockForTeachers": "A sala fecha quando a aula começa.",
       "end": "Encerrar jogo",
+      "endForTeachers": "Encerrar a aula",
       "skipTurn": "Pular a vez",
       "clear": "Apagar desenho",
       "clearConfirm": "Apagar o desenho em todas as telas?",
@@ -8372,18 +8400,23 @@
       "playToo": "Jogar também",
       "hidCount": "Jogadores escondendo este desenho: {count}",
       "endConfirm": "Encerrar o jogo para todos?",
+      "endConfirmForTeachers": "Encerrar a aula para todos?",
       "remove": "Remover",
       "removeConfirm": "Remover este jogador do jogo?",
+      "removeConfirmForTeachers": "Tirar este jogador da aula?",
       "ready": "Pronto",
       "late": "Entrou depois do início",
       "watching": "Vendo o mapa",
       "offline": "Desconectado",
       "empty": "Ninguém entrou ainda.",
       "qrLabel": "Código QR para entrar no jogo",
+      "qrLabelForTeachers": "Código QR para entrar na aula",
       "answers": "{count, plural, one {# resposta} other {# respostas}}",
       "players": "Jogadores",
       "controls": "Controles do jogo",
+      "controlsForTeachers": "Controles da aula",
       "reports": "Um jogador denunciou algo neste jogo. Confira se está tudo bem.",
+      "reportsForTeachers": "Um jogador denunciou algo nesta aula. Confira se está tudo bem.",
       "eyes": "Olhos aqui",
       "teacherView": "Visão do professor",
       "soundOn": "Som ligado",
@@ -8396,16 +8429,23 @@
     },
     "landing": {
       "title": "Conduzir um jogo ao vivo",
+      "titleForTeachers": "Conduzir uma aula ao vivo",
       "heading": "Conduzir um jogo ao vivo",
+      "headingForTeachers": "Conduzir uma aula ao vivo",
       "intro": "Escolha um jogo e quem pode entrar, depois abra a sala. Os jogadores acessam {url} e digitam o código.",
+      "introForTeachers": "Escolha uma aula e quem pode entrar, depois abra a sala. Os jogadores vão a {url} e digitam o código.",
       "modes": "Prontos para jogar",
       "official": "Jogos da Oomba Academy",
+      "officialForTeachers": "Aulas da Oomba Academy",
       "mine": "Meus jogos",
+      "mineForTeachers": "Minhas aulas",
       "shared": "Compartilhados com minhas turmas",
       "none": "Ainda não há jogos prontos para o modo ao vivo aqui.",
+      "noneForTeachers": "Ainda não há aulas prontas para o ao vivo aqui.",
       "usesQuestions": "Usa um conjunto de perguntas",
       "questions": "Perguntas",
       "questionsLabel": "Conjunto de perguntas (para jogos de quiz)",
+      "questionsLabelForTeachers": "Conjunto de perguntas (para aulas de quiz)",
       "starters": "Conjuntos prontos",
       "mySets": "Meus conjuntos de perguntas",
       "schoolSets": "Compartilhados na minha escola",
@@ -8421,9 +8461,11 @@
       "openHint": "Convidados recebem um nome inventado de uma lista segura. Ninguém pode conversar nem digitar.",
       "open": "Abrir a sala",
       "recent": "Jogos ao vivo recentes",
+      "recentForTeachers": "Aulas ao vivo recentes",
       "best": "Ideal para {min}–{max} jogadores",
       "teamsAbove": "Mais de {n} jogadores? Melhor em equipes.",
-      "maxHint": "Este jogo aceita até {max} jogadores."
+      "maxHint": "Este jogo aceita até {max} jogadores.",
+      "maxHintForTeachers": "Esta aula aceita até {max} jogadores."
     },
     "mode": {
       "questRace": "Corrida de Missões",
@@ -8604,6 +8646,7 @@
     },
     "results": {
       "title": "Resultados do jogo ao vivo",
+      "titleForTeachers": "Resultados da aula ao vivo",
       "heading": "Resultados: {title}",
       "rank": "Posição",
       "player": "Jogador",
@@ -8611,6 +8654,7 @@
       "correct": "Respostas certas",
       "scoredBy": "Pontuado por",
       "byGame": "o jogo",
+      "byGameForTeachers": "a aula",
       "byLive": "Oomba Live",
       "questions": "Perguntas",
       "accuracy": "{right} de {answered} certas",
@@ -8642,6 +8686,7 @@
       "stillHere": "{count, plural, one {# jogador ainda aqui} other {# jogadores ainda aqui}}",
       "playAgainTeams": "Jogar de novo com estes times",
       "newGame": "Novo jogo",
+      "newGameForTeachers": "Nova aula",
       "homework": "Passar como lição de casa",
       "votes": "{count, plural, one {# voto} other {# votos}}",
       "classHeading": "A turma",
@@ -8658,23 +8703,32 @@
       "school": "Compartilhados na minha escola",
       "schoolHint": "Conjuntos que outros professores da sua escola compartilharam. Faça uma cópia para alterar um deles.",
       "copy": "Fazer uma cópia",
-      "fromLesson": "A partir da minha aula"
+      "fromLesson": "Das minhas anotações"
     },
     "api": {
       "off": "Os jogos ao vivo estão desligados agora.",
+      "offForTeachers": "As aulas ao vivo estão desligadas agora.",
       "notHost": "Só professores e adultos podem conduzir jogos ao vivo.",
       "notTeacher": "Escolha uma das suas turmas.",
       "noFamily": "Configure sua família primeiro.",
       "notFound": "Não encontramos esse jogo.",
+      "notFoundForTeachers": "Não encontramos essa aula.",
       "notPublished": "Publique o jogo primeiro.",
+      "notPublishedForTeachers": "Publique a aula primeiro.",
       "notPublic": "Com o código, qualquer pessoa só pode jogar jogos públicos. Escolha sua turma ou família.",
+      "notPublicForTeachers": "Só com o código, dá para jogar apenas aulas públicas. Escolha sua turma.",
       "notShared": "Compartilhe o jogo com esta turma ou família primeiro.",
+      "notSharedForTeachers": "Compartilhe a aula com esta turma primeiro.",
       "notReady": "Este jogo ainda não está pronto para o modo ao vivo.",
+      "notReadyForTeachers": "Esta aula ainda não está pronta para o ao vivo.",
       "noSet": "Escolha um conjunto de perguntas.",
       "setIncomplete": "Algumas perguntas ainda estão sem as respostas.",
       "busy": "Há jogos ao vivo demais agora. Tente de novo em alguns minutos.",
+      "busyForTeachers": "Há aulas ao vivo demais acontecendo. Tente de novo em alguns minutos.",
       "hasOpen": "Você já tem um jogo ao vivo aberto. Encerre-o primeiro ou volte para ele.",
+      "hasOpenForTeachers": "Você já tem uma aula ao vivo aberta. Encerre primeiro ou volte para ela.",
       "mode": "Escolha um jogo.",
+      "modeForTeachers": "Escolha uma aula.",
       "audience": "Escolha quem pode entrar.",
       "set": {
         "title": "Dê um título ao conjunto.",
@@ -8684,7 +8738,7 @@
         "choices": "A pergunta {n} precisa de 2 a 4 respostas, com a certa escolhida.",
         "sameChoice": "A pergunta {n} tem duas respostas iguais.",
         "tooBig": "Este conjunto é grande demais.",
-        "noQuestions": "Esta aula não tem etapas de pergunta.",
+        "noQuestions": "Este plano de aula não tem passos de perguntas.",
         "notFound": "Não encontramos esse conjunto.",
         "topic": "Digite um tema primeiro.",
         "aiOff": "Criar com IA não está disponível agora. Você ainda pode digitar ou colar suas perguntas.",
@@ -8695,25 +8749,33 @@
       "needTwo": "São necessários dois jogadores para começar.",
       "tugTeams": "Tug of Math precisa de dois times, e os times estão desligados neste site.",
       "teamsOff": "Este jogo não tinha times.",
+      "teamsOffForTeachers": "Esta aula não tinha equipes.",
       "againGone": "Os jogadores já saíram. Comece um novo jogo.",
+      "againGoneForTeachers": "Os jogadores saíram. Comece uma aula nova.",
       "homeworkOff": "A lição de casa com conjuntos de perguntas está desligada.",
       "noClass": "Escolha uma das suas turmas.",
       "cohost": {
         "cohostRoom": "Coanfitriões são para jogos de turma e de família.",
+        "cohostRoomForTeachers": "Coanfitriões são para aulas de turma.",
         "notEligible": "Essa pessoa não pode ser coanfitriã deste jogo.",
+        "notEligibleForTeachers": "Essa pessoa não pode coconduzir esta aula.",
         "full": "Este jogo já tem 3 coanfitriões.",
+        "fullForTeachers": "Esta aula já tem 3 coanfitriões.",
         "already": "Essa pessoa já foi convidada ou já é coanfitriã.",
         "notCohost": "Essa pessoa não é coanfitriã deste jogo.",
+        "notCohostForTeachers": "Essa pessoa não é coanfitriã desta aula.",
         "hasOpen": "Essa pessoa está conduzindo outro jogo ao vivo agora.",
+        "hasOpenForTeachers": "Essa pessoa está conduzindo outra aula ao vivo agora.",
         "gone": "Este convite terminou.",
         "self": "Você já é o anfitrião."
       },
       "notForClass": "Este jogo é para diversão, não para a aula. Escolha um modo de perguntas ou um dos seus jogos.",
+      "notForClassForTeachers": "Esta é para diversão, não para a aula. Escolha um modo de quiz ou uma das suas próprias aulas.",
       "make": {
         "pdfBad": "Não foi possível ler esse arquivo. Escolha um PDF de até 2 MB.",
-        "lessonShort": "Cole um pouco mais da sua aula primeiro (um parágrafo ou mais).",
-        "lessonLong": "Essa aula é longa demais. Cole uma aula por vez (até 20.000 caracteres).",
-        "lessonThin": "Não havia conteúdo suficiente nessa aula para escrever perguntas. Cole mais e tente de novo.",
+        "lessonShort": "Cole primeiro um pouco mais das suas anotações (um parágrafo ou mais).",
+        "lessonLong": "Essas anotações são longas demais. Cole as anotações de uma aula de cada vez (até 20.000 caracteres).",
+        "lessonThin": "Não havia o bastante nessas anotações para escrever perguntas. Cole mais e tente de novo.",
         "aiOff": "O rascunho com IA não está disponível agora. Você ainda pode digitar ou colar suas perguntas em Meus conjuntos de perguntas.",
         "aiFailed": "A IA não conseguiu escrever perguntas desta vez. Tente de novo daqui a pouco."
       }
@@ -8866,8 +8928,9 @@
     },
     "entry": {
       "host": "Iniciar um jogo ao vivo",
+      "hostForTeachers": "Conduzir uma aula ao vivo",
       "hostLive": "Jogar ao vivo",
-      "quizLesson": "Quiz ao vivo desta aula",
+      "quizLesson": "Quiz ao vivo deste plano de aula",
       "fromLesson": "Criar um quiz ao vivo com estas perguntas",
       "family": "Jogue ao vivo com a família ou o grupo",
       "familyText": "Comece um jogo numa tela grande. Cada pessoa entra pelo próprio aparelho com um código. Ninguém pode conversar nem digitar.",
@@ -8878,6 +8941,7 @@
       "studioFixText": "Conserte a parte ao vivo deste jogo para o Oomba Live, para que um professor ou adulto possa conduzir: {issue}.",
       "badge": "Ao vivo",
       "badgeLong": "Jogo ao vivo para a turma",
+      "badgeLongForTeachers": "Aula ao vivo para a turma",
       "howJoin": "Seu professor mostra um código na tela. Digite aqui para entrar.",
       "teacherHost": "É professor? Comece ao vivo com sua turma",
       "solo": "Praticar sozinho",
@@ -8893,7 +8957,8 @@
       "live_raw": "fala com a página de um jeito não permitido"
     },
     "panel": {
-      "title": "Jogos ao vivo"
+      "title": "Jogos ao vivo",
+      "titleForTeachers": "Aulas ao vivo"
     },
     "team": {
       "preset": {
@@ -8935,6 +9000,7 @@
       "shuffle": "Embaralhar",
       "choose": "Os jogadores escolhem o time",
       "chooseHint": "Só antes de o jogo começar.",
+      "chooseHintForTeachers": "Só antes de a aula começar.",
       "lock": "Travar times",
       "unlock": "Destravar times",
       "locked": "Os times estão travados",
@@ -8945,6 +9011,7 @@
       "saved": "Times salvos.",
       "savedCount": "{count, plural, one {Times salvos para # aluno.} other {Times salvos para # alunos.}}",
       "notSaved": "Ainda não há times salvos. Os times do seu último jogo ao vivo com esta turma também ficam salvos aqui.",
+      "notSavedForTeachers": "Ainda não há equipes salvas. As equipes da sua última aula ao vivo com esta turma também ficam aqui.",
       "moveHere": "Mover para cá",
       "selectHint": "Arraste um jogador para um time, ou selecione um jogador e escolha “Mover para cá”.",
       "moved": "{name} → {team}",
@@ -8960,10 +9027,13 @@
       "madeFor": "Feito para times",
       "none": "Os times estão desligados.",
       "editor": "Times para jogos ao vivo",
-      "editorHint": "Monte os grupos antes da aula. Num jogo ao vivo, “Usar os últimos times” coloca todo mundo de volta neles."
+      "editorForTeachers": "Equipes para aulas ao vivo",
+      "editorHint": "Monte os grupos antes da aula. Num jogo ao vivo, “Usar os últimos times” coloca todo mundo de volta neles.",
+      "editorHintForTeachers": "Monte seus grupos de mesa antes da aula. Numa aula ao vivo, “Usar as últimas equipes” coloca todos de volta neles."
     },
     "settings": {
       "title": "Configurações do jogo",
+      "titleForTeachers": "Configurações da aula",
       "open": "Configurações",
       "more": "Mais configurações",
       "secs": "Tempo por pergunta",
@@ -8983,8 +9053,10 @@
       "namesHidden": "Sem nomes na tela grande",
       "namesHint": "Sua visão de professor sempre mostra os nomes dos seus alunos.",
       "sound": "Sons do jogo na tela grande",
+      "soundForTeachers": "Sons da aula na tela grande",
       "emotes": "Emotes",
       "remembered": "Suas escolhas ficam salvas para o próximo jogo ao vivo.",
+      "rememberedForTeachers": "Suas escolhas ficam guardadas para a próxima aula ao vivo.",
       "reset": "Voltar às configurações padrão",
       "save": "Salvar",
       "voices": "Vozes para ler em voz alta",
@@ -9079,6 +9151,7 @@
       "open": "Coanfitriões",
       "title": "Coanfitriões",
       "intro": "Outro professor da sua escola pode ajudar a conduzir este jogo pelo próprio dispositivo, com os mesmos controles que você.",
+      "introForTeachers": "Outro professor da sua escola pode ajudar a conduzir esta aula do próprio aparelho, com os mesmos controles que você.",
       "introFamily": "Outro adulto da sua família pode ajudar a conduzir este jogo pelo próprio dispositivo.",
       "max": "Até 3 coanfitriões.",
       "gate": "Aqui aparecem nomes de adultos. Confira se a turma não vê a sua tela.",
@@ -9106,24 +9179,34 @@
       "link": "Link para o seu coanfitrião",
       "linkHint": "A pessoa abre no próprio dispositivo, com a própria conta. Só funciona para quem você convidou.",
       "full": "Este jogo já tem 3 coanfitriões.",
+      "fullForTeachers": "Esta aula já tem 3 coanfitriões.",
       "inviteTitle": "Ser coanfitrião de um jogo ao vivo",
+      "inviteTitleForTeachers": "Coconduzir uma aula ao vivo",
       "inviteText": "{name} convidou você para ser coanfitrião de “{title}”.",
       "inviteFull": "Você terá os mesmos controles do anfitrião e verá os detalhes dos alunos.",
+      "inviteFullForTeachers": "Você terá os mesmos controles de quem conduz e verá os dados dos alunos.",
       "inviteLimited": "Você terá os mesmos controles do anfitrião. Os detalhes dos alunos ficam com os professores da turma.",
+      "inviteLimitedForTeachers": "Você terá os mesmos controles de quem conduz. Os dados dos alunos ficam com os professores da turma.",
       "accept": "Aceitar",
       "decline": "Não, obrigado",
       "youCohost": "Coanfitrião · {host} é o anfitrião",
       "youCohostShort": "Você é coanfitrião deste jogo.",
+      "youCohostShortForTeachers": "Você está coconduzindo esta aula.",
       "youHost": "Você é o anfitrião.",
       "roleHost": "Anfitrião",
       "roleCohost": "Coanfitrião",
       "leave": "Deixar de ser coanfitrião",
       "leaveConfirm": "Deixar de ser coanfitrião deste jogo?",
+      "leaveConfirmForTeachers": "Parar de coconduzir esta aula?",
       "left": "Você deixou de ser coanfitrião.",
       "removed": "Você não é mais coanfitrião deste jogo.",
+      "removedForTeachers": "Você não é mais coanfitrião desta aula.",
       "endConfirm": "Encerrar o jogo para todos? Você é coanfitrião: ele termina também para o anfitrião.",
+      "endConfirmForTeachers": "Encerrar a aula para todos? Você é coanfitrião: isso encerra também para quem conduz.",
       "projBusy": "O jogo já está em outra tela. Use a visão do professor para ajudar.",
+      "projBusyForTeachers": "A aula já está em outra tela. Use a visão do professor para ajudar a conduzir.",
       "projBack": "O anfitrião pegou a tela grande de volta. Use a visão do professor para ajudar.",
+      "projBackForTeachers": "Quem conduz pegou a tela grande de volta. Use a visão do professor para ajudar a conduzir a aula.",
       "landingInvite": "{name} convidou você para ser coanfitrião de “{title}”.",
       "landingOn": "Você é coanfitrião de “{title}”.",
       "openInvite": "Ver convite",
@@ -9136,14 +9219,18 @@
       "player": "um jogador",
       "log": {
         "title": "Quem conduziu este jogo",
+        "titleForTeachers": "Quem conduziu esta aula",
         "former": "Um ex-coanfitrião",
         "player": "um jogador",
         "team": "uma equipe"
       },
       "act": {
         "start": "{name} começou o jogo",
+        "startForTeachers": "{name} começou a aula",
         "pause": "{name} pausou o jogo",
+        "pauseForTeachers": "{name} pausou a aula",
         "resume": "{name} retomou o jogo",
+        "resumeForTeachers": "{name} retomou a aula",
         "next": "{name} seguiu em frente",
         "skip": "{name} pulou a pergunta",
         "clear": "{name} apagou o desenho",
@@ -9151,6 +9238,7 @@
         "unlock": "{name} abriu a sala",
         "kick": "{name} removeu {player}",
         "end": "{name} encerrou o jogo",
+        "endForTeachers": "{name} encerrou a aula",
         "eyesOn": "{name} pediu atenção",
         "eyesOff": "{name} encerrou o pedido de atenção",
         "say": "{name} enviou uma mensagem",
@@ -9217,7 +9305,8 @@
       "level": "Nível",
       "count": "Número de perguntas",
       "boardSubjects": "Matérias do tabuleiro (de 2 a 6)",
-      "bankHint": "Perguntas novas a cada partida, escritas para cada idade."
+      "bankHint": "Perguntas novas a cada partida, escritas para cada idade.",
+      "bankHintForTeachers": "Perguntas novas a cada rodada, escritas para cada faixa etária."
     },
     "wyrUi": {
       "legend": "O que você prefere? (Ao vivo)",
@@ -9252,6 +9341,7 @@
       "secs": "Tempo para desenhar",
       "secsN": "{n} segundos",
       "hint": "Todos desenham na sua vez enquanto os outros adivinham. Os jogadores entram com o código no próprio aparelho, onde estiverem. O que se digita vai só para o jogo: quem desenha só vê um palpite se for uma das palavras do jogo, e não há chat.",
+      "hintForTeachers": "Todos desenham na sua vez enquanto os outros adivinham. Os jogadores entram com o código no próprio aparelho, onde estiverem. Os palpites digitados vão só para a aula: quem desenha só vê um palpite quando é uma das palavras da aula, e não há chat.",
       "guess": "Como adivinham",
       "guessType": "Digitando no teclado",
       "guessTiles": "Peças de letras (mais fácil)",
@@ -9300,31 +9390,31 @@
       "preset": "Preparado a partir do plano da aula. Você ainda pode mudar tudo."
     },
     "make": {
-      "title": "Transforme sua aula em um jogo",
-      "heading": "Transforme sua aula em um jogo",
-      "lead": "Cole uma aula que você já dá. A Oomba rascunha as perguntas, você confere cada resposta e depois a turma joga.",
+      "title": "Transforme suas anotações em uma aula",
+      "heading": "Transforme suas anotações em uma aula",
+      "lead": "Cole suas anotações de uma aula que você já dá. A Oomba faz o rascunho das perguntas, você confere cada resposta e depois sua turma joga.",
       "stepsLabel": "Etapas",
-      "step1": "1. Cole sua aula",
+      "step1": "1. Cole suas anotações",
       "step2": "2. Confira as perguntas",
       "step3": "3. Jogue",
-      "pasteHeading": "Sua aula",
-      "textLabel": "Cole o texto da sua aula",
+      "pasteHeading": "Suas anotações",
+      "textLabel": "Cole suas anotações",
       "textHint": "Cole suas anotações, uma leitura, uma folha de atividades ou o roteiro dos slides…",
       "fileLabel": "Ou escolha um arquivo (PDF ou texto, até 2 MB)",
       "levelLabel": "Ano ou nível",
       "levelHint": "Por exemplo: 4º ano",
       "countLabel": "Quantas perguntas",
-      "privacy": "Sua aula é enviada ao nosso ajudante de IA para escrever as perguntas e não é guardada. Por favor, não inclua nomes de alunos nem nada pessoal.",
+      "privacy": "Suas anotações vão para nosso ajudante de IA escrever as perguntas e não são guardadas. Deixe de fora nomes de alunos e qualquer coisa pessoal.",
       "go": "Rascunhar as perguntas",
-      "wait": "Lendo sua aula e escrevendo as perguntas. Leva até um minuto.",
+      "wait": "Lendo suas anotações e escrevendo perguntas. Leva até um minuto.",
       "checkHeading": "Confira cada pergunta e cada resposta",
-      "checkText": "Isto é um primeiro rascunho. Leia cada pergunta, corrija o que estiver errado ou confuso e remova o que não quiser. Abaixo de cada pergunta você vê o trecho da aula de onde ela veio. Nada chega aos alunos até você salvar.",
+      "checkText": "Este é um primeiro rascunho. Leia cada pergunta, corrija o que estiver errado ou confuso e tire o que não quiser. Embaixo de cada pergunta você vê a parte das suas anotações de onde ela veio. Nada chega aos alunos até você salvar.",
       "back": "Começar de novo",
       "doneHeading": "Suas perguntas estão salvas",
       "doneText": "Escolha como a turma vai usá-las.",
-      "host": "Apresentar um jogo ao vivo agora",
+      "host": "Conduzir uma aula ao vivo agora",
       "assignHeading": "Ou atribua para os alunos fazerem sozinhos",
-      "assignText": "Vira um questionário curto nas aulas da turma, e as notas vão para o seu diário de notas.",
+      "assignText": "Vira um quiz curto nos planos de aula da turma, e as pontuações vão para o seu diário de notas.",
       "classLabel": "Turma",
       "dueLabel": "Data de entrega (opcional)",
       "assign": "Atribuir a esta turma",
@@ -9333,18 +9423,22 @@
     },
     "wiz": {
       "modesTab": "Jogos ao vivo",
+      "modesTabForTeachers": "Aulas ao vivo",
       "progress": "Passo {n} de {total}",
       "back": "Voltar",
       "next": "Próximo",
       "change": "Mudar",
       "play": {
         "title": "O que vocês querem jogar?",
-        "hint": "Escolha um jogo. Você pode mudar tudo antes de abrir a sala."
+        "hint": "Escolha um jogo. Você pode mudar tudo antes de abrir a sala.",
+        "hintForTeachers": "Escolha uma aula. Você pode mudar tudo antes de a sala abrir."
       },
       "questions": {
         "title": "Quais perguntas?",
         "ownTitle": "Configure o jogo",
-        "hint": "Escolha o que o jogo pergunta e quanto tempo ele dura."
+        "ownTitleForTeachers": "Configurar a aula",
+        "hint": "Escolha o que o jogo pergunta e quanto tempo ele dura.",
+        "hintForTeachers": "Escolha o que a aula pergunta e quanto tempo dura."
       },
       "who": {
         "title": "Quem vai jogar?",
@@ -9356,6 +9450,7 @@
       },
       "row": {
         "game": "Jogo",
+        "gameForTeachers": "Aula",
         "questions": "Perguntas",
         "who": "Quem pode entrar",
         "teams": "Equipes"
@@ -9377,11 +9472,11 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: jogos de quiz ao vivo grátis para a sua turma",
+    "title": "Oomba Live: aulas de quiz ao vivo grátis para sua turma",
     "description": "Coloque uma corrida de perguntas ao vivo no projetor. Os alunos entram em qualquer aparelho com um código de 7 dígitos, sem conta, sem digitar e sem anúncios. Grátis para professores.",
     "kicker": "Oomba Live para professores",
-    "h1": "Jogos de quiz ao vivo que a turma toda joga junta",
-    "lead": "Mostre o jogo na lousa. Os alunos entram nos próprios aparelhos com um código de 7 dígitos e apostam corrida respondendo às suas perguntas, de qualquer matéria e em qualquer nível. Grátis, sem anúncios, e os alunos só precisam digitar o código.",
+    "h1": "Aulas de quiz ao vivo que a turma inteira joga junta",
+    "lead": "Coloque a aula no quadro. Os alunos entram nos próprios aparelhos com um código de 7 dígitos e disputam suas perguntas, de qualquer matéria e nível. Grátis, sem anúncios, e os alunos só digitam o código.",
     "demo": {
       "h": "Veja em um minuto",
       "note": "Um vídeo de um minuto, com música e legendas na tela: um professor inicia uma Quest Race de Ciências, os alunos entram pelo celular com um código e correm pelas perguntas. Depois, uma criança descreve um jogo para o Builder, que o cria e joga para conferir se funciona, e a criança joga. No fim, alguns dos jogos educativos."
@@ -9394,22 +9489,22 @@
       "languages": "{count} idiomas"
     },
     "cta": {
-      "host": "Conduza um jogo ao vivo grátis",
+      "host": "Conduzir uma aula ao vivo grátis",
       "how": "Veja como funciona",
       "join": "Vai entrar em um jogo? Digite o código aqui"
     },
     "how": {
       "h": "Das perguntas aos resultados em poucos minutos",
-      "lead": "Telas reais de um jogo ao vivo em uma escola de demonstração com nomes inventados.",
+      "lead": "Telas reais de uma aula ao vivo numa escola de demonstração com nomes inventados.",
       "s1": {
-        "h": "Escolha um jogo e as suas perguntas",
-        "p": "Escolha Corrida de Missões ou Tabuleiro Cérebro e depois as perguntas: o banco de perguntas por matéria e idade (de 6 a 14 anos), o seu próprio conjunto, um que um colega compartilhou ou as perguntas de uma das suas aulas.",
-        "alt": "O primeiro passo para iniciar um jogo ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores combinam com ele."
+        "h": "Escolha uma aula e suas perguntas",
+        "p": "Escolha Quest Race ou Brain Board e depois as perguntas: o banco por matéria e idade (6 a 14), seu próprio conjunto, um que um colega compartilhou ou as perguntas de um dos seus planos de aula.",
+        "alt": "O primeiro passo para conduzir uma aula ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores aceita."
       },
       "s2": {
         "h": "Mostre o código na lousa",
         "p": "Os alunos abrem a página de entrada no aparelho e digitam o código de 7 dígitos, ou leem o QR code. Os nomes aparecem conforme eles entram.",
-        "alt": "A tela do projetor antes de o jogo começar: um personagem de desenho contra quem a turma toda joga, um grande código de 7 dígitos, um código QR e quantos jogadores já entraram."
+        "alt": "A tela do projetor antes de a aula começar: um personagem de desenho contra quem a turma toda joga, um código grande de 7 dígitos, um QR code e quantos jogadores entraram."
       },
       "s3": {
         "h": "Os alunos entram em segundos",
@@ -9465,15 +9560,15 @@
       "li3": "Um cronômetro de 10, 20 ou 30 segundos por pergunta, e você pode pular ou pausar a qualquer momento.",
       "li4": "Pontos extras por trabalho em equipe, gentileza e esforço.",
       "li5": "Tempo extra para os alunos que precisam.",
-      "li6": "Um coanfitrião pode conduzir o jogo com você.",
-      "li7": "Resultados por pergunta e por aluno. Os jogos da turma ficam salvos e podem ser baixados como planilha."
+      "li6": "Um coanfitrião pode conduzir a aula com você.",
+      "li7": "Resultados por pergunta e por aluno. As aulas da turma ficam salvas e podem ser baixadas como planilha."
     },
     "safe": {
       "h": "Feito para crianças desde o início",
       "li1": "Os alunos só podem digitar o código: sem chat, sem nomes livres, sem comentários.",
       "li2": "Em uma sala aberta, cada um recebe um apelido inventado e simpático, como Lontra Corajosa, nunca um nome real.",
       "li3": "Uma sala de turma é só para os seus próprios alunos com conta conectada, e a pontuação deles vai para o seu diário de notas.",
-      "li4": "Os códigos expiram quando o jogo termina, e os alunos podem avisar você sobre qualquer coisa com um toque.",
+      "li4": "Os códigos acabam quando a aula termina, e os alunos podem avisar você de qualquer coisa com um toque.",
       "link": "Saiba mais na nossa <a href=\"{safety}\">página de segurança</a>."
     },
     "more": {
@@ -9482,24 +9577,24 @@
       "link": "Oomba Academy para professores"
     },
     "start": {
-      "h": "Tudo pronto para o seu primeiro jogo ao vivo?",
+      "h": "Pronto para a sua primeira aula ao vivo?",
       "p": "Crie uma conta de adulto grátis ou entre com a sua conta da escola. Escolha um conjunto pronto e em dois minutos você já pode estar jogando.",
-      "signedIn": "Sua conta está conectada. Escolha um jogo e abra a sua sala.",
+      "signedIn": "Você entrou. Escolha uma aula e abra sua sala.",
       "kid": "Os jogos ao vivo são conduzidos por professores e outros adultos. Peça o código ao seu professor e entre aqui:",
       "pSchool": "Entre com a sua conta da escola ou peça uma conta grátis da escola para a sua turma. Escolha um conjunto pronto e em dois minutos você já pode estar jogando."
     },
     "faq": {
       "h": "Perguntas dos professores sobre o Oomba Live",
       "q1": "O Oomba Live é grátis?",
-      "a1": "Sim. Conduzir jogos ao vivo, os conjuntos de perguntas prontos, os seus próprios conjuntos e os resultados são todos grátis, sem anúncios.",
+      "a1": "Sim. Conduzir aulas ao vivo, os conjuntos iniciais, seus próprios conjuntos e os resultados são grátis e sem anúncios.",
       "q2": "Meus alunos precisam de conta?",
       "a2": "Não em uma sala aberta: os alunos digitam o código e recebem um apelido inventado. Em uma sala de turma, eles usam as contas da escola que você criou para eles, e a pontuação deles vai para o seu diário de notas.",
       "q3": "Quantos alunos podem jogar?",
       "a3": "Até {max} em uma sala de turma. Uma sala aberta a qualquer pessoa com o código recebe até {open} jogadores quando é conduzida por um responsável ou outro adulto, e até {max} quando é conduzida por um professor.",
       "q4": "Posso usar as minhas próprias perguntas?",
-      "a4": "Sim, de qualquer matéria e em qualquer nível. Escreva um conjunto de até {items} perguntas com 2 a 4 respostas cada, cole um de uma planilha, deixe a IA criar um rascunho para você editar ou transforme as perguntas de uma das suas aulas em um quiz ao vivo.",
+      "a4": "Sim, de qualquer matéria e nível. Escreva um conjunto de até {items} perguntas com 2 a 4 respostas cada, cole um de uma planilha, deixe a IA fazer um rascunho para você editar ou transforme as perguntas de um dos seus planos de aula num quiz ao vivo.",
       "q5": "Do que os alunos precisam?",
-      "a5": "Qualquer aparelho com um navegador atualizado: Chromebooks, tablets, notebooks ou celulares. Nada para instalar. Você mostra o jogo na lousa pelo seu próprio computador."
+      "a5": "Qualquer aparelho com navegador atualizado: Chromebooks, tablets, notebooks ou celulares. Nada para instalar. Você mostra a aula no quadro pelo seu computador."
     },
     "own": {
       "h": "Suas perguntas, do seu jeito",
@@ -9508,7 +9603,7 @@
       "li2": "Cole um quiz inteiro de uma planilha ou de um documento de uma vez só.",
       "li3": "Descreva um tema e um ano escolar, e a IA cria um rascunho das perguntas para você conferir e editar.",
       "li4": "Até 100 perguntas por conjunto. Compartilhe conjuntos com os professores da sua escola, ou copie os deles e adapte do seu jeito.",
-      "li5": "Quer outro tipo de jogo? Crie o seu próprio jogo de quiz com o Construtor com IA, e ele pode ser jogado ao vivo com qualquer um dos seus conjuntos de perguntas."
+      "li5": "Quer outro tipo de aula? Crie sua própria aula de quiz com o Construtor com IA, e ela roda ao vivo com qualquer um dos seus conjuntos."
     }
   },
   "tts": {
@@ -10217,14 +10312,14 @@
       "li1": "Layouts prontos para a manhã, uma aula, trabalho em grupo, trabalho em silêncio e um intervalo divertido, ou arraste widgets para montar o seu.",
       "li2": "Cronômetros, sorteio de nomes, criador de grupos, medidor de voz, fila de ajuda e perguntas rápidas.",
       "li3": "Ferramentas de matemática na tela grande: barras de frações, retas numéricas, geoplanos, valor posicional e mais.",
-      "li4": "Fixe widgets na tela de cada aluno ou envie à turma um jogo, uma aula ou um link com um toque.",
+      "li4": "Fixe widgets na tela de cada aluno ou envie para a turma uma aula, um plano de aula ou um link com um toque.",
       "li5": "Nenhuma IA. Os alunos aparecem com o nome Oomba, e o que um aluno digita fica na tela dele.",
       "shotAlt": "Um painel da turma no projetor: o relógio, o objetivo do dia, o horário com Matemática agora e Recreio a seguir, as tarefas da turma e um registro de humor."
     },
     "meta": {
-      "title": "Painéis da turma e jogos educativos para professores · Oomba Academy",
-      "description": "Uma tela para conduzir o dia, um Builder de IA que transforma aulas em jogos, jogos ao vivo e jogos que seus alunos criam. 14 dias grátis, sem cartão.",
-      "imageAlt": "Oomba Academy para professores: uma tela para conduzir a turma e jogos para o aprendizado ficar."
+      "title": "Painéis da turma e aulas interativas para professores · Oomba Academy",
+      "description": "Uma tela para conduzir o dia da turma, um Construtor com IA que transforma seus planos de aula em aulas para jogar, aulas ao vivo e jogos que seus alunos criam. 14 dias grátis, sem cartão.",
+      "imageAlt": "Oomba Academy para professores: uma tela para conduzir a turma e aulas para o aprendizado ficar."
     },
     "nav": {
       "dashboards": "Painéis",
@@ -10234,7 +10329,7 @@
       "how": "Como funciona",
       "builder": "Construtor",
       "courses": "Cursos",
-      "live": "Jogos ao vivo",
+      "live": "Aulas ao vivo",
       "pricing": "Preços",
       "faq": "Dúvidas",
       "signIn": "Entrar",
@@ -10247,45 +10342,45 @@
     },
     "hero": {
       "kicker": "Para professores · da educação infantil ao 8º ano",
-      "h1": "Uma tela para conduzir sua turma. Jogos para o aprendizado ficar.",
-      "lead": "Configure o painel da sua turma em um minuto e conduza o dia inteiro por ele. Transforme qualquer aula em jogo com o Builder de IA, jogue ao vivo no projetor e deixe seus alunos criarem os próprios jogos.",
+      "h1": "Uma tela para conduzir sua turma. Aulas para o aprendizado ficar.",
+      "lead": "Configure o painel da turma em um minuto e conduza o dia todo por ele. Transforme qualquer plano de aula numa aula para jogar com o Construtor com IA, jogue ao vivo no projetor e deixe seus alunos criarem os próprios jogos.",
       "cta": "Comece seu teste grátis de 14 dias",
       "how": "Veja como funciona",
       "trustCard": "Sem cartão",
       "trustCancel": "Cancele quando quiser",
       "trustStudents": "Alunos ilimitados",
       "cBuildTag": "Builder de IA",
-      "cBuild": "Sua aula de frações virou um jogo",
-      "cLiveTag": "Jogo ao vivo",
+      "cBuild": "Seu plano de frações agora é uma aula para jogar",
+      "cLiveTag": "Aula ao vivo",
       "cLive": "Sua turma está entrando"
     },
     "facts": {
-      "games": "jogos educativos prontos",
+      "games": "aulas prontas",
       "courses": "cursos completos com planos de aula",
       "languages": "idiomas para alunos e professores",
       "installs": "instalações: funciona no navegador"
     },
     "demo": {
-      "label": "Ilustração: uma aula virando jogo",
-      "lessonTag": "Sua aula",
+      "label": "Ilustração: um plano de aula virando uma aula para jogar",
+      "lessonTag": "Seu plano de aula",
       "lessonTitle": "Frações equivalentes · 4º ano",
       "lessonBody": "Os alunos mostram que 1/2, 2/4 e 4/8 representam a mesma quantidade, com pizzas, barras e retas numéricas. Tíquete de saída: três perguntas rápidas.",
       "file": "aula-fracoes.pdf",
       "builderTag": "Construtor IA",
-      "step1": "Lendo sua aula",
+      "step1": "Lendo seu plano de aula",
       "step2": "Criando as fases",
       "step3": "Testando no celular, tablet e computador",
       "step4": "Pronto para jogar",
-      "gameTag": "Seu jogo",
+      "gameTag": "Sua aula",
       "gameMeta": "Pronto para jogar ao vivo ou passar para a turma",
       "host": "Jogar ao vivo",
       "assign": "Passar",
-      "credit": "Arte do jogo Fraction Factory, um dos jogos prontos da Oomba."
+      "credit": "Arte de Fraction Factory, uma das aulas prontas da Oomba."
     },
     "how": {
       "kicker": "Como funciona",
       "h": "Todo o seu dia de aula, em um só lugar",
-      "lead": "Comece pela tela que fica aberta o dia todo e depois traga os jogos. Cada passo funciona sozinho, e juntos funcionam ainda melhor.",
+      "lead": "Comece pela tela que fica aberta o dia todo e depois traga as aulas. Cada passo funciona sozinho, e juntos funcionam ainda melhor.",
       "s1": {
         "h": "Configure o painel da turma",
         "p": "Abra sua turma e seis layouts prontos estarão à sua espera. Coloque no projetor, e cada aluno ganha a própria tela."
@@ -10295,8 +10390,8 @@
         "p": "Registro de humor, cronômetros, perguntas rápidas, fila de ajuda, grupos e ferramentas de matemática, da roda da manhã à saída. Troque de layout com um toque."
       },
       "s3": {
-        "h": "Transforme aulas em jogos",
-        "p": "Cole uma aula ou envie um PDF. O Builder de IA faz um jogo, testa sozinho e guarda cada versão."
+        "h": "Transforme seus planos em aulas para jogar",
+        "p": "Cole um plano de aula ou envie um PDF. O Construtor com IA o transforma numa aula para jogar, testa e guarda cada versão."
       },
       "see": "Ver",
       "s4": {
@@ -10305,23 +10400,23 @@
       },
       "s5": {
         "h": "Deixe os alunos criarem também",
-        "p": "Adicione uma etapa “Criar um jogo” a uma aula. Os alunos planejam, testam e corrigem o próprio jogo, e depois a turma joga."
+        "p": "Adicione um passo “Criar um jogo” a um plano de aula. Os alunos projetam, testam e consertam o próprio jogo, e depois os colegas jogam."
       }
     },
     "builder": {
       "kicker": "O Construtor IA",
-      "h": "Entra sua aula, sai um jogo de verdade",
-      "lead": "Converse com o Construtor como com um assistente que também cria jogos. Ele guarda cada versão, então dá sempre para voltar atrás.",
+      "h": "Entra seu plano de aula, sai uma aula para jogar",
+      "lead": "Fale com o Construtor como com um assistente de ensino que também cria aulas. Ele guarda cada versão, então você sempre pode voltar.",
       "you": "Você",
-      "msg": "Faça um jogo com esta aula para minha turma do 4º ano. Dez minutos, três fases, e termine com as perguntas do tíquete de saída.",
+      "msg": "Faça uma aula para jogar com este plano para o meu 4º ano. Dez minutos, três níveis, e termine com as perguntas do bilhete de saída.",
       "bot": "Pronto! A versão 1 está pronta: três fases, da mais fácil para a mais difícil, com o tíquete de saída no final. Toque em Jogar para testar.",
-      "li1": "Entende o texto da aula e os PDFs, imagens e arquivos de texto que você envia",
+      "li1": "Entende planos de aula, PDFs, imagens e arquivos de texto que você envia",
       "li2": "Responde no seu idioma, e no de cada aluno",
       "li3": "Testa cada versão nos tamanhos de celular, tablet e computador",
       "li4": "Privado até você compartilhar: só você, suas turmas ou, depois da revisão de uma pessoa da nossa equipe, todo mundo",
       "li5": "Os alunos também podem criar: descrever, testar e consertar um jogo é planejar, escrever e depurar, sem programar",
-      "shotAlt": "O Estúdio da Oomba: à esquerda, o chat do Construtor avisa que a versão 2 está pronta; à direita, o jogo roda numa prévia do tamanho de um celular.",
-      "caption": "O Estúdio de verdade: o Construtor à esquerda, seu jogo à direita."
+      "shotAlt": "O Estúdio Oomba: o chat do Construtor à esquerda diz que a versão 2 está pronta, e a aula roda à direita numa prévia do tamanho de um celular.",
+      "caption": "O Estúdio de verdade: o Construtor à esquerda, sua aula à direita."
     },
     "courses": {
       "kicker": "Cursos prontos",
@@ -10345,15 +10440,15 @@
       "link": "Guia do professor"
     },
     "live": {
-      "kicker": "Jogos de turma ao vivo",
+      "kicker": "Aulas ao vivo para a turma",
       "h": "Acenda o projetor",
       "lead": "Aquecimentos e tíquetes de saída que a turma espera ansiosa. Os alunos entram pelos próprios aparelhos com um código de 7 dígitos.",
       "li1": "Quest Race, Brain Board, Would You Rather e mais",
       "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
       "li3": "As pontuações vão direto para o seu boletim",
-      "li4": "Jogos da turma: só os seus alunos com sessão iniciada. Jogos com convidados: nomes inventados e seguros. Sem chat e sem texto livre em ambos",
-      "link": "Como funcionam os jogos ao vivo",
-      "shotAlt": "O saguão de um jogo ao vivo de Question Battle: a tela grande mostra o personagem de desenho contra quem a turma joga, o código do jogo e um código QR."
+      "li4": "Aulas da turma: só seus alunos com login. Aulas de convidados: nomes inventados e seguros. Sem chat e sem digitação em nenhuma",
+      "link": "Como funcionam as aulas ao vivo",
+      "shotAlt": "Uma sala de Question Battle ao vivo: a tela grande mostra o personagem contra quem a turma joga, o código para entrar e um QR code."
     },
     "why": {
       "kicker": "Por que os jogos funcionam",
@@ -10398,7 +10493,7 @@
       "devices": "Chromebooks, iPads, notebooks, celulares e a lousa digital, direto no navegador. Nada para instalar.",
       "languages": "{count} idiomas, entre eles espanhol, árabe, português e francês. Cada aluno escolhe o seu.",
       "voicesH": "Leitura em voz alta",
-      "voices": "Vozes de IA naturais leem em voz alta todos os jogos oficiais."
+      "voices": "Vozes naturais de IA leem em voz alta cada aula oficial."
     },
     "pricing": {
       "kicker": "Preços",
@@ -10410,9 +10505,9 @@
         "priceShown": "{price} por ano",
         "trial": "14 dias grátis · sem cartão",
         "li1": "Alunos ilimitados, sem cobrança por aluno",
-        "li2": "300 jogos criados com IA por dia para sua turma",
-        "li3": "Todos os cursos, mais de 30 jogos prontos e jogos de turma ao vivo",
-        "li4": "Turmas, aulas, progresso e boletim",
+        "li2": "300 criações de aulas com IA por dia para sua turma",
+        "li3": "Todos os cursos, mais de 30 aulas prontas e aulas ao vivo para a turma",
+        "li4": "Turmas, planos de aula, progresso e o diário de notas",
         "li5": "Todos os idiomas, todos os aparelhos",
         "cta": "Comece seu teste grátis",
         "plans": "Ver planos e preços",
@@ -10430,29 +10525,29 @@
         "form": "Configure sua escola",
         "subject": "Oomba Academy para a nossa escola"
       },
-      "leadFree": "Nunca há taxa por aluno. O básico é grátis para todo professor, e o plano Professor adiciona jogos criados com IA para a turma toda.",
+      "leadFree": "Nunca há taxa por aluno. O básico é grátis para todo professor, e o Plano Professor adiciona criações de aulas com IA para a turma toda.",
       "free": {
         "name": "Grátis",
         "price": "Sempre grátis",
-        "li1": "Todos os jogos e os três cursos",
-        "li2": "Turmas, aulas, progresso e boletim",
+        "li1": "Todas as aulas e os três cursos",
+        "li2": "Turmas, planos de aula, progresso e o diário de notas",
         "li3": "Mensagens diárias grátis do Builder para você e seus alunos",
         "li4": "Contas da escola e cartões de acesso para imprimir",
-        "liLive": "Jogos ao vivo para a turma no projetor"
+        "liLive": "Aulas ao vivo para a turma no projetor"
       }
     },
     "faq": {
       "h": "Perguntas de professores",
       "q1": "O que é a Oomba Academy?",
-      "a1": "Uma plataforma de aprendizagem baseada em jogos da educação infantil ao 8º ano. Os professores transformam as próprias aulas em jogos interativos com um Construtor IA, fazem jogos de turma ao vivo e usam cursos prontos de matemática, computação e segurança na internet.",
+      "a1": "Uma plataforma de aprendizagem interativa da educação infantil ao 8º ano. Os professores transformam os próprios planos de aula em aulas para jogar com um Construtor com IA, conduzem aulas ao vivo e usam cursos prontos de matemática, computação e segurança on-line.",
       "q2": "Como funciona o teste grátis?",
       "a2": "Comece um teste grátis de 14 dias sem cartão. Tudo do plano Professor está incluído durante o teste, e quando ele acaba você decide se quer assinar.",
       "q3": "Eu pago por aluno?",
       "a3": "Não. Um preço anual por professor cobre todos os seus alunos. Não há cobrança por aluno.",
-      "q4": "O que posso transformar em jogo?",
-      "a4": "Quase qualquer aula: cole o texto, envie um PDF, uma imagem ou um arquivo de texto, ou descreva o tema e o que a turma precisa praticar. O Construtor usa seu material como referência e cria um jogo em volta dele.",
+      "q4": "O que posso transformar numa aula?",
+      "a4": "Quase qualquer plano de aula: cole o texto, envie um PDF, uma imagem ou um arquivo de texto, ou descreva o tema e o que a turma deve praticar. O Construtor usa seu material como referência e cria uma aula para jogar em volta dele.",
       "q5": "Os alunos precisam de e-mail?",
-      "a5": "Não. Você pode criar contas escolares para a turma e imprimir cartões de acesso, sem e-mail de aluno. E qualquer um pode jogar os jogos grátis na hora.",
+      "a5": "Não. Você pode criar contas escolares para a turma e imprimir cartões de acesso, sem e-mail dos alunos. Qualquer pessoa também pode jogar as aulas gratuitas na hora.",
       "q6": "Funciona em Chromebooks e iPads?",
       "a6": "Sim. Funciona em qualquer navegador atualizado em Chromebooks, iPads e outros tablets, notebooks, celulares e lousas digitais, sem instalar nada.",
       "q7": "É seguro para meus alunos?",
@@ -10461,7 +10556,7 @@
       "a8": "Sim. As escolas pagam o mesmo preço por professor por ano, por fatura ou ordem de compra. Mande um e-mail e a gente organiza tudo.",
       "q9": "Quais idiomas existem?",
       "a9": "{count} idiomas, entre eles inglês, espanhol, português, francês, alemão, árabe, hebraico e japonês. Cada aluno escolhe o seu, e o Construtor responde nele.",
-      "a2free": "Comece um teste grátis de 14 dias do plano Professor, sem cartão. Enquanto ele dura, o plano inteiro está incluído, e no fim você decide se quer assinar. Se não assinar, só param os jogos extras criados com IA do plano: os jogos, suas turmas, aulas e o progresso continuam grátis, e nada é apagado."
+      "a2free": "Comece um teste grátis de 14 dias do Plano Professor sem cartão. Tudo do plano está incluído enquanto durar, e no fim você decide se assina. Se não assinar, só as criações extras com IA param: as aulas, suas turmas, planos de aula e progresso continuam grátis, e nada é apagado."
     },
     "final": {
       "h": "Sua próxima aula pode ser aquela que eles pedem para jogar de novo",
@@ -10474,7 +10569,7 @@
       "cta": "Só jogar"
     },
     "footer": {
-      "tagline": "Jogos educativos para crianças de 5 a 14 anos, e um Construtor IA que transforma aulas em jogos.",
+      "tagline": "Aulas interativas para 5 a 14 anos e um Construtor com IA que transforma seus planos em aulas para jogar.",
       "teachers": "Para professores",
       "product": "Explore",
       "about": "Sobre",
@@ -10496,9 +10591,9 @@
     "kids": {
       "kicker": "Alunos criadores",
       "h": "Seus alunos também criam jogos",
-      "lead": "Para criar um jogo sobre um tema, é preciso entendê-lo bem o bastante para ensinar. Adicione uma etapa “Criar um jogo” a qualquer aula, e seus alunos descrevem, testam e melhoram o próprio jogo com o Builder, sem escrever código.",
-      "li1": "Uma etapa “Criar um jogo” nas suas aulas, com a ideia de onde os alunos partem",
-      "li2": "Cada aluno cria no próprio Studio, e você acompanha o progresso junto com o resto da aula",
+      "lead": "Para criar um jogo sobre um tema, é preciso entendê-lo bem o bastante para ensiná-lo. Adicione um passo “Criar um jogo” a qualquer plano de aula, e seus alunos descrevem, testam e melhoram o próprio jogo com o Construtor, sem escrever código.",
+      "li1": "Um passo “Criar um jogo” nos seus planos de aula, com a ideia da qual os alunos partem",
+      "li2": "Cada aluno cria no próprio Estúdio, e você vê o progresso junto com o resto do plano de aula",
       "li3": "A turma joga os jogos uns dos outros: um jogo de revisão do tema da semana funciona muito bem",
       "li4": "Privado até ser compartilhado: com a turma, ou com todos só depois que uma pessoa da nossa equipe revisar",
       "shotAlt": "O Studio de um aluno: o Builder avisa que a versão 2 está pronta, e o jogo roda numa prévia do tamanho de um celular.",
@@ -10519,9 +10614,9 @@
     "focus": {
       "manipulatives": "materiais manipuláveis virtuais de matemática",
       "play": "Palavras cruzadas, jogos de matemática e jogos ao vivo com a turma, sem cadastro.",
-      "freeLi1": "Todos os jogos prontos, quebra-cabeças e ferramentas de sala de aula",
-      "faqA1": "Uma plataforma de ensino do jardim ao 8º ano: um painel da turma para conduzir o dia, materiais manipuláveis virtuais de matemática, figuras desenhadas em escala, criadores de quebra-cabeças como as Palavras cruzadas, jogos ao vivo com a turma e uma Biblioteca de histórias. Professores também podem transformar suas próprias aulas em jogos de sala de aula com o Builder de IA.",
-      "demoCredit": "Arte do jogo {title}, um dos jogos prontos da Oomba."
+      "freeLi1": "Todas as aulas prontas, enigmas e ferramentas de sala",
+      "faqA1": "Uma plataforma de ensino da educação infantil ao 8º ano: um painel da turma para o dia, materiais manipuláveis virtuais de matemática, figuras em escala, criadores de enigmas como Crossword, aulas ao vivo e uma biblioteca de histórias. Os professores também podem transformar os próprios planos de aula em aulas para jogar com um Construtor com IA.",
+      "demoCredit": "Arte de {title}, uma das aulas prontas da Oomba."
     }
   },
   "teach": {
@@ -10529,9 +10624,9 @@
       "title": "Passar {game}",
       "pickClass": "Turma",
       "submit": "Passar",
-      "note": "Sua turma recebe uma aula de uma etapa que abre este jogo. Você pode mudá-la depois na biblioteca de aulas.",
+      "note": "Sua turma recebe um plano de aula de um passo que abre esta aula. Você pode mudar depois na Biblioteca de planos de aula.",
       "none": "Você ainda não tem turmas. Crie uma primeiro em Minha sala.",
-      "liveOnly": "Este é um jogo ao vivo para a turma: conduza na tela grande em vez de passar como atividade."
+      "liveOnly": "Esta é uma aula ao vivo para a turma: conduza na tela grande em vez de passar como atividade."
     },
     "home": {
       "hello": "Olá, {name}",
@@ -10540,7 +10635,7 @@
       "caughtUp": "Tudo em dia",
       "lessonFolder": "Pasta de aulas",
       "openClass": "Abrir a turma",
-      "openLive": "Abrir o jogo ao vivo",
+      "openLive": "Abrir a aula ao vivo",
       "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
       "allClasses": "Todas as turmas"
     },
@@ -10551,7 +10646,7 @@
       "steps": {
         "plan": {
           "name": "Planejar",
-          "benefit": "Comece com uma aula pronta ou um tema e transforme-a num jogo que a sua turma vai querer jogar."
+          "benefit": "Comece com um plano de aula pronto ou um tema e transforme-o numa aula que sua turma vai querer jogar."
         },
         "play": {
           "name": "Jogar",
@@ -10563,35 +10658,35 @@
         },
         "feedback": {
           "name": "Comentar",
-          "benefit": "Leia cada resposta e escreva um comentário que o aluno vê na própria aula."
+          "benefit": "Leia cada resposta e escreva um retorno que o aluno vê no próprio plano de aula."
         }
       },
       "tools": {
-        "builder": "Transformar uma aula em jogo",
+        "builder": "Transformar suas anotações em uma aula",
         "assign": "Atribuir a uma turma",
         "gradebook": "Diário de notas",
         "gradebookCsv": "Diário de notas com download em CSV",
         "standards": "Aba Padrões",
         "review": "Respostas para ler",
         "written": "Comentários escritos que os alunos veem",
-        "library": "Biblioteca de aulas",
+        "library": "Biblioteca de planos de aula",
         "draftAi": "Criar rascunho com IA",
         "attention": "Quem precisa de atenção primeiro",
         "csv": "Baixar (CSV)",
-        "live": "Conduzir um jogo ao vivo"
+        "live": "Conduzir uma aula ao vivo"
       },
       "shots": {
         "gradebook": {
-          "alt": "O diário de notas: alunos nas linhas, aulas nas colunas, com passos feitos e respostas para ler",
+          "alt": "O diário de notas: alunos na lateral, planos de aula no topo, com passos feitos e respostas para ler",
           "caption": "Diário de notas: a turma toda num relance, pronta para baixar em CSV."
         },
         "attention": {
-          "alt": "O progresso de uma aula, ordenado para que os alunos que precisam de atenção venham primeiro",
-          "caption": "Primeiro quem precisa de atenção: respostas para ler, atrasos e aulas pela metade no topo."
+          "alt": "O progresso de um plano de aula, ordenado para que os alunos que precisam de atenção venham primeiro",
+          "caption": "O que precisa de atenção primeiro: respostas para ler, trabalhos atrasados e planos de aula pela metade no topo."
         },
         "feedback": {
           "alt": "A resposta escrita de um aluno com a caixa de comentário do professor e o botão de salvar",
-          "caption": "Comentar: escreva uma nota, salve, e o aluno a vê na aula dele."
+          "caption": "Retorno: escreva uma nota, salve, e o aluno vê no plano de aula dele."
         },
         "standards": {
           "alt": "A aba Padrões da turma: padrões de matemática do Common Core e até onde cada aluno chegou",
@@ -10621,7 +10716,7 @@
   },
   "rubrics": {
     "title": "Rubricas",
-    "intro": "Rubricas reutilizáveis: critérios nas linhas, níveis nas colunas. Associe uma a uma resposta escrita, a um jogo criado ou a uma aula inteira e avalie cada aluno tocando em um nível.",
+    "intro": "Rubricas reutilizáveis: critérios na lateral, níveis no topo. Anexe uma a uma resposta escrita, uma criação ou um plano de aula inteiro e avalie cada aluno tocando num nível.",
     "mine": "Minhas rubricas",
     "shared": "Compartilhadas por colegas",
     "new": "Nova rubrica",
@@ -10636,10 +10731,10 @@
     "levelsN": "{count, plural, one {# nível} other {# níveis}}",
     "pointsN": "{count, plural, one {# ponto} other {# pontos}}",
     "maxPoints": "De {points}",
-    "usedN": "{count, plural, one {Usada em # aula} other {Usada em # aulas}}",
+    "usedN": "{count, plural, one {Usada em # plano de aula} other {Usada em # planos de aula}}",
     "usedIn": "Usada em",
-    "notUsed": "Ainda não está em nenhuma aula. Associe-a em uma etapa de uma aula ou nos detalhes da aula.",
-    "wholeLesson": "Aula inteira",
+    "notUsed": "Ainda não está anexada a nenhum plano de aula. Anexe a partir de um passo ou dos detalhes de um plano de aula.",
+    "wholeLesson": "Plano de aula inteiro",
     "stepsN": "{count, plural, one {# etapa} other {# etapas}}",
     "print": "Imprimir",
     "printName": "Nome:",
@@ -10657,7 +10752,7 @@
     "unsharedToast": "Não está mais compartilhada",
     "delete": "Excluir rubrica",
     "deleteConfirm": "Excluir a rubrica {title}? As avaliações já feitas continuam como estavam.",
-    "deleteUsedConfirm": "{count, plural, one {{title} está em # aula. Tirar e excluir a rubrica? As avaliações já feitas continuam como estavam.} other {{title} está em # aulas. Tirar delas e excluir a rubrica? As avaliações já feitas continuam como estavam.}}",
+    "deleteUsedConfirm": "{count, plural, one {{title} está anexada a # plano de aula. Tirar e apagar a rubrica? As pontuações já dadas continuam como estavam.} other {{title} está anexada a # planos de aula. Tirar de todos e apagar a rubrica? As pontuações já dadas continuam como estavam.}}",
     "deletedToast": "Rubrica excluída",
     "levelNames": {
       "notYet": "Ainda não",
@@ -10704,7 +10799,7 @@
     },
     "starters": {
       "title": "Rubricas iniciais",
-      "intro": "O ticket de saída de cada aula do CS Quest vem com uma rubrica (níveis 0 a 3, em inglês). Adicione uma às suas rubricas para usar em qualquer aula, ou adapte.",
+      "intro": "Cada bilhete de saída de uma aula do CS Quest vem com uma rubrica (níveis 0 a 3, em inglês). Adicione uma às suas rubricas para usar com qualquer plano de aula, ou ajuste como quiser.",
       "add": "Adicionar às minhas rubricas",
       "addFor": "Adicionar {title} às minhas rubricas",
       "added": "Adicionada às suas rubricas. Mude como quiser.",
@@ -10712,9 +10807,9 @@
     },
     "attach": {
       "step": "Rubrica",
-      "lesson": "Rubrica para a aula inteira",
-      "lessonTitle": "Rubrica da aula inteira",
-      "lessonHint": "Avalie cada aluno na aula inteira pela página de progresso dela.",
+      "lesson": "Rubrica para o plano de aula inteiro",
+      "lessonTitle": "Rubrica do plano de aula inteiro",
+      "lessonHint": "Avalie cada aluno no plano de aula inteiro pela página de progresso dele.",
       "none": "Sem rubrica",
       "hint": "Avalie com ela as respostas ou os jogos desta etapa.",
       "noneYet": "Você ainda não tem rubricas.",
@@ -10754,7 +10849,7 @@
       "rubricPoints": "Os pontos são um número de 0 a 100.",
       "rubricName": "Dê um nome a cada critério.",
       "tooManyRubrics": "Você tem o máximo de rubricas nesta escola. Exclua uma que não usa mais.",
-      "inUse": "{count, plural, one {Esta rubrica está em # aula.} other {Esta rubrica está em # aulas.}}",
+      "inUse": "{count, plural, one {Esta rubrica está anexada a # plano de aula.} other {Esta rubrica está anexada a # planos de aula.}}",
       "task": "Diga o que os alunos fazem.",
       "aiFailed": "A IA não conseguiu criar uma rubrica agora. Tente de novo em um minuto.",
       "pick": "Escolha uma das suas rubricas (copie antes a de um colega)."
@@ -10770,7 +10865,7 @@
     "picker": "Conjunto de padrões",
     "notice": "Common Core State Standards, usados sob a licença pública CCSS.",
     "class": {
-      "lead": "Quais padrões Common Core esta turma cobre com as lições atribuídas, os jogos de Aprender que elas têm, os jogos ao vivo e os cursos, e como cada estudante está indo. Calculado a partir do trabalho já registrado: nada novo é coletado.",
+      "lead": "Quais padrões Common Core esta turma cobre com os planos de aula atribuídos, as aulas do Aprender dentro deles, as aulas ao vivo e os cursos, e como cada aluno está indo. Calculado com o trabalho já registrado: nada novo é coletado.",
       "grade": "Ano",
       "covered": "Só os padrões cobertos",
       "allOf": "Todos os padrões de {grade}",
@@ -10806,23 +10901,23 @@
     "rubricBest": "melhor {pct}% · {count} avaliados",
     "mine": "{right} de {answered} certas",
     "src": {
-      "live": "jogos ao vivo: {count}"
+      "live": "{count, plural, one {# aula ao vivo} other {# aulas ao vivo}}"
     },
     "legend": {
       "h": "Como ler",
-      "sources": "Coberto por: as lições atribuídas marcadas com o padrão (ou com uma etapa ou um jogo de Aprender que o pratica), os jogos ao vivo que perguntaram sobre ele (Tug of Math Live no seu ano, conjuntos de perguntas que levam o código) e os cursos em que seus estudantes estão.",
+      "sources": "Coberto por: os planos de aula atribuídos marcados com o padrão (ou com um passo ou uma aula do Aprender que o pratica), as aulas ao vivo que perguntaram sobre ele (Tug of Math Live no ano dele, conjuntos cujas perguntas têm o código) e os cursos em que seus alunos estão.",
       "practiced": "Praticado: estudantes que terminaram uma atividade que pratica o padrão. Quer dizer que fizeram, não que dominam.",
-      "checked": "Perguntas: respostas certas entre as perguntas respondidas sobre o padrão (quizzes das lições, jogos ao vivo, verificações do Number Quest).",
+      "checked": "Perguntas: respostas certas entre as perguntas respondidas sobre o padrão (questionários dos planos de aula, aulas ao vivo, checagens do Number Quest).",
       "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
       "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
       "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso.",
-      "games": "Jogos com níveis para várias séries (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para a série da aula, ou para o nível em que o passo está fixado. Numa aula sem série, aparecem só em «Coberto por».",
-      "live": "Jogos ao vivo como o Tug of Math Live não guardam qual pergunta era de qual padrão, por isso as respostas de um aluno são divididas entre os padrões do jogo. Esses números são estimativas.",
+      "games": "As aulas com níveis para vários anos (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para o ano do plano de aula, ou para o nível em que o passo está fixado. Num plano de aula sem ano, elas aparecem só em Coberto por.",
+      "live": "As aulas ao vivo como Tug of Math Live não registram qual pergunta era de qual padrão, então as respostas de um aluno são divididas entre os padrões da aula. Esses números são estimativas.",
       "courses": "O Number Quest conta o trabalho feito com uma conta da escola, ou desde que o aluno entrou nesta turma. Uma única verificação (3 perguntas) não basta para atingir um padrão."
     },
     "empty": {
       "title": "Ainda não há padrões Common Core",
-      "text": "Marque suas lições com padrões, ou atribua lições com jogos de Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
+      "text": "Marque seus planos de aula com padrões ou atribua planos de aula com aulas do Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
     },
     "csvCols": {
       "code": "Código",
@@ -10843,11 +10938,11 @@
     },
     "lesson": {
       "title": "Padrões",
-      "lead": "Marque esta lição, ou uma das etapas, com os padrões Common Core que ela trabalha. Eles aparecem na aba Padrões de cada turma a que ela foi atribuída.",
-      "back": "Voltar à lição",
+      "lead": "Marque este plano de aula, ou um dos passos, com os padrões Common Core que ele trabalha. Eles aparecem na aba Padrões de cada turma a que ele for atribuído.",
+      "back": "Voltar ao plano de aula",
       "current": "Padrões marcados",
       "none": "Ainda não há padrões marcados.",
-      "whole": "A lição toda",
+      "whole": "Plano de aula inteiro",
       "stepN": "Etapa {n}: {title}",
       "remove": "Remover",
       "removeLabel": "Remover {code}",
@@ -10871,13 +10966,13 @@
       "view": "Ver padrões",
       "editorNone": "Ainda não há padrões Common Core marcados.",
       "onSteps": "Padrões marcados em etapas: {count}",
-      "gameCodes": "Padrões de {framework} que este jogo pratica",
-      "gameNeedsGrade": "Este jogo tem níveis para várias séries. Dê uma série à aula (ou fixe o passo num nível) para que seus padrões contem como prática."
+      "gameCodes": "Padrões {framework} que esta aula pratica",
+      "gameNeedsGrade": "Esta aula tem níveis para vários anos. Dê um ano ao plano de aula (ou fixe o passo em um nível) para os padrões contarem como prática."
     },
     "errors": {
       "badCode": "Esse não é um código Common Core.",
-      "badStep": "Essa etapa não está nesta lição.",
-      "tooMany": "Uma lição pode ter até 60 padrões.",
+      "badStep": "Esse passo não está neste plano de aula.",
+      "tooMany": "Um plano de aula pode ter até 60 padrões.",
       "badFramework": "Escolha Common Core Matemática ou Inglês."
     },
     "learn": {
@@ -10893,19 +10988,19 @@
       "what": {
         "courses": "vincular esta turma a uma das suas turmas do Classroom",
         "roster": "trazer os alunos dela, que entram com o Google",
-        "post": "publicar aulas lá, com um link para cá e a data de entrega",
-        "grades": "enviar a nota de cada aluno para o Classroom (de conclusão, ou a pontuação escolhida no Homeroom)"
+        "post": "publicar lá planos de aula, com um link de volta para cá e o prazo",
+        "grades": "enviar ao Classroom a nota de cada aluno num plano de aula (conclusão ou a pontuação escolhida no Homeroom)"
       },
       "button": "Conectar o Google Classroom",
-      "privacy": "Só você vê esta conexão. Ao conectar, a Oomba Academy pode ler suas turmas e os alunos delas. Só se você permitir publicar ela envia ao Classroom o que você publicar: o título, o link e a data de entrega de uma aula, a nota de cada aluno de 0 a 100 (de conclusão, ou a pontuação escolhida no Homeroom), o nome de um tópico e os avisos que você escrever. Nunca nomes, respostas ou jogos dos alunos.",
+      "privacy": "Só você vê esta conexão. Conectar permite que a Oomba Academy leia suas turmas e os alunos delas. Só se você permitir publicar, ela envia ao Classroom o que você publica: o título, o link e o prazo de um plano de aula, a nota de cada aluno de 0 a 100 (conclusão ou a pontuação escolhida no Homeroom), um nome de tema e os avisos que você escreve. Nunca nomes, respostas ou jogos dos alunos.",
       "connectedAs": "Conectado como {email}",
       "connectedHint": "Esta conexão é sua: seus colegas professores conectam a deles.",
       "connectedToast": "O Google Classroom está conectado.",
       "disconnect": "Desconectar",
-      "disconnectConfirm": "Desconectar o Google Classroom? A Oomba Academy vai parar de sincronizar por você e apagar a chave de acesso ao seu Classroom. As aulas já publicadas ficam no Classroom.",
+      "disconnectConfirm": "Desconectar o Google Classroom? A Oomba Academy vai parar de sincronizar e apagar a chave do seu Classroom. Os planos de aula já publicados ficam no Classroom.",
       "disconnected": "O Google Classroom foi desconectado.",
       "reconnect": "Conectar de novo",
-      "later": "Publicar aulas, notas e avisos vem depois, só se você permitir."
+      "later": "Publicar planos de aula, notas e avisos vem depois, só se você permitir."
     },
     "course": {
       "heading": "Turma do Classroom vinculada",
@@ -10916,7 +11011,7 @@
       "linked": "Vinculada a {course}.",
       "linkedTo": "Vinculada a {course}",
       "unlink": "Desvincular",
-      "unlinkConfirm": "Desvincular {course}? Os alunos e as aulas ficam onde estão.",
+      "unlinkConfirm": "Desvincular {course}? Os alunos e os planos de aula ficam onde estão.",
       "unlinked": "Desvinculada.",
       "connectFirst": "Conecte seu Google Classroom acima para sincronizar.",
       "refresh": "Atualizar a lista"
@@ -10942,8 +11037,8 @@
       "resultLeft": "{count, plural, one {# não está mais no Google Classroom} other {# não estão mais no Google Classroom}}"
     },
     "post": {
-      "heading": "Aulas no Classroom",
-      "text": "Publicar uma aula cria uma atividade no Classroom com o título, um link para a aula aqui e a data de entrega.",
+      "heading": "Planos de aula no Classroom",
+      "text": "Publicar um plano de aula cria uma atividade no Classroom com o título, um link para o plano de aula aqui e a data de entrega.",
       "button": "Publicar no Google Classroom",
       "also": "Publicar também no Google Classroom",
       "description": "Abra esta aula na Oomba Academy.",
@@ -10954,14 +11049,14 @@
       "noDue": "Sem data de entrega",
       "posted": "Publicada",
       "open": "Abrir no Classroom",
-      "noLessons": "Ainda não há aulas nesta turma. Atribua uma na aba Aulas.",
-      "doneScheduled": "Agendada no Google Classroom: os alunos a verão em {date}, quando a aula abrir.",
-      "locked": "Para publicar aulas, enviar notas e compartilhar material, permita que a Oomba Academy publique no Classroom.",
+      "noLessons": "Ainda não há planos de aula nesta turma. Atribua um na aba Planos de aula.",
+      "doneScheduled": "Agendado no Google Classroom: os alunos veem em {date}, quando o plano de aula abrir.",
+      "locked": "Para publicar planos de aula, enviar notas e compartilhar materiais, permita que a Oomba Academy publique no Classroom.",
       "someNot": "Atribuída a alguns alunos, por isso não publicada: no Google Classroom ela iria para a turma toda.",
       "somePosted": "Aqui está atribuída a alguns alunos. Antes foi publicada para a turma toda no Google Classroom, e as notas vão só para os alunos atribuídos."
     },
     "grades": {
-      "text": "Cada aula envia a nota pela qual é avaliada, de 0 a 100. Aulas atribuídas no Classroom enviam uma nota de conclusão: a parte das etapas feitas, não as respostas certas. Tarefas do Homeroom enviam o que você escolheu ao distribuí-las: Pontuação envia a % de acertos, Conclusão a nota de conclusão e Sem nota não envia nada. Quem ainda não começou fica de fora.",
+      "text": "Cada plano de aula envia a nota pela qual é avaliado, de 0 a 100. Os planos de aula atribuídos no Classroom enviam uma nota de conclusão: a parte dos passos do plano de aula que o aluno fez, não as respostas certas. As atividades do Homeroom enviam o que você escolheu ao distribuí-las: Pontuação envia o % de acertos, Conclusão a nota de conclusão, e Sem nota não envia nada. Os alunos que não começaram ficam de fora.",
       "as": "Enviar como",
       "draft": "Nota provisória (você devolve no Classroom)",
       "assigned": "Nota atribuída",
@@ -10989,7 +11084,7 @@
         "link": "Turma vinculada",
         "unlink": "Turma desvinculada",
         "roster": "Alunos importados",
-        "post": "Aula publicada",
+        "post": "Publicou um plano de aula",
         "grades": "Notas enviadas",
         "autoRoster": "Alunos atualizados (automático)",
         "autoGrades": "Notas enviadas (automático)",
@@ -11015,8 +11110,8 @@
       "googleDown": "O Google Classroom não respondeu. Tente de novo.",
       "badRequest": "O Google Classroom não aceitou isso.",
       "tooMany": "Essa turma do Classroom tem mais de {max} alunos.",
-      "alreadyPosted": "Esta aula já está no Google Classroom.",
-      "notPosted": "Publique primeiro esta aula no Google Classroom.",
+      "alreadyPosted": "Este plano de aula já está no Google Classroom.",
+      "notPosted": "Publique primeiro este plano de aula no Google Classroom.",
       "badMode": "Escolha como enviar as notas.",
       "scopesMissing": "Marque as duas caixas na tela do Google (ver suas turmas e os alunos delas): a Oomba Academy precisa delas para vincular uma turma.",
       "noRefresh": "O Google não enviou uma chave que possamos guardar. Conecte de novo.",
@@ -11026,25 +11121,25 @@
       "tooManyTries": "Sincronizações demais por agora. Tente de novo daqui a uma hora.",
       "needsScope": "A Oomba Academy ainda não tem permissão para fazer isso no seu Classroom. Use antes “Permitir que a Oomba Academy publique no Classroom”.",
       "noneAllowed": "Nada novo foi permitido na tela do Google, então publicar continua desligado.",
-      "alreadyShared": "Esta aula já está compartilhada como material.",
+      "alreadyShared": "Este plano de aula já está compartilhado como material.",
       "notLeaver": "Esse aluno não está mais na lista.",
       "badTemplate": "Escolha o que avisar.",
-      "noLiveGame": "Nenhum jogo ao vivo está aberto para esta turma agora.",
-      "pickLesson": "Escolha uma aula desta turma.",
-      "lessonNotOpen": "Essa aula ainda não está aberta.",
+      "noLiveGame": "Não há nenhuma aula ao vivo aberta para esta turma agora.",
+      "pickLesson": "Escolha um plano de aula desta turma.",
+      "lessonNotOpen": "Esse plano de aula ainda não está aberto.",
       "emptyNote": "Escreva sua mensagem primeiro.",
       "tooLong": "Os avisos podem ter no máximo {max} caracteres.",
       "hasName": "“{name}” na sua mensagem é igual ao nome de um aluno. Os avisos vão para a turma toda: reescreva ou tire essa palavra, por favor.",
       "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco.",
-      "someStudents": "Esta lição está atribuída a alguns alunos, por isso não é publicada no Google Classroom: lá ela iria para a turma toda.",
+      "someStudents": "Este plano de aula está atribuído só a alguns alunos, então não é publicado no Google Classroom: lá iria para a turma toda.",
       "notGraded": "Esta entrega não vale nota, então nenhuma nota vai para o Google Classroom."
     },
     "allow": {
       "heading": "O que a Oomba Academy pode fazer no seu Classroom",
       "features": {
         "read": "Ver suas turmas e trazer os alunos delas",
-        "post": "Publicar aulas como atividades e enviar notas",
-        "materials": "Compartilhar aulas como material",
+        "post": "Publicar planos de aula como atividades e enviar notas",
+        "materials": "Compartilhar planos de aula como materiais",
         "announce": "Publicar avisos no mural da turma",
         "topics": "Colocar as publicações dela em um tópico"
       },
@@ -11070,7 +11165,7 @@
       "roster": "Atualizar os alunos do Classroom a cada 6 horas",
       "rosterHint": "Alunos novos são adicionados. Quem sai do Classroom aparece acima para você remover: ninguém é removido sozinho.",
       "grades": "Enviar notas automaticamente",
-      "gradesHint": "A cada 30 minutos, as notas que mudaram vão para o Classroom nas aulas publicadas daqui (cada uma como é avaliada: nota de conclusão ou pontuação), até 30 dias depois de cada prazo.",
+      "gradesHint": "A cada 30 minutos, as notas que mudaram vão para o Classroom nos planos de aula publicados daqui (cada um como é avaliado: conclusão ou pontuação), até 30 dias depois de cada prazo.",
       "by": "As notas vão pela conexão do Google Classroom de {name}.",
       "save": "Salvar",
       "saved": "Salvo.",
@@ -11091,10 +11186,10 @@
       "hint": "As novas publicações ficam neste tópico no Classroom. Deixe vazio para usar o padrão."
     },
     "material": {
-      "text": "Compartilhar como material coloca o título e o link da aula no Classroom, sem nota e sem data de entrega.",
+      "text": "Compartilhar como material coloca o título e o link do plano de aula no Classroom, sem nota e sem prazo.",
       "button": "Compartilhar como material",
       "done": "Compartilhado no Google Classroom como material.",
-      "doneScheduled": "Programado no Google Classroom como material: os alunos veem em {date}, quando a aula abrir.",
+      "doneScheduled": "Agendado no Google Classroom como material: os alunos veem em {date}, quando o plano de aula abrir.",
       "shared": "Compartilhado como material",
       "open": "Abrir material"
     },
@@ -11108,11 +11203,11 @@
       "note": "Acrescente um recado (opcional)",
       "message": "Sua mensagem",
       "send": "Publicar no mural",
-      "noLive": "Nenhum jogo ao vivo está aberto para esta turma agora. Abra um e volte aqui, ou use “Avisar no Classroom” na tela do anfitrião.",
-      "hostLive": "Abrir um jogo ao vivo",
-      "pickLesson": "Aula",
-      "lessonTitle": "o título da aula",
-      "noLessons": "Ainda não há aulas abertas nesta turma.",
+      "noLive": "Não há nenhuma aula ao vivo aberta para esta turma agora. Conduza uma e depois volte aqui ou use “Anunciar no Classroom” na tela de quem conduz.",
+      "hostLive": "Conduzir uma aula ao vivo",
+      "pickLesson": "Plano de aula",
+      "lessonTitle": "o título do plano de aula",
+      "noLessons": "Ainda não há planos de aula abertos nesta turma.",
       "fixed": {
         "live": "🎮 Um jogo ao vivo está começando! Entre em {url} com o código {code}.",
         "lesson": "📚 Uma aula nova está pronta: {title}\n{url}"
@@ -11128,7 +11223,7 @@
       "manage": "Configurações do Classroom",
       "name": "Google Classroom",
       "short": "Classroom",
-      "what": "Vincule esta turma, traga seus alunos e publique aulas e notas."
+      "what": "Vincule esta turma, traga os alunos e publique planos de aula e notas."
     }
   },
   "digest": {
@@ -11171,7 +11266,7 @@
     },
     "me": {
       "heading": "Resumo semanal das turmas",
-      "text": "Uma vez por semana enviamos por e-mail os números de cada turma: lições para entregar, trabalho feito, respostas para revisar, alunos que não começaram e jogos ao vivo. Nunca o nome ou a resposta de um aluno.",
+      "text": "Uma vez por semana enviamos por e-mail números de cada turma: planos de aula com prazo, trabalho feito, respostas para revisar, alunos que não começaram e aulas ao vivo. Nunca o nome ou a resposta de um aluno.",
       "noAddress": "Ainda não temos seu endereço de e-mail. Conecte o Google nesta página e o resumo vai para esse endereço.",
       "on": "Enviar o resumo semanal por e-mail",
       "day": "Dia",
@@ -11185,7 +11280,7 @@
     "page": {
       "link": "Resumo desta semana",
       "title": "Resumo desta semana",
-      "sub": "Cada turma sua: os últimos 7 dias e as lições para entregar nos próximos 7.",
+      "sub": "Cada turma: os últimos 7 dias e os planos de aula com prazo nos próximos 7.",
       "next": "Seu e-mail de resumo sai toda semana: {when}.",
       "off": "O e-mail de resumo semanal está desligado. Você ainda pode ver esta página quando quiser.",
       "noAddress": "Ainda não temos seu endereço de e-mail, então nenhum resumo é enviado. Conecte o Google na sua página Eu.",
@@ -11197,7 +11292,7 @@
       "statDone": "Trabalho feito",
       "statToRead": "Para revisar",
       "statNotStarted": "Não começaram",
-      "statLive": "Jogos ao vivo",
+      "statLive": "Aulas ao vivo",
       "dueHeading": "Para entregar esta semana",
       "finished": "{done} de {count} terminaram",
       "toReadHeading": "Respostas para revisar",
@@ -11231,25 +11326,25 @@
       "score": "pontuação: pontos obtidos dos pontos possíveis"
     },
     "names": {
-      "inGames": "Nome nos jogos"
+      "inGames": "Nome nas aulas"
     },
     "help": {
-      "workDone": "A parte dos passos que o aluno terminou nas lições abertas. Não olha para as respostas certas.",
-      "score": "Pontos obtidos dos pontos possíveis: questionários (1 ponto por pergunta), jogos ao vivo que você conduz para um passo de uma lição (1 ponto por pergunta, o melhor jogo) e trabalhos que você pontua com uma rubrica (os pontos dela). Trabalhos maiores contam mais. O que não está feito ou ainda não foi pontuado fica de fora; sem nada pontuado aparece –. Toque numa pontuação para ver de que é feita.",
+      "workDone": "A parte dos passos que o aluno terminou nos planos de aula abertos. Não olha para as respostas certas.",
+      "score": "Pontos obtidos dos pontos possíveis: questionários (1 ponto por pergunta), aulas ao vivo que você conduz para um passo de um plano de aula (1 ponto por pergunta, a melhor rodada) e trabalhos que você pontua com uma rubrica (os pontos dela). Trabalhos maiores contam mais. O que não está feito ou ainda não foi pontuado fica de fora; sem nada pontuado aparece –. Toque numa pontuação para ver de que é feita.",
       "late": "Trabalho que ainda falta depois da data de entrega. “Feito com atraso” quer dizer terminado depois da data de entrega.",
-      "names": "O nome a cinzento por baixo do nome de um aluno é o que ele tem nos jogos e no ecrã da turma."
+      "names": "O nome cinza embaixo do nome de um aluno é o que ele tem nas aulas e na tela da turma."
     },
     "live": {
-      "title": "Resultados dos jogos ao vivo",
+      "title": "Resultados das aulas ao vivo",
       "hint": "Respostas certas das perguntas feitas, para alunos com sessão iniciada nesta turma. Os convidados nunca são guardados.",
-      "linked": "Parte de uma lição: conta para a pontuação",
+      "linked": "Parte de um plano de aula: conta na pontuação",
       "keyRight": "respostas certas das perguntas feitas",
       "keyPlayed": "jogou, nada para pontuar",
       "keyAbsent": "não jogou"
     },
     "csv": {
       "points": "Pontuação (pontos)",
-      "lateCount": "Lições em atraso",
+      "lateCount": "Planos de aula atrasados",
       "scoreCol": "{title} (pontuação %)",
       "helpedCol": "{title} (respostas mostradas pelo professor)",
       "lateCol": "{title} (atraso)",
@@ -11260,7 +11355,7 @@
     "kind": {
       "quiz": "Questionário",
       "typing": "Nota de digitação",
-      "live": "Jogo ao vivo",
+      "live": "Aula ao vivo",
       "rubric": "Rubrica",
       "marks": "Notas da rubrica"
     },
@@ -11268,28 +11363,28 @@
       "back": "Progresso",
       "printFull": "Imprimir o nome completo",
       "print": "Imprimir",
-      "printHint": "A impressão mostra só o primeiro nome, a não ser que marque a caixa. O nome usado nos jogos nunca é impresso.",
-      "lateLessons": "Lições em atraso",
-      "lesson": "Lição",
+      "printHint": "A impressão mostra só o primeiro nome, a não ser que você marque a caixa. O nome usado nas aulas nunca é impresso.",
+      "lateLessons": "Planos de aula atrasados",
+      "lesson": "Plano de aula",
       "due": "Entrega",
       "late": "Em atraso",
       "scoreH": "De que é feita a pontuação",
       "work": "Trabalho",
       "type": "Tipo",
       "points": "Pontos",
-      "none": "Ainda não há nada pontuado. As pontuações vêm de questionários, de jogos ao vivo para um passo de uma lição e de trabalhos pontuados com uma rubrica.",
+      "none": "Ainda não há nada pontuado. As pontuações vêm de questionários, de aulas ao vivo para um passo de um plano de aula e de trabalhos pontuados com uma rubrica.",
       "standardsLine": "{meets} atingidos · {developing} em desenvolvimento · {practiced} praticados",
       "standardsOpen": "Ver os padrões",
       "noStandards": "Ainda sem evidências de padrões.",
       "answers": "Respostas e comentários recentes",
       "feedback": "Comentário do professor",
       "noAnswers": "Ainda não há respostas escritas.",
-      "noLive": "Ainda não há jogos ao vivo."
+      "noLive": "Ainda não há aulas ao vivo."
     },
     "dash": {
       "showNames": "Mostrar nomes da lista da turma",
       "hideNames": "Ocultar nomes da lista da turma",
-      "namesHint": "Mostra o nome da lista da turma ao lado do nome no jogo, só neste ecrã. O ecrã da turma mantém os nomes do jogo."
+      "namesHint": "Mostra o nome da lista da turma ao lado do nome usado nas aulas, só nesta tela. A tela da turma mantém os nomes das aulas."
     },
     "notAssigned": "Não atribuída",
     "grade": {
@@ -11304,21 +11399,21 @@
     }
   },
   "quickLive": {
-    "cta": "Comece um jogo ao vivo agora",
+    "cta": "Conduzir uma aula ao vivo agora",
     "ctaNote": "Não é preciso contas de alunos. Os alunos entram com um código e recebem um nome inventado e seguro.",
     "haveCode": "Tem um código de jogo? Entrar",
     "join": "Entrar num jogo",
     "host": {
-      "title": "Comece um jogo ao vivo agora",
-      "h": "Comece um jogo ao vivo agora",
-      "lead": "Crie uma conta de professor, escolha um jogo e os seus alunos entram com um código. Sem contas de alunos, sem endereço de email, e é grátis.",
+      "title": "Conduzir uma aula ao vivo agora",
+      "h": "Conduzir uma aula ao vivo agora",
+      "lead": "Crie uma conta de professor, escolha uma aula e seus alunos entram com um código. Sem contas de alunos, sem e-mail, e é grátis.",
       "step1": "Crie a sua conta de professor: três campos.",
-      "step2": "Escolha um jogo e as perguntas.",
+      "step2": "Escolha uma aula e as perguntas.",
       "step3": "Mostre o código no quadro. Os alunos entram em qualquer dispositivo."
     },
     "signup": {
       "h": "A sua conta de professor",
-      "submit": "Criar a minha conta e escolher um jogo",
+      "submit": "Criar minha conta e escolher uma aula",
       "privacy": "Guardamos o seu nome, o seu nome de utilizador e uma cópia cifrada da sua palavra-passe. <a href=\"{privacy}\">Política de privacidade</a>",
       "have": "Já tem uma conta? <a href=\"{login}\">Iniciar sessão</a>",
       "student": "És aluno?",
@@ -11330,29 +11425,40 @@
     },
     "quick": {
       "title": "Jogo rápido",
+      "titleForTeachers": "Aula rápida",
       "h": "Jogo rápido",
+      "hForTeachers": "Aula rápida",
       "forClass": "Para {name}. Só os alunos desta turma podem entrar, com a sua própria conta.",
       "open": "Qualquer pessoa com o código pode entrar. Sem contas de alunos: cada jogador recebe um nome inventado e seguro.",
       "hasOpen": "Já tem um jogo aberto: {title}.",
+      "hasOpenForTeachers": "Você já tem uma aula aberta: {title}.",
       "mode": "Jogo",
+      "modeForTeachers": "Aula",
       "level": "Nível",
       "subject": "Disciplina",
       "what": "{count} perguntas prontas, novas em cada jogo. Carrega em Começar quando todos tiverem entrado.",
+      "whatForTeachers": "{count} perguntas prontas, novas a cada vez. Você aperta Começar quando todos estiverem dentro.",
       "go": "Abrir a sala",
       "more": "Mais jogos e definições",
-      "recent": "Os seus últimos jogos"
+      "moreForTeachers": "Mais aulas e configurações",
+      "recent": "Os seus últimos jogos",
+      "recentForTeachers": "Suas últimas aulas"
     },
     "results": {
       "h": "Este foi um jogo com convidados.",
+      "hForTeachers": "Esta foi uma aula de convidados.",
       "now": "Os jogadores não tinham conta, por isso nada foi para a caderneta de notas. A revisão das perguntas desta página fica guardada. Os nomes de jogo e as pontuações não: pode vê-los aqui só durante alguns minutos.",
+      "nowForTeachers": "Os jogadores não tinham conta, então nada foi para um diário de notas. A revisão das perguntas nesta página fica guardada. Os nomes dos jogadores na aula e as pontuações não: você vê aqui só por alguns minutos.",
       "saved": "Os jogadores não tinham conta, por isso não se guardaram nomes nem pontuações e nada foi para a caderneta de notas. A revisão das perguntas fica guardada.",
       "keep": "Criar uma turma para guardar as pontuações",
-      "keepHint": "Cole os nomes dos seus alunos e imprima os cartões de acesso. Assim as pontuações dos jogos da sua turma ficam guardadas."
+      "keepHint": "Cole os nomes dos seus alunos e imprima os cartões de acesso. Assim as pontuações dos jogos da sua turma ficam guardadas.",
+      "keepHintForTeachers": "Cole os nomes dos seus alunos e imprima os cartões de acesso. Assim as pontuações das aulas da turma ficam salvas."
     },
     "keep": {
       "title": "Criar uma turma para guardar as pontuações",
       "h": "Criar uma turma para guardar as pontuações",
       "lead": "Cole os nomes dos seus alunos. Cada aluno recebe um cartão de acesso. A partir daí, as pontuações dos jogos da sua turma ficam guardadas com os nomes deles, para si.",
+      "leadForTeachers": "Cole os nomes dos seus alunos. Cada aluno recebe um cartão de acesso. A partir daí, as pontuações das aulas da turma ficam salvas com os nomes, para você.",
       "names": "Nomes dos alunos",
       "namesHint": "Um nome por linha. Basta o primeiro nome.",
       "go": "Criar a turma e os cartões de acesso",
@@ -11482,7 +11588,7 @@
       "heading": "Conectar o Google Sala de Aula?",
       "lead": "Você também pode fazer isso depois, em qualquer turma.",
       "li1": "Traga suas listas de alunos do Google Sala de Aula.",
-      "li2": "Publique aulas no Sala de Aula como atividades.",
+      "li2": "Publicar planos de aula no Classroom como atividades.",
       "li3": "Envie as notas de volta para o Sala de Aula.",
       "connect": "Conectar o Google Sala de Aula",
       "connected": "O Google Sala de Aula está conectado.",
@@ -13907,18 +14013,26 @@
     "more": "Mais para {name}",
     "delete": "Apagar pasta",
     "deleteConfirm": "Apagar a pasta “{name}”? Os jogos dela não são apagados.",
+    "deleteConfirmForTeachers": "Apagar a pasta “{name}”? As aulas dela não são apagadas.",
     "emptyTitle": "Esta pasta está vazia",
     "emptyText": "Guarda jogos aqui com 📁 Guardar numa pasta, em Criar ou na página de qualquer jogo.",
+    "emptyTextForTeachers": "Guarde aulas aqui com 📁 Guardar numa pasta, em Criar ou na página de qualquer aula.",
     "findOomba": "Encontrar jogos Oomba",
+    "findOombaForTeachers": "Encontrar aulas Oomba",
     "oombaGame": "Jogo Oomba",
+    "oombaGameForTeachers": "Aula Oomba",
     "myGame": "O meu jogo",
+    "myGameForTeachers": "Minha aula",
     "assign": "Atribuir",
     "removeGame": "Tirar da pasta",
     "save": "Guardar numa pasta",
     "oomba": {
       "title": "Jogos da Oomba",
+      "titleForTeachers": "Aulas da Oomba",
       "search": "Buscar jogos da Oomba",
+      "searchForTeachers": "Buscar aulas da Oomba",
       "none": "Nenhum jogo encontrado. Tente outra matéria ou outro ano.",
+      "noneForTeachers": "Nenhuma aula encontrada. Tente outra matéria ou outro ano.",
       "live": "Ao vivo"
     },
     "pick": "Em qual pasta?",
@@ -13926,6 +14040,7 @@
     "openFolder": "Abrir {folder}",
     "reorderHint": "Arraste para mudar a ordem (no celular ou tablet, toque e segure primeiro). No teclado: Alt e as setas.",
     "dropHint": "Arraste um jogo para uma pasta para guardá-lo lá.",
+    "dropHintForTeachers": "Arraste uma aula para uma pasta para guardá-la lá.",
     "dropAsk": {
       "title": "{game} → {folder}",
       "move": "Mover para cá",
@@ -13938,26 +14053,38 @@
     "moved": "{name}: {n} de {total}",
     "saveTitle": "Guardar “{game}” numa pasta",
     "gamesN": "{count, plural, one {# jogo} other {# jogos}}",
+    "assignedItemsN": "{count, plural, one {# item} other {# itens}}",
+    "studentGamesN": "{count, plural, one {# jogo} other {# jogos}}",
+    "gamesNForTeachers": "{count, plural, one {# aula} other {# aulas}}",
     "saved": "Nesta pasta",
     "addHere": "Adicionar aqui",
     "none": "Ainda não tens pastas. Dá nome a uma abaixo.",
     "newWithGame": "Nova pasta com este jogo",
+    "newWithGameForTeachers": "Nova pasta com esta aula",
     "savedTo": "Guardado em {folder}",
     "already": "Já está em {folder}",
     "assignMine": "Atribuir dos meus jogos",
+    "assignMineForTeachers": "Atribuir das minhas aulas",
     "assigned": "Jogos atribuídos",
+    "assignedForTeachers": "Aulas atribuídas",
     "kindGame": "Jogo",
+    "kindGameForTeachers": "Aula",
     "scores": "Pontuações",
     "courses": "Cursos prontos",
     "classEmpty": "Ainda não há jogos atribuídos",
+    "classEmptyForTeachers": "Nenhuma aula atribuída ainda",
     "classEmptyText": "Cria um jogo, ou atribui um das tuas pastas ou dos jogos da Oomba.",
+    "classEmptyTextForTeachers": "Crie uma aula ou atribua uma das suas pastas ou das aulas da Oomba.",
     "myGamesFolders": "Os meus jogos e pastas",
+    "myGamesFoldersForTeachers": "Pasta de aulas",
     "assignNote": "Os alunos veem-no na página da turma. As pontuações estão no separador Jogos atribuídos da turma.",
+    "assignNoteForTeachers": "Os alunos veem na página da turma. As pontuações ficam na aba Aulas atribuídas da turma.",
     "errors": {
       "name": "Dá um nome à pasta.",
       "tooMany": "Tens o número máximo de pastas. Apaga uma primeiro.",
       "full": "Esta pasta está cheia.",
-      "publishFirst": "Publica primeiro este jogo, para a tua turma ou escola, para os alunos o poderem jogar."
+      "publishFirst": "Publica primeiro este jogo, para a tua turma ou escola, para os alunos o poderem jogar.",
+      "publishFirstForTeachers": "Publique esta aula primeiro, para sua turma ou sua escola, para os alunos poderem jogar."
     },
     "sharedTitle": "Partilhadas por colegas",
     "by": "de {name}",
@@ -13965,37 +14092,51 @@
     "shareWith": "Partilhar com {school}",
     "sharedWithSchool": "Partilhada com {school}",
     "shareNote": "Os colegas dessa escola podem abrir esta pasta, jogar e atribuir os jogos dela e copiá-la. Só veem os jogos que podem abrir: publica os teus jogos para a tua escola.",
+    "shareNoteForTeachers": "Os colegas de lá podem abrir esta pasta, jogar e atribuir as aulas dela, e copiá-la. Eles só veem as aulas que podem abrir: publique suas próprias aulas para a sua escola.",
     "unshare": "Deixar de partilhar",
     "copy": "Copiar para as minhas pastas",
     "sharedToast": "Partilhada com a tua escola",
     "unsharedToast": "Já não é partilhada",
     "copied": "Copiada para as tuas pastas",
     "buildNew": "Criar um jogo novo",
+    "buildNewForTeachers": "Criar uma aula nova",
     "progressEmptyText": "Atribui um jogo no separador Jogos e vais ver aqui como está cada aluno.",
+    "progressEmptyTextForTeachers": "Atribua uma aula na aba Aulas e você verá aqui como cada aluno está indo.",
     "studentEmptyText": "O teu professor vai pôr jogos aqui.",
     "liveHistory": "Histórico de jogos ao vivo",
+    "liveHistoryForTeachers": "Histórico de aulas ao vivo",
     "liveHistoryNone": "Ainda não há jogos ao vivo com esta turma.",
+    "liveHistoryNoneForTeachers": "Ainda não há aulas ao vivo com esta turma.",
     "allGames": "Todos os meus jogos",
+    "allGamesForTeachers": "Todas as minhas aulas",
     "assignedTo": "Atribuídos a {class}",
     "studentShared": "Jogos partilhados pelos alunos",
     "fromClass": "Da nossa turma",
     "sideClass": "Jogos para esta turma",
+    "sideClassForTeachers": "Aulas para esta turma",
     "assignTo": "Atribuir a {class}",
     "assignAll": "{count, plural, one {Atribuir # jogo} other {Atribuir os #}}",
+    "assignAllForTeachers": "{count, plural, one {Atribuir # aula} other {Atribuir todas as #}}",
     "assignAllNote": "Cada jogo daqui que {class} pode jogar é atribuído com este prazo. Os jogos que a turma já tem, e os que é preciso preparar primeiro, são ignorados.",
+    "assignAllNoteForTeachers": "Cada aula daqui que {class} pode jogar é atribuída com este prazo. As aulas que já estão na turma e as que precisam ser preparadas antes ficam de fora.",
     "assignAllDone": "{count, plural, one {# jogo atribuído a {class}} other {# jogos atribuídos a {class}}}",
+    "assignAllDoneForTeachers": "{count, plural, one {# aula atribuída a {class}} other {# aulas atribuídas a {class}}}",
     "assignAllSkipped": "{count, plural, one {# ignorado} other {# ignorados}}",
     "assignAllNone": "Nada de novo para atribuir: estes jogos já estão em {class} ou é preciso prepará-los primeiro.",
+    "assignAllNoneForTeachers": "Nada novo para atribuir: estas aulas já estão em {class} ou precisam ser preparadas antes.",
     "assignedChip": "Atribuído",
     "assignedWhere": "Os jogos atribuídos aparecem em «Atribuídos a {class}», com os seus prazos.",
+    "assignedWhereForTeachers": "As aulas atribuídas aparecem em “Atribuídas a {class}”, com os prazos.",
     "saveAnother": "Guardar noutra pasta",
     "moveUp": "Subir",
     "moveDown": "Descer",
     "sharedEmpty": "Ainda não há aqui jogos que possas abrir.",
+    "sharedEmptyForTeachers": "Ainda não há aqui aulas que você possa abrir.",
     "phone": {
       "assigned": "Atribuídos",
       "library": "Minha biblioteca",
       "assignedSub": "{count, plural, one {# jogo, na ordem em que os alunos o veem} other {# jogos, na ordem em que os alunos os veem}}",
+      "assignedSubForTeachers": "{count, plural, one {# item, na ordem em que os alunos o veem} other {# itens, na ordem em que os alunos os veem}}",
       "addFromLibrary": "Adicionar da biblioteca",
       "reorder": "Reordenar",
       "done": "Pronto",
@@ -14003,7 +14144,9 @@
       "up": "Subir {name}",
       "down": "Descer {name}",
       "libraryNote": "As coleções só organizam seus jogos. Atribua de dentro de uma.",
+      "libraryNoteForTeachers": "As coleções só organizam suas aulas. Atribua de dentro de uma delas.",
       "allSub": "Jogos que você criou",
+      "allSubForTeachers": "Aulas que você criou",
       "sharedSub": "Compartilhada com sua escola",
       "newCollection": "Nova coleção",
       "collectionName": "Nome da coleção",
@@ -14011,9 +14154,12 @@
       "byReadOnly": "de {name} · somente leitura",
       "studentsSub": "Feitos por alunos de {class}",
       "oomba": "Jogos Oomba",
+      "oombaForTeachers": "Aulas da Oomba",
       "oombaSub": "Ver todos os jogos Oomba",
+      "oombaSubForTeachers": "Ver todas as aulas da Oomba",
       "collectionEmpty": "Esta coleção ainda está vazia",
-      "allEmpty": "Você ainda não criou nenhum jogo."
+      "allEmpty": "Você ainda não criou nenhum jogo.",
+      "allEmptyForTeachers": "Você ainda não criou nenhuma aula."
     }
   },
   "library": {
@@ -14637,7 +14783,7 @@
       },
       "showAnswers": "Mostrar respostas depois da data de entrega",
       "showAnswersHint": "Desligado por padrão. Ligado: depois da data de entrega, cada aluno que entregou vê as respostas e os passos.",
-      "showNeedsDue": "Coloque uma data de entrega nesta aula para mostrar as respostas depois.",
+      "showNeedsDue": "Coloque uma data de entrega neste plano de aula para mostrar as respostas depois.",
       "handedInCount": "Entregues: {done} de {total}",
       "questionN": "Pergunta {n}",
       "rightOf": "{right} de {total} certas",
@@ -14656,7 +14802,7 @@
         "badDate": "Essa data não parece certa.",
         "dueBeforeOpen": "A data de entrega é antes da data de abertura.",
         "needsDue": "Defina uma data de entrega para mostrar as respostas depois.",
-        "started": "Os alunos já começaram esta etapa, então as questões ficam como estão. Faça uma cópia da aula para mudá-las."
+        "started": "Os alunos já começaram esta etapa, então as questões ficam como estão. Faça uma cópia do plano de aula para mudá-las."
       }
     },
     "terms": {
@@ -14689,7 +14835,7 @@
       "titleManip": "Materiais manipuláveis",
       "headingFigures": "Figuras faz parte do plano Professor",
       "headingManip": "Os materiais manipuláveis fazem parte do plano Professor",
-      "leadFigures": "Crie figuras exatas de matemática, dados, ciências e economia, monte com elas fichas e provas, e adicione perguntas com figuras às suas aulas.",
+      "leadFigures": "Crie figuras exatas de matemática, dados, ciências e economia, monte com elas fichas e provas, e adicione perguntas com figuras aos seus planos de aula.",
       "leadManip": "Use materiais manipuláveis virtuais na lousa, salve quadros para compartilhar e faça sessões ao vivo com suas turmas.",
       "trial": "Experimente o plano Professor grátis por {days} dias. Não precisa de cartão para começar.",
       "kept": "Tudo o que você já atribuiu continua funcionando para seus alunos.",
@@ -14713,9 +14859,9 @@
       "showHint": "Desligado por padrão. Ligado: depois do prazo, quem entregou vê as correções e por que cada uma está certa.",
       "snapshotNote": "Os alunos recebem este conjunto como ele está agora. Mudanças depois não mudam o que a turma recebeu. Os resultados vão para Progresso e o boletim.",
       "submit": "Atribuir",
-      "practiceHint": "Os alunos jogam o conjunto como um jogo, conferem enquanto fazem e recebem dicas. Conta como feito quando terminam.",
+      "practiceHint": "Os alunos jogam o conjunto como uma aula, conferem enquanto fazem e recebem dicas. Conta como feito quando terminam.",
       "chooseH": "Como os alunos vão fazer?",
-      "gradeSub": "Eles fazem uma vez na aula. É corrigido e vai para o diário de notas.",
+      "gradeSub": "Eles fazem uma vez no plano de aula. É corrigido e vai para o diário de notas.",
       "practiceH": "Prática",
       "practiceSub": "Eles jogam o conjunto quantas vezes quiserem. Nada vale nota.",
       "allowHints": "Permitir dicas",
@@ -14779,7 +14925,7 @@
   "companion": {
     "settings": {
       "title": "Oomba, o ajudante para ensinar",
-      "text": "Professores com o Plano Professor podem pedir ao Oomba jogos, livros, mudanças no painel e ajuda com aulas por uma bolha nas páginas deles. Os alunos nunca a veem. As mensagens, o texto anexado e as imagens vão para nosso provedor de IA, a Anthropic, sem os nomes dos alunos.",
+      "text": "Professores com o Plano Professor podem pedir ao Oomba aulas, livros, mudanças no painel e ajuda com planos de aula por uma bolha nas páginas deles. Os alunos nunca a veem. As mensagens, o texto anexado e as imagens vão para nosso provedor de IA, a Anthropic, sem os nomes dos alunos.",
       "on": "Oomba para os professores desta escola",
       "onHint": "Desligado: nenhum professor desta escola vê a bolha do Oomba.",
       "web": "Busca na web",
@@ -15043,10 +15189,10 @@
     "panel": {
       "label": "Mesa do professor",
       "handOut": "Entregar para",
-      "myLessons": "Minhas aulas",
-      "myGames": "Jogos que criei",
-      "noGames": "Os jogos que você cria aparecem aqui.",
-      "oomba": "Jogos e ferramentas Oomba",
+      "myLessons": "Meus planos de aula",
+      "myGames": "Aulas que criei",
+      "noGames": "As aulas que você cria aparecem aqui.",
+      "oomba": "Aulas e ferramentas Oomba",
       "manipulatives": "Materiais manipuláveis",
       "figures": "Figuras",
       "reading": "Leitura",
@@ -15056,7 +15202,7 @@
       "note": "Recado para a turma",
       "timer": "Cronômetro",
       "board": "Ferramentas do quadro",
-      "handOutHint": "Toque em um jogo e depois em uma carteira, um grupo ou Turma toda. Ou arraste até lá.",
+      "handOutHint": "Toque em uma aula e depois em uma carteira, um grupo ou Turma toda. Ou arraste até lá.",
       "comingNext": "Em breve"
     },
     "errors": {
@@ -15075,8 +15221,8 @@
       "badAction": "Não deu certo. Tente de novo.",
       "notLive": "Primeiro comece a aula com Todos para o Homeroom.",
       "padFull": "Seu bloco está cheio. Limpe para continuar desenhando.",
-      "pickGame": "Esse jogo não pode ser entregue. Escolha outro.",
-      "publishFirst": "Publique este jogo primeiro e depois entregue.",
+      "pickGame": "Essa aula não pode ser distribuída. Escolha outra.",
+      "publishFirst": "Publique esta aula primeiro e depois distribua.",
       "badDate": "Escolha uma data válida para o prazo.",
       "badTarget": "Solte em uma carteira, um grupo ou Turma toda.",
       "noStudents": "Esta turma ainda não tem alunos.",
@@ -15085,20 +15231,20 @@
       "badOrder": "Escolha Em ordem ou Qualquer ordem.",
       "badGrade": "Escolha Pontuação, Conclusão ou Sem nota.",
       "tooLong": "As instruções podem ter no máximo 300 caracteres.",
-      "alreadyOnDesk": "{count, plural, one {# destas carteiras já tem este jogo.} other {# destas carteiras já têm este jogo.}} Tire de lá primeiro ou entregue para os outros.",
+      "alreadyOnDesk": "{count, plural, one {# destas carteiras já tem esta aula.} other {# destas carteiras já têm esta aula.}} Tire de lá primeiro ou entregue para os outros.",
       "tooManyHandouts": "Esta turma tem muitas entregas abertas. Remova algumas antigas primeiro.",
       "notOnDesk": "Essa entrega não está nesta carteira.",
-      "noLesson": "Essa aula não está mais nas suas aulas.",
-      "badGame": "Por enquanto, dá para criar aulas para Arithmetic Lab, Algebra Builder e Palavras cruzadas.",
-      "needTitle": "Dê um nome à aula.",
+      "noLesson": "Esse plano de aula não está mais nos seus planos de aula.",
+      "badGame": "Por enquanto, dá para criar planos de aula para Arithmetic Lab, Algebra Builder e Crossword.",
+      "needTitle": "Dê um nome ao plano de aula.",
       "titleLong": "O nome pode ter no máximo 60 caracteres.",
       "fewWords": "Palavras cruzadas precisam de pelo menos 3 palavras.",
       "missingClue": "Cada palavra precisa de uma dica.",
       "settings": "Não foi possível salvar essas configurações. Confira e tente de novo.",
-      "setsFull": "Você já tem o máximo de folhas que este jogo pode guardar. Apague algumas antes em Minhas folhas, no jogo.",
-      "tooManyLessons": "Você já tem o máximo de aulas que pode guardar. Apague uma antes.",
-      "lessonGone": "Uma folha desta aula foi apagada. Abra a aula, salve de novo e depois distribua.",
-      "lessonOnDesk": "{count, plural, one {# destas carteiras já tem esta aula.} other {# destas carteiras já têm esta aula.}} Tire de lá primeiro ou entregue aos outros.",
+      "setsFull": "Você já tem o máximo de folhas que esta aula pode guardar. Apague algumas antes em Minhas folhas, na aula.",
+      "tooManyLessons": "Você já tem o máximo de planos de aula. Apague um primeiro.",
+      "lessonGone": "Uma folha deste plano de aula foi apagada. Abra o plano de aula, salve de novo e depois distribua.",
+      "lessonOnDesk": "{count, plural, one {# destas carteiras já tem este plano de aula.} other {# destas carteiras já têm este plano de aula.}} Tire de lá primeiro ou entregue aos outros.",
       "teamTooSmall": "Escolha pelo menos 2 mesas para uma equipe.",
       "teamTooBig": "Uma equipe pode ter no máximo 6 alunos.",
       "alreadyInTeam": "Um desses alunos já está em uma mesa de equipe. Separe essa equipe primeiro.",
@@ -15221,12 +15367,12 @@
     "lessons": {
       "handedOut": "{title} está em {count, plural, one {# carteira} other {# carteiras}}.",
       "handedOutVersions": "{title} está em {count, plural, one {# carteira} other {# carteiras}}, com uma versão para cada grupo.",
-      "saved": "Aula salva.",
-      "savedNew": "Salva em Minhas aulas. Toque nela e depois numa carteira para distribuir.",
+      "saved": "Plano de aula salvo.",
+      "savedNew": "Salvo em Meus planos de aula. Toque nele e depois em uma carteira para distribuir.",
       "copyOf": "Cópia de {title}",
-      "duplicated": "Aula copiada.",
-      "deleted": "Aula apagada.",
-      "untitled": "Nova aula",
+      "duplicated": "Plano de aula copiado.",
+      "deleted": "Plano de aula apagado.",
+      "untitled": "Novo plano de aula",
       "print": {
         "solve": "Resolva para x. Mostre os passos.",
         "multiply": "Multiplique. Escreva cada resposta como uma só expressão.",
@@ -15258,9 +15404,9 @@
       "trend": "Tendência",
       "tableLabel": "Visão geral: tarefas e resultados",
       "kind": {
-        "lesson": "Aula",
-        "game": "Jogo",
-        "mine": "Meu jogo"
+        "lesson": "Plano de aula",
+        "game": "Aula",
+        "mine": "Minha aula"
       },
       "versions": "{count, plural, one {# versão} other {# versões}}",
       "gradedBy": {
@@ -15294,7 +15440,7 @@
       "keyTrend": "Tendência, pelas últimas 3 pontuações de cada aluno: Precisa de apoio se a média fica abaixo de 60%, Melhorando se a última passa a primeira em 10 pontos ou mais, senão Estável.",
       "more": "O boletim completo, o CSV, os padrões, as rubricas e o Google Classroom estão abaixo, como antes.",
       "fullGradebook": "Boletim completo",
-      "noHandouts": "Nada foi distribuído no Homeroom nas últimas {weeks} semanas. Distribua um jogo ou uma aula pela aba Homeroom.",
+      "noHandouts": "Nada foi distribuído no Homeroom nas últimas {weeks} semanas. Distribua uma aula ou um plano de aula pela aba Homeroom.",
       "gcLinked": "Vinculada a “{course}”",
       "gcRoster": "lista sincronizada {when}",
       "gcRosterNever": "lista ainda não sincronizada",

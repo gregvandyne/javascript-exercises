@@ -12,7 +12,8 @@ import { mayOpenCourses } from './services/game-focus.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { handler as health, lifecycle } from './services/health.js';
-import { middleware as i18n, tReq, tFor, pickLocale, readCookie, localeInfo, COOKIE as LANG_COOKIE } from './i18n/index.js';
+import { middleware as i18n, tReq, tFor, pickLocale, readCookie, localeInfo, COOKIE as LANG_COOKIE, useTeacherWords } from './i18n/index.js';
+import { isSchoolStaff } from './services/schools.js';
 import { frameSafeHeaders } from './services/frame.js';
 import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
@@ -220,6 +221,8 @@ export function createApp() {
   app.use(handoffRoutes);   // before countVisits: hand-off hops are never counted as visits
   app.use(countVisits);
   app.use(i18n);
+  // Teachers say lessons (docs/decisions.md "Teachers say lessons"): school staff get the teacher variant of shared strings.
+  app.use((req, res, next) => { if (req.user && !req.user.is_guest && isSchoolStaff(req.user)) useTeacherWords(req); next(); });
   app.use(theme);
   // One-click unsubscribe (routes/email.js): a mail provider's POST comes from its own servers; the signed token is the check.
   app.use(emailRoutes);

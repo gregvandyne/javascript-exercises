@@ -269,8 +269,8 @@ router.get('/build', requireBuilder, (req, res) => {
   const ctx = { kind: 'build', base: '/build', folders: true, staff, adult: shelfOn(req.user), mine, allCount: mine.length, status,
     top: html`<p class="build-hero build-hero-compact"><b>${t('build.hero.heading')}</b> <span>${t('build.hero.text')}</span></p>` };
   if (shelfReply(req, res, ctx)) return;
-  // School staff build lessons (docs/decisions.md "A simpler teacher home"); kids and students build games.
-  const body = html`<div class="pagehead"><h1>${ico('🛠️', { size: 36 })} ${staff ? t('build.titleStaff') : t('build.title')}</h1></div>${shelf(req, ctx)}`;
+  // School staff build lessons (build.titleForTeachers, docs/decisions.md "Teachers say lessons"); kids build games.
+  const body = html`<div class="pagehead"><h1>${ico('🛠️', { size: 36 })} ${t('build.title')}</h1></div>${shelf(req, ctx)}`;
   page(req, res, { ...opts, body, scripts: ['/js/build.js', '/js/shelf.js'] });
 });
 

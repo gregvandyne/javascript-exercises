@@ -126,7 +126,7 @@ test('pages: Build shows folders, a folder in its sidebar, Save to folder, the c
   assert.equal((await as(ben)(`/build/folders/${f.id}`)).status, 404, "another teacher's folder is not found");
   assert.doesNotMatch((await as(ben)(`/build?folder=${f.id}`)).text, /Week 2/, 'nor shown on their Build');
   const save = await as(ana)(`/build/save?id=${oomba.id}`);
-  assert.match(save.text, /In this folder/); assert.match(save.text, /New folder with this game/);
+  assert.match(save.text, /In this folder/); assert.match(save.text, /New folder with this lesson/);
   const r = await as(ana)('/api/game-folders', { method: 'POST', body: { name: 'Quick picks', gameId: other.id } });
   assert.ok(r.json.ok); assert.match(r.json.toast, /Quick picks/);
   const klass = await as(ana)(`/class/${cls.id}`);

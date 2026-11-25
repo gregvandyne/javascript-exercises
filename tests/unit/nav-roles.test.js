@@ -312,8 +312,8 @@ test('/school: one school -> its overview (setup checklist and classes); several
   assert.match((await get(null, '/school')).location || '', /^\/login/);
 });
 
-test('"Make a game" for staff on Me; My classes has Lesson Folder instead ("A simpler teacher home"); not on a kid\'s Me', async () => {
-  const mk = /<a class="btn" href="\/build">🛠️ Make a game<\/a>/;
+test('"Make a lesson" for staff on Me (docs/decisions.md "Teachers say lessons"); My classes has Lesson Folder instead ("A simpler teacher home"); not on a kid\'s Me', async () => {
+  const mk = /<a class="btn" href="\/build">🛠️ Make a lesson<\/a>/;
   const home = (await get(teacher, '/teach')).text;
   assert.doesNotMatch(home, mk);
   assert.match(home, /<a class="btn btn-primary" href="\/build" id="teach-folder">[\s\S]*?Lesson Folder<\/a>/);

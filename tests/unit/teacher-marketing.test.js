@@ -53,7 +53,7 @@ test('Google Classroom: a section on "/" and on /teachers with the same words, o
     assert.match(gc, /can only see your classes and their students\. It posts nothing until you allow posting\./, 'read-only connect first');
     assert.match(gc, /refreshes itself every 6 hours/, 'the roster refresh (GC.ROSTER_EVERY)');
     assert.match(gc, /as a Classroom assignment, with its link and due date, or share it as a material/);
-    assert.match(gc, /Grades flow back to Classroom out of 100: a completion grade \(the share of the lesson(?:’|&#39;)s steps finished, not right answers\), or for Homeroom handouts the grade you chose/, 'completion grades and Homeroom grades, said plainly');
+    assert.match(gc, /Grades flow back to Classroom out of 100: a completion grade \(the share of the lesson plan(?:’|&#39;)s steps finished, not right answers\), or for Homeroom handouts the grade you chose/, 'completion grades and Homeroom grades, said plainly');
     assert.match(gc, /doesn(?:’|&#39;)t ask Classroom for student emails, and never sends Google a student(?:’|&#39;)s name, answers or games/);
     assert.match(gc, /once you allow posting, a separate step/);
     assert.match(gc, /href="\/privacy#google"/);
@@ -94,8 +94,8 @@ test('free and paid: no "always free" line on "/" or /teachers (the owner: "ever
   assert.match(pricing, /<h3 id="plan-free">Free<\/h3>\s*<p class="lp-price">Always free<\/p>/, 'a Free card');
   assert.match(pricing, /Everything in Free, plus:/);
   const teacherCard = /<article[^>]*aria-labelledby="plan-teacher"[\s\S]*?<\/article>/.exec(pricing)[0];
-  assert.doesNotMatch(teacherCard, /Classes, lessons, progress and the gradebook|30\+ ready-made games and live class games|Every language, every device/, 'free things are not sold as Teacher plan features');
-  assert.match(s, /only the plan(?:’|&#39;)s extra AI builds stop: the games, your classes, lessons and progress stay free, and nothing is deleted/, 'the trial FAQ says what stays free');
+  assert.doesNotMatch(teacherCard, /Classes, lesson plans, progress and the gradebook|30\+ ready-made lessons and live class lessons|Every language, every device/, 'free things are not sold as Teacher plan features');
+  assert.match(s, /only the plan(?:’|&#39;)s extra AI builds stop: the lessons, your classes, lesson plans and progress stay free, and nothing is deleted/, 'the trial FAQ says what stays free');
   assert.doesNotMatch(s, /Try everything free for 14 days/, 'no hint that everything is paid after the trial');
   // /plans is where the amounts are (the fake Stripe has the Teacher price).
   assert.match((await get('/plans')).text, /\$\s?119|119/);

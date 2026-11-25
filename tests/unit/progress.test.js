@@ -181,7 +181,7 @@ test('pages and APIs: student lesson page, answers, gradebook, lesson progress, 
   assert.ok(wd > lines[0].split(',').indexOf('Fractions day'), 'Work done comes after the lessons, where Overall was');
   assert.doesNotMatch(lines[0], /Overall/);
   assert.equal(lines.find(x => x.startsWith('Mia Pupil,')).split(',')[wd], `${miaOverall}%`, 'the CSV Work done is the page\'s Work done');
-  assert.deepEqual(lines[0].split(',').slice(wd + 1, wd + 4), ['Score', 'Score (points)', 'Late lessons'], 'new columns go at the end');
+  assert.deepEqual(lines[0].split(',').slice(wd + 1, wd + 4), ['Score', 'Score (points)', 'Late lesson plans'], 'new columns go at the end');
 
   r = await teacher(`/class/${cls.id}/progress/${cl.id}`);
   assert.equal(r.status, 200); assert.match(r.text, /Two quarters are one half\./); assert.match(r.text, /Why is 2\/4 the same as 1\/2\?/);

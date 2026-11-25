@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse, placeholders, placeholderInfo } from '../../public/js/i18n-format.js';
-import { flatten, CODES, DEFAULT_LOCALE } from './index.js';
+import { flatten, CODES, DEFAULT_LOCALE, TEACHER_SUFFIX } from './index.js';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 export const ROOT = path.resolve(HERE, '../..');
@@ -80,10 +80,13 @@ export function checkAll({ dir = path.join(HERE, 'locales'), root = ROOT } = {})
   const en = loadLocale(DEFAULT_LOCALE, dir);
   const enErrors = [];
   for (const [k, v] of Object.entries(en)) { try { parse(v); } catch (e) { enErrors.push(`${k}: ${e.message}`); } }
+  // A teacher variant (docs/decisions.md "Teachers say lessons") stands in for its key: the key must exist.
+  for (const k of Object.keys(en)) if (k.endsWith(TEACHER_SUFFIX) && !(k.slice(0, -TEACHER_SUFFIX.length) in en)) enErrors.push(`${k}: a teacher variant of a key that does not exist`);
   const locales = CODES.filter(c => c !== DEFAULT_LOCALE).map(c => checkLocale(c, en, loadLocale(c, dir)));
   const { used, prefixes, mentioned, clientScope } = codeKeys(root);
   const unknownInCode = [...used].filter(([k]) => !(k in en));
-  const unused = Object.keys(en).filter(k => !used.has(k) && !mentioned.has(k) && ![...prefixes].some(p => k.startsWith(p)));
+  const isUsed = k => used.has(k) || mentioned.has(k) || [...prefixes].some(p => k.startsWith(p));
+  const unused = Object.keys(en).filter(k => !isUsed(k) && !(k.endsWith(TEACHER_SUFFIX) && isUsed(k.slice(0, -TEACHER_SUFFIX.length))));
   const notesFile = path.join(HERE, 'notes.json');
   const notes = fs.existsSync(notesFile) ? readJson(notesFile) : {};
   const badNotes = Object.keys(notes).filter(k => !k.startsWith('_') && !(k in en));

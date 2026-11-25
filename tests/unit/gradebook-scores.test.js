@@ -225,14 +225,14 @@ test('d. live game results: a column per saved class game with right/asked per s
 test('e. staff screens show the roster name with the name used in games beside it; students and the big screen never see a roster name', async () => {
   const gen = u => auth.getUser(u.id).display_name;
   assert.notEqual(gen(mia), 'Mia Realname');
-  const both = u => new RegExp(`<b dir="auto">${S.roster(cls.id).find(p => p.id === u.id).roster_name}</b> <span class="gname small muted" title="Name in games"><span class="sr-only">Name in games: </span><bdi>${gen(u)}</bdi></span></a>`);
+  const both = u => new RegExp(`<b dir="auto">${S.roster(cls.id).find(p => p.id === u.id).roster_name}</b> <span class="gname small muted" title="Name in lessons"><span class="sr-only">Name in lessons: </span><bdi>${gen(u)}</bdi></span></a>`);
   const book = await req(ana, `/class/${cls.id}/progress`);
   for (const u of [mia, leo, kim]) assert.match(book.text, both(u), u.username);
   assert.match(book.text, new RegExp(`<a href="/class/${cls.id}/student/${mia.id}"><b dir="auto">Mia Realname</b> <span class="gname`), 'the name links to the student\'s page');
   const lp = await req(ana, `/class/${cls.id}/progress/${cl.id}`);
   assert.match(lp.text, both(mia));
   // answers to review: the card carries both names (no link there)
-  assert.match(lp.text, new RegExp(`id="a-${ask.id}-${mia.id}">\\s*<div class="ac-head"><span class="pp">[\\s\\S]*?<b dir="auto">Mia Realname</b> <span class="gname small muted" title="Name in games"><span class="sr-only">Name in games: </span><bdi>${gen(mia)}</bdi>`));
+  assert.match(lp.text, new RegExp(`id="a-${ask.id}-${mia.id}">\\s*<div class="ac-head"><span class="pp">[\\s\\S]*?<b dir="auto">Mia Realname</b> <span class="gname small muted" title="Name in lessons"><span class="sr-only">Name in lessons: </span><bdi>${gen(mia)}</bdi>`));
   // the Standards tab's student picker
   const std = await req(ana, `/class/${cls.id}/standards?fw=ccss-math`);
   assert.equal(std.status, 200); assert.match(std.text, new RegExp(`>Mia Realname \\(${gen(mia)}\\)</option>`));
@@ -273,7 +273,7 @@ test('f. a student\'s page: work done, score and its items, late, standards, ans
   assert.match(m, /<h2 class="sp-name"><span class="sp-first" dir="auto">Mia<\/span><span class="sp-rest" dir="auto"> Realname<\/span><\/h2>/);
   assert.match(m, /<label class="chk sp-fullname"><input type="checkbox" id="sp-full"> Print the full name<\/label>/);
   assert.doesNotMatch(m, /id="sp-full"[^>]*checked/, 'first name only unless the teacher ticks the box');
-  assert.match(m, new RegExp(`<span class="noprint">Name in games: <bdi>${auth.getUser(mia.id).display_name}</bdi> · </span>`));
+  assert.match(m, new RegExp(`<span class="noprint">Name in lessons: <bdi>${auth.getUser(mia.id).display_name}</bdi> · </span>`));
   assert.match(m, /<button class="btn btn-primary btn-sm" type="button" data-print>/);
   const css = fs.readFileSync(new URL('../../public/css/schools.css', import.meta.url), 'utf8');
   assert.match(css, /@media print\{[^@]*\.sp-page:not\(:has\(#sp-full:checked\)\) \.sp-rest\{display:none\}/, 'the print rule that hides the rest of the name');
@@ -282,7 +282,7 @@ test('f. a student\'s page: work done, score and its items, late, standards, ans
   assert.match(m, /<span class="sp-stat-v"><span dir="ltr">81%<\/span><\/span><span class="sp-stat-l">Score<\/span><span class="small muted"><span dir="ltr">25\/31<\/span>/);
   // what the score is made of: each item with its type and points, and the total
   const score = /<section class="panel" id="score"[\s\S]*?<\/section>/.exec(m)[0];
-  for (const [title, kind, pts] of [['Exit ticket', 'Quiz', '4/5'], ['Explain', 'Rubric', '12/16'], ['Class game', 'Live game', '9/10']]) {
+  for (const [title, kind, pts] of [['Exit ticket', 'Quiz', '4/5'], ['Explain', 'Rubric', '12/16'], ['Class game', 'Live lesson', '9/10']]) {
     assert.match(score, new RegExp(`<th scope="row" dir="auto">${title}</th><td data-label="Type"><span aria-hidden="true">[^<]+</span> ${kind}</td><td data-label="Points"><span class="gb-num" dir="ltr">${pts}</span>`), title);
   }
   assert.match(score, /<tfoot><tr><th scope="row" colspan="2">Score<\/th><td><b dir="ltr">81%<\/b> <span class="small muted" dir="ltr">25\/31<\/span>/);
@@ -294,7 +294,7 @@ test('f. a student\'s page: work done, score and its items, late, standards, ans
   assert.doesNotMatch(m, /\$\s?\d|\/plans|upgrade|free trial/i, 'no prices on a page about a child');
   // Leo: late, and a 13% score; Kim: nothing scored, with the reason
   const leoPage = main((await req(ana, `/class/${cls.id}/student/${leo.id}`)).text);
-  assert.match(leoPage, /<span class="chip-s bad">⏰ Done late<\/span>/); assert.match(leoPage, /<span class="sp-stat-v">1<\/span><span class="sp-stat-l">Late lessons<\/span>/);
+  assert.match(leoPage, /<span class="chip-s bad">⏰ Done late<\/span>/); assert.match(leoPage, /<span class="sp-stat-v">1<\/span><span class="sp-stat-l">Late lesson plans<\/span>/);
   const kimPage = main((await req(ana, `/class/${cls.id}/student/${kim.id}`)).text);
   assert.match(kimPage, /Nothing is scored yet\. Scores come from quizzes/); assert.match(kimPage, /<span class="chip-s bad">⏰ Late<\/span>/);
 });
@@ -332,14 +332,14 @@ test('h. the CSV keeps its old columns in place and adds Score, late and live ga
   assert.deepEqual(csv[0], ['Name', 'Oomba Academy name',
     'Times tables', 'Times tables (quiz %)', 'Times tables (rubric points)', 'Times tables (rubric %)', 'Read about arrays', 'Next term', 'Next term (quiz %)',
     'Work done', 'Quiz %', 'Rubric points', 'Rubric %',
-    'Score', 'Score (points)', 'Late lessons', 'Times tables (score %)', 'Times tables (late)',
+    'Score', 'Score (points)', 'Late lesson plans', 'Times tables (score %)', 'Times tables (late)',
     ...runs.map(r => `Live: ${r.title} (${fmt.format(r.ended_at)})`)]);
   const line = name => csv.find(l => l[0] === name).slice(2);
   assert.deepEqual(line('Mia Realname').slice(0, 16), ['3/3', '80%', '12/16', '75%', '1/1', '–', '', '100%', '80%', '12/16', '75%', '81%', '25/31', '0', '81%', '']);
   const col = (name, h) => csv.find(l => l[0] === name)[csv[0].indexOf(h)];
   assert.equal(col('Mia Realname', 'Work done'), '100%'); assert.equal(col('Mia Realname', 'Score'), '81%'); assert.equal(col('Mia Realname', 'Score (points)'), '25/31');
-  assert.equal(col('Mia Realname', 'Times tables (score %)'), '81%'); assert.equal(col('Mia Realname', 'Times tables (late)'), ''); assert.equal(col('Mia Realname', 'Late lessons'), '0');
-  assert.equal(col('Leo Realname', 'Work done'), '100%'); assert.equal(col('Leo Realname', 'Score'), '13%'); assert.equal(col('Leo Realname', 'Times tables (late)'), 'done late'); assert.equal(col('Leo Realname', 'Late lessons'), '1');
+  assert.equal(col('Mia Realname', 'Times tables (score %)'), '81%'); assert.equal(col('Mia Realname', 'Times tables (late)'), ''); assert.equal(col('Mia Realname', 'Late lesson plans'), '0');
+  assert.equal(col('Leo Realname', 'Work done'), '100%'); assert.equal(col('Leo Realname', 'Score'), '13%'); assert.equal(col('Leo Realname', 'Times tables (late)'), 'done late'); assert.equal(col('Leo Realname', 'Late lesson plans'), '1');
   assert.equal(col('Kim Realname', 'Score'), '–'); assert.equal(col('Kim Realname', 'Score (points)'), ''); assert.equal(col('Kim Realname', 'Times tables (late)'), 'late');
   const live = title => csv[0].findIndex(h => h.startsWith(`Live: ${title} `));
   assert.equal(csv.find(l => l[0] === 'Mia Realname')[live('Friday warm-up')], '7/8');

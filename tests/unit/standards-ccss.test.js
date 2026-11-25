@@ -405,7 +405,7 @@ test('levelled games: a step practises only its lesson\'s grade or its locked tr
   assert.ok(ed4.text.includes('4.NBT.B.4') && !ed4.text.includes('1.OA.C.6'), 'grade 4 only in the editor');
   const edPlain = await req(ana, `/teach/lessons/${plain.l.id}`);
   assert.ok(!edPlain.text.includes('1.OA.C.6'), 'no codes until the lesson has a grade');
-  assert.ok(edPlain.text.includes('Give the lesson a grade'), 'and a hint to give it one');
+  assert.ok(edPlain.text.includes('Give the lesson plan a grade'), 'and a hint to give it one');
 });
 
 test('Number Quest: own-account students count from when they joined; one check alone never meets', () => {

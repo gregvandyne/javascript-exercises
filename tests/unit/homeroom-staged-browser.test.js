@@ -82,7 +82,7 @@ test('a tablet, a class with no students: stage on My desk, preview, hand out to
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(teacher, `/class/${empty.id}/homeroom`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-tdesk');
-  assert.match(await page.locator('.hr-tdesk').innerText(), /My desk[\s\S]*Drop a game here/);
+  assert.match(await page.locator('.hr-tdesk').innerText(), /My desk[\s\S]*Drop a lesson here/);
   // Tap Sudoku, then My desk.
   await page.tap(`[data-hritem="${sudoku.id}"]`);
   await page.waitForSelector('#hr-givebar:not([hidden]) [data-hrto="me"]');
