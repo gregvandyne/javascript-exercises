@@ -41,10 +41,11 @@ const on = (req, res, next) => (LS.liveOn() ? next() : next('router'));
 const HEAD = '<link rel="stylesheet" href="/css/quick-live.css">';
 const el = (t, tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${t.own(key) ? '' : ' lang="en" dir="ltr"'}>${tHtml(t, key, vars)}</${tag}>`);
 const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
-const MODE_ICON = { battle: '⚡', 'quest-race': '🏝️' };
-/** The quick modes on offer: Quest Race only while its game is not hidden (ARCADE off, services/game-focus.js). */
+const MODE_ICON = { battle: '⚡', 'quest-race': '🏝️', board: '🌟' };
+/** The quick modes on offer: those whose game is not hidden (services/game-focus.js: Quest Race while ARCADE is off,
+ *  Question Battle for good), so Brain Board is the quick game while both are. */
 const quickModes = () => ST.QUICK_MODES.filter(m => !slugHidden(A.MODES[m]));
-const MODE_KEY = { battle: 'battle', 'quest-race': 'questRace' };
+const MODE_KEY = { battle: 'battle', 'quest-race': 'questRace', board: 'board' };
 
 /** The question bank level that fits a class's grade ("3", "Grade 5", "K"); null when the grade says nothing. */
 export function levelForGrade(grade) {
@@ -192,7 +193,10 @@ router.post('/api/live/quick', on, hostOnly, rateLimit('lv-new', 30, 3600e3), (r
     subject: b.subject === 'mixed' || SUBJECTS.includes(String(b.subject)) ? String(b.subject) : base.subject,
     level: LEVELS.includes(String(b.level)) ? String(b.level) : base.level,
   };
-  const r = LS.createSession(u, { mode: pick.mode, audience: c ? 'class' : 'open', classId: c ? c.id : null, starter: `bank:${pick.subject}:${pick.level}:${QUICK_COUNT}`, lang: req.locale });
+  // Brain Board's starter is a board of categories: the chosen subject first, then others to make five.
+  const starter = pick.mode === 'board' ? `bank:board:${pick.level}:${[...new Set([...(SUBJECTS.includes(pick.subject) ? [pick.subject] : []), ...SUBJECTS])].slice(0, 5).join('+')}`
+    : `bank:${pick.subject}:${pick.level}:${QUICK_COUNT}`;
+  const r = LS.createSession(u, { mode: pick.mode, audience: c ? 'class' : 'open', classId: c ? c.id : null, starter, lang: req.locale });
   if (!r.ok) {
     // A room is open already: back to it (a room with players in it is never ended by a tap somewhere else).
     if (r.code === 'hasOpen') { const old = LS.get(r.sid); return res.json({ ok: true, sid: r.sid, redirect: `/live/host/${r.sid}`, toast: t('quickLive.quick.hasOpen', { title: old ? old.title : '' }), already: true }); }

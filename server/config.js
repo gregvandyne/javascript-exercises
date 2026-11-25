@@ -391,6 +391,9 @@ export const config = {
   // connections and classes only, and no list shows it to anyone else. Official games are open to everyone either way.
   // PUBLIC_GAMES=1 brings back public games as they were. Nothing in the database changes either way.
   publicGames: publicGames.on,
+  // Official games taken off the site for good (services/game-focus.js REMOVED_GAMES: Tug of Math and Question Battle,
+  // with their Live modes). REMOVED_GAMES (comma separated) replaces the list; REMOVED_GAMES=none brings them all back.
+  removedGames: process.env.REMOVED_GAMES === undefined ? null : String(process.env.REMOVED_GAMES).split(',').map(x => x.trim().toLowerCase()).filter(x => x && x !== 'none'),
   hiddenGames: process.env.HIDDEN_GAMES ? String(process.env.HIDDEN_GAMES).split(',').map(x => x.trim().toLowerCase()).filter(Boolean) : null,
   // Oomba, the teaching companion (docs/decisions.md "Oomba teaching companion"; services/companion.js): the bubble on
   // teacher pages for Teacher plan staff (services/teacher-tools.js toolAccess). COMPANION=0 hides it from everyone.
