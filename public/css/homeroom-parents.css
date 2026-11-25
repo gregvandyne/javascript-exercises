@@ -1,0 +1,69 @@
+/* Homeroom: the parents' view (routes/homeroom-parents.js; docs/decisions.md "Homeroom: the parents' view"). Phones
+   first (parents check on phones): one column of calm cards, two columns of notes on wider screens. Design tokens only;
+   the notebook's lined cream paper (the same in both themes, like the student's notebook). */
+.pv{display:flex;flex-direction:column;gap:14px;max-width:880px;margin:0 auto;min-width:0}
+.pv .pagehead{margin-bottom:0}
+.pv .pagehead h1{display:flex;align-items:center;gap:10px;overflow-wrap:anywhere}
+.pv-lead{margin:0;max-width:62ch}
+.pv-classes{display:flex;flex-wrap:wrap;gap:8px}
+.pv-chip{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font-weight:800;text-decoration:none;box-shadow:0 2px 0 var(--line)}
+.pv-chip:hover{background:var(--hover)}
+.pv-chip.on{background:var(--current);color:var(--on-current);border-color:var(--current)}
+.pv-class{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:1.35rem;overflow-wrap:anywhere}
+.pv-jump{display:flex;flex-wrap:wrap;gap:6px}
+.pv-jump a{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border-radius:999px;background:var(--card-2);color:var(--link);font-weight:800;text-decoration:none}
+.pv-jump a:hover{text-decoration:underline}
+.pv-sec{display:flex;flex-direction:column;gap:10px;scroll-margin-top:calc(var(--top) + 12px)}
+.pv-sec h2{display:flex;align-items:center;gap:8px;margin:10px 0 0;font-size:1.2rem}
+.pv-n{display:inline-flex;align-items:center;justify-content:center;min-width:28px;height:28px;padding:0 8px;border-radius:999px;background:var(--card-2);color:var(--muted);font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.pv-sub,.pv-none{margin:0}
+.pv-catch{padding:12px;border-radius:var(--r);background:var(--warn-bg)}
+.pv-catch .pv-sub{color:var(--text-2)}
+.pv-cards,.pv-books{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.pv-card{display:flex;flex-direction:column;gap:8px;padding:14px;border:2px solid var(--line);border-radius:var(--r);background:var(--card);box-shadow:0 3px 0 var(--line);min-width:0}
+.pv-card p{margin:0}
+.pv-head{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.pv-ico{flex:none;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:14px;background:var(--card-2)}
+.pv-main{flex:1;min-width:0}
+.pv-title{display:block;font-size:1.05rem;overflow-wrap:anywhere}
+.pv-meta{margin-top:2px;color:var(--muted);font-size:14px;font-weight:600}
+.pv-state{flex:none;display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:999px;font-size:14px;font-weight:800;white-space:nowrap}
+.pv-state.done{background:var(--ok-bg);color:var(--ok)}
+.pv-state.todo{background:var(--card-2);color:var(--text-2)}
+.pv-missed{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:4px 12px;border-radius:999px;background:var(--warn-bg);color:var(--warn-ink);font-size:14px;font-weight:800}
+.pv-lbl{display:block;color:var(--muted);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.pv-instr p{white-space:pre-line;overflow-wrap:anywhere}
+.pv-line,.pv-grade{color:var(--text-2);font-size:15px}
+.pv-pct{display:inline-block;padding:1px 10px;border-radius:999px;background:var(--card-2);color:var(--text);font-variant-numeric:tabular-nums}
+.pv-fb{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:16px;background:var(--spark-soft)}
+.pv-sticker{flex:none;width:56px;height:56px;object-fit:contain}
+.pv-fbtext{min-width:0}
+.pv-fbtext p{white-space:pre-line;overflow-wrap:anywhere;font-weight:600}
+.pv-book{display:flex;align-items:center;gap:12px;padding:12px;border:2px solid var(--line);border-radius:var(--r);background:var(--card)}
+.pv-cover{flex:none;width:64px;height:64px;border-radius:12px;object-fit:cover;background:var(--card-2)}
+.pv-nocover{display:inline-flex;align-items:center;justify-content:center}
+.pv-pages{display:grid;grid-template-columns:1fr;gap:12px}
+.pv-page{display:flex;flex-direction:column;gap:6px;padding:14px;border:2px solid var(--line);border-radius:var(--r);background:var(--card);min-width:0}
+.pv-page h3{margin:0;font-size:1.05rem;overflow-wrap:anywhere}
+.pv-pic{display:block;width:100%;max-width:420px;height:auto;margin-top:4px}
+.pv-paper{fill:var(--brand-cream);stroke:var(--edge);stroke-width:2;stroke-dasharray:10 8}
+.pv-paperText{padding:6px 14px;border-radius:14px;border:2px solid var(--line);background:#FFFDF2 repeating-linear-gradient(transparent 0 31px,#E7E1CB 31px 32px) 0 6px/100% 32px local;color:#141414;font:500 1.02rem/32px var(--font);overflow-wrap:anywhere}
+.pv-paperText p{margin:0}
+.pv-paperText ul,.pv-paperText ol{margin:0;padding-inline-start:26px}
+.pv-paperText b{font-weight:800}
+.pv-paperText mark{color:#141414;border-radius:4px;padding:1px 0;background:#FFE066}
+.pv-paperText mark.hl-g{background:#A8E6BF}
+.pv-paperText mark.hl-b{background:#A9D4F5}
+.pv-paperText mark.hl-p{background:#F7B8D2}
+.pv-paperText ul.nb-check{list-style:none;padding-inline-start:4px}
+.pv-paperText ul.nb-check>li{position:relative;padding-inline-start:32px}
+.pv-paperText ul.nb-check>li::before{content:"";position:absolute;inset-inline-start:0;top:5px;width:20px;height:20px;border:2px solid #5E5A4D;border-radius:6px;background:#fff}
+.pv-paperText ul.nb-check>li.done{color:#6B6759;text-decoration:line-through}
+.pv-paperText ul.nb-check>li.done::before{background:#1F9D63;border-color:#1F9D63}
+.pv-empty p{display:flex;align-items:center;gap:10px;margin:0}
+.pv-foot{margin:8px 0 0}
+@media (min-width:760px){
+  .pv-cards{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+  .pv-books{display:grid;grid-template-columns:1fr 1fr}
+  .pv-pages{grid-template-columns:1fr 1fr;align-items:start}
+}

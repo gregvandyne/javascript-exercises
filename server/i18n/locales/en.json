@@ -2375,6 +2375,25 @@
           "off": "Off for this class"
         },
         "perStudent": "Turn it on or off for one student from their desk's menu (tap their name)."
+      },
+      "parents": {
+        "menu": "Parents' view",
+        "title": "Parents' view",
+        "on": "On",
+        "off": "Off",
+        "lead": "A grown-up whose family account on Oomba is linked to a student's own account sees a calm, read-only page of that student's work in this class. Accounts the school made can't be linked to a family yet.",
+        "sees": "They see",
+        "what": {
+          "handouts": "Their handouts: the title, your instructions, the dates, done or not yet, and the grade as you chose to show it",
+          "feedback": "Your comments and stickers on their work",
+          "reading": "Books read with the reading routine and the quiz result",
+          "notes": "Their notes in this class's tab of the notebook, drawings included"
+        },
+        "never": "They never see",
+        "neverList": "Other students, ranks or class comparisons, live class, hands, the hall pass, supports, attendance (only \"Missed while away\" on a handout) or the student's own notebook tabs.",
+        "modeOn": "On for this class",
+        "modeOff": "Off for this class",
+        "how": "Students are told in their notebook when a grown-up can see their class notes."
       }
     },
     "stories": {
@@ -5365,6 +5384,7 @@
       "ofStudent": "{name}'s notebook",
       "readOnly": "Read only. Students can't see that you opened it.",
       "teacherReads": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see the notes in your class tabs.",
       "format": "Formatting",
       "bold": "Bold",
       "list": "List",
@@ -6205,6 +6225,7 @@
       "notesLead": "Write 3 short notes about {title}. They go in your notebook.",
       "saveNotes": "Save to my notebook",
       "notesPrivacy": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see these notes too.",
       "noteEmpty": "Write all 3 notes first.",
       "doneTitle": "All done!",
       "doneLead": "You read {title}, did the quiz and wrote 3 notes.",
@@ -16860,6 +16881,55 @@
     },
     "k2": {
       "saved": "K-2 desks saved"
+    },
+    "parents": {
+      "title": "{name}'s class work",
+      "heading": "{name}'s class work",
+      "lead": "What {name}'s teacher shares from Homeroom: handouts, the teacher's comments, books read and notes from the class's tab. Read only. Only {name}'s own work, never anyone else's.",
+      "open": "Class work",
+      "back": "Family",
+      "classes": "Classes",
+      "jump": "On this page",
+      "handouts": "Handouts",
+      "reading": "Reading",
+      "notes": "Class notes",
+      "classNotes": "Class notes",
+      "catchUp": "To catch up on",
+      "catchUpLead": "Given while {name} was away. They wait on the desk, with the teacher's words, until they are done.",
+      "missed": "Missed while away",
+      "given": "Given {date}",
+      "due": "Due {date}",
+      "done": "Done",
+      "notYet": "Not yet",
+      "instructions": "The teacher's instructions",
+      "fromTeacher": "From the teacher",
+      "stickerOnly": "A sticker for this work.",
+      "grade": {
+        "score": "Graded by score:",
+        "scoreLater": "Graded by score. The score shows once it is done.",
+        "scoreNone": "Graded by score: done, with nothing to score.",
+        "completion": "Graded by completion: done or not yet.",
+        "none": "Practice, not graded."
+      },
+      "pct": "{pct}% right",
+      "quiz": "Quiz: {right} of {total} right on the first try",
+      "step": {
+        "choose": "Picking a book",
+        "read": "Reading",
+        "quiz": "Quiz next",
+        "notes": "Notes next",
+        "done": "Read, quiz and notes done"
+      },
+      "notesLead": "The notes {name} wrote in this class's tab of their notebook. Their own tabs stay private.",
+      "updated": "Updated {date}",
+      "drawing": "{name}'s drawing",
+      "noHandouts": "No handouts yet.",
+      "noReading": "No books read with the class yet.",
+      "noNotes": "{name} hasn't written class notes yet.",
+      "none": "Nothing from school here yet. When {name}'s teacher uses Homeroom, their class work shows here.",
+      "foot": "Read only. The teacher can turn this view off for a class.",
+      "savedOn": "Parents' view on",
+      "savedOff": "Parents' view off"
     },
     "attendance": {
       "toast": {
