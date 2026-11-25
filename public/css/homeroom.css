@@ -1136,3 +1136,156 @@ body.hr-subpage main#main{max-width:none;padding:0}
 .hr-tgrd li b{color:var(--text)}
 .hr-booksheet .rdp-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
 .hr-readmore{margin-top:-2px}
+
+/* ---- step 4c: K-2 mode, absent and at home (docs/decisions.md "Homeroom: K-2 mode, absent and at home") */
+/* Missed while you were out (every desk): the handouts given on a day they were marked absent */
+.hd-cardsbox{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hd-missed{display:flex;flex-direction:column;gap:4px;padding:12px 12px 6px;border:2px dashed var(--accent-press);border-radius:18px;background:var(--accent-soft)}
+.hd-missedh{display:flex;align-items:center;gap:8px;margin:0;font-size:1rem;font-weight:800}
+.hd-missedlead{margin:0;color:var(--text-2);font-size:.9rem;font-weight:600}
+.hd-missed .hd-cards{padding-top:14px}
+/* At home: Ask my teacher (no hand, no hall pass), the At home chip */
+.hd-homechip{flex:none;display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-weight:800;font-size:.9rem;white-space:nowrap}
+.hd-askmenu{width:min(360px,calc(100vw - 24px));gap:8px;padding:14px}
+.hd-askh{margin:0;font-size:1.05rem}
+.hd-asklead,.hd-asknote{margin:0}
+.hd-askform{display:flex;flex-direction:column;gap:8px}
+.hd-askkinds{display:flex;flex-direction:column;gap:6px}
+.hd-askkinds input{width:20px;height:20px;accent-color:var(--accent-press)}
+.hd-askkinds .hd-hmi:has(input:checked){border-color:var(--text);box-shadow:0 2px 0 var(--text)}
+.hd-asksend{min-height:52px;justify-content:center}
+.hd-asklist{display:flex;flex-direction:column;gap:4px;margin:0;padding:8px 10px;border-radius:12px;background:var(--card-2);font-size:.9rem;font-weight:700}
+.hd-asklist li{display:flex;align-items:flex-start;gap:6px}
+.hd-asklist i{font-style:normal;color:var(--text-2);overflow-wrap:anywhere}
+.hd-askbtn.on{background:var(--accent-soft);border-color:var(--accent-press);color:var(--text);box-shadow:0 3px 0 var(--accent-press)}
+
+/* K-2 mode: bigger targets and text, a picture with every label, one thing at a time; calm, never babyish */
+.hd-k2{font-size:1.1rem}
+.hd-k2 .hd-top{min-height:68px}
+.hd-k2 .hd-body{top:92px;bottom:96px}
+.hd-k2 .hd-dock{padding:8px}
+.hd-k2 .hd-dockbtn{flex:1 1 auto;min-width:0;justify-content:center;min-height:64px;padding:6px 12px;font-size:1.05rem;border-radius:18px}
+.hd-k2 .hd-dockbtn span{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.hd-k2 .hd-dock>.hd-grow{display:none}
+.hd-k2 .hd-handbtn{min-height:56px;font-size:1.1rem;padding:0 20px}
+.hd-k2 .hd-deskh{font-size:1.35rem}
+.hd-k2 .hd-pen{width:56px;height:56px}
+.hd-k2 .hd-pen i{width:34px;height:34px}
+.hd-k2 .hd-tool{min-height:56px;padding:0 18px;font-size:1rem}
+.hd-k2 .hd-padcap{font-size:14px}
+.hd-k2cards{display:flex;flex-direction:column;gap:10px;min-width:0}
+.hd-k2cap{display:flex;align-items:center;gap:8px;margin:4px 0 0;font-size:1.05rem;font-weight:800;color:var(--text-2)}
+.hd-k2next{display:flex;flex-direction:column;gap:8px}
+.hd-k2hero{display:flex;align-items:center;gap:18px;padding:16px 18px;border:3px solid var(--accent-press);border-radius:24px;background:var(--card);box-shadow:0 4px 0 var(--accent-press);min-width:0}
+.hd-k2hero>.hd-k2ico,.hd-k2hero>.hd-k2cover{flex:none}
+.hd-k2ico{display:grid;place-items:center;width:64px;height:64px;border-radius:18px;background:var(--card-2)}
+.hd-k2hero>.hd-k2ico{width:112px;height:112px;border-radius:26px;background:var(--accent-soft)}
+.hd-k2cover{display:block;width:64px;height:50px;object-fit:cover;border-radius:12px;border:2px solid var(--line);background:var(--card-2)}
+.hd-k2hero>.hd-k2cover{width:140px;height:108px;border-radius:18px}
+.hd-k2herot{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px}
+.hd-k2name{font-size:1.7rem;line-height:1.15;overflow-wrap:anywhere}
+.hd-k2words{margin:0;padding:10px 14px;border-radius:14px;background:#FFF4C7;color:#141414;font-weight:700;font-size:1.15rem;line-height:1.4;white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;line-clamp:4;overflow:hidden}
+.hd-k2acts{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.hd-k2acts .hr-readbtn{min-height:60px;padding:0 20px;font-size:1.05rem;border-radius:999px}
+.hd-card.hd-k2start{flex-direction:row;align-items:center;justify-content:center;gap:10px;min-height:68px;padding:0 34px;border:0;border-radius:999px;background:var(--accent);color:var(--on-accent);font:900 1.45rem var(--font);box-shadow:0 4px 0 var(--accent-press)}
+a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
+.hd-k2wait{margin:0;display:flex;align-items:center;gap:8px;font-weight:700;color:var(--muted)}
+.hd-k2tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:12px 2px 4px}
+.hd-k2wrap{position:relative;min-width:0;display:flex}
+.hd-card.hd-k2tile{flex:1 1 auto;min-height:150px;align-items:center;justify-content:center;gap:10px;padding:16px 10px 14px;text-align:center;border-radius:22px}
+.hd-k2tile .hd-k2t{font-size:1.1rem;line-height:1.2;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;overflow-wrap:anywhere}
+.hd-k2tile .hd-k2cover{width:96px;height:74px}
+.hd-k2tile .hd-k2tw{align-self:stretch;padding:6px 8px;border-radius:10px;background:#FFF4C7;color:#141414;font-size:.95rem;font-weight:700;line-height:1.3;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;overflow:hidden;overflow-wrap:anywhere}
+.hd-missed .hd-k2tiles{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.hd-k2mark{position:absolute;top:10px;inset-inline-start:10px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--card-2);font-weight:900}
+.hd-k2mark.done{background:var(--accent-soft);color:var(--accent-ink)}
+.hd-k2wrap>.hr-readbtn{position:absolute;top:8px;inset-inline-end:8px;min-height:44px;min-width:44px;padding:0 10px;border-radius:999px}
+.hd-k2wrap>.hr-readbtn span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.hd-k2alldone{display:flex;align-items:center;gap:14px;padding:18px 20px;border-radius:22px;background:var(--accent-soft);font-size:1.4rem}
+.hd-k2empty{padding:18px}
+.hd-k2empty b{font-size:1.25rem}
+.hd-k2 .hd-missed{padding:14px}
+.hd-k2 .hd-missedh{font-size:1.2rem}
+/* Raise hand as three big pictures (K-2), and Ask my teacher's two */
+.hd-k2 .hd-handmenu{width:min(480px,calc(100vw - 24px));padding:12px}
+.hd-k2hands{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hd-k2hands.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.hd-k2hand{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:132px;padding:12px 6px;border:3px solid var(--line);border-radius:22px;background:var(--card);color:var(--text);font:800 1.1rem var(--font);cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.hd-k2hand:hover{background:var(--hover)}
+.hd-k2hand.on{border-color:var(--text);box-shadow:0 3px 0 var(--text)}
+.hd-k2hand:disabled{opacity:.45;cursor:default}
+.hd-k2 .hd-handmenu .hd-hmi{min-height:64px;font-size:1.1rem}
+@media (max-width:600px){
+  .hd-k2hero{flex-direction:column;align-items:stretch;text-align:center;gap:12px;padding:14px}
+  .hd-k2hero>.hd-k2ico,.hd-k2hero>.hd-k2cover{align-self:center}
+  .hd-k2acts{justify-content:center}
+  .hd-card.hd-k2start{flex:1 1 100%}
+  .hd-k2tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hd-k2hand{min-height:110px;font-size:1rem}
+  .hd-k2 .hd-body{top:84px}
+  .hd-k2 .hd-dock{gap:4px;padding:6px}
+  .hd-k2 .hd-dockbtn{flex-direction:column;gap:2px;min-width:0;padding:6px 2px;font-size:.72rem;line-height:1.1}
+  .hd-k2 .hd-dockbtn span{max-width:100%;white-space:nowrap}
+  .hd-k2hero>.hd-k2ico{width:84px;height:84px}
+  .hd-k2hero>.hd-k2cover{width:112px;height:86px}
+  .hd-k2name{font-size:1.45rem}
+}
+/* K-2's reading notes: draw what happened, tap how you liked it, one word if they want */
+.hd-k2notes{gap:14px}
+.hd-k2part{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;border:0;min-width:0}
+.hd-k2q{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0;font-size:1.25rem}
+.hd-k2feels{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hd-k2feelb{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;min-height:120px;justify-content:center;padding:10px 6px;border:3px solid var(--line);border-radius:22px;background:var(--card);cursor:pointer;font-size:1.05rem;text-align:center;box-shadow:0 3px 0 var(--line)}
+.hd-k2feelb input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.hd-k2feelb:has(input:checked){border-color:var(--accent-press);background:var(--accent-soft);box-shadow:0 3px 0 var(--accent-press)}
+.hd-k2feelb:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+.hd-k2word{min-height:56px;font-size:1.2rem;max-width:420px}
+/* the drawing pad K-2 uses (public/js/homeroom-drawpad.js; the desk pad's look) */
+.dp{display:flex;flex-direction:column;gap:6px;min-width:0}
+.dp-bar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.dp-box{position:relative;width:100%;aspect-ratio:3/2;max-height:46vh}
+.dp-box .dp-svg{position:absolute;inset:0;width:100%;height:100%}
+.dp-pic{display:block;width:100%;height:auto;max-width:420px}
+.hd-k2notes .dp-box{max-width:640px}
+
+/* the teacher's board: an Absent desk dimmed with its chip, an At home chip (no cursor) */
+.hr-attchip{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:800;white-space:nowrap;background:var(--card-2);color:var(--text-2);border:1px solid var(--line)}
+.hr-attchip.home{background:var(--accent-soft);color:var(--accent-ink);border-color:var(--accent-press)}
+.hr-attchip.here{background:transparent}
+/* (at the desk's foot where live class's status chip goes: an absent desk has none, an At home desk's live chip says it) */
+.hr-desk>.hr-attchip{position:absolute;left:8px;bottom:-14px;z-index:3;min-height:26px;font-size:12px;box-shadow:0 2px 0 var(--line);border-width:2px}
+.hr-desk:has(.hr-lvhome)>.hr-attchip{display:none}
+.hr-desk.hr-att-absent{border-style:dashed;box-shadow:none;background:color-mix(in srgb,var(--card) 55%,transparent)}
+.hr-desk.hr-att-absent .hr-cards,.hr-desk.hr-att-absent>.hr-name{opacity:.5}
+.hr-desk.hr-att-absent .hr-cards{filter:grayscale(.6)}
+.hr-tname.hr-att-absent{opacity:.55}
+.hr-lvchip.hr-lvhome{gap:4px}
+.hr-mitag{margin-inline-start:auto;font-size:12px;font-weight:800;color:var(--muted)}
+.hr-k2box{display:flex;flex-direction:column;gap:10px}
+.hr-k2box p{margin:0}
+.hr-k2what{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:2px}
+.hr-k2seg .hr-segb{min-height:48px}
+.hr-dmtop{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.hr-dmrow{flex-wrap:wrap}
+.hr-dmrow .hr-seg{flex:1 1 100%}
+.hr-dmatt{margin:0}
+.hr-attseg{gap:4px;flex-wrap:nowrap}
+.hr-attseg .hr-segb{display:inline-flex;align-items:center;gap:4px;min-height:44px;padding:0 10px;font-size:.82rem;box-shadow:0 2px 0 var(--line)}
+.hr-attseg .hr-segb.on{box-shadow:0 2px 0 #000}
+.hr-attbox{margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:14px;background:var(--card-2)}
+.hr-attbox>summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:44px;cursor:pointer}
+.hr-attbox p{margin:4px 0 8px}
+.hr-attlist{display:flex;flex-direction:column;gap:4px}
+.hr-attlist li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;padding:6px 0;border-top:1px solid var(--line)}
+.hr-attlist li bdi{flex:1 1 120px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.hr-attlist li .hr-seg{flex:0 0 auto;margin-inline-start:auto}
+.hr-attlist li.hr-att-absent bdi{color:var(--muted)}
+@media (max-width:480px){.hr-attseg .hr-attl{display:none}.hr-attseg .hr-segb{padding:0 10px}}
+.hr-askrow .hr-hwho{flex-wrap:wrap}
+.hr-hkind.k-home{color:var(--accent-ink)}
+.hr-asktext{flex:1 1 100%;padding:4px 8px;border-radius:10px;background:var(--card-2);font-weight:600;overflow-wrap:anywhere}
+.hr-sdesk.hr-att-absent{opacity:.55;border-style:dashed;box-shadow:none}
+.hr-steam.hr-att-absent{opacity:.55}
+.hr-subatt .hr-attbox{margin-top:0;background:var(--card)}
+.hr-sum-nums>.hr-sum-abs{grid-column:1/-1;flex-direction:row;align-items:baseline;gap:10px}
+.hr-sum-nums>.hr-sum-abs b{font-size:1.2rem}

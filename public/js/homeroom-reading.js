@@ -15,6 +15,7 @@
 import { t, api, toast, esc } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
+import { drawPadHtml, drawPad } from '/js/homeroom-drawpad.js';
 
 const tr = (k, v) => t(`js.homeroom-reading.${k}`, v);
 export const GRADES = ['k', '1', '2', '3', '4-5'];
@@ -232,8 +233,39 @@ export function readingLayer(opts) {
     bodyEl().innerHTML = readerHtml(R.book, page, true);
   }
 
+  // ---- K-2's notes (step 4c): draw what happened, tap how you liked it, and a word from the book if you want
+  const FEELS = [['love', '❤️'], ['like', '🙂'], ['ok', '😌']];
+  const k2t = (k, v) => tr(`k2.${k}`, v), drt = (k, v) => tr(`draw.${k}`, v);
+  const padWords = { pens: drt('pens'), pen: v => drt('pen', v), undo: drt('undo'), clear: drt('clear'), label: k2t('drawLabel') };
+  function drawK2Notes() {
+    const b = bodyEl(), read = sup().read;
+    const ask = (k, icon, extra = '') => `<h3 class="hd-k2q">${iconHtml(icon, { size: 26 })} <span>${esc(k2t(`${k}`))}</span>${read ? readBtn(k2t(`${k}`), { small: true }) : ''}${extra}</h3>`;
+    b.innerHTML = `<form class="hd-rdpad hd-rdnotes hd-k2notes" novalidate><h2 class="hd-rdh">${iconHtml('📝', { size: 28 })} ${esc(k2t('title'))}</h2>
+      <div class="hd-k2part">${ask('draw', '🖍️')}${drawPadHtml({ id: 'rdk2', words: padWords })}</div>
+      <fieldset class="hd-k2part hd-k2feel"><legend class="sr-only">${esc(k2t('feel'))}</legend>${ask('feel', '🤔')}
+        <div class="hd-k2feels">${FEELS.map(([k, ic]) => `<label class="hd-k2feelb"><input type="radio" name="feel" value="${k}"><span aria-hidden="true">${iconHtml(ic, { size: 56 })}</span><b>${esc(k2t(`feels.${k}`))}</b></label>`).join('')}</div></fieldset>
+      <div class="hd-k2part">${ask('word', '🔤')}<label class="sr-only" for="hd-rdk2word">${esc(k2t('word'))}</label><input class="input hd-k2word" id="hd-rdk2word" name="word" maxlength="40" autocomplete="off" placeholder="${esc(k2t('wordPh'))}"></div>
+      <p class="err" id="hd-rdnerr" aria-live="polite"></p>
+      <div class="row hd-rdacts"><button class="btn btn-primary btn-big" type="submit">${iconHtml('📒', { size: 22 })} ${esc(k2t('save'))}</button></div>
+      <p class="small muted">${esc(tr('notesPrivacy'))}</p></form>`;
+    R.pad = drawPad(b, { max: { strokes: 80, points: 400, total: 8000 }, full: () => toast(k2t('padFull'), { bad: true }) });
+  }
+  async function submitK2(f) {
+    const err = f.querySelector('#hd-rdnerr'), strokes = R.pad ? R.pad.strokes() : [], feel = f.querySelector('input[name="feel"]:checked');
+    if (!strokes.length) { err.textContent = k2t('drawFirst'); return; }
+    if (!feel) { err.textContent = k2t('pickFeel'); f.querySelector('input[name="feel"]').focus(); return; }
+    R.busy = true; const okBtn = f.querySelector('[type="submit"]'); okBtn.disabled = true;
+    try {
+      R.v = await api(`${base}/${encodeURIComponent(R.id)}`, { method: 'POST', body: { action: 'notes', notes: { k2: { drawing: strokes, feel: feel.value, word: f.querySelector('[name="word"]').value } } } });
+      R.pad = null;
+      if (opts.onChange) opts.onChange();
+      drawRoutine();
+    } catch (e2) { err.textContent = e2.message; okBtn.disabled = false; } finally { R.busy = false; }
+  }
+
   // ---- the 3 notes
   function drawNotes() {
+    if (opts.k2 && opts.k2()) { drawK2Notes(); return; }
     const b = bodyEl(), read = sup().read, max = 300;
     const field = k => `<div class="hd-rdnote"><label class="hr-label" for="hd-rdn-${k}">${iconHtml({ happened: '🎬', word: '🔤', think: '💭' }[k], { size: 20 })} ${esc(tr(`notes.${k}`))}</label>${read ? readBtn(`${tr(`notes.${k}`)}. ${tr(`notes.${k}Hint`)}`, { small: true }) : ''}
       <p class="small muted" id="hd-rdh-${k}">${esc(tr(`notes.${k}Hint`))}</p><textarea class="input" id="hd-rdn-${k}" name="${k}" rows="2" maxlength="${max}" aria-describedby="hd-rdh-${k}" required></textarea></div>`;
@@ -247,6 +279,7 @@ export function readingLayer(opts) {
     const f = e.target.closest('.hd-rdnotes'); if (!f) return;
     e.preventDefault();
     if (R.busy) return;
+    if (f.classList.contains('hd-k2notes')) { submitK2(f); return; }
     const notes = Object.fromEntries(['happened', 'word', 'think'].map(k => [k, f.querySelector(`[name="${k}"]`).value]));
     const empty = Object.keys(notes).find(k => !notes[k].trim());
     const err = f.querySelector('#hd-rdnerr');

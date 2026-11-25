@@ -331,6 +331,22 @@ export const padKeyFor = (classId, userId) => { const t = teamOf(classId, userId
 export const doodleOf = (classId, userId) => json((padRow(classId, padKeyFor(classId, userId)) || {}).strokes, []);
 /** The pad's version (when it was last saved; 0: never): a team's desks ask for it to see each other's drawing. */
 export const padVersion = (classId, userId) => (padRow(classId, padKeyFor(classId, userId)) || {}).updated_at || 0;
+/** Pen strokes as the pad keeps them (also a notebook page's drawing): at most lim.strokes strokes and lim.total points,
+ *  each point inside the page, a known pen color; a stroke of one point is dropped. -> { ok, strokes } | padFull | badState */
+export function cleanStrokes(strokes, lim = DOODLE) {
+  if (!Array.isArray(strokes)) return fail('badState');
+  if (strokes.length > lim.strokes) return fail('padFull');
+  const out = []; let total = 0;
+  for (const s of strokes) {
+    if (!s || typeof s !== 'object' || !Array.isArray(s.pts)) return fail('badState');
+    const pts = s.pts.slice(0, lim.points).map(p => ({ x: frac(p && p.x), y: frac(p && p.y) }));
+    if (pts.length < 2) continue;
+    total += pts.length; if (total > lim.total) return fail('padFull');
+    out.push({ c: DOODLE_COLORS.includes(s.c) ? s.c : DOODLE_COLORS[0], pts });
+  }
+  if (JSON.stringify(out).length > lim.bytes) return fail('padFull');
+  return ok({ strokes: out });
+}
 /** Save a student's pad (theirs, or their team's: any member writes it; in a class with Homeroom): at most DOODLE.strokes
  *  strokes and DOODLE.total points, each point inside the page, a known pen color; a stroke of one point is dropped.
  *  base: the pad version the page last saw; on a team pad another member may have saved since, and then nothing is
@@ -339,17 +355,8 @@ export const padVersion = (classId, userId) => (padRow(classId, padKeyFor(classI
 export function saveDoodle(u, c, strokes, { base = null } = {}) {
   if (!canUseDesk(u, c)) return fail('notFound');
   const key = padKeyFor(c.id, u.id), team = key !== u.id;
-  if (!Array.isArray(strokes)) return fail('badState');
-  if (strokes.length > DOODLE.strokes) return fail('padFull');
-  const out = []; let total = 0;
-  for (const s of strokes) {
-    if (!s || typeof s !== 'object' || !Array.isArray(s.pts)) return fail('badState');
-    const pts = s.pts.slice(0, DOODLE.points).map(p => ({ x: frac(p && p.x), y: frac(p && p.y) }));
-    if (pts.length < 2) continue;
-    total += pts.length; if (total > DOODLE.total) return fail('padFull');
-    out.push({ c: DOODLE_COLORS.includes(s.c) ? s.c : DOODLE_COLORS[0], pts });
-  }
-  const text = JSON.stringify(out); if (text.length > DOODLE.bytes) return fail('padFull');
+  const cl = cleanStrokes(strokes); if (!cl.ok) return cl;
+  const out = cl.strokes, text = JSON.stringify(out);
   const cur = padRow(c.id, key);
   if (team && base !== null && cur && String(base) !== String(cur.updated_at)) return { ok: false, code: 'padChanged', strokes: json(cur.strokes, []), pv: cur.updated_at };
   // A version that always moves on (two saves in one millisecond still differ).

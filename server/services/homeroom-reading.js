@@ -35,6 +35,7 @@ import * as LIB from './library.js';
 import * as NB from './notebook.js';
 import * as RQ from './reading-quiz.js';
 import { textProblem } from './manipulatives.js';
+import * as AT from './homeroom-attendance.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -43,6 +44,10 @@ export const STEPS = ['read', 'quiz', 'notes'];
 /** The three notes: their keys (the prompts are words in the student's language: homeroom.reading.notes.<key>). */
 export const NOTES = ['happened', 'word', 'think'];
 export const NOTE_MAX = 300;
+/** K-2 mode's notes (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): a drawing of something that happened,
+ *  how they liked the book (a picture to tap) and, if they want, one word from it. */
+export const FEELS = ['love', 'like', 'ok'];
+export const WORD_MAX = 40;
 
 /** A class's grade ('K', '3', 'Grade 4'...) as a Story Library grade band ('k', '1', '2', '3', '4-5'), or null. */
 export function libraryGrade(grade) {
@@ -241,6 +246,7 @@ export function saveNotes(u, c, clId, notes = {}, labels = {}) {
   const x = routineOf(u, c, clId); if (!x.ok) return x;
   if (!x.book || !x.row || !x.row.quiz_at) return fail('quizFirst');
   if (x.row.notes_at) return fail('notesSaved');
+  if (notes && notes.k2 && typeof notes.k2 === 'object') return saveK2Notes(u, c, x, notes.k2, labels);
   const clean = {};
   for (const k of NOTES) {
     const v = notes && typeof notes[k] === 'string' ? notes[k].replace(/\r\n?/g, '\n').replace(/[\u0000-\u0009\u000b-\u001f\u007f]/g, '').replace(/\n{3,}/g, '\n\n').trim() : '';
@@ -262,6 +268,34 @@ export function saveNotes(u, c, clId, notes = {}, labels = {}) {
   audit(u.id, 'homeroom.readingNotes', c.id, { classLesson: x.cl.id });
   const v = view(u, c, clId);
   return ok({ ...v, page: pg.page, tab: pg.tab });
+}
+
+/** K-2 notes: { drawing: strokes (at least one), feel: love | like | ok, word: '' or a word or two }, on the same page of
+ *  the notebook (the drawing as the page's drawing, the rest as words), only for a student whose desk is in K-2 mode. */
+function saveK2Notes(u, c, x, k2, labels) {
+  if (!AT.k2For(c, u.id)) return fail('noteEmpty', { note: 'happened' });
+  const d = H.cleanStrokes(k2.drawing, NB.DRAWING);
+  if (!d.ok) return fail(d.code === 'padFull' ? 'noteLong' : 'noteEmpty', { note: 'happened' });
+  if (!d.strokes.length) return fail('drawFirst', { note: 'happened' });
+  if (!FEELS.includes(k2.feel)) return fail('pickFeel', { note: 'think' });
+  const word = typeof k2.word === 'string' ? k2.word.replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim() : '';
+  if (word.length > WORD_MAX) return fail('noteLong', { note: 'word' });
+  const bad = word && textProblem(word); if (bad) return fail(bad, { note: 'word' });
+  if (!NB.canUse(u)) return fail('noNotebook');
+  const pg = NB.handoutPage(u, c, x.cl.id, [{ id: x.cl.id, title: x.book.title }]);
+  if (!pg.ok) return pg;
+  q.run('UPDATE notebook_pages SET title=? WHERE id=? AND user_id=?', x.book.title.slice(0, NB.LIMITS.title), pg.page, u.id);
+  const old = q.get('SELECT body, drawing FROM notebook_pages WHERE id=?', pg.page) || {};
+  let had = []; try { had = JSON.parse(old.drawing || '[]') || []; } catch { had = []; }
+  const L2 = k => labels[k] || k;
+  const html = `<p><b>${esc(L2('k2drew'))}</b></p><p><b>${esc(L2('think'))}</b></p><p>${esc(L2(`feel.${k2.feel}`))}</p>${word ? `<p><b>${esc(L2('word'))}</b></p><p>${esc(word)}</p>` : ''}`;
+  const saved = NB.savePage(u, pg.page, `${old.body ? `${old.body}<p><br></p>` : ''}${html}`, [...(Array.isArray(had) ? had : []), ...d.strokes].slice(-NB.DRAWING.strokes));
+  if (!saved.ok) return saved;
+  setRow(x.cl, u.id, { notes_at: now(), page_id: pg.page });
+  const r = rowOf(x.cl.id, u.id);
+  P.storyStep(u, x.cl.id, x.step.id, { bookId: x.book.id, done: true, marks: r.marks, aloud: !!r.aloud });
+  audit(u.id, 'homeroom.readingNotes', c.id, { classLesson: x.cl.id, k2: true });
+  return ok({ ...view(u, c, x.cl.id), page: pg.page, tab: pg.tab });
 }
 
 // ---------------------------------------------------------------- the teacher: the handout's results page

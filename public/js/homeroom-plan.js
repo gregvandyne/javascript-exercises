@@ -144,7 +144,7 @@ export function planPill(ctx) {
       <span class="hr-sum-b"><b dir="auto">${esc(partName(x))}</b><span class="small">${esc(!x.done && !x.cut ? tp('notReached', { planned: x.planned }) : x.used < 1 ? tp('underMin', { planned: x.planned }) : tp('usedOf', { used: x.used, planned: x.planned }))}${x.cut ? ` · ${esc(tp('cut'))}` : ''}</span>
       ${x.of ? `<span class="hr-sum-ho"><span class="hr-sum-bar" role="img" aria-label="${esc(tp('finishedOf', { finished: x.finished, of: x.of }))}"><i style="width:${Math.round((100 * x.finished) / x.of)}%"></i></span><span class="small">${esc(tp('finishedOf', { finished: x.finished, of: x.of }))}</span></span>` : ''}</span></li>`).join('');
     sheet({ title: `🏁 ${tp('summaryTitle')}`, content: `<div class="hr-sum">
-      <div class="hr-sum-nums"><div><b>${esc(tp('partsDone', { done: s.partsDone, total: s.partsTotal }))}</b><span class="small muted">${esc(tp('parts'))}</span></div><div><b>${esc(minutes(s.used))}</b><span class="small muted">${esc(tp('plannedWas', { count: s.planned }))}</span></div></div>
+      <div class="hr-sum-nums"><div><b>${esc(tp('partsDone', { done: s.partsDone, total: s.partsTotal }))}</b><span class="small muted">${esc(tp('parts'))}</span></div><div><b>${esc(minutes(s.used))}</b><span class="small muted">${esc(tp('plannedWas', { count: s.planned }))}</span></div>${s.absent ? `<div class="hr-sum-abs"><b>${esc(tp('absentN', { count: s.absent }))}</b><span class="small muted">${esc(tp('absentNote'))}</span></div>` : ''}</div>
       <ol class="plain hr-sum-parts">${rows}</ol>
       <p class="hr-sum-home">${ic('🎒', 18)} <span>${esc(s.homework ? tp('homework', { count: s.homework }) : tp('noHomework'))}</span></p>
       <p class="small muted">${esc(tp('summaryPrivate'))}</p></div>` });

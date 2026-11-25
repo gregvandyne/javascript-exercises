@@ -11,6 +11,10 @@
 //     stacked bar, the Needs a look names, and the way to the Classroom tab for longer-term progress.
 //   - tapping a desk (or its status chip) while live: a look at that student's desk in summary (current handout and how
 //     far, their pad as a read-only drawing, their last activity), with Lock desk, Hide cursor and "I'm coming over".
+//   - step 4c (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): an Absent desk shows no status and is left
+//     out of Needs a look and Today's counts ("2 absent" beside them); an At home desk shows "At home" instead of a
+//     cursor; Today lists who is here, absent or at home (the teacher and a sub change it, an aide only sees it); Hands
+//     also holds questions sent from home, marked At home, answered from there (even when class isn't live).
 // Nothing here is ever on the projector (its page and poll carry only the teacher's area and the live state).
 import { t, api, toast, esc, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -63,6 +67,9 @@ export function liveBoard(ctx) {
         `<span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt" dir="auto">${iconHtml('📖', { size: 12 })} ${esc(rdText)}</span><span class="hr-lvpg">${esc(tl('readingPage', { page: d.book.page || 1 }))}</span>`);
     }
     const what = h && d.st !== 'done' ? `, ${tl(d.where === 'game' ? 'inGame' : 'onDesk', { title: h.title })}` : '';
+    // at home (step 4c): the chip says so (and there is no cursor)
+    if (d.home) return btn(`hr-lvchip hr-lvhome st-${d.st}`, `data-hrlook="${esc(sid)}" aria-label="${esc(`${tl('chipLabel', { name, status: stLabel(d.st) })}, ${tl('att.home')}${what}`)}"`,
+      `${iconHtml('🏠', { size: 12 })}<span class="hr-lvt">${esc(tl('att.home'))}</span><span class="hr-lvpg">${esc(stLabel(d.st))}</span>`);
     return btn(`hr-lvchip st-${d.st}`, `data-hrlook="${esc(sid)}" aria-label="${esc(tl('chipLabel', { name, status: stLabel(d.st) }) + what)}"`,
       `<span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt">${esc(stLabel(d.st))}</span>${bar}`);
   }
@@ -83,7 +90,8 @@ export function liveBoard(ctx) {
       for (const c of el.querySelectorAll('.hr-card.on')) c.classList.remove('on');
       if (!on) continue;
       const members = el.dataset.team ? ((H.teams.find(x => x.id === el.dataset.team) || {}).members || []) : [el.dataset.sid];
-      const ds = members.map(id => [id, dd[id]]).filter(([, d]) => d);
+      // (an absent student has no live status: their desk is dimmed with its "Absent today" chip, step 4c)
+      const ds = members.map(id => [id, dd[id]]).filter(([, d]) => d && d.st !== 'absent');
       if (!ds.length) continue;
       const box = document.createElement('div'); box.className = 'hr-lv';
       if (el.dataset.team) {
@@ -143,11 +151,14 @@ export function liveBoard(ctx) {
   }
 
   // ---------------------------------------------------------------- the top bar's buttons and panels
-  const handsCount = () => (LV.data ? LV.data.hands.length : 0);
+  /** Questions sent from home (step 4c): from the live poll while live, else the board's handouts view. */
+  const asks = () => ((LV.data && LV.data.asks) || (H.ho && H.ho.asks) || []).map(x => ({ ...x, name: x.name || ctx.nameOfId(x.sid) }));
+  const handsCount = () => (LV.data ? LV.data.hands.length : 0) + asks().length;
+  const handsOn = () => live() || asks().length > 0;
   function topButtons() {
     const n = handsCount();
     return `${btn(`btn hr-chunk hr-todaybtn${LV.open === 'today' ? ' on' : ''}`, `data-hrpanel="today" aria-expanded="${LV.open === 'today'}" aria-label="${esc(tl('today.title'))}"`, `${iconHtml('📊', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('today.button'))}</span>`)}
-      ${live() ? btn(`btn hr-chunk hr-handsbtn${LV.open === 'hands' ? ' on' : ''}`, `data-hrpanel="hands" aria-expanded="${LV.open === 'hands'}" aria-label="${esc(tl('hands.label', { count: n }))}"`, `${iconHtml('✋', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('hands.button'))}</span>${n ? `<span class="hr-count" aria-hidden="true">${n}</span>` : ''}`) : ''}`;
+      ${handsOn() ? btn(`btn hr-chunk hr-handsbtn${LV.open === 'hands' ? ' on' : ''}`, `data-hrpanel="hands" aria-expanded="${LV.open === 'hands'}" aria-label="${esc(tl('hands.label', { count: n }))}"`, `${iconHtml('✋', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('hands.button'))}</span>${n ? `<span class="hr-count" aria-hidden="true">${n}</span>` : ''}`) : ''}`;
   }
   function panelEl() {
     let el = document.getElementById('hr-flpanel');
@@ -167,13 +178,17 @@ export function liveBoard(ctx) {
       <span class="hr-hacts">${h.kind === 'bathroom' ? `${btn('btn btn-sm', `data-hrhand="notNow:${esc(h.id)}"`, esc(tl('hands.notNow')))}${btn('btn btn-sm btn-primary', `data-hrhand="pass:${esc(h.id)}"`, esc(p.out ? tl('hands.putInLine') : tl('hands.givePass')))}`
         : btn('btn btn-sm btn-primary', `data-hrhand="answer:${esc(h.id)}"`, esc(tl('hands.answered')))}</span></li>`).join('');
     const left = p.out ? Math.round((p.out.at + p.minutes * 60e3 - (Date.now() - skew())) / 1000) : 0;
+    const home = asks().map(x => `<li class="hr-hrow hr-askrow"><span class="hr-hwho"><b><bdi>${esc(x.name)}</bdi></b> <span class="hr-hkind k-home">${iconHtml('🏠', { size: 16 })} ${esc(tl('att.home'))}</span> <span class="hr-hkind k-${esc(x.kind)}">${iconHtml(x.kind === 'help' ? '🆘' : '💬', { size: 16 })} ${esc(kindLabel(x.kind))}</span>${x.text ? `<span class="hr-asktext" dir="auto">${esc(x.text)}</span>` : ''}</span>
+      <span class="hr-hacts">${btn('btn btn-sm btn-primary', `data-hrask="${esc(x.id)}"`, esc(tl('hands.answered')))}</span></li>`).join('');
     return `<header class="hr-flhead"><h2 id="hr-flh">${iconHtml('✋', { size: 20 })} ${esc(tl('hands.title'))}</h2>${btn('iconbtn hr-flclose', `data-hrpanel="" aria-label="${esc(tl('close'))}"`, iconHtml('✖️', { size: 16 }))}</header>
-      ${rows ? `<ol class="plain hr-hlist">${rows}</ol>` : `<p class="small muted">${esc(tl('hands.none'))}</p>`}
-      <h3 class="hr-flsub">${iconHtml('🚻', { size: 18 })} ${esc(tl('pass.title'))}</h3>
+      ${rows ? `<ol class="plain hr-hlist">${rows}</ol>` : live() ? `<p class="small muted">${esc(tl('hands.none'))}</p>` : ''}
+      ${home ? `<h3 class="hr-flsub">${iconHtml('🏠', { size: 18 })} ${esc(tl('asks.title'))}</h3><p class="small muted">${esc(tl('asks.lead'))}</p><ol class="plain hr-hlist">${home}</ol>` : ''}
+      ${live() ? '' : `<p class="small muted">${esc(tl('asks.notLive'))}</p>`}
+      ${live() ? `<h3 class="hr-flsub">${iconHtml('🚻', { size: 18 })} ${esc(tl('pass.title'))}</h3>
       ${p.out ? `<div class="hr-pout${left <= 0 ? ' over' : ''}"><span><b><bdi>${esc(p.out.name)}</bdi></b> <span class="hr-pclock" id="hr-pclock">${esc(passClock(p))}</span></span>${btn('btn btn-sm btn-primary', `data-hrhand="back:${esc(p.out.id)}"`, esc(tl('pass.isBack', { name: p.out.name })))}</div>` : `<p class="small muted">${esc(tl('pass.nobody'))}</p>`}
       ${p.line.length ? `<ol class="plain hr-pline">${p.line.map((x, i) => `<li><span>${esc(i ? tl('pass.then') : tl('pass.next'))} <b><bdi>${esc(x.name)}</bdi></b></span>${btn('btn btn-sm', `data-hrhand="back:${esc(x.id)}" aria-label="${esc(tl('pass.removeLine', { name: x.name }))}"`, '×')}</li>`).join('')}</ol>` : ''}
       <div class="hr-pmin"><span id="hr-pminl">${esc(tl('pass.length'))}</span>${btn('btn btn-sm hr-pstep', `data-hrmin="-1" aria-label="${esc(tl('pass.less'))}"${p.minutes <= (D.pulse || {}).passMin ? ' disabled' : ''}`, '−')}<b aria-live="polite">${esc(tl('pass.minutes', { count: p.minutes }))}</b>${btn('btn btn-sm hr-pstep', `data-hrmin="1" aria-label="${esc(tl('pass.more'))}"${p.minutes >= (D.pulse || {}).passMax ? ' disabled' : ''}`, '+')}</div>
-      <p class="small muted hr-flnote">${esc(tl('hands.private'))}</p>`;
+      ` : ''}<p class="small muted hr-flnote">${esc(tl('hands.private'))}</p>`;
   }
   /** A Reading handout in Today (step 4b): every student it went to, alphabetical (never ranked), with their step and
    *  the quiz's first-try result. */
@@ -190,12 +205,25 @@ export function liveBoard(ctx) {
     const since = Math.min(d0.getTime(), H.live ? H.live.since : Infinity);
     return H.ho.handouts.filter(h => (h.at || 0) >= since);
   }
+  /** Today's attendance (step 4c): every student, alphabetical, Here, Absent or At home (the teacher and a sub change it;
+   *  an aide only sees it). */
+  function attHtml() {
+    const coll = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true });
+    const list = [...H.students].sort((a, b) => coll.compare(a.name, b.name)), n = k => list.filter(s => ctx.att(s.id) === k).length;
+    if (!list.length) return '';
+    const seg = s => { const a = ctx.att(s.id); return ctx.markAtt ? `<span class="hr-seg hr-attseg" role="radiogroup" aria-label="${esc(tl('att.of', { name: s.name }))}">${[['', '✅'], ['absent', '📅'], ['home', '🏠']].map(([k, ic]) => btn(`hr-segb${a === k ? ' on' : ''}`, `role="radio" aria-checked="${a === k}" data-hratt="${esc(s.id)}:${k}" aria-label="${esc(tl(k ? `att.${k}` : 'att.here'))}" title="${esc(tl(k ? `att.${k}` : 'att.here'))}"`, `${iconHtml(ic, { size: 14 })}<span class="hr-attl"> ${esc(tl(k ? `att.${k}Short` : 'att.hereShort'))}</span>`)).join('')}</span>`
+      : `<span class="hr-attchip ${a || 'here'}">${esc(tl(a ? `att.${a}` : 'att.here'))}</span>`; };
+    return `<details class="hr-attbox"${n('absent') || n('home') ? '' : ''}><summary><b>${iconHtml('📋', { size: 18 })} ${esc(tl('att.title'))}</b> <span class="small muted">${esc(tl('att.counts', { here: list.length - n('absent') - n('home'), absent: n('absent'), home: n('home') }))}</span></summary>
+      <p class="small muted">${esc(tl('att.lead'))}</p><ul class="plain hr-attlist">${list.map(s => `<li class="${ctx.att(s.id) ? `hr-att-${ctx.att(s.id)}` : ''}"><bdi>${esc(s.name)}</bdi>${seg(s)}</li>`).join('')}</ul></details>`;
+  }
   function todayHtml() {
     const list = todayHandouts(), dd = desks(), look = new Set();
     const rows = list.map(h => {
-      let done = 0, stuck = 0, work = 0, total = 0;
+      let done = 0, stuck = 0, work = 0, total = 0, absent = 0;
       for (const s of H.students) {
         const card = (H.ho.desks[s.id] || []).find(x => x.id === h.id); if (!card) continue;
+        // (an absent student's card stays on their desk for when they're back; it is counted on its own, step 4c)
+        if (ctx.att(s.id) === 'absent' && !card.done) { absent++; continue; }
         total++;
         const d = dd[s.id];
         if (card.done) done++;
@@ -205,25 +233,28 @@ export function liveBoard(ctx) {
       const none = total - done - stuck - work, pc = n => (total ? (100 * n) / total : 0);
       return `<li class="hr-tg"><div class="hr-tgh"><b dir="auto">${iconHtml(h.icon, { size: 16 })} ${esc(h.title)}</b><span>${esc(tl('today.doneOf', { done, total }))}</span></div>
         <div class="hr-tgbar" role="img" aria-label="${esc(tl('today.barLabel', { done, work, stuck, none }))}"><i class="d" style="width:${pc(done)}%"></i><i class="w" style="width:${pc(work)}%"></i><i class="s" style="width:${pc(stuck)}%"></i></div>
-        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}</p>${h.reading ? readingRows(h) : ''}</li>`;
+        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}${absent ? ` · ${esc(tl('att.nAbsent', { count: absent }))}` : ''}</p>${h.reading ? readingRows(h) : ''}</li>`;
     }).join('');
-    for (const [sid, d] of Object.entries(dd)) if (d.st === 'stuck') look.add(sid);
+    for (const [sid, d] of Object.entries(dd)) if (d.st === 'stuck' && ctx.att(sid) !== 'absent') look.add(sid);
     const names = [...look].map(id => btn('hr-lookname', `data-hrlook="${esc(id)}"`, `<bdi>${esc(ctx.nameOfId(id))}</bdi>`)).join('');
     return `<header class="hr-flhead"><h2 id="hr-flh">${iconHtml('📊', { size: 20 })} ${esc(tl('today.title'))}</h2>${btn('iconbtn hr-flclose', `data-hrpanel="" aria-label="${esc(tl('close'))}"`, iconHtml('✖️', { size: 16 }))}</header>
       <p class="small muted">${esc(live() ? tl('today.leadLive') : tl('today.lead'))}</p>
       ${rows ? `<ol class="plain hr-tglist">${rows}</ol><div class="hr-tgkey" aria-hidden="true"><span><i class="d"></i>${esc(tl('today.done'))}</span><span><i class="w"></i>${esc(tl('today.working'))}</span><span><i class="s"></i>${esc(tl('today.stuck'))}</span><span><i></i>${esc(tl('today.notStarted'))}</span></div>` : `<p class="muted">${esc(tl('today.none'))}</p>`}
       ${names ? `<div class="hr-tgflag"><b>${esc(tl('needsLook'))}:</b> ${names}</div>` : ''}
+      ${attHtml()}
       ${ctx.aide ? '' : `<p class="small hr-flnote">${esc(tl('today.weeks'))} <a href="/class/${esc(encodeURIComponent(D.classId))}/progress">${esc(tl('today.classroom'))}</a></p>`}`;
   }
   function renderPanel() {
     const el = panelEl();
-    if (LV.open === 'hands' && !live()) LV.open = '';
+    if (LV.open === 'hands' && !handsOn()) LV.open = '';
     el.hidden = !LV.open;
     if (!LV.open) { el.innerHTML = ''; return; }
     // keep the focus where it was across the 2 s refresh
     const f = document.activeElement && el.contains(document.activeElement) ? [...el.querySelectorAll('button,a')].indexOf(document.activeElement) : -1;
     el.setAttribute('aria-labelledby', 'hr-flh');
+    const attOpen = !!el.querySelector('.hr-attbox[open]');
     el.innerHTML = LV.open === 'hands' ? handsHtml() : todayHtml();
+    if (attOpen || LV.attOpen) el.querySelector('.hr-attbox')?.setAttribute('open', '');
     if (f >= 0) el.querySelectorAll('button,a')[f]?.focus();
   }
   function openPanel(k) {
@@ -240,6 +271,13 @@ export function liveBoard(ctx) {
       if (LV.data) Object.assign(LV.data, { hands: r.hands, pass: r.pass });
       toast(tl(`hands.done.${action}`));
       poll();
+    } catch (e) { toast(e.message, { bad: true }); }
+  }
+  async function answerAsk(id) {
+    try {
+      const r = await api(ctx.api2('asks'), { method: 'POST', body: { id } });
+      if (LV.data) LV.data.asks = r.asks; if (H.ho) H.ho.asks = r.asks;
+      toast(tl('asks.done')); renderPanel(); ctx.renderLive();
     } catch (e) { toast(e.message, { bad: true }); }
   }
   async function setMinutes(delta) {
@@ -312,6 +350,9 @@ export function liveBoard(ctx) {
     const p = e.target.closest('[data-hrpanel]'); if (p) { openPanel(p.dataset.hrpanel); return true; }
     if (e.target.closest('[data-hrhands]')) { if (LV.open !== 'hands') openPanel('hands'); return true; }
     const hh = e.target.closest('[data-hrhand]'); if (hh) { handAct(hh.dataset.hrhand); return true; }
+    const ak = e.target.closest('[data-hrask]'); if (ak) { answerAsk(ak.dataset.hrask); return true; }
+    const at = e.target.closest('[data-hratt]');
+    if (at && ctx.markAtt) { const [sid, st] = at.dataset.hratt.split(':'); LV.attOpen = true; ctx.markAtt(sid, st).then(() => renderPanel()); return true; }
     const mn = e.target.closest('[data-hrmin]'); if (mn) { setMinutes(+mn.dataset.hrmin); return true; }
     const lk = e.target.closest('[data-hrlook]'); if (lk) { look(lk.dataset.hrlook); return true; }
     if (!live() || H.seatsOpen || H.pick) return false;
@@ -326,6 +367,8 @@ export function liveBoard(ctx) {
   }
   return {
     paint, topButtons, click, tapDesk, look,
+    /** Attendance changed (step 4c): the desks' marks and the open panel again. */
+    refresh() { paint(); renderPanel(); ctx.renderLive(); },
     /** Live class started or ended on this page. */
     onLive() { LV.hv = ''; if (live()) poll(); else { clearTimeout(LV.timer); LV.data = null; if (LV.look) LV.look.sh.close(); paint(); renderPanel(); } },
     polling: () => live(),

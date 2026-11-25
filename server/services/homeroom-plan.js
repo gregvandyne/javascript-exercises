@@ -497,17 +497,18 @@ export function runAction(u, c, action, at = now()) {
 /** Finish class: each part with its planned and used minutes and, for a part that handed something out, how many of
  *  its handouts' cards are finished out of how many desks got one (counts only: no names, no order of students). */
 export function summaryOf(c, p) {
-  const board = HO.boardView(c);
+  // (students marked absent today are counted on their own, never as unfinished: "2 absent")
+  const board = HO.boardView(c), att = board.att || {}, absent = Object.values(att).filter(x => x === 'absent').length;
   const byLog = new Map((p.run && p.run.log || []).map(x => [x.idx, x]));
   const parts = p.parts.map((part, i) => {
     const l = byLog.get(i);
     let finished = 0, of = 0;
-    for (const id of part.handouts || []) for (const cards of Object.values(board.desks)) { const k = cards.find(x => x.id === id); if (k) { of++; if (k.done) finished++; } }
+    for (const id of part.handouts || []) for (const [sid, cards] of Object.entries(board.desks)) { if (att[sid] === 'absent') continue; const k = cards.find(x => x.id === id); if (k) { of++; if (k.done) finished++; } }
     return { kind: part.kind, title: part.title || '', planned: part.minutes, used: l ? Math.max(0, Math.round((l.end - l.start) / 60e3)) : 0, done: !!l && !l.open, cut: !!l && !!l.open, ...(part.handouts && part.handouts.length ? { finished, of } : {}) };
   });
   const homework = parts.reduce((s, x) => s + (x.of ? x.of - x.finished : 0), 0);
   return { name: p.name || '', parts, partsDone: parts.filter(x => x.done).length, partsTotal: parts.length,
-    planned: parts.reduce((s, x) => s + x.planned, 0), used: p.run ? Math.max(0, Math.round(((p.finishedAt || now()) - p.run.startedAt) / 60e3)) : 0, homework };
+    planned: parts.reduce((s, x) => s + x.planned, 0), used: p.run ? Math.max(0, Math.round(((p.finishedAt || now()) - p.run.startedAt) / 60e3)) : 0, homework, absent };
 }
 
 // ---------------------------------------------------------------- what pages see

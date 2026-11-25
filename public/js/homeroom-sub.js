@@ -58,18 +58,33 @@ function liveHtml() {
 const supLine = sup => (sup && sup.length ? `<span class="hr-subsup" title="${esc(ts('hasSupports'))}">${ic('🧩', 14)} ${sup.map(k => `<span>${ic(SUP_ICON[k], 14)} ${esc(ts(`sup.${k}`))}</span>`).join('')}</span>` : '');
 const stChip = st => (st && ST.includes(st) ? `<span class="hr-lvchip st-${st} static"><span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt">${esc(ts(`st.${st}`))}</span></span>` : '');
 const handTag = d => (d.pass === 'out' ? `<span class="hr-lvhand out">${ic('🚻', 14)} ${esc(ts('passOut'))}</span>` : d.pass === 'line' ? `<span class="hr-lvhand">${ic('🚻', 14)} ${esc(ts('passLine'))}</span>` : d.hand ? `<span class="hr-lvhand">${ic(d.hand === 'bathroom' ? '🚻' : '✋', 14)} ${esc(ts(`hand.${d.hand}`))}</span>` : '');
+// step 4c: today's attendance (Absent, At home) on each desk; the sub marks it in the Attendance list
+const attChip = d => (d.att ? `<span class="hr-attchip ${esc(d.att)}">${ic(d.att === 'absent' ? '📅' : '🏠', 14)} ${esc(ts(`att.${d.att}`))}</span>` : '');
 function deskHtml(d) {
-  return `<div class="hr-sdesk${d.st === 'away' ? ' away' : ''}${d.hand || d.pass ? ' hand' : ''}" data-x="${+d.x || 0}" data-y="${+d.y || 0}"><b class="hr-sname" dir="auto"><bdi>${esc(d.name)}</bdi></b>${handTag(d)}${stChip(d.st)}${supLine(d.sup)}</div>`;
+  return `<div class="hr-sdesk${d.st === 'away' && !d.att ? ' away' : ''}${d.att ? ` hr-att-${esc(d.att)}` : ''}${d.hand || d.pass ? ' hand' : ''}" data-x="${+d.x || 0}" data-y="${+d.y || 0}"><b class="hr-sname" dir="auto"><bdi>${esc(d.name)}</bdi></b>${attChip(d)}${handTag(d)}${d.att === 'absent' ? '' : stChip(d.st)}${supLine(d.sup)}</div>`;
 }
 function teamHtml(tm) {
-  return `<div class="hr-sdesk team" data-x="${+tm.x || 0}" data-y="${+tm.y || 0}" data-team="1">${tm.members.map(d => `<div class="hr-steam"><b class="hr-sname" dir="auto"><bdi>${esc(d.name)}</bdi></b>${handTag(d)}${stChip(d.st)}${supLine(d.sup)}</div>`).join('')}</div>`;
+  return `<div class="hr-sdesk team" data-x="${+tm.x || 0}" data-y="${+tm.y || 0}" data-team="1">${tm.members.map(d => `<div class="hr-steam${d.att ? ` hr-att-${esc(d.att)}` : ''}"><b class="hr-sname" dir="auto"><bdi>${esc(d.name)}</bdi></b>${attChip(d)}${handTag(d)}${d.att === 'absent' ? '' : stChip(d.st)}${supLine(d.sup)}</div>`).join('')}</div>`;
+}
+/** Attendance (taking it is a sub's job): every student, Here, Absent or At home; each mark is in the teacher's log. */
+function attHtml() {
+  const st = S.st || {}, all = [...(st.desks || []), ...(st.teams || []).flatMap(t => t.members)];
+  const coll = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true });
+  const list = all.sort((a, b) => coll.compare(a.name, b.name));
+  if (!list.length) return '';
+  const n = k => list.filter(d => d.att === k).length;
+  return `<details class="hr-attbox"${S.attOpen ? ' open' : ''}><summary><b>${ic('📋', 18)} ${esc(ts('att.title'))}</b> <span class="small muted">${esc(ts('att.counts', { here: list.length - n('absent') - n('home'), absent: n('absent'), home: n('home') }))}</span></summary>
+    <ul class="plain hr-attlist">${list.map(d => `<li class="${d.att ? `hr-att-${esc(d.att)}` : ''}"><bdi>${esc(d.name)}</bdi><span class="hr-seg hr-attseg" role="radiogroup" aria-label="${esc(ts('att.of', { name: d.name }))}">${[['', '✅'], ['absent', '📅'], ['home', '🏠']].map(([k, icon]) => btn(`hr-segb${(d.att || '') === k ? ' on' : ''}`, `role="radio" aria-checked="${(d.att || '') === k}" data-subatt="${esc(d.id)}:${k}" aria-label="${esc(ts(k ? `att.${k}` : 'att.here'))}" title="${esc(ts(k ? `att.${k}` : 'att.here'))}"`, `${ic(icon, 14)}<span class="hr-attl"> ${esc(ts(k ? `att.${k}Short` : 'att.hereShort'))}</span>`)).join('')}</span></li>`).join('')}</ul></details>`;
 }
 function handsHtml() {
   const st = S.st || {}, hands = st.hands || [], p = st.pass || { out: null, line: [] };
   const rows = hands.map(h => `<li class="hr-hrow"><span class="hr-hwho"><b><bdi>${esc(h.name)}</bdi></b> <span class="hr-hkind">${ic(h.kind === 'bathroom' ? '🚻' : h.kind === 'help' ? '🆘' : '💬', 16)} ${esc(ts(`hand.${h.kind}`))}</span></span>
     <span class="hr-hacts">${h.kind === 'bathroom' ? `${btn('btn btn-sm', `data-subhand="notNow:${esc(h.id)}"`, esc(ts('notNow')))}${btn('btn btn-sm btn-primary', `data-subhand="pass:${esc(h.id)}"`, esc(p.out ? ts('putInLine') : ts('givePass')))}` : btn('btn btn-sm btn-primary', `data-subhand="answer:${esc(h.id)}"`, esc(ts('answered')))}</span></li>`).join('');
+  const asks = (st.asks || []).map(x => `<li class="hr-hrow hr-askrow"><span class="hr-hwho"><b><bdi>${esc(x.name)}</bdi></b> <span class="hr-hkind k-home">${ic('🏠', 16)} ${esc(ts('att.home'))}</span> <span class="hr-hkind">${ic(x.kind === 'help' ? '🆘' : '💬', 16)} ${esc(ts(`hand.${x.kind}`))}</span>${x.text ? `<span class="hr-asktext" dir="auto">${esc(x.text)}</span>` : ''}</span>
+    <span class="hr-hacts">${btn('btn btn-sm btn-primary', `data-subask="${esc(x.id)}"`, esc(ts('answered')))}</span></li>`).join('');
   return `<h2 class="hr-subh">${ic('✋', 20)} ${esc(ts('hands'))}</h2>
     ${!st.live ? `<p class="small muted">${esc(ts('handsNotLive'))}</p>` : rows ? `<ol class="plain hr-hlist">${rows}</ol>` : `<p class="small muted">${esc(ts('noHands'))}</p>`}
+    ${asks ? `<h3 class="hr-flsub">${ic('🏠', 18)} ${esc(ts('asks'))}</h3><ol class="plain hr-hlist">${asks}</ol>` : ''}
     <h3 class="hr-flsub">${ic('🚻', 18)} ${esc(ts('pass'))}</h3>
     ${p.out ? `<div class="hr-pout"><span><b><bdi>${esc(p.out.name)}</bdi></b> <span class="small">${esc(ts('passFor', { minutes: p.minutes }))}</span></span>${btn('btn btn-sm btn-primary', `data-subhand="back:${esc(p.out.id)}"`, esc(ts('isBack', { name: p.out.name })))}</div>` : `<p class="small muted">${esc(ts('nobodyOut'))}</p>`}
     ${p.line.length ? `<ol class="plain hr-pline">${p.line.map((x, i) => `<li><span>${esc(i ? ts('then') : ts('nextInLine'))} <b><bdi>${esc(x.name)}</bdi></b></span></li>`).join('')}</ol>` : ''}`;
@@ -85,11 +100,13 @@ function render() {
     main.innerHTML = `<div class="hr-subgrid"><aside class="hr-subside">
         <section class="hr-subnote" aria-labelledby="hr-subnoteh"><h2 class="hr-subh" id="hr-subnoteh">${ic('📝', 20)} ${esc(ts('noteTitle'))}</h2>${D.note ? `<p dir="auto">${esc(D.note)}</p>` : `<p class="small muted">${esc(ts('noNote'))}</p>`}<p class="small muted">${ic('🕒', 14)} ${esc(D.endOfDay ? ts('untilEnd') : ts('until', { time: D.until }))}</p></section>
         <section class="hr-subhands" id="hr-subhands" aria-live="polite"></section>
+        <section class="hr-subatt" id="hr-subatt"></section>
         <p class="small muted hr-subpriv">${ic('🔒', 14)} ${esc(ts('privacy'))}</p></aside>
       <section class="hr-subroom" aria-labelledby="hr-subroomh"><h2 class="hr-subh" id="hr-subroomh">${ic('🏫', 20)} ${esc(ts('room'))}</h2>
         <div class="hr-subarea" id="hr-subarea"></div><div class="hr-subdesks" id="hr-subdesks"></div></section></div>`;
   }
   const hh = handsHtml(); if ($('hr-subhands').dataset.h !== hh) { $('hr-subhands').innerHTML = hh; $('hr-subhands').dataset.h = hh; }
+  const ah = attHtml(), ae = $('hr-subatt'); if (ae.dataset.h !== ah) { S.attOpen = !!ae.querySelector('.hr-attbox[open]') || S.attOpen; ae.innerHTML = attHtml(); ae.dataset.h = ah; }
   const dk = [...st.desks.map(deskHtml), ...(st.teams || []).map(teamHtml)].join('') || `<p class="muted">${esc(ts('noStudents'))}</p>`;
   if ($('hr-subdesks').dataset.h !== dk) { $('hr-subdesks').innerHTML = dk; $('hr-subdesks').dataset.h = dk; placeDesks(); }
 }
@@ -138,6 +155,9 @@ async function click(e) {
   if (l) { const a = l.dataset.sublive; if (a === 'end' && !(await ask({ title: ts('endClass'), text: ts('endConfirm'), ok: ts('endClass') }))) return; act('live', { action: a }, ts(`toast.${a}`)); return; }
   const p = e.target.closest('[data-subplan]'); if (p) { act('plan', { action: p.dataset.subplan }, ts(`toast.plan.${p.dataset.subplan}`)); return; }
   const h = e.target.closest('[data-subhand]'); if (h) { const [action, studentId] = h.dataset.subhand.split(':'); act('hands', { action, studentId }, ts(`toast.hand.${action}`)); return; }
+  const at = e.target.closest('[data-subatt]');
+  if (at) { const [studentId, status] = at.dataset.subatt.split(':'); let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* the school's */ } S.attOpen = true; act('attendance', { studentId, status, tz }, ts(`att.toast.${status || 'here'}`)); return; }
+  const ak = e.target.closest('[data-subask]'); if (ak) { act('asks', { id: ak.dataset.subask }, ts('toast.hand.answer')); return; }
   if (e.target.closest('[data-sub="leave"]')) { api('/api/sub/leave', { method: 'POST', body: {} }).finally(() => { location.href = '/'; }); }
 }
 if (root && D.state) {

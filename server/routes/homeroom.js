@@ -60,6 +60,12 @@
 //   POST /api/desk/:id/reading/:clid           { action: choose, bookId } | { action: progress, page, aloud }
 //                                              | { action: answer, i, c } | { action: notes, notes: { happened, word, think } }
 //   GET  /api/desk/:id/reading/:clid/quiz      the quiz's questions (never the answers; written once per book if needed)
+// K-2 mode, absent and at home (docs/decisions.md "Homeroom: K-2 mode, absent and at home"; services/homeroom-attendance.js):
+//   POST /api/homeroom/:id/k2                  the class's K-2 desks: { mode: '' (by grade) | on | off }, or one student's:
+//                                              { studentId, mode: '' (as the class) | on | off }
+//   POST /api/homeroom/:id/attendance          { studentId, status: absent | home | '' (here), tz } for today (a sub: /api/sub)
+//   POST /api/homeroom/:id/asks                { id }: a question from home answered (an aide may too)
+//   POST /api/desk/:id/ask                     a student at home asks: { kind: question | help, text }
 //   (the books: GET /api/library/books, routes/library.js; free reading's "Reading <book>" is the desk's pulse)
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
@@ -93,6 +99,7 @@ import { parseCookies } from '../auth.js';
 import * as NB from '../services/notebook.js';
 import * as HR from '../services/homeroom-reading.js';
 import { readingResultsPage } from './homeroom-reading.js';
+import * as AT from '../services/homeroom-attendance.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413, forbidden: 403 };
@@ -106,7 +113,7 @@ const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 // addresses listed for them here; everything else of the class's Homeroom answers them 403. The services check again.
 const HELPER_OK = {
   aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports)$/],
-    ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
+    ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag|asks)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
   sub: [['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
 };
 /** The sub this request's hr_sub cookie stands for now ({ link, c, actor }), or null. */
@@ -218,7 +225,8 @@ router.get('/class/:id/homeroom', (req, res) => {
       hostLive: !aide && !c.archived_at && liveOn() && liveCanHost(u) ? `/live?class=${c.id}` : '',
       pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c),
       // step 3c: the students' supports, and for the teacher the aides, sub links and "While you were out"
-      supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
+      // K-2 mode: the class's setting and each student's own (step 4c)
+      k2: AT.classK2(c), k2Students: AT.studentModes(c.id), supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
       ...(aide ? {} : { helpers: { aides: HA.listFor(c), subLinks: SB.linksOf(c), notes: SB.notesFor(c), noteMax: SB.NOTE_MAX, aidesMax: HA.AIDES_MAX } }) })}
     ${body}`,
   });
@@ -263,6 +271,25 @@ router.post('/api/homeroom/:id/seats', rateLimit('homeroom-seats', 600, 3600e3),
 router.post('/api/homeroom/:id/groups', rateLimit('homeroom-groups', 300, 3600e3), (req, res) => send(req, res, H.saveGroups(req.user, req.homeroomClass, { groups: body(req).groups, members: body(req).members })));
 router.post('/api/homeroom/:id/area', rateLimit('homeroom-area', 1800, 3600e3), (req, res) => send(req, res, H.saveArea(req.user, req.homeroomClass, body(req).state)));
 router.post('/api/homeroom/:id/live', rateLimit('homeroom-live', 600, 3600e3), (req, res) => send(req, res, H.setLive(req.user, req.homeroomClass, String(body(req).action || ''))));
+
+// ---------------------------------------------------------------- K-2 mode, absent and at home (step 4c)
+router.post('/api/homeroom/:id/k2', rateLimit('homeroom-k2', 300, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass, mode = String(x.mode ?? '');
+  const r = x.studentId ? AT.setStudentK2(req.user, c, String(x.studentId), mode) : AT.setClassK2(req.user, c, mode);
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, k2: AT.classK2(c), k2Students: AT.studentModes(c.id), toast: req.t('homeroom.k2.saved') });
+});
+router.post('/api/homeroom/:id/attendance', rateLimit('homeroom-attendance', 1200, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass;
+  const r = AT.mark(req.user, c, String(x.studentId || ''), String(x.status ?? ''), { tz: String(x.tz || '') });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, att: r.att, toast: req.t(`homeroom.attendance.toast.${r.status || 'here'}`), ...HO.boardView(c, req.locale) });
+});
+router.post('/api/homeroom/:id/asks', rateLimit('homeroom-hands-t', 1200, 3600e3), (req, res) => {
+  const r = AT.answerAsk(req.hrActor || req.user, req.homeroomClass, String(body(req).id || ''));
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, asks: r.asks });
+});
 
 // ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
 // The pill's timer is the server's (a reload, the projector and the desks see the same); it never moves on by itself.
@@ -439,7 +466,7 @@ router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3),
 const dockBtn = (k, icon, label, attrs = '') => html`<button type="button" class="hd-dockbtn" data-hd="${k}"${raw(attrs)}>${ico(icon, { size: 20 })}<span>${label}</span></button>`;
 router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
-  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, sup = SUP.forDesk(c, u), cards = SUP.applyToCards(c, sup, HO.deskView(c, u, req.locale));
+  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, sup = SUP.forDesk(c, u), cards = deskCards(c, u, sup, req.locale);
   // the notebook (docs/decisions.md "Homeroom: the notebook"): the dock's last button, and a Notes button on each handout
   const nb = NB.canUse(u);
   page(req, res, {
@@ -448,11 +475,12 @@ router.get('/class/:id/desk', (req, res) => {
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, libraryGrade: HR.libraryGrade(c.grade), color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
       strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
       // step 3c: their own supports (only theirs; See the room never carries anyone's)
-      ...(SUP.anySup(sup) ? { support: sup } : {}), state: { ...H.boardState(c.id), ...deskLive(c, u), plan: HP.deskView(c, sup), support: sup } })}
-    <div class="hd" id="hd">
+      ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup } })}
+    <div class="hd${AT.k2For(c, u.id) ? ' hd-k2' : ''}" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
         <h1 class="hd-title" dir="auto">${c.name}</h1>
+        <span class="hd-homechip" id="hd-homechip"${AT.statusOf(c.id, u.id) === 'home' ? '' : raw(' hidden')}>${ico('🏠', { size: 18 })} ${t('homeroom.attendance.atHomeToday')}</span>
         <span class="hd-now" id="hd-now" hidden></span>
         <span class="hd-grow"></span><span class="hd-handwrap" id="hd-handwrap"></span>
         ${device ? html`<span class="hd-notyou"><span class="hd-hidephone">${t('homeroom.desk.notYou', { name: u.display_name })}</span><button type="button" class="hd-tool hd-switch" data-hd="switch">${ico('🔄', { size: 18 })} ${t('homeroom.desk.switch')}</button></span>` : ''}
@@ -473,15 +501,16 @@ router.get('/class/:id/desk', (req, res) => {
 });
 router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => {
   // The student's own cards (never anyone else's), sent again only when they changed (hv: the version the page has).
-  const c = req.homeroomClass, sup = SUP.forDesk(c, req.user), cards = SUP.applyToCards(c, sup, HO.deskView(c, req.user, req.locale)), hv = HO.deskVersion(cards);
+  const c = req.homeroomClass, sup = SUP.forDesk(c, req.user), cards = deskCards(c, req.user, sup, req.locale), hv = HO.deskVersion(cards);
   // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
   const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
-  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), plan: HP.deskView(c, sup), support: sup, hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), ...deskMode(c, req.user), plan: HP.deskView(c, sup), support: sup, hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
     ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
 });
 // ---------------------------------------------------------------- reading from the desk (services/homeroom-reading.js)
 // Only the student's own routine on a handout on their own desk; the quiz's answers never leave the server.
-const noteLabels = req => Object.fromEntries(HR.NOTES.map(k => [k, req.t(`homeroom.reading.notes.${k}`)]));
+const noteLabels = req => ({ ...Object.fromEntries(HR.NOTES.map(k => [k, req.t(`homeroom.reading.notes.${k}`)])), k2drew: req.t('homeroom.reading.notes.k2drew'),
+  ...Object.fromEntries(HR.FEELS.map(k => [`feel.${k}`, req.t(`homeroom.reading.notes.feel.${k}`)])) });
 const rdFail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`homeroom.reading.errors.${r.code}`), code: r.code, ...(r.note ? { note: r.note } : {}) });
 const rdSend = (req, res, r) => (r.ok ? res.json(r) : rdFail(req, res, r));
 router.get('/api/desk/:id/reading/:clid', rateLimit('homeroom-reading', 3000, 3600e3), (req, res) => rdSend(req, res, HR.view(req.user, req.homeroomClass, req.params.clid)));
@@ -497,6 +526,16 @@ router.post('/api/desk/:id/reading/:clid', rateLimit('homeroom-reading', 3000, 3
   rdSend(req, res, r);
 });
 
+/** A student's own cards: their supports applied (simpler wording) and the ones missed while absent marked (step 4c). */
+const deskCards = (c, u, sup, locale) => AT.markMissed(c, u, SUP.applyToCards(c, sup, HO.deskView(c, u, locale)));
+/** Step 4c: the desk's K-2 mode, whether they are at home (marked, or outside live class: no hands, a question goes as a
+ *  note) and their own questions of today. */
+const deskMode = (c, u) => ({ k2: AT.k2For(c, u.id), home: AT.homeOf(c, u.id), asks: AT.myAsks(c, u.id) });
+router.post('/api/desk/:id/ask', rateLimit('homeroom-ask', 60, 3600e3), (req, res) => {
+  const x = body(req), r = AT.ask(req.user, req.homeroomClass, { kind: String(x.kind || 'question'), text: typeof x.text === 'string' ? x.text : '' });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, asks: r.asks, toast: req.t('homeroom.attendance.askSent') });
+});
 // Step 3a: what a desk hears about its own live desk (its hand, its place with the hall pass, its settings, and a team
 // desk's teammates' cursors on the shared pad); nothing while class isn't live.
 function deskLive(c, u) {

@@ -25,6 +25,7 @@ import * as S from './schools.js';
 import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
 import * as LIB from './library.js';
+import * as AT from './homeroom-attendance.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -90,7 +91,8 @@ export function pulse(u, c, body = {}, at = now()) {
   // turning a page counts as moving forward (never time alone)
   if (!fresh && bk && b.book && old && old.book && old.book.id === bk.id && b.book.page > old.book.page) b.progAt = at;
   const row = rowOf(c.id, u.id);
-  if (cursorsOn(c.id) && !(row && row.hidden) && live && !live.paused) {
+  // (a student marked At home or Absent today shares no cursor: the board shows a chip instead)
+  if (cursorsOn(c.id) && !(row && row.hidden) && live && !live.paused && !AT.statusOf(c.id, u.id, at)) {
     const cur = where === 'desk' ? cleanSamples(body.cur, at) : [], pad = where === 'desk' ? cleanSamples(body.pad, at) : [];
     if (cur.length) b.cur = cur; if (pad.length) b.pad = pad;
     if (cur.length || pad.length) b.curAt = at;
@@ -141,7 +143,7 @@ function moveLine(classId) {
  *  Never anyone else's. */
 export function mineOf(c, userId, at = now()) {
   const r = rowOf(c.id, userId) || {}, line = r.pass === 'line' ? lineOf(c.id) : [];
-  return { hand: r.hand || '', pass: r.pass || '', ...(r.pass === 'line' ? { place: line.findIndex(x => x.user_id === userId) + 1 } : {}),
+  return { hand: r.hand || '', pass: r.pass || '', ...(AT.statusOf(c.id, userId, at) ? { home: true } : {}), ...(r.pass === 'line' ? { place: line.findIndex(x => x.user_id === userId) + 1 } : {}),
     ...(r.pass === 'out' ? { outAt: r.out_at } : {}), minutes: passMinutes(c.id), locked: !!r.locked, hidden: !!r.hidden,
     coming: !!r.coming_at && at - r.coming_at < COMING_MS, cursors: cursorsOn(c.id), now: at };
 }
@@ -166,6 +168,8 @@ export function raiseHand(u, c, kind) {
   if (!H.canUseDesk(u, c)) return fail('notFound');
   if (!H.liveOf(c.id)) return fail('notLive');
   if (!HAND_KINDS.includes(kind)) return fail('badKind');
+  // at home (or marked absent): no hands or hall pass; a question goes to the teacher as a note (AT.ask)
+  if (AT.statusOf(c.id, u.id)) return fail('atHome');
   const r = rowOf(c.id, u.id);
   if (kind === 'bathroom' && r && (r.pass === 'line' || r.pass === 'out')) return fail('passAlready');
   if (!r || r.hand !== kind) setRow(c.id, u.id, { hand: kind, hand_at: now() });
@@ -241,7 +245,8 @@ export function handsView(c) {
   const names = new Map(H.studentsOf(c.id).map(s => [s.id, s.name])), rows = rowsOf(c.id);
   const hands = rows.filter(r => r.hand).sort((a, b) => (a.hand_at || 0) - (b.hand_at || 0)).map(r => ({ id: r.user_id, name: names.get(r.user_id) || '', kind: r.hand, at: r.hand_at }));
   const out = rows.find(r => r.pass === 'out');
-  return { hands, pass: { minutes: passMinutes(c.id), out: out ? { id: out.user_id, name: names.get(out.user_id) || '', at: out.out_at } : null,
+  const asks = AT.openAsks(c.id).map(x => ({ ...x, name: names.get(x.sid) || '' }));
+  return { hands, asks, pass: { minutes: passMinutes(c.id), out: out ? { id: out.user_id, name: names.get(out.user_id) || '', at: out.out_at } : null,
     line: lineOf(c.id).map(r => ({ id: r.user_id, name: names.get(r.user_id) || '', at: r.pass_at })) } };
 }
 
@@ -253,16 +258,20 @@ export function handsView(c) {
 export function liveView(c, board = HO.boardView(c), at = now()) {
   const live = H.liveOf(c.id);
   if (!live) return { live: null, desks: {}, ...handsView(c), cursors: false, now: at };
-  const m = beatsOf(c.id), rows = new Map(rowsOf(c.id).map(r => [r.user_id, r])), cursors = cursorsOn(c.id), desks = {};
+  const m = beatsOf(c.id), rows = new Map(rowsOf(c.id).map(r => [r.user_id, r])), cursors = cursorsOn(c.id), desks = {}, att = board.att || AT.marksToday(c.id, at);
   for (const s of H.studentsOf(c.id)) {
     const b = m.get(s.id), cards = board.desks[s.id] || [];
+    // Absent today: a dimmed desk, never Stuck, Not here or counted (docs/decisions.md "Homeroom: K-2 mode, absent and at
+    // home"); At home: their status as always, an At home chip and no cursor.
+    if (att[s.id] === 'absent') { desks[s.id] = { st: 'absent', on: '', where: '', at: b ? b.at : 0, hand: '', pass: '', absent: true, ...flagsOf(rows.get(s.id)) }; continue; }
     // a card that moved forward (done, a new score) counts as progress for Stuck
     if (b) { const k = cardKey(cards.find(x => x.id === b.on) || cards.find(x => x.next)); if (b.cardKey !== k) { if (b.cardKey !== null && b.cardKey !== undefined) b.progAt = at; b.cardKey = k; } }
     const { st, on } = statusOf(b, cards, at), r = rows.get(s.id) || {};
     const bk = b && st !== 'away' && b.where === 'reading' && b.book ? LIB.getBook(b.book.id) : null;
-    desks[s.id] = { st, on, where: b && st !== 'away' ? b.where : '', at: b ? b.at : 0, hand: r.hand || '', pass: r.pass || '', ...flagsOf(r),
+    const home = att[s.id] === 'home';
+    desks[s.id] = { st, on, where: b && st !== 'away' ? b.where : '', at: b ? b.at : 0, hand: home ? '' : r.hand || '', pass: home ? '' : r.pass || '', ...flagsOf(r), ...(home ? { home: true } : {}),
       ...(bk ? { book: { id: bk.id, title: bk.title, cover: bk.cover.src, page: b.book.page, pages: bk.pages.length } } : {}),
-      ...(cursors && b && !r.hidden && st !== 'away' && b.cur && b.cur.length && at - (b.curAt || 0) < SAMPLE_SPAN + 6000 ? { cur: b.cur.map(([t, x, y]) => [at - t, x, y]) } : {}) };
+      ...(cursors && b && !home && !r.hidden && st !== 'away' && b.cur && b.cur.length && at - (b.curAt || 0) < SAMPLE_SPAN + 6000 ? { cur: b.cur.map(([t, x, y]) => [at - t, x, y]) } : {}) };
   }
   return { live, desks, ...handsView(c), cursors, now: at };
 }

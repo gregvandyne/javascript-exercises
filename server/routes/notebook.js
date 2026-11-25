@@ -2,7 +2,7 @@
 //   GET  /api/notebook                 the student's own notebook: tabs, pages, limits, whether a teacher reads it
 //   POST /api/notebook/tabs            own tabs: { action: add, name } | { action: rename, id, name } | { action: delete, id }
 //                                      | { action: move, id, dir }
-//   POST /api/notebook/pages/:id       autosave a page: { body } (rich text, cleaned on the server)
+//   POST /api/notebook/pages/:id       autosave a page: { body, drawing? } (rich text and pen strokes, cleaned on the server)
 //   POST /api/notebook/handout         a handout's note area on the desk: { classId, handout } -> its page in the class tab
 //   GET  /api/notebook/of/:studentId   a teacher of the student's class: the whole notebook, read only (403 for anyone else)
 // The corner button's script goes on every full page for a student who keeps a notebook (views/layout.js onEveryPage).
@@ -23,7 +23,7 @@ router.use('/api/notebook', quiet);
 
 router.get('/api/notebook', rateLimit('notebook-read', 600, 3600e3), (req, res) => send(req, res, NB.mine(req.user)));
 router.post('/api/notebook/tabs', rateLimit('notebook-tabs', 300, 3600e3), (req, res) => send(req, res, NB.tabs(req.user, body(req))));
-router.post('/api/notebook/pages/:id', rateLimit('notebook-save', 3000, 3600e3), (req, res) => send(req, res, NB.savePage(req.user, req.params.id, body(req).body)));
+router.post('/api/notebook/pages/:id', rateLimit('notebook-save', 3000, 3600e3), (req, res) => send(req, res, NB.savePage(req.user, req.params.id, body(req).body, body(req).drawing)));
 router.post('/api/notebook/handout', rateLimit('notebook-handout', 600, 3600e3), (req, res) => {
   const x = body(req), c = S.getClass(String(x.classId || ''));
   if (!c || !req.user) return fail(req, res, 'notFound');

@@ -119,6 +119,17 @@ student's step and quiz in Today (alphabetical), a Reading column in the Classro
 results page, and the 3 notes from the desk's sheet (the notebook, read only). Results go to Progress and Google
 Classroom by the grade chosen.
 
+Built (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): **K-2 mode** turns on by itself for a K, 1 or 2
+class (the ⋯ menu's K-2 desks: by grade, on or off; one student's own from the desk's menu): bigger targets and text, a
+picture with every label, Next up as one big card with Read to me and a big Start and the rest as picture tiles, Read to
+me on by default, Raise hand as three big pictures, a notebook that draws or types (Bold and a highlighter, no search or
+tabs to manage) and reading notes a six year old can do (a drawing, how they liked it, a word). **Absent and at home**:
+the teacher (desk's menu, Today) or a sub marks a student Absent or At home for today; an Absent desk is dimmed, left out
+of Needs a look, Today's counts and Finish class's counts ("2 absent" on its own); handouts given while they were absent
+wait under "Missed while you were out" with the teacher's words and are never late by themselves in Progress; at home the
+desk is the same with an "At home" chip on the board instead of a cursor, no hand or hall pass, and Ask my teacher sends a
+question the teacher sees in Hands, marked At home. Marks are per class per day; there is no attendance report.
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their
@@ -133,6 +144,7 @@ class, closed by End class). Those sign-ins end with class; the desk has "Not yo
   aide opens that class's Homeroom (an Aide chip in the top bar): desks and live status, hands and the hall pass, a look
   at a student's desk, comments and stickers, students' supports (to read). Never grades or grading, removing handouts,
   groups or seating, planning with Oomba, billing, End class or notebooks. No Teacher plan needed. Removed anytime.
+- Aides see Absent and At home on the desks; subs take attendance (Absent, At home), logged for the teacher.
 - **Sub link for today**: from the ⋯ menu, a link for today or tomorrow, until the end of the school day or a set time
   (24 hours at most), with an optional PIN and a note for the sub. No account. The sub sees the board, desks with first
   names, the plan pill (Start, Next, +5 min), hands and the hall pass, the projector view, the note, and "has supports"

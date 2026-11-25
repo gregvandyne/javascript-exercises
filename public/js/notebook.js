@@ -9,11 +9,15 @@
 //     stops and when the page is left. Pasted text comes in as plain words. The server cleans every page again.
 //   - a handout's note area on the desk opens its page in the class's tab (the 'notebook:open' event with
 //     { classId, handout }); the dock's Notebook opens it as it was.
+// K-2 mode (docs/decisions.md "Homeroom: K-2 mode, absent and at home": the server says k2 when a class of theirs has a
+// K-2 desk): draw or type on every page (the desk pad's tools, public/js/homeroom-drawpad.js), a simpler toolbar (Bold and
+// one highlighter), no search and no tabs to manage (their class's tab and My notes only).
 // A class's teacher reads it with viewNotebook(studentId, name): the same tabs and search, read only (Homeroom's desk
 // menu). Loaded as a page's script (a student's), it mounts the corner button; imported by another script, it only
 // gives viewNotebook.
 import { t, api, esc, toast, ask, askText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
+import { drawPadHtml, drawPad, drawingHtml } from '/js/homeroom-drawpad.js';
 
 const tn = (k, v) => t(`js.notebook.${k}`, v);
 const ic = (e, size = 20) => iconHtml(e, { size });
@@ -34,7 +38,11 @@ const fold = s => String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLow
 const textOf = html => { const d = document.createElement('div'); d.innerHTML = String(html || '').replace(/<br>|<\/?(p|li|ul|ol)\b[^>]*>/g, '$& '); return d.textContent.replace(/\s+/g, ' ').trim(); };
 
 // ---------------------------------------------------------------- the panel
-const S = { el: null, data: null, tab: null, ro: false, student: null, q: '', timers: new Map(), dirty: new Map(), ed: null, btn: null, opener: null, loading: null };
+const S = { el: null, data: null, tab: null, ro: false, student: null, q: '', timers: new Map(), dirty: new Map(), ed: null, btn: null, opener: null, loading: null,
+  // K-2: the page being drawn on ({ id, pad }) and the pages whose drawing changed since saved
+  draw: null, drawn: new Set() };
+const k2 = () => !S.ro && !!(S.data && S.data.k2);
+const padWords = () => ({ pens: tn('k2.pens'), pen: v => tn('k2.pen', v), undo: tn('k2.undo'), clear: tn('k2.clear'), label: tn('k2.drawLabel') });
 const $ = sel => S.el && S.el.querySelector(sel);
 const tabName = x => (x.kind === 'class' ? x.name || tn('classTab') : x.name || tn('myNotes'));
 const pageTitle = (tab, p) => p.title || (tab.kind === 'class' && !p.handout ? tn('classNotes') : '');
@@ -67,7 +75,10 @@ function shell() {
   const title = S.ro ? tn('ofStudent', { name: st ? st.name : '' }) : tn('title');
   const lead = S.ro ? `<p class="nb-lead nb-ro">${ic('👀', 18)} <span>${esc(tn('readOnly'))}</span></p>`
     : S.data && S.data.teacherReads ? `<p class="nb-lead">${ic('🔒', 18)} <span>${esc(tn('teacherReads'))}</span></p>` : '';
-  const tools = S.ro ? '' : `<div class="nb-tools" role="toolbar" aria-label="${esc(tn('format'))}">
+  const tools = S.ro ? '' : k2() ? `<div class="nb-tools nb-k2tools" role="toolbar" aria-label="${esc(tn('format'))}">
+      <button type="button" class="nb-tool" data-nbf="bold" aria-label="${esc(tn('bold'))}" title="${esc(tn('bold'))}">${SVG.bold}<span>${esc(tn('k2.bold'))}</span></button>
+      <button type="button" class="nb-tool nb-hl" data-nbf="hl" data-hl="hl-y" style="--nb-hl:#FFE066" aria-label="${esc(tn('highlightN', { n: 1, color: tn('colors.hl-y') }))}" title="${esc(tn('colors.hl-y'))}">${SVG.pen}<span>${esc(tn('k2.highlight'))}</span></button>
+    </div>` : `<div class="nb-tools" role="toolbar" aria-label="${esc(tn('format'))}">
       <button type="button" class="nb-tool" data-nbf="bold" aria-label="${esc(tn('bold'))}" title="${esc(tn('bold'))}">${SVG.bold}</button>
       <button type="button" class="nb-tool" data-nbf="list" aria-label="${esc(tn('list'))}" title="${esc(tn('list'))}">${SVG.list}</button>
       <button type="button" class="nb-tool" data-nbf="check" aria-label="${esc(tn('checklist'))}" title="${esc(tn('checklist'))}">${SVG.check}</button>
@@ -76,6 +87,7 @@ function shell() {
         <button type="button" class="nb-tool" data-nbf="unhl" aria-label="${esc(tn('noHighlight'))}" title="${esc(tn('noHighlight'))}">${ic('🧽', 20)}</button></span>
     </div>`;
   S.el.classList.toggle('nb-readonly', S.ro);
+  S.el.classList.toggle('nb-k2', k2());
   S.el.innerHTML = `<header class="nb-head">
       <span class="nb-mark" aria-hidden="true">${ic('📝', 26)}</span>
       <h2 class="nb-title" id="nb-h" dir="auto">${esc(title)}</h2>
@@ -83,38 +95,61 @@ function shell() {
       <button type="button" class="nb-x" data-nb="close" aria-label="${esc(tn('close'))}" title="${esc(tn('close'))}">${ic('✖️', 20)}</button>
     </header>
     ${lead}
-    <div class="nb-search"><span class="nb-sico" aria-hidden="true">${ic('🔎', 18)}</span><label class="sr-only" for="nb-q">${esc(tn('search'))}</label>
-      <input type="search" id="nb-q" class="nb-q" placeholder="${esc(tn(S.ro ? 'searchTheirs' : 'search'))}" autocomplete="off" value="${esc(S.q)}"></div>
+    ${k2() ? '' : `<div class="nb-search"><span class="nb-sico" aria-hidden="true">${ic('🔎', 18)}</span><label class="sr-only" for="nb-q">${esc(tn('search'))}</label>
+      <input type="search" id="nb-q" class="nb-q" placeholder="${esc(tn(S.ro ? 'searchTheirs' : 'search'))}" autocomplete="off" value="${esc(S.q)}"></div>`}
     <div class="nb-tabs" id="nb-tabs" role="tablist" aria-label="${esc(tn('tabs'))}"></div>
     ${tools}
     <div class="nb-body" id="nb-body" tabindex="-1"></div>`;
 }
 function drawTabs() {
   const box = $('#nb-tabs'); if (!box || !S.data) return;
-  box.innerHTML = S.data.tabs.map(x => `<button type="button" role="tab" class="nb-tab${x.kind === 'class' ? ' cls' : ''}" id="nb-tab-${esc(x.id)}" data-nbtab="${esc(x.id)}" aria-selected="${x.id === S.tab && !S.q}" aria-controls="nb-body"><i style="--c:${esc(x.color || '#66C792')}" aria-hidden="true"></i><span dir="auto">${esc(tabName(x))}</span></button>`).join('')
-    + (S.ro ? '' : `<button type="button" class="nb-tab nb-add" data-nb="addtab" aria-label="${esc(tn('newTab'))}" title="${esc(tn('newTab'))}">${ic('➕', 18)}<span class="nb-addt">${esc(tn('newTabShort'))}</span></button>`);
+  box.innerHTML = shownTabs().map(x => `<button type="button" role="tab" class="nb-tab${x.kind === 'class' ? ' cls' : ''}" id="nb-tab-${esc(x.id)}" data-nbtab="${esc(x.id)}" aria-selected="${x.id === S.tab && !S.q}" aria-controls="nb-body"><i style="--c:${esc(x.color || '#66C792')}" aria-hidden="true"></i><span dir="auto">${esc(tabName(x))}</span></button>`).join('')
+    + (S.ro || k2() ? '' : `<button type="button" class="nb-tab nb-add" data-nb="addtab" aria-label="${esc(tn('newTab'))}" title="${esc(tn('newTab'))}">${ic('➕', 18)}<span class="nb-addt">${esc(tn('newTabShort'))}</span></button>`);
   const cur = box.querySelector('[aria-selected="true"]'); if (cur) cur.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+}
+/** The tabs shown: every tab, or in K-2 their classes' tabs and My notes (their first own tab) only. */
+function shownTabs() {
+  const all = (S.data && S.data.tabs) || [];
+  if (!k2()) return all;
+  const own = all.find(x => x.kind === 'own');
+  return all.filter(x => x.kind === 'class' || x === own);
+}
+/** A page's drawing: the picture (read only), or in K-2 the picture with Draw, or the pad while drawing on it. */
+function drawHtml(p) {
+  if (!k2()) return p.drawing && p.drawing.length ? `<div class="nb-drawing">${drawingHtml(p.drawing, tn('k2.picture'))}</div>` : '';
+  if (S.draw && S.draw.id === p.id) return `<div class="nb-k2draw on" data-nbdrawbox="${esc(p.id)}">${drawPadHtml({ id: p.id, words: padWords() })}<button type="button" class="btn btn-primary nb-k2done" data-nb="drawdone">${ic('✅', 20)} ${esc(tn('k2.doneDrawing'))}</button></div>`;
+  const pic = p.drawing && p.drawing.length ? drawingHtml(p.drawing, tn('k2.picture')) : '';
+  return `<div class="nb-k2draw" data-nbdrawbox="${esc(p.id)}">${pic}<button type="button" class="btn nb-k2drawbtn" data-nb="draw" data-page="${esc(p.id)}">${ic('🖍️', 24)} <span>${esc(tn(pic ? 'k2.drawMore' : 'k2.draw'))}</span></button></div>`;
 }
 function pageHtml(tab, p) {
   const title = pageTitle(tab, p);
   const head = title ? `<h3 class="nb-ptitle" dir="auto">${p.handout ? ic('📄', 18) : ''}<span>${esc(title)}</span></h3>` : '';
   const ed = S.ro ? `<div class="nb-ed nb-roed" dir="auto" data-page="${esc(p.id)}">${p.body || `<p class="nb-empty">${esc(tn('emptyPage'))}</p>`}</div>`
-    : `<div class="nb-ed" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" dir="auto" data-page="${esc(p.id)}" aria-label="${esc(title || tabName(tab))}" data-ph="${esc(tn(p.handout ? 'placeholderHandout' : 'placeholder'))}">${p.body || ''}</div>`;
-  return `<article class="nb-page" id="nb-p-${esc(p.id)}">${head}${ed}</article>`;
+    : `<div class="nb-ed" contenteditable="true" role="textbox" aria-multiline="true" spellcheck="true" dir="auto" data-page="${esc(p.id)}" aria-label="${esc(title || tabName(tab))}" data-ph="${esc(tn(k2() ? 'k2.placeholder' : p.handout ? 'placeholderHandout' : 'placeholder'))}">${p.body || ''}</div>`;
+  return `<article class="nb-page${k2() ? ' nb-k2page' : ''}" id="nb-p-${esc(p.id)}">${head}${drawHtml(p)}${ed}</article>`;
 }
 function drawBody() {
   const body = $('#nb-body'); if (!body || !S.data) return;
   drawTabs();
   S.el.classList.toggle('nb-searching', !!S.q.trim());
   if (S.q.trim()) { body.innerHTML = resultsHtml(S.q.trim()); return; }
-  const tab = S.data.tabs.find(x => x.id === S.tab) || S.data.tabs[0];
+  const tab = shownTabs().find(x => x.id === S.tab) || shownTabs()[0];
   if (!tab) { body.innerHTML = `<p class="nb-none">${esc(tn('emptyBook'))}</p>`; return; }
   S.tab = tab.id;
-  const own = !S.ro && tab.kind === 'own';
+  const own = !S.ro && !k2() && tab.kind === 'own';
   const lead = tab.kind === 'class' ? `<p class="nb-tablead">${ic('🏫', 16)} <span>${esc(tn(S.ro ? 'classLeadRo' : 'classLead'))}</span></p>` : '';
   body.setAttribute('aria-labelledby', `nb-tab-${tab.id}`);
   body.innerHTML = `${lead}${tab.pages.map(p => pageHtml(tab, p)).join('')}
     ${own ? `<div class="nb-tabacts"><button type="button" class="btn btn-sm nb-small" data-nb="rename">${ic('✏️', 16)} ${esc(tn('renameTab'))}</button><button type="button" class="btn btn-sm nb-small" data-nb="deltab">${ic('🗑️', 16)} ${esc(tn('deleteTab'))}</button></div>` : ''}`;
+  wirePad();
+}
+/** K-2: the pad on the page being drawn on; each stroke saves the page (with its drawing) like typing does. */
+function wirePad() {
+  if (!S.draw) return;
+  const box = $(`[data-nbdrawbox="${CSS.escape(S.draw.id)}"]`), p = pageOf(S.draw.id);
+  if (!box || !p) { S.draw = null; return; }
+  const id = S.draw.id;
+  S.draw.pad = drawPad(box, { strokes: p.drawing || [], max: (S.data.limits || {}).drawing, onChange: list => { p.drawing = list.slice(); S.drawn.add(id); queue(id); }, full: () => toast(tn('k2.padFull'), { bad: true }) });
 }
 /** Search: every page whose words hold the query (letters only, no accents or case), with a line around the first hit. */
 function resultsHtml(qs) {
@@ -142,7 +177,7 @@ function show() {
 }
 export function close() {
   if (!S.el || S.el.hidden) return;
-  flush();
+  flush(); S.draw = null;
   S.el.hidden = true; document.body.classList.remove('nb-on');
   if (S.btn) { S.btn.hidden = !!document.querySelector('[data-nb-open]'); S.btn.setAttribute('aria-expanded', 'false'); }
   for (const b of document.querySelectorAll('[data-nb-open]')) b.setAttribute('aria-expanded', 'false');
@@ -201,9 +236,10 @@ async function save(id) {
   const ed = $(`.nb-ed[data-page="${CSS.escape(id)}"]`), p = pageOf(id);
   if (!ed || !p || !S.dirty.get(id)) return;
   S.dirty.delete(id);
-  const body = ed.innerHTML;
+  const body = ed.innerHTML, drew = S.drawn.has(id);
+  S.drawn.delete(id);
   try {
-    const r = await api(`/api/notebook/pages/${encodeURIComponent(id)}`, { method: 'POST', body: { body } });
+    const r = await api(`/api/notebook/pages/${encodeURIComponent(id)}`, { method: 'POST', body: { body, ...(drew ? { drawing: p.drawing || [] } : {}) } });
     p.body = r.body; p.updatedAt = r.updatedAt; if (S.data) S.data.used = r.used;
     if (!S.dirty.size) status('saved');
   } catch (e) { p.body = body; status('error'); toast(e.message, { bad: true }); }
@@ -214,7 +250,8 @@ function flush() {
     clearTimeout(S.timers.get(id)); S.timers.delete(id);
     const ed = S.el && S.el.querySelector(`.nb-ed[data-page="${CSS.escape(id)}"]`), p = pageOf(id); if (!ed) continue;
     if (p) p.body = ed.innerHTML;
-    try { fetch(`/api/notebook/pages/${encodeURIComponent(id)}`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: ed.innerHTML }) }); } catch { /* gone */ }
+    const drew = S.drawn.has(id); S.drawn.delete(id);
+    try { fetch(`/api/notebook/pages/${encodeURIComponent(id)}`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ body: ed.innerHTML, ...(drew && p ? { drawing: p.drawing || [] } : {}) }) }); } catch { /* gone */ }
   }
   S.dirty.clear();
 }
@@ -270,7 +307,7 @@ async function onClick(e) {
   const f = e.target.closest('[data-nbf]');
   if (f) { format(f.dataset.nbf, f.dataset.hl); return; }
   const tb = e.target.closest('[data-nbtab]');
-  if (tb) { flush(); S.tab = tb.dataset.nbtab; S.q = ''; const q = $('#nb-q'); if (q) q.value = ''; drawBody(); $('#nb-body').scrollTop = 0; tb.focus(); return; }
+  if (tb) { flush(); S.draw = null; S.tab = tb.dataset.nbtab; S.q = ''; const q = $('#nb-q'); if (q) q.value = ''; drawBody(); $('#nb-body').scrollTop = 0; tb.focus(); return; }
   const hit = e.target.closest('[data-nbhit]');
   if (hit) {
     const qs = S.q; S.tab = hit.dataset.tab; S.q = ''; const q = $('#nb-q'); if (q) q.value = ''; drawBody();
@@ -288,6 +325,17 @@ async function onClick(e) {
   const b = e.target.closest('[data-nb]'); if (!b) return;
   const k = b.dataset.nb;
   if (k === 'close') return close();
+  // K-2: draw on a page, then Done (the text stays as it was typed)
+  if (k === 'draw' || k === 'drawdone') {
+    const keep = new Map([...S.el.querySelectorAll('.nb-ed[contenteditable]')].map(ed => [ed.dataset.page, ed.innerHTML]));
+    for (const [id, html] of keep) { const p = pageOf(id); if (p) p.body = html; }
+    S.draw = k === 'draw' ? { id: b.dataset.page, pad: null } : null;
+    const at = k === 'draw' ? b.dataset.page : (b.closest('[data-nbdrawbox]') || {}).dataset?.nbdrawbox;
+    drawBody();
+    const box = at ? $(`[data-nbdrawbox="${CSS.escape(at)}"]`) : null;
+    if (box) { box.scrollIntoView({ block: 'nearest' }); box.querySelector(k === 'draw' ? '.dp-svg' : '[data-nb="draw"]')?.focus?.({ preventScroll: true }); }
+    return;
+  }
   if (k === 'addtab') {
     const name = await askText({ title: tn('newTab'), label: tn('tabNameLabel'), ok: tn('make'), max: (S.data.limits || {}).name || 30 });
     if (!name || !name.trim()) return;

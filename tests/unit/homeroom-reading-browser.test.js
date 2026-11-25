@@ -41,6 +41,9 @@ const teacher = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Ms La
 TOOLS.givePlan(teacher.id);
 Object.assign(config, { homeroom: true, homeroomUsers: [teacher.username.toLowerCase()] });
 const cls = S.createClass(boss, oak.id, { name: 'Room 2 · Readers', teacherId: teacher.id, grade: '2' }).class;
+// (a grade 2 class gets K-2 desks by itself; this test is the standard desk's routine, so K-2 mode is off here:
+// tests/unit/homeroom-k2-browser.test.js has K-2's reading notes)
+(await import('../../server/services/homeroom-attendance.js')).setClassK2(teacher, cls, 'off');
 const NAMES = ['Ada', 'Ben', 'Cleo', 'Dev', 'Eli', 'Fay', 'Gus', 'Hana'];
 const kids = NAMES.map(n => { const u = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: n }).user.id); S.addToClass(boss, cls.id, u.id); return getUser(u.id); });
 H.saveSeats(teacher, cls, { preset: 'pods', seats: {} });

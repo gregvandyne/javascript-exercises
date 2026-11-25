@@ -28,6 +28,12 @@
 //   - step 4b, reading (public/js/homeroom-reading.js; docs/decisions.md "Homeroom: reading from the desk"): the dock's
 //     Library opens the Story Library in a layer on the desk (any book, read with the library's reader; the board sees
 //     "Reading <book>" while class is live), and a Reading handout's card opens its routine there: Read, Quiz, 3 notes.
+//   - step 4c (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): K-2 mode (S.k2, from the class's grade or the
+//     teacher's setting): bigger targets and text, a picture with every label, one thing at a time ("Next up" as one big
+//     picture with a big Start, the rest as picture tiles), Read to me on every card, Raise hand as three big pictures;
+//     "Missed while you were out" (handouts given on a day they were marked absent, with the teacher's words); at home
+//     (marked At home, or no live class) no hand or hall pass, and Ask my teacher sends a question the teacher sees in
+//     Hands (pictures in K-2, a few words otherwise).
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -61,7 +67,11 @@ const S = {
   me: null, mates: [], handMenu: false, handBusy: false, skew: 0,
   // step 3c: their supports ({ time, read, simple, big }) and the plan's Now / Next with their own clock
   sup: D.support || null, plan: null, planSkew: 0,
+  // step 4c: K-2 mode, away from the room ('home' | 'absent' | 'outside' | ''), their questions from home, and the Ask menu
+  k2: !!(D.state && D.state.k2), home: (D.state && D.state.home) || '', asks: (D.state && D.state.asks) || [], askMenu: false,
 };
+/** Read to me on a card: their Read aloud support, or K-2 mode (on by default there). */
+const readOn = () => S.k2 || !!(S.sup && S.sup.read);
 const root = $('hd'), body = $('hd-body'), over = $('hd-over');
 
 // ---------------------------------------------------------------- the desk
@@ -117,7 +127,7 @@ function cardHtml(x) {
   const card = x.reading ? readCardHtml(x, cls, badge, x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : '') : x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
   // Read aloud (step 3c): the card's title and the teacher's words, from a button beside the card (never inside its link)
-  const read = S.sup && S.sup.read && !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. ')) : '';
+  const read = readOn() && !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. ')) : '';
   // the handout's note area: its page in this class's tab of the notebook (public/js/notebook.js), named after it
   const note = D.notebook ? `<button type="button" class="hd-notebtn" data-hdnote="${esc(x.id)}" aria-label="${esc(td('notesLabel', { title }))}">${iconHtml('📝', { size: 18 })}<span>${esc(td('notes'))}</span></button>` : '';
   return read || note ? `<div class="hd-cardwrap">${card}${read}${note}</div>` : card;
@@ -129,11 +139,52 @@ function fbHtml(x) {
 }
 function renderCards() {
   const el = $('hd-cards'), ord = $('hd-order'); if (!el) return;
-  const cards = S.cards;
-  if (ord) { const left = cards.filter(x => !x.done); ord.textContent = !left.length ? '' : left.some(x => x.inOrder) ? td('inOrder') : td('anyOrder'); ord.hidden = !left.length; }
-  el.className = cards.length ? 'hd-cards' : '';
-  el.innerHTML = cards.length ? cards.map(cardHtml).join('')
+  const cards = S.cards, missed = cards.filter(x => x.missed), rest = cards.filter(x => !x.missed);
+  if (ord) { const left = cards.filter(x => !x.done); ord.textContent = !left.length ? '' : left.some(x => x.inOrder) ? td('inOrder') : td('anyOrder'); ord.hidden = !left.length || S.k2; }
+  // "Missed while you were out" (step 4c): handouts given on a day they were marked absent, with the teacher's words
+  const missedHtml = missed.length ? `<section class="hd-missed" aria-labelledby="hd-missedh"><h3 class="hd-missedh" id="hd-missedh">${iconHtml('📬', { size: S.k2 ? 26 : 20 })} <span>${esc(td('missed.title'))}</span></h3>
+    <p class="hd-missedlead">${esc(td(S.k2 ? 'missed.leadK2' : 'missed.lead'))}</p><div class="${S.k2 ? 'hd-k2tiles' : 'hd-cards'}">${missed.map(x => (S.k2 ? k2Tile(x, true) : cardHtml(x))).join('')}</div></section>` : '';
+  if (S.k2) { el.className = 'hd-k2cards'; el.innerHTML = `${missedHtml}${k2Html(rest, !!missed.length)}`; return; }
+  el.className = cards.length ? 'hd-cardsbox' : '';
+  el.innerHTML = cards.length ? `${missedHtml}${rest.length ? `<div class="hd-cards">${rest.map(cardHtml).join('')}</div>` : ''}`
     : `<div class="hd-emptydesk">${iconHtml('🎒', { size: 28 })}<p><b>${esc(td('empty'))}</b><span>${esc(td('emptyText'))}</span></p></div>`;
+}
+
+// ---------------------------------------------------------------- K-2 mode (step 4c)
+const cardTitle = x => (x.reading && x.reading.book ? x.reading.book.title : x.title);
+const cardPic = (x, size) => (x.reading && x.reading.book ? `<img class="hd-k2cover" src="${esc(x.reading.book.cover)}" alt="" loading="lazy">`
+  : `<span class="hd-k2ico" aria-hidden="true">${iconHtml(x.reading ? '📖' : x.lesson ? '📄' : x.icon, { size })}</span>`);
+const opens = x => !x.locked && (x.reading || (x.ready && x.href));
+/** A handout as one big picture button (the game's icon or the book's cover, a short name), with Read to me. */
+function k2Tile(x, words = false) {
+  const title = cardTitle(x), cls = `hd-card hd-k2tile${x.done ? ' done' : ''}${x.locked ? ' locked' : ''}${x.ready || x.reading ? '' : ' notready'}${words && x.instructions ? ' words' : ''}`;
+  const mark = x.done ? `<span class="hd-k2mark done" aria-hidden="true">✓</span>` : x.locked ? `<span class="hd-k2mark" aria-hidden="true">${iconHtml('🔒', { size: 18 })}</span>` : '';
+  // (the missed ones keep the teacher's words on them: they weren't there to hear them)
+  const inner = `${cardPic(x, 52)}<b class="hd-k2t" dir="auto">${esc(title)}</b>${words && x.instructions ? `<span class="hd-k2tw" dir="auto">${esc(x.instructions)}</span>` : ''}${mark}`;
+  const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : ''}`;
+  const card = opens(x) ? `<a class="${cls}" href="${esc(x.href || '#')}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}"${x.reading ? ' data-hdread="1"' : ''}>${inner}</a>`
+    : `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`;
+  const read = !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. '), { small: true }) : '';
+  return `<div class="hd-k2wrap">${card}${read}</div>`;
+}
+/** K-2's desk: one thing at a time. Next up is one big picture with the teacher's words, Read to me and a big Start;
+ *  the others wait underneath as picture tiles. */
+function k2Html(cards, hasMissed) {
+  if (!cards.length) return hasMissed ? '' : `<div class="hd-emptydesk hd-k2empty">${iconHtml('🎒', { size: 44 })}<p><b>${esc(td('empty'))}</b><span>${esc(td('k2.emptyText'))}</span></p></div>`;
+  const next = cards.find(x => !x.done && !x.locked) || null, others = cards.filter(x => x !== next);
+  const hero = next ? (() => {
+    const title = cardTitle(next), words = next.instructions || '';
+    const say = [title, words].filter(Boolean).join('. ');
+    const go = opens(next) ? `<a class="hd-card hd-k2start btn-big" href="${esc(next.href || '#')}" data-hdcard="${esc(next.id)}"${next.reading ? ' data-hdread="1"' : ''} aria-label="${esc(td('k2.startLabel', { title }))}">${iconHtml('▶️', { size: 28 })}<span>${esc(td('k2.start'))}</span></a>`
+      : `<p class="hd-k2wait">${iconHtml('⏳', { size: 22 })} ${esc(td('notReadyHint'))}</p>`;
+    return `<section class="hd-k2next" aria-labelledby="hd-k2nexth"><h3 class="hd-k2cap" id="hd-k2nexth">${iconHtml('⭐', { size: 22 })} <span>${esc(td('nextUp'))}</span></h3>
+      <div class="hd-k2hero">${cardPic(next, 84)}<div class="hd-k2herot"><b class="hd-k2name" dir="auto">${esc(title)}</b>
+        ${words ? `<p class="hd-k2words" dir="auto">${esc(words)}</p>` : ''}
+        <div class="hd-k2acts">${readBtn(say)}${go}</div></div></div></section>`;
+  })() : `<div class="hd-k2alldone">${iconHtml('🎉', { size: 48 })}<b>${esc(td('k2.allDone'))}</b></div>`;
+  const rest = others.filter(x => !x.done), done = others.filter(x => x.done);
+  const row = (k, icon, list) => (list.length ? `<h3 class="hd-k2cap">${iconHtml(icon, { size: 20 })} <span>${esc(td(k))}</span></h3><div class="hd-k2tiles">${list.map(x => k2Tile(x)).join('')}</div>` : '');
+  return `${hero}${row('k2.then', '➡️', rest)}${row('k2.finished', '✅', done)}`;
 }
 function newCards(list) {
   const had = new Set(S.cards.map(x => x.id)), fresh = list.filter(x => !had.has(x.id));
@@ -285,6 +336,14 @@ function applyState(st) {
   // (step 3c) their own longer clock for the part on now.
   if ('plan' in st) { S.plan = st.plan || null; S.planSkew = S.plan ? Date.now() - S.plan.now : 0; renderNow(); }
   if ('support' in st && JSON.stringify(st.support || null) !== JSON.stringify(S.sup)) { S.sup = st.support || null; applySup(); renderCards(); RL.restyle(); }
+  // step 4c: K-2 mode (the teacher can turn it on or off), at home, the questions sent from home
+  if ('k2' in st && !!st.k2 !== S.k2) { S.k2 = !!st.k2; root.classList.toggle('hd-k2', S.k2); renderCards(); }
+  if ('home' in st || 'asks' in st) {
+    const was = JSON.stringify([S.home, S.asks]);
+    if ('home' in st) S.home = st.home || '';
+    if ('asks' in st) S.asks = st.asks || [];
+    if (was !== JSON.stringify([S.home, S.asks])) { if (!S.home) S.askMenu = false; renderHand(); }
+  }
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
   if (areaChanged || was !== JSON.stringify([S.live, S.me && S.me.locked])) renderOver();
@@ -346,15 +405,49 @@ function handNote() {
 function renderHand() {
   const wrap = $('hd-handwrap'); if (!wrap) return;
   const me = S.me, live = S.live;
+  renderHomeChip();
+  // at home (step 4c): no hand or hall pass; Ask my teacher sends a question the teacher sees in Hands
+  if (S.home) { const h = askHtml(); if (h !== askShown) { wrap.innerHTML = h; askShown = h; } renderNote(''); return; }
+  askShown = '';
   if (!live || !me) { wrap.innerHTML = ''; renderNote(''); return; }
   const up = !!me.hand || !!me.pass;
   const menu = S.handMenu ? `<div class="hd-handmenu" id="hd-handmenu" role="menu" aria-label="${esc(td('hand.menu'))}">
     ${up && me.pass !== 'out' ? btn('hd-hmi down', 'role="menuitem" data-hdhand="lower"', `${iconHtml('👇', { size: 22 })} <span>${esc(me.pass === 'line' ? td('hand.leaveLine') : td('hand.down'))}</span>`) : ''}
     ${me.pass === 'out' ? btn('hd-hmi', 'role="menuitem" data-hdhand="back"', `${iconHtml('🏫', { size: 22 })} <span>${esc(td('hand.back'))}</span>`) : ''}
-    ${KINDS.map(([k, ic]) => btn(`hd-hmi${me.hand === k ? ' on' : ''}`, `role="menuitemradio" aria-checked="${me.hand === k}" data-hdhand="raise:${k}"${k === 'bathroom' && me.pass ? ' disabled' : ''}`,
+    ${S.k2 ? `<div class="hd-k2hands">${KINDS.map(([k, ic]) => [k, k === 'help' ? '🙋' : ic]).map(([k, ic]) => btn(`hd-k2hand${me.hand === k ? ' on' : ''}`, `role="menuitemradio" aria-checked="${me.hand === k}" data-hdhand="raise:${k}"${k === 'bathroom' && me.pass ? ' disabled' : ''} aria-label="${esc(td(`hand.${k}`))}"`,
+      `${iconHtml(ic, { size: 56 })}<span>${esc(td(`k2.hand.${k}`))}</span>`)).join('')}</div>`
+    : KINDS.map(([k, ic]) => btn(`hd-hmi${me.hand === k ? ' on' : ''}`, `role="menuitemradio" aria-checked="${me.hand === k}" data-hdhand="raise:${k}"${k === 'bathroom' && me.pass ? ' disabled' : ''}`,
       `${iconHtml(ic, { size: 22 })} <span>${esc(td(`hand.${k}`))}</span>${k === 'bathroom' ? `<span class="hd-hmtag">${esc(td('hand.hallPass'))}</span>` : ''}`)).join('')}</div>` : '';
   wrap.innerHTML = `${btn(`btn hr-chunk hr-spark hd-handbtn${up ? ' on' : ''}`, `data-hd="hand" aria-haspopup="menu" aria-expanded="${S.handMenu}"`, `${iconHtml(me.pass ? '🚻' : '✋', { size: 20 })} <span>${esc(me.pass ? td('hand.passBtn') : up ? td('hand.isUp') : td('hand.raise'))}</span>`)}${menu}`;
-  renderNote(handNote());
+  // (the note under the bar steps aside while the hand menu is open: it would cover the menu)
+  renderNote(S.handMenu ? '' : handNote());
+}
+// ---------------------------------------------------------------- at home: Ask my teacher (step 4c)
+const ASKS = [['question', '💬'], ['help', '🙋']];
+let askShown = '';
+/** "At home today" beside the class's name when the teacher marked it (never for a desk that's simply outside class). */
+function renderHomeChip() {
+  const el = $('hd-homechip'); if (!el) return;
+  el.hidden = S.home !== 'home';
+}
+function askHtml() {
+  const open = S.asks.filter(x => !x.answeredAt).length, max = D.askMax || 200;
+  const sent = S.asks.length ? `<ul class="plain hd-asklist">${S.asks.slice(-3).map(x => `<li>${iconHtml(x.answeredAt ? '✅' : '📨', { size: 18 })} <span>${esc(td(x.answeredAt ? 'ask.seen' : 'ask.waiting'))}${x.text ? `: <i dir="auto">${esc(x.text)}</i>` : ''}</span></li>`).join('')}</ul>` : '';
+  const menu = !S.askMenu ? '' : `<div class="hd-handmenu hd-askmenu" id="hd-askmenu" role="dialog" aria-labelledby="hd-askh"><h3 class="hd-askh" id="hd-askh">${esc(td('ask.title'))}</h3><p class="hd-asklead">${esc(td('ask.lead'))}</p>
+    ${S.k2 ? `<div class="hd-k2hands two">${ASKS.map(([k, ic]) => btn('hd-k2hand', `data-hdask="${k}" aria-label="${esc(td(`hand.${k}`))}"`, `${iconHtml(ic, { size: 56 })}<span>${esc(td(`k2.hand.${k}`))}</span>`)).join('')}</div>`
+      : `<form class="hd-askform" novalidate><div class="hd-askkinds" role="radiogroup" aria-label="${esc(td('ask.kind'))}">${ASKS.map(([k, ic], i) => `<label class="hd-hmi"><input type="radio" name="kind" value="${k}"${i ? '' : ' checked'}> ${iconHtml(ic, { size: 22 })} <span>${esc(td(`hand.${k}`))}</span></label>`).join('')}</div>
+        <label class="hr-label" for="hd-askin">${esc(td('ask.words'))}</label><textarea class="input" id="hd-askin" rows="2" maxlength="${max}" placeholder="${esc(td('ask.ph'))}"></textarea>
+        <button class="btn btn-primary hd-asksend" type="submit">${iconHtml('📨', { size: 18 })} ${esc(td('ask.send'))}</button></form>`}
+    ${sent}<p class="small muted hd-asknote">${esc(td('ask.private'))}</p></div>`;
+  return `${btn(`btn hr-chunk hd-handbtn hd-askbtn${open ? ' on' : ''}`, `data-hd="ask" aria-haspopup="dialog" aria-expanded="${S.askMenu}"`, `${iconHtml('💬', { size: 20 })} <span>${esc(td(open ? 'ask.sentBtn' : 'ask.button'))}</span>`)}${menu}`;
+}
+async function sendAsk(kind, text = '') {
+  if (S.handBusy) return;
+  S.handBusy = true;
+  try {
+    const r = await api(`/api/desk/${encodeURIComponent(D.classId)}/ask`, { method: 'POST', body: { kind, text } });
+    S.asks = r.asks || S.asks; S.askMenu = false; toast(r.toast);
+  } catch (e) { toast(e.message, { bad: true }); } finally { S.handBusy = false; renderHand(); root.querySelector('[data-hd="ask"]')?.focus(); }
 }
 let noteShown = '';
 function renderNote(html) {
@@ -428,9 +521,12 @@ function click(e) {
   const pen = e.target.closest('[data-hdpen]');
   if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
   const hk = e.target.closest('[data-hdhand]'); if (hk) { handAction(hk.dataset.hdhand); return; }
+  const ak = e.target.closest('[data-hdask]'); if (ak) { sendAsk(ak.dataset.hdask); return; }
+  if (S.askMenu && !e.target.closest('.hd-handwrap')) { S.askMenu = false; renderHand(); }
   const a = e.target.closest('[data-hd]'); if (!a) { if (S.handMenu && !e.target.closest('.hd-handwrap')) { S.handMenu = false; renderHand(); } return; }
   const k = a.dataset.hd;
   if (k === 'hand') { S.handMenu = !S.handMenu; renderHand(); if (S.handMenu) $('hd-handmenu')?.querySelector('button')?.focus(); return; }
+  if (k === 'ask') { S.askMenu = !S.askMenu; renderHand(); if (S.askMenu) $('hd-askmenu')?.querySelector('button, input')?.focus(); return; }
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
@@ -448,7 +544,7 @@ function click(e) {
 // Reading in the desk (step 4b): the Library and a Reading handout's routine. The desk's own pulse goes on and says what
 // is being read (where: reading, the book and page); closing asks for the cards again.
 const RL = readingLayer({
-  host: root, classId: D.classId, path: `/class/${encodeURIComponent(D.classId)}/desk`, grade: D.libraryGrade || null, sup: () => S.sup,
+  host: root, classId: D.classId, path: `/class/${encodeURIComponent(D.classId)}/desk`, grade: D.libraryGrade || null, sup: () => ({ ...(S.sup || {}), read: readOn() }), k2: () => S.k2,
   onOpen: () => { root.classList.add('hd-playing'); setDock('library'); },
   onClose: () => { root.classList.remove('hd-playing'); setDock(S.view); S.hv = ''; poll(); },
   onChange: () => { S.hv = ''; poll(); },
@@ -467,8 +563,10 @@ function start() {
   renderDesk();
   applyState(D.state);
   root.addEventListener('click', click);
+  root.addEventListener('submit', e => { const f = e.target.closest('.hd-askform'); if (!f) return; e.preventDefault(); sendAsk(f.querySelector('input[name="kind"]:checked')?.value || 'question', f.querySelector('#hd-askin').value); });
   root.addEventListener('keydown', e => {
     if (e.key === 'Escape' && S.handMenu) { S.handMenu = false; renderHand(); root.querySelector('[data-hd="hand"]')?.focus(); return; }
+    if (e.key === 'Escape' && S.askMenu) { S.askMenu = false; renderHand(); root.querySelector('[data-hd="ask"]')?.focus(); return; }
     if (e.key === 'Escape' && S.view !== 'desk') { S.view = 'desk'; renderOver(); }
   });
   PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', extra: () => RL.pulse(), deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),

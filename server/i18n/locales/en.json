@@ -2350,6 +2350,31 @@
         "noBook": "No book picked yet",
         "quizScore": "Quiz {right} of {total}",
         "readNotes": "Read their 3 notes"
+      },
+      "att": {
+        "absent": "Absent today",
+        "home": "At home"
+      },
+      "k2": {
+        "menu": "K-2 desks",
+        "title": "K-2 desks",
+        "on": "On",
+        "off": "Off",
+        "lead": "A calmer, bigger desk for kindergarten to grade 2. It turns on by itself when the class's grade is K, 1 or 2.",
+        "what": {
+          "big": "Bigger buttons and text, with a picture on every button",
+          "one": "One thing at a time: Next up with a big Start",
+          "read": "Read to me on every card",
+          "hands": "Raise hand with pictures, no typing",
+          "notes": "A notebook that draws or types, and reading notes they can draw"
+        },
+        "mode": {
+          "gradeOn": "By grade (on)",
+          "gradeOff": "By grade (off)",
+          "on": "On for this class",
+          "off": "Off for this class"
+        },
+        "perStudent": "Turn it on or off for one student from their desk's menu (tap their name)."
       }
     },
     "stories": {
@@ -5384,6 +5409,21 @@
         "saving": "Saving...",
         "saved": "Saved",
         "error": "Not saved"
+      },
+      "k2": {
+        "draw": "Draw",
+        "drawMore": "Draw more",
+        "doneDrawing": "Done drawing",
+        "drawLabel": "Drawing paper for this page. Draw with your finger, a pencil or the mouse.",
+        "picture": "My drawing",
+        "pens": "Pen colors",
+        "pen": "Pen color {n}",
+        "undo": "Undo",
+        "clear": "Clear",
+        "bold": "Bold",
+        "highlight": "Highlight",
+        "placeholder": "Write here, or tap Draw.",
+        "padFull": "Your drawing is full. Clear it to draw again."
       }
     },
     "homeroom-desk": {
@@ -5489,6 +5529,37 @@
           "notes": "notes next",
           "done": "done"
         }
+      },
+      "missed": {
+        "title": "Missed while you were out",
+        "lead": "Your teacher handed these out while you were away. Take your time.",
+        "leadK2": "These came while you were away."
+      },
+      "k2": {
+        "emptyText": "Your teacher will put something here.",
+        "start": "Start",
+        "startLabel": "Start {title}",
+        "allDone": "All done! Great work.",
+        "then": "Then",
+        "finished": "Finished",
+        "hand": {
+          "question": "Question",
+          "help": "Help",
+          "bathroom": "Bathroom"
+        }
+      },
+      "ask": {
+        "button": "Ask my teacher",
+        "sentBtn": "Question sent",
+        "title": "Ask your teacher",
+        "lead": "Your teacher will see it and answer when they can.",
+        "kind": "What do you need?",
+        "words": "A few words (if you want)",
+        "ph": "What are you stuck on?",
+        "send": "Send",
+        "waiting": "Sent. Your teacher will see it",
+        "seen": "Your teacher saw it",
+        "private": "Only your teacher sees this."
       }
     },
     "homeroom-area": {
@@ -5654,7 +5725,8 @@
         "stuck": "Stuck",
         "typing": "Typing",
         "working": "Working",
-        "here": "At desk"
+        "here": "At desk",
+        "absent": "Absent today"
       },
       "hand": {
         "question": "Question",
@@ -5763,6 +5835,25 @@
         "quiz": "Quiz",
         "notes": "Notes",
         "score": "{right} of {total}"
+      },
+      "att": {
+        "title": "Attendance",
+        "lead": "Mark who is absent or learning at home today. Absent desks are left out of the counts.",
+        "counts": "{here} here · {absent} absent · {home} at home",
+        "of": "{name}: here, absent or at home",
+        "here": "Here",
+        "absent": "Absent today",
+        "home": "At home",
+        "hereShort": "Here",
+        "absentShort": "Absent",
+        "homeShort": "Home",
+        "nAbsent": "{count} absent"
+      },
+      "asks": {
+        "title": "From home",
+        "lead": "Questions students sent from home.",
+        "notLive": "Hands and the hall pass come back when class is live.",
+        "done": "Answered"
       }
     },
     "homeroom-plan": {
@@ -5822,7 +5913,9 @@
         "exit": "Exit check"
       },
       "underMin": "Under a minute of {planned} min",
-      "cut": "on when class finished"
+      "cut": "on when class finished",
+      "absentN": "{count} absent",
+      "absentNote": "not counted as unfinished"
     },
     "homeroom-support": {
       "read": "Read to me",
@@ -5940,9 +6033,27 @@
         "planMore": "{count, plural, one {Added 5 minutes once} other {Added 5 minutes # times}}",
         "paused": "{count, plural, one {Paused screens once} other {Paused screens # times}}",
         "brought": "{count, plural, one {Brought everyone to the teacher's area once} other {Brought everyone to the teacher's area # times}}",
-        "ended": "Ended class at {time}"
+        "ended": "Ended class at {time}",
+        "absent": "{count, plural, one {Marked # student absent} other {Marked # students absent}}",
+        "home": "{count, plural, one {Marked # student at home} other {Marked # students at home}}",
+        "asks": "{count, plural, one {Answered # question from home} other {Answered # questions from home}}"
       },
-      "endOfDay": "the end of the day"
+      "endOfDay": "the end of the day",
+      "att": {
+        "today": "Today",
+        "hint": "Absent desks stay out of the counts; their handouts wait for them.",
+        "here": "Here",
+        "absent": "Absent today",
+        "home": "At home today"
+      },
+      "k2": {
+        "desk": "K-2 desk",
+        "hint": "Bigger, simpler desk for young students.",
+        "on": "On",
+        "off": "Off",
+        "classOn": "As the class (on)",
+        "classOff": "As the class (off)"
+      }
     },
     "homeroom-sub": {
       "today": "Today",
@@ -6024,7 +6135,24 @@
           "back": "Back from the hall pass"
         }
       },
-      "untilEnd": "This link works until the end of the school day."
+      "untilEnd": "This link works until the end of the school day.",
+      "asks": "From home",
+      "att": {
+        "title": "Attendance",
+        "counts": "{here} here · {absent} absent · {home} at home",
+        "of": "{name}: here, absent or at home",
+        "here": "Here",
+        "absent": "Absent today",
+        "home": "At home",
+        "hereShort": "Here",
+        "absentShort": "Absent",
+        "homeShort": "Home",
+        "toast": {
+          "absent": "Marked absent",
+          "home": "Marked at home",
+          "here": "Marked here"
+        }
+      }
     },
     "homeroom-reading": {
       "grades": "Grades",
@@ -6081,7 +6209,30 @@
       "doneTitle": "All done!",
       "doneLead": "You read {title}, did the quiz and wrote 3 notes.",
       "openNotes": "See my notes",
-      "myDesk": "My desk"
+      "myDesk": "My desk",
+      "draw": {
+        "pens": "Pen colors",
+        "pen": "Pen color {n}",
+        "undo": "Undo",
+        "clear": "Clear"
+      },
+      "k2": {
+        "title": "My notes",
+        "draw": "Draw something that happened",
+        "drawLabel": "Drawing paper. Draw with your finger, a pencil or the mouse.",
+        "feel": "Did you like the book?",
+        "feels": {
+          "love": "Loved it",
+          "like": "Liked it",
+          "ok": "It was OK"
+        },
+        "word": "A word from the book (if you want)",
+        "wordPh": "One word",
+        "save": "Save my notes",
+        "padFull": "Your drawing is full. Clear it to draw again.",
+        "drawFirst": "Draw something that happened first.",
+        "pickFeel": "Tap how you liked the book."
+      }
     }
   },
   "favorites": {
@@ -16294,7 +16445,8 @@
       "tooManyTabs": "That's as many tabs as a notebook can have.",
       "classTab": "A class tab keeps its class's name.",
       "badAction": "That didn't work. Try again.",
-      "badState": "That didn't save. Try again."
+      "badState": "That didn't save. Try again.",
+      "drawingFull": "This drawing is full. Clear it to draw again."
     }
   },
   "homeroom": {
@@ -16408,7 +16560,10 @@
       "endsBefore": "That end time has already passed. Pick a later one, or leave it empty for the end of the day.",
       "badPin": "A PIN is 4 to 8 numbers, or leave it empty.",
       "tooManyLinks": "This class has 5 sub links open. Revoke one first.",
-      "pickBook": "Pick a book from the Story Library."
+      "pickBook": "Pick a book from the Story Library.",
+      "notHome": "Raise your hand in class. This is for asking from home.",
+      "tooManyAsks": "Your teacher has your questions. Wait for an answer first.",
+      "atHome": "You're at home today. Ask your teacher a question instead."
     },
     "live": "Live",
     "desk": {
@@ -16658,7 +16813,13 @@
       "notes": {
         "happened": "Something that happened",
         "word": "A new word",
-        "think": "What I think"
+        "think": "What I think",
+        "k2drew": "What happened (my drawing)",
+        "feel": {
+          "love": "I loved it.",
+          "like": "I liked it.",
+          "ok": "It was OK."
+        }
       },
       "step": {
         "readingPage": "Reading p. {page} of {pages}",
@@ -16690,8 +16851,24 @@
         "noteEmpty": "Write all 3 notes first.",
         "noteLong": "That note is too long. Make it shorter.",
         "noNotebook": "Your notebook isn't open to you here.",
-        "badRequest": "Something was not right. Try again."
+        "badRequest": "Something was not right. Try again.",
+        "drawFirst": "Draw something that happened first.",
+        "pickFeel": "Tap how you liked the book.",
+        "words": "Please use kind words.",
+        "personal": "Please don't write personal information."
       }
+    },
+    "k2": {
+      "saved": "K-2 desks saved"
+    },
+    "attendance": {
+      "toast": {
+        "absent": "Marked absent today",
+        "home": "Marked at home today",
+        "here": "Marked here"
+      },
+      "askSent": "Sent to your teacher",
+      "atHomeToday": "At home today"
     }
   }
 }
