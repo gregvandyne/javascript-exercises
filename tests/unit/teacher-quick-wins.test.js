@@ -112,7 +112,7 @@ test('b. a quiz score shows in the lesson table, the gradebook cell and the CSV 
   assert.equal((book.text.match(/class="gb-pts gb-quiz" title="Quiz score: /g) || []).length, 1, 'only for the student who finished it');
   // The CSV: a quiz column after the lesson, and the mean of all.
   const csv = (await req(ana, `/class/${cls.id}/progress.csv`)).text.replace(/^﻿/, '').split('\r\n');
-  assert.equal(csv[0], 'Name,Oomba Academy name,Times tables,Times tables (quiz %),Work done,Quiz %,Score,Score (points),Late lessons,Times tables (score %)');
+  assert.equal(csv[0], 'Name,Oomba Academy name,Times tables,Times tables (quiz %),Work done,Quiz %,Score,Score (points),Late lesson plans,Times tables (score %)');
   const line = name => csv.find(l => l.startsWith(`${name},`)).split(',');
   assert.deepEqual(line('Mia Realname').slice(2), ['1/2', '80%', '50%', '80%', '80%', '4/5', '0', '80%']);
   assert.deepEqual(line('Leo Realname').slice(2), ['0/2', '', '0%', '', '–', '', '0', '']);
@@ -238,15 +238,15 @@ test('m. the Standards tab opens on the framework the class has work in; every c
 test('n. the lesson game picker lists Learn-shelf games under their subject first; "More games" is only the rest', async () => {
   const groups = siteGroups(en, [rumble, fractions, sumRacer, atlas, questRace].map(g => ({ id: g.id, title: g.title, icon: g.icon, slug: g.slug, source: 'seed' })));
   assert.deepEqual(groups.map(g => [g.label, g.games.map(x => x.title)]), [
-    ['Math games', ['Fraction Factory', 'Sum Racer']], ['Maps', ['Atlas Quest']], ['Live class games (you host them)', ['Quest Race']], ['More games', ['Ring Rumble']]]);
+    ['Math games', ['Fraction Factory', 'Sum Racer']], ['Maps', ['Atlas Quest']], ['Live class lessons (you host them)', ['Quest Race']], ['More lessons', ['Ring Rumble']]]);
   // A player's own public game is never mistaken for an official one with the same slug.
-  assert.deepEqual(siteGroups(en, [{ id: 'x', title: 'Mine', slug: 'fraction-factory', source: 'builder' }]).map(g => g.label), ['More games']);
+  assert.deepEqual(siteGroups(en, [{ id: 'x', title: 'Mine', slug: 'fraction-factory', source: 'builder' }]).map(g => g.label), ['More lessons']);
   const page = await req(ana, `/teach/lessons/${lesson.id}`);
   const select = /<select class="input" id="ns-g" name="gameId">[\s\S]*?<\/select>/.exec(page.text)[0];
   const math = /<optgroup label="Math games">([\s\S]*?)<\/optgroup>/.exec(select)[1];
   assert.ok(math.includes('Fraction Factory') && math.includes('Sum Racer'));
-  assert.ok(select.indexOf('label="Math games"') < select.indexOf('label="More games"'));
-  assert.doesNotMatch(/<optgroup label="More games">([\s\S]*?)<\/optgroup>/.exec(select)[1], /Fraction Factory/);
+  assert.ok(select.indexOf('label="Math games"') < select.indexOf('label="More lessons"'));
+  assert.doesNotMatch(/<optgroup label="More lessons">([\s\S]*?)<\/optgroup>/.exec(select)[1], /Fraction Factory/);
 });
 
 // ---------------------------------------------------------------- a. the "Make a new game" form

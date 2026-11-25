@@ -192,7 +192,7 @@ test('a guest game\'s results: the host is told what is kept and offered "Make a
   LS.endSession(s.id, 'ended');
   const now = await call(`/live/results/${s.id}`, { user: teacher });
   assert.equal(now.status, 200);
-  assert.match(now.text, /id="lv-guest-note"/); assert.match(now.text, /This was a guest game\./); assert.match(now.text, /nothing went into a gradebook/);
+  assert.match(now.text, /id="lv-guest-note"/); assert.match(now.text, /This was a guest lesson\./); assert.match(now.text, /nothing went into a gradebook/);
   assert.match(now.text, /<a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="\/teach\/keep-scores">/);
   // after the 10 minutes in memory: the saved run keeps the questions and counts, and no player
   const run = q.get('SELECT * FROM live_runs WHERE id=?', s.id);
@@ -259,7 +259,7 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   const L = await import('../../server/routes/landing.js');
   const home = await call('/');
   assert.match(home.text, /<a class="lp-btn lp-btn-spark lp-btn-big" href="\/teachers\/host" data-cta="host" id="lp-host-now">/);
-  assert.match(home.text, /Host a live game now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
+  assert.match(home.text, /Host a live lesson now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
   assert.doesNotMatch(visible(home.text), /\$\s?\d|\b119\b/, 'no price on "/"');
   assert.equal(L.HOST_NOW_URL, QL.HOST_URL);
   const t = await call('/teachers');
@@ -267,7 +267,7 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   assert.match((await call('/teachers', { user: teacher })).text, /href="\/live\/quick" id="host-now"/);
   assert.doesNotMatch((await call('/teachers', { user: kid })).text, /id="host-now"/, 'a child is not offered hosting');
   const tl = await call('/teachers/live');
-  assert.match(tl.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live game<\/a>/);
+  assert.match(tl.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live lesson<\/a>/);
   assert.doesNotMatch(tl.text, /grown-ups\/signup/, 'a teacher is never sent to the parent sign-up');
   // the landing's click counter knows the new button
   const c = await call('/landing/count/host', { method: 'POST', headers: { 'sec-fetch-site': 'same-origin', 'user-agent': 'Mozilla/5.0 Chrome/141.0' } });

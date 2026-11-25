@@ -464,7 +464,7 @@ test('Draft with AI: the editor says what the checks did to the draft, from the 
     assert.match(page.text, /1 figure couldn’t be drawn as written/);
     assert.match(page.text, /1 figure was left out/);
     assert.match(page.text, /1 figure was drawn without a measure/);
-    assert.match(page.text, /1 game step became a text step/);
+    assert.match(page.text, /1 lesson step became a text step/);
     assert.doesNotMatch(page.text, /steps were saved/, 'every step was saved');
     // Nothing to say: no note.
     const clean = await as(boss)(`/teach/lessons/${lid}?drafted=ai&chk=2.2.0.0.0.0`);

@@ -80,7 +80,7 @@ async function lift(page, i) {
 
 test('bug 1: the 30 s live count refresh leaves the games in a folder alone; dragging still works after it', { skip }, async () => {
   const { ctx, page, errors } = await open(`/class/${cls.id}?folder=${fun.id}`, { clock: true });
-  assert.match(await page.textContent('#shelf-main .shelf-head'), /3 games · Shared with Testy University/);
+  assert.match(await page.textContent('#shelf-main .shelf-head'), /3 lessons · Shared with Testy University/);
   assert.deepEqual(await shown(page), idsIn(fun));
   const asked = page.waitForRequest(r => r.url().includes('/api/live?'), { timeout: 5000 }).catch(() => null);
   await page.clock.runFor(31000);
@@ -97,7 +97,7 @@ test('bug 1: the 30 s live count refresh leaves the games in a folder alone; dra
   await page.waitForTimeout(300);
   assert.deepEqual(idsIn(fun), [before[1], before[2], before[0]], 'the new order is saved');
   assert.deepEqual(await shown(page), idsIn(fun), 'and shows, every game');
-  assert.match(await page.textContent('#shelf-main .shelf-head'), /3 games/);
+  assert.match(await page.textContent('#shelf-main .shelf-head'), /3 lessons/);
   assert.deepEqual(errors, []);
   await ctx.close();
 });

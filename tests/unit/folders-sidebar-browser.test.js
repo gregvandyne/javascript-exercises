@@ -67,7 +67,7 @@ const shot = (page, name) => (SHOTS ? page.screenshot({ path: `${SHOTS}/${name}.
 
 test('Build: picking a folder shows its games in place; the address, Back and a reload keep it', { skip }, async () => {
   const { ctx, page, errors } = await open(ana, '/build');
-  assert.equal(await heading(page), 'All my games');
+  assert.equal(await heading(page), 'All my lessons');
   assert.deepEqual(await current(page), ['all']);
   await page.evaluate(() => { window.__stay = 1; });
   await page.click(`.shelf-item[data-shelf-key="f-${fun.id}"]`);
@@ -76,7 +76,7 @@ test('Build: picking a folder shows its games in place; the address, Back and a 
   assert.equal(new URL(page.url()).search, `?folder=${fun.id}`);
   assert.deepEqual(await current(page), [`f-${fun.id}`]);
   assert.equal(await page.locator('#shelf-main .shelf-game').count(), 2);
-  assert.match(await page.textContent('#shelf-main .shelf-head'), /2 games · Shared with Testy University/);
+  assert.match(await page.textContent('#shelf-main .shelf-head'), /2 lessons · Shared with Testy University/);
   assert.equal(await page.locator('#shelf-main [data-reorder]').count(), 1, 'its games can be dragged into order');
   await shot(page, 'build-folder-1440');
   // A colleague's folder: read only, Copy to my folders.
@@ -86,7 +86,7 @@ test('Build: picking a folder shows its games in place; the address, Back and a 
   assert.equal(await page.locator('#shelf-main [data-grip], #shelf-main form[data-api$="/delete"]').count(), 0, 'nothing to change in it');
   await page.goBack(); await page.waitForFunction(() => document.querySelector('#shelf-h').textContent.trim() === 'Fun Games');
   assert.equal(await page.evaluate(() => window.__stay), 1, 'Back swaps in place too');
-  await page.goBack(); await page.waitForFunction(() => document.querySelector('#shelf-h').textContent.trim() === 'All my games');
+  await page.goBack(); await page.waitForFunction(() => document.querySelector('#shelf-h').textContent.trim() === 'All my lessons');
   await page.goForward(); await page.waitForFunction(() => document.querySelector('#shelf-h').textContent.trim() === 'Fun Games');
   await page.reload(); assert.equal(await heading(page), 'Fun Games', 'a reload keeps it');
   // The keyboard: Tab reaches the items, Enter picks one.
@@ -105,7 +105,7 @@ test('class page: "Assigned to" first; a folder in place, with "Assign to <class
   const { ctx, page, errors } = await open(ana, `/class/${cls.id}`);
   assert.equal(await heading(page), 'Assigned to 4b math');
   assert.match(await page.textContent('#shelf-main'), new RegExp(g4.title));
-  for (const w of ['Build new game', 'Find Oomba games', 'My folders', 'Shared by colleagues', 'Games students shared']) assert.ok((await page.textContent('.shelf-side')).includes(w), w);
+  for (const w of ['Build new lesson', 'Find Oomba lessons', 'My folders', 'Shared by colleagues', 'Games students shared']) assert.ok((await page.textContent('.shelf-side')).includes(w), w);
   await shot(page, 'class-assigned-1440');
   await page.evaluate(() => { window.__stay = 1; });
   await page.click(`.shelf-item[data-shelf-key="f-${fun.id}"]`);

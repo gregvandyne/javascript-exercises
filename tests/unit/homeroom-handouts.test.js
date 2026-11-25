@@ -258,7 +258,7 @@ test('the teacher\'s board: games are buttons to hand out; the Manipulatives and
   const r = await as(rivera)(`/class/${cls.id}/homeroom`);
   assert.equal(r.status, 200);
   assert.match(r.text, new RegExp(`data-hritem="${sudoku.id}"`));
-  assert.match(r.text, /Tap a game, then a desk, a group or Whole class/);
+  assert.match(r.text, /Tap a lesson, then a desk, a group or Whole class/);
   assert.doesNotMatch(r.text, /Handing out to desks comes next/);
   assert.ok(SD.BY_CLASS.includes('homeroom_handouts'));
   // A class deleted with the school: its handouts' rows go too.

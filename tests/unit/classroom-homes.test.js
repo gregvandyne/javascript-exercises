@@ -84,12 +84,12 @@ test('the Classroom while a class\'s live room is open: its card\'s chip leads b
   const made = await post('/api/live/sessions', teacher, { pick: 'mode:battle', items, audience: 'class', classId: busy.id, replace: true });
   assert.equal(made.status, 200, JSON.stringify(made.json));
   r = await get('/teach', teacher);
-  assert.match(r.text, new RegExp(`<a class="chip-s good" href="/live/host/${made.json.sid}">📡 Live game now</a>`));
-  assert.equal([...r.text.matchAll(/Live game now/g)].length, 1, 'only on the card of the class the room is for');
+  assert.match(r.text, new RegExp(`<a class="chip-s good" href="/live/host/${made.json.sid}">📡 Live lesson now</a>`));
+  assert.equal([...r.text.matchAll(/Live lesson now/g)].length, 1, 'only on the card of the class the room is for');
   assert.doesNotMatch(cards(r.text), hostBtn);
   LS.endSession(made.json.sid, 'ended');
   r = await get('/teach', teacher);
-  assert.doesNotMatch(r.text, /Live game now/);
+  assert.doesNotMatch(r.text, /Live lesson now/);
 });
 
 test('the School tab of a school\'s own admin has no back link (it is a first tab); the platform admin\'s has one to Schools', async () => {

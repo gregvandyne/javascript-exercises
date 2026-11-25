@@ -32,7 +32,7 @@ test('class page: four tiles with the same links as the buttons they stand in fo
   const text = await get(teacher, `/class/${c.id}`);
   const tiles = tilesOf(text);
   assert.deepEqual(tiles.map(x => x.href), [`/live?class=${c.id}`, `/class/${c.id}/dashboard`, `/build/new?for=class&class=${c.id}`, `/class/${c.id}?tab=lessons&view=oomba`], 'Find Oomba games stays on the class');
-  assert.deepEqual(tiles.map(x => x.label), ['Host a live game', 'Class dashboard', 'Build new game', 'Find Oomba games']);
+  assert.deepEqual(tiles.map(x => x.label), ['Host a live lesson', 'Class dashboard', 'Build new lesson', 'Find Oomba lessons']);
   assert.deepEqual(tiles.map(x => x.hot), [true, false, false, false], 'only Host a live game is the green one');
   // The buttons and chip they replace on phones are still in the page (wider screens show them).
   assert.match(text, /id="class-dash-link"/); assert.match(text, /href="\/live\?class=/); assert.match(text, /id="cl-newgame"/);

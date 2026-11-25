@@ -110,7 +110,7 @@ test('create, list and edit a lesson: real question sets, one per version; only 
   const baseS = M.defaults('arithmetic-lab', 21);
   const r = await as(rivera)(`${api()}/lessons`, { body: { slug: 'arithmetic-lab', title: 'Long division practice', instructions: 'Show every step.', base: baseS, versions: versionsFor('arithmetic-lab', baseS) } });
   assert.equal(r.status, 200, r.text);
-  assert.match(r.json.toast, /Saved to My lessons/);
+  assert.match(r.json.toast, /Saved to My lesson plans/);
   labLesson = HL.getMine(rivera, r.json.id);
   assert.equal(labLesson.versions.length, 3);
   const sets = [labLesson.base.set, ...labLesson.versions.map(v => v.set)];

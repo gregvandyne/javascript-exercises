@@ -494,7 +494,7 @@ test('audit: the run\'s log is saved only for runs that had a co-host, with clas
   R.forgetUser(teacher2.id);
   assert.equal(q.get("SELECT COUNT(*) n FROM live_run_log WHERE actor_id=? OR other_id=?", teacher2.id, teacher2.id).n, 0);
   LS._all().delete(s.id);
-  assert.match((await call(`/live/results/${s.id}`, { user: teacher })).text, /A former co-host paused the game/);
+  assert.match((await call(`/live/results/${s.id}`, { user: teacher })).text, /A former co-host paused the lesson/);
   // retention: a classless run's log goes with it
   q.run('UPDATE live_runs SET class_id=NULL, ended_at=0 WHERE id=?', s.id);
   R.retention();

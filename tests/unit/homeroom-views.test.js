@@ -120,10 +120,10 @@ test('the Classroom view is calm: one small header line, Build and Find as two s
   // the class's name is the switcher's: no big title (one for screen readers), the school and the students on one line
   assert.match(view, /<div class="cv-classhead"><h1 class="sr-only">4B Math<\/h1><p class="small muted cv-classmeta"><span class="classschool">[\s\S]*Views Server Oak[\s\S]*<\/span> · 1 student<\/p><\/div>/);
   assert.doesNotMatch(view, /class="pagehead classhead"/);
-  // no Host a live game or Class dashboard tiles; Build new game and Find Oomba games as one row of small buttons
+  // no Host a live game or Class dashboard tiles; Build new lesson and Find Oomba lessons as one row of small buttons
   assert.doesNotMatch(view, /class="classtiles|class="classtile/);
   const quick = [...view.matchAll(/<a class="btn btn-sm classquick-b" href="([^"]*)">[\s\S]*?<span>([^<]*)<\/span><\/a>/g)].map(m => [m[1].replace(/&amp;/g, '&'), m[2]]);
-  assert.deepEqual(quick, [[`/build/new?for=class&class=${cls.id}`, 'Build new game'], [`/class/${cls.id}?tab=lessons&view=oomba`, 'Find Oomba games']]);
+  assert.deepEqual(quick, [[`/build/new?for=class&class=${cls.id}`, 'Build new lesson'], [`/class/${cls.id}?tab=lessons&view=oomba`, 'Find Oomba lessons']]);
   assert.ok(view.indexOf('class="classquick"') < view.indexOf('classtabs'), 'the row sits above the tabs');
   assert.doesNotMatch(view, new RegExp(`href="/live\\?class=${cls.id}"|href="/class/${cls.id}/dashboard"`));
   // the X-View fragment is the same

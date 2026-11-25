@@ -278,6 +278,7 @@
       "grade": "Year",
       "gradeN": "Year {grade}",
       "lessons": "Lessons",
+      "lessonsForTeachers": "Lesson plans",
       "lastActivity": "Last activity",
       "noActivity": "none yet"
     },
@@ -288,8 +289,8 @@
     "settings": {
       "timeZone": "Time zone",
       "timeZoneNone": "Not set (days are counted in UTC)",
-      "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
-      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now."
+      "timeZoneUnset": "Set your school's time zone so lesson plans open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
+      "timeZoneHint": "Lesson plans open at midnight and due dates end at midnight in this zone. It's {time} there now."
     },
     "errors": {
       "badZone": "Pick a time zone from the list."
@@ -311,7 +312,7 @@
       "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for Year 4"
     },
     "assign": {
-      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lessons open and due dates end at midnight in {zone}.}}",
+      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lesson plans open and due dates end at midnight in {zone}.}}",
       "someHint": "Only the students you tick see it, and only they count in the gradebook. You can change this later from the ⋯ menu."
     },
     "kinds": {
@@ -354,7 +355,7 @@
     }
   },
   "teachers": {
-    "description": "Ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too, plus maths manipulatives, a Classroom Dashboard and an AI game Builder.",
+    "description": "Ad-free interactive lessons for ages 5 to 14 that run in any browser, Chromebooks too, plus maths manipulatives, a Classroom Dashboard and an AI Builder.",
     "safe": {
       "li2google": "Students never type an email address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. A student’s real name, if you add one, is seen only by your school’s staff."
     },
@@ -364,7 +365,7 @@
     },
     "faq": {
       "q5": "What ages and year groups is it for?",
-      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the maths course, runs from about age 5 to age 14, and CS Quest and Cyber Defenders start in Year 4.",
+      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Lessons such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the maths course, runs from about age 5 to age 14, and CS Quest and Cyber Defenders start in Year 4.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
     },
     "setup": {
@@ -397,7 +398,7 @@
         "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
       }
     },
-    "lead": "Learning games, maths manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "lead": "Interactive lessons, maths manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
     "tools": {
       "lead": "Real screens from a demo class: a maths board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
       "board": {
@@ -410,10 +411,10 @@
     },
     "how": {
       "s1": {
-        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live game, and the teaching loop card with Plan, Play, Check and Feedback."
+        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live lesson, and the teaching loop card with Plan, Play, Check and Feedback."
       },
       "s5": {
-        "alt": "The class Progress tab: links to the courses and the live games history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson."
+        "alt": "The class Progress tab: links to the courses and the live lessons history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson plan."
       },
       "s6": {
         "h": "Teach with the tools",
@@ -599,7 +600,7 @@
     "make": {
       "levelLabel": "Year or level",
       "levelHint": "For example: Year 5",
-      "assignText": "It becomes a short quiz in the class's lessons, and the scores go to your markbook."
+      "assignText": "It becomes a short quiz in the class's lesson plans, and the scores go to your markbook."
     },
     "host": {
       "startAnyway": "Start anyway"
@@ -636,10 +637,10 @@
     },
     "how": {
       "s1": {
-        "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
+        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
       },
       "s2": {
-        "alt": "The projector screen before the game starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
+        "alt": "The projector screen before the lesson starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
       },
       "s4": {
         "alt": "A student’s phone during a question: the cartoon character the class plays against at the top, then the question and four answer buttons."
@@ -944,7 +945,7 @@
       }
     },
     "builder": {
-      "msg": "Make a game from this lesson for my Year 5 class. Ten minutes, three levels, and end with the exit ticket questions."
+      "msg": "Make a playable lesson from this plan for my Year 5 class. Ten minutes, three levels, and end with the exit ticket questions."
     },
     "courses": {
       "nq": {
@@ -961,11 +962,11 @@
       }
     },
     "faq": {
-      "a1": "A game-based learning platform for ages 5 to 14. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in maths, computing and online safety.",
-      "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a game around it."
+      "a1": "An interactive learning platform for ages 5 to 14. Teachers turn their own lesson plans into playable lessons with an AI Builder, run live class lessons, and use ready-made courses in maths, computing and online safety.",
+      "a4": "Almost any lesson plan: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a playable lesson around it."
     },
     "live": {
-      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the game code and a QR code."
+      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the join code and a QR code."
     },
     "tools": {
       "kicker": "Teaching tools",
@@ -985,9 +986,9 @@
     "focus": {
       "manipulatives": "virtual maths manipulatives",
       "play": "Word puzzles, maths games and live class games, with no sign-up.",
-      "freeLi1": "Every ready-made game, puzzle and classroom tool",
-      "faqA1": "A teaching platform for Reception to Year 9: a class dashboard to run the day, virtual maths manipulatives, figures drawn to scale, puzzle builders like Crossword, live class games and a Story Library. Teachers can also turn their own lessons into classroom games with an AI Builder.",
-      "demoCredit": "Game art from {title}, one of Oomba’s ready-made games."
+      "freeLi1": "Every ready-made lesson, puzzle and classroom tool",
+      "faqA1": "A teaching platform for Reception to Year 9: a class dashboard to run the day, virtual maths manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder.",
+      "demoCredit": "Art from {title}, one of Oomba’s ready-made lessons."
     }
   },
   "standards": {
@@ -1001,14 +1002,14 @@
       "practiced": "Practised"
     },
     "legend": {
-      "sources": "Covered by: the assigned lessons tagged with the standard (or with a step or a Learn game that practises it), live games that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
+      "sources": "Covered by: the assigned lesson plans tagged with the standard (or with a step or a Learn lesson that practises it), live lessons that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
       "practiced": "Practised: students who finished an activity that practises the standard. It means they did it, not mastery."
     },
     "csvCols": {
       "practiced": "Practised (students)"
     },
     "lesson": {
-      "gameCodes": "{framework} standards this game practises"
+      "gameCodes": "{framework} standards this lesson practises"
     }
   },
   "gclassroom": {

@@ -53,11 +53,11 @@ test('the sidebar renders for a teacher on Build and on the class page, the same
   assert.equal(build.status, 200); assert.match(build.vary, /X-Shelf/i);
   assert.match(build.text, /<div class="shelf" data-shelf>/);
   assert.match(build.text, /<a class="btn btn-primary shelf-go" href="\/build\/new" id="newgame">/, 'New game');
-  assert.match(build.text, /data-shelf-key="all" aria-current="true">[^]*?All my games<\/span><span class="n" aria-hidden="true">1<\/span>/, 'All my games, picked, with its count');
+  assert.match(build.text, /data-shelf-key="all" aria-current="true">[^]*?All my lessons<\/span><span class="n" aria-hidden="true">1<\/span>/, 'All my lessons, picked, with its count');
   assert.match(build.text, new RegExp(`href="/build\\?folder=${fun.id}" data-shelf-key="f-${fun.id}"`));
   assert.match(build.text, /Shared by colleagues/); assert.match(build.text, new RegExp(`href="/build\\?folder=${benF.id}"`));
   assert.doesNotMatch(build.text, /Ben private/, "a colleague's folder that isn't shared");
-  assert.match(build.text, /Make your own game by chatting!/, 'the Builder line, compact');
+  assert.match(build.text, /Make a lesson by chatting!/, 'the Builder line, compact (a teacher\'s words)');
   assert.match(build.text, /data-reorder="\/api\/game-folders\/order"/, 'folders can be dragged into order');
   assert.match(build.text, /<script type="module" src="\/js\/shelf\.js/);
   // All my games: one's own game with Edit, Play, Assign and ⋯ (Save to folder, Rename, Delete).
@@ -65,8 +65,8 @@ test('the sidebar renders for a teacher on Build and on the class page, the same
   const klass = await as(ana)(`/class/${cls.id}`);
   assert.equal(klass.status, 200);
   assert.match(klass.text, /<div class="shelf shelf-class" data-shelf id="lessons">/);
-  assert.match(klass.text, /id="cl-newgame">[^]*?Build new game/);
-  for (const w of ['Assigned to Ana 5C', 'Find Oomba games', 'My folders', 'New folder', 'Shared by colleagues', 'Games students shared']) assert.ok(klass.text.includes(w), w);
+  assert.match(klass.text, /id="cl-newgame">[^]*?Build new lesson/);
+  for (const w of ['Assigned to Ana 5C', 'Find Oomba lessons', 'My folders', 'New folder', 'Shared by colleagues', 'Games students shared']) assert.ok(klass.text.includes(w), w);
   assert.match(klass.text, new RegExp(`href="/class/${cls.id}\\?folder=${fun.id}"`)); assert.match(klass.text, new RegExp(`href="/class/${cls.id}\\?view=students"`));
   // Nothing assigned yet: the first folder is picked, with Assign to the class and Assign all.
   assert.match(klass.text, new RegExp(`data-shelf-key="f-${fun.id}" aria-current="true"`));
@@ -126,7 +126,7 @@ test("a colleague's shared folder is read-only: no menu, no Remove, no reorder; 
 test('Assign all: each game the class can play, once; skips what it has; back on Assigned', async () => {
   assert.ok(F.assignGame(ana, cls.id, o1.id).ok);
   const r = await as(ana)('/api/teach/assign-folder', { method: 'POST', body: { folderId: fun.id, classId: cls.id, dueAt: '2030-02-01' } });
-  assert.equal(r.status, 200); assert.equal(r.json.toast, '1 game assigned to Ana 5C · 1 skipped'); assert.equal(r.json.redirect, `/class/${cls.id}?view=assigned`);
+  assert.equal(r.status, 200); assert.equal(r.json.toast, '1 lesson assigned to Ana 5C · 1 skipped'); assert.equal(r.json.redirect, `/class/${cls.id}?view=assigned`);
   assert.ok(F.assignmentOf(cls.id, o2.id));
   const again = await as(ana)('/api/teach/assign-folder', { method: 'POST', body: { folderId: fun.id, classId: cls.id } });
   assert.equal(again.status, 400); assert.match(again.json.error, /Nothing new to assign/);
@@ -139,7 +139,7 @@ test('Assign all: each game the class can play, once; skips what it has; back on
   // With assignments, the class page opens on them, with their due dates and existing actions.
   const page = await as(ana)(`/class/${cls.id}`);
   assert.match(page.text, /data-shelf-key="assigned" aria-current="true"/);
-  assert.match(page.text, /<h2 id="shelf-h" tabindex="-1" dir="auto">Assigned to Ana 5C<\/h2><p class="small muted">3 games<\/p>/);
+  assert.match(page.text, /<h2 id="shelf-h" tabindex="-1" dir="auto">Assigned to Ana 5C<\/h2><p class="small muted">3 items<\/p>/);
   assert.match(page.text, /Due /); assert.match(page.text, /Remove from class/); assert.match(page.text, /📊 Scores/);
   // In a folder, a game already in the class says so.
   assert.match((await as(ana)(`/class/${cls.id}?folder=${fun.id}`)).text, /✅ Assigned/);
@@ -185,8 +185,8 @@ test('Find Oomba games opens on the right of the class page: the side item, one 
   const sum = official('sum-racer', 'Sum Racer'), trail = official('word-trail', 'Word Trail');
   const page = (await as(ana)(`/class/${cls.id}?view=oomba`)).text;
   assert.match(page, new RegExp(`<a class="shelf-item is-on" href="/class/${cls.id}\\?view=oomba" data-shelf-key="oomba" aria-current="true">`), 'the side item, picked');
-  assert.match(page, /<h2 id="shelf-h" tabindex="-1">🦉 Oomba games<\/h2>/);
-  assert.match(page, /<form class="oomba-bar" method="get"/); assert.match(page, /placeholder="Search Oomba games"/); assert.match(page, /data-oomba-grade/);
+  assert.match(page, /<h2 id="shelf-h" tabindex="-1">🦉 Oomba lessons<\/h2>/);
+  assert.match(page, /<form class="oomba-bar" method="get"/); assert.match(page, /placeholder="Search Oomba lessons"/); assert.match(page, /data-oomba-grade/);
   assert.doesNotMatch(page.slice(page.indexOf('id="shelf-main"')), /e\.g\. 3\.OA|How you play/, 'no standard box or "How you play" row');
   assert.match(page, new RegExp(`data-id="${sum.id}"`)); assert.match(page, new RegExp(`data-id="${trail.id}"`));
   // The shelf's own reply (what public/js/shelf.js swaps in), filtered by subject, grade and search.

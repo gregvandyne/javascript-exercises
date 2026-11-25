@@ -386,7 +386,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     : `<meta name="theme-color" content="${BAR_COLORS.light}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="${BAR_COLORS.dark}" media="(prefers-color-scheme: dark)">`;
   const fullTitle = title ? t('layout.titleWith', { title }) : t('layout.titleHome');
   const desc = clip(description || t('layout.description'), 160);
-  const strings = jsonData('i18n', { lang: locale, dir: info.dir, intl: info.intl, strings: clientStrings(locale, [...new Set(prefixes)]) });
+  const strings = jsonData('i18n', { lang: locale, dir: info.dir, intl: info.intl, strings: clientStrings(locale, [...new Set(prefixes)], { teacher: !!req.teacherWords }) });
   return `<!doctype html>
 <html lang="${esc(locale)}" dir="${esc(info.dir)}"${theme ? ` data-theme="${theme}"` : ''}>
 <head>
@@ -468,7 +468,7 @@ export function viewFragment(req, { title = '', body = '', scripts = [], head = 
   const t = tReq(req), locale = req.locale || DEFAULT_LOCALE;
   const prefixes = [...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   return { title: title ? t('layout.titleWith', { title }) : t('layout.titleHome'), body: String(body), head: String(head || ''), bodyClass,
-    scripts: scripts.map(s => `${s}?v=${VERSION}`), strings: clientStrings(locale, [...new Set(prefixes)]) };
+    scripts: scripts.map(s => `${s}?v=${VERSION}`), strings: clientStrings(locale, [...new Set(prefixes)], { teacher: !!req.teacherWords }) };
 }
 export const page = (req, res, opts, status = 200) => {
   const v = viewShell && req.classView && status === 200 ? viewShell(req, res, opts) : null;
