@@ -25,6 +25,10 @@ For Teacher plan teachers a class has three tabs:
   automatic sync, the log).
 - **Dashboard**: unchanged.
 
+The three are one page with three views (docs/decisions.md "Homeroom: one page, three views"): one shared bar (class
+switcher, the three tabs, the view's own buttons) and switching that never loads the page again. A game opened from
+Homeroom (My desk, a student's handout card) plays in a layer over the board or the desk.
+
 Teachers without the Teacher plan keep today's class page.
 
 ## The board (teacher)

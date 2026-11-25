@@ -13896,3 +13896,67 @@ game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked a
   Noto set instead.
 - Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
   never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.
+
+## Homeroom: one page, three views (25 Nov 2026)
+
+The owner: "the switch between Dashboard, Homeroom, and Classroom should be seamless like you are on the same page and
+just switching views briefly. Currently it's 3 different pages and setups." Then: "When you choose a game you should be
+able to play from within the homeroom instead of having to navigate away."
+- **One page** (`server/routes/homeroom-views.js`, `public/js/class-views.js`, `public/css/class-views.css`): for a
+  teacher Homeroom lets into the class (`canUseClass`), `/class/:id/homeroom`, `/class/:id` (every Classroom page:
+  Games, Progress, Students, Settings, gradebook and reports) and `/class/:id/dashboard` draw the same page: the site's
+  bar, then one **shared bar** (class switcher, Homeroom | Classroom | Dashboard, the view's own buttons on the right),
+  then the view area. Same place, same height (71 px; two rows on a phone, 119 px), same chunky pill buttons on every
+  view; on a narrow laptop the buttons lose their words before anything wraps, and what still does not fit scrolls
+  inside the bar. Sticky under the site's bar while Classroom scrolls. Everyone else gets the pages exactly as before.
+  - A route marks its page as a view (`markView(req, c, view, actions)`: the Homeroom page, `routes/schools.js`
+    classHeader for every Classroom page, the teacher's dashboard); `views/layout.js` page() asks the registered shell
+    (`setViewShell`, so the layout imports nothing of Homeroom, as with onEveryPage).
+  - **The buttons moved into the bar**: Homeroom's Live dot, live buttons, Arrange seats and ⋯ (the old `.hr-top` is
+    gone; the ids stay); Classroom's Connections and Host a live game (its Dashboard button is the pill now; the Back
+    link stays at the top of the view); the dashboard's date, clock, Stickers, Projector and Edit screen (its logo and
+    class name are the switcher; edit mode keeps its own bar under the shared one). In Projector the site's bars, the
+    switcher and the pill step aside and the class name shows in the bar. The dashboard gets the site's bar and tab
+    bar like the other two views (its phone footer sits above the tab bar; Oomba's chat button is never moved into
+    its footer on this page).
+- **Switching never loads the page**: the pill items are real links (without script, or with a modifier key, they open
+  the page). With script, a view opened for the first time is fetched with `X-View: 1` (the same address answers JSON:
+  content, the bar's buttons, stylesheets, scripts at the page's own `?v=` addresses and their strings,
+  `views/layout.js` viewFragment; `Vary: X-View`, no-store); its stylesheets load first (placed before
+  class-views.css), its strings join the page's (`i18n.js` addStrings), the content goes in, then its scripts run once
+  (dynamic import, so a module is never evaluated twice). A short fade out and in (110 and 170 ms; none with reduced
+  motion). `history.pushState` keeps the address; Back and Forward move between views; a reload or a link opens the
+  view its address names, drawn by the server. Another class from the switcher opens the same view of it.
+- **Views are kept, not rebuilt**: a view is hidden and shown again. It hears `cv:hide` and `cv:show` on its section.
+  Homeroom keeps its zoom, place and selection (typing ends, the ⋯ menu closes); it stops asking for the desks and the
+  live pulse while hidden and asks at once when shown. The dashboard leaves Projector, edit mode (saved) and the
+  sticker panel when left, stops its live check while hidden, and checks and fits its rows when shown. Keys go to the
+  view on screen only (Homeroom's Delete and the dashboard's Ctrl+Z check). Each view's page data has its id only
+  while shown, so scripts that read it later read their own. Classroom remembers its page and scroll for the tab
+  (sessionStorage), so the pill opens it where it was left; its own tabs and links still load their page (the
+  class page's scripts bind once at load and are not built to be re-run).
+- The page may become the dashboard without loading again, so all three views get the dashboard teacher's frame hosts
+  (the two video hosts) and camera and microphone policy (after a tap, as on the dashboard). Oomba's chat stays where
+  it is and follows the view (`companion.js`: the dashboard's context on the dashboard, the class's elsewhere).
+- **Playing inside Homeroom** (`public/js/homeroom-player.js`): Play / Preview on a My desk card (a game or a lesson;
+  tools still open their page) and a handout card on a student's desk open the game in a layer over the board or the
+  desk, with "Back to Homeroom" / "Back to my desk" (new strings, 12 languages). The layer is the game's own play page
+  in a frame: `/play/<slug>?in=hr` may be framed by this site only when it is asked for in a frame (`Sec-Fetch-Dest:
+  iframe`; `frame-ancestors 'self'`, no X-Frame-Options); anywhere else the page is unchanged and never framable. In
+  the frame its Back links give way to the layer's, and a game's own "back" or Escape on the page asks the layer to
+  close (`play.js`). The address carries the open game (`#play=<card>`): a reload opens it again, Back closes it,
+  Escape closes it. Underneath, nothing stops: the board keeps its zoom, place and live polling; the desk keeps Raise
+  hand, its state poll, Pause screens, Bring everyone to me and the lock, which cover the game as they cover the desk.
+  One pulse per student: the desk's own pulse rests while the game page in the layer pulses (where: game, as before).
+  Closing asks for the cards again, so the card shows its progress. In order still waits: a locked card never opens,
+  and the server's "Finish the one before it first" is unchanged. On a phone the layer fills the board under the
+  shared bar.
+- Tests: `tests/unit/homeroom-views.test.js` (the shell on each address, the X-View JSON, everyone else unchanged, the
+  flag off, Spanish, the play page framed only when asked) and `tests/unit/homeroom-views-browser.test.js` (Homeroom ->
+  Classroom -> Dashboard -> Homeroom with a value on window surviving and one navigation entry, Back and Forward, a
+  reload; zoom and place kept; Delete once deletes one note and never from another view; no dashboard checks while
+  hidden; Classroom's tab and scroll; deep links on every view; the bar's place and height at 1366 x 768, 1000 x 600
+  and a phone with nothing sideways; a teacher without Homeroom; playing from My desk with Escape, Back and a reload;
+  a student playing a handout with one pulse, Pause screens over it and the progress after closing).
+- **Open**: Classroom's own tabs still load their page (Homeroom's board state then starts fresh, its saved state is
+  the server's as always); a game left open in the layer keeps playing while another view is on screen.

@@ -201,7 +201,9 @@ test('the class page: a Homeroom teacher keeps every class tab working (Classroo
   const p = await as(rivera)(`/class/${cls.id}/progress`);
   assert.equal(p.status, 200); assert.match(p.text, /class="hr-tabs"/);
   const d = await as(rivera)(`/class/${cls.id}/dashboard`);
-  assert.equal(d.status, 200); assert.doesNotMatch(d.text, /class="hr-tabs"/);
+  // Dashboard is the third view of the same page now (docs/decisions.md "Homeroom: one page, three views"); its widgets
+  // are unchanged.
+  assert.equal(d.status, 200); assert.match(d.text, /class="hr-tabs"/); assert.match(d.text, /id="dash-grid"/);
   // In Spanish.
   const es = await fetch(`${base}/class/${cls.id}/homeroom`, { headers: { cookie: `${cookieFor(rivera.id)}; lang=es` } });
   assert.match(await es.text(), /Organizar los asientos/);

@@ -33,7 +33,10 @@ const MAX_CLIP_MS = 120e3;   // the longest recording here (the server's own STT
 if (PAGE) start();
 
 function start() {
-  const dash = PAGE.type === 'dashboard';
+  // A Homeroom teacher's class is one page with three views (public/js/class-views.js): the chat stays where it is (never
+  // in the dashboard's footer) and follows the view on screen (the dashboard, or the class).
+  const views = !!document.getElementById('cv');
+  let dash = PAGE.type === 'dashboard';
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
   const label = () => {
     const a = BUS.page(); if (a && a.label) { const x = a.label(); if (x) return String(x).slice(0, 60); }
@@ -63,7 +66,7 @@ function start() {
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
     start: () => via('start') || 'closed',
-    bubbleHost: dash ? document.getElementById('dash-foot') : null,
+    bubbleHost: dash && !views ? document.getElementById('dash-foot') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
@@ -568,18 +571,26 @@ function start() {
   }
 
   // ---------------------------------------------------------------- the dashboard: hidden while students can see it
-  if (dash) {
+  if (dash || views) {
     const sync = () => {
       const eyes = document.getElementById('dash-eyes-btn');
-      const hide = document.body.classList.contains('dash-projector') || !!document.fullscreenElement || (eyes && eyes.getAttribute('aria-pressed') === 'true');
+      const hide = !!document.fullscreenElement || (dash && (document.body.classList.contains('dash-projector') || (eyes && eyes.getAttribute('aria-pressed') === 'true')));
       document.body.classList.toggle('oc-hide', hide);
       if (hide && chat.state().mode === 'open') chat.setMode('closed', { focus: false });
     };
     new MutationObserver(sync).observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    const eyes = document.getElementById('dash-eyes-btn'); if (eyes) new MutationObserver(sync).observe(eyes, { attributes: true, attributeFilter: ['aria-pressed'] });
+    let watched = null;
+    const watchEyes = () => { const eyes = document.getElementById('dash-eyes-btn'); if (eyes && eyes !== watched) { watched = eyes; new MutationObserver(sync).observe(eyes, { attributes: true, attributeFilter: ['aria-pressed'] }); } };
+    watchEyes();
     document.addEventListener('fullscreenchange', sync);
+    document.addEventListener('cv:view', e => {
+      const v = e.detail && e.detail.view;
+      dash = v === 'dashboard'; PAGE.type = dash ? 'dashboard' : 'class';
+      watchEyes(); sync();
+      const b = document.getElementById('oc-sees'); if (b) b.textContent = label();
+    });
     sync();
-    const hl = store.get('oc-hl');
+    const hl = dash && store.get('oc-hl');
     if (hl) {
       store.set('oc-hl', null);
       let ids = []; try { ids = JSON.parse(hl); } catch { ids = []; }
