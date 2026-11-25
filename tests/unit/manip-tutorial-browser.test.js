@@ -10,7 +10,7 @@ import fs from 'node:fs';
 
 const { createApp } = await import('../../server/app.js');
 const { createUser, startSession } = await import('../../server/auth.js');
-const { TUTORIALS } = await import('../../public/js/manip-data.js');
+const { TUTORIALS, TOOLS } = await import('../../public/js/manip-data.js');
 
 const LOCAL = ['/opt/pw-browsers/chromium', '/opt/pw-browsers/chromium-1194/chrome-linux/chrome'];
 const exe = [process.env.BRB_CHROMIUM, ...LOCAL].find(p => p && fs.existsSync(p));
@@ -61,10 +61,12 @@ test('How it works: the button opens the video with captions, Escape closes it; 
   await page.keyboard.press('Escape');
   assert.equal(await page.locator('.sheet-bg').count(), 0, 'Escape closed it');
   assert.ok(await how.evaluate(el => el === document.activeElement), 'the focus went back to the button');
-  // A tool without a video: no button.
-  await page.goto(`${BASE}/manipulatives#clock`);
-  await page.waitForSelector('#mp-content .mp-obj');
-  assert.equal(await page.locator('.mp-howbtn').count(), 0);
+  // A tool without a video: no button (every tool has one since 25 Nov 2026: then the clock, an object tool, has its button).
+  const without = TOOLS.map(x => x.slug).find(sl => !TUTORIALS.has(sl));
+  await page.goto(`${BASE}/manipulatives#${without || 'clock'}`);
+  await page.waitForSelector('#mp-content .mp-obj, #mp-content .mp-boardhint, #mp-board');
+  await page.waitForTimeout(300);
+  assert.equal(await page.locator('.mp-howbtn').count(), without ? 0 : 1);
   // The All tools cards: only the ones with a video, and the button opens it without following the card's link.
   await page.goto(`${BASE}/manipulatives`);
   await page.waitForSelector('.mp-toolcard');
