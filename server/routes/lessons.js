@@ -149,6 +149,20 @@ function shareForm(t, l, id = null) {
 
 // ================================================================ library
 // Games, not lessons: the lesson library is now Build (folders of games). Old links land there.
+/** The editor's note after an AI draft: what was saved, read back (chk: saved.planned.fixed.replaced.dropped.games),
+ *  only when something is not as the AI wrote it. */
+function draftCheck(t, chk) {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(String(chk || ''));
+  if (!m) return '';
+  const [saved, planned, fixed, replaced, dropped, games] = m.slice(1).map(Number);
+  const lines = [];
+  if (saved < planned) lines.push(t('lessons.ai.check.steps', { saved, planned }));
+  if (replaced) lines.push(t('lessons.ai.check.replaced', { count: replaced }));
+  if (dropped) lines.push(t('lessons.ai.check.dropped', { count: dropped }));
+  if (fixed) lines.push(t('lessons.ai.check.fixed', { count: fixed }));
+  if (games) lines.push(t('lessons.ai.check.games', { count: games }));
+  return lines.length ? html`<div class="notice warn" role="note" id="lesson-ai-check"><p><b>${t('lessons.ai.check.title')}</b></p><ul>${lines.map(l => html`<li>${l}</li>`)}</ul></div>` : '';
+}
 router.get('/teach/lessons', requireUser, (req, res) => res.redirect(302, '/build'));
 
 // ---- library APIs
@@ -176,13 +190,18 @@ router.post('/api/lessons/draft', requireUser, rateLimit('lesson-ai', 30, 3600e3
   catch { return err(req, res, 'aiFailed', 503); }
   const r = L.createLesson(req.user, schoolId, { title: d.draft.title || topic, folderId: folderId || null, summary: d.draft.summary, subject: subject || d.draft.subject || '', grade: grade || d.draft.grade || '', objectives: d.draft.objectives });
   if (!r.ok) return err(req, res, r.code);
-  for (const s of d.draft.steps || []) {
+  const planned = d.draft.steps || [];
+  for (const s of planned) {
     if (s.kind === L.FIGURES_KIND) { FS.draftedStep(req.user, r.lesson.id, s, { lang: req.locale }); continue; }
     L.addStep(req.user, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
   }
-  audit(req.user.id, 'lesson.draft', r.lesson.id, { ai: d.ai });
+  // Checked work (docs/decisions.md "Builders check their work"): the lesson read back as saved, so the editor's note
+  // says what is really there: steps saved of planned, and what the checks did to the AI's figures and games.
+  const saved = L.steps(r.lesson.id).length, rep = d.report || null;
+  const chk = d.ai && rep ? [saved, planned.length, rep.figures.fixed, rep.figures.replaced, rep.figures.dropped, rep.gamesSwapped].join('.') : '';
+  audit(req.user.id, 'lesson.draft', r.lesson.id, { ai: d.ai, saved, planned: planned.length });
   const cid = classParam(req.user, classId, r.lesson.school_id);
-  res.json({ ok: true, redirect: `/teach/lessons/${r.lesson.id}?drafted=${d.ai ? 'ai' : 'template'}${cid ? `&class=${encodeURIComponent(cid)}` : ''}` });
+  res.json({ ok: true, redirect: `/teach/lessons/${r.lesson.id}?drafted=${d.ai ? 'ai' : 'template'}${chk ? `&chk=${chk}` : ''}${cid ? `&class=${encodeURIComponent(cid)}` : ''}` });
 });
 router.post('/api/lesson-folders', requireUser, (req, res) => {
   const { schoolId, parentId, name } = b(req);
@@ -340,6 +359,7 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
   ${l.template_key && T.getTemplate(l.template_key) ? editorBanner(req, l, T.getTemplate(l.template_key), { edit }) : ''}
   ${req.query.figures === 'saved' ? html`<p class="notice good" role="status">${ico('📐', { size: 18 })} ${t('lessons.step.figuresSaved')}</p>` : ''}
   ${drafted ? html`<p class="notice ${drafted === 'ai' ? '' : 'warn'}">${drafted === 'ai' ? `✨ ${t('lessons.ai.done')}` : t('lessons.ai.template')}</p>` : ''}
+  ${draftCheck(t, req.query.chk)}
   ${assigned.length ? html`<p class="notice livenote">${ico('📌', { size: 18 })} ${tHtml(t, 'lessons.editor.live', { classes: progressLinks, count: started })}</p>` : ''}
   ${edit ? html`<details class="panel lessondetails"><summary>${ico('✏️', { size: 18 })} ${t('lessons.lesson.editDetails')}</summary>
     <form class="formgrid" data-api="/api/lessons/${l.id}" data-reload data-toast="${t('school.settings.saved')}" novalidate>

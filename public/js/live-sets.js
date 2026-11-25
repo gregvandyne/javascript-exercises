@@ -339,7 +339,9 @@ if (editor) {
       try {
         const r = await api('/api/live/sets/draft', { method: 'POST', body: { topic, level: f.querySelector('#lv-ai-level').value.trim(), count: +f.querySelector('#lv-ai-count').value, kind: f.querySelector('#lv-ai-kind').value } });
         const title = $('lv-set-title'); if (!title.value.trim()) title.value = r.title;
-        const n = addItems(r.items); s.close(); toast(t('js.live-sets.added', { n }));
+        // Checked work: n is how many the editor really took; fewer than asked for is said plainly.
+        const n = addItems(r.items), asked = r.report && r.report.asked > n ? r.report.asked : 0;
+        s.close(); toast(asked ? t('js.live-sets.addedOf', { n, asked }) : t('js.live-sets.added', { n }));
       } catch (er) { err.textContent = er.message; btn.disabled = false; btn.innerHTML = `${ico('✨')} ${esc(t('js.live-sets.aiGo'))}`; }
     });
   }

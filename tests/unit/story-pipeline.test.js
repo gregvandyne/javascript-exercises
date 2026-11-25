@@ -207,6 +207,40 @@ test('changing a story: voice, music and words reuse every scene; a rewrite rend
   }
 });
 
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): a change that stopped being
+// made while it rendered (the stall check ended it) must not swap in its video: before, the new video went in while the
+// row kept the old words, so the page showed one story and played another. And a finished version is "done" only with
+// its video, poster and captions on disk.
+test('a change that is no longer being made never swaps its video in; a version is done only when its files are there', { skip: ffmpeg ? false : 'ffmpeg is not installed', timeout: 10 * 60e3 }, async () => {
+  const { versionMissing } = await import('../../server/stories/worker.js');
+  const old = { key: config.anthropicKey, remakes: config.storyRemakeLimit };
+  config.anthropicKey = 'test-key'; config.storyRemakeLimit = 10;
+  const renderer = new FakeRenderer();
+  const go = async (write = null) => { const c = J.claimNext('test-worker'); assert.ok(c, 'a job to run'); return runStory(c, { renderer, worker: 'test-worker', quality: 'test', voice: 'silent', ...(write ? { write } : {}) }); };
+  try {
+    const u = auth.createUser({ username: `Gone${uid(5)}`, password: 'rainbow-77' });
+    const { story } = J.create(u, { idea: 'a bunny who cannot sleep', seconds: 45 });
+    assert.equal(await go(async () => ({ ok: true, script: validateScript(SCRIPT).script, attempts: 1 })), 'done');
+    const dir = J.storyDir(story.id), video = path.join(dir, 'story.mp4');
+    assert.deepEqual(versionMissing(dir), [], 'the first version is complete');
+    const v1 = sha(video), s1 = J.get(story.id);
+    // A rewrite whose render is ended by the stall check while it runs.
+    assert.equal(J.requestRemake(u, J.get(story.id), { kind: 'rewrite', note: 'in the forest', options: {} }).ok, true);
+    const moved = validateScript(SCRIPT).script; moved.title = 'Moss in the Forest'; moved.scenes[1].set = 'forest';
+    const render0 = renderer.render.bind(renderer);
+    renderer.render = async spec => { const r = await render0(spec); J.failRemake(story.id, 'stalled'); return r; };
+    assert.equal(await go(async () => ({ ok: true, script: moved, attempts: 1 })), 'done');
+    const s2 = J.get(story.id);
+    assert.deepEqual([s2.version, s2.title, s2.remake_status], [s1.version, s1.title, 'failed']);
+    assert.equal(sha(video), v1, 'the old video stays with the old words');
+    assert.ok(!fs.existsSync(path.join(dir, 'next')));
+    // An empty video is not a version.
+    fs.writeFileSync(path.join(dir, 'poster.jpg'), '');
+    assert.deepEqual(versionMissing(dir), ['poster.jpg']);
+    fs.rmSync(dir, { recursive: true, force: true });
+  } finally { Object.assign(config, { anthropicKey: old.key, storyRemakeLimit: old.remakes }); }
+});
+
 test('the offline voice says the narrator chosen: a lower voice for "deep and calm", a higher one for "bright"', { skip: ffmpeg && (spawnSync('sh', ['-c', 'command -v pico2wave || command -v espeak-ng']).status === 0) ? false : 'no offline voice', timeout: 60e3 }, async () => {
   const dir = fs.mkdtempSync(path.join(config.dataDir, 'voice-'));
   // the dominant pitch, from the zero crossings of the voiced part

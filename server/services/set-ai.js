@@ -74,7 +74,8 @@ ${shape}
   if (!d || !Array.isArray(d.items) || !d.items.length) return { ok: false, code: 'aiFailed' };
   const items = cleanItems(d.items.slice(0, n), { tf, board });
   if (!items.length) return { ok: false, code: 'aiFailed' };
-  return { ok: true, title: String(d.title || topic).trim().slice(0, LIMITS.title), items };
+  // asked: how many the teacher asked for, so the editor can say how many of them it really got (checked work).
+  return { ok: true, title: String(d.title || topic).trim().slice(0, LIMITS.title), items, asked: n };
 }
 
 // ---------------------------------------------------------------- from the teacher's own lesson (/teach/make)
@@ -144,7 +145,7 @@ export async function draftFromLesson({ text = '', pdf = null, level = '', count
   if (!d || !Array.isArray(d.items)) return { ok: false, code: 'aiFailed' };
   const items = cleanItems(d.items.slice(0, n), { tf, why: true });
   if (!items.length) return { ok: false, code: d.enough === false || !d.items.length ? 'lessonThin' : 'aiFailed' };
-  return { ok: true, title: String(d.title || '').trim().slice(0, LIMITS.title), items };
+  return { ok: true, title: String(d.title || '').trim().slice(0, LIMITS.title), items, asked: n };
 }
 
 // ---------------------------------------------------------------- crossword clues (the Crossword game's builder)
