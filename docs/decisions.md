@@ -14427,3 +14427,68 @@ everyone else keeps the class page and its tiles exactly as before ("Action tile
   the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
   its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
 - With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.
+
+## Homeroom: the notebook (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` step 4 ("Student side": the notebook). Migration `0133_notebook`. For
+students, "where there is the Oomba AI chat, let's put the notepad that can be opened up the same way".
+
+- **Where it is** (`public/js/notebook.js`, `public/css/notebook.css`): a green (Mint) round button at the bottom right
+  of every full page a student with a notebook sees, exactly where teachers have the Oomba chat's bubble (above the
+  phone's tab bar). Oomba never talks to students, so the corner is theirs. It opens the way the chat opens: a panel on
+  the right on laptops and wide tablets (1366 x 768: below the site bar, 460 pixels wide), a sheet from the bottom on
+  phones and a tablet in portrait (the tab bar steps aside while it is open, as for the chat). Escape or ✕ closes it.
+  On the desk the corner button gives way to **Notebook**, the dock's last button (bottom right too, green), so it
+  never covers the pad or the dock. The script is added by `routes/notebook.js` through `views/layout.js` onEveryPage,
+  only for a student who keeps a notebook; never on a bare page (a game playing), a teacher's, a grown-up's or a guest's.
+- **Who keeps one** (`services/notebook.js` canUse): `HOMEROOM` on, a student's account (not staff, a grown-up or a
+  guest) in a class that has Homeroom, or one who already has notes (so a plan ending never takes them away). A plain
+  student of a class without Homeroom has none yet.
+- **What it holds** (`notebook_tabs`, `notebook_pages`): tabs the student makes and names ("Fractions", "Reading log";
+  a new notebook starts with "My notes"; up to 30, renamed, or deleted with their pages after a question) and one
+  **class tab** per class with Homeroom, made by itself, named by the class as it is now, never renamed or deleted by
+  the student. Each own tab is one running page. A class tab has its Class notes page and a page per handout the
+  student took notes on, titled with the handout's name: **Notes** under each handout card on the desk opens that page
+  (made the first time; only for a handout on their own desk). The reading routine's "3 notes" in a later step use the
+  same call (`POST /api/notebook/handout`). Each tab stores its kind ('own' or 'class'): parents' view (a later step)
+  shows class tabs only.
+- **Writing**: lined cream paper (the same in both themes, like the pad, so every highlighter shows), Bold, a bullet
+  list, a checklist (tap the box to tick; a ticked line is struck through) and four highlighters (yellow, green, blue,
+  pink) plus Take off highlight, on the words picked; 48-pixel buttons for young hands. Pasting brings plain words
+  only. Saved by itself 0.8 s after typing stops, when the notebook closes, when the tab is hidden and when the page is
+  left; "Saving..." / "Saved" in the header.
+- **Search**: one box over every page of every tab (letters only: no case or accents), each hit with its tab, page and
+  the line around it with the words marked; a tap opens that page with the words picked on it.
+- **Cleaning** (`cleanHtml`): the server never trusts the editor. A small scanner keeps only p, br, b, i, u, ul, ol, li
+  and mark (strong, em and div renamed), and only the classes `hl-y|hl-g|hl-b|hl-p` on mark, `nb-check` on ul and `done`
+  on li; every other attribute, every other tag (its words kept) and script-like elements with their content are
+  dropped, every bit of text is escaped again, what it opened is closed, nesting is capped at 12. The page's plain words
+  are stored beside it for search.
+- **Limits**: a page at most 20,000 characters of cleaned markup (`pageFull`), a notebook 400,000 in all
+  (`notebookFull`), 30 own tabs, 300 pages.
+- **Privacy**: the top of the notebook says plainly "Your teacher can read your notebook." whenever the student is in a
+  class. A teacher of a class the student is in now (class_members role 'teacher', the class not archived) reads the
+  whole notebook, own tabs too, read only (`GET /api/notebook/of/:studentId`; each read is audited as who read whose
+  notebook, never what it says). From Homeroom: a desk's menu (tap the student's name) has **Notebook**, which opens the
+  same panel with the same tabs and search, nothing editable ("Read only. Students can't see that you opened it.").
+  Aides (not class members), subs (no account), other teachers, school admins who don't teach the student, the platform
+  admin and classmates get 403; grown-ups' accounts are kept off student addresses by the site's own guard (404).
+  A student who leaves a class keeps their notes, and that class's teachers can no longer read them. **No AI reads the
+  notebook**: nothing in it reaches services/companion.js or any model (a test checks the prompt-building code never
+  names it).
+- **Deleting**: with the account (`services/account-delete.js`: every tab and page); a class's tab and its pages with the
+  class and the school (`services/school-delete.js` BY_CLASS, the class-leave hook for a deleted class; the student's
+  own tabs stay theirs); moved with a school account merged into the student's own account (a class tab both have is
+  joined).
+- **Layouts**: phone (390), tablet (820, a sheet), Chromebook 1366 x 768 (a panel), every button at least 48 pixels,
+  tabs wrap (two rows before they scroll), nothing sideways. The Classroom view has no student menu yet, so the
+  teacher's way in is the desk's menu for now.
+- Tests: `tests/unit/notebook.test.js` (the cleaner against scripts, attributes, broken and nested markup; who keeps
+  one and where the script loads; tabs, autosave, limits; a handout's page; authorization for the student, their
+  teacher, an aide, a sub, another teacher, a school admin, the platform admin, a parent and classmates; deletion with
+  the account and the school; the merge; no AI code names it) and `tests/unit/notebook-browser.test.js` (390, 820 and
+  1366: the corner button, a new tab, typing, bold, a checklist, a highlighter, saved and kept; search; the desk's
+  Notebook and a handout's Notes; the teacher's read-only view). The desk's dock test now counts 5 buttons.
+- **Open**: parents' view of class tabs (step 4), the reading routine's notes (step 4), the notebook from the Classroom
+  view's student row, more than one page in an own tab, numbered lists in the toolbar (the cleaner already keeps them),
+  translations of the new strings (English now; the other languages fall back to it).

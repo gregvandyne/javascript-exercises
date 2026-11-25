@@ -96,6 +96,14 @@ me beside the teacher's words, the simpler wording the teacher typed (or Oomba w
 and their own longer clock for the plan's part on now. A small 🧩 on the desk shows the teacher and an aide who has
 supports; classmates never see them. Games get them as `BRB.support` / `BRB.timeFor` (docs/sdk.md).
 
+Built (docs/decisions.md "Homeroom: the notebook"): the green corner button bottom right on every page a student with
+a notebook sees (where teachers have the Oomba chat), opening a panel (laptops) or a sheet (phones, tablets in
+portrait); on the desk it is the dock's Notebook. Own tabs and a tab per class, search across every note, bold, a list,
+a checklist, four highlighters, saved by itself. Notes under a handout card on the desk open its page in the class's
+tab, named after it. "Your teacher can read your notebook" at the top. The class's teachers read it from a desk's menu
+(Notebook), read only; aides and subs never. No AI reads it. Each tab keeps its kind so parents can later see the class
+tabs only.
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their

@@ -1497,6 +1497,25 @@ export const MIGRATIONS = [
       class_id TEXT NOT NULL, at INTEGER NOT NULL, action TEXT NOT NULL, student TEXT, detail TEXT NOT NULL DEFAULT '');
     CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_link ON homeroom_sub_log(link_id, at);
     CREATE INDEX IF NOT EXISTS idx_homeroom_sub_log_class ON homeroom_sub_log(class_id);`],
+  // Homeroom: the notebook (docs/decisions.md "Homeroom: the notebook"; services/notebook.js). A student's running notes
+  // across sessions. notebook_tabs: their own tabs (kind 'own', the name they gave it) and one per class with Homeroom
+  // (kind 'class', class_id set: that class's handout notes; parents will see only these). notebook_pages: a tab's pages
+  // (an own tab has one; a class tab its Class notes page and a page per handout, class_lesson_id and the handout's
+  // name as title), the cleaned rich text (body) and its plain words for search (text). The student writes them; their
+  // class's teachers read them; no AI ever does. Gone with the account; a class's tab and pages with the class or school.
+  ['0133_notebook', `
+    CREATE TABLE IF NOT EXISTS notebook_tabs (id TEXT PRIMARY KEY, user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL DEFAULT 'own', class_id TEXT REFERENCES classrooms(id) ON DELETE CASCADE, name TEXT NOT NULL DEFAULT '',
+      color TEXT NOT NULL DEFAULT '', position INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_notebook_tabs_user ON notebook_tabs(user_id, position);
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_notebook_tabs_class ON notebook_tabs(user_id, class_id) WHERE class_id IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_notebook_tabs_classid ON notebook_tabs(class_id) WHERE class_id IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS notebook_pages (id TEXT PRIMARY KEY, tab_id TEXT NOT NULL REFERENCES notebook_tabs(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, class_id TEXT REFERENCES classrooms(id) ON DELETE CASCADE, class_lesson_id TEXT,
+      title TEXT NOT NULL DEFAULT '', body TEXT NOT NULL DEFAULT '', text TEXT NOT NULL DEFAULT '', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_user ON notebook_pages(user_id);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_tab ON notebook_pages(tab_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_notebook_pages_class ON notebook_pages(class_id) WHERE class_id IS NOT NULL;`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

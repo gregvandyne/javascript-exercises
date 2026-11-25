@@ -76,7 +76,7 @@ test('the desk on a Chromebook, a tablet both ways and a phone: everything there
     });
     assert.ok(m.scroll <= 0, `${name}: no sideways scroll (${m.scroll})`);
     assert.deepEqual(m.small, [], `${name}: every tap target at least 48 pixels`);
-    assert.ok(m.dockIn, `${name}: the dock fits`); assert.equal(m.dockBtns, 4);
+    assert.ok(m.dockIn, `${name}: the dock fits`); assert.equal(m.dockBtns, 5, 'My desk, Teacher\'s area, Library, See the room, Notebook');
     assert.ok(m.win > 150 && m.pad[0] > 200 && m.pad[1] > 120, `${name}: the window and the pad have room (${JSON.stringify(m)})`);
     await shot(page, `desk-${name}`);
     assert.deepEqual(errors, []);

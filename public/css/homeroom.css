@@ -1036,3 +1036,10 @@ body.hr-subpage main#main{max-width:none;padding:0}
 @media (max-width:899px){.hr-subgrid{grid-template-columns:1fr}.hr-subside{position:static}}
 @media (max-width:1279px){.hr-subtop .hr-subt{display:none}}
 @media (max-width:819px){.hr-subtop .hr-hidephone{display:none}.hr-subcls{max-width:150px}}
+/* the notebook (public/js/notebook.js): Notes under a handout card opens its page in the class's tab; the dock's
+   Notebook button is green, like the corner button it stands for on the desk */
+.hd-cardwrap>.hd-notebtn{margin-top:6px;align-self:stretch;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 12px;border:2px solid var(--line);border-radius:14px;background:var(--card-2);color:var(--text);font:800 .9rem var(--font);cursor:pointer}
+.hd-cardwrap>.hd-notebtn:hover{background:var(--hover)}
+.hd-dockbtn.hd-nbbtn{background:var(--accent);border-color:var(--accent-press);color:var(--on-accent);box-shadow:0 2px 0 var(--accent-press)}
+.hd-dockbtn.hd-nbbtn:hover{background:var(--accent-hover)}
+.hd.hr-big .hd-cardwrap>.hd-notebtn{font-size:1.05rem}

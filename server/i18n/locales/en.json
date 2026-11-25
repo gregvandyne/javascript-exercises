@@ -5314,6 +5314,58 @@
       "close": "Close sign-in",
       "settings": "Sign-in settings and cards"
     },
+    "notebook": {
+      "open": "My notebook",
+      "title": "My notebook",
+      "ofStudent": "{name}'s notebook",
+      "readOnly": "Read only. Students can't see that you opened it.",
+      "teacherReads": "Your teacher can read your notebook.",
+      "format": "Formatting",
+      "bold": "Bold",
+      "list": "List",
+      "checklist": "Checklist",
+      "highlight": "Highlighters",
+      "highlightN": "Highlighter {n}: {color}",
+      "colors": {
+        "hl-y": "Yellow",
+        "hl-g": "Green",
+        "hl-b": "Blue",
+        "hl-p": "Pink"
+      },
+      "noHighlight": "Take off highlight",
+      "pickWords": "Pick some words first, then a highlighter.",
+      "close": "Close",
+      "search": "Search my notes",
+      "searchTheirs": "Search their notes",
+      "tabs": "Notebook tabs",
+      "newTab": "New tab",
+      "newTabShort": "New",
+      "emptyPage": "Nothing written yet.",
+      "placeholder": "Write here...",
+      "placeholderHandout": "Notes for this handout...",
+      "classTab": "Class",
+      "myNotes": "My notes",
+      "classNotes": "Class notes",
+      "emptyBook": "No tabs yet.",
+      "classLead": "Notes from this class. Notes on a handout land here with its name.",
+      "classLeadRo": "Notes from this class, with a page for each handout.",
+      "renameTab": "Rename tab",
+      "deleteTab": "Delete tab",
+      "deleteAskTitle": "Delete \"{name}\"?",
+      "deleteAsk": "Everything written in this tab goes too. This can't be undone.",
+      "deleteOk": "Delete tab",
+      "tabNameLabel": "Tab name",
+      "make": "Make tab",
+      "save": "Save",
+      "results": "{count, plural, one {# page found} other {# pages found}}",
+      "noResults": "No notes have \"{q}\".",
+      "loading": "Opening your notebook...",
+      "status": {
+        "saving": "Saving...",
+        "saved": "Saved",
+        "error": "Not saved"
+      }
+    },
     "homeroom-desk": {
       "deskOf": "{name} · My desk",
       "empty": "Nothing on your desk yet",
@@ -5401,7 +5453,9 @@
         "passBtn": "Hall pass"
       },
       "playBack": "Back to my desk",
-      "myTime": "Your time"
+      "myTime": "Your time",
+      "notes": "Notes",
+      "notesLabel": "My notes for {title}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5731,6 +5785,7 @@
       "readLabel": "Read this to me"
     },
     "homeroom-helpers": {
+      "notebook": "Notebook",
       "hasSupports": "{name} has supports: {what}",
       "sup": {
         "time": "Extra time",
@@ -16128,6 +16183,19 @@
       "repaintAll": "Paint all pictures again"
     }
   },
+  "notebook": {
+    "errors": {
+      "notFound": "That notebook page isn't here.",
+      "forbidden": "Only this student's teacher can read their notebook.",
+      "pageFull": "This page is full. Start a new tab to keep writing.",
+      "notebookFull": "Your notebook is full. Delete a tab you don't need to make room.",
+      "tabName": "Give the tab a name.",
+      "tooManyTabs": "That's as many tabs as a notebook can have.",
+      "classTab": "A class tab keeps its class's name.",
+      "badAction": "That didn't work. Try again.",
+      "badState": "That didn't save. Try again."
+    }
+  },
   "homeroom": {
     "staged": {
       "added": "On your desk. Students don't see it.",
@@ -16250,6 +16318,7 @@
       "notYou": "Not {name}?",
       "switch": "Switch",
       "backToDesk": "Back to my desk",
+      "notebook": "Notebook",
       "fromTeacher": "Your teacher says",
       "waitTitle": "Not yet",
       "waitText": "Finish the one before it on your desk first. Then this one opens."

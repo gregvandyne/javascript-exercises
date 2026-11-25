@@ -38,6 +38,7 @@
 //   GET  /api/desk/:id/state?v=&hv=            the live state, the teacher's area when it changed, and the student's own
 //                                              handout cards when they changed (hv: the cards' version the page has)
 //   POST /api/desk/:id/doodle                  their doodle and working-out pad: { strokes }
+//                                              (the desk's Notebook and a handout's Notes: routes/notebook.js)
 //   GET  /api/homeroom-live                    the live classes of this student with Homeroom (the prompt on every page)
 // Step 3a, live class (services/homeroom-live.js; docs/decisions.md "Homeroom, step 3a"):
 //   GET  /api/homeroom/:id/pulse?hv=           the teacher's board while live, every 2 s: each desk's status, current
@@ -81,6 +82,7 @@ import * as SUP from '../services/homeroom-supports.js';
 import * as HA from '../services/homeroom-aides.js';
 import * as SB from '../services/homeroom-sub.js';
 import { parseCookies } from '../auth.js';
+import * as NB from '../services/notebook.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413, forbidden: 403 };
@@ -196,7 +198,7 @@ router.get('/class/:id/homeroom', (req, res) => {
         <div class="cv-acts cv-acts-homeroom hr" data-cv-acts="homeroom">${acts}</div></header>
       <div class="cv-views"><section class="cv-view cv-view-homeroom" data-cv-view="homeroom" aria-label="${t('homeroom.tabs.homeroom')}">${board}</section></div></div>` : board;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">${aide ? `<link rel="stylesheet" href="/css/class-views.css?v=${VERSION}">` : ''}`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
@@ -420,10 +422,12 @@ const dockBtn = (k, icon, label, attrs = '') => html`<button type="button" class
 router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
   const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, sup = SUP.forDesk(c, u), cards = SUP.applyToCards(c, sup, HO.deskView(c, u, req.locale));
+  // the notebook (docs/decisions.md "Homeroom: the notebook"): the dock's last button, and a Notes button on each handout
+  const nb = NB.canUse(u);
   page(req, res, {
     title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
       strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
       // step 3c: their own supports (only theirs; See the room never carries anyone's)
       ...(SUP.anySup(sup) ? { support: sup } : {}), state: { ...H.boardState(c.id), ...deskLive(c, u), plan: HP.deskView(c, sup), support: sup } })}
@@ -442,6 +446,7 @@ router.get('/class/:id/desk', (req, res) => {
         <a class="hd-dockbtn" href="/library">${ico('📚', { size: 20 })}<span>${t('homeroom.desk.library')}</span></a>
         <span class="hd-grow"></span>
         ${dockBtn('room', '🏫', t('homeroom.desk.room'), ' aria-pressed="false"')}
+        ${nb ? html`<button type="button" class="hd-dockbtn hd-nbbtn" data-nb-open aria-controls="nb" aria-expanded="false">${ico('📝', { size: 20 })}<span>${t('homeroom.desk.notebook')}</span></button>` : ''}
       </nav>
       <div id="hd-over"></div>
       <noscript><p class="notice warn">${t('homeroom.noscript')}</p></noscript>

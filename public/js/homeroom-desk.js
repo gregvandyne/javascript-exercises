@@ -23,6 +23,8 @@
 //   - step 3c, their supports (public/js/homeroom-support.js; only their own): Read to me beside the teacher's words,
 //     Bigger text, the simpler wording in place of the instructions (from the server), and with extra time their own
 //     longer clock for the plan's part on now ("Your time"). Shown as tools, never a label; See the room shows nobody's.
+//   - step 4a, the notebook (public/js/notebook.js; docs/decisions.md "Homeroom: the notebook"): Notebook, the dock's last
+//     button, and Notes under each handout card (its page in this class's tab of the notebook, named after it).
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -96,7 +98,9 @@ function cardHtml(x) {
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
   // Read aloud (step 3c): the card's title and the teacher's words, from a button beside the card (never inside its link)
   const read = S.sup && S.sup.read && !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. ')) : '';
-  return read ? `<div class="hd-cardwrap">${card}${read}</div>` : card;
+  // the handout's note area: its page in this class's tab of the notebook (public/js/notebook.js), named after it
+  const note = D.notebook ? `<button type="button" class="hd-notebtn" data-hdnote="${esc(x.id)}" aria-label="${esc(td('notesLabel', { title }))}">${iconHtml('📝', { size: 18 })}<span>${esc(td('notes'))}</span></button>` : '';
+  return read || note ? `<div class="hd-cardwrap">${card}${read}${note}</div>` : card;
 }
 /** The teacher's comment and sticker on a finished card (step 2c): only this student's own. */
 function fbHtml(x) {
@@ -396,6 +400,8 @@ function click(e) {
   if (play && !(e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) && PL.open(play.dataset.hdcard)) { e.preventDefault(); return; }
   const card = e.target.closest('.hd-card[aria-disabled="true"]');
   if (card) { const x = S.cards.find(c => c.id === card.dataset.hdcard); toast(x && x.locked ? td('laterHint') : td('notReadyHint')); return; }
+  const note = e.target.closest('[data-hdnote]');
+  if (note) { window.dispatchEvent(new CustomEvent('notebook:open', { detail: { classId: D.classId, handout: note.dataset.hdnote } })); return; }
   const pen = e.target.closest('[data-hdpen]');
   if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
   const hk = e.target.closest('[data-hdhand]'); if (hk) { handAction(hk.dataset.hdhand); return; }
