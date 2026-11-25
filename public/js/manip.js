@@ -936,7 +936,7 @@ function paletteFor(slug, impl, st, ctx) {
     const o = target(slug, st, ctx.osel);
     if (o && !o.st.q) for (const p of impl.palette(o.st)) out.push({ group: 'obj', label: p.label, aria: p.aria, adds: !!p.adds, color: p.color, pressed: p.pressed, run: s => { const x = (s.objects || []).find(q => q.id === o.id); return x ? p.run(x.st) : false; } });
   } else {
-    for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, mini: d, round: roundPiece(slug, d.kind), adds: true, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
+    for (const d of impl.defs(st)) { const nm = paletteName(slug, d); out.push({ group: 'piece', label: nm.aria, face: nm.face, text: nm.text, ghost: nm.ghost, mini: d, round: roundPiece(slug, d.kind), adds: true, color: d.color, run: (s, v) => { const p = ctx.place(d); s.pieces.push(p); v.fresh = p.id; } }); }
     // Break is on a piece's wheel (hold it); Regroup, which takes ten pieces, stays here.
     if (BREAKS[slug]) out.push({ group: 'piece', label: 'Regroup 10 → 1', run: (s, v) => regroup(s, v, slug, ctx.space) });
   }
@@ -958,7 +958,7 @@ function bindTrayDrag(host, ctx) {
     ghost = document.createElement('div'); ghost.className = `mp-trayghost${it.mini ? '' : ' obj'}`; ghost.setAttribute('aria-hidden', 'true');
     Object.assign(ghost.style, { width: `${w}px`, height: `${h}px`, ...(it.mini ? { background: it.color } : {}) });
     if (it.mini && SHAPES[it.mini.kind]) ghost.style.clipPath = SHAPES[it.mini.kind]; else if (it.mini && it.round) ghost.style.borderRadius = '50%';
-    ghost.textContent = it.mini ? it.face || '' : it.label.replace(/^Add (a |an )?/, '');
+    ghost.textContent = it.mini ? it.face || it.ghost || '' : it.label.replace(/^Add (a |an )?/, '');
     d.w = w; d.h = h; document.body.appendChild(ghost); place(d.x, d.y);
     try { d.b.setPointerCapture(d.id); } catch { /* gone */ }
   };

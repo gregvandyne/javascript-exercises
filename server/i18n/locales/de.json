@@ -2099,7 +2099,7 @@
       },
       "shapeDelete": "Diese Form löschen",
       "hintMove": "Tippe etwas im Lehrerbereich an, um es auszuwählen. Ziehen verschiebt es, ein Griff ändert die Größe, nochmal tippen zum Schreiben.",
-      "hintDraw": "Zeichne im Lehrerbereich. Tippe auf Auswählen, wenn du fertig bist.",
+      "hintDraw": "Zeichne überall auf der Tafel. Was im Lehrerbereich steht, sehen alle an ihren Tischen. Tippe auf Auswählen, wenn du fertig bist.",
       "bt": {
         "shapes": "Formen",
         "lines": "Linien",

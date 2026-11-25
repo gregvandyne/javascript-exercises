@@ -45,6 +45,16 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 .hr-tools .rm-pens{display:flex;flex-wrap:wrap;align-items:center}
 .rm.inking{cursor:default}
 .hr-area.drawing,.hr-area.drawing *{cursor:crosshair}
+/* the pen anywhere on the board (public/js/homeroom-ink.js): its lines over the desks; a crosshair everywhere */
+.hr-ink{position:absolute;left:0;top:0;z-index:30;pointer-events:none;overflow:visible}
+.hr-board.hr-penon,.hr-board.hr-penon .rm-world *{cursor:crosshair}
+/* the pen's own bar on a phone (renderTools): style, undo, redo, Clear the pen as icons, above the zoom pill */
+.hr-penbar{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow-lg)}
+.hr-penbar[hidden]{display:none}
+.hr-penbar .hr-toolstyle .hr-stb{min-height:44px;min-width:44px}
+.hr-pbb{display:inline-grid;place-items:center;flex:none;width:44px;height:44px;padding:0;border:2px solid var(--line);border-radius:999px;background:var(--card-2);color:var(--text);cursor:pointer}
+.hr-pbb:hover{background:var(--hover)}
+.hr-pbb:disabled{opacity:.4;cursor:default}
 
 .hr-seatbar{position:absolute;z-index:65;left:264px;right:12px;top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 12px;
   background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:800;cursor:default}
@@ -220,6 +230,7 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
   .hr-seatbar{left:8px;right:8px;top:8px}
   .hr-seathint{display:none}
   .hr-zoom{bottom:84px;left:8px}
+  .hr-penbar{left:8px;bottom:144px;max-width:calc(100% - 16px)}
   .hr-mini{display:none}
 }
 
@@ -306,6 +317,7 @@ main.rm-main>#hd{flex:1 1 auto;min-height:0}
 .hd-rdesk.me{border-color:var(--gc,var(--text));box-shadow:0 0 0 3px var(--text)}
 .hd-rname{position:absolute;inset-inline-start:2px;bottom:calc(100% + 2px);max-width:calc(100% + 30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}
 /* a phone: the desks in seating order as a grid (the teacher's area across the top) */
+.hd-rink{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:visible}
 .hd-roombox.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:30px 12px;padding-top:4px}
 .hd-roombox.grid .hd-front{position:static;grid-column:1/-1;order:0;min-height:44px;align-items:center;justify-content:center}
 .hd-roombox.grid .hd-tdesk{position:static;grid-column:1/-1;order:1;justify-self:center;min-height:36px;padding:0 16px}

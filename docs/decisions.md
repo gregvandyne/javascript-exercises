@@ -14715,3 +14715,43 @@ students). Step 4c. Migration `0135_homeroom_k2_attendance`. Service: `services/
 - **Open**: an attendance export or report (on purpose: none); marking a whole group absent at once; K-2 mode inside
   games (each game's own); the board's K-2 setting is not shown to a sub (the teacher's); translations of the new strings
   (English now; the other languages fall back to it).
+
+## Homeroom: the pen anywhere on the board (25 Nov 2026)
+
+- **Why**: on an iPhone the owner could draw only inside the teacher's area (the yellow band), not around desks, and the
+  pen's controls along the bottom overlapped each other, the zoom pill and Oomba's chat button.
+- **Root causes**: the board's pointerdown (`public/js/homeroom.js` down) started a pen line only when `inArea()` found
+  the press inside the teacher's area; anywhere else fell through to Select and panning, and the area (fractions of
+  `AREA`) was the only place a line could be stored. On a phone the pen's style, Clear the pen and the tools were all
+  one sideways-scrolling strip at the bottom (`.hr-panel` at max-width 819px), so the pen's row ran past the screen's
+  edge and under the round buttons.
+- **The pen anywhere**: a line started inside the teacher's area is still the area's own line (shown on every desk's
+  window and on the projector, as before). A line started anywhere else is **board ink**
+  (`public/js/homeroom-ink.js`): points in board pixels, saved with the area as `area.ink` by the same POST
+  `/api/homeroom/:id/area` (cleaned on the server by `cleanInk`: palette colors, the pen's weight and dash, at least two
+  points inside the board, at most 80 lines, 600 points a line, 20000 in all). It is drawn over the desks on the
+  teacher's and the aide's board and in a student's See the room (pressed into the room's low front band beside the area,
+  moved up with the desks under it; the phone's grid of names has no board, so none there); never on the projector or a
+  desk's window on the teacher's area. Undo and redo (one snapshot with the area), Clear the pen (both kinds) and the
+  half-second save work as before. An older board has no `ink` and loads as it was. With the pen on, one finger (or the
+  mouse's main button) draws, also over a desk (a tap there opens nothing); two fingers pan and zoom, and a line just
+  started when the second finger lands is dropped. Board ink is not selectable: Undo or Clear the pen removes it.
+- **The pen's bar on a phone**: in pen (and shape) mode below 820px the style button, Undo, Redo and Clear the pen are
+  their own bar (`#hr-penbar`, icons with aria-labels, 44px targets) above the zoom pill, clear of Oomba's button, at 320
+  to 430 wide; the strip keeps the tools and scrolls to show them from Select. On a tablet and a laptop the row stays in
+  the panel as before. The style popover is the bottom sheet it already was on a phone. The hint now says "Draw anywhere
+  on the board" (every language).
+- Tests: `tests/unit/homeroom-pen-browser.test.js` (the server's cleaning and an older board; a line around a desk saved,
+  redrawn after a reload, undone, redone, cleared and its clearing undone, the area keeping its own line, Select panning;
+  one finger drawing and two fingers zooming on an iPhone-sized touch screen; the bar's buttons not on each other, inside
+  the screen, 44px and clear of the zoom pill and the chat button at 320, 375, 390 and 430, the panel's row at 820 and
+  1366; See the room drawing the ink and the projector not). Chromium with an iPhone's size, touch and pixel ratio
+  (Playwright's WebKit is not installed here; the tests use it when it is).
+- **Open**: board ink cannot be selected, moved or erased one line at a time; shapes, notes and text are still placed
+  only in the teacher's area.
+
+## Manipulatives: disk palette
+
+The place value disks' palette shows each disk as a plain colored circle with its value written beside it, not inside:
+a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
+and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.

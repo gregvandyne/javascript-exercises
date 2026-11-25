@@ -2098,7 +2098,7 @@
       },
       "shapeDelete": "Supprimer cette forme",
       "hintMove": "Touchez un élément de l’espace de l’enseignant pour le sélectionner. Faites-le glisser pour le déplacer, tirez une poignée pour le redimensionner, touchez-le encore pour écrire.",
-      "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez Sélectionner quand vous avez fini.",
+      "hintDraw": "Dessinez n’importe où sur le tableau. Ce qui est dans l’espace de l’enseignant s’affiche sur chaque bureau. Touchez Sélectionner quand vous avez fini.",
       "bt": {
         "shapes": "Formes",
         "lines": "Lignes",

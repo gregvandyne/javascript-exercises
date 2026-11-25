@@ -30,6 +30,7 @@ import * as S from './schools.js';
 import { teacherPlan } from './teacher-plan.js';
 import { cleanState, textProblem, LIMITS } from './manipulatives.js';
 import { cleanShapes, SHAPES_MAX, PALETTE, noteStyle, textStyle, strokeStyle } from '../../public/js/board-shapes.js';
+import { cleanInk } from '../../public/js/homeroom-ink.js';
 import { PRESETS, AREA, NOTE_BOX, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
 
 export { PRESETS, AREA };
@@ -203,7 +204,8 @@ const frac = v => { const n = Number(v); return Number.isFinite(n) ? Math.round(
 const firstById = list => { const m = new Map(); for (const n of Array.isArray(list) ? list : []) if (n && typeof n === 'object' && !m.has(String(n.id))) m.set(String(n.id), n); return m; };
 /** The teacher's area: sticky notes, text, pen marks (cleaned as the live room's teacher's area is: services/manipulatives.js
  *  cleanState, the site's word rules included) and shapes, then Homeroom's own fields on them (board-shapes.js: a note's
- *  size and color, a text box's color, weight, alignment and rotation, a pen line's id, weight, dash and layer, a lock).
+ *  size and color, a text box's color, weight, alignment and rotation, a pen line's id, weight, dash and layer, a lock),
+ *  and the board's own pen lines outside the area (`ink`, public/js/homeroom-ink.js cleanInk).
  *  -> { ok, area } */
 export function saveArea(u, c, state) {
   if (!canUseClass(u, c)) return fail('notFound');
@@ -213,7 +215,9 @@ export function saveArea(u, c, state) {
   const strokesIn = (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes);
   const r = cleanState({ v: 2, objects: [], __ann: { notes: ann.notes, texts: ann.texts, strokes: strokesIn } }, { w: AREA.w, h: AREA.h, teacher: true });
   if (!r.ok) return r;
-  const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes) };
+  // Pen lines drawn elsewhere on the board (public/js/homeroom-ink.js), in board pixels; an older board has none.
+  const ink = cleanInk(state.ink);
+  const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes), ...(ink.length ? { ink } : {}) };
   const out = area.__ann || {};
   // A sticky note's size (resized in both directions on the board), within NOTE_BOX; the live room's notes have none.
   const notes = firstById(ann.notes), texts = firstById(ann.texts);

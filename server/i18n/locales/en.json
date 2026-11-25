@@ -2101,7 +2101,7 @@
       },
       "shapeDelete": "Delete this shape",
       "hintMove": "Tap anything in the teacher's area to select it. Drag it to move it, pull a handle to resize it, tap it again to type.",
-      "hintDraw": "Draw in the teacher's area. Tap Select when you're done.",
+      "hintDraw": "Draw anywhere on the board. Marks in the teacher's area show on every desk. Tap Select when you're done.",
       "bt": {
         "shapes": "Shapes",
         "lines": "Lines",

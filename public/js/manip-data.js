@@ -92,7 +92,8 @@ export function paletteName(slug, d) {
   if (slug === 'color-tiles') return r('', `${TILE_NAMES[+k.slice(1)] || ''} tile`.trim());
   if (slug === 'two-color-counters') return { pos: r('+1', 'Yellow counter', 'Yellow counter, plus 1'), neg: r('−1', 'Red counter', 'Red counter, minus 1'), blue: r('', 'Blue counter'), green: r('', 'Green counter') }[k] || r(L, '');
   if (slug === 'base-ten-blocks') return r(L, { unit: 'Unit', rod: 'Rod', flat: 'Flat', cube: 'Cube', one: 'One', tenth: 'Tenth', hundredth: 'Hundredth', thousandth: 'Thousandth' }[k] || '');
-  if (slug === 'place-value-disks') return r(L, '', `${L} disk`);
+  // A plain colored circle in the palette with its value beside it (a long value inside stretched the circle to an oval).
+  if (slug === 'place-value-disks') return { ...r('', L, `${L} disk`), ghost: L };
   if (slug === 'algebra-tiles') return r(L, '', `${L} tile`);
   if (slug === 'fraction-tiles') return r(L, '', `${L} tile`);
   if (slug === 'number-rods') return r(String(d.value), ROD_NAMES[d.value - 1] || '', `Rod ${d.value}, ${ROD_NAMES[d.value - 1] || ''}`);

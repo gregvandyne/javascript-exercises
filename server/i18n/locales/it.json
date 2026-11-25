@@ -2099,7 +2099,7 @@
       },
       "shapeDelete": "Elimina questa forma",
       "hintMove": "Tocca qualsiasi cosa nell’area dell’insegnante per selezionarla. Trascinala per spostarla, tira una maniglia per ridimensionarla, toccala di nuovo per scrivere.",
-      "hintDraw": "Disegna nell’area dell’insegnante. Tocca Seleziona quando hai finito.",
+      "hintDraw": "Disegna ovunque sulla lavagna. Ciò che è nell’area dell’insegnante appare su ogni banco. Tocca Seleziona quando hai finito.",
       "bt": {
         "shapes": "Forme",
         "lines": "Linee",
