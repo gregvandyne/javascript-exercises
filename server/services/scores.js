@@ -9,7 +9,7 @@
 //   rubric   a rubric from the library, scored by the teacher: the points given of the most possible (only criteria with
 //            a level; a score from a swapped-out rubric is left out, as everywhere: rubrics.scoreCounts)
 //   marks    a step's own 0-3 rubric lines (CS Quest): each marked line is worth 3
-//   typing   a Typing Pets step assigned with a pass mark: its best run's grade (services/typing.js), out of 10
+//   typing   a Typing Zoo step assigned with a pass mark: its best run's grade (services/typing.js), out of 10
 // Everything is weighted by its points possible: Score = 100 x sum(earned) / sum(possible). Work not done or not scored
 // yet is not in it (Work done shows that), so nothing scored reads "–", never 0 %. A game played outside a live run
 // reports a bare number with no maximum, so it has no place in a percentage and is left out.
@@ -91,7 +91,7 @@ export function classItems(classId, { userId = null } = {}) {
     if (!old || x.right / x.total > old.earned / old.possible) best.set(k, { u: r.u, cl: r.cl, kind: 'live', stepId: r.sid, title: r.title || '', stepKind: r.kind, pos: r.pos, earned: x.right, possible: x.total });
   }
   for (const { u, cl, ...it } of best.values()) add(u, cl, it);
-  // A Typing Pets step with a pass mark (services/typing.js gradeOf): the best run's grade, out of GRADE_POINTS.
+  // A Typing Zoo step with a pass mark (services/typing.js gradeOf): the best run's grade, out of GRADE_POINTS.
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.score, p.label, s.id, s.kind, s.game_id, s.options, s.title, s.position pos FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
       JOIN games g ON g.id=s.game_id AND g.slug=? AND g.source='seed'

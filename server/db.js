@@ -1448,12 +1448,16 @@ export const MIGRATIONS = [
       PRIMARY KEY (class_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_homeroom_live_user ON homeroom_live(user_id);
     ALTER TABLE homeroom_rooms ADD COLUMN pass_minutes INTEGER NOT NULL DEFAULT 5;`],
+  // Typing Pets is now Typing Zoo (docs/decisions.md "Typing Zoo: the rename, Noto animals..."), the same way as 0121:
+  // the official row keeps its id (plays, saves under the kept key 'typing-pets-v1', favorites, ratings, assignments,
+  // lesson steps, sets, the teacher's typing panel) and only its slug changes; old links: services/slug-aliases.js.
+  ['0129_typing_zoo_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'typing-pets', 'typing-zoo')],
   // Homeroom: the teacher's desk (docs/decisions.md "Homeroom: the teacher's desk"; services/homeroom-staged.js).
   // homeroom_rooms.staged: the games, lessons and tools the class's teachers put on their own desk on the board to try
   // and hand out later ([{ id, kind: game | lesson | tool, ref, by, at }]). Staged, never assigned: only the class's
   // teachers read it, no student-facing page or poll does. Gone with the class and the school; a teacher's own items go
   // with their account.
-  ['0129_homeroom_staged', `
+  ['0130_homeroom_staged', `
     ALTER TABLE homeroom_rooms ADD COLUMN staged TEXT NOT NULL DEFAULT '[]';`],
 ];
 

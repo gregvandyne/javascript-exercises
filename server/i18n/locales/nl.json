@@ -6074,7 +6074,7 @@
       "readToMe": "Lees het voor"
     },
     "typing": {
-      "title": "Typdieren",
+      "title": "Typdierentuin",
       "unlockH": "Om elke volgende les te openen:",
       "unlockSummary": "volgende les vanaf {what}",
       "goalMins": "Minuten per dag",
@@ -6119,7 +6119,7 @@
       "minutes": "{n} min",
       "missed": "{pct}% van de keren gemist",
       "notYet": "Nog niet begonnen",
-      "note": "Uit de eigen voortgang van elke leerling in Typdieren, oefenen thuis meegerekend. Snelheid is woorden per minuut (wpm); nauwkeurigheid is het gemiddelde van de beste lessen. Lastige toetsen worden het vaakst gemist.",
+      "note": "Uit de eigen voortgang van elke leerling in Typdierentuin, oefenen thuis meegerekend. Snelheid is woorden per minuut (wpm); nauwkeurigheid is het gemiddelde van de beste lessen. Lastige toetsen worden het vaakst gemist.",
       "assign": "Een typles toewijzen"
     },
     "courses": {
@@ -7244,7 +7244,7 @@
       "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
       "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas.",
       "mistakeHunt": "Vind en verbeter de fouten in een korte tekst: leraren plakken hun eigen tekst, zetten er spel-, grammatica- en interpunctiefouten in en delen, geven op of printen hem.",
-      "typingPets": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
+      "typingZoo": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
     },
     "hubs": {
       "math": {

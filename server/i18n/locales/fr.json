@@ -6073,7 +6073,7 @@
       "readToMe": "Lis-le-moi"
     },
     "typing": {
-      "title": "Animaux Clavier",
+      "title": "Zoo du Clavier",
       "unlockH": "Pour ouvrir chaque leçon suivante :",
       "unlockSummary": "leçon suivante à partir de {what}",
       "goalMins": "Minutes par jour",
@@ -6118,7 +6118,7 @@
       "minutes": "{n} min",
       "missed": "Ratée {pct} % du temps",
       "notYet": "Pas encore commencé",
-      "note": "D’après la progression de chaque élève dans Animaux Clavier, entraînement à la maison compris. La vitesse est en mots par minute ; la précision est la moyenne de ses meilleures leçons. Les touches difficiles sont celles qu’il rate le plus.",
+      "note": "D’après la progression de chaque élève dans Zoo du Clavier, entraînement à la maison compris. La vitesse est en mots par minute ; la précision est la moyenne de ses meilleures leçons. Les touches difficiles sont celles qu’il rate le plus.",
       "assign": "Donner une leçon de frappe"
     },
     "courses": {
@@ -7243,7 +7243,7 @@
       "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
       "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe.",
       "mistakeHunt": "Trouve et corrige les fautes d'un court texte : l'enseignant colle son propre texte, y place des fautes d'orthographe, de grammaire et de ponctuation, puis le partage, l'assigne ou l'imprime.",
-      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
+      "typingZoo": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
     },
     "hubs": {
       "math": {

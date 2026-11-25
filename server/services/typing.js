@@ -1,14 +1,19 @@
-// Typing Pets for teachers: each student's typing progress, read from the game's own cloud save (seed-games/typing-pets.html,
+// Typing Zoo for teachers: each student's typing progress, read from the game's own cloud save (seed-games/typing-zoo.html,
 // BRB.storage key 'typing-pets-v1'), so practice at home or in free play shows up too, not only assigned lesson steps.
 // The save is written by the game in the student's browser, so everything read here is checked and clamped: a tampered
 // save can only show odd numbers for that one student, never break the page or show anything but numbers and known keys.
 // Who may see it is the caller's job (routes/progress.js checkPage: the class's own teachers and school leaders).
+import fs from 'node:fs';
 import * as games from './games.js';
 import { q } from '../db.js';
 import { parseParams } from './play-params.js';
 
-export const SLUG = 'typing-pets';
+export const SLUG = 'typing-zoo';
 export const SAVE_KEY = 'typing-pets-v1';
+/** How many pets the game has (its PETS list; new pets are added at its end): a save never counts more. */
+export const PET_COUNT = (() => {
+  try { const m = /const PETS = \[([\s\S]*?)\n\];/.exec(fs.readFileSync(new URL('../../seed-games/typing-zoo.html', import.meta.url), 'utf8')); return m ? m[1].match(/\['[a-z]+', /g).length : 41; } catch (e) { return 41; }
+})();
 /** The game's lessons, in order (LESSONS in the game; tests/unit/typing.test.js checks the two agree). */
 export const LESSONS = Array.from({ length: 40 }, (_, i) => `l${String(i + 1).padStart(2, '0')}`);
 /** The game's lesson names, in order (the Assign picker; the game's own LESSONS hold the same). */
@@ -72,7 +77,7 @@ export function summarize(raw) {
     practiced: int(obj(s.practice).n, 0, 100000),
     days: practiceDays(s.days),
     week: Math.round(practiceDays(s.days).reduce((n, d) => n + d.secs, 0) / 60),
-    pets: Math.min(40, Object.keys(obj(s.pets)).length),
+    pets: Math.min(PET_COUNT, Object.keys(obj(s.pets)).length),
     tricky,
     minutes: Math.round(int(s.secs, 0, 1e8) / 60),
     last: Math.max(int(s.last, 0, 8.64e15), ...lessons.map(l => l.at), int(obj(tests[`t${(bestTest || {}).min}`]).t, 0, 8.64e15)) || null,
@@ -145,7 +150,7 @@ export function assignChoice(t, raw) {
 
 // ---------------------------------------------------------------- pass marks
 // A pass mark rides in an assignment's lesson parameters as mode=a<accuracy>-w<speed> (either part may be left out);
-// the game reports the step done only for a run that reaches it (seed-games/typing-pets.html passMark).
+// the game reports the step done only for a run that reaches it (seed-games/typing-zoo.html passMark).
 export const PASS = { acc: [50, 100], wpm: [1, 120] };
 const num = v => (v === undefined || v === null || String(v).trim() === '' ? null : Number(v));
 /** -> { acc, wpm, mode } or null (no pass mark). Out-of-range numbers are clamped; a non-number counts as left out. */
@@ -160,7 +165,7 @@ export function passLabel(t, p) {
 }
 
 // ---------------------------------------------------------------- grades from a pass mark (an assigned step)
-// A Typing Pets step assigned with a pass mark (its options carry mode=a90-w20) is done only once a run reaches the mark,
+// A Typing Zoo step assigned with a pass mark (its options carry mode=a90-w20) is done only once a run reaches the mark,
 // and its grade is how close the best run came: half for accuracy and half for speed when both are set (each part at
 // most full marks), the whole grade from the one part otherwise. A run reaching the mark scores 100%. The game reports
 // every finished run (its speed as the score, "... 93% ... wpm" in the label); the server decides, so the game's own

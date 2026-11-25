@@ -58,7 +58,7 @@ const guest = auth.createGuest();
 
 // ---------------------------------------------------------------- the tags
 const PLAY = ['hero-of-sunvale', 'ring-rumble', 'footy-tycoon', 'connect-four', 'happy-putt', 'brick-drop', 'munch-maze', 'swish-flick', 'beat-lanes', 'would-you-rather', 'gulp-city', 'remis-quiet-meadow', 'quiet-bounce', 'popcorn-hush', 'jungle-cup', 'algebra-builder', 'arithmetic-lab'];
-const LEARN = ['typing-pets', 'shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live',
+const LEARN = ['typing-zoo', 'shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'quest-race', 'question-battle', 'brain-board', 'atlas-quest', 'would-you-rather-live', 'atlas-quest-live',
   'packet-post', 'trick-inbox', 'inside-the-machine', 'data-detective', 'robo-route', 'escape-the-post-office', 'fraction-factory', 'tug-of-math', 'doodle-hoot', 'word-trail', 'garden-count', 'lily-hop', 'crate-stacker', 'balance-bridge', 'rocket-supply', 'shape-hunt', 'kitchen-rush', 'lantern-mix', 'sub-zero', 'machine-line', 'scale-scout', 'sky-lines', 'keep-builder', 'launch-lab', 'sudoku', 'sum-spotter', 'crossword', 'mistake-hunt'];
 const seedMeta = fs.readdirSync('seed-games').filter(f => f.endsWith('.json')).map(f => JSON.parse(fs.readFileSync(`seed-games/${f}`, 'utf8')));
 
