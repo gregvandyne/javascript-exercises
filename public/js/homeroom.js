@@ -48,6 +48,7 @@ import { liveBoard } from '/js/homeroom-live.js';
 import { gamePlayer } from '/js/homeroom-player.js';
 import { planPill } from '/js/homeroom-plan.js';
 import { helpers as helpersOf } from '/js/homeroom-helpers.js';
+import { bookPicker } from '/js/homeroom-reading.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -102,8 +103,17 @@ function areaInner() { return `<div class="rm-in hr-areain">${ed.html()}</div>`;
 const handout = id => H.ho.handouts.find(h => h.id === id) || null;
 const cardsOf = sid => (H.ho.desks[sid] || []).filter(x => handout(x.id));
 /** A handout on a desk: its icon and name, a bar (or ✓ when done, 🔒 while it waits for the ones before it). */
+/** A Reading handout's step for a student (step 4b): "Reading p. 12", "Quiz", "Notes", "Done" (or "Picking a book"). */
+const rdStep = rd => (!rd ? '' : rd.step === 'read' ? (rd.page ? th('rd.readingPage', { page: rd.page }) : th('rd.notStarted')) : th(`rd.${rd.step}`));
 function cardRow(x, sid) {
   const h = handout(x.id), state = x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted');
+  // A Reading handout (step 4b): the book's cover and title, and the routine's step instead of a bar.
+  if (x.rd) {
+    const bk = x.rd.book, step = x.done ? th('ho.done') : x.locked ? th('ho.later') : rdStep(x.rd);
+    const inner = `${bk ? `<img class="hr-ccover" src="${esc(bk.cover)}" alt="" width="22" height="18" loading="lazy">` : `<span class="hr-cico" aria-hidden="true">${iconHtml('📖', { size: 14 })}</span>`}<span class="hr-ct" dir="auto">${esc(bk ? bk.title : h.title)}</span>
+      ${x.done ? `<span class="hr-cdone" aria-hidden="true">✓</span>` : `<span class="hr-cstep${x.rd.step === 'quiz' || x.rd.step === 'notes' ? ' on' : ''}">${esc(step)}</span>`}<span class="sr-only">, ${esc(step)}</span>`;
+    return H.seatsOpen ? `<span class="hr-card hr-rdc${x.done ? ' done' : ''}">${inner}</span>` : btn(`hr-card hr-rdc${x.done ? ' done' : ''}`, `data-hrho="${esc(x.id)}" data-sid="${esc(sid)}"`, inner);
+  }
   const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(h.title)}</span>
     ${x.done ? `<span class="hr-cdone" aria-hidden="true">✓</span>${x.fb && x.fb.src ? `<img class="hr-cfb" src="${esc(x.fb.src)}" alt="" width="18" height="18">` : x.fb && x.fb.comment ? `<span class="hr-cfbc" aria-hidden="true">${iconHtml('💬', { size: 12 })}</span>` : ''}` : x.locked ? `<span class="hr-clock" aria-hidden="true">${iconHtml('🔒', { size: 12 })}</span>` : `<span class="hr-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`}<span class="sr-only">, ${esc(state)}</span>`;
   return H.seatsOpen ? `<span class="hr-card${x.done ? ' done' : ''}">${inner}</span>` : btn(`hr-card${x.done ? ' done' : ''}`, `data-hrho="${esc(x.id)}" data-sid="${esc(sid)}"`, inner);
@@ -477,7 +487,7 @@ function renderGivebar() {
   // The groups and Whole class again in the bar, so they are one tap away wherever the panel is scrolled (a phone).
   const onMine = H.pick && H.staged.some(x => x.pick === H.pick.id);
   const chips = [...(H.pick && H.pick.id.startsWith('T:') ? [] : [btn('hr-gchip whole', 'data-hrto="all"', esc(th('ho.wholeClass'))), ...H.groups.filter(g => count(g)).map(g => btn('hr-gchip', `data-hrto="group:${esc(g.id)}" style="--gc:${esc(g.color)}"`, `<span class="rm-dot" style="--c:${esc(g.color)}"></span>${esc(groupName(g))}`))]),
-    ...(onMine ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
+    ...(onMine || (H.pick && H.pick.id.startsWith('R:')) ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
   el.innerHTML = H.pick ? `<span class="hr-giveico" aria-hidden="true">${iconHtml(H.pick.icon, { size: 20 })}</span><span class="hr-givet"><b dir="auto">${esc(H.pick.title)}</b> <span>${esc(th(H.pick.id.startsWith('T:') ? 'my.tapMine' : onMine ? 'ho.tapWhere' : 'my.tapWhere'))}</span></span>
     <span class="hr-giveto">${chips}</span>${btn('btn btn-sm hr-chunk', 'data-hr="unpick"', esc(th('ho.cancel')))}` : '';
 }
@@ -525,8 +535,10 @@ function gcPicked(f) { const c = f.querySelector('.hr-gcpost'); return !!(c && c
 /** The handout sheet (the mockup's "Game · free play"): instructions, Order on the desk, Grade it by, a due day. */
 function giveSheet(to) {
   const p = H.pick; if (!p) return;
+  if (to.kind === 'me' && p.id.startsWith('R:')) { toast(th('rd.notMine')); return; }
   if (to.kind === 'me') { stagePick(p); return; }
   if (p.id.startsWith('T:')) { toast(th('my.toolSoon')); return; }
+  const reading = p.id.startsWith('R:');
   const who = whoLabel(to);
   // Whole class works with nobody in the class yet: it waits for whoever joins (the sheet says so).
   if (!who.n && to.kind !== 'all') { toast(th('ho.emptyGroup'), { bad: true }); return; }
@@ -539,7 +551,7 @@ function giveSheet(to) {
   const sh = sheet({
     title: `${p.icon} ${th('ho.title', { game: p.title, who: who.label })}`,
     onClose: () => { H.giving = false; renderGivebar(); },
-    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(th('ho.eyebrow'))}</p><p class="small muted">${esc(th('ho.lead'))}</p>${emptyNote(to, who)}
+    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(th(reading ? 'rd.eyebrow' : 'ho.eyebrow'))}</p><p class="small muted">${esc(th(reading ? (p.id === 'R:' ? 'rd.leadAny' : 'rd.leadBook') : 'ho.lead'))}</p>${emptyNote(to, who)}
       <label class="hr-label" for="hr-ins">${esc(th('ho.instructions'))}</label>
       <textarea class="input hr-ins" id="hr-ins" rows="3" maxlength="${max}" placeholder="${esc(th('ho.instructionsPh'))}"></textarea>
       <p class="small muted hr-count" id="hr-inscount" aria-live="polite">${esc(th('ho.left', { count: max }))}</p>
@@ -554,6 +566,8 @@ function giveSheet(to) {
   });
   const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'completion' };
   const hints = { in: 'inOrderHint', any: 'anyOrderHint', score: 'scoreHint', completion: 'completionHint', none: 'notGradedHint' };
+  // Reading (step 4b): Completion is the whole routine; Score is the quiz's % right
+  if (reading) { hints.score = 'rdScoreHint'; hints.completion = 'rdCompletionHint'; f.querySelector('#hr-gradehint').textContent = th('ho.rdCompletionHint'); }
   const ins = f.querySelector('#hr-ins');
   ins.addEventListener('input', () => { f.querySelector('#hr-inscount').textContent = th('ho.left', { count: Math.max(0, max - ins.value.length) }); });
   f.addEventListener('click', e => {
@@ -570,11 +584,20 @@ function giveSheet(to) {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
-      const r = await api(api2('handouts'), { method: 'POST', body: { gameId: p.id, to, instructions: ins.value, order: val.order, grade: val.grade, dueAt: f.querySelector('#hr-due').value || null, gcPost: gcPicked(f) } });
+      const common = { to, instructions: ins.value, order: val.order, grade: val.grade, dueAt: f.querySelector('#hr-due').value || null, gcPost: gcPicked(f) };
+      const r = await api(api2('handouts'), { method: 'POST', body: reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
       H.ho = { handouts: r.handouts, desks: r.desks }; sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
   });
   requestAnimationFrame(() => ins.focus());
+}
+/** Reading (step 4b): "Choose a book" opens the Story Library's books (the class's grade first); a book picked is
+ *  handed out like a game (tap a desk, a group or Whole class). */
+function bookSheet() {
+  const sh = sheet({ title: `📚 ${th('rd.chooseTitle')}`, content: `<div class="hr-booksheet"><p class="small muted">${esc(th('rd.chooseLead'))}</p><div id="hr-bookpick"></div></div>` });
+  sh.el.classList.add('hr-booksheetwrap');
+  bookPicker(sh.el.querySelector('#hr-bookpick'), { grade: D.libraryGrade || null, pickLabel: b => th('rd.pickLabel', { title: b.title }),
+    onPick: b => { sh.close(); if (H.seatsOpen) openSeats(false); setPick({ id: `R:${b.id}`, icon: '📖', title: b.title }); } });
 }
 /** Clicks for handing out; true when it took the click. */
 function giveClick(e) {
@@ -645,12 +668,19 @@ function deskSheet(sid, first = null) {
     return cards.length ? `<ol class="plain hr-dlist">${cards.map(x => { const h = handout(x.id); return `<li class="hr-ditem${x.id === first ? ' first' : ''}${x.done ? ' done' : ''}">
       <div class="hr-dhead"><span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 20 })}</span><b dir="auto">${esc(h.title)}</b>
         <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}</span></div>
-      ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}
+      ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}${x.rd ? rdBlock(x, sid, s.name) : ''}
       <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
       ${x.done ? fbBlock(x, edit === x.id) : ''}
       ${!AIDE && H.simples && H.simples[x.id] ? `<p class="hr-dsimple" dir="auto"><b>${iconHtml('✏️', { size: 14 })} ${esc(th('helpers.simpler'))}:</b> ${esc(H.simples[x.id])}</p>` : ''}
       <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${AIDE ? '' : `${btn('btn btn-sm', `data-simpler="${esc(x.id)}"`, `${iconHtml('✏️', { size: 16 })} ${esc(th('helpers.simpler'))}`)}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}`}</div></li>`; }).join('')}</ol>`
       : `<p class="muted">${esc(th('emptyDesk'))}</p>`;
+  };
+  // A Reading handout (step 4b): the book, the step, the quiz's result, and its 3 notes (a page of the student's notebook,
+  // read only; never for an aide).
+  const rdBlock = (x) => {
+    const rd = x.rd, bk = rd.book;
+    return `<div class="hr-drd">${bk ? `<img src="${esc(bk.cover)}" alt="" width="64" height="48" loading="lazy">` : ''}<p><b dir="auto">${esc(bk ? bk.title : th('rd.noBook'))}</b><span class="small">${esc(x.done ? th('ho.done') : rdStep(rd))}${rd.total ? ` · ${esc(th('rd.quizScore', { right: rd.right, total: rd.total }))}` : ''}</span></p>
+      ${rd.notes && !AIDE ? btn('btn btn-sm', `data-rdnotes="${esc(rd.notes)}"`, `${iconHtml('📒', { size: 16 })} ${esc(th('rd.readNotes'))}`) : ''}</div>`;
   };
   // A comment and a sticker on a finished card (step 2c): shown, or the little editor (one at a time).
   let edit = null, pickSt = '';
@@ -676,6 +706,8 @@ function deskSheet(sid, first = null) {
     } catch (err) { const el = box.querySelector('#hr-fberr'); if (el) el.textContent = err.message; else toast(err.message, { bad: true }); }
   };
   box.addEventListener('click', async e => {
+    const rn = e.target.closest('[data-rdnotes]');
+    if (rn) { sh.close(); import(`/js/notebook.js${new URL(import.meta.url).search}`).then(m => m.viewNotebook(sid, s.name, { page: rn.dataset.rdnotes })).catch(() => toast(t('js.app.wentWrong'))); return; }
     const fe = e.target.closest('[data-fbedit]');
     if (fe) { edit = fe.dataset.fbedit; const x = cardsOf(sid).find(c => c.id === edit); pickSt = (x && x.fb && x.fb.sticker) || ''; box.innerHTML = draw(); box.querySelector('#hr-fbc')?.focus(); return; }
     const st = e.target.closest('[data-fbst]');
@@ -783,6 +815,9 @@ function up(e) {
   H.gesture = null;
   if (g.kind === 'pan') {
     H.justPanned = g.moved;
+    // a game, lesson or book picked, then a desk clicked with a mouse (the capture sends that click to the board; a
+    // finger's tap still reaches the desk as a click, giveClick)
+    if (!g.moved && g.desk && H.pick && !H.giving && e.pointerType === 'mouse') { const to = targetAt(g.desk); if (to) { H.justPanned = true; giveSheet(to); return; } }
     if (!g.moved && g.desk && LV.tapDesk(g.desk)) { H.justPanned = true; return; }
     if (!g.moved) {
       ed.clear();
@@ -838,6 +873,7 @@ function click(e) {
   else if (k === 'teammake') makeTeam();
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
+  else if (k === 'pickbook') bookSheet();
   else if (k === 'signin') signinSheet();
   else if (k === 'aides') { H.menuOpen = false; renderMenu(); HLP.aidesSheet(); }
   else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }

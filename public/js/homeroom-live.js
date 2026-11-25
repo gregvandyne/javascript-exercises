@@ -56,6 +56,12 @@ export function liveBoard(ctx) {
     const cards = (H.ho.desks[sid] || []), card = cards.find(x => x.id === d.on), h = card && ctx.handout(card.id);
     const bar = card && !card.done && d.st !== 'away' && d.st !== 'stuck' ? `<span class="hr-lvbar" aria-hidden="true"><i style="width:${card.pct}%"></i></span>` : '';
     const name = ctx.nameOfId(sid);
+    // reading in the desk's reading layer (step 4b): "Reading <book>" and the page, a Reading handout or free reading
+    if (d.book && d.st !== 'away') {
+      const rdText = tl('readingBook', { title: d.book.title });
+      return btn(`hr-lvchip hr-lvread st-${d.st === 'stuck' ? 'stuck' : 'working'}`, `data-hrlook="${esc(sid)}" aria-label="${esc(`${tl('chipLabel', { name, status: stLabel(d.st) })}, ${rdText}, ${tl('readingPage', { page: d.book.page || 1 })}`)}"`,
+        `<span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt" dir="auto">${iconHtml('📖', { size: 12 })} ${esc(rdText)}</span><span class="hr-lvpg">${esc(tl('readingPage', { page: d.book.page || 1 }))}</span>`);
+    }
     const what = h && d.st !== 'done' ? `, ${tl(d.where === 'game' ? 'inGame' : 'onDesk', { title: h.title })}` : '';
     return btn(`hr-lvchip st-${d.st}`, `data-hrlook="${esc(sid)}" aria-label="${esc(tl('chipLabel', { name, status: stLabel(d.st) }) + what)}"`,
       `<span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt">${esc(stLabel(d.st))}</span>${bar}`);
@@ -169,6 +175,15 @@ export function liveBoard(ctx) {
       <div class="hr-pmin"><span id="hr-pminl">${esc(tl('pass.length'))}</span>${btn('btn btn-sm hr-pstep', `data-hrmin="-1" aria-label="${esc(tl('pass.less'))}"${p.minutes <= (D.pulse || {}).passMin ? ' disabled' : ''}`, '−')}<b aria-live="polite">${esc(tl('pass.minutes', { count: p.minutes }))}</b>${btn('btn btn-sm hr-pstep', `data-hrmin="1" aria-label="${esc(tl('pass.more'))}"${p.minutes >= (D.pulse || {}).passMax ? ' disabled' : ''}`, '+')}</div>
       <p class="small muted hr-flnote">${esc(tl('hands.private'))}</p>`;
   }
+  /** A Reading handout in Today (step 4b): every student it went to, alphabetical (never ranked), with their step and
+   *  the quiz's first-try result. */
+  function readingRows(h) {
+    const coll = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true });
+    const rows = H.students.map(s => ({ s, card: (H.ho.desks[s.id] || []).find(x => x.id === h.id) })).filter(x => x.card && x.card.rd).sort((a, b) => coll.compare(a.s.name, b.s.name));
+    if (!rows.length) return '';
+    const step = (card) => { const rd = card.rd; return card.done ? tl('rd.done') : rd.step === 'read' ? (rd.page ? tl('readingPage', { page: rd.page }) : tl('rd.notStarted')) : tl(`rd.${rd.step}`); };
+    return `<ul class="plain hr-tgrd">${rows.map(({ s, card }) => `<li><bdi>${esc(s.name)}</bdi><span>${esc(step(card))}${card.rd.total ? ` · <b>${esc(tl('rd.score', { right: card.rd.right, total: card.rd.total }))}</b>` : ''}</span></li>`).join('')}</ul>`;
+  }
   /** Today's handouts: handed out since the start of the teacher's day, or since this live class started. */
   function todayHandouts() {
     const d0 = new Date(); d0.setHours(0, 0, 0, 0);
@@ -190,7 +205,7 @@ export function liveBoard(ctx) {
       const none = total - done - stuck - work, pc = n => (total ? (100 * n) / total : 0);
       return `<li class="hr-tg"><div class="hr-tgh"><b dir="auto">${iconHtml(h.icon, { size: 16 })} ${esc(h.title)}</b><span>${esc(tl('today.doneOf', { done, total }))}</span></div>
         <div class="hr-tgbar" role="img" aria-label="${esc(tl('today.barLabel', { done, work, stuck, none }))}"><i class="d" style="width:${pc(done)}%"></i><i class="w" style="width:${pc(work)}%"></i><i class="s" style="width:${pc(stuck)}%"></i></div>
-        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}</p></li>`;
+        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}</p>${h.reading ? readingRows(h) : ''}</li>`;
     }).join('');
     for (const [sid, d] of Object.entries(dd)) if (d.st === 'stuck') look.add(sid);
     const names = [...look].map(id => btn('hr-lookname', `data-hrlook="${esc(id)}"`, `<bdi>${esc(ctx.nameOfId(id))}</bdi>`)).join('');

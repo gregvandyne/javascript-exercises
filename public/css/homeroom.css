@@ -1043,3 +1043,84 @@ body.hr-subpage main#main{max-width:none;padding:0}
 .hd-dockbtn.hd-nbbtn{background:var(--accent);border-color:var(--accent-press);color:var(--on-accent);box-shadow:0 2px 0 var(--accent-press)}
 .hd-dockbtn.hd-nbbtn:hover{background:var(--accent-hover)}
 .hd.hr-big .hd-cardwrap>.hd-notebtn{font-size:1.05rem}
+
+/* ---------------------------------------------------------------- reading from the desk (step 4b; docs/decisions.md
+   "Homeroom: reading from the desk"; public/js/homeroom-reading.js): the book picker, the desk's reading layer (the
+   Library, a Reading handout's routine: Read, Quiz, 3 notes), the cards on the desk and the board, Today's rows. */
+.rdp-tools{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px}
+.rdp-grades{position:relative;flex:1 1 320px;min-width:0}
+.rdp-grades .chip{min-height:44px}
+.rdp-q{flex:1 1 200px;max-width:320px;min-height:44px}
+.rdp-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.rdp-book{display:flex;flex-direction:column;align-items:stretch;gap:4px;width:100%;height:100%;padding:8px;border:2px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);text-align:start;font:inherit;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.rdp-book:hover{border-color:var(--accent-press)}
+.rdp-book img{width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:var(--card-2)}
+.rdp-book b{font-size:.95rem;line-height:1.2;overflow-wrap:anywhere}
+.rdp-loading,.rdp-none{grid-column:1/-1;padding:16px 4px}
+.hd>.hr-player.hd-rd{background:var(--card)}
+.hd-rdtop{flex-wrap:wrap}
+.hd-rdtop .hr-playt{flex:1 1 0;min-width:0}
+.hr-pickbook{width:100%}
+.hd-rdbody{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;overflow:auto;background:var(--bg)}
+.hd-rdbody>.hd-rdframe{flex:1 1 auto;min-height:320px;background:var(--bg)}
+.hd-rdpad{width:100%;max-width:980px;margin:0 auto;padding:16px 16px 24px}
+.hd-rdh{display:flex;align-items:center;gap:8px;margin:4px 0 4px;font-size:1.35rem}
+.hd-rdlead{margin:0 0 14px;color:var(--muted);font-weight:600}
+.hd-rdsteps{list-style:none;display:flex;gap:6px;margin:0;padding:0}
+.hd-rdsteps li{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:2px 12px;border:2px solid var(--line);border-radius:999px;background:var(--card);font-weight:800;font-size:.9rem;white-space:nowrap}
+.hd-rdsteps li span{display:inline-grid;place-items:center;min-width:20px;height:20px;border-radius:999px;background:var(--card-2);font-size:.75rem}
+.hd-rdsteps li.on{border-color:var(--accent-press);background:color-mix(in srgb,var(--accent) 16%,var(--card))}
+.hd-rdsteps li.done{color:var(--muted)}
+.hd-rdsteps li.done span{background:var(--accent);color:var(--on-accent)}
+.hd-rdinsbar{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.hd-rdins{margin:0;padding:6px 10px;border-radius:10px;background:#FFF4C7;color:#141414;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
+.hd-rdpad>.hd-rdins{margin-bottom:12px}
+.hd-rdqs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.hd-rdq{padding:14px;border:2px solid var(--line);border-radius:18px;background:var(--card)}
+.hd-rdq h3{margin:0 0 8px;font-size:1.15rem;line-height:1.3}
+.hd-rdq h3 span{color:var(--muted)}
+.hd-rdq.is-solved{border-color:var(--accent-press)}
+.hd-rdopts{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-top:8px}
+.hd-rdopt{min-height:52px;padding:8px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card-2);color:var(--text);font:700 1.02rem var(--font);text-align:start;cursor:pointer;box-shadow:0 3px 0 var(--line)}
+.hd-rdopt:hover:not(:disabled){border-color:var(--accent-press)}
+.hd-rdopt:disabled{cursor:default}
+.hd-rdopt.ok{background:var(--accent);color:var(--on-accent);border-color:var(--accent-press)}
+.hd-rdopt.no{background:color-mix(in srgb,#FF8A6B 22%,var(--card));text-decoration:line-through;opacity:.8}
+.hd-rdhint{margin:8px 0 0;min-height:1.2em;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hd-rdnotes{display:flex;flex-direction:column;gap:6px}
+.hd-rdnote{padding:12px 14px;border:2px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:8px}
+.hd-rdnote .hr-label{display:inline-flex;align-items:center;gap:8px;font-size:1.05rem;margin:0}
+.hd-rdnote p{margin:2px 0 6px}
+.hd-rdnote textarea{width:100%;min-height:72px;font-size:1.02rem;resize:vertical}
+.hd-rdacts{gap:10px;flex-wrap:wrap;margin-top:6px}
+.hd-rddone{text-align:center}
+.hd-rddone .hd-rdh{justify-content:center}
+.hd-rddone .hd-rdacts{justify-content:center}
+.hd-rdbig{margin:12px 0 0}
+.hd-rd.hr-big .hd-rdq h3,.hd-rd.hr-big .hd-rdopt,.hd-rd.hr-big .hd-rdnote textarea{font-size:1.3rem}
+.hd-rd.hr-big .hd-rdlead,.hd-rd.hr-big .hd-rdnote p{font-size:1.1rem}
+.hd-rdshort{display:none}
+@media (max-width:819px){.hd-rdtop .hd-rdsteps{order:5;width:100%;overflow-x:auto}.hd-rdtop [data-rd="books"] .hd-rdhide{display:none}}
+@media (max-width:600px){.hd-rdtop .hr-playback .hd-rdhide{display:none}.hd-rdtop .hr-playback .hd-rdshort{display:inline}.hd-rdinsbar{padding:6px 8px}.hd-rdinsbar .hd-rdins{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;font-size:.9rem}}
+@media (max-width:600px){.hd-rdpad{padding:12px 12px 20px}.rdp-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.rdp-q{max-width:none}.hd-rdsteps li{min-height:32px;padding:2px 10px;font-size:.82rem}}
+/* the desk's Reading card */
+.hd-ccover{width:60px;height:44px;object-fit:cover;border-radius:10px;background:var(--card-2);flex:none}
+.hd-csteps{display:flex;flex-wrap:wrap;gap:4px}
+.hd-csteps i{font-style:normal;font-size:.72rem;font-weight:800;padding:1px 8px;border-radius:999px;background:var(--card-2);color:var(--muted)}
+.hd-csteps i.on{background:color-mix(in srgb,var(--accent) 22%,var(--card));color:var(--text)}
+.hd-csteps i.done{color:var(--accent-press)}
+/* the board: a Reading card on a desk, its step; the desk's sheet; the live chip; Today */
+.hr-ccover{flex:none;width:22px;height:18px;object-fit:cover;border-radius:4px}
+.hr-cstep{flex:none;max-width:48%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;font-weight:800;padding:1px 6px;border-radius:999px;background:var(--card);color:var(--muted)}
+.hr-cstep.on{color:var(--text);background:color-mix(in srgb,var(--accent) 22%,var(--card))}
+.hr-drd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 4px}
+.hr-drd img{width:64px;height:48px;object-fit:cover;border-radius:10px}
+.hr-drd p{margin:0;display:flex;flex-direction:column;flex:1 1 140px;min-width:0}
+.hr-lvread .hr-lvt{max-width:120px}
+.hr-lvpg{flex:none;color:var(--muted)}
+.hr-tgrd{margin:6px 0 0;display:flex;flex-direction:column;gap:2px;font-size:.85rem}
+.hr-tgrd li{display:flex;justify-content:space-between;gap:10px;padding:2px 0;border-top:1px dashed var(--line)}
+.hr-tgrd li span{color:var(--muted);text-align:end}
+.hr-tgrd li b{color:var(--text)}
+.hr-booksheet .rdp-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))}
+.hr-readmore{margin-top:-2px}

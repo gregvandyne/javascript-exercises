@@ -54,7 +54,7 @@ test('the desk: a student of a Homeroom class gets it; another class, a class wi
   assert.match(r.text, /\/js\/homeroom-desk\.js/);
   assert.match(r.text, /Room 4B/);
   assert.match(r.text, /noindex/);
-  assert.match(r.text, /See the room/); assert.match(r.text, /href="\/library"/);
+  assert.match(r.text, /See the room/); assert.match(r.text, /data-hd="library"/, 'the Library opens in the desk (step 4b)');
   assert.doesNotMatch(r.text, /\/plans|Teacher plan|\$\d/, 'students never see plans or prices');
   // See the room: every desk of the class, by the names classmates see (display names), never the roster's real names.
   for (const k of kids) { assert.ok(r.text.includes(k.id)); assert.ok(r.text.includes(k.display_name)); }

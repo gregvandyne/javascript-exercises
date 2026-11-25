@@ -15,6 +15,15 @@ import { aiOn, ttsBlob, deviceVoice, unlockAudio, stopReading } from '/js/tts.js
 import { sentences, tokens, dotWindow } from '/js/library-text.js';
 
 const D = pageData();
+// Inside Homeroom's reading layer (?in=hr, public/js/homeroom-reading.js; docs/decisions.md "Homeroom: reading from the
+// desk"): the layer hears the page reached and Read to me (hr:page) and the end of the book (hr:end); Escape and the
+// end's buttons ask it to close or go on (hr:close, hr:go).
+const inHr = !!D.embed && parent !== window;
+const toLayer = msg => { if (inHr) parent.postMessage(msg, location.origin); };
+if (inHr) {
+  addEventListener('keydown', e => { if (e.key === 'Escape') toLayer({ type: 'hr:close' }); });
+  document.addEventListener('click', e => { const b = e.target.closest('[data-hrgo]'); if (b) toLayer({ type: 'hr:go', to: b.dataset.hrgo }); });
+}
 const root = document.getElementById('reader');
 if (root && D.book) start();
 
@@ -107,14 +116,17 @@ function start() {
       for (let k = last + 1; k <= Math.min(n, last + 1); k++) if (bk.pages[k - 1].image) { const pre = new Image(); pre.src = bk.pages[k - 1].image.src; }
       if (last > furthest) furthest = last;
       if (!peek) save();
+      toLayer({ type: 'hr:page', book: bk.id, page: last, pages: n, aloud: usedAloud });
       if (reading) readPage();
     } else {
       // The last page was read: the questions (and the server hears the book was finished).
       if (furthest >= n) save({ page: n });
+      if (furthest >= n) toLayer({ type: 'hr:end', book: bk.id, page: n, pages: n, aloud: usedAloud });
       const h = document.getElementById('rd-end-h'); if (h) h.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    if (push) history.replaceState(null, '', `?p=${page}${location.hash}`);
+    // (inside Homeroom the frame's other settings stay in its address: in=hr, the routine, the supports)
+    if (push) { const qs = new URLSearchParams(location.search); qs.set('p', String(page)); history.replaceState(null, '', `?${inHr ? qs.toString() : `p=${page}`}${location.hash}`); }
   }
 
   prev.addEventListener('click', e => { e.preventDefault(); if (page > 1) show(page - 1); });
@@ -253,7 +265,7 @@ function start() {
     // Every sentence on screen, in reading order: { pnum (its page), s (its number on that page), sen, el }.
     const shown = view.filter(x => x >= 1 && x <= n).map((pnum, k) => ({ pnum, el: k ? text2 : text }));
     const list = shown.flatMap(({ pnum, el }) => sentences(bk.pages[pnum - 1].text).map((sen, s) => ({ pnum, s, sen, el })));
-    if (!usedAloud) { usedAloud = true; save(); }
+    if (!usedAloud) { usedAloud = true; save(); toLayer({ type: 'hr:page', book: bk.id, page: Math.min(lastOf(view), n), pages: n, aloud: true }); }
     let ai = canAi;
     const done = () => { if (my !== seq) return; clearHl(); };
     const say = i => {

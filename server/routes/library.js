@@ -9,6 +9,13 @@
 //   POST /api/library/:id/progress { page, aloud, cl?, step? }
 //   POST /api/library/:id/answer   { i, c, cl?, step? } -> { right, page (to look at, when wrong), solved, done }
 //   POST /api/library/assign       { bookId, classId, dueAt }
+//   GET  /api/library/books        ?grade=&q=: the books as cards (id, title, grade, cover, pages), for Homeroom's book
+//                                  pickers (the desk's Library, the teacher's Choose a book; docs/decisions.md
+//                                  "Homeroom: reading from the desk")
+// Inside Homeroom (?in=hr, only in a frame of this site): the reader in the desk's reading layer, framed by this site
+// alone, without the site bar or its own Back; it tells the layer the page reached (hr:page) and the end (hr:end).
+// &hr=1: the reading routine's Read step (the routine's own quiz comes next, so the library's questions are not shown);
+// &big=1 and &aloud=1: the student's supports (Bigger text; Read aloud: Read to me stands out).
 // An assigned book's results (who read it, Read to me or on their own, the score, where they stopped, the hardest
 // question) are its page under the class's Progress: storyResults(), called by routes/progress.js.
 import { Router } from 'express';
@@ -277,7 +284,10 @@ const pageText = text => String(text).split('\n\n').map((para, i) => html`${i ? 
 router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = readerOf(req.user);
-  const ctx = LIB.assignmentCtx(u, bk, req.query.cl, req.query.step);
+  const embed = req.query.in === 'hr' && req.headers['sec-fetch-dest'] === 'iframe', routine = embed && req.query.hr === '1';
+  if (embed) { res.set('Content-Security-Policy', String(res.get('Content-Security-Policy') || '').replace("frame-ancestors 'none'", "frame-ancestors 'self'")); res.removeHeader('X-Frame-Options'); }
+  const big = embed && req.query.big === '1', aloud = embed && req.query.aloud === '1';
+  const ctx = embed ? null : LIB.assignmentCtx(u, bk, req.query.cl, req.query.step);
   LIB.freshForAssignment(u, bk, ctx);
   const rd = u ? LIB.readOf(u.id, bk.id) : null;
   const n = bk.pages.length;
@@ -292,8 +302,8 @@ router.get('/library/:id/read', (req, res) => {
     : html`<figure class="rd-pic" hidden><img id="rd-img" alt=""></figure>`;
   // The first page is drawn by the server (it works without JavaScript: Back/Next are links); public/js/library.js takes
   // over, turns pages in place and runs Read to me and the questions.
-  const body = html`<div class="rd${classic ? ' rd-classic' : ''}" id="reader" data-book="${bk.id}">
-    <div class="rd-top"><a class="rd-back" href="${back.href}"><span class="flip" aria-hidden="true">←</span> <span dir="auto">${back.label}</span></a>
+  const body = html`<div class="rd${classic ? ' rd-classic' : ''}${embed ? ' rd-inhr' : ''}${big ? ' rd-big' : ''}${aloud ? ' rd-aloudsup' : ''}" id="reader" data-book="${bk.id}">
+    <div class="rd-top">${embed ? raw('<span class="rd-back" aria-hidden="true"></span>') : html`<a class="rd-back" href="${back.href}"><span class="flip" aria-hidden="true">←</span> <span dir="auto">${back.label}</span></a>`}
       <h1 class="rd-title" dir="auto">${bk.title}</h1>
       <button class="btn btn-primary rd-aloud" type="button" id="rd-aloud" aria-pressed="false" hidden>${ico('🔊', { size: 18 })} <span>${t('library.readToMe')}</span></button></div>
     <div class="rd-stage${classic ? ` is-classic${pg.image ? '' : ' is-text'}` : ''}" id="rd-stage"${p0 > n ? raw(' hidden') : ''}>
@@ -308,7 +318,13 @@ router.get('/library/:id/read', (req, res) => {
         <span class="rd-count small muted" id="rd-count">${t('library.pageOf', { page: Math.min(p0, n), pages: n })}</span>
         <a class="btn btn-primary rd-next" id="rd-next" href="?p=${p0 + 1}">${p0 >= n ? t('library.toQuestions') : t('library.next')} <span class="flip" aria-hidden="true">▶</span></a>
       </nav></div>
-    <section class="rd-end" id="rd-end"${p0 > n ? '' : raw(' hidden')} aria-labelledby="rd-end-h">
+    ${routine ? html`<section class="rd-end rd-hrend" id="rd-end"${p0 > n ? '' : raw(' hidden')} aria-labelledby="rd-end-h">
+      <div class="rd-end-head"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
+        <h2 id="rd-end-h" tabindex="-1">${ico('⭐', { size: 28 })} ${t('library.finished', { title: bk.title })}</h2>
+        <p class="muted">${t('homeroom.reading.quizNext')}</p></div>
+      <ol class="rd-qs" id="rd-qs" hidden></ol><div class="rd-done" id="rd-done" hidden><p class="rd-done-msg" role="status"></p></div>
+      <div class="row rd-hrgo"><a class="btn" href="?p=1&amp;in=hr&amp;hr=1${big ? '&big=1' : ''}${aloud ? '&aloud=1' : ''}">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a><button class="btn btn-primary btn-big" type="button" data-hrgo="quiz">${ico('🧩', { size: 18 })} ${t('homeroom.reading.toQuiz')}</button></div>
+    </section>` : html`<section class="rd-end" id="rd-end"${p0 > n ? '' : raw(' hidden')} aria-labelledby="rd-end-h">
       <div class="rd-end-head"><img src="${bk.cover.src}" alt="" width="${bk.cover.w || 440}" height="${bk.cover.h || 330}">
         <h2 id="rd-end-h" tabindex="-1">${ico('⭐', { size: 28 })} ${t('library.finished', { title: bk.title })}</h2>
         <p class="muted">${t('library.questionsLead', { count: bk.questions.length })}</p></div>
@@ -316,16 +332,22 @@ router.get('/library/:id/read', (req, res) => {
         <div class="rd-opts">${x.choices.map((c, k) => html`<button class="rd-opt" type="button" data-c="${k}" disabled>${c}</button>`)}</div>
         <p class="rd-hint" role="status"></p></li>`)}</ol>
       <div class="rd-done" id="rd-done" hidden><p class="rd-done-msg" role="status"></p>
-        <div class="row"><a class="btn" href="?p=1">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/read'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
+        <div class="row"><a class="btn" href="?p=1${embed ? '&amp;in=hr' : ''}">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a>${embed ? html`<button class="btn btn-primary" type="button" data-hrgo="library">${t('library.moreBooks')}</button>` : html`<a class="btn btn-primary" href="${cls ? back.href : '/read'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a>`}</div></div>
       <noscript><p class="notice">${t('library.needJs')}</p></noscript>
-    </section>
+    </section>`}
     ${credits(t, bk)}
   </div>
   ${jsonData('page-data', { book: LIB.forReader(bk), start: p0, ctx: ctx ? { cl: ctx.clId, step: ctx.stepId } : null, signedIn: !!u,
-    read: rd ? { page: rd.page, solved: rd.solved, aloud: !!rd.aloud } : null, tts: ttsOnLocales(), backHref: back.href })}`;
-  page(req, res, { title: bk.title, active: 'read', body, head: CSS, scripts: ['/js/library.js'], mid: true });
+    read: rd ? { page: rd.page, solved: rd.solved, aloud: !!rd.aloud } : null, tts: ttsOnLocales(), backHref: back.href, ...(embed ? { embed: true, routine, aloudSup: aloud } : {}) })}`;
+  page(req, res, { title: bk.title, active: 'read', body, head: CSS, scripts: ['/js/library.js'], mid: true, ...(embed ? { bare: true, bodyClass: 'rd-inhrpage' } : {}) });
 });
 
+// The books as cards for Homeroom's pickers: one grade (or all), words to search for; the library is open to everyone.
+router.get('/api/library/books', rateLimit('library-books', 1200, 3600e3), (req, res) => {
+  const grade = LIB.gradeParam(req.query.grade), words = String(req.query.q || '').slice(0, 60).trim();
+  const list = LIB.search({ grade, q: words });
+  res.json({ books: list.slice(0, 120).map(bk => ({ id: bk.id, title: bk.title, grade: bk.grade, cover: bk.cover.src, w: bk.cover.w || 440, h: bk.cover.h || 330, pages: bk.pages.length })), count: list.length });
+});
 const ctxOf = (req, bk) => LIB.assignmentCtx(readerOf(req.user), bk, b(req).cl, b(req).step);
 const whole = v => (typeof v === 'number' || (typeof v === 'string' && /^\d{1,4}$/.test(v)) ? +v : NaN);
 router.post('/api/library/:id/progress', rateLimit('library', 600, 60e3), (req, res) => {
