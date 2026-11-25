@@ -6,7 +6,7 @@
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
 import { liveOn } from '../services/classlive-sessions.js';
-import { canHost, GROWNUP_OPEN_MAX, capacityFor } from '../services/classlive-access.js';
+import { canHost, GROWNUP_OPEN_MAX, capacityFor, MODES as A_MODES } from '../services/classlive-access.js';
 import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
 import express, { Router } from 'express';
 import fs from 'node:fs';
@@ -463,7 +463,7 @@ router.get('/teachers/live', (req, res, next) => {
 
   <section class="lp-sec" id="modes" aria-labelledby="modes-h">
     ${el(t, 'h2', 'teachersLive.modes.h', {}, ' id="modes-h"')}
-    <div class="lp-modes">${mode('🏝️', 'race')}${mode('⚡', 'battle')}${mode('🌟', 'board')}${mode('🤔', 'wyr')}${mode('🌍', 'atlas')}${mode('🪢', 'tug')}${mode('🦉', 'doodle')}</div>
+    <div class="lp-modes">${[['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugRemoved(A_MODES[MODE_ID[k]])).map(([e, k]) => mode(e, k))}</div>
   </section>
 
   <section class="panel" id="own" aria-labelledby="own-h">

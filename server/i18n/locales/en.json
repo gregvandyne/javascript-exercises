@@ -8231,7 +8231,7 @@
     "live": {
       "h": "Live class games",
       "p1": "Run a live quiz race or any live-ready game on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions), Question Battle and Brain Board (a board of categories, easy to hard).",
+      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Brain Board (a board of categories, easy to hard).",
       "li2": "Use a starter question set, type a quick set, or turn a lesson's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -8989,7 +8989,7 @@
         },
         "faq": {
           "q2": "Can my child play if they can’t read yet?",
-          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer and Tug of Math use numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
+          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer uses numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
           "q3": "Are the courses for this age?",
           "a3": "One is. Number Quest, our math course, starts in kindergarten: its Launchpad street is for kindergarten to grade 2, and its games read every instruction aloud. CS Quest and Cyber Defenders start in grade 3, at about age 8.",
           "q4": "Can a 6 year old use the AI Builder?",
@@ -10721,7 +10721,7 @@
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
-        "p": "Choose Quest Race, Question Battle or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
+        "p": "Choose Quest Race or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
         "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
       },
       "s2": {
@@ -11826,7 +11826,7 @@
       "kicker": "Live class games",
       "h": "Light up the projector",
       "lead": "Warm-ups and exit tickets your class actually looks forward to. Students join on their own devices with a 7-digit code.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
+      "li1": "Quest Race, Brain Board, Would You Rather and more",
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
       "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",

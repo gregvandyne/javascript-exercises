@@ -7246,7 +7246,7 @@
     "live": {
       "h": "Jogos ao vivo em sala de aula",
       "p1": "Conduza uma corrida de perguntas ao vivo ou qualquer jogo pronto para o modo ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas), Batalha de Perguntas e Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil).",
+      "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas) e Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil).",
       "li2": "Use um conjunto pronto, digite um conjunto rápido ou transforme as perguntas de uma aula em um quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
@@ -7671,7 +7671,7 @@
         },
         "faq": {
           "q2": "Meu filho pode jogar se ainda não sabe ler?",
-          "a2": "Em alguns jogos, sim. Word Trail e Shark Plank leem cada palavra em voz alta, Word Hunt lê uma palavra quando você toca nela, e Sum Racer e Tug of Math usam números. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
+          "a2": "Em alguns jogos, sim. Word Trail e Shark Plank leem cada palavra em voz alta, Word Hunt lê uma palavra quando você toca nela, e Sum Racer usa números. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
           "q3": "Os cursos são para esta idade?",
           "a3": "Um deles, sim. Number Quest, nosso curso de matemática, começa na educação infantil: a rua Launchpad vai da educação infantil ao 2º ano, e seus jogos leem cada instrução em voz alta. CS Quest e Cyber Defenders começam no 3º ano, por volta dos 8 anos.",
           "q4": "Uma criança de 6 anos pode usar o Construtor com IA?",
@@ -9403,7 +9403,7 @@
       "lead": "Telas reais de um jogo ao vivo em uma escola de demonstração com nomes inventados.",
       "s1": {
         "h": "Escolha um jogo e as suas perguntas",
-        "p": "Escolha Corrida de Missões, Batalha de Perguntas ou Tabuleiro Cérebro e depois as perguntas: o banco de perguntas por matéria e idade (de 6 a 14 anos), o seu próprio conjunto, um que um colega compartilhou ou as perguntas de uma das suas aulas.",
+        "p": "Escolha Corrida de Missões ou Tabuleiro Cérebro e depois as perguntas: o banco de perguntas por matéria e idade (de 6 a 14 anos), o seu próprio conjunto, um que um colega compartilhou ou as perguntas de uma das suas aulas.",
         "alt": "O primeiro passo para iniciar um jogo ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores combinam com ele."
       },
       "s2": {
@@ -10348,7 +10348,7 @@
       "kicker": "Jogos de turma ao vivo",
       "h": "Acenda o projetor",
       "lead": "Aquecimentos e tíquetes de saída que a turma espera ansiosa. Os alunos entram pelos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math e mais",
+      "li1": "Quest Race, Brain Board, Would You Rather e mais",
       "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
       "li3": "As pontuações vão direto para o seu boletim",
       "li4": "Jogos da turma: só os seus alunos com sessão iniciada. Jogos com convidados: nomes inventados e seguros. Sem chat e sem texto livre em ambos",

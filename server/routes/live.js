@@ -196,7 +196,7 @@ router.get('/live', on, requireAnyAccount, hostOnly, (req, res) => {
   page(req, res, { title: t('live.landing.title'), active: 'live', mid: true, head: '<link rel="stylesheet" href="/css/build-setup.css"><link rel="stylesheet" href="/css/live.css">', scripts: ['/js/live-sets.js'],
     ...(forClass ? { back: `/class/${forClass.id}`, backLabel: forClass.name } : {}),
     body: V.landingBody(req, { forClass, modes, groups, sets: SETS.listFor(u), starters, classes: teaching, family, pre, recent: R.hostRuns(u.id, 8), maxPlayers: A.maxPlayersFor(u, 'open', null) === 30 ? 30 : config.liveMaxPlayers, origin: requestOrigin(req),
-      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() ? tugPicker(req) : null, doodle: doodlePicker(req),
+      prefs: ST.loadPrefs(u.id), teamsOn: LS.teamsOn(), bank: pickerFor(req.locale), wyr: wyrPicker(req), atlas: atlasPicker(req), tug: LS.teamsOn() && modeOpen(u, 'tug') ? tugPicker(req) : null, doodle: doodlePicker(req),
       cohost: { invites: CH.invitesFor(u).map(x => ({ sid: x.s.id, title: x.s.title, from: x.from })), on: CH.cohostingFor(u).map(x => ({ sid: x.id, title: x.title })) } }) });
 });
 
@@ -371,6 +371,9 @@ router.post('/api/live/sessions', on, requireAnyAccount, hostOnly, rateLimit('lv
     if (!f.ok) return apiErr(req, res, f.status, f.code);
     opts = f.opts;
   } else opts = sessionOpts(b, req);
+  // Tug of Math and Question Battle are off the site (game-focus.js removedGames): no new room in their modes, from any
+  // form or saved run, unless the host may still open the game (the platform admin, a class with it assigned).
+  if (opts.mode && focus.slugRemoved(A.MODES[opts.mode]) && !modeOpen(req.user, opts.mode)) return apiErr(req, res, 404, 'notFound');
   const r = LS.createSession(req.user, opts);
   if (!r.ok) {
     if (r.code === 'hasOpen') {

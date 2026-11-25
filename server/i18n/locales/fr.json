@@ -7244,7 +7244,7 @@
     "live": {
       "h": "Jeux en direct en classe",
       "p1": "Lancez une course-quiz en direct ou tout jeu prêt pour le direct au vidéoprojecteur. Les élèves rejoignent sur leurs propres appareils avec un code à 7 chiffres.",
-      "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions), Bataille de questions et Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile).",
+      "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions) et Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile).",
       "li2": "Utilisez une série de départ, tapez une série rapide ou transformez les questions d’une leçon en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
@@ -7669,7 +7669,7 @@
         },
         "faq": {
           "q2": "Mon enfant peut-il jouer s’il ne sait pas encore lire ?",
-          "a2": "Pour certains jeux, oui. Word Trail et Shark Plank lisent chaque mot à voix haute, Word Hunt lit un mot quand on le touche, et Sum Racer et Tug of Math utilisent des nombres. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
+          "a2": "Pour certains jeux, oui. Word Trail et Shark Plank lisent chaque mot à voix haute, Word Hunt lit un mot quand on le touche, et Sum Racer utilise des nombres. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
           "q3": "Les parcours sont-ils prévus pour cet âge ?",
           "a3": "L’un d’eux, oui. Number Quest, notre parcours de maths, commence en grande section : sa rue Launchpad va de la grande section au CE1, et ses jeux lisent chaque consigne à voix haute. CS Quest et Cyber Defenders commencent au CE2, vers 8 ans.",
           "q4": "Un enfant de 6 ans peut-il utiliser le Constructeur IA ?",
@@ -9401,7 +9401,7 @@
       "lead": "De vrais écrans d’une partie en direct dans une école de démonstration aux noms inventés.",
       "s1": {
         "h": "Choisissez un jeu et vos questions",
-        "p": "Choisissez Course aux quêtes, Bataille de questions ou Plateau Cerveau, puis les questions : la banque de questions par matière et par âge (de 6 à 14 ans), votre propre série, une série partagée par un collègue ou les questions de l’une de vos leçons.",
+        "p": "Choisissez Course aux quêtes ou Plateau Cerveau, puis les questions : la banque de questions par matière et par âge (de 6 à 14 ans), votre propre série, une série partagée par un collègue ou les questions de l’une de vos leçons.",
         "alt": "La première étape pour lancer une partie en direct, « Qu’est-ce que vous voulez jouer ? » : Quest Race, Question Battle et Brain Board, chacun avec le nombre de joueurs qui lui convient."
       },
       "s2": {
@@ -10346,7 +10346,7 @@
       "kicker": "Jeux de classe en direct",
       "h": "Allumez le vidéoprojecteur",
       "lead": "Des échauffements et des bilans de sortie que votre classe attend avec impatience. Les élèves rejoignent la partie sur leur propre appareil avec un code à 7 chiffres.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math et d’autres",
+      "li1": "Quest Race, Brain Board, Would You Rather et d’autres",
       "li2": "Utilisez une série de questions toute prête, écrivez la vôtre ou laissez l’IA en proposer une à modifier",
       "li3": "Les scores arrivent directement dans votre carnet de notes",
       "li4": "Jeux de classe : seulement vos élèves connectés. Jeux avec invités : des noms inventés, sans risque. Ni chat ni texte libre dans les deux cas",

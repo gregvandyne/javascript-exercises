@@ -22,21 +22,30 @@ export const HIDDEN_GAMES = Object.freeze([
   'beat-lanes', 'loop-lab', 'would-you-rather',
 ]);
 
+/** The official games taken off the site for good (owner, 25 Nov 2026; docs/decisions.md "Tug of Math and Question
+ *  Battle taken off"): hidden as above whatever ARCADE says, and with them their Oomba Live modes ('tug', 'battle';
+ *  classlive-access.js MODES). Nothing is deleted: plays, saves and results stay, and a class that has one assigned
+ *  still opens it (mayOpenHidden). */
+export const REMOVED_GAMES = Object.freeze(['tug-of-math', 'question-battle']);
+/** The removed games right now: REMOVED_GAMES unless config.removedGames (env REMOVED_GAMES) replaces it. */
+export const removedGames = () => (config.removedGames ? config.removedGames.map(canonicalSlug) : REMOVED_GAMES);
+/** Is this official game's slug removed for good (whatever ARCADE says)? */
+export const slugRemoved = slug => removedGames().includes(String(canonicalSlug(slug) || ''));
+
 // (an old slug in HIDDEN_GAMES means the game under its new one: services/slug-aliases.js)
-const list = () => (config.hiddenGames ? config.hiddenGames.map(canonicalSlug) : HIDDEN_GAMES);
+const list = () => [...(arcadeHidden() ? (config.hiddenGames ? config.hiddenGames.map(canonicalSlug) : HIDDEN_GAMES) : []), ...removedGames()];
 /** Is the arcade hidden right now (ARCADE off)? */
 export const arcadeHidden = () => !config.arcade;
 /** Are the courses hidden right now (COURSES off)? */
 export const coursesHidden = () => !config.courses;
 /** Is this official game's slug hidden right now? */
-export const slugHidden = slug => arcadeHidden() && list().includes(String(canonicalSlug(slug) || ''));
+export const slugHidden = slug => list().includes(String(canonicalSlug(slug) || ''));
 /** Is this games row hidden right now? Only official games (source 'seed'): a game someone built is never hidden. */
 export const gameHidden = g => !!(g && g.source === 'seed' && slugHidden(g.slug));
 /** A list of slugs without the hidden ones (for hand-made lists: hubs, landing cards, suggestions). */
-export const keepSlugs = slugs => (arcadeHidden() ? slugs.filter(s => !slugHidden(s)) : slugs);
-/** SQL to add to a games query (alias g) that leaves the hidden official games out; '' while ARCADE is on. */
+export const keepSlugs = slugs => slugs.filter(s => !slugHidden(s));
+/** SQL to add to a games query (alias g) that leaves the hidden official games out (the removed ones whatever ARCADE says). */
 export function hiddenSql(alias = 'g') {
-  if (!arcadeHidden()) return '';
   const slugs = list().map(s => `'${String(s).replace(/[^a-z0-9-]/g, '')}'`).join(',');
   return slugs ? ` AND NOT (${alias}.source='seed' AND ${alias}.slug IN (${slugs}))` : '';
 }
@@ -65,7 +74,6 @@ export const mayOpenCourses = user => !coursesHidden() || !!(user && (user.role 
 
 /** The /learn/<hub> subject pages still worth a page (learn.js HUBS): the make-a-game page, and every page with a game
  *  that is not hidden. All of them while ARCADE is on. */
-export const openHubs = hubs => (arcadeHidden() ? hubs.filter(h => h.extra === 'builder' || keepSlugs(h.games).length) : hubs);
+export const openHubs = hubs => hubs.filter(h => h.extra === 'builder' || keepSlugs(h.games).length);
 /** The Learn tab's subject chips (learn.js SUBJECTS) that still have a game (learn.js SHELF_INFO) not hidden. */
-export const openSubjects = (subjects, shelfInfo) => (arcadeHidden()
-  ? subjects.filter(x => Object.entries(shelfInfo).some(([slug, i]) => i.subject === x.key && !slugHidden(slug))) : subjects);
+export const openSubjects = (subjects, shelfInfo) => subjects.filter(x => Object.entries(shelfInfo).some(([slug, i]) => i.subject === x.key && !slugHidden(slug)));
