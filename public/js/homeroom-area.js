@@ -21,7 +21,7 @@ export const hasContent = area => { const a = (area && area.__ann) || {}; return
  *  box (its height follows); 'contain': as big as fits in its box. */
 export function areaHtml(area, { mode = 'width', label = true } = {}) {
   const a = (area && area.__ann) || {}, shapes = (area && area.shapes) || [];
-  const notes = (a.notes || []).map(n => `<div class="mp-sticky hr-rosticky" style="left:${(+n.x || 0) * 100}%;top:${(+n.y || 0) * 100}%"><p dir="auto">${esc(n.text)}</p></div>`).join('');
+  const notes = (a.notes || []).map(n => `<div class="mp-sticky hr-rosticky" style="left:${(+n.x || 0) * 100}%;top:${(+n.y || 0) * 100}%${Number.isFinite(+n.w) && Number.isFinite(+n.h) ? `;width:${+n.w}px;min-height:${+n.h}px;max-width:none` : ''}"><p dir="auto">${esc(n.text)}</p></div>`).join('');
   const texts = (a.texts || []).map(x => textBoxHtml(x, { editing: false, ro: true })).join('');
   const empty = hasContent(area) ? '' : `<p class="hr-roempty">${esc(t('js.homeroom-area.empty'))}</p>`;
   return `<div class="hr-fit ${mode === 'contain' ? 'contain' : ''}" data-fit="${mode}"><div class="hr-fitin" style="width:${AREA.w}px;height:${AREA.h}px">

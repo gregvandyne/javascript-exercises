@@ -13780,3 +13780,38 @@ ahead"). Builds on steps 1 and 2. Migration `0128_homeroom_live`.
 - **Open**: aides and sub links answering hands (step 3, later); supports per student; "Remove a sticky" once students
   can add them; Needs a look from more signals (several misses in a row, many hints: step 5); a socket per class if
   polling ever shows lag in the 35-student load test.
+
+## Homeroom: one way to edit the board (25 Nov 2026)
+
+The owner, in Safari on a MacBook: text could not be clicked again to retype, a sticky note resized only in height,
+shapes and pen lines were nearly impossible to click back onto, and the ⋯ menu opened off the left edge when the top
+bar wrapped. Causes: a draw tool stayed on after placing (a click on existing text with Text still on made a new empty
+one), shapes took presses only on their 5 px stroke (about 3 px on screen at Fit's zoom) and pen lines took none, notes
+had no width (the textarea's own `resize: vertical` was the only handle), the board's `user-select: none` stops WebKit
+editing text inside it, and the menu was `right: 0` under its button whatever side of the screen that was.
+- **One model** (`public/js/homeroom-board.js`, used by `homeroom.js`): a **Select** tool (first in Board tools, the
+  default). Tap any object to select it; it is hit-tested in JS in area pixels with a margin of 14 screen pixels, so a pen
+  line or a shape's outline is as easy to catch as a note, and the inside of a rectangle or circle counts too. Selected:
+  an outline, handles (corners and edges; a pen line's corners, which scale it; a line's two ends) and a toolbar over it,
+  kept inside the board: Edit and Done (notes, text), A- A+ (text), the four colors (shapes, pen lines), Delete. Drag to
+  move, a handle to resize. Tap a selected note or text again (so a double-click or double-tap too) to type in it in
+  place: the words become `contenteditable` with `user-select: text`, the caret where it was tapped
+  (`caretPositionFromPoint`, else WebKit's `caretRangeFromPoint`). Escape or a tap elsewhere finishes; Delete or
+  Backspace deletes the selection when nothing is being typed; a tap on the empty board lets go. Pointer events only, so
+  mouse, pen and touch work the same.
+- **Tools go back to Select** after one sticky note, text box or shape is placed (the new one is selected, its handles
+  show it can be resized); a tap with a shape tool puts a middle-sized shape there. The pen stays on until Select or
+  Escape (writing takes many strokes). While a draw tool is on, presses draw; otherwise they never start a new object.
+- **Text is a box** like a note (260 x 40 to start, words wrap, newlines kept); notes and text boxes resize in width and
+  height. Notes now store `w`, `h` (area pixels): the server keeps them within `NOTE_BOX` (`homeroom-seats.js`, 90..600 by
+  60..380); text sizes were already kept (`TEXT_BOX`). The desks' and projector's read-only drawing uses the sizes.
+  Saving is the same debounced POST; undo is the same history.
+- **Popovers stay on screen**: `public/js/popover-place.js` places the ⋯ menu `position: fixed` by its button (right
+  edges lined up, else left edges), under it or over it where there is more room, clamped inside the viewport with its
+  height capped, again on resize and scroll. The Groups, sign-in and hand-out sheets were already fixed and centered.
+- **Manipulatives unchanged**: its live room edits through `manip.js` / `board-ann.js` (textarea text, grip and corner),
+  a different code path; Homeroom no longer uses `textBoxPointer`, `textBoxHtml` editing or `snapText`.
+- Tests: `tests/unit/homeroom-board-browser.test.js` (text written, let go, selected, edited at the caret, double-click,
+  reload; a note resized both ways and moved; an oval selected by its outline, moved, resized, recolored, deleted; a pen
+  line selected near it, scaled, deleted with the key; a tablet by touch; the ⋯ menu inside the screen at 390, 900 x 700,
+  1366 x 768 and live; the server's sizes). Chromium only here: Playwright's WebKit is not installed in this environment.

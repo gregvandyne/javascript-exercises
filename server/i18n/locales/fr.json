@@ -2080,8 +2080,8 @@
         "line": "Ligne"
       },
       "shapeDelete": "Supprimer cette forme",
-      "hintMove": "Choisissez un outil, puis dessinez ou touchez l’espace de l’enseignant.",
-      "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez de nouveau l’outil quand vous avez fini.",
+      "hintMove": "Touchez un élément de l’espace de l’enseignant pour le sélectionner. Faites-le glisser pour le déplacer, tirez une poignée pour le redimensionner, touchez-le encore pour écrire.",
+      "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez Sélectionner quand vous avez fini.",
       "tooMany": "Il n’y a plus de place pour en ajouter dans l’espace de l’enseignant.",
       "arrange": "Placer les élèves",
       "signin": "Connexion des élèves",
@@ -2178,6 +2178,12 @@
         "noSticker": "Aucun",
         "private": "Seul cet élève le voit, sur son bureau et la page de la leçon.",
         "remove": "Retirer"
+      },
+      "select": "Sélectionner",
+      "hintPlace": "Touchez ou faites glisser dans l’espace de l’enseignant pour le placer. Vous revenez ensuite à Sélectionner.",
+      "sel": {
+        "tools": "Élément sélectionné",
+        "delete": "Supprimer l’élément sélectionné"
       }
     },
     "stories": {

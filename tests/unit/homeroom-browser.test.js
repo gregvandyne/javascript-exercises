@@ -85,12 +85,12 @@ test('Arrange seats: a preset and a dragged desk are saved; a sticky note in the
   const after = H.roomOf(cls.id).seats[kids[0].id];
   assert.ok(after.x > before.x && after.y > before.y, 'the desk moved where it was dropped');
   await page.click('[data-hr="seatsdone"]');
-  // A sticky note: the tool, a tap in the teacher's area, words, Done.
+  // A sticky note: the tool, a tap in the teacher's area, words typed straight into it, Done.
   await page.click('[data-hrmode="note"]');
   const area = await page.locator('.hr-area').boundingBox();
   await page.mouse.click(area.x + area.width * 0.3, area.y + area.height * 0.4);
-  await page.fill('.hr-area textarea.mp-notetext', 'Fractions warm-up');
-  await page.click('.hr-area [data-nact="done"]'); await page.waitForTimeout(800);
+  await page.keyboard.type('Fractions warm-up');
+  await page.click('#hr-seltools [data-hrsel="done"]'); await page.waitForTimeout(800);
   assert.deepEqual(H.roomOf(cls.id).area.__ann.notes.map(n => n.text), ['Fractions warm-up']);
   // Reloaded: the same seats and the note.
   await page.reload(); await page.waitForSelector('.hr-desk');

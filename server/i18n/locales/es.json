@@ -2080,8 +2080,8 @@
         "line": "Línea"
       },
       "shapeDelete": "Eliminar esta forma",
-      "hintMove": "Elige una herramienta y luego dibuja o toca en el área del docente.",
-      "hintDraw": "Dibuja en el área del docente. Toca la herramienta otra vez cuando termines.",
+      "hintMove": "Toca cualquier cosa del área del docente para seleccionarla. Arrástrala para moverla, tira de un tirador para cambiar su tamaño y tócala otra vez para escribir.",
+      "hintDraw": "Dibuja en el área del docente. Toca Seleccionar cuando termines.",
       "tooMany": "No caben más de esos en el área del docente.",
       "arrange": "Organizar los asientos",
       "signin": "Inicio de sesión de alumnos",
@@ -2178,6 +2178,12 @@
         "noSticker": "Ninguna",
         "private": "Solo lo ve este alumno, en su mesa y en la página de la lección.",
         "remove": "Quitar"
+      },
+      "select": "Seleccionar",
+      "hintPlace": "Toca o arrastra en el área del docente para colocarlo. Después vuelves a Seleccionar.",
+      "sel": {
+        "tools": "Elemento seleccionado",
+        "delete": "Eliminar el elemento seleccionado"
       }
     },
     "stories": {

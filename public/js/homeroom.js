@@ -27,7 +27,9 @@
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
-import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
+import { inkLine } from '/js/board-ann.js';
+import { areaEditor } from '/js/homeroom-board.js';
+import { placePopover } from '/js/popover-place.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
 import { liveBoard } from '/js/homeroom-live.js';
@@ -47,7 +49,7 @@ const room = D.room || {};
 const H = {
   students: room.students || [], seats: room.seats || {}, preset: room.preset || 'rows', groups: room.groups || [], members: room.members || {},
   ann: { notes: [], texts: [], strokes: [], ...((room.area || {}).__ann || {}) }, shapes: Array.isArray((room.area || {}).shapes) ? room.area.shapes : [],
-  view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], editing: null, textEdit: null, shapeSel: null, gesture: null, pointers: new Map(),
+  view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], sel: null, edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
   teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null,
@@ -73,35 +75,7 @@ const teamNames = tm => tm.members.map(nameOfId).filter(Boolean).join(', ');
 
 // ---------------------------------------------------------------- the board
 const world = () => boardSize(H.seats, H.teams);
-function areaInner() {
-  return `<div class="rm-in hr-areain"><svg class="mp-ink" viewBox="0 0 ${AREA.w} ${AREA.h}" aria-hidden="true">${H.ann.strokes.map(s => inkLine(s, AREA.w, AREA.h)).join('')}</svg>
-    <svg class="hr-shapes" viewBox="0 0 ${AREA.w} ${AREA.h}" aria-hidden="true">${H.shapes.map(shapeSvg).join('')}</svg>
-    ${H.shapeSel ? shapeDelHtml() : ''}
-    <div class="mp-texts">${H.ann.texts.map(x => textBoxHtml(x, { editing: H.textEdit === x.id, ro: false, del: 'data-hrtx', id: `hrt-${x.id}`, label: tm('textLabel'), ph: tm('textPh'), delLabel: tm('textDelete') })).join('')}</div>
-    <div class="mp-notes">${H.ann.notes.map(noteHtml).join('')}</div></div>`;
-}
-function shapeSvg(s) {
-  const x1 = s.x * AREA.w, y1 = s.y * AREA.h, x2 = s.x2 * AREA.w, y2 = s.y2 * AREA.h, on = H.shapeSel === s.id ? ' on' : '';
-  const attrs = `class="hr-shape${on}" data-shape="${esc(s.id)}" stroke="${esc(s.c)}" stroke-width="5" fill="none" stroke-linecap="round"`;
-  if (s.k === 'line') return `<line ${attrs} x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/><line class="hr-hit" data-shape="${esc(s.id)}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
-  const x = Math.min(x1, x2), y = Math.min(y1, y2), w = Math.abs(x2 - x1), h = Math.abs(y2 - y1);
-  if (s.k === 'circle') return `<ellipse ${attrs} cx="${x + w / 2}" cy="${y + h / 2}" rx="${w / 2}" ry="${h / 2}"/>`;
-  return `<rect ${attrs} x="${x}" y="${y}" width="${w}" height="${h}" rx="6"/>`;
-}
-function shapeDelHtml() {
-  const s = H.shapes.find(x => x.id === H.shapeSel); if (!s) return '';
-  return btn('hr-shapedel', `data-hrshapedel="${esc(s.id)}" style="left:${Math.max(s.x, s.x2) * 100}%;top:${Math.min(s.y, s.y2) * 100}%" aria-label="${esc(th('shapeDelete'))}"`, '×');
-}
-function noteHtml(n, i) {
-  const pos = `left:${(+n.x || 0) * 100}%;top:${(+n.y || 0) * 100}%`, id = esc(n.id);
-  if (H.editing === n.id) {
-    return `<div class="mp-sticky editing" data-note="${id}" style="${pos}"><label class="sr-only" for="hrn-${id}">${esc(tm('noteText', { n: i + 1 }))}</label>
-      <textarea id="hrn-${id}" class="mp-notetext" rows="3" maxlength="300" placeholder="${esc(tm('notePh'))}">${esc(n.text)}</textarea>
-      <div class="row">${btn('mp-nbtn', `data-nact="done" data-id="${id}"`, esc(tm('done')))}${btn('mp-nbtn bad', `data-nact="delete" data-id="${id}"`, esc(tm('delete')))}</div></div>`;
-  }
-  return `<div class="mp-sticky" data-note="${id}" role="group" aria-label="${esc(tm('noteN', { n: i + 1 }))}" style="${pos}"><p>${n.text ? esc(n.text) : `<span class="mp-ph">${esc(tm('noteTap'))}</span>`}</p>
-    <div class="row">${btn('mp-nbtn', `data-nact="edit" data-id="${id}"`, `${iconHtml('✎', { size: 18 })} ${esc(tm('edit'))}`)}${btn('mp-nbtn bad', `data-nact="delete" data-id="${id}"`, esc(tm('delete')))}</div></div>`;
-}
+function areaInner() { return `<div class="rm-in hr-areain">${ed.html()}</div>`; }
 const handout = id => H.ho.handouts.find(h => h.id === id) || null;
 const cardsOf = sid => (H.ho.desks[sid] || []).filter(x => handout(x.id));
 /** A handout on a desk: its icon and name, a bar (or ✓ when done, 🔒 while it waits for the ones before it). */
@@ -150,6 +124,7 @@ function renderDesks() {
   LV.paint();
 }
 function renderWorld() {
+  ed.clear();   // a fresh board: nothing selected or being typed in
   const w = world();
   worldEl.style.width = `${w.w}px`; worldEl.style.height = `${w.h}px`;
   worldEl.innerHTML = `<section class="rm-area teach editable hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
@@ -163,15 +138,14 @@ function renderWorld() {
 }
 function renderArea() {
   const el = worldEl.querySelector('.hr-areabody'); if (!el) return;
-  el.innerHTML = areaInner();
-  const ta = el.querySelector('textarea'); if (ta) ta.focus({ preventScroll: true });
+  el.innerHTML = areaInner(); ed.renderSel();
 }
 
 // ---------------------------------------------------------------- the view
 function size() { return { w: board.clientWidth || 800, h: board.clientHeight || 600 }; }
 const toWorld = (cx, cy) => { const r = board.getBoundingClientRect(); return { x: (cx - r.left - H.view.x) / H.view.z, y: (cy - r.top - H.view.y) / H.view.z }; };
 function applyView() {
-  applyTransform(worldEl, H.view);
+  applyTransform(worldEl, H.view); ed.place();
   for (const p of document.querySelectorAll('#hr-zoom .rm-pct')) p.textContent = `${Math.round(H.view.z * 100)}%`;
   renderMini();
 }
@@ -207,16 +181,15 @@ function renderZoom() {
 // ---------------------------------------------------------------- the board tools (the teacher's area)
 function renderTools() {
   const tool = (mode, icon, label) => btn(`mp-tbtn hr-tool${H.mode === mode ? ' on' : ''}`, `data-hrmode="${mode}" aria-pressed="${H.mode === mode}"`, `${icon}<span> ${esc(label)}</span>`);
-  $('hr-tools').innerHTML = `<div class="hr-toolgrid">${tool('note', iconHtml('🗒️', { size: 18 }), tm('note'))}${tool('text', '<b class="mp-tglyph">T</b>', tm('text'))}${tool('pen', iconHtml('✎', { size: 18 }), tm('pen'))}
+  $('hr-tools').innerHTML = `<div class="hr-toolgrid">${tool('move', iconHtml('👆', { size: 18 }), th('select'))}${tool('note', iconHtml('🗒️', { size: 18 }), tm('note'))}${tool('text', '<b class="mp-tglyph">T</b>', tm('text'))}${tool('pen', iconHtml('✎', { size: 18 }), tm('pen'))}
       ${tool('rect', iconHtml('🔲', { size: 18 }), th('shapes.rect'))}${tool('circle', iconHtml('⚪', { size: 18 }), th('shapes.circle'))}${tool('line', iconHtml('📏', { size: 18 }), th('shapes.line'))}
       ${btn('mp-tbtn hr-tool', `data-hr="undo"${H.hist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })}<span> ${esc(tm('undo'))}</span>`)}</div>
     ${['pen', 'rect', 'circle', 'line'].includes(H.mode) ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${H.pen === c ? ' on' : ''}`, `data-hrpen="${c}" style="background:${c}" aria-label="${esc(tm('penColor', { color: c }))}"`, '')).join('')}${H.mode === 'pen' ? btn('chip', 'data-hr="clearpen"', esc(tm('clearPen'))) : ''}</div>` : ''}
-    <p class="hr-toolhint small">${esc(H.mode === 'move' ? th('hintMove') : th('hintDraw'))}</p>`;
+    <p class="hr-toolhint small">${esc(H.mode === 'move' ? th('hintMove') : H.mode === 'pen' ? th('hintDraw') : th('hintPlace'))}</p>`;
 }
 function setMode(m) {
   H.mode = H.mode === m ? 'move' : m;
-  if (H.textEdit) commitText();
-  H.editing = null; H.shapeSel = null;
+  ed.clear();
   board.classList.toggle('inking', H.mode !== 'move');
   renderTools(); renderArea();
   worldEl.querySelector('.hr-area')?.classList.toggle('drawing', H.mode !== 'move');
@@ -232,7 +205,7 @@ async function saveArea() {
 }
 function undo() {
   const last = H.hist.pop(); if (!last) return;
-  const o = JSON.parse(last); H.ann = o.ann; H.shapes = o.shapes; H.editing = null; H.textEdit = null; H.shapeSel = null;
+  const o = JSON.parse(last); H.ann = o.ann; H.shapes = o.shapes; H.sel = null; H.edit = false;
   renderArea(); queueSave();
 }
 /** A point inside the teacher's area, as fractions of it (null outside). */
@@ -240,20 +213,10 @@ function inArea(cx, cy, pad = 0) {
   const p = toWorld(cx, cy), x = (p.x - AREA.x) / AREA.w, y = (p.y - AREA.y) / AREA.h;
   return x < -pad || y < -pad || x > 1 + pad || y > 1 + pad ? null : { x: clamp(x, 0, 1), y: clamp(y, 0, 1) };
 }
-function commitText() {
-  const id = H.textEdit; if (!id) return;
-  H.textEdit = null;
-  const inp = worldEl.querySelector('.hr-area .mp-textin'), x = H.ann.texts.find(n => n.id === id);
-  if (x && inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200);
-  H.ann.texts = H.ann.texts.filter(n => String(n.text || '').trim());
-  renderArea(); queueSave();
-}
-function commitNote() {
-  const id = H.editing; if (!id) return;
-  const ta = worldEl.querySelector('.hr-area textarea.mp-notetext'), n = H.ann.notes.find(x => x.id === id);
-  if (n && ta) n.text = ta.value.slice(0, 300);
-  H.editing = null; renderArea(); queueSave();
-}
+/** Back to Select after a note, a text or a shape is placed (the pen stays on until Select or Escape). */
+function backToSelect() { H.mode = 'move'; board.classList.remove('inking'); worldEl.querySelector('.hr-area')?.classList.remove('drawing'); renderTools(); }
+const ed = areaEditor({ H, AREA, board, worldEl, penColors: PEN_COLORS, zoom: () => H.view.z, remember, snapshot, queueSave, renderArea,
+  areaPt: (cx, cy) => { const p = toWorld(cx, cy); return { x: p.x - AREA.x, y: p.y - AREA.y }; } });
 
 // ---------------------------------------------------------------- Arrange seats
 function renderSeatbar() {
@@ -354,6 +317,7 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="signin"', `${iconHtml('🔑', { size: 18 })} ${esc(th('signin'))}`)}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
+  placePopover(el.firstElementChild, document.querySelector('[data-hr="menu"]'));
   el.querySelector('button')?.focus();
 }
 // Students sign in (step 1c): the class sign-in's QR code and code, open or closed, in a sheet.
@@ -652,26 +616,13 @@ function down(e) {
     H.gesture = { kind: 'desk', sid, sx: e.clientX, sy: e.clientY, x0: p.x, y0: p.y, moved: false };
     board.setPointerCapture(e.pointerId); e.preventDefault(); return;
   }
-  const textEl = e.target.closest('.hr-area .mp-text[data-text]');
-  if (textEl && textEl.classList.contains('editing')) {
-    const x = H.ann.texts.find(n => n.id === textEl.dataset.text);
-    if (x) textBoxPointer(e, { x, el: textEl, space: AREA, zoom: () => H.view.z, others: () => [], start: remember, done: moved => { if (moved) queueSave(); H.justPanned = true; } });
-    return;
-  }
   const at = inArea(e.clientX, e.clientY);
   if (at && !H.seatsOpen && H.mode !== 'move') {
-    if (H.textEdit) { commitText(); H.justPanned = true; return; }
-    if (H.editing) { commitNote(); H.justPanned = true; return; }
+    ed.clear();
     if (H.mode === 'pen') { remember(); H.ann.strokes.push({ c: H.pen, pts: [at] }); H.gesture = { kind: 'ink' }; board.setPointerCapture(e.pointerId); return; }
-    if (H.mode === 'note') {
-      if (H.ann.notes.length >= NOTE_MAX) { toast(th('tooMany'), { bad: true }); return; }
-      remember(); const n = { id: `n-${newId()}`, text: '', x: clamp(at.x, 0, 0.88), y: clamp(at.y, 0, 0.7), by: 't' };
-      H.ann.notes.push(n); H.editing = n.id; H.mode = 'move'; renderTools(); renderArea(); H.justPanned = true; e.preventDefault(); return;
-    }
-    if (H.mode === 'text') {
-      if (H.ann.texts.length >= TEXT_MAX) { toast(th('tooMany'), { bad: true }); return; }
-      remember(); const x = { id: `x-${newId()}`, text: '', x: clamp(at.x, 0, 0.95), y: clamp(at.y - 10 / AREA.h, 0, 0.96), by: 't' };
-      H.ann.texts.push(x); H.textEdit = x.id; renderArea(); H.justPanned = true; e.preventDefault(); return;
+    if (H.mode === 'note' || H.mode === 'text') {
+      if (H.mode === 'note' ? H.ann.notes.length >= NOTE_MAX : H.ann.texts.length >= TEXT_MAX) { toast(th('tooMany'), { bad: true }); return; }
+      const k = H.mode; backToSelect(); ed.add(k, at); H.justPanned = true; e.preventDefault(); return;
     }
     if (['rect', 'circle', 'line'].includes(H.mode)) {
       if (H.shapes.length >= SHAPE_MAX) { toast(th('tooMany'), { bad: true }); return; }
@@ -679,12 +630,7 @@ function down(e) {
       H.shapes.push(s); H.gesture = { kind: 'shape', s }; board.setPointerCapture(e.pointerId); return;
     }
   }
-  if (at && !H.seatsOpen) {
-    const noteEl = e.target.closest('.mp-sticky[data-note]:not(.editing)'), textEl2 = e.target.closest('.mp-text[data-text]'), shapeEl = e.target.closest('[data-shape]');
-    const it = noteEl ? H.ann.notes.find(n => n.id === noteEl.dataset.note) : textEl2 ? H.ann.texts.find(n => n.id === textEl2.dataset.text) : null;
-    if (it) { H.gesture = { kind: noteEl ? 'note' : 'text', it, el: noteEl || textEl2, sx: e.clientX, sy: e.clientY, x0: +it.x || 0, y0: +it.y || 0, moved: false }; board.setPointerCapture(e.pointerId); e.preventDefault(); return; }
-    if (shapeEl) { const s = H.shapes.find(x => x.id === shapeEl.dataset.shape); if (s) { H.gesture = { kind: 'moveShape', s, sx: e.clientX, sy: e.clientY, o: { ...s }, moved: false }; board.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
-  }
+  if (!H.seatsOpen && ed.down(e)) return;
   // (a desk tapped without moving: live class looks at it, public/js/homeroom-live.js; the capture below sends the click
   // to the board, so the tap is told here)
   H.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: H.view.x, y0: H.view.y, moved: false, desk: desk && !H.seatsOpen ? desk : null };
@@ -692,6 +638,7 @@ function down(e) {
 }
 function move(e) {
   if (H.pointers.has(e.pointerId)) H.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ed.move(e)) return;
   const g = H.gesture; if (!g) return;
   if (g.kind === 'pinch') {
     if (H.pointers.size !== 2) return;
@@ -701,25 +648,17 @@ function move(e) {
   const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
   if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) g.moved = true; H.view.x = g.x0 + dx; H.view.y = g.y0 + dy; applyView(); return; }
   if (g.kind === 'ink') { const s = H.ann.strokes[H.ann.strokes.length - 1], p = inArea(e.clientX, e.clientY, 1); if (s && p && s.pts.length < 600) s.pts.push(p); const svg = worldEl.querySelector('.hr-area .mp-ink'); if (svg) svg.innerHTML = H.ann.strokes.map(x => inkLine(x, AREA.w, AREA.h)).join(''); return; }
-  if (g.kind === 'shape') { const p = inArea(e.clientX, e.clientY, 1); if (p) { g.s.x2 = p.x; g.s.y2 = p.y; const svg = worldEl.querySelector('.hr-area .hr-shapes'); if (svg) svg.innerHTML = H.shapes.map(shapeSvg).join(''); } return; }
+  if (g.kind === 'shape') { const p = inArea(e.clientX, e.clientY, 1); if (p) { g.s.x2 = p.x; g.s.y2 = p.y; ed.redrawSvg('shape'); } return; }
   if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
   if (!g.moved && g.kind !== 'desk') remember();
   g.moved = true;
   const z = H.view.z;
   if (g.kind === 'desk') { if (H.teamPick) return; const p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (p) { H.seats[g.sid] = p; moveDeskEl(g.sid); } return; }
   if (g.kind === 'team') { const tm = teamById(g.id), p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (tm && p) { tm.x = p.x; tm.y = p.y; moveTeamEl(g.id); } return; }
-  if (g.kind === 'note' || g.kind === 'text') {
-    g.it.x = clamp(g.x0 + dx / z / AREA.w, 0, 1 - g.el.offsetWidth / AREA.w); g.it.y = clamp(g.y0 + dy / z / AREA.h, 0, 1 - g.el.offsetHeight / AREA.h);
-    g.el.style.left = `${g.it.x * 100}%`; g.el.style.top = `${g.it.y * 100}%`; return;
-  }
-  if (g.kind === 'moveShape') {
-    const o = g.o, ddx = clamp(dx / z / AREA.w, -Math.min(o.x, o.x2), 1 - Math.max(o.x, o.x2)), ddy = clamp(dy / z / AREA.h, -Math.min(o.y, o.y2), 1 - Math.max(o.y, o.y2));
-    Object.assign(g.s, { x: o.x + ddx, x2: o.x2 + ddx, y: o.y + ddy, y2: o.y2 + ddy });
-    const svg = worldEl.querySelector('.hr-area .hr-shapes'); if (svg) svg.innerHTML = H.shapes.map(shapeSvg).join('');
-  }
 }
 function up(e) {
   H.pointers.delete(e.pointerId);
+  if (ed.up(e)) { H.justPanned = true; return; }
   const g = H.gesture; if (!g) return;
   if (g.kind === 'pinch') { if (H.pointers.size < 2) H.gesture = null; return; }
   H.gesture = null;
@@ -727,8 +666,7 @@ function up(e) {
     H.justPanned = g.moved;
     if (!g.moved && g.desk && LV.tapDesk(g.desk)) { H.justPanned = true; return; }
     if (!g.moved) {
-      if (H.textEdit) commitText(); else if (H.editing) commitNote();
-      if (H.shapeSel) { H.shapeSel = null; renderArea(); }
+      ed.clear();
       if (H.deskSel) { H.deskSel = null; for (const d of worldEl.querySelectorAll('.hr-desk.sel')) d.classList.remove('sel'); }
     }
     return;
@@ -739,19 +677,14 @@ function up(e) {
     if (g.moved) seatMoved(g.sid); H.justPanned = true; return;
   }
   if (g.kind === 'team') { if (g.moved) teamMoved(g.id); H.justPanned = true; return; }
-  if (g.kind === 'ink') { H.ann.strokes = H.ann.strokes.filter(s => s.pts.length > 1); renderArea(); queueSave(); return; }
+  if (g.kind === 'ink') { const n = H.ann.strokes.length; H.ann.strokes = H.ann.strokes.filter(s => s.pts.length > 1); if (H.ann.strokes.length < n) H.hist.pop(); renderArea(); queueSave(); return; }
   if (g.kind === 'shape') {
-    const s = g.s, tiny = Math.abs(s.x2 - s.x) * AREA.w < 12 && Math.abs(s.y2 - s.y) * AREA.h < 12;
-    if (tiny) { H.shapes = H.shapes.filter(x => x !== s); H.hist.pop(); } else queueSave();
-    renderArea(); renderTools(); H.justPanned = true; return;
+    // A shape is drawn by dragging; a tap with a shape tool puts a middle-sized one there. Then back to Select, the new
+    // shape selected (its handles show how to resize it).
+    const s = g.s;
+    if (Math.abs(s.x2 - s.x) * AREA.w < 12 && Math.abs(s.y2 - s.y) * AREA.h < 12) { s.x2 = clamp(s.x + 160 / AREA.w, 0, 1); s.y2 = s.k === 'line' ? s.y : clamp(s.y + 100 / AREA.h, 0, 1); }
+    queueSave(); backToSelect(); renderArea(); ed.selectNew({ k: 'shape', id: s.id }); H.justPanned = true; return;
   }
-  if (g.kind === 'moveShape') { if (g.moved) queueSave(); else H.shapeSel = H.shapeSel === g.s.id ? null : g.s.id; renderArea(); H.justPanned = true; return; }
-  if (g.kind === 'text') {
-    if (g.moved) { snapText(g.it, g.el, AREA, [], 14 / H.view.z); queueSave(); }
-    else { if (H.textEdit) commitText(); H.textEdit = g.it.id; renderArea(); }
-    H.justPanned = true; return;
-  }
-  if (g.kind === 'note') { if (g.moved) queueSave(); else { H.editing = g.it.id; renderArea(); } H.justPanned = true; }
 }
 function togglePick(sid) {
   const list = H.teamPick; if (!list) return;
@@ -769,22 +702,7 @@ function click(e) {
   const mode = e.target.closest('[data-hrmode]'); if (mode) return setMode(mode.dataset.hrmode);
   const pen = e.target.closest('[data-hrpen]'); if (pen) { H.pen = pen.dataset.hrpen; renderTools(); return; }
   const preset = e.target.closest('[data-hrpreset]'); if (preset) return usePreset(preset.dataset.hrpreset);
-  const sd = e.target.closest('[data-hrshapedel]'); if (sd) { remember(); H.shapes = H.shapes.filter(s => s.id !== sd.dataset.hrshapedel); H.shapeSel = null; renderArea(); queueSave(); return; }
-  const tx = e.target.closest('[data-hrtx]'); if (tx) { remember(); H.ann.texts = H.ann.texts.filter(n => n.id !== tx.dataset.hrtx); H.textEdit = null; renderArea(); queueSave(); return; }
-  const tsz = e.target.closest('[data-tsz]');
-  if (tsz && H.textEdit) {
-    const x = H.ann.texts.find(n => n.id === H.textEdit), inp = worldEl.querySelector('.hr-area .mp-textin');
-    if (x) { if (inp) x.text = inp.value.replace(/\n+/g, ' ').slice(0, 200); const before = snapshot(); if (textSizeButton(x, +tsz.dataset.tsz)) { H.hist.push(before); renderArea(); queueSave(); } }
-    return;
-  }
-  const nb = e.target.closest('[data-nact]');
-  if (nb) {
-    const id = nb.dataset.id, k = nb.dataset.nact;
-    if (k === 'edit') { H.editing = id; renderArea(); }
-    else if (k === 'done') commitNote();
-    else if (k === 'delete') { remember(); H.ann.notes = H.ann.notes.filter(n => n.id !== id); H.editing = null; renderArea(); queueSave(); }
-    return;
-  }
+  if (ed.click(e)) return;
   const a = e.target.closest('[data-hr]'); if (!a) { if (H.menuOpen && !e.target.closest('.hr-morewrap')) { H.menuOpen = false; renderMenu(); } return; }
   const k = a.dataset.hr;
   if (k !== 'menu' && H.menuOpen) { H.menuOpen = false; renderMenu(); }
@@ -809,14 +727,11 @@ function keys(e) {
     if (H.pick && !H.giving) { setPick(null); return; }
     if (LV.escape()) return;
     if (H.menuOpen) { H.menuOpen = false; renderMenu(); document.querySelector('[data-hr="menu"]')?.focus(); return; }
-    if (H.textEdit) { commitText(); return; }
-    if (H.editing) { commitNote(); return; }
     if (H.teamPick) { H.teamPick = null; renderSeatbar(); renderWorld(); return; }
     if (H.seatsOpen) { openSeats(false); return; }
     if (H.mode !== 'move') { setMode(H.mode); return; }
   }
   if (e.target.matches && e.target.matches('input, textarea, select')) return;
-  if ((e.key === 'Delete' || e.key === 'Backspace') && H.shapeSel) { remember(); H.shapes = H.shapes.filter(s => s.id !== H.shapeSel); H.shapeSel = null; renderArea(); queueSave(); e.preventDefault(); return; }
   // Arrange seats from the keyboard: a desk with the focus moves 10 pixels per arrow key (50 with Shift).
   const desk = e.target.closest && e.target.closest('.hr-desk');
   const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
@@ -856,10 +771,11 @@ function start() {
   const root = $('homeroom');
   root.addEventListener('click', click);
   root.addEventListener('keydown', keys);
+  document.addEventListener('keydown', ed.key);
   // The minimap sits outside the board: a press on it moves the view there.
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
   $('hr-class').addEventListener('change', e => { if (e.target.value && e.target.value !== D.classId) location.href = `/class/${encodeURIComponent(e.target.value)}/homeroom`; });
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderMini(); }, 150); });
-  window.addEventListener('pagehide', () => { if (saveTimer) { clearTimeout(saveTimer); saveArea(); } });
+  window.addEventListener('pagehide', () => { ed.finishEdit(); if (saveTimer) { clearTimeout(saveTimer); saveArea(); } });
 }
 if (board && worldEl) start();

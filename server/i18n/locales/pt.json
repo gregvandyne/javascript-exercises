@@ -2081,8 +2081,8 @@
         "line": "Linha"
       },
       "shapeDelete": "Apagar esta forma",
-      "hintMove": "Escolha uma ferramenta e depois desenhe ou toque na área do professor.",
-      "hintDraw": "Desenhe na área do professor. Toque de novo na ferramenta quando terminar.",
+      "hintMove": "Toque em qualquer coisa na área do professor para selecioná-la. Arraste para mover, puxe uma alça para redimensionar e toque de novo para escrever.",
+      "hintDraw": "Desenhe na área do professor. Toque em Selecionar quando terminar.",
       "tooMany": "Não cabem mais desses na área do professor.",
       "arrange": "Organizar os lugares",
       "signin": "Entrada dos alunos",
@@ -2179,6 +2179,12 @@
         "noSticker": "Nenhum",
         "private": "Só este aluno vê, na mesa dele e na página da aula.",
         "remove": "Remover"
+      },
+      "select": "Selecionar",
+      "hintPlace": "Toque ou arraste na área do professor para colocá-lo. Depois você volta para Selecionar.",
+      "sel": {
+        "tools": "Item selecionado",
+        "delete": "Excluir o item selecionado"
       }
     },
     "stories": {

@@ -2081,8 +2081,8 @@
         "line": "Linea"
       },
       "shapeDelete": "Elimina questa forma",
-      "hintMove": "Scegli uno strumento, poi disegna o tocca nell’area dell’insegnante.",
-      "hintDraw": "Disegna nell’area dell’insegnante. Tocca di nuovo lo strumento quando hai finito.",
+      "hintMove": "Tocca qualsiasi cosa nell’area dell’insegnante per selezionarla. Trascinala per spostarla, tira una maniglia per ridimensionarla, toccala di nuovo per scrivere.",
+      "hintDraw": "Disegna nell’area dell’insegnante. Tocca Seleziona quando hai finito.",
       "tooMany": "Nell’area dell’insegnante non c’è più posto per altri.",
       "arrange": "Disponi i posti",
       "signin": "Accesso degli alunni",
@@ -2179,6 +2179,12 @@
         "noSticker": "Nessuno",
         "private": "Lo vede solo questo studente, sul suo banco e nella pagina della lezione.",
         "remove": "Togli"
+      },
+      "select": "Seleziona",
+      "hintPlace": "Tocca o trascina nell’area dell’insegnante per posizionarlo. Poi torni a Seleziona.",
+      "sel": {
+        "tools": "Elemento selezionato",
+        "delete": "Elimina l’elemento selezionato"
       }
     },
     "stories": {

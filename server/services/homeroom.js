@@ -29,7 +29,7 @@ import { isGrownup, getUser } from '../auth.js';
 import * as S from './schools.js';
 import { teacherPlan } from './teacher-plan.js';
 import { cleanState, textProblem } from './manipulatives.js';
-import { PRESETS, AREA, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
+import { PRESETS, AREA, NOTE_BOX, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
 
 export { PRESETS, AREA };
 const ok = (x = {}) => ({ ok: true, ...x });
@@ -195,6 +195,12 @@ export function saveArea(u, c, state) {
   const r = cleanState({ v: 2, objects: [], __ann: { notes: ann.notes, texts: ann.texts, strokes: ann.strokes } }, { w: AREA.w, h: AREA.h, teacher: true });
   if (!r.ok) return r;
   const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes) };
+  // A sticky note's size (resized in both directions on the board), within NOTE_BOX; the live room's notes have none.
+  const sizes = new Map((Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').map(n => [String(n.id), n]));
+  for (const n of (area.__ann && area.__ann.notes) || []) {
+    const o = sizes.get(String(n.id)), w = o ? Number(o.w) : NaN, h = o ? Number(o.h) : NaN;
+    if (Number.isFinite(w) && Number.isFinite(h)) { n.w = Math.round(Math.min(NOTE_BOX.wMax, Math.max(NOTE_BOX.wMin, w))); n.h = Math.round(Math.min(NOTE_BOX.hMax, Math.max(NOTE_BOX.hMin, h))); }
+  }
   save(u, c.id, { area: JSON.stringify(area) });
   return ok({ area });
 }

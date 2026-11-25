@@ -2081,8 +2081,8 @@
         "line": "Lijn"
       },
       "shapeDelete": "Deze vorm verwijderen",
-      "hintMove": "Kies een hulpmiddel en teken of tik dan in het lerarendeel.",
-      "hintDraw": "Teken in het lerarendeel. Tik nog een keer op het hulpmiddel als je klaar bent.",
+      "hintMove": "Tik op iets in het docentenvak om het te selecteren. Sleep om het te verplaatsen, trek aan een greep om het formaat te wijzigen, tik nog eens om te typen.",
+      "hintDraw": "Teken in het docentenvak. Tik op Selecteren als je klaar bent.",
       "tooMany": "Daar is in het lerarendeel geen ruimte meer voor.",
       "arrange": "Plaatsen indelen",
       "signin": "Leerlingen inloggen",
@@ -2179,6 +2179,12 @@
         "noSticker": "Geen",
         "private": "Alleen deze leerling ziet het, op de eigen tafel en de pagina van de les.",
         "remove": "Verwijderen"
+      },
+      "select": "Selecteren",
+      "hintPlace": "Tik of sleep in het docentenvak om het te plaatsen. Daarna sta je weer op Selecteren.",
+      "sel": {
+        "tools": "Geselecteerd item",
+        "delete": "Geselecteerd item verwijderen"
       }
     },
     "stories": {

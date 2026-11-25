@@ -15,7 +15,8 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 .hr-chunk:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .hr-chunk[aria-pressed="true"],.hr-chunk.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
 .hr-morewrap{position:relative}
-.hr-morewrap .rm-menu{right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 24px));max-height:70vh;z-index:90}
+/* placed by public/js/popover-place.js (fixed, by its button, always inside the screen); this is where it starts */
+.hr-morewrap .rm-menu{position:fixed;right:auto;left:8px;top:8px;width:min(300px,calc(100vw - 16px));max-height:70vh;z-index:90}
 .hr-menusoon{margin:6px 12px 4px;color:var(--muted)}
 
 /* the stage: the board, with the panel, the seat bar, the zoom pill and the minimap floating over it */
@@ -57,11 +58,37 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 /* the board's contents */
 .hr-areabody{position:absolute;inset:0}
 .hr-shapes{position:absolute;inset:0;width:100%;height:100%;z-index:24;pointer-events:none;overflow:visible}
-.hr-shape,.hr-hit{pointer-events:visibleStroke;cursor:move}
-.hr-hit{stroke:transparent;stroke-width:24}
-.hr-shape.on{filter:drop-shadow(0 0 4px var(--focus))}
-.hr-area.drawing .hr-shape,.hr-area.drawing .hr-hit{pointer-events:none}
-.hr-shapedel{position:absolute;z-index:40;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 22px/1 var(--font);cursor:pointer;box-shadow:var(--shadow)}
+/* Editing the teacher's area (public/js/homeroom-board.js): objects are hit-tested in JS (a generous margin around pen
+   lines and outlines), so the drawings themselves take no presses; a selected object has an outline, handles that keep
+   their size on screen (--iz) and a toolbar over the board; words are typed in place (contenteditable: WebKit needs
+   user-select: text on it inside the board's user-select: none). */
+.hr-shape{pointer-events:none}
+.hr-area:not(.drawing) .hr-obj{cursor:move}
+.hr-area .mp-sticky.hr-obj{display:flex;flex-direction:column;box-sizing:border-box;max-width:none}
+.hr-area .mp-sticky.hr-obj .hr-objtext{flex:1 1 auto;margin:0;min-height:1.3em}
+.hr-area .mp-text.hr-obj{white-space:pre-wrap;overflow-wrap:anywhere;box-sizing:border-box;padding:4px 6px}
+.hr-objtext:empty::before{content:attr(data-ph);color:color-mix(in srgb,currentColor 55%,transparent);font-weight:600}
+.hr-obj.on{box-shadow:none}
+.hr-objtext[contenteditable="true"]{cursor:text;outline:0;-webkit-user-select:text;user-select:text;-webkit-touch-callout:default;touch-action:auto}
+.hr-obj.hr-typing{cursor:text}
+.hr-sel{position:absolute;inset:0;z-index:40;pointer-events:none}
+.hr-selbox{position:absolute;box-sizing:border-box;border:calc(2px * var(--iz,1)) solid var(--focus);border-radius:6px}
+.hr-selbox.editing{border-style:dashed}
+.hr-h{position:absolute;width:14px;height:14px;box-sizing:border-box;border:2px solid var(--focus);background:#fff;border-radius:4px;pointer-events:auto;touch-action:none;
+  transform:translate(-50%,-50%) scale(var(--iz,1))}
+.hr-h::before{content:"";position:absolute;inset:-6px}
+.hr-h-nw,.hr-h-se{cursor:nwse-resize}.hr-h-ne,.hr-h-sw{cursor:nesw-resize}.hr-h-n,.hr-h-s{cursor:ns-resize}.hr-h-e,.hr-h-w{cursor:ew-resize}
+.hr-h-a,.hr-h-b{cursor:move;border-radius:50%}
+.hr-seltools{position:absolute;z-index:58;display:flex;align-items:center;gap:4px;padding:5px;border-radius:999px;background:var(--card);box-shadow:var(--shadow-lg);border:1px solid var(--line);cursor:default;white-space:nowrap}
+.hr-stb{display:inline-flex;align-items:center;gap:4px;min-height:36px;min-width:36px;justify-content:center;padding:0 12px;border:0;border-radius:999px;background:var(--card-2);color:var(--text);font:800 14px var(--font);cursor:pointer}
+.hr-stb:hover{background:var(--hover)}
+.hr-stb:disabled{opacity:.4;cursor:default}
+.hr-stb.big{font-size:16px}
+.hr-stb.bad{background:var(--danger);color:var(--on-danger)}
+.hr-stcolors{display:inline-flex;gap:4px;padding:0 4px}
+.hr-stc{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hr-stc.on{box-shadow:0 0 0 3px var(--focus)}
+@media (pointer:coarse){.hr-h{width:20px;height:20px}.hr-stb{min-height:44px;min-width:44px}.hr-stc{width:34px;height:34px}}
 .hr-tdesk{position:absolute;border-radius:14px;background:var(--text);color:var(--card);display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
 .hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
 .hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
