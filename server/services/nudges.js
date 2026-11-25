@@ -22,6 +22,10 @@ import { register, job, runJob } from './jobs.js';
 import * as E from './email.js';
 import { staffName } from './schools.js';
 import { renderTrial, firstNameOf, TRIAL_STEPS } from './email-templates.js';
+import { config } from '../config.js';
+import { googleEnabled } from '../oidc.js';
+import { plansOn } from './teacher-tools.js';
+import { settingsFor as companionSettings } from './companion-settings.js';
 export { TRIAL_STEPS };
 
 const H = 3600e3, DAY = 24 * H;
@@ -129,10 +133,24 @@ function skipReason(row, t, at) {
   if (row.step === 'class' && hasClass(row.user_id)) return 'has_class';
   return null;
 }
+/** What the copy may say is there for this teacher today (server/emails/trial-en.js `when` / `unless`; docs/decisions.md
+ *  "Trial emails", "Updated for the current app"). By the plan's rules, not the teacher's plan right now, so the ending
+ *  and ended emails can name what the plan keeps. */
+export function featuresFor(u) {
+  const tools = plansOn() && !!config.manipulatives && !!config.figures;
+  let chatOn = false;
+  try { chatOn = !!u?.id && companionSettings(u).on; } catch { chatOn = false; }
+  return {
+    hasClass: !!u?.id && hasClass(u.id),
+    classroom: googleEnabled() && !!config.googleClassroom,
+    tools,
+    chat: plansOn() && !!config.companion && chatOn,
+  };
+}
 /** The email for one row, rendered for its teacher. */
 export function renderFor(step, u, t) {
   return renderTrial(step, { locale: u?.lang || 'en', firstName: firstNameOf(u, u?.id ? staffName(u) : ''), trialStart: t?.trial_start, trialEnd: t?.trial_end, base: E.siteBase(),
-    unsubscribeUrl: E.unsubscribeUrl(u?.id || ''), postalAddress: E.emailStatus().postalAddress });
+    unsubscribeUrl: E.unsubscribeUrl(u?.id || ''), postalAddress: E.emailStatus().postalAddress, features: featuresFor(u) });
 }
 const mark = (row, status, extra = {}) => q.run('UPDATE trial_nudges SET status=?, reason=?, sent_at=?, claimed_at=? WHERE user_id=? AND step=?',
   status, extra.reason ?? null, extra.sentAt ?? null, extra.claimedAt ?? null, row.user_id, row.step);

@@ -64,7 +64,7 @@ test('a trial through /trial starts the sequence at the checkout email; a card a
   await N.runDue(Date.now() + 1000);
   assert.deepEqual(templates(x.teacher.id), ['trial_welcome']);
   assert.deepEqual(sent.at(-1).to, [x.email]);
-  assert.match(sent.at(-1).text, /^Hi Ms Rivera,/); assert.match(sent.at(-1).text, /Your 14-day free trial is on/);
+  assert.match(sent.at(-1).text, /^Hi Ms Rivera,/); assert.match(sent.at(-1).text, /Your 14-day free trial of the Teacher plan is on/);
   // The teacher adds a card in the Portal; Stripe's trial_will_end (3 days before) syncs it: the sequence stops.
   const cus = fake.st.customers.get(fake.st.subscriptions.get(x.subId).customer);
   cus.invoice_settings = { ...cus.invoice_settings, default_payment_method: 'pm_card_visa' };

@@ -53,6 +53,12 @@ test('the email: in the language asked for, the username and a "choose my passwo
   assert.equal(W.greetName('Ms Ana Rivera'), 'Ms Ana'); assert.equal(W.greetName('Ana Rivera'), 'Ana'); assert.equal(W.greetName(''), '');
   const he = W.schoolWelcomeEmail(tFor('he'), { name: '', school: 'X', username: 'A1', setUrl: null, schoolUrl: 'https://x/s', loginUrl: 'https://x/login' });
   assert.match(he.html, /dir="rtl"/);
+  // Google Classroom is named only while Classroom sync is on (update, Nov 2026); off in tests by default.
+  const base = { name: 'Ana', school: 'S', username: 'U1', setUrl: null, schoolUrl: 'https://x/s', loginUrl: 'https://x/login' };
+  assert.equal(W.classroomOn(), false);
+  assert.doesNotMatch(W.schoolWelcomeEmail(tFor('en'), base).text, /Google Classroom/);
+  const gc = W.schoolWelcomeEmail(tFor('en'), { ...base, classroom: true });
+  assert.match(gc.text, /If your school uses Google Classroom, teachers can connect it from their class page/); assert.match(gc.html, /Google Classroom/);
 });
 
 test('only the platform admin opens the setup page and its API', async () => {

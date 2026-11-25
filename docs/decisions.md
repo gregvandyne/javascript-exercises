@@ -3295,6 +3295,44 @@ The site sent no email before this. The owner chose **Resend** and approved a fi
   times, skip rules, conversion, the end without a card, restarts, late catch-up, admin only) and
   `tests/unit/trial-emails-wiring.test.js` (the Teacher plan's trial through the fake Stripe). Resend is never called:
   `email.js` takes a fetch stand-in.
+- **Updated for the current app (25 Nov 2026).** The owner: "We need to update the onboarding emails to reflect the
+  new flows and structure of the app." Every claim and link checked against the app as it is after "Focus: teaching
+  tools first", "Classroom focus", "Learn and Read", "No public games" and "Automatic trial at sign-up"; each change is
+  marked `update (Nov 2026)` in `server/emails/trial-en.js`.
+  - **The owner's naming:** for teachers a single game is a "lesson" (multi-step Lessons are "lesson plans"; students
+    and kids still see games). #1 is now "You're in! Your first lesson takes 2 minutes" ("Paste what you already
+    teach, get a lesson your class will beg to play."); "games" became "lessons" in #4, #5 and the thank-you, and no
+    email says "game" to a teacher.
+  - **#1:** the trial "of the Teacher plan is on, with nothing to set up" (it starts by itself at sign-up). Step 1 is
+    "Bring your students in: your class is ready" for a teacher with a class (the sign-up's class step is required), else
+    "Make a class"; both name the join code and printed login cards. Step 2 is building a lesson from what you teach
+    (paste or a PDF, Oomba drafts, you check) and step 3 hosting it live: that is `/teach/make`, so the CTA ("Build my
+    first lesson") moved there from `/build` (the Builder's classroom games can't be hosted live while ARCADE is off).
+    New: what the trial opens (Teaching tools: the Manipulatives and Figures).
+  - **#2:** login cards; the Class dashboard every class has; "host a lesson live tomorrow".
+  - **#3:** subject "3 ways teachers are using Oomba this week" became "3 easy wins for your week" (no numbers behind
+    it); preview "A live warm-up, a hands-on lesson and a story to share.". The courses paragraph and "Explore courses"
+    to `/learn` are gone (COURSES is off: the courses answer 404 and aren't on Learn); "Students as makers" became Story
+    time (the Story Library and its book maker); Hands-on math (the Manipulatives' live room) or, without the tools,
+    Review day in Build lessons; and the Oomba chat ("suggest lessons and books ... start a lesson or a book with you").
+    CTA "Try the Manipulatives" (`/manipulatives`), else "Make Monday's warm-up" (`/teach/make`).
+  - **#4:** "To keep everything (your classes, the games you've made, your students' progress) add a card" contradicted
+    #5 and the plan (nothing is deleted or locked): it now names the plan's extras (the Manipulatives, Figures, the Oomba
+    chat, more Builder messages) and says classes, lessons and progress stay either way. Preview "Keep the Teacher plan
+    for one simple yearly price."; CTA "Keep the Teacher plan" (was "Keep my classes").
+  - **#5:** the extras are paused and anything assigned keeps working for students; CTA "Get the Teacher plan" (was
+    "Reactivate my classes": the classes never stopped; `/trial` offers a used trial the plan).
+  - **Only what is on.** A block or list item may name features (`when` / `unless`; `email-templates.js FEATURES`):
+    `hasClass`, `classroom` (Google Classroom sync on), `tools` (paid plans public, MANIPULATIVES and FIGURES on),
+    `chat` (COMPANION on, paid plans public, the school hasn't turned it off). `nudges.featuresFor(u)` reads them at
+    send time; a feature not given is off, so the email never promises something switched off in production.
+  - **Homeroom is not mentioned** (not launched: HOMEROOM plus HOMEROOM_USERS, privacy update and lawyer review first).
+  - **Also:** the school welcome ("{school} is ready") names Google Classroom only while Classroom sync is on
+    (`school-welcome.js classroom`); the default automatic welcomes in the Team inbox (`services/team.js`, kids, parents,
+    teachers) no longer offer the courses or the arcade, use Learn, Read and Build, and say "lesson" to teachers (an
+    admin-saved text still wins). The staff invite and the weekly summary were checked and left as they are.
+  - Tests: trial-emails (no em dash, price or Homeroom in any email with every feature on or off, each feature's lines,
+    no "game" to a teacher, `featuresFor`), trial-emails-wiring, school-welcome, team-welcome.
 
 ## Teacher landing page at "/" (9 Nov 2026)
 Owner: "build me an absolutely killer marketing website … top right a button that says Just Play … target teachers …
