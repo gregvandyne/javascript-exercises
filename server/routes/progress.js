@@ -357,7 +357,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   const t = req.t, f = req.fmt;
   const l = L.getLesson(lp.cl.lesson_id);
   // A Story Library book (routes/library.js): who read it, Read to me or on their own, the score, the hardest question.
-  if (l.kind === 'story') return storyResults(req, res, c, lp.cl, l);
+  if (l.kind === 'story') { if (L.storyResults(req, res, c, lp.cl)) return; return storyResults(req, res, c, lp.cl, l); }
   const doneN = lp.students.filter(p => p.total && p.done >= p.total).length;
   const toRead = lp.students.reduce((n, p) => n + p.toRead, 0);
   const lateFor = L.isOpen(lp.cl) && L.dueState(lp.cl) === 'late' ? p => p.done < p.total : () => false;
@@ -561,6 +561,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   // A Story Library book opens in the reader: for a student with the assignment (so the class sees the progress), for
   // the class's staff as it is (nothing is saved for the class).
   if (l.kind === 'story') {
+    // (Homeroom's Reading handouts run on the desk: services/homeroom-reading.js)
+    const go = L.storyOpen(u, cl); if (go) return res.redirect(302, go);
     const s = st.find(x => x.kind === 'story'), bk = s && LIB.getBook(s.story_id);
     if (!bk) return no(req, res);
     const student = !S.canManageClass(u, c) && S.classMember(c.id, u.id)?.role === 'student';

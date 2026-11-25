@@ -1,6 +1,7 @@
 // The Classroom tab's overview (Homeroom, step 2c; docs/homeroom.md "A class's tabs"; the owner-approved mockup's
 // Classroom view): the calm, simple picture of the last WEEKS weeks at the top of Progress, for Homeroom teachers only.
-//   - one column per handout (games, the teacher's own games, lessons) handed out in Homeroom in the last WEEKS weeks,
+//   - one column per handout (games, the teacher's own games, lessons, Reading: docs/decisions.md "Homeroom: reading
+//     from the desk", graded by Completion or the quiz's Score like any other) handed out in Homeroom in the last WEEKS weeks,
 //     newest first, each with how it is graded (Score, Completion, Not graded). The versions of one lesson handed out
 //     together (homeroom_handouts.batch) are one column: each student's cell is their own version's result;
 //   - one row per student, in alphabetical order (never ranked);
@@ -15,6 +16,7 @@ import { q, now } from '../db.js';
 import * as P from './progress.js';
 import * as games from './games.js';
 import * as H from './homeroom.js';
+import * as HR from './homeroom-reading.js';
 
 export const WEEKS = 4;
 const DAY = 86400e3;
@@ -46,8 +48,8 @@ export const monthStart = t => { const d = new Date(t); return Date.UTC(d.getUTC
 
 /** The window's handouts, grouped: a lesson's versions handed out together are one column. Newest first. */
 function columnsOf(classId, since) {
-  const rows = q.all(`SELECT h.class_lesson_id id, h.grade, h.hr_lesson hl, h.batch, h.created_at, cl.lesson_id, s.game_id FROM homeroom_handouts h
-      JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
+  const rows = q.all(`SELECT h.class_lesson_id id, h.grade, h.hr_lesson hl, h.batch, h.created_at, cl.lesson_id, s.game_id, l.kind lkind FROM homeroom_handouts h
+      JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL JOIN lessons l ON l.id=cl.lesson_id
       LEFT JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind='game'
       WHERE h.class_id=? AND h.created_at>=? ORDER BY h.created_at, h.class_lesson_id`, classId, since);
   const by = new Map(), cache = new Map();
@@ -56,7 +58,7 @@ function columnsOf(classId, since) {
     if (!by.has(key)) {
       if (!cache.has(r.game_id)) cache.set(r.game_id, r.game_id ? games.getGame(r.game_id) : null);
       const g = cache.get(r.game_id);
-      by.set(key, { key, id: r.id, ids: [], grade: r.grade, kind: r.hl ? 'lesson' : g && g.source !== 'seed' ? 'mine' : 'game', at: r.created_at });
+      by.set(key, { key, id: r.id, ids: [], grade: r.grade, kind: r.lkind === 'story' ? 'reading' : r.hl ? 'lesson' : g && g.source !== 'seed' ? 'mine' : 'game', at: r.created_at });
     }
     by.get(key).ids.push(r.id);
   }
@@ -92,11 +94,16 @@ export function overview(c, { t = now(), locale = 'en' } = {}) {
   const rows = gb.students.map(p => ({ p, name: names.get(p.id) || p.display_name || p.username || '' })).sort((a, b) => coll.compare(a.name, b.name) || (a.p.id < b.p.id ? -1 : 1));
   const columns = cols.filter(col => col.ids.some(id => at.has(id))).map(col => ({ key: col.key, id: col.ids.find(id => at.has(id)), ids: col.ids, title: title.get(col.ids.find(id => at.has(id))) || '', kind: col.kind, grade: col.grade, versions: col.ids.length, at: col.at }));
   let cells = 0, finished = 0;
+  // A Reading column (docs/decisions.md "Homeroom: reading from the desk"): the quiz's first try beside the cell, whatever
+  // the grading, so a Completion column still shows how the quiz went.
+  const rd = columns.some(col => col.kind === 'reading') ? HR.infosOf(c.id) : new Map();
   const students = rows.map(({ p, name }) => {
     const out = columns.map(col => {
       // Their own version: the one of this handout assigned to them (the others are "not assigned" for them).
       const id = col.ids.find(i => at.has(i) && !p.cells[at.get(i)].na);
       const cell = cellOf(col, id ? p.cells[at.get(id)] : null, id);
+      const info = col.kind === 'reading' && id ? rd.get(`${id}:${p.id}`) : null;
+      if (info && info.total && cell.state !== 'score') cell.quiz = { right: info.right, total: info.total };
       if (cell.state !== 'na' && cell.state !== 'locked') { cells++; if (['score', 'done', 'practiced'].includes(cell.state) && fullOf(p.cells[at.get(id)])) finished++; }
       return cell;
     });

@@ -21,8 +21,8 @@ const SAMPLE_MS = 250, SEND_MS = 2000, BEAT_MS = 10000, SAMPLES = 8;
 
 /**
  * Start pulsing. opts: { classId, where: 'desk' | 'game', on: () => class lesson id | '', deskEl: () => element whose
- * box the cursor is measured against, padEl: () => the pad's element, onAnswer: r => {} (the pulse's answer: live, me,
- * mates) }. -> { setLive(live, me), stop(), input() }
+ * box the cursor is measured against, padEl: () => the pad's element, extra: () => { where, on, book, page } | null (the
+ * desk's reading layer), onAnswer: r => {} (the pulse's answer: live, me, mates) }. -> { setLive(live, me), stop(), input() }
  */
 export function startPulse(opts) {
   const P = { live: null, me: null, lastInput: 0, step: 0, cur: [], pad: [], lastSample: 0, lastSent: 0, timer: null, busy: false, stopped: false };
@@ -54,7 +54,9 @@ export function startPulse(opts) {
     P.busy = true;
     const rebase = list => { const t0 = list.length ? list[0][0] : 0; return list.map(([at, x, y]) => [at - t0, x, y]); };
     const idle = P.lastInput ? Math.round((Date.now() - P.lastInput) / 1000) : 3600;
-    const body = { where: opts.where, on: (opts.on && opts.on()) || '', idle, step: P.step, ...(P.cur.length ? { cur: rebase(P.cur) } : {}), ...(P.pad.length ? { pad: rebase(P.pad) } : {}) };
+    // (the desk's reading layer: where 'reading', the handout or '', the book and page: opts.extra)
+    const more = (opts.extra && opts.extra()) || null;
+    const body = { where: opts.where, on: (opts.on && opts.on()) || '', idle, step: P.step, ...(P.cur.length ? { cur: rebase(P.cur) } : {}), ...(P.pad.length ? { pad: rebase(P.pad) } : {}), ...(more || {}) };
     P.cur = []; P.pad = []; P.lastSent = Date.now();
     try {
       const r = await api(`/api/desk/${encodeURIComponent(opts.classId)}/pulse`, { method: 'POST', body, background: true, active: idle < 60 });

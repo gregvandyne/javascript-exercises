@@ -24,6 +24,7 @@ import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
 import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
+import * as LIB from './library.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -37,7 +38,9 @@ export const HAND_KINDS = ['question', 'help', 'bathroom'];
 export const PASS_DEFAULT = 5, PASS_MIN = 1, PASS_MAX = 20;
 /** "I'm coming over" shows on the student's desk for this long at most. */
 export const COMING_MS = 5 * 60e3;
-const WHERE = ['desk', 'game'];
+// 'reading': the desk's reading layer is open (docs/decisions.md "Homeroom: reading from the desk"), on a Reading handout
+// (on) or reading freely from the dock's Library; it says which book and page, so the board shows "Reading <book>".
+const WHERE = ['desk', 'game', 'reading'];
 const FLAGS = { lock: 'locked', hide: 'hidden', coming: 'coming_at' };
 
 // ---------------------------------------------------------------- pulses (memory only)
@@ -82,6 +85,10 @@ export function pulse(u, c, body = {}, at = now()) {
   // the game's own steps forward (it saved or scored) on this page
   if (!fresh && where === 'game' && b.where === 'game' && b.on === on && step > (b.step || 0)) b.progAt = at;
   Object.assign(b, { at, where, on, step, inputAt: at - idle * 1000 });
+  const bk = where === 'reading' && body.book ? LIB.getBook(String(body.book)) : null;
+  b.book = bk ? { id: bk.id, page: Math.max(0, Math.min(bk.pages.length, Math.floor(Number(body.page) || 0))) } : null;
+  // turning a page counts as moving forward (never time alone)
+  if (!fresh && bk && b.book && old && old.book && old.book.id === bk.id && b.book.page > old.book.page) b.progAt = at;
   const row = rowOf(c.id, u.id);
   if (cursorsOn(c.id) && !(row && row.hidden) && live && !live.paused) {
     const cur = where === 'desk' ? cleanSamples(body.cur, at) : [], pad = where === 'desk' ? cleanSamples(body.pad, at) : [];
@@ -252,7 +259,9 @@ export function liveView(c, board = HO.boardView(c), at = now()) {
     // a card that moved forward (done, a new score) counts as progress for Stuck
     if (b) { const k = cardKey(cards.find(x => x.id === b.on) || cards.find(x => x.next)); if (b.cardKey !== k) { if (b.cardKey !== null && b.cardKey !== undefined) b.progAt = at; b.cardKey = k; } }
     const { st, on } = statusOf(b, cards, at), r = rows.get(s.id) || {};
+    const bk = b && st !== 'away' && b.where === 'reading' && b.book ? LIB.getBook(b.book.id) : null;
     desks[s.id] = { st, on, where: b && st !== 'away' ? b.where : '', at: b ? b.at : 0, hand: r.hand || '', pass: r.pass || '', ...flagsOf(r),
+      ...(bk ? { book: { id: bk.id, title: bk.title, cover: bk.cover.src, page: b.book.page, pages: bk.pages.length } } : {}),
       ...(cursors && b && !r.hidden && st !== 'away' && b.cur && b.cur.length && at - (b.curAt || 0) < SAMPLE_SPAN + 6000 ? { cur: b.cur.map(([t, x, y]) => [at - t, x, y]) } : {}) };
   }
   return { live, desks, ...handsView(c), cursors, now: at };

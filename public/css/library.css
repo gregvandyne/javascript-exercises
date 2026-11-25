@@ -271,3 +271,17 @@ html:has(#rd-stage:not([hidden])),html:has(#rd-stage:not([hidden])) body{overscr
 /* No picture-save menu or text selection getting in the way of a swipe (iPhone Safari). */
 .rd-stage img{-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none}
 .rd-stage.is-dragging{-webkit-user-select:none;user-select:none}
+
+/* Inside Homeroom's reading layer (?in=hr; docs/decisions.md "Homeroom: reading from the desk"): no site bar, no Back
+   (the layer has its own), a little less room around it; Bigger text (a student's support) and Read aloud (Read to me
+   stands out). */
+.rd-inhrpage main#main{padding-top:6px}
+.rd-inhr .rd-title{font-size:1.15rem}
+.rd-big .rd-text{font-size:clamp(1.8rem,1.3rem + 1.8vw,2.6rem)}
+.rd-big .rd-text[data-len="m"]{font-size:clamp(1.6rem,1.2rem + 1.3vw,2.2rem)}
+.rd-big .rd-text[data-len="l"],.rd-big .rd-text[data-len="xl"]{font-size:clamp(1.35rem,1.1rem + .8vw,1.7rem)}
+.rd-aloudsup .rd-aloud{box-shadow:0 0 0 4px color-mix(in srgb,var(--spark) 55%,transparent)}
+.rd-hrgo{justify-content:center;gap:12px;margin-top:18px}
+/* the layer shows the book's name already */
+.rd-inhr .rd-title{visibility:hidden}
+@media (max-width:640px){.rd-inhr .rd-title{display:none}.rd-inhr .rd-top{grid-template-areas:"back aloud"}.rd-inhr .rd-pic img{max-height:26vh}.rd-inhr .rd-nav{position:static}}

@@ -166,7 +166,7 @@ async function openMine(at = null) {
   else ($('#nb-q') || S.el).focus({ preventScroll: true });
 }
 /** A class's teacher reads one student's notebook: the same tabs and search, nothing editable. */
-export async function viewNotebook(studentId, name = '') {
+export async function viewNotebook(studentId, name = '', { page = null } = {}) {
   mount(); flush();
   S.ro = true; S.student = { id: studentId, name }; S.q = ''; S.tab = null; S.data = { tabs: [] }; S.dataRo = true;
   S.opener = document.activeElement;
@@ -174,8 +174,13 @@ export async function viewNotebook(studentId, name = '') {
   try {
     const r = await api(`/api/notebook/of/${encodeURIComponent(studentId)}`);
     S.data = { tabs: r.tabs || [] }; S.student = { id: studentId, name: (r.student && r.student.name) || name };
-    S.tab = (S.data.tabs.find(x => x.pages.some(p => p.body)) || S.data.tabs[0] || {}).id;
-    shell(); drawBody(); $('#nb-q').focus({ preventScroll: true });
+    // (a Reading handout's 3 notes: the page given, in its tab)
+    const at = page ? S.data.tabs.find(x => x.pages.some(p => p.id === page)) : null;
+    S.tab = (at || S.data.tabs.find(x => x.pages.some(p => p.body)) || S.data.tabs[0] || {}).id;
+    shell(); drawBody();
+    const pg = at ? $(`.nb-ed[data-page="${CSS.escape(page)}"]`) : null;
+    if (pg) { (pg.closest('.nb-page') || pg).scrollIntoView({ block: 'start' }); }
+    $('#nb-q').focus({ preventScroll: true });
   } catch (e) { $('#nb-body').innerHTML = `<p class="nb-none">${esc(e.message)}</p>`; }
 }
 function caretEnd(el) {

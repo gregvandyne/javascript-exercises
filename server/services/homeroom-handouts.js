@@ -39,6 +39,8 @@ import { PLAYED_ENOUGH } from './progress.js';
 import { textProblem } from './manipulatives.js';
 import { liveGameOf } from '../live/live-games.js';
 import { gameHidden, mayOpenHidden } from './game-focus.js';
+import * as HR from './homeroom-reading.js';
+import * as LIB from './library.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -63,19 +65,23 @@ export function handable(u, g) {
 }
 
 // ---------------------------------------------------------------- reading
-/** The class's open handouts in the order they were handed out, each with its game step and who it is for. */
+/** The class's open handouts in the order they were handed out, each with its game step (or a Reading handout's story
+ *  step: services/homeroom-reading.js) and who it is for. */
 function rowsOf(classId) {
-  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id
+  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id
       FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
-      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind='game'
+      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story')
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
 }
+const READ_ICON = '📖';
+/** A Reading handout's own part of a handout: the book it names ({ book: card | null }, null for their own choice). */
+const readingPart = r => (r.step_kind === 'story' ? { reading: { book: HR.bookCard(r.story_id ? LIB.getBook(r.story_id) : null) } } : {});
 function gameInfo(cache, id, locale) {
   if (!cache.has(id)) { const g = games.getGame(id); cache.set(id, g ? games.localizeGame(g, locale) : null); }
   return cache.get(id);
 }
 /** Title as students see it: an Oomba game in their language, a teacher's own game by its name, a lesson by its own. */
-const titleOf = (r, g) => (r.hl ? r.title : g && g.source === 'seed' ? g.title : r.title || (g ? g.title : ''));
+const titleOf = (r, g) => (r.hl || r.step_kind === 'story' ? r.title : g && g.source === 'seed' ? g.title : r.title || (g ? g.title : ''));
 /** A lesson's card: how many of what ('words' for Crossword, else 'problems'). */
 const lessonOf = (r, g) => (r.hl ? { lesson: true, n: r.problems || 0, unit: g && g.slug === 'crossword' ? 'words' : 'problems' } : {});
 /** step_progress for these handouts: Map 'clId:userId' -> row. */
@@ -102,17 +108,18 @@ function deskOrder(cards) {
  *  students: n }) and each current student's cards ({ desks: { studentId: [{ id, done, pct, score, locked, next }] } }). */
 export function boardView(c, locale = 'en') {
   const rows = rowsOf(c.id), picks = L.picksIn(c.id), ids = H.studentsOf(c.id).map(s => s.id), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id);
+  const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = HR.infosOf(c.id, rds);
   const handouts = rows.map(r => {
-    const g = gameInfo(cache, r.game_id, locale), who = picks.get(r.id);
-    return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
+    const g = r.game_id ? gameInfo(cache, r.game_id, locale) : null, who = picks.get(r.id);
+    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : (g && g.icon) || '🎮', ...readingPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
       students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
   });
   const desks = {};
   for (const sid of ids) {
     desks[sid] = deskOrder(rows.filter(r => { const who = picks.get(r.id); return !who || who.has(sid); }).map(r => {
       const p = prog.get(`${r.id}:${sid}`);
-      const f = fb.get(`${r.id}:${sid}`);
-      return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(f ? { fb: f } : {}) };
+      const f = fb.get(`${r.id}:${sid}`), rd = r.step_kind === 'story' ? infos.get(`${r.id}:${sid}`) : null;
+      return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: rd ? HR.pctOfInfo(rd) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
     }));
   }
   return { handouts, desks };
@@ -123,8 +130,17 @@ export function deskView(c, u, locale = 'en') {
   const rows = rowsOf(c.id).filter(r => L.isOpen(r) && L.assignedTo(r.id, u.id)), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id, u.id);
   const steps = new Map(rows.length ? q.all(`SELECT s.*, g.slug game_slug, g.status game_status, g.visibility game_visibility, g.source game_source, g.owner_id game_owner,
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
+  const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = rds.size ? HR.infosOf(c.id, rds, u.id) : new Map();
   return deskOrder(rows.map(r => {
-    const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id), p = prog.get(`${r.id}:${u.id}`);
+    const p = prog.get(`${r.id}:${u.id}`);
+    // A Reading handout (services/homeroom-reading.js): it opens the desk's reading layer, the routine's step on the card.
+    if (r.step_kind === 'story') {
+      const rd = infos.get(`${r.id}:${u.id}`);
+      return { id: r.id, title: titleOf(r, null), icon: READ_ICON, instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready: true, reading: rd,
+        href: `/class/${c.id}/desk#read=${encodeURIComponent(r.id)}`, done: !!p && p.status === 'done', pct: HR.pctOfInfo(rd),
+        ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
+    }
+    const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id);
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
@@ -132,7 +148,7 @@ export function deskView(c, u, locale = 'en') {
   }));
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
-export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${String(x.instructions || '').length}`).join('|');
+export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');
 
 // ---------------------------------------------------------------- comments and stickers (step 2c)
 /** The stickers a teacher can leave on finished work: a small set from the owner's sticker library

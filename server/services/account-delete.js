@@ -135,6 +135,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('DELETE FROM homeroom_live WHERE user_id=?', u.id);
     // the teacher's comments and stickers on their finished handouts (step 2c)
     q.run('DELETE FROM homeroom_feedback WHERE user_id=?', u.id);
+    // their reading routines on Reading handouts (docs/decisions.md "Homeroom: reading from the desk")
+    q.run('DELETE FROM homeroom_reading WHERE user_id=?', u.id);
     // their notebook (docs/decisions.md "Homeroom: the notebook"): every tab and page, their own and their classes'
     q.run('DELETE FROM notebook_pages WHERE user_id=?', u.id);
     q.run('DELETE FROM notebook_tabs WHERE user_id=?', u.id);

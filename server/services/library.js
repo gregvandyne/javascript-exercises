@@ -85,6 +85,9 @@ export function stateOf(read, b) {
  *  assignment whose step is this book. -> { clId, stepId } | null (anything else just isn't counted for a class). */
 export function assignmentCtx(u, b, clId, stepId) {
   if (!u || !clId || !stepId) return null;
+  // A Homeroom Reading handout is read on the desk, with its quiz and notes (services/homeroom-reading.js): the library's
+  // own reader never counts it for the class.
+  if (q.get('SELECT 1 FROM homeroom_handouts WHERE class_lesson_id=?', String(clId))) return null;
   const c = P.context(u, String(clId), String(stepId));
   return c.ok && c.step.kind === 'story' && c.step.story_id === b.id ? { clId: c.cl.id, stepId: c.step.id } : null;
 }

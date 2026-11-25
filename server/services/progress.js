@@ -203,7 +203,8 @@ export function proofHint(u, clId, stepId, edits, i) {
  *  -> { ok, row } | { ok: false, code } */
 export function storyStep(u, clId, stepId, { bookId, done: isDone = false, marks = '', aloud = false } = {}) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
-  if (c.step.kind !== 'story' || c.step.story_id !== bookId) return fail('notFound');
+  // (a Homeroom Reading handout of the student's own choice has no book on its step: services/homeroom-reading.js)
+  if (c.step.kind !== 'story' || !bookId || (c.step.story_id && c.step.story_id !== bookId)) return fail('notFound');
   const old = get(clId, stepId, u.id);
   if (old && old.status === 'done') return ok({ row: old });   // the first finished reading is the one that counts
   const label = aloud || (old && old.label === 'aloud') ? 'aloud' : 'own';
