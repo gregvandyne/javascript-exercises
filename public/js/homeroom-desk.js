@@ -36,6 +36,7 @@ import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { roomInk } from '/js/homeroom-ink.js';
 import { nowNextHtml } from '/js/homeroom-plan.js';
 import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
@@ -258,7 +259,7 @@ function placeRoom() {
   if (grid) {
     for (const el of [front, tdesk, ...desks]) el.removeAttribute('style');
     pts.sort((a, b) => (Math.abs(a.y - b.y) < DESK.h / 2 ? a.x - b.x : a.y - b.y)).forEach((p, i) => { p.el.style.order = String(i + 2); if (p.el.classList.contains('me') && D.color) p.el.style.setProperty('--gc', D.color); });
-    box.style.height = '';
+    box.style.height = ''; roomInk(box, null);
     return;
   }
   // The front of the room as a low band (the area's words aren't shown here), everything under it moved up to match.
@@ -267,6 +268,7 @@ function placeRoom() {
   put(front, { ...AREA, h: band }); put(tdesk, { ...TEACHER_DESK, y: TEACHER_DESK.y - up });
   for (const p of pts) { put(p.el, { x: p.x, y: p.y - up, w: p.w, h: p.h }); p.el.style.order = ''; }
   box.style.height = `${(y1 - up - top) * k + 10}px`;
+  roomInk(box, S.area && S.area.ink, { x0, top, band, up, k });   // the teacher's pen lines around the desks
 }
 
 // ---------------------------------------------------------------- live state

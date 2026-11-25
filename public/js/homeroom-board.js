@@ -276,7 +276,9 @@ export function areaEditor(ctx) {
   function popAnchorEl() {
     if (!H.pop) return null;
     if (H.pop.kind === 'shapes') return document.querySelector('#hr-tools [data-hrmode="shape"]');
-    return document.querySelector(`${H.pop.for === 'sel' ? '#hr-seltools' : '#hr-tools'} [data-hrpop="${H.pop.kind}"]`);
+    if (H.pop.for === 'sel') return document.querySelector(`#hr-seltools [data-hrpop="${H.pop.kind}"]`);
+    // the pen's style: in the panel, or in its own bar on a phone (public/js/homeroom.js renderTools)
+    return document.querySelector(`#hr-penbar:not([hidden]) [data-hrpop="${H.pop.kind}"], #hr-tools [data-hrpop="${H.pop.kind}"]`);
   }
   function toolValues() {
     const pen = H.pop.for === 'pen', line = !pen && B.isLine((B.PICKS.find(p => p.id === H.shapePick) || {}).k), st = pen ? H.style.pen : line ? H.style.line : H.style.shape;
@@ -319,7 +321,7 @@ export function areaEditor(ctx) {
     if (!H.pop) return;
     const was = H.pop; H.pop = null; renderPop();
     // only the button's state changes: redrawing the toolbar here (a press elsewhere closes it) would lose that click
-    for (const b of document.querySelectorAll('#hr-seltools [data-hrpop].open, #hr-tools [data-hrpop].open, #hr-tools [data-hrmode="shape"][aria-expanded="true"]')) { b.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); }
+    for (const b of document.querySelectorAll('#hr-seltools [data-hrpop].open, #hr-tools [data-hrpop].open, #hr-penbar [data-hrpop].open, #hr-tools [data-hrmode="shape"][aria-expanded="true"]')) { b.classList.remove('open'); b.setAttribute('aria-expanded', 'false'); }
     if (was.for === 'sel' && H.sels.length) toolsHtml = selToolsHtml(values());
   }
 

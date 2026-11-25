@@ -135,7 +135,7 @@
       "colorN": "Colour {n}",
       "select": "Select",
       "hintMove": "Tap anything in the teacher's area to select it. Drag it to move it, pull a handle to resize it, tap it again to type.",
-      "hintDraw": "Draw in the teacher's area. Tap Select when you've finished.",
+      "hintDraw": "Draw anywhere on the board. Marks in the teacher's area show on every desk. Tap Select when you've finished.",
       "bt": {
         "noteColor": "Note colour",
         "color": "Colour",
