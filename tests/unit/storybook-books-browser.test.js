@@ -99,7 +99,7 @@ async function demoBooks() {
 
 test('laptop: the library shows Your books as the library\'s cards; Rename in place; Duplicate; Delete with the site\'s dialog and Undo', { skip }, async () => {
   const { u, milo, kip, empty } = await demoBooks();
-  const { ctx, page, errors } = await open(u, '/library', LAPTOP);
+  const { ctx, page, errors } = await open(u, '/read', LAPTOP);
   try {
     const cards = page.locator('#sb-books .sb-bcard');
     assert.equal(await cards.count(), 4);

@@ -1,5 +1,5 @@
-// Records the Builder: a kid types an idea in the Studio, the build steps tick (as the AI Builder shows them, including the
-// new automatic playtest), the game appears in the phone preview and gets played.
+// Records the Builder: a kid types an idea for a classroom game (a Category Board) in the Studio, the build steps tick (as
+// the AI Builder shows them, including the automatic playtest), the board appears in the sideways preview and gets played.
 // SIMULATED: this server has no AI key, so the real build is done by the offline building blocks and the page's live
 // stream is replayed slowly with the AI Builder's step rows (think, write, name, check, autotest) around the real version.
 import { chromium } from 'playwright';
@@ -44,7 +44,8 @@ await ctx.addInitScript(() => {
       const fw = after.match(/\S+\s*/g) || [];
       for (let i = 0; i < fw.length; i += 2) { send('text', { text: fw.slice(i, i + 2).join('') }); await wait(70); }
       step('notes'); send('notes', notes.d); await wait(300);
-      step('ask'); send('ask', ask.d); await wait(2200);
+      // the offline blocks offer their arcade next steps; the AI Builder suggests ones that fit the board it made
+      step('ask'); send('ask', { ...ask.d, options: ['Use our spelling words', 'Add a fourth team', 'Make it harder'] }); await wait(2200);
       send('done', { ...done, steps: { v: 1, p: 'claude', ms: at(), r: 1, end: 'ok', s: s.map(([k, t, f]) => (Object.keys(f).length ? [k, t, f] : [k, t])) } });
     }
     (async () => {
@@ -70,6 +71,7 @@ await ctx.route(/\/api\/studio\/[A-Za-z0-9]+$/, async route => {
   if (route.request().method() !== 'GET') return route.continue();
   const res = await route.fetch(); let body = await res.text();
   body = body.replace(/"p":"blocks","ms":\d+/g, '"p":"claude","ms":16400').replace(/"provider":"blocks"/g, '"provider":"claude"');
+  body = body.split('"Make it harder","Add a second level","Change the hero to a dragon"').join('"Use our spelling words","Add a fourth team","Make it harder"');
   return route.fulfill({ response: res, body });
 });
 // the replayed build shows the AI Builder's summary line (this server's build was made by the offline blocks)
@@ -88,7 +90,7 @@ await cap.advance(1500); await cursorInit(p); await setCursor(p, V.viewport.widt
 const M = {}; const mark = k => { M[k] = cap.n / 30; };
 await cap.seconds(0.4);
 await glide(cap, p, p.locator('#st-input'), { sec: 0.55 });
-const idea = 'A beach game where my puppy catches falling ice creams!';
+const idea = 'A Category Board quiz for my class: animals, space and maps!';
 for (let i = 0; i < idea.length; i += 2) { await p.keyboard.type(idea.slice(i, i + 2)); await cap.frames(3); }
 await cap.seconds(0.25);
 await glide(cap, p, p.locator('#st-send'), { sec: 0.4 }); mark('send');
@@ -97,28 +99,20 @@ const chips0 = await p.locator('.qchips').count();
 for (let i = 0; i < 30 * 40; i++) { if (await p.locator('.qchips').count() > chips0) break; await cap.frame(); }
 mark('done'); console.log('done at', M.done);
 await cap.seconds(1.6);
+// the board wants room: the sideways preview
+await glide(cap, p, p.getByRole('button', { name: /Sideways/ }).first(), { sec: 0.5 }); await cap.seconds(0.6);
 const ifr = p.locator('iframe').first();
 await ifr.scrollIntoViewIfNeeded();
-await glide(cap, p, ifr, { sec: 0.55, click: false, dy: 0.47 }); mark('full');
+await glide(cap, p, ifr, { sec: 0.55, click: false, dy: 0.3 }); mark('full');
 let gf = null; for (let i = 0; i < 40 && !gf; i++) { gf = p.frames().find(f => /\/frame\//.test(f.url())); if (!gf) await cap.frame(); }
-await gf.locator('button:has-text("Play")').first().click({ timeout: 8000, noWaitAfter: true }).catch(e => console.log('play click', e.message));
-await cap.seconds(0.8);
-const go = gf.locator('.ok-ui button:visible').filter({ hasText: /^\s*(Go|Let.s go|Start|OK)\b/i }).first();
-if (await go.count()) await go.click({ timeout: 3000, noWaitAfter: true }).catch(e => console.log('go click', e.message));
-await cap.seconds(0.4);
-const fb = await ifr.boundingBox(); const vw = fb.width, cy = fb.y + fb.height * 0.82; let x = fb.x + vw / 2;
 await p.evaluate(() => { document.getElementById('demo-cursor').style.opacity = '0'; });
-void x; void cy; void vw;
-// steer with the arrow keys (held across frames, so the kit moves the hero smoothly), while things fall
-await gf.evaluate(() => { window.focus(); (document.querySelector('canvas') || document.body).focus && (document.querySelector('canvas') || document.body).focus(); }).catch(() => {});
+// played with the board's own keys (arrows and Enter pick, Space shows the answer, a number gives the points)
+await gf.evaluate(() => window.focus()).catch(() => {});
 await cap.seconds(0.6);
 mark('play');
-for (const [key, sec] of [['ArrowRight', 0.55], [null, 0.25], ['ArrowLeft', 0.95], [null, 0.2], ['ArrowRight', 0.8], [null, 0.3], ['ArrowLeft', 0.6], [null, 0.25], ['ArrowRight', 0.7], [null, 0.4]]) {
-  if (key) await p.keyboard.down(key);
-  await cap.seconds(sec);
-  if (key) await p.keyboard.up(key);
-}
-await cap.seconds(0.3);
+const key = async (k, sec) => { await p.keyboard.down(k); await cap.frames(2); await p.keyboard.up(k); await cap.seconds(sec); };
+await key('ArrowRight', 0.35); await key('ArrowRight', 0.35); await key('ArrowDown', 0.45);
+await key('Enter', 1.5); await key('Space', 1.3); await key('1', 1.1);
 mark('end');
 { const bb = await ifr.boundingBox(); const k = V.out[0] / V.viewport.width; fs.writeFileSync(`${C}/builder-${orient}-box.json`, JSON.stringify({ x: Math.round(bb.x * k), y: Math.round(bb.y * k), w: Math.round(bb.width * k / 2) * 2, h: Math.round(bb.height * k / 2) * 2 })); }
 cap.encode('builder-' + orient, { b: V.out }); fs.writeFileSync(`${C}/builder-${orient}.json`, JSON.stringify(M));

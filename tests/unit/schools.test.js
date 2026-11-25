@@ -170,7 +170,7 @@ test('pages: school console for admins, teacher pages for teachers, student clas
   assert.match((await as(rivera)(`/class/${c.id}?tab=students`)).text, /Wendy Kidd/);
   // nav: school people get a Classes tab
   assert.equal((await as(kid)('/')).location, '/classes', 'a student\'s \'/\' is their Class tab'); assert.equal((await as(rivera)('/')).location, '/teach', 'a teacher\'s is Classroom');
-  assert.match((await as(kid)('/play')).text, /class="tab" href="\/classes"/); assert.match((await as(rivera)('/play')).text, /class="tab" href="\/teach"/);
+  assert.match((await as(kid)('/learn')).text, /class="tab" href="\/classes"/); assert.match((await as(rivera)('/learn')).text, /class="tab" href="\/teach"/);
   assert.doesNotMatch((await as(createUser({ username: 'NoSchoolKid', password: 'secret123' }))('/')).text, /href="\/classes"[^>]*class="tab"|class="tab" href="\/classes"/);
 });
 

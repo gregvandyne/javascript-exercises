@@ -114,7 +114,7 @@ test('My library: All my games, own collections (shared marked), New collection,
     [`/class/${cls.id}?view=students`, 'Games students shared', 'Made by Ana 5C students'],
     [`/class/${cls.id}?view=oomba`, 'Oomba games', 'Browse every Oomba game'],
     // The Story Library (routes/library.js), with the class kept for Assign.
-    [`/library?class=${cls.id}`, 'Story Library', `${LIB.books().length} leveled picture books with questions. Assign one to a class.`],
+    [`/read?class=${cls.id}`, 'Story Library', `${LIB.books().length} leveled picture books with questions. Assign one to a class.`],
   ]);
   assert.match(p, /<span class="lib-name">New collection<\/span>/);
   assert.match(p, new RegExp(`<form class="lib-newf-panel" data-api="/api/game-folders" novalidate><input type="hidden" name="classId" value="${cls.id}">`));

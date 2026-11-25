@@ -73,8 +73,8 @@
     "games": "Jogos",
     "account": "Conta",
     "school": "Escola",
-    "play": "Jogar",
     "learn": "Aprender",
+    "read": "Ler",
     "class": "Turma",
     "classroom": "Minha sala",
     "live": "Ao vivo",
@@ -562,17 +562,8 @@
       "start": "Começar a criar"
     },
     "rails": {
-      "featured": "Destaques",
-      "playing": "Jogando agora",
-      "friends": "Dos seus amigos",
-      "popular": "Populares",
-      "rated": "Mais bem avaliados",
-      "new": "Novos",
       "mine": "Meus jogos",
-      "favorites": "Meus favoritos",
-      "keep": "Continue jogando",
-      "two": "Dois jogadores",
-      "fromLearn": "De Aprender: os mais divertidos"
+      "favorites": "Meus favoritos"
     },
     "hero": {
       "label": "Jogo em destaque",
@@ -581,10 +572,8 @@
       "more": "Saiba mais",
       "about": "Sobre {title}"
     },
-    "categories": "Categorias",
     "empty": {
       "title": "Nenhum jogo ainda",
-      "text": "Crie o primeiro!",
       "action": "Criar um jogo"
     },
     "intro": {
@@ -607,9 +596,6 @@
       "todo": "{count, plural, one {# aula para fazer} other {# aulas para fazer}}",
       "continue": "Continuar",
       "open": "Abrir minha turma"
-    },
-    "chips": {
-      "two": "2 jogadores"
     },
     "focus": {
       "tools": "Ferramentas de sala de aula",
@@ -1227,8 +1213,8 @@
     },
     "unavailable": {
       "title": "Este jogo não está disponível agora",
-      "text": "Ele pode voltar mais tarde. Em Jogar há mais jogos e quebra-cabeças para experimentar.",
-      "play": "Ir para Jogar"
+      "text": "Ele pode voltar mais tarde. Em Aprender há mais jogos e quebra-cabeças para experimentar.",
+      "play": "Ir para Aprender"
     }
   },
   "play": {
@@ -7078,7 +7064,6 @@
       "games": "Jogos para aprender",
       "none": "Ainda não há jogos com esses filtros.",
       "clear": "Ver todos os jogos",
-      "players": "Jogos para aprender feitos por jogadores",
       "meta": "{subject} · {grades}",
       "assign": "Passar",
       "assignCourse": "Passar para uma turma",
@@ -13430,8 +13415,6 @@
     "kindStory": "História",
     "findStories": "Biblioteca de histórias",
     "door": {
-      "title": "Biblioteca de histórias",
-      "kids": "{count} livros ilustrados. Leia ou toque em Leia para mim!",
       "staff": "{count} livros ilustrados por nível, com perguntas. Atribua um a uma turma."
     },
     "results": {

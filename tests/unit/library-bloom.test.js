@@ -340,7 +340,7 @@ test('pages: a Bloom book shows Bloom Library, its own license and deed, and the
     const bloom = LIB.books().filter(b => b.source === 'bloom');
     const by = bloom.find(b => !b.credits.shareAlike), sa = bloom.find(b => b.credits.shareAlike);
     const sw = LIB.books().find(b => b.source === 'storyweaver');
-    const lib = await get('/library');
+    const lib = await get('/read');
     assert.match(lib.text, /Bloom Library/); assert.match(lib.text, /StoryWeaver/);
     assert.match(lib.text, /Pratham Books \(StoryWeaver\) and the authors and publishers on Bloom Library/);
     const card = new RegExp(`href="/library/${by.id}"[\\s\\S]*?lb-src" dir="ltr">Bloom Library<`);

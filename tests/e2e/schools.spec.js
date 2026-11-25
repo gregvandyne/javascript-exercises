@@ -83,7 +83,7 @@ test('a school admin\'s My school (in the account menu) opens their school; Make
   expect(new URL(head.url()).pathname).toBe(`/school/${school.slug}`);
   expect(await head.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live', '/me']);
   await expect(head.locator('.tabbar .tab[href="/me"]')).toHaveAttribute('aria-current', 'page');
-  await head.goto('/play');
+  await head.goto('/learn');
   await head.locator('.topbar .acctpick summary').click();
   await Promise.all([head.waitForURL(new RegExp(`/school/${school.slug}$`)), head.locator('.acct-menu a[href="/school"]').click()]);
   await expect(head.locator('h1')).toContainText(school.name);
@@ -91,11 +91,11 @@ test('a school admin\'s My school (in the account menu) opens their school; Make
   await head.goto('/me');
   await expect(head.locator('.pagehead a[href="/build"]')).toContainText('Make a game');
   await Promise.all([head.waitForURL(/\/build$/), head.locator('.pagehead a[href="/build"]').click()]);
-  // Desktop: Classroom · Build · Live; the avatar opens the account menu: the card (Me), Play, Learn, My school, Settings.
+  // Desktop: Classroom · Build · Live; the avatar opens the account menu: the card (Me), Learn, Read, My school, Settings.
   await head.setViewportSize({ width: 1280, height: 800 });
   await head.goto('/teach?all=1');
   expect(await head.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live']);
   await head.locator('.topbar .acctpick summary').click();
-  expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/play', '/learn', '/school', '/me/settings']);
+  expect(await head.locator('.acct-menu a').evaluateAll(l => l.map(a => a.getAttribute('href')).filter(h => !h.includes('theme=')))).toEqual(['/me', '/learn', '/read', '/school', '/me/settings']);
   await hctx.close(); await admin.context().close();
 });

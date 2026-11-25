@@ -1,5 +1,6 @@
 // Home doors (the navigation proposal's Week 2, docs/decisions.md "Home doors"): signed out and as a guest the home page
-// opens with a promise and three doors: kid → down the same page to the featured game and the game rows (#play), parent
+// opens with a promise and three doors: kid → down the same page to the games by topic (#play; the home page is the
+// Learn page since Play and Learn became one, docs/decisions.md "Learn and Read"), parent
 // and teacher straight to their page in the home page's language, each counted by a beacon (POST /go/<door>; a daily
 // total, people only); the wide top bar is Home · Build · (Plans) · Parents · Teachers ·
 // Sign in · ▶ Play now. Kids, students, teachers and grown-ups with an account see none of it.
@@ -47,9 +48,9 @@ const inSchool = role => { const u = kid(); assert.ok(S.addMember(auth.getUser(b
 
 const doors = s => (/<div class="doors"[\s\S]*?<\/div>/.exec(s) || [''])[0];
 const topnav = s => (/<nav class="topnav"[\s\S]*?<\/nav>/.exec(s) || [''])[0];
-const hrefs = s => [...s.matchAll(/href="([^"]+)"/g)].map(m => m[1]);
+const hrefs = s => [...s.matchAll(/href="([^"]+)"/g)].map(m => m[1]).filter(h => !h.startsWith('/icons/'));
 
-test('signed out and as a guest: the promise, then three doors (kid first, the big one), then the featured game', async () => {
+test('signed out and as a guest: the promise, then three doors (kid first, the big one), then the games by topic', async () => {
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const home = (await call(u, '/')).text;
     const d = doors(home);
@@ -64,31 +65,31 @@ test('signed out and as a guest: the promise, then three doors (kid first, the b
     assert.match(d, /🍎.*?I’m a teacher<\/span><span class="door-s">Free classes, lessons and progress/);
     assert.doesNotMatch(home, /home-who|>For parents<\/span><\/a><a class="btn"/, `${who}: the old parent/teacher buttons are gone (no duplicates)`);
     const at = k => home.indexOf(k);
-    assert.ok(at('id="home-h1"') < at('class="doors"') && at('class="doors"') < at('class="hero '), `${who}: heading, doors, then the featured game`);
+    assert.ok(at('id="home-h1"') < at('class="doors"') && at('class="doors"') < at('class="rail'), `${who}: heading, doors, then the games`);
     assert.equal(home.match(/\bid="play"/g).length, 1, `${who}: one #play on the page`);
-    assert.ok(at('class="doors"') < at('<div id="play" class="home-play">') && at('id="play"') < at('class="hero ') && at('id="play"') < at('class="rail'), `${who}: #play starts at the featured game, above the rows`);
+    assert.ok(at('class="doors"') < at('<div id="play" class="learn-games-wrap">') && at('id="play"') < at('topic-chips') && at('id="play"') < at('class="rail'), `${who}: #play starts at the topic chips, above the rows`);
     assert.doesNotMatch(d, /\$\d|€\d|£\d|plan/i, 'no prices or plan names on the doors');
   }
 });
 
 test('nobody with an account sees the doors or Play now: kids, students, teachers, grown-ups', async () => {
-  // A kid's '/' is Play; the others land on their first tab, and their Play is /play (no doors there either).
-  for (const [who, u, path] of [['kid', kid(), '/'], ['student', inSchool('student'), '/play'], ['teacher', inSchool('teacher'), '/play'], ['grown-up', grownup(), '/play']]) {
+  // A kid's '/' is Learn; the others land on their first tab, and their Learn is /learn (no doors there either).
+  for (const [who, u, path] of [['kid', kid(), '/'], ['student', inSchool('student'), '/learn'], ['teacher', inSchool('teacher'), '/learn'], ['grown-up', grownup(), '/learn']]) {
     const home = await call(u, path);
     assert.equal(home.status, 200, who);
-    assert.match(home.text, /<div id="play" class="home-play">/, who);
+    assert.match(home.text, /<div id="play" class="learn-games-wrap">/, who);
     assert.doesNotMatch(home.text, /class="doors"|href="\/go\//, who);
     assert.doesNotMatch(home.text, /class="btn btn-hot playnow"/, who);
   }
 });
 
-test('the kid door reaches a game in two taps: #play → the featured game\'s Play (no sign-up), which plays; old /go/kid links land on #play', async () => {
+test('the kid door reaches a game in two taps: #play → a game in the topic rows (no sign-up), which opens; old /go/kid links land on #play', async () => {
   const home = (await call(null, '/')).text;
-  const play = home.slice(home.indexOf('<div id="play" class="home-play">'));
-  const heroPlay = /<a class="btn btn-big" href="(\/play\/[a-z0-9-]+)">/.exec(play)[1];
-  const g = await call(null, heroPlay);
-  assert.equal(g.status, 200, 'the game opens signed out (a guest is made, no sign-up)');
-  assert.match(play, /class="rail/, 'the game rows are in #play too, so a kid picks');
+  const play = home.slice(home.indexOf('<div id="play" class="learn-games-wrap">'));
+  assert.match(play, /class="rail/, 'the game rows by topic are in #play, so a kid picks');
+  const first = /<a [^>]*href="(\/(?:g|play)\/[a-z0-9-]+)"/.exec(play)[1];
+  const g = await call(null, first);
+  assert.equal(g.status, 200, 'the game opens signed out (no sign-up)');
   for (const [path, to] of [['/go/kid', '/#play'], ['/go/play', '/#play'], ['/go/kid?l=es', '/es#play'], ['/go/play?l=de', '/de#play'], ['/go/kid?l=xx', '/#play'], ['/go/kid?l=//evil.example', '/#play']]) {
     const r = await call(null, path);
     assert.equal(r.status, 302, path); assert.equal(r.location, to, path);
@@ -178,22 +179,22 @@ test('a translated home page shows its own doors; until a language has them, its
   assert.doesNotMatch(doors((await call(null, '/de')).text), /Für Eltern/, 'the words are back');
 });
 
-test('the wide top bar, signed out and as a guest: Play · Learn · Build · Parents · Teachers, then Sign in and ▶ Play now (Plans in the footer)', async () => {
+test('the wide top bar, signed out and as a guest: Learn · Read · Build · Parents · Teachers, then Sign in and ▶ Play now (Plans in the footer)', async () => {
   for (const [who, u] of [['signed out', null], ['guest', auth.createGuest()]]) {
     const page = (await call(u, '/safety')).text;
-    assert.deepEqual(hrefs(topnav(page)), ['/', '/learn', '/build', '/parents', '/teachers'], who);
+    assert.deepEqual(hrefs(topnav(page)), ['/learn', '/read', '/build', '/parents', '/teachers'], who);
     assert.match((/<footer class="foot">[\s\S]*?<\/footer>/.exec(page) || [''])[0], /<a href="\/plans">Plans<\/a>/, `${who}: Plans in the footer`);
     assert.match(page, /class="me-btn" href="\/(login|me)"[\s\S]*?<\/a>\s*<a class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"><span aria-hidden="true">▶<\/span> <span class="playnow-t">Play now<\/span><\/a>\s*<\/header>/, `${who}: Play now ends the bar`);
     assert.match(page, /<form class="topsearch" role="search"/, `${who}: the search field stays`);
   }
   // A kid keeps their menu (Friends in it; search is the field) and no Play now.
   const k = (await call(kid(), '/safety')).text;
-  assert.deepEqual(hrefs(topnav(k)), ['/', '/learn', '/build', '/friends']);
+  assert.deepEqual(hrefs(topnav(k)), ['/learn', '/read', '/build', '/friends']);
   assert.doesNotMatch(k, /class="btn btn-hot playnow"/);
   // Plans off (billing not public): no Plans for anyone, the doors and Play now unchanged.
   config.stripeApiKey = '';
   const off = (await call(null, '/')).text;
-  assert.deepEqual(hrefs(topnav(off)), ['/', '/learn', '/build', '/parents', '/teachers']);
+  assert.deepEqual(hrefs(topnav(off)), ['/learn', '/read', '/build', '/parents', '/teachers']);
   assert.doesNotMatch(off, /href="\/plans"/);
   assert.deepEqual(hrefs(doors(off)), ['#play', '/parents', '/teachers']);
   assert.match(off, /class="btn btn-hot playnow" href="\/#play" data-count="\/go\/play"/);

@@ -10,7 +10,7 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as LIB from '../services/library.js';
 import * as SUG from '../services/library-suggest.js';
-import { bookCard } from './library.js';
+import { bookCard, readerOf } from './library.js';
 import { ico } from '../views/icon.js';
 
 export const router = Router();
@@ -53,7 +53,7 @@ router.post('/api/library/suggest', rateLimit('library-suggest', 40, 60e3), asyn
   const staff = isStaff(u);
   const forClass = staff && body.class ? LIB.assignClasses(u).find(c => c.id === String(body.class)) || null : null;
   const books = r.ids.map(id => LIB.getBook(id)).filter(Boolean);
-  const reads = new Map(books.map(bk => [bk.id, u ? LIB.readOf(u.id, bk.id) : null]));
+  const reads = new Map(books.map(bk => [bk.id, readerOf(u) ? LIB.readOf(u.id, bk.id) : null]));
   const cards = books.map(bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass }));
   res.json({ ok: true, by: r.by, ids: books.map(bk => bk.id), none: r.none, refused: false,
     html: String(html`${cards}`), note: r.none ? t('library.wish.none') : t('library.wish.found', { count: books.length }) });

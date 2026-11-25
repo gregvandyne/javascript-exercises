@@ -53,7 +53,7 @@ const noSideways = page => page.evaluate(() => document.documentElement.scrollWi
 const shot = async (page, name) => { if (!SHOTS) return; await page.waitForTimeout(300); await page.screenshot({ path: `${SHOTS}/${name}.png` }); };
 
 test('a wish shows the chosen books as library cards; All books brings the grid back', { skip }, async () => {
-  const { ctx, page, errors } = await open(ava, '/library');
+  const { ctx, page, errors } = await open(ava, '/read');
   await page.waitForSelector('#lb-wish:not([hidden])');
   assert.equal(await page.innerHTML('.lb-wish-label').then(h => deicon(h).replace(/<[^>]+>/g, '').trim()), '✨ What would you like to read today?');
   assert.equal(await page.getAttribute('#lb-wish-q', 'placeholder'), 'dinosaurs, a funny story, something about space...');
@@ -87,7 +87,7 @@ test('a wish shows the chosen books as library cards; All books brings the grid 
 
 test('phones: the box and the books fit with no sideways scroll', { skip }, async () => {
   for (const dev of ['iPhone 13', 'Galaxy S9+']) {
-    const { ctx, page, errors } = await open(null, '/library', { ...devices[dev] });
+    const { ctx, page, errors } = await open(null, '/read', { ...devices[dev] });
     await page.waitForSelector('#lb-wish:not([hidden])');
     assert.ok(await noSideways(page), `${dev} box`);
     const box = await page.$eval('#lb-wish-go', el => el.getBoundingClientRect().width);

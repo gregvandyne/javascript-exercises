@@ -178,7 +178,7 @@ async function call(p, { method = 'GET', body, user = null } = {}) {
 const post = (body, user) => call('/api/library/suggest', { method: 'POST', body, user });
 
 test('the library page has the box (hidden until its script runs) with our words', async () => {
-  const r = await call('/library?grade=2');
+  const r = await call('/read?grade=2');
   assert.match(r.text, /<form class="lb-wish" id="lb-wish" hidden data-grade="2"/);
   assert.match(r.text, /What would you like to read today\?/);
   assert.match(r.text, /placeholder="dinosaurs, a funny story, something about space\.\.\."/);

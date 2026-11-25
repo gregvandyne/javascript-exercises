@@ -327,10 +327,10 @@ test('changes from the book\'s page and from any other page: the same writer, Un
 
 test('pages: Make a book opens the chat for companion teachers; the book page is the companion\'s (no second chat); others keep the page flow', async () => {
   const u = teacher(), plain = teacher({ tester: false });
-  const lib = await as(u)('/library');
+  const lib = await as(u)('/read');
   assert.match(lib.text, /href="\/library\/make\?new=1"[^>]*data-oc-book/);
   const go = await as(u)('/library/make?new=1');
-  assert.equal(go.status, 302); assert.equal(go.headers.get('location'), '/library?make=1');
+  assert.equal(go.status, 302); assert.equal(go.headers.get('location'), '/read?make=1');
   const list = await as(u)('/library/make');
   assert.equal(list.status, 200); assert.doesNotMatch(list.text, /id="sb-setup"/);
   const id = await madeBook(u, 'A Seed Story', { kind: 'linear' });

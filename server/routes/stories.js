@@ -345,7 +345,7 @@ router.post('/api/stories', requireBuilder, rateLimit('stories', 12, 3600e3), as
 
 // The hand-off to the book maker (docs/story-builder.md "Picture books"): what the Story Builder knows becomes the book
 // maker's first answers (companion-book.js fromStory). With the Oomba chat, a card in that chat that asks only the rest
-// (companion.js storyBook; the library opens it: /library?make=1); without it, the setup page's own steps with these
+// (companion.js storyBook; the library opens it: /read?make=1); without it, the setup page's own steps with these
 // picked (the page keeps them in sessionStorage). Nothing goes to an AI here: the book maker's check shows exactly what
 // will be sent, after its scrubber and screening, and makes nothing until the teacher says so. Kids and students: 404,
 // whatever STORY_PICTURE_BOOKS says (storybook.js canMake never lets them in).
@@ -361,7 +361,7 @@ router.post('/api/stories/book', requireBuilder, rateLimit('stories-book', 30, 3
   if (CO.companionFor(u)) {
     const r = CO.storyBook(u, { lang: req.locale || 'en', input });
     if (!r.ok) return res.status(r.code === 'chatBusy' ? 409 : 404).json({ code: r.code, error: t(r.code === 'chatBusy' ? 'js.companion.err.chatBusy' : 'errors.api.notFound') });
-    return res.json({ href: '/library?make=1' });
+    return res.json({ href: '/read?make=1' });
   }
   res.json({ href: '/library/make', setup: BK.pageSetup(input) });
 });

@@ -121,7 +121,7 @@ function side(req, ctx, sel, mine, shared) {
     <nav class="shelf-nav" aria-label="${ctx.kind === 'build' ? t('folders.myGamesFolders') : t('folders.sideClass')}">
       <ul class="shelf-group${ctx.kind === 'class' ? ' shelf-cltop' : ''}">${first.map(it => html`<li>${item(req, ctx, sel, it)}</li>`)}
         ${oombaOn(ctx) ? html`<li>${item(req, ctx, sel, { key: 'oomba', href: `${ctx.base}?view=oomba`, icon: 'find', name: t('folders.findOomba') })}</li>` : ''}
-        ${ctx.kind === 'class' && ctx.staff ? html`<li>${item(req, ctx, sel, { key: 'library', href: `/library?class=${ctx.c.id}`, icon: 'book', name: t('library.findStories') })}</li>` : ''}</ul>
+        ${ctx.kind === 'class' && ctx.staff ? html`<li>${item(req, ctx, sel, { key: 'library', href: `/read?class=${ctx.c.id}`, icon: 'book', name: t('library.findStories') })}</li>` : ''}</ul>
       ${ctx.folders ? html`<p class="shelf-lab" id="shelf-lab-mine">${t('folders.title')}</p>
       ${mine.length ? html`<ul class="shelf-group" aria-labelledby="shelf-lab-mine"${mine.length > 1 ? html` data-reorder="/api/game-folders/order" data-moved="${movedTpl(t)}" aria-describedby="shelf-order"` : ''}>${mine.map(f => html`<li data-id="${f.id}">${item(req, ctx, sel, fItem(f), { grip: mine.length > 1, drop: f.id })}</li>`)}</ul>
       <p class="small muted shelf-drophint">${t('folders.dropHint')}</p>
@@ -340,7 +340,7 @@ function libList(req, ctx, mine, shared, myGames) {
       ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
       ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
       ${ctx.staff ? libItem(req, { href: `${base}?view=oomba`, emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
-      ${ctx.staff ? libItem(req, { href: `/library?class=${c.id}`, emo: '📚', name: t('library.findStories'), sub: t('library.door.staff', { count: LIB.books().length }) }) : ''}
+      ${ctx.staff ? libItem(req, { href: `/read?class=${c.id}`, emo: '📚', name: t('library.findStories'), sub: t('library.door.staff', { count: LIB.books().length }) }) : ''}
     </ul>`;
 }
 

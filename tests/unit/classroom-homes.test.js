@@ -175,15 +175,15 @@ test('the Me page: My school for a school\'s admin (to /school), not for a teach
   assert.equal((await get('/school', head)).location, `/school/${school.slug}`);
 });
 
-test('what My classes no longer lists is still a tap away: Learn has the courses (Assign), live games (Host live) and brain breaks; Play and Learn are in the account menu', async () => {
+test('what My classes no longer lists is still a tap away: Learn has the courses (Assign), live games (Host live) and brain breaks; Learn and Read are in the account menu', async () => {
   const l = await get('/learn', teacher); assert.equal(l.status, 200);
   for (const href of ['/teach/cs-quest', '/teach/cyber-defenders']) assert.ok(l.text.includes(`href="${href}"`), `Learn: ${href}`);
   assert.match(l.text, /href="\/live\?mode=[a-z-]+"/, 'Learn: Host live on the live class games');
   assert.match(l.text, /href="\/learn\/brain-break-games"/, 'Learn: the brain break games page');
-  // Teachers' bars are Classroom · Build · Live: Play and Learn are in the account menu
+  // Teachers' bars are Classroom · Build · Live: Learn and Read are in the account menu
   const menu = l.text.slice(l.text.indexOf('<details class="acctpick"'), l.text.indexOf('</details>', l.text.indexOf('<details class="acctpick"')));
-  assert.match(menu, /<div class="acct-tiles">\s*<a href="\/play" ><span class="acct-tile-e" aria-hidden="true">🎮<\/span>Play<\/a>/, 'Play is a tile in the account menu');
-  assert.match(menu, /<a href="\/learn" aria-current="page"><span class="acct-tile-e" aria-hidden="true">📚<\/span>Learn<\/a>/, 'Learn too, marked on /learn');
+  assert.match(menu, /<div class="acct-tiles">\s*<a href="\/learn" aria-current="page"><span class="acct-tile-e" aria-hidden="true">💡<\/span>Learn<\/a>/, 'Learn is a tile in the account menu, marked on /learn');
+  assert.match(menu, /<a href="\/read" ><span class="acct-tile-e" aria-hidden="true">📚<\/span>Read<\/a>/, 'Read (the Story Library) too');
   // The lesson library is now Build (games in folders); the ready-made courses are on each class page.
   const lib = await get('/teach/lessons', teacher);
   assert.equal(lib.status, 302); assert.equal(lib.location, '/build');

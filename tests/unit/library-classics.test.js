@@ -169,7 +169,7 @@ test('no digitizer\'s name, header or license anywhere in the manifest, the cura
   const manifest = fs.readFileSync(path.join(ROOT, 'server/library/manifest.json'), 'utf8');
   assert.ok(!/gutenberg|pglaf|pgdp|distributed proofread|transcriber/i.test(manifest), 'the manifest');
   for (const b of classics()) for (const p of b.pages) assert.ok(!C.SOURCE_NAME_RE.test(p.text) && !/https?:|www\./.test(p.text), `${b.id}`);
-  for (const pathname of ['/library', '/library?q=classics', '/library/cl-whale', '/library/cl-whale/read', '/library/cl-velveteen-rabbit/read?p=10']) {
+  for (const pathname of ['/read', '/read?q=classics', '/library/cl-whale', '/library/cl-whale/read', '/library/cl-velveteen-rabbit/read?p=10']) {
     const r = await call(pathname);
     assert.equal(r.status, 200, pathname);
     assert.ok(!/gutenberg/i.test(r.text), pathname);
@@ -188,7 +188,7 @@ async function call(p, { method = 'GET', body, user = null } = {}) {
 }
 
 test('cards, book page and credits: "Classics", author and illustrator with the year, public domain, what Oomba changed', async () => {
-  const lib = await call('/library');
+  const lib = await call('/read');
   assert.match(lib.text, /<li class="lb-card" data-grade="[^"]+">\s*<a class="lb-cover" href="\/library\/cl-whale"/);
   assert.match(lib.text, /<span class="lb-src">Classics<\/span>/);
   assert.match(lib.text, /Classics: old books in the public domain, with their original pictures\./);

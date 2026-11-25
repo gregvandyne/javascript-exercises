@@ -1830,6 +1830,28 @@ a.cmap-row:hover .cmap-k{text-decoration:underline}
 .lcard-acts .btn{flex:1 1 auto;justify-content:center}
 .lcard-try{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;font-weight:700;font-size:.95rem;color:var(--text-2)}
 .learn-how{row-gap:8px}
+/* One Learn page (docs/decisions.md "Learn and Read"): the topic chips, then one quiet "Filter the games" line that opens
+   the filters (a <details>, open while a filter is chosen), then the topic sections or the filtered grid. */
+.learn-games-wrap{display:flex;flex-direction:column;gap:var(--s3);min-width:0}
+.learn-games-wrap>.rail{margin:0 0 var(--s3)}
+.learn-games-wrap .rail-head h2{scroll-margin-top:calc(var(--top) + 16px)}
+.learn-games-wrap>.lp-sec,.learn-games-wrap>.buildbanner{margin:0 0 var(--s3)}
+.learn-filterbox{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--card);padding:0 var(--s3);min-width:0}
+.learn-filterbox>summary{display:flex;align-items:center;gap:var(--s2);min-height:48px;cursor:pointer;font-weight:700;list-style:none;color:var(--text-2)}
+.learn-filterbox>summary::-webkit-details-marker{display:none}
+.learn-filterbox>summary::after{content:"";width:9px;height:9px;margin-inline-start:auto;flex:none;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.learn-filterbox[open]>summary::after{transform:rotate(-135deg) translateY(-2px)}
+.learn-filterbox>summary:focus-visible{outline:3px solid var(--focus,var(--accent));outline-offset:2px;border-radius:var(--r-sm)}
+.learn-filterbox .lf-ico{display:inline-flex;flex:none}
+.learn-filterbox .lf-now{color:var(--text);background:var(--accent-soft);border-radius:999px;padding:2px 10px;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.learn-filterbox[open]{padding-bottom:var(--s3)}
+.learn-filterbox[open]>summary{margin-bottom:var(--s2)}
+.learn-clear{margin:var(--s3) 0 0;font-weight:700}
+.learn-clear>a{display:inline-flex;align-items:center;gap:6px;min-height:44px}
+.learn-tab .home-class{margin:0}
+/* Phones: the games come up one screen sooner (the heading says where you are; the lead line is for wide screens). */
+@media (max-width:600px){.learn-head p.muted{display:none}}
+@media (prefers-reduced-motion:reduce){.learn-filterbox>summary::after{transition:none}}
 .gcard .gmeta{font-weight:700;color:var(--text-2)}
 /* "Set up your school", signed out: the account part of the sign-up (routes/teachers.js setupBlock) */
 .sr-account{margin:var(--s4) 0 0;padding:var(--s3) var(--s4) var(--s2);border:1px solid var(--line);border-radius:var(--r-sm)}

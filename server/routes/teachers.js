@@ -5,7 +5,6 @@
 // Games are listed only when they are an official launch game anyone may open now (canView for a signed-out visitor):
 // never a game a child made. The text is under teachers.* and learn.* in the locale files. Until a language has it, a
 // paragraph shows the English, marked lang="en" dir="ltr", and search engines are told the page is English only.
-import * as LIB from '../services/library.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { canHost, GROWNUP_OPEN_MAX, capacityFor } from '../services/classlive-access.js';
 import { LIMITS as SET_LIMITS } from '../services/classlive-sets.js';
@@ -15,7 +14,11 @@ import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { iconLine } from '../../public/js/icons.js';
 import { folded } from './info.js';
-import { page, notFound, parentsLabel, signedOut, VERSION } from '../views/layout.js';
+import { page, notFound, parentsLabel, signedOut, VERSION, landingFor } from '../views/layout.js';
+import { focusSections, topicOf, buildBanner, classStrip, homeDoors } from './discover.js';
+import { courseOwned } from '../services/course-catalog.js';
+/** A Play topic's Learn subject (the filters' subjects), for the games with no Learn subject of their own. */
+const TOPIC_SUBJECT = { math: 'math', reading: 'words', geography: 'maps', strategy: 'thinking' };
 import { coverArt, gameCard, rail } from '../views/components.js';
 import { courseRow } from '../views/courses.js';
 import * as focus from '../services/game-focus.js';
@@ -533,10 +536,14 @@ const csTeaser = (req, t) => html`<section class="panel" id="cs-quest" aria-labe
 export const inClassLine = req => (signedOut(req.user) && req.t.own('learn.inClass') ? el(req.t, 'p', 'learn.inClass', { href: lp(req, '/teachers') }, ' class="lp-aside small in-class"') : '');
 
 // ---------------------------------------------------------------------------------------------------- /learn
-// The Learn tab (docs/decisions.md "Play and Learn"): the library's learning shelf, the same page for everyone. Filters
-// (subject, grade, how you play) are plain links and a GET form, so they work without scripts; a filtered view is noindex
-// and /learn stays the page search engines see (its heading, lead, subject and age pages and structured data, signed out).
-// School staff see Assign (to their classes), Host live (live modes) and Try it on the same cards; nobody else does.
+// The Learn tab (docs/decisions.md "Play and Learn", "Learn and Read"): every game, the same page for everyone. Play and
+// Learn are one page now. By default the games are by topic (Play's topic chips and sections, each official game in one,
+// My favorites first); a subject or "how you play" filter shows the filtered grid (Learn's), and a grade narrows either
+// view. Filters (subject, grade, how you play) are plain links and a GET form in a <details> (open while one is chosen),
+// so they work without scripts; a filtered view is noindex and /learn stays the page search engines see (its heading,
+// lead, subject and age pages and structured data, signed out). School staff always see the grid, with Assign (to their
+// classes), Host live (live modes), Try it and ?std= on the cards, as before; nobody else does. '/' is this page for
+// those who land on it (landingFor null), with the signed-out home's heading, doors and structured data there.
 const GRADES = ['K', '1', '2', '3', '4', '5', '6', '7', '8'];
 const HOWS = ['solo', 'two', 'live'];
 /** Each course's subject and grades, for the filters and the card's "Subject · Grades" line: the same grades as the
@@ -568,32 +575,44 @@ const fits = (info, f) => !!info && (!f.subject || info.subject === f.subject) &
 const isTwo = g => TWO_PLAYER.includes(g.slug) || (g.players_max >= 2 && g.players_max <= 8);
 const liveOnly = g => { const l = liveGameOf(g); return !!l && !l.play; };
 
-router.get('/learn', (req, res) => {
+export function learnPage(req, res, { landing = false } = {}) {
   const t = req.t, u = req.user;
   const out = signedOut(u);
   const staff = !out && isSchoolStaff(u);
   const defGrade = out || staff ? '' : rosterGrade(u);
   const f = learnFilters(req.query, defGrade);
   const filtered = !!(f.subject || f.grade || f.how);
+  // Links stay in the language address the page was opened at (/es -> /es/teachers).
+  const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
   // With a roster grade, "Any grade" has to say so in the address (grade=any), or the default would come back.
   const gradeQ = g => g || (defGrade ? 'any' : '');
   const live = liveOn();
   const subjName = k => t(`learn.tab.subjects.${k}`);
-  const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(i.subject), grades: t('learn.grades', gr) }) : null; };
+  // A card's "Subject · Grades" line: the subject the filters use (subjectOf: Sudoku is Math), the Learn grades.
+  const meta = g => { const i = SHELF_INFO[g.slug]; const gr = shelfGrades(g.slug); return i ? t('learn.tab.meta', { subject: subjName(subjectOf(g)), grades: t('learn.grades', gr) }) : null; };
   const href = over => { const p = { ...f, ...over }; p.grade = gradeQ(p.grade); const qs = new URLSearchParams(Object.entries(p).filter(([, v]) => v)).toString(); return lp(req, '/learn') + (qs ? `?${qs}` : '') + '#filters'; };
   const card = (href, emoji, name, short) => html`<li><a class="lp-hub panel" href="${lp(req, href)}"><span class="lp-hub-e" aria-hidden="true">${ico(emoji, { size: 32 })}</span><span>${el(t, 'span', name, {}, ' class="lp-hub-t"')}${el(t, 'span', short, {}, ' class="lp-hub-d"')}</span></a></li>`;
   const crumbs = [[t('nav.home'), '/'], [t('learn.index.crumb'), '/learn']];
   // Learn is a tab: signed in, it needs no breadcrumb ("Home" is another tab, or another first page, for them).
   const seenCrumbs = out ? crumbs : [];
 
-  // The official Learn-shelf games anyone may open (course-owned games are reached through their course).
-  const all = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 60 }).filter(g => SHELF_INFO[g.slug]);
   // Staff only: the Common Core codes each official game practises (server/standards/official-tags.js), and ?std= to
   // keep the games that practise a code or a code's start ("3.OA", "RF.K"). Never shown to kids or visitors.
   const std = staff ? stdNorm(String(req.query.std || '').slice(0, 24)).replace(/\.$/, '') : '';
+  // Every official game anyone may open, from both shelves (Play and Learn are one page). A game's subject is its topic's
+  // (the same section it has on the topics view: Sudoku is Math), else its Learn subject (a live game, Coding); a game
+  // without grades fits every grade.
+  const subjectOf = g => TOPIC_SUBJECT[topicOf(g)] || (SHELF_INFO[g.slug] || {}).subject || '';
+  // Course-owned games are reached through their course (its card), never listed as games of their own.
+  const all = games.listVisible(u, { official: true, order: 'plays', limit: 100 }).filter(g => !courseOwned(g) && (subjectOf(g) || !(f.subject || std)));
+  const infoOf = g => ({ from: 0, to: 8, ...SHELF_INFO[g.slug], subject: subjectOf(g) });
+  // The grid (Learn's filtered view) for staff, and for anyone who picked a subject or a way to play; else the topics.
+  const gridView = staff || !!(f.subject || f.how);
+  // A filter chosen in the address (not only a student's roster grade): the filters stay open, with a way back.
+  const asked = !!(f.subject || f.how || std || req.query.grade !== undefined);
   const codesOf = slug => ['ccss-math', 'ccss-ela'].map(fw => [fw, OT.gameCodes(slug, fw)]).filter(([, c]) => c.length);
   const hasStd = slug => codesOf(slug).some(([, c]) => c.some(x => x === std || x.startsWith(`${std}.`) || x.startsWith(std)));
-  const pass = all.filter(g => fits(SHELF_INFO[g.slug], f) && (!std || hasStd(g.slug)));
+  const pass = all.filter(g => fits(infoOf(g), f) && (!std || hasStd(g.slug)));
   // Live class games: the Oomba Live modes (while Live is on), in their own section; the rest in the grid.
   const liveList = live && f.how !== 'solo' && f.how !== 'two' ? pass.filter(g => liveGameOf(g)) : [];
   const grid = f.how === 'live' ? [] : pass.filter(g => !liveList.includes(g) && !(live && liveOnly(g))).filter(g => f.how !== 'two' || isTwo(g));
@@ -619,9 +638,9 @@ router.get('/learn', (req, res) => {
       courseMarkup = items.length ? courseRow(items, { staff, title: mine ? t('learn.tab.myCourses') : null }) : '';
     } catch (e) { log('error', 'learn courses', { error: e.message }); }
   }
-  // Games other players made for learning: signed in only (an indexed page never carries a child's name or words).
-  // Everyone's games only while PUBLIC_GAMES is on (services/games.js openToAll).
-  const players = !config.publicGames || out || (filtered && !(f.grade === defGrade && !f.subject && !f.how)) ? [] : games.listVisible(u, { shelf: 'learn', limit: 12, order: 'popular' }).filter(g => g.source !== 'seed');
+  // Games other players made (any kind: Play and Learn are one page), on the topics view: signed in only (an indexed page
+  // never carries a child's name or words), and only while PUBLIC_GAMES is on (services/games.js openToAll).
+  const players = !config.publicGames || out || gridView ? [] : games.listVisible(u, { limit: 16, order: 'popular' }).filter(g => g.source !== 'seed' && !courseOwned(g));
   const subj = SUBJECTS.find(x => x.key === f.subject);
   // While the arcade is hidden (services/game-focus.js), the subject chips and pages with no game left are left out.
   const subjects = focus.openSubjects(SUBJECTS, SHELF_INFO), hubs = focus.openHubs(HUBS);
@@ -644,20 +663,27 @@ router.get('/learn', (req, res) => {
   const kidEnd = !out && !staff && !isGrownup(u);
   const liveSec = liveList.length ? html`<section class="lp-sec" id="live-games" aria-labelledby="live-games-h"><h2 id="live-games-h">${ico('📡', { size: 28 })} ${t('learn.tab.live')}</h2>
       <p class="small muted">${staff ? t('learn.tab.liveStaff') : t('learn.tab.liveText')}</p>${cards(liveList)}</section>` : '';
-  const body = html`<div class="lp learn-tab">
-    ${seenCrumbs.length ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
-    ${out ? html`<section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
-      ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
-      ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
-    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('📚', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t(focus.coursesHidden() ? 'learn.tab.leadGames' : 'learn.tab.lead')}</p></div>`}
-    <form class="learn-filters" id="filters" method="get" action="${lp(req, '/learn')}" aria-label="${t('learn.tab.filters')}">
+  // The games by topic (routes/discover.js focusSections), each narrowed to the grade chosen (a game without grades fits
+  // every grade). Live class games come first for a student in a class (their teacher starts them).
+  const gradeFits = g => !f.grade || !SHELF_INFO[g.slug] || fits({ ...SHELF_INFO[g.slug], subject: '' }, { grade: f.grade });
+  const topicSecs = gridView ? [] : focusSections(u).sections.map(sec => ({ ...sec, games: sec.games.filter(gradeFits) })).filter(sec => sec.games.length);
+  if (liveFirst) topicSecs.sort((a, b) => (b.id === 'live') - (a.id === 'live'));
+  // My favorites: the games this player tapped Favorite on (students too), that they may still open. No section until there is one.
+  const favs = gridView || out ? [] : games.favorites(u, u.id, 16).filter(g => !courseOwned(g));
+  const mine = gridView || out ? [] : games.myGames(u.id, 12);
+  // The home page's own heading, doors and join door: '/' signed out (where the teacher landing page is not at '/').
+  const homeIntro = landing && out;
+  const howName = h => t(`learn.tab.hows.${h}`);
+  const gradeName = g => (g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g }));
+  const now = [f.subject && subjName(f.subject), f.grade && gradeName(f.grade), f.how && howName(f.how)].filter(Boolean);
+  const filterForm = html`<form class="learn-filters" id="filters" method="get" action="${lp(req, '/learn')}" aria-label="${t('learn.tab.filters')}">
       <div class="chips scroll" role="group" aria-label="${t('learn.tab.subject')}">
         ${chip(!f.subject, href({ subject: '' }), t('learn.tab.subjects.all'))}
         ${subjects.map(x => chip(f.subject === x.key, href({ subject: x.key }), subjName(x.key), x.emoji))}
       </div>
       <div class="learn-filter-row">
         <label class="learn-grade"><span>${t('learn.tab.grade')}</span>
-          <select class="input" name="grade" data-autosubmit>${[[defGrade ? 'any' : '', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}"${(f.grade || (defGrade ? 'any' : '')) === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
+          <select class="input" name="grade" data-autosubmit>${[[defGrade ? 'any' : '', t('learn.tab.gradeAny')], ...GRADES.map(g => [g, gradeName(g)])].map(([v, l]) => html`<option value="${v}"${(f.grade || (defGrade ? 'any' : '')) === v ? raw(' selected') : ''}>${l}</option>`)}</select></label>
         ${staff ? html`<span class="learn-std-row"><label class="learn-std"><span>${t('standards.learn.label')}</span><input class="input" name="std" value="${std}" maxlength="24" placeholder="${t('standards.learn.hint')}" dir="ltr" autocomplete="off"></label>
           <button class="btn learn-std-go" type="submit">${t('learn.tab.filter')}</button></span>` : ''}
         ${f.subject ? html`<input type="hidden" name="subject" value="${f.subject}">` : ''}${f.how ? html`<input type="hidden" name="how" value="${f.how}">` : ''}
@@ -666,24 +692,56 @@ router.get('/learn', (req, res) => {
       <div class="chips learn-how" role="group" aria-label="${t('learn.tab.how')}">
         <span class="small muted learn-how-l" aria-hidden="true">${t('learn.tab.how')}</span>
         ${chip(!f.how, href({ how: '' }), t('learn.tab.howAll'))}
-        ${HOWS.filter(h => h !== 'live' || live).map(h => chip(f.how === h, href({ how: h }), t(`learn.tab.hows.${h}`), { solo: '🙂', two: '👥', live: '📡' }[h]))}
+        ${HOWS.filter(h => h !== 'live' || live).map(h => chip(f.how === h, href({ how: h }), howName(h), { solo: '🙂', two: '👥', live: '📡' }[h]))}
       </div>
-    </form>
-    ${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
-    ${f.how === 'two' || f.how === 'live' || std ? '' : html`<div class="home-join learn-join learn-library"><a class="door" href="/library" id="learn-library"><span class="door-e" aria-hidden="true">${ico('📚', { size: 40 })}</span><span class="door-t"><span class="door-h">${t('library.door.title')}</span><span class="door-s">${staff ? t('library.door.staff', { count: LIB.books().length }) : t('library.door.kids', { count: LIB.books().length })}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>`}
+    </form>`;
+  // Staff: the filters as before, always open. Everyone else: one quiet "Filter the games" line under the topic chips
+  // that opens them (open while a filter is chosen, with Show all games to go back to the topics).
+  const filters = staff ? filterForm : html`<details class="learn-filterbox"${asked ? raw(' open') : ''}>
+      <summary><span class="lf-ico" aria-hidden="true">${ico('🔎', { size: 18 })}</span><span class="lf-t">${t('learn.tab.filters')}</span>${now.length ? html`<span class="lf-now">${now.join(' · ')}</span>` : ''}</summary>
+      ${filterForm}
+      ${asked ? html`<p class="learn-clear"><a href="${lp(req, '/learn')}${defGrade ? '?grade=any' : ''}">${ico('✕', { size: 16 })} ${t('learn.tab.clear')}</a></p>` : ''}
+    </details>`;
+  const topicChips = !gridView && (topicSecs.length > 1 || favs.length) ? html`<nav class="chips scroll topic-chips" aria-label="${t('home.topics.label')}">
+      ${favs.length ? html`<a class="chip" href="#favorites-h">${ico('❤️', { size: 18 })}${t('home.rails.favorites')}</a>` : ''}
+      ${topicSecs.map(sec => html`<a class="chip" href="#sec-${sec.id}-h">${ico(sec.emoji, { size: 18 })}${t(sec.key)}</a>`)}
+    </nav>` : '';
+  const heading = homeIntro ? html`<section class="home-intro" aria-labelledby="home-h1"><h1 id="home-h1"${fb('home.intro.heading')}>${t('home.intro.heading')}</h1><p${fb('home.intro.text')}>${t('home.intro.text')}</p>
+      ${homeDoors(req)}
+      ${live ? html`<div class="home-join"><a class="door door-join" href="/join" id="home-join"><span class="door-e">${ico('🎟️', { size: 40 })}</span><span class="door-t"><span class="door-h"${fb('live.entry.join')}>${t('live.entry.join')}</span><span class="door-s"${fb('live.entry.joinShort')}>${t('live.entry.joinShort')}</span></span><span class="door-go flip" aria-hidden="true">›</span></a></div>` : ''}
+      <ul class="chips home-subjects" aria-label="${t('teachers.subjects.h')}">${hubs.map(h => html`<li><a class="chip" href="${lp(req, `/learn/${h.slug}`)}"><span aria-hidden="true">${h.emoji}</span><span${fb(`learn.hubs.${h.key}.name`)}>${t(`learn.hubs.${h.key}.name`)}</span></a></li>`)}</ul></section>`
+    : out ? html`<section class="lp-hero lp-hero-sm" aria-labelledby="lp-h1">
+      ${el(t, 'h1', 'learn.index.h1', {}, ' id="lp-h1"')}
+      ${el(t, 'p', 'learn.index.lead', {}, ' class="lead"')}
+    </section>` : html`<div class="pagehead learn-head"><h1 id="lp-h1">${ico('💡', { size: 36 })} ${t('learn.tab.h1')}</h1><p class="muted">${staff ? t('learn.tab.leadStaff') : t(focus.coursesHidden() ? 'learn.tab.leadGames' : 'learn.tab.lead')}</p></div>${classStrip(req)}`;
+  const gridMarkup = html`${subj && subj.hub ? html`<p class="learn-more"><a href="${lp(req, `/learn/${subj.hub}`)}">${t('learn.tab.moreAbout', { subject: subjName(subj.key) })} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
     ${courseMarkup}
     ${liveFirst ? liveSec : ''}
-    <section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">${ico('🎓', { size: 28 })} ${t('learn.tab.games')}</h2>
-      ${grid.length ? cards(grid) : liveList.length ? '' : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}#filters">${t('learn.tab.clear')}</a></p>`}
-      ${staff && [...grid, ...liveList].some(g => codesOf(g.slug).length) ? stdNotice(t) : ''}</section>
-    ${liveFirst ? '' : liveSec}
-    ${kidEnd ? '' : joinDoor}
-    ${players.length ? rail({ title: t('learn.tab.players'), emoji: '🛠️', games: players, id: 'learn-players', more: '/search?cat=learning' }) : ''}
-    <section class="lp-sec" id="subjects" aria-labelledby="subj-h">${el(t, 'h2', 'learn.index.subjects', {}, ' id="subj-h"')}
+    ${grid.length || !liveList.length ? html`<section class="lp-sec" id="learn-games" aria-labelledby="learn-games-h"><h2 id="learn-games-h">${ico('🎓', { size: 28 })} ${t('learn.tab.games')}</h2>
+      ${grid.length ? cards(grid) : html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}${defGrade ? '?grade=any' : ''}#filters">${t('learn.tab.clear')}</a></p>`}
+      ${staff && [...grid, ...liveList].some(g => codesOf(g.slug).length) ? stdNotice(t) : ''}</section>` : ''}
+    ${liveFirst ? '' : liveSec}`;
+  const topicMarkup = html`${favs.length ? rail({ title: t('home.rails.favorites'), emoji: '❤️', games: favs, user: u, id: 'favorites', more: '/favorites' }) : ''}
+    ${courseMarkup}
+    ${topicSecs.map(sec => rail({ title: t(sec.key), emoji: sec.emoji, games: sec.games, user: u, id: `sec-${sec.id}` }))}
+    ${!topicSecs.length ? html`<p class="notice">${t('learn.tab.none')} <a href="${lp(req, '/learn')}${defGrade ? '?grade=any' : ''}">${t('learn.tab.clear')}</a></p>` : ''}
+    ${buildBanner(req)}
+    ${mine.length ? rail({ title: t('home.rails.mine'), emoji: '🛠️', games: mine, user: u, id: 'mine', more: '/build' }) : ''}
+    ${players.length ? rail({ title: t('home.focus.players'), emoji: '✨', games: players, user: u, id: 'players', more: '/search?sort=popular' }) : ''}`;
+  const body = html`<div class="lp learn-tab">
+    ${seenCrumbs.length && !homeIntro ? html`<nav class="crumbs small" aria-label="${t('learn.crumbs')}"><ol>${seenCrumbs.map(([name, p], i) => html`<li>${i < seenCrumbs.length - 1 ? html`<a href="${lp(req, p)}">${name}</a>` : html`<span aria-current="page">${name}</span>`}</li>`)}</ol></nav>` : ''}
+    ${heading}
+    <div id="play" class="learn-games-wrap">
+    ${topicChips}
+    ${filters}
+    ${gridView ? gridMarkup : topicMarkup}
+    </div>
+    ${kidEnd || homeIntro ? '' : joinDoor}
+    ${homeIntro ? '' : html`<section class="lp-sec" id="subjects" aria-labelledby="subj-h">${el(t, 'h2', 'learn.index.subjects', {}, ' id="subj-h"')}
       <ul class="lp-hubs">${SUBJECTS.map(x => hubs.find(h => h.slug === x.hub)).filter(Boolean).map(hubCard)}</ul></section>
     <section class="lp-sec" id="also" aria-labelledby="also-h"><h2 id="also-h">${t('learn.tab.also')}</h2>
-      <ul class="lp-hubs">${hubs.filter(h => !subjectHub(h)).map(hubCard)}</ul></section>
-    ${forVisitors ? html`<section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
+      <ul class="lp-hubs">${hubs.filter(h => !subjectHub(h)).map(hubCard)}</ul></section>`}
+    ${forVisitors && !homeIntro ? html`<section class="lp-sec" id="ages" aria-labelledby="ages-h">${el(t, 'h2', 'learn.index.ages', {}, ' id="ages-h"')}
       <ul class="lp-hubs">${AGES.map(a => card(`/learn/${a.slug}`, a.emoji, `learn.ages.${a.key}.name`, `learn.ages.${a.key}.short`))}</ul></section>
     <section class="lp-sec" id="who" aria-labelledby="who-h">${el(t, 'h2', 'learn.index.who', {}, ' id="who-h"')}
       <ul class="chips lp-more"><li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('learn.teachersLink')}</a></li>
@@ -693,6 +751,15 @@ router.get('/learn', (req, res) => {
   const items = [...hubs.map(h => [`/learn/${h.slug}`, t(`learn.hubs.${h.key}.name`)]), ...AGES.map(a => [`/learn/${a.slug}`, t(`learn.ages.${a.key}.name`)])]
     .map(([p, name], i) => ({ '@type': 'ListItem', position: i + 1, url: seo.abs(req, p), name }));
   if (!out) res.set('Cache-Control', 'private, no-store');
+  // '/' (landing): the home page's title, description and structured data, as the Play page had.
+  if (landing) {
+    return page(req, res, { title: '', active: 'learn', body, bodyClass: 'lp-page learn-page', scripts: ['/js/learn.js'], description: t.own('seo.home.description') ? t('seo.home.description') : t('layout.description'),
+      ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`) } : {}),
+      seo: Object.keys(req.query).length && filtered ? null : {
+        index: true, path: '/', langs: seo.langsWithKey('home.intro.heading'), image: '/og/site.jpg', imageAlt: t('seo.home.imageAlt'),
+        jsonld: [seo.graph([seo.organizationLd(req), seo.websiteLd(req, req.locale)])],
+      } });
+  }
   page(req, res, {
     title: t('learn.index.title'), description: t('learn.index.description'), body, bodyClass: 'lp-page learn-page', active: 'learn', scripts: ['/js/learn.js'],
     ...(staff ? { head: raw(`<link rel="stylesheet" href="/css/standards.css?v=${VERSION}">`) } : {}),
@@ -705,6 +772,16 @@ router.get('/learn', (req, res) => {
       ])],
     },
   });
+}
+router.get('/learn', (req, res) => learnPage(req, res));
+// '/' is the Learn page for everyone who lands on it (signed out, guests, kids, the platform admin; the teacher landing
+// page answers '/' first for visitors with no session: routes/landing.js); everyone else goes to their own first tab
+// (layout.js landingFor: Class, Classroom, School, Family). Never cached, so a signed-in redirect is never served to
+// anyone else. The query string goes along (?utm_source=…, a ?code= from a poster).
+router.get('/', (req, res) => {
+  const to = landingFor(req.user);
+  if (to) { const qs = req.originalUrl.indexOf('?'); res.set('Cache-Control', 'private, no-store'); return res.redirect(302, to + (qs >= 0 ? req.originalUrl.slice(qs) : '')); }
+  learnPage(req, res, { landing: true });
 });
 
 router.get('/learn/:hub', (req, res) => {

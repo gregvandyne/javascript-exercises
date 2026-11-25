@@ -27,7 +27,7 @@ async function png(name, w, h, html, transparent = true) {
 const CAPS = {
   live1: 'Pick <b>any subject</b>, any level',
   live2: 'Students join with a code: <b>a safe made-up name</b>',
-  live3: 'Everyone answers. <b>The race is on!</b>',
+  live3: 'Everyone answers. <b>Who\'s on top?</b>',
   build1: 'Kids describe a game in their own words',
   build2: 'The Builder makes it, and <b>plays it to check it works</b>',
   build3: 'Then they play it!',

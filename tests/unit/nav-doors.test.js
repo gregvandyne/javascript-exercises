@@ -50,9 +50,9 @@ test('signed out and guests get the same doors: Grown-ups tab, no Friends, Paren
     assert.equal(home.status, 200);
     const tabs = tabbar(home.text);
     const order = [...tabs.matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-    assert.deepEqual(order, ['/', '/learn', '/build', '/parents', '/login'], `${who}: Play · Learn · Build · Grown-ups · Sign in`);
+    assert.deepEqual(order, ['/learn', '/read', '/build', '/parents', '/login'], `${who}: Learn · Read · Build · Grown-ups · Sign in`);
     assert.match(footer(home.text), /href="\/plans"/, `${who}: Plans in the footer (not in the bars)`);
-    assert.match(tabs, /🎮<\/span><span class="tab-t">Play<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Learn<\/span>/, who);
+    assert.match(tabs, /💡<\/span><span class="tab-t">Learn<\/span>/, who); assert.match(tabs, /📚<\/span><span class="tab-t">Read<\/span>/, who);
     // 👪 (Fluent's house with garden) is drawn in the tab bar as the Oomba Grown-ups icon, a different drawing from
     // Friends' 👫 (docs/decisions.md "Icons: Oomba geometric for controls, Fluent 3D for big spots").
     assert.match(tabbar(home.raw), /data-fx="house-with-garden"[^>]*><use href="\/icons\/oomba\/grownups\.svg[^"]*"\/><\/svg><\/span><span class="tab-t">Grown-ups<\/span>/, who);
@@ -78,13 +78,13 @@ test('a kid with an account keeps their tab bar (Friends, Me) and no grown-up do
   const k = kid();
   const home = await as(k)('/');
   const order = [...tabbar(home.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(order, ['/', '/learn', '/build', '/friends', '/me']);
+  assert.deepEqual(order, ['/learn', '/read', '/build', '/friends', '/me']);
   assert.doesNotMatch(topnav(home.text), /href="\/(parents|teachers)"/);
   assert.doesNotMatch(home.text, /class="home-intro"/);
   assert.doesNotMatch(footer(home.text), /href="\/teachers"/);
   config.stripeApiKey = '';
   const off = await call(null, '/');
-  assert.deepEqual([...tabbar(off.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]), ['/', '/learn', '/build', '/parents', '/login']);
+  assert.deepEqual([...tabbar(off.text).matchAll(/class="tab" href="([^"]+)"/g)].map(m => m[1]), ['/learn', '/read', '/build', '/parents', '/login']);
 });
 
 test('/parents: "Set up your child’s account" (grown-up sign-up) and "Try a game" at the top; before plans are public, the child sign-up', async () => {
@@ -130,14 +130,14 @@ test('/login is one sign-in for kids, parents and teachers; /signup asks who is 
   assert.doesNotMatch((await call(null, '/login')).text, /Parents sign in here/);
 });
 
-test('the sign-in page, signed out: no Play, Learn, Build, Parents, Teachers or Sign in in the top bar; other pages keep them', async () => {
+test('the sign-in page, signed out: no Learn, Read, Build, Parents, Teachers or Sign in in the top bar; other pages keep them', async () => {
   const bar = h => /<header class="topbar">[\s\S]*?<\/header>/.exec(h)[0];
   for (const who of [null, auth.createGuest()]) {
     const li = bar((await as(who)('/login')).text);
     assert.doesNotMatch(li, /class="topnav"|class="navlink"|class="me-btn"/, 'no links and no Sign in button');
     assert.match(li, /class="logo"/); assert.match(li, /class="topsearch"/); assert.match(li, /class="lang-/); assert.match(li, /class="btn btn-hot playnow"/);
   }
-  for (const p of ['/play', '/signup', '/parents']) {
+  for (const p of ['/learn', '/read', '/signup', '/parents']) {
     const b = bar((await call(null, p)).text);
     assert.match(b, /<nav class="topnav"/, p); assert.match(b, /class="me-btn" href="\/login"/, p);
   }

@@ -72,8 +72,8 @@
     "games": "Jeux",
     "account": "Compte",
     "school": "École",
-    "play": "Jouer",
     "learn": "Apprendre",
+    "read": "Lire",
     "class": "Classe",
     "classroom": "Ma classe",
     "live": "En direct",
@@ -561,17 +561,8 @@
       "start": "Commencer"
     },
     "rails": {
-      "featured": "À la une",
-      "playing": "En ce moment",
-      "friends": "De tes amis",
-      "popular": "Populaires",
-      "rated": "Les mieux notés",
-      "new": "Nouveautés",
       "mine": "Mes jeux",
-      "favorites": "Mes favoris",
-      "keep": "Continuer à jouer",
-      "two": "À deux",
-      "fromLearn": "D’Apprendre : les plus amusants"
+      "favorites": "Mes favoris"
     },
     "hero": {
       "label": "Jeu à la une",
@@ -580,10 +571,8 @@
       "more": "Plus d’infos",
       "about": "À propos de {title}"
     },
-    "categories": "Catégories",
     "empty": {
       "title": "Pas encore de jeux",
-      "text": "Crée le tout premier !",
       "action": "Créer un jeu"
     },
     "intro": {
@@ -606,9 +595,6 @@
       "todo": "{count, plural, one {# leçon à faire} other {# leçons à faire}}",
       "continue": "Continuer",
       "open": "Ouvrir ma classe"
-    },
-    "chips": {
-      "two": "À deux"
     },
     "focus": {
       "tools": "Outils de classe",
@@ -1226,8 +1212,8 @@
     },
     "unavailable": {
       "title": "Ce jeu n’est pas disponible pour le moment",
-      "text": "Il reviendra peut-être plus tard. Jouer propose d’autres jeux et casse-têtes à essayer.",
-      "play": "Aller à Jouer"
+      "text": "Il reviendra peut-être plus tard. Apprendre propose d’autres jeux et casse-têtes à essayer.",
+      "play": "Aller à Apprendre"
     }
   },
   "play": {
@@ -7076,7 +7062,6 @@
       "games": "Jeux pour apprendre",
       "none": "Aucun jeu ne correspond encore à ces filtres.",
       "clear": "Voir tous les jeux",
-      "players": "Jeux pour apprendre créés par des joueurs",
       "meta": "{subject} · {grades}",
       "assign": "Assigner",
       "assignCourse": "Assigner à une classe",
@@ -13428,8 +13413,6 @@
     "kindStory": "Histoire",
     "findStories": "Bibliothèque d’histoires",
     "door": {
-      "title": "Bibliothèque d’histoires",
-      "kids": "{count} albums illustrés. Lis-les, ou appuie sur Lis-le-moi !",
       "staff": "{count} albums classés par niveau, avec des questions. Assignez-en un à une classe."
     },
     "results": {

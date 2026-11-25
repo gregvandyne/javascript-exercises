@@ -109,7 +109,7 @@ async function pick(page, label) {
 test('laptop: a request skips what it answered, the cards, notes and a file, the check, Make my book, Open the book, the book page\'s chat', { skip }, async () => {
   const u = teacher('Greg Books');
   ai();
-  const { ctx, page, errors } = await open(u, '/library', LAPTOP);
+  const { ctx, page, errors } = await open(u, '/read', LAPTOP);
   try {
     await say(page, ASK);
     await bookCard(page).waitFor({ timeout: 15000 });
@@ -181,13 +181,13 @@ test('laptop: a request skips what it answered, the cards, notes and a file, the
 test('phone (390 px): Make a book on the library opens the chat sheet with the first card; the check card fits', { skip }, async () => {
   const u = teacher('Pia Phone');
   ai();
-  const { ctx, page, errors } = await open(u, '/library', PHONE());
+  const { ctx, page, errors } = await open(u, '/read', PHONE());
   try {
     await page.click('#lb-make');
     await bookCard(page).waitFor({ timeout: 15000 });
     assert.match(await bookCard(page).textContent(), /Upload your own book/);
     assert.match(await bookCard(page).textContent(), /Have AI make one/);
-    assert.match(page.url(), /\/library$/, 'no page change');
+    assert.match(page.url(), /\/read$/, 'no page change');
     await noSideScroll(page);
     await shot(page, 'cb-8-library-phone');
     await pick(page, 'Have AI make one'); await pick(page, 'Picture book');
@@ -204,7 +204,7 @@ test('the theme: Something else opens a box beside Stop; Use this theme (on from
   const u = teacher('Theo Theme');
   ai();
   for (const [label, opts] of [['laptop', LAPTOP], ['phone', PHONE()]]) {
-    const { ctx, page, errors } = await open(u, '/library', opts);
+    const { ctx, page, errors } = await open(u, '/read', opts);
     try {
       await page.click('#lb-make');
       await bookCard(page).waitFor({ timeout: 15000 });

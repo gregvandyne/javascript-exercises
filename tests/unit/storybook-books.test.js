@@ -43,7 +43,7 @@ test('cards: the teacher\'s own books on /library and /library/make, with the co
   const id = await start();
   const theirs = await start(teacher2);
   await call(`/api/library/make/${id}/share`, { method: 'POST', user: teacher, body: { classIds: [cls.id] } });
-  for (const path of ['/library', '/library/make']) {
+  for (const path of ['/read', '/library/make']) {
     const r = await call(path, { user: teacher });
     assert.equal(r.status, 200);
     const c = card(r.text, id);
@@ -62,7 +62,7 @@ test('cards: the teacher\'s own books on /library and /library/make, with the co
   const css = fs.readFileSync(new URL('../../public/css/library.css', import.meta.url), 'utf8');
   assert.match(css, /\.sb-bcard\{/); assert.match(css, /\.sb-bmenu\{/);
   // students, kids, grown-ups and visitors: no cards
-  for (const who of [mia, kid, mum, null]) assert.doesNotMatch((await call('/library', { user: who })).text, /sb-bcard|storybook-books\.js/);
+  for (const who of [mia, kid, mum, null]) assert.doesNotMatch((await call('/read', { user: who })).text, /sb-bcard|storybook-books\.js/);
   // the cards' delete asks in the site's own dialog, never the browser's
   const js = fs.readFileSync(new URL('../../public/js/storybook-books.js', import.meta.url), 'utf8');
   assert.match(js, /await ask\(\{ title: L\('deleteQ'/);

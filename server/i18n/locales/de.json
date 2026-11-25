@@ -73,8 +73,8 @@
     "games": "Spiele",
     "account": "Konto",
     "school": "Schule",
-    "play": "Spielen",
     "learn": "Lernen",
+    "read": "Lesen",
     "class": "Klasse",
     "classroom": "Klassenraum",
     "live": "Live",
@@ -562,17 +562,8 @@
       "start": "Los geht's"
     },
     "rails": {
-      "featured": "Empfohlen",
-      "playing": "Wird gerade gespielt",
-      "friends": "Von deinen Freunden",
-      "popular": "Beliebt",
-      "rated": "Am besten bewertet",
-      "new": "Neu",
       "mine": "Meine Spiele",
-      "favorites": "Meine Favoriten",
-      "keep": "Weiterspielen",
-      "two": "Zu zweit",
-      "fromLearn": "Aus Lernen: die lustigsten"
+      "favorites": "Meine Favoriten"
     },
     "hero": {
       "label": "Empfohlenes Spiel",
@@ -581,10 +572,8 @@
       "more": "Mehr dazu",
       "about": "Über {title}"
     },
-    "categories": "Kategorien",
     "empty": {
       "title": "Noch keine Spiele",
-      "text": "Bau du das erste!",
       "action": "Spiel bauen"
     },
     "intro": {
@@ -607,9 +596,6 @@
       "todo": "{count, plural, one {# Lektion offen} other {# Lektionen offen}}",
       "continue": "Weiter",
       "open": "Meine Klasse öffnen"
-    },
-    "chips": {
-      "two": "Zu zweit"
     },
     "focus": {
       "tools": "Werkzeuge für die Klasse",
@@ -1227,8 +1213,8 @@
     },
     "unavailable": {
       "title": "Dieses Spiel ist gerade nicht verfügbar",
-      "text": "Vielleicht kommt es später zurück. Unter Spielen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
-      "play": "Zu Spielen"
+      "text": "Vielleicht kommt es später zurück. Unter Lernen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
+      "play": "Zu Lernen"
     }
   },
   "play": {
@@ -7077,7 +7063,6 @@
       "games": "Lernspiele",
       "none": "Noch keine Spiele für diese Filter.",
       "clear": "Alle Spiele zeigen",
-      "players": "Lernspiele von Spielern",
       "meta": "{subject} · {grades}",
       "assign": "Zuweisen",
       "assignCourse": "Einer Klasse zuweisen",
@@ -13429,8 +13414,6 @@
     "kindStory": "Geschichte",
     "findStories": "Geschichtenbibliothek",
     "door": {
-      "title": "Geschichtenbibliothek",
-      "kids": "{count} Bilderbücher. Lies sie oder tippe auf Vorlesen!",
       "staff": "{count} Bilderbücher nach Lesestufen, mit Fragen. Weisen Sie eines einer Klasse zu."
     },
     "results": {

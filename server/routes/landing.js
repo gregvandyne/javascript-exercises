@@ -9,9 +9,9 @@
 // here; anyone with a session (kids, students, teachers, grown-ups, and a guest who already played) falls through to the
 // home page they have today, unchanged. renderLanding(req, res) is exported for whoever merges a new home route.
 //
-// "Just Play" (JUST_PLAY_URL): GET /play is the Play page (routes/discover.js), for every role,
-// so kids have a front door while "/" belongs to teachers. /play is private (server/seo.js PRIVATE_RE:
-// X-Robots-Tag noindex), so it never competes with "/" in search.
+// "Just Play" (JUST_PLAY_URL): /learn, the Learn page with every game (routes/teachers.js learnPage; /play answers 301
+// there since Play and Learn became one page, docs/decisions.md "Learn and Read"), so kids have a front door while "/"
+// belongs to teachers.
 //
 // Prices: kids are never sold to, and amounts appear only on /plans (tests/unit/billing*.test.js). The landing says "one
 // simple yearly price per teacher" and links to /plans; LANDING_SHOW_PRICE (off) is the one switch that would show the
@@ -47,7 +47,7 @@ import * as games from '../services/games.js';
 import { TOOLS as MANIP_TOOLS } from '../../public/js/manip-data.js';
 
 /** Where "Just Play" goes: the games for kids, no sign-up. */
-export const JUST_PLAY_URL = '/play';
+export const JUST_PLAY_URL = '/learn';
 /** Every "Start free trial" (the Teacher plan's 14-day trial, no card): "Who's signing up?" first (the landing is for
  *  signed-out visitors only); "I'm a teacher" there keeps ?trial=1 through the teacher's steps, which end at /trial. */
 export const TRIAL_URL = '/signup?trial=1';

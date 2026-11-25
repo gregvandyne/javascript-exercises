@@ -127,7 +127,7 @@ for (const [label, opts, dark] of RUNS) {
   test(`${label}: "How do I add students?": numbered steps with links that open in the same tab; Copy puts the clean text on the clipboard`, { skip }, async () => {
     const { u, cs } = teacher(`Gina How${tag}`, { classes: [`4A ${tag}`] });
     ai();
-    const { ctx, page, errors } = await open(u, '/library', opts || PHONE(), dark);
+    const { ctx, page, errors } = await open(u, '/read', opts || PHONE(), dark);
     try {
       await say(page, HOW);
       const ol = page.locator('.oc-msg.bot .oc-ol').last();

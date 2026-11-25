@@ -27,7 +27,7 @@ export const PAGES = Object.freeze({
   schoolSettings: '/school/:school?tab=settings',
   inviteTeacher: '/school/:school/invite',
   figures: '/figures',
-  library: '/library',
+  library: '/read',
   makeSchool: '/signup/teacher/school',
 });
 
