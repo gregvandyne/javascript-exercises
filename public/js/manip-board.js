@@ -32,8 +32,9 @@ export const OBJECTS = {
     size: st => ({ w: st.long ? 660 : 500, h: OBJ_HEAD + 28 + clamp(num(st.rows, 2), 1, 10) * 48 + (st.covered ? 56 : 0) }) }],
   'hundred-board': [{ k: 'hundred-board', name: 'Hundred board', add: 'Add a hundred board', start: true, init: () => ({ start: 1, picked: [], mult: 0, decimalMode: false, hidden: false }),
     size: () => ({ w: 500, h: OBJ_HEAD + 504 }) }],
-  'fraction-circles': [{ k: 'fraction-circles', name: 'Fraction set', add: 'Add a fraction set', start: true, init: () => ({ placed: [], mode: 'frac', rings: false }),
-    size: st => ({ w: 540, h: OBJ_HEAD + 24 + (st.rings ? 350 : Math.max(1, Math.ceil(clamp((st.placed || []).length, 1, 24) / 3)) * 172) }) }],
+  // A fraction set holds circles (wholes), each with its pieces edge to edge (fcCircles below); three circles a row.
+  'fraction-circles': [{ k: 'fraction-circles', name: 'Fraction set', add: 'Add a fraction set', start: true, init: () => ({ circles: [{ id: 'c1', ps: [] }], sel: null, mode: 'frac', rings: false }),
+    size: st => ({ w: 540, h: OBJ_HEAD + 24 + (st.rings ? 350 : Math.max(1, Math.ceil(clamp(fcCircles(st).length, 1, FC_MAX) / 3)) * FC_ROW + (st.q ? 0 : FC_FOOT)) }) }],
   'number-lines': [{ k: 'number-lines', name: 'Number line', add: 'Add a number line', start: true, init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null, mode: 'points' }),
     size: st => ({ w: 892, h: OBJ_HEAD + (st && st.ask ? 268 : st && (st.mode === 'jumps' || (st.jumps || []).length) ? 460 : 380) }) }],
   'bar-models': [{ k: 'bar-models', name: 'Bar model', add: 'Add a bar model', start: true,
@@ -91,6 +92,129 @@ export function freeResize(o, dx, dy, space) {
 }
 /** An answer box grown to show all of its text (h: the height its words need, unscaled): never smaller, within ANS. */
 export const grownHeight = (st, need) => Math.max(answerSize(st).h - OBJ_HEAD, Math.min(ANS.hMax, Math.ceil(num(need, 0))));
+
+// ---------------------------------------------------------------- fraction circles: circles that hold pieces
+// (owner, 25 Nov 2026: "a teacher can't show 1/2 + 1/4 + 1/4 = 1 whole"). A fraction set's state:
+//   { circles: [{ id, ps: [{ id, d }] }], sel: null | { c: circle id } | { p: piece id }, mode, rings, label?, q? }
+// A circle's pieces sit edge to edge from 12 o'clock, clockwise, in the order added; a piece never overfills a circle.
+// Sizes are counted in 360ths of a whole (a piece of 1/d is 360/d), so every sum is exact.
+/** The circles' piece sizes: the fraction set's denominators (ninths too, for "Thirds and ninths talk"). */
+export const FC_DENS = [...FRACTION_DENS.slice(0, 7), [9, '#8D6E63'], ...FRACTION_DENS.slice(7)];
+const FC_D = new Set(FC_DENS.map(([d]) => d));
+/** A whole in 360ths; at most this many circles in one set; a row of circles and the set's footer (its Delete chip,
+ *  its tip), in pixels. */
+export const FC_WHOLE = 360, FC_MAX = 24, FC_ROW = 200, FC_FOOT = 58;
+export const fcUsed = c => c.ps.reduce((s, p) => s + FC_WHOLE / p.d, 0);
+export const fcFits = (c, d) => fcUsed(c) + FC_WHOLE / d <= FC_WHOLE;
+/**
+ * A fraction set's circles from its saved state, either format: { circles } (pieces that would overfill a circle are
+ * dropped), or the old { placed: [{ id, d, rot }] } where each piece sat alone in its own circle: each becomes a circle
+ * holding that one piece, so an old board looks as it did (its turns are gone: pieces start at 12 o'clock).
+ */
+export function fcCircles(st) {
+  if (st && Array.isArray(st.circles)) {
+    return st.circles.filter(c => c && typeof c === 'object').slice(0, FC_MAX).map((c, i) => {
+      let used = 0;
+      const ps = (Array.isArray(c.ps) ? c.ps : []).filter(p => p && FC_D.has(+p.d) && (used += FC_WHOLE / +p.d) <= FC_WHOLE).map((p, j) => ({ id: String(p.id || `p${i + 1}_${j + 1}`), d: +p.d }));
+      return { id: String(c.id || `c${i + 1}`), ps };
+    });
+  }
+  if (st && Array.isArray(st.placed)) {
+    const old = st.placed.filter(p => p && FC_D.has(+p.d)).slice(0, FC_MAX);
+    return old.length ? old.map((p, i) => ({ id: `c${i + 1}`, ps: [{ id: String(p.id || `p${i + 1}`), d: +p.d }] })) : [{ id: 'c1', ps: [] }];
+  }
+  return [];
+}
+/** A fraction set's state made whole (a board loaded, an old one migrated): its circles, a selection that still points
+ *  at something, its label mode. */
+export function fcLoad(raw) {
+  const o = raw && typeof raw === 'object' ? raw : {};
+  const { placed, ...rest } = o;
+  const out = { ...rest, circles: fcCircles(o), mode: ['frac', 'pct', 'dec'].includes(o.mode) ? o.mode : 'frac', rings: !!o.rings };
+  out.sel = fcSelOk(out, o.sel);
+  return out;
+}
+/** The selection, when it still points at a circle or a piece of st; else null. */
+function fcSelOk(st, sel) {
+  if (!sel || typeof sel !== 'object') return null;
+  if (sel.c && st.circles.some(c => c.id === sel.c)) return { c: String(sel.c) };
+  if (sel.p && fcFind(st, sel.p)) return { p: String(sel.p) };
+  return null;
+}
+/** Where piece pid is: { c (its circle), i (its place in it) }, or null. */
+export function fcFind(st, pid) {
+  for (const c of st.circles || []) { const i = c.ps.findIndex(p => p.id === pid); if (i >= 0) return { c, i }; }
+  return null;
+}
+/** The circle new pieces go into first: the selected circle, or the circle of the selected piece; else null. */
+export function fcSelCircle(st) {
+  const s = st.sel; if (!s) return null;
+  if (s.c) return (st.circles || []).find(c => c.id === s.c) || null;
+  const f = s.p ? fcFind(st, s.p) : null; return f ? f.c : null;
+}
+const fcNum = id => +String(id).replace(/^\D+/, '').split('_')[0] || 0;
+const fcNextCircle = st => `c${(st.circles || []).reduce((m, c) => Math.max(m, fcNum(c.id)), 0) + 1}`;
+const fcNextPiece = st => `p${(st.circles || []).flatMap(c => c.ps).reduce((m, p) => Math.max(m, fcNum(p.id)), 0) + 1}`;
+/** A new empty circle at the end, selected (the next pieces go into it). -> the circle, or null when the set is full. */
+export function fcNewCircle(st) {
+  if (!Array.isArray(st.circles)) st.circles = [];
+  if (st.circles.length >= FC_MAX) return null;
+  const c = { id: fcNextCircle(st), ps: [] }; st.circles.push(c); st.sel = { c: c.id }; return c;
+}
+/**
+ * A piece of 1/d added from the palette: into the selected circle when it has room, else the first circle with room,
+ * else a new circle. -> { c (the circle it went into), piece, diverted (the selected circle had no room) }, or null
+ * when the set has no room for another circle.
+ */
+export function fcAdd(st, d) {
+  if (!FC_D.has(+d)) return null;
+  if (!Array.isArray(st.circles)) st.circles = [];
+  const want = fcSelCircle(st);
+  let c = want && fcFits(want, d) ? want : st.circles.find(x => fcFits(x, d));
+  if (!c) { if (st.circles.length >= FC_MAX) return null; c = { id: fcNextCircle(st), ps: [] }; st.circles.push(c); }
+  const piece = { id: fcNextPiece(st), d: +d };
+  c.ps.push(piece);
+  return { c, piece, diverted: !!want && want !== c };
+}
+/**
+ * Piece pid of set `from` moved into circle cid of set `to` (the same set or another; cid null: a new circle at the
+ * end of `to`). The circle it left closes up. -> 'moved', 'same' (dropped on its own circle), 'full' (no room there:
+ * nothing changes) or null (no such piece or circle).
+ */
+export function fcMove(from, pid, to, cid) {
+  const f = fcFind(from, pid); if (!f) return null;
+  const piece = f.c.ps[f.i];
+  let c = cid ? (to.circles || []).find(x => x.id === cid) : null;
+  if (cid && !c) return null;
+  if (c === f.c) return 'same';
+  if (c && !fcFits(c, piece.d)) return 'full';
+  if (!c && (to.circles || []).length >= FC_MAX) return 'full';
+  f.c.ps.splice(f.i, 1);
+  if (!c) { if (!Array.isArray(to.circles)) to.circles = []; c = { id: fcNextCircle(to), ps: [] }; to.circles.push(c); }
+  const moved = from === to || !fcFind(to, piece.id) ? piece : { ...piece, id: fcNextPiece(to) };
+  c.ps.push(moved);
+  if (from.sel && from.sel.p === pid) from.sel = null;
+  return 'moved';
+}
+/** Delete what is selected: a piece (its circle closes up) or a whole circle with its pieces. -> true when it did. */
+export function fcDelete(st) {
+  const s = st.sel; st.sel = null;
+  if (s && s.p) { const f = fcFind(st, s.p); if (f) { f.c.ps.splice(f.i, 1); return true; } }
+  if (s && s.c) { const n = st.circles.length; st.circles = st.circles.filter(c => c.id !== s.c); return st.circles.length < n; }
+  return false;
+}
+const gcd = (a, b) => (b ? gcd(b, a % b) : a);
+/** An amount of u 360ths in a label mode: 'frac' 3/4, 1 1/4, 2; 'pct' 75%; 'dec' 0.75. */
+export function fcAmount(u, mode = 'frac') {
+  if (mode === 'pct') return `${Math.round(u / 0.36) / 10}%`;
+  if (mode === 'dec') return String(Math.round(u / 0.36) / 1000);
+  const w = Math.floor(u / FC_WHOLE), r = u % FC_WHOLE, g = gcd(r, FC_WHOLE);
+  return r ? `${w ? `${w} ` : ''}${r / g}/${FC_WHOLE / g}` : String(w);
+}
+/** The sum under a circle: "Empty", "3/4" (in the label mode), or "1 whole ✓" when it is exactly full. */
+export const fcCircleLabel = (c, mode) => { const u = fcUsed(c); return u === FC_WHOLE ? '1 whole ✓' : u ? fcAmount(u, mode) : 'Empty'; };
+/** Every piece of the set added up (the total on its handle). */
+export const fcTotal = st => (st.circles || []).reduce((s, c) => s + fcUsed(c), 0);
 
 // ---------------------------------------------------------------- board text (T): its size and box
 /** Board text sizes (font pixels): S, M (the default), L, XL. */

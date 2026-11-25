@@ -108,7 +108,7 @@ test('Totals: off hides the header total of loose pieces; the first quadrant has
   assert.equal(await page.locator('#mp-palette [aria-label="Connect the points"], #mp-palette [aria-label="Lines off"]').count(), 1);
   assert.equal(await page.locator('#mp-palette [aria-label*="Point color"], #mp-palette [aria-label^="Add Connect"], #mp-palette [aria-label^="Add Lines"], #mp-palette [aria-label^="Add Clear"]').count(), 0);
   await page.goto(`${BASE}/manipulatives#fraction-circles`); await page.waitForSelector('#mp-content .mp-empty');
-  assert.equal(await page.textContent('#mp-content .mp-empty'), 'Add pieces from the palette. Tap a piece to turn it.');
+  assert.equal(await page.textContent('#mp-content .mp-empty'), 'Tap a piece in the palette to put it in a circle. Pieces fill a circle from the top, going clockwise.');
   assert.equal(await page.locator('#mp-palette [aria-label="Add 1/2 piece"]').count(), 1, 'a piece is still an add');
   assert.equal(await page.locator('#mp-palette [aria-label="Rings view"]').count(), 1);
   assert.deepEqual(errors, []);

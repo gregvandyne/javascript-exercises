@@ -331,8 +331,8 @@ test('the tools that keep their own taps still work, and none opens a wheel from
   assert.equal(await page.locator('#mp-content .mp-cell.on').count(), 1, 'hundred board: a cell is covered'); await noWheel('hundred-board');
   await go('fraction-circles');
   await page.click('#mp-palette [data-pal]:has-text("1/2")');
-  const t0 = await html(); await page.click('#mp-content [data-act="turn"]');
-  assert.notEqual(await html(), t0, 'fraction circles: a piece turns'); await noWheel('fraction-circles');
+  const t0 = await html(); await page.click('#mp-content [data-act="fcsel"][data-p] >> text');
+  assert.notEqual(await html(), t0, 'fraction circles: a piece is selected'); await noWheel('fraction-circles');
   for (const tool of ['number-lines', 'xy-coordinate-board']) {
     await go(tool);
     const before = await html(), b = await page.locator('#mp-content svg.mp-nl, #mp-content svg.mp-grid').first().boundingBox();

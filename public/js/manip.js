@@ -22,6 +22,7 @@ import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSec
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
 import * as CHAT from '/js/manip-chat.js';
+import { FC_DENS, FC_MAX, FC_WHOLE, fcLoad, fcAdd, fcNewCircle, fcMove, fcDelete, fcFind, fcFits, fcUsed, fcTotal, fcAmount, fcCircleLabel } from '/js/manip-board.js';
 import { inkLine, textBoxHtml, textSizeButton, growText, textBoxPointer, snapText } from '/js/board-ann.js';
 
 const ROOT = document.getElementById('manip');
@@ -272,28 +273,28 @@ const IMPL = {
   },
 
   'fraction-circles': {
-    init: () => ({ placed: [], mode: 'frac', rings: false }),
-    total: st => `Placed ${st.placed.reduce((s, p) => s + 1 / p.d, 0).toFixed(2)} wholes`,
-    palette: st => [...FRACTION_DENS.map(([d, c]) => ({ label: `${fracLabel(d, st.mode, '1')} piece`, adds: true, color: c, run: s => { s.placed.push({ id: newId(), d, rot: 0 }); } })),
-      { label: st.rings ? 'Single circles' : 'Rings view', color: '#5E35B1', run: s => { s.rings = !s.rings; } }],
+    // Circles that hold pieces (owner, 25 Nov 2026: show 1/2 + 1/4 + 1/4 = 1 whole). The model is manip-board.js fc*.
+    init: () => OBJECTS['fraction-circles'][0].init(),
+    load: raw => fcLoad(raw),
+    total: st => `Total ${fcAmount(fcTotal(st), st.mode)}`,
+    // New circle and the rings switch first: always in reach above the ten piece sizes.
+    palette: st => [{ label: 'New circle', color: '#5E35B1', run: s => { if (!fcNewCircle(s)) { toast(`A fraction set holds up to ${FC_MAX} circles. Add another fraction set.`); return false; } s.rings = false; } },
+      { label: st.rings ? 'Back to circles' : 'Rings view', color: '#5E35B1', run: s => { s.rings = !s.rings; } },
+      ...FC_DENS.map(([d, c]) => ({ label: `${fracLabel(d, st.mode, '1')} piece`, adds: true, color: c, run: s => fcAddPiece(s, d) }))],
     settings: st => sel('mode', [['frac', 'Fraction'], ['pct', 'Percent'], ['dec', 'Decimal']], st.mode, 'Labels'),
-    hint: 'Tap a placed piece to turn it. The ✕ takes it away.',
-    note: 'Put pieces together to make a whole, and use the rings view to compare denominators.',
-    board: (st, view) => {
-      const col = d => (FRACTION_DENS.find(([x]) => x === d) || [0, '#888'])[1];
-      if (st.rings) {
-        return `<div class="mp-pad"><svg width="320" height="320" viewBox="0 0 320 320" role="img" aria-label="Fraction circle rings">${FRACTION_DENS.slice(1).map(([d, c], ri) => Array.from({ length: d }, (_, i) => `<path d="${pie(160, 160, 150 - ri * 16, (i * 2 * Math.PI) / d - Math.PI / 2, ((i + 1) * 2 * Math.PI) / d - Math.PI / 2)}" fill="${c}" fill-opacity=".75" stroke="#fff" stroke-width="1.5"/>`).join('')).join('')}<circle cx="160" cy="160" r="22" fill="var(--card)" stroke="var(--line)"/></svg><p class="small muted">One ring for each denominator, so equal fractions line up.</p></div>`;
-      }
-      return `<div class="mp-pad mp-circles">${st.placed.map(p => {
-        const a0 = (p.rot * Math.PI) / 180 - Math.PI / 2, lab = fracLabel(p.d, st.mode, '1');
-        return `<div class="mp-circle"><button type="button" data-act="turn" data-id="${p.id}" ${view.readOnly ? 'tabindex="-1"' : ''} aria-label="${esc(lab)} piece, tap to turn"><svg width="150" height="150" viewBox="0 0 150 150"><circle cx="75" cy="75" r="70" fill="none" stroke="var(--line)" stroke-dasharray="4 4"/>${p.d === 1 ? `<circle cx="75" cy="75" r="68" fill="${col(1)}" fill-opacity=".9" stroke="#fff" stroke-width="2"/>` : `<path d="${pie(75, 75, 68, a0, a0 + (2 * Math.PI) / p.d)}" fill="${col(p.d)}" fill-opacity=".85" stroke="#fff" stroke-width="2"/>`}<text x="75" y="80" text-anchor="middle" font-size="17" font-weight="700" fill="var(--text)">${esc(lab)}</text></svg></button>${view.readOnly ? '' : btn('mp-x', `data-act="remove" data-id="${p.id}" aria-label="Remove ${esc(lab)} piece"`, '✕')}</div>`;
-      }).join('')}${st.placed.length ? '' : '<p class="mp-empty">Add pieces from the palette. Tap a piece to turn it.</p>'}</div>`;
-    },
+    hint: 'Tap a piece in the palette to add it to the selected circle, or to the first circle with room. A full circle says 1 whole. Tap a piece to select it, then Delete. Drag a piece onto another circle to move it.',
+    note: 'Fill circles to make wholes, compare circles side by side, and use the rings view to compare denominators.',
+    board: (st, view = {}) => (st.rings ? fcRingsHtml() : fcBoardHtml(st, view)),
     act: (st, d) => {
-      if (d.act === 'turn') { const p = st.placed.find(x => x.id === d.id); if (p) p.rot += 360 / p.d; return !!p; }
-      if (d.act === 'remove') { st.placed = st.placed.filter(x => x.id !== d.id); return true; }
+      if (d.act === 'fcsel') {
+        if (Date.now() - fcDragEnd < 300) return false;   // the tap that ends a drag selects nothing
+        const k = d.p ? 'p' : 'c', id = d.p || d.c;
+        st.sel = st.sel && st.sel[k] === id ? null : { [k]: id }; return true;
+      }
+      if (d.act === 'fcdel') return fcDelete(st);
       return false;
     },
+    bind: (el, ctx) => bindFractionSets(el, ctx),
   },
 
   'number-lines': {
@@ -586,6 +587,119 @@ function bindGrids(el, ctx) {
     });
     const up = () => { if (!d) return; const x = d; d = null; if (x.moved) xyDragEnd = Date.now(); svg.classList.remove('dragging'); if (x.moved && JSON.stringify(x.pts0) !== JSON.stringify(x.o.st.pts)) ctx.done(x.before); };
     svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  }
+}
+
+// ---------------------------------------------------------------- fraction circles (the drawing and the drag)
+const FC_C = 80, FC_R = 72;
+let fcDragEnd = 0;
+const fcColor = d => (FC_DENS.find(([x]) => x === d) || [0, '#90A4AE'])[1];
+/** A piece of 1/d from the palette (manip-board.js fcAdd: the selected circle, else the first with room, else a new one). */
+function fcAddPiece(s, d) {
+  const r = fcAdd(s, d);
+  if (!r) { toast(`A fraction set holds up to ${FC_MAX} circles. Add another fraction set.`); return false; }
+  s.rings = false;
+  if (r.diverted) toast(`That circle has no room for ${fracLabel(d, s.mode, '1')}, so it went into circle ${s.circles.indexOf(r.c) + 1}.`);
+}
+/** "1/2 + 1/4 + 1/4 = 1 whole": a circle's pieces as a sum (its label for screen readers). */
+const fcSentence = (c, mode) => (c.ps.length ? `${c.ps.map(p => fracLabel(p.d, mode, '1')).join(' + ')} = ${fcCircleLabel(c, mode).replace(' ✓', '')}` : 'empty');
+/** One piece's wedge (the whole piece: the full disk) from angle a0, with its label; selected: outlined and lifted out. */
+function fcWedge(p, a0, ci, st, edit) {
+  const a1 = a0 + (2 * Math.PI) / p.d, mid = (a0 + a1) / 2, on = edit && !!st.sel && st.sel.p === p.id;
+  const dx = on && p.d > 1 ? 5 * Math.cos(mid) : 0, dy = on && p.d > 1 ? 5 * Math.sin(mid) : 0;
+  const lab = fracLabel(p.d, st.mode, '1'), fs = p.d >= 10 ? 10.5 : p.d >= 6 ? 12.5 : 15, lr = p.d === 1 ? 0 : p.d === 2 ? FC_R * 0.5 : FC_R * 0.64;
+  const shape = p.d === 1 ? `<circle cx="${FC_C}" cy="${FC_C}" r="${FC_R}"` : `<path d="${pie(FC_C, FC_C, FC_R, a0, a1)}"`;
+  const attrs = edit ? ` data-act="fcsel" data-p="${esc(p.id)}" role="button" tabindex="0" aria-pressed="${on}" aria-label="${esc(`${lab} piece in circle ${ci + 1}${on ? ', selected' : ''}`)}"` : '';
+  return `<g class="mp-fcp${on ? ' on' : ''}" transform="translate(${dx.toFixed(1)} ${dy.toFixed(1)})"${attrs}>${shape} fill="${fcColor(p.d)}" stroke="${on ? 'var(--text)' : 'var(--card)'}" stroke-width="${on ? 3.5 : 2}"/>`
+    + `<text x="${(FC_C + lr * Math.cos(mid)).toFixed(1)}" y="${(FC_C + lr * Math.sin(mid) + fs * 0.36).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" class="mp-fclab">${esc(lab)}</text></g>`;
+}
+/** One circle: its outline (the part not yet covered), its pieces edge to edge from 12 o'clock going clockwise, and
+ *  its sum under it ("3/4", "1 whole ✓"; none on a practice question, where it would give the answer away). */
+function fcCircleHtml(c, ci, st, edit) {
+  const on = edit && !!st.sel && st.sel.c === c.id, u = fcUsed(c), lab = fcCircleLabel(c, st.mode);
+  let a = -Math.PI / 2, top = '';
+  const wedges = c.ps.map(p => {
+    const w = fcWedge(p, a, ci, st, edit);
+    // The selected piece's outline again on top of its neighbors (drawn only: taps go to the piece itself).
+    if (edit && st.sel && st.sel.p === p.id) top = w.replace(/^<g class="mp-fcp on"/, '<g class="mp-fcsel" aria-hidden="true"').replace(/ data-act="fcsel"[^>]*>/, '>').replace(/<text[\s\S]*<\/text>/, '').replace(/fill="[^"]*"/, 'fill="none"');
+    a += (2 * Math.PI) / p.d; return w;
+  });
+  const bg = `<circle class="mp-fcbg" cx="${FC_C}" cy="${FC_C}" r="${FC_R}"${edit ? ` data-act="fcsel" data-c="${esc(c.id)}"` : ''}/>`;
+  const ring = on ? `<circle class="mp-fcring" cx="${FC_C}" cy="${FC_C}" r="${FC_R + 5}"/>` : '';
+  const sum = st.q ? '' : edit ? btn(`mp-fcsum${u === FC_WHOLE ? ' full' : ''}${on ? ' on' : ''}`, `data-act="fcsel" data-c="${esc(c.id)}" aria-pressed="${on}" aria-label="${esc(`Circle ${ci + 1}: ${fcSentence(c, st.mode)}. Select the circle`)}"`, esc(lab))
+    : `<span class="mp-fcsum${u === FC_WHOLE ? ' full' : ''}">${esc(lab)}</span>`;
+  return `<div class="mp-fcc${on ? ' on' : ''}" data-fcc="${esc(c.id)}"><svg class="mp-fcsvg" width="160" height="160" viewBox="0 0 160 160" role="group" aria-label="${esc(`Circle ${ci + 1}${st.q ? '' : `: ${fcSentence(c, st.mode)}`}`)}">${bg}${wedges.join('')}${top}${ring}</svg>${sum}</div>`;
+}
+/** A fraction set: its circles, three a row, and a footer with Delete for what is selected and a short tip. */
+function fcBoardHtml(st, view) {
+  const edit = !view.readOnly, cs = st.circles || [], any = cs.some(c => c.ps.length);
+  const selP = edit && st.sel && st.sel.p ? fcFind(st, st.sel.p) : null, selC = edit && st.sel && st.sel.c ? cs.findIndex(c => c.id === st.sel.c) : -1;
+  const del = selP ? btn('chip mp-fcdel', 'data-act="fcdel"', `🗑 Delete the ${esc(fracLabel(selP.c.ps[selP.i].d, st.mode, '1'))} piece`)
+    : selC >= 0 ? btn('chip mp-fcdel', 'data-act="fcdel"', `🗑 Delete circle ${selC + 1}`) : '';
+  const tip = !any ? 'Tap a piece in the palette to put it in a circle. Pieces fill a circle from the top, going clockwise.'
+    : selP ? 'Drag it onto another circle to move it there.' : selC >= 0 ? 'New pieces go into this circle.' : 'Tap a piece to select it. Drag a piece onto another circle to move it.';
+  const foot = st.q ? '' : `<div class="mp-fcfoot">${edit ? del : ''}<p class="${any ? 'mp-fctip small muted' : 'mp-empty'}">${esc(tip)}</p></div>`;
+  return `<div class="mp-pad mp-fc"${edit ? ` data-fcset="${esc(view.oid || '')}"` : ''}><div class="mp-fcgrid">${cs.map((c, i) => fcCircleHtml(c, i, st, edit)).join('')}</div>${foot}</div>`;
+}
+/** The rings view: one ring for each size, all in one circle, so equal fractions end on the same line. */
+function fcRingsHtml() {
+  const R = FC_DENS.slice(1);
+  return `<div class="mp-pad"><svg width="320" height="320" viewBox="0 0 320 320" role="img" aria-label="Fraction circle rings">${R.map(([d, c], ri) => Array.from({ length: d }, (_, i) => `<path d="${pie(160, 160, 150 - ri * 14, (i * 2 * Math.PI) / d - Math.PI / 2, ((i + 1) * 2 * Math.PI) / d - Math.PI / 2)}" fill="${c}" fill-opacity=".75" stroke="#fff" stroke-width="1.5"/>`).join('')).join('')}<circle cx="160" cy="160" r="22" fill="var(--card)" stroke="var(--line)"/></svg><p class="small muted">One ring for each denominator, so equal fractions line up.</p></div>`;
+}
+/**
+ * Dragging a piece from one circle onto another (solo and room): a copy of the piece follows the pointer, the circle
+ * under it shows whether the piece fits, and on release it moves there (or, dropped on the set's empty space, into a
+ * new circle). A piece that would overfill the circle stays where it was. A press without a move is a tap (it selects).
+ * ctx: as bindClocks.
+ */
+function bindFractionSets(el, ctx) {
+  for (const pad of el.querySelectorAll('.mp-fc[data-fcset]')) {
+    // Enter or Space on a focused piece selects it (an svg element has no click of its own for keys).
+    pad.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target instanceof SVGElement && e.target.closest('[data-act]')) { e.preventDefault(); e.target.closest('[data-act]').dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+    });
+    pad.addEventListener('pointerdown', e => {
+      const pe = e.target.closest('[data-p]'); if (!pe || e.button > 0 || (ctx.blocked && ctx.blocked())) return;
+      const o = ctx.find(pad.dataset.fcset); if (!o || o.st.q) return;
+      const f = fcFind(o.st, pe.dataset.p); if (!f) return;
+      e.stopPropagation();
+      const d = { o, pid: pe.dataset.p, piece: f.c.ps[f.i], sx: e.clientX, sy: e.clientY, on: false, ghost: null, over: null, before: ctx.before() };
+      const target = (x, y) => {
+        const hit = document.elementFromPoint(x, y), set = hit && hit.closest('.mp-fc[data-fcset]');
+        const to = set && el.contains(set) ? ctx.find(set.dataset.fcset) : null; if (!to || to.st.q) return null;
+        const ce = hit.closest('[data-fcc]'), c = ce ? (to.st.circles || []).find(x => x.id === ce.dataset.fcc) : null;
+        const own = c && c.ps.some(p => p.id === d.pid) && to === d.o;
+        return { to, el: ce, c, ok: own || (c ? fcFits(c, d.piece.d) : (to.st.circles || []).length < FC_MAX), own };
+      };
+      const move = ev => {
+        if (!d.on && Math.hypot(ev.clientX - d.sx, ev.clientY - d.sy) < 6) return;
+        if (!d.on) {
+          d.on = true; pad.classList.add('dragging'); pe.classList.add('dragged');
+          d.ghost = document.createElement('div'); d.ghost.className = 'mp-fcghost'; d.ghost.setAttribute('aria-hidden', 'true');
+          const r = 34, a0 = -Math.PI / 2 - Math.PI / d.piece.d, a1 = a0 + (2 * Math.PI) / d.piece.d;
+          d.ghost.innerHTML = `<svg width="84" height="84" viewBox="0 0 84 84">${d.piece.d === 1 ? `<circle cx="42" cy="42" r="${r}"` : `<path d="${pie(42, 50, r, a0, a1)}"`} fill="${fcColor(d.piece.d)}" stroke="var(--text)" stroke-width="2.5"/></svg>`;
+          document.body.appendChild(d.ghost);
+        }
+        ev.preventDefault();
+        d.ghost.style.left = `${ev.clientX - 42}px`; d.ghost.style.top = `${ev.clientY - 42}px`;
+        const t = target(ev.clientX, ev.clientY);
+        if (d.over && (!t || d.over !== t.el)) d.over.classList.remove('drop-ok', 'drop-no');
+        d.over = t && t.el && !t.own ? t.el : null;
+        if (d.over) { d.over.classList.toggle('drop-ok', t.ok); d.over.classList.toggle('drop-no', !t.ok); }
+      };
+      const up = ev => {
+        window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up);
+        if (!d.on) return;
+        fcDragEnd = Date.now(); pad.classList.remove('dragging'); pe.classList.remove('dragged');
+        if (d.ghost) d.ghost.remove(); if (d.over) d.over.classList.remove('drop-ok', 'drop-no');
+        const t = ev.type === 'pointerup' ? target(ev.clientX, ev.clientY) : null;
+        if (!t || t.own) return;
+        const r = fcMove(d.o.st, d.pid, t.to.st, t.c ? t.c.id : null);
+        if (r === 'full') { toast(t.c ? `That circle has no room for ${fracLabel(d.piece.d, d.o.st.mode, '1')}.` : `A fraction set holds up to ${FC_MAX} circles.`); return; }
+        if (r === 'moved') ctx.done(d.before);
+      };
+      window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+    });
   }
 }
 
