@@ -5,7 +5,7 @@
 //                                              (public/js/homeroom.js)
 //   POST /api/homeroom/:id/seats               Arrange seats: { preset, seats: { studentId: { x, y } } }
 //   POST /api/homeroom/:id/groups              the teacher's groups and who is in which: { groups, members }
-//   POST /api/homeroom/:id/area                the teacher's area: { state: { __ann: { notes, texts, strokes }, shapes } }
+//   POST /api/homeroom/:id/area                the teacher's area: { state: { __ann: { notes, texts, strokes }, shapes, ink } }
 //   POST /api/homeroom/:id/live                live class: { action: start | bring | back | pause | resume | end }
 //   GET  /class/:id/homeroom/projector         the projector view: the teacher's area full screen, the class's name and
 //                                              whether it is live; never a student's name, desk or work

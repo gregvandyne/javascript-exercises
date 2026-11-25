@@ -2099,7 +2099,7 @@
       },
       "shapeDelete": "Apagar esta forma",
       "hintMove": "Toque em qualquer coisa na área do professor para selecioná-la. Arraste para mover, puxe uma alça para redimensionar e toque de novo para escrever.",
-      "hintDraw": "Desenhe na área do professor. Toque em Selecionar quando terminar.",
+      "hintDraw": "Desenhe em qualquer lugar do quadro. O que estiver na área do professor aparece em todas as mesas. Toque em Selecionar quando terminar.",
       "bt": {
         "shapes": "Formas",
         "lines": "Linhas",

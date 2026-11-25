@@ -2098,7 +2098,7 @@
       },
       "shapeDelete": "Eliminar esta forma",
       "hintMove": "Toca cualquier cosa del área del docente para seleccionarla. Arrástrala para moverla, tira de un tirador para cambiar su tamaño y tócala otra vez para escribir.",
-      "hintDraw": "Dibuja en el área del docente. Toca Seleccionar cuando termines.",
+      "hintDraw": "Dibuja en cualquier parte del tablero. Lo que dibujes en el área del docente se ve en cada escritorio. Toca Seleccionar cuando termines.",
       "bt": {
         "shapes": "Formas",
         "lines": "Líneas",
