@@ -618,3 +618,17 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-rename input{width:100%;max-width:420px}
 @media (prefers-reduced-motion:reduce){.mp-dpulse{animation:none}}
 .mp-host-who{margin:14px 0 0;line-height:1.45}
+
+/* Number line: Points / Jumps, the sentence the jumps write, a dot or jump selected with a tap, then Delete. */
+.mp-nl-top{display:flex;flex-direction:column;align-items:center;gap:6px;margin:4px 0 0}
+.mp-nl-mode{display:inline-flex;background:var(--hover);border-radius:999px;padding:4px;gap:2px}
+.mp-nl-m{border:0;background:transparent;border-radius:999px;padding:7px 16px;font:inherit;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.mp-nl-m.on{background:var(--text);color:var(--bg)}
+.mp-nl-help{margin:0;font-size:14px;color:var(--muted);text-align:center}
+.mp-nl-sum{text-align:center;font-size:24px;font-weight:800;margin:0 0 2px}
+.mp-nl-sum .mp-nl-j{color:#E8643F}
+.mp-nl .mp-nl-pt,.mp-nl .mp-nl-jump,.mp-nl .mp-nl-tag{cursor:pointer}
+.mp-nl .mp-nl-pt:not(.on):hover circle:nth-child(2){stroke:var(--text)}
+.mp-nl .mp-nl-jump:not(.on):hover path:last-of-type{stroke-width:5}
+.mp-nl-del{background:var(--text);color:var(--bg);border-color:var(--text)}
+.mp-nl .mp-nl-ghost{pointer-events:none}
