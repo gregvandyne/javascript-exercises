@@ -72,3 +72,17 @@ the music is ducked by 18 dB under each line. Copy the new `-web.mp4` over the p
 - The local server has no AI key, so the Builder's build is made by the offline building blocks; `rec-builder.mjs`
   replays the page's live stream slowly with the AI Builder's step rows around the real version it made.
 - Oomba Live runs on a slowed server clock so question timers don't run out while frames are shot.
+
+## Manipulatives quick tutorials (one per tool)
+
+`node scripts/manip-tutorials.mjs [slug ...] [--out dir] [--peek dir]` records a short tutorial for each Manipulatives
+tool (1280 x 720, about 35 to 50 s): the real `/manipulatives#<slug>` page on a throwaway in-memory database, signed in
+as a made-up teacher, driven by Playwright with real clicks, drags and typing, recorded with Chromium's screencast and
+encoded with ffmpeg (libx264, yuv420p, faststart). It writes `manip-<slug>.mp4`, `-poster.jpg`, `.en.vtt` and a 4 x 4
+contact sheet (`-sheet.jpg`). Every action is followed by a check on the page, so a control that does not work stops
+the run with the step's caption and what was wrong: recording is also a play-through test.
+
+A tool is one entry in its `SCENES` table (the header comment lists the actions and checks). Only `number-lines` is
+written so far; each other tool needs a real task from `public/js/manip-tasks.js`, its steps (caption, then actions with
+checks against the tool's own DOM in `public/js/manip.js`), and a look at the contact sheet. Captions: short, calm, no
+em dashes, US spelling.
