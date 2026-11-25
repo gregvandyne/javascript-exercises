@@ -39,6 +39,11 @@ Teachers without the Teacher plan keep today's class page.
 - Groups the teacher names (for example Stretch, On track, Building).
 - Left panel (teacher's desk): Hand out to (Whole class, groups), My lessons (+ Build a lesson), Games I built, Oomba
   games and tools, Reading, Class flow (brain break, note, timer, used right away), Board tools.
+- **My desk** (the teacher's own desk on the board, under the teacher's area): the teacher drops or tap-places any game,
+  lesson or tool there, even before the class has students, to try it (Play / Preview) and hand it out later (Hand
+  out, then a desk, a group or Whole class; or drag the card there). Staged, not assigned: students never see it. Kept
+  per class. Whole class works with no students yet ("No students yet. Students who join will get it."). Details:
+  docs/decisions.md "Homeroom: the teacher's desk".
 - Top bar: class switcher, tabs, Live dot, the plan pill (Today / Now with countdown / Time's up), +5 min and Next
   during a plan, Today (today at a glance), Hands, the yellow Everyone to Homeroom / Bring everyone to me, and the ⋯
   menu (Arrange seats, join code, projector view, End class).

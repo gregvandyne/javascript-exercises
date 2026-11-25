@@ -260,6 +260,8 @@ export function handOutLesson(u, c, { lessonId, to, order = 'in', grade = 'score
     if (!buckets.has(set)) buckets.set(set, { v, s: v ? v.s : l.base.s, ids: [] });
     buckets.get(set).ids.push(sid);
   }
+  // Whole class with no students yet: one assignment of the lesson as built, for whoever joins later.
+  if (!buckets.size) buckets.set(l.base.set, { v: null, s: l.base.s, ids: [] });
   for (const set of buckets.keys()) if (!gameSets.get(g.id, set)) return fail('lessonGone');
   const batch = uid(10), made = [];
   for (const [set, b] of buckets) {

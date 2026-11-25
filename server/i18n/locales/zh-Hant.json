@@ -2049,6 +2049,25 @@
       "bigger": "文字變大"
     },
     "homeroom": {
+      "my": {
+        "label": "我的桌子（只有你看得到上面的東西）",
+        "title": "我的桌子",
+        "note": "只有你看得到",
+        "empty": "把遊戲放到這裡，先試試看。",
+        "cardLabel": "{title}，在我的桌子上",
+        "play": "玩",
+        "preview": "預覽",
+        "open": "開啟",
+        "handOut": "發下去",
+        "takeOff": "從我的桌子拿走",
+        "lead": "放在你的桌子上先試試。發下去之前學生看不到。",
+        "lessonLead": "放在你的桌子上。預覽會開啟這堂課的題目。發下去之前學生看不到。",
+        "toolLead": "放在你的桌子上，隨時可以開啟。發放工具的功能即將推出。",
+        "tapWhere": "現在點一張桌子、一個小組、全班或我的桌子。",
+        "tapMine": "現在點我的桌子，把它放在那裡。",
+        "toolSoon": "發放工具的功能即將推出。放到我的桌子上，就能從那裡開啟。",
+        "pickFirst": "先在左邊選一個遊戲，再點我的桌子。"
+      },
       "wholeClass": "全班 · {count}",
       "editGroups": "分組",
       "groupsTitle": "分組",
@@ -2111,6 +2130,8 @@
       "resumed": "螢幕恢復了",
       "ended": "課堂已結束",
       "ho": {
+        "noStudentsYet": "還沒有學生。之後加入的學生會收到。",
+        "putClass": "發給全班",
         "tapWhere": "現在點一個座位、一個小組或「全班」。",
         "cancel": "取消",
         "wholeClass": "全班",
@@ -14886,6 +14907,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "已放在你的桌子上。學生看不到。",
+      "already": "這已經在你的桌子上了。",
+      "removed": "已從你的桌子拿走。"
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "切換班級",
     "arrange": "安排座位",
@@ -14919,6 +14945,9 @@
       "comingNext": "即將推出"
     },
     "errors": {
+      "badStage": "這個不能放在你的桌子上。",
+      "deskFull": "你的桌子滿了。請先拿走一些東西。",
+      "notStaged": "這已經不在你的桌子上了。",
       "notFound": "這個 Homeroom 無法使用。",
       "badPreset": "請選擇排排坐、四人一桌、U 形或圓形。",
       "badSeats": "無法儲存座位，請再試一次。",
@@ -15069,6 +15098,7 @@
       }
     },
     "handout": {
+      "forLater": "{title}已發給全班。之後加入的學生會收到。",
       "done": "{title} 已發到 {count} 個座位。",
       "removedOne": "已從那個座位拿走。",
       "removedAll": "已從所有座位移除。學生的作品會保留。"

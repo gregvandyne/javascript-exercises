@@ -2049,6 +2049,25 @@
       "bigger": "Texte plus grand"
     },
     "homeroom": {
+      "my": {
+        "label": "Mon bureau (vous seul voyez ce qui s’y trouve)",
+        "title": "Mon bureau",
+        "note": "Vous seul le voyez",
+        "empty": "Déposez un jeu ici pour l’essayer d’abord.",
+        "cardLabel": "{title}, sur mon bureau",
+        "play": "Jouer",
+        "preview": "Aperçu",
+        "open": "Ouvrir",
+        "handOut": "Distribuer",
+        "takeOff": "Retirer de mon bureau",
+        "lead": "Sur votre bureau pour l’essayer d’abord. Les élèves ne le voient pas tant que vous ne l’avez pas distribué.",
+        "lessonLead": "Sur votre bureau. L’aperçu ouvre les exercices de la leçon. Les élèves ne le voient pas tant que vous ne l’avez pas distribué.",
+        "toolLead": "Sur votre bureau, à ouvrir quand vous voulez. La distribution des outils arrive bientôt.",
+        "tapWhere": "Touchez maintenant un bureau, un groupe, Toute la classe ou Mon bureau.",
+        "tapMine": "Touchez maintenant Mon bureau pour le garder là.",
+        "toolSoon": "La distribution des outils arrive bientôt. Mettez-le sur Mon bureau pour l’ouvrir de là.",
+        "pickFirst": "Choisissez d’abord un jeu à gauche, puis touchez Mon bureau."
+      },
       "wholeClass": "Toute la classe · {count}",
       "editGroups": "Groupes",
       "groupsTitle": "Groupes",
@@ -2111,6 +2130,8 @@
       "resumed": "Les écrans sont de retour",
       "ended": "Classe terminée",
       "ho": {
+        "noStudentsYet": "Pas encore d’élèves. Ceux qui rejoindront la classe le recevront.",
+        "putClass": "Distribuer à la classe",
         "tapWhere": "Touchez maintenant un bureau, un groupe ou Toute la classe.",
         "cancel": "Annuler",
         "wholeClass": "Toute la classe",
@@ -14886,6 +14907,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Sur votre bureau. Les élèves ne le voient pas.",
+      "already": "C’est déjà sur votre bureau.",
+      "removed": "Retiré de votre bureau."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Changer de classe",
     "arrange": "Placer les élèves",
@@ -14919,6 +14945,9 @@
       "comingNext": "Bientôt"
     },
     "errors": {
+      "badStage": "Cela ne peut pas aller sur votre bureau.",
+      "deskFull": "Votre bureau est plein. Retirez d’abord quelque chose.",
+      "notStaged": "Ce n’est plus sur votre bureau.",
       "notFound": "Ce Homeroom n’est pas disponible.",
       "badPreset": "Choisissez Rangées, Tables de 4, En U ou En cercle.",
       "badSeats": "Les places n’ont pas pu être enregistrées. Réessayez.",
@@ -15069,6 +15098,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} est distribué à la classe. Les élèves qui la rejoindront le recevront.",
       "done": "{title} est sur {count, plural, one {# bureau} other {# bureaux}}.",
       "removedOne": "Retiré de ce bureau.",
       "removedAll": "Retiré de tous les bureaux. Le travail des élèves est conservé."

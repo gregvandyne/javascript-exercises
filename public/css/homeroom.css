@@ -89,7 +89,25 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 .hr-stc{width:28px;height:28px;border-radius:50%;border:2px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
 .hr-stc.on{box-shadow:0 0 0 3px var(--focus)}
 @media (pointer:coarse){.hr-h{width:20px;height:20px}.hr-stb{min-height:44px;min-width:44px}.hr-stc{width:34px;height:34px}}
-.hr-tdesk{position:absolute;border-radius:14px;background:var(--text);color:var(--card);display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
+/* the teacher's own desk ("My desk"): staged games, lessons and tools; only the teacher sees what is on it */
+.hr-tdesk{position:absolute;box-sizing:border-box;border-radius:18px;border:3px solid var(--spark-press);background:var(--text);color:var(--card);box-shadow:0 4px 0 var(--spark-press),var(--shadow);padding:8px 12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.hr-tdeskcap{display:flex;align-items:center;gap:8px;min-width:0;font-size:20px;line-height:1.1;white-space:nowrap}
+.hr-tdeskcap b{font-weight:900}
+.hr-tdesknote{margin-inline-start:auto;font-size:14px;font-weight:700;opacity:.75;overflow:hidden;text-overflow:ellipsis}
+.hr-tdeskempty{flex:1;display:grid;place-items:center;text-align:center;border:2px dashed color-mix(in srgb,var(--card) 40%,transparent);border-radius:12px;font-size:16px;font-weight:700;opacity:.85;padding:0 8px}
+.hr-scards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.hr-scard{display:flex;align-items:center;gap:6px;min-width:0;height:48px;padding:0 10px;border:0;border-radius:12px;background:var(--card);color:var(--text);font:800 15px var(--font);text-align:start;cursor:grab;touch-action:none;box-shadow:0 2px 0 var(--spark-press)}
+.hr-scard:hover{background:var(--spark-soft)}
+.hr-scard.tool{cursor:pointer;touch-action:manipulation}
+.hr-scard.hr-smore{justify-content:center;cursor:pointer;touch-action:manipulation;background:var(--card-2)}
+.hr-picking:not(.hr-picking-mine) .hr-tdesk{outline:3px dashed var(--spark);outline-offset:3px;cursor:pointer}
+.hr-tdesk.hr-droptarget{outline:4px solid var(--spark)!important}
+.hr-smenu .hr-smenuacts{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.hr-smenu .hr-smenuacts .btn{justify-content:center;min-height:48px}
+.hr-slist{display:flex;flex-direction:column;gap:8px;margin:4px 0 0}
+.hr-slist .btn{width:100%;justify-content:flex-start;min-height:48px}
+.hr-givebar .hr-gchip.mine{background:#141414;color:#FFFDF2}
+.hr-emptynote{display:flex;align-items:center;gap:8px;margin:10px 0 4px;padding:10px 12px;border-radius:12px;background:var(--spark-soft);color:var(--text);font-weight:700}
 .hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
 .hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
 .hr-desk .rm-dot{flex:none;background:var(--c,var(--line))}

@@ -13815,6 +13815,52 @@ editing text inside it, and the menu was `right: 0` under its button whatever si
   reload; a note resized both ways and moved; an oval selected by its outline, moved, resized, recolored, deleted; a pen
   line selected near it, scaled, deleted with the key; a tablet by touch; the ⋯ menu inside the screen at 390, 900 x 700,
   1366 x 768 and live; the server's sizes). Chromium only here: Playwright's WebKit is not installed in this environment.
+
+## Homeroom: the teacher's desk (25 Nov 2026)
+
+The owner: "You should also be able to put games on your desk as a teacher without students necessarily there." The
+board's "Teacher's desk" was only a label, and a new class had nowhere to try or line up anything before students joined
+(Whole class was refused with `noStudents`).
+- **My desk is a real desk** (`public/js/homeroom.js`, `public/js/homeroom-seats.js` TEACHER_DESK, now 640 x 108 at the
+  same place under the middle of the teacher's area, ending above the first row's names): dark with a yellow edge,
+  "My desk" and "Only you see this". A game, lesson or tool goes on it by tap-then-tap (pick in the panel, then My desk,
+  or the yellow bar's My desk chip, which also serves phones) or by dragging it there with a mouse or pen. It works with
+  no students in the class. The Manipulatives and Figures, which can't be handed out yet ("Coming next"), are now
+  pickable for My desk only (tapping a student desk says handing out tools comes next).
+- **Cards**: up to 4 on the desk (3 and "+N more", which lists them all). Tapping one: **Play** (a game: `/play/<slug>`),
+  **Preview** (a lesson: its own question set, `/play/<slug>?chapter=<set>&lock=1`, the route a handout opens), **Open**
+  (a tool: `/manipulatives`, `/figures`); **Hand out** (picks it exactly as the panel does, so the yellow bar and the
+  existing hand-out sheets follow: tap a desk, a group or Whole class); **Take off my desk**. A card can also be dragged
+  (mouse, pen and touch, since it sits on the board rather than in the scrolling panel) onto a student desk, a team
+  desk, a group chip or Whole class: the same sheet. Handing out keeps it on My desk (to hand to another group later).
+- **Staged, never assigned** (`services/homeroom-staged.js`; migration `0130_homeroom_staged`:
+  `homeroom_rooms.staged`, JSON `[{ id, kind: game | lesson | tool, ref, by, at }]`, at most 24). No class lesson is
+  made; nothing reaches a student. Only the class's teachers read or change it (`GET/POST /api/homeroom/:id/staged`
+  behind the Homeroom gate; everyone else the site's 404). A co-teacher sees the shared games and tools; a lesson shows
+  only to its owner (lessons are personal), and a game or lesson that is gone or can no longer be handed out isn't
+  shown. The desk page, its state poll, See the room, the projector page and its poll never read the column (tested).
+  Writing it leaves `updated_at` alone, so desks and the projector don't refetch the teacher's area. Kept per class
+  (switching classes reloads that class's desk). Deleting: with the room row (the class, the school: `BY_CLASS`); a
+  teacher's account takes their own items (`services/account-delete.js` 11c2). A table was not needed: the list is
+  small, per class, and only ever read whole.
+- **Whole class with nobody in the class**: `services/homeroom-handouts.js` studentsFor no longer refuses `all` with an
+  empty roster; it is `assignGame` with `[]` as always, so whoever joins gets it on their desk and To do list (tested
+  with a student added afterwards). A lesson to Whole class with no students is one assignment of the lesson as built.
+  The sheets show a calm "No students yet. Students who join will get it." and the button reads "Hand out to the
+  class"; the toast says "{title} is handed out to the class. Students who join will get it." An empty group is still
+  refused.
+- **Also fixed**: dragging a game from the panel with a mouse could start the browser's own image drag on its icon
+  (pointercancel, nothing dropped); `dragstart` is now cancelled on panel items and My desk cards.
+- Tests: `tests/unit/homeroom-staged.test.js` (stage a game, lesson and tool in an empty class, twice is once, take it
+  off, full desk, per class, links; auth for other teachers, students and guests; a co-teacher; nothing on the desk
+  page, desk state, See the room or projector; Whole class with an empty roster for a game and a lesson, then a student
+  joins and has both; account delete and class delete) and `tests/unit/homeroom-staged-browser.test.js` (tablet: stage
+  by tap-then-tap and the bar's chip in an empty class, Preview and Play, Hand out from the card to Whole class with the
+  note, the late student's desk; 1366 x 768: drag onto My desk, drag a card onto a student desk, take it off, Select
+  still edits the area; phone: My desk and its menu, nothing sideways).
+- **Open**: handing out tools (Manipulatives, Figures) is still to come; on a phone the board's Fit makes My desk small
+  (as every desk), so the bar's My desk chip is the easy way there; a co-teacher's own staged lessons are invisible to
+  the other teacher by design.
 ## Typing Zoo: the rename, Noto animals, and a pet that walks with you (25 Nov 2026)
 
 Owner: "The pets should be animated and full body that can move around a bit and follow your cursor", then: rename the
