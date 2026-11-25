@@ -13317,3 +13317,10 @@ Owner: "Create hundreds of sample passages for Mistake Hunt."
 - Every passage is checked like a saved set: tidy text, the site's word filter, enough mistakes for its grade, and
   `cleanProofItems` accepts it planted with three different seeds (`tests/unit/mistake-hunt-samples.test.js`).
 - Passages were drafted by helper agents against that validator, then reviewed; facts are worth a teacher's glance.
+- **Difficulty levels** (owner: "Create different difficulty levels"; `levelOf(g, lvl)` in the game): **Easy** plants 2
+  fewer mistakes than the grade's count, only kinds taught a grade or more earlier and no sentence mistakes, and tells
+  students how many of each kind; **Medium** is the grade's own kinds and count, telling the total (as before); **Hard**
+  adds kinds from up to two grades on and 3 more mistakes, and tells nothing. Chips in the sample library (Play it and
+  Use in my set plant at the chosen level; each level keeps its own saved work) and in the builder's "Mistakes to
+  plant" card, where they set the kinds, the count and what students are told for the draft's grade (all still
+  changeable by hand). Tested on every sample at Easy and Hard against the server's set rules.

@@ -54,3 +54,27 @@ test('the library screen: grades, topics, Play it and Use in my set', () => {
   assert.match(html, /function useOne\(s\)/); assert.match(html, /function playOne\(s\)/);
   assert.match(html, /sampleId: s\.id/, 'each sample keeps its own work');
 });
+
+// The same levels as the game's levelOf (seed-games/mistake-hunt.html), read from the game itself.
+const levelSrc = /function levelOf\(g, lvl\) \{[\s\S]*?\n  \}/.exec(html)[0];
+const levelOf = new Function('P', 'defaultCount', `${levelSrc}; return levelOf;`)(P, count);
+
+test('difficulty: Easy plants fewer and earlier kinds and tells each kind; Hard plants more and tells nothing', () => {
+  for (let g = 1; g <= 8; g++) {
+    const e = levelOf(g, 'easy'), m = levelOf(g, 'medium'), h = levelOf(g, 'hard');
+    assert.ok(e.n < m.n && m.n < h.n, `grade ${g}: counts ${e.n} < ${m.n} < ${h.n}`);
+    assert.ok(e.types.every(k => P.BY[k].gr <= Math.max(0, g - 1) && P.BY[k].g !== 'sent'), `grade ${g}: easy kinds are earlier ones`);
+    assert.ok(h.types.length >= m.types.length, `grade ${g}: hard has at least medium's kinds`);
+    assert.deepEqual([e.o.n, m.o.n, h.o.n], ['type', 'total', 'none']);
+  }
+  const bad = [];
+  for (const s of samples) for (const lvl of ['easy', 'hard']) {
+    const L = levelOf(s.g, lvl), m = P.plant(s.x, { types: L.types, n: L.n, seed: 4 });
+    const want = lvl === 'easy' ? 2 : count(s.g) + 1;   // a short text may not hold all of Hard's extra three
+    if (m.length < want) bad.push(`${s.id} ${lvl}: ${m.length}`);
+    else if (!cleanProofItems([{ t: s.t, x: s.x, g: s.g, m, o: L.o }])) bad.push(`${s.id} ${lvl}: refused as a set`);
+  }
+  assert.deepEqual(bad, []);
+  assert.match(html, /levelChips\(S\.sd,/, 'the library picks a level');
+  assert.match(html, /levelChips\(d\.lvl \|\| ''/, 'and so does the builder');
+});
