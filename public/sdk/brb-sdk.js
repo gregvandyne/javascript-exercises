@@ -1413,6 +1413,11 @@
     params: Object.freeze(cleanParams(INIT.params)),
     // An official game's rule from the player's teacher (Typing Zoo: { acc, wpm } to unlock each next lesson), or null.
     classRules: INIT.classRules && typeof INIT.classRules === 'object' ? Object.freeze({ acc: Math.max(0, Math.min(100, +INIT.classRules.acc || 0)), wpm: Math.max(0, Math.min(200, +INIT.classRules.wpm || 0)) }) : null,
+    // The player's supports from their teacher (a Homeroom handout; docs/sdk.md "Supports"): time 1, 1.5 or 2 (extra time
+    // on anything timed), read (read instructions aloud), simple (simpler wording), big (bigger text). All off otherwise.
+    support: Object.freeze({ time: INIT.support && (INIT.support.time === 150 || INIT.support.time === 200) ? INIT.support.time / 100 : 1, read: !!(INIT.support && INIT.support.read), simple: !!(INIT.support && INIT.support.simple), big: !!(INIT.support && INIT.support.big) }),
+    // A timed part's seconds with the player's extra time: BRB.timeFor(60) is 90 with 1.5x, 60 without.
+    timeFor: function (secs) { var n = +secs; if (!isFinite(n) || n <= 0) return 0; var f = INIT.support && (INIT.support.time === 150 || INIT.support.time === 200) ? INIT.support.time / 100 : 1; return Math.round(n * f); },
     // 3D games: what this browser can do ({webgl2, importmap}); null for 2D games. Live class games read it to pick their
     // 2D path (docs/kit-api.md "Live class games").
     device: DEV ? Object.freeze({ webgl2: devMissing.indexOf('webgl2') < 0, importmap: devMissing.indexOf('importmap') < 0 }) : null,

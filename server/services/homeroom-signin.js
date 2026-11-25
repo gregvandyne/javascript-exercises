@@ -100,7 +100,9 @@ function ensureRoom(u, classId) {
 /** Open sign-in (a new code), or keep it open SIGNIN_MS from now (the same code). Class-device sessions already
  *  started last as long. Teachers of the class only. -> { ok, signin } */
 export function openSignin(u, c) {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  // (a sub who starts class opens it too, as the teacher's Everyone to Homeroom does: docs/decisions.md "Homeroom:
+  // supports, aides and sub links"; the route itself stays the teacher's)
+  if (!H.canUseClass(u, c) && H.helperRole(u, c) !== 'sub') return fail('notFound');
   ensureRoom(u, c.id);
   const cur = signinOf(c.id), t = now(), until = t + SIGNIN_MS;
   const code = cur.open ? cur.code : freshCode();

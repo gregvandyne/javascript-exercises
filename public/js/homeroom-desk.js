@@ -20,6 +20,9 @@
 //     "You're next", "Go ahead" with the pass timer, I'm back; tap again to put it down), the desk's lock ("Your teacher
 //     locked your desk for a moment"), "Your teacher is coming over", a team pad's teammates' cursors, and the pulse
 //     (public/js/homeroom-pulse.js) that tells the teacher's board what this desk is doing (never keys or words).
+//   - step 3c, their supports (public/js/homeroom-support.js; only their own): Read to me beside the teacher's words,
+//     Bigger text, the simpler wording in place of the instructions (from the server), and with extra time their own
+//     longer clock for the plan's part on now ("Your time"). Shown as tools, never a label; See the room shows nobody's.
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -31,6 +34,8 @@ import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
 import { nowNextHtml } from '/js/homeroom-plan.js';
 import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
+import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
+import { clock as planClock } from '/js/homeroom-plan-time.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -47,6 +52,8 @@ const S = {
   // step 3a: this desk's own live desk (hand, hall pass, lock, "coming over"), the teammates' cursors on the pad, the
   // hand menu, and the server's clock (the pass timer counts from it)
   me: null, mates: [], handMenu: false, handBusy: false, skew: 0,
+  // step 3c: their supports ({ time, read, simple, big }) and the plan's Now / Next with their own clock
+  sup: D.support || null, plan: null, planSkew: 0,
 };
 const root = $('hd'), body = $('hd-body'), over = $('hd-over');
 
@@ -85,8 +92,11 @@ function cardHtml(x) {
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
   const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
-  return x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
+  const card = x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
+  // Read aloud (step 3c): the card's title and the teacher's words, from a button beside the card (never inside its link)
+  const read = S.sup && S.sup.read && !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. ')) : '';
+  return read ? `<div class="hd-cardwrap">${card}${read}</div>` : card;
 }
 /** The teacher's comment and sticker on a finished card (step 2c): only this student's own. */
 function fbHtml(x) {
@@ -246,12 +256,25 @@ function applyState(st) {
   teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
-  // The day plan's Now / Next (part names only, no clock: docs/decisions.md "Homeroom: the day plan").
-  if ('plan' in st) { const el = $('hd-now'); if (el) { el.hidden = !st.plan; el.innerHTML = nowNextHtml(st.plan, 0, { clockOn: false }); } }
+  // The day plan's Now / Next (part names only, no clock: docs/decisions.md "Homeroom: the day plan"); with extra time
+  // (step 3c) their own longer clock for the part on now.
+  if ('plan' in st) { S.plan = st.plan || null; S.planSkew = S.plan ? Date.now() - S.plan.now : 0; renderNow(); }
+  if ('support' in st && JSON.stringify(st.support || null) !== JSON.stringify(S.sup)) { S.sup = st.support || null; applySup(); renderCards(); }
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
   if (areaChanged || was !== JSON.stringify([S.live, S.me && S.me.locked])) renderOver();
 }
+/** The Now line; with extra time, "Your time" counts down to their own end of the part (never "Time's up"). */
+function renderNow() {
+  const el = $('hd-now'); if (!el) return;
+  const p = S.plan, mine = p && p.mine;
+  el.hidden = !p;
+  const left = mine ? mine.endsAt - (Date.now() - S.planSkew) : 0;
+  const html = p ? `${nowNextHtml(p, 0, { clockOn: false })}${mine && left > 0 ? `<span class="hd-mytime">${iconHtml('⏳', { size: 16 })} ${esc(td('myTime'))} <b data-hdmyclock>${esc(planClock(left))}</b></span>` : ''}` : '';
+  if (el.innerHTML !== html) el.innerHTML = html;
+}
+/** Bigger text on the whole desk. */
+function applySup() { bigText(root, S.sup && S.sup.big); }
 let pollTimer = null;
 async function poll() {
   clearTimeout(pollTimer); pollTimer = null;
@@ -411,7 +434,8 @@ function start() {
   PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
     onAnswer: r => liveDesk({ live: r.live, me: r.me, mates: r.mates }) });
   PULSE.setLive(S.live, S.me);
-  setInterval(tick, 1000);
+  setInterval(() => { tick(); if (S.plan && S.plan.mine) renderNow(); }, 1000);
+  applySup(); wireRead(root);
   body.addEventListener('pointerdown', padDown);
   body.addEventListener('pointermove', padMove);
   body.addEventListener('pointerup', padUp); body.addEventListener('pointercancel', padUp);

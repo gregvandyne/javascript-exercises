@@ -56,6 +56,23 @@ export function canUseClass(u, c) {
   return S.isPlatformAdmin(u) || (S.teaches(u, c.id) && !!S.membership(c.school_id, u.id));
 }
 
+// ---------------------------------------------------------------- helpers: aides and subs (step 3c)
+// Other adults who help in a class's Homeroom without running it (docs/decisions.md "Homeroom: supports, aides and sub
+// links"): an aide (services/homeroom-aides.js) or a sub through a one-day link (services/homeroom-sub.js). Each module
+// registers fn(u, c) -> 'aide' | 'sub' | null, so this module imports neither. canUseClass stays the class's own
+// teachers only: everything that changes the class (seating, groups, handouts, grading, plans, the AI) keeps asking it,
+// and a helper is let in only where a service asks helperRole for the few things a helper may do.
+const helperHooks = [];
+export const onHelper = fn => { if (!helperHooks.includes(fn)) helperHooks.push(fn); };
+/** 'aide' | 'sub' | null: how this person (or a sub link's actor) helps in this class. Never for its own teachers. */
+export function helperRole(u, c) {
+  if (!on() || !u || !c || c.archived_at) return null;
+  for (const fn of helperHooks) { const r = fn(u, c); if (r) return r; }
+  return null;
+}
+/** May this person do what a teacher or a helper of the given roles may (a teacher always may)? */
+export const canHelp = (u, c, roles = ['aide', 'sub']) => canUseClass(u, c) || roles.includes(helperRole(u, c));
+
 // ---------------------------------------------------------------- the room
 const rowOf = classId => q.get('SELECT * FROM homeroom_rooms WHERE class_id=?', classId) || null;
 /** The class's students in roster order: [{ id, name }]. */
@@ -235,6 +252,9 @@ export const canUseDesk = (u, c) => isStudentOf(u, c) && classHasHomeroom(c);
 /** A class left live ends by itself after this long (a teacher who forgot End class). */
 export const LIVE_MAX_MS = 6 * 3600e3;
 const LIVE_ACTIONS = ['start', 'bring', 'back', 'pause', 'resume', 'end'];
+/** What a sub may do to live class (an aide changes none of it: docs/decisions.md "Homeroom: supports, aides and sub
+ *  links"). */
+export const SUB_LIVE = ['start', 'bring', 'back', 'pause', 'resume', 'end'];
 // Told after a teacher starts or ends live class (services/homeroom-signin.js: starting opens the class sign-in, End
 // class closes it and signs out the class's shared devices): fn({ by, c, action }).
 const liveHooks = [];
@@ -248,7 +268,10 @@ export function liveOf(classId) {
 /** Live class, by the class's teachers only: start (Everyone to Homeroom), bring / back (Bring everyone to me, and
  *  back to desks), pause / resume (Pause screens), end (End class). -> { ok, live } */
 export function setLive(u, c, action) {
-  if (!canUseClass(u, c)) return fail('notFound');
+  if (!canUseClass(u, c)) {
+    if (helperRole(u, c) !== 'sub') return fail(helperRole(u, c) ? 'forbidden' : 'notFound');
+    if (!SUB_LIVE.includes(action)) return fail('forbidden');
+  }
   if (!LIVE_ACTIONS.includes(action)) return fail('badAction');
   const cur = liveOf(c.id);
   if (action === 'start') {

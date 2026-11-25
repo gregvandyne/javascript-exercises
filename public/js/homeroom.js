@@ -31,6 +31,10 @@
 //     only; the top bar's plan pill shows Now with a countdown and Next, +5 min and Next while it runs, Time's up in
 //     yellow (it never moves on by itself), and Finish class with a short summary. End class offers Finish class while a
 //     plan runs.
+//   - step 3c (public/js/homeroom-helpers.js): a desk's menu (tap the student's name) with their supports, the desk's
+//     small 🧩 when they have any, a handout's simpler wording (the desk's sheet), Aides and Sub link for today in the ⋯
+//     menu, "While you were out" after a sub. An aide (D.role) gets the board read-only with Hands, Today, a look at a
+//     desk, comments and stickers.
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
@@ -43,9 +47,14 @@ import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/hom
 import { liveBoard } from '/js/homeroom-live.js';
 import { gamePlayer } from '/js/homeroom-player.js';
 import { planPill } from '/js/homeroom-plan.js';
+import { helpers as helpersOf } from '/js/homeroom-helpers.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
+// An aide (step 3c; docs/decisions.md "Homeroom: supports, aides and sub links"): the same board to watch and help, with
+// nothing that changes the class (no hand-out panel, Arrange seats, board tools, My desk, removing handouts, live class's
+// buttons, End class); the server refuses those to an aide anyway.
+const AIDE = D.role === 'aide';
 const Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.05;
 const MODES = ['note', 'text', 'pen', 'shape'];
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
@@ -101,7 +110,9 @@ function cardRow(x, sid) {
 }
 function deskInner(s) {
   const g = groupOf(s.id), c = g ? g.color : '', cards = cardsOf(s.id), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
-  return `<span class="hr-name"><span class="rm-dot"${c ? ` style="--c:${esc(c)}"` : ''}></span><bdi>${esc(s.name)}</bdi></span>
+  // (the name opens the desk's menu, step 3c: supports, handouts, a look; a plain name while seats are arranged)
+  const nm = `<span class="rm-dot"${c ? ` style="--c:${esc(c)}"` : ''}></span><bdi>${esc(s.name)}</bdi>${HLP ? HLP.supIcon(s.id) : ''}`;
+  return `${H.seatsOpen ? `<span class="hr-name">${nm}</span>` : btn('hr-name hr-namebtn', `data-hrdmenu="${esc(s.id)}" aria-label="${esc(th('helpers.deskMenu', { name: s.name }))}" aria-haspopup="dialog"`, nm)}
     ${cards.length ? `<div class="hr-cards">${shown.map(x => cardRow(x, s.id)).join('')}${many ? (H.seatsOpen ? `<span class="hr-more">${esc(th('ho.more', { count: cards.length - 2 }))}</span>` : btn('hr-more', `data-hrdesk="${esc(s.id)}"`, esc(th('ho.more', { count: cards.length - 2 })))) : ''}</div>`
       : `<span class="hr-empty">${esc(th('emptyDesk'))}</span>${g ? `<span class="hr-gtag">${esc(groupName(g))}</span>` : ''}`}`;
 }
@@ -118,8 +129,8 @@ function teamCards(tm) {
 }
 function teamInner(tm) {
   const cards = teamCards(tm), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
-  const names = tm.members.map(sid => { const g = groupOf(sid); return H.seatsOpen || H.teamPick ? `<span class="hr-tname"><span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi></span>`
-    : btn('hr-tname', `data-hrdesk="${esc(sid)}" aria-label="${esc(th('deskOf', { name: nameOfId(sid) }))}"`, `<span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>`); }).join('');
+  const names = tm.members.map(sid => { const g = groupOf(sid), sup = HLP ? HLP.supIcon(sid) : ''; return H.seatsOpen || H.teamPick ? `<span class="hr-tname"><span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>${sup}</span>`
+    : btn('hr-tname', `data-hrdesk="${esc(sid)}" aria-label="${esc(th('deskOf', { name: nameOfId(sid) }))}"`, `<span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>${sup}`); }).join('');
   const row = e => { const h = handout(e.id); if (!h) return ''; const all = e.done >= e.n;
     const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(h.title)}</span><span class="hr-tcount${all ? ' all' : ''}">${all ? '✓' : esc(th('team.doneOf', { done: e.done, n: e.n }))}</span>`;
     return H.seatsOpen ? `<span class="hr-card${all ? ' done' : ''}">${inner}</span>` : btn(`hr-card${all ? ' done' : ''}`, `data-hrteam="${esc(tm.id)}"`, inner); };
@@ -192,11 +203,11 @@ function renderWorld() {
   ed.clear();   // a fresh board: nothing selected or being typed in
   const w = world();
   worldEl.style.width = `${w.w}px`; worldEl.style.height = `${w.h}px`;
-  worldEl.innerHTML = `<section class="rm-area teach editable hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
+  worldEl.innerHTML = `<section class="rm-area teach${AIDE ? '' : ' editable'} hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
       <header class="rm-label">✦ ${esc(tm('teacherArea'))} · ${esc(tm('teacherAreaNote'))}</header><div class="hr-areabody">${areaInner()}</div></section>
-    <div class="hr-tdesk" id="hr-tdesk" role="group" aria-label="${esc(th('my.label'))}" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${tdeskInner()}</div>
+    <div class="hr-tdesk" id="hr-tdesk"${AIDE ? ' hidden' : ''} role="group" aria-label="${esc(th('my.label'))}" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${tdeskInner()}</div>
     ${soloStudents().map(deskHtml).join('')}${H.teams.map(teamHtml).join('')}
-    ${H.students.length ? '' : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
+    ${H.students.length ? '' : AIDE ? `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))}</p>` : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
   board.classList.toggle('hr-seating', H.seatsOpen);
   applyView();
   LV.paint();
@@ -360,7 +371,7 @@ function renderLive() {
   barActs()?.classList.toggle('hr-islive', !!H.live);
   const L = H.live;
   // (the yellow button's words in a span: a phone's shared bar shows its icon only, the button keeps its name)
-  const html = LV.topButtons() + (!L ? btn('btn hr-chunk hr-spark', `data-hr="golive" aria-label="${esc(th('everyone'))}"`, `${iconHtml('🏫', { size: 18 })}<span class="hr-sparkt"> ${esc(th('everyone'))}</span>`)
+  const html = LV.topButtons() + (AIDE ? '' : !L ? btn('btn hr-chunk hr-spark', `data-hr="golive" aria-label="${esc(th('everyone'))}"`, `${iconHtml('🏫', { size: 18 })}<span class="hr-sparkt"> ${esc(th('everyone'))}</span>`)
     : `${btn(`btn hr-chunk hr-pausebtn${L.paused ? ' on' : ''}`, `data-hr="${L.paused ? 'resume' : 'pause'}" aria-pressed="${L.paused}" aria-label="${esc(th(L.paused ? 'resume' : 'pause'))}"`, `${iconHtml('👀', { size: 18 })}<span class="hr-hidephone"> ${esc(th(L.paused ? 'resume' : 'pause'))}</span>`)}
       ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}" aria-label="${esc(th(L.bring ? 'back' : 'bring'))}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })}<span class="hr-sparkt"> ${esc(th(L.bring ? 'back' : 'bring'))}</span>`)}`);
   // the poll redraws this every 2 s while live: only when something changed, so the focus stays put
@@ -389,11 +400,13 @@ function renderMenu() {
   document.querySelector('[data-hr="menu"]')?.setAttribute('aria-expanded', String(H.menuOpen));
   if (!H.menuOpen) { el.innerHTML = ''; return; }
   el.innerHTML = `<div class="rm-menu panel hr-menu" role="menu"><div class="rm-menu-body">
-    ${btn('rm-mi', 'role="menuitem" data-hr="seats"', `${iconHtml('🔀', { size: 18 })} ${esc(th('arrange'))}`)}
+    ${AIDE ? '' : `${btn('rm-mi', 'role="menuitem" data-hr="seats"', `${iconHtml('🔀', { size: 18 })} ${esc(th('arrange'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="groups"', `${iconHtml('🏷️', { size: 18 })} ${esc(th('editGroups'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="signin"', `${iconHtml('🔑', { size: 18 })} ${esc(th('signin'))}`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="aides"', `${iconHtml('🤝', { size: 18 })} ${esc(th('helpers.aides'))}`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="sublink"', `${iconHtml('🔗', { size: 18 })} ${esc(th('helpers.subMenu'))}`)}`}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
-    ${H.live ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
+    ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
   placePopover(el.firstElementChild, document.querySelector('[data-hr="menu"]'));
   el.querySelector('button')?.focus();
 }
@@ -579,8 +592,11 @@ function giveClick(e) {
     if (to) { giveSheet(to); return true; }
   } else if (e.target.closest('[data-hrto]')) { toast(th('ho.pickFirst')); return true; }
   else if (e.target.closest('.hr-tdesk') && !H.seatsOpen && !e.target.closest('button, a')) { toast(th('my.pickFirst')); return true; }
+  const dmenu = e.target.closest('[data-hrdmenu]');
+  if (dmenu) { HLP.deskMenu(dmenu.dataset.hrdmenu); return true; }
   if (ho) { deskSheet(ho.dataset.sid, ho.dataset.hrho); return true; }
   if (tcard) { teamSheet(tcard.dataset.hrteam); return true; }
+  if (more && more.classList.contains('hr-tname')) { HLP.deskMenu(more.dataset.hrdesk); return true; }
   if (more) { deskSheet(more.dataset.hrdesk); return true; }
   return false;
 }
@@ -631,7 +647,8 @@ function deskSheet(sid, first = null) {
       ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}
       <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
       ${x.done ? fbBlock(x, edit === x.id) : ''}
-      <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}</div></li>`; }).join('')}</ol>`
+      ${!AIDE && H.simples && H.simples[x.id] ? `<p class="hr-dsimple" dir="auto"><b>${iconHtml('✏️', { size: 14 })} ${esc(th('helpers.simpler'))}:</b> ${esc(H.simples[x.id])}</p>` : ''}
+      <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${AIDE ? '' : `${btn('btn btn-sm', `data-simpler="${esc(x.id)}"`, `${iconHtml('✏️', { size: 16 })} ${esc(th('helpers.simpler'))}`)}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}`}</div></li>`; }).join('')}</ol>`
       : `<p class="muted">${esc(th('emptyDesk'))}</p>`;
   };
   // A comment and a sticker on a finished card (step 2c): shown, or the little editor (one at a time).
@@ -647,7 +664,8 @@ function deskSheet(sid, first = null) {
       <p class="small muted">${esc(th('feedback.private'))}</p><p class="err" id="hr-fberr" aria-live="polite"></p>
       <div class="row">${btn('btn btn-sm', 'data-fbcancel', esc(th('ho.cancel')))}${f ? btn('btn btn-sm', `data-fbclear="${esc(x.id)}"`, esc(th('feedback.remove'))) : ''}${btn('btn btn-sm btn-primary', `data-fbsave="${esc(x.id)}"`, esc(th('save')))}</div></div>`;
   };
-  const sh = sheet({ title: `🎒 ${th('deskOf', { name: s.name })}`, content: `<div class="hr-dsheet">${draw()}</div>` });
+  const sh = sheet({ title: `🎒 ${th('deskOf', { name: s.name })}`, content: `<div class="row hr-dsupbtn">${btn('btn btn-sm', 'data-dsup', `${iconHtml('🧩', { size: 16 })} ${esc(th('helpers.supports'))}`)}</div><div class="hr-dsheet">${draw()}</div>` });
+  sh.el.querySelector('[data-dsup]').addEventListener('click', () => { sh.close(); HLP.deskMenu(sid); });
   const box = sh.el.querySelector('.hr-dsheet');
   box.querySelector('.hr-ditem.first')?.scrollIntoView({ block: 'nearest' });
   const saveFb = async (id, comment, sticker) => {
@@ -664,6 +682,7 @@ function deskSheet(sid, first = null) {
     if (e.target.closest('[data-fbcancel]')) { edit = null; box.innerHTML = draw(); return; }
     const fs = e.target.closest('[data-fbsave]'); if (fs) { saveFb(fs.dataset.fbsave, box.querySelector('#hr-fbc')?.value || '', pickSt); return; }
     const fc = e.target.closest('[data-fbclear]'); if (fc) { saveFb(fc.dataset.fbclear, '', ''); return; }
+    const sp = e.target.closest('[data-simpler]'); if (sp) { sh.close(); HLP.simplerSheet(handout(sp.dataset.simpler)); return; }
     const one = e.target.closest('[data-rm]'), all = e.target.closest('[data-rmall]'); if (!one && !all) return;
     const id = (one || all).dataset[one ? 'rm' : 'rmall'];
     if (all && !(await ask({ title: th('ho.removeAll'), text: th('ho.removeAllConfirm', { title: handout(id)?.title || '' }), ok: th('ho.removeAll') }))) return;
@@ -715,7 +734,7 @@ function down(e) {
     H.gesture = { kind: 'desk', sid, sx: e.clientX, sy: e.clientY, x0: p.x, y0: p.y, moved: false };
     board.setPointerCapture(e.pointerId); e.preventDefault(); return;
   }
-  const at = inArea(e.clientX, e.clientY);
+  const at = AIDE ? null : inArea(e.clientX, e.clientY);
   if (at && !H.seatsOpen && H.mode !== 'move') {
     ed.clear();
     if (H.mode === 'pen') { if (ed.penStart(at)) { H.gesture = { kind: 'ink' }; board.setPointerCapture(e.pointerId); } return; }
@@ -728,7 +747,7 @@ function down(e) {
       H.gesture = { kind: 'shape', s }; board.setPointerCapture(e.pointerId); return;
     }
   }
-  if (!H.seatsOpen && ed.down(e)) return;
+  if (!H.seatsOpen && !AIDE && ed.down(e)) return;
   // (a desk tapped without moving: live class looks at it, public/js/homeroom-live.js; the capture below sends the click
   // to the board, so the tap is told here)
   H.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: H.view.x, y0: H.view.y, moved: false, desk: desk && !H.seatsOpen ? desk : null };
@@ -819,6 +838,8 @@ function click(e) {
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
   else if (k === 'signin') signinSheet();
+  else if (k === 'aides') { H.menuOpen = false; renderMenu(); HLP.aidesSheet(); }
+  else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }
@@ -851,9 +872,12 @@ function keys(e) {
 // ---------------------------------------------------------------- start
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
 const LV = liveBoard({
-  D, H, th, api2: path => api2(path), worldEl, renderLive: () => renderLive(), deskSheet: sid => deskSheet(sid), groupOf, nameOfId, teamOf, handout,
+  D, H, th, api2: path => api2(path), worldEl, renderLive: () => renderLive(), deskSheet: sid => deskSheet(sid), groupOf, nameOfId, teamOf, handout, aide: AIDE, supports: sid => HLP.deskMenu(sid), supportsLabel: th('helpers.supports'),
   setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
 });
+
+// Step 3c: supports, simpler wording, aides, sub links, While you were out (public/js/homeroom-helpers.js).
+const HLP = helpersOf({ D, H, api2: path => api2(path), aide: AIDE, nameOfId, renderDesks: () => renderDesks(), deskSheet: sid => deskSheet(sid), look: sid => LV.look(sid), live: () => !!H.live });
 
 /** Another view is on screen: the board keeps its zoom, place and selection; typing ends, menus close, nothing polls. */
 function away() {
@@ -880,7 +904,7 @@ const PL = gamePlayer({
 let PLAN = null;
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
-  PLAN = planPill({ D, H, viewEl });
+  PLAN = planPill({ D, H, viewEl, readOnly: AIDE });
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
   $('hr-panel').addEventListener('pointerdown', dragStart);
   board.addEventListener('pointerdown', stagedDragStart);
@@ -897,13 +921,14 @@ function start() {
   board.addEventListener('wheel', e => { e.preventDefault(); const r = board.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
   const root = $('homeroom');
   for (const el of [root, barActs()].filter(Boolean)) { el.addEventListener('click', click); el.addEventListener('keydown', keys); }
-  document.addEventListener('keydown', e => { if (!H.away && !PL.current()) ed.key(e); });
+  document.addEventListener('keydown', e => { if (!H.away && !PL.current() && !AIDE) ed.key(e); });
   // copy, cut and paste for the board's objects (public/js/homeroom-board.js): only while the board is on screen
-  const clip = f => e => { if (!H.away && !PL.current() && !H.seatsOpen) f(e); };
+  const clip = f => e => { if (!H.away && !PL.current() && !H.seatsOpen && !AIDE) f(e); };
   document.addEventListener('copy', clip(e => ed.onCopy(e, false))); document.addEventListener('cut', clip(e => ed.onCopy(e, true))); document.addEventListener('paste', clip(e => ed.onPaste(e)));
   // The minimap sits outside the board: a press on it moves the view there.
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
   PL.sync();   // a game the address names (#play=<card>): open over the board
+  if (!AIDE) HLP.notes();   // what a sub did, until Got it
   // (another class: the shared bar's switcher, public/js/class-views.js)
   viewEl?.addEventListener('cv:hide', away);
   viewEl?.addEventListener('cv:show', back);

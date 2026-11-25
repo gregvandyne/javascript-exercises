@@ -185,8 +185,10 @@ export function lowerHand(u, c, { back = false } = {}) {
  * -> { ok, ...teacherView }
  */
 export function teacherHands(u, c, { action, studentId = '', minutes } = {}) {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  // (step 3c: an aide and a sub answer hands and the hall pass too; the pass's length is the teacher's or an aide's)
+  if (!H.canHelp(u, c)) return fail('notFound');
   if (action === 'minutes') {
+    if (!H.canHelp(u, c, ['aide'])) return fail('forbidden');
     const n = Math.round(Number(minutes));
     if (!Number.isFinite(n) || n < PASS_MIN || n > PASS_MAX) return fail('badMinutes');
     q.run('UPDATE homeroom_rooms SET pass_minutes=? WHERE class_id=?', n, c.id);
@@ -213,7 +215,8 @@ export function teacherHands(u, c, { action, studentId = '', minutes } = {}) {
 /** The class's teachers set one student's desk: lock (they see "Your teacher locked your desk for a moment"), hide
  *  (their cursor isn't shared), coming ("Your teacher is coming over"). -> { ok, flags } */
 export function setFlag(u, c, studentId, flag, on) {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  // (step 3c: an aide may say "I'm coming over"; locking a desk and hiding a cursor stay the teacher's)
+  if (!H.canUseClass(u, c)) { if (!H.canHelp(u, c, ['aide'])) return fail(H.helperRole(u, c) ? 'forbidden' : 'notFound'); if (flag !== 'coming') return fail('forbidden'); }
   if (!H.liveOf(c.id)) return fail('notLive');
   if (!FLAGS[flag]) return fail('badAction');
   const sid = String(studentId || '');
@@ -258,7 +261,7 @@ export function liveView(c, board = HO.boardView(c), at = now()) {
 /** Look at one student's desk (the teacher's panel): what the server already knows, and their pad as a read-only
  *  drawing. Never their screen or their keys. */
 export function lookAt(u, c, studentId, locale = 'en') {
-  if (!H.canUseClass(u, c)) return fail('notFound');
+  if (!H.canHelp(u, c, ['aide'])) return fail(H.helperRole(u, c) ? 'forbidden' : 'notFound');
   const sid = String(studentId || ''), s = H.studentsOf(c.id).find(x => x.id === sid);
   if (!s) return fail('notInClass');
   const board = HO.boardView(c, locale), view = liveView(c, board), d = view.desks[sid] || { st: 'away', on: '' };

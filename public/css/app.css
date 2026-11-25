@@ -511,6 +511,15 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .playnote-full{margin:0;padding:0 max(16px,env(safe-area-inset-left)) 14px;white-space:pre-line;overflow-wrap:anywhere;font-weight:700;font-size:1.05rem;line-height:1.4;max-height:50vh;overflow:auto}
 body.has-playnote .stage{top:104px}
 body.playmode.has-playnote.kb-up .stage{top:calc(104px + var(--vvt,0px));height:calc(var(--vvh,100dvh) - 104px)}
+/* Homeroom supports (public/js/homeroom-support.js): Read to me, here and on the desk; Bigger text over the game */
+.hr-readbtn{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .9rem var(--font);box-shadow:0 2px 0 var(--line);cursor:pointer;white-space:nowrap}
+.hr-readbtn.small{min-height:34px;padding:0 10px;font-size:.82rem}
+.hr-readbtn[aria-pressed="true"]{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 2px 0 #000}
+.playnote summary .hr-readbtn{flex:none;color:#141414;background:#FFFDF2;border-color:#E8D88A;box-shadow:0 2px 0 #E8D88A}
+body.hr-big .playnote summary{height:64px;font-size:1.25rem}
+body.hr-big .playnote-full{font-size:1.25rem;line-height:1.45}
+body.hr-big.has-playnote .stage{top:116px}
+body.playmode.hr-big.has-playnote.kb-up .stage{top:calc(116px + var(--vvt,0px));height:calc(var(--vvh,100dvh) - 116px)}
 @media (max-width:560px){.playnote-h .lbl-h{display:none}}
 /* an on-screen keyboard up (public/js/play.js): the stage fits the part of the page still visible */
 body.playmode.kb-up .stage{top:calc(52px + var(--vvt,0px));bottom:auto;height:calc(var(--vvh,100dvh) - 52px)}

@@ -44,7 +44,7 @@ import { emailInvitesPanel } from './staff-invites.js';
 import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
-import { deskLink } from './homeroom.js';
+import { deskLink, aidePanel } from './homeroom.js';
 import { markView } from './homeroom-views.js';
 
 export const router = Router();
@@ -780,12 +780,12 @@ router.get('/teach', requireUser, (req, res) => {
   if (['welcome', 'on'].includes(req.query.plan)) return res.redirect(302, `/me/settings?plan=${req.query.plan}#teacher-plan`);
   // One class: My classes is that class. Not when the list is asked for (All classes, New class), with a welcome notice,
   // or with a staff invite to answer (those are said on the list).
-  const one = onlyClass(u);
-  if (one && req.query.all === undefined && req.query.new === undefined && req.query.welcome === undefined && !S.invitesFor(u.id).length) {
+  const one = onlyClass(u), aiding = aidePanel(req);
+  if (one && !aiding && req.query.all === undefined && req.query.new === undefined && req.query.welcome === undefined && !S.invitesFor(u.id).length) {
     res.set('Cache-Control', 'private, no-store');
     return res.redirect(302, `/class/${one.id}`);
   }
-  page(req, res, { title: t('nav.classroom'), active: 'classes', body: classroomHome(req), head: html`${CSS}${LOOP_CSS}` });
+  page(req, res, { title: t('nav.classroom'), active: 'classes', body: html`${classroomHome(req)}${aiding}`, head: html`${CSS}${LOOP_CSS}` });
 });
 router.post('/api/classes', requireUser, rateLimit('class-new', 60, 3600e3), (req, res) => {
   const t = req.t; const { schoolId, name, subject, grade, teacherId } = b(req);
