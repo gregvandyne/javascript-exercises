@@ -127,6 +127,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     forgetGameSets(u.id);
     // 11c. virtual math manipulatives: their saved boards, their work in sessions, the sessions they ran
     forgetManipulatives(u.id);
+    // 11c2. Homeroom: their doodle and working-out pads (one per class desk)
+    q.run('DELETE FROM homeroom_doodles WHERE user_id=?', u.id);
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
     // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)

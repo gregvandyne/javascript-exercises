@@ -2080,7 +2080,7 @@
       "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez de nouveau l’outil quand vous avez fini.",
       "tooMany": "Il n’y a plus de place pour en ajouter dans l’espace de l’enseignant.",
       "arrange": "Placer les élèves",
-      "menuSoon": "Le code pour rejoindre, la vue projecteur et Terminer la classe arrivent bientôt.",
+      "menuSoon": "Le code pour rejoindre et la connexion rapide arrivent bientôt.",
       "seats": {
         "lead": "Reproduisez votre vraie salle :",
         "rows": "Rangées",
@@ -2090,7 +2090,21 @@
         "hint": "ou faites glisser un bureau à sa vraie place",
         "done": "Terminé",
         "saved": "Placement enregistré pour {class}"
-      }
+      },
+      "everyone": "Tout le monde dans Homeroom",
+      "bring": "Tout le monde vers moi",
+      "back": "Retour aux pupitres",
+      "pause": "Mettre les écrans en pause",
+      "resume": "Reprendre les écrans",
+      "endClass": "Terminer la classe",
+      "endConfirm": "Terminer la classe pour tout le monde ? Les pupitres et l’espace de l’enseignant restent tels quels.",
+      "projector": "Ouvrir la vue projecteur",
+      "started": "La classe est en direct. Les élèves voient un message pour aller à leur pupitre.",
+      "bringing": "Tout le monde regarde l’espace de l’enseignant",
+      "backToDesks": "Les élèves sont de retour à leur pupitre",
+      "paused": "Écrans en pause",
+      "resumed": "Les écrans sont de retour",
+      "ended": "Classe terminée"
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -4648,6 +4662,37 @@
       "deleteOk": "Supprimer",
       "deleted": "« {title} » supprimé.",
       "undo": "Annuler"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mon pupitre",
+      "empty": "Rien sur ton pupitre pour l’instant",
+      "emptyText": "Quand ton enseignant distribue quelque chose, ça arrive ici.",
+      "pad": "Dessins et calculs",
+      "pens": "Couleurs du crayon",
+      "penColor": "Couleur du crayon {n}",
+      "undo": "Annuler",
+      "clear": "Effacer",
+      "padLabel": "Carnet pour dessiner et calculer. Dessine avec ton doigt, un stylet ou la souris.",
+      "padFull": "Ton carnet est plein. Efface-le pour continuer à dessiner.",
+      "teacherArea": "Espace de l’enseignant",
+      "openArea": "Ouvrir l’espace de l’enseignant",
+      "back": "Retour à mon pupitre",
+      "showing": "Ton enseignant te montre ceci",
+      "showingHint": "Tu retourneras à ton pupitre quand ton enseignant aura fini.",
+      "eyes": "Les yeux vers ton enseignant",
+      "eyesHint": "Ton écran est en pause un instant.",
+      "roomTitle": "La classe",
+      "teacherDesk": "Bureau de l’enseignant",
+      "you": "toi"
+    },
+    "homeroom-area": {
+      "label": "Espace de l’enseignant",
+      "empty": "Ton enseignant n’a encore rien mis ici."
+    },
+    "homeroom-notify": {
+      "text": "Ta classe est dans Homeroom.",
+      "go": "Aller à mon pupitre",
+      "close": "Fermer"
     }
   },
   "favorites": {
@@ -14429,7 +14474,23 @@
       "words": "Merci d’utiliser des mots gentils.",
       "personal": "N’indiquez pas d’informations personnelles comme des numéros de téléphone, des e-mails ou des adresses.",
       "badState": "Impossible d’enregistrer. Réessayez.",
-      "tooBig": "L’espace de l’enseignant est trop rempli. Retirez quelque chose et réessayez."
+      "tooBig": "L’espace de l’enseignant est trop rempli. Retirez quelque chose et réessayez.",
+      "badAction": "Ça n’a pas marché. Réessaie.",
+      "notLive": "Commence d’abord la classe avec Tout le monde dans Homeroom.",
+      "padFull": "Ton carnet est plein. Efface-le pour continuer à dessiner."
+    },
+    "live": "En direct",
+    "desk": {
+      "pageTitle": "{class} · Mon pupitre",
+      "link": "Mon pupitre",
+      "dock": "Menu du pupitre",
+      "myDesk": "Mon pupitre",
+      "teacherArea": "Espace de l’enseignant",
+      "library": "Bibliothèque",
+      "room": "Voir la classe"
+    },
+    "projector": {
+      "title": "{class} · Projecteur"
     }
   }
 }

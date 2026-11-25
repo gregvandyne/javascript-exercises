@@ -2336,3 +2336,11 @@ img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],
 .hr-tabs a{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;font-weight:800;color:var(--muted);text-decoration:none;white-space:nowrap}
 .hr-tabs a:hover{background:var(--hover);color:var(--text)}
 .hr-tabs a[aria-current="page"]{background:var(--text);color:var(--card)}
+/* Homeroom's "Your class is in Homeroom. Go to my desk" (public/js/homeroom-notify.js): a calm card at the bottom of any
+   page for a student whose class went live, above the tab bar on phones. */
+.hr-notify{position:fixed;z-index:900;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 10px 10px 18px;border-radius:20px;background:var(--text);color:var(--card);box-shadow:var(--shadow-lg);font-weight:700}
+.hr-notify-t{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0}
+.hr-notify-go{min-height:48px}
+.hr-notify-x{width:48px;height:48px;border:0;border-radius:50%;background:transparent;color:inherit;font:800 24px/1 var(--font);cursor:pointer}
+.hr-notify-x:hover{background:color-mix(in srgb,var(--card) 16%,transparent)}
+@media (max-width:820px){.hr-notify{bottom:calc(var(--tabbar) + 12px + env(safe-area-inset-bottom))}}

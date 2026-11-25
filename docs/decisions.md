@@ -13363,3 +13363,64 @@ This step is the foundation, teacher side only.
 - Tests: `tests/unit/homeroom.test.js` (gate, seating, groups, the teacher's area, the class page) and
   `tests/unit/homeroom-browser.test.js` (1366 x 768, tablet and phone: desks, Fit, no sideways scroll, seats and a
   note saved).
+
+## Homeroom, step 1b: the student desk, live class, the projector view (25 Nov 2026)
+
+Spec: `docs/homeroom.md` and the owner-approved student desk mockup. Builds on step 1a.
+- **Who gets a desk** (`services/homeroom.js` canUseDesk / classHasHomeroom): `HOMEROOM` on, the class not archived,
+  the person an active student of the class, and at least one of the class's own teachers let into Homeroom (canUse:
+  on `HOMEROOM_USERS` with the Teacher plan, or the platform admin). It is the class that decides, so a student never
+  sees plans or prices; everyone else (another class's students, the class's teachers, signed-out visitors) gets the
+  normal 404. Their class page gets a **My desk** button when the class has Homeroom.
+- **The desk** (`/class/:id/desk`, `public/js/homeroom-desk.js`): top bar (Live dot, class name), the desk with their
+  name and their group's color as its border, "Nothing on your desk yet" (handouts come in step 2), the **doodle and
+  working-out pad**, a small read-only window on the teacher's area, and the dock: My desk, Teacher's area (full
+  screen), Library (`/library`), See the room. Tablet landscape: desk and window side by side; portrait, narrow
+  laptops and phones: one column with the teacher's area on top; Chromebook 1366 x 768 as landscape. Tap targets are
+  48 pixels. No Raise hand, notebook, handouts or cursors yet.
+- **Names on the student side** are the names classmates already see on the class page (display names); the roster's
+  real names stay the teacher's. **Group names never reach students** (Stretch / Building say how a child is doing);
+  a student sees only their own desk's group color, every other desk in See the room is plain.
+- **See the room**: every desk where the teacher seated it (the saved seating), names only, no work, theirs marked;
+  the front of the room as a low band. When that would make desks too small to read (a phone), the same desks as a
+  grid in seating order (front row first).
+- **The pad** (`homeroom_doodles`, one row per class and student; `POST /api/desk/:id/doodle`): pen strokes on a 3:2
+  page (fractions of 900 x 600, so a drawing keeps its shape on every screen), five pen colors, Undo and Clear (Clear
+  can be undone), saved 0.7 s after a stroke and when the page is left. Finger, pencil and mouse are pointer events;
+  once a pencil is used, touches stop drawing (a resting palm). The server keeps at most 150 strokes, 400 points a
+  stroke and 15,000 points in all (`padFull` past that), clamps every point to the page, drops one-point strokes and
+  unknown colors. Only its own student writes it. The paper is cream in both themes so every pen color shows.
+- **Live class** (migration `0123_homeroom_desk`: `homeroom_rooms.live_at`, `live_bring`, `live_paused`;
+  `POST /api/homeroom/:id/live` with start, bring, back, pause, resume, end): only the class's teachers (the Homeroom
+  gate); students only read it. Top bar: **Everyone to Homeroom** (yellow) starts it; then the yellow button is
+  **Bring everyone to me** / **Back to desks** (every desk shows the teacher's area, "Your teacher is showing this")
+  and **Pause screens** / **Unpause screens** ("Eyes on your teacher" on every desk, over everything). **End class** and
+  **Open projector view** (new tab) are in the ⋯ menu. A class left live ends by itself after 6 hours (LIVE_MAX_MS).
+- **How desks hear it: polling, not the Manipulatives socket.** The live room's socket (`services/manip-socket.js`) is
+  tied to a manipulatives session and its memory state, not to a class; bending it to Homeroom would mean a session
+  per class or a second kind of room in it. In this step nothing needs to be faster than a few seconds, so a desk asks
+  `GET /api/desk/:id/state?v=<version>` every 3 s while live and every 6 s otherwise, never while the tab is hidden;
+  the answer is the live state plus the teacher's area only when it changed (the room's `updated_at`). Cursors and
+  hands in step 3 are where a socket per class earns its place.
+- **"Your class is in Homeroom. Go to my desk"** on every page: the site already tells students about live things
+  only on their class page (Oomba Live: `public/js/class-live.js`, polling every 8 s; Manipulatives: a banner when the
+  page is drawn). Homeroom needs every page, so `views/layout.js` gained `onEveryPage(fn)` (a feature adds a script for
+  the people it is for; routes register it, the layout imports none of them). `routes/homeroom.js` adds
+  `public/js/homeroom-notify.js` only for students with a class that has a Homeroom room (one indexed query) and not on
+  the desk itself. It asks `GET /api/homeroom-live` 2 s after the page opens, then backs off by 1.5x from 15 s to a
+  minute while nothing is live, every 30 s while a class is live (the prompt goes when class ends), never while hidden,
+  as background requests (they don't keep a sign-in awake). The prompt is a calm dark card at the bottom (above the tab
+  bar on phones) with the class name, Go to my desk and a close button (closed for that live session only).
+- **Projector view** (`/class/:id/homeroom/projector`, the class's teachers only): bare page (no site bar, no Oomba
+  chat), the class name, the Live dot and the teacher's area as big as the screen, refreshed like a desk. Never a
+  student's name, desk, hand, flag or progress: its page data and `GET /api/homeroom/:id/state` carry only the area
+  and the live state (tested).
+- Shared read-only drawing of the teacher's area: `public/js/homeroom-area.js` (notes, text, pen, shapes, scaled to
+  its box); the teacher's board keeps its own editable drawing.
+- **Deleting**: `homeroom_doodles` goes with the class (`services/school-delete.js` BY_CLASS, the class-leave hook),
+  with the student leaving the class, with their account (`services/account-delete.js`), and moves with a school
+  account merged into the student's own.
+- Tests: `tests/unit/homeroom-desk.test.js` (the gate, live state and who may change it, the prompt's script, the pad
+  and its limits, the projector with no student names) and `tests/unit/homeroom-desk-browser.test.js` (1366 x 768,
+  tablet both ways, phone: layout, no sideways scroll, 48-pixel targets; drawing and saving; See the room; live class
+  from the teacher's bar to a desk and the prompt; the projector).

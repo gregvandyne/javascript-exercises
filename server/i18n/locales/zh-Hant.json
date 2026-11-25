@@ -2080,7 +2080,7 @@
       "hintDraw": "在老師區畫畫。完成後再點一次工具。",
       "tooMany": "老師區放不下更多了。",
       "arrange": "安排座位",
-      "menuSoon": "加入代碼、投影畫面和結束課堂即將推出。",
+      "menuSoon": "加入代碼和快速登入即將推出。",
       "seats": {
         "lead": "照真實教室排：",
         "rows": "排排坐",
@@ -2090,7 +2090,21 @@
         "hint": "或把座位拖到它真正的位置",
         "done": "完成",
         "saved": "已儲存 {class} 的座位"
-      }
+      },
+      "everyone": "大家來 Homeroom",
+      "bring": "大家看過來",
+      "back": "回到座位",
+      "pause": "暫停螢幕",
+      "resume": "恢復螢幕",
+      "endClass": "結束課堂",
+      "endConfirm": "要為大家結束課堂嗎？書桌和老師區都會保持原樣。",
+      "projector": "開啟投影畫面",
+      "started": "課堂開始了。學生會看到前往自己書桌的提示。",
+      "bringing": "大家都在看老師區",
+      "backToDesks": "學生回到自己的書桌了",
+      "paused": "螢幕已暫停",
+      "resumed": "螢幕恢復了",
+      "ended": "課堂已結束"
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -4648,6 +4662,37 @@
       "deleteOk": "刪除",
       "deleted": "已刪除「{title}」。",
       "undo": "復原"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · 我的書桌",
+      "empty": "你的書桌上還沒有東西",
+      "emptyText": "老師發下東西時，會出現在這裡。",
+      "pad": "塗鴉和計算",
+      "pens": "筆的顏色",
+      "penColor": "筆的顏色 {n}",
+      "undo": "復原",
+      "clear": "清除",
+      "padLabel": "塗鴉和計算的筆記板。用手指、觸控筆或滑鼠畫。",
+      "padFull": "你的筆記板滿了，清除後才能繼續畫。",
+      "teacherArea": "老師區",
+      "openArea": "開啟老師區",
+      "back": "回到我的書桌",
+      "showing": "老師正在給你看這個",
+      "showingHint": "老師講完後，你就會回到自己的書桌。",
+      "eyes": "眼睛看老師",
+      "eyesHint": "你的螢幕暫停一下。",
+      "roomTitle": "教室",
+      "teacherDesk": "老師的桌子",
+      "you": "你"
+    },
+    "homeroom-area": {
+      "label": "老師區",
+      "empty": "老師還沒有在這裡放東西。"
+    },
+    "homeroom-notify": {
+      "text": "你的班級在 Homeroom。",
+      "go": "去我的書桌",
+      "close": "關閉"
     }
   },
   "favorites": {
@@ -14429,7 +14474,23 @@
       "words": "請使用友善的字詞。",
       "personal": "請不要填寫電話、電子郵件或地址等個人資料。",
       "badState": "無法儲存，請再試一次。",
-      "tooBig": "老師區太滿了。請移除一些東西再試一次。"
+      "tooBig": "老師區太滿了。請移除一些東西再試一次。",
+      "badAction": "沒有成功，請再試一次。",
+      "notLive": "請先按「大家來 Homeroom」開始上課。",
+      "padFull": "你的筆記板滿了，清除後才能繼續畫。"
+    },
+    "live": "直播中",
+    "desk": {
+      "pageTitle": "{class} · 我的書桌",
+      "link": "我的書桌",
+      "dock": "書桌選單",
+      "myDesk": "我的書桌",
+      "teacherArea": "老師區",
+      "library": "圖書館",
+      "room": "看看教室"
+    },
+    "projector": {
+      "title": "{class} · 投影"
     }
   }
 }

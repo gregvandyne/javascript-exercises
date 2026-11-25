@@ -2080,7 +2080,7 @@
       "hintDraw": "Dibuja en el área del docente. Toca la herramienta otra vez cuando termines.",
       "tooMany": "No caben más de esos en el área del docente.",
       "arrange": "Organizar los asientos",
-      "menuSoon": "El código para unirse, la vista de proyector y Terminar la clase llegan pronto.",
+      "menuSoon": "El código para unirse y el acceso rápido llegan pronto.",
       "seats": {
         "lead": "Igual que tu aula real:",
         "rows": "Filas",
@@ -2090,7 +2090,21 @@
         "hint": "o arrastra un pupitre a donde está de verdad",
         "done": "Listo",
         "saved": "Asientos guardados para {class}"
-      }
+      },
+      "everyone": "Todos a Homeroom",
+      "bring": "Traer a todos conmigo",
+      "back": "Volver a los pupitres",
+      "pause": "Pausar pantallas",
+      "resume": "Reanudar pantallas",
+      "endClass": "Terminar la clase",
+      "endConfirm": "¿Terminar la clase para todos? Los pupitres y la zona del docente se quedan como están.",
+      "projector": "Abrir la vista de proyector",
+      "started": "La clase está en vivo. Los estudiantes ven un aviso para ir a su pupitre.",
+      "bringing": "Todos están mirando la zona del docente",
+      "backToDesks": "Los estudiantes volvieron a sus pupitres",
+      "paused": "Pantallas en pausa",
+      "resumed": "Las pantallas volvieron",
+      "ended": "Clase terminada"
     },
     "stories": {
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
@@ -4648,6 +4662,37 @@
       "deleteOk": "Eliminar",
       "deleted": "«{title}» eliminado.",
       "undo": "Deshacer"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mi pupitre",
+      "empty": "Todavía no hay nada en tu pupitre",
+      "emptyText": "Cuando tu docente reparta algo, aparecerá aquí.",
+      "pad": "Dibujos y cuentas",
+      "pens": "Colores del lápiz",
+      "penColor": "Color del lápiz {n}",
+      "undo": "Deshacer",
+      "clear": "Borrar",
+      "padLabel": "Cuaderno para dibujar y hacer cuentas. Dibuja con el dedo, un lápiz o el ratón.",
+      "padFull": "Tu cuaderno está lleno. Bórralo para seguir dibujando.",
+      "teacherArea": "Zona del docente",
+      "openArea": "Abrir la zona del docente",
+      "back": "Volver a mi pupitre",
+      "showing": "Tu docente te está mostrando esto",
+      "showingHint": "Volverás a tu pupitre cuando tu docente termine.",
+      "eyes": "Mira a tu docente",
+      "eyesHint": "Tu pantalla está en pausa un momento.",
+      "roomTitle": "El salón",
+      "teacherDesk": "Escritorio del docente",
+      "you": "tú"
+    },
+    "homeroom-area": {
+      "label": "Zona del docente",
+      "empty": "Tu docente todavía no ha puesto nada aquí."
+    },
+    "homeroom-notify": {
+      "text": "Tu clase está en Homeroom.",
+      "go": "Ir a mi pupitre",
+      "close": "Cerrar"
     }
   },
   "favorites": {
@@ -14429,7 +14474,23 @@
       "words": "Usa palabras amables, por favor.",
       "personal": "No incluyas datos personales como teléfonos, correos o direcciones.",
       "badState": "No se pudo guardar. Inténtalo de nuevo.",
-      "tooBig": "El área del docente está demasiado llena. Quita algo e inténtalo de nuevo."
+      "tooBig": "El área del docente está demasiado llena. Quita algo e inténtalo de nuevo.",
+      "badAction": "Eso no funcionó. Inténtalo de nuevo.",
+      "notLive": "Primero empieza la clase con Todos a Homeroom.",
+      "padFull": "Tu cuaderno está lleno. Bórralo para seguir dibujando."
+    },
+    "live": "En vivo",
+    "desk": {
+      "pageTitle": "{class} · Mi pupitre",
+      "link": "Mi pupitre",
+      "dock": "Menú del pupitre",
+      "myDesk": "Mi pupitre",
+      "teacherArea": "Zona del docente",
+      "library": "Biblioteca",
+      "room": "Ver el salón"
+    },
+    "projector": {
+      "title": "{class} · Proyector"
     }
   }
 }

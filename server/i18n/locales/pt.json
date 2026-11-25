@@ -2081,7 +2081,7 @@
       "hintDraw": "Desenhe na área do professor. Toque de novo na ferramenta quando terminar.",
       "tooMany": "Não cabem mais desses na área do professor.",
       "arrange": "Organizar os lugares",
-      "menuSoon": "Código de entrada, visão de projetor e Encerrar a aula vêm em seguida.",
+      "menuSoon": "O código de entrada e o acesso rápido vêm em seguida.",
       "seats": {
         "lead": "Igual à sua sala de verdade:",
         "rows": "Fileiras",
@@ -2091,7 +2091,21 @@
         "hint": "ou arraste uma carteira para onde ela fica de verdade",
         "done": "Pronto",
         "saved": "Lugares salvos para {class}"
-      }
+      },
+      "everyone": "Todos para o Homeroom",
+      "bring": "Trazer todos para mim",
+      "back": "Voltar às carteiras",
+      "pause": "Pausar telas",
+      "resume": "Retomar telas",
+      "endClass": "Encerrar a aula",
+      "endConfirm": "Encerrar a aula para todos? As carteiras e a área do professor ficam como estão.",
+      "projector": "Abrir a visão de projetor",
+      "started": "A aula está ao vivo. Os alunos veem um aviso para ir à carteira.",
+      "bringing": "Todos estão olhando a área do professor",
+      "backToDesks": "Os alunos voltaram às carteiras",
+      "paused": "Telas pausadas",
+      "resumed": "As telas voltaram",
+      "ended": "Aula encerrada"
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -4649,6 +4663,37 @@
       "deleteOk": "Excluir",
       "deleted": "“{title}” excluído.",
       "undo": "Desfazer"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Minha carteira",
+      "empty": "Ainda não há nada na sua carteira",
+      "emptyText": "Quando seu professor entregar algo, vai aparecer aqui.",
+      "pad": "Rabiscos e contas",
+      "pens": "Cores da caneta",
+      "penColor": "Cor da caneta {n}",
+      "undo": "Desfazer",
+      "clear": "Limpar",
+      "padLabel": "Bloco para rabiscar e fazer contas. Desenhe com o dedo, uma caneta ou o mouse.",
+      "padFull": "Seu bloco está cheio. Limpe para continuar desenhando.",
+      "teacherArea": "Área do professor",
+      "openArea": "Abrir a área do professor",
+      "back": "Voltar à minha carteira",
+      "showing": "Seu professor está mostrando isto",
+      "showingHint": "Você volta para a sua carteira quando o professor terminar.",
+      "eyes": "Olhos no professor",
+      "eyesHint": "Sua tela está pausada por um momento.",
+      "roomTitle": "A sala",
+      "teacherDesk": "Mesa do professor",
+      "you": "você"
+    },
+    "homeroom-area": {
+      "label": "Área do professor",
+      "empty": "Seu professor ainda não colocou nada aqui."
+    },
+    "homeroom-notify": {
+      "text": "Sua turma está no Homeroom.",
+      "go": "Ir para a minha carteira",
+      "close": "Fechar"
     }
   },
   "favorites": {
@@ -14431,7 +14476,23 @@
       "words": "Use palavras gentis, por favor.",
       "personal": "Não inclua dados pessoais como telefones, e-mails ou endereços.",
       "badState": "Não foi possível salvar. Tente de novo.",
-      "tooBig": "A área do professor está cheia demais. Tire algo e tente de novo."
+      "tooBig": "A área do professor está cheia demais. Tire algo e tente de novo.",
+      "badAction": "Não deu certo. Tente de novo.",
+      "notLive": "Primeiro comece a aula com Todos para o Homeroom.",
+      "padFull": "Seu bloco está cheio. Limpe para continuar desenhando."
+    },
+    "live": "Ao vivo",
+    "desk": {
+      "pageTitle": "{class} · Minha carteira",
+      "link": "Minha carteira",
+      "dock": "Menu da carteira",
+      "myDesk": "Minha carteira",
+      "teacherArea": "Área do professor",
+      "library": "Biblioteca",
+      "room": "Ver a sala"
+    },
+    "projector": {
+      "title": "{class} · Projetor"
     }
   }
 }

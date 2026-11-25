@@ -114,3 +114,124 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
   .hr-zoom{bottom:84px;left:8px}
   .hr-mini{display:none}
 }
+
+/* ---- live class (step 1b): the Live dot, Everyone to Homeroom / Bring everyone to me, Pause screens, End class */
+.hr-livedot{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ok);white-space:nowrap}
+.hr-livedot::before{content:'';width:10px;height:10px;border-radius:50%;background:#E5483A;box-shadow:0 0 0 3px color-mix(in srgb,#E5483A 22%,transparent)}
+.hr-livebtns{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hr-livebtns:empty{display:none}
+.hr-chunk.hr-spark{background:var(--spark);border-color:var(--spark);color:#141414;box-shadow:0 3px 0 var(--spark-press)}
+.hr-chunk.hr-spark:hover{background:var(--spark-hover)}
+.hr-chunk.hr-pausebtn.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-menu a.rm-mi{text-decoration:none;color:inherit}
+/* live on a laptop: Arrange seats keeps its icon (it is in the ⋯ menu too) so the top bar stays one row */
+@media (max-width:1500px){.hr-islive .hr-top [data-hr="seats"] .hr-hidephone{display:none}.hr-islive .hr-class{max-width:220px}}
+.hr-menu .hr-end{color:var(--danger)}
+
+/* ---- the student desk (public/js/homeroom-desk.js): a dotted board under floating cards, like the live room */
+main.rm-main>#hd{flex:1 1 auto;min-height:0}
+.hd{position:relative;overflow:hidden;background-color:var(--bg);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 1.2px,transparent 1.3px);background-size:28px 28px}
+.hd [hidden]{display:none!important}
+.hd-float{position:absolute;z-index:20;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;box-shadow:var(--shadow-lg)}
+.hd-top{left:12px;right:12px;top:12px;min-height:56px;display:flex;align-items:center;gap:12px;padding:6px 16px}
+.hd-title{margin:0;font-size:clamp(1rem,2.2vw,1.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-body{position:absolute;left:12px;right:12px;top:80px;bottom:84px;overflow-y:auto;overscroll-behavior:contain}
+.hd-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+.hd-desk{position:relative;display:flex;flex-direction:column;gap:12px;min-height:0;padding:14px;border:4px solid var(--gc,var(--edge));border-radius:24px;background:var(--card);box-shadow:var(--shadow)}
+.hd-deskh{display:flex;align-items:center;gap:8px;margin:0;font-size:1.1rem;font-weight:800;min-width:0}
+.hd-deskh span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-deskh .rm-dot{flex:none;background:var(--c,var(--edge))}
+.hd-emptydesk{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px dashed var(--line);border-radius:16px;background:var(--card-2)}
+.hd-emptydesk p{margin:0;display:flex;flex-direction:column}
+.hd-emptydesk span{color:var(--muted);font-size:.9rem}
+.hd-pad{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px}
+.hd-padbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.hd-padcap{margin:0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hd-grow{flex:1}
+.hd-pens{display:inline-flex;gap:0}
+.hd-pen{width:48px;height:48px;display:grid;place-items:center;border:0;background:transparent;border-radius:50%;cursor:pointer;padding:0}
+.hd-pen i{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px var(--card),0 0 0 3px var(--line)}
+.hd-pen.on i{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--text)}
+.hd-tool{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .9rem var(--font);box-shadow:0 2px 0 var(--line);cursor:pointer}
+.hd-tool:disabled{opacity:.45;cursor:default}
+.hd-padbox{flex:1 1 auto;min-height:180px;position:relative}
+.hd-svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
+/* The pad is a sheet of paper in both themes, so every pen color shows. */
+.hd-paper{fill:var(--brand-cream);stroke:var(--edge);stroke-width:2;stroke-dasharray:10 8}
+.hd-side{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px;border:3px solid #141414;border-radius:20px;background:color-mix(in srgb,var(--spark) 22%,var(--card));align-self:start}
+.hd-wintop{display:flex;align-items:center;gap:8px}
+.hd-areah{flex:1;margin:0;font-size:.9rem;font-weight:800;color:var(--warn-ink)}
+.hd-open{width:48px;height:48px;display:grid;place-items:center;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);cursor:pointer}
+.hd-window{cursor:zoom-in;border-radius:14px;overflow:hidden}
+.hd-dock{left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;padding:6px}
+.hd-dockbtn{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:52px;padding:6px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 .95rem var(--font);text-decoration:none;cursor:pointer;white-space:nowrap}
+.hd-dockbtn:hover{background:var(--hover)}
+.hd-dockbtn[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 2px 0 var(--accent-press)}
+
+/* the read-only teacher's area (public/js/homeroom-area.js), scaled to its box */
+.hr-fit{position:relative;width:100%;overflow:hidden}
+.hr-fit.contain{height:100%}
+.hr-fitin{position:absolute;left:0;top:0;transform-origin:0 0}
+.hr-roarea .rm-in{border-radius:var(--r)}
+.hr-roarea .mp-sticky,.hr-roarea .mp-text{cursor:default}
+.hr-rosticky p{margin:0}
+.hr-roempty{position:absolute;inset:0;display:grid;place-items:center;margin:0;font-size:40px;font-weight:700;color:var(--warn-ink);opacity:.75;text-align:center;padding:0 60px}
+
+/* overlays over the desk: the teacher's area, Bring everyone to me, Pause screens, See the room */
+.hd-over{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--bg)}
+.hd-show{background:color-mix(in srgb,var(--bg) 97%,transparent);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.hd-overtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hd-overcap{flex:1;margin:0;font-size:1.15rem;font-weight:800;text-align:start}
+.hd-show>.hd-overcap{flex:none;text-align:center}
+.hd-overarea{flex:1 1 auto;min-height:0;position:relative}
+.hd-overhint{margin:0;text-align:center;color:var(--muted);font-weight:600}
+.hd-back{min-height:48px}
+.hd-pause{align-items:center;justify-content:center;text-align:center;background:var(--accent-soft)}
+.hd-pausein{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:520px}
+.hd-pausein h2{margin:0;font-size:clamp(2rem,6vw,3.4rem);line-height:1.1}
+.hd-pausein p{margin:0;font-size:1.1rem;color:var(--text-2)}
+.hd-room{overflow-y:auto}
+.hd-roombox{position:relative;flex:none;width:100%}
+.hd-front{position:absolute;display:flex;align-items:flex-start;justify-content:flex-end;padding:6px 10px;border-radius:14px;background:color-mix(in srgb,var(--spark) 18%,var(--card));box-shadow:inset 0 0 0 2px var(--spark-press);font-size:.8rem;font-weight:800;color:var(--warn-ink)}
+.hd-tdesk{position:absolute;display:grid;place-items:center;border-radius:10px;background:var(--text);color:var(--card);font-size:.75rem;font-weight:800;overflow:hidden;white-space:nowrap}
+.hd-rdesk{position:absolute;border:3px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.hd-rdesk.me{border-color:var(--gc,var(--text));box-shadow:0 0 0 3px var(--text)}
+.hd-rname{position:absolute;inset-inline-start:2px;bottom:calc(100% + 2px);max-width:calc(100% + 30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}
+/* a phone: the desks in seating order as a grid (the teacher's area across the top) */
+.hd-roombox.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:30px 12px;padding-top:4px}
+.hd-roombox.grid .hd-front{position:static;grid-column:1/-1;order:0;min-height:44px;align-items:center;justify-content:center}
+.hd-roombox.grid .hd-tdesk{position:static;grid-column:1/-1;order:1;justify-self:center;min-height:36px;padding:0 16px}
+.hd-roombox.grid .hd-rdesk{position:relative;min-height:56px}
+
+/* covered by an overlay: the desk underneath can't be drawn on by accident */
+.hd-covered .hd-body{visibility:hidden}
+
+/* portrait tablets and narrow laptops: one column (the teacher's area on top), scrolling up and down inside the desk */
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  .hd-grid{grid-template-columns:minmax(0,1fr);height:auto}
+  .hd-padbox{flex:none;min-height:0;aspect-ratio:3/2;max-height:34vh;max-height:34dvh}
+  /* the teacher's area first: a short strip, so the desk and its pad still fit under it */
+  .hd-side{align-self:stretch;order:-1;padding:8px 12px}
+}
+/* phones: smaller gutters, the dock's four buttons share the width */
+@media (max-width:600px){
+  .hd-top{left:8px;right:8px;top:8px;min-height:48px;padding:4px 12px}
+  .hd-body{left:8px;right:8px;top:64px;bottom:80px}
+  .hd-desk{padding:10px;border-width:3px}
+  .hd-dock{left:8px;right:8px;bottom:8px;gap:4px;padding:4px}
+  .hd-dock .hd-grow{display:none}
+  .hd-dockbtn{flex:1 1 0;min-width:0;flex-direction:column;gap:2px;padding:4px 2px;font-size:.72rem;line-height:1.1;min-height:56px;justify-content:center;white-space:normal;text-align:center}
+  .hd-dockbtn span{max-width:100%;overflow-wrap:anywhere}
+  .hd-tool span{display:none}
+  .hd-tool{padding:0 12px}
+  .hd-pen{width:44px;height:48px}
+  .hd-over{padding:10px}
+}
+
+/* ---- the projector view: the teacher's area as big as the screen, the class's name, the Live dot; nothing else */
+body.hr-projpage{background:var(--bg)}
+.hr-proj{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:16px 24px 24px}
+.hr-projtop{display:flex;align-items:center;gap:16px}
+.hr-projname{margin:0;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-projtop .hr-livedot{font-size:1.2rem}
+.hr-projarea{flex:1 1 auto;min-height:0;position:relative}

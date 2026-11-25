@@ -278,6 +278,10 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
   </details>`;
 }
 
+/** A feature's script on every full page for the people it is for: fn(req) -> '/js/x.js' or null. Registered by the
+ *  feature's routes (routes/homeroom.js), so this module imports none of them. */
+const everyPage = [];
+export const onEveryPage = fn => { if (!everyPage.includes(fn)) everyPage.push(fn); };
 export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false, companion = null } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
@@ -371,6 +375,8 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   // The greeting uses the name the site already shows this teacher (their own, from the header): the first word.
   if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
   if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
+  // Scripts a feature adds to every page for some people (onEveryPage: Homeroom's "Your class is in Homeroom" prompt).
+  if (u && !u.is_guest && !bare) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
