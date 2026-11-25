@@ -11277,7 +11277,10 @@ action). Tests: `tests/unit/manip-playthrough-fixes-browser.test.js`, and the pl
 - **All 18 videos on.** `TUTORIALS` lists every tool; the files are in `public/video/manip/` (about 30 MB, each under
   2.5 MB). Re-recorded after these fixes: number lines, base ten blocks (the tenth's shape), fraction tiles (its Labels
   step now shows the tiles on the board relabel), coordinate grid (x-axis numbers), money (a Totals off step), and the
-  tools whose scenes or pictures changed with the fixes (listed in the branch's report).
+  tools whose scenes or pictures changed with the fixes: pattern blocks (the dragged-in mat is locked), geoboard (the
+  color buttons), rekenreks, fraction circles and number rods (Copy), clock, hundred board, bar models and place value
+  disks (the palette's names in their scenes). The rest were played through again and kept.
+- **A text's move or resize** sets the same flag, so its click is not a tap on the board.
 
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
