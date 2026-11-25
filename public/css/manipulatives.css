@@ -158,11 +158,29 @@
 .mp-cell{aspect-ratio:1;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--text);font:700 clamp(.65rem,2.6vw,.95rem) var(--font);cursor:pointer;padding:0}
 .mp-cell.mult{background:#CE93D8;color:#141414}
 .mp-cell.on{background:var(--current);color:var(--on-current)}
-.mp-circles{display:flex;flex-wrap:wrap;gap:20px}
-.mp-circle{position:relative}
-.mp-circle>button{background:none;border:0;padding:0;cursor:pointer}
 .mp-x{width:36px;height:36px;border-radius:50%;border:0;background:var(--current);color:var(--on-current);font-weight:800;cursor:pointer}
-.mp-circle .mp-x{position:absolute;top:-4px;inset-inline-end:-4px}
+/* Fraction circles: a set of circles (wholes), each with its pieces edge to edge from 12 o'clock and its sum under it. */
+.mp-fc{display:flex;flex-direction:column;gap:6px}
+.mp-fcgrid{display:grid;grid-template-columns:repeat(3,160px);gap:10px 20px;justify-content:center}
+.mp-fcc{display:flex;flex-direction:column;align-items:center;gap:2px;height:190px;border-radius:18px;transition:background-color .12s}
+.mp-fcsvg{display:block;overflow:visible}
+.mp-fcbg{fill:color-mix(in srgb,var(--line) 22%,var(--card));stroke:var(--muted);stroke-width:2;stroke-dasharray:5 4;cursor:pointer}
+.mp-fcsel{pointer-events:none}
+.mp-fcring{fill:none;stroke:var(--current);stroke-width:3}
+.mp-fcp{cursor:grab;touch-action:none;outline:none}
+.mp-fcp:focus-visible path,.mp-fcp:focus-visible circle{stroke:var(--text);stroke-width:4}
+.mp-fclab{fill:#fff;stroke:rgba(0,0,0,.5);stroke-width:3;paint-order:stroke;pointer-events:none}
+.mp-fcsum{min-height:28px;padding:0 12px;border-radius:999px;border:2px solid transparent;background:none;color:var(--text);font:800 1rem var(--font);cursor:pointer}
+.mp-fcsum.full{background:#1F9D63;color:#fff}
+.mp-fcsum.on{border-color:var(--current)}
+.mp-fcc.drop-ok{background:color-mix(in srgb,#1F9D63 16%,transparent)}
+.mp-fcc.drop-no{background:color-mix(in srgb,#E53935 14%,transparent)}
+.mp-fcp.dragged{opacity:.35}
+.mp-fcfoot{display:flex;align-items:center;justify-content:center;gap:12px;min-height:46px;flex-wrap:wrap;text-align:center}
+.mp-fcfoot p{margin:0}
+.mp-fcfoot .mp-empty{max-width:none}
+.mp-fcdel{background:var(--text);color:var(--bg);border-color:var(--text)}
+.mp-fcghost{position:fixed;width:84px;height:84px;pointer-events:none;z-index:1000;filter:drop-shadow(0 6px 10px rgba(0,0,0,.3))}
 .mp-nl{min-width:520px;width:100%;height:auto;cursor:pointer}
 .mp-bars{display:flex;flex-direction:column;gap:18px;max-width:760px}
 .mp-barname{font-weight:800;margin:0 0 4px}
