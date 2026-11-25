@@ -2039,6 +2039,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Drag to move this text",
+      "resize": "Drag to change the size of this box",
+      "smaller": "Smaller text",
+      "bigger": "Bigger text"
+    },
+    "homeroom": {
+      "wholeClass": "Whole class · {count}",
+      "editGroups": "Groups",
+      "groupsTitle": "Groups",
+      "groupsLead": "Name your groups and pick a color for each. A desk's border shows its group's color.",
+      "groups": {
+        "stretch": "Stretch",
+        "onTrack": "On track",
+        "building": "Building",
+        "unnamed": "New group"
+      },
+      "groupName": "Name of group {n}",
+      "groupColor": "Color of group {n}",
+      "colorN": "Color {n}",
+      "removeGroup": "Remove {name}",
+      "addGroup": "Add a group",
+      "whoIsIn": "Who is in each group",
+      "noGroup": "No group",
+      "save": "Save",
+      "needName": "Give every group a name.",
+      "groupsSaved": "Groups saved",
+      "deskOf": "{name}'s desk",
+      "emptyDesk": "Empty desk",
+      "teacherDesk": "Teacher's desk",
+      "noStudents": "No students in this class yet.",
+      "addStudents": "Add students",
+      "shapes": {
+        "rect": "Square",
+        "circle": "Circle",
+        "line": "Line"
+      },
+      "shapeDelete": "Delete this shape",
+      "hintMove": "Pick a tool, then draw or tap in the teacher's area.",
+      "hintDraw": "Draw in the teacher's area. Tap the tool again when you're done.",
+      "tooMany": "There's no room for more of those in the teacher's area.",
+      "arrange": "Arrange seats",
+      "menuSoon": "Join code, projector view and End class come next.",
+      "seats": {
+        "lead": "Match your real room:",
+        "rows": "Rows",
+        "pods": "Tables of 4",
+        "u": "U-shape",
+        "circle": "Circle",
+        "hint": "or drag a desk where it really sits",
+        "done": "Done",
+        "saved": "Seating saved for {class}"
+      }
+    },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
       "failed": "Something went wrong. Please try again.",
@@ -3664,11 +3718,7 @@
       "text": {
         "label": "Text on the board",
         "ph": "Type here…",
-        "delete": "Delete this text",
-        "move": "Drag to move this text",
-        "resize": "Drag to change the size of this box",
-        "smaller": "Smaller text",
-        "bigger": "Bigger text"
+        "delete": "Delete this text"
       },
       "obj": {
         "resize": "Drag to resize",
@@ -15053,6 +15103,51 @@
       "repaintSome": "Pictures to paint again: {count} now, {more} more tomorrow (today's pictures are used up).",
       "painting": "Painting pictures",
       "repaintAll": "Paint all pictures again"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Switch class",
+    "arrange": "Arrange seats",
+    "more": "More",
+    "boardLabel": "Homeroom board. Drag to move around, scroll or pinch to zoom.",
+    "loading": "Setting up the room…",
+    "noscript": "Homeroom needs JavaScript turned on.",
+    "tabs": {
+      "label": "Class views",
+      "homeroom": "Homeroom",
+      "classroom": "Classroom",
+      "dashboard": "Dashboard"
+    },
+    "panel": {
+      "label": "Teacher's desk",
+      "handOut": "Hand out to",
+      "handOutSoon": "Handing out to desks comes next. For now, set up your seats and groups.",
+      "myLessons": "My lessons",
+      "noLessons": "Lessons you build in Homeroom will show here.",
+      "myGames": "Games I built",
+      "noGames": "Games you build show here.",
+      "oomba": "Oomba games and tools",
+      "manipulatives": "Manipulatives",
+      "figures": "Figures",
+      "reading": "Reading",
+      "storyLibrary": "Story Library",
+      "flow": "Class flow",
+      "brainBreak": "Brain break",
+      "note": "Note to the class",
+      "timer": "Timer",
+      "board": "Board tools"
+    },
+    "errors": {
+      "notFound": "This Homeroom isn't available.",
+      "badPreset": "Pick Rows, Tables of 4, U-shape or Circle.",
+      "badSeats": "Those seats couldn't be saved. Try again.",
+      "badGroups": "Those groups couldn't be saved. Try again.",
+      "groupName": "Give every group a name.",
+      "words": "Please use kind words.",
+      "personal": "Please leave out personal details like phone numbers, emails and addresses.",
+      "badState": "That couldn't be saved. Try again.",
+      "tooBig": "The teacher's area is too full. Remove something and try again."
     }
   }
 }

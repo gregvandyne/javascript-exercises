@@ -2330,3 +2330,9 @@ img.fx[src*="satellite-antenna"]{background:radial-gradient(circle at 50% 52%,#B
 img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],img.fx[src*="/pirate-flag"],img.fx[src*="/vertical-traffic-light"],img.fx[src*="/mobile-phone"],img.fx[src*="flat/woman-student"],img.fx[src*="flat/student"]{background:radial-gradient(circle at 50% 52%,var(--fx-plate) 0 56%,transparent 58%);border-radius:50%}
 /* Two-column panels on the marketing pages (/teachers, /parents): an odd last panel spans both columns, so none is left alone. */
 @media (min-width:821px){.lp-cols>:last-child:nth-child(odd){grid-column:1/-1}}
+/* Homeroom's class views (routes/homeroom.js homeroomTabs): Homeroom | Classroom | Dashboard, a calm pill over the class
+   page for Homeroom teachers, and in Homeroom's own top bar (public/css/homeroom.css). */
+.hr-tabs{display:inline-flex;gap:4px;background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:4px;max-width:100%;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.hr-tabs a{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;font-weight:800;color:var(--muted);text-decoration:none;white-space:nowrap}
+.hr-tabs a:hover{background:var(--hover);color:var(--text)}
+.hr-tabs a[aria-current="page"]{background:var(--text);color:var(--card)}

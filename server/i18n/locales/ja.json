@@ -2038,6 +2038,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "ドラッグしてこの文字を動かす",
+      "resize": "ドラッグしてこの枠の大きさを変える",
+      "smaller": "文字を小さく",
+      "bigger": "文字を大きく"
+    },
+    "homeroom": {
+      "wholeClass": "クラス全員 · {count}",
+      "editGroups": "グループ",
+      "groupsTitle": "グループ",
+      "groupsLead": "グループに名前を付け、それぞれの色を選びましょう。机の枠がグループの色になります。",
+      "groups": {
+        "stretch": "発展",
+        "onTrack": "順調",
+        "building": "基礎固め",
+        "unnamed": "新しいグループ"
+      },
+      "groupName": "グループ {n} の名前",
+      "groupColor": "グループ {n} の色",
+      "colorN": "色 {n}",
+      "removeGroup": "{name} を削除",
+      "addGroup": "グループを追加",
+      "whoIsIn": "各グループのメンバー",
+      "noGroup": "グループなし",
+      "save": "保存",
+      "needName": "すべてのグループに名前を付けてください。",
+      "groupsSaved": "グループを保存しました",
+      "deskOf": "{name} の机",
+      "emptyDesk": "空の机",
+      "teacherDesk": "先生の机",
+      "noStudents": "このクラスにはまだ生徒がいません。",
+      "addStudents": "生徒を追加",
+      "shapes": {
+        "rect": "四角",
+        "circle": "円",
+        "line": "線"
+      },
+      "shapeDelete": "この図形を削除",
+      "hintMove": "ツールを選んで、先生のエリアに描くかタップしてください。",
+      "hintDraw": "先生のエリアに描きます。終わったらもう一度ツールをタップします。",
+      "tooMany": "先生のエリアにはこれ以上入りません。",
+      "arrange": "座席を配置",
+      "menuSoon": "参加コード、プロジェクター表示、授業の終了は次のステップで追加されます。",
+      "seats": {
+        "lead": "実際の教室に合わせる：",
+        "rows": "列",
+        "pods": "4人テーブル",
+        "u": "コの字",
+        "circle": "円",
+        "hint": "または机を実際の場所にドラッグ",
+        "done": "完了",
+        "saved": "{class} の座席を保存しました"
+      }
+    },
     "stories": {
       "needIdea": "まずアイデアを書いてね（少しの言葉でだいじょうぶ）。",
       "failed": "うまくいきませんでした。もう一度ためしてね。",
@@ -3423,12 +3477,6 @@
         "lockedHint": "ロックしました。長押しで解除できます。",
         "pieceLocked": "ピース {label}（ロック中）",
         "objLocked": "{name}（ロック中）"
-      },
-      "text": {
-        "move": "ドラッグしてこの文字を動かす",
-        "resize": "ドラッグしてこの枠の大きさを変える",
-        "smaller": "文字を小さく",
-        "bigger": "文字を大きく"
       },
       "boards": {
         "title": "マイボード",
@@ -14337,6 +14385,51 @@
       "repaintSome": "描き直す絵：今{count}枚、明日あと{more}枚（今日の絵は使い切りました）。",
       "painting": "絵を描いています",
       "repaintAll": "すべての絵をかき直す"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "クラスを切り替える",
+    "arrange": "座席を配置",
+    "more": "その他",
+    "boardLabel": "Homeroom のボード。ドラッグで移動、スクロールやピンチでズームします。",
+    "loading": "教室を準備しています…",
+    "noscript": "Homeroom には JavaScript が必要です。",
+    "tabs": {
+      "label": "クラスの表示",
+      "homeroom": "Homeroom",
+      "classroom": "クラスルーム",
+      "dashboard": "ダッシュボード"
+    },
+    "panel": {
+      "label": "先生の机",
+      "handOut": "配布先",
+      "handOutSoon": "机への配布は次のステップで追加されます。今は座席とグループを整えましょう。",
+      "myLessons": "自分のレッスン",
+      "noLessons": "Homeroom で作ったレッスンがここに表示されます。",
+      "myGames": "自分で作ったゲーム",
+      "noGames": "作ったゲームがここに表示されます。",
+      "oomba": "Oomba のゲームとツール",
+      "manipulatives": "操作教材",
+      "figures": "図形",
+      "reading": "読書",
+      "storyLibrary": "おはなしライブラリー",
+      "flow": "授業の流れ",
+      "brainBreak": "ブレインブレイク",
+      "note": "クラスへのメモ",
+      "timer": "タイマー",
+      "board": "ボードのツール"
+    },
+    "errors": {
+      "notFound": "この Homeroom は利用できません。",
+      "badPreset": "列、4人テーブル、コの字、円のどれかを選んでください。",
+      "badSeats": "座席を保存できませんでした。もう一度お試しください。",
+      "badGroups": "グループを保存できませんでした。もう一度お試しください。",
+      "groupName": "すべてのグループに名前を付けてください。",
+      "words": "やさしい言葉を使ってください。",
+      "personal": "電話番号、メールアドレス、住所などの個人情報は入れないでください。",
+      "badState": "保存できませんでした。もう一度お試しください。",
+      "tooBig": "先生のエリアがいっぱいです。何かを消してからもう一度お試しください。"
     }
   }
 }

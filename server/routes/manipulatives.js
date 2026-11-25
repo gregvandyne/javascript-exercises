@@ -75,7 +75,7 @@ router.get('/manipulatives', (req, res) => {
   // "Teaching tools: Manipulatives · Figures" for someone who can open both (routes/figures.js).
   const tools = teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat'], bodyClass: 'manip-page',
+    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: 'manip-page',
     body: html`${tools}${jsonData('page-data', { role: req.manipRole })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
@@ -87,7 +87,7 @@ router.get('/manipulatives/boards', (req, res, next) => {
   if (req.manipRole !== 'host') return next('router');
   const t = req.t, tools = teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.boardsTitle'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat'], bodyClass: 'manip-page',
+    title: t('manip.boardsTitle'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: 'manip-page',
     body: html`${tools}${jsonData('page-data', { role: req.manipRole, view: 'boards' })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });

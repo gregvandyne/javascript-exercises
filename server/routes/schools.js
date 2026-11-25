@@ -44,6 +44,7 @@ import { emailInvitesPanel } from './staff-invites.js';
 import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
+import { homeroomTabs } from './homeroom.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -900,7 +901,9 @@ export function classHeader(req, c, active) {
   // The first tab is the class's assigned games (games, not lessons); its key stays 'lessons' (links and ?tab= unchanged).
   const icon = { lessons: '🎮', progress: '📊', standards: '🧭', games: '🎮', students: '👩‍🎓', settings: '⚙️' };
   const badge = { progress: toRead ? html` <span class="tabbadge" title="${t('progress.gradebook.toRead', { count: toRead })}">${toRead}</span>` : '', students: requests ? html` <span class="tabbadge" title="${t('school.requests.title', { count: requests })}">${requests}</span>` : '' };
-  return html`
+  // Homeroom teachers (routes/homeroom.js homeroomTabs): Homeroom | Classroom | Dashboard over the class; everything
+  // under it (this header and its tabs) is the Classroom tab, unchanged. Nobody else sees the row.
+  return html`${homeroomTabs(req, c, 'classroom')}
   <div class="pagehead classhead"><div><span class="small muted classschool">${schoolLink(req, s)}</span><h1>${c.name}</h1>
     <p class="muted">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: students })].filter(Boolean).join(' · ')}</p></div>
     ${chip || host || dash ? html`<div class="row classacts">${chip}${dash ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.teacher')}</a>` : ''}${host ? html`<a class="btn btn-primary" href="/live?class=${c.id}">${ico('📡', { size: 18 })} ${t('live.entry.host')}</a>` : ''}</div>` : ''}</div>

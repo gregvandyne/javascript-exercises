@@ -2039,6 +2039,60 @@
     }
   },
   "js": {
+    "board-ann": {
+      "move": "Ziehen, um diesen Text zu verschieben",
+      "resize": "Ziehen, um die Größe dieses Felds zu ändern",
+      "smaller": "Kleinere Schrift",
+      "bigger": "Größere Schrift"
+    },
+    "homeroom": {
+      "wholeClass": "Ganze Klasse · {count}",
+      "editGroups": "Gruppen",
+      "groupsTitle": "Gruppen",
+      "groupsLead": "Benennen Sie Ihre Gruppen und wählen Sie für jede eine Farbe. Der Rand eines Tisches zeigt die Farbe seiner Gruppe.",
+      "groups": {
+        "stretch": "Vertiefung",
+        "onTrack": "Im Plan",
+        "building": "Aufbau",
+        "unnamed": "Neue Gruppe"
+      },
+      "groupName": "Name von Gruppe {n}",
+      "groupColor": "Farbe von Gruppe {n}",
+      "colorN": "Farbe {n}",
+      "removeGroup": "{name} entfernen",
+      "addGroup": "Gruppe hinzufügen",
+      "whoIsIn": "Wer ist in welcher Gruppe",
+      "noGroup": "Keine Gruppe",
+      "save": "Speichern",
+      "needName": "Geben Sie jeder Gruppe einen Namen.",
+      "groupsSaved": "Gruppen gespeichert",
+      "deskOf": "Tisch von {name}",
+      "emptyDesk": "Leerer Tisch",
+      "teacherDesk": "Lehrerpult",
+      "noStudents": "Noch keine Schüler in dieser Klasse.",
+      "addStudents": "Schüler hinzufügen",
+      "shapes": {
+        "rect": "Viereck",
+        "circle": "Kreis",
+        "line": "Linie"
+      },
+      "shapeDelete": "Diese Form löschen",
+      "hintMove": "Wählen Sie ein Werkzeug und zeichnen oder tippen Sie dann im Lehrerbereich.",
+      "hintDraw": "Zeichnen Sie im Lehrerbereich. Tippen Sie zum Beenden noch einmal auf das Werkzeug.",
+      "tooMany": "Im Lehrerbereich ist dafür kein Platz mehr.",
+      "arrange": "Sitzplan einrichten",
+      "menuSoon": "Beitrittscode, Beameransicht und Stunde beenden kommen als Nächstes.",
+      "seats": {
+        "lead": "Wie in Ihrem echten Raum:",
+        "rows": "Reihen",
+        "pods": "Vierertische",
+        "u": "U-Form",
+        "circle": "Kreis",
+        "hint": "oder ziehen Sie einen Tisch dorthin, wo er wirklich steht",
+        "done": "Fertig",
+        "saved": "Sitzplan für {class} gespeichert"
+      }
+    },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
       "failed": "Etwas ist schiefgegangen. Versuch es noch einmal.",
@@ -3424,12 +3478,6 @@
         "lockedHint": "Gesperrt. Lange drücken zum Entsperren.",
         "pieceLocked": "Teil {label}, gesperrt",
         "objLocked": "{name}, gesperrt"
-      },
-      "text": {
-        "move": "Ziehen, um diesen Text zu verschieben",
-        "resize": "Ziehen, um die Größe dieses Felds zu ändern",
-        "smaller": "Kleinere Schrift",
-        "bigger": "Größere Schrift"
       },
       "boards": {
         "title": "Meine Tafeln",
@@ -14338,6 +14386,51 @@
       "repaintSome": "Neu zu malende Bilder: {count} jetzt, {more} weitere morgen (die Bilder für heute sind aufgebraucht).",
       "painting": "Bilder werden gemalt",
       "repaintAll": "Alle Bilder neu malen"
+    }
+  },
+  "homeroom": {
+    "pageTitle": "{class} · Homeroom",
+    "switchClass": "Klasse wechseln",
+    "arrange": "Sitzplan einrichten",
+    "more": "Mehr",
+    "boardLabel": "Homeroom-Tafel. Ziehen zum Verschieben, scrollen oder mit zwei Fingern zoomen.",
+    "loading": "Der Raum wird vorbereitet…",
+    "noscript": "Homeroom braucht JavaScript.",
+    "tabs": {
+      "label": "Ansichten der Klasse",
+      "homeroom": "Homeroom",
+      "classroom": "Klassenraum",
+      "dashboard": "Dashboard"
+    },
+    "panel": {
+      "label": "Lehrerpult",
+      "handOut": "Austeilen an",
+      "handOutSoon": "Austeilen an die Tische kommt als Nächstes. Richten Sie vorerst Sitzplan und Gruppen ein.",
+      "myLessons": "Meine Stunden",
+      "noLessons": "Stunden, die Sie in Homeroom erstellen, erscheinen hier.",
+      "myGames": "Meine Spiele",
+      "noGames": "Spiele, die Sie bauen, erscheinen hier.",
+      "oomba": "Oomba-Spiele und -Werkzeuge",
+      "manipulatives": "Arbeitsmittel",
+      "figures": "Figuren",
+      "reading": "Lesen",
+      "storyLibrary": "Geschichtenbibliothek",
+      "flow": "Ablauf der Stunde",
+      "brainBreak": "Bewegungspause",
+      "note": "Notiz an die Klasse",
+      "timer": "Timer",
+      "board": "Tafelwerkzeuge"
+    },
+    "errors": {
+      "notFound": "Dieser Homeroom ist nicht verfügbar.",
+      "badPreset": "Wählen Sie Reihen, Vierertische, U-Form oder Kreis.",
+      "badSeats": "Der Sitzplan konnte nicht gespeichert werden. Bitte erneut versuchen.",
+      "badGroups": "Die Gruppen konnten nicht gespeichert werden. Bitte erneut versuchen.",
+      "groupName": "Geben Sie jeder Gruppe einen Namen.",
+      "words": "Bitte freundliche Worte verwenden.",
+      "personal": "Bitte keine persönlichen Angaben wie Telefonnummern, E-Mail-Adressen oder Anschriften.",
+      "badState": "Das konnte nicht gespeichert werden. Bitte erneut versuchen.",
+      "tooBig": "Der Lehrerbereich ist zu voll. Entfernen Sie etwas und versuchen Sie es erneut."
     }
   }
 }
