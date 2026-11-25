@@ -2081,7 +2081,7 @@
       "hintDraw": "Zeichnen Sie im Lehrerbereich. Tippen Sie zum Beenden noch einmal auf das Werkzeug.",
       "tooMany": "Im Lehrerbereich ist dafür kein Platz mehr.",
       "arrange": "Sitzplan einrichten",
-      "menuSoon": "Beitrittscode, Beameransicht und Stunde beenden kommen als Nächstes.",
+      "menuSoon": "Beitrittscode und schnelle Anmeldung kommen als Nächstes.",
       "seats": {
         "lead": "Wie in Ihrem echten Raum:",
         "rows": "Reihen",
@@ -2091,7 +2091,21 @@
         "hint": "oder ziehen Sie einen Tisch dorthin, wo er wirklich steht",
         "done": "Fertig",
         "saved": "Sitzplan für {class} gespeichert"
-      }
+      },
+      "everyone": "Alle ins Homeroom",
+      "bring": "Alle zu mir holen",
+      "back": "Zurück an die Plätze",
+      "pause": "Bildschirme pausieren",
+      "resume": "Bildschirme fortsetzen",
+      "endClass": "Stunde beenden",
+      "endConfirm": "Die Stunde für alle beenden? Die Plätze und der Bereich der Lehrkraft bleiben, wie sie sind.",
+      "projector": "Beameransicht öffnen",
+      "started": "Die Stunde läuft. Die Schüler sehen einen Hinweis, an ihren Platz zu gehen.",
+      "bringing": "Alle sehen den Bereich der Lehrkraft",
+      "backToDesks": "Die Schüler sind wieder an ihren Plätzen",
+      "paused": "Bildschirme pausiert",
+      "resumed": "Bildschirme sind wieder an",
+      "ended": "Stunde beendet"
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -4649,6 +4663,37 @@
       "deleteOk": "Löschen",
       "deleted": "„{title}“ gelöscht.",
       "undo": "Rückgängig"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mein Platz",
+      "empty": "Noch nichts auf deinem Platz",
+      "emptyText": "Wenn deine Lehrkraft etwas austeilt, landet es hier.",
+      "pad": "Kritzeln und Rechnen",
+      "pens": "Stiftfarben",
+      "penColor": "Stiftfarbe {n}",
+      "undo": "Rückgängig",
+      "clear": "Löschen",
+      "padLabel": "Block zum Kritzeln und Rechnen. Zeichne mit dem Finger, einem Stift oder der Maus.",
+      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen.",
+      "teacherArea": "Bereich der Lehrkraft",
+      "openArea": "Bereich der Lehrkraft öffnen",
+      "back": "Zurück zu meinem Platz",
+      "showing": "Deine Lehrkraft zeigt dir das",
+      "showingHint": "Du kommst an deinen Platz zurück, wenn deine Lehrkraft fertig ist.",
+      "eyes": "Augen zur Lehrkraft",
+      "eyesHint": "Dein Bildschirm ist kurz pausiert.",
+      "roomTitle": "Der Raum",
+      "teacherDesk": "Lehrerpult",
+      "you": "du"
+    },
+    "homeroom-area": {
+      "label": "Bereich der Lehrkraft",
+      "empty": "Deine Lehrkraft hat hier noch nichts hingelegt."
+    },
+    "homeroom-notify": {
+      "text": "Deine Klasse ist im Homeroom.",
+      "go": "Zu meinem Platz",
+      "close": "Schließen"
     }
   },
   "favorites": {
@@ -14430,7 +14475,23 @@
       "words": "Bitte freundliche Worte verwenden.",
       "personal": "Bitte keine persönlichen Angaben wie Telefonnummern, E-Mail-Adressen oder Anschriften.",
       "badState": "Das konnte nicht gespeichert werden. Bitte erneut versuchen.",
-      "tooBig": "Der Lehrerbereich ist zu voll. Entfernen Sie etwas und versuchen Sie es erneut."
+      "tooBig": "Der Lehrerbereich ist zu voll. Entfernen Sie etwas und versuchen Sie es erneut.",
+      "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
+      "notLive": "Starte die Stunde zuerst mit „Alle ins Homeroom“.",
+      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen."
+    },
+    "live": "Live",
+    "desk": {
+      "pageTitle": "{class} · Mein Platz",
+      "link": "Mein Platz",
+      "dock": "Platz-Menü",
+      "myDesk": "Mein Platz",
+      "teacherArea": "Bereich der Lehrkraft",
+      "library": "Bibliothek",
+      "room": "Den Raum ansehen"
+    },
+    "projector": {
+      "title": "{class} · Beamer"
     }
   }
 }

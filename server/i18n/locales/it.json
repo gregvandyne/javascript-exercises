@@ -2081,7 +2081,7 @@
       "hintDraw": "Disegna nell’area dell’insegnante. Tocca di nuovo lo strumento quando hai finito.",
       "tooMany": "Nell’area dell’insegnante non c’è più posto per altri.",
       "arrange": "Disponi i posti",
-      "menuSoon": "Codice di accesso, vista proiettore e Termina lezione arrivano presto.",
+      "menuSoon": "Il codice di accesso e l’accesso rapido arrivano presto.",
       "seats": {
         "lead": "Come la tua aula vera:",
         "rows": "File",
@@ -2091,7 +2091,21 @@
         "hint": "oppure trascina un banco dove si trova davvero",
         "done": "Fatto",
         "saved": "Posti salvati per {class}"
-      }
+      },
+      "everyone": "Tutti in Homeroom",
+      "bring": "Porta tutti da me",
+      "back": "Tornate ai banchi",
+      "pause": "Metti in pausa gli schermi",
+      "resume": "Riattiva gli schermi",
+      "endClass": "Termina lezione",
+      "endConfirm": "Terminare la lezione per tutti? I banchi e l’area dell’insegnante restano come sono.",
+      "projector": "Apri la vista proiettore",
+      "started": "La lezione è in diretta. Gli studenti vedono un invito ad andare al loro banco.",
+      "bringing": "Tutti stanno guardando l’area dell’insegnante",
+      "backToDesks": "Gli studenti sono tornati ai loro banchi",
+      "paused": "Schermi in pausa",
+      "resumed": "Gli schermi sono tornati",
+      "ended": "Lezione terminata"
     },
     "stories": {
       "needIdea": "Prima scrivi la tua idea (bastano poche parole).",
@@ -4649,6 +4663,37 @@
       "deleteOk": "Elimina",
       "deleted": "«{title}» eliminato.",
       "undo": "Annulla"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Il mio banco",
+      "empty": "Ancora niente sul tuo banco",
+      "emptyText": "Quando l’insegnante distribuisce qualcosa, arriva qui.",
+      "pad": "Disegni e calcoli",
+      "pens": "Colori della penna",
+      "penColor": "Colore della penna {n}",
+      "undo": "Annulla",
+      "clear": "Cancella",
+      "padLabel": "Blocco per disegnare e fare i calcoli. Disegna con il dito, una penna o il mouse.",
+      "padFull": "Il tuo blocco è pieno. Cancellalo per continuare a disegnare.",
+      "teacherArea": "Area dell’insegnante",
+      "openArea": "Apri l’area dell’insegnante",
+      "back": "Torna al mio banco",
+      "showing": "L’insegnante ti sta mostrando questo",
+      "showingHint": "Tornerai al tuo banco quando l’insegnante avrà finito.",
+      "eyes": "Occhi sull’insegnante",
+      "eyesHint": "Il tuo schermo è in pausa per un momento.",
+      "roomTitle": "L’aula",
+      "teacherDesk": "Cattedra",
+      "you": "tu"
+    },
+    "homeroom-area": {
+      "label": "Area dell’insegnante",
+      "empty": "L’insegnante non ha ancora messo niente qui."
+    },
+    "homeroom-notify": {
+      "text": "La tua classe è in Homeroom.",
+      "go": "Vai al mio banco",
+      "close": "Chiudi"
     }
   },
   "favorites": {
@@ -14430,7 +14475,23 @@
       "words": "Usa parole gentili, per favore.",
       "personal": "Non inserire dati personali come numeri di telefono, email o indirizzi.",
       "badState": "Non è stato possibile salvare. Riprova.",
-      "tooBig": "L’area dell’insegnante è troppo piena. Togli qualcosa e riprova."
+      "tooBig": "L’area dell’insegnante è troppo piena. Togli qualcosa e riprova.",
+      "badAction": "Non ha funzionato. Riprova.",
+      "notLive": "Prima avvia la lezione con Tutti in Homeroom.",
+      "padFull": "Il tuo blocco è pieno. Cancellalo per continuare a disegnare."
+    },
+    "live": "In diretta",
+    "desk": {
+      "pageTitle": "{class} · Il mio banco",
+      "link": "Il mio banco",
+      "dock": "Menu del banco",
+      "myDesk": "Il mio banco",
+      "teacherArea": "Area dell’insegnante",
+      "library": "Biblioteca",
+      "room": "Guarda l’aula"
+    },
+    "projector": {
+      "title": "{class} · Proiettore"
     }
   }
 }

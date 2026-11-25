@@ -7,8 +7,11 @@
 //   - Arrange seats: Rows, Tables of 4, U-shape, Circle, then drag any desk (or move it with the arrow keys); saved per
 //     class (POST .../seats);
 //   - groups the teacher names, with a color each (POST .../groups).
-// Handouts, live class, plans and cursors come in later steps (docs/homeroom.md "Build order").
-import { t, api, toast, esc, pageData, sheet } from '/js/app.js';
+//   - live class (step 1b): Everyone to Homeroom starts it (students get a prompt to go to their desks), then Bring
+//     everyone to me (every desk shows the teacher's area) and Pause screens ("Eyes on your teacher" on every desk);
+//     End class and the projector view are in the ⋯ menu (POST .../live; docs/decisions.md "Homeroom, step 1b").
+// Handouts, plans and cursors come in later steps (docs/homeroom.md "Build order").
+import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
@@ -29,7 +32,7 @@ const H = {
   students: room.students || [], seats: room.seats || {}, preset: room.preset || 'rows', groups: room.groups || [], members: room.members || {},
   ann: { notes: [], texts: [], strokes: [], ...((room.area || {}).__ann || {}) }, shapes: Array.isArray((room.area || {}).shapes) ? room.area.shapes : [],
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], editing: null, textEdit: null, shapeSel: null, gesture: null, pointers: new Map(),
-  justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null,
+  justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -216,6 +219,27 @@ function moveDeskEl(sid) {
   if (el && p) { el.style.left = `${p.x}px`; el.style.top = `${p.y}px`; }
 }
 
+// ---------------------------------------------------------------- live class
+function renderLive() {
+  const el = $('hr-livebtns'), dot = $('hr-live'); if (!el) return;
+  if (dot) dot.hidden = !H.live;
+  $('homeroom')?.classList.toggle('hr-islive', !!H.live);
+  const L = H.live;
+  el.innerHTML = !L ? btn('btn hr-chunk hr-spark', 'data-hr="golive"', `${iconHtml('🏫', { size: 18 })} ${esc(th('everyone'))}`)
+    : `${btn(`btn hr-chunk hr-pausebtn${L.paused ? ' on' : ''}`, `data-hr="${L.paused ? 'resume' : 'pause'}" aria-pressed="${L.paused}" aria-label="${esc(th(L.paused ? 'resume' : 'pause'))}"`, `${iconHtml('👀', { size: 18 })}<span class="hr-hidephone"> ${esc(th(L.paused ? 'resume' : 'pause'))}</span>`)}
+      ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })} ${esc(th(L.bring ? 'back' : 'bring'))}`)}`;
+}
+const LIVE_TOAST = { start: 'started', bring: 'bringing', back: 'backToDesks', pause: 'paused', resume: 'resumed', end: 'ended' };
+async function liveAction(action) {
+  if (H.liveBusy) return;
+  if (action === 'end' && !(await ask({ title: th('endClass'), text: th('endConfirm'), ok: th('endClass') }))) return;
+  H.liveBusy = true;
+  try {
+    const r = await api(`/api/homeroom/${encodeURIComponent(D.classId)}/live`, { method: 'POST', body: { action } });
+    H.live = r.live || null; renderLive(); toast(th(LIVE_TOAST[action]));
+  } catch (e) { toast(e.message, { bad: true }); } finally { H.liveBusy = false; }
+}
+
 // ---------------------------------------------------------------- the ⋯ menu and groups
 function renderMenu() {
   const el = $('hr-menu');
@@ -224,6 +248,8 @@ function renderMenu() {
   el.innerHTML = `<div class="rm-menu panel hr-menu" role="menu"><div class="rm-menu-body">
     ${btn('rm-mi', 'role="menuitem" data-hr="seats"', `${iconHtml('🔀', { size: 18 })} ${esc(th('arrange'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="groups"', `${iconHtml('🏷️', { size: 18 })} ${esc(th('editGroups'))}`)}
+    <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
+    ${H.live ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}
     <p class="hr-menusoon small">${esc(th('menuSoon'))}</p></div></div>`;
   el.querySelector('button')?.focus();
 }
@@ -405,6 +431,8 @@ function click(e) {
   else if (k === 'seatsdone') openSeats(false);
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
+  else if (k === 'golive') liveAction('start');
+  else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }
 function keys(e) {
   if (e.key === 'Escape') {
@@ -429,7 +457,7 @@ function keys(e) {
 // ---------------------------------------------------------------- start
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
-  renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderWorld();
+  renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld();
   requestAnimationFrame(fit);
   board.addEventListener('pointerdown', down);
   board.addEventListener('pointermove', move);

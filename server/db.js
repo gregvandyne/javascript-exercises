@@ -1358,6 +1358,19 @@ export const MIGRATIONS = [
       preset TEXT NOT NULL DEFAULT 'rows', seats TEXT NOT NULL DEFAULT '{}', groups TEXT NOT NULL DEFAULT '[]',
       members TEXT NOT NULL DEFAULT '{}', area TEXT NOT NULL DEFAULT '{}', updated_by TEXT,
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
+  // Homeroom step 1b (docs/decisions.md "Homeroom, step 1b"): live class and the student desk. On homeroom_rooms, the
+  // class's live state, set only by its teachers: live_at (when Everyone to Homeroom was pressed; NULL: not live; a
+  // class left live ends by itself after services/homeroom.js LIVE_MAX_MS), live_bring (Bring everyone to me: every desk
+  // shows the teacher's area), live_paused (Pause screens: every desk shows "Eyes on your teacher"). homeroom_doodles: a
+  // student's doodle and working-out pad on their desk in one class (pen strokes, cleaned and limited by
+  // services/homeroom.js saveDoodle). Gone with the class, the school, the student leaving the class, or their account.
+  ['0123_homeroom_desk', `
+    ALTER TABLE homeroom_rooms ADD COLUMN live_at INTEGER;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_bring INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_paused INTEGER NOT NULL DEFAULT 0;
+    CREATE TABLE IF NOT EXISTS homeroom_doodles (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_doodles_user ON homeroom_doodles(user_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

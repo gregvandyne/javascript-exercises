@@ -2081,7 +2081,7 @@
       "hintDraw": "Teken in het lerarendeel. Tik nog een keer op het hulpmiddel als je klaar bent.",
       "tooMany": "Daar is in het lerarendeel geen ruimte meer voor.",
       "arrange": "Plaatsen indelen",
-      "menuSoon": "Deelnamecode, beamerweergave en Les beëindigen komen hierna.",
+      "menuSoon": "De deelnamecode en snel inloggen komen hierna.",
       "seats": {
         "lead": "Zoals je echte lokaal:",
         "rows": "Rijen",
@@ -2091,7 +2091,21 @@
         "hint": "of sleep een tafel naar waar die echt staat",
         "done": "Klaar",
         "saved": "Plaatsen bewaard voor {class}"
-      }
+      },
+      "everyone": "Iedereen naar Homeroom",
+      "bring": "Iedereen bij mij",
+      "back": "Terug naar de tafels",
+      "pause": "Schermen pauzeren",
+      "resume": "Schermen hervatten",
+      "endClass": "Les beëindigen",
+      "endConfirm": "De les voor iedereen beëindigen? De tafels en het deel van de leraar blijven zoals ze zijn.",
+      "projector": "Beamerweergave openen",
+      "started": "De les is live. Leerlingen zien een melding om naar hun tafel te gaan.",
+      "bringing": "Iedereen kijkt naar het deel van de leraar",
+      "backToDesks": "De leerlingen zijn terug aan hun tafel",
+      "paused": "Schermen gepauzeerd",
+      "resumed": "De schermen zijn terug",
+      "ended": "Les beëindigd"
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -4649,6 +4663,37 @@
       "deleteOk": "Verwijderen",
       "deleted": "‘{title}’ verwijderd.",
       "undo": "Ongedaan maken"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · Mijn tafel",
+      "empty": "Nog niets op je tafel",
+      "emptyText": "Als je leraar iets uitdeelt, komt het hier.",
+      "pad": "Krabbels en rekenwerk",
+      "pens": "Penkleuren",
+      "penColor": "Penkleur {n}",
+      "undo": "Ongedaan maken",
+      "clear": "Wissen",
+      "padLabel": "Blok om te krabbelen en te rekenen. Teken met je vinger, een pen of de muis.",
+      "padFull": "Je blok is vol. Wis het om verder te tekenen.",
+      "teacherArea": "Deel van de leraar",
+      "openArea": "Het deel van de leraar openen",
+      "back": "Terug naar mijn tafel",
+      "showing": "Je leraar laat dit zien",
+      "showingHint": "Je gaat terug naar je tafel als je leraar klaar is.",
+      "eyes": "Ogen naar je leraar",
+      "eyesHint": "Je scherm is even gepauzeerd.",
+      "roomTitle": "Het lokaal",
+      "teacherDesk": "Bureau van de leraar",
+      "you": "jij"
+    },
+    "homeroom-area": {
+      "label": "Deel van de leraar",
+      "empty": "Je leraar heeft hier nog niets neergezet."
+    },
+    "homeroom-notify": {
+      "text": "Je klas is in Homeroom.",
+      "go": "Naar mijn tafel",
+      "close": "Sluiten"
     }
   },
   "favorites": {
@@ -14430,7 +14475,23 @@
       "words": "Gebruik vriendelijke woorden.",
       "personal": "Laat persoonlijke gegevens zoals telefoonnummers, e-mailadressen en adressen weg.",
       "badState": "Dat kon niet worden bewaard. Probeer het opnieuw.",
-      "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw."
+      "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw.",
+      "badAction": "Dat lukte niet. Probeer het opnieuw.",
+      "notLive": "Start de les eerst met Iedereen naar Homeroom.",
+      "padFull": "Je blok is vol. Wis het om verder te tekenen."
+    },
+    "live": "Live",
+    "desk": {
+      "pageTitle": "{class} · Mijn tafel",
+      "link": "Mijn tafel",
+      "dock": "Tafelmenu",
+      "myDesk": "Mijn tafel",
+      "teacherArea": "Deel van de leraar",
+      "library": "Bibliotheek",
+      "room": "Bekijk het lokaal"
+    },
+    "projector": {
+      "title": "{class} · Beamer"
     }
   }
 }

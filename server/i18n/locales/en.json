@@ -2081,7 +2081,7 @@
       "hintDraw": "Draw in the teacher's area. Tap the tool again when you're done.",
       "tooMany": "There's no room for more of those in the teacher's area.",
       "arrange": "Arrange seats",
-      "menuSoon": "Join code, projector view and End class come next.",
+      "menuSoon": "The join code and quick sign-in come next.",
       "seats": {
         "lead": "Match your real room:",
         "rows": "Rows",
@@ -2091,7 +2091,21 @@
         "hint": "or drag a desk where it really sits",
         "done": "Done",
         "saved": "Seating saved for {class}"
-      }
+      },
+      "everyone": "Everyone to Homeroom",
+      "bring": "Bring everyone to me",
+      "back": "Back to desks",
+      "pause": "Pause screens",
+      "resume": "Unpause screens",
+      "endClass": "End class",
+      "endConfirm": "End class for everyone? Desks and the teacher's area stay as they are.",
+      "projector": "Open projector view",
+      "started": "Class is live. Students see a prompt to go to their desks.",
+      "bringing": "Everyone is looking at the teacher's area",
+      "backToDesks": "Students are back at their desks",
+      "paused": "Screens paused",
+      "resumed": "Screens are back",
+      "ended": "Class ended"
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -4932,6 +4946,37 @@
       "deleteOk": "Delete",
       "deleted": "Deleted “{title}”.",
       "undo": "Undo"
+    },
+    "homeroom-desk": {
+      "deskOf": "{name} · My desk",
+      "empty": "Nothing on your desk yet",
+      "emptyText": "When your teacher hands something out, it lands here.",
+      "pad": "Doodles and working out",
+      "pens": "Pen colors",
+      "penColor": "Pen color {n}",
+      "undo": "Undo",
+      "clear": "Clear",
+      "padLabel": "Doodle and working-out pad. Draw with your finger, a pencil or the mouse.",
+      "padFull": "Your pad is full. Clear it to keep drawing.",
+      "teacherArea": "Teacher's area",
+      "openArea": "Open the teacher's area",
+      "back": "Back to my desk",
+      "showing": "Your teacher is showing this",
+      "showingHint": "You'll go back to your desk when your teacher is done.",
+      "eyes": "Eyes on your teacher",
+      "eyesHint": "Your screen is paused for a moment.",
+      "roomTitle": "The room",
+      "teacherDesk": "Teacher's desk",
+      "you": "you"
+    },
+    "homeroom-area": {
+      "label": "Teacher's area",
+      "empty": "Your teacher hasn't put anything here yet."
+    },
+    "homeroom-notify": {
+      "text": "Your class is in Homeroom.",
+      "go": "Go to my desk",
+      "close": "Close"
     }
   },
   "favorites": {
@@ -15147,7 +15192,23 @@
       "words": "Please use kind words.",
       "personal": "Please leave out personal details like phone numbers, emails and addresses.",
       "badState": "That couldn't be saved. Try again.",
-      "tooBig": "The teacher's area is too full. Remove something and try again."
+      "tooBig": "The teacher's area is too full. Remove something and try again.",
+      "badAction": "That didn't work. Try again.",
+      "notLive": "Start class first with Everyone to Homeroom.",
+      "padFull": "Your pad is full. Clear it to keep drawing."
+    },
+    "live": "Live",
+    "desk": {
+      "pageTitle": "{class} · My desk",
+      "link": "My desk",
+      "dock": "Desk menu",
+      "myDesk": "My desk",
+      "teacherArea": "Teacher's area",
+      "library": "Library",
+      "room": "See the room"
+    },
+    "projector": {
+      "title": "{class} · Projector"
     }
   }
 }

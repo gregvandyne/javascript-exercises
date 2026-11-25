@@ -44,7 +44,7 @@ import { emailInvitesPanel } from './staff-invites.js';
 import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
-import { homeroomTabs } from './homeroom.js';
+import { homeroomTabs, deskLink } from './homeroom.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -1083,7 +1083,7 @@ function studentClass(req, res, c) {
   const teachers = people.filter(p => p.role === 'teacher'), classmates = people.filter(p => p.role === 'student' && p.id !== req.user.id);
   const body = html`
   <div class="pagehead"><div><span class="small muted">${s.name}</span><h1>${c.name}</h1>
-    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
+    <p class="muted">${[c.subject, gradeLabel(t, c.grade)].filter(Boolean).join(' · ')}</p></div>${DASH.isStudent(req.user, c) ? html`<a class="btn" href="/class/${c.id}/dashboard" id="class-dash-link">${ico('🖥️', { size: 18 })} ${t('dash.entry.student')}</a>` : ''}${deskLink(req, c)}${studentNotYou(req, S.classMember(c.id, req.user.id)?.role === 'student')}</div>
   ${classLiveBanner(req, c)}
   ${manipBanner(req, c)}
   ${myPointsPanel(req, c)}

@@ -226,6 +226,10 @@
     },
     "storybook-read": {
       "startOver": "Start again"
+    },
+    "homeroom-desk": {
+      "pens": "Pen colours",
+      "penColor": "Pen colour {n}"
     }
   },
   "favorites": {
