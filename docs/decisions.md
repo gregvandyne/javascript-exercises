@@ -13166,3 +13166,21 @@ Owner: "Build for other languages now".
   against that keyboard. Tricky keys count any letter (services/typing.js).
 - **Not done**: the server-side lesson names on Assign stay English; other variants (UK, Swiss, Canadian French,
   Dvorak) and Zhuyin/Pinyin input are later work. AltGr characters are not taught.
+
+## Algebra Builder: cancel by dropping on the opposite, and x tiles turn to fit the T (25 Nov 2026)
+
+Owner: "if you drop a negative x or 1 or x squared over the top of a positive one, it should negate it and cause both to
+disappear. You should be able to do this with multiple blocks at a time. Also, if you place an x on the descending side
+of the T, it should automatically flip."
+- **Drop to cancel** (`tools/algebra-builder/src/lib/Activity.svelte` `cancelHits`): when tiles are let go, each held
+  tile that covers at least 40% of an opposite tile of the same kind (by the smaller tile's area) pairs with the one it
+  covers most, each board tile at most once, and the pairs zero out with the usual rumble and poof. Works from the
+  tray and for a dragged selection: every held tile that lands on an opposite cancels, the rest of the selection
+  lands as before. Same signs never cancel; locked tiles and copies (Alt-drag) don't; in Solve's balance a pair is
+  always in one pan, since the tiles overlap. Selecting a pair and pressing Zero out still works as before.
+- **x tiles turn to fit the T** (`sideTurn`): an x let go with its middle on the side going down (or just outside it)
+  stands up and joins that side's row; a standing x let go on the top lies flat. It turns with the usual swing, and the
+  sides read it as an x (before, a flat x on the side going down read as a 1 and couldn't be turned there).
+- `seed-games/algebra-builder.html` is rebuilt from the sources (`node build.mjs`).
+- Tests: `tests/unit/algebra-builder-drop-browser.test.js` (real mouse drags: x, x² and 1; three at once; a mixed
+  selection; same signs; the T on a laptop and a phone, then Check).
