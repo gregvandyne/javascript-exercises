@@ -35,6 +35,7 @@ import * as aiBudget from './ai-budget.js';
 import { callAi, logAiFail, fallbackReason } from './ai-call.js';
 import { log } from './log.js';
 import * as S from './schools.js';
+import * as VC from './verify-change.js';
 import * as D from './dash.js';
 import * as games from './games.js';
 import * as LIB from './library.js';
@@ -419,7 +420,12 @@ export function applyProposal(u, p) {
   if (r.error) return { code: r.error === 'notFound' ? 'notFound' : 'error' };
   const after = new Map(r.layout.widgets.map(w => [w.id, w]));
   audit(u.id, 'companion.dash.apply', l.id, { classId: c.id, ops: p.ops.map(o => `${o.op}:${o.type}`) });
+  // Checked work: the layout as saved. A widget removed or changed by hand since the card was made is not touched; the
+  // card says how many of the planned changes did not land (the lines list what was planned).
+  const landed = touched.filter(x => (x.before === null ? after.has(x.id) : true)).length, missed = p.ops.length - landed;
+  const verify = { ok: missed === 0, landed, notLanded: missed > 0 ? [{ code: 'meanwhile', count: missed }] : [] };
   return {
+    verify,
     change: { kind: 'dash', classId: c.id, layoutId: l.id, lines: p.lines, ids: touched.map(x => x.id).filter(id => after.has(id)) },
     undo: { kind: 'dash', classId: c.id, layoutId: l.id, items: touched.map(x => ({ id: x.id, before: x.before, index: x.index ?? null, after: wkey(after.get(x.id) || null) })) },
   };
@@ -777,10 +783,10 @@ export function undoClass(u, data) {
   return { ok: true, skipped: 0 };
 }
 export const PAGE_TOOLS = Object.freeze({
-  'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['edits'], properties: {
+  'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it. Its result is the worksheet read back after the change (landed, notLanded with why): report only what landed.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
     edits: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['add', 'replace', 'remove'] }, n: { type: 'integer' }, after: { type: ['integer', 'null'] }, item: { type: 'object' } } } } } } },
-  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it.', input_schema: { type: 'object', required: ['items'], properties: {
+  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed.', input_schema: { type: 'object', required: ['items'], properties: {
     title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
 });
 /** The tools for a page: the general ones and, on a worksheet or board, that page's own. */
@@ -800,6 +806,16 @@ const EXPLAIN = [
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
 
+/** Two editWorksheet calls in one answer, written as one change (one Undo): the second's numbers are the worksheet's
+ *  after the first (its dry run ran on top of the first), and new questions keep the ids chosen for them. */
+function mergePlans(p1, p2) {
+  // An earlier call's edit that did not land and that this call does again (the same question) is no longer news.
+  const again = new Set(p2.report.filter(x => x.n).map(x => `${x.op}:${x.n}`));
+  const stale = x => x.n && again.has(`${x.op}:${x.n}`) && x.at < 0;
+  const shift = p1.ops.length;
+  return { reply: '', title: p2.title || p1.title, grade: p2.grade || p1.grade, units: p2.units || p1.units, ops: [...p1.ops, ...p2.ops],
+    repaired: p1.repaired + p2.repaired, dropped: p1.dropped + p2.dropped, report: [...p1.report.filter(x => !stale(x)), ...p2.report.map(x => ({ ...x, at: x.at < 0 ? -1 : x.at + shift }))] };
+}
 /** Runs one tool call. ctx: { user, page, lang, names, files, seen, cards, out } -> { result (object for the model), step } */
 export function runTool(name, input, ctx) {
   const i = input && typeof input === 'object' ? input : {};
@@ -913,19 +929,45 @@ export function runTool(name, input, ctx) {
       if (ctx.out.points || ctx.out.pick) return { result: { error: 'Change the worksheet in a new message, not with a point.' }, step: { k: 'editNo' } };
       const w = ctx.page.type === 'figures-sheet' ? F.ownWorksheet(u, ctx.page.sheetId) : null;
       if (!w) return { result: { error: 'There is no worksheet open on this page.' }, step: { k: 'editNo' } };
-      let plan;
-      try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, F.itemsOf(w.id)); } catch { plan = null; }
-      if (!plan || (!plan.ops.length && !plan.title && !plan.grade && !plan.units)) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
-      ctx.out.figures = { sheetId: w.id, plan, first: F.itemsOf(w.id).length === 0 };
-      return { result: { done: true, changes: plan.ops.length, repaired: plan.repaired, dropped: plan.dropped, note: 'Applied when you answer; the teacher can Undo it.' }, step: { k: 'edit', n: plan.ops.length } };
+      // Checked work (services/verify-change.js): the change is written in a dry run on top of this answer's earlier
+      // changes, read back as the page shows it, and THAT is the result; the real write comes with the reply.
+      const prev = ctx.out.figures && ctx.out.figures.sheetId === w.id ? ctx.out.figures : null;
+      const calls = prev ? prev.calls + 1 : 1;
+      const r = VC.dryRun(() => {
+        if (prev) FC.applyPlan(u, w, prev.plan, { first: prev.first });
+        const items = F.itemsOf(w.id), before = FC.readBack(u, w);
+        let plan;
+        try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, items); } catch { return { empty: true }; }
+        if (!plan.ops.length && !plan.title && !plan.grade && !plan.units) return { plan, v: FC.verifyPlan(plan, null, before, before), back: before };
+        const a = FC.applyPlan(u, w, plan, { first: false });
+        const back = FC.readBack(u, w);
+        return { plan, v: FC.verifyPlan(plan, a, before, back), back };
+      });
+      if (r.empty) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
+      const first = prev ? prev.first : F.itemsOf(w.id).length === 0;
+      const merged = prev ? mergePlans(prev.plan, r.plan) : r.plan;
+      if (r.v.nothing) {
+        // Kept for the card (what did not land, and why); nothing new is written.
+        ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told: prev ? prev.told : { landed: [] } };
+        return { result: { ...FC.verifyResult(r.v, r.back), note: `Nothing on the worksheet changed. ${VC.NOTE} You may call editWorksheet again now with data that can be drawn.` }, step: { k: 'editNo' } };
+      }
+      // What the AI is told landed for the whole answer (every call so far), to compare with the real write.
+      const told = VC.dryRun(() => { const before = FC.readBack(u, w); const a = FC.applyPlan(u, w, merged, { first }); return FC.verifyPlan(merged, a, before, FC.readBack(u, w)); });
+      ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told };
+      return { result: { ...FC.verifyResult(r.v, r.back), note: `${VC.NOTE} It is saved with your answer; the teacher can Undo it.` }, step: { k: 'edit', n: r.v.landed.length } };
     }
     case 'changeBoard': {
       const b = ctx.page.type === 'manip' ? ctx.page.board : null;
       if (!b) return { result: { error: 'There is no board open on this page.' }, step: { k: 'boardNo' } };
       const r = MC.buildChange(i, b.tool);
-      if (!r.change) return { result: { error: 'The app could not build that board: nothing was changed.' }, step: { k: 'boardNo' } };
+      if (!r.change) {
+        ctx.out.manipMiss = true;
+        return { result: { applied: false, landed: [], notLanded: [{ why: 'none of the items could be built with this tool\'s settings' }], note: `Nothing on the board changed. ${VC.NOTE}` }, step: { k: 'boardNo' } };
+      }
       ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
-      return { result: { done: true, items: r.change.n, steps: r.change.steps, capped: r.change.capped }, step: { k: 'board', n: r.change.n } };
+      // Checked work: the board as the page will show it, built and read back here (the page puts this exact board on).
+      const notLanded = [...(r.change.dropped ? [{ items: r.change.dropped, why: r.change.capped ? `at most ${MC.PRACTICE_MAX} items, and items that failed this tool's checks were left out` : 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [])];
+      return { result: { applied: true, landed: { board: MC.readBack(b.tool, r.change), items: r.change.n, steps: r.change.steps }, notLanded, note: `${VC.NOTE} The page puts this board on when your answer arrives; the teacher can Undo it.` }, step: { k: 'board', n: r.change.n } };
     }
     // ---------------------------------------------------------------- the book maker (companion-book.js)
     case 'makeBook': {
@@ -1056,6 +1098,7 @@ function system(u, lang, page, settings) {
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
     'Never pretend: if you could not find something on Oomba, say so.',
+    VC.RULE,
     'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
     'Questions: when you need a decision or a missing detail, call askChoice with 2 to 5 short options instead of asking in a long sentence.',
     ...(SB.canMake(u) ? [
@@ -1174,8 +1217,13 @@ async function bookAnswer(user, bookId, { text, history, step, reply0 = '' }) {
     reply: r.reply || reply0,
     apply: () => {
       const a = SB.applyBook(user, bookId, base, r.book, { repaired: r.repaired });
-      if (a.code) return { note: ref };
-      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...a.change }, undo: { kind: 'book', bookId, ...a.undo } };
+      // Checked work: the book as written. Gone meanwhile, or every page the writer changed was changed by the teacher
+      // meanwhile (theirs stays): the app says so after the writer's words, and the card says what did not land.
+      if (a.code) return { note: ref, verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] }, correction: 'The book did not change after all: it is not there anymore.' };
+      const c = a.change, landed = c.added.length + c.changed.length + c.removed + (c.title ? 1 : 0) + (c.first ? c.pages : 0);
+      const verify = { ok: !c.kept && landed > 0, landed, notLanded: c.kept ? [{ code: 'meanwhile', count: c.kept }] : [] };
+      const fix = !landed ? 'The book did not change after all: the pages were changed by hand while Oomba was working, so yours stayed.' : c.kept ? 'Some pages stayed as you left them: they were changed by hand while Oomba was working.' : '';
+      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...c }, undo: { kind: 'book', bookId, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
     },
   };
 }
@@ -1243,7 +1291,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
@@ -1261,13 +1309,33 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         audit(user.id, 'companion.book.draft', ctx.out.book.id, { asking: ctx.out.book.state });
       }
       // Points: given here, in the engine's transaction with Oomba's turn, with Undo (Google Classroom after it).
-      if (points.length) { const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang); return a ? { note, ...a } : { note }; }
-      if (!fig) return { note };
-      // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it).
-      const w = F.ownWorksheet(user, fig.sheetId); if (!w) return { note };
-      const a = FC.applyPlan(user, w, fig.plan, { first: fig.first });
-      if (a.code || !a.change) return { note };
-      return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo } };
+      // Checked: the points actually given (a class that went, or a student who left, gives none); fewer than Oomba was
+      // told are said in the app's own words after its reply, and on the card.
+      if (points.length) {
+        const a = awardPoints(user, points.map(x => ({ ...x, user: x.user === 'class' ? null : x.user })), lang);
+        const got = a ? a.change.items.length : 0;
+        const verify = { ok: got === points.length, landed: got, notLanded: got < points.length ? [{ code: 'other', count: points.length - got }] : [] };
+        const fix = got === points.length ? '' : got ? 'Not every point was given after all. The card below shows the ones that were.' : 'The point was not given after all: the class or student is not there anymore. Please try again.';
+        return { note, ...(a || {}), verify, ...(fix ? { correction: fix } : {}) };
+      }
+      if (!fig) {
+        // A board: built and read back at the tool; the card says what was left out (the page puts the board on).
+        const m = ctx.out.manip;
+        const verify = m ? { ok: !m.dropped, landed: m.n, notLanded: m.dropped ? [{ code: 'filtered', count: m.dropped }] : [] } : ctx.out.manipMiss ? { ok: false, landed: 0, notLanded: [{ code: 'notBuilt' }] } : null;
+        return verify ? { note, verify } : { note };
+      }
+      // A worksheet's change: written in the engine's transaction, with its Undo (only what is still as Oomba left it),
+      // then read back: the card shows what landed, and the reply is corrected when it differs from what Oomba was told.
+      const w = F.ownWorksheet(user, fig.sheetId);
+      if (!w) return { note, verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] }, correction: 'Nothing changed after all: the worksheet is not there anymore.' };
+      const before = FC.readBack(user, w);
+      const writes = fig.plan.ops.length || fig.plan.title || fig.plan.grade || fig.plan.units;
+      const a = writes ? FC.applyPlan(user, w, fig.plan, { first: fig.first }) : {};
+      const v = FC.verifyPlan(fig.plan, a, before, FC.readBack(user, w));
+      const verify = FC.verifyCard(v), fix = VC.correction(fig.told, v);
+      if (fix) log('warn', 'companion change landed other than told', { turn: turnId, told: fig.told.landed.length, landed: v.landed.length });
+      if (a.code || !a.change) return { note, verify, ...(fix ? { correction: fix } : {}) };
+      return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
     },
   };
 }

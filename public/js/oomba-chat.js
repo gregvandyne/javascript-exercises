@@ -9,7 +9,8 @@
 //   their times) and an estimate ("Usually about 30 seconds · 0:12 so far").
 // - A failed answer is calm (its reason in plain words) with Try again and Edit; the surface may add its own button.
 // - A change Oomba made shows the surface's "What changed" card and Undo (the server puts back only what is still as
-//   Oomba left it). A quote ("Question 4: ...") sits above the message box until it is sent or removed.
+//   Oomba left it). The card also shows what the app read back after writing when not everything landed (turn.verify:
+//   what did not change and why, with Try again), so it is true whatever Oomba said. A quote ("Question 4: ...") sits above the message box until it is sent or removed.
 // Teachers only: a surface mounts it only on a teacher's own page.
 import { t, api, esc } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -173,9 +174,25 @@ export function mountChat(o) {
   function tickTime() { const el = C.el.log.querySelector('[data-c-time]'); if (el && C.chat.pending) el.innerHTML = etaLine(); }
   function changeCard(x) {
     const ch = x.change;
-    if (ch.undone) return `<div class="oc-change undone" tabindex="-1" data-undone="${esc(x.id)}"><p><b>${esc(t('js.oomba-chat.undone'))}</b>${ch.kept ? ` <span>${esc(t('js.oomba-chat.undoneKept', { count: ch.kept }))}</span>` : ''}</p></div>`;
-    return `<div class="oc-change">${o.change ? o.change(x) : ''}${ch.canUndo ? `<div class="oc-ch-row"><button type="button" class="btn btn-sm" data-c="undo" data-id="${esc(x.id)}">${iconHtml('↩', { size: 16 })} ${esc(t('js.oomba-chat.undo'))}</button>${o.changeLinks ? o.changeLinks(x) : ''}</div>` : ''}</div>`;
+    // "Change undone." only after an Undo (the server marks it only then), with why when it was not the teacher's tap.
+    if (ch.undone) return `<div class="oc-change undone" tabindex="-1" data-undone="${esc(x.id)}"><p><b>${esc(t('js.oomba-chat.undone'))}</b>${ch.why ? ` <span>${esc(ch.why)}</span>` : ''}${ch.kept ? ` <span>${esc(t('js.oomba-chat.undoneKept', { count: ch.kept }))}</span>` : ''}</p></div>`;
+    return `<div class="oc-change">${o.change ? o.change(x) : ''}${verifyHtml(x)}${ch.canUndo ? `<div class="oc-ch-row"><button type="button" class="btn btn-sm" data-c="undo" data-id="${esc(x.id)}">${iconHtml('↩', { size: 16 })} ${esc(t('js.oomba-chat.undo'))}</button>${o.changeLinks ? o.changeLinks(x) : ''}</div>` : ''}</div>`;
   }
+  // Checked work (services/verify-change.js): what the app read back after writing. Shown in the app's own words, so
+  // the card is true whatever Oomba said: what did not land (and why), and Try again.
+  const VERIFY_CODES = ['cannotDraw', 'noSuch', 'dropped', 'full', 'meanwhile', 'same', 'units', 'gone', 'filtered', 'notBuilt'];
+  function verifyLines(v) {
+    const lines = (v.notLanded || []).map(m => t(`js.oomba-chat.verify.${VERIFY_CODES.includes(m.code) ? m.code : 'other'}${m.n ? '' : 'Any'}`, { n: m.n || 0, units: m.units || '', count: m.count || 0 }));
+    for (const n of v.swapped || []) lines.push(t('js.oomba-chat.verify.swapped', { n }));
+    return lines;
+  }
+  function verifyHtml(x) {
+    const v = x.verify; if (!v || v.ok) return '';
+    const me = meBefore(x);
+    return `<div class="oc-verify" role="note"><p><b>${iconHtml('⚠️', { size: 16 })} ${esc(t(v.landed ? 'js.oomba-chat.verify.partial' : 'js.oomba-chat.verify.nothing'))}</b></p><ul class="oc-list">${verifyLines(v).map(l => `<li>${esc(l)}</li>`).join('')}</ul>${me && !C.chat.pending ? `<div class="oc-ch-row"><button type="button" class="btn btn-sm" data-c="again" data-id="${esc(me.id)}">${esc(t('js.oomba-chat.retry'))}</button></div>` : ''}</div>`;
+  }
+  /** The teacher's message an answer answered (the one just before it). */
+  const meBefore = x => { const ts = C.chat.turns, i = ts.indexOf(x); for (let k = i - 1; k >= 0; k--) if (ts[k].role === 'me') return ts[k]; return null; };
   // Copy on Oomba's answers (never on the teacher's own words): a small icon button, then "Copied" for a moment.
   const copyBtn = x => `<div class="oc-copyrow"><button type="button" class="oc-copy" data-c="copy" data-id="${esc(x.id)}" aria-label="${esc(t('js.oomba-chat.copy'))}" title="${esc(t('js.oomba-chat.copy'))}">${iconHtml('📋', { size: 16 })}</button><span class="oc-copied" role="status" aria-live="polite"></span></div>`;
   async function copy(turn, b) {
@@ -204,7 +221,7 @@ export function mountChat(o) {
       } else if (x.failed) {
         parts.push(`<div class="oc-turn bot"><span class="oc-av sm">${oombaMark(28)}</span><div class="oc-msg bot calm"><span>${esc(o.failText ? o.failText(x) : failText(x.failed))}</span>${o.extra ? o.extra(x, C.chat) : ''}</div></div>`);
       } else {
-        parts.push(bot(`${x.text ? (o.format ? o.format(x.text, x) : `<span dir="auto">${esc(x.text)}</span>`) : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : ''}${o.extra ? o.extra(x, C.chat) : ''}${x.text && o.copyText ? copyBtn(x) : ''}`));
+        parts.push(bot(`${x.text ? (o.format ? o.format(x.text, x) : `<span dir="auto">${esc(x.text)}</span>`) : ''}${o.note ? o.note(x) : ''}${x.change ? changeCard(x) : x.verify && !x.verify.ok ? `<div class="oc-change">${verifyHtml(x)}</div>` : ''}${o.extra ? o.extra(x, C.chat) : ''}${x.text && o.copyText ? copyBtn(x) : ''}`));
       }
     }
     if (C.chat.pending) parts.push(progress());
@@ -229,6 +246,7 @@ export function mountChat(o) {
     if (k === 'undo') return undo(id, b);
     if (k === 'copy' && turn && o.copyText) return copy(turn, b);
     if (k === 'retry' && turn) return send(turn.text, { retry: turn.id });
+    if (k === 'again' && turn) return send(turn.text);
     if (k === 'edit' && turn) { C.el.input.value = turn.text; autosize(); C.el.input.focus(); return; }
     if (k === 'act' && o.onAct) { const tt = C.chat.turns.find(x => x.id === b.dataset.turn); b.disabled = true; Promise.resolve(o.onAct(b.dataset.act, tt, b)).then(r => { if (r && r.chat) took(r.chat); }).finally(() => { b.disabled = false; }); }
   });

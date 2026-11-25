@@ -195,7 +195,8 @@ export async function draftClues({ words = [], level = '', locale = 'en', client
     return k.length >= 3 && key(text).includes(k) ? '' : text;
   });
   if (!clues.some(Boolean)) return { ok: false, code: 'aiFailed' };
-  return { ok: true, clues };
+  // Checked work (services/verify-change.js): how many clues the teacher actually gets, and why the rest are blank.
+  return { ok: true, clues, asked: list.length };
 }
 
 // ---------------------------------------------------------------- crossword words from a document (PDF or Word)
@@ -266,7 +267,8 @@ export async function draftWordsFromDoc({ text = '', pdf = null, level = '', foc
     if (words.length >= DOC.max) break;
   }
   if (!words.length) return { ok: false, code: 'docNone' };
-  return { ok: true, title: String(d.title || '').replace(/\s+/g, ' ').trim().slice(0, 60), words };
+  // asked: how many the AI sent, so the builder can say how many were kept after the checks.
+  return { ok: true, title: String(d.title || '').replace(/\s+/g, ' ').trim().slice(0, 60), words, asked: d.words.length };
 }
 
 // Atlas Quest's "Upload a geography lesson" (services/atlas-doc.js): Claude drafts quiz questions grounded in the
@@ -336,5 +338,5 @@ export async function draftGeoQuiz({ text = '', pdf = null, level = '', locale =
     if (items.length >= GEO.max) break;
   }
   if (!items.length) return { ok: false, code: 'docNone' };
-  return { ok: true, title: String(d.title || '').replace(/\s+/g, ' ').trim().slice(0, 60), items };
+  return { ok: true, title: String(d.title || '').replace(/\s+/g, ' ').trim().slice(0, 60), items, asked: d.items.length };
 }

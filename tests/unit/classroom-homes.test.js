@@ -5,6 +5,7 @@
 // tab (/classes): one section per class with To do (due date, x of y done, the next step, Start), games from the class,
 // a picker with several classes, one live banner each, no classmates' names, no staff greeting and no prices.
 import './_setup.js';
+process.env.TEACH_LOOP_CARD = '1';   // the card is off by default; this file tests it switched on
 import test from 'node:test';
 import assert from 'node:assert/strict';
 const { createApp } = await import('../../server/app.js');

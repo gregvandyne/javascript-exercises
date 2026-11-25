@@ -93,7 +93,7 @@ test('a document that is not a list: one small AI call on its text (cut at about
   try {
     const long = [...PROSE, ...Array.from({ length: 200 }, (_, i) => `Paragraph ${i + 1}: more about living things and the places they live, the food they eat and the land.`)];
     let r = await D.wordsFromFile({ kind: 'docx', buf: makeDocx(long), level: 'Grade 4' });
-    assert.deepEqual(r, { ok: true, title: 'Ecosystems', words: [['habitat', 'Where an animal lives'], ['predator', ''], ['prey', ''], ['erosion', 'Wearing away of land']], cut: true, ai: true });
+    assert.deepEqual(r, { ok: true, title: 'Ecosystems', words: [['habitat', 'Where an animal lives'], ['predator', ''], ['prey', ''], ['erosion', 'Wearing away of land']], cut: true, ai: true, asked: 6 }, 'asked: how many the AI sent (6), so the page can say 4 of 6 kept');
     assert.equal(ai.asked.length, 1);
     const sent = ai.asked[0].messages[0].content;
     assert.ok(sent.length < D.LIMITS.chars + 200, 'about 5 pages of text at most');

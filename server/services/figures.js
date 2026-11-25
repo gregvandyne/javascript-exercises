@@ -308,6 +308,8 @@ export function listWorksheets(u, { purposes = ['worksheet', 'test'] } = {}) {
 const storeItem = (setId, pos, it, id = uid(12)) => (q.run(`INSERT INTO question_set_items(id, set_id, pos, kind, data, gen, seed, hide, question, answer_key, answer, work, answer_type, choices, correct, points)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,1)`, id, setId, pos, it.kind, JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
   it.answerType === 'choice' ? 'choice' : 'number', JSON.stringify(it.choices || []), Number.isInteger(it.correct) ? it.correct : null), id);
+/** A new question's id (chosen before it is stored: Oomba's change is checked in a dry run, then written with the same ids). */
+export const newItemId = () => uid(12);
 /** Write a question's worked-out fields back to its row. */
 const rewrite = (id, it) => q.run('UPDATE question_set_items SET data=?, gen=?, seed=?, hide=?, question=?, answer_key=?, answer=?, work=?, answer_type=?, choices=?, correct=? WHERE id=?',
   JSON.stringify(it.data), it.gen, it.seed, it.hide === false ? null : String(it.hide), it.question, it.answerKey, it.answer, JSON.stringify(it.work),
@@ -664,35 +666,62 @@ const logRepair = fields => (hooks.log ? hooks.log(fields) : log('warn', 'figure
  * The AI's items made safe: a kind not in the catalog is dropped; data that does not pass OF.check, an answerKey that is
  * not one of the figure's OF.solve values, a choice question whose options are not 2 to 6 short different ones with one
  * marked right, or words that are not allowed (options too): the item is replaced by a fresh question from that kind's
- * generator. Every repair is logged (the kind and why, never the brief). -> { items, repaired, dropped }
+ * generator. Before that, a figure OF.check rejects only for a measure it says to leave out ('a square is drawn from AB;
+ * leave out "BC"') is drawn without it: the question keeps its own words, answer type and options (fixed). Every repair
+ * is logged (the kind and why, never the brief). notes: one per item sent, in order ({ i, kind, action: 'kept' | 'fixed'
+ * | 'replaced' | 'dropped', why?, left? }), so a caller can say truthfully what became of each.
+ * -> { items, repaired, dropped, fixed, notes }
  */
+const LEAVE_OUT = /leave out "([A-Za-z][A-Za-z0-9_]*)"/g;
+/** The data without the top-level measures OF.check's problems say to leave out (null when there are none to drop). */
+function leftOut(data, problems) {
+  const keys = [...new Set((problems || []).flatMap(p => [...String(p).matchAll(LEAVE_OUT)].map(m => m[1])))].filter(k => data && typeof data === 'object' && Object.hasOwn(data, k));
+  if (!keys.length) return null;
+  const d = { ...data }; for (const k of keys) delete d[k];
+  return { data: d, keys };
+}
 export function repairDraft(raw, { max = LIMITS.draftMax, lang = 'en' } = {}) {
-  const items = [], allowed = new Set(draftKinds().map(K => K.id));
-  let repaired = 0, dropped = 0;
+  const items = [], notes = [], allowed = new Set(draftKinds().map(K => K.id));
+  let repaired = 0, dropped = 0, fixed = 0;
   for (const [i, x] of (Array.isArray(raw) ? raw : []).slice(0, max).entries()) {
     const kind = x && typeof x.kind === 'string' ? x.kind : '';
-    if (!allowed.has(kind)) { dropped++; logRepair({ item: i, kind: clipStr(kind, 30), action: 'dropped', why: 'not in the catalog' }); continue; }
-    const data = typeof (x && x.data) === 'string' ? json(x.data, null) : x && x.data;
+    if (!allowed.has(kind)) { dropped++; notes.push({ i, kind: clipStr(kind, 30), action: 'dropped', why: 'not in the catalog' }); logRepair({ item: i, kind: clipStr(kind, 30), action: 'dropped', why: 'not in the catalog' }); continue; }
+    let data = typeof (x && x.data) === 'string' ? json(x.data, null) : x && x.data;
     const choice = x && x.answerType === 'choice';
-    let keyOk, c;
-    if (choice) {
-      // Options as given: 2 to 6, each a short non-empty string, all different, one of them right (no blank left out).
-      const list = Array.isArray(x.choices) ? x.choices : [];
-      const shape = list.length >= CHOICES.min && list.length <= CHOICES.max && list.every(o => typeof o === 'string' && o.trim() && o.trim().length <= CHOICES.chars) && Number.isInteger(x.correct) && x.correct >= 0 && x.correct < list.length;
-      c = data ? cleanItem({ kind, data, question: x.question, answerType: 'choice', choices: list, correct: x.correct, hide: false }, undefined, lang) : fail('badData');
-      keyOk = shape && c.ok && c.item.choices.length === list.length && c.item.correct === x.correct;
-      if (!shape && c.ok) c = fail('choices: 2 to 6 short different options and the index of the right one');
-    } else {
-      keyOk = data && typeof x.answerKey === 'string' && typeof solved(kind, data)[x.answerKey] === 'number';
-      c = data ? cleanItem({ kind, data, question: x.question, answerKey: x.answerKey, hide: false }, undefined, lang) : fail('badData');
+    const list = choice && Array.isArray(x.choices) ? x.choices : [];
+    // Options as given: 2 to 6, each a short non-empty string, all different, one of them right (no blank left out).
+    const shape = choice && list.length >= CHOICES.min && list.length <= CHOICES.max && list.every(o => typeof o === 'string' && o.trim() && o.trim().length <= CHOICES.chars) && Number.isInteger(x.correct) && x.correct >= 0 && x.correct < list.length;
+    const tryData = d => {
+      if (!d) return { c: fail('badData'), keyOk: false };
+      if (choice) {
+        let c = cleanItem({ kind, data: d, question: x.question, answerType: 'choice', choices: list, correct: x.correct, hide: false }, undefined, lang);
+        const keyOk = shape && c.ok && c.item.choices.length === list.length && c.item.correct === x.correct;
+        if (!shape && c.ok) c = fail('choices: 2 to 6 short different options and the index of the right one');
+        return { c, keyOk };
+      }
+      return { c: cleanItem({ kind, data: d, question: x.question, answerKey: x.answerKey, hide: false }, undefined, lang), keyOk: typeof x.answerKey === 'string' && typeof solved(kind, d)[x.answerKey] === 'number' };
+    };
+    let { c, keyOk } = tryData(data);
+    // A measure the figure says to leave out (it follows from the others): drawn without it, the question as it was.
+    const left = [];
+    for (let k = 0; k < 3 && !c.ok && c.code === 'cannotDraw'; k++) {
+      const lo = leftOut(data, c.problems); if (!lo) break;
+      const again = tryData(lo.data);
+      if (!again.c.ok && again.c.code !== 'cannotDraw') break;
+      data = lo.data; left.push(...lo.keys); ({ c, keyOk } = again);
     }
-    if (c.ok && keyOk && c.item.question) { items.push(c.item); continue; }
+    if (c.ok && keyOk && c.item.question) {
+      items.push(c.item);
+      if (left.length) { fixed++; notes.push({ i, kind, action: 'fixed', left }); logRepair({ item: i, kind, action: 'drawn without a measure', why: `left out ${left.join(', ')}` }); }
+      else notes.push({ i, kind, action: 'kept' });
+      continue;
+    }
     const why = !data ? 'data is not JSON' : c.code === 'cannotDraw' ? `OF.check: ${c.problems[0]}` : !c.ok ? c.code : !keyOk ? (choice ? 'choices: 2 to 6 short different options and the index of the right one' : 'answerKey is not an OF.solve value') : 'no question';
     const K = kindOf(kind), gid = K.gens[0].id, g = cleanItem({ kind, gen: gid, seed: newSeed() }, undefined, lang);
-    if (g.ok) { items.push(g.item); repaired++; logRepair({ item: i, kind, action: 'replaced by its generator', why: clipStr(why, 200) }); }
-    else { dropped++; logRepair({ item: i, kind, action: 'dropped', why: clipStr(why, 200) }); }
+    if (g.ok) { items.push(g.item); repaired++; notes.push({ i, kind, action: 'replaced', why: clipStr(why, 200) }); logRepair({ item: i, kind, action: 'replaced by its generator', why: clipStr(why, 200) }); }
+    else { dropped++; notes.push({ i, kind, action: 'dropped', why: clipStr(why, 200) }); logRepair({ item: i, kind, action: 'dropped', why: clipStr(why, 200) }); }
   }
-  return { items, repaired, dropped };
+  return { items, repaired, dropped, fixed, notes };
 }
 /**
  * "Power with AI" -> { ok, ai, added, repaired, dropped } (the questions are added to the worksheet; the teacher edits
@@ -784,23 +813,24 @@ function dealt(gid, lang = 'en') {
  * The test drafter's items made safe: a generator that is not in the catalog (or not of the chosen subject) is dropped;
  * a generator question is dealt here (fresh seed); an own figure question goes through repairDraft (OF.check, OF.solve
  * keys, choices, words: replaced by its kind's generator). Every repair is logged (the kind and why, never the topic).
- * -> { items, repaired, dropped }
+ * -> { items, repaired, dropped, fixed, notes } (notes as repairDraft's)
  */
 export function repairTestDraft(raw, { max = LIMITS.draftMax, subject = '', grade = '', lang = 'en' } = {}) {
-  const allowed = new Set(genCatalog({ subject, grade }).map(g => g.id)), items = [];
-  let repaired = 0, dropped = 0;
+  const allowed = new Set(genCatalog({ subject, grade }).map(g => g.id)), items = [], notes = [];
+  let repaired = 0, dropped = 0, fixed = 0;
   for (const [i, x] of (Array.isArray(raw) ? raw : []).slice(0, max).entries()) {
     const gid = x && typeof x.gen === 'string' ? x.gen.trim() : '';
     if (gid) {
-      if (!allowed.has(gid)) { dropped++; logRepair({ item: i, kind: clipStr(gid, 40), action: 'dropped', why: 'generator not in the catalog' }); continue; }
+      if (!allowed.has(gid)) { dropped++; notes.push({ i, kind: clipStr(gid, 40), action: 'dropped', why: 'generator not in the catalog' }); logRepair({ item: i, kind: clipStr(gid, 40), action: 'dropped', why: 'generator not in the catalog' }); continue; }
       const it = dealt(gid, lang);
-      if (it) items.push(it); else { dropped++; logRepair({ item: i, kind: genOf(gid).kind, action: 'dropped', why: 'the generator dealt nothing' }); }
+      if (it) { items.push(it); notes.push({ i, kind: genOf(gid).kind, action: 'kept' }); } else { dropped++; notes.push({ i, kind: genOf(gid).kind, action: 'dropped', why: 'the generator dealt nothing' }); logRepair({ item: i, kind: genOf(gid).kind, action: 'dropped', why: 'the generator dealt nothing' }); }
       continue;
     }
     const r = repairDraft([x], { max: 1, lang });
-    items.push(...r.items); repaired += r.repaired; dropped += r.dropped;
+    items.push(...r.items); repaired += r.repaired; dropped += r.dropped; fixed += r.fixed;
+    notes.push(...r.notes.map(nt => ({ ...nt, i })));
   }
-  return { items, repaired, dropped };
+  return { items, repaired, dropped, fixed, notes };
 }
 /** A starter test without the AI: the generators the topic's words point at, in the subject (if any) and grade band. */
 export function templateTest({ topic = '', subject = '', grade = '', count = 6, lang = 'en' } = {}) {

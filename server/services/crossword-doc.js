@@ -121,7 +121,7 @@ export async function wordsFromFile({ kind, buf, level = '', focus = '', locale 
   const words = cleanWords(r.words);
   if (!words.length) return { ok: false, code: 'docNone' };
   const ct = cleanText(r.title || '', CROSS.title);
-  return { ok: true, title: ct.ok ? ct.value : '', words, cut, ai: true };
+  return { ok: true, title: ct.ok ? ct.value : '', words, cut, ai: true, asked: Math.max(r.asked || 0, words.length) };
 }
 
 /**

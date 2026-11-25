@@ -760,3 +760,27 @@ test('CL-13 estimates for the AI: a Pro build is in the Pro bucket with its roun
   r = row();
   assert.deepEqual(['end_reason', 'sample', 'est_key'].map(k => r[k]), ['error', 0, 'ai:std:change:2d']);
 });
+
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): the AI's last change did not
+// save (its edit's text was not in the game) and it ends saying it is done anyway: the builder hears, in the app's own
+// words, that the game is still the version that saved. A last change that saved says nothing more.
+test('the last change did not save: the reply ends with the app\'s own "still version N", whatever the AI said', async () => {
+  const u = auth.createUser({ username: 'VerifyKid', password: 'secret1' }); const g = games.createGame(u.id, {});
+  script.push(
+    [{ type: 'tool_use', name: 'write_game', input: { notes: 'First version', html: GAME } }],
+    [{ type: 'tool_use', name: 'edit_game', input: { notes: 'Faster fox', edits: [{ find: 'speed: 9', replace: 'speed: 3' }] } }],
+    [{ type: 'text', text: 'Done! The fox is faster now.' }],
+  );
+  const events = [];
+  await runTurn({ user: u, gameId: g.id, text: 'a fox game', emit: (n, d) => events.push([n, d]) });
+  const said = events.filter(e => e[0] === 'text').map(e => e[1].text).join('');
+  assert.match(said, /Done! The fox is faster now\./);
+  assert.ok(said.endsWith(tEn('builder.lastNotSaved', { n: 1 })), said.slice(-200));
+  assert.match(games.getVersion(games.getGame(g.id).current_version_id).html, /speed: 1/, 'the game really is still version 1');
+  // A last change that saved: no such line.
+  const g2 = games.createGame(u.id, {});
+  script.push([{ type: 'tool_use', name: 'write_game', input: { notes: 'First version', html: GAME } }], [{ type: 'text', text: 'Done!' }]);
+  const ev2 = [];
+  await runTurn({ user: u, gameId: g2.id, text: 'a fox game', emit: (n, d) => ev2.push([n, d]) });
+  assert.doesNotMatch(ev2.filter(e => e[0] === 'text').map(e => e[1].text).join(''), /didn’t save/);
+});

@@ -16,6 +16,7 @@ const S = await import('../../server/services/schools.js');
 const CO = await import('../../server/services/companion.js');
 const BK = await import('../../server/services/companion-book.js');
 const SB = await import('../../server/services/storybook.js');
+const { mockChange } = await import('../../server/services/storybook-mock.js');
 const C = await import('../../server/services/oomba-chat.js');
 const RL = await import('../../server/services/ratelimit.js');
 const { createApp } = await import('../../server/app.js');
@@ -343,4 +344,32 @@ test('pages: Make a book opens the chat for companion teachers; the book page is
   assert.match(lp.text, /id="sb-setup"/);
   const id2 = await madeBook(plain, 'Plain Book');
   assert.doesNotMatch((await as(plain)(`/library/make/${id2}`)).text, /data-oc=/);
+});
+
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): the writer changes page 2,
+// but the teacher edits page 2 by hand while it works, so their page stays. Nothing of the writer's change lands: the
+// reply ends with the app's own words saying so, and the card says what did not land.
+test('a book change that does not land (the page edited by hand meanwhile) is reported truthfully', async () => {
+  const u = teacher();
+  const id = await madeBook(u, 'The Water Cycle Trip');
+  q.run('DELETE FROM made_book_ai_days');
+  standIn(w => (/page 2/.test(w) ? ['changeBook', { request: w }] : null), 'Done.');
+  SB.hooks.create = async () => {
+    // The teacher edits page 2 by hand while the writer works.
+    const row = SB.ownBook(u, id), b = SB.bookOf(row);
+    b.pages[1] = { ...b.pages[1], text: 'The teacher wrote this page by hand.' };
+    assert.ok(SB.saveBook(u, id, { book: b, rev: row.rev }).ok);
+    const answer = mockChange(SB.bookOf(SB.ownBook(u, id)), 'simpler words on page 2');
+    const base0 = SB.bookOf(row);   // what the writer saw: page 2 before the teacher's edit
+    answer.edits.pages = [{ ...base0.pages[1], text: `${base0.pages[1].text} Everyone held their breath.` }];
+    return { model: 'mock', usage: { input_tokens: 1, output_tokens: 1 }, stop_reason: 'end_turn', content: [{ type: 'text', text: JSON.stringify(answer) }] };
+  };
+  try {
+    await as(u)('/api/companion/chat', { body: { text: 'simpler words on page 2 please', page: { type: 'book', bookId: id } } }); await C.allSettled();
+    const last = (await chatOf(u)).turns.at(-1);
+    assert.equal(SB.bookOf(SB.ownBook(u, id)).pages[1].text, 'The teacher wrote this page by hand.', 'the teacher\'s page stays');
+    assert.match(last.text, /The book did not change after all: the pages were changed by hand while Oomba was working, so yours stayed\.$/);
+    assert.equal(last.verify.ok, false); assert.equal(last.verify.landed, 0);
+    assert.deepEqual(last.verify.notLanded, [{ code: 'meanwhile', count: 1 }]);
+  } finally { SB.hooks.create = null; await C.allSettled(); CO.reset(u); }
 });

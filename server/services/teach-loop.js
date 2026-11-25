@@ -9,6 +9,7 @@
 // The only thing kept for this feature is one row in the settings table per teacher who has opened a Check page or hidden
 // the card: key "teach.loop:<user id>", value JSON { check: ms, hidden: ms }. No new table, no migration.
 import { q, setting, now } from '../db.js';
+import { config } from '../config.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
 import { liveOn } from './classlive-sessions.js';
@@ -53,7 +54,7 @@ export function markCheck(u) {
 export function setHidden(u, hide) { save(u.id, { hidden: hide ? now() : null }); }
 
 /** Show the compact card on /teach? Until every step is done once, and not after the teacher hid it. */
-export const showCard = st => !!st && !st.all && !st.hidden;
+export const showCard = st => config.teachLoopCard && !!st && !st.all && !st.hidden;
 
 /** Links to the real tools for this teacher, for their first class (the class tools are null when they have none yet). Every link opens a
  *  page that checks the teacher's own access again; nothing here grants anything. */

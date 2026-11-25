@@ -2025,6 +2025,8 @@
     },
     "budgetStop": "The AI Builder has to rest now, so I stopped here. Everything I made so far is saved.",
     "searchStopped": "I couldn't look that up, so I stopped here. Try asking in a different way!",
+    "lastNotSaved": "Heads up: my last change didn’t save, so your game is still version {n}. Ask me again and I’ll try once more.",
+    "lastNotSavedNone": "Heads up: my last change didn’t save, so there’s no game yet. Ask me again and I’ll try once more.",
     "autotestLeft": "Heads up: my automatic playtest still found {count, plural, one {# problem} other {# problems}} I couldn’t fix this time. Ask me to “fix the playtest problems” and I’ll keep going."
   },
   "uploads": {
@@ -2276,6 +2278,7 @@
       "courseNotYet": "That finish does not complete the step yet. Win the part the step set you, and it counts.",
       "courseSaveFailed": "That win could not be saved. Head back to the step and check it there.",
       "courseKeepPlaying": "Keep playing",
+      "aiKept": "{kept} of {asked} kept. The rest didn’t pass the checks, so they were left out.",
       "courseBack": "Back"
     },
     "friends": {
@@ -4379,6 +4382,7 @@
       "chTitle": "Title: {title}",
       "chGrade": "Grade: {grade}",
       "chRepaired": "{count, plural, one {# figure couldn’t be drawn and was replaced or left out} other {# figures couldn’t be drawn and were replaced or left out}}",
+      "notOnScreen": "Some of Oomba’s change isn’t showing here. Refresh the page to see the worksheet as it was saved.",
       "chAnswers": "Every answer worked out from its figure",
       "greetLine": "Tell me what this worksheet needs: the topic, the grade, how many questions.",
       "greetLineTest": "Tell me what this test should cover: the topic, the grade, how many questions.",
@@ -4422,6 +4426,7 @@
       "changedTitle": "Board updated: {title}",
       "changed": "{n, plural, one {# problem} other {# problems}}, {steps, plural, one {# step} other {# steps}}",
       "undoneTitle": "Change undone. Your board is as it was.",
+      "notPut": "This couldn’t be put on your board, so nothing changed. Try again.",
       "undo": "Undo Oomba’s change",
       "redo": "Put it back",
       "use": "Put it on my board",
@@ -4460,6 +4465,33 @@
       "edit": "Edit",
       "undo": "Undo",
       "undone": "Change undone.",
+      "verify": {
+        "nothing": "Nothing changed. Oomba checked the page after trying:",
+        "partial": "Not everything changed. Oomba checked the page after the change:",
+        "cannotDraw": "Question {n} stayed as it was: its figure couldn’t be drawn that way.",
+        "cannotDrawAny": "A question wasn’t added: its figure couldn’t be drawn that way.",
+        "noSuch": "There is no question {n}.",
+        "noSuchAny": "One change named something that isn’t there.",
+        "dropped": "Question {n} stayed as it was: the app can’t draw what was sent.",
+        "droppedAny": "One question was left out: the app can’t draw what was sent.",
+        "full": "Question {n} wasn’t added: there’s no more room.",
+        "fullAny": "Some questions weren’t added: there’s no more room.",
+        "meanwhile": "Question {n} was left alone: it changed while Oomba was working.",
+        "meanwhileAny": "Something was left alone: it changed while Oomba was working.",
+        "same": "Question {n} is the same as before.",
+        "sameAny": "One question is the same as before.",
+        "units": "No figure here could switch to {units}.",
+        "unitsAny": "No figure here could switch units.",
+        "gone": "This isn’t here anymore.",
+        "goneAny": "This isn’t here anymore.",
+        "filtered": "Question {n} was left out by the checks.",
+        "filteredAny": "{count, plural, one {# item was left out: it didn’t pass the tool’s checks.} other {# items were left out: they didn’t pass the tool’s checks.}}",
+        "notBuilt": "Nothing could be built with this tool’s settings.",
+        "notBuiltAny": "Nothing could be built with this tool’s settings.",
+        "other": "Question {n} didn’t change.",
+        "otherAny": "One change didn’t land.",
+        "swapped": "Question {n} couldn’t be drawn as asked, so a question from its figure’s generator is there instead."
+      },
       "undoneKept": "{count, plural, one {# thing you changed since was kept.} other {# things you changed since were kept.}}",
       "ideas": "Ideas",
       "unquote": "Remove the quote",
@@ -4625,7 +4657,7 @@
         "webNo": "Searched the web, but left out what it found",
         "toolNo": "One step didn't work",
         "sheet": "Read your worksheet ({n} questions)",
-        "edit": "Changed your worksheet ({n} changes)",
+        "edit": "{n, plural, one {Changed your worksheet (# change)} other {Changed your worksheet (# changes)}}",
         "editNo": "Couldn't change the worksheet",
         "board": "Made the board ({n} items)",
         "boardNo": "Couldn't build that board",
@@ -15309,6 +15341,10 @@
     }
   },
   "proof": {
+    "chatCheck": {
+      "notBuilt": "Nothing in the set changed: none of the passages passed the checks. Ask again and Oomba will try once more.",
+      "dropped": "{count, plural, one {# passage was left out: it didn’t pass the checks.} other {# passages were left out: they didn’t pass the checks.}}"
+    },
     "assign": {
       "title": "Hand in for a grade",
       "untitled": "Mistake Hunt",
