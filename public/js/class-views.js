@@ -135,6 +135,40 @@ function start() {
     await fadeIn;
   }
 
+  // Every button in the bar whole, at every width (public/css/class-views.css): the view's buttons on screen are
+  // measured, and when one does not fit (a live class, a longer language, a narrow window) the bar drops their words
+  // (cv-icons), then the clock (cv-noclock), then a button the ⋯ menu also has (cv-fold, Arrange seats), then gives the
+  // pill a row of its own (cv-two; under 1024 px it always has).
+  // Again after a resize, a view change and any change to the bar's buttons (Homeroom's live buttons come and go).
+  const TIGHT = ['cv-icons', 'cv-noclock', 'cv-fold', 'cv-two'], twoRows = matchMedia('(max-width: 1023px)');
+  function overflows() {
+    const a = acts(cur);
+    if (bar.scrollWidth > bar.clientWidth + 1) return true;
+    if (!a || !a.getClientRects().length) return false;
+    if (a.scrollWidth > a.clientWidth + 1) return true;
+    const r = a.getBoundingClientRect();
+    for (const el of a.querySelectorAll('button, a, select, summary, .dash-now, .hr-livedot')) {
+      const b = el.getBoundingClientRect();
+      if (b.width && (b.left < r.left - 1 || b.right > r.right + 1)) return true;
+    }
+    return false;
+  }
+  function fit() {
+    bar.classList.remove(...TIGHT);
+    for (const c of TIGHT) {
+      if (!overflows()) return;
+      if (c === 'cv-two' && twoRows.matches) return;
+      bar.classList.add(c);
+    }
+  }
+  let fitting = 0;
+  const refit = () => { if (!fitting) fitting = requestAnimationFrame(() => { fitting = 0; fit(); }); };
+  fit();
+  addEventListener('resize', refit);
+  new MutationObserver(refit).observe(bar, { childList: true, subtree: true });
+  document.fonts?.ready.then(refit, () => {});
+  document.addEventListener('cv:view', refit);
+
   bar.addEventListener('click', e => {
     const a = e.target instanceof Element && e.target.closest('a[data-cv-go]');
     if (!a || e.defaultPrevented || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

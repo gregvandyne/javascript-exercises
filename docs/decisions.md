@@ -11182,6 +11182,40 @@ small daily cap and Teacher plan holders without one.
   and iPhone 13: 16 checked, closed by default, the count, needs-help first, no overlap with the switches, a long name
   cut short, End session in reach; nobody checked).
 
+## Manipulatives: a selection box (25 Nov 2026)
+
+The owner: "All manipulative games should allow you to click and drag your cursor to select a bunch of objects at
+once." Every tool's board, solo (`public/js/manip.js bindPlane`) and in the live room (`public/js/manip-room.js`, inside
+one square the viewer may change), with the geometry shared in `public/js/manip-board.js` (`inRect`, `selMoving`,
+`selMove`, `selDelete`).
+
+- **The gesture change.** With a mouse or pen, a left drag on empty space no longer pans: it draws a selection box
+  (dashed, in the accent color). A drag on a locked backdrop's body (a chart, a mat, a locked frame) counts as empty
+  space, since those fill the board under the pieces; a hold there still opens its wheel. A mouse now pans with **Space
+  held and a drag** (from anywhere, even a piece), the **middle button**, or the **wheel / trackpad scroll** (deltaX and
+  deltaY); Ctrl or Cmd with the wheel (and a trackpad pinch) zooms at the pointer. The room's wheel used to zoom: it
+  pans now too, the same as the solo board. In the room a drag outside the viewer's own square still pans.
+- **Touch** is unchanged: one finger on empty space pans, two pinch. A hold of 450 ms on empty space (the wheel's hold
+  ring shows) and then a drag draws the box.
+- **What it takes.** Every unlocked piece and unlocked object whose box meets the rectangle; locked things never (the
+  backdrops start locked), and Shift+click never adds them either. Shift with the drag adds to what was selected.
+- **Showing it.** Each selected thing has the single-tap outline (`.on`); an object's resize corner shows only when it
+  is selected alone. A pill at the top of the board (on a phone under the zoom bar; in the room under the bar): "N
+  selected", 🗑 Delete, ✕. One thing selected is the ordinary single selection.
+- **Moving and deleting.** Dragging any selected thing moves all of them (with their snapped groups, an unlocked frame's
+  seated counters, a chart's blocks), kept inside the board or square, no snapping; one Undo step, then the charts
+  settle. Delete or Backspace (never while typing in a field) deletes them: one Undo step, and the usual "N deleted"
+  message with Undo. Escape, ✕, a tap on empty space or on something outside the selection let go of it; Shift+click
+  adds or removes one. Objects that handle their own taps (the number line, the coordinate grid, clocks, beads, cells,
+  pegs, answer boxes) keep them; a read-only board shows no selection.
+- **Strings** `js.manip.sel.*` and `js.manip-room.sel*`, English only (other locales fall back, as for the rest of the
+  manipulatives while they are tested).
+- **Tests:** `manip-box-select-browser.test.js` (laptop: a box from a locked chart's body selects three units and not the
+  chart or a locked unit, the pill, a group move, Delete and two Undo steps, Escape, a tap, ✕, Shift+click, dark mode;
+  the wheel, Ctrl+wheel, Space+drag and the middle button; a phone's pan and hold-then-drag; the room: a student's box,
+  a group move and Backspace, saved; a drag outside the square pans). `manip-steps-browser.test.js`'s laptop case now
+  pans a locked chart with Space held (a plain drag selects and moves nothing).
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,
@@ -13940,9 +13974,16 @@ able to play from within the homeroom instead of having to navigate away."
   teacher Homeroom lets into the class (`canUseClass`), `/class/:id/homeroom`, `/class/:id` (every Classroom page:
   Games, Progress, Students, Settings, gradebook and reports) and `/class/:id/dashboard` draw the same page: the site's
   bar, then one **shared bar** (class switcher, Homeroom | Classroom | Dashboard, the view's own buttons on the right),
-  then the view area. Same place, same height (71 px; two rows on a phone, 119 px), same chunky pill buttons on every
-  view; on a narrow laptop the buttons lose their words before anything wraps, and what still does not fit scrolls
-  inside the bar. Sticky under the site's bar while Classroom scrolls. Everyone else gets the pages exactly as before.
+  then the view area. Same place, same height (71 px; two rows under 1024 px, on a tablet and a phone, 119 px), same
+  chunky pill buttons on every view; on a narrow laptop the buttons lose their words before anything wraps. Sticky
+  under the site's bar while Classroom scrolls. Everyone else gets the pages exactly as before.
+  - **Every button whole, 360 to 1440 px** (25 Nov, a fix: at 820 and 1024 px the last buttons were cut off, "what
+    does not fit scrolls inside the bar" hid them). Under 1024 px the pill always takes the second row. Then
+    `class-views.js fit()` measures the view's buttons on screen (after a resize, a view change, and any change to the
+    bar's buttons, such as a live class starting) and, only while one is cut off: icons only (`cv-icons`; each button
+    keeps its name as aria-label), no clock (`cv-noclock`; the clock widget still shows it), Arrange seats steps out
+    (`cv-fold`; it is in the ⋯ menu) with the Live dot without its word, and last the pill on its own row at any width
+    (`cv-two`). Tested at 390, 820, 1024 and 1366 on all three views and a live class (`homeroom-views-browser`).
   - A route marks its page as a view (`markView(req, c, view, actions)`: the Homeroom page, `routes/schools.js`
     classHeader for every Classroom page, the teacher's dashboard); `views/layout.js` page() asks the registered shell
     (`setViewShell`, so the layout imports nothing of Homeroom, as with onEveryPage).
@@ -13983,14 +14024,17 @@ able to play from within the homeroom instead of having to navigate away."
   hand, its state poll, Pause screens, Bring everyone to me and the lock, which cover the game as they cover the desk.
   One pulse per student: the desk's own pulse rests while the game page in the layer pulses (where: game, as before).
   Closing asks for the cards again, so the card shows its progress. In order still waits: a locked card never opens,
-  and the server's "Finish the one before it first" is unchanged. On a phone the layer fills the board under the
+  and the server's "Finish the one before it first" is unchanged. (`homeroom-handouts-browser` and
+  `homeroom-lessons-browser` test 3 still expected the desk to navigate to the game page and failed on main; they now
+  check the same things through the layer: the instructions above the game inside the frame, the lesson's exact set
+  in the frame's address and on screen, Back to my desk, a locked card never opening the layer.) On a phone the layer fills the board under the
   shared bar.
 - Tests: `tests/unit/homeroom-views.test.js` (the shell on each address, the X-View JSON, everyone else unchanged, the
   flag off, Spanish, the play page framed only when asked) and `tests/unit/homeroom-views-browser.test.js` (Homeroom ->
   Classroom -> Dashboard -> Homeroom with a value on window surviving and one navigation entry, Back and Forward, a
   reload; zoom and place kept; Delete once deletes one note and never from another view; no dashboard checks while
   hidden; Classroom's tab and scroll; deep links on every view; the bar's place and height at 1366 x 768, 1000 x 600
-  and a phone with nothing sideways; a teacher without Homeroom; playing from My desk with Escape, Back and a reload;
+  and a phone with nothing sideways; every button in the bar whole at 390, 820, 1024 and 1366 (a live class too); a teacher without Homeroom; playing from My desk with Escape, Back and a reload;
   a student playing a handout with one pulse, Pause screens over it and the progress after closing).
 - **Open**: Classroom's own tabs still load their page (Homeroom's board state then starts fresh, its saved state is
   the server's as always); a game left open in the layer keeps playing while another view is on screen.
