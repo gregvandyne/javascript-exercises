@@ -4823,6 +4823,39 @@
         "fireworks": "Fuegos artificiales",
         "smiley": "Cara sonriente",
         "rainbow": "Arcoíris"
+      },
+      "hand": {
+        "raise": "Levantar la mano",
+        "isUp": "Mano arriba",
+        "menu": "Levanta la mano",
+        "question": "Tengo una pregunta",
+        "help": "Necesito ayuda",
+        "bathroom": "Baño",
+        "hallPass": "pase",
+        "down": "Bajar la mano",
+        "leaveLine": "Salir de la fila",
+        "back": "Ya volví",
+        "goAhead": "Puedes ir.",
+        "passLeft": "Pase: {time}",
+        "timeUp": "Se acabó el tiempo. Regresa, por favor.",
+        "next": "Eres el siguiente para el pase.",
+        "inLine": "{count, plural, one {Estás en la fila. Hay # persona antes que tú.} other {Estás en la fila. Hay # personas antes que tú.}}",
+        "lineHint": "Espera en tu lugar. Ya te toca pronto.",
+        "up": {
+          "question": "Tu mano está arriba: una pregunta.",
+          "help": "Tu mano está arriba: necesitas ayuda.",
+          "bathroom": "Pediste el pase de pasillo."
+        },
+        "askedPass": "Tu maestro responderá pronto.",
+        "upHint": "Tu maestro la puede ver.",
+        "toastPass": "Pediste el pase",
+        "toastUp": "Tu maestro ve que levantaste la mano",
+        "toastBack": "Bienvenido de nuevo",
+        "toastDown": "Mano abajo",
+        "locked": "Tu maestro bloqueó tu pupitre un momento",
+        "lockedHint": "Se abrirá pronto. Tu trabajo está guardado.",
+        "coming": "Tu maestro viene a tu lugar",
+        "passBtn": "Pase de pasillo"
       }
     },
     "homeroom-area": {
@@ -4974,6 +5007,119 @@
       "none": {
         "name": "Sin calificar",
         "hint": "Práctica: sin nota, no se envía nada."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Tu maestro bloqueó tu pupitre un momento",
+      "lockedHint": "Se abrirá pronto. Tu trabajo está guardado.",
+      "coming": "Tu maestro viene a tu lugar"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "No está",
+        "done": "Listo",
+        "stuck": "Atascado",
+        "typing": "Escribiendo",
+        "working": "Trabajando",
+        "here": "En su lugar"
+      },
+      "hand": {
+        "question": "Pregunta",
+        "help": "Necesita ayuda",
+        "bathroom": "Baño"
+      },
+      "inGame": "en {title}",
+      "onDesk": "sigue: {title}",
+      "chipLabel": "{name}: {status}. Ver su pupitre",
+      "handOf": "{name}: {what}",
+      "needsLook": "Revisar",
+      "close": "Cerrar",
+      "pass": {
+        "title": "Pase de pasillo",
+        "outShort": "Fuera con el pase",
+        "lineShort": "Espera el pase",
+        "left": "quedan {time}",
+        "over": "{time} más del tiempo",
+        "isBack": "{name} volvió",
+        "nobody": "Ahora no hay nadie fuera.",
+        "next": "Sigue:",
+        "then": "Después:",
+        "removeLine": "Sacar a {name} de la fila",
+        "length": "Tiempo del pase",
+        "less": "Menos tiempo",
+        "more": "Más tiempo",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Fuera",
+        "lineTag": "En la fila"
+      },
+      "today": {
+        "title": "Hoy de un vistazo",
+        "button": "Hoy",
+        "doneOf": "{done} de {total} listos",
+        "barLabel": "{done} listos, {work} trabajando, {stuck} atascados, {none} sin empezar",
+        "nums": "{done} listos · {work} trabajando · {stuck} atascados · {none} sin empezar",
+        "lead": "Las tareas de hoy. Empieza la clase para ver quién trabaja o está atascado.",
+        "leadLive": "Las tareas de hoy, mientras trabajan.",
+        "done": "Listo",
+        "working": "Trabajando",
+        "stuck": "Atascado",
+        "notStarted": "Sin empezar",
+        "none": "Hoy todavía no se repartió nada.",
+        "weeks": "El progreso de varias semanas está en la pestaña Clase.",
+        "classroom": "Abrir Clase"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Manos, ninguna arriba} one {Manos, # arriba} other {Manos, # arriba}}",
+        "button": "Manos",
+        "title": "Manos arriba",
+        "notNow": "Ahora no",
+        "putInLine": "Poner en la fila",
+        "givePass": "Dar el pase",
+        "answered": "Respondida",
+        "none": "Ahora no hay manos arriba.",
+        "private": "Solo tú ves las manos y el pase. Nunca en el proyector.",
+        "done": {
+          "answer": "Respondida",
+          "pass": "Pase actualizado",
+          "notNow": "Mano bajada",
+          "back": "Pase actualizado"
+        }
+      },
+      "look": {
+        "title": "Pupitre de {name}",
+        "loading": "Cargando...",
+        "never": "nada aún",
+        "done": "Listo",
+        "pct": "{pct} % avanzado",
+        "allDone": "Todo en su pupitre está listo.",
+        "nothing": "Aún no hay nada en su pupitre.",
+        "stuckNote": "Sin avanzar en esta tarea desde hace {min} minutos.",
+        "lastSeen": "Visto por última vez {when}",
+        "whereGame": "En el juego",
+        "whereDesk": "En su pupitre",
+        "activity": "última actividad {when}",
+        "on": "Trabaja en",
+        "progress": "{done} de {total} tareas listas",
+        "pad": "Su libreta",
+        "teamPad": "Libreta del equipo",
+        "padLabel": "Libreta de {name}",
+        "padEmpty": "Aún no hay dibujos",
+        "private": "Un resumen de lo que sabe Homeroom. Nunca muestra su pantalla ni lo que escribe.",
+        "coming": "Voy para allá",
+        "comingOn": "En camino: toca para quitarlo",
+        "lock": "Bloquear pupitre",
+        "unlock": "Desbloquear pupitre",
+        "hideCursor": "Ocultar cursor",
+        "showCursor": "Mostrar cursor",
+        "handouts": "Sus tareas",
+        "toast": {
+          "lockOn": "El pupitre de {name} está bloqueado",
+          "lockOff": "El pupitre de {name} está abierto otra vez",
+          "hideOn": "El cursor de {name} está oculto",
+          "hideOff": "El cursor de {name} se ve otra vez",
+          "comingOn": "{name} ve que vas para allá",
+          "comingOff": "Aviso quitado del pupitre de {name}"
+        }
       }
     }
   },
@@ -14811,7 +14957,12 @@
       "commentLong": "Un comentario puede tener 140 caracteres como máximo.",
       "badSticker": "Elige una de las pegatinas.",
       "notFinished": "Los comentarios y pegatinas van en trabajos terminados. Este aún no lo está.",
-      "padChanged": "Alguien de tu equipo dibujó a la vez. Tu dibujo se añadió al suyo."
+      "padChanged": "Alguien de tu equipo dibujó a la vez. Tu dibujo se añadió al suyo.",
+      "badKind": "Elige una pregunta, ayuda o el baño.",
+      "passAlready": "Ya tienes un lugar con el pase de pasillo.",
+      "badMinutes": "Elige entre 1 y 20 minutos.",
+      "noHand": "Esa mano ya está abajo.",
+      "noPass": "No tiene el pase ni un lugar en la fila."
     },
     "live": "En vivo",
     "desk": {

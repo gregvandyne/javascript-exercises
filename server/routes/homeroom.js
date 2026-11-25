@@ -36,6 +36,15 @@
 //                                              handout cards when they changed (hv: the cards' version the page has)
 //   POST /api/desk/:id/doodle                  their doodle and working-out pad: { strokes }
 //   GET  /api/homeroom-live                    the live classes of this student with Homeroom (the prompt on every page)
+// Step 3a, live class (services/homeroom-live.js; docs/decisions.md "Homeroom, step 3a"):
+//   GET  /api/homeroom/:id/pulse?hv=           the teacher's board while live, every 2 s: each desk's status, current
+//                                              handout, hand, pass, settings and cursor samples; the Hands panel; and the
+//                                              desks' handouts again when they changed (hv: the fingerprint the page has)
+//   POST /api/homeroom/:id/hands               { action: answer | pass | notNow | back, studentId } or { action: minutes, minutes }
+//   POST /api/homeroom/:id/desk-flag           { studentId, flag: lock | hide | coming, on }
+//   GET  /api/homeroom/:id/look/:sid           look at one student's desk: status, current handout, last pulse, their pad
+//   POST /api/desk/:id/pulse                   a desk's or a handout game's pulse: { where, on, idle, step, cur, pad }
+//   POST /api/desk/:id/hand                    their own hand: { action: raise, kind } | { action: lower } | { action: back }
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
@@ -44,6 +53,8 @@ import { rateLimit } from '../services/ratelimit.js';
 import * as H from '../services/homeroom.js';
 import * as HO from '../services/homeroom-handouts.js';
 import * as HL from '../services/homeroom-lessons.js';
+import * as HV from '../services/homeroom-live.js';
+import crypto from 'node:crypto';
 import { localeInfo } from '../i18n/index.js';
 import { hasModel } from '../builder/anthropic.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
@@ -116,11 +127,12 @@ router.get('/class/:id/homeroom', (req, res) => {
   const lists = deskLists(req);
   const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
-      lessons: HL.listMine(u, req.locale), lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u) })}
+      lessons: HL.listMine(u, req.locale), lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
+      pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX } })}
     <div id="homeroom" class="hr">
       <header class="hr-top">
         <label class="sr-only" for="hr-class">${t('homeroom.switchClass')}</label>
@@ -159,6 +171,23 @@ router.post('/api/homeroom/:id/seats', rateLimit('homeroom-seats', 600, 3600e3),
 router.post('/api/homeroom/:id/groups', rateLimit('homeroom-groups', 300, 3600e3), (req, res) => send(req, res, H.saveGroups(req.user, req.homeroomClass, { groups: body(req).groups, members: body(req).members })));
 router.post('/api/homeroom/:id/area', rateLimit('homeroom-area', 1800, 3600e3), (req, res) => send(req, res, H.saveArea(req.user, req.homeroomClass, body(req).state)));
 router.post('/api/homeroom/:id/live', rateLimit('homeroom-live', 600, 3600e3), (req, res) => send(req, res, H.setLive(req.user, req.homeroomClass, String(body(req).action || ''))));
+
+// ---------------------------------------------------------------- live class: watching desks (step 3a)
+// The board asks every 2 s while live and visible (1800 an hour); the desks' handouts come again only when they changed.
+const hoPrint = ho => crypto.createHash('sha1').update(JSON.stringify(ho)).digest('base64url').slice(0, 16);
+router.get('/api/homeroom/:id/pulse', rateLimit('homeroom-pulse-t', 5000, 3600e3), (req, res) => {
+  const c = req.homeroomClass, ho = HO.boardView(c, req.locale), hv = hoPrint(ho);
+  res.json({ ...HV.liveView(c, ho), hv, ...(String(req.query.hv || '') === hv ? {} : { ho }) });
+});
+router.post('/api/homeroom/:id/hands', rateLimit('homeroom-hands-t', 1200, 3600e3), (req, res) => {
+  const x = body(req);
+  send(req, res, HV.teacherHands(req.user, req.homeroomClass, { action: String(x.action || ''), studentId: String(x.studentId || ''), minutes: x.minutes }));
+});
+router.post('/api/homeroom/:id/desk-flag', rateLimit('homeroom-flag', 1200, 3600e3), (req, res) => {
+  const x = body(req);
+  send(req, res, HV.setFlag(req.user, req.homeroomClass, String(x.studentId || ''), String(x.flag || ''), !!x.on));
+});
+router.get('/api/homeroom/:id/look/:sid', rateLimit('homeroom-look', 1200, 3600e3), (req, res) => send(req, res, HV.lookAt(req.user, req.homeroomClass, req.params.sid, req.locale)));
 
 // ---------------------------------------------------------------- handouts (step 2a; services/homeroom-handouts.js)
 // A handout is a real class assignment (services/game-folders.js assignGame), so it shares the assign routes' limit
@@ -284,15 +313,16 @@ router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
   const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, cards = HO.deskView(c, u, req.locale);
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
-      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: H.boardState(c.id) })}
+      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: { ...H.boardState(c.id), ...deskLive(c, u) } })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
         <h1 class="hd-title" dir="auto">${c.name}</h1>
-        ${device ? html`<span class="hd-grow"></span><span class="hd-notyou"><span class="hd-hidephone">${t('homeroom.desk.notYou', { name: u.display_name })}</span><button type="button" class="hd-tool hd-switch" data-hd="switch">${ico('🔄', { size: 18 })} ${t('homeroom.desk.switch')}</button></span>` : ''}
+        <span class="hd-grow"></span><span class="hd-handwrap" id="hd-handwrap"></span>
+        ${device ? html`<span class="hd-notyou"><span class="hd-hidephone">${t('homeroom.desk.notYou', { name: u.display_name })}</span><button type="button" class="hd-tool hd-switch" data-hd="switch">${ico('🔄', { size: 18 })} ${t('homeroom.desk.switch')}</button></span>` : ''}
       </header>
       <div class="hd-body" id="hd-body"><p class="muted hr-loading">${t('homeroom.loading')}</p></div>
       <nav class="hd-dock hd-float" aria-label="${t('homeroom.desk.dock')}">
@@ -312,8 +342,22 @@ router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3)
   const c = req.homeroomClass, cards = HO.deskView(c, req.user, req.locale), hv = HO.deskVersion(cards);
   // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
   const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
-  res.json({ ...H.boardState(c.id, req.query.v), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
     ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
+});
+// Step 3a: what a desk hears about its own live desk (its hand, its place with the hall pass, its settings, and a team
+// desk's teammates' cursors on the shared pad); nothing while class isn't live.
+function deskLive(c, u) {
+  if (!H.liveOf(c.id)) return {};
+  return HV.deskLiveOf(c, u);
+}
+// A pulse at most every 2 s while the pointer moves, else every 10 s (1800 an hour at most).
+router.post('/api/desk/:id/pulse', rateLimit('homeroom-pulse', 4000, 3600e3), (req, res) => send(req, res, HV.pulse(req.user, req.homeroomClass, body(req))));
+router.post('/api/desk/:id/hand', rateLimit('homeroom-hand', 300, 3600e3), (req, res) => {
+  const x = body(req), a = String(x.action || ''), c = req.homeroomClass;
+  if (a === 'raise') return send(req, res, HV.raiseHand(req.user, c, String(x.kind || '')));
+  if (a === 'lower' || a === 'back') return send(req, res, HV.lowerHand(req.user, c, { back: a === 'back' }));
+  fail(req, res, 'badAction');
 });
 router.post('/api/desk/:id/doodle', rateLimit('homeroom-doodle', 1200, 3600e3), (req, res) => {
   const x = body(req), r = H.saveDoodle(req.user, req.homeroomClass, x.strokes, { base: x.base === undefined || x.base === null ? null : String(x.base) });

@@ -4824,6 +4824,39 @@
         "fireworks": "Vuurwerk",
         "smiley": "Smiley",
         "rainbow": "Regenboog"
+      },
+      "hand": {
+        "raise": "Hand opsteken",
+        "isUp": "Hand omhoog",
+        "menu": "Steek je hand op",
+        "question": "Ik heb een vraag",
+        "help": "Ik heb hulp nodig",
+        "bathroom": "Wc",
+        "hallPass": "gangpas",
+        "down": "Hand omlaag",
+        "leaveLine": "Uit de rij gaan",
+        "back": "Ik ben terug",
+        "goAhead": "Je mag gaan.",
+        "passLeft": "Gangpas: {time}",
+        "timeUp": "De tijd is om. Kom maar terug.",
+        "next": "Jij bent de volgende voor de gangpas.",
+        "inLine": "{count, plural, one {Je staat in de rij. Er is # persoon voor je.} other {Je staat in de rij. Er zijn # mensen voor je.}}",
+        "lineHint": "Wacht aan je tafel. Je bent zo aan de beurt.",
+        "up": {
+          "question": "Je hand is omhoog: een vraag.",
+          "help": "Je hand is omhoog: je hebt hulp nodig.",
+          "bathroom": "Je hebt om de gangpas gevraagd."
+        },
+        "askedPass": "Je leraar antwoordt zo.",
+        "upHint": "Je leraar ziet het.",
+        "toastPass": "Je hebt om de gangpas gevraagd",
+        "toastUp": "Je leraar ziet dat je hand omhoog is",
+        "toastBack": "Welkom terug",
+        "toastDown": "Hand omlaag",
+        "locked": "Je leraar heeft je tafel even op slot gezet",
+        "lockedHint": "Hij gaat zo weer open. Je werk is bewaard.",
+        "coming": "Je leraar komt naar je toe",
+        "passBtn": "Gangpas"
       }
     },
     "homeroom-area": {
@@ -4975,6 +5008,119 @@
       "none": {
         "name": "Geen cijfer",
         "hint": "Oefening: geen cijfer, er wordt niets verstuurd."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Je leraar heeft je tafel even op slot gezet",
+      "lockedHint": "Hij gaat zo weer open. Je werk is bewaard.",
+      "coming": "Je leraar komt naar je toe"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Niet hier",
+        "done": "Klaar",
+        "stuck": "Loopt vast",
+        "typing": "Typt",
+        "working": "Werkt",
+        "here": "Aan tafel"
+      },
+      "hand": {
+        "question": "Vraag",
+        "help": "Heeft hulp nodig",
+        "bathroom": "Wc"
+      },
+      "inGame": "in {title}",
+      "onDesk": "hierna: {title}",
+      "chipLabel": "{name}: {status}. Bekijk de tafel",
+      "handOf": "{name}: {what}",
+      "needsLook": "Even kijken",
+      "close": "Sluiten",
+      "pass": {
+        "title": "Gangpas",
+        "outShort": "Weg met de gangpas",
+        "lineShort": "Wacht op de gangpas",
+        "left": "nog {time}",
+        "over": "{time} over tijd",
+        "isBack": "{name} is terug",
+        "nobody": "Er is nu niemand weg.",
+        "next": "Hierna:",
+        "then": "Daarna:",
+        "removeLine": "{name} uit de rij halen",
+        "length": "Tijd van de pas",
+        "less": "Korter",
+        "more": "Langer",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Weg",
+        "lineTag": "In de rij"
+      },
+      "today": {
+        "title": "Vandaag in één blik",
+        "button": "Vandaag",
+        "doneOf": "{done} van {total} klaar",
+        "barLabel": "{done} klaar, {work} bezig, {stuck} vast, {none} niet begonnen",
+        "nums": "{done} klaar · {work} bezig · {stuck} vast · {none} niet begonnen",
+        "lead": "De opdrachten van vandaag. Start de les om te zien wie werkt of vastloopt.",
+        "leadLive": "De opdrachten van vandaag, terwijl de klas werkt.",
+        "done": "Klaar",
+        "working": "Bezig",
+        "stuck": "Vast",
+        "notStarted": "Niet begonnen",
+        "none": "Vandaag is nog niets uitgedeeld.",
+        "weeks": "Voortgang over weken staat op het tabblad Klas.",
+        "classroom": "Klas openen"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Handen, geen omhoog} one {Handen, # omhoog} other {Handen, # omhoog}}",
+        "button": "Handen",
+        "title": "Handen omhoog",
+        "notNow": "Nu niet",
+        "putInLine": "In de rij zetten",
+        "givePass": "Gangpas geven",
+        "answered": "Beantwoord",
+        "none": "Er zijn nu geen handen omhoog.",
+        "private": "Alleen jij ziet handen en de gangpas. Nooit op de beamer.",
+        "done": {
+          "answer": "Beantwoord",
+          "pass": "Gangpas bijgewerkt",
+          "notNow": "Hand omlaag gezet",
+          "back": "Gangpas bijgewerkt"
+        }
+      },
+      "look": {
+        "title": "Tafel van {name}",
+        "loading": "Laden...",
+        "never": "nog niets",
+        "done": "Klaar",
+        "pct": "{pct}% gedaan",
+        "allDone": "Alles op de tafel is klaar.",
+        "nothing": "Nog niets op de tafel.",
+        "stuckNote": "Al {min} minuten geen stap verder met deze opdracht.",
+        "lastSeen": "Laatst gezien {when}",
+        "whereGame": "In het spel",
+        "whereDesk": "Aan tafel",
+        "activity": "laatst actief {when}",
+        "on": "Werkt aan",
+        "progress": "{done} van {total} opdrachten klaar",
+        "pad": "Kladblok",
+        "teamPad": "Kladblok van het team",
+        "padLabel": "Kladblok van {name}",
+        "padEmpty": "Nog niets getekend",
+        "private": "Een overzicht van wat Homeroom weet. Nooit het scherm of wat er getypt wordt.",
+        "coming": "Ik kom eraan",
+        "comingOn": "Onderweg: tik om weg te halen",
+        "lock": "Tafel op slot",
+        "unlock": "Tafel van slot",
+        "hideCursor": "Cursor verbergen",
+        "showCursor": "Cursor tonen",
+        "handouts": "Opdrachten",
+        "toast": {
+          "lockOn": "De tafel van {name} is op slot",
+          "lockOff": "De tafel van {name} is weer open",
+          "hideOn": "De cursor van {name} is verborgen",
+          "hideOff": "De cursor van {name} is weer zichtbaar",
+          "comingOn": "{name} ziet dat je eraan komt",
+          "comingOff": "Melding van de tafel van {name} gehaald"
+        }
       }
     }
   },
@@ -14812,7 +14958,12 @@
       "commentLong": "Een opmerking mag hoogstens 140 tekens hebben.",
       "badSticker": "Kies een van de stickers.",
       "notFinished": "Opmerkingen en stickers zijn voor af werk. Dit is nog niet af.",
-      "padChanged": "Iemand uit je team tekende tegelijk. Jouw tekening is erbij gezet."
+      "padChanged": "Iemand uit je team tekende tegelijk. Jouw tekening is erbij gezet.",
+      "badKind": "Kies een vraag, hulp of de wc.",
+      "passAlready": "Je hebt al een plek voor de gangpas.",
+      "badMinutes": "Kies tussen 1 en 20 minuten.",
+      "noHand": "Die hand is al omlaag.",
+      "noPass": "Geen pas en geen plek in de rij."
     },
     "live": "Live",
     "desk": {

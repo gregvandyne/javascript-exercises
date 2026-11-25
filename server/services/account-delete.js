@@ -131,6 +131,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // passwords
     q.run('DELETE FROM homeroom_doodles WHERE user_id=?', u.id);
     q.run('DELETE FROM homeroom_signins WHERE user_id=?', u.id);
+    // their raised hand, hall pass and desk settings in a live class (step 3a)
+    q.run('DELETE FROM homeroom_live WHERE user_id=?', u.id);
     // the teacher's comments and stickers on their finished handouts (step 2c)
     q.run('DELETE FROM homeroom_feedback WHERE user_id=?', u.id);
     // their Homeroom lessons (step 2b; the lessons' question sets went with 11b)

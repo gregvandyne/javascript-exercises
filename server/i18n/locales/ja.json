@@ -4823,6 +4823,39 @@
         "fireworks": "花火",
         "smiley": "にっこり",
         "rainbow": "虹"
+      },
+      "hand": {
+        "raise": "手をあげる",
+        "isUp": "手をあげています",
+        "menu": "手をあげる",
+        "question": "質問があります",
+        "help": "手伝ってほしい",
+        "bathroom": "トイレ",
+        "hallPass": "外出パス",
+        "down": "手をおろす",
+        "leaveLine": "順番をやめる",
+        "back": "もどりました",
+        "goAhead": "行っていいよ。",
+        "passLeft": "外出パス：{time}",
+        "timeUp": "時間です。もどってきてね。",
+        "next": "つぎは あなたの番です。",
+        "inLine": "{count, plural, other {順番を待っています。前に#人います。}}",
+        "lineHint": "つくえで待っていてね。もうすぐ番です。",
+        "up": {
+          "question": "手をあげています：質問",
+          "help": "手をあげています：手伝ってほしい",
+          "bathroom": "外出パスをたのみました。"
+        },
+        "askedPass": "先生がすぐに答えます。",
+        "upHint": "先生に見えています。",
+        "toastPass": "外出パスをたのみました",
+        "toastUp": "先生に手が見えています",
+        "toastBack": "おかえり",
+        "toastDown": "手をおろしました",
+        "locked": "先生がつくえを少しのあいだロックしました",
+        "lockedHint": "すぐにまた開きます。やったことは保存されています。",
+        "coming": "先生がそばに来ます",
+        "passBtn": "外出パス"
       }
     },
     "homeroom-area": {
@@ -4974,6 +5007,119 @@
       "none": {
         "name": "評価なし",
         "hint": "練習：成績にならず、何も送りません。"
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "先生がつくえを少しのあいだロックしました",
+      "lockedHint": "すぐにまた開きます。やったことは保存されています。",
+      "coming": "先生がそばに来ます"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "いない",
+        "done": "できた",
+        "stuck": "つまずき中",
+        "typing": "入力中",
+        "working": "取り組み中",
+        "here": "つくえにいる"
+      },
+      "hand": {
+        "question": "質問",
+        "help": "手伝いが必要",
+        "bathroom": "トイレ"
+      },
+      "inGame": "{title} に取り組み中",
+      "onDesk": "つぎは：{title}",
+      "chipLabel": "{name}：{status}。つくえを見る",
+      "handOf": "{name}：{what}",
+      "needsLook": "見てあげて",
+      "close": "閉じる",
+      "pass": {
+        "title": "外出パス",
+        "outShort": "外出中",
+        "lineShort": "外出パス待ち",
+        "left": "のこり {time}",
+        "over": "{time} すぎています",
+        "isBack": "{name} がもどった",
+        "nobody": "いま外出中の人はいません。",
+        "next": "つぎ：",
+        "then": "そのあと：",
+        "removeLine": "{name} を順番から外す",
+        "length": "パスの時間",
+        "less": "短く",
+        "more": "長く",
+        "minutes": "{count, plural, other {#分}}",
+        "outTag": "外出中",
+        "lineTag": "順番待ち"
+      },
+      "today": {
+        "title": "今日のようす",
+        "button": "今日",
+        "doneOf": "{total}人中{done}人できた",
+        "barLabel": "できた {done}、取り組み中 {work}、つまずき中 {stuck}、まだ {none}",
+        "nums": "できた {done}・取り組み中 {work}・つまずき中 {stuck}・まだ {none}",
+        "lead": "今日の配布物。授業を始めると、取り組み中やつまずき中が見えます。",
+        "leadLive": "今日の配布物（いまの様子）",
+        "done": "できた",
+        "working": "取り組み中",
+        "stuck": "つまずき中",
+        "notStarted": "まだ",
+        "none": "今日はまだ何も配っていません。",
+        "weeks": "何週間かの進み具合は「クラス」タブで見られます。",
+        "classroom": "クラスを開く"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {挙手：なし} other {挙手：#人}}",
+        "button": "挙手",
+        "title": "手をあげている人",
+        "notNow": "あとで",
+        "putInLine": "順番に入れる",
+        "givePass": "パスをわたす",
+        "answered": "答えた",
+        "none": "いま手をあげている人はいません。",
+        "private": "挙手とパスはあなただけに見えます。プロジェクターには出ません。",
+        "done": {
+          "answer": "答えました",
+          "pass": "パスを更新しました",
+          "notNow": "手をおろしました",
+          "back": "パスを更新しました"
+        }
+      },
+      "look": {
+        "title": "{name} のつくえ",
+        "loading": "読み込み中...",
+        "never": "まだなし",
+        "done": "できた",
+        "pct": "{pct}% 進んだ",
+        "allDone": "つくえの上のものは全部できました。",
+        "nothing": "つくえにはまだ何もありません。",
+        "stuckNote": "この配布物で{min}分間、先に進んでいません。",
+        "lastSeen": "最後に見えた：{when}",
+        "whereGame": "ゲーム中",
+        "whereDesk": "つくえにいる",
+        "activity": "最後の操作：{when}",
+        "on": "取り組み中",
+        "progress": "{total}こ中{done}こできた",
+        "pad": "メモ帳",
+        "teamPad": "チームのメモ帳",
+        "padLabel": "{name} のメモ帳",
+        "padEmpty": "まだ何もかいていません",
+        "private": "Homeroom が知っていることのまとめです。画面や入力した文字は見せません。",
+        "coming": "そっちに行くね",
+        "comingOn": "向かっています：タップで消す",
+        "lock": "つくえをロック",
+        "unlock": "ロックを解除",
+        "hideCursor": "カーソルをかくす",
+        "showCursor": "カーソルを表示",
+        "handouts": "配布物",
+        "toast": {
+          "lockOn": "{name} のつくえをロックしました",
+          "lockOff": "{name} のつくえをまた開きました",
+          "hideOn": "{name} のカーソルをかくしました",
+          "hideOff": "{name} のカーソルをまた表示します",
+          "comingOn": "{name} に向かっていることが見えます",
+          "comingOff": "{name} のつくえからメモを消しました"
+        }
       }
     }
   },
@@ -14811,7 +14957,12 @@
       "commentLong": "コメントは140文字までです。",
       "badSticker": "シールを1つ選んでください。",
       "notFinished": "コメントやシールは終わった課題に付けられます。これはまだ終わっていません。",
-      "padChanged": "チームの友だちが同時にかいていました。あなたの絵はそこに足されました。"
+      "padChanged": "チームの友だちが同時にかいていました。あなたの絵はそこに足されました。",
+      "badKind": "質問、手伝い、トイレのどれかを選んでね。",
+      "passAlready": "もう外出パスの順番に入っています。",
+      "badMinutes": "1分から20分の間で選んでください。",
+      "noHand": "その手はもう下りています。",
+      "noPass": "外出パスも順番もありません。"
     },
     "live": "ライブ",
     "desk": {

@@ -13696,3 +13696,87 @@ step 2. Migration `0127_homeroom_teams_feedback`.
   handed a game on a tablet, the student's Team line and See the room).
 - **Open**: parents' view of comments and stickers (step 4); the overview's columns are Homeroom handouts only; a team
   desk shows its first two handouts like any desk, then "+N more" (each member's name opens their full sheet).
+
+## Homeroom, step 3a: live class, watching desks (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Live class", "Calming the room", "Two ways to see progress") and the two owner-approved
+mockups (the teacher's live desks with Working / Typing / Stuck / Done, "Needs a look", named cursors, ✋ and the Hands
+panel, 📊 Today; the student desk's Raise hand with I have a question / I need help / Bathroom, "You're next" and "Go
+ahead"). Builds on steps 1 and 2. Migration `0128_homeroom_live`.
+- **Transport: Homeroom's own polling, not the Manipulatives socket.** Step 1b's reason still holds: the live room's socket
+  (`services/manip-socket.js`) keeps its state per manipulatives session in memory and has no idea of a class, a desk, a
+  hand or a hall pass; carrying a class on it would mean a second kind of room inside it. Polling carries this cleanly:
+  - a desk sends `POST /api/desk/:id/pulse` (`public/js/homeroom-pulse.js`): where it is (desk or game), which handout,
+    seconds since the last input, how many times the game moved forward on this page (it saved or scored; counted from
+    the game frame's own `brb:save` / `brb:score` / `brb:gameover` messages), and up to 8 cursor samples (fractions of
+    the desk and of the pad) taken at most 4 times a second. Every 2 s while the pointer moves, else every 10 s; only
+    while class is live and the page visible. Never keys, words, answers or the screen. A handout's game page pulses too
+    (the play frame Homeroom registers gained `script` and `data`, so `routes/games.js` stays Homeroom-free), using the
+    browser's user-activation flag for input inside the sandboxed game.
+  - the board asks `GET /api/homeroom/:id/pulse` every 2 s while live and visible; the desks' handouts ride along only
+    when their fingerprint changed (`hv`), so the board's own 8 s handouts poll stops while live.
+  - the desk's existing 3 s state poll also carries its own `me` (hand, pass, place in line, lock, "coming over") and, on
+    a team desk, the teammates' pad cursors.
+  - Cursors are replayed with their own timing, about 2 s behind; above 30 students (`CURSORS_MAX`) the board shows
+    presence only and desks stop sending samples.
+  - **Load for 35 students**: cursors are off (over 30), so pulses come every 10 s: 3.5 a second, plus the desks' state
+    polls (11.7 a second, as in step 1b) and the board's one every 2 s: about 16 small requests a second. Pulses touch no
+    disk (memory only); hands and passes are a few indexed rows. With cursors on (30 or fewer) pulses peak at one per
+    student every 2 s (15 a second). Limits: 4000 pulses an hour per student, 5000 board polls an hour.
+- **Status rules** (`services/homeroom-live.js` statusOf, tested on their own), checked in this order:
+  1. **Not here**: no pulse for 30 s (`HERE_MS`; a desk pulses at least every 10 s);
+  2. **Done**: every handout on their desk is done;
+  3. **Stuck** ("Needs a look"): their current handout (open in the game, else the desk's Next up) is unfinished and
+     nothing moved forward on it for **3 minutes** (`STUCK_MS`) since they started on it, came back after being away, or
+     class started. Moving forward is the card turning done, a new score, or the game itself saving or scoring. Time
+     alone is not progress (the card's bar fills with time), and neither is drawing on the pad. 3 minutes is the spec's
+     "stuck for a few minutes": long enough for a hard problem, short enough to matter in a 45-minute class;
+  4. **Typing**: any input in the last 10 s; 5. **Working** (or **At desk** when nothing is on their desk).
+  The board shows a calm chip hanging under each desk (a dot, the word, a small bar for the handout they are on, which is
+  outlined on the desk), "Needs a look" beside a Stuck chip, the desk faded and dashed when they are not here. No ranking,
+  no sounds, no red alarms; the chip and the desk open the look panel.
+- **Hands** (`homeroom_live`, one row per class and student while live): Raise hand on the desk's top bar (big, yellow)
+  opens I have a question / I need help / Bathroom (hall pass); tapping again offers Put my hand down. One hand at a time;
+  a new kind replaces the old one. The board shows ✋ on the desk and a ✋ Hands button with a count; the panel lists hands
+  in the order raised (the roster's names: the teacher's screen) with **Answered**. Raising is refused while not live.
+- **The hall pass**: not `dash_passes`. The dashboard's pass needs a pinned widget with places, asks the teacher to approve
+  each request and only optionally keeps one out; Homeroom's is a queue that moves by itself. Its rules mirror the
+  dashboard's where they meet (fixed buttons and no text; a student sees only their own pass; one row per student; gone
+  at the end of the day there, at End class here). A Bathroom hand shows **Give hall pass** (nobody out: they go now) or
+  **Put in line** (someone out), and **Not now**. One student out at a time, timed (`homeroom_rooms.pass_minutes`, 5 by
+  default, 1 to 20, the − / + in the panel); the desk shows "Go ahead." with a countdown (then "Time's up. Please come
+  back.") and I'm back; the first in line sees "You're next for the hall pass", the others how many are ahead. **"X is
+  back"** (or the student's I'm back) gives the pass to the next in line at once. The teacher can take someone out of
+  the line; a student leaving the line or the class moves it on.
+- **📊 Today** (top bar, live or not): each handout handed out since the start of the teacher's day (or since this live
+  class started) with "n of m done", a stacked bar of Done / Working / Stuck / Not started (Working: started or open now),
+  the counts in words, the Needs a look names (each opens the look panel) and a link to the Classroom tab for progress
+  over weeks. Statuses only while live.
+- **Look at a student's desk** (`GET /api/homeroom/:id/look/:sid`, refreshed every 4 s while open): status, at their desk
+  or in the game, last activity, what they are on and how far, how many handouts are done, their hand or pass, and their
+  pad (or team pad) as a read-only drawing. Never their screen or their keys. From there: **I'm coming over** (the desk
+  shows a calm "Your teacher is coming over" for up to 5 minutes), **Lock desk** ("Your teacher locked your desk for a
+  moment", over the desk and over a handout's game), **Hide cursor** (their cursor is no longer shared with the board or
+  their team), and Their handouts (the desk's sheet from step 2a). Students can't add stickies to the teacher's area yet,
+  so "Remove a sticky" waits for that.
+- **Students' side stays simple**: no cursors on desks, except a team desk's teammates on the shared pad (by the names
+  classmates see).
+- **Who**: the board's poll, hands, desk settings and look are behind the Homeroom gate (the class's own teachers);
+  pulses and hands behind the desk gate (the class's students), always their own row whatever the body says. Locks and
+  hides are audited. **The projector never gets any of it** (its page and poll carry only the area and the live state;
+  tested).
+- **Cleaning up**: End class deletes every `homeroom_live` row of the class and its pulses; so does a new live class
+  (a class left live past 6 hours ends without End class). Rows also go with the student leaving the class (the line moves
+  on), their account, a merged school account, the class and the school (`BY_CLASS`).
+- **Phones and laptops**: on a phone the board's live buttons wrap to icons (📊 ✋ 👀 🔀 ⋯) with Bring everyone to me on
+  its own row; panels span the width. The desk's note sits under its top bar and moves the desk down. Tap targets 48 px.
+- Tests: `tests/unit/homeroom-live.test.js` (the status rules incl. Stuck at 3 minutes, a step forward, Not here at 30 s
+  and a fresh start; pulses only while live, cleaned, cursors off above 30 and when hidden; team pad cursors; hands
+  raise / change / lower / Answered; the hall pass one at a time, the timer's start, You're next, back moves the line,
+  Not now, the pass time; lock / hide / coming and look; auth; the projector without names or hands; End class, a new
+  class, leaving, account delete) and `tests/unit/homeroom-live-browser.test.js` (1366 x 768 board and tablet desks:
+  statuses, a cursor, a question raised and answered, the pass queue with two students, Today with Needs a look, look and
+  lock, a tap on a desk; phones: board, panels, the hand menu and Go ahead with nothing sideways).
+- **Open**: aides and sub links answering hands (step 3, later); supports per student; "Remove a sticky" once students
+  can add them; Needs a look from more signals (several misses in a row, many hints: step 5); a socket per class if
+  polling ever shows lag in the 35-student load test.

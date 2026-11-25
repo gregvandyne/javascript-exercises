@@ -548,7 +548,8 @@ export const gradeModes = classId => new Map(q.all('SELECT class_lesson_id id, g
 export const gradeModeOf = clId => (clId ? (q.get('SELECT grade FROM homeroom_handouts WHERE class_lesson_id=?', clId) || {}).grade || null : null);
 // The play page (routes/games.js) asks here how a game opened from a class lesson is framed: where Back goes, and a
 // note from the teacher at the top of the game. A feature that hands games out registers fn(u, cl, step) -> { backHref,
-// backLabel, note } | null (Homeroom: "Back to my desk" and the handout's instructions); null keeps the lesson's own.
+// backLabel, note, script?, data? } | null (Homeroom: "Back to my desk" and the handout's instructions; step 3a: a script
+// for the page and its page data, the desk's pulse); null keeps the lesson's own.
 const frames = [];
 export const onPlayFrame = fn => { if (!frames.includes(fn)) frames.push(fn); };
 export function playFrame(u, cl, step, t) {

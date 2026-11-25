@@ -104,7 +104,7 @@ export function boardView(c, locale = 'en') {
   const handouts = rows.map(r => {
     const g = gameInfo(cache, r.game_id, locale), who = picks.get(r.id);
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
-      students: who ? ids.filter(id => who.has(id)).length : ids.length, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
+      students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
   });
   const desks = {};
   for (const sid of ids) {
@@ -284,7 +284,10 @@ L.onPlayFrame((u, cl, step, t) => {
   if (!u || !cl || !q.get('SELECT 1 FROM homeroom_handouts WHERE class_lesson_id=?', cl.id)) return null;
   const c = S.getClass(cl.class_id);
   if (!H.canUseDesk(u, c)) return null;
-  return { backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk'), note: step && step.body ? step.body : '' };
+  // step 3a: the game page pulses too (public/js/homeroom-pulse.js: which handout, how long since the last input, the
+  // game's own steps forward), so the teacher's board knows what the student is on; and it shows a desk lock or Pause.
+  return { backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk'), note: step && step.body ? step.body : '',
+    script: '/js/homeroom-pulse.js', data: { hrPulse: { classId: c.id, on: cl.id } } };
 });
 
 // ---------------------------------------------------------------- an In order handout that waits

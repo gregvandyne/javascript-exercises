@@ -21,13 +21,16 @@
 //     names, is dragged like a desk, and a handout dropped on it goes to every member; POST .../teams); a comment and a
 //     sticker on a finished card (the desk's sheet; POST .../handouts/<id>/feedback); "Also post to Google Classroom" in
 //     the hand-out sheet when the class is linked (Whole class only, as Classroom's Assign).
-// Plans and cursors come in later steps (docs/homeroom.md "Build order").
+//   - step 3a, live class (public/js/homeroom-live.js): each desk's status, current handout, cursor and hand; ✋ Hands
+//     with the hall pass; 📊 Today; tapping a desk looks at that student's desk (Lock desk, Hide cursor, I'm coming over).
+// Plans come in a later step (docs/homeroom.md "Build order").
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
+import { liveBoard } from '/js/homeroom-live.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -144,6 +147,7 @@ function teamHtml(tm) {
 function renderDesks() {
   for (const s of soloStudents()) { const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (el) el.innerHTML = deskInner(s); }
   for (const tm of H.teams) { const el = worldEl.querySelector(`.hr-team[data-team="${CSS.escape(tm.id)}"]`); if (el) el.innerHTML = teamInner(tm); }
+  LV.paint();
 }
 function renderWorld() {
   const w = world();
@@ -155,6 +159,7 @@ function renderWorld() {
     ${H.students.length ? '' : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + 160}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
   board.classList.toggle('hr-seating', H.seatsOpen);
   applyView();
+  LV.paint();
 }
 function renderArea() {
   const el = worldEl.querySelector('.hr-areabody'); if (!el) return;
@@ -318,10 +323,13 @@ function renderLive() {
   if (dot) dot.hidden = !H.live;
   $('homeroom')?.classList.toggle('hr-islive', !!H.live);
   const L = H.live;
-  el.innerHTML = !L ? btn('btn hr-chunk hr-spark', 'data-hr="golive"', `${iconHtml('🏫', { size: 18 })} ${esc(th('everyone'))}`)
+  const html = LV.topButtons() + (!L ? btn('btn hr-chunk hr-spark', 'data-hr="golive"', `${iconHtml('🏫', { size: 18 })} ${esc(th('everyone'))}`)
     : `${btn(`btn hr-chunk hr-pausebtn${L.paused ? ' on' : ''}`, `data-hr="${L.paused ? 'resume' : 'pause'}" aria-pressed="${L.paused}" aria-label="${esc(th(L.paused ? 'resume' : 'pause'))}"`, `${iconHtml('👀', { size: 18 })}<span class="hr-hidephone"> ${esc(th(L.paused ? 'resume' : 'pause'))}</span>`)}
-      ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })} ${esc(th(L.bring ? 'back' : 'bring'))}`)}`;
+      ${btn('btn hr-chunk hr-spark', `data-hr="${L.bring ? 'back' : 'bring'}" aria-pressed="${L.bring}"`, `${iconHtml(L.bring ? '🎒' : '🙋', { size: 18 })} ${esc(th(L.bring ? 'back' : 'bring'))}`)}`);
+  // the poll redraws this every 2 s while live: only when something changed, so the focus stays put
+  if (html !== liveHtml) { liveHtml = html; el.innerHTML = html; }
 }
+let liveHtml = '';
 const LIVE_TOAST = { start: 'started', bring: 'bringing', back: 'backToDesks', pause: 'paused', resume: 'resumed', end: 'ended' };
 async function liveAction(action) {
   if (H.liveBusy) return;
@@ -329,7 +337,9 @@ async function liveAction(action) {
   H.liveBusy = true;
   try {
     const r = await api(`/api/homeroom/${encodeURIComponent(D.classId)}/live`, { method: 'POST', body: { action } });
+    const was = !!H.live;
     H.live = r.live || null; renderLive(); toast(th(LIVE_TOAST[action]));
+    if (was !== !!H.live) LV.onLive();
   } catch (e) { toast(e.message, { bad: true }); } finally { H.liveBusy = false; }
 }
 
@@ -614,6 +624,8 @@ const pollEvery = () => (H.live ? 8000 : 20000);
 async function pollHandouts() {
   clearTimeout(pollTimer); pollTimer = null;
   if (document.hidden) return;
+  // while live the board's 2 s pulse brings the handouts whenever they change (public/js/homeroom-live.js)
+  if (LV.polling()) { pollTimer = setTimeout(pollHandouts, pollEvery()); return; }
   try {
     const r = await api(api2('handouts'), { background: true });
     if (JSON.stringify(r) !== JSON.stringify(H.ho)) { H.ho = r; renderDesks(); }
@@ -673,7 +685,9 @@ function down(e) {
     if (it) { H.gesture = { kind: noteEl ? 'note' : 'text', it, el: noteEl || textEl2, sx: e.clientX, sy: e.clientY, x0: +it.x || 0, y0: +it.y || 0, moved: false }; board.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     if (shapeEl) { const s = H.shapes.find(x => x.id === shapeEl.dataset.shape); if (s) { H.gesture = { kind: 'moveShape', s, sx: e.clientX, sy: e.clientY, o: { ...s }, moved: false }; board.setPointerCapture(e.pointerId); e.preventDefault(); return; } }
   }
-  H.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: H.view.x, y0: H.view.y, moved: false };
+  // (a desk tapped without moving: live class looks at it, public/js/homeroom-live.js; the capture below sends the click
+  // to the board, so the tap is told here)
+  H.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: H.view.x, y0: H.view.y, moved: false, desk: desk && !H.seatsOpen ? desk : null };
   board.setPointerCapture(e.pointerId);
 }
 function move(e) {
@@ -711,6 +725,7 @@ function up(e) {
   H.gesture = null;
   if (g.kind === 'pan') {
     H.justPanned = g.moved;
+    if (!g.moved && g.desk && LV.tapDesk(g.desk)) { H.justPanned = true; return; }
     if (!g.moved) {
       if (H.textEdit) commitText(); else if (H.editing) commitNote();
       if (H.shapeSel) { H.shapeSel = null; renderArea(); }
@@ -749,6 +764,7 @@ function togglePick(sid) {
 function click(e) {
   if (H.justPanned) { H.justPanned = false; if (!e.target.closest(UI)) return; }
   const sp = e.target.closest('[data-hrsplit]'); if (sp) { splitTeam(sp.dataset.hrsplit); return; }
+  if (LV.click(e)) return;
   if (giveClick(e)) return;
   const mode = e.target.closest('[data-hrmode]'); if (mode) return setMode(mode.dataset.hrmode);
   const pen = e.target.closest('[data-hrpen]'); if (pen) { H.pen = pen.dataset.hrpen; renderTools(); return; }
@@ -791,6 +807,7 @@ function click(e) {
 function keys(e) {
   if (e.key === 'Escape') {
     if (H.pick && !H.giving) { setPick(null); return; }
+    if (LV.escape()) return;
     if (H.menuOpen) { H.menuOpen = false; renderMenu(); document.querySelector('[data-hr="menu"]')?.focus(); return; }
     if (H.textEdit) { commitText(); return; }
     if (H.editing) { commitNote(); return; }
@@ -817,6 +834,12 @@ function keys(e) {
 }
 
 // ---------------------------------------------------------------- start
+// ---------------------------------------------------------------- live class: watching desks (step 3a)
+const LV = liveBoard({
+  D, H, th, api2: path => api2(path), worldEl, renderLive: () => renderLive(), deskSheet: sid => deskSheet(sid), groupOf, nameOfId, teamOf, handout,
+  setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
+});
+
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
@@ -824,6 +847,7 @@ function start() {
   document.addEventListener('pointermove', dragMove); document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) pollHandouts(); });
   pollTimer = setTimeout(pollHandouts, pollEvery());
+  if (H.live) LV.onLive();
   requestAnimationFrame(fit);
   board.addEventListener('pointerdown', down);
   board.addEventListener('pointermove', move);
