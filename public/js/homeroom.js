@@ -80,6 +80,8 @@ const H = {
   teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [], away: false,
   // step 4c: the class's K-2 setting ({ mode, auto, on }) and each student's own ({ id: 'on' | 'off' })
   k2: D.k2 || { mode: '', auto: false, on: false }, k2Students: D.k2Students || {},
+  // the parents' view (step 4d): on unless the class's teachers turned it off
+  parents: D.parents !== false,
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -474,7 +476,8 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="signin"', `${iconHtml('🔑', { size: 18 })} ${esc(th('signin'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="aides"', `${iconHtml('🤝', { size: 18 })} ${esc(th('helpers.aides'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="sublink"', `${iconHtml('🔗', { size: 18 })} ${esc(th('helpers.subMenu'))}`)}
-    ${btn('rm-mi', 'role="menuitem" data-hr="k2"', `${iconHtml('🧒', { size: 18 })} ${esc(th('k2.menu'))}<span class="hr-mitag">${esc(th(H.k2.on ? 'k2.on' : 'k2.off'))}</span>`)}`}
+    ${btn('rm-mi', 'role="menuitem" data-hr="k2"', `${iconHtml('🧒', { size: 18 })} ${esc(th('k2.menu'))}<span class="hr-mitag">${esc(th(H.k2.on ? 'k2.on' : 'k2.off'))}</span>`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="parents"', `${iconHtml('👪', { size: 18 })} ${esc(th('parents.menu'))}<span class="hr-mitag">${esc(th(H.parents ? 'parents.on' : 'parents.off'))}</span>`)}`}
     ${D.hostLive && !AIDE ? `<a class="rm-mi" role="menuitem" href="${esc(D.hostLive)}" data-hr="hostlive">${iconHtml('📡', { size: 18 })} ${esc(th('hostLive'))}</a>` : ''}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
@@ -496,6 +499,27 @@ function k2Sheet() {
       const r = await api(api2('k2'), { method: 'POST', body: { mode: b.dataset.k2mode } });
       H.k2 = r.k2; H.k2Students = r.k2Students || {}; toast(r.toast);
       const box = body.querySelector('.hr-k2box'); if (box) box.outerHTML = draw();
+    } catch (err) { toast(err.message, { bad: true }); }
+  });
+}
+// The parents' view (step 4d; services/homeroom-parents.js): what a student's linked grown-up sees of this class, read
+// only, on by default; the class's teachers turn it off or on again.
+function parentsSheet() {
+  const draw = () => `<div class="hr-k2box hr-parbox"><p class="small muted">${esc(th('parents.lead'))}</p>
+    <p class="hr-parcap small"><b>${esc(th('parents.sees'))}</b></p>
+    <ul class="hr-k2what small">${['handouts', 'feedback', 'reading', 'notes'].map(k => `<li>${esc(th(`parents.what.${k}`))}</li>`).join('')}</ul>
+    <p class="hr-parcap small"><b>${esc(th('parents.never'))}</b></p>
+    <p class="small muted">${esc(th('parents.neverList'))}</p>
+    <div class="hr-seg hr-k2seg" role="radiogroup" aria-label="${esc(th('parents.menu'))}">${[true, false].map(on => btn(`hr-segb${H.parents === on ? ' on' : ''}`, `role="radio" aria-checked="${H.parents === on}" data-parents="${on ? 1 : 0}"`, esc(th(on ? 'parents.modeOn' : 'parents.modeOff')))).join('')}</div>
+    <p class="small muted">${esc(th('parents.how'))}</p></div>`;
+  const sh = sheet({ title: `👪 ${th('parents.title')}`, content: draw() });
+  const body = sh.el.querySelector('.sheet-body') || sh.el;
+  body.addEventListener('click', async e => {
+    const b = e.target.closest('[data-parents]'); if (!b) return;
+    try {
+      const r = await api(api2('parents'), { method: 'POST', body: { on: b.dataset.parents === '1' } });
+      H.parents = !!r.parents; toast(r.toast);
+      const box = body.querySelector('.hr-parbox'); if (box) box.outerHTML = draw();
     } catch (err) { toast(err.message, { bad: true }); }
   });
 }
@@ -969,6 +993,7 @@ function click(e) {
   else if (k === 'aides') { H.menuOpen = false; renderMenu(); HLP.aidesSheet(); }
   else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }
   else if (k === 'k2') { H.menuOpen = false; renderMenu(); k2Sheet(); }
+  else if (k === 'parents') { H.menuOpen = false; renderMenu(); parentsSheet(); }
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }

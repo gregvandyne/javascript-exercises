@@ -22,6 +22,7 @@ import * as auth from '../auth.js';
 import { audit, tx, today } from '../db.js';
 import { config } from '../config.js';
 import * as F from '../services/family.js';
+import * as PV from '../services/homeroom-parents.js';
 import * as funnel from '../services/funnel.js';
 import * as S from '../services/stripe.js';
 import * as C from '../services/checkout.js';
@@ -88,7 +89,9 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   /^\/courses\/[^/]+(\/[^/]+)?$/,
   // The Oomba team thread (routes/chat.js; linked from /family): messages from the team, copies of what the team and their
   // children said to each other. No friends' chat: /chat itself stays closed.
-  /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i];
+  /^\/chat\/oombaacademy$/i, /^\/api\/chat\/oombaacademy$/i,
+  // Homeroom's parents' view (routes/homeroom-parents.js): a linked child's class work, read only (the link is checked there).
+  /^\/family\/class\/[^/]+$/];
 const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|reset)$/, /^\/api\/me\/(password|theme|name|username)$/, /^\/api\/me\/google\/(connect|disconnect)$/, /^\/api\/family\/(link|checklist\/hide|reauth|children\/new|children\/[^/]+\/(remove|switch|password|delete))$/,
   /^\/api\/billing\/(family\/checkout|family\/sparks|portal)$/,
   /^\/api\/family\/asks\/[^/]+\/dismiss$/,   // a child's "Ask my grown-up" (services/sparks.js)
@@ -416,7 +419,8 @@ router.get('/family', grownupOnly, async (req, res) => {
     return html`<li class="famkid${mine ? ' famkid-made' : ''}">${avatar({ id: k.child_id, avatar: k.avatar, color: k.color, photo_at: 0, display_name: k.display_name }, 44)}
       <div class="famkid-main"><b><bdi>${k.display_name}</bdi></b> <span class="muted small"><bdi>@${k.username}</bdi></span>
         <div class="small">${t('family.page.yesterday', { n: use.yesterday })} · ${t('family.page.month', { n: use.month })}</div>
-        <div class="small muted">${t(source)}</div>${mine ? html`<div class="small muted"${en('family.made.madeByYou')}>${t('family.made.madeByYou')}</div>` : ''}</div>
+        <div class="small muted">${t(source)}</div>${mine ? html`<div class="small muted"${en('family.made.madeByYou')}>${t('family.made.madeByYou')}</div>` : ''}
+        ${PV.anyFor(k.child_id) ? html`<a class="btn btn-sm famkid-class" href="/family/class/${F.requestToken(fam.id, k.child_id)}"${en('homeroom.parents.open')}>${ico('🏫', { size: 18 })} ${t('homeroom.parents.open')}</a>` : ''}</div>
       ${mine ? madeTools(req, fam, k) : madeLink ? '' : removeForm(k, t('family.page.remove'), t('family.page.removeConfirm', { name: k.display_name }))}</li>`;
   });
   const linked = kids.filter(k => k.status === 'linked');

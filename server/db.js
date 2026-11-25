@@ -1556,6 +1556,10 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_homeroom_asks_class ON homeroom_asks(class_id, answered_at);
     CREATE INDEX IF NOT EXISTS idx_homeroom_asks_user ON homeroom_asks(user_id);
     ALTER TABLE notebook_pages ADD COLUMN drawing TEXT NOT NULL DEFAULT '';`],
+  // Homeroom: the parents' view (docs/decisions.md "Homeroom: the parents' view"): a class's teachers turn it off (0) or
+  // on (1, the default) from the ⋯ menu. Nothing else is stored: what a linked grown-up sees is read from what exists.
+  ['0136_homeroom_parents', `
+    ALTER TABLE homeroom_rooms ADD COLUMN parents_view INTEGER NOT NULL DEFAULT 1;`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

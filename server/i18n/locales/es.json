@@ -7244,7 +7244,7 @@
     "live": {
       "h": "Juegos en vivo en clase",
       "p1": "Lanza una carrera de preguntas en vivo o cualquier juego listo para jugar en vivo en el proyector. El alumnado se une desde sus propios dispositivos con un código de 7 cifras.",
-      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas), Batalla de preguntas y Tablero Cerebro (un tablero de categorías, de fácil a difícil).",
+      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas) y Tablero Cerebro (un tablero de categorías, de fácil a difícil).",
       "li2": "Usa un conjunto inicial, escribe un conjunto rápido o convierte las preguntas de una lección en un juego en vivo.",
       "li3": "Las salas de clase son solo para tu alumnado con sesión iniciada, y sus puntos van a tu cuaderno de notas. Sin chat, sin escribir y sin nombres escritos a mano.",
       "more": "Vea cómo funciona Oomba Live"
@@ -7669,7 +7669,7 @@
         },
         "faq": {
           "q2": "¿Puede jugar mi hijo si todavía no sabe leer?",
-          "a2": "En algunos juegos, sí. Word Trail y Shark Plank leen cada palabra en voz alta, Word Hunt lee una palabra cuando la tocas, y Sum Racer y Tug of Math usan números. Los menús y las instrucciones están escritos, así que al principio ayuda tener un adulto cerca.",
+          "a2": "En algunos juegos, sí. Word Trail y Shark Plank leen cada palabra en voz alta, Word Hunt lee una palabra cuando la tocas, y Sum Racer usa números. Los menús y las instrucciones están escritos, así que al principio ayuda tener un adulto cerca.",
           "q3": "¿Los cursos son para esta edad?",
           "a3": "Uno sí. Number Quest, nuestro curso de matemáticas, empieza en kínder: su calle Launchpad es para kínder a 2.º grado, y sus juegos leen cada instrucción en voz alta. CS Quest y Cyber Defenders empiezan en 3.er grado, hacia los 8 años.",
           "q4": "¿Puede un niño de 6 años usar el Constructor con IA?",
@@ -9401,7 +9401,7 @@
       "lead": "Pantallas reales de un juego en vivo en una escuela de demostración con nombres inventados.",
       "s1": {
         "h": "Elija un juego y sus preguntas",
-        "p": "Elija Carrera de misiones, Batalla de preguntas o Tablero Cerebro y, después, las preguntas: el banco de preguntas por materia y edad (de 6 a 14 años), su propio conjunto, uno que haya compartido un colega o las preguntas de una de sus lecciones.",
+        "p": "Elija Carrera de misiones o Tablero Cerebro y, después, las preguntas: el banco de preguntas por materia y edad (de 6 a 14 años), su propio conjunto, uno que haya compartido un colega o las preguntas de una de sus lecciones.",
         "alt": "El primer paso para organizar una partida en vivo, «¿A qué quieres jugar?»: Quest Race, Question Battle y Brain Board, cada uno con cuántos jugadores le van bien."
       },
       "s2": {
@@ -10346,7 +10346,7 @@
       "kicker": "Juegos de clase en vivo",
       "h": "Enciende el proyector",
       "lead": "Calentamientos y boletos de salida que tu clase espera con ganas. Los estudiantes entran desde sus propios dispositivos con un código de 7 cifras.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math y más",
+      "li1": "Quest Race, Brain Board, Would You Rather y más",
       "li2": "Usa un banco de preguntas inicial, escribe el tuyo o deja que la IA haga un borrador para que lo edites",
       "li3": "Las puntuaciones van directo a tu libro de calificaciones",
       "li4": "Juegos de clase: solo tus estudiantes con sesión iniciada. Juegos con invitados: nombres inventados y seguros. Sin chat ni texto libre en ninguno",

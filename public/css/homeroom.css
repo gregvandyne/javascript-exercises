@@ -1265,6 +1265,7 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-k2box p{margin:0}
 .hr-k2what{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:2px}
 .hr-k2seg .hr-segb{min-height:48px}
+.hr-parcap{margin:4px 0 -4px!important}
 .hr-dmtop{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
 .hr-dmrow{flex-wrap:wrap}
 .hr-dmrow .hr-seg{flex:1 1 100%}

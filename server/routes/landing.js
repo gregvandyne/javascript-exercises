@@ -513,8 +513,8 @@ ${body}
 const HERO_FAN = ['beat-lanes', 'robo-route', 'fraction-factory', 'atlas-quest', 'word-trail'];
 /** The same while the arcade is hidden: puzzle builders and live class games that stay on Play. */
 const FOCUS_FAN = ['crossword', 'brain-board', 'word-hunt', 'doodle-hoot', 'sudoku'];
-/** The game in the hero's "now a game" card and the Builder demo: Fraction Factory with the arcade, else Question Battle. */
-const demoGame = arcade => (arcade ? { slug: 'fraction-factory', title: 'Fraction Factory' } : { slug: 'question-battle', title: 'Question Battle' });
+/** The game in the hero's "now a game" card and the Builder demo: Fraction Factory with the arcade, else Brain Board. */
+const demoGame = arcade => (arcade ? { slug: 'fraction-factory', title: 'Fraction Factory' } : { slug: 'brain-board', title: 'Brain Board' });
 
 /** The hero's picture: the class dashboard on the projector (a real capture, scripts/how-shots.js), a student's own screen
  *  on a phone, and around it the rest of the day: a game the Builder just made and a live game starting. The cards move

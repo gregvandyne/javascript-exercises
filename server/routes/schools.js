@@ -886,7 +886,11 @@ function classTiles(req, c, { host, dash, compact = false }) {
     staff && { href: `/class/${c.id}?tab=lessons&view=oomba`, emoji: '🦉', label: t('folders.findOomba') },
   ].filter(Boolean);
   if (!tiles.length) return '';
-  if (compact) return html`<div class="classquick">${tiles.map(x => html`<a class="btn btn-sm classquick-b" href="${x.href}">${ico(x.emoji, { size: 16 })} <span>${x.label}</span></a>`)}</div>`;
+  // Phones (compact): the Google Classroom button spans the row under the two (class-views.css hides the Games tab's copy).
+  if (compact) {
+    const gc = staff ? gcLessonsButton(req, c) : '';
+    return html`<div class="classquick">${tiles.map(x => html`<a class="btn btn-sm classquick-b" href="${x.href}">${ico(x.emoji, { size: 16 })} <span>${x.label}</span></a>`)}${gc ? html`<div class="classquick-gc">${gc}</div>` : ''}</div>`;
+  }
   return html`<div class="classtiles${tiles.length === 1 ? ' is-one' : ''}">${tiles.map(x => html`<a class="classtile${x.hot ? ' is-hot' : ''}" href="${x.href}"><span class="classtile-e">${ico(x.emoji, { size: 40 })}</span><span class="classtile-l">${x.label}</span></a>`)}</div>`;
 }
 export function classHeader(req, c, active) {

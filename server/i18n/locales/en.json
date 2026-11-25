@@ -2376,6 +2376,25 @@
           "off": "Off for this class"
         },
         "perStudent": "Turn it on or off for one student from their desk's menu (tap their name)."
+      },
+      "parents": {
+        "menu": "Parents' view",
+        "title": "Parents' view",
+        "on": "On",
+        "off": "Off",
+        "lead": "A grown-up whose family account on Oomba is linked to a student's own account sees a calm, read-only page of that student's work in this class. Accounts the school made can't be linked to a family yet.",
+        "sees": "They see",
+        "what": {
+          "handouts": "Their handouts: the title, your instructions, the dates, done or not yet, and the grade as you chose to show it",
+          "feedback": "Your comments and stickers on their work",
+          "reading": "Books read with the reading routine and the quiz result",
+          "notes": "Their notes in this class's tab of the notebook, drawings included"
+        },
+        "never": "They never see",
+        "neverList": "Other students, ranks or class comparisons, live class, hands, the hall pass, supports, attendance (only \"Missed while away\" on a handout) or the student's own notebook tabs.",
+        "modeOn": "On for this class",
+        "modeOff": "Off for this class",
+        "how": "Students are told in their notebook when a grown-up can see their class notes."
       }
     },
     "stories": {
@@ -5366,6 +5385,7 @@
       "ofStudent": "{name}'s notebook",
       "readOnly": "Read only. Students can't see that you opened it.",
       "teacherReads": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see the notes in your class tabs.",
       "format": "Formatting",
       "bold": "Bold",
       "list": "List",
@@ -6206,6 +6226,7 @@
       "notesLead": "Write 3 short notes about {title}. They go in your notebook.",
       "saveNotes": "Save to my notebook",
       "notesPrivacy": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see these notes too.",
       "noteEmpty": "Write all 3 notes first.",
       "doneTitle": "All done!",
       "doneLead": "You read {title}, did the quiz and wrote 3 notes.",
@@ -8231,7 +8252,7 @@
     "live": {
       "h": "Live class games",
       "p1": "Run a live quiz race or any live-ready game on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions), Question Battle and Brain Board (a board of categories, easy to hard).",
+      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Brain Board (a board of categories, easy to hard).",
       "li2": "Use a starter question set, type a quick set, or turn a lesson's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -8989,7 +9010,7 @@
         },
         "faq": {
           "q2": "Can my child play if they can’t read yet?",
-          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer and Tug of Math use numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
+          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer uses numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
           "q3": "Are the courses for this age?",
           "a3": "One is. Number Quest, our math course, starts in kindergarten: its Launchpad street is for kindergarten to grade 2, and its games read every instruction aloud. CS Quest and Cyber Defenders start in grade 3, at about age 8.",
           "q4": "Can a 6 year old use the AI Builder?",
@@ -10721,7 +10742,7 @@
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
-        "p": "Choose Quest Race, Question Battle or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
+        "p": "Choose Quest Race or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
         "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
       },
       "s2": {
@@ -11826,7 +11847,7 @@
       "kicker": "Live class games",
       "h": "Light up the projector",
       "lead": "Warm-ups and exit tickets your class actually looks forward to. Students join on their own devices with a 7-digit code.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
+      "li1": "Quest Race, Brain Board, Would You Rather and more",
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
       "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",
@@ -16859,6 +16880,55 @@
     },
     "k2": {
       "saved": "K-2 desks saved"
+    },
+    "parents": {
+      "title": "{name}'s class work",
+      "heading": "{name}'s class work",
+      "lead": "What {name}'s teacher shares from Homeroom: handouts, the teacher's comments, books read and notes from the class's tab. Read only. Only {name}'s own work, never anyone else's.",
+      "open": "Class work",
+      "back": "Family",
+      "classes": "Classes",
+      "jump": "On this page",
+      "handouts": "Handouts",
+      "reading": "Reading",
+      "notes": "Class notes",
+      "classNotes": "Class notes",
+      "catchUp": "To catch up on",
+      "catchUpLead": "Given while {name} was away. They wait on the desk, with the teacher's words, until they are done.",
+      "missed": "Missed while away",
+      "given": "Given {date}",
+      "due": "Due {date}",
+      "done": "Done",
+      "notYet": "Not yet",
+      "instructions": "The teacher's instructions",
+      "fromTeacher": "From the teacher",
+      "stickerOnly": "A sticker for this work.",
+      "grade": {
+        "score": "Graded by score:",
+        "scoreLater": "Graded by score. The score shows once it is done.",
+        "scoreNone": "Graded by score: done, with nothing to score.",
+        "completion": "Graded by completion: done or not yet.",
+        "none": "Practice, not graded."
+      },
+      "pct": "{pct}% right",
+      "quiz": "Quiz: {right} of {total} right on the first try",
+      "step": {
+        "choose": "Picking a book",
+        "read": "Reading",
+        "quiz": "Quiz next",
+        "notes": "Notes next",
+        "done": "Read, quiz and notes done"
+      },
+      "notesLead": "The notes {name} wrote in this class's tab of their notebook. Their own tabs stay private.",
+      "updated": "Updated {date}",
+      "drawing": "{name}'s drawing",
+      "noHandouts": "No handouts yet.",
+      "noReading": "No books read with the class yet.",
+      "noNotes": "{name} hasn't written class notes yet.",
+      "none": "Nothing from school here yet. When {name}'s teacher uses Homeroom, their class work shows here.",
+      "foot": "Read only. The teacher can turn this view off for a class.",
+      "savedOn": "Parents' view on",
+      "savedOff": "Parents' view off"
     },
     "attendance": {
       "toast": {
