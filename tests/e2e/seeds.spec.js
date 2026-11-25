@@ -37,7 +37,7 @@ for (const [slug, title] of COURSE) {
 
 // Each launch game's shelf (docs/decisions.md "Play and Learn"): Play games are featured on Play ('/'), Learn games are in
 // Learn's games (or its live class games). Remi's noise meter is a class tool: on neither row, found by search.
-const LEARN = new Set(['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'atlas-quest', 'tug-of-math', 'doodle-hoot', 'word-trail', 'sudoku', 'sum-spotter', 'typing-pets']);
+const LEARN = new Set(['shark-plank', 'castle-clash', 'word-hunt', 'sum-racer', 'word-peek', 'loop-lab', 'code-isle', 'atlas-quest', 'tug-of-math', 'doodle-hoot', 'word-trail', 'sudoku', 'sum-spotter', 'typing-zoo']);
 for (const [slug, title] of SEEDS) {
   test(`${slug} loads in the sandbox and shows up on its shelf (Play or Learn)`, async ({ page }) => {
     const errors = [];

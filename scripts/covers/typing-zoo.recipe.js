@@ -1,7 +1,7 @@
-// Typing Pets' card cover (scripts/covers.js loads every scripts/covers/<slug>.recipe.js): a home-row words lesson part
+// Typing Zoo's card cover (scripts/covers.js loads every scripts/covers/<slug>.recipe.js): a home-row words lesson part
 // typed, the next key lit on the finger-colored keyboard, through the game's own test handle (window.__brbTest).
 export default {
-  'typing-pets': {
+  'typing-zoo': {
     viewport: { width: 432, height: 576 },
     scale: 1.25,
     touch: true,

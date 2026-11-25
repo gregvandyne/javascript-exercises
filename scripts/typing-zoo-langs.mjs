@@ -1,18 +1,18 @@
-// Typing Pets' languages (docs/decisions.md "Typing Pets in other languages"): writes the language packs in
-// seed-games/typing-pets-langs/ into seed-games/typing-pets.html, so the game stays one self-contained file.
-//   seed-games/typing-pets-langs/layouts.json   keyboard layouts by physical key position (normal and Shift characters,
+// Typing Zoo's languages (docs/decisions.md "Typing Pets in other languages"): writes the language packs in
+// seed-games/typing-zoo-langs/ into seed-games/typing-zoo.html, so the game stays one self-contained file.
+//   seed-games/typing-zoo-langs/layouts.json   keyboard layouts by physical key position (normal and Shift characters,
 //                                               dead keys), shared by every pack
-//   seed-games/typing-pets-langs/<lang>.json    { lang, layout, label?, strings, pets, words, sentences, marks, apos, paras }
+//   seed-games/typing-zoo-langs/<lang>.json    { lang, layout, label?, strings, pets, words, sentences, marks, apos, paras }
 // The game gets: the I18N block (each language's strings, read by server/services/tts-lines.js too), and between the
 // PACKS markers LAYOUTS, PACKS (the typing content of each pack whose content isn't English's: zh-Hant types English)
-// and PET_NAMES. Usage: node scripts/typing-pets-langs.mjs [--check]   (--check: exit 1 when the game is out of date)
+// and PET_NAMES. Usage: node scripts/typing-zoo-langs.mjs [--check]   (--check: exit 1 when the game is out of date)
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const DIR = path.join(ROOT, 'seed-games', 'typing-pets-langs');
-const GAME = path.join(ROOT, 'seed-games', 'typing-pets.html');
+const DIR = path.join(ROOT, 'seed-games', 'typing-zoo-langs');
+const GAME = path.join(ROOT, 'seed-games', 'typing-zoo.html');
 /** The order languages appear in (English first, then the site's order). */
 export const ORDER = ['en', 'de', 'es', 'fr', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'];
 
@@ -46,6 +46,6 @@ export function build(src, packsData = readPacks()) {
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const src = fs.readFileSync(GAME, 'utf8'), out = build(src);
-  if (process.argv.includes('--check')) { if (out !== src) { console.error('typing-pets.html is out of date: run node scripts/typing-pets-langs.mjs'); process.exit(1); } console.log('up to date'); }
+  if (process.argv.includes('--check')) { if (out !== src) { console.error('typing-zoo.html is out of date: run node scripts/typing-zoo-langs.mjs'); process.exit(1); } console.log('up to date'); }
   else { fs.writeFileSync(GAME, out); console.log(`wrote ${path.relative(ROOT, GAME)} (${readPacks().packs.map(p => p.lang).join(', ')})`); }
 }

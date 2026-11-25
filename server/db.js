@@ -1342,6 +1342,10 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS class_lesson_students (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL, PRIMARY KEY (class_lesson_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_class_lesson_students_user ON class_lesson_students(user_id);`],
+  // Typing Pets is now Typing Zoo (seed-games/typing-zoo.json): the same game row takes the new slug, so its id, plays,
+  // saves (key 'typing-pets-v1' kept), favorites, ratings, class assignments, lesson steps, sets and typing progress
+  // all stay with it. Only when no row has the new slug yet; the old addresses answer 301 (server/renamed.js).
+  ['0121_typing_zoo_slug', "UPDATE games SET slug='typing-zoo' WHERE source='seed' AND slug='typing-pets' AND NOT EXISTS (SELECT 1 FROM games WHERE slug='typing-zoo');"],
 ];
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by

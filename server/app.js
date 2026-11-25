@@ -70,6 +70,7 @@ import { router as figuresRoutes } from './routes/figures.js';
 import { router as companionRoutes } from './routes/companion.js';
 import { router as passwordResetRoutes } from './routes/password-reset.js';
 import { pathLocale, privateNoindex } from './seo.js';
+import { renamedGames } from './renamed.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
 import { hostOnly } from './site.js';
@@ -154,6 +155,8 @@ export function createApp() {
   // The domain move: page loads on an old name (magic-cup.onrender.com) go to PUBLIC_URL. Off until PUBLIC_URL is set
   // and its self-check passed; MOVED_TO_URL and MAINTENANCE_MODE above still win.
   app.use(canonicalRedirect);
+  // A renamed official game's old addresses (server/renamed.js: /g/typing-pets, /fr/g/typing-pets, /play/typing-pets?...).
+  app.use(renamedGames);
   // Signed-out pages, the sitemap and robots.txt go out compressed (services/compress.js says why not signed-in ones).
   app.use(compressPublicPages);
   app.use(seoRoutes);   // /robots.txt, /sitemap.xml: no session needed

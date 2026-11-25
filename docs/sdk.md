@@ -50,7 +50,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.game` | `{ id, title }` |
 | `BRB.preview` | `true` inside the Studio preview (saving is off there). |
 | `BRB.params` | Lesson parameters, when a lesson step opened the game at a place: a frozen `{ chapter, band, mode, level, lock, style }` (any of them may be missing), `{}` otherwise. See [Lesson parameters](#lesson-parameters). |
-| `BRB.classRules` | Official games only (Typing Pets): a frozen `{ acc, wpm }` the player's teachers ask for before each next lesson opens (the strictest among the player's classes; 0 = no minimum), or `null`. Never a preview, a guest or a signed-out player. |
+| `BRB.classRules` | Official games only (Typing Zoo): a frozen `{ acc, wpm }` the player's teachers ask for before each next lesson opens (the strictest among the player's classes; 0 = no minimum), or `null`. Never a preview, a guest or a signed-out player. |
 | `BRB.theme` / `BRB.motion` | The site theme (`'light'`, `'dark'`, or `''` to follow the device): read-only plumbing for games that follow the site, like [Oomba Kit](kit-api.md) games and the Builder's classroom games (they set `data-theme` from it for the classroom look's light and dark); other games keep their own colors. `BRB.motion` is **reserved** for a future site motion setting and is always `''` today: games follow the device's reduced-motion setting (the kit also has its own settings panel). |
 | `BRB.storage.get(key)` | Per-player, per-game cloud save. Synchronous read. Values are JSON-decoded when possible. |
 | `BRB.storage.set(key, value)` / `remove(key)` | Writes are debounced and sent to the server. Max ~450 KB per game per player. |

@@ -5526,7 +5526,7 @@
       "readToMe": "Vorlesen"
     },
     "typing": {
-      "title": "Tipp-Tiere",
+      "title": "Tipp-Zoo",
       "unlockH": "Für jede nächste Lektion:",
       "unlockSummary": "nächste Lektion ab {what}",
       "goalMins": "Minuten pro Tag",
@@ -5571,7 +5571,7 @@
       "minutes": "{n} Min.",
       "missed": "In {pct}% der Fälle verfehlt",
       "notYet": "Noch nicht begonnen",
-      "note": "Aus dem eigenen Tipp-Tiere-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
+      "note": "Aus dem eigenen Tipp-Zoo-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
       "assign": "Eine Tipp-Lektion verteilen"
     },
     "courses": {
@@ -6696,7 +6696,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {

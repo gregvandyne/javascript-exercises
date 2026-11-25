@@ -5525,7 +5525,7 @@
       "readToMe": "Léemelo"
     },
     "typing": {
-      "title": "Mascotas Teclado",
+      "title": "Zoo del Teclado",
       "unlockH": "Para abrir cada lección siguiente:",
       "unlockSummary": "siguiente lección con {what}",
       "goalMins": "Minutos al día",
@@ -5570,7 +5570,7 @@
       "minutes": "{n} min",
       "missed": "Fallada el {pct}% de las veces",
       "notYet": "Aún no ha empezado",
-      "note": "Del propio progreso de cada estudiante en Mascotas Teclado, incluida la práctica en casa. La velocidad es en palabras por minuto (ppm); la precisión es la media de sus mejores lecciones. Las teclas difíciles son las que más fallan.",
+      "note": "Del propio progreso de cada estudiante en Zoo del Teclado, incluida la práctica en casa. La velocidad es en palabras por minuto (ppm); la precisión es la media de sus mejores lecciones. Las teclas difíciles son las que más fallan.",
       "assign": "Asignar una lección de mecanografía"
     },
     "courses": {
@@ -6695,7 +6695,7 @@
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
       "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase.",
       "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime.",
-      "typingPets": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 40 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
+      "typingZoo": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 40 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
     },
     "hubs": {
       "math": {
