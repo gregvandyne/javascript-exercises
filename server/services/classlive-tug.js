@@ -138,7 +138,7 @@ export function answer(s, io, seat, i, v) {
 }
 
 /** The end of the match: past the line, or time is up. The winner (1 Blue, 2 Red, 0 a draw) shows on every screen for
- *  HOLD_MS, then the session ends (the podium and the results). */
+ *  HOLD_MS, then the session ends (the winning team and the results). */
 export function finish(s, io) {
   const x = s.tug;
   if (x.done) return;

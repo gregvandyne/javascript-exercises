@@ -2,7 +2,7 @@
 // for each built-in live mode and each class size. The bots join, run around the lobby, answer every question at
 // human speed (1-6 s, mostly right) and stay to the end. Measures what matters for a full classroom on one server:
 //   - correctness: every bot is seated and counted, every bot gets every question, every answer is counted at the
-//     reveal, the leaderboard counts everyone;
+//     reveal, the score update (lb, which ranks nobody) counts everyone;
 //   - server: CPU and memory of the server process (SERVER_PID, Linux /proc), and event-loop lag seen from outside
 //     (round trips to /health every 100 ms, p95);
 //   - network: messages and bytes per second each player receives;
@@ -191,7 +191,7 @@ async function run(browser, cookie, mode, n, tag) {
     }
     await sleep(400);
   }
-  await sleep(2500); // the last leaderboard
+  await sleep(2500); // the last score update
   const secs = (Date.now() - t0) / 1000, p1 = PID ? proc(PID) : null;
   pinging = false;
   // Correctness.

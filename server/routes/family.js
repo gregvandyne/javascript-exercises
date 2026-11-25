@@ -65,14 +65,14 @@ const nope = (req, res) => (isApi(req) ? res.status(404).json({ error: req.t('er
 // ---------------------------------------------------------------- the fence
 // What a grown-up may open: game pages and play, search, the grown-up and info pages, signing in and out, their own
 // password and theme, and the family routes. Game calls a play page makes (save, score, ...) are allowed; a grown-up's
-// score is never stored (routes/games.js), so they are on no leaderboard.
+// score is never stored (routes/games.js). There are no leaderboards anywhere (docs/decisions.md "No leaderboards").
 // The parent pages' own links: the guides (/parents/<guide>), and the read-only age and subject pages (/learn/<slug>).
 const GUIDE_PATHS = new RegExp(`^/parents/(${PARENT_GUIDES.map(g => g.slug).join('|')})$`);
 const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billing\/status|billing\/sparks\/status)$/, /^\/(g|play)\/[^/]+$/, /^\/(frame|shots|avatars)\/[^/]+$/,
   /^\/(parents|safety|terms|refunds|privacy|teachers)$/, GUIDE_PATHS, /^\/learn(\/[a-z0-9-]+)?$/, /^\/plans(\/schools(\/print)?)?$/, /^\/trial$/, /^\/grown-ups(\/(signup|login))?$/, /^\/family(\/(link|add))?$/, /^\/family\/account$/, /^\/me\/settings$/, /^\/family\/children\/(new|[^/]+\/data)$/, /^\/(login|signup|forgot|reset)$/,
   // The sign-up's steps (routes/onboarding.js send a signed-in grown-up on to /family) and Sign in with Google (the
   // family account page connects a Google account).
-  /^\/signup\/(kid|parent|teacher)(\/[a-z]+)?$/, /^\/auth\/google\/(start|callback)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
+  /^\/signup\/(kid|parent|teacher)(\/[a-z]+)?$/, /^\/auth\/google\/(start|callback)$/, /^\/api\/games\/[^/]+\/save$/,
   // The Story Library (the Read tab; docs/decisions.md "Learn and Read"): the shelf, a book and its reader. Reading only:
   // routes/library.js keeps nothing for a grown-up (no reading progress, no answers, no points) and shows them no
   // child's. Never Assign (staff) or the book maker's own paths (GROWNUP_BOOK_GET, behind STORY_PICTURE_BOOKS).

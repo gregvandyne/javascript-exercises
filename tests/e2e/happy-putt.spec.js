@@ -85,7 +85,7 @@ test('Happy Putt runs on the kit: title, hole card, a drag putt, pass the phone,
   await expect(f.locator('.ok-title-screen #play9')).toBeVisible();
   expect(await f.evaluate(() => __brbTest.state().screen)).toBe('title');
 
-  // a fast Quick 9 for two: the ceremony and the scorecard; Quick 9 is practice (no leaderboard points)
+  // a fast Quick 9 for two: the ceremony and the scorecard; Quick 9 is practice (no best score)
   const end = await f.evaluate(async () => {
     const T = __brbTest; T.start({ players: 2, holes: 9, names: ['Ace', 'Birdie'] }); T.skipAnimations();
     const plan = T.holePlan();

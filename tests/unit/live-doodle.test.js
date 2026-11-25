@@ -304,7 +304,7 @@ test('hints, a pick that times out, the hide vote, a drawer who leaves, waiting 
   a.ws.close(); h.ws.close();
 });
 
-test('the end: the podium, then the results; nothing of a drawing or a word is kept or logged', async () => {
+test('the end: the class\'s end screen (no podium of players), then the results; nothing of a drawing or a word is kept or logged', async () => {
   reset();
   logs.length = 0;
   const s = open(teacher, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
@@ -320,13 +320,12 @@ test('the end: the podium, then the results; nothing of a drawing or a word is k
   const w2 = await picked(s, b, [a]);
   ev(a, 'gs', { n: 2, t: spell(s, a) });
   const done = await h.next('st', m => m.d.dd && m.d.dd.ph === 'done', 3000);
-  assert.equal(done.d.dd.top.length, 2);
-  assert.ok(done.d.dd.top[0][1] >= done.d.dd.top[1][1]);
+  assert.deepEqual(done.d.dd.top, [], 'no podium: nobody is ranked');
   await h.next('ph', m => m.phase === 'ended', 3000);
   assert.equal(s.doodle.canvas.length, 0); assert.equal(s.doodle.word, null); assert.equal(s.doodle.tray, null);
   const sum = s.summary;
   assert.equal(sum.scoredBy, 'server'); assert.equal(sum.settings.doodle, 'doodle:en:1:1:60:t');
-  assert.equal(sum.players[0].rank, 1);
+  assert.equal(sum.players[0].rank, undefined, 'no rank is kept');
   const kept = words(sum) + words(R.persisted(teacher, s.id) || {});
   for (const w of [w1, w2]) assert.ok(!kept.includes(`"${w}"`), `no word in the results: ${w} in ${kept}`);
   assert.ok(!/123,321|"pts"|"canvas"|"tray"/.test(kept), 'no stroke in the results');
@@ -379,7 +378,7 @@ test('blips: a reload at the end of a reveal never ends the game; a reloading gu
   await c2.next('ev', m => m.k === 'tray');
   ev(c2, 'gs', { n: 1, t: spell(s, c2) });
   assert.equal((await h.next('st', m => m.d.dd && m.d.dd.ph === 'reveal')).d.dd.rv.why, 'all');
-  // everyone's connection drops just as the reveal ends: the game goes on with the next drawer, not to the podium
+  // everyone's connection drops just as the reveal ends: the game goes on with the next drawer, not to the end
   for (const p of [a, b, c2]) p.ws.close();
   await h.next('st', m => m.d.dd && m.d.dd.tn === 2, 3000);
   assert.equal(dd(s).done, false); assert.equal(dd(s).rd, 1); assert.equal(dd(s).dr, seatOf(b), 'b draws next, though reloading');
@@ -388,7 +387,7 @@ test('blips: a reload at the end of a reveal never ends the game; a reloading gu
   h.ws.close(); b2.ws.close();
 });
 
-test('the host: Skip wipes the drawing; Remove locks the room and a removed player never stands on the podium', async () => {
+test('the host: Skip wipes the drawing; Remove locks the room; the end ranks nobody', async () => {
   reset();
   const s = open(mum, { mode: 'doodle', starter: 'doodle:en:1:1:60:t', audience: 'open', lang: 'en' });
   const h = await hostSocket(s, mum);
@@ -406,11 +405,11 @@ test('the host: Skip wipes the drawing; Remove locks the room and a removed play
   h.send({ t: 'h', a: 'skip', at: 1 });
   for (const p of [b, h]) await p.next('ev', m => m.k === 'cl' && m.f === 0);
   assert.equal(dd(s).canvas.length, 0); assert.equal(dd(s).rv.why, 'skip');
-  // the rest of the round, skipped: the podium has a and b, never c
+  // the rest of the round, skipped: the end shows no podium at all
   await h.next('st', m => m.d.dd && m.d.dd.tn === 2);
   h.send({ t: 'h', a: 'skip', at: 2 });
   const done = await h.next('st', m => m.d.dd && m.d.dd.ph === 'done', 3000);
-  assert.ok(!done.d.dd.top.some(r => r[0] === seatOf(c)), JSON.stringify(done.d.dd.top));
+  assert.deepEqual(done.d.dd.top, [], JSON.stringify(done.d.dd.top));
   for (const p of [a, b, h]) p.ws.close();
 });
 

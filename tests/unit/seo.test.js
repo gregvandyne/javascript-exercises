@@ -28,7 +28,7 @@ const kidPublic = kidGame('kid-public-game', 'public');
 kidGame('kid-private-game', 'private');
 kidGame('kid-class-game', 'class');
 const guest = auth.createGuest();
-// Kid's name on the Sum Racer leaderboard.
+// A kid's score on Sum Racer (there is no leaderboard: it must never put their name anywhere).
 const sum = games.getGameBySlug('sum-racer');
 q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', 'p-seo-1', sum.id, kid.id, now());
 games.submitScore(sum.id, kid.id, 999, '');
@@ -204,15 +204,15 @@ test('languages: /<code>/ addresses, hreflang only for written languages, no coo
   assert.equal(pick.status, 303); assert.equal(pick.headers.get('location'), '/fr/teachers');
 });
 
-test('children\'s names never reach a signed-out page; signed in, the leaderboard shows them', async () => {
+test('children\'s names never reach a signed-out page, and no leaderboard shows them signed in either', async () => {
   for (const p of ['/', '/g/sum-racer', '/search?q=Kid', '/search?q=Zoe', '/teachers', `/g/${kidPublic.slug}`.replace(kidPublic.slug, 'castle-clash')]) {
     const r = await get(p);
     assert.ok(!r.text.includes('Zoe Kidname'), `${p} shows no child's display name`);
   }
-  const out = await get('/g/sum-racer');
-  assert.match(out.text, /Sign in to see the players(&#39;|')? names\./);
-  const signedIn = await get('/g/sum-racer', { cookie: cookieOf(kid) });
-  assert.ok(signedIn.text.includes('Zoe Kidname'), 'players see the leaderboard names');
+  const other = auth.createUser({ username: 'SeoOtherKid', password: 'secret123' });
+  const signedIn = await get('/g/sum-racer', { cookie: cookieOf(other) });
+  assert.ok(!signedIn.text.includes('Zoe Kidname'), 'no leaderboard: another player never sees the name');
+  assert.match((await get('/g/sum-racer', { cookie: cookieOf(kid) })).text, /id="mybest"/, 'the kid sees their own best');
   // Cards for signed-out visitors credit only the official account.
   const home = await get('/');
   assert.ok(!home.text.includes(`by ${kid.display_name}`));
@@ -309,12 +309,11 @@ test('a plain address is the indexable English page whatever Accept-Language, co
   assert.equal(canonical(es.text), `${base}/es/g/sum-racer`);
 });
 
-test('leaderboard API: no names signed out; launch-game "More like this" lists launch games only signed out', async () => {
-  const out = await (await fetch(`${base}/api/games/${sum.id}/leaderboard`)).json();
-  assert.ok(out.rows.length >= 1);
-  for (const r of out.rows) { assert.equal(r.name, undefined); assert.ok('score' in r); }
+test('the old leaderboard API is empty; launch-game "More like this" lists launch games only signed out', async () => {
+  const out = await fetch(`${base}/api/games/${sum.id}/leaderboard`);
+  assert.equal(out.status, 410); assert.deepEqual(await out.json(), { rows: [] });
   const inn = await (await fetch(`${base}/api/games/${sum.id}/leaderboard`, { headers: { cookie: cookieOf(kid) } })).json();
-  assert.ok(inn.rows.some(r => r.name === 'Zoe Kidname'), 'signed in, names are there');
+  assert.deepEqual(inn.rows, [], 'signed in, nothing either');
   // The kid's public game is an arcade game: it would be a candidate on an arcade launch game's page.
   const arcade = q.get("SELECT slug FROM games WHERE source='seed' AND category='arcade' AND status='published' AND visibility='public' LIMIT 1");
   if (arcade) {

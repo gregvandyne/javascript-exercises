@@ -747,7 +747,7 @@
       "heading": "Spiele-SDK",
       "brb": {
         "p1": "Jedes Spiel bekommt einen kleinen Helfer namens BRB. {get} und {set} speichern den Fortschritt für jeden Spieler. localStorage funktioniert auch und wird in der Cloud gespeichert.",
-        "p2": "{submit} trägt einen Punktestand in die Bestenliste ein (nur der beste zählt). {over} beendet eine Runde.",
+        "p2": "{submit} speichert den besten Punktestand des Spielers, den nur er selbst sieht. {over} beendet eine Runde.",
         "p3": "{fx} bringen Schwung ins Spiel.",
         "p4": "{full} und {orient} fragen die Seite höflich.",
         "p5": "{lang} ist die Sprache des Spielers (zum Beispiel \"fr\" oder \"ar\") und {dir} ist \"rtl\" bei Sprachen, die von rechts nach links geschrieben werden. So kann ein Spiel die Sprache des Spielers sprechen."
@@ -1164,11 +1164,6 @@
       "tap": "Tipp auf einen Stern.",
       "guest": "Als Gast spielen und bewerten"
     },
-    "leaderboard": {
-      "heading": "Bestenliste",
-      "empty": "Noch keine Punkte. Sei der Erste!",
-      "signIn": "Melde dich an, um die Namen der Spieler zu sehen."
-    },
     "more": {
       "label": "Mehr",
       "heading": "Mehr davon"
@@ -1215,6 +1210,9 @@
       "title": "Dieses Spiel ist gerade nicht verfügbar",
       "text": "Vielleicht kommt es später zurück. Unter Lernen gibt es weitere Spiele und Rätsel zum Ausprobieren.",
       "play": "Zu Lernen"
+    },
+    "best": {
+      "heading": "Dein bester Punktestand"
     }
   },
   "play": {
@@ -6532,7 +6530,7 @@
         "h": "Bevor Sie es erstellen: Was dieses Konto speichert",
         "keep": "Was dieses Konto speichert: die Spiele, die Ihr Kind baut, seine Chats mit dem Baumeister, Bilder und Dateien, die es hochlädt, Spielstände, Punktestände, Bewertungen und Likes, Freunde und Nachrichten im Freundes-Chat, ein Profilfoto, falls es eines hinzufügt, seine Einstellungen und Anmelde-Cookies mit dem Namen des Browsers.",
         "ai": "Was an Claude von Anthropic geht (die KI hinter dem Baumeister): Nachrichten an den Baumeister, Bilder und Dateien, Profilfotos (für eine Sicherheitsprüfung) und Spiele, die zur öffentlichen Prüfung eingereicht werden. Es werden keine Namen oder Benutzernamen gesendet. Der Freundes-Chat geht nie an die KI.",
-        "who": "Wer was sieht: Freunde, die Ihr Kind mit einem Freundescode hinzufügt, können mit ihm chatten und seine Spiele sehen, die nur für Freunde sind. Alle können die Spiele spielen, die es öffentlich macht. Sein Benutzername steht bei öffentlichen Spielen und in Bestenlisten.",
+        "who": "Wer was sieht: Freunde, die Ihr Kind mit einem Freundescode hinzufügt, können mit ihm chatten und seine Spiele sehen, die nur für Freunde sind. Alle können die Spiele spielen, die es öffentlich macht. Sein Benutzername steht bei seinen öffentlichen Spielen.",
         "howLong": "Wie lange wir es speichern: solange es das Konto gibt. Automatische Löschfristen gibt es noch nicht.",
         "rights": "Was Sie tun können: auf Ihrer Familienseite sehen, was wir speichern, und das Konto löschen, oder uns schreiben.",
         "more": "Die ganze Datenschutzerklärung lesen"
@@ -7921,7 +7919,7 @@
       "li1": "Das sind Durchschnittswerte über viele Studien, Altersstufen, Fächer und Spiele. Manche Spiele halfen viel, manche gar nicht.",
       "li2": "Keine dieser Studien hat Oomba Academy getestet. Sie beschreiben Lernspiele allgemein und sind kein Versprechen für ein bestimmtes Spiel, eine Klasse oder ein Kind.",
       "li3": "Wouters und Kollegen fanden, dass Serious Games nicht stärker motivierten als herkömmlicher Unterricht, obwohl die Kinder mehr lernten.",
-      "li4": "Gamification ist nicht dasselbe wie ein Lernspiel: Sie fügt normalem Unterricht Spielelemente hinzu. Wir führen sie auf, weil Punkte, Sterne und Bestenlisten zu vielen Lernspielen gehören, auch zu unseren."
+      "li4": "Gamification ist nicht dasselbe wie ein Lernspiel: Sie fügt normalem Unterricht Spielelemente hinzu. Wir führen sie auf, weil Punkte und Sterne zu vielen Lernspielen gehören, auch zu unseren."
     },
     "use": {
       "h": "Spiele so einsetzen, wie es die Forschung nahelegt",
@@ -8201,7 +8199,6 @@
       },
       "cancel": "Abbrechen",
       "reportThanks": "Danke. Jemand von Oomba Academy schaut es sich an.",
-      "place": "Du bist auf Platz {rank} von {count}!",
       "late": "Du bist nach dem Start dazugekommen.",
       "watchHint": "Dieses Gerät kann die 3D-Welt nicht zeigen. Du siehst stattdessen eine Karte mit allen.",
       "removed": "Die Spielleitung hat dich aus dem Spiel genommen.",
@@ -8221,8 +8218,8 @@
       "moved": "Du bist jetzt bei {team}",
       "again": "Warte auf deine Lehrkraft … Vielleicht startet sie gleich ein neues Spiel mit allen hier.",
       "aiVoice": "Vorlesen nutzt eine KI-Stimme vom Computer ({provider}).",
-      "placeTied": "{others, plural, one {Du teilst Platz {rank} mit # anderen Spieler!} other {Du teilst Platz {rank} mit # anderen Spielern!}}",
-      "placeZero": "Alle gleichauf! Diesmal hat niemand Punkte."
+      "mine": "Du hattest {right} von {total} richtig!",
+      "myScore": "Deine Punkte: {score}"
     },
     "emote": {
       "wave": "Winken",
@@ -8315,7 +8312,7 @@
       "questRace": "Quest-Rennen",
       "questRaceText": "Beantworte Fragen und renne über eine 3D-Insel. Richtige Antworten bringen Edelsteine und einen Schub!",
       "battle": "Fragen-Duell",
-      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste.",
+      "battleText": "Fragen auf dem großen Bildschirm, Antworten auf jedem Gerät und nach jeder Frage die Antworten der Klasse.",
       "board": "Denkbrett",
       "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte.",
       "wyr": "Was wäre dir lieber? (Live)",
@@ -8529,7 +8526,10 @@
       "playAgainTeams": "Nochmal mit diesen Teams",
       "newGame": "Neues Spiel",
       "homework": "Als Hausaufgabe geben",
-      "votes": "{count, plural, one {# Stimme} other {# Stimmen}}"
+      "votes": "{count, plural, one {# Stimme} other {# Stimmen}}",
+      "classHeading": "Die Klasse",
+      "classPct": "{pct} % der Antworten richtig",
+      "classRight": "{right} von {answered} Antworten richtig"
     },
     "sets": {
       "title": "Fragensets",
@@ -8859,10 +8859,6 @@
       "points": "Punkte",
       "pointsSpeed": "Schnelle Antworten bringen mehr",
       "pointsAccuracy": "Nur richtige Antworten (je 1.000)",
-      "board": "Bestenliste auf den Geräten",
-      "boardAll": "Zeigen",
-      "boardTop5": "Nur die Top 5",
-      "boardOff": "Verbergen",
       "late": "Mitspielen nach dem Start erlaubt",
       "names": "Namen auf den Bildschirmen",
       "namesNames": "Echte Namen",
@@ -9286,7 +9282,7 @@
       "join": "Einem Spiel beitreten? Code hier eingeben"
     },
     "how": {
-      "h": "Von den Fragen aufs Siegerpodest in wenigen Minuten",
+      "h": "Von den Fragen zu den Ergebnissen in wenigen Minuten",
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
@@ -9310,8 +9306,8 @@
       },
       "s5": {
         "h": "Sehen, wer was weiß",
-        "p": "Nach jeder Frage eine Bestenliste und am Ende eine Ergebnisseite nach Fragen und nach Schülerinnen und Schülern.",
-        "alt": "Der Beamer-Bildschirm mit der Bestenliste und den Punkten der Schülerinnen und Schüler."
+        "p": "Nach jeder Frage, wie die Klasse geantwortet hat, und am Ende eine Ergebnisseite nach Fragen und nach Schülerinnen und Schülern.",
+        "alt": "Der Beamer-Bildschirm mit den Antworten der Klasse."
       }
     },
     "modes": {
@@ -9322,7 +9318,7 @@
       },
       "battle": {
         "h": "Fragen-Duell",
-        "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage eine Bestenliste."
+        "p": "Der Klassiker: die Frage auf der großen Leinwand, die Antworten auf jedem Gerät und nach jeder Frage die Antworten der Klasse."
       },
       "board": {
         "h": "Denkbrett",

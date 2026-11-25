@@ -220,14 +220,13 @@ function endTurn(s, io, why) {
   return true;
 }
 
-/** The final podium: the top three for HOLD_MS, then the session ends (the platform's podium and results). */
+/** The end: the class's "well done" screen for HOLD_MS, then the session ends (the platform's results). No podium of
+ *  students: top stays an empty list (docs/decisions.md "No leaderboards"); each device shows its own score. */
 export function finish(s, io) {
   const x = s.doodle, now = io.now();
   if (x.done) return;
-  // (a player the host removed never stands on the podium)
-  const rows = [...s.seats.values(), ...(s.gone || []).filter(seat => !seat.removed)].map(seat => [seat.no, (seat.score || 0) + (seat.bonus || 0)]).sort((a, b) => b[1] - a[1] || a[0] - b[0]);
   wipeTurn(x);
-  x.done = true; x.ph = 'done'; x.top = rows.slice(0, 3); x.rv = null; x.doneAt = now; x.running = s.phase === 'playing';
+  x.done = true; x.ph = 'done'; x.top = []; x.rv = null; x.doneAt = now; x.running = s.phase === 'playing';
   send(s, io, now);
   if (io.leaderboard) io.leaderboard(s);
 }

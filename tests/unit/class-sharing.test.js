@@ -232,9 +232,11 @@ test('every per-game endpoint: 404 for outsiders, works for classmates; frame to
   } finally { fs.rmSync(shots.fileFor(v), { force: true }); }
   // The game APIs.
   const calls = [['POST', 'rate', { stars: 4 }], ['POST', 'like', {}], ['POST', 'play', {}], ['POST', 'heartbeat', {}], ['POST', 'save', { data: { k: 'v' } }],
-    ['GET', 'save'], ['POST', 'score', { score: 5 }], ['GET', 'leaderboard'], ['POST', 'report', { reason: 'other' }]];
+    ['GET', 'save'], ['POST', 'score', { score: 5 }], ['POST', 'report', { reason: 'other' }]];
   for (const [method, p, body] of calls) assert.equal((await b(`/api/games/${g.id}/${p}`, { method, body })).status, 404, `${method} ${p} (outsider)`);
   for (const [method, p, body] of calls) assert.equal((await a(`/api/games/${g.id}/${p}`, { method, body })).status, 200, `${method} ${p} (classmate)`);
+  // No leaderboard: the old endpoint is 404 for outsiders and 410 (nothing in it) for classmates.
+  assert.equal((await b(`/api/games/${g.id}/leaderboard`)).status, 404); assert.equal((await a(`/api/games/${g.id}/leaderboard`)).status, 410);
   // Leaving the class: the next frame load (and everything else) is a 404.
   S.removeFromClass(w.t1, A.id, kidA.id);
   assert.equal((await frame(kidA)).status, 404);

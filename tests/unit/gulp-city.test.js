@@ -124,11 +124,13 @@ test('gulp-city: a hole grows by swallowing what fits, big things wait, rivals s
     assert.equal(s.screen, 'play'); assert.equal(s.alive, true);
     assert.ok(s.rT < 3 && s.rT >= 0.8, `starts again a little smaller (${s.rT})`);
 
-    // the round ends when the clock runs out, with a rank
+    // the round ends when the clock runs out: the player's own size and points, never a place (no leaderboard)
     await T(frame, 'setTimeLeft', 1); await T(frame, 'sim', 2);
     s = await T(frame, 'state');
     assert.equal(s.screen, 'end');
-    assert.ok(await frame.evaluate(() => !document.getElementById('endScreen').hidden && /#|1/.test(document.getElementById('endRank').textContent)));
+    const end = await frame.evaluate(() => ({ shown: !document.getElementById('endScreen').hidden, rank: document.getElementById('endRank').textContent, points: document.getElementById('endPoints').textContent, board: !!document.getElementById('boardList') }));
+    assert.ok(end.shown && /\d/.test(end.points), JSON.stringify(end));
+    assert.ok(!/#\d| of \d/.test(end.rank) && !end.board, 'no place and no leaderboard list');
 
     // free roam has no clock
     await T(frame, 'start', { mode: 'free', seed: 12 }); await T(frame, 'freezeRivals', true);

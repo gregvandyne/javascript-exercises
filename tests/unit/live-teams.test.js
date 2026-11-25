@@ -205,7 +205,7 @@ test('empty teams are unranked and marked never-had-a-member; messages', () => {
   assert.ok(tms.teams.every(([k, p, n]) => Number.isInteger(k) && Number.isInteger(p) && Number.isInteger(n)));
   const ts = T.tsMsg(s);
   assert.equal(ts.t, 'ts'); assert.equal(ts.s.length, 3); assert.ok(ts.s.every(row => row.length === 5));
-  assert.ok(T.tsMsg(s, { ranks: false }).s.every(row => row[2] === 0), 'leaderboard off: no ranks');
+  assert.ok(T.tsMsg(s, { ranks: false }).s.every(row => row[2] === 0), 'ranks: false: every rank 0');
   assert.equal(T.tsMsg(s, { fin: true }).fin, 1);
   assert.deepEqual(T.tmsMsg(fake(1)).teams, [], 'teams off');
 });

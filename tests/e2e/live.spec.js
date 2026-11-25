@@ -1,11 +1,11 @@
 // Oomba Live end to end (docs/live-protocol.md; design: docs/decisions.md "Oomba Live"). A host (the demo teacher) on
 // the projector page and players in their own browser contexts, all on the real socket: guests join with generated
-// names (no cookies), everyone sees everyone move in the 3D lobby, a full Quest Race to the podium and the results, the
+// names (no cookies), everyone sees everyone move in the 3D lobby, a full Quest Race to the flag and the results, the
 // classic Question Battle from the landing page, a class room with account names and saved scores, removal and the
 // auto-lock, Hero of Sunvale (an existing 3D game made live-ready) with players seeing each other walk, a Builder game
 // made live-ready in the Studio and hosted for the class, the 2D fallback and the Watch view, a 360px phone, RTL,
 // reconnecting mid-race, and 40 bot seats against a low-tier device's draw-call budget.
-// LIVE_SHOTS=<dir> saves the screenshots (host lobby, mid-race, phone, question card, podium, results, 2D, join card).
+// LIVE_SHOTS=<dir> saves the screenshots (host lobby, mid-race, phone, question card, the end, results, 2D, join card).
 import { test, expect } from '@playwright/test';
 import path from 'node:path';
 import WebSocket from 'ws';
@@ -74,7 +74,7 @@ const act = (host, a) => host.locator(`[data-lv-act="${a}"]:not([hidden])`).clic
 
 test.describe.configure({ mode: 'serial' });
 
-test('Quest Race, open room: guests join with generated names, see each other move, race to the podium; results; no guest cookies', async ({ browser }) => {
+test('Quest Race, open room: guests join with generated names, see each other move, race to the flag; results; no guest cookies', async ({ browser }) => {
   test.setTimeout(300_000);
   const host = await signedIn(browser, TEACHER);
   const code = await openRoom(host, { pick: 'mode:quest-race', items: ITEMS });
@@ -133,9 +133,9 @@ test('Quest Race, open room: guests join with generated names, see each other mo
   expect(progress.b.every(x => x === 0)).toBe(true);               // wrong answers never move a runner
   const end = await state(fa3);
   expect(end.me.target).toBeGreaterThanOrEqual(990);
-  expect(end.podium[0]).toBe(end.me.seat);                          // all right and quick: first on the podium
-  await expect(a.locator('#lv-place')).toContainText(/1/);
-  await a.waitForTimeout(1500); await shot(a, 'podium-player');
+  expect(end.podium).toEqual([]);                                   // a live race has no podium of runners
+  await expect(a.locator('#lv-place')).toContainText(/You got \d+ of \d+ right/); // the player's own result, never a place
+  await a.waitForTimeout(1500); await shot(a, 'end-player');
   await host.waitForURL(/\/live\/results\//);
   await expect(host.locator('.lv-table tbody tr')).toHaveCount(3);
   await expect(host.locator('.lv-results')).toContainText('3 guests played');
