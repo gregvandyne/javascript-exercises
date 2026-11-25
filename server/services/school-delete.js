@@ -39,9 +39,9 @@ export const BY_SCHOOL = ['school_members', 'staff_invites', 'staff_email_invite
 /** Rows removed by its classes' ids. */
 export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_classes', 'gc_posts', 'gc_links', 'gc_syncs', 'gc_roster',
   'live_class_teams', 'live_class_team_cfg', 'live_support', 'dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes',
-  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_point_awards', 'dash_class_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'manip_sessions', 'homeroom_rooms', 'homeroom_doodles', 'homeroom_signins', 'homeroom_live', 'homeroom_handouts', 'homeroom_feedback', 'homeroom_aides', 'homeroom_sub_log', 'homeroom_sub_links', 'made_book_classes', 'class_lessons'];
+  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_point_awards', 'dash_class_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'manip_sessions', 'homeroom_rooms', 'homeroom_doodles', 'homeroom_signins', 'homeroom_live', 'homeroom_handouts', 'homeroom_feedback', 'homeroom_aides', 'homeroom_sub_log', 'homeroom_sub_links', 'made_book_classes', 'typing_goals', 'class_lessons'];
 /** Rows removed by its classes' assigned lessons. */
-export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades', 'lessons_retired', 'proof_insights'];
+export const BY_CLASS_LESSON = ['step_progress', 'class_lesson_students', 'rubric_scores', 'gc_grades', 'lessons_retired', 'proof_insights'];
 /** Rows kept, with why (handled apart or history). */
 export const KEPT = {
   schools: 'the school row itself, deleted last',
