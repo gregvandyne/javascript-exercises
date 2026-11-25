@@ -2049,6 +2049,25 @@
       "bigger": "Texto más grande"
     },
     "homeroom": {
+      "my": {
+        "label": "Mi escritorio (solo tú ves lo que hay)",
+        "title": "Mi escritorio",
+        "note": "Solo tú ves esto",
+        "empty": "Suelta un juego aquí para probarlo primero.",
+        "cardLabel": "{title}, en mi escritorio",
+        "play": "Jugar",
+        "preview": "Vista previa",
+        "open": "Abrir",
+        "handOut": "Repartir",
+        "takeOff": "Quitar de mi escritorio",
+        "lead": "En tu escritorio para probarlo primero. Los alumnos no lo ven hasta que lo repartas.",
+        "lessonLead": "En tu escritorio. La vista previa abre los problemas de la lección. Los alumnos no lo ven hasta que lo repartas.",
+        "toolLead": "En tu escritorio para abrirlo cuando quieras. Repartir herramientas llega pronto.",
+        "tapWhere": "Ahora toca un pupitre, un grupo, Toda la clase o Mi escritorio.",
+        "tapMine": "Ahora toca Mi escritorio para dejarlo ahí.",
+        "toolSoon": "Repartir herramientas llega pronto. Ponlo en Mi escritorio para abrirlo desde ahí.",
+        "pickFirst": "Elige primero un juego a la izquierda y luego toca Mi escritorio."
+      },
       "wholeClass": "Toda la clase · {count}",
       "editGroups": "Grupos",
       "groupsTitle": "Grupos",
@@ -2111,6 +2130,8 @@
       "resumed": "Las pantallas volvieron",
       "ended": "Clase terminada",
       "ho": {
+        "noStudentsYet": "Todavía no hay alumnos. Quienes se unan lo recibirán.",
+        "putClass": "Repartir a la clase",
         "tapWhere": "Ahora toca un pupitre, un grupo o Toda la clase.",
         "cancel": "Cancelar",
         "wholeClass": "Toda la clase",
@@ -14886,6 +14907,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "En tu escritorio. Los alumnos no lo ven.",
+      "already": "Eso ya está en tu escritorio.",
+      "removed": "Quitado de tu escritorio."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Cambiar de clase",
     "arrange": "Organizar los asientos",
@@ -14919,6 +14945,9 @@
       "comingNext": "Muy pronto"
     },
     "errors": {
+      "badStage": "Eso no puede ir en tu escritorio.",
+      "deskFull": "Tu escritorio está lleno. Quita algo primero.",
+      "notStaged": "Eso ya no está en tu escritorio.",
       "notFound": "Este Homeroom no está disponible.",
       "badPreset": "Elige Filas, Mesas de 4, Forma de U o Círculo.",
       "badSeats": "No se pudieron guardar los asientos. Inténtalo de nuevo.",
@@ -15069,6 +15098,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} está repartido a la clase. Quienes se unan lo recibirán.",
       "done": "{title} está en {count, plural, one {# pupitre} other {# pupitres}}.",
       "removedOne": "Quitado de ese pupitre.",
       "removedAll": "Quitado de todos los pupitres. El trabajo de los estudiantes se conserva."

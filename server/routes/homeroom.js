@@ -20,6 +20,9 @@
 //   POST /api/homeroom/:id/handouts/:clid/feedback  a comment and a sticker on a finished card: { studentId, comment, sticker }
 //   POST /api/homeroom/:id/handouts/:clid/grade     change how it is graded: { grade: score | completion | none } (the
 //                                              Classroom tab's overview; every version handed out together)
+// The teacher's desk (docs/decisions.md "Homeroom: the teacher's desk"; services/homeroom-staged.js):
+//   GET  /api/homeroom/:id/staged              what is on the teacher's own desk (this teacher's view)
+//   POST /api/homeroom/:id/staged              { action: add, pick: gameId | L:<lessonId> | T:<tool> } | { action: remove, id }
 //   POST /api/homeroom/:id/teams               team desks: { action: make, members, x?, y? } | { action: split | move, id, x?, y? }
 // Lessons (step 2b; services/homeroom-lessons.js): the teacher's own, for any of their classes (the class in the address
 // is where they are working: its groups make the versions).
@@ -54,6 +57,7 @@ import * as H from '../services/homeroom.js';
 import * as HO from '../services/homeroom-handouts.js';
 import * as HL from '../services/homeroom-lessons.js';
 import * as HV from '../services/homeroom-live.js';
+import * as HS from '../services/homeroom-staged.js';
 import crypto from 'node:crypto';
 import { localeInfo } from '../i18n/index.js';
 import { hasModel } from '../builder/anthropic.js';
@@ -103,21 +107,22 @@ export function homeroomTabs(req, c, active) {
   return html`<nav class="hr-tabs" aria-label="${t('homeroom.tabs.label')}">${tabs.map(([k, href]) => html`<a href="${href}"${k === active ? raw(' aria-current="page"') : ''}>${t(`homeroom.tabs.${k}`)}</a>`)}</nav>`;
 }
 
-/** What the teacher's desk lists: their own games and the Oomba games, each one a handout (step 2a: tap it, then a desk,
+/** What the left panel lists: their own games and the Oomba games, each one a handout (step 2a: tap it, then a desk,
  *  a group or Whole class; or drag it there), and the Manipulatives and Figures, which come next. */
 function deskLists(req) {
   const u = req.user;
   const title = g => games.localizeGame(g, req.locale).title;
   const mine = games.myGames(u.id, 12).filter(g => g.status !== 'deleted').map(g => ({ id: g.id, icon: g.icon || '🎮', title: g.title }));
   const tools = [
-    ...(toolAccess(u, config.manipulatives) === 'yes' ? [{ icon: '🧮', title: req.t('homeroom.panel.manipulatives'), soon: true }] : []),
-    ...(toolAccess(u, config.figures) === 'yes' ? [{ icon: '📐', title: req.t('homeroom.panel.figures'), soon: true }] : []),
+    // tools can't be handed out yet ("Coming next"), but they go on the teacher's desk to open from there
+    ...(toolAccess(u, config.manipulatives) === 'yes' ? [{ id: 'T:manipulatives', icon: '🧮', title: req.t('homeroom.panel.manipulatives'), soon: true }] : []),
+    ...(toolAccess(u, config.figures) === 'yes' ? [{ id: 'T:figures', icon: '📐', title: req.t('homeroom.panel.figures'), soon: true }] : []),
   ];
   const oomba = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 16 }).filter(g => HO.handable(u, g)).map(g => ({ id: g.id, icon: g.icon || '🎮', title: title(g) }));
   return { mine, oomba: [...oomba, ...tools] };
 }
 const row = (t, x) => (x.id
-  ? html`<li><button type="button" class="hr-item hr-give" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></button></li>`
+  ? html`<li><button type="button" class="hr-item hr-give" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span>${x.soon ? html`<span class="hr-soontag">${t('homeroom.panel.comingNext')}</span>` : ''}</button></li>`
   : html`<li class="hr-item hr-later"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span>${x.soon ? html`<span class="hr-soontag">${t('homeroom.panel.comingNext')}</span>` : ''}</li>`);
 
 router.get('/class/:id/homeroom', (req, res) => {
@@ -131,7 +136,7 @@ router.get('/class/:id/homeroom', (req, res) => {
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
-      lessons: HL.listMine(u, req.locale), lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
+      lessons: HL.listMine(u, req.locale), staged: HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
       pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX } })}
     <div id="homeroom" class="hr">
       <header class="hr-top">
@@ -202,13 +207,16 @@ router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), 
     const r = HL.handOutLesson(req.user, c, { lessonId: String(x.lessonId), to, order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null });
     if (!r.ok) return hoFail(req, res, r);
     const also = await alsoPost(req, r.classLessons);
-    const toast = req.t(r.versions > 1 ? 'homeroom.lessons.handedOutVersions' : 'homeroom.lessons.handedOut', { title: r.lesson.title, count: r.students, versions: r.versions });
+    const toast = !r.students ? req.t('homeroom.handout.forLater', { title: r.lesson.title })
+      : req.t(r.versions > 1 ? 'homeroom.lessons.handedOutVersions' : 'homeroom.lessons.handedOut', { title: r.lesson.title, count: r.students, versions: r.versions });
     return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
   }
   const r = HO.handOut(req.user, c, { gameId: String(x.gameId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null });
   if (!r.ok) return hoFail(req, res, r);
   const also = await alsoPost(req, [r.classLesson]);
-  const toast = req.t('homeroom.handout.done', { title: games.localizeGame(r.game, req.locale).title, count: r.students });
+  const title = games.localizeGame(r.game, req.locale).title;
+  // Whole class with no students yet: it waits for them (whoever joins gets it).
+  const toast = r.students ? req.t('homeroom.handout.done', { title, count: r.students }) : req.t('homeroom.handout.forLater', { title });
   res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
 });
 /** "Also post to Google Classroom" (step 2c): each class lesson just made goes to the linked Classroom class through
@@ -230,6 +238,23 @@ router.post('/api/homeroom/:id/handouts/:clid/grade', rateLimit('homeroom-grade'
   const r = HO.setGrade(req.user, req.homeroomClass, req.params.clid, String(body(req).grade || ''));
   if (!r.ok) return hoFail(req, res, r);
   res.json({ ok: true, grade: r.grade, ids: r.ids, toast: req.t('homeroom.overview.gradeSaved') });
+});
+// ---------------------------------------------------------------- the teacher's desk (services/homeroom-staged.js)
+// Games, lessons and tools the teacher put on their own desk to try and hand out later: staged, never assigned. Only
+// the class's teachers (the gate above); nothing a student reads carries it.
+const stagedOut = req => ({ staged: HS.stagedFor(req.user, req.homeroomClass, req.locale, req.t) });
+router.get('/api/homeroom/:id/staged', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(stagedOut(req)));
+router.post('/api/homeroom/:id/staged', rateLimit('homeroom-staged', 600, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass;
+  if (x.action === 'remove') {
+    const r = HS.unstage(req.user, c, String(x.id || ''));
+    if (!r.ok) return fail(req, res, r.code);
+    return res.json({ ok: true, toast: req.t('homeroom.staged.removed'), ...stagedOut(req) });
+  }
+  if (x.action !== 'add') return fail(req, res, 'badAction');
+  const r = HS.stage(req.user, c, { pick: String(x.pick || '') });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, id: r.item.id, toast: req.t(r.already ? 'homeroom.staged.already' : 'homeroom.staged.added'), ...stagedOut(req) });
 });
 router.post('/api/homeroom/:id/teams', rateLimit('homeroom-seats', 600, 3600e3), (req, res) => {
   const x = body(req);

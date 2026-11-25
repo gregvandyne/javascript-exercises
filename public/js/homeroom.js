@@ -23,6 +23,10 @@
 //     the hand-out sheet when the class is linked (Whole class only, as Classroom's Assign).
 //   - step 3a, live class (public/js/homeroom-live.js): each desk's status, current handout, cursor and hand; ✋ Hands
 //     with the hall pass; 📊 Today; tapping a desk looks at that student's desk (Lock desk, Hide cursor, I'm coming over).
+//   - the teacher's own desk (docs/decisions.md "Homeroom: the teacher's desk"): "My desk" under the teacher's area holds
+//     games, lessons and tools the teacher drops or tap-places there, even with no students in the class, to try them
+//     (Play / Preview) and hand them out later (Hand out picks the item, then a desk, a group or Whole class; or the card
+//     is dragged there). Staged, never assigned: students never see it (POST .../staged).
 // Plans come in a later step (docs/homeroom.md "Build order").
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -52,7 +56,7 @@ const H = {
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], sel: null, edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
-  teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null,
+  teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [],
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -117,6 +121,54 @@ function teamHtml(tm) {
   return `<div class="hr-desk hr-team${H.deskSel === `team:${tm.id}` ? ' sel' : ''}" data-team="${esc(tm.id)}" role="group" aria-label="${esc(th('team.deskOf', { names: teamNames(tm) }))}"${H.seatsOpen ? ' tabindex="0"' : ''}
     style="left:${tm.x}px;top:${tm.y}px;width:${TEAM_DESK.w}px;min-height:${TEAM_DESK.h}px">${teamInner(tm)}</div>`;
 }
+// ---------------------------------------------------------------- the teacher's own desk (staged items)
+const STAGED_SHOWN = 3;
+const stagedById = id => H.staged.find(x => x.id === id) || null;
+/** My desk: a card per staged game, lesson or tool (tap: Play / Preview, Hand out, Take off my desk; drag: hand out). */
+function tdeskInner() {
+  const list = H.staged, many = list.length > STAGED_SHOWN + 1, shown = many ? list.slice(0, STAGED_SHOWN) : list;
+  const card = x => btn(`hr-scard${x.tool ? ' tool' : ''}`, `data-hrstaged="${esc(x.id)}" aria-label="${esc(th('my.cardLabel', { title: x.title }))}"`,
+    `<span class="hr-cico" aria-hidden="true">${iconHtml(x.icon, { size: 20 })}</span><span class="hr-ct" dir="auto">${esc(x.title)}</span>`);
+  return `<span class="hr-tdeskcap">${iconHtml('🧑‍🏫', { size: 22 })} <b>${esc(th('my.title'))}</b><span class="hr-tdesknote">${esc(th('my.note'))}</span></span>
+    ${list.length ? `<div class="hr-scards">${shown.map(card).join('')}${many ? btn('hr-scard hr-smore', 'data-hrstagedall', esc(th('ho.more', { count: list.length - STAGED_SHOWN }))) : ''}</div>`
+      : `<span class="hr-tdeskempty">${esc(th('my.empty'))}</span>`}`;
+}
+function renderTdesk() { const el = $('hr-tdesk'); if (el) el.innerHTML = tdeskInner(); renderGivebar(); }
+async function stagedApi(bodyIn) {
+  try {
+    const r = await api(api2('staged'), { method: 'POST', body: bodyIn });
+    H.staged = r.staged || []; renderTdesk(); toast(r.toast);
+    return r;
+  } catch (e) { toast(e.message, { bad: true }); return null; }
+}
+/** Put the picked game, lesson or tool on My desk (tap-then-tap or a drop on it). */
+async function stagePick(p) {
+  if (!p) return;
+  setPick(null);
+  const r = await stagedApi({ action: 'add', pick: p.id });
+  if (r && r.id) worldEl.querySelector(`[data-hrstaged="${CSS.escape(r.id)}"]`)?.focus({ preventScroll: true });
+}
+const pickOfStaged = x => ({ id: x.pick, icon: x.icon, title: x.title, staged: x.id });
+/** A card on My desk: Play / Preview (the game, the lesson's own question set, the tool), Hand out, Take off my desk. */
+function stagedMenu(id) {
+  const x = stagedById(id); if (!x) return;
+  const play = x.href ? `<a class="btn btn-primary hr-chunk" data-sm="play" href="${esc(x.href)}">${iconHtml(x.tool ? '🧰' : x.lesson ? '👀' : '▶️', { size: 18 })} ${esc(th(x.tool ? 'my.open' : x.lesson ? 'my.preview' : 'my.play'))}</a>` : '';
+  const sh = sheet({ title: `${x.icon} ${x.title}`, content: `<div class="hr-smenu"><p class="small muted">${esc(th(x.tool ? 'my.toolLead' : x.lesson ? 'my.lessonLead' : 'my.lead'))}</p>
+    <div class="hr-smenuacts">${play}
+      ${x.tool ? '' : btn('btn hr-chunk', 'data-sm="give"', `${iconHtml('🎒', { size: 18 })} ${esc(th('my.handOut'))}`)}
+      ${btn('btn hr-chunk', 'data-sm="off"', `${iconHtml('↩️', { size: 18 })} ${esc(th('my.takeOff'))}`)}</div></div>` });
+  sh.el.querySelector('.hr-smenu').addEventListener('click', async e => {
+    const b = e.target.closest('[data-sm]'); if (!b) return;
+    if (b.dataset.sm === 'give') { sh.close(); if (H.seatsOpen) openSeats(false); setPick(pickOfStaged(x)); return; }
+    if (b.dataset.sm === 'off') { sh.close(); stagedApi({ action: 'remove', id: x.id }); }
+  });
+}
+/** Everything on My desk, when there is more than the desk shows. */
+function stagedList() {
+  const sh = sheet({ title: `🧑‍🏫 ${th('my.title')}`, content: `<ul class="plain hr-slist">${H.staged.map(x => `<li>${btn('btn hr-chunk hr-sitem', `data-sl="${esc(x.id)}"`, `${iconHtml(x.icon, { size: 18 })} <span dir="auto">${esc(x.title)}</span>`)}</li>`).join('')}</ul>` });
+  sh.el.addEventListener('click', e => { const b = e.target.closest('[data-sl]'); if (b) { sh.close(); stagedMenu(b.dataset.sl); } });
+}
+
 /** Only the desks again (fresh progress, a new handout), leaving the teacher's area and its edits alone. */
 function renderDesks() {
   for (const s of soloStudents()) { const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (el) el.innerHTML = deskInner(s); }
@@ -129,9 +181,9 @@ function renderWorld() {
   worldEl.style.width = `${w.w}px`; worldEl.style.height = `${w.h}px`;
   worldEl.innerHTML = `<section class="rm-area teach editable hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
       <header class="rm-label">✦ ${esc(tm('teacherArea'))} · ${esc(tm('teacherAreaNote'))}</header><div class="hr-areabody">${areaInner()}</div></section>
-    <div class="hr-tdesk" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${esc(th('teacherDesk'))}</div>
+    <div class="hr-tdesk" id="hr-tdesk" role="group" aria-label="${esc(th('my.label'))}" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${tdeskInner()}</div>
     ${soloStudents().map(deskHtml).join('')}${H.teams.map(teamHtml).join('')}
-    ${H.students.length ? '' : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + 160}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
+    ${H.students.length ? '' : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
   board.classList.toggle('hr-seating', H.seatsOpen);
   applyView();
   LV.paint();
@@ -162,7 +214,7 @@ function fit() {
   const seats = [...soloStudents().map(s => ({ ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK })), ...H.teams.map(tm => ({ x: tm.x, y: tm.y, ...TEAM_DESK }))];
   const w = world(), xs = [AREA.x, ...seats.map(p => p.x)], ys = seats.map(p => p.y + p.h);
   const x0 = Math.min(...xs) - 20, x1 = Math.max(AREA.x + AREA.w, ...seats.map(p => p.x + p.w)) + 20;
-  const rect = { x: x0, y: 0, w: Math.min(w.w, x1) - x0, h: Math.max(AREA.y + AREA.h + 140, ...ys) + 40 };
+  const rect = { x: x0, y: 0, w: Math.min(w.w, x1) - x0, h: Math.max(TEACHER_DESK.y + TEACHER_DESK.h + (H.students.length ? 12 : 90), ...ys) + 40 };
   H.view = fitView(rect, freeBox(), { pad: 12, zMin: Z_FIT, zMax: 1 });
   applyView();
 }
@@ -376,6 +428,7 @@ function setPick(p) {
   H.pick = p;
   for (const b of document.querySelectorAll('[data-hritem]')) b.setAttribute('aria-pressed', String(!!p && b.dataset.hritem === p.id));
   $('homeroom').classList.toggle('hr-picking', !!p);
+  $('homeroom').classList.toggle('hr-picking-mine', !!(p && p.staged));
   renderGivebar();
 }
 function renderGivebar() {
@@ -383,15 +436,17 @@ function renderGivebar() {
   if (!el) { el = document.createElement('div'); el.id = 'hr-givebar'; el.className = 'hr-givebar'; el.setAttribute('role', 'status'); $('hr-seatbar').after(el); }
   el.hidden = !H.pick || H.seatsOpen || H.giving;
   // The groups and Whole class again in the bar, so they are one tap away wherever the panel is scrolled (a phone).
-  const chips = [btn('hr-gchip whole', 'data-hrto="all"', esc(th('ho.wholeClass'))), ...H.groups.filter(g => count(g)).map(g => btn('hr-gchip', `data-hrto="group:${esc(g.id)}" style="--gc:${esc(g.color)}"`, `<span class="rm-dot" style="--c:${esc(g.color)}"></span>${esc(groupName(g))}`))].join('');
-  el.innerHTML = H.pick ? `<span class="hr-giveico" aria-hidden="true">${iconHtml(H.pick.icon, { size: 20 })}</span><span class="hr-givet"><b dir="auto">${esc(H.pick.title)}</b> <span>${esc(th('ho.tapWhere'))}</span></span>
+  const onMine = H.pick && H.staged.some(x => x.pick === H.pick.id);
+  const chips = [...(H.pick && H.pick.id.startsWith('T:') ? [] : [btn('hr-gchip whole', 'data-hrto="all"', esc(th('ho.wholeClass'))), ...H.groups.filter(g => count(g)).map(g => btn('hr-gchip', `data-hrto="group:${esc(g.id)}" style="--gc:${esc(g.color)}"`, `<span class="rm-dot" style="--c:${esc(g.color)}"></span>${esc(groupName(g))}`))]),
+    ...(onMine ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
+  el.innerHTML = H.pick ? `<span class="hr-giveico" aria-hidden="true">${iconHtml(H.pick.icon, { size: 20 })}</span><span class="hr-givet"><b dir="auto">${esc(H.pick.title)}</b> <span>${esc(th(H.pick.id.startsWith('T:') ? 'my.tapMine' : onMine ? 'ho.tapWhere' : 'my.tapWhere'))}</span></span>
     <span class="hr-giveto">${chips}</span>${btn('btn btn-sm hr-chunk', 'data-hr="unpick"', esc(th('ho.cancel')))}` : '';
 }
 const pickFrom = b => ({ id: b.dataset.hritem, icon: b.dataset.icon || '🎮', title: b.querySelector('.hr-itemt')?.textContent || '' });
 // ---------------------------------------------------------------- lessons (step 2b)
 const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id === p.id.slice(2)) || null : null);
 const lessonCtx = {
-  D, H, th, api2: path => api2(path), groupName, gcField, gcPicked,
+  D, H, th, api2: path => api2(path), groupName, gcField, gcPicked, emptyNote, putLabel,
   onLessons: list => { H.lessons = list; if (H.pick && H.pick.id.startsWith('L:') && !lessonOfPick(H.pick)) setPick(null); renderLessons(lessonCtx); },
   onHanded: r => { H.ho = { handouts: r.handouts, desks: r.desks }; setPick(null); renderDesks(); toast(r.toast); },
 };
@@ -404,7 +459,8 @@ function groupsIn(to) {
 function targetAt(el) {
   if (!el) return null;
   const chip = el.closest('[data-hrto]');
-  if (chip) { const v = chip.dataset.hrto; return v === 'all' ? { kind: 'all' } : { kind: 'group', id: v.slice(6) }; }
+  if (chip) { const v = chip.dataset.hrto; return v === 'all' ? { kind: 'all' } : v === 'me' ? { kind: 'me' } : { kind: 'group', id: v.slice(6) }; }
+  if (el.closest('.hr-tdesk') && !H.seatsOpen) return { kind: 'me' };
   const desk = el.closest('.hr-desk');
   if (!desk || H.seatsOpen) return null;
   return desk.dataset.team ? { kind: 'team', id: desk.dataset.team } : { kind: 'desk', id: desk.dataset.sid };
@@ -423,12 +479,18 @@ function gcField(to) {
   return `<label class="hr-gcalso${whole ? '' : ' off'}"><input type="checkbox" class="hr-gcpost"${whole ? '' : ' disabled'}> <span>${iconHtml('🎓', { size: 18 })} ${esc(th('ho.gcAlso'))}</span></label>
     <p class="small muted hr-seghint">${esc(th(whole ? 'ho.gcHint' : 'ho.gcWholeOnly'))}</p>`;
 }
+/** Whole class with nobody in the class yet: a calm note (it waits for whoever joins) and the sheet's button. */
+function emptyNote(to, who) { return to.kind === 'all' && !who.n ? `<p class="hr-emptynote" role="note">${iconHtml('🌱', { size: 18 })} ${esc(th('ho.noStudentsYet'))}</p>` : ''; }
+function putLabel(to, who) { return to.kind === 'all' && !who.n ? th('ho.putClass') : who.n === 1 && to.kind === 'desk' ? th('ho.putOne') : th('ho.putMany', { count: who.n }); }
 function gcPicked(f) { const c = f.querySelector('.hr-gcpost'); return !!(c && c.checked); }
 /** The handout sheet (the mockup's "Game · free play"): instructions, Order on the desk, Grade it by, a due day. */
 function giveSheet(to) {
   const p = H.pick; if (!p) return;
+  if (to.kind === 'me') { stagePick(p); return; }
+  if (p.id.startsWith('T:')) { toast(th('my.toolSoon')); return; }
   const who = whoLabel(to);
-  if (!who.n) { toast(th('ho.emptyGroup'), { bad: true }); return; }
+  // Whole class works with nobody in the class yet: it waits for whoever joins (the sheet says so).
+  if (!who.n && to.kind !== 'all') { toast(th('ho.emptyGroup'), { bad: true }); return; }
   const lesson = lessonOfPick(p);
   if (p.id.startsWith('L:') && !lesson) { setPick(null); return; }
   H.giving = true; renderGivebar();
@@ -438,7 +500,7 @@ function giveSheet(to) {
   const sh = sheet({
     title: `${p.icon} ${th('ho.title', { game: p.title, who: who.label })}`,
     onClose: () => { H.giving = false; renderGivebar(); },
-    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(th('ho.eyebrow'))}</p><p class="small muted">${esc(th('ho.lead'))}</p>
+    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(th('ho.eyebrow'))}</p><p class="small muted">${esc(th('ho.lead'))}</p>${emptyNote(to, who)}
       <label class="hr-label" for="hr-ins">${esc(th('ho.instructions'))}</label>
       <textarea class="input hr-ins" id="hr-ins" rows="3" maxlength="${max}" placeholder="${esc(th('ho.instructionsPh'))}"></textarea>
       <p class="small muted hr-count" id="hr-inscount" aria-live="polite">${esc(th('ho.left', { count: max }))}</p>
@@ -449,7 +511,7 @@ function giveSheet(to) {
       <label class="hr-label" for="hr-due">${esc(th('ho.due'))}</label><input class="input hr-due" type="date" id="hr-due">
       ${gcField(to)}
       <p class="err" id="hr-giveerr" aria-live="polite"></p>
-      <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(who.n === 1 && to.kind === 'desk' ? th('ho.putOne') : th('ho.putMany', { count: who.n }))}</button></div></form>`,
+      <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(putLabel(to, who))}</button></div></form>`,
   });
   const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'completion' };
   const hints = { in: 'inOrderHint', any: 'anyOrderHint', score: 'scoreHint', completion: 'completionHint', none: 'notGradedHint' };
@@ -480,6 +542,10 @@ function giveClick(e) {
   const item = e.target.closest('[data-hritem]');
   if (item) { if (H.drag && H.drag.dropped) { H.drag = null; return true; } const p = pickFrom(item); setPick(H.pick && H.pick.id === p.id ? null : p); return true; }
   if (e.target.closest('[data-hr="unpick"]')) { setPick(null); return true; }
+  const sc = e.target.closest('[data-hrstaged]');
+  if (sc && H.drag && H.drag.dropped) { H.drag = null; return true; }
+  if (sc && !H.pick) { stagedMenu(sc.dataset.hrstaged); return true; }
+  if (e.target.closest('[data-hrstagedall]') && !H.pick) { stagedList(); return true; }
   const lm = e.target.closest('[data-hrlmore]'); if (lm) { lessonMenu(lessonCtx, lm.dataset.hrlmore); return true; }
   if (e.target.closest('[data-hr="build"]')) { openBuilder(lessonCtx); return true; }
   const ho = e.target.closest('[data-hrho]'), more = e.target.closest('[data-hrdesk]'), tcard = e.target.closest('[data-hrteam]');
@@ -487,6 +553,7 @@ function giveClick(e) {
     const to = targetAt(e.target);
     if (to) { giveSheet(to); return true; }
   } else if (e.target.closest('[data-hrto]')) { toast(th('ho.pickFirst')); return true; }
+  else if (e.target.closest('.hr-tdesk') && !H.seatsOpen && !e.target.closest('button, a')) { toast(th('my.pickFirst')); return true; }
   if (ho) { deskSheet(ho.dataset.sid, ho.dataset.hrho); return true; }
   if (tcard) { teamSheet(tcard.dataset.hrteam); return true; }
   if (more) { deskSheet(more.dataset.hrdesk); return true; }
@@ -498,6 +565,12 @@ function dragStart(e) {
   if (!item || e.pointerType === 'touch' || e.button > 0 || H.seatsOpen) return;
   H.drag = { p: pickFrom(item), sx: e.clientX, sy: e.clientY, ghost: null, dropped: false };
 }
+function stagedDragStart(e) {
+  const card = e.target.closest('[data-hrstaged]');
+  if (!card || e.button > 0 || H.seatsOpen || H.pick) return;
+  const x = stagedById(card.dataset.hrstaged); if (!x || x.tool) return;
+  H.drag = { p: pickOfStaged(x), sx: e.clientX, sy: e.clientY, ghost: null, dropped: false, staged: true };
+}
 function dragMove(e) {
   const d = H.drag; if (!d || d.dropped) return;
   if (!d.ghost) {
@@ -508,7 +581,7 @@ function dragMove(e) {
   }
   d.ghost.style.transform = `translate(${e.clientX + 12}px, ${e.clientY + 12}px)`;
   for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget');
-  const under = document.elementFromPoint(e.clientX, e.clientY), at = under && (under.closest('[data-hrto]') || under.closest('.hr-desk'));
+  const under = document.elementFromPoint(e.clientX, e.clientY), at = under && (under.closest('[data-hrto]') || under.closest('.hr-desk') || (d.staged ? null : under.closest('.hr-tdesk')));
   if (at) at.classList.add('hr-droptarget');
 }
 function dragEnd(e) {
@@ -518,7 +591,8 @@ function dragEnd(e) {
   for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget');
   const to = e.type === 'pointerup' ? targetAt(document.elementFromPoint(e.clientX, e.clientY)) : null;
   H.justPanned = false;
-  if (to) giveSheet(to); else setPick(null);
+  // a card dragged off My desk and dropped back on it: nothing to do
+  if (to && !(d.staged && to.kind === 'me')) giveSheet(to); else setPick(null);
   setTimeout(() => { if (H.drag === d) H.drag = null; }, 400);
 }
 /** A desk's handouts: each with its state and instructions, and Remove from this desk / from every desk. */
@@ -759,6 +833,9 @@ function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
   $('hr-panel').addEventListener('pointerdown', dragStart);
+  board.addEventListener('pointerdown', stagedDragStart);
+  // a game's icon is a picture: the browser's own image drag would cancel ours (pointercancel)
+  document.addEventListener('dragstart', e => { if (e.target.closest && e.target.closest('[data-hritem], [data-hrstaged]')) e.preventDefault(); });
   document.addEventListener('pointermove', dragMove); document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) pollHandouts(); });
   pollTimer = setTimeout(pollHandouts, pollEvery());

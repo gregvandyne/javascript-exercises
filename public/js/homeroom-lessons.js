@@ -311,7 +311,7 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
   const sh = sheet({
     title: `📄 ${tl('giveTitle', { lesson: l.title, who: who.label })}`, onClose,
     content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(tl('giveEyebrow'))}</p>
-      <p class="small muted">${esc(`${l.game} · ${summary(l.slug, l.base)}`)}</p>${l.instructions ? `<p class="hr-dins" dir="auto">${esc(l.instructions)}</p>` : ''}${vers}
+      <p class="small muted">${esc(`${l.game} · ${summary(l.slug, l.base)}`)}</p>${ctx.emptyNote ? ctx.emptyNote(to, who) : ''}${l.instructions ? `<p class="hr-dins" dir="auto">${esc(l.instructions)}</p>` : ''}${vers}
       <p class="hr-label" id="hrlg-order">${esc(ctx.th('ho.order'))}</p>${seg('order', [['in', ctx.th('ho.inOrder')], ['any', ctx.th('ho.anyOrder')]], 'in', 'hrlg-order')}
       <p class="small muted hr-seghint" id="hrlg-orderhint">${esc(ctx.th('ho.inOrderHint'))}</p>
       <p class="hr-label" id="hrlg-grade">${esc(ctx.th('ho.grade'))}</p>${seg('grade', [['score', ctx.th('ho.score')], ['completion', ctx.th('ho.completion')], ['none', ctx.th('ho.notGraded')]], 'score', 'hrlg-grade')}
@@ -319,7 +319,7 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
       <label class="hr-label" for="hrlg-due">${esc(ctx.th('ho.due'))}</label><input class="input hr-due" type="date" id="hrlg-due">
       ${ctx.gcField ? ctx.gcField(to) : ''}
       <p class="err" id="hrlg-err" aria-live="polite"></p>
-      <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(ctx.th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(who.n === 1 && to.kind === 'desk' ? ctx.th('ho.putOne') : ctx.th('ho.putMany', { count: who.n }))}</button></div></form>`,
+      <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(ctx.th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(ctx.putLabel ? ctx.putLabel(to, who) : who.n === 1 && to.kind === 'desk' ? ctx.th('ho.putOne') : ctx.th('ho.putMany', { count: who.n }))}</button></div></form>`,
   });
   const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'score' };
   const hints = { in: ctx.th('ho.inOrderHint'), any: ctx.th('ho.anyOrderHint'), score: tl('scoreHint'), completion: ctx.th('ho.completionHint'), none: ctx.th('ho.notGradedHint') };

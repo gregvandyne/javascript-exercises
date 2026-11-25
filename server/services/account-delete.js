@@ -137,6 +137,12 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     q.run('DELETE FROM homeroom_feedback WHERE user_id=?', u.id);
     // their Homeroom lessons (step 2b; the lessons' question sets went with 11b)
     q.run('DELETE FROM homeroom_lessons WHERE owner_id=?', u.id);
+    // what they put on their own desk on a class's board (services/homeroom-staged.js; the class's other teachers keep theirs)
+    for (const r of q.all('SELECT class_id, staged FROM homeroom_rooms WHERE staged LIKE ?', `%${u.id}%`)) {
+      let list = []; try { list = JSON.parse(r.staged) || []; } catch { /* kept as it was */ }
+      const left = Array.isArray(list) ? list.filter(x => !x || x.by !== u.id) : [];
+      q.run('UPDATE homeroom_rooms SET staged=? WHERE class_id=?', JSON.stringify(left), r.class_id);
+    }
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
     // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)

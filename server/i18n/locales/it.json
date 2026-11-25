@@ -2050,6 +2050,25 @@
       "bigger": "Testo più grande"
     },
     "homeroom": {
+      "my": {
+        "label": "La mia cattedra (solo tu vedi cosa c’è)",
+        "title": "La mia cattedra",
+        "note": "Lo vedi solo tu",
+        "empty": "Trascina qui un gioco per provarlo prima.",
+        "cardLabel": "{title}, sulla mia cattedra",
+        "play": "Gioca",
+        "preview": "Anteprima",
+        "open": "Apri",
+        "handOut": "Distribuisci",
+        "takeOff": "Togli dalla mia cattedra",
+        "lead": "Sulla tua cattedra per provarlo prima. Gli studenti non lo vedono finché non lo distribuisci.",
+        "lessonLead": "Sulla tua cattedra. L’anteprima apre gli esercizi della lezione. Gli studenti non lo vedono finché non lo distribuisci.",
+        "toolLead": "Sulla tua cattedra da aprire quando vuoi. Distribuire gli strumenti arriva presto.",
+        "tapWhere": "Ora tocca un banco, un gruppo, Tutta la classe o La mia cattedra.",
+        "tapMine": "Ora tocca La mia cattedra per tenerlo lì.",
+        "toolSoon": "Distribuire gli strumenti arriva presto. Mettilo su La mia cattedra per aprirlo da lì.",
+        "pickFirst": "Scegli prima un gioco a sinistra, poi tocca La mia cattedra."
+      },
       "wholeClass": "Tutta la classe · {count}",
       "editGroups": "Gruppi",
       "groupsTitle": "Gruppi",
@@ -2112,6 +2131,8 @@
       "resumed": "Gli schermi sono tornati",
       "ended": "Lezione terminata",
       "ho": {
+        "noStudentsYet": "Ancora nessuno studente. Chi si unisce lo riceverà.",
+        "putClass": "Distribuisci alla classe",
         "tapWhere": "Ora tocca un banco, un gruppo o Tutta la classe.",
         "cancel": "Annulla",
         "wholeClass": "Tutta la classe",
@@ -14887,6 +14908,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Sulla tua cattedra. Gli studenti non lo vedono.",
+      "already": "È già sulla tua cattedra.",
+      "removed": "Tolto dalla tua cattedra."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Cambia classe",
     "arrange": "Disponi i posti",
@@ -14920,6 +14946,9 @@
       "comingNext": "In arrivo"
     },
     "errors": {
+      "badStage": "Questo non può andare sulla tua cattedra.",
+      "deskFull": "La tua cattedra è piena. Togli prima qualcosa.",
+      "notStaged": "Non è più sulla tua cattedra.",
       "notFound": "Questo Homeroom non è disponibile.",
       "badPreset": "Scegli File, Tavoli da 4, A ferro di cavallo o In cerchio.",
       "badSeats": "Non è stato possibile salvare i posti. Riprova.",
@@ -15070,6 +15099,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} è distribuito alla classe. Chi si unisce lo riceverà.",
       "done": "{title} è su {count, plural, one {# banco} other {# banchi}}.",
       "removedOne": "Tolto da quel banco.",
       "removedAll": "Tolto da tutti i banchi. Il lavoro degli studenti resta salvato."

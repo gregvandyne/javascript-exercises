@@ -9,7 +9,9 @@ export const AREA = { x: 420, y: 40, w: 1560, h: 380 };
  *  server's cleaner use the same numbers). Both resize in width and height; their words wrap inside. */
 export const NOTE_BOX = { w: 176, h: 110, wMin: 90, wMax: 600, hMin: 60, hMax: 380 };
 export const TEXT_NEW = { w: 260, h: 40 };
-export const TEACHER_DESK = { x: 1080, y: 440, w: 240, h: 70 };
+/** The teacher's own desk, under the middle of the teacher's area: a real desk where the teacher stages games, lessons and
+ *  tools to try and hand out later (services/homeroom-staged.js). Ends above the first row's names (SEATS_TOP - 34). */
+export const TEACHER_DESK = { x: 880, y: 436, w: 640, h: 108 };
 export const DESK = { w: 180, h: 124 };
 /** A team desk (step 2c): students who share one desk. Wider than a desk, so every member's name fits on it. */
 export const TEAM_DESK = { w: 300, h: 150 };

@@ -2050,6 +2050,25 @@
       "bigger": "Grotere tekst"
     },
     "homeroom": {
+      "my": {
+        "label": "Mijn bureau (alleen jij ziet wat erop ligt)",
+        "title": "Mijn bureau",
+        "note": "Alleen jij ziet dit",
+        "empty": "Zet hier een spel neer om het eerst te proberen.",
+        "cardLabel": "{title}, op mijn bureau",
+        "play": "Spelen",
+        "preview": "Voorbeeld",
+        "open": "Openen",
+        "handOut": "Uitdelen",
+        "takeOff": "Van mijn bureau halen",
+        "lead": "Op je bureau om eerst te proberen. Leerlingen zien het pas als je het uitdeelt.",
+        "lessonLead": "Op je bureau. Het voorbeeld opent de opgaven van de les. Leerlingen zien het pas als je het uitdeelt.",
+        "toolLead": "Op je bureau om op elk moment te openen. Hulpmiddelen uitdelen komt hierna.",
+        "tapWhere": "Tik nu op een tafel, een groep, Hele klas of Mijn bureau.",
+        "tapMine": "Tik nu op Mijn bureau om het daar te leggen.",
+        "toolSoon": "Hulpmiddelen uitdelen komt hierna. Leg het op Mijn bureau om het daar te openen.",
+        "pickFirst": "Kies eerst links een spel en tik dan op Mijn bureau."
+      },
       "wholeClass": "Hele klas · {count}",
       "editGroups": "Groepen",
       "groupsTitle": "Groepen",
@@ -2112,6 +2131,8 @@
       "resumed": "De schermen zijn terug",
       "ended": "Les beëindigd",
       "ho": {
+        "noStudentsYet": "Nog geen leerlingen. Wie erbij komt, krijgt het.",
+        "putClass": "Uitdelen aan de klas",
         "tapWhere": "Tik nu op een tafel, een groep of Hele klas.",
         "cancel": "Annuleren",
         "wholeClass": "Hele klas",
@@ -14887,6 +14908,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Op je bureau. Leerlingen zien het niet.",
+      "already": "Dat ligt al op je bureau.",
+      "removed": "Van je bureau gehaald."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Andere klas",
     "arrange": "Plaatsen indelen",
@@ -14920,6 +14946,9 @@
       "comingNext": "Binnenkort"
     },
     "errors": {
+      "badStage": "Dat kan niet op je bureau.",
+      "deskFull": "Je bureau is vol. Haal er eerst iets af.",
+      "notStaged": "Dat ligt niet meer op je bureau.",
       "notFound": "Deze Homeroom is niet beschikbaar.",
       "badPreset": "Kies Rijen, Groepjes van 4, U-vorm of Kring.",
       "badSeats": "De plaatsen konden niet worden bewaard. Probeer het opnieuw.",
@@ -15070,6 +15099,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} is uitgedeeld aan de klas. Wie erbij komt, krijgt het.",
       "done": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
       "removedOne": "Van die tafel gehaald.",
       "removedAll": "Van alle tafels gehaald. Het werk van de leerlingen blijft bewaard."
