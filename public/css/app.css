@@ -501,6 +501,20 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen,.stage.css-full{top:0}
+/* a game handed out from Homeroom with the teacher's instructions (routes/games.js): one yellow line over the game,
+   tap it for all of it (the stage moves down by its height; full screen still covers everything) */
+.playnote{position:fixed;top:52px;inset-inline:0;z-index:9;background:#FFF4C7;color:#141414;border-bottom:2px solid #E8D88A}
+.playnote summary{list-style:none;display:flex;align-items:center;gap:10px;height:50px;padding:0 max(16px,env(safe-area-inset-left));cursor:pointer;font-weight:700;min-width:0}
+.playnote summary::-webkit-details-marker{display:none}
+.playnote summary::after{content:'▾';margin-inline-start:auto;font-weight:800;flex:none}
+.playnote[open] summary::after{content:'▴'}
+.playnote-h{flex:none;display:inline-flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap}
+.playnote-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playnote[open] .playnote-t{visibility:hidden}
+.playnote-full{margin:0;padding:0 max(16px,env(safe-area-inset-left)) 14px;white-space:pre-line;overflow-wrap:anywhere;font-weight:700;font-size:1.05rem;line-height:1.4;max-height:50vh;overflow:auto}
+body.has-playnote .stage{top:104px}
+body.playmode.has-playnote.kb-up .stage{top:calc(104px + var(--vvt,0px));height:calc(var(--vvh,100dvh) - 104px)}
+@media (max-width:560px){.playnote-h .lbl-h{display:none}}
 /* an on-screen keyboard up (public/js/play.js): the stage fits the part of the page still visible */
 body.playmode.kb-up .stage{top:calc(52px + var(--vvt,0px));bottom:auto;height:calc(var(--vvh,100dvh) - 52px)}
 /* Full screen without the Fullscreen API (public/js/fullscreen.js: iPhone Safari, or a refused request): the element

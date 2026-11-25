@@ -2106,7 +2106,45 @@
       "backToDesks": "Students are back at their desks",
       "paused": "Screens paused",
       "resumed": "Screens are back",
-      "ended": "Class ended"
+      "ended": "Class ended",
+      "ho": {
+        "tapWhere": "Now tap a desk, a group or Whole class.",
+        "cancel": "Cancel",
+        "wholeClass": "Whole class",
+        "emptyGroup": "Nobody is in that group yet.",
+        "pickFirst": "Pick a game on the left first, then tap here.",
+        "title": "{game} for {who}",
+        "eyebrow": "Game · free play",
+        "lead": "Students play freely. Add instructions if you want them to do something specific.",
+        "instructions": "Instructions (optional)",
+        "instructionsPh": "For example: Do 3 long divisions with remainders, then show one on your pad.",
+        "left": "{count, plural, one {# character left} other {# characters left}}",
+        "order": "Order on the desk",
+        "inOrder": "In order",
+        "anyOrder": "Any order",
+        "inOrderHint": "It waits until the handouts before it are done.",
+        "anyOrderHint": "Students can open it any time.",
+        "grade": "Grade it by",
+        "score": "Score",
+        "completion": "Completion",
+        "notGraded": "Not graded",
+        "scoreHint": "The gradebook shows their score, as for any assignment.",
+        "completionHint": "100% when they finish it.",
+        "notGradedHint": "Practice: it shows in Progress but never as a grade.",
+        "due": "Due date (optional)",
+        "putOne": "Put on desk",
+        "putMany": "{count, plural, one {Put on # desk} other {Put on # desks}}",
+        "done": "Done",
+        "later": "Later",
+        "pct": "{pct}% done",
+        "notStarted": "Not started",
+        "more": "+{count} more",
+        "onDesks": "{count, plural, one {# desk} other {# desks}}",
+        "best": "Best score {score}",
+        "removeOne": "Take off {name}'s desk",
+        "removeAll": "Remove from every desk",
+        "removeAllConfirm": "Remove {title} from every desk? Students' work is kept, and it comes back if you hand it out again."
+      }
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -5002,7 +5040,19 @@
       "eyesHint": "Your screen is paused for a moment.",
       "roomTitle": "The room",
       "teacherDesk": "Teacher's desk",
-      "you": "you"
+      "you": "you",
+      "done": "Done",
+      "nextUp": "Next up",
+      "later": "Later",
+      "laterHint": "Finish the ones before it first.",
+      "freePlay": "Free play",
+      "notReady": "Not ready yet",
+      "notReadyHint": "This one isn't ready yet. Ask your teacher.",
+      "due": "Due {date}",
+      "teacherSays": "Teacher:",
+      "inOrder": "Do these in order",
+      "anyOrder": "Any order",
+      "newHandout": "New from your teacher: {title}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -11184,7 +11234,8 @@
       "tooLong": "Announcements can be at most {max} characters.",
       "hasName": "“{name}” in your message matches a student's name. Announcements go to the whole class, so please reword it or take it out.",
       "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little.",
-      "someStudents": "This lesson is assigned to some students, so it isn't posted to Google Classroom: there it would go to the whole class."
+      "someStudents": "This lesson is assigned to some students, so it isn't posted to Google Classroom: there it would go to the whole class.",
+      "notGraded": "This handout is not graded, so no grades go to Google Classroom."
     },
     "allow": {
       "heading": "What Oomba Academy may do in your Classroom",
@@ -11438,7 +11489,17 @@
       "hideNames": "Hide class-list names",
       "namesHint": "Shows each student's class-list name beside their name in the game, on this screen only. The class screen keeps the game names."
     },
-    "notAssigned": "Not assigned"
+    "notAssigned": "Not assigned",
+    "grade": {
+      "score": "Score",
+      "completion": "Completion",
+      "notGraded": "Not graded",
+      "practice": "Practice",
+      "practiced": "Practiced",
+      "done": "Done",
+      "notDone": "Not done",
+      "practiceCsv": "Practice ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Host a live game now",
@@ -15202,7 +15263,6 @@
     "panel": {
       "label": "Teacher's desk",
       "handOut": "Hand out to",
-      "handOutSoon": "Handing out to desks comes next. For now, set up your seats and groups.",
       "myLessons": "My lessons",
       "noLessons": "Lessons you build in Homeroom will show here.",
       "myGames": "Games I built",
@@ -15216,7 +15276,9 @@
       "brainBreak": "Brain break",
       "note": "Note to the class",
       "timer": "Timer",
-      "board": "Board tools"
+      "board": "Board tools",
+      "handOutHint": "Tap a game, then a desk, a group or Whole class. Or drag it there.",
+      "comingNext": "Coming next"
     },
     "errors": {
       "notFound": "This Homeroom isn't available.",
@@ -15230,7 +15292,20 @@
       "tooBig": "The teacher's area is too full. Remove something and try again.",
       "badAction": "That didn't work. Try again.",
       "notLive": "Start class first with Everyone to Homeroom.",
-      "padFull": "Your pad is full. Clear it to keep drawing."
+      "padFull": "Your pad is full. Clear it to keep drawing.",
+      "pickGame": "That game can't be handed out. Pick another one.",
+      "publishFirst": "Publish this game first, then hand it out.",
+      "badDate": "Pick a real date for the due date.",
+      "badTarget": "Drop it on a desk, a group or Whole class.",
+      "noStudents": "This class has no students yet.",
+      "notInClass": "That student isn't in this class anymore.",
+      "emptyGroup": "Nobody is in that group yet.",
+      "badOrder": "Pick In order or Any order.",
+      "badGrade": "Pick Score, Completion or Not graded.",
+      "tooLong": "Instructions can be 300 characters at most.",
+      "alreadyOnDesk": "{count, plural, one {# of these desks already has this game.} other {# of these desks already have this game.}} Take it off there first, or hand it to the others.",
+      "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
+      "notOnDesk": "That handout isn't on this desk."
     },
     "live": "Live",
     "desk": {
@@ -15242,7 +15317,9 @@
       "library": "Library",
       "room": "See the room",
       "notYou": "Not {name}?",
-      "switch": "Switch"
+      "switch": "Switch",
+      "backToDesk": "Back to my desk",
+      "fromTeacher": "Your teacher says"
     },
     "projector": {
       "title": "{class} · Projector"
@@ -15325,6 +15402,11 @@
         "usesPassword": "Type your password",
         "usesGoogle": "Use Sign in with Google"
       }
+    },
+    "handout": {
+      "done": "{title} is on {count, plural, one {# desk} other {# desks}}.",
+      "removedOne": "Taken off that desk.",
+      "removedAll": "Removed from every desk. Students' work is kept."
     }
   }
 }

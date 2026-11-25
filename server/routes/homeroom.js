@@ -10,10 +10,15 @@
 //   GET  /class/:id/homeroom/projector         the projector view: the teacher's area full screen, the class's name and
 //                                              whether it is live; never a student's name, desk or work
 //   GET  /api/homeroom/:id/state?v=            the live state, and the teacher's area when it changed (the projector)
+//   GET  /api/homeroom/:id/handouts            step 2a: the class's handouts and every desk's cards with progress
+//   POST /api/homeroom/:id/handouts            hand out a game: { gameId, to: { kind: all | group | desk, id }, instructions,
+//                                              order: in | any, grade: score | completion | none, dueAt }
+//   POST /api/homeroom/:id/handouts/:clid/remove  take it off one desk ({ studentId }) or off every desk ({})
 // The student side (step 1b): only a class's own students, the class having Homeroom (services/homeroom.js canUseDesk);
 // everyone else (teachers included) the site's 404.
 //   GET  /class/:id/desk                       the student's desk (public/js/homeroom-desk.js)
-//   GET  /api/desk/:id/state?v=                the live state, and the teacher's area when it changed
+//   GET  /api/desk/:id/state?v=&hv=            the live state, the teacher's area when it changed, and the student's own
+//                                              handout cards when they changed (hv: the cards' version the page has)
 //   POST /api/desk/:id/doodle                  their doodle and working-out pad: { strokes }
 //   GET  /api/homeroom-live                    the live classes of this student with Homeroom (the prompt on every page)
 import { Router } from 'express';
@@ -22,6 +27,7 @@ import { ico } from '../views/icon.js';
 import { page, VERSION, onEveryPage } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as H from '../services/homeroom.js';
+import * as HO from '../services/homeroom-handouts.js';
 import * as SI from '../services/homeroom-signin.js';
 import { signinView } from './homeroom-signin.js';
 import * as S from '../services/schools.js';
@@ -65,30 +71,33 @@ export function homeroomTabs(req, c, active) {
   return html`<nav class="hr-tabs" aria-label="${t('homeroom.tabs.label')}">${tabs.map(([k, href]) => html`<a href="${href}"${k === active ? raw(' aria-current="page"') : ''}>${t(`homeroom.tabs.${k}`)}</a>`)}</nav>`;
 }
 
-/** What the teacher's desk lists in this step (handing out comes next): their own games and the Oomba games and tools. */
+/** What the teacher's desk lists: their own games and the Oomba games, each one a handout (step 2a: tap it, then a desk,
+ *  a group or Whole class; or drag it there), and the Manipulatives and Figures, which come next. */
 function deskLists(req) {
   const u = req.user;
   const title = g => games.localizeGame(g, req.locale).title;
-  const mine = games.myGames(u.id, 12).filter(g => g.status !== 'deleted').map(g => ({ icon: g.icon || '🎮', title: g.title }));
+  const mine = games.myGames(u.id, 12).filter(g => g.status !== 'deleted').map(g => ({ id: g.id, icon: g.icon || '🎮', title: g.title }));
   const tools = [
-    ...(toolAccess(u, config.manipulatives) === 'yes' ? [{ icon: '🧮', title: req.t('homeroom.panel.manipulatives') }] : []),
-    ...(toolAccess(u, config.figures) === 'yes' ? [{ icon: '📐', title: req.t('homeroom.panel.figures') }] : []),
+    ...(toolAccess(u, config.manipulatives) === 'yes' ? [{ icon: '🧮', title: req.t('homeroom.panel.manipulatives'), soon: true }] : []),
+    ...(toolAccess(u, config.figures) === 'yes' ? [{ icon: '📐', title: req.t('homeroom.panel.figures'), soon: true }] : []),
   ];
-  const oomba = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 16 }).map(g => ({ icon: g.icon || '🎮', title: title(g) }));
-  return { mine, oomba: [...tools, ...oomba] };
+  const oomba = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 16 }).filter(g => HO.handable(u, g)).map(g => ({ id: g.id, icon: g.icon || '🎮', title: title(g) }));
+  return { mine, oomba: [...oomba, ...tools] };
 }
-const row = x => html`<li class="hr-item"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></li>`;
+const row = (t, x) => (x.id
+  ? html`<li><button type="button" class="hr-item hr-give" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></button></li>`
+  : html`<li class="hr-item hr-later"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span>${x.soon ? html`<span class="hr-soontag">${t('homeroom.panel.comingNext')}</span>` : ''}</li>`);
 
 router.get('/class/:id/homeroom', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
   const room = H.roomOf(c.id), classes = H.switchable(u);
   if (!classes.some(x => x.id === c.id)) classes.unshift({ id: c.id, name: c.name });
   const lists = deskLists(req);
-  const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(row)}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
+  const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   page(req, res, {
     title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id) })}
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX })}
     <div id="homeroom" class="hr">
       <header class="hr-top">
         <label class="sr-only" for="hr-class">${t('homeroom.switchClass')}</label>
@@ -105,7 +114,7 @@ router.get('/class/:id/homeroom', (req, res) => {
         <aside class="hr-panel" id="hr-panel" aria-label="${t('homeroom.panel.label')}">
           <h2 class="hr-cap">${t('homeroom.panel.handOut')}</h2>
           <div class="hr-groupchips" id="hr-groupchips"></div>
-          <p class="hr-soon small">${ico('🗓️', { size: 16 })} ${t('homeroom.panel.handOutSoon')}</p>
+          <p class="hr-soon small" id="hr-givehint">${ico('👆', { size: 16 })} ${t('homeroom.panel.handOutHint')}</p>
           ${section('myLessons', [], t('homeroom.panel.noLessons'))}
           ${section('myGames', lists.mine, t('homeroom.panel.noGames'))}
           ${section('oomba', lists.oomba)}
@@ -127,6 +136,26 @@ router.post('/api/homeroom/:id/seats', rateLimit('homeroom-seats', 600, 3600e3),
 router.post('/api/homeroom/:id/groups', rateLimit('homeroom-groups', 300, 3600e3), (req, res) => send(req, res, H.saveGroups(req.user, req.homeroomClass, { groups: body(req).groups, members: body(req).members })));
 router.post('/api/homeroom/:id/area', rateLimit('homeroom-area', 1800, 3600e3), (req, res) => send(req, res, H.saveArea(req.user, req.homeroomClass, body(req).state)));
 router.post('/api/homeroom/:id/live', rateLimit('homeroom-live', 600, 3600e3), (req, res) => send(req, res, H.setLive(req.user, req.homeroomClass, String(body(req).action || ''))));
+
+// ---------------------------------------------------------------- handouts (step 2a; services/homeroom-handouts.js)
+// A handout is a real class assignment (services/game-folders.js assignGame), so it shares the assign routes' limit
+// (lesson-new, 120 an hour). Errors that name a count (alreadyOnDesk) say how many desks.
+const HO_ERR = { pickGame: 'homeroom.errors.pickGame', publishFirst: 'homeroom.errors.publishFirst', badDate: 'homeroom.errors.badDate' };
+const hoFail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(HO_ERR[r.code] || `homeroom.errors.${r.code}`, { count: r.count || 0 }), code: r.code });
+router.get('/api/homeroom/:id/handouts', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(HO.boardView(req.homeroomClass, req.locale)));
+router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass;
+  const to = x.to && typeof x.to === 'object' ? { kind: String(x.to.kind || ''), id: String(x.to.id || '') } : null;
+  const r = HO.handOut(req.user, c, { gameId: String(x.gameId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null });
+  if (!r.ok) return hoFail(req, res, r);
+  res.json({ ok: true, toast: req.t('homeroom.handout.done', { title: games.localizeGame(r.game, req.locale).title, count: r.students }), ...HO.boardView(c, req.locale) });
+});
+router.post('/api/homeroom/:id/handouts/:clid/remove', rateLimit('homeroom-handout-remove', 600, 3600e3), (req, res) => {
+  const c = req.homeroomClass, sid = body(req).studentId ? String(body(req).studentId) : null;
+  const r = HO.removeHandout(req.user, c, req.params.clid, sid);
+  if (!r.ok) return hoFail(req, res, r);
+  res.json({ ok: true, toast: req.t(r.removed === 'all' ? 'homeroom.handout.removedAll' : 'homeroom.handout.removedOne'), ...HO.boardView(c, req.locale) });
+});
 
 // ---------------------------------------------------------------- the projector view
 // The teacher's area as big as the screen, the class's name and the Live dot: never a name, a desk, a hand or progress.
@@ -158,11 +187,11 @@ router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3),
 const dockBtn = (k, icon, label, attrs = '') => html`<button type="button" class="hd-dockbtn" data-hd="${k}"${raw(attrs)}>${ico(icon, { size: 20 })}<span>${label}</span></button>`;
 router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
-  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id;
+  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, cards = HO.deskView(c, u, req.locale);
   page(req, res, {
     title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks,
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, cards,
       strokes: H.doodleOf(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: H.boardState(c.id) })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
@@ -183,7 +212,11 @@ router.get('/class/:id/desk', (req, res) => {
     </div>`,
   });
 });
-router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => res.json(H.boardState(req.homeroomClass.id, req.query.v)));
+router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => {
+  // The student's own cards (never anyone else's), sent again only when they changed (hv: the version the page has).
+  const cards = HO.deskView(req.homeroomClass, req.user, req.locale), hv = HO.deskVersion(cards);
+  res.json({ ...H.boardState(req.homeroomClass.id, req.query.v), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }) });
+});
 router.post('/api/desk/:id/doodle', rateLimit('homeroom-doodle', 1200, 3600e3), (req, res) => send(req, res, H.saveDoodle(req.user, req.homeroomClass, body(req).strokes)));
 
 // ---------------------------------------------------------------- "Your class is in Homeroom" on every page

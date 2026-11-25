@@ -1389,6 +1389,18 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_homeroom_signins_user ON homeroom_signins(user_id);
     ALTER TABLE sessions ADD COLUMN class_device TEXT;
     CREATE INDEX IF NOT EXISTS idx_sessions_class_device ON sessions(class_device) WHERE class_device IS NOT NULL;`],
+  // Homeroom step 2a (docs/decisions.md "Homeroom, step 2a"): a game handed out from the teacher's board is an ordinary
+  // game assignment (services/game-folders.js assignGame: a hidden 'game' lesson, a class_lessons row, and
+  // class_lesson_students for the desks it went to; the teacher's instructions are its game step's body). This side
+  // table holds what only Homeroom adds, one row per such class lesson: in_order (1: In order, a later card waits until
+  // the ones before it are done; 0: Any order), grade (how it is graded: 'score', 'completion' or 'none' = not graded,
+  // practice; the Progress gradebook reads it), target (what it was dropped on: 'all', 'group' or 'desk') and when.
+  // Gone with its class lesson, the class or the school.
+  ['0125_homeroom_handouts', `
+    CREATE TABLE IF NOT EXISTS homeroom_handouts (class_lesson_id TEXT PRIMARY KEY REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, in_order INTEGER NOT NULL DEFAULT 1,
+      grade TEXT NOT NULL DEFAULT 'completion', target TEXT NOT NULL DEFAULT 'desk', created_by TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_handouts_class ON homeroom_handouts(class_id, created_at);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

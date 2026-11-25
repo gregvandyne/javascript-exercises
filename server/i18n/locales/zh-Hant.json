@@ -2105,7 +2105,45 @@
       "backToDesks": "學生回到自己的書桌了",
       "paused": "螢幕已暫停",
       "resumed": "螢幕恢復了",
-      "ended": "課堂已結束"
+      "ended": "課堂已結束",
+      "ho": {
+        "tapWhere": "現在點一個座位、一個小組或「全班」。",
+        "cancel": "取消",
+        "wholeClass": "全班",
+        "emptyGroup": "這個小組還沒有人。",
+        "pickFirst": "請先在左邊選一個遊戲，再點這裡。",
+        "title": "{game} · 給 {who}",
+        "eyebrow": "遊戲 · 自由玩",
+        "lead": "學生自由地玩。如果希望他們做某件事，可以加上說明。",
+        "instructions": "說明（選填）",
+        "instructionsPh": "例如：做 3 題有餘數的直式除法，再把其中一題寫在你的手寫板上。",
+        "left": "還剩 {count} 個字",
+        "order": "座位上的順序",
+        "inOrder": "依序",
+        "anyOrder": "不限順序",
+        "inOrderHint": "要等前面的都完成後才能打開。",
+        "anyOrderHint": "學生隨時都能打開。",
+        "grade": "評分方式",
+        "score": "分數",
+        "completion": "完成度",
+        "notGraded": "不評分",
+        "scoreHint": "成績簿會顯示分數，和其他作業一樣。",
+        "completionHint": "完成時就是 100%。",
+        "notGradedHint": "練習：會出現在進度中，但不會變成成績。",
+        "due": "截止日期（選填）",
+        "putOne": "放到座位上",
+        "putMany": "放到 {count} 個座位上",
+        "done": "完成",
+        "later": "稍後",
+        "pct": "已完成 {pct}%",
+        "notStarted": "還沒開始",
+        "more": "另外 {count} 個",
+        "onDesks": "{count} 個座位",
+        "best": "最佳分數 {score}",
+        "removeOne": "從{name}的座位拿走",
+        "removeAll": "從所有座位移除",
+        "removeAllConfirm": "要把 {title} 從所有座位移除嗎？學生的作品會保留，再發一次就會回來。"
+      }
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -4718,7 +4756,19 @@
       "eyesHint": "你的螢幕暫停一下。",
       "roomTitle": "教室",
       "teacherDesk": "老師的桌子",
-      "you": "你"
+      "you": "你",
+      "done": "完成",
+      "nextUp": "下一個",
+      "later": "稍後",
+      "laterHint": "先完成前面的。",
+      "freePlay": "自由玩",
+      "notReady": "還沒準備好",
+      "notReadyHint": "這個還沒準備好。問問老師吧。",
+      "due": "{date} 截止",
+      "teacherSays": "老師：",
+      "inOrder": "依序完成",
+      "anyOrder": "不限順序",
+      "newHandout": "老師發了新東西：{title}"
     },
     "homeroom-area": {
       "label": "老師區",
@@ -10492,7 +10542,8 @@
       "tooLong": "公告最多 {max} 個字元。",
       "hasName": "訊息裡的「{name}」和學生的名字相同。公告會傳給全班，請改寫或拿掉它。",
       "tooManyAnnouncements": "這個班級一小時內已有 10 則公告。請稍等一下。",
-      "someStudents": "這堂課只指派給部分學生，因此不會發布到 Google Classroom：在那裡會發給全班。"
+      "someStudents": "這堂課只指派給部分學生，因此不會發布到 Google Classroom：在那裡會發給全班。",
+      "notGraded": "這份發下的東西不評分，所以不會傳送成績到 Google Classroom。"
     },
     "allow": {
       "heading": "Oomba Academy 可以在你的 Classroom 做什麼",
@@ -10746,7 +10797,17 @@
       "hideNames": "隱藏班級名單上的姓名",
       "namesHint": "只在這個畫面上，在遊戲名稱旁顯示班級名單上的姓名。班級螢幕仍顯示遊戲名稱。"
     },
-    "notAssigned": "未指派"
+    "notAssigned": "未指派",
+    "grade": {
+      "score": "分數",
+      "completion": "完成度",
+      "notGraded": "不評分",
+      "practice": "練習",
+      "practiced": "已練習",
+      "done": "完成",
+      "notDone": "未完成",
+      "practiceCsv": "練習（{done}/{total}）"
+    }
   },
   "quickLive": {
     "cta": "立即主持即時遊戲",
@@ -14484,7 +14545,6 @@
     "panel": {
       "label": "老師的桌子",
       "handOut": "發給",
-      "handOutSoon": "發到座位的功能即將推出。現在先安排座位和分組。",
       "myLessons": "我的課程",
       "noLessons": "你在 Homeroom 建立的課程會顯示在這裡。",
       "myGames": "我做的遊戲",
@@ -14498,7 +14558,9 @@
       "brainBreak": "動腦休息",
       "note": "給全班的便條",
       "timer": "計時器",
-      "board": "白板工具"
+      "board": "白板工具",
+      "handOutHint": "點一個遊戲，再點一個座位、一個小組或「全班」。也可以直接拖過去。",
+      "comingNext": "即將推出"
     },
     "errors": {
       "notFound": "這個 Homeroom 無法使用。",
@@ -14512,7 +14574,20 @@
       "tooBig": "老師區太滿了。請移除一些東西再試一次。",
       "badAction": "沒有成功，請再試一次。",
       "notLive": "請先按「大家來 Homeroom」開始上課。",
-      "padFull": "你的筆記板滿了，清除後才能繼續畫。"
+      "padFull": "你的筆記板滿了，清除後才能繼續畫。",
+      "pickGame": "這個遊戲無法發下。請選另一個。",
+      "publishFirst": "請先發布這個遊戲，再發下去。",
+      "badDate": "請選一個正確的截止日期。",
+      "badTarget": "請放到座位、小組或「全班」上。",
+      "noStudents": "這個班級還沒有學生。",
+      "notInClass": "這位學生已不在這個班級。",
+      "emptyGroup": "這個小組還沒有人。",
+      "badOrder": "請選「依序」或「不限順序」。",
+      "badGrade": "請選「分數」、「完成度」或「不評分」。",
+      "tooLong": "說明最多 300 個字。",
+      "alreadyOnDesk": "其中 {count} 個座位已經有這個遊戲了。請先從那裡拿走，或發給其他人。",
+      "tooManyHandouts": "這個班級發下的東西太多了。請先移除一些舊的。",
+      "notOnDesk": "這個座位上沒有這份發下的東西。"
     },
     "live": "直播中",
     "desk": {
@@ -14524,7 +14599,9 @@
       "library": "圖書館",
       "room": "看看教室",
       "notYou": "不是 {name}？",
-      "switch": "切換"
+      "switch": "切換",
+      "backToDesk": "回到我的座位",
+      "fromTeacher": "老師說"
     },
     "projector": {
       "title": "{class} · 投影"
@@ -14607,6 +14684,11 @@
         "usesPassword": "輸入你的密碼",
         "usesGoogle": "使用「以 Google 登入」"
       }
+    },
+    "handout": {
+      "done": "{title} 已發到 {count} 個座位。",
+      "removedOne": "已從那個座位拿走。",
+      "removedAll": "已從所有座位移除。學生的作品會保留。"
     }
   }
 }

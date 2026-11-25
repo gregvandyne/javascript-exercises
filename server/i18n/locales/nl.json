@@ -2106,7 +2106,45 @@
       "backToDesks": "De leerlingen zijn terug aan hun tafel",
       "paused": "Schermen gepauzeerd",
       "resumed": "De schermen zijn terug",
-      "ended": "Les beëindigd"
+      "ended": "Les beëindigd",
+      "ho": {
+        "tapWhere": "Tik nu op een tafel, een groep of Hele klas.",
+        "cancel": "Annuleren",
+        "wholeClass": "Hele klas",
+        "emptyGroup": "Er zit nog niemand in die groep.",
+        "pickFirst": "Kies eerst links een spel en tik dan hier.",
+        "title": "{game} voor {who}",
+        "eyebrow": "Spel · vrij spelen",
+        "lead": "Leerlingen spelen vrij. Voeg instructies toe als je wilt dat ze iets bepaalds doen.",
+        "instructions": "Instructies (optioneel)",
+        "instructionsPh": "Bijvoorbeeld: maak 3 staartdelingen met rest en laat er een zien op je blok.",
+        "left": "{count, plural, one {Nog # teken} other {Nog # tekens}}",
+        "order": "Volgorde op de tafel",
+        "inOrder": "Op volgorde",
+        "anyOrder": "In elke volgorde",
+        "inOrderHint": "Het wacht tot de opdrachten ervoor klaar zijn.",
+        "anyOrderHint": "Leerlingen kunnen het altijd openen.",
+        "grade": "Beoordelen op",
+        "score": "Score",
+        "completion": "Afgerond",
+        "notGraded": "Geen cijfer",
+        "scoreHint": "Het cijferoverzicht toont hun score, zoals bij elke opdracht.",
+        "completionHint": "100% als ze het af hebben.",
+        "notGradedHint": "Oefenen: het staat bij Voortgang, maar nooit als cijfer.",
+        "due": "Inleverdatum (optioneel)",
+        "putOne": "Op de tafel leggen",
+        "putMany": "{count, plural, one {Op # tafel leggen} other {Op # tafels leggen}}",
+        "done": "Klaar",
+        "later": "Later",
+        "pct": "{pct}% klaar",
+        "notStarted": "Niet begonnen",
+        "more": "+{count} meer",
+        "onDesks": "{count, plural, one {# tafel} other {# tafels}}",
+        "best": "Beste score {score}",
+        "removeOne": "Van de tafel van {name} halen",
+        "removeAll": "Van alle tafels halen",
+        "removeAllConfirm": "{title} van alle tafels halen? Het werk van de leerlingen blijft bewaard en komt terug als je het weer uitdeelt."
+      }
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -4719,7 +4757,19 @@
       "eyesHint": "Je scherm is even gepauzeerd.",
       "roomTitle": "Het lokaal",
       "teacherDesk": "Bureau van de leraar",
-      "you": "jij"
+      "you": "jij",
+      "done": "Klaar",
+      "nextUp": "Nu aan de beurt",
+      "later": "Later",
+      "laterHint": "Maak eerst de opdrachten ervoor af.",
+      "freePlay": "Vrij spelen",
+      "notReady": "Nog niet klaar",
+      "notReadyHint": "Deze is nog niet klaar. Vraag het je leraar.",
+      "due": "Inleveren {date}",
+      "teacherSays": "Leraar:",
+      "inOrder": "Doe ze op volgorde",
+      "anyOrder": "In elke volgorde",
+      "newHandout": "Nieuw van je leraar: {title}"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -10493,7 +10543,8 @@
       "tooLong": "Aankondigingen zijn hoogstens {max} tekens lang.",
       "hasName": "‘{name}’ in je bericht is ook de naam van een leerling. Aankondigingen gaan naar de hele klas: formuleer het alsjeblieft anders of haal het eruit.",
       "tooManyAnnouncements": "Deze klas had al 10 aankondigingen in een uur. Wacht even.",
-      "someStudents": "Deze les is aan een paar leerlingen toegewezen en wordt daarom niet in Google Classroom geplaatst: daar zou ze naar de hele klas gaan."
+      "someStudents": "Deze les is aan een paar leerlingen toegewezen en wordt daarom niet in Google Classroom geplaatst: daar zou ze naar de hele klas gaan.",
+      "notGraded": "Deze opdracht krijgt geen cijfer, dus er gaan geen cijfers naar Google Classroom."
     },
     "allow": {
       "heading": "Wat Oomba Academy mag in je Classroom",
@@ -10747,7 +10798,17 @@
       "hideNames": "Namen van de klassenlijst verbergen",
       "namesHint": "Toont de naam van de klassenlijst naast de naam in het spel, alleen op dit scherm. Het klassenscherm houdt de spelnamen."
     },
-    "notAssigned": "Niet toegewezen"
+    "notAssigned": "Niet toegewezen",
+    "grade": {
+      "score": "Score",
+      "completion": "Afgerond",
+      "notGraded": "Geen cijfer",
+      "practice": "Oefenen",
+      "practiced": "Geoefend",
+      "done": "Klaar",
+      "notDone": "Niet klaar",
+      "practiceCsv": "Oefenen ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Start nu een live spel",
@@ -14485,7 +14546,6 @@
     "panel": {
       "label": "Bureau van de leraar",
       "handOut": "Uitdelen aan",
-      "handOutSoon": "Uitdelen op de tafels komt hierna. Deel voor nu de plaatsen en groepen in.",
       "myLessons": "Mijn lessen",
       "noLessons": "Lessen die je in Homeroom maakt, verschijnen hier.",
       "myGames": "Mijn spellen",
@@ -14499,7 +14559,9 @@
       "brainBreak": "Beweegpauze",
       "note": "Bericht aan de klas",
       "timer": "Timer",
-      "board": "Bordhulpmiddelen"
+      "board": "Bordhulpmiddelen",
+      "handOutHint": "Tik op een spel en dan op een tafel, een groep of Hele klas. Of sleep het erheen.",
+      "comingNext": "Binnenkort"
     },
     "errors": {
       "notFound": "Deze Homeroom is niet beschikbaar.",
@@ -14513,7 +14575,20 @@
       "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw.",
       "badAction": "Dat lukte niet. Probeer het opnieuw.",
       "notLive": "Start de les eerst met Iedereen naar Homeroom.",
-      "padFull": "Je blok is vol. Wis het om verder te tekenen."
+      "padFull": "Je blok is vol. Wis het om verder te tekenen.",
+      "pickGame": "Dat spel kan niet uitgedeeld worden. Kies een ander spel.",
+      "publishFirst": "Publiceer dit spel eerst en deel het dan uit.",
+      "badDate": "Kies een echte datum als inleverdatum.",
+      "badTarget": "Zet het op een tafel, een groep of Hele klas.",
+      "noStudents": "Deze klas heeft nog geen leerlingen.",
+      "notInClass": "Die leerling zit niet meer in deze klas.",
+      "emptyGroup": "Er zit nog niemand in die groep.",
+      "badOrder": "Kies Op volgorde of In elke volgorde.",
+      "badGrade": "Kies Score, Afgerond of Geen cijfer.",
+      "tooLong": "Instructies mogen hoogstens 300 tekens lang zijn.",
+      "alreadyOnDesk": "{count, plural, one {# van deze tafels heeft dit spel al.} other {# van deze tafels hebben dit spel al.}} Haal het daar eerst weg of deel het uit aan de anderen.",
+      "tooManyHandouts": "Deze klas heeft veel uitgedeelde opdrachten open. Haal eerst wat oude weg.",
+      "notOnDesk": "Die opdracht ligt niet op deze tafel."
     },
     "live": "Live",
     "desk": {
@@ -14525,7 +14600,9 @@
       "library": "Bibliotheek",
       "room": "Bekijk het lokaal",
       "notYou": "Ben je niet {name}?",
-      "switch": "Wisselen"
+      "switch": "Wisselen",
+      "backToDesk": "Terug naar mijn tafel",
+      "fromTeacher": "Je leraar zegt"
     },
     "projector": {
       "title": "{class} · Beamer"
@@ -14608,6 +14685,11 @@
         "usesPassword": "Typ je wachtwoord",
         "usesGoogle": "Gebruik Inloggen met Google"
       }
+    },
+    "handout": {
+      "done": "{title} ligt op {count, plural, one {# tafel} other {# tafels}}.",
+      "removedOne": "Van die tafel gehaald.",
+      "removedAll": "Van alle tafels gehaald. Het werk van de leerlingen blijft bewaard."
     }
   }
 }
