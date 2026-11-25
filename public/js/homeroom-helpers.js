@@ -9,10 +9,13 @@
 //   - Aides (⋯ menu): invite by link (sent by the teacher's own email) or add a teacher of the school; remove any time;
 //   - Sub link for today (⋯ menu): a link for one day with an optional PIN and a note for the sub; revoke any time;
 //   - "While you were out": what a sub did, in short, the next time the teacher opens Homeroom, until Got it.
+//   - step 4a: Notebook in a desk's menu, the student's notebook read only (public/js/notebook.js; not for an aide)
 import { t, api, toast, esc, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import * as BUS from '/js/oomba-bus.js';
 
+/** A student's notebook, read only (public/js/notebook.js; the class's teachers only, never an aide or a sub). */
+const openNotebook = (sid, name) => import(`/js/notebook.js${new URL(import.meta.url).search}`).then(m => m.viewNotebook(sid, name)).catch(() => toast(t('js.app.wentWrong')));
 const tx = (k, v) => t(`js.homeroom-helpers.${k}`, v);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const ic = (e, size = 18) => iconHtml(e, { size });
@@ -54,14 +57,14 @@ export function helpers(ctx) {
       <p class="small muted hr-supnote">${ic('🔒', 14)} ${esc(tx('supPrivate'))}</p>
       ${ro ? '' : `<p class="err" id="hr-superr" aria-live="polite"></p><div class="row hr-supacts">${btn('btn btn-primary', 'data-supsave', esc(tx('saveSupports')))}</div>`}
     </div>
-    <div class="row hr-dmacts">${btn('btn hr-chunk', 'data-dm="desk"', `${ic('🎒')} ${esc(tx('handouts'))}`)}${ctx.live() && ctx.look ? btn('btn hr-chunk', 'data-dm="look"', `${ic('👀')} ${esc(tx('lookAt'))}`) : ''}</div>`;
+    <div class="row hr-dmacts">${btn('btn hr-chunk', 'data-dm="desk"', `${ic('🎒')} ${esc(tx('handouts'))}`)}${ro ? '' : btn('btn hr-chunk', 'data-dm="notebook"', `${ic('📝')} ${esc(tx('notebook'))}`)}${ctx.live() && ctx.look ? btn('btn hr-chunk', 'data-dm="look"', `${ic('👀')} ${esc(tx('lookAt'))}`) : ''}</div>`;
     const sh = sheet({ title: `🎒 ${name}`, content: `<div class="hr-dmenu">${draw()}</div>` });
     const box = sh.el.querySelector('.hr-dmenu');
     box.addEventListener('click', async e => {
       const tb = e.target.closest('[data-suptime]');
       if (tb && !ro) { s.time = +tb.dataset.suptime; for (const b of box.querySelectorAll('[data-suptime]')) { const on = b === tb; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
       const dm = e.target.closest('[data-dm]');
-      if (dm) { sh.close(); if (dm.dataset.dm === 'desk') ctx.deskSheet(sid); else ctx.look(sid); return; }
+      if (dm) { sh.close(); if (dm.dataset.dm === 'desk') ctx.deskSheet(sid); else if (dm.dataset.dm === 'notebook') openNotebook(sid, name); else ctx.look(sid); return; }
       if (e.target.closest('[data-supsave]')) {
         for (const c of box.querySelectorAll('[data-sup]')) s[c.dataset.sup] = c.checked;
         try {
