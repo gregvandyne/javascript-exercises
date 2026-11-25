@@ -146,6 +146,11 @@ const SCENES = {
     ],
   },
 };
+// The other tools' scenes: one file per tool in scripts/manip-tutorials/<slug>.mjs, each `export default h => ({ '<slug>': scene })`
+// where h holds the helpers above (txt, count, sel, attr, beside, all, norm) for its checks and spots.
+const HELP = { txt, count, sel, attr, beside, all, norm };
+const SCENE_DIR = path.join(ROOT, 'scripts', 'manip-tutorials');
+if (fs.existsSync(SCENE_DIR)) for (const f of fs.readdirSync(SCENE_DIR).filter(f => f.endsWith('.mjs')).sort()) Object.assign(SCENES, (await import(path.join(SCENE_DIR, f))).default(HELP));
 
 // ---------------------------------------------------------------- what is drawn into the page
 const OVERLAY_CSS = `
