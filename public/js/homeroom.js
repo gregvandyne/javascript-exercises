@@ -31,8 +31,9 @@
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
-import { inkLine } from '/js/board-ann.js';
-import { areaEditor } from '/js/homeroom-board.js';
+import { areaEditor, MAX } from '/js/homeroom-board.js';
+import { GL, shapeIcon, toolStyleHtml, tb } from '/js/homeroom-board-ui.js';
+import { PICKS, isLine } from '/js/board-shapes.js';
 import { placePopover } from '/js/popover-place.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
@@ -41,9 +42,8 @@ import { gamePlayer } from '/js/homeroom-player.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
-const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
-const NOTE_MAX = 12, TEXT_MAX = 30, SHAPE_MAX = 40, Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.05;
-const MODES = ['note', 'text', 'pen', 'rect', 'circle', 'line'];
+const Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.05;
+const MODES = ['note', 'text', 'pen', 'shape'];
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const phone = () => window.matchMedia('(max-width: 819px)').matches;
 const tm = (k, v) => t(`js.manip-room.${k}`, v);
@@ -54,7 +54,7 @@ const room = D.room || {};
 const H = {
   students: room.students || [], seats: room.seats || {}, preset: room.preset || 'rows', groups: room.groups || [], members: room.members || {},
   ann: { notes: [], texts: [], strokes: [], ...((room.area || {}).__ann || {}) }, shapes: Array.isArray((room.area || {}).shapes) ? room.area.shapes : [],
-  view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], sel: null, edit: false, gesture: null, pointers: new Map(),
+  view: { x: 0, y: 0, z: 0.5 }, mode: 'move', hist: [], redo: [], sels: [], edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
   teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [], away: false,
@@ -241,22 +241,30 @@ function renderZoom() {
 
 // ---------------------------------------------------------------- the board tools (the teacher's area)
 function renderTools() {
-  const tool = (mode, icon, label) => btn(`mp-tbtn hr-tool${H.mode === mode ? ' on' : ''}`, `data-hrmode="${mode}" aria-pressed="${H.mode === mode}"`, `${icon}<span> ${esc(label)}</span>`);
+  const tool = (mode, icon, label, extra = '') => btn(`mp-tbtn hr-tool${H.mode === mode ? ' on' : ''}`, `data-hrmode="${mode}" aria-pressed="${H.mode === mode}"${extra}`, `${icon}<span> ${esc(label)}</span>`);
+  const pick = PICKS.find(p => p.id === H.shapePick) || PICKS[0], shapeOpen = !!(H.pop && H.pop.kind === 'shapes');
+  const act = (k, glyph, label, dis) => btn('mp-tbtn hr-tool', `data-hr="${k}" aria-label="${esc(label)}" title="${esc(label)}"${dis ? ' disabled' : ''}`, `${glyph}<span> ${esc(label)}</span>`);
+  const style = H.mode === 'pen' ? toolStyleHtml('pen', H.style.pen, H.pop && H.pop.for === 'pen' ? H.pop.kind : null)
+    : H.mode === 'shape' ? toolStyleHtml('shape', { ...(isLine(pick.k) ? H.style.line : H.style.shape), closed: !isLine(pick.k) }, H.pop && H.pop.for === 'shape' ? H.pop.kind : null) : '';
   $('hr-tools').innerHTML = `<div class="hr-toolgrid">${tool('move', iconHtml('👆', { size: 18 }), th('select'))}${tool('note', iconHtml('🗒️', { size: 18 }), tm('note'))}${tool('text', '<b class="mp-tglyph">T</b>', tm('text'))}${tool('pen', iconHtml('✎', { size: 18 }), tm('pen'))}
-      ${tool('rect', iconHtml('🔲', { size: 18 }), th('shapes.rect'))}${tool('circle', iconHtml('⚪', { size: 18 }), th('shapes.circle'))}${tool('line', iconHtml('📏', { size: 18 }), th('shapes.line'))}
-      ${btn('mp-tbtn hr-tool', `data-hr="undo"${H.hist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })}<span> ${esc(tm('undo'))}</span>`)}</div>
-    ${['pen', 'rect', 'circle', 'line'].includes(H.mode) ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${H.pen === c ? ' on' : ''}`, `data-hrpen="${c}" style="background:${c}" aria-label="${esc(tm('penColor', { color: c }))}"`, '')).join('')}${H.mode === 'pen' ? btn('chip', 'data-hr="clearpen"', esc(tm('clearPen'))) : ''}</div>` : ''}
-    <p class="hr-toolhint small">${esc(H.mode === 'move' ? th('hintMove') : H.mode === 'pen' ? th('hintDraw') : th('hintPlace'))}</p>`;
+      ${tool('shape', shapeIcon(pick.id, 20), tb('shapes'), ` aria-haspopup="true" aria-expanded="${shapeOpen}" title="${esc(tb('shapes'))}"`)}
+      ${act('undo', GL.undo, tm('undo'), !H.hist.length)}${act('redo', GL.redo, tb('redo'), !H.redo.length)}${act('paste', GL.paste, tb('paste'), false)}</div>
+    ${style || H.mode === 'pen' ? `<div class="row rm-pens hr-toolrow">${style}${H.mode === 'pen' ? btn('chip', 'data-hr="clearpen"', esc(tm('clearPen'))) : ''}</div>` : ''}
+    <p class="hr-toolhint small">${esc(H.mode === 'move' ? tb('hintSelect') : H.mode === 'pen' ? th('hintDraw') : H.mode === 'shape' ? tb('hintShape') : th('hintPlace'))}</p>`;
 }
-function setMode(m) {
-  H.mode = H.mode === m ? 'move' : m;
-  ed.clear();
+function setMode(m, { on = false } = {}) {
+  H.mode = on ? m : H.mode === m ? 'move' : m;
+  ed.clear(); if (H.pop && H.pop.for !== 'sel' && !(on && m === 'shape')) ed.closePop();
   board.classList.toggle('inking', H.mode !== 'move');
   renderTools(); renderArea();
   worldEl.querySelector('.hr-area')?.classList.toggle('drawing', H.mode !== 'move');
 }
 const snapshot = () => JSON.stringify({ ann: H.ann, shapes: H.shapes });
-function remember() { H.hist.push(snapshot()); if (H.hist.length > 60) H.hist.shift(); }
+// Undo and redo (Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z or Ctrl+Y, and the Board tools' buttons): a snapshot of the area before
+// each change. remember() before a change; forget() when it turned out to change nothing (the redo list comes back).
+let redoKept = null;
+function remember() { H.hist.push(snapshot()); if (H.hist.length > 80) H.hist.shift(); redoKept = H.redo; H.redo = []; }
+function forget() { H.hist.pop(); if (redoKept) H.redo = redoKept; redoKept = null; renderTools(); }
 let saveTimer = null;
 function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveArea, 450); renderTools(); }
 async function saveArea() {
@@ -264,11 +272,9 @@ async function saveArea() {
   const state = { __ann: { notes: H.ann.notes, strokes: H.ann.strokes, texts: H.ann.texts.filter(x => String(x.text || '').trim()) }, shapes: H.shapes };
   try { await api(`/api/homeroom/${encodeURIComponent(D.classId)}/area`, { method: 'POST', body: { state } }); } catch (e) { toast(e.message, { bad: true }); }
 }
-function undo() {
-  const last = H.hist.pop(); if (!last) return;
-  const o = JSON.parse(last); H.ann = o.ann; H.shapes = o.shapes; H.sel = null; H.edit = false;
-  renderArea(); queueSave();
-}
+function restore(snap) { const o = JSON.parse(snap); H.ann = o.ann; H.shapes = o.shapes; H.sels = []; H.edit = false; renderArea(); queueSave(); }
+function undo() { ed.finishEdit(); const last = H.hist.pop(); if (!last) return; H.redo.push(snapshot()); restore(last); }
+function redo() { ed.finishEdit(); const next = H.redo.pop(); if (!next) return; H.hist.push(snapshot()); restore(next); }
 /** A point inside the teacher's area, as fractions of it (null outside). */
 function inArea(cx, cy, pad = 0) {
   const p = toWorld(cx, cy), x = (p.x - AREA.x) / AREA.w, y = (p.y - AREA.y) / AREA.h;
@@ -276,7 +282,8 @@ function inArea(cx, cy, pad = 0) {
 }
 /** Back to Select after a note, a text or a shape is placed (the pen stays on until Select or Escape). */
 function backToSelect() { H.mode = 'move'; board.classList.remove('inking'); worldEl.querySelector('.hr-area')?.classList.remove('drawing'); renderTools(); }
-const ed = areaEditor({ H, AREA, board, worldEl, penColors: PEN_COLORS, zoom: () => H.view.z, remember, snapshot, queueSave, renderArea,
+const ed = areaEditor({ H, AREA, board, stage: $('hr-stage') || board?.parentElement, worldEl, zoom: () => H.view.z, remember, forget, snapshot, queueSave, renderArea, undo, redo,
+  renderPanel: () => renderTools(), setMode: m => setMode(m, { on: true }),
   areaPt: (cx, cy) => { const p = toWorld(cx, cy); return { x: p.x - AREA.x, y: p.y - AREA.y }; } });
 
 // ---------------------------------------------------------------- Arrange seats
@@ -683,7 +690,7 @@ async function pollHandouts() {
 }
 
 // ---------------------------------------------------------------- input
-const UI = 'button, a, input, select, textarea, label, .hr-panel, .hr-seatbar, .rm-float, .rm-menu';
+const UI = 'button, a, input, select, textarea, label, .hr-panel, .hr-seatbar, .rm-float, .rm-menu, .hr-seltools, .hr-pop';
 function down(e) {
   H.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
   if (H.pointers.size === 2) { const [a, b] = [...H.pointers.values()]; H.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return; }
@@ -704,15 +711,14 @@ function down(e) {
   const at = inArea(e.clientX, e.clientY);
   if (at && !H.seatsOpen && H.mode !== 'move') {
     ed.clear();
-    if (H.mode === 'pen') { remember(); H.ann.strokes.push({ c: H.pen, pts: [at] }); H.gesture = { kind: 'ink' }; board.setPointerCapture(e.pointerId); return; }
+    if (H.mode === 'pen') { if (ed.penStart(at)) { H.gesture = { kind: 'ink' }; board.setPointerCapture(e.pointerId); } return; }
     if (H.mode === 'note' || H.mode === 'text') {
-      if (H.mode === 'note' ? H.ann.notes.length >= NOTE_MAX : H.ann.texts.length >= TEXT_MAX) { toast(th('tooMany'), { bad: true }); return; }
+      if (H.ann[H.mode === 'note' ? 'notes' : 'texts'].length >= MAX[H.mode]) { toast(th('tooMany'), { bad: true }); return; }
       const k = H.mode; backToSelect(); ed.add(k, at); H.justPanned = true; e.preventDefault(); return;
     }
-    if (['rect', 'circle', 'line'].includes(H.mode)) {
-      if (H.shapes.length >= SHAPE_MAX) { toast(th('tooMany'), { bad: true }); return; }
-      remember(); const s = { id: `s-${newId()}`, k: H.mode, x: at.x, y: at.y, x2: at.x, y2: at.y, c: H.pen };
-      H.shapes.push(s); H.gesture = { kind: 'shape', s }; board.setPointerCapture(e.pointerId); return;
+    if (H.mode === 'shape') {
+      const s = ed.shapeStart(at); if (!s) return;
+      H.gesture = { kind: 'shape', s }; board.setPointerCapture(e.pointerId); return;
     }
   }
   if (!H.seatsOpen && ed.down(e)) return;
@@ -723,6 +729,7 @@ function down(e) {
 }
 function move(e) {
   if (H.pointers.has(e.pointerId)) H.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  ed.hoverAt(e);
   if (ed.move(e)) return;
   const g = H.gesture; if (!g) return;
   if (g.kind === 'pinch') {
@@ -732,8 +739,8 @@ function move(e) {
   }
   const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
   if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) g.moved = true; H.view.x = g.x0 + dx; H.view.y = g.y0 + dy; applyView(); return; }
-  if (g.kind === 'ink') { const s = H.ann.strokes[H.ann.strokes.length - 1], p = inArea(e.clientX, e.clientY, 1); if (s && p && s.pts.length < 600) s.pts.push(p); const svg = worldEl.querySelector('.hr-area .mp-ink'); if (svg) svg.innerHTML = H.ann.strokes.map(x => inkLine(x, AREA.w, AREA.h)).join(''); return; }
-  if (g.kind === 'shape') { const p = inArea(e.clientX, e.clientY, 1); if (p) { g.s.x2 = p.x; g.s.y2 = p.y; ed.redrawSvg('shape'); } return; }
+  if (g.kind === 'ink') { ed.penMove(inArea(e.clientX, e.clientY, 1)); return; }
+  if (g.kind === 'shape') { const p = inArea(e.clientX, e.clientY, 1); if (p) ed.shapeMove(p, e.shiftKey); return; }
   if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
   if (!g.moved && g.kind !== 'desk') remember();
   g.moved = true;
@@ -762,13 +769,11 @@ function up(e) {
     if (g.moved) seatMoved(g.sid); H.justPanned = true; return;
   }
   if (g.kind === 'team') { if (g.moved) teamMoved(g.id); H.justPanned = true; return; }
-  if (g.kind === 'ink') { const n = H.ann.strokes.length; H.ann.strokes = H.ann.strokes.filter(s => s.pts.length > 1); if (H.ann.strokes.length < n) H.hist.pop(); renderArea(); queueSave(); return; }
+  if (g.kind === 'ink') { ed.penEnd(); return; }
   if (g.kind === 'shape') {
     // A shape is drawn by dragging; a tap with a shape tool puts a middle-sized one there. Then back to Select, the new
     // shape selected (its handles show how to resize it).
-    const s = g.s;
-    if (Math.abs(s.x2 - s.x) * AREA.w < 12 && Math.abs(s.y2 - s.y) * AREA.h < 12) { s.x2 = clamp(s.x + 160 / AREA.w, 0, 1); s.y2 = s.k === 'line' ? s.y : clamp(s.y + 100 / AREA.h, 0, 1); }
-    queueSave(); backToSelect(); renderArea(); ed.selectNew({ k: 'shape', id: s.id }); H.justPanned = true; return;
+    const r = ed.shapeEnd(); backToSelect(); renderArea(); if (r) ed.selectNew(r); H.justPanned = true; return;
   }
 }
 function togglePick(sid) {
@@ -784,8 +789,9 @@ function click(e) {
   const sp = e.target.closest('[data-hrsplit]'); if (sp) { splitTeam(sp.dataset.hrsplit); return; }
   if (LV.click(e)) return;
   if (giveClick(e)) return;
-  const mode = e.target.closest('[data-hrmode]'); if (mode) return setMode(mode.dataset.hrmode);
-  const pen = e.target.closest('[data-hrpen]'); if (pen) { H.pen = pen.dataset.hrpen; renderTools(); return; }
+  const mode = e.target.closest('[data-hrmode]');
+  // the Shapes button opens the picker (a shape picked there turns the tool on)
+  if (mode) { if (mode.dataset.hrmode === 'shape') { ed.openPop('shapes', 'shape'); return; } return setMode(mode.dataset.hrmode); }
   const preset = e.target.closest('[data-hrpreset]'); if (preset) return usePreset(preset.dataset.hrpreset);
   if (ed.click(e)) return;
   const a = e.target.closest('[data-hr]'); if (!a) { if (H.menuOpen && !e.target.closest('.hr-morewrap')) { H.menuOpen = false; renderMenu(); } return; }
@@ -795,6 +801,8 @@ function click(e) {
   else if (k === 'zout') zoomMid(1 / 1.25);
   else if (k === 'fit') fit();
   else if (k === 'undo') undo();
+  else if (k === 'redo') redo();
+  else if (k === 'paste') ed.pasteButton();
   else if (k === 'clearpen') { if (H.ann.strokes.length) { remember(); H.ann.strokes = []; renderArea(); queueSave(); } }
   else if (k === 'seats') openSeats(true);
   else if (k === 'seatsdone') openSeats(false);
@@ -881,13 +889,16 @@ function start() {
   const root = $('homeroom');
   for (const el of [root, barActs()].filter(Boolean)) { el.addEventListener('click', click); el.addEventListener('keydown', keys); }
   document.addEventListener('keydown', e => { if (!H.away && !PL.current()) ed.key(e); });
+  // copy, cut and paste for the board's objects (public/js/homeroom-board.js): only while the board is on screen
+  const clip = f => e => { if (!H.away && !PL.current() && !H.seatsOpen) f(e); };
+  document.addEventListener('copy', clip(e => ed.onCopy(e, false))); document.addEventListener('cut', clip(e => ed.onCopy(e, true))); document.addEventListener('paste', clip(e => ed.onPaste(e)));
   // The minimap sits outside the board: a press on it moves the view there.
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
   PL.sync();   // a game the address names (#play=<card>): open over the board
   // (another class: the shared bar's switcher, public/js/class-views.js)
   viewEl?.addEventListener('cv:hide', away);
   viewEl?.addEventListener('cv:show', back);
-  let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderMini(); }, 150); });
+  let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderMini(); ed.place(); }, 150); });
   window.addEventListener('pagehide', () => { ed.finishEdit(); if (saveTimer) { clearTimeout(saveTimer); saveArea(); } });
 }
 if (board && worldEl) start();
