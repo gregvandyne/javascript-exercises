@@ -52,7 +52,7 @@ test('a save reads back as clean numbers; a tampered one is clamped, never trust
     pets: Object.fromEntries(Array.from({ length: 500 }, (_, i) => [`p${i}`, 1])),
     keys: { '<script>': [1e9, 1e9], f: ['a', 'b'], k: 'nope' }, secs: -1, last: 'soon' });
   assert.equal(bad.done, 1, 'only the game\'s own lesson ids');
-  assert.equal(bad.stars, 3); assert.equal(bad.bestWpm, 200); assert.equal(bad.acc, 0); assert.equal(bad.pets, 40); assert.equal(bad.minutes, 0);
+  assert.equal(bad.stars, 3); assert.equal(bad.bestWpm, 200); assert.equal(bad.acc, 0); assert.equal(bad.pets, TY.PET_COUNT); assert.equal(TY.PET_COUNT, (html.match(/const PETS = \[([\s\S]*?)\n\];/)[1].match(/\['[a-z]+', /g) || []).length, 'the game\'s own pet count'); assert.equal(bad.minutes, 0);
   assert.deepEqual(bad.tricky, [], 'unknown keys are dropped');
   const all = TY.summarize({ done: Object.fromEntries(TY.LESSONS.map(id => [id, { s: 1, w: 10, a: 80 }])) });
   assert.equal(all.next, null, 'every lesson done');
@@ -323,7 +323,7 @@ test('every pack: every string in every language, with the same placeholders, an
     assert.ok(LAYOUTS[p.layout], `${p.lang}: layout`);
     assert.deepEqual(Object.keys(p.strings).sort(), Object.keys(en.strings).sort(), `${p.lang}: the same keys`);
     for (const [k, v] of Object.entries(en.strings)) assert.equal(ph(p.strings[k]), ph(v), `${p.lang}.${k} placeholders`);
-    assert.equal(p.pets.length, 40, `${p.lang}: pets`);
+    assert.equal(p.pets.length, TY.PET_COUNT, `${p.lang}: a name for every pet`);
     const ok = typableOn(p.layout);
     const all = [...p.words, ...p.sentences, ...p.marks, ...p.apos, ...Object.values(p.paras)];
     const bad = new Set(all.flatMap(x => [...x].filter(c => !ok.has(c))));

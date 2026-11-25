@@ -120,10 +120,9 @@
   .err { color: var(--warn); font-weight: 700; }
   .code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 1.6rem; font-weight: 800; letter-spacing: .1em; }
   .passnote { border: 2px dashed var(--accent); }
-  /* ==== pet art START (PetArt in the script; docs/decisions.md "Typing Zoo: pets that walk") ==== */
+/* ==== pet art START (PetArt in the script; docs/decisions.md "Typing Zoo: pets that walk") ==== */
   .pa { display: block; width: 100%; height: 100%; overflow: visible; }
-  .pa * { transform-box: view-box; vector-effect: non-scaling-stroke; }
-  .pa-sh { fill: rgba(31, 36, 48, .16); }
+  .pa * { transform-box: view-box; }
   .pa-b { transform-origin: 50px 91px; animation: pa-breathe 2.8s ease-in-out var(--d, 0s) infinite; }
   .pa-y { animation: pa-blink 5.2s var(--d, 0s) infinite; }
   .pa-e { animation: pa-ear 4.6s ease-in-out var(--d, 0s) infinite; }
@@ -134,7 +133,7 @@
   .pa-hov { animation: pa-hover 1.6s ease-in-out var(--d, 0s) infinite; }
   .pa-bub { animation: pa-bub 2.4s ease-in infinite; }
   .pa-sp { animation: pa-twinkle 1.6s ease-in-out infinite; }
-  .pa.shiny { filter: drop-shadow(0 0 5px rgba(255, 196, 30, .85)); }
+  .pa.shiny { filter: drop-shadow(0 0 4px rgba(255, 196, 30, .8)); }
   .g-swim .pa-b { animation-name: pa-swim; }
   @keyframes pa-breathe { 50% { transform: scale(1.02, .97); } }
   @keyframes pa-swim { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2px) rotate(-3deg); } }
@@ -150,7 +149,9 @@
   /* walking: the leg pairs swing in turn (hop, waddle, slide and swim move the whole pet instead) */
   .walking .pa-l1 { animation: pa-step .42s ease-in-out infinite alternate; }
   .walking .pa-l2 { animation: pa-step .42s ease-in-out -.42s infinite alternate; }
-  .walking .g-walk .pa-b { animation: pa-trot .42s ease-in-out infinite alternate; }
+  .walking .g-walk .pa-b { animation: pa-trot .42s ease-in-out infinite; }
+  .walking .pa-t { animation-duration: .84s; }
+  .walking .pa-e { animation: pa-earbob .42s ease-in-out infinite alternate; }
   .walking .g-hop .pa-b { animation: pa-hop .5s cubic-bezier(.3, 0, .5, 1) infinite; }
   .walking .g-hop .pa-l1, .walking .g-hop .pa-l2 { animation: none; }
   .walking .g-waddle .pa-b { animation: pa-waddle .5s ease-in-out infinite alternate; }
@@ -158,8 +159,9 @@
   .walking .g-swim .pa-b { animation: pa-swim .8s ease-in-out infinite; }
   .walking .g-swim .pa-t { animation-duration: .5s; }
   .walking .k-sea .pa-l1, .walking .k-sea .pa-l2 { animation-duration: .3s; }
-  @keyframes pa-step { from { transform: rotate(-16deg); } to { transform: rotate(16deg); } }
-  @keyframes pa-trot { from { transform: translateY(0); } to { transform: translateY(-1.5px); } }
+  @keyframes pa-step { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+  @keyframes pa-trot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.6px); } }
+  @keyframes pa-earbob { from { transform: rotate(-3deg); } to { transform: rotate(4deg); } }
   @keyframes pa-hop { 0%, 100% { transform: translateY(0) scale(1.04, .94); } 15% { transform: translateY(0) scale(.96, 1.05); } 50% { transform: translateY(-9px) scale(1); } 85% { transform: translateY(0) scale(1); } }
   @keyframes pa-waddle { from { transform: rotate(-6deg); } to { transform: rotate(6deg); } }
   @keyframes pa-slide { from { transform: scale(1, 1); } to { transform: scale(1.06, .95); } }
@@ -216,7 +218,6 @@ const CONFIG = {
   lineLength: 34,         // characters a drill line aims for
   crackTaps: 4,           // presses to hatch the egg
   starsAt: [95, 85],      // accuracy for 3 and 2 stars
-  petsTotal: 40,
 };
 const SAVE_KEY = 'typing-pets-v1';
 
@@ -265,18 +266,18 @@ const PACKS = {
   "he": {"layout":"he","words":["שלג","ילד","דג","חג","כל","יד","דף","כף","גל","דגל","דלי","גדי","לחש","חלל","ידיד","שיח","על","עד","לך","גיל","כלי","ליל","שלי","עף","אבא","אמא","בית","כלב","חתול","ילדה","ספר","שולחן","כיסא","דלת","חלון","שמש","ירח","כוכב","ים","עץ","פרח","ציפור","סוס","פרה","תרנגול","ארנב","דוב","אריה","פיל","קוף","נמר","זאב","שועל","צב","צפרדע","פרפר","דבורה","נמלה","תפוח","בננה","ענבים","תות","לחם","חלב","גבינה","מים","מיץ","עוגה","ביצה","אורז","מרק","גלידה","שוקו","כדור","בובה","משחק","צבע","אדום","כחול","ירוק","צהוב","לבן","שחור","ורוד","גדול","קטן","חם","קר","יפה","טוב","שמח","חדש","ישן","מהר","לאט","אני","אתה","את","הוא","היא","אנחנו","כן","לא","מה","מי","איפה","למה","כאן","שם","יום","לילה","בוקר","ערב","שנה","חודש","שבוע","שעה","גשם","רוח","ענן","קיץ","חורף","אביב","סתיו","רגל","ראש","עין","אוזן","פה","אף","שן","שיער","לב","כיתה","מורה","עט","עיפרון","מחברת","תיק","שיר","ריקוד","חבר","חברה","משפחה","אח","אחות","סבא","סבתא","דוד","דודה","תינוק","אוטו","אוטובוס","רכבת","מטוס","אופניים","סירה","דרך","עיר","כפר","גן","פארק","חוף","הר","נהר","שדה","אוכל","לאכול","לשתות","לרוץ","לקפוץ","לשחק","לקרוא","לכתוב","לשיר","לצייר","לישון","ללמוד","אוהב","רוצה","יודע","רואה","שלום","תודה","בבקשה","סליחה","כוס","צלחת","כפית","מזלג","מיטה","כרית","שמיכה","נעל","כובע","מעיל","חולצה","גרב","מטריה","מפתח","שעון","מספר","אות","מילה","סיפור","חלום","אור","קול","צחוק","חיוך","הפתעה","מתנה","קיפוד","ינשוף","תוכי","דולפין","לוויתן"],"sentences":["החתול ישן על הספה.","הכלב אוהב לרוץ.","אנחנו משחקים בגן.","השמש חמה היום.","אני רואה ציפור אדומה.","אמא אופה עוגה.","אבא קורא ספר.","יש לי דג זהב קטן.","אחי מצייר פיל.","אנחנו הולכים לבית הספר.","בחורף יורד גשם.","הברווז שוחה באגם.","השועל גר ביער.","אני אוהבת לקרוא סיפורים.","אחותי שרה שיר.","בלילה רואים כוכבים.","החברים משחקים בכדור.","סבתא סורגת צעיף.","בקיץ הולכים לים.","הפרחים גדלים בגינה.","מחר יש מסיבה בכיתה."],"marks":["רואים את הירח?","איזה כלב גדול!","כבר הגיע זמן לאכול?","ניצחנו במשחק!","איפה הכדור שלי?","הידד, חופש!","מי דופק בדלת?","תראו, קשת בענן!","מי רוצה עוגה?","כמה כיף!","אתה יודע לשחות?","שלום, חברים!"],"apos":["ג'ירפה","צ'יפס","ג'ונגל","ג'ינס","צ'ופר","ז'קט","צ'לו","פיג'מה","ג'ודו","חד-קרן","דו-שיח","תת-ימי","רב-קומות","אי-אפשר","דו-לשוני","ביה\"ס"],"paras":{"l29":"הדבורים מספרות זו לזו איפה יש פרחים בעזרת ריקוד. כשדבורה מוצאת שדה מלא פרחים, היא חוזרת לכוורת ורוקדת בצורה שדומה לספרה 8. הכיוון של הריקוד מראה לשאר הדבורים לאן לעוף, ואורך הריקוד מספר להן כמה רחוק הפרחים.","l30":"למאדים קוראים הכוכב האדום, כי האדמה שלו מלאה בחלודה. על מאדים נמצא הר הגעש הגבוה ביותר שאנחנו מכירים במערכת השמש. קוראים לו אולימפוס מונס, והוא גבוה פי שניים וחצי מהאוורסט. יום על מאדים ארוך רק בקצת מיום אצלנו, בערך 24 שעות ו-37 דקות.","l31":"נועה ואחיה איתי טסו מתל אביב לרומא באוגוסט. ביום שני הם ביקרו בקולוסיאום, וביום חמישי נסעו ברכבת לפירנצה. שם חיכתה להם הדודה מרים, שגרה בדירה קטנה ליד נהר הארנו, והכינה להם פסטה עם עגבניות.","l32":"בספרייה של בית הספר יש 1,200 ספרים. בשבוע שעבר התלמידים השאילו 85 ספרים, ו-14 מהם היו ספרים על חיות. ביום רביעי הגיעו 30 ספרים חדשים, והספרנית סידרה אותם על 3 מדפים עד השעה 10:30.","l33":"\"אפשר לצאת להפסקה?\" שאלה תמר. \"עוד רגע,\" ענתה המורה, \"קודם נסיים את הדף.\" תמר כתבה מהר ככל שיכלה. \"סיימתי!\" קראה. \"יופי,\" חייכה המורה, \"עכשיו כולם יכולים לצאת לשחק.\"","l34":"כל בוקר אבא מעיר אותי בשבע. אני מצחצח שיניים, מתלבש ואוכל פרוסה עם גבינה. אחותי הקטנה תמיד מחפשת את הנעל השנייה שלה, והכלב רץ אחריה בכל הבית. בשבע וחצי כולנו יוצאים מהדלת ומספיקים בדיוק את האוטובוס.","l35":"כשמחממים מים ל-100 מעלות, הם מתחילים לרתוח והופכים לאדים. כשמקררים אותם מתחת לאפס, הם קופאים והופכים לקרח. מעניין שקרח קל יותר ממים, ולכן הוא צף. בזכות זה דגים יכולים לחיות בחורף מתחת לשכבת הקרח שמכסה את האגם.","l36":"לפני כ-5,000 שנה, במצרים העתיקה, אנשים כתבו על פפירוס. הם חתכו את הגבעול של צמח הפפירוס, שגדל ליד הנילוס, לרצועות דקות. אחר כך הניחו אותן בשתי שכבות ולחצו עליהן עד שהתייבשו. כך נוצר דף חלק וחזק, ואפשר היה לגלגל כמה דפים כאלה למגילה ארוכה.","l37":"איך מגדלים שעועית: 1) ממלאים כוס בצמר גפן רטוב. 2) מניחים עליו 3 שעועיות. 3) שמים את הכוס ליד חלון מואר. 4) בודקים כל יום שהצמר גפן עדיין לח. 5) אחרי 5 עד 7 ימים יופיעו נבטים - ציירו אותם במחברת!","l38":"באמצע הטיול התחיל לרדת גשם חזק. \"לא נורא,\" אמר סבא, \"נחכה במערה הקטנה.\" הוא הוציא מהתיק תרמוס עם תה חם ושקית צימוקים. ישבנו צמודים, הקשבנו לטיפות, וסבא סיפר על הטיולים שלו כשהיה ילד. כשהשמש חזרה, ראינו קשת ענקית מעל העמק, ואף אחד כבר לא רצה ללכת הביתה.","l39":"זה לא היה קל: השביל היה תלול, בוצי ומלא אבנים. ובכל זאת המשכנו - צעד אחרי צעד - עד הפסגה. \"זה שווה את זה?\" שאל ג'ק. כולנו הסתכלנו על הנוף וצחקנו. בדרך חזרה קנינו צ'יפס ליד ביה\"ס ואמרנו: \"נחזור לכאן בקיץ!\"","l40":"הצ'יטה היא היונק המהיר ביותר ביבשה. בריצה קצרה היא מגיעה למהירות של כ-100 קילומטרים בשעה, ומאפס ל-80 היא מאיצה בתוך כשלוש שניות. הזנב הארוך עוזר לה לשמור על שיווי משקל בפניות חדות. אבל הצ'יטה מתעייפת מהר, ולכן היא רודפת רק כמה מאות מטרים ואז חייבת לנוח."}}
 };
 const PET_NAMES = {
-  "en": ["Bunny","Puppy","Kitten","Chick","Fox","Panda","Koala","Tiger","Lion","Frog","Monkey","Penguin","Owl","Turtle","Octopus","Unicorn","Dragon","Hamster","Mouse","Bear","Piglet","Calf","Duckling","Dino","T. rex","Whale","Dolphin","Seal","Crab","Fish","Bee","Ladybug","Butterfly","Snail","Hedgehog","Sloth","Otter","Parrot","Flamingo","Peacock"],
-  "de": ["Häschen","Hündchen","Kätzchen","Küken","Fuchs","Panda","Koala","Tiger","Löwe","Frosch","Affe","Pinguin","Eule","Schildkröte","Krake","Einhorn","Drache","Hamster","Maus","Bär","Ferkel","Kälbchen","Entenküken","Dino","T. rex","Wal","Delfin","Robbe","Krabbe","Fisch","Biene","Marienkäfer","Schmetterling","Schnecke","Igel","Faultier","Otter","Papagei","Flamingo","Pfau"],
-  "es": ["Conejito","Perrito","Gatito","Pollito","Zorro","Panda","Koala","Tigre","León","Rana","Mono","Pingüino","Búho","Tortuga","Pulpo","Unicornio","Dragón","Hámster","Ratón","Oso","Cerdito","Ternero","Patito","Dino","T. rex","Ballena","Delfín","Foca","Cangrejo","Pez","Abeja","Mariquita","Mariposa","Caracol","Erizo","Perezoso","Nutria","Loro","Flamenco","Pavo real"],
-  "fr": ["Lapinou","Chiot","Chaton","Poussin","Renard","Panda","Koala","Tigre","Lion","Grenouille","Singe","Manchot","Hibou","Tortue","Pieuvre","Licorne","Dragon","Hamster","Souris","Ours","Porcelet","Veau","Caneton","Dino","T. rex","Baleine","Dauphin","Phoque","Crabe","Poisson","Abeille","Coccinelle","Papillon","Escargot","Hérisson","Paresseux","Loutre","Perroquet","Flamant rose","Paon"],
-  "it": ["Coniglietto","Cagnolino","Gattino","Pulcino","Volpe","Panda","Koala","Tigre","Leone","Rana","Scimmia","Pinguino","Gufo","Tartaruga","Polpo","Unicorno","Drago","Criceto","Topolino","Orso","Maialino","Vitellino","Anatroccolo","Dino","T. rex","Balena","Delfino","Foca","Granchio","Pesce","Ape","Coccinella","Farfalla","Lumaca","Riccio","Bradipo","Lontra","Pappagallo","Fenicottero","Pavone"],
-  "pt": ["Coelhinho","Cachorrinho","Gatinho","Pintinho","Raposa","Panda","Coala","Tigre","Leão","Sapo","Macaco","Pinguim","Coruja","Tartaruga","Polvo","Unicórnio","Dragão","Hamster","Ratinho","Urso","Porquinho","Bezerro","Patinho","Dino","T. rex","Baleia","Golfinho","Foca","Caranguejo","Peixe","Abelha","Joaninha","Borboleta","Caracol","Ouriço","Bicho-preguiça","Lontra","Papagaio","Flamingo","Pavão"],
-  "nl": ["Konijntje","Puppy","Poesje","Kuikentje","Vos","Panda","Koala","Tijger","Leeuw","Kikker","Aap","Pinguïn","Uil","Schildpad","Octopus","Eenhoorn","Draak","Hamster","Muis","Beer","Biggetje","Kalfje","Eendje","Dino","T. rex","Walvis","Dolfijn","Zeehond","Krab","Vis","Bij","Lieveheersbeestje","Vlinder","Slak","Egel","Luiaard","Otter","Papegaai","Flamingo","Pauw"],
-  "ru": ["Зайчик","Щенок","Котенок","Цыпленок","Лисенок","Панда","Коала","Тигр","Лев","Лягушка","Обезьянка","Пингвин","Сова","Черепаха","Осьминог","Единорог","Дракон","Хомяк","Мышка","Медведь","Поросенок","Теленок","Утенок","Дино","Тираннозавр","Кит","Дельфин","Тюлень","Краб","Рыбка","Пчелка","Божья коровка","Бабочка","Улитка","Ежик","Ленивец","Выдра","Попугай","Фламинго","Павлин"],
-  "ja": ["うさぎ","こいぬ","こねこ","ひよこ","きつね","パンダ","コアラ","トラ","ライオン","カエル","おさる","ペンギン","フクロウ","カメ","タコ","ユニコーン","ドラゴン","ハムスター","ネズミ","クマ","こぶた","こうし","こがも","きょうりゅう","ティラノサウルス","クジラ","イルカ","アザラシ","カニ","さかな","ミツバチ","テントウムシ","チョウチョ","カタツムリ","ハリネズミ","ナマケモノ","カワウソ","オウム","フラミンゴ","クジャク"],
-  "zh-Hant": ["小兔子","小狗","小貓","小雞","狐狸","熊貓","無尾熊","老虎","獅子","青蛙","猴子","企鵝","貓頭鷹","烏龜","章魚","獨角獸","龍","倉鼠","老鼠","熊","小豬","小牛","小鴨","恐龍","暴龍","鯨魚","海豚","海豹","螃蟹","魚","蜜蜂","瓢蟲","蝴蝶","蝸牛","刺蝟","樹懶","水獺","鸚鵡","紅鶴","孔雀"],
-  "ar": ["أرنب صغير","جرو","هريرة","صوص","ثعلب","باندا","كوالا","نمر","أسد","ضفدع","قرد","بطريق","بومة","سلحفاة","أخطبوط","يونيكورن","تنين","هامستر","فأر","دب","خنزير صغير","عجل","بطة صغيرة","دينو","تي ركس","حوت","دلفين","فقمة","سلطعون","سمكة","نحلة","دعسوقة","فراشة","حلزون","قنفذ","كسلان","ثعلب الماء","ببغاء","فلامنغو","طاووس"],
-  "he": ["ארנבון","גור כלבים","חתלתול","אפרוח","שועל","פנדה","קואלה","נמר","אריה","צפרדע","קוף","פינגווין","ינשוף","צב","תמנון","חד-קרן","דרקון","אוגר","עכבר","דוב","חזרזיר","עגל","ברווזון","דינו","טי-רקס","לווייתן","דולפין","כלב ים","סרטן","דג","דבורה","פרת משה רבנו","פרפר","חילזון","קיפוד","עצלן","לוטרה","תוכי","פלמינגו","טווס"]
+  "en": ["Bunny","Puppy","Kitten","Chick","Fox","Panda","Koala","Tiger","Lion","Frog","Monkey","Penguin","Owl","Turtle","Octopus","Unicorn","Dragon","Hamster","Mouse","Bear","Piglet","Calf","Duckling","Dino","T. rex","Whale","Dolphin","Seal","Crab","Fish","Bee","Ladybug","Butterfly","Snail","Hedgehog","Sloth","Otter","Parrot","Flamingo","Peacock","Alpaca"],
+  "de": ["Häschen","Hündchen","Kätzchen","Küken","Fuchs","Panda","Koala","Tiger","Löwe","Frosch","Affe","Pinguin","Eule","Schildkröte","Krake","Einhorn","Drache","Hamster","Maus","Bär","Ferkel","Kälbchen","Entenküken","Dino","T. rex","Wal","Delfin","Robbe","Krabbe","Fisch","Biene","Marienkäfer","Schmetterling","Schnecke","Igel","Faultier","Otter","Papagei","Flamingo","Pfau","Alpaka"],
+  "es": ["Conejito","Perrito","Gatito","Pollito","Zorro","Panda","Koala","Tigre","León","Rana","Mono","Pingüino","Búho","Tortuga","Pulpo","Unicornio","Dragón","Hámster","Ratón","Oso","Cerdito","Ternero","Patito","Dino","T. rex","Ballena","Delfín","Foca","Cangrejo","Pez","Abeja","Mariquita","Mariposa","Caracol","Erizo","Perezoso","Nutria","Loro","Flamenco","Pavo real","Alpaca"],
+  "fr": ["Lapinou","Chiot","Chaton","Poussin","Renard","Panda","Koala","Tigre","Lion","Grenouille","Singe","Manchot","Hibou","Tortue","Pieuvre","Licorne","Dragon","Hamster","Souris","Ours","Porcelet","Veau","Caneton","Dino","T. rex","Baleine","Dauphin","Phoque","Crabe","Poisson","Abeille","Coccinelle","Papillon","Escargot","Hérisson","Paresseux","Loutre","Perroquet","Flamant rose","Paon","Alpaga"],
+  "it": ["Coniglietto","Cagnolino","Gattino","Pulcino","Volpe","Panda","Koala","Tigre","Leone","Rana","Scimmia","Pinguino","Gufo","Tartaruga","Polpo","Unicorno","Drago","Criceto","Topolino","Orso","Maialino","Vitellino","Anatroccolo","Dino","T. rex","Balena","Delfino","Foca","Granchio","Pesce","Ape","Coccinella","Farfalla","Lumaca","Riccio","Bradipo","Lontra","Pappagallo","Fenicottero","Pavone","Alpaca"],
+  "pt": ["Coelhinho","Cachorrinho","Gatinho","Pintinho","Raposa","Panda","Coala","Tigre","Leão","Sapo","Macaco","Pinguim","Coruja","Tartaruga","Polvo","Unicórnio","Dragão","Hamster","Ratinho","Urso","Porquinho","Bezerro","Patinho","Dino","T. rex","Baleia","Golfinho","Foca","Caranguejo","Peixe","Abelha","Joaninha","Borboleta","Caracol","Ouriço","Bicho-preguiça","Lontra","Papagaio","Flamingo","Pavão","Alpaca"],
+  "nl": ["Konijntje","Puppy","Poesje","Kuikentje","Vos","Panda","Koala","Tijger","Leeuw","Kikker","Aap","Pinguïn","Uil","Schildpad","Octopus","Eenhoorn","Draak","Hamster","Muis","Beer","Biggetje","Kalfje","Eendje","Dino","T. rex","Walvis","Dolfijn","Zeehond","Krab","Vis","Bij","Lieveheersbeestje","Vlinder","Slak","Egel","Luiaard","Otter","Papegaai","Flamingo","Pauw","Alpaca"],
+  "ru": ["Зайчик","Щенок","Котенок","Цыпленок","Лисенок","Панда","Коала","Тигр","Лев","Лягушка","Обезьянка","Пингвин","Сова","Черепаха","Осьминог","Единорог","Дракон","Хомяк","Мышка","Медведь","Поросенок","Теленок","Утенок","Дино","Тираннозавр","Кит","Дельфин","Тюлень","Краб","Рыбка","Пчелка","Божья коровка","Бабочка","Улитка","Ежик","Ленивец","Выдра","Попугай","Фламинго","Павлин","Альпака"],
+  "ja": ["うさぎ","こいぬ","こねこ","ひよこ","きつね","パンダ","コアラ","トラ","ライオン","カエル","おさる","ペンギン","フクロウ","カメ","タコ","ユニコーン","ドラゴン","ハムスター","ネズミ","クマ","こぶた","こうし","こがも","きょうりゅう","ティラノサウルス","クジラ","イルカ","アザラシ","カニ","さかな","ミツバチ","テントウムシ","チョウチョ","カタツムリ","ハリネズミ","ナマケモノ","カワウソ","オウム","フラミンゴ","クジャク","アルパカ"],
+  "zh-Hant": ["小兔子","小狗","小貓","小雞","狐狸","熊貓","無尾熊","老虎","獅子","青蛙","猴子","企鵝","貓頭鷹","烏龜","章魚","獨角獸","龍","倉鼠","老鼠","熊","小豬","小牛","小鴨","恐龍","暴龍","鯨魚","海豚","海豹","螃蟹","魚","蜜蜂","瓢蟲","蝴蝶","蝸牛","刺蝟","樹懶","水獺","鸚鵡","紅鶴","孔雀","羊駝"],
+  "ar": ["أرنب صغير","جرو","هريرة","صوص","ثعلب","باندا","كوالا","نمر","أسد","ضفدع","قرد","بطريق","بومة","سلحفاة","أخطبوط","يونيكورن","تنين","هامستر","فأر","دب","خنزير صغير","عجل","بطة صغيرة","دينو","تي ركس","حوت","دلفين","فقمة","سلطعون","سمكة","نحلة","دعسوقة","فراشة","حلزون","قنفذ","كسلان","ثعلب الماء","ببغاء","فلامنغو","طاووس","ألبكة"],
+  "he": ["ארנבון","גור כלבים","חתלתול","אפרוח","שועל","פנדה","קואלה","נמר","אריה","צפרדע","קוף","פינגווין","ינשוף","צב","תמנון","חד-קרן","דרקון","אוגר","עכבר","דוב","חזרזיר","עגל","ברווזון","דינו","טי-רקס","לווייתן","דולפין","כלב ים","סרטן","דג","דבורה","פרת משה רבנו","פרפר","חילזון","קיפוד","עצלן","לוטרה","תוכי","פלמינגו","טווס","אלפקה"]
 };
 // ==== PACKS END ====
 
@@ -432,385 +433,448 @@ const PETS = [
   ['whale', '🐳', 'Whale'], ['dolphin', '🐬', 'Dolphin'], ['seal', '🦭', 'Seal'], ['crab', '🦀', 'Crab'], ['fish', '🐠', 'Fish'],
   ['bee', '🐝', 'Bee'], ['ladybug', '🐞', 'Ladybug'], ['butterfly', '🦋', 'Butterfly'], ['snail', '🐌', 'Snail'], ['hedgehog', '🦔', 'Hedgehog'],
   ['sloth', '🦥', 'Sloth'], ['otter', '🦦', 'Otter'], ['parrot', '🦜', 'Parrot'], ['flamingo', '🦩', 'Flamingo'], ['peacock', '🦚', 'Peacock'],
+  ['alpaca', '🦙', 'Alpaca'],   // added later: new pets go at the end, so saved pets and PET_NAMES keep their places
 ];
 
 // ==== PET ART START ====
-// Full-body pets (docs/decisions.md "Typing Zoo: pets that walk"): every pet is inline SVG built on one rig per body
-// type (four legs, bird, sea, bug, reptile, mythical) from shared parts, each in its own group so CSS can move it:
-// .pa-b the body (breathing), .pa-h the head, .pa-e ears, .pa-y eyes (blink), .pa-t tail, .pa-w wings or fins,
-// .pa-l1 / .pa-l2 the two leg pairs (walk cycle). Faces right; the walker flips it. viewBox 100x100, ground at y 91.
-// Shiny pets: a brighter palette, a gold glow and twinkling sparkles. No images, no emoji, nothing from another site.
+// Full-body pets (docs/decisions.md "Typing Zoo: pets that walk"): inline SVG in a soft, natural style. Each body type
+// has its own rig (four legs, bird, sea, bug, reptile, mythical) built from shared parts with jointed legs, and each
+// part sits in a group CSS moves: .pa-b the body (breathing, the step's rise and fall), .pa-h the head, .pa-e ears,
+// .pa-y eyes (blink), .pa-t tail, .pa-w wings or fins, .pa-l1 / .pa-l2 the two leg pairs (the walk cycle). Shading is
+// one light from the top left: three gradients shared by every pet (PetArt.defs, in the page once). Faces right; the
+// walker flips it. viewBox 100x100, ground at y 91. Shiny pets: a brighter palette, a gold glow and sparkles.
 const PetArt = (function () {
-  const K = '#1f2430', WH = '#ffffff', PINK = '#f6a9bd', BLUSH = '#f49ab0';
-  const S = ` stroke="${K}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
+  const INK = '#3a2a22', WH = '#f7f3ec';
+  const OL = ` stroke="${INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+  const DEFS = '<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>' +
+    '<linearGradient id="paSh" x1="0" y1="0" x2=".25" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset=".42" stop-color="#fff" stop-opacity="0"/><stop offset=".6" stop-color="#3a2416" stop-opacity="0"/><stop offset="1" stop-color="#3a2416" stop-opacity=".3"/></linearGradient>' +
+    '<linearGradient id="paLg" gradientUnits="userSpaceOnUse" x1="0" y1="55" x2="0" y2="92"><stop offset="0" stop-color="#3a2416" stop-opacity="0"/><stop offset="1" stop-color="#3a2416" stop-opacity=".3"/></linearGradient>' +
+    '<radialGradient id="paCs"><stop offset="0" stop-color="#2a1d14" stop-opacity=".32"/><stop offset="1" stop-color="#2a1d14" stop-opacity="0"/></radialGradient></defs></svg>';
   let pal = c => c, uid = 0;
   /** A shiny pet's color: more saturated and a little lighter (greys, black and white stay as they are). */
   function bright(c) {
     const m = /^#([0-9a-f]{6})$/i.exec(c); if (!m) return c;
     const [r, g, b] = [0, 2, 4].map(i => parseInt(m[1].substr(i, 2), 16) / 255);
     const mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn; let l = (mx + mn) / 2;
-    if (d < 0.06) return c;
+    if (d < 0.08) return c;
     let s = l > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
     let h = mx === r ? (g - b) / d + (g < b ? 6 : 0) : mx === g ? (b - r) / d + 2 : (r - g) / d + 4; h /= 6;
-    s = Math.min(1, s * 1.3 + 0.1); l = Math.min(0.88, l + 0.05);
+    s = Math.min(1, s * 1.3 + 0.12); l = Math.min(0.86, l + 0.06);
     const q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q;
     const f = t => { t = (t + 1) % 1; return t < 1 / 6 ? p + (q - p) * 6 * t : t < 1 / 2 ? q : t < 2 / 3 ? p + (q - p) * (2 / 3 - t) * 6 : p; };
     return '#' + [h + 1 / 3, h, h - 1 / 3].map(t => Math.round(f(t) * 255).toString(16).padStart(2, '0')).join('');
   }
-  /** A darker shade, for the far legs and markings. */
-  function dark(c, k) {
+  /** A darker shade (the far legs). */
+  function dark(c, k = 0.82) {
     const m = /^#([0-9a-f]{6})$/i.exec(c); if (!m) return c;
-    if (k === undefined) k = /^#(?:[e-f][0-9a-f]){3}$/i.test(c) ? 0.9 : 0.78;   // a white pet's far legs: light grey
     return '#' + [0, 2, 4].map(i => Math.round(parseInt(m[1].substr(i, 2), 16) * k).toString(16).padStart(2, '0')).join('');
   }
   const F = c => (c === 'none' ? 'none' : pal(c));
-  // ---- shapes (outlined) and markings (no outline)
-  const E = (cx, cy, rx, ry, c, a = '') => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${F(c)}"${S}${a}/>`;
-  const C = (cx, cy, r, c, a = '') => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${F(c)}"${S}${a}/>`;
-  const P = (d, c, a = '') => `<path d="${d}" fill="${F(c)}"${S}${a}/>`;
-  const L = (d, w = 2.5, c = K) => `<path d="${d}" fill="none" stroke="${F(c)}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"/>`;
-  const M = (d, c, a = '') => `<path d="${d}" fill="${F(c)}"${a}/>`;
-  const ME = (cx, cy, rx, ry, c, a = '') => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${F(c)}"${a}/>`;
-  const rot = (deg, x, y) => ` transform="rotate(${deg} ${x} ${y})"`;
-  /** A group that CSS moves, turning about (ox, oy). */
-  const G = (cls, inner, ox, oy) => `<g class="${cls}" style="transform-origin:${ox}px ${oy}px">${inner}</g>`;
-  /** A filled shape with markings kept inside it (clipped), outlined on top. shape: 'ellipse cx=".." ...'. */
-  function clip(shape, c, marks) {
-    if (!marks) return `<${shape} fill="${F(c)}"${S}/>`;
-    const id = 'pc' + (++uid);
-    return `<clipPath id="${id}"><${shape}/></clipPath><${shape} fill="${F(c)}"/><g clip-path="url(#${id})">${marks}</g><${shape} fill="none"${S}/>`;
+  const r1 = n => Math.round(n * 10) / 10;
+  // ---- drawing parts
+  /** An ellipse as a path. */
+  const eP = (cx, cy, rx, ry) => `M${r1(cx - rx)} ${r1(cy)}a${rx} ${ry} 0 1 0 ${r1(2 * rx)} 0a${rx} ${ry} 0 1 0 ${r1(-2 * rx)} 0z`;
+  /** A body part: its fill, markings kept inside it, the shared shading, a soft outline. */
+  function part(d, c, marks, flat) {
+    let s = `<path d="${d}" fill="${F(c)}"/>`;
+    if (marks) { const id = 'pc' + (++uid); s = `<clipPath id="${id}"><path d="${d}"/></clipPath>${s}<g clip-path="url(#${id})">${marks}</g>`; }
+    return s + (flat ? '' : `<path d="${d}" fill="url(#paSh)"/>`) + `<path d="${d}" fill="none"${OL}/>`;
   }
-  const eye = (x, y, s = 1) => G('pa-y', `<ellipse cx="${x}" cy="${y}" rx="${2.7 * s}" ry="${3.1 * s}" fill="${K}"/><circle cx="${x + 0.9 * s}" cy="${y - 1.1 * s}" r="${1.05 * s}" fill="#fff"/>`, x, y);
-  const eyes = (x1, x2, y, s) => eye(x1, y, s) + eye(x2, y, s);
-  const smile = (x, y, w = 3) => L(`M${x - w} ${y} q${w / 2} ${w * 0.7} ${w} 0 q${w / 2} ${w * 0.7} ${w} 0`, 2);
-  const grin = (x, y, w = 3) => L(`M${x - w} ${y} q${w} ${w} ${w * 2} 0`, 2);
-  const blush = (x, y, r = 2.6) => ME(x, y, r, r * 0.65, BLUSH, ' opacity=".6"');
-  const nose = (x, y, s = 1, c = K) => M(`M${x - 2.4 * s} ${y - 1.2 * s} q${2.4 * s} -${1.6 * s} ${4.8 * s} 0 q-${0.6 * s} ${2.6 * s} -${2.4 * s} ${3 * s} q-${1.8 * s} -${0.4 * s} -${2.4 * s} -${3 * s}z`, c);
-  const whisk = (x, y) => L(`M${x} ${y} l9 -2 M${x} ${y + 2} l9 1.5`, 1.3) + L(`M${x - 13} ${y} l-8 -2 M${x - 13} ${y + 2} l-8 1.5`, 1.3);
-  const leg = (x, top, w, c, cls, foot, bottom = 91) => G(cls, `<rect x="${x}" y="${top}" width="${w}" height="${bottom - top}" rx="${w / 2}" fill="${F(c)}"${S}/>` +
-    (foot ? `<rect x="${x}" y="${bottom - 5.5}" width="${w}" height="5.5" rx="${Math.min(2.5, w / 2)}" fill="${F(foot)}"${S}/>` : ''), x + w / 2, top + 3);
-  /** A pointed ear: base (x, y), width w, height h, tip leaning by lean; inner color optional. */
-  const earTri = (x, y, w, h, c, inner, lean = 0) => P(`M${x - w / 2} ${y} Q${x - w / 4 + lean / 2} ${y - h * 0.7} ${x + lean} ${y - h} Q${x + w / 4 + lean / 2} ${y - h * 0.7} ${x + w / 2} ${y}z`, c) +
-    (inner ? M(`M${x - w / 4} ${y - 1} Q${x - w / 8 + lean / 2} ${y - h * 0.6} ${x + lean * 0.8} ${y - h * 0.78} Q${x + w / 8 + lean / 2} ${y - h * 0.6} ${x + w / 4} ${y - 1}z`, inner) : '');
-  const earRound = (x, y, r, c, inner) => C(x, y, r, c) + (inner ? ME(x, y + 0.5, r * 0.55, r * 0.55, inner) : '');
+  const E = (cx, cy, rx, ry, c, marks) => part(eP(cx, cy, rx, ry), c, marks);
+  /** A marking (no outline). */
+  const M = (d, c, a = '') => `<path d="${d}" fill="${F(c)}"${a}/>`;
+  const ME = (cx, cy, rx, ry, c, a = '') => M(eP(cx, cy, rx, ry), c, a);
+  /** A line (whiskers, mouths, veins). */
+  const L = (d, w = 1.4, c = INK, a = '') => `<path d="${d}" fill="none" stroke="${F(c)}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round"${a}/>`;
+  /** A limb or a thin tail: a round-ended stroke w wide with an outline and the ground shading. */
+  const limb = (d, w, c, stripes = '') => L(d, w + 4, INK) + L(d, w, c) + stripes + L(d, w, 'url(#paLg)').replace('stroke="url(#paLg)"', 'stroke="url(#paLg)"');
+  const rot = (deg, x, y) => ` transform="rotate(${deg} ${x} ${y})"`;
+  /** A group CSS moves, turning about (ox, oy). */
+  const G = (cls, inner, ox, oy) => `<g class="${cls}" style="transform-origin:${r1(ox)}px ${r1(oy)}px">${inner}</g>`;
+  const eye = (x, y, r = 1.7, c = '#1d1512') => G('pa-y', ME(x, y, r, r * 1.1, c) + `<circle cx="${r1(x + r * 0.35)}" cy="${r1(y - r * 0.4)}" r="${r1(r * 0.38)}" fill="#fff"/>`, x, y);
+  const nose = (x, y, s = 1, c = '#2a1f1a') => M(`M${r1(x - 2 * s)} ${r1(y - 1 * s)}q${r1(2 * s)} ${r1(-1.4 * s)} ${r1(3.2 * s)} ${r1(0.2 * s)}q${r1(0.2 * s)} ${r1(1.8 * s)} ${r1(-1.6 * s)} ${r1(2.2 * s)}q${r1(-1.6 * s)} ${r1(-0.3 * s)} ${r1(-1.6 * s)} ${r1(-2.4 * s)}z`, c);
+  const whisk = (x, y, l = 8) => L(`M${x} ${y}l${l} -2M${x} ${y + 1.4}l${l} 1M${x - 1} ${y + 2.6}l${l * 0.8} 3`, 0.6, '#5b4a40', ' opacity=".7"');
+  /** A profile head: cranium (x, y) of radius s, a muzzle L long and h high (0..1 of s), a little dome on top. */
+  const headD = (x, y, s, L0, h = 0.9, dome = 1.2) => `M${r1(x - s)} ${r1(y + s * 0.1)}C${r1(x - s)} ${r1(y - s * dome)} ${r1(x + s * 0.6)} ${r1(y - s * (dome + 0.05))} ${r1(x + s * 0.85)} ${r1(y - s * 0.45)}C${r1(x + s + L0 * 0.4)} ${r1(y - s * (h - 0.6))} ${r1(x + s + L0)} ${r1(y - s * (h - 0.75))} ${r1(x + s + L0)} ${r1(y + s * 0.2)}C${r1(x + s + L0)} ${r1(y + s * 0.6)} ${r1(x + s + L0 * 0.5)} ${r1(y + s * 0.75)} ${r1(x + s * 0.4)} ${r1(y + s * 0.85)}C${r1(x - s * 0.2)} ${r1(y + s * 1.05)} ${r1(x - s)} ${r1(y + s * 0.85)} ${r1(x - s)} ${r1(y + s * 0.1)}z`;
+  /** A fluffy outline (fleece, down): an ellipse with n soft bumps. */
+  const fluffD = (cx, cy, rx, ry, n, k = 0.12) => Array.from({ length: n }, (_, i) => {
+    const a = (i / n) * 2 * Math.PI, b = ((i + 0.5) / n) * 2 * Math.PI, a2 = ((i + 1) / n) * 2 * Math.PI;
+    return `${i ? '' : `M${r1(cx + Math.cos(a) * rx)} ${r1(cy + Math.sin(a) * ry)}`}Q${r1(cx + Math.cos(b) * rx * (1 + k * 1.6))} ${r1(cy + Math.sin(b) * ry * (1 + k * 1.6))} ${r1(cx + Math.cos(a2) * rx)} ${r1(cy + Math.sin(a2) * ry)}`;
+  }).join('') + 'z';
+  /** A torso from the rump (x1) to the chest (x2), back at top, belly at bot. */
+  const torsoD = (x1, x2, top, bot, o = {}) => {
+    const m = x2 - x1, h = bot - top;
+    return `M${x1} ${r1(top + h * 0.35)}C${x1} ${r1(top - (o.rump || 0))} ${r1(x1 + m * 0.3)} ${r1(top + (o.dip || 1.5))} ${r1(x1 + m * 0.55)} ${r1(top + (o.dip || 1.5))}S${r1(x2 - 3)} ${r1(top - (o.wither || 1))} ${r1(x2 + 2)} ${r1(top + h * 0.3)}C${r1(x2 + 6)} ${r1(top + h * 0.6)} ${r1(x2 + 3)} ${bot} ${r1(x2 - 4)} ${bot}C${r1(x1 + m * 0.6)} ${r1(bot + (o.belly || 1))} ${r1(x1 + m * 0.3)} ${r1(bot - (o.tuck || 2.5))} ${r1(x1 + 3)} ${r1(bot - 2)}C${r1(x1 - 3)} ${r1(bot - 4)} ${r1(x1 - 3)} ${r1(top + h * 0.6)} ${x1} ${r1(top + h * 0.35)}z`;
+  };
+  /** A leg with its joints: a foreleg (elbow, wrist) or a hind leg (knee forward, hock back), from (x, y) to the ground. */
+  function leg(x, y, w, c, kind, cls, o = {}) {
+    const len = 90.5 - w * 0.4 - y, foot = o.foot || (kind === 'hind' ? -1.5 : 0.5);
+    const d = kind === 'hind' ? `M${x} ${y}L${r1(x + 3)} ${r1(y + len * 0.42)}L${r1(x - 2.2)} ${r1(y + len * 0.76)}L${r1(x + foot)} ${r1(y + len)}`
+      : `M${x} ${y}L${r1(x + 1)} ${r1(y + len * 0.55)}L${r1(x + foot)} ${r1(y + len)}`;
+    // the thigh or shoulder: no outline of its own, so the leg grows out of the body
+    const td = eP(x + (kind === 'hind' ? 0.5 : 0), y + 0.5, w * (kind === 'hind' ? 0.95 : 0.75), w * (kind === 'hind' ? 1.6 : 1.3));
+    const top = o.top === false ? '' : `<path d="${td}" fill="${F(c)}"/>`+`<path d="${td}" fill="url(#paSh)" opacity=".7"/>`;
+    const px = x + foot + 1.4, paw = o.hoof ? part(`M${r1(px - w * 0.6)} ${r1(91 - w * 0.75)}h${r1(w * 1.2)}l0.6 ${r1(w * 0.75)}h${r1(-w * 1.6)}z`, o.hoof)
+      : E(px, 91 - w * 0.42, w * 0.78, w * 0.42, o.paw || c);
+    return G(cls, limb(d, w, c, o.stripes ? o.stripes(d, w) : '') + paw + top, x, y);
+  }
+  /** Stripes across a limb (a tiger's, a tabby's): short dark bands along it. */
+  const bands = c => (d, w) => `<path d="${d}" fill="none" stroke="${F(c)}" stroke-width="${w}" stroke-dasharray="1.3 4.2" stroke-linejoin="round" opacity=".85"/>`;
   /** Little four-point stars around a shiny pet. */
-  const sparkles = () => [[14, 22, 1], [86, 16, 0.8], [90, 60, 0.65]].map(([x, y, s], i) => `<path class="pa-sp" style="transform-origin:${x}px ${y}px;animation-delay:${i * 0.5}s" d="M${x} ${y - 7 * s} Q${x + 1.4 * s} ${y - 1.4 * s} ${x + 7 * s} ${y} Q${x + 1.4 * s} ${y + 1.4 * s} ${x} ${y + 7 * s} Q${x - 1.4 * s} ${y + 1.4 * s} ${x - 7 * s} ${y} Q${x - 1.4 * s} ${y - 1.4 * s} ${x} ${y - 7 * s}z" fill="#ffd23f" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/>`).join('');
+  const sparkles = () => [[12, 20, 1], [88, 14, 0.8], [92, 58, 0.62]].map(([x, y, s], i) => `<path class="pa-sp" style="transform-origin:${x}px ${y}px;animation-delay:${i * 0.5}s" d="M${x} ${y - 7 * s}Q${x + 1.4 * s} ${y - 1.4 * s} ${x + 7 * s} ${y}Q${x + 1.4 * s} ${y + 1.4 * s} ${x} ${y + 7 * s}Q${x - 1.4 * s} ${y + 1.4 * s} ${x - 7 * s} ${y}Q${x - 1.4 * s} ${y - 1.4 * s} ${x} ${y - 7 * s}z" fill="#ffd23f" stroke="${INK}" stroke-width="1.3" stroke-linejoin="round"/>`).join('');
 
-  // ---------------------------------------------------------------- the four-legged rig (mammals, reptiles, mythical)
+  // ---------------------------------------------------------------- the four-legged rig
+  // o: c coat; body [x1 rump, x2 chest, top, bot] (+ tor: torso options); legs { w, fx fore x, hx hind x, fy, hy hip
+  // heights, hoof, paw, stripes }; head: markup (drawn in .pa-h about hd [x, y]); neck: path d; tail, far, near, top.
   function quad(o) {
-    const c = o.c, d = o.d || dark(c), [bx, by, brx, bry] = o.body || [46, 64, 22, 14], [hx, hy, hr] = o.head || [70, 46, 15];
-    const lt = o.lt || by + 2, lw = o.lw || 8, lg = o.legs || [bx - 17, bx - 10, bx + 9, bx + 16], lc = o.lc || c, ld = o.ld || dark(lc);
-    let s = o.tail || '';
-    s += leg(lg[0], lt, lw, ld, 'pa-l2', o.foot && dark(o.foot, 0.85)) + leg(lg[2], lt, lw, ld, 'pa-l1', o.foot && dark(o.foot, 0.85));
-    s += o.far || '';
-    s += leg(lg[1], lt, lw, lc, 'pa-l1', o.foot) + leg(lg[3], lt, lw, lc, 'pa-l2', o.foot);
-    s += o.bodyShape || clip(`ellipse cx="${bx}" cy="${by}" rx="${brx}" ry="${bry}"`, c, o.marks);
-    s += o.neck || '';
-    const head = (o.earsBack || '') + (o.headShape || clip(`circle cx="${hx}" cy="${hy}" r="${hr}"`, o.hc || c, o.headMarks)) + (o.face || '') +
-      (o.noEyes ? '' : eyes(hx + (o.ex || [-3, 6])[0], hx + (o.ex || [-3, 6])[1], hy + (o.ey || -2), o.es || 1)) + (o.earsFront || '');
-    s += G('pa-h', head, hx, hy + hr);
+    const c = o.c, [x1, x2, top, bot] = o.body, lg = o.legs || {}, w = lg.w || 5;
+    const fx = lg.fx || x2 - 5, hx = lg.hx || x1 + 6, fy = lg.fy || bot - 5, hy = lg.hy || bot - 6;
+    const lo = { hoof: lg.hoof, paw: lg.paw, stripes: lg.stripes, foot: lg.foot }, fc = lg.c || c, far = dark(fc);
+    let s = o.back || '';
+    s += leg(hx + 4, hy - 1, w * 0.92, far, 'hind', 'pa-l2', { ...lo, top: false, paw: lg.paw && dark(lg.paw), hoof: lg.hoof && dark(lg.hoof, 0.8) }) +
+      leg(fx + 4, fy - 1, w * 0.92, far, 'fore', 'pa-l1', { ...lo, top: false, paw: lg.paw && dark(lg.paw), hoof: lg.hoof && dark(lg.hoof, 0.8) });
+    s += o.tail || '';
+    if (o.neck) s += part(o.neck, o.nc || c, o.neckMarks);
+    s += part(o.torso || torsoD(x1, x2, top, bot, o.tor), c, o.marks);
+    s += o.mid || '';
+    s += leg(hx, hy, w, fc, 'hind', 'pa-l1', lo) + leg(fx, fy, w * 0.95, fc, 'fore', 'pa-l2', lo);
+    s += G('pa-h', o.head, o.hd[0], o.hd[1]);
     return s + (o.top || '');
   }
+  /** The usual mammal head: profile shape, ears behind or in front, eye, nose, mouth. */
+  function mhead(o) {
+    const { x, y, s, L: L0 = 6, c } = o, tip = x + s + L0;
+    return (o.earsBack || '') + part(headD(x, y, s, L0, o.h || 0.9, o.dome || 1.2), c, o.marks) + (o.muzzle || '') +
+      (o.nose === false ? '' : nose(tip - 1.2, y + s * 0.05, o.ns || 1, o.nc)) +
+      (o.mouth === false ? '' : L(`M${r1(tip - 1.6)} ${r1(y + s * 0.5)}q${r1(-L0 * 0.4)} ${r1(s * 0.22)} ${r1(-L0 * 0.75 - 1)} ${r1(-s * 0.05)}`, 1.1)) +
+      eye(o.ex || x + s * 0.45, o.ey || y - s * 0.28, o.es || s * 0.16) + (o.whisk ? whisk(tip - 3, y + s * 0.35) : '') + (o.earsFront || '');
+  }
+  const earTri = (x, y, w, h, c, inner, lean = 0) => part(`M${r1(x - w / 2)} ${y}Q${r1(x - w / 4 + lean / 2)} ${r1(y - h * 0.7)} ${r1(x + lean)} ${r1(y - h)}Q${r1(x + w / 4 + lean / 2)} ${r1(y - h * 0.6)} ${r1(x + w / 2)} ${y}z`, c,
+    inner ? M(`M${r1(x - w / 4)} ${y}Q${r1(x - w / 8 + lean / 2)} ${r1(y - h * 0.55)} ${r1(x + lean * 0.8)} ${r1(y - h * 0.8)}Q${r1(x + w / 8 + lean / 2)} ${r1(y - h * 0.5)} ${r1(x + w / 4)} ${y}z`, inner) : '');
+  const earRound = (x, y, r, c, inner) => E(x, y, r, r * 0.92, c, inner ? ME(x + r * 0.15, y + r * 0.1, r * 0.55, r * 0.5, inner) : '');
+
   // ---------------------------------------------------------------- the bird rig
   function bird(o) {
-    const c = o.c, [bx, by, brx, bry] = o.body || [46, 62, 18, 16], [hx, hy, hr] = o.head || [58, 40, 12];
-    const lt = o.lt || by + bry - 3, lx = o.legs || [bx - 5, bx + 4], lc = o.lc || '#f59f2f';
-    const birdLeg = (x, cls) => G(cls, L(`M${x} ${lt} V89`, 2.6, lc) + L(`M${x - 3} 90.5 h7 M${x + 1} 90.5 l3 -2`, 2.6, lc), x, lt);
-    let s = o.tail || '';
-    s += (o.noLegs ? '' : birdLeg(lx[0], 'pa-l2') + birdLeg(lx[1], 'pa-l1'));
-    s += o.bodyShape || clip(`ellipse cx="${bx}" cy="${by}" rx="${brx}" ry="${bry}"`, c, o.marks);
-    s += o.neck || '';
-    const head = (o.headShape || clip(`circle cx="${hx}" cy="${hy}" r="${hr}"`, o.hc || c, o.headMarks)) + (o.beak || '') + (o.face || '') +
-      eyes(hx + (o.ex || [-3, 4])[0], hx + (o.ex || [-3, 4])[1], hy + (o.ey || -2), o.es || 1) + (o.crest || '');
-    s += G('pa-h', head, hx, hy + hr);
-    s += o.wing === false ? '' : G('pa-w', o.wing || E(bx - 3, by + 1, brx * 0.55, bry * 0.5, o.wc || dark(c, 0.88), rot(-18, bx - 3, by + 1)), bx + 4, by - 4);
+    const c = o.c, lc = o.lc || '#d98a3a', [lx1, lx2] = o.legs, ly = o.ly;
+    const bl = (x, cls, k) => G(cls, L(`M${x} ${ly}L${r1(x - 1.6)} ${r1(ly + (89.5 - ly) * 0.5)}L${r1(x + 0.6)} 89.5`, 1.9 * k, INK) + L(`M${x} ${ly}L${r1(x - 1.6)} ${r1(ly + (89.5 - ly) * 0.5)}L${r1(x + 0.6)} 89.5`, 1.2 * k, lc) +
+      L(`M${r1(x - 3)} 90.6h6.5M${r1(x + 1)} 90.6l2.6 -1.2`, 1.6, lc), x, ly);
+    let s = o.back || '';
+    s += bl(lx2, 'pa-l2', o.lk || 1);
+    s += o.tail || '';
+    s += part(o.bodyD, c, o.marks);
+    s += bl(lx1, 'pa-l1', o.lk || 1);
+    s += G('pa-h', o.head, o.hd[0], o.hd[1]);
+    s += o.wing ? G('pa-w', o.wing, o.wo[0], o.wo[1]) : '';
     return s + (o.top || '');
   }
-  const beak = (x, y, c = '#f59f2f', w = 7, h = 5) => P(`M${x} ${y - h / 2} Q${x + w * 0.7} ${y - h / 4} ${x + w} ${y + h * 0.1} Q${x + w * 0.6} ${y + h / 2} ${x} ${y + h / 2}z`, c);
+  const feathers = (x, y, n, dx, c = '#000') => Array.from({ length: n }, (_, i) => L(`M${r1(x + i * dx)} ${y}q1.5 3 0 6`, 0.8, c, ' opacity=".28"')).join('');
 
   // ---------------------------------------------------------------- the pets
-  // Each: gait (walk, hop, waddle, fly, swim, slide), kind (the rig's body type) and how it is drawn.
   const ART = {
-    bunny: { kind: 'mammal', gait: 'hop', draw: () => quad({
-      c: '#f7f3ec', body: [44, 72, 19, 13], legs: [31, 37, 51, 57], lw: 8.5, lt: 74, head: [64, 52, 14], ex: [-2, 6], ey: -1,
-      tail: C(25, 66, 6.5, '#ffffff'),
-      earsBack: G('pa-e', E(58, 29, 5, 14, '#f7f3ec', rot(-10, 58, 29)) + ME(58, 30, 2.2, 9, PINK, rot(-10, 58, 30)) +
-        E(68, 28, 5, 14, '#f7f3ec', rot(10, 68, 28)) + ME(68, 29, 2.2, 9, PINK, rot(10, 68, 29)), 63, 42),
-      face: nose(66, 56, 0.7, '#f07a98') + smile(66, 58.5, 2.4) + blush(58, 57) + blush(73, 57) }) },
-    puppy: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#e0a96b', lc: '#e0a96b', head: [70, 45, 15],
-      tail: G('pa-t', L('M26 60 q-9 -6 -6 -16', 6, K) + L('M26 60 q-9 -6 -6 -16', 3.4, '#e0a96b'), 26, 60),
-      marks: ME(52, 76, 16, 7, '#f7e3c6'),
-      earsBack: '', earsFront: G('pa-e', E(57, 47, 5, 10, '#8b5a2b', rot(18, 57, 47)) + E(83, 47, 5, 10, '#8b5a2b', rot(-18, 83, 47)), 70, 36),
-      face: E(74, 52, 8, 6, '#f7e3c6') + nose(74, 49.5, 0.9) + smile(74, 54, 2.6) + `<path d="M72 56.5 q2 5 4 0z" fill="#f07a98" stroke="${K}" stroke-width="1.6"/>`,
-      neck: P('M58 52 q8 6 16 4 l0 4 q-9 3 -17 -3z', '#e2483f') + C(66, 60, 2.6, '#ffd23f') }) },
-    kitten: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#a9b0bc', body: [46, 65, 20, 13], lw: 7, head: [69, 46, 14],
-      tail: G('pa-t', L('M28 60 q-12 -2 -10 -16 q1 -8 7 -8', 6.5, K) + L('M28 60 q-12 -2 -10 -16 q1 -8 7 -8', 3.6, '#a9b0bc'), 28, 60),
-      marks: M('M40 51 l3 8 l3 -8z M50 51 l3 8 l3 -8z', '#7b8494'),
-      headMarks: M('M66 32 l2 6 l2 -6z M71 32 l1.5 5 l1.5 -5z', '#7b8494'),
-      earsBack: G('pa-e', earTri(61, 37, 10, 12, '#a9b0bc', PINK, -1) + earTri(77, 37, 10, 12, '#a9b0bc', PINK, 1), 69, 36),
-      face: nose(71.5, 49, 0.6, '#f07a98') + smile(71.5, 51, 2.2) + whisk(78, 50) + blush(62, 51) + blush(80, 51) }) },
-    fox: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#ec8a3c', lc: '#3d2b26', ld: '#2c201c', body: [46, 63, 21, 13], lw: 7, head: [70, 45, 14],
-      tail: G('pa-t', P('M28 60 Q8 62 6 46 Q10 38 18 44 Q22 52 30 54z', '#ec8a3c') + M('M6.6 46.5 Q10 38 18 44 Q14 47 8.6 50z', '#fff6ea') + P('M6 46 Q10 38 18 44', 'none'), 28, 58),
-      marks: ME(56, 72, 13, 7, '#fff6ea'),
-      earsBack: G('pa-e', earTri(62, 36, 10, 14, '#ec8a3c', '#3d2b26', -2) + earTri(78, 36, 10, 14, '#ec8a3c', '#3d2b26', 2), 70, 36),
-      headMarks: M('M56 48 Q66 50 72 60 L88 52 Q80 46 72 50 Q64 44 56 48z', '#fff6ea'),
-      face: nose(76, 51, 0.7) + smile(75, 53.5, 2) }) },
-    panda: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#ffffff', lc: '#2a2e38', ld: '#1b1e26', body: [46, 64, 22, 15], lw: 9, head: [70, 45, 15], es: 0.85,
-      tail: C(24, 60, 4, '#ffffff'),
-      marks: M('M52 48 Q60 60 56 80 L68 80 L68 48z', '#2a2e38'),
-      earsBack: G('pa-e', earRound(59, 33, 5.5, '#2a2e38') + earRound(81, 33, 5.5, '#2a2e38'), 70, 34),
-      face: ME(66, 43.5, 4.6, 5.8, '#2a2e38', rot(25, 66, 43.5)) + ME(76, 43.5, 4.6, 5.8, '#2a2e38', rot(-25, 76, 43.5)) + nose(71, 50, 0.65) + smile(71, 52, 2) + blush(61, 51) + blush(80, 51),
-      ex: [-4, 6], ey: -1.5 }) },
-    koala: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#a3abb8', body: [46, 66, 20, 14], lw: 8.5, head: [68, 46, 15],
-      marks: ME(50, 74, 12, 7, '#e7eaef'),
-      earsBack: G('pa-e', earRound(55, 36, 8, '#a3abb8', '#eef0f4') + earRound(82, 36, 8, '#a3abb8', '#eef0f4'), 68, 36),
-      face: ME(69.5, 51, 3.6, 5, '#3b3f4a') + smile(69.5, 56.5, 2) + blush(60, 52) + blush(79, 52), ex: [-5, 5], ey: -3 }) },
-    tiger: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#f39a2b', body: [46, 64, 22, 13], lw: 8, head: [70, 45, 15],
-      tail: G('pa-t', L('M26 60 q-12 0 -14 -14', 6.5, K) + L('M26 60 q-12 0 -14 -14', 3.6, '#f39a2b') + L('M12.6 47 l0.4 -2', 4, K), 26, 60),
-      marks: M('M34 50 l3 10 l3 -10z M44 50 l3 11 l3 -11z M54 50 l3 10 l3 -10z M30 64 l-6 2 l6 2z', K) + ME(56, 75, 13, 6, '#fff3df'),
-      earsBack: G('pa-e', earRound(59, 33, 5, '#f39a2b', '#fff3df') + earRound(81, 33, 5, '#f39a2b', '#fff3df'), 70, 34),
-      headMarks: M('M70 30 l-2 6 l4 0z M64 31 l0 5 l3 -1z M76 31 l0 5 l-3 -1z M55 44 l6 1 l-6 2z M85 44 l-6 1 l6 2z', K) + ME(72, 53, 9, 6, '#fff3df'),
-      face: nose(72, 50, 0.7, '#e46a7e') + smile(72, 52.5, 2.2) + whisk(79, 52) }) },
-    lion: { kind: 'mammal', gait: 'walk', draw: () => {
-      const n = 14, R = 21, mane = Array.from({ length: n }, (_, i) => { const a = (i / n) * Math.PI * 2, a2 = ((i + 0.5) / n) * Math.PI * 2;
-        return `${i ? 'Q' : 'M'}${(70 + Math.cos(a2 - Math.PI / n) * (R + 5)).toFixed(1)} ${(45 + Math.sin(a2 - Math.PI / n) * (R + 5)).toFixed(1)} ${(70 + Math.cos(a) * R).toFixed(1)} ${(45 + Math.sin(a) * R).toFixed(1)}`; }).join(' ');
-      return quad({
-        c: '#ebb85a', body: [46, 64, 22, 13], lw: 8, head: [70, 45, 13],
-        tail: G('pa-t', L('M26 60 q-12 2 -14 -12', 3.5, K) + C(12, 46, 4.5, '#a8571e'), 26, 60),
-        earsBack: P(mane + 'z', '#b9611f') + earRound(61, 34, 4.2, '#ebb85a') + earRound(79, 34, 4.2, '#ebb85a'),
-        face: ME(72, 51, 7, 5, '#f8dfae') + nose(72, 49, 0.7, '#7a3d1a') + smile(72, 51.5, 2.2), ex: [-3, 6] }); } },
-    frog: { kind: 'reptile', gait: 'hop', draw: () => {
-      const g = '#6cc04a', gd = '#4f9a35';
-      return G('pa-l2', P('M26 88 Q18 76 30 70 Q40 72 40 82 L44 90 L30 91z', gd), 32, 78) +
-        clip('ellipse cx="50" cy="72" rx="24" ry="17"', g, ME(54, 80, 16, 8, '#dff3a8') + M('M30 62 q4 3 8 0 M60 58 q3 3 6 0', gd)) +
-        G('pa-l1', P('M60 82 Q64 90 70 90 L74 90 Q70 86 66 80z', g), 64, 82) +
-        P('M28 88 Q22 78 32 72 Q40 74 40 84 L46 91 L30 91z', g) +
-        G('pa-h', G('pa-y', C(42, 52, 8, g) + C(42, 52, 5, WH, '') + `<circle cx="43" cy="52" r="2.8" fill="${K}"/><circle cx="44" cy="51" r="1" fill="#fff"/>`, 42, 52) +
-          G('pa-y', C(60, 51, 8, g) + C(60, 51, 5, WH) + `<circle cx="61.5" cy="51" r="2.8" fill="${K}"/><circle cx="62.5" cy="50" r="1" fill="#fff"/>`, 60, 51) +
-          L('M44 66 Q54 73 66 64', 2.2) + blush(40, 64) + blush(68, 62), 52, 70); } },
-    monkey: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#8b5a3c', body: [46, 63, 19, 13], lw: 7, head: [69, 44, 14], lt: 64,
-      tail: G('pa-t', L('M28 60 Q14 64 14 50 Q14 40 22 42 Q27 45 23 49', 3.4, K), 28, 60),
-      marks: ME(52, 70, 10, 7, '#e9c39e'),
-      earsBack: G('pa-e', earRound(55, 45, 5.5, '#8b5a3c', '#f1c9a5') + earRound(84, 45, 5.5, '#8b5a3c', '#f1c9a5'), 69, 44),
-      face: P('M62 39 Q66 34 70 39 Q74 34 78 39 Q83 46 78 53 Q70 60 62 53 Q57 46 62 39z', '#f1c9a5') + M('M68.5 50 h3 M68.6 50 l1.4 1.2 l1.4 -1.2', K) + grin(70, 53, 3), ex: [-3, 5], ey: -1, es: 0.9 }) },
-    penguin: { kind: 'bird', gait: 'waddle', draw: () => bird({
-      c: '#2c3340', body: [48, 62, 16, 24], head: [52, 34, 13], legs: [43, 53], lt: 84, lc: '#f59f2f',
-      marks: ME(54, 66, 10, 19, '#ffffff'), headMarks: ME(56, 38, 8, 8, '#ffffff'),
-      beak: P('M63 36 l8 2 l-8 3z', '#f59f2f'), face: blush(52, 41) + blush(63, 41, 2), ex: [-1, 6], ey: -3,
-      wing: P('M36 50 Q26 66 34 76 Q40 70 40 54z', '#1f2430'), wc: '#1f2430' }) },
-    chick: { kind: 'bird', gait: 'hop', draw: () => bird({
-      c: '#ffd84a', body: [46, 72, 18, 15], head: [60, 52, 12], legs: [42, 51], lt: 84,
-      beak: P('M71 51 l7 2.5 l-7 3z', '#f59f2f'), face: blush(56, 57) + blush(69, 57, 2), ex: [-3, 4], ey: -2,
-      crest: P('M58 40 q-1 -6 3 -8 q-1 4 2 5 q0 -4 4 -4 q-3 3 -2 7', '#ffd84a'),
-      tail: P('M30 68 l-6 -5 l8 0z', '#ffd84a'),
-      wing: P('M34 70 Q40 62 50 68 Q46 78 36 77z', '#f5c22e') }) },
-    owl: { kind: 'bird', gait: 'hop', draw: () => bird({
-      c: '#a0703f', body: [50, 60, 21, 26], head: [50, 46, 0.1], legs: [45, 55], lt: 84,
-      tail: P('M33 46 L30 28 L45 37z', '#a0703f') + P('M67 46 L70 28 L55 37z', '#a0703f'),
-      marks: ME(50, 72, 12, 13, '#e8cfa6') + M('M45 67 q2 2 4 0 M52 67 q2 2 4 0 M48 73 q2 2 4 0 M45 79 q2 2 4 0 M52 79 q2 2 4 0', '#b88a57'),
-      headShape: E(42, 47, 8.5, 8.5, '#f3e2c0') + E(58, 47, 8.5, 8.5, '#f3e2c0'),
-      beak: P('M47.5 53 h5 l-2.5 5z', '#f59f2f'), ex: [-8, 8], ey: 1, es: 1.3,
-      wing: E(34, 64, 6, 13, '#8a5d33', rot(10, 34, 64)) }) },
-    turtle: { kind: 'reptile', gait: 'walk', draw: () => quad({
-      c: '#9ad16a', lc: '#9ad16a', body: [46, 74, 22, 8], legs: [30, 36, 52, 58], lt: 76, lw: 8, head: [77, 64, 9], ex: [-2, 4], ey: -1, es: 0.85,
-      tail: P('M26 74 l-8 2 l8 3z', '#9ad16a'),
-      bodyShape: clip('path d="M22 79 Q22 50 46 50 Q70 50 70 79z"', '#4f9d5a', M('M38 56 l8 -3 l8 3 l0 9 l-8 3 l-8 -3z M26 72 l6 -8 l6 3 l0 7z M66 72 l-6 -8 l-6 3 l0 7z', '#7cc27f')) + P('M20 79 Q46 84 72 79', 'none') +
-        `<rect x="20" y="77" width="52" height="5" rx="2.5" fill="${F('#d8c76a')}"${S}/>`,
-      neck: P('M66 74 Q70 68 72 66 L80 70 Q76 76 70 78z', '#9ad16a'),
-      face: smile(79, 66.5, 1.8) + blush(73, 67, 2) }) },
-    octopus: { kind: 'sea', gait: 'swim', draw: () => {
-      const c = '#c07ad9', arm = (x, d, cls) => { const p = `M${x} 62 Q${x + d} 76 ${x + d * 2.2} 85 q${d * 0.6} 4 ${d * 1.3} 0.5`; return G(cls, L(p, 9.5, K) + L(p, 5.6, c), x, 62); };
-      return arm(32, -5, 'pa-l1') + arm(41, -2.5, 'pa-l2') + arm(50, 0.8, 'pa-l1') + arm(59, 2.5, 'pa-l2') + arm(68, 5, 'pa-l1') +
-        G('pa-h', clip('path d="M26 64 Q24 26 50 26 Q76 26 76 64 Q50 72 26 64z"', c, ME(40, 38, 4, 3, '#d9a3ea') + ME(62, 36, 3, 2.4, '#d9a3ea') + ME(52, 32, 2, 1.6, '#d9a3ea')) +
-          eyes(44, 58, 50) + smile(51, 57, 2.4) + blush(38, 56) + blush(64, 56), 50, 66); } },
-    unicorn: { kind: 'mythical', gait: 'walk', draw: () => quad({
-      c: '#ffffff', body: [44, 60, 22, 12], legs: [26, 33, 52, 59], lt: 62, lw: 7, foot: '#c7b6f2', head: [70, 38, 11],
-      tail: G('pa-t', P('M24 54 Q10 56 10 72 Q16 66 18 70 Q20 62 26 60z', '#f7a1c4') + P('M22 58 Q14 64 16 78 Q20 70 24 70z', '#9fd0f5'), 24, 56),
-      neck: P('M58 54 Q60 40 66 32 L76 40 Q70 52 66 60z', '#ffffff') + P('M59 30 Q52 40 56 56 Q60 46 62 44 Q60 52 64 54 Q64 40 68 34z', '#b9a2f0') + P('M62 28 Q56 36 58 48 Q62 40 66 34z', '#f7a1c4'),
-      headShape: P('M60 34 Q62 26 72 28 Q84 32 84 42 Q84 48 77 48 Q70 48 64 44 Q58 40 60 34z', '#ffffff'),
-      earsBack: earTri(64, 30, 6, 8, '#ffffff', PINK, -1),
-      top: '',
-      earsFront: P('M70 28 L75 12 L76 29z', '#ffd166') + L('M71.2 24 l4 -1 M72.4 19.5 l3 -0.8', 1.3) + ME(81, 42, 1, 0.8, K) + blush(74, 41),
-      ex: [-1, -1], ey: -4, es: 0.95, face: smile(79, 44.5, 1.6) }) },
-    dragon: { kind: 'mythical', gait: 'walk', draw: () => quad({
-      c: '#7f72e6', body: [46, 63, 21, 13], lw: 8, head: [70, 44, 13], foot: '#5a4fb8',
-      tail: G('pa-t', L('M28 62 Q12 66 8 54', 7, K) + L('M28 62 Q12 66 8 54', 4, '#7f72e6') + P('M8 54 l-5 -4 l8 -3 l1 7z', '#ffcf5a'), 28, 62),
-      far: G('pa-w', P('M44 52 Q36 30 52 24 Q52 34 60 34 Q56 44 52 52z', '#b4a9f7') + L('M46 50 L52 26 M50 51 L58 34', 1.6), 48, 52),
-      marks: ME(52, 72, 15, 7, '#ffe08a') + M('M50 72 h12 M48 76 h12', '#e8c66a'),
-      neck: M('M30 51 l3 -6 l3 6z M37 50 l3 -6 l3 6z', '#ffcf5a') + P('M30 51 l3 -6 l3 6 M37 50 l3 -6 l3 6', 'none'),
-      earsBack: P('M62 34 l-4 -10 l8 7z', '#fff3c8') + P('M74 33 l2 -11 l4 10z', '#fff3c8'),
-      face: ME(76, 49, 6.5, 5, '#a69bf2') + `<circle cx="74" cy="48" r="0.9" fill="${K}"/><circle cx="79" cy="48" r="0.9" fill="${K}"/>` + smile(76, 51.5, 2) + blush(63, 49), ex: [-3, 5], ey: -3 }) },
-    hamster: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#f2b56b', body: [48, 70, 22, 18], legs: [33, 39, 54, 60], lw: 7, lt: 82, head: [64, 56, 0.1], noEyes: false,
-      marks: ME(56, 80, 16, 10, '#fff3e0') + ME(68, 64, 12, 9, '#fff3e0'),
-      headShape: '', earsBack: '', ex: [-2, 8], ey: -2,
-      face: earRound(52, 54, 4.5, '#f2b56b', PINK) + earRound(70, 52, 4.5, '#f2b56b', PINK) + nose(70, 63, 0.55, '#f07a98') + smile(70, 65, 1.8) + blush(60, 63, 3.6) + blush(78, 62, 3) }) },
-    mouse: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#b8bdc9', body: [46, 72, 18, 11], legs: [33, 38, 52, 57], lw: 6, lt: 78, head: [66, 62, 10], foot: '#f3a7ba',
-      tail: G('pa-t', L('M28 72 Q12 76 10 64 Q9 56 16 56', 2.2, '#e48aa3'), 28, 72),
-      earsBack: G('pa-e', earRound(57, 50, 7, '#b8bdc9', PINK) + earRound(72, 48, 7, '#b8bdc9', PINK), 64, 54),
-      headShape: P('M56 62 Q56 52 66 52 Q72 52 80 62 Q78 68 66 70 Q56 70 56 62z', '#b8bdc9'),
-      face: C(80, 62, 1.8, '#f07a98') + whisk(80, 63) + blush(64, 66, 2), ex: [-2, 6], ey: -3, es: 0.8 }) },
-    bear: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#9a6a43', body: [45, 62, 24, 16], legs: [27, 35, 53, 61], lw: 10, head: [71, 43, 15],
-      tail: C(21, 58, 4.5, '#9a6a43'), marks: ME(52, 74, 15, 7, '#c19468'),
-      earsBack: G('pa-e', earRound(60, 31, 5.5, '#9a6a43', '#e2c29a') + earRound(82, 31, 5.5, '#9a6a43', '#e2c29a'), 71, 32),
-      face: E(73, 50, 7.5, 6, '#e2c29a') + nose(73, 48, 0.85) + smile(73, 51, 2.3) + blush(62, 50) }) },
-    pig: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#f7a8b8', body: [46, 65, 22, 14], lw: 8, head: [70, 47, 14], foot: '#d9798f',
-      tail: G('pa-t', L('M24 62 q-6 -2 -4 -7 q3 -3 4 1 q0 4 -5 3', 2.4, '#d9798f'), 24, 62),
-      earsBack: G('pa-e', P('M58 38 l-2 -10 l9 6z', '#f7a8b8') + P('M82 38 l2 -10 l-9 6z', '#f7a8b8'), 70, 36),
-      face: E(73, 52, 6.5, 4.8, '#f48aa1') + ME(71, 52, 1.2, 1.6, '#9a3d55') + ME(75.5, 52, 1.2, 1.6, '#9a3d55') + smile(73, 57.5, 2) + blush(62, 52) + blush(84, 52, 2), ex: [-3, 7], ey: -4 }) },
-    cow: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#ffffff', body: [45, 62, 22, 14], legs: [28, 35, 52, 59], lw: 8, head: [70, 44, 13], foot: '#3a3f4a',
-      tail: G('pa-t', L('M23 58 q-6 6 -6 16', 2.4) + P('M17 72 q-3 4 0 7 q3 -3 0 -7z', K), 23, 58),
-      marks: ME(38, 56, 8, 6, K) + ME(54, 70, 7, 5, K) + ME(30, 70, 4, 3, K),
-      earsBack: P('M58 39 q-9 -2 -10 3 q6 3 11 0z', '#ffffff') + P('M82 39 q9 -2 10 3 q-6 3 -11 0z', '#ffffff') + P('M62 33 q-2 -6 2 -8 q0 4 2 7z', '#f3e6c0') + P('M78 33 q2 -6 -2 -8 q0 4 -2 7z', '#f3e6c0'),
-      headMarks: ME(63, 38, 5, 6, K),
-      face: E(72, 52, 9, 6, '#f6b3c1') + ME(68.5, 52, 1.2, 1.6, '#9a3d55') + ME(75.5, 52, 1.2, 1.6, '#9a3d55'), ex: [-3, 6], ey: -4 }) },
-    duck: { kind: 'bird', gait: 'waddle', draw: () => bird({
-      c: '#ffe066', body: [44, 68, 20, 13], head: [62, 46, 11], legs: [40, 49], lt: 78,
-      tail: P('M26 64 l-6 -8 l10 2z', '#ffe066'),
-      neck: P('M54 56 Q58 64 64 62 L64 50 L56 50z', '#ffe066'),
-      beak: P('M70 47 Q80 45 82 49 Q80 53 70 52z', '#f5a524') + L('M71 49.5 h9', 1.3), ex: [-4, 3], ey: -3,
-      crest: P('M60 35 q0 -5 3 -6 q-1 3 1 6', '#ffe066'),
-      wing: P('M34 64 Q40 56 52 62 Q46 72 34 70z', '#f7cf3c') }) },
-    dino: { kind: 'reptile', gait: 'walk', draw: () => quad({
-      c: '#7cc66b', body: [44, 66, 21, 13], legs: [28, 35, 50, 57], lw: 8.5, lt: 68, head: [80, 26, 8.5], ex: [-1, 5], ey: -1.5, es: 0.85,
-      tail: G('pa-t', P('M26 62 Q10 66 4 78 Q16 74 28 72z', '#7cc66b'), 26, 66),
-      marks: ME(36, 58, 3.5, 2.5, '#5da64f') + ME(46, 56, 3, 2.2, '#5da64f') + ME(52, 62, 2.4, 1.8, '#5da64f') + ME(48, 74, 14, 5, '#c9ea9a'),
-      neck: P('M56 60 Q62 44 72 30 L84 30 Q72 46 66 66z', '#7cc66b'),
-      headShape: P('M72 26 Q72 18 80 18 Q90 18 92 26 Q90 32 80 32 Q74 32 72 26z', '#7cc66b'),
-      face: smile(86, 28.5, 1.8) + blush(80, 29, 2) }) },
-    trex: { kind: 'reptile', gait: 'walk', draw: () => {
-      const g = '#4fb07a', gd = dark(g);
-      return G('pa-t', P('M36 56 Q16 58 6 74 Q22 70 38 68z', g), 36, 60) +
-        G('pa-l2', P('M38 64 Q34 76 38 84 L36 90 L46 90 L46 84 Q46 74 50 68z', gd), 44, 66) +
-        clip('ellipse cx="46" cy="60" rx="17" ry="14"', g, ME(52, 66, 10, 8, '#d3f0b6') + M('M34 48 l3 4 l3 -4z M42 46 l3 4 l3 -4z', gd)) +
-        G('pa-l1', P('M44 64 Q40 76 44 84 L42 90 L53 90 L52 84 Q54 74 56 68z', g), 50, 66) +
-        G('pa-w', L('M58 60 q4 2 6 0 l1 -2', 4.6, K) + L('M58 60 q4 2 6 0 l1 -2', 2, g), 58, 60) +
-        G('pa-h', clip('path d="M50 40 Q50 22 66 22 Q86 22 88 34 Q88 46 72 46 Q58 48 54 46 Q50 44 50 40z"', g, M('M58 42 Q72 46 88 38 L88 50 L56 50z', '#d3f0b6')) +
-          L('M60 41 Q72 44 86 38', 2) + M('M66 42.4 l1.5 3 l1.5 -3z M72 42 l1.5 3 l1.5 -3z M78 40.4 l1.5 3 l1.5 -3z', WH) + eyes(64, 72, 32, 0.95) + blush(60, 38), 60, 46); } },
-    whale: { kind: 'sea', gait: 'swim', draw: () => {
-      const c = '#4a8fd6';
-      return G('pa-t', P('M24 52 Q14 50 8 40 Q16 40 18 46 Q20 38 28 38 Q24 46 28 54z', c), 26, 54) +
-        clip('path d="M20 56 Q22 36 52 34 Q84 34 86 56 Q84 74 52 76 Q26 76 20 56z"', c, M('M30 64 Q52 80 84 60 L86 80 L24 80z', '#dceefc') + L('M44 68 h20 M42 72 h24', 1.4, '#9dc5ec')) +
-        G('pa-w', P('M50 66 Q46 76 40 78 Q46 70 46 64z', dark(c, 0.85)), 48, 66) +
-        eyes(66, 76, 52, 0.95) + smile(72, 59, 2.4) + blush(62, 59) + blush(82, 57, 2) +
-        G('pa-e', L('M58 30 q-2 -8 -8 -10 M58 30 q2 -8 8 -10 M58 30 v-12', 2, '#7cc0f5'), 58, 32); } },
-    dolphin: { kind: 'sea', gait: 'swim', draw: () => {
-      const c = '#7fa6c9';
-      return G('pa-t', P('M20 54 Q10 50 6 40 Q14 42 16 46 Q16 38 22 34 Q22 44 26 50z', c), 22, 52) +
-        P('M44 38 Q46 26 56 24 Q52 32 54 40z', c) +
-        clip('path d="M18 54 Q24 36 52 38 Q74 40 80 50 L92 52 Q92 56 80 58 Q68 66 48 66 Q26 66 18 54z"', c, M('M30 60 Q56 70 80 56 L92 56 L90 72 L24 72z', '#e3eef8')) +
-        G('pa-w', P('M48 60 Q46 70 38 72 Q44 64 44 58z', dark(c, 0.85)), 46, 60) +
-        eyes(66, 74, 48, 0.85) + smile(83, 54.5, 2) + blush(70, 54); } },
-    seal: { kind: 'sea', gait: 'slide', draw: () => {
-      const c = '#9aa3b2';
-      return G('pa-t', P('M22 82 Q12 78 8 86 Q14 90 24 88z', c) + P('M22 84 Q14 88 12 92 Q22 92 26 88z', c), 24, 84) +
-        clip('path d="M18 84 Q24 60 56 58 Q72 56 74 72 Q72 88 50 90 Q26 92 18 84z"', c, ME(40, 72, 2, 1.4, '#7f8898') + ME(48, 80, 1.6, 1.2, '#7f8898') + ME(32, 80, 1.8, 1.3, '#7f8898') + ME(54, 84, 14, 6, '#c9d0db')) +
-        G('pa-w', P('M56 80 Q62 90 70 90 Q66 82 62 76z', dark(c, 0.85)), 58, 78) +
-        G('pa-h', C(68, 50, 13, c) + ME(74, 55, 6, 4.4, '#c9d0db') + nose(74, 52.5, 0.6) + whisk(80, 55) + eyes(64, 73, 47) + blush(62, 55), 66, 62); } },
-    crab: { kind: 'sea', gait: 'walk', draw: () => {
-      const c = '#e8553f', lg = (x, d, cls) => G(cls, L(`M${x} 74 q${d * 6} 4 ${d * 9} 16`, 3, K), x, 74);
-      return lg(34, -1, 'pa-l1') + lg(38, -1, 'pa-l2') + lg(42, -1, 'pa-l1') + lg(58, 1, 'pa-l2') + lg(62, 1, 'pa-l1') + lg(66, 1, 'pa-l2') +
-        G('pa-w', L('M32 66 Q22 60 22 50', 3.5) + P('M14 44 Q18 34 26 40 L22 44 L28 46 Q26 54 18 52 Q12 50 14 44z', c), 30, 66) +
-        G('pa-e', L('M68 66 Q78 60 78 50', 3.5) + P('M86 44 Q82 34 74 40 L78 44 L72 46 Q74 54 82 52 Q88 50 86 44z', c), 70, 66) +
-        L('M44 58 V46 M56 58 V46', 2.6) +
-        G('pa-h', eye(44, 44, 1.1) + eye(56, 44, 1.1), 50, 50) +
-        clip('ellipse cx="50" cy="68" rx="21" ry="12"', c, ME(50, 64, 12, 4, '#f37a62')) + smile(50, 70, 3) + blush(39, 68) + blush(61, 68); } },
-    fish: { kind: 'sea', gait: 'swim', draw: () => {
-      const c = '#f7882f';
-      return G('pa-t', P('M28 54 Q16 42 12 46 Q16 54 12 64 Q18 66 28 56z', c), 28, 55) +
-        P('M44 40 Q52 30 62 38z', c) +
-        clip('ellipse cx="50" cy="55" rx="24" ry="15"', c, M('M38 38 Q44 55 38 72 L46 72 Q52 55 46 38z M58 38 Q64 55 58 72 L64 72 Q68 55 64 38z', WH) + L('M38 38 Q44 55 38 72 M46 72 Q52 55 46 38 M58 38 Q64 55 58 72 M64 72 Q68 55 64 38', 1.6)) +
-        G('pa-w', P('M48 62 Q44 72 36 72 Q42 64 42 60z', '#f26b1d'), 46, 62) +
-        eyes(64, 72, 51, 0.9) + smile(70, 59, 2) +
-        `<g class="pa-bub">${C(84, 40, 2.4, '#e9f6ff')}${C(88, 30, 1.6, '#e9f6ff')}</g>`; } },
-    bee: { kind: 'bug', gait: 'fly', draw: () => {
-      const y = '#ffd23f';
-      return `<g class="pa-hov">` + G('pa-w pa-wf', E(42, 34, 8, 12, '#eaf6ff', rot(-25, 42, 34) + ' opacity=".92"') + E(52, 34, 7, 11, '#eaf6ff', rot(20, 52, 34) + ' opacity=".92"'), 47, 46) +
-        P('M26 52 l-7 2 l7 3z', K) +
-        clip('ellipse cx="46" cy="54" rx="20" ry="14"', y, M('M34 38 h7 v34 h-7z M48 38 h7 v34 h-7z', K)) +
-        G('pa-h', C(68, 50, 11, y) + L('M66 40 q-2 -8 -6 -9 M72 40 q2 -8 6 -9', 1.8) + C(60, 31, 1.6, K) + C(78, 31, 1.6, K) + eyes(65, 73, 49, 0.9) + smile(69, 55, 2) + blush(63, 55) + blush(77, 54, 2), 66, 60) + `</g>`; } },
-    ladybug: { kind: 'bug', gait: 'walk', draw: () => {
-      const lg = (x, d, cls) => G(cls, L(`M${x} 80 l${d * 3} 9`, 2.6), x, 80);
-      return lg(34, -1, 'pa-l1') + lg(46, -0.3, 'pa-l2') + lg(58, 1, 'pa-l1') +
-        G('pa-h', C(72, 72, 11, '#2a2e38') + G('pa-y', C(70, 70, 3, WH) + C(77, 70, 3, WH) + `<circle cx="71" cy="70.4" r="1.6" fill="${K}"/><circle cx="78" cy="70.4" r="1.6" fill="${K}"/>`, 73, 70) + L('M70 62 q-2 -7 -6 -8 M76 62 q2 -7 6 -8', 1.8) + smile(74, 76, 1.8, WH), 70, 82) +
-        clip('path d="M22 82 Q22 54 46 54 Q70 54 70 82z"', '#e23b3b', ME(34, 66, 4, 4, K) + ME(48, 62, 3.5, 3.5, K) + ME(58, 72, 4, 4, K) + ME(40, 76, 3, 3, K)) + L('M46 54 V82', 2.4) + L('M20 82 H72', 2.6); } },
-    butterfly: { kind: 'bug', gait: 'fly', draw: () => {
-      const a = '#f58cc8', b = '#ffc94a';
-      return `<g class="pa-hov">` + G('pa-w pa-wf', P('M50 50 Q36 22 22 30 Q16 44 48 54z', a) + P('M48 54 Q24 58 28 72 Q38 76 50 58z', b) + ME(32, 38, 4, 4, '#fff6fb') + ME(34, 66, 3, 3, '#fff6fb'), 50, 54) +
-        `<ellipse cx="51" cy="56" rx="3.6" ry="14" fill="${K}"/>` +
-        G('pa-w pa-wf2', P('M52 50 Q64 22 78 30 Q84 44 54 54z', a) + P('M54 54 Q76 58 72 72 Q62 76 52 58z', b) + ME(68, 38, 4, 4, '#fff6fb') + ME(66, 66, 3, 3, '#fff6fb'), 52, 54) +
-        G('pa-h', C(52, 40, 6, '#3a3f4c') + L('M50 35 q-3 -8 -7 -9 M54 35 q3 -8 7 -9', 1.6) + C(43, 26, 1.5, K) + C(61, 26, 1.5, K) + G('pa-y', `<circle cx="50" cy="40" r="1.3" fill="#fff"/><circle cx="54.5" cy="40" r="1.3" fill="#fff"/>`, 52, 40), 52, 46) + `</g>`; } },
-    snail: { kind: 'bug', gait: 'slide', draw: () => {
-      const body = '#cfe39a', sh = '#e3a35a';
-      return P('M14 90 Q16 80 30 80 L62 78 Q70 66 74 60 Q82 58 84 66 Q84 80 76 88 Q74 90 70 90z', body) +
-        G('pa-h', G('pa-e', L('M76 62 L74 48 M82 62 L86 48', 2.2) + C(74, 47, 3.2, body) + C(86, 47, 3.2, body) + G('pa-y', `<circle cx="74.6" cy="47" r="1.6" fill="${K}"/><circle cx="86.6" cy="47" r="1.6" fill="${K}"/>`, 80, 47), 79, 62) + smile(80, 72, 2) + blush(74, 72), 78, 66) +
-        C(44, 62, 20, sh) + L('M44 62 m0 0 a3 3 0 1 1 3 3 a7 7 0 1 1 -8 -8 a12 12 0 1 1 13 14', 2.4) + ME(36, 50, 4, 2.6, '#f2c48e', rot(-30, 36, 50)); } },
-    hedgehog: { kind: 'mammal', gait: 'walk', draw: () => {
-      const sp = Array.from({ length: 9 }, (_, i) => { const a = Math.PI * (1.02 + i * 0.12), r1 = 24, r2 = 31; return `L${(46 + Math.cos(a) * r1).toFixed(1)} ${(70 + Math.sin(a) * r1).toFixed(1)} L${(46 + Math.cos(a + 0.06) * r2).toFixed(1)} ${(70 + Math.sin(a + 0.06) * r2).toFixed(1)}`; }).join(' ');
-      return quad({
-        c: '#efd1a6', body: [46, 72, 22, 14], legs: [31, 37, 53, 59], lw: 7, lt: 78, head: [68, 68, 10], noEyes: true,
-        bodyShape: E(46, 72, 22, 14, '#efd1a6') + P(`M20 78 ${sp} L66 60 Q58 52 46 50 Q40 50 34 54 z`, '#7c5c43') + M('M30 62 l4 -4 M40 56 l3 -4 M50 56 l2 -4', '#5d4431'),
-        headShape: P('M60 64 Q66 56 74 62 Q80 66 88 68 Q86 74 76 76 Q64 78 60 72z', '#efd1a6'),
-        face: C(88, 68, 2.2, K) + eye(72, 65, 0.9) + smile(79, 71, 1.6) + blush(70, 71, 2) }); } },
-    sloth: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#b39b7b', body: [46, 66, 21, 12], legs: [27, 34, 54, 61], lw: 7, lt: 66, head: [70, 47, 13],
-      foot: '#6b5440',
-      headMarks: ME(71, 49, 11, 8, '#efe0c8'),
-      face: ME(66, 47, 4.5, 2.6, '#6b5440', rot(-20, 66, 47)) + ME(76, 47, 4.5, 2.6, '#6b5440', rot(20, 76, 47)) + ME(71, 52, 2.4, 1.6, K) + smile(71, 55, 2.4),
-      ex: [-4, 6], ey: 0, es: 0.75 }) },
-    otter: { kind: 'mammal', gait: 'walk', draw: () => quad({
-      c: '#8a5a3a', body: [44, 70, 24, 11], legs: [26, 33, 52, 59], lw: 7, lt: 74, head: [72, 56, 11],
-      tail: G('pa-t', P('M22 68 Q6 74 2 86 Q14 82 24 78z', '#8a5a3a'), 22, 72),
-      marks: ME(56, 78, 14, 6, '#d9b48c'),
-      earsBack: earRound(63, 47, 3.2, '#8a5a3a') + earRound(81, 47, 3.2, '#8a5a3a'),
-      headMarks: ME(74, 61, 9, 6, '#e9cfae'),
-      face: nose(74, 58.5, 0.7) + smile(74, 61, 2) + whisk(81, 60), ex: [-3, 5], ey: -3, es: 0.85 }) },
-    parrot: { kind: 'bird', gait: 'hop', draw: () => bird({
-      c: '#e84a3c', body: [46, 58, 15, 18], head: [56, 36, 11], legs: [44, 52], lt: 74, lc: '#8a8f9c',
-      tail: G('pa-t', P('M36 68 L22 90 L30 90 L42 72z', '#3d7be0') + P('M40 70 L32 90 L38 90 L46 72z', '#ffcf3a'), 40, 70),
-      headMarks: ME(60, 38, 5, 6, WH), ex: [0, 6], ey: -2,
-      beak: P('M65 34 Q74 32 74 40 Q72 44 68 44 Q70 40 65 40z', '#f2ead8') + M('M68 42 Q71 43 72 40', K),
-      wing: P('M36 50 Q44 46 52 56 Q48 70 38 72 Q32 62 36 50z', '#ffcf3a') + M('M38 62 Q44 66 48 64 Q46 70 38 72z', '#3d7be0') }) },
-    flamingo: { kind: 'bird', gait: 'walk', draw: () => bird({
-      c: '#f78fb3', body: [42, 46, 17, 11], head: [70, 22, 7.5], legs: [42, 48], lt: 54, lc: '#e86f98',
-      tail: P('M26 42 l-8 -4 l2 8z', '#f78fb3'),
-      neck: L('M54 42 Q66 40 62 32 Q58 24 66 20', 7, K) + L('M54 42 Q66 40 62 32 Q58 24 66 20', 4, '#f78fb3'),
-      beak: P('M76 20 Q84 22 82 30 Q80 26 76 26z', '#fff3e6') + M('M80.4 25 Q82 26 82 30 Q80 27 79 26.4z', K), ex: [0, 0], ey: -1, es: 0.8,
-      wing: P('M30 42 Q42 38 52 46 Q44 54 32 50z', '#f26f9f') }) },
-    peacock: { kind: 'bird', gait: 'walk', draw: () => {
-      const fan = [[12, 42], [14, 28], [22, 18], [34, 13], [46, 15], [23, 38], [28, 27], [38, 22]].map(([x, y]) => ME(x, y, 4.6, 5.6, '#3fae6a') + ME(x, y, 2.8, 3.6, '#ffd23f') + ME(x, y + 0.5, 1.5, 2, '#2d6fd1')).join('');
-      return bird({
-        c: '#2d6fd1', body: [50, 64, 13, 15], head: [60, 40, 9], legs: [47, 54], lt: 77, lc: '#8a8f9c',
-        tail: G('pa-t', P('M42 70 Q2 60 6 28 Q20 6 44 10 Q60 20 52 62z', '#5cc283') + fan, 46, 68),
-        neck: P('M52 54 Q56 46 56 42 L64 42 Q62 52 60 58z', '#2d6fd1'),
-        beak: P('M68 39 l6 2 l-6 2.4z', '#f2ead8'), ex: [-2, 4], ey: -2, es: 0.85,
-        crest: L('M58 31 l-2 -7 M61 31 l0 -8 M64 31 l2 -7', 1.4) + C(56, 23.5, 1.6, '#2d6fd1') + C(61, 22.5, 1.6, '#2d6fd1') + C(66, 23.5, 1.6, '#2d6fd1'),
-        wing: P('M42 58 Q52 54 58 64 Q52 74 44 72z', '#1f5fa8') }); } },
+    bunny: { kind: 'mammal', gait: 'hop', draw: () => { const c = '#c8b39a', w = '#f4efe7';
+      return G('pa-l2', E(52, 86, 5, 3, dark(c)), 52, 84) +
+        E(24, 70, 4.5, 4.2, w) +
+        part('M26 78C24 64 34 58 46 59C56 60 60 66 60 74C60 82 54 86 44 87C34 88 27 85 26 78z', c, ME(48, 82, 10, 5, w) + ME(34, 66, 8, 4, '#fff', ' opacity=".15"')) +
+        G('pa-l1', part('M30 74C28 82 32 88 42 89L50 89.5C51 87 48 85 42 84C38 80 37 76 36 72z', c) + E(32, 76, 7, 9, c), 34, 72) +
+        G('pa-l2', limb('M54 74L55 84L57 89', 2.6, c) + E(58, 89.6, 2.4, 1.3, w), 54, 74) +
+        G('pa-h', G('pa-e', part('M60 54C56 44 54 32 57 26C60 24 63 34 64 50z', c, M('M58.5 31C58 38 60 46 61.6 50L63 49C62 40 60 32 58.5 31z', '#e9a9a9')) +
+          part('M64 53C64 42 66 30 70 26C73 26 72 38 68 54z', dark(c, 0.92), M('M69.6 30C68 36 66.6 46 66.4 52L67.6 52C69 44 70.6 36 69.6 30z', '#e9a9a9')), 64, 54) +
+          mhead({ x: 64, y: 61, s: 6.6, L: 5, c, h: 0.8, dome: 1.05, ns: 0.6, nc: '#c98a8a', es: 1.3, whisk: true, muzzle: ME(73, 63.5, 3.2, 2.4, w) }), 64, 66); } },
+    puppy: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#c98a4b', w = '#f4efe6', b = '#3d2c22';
+      return quad({ c, body: [28, 62, 54, 70], legs: { w: 5, paw: w, fx: 58, hx: 33 }, hd: [70, 52],
+        tail: G('pa-t', limb('M28 58Q20 50 21 41', 3.2, c) + L('M21.2 43.5L21 41', 3.2, w), 28, 58),
+        marks: M('M28 56Q36 50 48 52Q56 53 58 56Q52 61 40 60Q30 61 28 56z', b) + ME(56, 72, 12, 5, w),
+        neck: 'M58 58L66 46L74 52L66 66z', neckMarks: ME(70, 64, 6, 9, w),
+        head: mhead({ x: 70, y: 46, s: 7, L: 7, c, h: 0.78, dome: 1.15, muzzle: M('M77.8 44.2C80 44 84 45 84 48.2C84 51 80 52.4 75 52Q76.6 48 77.8 44.2z', w), ns: 0.9,
+          earsFront: G('pa-e', part('M66 41C62 42 61 50 63 55C65 57 68 55 68.4 50C69 46 69 42 66 41z', '#8a5a2e'), 66, 42) }),
+        mid: part('M60 55Q66 59 70 57L70.6 60Q65 62 59.4 58z', '#c8453b') + E(66, 61.4, 1.5, 1.5, '#e8c35a') }); } },
+    kitten: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#a39383', st = '#5e5248', w = '#e6dccf';
+      return quad({ c, body: [30, 62, 57, 69], tor: { dip: 2 }, legs: { w: 3.6, fx: 58, hx: 35, stripes: bands(st) }, hd: [69, 51],
+        tail: G('pa-t', limb('M30 60Q20 60 18 50Q17 42 22 38', 2.8, c, bands(st)('M30 60Q20 60 18 50Q17 42 22 38', 2.8)), 30, 60),
+        marks: L('M38 56l2 7M44 55l1.6 8M50 55l1 8M56 56l0 6', 2.2, st) + ME(50, 69, 10, 3, w),
+        neck: 'M57 60L64 49L71 52L66 65z', neckMarks: L('M62 54l3 1M63 58l3 1', 1.6, st),
+        head: mhead({ x: 69, y: 49, s: 6.2, L: 2.6, c, h: 0.95, dome: 1.1, ns: 0.55, nc: '#d48a8a', es: 1.25, whisk: true,
+          marks: L('M65 43l1.4 3M68 42.4l0.6 3M71 42.6l-0.4 3', 1.2, st) + ME(73, 52, 3.4, 2.4, w),
+          earsBack: G('pa-e', earTri(64.6, 45, 5, 6.4, dark(c, 0.9), '#e2a5a0', -0.6) + earTri(70, 44, 5, 7, c, '#e2a5a0', 0.6), 68, 45) }) }); } },
+    chick: { kind: 'bird', gait: 'hop', draw: () => { const c = '#f2cf4e';
+      return bird({ c, legs: [47, 52], ly: 82, lc: '#e08a2a', hd: [58, 60],
+        bodyD: 'M30 72C30 62 38 58 48 58C58 58 66 64 66 74C66 82 58 86 48 86C38 86 30 82 30 72z', marks: ME(52, 80, 10, 4, '#fbe48c') + ME(42, 64, 8, 3, '#fff', ' opacity=".18"'),
+        tail: part('M32 70L24 66L26 72L31 75z', c),
+        head: part(eP(60, 56, 8.5, 8), c) + part('M67.6 55.4L73 57.2L67.4 59z', '#e08a2a') + eye(63, 54.5, 1.3) + L('M57 48q1 -3 3 -2M60 48q0 -3 2 -3', 1.2, '#c9a22e'),
+        wing: part('M38 68C44 64 52 66 54 72C50 78 42 78 38 74z', '#e7bd3a', feathers(42, 73, 3, 3)), wo: [44, 68] }); } },
+    fox: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#d9752f', w = '#f6efe4', b = '#2e2420';
+      return quad({ c, body: [28, 64, 54, 67], legs: { w: 3.6, fx: 60, hx: 33, c: b }, hd: [72, 50],
+        tail: G('pa-t', part('M30 58C20 56 10 60 6 66C12 70 22 68 30 63z', c, M('M6 66C9 63 12 63 14 64C12 68 9 68.4 6 66z', w)), 30, 60),
+        marks: ME(54, 68, 10, 3.6, w),
+        neck: 'M60 58L68 45L75 50L68 64z', neckMarks: M('M64 64L69 50L75 52L72 64z', w),
+        head: mhead({ x: 71, y: 46, s: 6.4, L: 9, c, h: 0.7, dome: 1.05, ns: 0.75, es: 1.25, whisk: true,
+          marks: M('M70 50Q78 52 86.4 47.6L86.4 52Q78 56 66 53z', w),
+          earsBack: G('pa-e', earTri(66, 41.6, 5.4, 8.4, dark(c, 0.88), b, -1) + earTri(71.6, 41, 5.6, 9, c, b, 0.4), 69, 42) }) }); } },
+    panda: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#f1eee7', b = '#2a2624';
+      return quad({ c, body: [24, 64, 50, 72], tor: { dip: 0, wither: 2, belly: 2 }, legs: { w: 7.5, fx: 57, hx: 31, c: b }, hd: [72, 50],
+        tail: E(23, 56, 2.6, 2.4, c), marks: M('M50 46Q58 60 54 76L66 76L68 46z', b),
+        head: mhead({ x: 72, y: 47, s: 9, L: 4.5, c, h: 0.85, dome: 1.05, ns: 0.9, es: 1.25, ex: 76.6, ey: 44.6,
+          marks: ME(76.4, 45, 3.4, 2.6, b, rot(-25, 76.4, 45)),
+          earsBack: G('pa-e', earRound(64, 38.6, 3.8, b) + earRound(72, 37.4, 3.6, b), 68, 40) }) }); } },
+    koala: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#9b968f', w = '#ebe7e0';
+      return quad({ c, body: [26, 62, 52, 72], tor: { dip: 0.5, belly: 2 }, legs: { w: 6.6, fx: 56, hx: 32, paw: '#4a4440' }, hd: [70, 52],
+        marks: ME(54, 72, 11, 6, w),
+        head: G('pa-e', E(62, 37, 8.4, 7.6, c, ME(63.6, 38, 5.8, 5.2, w)), 64, 42) + mhead({ x: 70, y: 46, s: 9, L: 1.6, c, h: 1, dome: 1.05, nose: false, mouth: false, es: 1.2, ex: 73, ey: 43,
+          muzzle: part('M76 42C81 41 83 46 82.4 50.4C82 54 78.4 55 76 53C74.4 50 74.6 45 76 42z', '#2b2623') + L('M73 54.4q2 1 4 0', 1.1) }) +
+          G('pa-e', E(77, 37.6, 5.6, 5.2, c, ME(77.4, 38.2, 3.8, 3.4, w)), 76, 42) }); } },
+    tiger: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#e07a26', b = '#2a1e18', w = '#f5ede0';
+      return quad({ c, body: [24, 64, 52, 68], legs: { w: 5, fx: 59, hx: 30, stripes: bands(b), paw: w }, hd: [73, 49],
+        tail: G('pa-t', limb('M25 56Q14 60 12 72', 3, c, bands(b)('M25 56Q14 60 12 72', 3)) + L('M12.4 70L12 72.4', 3.2, b), 25, 56),
+        marks: L('M32 52q2 6 0 10M38 51q3 7 0 12M44 51q2 6 0 11M50 51q2 6 -1 11M56 52q1 4 -1 8', 2, b) + ME(50, 68, 12, 3.4, w),
+        neck: 'M58 56L66 42L78 46L72 64z', neckMarks: M('M65 64L72 50L78 50L74 64z', w) + L('M63 50l3 2M61 54l4 2', 1.6, b),
+        head: mhead({ x: 72, y: 45, s: 8.4, L: 4.6, c, h: 0.92, dome: 1, ns: 0.75, nc: '#c9707a', es: 1.25, whisk: true,
+          marks: M('M70 50Q76 52 84.2 48.4L84 52.6Q76 56 68 53z', w) + L('M67 39l1.6 3M71 38l0.6 3M65 45l3 1.4', 1.3, b),
+          earsBack: G('pa-e', earRound(66, 39, 3, dark(c, 0.88), b) + earRound(71, 38.2, 3, c, w), 68, 40) }) }); } },
+    lion: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#d4a253', m = '#8a5a2b', w = '#f0dcb4';
+      const n = 13, mane = Array.from({ length: n }, (_, i) => { const a = Math.PI * (0.55 + (i / (n - 1)) * 1.4), a2 = a + 0.07; return `${i ? 'Q' : 'M'}${r1(70 + Math.cos(a2) * 15)} ${r1(48 + Math.sin(a2) * 15)} ${r1(70 + Math.cos(a) * 12)} ${r1(48 + Math.sin(a) * 12)}`; }).join(' ');
+      return quad({ c, body: [24, 64, 52, 69], legs: { w: 5.2, fx: 59, hx: 30 }, hd: [73, 49],
+        tail: G('pa-t', limb('M25 56Q14 60 13 72', 2.6, c) + E(13, 73, 2.6, 3.4, '#5a3a1e'), 25, 56), marks: ME(48, 69, 12, 3, w),
+        neck: 'M58 56L66 42L76 48L70 66z',
+        head: part(mane + 'L62 64z', m, L('M62 44q-3 4 -2 9M66 38q-4 4 -3 9', 1, '#5a3a1e', ' opacity=".6"')) +
+          mhead({ x: 73, y: 46, s: 7, L: 4.4, c, h: 0.92, dome: 1, ns: 0.8, nc: '#6b3f26', es: 1.2, whisk: true, marks: ME(80, 49, 4.4, 3, w),
+            earsBack: G('pa-e', earRound(71, 39.4, 2.6, c, '#7a5030'), 71, 41) }) }); } },
+    frog: { kind: 'reptile', gait: 'hop', draw: () => { const c = '#5e9e3c', s = '#3f6e28', u = '#e5e3a8';
+      return G('pa-l2', limb('M36 78L30 84L42 89.4', 4, dark(c)), 36, 78) +
+        part('M26 80C24 68 36 60 52 60C64 60 72 66 72 74C72 82 62 86 48 86C36 86 28 85 26 80z', c, ME(52, 84, 16, 6, u) + ME(40, 66, 2.6, 1.8, s) + ME(50, 63.6, 2.2, 1.6, s) + ME(32, 72, 2, 1.5, s)) +
+        G('pa-l1', part('M28 72C24 80 30 88 38 88L52 89.6C53 88 50 86 46 86L38 84C40 78 38 72 34 70z', c, ME(34, 78, 2, 1.5, s)) + E(34, 76, 7.5, 8, c, ME(32, 74, 2.4, 1.8, s)), 34, 72) +
+        G('pa-l2', limb('M62 78L64 86L68 89.6', 3, c) + L('M66 90.4l4 -0.4M67 89.4l3 -2', 1.4, c), 62, 78) +
+        G('pa-h', part('M58 64C60 56 68 56 70 60C74 62 78 66 78 70C74 74 66 74 60 72z', c) + L('M78 70Q70 72 63 69', 1.2) +
+          G('pa-y', E(64, 58.5, 4.2, 4, c) + ME(65, 58, 2.6, 2.4, '#d9a52b') + ME(65.4, 58, 2.2, 1.2, '#1d1512') + `<circle cx="66" cy="57" r=".7" fill="#fff"/>`, 64, 58) +
+          ME(76.6, 65.2, 0.6, 0.4, '#1d1512'), 62, 70); } },
+    monkey: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#7a5434', f = '#e2bf98';
+      return quad({ c, body: [30, 62, 50, 66], tor: { rump: 2, wither: 3 }, legs: { w: 4, fx: 58, hx: 35, fy: 58, hy: 62, paw: '#4a3220' }, hd: [69, 42],
+        tail: G('pa-t', limb('M30 56Q18 60 16 48Q15 38 22 38Q26 40 23 44', 2, c), 30, 56), marks: ME(50, 64, 8, 3, '#9c7350'),
+        neck: 'M56 52L64 40L72 44L66 58z',
+        head: mhead({ x: 69, y: 40, s: 7.4, L: 2.6, c, h: 1, dome: 1.1, nose: false, es: 1.2, ex: 74, ey: 38.4,
+          muzzle: part('M70 36C74 33 79 35 79.6 39C80.4 43 79 46 75 46.4C71 46.6 69 42 70 36z', f) + ME(78.2, 41, 0.8, 0.5, '#4a3220'),
+          earsBack: G('pa-e', earRound(64.4, 39.4, 3.2, c, f), 65, 40) }) }); } },
+    penguin: { kind: 'bird', gait: 'waddle', draw: () => { const c = '#232628', w = '#f4f2ee';
+      return bird({ c, legs: [48, 54], ly: 86, lc: '#e07a2a', lk: 1.3, hd: [54, 36],
+        bodyD: 'M42 38C34 46 32 66 36 80C38 88 50 90 58 87C64 84 64 70 62 56C61 46 58 40 52 36z', marks: M('M52 44C58 50 60 64 59 76C58 84 52 87 46 86C50 76 50 58 52 44z', w) + ME(56, 46, 3, 4, '#f2a33a', ' opacity=".85"'),
+        head: part('M44 36C42 26 48 22 54 23C60 24 62 30 60 36C58 40 50 42 44 36z', c) + part('M59.6 30L67 31.6L59.6 33.6z', '#d9662a') + G('pa-y', ME(56, 28.6, 1.9, 1.9, w) + ME(56.3, 28.6, 1.1, 1.2, '#1d1512'), 56, 28.6),
+        wing: part('M40 46C34 56 34 68 38 74C42 70 44 58 44 48z', '#1b1d1f'), wo: [42, 46] }); } },
+    owl: { kind: 'bird', gait: 'hop', draw: () => { const c = '#8d6440', d = '#d9b98c', br = '#5e4128';
+      return bird({ c, legs: [46, 54], ly: 84, lc: '#c9a25a', hd: [50, 40],
+        bodyD: 'M34 52C32 66 36 82 46 86C54 88 62 84 64 72C66 60 64 50 58 46C50 42 38 44 34 52z', marks: ME(50, 70, 9, 14, '#c9a57a') + L('M44 62h4M52 64h4M46 70h4M53 72h4M46 78h4M53 80h3', 1.2, br),
+        head: part('M34 34L33 20L40 28C46 24 54 24 60 28L67 20L66 34C68 44 60 50 50 50C40 50 32 44 34 34z', c, L('M38 30l2 2M60 30l-2 2', 1, br)) +
+          E(43, 38, 6.6, 6.4, d) + E(57, 38, 6.6, 6.4, d) + G('pa-y', ME(43.6, 38, 2.8, 2.8, '#e8a92a') + ME(43.6, 38, 1.6, 1.7, '#1d1512') + ME(57, 38, 2.8, 2.8, '#e8a92a') + ME(57, 38, 1.6, 1.7, '#1d1512') + `<circle cx="44.2" cy="37.2" r=".6" fill="#fff"/><circle cx="57.6" cy="37.2" r=".6" fill="#fff"/>`, 50, 38) +
+          part('M48.6 41L51.4 41L50 46z', '#4a3a2a'),
+        wing: part('M34 52C30 62 32 74 38 80C42 72 42 60 40 52z', '#7a5435', L('M34 60l4 1M34 66l4 1M35 72l4 1', 1, br)), wo: [36, 52] }); } },
+    turtle: { kind: 'reptile', gait: 'walk', draw: () => { const sh = '#7a6a3a', sc = '#a28f52', sk = '#8f8a64';
+      const lgT = (x, cls, k) => G(cls, limb(`M${x} 76L${x + 0.6} 89`, 5, k) + E(x + 1.6, 89.6, 3.2, 1.6, k), x, 76);
+      return lgT(30, 'pa-l2', dark(sk)) + lgT(56, 'pa-l1', dark(sk)) + part('M24 76L16 79L24 80z', sk) +
+        G('pa-h', part('M60 72C64 66 70 62 76 63C82 64 84 68 82 71C78 73 72 72 66 76z', sk, L('M68 68l3 1', 0.8, '#5e5a3e')) + eye(77.6, 65.6, 1.2) + L('M83 69.6q-3 1 -6 0', 1), 64, 74) +
+        part('M20 78C20 58 32 50 44 50C56 50 66 58 66 78z', sh, M('M33 56l6 -3l6 1l2 7l-6 4l-7 -2z', sc) + M('M48 55l7 2l3 7l-6 3l-5 -5z', sc) + M('M24 72l3 -8l7 2l1 8z', sc) + M('M38 72l2 -6l8 0l2 6z', sc) + M('M54 72l2 -6l7 2l0 4z', sc)) +
+        part('M18 77Q43 82 68 77L68 80Q43 85 18 80z', '#c9b27a') +
+        lgT(36, 'pa-l1', sk) + lgT(62, 'pa-l2', sk); } },
+    octopus: { kind: 'sea', gait: 'swim', draw: () => { const c = '#d06a4c';
+      const arm = (x, k, cls, cc) => { const d = `M${x} 66Q${x + k * 4} 76 ${x + k * 9} 82Q${x + k * 13} 86 ${x + k * 11} 89Q${x + k * 8} 90 ${x + k * 9} 86`; return G(cls, limb(d, 3.6, cc, L(d, 1.4, '#f1c0a6', ' stroke-dasharray="0.1 2.6" opacity=".9"')), x, 66); };
+      return arm(36, -1, 'pa-l2', dark(c)) + arm(56, 1, 'pa-l1', dark(c)) + arm(42, -0.6, 'pa-l1', c) + arm(50, 0.5, 'pa-l2', c) + arm(60, 1.2, 'pa-l2', c) +
+        G('pa-h', part('M32 52C28 36 38 24 50 24C64 24 70 36 66 50C64 60 58 66 48 66C40 66 34 62 32 52z', c, ME(44, 34, 2, 1.4, '#e8957a') + ME(54, 30, 1.6, 1.2, '#e8957a') + ME(58, 40, 1.4, 1, '#e8957a') + ME(42, 46, 1.4, 1, '#e8957a')) +
+          E(58, 54, 3.2, 3, '#e08a6c') + eye(58.6, 54, 1.6) + L('M56 60q3 1.6 6 0', 1.1), 50, 64); } },
+    unicorn: { kind: 'mythical', gait: 'walk', draw: () => { const c = '#f6f3f5', pk = '#f0a6c8', bl = '#a9b8f0', hf = '#b9a9c9';
+      return quad({ c, body: [26, 60, 48, 62], tor: { dip: 2.5, wither: 1.5 }, legs: { w: 3.6, fx: 55, hx: 31, hoof: hf, hy: 56, fy: 56 }, hd: [70, 32],
+        tail: G('pa-t', part('M27 50C18 50 14 60 16 74C20 70 20 64 24 62C22 68 22 74 26 78C26 68 28 60 29 54z', pk, M('M20 58C18 64 18 70 20 72C22 66 24 60 26 56z', bl)), 27, 52),
+        neck: 'M52 52L60 30L70 28L66 54z', neckMarks: '',
+        head: part('M60 30C56 34 54 44 55 52C58 46 60 42 62 40C61 46 62 50 64 52C64 44 66 36 66 30z', pk, M('M59 34C57 40 57 46 57 50C59 44 61 40 62 36z', bl)) +
+          part('M62 27C62 22 66 20 70 21C76 23 82 28 84 33C85 36 82 38 79 37C74 36 68 36 64 33C62 31 62 29 62 27z', c) + ME(82.4, 33.6, 0.7, 0.5, '#5a4a52') + L('M83 35.4q-2 0.6 -4 0', 0.9) + eye(71, 26.4, 1.2) +
+          part('M65 22L64 15L68 20z', c) + part('M68 21L72 8L71.6 21.6z', '#e8c35a', L('M68.6 18.4l3 -1M69.4 15l2.4 -0.8M70.2 11.6l1.8 -0.6', 0.8, '#b88f2a')) +
+          part('M63 24C60 26 59 32 60 36C62 32 64 28 66 26z', bl) }); } },
+    dragon: { kind: 'mythical', gait: 'walk', draw: () => { const c = '#c0433a', u = '#e8c070', wg = '#d9675c', hn = '#efe3c0';
+      const scales = Array.from({ length: 12 }, (_, i) => `M${r1(26 + (i % 6) * 6 + (i > 5 ? 3 : 0))} ${i > 5 ? 60 : 55}q1.6 1.6 3.2 0`).join('');
+      return quad({ c, body: [24, 60, 50, 66], legs: { w: 5, fx: 55, hx: 29, paw: dark(c, 0.7) }, hd: [76, 34],
+        back: G('pa-w', part('M44 50C40 36 34 22 22 12C30 14 36 16 40 20C44 14 50 10 58 10C54 16 52 22 52 30C56 28 60 28 64 30C58 36 54 42 52 50z', dark(wg, 0.85), L('M44 48L24 14M47 46L40 21M50 46L56 12M51 47L62 30', 1, INK, ' opacity=".5"')), 48, 50),
+        tail: G('pa-t', limb('M26 58Q12 62 8 74Q6 80 2 80', 4, c) + part('M2 80L-2 74L6 76z', hn), 26, 58),
+        marks: L(scales, 1, '#8a2a24', ' opacity=".7"') + M('M30 66Q44 70 60 64L60 72L30 72z', u) + L('M38 66v4M44 66.6v4M50 66.4v4', 0.9, '#c49a4a'),
+        neck: 'M54 54L68 30L78 34L64 62z', neckMarks: M('M60 62L72 36L78 36L66 64z', u) + L('M64 50l4 1M66 45l4 1M68 40l4 1', 0.8, '#c49a4a'),
+        head: part('M66 30L62 22L70 27z', hn) + part('M70 28L72 18L74 28z', hn) + mhead({ x: 72, y: 32, s: 6, L: 9, c, h: 0.6, dome: 1, ns: 0.5, es: 1.15,
+          marks: M('M70 36Q80 37 87 33L87 36Q80 40 70 38z', u) }) + L('M84 32.4l1 -0.4', 1) +
+          L('M36 50l2 -4 2 4 2 -4 2 4 2 -4 2 4', 1.2, hn),
+        top: G('pa-w', part('M50 50C50 36 56 22 70 12C68 22 70 28 74 30C76 26 80 24 86 24C80 30 74 38 66 44C62 46 56 50 50 52z', wg, L('M52 48L70 14M56 46L74 30M60 46L86 25', 1, INK, ' opacity=".45"')), 52, 50) }); } },
+    hamster: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#e3a65a', w = '#f5ece0';
+      return G('pa-l2', E(36, 88.6, 4, 2.4, '#e9b6a8'), 36, 86) + G('pa-l1', E(60, 88.6, 3.6, 2.2, '#e9b6a8'), 60, 86) +
+        part('M18 74C16 58 30 48 46 48C62 48 72 56 74 66C76 78 68 88 50 88C30 88 20 84 18 74z', c, ME(52, 82, 18, 8, w) + ME(36, 56, 10, 4, '#fff', ' opacity=".2"')) +
+        G('pa-l1', E(30, 87, 4.6, 3.2, '#e9b6a8'), 30, 84) + G('pa-l2', E(54, 87.6, 4, 2.8, '#e9b6a8'), 54, 85) +
+        G('pa-h', G('pa-e', earRound(60, 50, 4.2, dark(c, 0.92), '#e9a9a0') + earRound(66.6, 48.4, 4, c, '#e9a9a0'), 63, 52) +
+          part('M56 64C56 54 64 50 72 54C78 56 82 62 82 66C82 70 78 72 74 72C66 74 58 72 56 64z', c, ME(72, 70, 6, 4, w)) +
+          E(66, 69, 7, 6, '#f0c48a', '') + nose(81, 64.4, 0.5, '#c98a8a') + L('M80.6 67q-1.4 1.4 -3 0.6', 0.9) + eye(73.4, 59, 1.35) + whisk(78, 66, 6), 66, 70); } },
+    mouse: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#9d958e', p = '#e9a3a8', w = '#e2ddd6';
+      return G('pa-l2', limb('M36 80L35 88', 1.6, dark(c)) + E(36, 89.8, 2, 1, p), 36, 80) + G('pa-l1', limb('M58 82L59 88', 1.4, dark(c)) + E(60, 89.8, 1.8, 0.9, p), 58, 82) +
+        G('pa-t', L('M28 80Q14 86 8 78Q4 72 10 68', 2.6, INK) + L('M28 80Q14 86 8 78Q4 72 10 68', 1.3, p), 28, 80) +
+        part('M26 80C24 70 34 64 46 64C56 64 64 68 66 76C66 84 58 88 44 88C32 88 27 86 26 80z', c, ME(48, 86, 12, 3, w)) +
+        G('pa-l1', limb('M38 82L37 88', 1.8, c) + E(38.6, 89.8, 2.2, 1, p), 38, 82) + G('pa-l2', limb('M60 82L61 88', 1.6, c) + E(62, 89.8, 2, 1, p), 60, 82) +
+        G('pa-h', G('pa-e', E(60, 62, 5.6, 6, c, ME(60.6, 62.4, 3.8, 4.4, p)), 60, 66) +
+          part('M58 76C56 70 60 66 66 66C72 66 78 70 82 74C80 77 76 78 70 78C64 78 60 78 58 76z', c, ME(74, 77, 5, 1.6, w)) + E(82, 74, 1.3, 1.1, '#d07a82') +
+          eye(70, 70.6, 1.3) + whisk(78, 74, 7), 64, 76); } },
+    bear: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#7a5133', m = '#b48a62';
+      return quad({ c, body: [20, 64, 46, 72], tor: { wither: 5, dip: 1, belly: 2, rump: 0 }, legs: { w: 7.4, fx: 57, hx: 28, paw: dark(c, 0.7) }, hd: [74, 52],
+        tail: E(19, 54, 2.6, 2.2, c),
+        neck: 'M58 50L70 44L78 54L64 66z',
+        head: mhead({ x: 73, y: 50, s: 7.4, L: 6, c, h: 0.75, dome: 1.05, ns: 1, es: 1.15, muzzle: M('M79 50C82 49 86.6 50 86.6 53C86.6 56 82 57 79 56z', m),
+          earsBack: G('pa-e', earRound(68, 43.4, 2.8, dark(c, 0.9), m) + earRound(73, 42.2, 2.8, c, m), 70, 44) }) }); } },
+    pig: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#f0b2b0', d = '#d98c8e';
+      return quad({ c, body: [24, 66, 52, 72], tor: { dip: 0, wither: 0, belly: 3 }, legs: { w: 4.4, fx: 59, hx: 31, hoof: '#a8686c' }, hd: [74, 54],
+        tail: G('pa-t', L('M24 58q-5 -1 -4 -5q2 -3 4 0q1 3 -3 4', 1.4, d), 24, 58),
+        head: mhead({ x: 73, y: 52, s: 7, L: 6, c, h: 0.8, dome: 1, nose: false, mouth: false, es: 1.15, ex: 75, ey: 48.6,
+          muzzle: part('M84.2 50C86.4 50 87 52 87 54C87 56 86.4 58 84.2 58C83 58 82.4 56 82.4 54C82.4 52 83 50 84.2 50z', d) + ME(85, 52.6, 0.6, 0.9, '#8a4a50') + ME(85, 55.6, 0.6, 0.9, '#8a4a50') + L('M81 59q-3 1.4 -6 0', 1),
+          earsFront: G('pa-e', part('M70 45L66 38L76 42z', c) + part('M74 45C76 41 80 40 82 42C80 46 77 48 74 48z', d), 72, 45) }) }); } },
+    cow: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#f4f1ea', b = '#2a2624', m = '#e7aab0';
+      return quad({ c, body: [24, 62, 48, 64], tor: { dip: 1, wither: 0 }, legs: { w: 4, fx: 57, hx: 29, hoof: '#4a4240', hy: 58, fy: 58 }, hd: [72, 42],
+        tail: G('pa-t', L('M24 52q-4 10 -4 22', 1.6) + part('M20 72q-2 4 0 7q2 -3 0 -7z', b), 24, 52),
+        marks: M('M30 48Q38 46 42 52Q40 60 32 58Q26 56 30 48z', b) + M('M48 52Q56 50 58 56Q54 62 48 60z', b) + ME(46, 64, 4, 2, m),
+        neck: 'M54 52L64 38L74 42L64 58z', neckMarks: M('M60 44L66 38L70 44L64 48z', b),
+        head: part('M66 35L63 31L67 32z', '#e8dcc0') + mhead({ x: 71, y: 40, s: 6.6, L: 8.6, c, h: 0.85, dome: 1.05, nose: false, es: 1.15,
+          marks: ME(70, 37, 4, 4.4, b), muzzle: part('M82 38.6C86 38.2 87.4 41 87.2 44C87 47 84 48 80 47.4Q80 43 82 38.6z', m) + ME(85.4, 41.4, 0.7, 0.5, '#8a4a50') }) +
+          G('pa-e', part('M66 38C62 36 58 37 57 39C60 41 64 41 67 40z', c), 66, 38) }); } },
+    duck: { kind: 'bird', gait: 'waddle', draw: () => { const c = '#f5d34a', bl = '#e49b2c';
+      return bird({ c, legs: [44, 50], ly: 80, lc: bl, lk: 1.2, hd: [62, 58],
+        bodyD: 'M24 70C26 64 34 62 44 62C54 62 60 66 62 72C62 80 54 84 44 84C32 84 26 80 24 74L20 66z', marks: ME(46, 81, 12, 3, '#fbe48c'),
+        head: part('M54 64C52 54 58 48 64 48C70 48 72 54 70 60C68 64 62 68 56 68z', c) + part('M69 54C74 53 78 54 79 56C78 58 74 59 69 58z', bl) + L('M70 56h7', 0.8, '#a86a20') + eye(65.6, 53, 1.3),
+        wing: part('M32 68C38 64 48 66 52 72C46 78 36 78 32 74z', '#e9bd3c', feathers(37, 73, 3, 3.2)), wo: [40, 68] }); } },
+    dino: { kind: 'reptile', gait: 'walk', draw: () => { const c = '#6f9e58', u = '#c9d79a', s = '#557f43';
+      return quad({ c, body: [26, 58, 52, 70], tor: { wither: 2, dip: -1, belly: 2 }, legs: { w: 6.4, fx: 53, hx: 31, paw: dark(c, 0.75) }, hd: [82, 26],
+        tail: G('pa-t', part('M28 58C18 60 8 70 2 80C12 76 22 70 30 66z', c, ME(14, 70, 2, 1.4, s)), 28, 62),
+        marks: ME(36, 56, 3, 2, s) + ME(44, 54, 2.6, 1.8, s) + ME(50, 58, 2.2, 1.6, s) + ME(44, 70, 14, 4, u),
+        neck: 'M50 58C58 48 66 36 76 26L82 30C74 40 66 54 60 66z', neckMarks: M('M56 66C62 54 70 40 80 30L82 31C74 42 66 56 60 68z', u),
+        head: part('M74 24C76 19 82 18 86 20C90 22 92 25 91 27C88 29 82 29 78 29C75 28 74 26 74 24z', c) + eye(82, 22.4, 1.1) + L('M90.4 26.6q-3 1 -6 0', 0.9) }); } },
+    trex: { kind: 'reptile', gait: 'walk', draw: () => { const c = '#7b8a4a', u = '#c8c08a', s = '#5d6b36';
+      const lg2 = (x, cls, k) => G(cls, E(x, 62, 6, 9, k) + limb(`M${x} 66L${x + 3} 76L${x - 2} 85L${x + 1} 89`, 4, k) + part(`M${x - 2} 91L${x + 7} 91L${x + 5} 88L${x - 1} 88z`, dark(k, 0.8)), x, 58);
+      return lg2(46, 'pa-l2', dark(c)) +
+        G('pa-t', part('M34 52C24 54 12 60 2 66C14 64 26 62 36 62z', c, L('M10 62l2 2M18 59l2 2M26 56l2 2', 1, s)), 34, 56) +
+        part('M30 54C34 44 48 40 58 44C66 48 66 58 62 64C56 70 42 70 34 64z', c, M('M44 68Q56 70 64 58L66 70L40 72z', u) + L('M38 46l2 4M44 44l2 4M50 43l2 4', 1.3, s)) +
+        lg2(42, 'pa-l1', c) +
+        G('pa-w', L('M60 56q4 1 6 4l1 1', 3.4, INK) + L('M60 56q4 1 6 4l1 1', 1.6, c), 60, 56) +
+        G('pa-h', part('M56 40C56 30 62 26 70 26C80 26 88 30 90 34C90 38 86 40 80 41L66 44C60 46 56 44 56 40z', c, M('M64 42Q76 42 90 36L90 46L62 46z', u) + L('M64 30l2 2M60 34l2 2', 1, s)) +
+          L('M68 40.6Q78 41 88 37', 1) + M('M72 40.6l1 1.8l1 -1.8zM77 40.2l1 1.8l1 -1.8zM82 39l1 1.6l1 -1.6z', '#f7f2e4') + eye(72, 31.4, 1.25) + ME(88, 33.4, 0.6, 0.4, '#1d1512'), 60, 44); } },
+    whale: { kind: 'sea', gait: 'swim', draw: () => { const c = '#4a6f93', u = '#c9d6e0';
+      return G('pa-t', part('M22 54C16 52 10 46 4 44C8 50 6 56 4 62C10 60 16 58 22 58z', c), 22, 56) +
+        part('M18 56C22 46 36 40 56 40C74 40 88 46 92 56C90 64 78 68 58 68C38 68 24 64 18 56z', c, M('M40 62Q64 70 92 56L92 72L36 72z', u) + L('M50 64.4q16 2 34 -3M54 66.6q14 1.4 28 -2', 0.8, '#8aa0b4') + ME(60, 46, 14, 3, '#fff', ' opacity=".12"')) +
+        G('pa-w', part('M52 62C50 68 46 72 40 74C44 70 46 66 46 62z', dark(c, 0.85)), 50, 62) +
+        eye(76, 55, 1.3) + L('M91.6 57.4q-6 2 -12 1', 1) +
+        G('pa-e', L('M64 38q-2 -6 -7 -8M64 38q2 -6 7 -8M64 38v-9', 1.3, '#8fc3ee'), 64, 40); } },
+    dolphin: { kind: 'sea', gait: 'swim', draw: () => { const c = '#8095a8', u = '#e3e8ec';
+      return G('pa-t', part('M22 56C16 52 10 50 6 44C10 50 10 56 6 62C12 60 18 60 22 60z', c), 22, 58) +
+        part('M44 44C46 36 52 32 58 31C54 36 54 40 56 44z', c) +
+        part('M18 58C24 46 40 42 56 43C68 44 76 48 80 52L92 54C92 57 86 58 80 58C72 64 56 66 40 64C30 63 22 62 18 58z', c, M('M30 62Q56 68 80 57L92 56L90 72L24 72z', u) + ME(52, 47, 12, 2.4, '#fff', ' opacity=".14"')) +
+        G('pa-w', part('M50 60C48 66 44 70 38 71C42 67 44 63 44 59z', dark(c, 0.88)), 48, 60) + eye(72, 51.4, 1.2) + L('M91 56q-5 1.4 -10 0.4', 0.9); } },
+    seal: { kind: 'sea', gait: 'slide', draw: () => { const c = '#8e8a84', s = '#5f5a55', u = '#c9c4bc';
+      return G('pa-t', part('M24 84C18 80 12 78 8 82C12 86 18 88 24 88z', dark(c)) + part('M24 86C18 86 12 88 10 91C16 92 22 91 26 89z', c), 24, 86) +
+        part('M20 86C20 74 34 64 52 62C66 61 74 66 74 76C74 86 62 90 46 90C30 90 20 90 20 86z', c, ME(40, 72, 1.6, 1.1, s) + ME(48, 78, 1.2, 0.9, s) + ME(32, 80, 1.4, 1, s) + ME(56, 70, 1.2, 0.9, s) + ME(52, 88, 14, 4, u)) +
+        G('pa-w', part('M58 80C62 86 66 90 72 90C68 86 66 82 64 78z', dark(c, 0.86)), 60, 80) +
+        G('pa-h', part('M60 62C60 52 66 48 72 48C80 48 84 54 84 58C84 62 80 64 74 66C68 66 62 66 60 62z', c, ME(66, 52, 1, 0.8, s) + ME(80, 60, 4, 3, u)) +
+          nose(83, 56, 0.6) + L('M82.4 60q-2 1.4 -4 0', 0.9) + eye(74, 54, 1.7) + whisk(79, 59, 7), 66, 64); } },
+    crab: { kind: 'sea', gait: 'walk', draw: () => { const c = '#cf4a32';
+      const lg3 = (x, k, cls) => G(cls, limb(`M${x} 72L${r1(x + k * 6)} 76L${r1(x + k * 8)} 89`, 1.8, dark(c, 0.9)), x, 72);
+      return lg3(34, -1, 'pa-l1') + lg3(38, -0.7, 'pa-l2') + lg3(42, -0.4, 'pa-l1') + lg3(58, 0.4, 'pa-l2') + lg3(62, 0.7, 'pa-l1') + lg3(66, 1, 'pa-l2') +
+        G('pa-w', limb('M34 66L26 60L24 52', 2.6, c) + part('M18 46C20 40 28 40 30 46L26 48L30 50C28 56 20 56 18 50z', c), 32, 66) +
+        G('pa-e', limb('M66 66L74 60L76 52', 2.6, c) + part('M82 46C80 40 72 40 70 46L74 48L70 50C72 56 80 56 82 50z', c), 68, 66) +
+        G('pa-h', limb('M45 60L44 52', 1.2, c) + limb('M55 60L56 52', 1.2, c) + eye(44, 51, 1.5) + eye(56, 51, 1.5), 50, 58) +
+        part('M28 70C28 60 38 56 50 56C62 56 72 60 72 70C72 76 62 78 50 78C38 78 28 76 28 70z', c, ME(50, 60, 12, 2.4, '#e8775c') + ME(40, 66, 1, 0.8, '#a2341f') + ME(58, 64, 1, 0.8, '#a2341f')) + L('M46 73q4 2 8 0', 1); } },
+    fish: { kind: 'sea', gait: 'swim', draw: () => { const c = '#ef7b22', b = '#2a1f1a';
+      return G('pa-t', part('M28 56C20 46 14 44 12 46C16 52 16 58 12 66C16 68 22 64 28 58z', c, L('M14 52h8M14 58h10M14 62h8', 0.7, '#b8521a', ' opacity=".6"')), 28, 56) +
+        part('M44 44C48 36 56 34 62 38C58 40 56 42 56 44z', c) +
+        part('M26 56C28 46 40 40 54 40C68 40 78 48 80 56C78 64 68 70 54 70C40 70 28 64 26 56z', c,
+          M('M40 40Q46 55 40 70L46 70Q52 55 46 40z', '#fff') + L('M40 40Q46 55 40 70M46 70Q52 55 46 40', 1.2, b) + M('M60 40Q65 55 60 70L65 70Q70 55 65 40z', '#fff') + L('M60 40Q65 55 60 70M65 70Q70 55 65 40', 1.2, b) + ME(56, 46, 12, 2.4, '#fff', ' opacity=".2"')) +
+        G('pa-w', part('M50 62C48 68 44 72 38 72C42 68 44 64 44 60z', '#e86a14'), 48, 62) + eye(71, 52, 1.6) + L('M79.4 58q-3 1.4 -5 0', 0.9) +
+        `<g class="pa-bub">${E(86, 42, 1.8, 1.8, '#dcefff')}${E(90, 34, 1.2, 1.2, '#dcefff')}</g>`; } },
+    bee: { kind: 'bug', gait: 'fly', draw: () => { const y = '#e8b23a', b = '#2a2220', wg = '#e9f2f7';
+      return `<g class="pa-hov">` + G('pa-l1', L('M44 62l-3 8M50 62l0 9M56 62l3 8', 1.4, b), 50, 62) +
+        G('pa-w pa-wf', part('M48 50C40 36 30 30 26 34C24 40 34 48 46 52z', wg, L('M46 50L30 36M40 46L28 40', 0.6, '#9fb4c4')) + part('M52 50C50 40 46 34 42 36C40 40 44 46 50 52z', wg), 50, 52) +
+        part('M22 58C22 50 30 46 40 48C46 50 48 56 46 62C44 66 36 68 28 66C24 64 22 62 22 58z', y, M('M28 47h4v22h-4zM36 47h4v22h-4z', b) + ME(32, 50, 8, 2, '#fff', ' opacity=".2"')) + M('M22 58l-4 1l4 1.6z', b) +
+        part(eP(52, 56, 8, 7.4), '#a8782e', L('M47 51q1 2 0 4M51 50q1 2 0 4M55 51q1 2 0 4M48 59q1 2 0 3M54 59q1 2 0 3', 0.6, '#6e4a1a')) +
+        G('pa-h', part(eP(63, 56, 5.6, 5.6), b) + eye(65.6, 54.4, 1.6, '#0d0a08') + L('M64 51q2 -6 6 -8M62 51q0 -6 2 -9', 0.9, b), 60, 58) + `</g>`; } },
+    ladybug: { kind: 'bug', gait: 'walk', draw: () => { const r = '#d3302a', b = '#1f1b1a';
+      const lg4 = (x, k, cls) => G(cls, L(`M${x} 80l${k * 3} 4l${k} 5`, 1.4, b), x, 80);
+      return lg4(36, -1, 'pa-l1') + lg4(46, -0.3, 'pa-l2') + lg4(56, 1, 'pa-l1') +
+        G('pa-h', part(eP(70, 78, 7, 6.4), b) + ME(71, 74, 2.4, 1.6, '#f2ede4') + eye(73.6, 78, 1.2, '#0d0a08') + L('M74 73q4 -6 8 -6M72 73q2 -7 5 -9', 0.9, b), 66, 80) +
+        part('M24 82C22 66 34 58 46 58C58 58 66 66 66 82z', r, ME(34, 68, 3.6, 3, b) + ME(46, 64, 3, 2.6, b) + ME(56, 72, 3.4, 3, b) + ME(40, 77, 2.6, 2.2, b) + ME(42, 62, 10, 2.4, '#fff', ' opacity=".28"')) +
+        part('M22 82Q44 86 68 82L68 84Q44 88 22 84z', b) + lg4(40, -0.6, 'pa-l2') + lg4(52, 0.6, 'pa-l1'); } },
+    butterfly: { kind: 'bug', gait: 'fly', draw: () => { const o = '#ec8a1e', b = '#1f1b1a';
+      const veins = L('M50 52L26 30M50 52L22 44M50 52L36 26M50 56L30 70M50 56L40 74', 1.1, b);
+      const spots = ME(24, 32, 1.1, 1.1, '#fff') + ME(22, 38, 1, 1, '#fff') + ME(28, 26, 1, 1, '#fff') + ME(30, 74, 1, 1, '#fff');
+      return `<g class="pa-hov">` + G('pa-w pa-wf', part('M50 52C42 32 30 20 20 24C14 30 18 46 48 56z', o, veins + L('M50 52C42 32 30 20 20 24C14 30 18 46 48 56', 4, b) + spots) +
+        part('M48 56C30 56 22 66 26 74C32 80 44 72 50 58z', dark(o, 0.92), veins + L('M48 56C30 56 22 66 26 74C32 80 44 72 50 58', 4, b) + spots), 50, 55) +
+        part('M49 46C51 46 52 50 52 58C52 66 51 70 50 70C49 70 48 66 48 58C48 50 48 46 49 46z', b) +
+        G('pa-h', part(eP(51, 43, 3, 3), b) + L('M51 40q2 -8 7 -11M50 40q-1 -8 2 -12', 0.8, b) + `<g class="pa-y"><circle cx="52.6" cy="42.4" r=".7" fill="#fff"/></g>`, 51, 46) +
+        G('pa-w pa-wf2', part('M52 52C58 34 66 24 74 26C80 32 74 46 54 56z', o, L('M52 52L72 30M52 52L76 40M52 56L70 70', 1, b) + L('M52 52C58 34 66 24 74 26C80 32 74 46 54 56', 3.6, b) + ME(74, 30, 1, 1, '#fff')) +
+          part('M54 56C66 56 72 64 70 72C66 76 58 70 52 58z', dark(o, 0.92), L('M54 56C66 56 72 64 70 72C66 76 58 70 52 58', 3.6, b)), 52, 55) + `</g>`; } },
+    snail: { kind: 'bug', gait: 'slide', draw: () => { const body = '#b9a98f', sh = '#b77a3e';
+      return part('M12 90C14 84 22 82 32 82L62 80C68 72 72 64 76 62C82 60 86 64 86 70C86 80 80 86 74 88C70 90 66 90 60 90z', body, L('M30 86h20M36 88h20', 0.6, '#8f8068')) +
+        G('pa-h', G('pa-e', L('M78 64L76 52M82 64L86 52', 3.2, INK) + L('M78 64L76 52M82 64L86 52', 1.8, body) + E(76, 51, 1.8, 1.8, body) + E(86, 51, 1.8, 1.8, body) +
+          G('pa-y', ME(76.4, 51, 1, 1, '#1d1512') + ME(86.4, 51, 1, 1, '#1d1512'), 81, 51), 80, 64) + L('M84 74q-2 1.4 -4 0', 0.9), 80, 70) +
+        part(eP(44, 64, 18, 18), sh, M(eP(40, 56, 8, 5), '#d69a5a', ' opacity=".5"')) + L('M44 64m0 0a3 3 0 1 1 3 3a7 7 0 1 1 -8 -8a12 12 0 1 1 13 14a16 16 0 0 1 -18 -10', 1.6, '#6e4220'); } },
+    hedgehog: { kind: 'mammal', gait: 'walk', draw: () => { const sp = '#6f5640', f = '#d8b98f';
+      const spikes = Array.from({ length: 14 }, (_, i) => { const a = Math.PI * (1 + i / 13 * 0.95), x0 = 44 + Math.cos(a) * 22, y0 = 76 + Math.sin(a) * 20; return `L${r1(x0)} ${r1(y0)}L${r1(44 + Math.cos(a + 0.05) * 29)} ${r1(76 + Math.sin(a + 0.05) * 27)}`; }).join('');
+      return G('pa-l2', limb('M30 82L29 88', 2.4, dark(f)), 30, 82) + G('pa-l1', limb('M56 82L57 88', 2.4, dark(f)), 56, 82) +
+        part('M22 80C22 70 32 64 46 64C58 64 66 70 68 78C66 86 56 88 44 88C32 88 22 86 22 80z', f) +
+        part(`M18 82${spikes}L70 70C64 60 54 56 44 56C34 56 24 62 20 72z`, sp, L('M28 64l4 3M36 60l3 4M46 58l2 4M54 60l1 4M32 72l4 2M44 66l3 3', 1, '#d8c7aa', ' opacity=".7"')) +
+        G('pa-l1', limb('M34 82L33 88', 2.6, f) + E(34.4, 89.6, 2.4, 1.2, dark(f)), 34, 82) + G('pa-l2', limb('M60 82L61 88', 2.6, f) + E(62.4, 89.6, 2.4, 1.2, dark(f)), 60, 82) +
+        G('pa-h', part('M60 74C62 66 70 64 76 68C80 70 84 72 88 74C86 78 80 80 72 80C66 80 62 78 60 74z', f) + E(88, 74, 1.6, 1.3, '#1d1512') + eye(74, 71, 1.3) + earRound(68, 67, 2.2, f, '#b8957a') + whisk(84, 76, 5), 66, 76); } },
+    sloth: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#8f7a62', m = '#e2d3b8', st = '#3f3127', cl = '#e9dfc8';
+      const arm = (x, cls, k) => G(cls, limb(`M${x} 62L${x + 8} 74L${x + 10} 87`, 4, k) + L(`M${x + 9} 88q3 1 5 3M${x + 10} 87q4 0 5 3`, 1.4, cl), x, 62);
+      const lg5 = (x, cls, k) => G(cls, limb(`M${x} 66L${x - 4} 78L${x - 2} 87`, 3.8, k) + L(`M${x - 2} 88q3 1 4 3`, 1.4, cl), x, 66);
+      return lg5(38, 'pa-l2', dark(c)) + arm(56, 'pa-l1', dark(c)) +
+        part('M26 66C24 56 34 50 46 50C58 50 64 56 64 64C64 72 56 76 44 76C34 76 28 72 26 66z', c, L('M32 56q4 2 6 0M40 54q4 2 6 0M48 55q4 2 6 0M34 64q4 2 6 0M44 62q4 2 6 0', 1, '#6e5c48', ' opacity=".6"')) +
+        lg5(34, 'pa-l1', c) + arm(52, 'pa-l2', c) +
+        G('pa-h', part('M58 54C58 46 64 42 70 42C76 42 80 46 80 52C80 58 76 62 70 62C64 62 58 60 58 54z', c) +
+          part('M62 52C62 46 68 44 72 45C77 46 79 50 78 54C77 58 72 60 68 59C64 58 62 56 62 52z', m) +
+          M('M65 50C67 48 71 48 74 50L73 53C71 52 68 52 66 53z', st) + eye(71, 51, 1.1, '#120c08') + ME(77, 53.6, 1.1, 0.8, st) + L('M76 56.6q-2 1.4 -5 0.6', 0.9), 68, 60); } },
+    otter: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#6b4a30', f = '#c9a985';
+      return quad({ c, body: [22, 64, 60, 74], tor: { dip: 1, wither: 2, belly: 1, tuck: 1 }, legs: { w: 4.2, fx: 58, hx: 28, paw: dark(c, 0.75) }, hd: [74, 60],
+        tail: G('pa-t', part('M24 64C14 66 6 72 2 80C10 78 18 76 26 72z', c), 24, 68), marks: ME(50, 74, 14, 2.6, '#8a6646'),
+        neck: 'M58 62L68 54L76 60L66 72z', neckMarks: M('M64 72L72 58L78 60L70 72z', f),
+        head: mhead({ x: 73, y: 57, s: 5.6, L: 4, c, h: 0.85, dome: 1, ns: 0.7, es: 1.1, whisk: true, marks: ME(79, 60, 4.4, 2.8, f),
+          earsBack: earRound(69, 52.6, 1.8, c, '#4a3220') }) }); } },
+    parrot: { kind: 'bird', gait: 'hop', draw: () => { const c = '#d6322a', y = '#f2c230', bl = '#2f6fc0';
+      return bird({ c, legs: [46, 52], ly: 80, lc: '#8a8f9c', hd: [58, 40],
+        tail: G('pa-t', part('M38 72L24 90L30 91L44 76z', bl) + part('M42 74L34 90L38 91L46 76z', c), 42, 74),
+        bodyD: 'M40 50C38 60 40 74 46 80C52 84 58 80 60 72C62 62 60 52 56 46C52 42 42 44 40 50z', marks: ME(54, 64, 4, 10, '#e2483e'),
+        head: part('M48 40C48 32 54 28 60 28C66 28 68 34 68 38C68 44 62 48 56 48C52 48 48 46 48 40z', c, ME(62, 38, 4.4, 4.6, '#f4efe7')) +
+          part('M66 34C72 32 76 36 76 42C75 46 72 48 70 48C72 44 70 40 66 40z', '#ece4d4') + M('M69 44Q71 46 73 45L72 47Q70 47.6 68.6 46z', '#2a2220') + eye(61.4, 36.4, 1.3) + L('M60 39q2 1 4 0M60 41q2 1 4 0', 0.6, '#c9302a'),
+        wing: part('M40 52C46 50 54 56 56 64C54 74 48 78 42 76C38 68 38 58 40 52z', y, M('M40 64C44 64 50 68 54 70C52 76 46 78 42 76z', bl) + feathers(42, 70, 4, 3)), wo: [44, 54] }); } },
+    flamingo: { kind: 'bird', gait: 'walk', draw: () => { const c = '#f08aa6';
+      return bird({ c, legs: [44, 49], ly: 56, lc: '#d86a8a', lk: 1.1, hd: [72, 22],
+        tail: part('M26 46L18 42L22 50z', c),
+        bodyD: 'M24 48C26 40 36 36 46 38C54 40 58 46 56 52C52 58 40 60 32 56C28 54 24 52 24 48z',
+        back: '', marks: ME(38, 42, 10, 2.4, '#fff', ' opacity=".2"'),
+        head: limb('M52 44Q64 42 62 32Q58 24 66 20', 3.4, c) + part(eP(69, 20, 4, 3.6), c) + part('M72 18C78 18 80 22 79 28C78 26 76 24 72 23z', '#f4efe7', M('M78 23C79 24 79.4 26 79 28C78 27 77.4 26 77 25z', '#1f1b1a')) + eye(69.6, 19, 1),
+        wing: part('M30 44C40 40 50 44 54 50C48 56 38 56 32 52z', '#e46f93', feathers(36, 50, 4, 3.2)), wo: [40, 46] }); } },
+    peacock: { kind: 'bird', gait: 'walk', draw: () => { const c = '#1f5fae', gr = '#2f8f6a';
+      const eyes6 = [[12, 76], [20, 70], [28, 76], [18, 82], [30, 84], [8, 84]].map(([x, y]) => ME(x, y, 2.6, 3.2, '#3fae6a') + ME(x, y, 1.6, 2, '#e8c35a') + ME(x, y + 0.4, 0.9, 1.2, '#1f3f8a')).join('');
+      return bird({ c, legs: [52, 57], ly: 74, lc: '#8a8f9c', hd: [62, 40],
+        tail: G('pa-t', part('M44 66C30 64 14 68 2 82C4 88 20 90 44 84z', gr, L('M44 70L6 84M44 76L10 88M44 82L24 90', 0.7, '#1f6a4a') + eyes6), 44, 74),
+        bodyD: 'M42 66C40 58 46 52 54 52C62 52 66 58 64 68C62 76 54 78 48 76C44 74 42 70 42 66z',
+        head: limb('M56 54Q60 46 62 38', 4.4, c) + part(eP(63, 36, 4, 3.6), c, ME(64.6, 37.6, 1.6, 0.8, '#fff')) + part('M66.6 35L71 36.4L66.6 38z', '#d8cdb4') + eye(64.6, 35, 1) +
+          L('M61 32l-1.6 -6M63 32l0 -6.6M65 32l1.6 -6', 0.7) + E(59.4, 25.6, 1, 1, c) + E(63, 25, 1, 1, c) + E(66.6, 25.6, 1, 1, c),
+        wing: part('M46 60C52 56 60 60 62 66C58 72 50 72 46 68z', '#8a7a5a', L('M48 64l10 0M48 67l9 0', 0.6, '#5a4a30')), wo: [50, 60] }); } },
+    alpaca: { kind: 'mammal', gait: 'walk', draw: () => { const c = '#efe2c8', d = '#d9c6a2', f = '#5a4636';
+      return quad({ c, body: [28, 62, 50, 66], torso: fluffD(45, 58, 19, 10, 14), legs: { w: 3.2, fx: 56, hx: 34, hy: 62, fy: 62, hoof: '#4a3a2e' }, hd: [72, 22],
+        tail: G('pa-t', part(fluffD(26, 55, 3, 4.4, 6, 0.2), c), 27, 56), marks: ME(46, 52, 14, 3, '#fff', ' opacity=".25"'),
+        neck: 'M54 56C56 44 60 32 65 23L75 24C73 34 72 46 70 60z', neckMarks: L('M62 36q3 1 6 0M60 44q3 1 6 0M59 52q3 1 7 0', 0.8, d),
+        head: G('pa-e', part('M66.4 19C63.6 14 64 9 66.6 7.6C67.6 10 68.6 14 69 19z', c, M('M66.2 10C66 13 66.8 16 68 18.6L68.4 17C67.6 14 67 12 66.2 10z', '#c9a98a')) +
+            part('M71.4 18.6C70.6 13 72 9 74.6 8.4C75 11 74.4 15 73.6 19z', c, M('M74.2 10.4C73.4 13 73 16 73 18.6L73.8 18C74 15 74.4 13 74.2 10.4z', '#c9a98a')), 70, 19) +
+          mhead({ x: 71, y: 23, s: 5, L: 4.4, c, h: 0.95, dome: 1.05, ns: 0.55, nc: f, es: 1.15, muzzle: ME(79, 24.6, 2.6, 2.2, d) }) + part(fluffD(70, 18.6, 4, 2.4, 7, 0.25), c) }); } },
   };
 
   /** A pet's SVG. opts: shiny, cls (more classes), title (spoken name; else hidden from screen readers). */
   function svg(id, opts = {}) {
     const a = ART[id]; if (!a) return '';
+    if (typeof document !== 'undefined' && document.body && !document.getElementById('paSh')) document.body.insertAdjacentHTML('beforeend', DEFS);
     pal = opts.shiny ? bright : (c => c);
     const inner = a.draw();
     pal = c => c;
     const d = (id.length * 0.37) % 2;   // each pet blinks and breathes on its own beat
+    const fly = a.gait === 'fly';
     return `<svg class="pa g-${a.gait} k-${a.kind}${opts.shiny ? ' shiny' : ''}${opts.cls ? ' ' + opts.cls : ''}" viewBox="0 0 100 100" style="--d:-${d.toFixed(2)}s"${opts.title ? ` role="img" aria-label="${opts.title}"` : ' aria-hidden="true"'} focusable="false">` +
-      `<ellipse class="pa-sh" cx="50" cy="92" rx="${a.kind === 'bug' && a.gait === 'fly' ? 16 : 28}" ry="3.6"/>` +
+      `<ellipse class="pa-sh" cx="50" cy="91" rx="${fly ? 14 : 30}" ry="${fly ? 2.4 : 3.6}" fill="url(#paCs)"/>` +
       `<g class="pa-b">${inner}</g>${opts.shiny ? sparkles() : ''}</svg>`;
   }
-  return { svg, ids: Object.keys(ART), gait: id => (ART[id] || {}).gait, kind: id => (ART[id] || {}).kind };
+  return { svg, defs: DEFS, ids: Object.keys(ART), gait: id => (ART[id] || {}).gait, kind: id => (ART[id] || {}).kind };
 })();
 // ==== PET ART END ====
 

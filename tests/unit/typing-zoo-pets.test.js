@@ -25,7 +25,8 @@ const HTML = fs.readFileSync(path.join(ROOT, 'seed-games/typing-zoo.html'), 'utf
 const PET_IDS = [...HTML.match(/const PETS = \[([\s\S]*?)\n\];/)[1].matchAll(/\['([a-z]+)', '/g)].map(m => m[1]);
 
 test('every pet has full-body art: one rig per body type, its own groups to move, a shiny look', () => {
-  assert.equal(PET_IDS.length, 40);
+  assert.ok(PET_IDS.length >= 41 && PET_IDS[PET_IDS.length - 1] === 'alpaca', 'new pets go at the end (old saves keep theirs)');
+  assert.equal(PET_IDS[0], 'bunny');
   const block = /\/\/ ==== PET ART START ====([\s\S]*?)\/\/ ==== PET ART END ====/.exec(HTML)[1];
   const box = {}; vm.runInNewContext(`${block}; this.PetArt = PetArt;`, box);
   const A = box.PetArt;
@@ -38,12 +39,12 @@ test('every pet has full-body art: one rig per body type, its own groups to move
     assert.match(s, /class="pa-b"/, `${id}: a body that breathes`);
     assert.match(s, /class="pa-y"/, `${id}: eyes that blink`);
     assert.ok(/class="pa-(l1|l2|t|w|e)\b/.test(s), `${id}: legs, a tail, wings or ears that move`);
-    assert.doesNotMatch(s, /\p{Extended_Pictographic}|<image|href=|url\((?!#pc)/u, `${id}: drawn, no emoji, no picture, nothing loaded`);
+    assert.doesNotMatch(s, /\p{Extended_Pictographic}|<image|href=|url\((?!#p[ac])/u, `${id}: drawn, no emoji, no picture, nothing loaded`);
     assert.equal((s.match(/<g\b/g) || []).length, (s.match(/<\/g>/g) || []).length, `${id}: groups closed`);
     assert.match(A.svg(id, { shiny: true }), /class="pa shiny|pa-sp/, `${id}: shiny sparkles`);
   }
   assert.deepEqual([...kinds].sort(), ['bird', 'bug', 'mammal', 'mythical', 'reptile', 'sea']);
-  assert.ok(block.length < 45000, `the art stays small (${block.length} bytes)`);
+  assert.ok(block.length < 60000, `the art stays small (${block.length} bytes)`);
 });
 
 test('the teacher\'s summary reads a save with the walking pet the same as before', () => {
@@ -87,7 +88,7 @@ test('an old save loads as before; the latest pet walks; "Walk with me" picks an
   assert.equal((await walk()).id, 'tiger', 'the latest hatched pet is out');
   assert.match(await frame.evaluate(() => document.querySelector('#walker svg').getAttribute('class')), /shiny/, 'shiny, as it hatched');
   await frame.evaluate(() => window.__brbTest.pets());
-  assert.equal(await frame.locator('.petcard.locked').count(), 37, 'locked pets are silhouettes');
+  assert.equal(await frame.locator('.petcard.locked').count(), PET_IDS.length - 3, 'locked pets are silhouettes');
   await frame.locator('[data-walk="owl"]').click();
   assert.equal((await walk()).id, 'owl');
   assert.equal(await frame.evaluate(() => window.__brbTest.save().out), 'owl', 'kept in the save');

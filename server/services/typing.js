@@ -3,12 +3,17 @@
 // The save is written by the game in the student's browser, so everything read here is checked and clamped: a tampered
 // save can only show odd numbers for that one student, never break the page or show anything but numbers and known keys.
 // Who may see it is the caller's job (routes/progress.js checkPage: the class's own teachers and school leaders).
+import fs from 'node:fs';
 import * as games from './games.js';
 import { q } from '../db.js';
 import { parseParams } from './play-params.js';
 
 export const SLUG = 'typing-zoo';
 export const SAVE_KEY = 'typing-pets-v1';
+/** How many pets the game has (its PETS list; new pets are added at its end): a save never counts more. */
+export const PET_COUNT = (() => {
+  try { const m = /const PETS = \[([\s\S]*?)\n\];/.exec(fs.readFileSync(new URL('../../seed-games/typing-zoo.html', import.meta.url), 'utf8')); return m ? m[1].match(/\['[a-z]+', /g).length : 41; } catch (e) { return 41; }
+})();
 /** The game's lessons, in order (LESSONS in the game; tests/unit/typing.test.js checks the two agree). */
 export const LESSONS = Array.from({ length: 40 }, (_, i) => `l${String(i + 1).padStart(2, '0')}`);
 /** The game's lesson names, in order (the Assign picker; the game's own LESSONS hold the same). */
@@ -72,7 +77,7 @@ export function summarize(raw) {
     practiced: int(obj(s.practice).n, 0, 100000),
     days: practiceDays(s.days),
     week: Math.round(practiceDays(s.days).reduce((n, d) => n + d.secs, 0) / 60),
-    pets: Math.min(40, Object.keys(obj(s.pets)).length),
+    pets: Math.min(PET_COUNT, Object.keys(obj(s.pets)).length),
     tricky,
     minutes: Math.round(int(s.secs, 0, 1e8) / 60),
     last: Math.max(int(s.last, 0, 8.64e15), ...lessons.map(l => l.at), int(obj(tests[`t${(bestTest || {}).min}`]).t, 0, 8.64e15)) || null,
