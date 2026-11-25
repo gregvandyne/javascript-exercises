@@ -454,12 +454,12 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-board.mp-grab,.mp-board.mp-grab .mp-piece,.mp-board.mp-grab .mp-obj{cursor:grab}
 .mp-board.mp-grab:active{cursor:grabbing}
 .mp-selbox{position:absolute;z-index:44;border:2px dashed var(--accent-line);border-radius:6px;background:color-mix(in srgb,var(--accent) 16%,transparent);pointer-events:none}
-.mp-selpill{position:absolute;z-index:46;top:10px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:4px 4px 4px 16px;border-radius:999px;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(6px);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--accent-line);color:var(--text);font-weight:800;white-space:nowrap;cursor:default}
+.mp-selpill{position:absolute;z-index:46;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:4px 4px 4px 16px;border-radius:999px;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(6px);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--accent-line);color:var(--text);font-weight:800;white-space:nowrap;cursor:default}
 .mp-selpill[hidden]{display:none}
 .mp-selpill .chip{min-height:36px;padding:0 12px}
 .mp-selpill .mp-seldel{color:var(--bad-ink)}
 .mp-seln{font-variant-numeric:tabular-nums}
-.rm-selpill{top:84px;z-index:55}
+.rm-selpill{top:84px;bottom:auto;z-index:55}
 .rm.rm-grab,.rm.rm-grab .rm-area,.rm.rm-grab .mp-piece,.rm.rm-grab .mp-obj{cursor:grab}
 .mp-piece.grouped .mp-face{box-shadow:0 2px 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.10)}
 .mp-piece.snapped{animation:mp-snap .22s ease-out}
@@ -514,7 +514,6 @@ main.rm-main .fg-tools{margin-bottom:0}
 @media (max-width:899px){
   .mp-zoom{bottom:auto;top:8px;inset-inline-start:auto;inset-inline-end:8px}
   .mp-zoom .chip{min-height:34px;padding:4px 10px}
-  .mp-selpill{top:56px}
   .rm-stepsed li{flex-wrap:wrap;gap:6px}
   .rm-stepsed li textarea{flex:1 1 calc(100% - 3.2em);min-width:0}
   .rm-stepops{flex:1 1 100%;justify-content:flex-end}
