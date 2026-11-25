@@ -2236,6 +2236,7 @@
       "endClass": "Terminer la classe",
       "endConfirm": "Terminer la classe pour tout le monde ? Les pupitres et l’espace de l’enseignant restent tels quels.",
       "projector": "Ouvrir la vue projecteur",
+      "hostLive": "Lancer un jeu en direct",
       "started": "La classe est en direct. Les élèves voient un message pour aller à leur pupitre.",
       "bringing": "Tout le monde regarde l’espace de l’enseignant",
       "backToDesks": "Les élèves sont de retour à leur pupitre",

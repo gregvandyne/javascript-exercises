@@ -30,6 +30,8 @@
 /* every button in the bar has one shape (Homeroom's chunky pill), whichever view it belongs to */
 .cv-bar .btn{min-height:44px;border-radius:999px;font-weight:800;white-space:nowrap}
 .cv-bar .btn:not(.btn-primary):not(.hr-spark):not(.on):not([aria-pressed="true"]){border:2px solid var(--line);background:var(--card);box-shadow:0 3px 0 var(--line)}
+/* the Connections chip as tall as the class switcher next to it */
+.cv-acts-classroom .cx-chip{min-height:46px;padding-inline:14px;font-size:.9375rem}
 .cv-acts-classroom .classacts{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:8px;margin:0;flex:1 0 auto}
 /* the dashboard's buttons, its date and its clock (its edit mode hides them and shows its own bar under this one) */
 .dash-acts{display:flex;align-items:center;justify-content:flex-end;gap:8px 12px;flex:1 1 auto;min-width:0}
@@ -59,6 +61,19 @@
 .cv-bar.cv-fold .cv-acts{max-width:calc(100% - 96px)}
 .cv-bar.cv-fold .cv-acts .btn{padding-inline:8px}
 .cv-bar.cv-fold .hr-livedot{font-size:0;gap:0;padding-inline:4px}   /* the red dot alone (its word is still read out) */
+
+/* ---- Classroom's header (routes/schools.js classHeader; docs/decisions.md "A calmer Classroom view on phones"): the
+   class's name is the switcher's, so one small line (the school, the class, its students); on phones Build new game and
+   Find Oomba games as one row of two small buttons (wider screens have them in the Games tab's sidebar) */
+.cv-classhead{margin:0 0 var(--s3)}
+.cv-classmeta{margin:0;line-height:1.5}
+.cv-classmeta .classschool{display:inline;overflow-wrap:anywhere}
+.classquick{display:none}
+@media (max-width:639px){
+  .classquick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 var(--s3)}
+  .classquick-b{justify-content:center;gap:4px;min-width:0;min-height:44px;padding:6px 8px;font-size:.875rem;line-height:1.2;white-space:normal;text-align:center}
+  .classquick-b>span{min-width:0;overflow-wrap:anywhere}
+}
 
 /* ---- the views */
 .cv-view-homeroom>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}

@@ -180,7 +180,13 @@ function start() {
     go(k, url, true);
   });
   // Another class: the same view of it (a new page).
-  bar.querySelector('[data-cv-switch]')?.addEventListener('change', e => {
+  // All classes (the last option): the teacher's list of classes. Coming back to this page (Back, the page cache) shows
+  // this class in the switcher again.
+  const sw = bar.querySelector('[data-cv-switch]');
+  addEventListener('pageshow', () => { if (sw && sw.value !== CID) sw.value = CID; });
+  sw?.addEventListener('change', e => {
+    const opt = e.target.selectedOptions && e.target.selectedOptions[0];
+    if (opt && opt.dataset.cvHref) { location.href = opt.dataset.cvHref; return; }
     const id = e.target.value; if (!id || id === CID) return;
     const base = `/class/${encodeURIComponent(id)}`;
     location.href = cur === 'homeroom' ? `${base}/homeroom` : cur === 'dashboard' ? `${base}/dashboard` : base;

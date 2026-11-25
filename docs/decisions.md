@@ -14366,3 +14366,24 @@ Owner-approved spec: `docs/homeroom.md` step 3c ("Live class": supports, aides a
   games until the kit and the official games read `BRB.timeFor`; Read aloud of a game's own questions (the game's own
   voice); translations of the new strings (English now; the other languages fall back to it); sending the aide invite
   by email from Oomba (the teacher sends the link themselves).
+
+## A calmer Classroom view on phones (25 Nov 2026)
+
+Owner: the Classroom view looked strange on a phone (the shared bar, then the old class header, four big tiles, the tabs,
+and Oomba's chat button over the Assigned / My library switch); hosting a live game and the class dashboard are now in
+Homeroom. For teachers Homeroom lets into a class only (the Classroom view of "Homeroom: one page, three views");
+everyone else keeps the class page and its tiles exactly as before ("Action tiles on the class page, on phones").
+
+- **No Live button in the shared bar.** Classroom's bar buttons are the Connections chip alone (now as tall as the
+  class switcher beside it, so the row is balanced). Host a live game moved to Homeroom's ⋯ menu (`public/js/homeroom.js`
+  renderMenu, `hostLive` in the page data: `/live?class=<id>`, the address the tile had; only while live games are on,
+  the teacher may host and the class is not archived; never for an aide). Its label reuses each language's
+  `live.entry.host` wording (`js.homeroom.hostLive`).
+- **No Host a live game or Class dashboard tiles** (the Dashboard is a tab of the pill). Build new game and Find Oomba
+  games stay on phones as one row of two small buttons (`.classquick`, under 640 px; wider screens have both in the
+  Games tab's sidebar and chip row, as before).
+- **The header is one small line**: the school (its link, with Invite a teacher), the subject and grade when set, and the
+  student count. The big class title is left to the switcher (an `h1` for screen readers stays). The Back link out of
+  the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
+  its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
+- With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.

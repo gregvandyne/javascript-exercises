@@ -1,6 +1,7 @@
 // Homeroom, Classroom and Dashboard as one page with three views (docs/decisions.md "Homeroom: one page, three views").
 // For a teacher Homeroom lets into a class (services/homeroom.js canUseClass) the three are views of one page: one shared
-// bar (the class switcher, Homeroom | Classroom | Dashboard, and the view's own buttons) over a view area. A route marks
+// bar (the class switcher with All classes at its foot, Homeroom | Classroom | Dashboard, and the view's own buttons)
+// over a view area. A route marks
 // its page as one view (markView: the Homeroom page, every Classroom page through routes/schools.js classHeader, the
 // teacher's dashboard); views/layout.js page() then asks the shell registered here how to send it:
 //   - a normal request: the whole page, the view's content in its place and the other two views empty (they are fetched
@@ -43,7 +44,7 @@ function shell(req, c, view, { content, actions, bodyClass, mid }) {
     <header class="cv-bar" id="cv-bar">
       <div class="cv-nav">
         <label class="sr-only" for="hr-class">${t('homeroom.switchClass')}</label>
-        <select class="input cv-class" id="hr-class" data-cv-switch autocomplete="off">${classes.map(x => html`<option value="${x.id}"${x.id === c.id ? raw(' selected') : ''}>${x.name}</option>`)}</select>
+        <select class="input cv-class" id="hr-class" data-cv-switch autocomplete="off">${classes.map(x => html`<option value="${x.id}"${x.id === c.id ? raw(' selected') : ''}>${x.name}</option>`)}<option value="" data-cv-href="/teach?all=1">${t('teach.home.allClasses')}</option></select>
         ${homeroomTabs(req, c, view)}
       </div>
       <p class="sr-only" id="cv-say" aria-live="polite"></p>
@@ -63,8 +64,11 @@ setViewShell((req, res, opts) => {
   // The dashboard's own full-page look (no site bar) gives way to the shared bar; its class on <body> that drops the
   // tab bar's space on a phone is left off (the site's tab bar stays, as on the other two views).
   const bodyClass = String(opts.bodyClass || '').split(/\s+/).filter(x => x && x !== 'dash-page').join(' ');
-  // Classroom pages have a Back link ("My classes"): it stays at the top of the view, under the shared bar.
-  const back = view === 'classroom' && opts.back ? html`<a class="backlink" href="${opts.back}"><span class="flip" aria-hidden="true">←</span> ${opts.backLabel || t('layout.back')}</a>` : '';
+  // Classroom pages have a Back link. One out of the class ("My classes", "All classes", the school) is left off: the
+  // switcher has the class's siblings and All classes (docs/decisions.md "A calmer Classroom view on phones"). One back
+  // to a page of this class (a lesson's gradebook) stays at the top of the view, under the shared bar.
+  const inClass = typeof opts.back === 'string' && (opts.back === `/class/${c.id}` || opts.back.startsWith(`/class/${c.id}/`) || opts.back.startsWith(`/class/${c.id}?`));
+  const back = view === 'classroom' && inClass ? html`<a class="backlink" href="${opts.back}"><span class="flip" aria-hidden="true">←</span> ${opts.backLabel || t('layout.back')}</a>` : '';
   const content = html`${back}${raw(String(opts.body || ''))}`;
   const vopts = { ...opts, body: content, bodyClass, bare: false, companion: undefined, back: null };
   if (req.get('X-View') === '1') return { fragment: true, opts: vopts, extra: { view, actions: String(actions || ''), mid: !!opts.mid } };

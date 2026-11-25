@@ -270,6 +270,38 @@ test('the shared bar fits at 390, 820, 1024 and 1366 on every view (and live): n
   } finally { H.setLive(teacher, cls2, 'end'); }
 });
 
+test('Classroom on a phone is calm: no Live button, Build and Find in one row, Oomba clear of the switch; All classes; Host a live game in Homeroom\'s ⋯ menu', { timeout: 120000 }, async t => {
+  if (skip) return t.skip(skip);
+  const { ctx, page, errors } = await open(`/class/${cls.id}`, { viewport: { width: 390, height: 844 }, touch: true });
+  await shown(page, 'classroom'); await page.waitForTimeout(300);
+  await shot(page, 'phone-classroom-calm');
+  assert.equal(await page.locator(`#cv-bar a[href^="/live"]`).count(), 0, 'no Live button in the shared bar');
+  assert.equal(await page.locator('.cv-view-classroom .classtiles, .cv-view-classroom .backlink').count(), 0, 'no tiles, no My classes link');
+  assert.deepEqual(await page.$$eval('.cv-view-classroom h1', els => els.filter(e => e.getBoundingClientRect().height > 2).map(e => e.textContent)), [], 'no big class title (the switcher has its name; one for screen readers)');
+  const quick = await page.$$eval('.classquick-b', els => els.map(e => { const r = e.getBoundingClientRect(); return { top: Math.round(r.top), h: Math.round(r.height), text: e.textContent.trim() }; }));
+  assert.deepEqual(quick.map(x => x.text), ['Build new game', 'Find Oomba games']);
+  assert.equal(quick[0].top, quick[1].top, 'one row'); assert.ok(quick[0].h <= 56, `small buttons (${quick[0].h}px)`);
+  // the Assigned | My library switch is on screen and Oomba's chat button does not cover it
+  const seg = await page.locator('.lib-segs').boundingBox();
+  assert.ok(seg && seg.y + seg.height < 844, 'the switch is on the first screen');
+  const bub = await page.locator('.oc-bubble').boundingBox().catch(() => null);
+  if (bub) assert.ok(bub.y >= seg.y + seg.height || bub.x >= seg.x + seg.width, 'Oomba does not cover the switch');
+  assert.equal(await sideways(page), 0);
+  // All classes (the switcher's last option): the list of classes
+  await page.selectOption('#hr-class', { label: 'All classes' });
+  await page.waitForURL(/\/teach\?all=1$/);
+  // Homeroom's ⋯ menu: Host a live game, to the address the tile had
+  await page.goto(`${BASE}/class/${cls.id}/homeroom`); await page.waitForSelector('.hr-desk');
+  await page.click('[data-hr="menu"]');
+  const host = page.locator('#hr-menu a[data-hr="hostlive"]');
+  assert.equal(await host.getAttribute('href'), `/live?class=${cls.id}`);
+  assert.equal((await host.textContent()).trim(), 'Host a live game');
+  await shot(page, 'phone-homeroom-menu');
+  await Promise.all([page.waitForURL(/\/live\?class=/), host.click()]);
+  assert.deepEqual(errors, []);
+  await ctx.close();
+});
+
 test('a teacher without Homeroom: the class page and the dashboard as before', { timeout: 60000 }, async t => {
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(`/class/${plainCls.id}`, { who: plain });
