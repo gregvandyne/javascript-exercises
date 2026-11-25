@@ -167,7 +167,7 @@ test('a board pushed by share code into a live room: its steps become the deck; 
 });
 
 for (const [label, opts] of [['iPhone 13', PHONE], ['laptop', () => LAPTOP]]) {
-  test(`a new place-value chart starts locked (${label}): dragging it pans the board, its wheel holds only Unlock`, { skip }, async () => {
+  test(`a new place-value chart starts locked (${label}): dragging it pans the board (a mouse: with Space held), its wheel holds only Unlock`, { skip }, async () => {
     const { ctx, page, errors, cdp } = await open(boss, '#base-ten-blocks', opts());
     await page.waitForSelector('#mp-board'); await page.waitForTimeout(200);
     const c = '#mp-content .mp-obj.k-pv-chart';
@@ -179,12 +179,21 @@ for (const [label, opts] of [['iPhone 13', PHONE], ['laptop', () => LAPTOP]]) {
     await page.$eval('[data-view="fit"]', b => b.click()); await page.waitForTimeout(150);
     const el = page.locator(c).first(), b0 = await el.boundingBox(), id = await el.getAttribute('data-oid');
     const at0 = await page.$eval(`${c}[data-oid="${id}"]`, e => [e.style.left, e.style.top]);
-    // Drag the chart's body (a column): the board pans, the chart stays where it is on the board.
+    // Drag the chart's body (a column): the board pans, the chart stays where it is on the board. A mouse's plain drag
+    // there draws a selection box instead (docs/decisions.md "Manipulatives: a selection box"): the chart neither moves
+    // nor is selected, and with Space held the same drag pans.
     const [x0, y0] = [b0.x + b0.width / 2, b0.y + b0.height * 0.7];
     if (cdp) {
       const t = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y]) => ({ x, y })) });
       await t('touchStart', [[x0, y0]]); for (let i = 1; i <= 10; i++) { await t('touchMove', [[x0 + i * 6, y0 + i * 4]]); await page.waitForTimeout(16); } await t('touchEnd', []);
-    } else { await page.mouse.move(x0, y0); await page.mouse.down(); await page.mouse.move(x0 + 60, y0 + 40, { steps: 10 }); await page.mouse.up(); }
+    } else {
+      const mdrag = async () => { await page.mouse.move(x0, y0); await page.mouse.down(); await page.mouse.move(x0 + 60, y0 + 40, { steps: 10 }); await page.mouse.up(); await page.waitForTimeout(150); };
+      await mdrag();
+      assert.deepEqual(await page.$eval(`${c}[data-oid="${id}"]`, e => [e.style.left, e.style.top]), at0, 'a plain drag did not move the chart');
+      const bb = await el.boundingBox(); assert.ok(Math.abs(bb.x - b0.x) < 1 && Math.abs(bb.y - b0.y) < 1, 'a plain drag did not pan');
+      assert.equal(await page.locator(`${c}.on`).count(), 0, 'the locked chart is never selected');
+      await page.evaluate(() => document.activeElement?.blur()); await page.mouse.move(x0, y0); await page.keyboard.down('Space'); await mdrag(); await page.keyboard.up('Space');
+    }
     await page.waitForTimeout(150);
     assert.deepEqual(await page.$eval(`${c}[data-oid="${id}"]`, e => [e.style.left, e.style.top]), at0, 'the chart did not move on the board');
     const b1 = await el.boundingBox(); assert.ok(Math.abs(b1.x - b0.x - 60) < 6 && Math.abs(b1.y - b0.y - 40) < 6, `the view panned (${b1.x - b0.x}, ${b1.y - b0.y})`);

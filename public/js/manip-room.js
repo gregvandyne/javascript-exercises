@@ -12,9 +12,9 @@ import { t, api, toast, esc, copyText } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H, checkSummary } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
-import { inChart, paletteAdd } from '/js/manip-pv.js';
-import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
+  snapOpts, linksPieces, nearSpot, ANS, FREE_SIZE, freeResize, rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
+import { paletteAdd } from '/js/manip-pv.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, wheelOpen, SLOP } from '/js/manip-wheel.js';
 import { clamp, zoomAround, fitView, applyTransform, visible, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -44,13 +44,13 @@ export async function open(root, id, deps) {
   const room = r.room, impl = deps.IMPL[room.tool];
   R = { root, id, deps, room, impl, tool: toolOf(room.tool), L: roomLayout(room.tool), role: room.role, me: room.me, areas: new Map(), view: { x: 0, y: 0, z: 1 },
     active: room.role === 'teacher' ? 't' : room.me, sel: null, annotate: false, pen: PEN_COLORS[0], editing: null, hist: [], cursors: room.cursors || [],
-    seenBring: room.bring ? room.bring.seq : 0, seenPush: 0, timers: [], ws: null, wsOk: false, pointers: new Map(), gesture: null, lastSend: 0, brought: false, stripOpen: new Set(), hands: room.hands || [], handsOpen: false };
+    seenBring: room.bring ? room.bring.seq : 0, seenPush: 0, timers: [], ws: null, wsOk: false, pointers: new Map(), gesture: null, lastSend: 0, brought: false, stripOpen: new Set(), hands: room.hands || [], handsOpen: false, many: null };
   syncAreas(room);
   root.innerHTML = `<div class="rm${R.role === 'teacher' ? ' rm-teacher' : ''}" id="rm" tabindex="-1">
     <div class="rm-world" id="rm-world"></div><div class="rm-cursors" id="rm-cursors" aria-hidden="true"></div>
     <div class="rm-bar" id="rm-bar"></div><aside class="mp-side rm-pal" id="rm-pal" aria-label="${esc(t('js.manip-room.palette'))}"></aside>
     <div class="rm-float rm-zoomdesk" id="rm-zoom"></div><div class="rm-float rm-minifloat" id="rm-mini"></div>
-    <div id="rm-handlist"></div><div id="rm-menu"></div><div id="rm-banner"></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.backMine'))}`)}</div>`;
+    <div id="rm-handlist"></div><div id="rm-menu"></div><div id="rm-banner"></div><div class="mp-selbox" id="rm-selbox" hidden></div><div class="mp-selpill rm-selpill" id="rm-selpill" role="group" aria-live="polite" hidden></div>${btn('btn btn-primary btn-big rm-back', `id="rm-back" data-rtool="mine" hidden`, `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.backMine'))}`)}</div>`;
   document.querySelector('main#main')?.classList.add('rm-main');
   renderWorld(); renderBar(); renderPal();
   requestAnimationFrame(() => { if (R.role === 'teacher') fitAll(); else goMine(); });
@@ -188,9 +188,9 @@ function stripHtml(A) {
 function areaInner(A) {
   // A classmate's square while the teacher hides work: the server sent nothing of it; a frosted panel drawn from nothing.
   if (A.hidden) return `<div class="rm-body">${stripHtml(A)}<div class="rm-in rm-frost" style="top:${topOf(A)}px"><span>${iconHtml('🔒', { size: 18 })} ${esc(t('js.manip-room.hiddenWork'))}</span></div></div>`;
-  const sel = R.sel && R.sel.key === A.key ? R.sel.id : null, osel = R.osel && R.osel.key === A.key ? R.osel.id : null, ws = workSize(A);
+  const sel = R.sel && R.sel.key === A.key ? R.sel.id : null, osel = R.osel && R.osel.key === A.key ? R.osel.id : null, ws = workSize(A), many = R.many && R.many.key === A.key ? R.many : null;
   const lifted = R.lifted && R.lifted.key === A.key ? R.lifted.id : null, flipIn = R.flipIn && R.flipIn.key === A.key ? R.flipIn.id : null;
-  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, traded: R.traded && R.traded.key === A.key ? R.traded.ids : null, totals: totalsOn(), checked: A.key === R.me ? R.checked : null, lifted, flipIn })}</div>
+  return `<div class="rm-body">${stripHtml(A)}<div class="rm-in" style="top:${topOf(A)}px"><div class="mp-content mp-abs">${R.deps.boardHtml(R.room.tool, R.impl, A.st, { sel, osel, many, readOnly: !A.editable || R.room.status !== 'active', snapped: R.snapped, fresh: R.fresh, traded: R.traded && R.traded.key === A.key ? R.traded.ids : null, totals: totalsOn(), checked: A.key === R.me ? R.checked : null, lifted, flipIn })}</div>
     <svg class="mp-ink" viewBox="0 0 ${ws.w} ${ws.h}" aria-hidden="true">${inkOf(A)}</svg>
     <div class="mp-texts">${A.ann.texts.map(x => textHtml(A, x)).join('')}</div><div class="mp-notes">${A.ann.notes.map((n, i) => noteHtml(A, n, i)).join('')}</div></div></div>`;
 }
@@ -220,11 +220,65 @@ function inkOf(A) { const ws = workSize(A); return A.ann.strokes.map(s => R.deps
 function renderArea(key) {
   const A = R.areas.get(key), el = R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"]`);
   if (!A || !el) return;
+  if (R.many && R.many.key === key) setMany(key, A.editable ? selKeep(A.st, R.many) : null);   // what went away (or a room that ended) leaves the selection
   el.classList.toggle('active', R.role === 'teacher' && R.active === key);
   el.querySelector('.rm-body').outerHTML = areaInner(A);
   bindArea(key); R.fresh = null; if (R.traded && R.traded.key === key) R.traded = null;
   if (!A.hidden) R.deps.growAnswers(el, A.st, workSize(A));   // a long answer shows whole (its box grows; saved with its next change)
   const ta = el.querySelector('textarea.mp-notetext, textarea.mp-textin'); if (ta) ta.focus({ preventScroll: true });
+  renderSelPill();
+}
+// ---------------------------------------------------------------- many at once, in one square (public/js/manip.js setMany)
+/** The selection in square key (a selection box, Shift+click): one thing is the usual R.sel or R.osel; two or more are
+ *  R.many { key, p, o }. Anything selected in another square is let go of. */
+function setMany(key, m) {
+  const n = selCount(m);
+  R.many = n > 1 ? { key, p: m.p, o: m.o } : null;
+  R.sel = n === 1 && m.p.size ? { key, id: [...m.p][0] } : null;
+  R.osel = n === 1 && m.o.size ? { key, id: [...m.o][0] } : null;
+}
+const curSel = key => (R.many && R.many.key === key ? R.many : { p: new Set(R.sel && R.sel.key === key ? [R.sel.id] : []), o: new Set(R.osel && R.osel.key === key ? [R.osel.id] : []) });
+/** The squares that show something selected now. */
+const selKeys = () => new Set([R.sel, R.osel, R.many].filter(Boolean).map(x => x.key));
+/** Change the selection and draw again every square it was or is in. */
+function reselect(fn) { const was = selKeys(); fn(); for (const k of new Set([...was, ...selKeys()])) renderArea(k); renderPal(); renderSelPill(); }
+/** Shift+click in square key: a piece (k 'p') or object ('o') joins the selection there, or leaves it. */
+function toggleSel(key, k, it) {
+  if (it.locked) return;
+  const m = curSel(key), c = { p: new Set(m.p), o: new Set(m.o) };
+  if (c[k].has(it.id)) c[k].delete(it.id); else c[k].add(it.id);
+  setMany(key, c);
+}
+function renderSelPill() {
+  const el = document.getElementById('rm-selpill'); if (!el || !R) return;
+  const n = selCount(R.many); el.hidden = !n;
+  el.innerHTML = n ? R.deps.selPillHtml(n, { count: t('js.manip-room.selCount', { n }), del: t('js.manip-room.selDelete'), delLabel: t('js.manip-room.selDeleteN', { n }), clear: t('js.manip-room.selClear') }) : '';
+  const bar = document.getElementById('rm-bar'); if (n && bar) el.style.top = `${bar.offsetTop + bar.offsetHeight + 10}px`;
+}
+/** Delete everything selected in its square: one Undo step (and an Undo on the toast). */
+function deleteMany() {
+  const m = R.many; if (!m) return;
+  const n = selCount(m);
+  edit(m.key, (st, v) => { if (!selDelete(st, m)) return false; R.many = null; v.sel = null; v.osel = null; });
+  const mark = R.hist.length;
+  undoToast(t('js.manip-room.selDeleted', { n }), t('js.manip-room.undo'), () => { if (R && R.hist.length === mark) toolButton('undo'); });
+}
+/** Delete or Backspace deletes what is selected, Escape lets go (never while typing or with a wheel open). */
+const typing = el => !!(el && el.closest && el.closest('input, textarea, select, [contenteditable="true"], [contenteditable=""]'));
+document.addEventListener('keydown', e => {
+  if (!R || !document.getElementById('rm') || typing(e.target)) return;
+  if (e.code === 'Space') { if (!e.target.closest?.('button, a') && (document.getElementById('rm').matches(':hover') || R.spaceDown)) { e.preventDefault(); R.spaceDown = true; document.getElementById('rm').classList.add('rm-grab'); } return; }
+  if (!R.many || wheelOpen()) return;
+  if (e.key === 'Escape') { e.preventDefault(); reselect(() => { R.many = null; }); }
+  else if (e.key === 'Delete' || e.key === 'Backspace') { e.preventDefault(); deleteMany(); }
+});
+const spaceUp = () => { if (!R) return; R.spaceDown = false; document.getElementById('rm')?.classList.remove('rm-grab'); };
+document.addEventListener('keyup', e => { if (e.code === 'Space') spaceUp(); });
+window.addEventListener('blur', spaceUp);
+/** Where a screen point falls in square key's work space (its pixels). */
+function inArea(key, cx, cy) {
+  const inn = R.world && R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"] .rm-in`); if (!inn) return { x: 0, y: 0 };
+  const r = inn.getBoundingClientRect(); return { x: (cx - r.left) / R.view.z, y: (cy - r.top) / R.view.z };
 }
 function bindArea(key) {
   const A = R.areas.get(key), el = R.world.querySelector(`.rm-area[data-key="${CSS.escape(key)}"]`);
@@ -505,8 +559,14 @@ function bind() {
   el.addEventListener('pointerdown', down);
   el.addEventListener('pointermove', move);
   el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
-  // The wheel zooms the board, except over a list that scrolls (the ⋯ menu's "Answers checked", raised hands).
-  el.addEventListener('wheel', e => { if (e.target.closest('.rm-menu, .rm-handlist')) return; e.preventDefault(); const r = el.getBoundingClientRect(); zoomAt(Math.exp(-e.deltaY * (e.ctrlKey ? 0.01 : 0.0015)), e.clientX - r.left, e.clientY - r.top); }, { passive: false });
+  // The wheel pans the room (Ctrl or Cmd, or a trackpad's pinch: zooms; manip.js wheelMove), except over a list that
+  // scrolls (the ⋯ menu's "Answers checked", raised hands) or a field.
+  el.addEventListener('wheel', e => {
+    if (e.target.closest('.rm-menu, .rm-handlist, textarea')) return;
+    e.preventDefault();
+    const w = R.deps.wheelMove(e, size().h), r = el.getBoundingClientRect();
+    if (w.zoom) zoomAt(w.zoom, e.clientX - r.left, e.clientY - r.top); else { R.view.x += w.dx; R.view.y += w.dy; applyView(); }
+  }, { passive: false });
   el.addEventListener('click', click);
   // The menu's "Answers checked" stays open (or closed) as the teacher left it when the menu is drawn again.
   el.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('details.rm-checks')) R.checksOpen = e.target.open; }, true);
@@ -537,7 +597,7 @@ function bind() {
     if (e.target.classList.contains('mp-notetext') && R.editing) { const n = A.ann.notes.find(x => x.id === R.editing.id); if (n) { n.text = e.target.value.slice(0, 300); queueSave(A.key); } }
   });
 }
-const UI = 'button, a, input, select, textarea, label, .rm-bar, .rm-pal, .rm-float, .rm-banner, .rm-back, .rm-strip, .rm-handlist, .rm-menu, .rm-steps-sheet';
+const UI = 'button, a, input, select, textarea, label, .mp-selpill, .rm-bar, .rm-pal, .rm-float, .rm-banner, .rm-back, .rm-strip, .rm-handlist, .rm-menu, .rm-steps-sheet';
 function down(e) {
   if (!R) return;
   const rm = document.getElementById('rm');
@@ -546,13 +606,25 @@ function down(e) {
   if (e.target.closest('.rm-mini')) { miniJump(e); return; }
   if (R.pointers.size === 2) {
     const [a, b] = [...R.pointers.values()];
+    if (R.gesture && R.gesture.hold) R.gesture.hold.cancel();
+    selBox(null);
     R.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 };
     return;
   }
   if (e.target.closest('.mp-text.editing .mp-textbar, .mp-text.editing [data-trz]')) R.textHold = Date.now();   // the text's own buttons keep it open
   if (e.target.closest(UI)) return;
+  const mouse = e.pointerType !== 'touch';
+  // Space held, or the middle button: a mouse pans from anywhere.
+  if (e.button === 1 || (mouse && R.spaceDown && e.button === 0)) { e.preventDefault(); R.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: R.view.x, y0: R.view.y, moved: false, grab: true }; rm.setPointerCapture(e.pointerId); return; }
   const areaEl = e.target.closest('.rm-area'), A = areaEl && R.areas.get(areaEl.dataset.key);
   const live = R.room.status === 'active';
+  // A selection box in this square, from here (on a locked backdrop's body, o: a hold still opens its wheel).
+  const boxFrom = (o = null) => {
+    const gg = R.gesture = { kind: 'box', key: A.key, sx: e.clientX, sy: e.clientY, moved: false, add: e.shiftKey };
+    if (o) gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; objMenu(gg.key, o.id, gg.sx, gg.sy); } });
+    rm.setPointerCapture(e.pointerId);
+  };
+  const boxable = !!(A && A.editable && live && !A.hidden && !R.textMode && !R.annotate && e.target.closest('.rm-in'));
   if (A && A.editable && live) {
     if (R.role === 'teacher' && R.active !== A.key) { const old = R.active; R.active = A.key; renderPal(); areaEl.classList.add('active'); R.world.querySelector(`.rm-area[data-key="${CSS.escape(old)}"]`)?.classList.remove('active'); }
     const inner = areaEl.querySelector('.rm-in').getBoundingClientRect();
@@ -574,7 +646,7 @@ function down(e) {
         e.preventDefault();
         if (e.button === 2) { pieceMenu(A.key, p.id, e.clientX, e.clientY); return; }
         if (e.button > 0) return;
-        const gg = R.gesture = { kind: 'piece', key: A.key, p, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        const gg = R.gesture = { kind: 'piece', key: A.key, p, sx: e.clientX, sy: e.clientY, moved: false, held: false, before, shift: e.shiftKey, many: !e.shiftKey && !!R.many && R.many.key === A.key && R.many.p.has(p.id) };
         gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; pieceMenu(gg.key, p.id, gg.sx, gg.sy); } });
         rm.setPointerCapture(e.pointerId); return;
       }
@@ -611,15 +683,22 @@ function down(e) {
         e.preventDefault();
         if (e.button === 2) { objMenu(A.key, o.id, e.clientX, e.clientY); return; }
         if (e.button > 0) return;
-        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before };
+        // A locked backdrop's body is the square under the pieces for a mouse: a drag there draws the selection box.
+        if (o.locked && mouse && boxable && !e.target.closest('.mp-ohead')) return boxFrom(o);
+        const gg = R.gesture = { kind: 'obj', key: A.key, o, el: objEl, head: !!e.target.closest('.mp-ohead'), x0: o.x, y0: o.y, sx: e.clientX, sy: e.clientY, moved: false, held: false, before, shift: e.shiftKey, many: !e.shiftKey && !!R.many && R.many.key === A.key && R.many.o.has(o.id) };
         gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) { gg.held = true; objMenu(gg.key, o.id, gg.sx, gg.sy); } });
         rm.setPointerCapture(e.pointerId); return;
       }
     }
   }
-  R.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: R.view.x, y0: R.view.y, moved: false };
+  // Empty space in a square this viewer may change: a mouse draws the selection box; a finger pans, or held still for a
+  // moment first, draws the box. Anywhere else a drag pans the room.
+  if (boxable && mouse) { if (e.button === 0) boxFrom(); return; }
+  const gg = R.gesture = { kind: 'pan', sx: e.clientX, sy: e.clientY, x0: R.view.x, y0: R.view.y, moved: false };
+  if (boxable) gg.hold = startHold(e.clientX, e.clientY, () => { if (R && R.gesture === gg && !gg.moved) R.gesture = { kind: 'box', key: A.key, sx: gg.sx, sy: gg.sy, moved: false, add: false }; });
   rm.setPointerCapture(e.pointerId);
 }
+const selBox = a => R && R.deps.drawSelBox(document.getElementById('rm-selbox'), document.getElementById('rm'), a);
 function move(e) {
   if (!R) return;
   if (R.pointers.has(e.pointerId)) R.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -634,6 +713,11 @@ function move(e) {
   }
   if (g.kind === 'dead') return;
   const dx = e.clientX - g.sx, dy = e.clientY - g.sy;
+  if (g.kind === 'box') {
+    if (g.held || (!g.moved && Math.abs(dx) + Math.abs(dy) < 5)) return;
+    if (g.hold) g.hold.cancel();
+    g.moved = true; g.ex = e.clientX; g.ey = e.clientY; selBox({ x0: g.sx, y0: g.sy, x1: g.ex, y1: g.ey }); return;
+  }
   if ((g.kind === 'piece' || g.kind === 'obj') && !g.moved) {
     // A piece or object starts to move after 10 px; before that it may still become a hold.
     if (Math.hypot(dx, dy) < SLOP) return;
@@ -644,7 +728,9 @@ function move(e) {
     if (g.kind === 'obj' && g.o.locked && !g.held && !g.head) { R.gesture = { kind: 'pan', sx: g.sx, sy: g.sy, x0: R.view.x, y0: R.view.y, moved: true }; R.view.x += dx; R.view.y += dy; applyView(); return; }
     if (g.kind === 'piece' ? g.p.locked : g.o.locked) { if (!g.held) shake(g.kind === 'piece' ? pieceElIn(g.key, g.p.id) : objElIn(g.key, g.o.id)); R.gesture = { kind: 'dead', key: g.key }; return; }
     if (g.held) { closeWheel({ focus: false }); g.before = JSON.stringify({ st: A0.st, ann: A0.ann }); }
-    if (g.kind === 'piece') {
+    // One of many selected: all of them move (and what their frames carry), no snapping.
+    if (g.many && !g.held && R.many) g.list = selMoving(R.room.tool, A0.st, R.many, o => R.deps.carried(R.room.tool, o, A0.st.pieces)).map(x => ({ ...x, el: x.obj ? objElIn(g.key, x.it.id) : pieceElIn(g.key, x.it.id) }));
+    else if (g.kind === 'piece') {
       // Held first (out of its group now), or counters (they never link): just this piece.
       const members = g.held || !linksPieces(R.room.tool) ? [g.p] : groupOf(A0.st.pieces, g.p);
       g.members = members.map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) }));
@@ -652,11 +738,11 @@ function move(e) {
       g.el = objElIn(g.key, g.o.id) || g.el; g.x0 = g.o.x; g.y0 = g.o.y;
       // An unlocked frame takes the counters seated in its cells along.
       // A place-value chart takes the blocks in its columns along.
-      g.carry = (FRAMES.has(g.o.k) ? seatedIn(R.room.tool, g.o, A0.st.pieces) : g.o.k === 'pv-chart' ? inChart(R.room.tool, g.o, A0.st.pieces) : []).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) }));
+      g.carry = R.deps.carried(R.room.tool, g.o, A0.st.pieces).map(m => ({ m, x0: m.x, y0: m.y, el: pieceElIn(g.key, m.id) }));
     }
     g.moved = true;
   }
-  if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) g.moved = true; R.view.x = g.x0 + dx; R.view.y = g.y0 + dy; applyView(); return; }
+  if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) { g.moved = true; if (g.hold) { g.hold.cancel(); g.hold = null; } } R.view.x = g.x0 + dx; R.view.y = g.y0 + dy; applyView(); return; }
   if (g.kind === 'ink') {
     const A = R.areas.get(g.key), s = A.ann.strokes[A.ann.strokes.length - 1];
     if (s && s.pts.length < 600) s.pts.push({ x: clamp((e.clientX - g.inner.left) / g.inner.width, 0, 1), y: clamp((e.clientY - g.inner.top) / g.inner.height, 0, 1) });
@@ -669,6 +755,11 @@ function move(e) {
   g.moved = true;
   const A = R.areas.get(g.key), ws = workSize(A), z = R.view.z;
   // Everything stays inside the square's work space (under its strip): the server keeps it there too.
+  if (g.list) {
+    selMove(g.list, dx / z, dy / z, ws);
+    for (const x of g.list) if (x.el) { x.el.style.left = `${x.it.x}px`; x.el.style.top = `${x.it.y}px`; if (!x.obj) x.el.classList.add('dragging'); }
+    return;
+  }
   if (g.kind === 'obj') {
     const r = objRect(R.room.tool, g.o);
     g.o.x = Math.round(clamp(g.x0 + dx / z, 0, ws.w - r.w)); g.o.y = Math.round(clamp(g.y0 + dy / z, 0, ws.h - r.h));
@@ -708,16 +799,33 @@ function up(e) {
   if (g.kind === 'dead') { R.justPanned = true; return; }
   // Held: the wheel stays open after the finger lifts.
   if ((g.kind === 'obj' || g.kind === 'piece') && !g.moved && (g.held || e.type === 'pointercancel')) { R.justPanned = true; return; }
-  if (g.kind === 'pan') { R.justPanned = g.moved; if (!g.moved && (R.sel || R.osel)) { const k = (R.sel || R.osel).key; R.sel = null; R.osel = null; renderArea(k); renderPal(); } return; }
+  if (g.kind === 'box') {
+    selBox(null);
+    if (g.held) { R.justPanned = true; return; }
+    const A = R.areas.get(g.key);
+    if (g.moved && A) {
+      // Everything unlocked the box touches in this square (Shift: added to what was selected there).
+      const m = inRect(R.room.tool, A.st, rectFrom(inArea(g.key, g.sx, g.sy), inArea(g.key, g.ex, g.ey)));
+      if (g.add) { const c = curSel(g.key); for (const id of c.p) m.p.add(id); for (const id of c.o) m.o.add(id); }
+      reselect(() => setMany(g.key, m)); R.justPanned = true; return;
+    }
+  }
+  // A tap on empty space lets go of what was selected.
+  if (g.kind === 'pan' || g.kind === 'box') { R.justPanned = g.moved; if (!g.moved && !g.grab && !g.add && (R.sel || R.osel || R.many)) reselect(() => { R.sel = null; R.osel = null; R.many = null; }); return; }
   if (g.kind === 'ink') { const A = R.areas.get(g.key); A.ann.strokes = A.ann.strokes.filter(s => s.pts.length > 1); renderArea(g.key); renderPal(); queueSave(g.key); return; }
+  // Many moved together: one Undo step, the selection kept.
+  if (g.list) { const A = R.areas.get(g.key); if (A) settle(A); R.hist.push([g.key, g.before]); if (R.hist.length > 60) R.hist.shift(); queueSave(g.key); renderArea(g.key); renderPal(); R.justPanned = true; return; }
+  // Any other drag or tap on a piece or object lets go of many selected (Shift+click adds or removes one instead).
+  if ((g.kind === 'obj' || g.kind === 'piece') && R.many && !(g.shift && !g.moved)) reselect(() => { R.many = null; });
   if (g.kind === 'obj' || g.kind === 'resize') {
-    // A tap selects (its buttons open); a drag only moves it.
+    // A tap selects (its buttons open; Shift: adds or removes it); a drag only moves it.
     if (g.moved) {
       const A = R.areas.get(g.key);
       if (A && g.kind === 'resize') R.deps.scaleWithChart(R.room.tool, g.o, g.s0, A.st.pieces);
       if (A) settle(A);
       R.hist.push([g.key, g.before]); queueSave(g.key);
-    } else if (g.o && !g.o.locked) { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
+    } else if (g.shift && g.kind === 'obj') reselect(() => toggleSel(g.key, 'o', g.o));
+    else if (g.o && !g.o.locked) { R.osel = { key: g.key, id: g.o.id }; R.sel = null; }
     renderArea(g.key); renderPal(); R.justPanned = true; return;
   }
   if (g.kind === 'piece') {
@@ -737,7 +845,8 @@ function up(e) {
       settle(A);
       R.hist.push([g.key, g.before]); if (R.hist.length > 60) R.hist.shift(); queueSave(g.key);
     }
-    if (!g.moved) { R.sel = { key: g.key, id: g.p.id }; R.osel = null; } else if (R.sel && R.sel.key === g.key && R.sel.id !== g.p.id) R.sel = null;
+    if (!g.moved && g.shift) reselect(() => toggleSel(g.key, 'p', g.p));
+    else if (!g.moved) { R.sel = { key: g.key, id: g.p.id }; R.osel = null; } else if (R.sel && R.sel.key === g.key && R.sel.id !== g.p.id) R.sel = null;
     renderArea(g.key); renderPal(); R.snapped = null;
     R.justPanned = true; return;
   }
@@ -788,6 +897,8 @@ function click(e) {
   if (pal) { const A = R.areas.get(R.active); const p = A && palette(A)[+pal.dataset.pal]; if (p) edit(R.active, (st, v) => p.run(st, v)); return; }
   const tool = e.target.closest('[data-rtool]');
   if (tool) return toolButton(tool.dataset.rtool);
+  if (e.target.closest('#rm-selpill [data-seldel]')) return deleteMany();
+  if (e.target.closest('#rm-selpill [data-selx]')) return reselect(() => { R.many = null; });
   const hgo = e.target.closest('[data-hgo]');
   if (hgo) { const A = R.areas.get(hgo.dataset.hgo); if (A) fitRect({ x: A.rect.x, y: A.rect.y - 36, w: A.rect.w, h: A.rect.h + 36 }, 12); return; }
   const hlow = e.target.closest('[data-hlow]');
@@ -851,6 +962,7 @@ function pieceMenu(key, id, x, y, keyboard = false) {
   const slug = R.room.tool, ws = workSize(A);
   const p0 = A.st.pieces.find(q => q.id === id); if (!p0) return;
   if (teacherLocked(p0)) { shake(pieceElIn(key, id)); toast(t('js.manip-room.teacherLock')); return; }
+  if (R.many) reselect(() => { R.many = null; });
   edit(key, (st, v) => R.deps.pieceAction(st, 'lift', id, v, null, slug, ws));
   const p = A.st.pieces.find(q => q.id === id); if (!p) return;
   R.sel = { key, id }; R.osel = null; R.lifted = p.locked ? null : { key, id };
@@ -872,7 +984,7 @@ function objMenu(key, id, x, y, keyboard = false) {
   const A = R && R.areas.get(key); if (!A || !A.editable || R.room.status !== 'active') return;
   const slug = R.room.tool, ws = workSize(A), o = A.st.objects.find(q => q.id === id); if (!o) return;
   if (teacherLocked(o)) { shake(objElIn(key, id)); toast(t('js.manip-room.teacherLock')); return; }
-  if (!o.locked) { R.osel = { key, id }; R.sel = null; renderArea(key); renderPal(); }
+  if (!o.locked) reselect(() => { R.many = null; R.osel = { key, id }; R.sel = null; });
   openWheel({ x, y, keyboard, items: R.deps.wheelItems(R.deps.objWheel(o)), label: t('js.manip-room.actionsFor', { label: R.deps.objName(slug, o) }), focusBack: () => objElIn(key, id)?.querySelector('.mp-ohead'),
     onPick: k => R.deps.wheelRun({ k, slug, label: R.deps.objName(slug, o), el: () => null, mark: () => R.hist.length, undo: () => toolButton('undo'),
       apply: () => edit(key, (st, v) => { const r = R.deps.objectAction(slug, st, k, id, v, { x: 0, y: 0, w: ws.w, h: ws.h }, ws, objMax(A)); if (r) markLock(key, st.objects.find(z => z.id === id), k); return r; }) }) });
@@ -913,7 +1025,7 @@ async function toolButton(k) {
   if (k === 'undo') {
     const last = R.hist.pop(); if (!last) return;
     const A = R.areas.get(last[0]); if (!A) return;
-    const o = JSON.parse(last[1]); A.st = o.st; A.ann = o.ann; renderArea(A.key); renderPal(); queueSave(A.key); return;
+    const o = JSON.parse(last[1]); A.st = o.st; A.ann = o.ann; if (R.many && R.many.key === A.key) R.many = null; renderArea(A.key); renderPal(); queueSave(A.key); return;
   }
   if (k === 'pen') { R.annotate = !R.annotate; renderPal(); document.getElementById('rm').classList.toggle('inking', R.annotate); return; }
   if (k === 'clearpen') { const A = R.areas.get(R.active); if (A) { R.hist.push([A.key, JSON.stringify({ st: A.st, ann: A.ann })]); A.ann.strokes = []; renderArea(A.key); queueSave(A.key); } return; }

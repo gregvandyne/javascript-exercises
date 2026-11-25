@@ -505,6 +505,49 @@ export function seatedIn(slug, o, pieces) {
   const cells = slotsOf(slug, o).filter(s => s.kind === 'cell');
   return (pieces || []).filter(p => !p.locked && cells.some(s => { const cx = num(p.x) + num(p.w, 40) / 2, cy = num(p.y) + num(p.h, 40) / 2; return cx >= s.x && cx <= s.x + s.w && cy >= s.y && cy <= s.y + s.h; }));
 }
+// ---------------------------------------------------------------- selecting many at once (a selection box, Shift+click)
+// A selection is { p: Set(piece ids), o: Set(object ids) }; the solo board and the room keep one each (the room's per square).
+/** The rectangle between two corners. */
+export const rectFrom = (a, b) => ({ x: Math.min(a.x, b.x), y: Math.min(a.y, b.y), w: Math.abs(a.x - b.x), h: Math.abs(a.y - b.y) });
+const meets = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/** A piece's box as it lies, at any turn (the box around its turned corners). */
+export function pieceRect(p) {
+  const b = pieceBox(p); if (b) return b;
+  const a = (num(p.rot) * Math.PI) / 180, w = num(p.w, 40), h = num(p.h, 40), c = Math.abs(Math.cos(a)), s = Math.abs(Math.sin(a)), W = w * c + h * s, H = w * s + h * c;
+  return { x: num(p.x) + (w - W) / 2, y: num(p.y) + (h - H) / 2, w: W, h: H };
+}
+/** What a selection box r takes (owner, 25 Nov 2026): every unlocked piece and object whose box meets it. Locked ones
+ *  (backdrops start locked) never. -> a selection */
+export const inRect = (slug, b, r) => ({ p: new Set((b.pieces || []).filter(p => !p.locked && meets(pieceRect(p), r)).map(p => p.id)), o: new Set((b.objects || []).filter(o => !o.locked && meets(objRect(slug, o), r)).map(o => o.id)) });
+/** How many things a selection holds (null: none). */
+export const selCount = m => (m ? m.p.size + m.o.size : 0);
+/** The selection with what is still on the board and unlocked. */
+export const selKeep = (b, m) => ({ p: new Set((b.pieces || []).filter(p => m.p.has(p.id) && !p.locked).map(p => p.id)), o: new Set((b.objects || []).filter(o => m.o.has(o.id) && !o.locked).map(o => o.id)) });
+/** Everything a drag of the selection moves, at its start: its pieces (with their snapped groups) and objects, and what each object takes along
+ *  (carry(o): an unlocked frame's seated counters, a chart's blocks), each once. -> [{ it, obj, x0, y0, r }] */
+export function selMoving(slug, b, m, carry = () => []) {
+  const objs = (b.objects || []).filter(o => m.o.has(o.id) && !o.locked), ps = new Set((b.pieces || []).filter(p => m.p.has(p.id) && !p.locked));
+  for (const p of [...ps]) for (const q of groupOf(b.pieces, p)) if (!q.locked) ps.add(q);   // a snapped group stays whole
+  for (const o of objs) for (const p of carry(o)) ps.add(p);
+  return [...objs.map(o => ({ it: o, obj: true, x0: num(o.x), y0: num(o.y), r: objRect(slug, o) })), ...[...ps].map(p => ({ it: p, obj: false, x0: num(p.x), y0: num(p.y), r: { x: num(p.x), y: num(p.y), w: num(p.w, 40), h: num(p.h, 40) } }))];
+}
+/** Move a selection by (dx, dy) plane pixels from where it started, all of it kept inside space (no snapping). */
+export function selMove(list, dx, dy, space) {
+  const b = bbox(list.map(x => x.r)); if (!b) return;
+  const ddx = clamp(dx, -b.x, space.w - b.x - b.w), ddy = clamp(dy, -b.y, space.h - b.y - b.h);
+  for (const x of list) { x.it.x = Math.round(x.x0 + ddx); x.it.y = Math.round(x.y0 + ddy); }
+}
+/** Delete a selection's unlocked pieces and objects (a snapped group left with one piece is no group). -> how many went */
+export function selDelete(b, m) {
+  const k = selKeep(b, m), n = selCount(k);
+  b.objects = (b.objects || []).filter(o => !k.o.has(o.id));
+  if (Array.isArray(b.pieces)) {
+    b.pieces = b.pieces.filter(p => !k.p.has(p.id));
+    const size = {}; for (const p of b.pieces) if (p.g) size[p.g] = (size[p.g] || 0) + 1;
+    for (const p of b.pieces) if (p.g && size[p.g] < 2) delete p.g;
+  }
+  return n;
+}
 /** A copy's place: right beside the piece (under it, right of it, above, left), the first that is free and inside the
  *  region; else the region's free-spot search. boxes: everything on the board. -> { x, y } */
 export function nearSpot(boxes, p, region) {

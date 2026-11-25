@@ -3879,6 +3879,13 @@
         "pieceLocked": "Piece {label}, locked",
         "objLocked": "{name}, locked"
       },
+      "sel": {
+        "count": "{n} selected",
+        "delete": "Delete",
+        "deleteN": "Delete the {n} selected",
+        "clear": "Clear the selection",
+        "deleted": "{n} deleted"
+      },
       "save": {
         "name": "Template name",
         "what": "A template is a fresh starting point: opening it, or starting a room with it, always gives a clean copy. This board keeps saving as you work.",
@@ -3999,6 +4006,11 @@
       "checkShort": "Check",
       "actionsFor": "Actions for {label}",
       "teacherLock": "Your teacher locked this.",
+      "selCount": "{n} selected",
+      "selDelete": "Delete",
+      "selDeleteN": "Delete the {n} selected",
+      "selClear": "Clear the selection",
+      "selDeleted": "{n} deleted",
       "reopen": "Reopen room",
       "reopened": "The room is open again. Students go back to their own squares.",
       "prevStep": "Previous step",
