@@ -13424,3 +13424,58 @@ Spec: `docs/homeroom.md` and the owner-approved student desk mockup. Builds on s
   and its limits, the projector with no student names) and `tests/unit/homeroom-desk-browser.test.js` (1366 x 768,
   tablet both ways, phone: layout, no sideways scroll, 48-pixel targets; drawing and saving; See the room; live class
   from the teacher's bar to a desk and the prompt; the projector).
+
+## Homeroom, step 1c: quick sign-in for a class on shared devices (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Getting everyone in fast", approved). Builds on steps 1a and 1b.
+- **The class sign-in code** (`services/homeroom-signin.js`, `routes/homeroom-signin.js`; migration
+  `0124_homeroom_signin`: `homeroom_rooms.signin_code` / `signin_until`). Six characters from the friend-code letters (no
+  0/O, 1/I/L), random, unique while set, about 887 million codes. Only the class's teachers open it (**Students sign
+  in** in the ⋯ menu, and the Sign-in panel); it stays open 90 minutes (Keep open longer: 90 more from now, same code),
+  opens by itself when live class starts, closes with End class, and the teacher can close it. Closed or expired, the
+  code means nothing. The box shows a big QR code of `/hr#<code>` (the existing `services/qr.js`, as Oomba Live's join
+  QR), the short address and the code in two halves. The projector shows the same card beside the teacher's area while
+  sign-in is open (its poll sends the QR only when the code changed). Desks never get the code.
+- **The short address is `/hr`** (no existing route or file used it). The code travels after `#`, so it never reaches
+  server logs from the QR code, and the page keeps it in the address for "Not you? Switch".
+- **The student flow** (`public/js/homeroom-signin.js`, a bare page): the code, then the class's name and its students
+  as big name buttons (84 px; two columns on a phone), then: their password (typed, Show/Hide), or their three pictures
+  in order from a grid of nine Fluent 3D icons already in the repo (bear, lion, frog, owl, rocket, apple, star, rainbow,
+  cupcake; never photos), or Sign in with Google (the site's own button and flow). Then their desk.
+- **The name grid exposes display names only** (the names classmates see on the class page; for school accounts that
+  is often the generated username, which the class already sees), plus how each signs in (password, picture, Google,
+  or "ask your teacher"). Never an account id, roster name or anything else: each button carries an HMAC of the class,
+  the code and the student, so a grid read under one code is useless under any other. Only while the code is open.
+- **Picture passwords**: only for accounts the class's school made (`users.managed_school`: the accounts a teacher
+  already resets passwords for); own accounts always use their own password. Stored in `homeroom_signins` as a bcrypt
+  hash of the three pictures (cost as passwords), shown once on a printable card kept in memory for a day for the
+  teacher who made it (as login cards are). A new one ends that student's class-device sessions. Grade K to 2 classes
+  (`classrooms.grade`, free text: K, TK, Kindergarten, 1, 2nd, Grade 2, K-2, CP, CE1, 2年生...; `earlyGrade`) give
+  school accounts picture passwords unless the teacher picks Password; a student without one yet sees "Ask your teacher
+  for your sign-in card". Wrong pictures: 5 tries, then a wait of 1 minute that doubles per wrong try (up to 15), and
+  after 10 wrong tries in a row it stays locked until a teacher unlocks it or makes a new one. A bcrypt check runs on
+  every try, so timing never says who has one.
+- **Typed passwords use the sign-in page's own limits and buckets** (`routes/auth.js` LOGIN: per address failures and
+  tries, `loginLockKey` per username), so this door never buys more guesses than `/login`. Staff, grown-up, guest and
+  banned accounts never sign in here. Picture tries also count toward the per-address failure bucket.
+- **Other limits** (in memory, `services/ratelimit.js`): wrong codes 100 per address per 15 minutes (only wrong ones
+  count, so a school behind one address is fine), 1500 code requests per address, 3000 uses per code and 150 wrong
+  picture tries per code per 15 minutes.
+- **Shared devices** (`sessions.class_device`): a session started here (or by Google from this page, through two hooks
+  `routes/google.js` exposes so it imports nothing of Homeroom, and only for an active student of that class while it
+  is open) is a class-device session: it ends at the sign-in window plus 15 minutes (kept open longer: they last
+  longer), with End class, with the student leaving the class or the class going, and with a new picture password. The
+  desk shows **Not you? Switch** (signs out, back to `/hr#<code>`), and a desk whose sign-in ended goes to
+  `/hr?ended=1` ("Class is over"). Normal sign-ins are never marked or touched; `server/auth.js` is unchanged.
+- **The teacher's Sign-in panel** (`/class/:id/homeroom/signin`, the Homeroom gate): the code box, every student with
+  their roster name and "Shows as", Password / Picture password, status (ready, none yet, waiting, locked), New picture
+  password, Unlock, and **Print sign-in cards** (new picture passwords for everyone on pictures, "Type your password" or
+  "Use Sign in with Google" for the rest; two cards a row on paper). Mode changes, resets, unlocks, opening and closing
+  are in the audit log.
+- **Deleting**: `homeroom_signins` goes with the class and the school (`services/school-delete.js` BY_CLASS), the
+  student leaving the class, their account (`services/account-delete.js`), and moves with a merged school account.
+- Tests: `tests/unit/homeroom-signin.test.js` (open, extend, close, expiry, live start and End class; wrong codes and
+  per-address and per-code limits; the grid only while open and only display names; password and picture success,
+  failure, wait and lock; End class, the window and Switch; Google hooks; teacher-only; K-2; cards; projector vs desk;
+  delete paths) and `tests/unit/homeroom-signin-browser.test.js` (the teacher's sheet, panel, cards and projector; the
+  whole shared-tablet flow: code, name, pictures, desk, Switch, the next student's password, End class; phone widths).

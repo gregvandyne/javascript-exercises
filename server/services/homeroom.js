@@ -1,7 +1,7 @@
 // Homeroom (docs/homeroom.md; docs/decisions.md "Homeroom, step 1a"): the board a teacher runs a class from. This step is
 // the foundation: the gate, the class's Homeroom tab, the board (built on the Manipulatives live room: its view, its
 // teacher's area with notes, text and pen, its cleaning and saving), a desk per student placed where they really sit,
-// and the teacher's groups. Handouts, plans and sign-in come later.
+// and the teacher's groups. Handouts and plans come later; quick sign-in is services/homeroom-signin.js (step 1c).
 //
 // Who gets it (gate): HOMEROOM on (off by default: off means nobody, the platform admin included, as MANIPULATIVES=0),
 // then the platform admin, or school staff whose username is in HOMEROOM_USERS ('*': every teacher) and who have the
@@ -153,6 +153,10 @@ export const canUseDesk = (u, c) => isStudentOf(u, c) && classHasHomeroom(c);
 /** A class left live ends by itself after this long (a teacher who forgot End class). */
 export const LIVE_MAX_MS = 6 * 3600e3;
 const LIVE_ACTIONS = ['start', 'bring', 'back', 'pause', 'resume', 'end'];
+// Told after a teacher starts or ends live class (services/homeroom-signin.js: starting opens the class sign-in, End
+// class closes it and signs out the class's shared devices): fn({ by, c, action }).
+const liveHooks = [];
+export const onLive = fn => { if (!liveHooks.includes(fn)) liveHooks.push(fn); };
 /** The class's live state: null (not live) or { since, bring, paused }. */
 export function liveOf(classId) {
   const r = rowOf(classId);
@@ -175,6 +179,7 @@ export function setLive(u, c, action) {
     save(u, c.id, f);
   }
   audit(u.id, 'homeroom.live', c.id, { action });
+  if (action === 'start' || action === 'end') for (const fn of liveHooks) fn({ by: u, c, action, wasLive: !!cur });
   return ok({ live: liveOf(c.id) });
 }
 /** What a desk or the projector reads every few seconds: the live state and, when it changed since version v (the

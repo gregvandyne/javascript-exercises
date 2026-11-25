@@ -2081,7 +2081,8 @@
       "hintDraw": "Desenhe na área do professor. Toque de novo na ferramenta quando terminar.",
       "tooMany": "Não cabem mais desses na área do professor.",
       "arrange": "Organizar os lugares",
-      "menuSoon": "O código de entrada e o acesso rápido vêm em seguida.",
+      "signin": "Entrada dos alunos",
+      "loadingSignin": "Gerando o código…",
       "seats": {
         "lead": "Igual à sua sala de verdade:",
         "rows": "Fileiras",
@@ -4663,6 +4664,40 @@
       "deleteOk": "Excluir",
       "deleted": "“{title}” excluído.",
       "undo": "Desfazer"
+    },
+    "homeroom-signin": {
+      "codeLength": "O código tem {n} letras e números.",
+      "tapName": "Toque no seu nome",
+      "noNames": "Ainda não há ninguém nesta turma.",
+      "notThere": "Não achou seu nome? Fale com seu professor.",
+      "googleHint": "Você usa o Google na escola?",
+      "otherCode": "Usar outro código",
+      "hi": "Oi, {name}!",
+      "notMe": "Não sou eu",
+      "useGoogle": "Entre com sua conta Google da escola.",
+      "askTeacher": "Peça seu cartão de entrada ao seu professor.",
+      "typePassword": "Digite sua senha",
+      "show": "Mostrar",
+      "hide": "Esconder",
+      "signIn": "Entrar",
+      "tapPictures": "Toque nas suas {n} figuras em ordem",
+      "picked": "{n} de {total} figuras escolhidas",
+      "pictures": "Figuras",
+      "undo": "Desfazer",
+      "waitSecs": "Tente de novo em {n} segundos.",
+      "welcome": "Bem-vindo, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "A entrada está fechada",
+      "closedHint": "Ela abre sozinha quando você começa a aula com Todos para o Homeroom.",
+      "open": "Abrir entrada",
+      "goTo": "Acessem",
+      "enterCode": "e digitem este código:",
+      "codeIs": "Código: {code}",
+      "until": "Aberta até {time}",
+      "longer": "Manter aberta por mais tempo",
+      "close": "Fechar entrada",
+      "settings": "Ajustes e cartões de entrada"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Minha carteira",
@@ -14489,10 +14524,91 @@
       "myDesk": "Minha carteira",
       "teacherArea": "Área do professor",
       "library": "Biblioteca",
-      "room": "Ver a sala"
+      "room": "Ver a sala",
+      "notYou": "Não é {name}?",
+      "switch": "Trocar"
     },
     "projector": {
       "title": "{class} · Projetor"
+    },
+    "signin": {
+      "title": "Entrada dos alunos",
+      "qrLabel": "QR code para entrar nesta turma",
+      "goTo": "Acesse",
+      "enterCode": "e digite o código",
+      "opened": "A entrada está aberta",
+      "closed": "A entrada está fechada",
+      "pageTitle": "Entre na sua turma",
+      "signedInAs": "Conectado como {name}. Entrar aqui desconecta essa conta.",
+      "ended": "A aula acabou. Até a próxima!",
+      "codeHeading": "Entre na sua turma",
+      "codeLead": "Digite o código que seu professor mostra.",
+      "codeLabel": "Código da turma",
+      "go": "Ir",
+      "errors": {
+        "badCode": "Esse código não funciona. Confira e tente de novo.",
+        "tooMany": "Tentativas demais. Espere um pouco e tente de novo.",
+        "notFound": "Não deu certo. Toque no seu nome de novo.",
+        "wrongPassword": "Essa não é a senha certa. Tente de novo.",
+        "wrongPictures": "Essas não são as suas figuras. Tente de novo.",
+        "wait": "Tentativas demais. Espere um momento.",
+        "locked": "Tentativas demais. Peça ajuda ao seu professor para entrar.",
+        "badAction": "Não deu certo. Tente de novo.",
+        "badMode": "Escolha Senha ou Senha de figuras.",
+        "ownAccount": "Este aluno tem conta própria, então entra com a própria senha."
+      },
+      "pics": {
+        "bear": "Urso",
+        "lion": "Leão",
+        "frog": "Sapo",
+        "owl": "Coruja",
+        "rocket": "Foguete",
+        "apple": "Maçã",
+        "star": "Estrela",
+        "rainbow": "Arco-íris",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Entrada",
+        "back": "Voltar ao Homeroom",
+        "heading": "Entrada",
+        "lead": "Em aparelhos compartilhados, os alunos abrem a entrada da turma, tocam no próprio nome e depois digitam a senha ou tocam nas figuras da senha.",
+        "students": "Alunos",
+        "cards": "Imprimir cartões de entrada",
+        "cardsConfirm": "Isso cria novas senhas de figuras para todos que entram com figuras. As figuras antigas param de funcionar.",
+        "early": "Esta turma é da educação infantil ao 2º ano, então os alunos começam com senhas de figuras. Você pode mudar qualquer um para Senha.",
+        "shows": "Aparece como {name}",
+        "modeFor": "Como {name} entra",
+        "mode": {
+          "password": "Senha",
+          "picture": "Senha de figuras"
+        },
+        "ownAccount": "Conta própria: usa a própria senha",
+        "usesPassword": "Usa a própria senha",
+        "usesGoogle": "Usa o Google",
+        "locked": "Bloqueado após tentativas demais",
+        "waiting": "Esperando após tentativas erradas",
+        "hasPicture": "Senha de figuras pronta",
+        "noPicture": "Ainda sem senha de figuras",
+        "newConfirm": "Criar uma nova senha de figuras para {name}? A antiga para de funcionar.",
+        "newPicture": "Nova senha de figuras",
+        "makePicture": "Criar senha de figuras",
+        "unlock": "Desbloquear",
+        "none": "Ainda não há alunos nesta turma.",
+        "saved": "Salvo",
+        "unlocked": "Desbloqueado. O aluno pode tentar de novo."
+      },
+      "cards": {
+        "title": "Cartões de entrada",
+        "count": "{count, plural, one {# cartão} other {# cartões}}",
+        "print": "Imprimir",
+        "back": "Voltar à Entrada",
+        "once": "As senhas de figuras aparecem só aqui e agora. Imprima ou salve estes cartões antes de sair da página.",
+        "tap": "Seu botão: {name}",
+        "pictures": "Suas figuras, em ordem",
+        "usesPassword": "Digite sua senha",
+        "usesGoogle": "Use Entrar com o Google"
+      }
     }
   }
 }

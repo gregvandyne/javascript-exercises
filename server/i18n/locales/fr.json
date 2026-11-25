@@ -2080,7 +2080,8 @@
       "hintDraw": "Dessinez dans l’espace de l’enseignant. Touchez de nouveau l’outil quand vous avez fini.",
       "tooMany": "Il n’y a plus de place pour en ajouter dans l’espace de l’enseignant.",
       "arrange": "Placer les élèves",
-      "menuSoon": "Le code pour rejoindre et la connexion rapide arrivent bientôt.",
+      "signin": "Connexion des élèves",
+      "loadingSignin": "Création du code…",
       "seats": {
         "lead": "Reproduisez votre vraie salle :",
         "rows": "Rangées",
@@ -4662,6 +4663,40 @@
       "deleteOk": "Supprimer",
       "deleted": "« {title} » supprimé.",
       "undo": "Annuler"
+    },
+    "homeroom-signin": {
+      "codeLength": "Le code a {n} lettres et chiffres.",
+      "tapName": "Touche ton nom",
+      "noNames": "Il n’y a encore personne dans cette classe.",
+      "notThere": "Tu ne trouves pas ton nom ? Demande à ton enseignant.",
+      "googleHint": "Tu utilises Google à l’école ?",
+      "otherCode": "Utiliser un autre code",
+      "hi": "Salut, {name} !",
+      "notMe": "Ce n’est pas moi",
+      "useGoogle": "Connecte-toi avec ton compte Google de l’école.",
+      "askTeacher": "Demande ta carte de connexion à ton enseignant.",
+      "typePassword": "Tape ton mot de passe",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "signIn": "Se connecter",
+      "tapPictures": "Touche tes {n} images dans l’ordre",
+      "picked": "{n} images sur {total} choisies",
+      "pictures": "Images",
+      "undo": "Annuler",
+      "waitSecs": "Réessaie dans {n} secondes.",
+      "welcome": "Bienvenue, {name} !"
+    },
+    "homeroom-signin-panel": {
+      "closed": "La connexion est fermée",
+      "closedHint": "Elle s’ouvre toute seule quand vous lancez le cours avec Tout le monde dans Homeroom.",
+      "open": "Ouvrir la connexion",
+      "goTo": "Allez sur",
+      "enterCode": "et tapez ce code :",
+      "codeIs": "Code : {code}",
+      "until": "Ouverte jusqu’à {time}",
+      "longer": "Laisser ouvert plus longtemps",
+      "close": "Fermer la connexion",
+      "settings": "Réglages et cartes de connexion"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Mon pupitre",
@@ -14487,10 +14522,91 @@
       "myDesk": "Mon pupitre",
       "teacherArea": "Espace de l’enseignant",
       "library": "Bibliothèque",
-      "room": "Voir la classe"
+      "room": "Voir la classe",
+      "notYou": "Tu n’es pas {name} ?",
+      "switch": "Changer"
     },
     "projector": {
       "title": "{class} · Projecteur"
+    },
+    "signin": {
+      "title": "Connexion des élèves",
+      "qrLabel": "QR code pour se connecter à cette classe",
+      "goTo": "Va sur",
+      "enterCode": "et tape le code",
+      "opened": "La connexion est ouverte",
+      "closed": "La connexion est fermée",
+      "pageTitle": "Connecte-toi à ta classe",
+      "signedInAs": "Connecté en tant que {name}. Te connecter ici le déconnecte.",
+      "ended": "Le cours est fini. À la prochaine !",
+      "codeHeading": "Connecte-toi à ta classe",
+      "codeLead": "Tape le code que ton enseignant affiche.",
+      "codeLabel": "Code de la classe",
+      "go": "Valider",
+      "errors": {
+        "badCode": "Ce code ne marche pas. Vérifie-le et réessaie.",
+        "tooMany": "Trop d’essais. Attends un peu, puis réessaie.",
+        "notFound": "Ça n’a pas marché. Touche encore ton nom.",
+        "wrongPassword": "Ce n’est pas le bon mot de passe. Réessaie.",
+        "wrongPictures": "Ce ne sont pas tes images. Réessaie.",
+        "wait": "Trop d’essais. Attends un moment.",
+        "locked": "Trop d’essais. Demande à ton enseignant de t’aider à te connecter.",
+        "badAction": "Ça n’a pas marché. Réessaie.",
+        "badMode": "Choisissez Mot de passe ou Mot de passe en images.",
+        "ownAccount": "Cet élève a son propre compte : il se connecte avec son mot de passe."
+      },
+      "pics": {
+        "bear": "Ours",
+        "lion": "Lion",
+        "frog": "Grenouille",
+        "owl": "Hibou",
+        "rocket": "Fusée",
+        "apple": "Pomme",
+        "star": "Étoile",
+        "rainbow": "Arc-en-ciel",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Connexion",
+        "back": "Retour à Homeroom",
+        "heading": "Connexion",
+        "lead": "Sur les appareils partagés, les élèves ouvrent la connexion de la classe, touchent leur nom, puis tapent leur mot de passe ou touchent leurs images.",
+        "students": "Élèves",
+        "cards": "Imprimer les cartes de connexion",
+        "cardsConfirm": "Cela crée de nouveaux mots de passe en images pour tous ceux qui se connectent avec des images. Les anciennes images ne marchent plus.",
+        "early": "Cette classe est en maternelle, CP ou CE1 : les élèves commencent avec des mots de passe en images. Vous pouvez passer n’importe qui à Mot de passe.",
+        "shows": "Affiché : {name}",
+        "modeFor": "Comment {name} se connecte",
+        "mode": {
+          "password": "Mot de passe",
+          "picture": "Mot de passe en images"
+        },
+        "ownAccount": "Compte personnel : utilise son mot de passe",
+        "usesPassword": "Utilise son mot de passe",
+        "usesGoogle": "Utilise Google",
+        "locked": "Bloqué après trop d’essais",
+        "waiting": "En attente après des erreurs",
+        "hasPicture": "Mot de passe en images prêt",
+        "noPicture": "Pas encore de mot de passe en images",
+        "newConfirm": "Créer un nouveau mot de passe en images pour {name} ? L’ancien ne marchera plus.",
+        "newPicture": "Nouveau mot de passe en images",
+        "makePicture": "Créer le mot de passe en images",
+        "unlock": "Débloquer",
+        "none": "Pas encore d’élèves dans cette classe.",
+        "saved": "Enregistré",
+        "unlocked": "Débloqué. L’élève peut réessayer."
+      },
+      "cards": {
+        "title": "Cartes de connexion",
+        "count": "{count, plural, one {# carte} other {# cartes}}",
+        "print": "Imprimer",
+        "back": "Retour à la connexion",
+        "once": "Les mots de passe en images ne s’affichent qu’ici et maintenant. Imprimez ou enregistrez ces cartes avant de quitter la page.",
+        "tap": "Ton bouton : {name}",
+        "pictures": "Tes images, dans l’ordre",
+        "usesPassword": "Tape ton mot de passe",
+        "usesGoogle": "Utilise Se connecter avec Google"
+      }
     }
   }
 }

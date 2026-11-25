@@ -9,6 +9,9 @@
 //     names only, no work);
 //   - live class: Bring everyone to me shows every desk the teacher's area ("Your teacher is showing this"), Pause
 //     screens shows "Eyes on your teacher". Students only read the live state; only the class's teachers change it.
+//   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
+//     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
+//     sign-in page.
 import { t, api, toast, esc, pageData } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
@@ -171,8 +174,19 @@ let pollTimer = null;
 async function poll() {
   clearTimeout(pollTimer); pollTimer = null;
   if (document.hidden) return;
-  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}`, { background: true })); } catch { /* offline: try again */ }
+  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}`, { background: true })); }
+  catch (e) {
+    // A shared device's sign-in ended (End class, or its time ran out): back to the class sign-in for the next student.
+    if (D.device && (e.status === 401 || e.status === 404)) { location.href = '/hr?ended=1'; return; }
+  }
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
+}
+
+// ---------------------------------------------------------------- Not you? Switch (a shared device)
+async function switchUser(b) {
+  b.disabled = true; flush();
+  try { const r = await api(`/api/desk/${encodeURIComponent(D.classId)}/switch`, { method: 'POST', body: {} }); location.href = r.redirect || '/hr'; }
+  catch { location.href = '/hr'; }
 }
 
 // ---------------------------------------------------------------- input
@@ -183,6 +197,7 @@ function click(e) {
   const k = a.dataset.hd;
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; drawInk(); toolsState(); queueSave(); } }
+  else if (k === 'switch') switchUser(a);
   else if (k === 'desk' || k === 'area' || k === 'room') {
     S.view = k === S.view && k !== 'desk' ? 'desk' : k; renderOver();
     if (S.view === 'desk') root.querySelector('.hd-dockbtn[data-hd="desk"]')?.focus();

@@ -22,6 +22,8 @@ import { ico } from '../views/icon.js';
 import { page, VERSION, onEveryPage } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as H from '../services/homeroom.js';
+import * as SI from '../services/homeroom-signin.js';
+import { signinView } from './homeroom-signin.js';
 import * as S from '../services/schools.js';
 import * as games from '../services/games.js';
 import * as DASH from '../services/dash.js';
@@ -84,7 +86,7 @@ router.get('/class/:id/homeroom', (req, res) => {
   const lists = deskLists(req);
   const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(row)}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id) })}
     <div id="homeroom" class="hr">
@@ -134,29 +136,39 @@ router.get('/class/:id/homeroom/projector', (req, res) => {
   page(req, res, {
     title: t('homeroom.projector.title', { class: c.name }), bare: true, bodyClass: 'hr-projpage', scripts: ['/js/homeroom-projector.js'], i18n: ['js.homeroom-area'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, state: H.boardState(c.id) })}
+    body: html`${jsonData('page-data', { classId: c.id, state: { ...H.boardState(c.id), signin: signinView(req, c.id) } })}
     <div class="hr-proj" id="hr-proj">
       <header class="hr-projtop"><h1 class="hr-projname" dir="auto">${c.name}</h1><span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span></header>
-      <div class="hr-projarea" id="hr-projarea"></div>
+      <div class="hr-projmain"><div class="hr-projarea" id="hr-projarea"></div>
+        <aside class="hr-projsign" id="hr-projsign" hidden aria-labelledby="hr-projsignh"><h2 id="hr-projsignh">${ico('🔑', { size: 28 })} ${t('homeroom.signin.title')}</h2>
+          <div class="hr-projqr" id="hr-projqr"></div>
+          <p class="hr-projgo">${t('homeroom.signin.goTo')} <b dir="ltr" id="hr-projurl"></b></p>
+          <p class="hr-projcodecap">${t('homeroom.signin.enterCode')}</p><p class="hr-projcode" dir="ltr" id="hr-projcode"></p></aside></div>
     </div>`,
   });
 });
-router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(H.boardState(req.homeroomClass.id, req.query.v)));
+// The projector's poll: the live state, the area when it changed, and the class sign-in (its QR code only when the code
+// changed since sc, the code the page last saw).
+router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => {
+  const id = req.homeroomClass.id, si = SI.signinOf(id);
+  res.json({ ...H.boardState(id, req.query.v), signin: signinView(req, id, { qr: !si.open || String(req.query.sc || '') !== si.code }) });
+});
 
 // ---------------------------------------------------------------- the student desk
 const dockBtn = (k, icon, label, attrs = '') => html`<button type="button" class="hd-dockbtn" data-hd="${k}"${raw(attrs)}>${ico(icon, { size: 20 })}<span>${label}</span></button>`;
 router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
-  const room = H.roomForStudent(c, u);
+  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id;
   page(req, res, {
     title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, color: room.color, desks: room.desks,
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks,
       strokes: H.doodleOf(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: H.boardState(c.id) })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
         <h1 class="hd-title" dir="auto">${c.name}</h1>
+        ${device ? html`<span class="hd-grow"></span><span class="hd-notyou"><span class="hd-hidephone">${t('homeroom.desk.notYou', { name: u.display_name })}</span><button type="button" class="hd-tool hd-switch" data-hd="switch">${ico('🔄', { size: 18 })} ${t('homeroom.desk.switch')}</button></span>` : ''}
       </header>
       <div class="hd-body" id="hd-body"><p class="muted hr-loading">${t('homeroom.loading')}</p></div>
       <nav class="hd-dock hd-float" aria-label="${t('homeroom.desk.dock')}">

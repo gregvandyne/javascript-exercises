@@ -2081,7 +2081,8 @@
       "hintDraw": "Zeichnen Sie im Lehrerbereich. Tippen Sie zum Beenden noch einmal auf das Werkzeug.",
       "tooMany": "Im Lehrerbereich ist dafür kein Platz mehr.",
       "arrange": "Sitzplan einrichten",
-      "menuSoon": "Beitrittscode und schnelle Anmeldung kommen als Nächstes.",
+      "signin": "Anmeldung für Schüler",
+      "loadingSignin": "Code wird erstellt…",
       "seats": {
         "lead": "Wie in Ihrem echten Raum:",
         "rows": "Reihen",
@@ -4663,6 +4664,40 @@
       "deleteOk": "Löschen",
       "deleted": "„{title}“ gelöscht.",
       "undo": "Rückgängig"
+    },
+    "homeroom-signin": {
+      "codeLength": "Der Code hat {n} Buchstaben und Zahlen.",
+      "tapName": "Tippe auf deinen Namen",
+      "noNames": "In dieser Klasse ist noch niemand.",
+      "notThere": "Du findest deinen Namen nicht? Frag deine Lehrkraft.",
+      "googleHint": "Nutzt du Google in der Schule?",
+      "otherCode": "Anderen Code nutzen",
+      "hi": "Hallo, {name}!",
+      "notMe": "Das bin ich nicht",
+      "useGoogle": "Melde dich mit deinem Google-Konto der Schule an.",
+      "askTeacher": "Frag deine Lehrkraft nach deiner Anmeldekarte.",
+      "typePassword": "Gib dein Passwort ein",
+      "show": "Zeigen",
+      "hide": "Verbergen",
+      "signIn": "Anmelden",
+      "tapPictures": "Tippe deine {n} Bilder der Reihe nach",
+      "picked": "{n} von {total} Bildern gewählt",
+      "pictures": "Bilder",
+      "undo": "Rückgängig",
+      "waitSecs": "Versuche es in {n} Sekunden noch einmal.",
+      "welcome": "Willkommen, {name}!"
+    },
+    "homeroom-signin-panel": {
+      "closed": "Die Anmeldung ist geschlossen",
+      "closedHint": "Sie öffnet sich von selbst, wenn Sie die Stunde mit Alle ins Homeroom starten.",
+      "open": "Anmeldung öffnen",
+      "goTo": "Geht auf",
+      "enterCode": "und gebt diesen Code ein:",
+      "codeIs": "Code: {code}",
+      "until": "Offen bis {time}",
+      "longer": "Länger offen lassen",
+      "close": "Anmeldung schließen",
+      "settings": "Anmeldung: Einstellungen und Karten"
     },
     "homeroom-desk": {
       "deskOf": "{name} · Mein Platz",
@@ -14488,10 +14523,91 @@
       "myDesk": "Mein Platz",
       "teacherArea": "Bereich der Lehrkraft",
       "library": "Bibliothek",
-      "room": "Den Raum ansehen"
+      "room": "Den Raum ansehen",
+      "notYou": "Nicht {name}?",
+      "switch": "Wechseln"
     },
     "projector": {
       "title": "{class} · Beamer"
+    },
+    "signin": {
+      "title": "Anmeldung für Schüler",
+      "qrLabel": "QR-Code zum Anmelden in dieser Klasse",
+      "goTo": "Geh auf",
+      "enterCode": "und gib den Code ein",
+      "opened": "Die Anmeldung ist offen",
+      "closed": "Die Anmeldung ist geschlossen",
+      "pageTitle": "Melde dich in deiner Klasse an",
+      "signedInAs": "Angemeldet als {name}. Wenn du dich hier anmeldest, wird {name} abgemeldet.",
+      "ended": "Die Stunde ist vorbei. Bis zum nächsten Mal!",
+      "codeHeading": "Melde dich in deiner Klasse an",
+      "codeLead": "Gib den Code ein, den deine Lehrkraft zeigt.",
+      "codeLabel": "Klassencode",
+      "go": "Los",
+      "errors": {
+        "badCode": "Dieser Code funktioniert nicht. Prüfe ihn und versuche es noch einmal.",
+        "tooMany": "Zu viele Versuche. Warte kurz und versuche es dann noch einmal.",
+        "notFound": "Das hat nicht geklappt. Tippe noch einmal auf deinen Namen.",
+        "wrongPassword": "Das ist nicht das richtige Passwort. Versuche es noch einmal.",
+        "wrongPictures": "Das sind nicht deine Bilder. Versuche es noch einmal.",
+        "wait": "Zu viele Versuche. Warte einen Moment.",
+        "locked": "Zu viele Versuche. Bitte deine Lehrkraft, dir beim Anmelden zu helfen.",
+        "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
+        "badMode": "Wählen Sie Passwort oder Bilderpasswort.",
+        "ownAccount": "Dieses Kind hat ein eigenes Konto und meldet sich mit seinem Passwort an."
+      },
+      "pics": {
+        "bear": "Bär",
+        "lion": "Löwe",
+        "frog": "Frosch",
+        "owl": "Eule",
+        "rocket": "Rakete",
+        "apple": "Apfel",
+        "star": "Stern",
+        "rainbow": "Regenbogen",
+        "cupcake": "Cupcake"
+      },
+      "panel": {
+        "title": "{class} · Anmeldung",
+        "back": "Zurück zum Homeroom",
+        "heading": "Anmeldung",
+        "lead": "Auf gemeinsamen Geräten öffnen die Kinder die Anmeldung der Klasse, tippen auf ihren Namen und geben dann ihr Passwort ein oder tippen ihr Bilderpasswort.",
+        "students": "Schüler",
+        "cards": "Anmeldekarten drucken",
+        "cardsConfirm": "Damit bekommen alle, die sich mit Bildern anmelden, ein neues Bilderpasswort. Die alten Bilder funktionieren nicht mehr.",
+        "early": "Diese Klasse ist Vorschule bis Klasse 2, deshalb starten die Kinder mit Bilderpasswörtern. Sie können jedes Kind auf Passwort umstellen.",
+        "shows": "Erscheint als {name}",
+        "modeFor": "So meldet sich {name} an",
+        "mode": {
+          "password": "Passwort",
+          "picture": "Bilderpasswort"
+        },
+        "ownAccount": "Eigenes Konto: nutzt das eigene Passwort",
+        "usesPassword": "Nutzt das eigene Passwort",
+        "usesGoogle": "Nutzt Google",
+        "locked": "Gesperrt nach zu vielen Versuchen",
+        "waiting": "Wartet nach falschen Versuchen",
+        "hasPicture": "Bilderpasswort bereit",
+        "noPicture": "Noch kein Bilderpasswort",
+        "newConfirm": "Ein neues Bilderpasswort für {name} erstellen? Das alte funktioniert dann nicht mehr.",
+        "newPicture": "Neues Bilderpasswort",
+        "makePicture": "Bilderpasswort erstellen",
+        "unlock": "Entsperren",
+        "none": "Noch keine Schüler in dieser Klasse.",
+        "saved": "Gespeichert",
+        "unlocked": "Entsperrt. Das Kind kann es noch einmal versuchen."
+      },
+      "cards": {
+        "title": "Anmeldekarten",
+        "count": "{count, plural, one {# Karte} other {# Karten}}",
+        "print": "Drucken",
+        "back": "Zurück zur Anmeldung",
+        "once": "Bilderpasswörter erscheinen nur hier und jetzt. Drucken oder speichern Sie diese Karten, bevor Sie die Seite verlassen.",
+        "tap": "Dein Knopf: {name}",
+        "pictures": "Deine Bilder, der Reihe nach",
+        "usesPassword": "Gib dein Passwort ein",
+        "usesGoogle": "Nutze Mit Google anmelden"
+      }
     }
   }
 }
