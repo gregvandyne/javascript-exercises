@@ -2106,7 +2106,45 @@
       "backToDesks": "Die Schüler sind wieder an ihren Plätzen",
       "paused": "Bildschirme pausiert",
       "resumed": "Bildschirme sind wieder an",
-      "ended": "Stunde beendet"
+      "ended": "Stunde beendet",
+      "ho": {
+        "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe oder Ganze Klasse.",
+        "cancel": "Abbrechen",
+        "wholeClass": "Ganze Klasse",
+        "emptyGroup": "In dieser Gruppe ist noch niemand.",
+        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie hier.",
+        "title": "{game} für {who}",
+        "eyebrow": "Spiel · freies Spielen",
+        "lead": "Die Kinder spielen frei. Geben Sie Hinweise, wenn sie etwas Bestimmtes tun sollen.",
+        "instructions": "Hinweise (optional)",
+        "instructionsPh": "Zum Beispiel: Rechne 3 schriftliche Divisionen mit Rest und zeige eine auf deinem Block.",
+        "left": "{count, plural, one {noch # Zeichen} other {noch # Zeichen}}",
+        "order": "Reihenfolge auf dem Tisch",
+        "inOrder": "Der Reihe nach",
+        "anyOrder": "Beliebige Reihenfolge",
+        "inOrderHint": "Es wartet, bis die Aufgaben davor erledigt sind.",
+        "anyOrderHint": "Die Kinder können es jederzeit öffnen.",
+        "grade": "Bewerten nach",
+        "score": "Punkte",
+        "completion": "Erledigt",
+        "notGraded": "Ohne Bewertung",
+        "scoreHint": "Die Notenübersicht zeigt ihre Punkte wie bei jeder Aufgabe.",
+        "completionHint": "100 %, sobald sie es fertig haben.",
+        "notGradedHint": "Übung: erscheint im Fortschritt, aber nie als Note.",
+        "due": "Fällig am (optional)",
+        "putOne": "Auf den Tisch legen",
+        "putMany": "{count, plural, one {Auf # Tisch legen} other {Auf # Tische legen}}",
+        "done": "Erledigt",
+        "later": "Später",
+        "pct": "{pct} % erledigt",
+        "notStarted": "Nicht begonnen",
+        "more": "+{count} weitere",
+        "onDesks": "{count, plural, one {# Tisch} other {# Tische}}",
+        "best": "Bestes Ergebnis {score}",
+        "removeOne": "Von {name}s Tisch nehmen",
+        "removeAll": "Von allen Tischen entfernen",
+        "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen."
+      }
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -4719,7 +4757,19 @@
       "eyesHint": "Dein Bildschirm ist kurz pausiert.",
       "roomTitle": "Der Raum",
       "teacherDesk": "Lehrerpult",
-      "you": "du"
+      "you": "du",
+      "done": "Erledigt",
+      "nextUp": "Als Nächstes",
+      "later": "Später",
+      "laterHint": "Mach zuerst die davor fertig.",
+      "freePlay": "Freies Spielen",
+      "notReady": "Noch nicht bereit",
+      "notReadyHint": "Das ist noch nicht bereit. Frag deine Lehrkraft.",
+      "due": "Fällig {date}",
+      "teacherSays": "Lehrkraft:",
+      "inOrder": "Der Reihe nach",
+      "anyOrder": "Beliebige Reihenfolge",
+      "newHandout": "Neu von deiner Lehrkraft: {title}"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -10493,7 +10543,8 @@
       "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
       "hasName": "„{name}“ in deiner Nachricht ist auch der Name eines Kindes. Ankündigungen gehen an die ganze Klasse: Formuliere es bitte um oder nimm es heraus.",
       "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig.",
-      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse."
+      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse.",
+      "notGraded": "Diese Aufgabe wird nicht bewertet, daher gehen keine Noten an Google Classroom."
     },
     "allow": {
       "heading": "Was Oomba Academy in deinem Classroom darf",
@@ -10747,7 +10798,17 @@
       "hideNames": "Namen aus der Klassenliste ausblenden",
       "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
     },
-    "notAssigned": "Nicht zugewiesen"
+    "notAssigned": "Nicht zugewiesen",
+    "grade": {
+      "score": "Punkte",
+      "completion": "Erledigt",
+      "notGraded": "Ohne Bewertung",
+      "practice": "Übung",
+      "practiced": "Geübt",
+      "done": "Erledigt",
+      "notDone": "Nicht erledigt",
+      "practiceCsv": "Übung ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Jetzt ein Live-Spiel starten",
@@ -14485,7 +14546,6 @@
     "panel": {
       "label": "Lehrerpult",
       "handOut": "Austeilen an",
-      "handOutSoon": "Austeilen an die Tische kommt als Nächstes. Richten Sie vorerst Sitzplan und Gruppen ein.",
       "myLessons": "Meine Stunden",
       "noLessons": "Stunden, die Sie in Homeroom erstellen, erscheinen hier.",
       "myGames": "Meine Spiele",
@@ -14499,7 +14559,9 @@
       "brainBreak": "Bewegungspause",
       "note": "Notiz an die Klasse",
       "timer": "Timer",
-      "board": "Tafelwerkzeuge"
+      "board": "Tafelwerkzeuge",
+      "handOutHint": "Tippen Sie auf ein Spiel, dann auf einen Tisch, eine Gruppe oder Ganze Klasse. Oder ziehen Sie es dorthin.",
+      "comingNext": "Kommt bald"
     },
     "errors": {
       "notFound": "Dieser Homeroom ist nicht verfügbar.",
@@ -14513,7 +14575,20 @@
       "tooBig": "Der Lehrerbereich ist zu voll. Entfernen Sie etwas und versuchen Sie es erneut.",
       "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
       "notLive": "Starte die Stunde zuerst mit „Alle ins Homeroom“.",
-      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen."
+      "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen.",
+      "pickGame": "Dieses Spiel kann nicht ausgeteilt werden. Wählen Sie ein anderes.",
+      "publishFirst": "Veröffentlichen Sie dieses Spiel zuerst, dann teilen Sie es aus.",
+      "badDate": "Wählen Sie ein gültiges Fälligkeitsdatum.",
+      "badTarget": "Ziehen Sie es auf einen Tisch, eine Gruppe oder Ganze Klasse.",
+      "noStudents": "In dieser Klasse sind noch keine Schülerinnen und Schüler.",
+      "notInClass": "Dieses Kind ist nicht mehr in dieser Klasse.",
+      "emptyGroup": "In dieser Gruppe ist noch niemand.",
+      "badOrder": "Wählen Sie Der Reihe nach oder Beliebige Reihenfolge.",
+      "badGrade": "Wählen Sie Punkte, Erledigt oder Ohne Bewertung.",
+      "tooLong": "Hinweise dürfen höchstens 300 Zeichen lang sein.",
+      "alreadyOnDesk": "{count, plural, one {# dieser Tische hat dieses Spiel schon.} other {# dieser Tische haben dieses Spiel schon.}} Nehmen Sie es dort zuerst weg oder teilen Sie es den anderen aus.",
+      "tooManyHandouts": "In dieser Klasse ist sehr viel ausgeteilt. Entfernen Sie zuerst ein paar alte Aufgaben.",
+      "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch."
     },
     "live": "Live",
     "desk": {
@@ -14525,7 +14600,9 @@
       "library": "Bibliothek",
       "room": "Den Raum ansehen",
       "notYou": "Nicht {name}?",
-      "switch": "Wechseln"
+      "switch": "Wechseln",
+      "backToDesk": "Zurück zu meinem Tisch",
+      "fromTeacher": "Deine Lehrkraft sagt"
     },
     "projector": {
       "title": "{class} · Beamer"
@@ -14608,6 +14685,11 @@
         "usesPassword": "Gib dein Passwort ein",
         "usesGoogle": "Nutze Mit Google anmelden"
       }
+    },
+    "handout": {
+      "done": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
+      "removedOne": "Von diesem Tisch genommen.",
+      "removedAll": "Von allen Tischen entfernt. Die Arbeit der Kinder bleibt erhalten."
     }
   }
 }

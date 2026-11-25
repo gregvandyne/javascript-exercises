@@ -989,6 +989,9 @@
   "gradebook": {
     "student": {
       "standardsLine": "{meets} met · {developing} developing · {practiced} practised"
+    },
+    "grade": {
+      "practiced": "Practised"
     }
   },
   "buildSetup": {

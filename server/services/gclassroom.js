@@ -506,6 +506,8 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
   if (!linkOf(cl.class_id)) return fail('notLinked');
   if (!can(u.id, 'coursework')) return fail('needsScope');
   const post = postOf(cl.id); if (!post) return fail('notPosted');
+  // Not graded (a Homeroom handout given as practice, services/lessons.js gradeModeOf): no grade ever goes to Classroom.
+  if (L.gradeModeOf(cl.id) === 'none') return auto ? ok({ counts: { sent: 0, notStarted: 0, notMatched: 0, failed: 0, unchanged: 0 }, quiet: true }) : fail('notGraded');
   const lp = P.lessonProgress(cl.id);
   const last = new Map(q.all('SELECT * FROM gc_grades WHERE class_lesson_id=? AND coursework_id=?', cl.id, post.coursework_id).map(r => [r.user_id, r]));
   const changed = p => { const g = last.get(p.id); return !g || g.grade !== scoreOf(p) || (mode === 'assigned' && g.mode !== 'assigned'); };

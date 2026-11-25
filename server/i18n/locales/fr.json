@@ -2105,7 +2105,45 @@
       "backToDesks": "Les élèves sont de retour à leur pupitre",
       "paused": "Écrans en pause",
       "resumed": "Les écrans sont de retour",
-      "ended": "Classe terminée"
+      "ended": "Classe terminée",
+      "ho": {
+        "tapWhere": "Touchez maintenant un bureau, un groupe ou Toute la classe.",
+        "cancel": "Annuler",
+        "wholeClass": "Toute la classe",
+        "emptyGroup": "Personne n’est encore dans ce groupe.",
+        "pickFirst": "Choisissez d’abord un jeu à gauche, puis touchez ici.",
+        "title": "{game} pour {who}",
+        "eyebrow": "Jeu · jeu libre",
+        "lead": "Les élèves jouent librement. Ajoutez des consignes si vous voulez qu’ils fassent quelque chose de précis.",
+        "instructions": "Consignes (facultatif)",
+        "instructionsPh": "Par exemple : fais 3 divisions posées avec reste, puis montres-en une sur ton bloc.",
+        "left": "{count, plural, one {# caractère restant} other {# caractères restants}}",
+        "order": "Ordre sur le bureau",
+        "inOrder": "Dans l’ordre",
+        "anyOrder": "Dans n’importe quel ordre",
+        "inOrderHint": "Il attend que les documents d’avant soient terminés.",
+        "anyOrderHint": "Les élèves peuvent l’ouvrir quand ils veulent.",
+        "grade": "Noter selon",
+        "score": "Score",
+        "completion": "Réalisation",
+        "notGraded": "Non noté",
+        "scoreHint": "Le carnet de notes affiche leur score, comme pour tout devoir.",
+        "completionHint": "100 % quand ils l’ont terminé.",
+        "notGradedHint": "Entraînement : visible dans Progrès, mais jamais comme une note.",
+        "due": "Date limite (facultatif)",
+        "putOne": "Mettre sur le bureau",
+        "putMany": "{count, plural, one {Mettre sur # bureau} other {Mettre sur # bureaux}}",
+        "done": "Fait",
+        "later": "Plus tard",
+        "pct": "{pct} % fait",
+        "notStarted": "Pas commencé",
+        "more": "+{count} de plus",
+        "onDesks": "{count, plural, one {# bureau} other {# bureaux}}",
+        "best": "Meilleur score {score}",
+        "removeOne": "Retirer du bureau de {name}",
+        "removeAll": "Retirer de tous les bureaux",
+        "removeAllConfirm": "Retirer {title} de tous les bureaux ? Le travail des élèves est conservé et revient si vous le distribuez à nouveau."
+      }
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -4718,7 +4756,19 @@
       "eyesHint": "Ton écran est en pause un instant.",
       "roomTitle": "La classe",
       "teacherDesk": "Bureau de l’enseignant",
-      "you": "toi"
+      "you": "toi",
+      "done": "Fait",
+      "nextUp": "À faire maintenant",
+      "later": "Plus tard",
+      "laterHint": "Termine d’abord ceux d’avant.",
+      "freePlay": "Jeu libre",
+      "notReady": "Pas encore prêt",
+      "notReadyHint": "Celui-ci n’est pas encore prêt. Demande à ton enseignant.",
+      "due": "Pour le {date}",
+      "teacherSays": "Enseignant :",
+      "inOrder": "Dans l’ordre",
+      "anyOrder": "Dans n’importe quel ordre",
+      "newHandout": "Nouveau de ton enseignant : {title}"
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
@@ -10492,7 +10542,8 @@
       "tooLong": "Les annonces font au plus {max} caractères.",
       "hasName": "« {name} » dans votre message correspond au nom d'un élève. Les annonces vont à toute la classe : reformulez ou retirez ce mot, s'il vous plaît.",
       "tooManyAnnouncements": "Cette classe a déjà eu 10 annonces en une heure. Patientez un peu.",
-      "someStudents": "Cette leçon est attribuée à certains élèves, elle n'est donc pas publiée dans Google Classroom : elle y irait à toute la classe."
+      "someStudents": "Cette leçon est attribuée à certains élèves, elle n'est donc pas publiée dans Google Classroom : elle y irait à toute la classe.",
+      "notGraded": "Ce document n’est pas noté : aucune note n’est envoyée à Google Classroom."
     },
     "allow": {
       "heading": "Ce qu'Oomba Academy peut faire dans votre Classroom",
@@ -10746,7 +10797,17 @@
       "hideNames": "Masquer les noms de la liste de classe",
       "namesHint": "Affiche le nom de la liste de classe à côté du nom dans le jeu, sur cet écran seulement. L’écran de la classe garde les noms du jeu."
     },
-    "notAssigned": "Non attribuée"
+    "notAssigned": "Non attribuée",
+    "grade": {
+      "score": "Score",
+      "completion": "Réalisation",
+      "notGraded": "Non noté",
+      "practice": "Entraînement",
+      "practiced": "Entraîné",
+      "done": "Fait",
+      "notDone": "Pas fait",
+      "practiceCsv": "Entraînement ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Lancer un jeu en direct maintenant",
@@ -14484,7 +14545,6 @@
     "panel": {
       "label": "Bureau de l’enseignant",
       "handOut": "Distribuer à",
-      "handOutSoon": "La distribution sur les bureaux arrive bientôt. Pour l’instant, organisez les places et les groupes.",
       "myLessons": "Mes leçons",
       "noLessons": "Les leçons créées dans Homeroom s’afficheront ici.",
       "myGames": "Mes jeux",
@@ -14498,7 +14558,9 @@
       "brainBreak": "Pause active",
       "note": "Message à la classe",
       "timer": "Minuteur",
-      "board": "Outils du tableau"
+      "board": "Outils du tableau",
+      "handOutHint": "Touchez un jeu, puis un bureau, un groupe ou Toute la classe. Ou faites-le glisser.",
+      "comingNext": "Bientôt"
     },
     "errors": {
       "notFound": "Ce Homeroom n’est pas disponible.",
@@ -14512,7 +14574,20 @@
       "tooBig": "L’espace de l’enseignant est trop rempli. Retirez quelque chose et réessayez.",
       "badAction": "Ça n’a pas marché. Réessaie.",
       "notLive": "Commence d’abord la classe avec Tout le monde dans Homeroom.",
-      "padFull": "Ton carnet est plein. Efface-le pour continuer à dessiner."
+      "padFull": "Ton carnet est plein. Efface-le pour continuer à dessiner.",
+      "pickGame": "Ce jeu ne peut pas être distribué. Choisissez-en un autre.",
+      "publishFirst": "Publiez d’abord ce jeu, puis distribuez-le.",
+      "badDate": "Choisissez une vraie date pour la date limite.",
+      "badTarget": "Déposez-le sur un bureau, un groupe ou Toute la classe.",
+      "noStudents": "Cette classe n’a pas encore d’élèves.",
+      "notInClass": "Cet élève ne fait plus partie de cette classe.",
+      "emptyGroup": "Personne n’est encore dans ce groupe.",
+      "badOrder": "Choisissez Dans l’ordre ou Dans n’importe quel ordre.",
+      "badGrade": "Choisissez Score, Réalisation ou Non noté.",
+      "tooLong": "Les consignes font 300 caractères au maximum.",
+      "alreadyOnDesk": "{count, plural, one {# de ces bureaux a déjà ce jeu.} other {# de ces bureaux ont déjà ce jeu.}} Retirez-le d’abord, ou distribuez-le aux autres.",
+      "tooManyHandouts": "Cette classe a beaucoup de documents distribués. Retirez d’abord les anciens.",
+      "notOnDesk": "Ce document n’est pas sur ce bureau."
     },
     "live": "En direct",
     "desk": {
@@ -14524,7 +14599,9 @@
       "library": "Bibliothèque",
       "room": "Voir la classe",
       "notYou": "Tu n’es pas {name} ?",
-      "switch": "Changer"
+      "switch": "Changer",
+      "backToDesk": "Retour à mon pupitre",
+      "fromTeacher": "Ton enseignant dit"
     },
     "projector": {
       "title": "{class} · Projecteur"
@@ -14607,6 +14684,11 @@
         "usesPassword": "Tape ton mot de passe",
         "usesGoogle": "Utilise Se connecter avec Google"
       }
+    },
+    "handout": {
+      "done": "{title} est sur {count, plural, one {# bureau} other {# bureaux}}.",
+      "removedOne": "Retiré de ce bureau.",
+      "removedAll": "Retiré de tous les bureaux. Le travail des élèves est conservé."
     }
   }
 }

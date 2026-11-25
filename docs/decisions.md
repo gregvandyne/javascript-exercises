@@ -13479,3 +13479,67 @@ Spec: `docs/homeroom.md` ("Getting everyone in fast", approved). Builds on steps
   failure, wait and lock; End class, the window and Switch; Google hooks; teacher-only; K-2; cards; projector vs desk;
   delete paths) and `tests/unit/homeroom-signin-browser.test.js` (the teacher's sheet, panel, cards and projector; the
   whole shared-tablet flow: code, name, pictures, desk, Switch, the next student's password, End class; phone widths).
+
+## Homeroom, step 2a: handing out games (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Handouts and lessons", "The student desk") and the two owner-approved mockups (the handout
+sheet "Game · free play"; the desk cards with Next up, 🔒 Later and the teacher's words in yellow). Builds on step 1.
+- **A handout is a class assignment, not a second system.** `services/homeroom-handouts.js` handOut calls
+  `services/game-folders.js` assignGame: the hidden lesson of kind `game` with the game as its one step, a
+  `class_lessons` row (with its due day) and `class_lesson_students` for exactly the students it went to (one desk: that
+  student; a group: its students at that moment; Whole class: `[]`, the whole class, so a student who joins later gets
+  it too). So step_progress, the play page's time and scores, the Progress gradebook and its CSV, the lesson page, the
+  Classroom tab's list and the student's To do list on /classes all see it with no change. assignGame gained two
+  options: `body` (the teacher's instructions become the game step's text, so the lesson page shows them too) and
+  `again` (Homeroom checks duplicates itself, below).
+- **What Homeroom adds** (migration `0125_homeroom_handouts`, one row per handout's class lesson, gone with it, the
+  class or the school; in `services/school-delete.js` BY_CLASS): `in_order` (In order / Any order), `grade` (`score`,
+  `completion` or `none`), `target` (all, group, desk), who and when. Defaults from the spec: free play is graded by
+  Completion; In order.
+- **Never the same game twice for a student**: a handout is refused (`alreadyOnDesk`, with how many desks) while any of
+  its students has that game open in the class, from Homeroom or from Classroom's Assign. A teacher can hand a game to
+  one group today and another tomorrow.
+- **Instructions**: plain text, at most 300 characters (`INSTRUCTIONS_MAX`) and 4 lines, control and direction characters
+  removed, spaces tidied, and the site's word and personal-information rules (`services/manipulatives.js` textProblem,
+  as group names and the teacher's area). Shown escaped everywhere.
+- **The teacher's board** (`public/js/homeroom.js`): the panel's Oomba games and Games I built are buttons. Tap one (it
+  stays picked; a yellow bar says what to do and repeats Whole class and the groups, since on a phone the panel strip
+  may be scrolled away from them), then tap a desk, a group chip or Whole class; with a mouse or pen a game can also be
+  dragged there (a finger scrolls the panel, so touch is tap-then-tap). The sheet: instructions, Order on the desk,
+  Grade it by (Score / Completion / Not graded, each with a one-line meaning), an optional due date, then "Put on desk"
+  / "Put on N desks". Live-only games (Quest Race...) are not listed. **Manipulatives and Figures** are not games (no
+  game row, Figures has its own worksheet assign) and stay in the panel marked "Coming next".
+- **Desks on the board** show their handouts (icon, name, a progress bar from play time toward the 2 minutes that count
+  a game as done, ✓ when done, 🔒 while waiting); more than 3 show 2 and "+N more". Tapping one opens the desk's sheet:
+  each handout with its state, instructions, order, grading and best score, **Take off {name}'s desk** and **Remove from
+  every desk**. Off one desk takes the student off its list (a Whole class handout becomes the current roster minus
+  them; the last one off removes it); every desk is the same soft remove as Classroom's (`class_lessons.removed_at`,
+  work kept, comes back if assigned again). The board asks `GET /api/homeroom/:id/handouts` every 20 s (8 s while live)
+  while visible.
+- **The student's desk** (`public/js/homeroom-desk.js`): the cards in the order they were handed out, as a row that
+  scrolls sideways inside the desk (the pad keeps its room). The first unfinished card is **Next up**; an In order card
+  after any unfinished card shows **🔒 Later**, is not a link and says "Finish the ones before it first"; Any order cards
+  always open. The teacher's instructions in yellow on the card ("Teacher: ..."), the due day, and the bar. Done cards
+  fade with "✓ Done". The desk's existing poll (`GET /api/desk/:id/state`) carries the student's own cards only when
+  they changed (`hv`), with a small "New from your teacher" toast. Only their own cards: never a classmate's or a group
+  name. The lock is the desk's; the lesson link in the To do list still opens a waiting handout (open point).
+- **The game**: a card opens `/play/<slug>?lesson=&step=` as any lesson step does. The play page asks
+  `services/lessons.js` playFrame (a hook Homeroom registers, so `routes/games.js` imports nothing of Homeroom): for a
+  student of the class with a desk, **Back** goes to `/class/:id/desk` ("Back to my desk") and the instructions show in
+  a yellow line over the game (tap for all of it; the stage moves down; full screen still covers everything). No game
+  code changed. A teacher trying the link gets the game as before.
+- **Grading in Progress** (`services/progress.js` classProgress via `services/lessons.js` gradeModes): a Not graded
+  handout is **practice**: its cell shows ◐ / ✅ and "Practice" / "Practiced", and it counts in neither Work done, the
+  Score, late counts nor "has open work"; a Completion handout shows "Done" / "Not done"; columns carry a chip (Not
+  graded, Completion, Score). CSV: "Practice (done/total)", "Done" / "Not done". Score handouts are graded as every
+  lesson is (a free-play game has no % right, so in practice it shows its steps done until step 2b's lessons).
+- **Google Classroom**: nothing new is posted (Homeroom has no "Also post" yet; step 2c). One guard in
+  `services/gclassroom.js` sendGrades: a Not graded handout never sends grades (by hand: `notGraded`; the automatic
+  sync skips it quietly), in case one was posted from Classroom.
+- **Who**: `POST /api/homeroom/:id/handouts` and `.../handouts/:clid/remove` behind the Homeroom gate (the class's own
+  teachers with the plan; everyone else the site's 404), sharing the assign routes' limit (`lesson-new`, 120 an hour;
+  removing 600 an hour). Students read only their own desk (the desk gate).
+- Tests: `tests/unit/homeroom-handouts.test.js` (one desk, group, Whole class targets; instructions cleaned; refusals;
+  auth; desk order and locks; the play page; gradebook, CSV and the Classroom guard; remove one and all; the panel) and
+  `tests/unit/homeroom-handouts-browser.test.js` (tap-then-tap on a tablet, drag with a mouse, the phone's bar; the
+  student's desk at tablet, 1366 x 768 and phone, the lock, the game with instructions and back).

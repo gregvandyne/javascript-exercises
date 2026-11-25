@@ -2106,7 +2106,45 @@
       "backToDesks": "Os alunos voltaram às carteiras",
       "paused": "Telas pausadas",
       "resumed": "As telas voltaram",
-      "ended": "Aula encerrada"
+      "ended": "Aula encerrada",
+      "ho": {
+        "tapWhere": "Agora toque em uma carteira, um grupo ou Turma toda.",
+        "cancel": "Cancelar",
+        "wholeClass": "Turma toda",
+        "emptyGroup": "Ainda não há ninguém nesse grupo.",
+        "pickFirst": "Escolha primeiro um jogo à esquerda e depois toque aqui.",
+        "title": "{game} para {who}",
+        "eyebrow": "Jogo · jogo livre",
+        "lead": "Os alunos jogam livremente. Adicione instruções se quiser que eles façam algo específico.",
+        "instructions": "Instruções (opcional)",
+        "instructionsPh": "Por exemplo: faça 3 divisões longas com resto e mostre uma no seu bloco.",
+        "left": "{count, plural, one {Falta # caractere} other {Faltam # caracteres}}",
+        "order": "Ordem na carteira",
+        "inOrder": "Em ordem",
+        "anyOrder": "Qualquer ordem",
+        "inOrderHint": "Espera até as entregas anteriores estarem feitas.",
+        "anyOrderHint": "Os alunos podem abrir quando quiserem.",
+        "grade": "Avaliar por",
+        "score": "Pontuação",
+        "completion": "Conclusão",
+        "notGraded": "Sem nota",
+        "scoreHint": "O boletim mostra a pontuação, como em qualquer tarefa.",
+        "completionHint": "100% quando terminam.",
+        "notGradedHint": "Prática: aparece no Progresso, mas nunca como nota.",
+        "due": "Prazo (opcional)",
+        "putOne": "Colocar na carteira",
+        "putMany": "{count, plural, one {Colocar em # carteira} other {Colocar em # carteiras}}",
+        "done": "Feito",
+        "later": "Depois",
+        "pct": "{pct}% feito",
+        "notStarted": "Não começou",
+        "more": "+{count} a mais",
+        "onDesks": "{count, plural, one {# carteira} other {# carteiras}}",
+        "best": "Melhor pontuação {score}",
+        "removeOne": "Tirar da carteira de {name}",
+        "removeAll": "Remover de todas as carteiras",
+        "removeAllConfirm": "Remover {title} de todas as carteiras? O trabalho dos alunos fica guardado e volta se você entregar de novo."
+      }
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -4719,7 +4757,19 @@
       "eyesHint": "Sua tela está pausada por um momento.",
       "roomTitle": "A sala",
       "teacherDesk": "Mesa do professor",
-      "you": "você"
+      "you": "você",
+      "done": "Feito",
+      "nextUp": "Próximo",
+      "later": "Depois",
+      "laterHint": "Termine primeiro os anteriores.",
+      "freePlay": "Jogo livre",
+      "notReady": "Ainda não está pronto",
+      "notReadyHint": "Este ainda não está pronto. Pergunte ao seu professor.",
+      "due": "Até {date}",
+      "teacherSays": "Professor:",
+      "inOrder": "Faça em ordem",
+      "anyOrder": "Qualquer ordem",
+      "newHandout": "Novo do seu professor: {title}"
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -10494,7 +10544,8 @@
       "tooLong": "Os avisos podem ter no máximo {max} caracteres.",
       "hasName": "“{name}” na sua mensagem é igual ao nome de um aluno. Os avisos vão para a turma toda: reescreva ou tire essa palavra, por favor.",
       "tooManyAnnouncements": "Já foram 10 avisos em uma hora para esta turma. Espere um pouco.",
-      "someStudents": "Esta lição está atribuída a alguns alunos, por isso não é publicada no Google Classroom: lá ela iria para a turma toda."
+      "someStudents": "Esta lição está atribuída a alguns alunos, por isso não é publicada no Google Classroom: lá ela iria para a turma toda.",
+      "notGraded": "Esta entrega não vale nota, então nenhuma nota vai para o Google Classroom."
     },
     "allow": {
       "heading": "O que a Oomba Academy pode fazer no seu Classroom",
@@ -10748,7 +10799,17 @@
       "hideNames": "Ocultar nomes da lista da turma",
       "namesHint": "Mostra o nome da lista da turma ao lado do nome no jogo, só neste ecrã. O ecrã da turma mantém os nomes do jogo."
     },
-    "notAssigned": "Não atribuída"
+    "notAssigned": "Não atribuída",
+    "grade": {
+      "score": "Pontuação",
+      "completion": "Conclusão",
+      "notGraded": "Sem nota",
+      "practice": "Prática",
+      "practiced": "Praticou",
+      "done": "Feito",
+      "notDone": "Não feito",
+      "practiceCsv": "Prática ({done}/{total})"
+    }
   },
   "quickLive": {
     "cta": "Comece um jogo ao vivo agora",
@@ -14486,7 +14547,6 @@
     "panel": {
       "label": "Mesa do professor",
       "handOut": "Entregar para",
-      "handOutSoon": "Entregar nas carteiras vem em seguida. Por enquanto, organize os lugares e os grupos.",
       "myLessons": "Minhas aulas",
       "noLessons": "As aulas que você criar no Homeroom aparecem aqui.",
       "myGames": "Jogos que criei",
@@ -14500,7 +14560,9 @@
       "brainBreak": "Pausa ativa",
       "note": "Recado para a turma",
       "timer": "Cronômetro",
-      "board": "Ferramentas do quadro"
+      "board": "Ferramentas do quadro",
+      "handOutHint": "Toque em um jogo e depois em uma carteira, um grupo ou Turma toda. Ou arraste até lá.",
+      "comingNext": "Em breve"
     },
     "errors": {
       "notFound": "Este Homeroom não está disponível.",
@@ -14514,7 +14576,20 @@
       "tooBig": "A área do professor está cheia demais. Tire algo e tente de novo.",
       "badAction": "Não deu certo. Tente de novo.",
       "notLive": "Primeiro comece a aula com Todos para o Homeroom.",
-      "padFull": "Seu bloco está cheio. Limpe para continuar desenhando."
+      "padFull": "Seu bloco está cheio. Limpe para continuar desenhando.",
+      "pickGame": "Esse jogo não pode ser entregue. Escolha outro.",
+      "publishFirst": "Publique este jogo primeiro e depois entregue.",
+      "badDate": "Escolha uma data válida para o prazo.",
+      "badTarget": "Solte em uma carteira, um grupo ou Turma toda.",
+      "noStudents": "Esta turma ainda não tem alunos.",
+      "notInClass": "Esse aluno não está mais nesta turma.",
+      "emptyGroup": "Ainda não há ninguém nesse grupo.",
+      "badOrder": "Escolha Em ordem ou Qualquer ordem.",
+      "badGrade": "Escolha Pontuação, Conclusão ou Sem nota.",
+      "tooLong": "As instruções podem ter no máximo 300 caracteres.",
+      "alreadyOnDesk": "{count, plural, one {# destas carteiras já tem este jogo.} other {# destas carteiras já têm este jogo.}} Tire de lá primeiro ou entregue para os outros.",
+      "tooManyHandouts": "Esta turma tem muitas entregas abertas. Remova algumas antigas primeiro.",
+      "notOnDesk": "Essa entrega não está nesta carteira."
     },
     "live": "Ao vivo",
     "desk": {
@@ -14526,7 +14601,9 @@
       "library": "Biblioteca",
       "room": "Ver a sala",
       "notYou": "Não é {name}?",
-      "switch": "Trocar"
+      "switch": "Trocar",
+      "backToDesk": "Voltar para minha carteira",
+      "fromTeacher": "Seu professor diz"
     },
     "projector": {
       "title": "{class} · Projetor"
@@ -14609,6 +14686,11 @@
         "usesPassword": "Digite sua senha",
         "usesGoogle": "Use Entrar com o Google"
       }
+    },
+    "handout": {
+      "done": "{title} está em {count, plural, one {# carteira} other {# carteiras}}.",
+      "removedOne": "Tirado dessa carteira.",
+      "removedAll": "Removido de todas as carteiras. O trabalho dos alunos fica guardado."
     }
   }
 }

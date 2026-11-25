@@ -2105,7 +2105,45 @@
       "backToDesks": "生徒は自分の机にもどりました",
       "paused": "画面を一時停止しました",
       "resumed": "画面がもどりました",
-      "ended": "授業を終えました"
+      "ended": "授業を終えました",
+      "ho": {
+        "tapWhere": "次に、机・グループ・クラス全員のどれかをタップしてください。",
+        "cancel": "キャンセル",
+        "wholeClass": "クラス全員",
+        "emptyGroup": "このグループにはまだ誰もいません。",
+        "pickFirst": "先に左のゲームを選んでから、ここをタップしてください。",
+        "title": "{who}に{game}",
+        "eyebrow": "ゲーム · 自由に遊ぶ",
+        "lead": "児童・生徒は自由に遊びます。特にやってほしいことがあれば指示を書きましょう。",
+        "instructions": "指示（任意）",
+        "instructionsPh": "例：あまりのある筆算のわり算を3問やって、1問をパッドに書いてみよう。",
+        "left": "あと{count}文字",
+        "order": "机の上での順番",
+        "inOrder": "順番に",
+        "anyOrder": "好きな順で",
+        "inOrderHint": "前の配布物が終わるまで待ちます。",
+        "anyOrderHint": "いつでも開けます。",
+        "grade": "評価の方法",
+        "score": "得点",
+        "completion": "完了",
+        "notGraded": "評価なし",
+        "scoreHint": "ほかの課題と同じく、成績表に得点が出ます。",
+        "completionHint": "終わったら100%です。",
+        "notGradedHint": "練習：進み具合には出ますが、成績にはなりません。",
+        "due": "期限（任意）",
+        "putOne": "机に置く",
+        "putMany": "{count}台の机に置く",
+        "done": "完了",
+        "later": "あとで",
+        "pct": "{pct}%完了",
+        "notStarted": "未着手",
+        "more": "ほか{count}件",
+        "onDesks": "{count}台の机",
+        "best": "ベストスコア {score}",
+        "removeOne": "{name}の机から外す",
+        "removeAll": "すべての机から外す",
+        "removeAllConfirm": "{title}をすべての机から外しますか？児童・生徒の取り組みは残り、また配布すればもどります。"
+      }
     },
     "stories": {
       "needIdea": "まずアイデアを書いてね（少しの言葉でだいじょうぶ）。",
@@ -4718,7 +4756,19 @@
       "eyesHint": "画面は少しのあいだ止まっています。",
       "roomTitle": "教室",
       "teacherDesk": "先生の机",
-      "you": "あなた"
+      "you": "あなた",
+      "done": "できた",
+      "nextUp": "つぎはこれ",
+      "later": "あとで",
+      "laterHint": "先に前のものを終わらせよう。",
+      "freePlay": "自由に遊ぶ",
+      "notReady": "まだ準備中",
+      "notReadyHint": "これはまだ準備中です。先生に聞いてみよう。",
+      "due": "期限 {date}",
+      "teacherSays": "先生：",
+      "inOrder": "順番にやろう",
+      "anyOrder": "好きな順で",
+      "newHandout": "先生から新しいもの：{title}"
     },
     "homeroom-area": {
       "label": "先生のエリア",
@@ -10492,7 +10542,8 @@
       "tooLong": "お知らせは最大 {max} 文字です。",
       "hasName": "メッセージ内の「{name}」は生徒の名前と同じです。お知らせはクラス全員に届くので、言い換えるか消してください。",
       "tooManyAnnouncements": "このクラスでは 1 時間に 10 件のお知らせを投稿しました。少し待ってください。",
-      "someStudents": "このレッスンは一部の生徒に割り当てられているため、Google Classroom には投稿されません。投稿するとクラス全員に届いてしまいます。"
+      "someStudents": "このレッスンは一部の生徒に割り当てられているため、Google Classroom には投稿されません。投稿するとクラス全員に届いてしまいます。",
+      "notGraded": "この配布物は評価なしのため、Google Classroom に成績は送られません。"
     },
     "allow": {
       "heading": "あなたの Classroom で Oomba Academy ができること",
@@ -10746,7 +10797,17 @@
       "hideNames": "クラス名簿の名前を隠す",
       "namesHint": "ゲームでの名前の横に、クラス名簿の名前をこの画面だけに表示します。クラスの画面はゲームでの名前のままです。"
     },
-    "notAssigned": "割り当てなし"
+    "notAssigned": "割り当てなし",
+    "grade": {
+      "score": "得点",
+      "completion": "完了",
+      "notGraded": "評価なし",
+      "practice": "練習",
+      "practiced": "練習済み",
+      "done": "完了",
+      "notDone": "未完了",
+      "practiceCsv": "練習（{done}/{total}）"
+    }
   },
   "quickLive": {
     "cta": "今すぐライブゲームをひらく",
@@ -14484,7 +14545,6 @@
     "panel": {
       "label": "先生の机",
       "handOut": "配布先",
-      "handOutSoon": "机への配布は次のステップで追加されます。今は座席とグループを整えましょう。",
       "myLessons": "自分のレッスン",
       "noLessons": "Homeroom で作ったレッスンがここに表示されます。",
       "myGames": "自分で作ったゲーム",
@@ -14498,7 +14558,9 @@
       "brainBreak": "ブレインブレイク",
       "note": "クラスへのメモ",
       "timer": "タイマー",
-      "board": "ボードのツール"
+      "board": "ボードのツール",
+      "handOutHint": "ゲームをタップしてから、机・グループ・クラス全員のどれかをタップします。ドラッグしてもOKです。",
+      "comingNext": "近日公開"
     },
     "errors": {
       "notFound": "この Homeroom は利用できません。",
@@ -14512,7 +14574,20 @@
       "tooBig": "先生のエリアがいっぱいです。何かを消してからもう一度お試しください。",
       "badAction": "うまくいきませんでした。もう一度ためしてね。",
       "notLive": "まず「みんなHomeroomへ」で授業を始めてください。",
-      "padFull": "メモ帳がいっぱいです。消すとまたかけます。"
+      "padFull": "メモ帳がいっぱいです。消すとまたかけます。",
+      "pickGame": "このゲームは配布できません。ほかのゲームを選んでください。",
+      "publishFirst": "このゲームを公開してから配布してください。",
+      "badDate": "期限には正しい日付を選んでください。",
+      "badTarget": "机、グループ、またはクラス全員の上に置いてください。",
+      "noStudents": "このクラスにはまだ児童・生徒がいません。",
+      "notInClass": "この児童・生徒はもうこのクラスにいません。",
+      "emptyGroup": "このグループにはまだ誰もいません。",
+      "badOrder": "「順番に」か「好きな順で」を選んでください。",
+      "badGrade": "「得点」「完了」「評価なし」から選んでください。",
+      "tooLong": "指示は300文字までです。",
+      "alreadyOnDesk": "このうち{count}台の机には、すでにこのゲームがあります。先にそこから外すか、ほかの机に配布してください。",
+      "tooManyHandouts": "このクラスでは配布物がたくさん開いています。先に古いものを外してください。",
+      "notOnDesk": "この配布物はこの机にありません。"
     },
     "live": "ライブ",
     "desk": {
@@ -14524,7 +14599,9 @@
       "library": "ライブラリー",
       "room": "教室を見る",
       "notYou": "{name} じゃない？",
-      "switch": "切りかえる"
+      "switch": "切りかえる",
+      "backToDesk": "自分の机にもどる",
+      "fromTeacher": "先生から"
     },
     "projector": {
       "title": "{class} · プロジェクター"
@@ -14607,6 +14684,11 @@
         "usesPassword": "自分のパスワードを入れてね",
         "usesGoogle": "「Googleでサインイン」を使ってね"
       }
+    },
+    "handout": {
+      "done": "{title}を{count}台の机に配りました。",
+      "removedOne": "その机から外しました。",
+      "removedAll": "すべての机から外しました。児童・生徒の取り組みは残ります。"
     }
   }
 }

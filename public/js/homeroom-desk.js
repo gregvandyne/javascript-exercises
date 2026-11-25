@@ -1,6 +1,10 @@
 // A student's desk in Homeroom (docs/homeroom.md "The student desk"; docs/decisions.md "Homeroom, step 1b"; server:
 // routes/homeroom.js /class/:id/desk, services/homeroom.js). Step 1b:
-//   - the desk with their name and their group's color, "Nothing on your desk yet" (handouts land here in step 2);
+//   - the desk with their name and their group's color, and their handouts (step 2a) as cards in the order the teacher
+//     handed them out: the first unfinished one is "Next up"; an In order card after an unfinished one shows "🔒 Later"
+//     and does not open; the teacher's instructions in yellow on the card; tapping opens the game (its Back goes to
+//     this desk); a finished card fades with a check. "Nothing on your desk yet" when there are none. The cards come
+//     again with the desk's poll when they changed (hv);
 //   - a doodle and working-out pad (finger, pencil or mouse), saved for them in this class (POST /api/desk/<class>/doodle,
 //     cleaned and limited on the server);
 //   - a small read-only window on the teacher's area (public/js/homeroom-area.js), kept fresh by asking
@@ -24,6 +28,7 @@ const td = (k, v) => t(`js.homeroom-desk.${k}`, v);
 const $ = id => document.getElementById(id);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const S = {
+  cards: Array.isArray(D.cards) ? D.cards : [], hv: null,
   live: null, area: {}, v: null, view: 'desk', strokes: Array.isArray(D.strokes) ? D.strokes : [], hist: [], pen: P.colors[0],
   cur: null, penSeen: false, saveTimer: null, dirty: false,
 };
@@ -34,8 +39,8 @@ function renderDesk() {
   const color = D.color ? ` style="--gc:${esc(D.color)}"` : '';
   body.innerHTML = `<div class="hd-grid">
     <section class="hd-desk"${color} aria-labelledby="hd-deskh">
-      <h2 class="hd-deskh" id="hd-deskh"><span class="rm-dot"${D.color ? ` style="--c:${esc(D.color)}"` : ''}></span><span>${esc(td('deskOf', { name: D.me.name }))}</span></h2>
-      <div class="hd-emptydesk">${iconHtml('🎒', { size: 28 })}<p><b>${esc(td('empty'))}</b><span>${esc(td('emptyText'))}</span></p></div>
+      <div class="hd-deskrow"><h2 class="hd-deskh" id="hd-deskh"><span class="rm-dot"${D.color ? ` style="--c:${esc(D.color)}"` : ''}></span><span>${esc(td('deskOf', { name: D.me.name }))}</span></h2><span class="hd-order" id="hd-order"></span></div>
+      <div id="hd-cards"></div>
       <div class="hd-pad">
         <div class="hd-padbar"><h3 class="hd-padcap">${esc(td('pad'))}</h3><span class="hd-grow"></span>
           <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${S.pen === c ? ' on' : ''}`, `role="radio" aria-checked="${S.pen === c}" data-hdpen="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"`, `<i style="background:${c}"></i>`)).join('')}</span>
@@ -48,7 +53,33 @@ function renderDesk() {
       <div class="hd-wintop"><h2 class="hd-areah" id="hd-areah">✦ ${esc(td('teacherArea'))}</h2>${btn('hd-open', `data-hd="area" aria-label="${esc(td('openArea'))}"`, iconHtml('⤢', { size: 18 }))}</div>
       <div class="hd-window" id="hd-window" data-hd="area"></div>
     </section></div>`;
-  drawInk(); renderWindow(); toolsState();
+  drawInk(); renderWindow(); toolsState(); renderCards();
+}
+
+// ---------------------------------------------------------------- handouts (step 2a)
+const dayFmt = due => { try { return new Date(due).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }); } catch { return ''; } };
+function cardHtml(x) {
+  const cls = `hd-card${x.next ? ' next' : ''}${x.locked ? ' locked' : ''}${x.done ? ' done' : ''}${x.ready ? '' : ' notready'}`;
+  const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
+  const sub = [x.ready ? td('freePlay') : td('notReady'), x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
+  const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(x.title)}</b><span class="hd-csub">${esc(sub)}</span>
+    ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
+  const label = `${x.title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
+  return x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
+    : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
+}
+function renderCards() {
+  const el = $('hd-cards'), ord = $('hd-order'); if (!el) return;
+  const cards = S.cards;
+  if (ord) { const left = cards.filter(x => !x.done); ord.textContent = !left.length ? '' : left.some(x => x.inOrder) ? td('inOrder') : td('anyOrder'); ord.hidden = !left.length; }
+  el.className = cards.length ? 'hd-cards' : '';
+  el.innerHTML = cards.length ? cards.map(cardHtml).join('')
+    : `<div class="hd-emptydesk">${iconHtml('🎒', { size: 28 })}<p><b>${esc(td('empty'))}</b><span>${esc(td('emptyText'))}</span></p></div>`;
+}
+function newCards(list) {
+  const had = new Set(S.cards.map(x => x.id)), fresh = list.filter(x => !had.has(x.id));
+  S.cards = list; renderCards();
+  if (fresh.length && S.hv !== null) toast(td('newHandout', { title: fresh[fresh.length - 1].title }));
 }
 function renderWindow() {
   const w = $('hd-window'); if (!w) return;
@@ -165,6 +196,8 @@ function applyState(st) {
   if (!st) return;
   const was = JSON.stringify(S.live);
   S.live = st.live || null; S.v = st.v;
+  if (Array.isArray(st.cards)) newCards(st.cards);
+  if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
@@ -174,7 +207,7 @@ let pollTimer = null;
 async function poll() {
   clearTimeout(pollTimer); pollTimer = null;
   if (document.hidden) return;
-  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}`, { background: true })); }
+  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}&hv=${encodeURIComponent(S.hv ?? '')}`, { background: true })); }
   catch (e) {
     // A shared device's sign-in ended (End class, or its time ran out): back to the class sign-in for the next student.
     if (D.device && (e.status === 401 || e.status === 404)) { location.href = '/hr?ended=1'; return; }
@@ -191,6 +224,8 @@ async function switchUser(b) {
 
 // ---------------------------------------------------------------- input
 function click(e) {
+  const card = e.target.closest('.hd-card[aria-disabled="true"]');
+  if (card) { const x = S.cards.find(c => c.id === card.dataset.hdcard); toast(x && x.locked ? td('laterHint') : td('notReadyHint')); return; }
   const pen = e.target.closest('[data-hdpen]');
   if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
   const a = e.target.closest('[data-hd]'); if (!a) return;

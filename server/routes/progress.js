@@ -132,6 +132,10 @@ function dateChips(t, f, cl, { late = false, short = false } = {}) {
     late ? html`<span class="chip-s bad">${ico('⏰', { size: 18 })} ${t('lessons.class.late')}</span>` : '',
   ].filter(Boolean);
 }
+/** How a column is graded when the teacher chose (a Homeroom handout): a chip under its title. '' for every other lesson. */
+const gradeChip = (t, grade) => (grade === 'none' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('🌱', { size: 18 })} ${t('gradebook.grade.notGraded')}</span></span>`
+  : grade === 'completion' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('✅', { size: 18 })} ${t('gradebook.grade.completion')}</span></span>`
+  : grade === 'score' ? html`<span class="gb-dates"><span class="chip-s gb-grade">${ico('🎯', { size: 18 })} ${t('gradebook.grade.score')}</span></span>` : '');
 /** Overall for a gradebook row: '–' while none of the class's lessons has opened (nothing to count yet). */
 const overallOf = p => (P.hasOpenWork(p) ? `${p.overall}%` : null);
 
@@ -166,7 +170,7 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   const table = html`<div class="gbwrap" tabindex="0" role="region" aria-label="${t('progress.gradebook.title')}"><table class="tbl gradebook" id="gb-lessons">
     <thead><tr><th scope="col" class="gb-name">${t('school.people.name')}</th>
       ${gb.lessons.map((l, i) => { const chips = dateChips(t, f, l, { late: anyLate[i], short: true });
-        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}${l.some ? html`<span class="gb-dates"><span class="chip-s gb-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: l.picked })}</span></span>` : ''}</th>`; })}
+        return html`<th scope="col" class="${l.locked ? 'gb-locked' : ''}"><a href="/class/${c.id}/progress/${l.id}" dir="auto">${l.title}</a>${chips.length ? html`<span class="gb-dates">${chips}</span>` : ''}${l.some ? html`<span class="gb-dates"><span class="chip-s gb-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: l.picked })}</span></span>` : ''}${gradeChip(t, l.grade)}</th>`; })}
       <th scope="col" class="gb-sum">${t('gradebook.workDone')}</th><th scope="col" class="gb-sum">${t('gradebook.score')}</th></tr></thead>
     <tbody>${gb.students.map(p => {
       const all = overallOf(p);
@@ -177,6 +181,10 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
           if (x.na) return html`<td class="gb-na"><span aria-hidden="true">–</span><span class="sr-only">${t('gradebook.notAssigned')}</span></td>`;
           if (x.locked) return html`<td class="gb-locked"><span aria-hidden="true">–</span><span class="sr-only">${t('lessons.class.opensOn', { date: f.day(l.opens_at, SHORT) })}</span></td>`;
           const full = x.total && x.done >= x.total;
+          // A Homeroom handout graded by completion: done or not done; not graded: practice, shown but never a grade.
+          if (x.practice || x.completion) return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}${x.practice ? ' gb-practice' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#s-${p.id}">
+            <span class="gb-num">${full ? '✅' : x.practice ? (x.last ? '◐' : '–') : '○'}</span><span class="gb-pts">${t(x.practice ? (full ? 'gradebook.grade.practiced' : 'gradebook.grade.practice') : full ? 'gradebook.grade.done' : 'gradebook.grade.notDone')}</span>
+            ${x.late ? html`<span class="sr-only">${t('lessons.class.late')}</span>` : ''}${x.lateDone ? html`<span class="chip-s bad gb-latedone">${ico('⏰', { size: 18 })} ${t('gradebook.doneLate')}</span>` : ''}</a></td>`;
           const first = x.toRead ? firstNew[`${p.id}:${l.id}`] : null;
           return html`<td class="${full ? 'gb-done' : x.late ? 'gb-late' : ''}"><a class="gb-cell" href="/class/${c.id}/progress/${l.id}#${first ? `a-${first}-${p.id}` : `s-${p.id}`}">
           <span class="gb-num">${full ? '✅' : `${x.done}/${x.total}`}</span>${bar(x.done, x.total)}
@@ -329,7 +337,7 @@ router.get('/class/:id/progress.csv', requireUser, (req, res) => {
     ...p.cells.flatMap((x, i) => (helped[i] ? [x.helped || ''] : []))];
   const lines = [[t('school.people.name'), t('school.people.username'), ...head, t('gradebook.workDone'), ...(anyQz ? [t('progress.csv.quizAll')] : []), ...(anyRb ? [t('rubrics.csv.totalPoints'), t('rubrics.csv.totalPercent')] : []), ...tail].map(cell).join(',')];
   for (const p of gb.students) {
-    const cols = p.cells.flatMap((x, i) => [x.na ? t('gradebook.notAssigned') : x.locked ? '–' : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
+    const cols = p.cells.flatMap((x, i) => [x.na ? t('gradebook.notAssigned') : x.locked ? '–' : x.practice ? t('gradebook.grade.practiceCsv', { done: x.done, total: x.total }) : x.completion ? t(x.total && x.done >= x.total ? 'gradebook.grade.done' : 'gradebook.grade.notDone') : `${x.done}/${x.total}`, ...(qz[i] ? [x.quiz !== null ? `${x.quiz}%` : ''] : []), ...(rb[i] ? (x.maxPoints > 0 ? [R.pointsText(x.points, x.maxPoints), `${R.percent(x.points, x.maxPoints)}%`] : ['', '']) : [])]);
     lines.push([nameOf(p), p.username, ...cols, overallOf(p) || '', ...(anyQz ? [p.quiz !== null ? `${p.quiz}%` : ''] : []), ...(anyRb ? (p.rubric ? [R.pointsText(p.rubric.points, p.rubric.max), `${p.rubric.pct}%`] : ['', '']) : []), ...tailOf(p)].map(cell).join(','));
   }
   const file = `${c.name.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '') || 'class'}-progress.csv`;

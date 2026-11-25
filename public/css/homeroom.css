@@ -100,7 +100,7 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
   .hr-class{flex:1 1 0;min-width:0;max-width:none}
   .hr-top .hr-grow{display:none}
   .hr-panel{top:auto;left:8px;right:88px;bottom:8px;width:auto;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:8px;gap:8px}
-  .hr-panel .hr-cap,.hr-panel .hr-soon,.hr-panel .hr-empty,.hr-toolhint,.hr-gchip.whole{display:none}
+  .hr-panel .hr-cap,.hr-panel .hr-soon,.hr-panel .hr-empty,.hr-toolhint{display:none}
   .hr-items,.hr-groupchips{flex-direction:row;flex-wrap:nowrap}
   .hr-item,.hr-gchip,.hr-gedit{flex:none}
   .hr-itemt{max-width:180px}
@@ -376,3 +376,92 @@ body.hs-page main#main{min-height:100vh;min-height:100dvh}
 .hd-notyou{display:inline-flex;align-items:center;gap:8px;flex:none;font-weight:700;color:var(--text-2)}
 .hd-switch{min-height:48px}
 @media (max-width:600px){.hd-hidephone{display:none}}
+
+/* ---- handing out (step 2a): the panel's games are buttons; tap one (it stays picked), then a desk, a group or Whole
+   class; or drag it there with a mouse or pen. Desks show their handouts with progress. */
+.hr-give{width:100%;text-align:start;font:inherit;font-weight:800;font-size:14px;color:var(--text);cursor:pointer;touch-action:manipulation}
+.hr-give:hover{background:var(--hover)}
+.hr-give[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 0 0 3px var(--accent-press);background:var(--accent-soft)}
+.hr-later{opacity:.75}
+.hr-soontag{margin-inline-start:auto;flex:none;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--card-2);color:var(--muted);border:1px solid var(--line)}
+button.hr-gchip{border:0;font-family:inherit;cursor:pointer;touch-action:manipulation}
+button.hr-gchip.whole{border:2px dashed var(--line)}
+.hr-picking .hr-gchip,.hr-picking .hr-desk{outline:3px dashed var(--brand-spark);outline-offset:3px;cursor:copy}
+.hr-picking .hr-desk{outline-offset:4px}
+.hr-droptarget{outline:4px solid var(--accent-press)!important;outline-offset:3px}
+.hr-givebar{position:absolute;z-index:66;left:264px;right:12px;top:12px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:600;cursor:default}
+.hr-givebar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A;margin-inline-start:auto;flex:none}
+.hr-givebar .hr-gchip{min-height:40px;background:color-mix(in srgb,var(--gc,#FFFDF2) 22%,#FFFDF2);color:#141414;outline:0}
+.hr-givebar .hr-gchip.whole{background:#FFFDF2;border-color:#E8D88A}
+.hr-giveico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#FFFDF2}
+.hr-givet{min-width:0;flex:1 1 200px}
+.hr-giveto{display:flex;flex-wrap:wrap;gap:6px}
+.hr-givebar{flex-wrap:wrap}
+.hr-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--card);border:2px solid var(--accent-press);box-shadow:var(--shadow-lg);font-weight:800;font-size:14px;max-width:240px;white-space:nowrap;overflow:hidden}
+/* a desk's handouts */
+.hr-desk:has(.hr-cards){justify-content:flex-start;padding:8px}
+.hr-cards{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hr-card{display:flex;align-items:center;gap:6px;width:100%;height:30px;padding:0 6px;border:0;border-radius:9px;background:color-mix(in srgb,var(--gc,var(--line)) 14%,var(--card-2));color:var(--text);font:700 13px var(--font);text-align:start;min-width:0;cursor:pointer}
+.hr-card:hover{background:var(--hover)}
+span.hr-card{cursor:inherit}
+.hr-card.done{opacity:.6}
+.hr-cico{flex:none;display:grid;place-items:center}
+.hr-ct{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-cbar{flex:none;width:32px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hr-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+.hr-cdone{flex:none;font-weight:800;color:var(--accent-press)}
+.hr-clock{flex:none;display:grid;place-items:center;opacity:.7}
+.hr-more{align-self:flex-start;border:0;background:transparent;padding:2px 6px;border-radius:8px;color:var(--link);font:800 12px var(--font);cursor:pointer}
+/* the handout sheet */
+.hr-giveform{display:flex;flex-direction:column;gap:6px}
+.hr-eyebrow{margin:0;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink)}
+.hr-label{margin:10px 0 0;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-ins{width:100%;resize:vertical;min-height:84px}
+.hr-count{margin:0;text-align:end}
+.hr-seg{display:flex;flex-wrap:wrap;gap:6px}
+.hr-segb{min-height:44px;padding:0 16px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .95rem var(--font);box-shadow:0 3px 0 var(--line);cursor:pointer}
+.hr-segb.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-seghint{margin:2px 0 0}
+.hr-due{max-width:220px}
+.hr-giveacts{justify-content:flex-end;margin-top:12px;gap:8px}
+/* a desk's sheet */
+.hr-dlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.hr-ditem{padding:12px;border:2px solid var(--line);border-radius:16px;background:var(--card)}
+.hr-ditem.first{border-color:var(--accent-press)}
+.hr-ditem.done .hr-dhead b{opacity:.7}
+.hr-dhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hr-dstate{margin-inline-start:auto;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-dins{margin:8px 0 4px;padding:8px 10px;border-radius:12px;background:#FFF4C7;color:#141414;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
+.hr-ditem .row{margin-top:8px;gap:8px;flex-wrap:wrap}
+@media (max-width:1100px){.hr-givebar{left:234px}}
+@media (max-width:819px){
+  .hr-givebar{left:8px;right:8px;top:8px}
+  .hr-give{width:auto}
+  .hr-panel .hr-soontag{display:none}
+  .hr-panel .hr-give .hr-itemt{max-width:150px}
+}
+
+/* ---- the student's handout cards (step 2a) */
+.hd-deskrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.hd-deskrow .hd-deskh{flex:1 1 auto}
+.hd-order{flex:none;font-size:.8rem;font-weight:800;border-radius:999px;padding:4px 12px;background:var(--card-2);border:1px solid var(--line);color:var(--text-2)}
+.hd-cards{flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,230px);gap:12px;overflow-x:auto;overscroll-behavior-x:contain;padding:12px 2px 6px;scroll-snap-type:x proximity}
+.hd-card{position:relative;display:flex;flex-direction:column;gap:6px;min-height:150px;padding:14px 12px 12px;border:2px solid var(--line);border-radius:18px;background:var(--card);color:var(--text);text-decoration:none;box-shadow:0 3px 0 var(--line);scroll-snap-align:start;min-width:0}
+a.hd-card:hover{background:var(--hover)}
+a.hd-card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hd-card.next{border:3px solid var(--accent-press);box-shadow:0 3px 0 var(--accent-press)}
+.hd-card.locked,.hd-card.notready{background:var(--card-2);color:var(--muted);box-shadow:none}
+.hd-card.locked .hd-cico{filter:grayscale(.8);opacity:.7}
+.hd-card.done{opacity:.55;box-shadow:none}
+.hd-badge{position:absolute;top:-11px;inset-inline-end:10px;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.hd-badge.next{background:var(--accent-press);color:#fff}
+.hd-badge.later{background:var(--card);color:var(--muted);border:1px solid var(--line)}
+.hd-badge.done{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent-press)}
+.hd-cico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hd-ct{font-size:1rem;line-height:1.2;overflow-wrap:anywhere}
+.hd-csub{font-size:.8rem;color:var(--muted);font-weight:600}
+.hd-cins{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden;padding:6px 8px;border-radius:10px;background:#FFF4C7;color:#141414;font-size:.82rem;font-weight:700;line-height:1.3;overflow-wrap:anywhere;white-space:pre-line}
+.hd-card.locked .hd-cins{opacity:.85}
+.hd-cbar{margin-top:auto;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hd-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+@media (max-width:600px){.hd-cards{grid-auto-columns:minmax(170px,72%)}}
