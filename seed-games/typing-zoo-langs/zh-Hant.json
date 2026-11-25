@@ -182,7 +182,9 @@
   "ln_l39": "難打的標點符號",
   "ln_l40": "高手速度挑戰",
   "keyboardL": "鍵盤",
-  "keyboardHint": "選擇你使用的語言和鍵盤。"
+  "keyboardHint": "選擇你使用的語言和鍵盤。",
+  "shiftKey": "Shift",
+  "spaceKey": "空白鍵"
  },
  "words": [
   "a",

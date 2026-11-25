@@ -1,0 +1,467 @@
+/* Homeroom (public/js/homeroom.js; docs/homeroom.md). Loaded after public/css/manipulatives.css: the board is the live
+   room's (.rm, .rm-world, .rm-area.teach, the zoom pill, the minimap, sticky notes, text and pen), and this file adds the
+   top bar, the teacher's desk panel, the desks, Arrange seats and the groups. The page fills the screen under the site's
+   bar like the live room (main.rm-main). */
+main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+.hr{position:relative}
+.hr [hidden]{display:none!important}
+
+/* the top bar: class switcher, Homeroom | Classroom | Dashboard, Arrange seats, ⋯ */
+.hr-top{position:relative;z-index:80;display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.hr-top .hr-tabs{margin:0}
+.hr-class{width:auto;min-width:0;max-width:280px;min-height:44px;border-radius:999px;font-weight:800;font-size:1.05rem;padding-inline:16px 36px}
+.hr-grow{flex:1}
+.hr-chunk{min-height:44px;border:2px solid var(--line);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;white-space:nowrap}
+.hr-chunk:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hr-chunk[aria-pressed="true"],.hr-chunk.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-morewrap{position:relative}
+.hr-morewrap .rm-menu{right:0;top:calc(100% + 8px);width:min(300px,calc(100vw - 24px));max-height:70vh;z-index:90}
+.hr-menusoon{margin:6px 12px 4px;color:var(--muted)}
+
+/* the stage: the board, with the panel, the seat bar, the zoom pill and the minimap floating over it */
+.hr-stage{position:relative;flex:1 1 auto;min-height:0;display:flex}
+.hr-board{flex:1 1 auto}
+.hr-loading{position:absolute;left:24px;top:24px;white-space:nowrap}
+.hr-panel{position:absolute;z-index:60;left:12px;top:12px;bottom:76px;width:240px;padding:12px;overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;
+  background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:var(--r);box-shadow:var(--shadow-lg);cursor:default}
+.hr-cap{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:8px 0 2px}
+.hr-cap:first-child{margin-top:0}
+.hr-items{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.hr-item{display:flex;align-items:center;gap:10px;min-height:44px;padding:6px 10px;border-radius:14px;background:var(--card);border:2px solid var(--line);font-weight:800;font-size:14px;box-shadow:0 2px 0 var(--line);min-width:0}
+.hr-ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hr-itemt{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-empty{margin:0;color:var(--muted)}
+.hr-soon{margin:2px 0;padding:8px 10px;border-radius:var(--r-sm);background:var(--spark-soft);color:var(--text);font-weight:600}
+.hr-groupchips{display:flex;flex-wrap:wrap;gap:6px}
+.hr-gchip{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:4px 10px;border-radius:999px;font-size:13px;font-weight:800;background:color-mix(in srgb,var(--gc) 16%,var(--card));color:var(--text);white-space:nowrap}
+.hr-gchip.whole{background:var(--card-2);border:2px dashed var(--line)}
+.hr-gchip .rm-dot{width:10px;height:10px}
+.hr-gedit{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 10px;border:0;border-radius:999px;background:transparent;color:var(--link);font:800 13px var(--font);cursor:pointer;white-space:nowrap}
+.hr-gedit:hover{background:var(--hover)}
+.hr-toolgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.hr-tool{width:100%;padding:0 10px;font-size:.85rem}
+.hr-toolhint{margin:4px 0 0;color:var(--muted)}
+.hr-tools .rm-pens{display:flex;flex-wrap:wrap;align-items:center}
+.rm.inking{cursor:default}
+.hr-area.drawing,.hr-area.drawing *{cursor:crosshair}
+
+.hr-seatbar{position:absolute;z-index:65;left:264px;right:12px;top:12px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding:10px 12px;
+  background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:800;cursor:default}
+.hr-seatbar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A}
+.hr-seatbar .hr-chunk.on{background:#141414;color:#FFFDF2;border-color:#141414;box-shadow:0 3px 0 #000}
+.hr-seatbar .hr-done{background:#1F9D63;border-color:#1F9D63;color:#fff;box-shadow:0 3px 0 #146B43}
+.hr-seathint{color:#5D5A50;font-weight:600}
+.hr-zoom{left:12px;bottom:12px}
+.hr-mini{right:96px;bottom:12px}
+
+/* the board's contents */
+.hr-areabody{position:absolute;inset:0}
+.hr-shapes{position:absolute;inset:0;width:100%;height:100%;z-index:24;pointer-events:none;overflow:visible}
+.hr-shape,.hr-hit{pointer-events:visibleStroke;cursor:move}
+.hr-hit{stroke:transparent;stroke-width:24}
+.hr-shape.on{filter:drop-shadow(0 0 4px var(--focus))}
+.hr-area.drawing .hr-shape,.hr-area.drawing .hr-hit{pointer-events:none}
+.hr-shapedel{position:absolute;z-index:40;transform:translate(-50%,-50%);width:40px;height:40px;border-radius:50%;border:0;background:var(--danger);color:var(--on-danger);font:800 22px/1 var(--font);cursor:pointer;box-shadow:var(--shadow)}
+.hr-tdesk{position:absolute;border-radius:14px;background:var(--text);color:var(--card);display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:var(--shadow)}
+.hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
+.hr-desk .rm-dot{flex:none;background:var(--c,var(--line))}
+.hr-desk .hr-empty{font-size:14px}
+.hr-gtag{align-self:flex-start;font-size:12px;font-weight:800;border-radius:999px;padding:2px 8px;background:color-mix(in srgb,var(--gc) 18%,var(--card));color:var(--text)}
+.hr-seating .hr-desk{cursor:move;box-shadow:0 0 0 3px var(--spark),var(--shadow);touch-action:none}
+.hr-seating .hr-desk.sel,.hr-seating .hr-desk:focus-visible{box-shadow:0 0 0 5px var(--focus),var(--shadow-lg);outline:0}
+.hr-nostudents{position:absolute;margin:0;text-align:center;font-size:22px;font-weight:700;color:var(--muted)}
+
+/* the groups sheet */
+.hr-glist{list-style:none;margin:12px 0;padding:0;display:flex;flex-direction:column;gap:10px}
+.hr-glist li{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.hr-glist input{flex:1 1 120px;min-width:0}
+.hr-swatches{display:flex;flex-wrap:wrap;gap:4px}
+.hr-sw{width:26px;height:26px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0}
+.hr-sw.on{box-shadow:0 0 0 3px var(--text)}
+.hr-gsub{font-size:1rem;margin:16px 0 8px}
+.hr-gstudents{margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.hr-gstudents li{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+.hr-gstudents label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.hr-gstudents select{flex:none;width:auto;max-width:55%}
+.hr-gacts{margin-top:16px;justify-content:flex-end}
+
+/* tablets: a narrower panel */
+@media (max-width:1100px){
+  .hr-panel{width:210px}
+  .hr-seatbar{left:234px}
+}
+/* phones: the panel is one strip along the bottom (scrolls sideways), clear of Oomba's chat button; no minimap */
+@media (max-width:819px){
+  .hr-hidephone{display:none}
+  .hr-top{padding:8px;gap:6px 8px}
+  .hr-top .hr-tabs{order:5;flex:1 1 100%}
+  .hr-top .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+  .hr-class{flex:1 1 0;min-width:0;max-width:none}
+  .hr-top .hr-grow{display:none}
+  .hr-panel{top:auto;left:8px;right:88px;bottom:8px;width:auto;flex-direction:row;align-items:center;overflow-x:auto;overflow-y:hidden;padding:8px;gap:8px}
+  .hr-panel .hr-cap,.hr-panel .hr-soon,.hr-panel .hr-empty,.hr-toolhint{display:none}
+  .hr-items,.hr-groupchips{flex-direction:row;flex-wrap:nowrap}
+  .hr-item,.hr-gchip,.hr-gedit{flex:none}
+  .hr-itemt{max-width:180px}
+  .hr-toolgrid{display:flex;flex-wrap:nowrap}
+  .hr-tool{width:auto;flex:none}
+  .hr-tool span{display:none}
+  .hr-tools{display:flex;align-items:center;gap:6px}
+  .hr-tools .rm-pens{flex-wrap:nowrap;margin:0}
+  .hr-seatbar{left:8px;right:8px;top:8px}
+  .hr-seathint{display:none}
+  .hr-zoom{bottom:84px;left:8px}
+  .hr-mini{display:none}
+}
+
+/* ---- live class (step 1b): the Live dot, Everyone to Homeroom / Bring everyone to me, Pause screens, End class */
+.hr-livedot{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--ok);white-space:nowrap}
+.hr-livedot::before{content:'';width:10px;height:10px;border-radius:50%;background:#E5483A;box-shadow:0 0 0 3px color-mix(in srgb,#E5483A 22%,transparent)}
+.hr-livebtns{display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hr-livebtns:empty{display:none}
+.hr-chunk.hr-spark{background:var(--spark);border-color:var(--spark);color:#141414;box-shadow:0 3px 0 var(--spark-press)}
+.hr-chunk.hr-spark:hover{background:var(--spark-hover)}
+.hr-chunk.hr-pausebtn.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-menu a.rm-mi{text-decoration:none;color:inherit}
+/* live on a laptop: Arrange seats keeps its icon (it is in the ⋯ menu too) so the top bar stays one row */
+@media (max-width:1500px){.hr-islive .hr-top [data-hr="seats"] .hr-hidephone{display:none}.hr-islive .hr-class{max-width:220px}}
+.hr-menu .hr-end{color:var(--danger)}
+
+/* ---- the student desk (public/js/homeroom-desk.js): a dotted board under floating cards, like the live room */
+main.rm-main>#hd{flex:1 1 auto;min-height:0}
+.hd{position:relative;overflow:hidden;background-color:var(--bg);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 28%,transparent) 1.2px,transparent 1.3px);background-size:28px 28px}
+.hd [hidden]{display:none!important}
+.hd-float{position:absolute;z-index:20;background:color-mix(in srgb,var(--card) 94%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-radius:18px;box-shadow:var(--shadow-lg)}
+.hd-top{left:12px;right:12px;top:12px;min-height:56px;display:flex;align-items:center;gap:12px;padding:6px 16px}
+.hd-title{margin:0;font-size:clamp(1rem,2.2vw,1.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-body{position:absolute;left:12px;right:12px;top:80px;bottom:84px;overflow-y:auto;overscroll-behavior:contain}
+.hd-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;height:100%;min-height:0}
+.hd-desk{position:relative;display:flex;flex-direction:column;gap:12px;min-height:0;padding:14px;border:4px solid var(--gc,var(--edge));border-radius:24px;background:var(--card);box-shadow:var(--shadow)}
+.hd-deskh{display:flex;align-items:center;gap:8px;margin:0;font-size:1.1rem;font-weight:800;min-width:0}
+.hd-deskh span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-deskh .rm-dot{flex:none;background:var(--c,var(--edge))}
+.hd-emptydesk{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px dashed var(--line);border-radius:16px;background:var(--card-2)}
+.hd-emptydesk p{margin:0;display:flex;flex-direction:column}
+.hd-emptydesk span{color:var(--muted);font-size:.9rem}
+.hd-pad{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:6px}
+.hd-padbar{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}
+.hd-padcap{margin:0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hd-grow{flex:1}
+.hd-pens{display:inline-flex;gap:0}
+.hd-pen{width:48px;height:48px;display:grid;place-items:center;border:0;background:transparent;border-radius:50%;cursor:pointer;padding:0}
+.hd-pen i{width:28px;height:28px;border-radius:50%;box-shadow:0 0 0 2px var(--card),0 0 0 3px var(--line)}
+.hd-pen.on i{box-shadow:0 0 0 3px var(--card),0 0 0 5px var(--text)}
+.hd-tool{display:inline-flex;align-items:center;gap:6px;min-height:48px;padding:0 14px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .9rem var(--font);box-shadow:0 2px 0 var(--line);cursor:pointer}
+.hd-tool:disabled{opacity:.45;cursor:default}
+.hd-padbox{flex:1 1 auto;min-height:180px;position:relative}
+.hd-svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
+/* The pad is a sheet of paper in both themes, so every pen color shows. */
+.hd-paper{fill:var(--brand-cream);stroke:var(--edge);stroke-width:2;stroke-dasharray:10 8}
+.hd-side{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px;border:3px solid #141414;border-radius:20px;background:color-mix(in srgb,var(--spark) 22%,var(--card));align-self:start}
+.hd-wintop{display:flex;align-items:center;gap:8px}
+.hd-areah{flex:1;margin:0;font-size:.9rem;font-weight:800;color:var(--warn-ink)}
+.hd-open{width:48px;height:48px;display:grid;place-items:center;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);cursor:pointer}
+.hd-window{cursor:zoom-in;border-radius:14px;overflow:hidden}
+.hd-dock{left:12px;right:12px;bottom:12px;display:flex;align-items:center;gap:8px;padding:6px}
+.hd-dockbtn{flex:none;display:inline-flex;align-items:center;gap:6px;min-height:52px;padding:6px 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 .95rem var(--font);text-decoration:none;cursor:pointer;white-space:nowrap}
+.hd-dockbtn:hover{background:var(--hover)}
+.hd-dockbtn[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 2px 0 var(--accent-press)}
+
+/* the read-only teacher's area (public/js/homeroom-area.js), scaled to its box */
+.hr-fit{position:relative;width:100%;overflow:hidden}
+.hr-fit.contain{height:100%}
+.hr-fitin{position:absolute;left:0;top:0;transform-origin:0 0}
+.hr-roarea .rm-in{border-radius:var(--r)}
+.hr-roarea .mp-sticky,.hr-roarea .mp-text{cursor:default}
+.hr-rosticky p{margin:0}
+.hr-roempty{position:absolute;inset:0;display:grid;place-items:center;margin:0;font-size:40px;font-weight:700;color:var(--warn-ink);opacity:.75;text-align:center;padding:0 60px}
+
+/* overlays over the desk: the teacher's area, Bring everyone to me, Pause screens, See the room */
+.hd-over{position:absolute;inset:0;z-index:40;display:flex;flex-direction:column;gap:12px;padding:16px;background:var(--bg)}
+.hd-show{background:color-mix(in srgb,var(--bg) 97%,transparent);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+.hd-overtop{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.hd-overcap{flex:1;margin:0;font-size:1.15rem;font-weight:800;text-align:start}
+.hd-show>.hd-overcap{flex:none;text-align:center}
+.hd-overarea{flex:1 1 auto;min-height:0;position:relative}
+.hd-overhint{margin:0;text-align:center;color:var(--muted);font-weight:600}
+.hd-back{min-height:48px}
+.hd-pause{align-items:center;justify-content:center;text-align:center;background:var(--accent-soft)}
+.hd-pausein{display:flex;flex-direction:column;align-items:center;gap:12px;max-width:520px}
+.hd-pausein h2{margin:0;font-size:clamp(2rem,6vw,3.4rem);line-height:1.1}
+.hd-pausein p{margin:0;font-size:1.1rem;color:var(--text-2)}
+.hd-room{overflow-y:auto}
+.hd-roombox{position:relative;flex:none;width:100%}
+.hd-front{position:absolute;display:flex;align-items:flex-start;justify-content:flex-end;padding:6px 10px;border-radius:14px;background:color-mix(in srgb,var(--spark) 18%,var(--card));box-shadow:inset 0 0 0 2px var(--spark-press);font-size:.8rem;font-weight:800;color:var(--warn-ink)}
+.hd-tdesk{position:absolute;display:grid;place-items:center;border-radius:10px;background:var(--text);color:var(--card);font-size:.75rem;font-weight:800;overflow:hidden;white-space:nowrap}
+.hd-rdesk{position:absolute;border:3px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.hd-rdesk.me{border-color:var(--gc,var(--text));box-shadow:0 0 0 3px var(--text)}
+.hd-rname{position:absolute;inset-inline-start:2px;bottom:calc(100% + 2px);max-width:calc(100% + 30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}
+/* a phone: the desks in seating order as a grid (the teacher's area across the top) */
+.hd-roombox.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:30px 12px;padding-top:4px}
+.hd-roombox.grid .hd-front{position:static;grid-column:1/-1;order:0;min-height:44px;align-items:center;justify-content:center}
+.hd-roombox.grid .hd-tdesk{position:static;grid-column:1/-1;order:1;justify-self:center;min-height:36px;padding:0 16px}
+.hd-roombox.grid .hd-rdesk{position:relative;min-height:56px}
+
+/* covered by an overlay: the desk underneath can't be drawn on by accident */
+.hd-covered .hd-body{visibility:hidden}
+
+/* portrait tablets and narrow laptops: one column (the teacher's area on top), scrolling up and down inside the desk */
+@media (max-width:900px),(max-aspect-ratio:1/1){
+  .hd-grid{grid-template-columns:minmax(0,1fr);height:auto}
+  .hd-padbox{flex:none;min-height:0;aspect-ratio:3/2;max-height:34vh;max-height:34dvh}
+  /* the teacher's area first: a short strip, so the desk and its pad still fit under it */
+  .hd-side{align-self:stretch;order:-1;padding:8px 12px}
+}
+/* phones: smaller gutters, the dock's four buttons share the width */
+@media (max-width:600px){
+  .hd-top{left:8px;right:8px;top:8px;min-height:48px;padding:4px 12px}
+  .hd-body{left:8px;right:8px;top:64px;bottom:80px}
+  .hd-desk{padding:10px;border-width:3px}
+  .hd-dock{left:8px;right:8px;bottom:8px;gap:4px;padding:4px}
+  .hd-dock .hd-grow{display:none}
+  .hd-dockbtn{flex:1 1 0;min-width:0;flex-direction:column;gap:2px;padding:4px 2px;font-size:.72rem;line-height:1.1;min-height:56px;justify-content:center;white-space:normal;text-align:center}
+  .hd-dockbtn span{max-width:100%;overflow-wrap:anywhere}
+  .hd-tool span{display:none}
+  .hd-tool{padding:0 12px}
+  .hd-pen{width:44px;height:48px}
+  .hd-over{padding:10px}
+}
+
+/* ---- the projector view: the teacher's area as big as the screen, the class's name, the Live dot; nothing else */
+body.hr-projpage{background:var(--bg)}
+.hr-proj{position:fixed;inset:0;display:flex;flex-direction:column;gap:12px;padding:16px 24px 24px}
+.hr-projtop{display:flex;align-items:center;gap:16px}
+.hr-projname{margin:0;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:800;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-projtop .hr-livedot{font-size:1.2rem}
+.hr-projarea{flex:1 1 auto;min-height:0;position:relative}
+
+/* ---- quick sign-in (step 1c): the class sign-in box, the projector's card, the shared-device sign-in page, the
+   teacher's Sign-in panel and the printed cards */
+.hr-projmain{flex:1 1 auto;min-height:0;display:flex;gap:20px}
+.hr-projmain .hr-projarea{flex:1 1 auto;min-width:0}
+.hr-projsign{flex:none;width:clamp(240px,26vw,380px);display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px;border-radius:24px;background:var(--card);border:3px solid #141414;box-shadow:var(--shadow-lg);text-align:center;overflow:hidden}
+.hr-projsign h2{margin:0;font-size:clamp(1.1rem,2vw,1.6rem);display:flex;align-items:center;gap:8px}
+.hr-projqr{width:100%;max-width:300px;aspect-ratio:1;background:#fff;border-radius:12px}
+.hr-projqr svg,.hs-qr svg{display:block;width:100%;height:100%}
+.hr-projgo,.hr-projcodecap{margin:0;font-size:clamp(1rem,1.6vw,1.3rem);font-weight:700}
+.hr-projgo b{font-size:1.15em}
+.hr-projcode,.hs-code{margin:0;font:800 clamp(2rem,4.4vw,3.6rem)/1.1 var(--font);letter-spacing:.12em;white-space:nowrap;font-variant-numeric:tabular-nums}
+@media (max-aspect-ratio:1/1){.hr-projmain{flex-direction:column}.hr-projsign{width:auto;flex-direction:row;flex-wrap:wrap;justify-content:center}.hr-projqr{width:160px}}
+
+/* the box (Sign-in panel and the board's sheet) */
+.hs-open{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center}
+.hs-qr{flex:none;width:min(240px,100%);aspect-ratio:1;background:#fff;border-radius:14px;padding:4px;box-shadow:0 0 0 2px var(--line)}
+.hs-codecol{flex:1 1 220px;min-width:0;display:flex;flex-direction:column;gap:4px}
+.hs-go,.hs-codecap{margin:0;font-weight:700}
+.hs-go b{font-size:1.15em}
+.hs-code{font-size:clamp(2rem,7vw,3rem)}
+.hs-until{margin:0}
+.hs-codeacts{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.hs-closedt{display:flex;align-items:center;gap:8px;margin:0 0 4px;font-size:1.1rem}
+.hs-closed .small{margin:0}
+
+/* the teacher's Sign-in panel */
+.hs-panel{display:flex;flex-direction:column;gap:12px;max-width:980px;margin:0 auto;padding-bottom:24px}
+.hs-panel h1{display:flex;align-items:center;gap:10px;margin:4px 0 0}
+.hs-panel>p{margin:0}
+.hs-panelhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px}
+.hs-panelhead .hr-tabs{margin:0}
+.hs-box{padding:16px;border-radius:var(--r);background:var(--card);border:2px solid var(--line);box-shadow:var(--shadow);min-width:0}
+.hs-box h2{margin:0 0 10px;font-size:1.15rem}
+.hs-stuhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.hs-stuhead h2{margin:0}
+.hs-rows{margin:0;padding:0;display:flex;flex-direction:column}
+.hs-row{display:grid;grid-template-columns:minmax(0,1.2fr) 280px minmax(0,1fr) 240px;align-items:center;gap:8px 14px;padding:10px 0;border-top:1px solid var(--line)}
+.hs-row:first-child{border-top:0}
+.hs-who{display:flex;flex-direction:column;min-width:0}
+.hs-who b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-segs{display:inline-flex;border:2px solid var(--line);border-radius:999px;overflow:hidden;background:var(--card);box-shadow:0 2px 0 var(--line)}
+.hs-seg{min-height:44px;padding:0 14px;border:0;background:transparent;color:var(--text);font:800 .9rem var(--font);cursor:pointer;white-space:nowrap}
+.hs-seg+.hs-seg{border-inline-start:2px solid var(--line)}
+.hs-seg[aria-pressed="true"]{background:var(--text);color:var(--card);cursor:default;opacity:1}
+.hs-segs,.hs-own{justify-self:start}
+.hs-own{max-width:260px}
+.hs-status{color:var(--text-2)}
+.hs-status.bad{color:var(--danger);font-weight:700}
+.hs-acts{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end}
+.hs-acts form{margin:0}
+.hs-sheet{min-width:0}
+@media (max-width:980px){.hs-row{grid-template-columns:minmax(0,1fr) 280px}.hs-row .hs-status{grid-column:1}.hs-row .hs-acts{justify-content:flex-start}}
+@media (max-width:600px){.hs-panelhead .hr-tabs{flex:1 1 100%}.hs-panelhead .hr-tabs a{flex:1;justify-content:center;padding:0 8px}}
+@media (max-width:760px){
+  .hs-row{grid-template-columns:minmax(0,1fr) auto}
+  .hs-row .hs-status{grid-column:1}
+  .hs-row .hs-acts{grid-column:1/-1;justify-content:flex-start}
+  .hs-acts:empty{display:none}
+  .hs-seg{padding:0 10px}
+}
+@media (max-width:420px){.hs-row{grid-template-columns:minmax(0,1fr)}.hs-segs{justify-self:start}}
+
+/* the printed cards: two to a row on paper, nothing else printed */
+.hs-cardsbar{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+.hs-cardsbar h1{display:flex;align-items:center;gap:10px;margin:0}
+.hs-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.hs-card{break-inside:avoid;padding:14px 16px;border:2px dashed #8a8a8a;border-radius:18px;background:#fff;color:#141414;display:flex;flex-direction:column;gap:6px}
+.hs-cardtop{display:flex;justify-content:space-between;gap:8px;font-size:.8rem;font-weight:700;color:#555}
+.hs-cardtop span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-cardname{font-size:1.5rem;font-weight:800;line-height:1.15;overflow-wrap:anywhere}
+.hs-cardshows,.hs-cardcap{margin:0;color:#444}
+.hs-cardpics{display:flex;gap:10px;justify-content:flex-start;flex-wrap:wrap}
+.hs-cardpic{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 8px 4px;border:2px solid #d8d8d8;border-radius:14px;min-width:72px}
+.hs-cardn{position:absolute;top:-10px;inset-inline-start:-8px;width:24px;height:24px;border-radius:50%;background:#141414;color:#fff;font:800 13px/24px var(--font);text-align:center}
+.hs-cardpicname{font-size:.75rem;font-weight:700}
+.hs-carduses{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-weight:700}
+@media print{
+  body.hs-teach .nav,body.hs-teach .foot,body.hs-teach .noprint,body.hs-teach .tabbar,body.hs-teach .oc-bubble,body.hs-teach .oc-panel{display:none!important}
+  body.hs-teach{background:#fff}
+  .hs-cards{grid-template-columns:1fr 1fr;gap:10px}
+  .hs-card{border-color:#999}
+}
+
+/* the shared-device sign-in page (/hr): big, calm, one step at a time; tap targets 64 px and up (K-2) */
+body.hs-page{background:var(--bg)}
+body.hs-page main#main{min-height:100vh;min-height:100dvh}
+.hs{max-width:1100px;margin:0 auto;padding:12px 16px 32px;display:flex;flex-direction:column;gap:12px;min-height:100vh;min-height:100dvh}
+.hs [hidden]{display:none!important}
+.hs-top{display:flex;align-items:center;gap:12px;min-height:48px}
+.hs-brand .wordmark{height:30px;width:auto;display:block}
+.hs-grow{flex:1}
+.hs-signedas{max-width:60%;text-align:end}
+.hs-ended{margin:0}
+.hs-main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:clamp(8px,4vh,48px)}
+.hs-step{width:100%;max-width:960px;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.hs-step.hs-busy{opacity:.6;pointer-events:none}
+.hs-h{margin:0;font-size:clamp(1.7rem,5vw,2.6rem);line-height:1.15;display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap}
+.hs-lead{margin:0;font-size:clamp(1.05rem,2.6vw,1.3rem);color:var(--text-2);display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap}
+.hs-lead.small{font-size:1rem}
+.hs-class{margin:0;display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--card);border:2px solid var(--line);font-weight:800;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hs-codeform{max-width:520px}
+.hs-codein{width:100%;max-width:420px;min-height:84px;text-align:center;font:800 clamp(2rem,8vw,3rem)/1 var(--font);letter-spacing:.18em;text-transform:uppercase;border-radius:20px;border-width:3px}
+.hs-err{margin:0;min-height:1.4em;font-size:1.05rem;font-weight:700}
+.hs-big{min-height:64px;min-width:min(320px,100%);font-size:1.3rem;border-radius:999px;box-shadow:0 4px 0 var(--accent-press)}
+.hs-back{min-height:56px;padding:0 20px;font-size:1.05rem;border-radius:999px;border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.hs-names{list-style:none;margin:6px 0;padding:0;width:100%;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(150px,100%),1fr));gap:12px}
+.hs-name{width:100%;min-height:84px;padding:10px 14px;border:3px solid var(--line);border-radius:22px;background:var(--card);color:var(--text);font:800 clamp(1.2rem,3vw,1.5rem)/1.2 var(--font);box-shadow:0 4px 0 var(--line);cursor:pointer;overflow-wrap:anywhere}
+.hs-name:hover{border-color:var(--accent)}
+.hs-name:active,.hs-pic:active,.hs-big:active,.hs-back:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.hs-gbox{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:4px}
+.hs-gbox p{margin:0}
+.hs-google{min-height:56px}
+.hs-pwrow{display:flex;gap:8px;width:100%;max-width:520px}
+.hs-pwin{flex:1;min-width:0;min-height:64px;font-size:1.5rem;border-radius:18px;border-width:3px}
+.hs-show{min-height:64px;flex:none}
+.hs-slots{display:flex;gap:12px;justify-content:center}
+.hs-slot{width:76px;height:76px;border-radius:20px;border:3px dashed var(--line);background:var(--card);display:grid;place-items:center}
+.hs-slot.on{border-style:solid;border-color:var(--accent)}
+.hs-slot .fx{width:56px;height:56px}
+.hs-slotn{font-size:1.4rem;font-weight:800;color:var(--muted)}
+.hs-shake{animation:hs-shake .4s}
+@keyframes hs-shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@media (prefers-reduced-motion:reduce){.hs-shake{animation:none}}
+.hs-pics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;width:100%;max-width:460px}
+.hs-pic{aspect-ratio:1;min-height:88px;display:grid;place-items:center;border:3px solid var(--line);border-radius:24px;background:var(--card);box-shadow:0 4px 0 var(--line);cursor:pointer;padding:6px}
+.hs-pic .fx{width:min(72px,70%);height:auto;aspect-ratio:1}
+.hs-pic:hover{border-color:var(--accent)}
+.hs-picacts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hs-undo{min-height:56px;padding:0 20px;border-radius:999px;font-size:1.05rem}
+/* a phone held sideways or a short tablet: the pictures beside the slots */
+@media (min-width:700px) and (max-height:700px){
+  .hs-picstep{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;text-align:center;column-gap:24px}
+  .hs-picstep>:not(.hs-pics){grid-column:1}
+  .hs-picstep .hs-pics{grid-column:2;grid-row:1/span 6;max-width:360px;justify-self:center}
+}
+
+/* the desk on a shared device: Not you? Switch */
+.hd-notyou{display:inline-flex;align-items:center;gap:8px;flex:none;font-weight:700;color:var(--text-2)}
+.hd-switch{min-height:48px}
+@media (max-width:600px){.hd-hidephone{display:none}}
+
+/* ---- handing out (step 2a): the panel's games are buttons; tap one (it stays picked), then a desk, a group or Whole
+   class; or drag it there with a mouse or pen. Desks show their handouts with progress. */
+.hr-give{width:100%;text-align:start;font:inherit;font-weight:800;font-size:14px;color:var(--text);cursor:pointer;touch-action:manipulation}
+.hr-give:hover{background:var(--hover)}
+.hr-give[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 0 0 3px var(--accent-press);background:var(--accent-soft)}
+.hr-later{opacity:.75}
+.hr-soontag{margin-inline-start:auto;flex:none;font-size:11px;font-weight:800;border-radius:999px;padding:2px 8px;background:var(--card-2);color:var(--muted);border:1px solid var(--line)}
+button.hr-gchip{border:0;font-family:inherit;cursor:pointer;touch-action:manipulation}
+button.hr-gchip.whole{border:2px dashed var(--line)}
+.hr-picking .hr-gchip,.hr-picking .hr-desk{outline:3px dashed var(--brand-spark);outline-offset:3px;cursor:copy}
+.hr-picking .hr-desk{outline-offset:4px}
+.hr-droptarget{outline:4px solid var(--accent-press)!important;outline-offset:3px}
+.hr-givebar{position:absolute;z-index:66;left:264px;right:12px;top:12px;display:flex;align-items:center;gap:10px;padding:8px 12px;background:#FFF6CF;color:#141414;border-radius:var(--r);box-shadow:var(--shadow-lg);font-weight:600;cursor:default}
+.hr-givebar .hr-chunk{min-height:40px;background:#FFFDF2;color:#141414;border-color:#E8D88A;box-shadow:0 3px 0 #E8D88A;margin-inline-start:auto;flex:none}
+.hr-givebar .hr-gchip{min-height:40px;background:color-mix(in srgb,var(--gc,#FFFDF2) 22%,#FFFDF2);color:#141414;outline:0}
+.hr-givebar .hr-gchip.whole{background:#FFFDF2;border-color:#E8D88A}
+.hr-giveico{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:#FFFDF2}
+.hr-givet{min-width:0;flex:1 1 200px}
+.hr-giveto{display:flex;flex-wrap:wrap;gap:6px}
+.hr-givebar{flex-wrap:wrap}
+.hr-ghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:14px;background:var(--card);border:2px solid var(--accent-press);box-shadow:var(--shadow-lg);font-weight:800;font-size:14px;max-width:240px;white-space:nowrap;overflow:hidden}
+/* a desk's handouts */
+.hr-desk:has(.hr-cards){justify-content:flex-start;padding:8px}
+.hr-cards{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hr-card{display:flex;align-items:center;gap:6px;width:100%;height:30px;padding:0 6px;border:0;border-radius:9px;background:color-mix(in srgb,var(--gc,var(--line)) 14%,var(--card-2));color:var(--text);font:700 13px var(--font);text-align:start;min-width:0;cursor:pointer}
+.hr-card:hover{background:var(--hover)}
+span.hr-card{cursor:inherit}
+.hr-card.done{opacity:.6}
+.hr-cico{flex:none;display:grid;place-items:center}
+.hr-ct{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-cbar{flex:none;width:32px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hr-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+.hr-cdone{flex:none;font-weight:800;color:var(--accent-press)}
+.hr-clock{flex:none;display:grid;place-items:center;opacity:.7}
+.hr-more{align-self:flex-start;border:0;background:transparent;padding:2px 6px;border-radius:8px;color:var(--link);font:800 12px var(--font);cursor:pointer}
+/* the handout sheet */
+.hr-giveform{display:flex;flex-direction:column;gap:6px}
+.hr-eyebrow{margin:0;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--accent-ink)}
+.hr-label{margin:10px 0 0;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-ins{width:100%;resize:vertical;min-height:84px}
+.hr-count{margin:0;text-align:end}
+.hr-seg{display:flex;flex-wrap:wrap;gap:6px}
+.hr-segb{min-height:44px;padding:0 16px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 .95rem var(--font);box-shadow:0 3px 0 var(--line);cursor:pointer}
+.hr-segb.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hr-seghint{margin:2px 0 0}
+.hr-due{max-width:220px}
+.hr-giveacts{justify-content:flex-end;margin-top:12px;gap:8px}
+/* a desk's sheet */
+.hr-dlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.hr-ditem{padding:12px;border:2px solid var(--line);border-radius:16px;background:var(--card)}
+.hr-ditem.first{border-color:var(--accent-press)}
+.hr-ditem.done .hr-dhead b{opacity:.7}
+.hr-dhead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hr-dstate{margin-inline-start:auto;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-dins{margin:8px 0 4px;padding:8px 10px;border-radius:12px;background:#FFF4C7;color:#141414;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
+.hr-ditem .row{margin-top:8px;gap:8px;flex-wrap:wrap}
+@media (max-width:1100px){.hr-givebar{left:234px}}
+@media (max-width:819px){
+  .hr-givebar{left:8px;right:8px;top:8px}
+  .hr-give{width:auto}
+  .hr-panel .hr-soontag{display:none}
+  .hr-panel .hr-give .hr-itemt{max-width:150px}
+}
+
+/* ---- the student's handout cards (step 2a) */
+.hd-deskrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.hd-deskrow .hd-deskh{flex:1 1 auto}
+.hd-order{flex:none;font-size:.8rem;font-weight:800;border-radius:999px;padding:4px 12px;background:var(--card-2);border:1px solid var(--line);color:var(--text-2)}
+.hd-cards{flex:none;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(190px,230px);gap:12px;overflow-x:auto;overscroll-behavior-x:contain;padding:12px 2px 6px;scroll-snap-type:x proximity}
+.hd-card{position:relative;display:flex;flex-direction:column;gap:6px;min-height:150px;padding:14px 12px 12px;border:2px solid var(--line);border-radius:18px;background:var(--card);color:var(--text);text-decoration:none;box-shadow:0 3px 0 var(--line);scroll-snap-align:start;min-width:0}
+a.hd-card:hover{background:var(--hover)}
+a.hd-card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hd-card.next{border:3px solid var(--accent-press);box-shadow:0 3px 0 var(--accent-press)}
+.hd-card.locked,.hd-card.notready{background:var(--card-2);color:var(--muted);box-shadow:none}
+.hd-card.locked .hd-cico{filter:grayscale(.8);opacity:.7}
+.hd-card.done{opacity:.55;box-shadow:none}
+.hd-badge{position:absolute;top:-11px;inset-inline-end:10px;display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:999px;padding:3px 9px;white-space:nowrap}
+.hd-badge.next{background:var(--accent-press);color:#fff}
+.hd-badge.later{background:var(--card);color:var(--muted);border:1px solid var(--line)}
+.hd-badge.done{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent-press)}
+.hd-cico{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--card-2);flex:none}
+.hd-ct{font-size:1rem;line-height:1.2;overflow-wrap:anywhere}
+.hd-csub{font-size:.8rem;color:var(--muted);font-weight:600}
+.hd-cins{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden;padding:6px 8px;border-radius:10px;background:#FFF4C7;color:#141414;font-size:.82rem;font-weight:700;line-height:1.3;overflow-wrap:anywhere;white-space:pre-line}
+.hd-card.locked .hd-cins{opacity:.85}
+.hd-cbar{margin-top:auto;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hd-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
+@media (max-width:600px){.hd-cards{grid-auto-columns:minmax(170px,72%)}}

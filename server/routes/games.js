@@ -355,8 +355,12 @@ router.get('/play/:slug', (req, res) => {
   // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
   // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
   // escape (the game's own screens offer only Play again / Next).
+  // A game handed out from a class's Homeroom (services/lessons.js playFrame): back to the student's desk, and the
+  // teacher's instructions again at the top of the game (the game itself is unchanged).
+  const frame = lesson ? L.playFrame(u, lc.cl, lc.step, t) : null;
+  if (frame) lesson.back = frame.backHref;
   const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
-  const backLabel = lesson ? t('progress.play.backToLesson') : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
+  const backLabel = lesson ? (frame ? frame.backLabel : t('progress.play.backToLesson')) : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
   // Loudness (services/mic-games.js): the official noise meters, and any Builder game whose code uses BRB.loudness; never
   // in an online match. This page (not the game frame, which keeps microphone=()) may then open the mic after a tap and
   // pass the game a number.
@@ -372,6 +376,7 @@ router.get('/play/:slug', (req, res) => {
     ${ttsData ? html`<button class="iconbtn" type="button" id="p-voices" aria-haspopup="dialog" aria-label="${t('play.voices')}"><span class="emo">${ico('🔊', { size: 20 })}</span><span class="lbl">${t('play.voices')}</span></button>` : ''}
     <button class="iconbtn" type="button" id="p-full" aria-label="${t('play.fullScreen')}"><span class="emo" aria-hidden="true">⛶</span><span class="lbl">${t('play.fullScreen')}</span></button>
   </header>
+  ${frame && frame.note ? html`<details class="playnote"><summary><span class="playnote-h">${ico('📝', { size: 18 })}<span class="lbl-h">${t('homeroom.desk.fromTeacher')}</span></span><span class="playnote-t" dir="auto">${frame.note}</span></summary><p class="playnote-full" dir="auto">${frame.note}</p></details>` : ''}
   <div class="stage" id="stage" dir="ltr">
     <a class="fsback" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
@@ -379,7 +384,7 @@ router.get('/play/:slug', (req, res) => {
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
-  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}`, body, scripts: ['/js/play.js'], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
@@ -469,7 +474,7 @@ router.get('/frame/:token', (req, res) => {
     // A graded Mistake Hunt step (BRB.proofStep; services/proof-steps.js viewFor): the words students see and their
     // saved fixes, never the key or the why lines before they are allowed. Only for the student the token was made for.
     ...(!preview && tok.pf && u && docTextGame(g) ? (() => { const r = progress.proofFor(u, String(tok.pf[0]), String(tok.pf[1])); return r.ok ? { proofStep: r.view } : {}; })() : {}),
-    // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
+    // Print (BRB.canPrint / BRB.print; Crossword, Arithmetic Lab, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
     // answer key (BRB.canPrintKey) to its maker and school staff only; the print route checks again.
@@ -626,7 +631,7 @@ const printKeyFor = (u, g) => isSchoolStaff(u) || (g.slug === 'atlas-quest' && m
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
 const docTextGame = g => setGame(g) && g.slug === 'mistake-hunt';
-/** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
+/** A game that prints (services/game-print.js): Crossword's puzzles, Arithmetic Lab's worksheets. */
 const printGame = g => setGame(g) && PRINTERS.has(g.slug);
 /** A Builder classroom activity that prints (Oomba Canvas 1.2.0 with a worksheet or generator purpose,
  *  services/canvas-print.js): the published version, or (for its maker or an admin) the version they ask for, as in
@@ -776,7 +781,7 @@ router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
 });
 // Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;
-// services/crossword-print.js); The Big Divide: an activity's problems as a question set's item (numbers and fixed
+// services/crossword-print.js); Arithmetic Lab: an activity's problems as a question set's item (numbers and fixed
 // words only; services/box-by-box-print.js). Anyone who can open the game may print (a student, a guest with the sample,
 // a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check), and in Atlas Quest the grown-ups
 // who may make a quiz (printKeyFor). Words pass the site's text

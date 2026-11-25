@@ -1,4 +1,4 @@
-// The Big Divide's worksheet (services/box-by-box-print.js, through the shared print route services/game-print.js;
+// Arithmetic Lab's worksheet (services/box-by-box-print.js, through the shared print route services/game-print.js;
 // docs/decisions.md "The Big Divide: read aloud, worksheets, every language"):
 //   - the answers are the game's own, worked on the server without floating point, for every kind and option;
 //   - each problem is written as on paper (the division bracket, columns lined up) with room to work, the instructions
@@ -103,7 +103,7 @@ test('the print request: plain numbers and fixed words only, as a question setâ€
   assert.equal(BP.cleanBoxPrintDoc({ ...DOCS.R, set: 's-abcdefghjk' }).ok, true);
 });
 
-const bb = publish(official, '<!doctype html><title>The Big Divide</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+const bb = publish(official, '<!doctype html><title>Arithmetic Lab</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
 const post = (user, body, opts = {}) => call(`/api/games/${bb.id}/print`, { method: 'POST', body, user, ...opts });
 test('route: anyone may print the worksheet; only school staff get the answer key (students and parents never)', async () => {
   const guest = auth.createGuest();
@@ -123,7 +123,7 @@ test('route: anyone may print the worksheet; only school staff get the answer ke
   const es = await call(`/api/games/${bb.id}/print`, { method: 'POST', body: { doc: DOCS.R }, headers: { 'accept-language': 'es' } });
   assert.equal(es.status, 200); assert.match(es.json.html, /lang="es"/);
   // the play page says Print is on
-  assert.match((await call('/play/box-by-box')).text, /"print":true/);
+  assert.match((await call('/play/arithmetic-lab')).text, /"print":true/);
 });
 
 

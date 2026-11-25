@@ -15,12 +15,12 @@ import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, ANS, FREE_SIZE, freeResize } from '/js/manip-board.js';
 import { inChart, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, SLOP } from '/js/manip-wheel.js';
+import { clamp, zoomAround, fitView, applyTransform, visible, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
 // Z_FIT: how far Fit may zoom out (below Z_MIN) so a big class still shows whole on a phone, between its bars.
 const NOTE_MAX = 12, Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.04;
 let R = null;
-const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s || d; } catch { return d; } };
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const phone = () => window.matchMedia('(max-width: 899px)').matches;
@@ -347,22 +347,19 @@ function size() { const el = document.getElementById('rm'); return el ? { w: el.
 const toWorld = (cx, cy) => { const r = document.getElementById('rm').getBoundingClientRect(); return { x: (cx - r.left - R.view.x) / R.view.z, y: (cy - r.top - R.view.y) / R.view.z }; };
 function applyView() {
   if (!R || !R.world) return;
-  R.world.style.transform = `translate(${R.view.x}px,${R.view.y}px) scale(${R.view.z})`; R.world.style.setProperty('--iz', String(Math.min(2.5, 1 / R.view.z)));
+  applyTransform(R.world, R.view);
   renderCursors(); renderMini();
   const pct = document.querySelectorAll('.rm-pct'); for (const p of pct) p.textContent = `${Math.round(R.view.z * 100)}%`;
 }
 function zoomAt(f, sx, sy) {
-  const z = clamp(R.view.z * f, Math.min(Z_MIN, R.view.z), Z_MAX), k = z / R.view.z;   // never further out than Fit went
-  R.view = { x: sx - (sx - R.view.x) * k, y: sy - (sy - R.view.y) * k, z };
+  R.view = zoomAround(R.view, f, sx, sy, Math.min(Z_MIN, R.view.z), Z_MAX);   // never further out than Fit went
   applyView();
 }
 /** Show a room rectangle, as big as fits between the bars. */
 function fitRect(rect, pad = 24) {
   const s = size(), top = (document.getElementById('rm-bar')?.offsetHeight || 60) + 24, left = !phone() ? (document.getElementById('rm-pal')?.offsetWidth || 0) + 32 : 8;
   const bottom = phone() ? (document.getElementById('rm-pal')?.offsetHeight || 0) + 16 : 16;
-  const w = Math.max(100, s.w - left - 16), h = Math.max(100, s.h - top - bottom);
-  const z = clamp(Math.min(w / (rect.w + pad * 2), h / (rect.h + pad * 2)), Z_FIT, Z_MAX);
-  R.view = { z, x: left + (w - rect.w * z) / 2 - rect.x * z, y: top + (h - rect.h * z) / 2 - rect.y * z };
+  R.view = fitView(rect, { left, top, w: Math.max(100, s.w - left - 16), h: Math.max(100, s.h - top - bottom) }, { pad, zMin: Z_FIT, zMax: Z_MAX });
   applyView();
 }
 const fitAll = () => { const w = world(); fitRect({ x: 0, y: 0, w: w.w, h: w.h }); };
@@ -378,7 +375,7 @@ function showSpot(wx, wy) {
   R.view.x = s.w / 2 - wx * R.view.z; R.view.y = s.h / 2 - wy * R.view.z; applyView();
 }
 /** What this screen shows, as a room rectangle (what "Bring everyone to me" sends). */
-function visibleRect() { const s = size(); return { x: -R.view.x / R.view.z, y: -R.view.y / R.view.z, w: s.w / R.view.z, h: s.h / R.view.z }; }
+function visibleRect() { return visible(R.view, size()); }
 function onBring(b) {
   R.seenBring = b.seq;
   if (R.role !== 'student' || !b.view) return;
@@ -397,19 +394,14 @@ function renderBanner() {
 function renderMini() {
   const el = document.getElementById('rm-mini'); if (!el || !R) return;
   if (R.role === 'student') { el.innerHTML = ''; return; }   // students: Fit and My square instead
-  const wd = world(), mw = phone() ? 96 : 150, k = mw / wd.w, s = size(), v = R.view;
-  const r = (a, cls, style = '') => `<i class="${cls}" style="left:${a.x * k}px;top:${a.y * k}px;width:${Math.max(2, a.w * k)}px;height:${Math.max(2, a.h * k)}px;${style}"></i>`;
-  const view = { x: -v.x / v.z, y: -v.y / v.z, w: s.w / v.z, h: s.h / v.z };
-  const vx = clamp(view.x, 0, wd.w), vy = clamp(view.y, 0, wd.h);
-  el.innerHTML = `<div class="rm-mini" role="button" tabindex="0" aria-label="${esc(t('js.manip-room.map'))}" style="width:${mw + 16}px;height:${wd.h * k + 16}px"><div class="rm-mini-in">
-    ${[...R.areas.values()].map(a => r(a.rect, a.key === 't' ? 't' : a.key === R.me ? 'me' : '', `--c:${a.color}`)).join('')}
-    ${r({ x: vx, y: vy, w: Math.min(view.w, wd.w - vx), h: Math.min(view.h, wd.h - vy) }, 'view')}</div></div>`;
+  el.innerHTML = miniHtml({ world: world(), items: [...R.areas.values()].map(a => ({ rect: a.rect, cls: a.key === 't' ? 't' : a.key === R.me ? 'me' : '', c: a.color })),
+    view: R.view, size: size(), width: phone() ? 96 : 150, label: t('js.manip-room.map') });
 }
 
 // ---------------------------------------------------------------- the bar and the palette
 function zoomHtml(cls) {
   if (R.role === 'student') return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}${btn('chip', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}</div>`;
-  return `<div class="rm-zoom ${cls}" role="group" aria-label="${esc(t('js.manip-room.zoom'))}">${btn('chip', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}<span class="rm-pct">${Math.round(R.view.z * 100)}%</span>${btn('chip', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}${btn('chip', 'data-rtool="fit"', `⤢ ${esc(t('js.manip-room.fit'))}`)}</div>`;
+  return zoomPillHtml({ z: R.view.z, attr: 'data-rtool', cls, labels: { zoom: t('js.manip-room.zoom'), zoomOut: t('js.manip-room.zoomOut'), zoomIn: t('js.manip-room.zoomIn'), fit: t('js.manip-room.fit') } });
 }
 function renderBar() {
   const el = document.getElementById('rm-bar'), room = R.room, live = room.status === 'active', d = deck();
@@ -785,9 +777,8 @@ function ghostIn(A) {
   return gh;
 }
 function miniJump(e) {
-  const box = e.target.closest('.rm-mini').querySelector('.rm-mini-in').getBoundingClientRect(), wd = world(), k = box.width / wd.w;
-  const wx = (e.clientX - box.left) / k, wy = (e.clientY - box.top) / k, s = size();
-  R.view.x = s.w / 2 - wx * R.view.z; R.view.y = s.h / 2 - wy * R.view.z; applyView();
+  const p = miniPoint(e, world()), s = size();
+  R.view.x = s.w / 2 - p.x * R.view.z; R.view.y = s.h / 2 - p.y * R.view.z; applyView();
 }
 function click(e) {
   if (!R) return;

@@ -93,7 +93,7 @@ const SUBJECT_TOPIC = { math: 'math', words: 'reading', maps: 'geography', think
 const CATEGORY_TOPIC = { words: 'reading', board: 'strategy' };
 /** Where the subject data says something else (or nothing): Sudoku is a number puzzle (Math), and the Play-shelf math
  *  games have no Learn subject. */
-const TOPIC_OF = { sudoku: 'math', 'algebra-builder': 'math', 'box-by-box': 'math' };
+const TOPIC_OF = { sudoku: 'math', 'algebra-builder': 'math', 'arithmetic-lab': 'math' };
 /** An official game's topic: a live class game is under Live class games (it is played with the whole class, whatever
  *  its subject), a noise meter under Classroom tools, then the explicit map, the Learn subject, the seed category. */
 export function topicOf(g) {

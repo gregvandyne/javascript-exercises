@@ -10,6 +10,7 @@
 // of a class that has the game (or, for courses, a course lesson) assigned.
 import { q } from '../db.js';
 import { config } from '../config.js';
+import { canonicalSlug } from './slug-aliases.js';
 
 /** The official (seed-games/) games hidden while ARCADE is off. HIDDEN_GAMES (comma separated) replaces this list. */
 export const HIDDEN_GAMES = Object.freeze([
@@ -21,13 +22,14 @@ export const HIDDEN_GAMES = Object.freeze([
   'beat-lanes', 'loop-lab', 'would-you-rather',
 ]);
 
-const list = () => (config.hiddenGames || HIDDEN_GAMES);
+// (an old slug in HIDDEN_GAMES means the game under its new one: services/slug-aliases.js)
+const list = () => (config.hiddenGames ? config.hiddenGames.map(canonicalSlug) : HIDDEN_GAMES);
 /** Is the arcade hidden right now (ARCADE off)? */
 export const arcadeHidden = () => !config.arcade;
 /** Are the courses hidden right now (COURSES off)? */
 export const coursesHidden = () => !config.courses;
 /** Is this official game's slug hidden right now? */
-export const slugHidden = slug => arcadeHidden() && list().includes(String(slug || ''));
+export const slugHidden = slug => arcadeHidden() && list().includes(String(canonicalSlug(slug) || ''));
 /** Is this games row hidden right now? Only official games (source 'seed'): a game someone built is never hidden. */
 export const gameHidden = g => !!(g && g.source === 'seed' && slugHidden(g.slug));
 /** A list of slugs without the hidden ones (for hand-made lists: hubs, landing cards, suggestions). */

@@ -1,4 +1,4 @@
-// The Big Divide: every line the speaker button can read, for one language (argv[2]), checked against the server's
+// Arithmetic Lab: every line the speaker button can read, for one language (argv[2]), checked against the server's
 // allowlist for the AI voice (server/services/tts-lines.js). Run by box-by-box-voice.test.js, one process per language:
 // the game's language is fixed when its modules load (BRB.user.lang), as in the frame. Prints JSON:
 // { lines: <how many read>, bad: [{ line, where }] }.
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const lang = process.argv[2] || 'en';
-const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
 const block = html.slice(html.indexOf('// ==== I18N START ===='), html.indexOf('// ==== I18N END ===='));
 globalThis.I18N = JSON.parse(block.slice(block.indexOf('{'), block.lastIndexOf('}') + 1));
 globalThis.BRB = { user: { lang } };
@@ -48,7 +48,7 @@ const bad = [];
 const hear = (msgs, where) => {
   for (const line of S.sayAll(msgs)) {
     count++;
-    if (!lines.allowedLine('box-by-box', lang, line)) bad.push({ line, where });
+    if (!lines.allowedLine('arithmetic-lab', lang, line)) bad.push({ line, where });
   }
 };
 for (const item of ITEMS) {

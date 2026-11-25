@@ -129,6 +129,11 @@
     }
   },
   "js": {
+    "homeroom": {
+      "groupsLead": "Name your groups and pick a colour for each. A desk's border shows its group's colour.",
+      "groupColor": "Colour of group {n}",
+      "colorN": "Colour {n}"
+    },
     "game": {
       "liked": "Added to your favourites!",
       "unliked": "Removed from your favourites"
@@ -221,6 +226,10 @@
     },
     "storybook-read": {
       "startOver": "Start again"
+    },
+    "homeroom-desk": {
+      "pens": "Pen colours",
+      "penColor": "Pen colour {n}"
     }
   },
   "favorites": {
@@ -980,6 +989,9 @@
   "gradebook": {
     "student": {
       "standardsLine": "{meets} met · {developing} developing · {practiced} practised"
+    },
+    "grade": {
+      "practiced": "Practised"
     }
   },
   "buildSetup": {

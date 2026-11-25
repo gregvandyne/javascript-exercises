@@ -719,5 +719,5 @@
 	"ui.ed.remove": "Remove problem {n}",
 	"ui.ed.add": "Add a problem",
 	"ui.ed.fault": "Problem {n}: {x}",
-	"ui.name": "The Big Divide"
+	"ui.name": "Arithmetic Lab"
 }

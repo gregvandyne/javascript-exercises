@@ -1,4 +1,4 @@
-// The Big Divide (slug box-by-box; seed-games/box-by-box.html, built from tools/box-by-box): long division and multiplication worked box by
+// Arithmetic Lab (slug arithmetic-lab, once box-by-box; seed-games/arithmetic-lab.html, built from tools/box-by-box): long division and multiplication worked box by
 // box. Its activities are shared as question sets (services/game-sets.js): one activity per set, only numbers and
 // fixed settings (no title or other free text leaves the teacher's save). This file: the set cleaner, what the Assign
 // page and the lesson call an activity, and saving one through the route and opening it in the frame.
@@ -12,7 +12,7 @@ const DIV = { k: 'divide', p: [[92, 4], [612, 6], [1000, 3]], l: 'guided' };
 const MUL = { k: 'multiply', p: [[24, 13], [4096, 908]], l: 'countUp' };
 
 test('box-by-box sets: one activity of problems the game can work, a known level, flags only for a custom mix', () => {
-  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const clean = gameSets.SET_GAMES.get('arithmetic-lab');
   assert.deepEqual(clean([DIV]), [DIV]);
   assert.deepEqual(clean([MUL]), [MUL]);
   assert.deepEqual(clean([{ ...DIV, p: [['92', '4']] }]), [{ ...DIV, p: [[92, 4]] }], 'numbers written as text are read');
@@ -34,7 +34,7 @@ test('box-by-box sets: one activity of problems the game can work, a known level
 });
 
 test('box-by-box sets: the method is one of the kind’s own (never free text); a set without one is the standard algorithm', () => {
-  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const clean = gameSets.SET_GAMES.get('arithmetic-lab');
   assert.deepEqual(gameSets.BB_METHODS, { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area', 'partial'], add: ['standard'], subtract: ['standard'] });
   for (const m of ['ladder', 'area']) assert.deepEqual(clean([{ ...DIV, m }]), [{ ...DIV, m }]);
   for (const m of ['area', 'partial']) assert.deepEqual(clean([{ ...MUL, m }]), [{ ...MUL, m }]);
@@ -48,23 +48,23 @@ test('box-by-box sets: the method is one of the kind’s own (never free text); 
 
 test('box-by-box: a teacher saves an activity, its link opens it, the Assign page and the lesson name it', async () => {
   reset();
-  const g = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const g = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
   const r = await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [DIV] }, user: teacher });
   assert.equal(r.status, 200, r.text);
   assert.match(r.json.id, gameSets.SET_ID);
   assert.equal((await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [{ ...DIV, p: [[3, 4]] }] }, user: teacher })).status, 400);
   assert.equal((await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [{ a: 'solve', p: '2x=4' }] }, user: teacher })).status, 400, "another game's shape");
-  const page = await call(`/play/box-by-box?chapter=${r.json.id}&lock=1`, { user: kid });
+  const page = await call(`/play/arithmetic-lab?chapter=${r.json.id}&lock=1`, { user: kid });
   const fr = await call(/data-src="(\/frame\/[^"]+?)"/.exec(page.text)[1].replace(/&amp;/g, '&'), { user: kid });
   const init = JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(fr.text)[1]);
   assert.deepEqual(init.set, { id: r.json.id, items: [DIV], mine: false });
-  assert.deepEqual(gameSets.describe(g.id, parseParams(`chapter=${r.json.id}&lock=1`), 'box-by-box'), { kind: 'one', label: 'Long division, 3 problems, Guided' });
-  const per = gameSets.save(g.id, teacher.id, [{ k: 'multiply', p: [[24, 13], [57, 16]], l: 'onMyOwn', d: 1, g: { count: 12, tops: [10, 99], bottoms: [10, 99] } }], null, 'box-by-box');
-  assert.equal(gameSets.describe(g.id, { chapter: per.id }, 'box-by-box').label, 'Multiplication, 2 problems (different for each student), On my own');
-  assert.equal(gameSets.describe(g.id, { mode: 'solve', chapter: '2xp3q7' }, 'box-by-box'), null, 'only its own sets');
-  const pg = await call(`/teach/assign?game=box-by-box&opts=${encodeURIComponent(`chapter=${r.json.id}&lock=1`)}`, { user: teacher });
+  assert.deepEqual(gameSets.describe(g.id, parseParams(`chapter=${r.json.id}&lock=1`), 'arithmetic-lab'), { kind: 'one', label: 'Long division, 3 problems, Guided' });
+  const per = gameSets.save(g.id, teacher.id, [{ k: 'multiply', p: [[24, 13], [57, 16]], l: 'onMyOwn', d: 1, g: { count: 12, tops: [10, 99], bottoms: [10, 99] } }], null, 'arithmetic-lab');
+  assert.equal(gameSets.describe(g.id, { chapter: per.id }, 'arithmetic-lab').label, 'Multiplication, 2 problems (different for each student), On my own');
+  assert.equal(gameSets.describe(g.id, { mode: 'solve', chapter: '2xp3q7' }, 'arithmetic-lab'), null, 'only its own sets');
+  const pg = await call(`/teach/assign?game=arithmetic-lab&opts=${encodeURIComponent(`chapter=${r.json.id}&lock=1`)}`, { user: teacher });
   assert.match(pg.text, /Students open: Long division, 3 problems, Guided/);
-  assert.match((await call('/teach/assign?game=box-by-box', { user: teacher })).text, /in the game first/);
+  assert.match((await call('/teach/assign?game=arithmetic-lab', { user: teacher })).text, /in the game first/);
 });
 
 // ---------------------------------------------------------------- the game file
@@ -76,15 +76,15 @@ import { sanitizeGameHtml } from '../../server/services/sanitize.js';
 import { kitTag } from '../../server/services/kit.js';
 import { SEED_GAMES } from '../../scripts/seed.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
-const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.json'), 'utf8'));
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
+const meta = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.json'), 'utf8'));
 
 test('box-by-box: a registered Play game that passes the safety scan, with the pinned Oomba Kit tag and no outside address', () => {
-  assert.ok(SEED_GAMES.includes('box-by-box'));
-  assert.equal(meta.slug, 'box-by-box'); assert.equal(meta.shelf, 'play'); assert.equal(meta.title, 'The Big Divide');
+  assert.ok(SEED_GAMES.includes('arithmetic-lab'));
+  assert.equal(meta.slug, 'arithmetic-lab'); assert.equal(meta.shelf, 'play'); assert.equal(meta.title, 'Arithmetic Lab');
   for (const l of ['en-GB', 'pt', 'fr', 'es', 'de', 'he', 'ja', 'ar', 'ru', 'it', 'zh-Hant', 'nl']) { assert.ok(meta.l10n[l]?.description.length > 80, l); assert.ok(meta.l10n[l].title, `${l}: its title`); }
   assert.equal(meta.l10n['en-GB'].title, meta.title);
-  assert.ok(fs.existsSync(path.join(ROOT, 'public/covers/box-by-box.jpg')), 'its cover');
+  assert.ok(fs.existsSync(path.join(ROOT, 'public/covers/arithmetic-lab.jpg')), 'its cover');
   const r = scanVersion(sanitizeGameHtml(html).html);
   assert.equal(r.status, 'pass', JSON.stringify(r.issues));
   assert.ok(html.includes(kitTag()));
@@ -101,7 +101,7 @@ test('box-by-box: nothing in the game, its sources, its metadata or its docs poi
     w([109, 117, 108, 116, 105, 112, 108, 105, 99, 97, 116, 105, 111, 110, 45, 100, 105, 118, 105, 115, 105, 111, 110, 45, 112, 114, 97, 99, 116, 105, 99, 101])];
   const re = new RegExp(KEPT.join('|'), 'i');
   const files = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e => (e.name === 'node_modules' || e.name === 'dist' ? [] : e.isDirectory() ? files(path.join(d, e.name)) : [path.join(d, e.name)]));
-  for (const f of [path.join(ROOT, 'seed-games/box-by-box.html'), path.join(ROOT, 'seed-games/box-by-box.json'), path.join(ROOT, 'scripts/covers/box-by-box.recipe.js'),
+  for (const f of [path.join(ROOT, 'seed-games/arithmetic-lab.html'), path.join(ROOT, 'seed-games/arithmetic-lab.json'), path.join(ROOT, 'scripts/covers/arithmetic-lab.recipe.js'),
     path.join(ROOT, 'tests/unit/box-by-box.test.js'), path.join(ROOT, 'server/services/game-sets.js'), path.join(ROOT, 'docs/sdk.md'),
     ...files(path.join(ROOT, 'tools/box-by-box'))]) {
     assert.doesNotMatch(fs.readFileSync(f, 'utf8'), re, path.relative(ROOT, f));
@@ -115,7 +115,7 @@ test('box-by-box: nothing in the game, its sources, its metadata or its docs poi
 
 test('box-by-box: a student types a saved activity’s class code and gets it to play', async () => {
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
   const r = await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [MUL] }, user: teacher });
   const code = r.json.id.slice(2).toUpperCase();
   const got = await call(`/api/games/${g.id}/sets/${code.slice(0, 5)}%20${code.slice(5)}`, { user: kid });
@@ -124,8 +124,8 @@ test('box-by-box: a student types a saved activity’s class code and gets it to
 
 test('box-by-box: the activity’s label names its method (Ladder, Area model, Partial products), and not the standard one', async () => {
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
-  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'arithmetic-lab').id }, 'arithmetic-lab').label;
   assert.equal(label([{ ...DIV, m: 'ladder' }]), 'Long division, 3 problems, Ladder, Guided');
   assert.equal(label([{ ...DIV, m: 'area', l: 'onMyOwn' }]), 'Long division, 3 problems, Area model, On my own');
   assert.equal(label([{ ...MUL, m: 'partial' }]), 'Multiplication, 2 problems, Partial products, Count up');
@@ -135,7 +135,7 @@ test('box-by-box: the activity’s label names its method (Ladder, Area model, P
 });
 
 test('box-by-box sets: remainders as a fraction or a decimal ride in r (division only, one of two words); old sets stay exactly as they were', () => {
-  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const clean = gameSets.SET_GAMES.get('arithmetic-lab');
   assert.deepEqual(gameSets.BB_FORMS, ['fraction', 'decimal']);
   for (const r of ['fraction', 'decimal']) assert.deepEqual(clean([{ ...DIV, r }]), [{ ...DIV, r }]);
   const plan = { count: 16, dividends: [100, 999], divisors: [2, 9], remainders: true };
@@ -149,15 +149,15 @@ test('box-by-box sets: remainders as a fraction or a decimal ride in r (division
 
 test('box-by-box: the label says how remainders are written when they are a fraction or a decimal', async () => {
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
-  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'arithmetic-lab').id }, 'arithmetic-lab').label;
   assert.equal(label([{ ...DIV, r: 'fraction' }]), 'Long division, 3 problems, remainders as fractions, Guided');
   assert.equal(label([{ ...DIV, r: 'decimal', l: 'onMyOwn' }]), 'Long division, 3 problems, answers as decimals, On my own');
   assert.equal(label([{ ...DIV, r: 'fraction', m: 'ladder' }]), 'Long division, 3 problems, remainders as fractions, Ladder, Guided');
 });
 
 test('box-by-box sets: decimals only with dec: 1 (at most 2 places each); the label says decimals', async () => {
-  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const clean = gameSets.SET_GAMES.get('arithmetic-lab');
   const DEC = { k: 'divide', p: [[7.5, 3], [4.5, 0.3], [12, 5]], l: 'guided', dec: 1 };
   const MDEC = { k: 'multiply', p: [[2.4, 1.3], [0.6, 4]], l: 'onMyOwn', dec: 1 };
   assert.deepEqual(clean([DEC]), [DEC]);
@@ -166,14 +166,14 @@ test('box-by-box sets: decimals only with dec: 1 (at most 2 places each); the la
   for (const bad of [{ ...DEC, dec: undefined }, { ...DEC, dec: 2 }, { ...DEC, dec: true }, { ...DEC, dec: 'yes' }, { ...DEC, p: [[7.555, 3]] }, { ...DEC, p: [[7.5, 0.1]] }, { ...DEC, p: [[-7.5, 3]] }, { ...MDEC, p: [[2.4, 13.5]] }])
     assert.equal(clean([JSON.parse(JSON.stringify(bad))]), null, JSON.stringify(bad));
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
-  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'arithmetic-lab').id }, 'arithmetic-lab').label;
   assert.equal(label([DEC]), 'Long division, 3 problems, decimals, Guided');
   assert.equal(label([MDEC]), 'Multiplication, 2 problems, decimals, On my own');
 });
 
 test('box-by-box sets: addition and subtraction (2 to 4 digits, the bigger on top), their plans, and their labels', async () => {
-  const clean = gameSets.SET_GAMES.get('box-by-box');
+  const clean = gameSets.SET_GAMES.get('arithmetic-lab');
   const ADD = { k: 'add', p: [[475, 368], [9999, 9999]], l: 'guided' };
   const SUB = { k: 'subtract', p: [[400, 167], [5003, 2468]], l: 'onMyOwn' };
   assert.deepEqual(clean([ADD]), [ADD]);
@@ -185,8 +185,8 @@ test('box-by-box sets: addition and subtraction (2 to 4 digits, the bigger on to
     assert.equal(clean([bad]), null, JSON.stringify(bad));
   assert.deepEqual(clean([{ ...ADD, m: 'standard' }]), [ADD]);
   reset();
-  const g = games.getGameBySlug('box-by-box') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
-  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'box-by-box').id }, 'box-by-box').label;
+  const g = games.getGameBySlug('arithmetic-lab') || publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
+  const label = items => gameSets.describe(g.id, { chapter: gameSets.save(g.id, teacher.id, items, null, 'arithmetic-lab').id }, 'arithmetic-lab').label;
   assert.equal(label([ADD]), 'Addition, 2 problems, Guided');
   assert.equal(label([{ ...SUB, p: [[5.2, 1.75]], dec: 1 }]), 'Subtraction, 1 problem, decimals, On my own');
   assert.equal(label([{ k: 'subtract', p: [], l: 'watch', d: 1, g: plan }]), 'Subtraction, 12 problems (different for each student), Watch');

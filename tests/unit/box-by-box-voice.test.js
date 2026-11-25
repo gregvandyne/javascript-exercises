@@ -1,4 +1,4 @@
-// The Big Divide: every line the speaker button can read is one the AI voice will read, in every language. For each
+// Arithmetic Lab: every line the speaker button can read is one the AI voice will read, in every language. For each
 // kind, method and option (and the edge cases: 0 in the quotient, a repeating decimal, a fraction that simplifies, a 0
 // part, a carry into the millions), each step's question, what it tells, the nudges and the last line are said in natural
 // words and checked against the server's allowlist (server/services/tts-lines.js). One process per language

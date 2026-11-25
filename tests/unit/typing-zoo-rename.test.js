@@ -1,6 +1,6 @@
 // Typing Pets became Typing Zoo (docs/decisions.md "Typing Zoo"): the old addresses answer 301 to the new ones keeping
-// the rest of the path and the query string (server/renamed.js), and a database from before the rename keeps
-// everything: migration 0121 gives the same game row the new slug, so a student's save (key 'typing-pets-v1', kept),
+// the rest of the path and the query string (services/slug-aliases.js, as for Arithmetic Lab), and a database from before the rename keeps
+// everything: migration 0126 gives the same game row the new slug, so a student's save (key 'typing-pets-v1', kept),
 // a class assignment and its lesson step, step progress and the teacher's typing panel all still point at that game;
 // seeding again makes no second game.
 import './_setup.js';
@@ -13,7 +13,8 @@ const { createUser, startSession } = await import('../../server/auth.js');
 const G = await import('../../server/services/games.js');
 const S = await import('../../server/services/schools.js');
 const TY = await import('../../server/services/typing.js');
-const { renamedUrl } = await import('../../server/renamed.js');
+const { renamedPath } = await import('../../server/services/slug-aliases.js');
+const renamedUrl = u => { const i = u.indexOf('?'), p = renamedPath(i < 0 ? u : u.slice(0, i)); return p && p + (i < 0 ? '' : u.slice(i)); };
 
 seed({ quiet: true });
 let server, base;
@@ -34,7 +35,7 @@ test('the old addresses map to the new ones, keeping the path and the query stri
     '/og/typing-pets.jpg': '/og/typing-zoo.jpg',
   };
   for (const [from, to] of Object.entries(cases)) assert.equal(renamedUrl(from), to, from);
-  for (const other of ['/g/typing-petsy', '/g/typing-zoo', '/play/typing-pets-v1', '/u/typing-pets', '/g/word-hunt?x=typing-pets', '/covers/typing-pets.png'])
+  for (const other of ['/g/typing-petsy', '/g/typing-zoo', '/play/typing-pets-v1', '/g/word-hunt?x=typing-pets'])
     assert.equal(renamedUrl(other), null, other);
 });
 
@@ -48,15 +49,16 @@ test('the server answers 301 for the old addresses (GET only) and the new ones w
   assert.equal((await get('/g/typing-zoo')).status, 200);
   assert.equal((await get('/covers/typing-zoo.jpg')).status, 200);
   const post = await fetch(base + '/g/typing-pets', { method: 'POST', redirect: 'manual', headers: { origin: base } });
-  assert.notEqual(post.status, 301, 'a POST is never redirected');
+  assert.equal(post.status, 308, 'a POST keeps its body (308)');
+  assert.equal(G.getGameBySlug('typing-pets').id, G.getGameBySlug('typing-zoo').id, 'a lookup by the old slug finds the game');
 });
 
 test('a database from before the rename: the same game row, its save, assignment and progress all carry over', async () => {
   const game = G.getGameBySlug('typing-zoo');
   // Back to how it was before the rename: the row under the old slug, the migration not yet run.
   q.run("UPDATE games SET slug='typing-pets', title='Typing Pets' WHERE id=?", game.id);
-  q.run("DELETE FROM migrations WHERE name='0121_typing_zoo_slug'");
-  assert.ok(!G.getGameBySlug('typing-zoo'));
+  q.run("DELETE FROM migrations WHERE name='0126_typing_zoo_slug'");
+  assert.ok(!q.get("SELECT 1 FROM games WHERE slug='typing-zoo'"));
   const boss = createUser({ username: 'ZooBoss', password: 'secret123', role: 'admin' });
   const school = S.createSchool(boss, { name: 'Zoo Primary' }).school;
   const head = S.createSchoolAccount(boss, school.id, { rosterName: 'Mrs Zoo', role: 'admin' }).user;
@@ -72,10 +74,10 @@ test('a database from before the rename: the same game row, its save, assignment
   const cl = q.get('SELECT id FROM class_lessons WHERE lesson_id=? AND class_id=?', step.lesson_id, klass.id);
   assert.equal((await fetch(`${base}/api/progress/${cl.id}/${step.id}/game`, { method: 'POST', headers: { cookie: cookieFor(kid.id), 'content-type': 'application/json', origin: base }, body: JSON.stringify({ event: 'score', score: 15, label: 'L2 96% 3* 15 wpm' }) })).status, 200);
 
-  migrate();   // the deploy: 0121 runs once
+  migrate();   // the deploy: 0126 runs once
   const now = G.getGameBySlug('typing-zoo');
   assert.equal(now.id, game.id, 'the same game row, now under the new slug');
-  assert.ok(!G.getGameBySlug('typing-pets'), 'nothing left under the old slug');
+  assert.ok(!q.get("SELECT 1 FROM games WHERE slug='typing-pets'"), 'nothing left under the old slug');
   seed({ quiet: true });   // the deploy seeds again: the game is found by its new slug, never made twice
   assert.equal(q.get("SELECT COUNT(*) n FROM games WHERE slug IN ('typing-pets', 'typing-zoo')").n, 1);
   assert.equal(G.getGameBySlug('typing-zoo').title, 'Typing Zoo', 'the seed brings the new title');

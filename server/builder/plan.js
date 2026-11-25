@@ -168,7 +168,7 @@ export const KINDS = ['activity', 'arcade'];
 /** The card that starts selected (one tap switches): Classroom activity for every teacher and whenever the page was
  *  opened from a class or a lesson (?for=class); Arcade game for kids and families. */
 export const startKind = ({ teacher = false, forClass = false } = {}) => (teacher || forClass ? 'activity' : 'arcade');
-/** "How much help?": the Big Divide's support modes, in the order an activity offers them (the first one picked is
+/** "How much help?": Arithmetic Lab's support modes, in the order an activity offers them (the first one picked is
  *  where it starts). Pick as many as you like; at least one. */
 export const SUPPORTS = ['watch', 'count', 'guided', 'own'];
 /** The help a plan or page sent -> the modes in SUPPORTS order, no repeats; an older page's single value works too.

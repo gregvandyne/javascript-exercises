@@ -6,7 +6,8 @@
 //   - its classes, with their rosters (class_members), join requests, units, assigned lessons (class_lessons), the
 //     students' progress and rubric scores on them, games shared with them (game_classes), Oomba Live teams, support
 //     and runs, every classroom-dashboard row (and, after the commit, the dashboard pictures' files) and the Google
-//     Classroom link rows (gc_*), and the shares of teachers' own books with them (made_book_classes; the books stay);
+//     Classroom link rows (gc_*), the Homeroom seating, groups, teacher's area and live state (homeroom_rooms), the students' desk pads (homeroom_doodles), their sign-in settings and picture passwords (homeroom_signins), the Homeroom handouts' order and grading (homeroom_handouts), and the shares of
+//     teachers' own books with them (made_book_classes; the books stay);
 //   - the school's lessons, folders, standards tags and rubrics; quiz sets made at the school stay with their owner,
 //     no longer shared (live_sets.school_id NULL);
 //   - its memberships (school_members), staff invites, Google invites, announcements to it, billing requests, plan
@@ -38,7 +39,7 @@ export const BY_SCHOOL = ['school_members', 'staff_invites', 'staff_email_invite
 /** Rows removed by its classes' ids. */
 export const BY_CLASS = ['class_members', 'join_requests', 'class_units', 'game_classes', 'gc_posts', 'gc_links', 'gc_syncs', 'gc_roster',
   'live_class_teams', 'live_class_team_cfg', 'live_support', 'dash_layouts', 'dash_class', 'dash_students', 'dash_links', 'dash_pushes',
-  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_point_awards', 'dash_class_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'manip_sessions', 'made_book_classes', 'class_lessons'];
+  'dash_help', 'dash_checks', 'dash_passes', 'dash_points', 'dash_point_awards', 'dash_class_points', 'dash_moods', 'dash_pictures', 'dash_builds', 'dash_feeds', 'live_runs', 'manip_sessions', 'homeroom_rooms', 'homeroom_doodles', 'homeroom_signins', 'homeroom_handouts', 'made_book_classes', 'class_lessons'];
 /** Rows removed by its classes' assigned lessons. */
 export const BY_CLASS_LESSON = ['step_progress', 'rubric_scores', 'gc_grades', 'lessons_retired', 'proof_insights'];
 /** Rows kept, with why (handled apart or history). */

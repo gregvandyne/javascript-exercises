@@ -1342,11 +1342,85 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS class_lesson_students (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL, PRIMARY KEY (class_lesson_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_class_lesson_students_user ON class_lesson_students(user_id);`],
-  // Typing Pets is now Typing Zoo (seed-games/typing-zoo.json): the same game row takes the new slug, so its id, plays,
-  // saves (key 'typing-pets-v1' kept), favorites, ratings, class assignments, lesson steps, sets and typing progress
-  // all stay with it. Only when no row has the new slug yet; the old addresses answer 301 (server/renamed.js).
-  ['0121_typing_zoo_slug', "UPDATE games SET slug='typing-zoo' WHERE source='seed' AND slug='typing-pets' AND NOT EXISTS (SELECT 1 FROM games WHERE slug='typing-zoo');"],
+  // The Big Divide is now Arithmetic Lab (docs/decisions.md "The Big Divide is now Arithmetic Lab"): the official game's
+  // row keeps its id and everything that points at it (plays, scores, saves, question sets, lesson steps, assignments,
+  // folders) and only its slug changes, so the seed import then updates the same row instead of adding a second game.
+  // Stored references are by game id; links and QR codes with the old slug are redirected (services/slug-aliases.js).
+  ['0121_arithmetic_lab_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'box-by-box', 'arithmetic-lab')],
+  // Homeroom (docs/homeroom.md; services/homeroom.js): one row per class, written by its teachers. preset: the seating
+  // layout last picked (rows, pods, u, circle); seats: {studentId: {x, y}} where each desk sits on the board; groups:
+  // [{id, key, name, color}] the teacher's groups (key: a default group whose name follows the teacher's language until
+  // renamed); members: {studentId: groupId}; area: the teacher's area (notes, text, pen marks and shapes, the
+  // Manipulatives live room's board format, cleaned the same way). A student who leaves the class keeps no desk: the
+  // board only ever draws the current roster. Gone with the class.
+  ['0122_homeroom', `
+    CREATE TABLE IF NOT EXISTS homeroom_rooms (class_id TEXT PRIMARY KEY REFERENCES classrooms(id) ON DELETE CASCADE,
+      preset TEXT NOT NULL DEFAULT 'rows', seats TEXT NOT NULL DEFAULT '{}', groups TEXT NOT NULL DEFAULT '[]',
+      members TEXT NOT NULL DEFAULT '{}', area TEXT NOT NULL DEFAULT '{}', updated_by TEXT,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);`],
+  // Homeroom step 1b (docs/decisions.md "Homeroom, step 1b"): live class and the student desk. On homeroom_rooms, the
+  // class's live state, set only by its teachers: live_at (when Everyone to Homeroom was pressed; NULL: not live; a
+  // class left live ends by itself after services/homeroom.js LIVE_MAX_MS), live_bring (Bring everyone to me: every desk
+  // shows the teacher's area), live_paused (Pause screens: every desk shows "Eyes on your teacher"). homeroom_doodles: a
+  // student's doodle and working-out pad on their desk in one class (pen strokes, cleaned and limited by
+  // services/homeroom.js saveDoodle). Gone with the class, the school, the student leaving the class, or their account.
+  ['0123_homeroom_desk', `
+    ALTER TABLE homeroom_rooms ADD COLUMN live_at INTEGER;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_bring INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_rooms ADD COLUMN live_paused INTEGER NOT NULL DEFAULT 0;
+    CREATE TABLE IF NOT EXISTS homeroom_doodles (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_doodles_user ON homeroom_doodles(user_id);`],
+  // Homeroom step 1c (docs/decisions.md "Homeroom, step 1c"): quick sign-in on shared devices. On homeroom_rooms, the
+  // class sign-in code (random, unique while set) and when sign-in closes (signin_until; NULL or past: closed): only the
+  // class's teachers open it, live class opens it, End class closes it. homeroom_signins: how a student of the class
+  // signs in there (mode '' = the class's default, 'password' or 'picture'), their picture password (bcrypt hash of the
+  // three pictures in order, like a password, never the pictures), and the wrong tries and lock for it. Gone with the
+  // class, the school, the student leaving the class, or their account. sessions.class_device: the class whose sign-in
+  // started this session (a shared device): ended when the teacher ends class, and at the sign-in window plus a short
+  // grace; NULL for every normal sign-in.
+  ['0124_homeroom_signin', `
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_code TEXT;
+    ALTER TABLE homeroom_rooms ADD COLUMN signin_until INTEGER;
+    CREATE UNIQUE INDEX IF NOT EXISTS idx_homeroom_signin_code ON homeroom_rooms(signin_code) WHERE signin_code IS NOT NULL;
+    CREATE TABLE IF NOT EXISTS homeroom_signins (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE,
+      user_id TEXT NOT NULL, mode TEXT NOT NULL DEFAULT '', pic_hash TEXT, pic_at INTEGER, fails INTEGER NOT NULL DEFAULT 0,
+      locked_until INTEGER, updated_by TEXT, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_signins_user ON homeroom_signins(user_id);
+    ALTER TABLE sessions ADD COLUMN class_device TEXT;
+    CREATE INDEX IF NOT EXISTS idx_sessions_class_device ON sessions(class_device) WHERE class_device IS NOT NULL;`],
+  // Homeroom step 2a (docs/decisions.md "Homeroom, step 2a"): a game handed out from the teacher's board is an ordinary
+  // game assignment (services/game-folders.js assignGame: a hidden 'game' lesson, a class_lessons row, and
+  // class_lesson_students for the desks it went to; the teacher's instructions are its game step's body). This side
+  // table holds what only Homeroom adds, one row per such class lesson: in_order (1: In order, a later card waits until
+  // the ones before it are done; 0: Any order), grade (how it is graded: 'score', 'completion' or 'none' = not graded,
+  // practice; the Progress gradebook reads it), target (what it was dropped on: 'all', 'group' or 'desk') and when.
+  // Gone with its class lesson, the class or the school.
+  ['0125_homeroom_handouts', `
+    CREATE TABLE IF NOT EXISTS homeroom_handouts (class_lesson_id TEXT PRIMARY KEY REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, in_order INTEGER NOT NULL DEFAULT 1,
+      grade TEXT NOT NULL DEFAULT 'completion', target TEXT NOT NULL DEFAULT 'desk', created_by TEXT, created_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_handouts_class ON homeroom_handouts(class_id, created_at);`],
+  // Typing Pets is now Typing Zoo (docs/decisions.md "Typing Zoo: the rename, Noto animals..."), the same way as 0121:
+  // the official row keeps its id (plays, saves under the kept key 'typing-pets-v1', favorites, ratings, assignments,
+  // lesson steps, sets, the teacher's typing panel) and only its slug changes; old links: services/slug-aliases.js.
+  ['0126_typing_zoo_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'typing-pets', 'typing-zoo')],
 ];
+
+/** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has
+ *  `from` (a new database: the seed makes the game under `to`). A game someone else made that already has `to` gets the
+ *  next free numbered slug (to-2, to-3...) first, as uniqueSlug would have given it. */
+export function renameSeedSlug(conn, from, to) {
+  const row = conn.prepare("SELECT id FROM games WHERE slug=? AND source='seed'").get(from);
+  if (!row) return;
+  const taken = s => conn.prepare('SELECT 1 FROM games WHERE slug=?').get(s);
+  const other = conn.prepare('SELECT id FROM games WHERE slug=? AND id<>?').get(to, row.id);
+  if (other) {
+    let s, i = 2; do s = `${to}-${i++}`; while (taken(s));
+    conn.prepare('UPDATE games SET slug=? WHERE id=?').run(s, other.id);
+  }
+  conn.prepare('UPDATE games SET slug=? WHERE id=?').run(to, row.id);
+}
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
  *  Assign or the same shape; a live set sent as homework; else a teacher-made lesson), then a folder for each teacher-made

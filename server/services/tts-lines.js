@@ -22,6 +22,7 @@ import * as usage from './tts-usage.js';
 import { audit } from '../db.js';
 import { config } from '../config.js';
 import { chromeStrings } from '../../kit/src/strings.js';
+import { canonicalSlug } from './slug-aliases.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 export const SEED_DIR = path.join(ROOT, 'seed-games');
@@ -158,11 +159,11 @@ export const GAMES = {
   // Algebra Builder (adapted from Algebra Tiles by teacher.dev) reads nothing aloud, like the original: its words are
   // the activities' labels and Check's messages, which it shows. Registered so the platform knows it (no I18N block).
   'algebra-builder': { title: 'Algebra Builder', role: 'friendly', spoken: /(?!)/ },
-  // The Big Divide reads a step's question aloud when the player taps its speaker button (never by itself): the say.*
+  // Arithmetic Lab reads a step's question aloud when the player taps its speaker button (never by itself): the say.*
   // lines its build writes into its I18N block, each its q.* line as the voice says it ("745 divided by 6"). Their
   // {placeholders} hold the numbers of the problem, and may also hold the game's own fill-in words (its w.* keys:
   // place names, "or", "and … tenths", "over"), so a decimal or a list reads naturally; never anything else.
-  'box-by-box': { title: 'The Big Divide', role: 'friendly', spoken: /^say\./, fills: /^w\./ },
+  'arithmetic-lab': { title: 'Arithmetic Lab', role: 'friendly', spoken: /^say\./, fills: /^w\./ },
   // Crossword reads nothing aloud: its clues are the teacher's own words, shown on the screen.
   'crossword': { title: 'Crossword', role: 'friendly', spoken: /(?!)/ },
   // Mistake Hunt reads nothing aloud yet: its passages are the teacher's own words (a "proof" read-aloud context is Phase 4).
@@ -221,6 +222,7 @@ const block = (src, start, end) => {
 const run = (code, name) => vm.runInNewContext(`${code}\n;${name}`, Object.create(null), { timeout: 2000 });
 /** A game's I18N object and voice roles, from its file in seed-games/. */
 export function readGame(slug, dir = SEED_DIR) {
+  slug = canonicalSlug(slug);   // an old slug reads the game under its new one (services/slug-aliases.js)
   if (!GAMES[slug]) return null;
   if (GAMES[slug].pack) return readPack(GAMES[slug]);
   return parseGame(fs.readFileSync(path.join(dir, `${slug}.html`), 'utf8'));
@@ -263,6 +265,7 @@ export function roleOf(key, roles, keyRoles = {}) {
 /** A game's spoken lines in one locale: [{ key, locale, role, text }] (falls back like the game's t(): locale, base, en).
  *  templates: true also lists lines with {placeholders} (for the allowlist; the warm-up skips them). */
 export function gameLines(slug, locale, game = readGame(slug), { templates = false } = {}) {
+  slug = canonicalSlug(slug);
   if (!game) return [];
   const { strings, roles, keyRoles } = game;
   const chain = [...new Set([locale, locale.split('-')[0], 'en'])].filter(c => Object.prototype.hasOwnProperty.call(strings, c));
@@ -298,6 +301,7 @@ const escRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const memo = new Map();   // `${slug}|${locale}` -> { mtime, exact: Map(text -> roles[]), tpl: [{ re, roles }] }
 /** The allowlist of one game and locale (memoised per file modification time). */
 export function allowlist(slug, locale, dir = SEED_DIR) {
+  slug = canonicalSlug(slug);
   if (!GAMES[slug]) return null;
   const file = path.join(dir, `${slug}.html`);
   let mtime; try {
@@ -329,6 +333,7 @@ export function allowlist(slug, locale, dir = SEED_DIR) {
  * role only when the same words are also another character's line) or null.
  */
 export function allowedLine(slug, locale, text, askedRole = null) {
+  slug = canonicalSlug(slug);
   const a = allowlist(slug, locale); if (!a) return null;
   const s = tts.tidy(text);
   const pick = roles => ({ text: s, role: roles.includes(askedRole) ? askedRole : roles[0] });
@@ -357,6 +362,7 @@ export function kitLine(locale, text) {
 }
 /** kitLine for a listed game: -> { text, role } (the role the game's own story lines have), or null. */
 export function kitChromeLine(slug, locale, text) {
+  slug = canonicalSlug(slug);
   const s = GAMES[slug] ? kitLine(locale, text) : null; if (!s) return null;
   const g = readGame(slug);
   return { text: s, role: g ? roleOf('howTo', g.roles, g.keyRoles) : (GAMES[slug].role || 'narrator') };

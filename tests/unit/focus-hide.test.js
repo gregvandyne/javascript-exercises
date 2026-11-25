@@ -33,7 +33,7 @@ const gameLinks = s => new Set([...s.matchAll(/href="\/(?:g|play)\/([a-z0-9-]+)/
 const hiddenIn = s => [...gameLinks(s)].filter(x => FOCUS.HIDDEN_GAMES.includes(x));
 
 const KEPT = ['brain-board', 'question-battle', 'tug-of-math', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'popcorn-hush', 'quiet-bounce', 'remis-quiet-meadow',
-  'crossword', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'algebra-builder', 'box-by-box', 'atlas-quest', 'castle-clash'];
+  'crossword', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'algebra-builder', 'arithmetic-lab', 'atlas-quest', 'castle-clash'];
 
 // ---------------------------------------------------------------- people
 const boss = auth.createUser({ username: 'FocusBoss', password: 'boss-password-1', role: 'admin' });
@@ -66,7 +66,7 @@ test('Learn (by topic and filtered) and search list no hidden game and keep the 
     assert.deepEqual(hiddenIn(learn.text), [], `Learn for ${who ? who.username : 'a visitor'}`);
   }
   const seen = new Set([...gameLinks((await get('/learn?how=solo')).text), ...gameLinks((await get('/learn')).text)]);
-  for (const s of ['crossword', 'word-hunt', 'castle-clash', 'algebra-builder', 'box-by-box', 'tug-of-math', 'atlas-quest']) assert.ok(seen.has(s), `${s} is listed`);
+  for (const s of ['crossword', 'word-hunt', 'castle-clash', 'algebra-builder', 'arithmetic-lab', 'tug-of-math', 'atlas-quest']) assert.ok(seen.has(s), `${s} is listed`);
   // The subject chips and pages with nothing left (Music, Computer science) are gone; the others stay.
   const learn = (await get('/learn')).text;
   assert.ok(!learn.includes('/learn/music-games') && !learn.includes('/learn/computer-science'));
@@ -217,7 +217,7 @@ test('Learn shows each kept game once, in sections by topic, with the live and p
     const cards = [...r.text.matchAll(/class="gcard[^"]*" href="\/g\/([a-z0-9-]+)"/g)].map(m => m[1]);
     const official = cards.filter(s => KEPT.includes(s));
     assert.equal(new Set(official).size, official.length, `no repeats: ${official.join()}`);
-    for (const s of ['crossword', 'brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'box-by-box', 'popcorn-hush'])
+    for (const s of ['crossword', 'brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'arithmetic-lab', 'popcorn-hush'])
       assert.ok(official.includes(s), `${s} is on Learn`);
     for (const id of ['sec-math', 'sec-reading', 'sec-geography', 'sec-live', 'sec-strategy', 'sec-tools']) assert.ok(r.text.includes(`id="${id}-h"`), id);
     assert.ok(!r.text.includes('id="popular-h"') && !r.text.includes('id="rated-h"'));

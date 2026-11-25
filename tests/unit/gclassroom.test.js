@@ -1193,13 +1193,13 @@ test('Algebra Builder: a teacher assigns a problem or a saved question set to a 
   assert.equal(sub.draftGrade, 100);
 });
 
-test('The Big Divide: an activity assigned to a linked class is posted to Classroom, named after it, and finishing it is the grade', async () => {
+test('Arithmetic Lab: an activity assigned to a linked class is posted to Classroom, named after it, and finishing it is the grade', async () => {
   const games = await import('../../server/services/games.js');
   const { OFFICIAL, getUserByName } = await import('../../server/auth.js');
   const official = getUserByName(OFFICIAL) || createUser({ username: OFFICIAL, password: 'official-pass-123' });
-  let g = games.getGameBySlug('box-by-box');
+  let g = games.getGameBySlug('arithmetic-lab');
   if (!g) {
-    g = games.createGame(official.id, { title: 'The Big Divide', source: 'seed', slug: 'box-by-box' });
+    g = games.createGame(official.id, { title: 'Arithmetic Lab', source: 'seed', slug: 'arithmetic-lab' });
     const v = games.addVersion(g.id, '<!doctype html><title>t</title><p>bb</p>', { createdBy: official.id, safetyStatus: 'pass' });
     q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, current_version_id=? WHERE id=?", v.id, v.id, g.id);
   }
@@ -1209,10 +1209,10 @@ test('The Big Divide: an activity assigned to a linked class is posted to Classr
   await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
   const set = await (await post(`/api/games/${g.id}/sets`, { items: [{ k: 'multiply', p: [[24, 13], [57, 6]], l: 'onMyOwn' }] }, tc)).json();
   const opts = `chapter=${set.id}&lock=1`;
-  const a = await (await post('/api/teach/assign-game', { game: 'box-by-box', opts, classId: c.id, dueAt: new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
+  const a = await (await post('/api/teach/assign-game', { game: 'arithmetic-lab', opts, classId: c.id, dueAt: new Date(Date.now() + 7 * DAY).toISOString().slice(0, 10), gcPost: '1' }, tc)).json();
   assert.equal(a.ok, true, JSON.stringify(a)); assert.match(a.toast, /Posted to Google Classroom\./);
-  assert.equal(room.calls.findLast(x => x.method === 'POST').body.title, 'The Big Divide: Multiplication, 2 problems, On my own');
-  const cl = L.classLessons(c.id).find(x => x.title.startsWith('The Big Divide'));
+  assert.equal(room.calls.findLast(x => x.method === 'POST').body.title, 'Arithmetic Lab: Multiplication, 2 problems, On my own');
+  const cl = L.classLessons(c.id).find(x => x.title.startsWith('Arithmetic Lab'));
   const step = L.steps(cl.lesson_id)[0];
   assert.equal(step.options, opts);
   await post(`/api/progress/${cl.id}/${step.id}/game`, { event: 'end', score: 2 }, kc);

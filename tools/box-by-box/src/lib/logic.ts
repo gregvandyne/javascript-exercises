@@ -1,4 +1,4 @@
-// The Big Divide: the problems, the sheets they are worked on, their steps, checking, and making problem sets. No platform
+// Arithmetic Lab: the problems, the sheets they are worked on, their steps, checking, and making problem sets. No platform
 // calls and no DOM here, so it runs as it is in Node too.
 
 import { methodOr, type Method } from './methods.ts';

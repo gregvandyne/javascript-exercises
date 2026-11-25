@@ -57,7 +57,7 @@ The data is JSON so the platform can read it: the Builder's self-test runs on it
 - **A fresh set each.** With `gen` and `config.fresh` (the default), each student gets a set of their own from a seed
   of their own, and a "seen" list keeps new sets from repeating problems.
 - **Results.** At the end of a set the kit calls `BRB.gameOver({ won: right === total, score: right })`, once per set,
-  exactly as the Big Divide does: the lesson's game step is done and the Classroom completion grade is posted.
+  exactly as Arithmetic Lab does: the lesson's game step is done and the Classroom completion grade is posted.
   `config.board: true` (played on the board together) sends no score.
 - **Theme.** The site's theme (`BRB.theme`), else the device's. Right to left for Arabic and Hebrew; the maths itself
   (bars, number lines, digit columns) always reads left to right.
@@ -221,7 +221,7 @@ frame cannot print it.
 ## Worksheets (1.4.0)
 
 Every Builder classroom activity on Oomba Canvas 1.4.0 keeps a teacher's worksheets, whatever it is for, the way
-Crossword, The Big Divide and Algebra Builder keep question sets (docs/sdk.md "Question sets"); one for a worksheet or a
+Crossword, Arithmetic Lab and Algebra Builder keep question sets (docs/sdk.md "Question sets"); one for a worksheet or a
 question generator (`config.purpose` "worksheet" or "generator") also prints them. It is the platform's, not the
 model's: the kit draws it, the server keeps it, and the Builder's CANVAS RULES only say to keep the questions as data
 and never build their own.

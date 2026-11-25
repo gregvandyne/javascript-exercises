@@ -66,13 +66,15 @@ import { router as digestRoutes } from './routes/digest.js';
 import { router as teachLoopRoutes } from './routes/teach-loop.js';
 import { router as dashRoutes } from './routes/dash.js';
 import { router as manipRoutes } from './routes/manipulatives.js';
+import { router as homeroomRoutes } from './routes/homeroom.js';
+import { router as homeroomSigninRoutes } from './routes/homeroom-signin.js';
 import { router as figuresRoutes } from './routes/figures.js';
 import { router as companionRoutes } from './routes/companion.js';
 import { router as passwordResetRoutes } from './routes/password-reset.js';
 import { pathLocale, privateNoindex } from './seo.js';
-import { renamedGames } from './renamed.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
+import { slugRedirect } from './services/slug-aliases.js';
 import { hostOnly } from './site.js';
 import { WEBHOOK_PATH as BILLING_WEBHOOK_PATH, webhookHandler as billingWebhook } from './services/billing.js';
 import { billingOn } from './services/stripe.js';
@@ -155,8 +157,9 @@ export function createApp() {
   // The domain move: page loads on an old name (magic-cup.onrender.com) go to PUBLIC_URL. Off until PUBLIC_URL is set
   // and its self-check passed; MOVED_TO_URL and MAINTENANCE_MODE above still win.
   app.use(canonicalRedirect);
-  // A renamed official game's old addresses (server/renamed.js: /g/typing-pets, /fr/g/typing-pets, /play/typing-pets?...).
-  app.use(renamedGames);
+  // A game's old slug (services/slug-aliases.js: /g/box-by-box, /play/box-by-box?..., /covers/box-by-box.jpg) goes to its
+  // new one, before the static files and the language prefix, so every page, file and API of the game is covered.
+  app.use(slugRedirect);
   // Signed-out pages, the sitemap and robots.txt go out compressed (services/compress.js says why not signed-in ones).
   app.use(compressPublicPages);
   app.use(seoRoutes);   // /robots.txt, /sitemap.xml: no session needed
@@ -231,7 +234,7 @@ export function createApp() {
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, homeroomRoutes, homeroomSigninRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

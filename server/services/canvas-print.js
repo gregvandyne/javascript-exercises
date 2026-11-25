@@ -1,5 +1,5 @@
 // A classroom activity's printed worksheet (Oomba Canvas 1.2.0, config.purpose "worksheet" or "generator"; docs/
-// canvas-api.md "Printing"). The same pipeline as The Big Divide's (services/game-print.js, BRB.print): the frame sends
+// canvas-api.md "Printing"). The same pipeline as Arithmetic Lab's (services/game-print.js, BRB.print): the frame sends
 // only numbers ({ k: 'canvas', seed, n, paper, key }), the play page or the Studio asks POST /api/games/:id/print, and
 // this makes the printable page from the version's OWN data: the kit's frozen file deals the sheet for that seed
 // (sheet.js) and writes each question, answer and worked answer in the viewer's language, and the pinned Oomba Figures

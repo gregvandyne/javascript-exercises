@@ -963,6 +963,22 @@
 	const sides = (): [SideTile[] | null, SideTile[] | null] =>
 		solving ? [null, null] : [top, left];
 
+	/** An x tile set down on a side of the T lies along it: standing up on the
+	 *  side going down, lying flat on the top. Dropped across the wrong way
+	 *  (its middle on the side or just outside it), it turns to fit, centered
+	 *  on the side. -> the turned tile's corner, or null when it fits already. */
+	function sideTurn(kind: Kind, isTurned: boolean, x: number, y: number) {
+		if (kind !== 'x' || solving || faded) return null;
+		const { w, h } = size('x', isTurned);
+		const c = { x: x + lenPx(w) / 2, y: y + lenPx(h) / 2 };
+		const reach = STRIP + XLEN / 2;
+		if (!isTurned && inside(c, { x: -reach, y: 0, w: reach, h: ARM }))
+			return { turned: true, x: -STRIP / 2 - UNIT / 2, y: Math.max(0, c.y - XLEN / 2) };
+		if (isTurned && inside(c, { x: 0, y: -reach, w: ARM, h: reach }))
+			return { turned: false, x: Math.max(0, c.x - XLEN / 2), y: -STRIP / 2 - UNIT / 2 };
+		return null;
+	}
+
 	/** The board with a tile set down at (x, y): on a side of the T it joins the
 	 *  side's row, and anywhere else it snaps to the edges near it. Not yet
 	 *  arranged: `change` closes up the rows. */
@@ -972,6 +988,12 @@
 		y: number,
 		base: Tile[] = tiles
 	): Tile[] {
+		const fit = sideTurn(t.kind, t.turned, x, y);
+		if (fit) {
+			t = { ...t, turned: fit.turned };
+			x = fit.x;
+			y = fit.y;
+		}
 		const pin = pinFor(t.kind, t.turned, x, y);
 		const others = base.filter((o) => o.id !== t.id && !vanished(o));
 		// In a row of the division step, the tile still snaps along the row to its neighbors.
@@ -1037,11 +1059,71 @@
 			return;
 		}
 		const id = held.source.from === 'board' ? held.source.id : nextId++;
-		change(drop(held, cx, cy, id));
+		// Dropped on top of their opposites (a −x on an x, a −1 on a 1...), held tiles cancel out
+		// with them, as many as the drop covers at once; the rest of the drop lands as usual.
+		const hits = zeroing ? [] : cancelHits(held, cx, cy, id);
+		if (hits.length) {
+			const at = new Map(hits.map((h) => [h.held.id, h.held]));
+			const next = drop(held, cx, cy, id).map((t) => (at.has(t.id) ? { ...t, ...at.get(t.id)! } : t));
+			change(next);
+			forget(id);
+			held.group.forEach(forget);
+			const byId = new Map(next.map((t) => [t.id, t]));
+			zeroOut(hits.map((h): [Tile, Tile] => [byId.get(h.held.id)!, byId.get(h.target.id)!]));
+			return;
+		}
+		const before = held.turned;
+		const next = drop(held, cx, cy, id);
+		change(next);
+		const now = next.find((t) => t.id === id);
+		if (now && now.kind === 'x' && now.turned !== before) animate(id, now.turned ? 'down' : 'up');
 		forget(id);
 		held.group.forEach(forget);
 		// A selection moved together stays selected; a single tile is let go.
 		select(held.group.length ? [id, ...held.group] : []);
+	}
+
+	/** Held tiles let go on top of opposite tiles of the same kind: each held tile
+	 *  that covers at least 40% of an opposite (by the smaller tile's area) pairs
+	 *  with the one it covers most, each board tile at most once. The held
+	 *  tiles are given where they were let go, before any snapping. */
+	function cancelHits(held: Held, cx: number, cy: number, id: number) {
+		if (held.copy && held.source.from === 'board') return [];
+		const pt = toBoard(cx, cy);
+		const x = pt.x - held.dx;
+		const y = unlift(held.kind, held.turned, x, pt.y - held.dy);
+		const src = held.source.from === 'board' ? tiles.find((t) => t.id === held.source.id) : null;
+		const dx = src ? x - src.x : 0;
+		const dy = src ? y - src.y : 0;
+		const moving: Tile[] = [
+			{ id, kind: held.kind, sign: held.sign, turned: held.turned, x, y, at: { x: null, y: null } },
+			...tiles
+				.filter((t) => held.group.includes(t.id))
+				.map((t) => ({ ...t, x: t.x + dx, y: t.y + dy, at: { x: null, y: null } }))
+		];
+		const mine = new Set([id, ...held.group, ...(src ? [src.id] : [])]);
+		const targets = tiles.filter((t) => !mine.has(t.id) && movable(t) && !vanished(t));
+		const cover = (a: Rect, b: Rect) => {
+			const w = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+			const h = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+			return w > 0 && h > 0 ? (w * h) / Math.min(a.w * a.h, b.w * b.h) : 0;
+		};
+		const options: { held: Tile; target: Tile; c: number }[] = [];
+		for (const m of moving)
+			for (const t of targets)
+				if (t.kind === m.kind && t.sign !== m.sign) {
+					const c = cover(rectOf(m), rectOf(t));
+					if (c >= 0.4) options.push({ held: m, target: t, c });
+				}
+		options.sort((a, b) => b.c - a.c);
+		const used = new Set<number>();
+		const out: { held: Tile; target: Tile }[] = [];
+		for (const o of options) {
+			if (used.has(o.held.id) || used.has(o.target.id)) continue;
+			used.add(o.held.id).add(o.target.id);
+			out.push(o);
+		}
+		return out;
 	}
 
 	/** A tile as copied: what it is, where it lay, and which pan it was in. */

@@ -501,6 +501,20 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen,.stage.css-full{top:0}
+/* a game handed out from Homeroom with the teacher's instructions (routes/games.js): one yellow line over the game,
+   tap it for all of it (the stage moves down by its height; full screen still covers everything) */
+.playnote{position:fixed;top:52px;inset-inline:0;z-index:9;background:#FFF4C7;color:#141414;border-bottom:2px solid #E8D88A}
+.playnote summary{list-style:none;display:flex;align-items:center;gap:10px;height:50px;padding:0 max(16px,env(safe-area-inset-left));cursor:pointer;font-weight:700;min-width:0}
+.playnote summary::-webkit-details-marker{display:none}
+.playnote summary::after{content:'▾';margin-inline-start:auto;font-weight:800;flex:none}
+.playnote[open] summary::after{content:'▴'}
+.playnote-h{flex:none;display:inline-flex;align-items:center;gap:6px;font-weight:800;white-space:nowrap}
+.playnote-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.playnote[open] .playnote-t{visibility:hidden}
+.playnote-full{margin:0;padding:0 max(16px,env(safe-area-inset-left)) 14px;white-space:pre-line;overflow-wrap:anywhere;font-weight:700;font-size:1.05rem;line-height:1.4;max-height:50vh;overflow:auto}
+body.has-playnote .stage{top:104px}
+body.playmode.has-playnote.kb-up .stage{top:calc(104px + var(--vvt,0px));height:calc(var(--vvh,100dvh) - 104px)}
+@media (max-width:560px){.playnote-h .lbl-h{display:none}}
 /* an on-screen keyboard up (public/js/play.js): the stage fits the part of the page still visible */
 body.playmode.kb-up .stage{top:calc(52px + var(--vvt,0px));bottom:auto;height:calc(var(--vvh,100dvh) - 52px)}
 /* Full screen without the Fullscreen API (public/js/fullscreen.js: iPhone Safari, or a refused request): the element
@@ -2169,7 +2183,7 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .cwp-blank-name{width:2.1in}
 .cwp-gridbox{display:flex;justify-content:center;margin:0 0 12pt}
 .cwp-grid{display:block;width:100%;height:auto;max-height:6.4in;break-inside:avoid}
-/* The teacher's own instructions above the grid (crossword-print.js; as The Big Divide's .bbp-mine); the grid gives up a little height for them. */
+/* The teacher's own instructions above the grid (crossword-print.js; as Arithmetic Lab's .bbp-mine); the grid gives up a little height for them. */
 .cwp-mine{margin:0 0 10pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
 .cwp-mine~.cwp-gridbox .cwp-grid{max-height:5.7in}
 .cwp-grid rect{fill:#fff;stroke:#000;stroke-width:0.45}
@@ -2224,7 +2238,7 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .atp-k2 .atp-keymap svg{max-height:5in}
 .atp-k3 .atp-keymap svg{max-height:4.3in}
 .atp-key.atp-many .atp-keylist li{margin:0 0 1.5pt}
-/* The Big Divide's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
+/* Arithmetic Lab's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
    (0.3in), with room to work under it; the answer key smaller, four to a row. */
 .bbp-mine{margin:0 0 6pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
 .bbp-how{margin:0 0 10pt;font-size:11.5pt}
@@ -2330,3 +2344,17 @@ img.fx[src*="satellite-antenna"]{background:radial-gradient(circle at 50% 52%,#B
 img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],img.fx[src*="/pirate-flag"],img.fx[src*="/vertical-traffic-light"],img.fx[src*="/mobile-phone"],img.fx[src*="flat/woman-student"],img.fx[src*="flat/student"]{background:radial-gradient(circle at 50% 52%,var(--fx-plate) 0 56%,transparent 58%);border-radius:50%}
 /* Two-column panels on the marketing pages (/teachers, /parents): an odd last panel spans both columns, so none is left alone. */
 @media (min-width:821px){.lp-cols>:last-child:nth-child(odd){grid-column:1/-1}}
+/* Homeroom's class views (routes/homeroom.js homeroomTabs): Homeroom | Classroom | Dashboard, a calm pill over the class
+   page for Homeroom teachers, and in Homeroom's own top bar (public/css/homeroom.css). */
+.hr-tabs{display:inline-flex;gap:4px;background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:4px;max-width:100%;overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.hr-tabs a{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:999px;font-weight:800;color:var(--muted);text-decoration:none;white-space:nowrap}
+.hr-tabs a:hover{background:var(--hover);color:var(--text)}
+.hr-tabs a[aria-current="page"]{background:var(--text);color:var(--card)}
+/* Homeroom's "Your class is in Homeroom. Go to my desk" (public/js/homeroom-notify.js): a calm card at the bottom of any
+   page for a student whose class went live, above the tab bar on phones. */
+.hr-notify{position:fixed;z-index:900;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 10px 10px 18px;border-radius:20px;background:var(--text);color:var(--card);box-shadow:var(--shadow-lg);font-weight:700}
+.hr-notify-t{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0}
+.hr-notify-go{min-height:48px}
+.hr-notify-x{width:48px;height:48px;border:0;border-radius:50%;background:transparent;color:inherit;font:800 24px/1 var(--font);cursor:pointer}
+.hr-notify-x:hover{background:color-mix(in srgb,var(--card) 16%,transparent)}
+@media (max-width:820px){.hr-notify{bottom:calc(var(--tabbar) + 12px + env(safe-area-inset-bottom))}}
