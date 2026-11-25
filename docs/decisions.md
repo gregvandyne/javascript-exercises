@@ -11282,6 +11282,33 @@ action). Tests: `tests/unit/manip-playthrough-fixes-browser.test.js`, and the pl
   disks (the palette's names in their scenes). The rest were played through again and kept.
 - **A text's move or resize** sets the same flag, so its click is not a tap on the board.
 
+## Manipulatives: fraction circles hold pieces (25 Nov 2026)
+
+Each fraction piece used to sit alone in its own dashed circle, so a teacher could not show 1/2 + 1/4 + 1/4 = 1 whole,
+and five library tasks ("Cover the whole", "Thirds and ninths talk", "Leftover pieces", "Equivalent cover", "Half and
+quarter mix") could not be acted out.
+
+- **Circles hold pieces**: a Fraction set holds circles (wholes). A circle's pieces sit edge to edge from 12 o'clock,
+  clockwise, with a dashed outline for the part not covered, and its sum under it in the label mode ("3/4", "75%",
+  "1 whole ✓" when exactly full). Sizes are counted in 360ths of a whole, so mixed denominators are exact
+  (1/3 + 1/6 + 1/2 = 1 whole). The model is `public/js/manip-board.js` fc* (pure, shared with the server).
+- **Adding**: a piece tapped in the palette goes into the selected circle (or the selected piece's circle), else the
+  first circle with room, else a new circle. A piece never overfills a circle; when the selected circle is full a
+  toast says where the piece went. New circle (in the palette, above the sizes) adds an empty whole and selects it.
+- **Select, then Delete** (the number line's pattern, never a one-tap delete): a tap on a piece or a circle's sum
+  selects it, a second tap lets go, and the "Delete the 1/4 piece" / "Delete circle 2" chip takes it away; the circle
+  closes up. Turning pieces is gone (pieces now sit edge to edge).
+- **Moving**: a piece dragged onto another circle (in the same set or another set on the board) moves there when it
+  fits; dropped on the set's empty space it starts a new circle. A drop that would overfill does nothing and says so.
+- **Ninths** join the circles' sizes (not the fraction tiles') for "Thirds and ninths talk", and the rings view has a
+  ring for them; the task's teacher note no longer says ninths are missing.
+- **Totals**: the set's handle shows every piece added up ("Total 2 1/12"). A practice question (q) shows no sums.
+- **Old boards**: a state with `placed` (one piece a circle) loads with each old piece alone in its own circle, as it
+  looked (their turns are dropped). Practice items put each fraction in its own circle; the AI drafter's board context
+  (`server/services/manip-chat.js`) reads each circle's pieces by size, and an old board as before.
+- Tests: `tests/unit/manip-fraction-circles-browser.test.js` (the model, solo, an old board, the live room). The
+  "How it works" video shows "Half and quarter mix".
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,
