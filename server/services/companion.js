@@ -1227,6 +1227,14 @@ async function bookAnswer(user, bookId, { text, history, step, reply0 = '' }) {
     },
   };
 }
+/** Room for one step's reply: a dozen worksheet questions with their figures' data fit well inside it. */
+export const MAX_REPLY_TOKENS = 8000;
+export const CUT_OFF_NOTE = '(Your last reply was too long and was cut off, so nothing in it was done. Do it in smaller steps: for a worksheet, at most 6 questions in each editWorksheet call.)';
+/** The last user turn with a note after it (a text block; tool results stay first). */
+function withNote(m, note) {
+  const content = typeof m.content === 'string' ? [{ type: 'text', text: m.content }] : [...m.content];
+  return { ...m, content: [...content, { type: 'text', text: note }] };
+}
 async function answer({ user, text, meta, quote, history, step, turnId }) {
   // A book's first draft (Make my book) or a change the teacher picked the book for on a card: straight to the book's
   // own writer (the teacher's words are the request; nothing else to decide).
@@ -1250,17 +1258,25 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const steps = [];
   const model = config.companionModel || config.builderModel;
   const t0 = Date.now();
-  let res = null;
+  let res = null, cutOff = false;
   try {
     for (let n = 0; ; n++) {
       const last = n >= settings.steps;
-      const params = { model, max_tokens: 2500, system: system(user, lang, page, settings), tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
+      const params = { model, max_tokens: MAX_REPLY_TOKENS, system: system(user, lang, page, settings), tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
       try { res = await callAi(client, params); } catch (e) {
         if (useWeb && SR.isToolRefusal(e)) { webBroken = String(e.message || 'refused').slice(0, 200); log('error', 'companion web search turned off', { reason: webBroken }); useWeb = false; res = await callAi(client, { ...params, tools: tools() }); } else throw e;
       }
       if (res && res.usage) aiBudget.recordUsage(res.model || model, res.usage);
       collectWeb(res.content, web);
       if (res.stop_reason === 'pause_turn' && !last) { msgs.push({ role: 'assistant', content: res.content }); continue; }
+      // Cut off (a very long change, like many questions at once): its half-written tool call is never run. Asked once
+      // more for a smaller step, so the teacher gets part of it and a reply, not "couldn't answer" (25 Nov 2026).
+      if (res.stop_reason === 'max_tokens') {
+        log('warn', 'companion reply cut off', { turn: turnId, page: page.type, step: n });
+        if (!last && !cutOff && msgs[msgs.length - 1].role === 'user') { cutOff = true; msgs.push(withNote(msgs.pop(), CUT_OFF_NOTE)); continue; }
+        res = { ...res, content: (res.content || []).filter(b => b.type === 'text') };
+        break;
+      }
       const uses = (res.content || []).filter(b => b.type === 'tool_use');
       if (res.stop_reason !== 'tool_use' || !uses.length || last) break;
       step(2);

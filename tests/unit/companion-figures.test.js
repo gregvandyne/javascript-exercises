@@ -452,3 +452,44 @@ test('routing on a worksheet: an off-topic request (a book for a level M reader)
     assert.match(calls[0].system, /ask one short question and change nothing/);
   } finally { await reset(boss); }
 });
+
+test('a reply cut off at its length cap is asked for again in smaller steps: the half-written change is never run, the teacher gets the questions and a reply (25 Nov 2026)', async () => {
+  const { boss } = world();
+  const calls = [];
+  CO.hooks.create = async params => {
+    calls.push(JSON.parse(JSON.stringify(params)));
+    const out = (stop, content) => ({ model: params.model, usage: { input_tokens: 5, output_tokens: 5 }, stop_reason: stop, content });
+    if (calls.length === 1) return out('max_tokens', [{ type: 'tool_use', id: 'tu_cut', name: 'editWorksheet', input: { edits: FIRST.slice(0, 3).map(item => ({ op: 'add', item })) } }]);
+    if (calls.length === 2) return out('tool_use', [{ type: 'tool_use', id: 'tu_ok', name: 'editWorksheet', input: { edits: FIRST.slice(0, 6).map(item => ({ op: 'add', item })) } }]);
+    return out('end_turn', [{ type: 'text', text: 'Here are the first 6 questions. Ask for the rest next.' }]);
+  };
+  try {
+    const id = F.createWorksheet(boss, { title: 'Untitled worksheet' }).id;
+    const r = await say(boss, id, { text: 'Build me a 25 question worksheet on area for 5th graders' });
+    assert.equal(r.status, 200);
+    await C.allSettled();
+    const last = (await chatOf(boss)).turns.at(-1);
+    assert.equal(last.role, 'oomba'); assert.match(last.text, /first 6 questions/);
+    assert.equal(answers(id).length, 6, 'only the second, whole call was run');
+    assert.equal(calls[0].max_tokens, CO.MAX_REPLY_TOKENS);
+    const note = calls[1].messages.at(-1).content.at(-1);
+    assert.equal(note.text, CO.CUT_OFF_NOTE);
+    assert.ok(!JSON.stringify(calls[1].messages).includes('tu_cut'), 'the cut-off call is not sent back');
+    // The page's rules say how a long request goes, and that a worksheet has no instruction pages.
+    assert.match(calls[0].system, /Asked for more than 12: add 12 now/);
+    assert.match(calls[0].system, /no instruction, explanation or worked-example pages/);
+  } finally { CO.hooks.create = null; }
+});
+
+test('a reply cut off twice still ends calmly: the text it had, or the calm failure, never a half-run change', async () => {
+  const { boss } = world();
+  CO.hooks.create = async params => ({ model: params.model, usage: { input_tokens: 5, output_tokens: 5 }, stop_reason: 'max_tokens', content: [{ type: 'tool_use', id: 'tu_cut', name: 'editWorksheet', input: { edits: FIRST.map(item => ({ op: 'add', item })) } }] });
+  try {
+    const id = F.createWorksheet(boss, { title: 'Untitled worksheet' }).id;
+    await say(boss, id, { text: 'Build me a 25 question worksheet' });
+    await C.allSettled();
+    const last = (await chatOf(boss)).turns.at(-1);
+    assert.equal(answers(id).length, 0);
+    assert.ok(last.failed || last.role === 'oomba');
+  } finally { CO.hooks.create = null; }
+});
