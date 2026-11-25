@@ -29,6 +29,7 @@ import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
 import { startPulse } from '/js/homeroom-pulse.js';
+import { gamePlayer } from '/js/homeroom-player.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -364,6 +365,9 @@ async function switchUser(b) {
 
 // ---------------------------------------------------------------- input
 function click(e) {
+  // A handout plays inside the desk (public/js/homeroom-player.js); a click for a new tab opens the game page.
+  const play = e.target.closest('a.hd-card[data-hdcard]');
+  if (play && !(e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) && PL.open(play.dataset.hdcard)) { e.preventDefault(); return; }
   const card = e.target.closest('.hd-card[aria-disabled="true"]');
   if (card) { const x = S.cards.find(c => c.id === card.dataset.hdcard); toast(x && x.locked ? td('laterHint') : td('notReadyHint')); return; }
   const pen = e.target.closest('[data-hdpen]');
@@ -376,11 +380,21 @@ function click(e) {
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
   else if (k === 'desk' || k === 'area' || k === 'room') {
+    if (k === 'desk' && PL.current()) PL.close();
     S.view = k === S.view && k !== 'desk' ? 'desk' : k; renderOver();
     if (S.view === 'desk') root.querySelector('.hd-dockbtn[data-hd="desk"]')?.focus();
     else over.querySelector('.hd-back')?.focus();
   }
 }
+// A handout played inside the desk: the desk's own pulse rests while the game page in the layer pulses for it (one
+// pulse, where: game); closing asks for the cards again, so the card shows its progress.
+const PL = gamePlayer({
+  host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
+  find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
+  onOpen: () => { root.classList.add('hd-playing'); if (PULSE) PULSE.pause(); },
+  onClose: () => { root.classList.remove('hd-playing'); if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
+});
+
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   S.area = (D.state && D.state.area) || {};
@@ -402,5 +416,6 @@ function start() {
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else poll(); });
   window.addEventListener('pagehide', flush);
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
+  PL.sync();   // a handout the address names (#play=<card>): open it again
 }
 if (root && body) start();

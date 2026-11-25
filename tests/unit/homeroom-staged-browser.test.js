@@ -110,8 +110,12 @@ test('a tablet, a class with no students: stage on My desk, preview, hand out to
   await page.waitForSelector('.hr-smenu');
   assert.match(await page.locator('#sheet-title').innerText(), /Sudoku/);
   await settle(page); await shot(page, 'card-menu-tablet');
-  await Promise.all([page.waitForURL(/\/play\/sudoku-td$/), page.locator('.hr-smenu [data-sm="play"]').tap()]);
+  // (it plays over the board, docs/decisions.md "Playing inside Homeroom": the game's own page in the layer's frame)
+  await page.locator('.hr-smenu [data-sm="play"]').tap();
+  await page.waitForSelector('.hr-player iframe');
+  assert.match(await page.locator('.hr-player iframe').getAttribute('src'), /^\/play\/sudoku-td\?in=hr$/);
   assert.equal(classLessons(empty), 0);
+  await page.locator('.hr-playback').tap(); await page.waitForSelector('.hr-player', { state: 'detached' });
   await page.goto(`${BASE}/class/${empty.id}/homeroom`);
   await page.waitForSelector('.hr-tdesk [data-hrstaged]');
   assert.equal(await page.locator('.hr-tdesk [data-hrstaged]').count(), 3, 'kept between visits');

@@ -18,6 +18,9 @@ const ACTIVE_FOR = 5 * 60e3; let lastInput = 0;
 const ua = navigator.userActivation;
 if (ua) setInterval(() => { if (ua.isActive) lastInput = Date.now(); }, 1000);
 for (const ev of ['pointerdown', 'keydown']) addEventListener(ev, () => { lastInput = Date.now(); }, { capture: true, passive: true });
+// Inside Homeroom's layer (?in=hr, public/js/homeroom-player.js): Escape on this page (not in full screen, and not inside
+// the game, which keeps its own keys) closes the layer, as it does from the layer's own bar.
+if (d.embed && parent !== window) addEventListener('keydown', e => { if (e.key === 'Escape' && !document.fullscreenElement) parent.postMessage({ type: 'hr:close' }, location.origin); });
 const playing = () => Date.now() - lastInput < ACTIVE_FOR;
 // A game that points its own frame somewhere else: this page's CSP (frame-src 'self') refuses any other website before
 // a request leaves, and a reload the game starts itself is refused by the server (no sign-in cookie on it). Either way
@@ -253,7 +256,8 @@ addEventListener('message', e => {
     // origin and cannot navigate the page itself, so the page goes back on its behalf. Only a course or
     // lesson launch has somewhere to go back to, and only on a real tap (the retry rule): a game must
     // never be able to yank the student out of a session on its own.
-    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) location.href = d.backHref; break;
+    // (inside Homeroom's layer, public/js/homeroom-player.js: the layer closes instead)
+    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) { if (d.embed && parent !== window) parent.postMessage({ type: 'hr:close' }, location.origin); else location.href = d.backHref; } break;
     case 'brb:fullscreen': m.on ? goFull() : fs.exit(); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.

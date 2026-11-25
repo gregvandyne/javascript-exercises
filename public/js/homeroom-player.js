@@ -1,0 +1,73 @@
+// Playing a game inside Homeroom (docs/decisions.md "Homeroom: one page, three views", "Playing inside Homeroom"): the
+// teacher's board (Play / Preview on a My desk card) and a student's desk (a handout card) open the game in a layer over
+// themselves, so nothing underneath goes away: the board keeps its zoom, place and live polling; the desk keeps Raise
+// hand, Pause screens, Bring everyone to me, the lock and its state poll. The layer is the game's own play page in a
+// frame (?in=hr: routes/games.js lets this site, and only this site, frame it, and hides its Back links), under a bar
+// with "Back to Homeroom" / "Back to my desk". The address carries the open game (#play=<id>), so a reload opens it
+// again and Back closes it; Escape closes it too, and a game's own "back" (play.js brb:back) asks the layer to close.
+import { esc } from '/js/app.js';
+import { iconHtml } from '/js/icons.js';
+
+/**
+ * opts: { host: element the layer covers, path: the page's own address (no hash), back: the close button's words,
+ * find: id -> { href, title, icon } | null (null: not playable here), onOpen(id), onClose(id), away: () => true while
+ * the page is not on screen (another view) }. -> { open(id), close(), current(), sync() }
+ */
+export function gamePlayer(opts) {
+  let cur = null, el = null;
+  const hashId = () => { const m = /^#play=([^&]{1,120})$/.exec(location.hash); try { return m ? decodeURIComponent(m[1]) : null; } catch { return null; } };
+  const onPage = () => location.pathname.replace(/\/+$/, '') === opts.path;
+  const src = href => `${href}${href.includes('?') ? '&' : '?'}in=hr`;
+  const plain = () => location.pathname + location.search;
+  function show(id) {
+    if (cur === id && el) return true;
+    const x = opts.find(id); if (!x || !x.href) return false;
+    hide(false);
+    el = document.createElement('div');
+    el.className = 'hr-player'; el.setAttribute('role', 'region'); el.setAttribute('aria-label', x.title || '');
+    el.innerHTML = `<div class="hr-playtop"><button type="button" class="btn hr-chunk hr-playback" data-hrplayer="close"><span class="flip" aria-hidden="true">←</span> ${esc(opts.back)}</button>
+      <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span></div>
+      <iframe class="hr-playframe" src="${esc(src(x.href))}" title="${esc(x.title || '')}" allow="fullscreen; autoplay; microphone" allowfullscreen></iframe>`;
+    el.querySelector('[data-hrplayer]').addEventListener('click', close);
+    opts.host.appendChild(el);
+    cur = id;
+    if (opts.onOpen) opts.onOpen(id);
+    el.querySelector('.hr-playback').focus({ preventScroll: true });
+    return true;
+  }
+  function hide(notify = true) {
+    if (!el) return;
+    el.remove(); el = null;
+    const was = cur; cur = null;
+    if (notify && opts.onClose) opts.onClose(was);
+  }
+  /** Open a game from a tap: a new history entry, so Back closes it. */
+  function open(id) {
+    if (!show(id)) return false;
+    if (hashId() !== id) history.pushState({ ...(history.state || {}), hrplay: id }, '', `${plain()}#play=${encodeURIComponent(id)}`);
+    return true;
+  }
+  function close() {
+    if (!cur) return;
+    if (history.state && history.state.hrplay === cur && hashId() === cur) { history.back(); return; }   // popstate hides it
+    hide();
+    if (hashId()) history.replaceState(history.state, '', plain());
+  }
+  /** The address says which game is open (a reload, Back, Forward). */
+  function sync() {
+    if (!onPage()) return;
+    const id = hashId();
+    if (id && id !== cur) { if (!show(id)) history.replaceState(history.state, '', plain()); }
+    else if (!id && cur) hide();
+  }
+  addEventListener('popstate', sync);
+  addEventListener('message', e => {
+    const f = el && el.querySelector('iframe');
+    if (f && e.source === f.contentWindow && e.origin === location.origin && e.data && e.data.type === 'hr:close') close();
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape' || !cur || (opts.away && opts.away()) || document.querySelector('.sheet-bg, dialog[open]')) return;
+    e.preventDefault(); e.stopImmediatePropagation(); close();
+  }, true);
+  return { open, close, sync, current: () => cur };
+}

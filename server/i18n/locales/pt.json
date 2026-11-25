@@ -2206,7 +2206,8 @@
       "sel": {
         "tools": "Item selecionado",
         "delete": "Excluir o item selecionado"
-      }
+      },
+      "playBack": "Voltar para o Homeroom"
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -4884,7 +4885,8 @@
         "lockedHint": "Ela abre de novo logo. Seu trabalho está salvo.",
         "coming": "Seu professor está vindo até você",
         "passBtn": "Passe de saída"
-      }
+      },
+      "playBack": "Voltar para minha carteira"
     },
     "homeroom-area": {
       "label": "Área do professor",

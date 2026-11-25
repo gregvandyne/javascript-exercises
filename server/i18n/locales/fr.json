@@ -2205,7 +2205,8 @@
       "sel": {
         "tools": "Élément sélectionné",
         "delete": "Supprimer l’élément sélectionné"
-      }
+      },
+      "playBack": "Retour à Homeroom"
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -4883,7 +4884,8 @@
         "lockedHint": "Il s’ouvre bientôt. Ton travail est enregistré.",
         "coming": "Ton enseignant arrive vers toi",
         "passBtn": "Laissez-passer"
-      }
+      },
+      "playBack": "Retour à mon pupitre"
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
