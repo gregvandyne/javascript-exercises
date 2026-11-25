@@ -1157,7 +1157,8 @@ function bindTexts() {
     if (el.classList.contains('editing')) {
       if (e.target.closest('.mp-textbar, [data-trz]')) V.textHold = Date.now();   // its own buttons keep it open
       textBoxPointer(e, { x, el, space: WORLD, zoom: () => V.view.z, others: () => others(x.id), start: textHist,
-        done: moved => { if (moved) el.querySelector('textarea')?.focus({ preventScroll: true }); } });
+        // The click that ends a move or a resize of the open text is not a tap on the board (the room does the same).
+        done: moved => { if (moved) { el.querySelector('textarea')?.focus({ preventScroll: true }); V.justMoved = true; } } });
       return;
     }
     d = { el, x, sx: e.clientX, sy: e.clientY, x0: x.x, y0: x.y, moved: false };
@@ -1174,7 +1175,7 @@ function bindTexts() {
   });
   const up = () => {
     if (!d) return; const x = d; d = null; x.el.classList.remove('dragging');
-    if (x.moved) { snapText(x.x, x.el, WORLD, others(x.x.id), SNAP_PX / V.view.z); return; }
+    if (x.moved) { snapText(x.x, x.el, WORLD, others(x.x.id), SNAP_PX / V.view.z); V.justMoved = true; return; }
     if (V.textEdit) commitText(); V.textEdit = x.x.id; renderTexts();
   };
   box.addEventListener('pointerup', up); box.addEventListener('pointercancel', () => { if (d) d.el.classList.remove('dragging'); d = null; });
