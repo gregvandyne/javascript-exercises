@@ -65,9 +65,13 @@ test('each address is the same page: the shared bar and the view area, that view
   const hr = await get(lane, `/class/${cls.id}/homeroom`);
   assert.match(hr.text, /data-cv-acts="homeroom">.*data-hr="seats".*data-hr="menu"/s); assert.doesNotMatch(hr.text, /hr-top/);
   const room = await get(lane, `/class/${cls.id}`);
-  assert.match(room.text, /data-cv-acts="classroom"><div class="row classacts">/);
+  // Classroom's bar: no Live button (Host a live game is in Homeroom's ⋯ menu); the Connections chip only (none here:
+  // Google is off), so the bar is the switcher and the pill (docs/decisions.md "A calmer Classroom view on phones")
+  assert.match(room.text, /data-cv-acts="classroom"><\/div>/);
+  assert.doesNotMatch(room.text, new RegExp(`href="/live\\?class=${cls.id}"`), 'no Host a live game on the Classroom view');
   assert.doesNotMatch(room.text, /id="class-dash-link"/, 'Dashboard is in the pill');
-  assert.match(room.text, /<a class="backlink" href="\/teach[^"]*">/, 'the Back link is inside the view');
+  assert.doesNotMatch(room.text, /class="backlink"/, 'no My classes link: the switcher has All classes');
+  assert.match(room.text, /<option value="" data-cv-href="\/teach\?all=1">All classes<\/option><\/select>/);
   const dash = await get(lane, `/class/${cls.id}/dashboard`);
   assert.match(dash.text, /data-cv-acts="dashboard"><div class="dash-acts" id="dash-top">.*id="dash-projector".*id="dash-edit"/s);
   assert.doesNotMatch(dash.text, /class="dash-logo"/);
@@ -98,7 +102,7 @@ test('X-View: only the view, its buttons, styles, scripts at the page\'s own add
   const room = await get(lane, `/class/${cls.id}?tab=students`, H);
   assert.equal(room.json.view, 'classroom');
   assert.match(room.json.body, /<nav class="tabs classtabs"/); assert.match(room.json.body, /id="roster"|school\.class\.noStudents|Students/);
-  assert.match(room.json.actions, /classacts/);
+  assert.equal(room.json.actions, '', 'no Live button (and no Connections chip with Google off)');
   assert.ok(room.json.scripts.includes(`/js/schools.js?v=${VERSION}`));
   assert.match(room.json.head, /\/css\/schools\.css/);
 
@@ -108,6 +112,33 @@ test('X-View: only the view, its buttons, styles, scripts at the page\'s own add
   assert.deepEqual(dash.json.scripts, [`/js/dash.js?v=${VERSION}`]);
   assert.doesNotMatch(dash.json.bodyClass, /(^|\s)dash-page(\s|$)/, 'the full-screen dashboard\'s own class is left off'); assert.match(dash.json.bodyClass, /dash-page-teacher/);
   assert.ok(Object.keys(dash.json.strings).some(k => k.startsWith('js.dash.')));
+});
+
+test('the Classroom view is calm: one small header line, Build and Find as two small buttons, hosting in Homeroom\'s ⋯ menu', async () => {
+  const room = await get(lane, `/class/${cls.id}`);
+  const view = room.text.slice(room.text.indexOf('data-cv-view="classroom"'), room.text.indexOf('data-cv-view="dashboard"'));
+  // the class's name is the switcher's: no big title (one for screen readers), the school and the students on one line
+  assert.match(view, /<div class="cv-classhead"><h1 class="sr-only">4B Math<\/h1><p class="small muted cv-classmeta"><span class="classschool">[\s\S]*Views Server Oak[\s\S]*<\/span> · 1 student<\/p><\/div>/);
+  assert.doesNotMatch(view, /class="pagehead classhead"/);
+  // no Host a live game or Class dashboard tiles; Build new game and Find Oomba games as one row of small buttons
+  assert.doesNotMatch(view, /class="classtiles|class="classtile/);
+  const quick = [...view.matchAll(/<a class="btn btn-sm classquick-b" href="([^"]*)">[\s\S]*?<span>([^<]*)<\/span><\/a>/g)].map(m => [m[1].replace(/&amp;/g, '&'), m[2]]);
+  assert.deepEqual(quick, [[`/build/new?for=class&class=${cls.id}`, 'Build new game'], [`/class/${cls.id}?tab=lessons&view=oomba`, 'Find Oomba games']]);
+  assert.ok(view.indexOf('class="classquick"') < view.indexOf('classtabs'), 'the row sits above the tabs');
+  assert.doesNotMatch(view, new RegExp(`href="/live\\?class=${cls.id}"|href="/class/${cls.id}/dashboard"`));
+  // the X-View fragment is the same
+  const x = await get(lane, `/class/${cls.id}`, { 'X-View': '1' });
+  assert.match(x.json.body, /class="classquick"/); assert.doesNotMatch(x.json.body, /classtiles|class="backlink"/);
+  // Host a live game: in Homeroom's ⋯ menu (its page data has the address the tile had)
+  const hr = await get(lane, `/class/${cls.id}/homeroom`);
+  const data = JSON.parse(hr.text.match(/<script type="application\/json" id="page-data">([\s\S]*?)<\/script>/)[1]);
+  assert.equal(data.hostLive, `/live?class=${cls.id}`);
+  const { config: cfg } = await import('../../server/config.js');
+  cfg.liveClassroom = false;
+  try {
+    const off = await get(lane, `/class/${cls.id}/homeroom`);
+    assert.equal(JSON.parse(off.text.match(/<script type="application\/json" id="page-data">([\s\S]*?)<\/script>/)[1]).hostLive, '', 'live games off: no Host a live game');
+  } finally { cfg.liveClassroom = true; }
 });
 
 test('everyone else: the pages as before, the header ignored', async () => {

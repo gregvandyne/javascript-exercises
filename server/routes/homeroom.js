@@ -67,6 +67,7 @@ import crypto from 'node:crypto';
 import { localeInfo } from '../i18n/index.js';
 import { hasModel } from '../builder/anthropic.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
+import { liveOn } from '../services/classlive-sessions.js';
 import { requestOrigin } from '../services/frame.js';
 import * as SI from '../services/homeroom-signin.js';
 import { signinView } from './homeroom-signin.js';
@@ -200,6 +201,8 @@ router.get('/class/:id/homeroom', (req, res) => {
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
       lessons: aide ? [] : HL.listMine(u, req.locale), staged: aide ? [] : HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: aide ? [] : HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: !aide && hasModel() && liveCanHost(u),
+      // the ⋯ menu's Host a live game (the Classroom view no longer has one; docs/decisions.md "A calmer Classroom view on phones")
+      hostLive: !aide && !c.archived_at && liveOn() && liveCanHost(u) ? `/live?class=${c.id}` : '',
       pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c),
       // step 3c: the students' supports, and for the teacher the aides, sub links and "While you were out"
       supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
