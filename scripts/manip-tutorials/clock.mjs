@@ -1,4 +1,5 @@
-// The clock's quick tutorial (scripts/manip-tutorials.mjs loads it). Task: "Time tracker challenge".
+// The clock's quick tutorial (scripts/manip-tutorials.mjs loads it). Task: "Time tracker challenge" (from 10:30, add 15
+// minutes four times).
 export default ({ txt, count, attr, sel, beside, all }) => {
   const FACE = '#mp-content svg.mp-clock';
   /** A spot on the (first) clock face: toward the number n on the dial (12 at the top), r units from the middle (the face
@@ -11,6 +12,11 @@ export default ({ txt, count, attr, sel, beside, all }) => {
   const shows = hm => attr(FACE, 'aria-label', `Clock showing ${hm}`);
   const elapsed = re => txt('#mp-content .mp-elapsed', re);
   const pal = label => `#mp-palette [aria-label="${label}"]`;
+  /** The hour hand's angle (degrees from the 12) is h hours on the dial. */
+  const hourAt = h => async page => {
+    const a = await page.locator(`${FACE} line[stroke="#E53935"][stroke-width="8"]`).first().evaluate(l => ((Math.atan2(+l.getAttribute('y2') - 110, +l.getAttribute('x2') - 110) * 180) / Math.PI + 450) % 360);
+    return Math.abs(a - h * 30) < 1 || `the hour hand is at ${a.toFixed(1)}°, wanted ${h * 30}°`;
+  };
   const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Time tracker challenge' });
   return {
     clock: {
@@ -19,40 +25,36 @@ export default ({ txt, count, attr, sel, beside, all }) => {
       end: ['Clock', 'Find it in Teaching tools, Manipulatives.'],
       top: '#mp-board',
       steps: [
-        { say: 'Drag near the middle to turn the red hour hand.', do: [
-          { drag: dial(9.25, 40), to: dial(10.2, 40), expect: shows('10:15') },
+        { say: 'Drag near the middle for the red hour hand. The minutes follow.', do: [
+          { drag: dial(9.25, 40), to: dial(9 + 55 / 60, 40), expect: all(shows('9:55'), hourAt(9 + 55 / 60)) },
         ] },
-        { say: 'Drag near the edge to turn the blue minute hand.', do: [
-          { drag: dial(3, 78), to: dial(5, 78), expect: shows('10:25') },
+        { say: 'Drag the blue minute hand past 12, and the hour moves on.', do: [
+          { drag: dial(11, 78), to: dial(1, 78), expect: all(shows('10:05'), txt('#mp-content .mp-hm', '10:05')) },
         ] },
-        { say: 'Or use the buttons: Hour + and Min +5.', do: [
-          { click: '#mp-content [data-act="min5"]', expect: all(shows('10:30'), txt('#mp-content .mp-clockwrap .mp-barname', '10:30')) },
+        { say: 'Back past 12, and the hour goes back.', do: [
+          { drag: dial(1, 78), to: dial(11, 78), expect: shows('9:55') },
+          { drag: dial(11, 78), to: dial(1, 78), expect: shows('10:05') },
+        ] },
+        { say: 'At 10:30 the hour hand is halfway between 10 and 11.', do: [
+          { drag: dial(1, 78), to: dial(6, 78), expect: all(shows('10:30'), hourAt(10.5)) },
+          { move: beside(FACE, 30) },
+          { wait: 1800 },
         ] },
         { say: 'Today’s task: from 10:30, add 15 minutes four times.', do: [
-          { move: pal('Start the tracker here') },
-          { wait: 900 },
-        ] },
-        { say: 'Start the tracker here, then tap Time tracker +15 min.', do: [
           { click: pal('Start the tracker here'), expect: elapsed('Start 10:30 · Elapsed 0 h 0 min') },
           { click: pal('Time tracker +15 min'), expect: all(shows('10:45, 15 minutes since 10:30'), elapsed(/Elapsed 0 h 15 min$/)) },
           { click: pal('Time tracker +15 min'), expect: elapsed(/Elapsed 0 h 30 min$/) },
           { click: pal('Time tracker +15 min'), expect: elapsed(/Elapsed 0 h 45 min$/) },
-        ] },
-        { say: 'The yellow shows the time since the start.', do: [
-          { move: beside(FACE, 30) },
-          { wait: 1300 },
-        ] },
-        { say: 'Tap +15 once more. Four 15s make an hour.', do: [
           { click: pal('Time tracker +15 min'), expect: all(shows('11:30, 60 minutes since 10:30'), elapsed(/Elapsed 1 h 0 min$/), sel(`${FACE} .mp-cring`)) },
           { move: beside(FACE, 30) },
-          { wait: 500 },
         ] },
-        { say: 'Each full hour adds a light ring and +1 h.', poster: true, do: [
-          { wait: 1700 },
+        { say: 'Four 15s make an hour: a light ring and +1 h.', poster: true, do: [
+          { wait: 2600 },
         ] },
-        { say: 'Add another clock from the palette. Each keeps its own time.', do: [
-          { click: pal('Add a clock'), expect: count(FACE, 2) },
-          { wait: 900 },
+        { say: 'Totals off hides the digital time, so students read the face.', do: [
+          { click: '#mp-settings [data-view="totals"]', expect: all(txt('#mp-settings [data-view="totals"]', 'Totals: off'), count('#mp-content .mp-hm', 0), count('#mp-content .mp-elapsed b', 0)) },
+          { move: beside(FACE, 30) },
+          { wait: 1800 },
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 16) },

@@ -81,7 +81,7 @@ function syncAreas(room) {
   for (const k of [...R.areas.keys()]) if (!keys.has(k)) { R.areas.delete(k); changed = true; }
   const put = (key, src, meta) => {
     const A = R.areas.get(key);
-    const typing = document.activeElement && document.activeElement.matches && document.activeElement.matches('.mp-answer, .mp-seglabel') && document.activeElement.closest(`.rm-area[data-key="${CSS.escape(key)}"]`);
+    const typing = document.activeElement && document.activeElement.matches && document.activeElement.matches('.mp-answer, .mp-seglabel, .mp-segval') && document.activeElement.closest(`.rm-area[data-key="${CSS.escape(key)}"]`);
     if (A && (typing || A.saveTimer || A.saving || (R.gesture && R.gesture.key === key) || (R.editing && R.editing.key === key) || (R.textEdit && R.textEdit.key === key))) { Object.assign(A, meta); return; }
     if (A && A.updatedAt === src.updatedAt && !!A.hidden === !!meta.hidden) { Object.assign(A, meta); return; }
     const A0 = { key, ...meta };
@@ -575,6 +575,12 @@ function bind() {
   // The menu's "Answers checked" stays open (or closed) as the teacher left it when the menu is drawn again.
   el.addEventListener('toggle', e => { if (e.target.matches && e.target.matches('details.rm-checks')) R.checksOpen = e.target.open; }, true);
   el.addEventListener('change', e => {
+    // A typed value inside an object (a bar model's part size), once it is finished.
+    if (e.target.classList.contains('mp-segval') && R.impl.commit) {
+      const area = e.target.closest('.rm-area'), oe = e.target.closest('.mp-obj'); if (!area || !oe) return;
+      edit(area.dataset.key, st => { const o = st.objects.find(x => x.id === oe.dataset.oid); return o && !o.st.q ? R.impl.commit(o.st, e.target) : false; });
+      return;
+    }
     const s = e.target.closest('[data-set]'); if (!s || !e.target.closest('#rm-pal')) return;
     const k = s.dataset.set, v = s.value;
     const A = R.areas.get(R.active); if (!A) return;
@@ -679,7 +685,7 @@ function down(e) {
       const n = A.ann.notes.find(x => x.id === noteEl.dataset.note);
       if (n && canEditNote(A, n)) { R.gesture = { kind: 'note', key: A.key, n, el: noteEl, sx: e.clientX, sy: e.clientY, x0: +n.x || 0, y0: +n.y || 0, inner, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     }
-    if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-seglabel')) return;   // a tap on the tool itself
+    if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-seglabel, .mp-segval')) return;   // a tap on the tool itself
     const objEl = !R.textMode && e.target.closest('.mp-obj');
     if (objEl) {
       const o = A.st.objects.find(x => x.id === objEl.dataset.oid);

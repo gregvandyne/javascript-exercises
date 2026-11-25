@@ -39,7 +39,8 @@ export const OBJECTS = {
     size: st => ({ w: 892, h: OBJ_HEAD + (st && st.ask ? 268 : st && (st.mode === 'jumps' || (st.jumps || []).length) ? 460 : 380) }) }],
   'bar-models': [{ k: 'bar-models', name: 'Bar model', add: 'Add a bar model', start: true,
     init: () => ({ bars: [{ name: 'Whole', segs: [{ label: 'Part A', value: 3, color: '#7CB342' }, { label: 'Part B', value: 2, color: '#AED581' }] }, { name: 'Compare', segs: [{ label: 'Red', value: 5, color: '#1E88E5' }] }] }),
-    size: st => ({ w: 700, h: OBJ_HEAD + 24 + clamp((st.bars || []).length, 1, 8) * 118 }) }],
+    // A selected part (pick) shows its Delete under its bar: a row more.
+    size: st => ({ w: 700, h: OBJ_HEAD + 24 + clamp((st.bars || []).length, 1, 8) * 118 + (st.pick ? 44 : 0) }) }],
   'xy-coordinate-board': [{ k: 'xy-coordinate-board', name: 'Coordinate grid', add: 'Add a coordinate grid', start: true,
     // Points of one color join into a line (in the order plotted); arrows: arrowheads at a line's two ends; table: the
     // x/y table beside the grid (on unless turned off).
@@ -264,11 +265,34 @@ export function snapBox(b, others, t, gap = 8) {
 /** The grid's range of values: four quadrants -10..10, the first quadrant 0..12. */
 export const xyRange = st => (st && st.four ? { lo: -10, hi: 10 } : { lo: 0, hi: 12 });
 /** The grid's lines: the points of each color, in the order they were plotted, joined (a color with one point has no
- *  line). -> [{ color, idx: [point indexes] }] */
-export function xyLines(pts) {
-  const by = new Map();
-  (pts || []).forEach((p, i) => { const c = String(p && p.color || ''); if (!by.has(c)) by.set(c, []); by.get(c).push(i); });
-  return [...by].filter(([, idx]) => idx.length > 1).map(([color, idx]) => ({ color, idx }));
+ *  line). A color may have more than one line: a point's `ln` (0 when absent) says which, and a line closed into a
+ *  shape (its key in `shut`, with 3 points or more) is drawn with its closing side and a light fill; the next point of
+ *  that color starts a new line (xyNextLn). -> [{ color, ln, key, idx: [point indexes], closed }] */
+export const xyKey = (color, ln) => `${String(color || '')}#${Math.max(0, Math.round(num(ln)))}`;
+export function xyLines(pts, shut = []) {
+  const by = new Map(), closed = new Set(Array.isArray(shut) ? shut : []);
+  (pts || []).forEach((p, i) => { const k = xyKey(p && p.color, p && p.ln); if (!by.has(k)) by.set(k, { color: String(p && p.color || ''), ln: Math.max(0, Math.round(num(p && p.ln))), idx: [] }); by.get(k).idx.push(i); });
+  return [...by].filter(([, L]) => L.idx.length > 1).map(([key, L]) => ({ ...L, key, closed: closed.has(key) && L.idx.length > 2 }));
+}
+/** The line a new point of `color` joins: the color's last line, or a new one after it when that one is closed into a
+ *  shape. -> its ln */
+export function xyNextLn(st, color) {
+  const lns = (st.pts || []).filter(p => p && p.color === color).map(p => Math.max(0, Math.round(num(p.ln))));
+  if (!lns.length) return 0;
+  const last = Math.max(...lns);
+  return (st.shut || []).includes(xyKey(color, last)) && lns.filter(n => n === last).length > 2 ? last + 1 : last;
+}
+/** The open line of `color` that can be closed into a shape (3 points or more, not closed yet). -> { key, idx } | null */
+export function xyOpenLine(st, color) {
+  const ln = xyNextLn(st, color), key = xyKey(color, ln);
+  const idx = (st.pts || []).map((p, i) => (p && p.color === color && Math.max(0, Math.round(num(p.ln))) === ln ? i : -1)).filter(i => i >= 0);
+  return idx.length > 2 && !(st.shut || []).includes(key) ? { key, idx } : null;
+}
+/** Close the open line of `color` into a shape (Lines turned on with it). -> true when it closed one */
+export function xyClose(st, color) {
+  const L = xyOpenLine(st, color); if (!L) return false;
+  st.shut = [...(st.shut || []).filter(k => k !== L.key), L.key]; st.connect = true;
+  return true;
 }
 /** A point dragged to (x, y) grid values: on the nearest grid point, inside the grid. -> { x, y } */
 export const xySnap = (x, y, lo, hi) => ({ x: clamp(Math.round(num(x)), lo, hi), y: clamp(Math.round(num(y)), lo, hi) });
