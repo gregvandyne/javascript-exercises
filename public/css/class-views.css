@@ -16,8 +16,11 @@
 .cv-bar .hr-tabs{margin:0;flex:none}
 .cv-bar .hr-tabs a[aria-busy="true"]{cursor:progress;opacity:.7}
 .cv-acts{display:none;align-items:center;flex-wrap:nowrap;gap:8px;flex:1 1 auto;min-width:0;
-  /* one row always: on a narrow window the buttons lose their words first; what still does not fit scrolls sideways
-     inside the bar (room for the buttons' shadows), never the page, and the bar never grows a second row */
+  /* every button whole, at every width: under 1024 px the pill takes a row of its own (below); on a narrow window the
+     buttons lose their words first, and public/js/class-views.js fit() measures the buttons on screen and, when they
+     still do not fit (a live class, a longer language), drops more words (cv-icons), then the clock (cv-noclock), then a
+     button the ⋯ menu also has (cv-fold), then gives the pill its own row at any width (cv-two). Nothing is ever cut off or scrolls sideways; the scroll below
+     is only a last guard (room for the buttons' shadows) */
   overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:4px 2px 6px;margin:-4px -2px -6px}
 .cv-acts::-webkit-scrollbar{display:none}
 .cv-acts>:first-child{margin-inline-start:auto}
@@ -46,6 +49,16 @@
 }
 /* live on a laptop: Arrange seats keeps its icon (it is in the ⋯ menu too) so the bar stays one row */
 @media (max-width:1500px){.cv-acts-homeroom.hr-islive [data-hr="seats"] .hr-hidephone{display:none}}
+/* fit() (public/js/class-views.js): the buttons on screen still do not fit. Icons only (every button keeps its name in
+   aria-label, and Arrange seats is in the ⋯ menu too), then no clock (the dashboard's clock widget still shows it) */
+.cv-bar.cv-icons .cv-acts :is(.hr-hidephone,.hr-sparkt,.cv-btnt,.dash-btnt,.dash-date,.cx-name){display:none}
+.cv-bar.cv-icons .cv-acts .btn{padding-inline:10px}
+.cv-bar.cv-noclock .dash-acts .dash-now{display:none}
+/* then a button that is in the ⋯ menu too steps out of the bar (Arrange seats), and the switcher gives the buttons room */
+.cv-bar.cv-fold .cv-acts [data-cv-fold]{display:none}
+.cv-bar.cv-fold .cv-acts{max-width:calc(100% - 96px)}
+.cv-bar.cv-fold .cv-acts .btn{padding-inline:8px}
+.cv-bar.cv-fold .hr-livedot{font-size:0;gap:0;padding-inline:4px}   /* the red dot alone (its word is still read out) */
 
 /* ---- the views */
 .cv-view-homeroom>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
@@ -84,18 +97,33 @@ body.cv-page.dash-projector .topbar,body.cv-page.dash-projector .tabbar,body.cv-
 body.cv-page.dash-projector .cv-projname{display:block;font-size:1.6rem;margin:0 auto 0 8px}
 body.cv-page.dash-projector .dash-acts .dash-now{font-size:2.2rem}
 
-/* ---- phones: the switcher and the view's buttons on one row, the pill under them (the same two rows on every view) */
-@media (max-width:819px){
-  .cv-bar{position:relative;top:auto;flex-wrap:wrap;min-height:119px;padding:8px;gap:6px 8px}
+/* ---- tablets and phones (and cv-two at any width): the switcher and the view's buttons on one row, the pill under
+   them (the same two rows on every view, so the bar keeps its height when the view changes) */
+@media (max-width:1023px){
+  .cv-bar{flex-wrap:wrap;min-height:119px;padding:8px 16px;gap:6px 8px}
   .cv-nav{display:contents}
-  #cv-bar .cv-class{flex:1 1 0;max-width:none}
+  #cv-bar .cv-class{flex:1 1 0;max-width:320px}
   .cv-bar .hr-tabs{order:5;flex:1 1 100%}
   .cv-bar .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
-  .cv-acts{flex:0 1 auto;max-width:70%;gap:6px}
+  .cv-acts{flex:0 1 auto;max-width:75%}
+}
+.cv-bar.cv-two{flex-wrap:wrap;min-height:119px;padding:8px 16px;gap:6px 8px}
+.cv-bar.cv-two .cv-nav{display:contents}
+#cv-bar.cv-two .cv-class{flex:1 1 0;max-width:320px}
+.cv-bar.cv-two .hr-tabs{order:5;flex:1 1 100%}
+.cv-bar.cv-two .hr-tabs a{flex:1;justify-content:center;padding:0 10px}
+.cv-bar.cv-two .cv-acts{flex:0 1 auto;max-width:75%}
+/* phones */
+@media (max-width:819px){
+  .cv-bar{position:relative;top:auto;padding:8px}
+  #cv-bar .cv-class{max-width:none}
+  .cv-acts{max-width:70%;gap:6px}
   .cv-acts .btn{padding-inline:10px}
   .cv-acts .hr-grow{display:none}
   .cv-acts .hr-sparkt,.cv-acts .cv-btnt{display:none}
   .cv-acts .hr-livebtns{display:flex}
   .dash-acts .dash-now{display:none}
 }
+/* the smallest phones: the pill's three words fit (360 px) */
+@media (max-width:400px){.cv-bar .hr-tabs a{padding:0 4px;min-width:0}}
 @media print{.cv-bar{display:none}}

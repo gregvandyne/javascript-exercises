@@ -3,9 +3,9 @@
 // Dashboard -> Homeroom never loads the page again (a value set on window survives, one navigation entry); the address
 // follows, Back and Forward move between views, a reload and a link open the view the address names; Homeroom's zoom
 // and place, Classroom's tab and scroll are kept; a key pressed once acts once, and only in the view on screen; the
-// shared bar is at the same place and height on every view (1366 x 768, 1000 x 600, a phone) with nothing sideways; no
-// errors. A teacher without Homeroom keeps the separate pages. Chromium only (Playwright's WebKit is not installed
-// here). HRVIEWS_SHOTS=<dir> saves screenshots there.
+// shared bar is at the same place and height on every view (1366 x 768, 1000 x 600, a phone) with nothing sideways, and
+// every button in it whole at 390, 820, 1024 and 1366 (a live class too); no errors. A teacher without Homeroom keeps
+// the separate pages. Chromium only (Playwright's WebKit is not installed here). HRVIEWS_SHOTS=<dir> saves screenshots there.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -218,6 +218,56 @@ test('the shared bar: same place and height on every view at 1366 x 768, 1000 x 
     await shot(page, 'midswitch');
     await ctx.close();
   }
+});
+
+// Every control in the shared bar, whole and on screen: none cut off by the bar's button row (or anything else that
+// clips) or by the window, and nothing scrolls inside the row.
+const clippedInBar = page => page.evaluate(() => {
+  const bar = document.getElementById('cv-bar'), out = [];
+  for (const el of bar.querySelectorAll('button, a, select, summary, .dash-now, .hr-livedot')) {
+    const r = el.getBoundingClientRect();
+    if (!r.width || !el.getClientRects().length || getComputedStyle(el).visibility === 'hidden') continue;
+    let l = 0, rt = innerWidth;
+    for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+      if (getComputedStyle(p).overflowX !== 'visible') { const b = p.getBoundingClientRect(); l = Math.max(l, b.left); rt = Math.min(rt, b.right); }
+    }
+    if (r.left < l - 1 || r.right > rt + 1) out.push(`${(el.getAttribute('aria-label') || el.textContent || el.tagName).trim().slice(0, 30)} ${Math.round(r.left)}..${Math.round(r.right)} in ${Math.round(l)}..${Math.round(rt)}`);
+  }
+  for (const a of bar.querySelectorAll('.cv-acts')) if (a.getClientRects().length && a.scrollWidth > a.clientWidth + 1) out.push(`${a.dataset.cvActs} scrolls (${a.scrollWidth} > ${a.clientWidth})`);
+  return out;
+});
+
+test('the shared bar fits at 390, 820, 1024 and 1366 on every view (and live): no button cut off, nothing sideways', { timeout: 180000 }, async t => {
+  if (skip) return t.skip(skip);
+  H.setLive(teacher, cls2, 'start');
+  try {
+    for (const width of [390, 820, 1024, 1366]) {
+      const viewport = { width, height: width < 600 ? 844 : width === 820 ? 1180 : 768 }, touch = width < 1366;
+      const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`, { viewport, touch });
+      await page.waitForSelector('.hr-desk');
+      const bar = await barBox(page);
+      for (const k of ['homeroom', 'classroom', 'dashboard']) {
+        if (k !== 'homeroom') await goView(page, k);
+        if (k === 'dashboard') await page.waitForSelector('#dash-grid .dash-w');
+        await page.waitForTimeout(200);
+        assert.deepEqual(await clippedInBar(page), [], `${width} ${k}: every button whole`);
+        assert.equal(await sideways(page), 0, `${width} ${k}: nothing sideways`);
+        assert.deepEqual(await barBox(page), bar, `${width} ${k}: the bar keeps its place and height`);
+        if (width === 820 || width === 1024) await shot(page, `fit-${width}-${k}`);
+      }
+      assert.deepEqual(errors, [], `${width}`);
+      await ctx.close();
+      // a live class: more buttons in Homeroom's bar (Today, Hands, Pause screens, Bring everyone to me)
+      const live = await open(`/class/${cls2.id}/homeroom`, { viewport, touch });
+      await live.page.waitForSelector('#hr-livebtns .hr-pausebtn');
+      await live.page.waitForTimeout(200);
+      assert.deepEqual(await clippedInBar(live.page), [], `${width} live: every button whole`);
+      assert.equal(await sideways(live.page), 0, `${width} live`);
+      if (width === 820 || width === 1024) await shot(live.page, `fit-${width}-live`);
+      assert.deepEqual(live.errors, [], `${width} live`);
+      await live.ctx.close();
+    }
+  } finally { H.setLive(teacher, cls2, 'end'); }
 });
 
 test('a teacher without Homeroom: the class page and the dashboard as before', { timeout: 60000 }, async t => {

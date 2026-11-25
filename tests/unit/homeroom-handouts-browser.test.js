@@ -4,7 +4,7 @@
 //     with a mouse, a game dragged onto a desk opens the same sheet; a desk's handout opens its sheet with Remove;
 //   - the student's desk on a tablet, a Chromebook (1366 x 768) and a phone: the cards in order, Next up, 🔒 Later on an
 //     In order card that waits (it does not open), the instructions in yellow, no sideways scroll; tapping the card opens
-//     the game with the instructions on top and Back to my desk.
+//     the game in the desk's player layer (public/js/homeroom-player.js) with the instructions on top and Back to my desk.
 // HR_SHOTS=<dir> also saves screenshots there (hr2a-*.png). Skipped with no Chromium.
 import './_setup.js';
 import test from 'node:test';
@@ -186,24 +186,32 @@ test('the student\'s desk: cards in order, Next up, 🔒 Later does not open, in
     await page.locator('.hd-card.locked').first().click({ force: true });   // aria-disabled: Playwright would wait
     await page.locator('.toast', { hasText: 'Finish the ones before it first' }).waitFor();
     assert.match(page.url(), /\/desk$/);
+    assert.equal(await page.locator('.hr-player').count(), 0, `${name}: a waiting card never opens the player`);
     if (name === 'tablet') {
-      // Open the game: the instructions on top, Back to my desk.
+      // Open the game in the desk's player layer (public/js/homeroom-player.js): the desk stays, the address says
+      // which card is open, the instructions on top of the game, Back to my desk.
       await page.locator('.hd-card.next').tap();
-      await page.waitForSelector('.playnote');
-      assert.match(await page.locator('.playnote-t').innerText(), /Do 3 long divisions/);
-      const back = page.locator('.playbar a.iconbtn').first();
-      assert.match(await back.getAttribute('href'), new RegExp(`/class/${cls.id}/desk$`));
-      assert.equal(await back.getAttribute('aria-label'), 'Back to my desk');
-      const stage = await page.locator('#stage').boundingBox(), note = await page.locator('.playnote').boundingBox();
+      await page.waitForSelector('.hr-player iframe');
+      assert.match(page.url(), new RegExp(`/class/${cls.id}/desk#play=`), 'the desk stays, the card in the address');
+      const back = page.locator('.hr-playback');
+      assert.match(await back.innerText(), /Back to my desk/);
+      assert.match(await page.locator('.hr-playframe').getAttribute('src'), /[?&]in=hr(&|$)/);
+      const game = page.frameLocator('.hr-player iframe');
+      await game.locator('.playnote').waitFor();
+      assert.match(await game.locator('.playnote-t').innerText(), /Do 3 long divisions/);
+      assert.equal(await game.locator('.playbar > a.iconbtn').first().isVisible(), false, 'the game page\'s own Back gives way to the layer\'s');
+      const stage = await game.locator('#stage').boundingBox(), note = await game.locator('.playnote').boundingBox();
       assert.ok(stage.y >= note.y + note.height - 1, 'the game starts under the instructions');
       await shot(page, 'game-instructions-tablet');
-      await page.locator('.playnote summary').tap(); await page.waitForTimeout(200);
+      await game.locator('.playnote summary').tap(); await page.waitForTimeout(200);
       await shot(page, 'game-instructions-open-tablet');
-      // Finish it: the next card opens, the done card fades with a check.
+      // Finish it: Back to my desk, the cards are asked for again: the next card opens, the done card fades with a check.
       const cl = HO.deskView(cls, dev)[0], step = L.steps(L.getClassLesson(cl.id).lesson_id)[0];
       const P = await import('../../server/services/progress.js');
       assert.ok(P.gameScore(dev, cl.id, step.id, 5).ok);
-      await back.click();
+      await back.tap();
+      await page.waitForSelector('.hr-player', { state: 'detached' });
+      assert.match(page.url(), new RegExp(`/class/${cls.id}/desk$`));
       await page.waitForSelector('.hd-card.done');
       assert.equal(await page.locator('.hd-card.next .hd-ct').innerText(), 'Crossword');
       assert.equal(await page.locator('.hd-card.locked').count(), 1);
