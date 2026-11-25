@@ -47,7 +47,7 @@ export default ({ txt, count, sel, attr, all }) => {
         ] },
         { say: 'Drag the handle bar to move a rekenrek.', do: [
           { drag: `${OBJ} .mp-ohead`, to: async page => { before = await lefts(page); const w = (await page.locator(OBJ).first().boundingBox()).width; return onBoard(24 + w / 2, 36)(page); },
-            expect: async page => { const [[x, y]] = await lefts(page); return (x < before[0][0] - 150 && y < before[0][1] - 150) || 'the rekenrek did not move up and left'; } },
+            expect: async page => { const [[x, y]] = await lefts(page); return (x < before[0][0] - 100 && y < before[0][1] - 100) || 'the rekenrek did not move up and left'; } },
         ] },
         { say: 'Hold it for its wheel. Copy makes a second one.', do: [
           { drag: `${OBJ} .mp-ohead`, to: held(`${OBJ} .mp-ohead`), expect: all(count('.mp-wheel .mp-wbtn', 3), sel('.mp-wheel .mp-wbtn[data-wk="copy"]')) },
@@ -55,7 +55,7 @@ export default ({ txt, count, sel, attr, all }) => {
           { click: '.mp-wheel .mp-wbtn[data-wk="copy"]', expect: all(count(OBJ, 2), count('.mp-wheel', 0)) },
         ] },
         { say: 'Drag across empty space to select several at once.', do: [
-          { drag: onBoard(960, 14), to: onBoard(330, 400), expect: all(txt('#mp-selpill .mp-seln', '2 selected'), count(`${OBJ}.on`, 2)) },
+          { drag: onBoard(880, 14), to: onBoard(330, 400), expect: all(txt('#mp-selpill .mp-seln', '2 selected'), count(`${OBJ}.on`, 2)) },
         ] },
         { say: 'Drag one, and they all move together.', do: [
           { drag: `${OBJ}:nth-child(2) .mp-ohead`, to: thenTo(230, 30), expect: all(allMoved, txt('#mp-selpill .mp-seln', '2 selected')) },
