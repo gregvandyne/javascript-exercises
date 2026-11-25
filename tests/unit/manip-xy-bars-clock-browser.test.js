@@ -58,7 +58,7 @@ async function mdrag(page, [x0, y0], [x1, y1], steps = 12) {
   for (let i = 1; i <= steps; i++) { await page.mouse.move(x0 + ((x1 - x0) * i) / steps, y0 + ((y1 - y0) * i) / steps); await page.waitForTimeout(12); }
   await page.mouse.up(); await page.waitForTimeout(200);
 }
-const undo = async page => { await page.click('[data-tool="undo"]'); await page.waitForTimeout(150); };
+const undo = async page => { await page.$eval('[data-tool="undo"]', b => b.click()); await page.waitForTimeout(150); };
 
 // ---------------------------------------------------------------- the coordinate grid
 const GRID = '#mp-content svg.mp-grid';
@@ -157,7 +157,8 @@ test('bar models: a part\'s number takes a typed size (clamped; - and + still st
   assert.deepEqual(await parts(page), ['Dogs=15,Cats=999', 'Blue=3'], 'at most 999');
   await undo(page); await undo(page);
   assert.deepEqual(await parts(page), ['Dogs=15,Cats=9', 'Blue=3'], 'Undo takes each typed size back');
-  await page.click(`${BAR} [data-act="seg"][data-bar="0"][data-seg="1"][data-d="1"]`); await page.waitForTimeout(150);
+  // (A click in the page, not at a spot: the Undo button may have scrolled the bar under the site's sticky header.)
+  await page.$eval(`${BAR} [data-act="seg"][data-bar="0"][data-seg="1"][data-d="1"]`, b => b.click()); await page.waitForTimeout(150);
   assert.deepEqual(await parts(page), ['Dogs=15,Cats=10', 'Blue=3'], '+ still steps it');
   await page.fill(`${BAR} .mp-seglabel[data-bar="0"][data-seg="1"]`, '?'); await page.waitForTimeout(100);
   await page.locator(`${BAR} .mp-seglabel[data-bar="0"][data-seg="1"]`).blur();
