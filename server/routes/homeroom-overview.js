@@ -16,7 +16,7 @@ import * as GC from '../services/gclassroom.js';
 import { studentHref } from './student-report.js';
 
 const GRADE_ICON = { score: '🎯', completion: '✅', none: '🌱' };
-const KIND_ICON = { lesson: '📄', game: '🎮', mine: '🛠️' };
+const KIND_ICON = { lesson: '📄', game: '🎮', mine: '🛠️', reading: '📖' };
 
 /** The Google Classroom status line (school staff while Classroom is on): linked course, roster last synced, grades last
  *  sent, and the class's Google Classroom page. '' when Classroom is off for this teacher. */
@@ -58,7 +58,7 @@ export function classroomOverview(req, c) {
   const table = ov.columns.length && ov.students.length ? html`<div class="hv-wrap" tabindex="0" role="region" aria-label="${t('homeroom.overview.tableLabel')}"><table class="hv-table" id="hv-table">
     <thead><tr><th scope="col" class="hv-name">${t('homeroom.overview.student')}</th>${ov.columns.map(head)}<th scope="col" class="hv-trendh">${t('homeroom.overview.trend')}</th></tr></thead>
     <tbody>${ov.students.map(p => html`<tr><th scope="row" class="hv-name"><a href="${studentHref(c, p)}" dir="auto">${p.name}</a></th>
-      ${p.cells.map(x => html`<td>${cellHtml(t, x)}</td>`)}
+      ${p.cells.map(x => html`<td>${cellHtml(t, x)}${x.quiz ? html` <span class="hv-quiz small muted" dir="ltr">${t('homeroom.overview.quiz', { right: x.quiz.right, total: x.quiz.total })}</span>` : ''}</td>`)}
       <td class="hv-trend${p.trend ? ` ${p.trend}` : ''}">${p.trend ? html`<span aria-hidden="true">${TREND[p.trend][0]}</span> ${t(`homeroom.overview.trends.${TREND[p.trend][1]}`)}` : html`<span class="muted">${t('homeroom.overview.trends.none')}</span>`}</td></tr>`)}</tbody></table></div>`
     : html`<p class="muted hv-empty">${ov.students.length ? t('homeroom.overview.noHandouts', { weeks: ov.weeks }) : t('progress.gradebook.noStudents')}</p>`;
   return html`<section class="panel hv" id="hr-overview" aria-labelledby="hv-h">

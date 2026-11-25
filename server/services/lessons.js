@@ -573,6 +573,21 @@ export function lessonNote(u, cl) {
   for (const fn of notes) { const r = fn(u, cl); if (r) return r; }
   return null;
 }
+// A 'story' class lesson that a feature runs itself (Homeroom's Reading handouts: the desk's reading routine, Read, Quiz
+// and 3 notes). The lesson page asks where a student opening it should go (fn(u, cl) -> an address | null), and the
+// lesson's results page asks for its own page (fn(req, res, c, cl) -> true when it answered); null / false keeps the
+// Story Library's own.
+const storyOpens = [], storyPages = [];
+export const onStoryOpen = fn => { if (!storyOpens.includes(fn)) storyOpens.push(fn); };
+export function storyOpen(u, cl) {
+  for (const fn of storyOpens) { const r = fn(u, cl); if (r) return r; }
+  return null;
+}
+export const onStoryResults = fn => { if (!storyPages.includes(fn)) storyPages.push(fn); };
+export function storyResults(req, res, c, cl) {
+  for (const fn of storyPages) if (fn(req, res, c, cl)) return true;
+  return false;
+}
 // A school account merged into the student's own one (schools.mergeIntoAccount): their place on lists moves with them.
 S.onAccountMerge(({ from, into }) => {
   q.run('UPDATE OR IGNORE class_lesson_students SET user_id=? WHERE user_id=?', into, from);

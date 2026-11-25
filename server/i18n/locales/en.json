@@ -2289,7 +2289,9 @@
         "version": "Version: {name}",
         "gcAlso": "Also post to Google Classroom",
         "gcHint": "It goes to your linked Classroom class as an assignment, with the grade you chose here.",
-        "gcWholeOnly": "Only Whole class handouts go to Google Classroom: there it would reach the whole class."
+        "gcWholeOnly": "Only Whole class handouts go to Google Classroom: there it would reach the whole class.",
+        "rdScoreHint": "The quiz's % right, first try.",
+        "rdCompletionHint": "100% when they finish Read, Quiz and 3 notes."
       },
       "team": {
         "label": "Team desk",
@@ -2330,6 +2332,24 @@
         "simpler": "Simpler wording",
         "supports": "Supports",
         "deskMenu": "{name}: supports and desk"
+      },
+      "rd": {
+        "readingPage": "Reading p. {page}",
+        "notStarted": "Not started",
+        "choose": "Picking a book",
+        "quiz": "Quiz",
+        "notes": "Notes",
+        "done": "Done",
+        "notMine": "Reading goes on students' desks. Tap a desk, a group or Whole class.",
+        "eyebrow": "Reading · Read, Quiz, 3 notes",
+        "leadAny": "Each student picks a Story Library book, reads it, answers a short quiz and writes 3 notes in their notebook.",
+        "leadBook": "Students read this book, answer a short quiz and write 3 notes in their notebook.",
+        "chooseTitle": "Choose a book",
+        "chooseLead": "Books for your class's grade come first. Pick one, then tap a desk, a group or Whole class.",
+        "pickLabel": "Hand out {title}",
+        "noBook": "No book picked yet",
+        "quizScore": "Quiz {right} of {total}",
+        "readNotes": "Read their 3 notes"
       }
     },
     "stories": {
@@ -5455,7 +5475,21 @@
       "playBack": "Back to my desk",
       "myTime": "Your time",
       "notes": "Notes",
-      "notesLabel": "My notes for {title}"
+      "notesLabel": "My notes for {title}",
+      "rd": {
+        "read": "Read",
+        "quiz": "Quiz",
+        "notes": "3 notes",
+        "readTitle": "Read: {title}",
+        "page": "Page {page} of {pages}",
+        "at": {
+          "choose": "pick a book",
+          "read": "read it",
+          "quiz": "quiz next",
+          "notes": "notes next",
+          "done": "done"
+        }
+      }
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5719,6 +5753,16 @@
           "comingOn": "{name} sees that you’re coming over",
           "comingOff": "Note taken off {name}’s desk"
         }
+      },
+      "readingBook": "Reading {title}",
+      "readingPage": "p. {page}",
+      "rd": {
+        "done": "Done",
+        "notStarted": "Not started",
+        "choose": "Picking a book",
+        "quiz": "Quiz",
+        "notes": "Notes",
+        "score": "{right} of {total}"
       }
     },
     "homeroom-plan": {
@@ -5981,6 +6025,63 @@
         }
       },
       "untilEnd": "This link works until the end of the school day."
+    },
+    "homeroom-reading": {
+      "grades": "Grades",
+      "search": "Search the books",
+      "searchPh": "Search books",
+      "loading": "Loading books...",
+      "allGrades": "All grades",
+      "gradek": "Kindergarten",
+      "grade1": "Grade 1",
+      "grade2": "Grade 2",
+      "grade3": "Grade 3",
+      "grade45": "Grades 4-5",
+      "found": "{count, plural, one {# book} other {# books}}",
+      "pagesN": "{count, plural, one {# page} other {# pages}}",
+      "none": "No books found. Try another grade or word.",
+      "backToDesk": "Back to my desk",
+      "library": "Library",
+      "libraryLead": "Pick any book to read. Read to me can read it with you.",
+      "readBook": "Read {title}",
+      "moreBooks": "More books",
+      "steps": "Steps",
+      "step": {
+        "read": "Read",
+        "quiz": "Quiz",
+        "notes": "3 notes"
+      },
+      "teacherSays": "Teacher:",
+      "chooseTitle": "Pick your book",
+      "chooseLead": "Choose a book you want to read.",
+      "pickBook": "Pick {title}",
+      "otherBook": "Pick another book",
+      "quizLoading": "Getting your quiz ready...",
+      "quizTitle": "Quiz",
+      "quizLead": "{count, plural, one {# question} other {# questions}} about the book. Tap the answer you think is right.",
+      "right": "Right!",
+      "tryAgainPage": "Try again. Look at page {page}.",
+      "tryAgain": "Try again.",
+      "lookAt": "Look at page {page}",
+      "quizDone": "Quiz done: {right} of {total} right the first time.",
+      "backToQuiz": "Back to the quiz",
+      "notes": {
+        "happened": "Something that happened",
+        "happenedHint": "What happened in the book?",
+        "word": "A new word",
+        "wordHint": "A word you learned, and what it means.",
+        "think": "What I think",
+        "thinkHint": "What did you think of the book?"
+      },
+      "notesTitle": "3 notes",
+      "notesLead": "Write 3 short notes about {title}. They go in your notebook.",
+      "saveNotes": "Save to my notebook",
+      "notesPrivacy": "Your teacher can read your notebook.",
+      "noteEmpty": "Write all 3 notes first.",
+      "doneTitle": "All done!",
+      "doneLead": "You read {title}, did the quiz and wrote 3 notes.",
+      "openNotes": "See my notes",
+      "myDesk": "My desk"
     }
   },
   "favorites": {
@@ -16232,7 +16333,9 @@
       "timer": "Timer",
       "board": "Board tools",
       "handOutHint": "Tap a game, then a desk, a group or Whole class. Or drag it there.",
-      "comingNext": "Coming next"
+      "comingNext": "Coming next",
+      "readAny": "Read any book",
+      "chooseBook": "Choose a book"
     },
     "errors": {
       "badStage": "That can't go on your desk.",
@@ -16304,7 +16407,8 @@
       "badTime": "That end time doesn't look right.",
       "endsBefore": "That end time has already passed. Pick a later one, or leave it empty for the end of the day.",
       "badPin": "A PIN is 4 to 8 numbers, or leave it empty.",
-      "tooManyLinks": "This class has 5 sub links open. Revoke one first."
+      "tooManyLinks": "This class has 5 sub links open. Revoke one first.",
+      "pickBook": "Pick a book from the Story Library."
     },
     "live": "Live",
     "desk": {
@@ -16453,7 +16557,8 @@
       "kind": {
         "lesson": "Lesson",
         "game": "Game",
-        "mine": "My game"
+        "mine": "My game",
+        "reading": "Reading"
       },
       "versions": "{count, plural, one {# version} other {# versions}}",
       "gradedBy": {
@@ -16496,7 +16601,8 @@
       "gcOpen": "Open settings",
       "gcNotLinked": "Not linked yet.",
       "gcLink": "Link a Classroom class",
-      "gradeSaved": "Grading changed"
+      "gradeSaved": "Grading changed",
+      "quiz": "Quiz {right}/{total}"
     },
     "helpers": {
       "forbiddenTitle": "Only the class's teacher can open this",
@@ -16544,6 +16650,48 @@
       "chip": "Sub",
       "projector": "Projector view",
       "leave": "Leave"
+    },
+    "reading": {
+      "anyTitle": "Read a book",
+      "quizNext": "Next: a short quiz, then 3 notes.",
+      "toQuiz": "Go to the quiz",
+      "notes": {
+        "happened": "Something that happened",
+        "word": "A new word",
+        "think": "What I think"
+      },
+      "step": {
+        "readingPage": "Reading p. {page} of {pages}",
+        "notStarted": "Not started",
+        "choose": "Picking a book",
+        "quiz": "Quiz",
+        "notes": "Notes",
+        "done": "Done"
+      },
+      "results": {
+        "summary": "{started} started · {done} done · {total} in all",
+        "lead": "Read, Quiz, 3 notes. Students in alphabetical order, never ranked. The quiz shows how many were right the first time.",
+        "book": "Book",
+        "step": "Step",
+        "quiz": "Quiz (first try)",
+        "noBook": "Not picked yet",
+        "notes": "Their 3 notes are a page in their notebook. Open it from their desk's menu in Homeroom (Notebook)."
+      },
+      "errors": {
+        "notFound": "That reading isn't on your desk.",
+        "later": "Finish the ones before it on your desk first.",
+        "pickBook": "Pick a book first.",
+        "bookSet": "Your teacher picked this book.",
+        "quizStarted": "You started the quiz on your book, so it stays.",
+        "readFirst": "Read the book to the end first.",
+        "noQuiz": "The quiz isn't ready. Try again in a moment.",
+        "quizFirst": "Finish the quiz first.",
+        "notesSaved": "Your notes are saved in your notebook.",
+        "noteEmpty": "Write all 3 notes first.",
+        "noteLong": "That note is too long. Make it shorter.",
+        "noNotebook": "Your notebook isn't open to you here.",
+        "badRequest": "Something was not right. Try again."
+      }
     }
   }
 }

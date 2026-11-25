@@ -1516,6 +1516,23 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_notebook_pages_user ON notebook_pages(user_id);
     CREATE INDEX IF NOT EXISTS idx_notebook_pages_tab ON notebook_pages(tab_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_notebook_pages_class ON notebook_pages(class_id) WHERE class_id IS NOT NULL;`],
+  // Homeroom: reading from the desk (docs/decisions.md "Homeroom: reading from the desk"; services/homeroom-reading.js,
+  // services/reading-quiz.js). A Reading handout is a 'story' class lesson (its one 'story' step names the book, or ''
+  // for the student's own choice). homeroom_reading: one row per Reading handout and student, the routine's steps: the
+  // book they read (their pick for a free choice), the furthest page, Read to me used, the quiz (which questions:
+  // quiz_src 'library' | 'ai' | 'retell'; first-try marks and solved, one character per question), the notebook page
+  // their 3 notes went to, and when each step was finished. Gone with the class lesson, the class, the school, the
+  // student leaving the class or their account. reading_quizzes: a short comprehension quiz the AI wrote from a book's
+  // own words, for a book without one, cached per book (never anything about a student).
+  ['0134_homeroom_reading', `
+    CREATE TABLE IF NOT EXISTS homeroom_reading (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL, book_id TEXT NOT NULL DEFAULT '',
+      page INTEGER NOT NULL DEFAULT 0, pages INTEGER NOT NULL DEFAULT 0, aloud INTEGER NOT NULL DEFAULT 0, read_at INTEGER,
+      quiz_src TEXT NOT NULL DEFAULT '', marks TEXT NOT NULL DEFAULT '', solved TEXT NOT NULL DEFAULT '', quiz_at INTEGER,
+      page_id TEXT, notes_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (class_lesson_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_reading_class ON homeroom_reading(class_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_reading_user ON homeroom_reading(user_id);
+    CREATE TABLE IF NOT EXISTS reading_quizzes (book_id TEXT PRIMARY KEY, source TEXT NOT NULL, items TEXT NOT NULL, created_at INTEGER NOT NULL);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

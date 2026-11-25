@@ -25,6 +25,9 @@
 //     longer clock for the plan's part on now ("Your time"). Shown as tools, never a label; See the room shows nobody's.
 //   - step 4a, the notebook (public/js/notebook.js; docs/decisions.md "Homeroom: the notebook"): Notebook, the dock's last
 //     button, and Notes under each handout card (its page in this class's tab of the notebook, named after it).
+//   - step 4b, reading (public/js/homeroom-reading.js; docs/decisions.md "Homeroom: reading from the desk"): the dock's
+//     Library opens the Story Library in a layer on the desk (any book, read with the library's reader; the board sees
+//     "Reading <book>" while class is live), and a Reading handout's card opens its routine there: Read, Quiz, 3 notes.
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -38,6 +41,7 @@ import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
 import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
 import { clock as planClock } from '/js/homeroom-plan-time.js';
+import { readingLayer } from '/js/homeroom-reading.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -84,6 +88,21 @@ function renderDesk() {
 
 // ---------------------------------------------------------------- handouts (step 2a)
 const dayFmt = due => { try { return new Date(due).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }); } catch { return ''; } };
+/** A Reading handout's card: the book's cover (once there is one), "Read: <book>" or "Read a book", and the routine's
+ *  steps with the one they are on. */
+function readCardHtml(x, cls, badge, label) {
+  const rd = x.reading || {}, bk = rd.book;
+  const at = rd.step === 'done' || x.done ? 3 : Math.max(0, ['read', 'quiz', 'notes'].indexOf(rd.step === 'choose' ? 'read' : rd.step));
+  const steps = `<span class="hd-csteps" aria-hidden="true">${['read', 'quiz', 'notes'].map((k, i) => `<i class="${i < at ? 'done' : i === at ? 'on' : ''}">${i < at ? '✓ ' : ''}${esc(td(`rd.${k}`))}</i>`).join('')}</span>`;
+  const title = bk ? td('rd.readTitle', { title: bk.title }) : x.title;
+  const where = rd.step === 'read' && rd.page ? td('rd.page', { page: rd.page, pages: rd.pages }) : '';
+  const sub = [where, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
+  const inner = `${badge}${bk ? `<img class="hd-ccover" src="${esc(bk.cover)}" alt="" width="52" height="40" loading="lazy">` : `<span class="hd-cico" aria-hidden="true">${iconHtml('📖', { size: 26 })}</span>`}<b class="hd-ct" dir="auto">${esc(title)}</b>${steps}${sub ? `<span class="hd-csub">${esc(sub)}</span>` : ''}
+    ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
+  const lab = `${title}, ${td(`rd.at.${x.done ? 'done' : rd.step || 'read'}`)}${label}`;
+  return x.locked ? `<div class="${cls} hd-rdcard" role="group" aria-label="${esc(lab)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
+    : `<a class="${cls} hd-rdcard" href="${esc(x.href)}" aria-label="${esc(lab)}" data-hdcard="${esc(x.id)}" data-hdread="1">${inner}</a>`;
+}
 function cardHtml(x) {
   const cls = `hd-card${x.next ? ' next' : ''}${x.locked ? ' locked' : ''}${x.done ? ' done' : ''}${x.ready ? '' : ' notready'}`;
   const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
@@ -94,7 +113,7 @@ function cardHtml(x) {
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
   const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
-  const card = x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
+  const card = x.reading ? readCardHtml(x, cls, badge, x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : '') : x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
   // Read aloud (step 3c): the card's title and the teacher's words, from a button beside the card (never inside its link)
   const read = S.sup && S.sup.read && !x.done ? readBtn([title, x.instructions].filter(Boolean).join('. ')) : '';
@@ -263,7 +282,7 @@ function applyState(st) {
   // The day plan's Now / Next (part names only, no clock: docs/decisions.md "Homeroom: the day plan"); with extra time
   // (step 3c) their own longer clock for the part on now.
   if ('plan' in st) { S.plan = st.plan || null; S.planSkew = S.plan ? Date.now() - S.plan.now : 0; renderNow(); }
-  if ('support' in st && JSON.stringify(st.support || null) !== JSON.stringify(S.sup)) { S.sup = st.support || null; applySup(); renderCards(); }
+  if ('support' in st && JSON.stringify(st.support || null) !== JSON.stringify(S.sup)) { S.sup = st.support || null; applySup(); renderCards(); RL.restyle(); }
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
   if (areaChanged || was !== JSON.stringify([S.live, S.me && S.me.locked])) renderOver();
@@ -397,6 +416,8 @@ async function switchUser(b) {
 function click(e) {
   // A handout plays inside the desk (public/js/homeroom-player.js); a click for a new tab opens the game page.
   const play = e.target.closest('a.hd-card[data-hdcard]');
+  // a Reading handout opens its routine in the reading layer (public/js/homeroom-reading.js)
+  if (play && play.dataset.hdread) { e.preventDefault(); RL.openRoutine(play.dataset.hdcard); return; }
   if (play && !(e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) && PL.open(play.dataset.hdcard)) { e.preventDefault(); return; }
   const card = e.target.closest('.hd-card[aria-disabled="true"]');
   if (card) { const x = S.cards.find(c => c.id === card.dataset.hdcard); toast(x && x.locked ? td('laterHint') : td('notReadyHint')); return; }
@@ -411,8 +432,10 @@ function click(e) {
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
+  else if (k === 'library') { if (PL.current()) PL.close(); if (S.view !== 'desk') { S.view = 'desk'; renderOver(); } RL.openLibrary(); }
   else if (k === 'desk' || k === 'area' || k === 'room') {
     if (k === 'desk' && PL.current()) PL.close();
+    if (RL.current()) RL.close();
     S.view = k === S.view && k !== 'desk' ? 'desk' : k; renderOver();
     if (S.view === 'desk') root.querySelector('.hd-dockbtn[data-hd="desk"]')?.focus();
     else over.querySelector('.hd-back')?.focus();
@@ -420,6 +443,15 @@ function click(e) {
 }
 // A handout played inside the desk: the desk's own pulse rests while the game page in the layer pulses for it (one
 // pulse, where: game); closing asks for the cards again, so the card shows its progress.
+// Reading in the desk (step 4b): the Library and a Reading handout's routine. The desk's own pulse goes on and says what
+// is being read (where: reading, the book and page); closing asks for the cards again.
+const RL = readingLayer({
+  host: root, classId: D.classId, path: `/class/${encodeURIComponent(D.classId)}/desk`, grade: D.libraryGrade || null, sup: () => S.sup,
+  onOpen: () => { root.classList.add('hd-playing'); setDock('library'); },
+  onClose: () => { root.classList.remove('hd-playing'); setDock(S.view); S.hv = ''; poll(); },
+  onChange: () => { S.hv = ''; poll(); },
+});
+function setDock(k) { for (const b of root.querySelectorAll('.hd-dockbtn[data-hd]')) b.setAttribute('aria-pressed', String(b.dataset.hd === k)); }
 const PL = gamePlayer({
   host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
   find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
@@ -437,7 +469,7 @@ function start() {
     if (e.key === 'Escape' && S.handMenu) { S.handMenu = false; renderHand(); root.querySelector('[data-hd="hand"]')?.focus(); return; }
     if (e.key === 'Escape' && S.view !== 'desk') { S.view = 'desk'; renderOver(); }
   });
-  PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
+  PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', extra: () => RL.pulse(), deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
     onAnswer: r => liveDesk({ live: r.live, me: r.me, mates: r.mates }) });
   PULSE.setLive(S.live, S.me);
   setInterval(() => { tick(); if (S.plan && S.plan.mine) renderNow(); }, 1000);
@@ -450,5 +482,6 @@ function start() {
   window.addEventListener('pagehide', flush);
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
   PL.sync();   // a handout the address names (#play=<card>): open it again
+  RL.sync();   // the Library or a Reading handout the address names (#library, #read=<card>)
 }
 if (root && body) start();

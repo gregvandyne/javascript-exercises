@@ -104,6 +104,21 @@ tab, named after it. "Your teacher can read your notebook" at the top. The class
 (Notebook), read only; aides and subs never. No AI reads it. Each tab keeps its kind so parents can later see the class
 tabs only.
 
+Built (docs/decisions.md "Homeroom: reading from the desk"): the dock's **Library** opens the Story Library in a layer on
+the desk (the class's grade first, every grade and a search a tap away); a book reads in the library's own reader, Read to
+me and all, and while class is live the teacher's board says "Reading <book>" with the page. The left panel's
+**Reading** hands out Reading like any handout: **Read any book** (their own choice) or **Choose a book** (a book
+picker, the class's grade first), with instructions, order, a due day, to a desk, a group, a team or Whole class, graded
+by Completion (the whole routine) by default, or Score (the quiz's first try). On the desk its card shows the cover and
+the steps, **Read, Quiz, 3 notes**: the book in the reader; the book's own questions (or, for a book without them, a
+short quiz the AI wrote once from the book's words, checked and cached; simple questions about the book when the AI is
+off), a wrong answer opening its page; then three short notes (Something that happened, A new word, What I think) saved
+as one page of their notebook in the class's tab, titled with the book. Bigger text and Read aloud reach the reader, the
+quiz and the notes. The teacher sees the cover and the step on each desk (Reading p. 12, Quiz, Notes, Done), each
+student's step and quiz in Today (alphabetical), a Reading column in the Classroom view (completion and the quiz), the
+results page, and the 3 notes from the desk's sheet (the notebook, read only). Results go to Progress and Google
+Classroom by the grade chosen.
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their

@@ -13,7 +13,7 @@
 .hv-gc b{display:inline-flex;align-items:center;gap:4px}
 .hv-gc.off{background:var(--card-2)}
 .hv-gc a{color:var(--link);font-weight:800}
-.hv-wrap{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:12px}
+.hv-wrap{position:relative;overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch;border-radius:12px}
 .hv-wrap:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .hv-table{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
 .hv-table th,.hv-table td{padding:8px;text-align:start;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle}
@@ -53,3 +53,4 @@ tbody .hv-name{position:sticky;inset-inline-start:0;background:var(--card);z-ind
   .hv-sum b{font-size:20px}
   .hv-gc{border-radius:14px}
 }
+.hv-quiz{white-space:nowrap}
