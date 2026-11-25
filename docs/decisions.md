@@ -14427,6 +14427,11 @@ everyone else keeps the class page and its tiles exactly as before ("Action tile
   the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
   its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
 - With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.
+- **Phones, later the same day** (owner): the class tabs (Games, Progress, Students, Settings) share the width evenly
+  (a column each, however many there are) with larger icons (30 px) over the label. The Connections chip is left out of
+  Classroom's bar under 640 px, and the Google Classroom button moved up from the foot of the Games tab to a
+  full-width button under Build new game and Find Oomba games (`.classquick-gc`; the foot copy is hidden there, so
+  there is one). Wider screens are unchanged.
 
 ## Homeroom: the notebook (25 Nov 2026)
 
