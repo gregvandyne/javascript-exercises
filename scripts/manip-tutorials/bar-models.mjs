@@ -27,10 +27,11 @@ export default h => {
       steps: [
         { say: 'Pick a layout from the palette, like Part-part-whole.', do: [
           { click: '#mp-palette [aria-label="Part-part-whole"]', expect: all(count(`${BAR} .mp-bar`, 1), parts([['Part', '4'], ['Part', '4']]), whole(8)) },
+          { wait: 800 },
         ] },
         { say: 'Today’s task: a class has 24 pets, and 15 are dogs.', do: [
           { move: near(`${BAR} .mp-barname`, 120, 0) },
-          { wait: 1200 },
+          { wait: 1800 },
         ] },
         { say: 'Type in a part to give it a name.', do: [
           { type: label(0, 0), text: 'Dogs', expect: parts([['Dogs', '4'], ['Part', '4']]) },
@@ -46,7 +47,7 @@ export default h => {
         ] },
         { say: '15 dogs and 9 cats make 24 pets.', poster: true, do: [
           { move: near(`${BAR} .mp-barname`, 140, 0) },
-          { wait: 1600 },
+          { wait: 2600 },
         ] },
         { say: 'Add a part from the palette.', do: [
           { click: '#mp-palette [aria-label="Add a part"]', expect: all(parts([['Dogs', '15'], ['Cats', '9'], ['Part', '1']]), whole(25)) },
@@ -55,14 +56,16 @@ export default h => {
           { click: corner(`${BAR} .mp-seg[data-seg="2"]`), expect: all(count(`${BAR} .mp-seg.on`, 1), txt(`${BAR} .mp-segdel`, '🗑 Delete Part')) },
           { wait: 400 },
           { click: `${BAR} .mp-segdel`, expect: all(parts([['Dogs', '15'], ['Cats', '9']]), count(`${BAR} .mp-segdel`, 0), whole(24)) },
+          { move: near(`${BAR} .mp-barname`, 140, 0) },
+          { wait: 1000 },
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { scroll: TASK, center: true },
           { spot: TASK, expect: txt('#mp-tasks .mp-task:has-text("Part-part-whole: pets") p.muted', /^Teacher note: Drawing the bar before computing/) },
           { move: page => TASK(page).locator('p').nth(1) },
-          { wait: 900 },
+          { wait: 1200 },
           { move: page => TASK(page).locator('p.muted') },
-          { wait: 1800 },
+          { wait: 2200 },
         ] },
       ],
     },

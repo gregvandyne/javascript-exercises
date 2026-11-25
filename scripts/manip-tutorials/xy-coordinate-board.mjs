@@ -27,7 +27,7 @@ export default ({ txt, count, attr, beside, all }) => {
       steps: [
         { say: 'Today’s task: plot (3, 4), (6, 2) and (6, 7), then connect them.', do: [
           { move: beside('#mp-content .mp-xytable', -60) },
-          { wait: 900 },
+          { wait: 1500 },
         ] },
         { say: 'First set Quadrants to First quadrant. It starts empty.', do: [
           { type: '#mp-settings select[data-set="four"]', text: 'First', enter: true,
@@ -48,11 +48,12 @@ export default ({ txt, count, attr, beside, all }) => {
         ] },
         { say: 'Three sides and three corners: the treasure is a triangle.', poster: true, do: [
           { move: beside('#mp-content .mp-xyshut', 16) },
-          { wait: 1800 },
+          { wait: 2600 },
         ] },
         { say: 'Undo opens it again. Close the shape in the palette closes it.', do: [
           { click: '[data-tool="undo"]', expect: shapes(0) },
           { click: '#mp-palette [aria-label="Close the red shape"]', expect: shapes(1) },
+          { scroll: GRID },
         ] },
         { say: 'The next tap starts a new line, in any color.', do: [
           { click: '#mp-palette [aria-label="Blue points"]', expect: attr('#mp-palette [aria-label="Blue points"]', 'aria-pressed', 'true') },

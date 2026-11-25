@@ -38,7 +38,7 @@ export default ({ txt, count, attr, sel, beside, all }) => {
         { say: 'At 10:30 the hour hand is halfway between 10 and 11.', do: [
           { drag: dial(1, 78), to: dial(6, 78), expect: all(shows('10:30'), hourAt(10.5)) },
           { move: beside(FACE, 30) },
-          { wait: 1200 },
+          { wait: 1800 },
         ] },
         { say: 'Today’s task: from 10:30, add 15 minutes four times.', do: [
           { click: pal('Start the tracker here'), expect: elapsed('Start 10:30 · Elapsed 0 h 0 min') },
@@ -49,12 +49,12 @@ export default ({ txt, count, attr, sel, beside, all }) => {
           { move: beside(FACE, 30) },
         ] },
         { say: 'Four 15s make an hour: a light ring and +1 h.', poster: true, do: [
-          { wait: 1800 },
+          { wait: 2600 },
         ] },
         { say: 'Totals off hides the digital time, so students read the face.', do: [
           { click: '#mp-settings [data-view="totals"]', expect: all(txt('#mp-settings [data-view="totals"]', 'Totals: off'), count('#mp-content .mp-hm', 0), count('#mp-content .mp-elapsed b', 0)) },
           { move: beside(FACE, 30) },
-          { wait: 1200 },
+          { wait: 1800 },
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 16) },
