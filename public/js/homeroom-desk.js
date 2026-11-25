@@ -16,6 +16,10 @@
 //   - step 2c: a team desk (students who share one desk): "Team: names" on the desk, one shared pad any member draws on
 //     (the poll brings a teammate's strokes; a save that crossed one adds this desk's new strokes to theirs), the team
 //     desk once in See the room; and the teacher's comment and sticker on a finished card (only this student's own).
+//   - step 3a, live class: the big yellow Raise hand (I have a question, I need help, Bathroom through the hall pass:
+//     "You're next", "Go ahead" with the pass timer, I'm back; tap again to put it down), the desk's lock ("Your teacher
+//     locked your desk for a moment"), "Your teacher is coming over", a team pad's teammates' cursors, and the pulse
+//     (public/js/homeroom-pulse.js) that tells the teacher's board what this desk is doing (never keys or words).
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -24,6 +28,7 @@ import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { startPulse } from '/js/homeroom-pulse.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -37,6 +42,9 @@ const S = {
   // a team's shared pad (step 2c): the version last saved or seen, and strokes drawn here since then (added to a
   // teammate's newer pad when a save crosses theirs)
   team: D.team || null, pv: D.pv ?? null, fresh: [], saving: false,
+  // step 3a: this desk's own live desk (hand, hall pass, lock, "coming over"), the teammates' cursors on the pad, the
+  // hand menu, and the server's clock (the pass timer counts from it)
+  me: null, mates: [], handMenu: false, handBusy: false, skew: 0,
 };
 const root = $('hd'), body = $('hd-body'), over = $('hd-over');
 
@@ -53,7 +61,7 @@ function renderDesk() {
           <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${S.pen === c ? ' on' : ''}`, `role="radio" aria-checked="${S.pen === c}" data-hdpen="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"`, `<i style="background:${c}"></i>`)).join('')}</span>
           ${btn('hd-tool', 'data-hd="undo" id="hd-undo"', `${iconHtml('↩', { size: 18 })}<span>${esc(td('undo'))}</span>`)}${btn('hd-tool', 'data-hd="clear" id="hd-clear"', `${iconHtml('🧽', { size: 18 })}<span>${esc(td('clear'))}</span>`)}</div>
         <div class="hd-padbox"><svg class="hd-svg" id="hd-svg" viewBox="0 0 ${P.w} ${P.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(td('padLabel'))}">
-          <rect class="hd-paper" x="1" y="1" width="${P.w - 2}" height="${P.h - 2}" rx="14"/><g id="hd-ink"></g><g id="hd-cur"></g></svg></div>
+          <rect class="hd-paper" x="1" y="1" width="${P.w - 2}" height="${P.h - 2}" rx="14"/><g id="hd-ink"></g><g id="hd-cur"></g><g id="hd-mates" aria-hidden="true"></g></svg></div>
       </div>
     </section>
     <section class="hd-side" aria-labelledby="hd-areah">
@@ -178,7 +186,9 @@ function teamPad(st) {
 function renderOver() {
   const L = S.live || {};
   let html = '';
-  if (L.paused) {
+  if (S.me && S.me.locked && S.live) {
+    html = `<div class="hd-over hd-pause hd-locked" role="status"><div class="hd-pausein">${iconHtml('🔒', { size: 64 })}<h2>${esc(td('hand.locked'))}</h2><p>${esc(td('hand.lockedHint'))}</p></div></div>`;
+  } else if (L.paused) {
     html = `<div class="hd-over hd-pause" role="status"><div class="hd-pausein">${iconHtml('👀', { size: 64 })}<h2>${esc(td('eyes'))}</h2><p>${esc(td('eyesHint'))}</p></div></div>`;
   } else if (L.bring) {
     html = `<div class="hd-over hd-show" role="status"><p class="hd-overcap">${esc(td('showing'))}</p><div class="hd-overarea">${areaHtml(S.area, { mode: 'contain' })}</div><p class="hd-overhint">${esc(td('showingHint'))}</p></div>`;
@@ -227,15 +237,16 @@ function placeRoom() {
 // ---------------------------------------------------------------- live state
 function applyState(st) {
   if (!st) return;
-  const was = JSON.stringify(S.live);
+  const was = JSON.stringify([S.live, S.me && S.me.locked]);
   S.live = st.live || null; S.v = st.v;
+  liveDesk(st);
   if (Array.isArray(st.cards)) newCards(st.cards);
   teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
-  if (areaChanged || was !== JSON.stringify(S.live)) renderOver();
+  if (areaChanged || was !== JSON.stringify([S.live, S.me && S.me.locked])) renderOver();
 }
 let pollTimer = null;
 async function poll() {
@@ -247,6 +258,101 @@ async function poll() {
     if (D.device && (e.status === 401 || e.status === 404)) { location.href = '/hr?ended=1'; return; }
   }
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
+}
+
+// ---------------------------------------------------------------- live class: the hand, the hall pass, the lock (step 3a)
+let PULSE = null;
+const KINDS = [['question', '💬'], ['help', '🆘'], ['bathroom', '🚻']];
+/** The live desk as the state poll or a pulse brought it: { live, me, mates }. */
+function liveDesk(st) {
+  const live = st.live || null;
+  if ('me' in st || !live) {
+    const lockWas = !!(S.me && S.me.locked);
+    S.me = live ? st.me || null : null;
+    if (S.me && S.me.now) S.skew = Date.now() - S.me.now;
+    if (!live) S.handMenu = false;
+    if (lockWas !== !!(S.me && S.me.locked)) renderOver();
+  }
+  S.mates = live && Array.isArray(st.mates) ? st.mates : [];
+  if (PULSE) PULSE.setLive(live, S.me);
+  renderHand(); drawMates();
+}
+const passLeft = () => { const me = S.me; if (!me || me.pass !== 'out' || !me.outAt) return 0; return Math.round((me.outAt + me.minutes * 60e3 - (Date.now() - S.skew)) / 1000); };
+const clock = s => `${Math.floor(Math.abs(s) / 60)}:${String(Math.abs(s) % 60).padStart(2, '0')}`;
+function handNote() {
+  const me = S.me; if (!me) return '';
+  const k = me.hand;
+  if (me.pass === 'out') {
+    const left = passLeft();
+    return `<div class="hd-note go" role="status">${iconHtml('🚻', { size: 22 })}<span class="hd-notet"><b>${esc(td('hand.goAhead'))}</b> <span class="hd-passclock${left <= 0 ? ' over' : ''}" id="hd-passclock">${esc(left > 0 ? td('hand.passLeft', { time: clock(left) }) : td('hand.timeUp'))}</span></span>${btn('btn hr-chunk hd-noteb', 'data-hdhand="back"', esc(td('hand.back')))}</div>`;
+  }
+  if (me.pass === 'line') return `<div class="hd-note" role="status">${iconHtml('🚻', { size: 22 })}<span class="hd-notet"><b>${esc(me.place <= 1 ? td('hand.next') : td('hand.inLine', { count: me.place - 1 }))}</b> <span>${esc(td('hand.lineHint'))}</span></span>${btn('btn hr-chunk hd-noteb', 'data-hdhand="lower"', esc(td('hand.leaveLine')))}</div>`;
+  if (k) return `<div class="hd-note up" role="status">${iconHtml(k === 'bathroom' ? '🚻' : '✋', { size: 22 })}<span class="hd-notet"><b>${esc(td(`hand.up.${k}`))}</b> <span>${esc(td(k === 'bathroom' ? 'hand.askedPass' : 'hand.upHint'))}</span></span>${btn('btn hr-chunk hd-noteb', 'data-hdhand="lower"', esc(td('hand.down')))}</div>`;
+  if (me.coming) return `<div class="hd-note calm" role="status">${iconHtml('🚶', { size: 22 })}<span class="hd-notet"><b>${esc(td('hand.coming'))}</b></span></div>`;
+  return '';
+}
+function renderHand() {
+  const wrap = $('hd-handwrap'); if (!wrap) return;
+  const me = S.me, live = S.live;
+  if (!live || !me) { wrap.innerHTML = ''; renderNote(''); return; }
+  const up = !!me.hand || !!me.pass;
+  const menu = S.handMenu ? `<div class="hd-handmenu" id="hd-handmenu" role="menu" aria-label="${esc(td('hand.menu'))}">
+    ${up && me.pass !== 'out' ? btn('hd-hmi down', 'role="menuitem" data-hdhand="lower"', `${iconHtml('👇', { size: 22 })} <span>${esc(me.pass === 'line' ? td('hand.leaveLine') : td('hand.down'))}</span>`) : ''}
+    ${me.pass === 'out' ? btn('hd-hmi', 'role="menuitem" data-hdhand="back"', `${iconHtml('🏫', { size: 22 })} <span>${esc(td('hand.back'))}</span>`) : ''}
+    ${KINDS.map(([k, ic]) => btn(`hd-hmi${me.hand === k ? ' on' : ''}`, `role="menuitemradio" aria-checked="${me.hand === k}" data-hdhand="raise:${k}"${k === 'bathroom' && me.pass ? ' disabled' : ''}`,
+      `${iconHtml(ic, { size: 22 })} <span>${esc(td(`hand.${k}`))}</span>${k === 'bathroom' ? `<span class="hd-hmtag">${esc(td('hand.hallPass'))}</span>` : ''}`)).join('')}</div>` : '';
+  wrap.innerHTML = `${btn(`btn hr-chunk hr-spark hd-handbtn${up ? ' on' : ''}`, `data-hd="hand" aria-haspopup="menu" aria-expanded="${S.handMenu}"`, `${iconHtml(me.pass ? '🚻' : '✋', { size: 20 })} <span>${esc(me.pass ? td('hand.passBtn') : up ? td('hand.isUp') : td('hand.raise'))}</span>`)}${menu}`;
+  renderNote(handNote());
+}
+let noteShown = '';
+function renderNote(html) {
+  let el = $('hd-note');
+  if (!el) { el = document.createElement('div'); el.id = 'hd-note'; el.className = 'hd-notewrap'; root.querySelector('.hd-top')?.after(el); }
+  if (html !== noteShown) { el.innerHTML = html; noteShown = html; }
+  el.hidden = !html;
+  root.classList.toggle('hd-hasnote', !!html);
+}
+function tick() {
+  if (!S.me || S.me.pass !== 'out') return;
+  const el = $('hd-passclock'); if (!el) return;
+  const left = passLeft();
+  el.textContent = left > 0 ? td('hand.passLeft', { time: clock(left) }) : td('hand.timeUp');
+  el.classList.toggle('over', left <= 0);
+}
+async function handAction(a) {
+  if (S.handBusy) return;
+  S.handBusy = true; S.handMenu = false;
+  const [action, kind] = a.split(':');
+  try {
+    const r = await api(`/api/desk/${encodeURIComponent(D.classId)}/hand`, { method: 'POST', body: { action, ...(kind ? { kind } : {}) } });
+    S.me = r.me || S.me; if (S.me && S.me.now) S.skew = Date.now() - S.me.now;
+    if (PULSE) PULSE.input();
+    toast(td(action === 'raise' ? (kind === 'bathroom' ? 'hand.toastPass' : 'hand.toastUp') : action === 'back' ? 'hand.toastBack' : 'hand.toastDown'));
+  } catch (e) { toast(e.message, { bad: true }); } finally { S.handBusy = false; renderHand(); root.querySelector('[data-hd="hand"]')?.focus(); }
+}
+/** A team pad's teammates' cursors (their names, the names classmates see), played back over the last couple of
+ *  seconds. Nobody else's cursor shows on a student's desk. */
+const mateSeen = new Map();
+function drawMates() {
+  const g = $('hd-mates'); if (!g) return;
+  const keep = new Set();
+  for (const m of S.mates) {
+    keep.add(m.id);
+    let el = g.querySelector(`[data-mate="${CSS.escape(m.id)}"]`);
+    if (!el) {
+      el = document.createElementNS('http://www.w3.org/2000/svg', 'g'); el.setAttribute('class', 'hd-mate'); el.dataset.mate = m.id;
+      el.innerHTML = `<path d="M0 0l22 12-10 3-4 10z" fill="#E8833A" stroke="#fff" stroke-width="2"/><text x="20" y="34">${esc(m.name)}</text>`;
+      g.appendChild(el);
+    }
+    // new samples only (the same ones can come with a pulse and a poll), played with their own timing
+    const now = S.me && S.me.now ? S.me.now : Date.now() - S.skew, seen = mateSeen.get(m.id) || 0;
+    const pts = (m.pts || []).map(([age, x, y]) => [now - age, x, y]).filter(p => p[0] > seen);
+    if (!pts.length) continue;
+    mateSeen.set(m.id, Math.max(...pts.map(p => p[0])));
+    const first = Math.min(...pts.map(p => p[0]));
+    for (const [at, x, y] of pts) setTimeout(() => el.setAttribute('transform', `translate(${x * P.w} ${y * P.h})`), at - first);
+  }
+  for (const el of [...g.children]) if (!keep.has(el.dataset.mate)) el.remove();
 }
 
 // ---------------------------------------------------------------- Not you? Switch (a shared device)
@@ -262,8 +368,10 @@ function click(e) {
   if (card) { const x = S.cards.find(c => c.id === card.dataset.hdcard); toast(x && x.locked ? td('laterHint') : td('notReadyHint')); return; }
   const pen = e.target.closest('[data-hdpen]');
   if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
-  const a = e.target.closest('[data-hd]'); if (!a) return;
+  const hk = e.target.closest('[data-hdhand]'); if (hk) { handAction(hk.dataset.hdhand); return; }
+  const a = e.target.closest('[data-hd]'); if (!a) { if (S.handMenu && !e.target.closest('.hd-handwrap')) { S.handMenu = false; renderHand(); } return; }
   const k = a.dataset.hd;
+  if (k === 'hand') { S.handMenu = !S.handMenu; renderHand(); if (S.handMenu) $('hd-handmenu')?.querySelector('button')?.focus(); return; }
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
@@ -279,7 +387,14 @@ function start() {
   renderDesk();
   applyState(D.state);
   root.addEventListener('click', click);
-  root.addEventListener('keydown', e => { if (e.key === 'Escape' && S.view !== 'desk') { S.view = 'desk'; renderOver(); } });
+  root.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && S.handMenu) { S.handMenu = false; renderHand(); root.querySelector('[data-hd="hand"]')?.focus(); return; }
+    if (e.key === 'Escape' && S.view !== 'desk') { S.view = 'desk'; renderOver(); }
+  });
+  PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
+    onAnswer: r => liveDesk({ live: r.live, me: r.me, mates: r.mates }) });
+  PULSE.setLive(S.live, S.me);
+  setInterval(tick, 1000);
   body.addEventListener('pointerdown', padDown);
   body.addEventListener('pointermove', padMove);
   body.addEventListener('pointerup', padUp); body.addEventListener('pointercancel', padUp);

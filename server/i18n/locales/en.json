@@ -5107,6 +5107,39 @@
         "fireworks": "Fireworks",
         "smiley": "Smiley face",
         "rainbow": "Rainbow"
+      },
+      "hand": {
+        "raise": "Raise hand",
+        "isUp": "Hand up",
+        "menu": "Raise your hand",
+        "question": "I have a question",
+        "help": "I need help",
+        "bathroom": "Bathroom",
+        "hallPass": "hall pass",
+        "down": "Put my hand down",
+        "leaveLine": "Leave the line",
+        "back": "I’m back",
+        "goAhead": "Go ahead.",
+        "passLeft": "Hall pass: {time}",
+        "timeUp": "Time’s up. Please come back.",
+        "next": "You’re next for the hall pass.",
+        "inLine": "{count, plural, one {You’re in line. # person is ahead of you.} other {You’re in line. # people are ahead of you.}}",
+        "lineHint": "Wait at your desk. Your turn is coming.",
+        "up": {
+          "question": "Your hand is up: a question.",
+          "help": "Your hand is up: you need help.",
+          "bathroom": "You asked for the hall pass."
+        },
+        "askedPass": "Your teacher will answer soon.",
+        "upHint": "Your teacher can see it.",
+        "toastPass": "You asked for the hall pass",
+        "toastUp": "Your teacher can see your hand is up",
+        "toastBack": "Welcome back",
+        "toastDown": "Hand down",
+        "locked": "Your teacher locked your desk for a moment",
+        "lockedHint": "It opens again soon. Your work is saved.",
+        "coming": "Your teacher is coming over",
+        "passBtn": "Hall pass"
       }
     },
     "homeroom-area": {
@@ -5258,6 +5291,119 @@
       "none": {
         "name": "Not graded",
         "hint": "Practice: no grade, nothing is sent."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Your teacher locked your desk for a moment",
+      "lockedHint": "It opens again soon. Your work is saved.",
+      "coming": "Your teacher is coming over"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Not here",
+        "done": "Done",
+        "stuck": "Stuck",
+        "typing": "Typing",
+        "working": "Working",
+        "here": "At desk"
+      },
+      "hand": {
+        "question": "Question",
+        "help": "Needs help",
+        "bathroom": "Bathroom"
+      },
+      "inGame": "in {title}",
+      "onDesk": "next up: {title}",
+      "chipLabel": "{name}: {status}. Look at their desk",
+      "handOf": "{name}: {what}",
+      "needsLook": "Needs a look",
+      "close": "Close",
+      "pass": {
+        "title": "Hall pass",
+        "outShort": "Out with the hall pass",
+        "lineShort": "Waiting for the hall pass",
+        "left": "{time} left",
+        "over": "{time} over the time",
+        "isBack": "{name} is back",
+        "nobody": "Nobody is out right now.",
+        "next": "Next:",
+        "then": "Then:",
+        "removeLine": "Take {name} out of the line",
+        "length": "Pass time",
+        "less": "Shorter",
+        "more": "Longer",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Out",
+        "lineTag": "In line"
+      },
+      "today": {
+        "title": "Today at a glance",
+        "button": "Today",
+        "doneOf": "{done} of {total} done",
+        "barLabel": "{done} done, {work} working, {stuck} stuck, {none} not started",
+        "nums": "{done} done · {work} working · {stuck} stuck · {none} not started",
+        "lead": "Today’s handouts. Start class to see who is working or stuck.",
+        "leadLive": "Today’s handouts, as students work.",
+        "done": "Done",
+        "working": "Working",
+        "stuck": "Stuck",
+        "notStarted": "Not started",
+        "none": "Nothing handed out today yet.",
+        "weeks": "Progress over weeks is in the Classroom tab.",
+        "classroom": "Open Classroom"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Hands, none up} one {Hands, # up} other {Hands, # up}}",
+        "button": "Hands",
+        "title": "Hands up",
+        "notNow": "Not now",
+        "putInLine": "Put in line",
+        "givePass": "Give hall pass",
+        "answered": "Answered",
+        "none": "No hands up right now.",
+        "private": "Only you see hands and the hall pass. Never on the projector.",
+        "done": {
+          "answer": "Answered",
+          "pass": "Hall pass updated",
+          "notNow": "Hand put down",
+          "back": "Hall pass updated"
+        }
+      },
+      "look": {
+        "title": "{name}’s desk",
+        "loading": "Loading...",
+        "never": "no activity yet",
+        "done": "Done",
+        "pct": "{pct}% along",
+        "allDone": "Everything on their desk is done.",
+        "nothing": "Nothing on their desk yet.",
+        "stuckNote": "No step forward on this handout for {min} minutes.",
+        "lastSeen": "Last seen {when}",
+        "whereGame": "In the game",
+        "whereDesk": "At their desk",
+        "activity": "last activity {when}",
+        "on": "Working on",
+        "progress": "{done} of {total} handouts done",
+        "pad": "Their pad",
+        "teamPad": "Team pad",
+        "padLabel": "{name}’s pad",
+        "padEmpty": "Nothing drawn yet",
+        "private": "A summary of what Homeroom knows. It never shows their screen or what they type.",
+        "coming": "I’m coming over",
+        "comingOn": "Coming over: tap to take it off",
+        "lock": "Lock desk",
+        "unlock": "Unlock desk",
+        "hideCursor": "Hide cursor",
+        "showCursor": "Show cursor",
+        "handouts": "Their handouts",
+        "toast": {
+          "lockOn": "{name}’s desk is locked",
+          "lockOff": "{name}’s desk is open again",
+          "hideOn": "{name}’s cursor is hidden",
+          "hideOff": "{name}’s cursor shows again",
+          "comingOn": "{name} sees that you’re coming over",
+          "comingOff": "Note taken off {name}’s desk"
+        }
       }
     }
   },
@@ -15529,7 +15675,12 @@
       "commentLong": "A comment can be 140 characters at most.",
       "badSticker": "Pick one of the stickers.",
       "notFinished": "Comments and stickers go on finished work. This one isn't finished yet.",
-      "padChanged": "Your teammate drew at the same time. Your drawing was added to theirs."
+      "padChanged": "Your teammate drew at the same time. Your drawing was added to theirs.",
+      "badKind": "Pick a question, help or the bathroom.",
+      "passAlready": "You already have a place with the hall pass.",
+      "badMinutes": "Pick between 1 and 20 minutes.",
+      "noHand": "That hand is already down.",
+      "noPass": "They don’t have the hall pass or a place in line."
     },
     "live": "Live",
     "desk": {

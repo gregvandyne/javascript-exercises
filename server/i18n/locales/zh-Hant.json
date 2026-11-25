@@ -4823,6 +4823,39 @@
         "fireworks": "煙火",
         "smiley": "笑臉",
         "rainbow": "彩虹"
+      },
+      "hand": {
+        "raise": "舉手",
+        "isUp": "已舉手",
+        "menu": "舉手",
+        "question": "我有問題",
+        "help": "我需要幫忙",
+        "bathroom": "上廁所",
+        "hallPass": "通行證",
+        "down": "把手放下",
+        "leaveLine": "離開隊伍",
+        "back": "我回來了",
+        "goAhead": "可以去了。",
+        "passLeft": "通行證：{time}",
+        "timeUp": "時間到了，請回來。",
+        "next": "下一個就輪到你拿通行證。",
+        "inLine": "{count, plural, other {你在隊伍裡，前面有 # 個人。}}",
+        "lineHint": "在座位上等一下，很快就輪到你。",
+        "up": {
+          "question": "你舉手了：有問題。",
+          "help": "你舉手了：需要幫忙。",
+          "bathroom": "你申請了通行證。"
+        },
+        "askedPass": "老師很快就會回覆。",
+        "upHint": "老師看得到。",
+        "toastPass": "你申請了通行證",
+        "toastUp": "老師看到你舉手了",
+        "toastBack": "歡迎回來",
+        "toastDown": "手放下了",
+        "locked": "老師暫時鎖住了你的桌子",
+        "lockedHint": "很快就會打開。你的作品已經存好了。",
+        "coming": "老師正走過來",
+        "passBtn": "通行證"
       }
     },
     "homeroom-area": {
@@ -4974,6 +5007,119 @@
       "none": {
         "name": "不評分",
         "hint": "練習：不打分數，也不會傳送。"
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "老師暫時鎖住了你的桌子",
+      "lockedHint": "很快就會打開。你的作品已經存好了。",
+      "coming": "老師正走過來"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "不在",
+        "done": "完成",
+        "stuck": "卡住了",
+        "typing": "正在輸入",
+        "working": "進行中",
+        "here": "在座位上"
+      },
+      "hand": {
+        "question": "提問",
+        "help": "需要幫忙",
+        "bathroom": "上廁所"
+      },
+      "inGame": "正在做 {title}",
+      "onDesk": "接下來：{title}",
+      "chipLabel": "{name}：{status}。查看桌面",
+      "handOf": "{name}：{what}",
+      "needsLook": "需要關心",
+      "close": "關閉",
+      "pass": {
+        "title": "通行證",
+        "outShort": "持通行證外出",
+        "lineShort": "等通行證",
+        "left": "剩 {time}",
+        "over": "超過 {time}",
+        "isBack": "{name} 回來了",
+        "nobody": "目前沒有人外出。",
+        "next": "下一位：",
+        "then": "再來：",
+        "removeLine": "把 {name} 移出隊伍",
+        "length": "通行時間",
+        "less": "縮短",
+        "more": "延長",
+        "minutes": "{count, plural, other {# 分鐘}}",
+        "outTag": "外出",
+        "lineTag": "排隊中"
+      },
+      "today": {
+        "title": "今天一覽",
+        "button": "今天",
+        "doneOf": "{total} 人中 {done} 人完成",
+        "barLabel": "完成 {done}，進行中 {work}，卡住 {stuck}，未開始 {none}",
+        "nums": "完成 {done}・進行中 {work}・卡住 {stuck}・未開始 {none}",
+        "lead": "今天的發放內容。開始上課後就能看到誰在進行、誰卡住了。",
+        "leadLive": "今天的發放內容，即時顯示。",
+        "done": "完成",
+        "working": "進行中",
+        "stuck": "卡住",
+        "notStarted": "未開始",
+        "none": "今天還沒有發放任何內容。",
+        "weeks": "幾週來的進度請看「班級」分頁。",
+        "classroom": "開啟班級"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {舉手：沒有} other {舉手：# 人}}",
+        "button": "舉手",
+        "title": "舉手的人",
+        "notNow": "晚點",
+        "putInLine": "排進隊伍",
+        "givePass": "給通行證",
+        "answered": "已回答",
+        "none": "目前沒有人舉手。",
+        "private": "只有你看得到舉手和通行證，投影畫面不會顯示。",
+        "done": {
+          "answer": "已回答",
+          "pass": "通行證已更新",
+          "notNow": "已把手放下",
+          "back": "通行證已更新"
+        }
+      },
+      "look": {
+        "title": "{name} 的桌面",
+        "loading": "載入中...",
+        "never": "尚無活動",
+        "done": "完成",
+        "pct": "完成 {pct}%",
+        "allDone": "桌上的都完成了。",
+        "nothing": "桌上還沒有東西。",
+        "stuckNote": "這份內容已有 {min} 分鐘沒有進展。",
+        "lastSeen": "最後出現：{when}",
+        "whereGame": "在遊戲中",
+        "whereDesk": "在座位上",
+        "activity": "最後活動：{when}",
+        "on": "正在做",
+        "progress": "{total} 份中完成 {done} 份",
+        "pad": "筆記板",
+        "teamPad": "小組筆記板",
+        "padLabel": "{name} 的筆記板",
+        "padEmpty": "還沒有畫任何東西",
+        "private": "這是 Homeroom 知道的摘要，不會顯示螢幕或打的字。",
+        "coming": "我過去找你",
+        "comingOn": "前往中：點一下取消",
+        "lock": "鎖住桌面",
+        "unlock": "解鎖桌面",
+        "hideCursor": "隱藏游標",
+        "showCursor": "顯示游標",
+        "handouts": "發放內容",
+        "toast": {
+          "lockOn": "已鎖住 {name} 的桌面",
+          "lockOff": "{name} 的桌面已重新開啟",
+          "hideOn": "已隱藏 {name} 的游標",
+          "hideOff": "{name} 的游標重新顯示",
+          "comingOn": "{name} 會看到你正過去",
+          "comingOff": "已移除 {name} 桌上的提示"
+        }
       }
     }
   },
@@ -14811,7 +14957,12 @@
       "commentLong": "留言最多 140 個字。",
       "badSticker": "請選一張貼紙。",
       "notFinished": "留言和貼紙只能給完成的作業，這份還沒完成。",
-      "padChanged": "組員同時在畫，你的畫已經加到他的畫上了。"
+      "padChanged": "組員同時在畫，你的畫已經加到他的畫上了。",
+      "badKind": "請選擇提問、求助或上廁所。",
+      "passAlready": "你已經在通行證的隊伍裡了。",
+      "badMinutes": "請選擇 1 到 20 分鐘。",
+      "noHand": "這隻手已經放下了。",
+      "noPass": "沒有通行證，也不在隊伍裡。"
     },
     "live": "直播中",
     "desk": {

@@ -4823,6 +4823,39 @@
         "fireworks": "Feu d’artifice",
         "smiley": "Visage souriant",
         "rainbow": "Arc-en-ciel"
+      },
+      "hand": {
+        "raise": "Lever la main",
+        "isUp": "Main levée",
+        "menu": "Lève la main",
+        "question": "J’ai une question",
+        "help": "J’ai besoin d’aide",
+        "bathroom": "Toilettes",
+        "hallPass": "laissez-passer",
+        "down": "Baisser la main",
+        "leaveLine": "Quitter la file",
+        "back": "Je suis revenu",
+        "goAhead": "Tu peux y aller.",
+        "passLeft": "Laissez-passer : {time}",
+        "timeUp": "C’est l’heure. Reviens, s’il te plaît.",
+        "next": "Tu es le prochain pour le laissez-passer.",
+        "inLine": "{count, plural, one {Tu es dans la file. # personne est devant toi.} other {Tu es dans la file. # personnes sont devant toi.}}",
+        "lineHint": "Attends à ton bureau. Ton tour arrive.",
+        "up": {
+          "question": "Ta main est levée : une question.",
+          "help": "Ta main est levée : tu as besoin d’aide.",
+          "bathroom": "Tu as demandé le laissez-passer."
+        },
+        "askedPass": "Ton enseignant va bientôt répondre.",
+        "upHint": "Ton enseignant la voit.",
+        "toastPass": "Tu as demandé le laissez-passer",
+        "toastUp": "Ton enseignant voit ta main levée",
+        "toastBack": "Bon retour",
+        "toastDown": "Main baissée",
+        "locked": "Ton enseignant a verrouillé ton bureau un instant",
+        "lockedHint": "Il s’ouvre bientôt. Ton travail est enregistré.",
+        "coming": "Ton enseignant arrive vers toi",
+        "passBtn": "Laissez-passer"
       }
     },
     "homeroom-area": {
@@ -4974,6 +5007,119 @@
       "none": {
         "name": "Non noté",
         "hint": "Entraînement : pas de note, rien n’est envoyé."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Ton enseignant a verrouillé ton bureau un instant",
+      "lockedHint": "Il s’ouvre bientôt. Ton travail est enregistré.",
+      "coming": "Ton enseignant arrive vers toi"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Absent",
+        "done": "Fini",
+        "stuck": "Bloqué",
+        "typing": "Écrit",
+        "working": "Travaille",
+        "here": "À son bureau"
+      },
+      "hand": {
+        "question": "Question",
+        "help": "A besoin d’aide",
+        "bathroom": "Toilettes"
+      },
+      "inGame": "dans {title}",
+      "onDesk": "ensuite : {title}",
+      "chipLabel": "{name} : {status}. Voir son bureau",
+      "handOf": "{name} : {what}",
+      "needsLook": "À regarder",
+      "close": "Fermer",
+      "pass": {
+        "title": "Laissez-passer",
+        "outShort": "Sorti avec le laissez-passer",
+        "lineShort": "Attend le laissez-passer",
+        "left": "encore {time}",
+        "over": "{time} de plus",
+        "isBack": "{name} est revenu",
+        "nobody": "Personne n’est sorti pour l’instant.",
+        "next": "Ensuite :",
+        "then": "Puis :",
+        "removeLine": "Retirer {name} de la file",
+        "length": "Durée",
+        "less": "Plus court",
+        "more": "Plus long",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Sorti",
+        "lineTag": "Dans la file"
+      },
+      "today": {
+        "title": "Aujourd’hui en bref",
+        "button": "Aujourd’hui",
+        "doneOf": "{done} sur {total} finis",
+        "barLabel": "{done} finis, {work} en cours, {stuck} bloqués, {none} pas commencé",
+        "nums": "{done} finis · {work} en cours · {stuck} bloqués · {none} pas commencé",
+        "lead": "Les documents du jour. Lance la classe pour voir qui travaille ou bloque.",
+        "leadLive": "Les documents du jour, pendant que la classe travaille.",
+        "done": "Fini",
+        "working": "En cours",
+        "stuck": "Bloqué",
+        "notStarted": "Pas commencé",
+        "none": "Rien n’a encore été distribué aujourd’hui.",
+        "weeks": "Les progrès sur plusieurs semaines sont dans l’onglet Classe.",
+        "classroom": "Ouvrir Classe"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Mains, aucune levée} one {Mains, # levée} other {Mains, # levées}}",
+        "button": "Mains",
+        "title": "Mains levées",
+        "notNow": "Pas maintenant",
+        "putInLine": "Mettre dans la file",
+        "givePass": "Donner le laissez-passer",
+        "answered": "Répondu",
+        "none": "Aucune main levée pour l’instant.",
+        "private": "Toi seul vois les mains et le laissez-passer. Jamais au projecteur.",
+        "done": {
+          "answer": "Répondu",
+          "pass": "Laissez-passer mis à jour",
+          "notNow": "Main baissée",
+          "back": "Laissez-passer mis à jour"
+        }
+      },
+      "look": {
+        "title": "Bureau de {name}",
+        "loading": "Chargement...",
+        "never": "rien pour l’instant",
+        "done": "Fini",
+        "pct": "{pct} % fait",
+        "allDone": "Tout sur son bureau est fini.",
+        "nothing": "Rien sur son bureau pour l’instant.",
+        "stuckNote": "Aucun pas en avant sur ce document depuis {min} minutes.",
+        "lastSeen": "Vu pour la dernière fois {when}",
+        "whereGame": "Dans le jeu",
+        "whereDesk": "À son bureau",
+        "activity": "dernière activité {when}",
+        "on": "Travaille sur",
+        "progress": "{done} documents finis sur {total}",
+        "pad": "Son bloc",
+        "teamPad": "Bloc de l’équipe",
+        "padLabel": "Bloc de {name}",
+        "padEmpty": "Rien de dessiné",
+        "private": "Un résumé de ce que Homeroom sait. Jamais son écran ni ce qu’il tape.",
+        "coming": "J’arrive",
+        "comingOn": "En route : touche pour l’enlever",
+        "lock": "Verrouiller le bureau",
+        "unlock": "Déverrouiller le bureau",
+        "hideCursor": "Masquer le curseur",
+        "showCursor": "Afficher le curseur",
+        "handouts": "Ses documents",
+        "toast": {
+          "lockOn": "Le bureau de {name} est verrouillé",
+          "lockOff": "Le bureau de {name} est rouvert",
+          "hideOn": "Le curseur de {name} est masqué",
+          "hideOff": "Le curseur de {name} est de nouveau visible",
+          "comingOn": "{name} voit que tu arrives",
+          "comingOff": "Message retiré du bureau de {name}"
+        }
       }
     }
   },
@@ -14811,7 +14957,12 @@
       "commentLong": "Un commentaire fait 140 caractères au plus.",
       "badSticker": "Choisissez un des autocollants.",
       "notFinished": "Les commentaires et autocollants vont sur un travail fini. Celui-ci ne l’est pas encore.",
-      "padChanged": "Un coéquipier dessinait en même temps. Ton dessin a été ajouté au sien."
+      "padChanged": "Un coéquipier dessinait en même temps. Ton dessin a été ajouté au sien.",
+      "badKind": "Choisis une question, de l’aide ou les toilettes.",
+      "passAlready": "Tu as déjà une place pour le laissez-passer.",
+      "badMinutes": "Choisis entre 1 et 20 minutes.",
+      "noHand": "Cette main est déjà baissée.",
+      "noPass": "Pas de laissez-passer ni de place dans la file."
     },
     "live": "En direct",
     "desk": {

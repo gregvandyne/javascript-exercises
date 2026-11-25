@@ -4824,6 +4824,39 @@
         "fireworks": "Fogos de artifício",
         "smiley": "Carinha feliz",
         "rainbow": "Arco-íris"
+      },
+      "hand": {
+        "raise": "Levantar a mão",
+        "isUp": "Mão levantada",
+        "menu": "Levante a mão",
+        "question": "Tenho uma pergunta",
+        "help": "Preciso de ajuda",
+        "bathroom": "Banheiro",
+        "hallPass": "passe",
+        "down": "Abaixar a mão",
+        "leaveLine": "Sair da fila",
+        "back": "Voltei",
+        "goAhead": "Pode ir.",
+        "passLeft": "Passe: {time}",
+        "timeUp": "O tempo acabou. Volte, por favor.",
+        "next": "Você é o próximo com o passe.",
+        "inLine": "{count, plural, one {Você está na fila. # pessoa está na sua frente.} other {Você está na fila. # pessoas estão na sua frente.}}",
+        "lineHint": "Espere na sua mesa. Sua vez está chegando.",
+        "up": {
+          "question": "Sua mão está levantada: uma pergunta.",
+          "help": "Sua mão está levantada: você precisa de ajuda.",
+          "bathroom": "Você pediu o passe de saída."
+        },
+        "askedPass": "Seu professor vai responder logo.",
+        "upHint": "Seu professor consegue ver.",
+        "toastPass": "Você pediu o passe",
+        "toastUp": "Seu professor vê que você levantou a mão",
+        "toastBack": "Bem-vindo de volta",
+        "toastDown": "Mão abaixada",
+        "locked": "Seu professor travou sua mesa por um momento",
+        "lockedHint": "Ela abre de novo logo. Seu trabalho está salvo.",
+        "coming": "Seu professor está vindo até você",
+        "passBtn": "Passe de saída"
       }
     },
     "homeroom-area": {
@@ -4975,6 +5008,119 @@
       "none": {
         "name": "Sem nota",
         "hint": "Prática: sem nota, nada é enviado."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Seu professor travou sua mesa por um momento",
+      "lockedHint": "Ela abre de novo logo. Seu trabalho está salvo.",
+      "coming": "Seu professor está vindo até você"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Não está",
+        "done": "Pronto",
+        "stuck": "Travado",
+        "typing": "Digitando",
+        "working": "Trabalhando",
+        "here": "Na mesa"
+      },
+      "hand": {
+        "question": "Pergunta",
+        "help": "Precisa de ajuda",
+        "bathroom": "Banheiro"
+      },
+      "inGame": "em {title}",
+      "onDesk": "próximo: {title}",
+      "chipLabel": "{name}: {status}. Ver a mesa",
+      "handOf": "{name}: {what}",
+      "needsLook": "Dar uma olhada",
+      "close": "Fechar",
+      "pass": {
+        "title": "Passe de saída",
+        "outShort": "Fora com o passe",
+        "lineShort": "Esperando o passe",
+        "left": "faltam {time}",
+        "over": "{time} além do tempo",
+        "isBack": "{name} voltou",
+        "nobody": "Ninguém está fora agora.",
+        "next": "Próximo:",
+        "then": "Depois:",
+        "removeLine": "Tirar {name} da fila",
+        "length": "Tempo do passe",
+        "less": "Menos tempo",
+        "more": "Mais tempo",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Fora",
+        "lineTag": "Na fila"
+      },
+      "today": {
+        "title": "Hoje num relance",
+        "button": "Hoje",
+        "doneOf": "{done} de {total} prontos",
+        "barLabel": "{done} prontos, {work} trabalhando, {stuck} travados, {none} sem começar",
+        "nums": "{done} prontos · {work} trabalhando · {stuck} travados · {none} sem começar",
+        "lead": "As atividades de hoje. Comece a aula para ver quem está trabalhando ou travado.",
+        "leadLive": "As atividades de hoje, enquanto a turma trabalha.",
+        "done": "Pronto",
+        "working": "Trabalhando",
+        "stuck": "Travado",
+        "notStarted": "Sem começar",
+        "none": "Nada foi distribuído hoje ainda.",
+        "weeks": "O progresso ao longo das semanas está na aba Turma.",
+        "classroom": "Abrir Turma"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Mãos, nenhuma levantada} one {Mãos, # levantada} other {Mãos, # levantadas}}",
+        "button": "Mãos",
+        "title": "Mãos levantadas",
+        "notNow": "Agora não",
+        "putInLine": "Colocar na fila",
+        "givePass": "Dar o passe",
+        "answered": "Respondida",
+        "none": "Nenhuma mão levantada agora.",
+        "private": "Só você vê as mãos e o passe. Nunca no projetor.",
+        "done": {
+          "answer": "Respondida",
+          "pass": "Passe atualizado",
+          "notNow": "Mão abaixada",
+          "back": "Passe atualizado"
+        }
+      },
+      "look": {
+        "title": "Mesa de {name}",
+        "loading": "Carregando...",
+        "never": "nada ainda",
+        "done": "Pronto",
+        "pct": "{pct}% feito",
+        "allDone": "Tudo na mesa está pronto.",
+        "nothing": "Nada na mesa ainda.",
+        "stuckNote": "Sem avançar nesta atividade há {min} minutos.",
+        "lastSeen": "Visto pela última vez {when}",
+        "whereGame": "No jogo",
+        "whereDesk": "Na mesa",
+        "activity": "última atividade {when}",
+        "on": "Trabalhando em",
+        "progress": "{done} de {total} atividades prontas",
+        "pad": "Bloco de notas",
+        "teamPad": "Bloco da equipe",
+        "padLabel": "Bloco de {name}",
+        "padEmpty": "Nada desenhado ainda",
+        "private": "Um resumo do que o Homeroom sabe. Nunca mostra a tela nem o que é digitado.",
+        "coming": "Estou indo aí",
+        "comingOn": "A caminho: toque para tirar",
+        "lock": "Travar mesa",
+        "unlock": "Destravar mesa",
+        "hideCursor": "Ocultar cursor",
+        "showCursor": "Mostrar cursor",
+        "handouts": "Atividades",
+        "toast": {
+          "lockOn": "A mesa de {name} está travada",
+          "lockOff": "A mesa de {name} está aberta de novo",
+          "hideOn": "O cursor de {name} está oculto",
+          "hideOff": "O cursor de {name} aparece de novo",
+          "comingOn": "{name} vê que você está indo",
+          "comingOff": "Aviso tirado da mesa de {name}"
+        }
       }
     }
   },
@@ -14813,7 +14959,12 @@
       "commentLong": "Um comentário pode ter no máximo 140 caracteres.",
       "badSticker": "Escolha um dos adesivos.",
       "notFinished": "Comentários e adesivos vão em trabalhos terminados. Este ainda não terminou.",
-      "padChanged": "Alguém da sua equipe desenhou ao mesmo tempo. Seu desenho foi juntado ao dele."
+      "padChanged": "Alguém da sua equipe desenhou ao mesmo tempo. Seu desenho foi juntado ao dele.",
+      "badKind": "Escolha uma pergunta, ajuda ou o banheiro.",
+      "passAlready": "Você já tem um lugar com o passe de saída.",
+      "badMinutes": "Escolha entre 1 e 20 minutos.",
+      "noHand": "Essa mão já está abaixada.",
+      "noPass": "Não está com o passe nem na fila."
     },
     "live": "Ao vivo",
     "desk": {

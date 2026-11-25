@@ -4824,6 +4824,39 @@
         "fireworks": "Feuerwerk",
         "smiley": "Smiley",
         "rainbow": "Regenbogen"
+      },
+      "hand": {
+        "raise": "Hand heben",
+        "isUp": "Hand oben",
+        "menu": "Heb deine Hand",
+        "question": "Ich habe eine Frage",
+        "help": "Ich brauche Hilfe",
+        "bathroom": "Toilette",
+        "hallPass": "Pass",
+        "down": "Hand runter",
+        "leaveLine": "Aus der Reihe gehen",
+        "back": "Ich bin zurück",
+        "goAhead": "Du kannst gehen.",
+        "passLeft": "Pass: {time}",
+        "timeUp": "Die Zeit ist um. Komm bitte zurück.",
+        "next": "Du bist als Nächstes mit dem Pass dran.",
+        "inLine": "{count, plural, one {Du stehst in der Reihe. # Person ist vor dir.} other {Du stehst in der Reihe. # Personen sind vor dir.}}",
+        "lineHint": "Warte an deinem Tisch. Du kommst bald dran.",
+        "up": {
+          "question": "Deine Hand ist oben: eine Frage.",
+          "help": "Deine Hand ist oben: du brauchst Hilfe.",
+          "bathroom": "Du hast nach dem Pass gefragt."
+        },
+        "askedPass": "Deine Lehrkraft antwortet gleich.",
+        "upHint": "Deine Lehrkraft sieht sie.",
+        "toastPass": "Du hast nach dem Pass gefragt",
+        "toastUp": "Deine Lehrkraft sieht deine Hand",
+        "toastBack": "Willkommen zurück",
+        "toastDown": "Hand unten",
+        "locked": "Deine Lehrkraft hat deinen Tisch kurz gesperrt",
+        "lockedHint": "Er geht gleich wieder auf. Deine Arbeit ist gespeichert.",
+        "coming": "Deine Lehrkraft kommt gleich zu dir",
+        "passBtn": "Toilettenpass"
       }
     },
     "homeroom-area": {
@@ -4975,6 +5008,119 @@
       "none": {
         "name": "Ohne Bewertung",
         "hint": "Übung: keine Note, nichts wird gesendet."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "Deine Lehrkraft hat deinen Tisch kurz gesperrt",
+      "lockedHint": "Er geht gleich wieder auf. Deine Arbeit ist gespeichert.",
+      "coming": "Deine Lehrkraft kommt gleich zu dir"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Nicht da",
+        "done": "Fertig",
+        "stuck": "Steckt fest",
+        "typing": "Tippt",
+        "working": "Arbeitet",
+        "here": "Am Tisch"
+      },
+      "hand": {
+        "question": "Frage",
+        "help": "Braucht Hilfe",
+        "bathroom": "Toilette"
+      },
+      "inGame": "in {title}",
+      "onDesk": "als Nächstes: {title}",
+      "chipLabel": "{name}: {status}. Tisch ansehen",
+      "handOf": "{name}: {what}",
+      "needsLook": "Mal nachsehen",
+      "close": "Schließen",
+      "pass": {
+        "title": "Toilettenpass",
+        "outShort": "Mit Pass draußen",
+        "lineShort": "Wartet auf den Pass",
+        "left": "noch {time}",
+        "over": "{time} über der Zeit",
+        "isBack": "{name} ist zurück",
+        "nobody": "Gerade ist niemand draußen.",
+        "next": "Als Nächstes:",
+        "then": "Danach:",
+        "removeLine": "{name} aus der Reihe nehmen",
+        "length": "Passzeit",
+        "less": "Kürzer",
+        "more": "Länger",
+        "minutes": "{count, plural, one {# Min.} other {# Min.}}",
+        "outTag": "Draußen",
+        "lineTag": "In der Reihe"
+      },
+      "today": {
+        "title": "Heute auf einen Blick",
+        "button": "Heute",
+        "doneOf": "{done} von {total} fertig",
+        "barLabel": "{done} fertig, {work} arbeiten, {stuck} stecken fest, {none} noch nicht begonnen",
+        "nums": "{done} fertig · {work} arbeiten · {stuck} stecken fest · {none} nicht begonnen",
+        "lead": "Die Aufgaben von heute. Starte den Unterricht, um zu sehen, wer arbeitet oder feststeckt.",
+        "leadLive": "Die Aufgaben von heute, während die Klasse arbeitet.",
+        "done": "Fertig",
+        "working": "Arbeitet",
+        "stuck": "Steckt fest",
+        "notStarted": "Nicht begonnen",
+        "none": "Heute wurde noch nichts verteilt.",
+        "weeks": "Den Fortschritt über Wochen zeigt der Tab Klassenzimmer.",
+        "classroom": "Klassenzimmer öffnen"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Hände, keine oben} one {Hände, # oben} other {Hände, # oben}}",
+        "button": "Hände",
+        "title": "Hände oben",
+        "notNow": "Jetzt nicht",
+        "putInLine": "In die Reihe",
+        "givePass": "Pass geben",
+        "answered": "Beantwortet",
+        "none": "Gerade ist keine Hand oben.",
+        "private": "Nur du siehst Hände und den Pass. Nie auf dem Beamer.",
+        "done": {
+          "answer": "Beantwortet",
+          "pass": "Pass aktualisiert",
+          "notNow": "Hand runtergenommen",
+          "back": "Pass aktualisiert"
+        }
+      },
+      "look": {
+        "title": "Tisch von {name}",
+        "loading": "Wird geladen...",
+        "never": "noch nichts",
+        "done": "Fertig",
+        "pct": "{pct} % geschafft",
+        "allDone": "Alles auf dem Tisch ist fertig.",
+        "nothing": "Noch nichts auf dem Tisch.",
+        "stuckNote": "Seit {min} Minuten kein Schritt weiter bei dieser Aufgabe.",
+        "lastSeen": "Zuletzt gesehen {when}",
+        "whereGame": "Im Spiel",
+        "whereDesk": "Am Tisch",
+        "activity": "zuletzt aktiv {when}",
+        "on": "Arbeitet an",
+        "progress": "{done} von {total} Aufgaben fertig",
+        "pad": "Notizblock",
+        "teamPad": "Team-Block",
+        "padLabel": "Block von {name}",
+        "padEmpty": "Noch nichts gezeichnet",
+        "private": "Eine Übersicht dessen, was Homeroom weiß. Bildschirm und Eingaben werden nie gezeigt.",
+        "coming": "Ich komme zu dir",
+        "comingOn": "Unterwegs: tippen zum Entfernen",
+        "lock": "Tisch sperren",
+        "unlock": "Tisch entsperren",
+        "hideCursor": "Zeiger verbergen",
+        "showCursor": "Zeiger zeigen",
+        "handouts": "Aufgaben",
+        "toast": {
+          "lockOn": "Tisch von {name} ist gesperrt",
+          "lockOff": "Tisch von {name} ist wieder offen",
+          "hideOn": "Zeiger von {name} ist verborgen",
+          "hideOff": "Zeiger von {name} ist wieder sichtbar",
+          "comingOn": "{name} sieht, dass du kommst",
+          "comingOff": "Hinweis von {name}s Tisch entfernt"
+        }
       }
     }
   },
@@ -14812,7 +14958,12 @@
       "commentLong": "Ein Kommentar darf höchstens 140 Zeichen haben.",
       "badSticker": "Wählen Sie einen der Sticker.",
       "notFinished": "Kommentare und Sticker gibt es für fertige Arbeit. Diese ist noch nicht fertig.",
-      "padChanged": "Jemand aus deinem Team hat gleichzeitig gemalt. Dein Bild wurde dazugelegt."
+      "padChanged": "Jemand aus deinem Team hat gleichzeitig gemalt. Dein Bild wurde dazugelegt.",
+      "badKind": "Wähle Frage, Hilfe oder Toilette.",
+      "passAlready": "Du hast schon einen Platz für den Toilettenpass.",
+      "badMinutes": "Wähle zwischen 1 und 20 Minuten.",
+      "noHand": "Diese Hand ist schon unten.",
+      "noPass": "Kein Pass und kein Platz in der Reihe."
     },
     "live": "Live",
     "desk": {

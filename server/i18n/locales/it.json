@@ -4824,6 +4824,39 @@
         "fireworks": "Fuochi d’artificio",
         "smiley": "Faccina sorridente",
         "rainbow": "Arcobaleno"
+      },
+      "hand": {
+        "raise": "Alza la mano",
+        "isUp": "Mano alzata",
+        "menu": "Alza la mano",
+        "question": "Ho una domanda",
+        "help": "Ho bisogno di aiuto",
+        "bathroom": "Bagno",
+        "hallPass": "permesso",
+        "down": "Abbassa la mano",
+        "leaveLine": "Esci dalla fila",
+        "back": "Sono tornato",
+        "goAhead": "Puoi andare.",
+        "passLeft": "Permesso: {time}",
+        "timeUp": "Il tempo è finito. Torna, per favore.",
+        "next": "Sei il prossimo per il permesso.",
+        "inLine": "{count, plural, one {Sei in fila. C’è # persona prima di te.} other {Sei in fila. Ci sono # persone prima di te.}}",
+        "lineHint": "Aspetta al tuo banco. Tocca a te tra poco.",
+        "up": {
+          "question": "Hai la mano alzata: una domanda.",
+          "help": "Hai la mano alzata: ti serve aiuto.",
+          "bathroom": "Hai chiesto il permesso di uscita."
+        },
+        "askedPass": "L’insegnante risponderà presto.",
+        "upHint": "L’insegnante la vede.",
+        "toastPass": "Hai chiesto il permesso",
+        "toastUp": "L’insegnante vede la tua mano alzata",
+        "toastBack": "Bentornato",
+        "toastDown": "Mano abbassata",
+        "locked": "L’insegnante ha bloccato il tuo banco per un momento",
+        "lockedHint": "Si riapre presto. Il tuo lavoro è salvato.",
+        "coming": "L’insegnante sta arrivando da te",
+        "passBtn": "Permesso di uscita"
       }
     },
     "homeroom-area": {
@@ -4975,6 +5008,119 @@
       "none": {
         "name": "Senza voto",
         "hint": "Esercizio: nessun voto, non si invia nulla."
+      }
+    },
+    "homeroom-pulse": {
+      "locked": "L’insegnante ha bloccato il tuo banco per un momento",
+      "lockedHint": "Si riapre presto. Il tuo lavoro è salvato.",
+      "coming": "L’insegnante sta arrivando da te"
+    },
+    "homeroom-live": {
+      "st": {
+        "away": "Non c’è",
+        "done": "Finito",
+        "stuck": "Bloccato",
+        "typing": "Sta scrivendo",
+        "working": "Lavora",
+        "here": "Al banco"
+      },
+      "hand": {
+        "question": "Domanda",
+        "help": "Ha bisogno di aiuto",
+        "bathroom": "Bagno"
+      },
+      "inGame": "in {title}",
+      "onDesk": "prossimo: {title}",
+      "chipLabel": "{name}: {status}. Guarda il banco",
+      "handOf": "{name}: {what}",
+      "needsLook": "Da guardare",
+      "close": "Chiudi",
+      "pass": {
+        "title": "Permesso di uscita",
+        "outShort": "Fuori con il permesso",
+        "lineShort": "Aspetta il permesso",
+        "left": "restano {time}",
+        "over": "{time} oltre il tempo",
+        "isBack": "{name} è tornato",
+        "nobody": "Al momento non è uscito nessuno.",
+        "next": "Prossimo:",
+        "then": "Poi:",
+        "removeLine": "Togli {name} dalla fila",
+        "length": "Durata",
+        "less": "Più breve",
+        "more": "Più lungo",
+        "minutes": "{count, plural, one {# min} other {# min}}",
+        "outTag": "Fuori",
+        "lineTag": "In fila"
+      },
+      "today": {
+        "title": "Oggi in breve",
+        "button": "Oggi",
+        "doneOf": "{done} su {total} finiti",
+        "barLabel": "{done} finiti, {work} al lavoro, {stuck} bloccati, {none} non iniziato",
+        "nums": "{done} finiti · {work} al lavoro · {stuck} bloccati · {none} non iniziato",
+        "lead": "Le consegne di oggi. Avvia la lezione per vedere chi lavora o è bloccato.",
+        "leadLive": "Le consegne di oggi, mentre la classe lavora.",
+        "done": "Finito",
+        "working": "Al lavoro",
+        "stuck": "Bloccato",
+        "notStarted": "Non iniziato",
+        "none": "Oggi non è ancora stato consegnato nulla.",
+        "weeks": "I progressi nelle settimane sono nella scheda Classe.",
+        "classroom": "Apri Classe"
+      },
+      "hands": {
+        "label": "{count, plural, =0 {Mani, nessuna alzata} one {Mani, # alzata} other {Mani, # alzate}}",
+        "button": "Mani",
+        "title": "Mani alzate",
+        "notNow": "Non ora",
+        "putInLine": "Metti in fila",
+        "givePass": "Dai il permesso",
+        "answered": "Risposto",
+        "none": "Al momento nessuna mano alzata.",
+        "private": "Solo tu vedi le mani e il permesso. Mai sul proiettore.",
+        "done": {
+          "answer": "Risposto",
+          "pass": "Permesso aggiornato",
+          "notNow": "Mano abbassata",
+          "back": "Permesso aggiornato"
+        }
+      },
+      "look": {
+        "title": "Banco di {name}",
+        "loading": "Caricamento...",
+        "never": "ancora niente",
+        "done": "Finito",
+        "pct": "{pct}% fatto",
+        "allDone": "Tutto sul banco è finito.",
+        "nothing": "Ancora niente sul banco.",
+        "stuckNote": "Nessun passo avanti su questa consegna da {min} minuti.",
+        "lastSeen": "Visto l’ultima volta {when}",
+        "whereGame": "Nel gioco",
+        "whereDesk": "Al banco",
+        "activity": "ultima attività {when}",
+        "on": "Sta lavorando a",
+        "progress": "{done} consegne su {total} finite",
+        "pad": "Il suo blocco",
+        "teamPad": "Blocco della squadra",
+        "padLabel": "Blocco di {name}",
+        "padEmpty": "Ancora nessun disegno",
+        "private": "Un riepilogo di ciò che Homeroom sa. Non mostra mai lo schermo né cosa scrive.",
+        "coming": "Arrivo da te",
+        "comingOn": "In arrivo: tocca per toglierlo",
+        "lock": "Blocca banco",
+        "unlock": "Sblocca banco",
+        "hideCursor": "Nascondi cursore",
+        "showCursor": "Mostra cursore",
+        "handouts": "Le sue consegne",
+        "toast": {
+          "lockOn": "Il banco di {name} è bloccato",
+          "lockOff": "Il banco di {name} è di nuovo aperto",
+          "hideOn": "Il cursore di {name} è nascosto",
+          "hideOff": "Il cursore di {name} è di nuovo visibile",
+          "comingOn": "{name} vede che stai arrivando",
+          "comingOff": "Avviso tolto dal banco di {name}"
+        }
       }
     }
   },
@@ -14812,7 +14958,12 @@
       "commentLong": "Un commento può avere al massimo 140 caratteri.",
       "badSticker": "Scegli uno degli adesivi.",
       "notFinished": "Commenti e adesivi vanno sul lavoro finito. Questo non è ancora finito.",
-      "padChanged": "Un compagno di squadra disegnava insieme a te. Il tuo disegno è stato aggiunto al suo."
+      "padChanged": "Un compagno di squadra disegnava insieme a te. Il tuo disegno è stato aggiunto al suo.",
+      "badKind": "Scegli una domanda, aiuto o il bagno.",
+      "passAlready": "Hai già un posto per il permesso di uscita.",
+      "badMinutes": "Scegli tra 1 e 20 minuti.",
+      "noHand": "Quella mano è già abbassata.",
+      "noPass": "Non ha il permesso né un posto in fila."
     },
     "live": "In diretta",
     "desk": {

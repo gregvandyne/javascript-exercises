@@ -1432,6 +1432,22 @@ export const MIGRATIONS = [
       PRIMARY KEY (class_lesson_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_user ON homeroom_feedback(user_id);
     CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_class ON homeroom_feedback(class_id);`],
+  // Homeroom, step 3a (docs/decisions.md "Homeroom, step 3a"; services/homeroom-live.js): watching desks during live
+  // class. homeroom_live: one row per class and student while class is live: their raised hand (hand: '' or question,
+  // help, bathroom; hand_at: when, for the order), their place with the hall pass (pass: '' or 'line' waiting for it, or
+  // 'out' with it since out_at; pass_at orders the line) and what the teacher set for their desk (locked: "Your teacher
+  // locked your desk for a moment"; hidden: their cursor isn't shared; coming_at: "Your teacher is coming over"). Only the
+  // class's teachers write the desk settings; a student writes only their own hand and pass. Every row goes with End
+  // class (and with the class, the school, the student leaving the class or their account). homeroom_rooms.pass_minutes:
+  // how long the hall pass lasts in this class (the teacher's choice, 5 by default). Activity, status and cursors are
+  // never stored: they live in the server's memory for the live class only.
+  ['0128_homeroom_live', `
+    CREATE TABLE IF NOT EXISTS homeroom_live (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      hand TEXT NOT NULL DEFAULT '', hand_at INTEGER, pass TEXT NOT NULL DEFAULT '', pass_at INTEGER, out_at INTEGER,
+      locked INTEGER NOT NULL DEFAULT 0, hidden INTEGER NOT NULL DEFAULT 0, coming_at INTEGER, updated_at INTEGER NOT NULL,
+      PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_live_user ON homeroom_live(user_id);
+    ALTER TABLE homeroom_rooms ADD COLUMN pass_minutes INTEGER NOT NULL DEFAULT 5;`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

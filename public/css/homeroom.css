@@ -595,3 +595,120 @@ button.hr-tname:hover{background:var(--hover)}
 .hd-rteam .hd-rname{position:static;display:flex;align-items:center;gap:4px;max-width:none;padding:6px 8px;white-space:normal;overflow-wrap:anywhere;line-height:1.2}
 .hd-roombox:not(.grid) .hd-rteam{overflow:hidden}
 .hd-card:has(.hd-fbsticker) .hd-ct,.hd-card:has(.hd-fbsticker) .hd-csub{padding-inline-end:58px}
+
+/* ---- step 3a, live class: watching desks (public/js/homeroom-live.js) and the student's hand (homeroom-desk.js) */
+.hr-lv{position:absolute;left:8px;right:8px;bottom:-15px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:3}
+.hr-lv>*{pointer-events:auto}
+.hr-lvchip,.hr-lvm{display:inline-flex;align-items:center;gap:5px;min-height:28px;max-width:100%;padding:2px 10px;border:2px solid var(--line);border-radius:999px;background:var(--card);color:var(--text);font:800 12px var(--font);white-space:nowrap;cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hr-lvchip.static{cursor:default;box-shadow:none}
+.hr-lvt{overflow:hidden;text-overflow:ellipsis}
+.hr-lvdot{flex:none;width:9px;height:9px;border-radius:50%;background:var(--muted)}
+.hr,.hr-fl,.sheet{--hr-sky:#3F8FCF;--hr-rose:color-mix(in srgb,var(--danger) 72%,var(--card))}
+.st-working .hr-lvdot,.st-here .hr-lvdot{background:var(--ok);animation:hr-pulse 1.6s infinite}
+.st-typing .hr-lvdot{background:var(--hr-sky);animation:hr-pulse .7s infinite}
+.st-stuck .hr-lvdot{background:var(--hr-rose)}
+.st-done .hr-lvdot{background:var(--spark-press)}
+.st-away{color:var(--muted)}
+.st-stuck.hr-lvchip,.st-stuck.hr-lvm{border-color:color-mix(in srgb,var(--danger) 45%,var(--line))}
+@keyframes hr-pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.hr-lvdot{animation:none!important}}
+.hr-lvbar{flex:none;display:block;width:40px;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
+.hr-lvbar i{display:block;height:100%;background:var(--ok);transition:width .6s}
+.hr-lvbar.big{width:100%;height:8px;margin-top:4px}
+.hr-lvflag{display:inline-flex;align-items:center;min-height:24px;padding:0 9px;border-radius:999px;background:var(--bad-bg);color:var(--bad-ink);font:800 11px var(--font);white-space:nowrap}
+.hr-lvteam{display:inline-flex;gap:4px;min-width:0;overflow:hidden}
+.hr-lvm{padding:2px 8px;min-width:0}
+.hr-lvm bdi{overflow:hidden;text-overflow:ellipsis;max-width:70px}
+.hr-lvtop{position:absolute;inset-inline-end:-6px;top:-36px;z-index:4;max-width:calc(100% + 12px);display:flex;justify-content:flex-end}
+.hr-lvhand{display:inline-flex;align-items:center;gap:4px;min-height:30px;max-width:190px;padding:2px 10px;border:0;border-radius:999px;background:var(--spark);color:#141414;font:800 12px var(--font);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 3px 10px rgba(0,0,0,.18);cursor:pointer}
+.hr-lvhand.out{background:var(--accent-soft);color:var(--text)}
+.hr-desk.hr-away{opacity:.55;border-style:dashed}
+.hr-desk.hr-stuck{box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 25%,transparent),var(--shadow)}
+.hr-desk:has(>.hr-lvtop) .hr-name{max-width:calc(100% - 84px)}
+.hr-card.on{box-shadow:inset 0 0 0 2px var(--ok)}
+.hr-curs{position:absolute;inset:0;pointer-events:none;z-index:5}
+.hr-cur{position:absolute;left:0;top:0;display:flex;align-items:flex-start;gap:2px;transition:transform .25s linear;will-change:transform}
+.hr-cur span{margin-top:12px;padding:1px 7px;border-radius:999px;color:#fff;font:800 11px var(--font);white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+@media (prefers-reduced-motion:reduce){.hr-cur{transition:none}}
+.hr-count{display:inline-grid;place-items:center;min-width:22px;height:22px;margin-inline-start:6px;padding:0 6px;border-radius:999px;background:var(--spark);color:#141414;font:900 12px var(--font)}
+.hr-chunk.on .hr-count{background:var(--spark);color:#141414}
+/* the floating panels under the top bar: ✋ Hands and 📊 Today */
+.hr-fl{position:absolute;inset-inline-end:12px;top:12px;z-index:60;width:min(340px,calc(100% - 24px));max-height:calc(100% - 100px);overflow:auto;padding:14px;border:1px solid var(--line);border-radius:var(--r-lg);background:var(--card);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;gap:8px}
+.hr-fl[hidden]{display:none}
+.hr-flhead{display:flex;align-items:center;gap:8px}
+.hr-flhead h2{flex:1;margin:0;font-size:1.05rem;display:flex;align-items:center;gap:6px}
+.hr-flclose{width:44px;height:44px}
+.hr-flsub{margin:6px 0 0;font-size:.95rem;display:flex;align-items:center;gap:6px}
+.hr-flnote{margin:4px 0 0}
+.hr-hlist,.hr-pline,.hr-tglist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column}
+.hr-hrow{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;padding:8px 0;border-top:1px solid var(--line)}
+.hr-hwho{display:flex;flex-direction:column;min-width:0}
+.hr-hkind{display:inline-flex;align-items:center;gap:4px;font-size:.85rem;color:var(--text-2);font-weight:700}
+.hr-hacts{display:flex;gap:6px;flex-wrap:wrap}
+.hr-hacts .btn,.hr-pout .btn,.hr-pline .btn,.hr-pstep{min-height:44px}
+.hr-pout{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;background:var(--accent-soft)}
+.hr-pout.over{background:var(--spark-soft)}
+.hr-pclock{font-variant-numeric:tabular-nums;color:var(--text-2);font-weight:700}
+.hr-pline li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0}
+.hr-pmin{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;font-weight:700}
+.hr-pmin b{min-width:64px;text-align:center}
+.hr-tg{padding:8px 0;border-top:1px solid var(--line)}
+.hr-tgh{display:flex;justify-content:space-between;gap:8px;font-size:.9rem}
+.hr-tgh b{min-width:0;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.hr-tgh span{color:var(--muted);font-weight:700;white-space:nowrap}
+.hr-tgbar{display:flex;height:10px;border-radius:9px;background:var(--line);overflow:hidden;margin-top:6px}
+.hr-tgbar i,.hr-tgkey i{display:block;height:100%}
+.hr-tgbar .d,.hr-tgkey .d{background:var(--ok)}.hr-tgbar .w,.hr-tgkey .w{background:var(--hr-sky)}.hr-tgbar .s,.hr-tgkey .s{background:var(--hr-rose)}
+.hr-tgnums{margin:4px 0 0;color:var(--muted)}
+.hr-tgkey{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted);font-weight:700}
+.hr-tgkey span{display:flex;align-items:center;gap:4px}
+.hr-tgkey i{width:10px;height:10px;border-radius:3px;background:var(--line)}
+.hr-tgflag{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 10px;border-radius:12px;background:var(--bad-bg);color:var(--bad-ink);font-size:.9rem}
+.hr-lookname{min-height:36px;padding:0 10px;border:0;border-radius:999px;background:var(--card);color:var(--text);font:800 .85rem var(--font);cursor:pointer}
+/* look at a student's desk */
+.hr-look{display:flex;flex-direction:column;gap:8px}
+.hr-lkhead{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.hr-lkstuck{margin:0;padding:8px 10px;border-radius:12px;background:var(--bad-bg);color:var(--bad-ink);font-weight:700}
+.hr-lkon{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-radius:14px;background:var(--card-2)}
+.hr-lkon>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.hr-lkhand{margin:0;display:flex;align-items:center;gap:6px;font-weight:800}
+.hr-lkpad{position:relative;max-width:min(340px,100%)}
+.hr-lkpad svg{display:block;width:100%;height:auto}
+.hr-lkempty{position:absolute;inset:0;display:grid;place-items:center}
+.hr-lkacts{justify-content:flex-start;flex-wrap:wrap;gap:8px}
+/* the student's hand (top bar), its menu and the note under the bar */
+.hd-handwrap{position:relative;flex:none}
+.hd-handbtn{min-height:48px;padding:0 16px;font-size:1rem}
+.hd-handbtn.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
+.hd-handmenu{position:absolute;inset-inline-end:0;top:calc(100% + 8px);z-index:60;display:flex;flex-direction:column;gap:6px;width:min(300px,calc(100vw - 24px));padding:8px;border-radius:18px;background:var(--card);box-shadow:var(--shadow-lg);border:1px solid var(--line)}
+.hd-hmi{display:flex;align-items:center;gap:8px;min-height:56px;padding:0 14px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 1rem var(--font);text-align:start;cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hd-hmi:hover{background:var(--hover)}
+.hd-hmi.on{border-color:var(--text);box-shadow:0 2px 0 var(--text)}
+.hd-hmi.down{background:var(--card-2)}
+.hd-hmi:disabled{opacity:.45;cursor:default}
+.hd-hmtag{margin-inline-start:auto;font-size:.75rem;color:var(--muted);font-weight:800}
+.hd-notewrap{position:absolute;z-index:30;top:76px;left:50%;transform:translateX(-50%);width:min(620px,calc(100% - 24px))}
+.hd-note{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 14px;border-radius:18px;background:var(--card);box-shadow:var(--shadow-lg);border:2px solid var(--spark)}
+.hd-note.go{border-color:var(--ok);background:var(--ok-bg)}
+.hd-note.calm{border-color:var(--accent-press);background:var(--accent-soft)}
+.hd-notet{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:2px 6px;align-items:baseline}
+.hd-notet>span{color:var(--text-2);font-size:.9rem}
+.hd-passclock{font-variant-numeric:tabular-nums;font-weight:800;color:var(--text)!important}
+.hd-noteb{flex:none;min-height:48px}
+.hd-hasnote .hd-body{top:150px}
+.hd-mate text{font:800 22px var(--font);fill:#141414;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.hd-mate{transition:transform .25s linear}
+@media (max-width:819px){
+  .hr-livebtns{display:contents}
+  .hr-livebtns .hr-spark{order:4}
+  .hr-top .hr-class{flex:1 1 200px}
+}
+@media (max-width:600px){
+  .hd-notewrap{top:62px;width:calc(100% - 16px)}
+  .hd-hasnote .hd-body{top:144px}
+  .hd-handbtn{padding:0 12px}
+  .hd-handbtn span{max-width:28vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+}
+/* over a handout's game (public/js/homeroom-pulse.js): the lock, Pause screens, "Your teacher is coming over" */
+.hp-full{position:fixed;z-index:9000}
+.hp-note{position:fixed;z-index:9000;left:50%;top:12px;transform:translateX(-50%);display:flex;align-items:center;gap:8px;max-width:calc(100% - 24px);padding:10px 16px;border-radius:999px;background:var(--accent-soft);color:var(--text);font-weight:800;box-shadow:var(--shadow-lg)}
