@@ -138,9 +138,10 @@ function start() {
   // Every button in the bar whole, at every width (public/css/class-views.css): the view's buttons on screen are
   // measured, and when one does not fit (a live class, a longer language, a narrow window) the bar drops their words
   // (cv-icons), then the clock (cv-noclock), then a button the ⋯ menu also has (cv-fold, Arrange seats), then gives the
-  // pill a row of its own (cv-two; under 1024 px it always has).
+  // pill a row of its own (cv-two; under 1024 px it always has). Before all of these, Homeroom's Arrange seats loses its word
+  // (cv-short: the ⋯ menu also has it), so the day plan pill (public/js/homeroom-plan.js) and the other buttons keep theirs.
   // Again after a resize, a view change and any change to the bar's buttons (Homeroom's live buttons come and go).
-  const TIGHT = ['cv-icons', 'cv-noclock', 'cv-fold', 'cv-two'], twoRows = matchMedia('(max-width: 1023px)');
+  const TIGHT = ['cv-short', 'cv-icons', 'cv-noclock', 'cv-fold', 'cv-two'], twoRows = matchMedia('(max-width: 1023px)');
   function overflows() {
     const a = acts(cur);
     if (bar.scrollWidth > bar.clientWidth + 1) return true;
