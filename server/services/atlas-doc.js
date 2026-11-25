@@ -54,5 +54,5 @@ export async function quizFromFile({ kind, buf, level = '', locale = 'en' }) {
   }
   if (!words.length) return { ok: false, code: 'docNone' };
   const ct = cleanText(r.title || '', 60);
-  return { ok: true, title: ct.ok ? ct.value : '', words, cut, ai: true };
+  return { ok: true, title: ct.ok ? ct.value : '', words, cut, ai: true, asked: Math.max(r.asked || 0, words.length) };
 }
