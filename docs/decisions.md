@@ -13896,3 +13896,92 @@ game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked a
   Noto set instead.
 - Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
   never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.
+
+## Builders check their work: verify after every change (25 Nov 2026)
+
+The owner's report. On a Figures test, the companion was asked for "a multiple choice test asking students to name
+different shapes". It said "The app repaired one question so its figure could be drawn"; question 1 on screen was "What
+is the area of the rectangle?". Told "The first question isn't multiple choice", Oomba said it had replaced question 1
+with a "name the square" question (Square, Circle, Triangle, Rectangle); the screen kept the area question; the same
+again after "It is still an area question". The owner: "it needs to check its work and confirm on the screen that it
+has done what it said it has first." Later, the same rule for every AI builder that changes something.
+
+Root cause, in two parts.
+- **The edit did land, as the wrong question.** The model drew its square as `{ AB: 5, BC: 5, square: true }`. OF.check
+  refuses that ("a square is drawn from AB; leave out "BC""), and `repairDraft` (`services/figures.js`) then replaced
+  the WHOLE question with its kind's first generator: the rectangle's number question "What is the area of the
+  rectangle?", the words and the four options thrown away. So the first draft's question 1 was already this swap, and
+  each "replace question 1" swapped it for another dealing of the same area question. Nothing undid anything: the
+  "Change undone." card is shown only after the teacher's own Undo (the engine marks `undone` only in `undo()`).
+- **The model was told "done" before anything was written.** `editWorksheet`'s result was `{ done: true, changes: 1,
+  repaired: 1, note: 'Applied when you answer' }`, made from the plan before the write, and the reply was written from
+  it. "repaired: 1" did not say that the repair had thrown the question away, so the model said what it had sent.
+
+What changed.
+- **Repairs keep the question** (`repairDraft`): when OF.check refuses a figure only for top-level measures it names to
+  leave out (`leave out "X"`, from the shipped kit's own messages; the kit is unchanged), the figure is checked again
+  without them and the question keeps its words, answer type and options (`fixed`). Only after that does the old
+  generator swap happen. Every item gets a note (`kept | fixed | replaced | dropped`, and why) so callers can say what
+  became of it; `repairTestDraft` passes them on. The worksheet's own "Power with AI" draft gets the same fix.
+- **A multiple-choice question is never swapped for a number question** in Oomba's edits (`figures-chat.js`
+  checkItem): when its figure still cannot be drawn, that edit is not applied and the reason goes back to the model,
+  which can send it again in the same answer (a second `editWorksheet` call is merged into the same change, one Undo).
+  A number question still falls back to its generator, reported as "landed other than asked".
+- **Checked work** (`services/verify-change.js`, shared): the tool writes the change in a dry run (a transaction that is
+  always rolled back; better-sqlite3 nests it as a savepoint), reads the worksheet back as the page shows it
+  (`figures-chat.js readBack`: each question's words, number or multiple choice, its options and answer) and returns
+  THAT: `applied`, `landed` (each question as it now reads, with any repair), `notLanded` (with why: its figure cannot be
+  drawn, no such question, the sheet is full, changed by hand meanwhile, the same as before, no figure takes that unit)
+  and `worksheetNow`. New questions get their ids before the dry run, so the real write makes the same questions.
+- **The real write is read back too** (with Oomba's reply, in the engine's one transaction). When it differs from what
+  the model was told (the teacher deleted or edited the question meanwhile), the app's own sentence follows Oomba's
+  words (`correction`, never cut by the reply limit), and the turn's `verify` says what did not land.
+- **The card tells the truth in the app's own words** (`public/js/oomba-chat.js`, shared by every surface): when not
+  everything landed, under "What changed" (or alone, when nothing changed) a yellow note lists each miss ("Question 1
+  stayed as it was: its figure couldn't be drawn that way.") with Try again (sends the same message again). The step
+  line says "Couldn't change the worksheet" when nothing landed; "Changed your worksheet (1 change)" counts what landed.
+  "Change undone." appears only after an Undo (`change.by: 'teacher'`), with a reason when there is one.
+- **On the screen**: after an answer, the Figures page reloads the worksheet and checks that every question the change
+  added or changed is drawn; if not, it loads again once, and says so if it still is not.
+- **The prompts** (the companion's and the Figures and Manipulatives page rules, never the arcade Builder's pinned
+  SYSTEM_PROMPT+TOOLS): `VC.RULE` ("Tell the teacher only what is under landed ... Never say something is done unless
+  the tool result shows it landed"), and the page tools' descriptions say their result is the page read back.
+- **Every page tool, through the shared engine**: Manipulatives' `changeBoard` returns the board read back as the page
+  will show it (`manip-chat.js readBack`) and what the checks left out (`dropped`); the card says "1 item was left out";
+  a board that cannot be built says nothing changed. The page puts the board on itself; if that throws, the board is
+  put back and the card says it could not be put on. Points the companion gives are counted as given (a class or a
+  student gone since gives none), with the app's correction when fewer landed. A new class is made only on the
+  teacher's tap (unchanged: the card shows it made), and dashboard changes only on Apply (unchanged).
+- **The engine** (`services/oomba-chat.js`): a surface's `apply()` may return `verify` (kept on the turn) and
+  `correction` (said after Oomba's words). `kept()` gives drafts without a page tool the same plain report ("12 of 15
+  words kept, 3 removed by the filter").
+- **Every other builder that changes something**, the same rule in its own place:
+  - *Books* (the companion's book writer): the merge keeps a page the teacher changed meanwhile; when nothing of the
+    writer's change landed, or some pages stayed, the reply ends with the app's own words and the card says so.
+  - *Dashboard* (Apply on a proposal card): the layout as saved; a widget removed by hand meanwhile is counted as not
+    landed on the card. A new class (createClass) is made only on Create, and its card shows it made (unchanged).
+  - *Mistake Hunt chat* (`services/proof-chat.js`): its reply is written before the server builds the set, so passages
+    the checks left out, or a set that could not be built, are said after it in the teacher's language
+    (`proof.chatCheck.*`) and kept on the turn (`verify`).
+  - *Crossword, Word Hunt, Atlas Quest drafts* (`set-ai.js`, `crossword-doc.js`, `atlas-doc.js`, `routes/games.js`):
+    each answer carries `report` (`VC.kept`: how many the AI sent, how many landed in the list, why the rest did not),
+    and the page says "12 of 15 kept" when some were left out (`js.play.aiKept`; the games' own frames are unchanged).
+  - *The Builder* (games, classroom activities and Canvas, `builder/claude.js`): the tools already answer the model
+    with what saved ("Saved as version 3", "Not saved: ...", "No changes were made"), and the playtest and safety scan
+    already end with honest lines. New: when the last change the AI tried did not save and nothing saved after it, the
+    reply ends with "my last change didn't save, so your game is still version N" (`builder.lastNotSaved`), whatever
+    the AI wrote. The arcade SYSTEM_PROMPT+TOOLS are unchanged (their hash test passes).
+  - Not changed in this pass: the lesson drafter (`lesson-ai.js`; its figure repairs get the leave-out fix through
+    `repairDraft`, but its draft does not yet say how many figures were repaired) and the live question-set drafts
+    (`set-ai.js draftQuestions` / `draftFromLesson`: the editor shows every question, but not how many the checks
+    dropped).
+
+Tests: `tests/unit/companion-verify.test.js` (the owner's flow: question 1 replaced by the name-the-shape question with
+its figure repaired, options kept, the tool's result read back, the reply from it, no "Change undone."; the first draft
+of that test; an edit that cannot land, told to the model and on the card; a second try in one answer; a question deleted
+meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers; the drafts'
+counts; a dashboard change after a widget went), `companion-book.test.js` (a book change that does not land),
+`proof-chat.test.js` (left-out passages and a set that could not be built), `builder-claude.test.js` (the last change
+did not save), and the
+owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
+next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).

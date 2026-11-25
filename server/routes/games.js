@@ -31,6 +31,7 @@ import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
 import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
+import * as VC from '../services/verify-change.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { quizFromFile } from '../services/atlas-doc.js';
 import { cleanText } from '../services/textfilter.js';
@@ -661,7 +662,9 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
   catch { r = { ok: false, code: 'aiFailed' }; }
   if (!r.ok) return res.status(r.code === 'words' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.clues', g.id, { count: b.words.length });
-  res.json({ clues: r.clues });
+  // Checked work (services/verify-change.js): what the teacher actually gets, said plainly when it is not everything.
+  const got = r.clues.filter(Boolean).length;
+  res.json({ clues: r.clues, report: VC.kept({ asked: r.asked || b.words.length, kept: got, removed: { 'left blank by the checks': (r.asked || b.words.length) - got }, noun: 'clues' }) });
 });
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
@@ -703,7 +706,10 @@ router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 
   const words = huntGame(g) ? r.words.filter(([w]) => { const n = [...gameSets.crossLetters(w)].length; return n >= 2 && n <= gameSets.HUNT.letters; }).slice(0, gameSets.HUNT.max).map(([w]) => [w, '']) : r.words;
   if (!words.length) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'docNone' });
   audit(req.user.id, atlas ? 'game.doc_quiz' : 'game.doc_words', g.id, { kind: b.kind, count: words.length, ai: r.ai, cut: r.cut });
-  res.json({ title: r.title, words, cut: r.cut, ai: r.ai });
+  // Checked work: how many of what the AI (or the list) offered landed in the list after the checks, and why not.
+  const asked = Math.max(r.asked || 0, r.words.length);
+  const report = VC.kept({ asked, kept: words.length, noun: atlas ? 'questions' : 'words', removed: { 'removed by the checks': asked - r.words.length, ...(huntGame(g) ? { 'left out (too long or too short for a word search, or past its limit)': r.words.length - words.length } : {}) } });
+  res.json({ title: r.title, words, cut: r.cut, ai: r.ai, report });
 });
 // Mistake Hunt's passage from a document (services/crossword-doc.js textFromFile): the text of a PDF (at most 5 pages)
 // or a Word file, at most 2 MB, read here with no AI; Crossword's limits and its 10 files a day (the same counter).
@@ -776,7 +782,7 @@ router.post('/api/games/:id/proof/chat', requireUser, rateLimit('proof-ai', 30, 
   if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const b = req.body || {};
   if (typeof b.text !== 'string' || b.text.length > 4000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'brief' });
-  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry }));
+  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry, lang: req.locale }));
 });
 router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
   const g = apiGame(req, res); if (!g) return;
