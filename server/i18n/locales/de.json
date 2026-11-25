@@ -2081,8 +2081,8 @@
         "line": "Linie"
       },
       "shapeDelete": "Diese Form löschen",
-      "hintMove": "Wählen Sie ein Werkzeug und zeichnen oder tippen Sie dann im Lehrerbereich.",
-      "hintDraw": "Zeichnen Sie im Lehrerbereich. Tippen Sie zum Beenden noch einmal auf das Werkzeug.",
+      "hintMove": "Tippe etwas im Lehrerbereich an, um es auszuwählen. Ziehen verschiebt es, ein Griff ändert die Größe, nochmal tippen zum Schreiben.",
+      "hintDraw": "Zeichne im Lehrerbereich. Tippe auf Auswählen, wenn du fertig bist.",
       "tooMany": "Im Lehrerbereich ist dafür kein Platz mehr.",
       "arrange": "Sitzplan einrichten",
       "signin": "Anmeldung für Schüler",
@@ -2179,6 +2179,12 @@
         "noSticker": "Keiner",
         "private": "Nur dieses Kind sieht es, auf seinem Tisch und der Seite der Aufgabe.",
         "remove": "Entfernen"
+      },
+      "select": "Auswählen",
+      "hintPlace": "Tippe oder ziehe im Lehrerbereich, um es zu platzieren. Danach bist du wieder bei Auswählen.",
+      "sel": {
+        "tools": "Ausgewähltes Element",
+        "delete": "Ausgewähltes Element löschen"
       }
     },
     "stories": {

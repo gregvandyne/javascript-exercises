@@ -2081,8 +2081,8 @@
         "line": "Line"
       },
       "shapeDelete": "Delete this shape",
-      "hintMove": "Pick a tool, then draw or tap in the teacher's area.",
-      "hintDraw": "Draw in the teacher's area. Tap the tool again when you're done.",
+      "hintMove": "Tap anything in the teacher's area to select it. Drag it to move it, pull a handle to resize it, tap it again to type.",
+      "hintDraw": "Draw in the teacher's area. Tap Select when you're done.",
       "tooMany": "There's no room for more of those in the teacher's area.",
       "arrange": "Arrange seats",
       "signin": "Students sign in",
@@ -2179,6 +2179,12 @@
         "noSticker": "None",
         "private": "Only this student sees it, on their desk and the lesson page.",
         "remove": "Remove"
+      },
+      "select": "Select",
+      "hintPlace": "Tap or drag in the teacher's area to place it. Then you're back on Select.",
+      "sel": {
+        "tools": "Selected item",
+        "delete": "Delete the selected item"
       }
     },
     "stories": {
