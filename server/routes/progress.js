@@ -43,6 +43,7 @@ import { router as studentRoutes, studentHref } from './student-report.js';
 import { storyResults } from './library.js';
 import * as LIB from '../services/library.js';
 import * as FS from '../services/figures-steps.js';
+import { classroomOverview } from './homeroom-overview.js';
 import { figuresStepHtml } from '../views/figures-step.js';
 import * as PS from '../services/proof-steps.js';
 import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
@@ -292,7 +293,10 @@ router.get('/class/:id/progress', requireUser, (req, res) => {
   </section>` : '';
   // Jump chips to the sections below the gradebook (only the ones on this page).
   const nav = gb.students.length ? jumpNav(t, [gb.lessons.length ? ['gb', `🎮 ${t('school.classTabs.games')}`] : null, ...shownCourses.map(course => [`course-${course.slug}`, `${course.emoji} ${t(`${course.key}.title`)}`]), typingPanel ? ['typing', `⌨️ ${t('progress.typing.title')}`] : null, livePanel ? ['live-games', `📡 ${t('folders.liveHistory')}`] : null]) : '';
-  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${nav}${body}${coursePanels}${typingPanel}${livePanel}`, head: CSS, ...classBack(req, c), scripts: ['/js/schools.js'] });
+  // Homeroom teachers (step 2c): the Classroom tab's calm overview of the last weeks, above everything that was here.
+  const overview = classroomOverview(req, c);
+  page(req, res, { title: `${t('progress.gradebook.title')} · ${c.name}`, active: 'classes', body: html`${classHeader(req, c, 'progress')}${overview}${nav}${body}${coursePanels}${typingPanel}${livePanel}`,
+    head: overview ? raw(`${CSS}<link rel="stylesheet" href="/css/homeroom-overview.css?v=${VERSION}">`) : CSS, ...classBack(req, c), scripts: ['/js/schools.js', ...(overview ? ['/js/homeroom-overview.js'] : [])] });
 });
 
 /** Typing Pets class goal (services/typing.js): { wpm, acc }; an empty speed clears it. The class's own teachers and school
@@ -642,6 +646,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')
     ? html`<form data-api="/api/live/sets/from-lesson/${l.id}"><button class="btn" type="submit">${ico('📡', { size: 18 })} ${t('live.entry.quizLesson')}</button></form>` : '';
   const late = student && L.isOpen(cl) && L.dueState(cl) === 'late' && doneN < st.length;
+  // Homeroom (step 2c): the teacher's comment and sticker on this student's own finished handout.
+  const note = student ? L.lessonNote(u, cl) : null;
   const body = html`
   <div class="pagehead"><div><h1 dir="auto">${l.title}</h1>
     <p class="muted lp-meta"><span>${t('lessons.stepsN', { count: st.length })}</span>${dateChips(t, f, cl, { late })}</p></div>
@@ -657,6 +663,7 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.kind === 'question' ? html`<div class="sc-body q-text">${paras(s.body)}</div>` : s.body ? html`<div class="sc-body">${paras(s.body)}</div>` : ''}
     ${student ? actions(s, x) : teacher ? preview(s) : s.kind === 'game' && !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>` : ''}
   </li>`; })}</ol>
+  ${note ? html`<section class="panel hr-note" id="teacher-note"><h2>${ico('💬', { size: 28 })} ${t('homeroom.desk.fromTeacher')}</h2><div class="hr-notein">${note.src ? html`<img class="hr-notesticker" src="${note.src}" alt="${t(`homeroom.stickers.${note.sticker}`)}" width="88" height="88">` : ''}${note.comment ? html`<p dir="auto">${note.comment}</p>` : ''}</div></section>` : ''}
   ${myScores[R.LESSON] ? html`<section class="panel" id="from-teacher"><h2>${ico('💬', { size: 28 })} ${t('rubrics.student.fromTeacherLesson')}</h2>${myScores[R.LESSON].feedback ? html`<div class="feedback"><p dir="auto">${myScores[R.LESSON].feedback}</p></div>` : ''}${resultView(t, myScores[R.LESSON])}</section>` : ''}`;
   page(req, res, { title: l.title, active: 'classes', mid: true, body, head: CSS, back: `/class/${c.id}`, backLabel: c.name, ...(student ? { scripts: ['/js/lesson-read.js', ...(st.some(s => s.kind === 'quiz') ? ['/js/live-quiz-step.js'] : [])] } : {}) });
 });

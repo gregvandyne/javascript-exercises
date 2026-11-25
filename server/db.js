@@ -1417,6 +1417,21 @@ export const MIGRATIONS = [
     ALTER TABLE homeroom_handouts ADD COLUMN version TEXT NOT NULL DEFAULT '';
     ALTER TABLE homeroom_handouts ADD COLUMN problems INTEGER NOT NULL DEFAULT 0;
     ALTER TABLE homeroom_handouts ADD COLUMN batch TEXT NOT NULL DEFAULT '';`],
+  // Homeroom, step 2c (docs/decisions.md "Homeroom, step 2c"). homeroom_rooms.teams: the team desks, students who share
+  // one desk ([{ id, members: [studentId...], x, y }], at least 2 members, a student in one team at most; written by the
+  // class's teachers in Arrange seats). A team's shared doodle pad is a homeroom_doodles row whose user_id is
+  // 'team:<team id>' (gone with the class, or when the team is split). homeroom_feedback: the teacher's short comment and
+  // one sticker on a student's finished handout (one row per class lesson and student; only that student, their
+  // teachers and later their parents see it). Gone with its class lesson, the class or the school, the student leaving
+  // the class, or their account.
+  ['0127_homeroom_teams_feedback', `
+    ALTER TABLE homeroom_rooms ADD COLUMN teams TEXT NOT NULL DEFAULT '[]';
+    CREATE TABLE IF NOT EXISTS homeroom_feedback (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
+      class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL, comment TEXT NOT NULL DEFAULT '',
+      sticker TEXT NOT NULL DEFAULT '', created_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL,
+      PRIMARY KEY (class_lesson_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_user ON homeroom_feedback(user_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_feedback_class ON homeroom_feedback(class_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

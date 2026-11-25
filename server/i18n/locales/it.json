@@ -2149,7 +2149,36 @@
         "removeAll": "Togli da tutti i banchi",
         "removeAllConfirm": "Togliere {title} da tutti i banchi? Il lavoro degli studenti resta salvato e torna se lo consegni di nuovo.",
         "lesson": "Lezione",
-        "version": "Versione: {name}"
+        "version": "Versione: {name}",
+        "gcAlso": "Pubblica anche su Google Classroom",
+        "gcHint": "Arriva al corso Classroom collegato come compito, con il voto scelto qui.",
+        "gcWholeOnly": "Solo le consegne a tutta la classe vanno su Google Classroom: lì arriverebbero a tutti."
+      },
+      "team": {
+        "label": "Banco di squadra",
+        "deskOf": "Banco di squadra: {names}",
+        "doneOf": "{done} su {n} fatto",
+        "split": "Dividi la squadra",
+        "splitConfirm": "Dividere il banco di squadra di {names}? Ognuno torna al proprio banco. Il blocco condiviso della squadra viene cancellato.",
+        "splitDone": "Squadra divisa. Ognuno è tornato al suo banco.",
+        "makeA": "Crea una squadra",
+        "pickLead": "Tocca i banchi degli studenti che condividono un banco (fino a {max})",
+        "picked": "{count, plural, =0 {Nessuno scelto} one {# scelto} other {# scelti}}",
+        "make": "Crea squadra",
+        "made": "Banco di squadra creato: {names}",
+        "full": "Una squadra può avere al massimo {max} studenti.",
+        "forNames": "la squadra {names}",
+        "sheetLead": "Tocca uno studente per vedere le sue consegne."
+      },
+      "feedback": {
+        "add": "Commento o adesivo",
+        "edit": "Cambia commento o adesivo",
+        "comment": "Un breve commento (facoltativo)",
+        "commentPh": "Per esempio: Ottimo lavoro con i resti!",
+        "sticker": "Un adesivo (facoltativo)",
+        "noSticker": "Nessuno",
+        "private": "Lo vede solo questo studente, sul suo banco e nella pagina della lezione.",
+        "remove": "Togli"
       }
     },
     "stories": {
@@ -4778,7 +4807,24 @@
       "newHandout": "Nuovo dall’insegnante: {title}",
       "lessonTitle": "Lezione: {title}",
       "worksheet": "Scheda · {count, plural, one {# esercizio} other {# esercizi}}",
-      "worksheetWords": "Scheda · {count, plural, one {# parola} other {# parole}}"
+      "worksheetWords": "Scheda · {count, plural, one {# parola} other {# parole}}",
+      "team": "Squadra: {names}",
+      "teamPad": "Il blocco della nostra squadra",
+      "fromTeacher": "L’insegnante:",
+      "stickers": {
+        "star": "Stella",
+        "thumbs": "Pollice in su",
+        "heart": "Cuore",
+        "idea": "Ottima idea",
+        "check": "Spunta",
+        "rocket": "Razzo",
+        "trophy": "Trofeo",
+        "medal": "Medaglia",
+        "crown": "Corona",
+        "fireworks": "Fuochi d’artificio",
+        "smiley": "Faccina sorridente",
+        "rainbow": "Arcobaleno"
+      }
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",
@@ -4915,6 +4961,21 @@
       "versionsBy": "Versioni per gruppo",
       "asBuilt": "La lezione così come l'hai creata",
       "scoreHint": "Il registro mostra la % di risposte giuste."
+    },
+    "homeroom-overview": {
+      "title": "Valuta per",
+      "score": {
+        "name": "Punteggio",
+        "hint": "La % di risposte giuste. Anche Google Classroom la riceve."
+      },
+      "completion": {
+        "name": "Completamento",
+        "hint": "100% quando è finito."
+      },
+      "none": {
+        "name": "Senza voto",
+        "hint": "Esercizio: nessun voto, non si invia nulla."
+      }
     }
   },
   "favorites": {
@@ -6910,7 +6971,7 @@
       "lead": "Colleghi il Suo Google Classroom in pochi clic. All’inizio Oomba Academy può vedere solo i Suoi corsi e i loro studenti. Non pubblica nulla finché Lei non consente la pubblicazione.",
       "li1": "Importi l’elenco degli studenti con un clic: poi si aggiorna da solo ogni 6 ore. Gli studenti vengono riconosciuti dal loro account Google.",
       "li2": "Pubblichi una lezione come compito di Classroom, con il link e la scadenza, oppure la condivida come materiale.",
-      "li3": "I voti di completamento tornano su Classroom: il voto di ogni studente, su 100, è la parte dei passaggi della lezione che ha completato, non quante risposte erano giuste. Li invii Lei o attivi i voti automatici.",
+      "li3": "I voti tornano su Classroom su 100: un voto di completamento (la parte dei passi finiti, non le risposte giuste) o, per le consegne di Homeroom, quello scelto: il punteggio, il completamento o niente per l’esercizio. Inviali tu o attiva i voti automatici.",
       "li4": "Pubblichi nello stream del corso quando inizia un gioco dal vivo o una lezione è pronta, con parole Sue.",
       "li5": "Oomba Academy non chiede a Classroom le email degli studenti e non invia mai a Google il nome, le risposte o i giochi di uno studente.",
       "note": "Compiti, materiali, voti e annunci funzionano quando Lei consente la pubblicazione, un passaggio a parte. Ogni insegnante collega il proprio account Google, e l’amministratore Google della Sua scuola potrebbe dover prima autorizzare Oomba Academy.",
@@ -10545,10 +10606,10 @@
         "courses": "collegare questa classe a uno dei tuoi corsi di Classroom",
         "roster": "portare qui i suoi studenti, che accederanno con Google",
         "post": "pubblicare lì le lezioni, con un link a questa pagina e la scadenza",
-        "grades": "inviare a Classroom il voto di completamento di ogni studente in una lezione"
+        "grades": "inviare il voto di ogni studente a Classroom (di completamento, o il punteggio scelto in Homeroom)"
       },
       "button": "Collega Google Classroom",
-      "privacy": "Solo tu vedi questo collegamento. Collegandoti, Oomba Academy può leggere le tue classi e i loro studenti. Solo se permetti di pubblicare invia a Classroom quello che pubblichi: titolo, link e scadenza di una lezione, il voto di completamento di ogni studente su 100, il nome di un argomento e gli annunci che scrivi. Mai nomi, risposte o giochi degli studenti.",
+      "privacy": "Solo tu vedi questo collegamento. Collegandoti, Oomba Academy può leggere le tue classi e i loro studenti. Solo se permetti di pubblicare invia a Classroom quello che pubblichi: titolo, link e scadenza di una lezione, il voto di ogni studente su 100 (di completamento, o il punteggio scelto in Homeroom), il nome di un argomento e gli annunci che scrivi. Mai nomi, risposte o giochi degli studenti.",
       "connectedAs": "Collegato come {email}",
       "connectedHint": "Questo collegamento è tuo: i tuoi colleghi collegano il loro.",
       "connectedToast": "Google Classroom è collegato.",
@@ -10612,17 +10673,25 @@
       "somePosted": "Qui è assegnata ad alcuni studenti. Prima era stata pubblicata per tutta la classe in Google Classroom; i voti vanno solo agli studenti assegnati."
     },
     "grades": {
-      "text": "È un voto di completamento: la parte dei passi della lezione fatti dallo studente, su 100. Non conta le risposte giuste. Chi non l'ha ancora iniziata viene escluso.",
+      "text": "Ogni lezione invia il voto con cui è valutata, su 100. Le lezioni assegnate in Classroom inviano un voto di completamento: la parte dei passi fatti, non le risposte giuste. Le consegne di Homeroom inviano ciò che hai scelto consegnandole: Punteggio invia la % di risposte giuste, Completamento il voto di completamento, Senza voto non invia nulla. Chi non ha ancora iniziato viene escluso.",
       "as": "Invia come",
       "draft": "Voto provvisorio (lo restituisci in Classroom)",
       "assigned": "Voto assegnato",
       "button": "Invia i voti di completamento",
-      "lastDraft": "Voti di completamento provvisori inviati {when}",
-      "lastAssigned": "Voti di completamento assegnati inviati {when}",
+      "lastDraft": "Voti provvisori inviati {when}",
+      "lastAssigned": "Voti assegnati inviati {when}",
       "resultSent": "{count, plural, one {# voto di completamento inviato} other {# voti di completamento inviati}}",
       "resultNotStarted": "{count, plural, one {# non ha iniziato} other {# non hanno iniziato}}",
       "resultNotMatched": "{count, plural, one {# non è in questa classe} other {# non sono in questa classe}}",
-      "resultFailed": "{count, plural, one {# non è andato a buon fine} other {# non sono andati a buon fine}}"
+      "resultFailed": "{count, plural, one {# non è andato a buon fine} other {# non sono andati a buon fine}}",
+      "buttonScore": "Invia i punteggi",
+      "resultSentScore": "{count, plural, one {# punteggio inviato} other {# punteggi inviati}}",
+      "resultNotScored": "{count, plural, one {# non ha ancora un punteggio} other {# non hanno ancora un punteggio}}",
+      "sends": {
+        "completion": "Invia un voto di completamento: la parte dei passi fatti.",
+        "score": "Valutato a punteggio in Homeroom: invia la % di risposte giuste.",
+        "none": "Senza voto in Homeroom: nessun voto va su Classroom."
+      }
     },
     "log": {
       "heading": "Sincronizzazioni recenti",
@@ -10713,7 +10782,7 @@
       "roster": "Aggiorna gli studenti da Classroom ogni 6 ore",
       "rosterHint": "I nuovi studenti vengono aggiunti. Chi lascia Classroom compare sopra perché sia tu a toglierlo: nessuno viene tolto da solo.",
       "grades": "Invia i voti automaticamente",
-      "gradesHint": "Ogni 30 minuti, i voti di completamento cambiati vanno a Classroom per le lezioni pubblicate da qui, fino a 30 giorni dopo ogni scadenza.",
+      "gradesHint": "Ogni 30 minuti i voti cambiati vanno su Classroom per le lezioni pubblicate da qui (ognuna come è valutata: voto di completamento o punteggio), fino a 30 giorni dopo ogni scadenza.",
       "by": "I voti partono con il collegamento a Google Classroom di {name}.",
       "save": "Salva",
       "saved": "Salvato.",
@@ -14734,7 +14803,16 @@
       "setsFull": "Hai il numero massimo di schede che questo gioco può tenere. Eliminane prima qualcuna in Le mie schede del gioco.",
       "tooManyLessons": "Hai il numero massimo di lezioni che puoi tenere. Eliminane prima una.",
       "lessonGone": "Una scheda di questa lezione è stata eliminata. Apri la lezione, salvala di nuovo e poi distribuiscila.",
-      "lessonOnDesk": "{count, plural, one {# di questi banchi ha già questa lezione.} other {# di questi banchi hanno già questa lezione.}} Toglila prima da lì, oppure dalla agli altri."
+      "lessonOnDesk": "{count, plural, one {# di questi banchi ha già questa lezione.} other {# di questi banchi hanno già questa lezione.}} Toglila prima da lì, oppure dalla agli altri.",
+      "teamTooSmall": "Scegli almeno 2 banchi per una squadra.",
+      "teamTooBig": "Una squadra può avere al massimo 6 studenti.",
+      "alreadyInTeam": "Uno di questi studenti è già a un banco di squadra. Dividi prima quella squadra.",
+      "tooManyTeams": "Questa classe ha già il massimo di banchi di squadra.",
+      "noTeam": "Quel banco di squadra non c’è più.",
+      "commentLong": "Un commento può avere al massimo 140 caratteri.",
+      "badSticker": "Scegli uno degli adesivi.",
+      "notFinished": "Commenti e adesivi vanno sul lavoro finito. Questo non è ancora finito.",
+      "padChanged": "Un compagno di squadra disegnava insieme a te. Il tuo disegno è stato aggiunto al suo."
     },
     "live": "In diretta",
     "desk": {
@@ -14853,6 +14931,78 @@
         "multiply": "Moltiplica. Scrivi ogni risposta come un'unica espressione.",
         "factor": "Scomponi ogni espressione."
       }
+    },
+    "stickers": {
+      "star": "Stella",
+      "thumbs": "Pollice in su",
+      "heart": "Cuore",
+      "idea": "Ottima idea",
+      "check": "Spunta",
+      "rocket": "Razzo",
+      "trophy": "Trofeo",
+      "medal": "Medaglia",
+      "crown": "Corona",
+      "fireworks": "Fuochi d’artificio",
+      "smiley": "Faccina sorridente",
+      "rainbow": "Arcobaleno"
+    },
+    "feedback": {
+      "saved": "Commento e adesivo salvati",
+      "removed": "Commento e adesivo tolti"
+    },
+    "overview": {
+      "title": "Panoramica della classe",
+      "lead": "Le ultime {weeks} settimane. Ogni colonna è una consegna data in Homeroom. Gli studenti sono in ordine alfabetico, mai in classifica.",
+      "student": "Studente",
+      "trend": "Andamento",
+      "tableLabel": "Panoramica: consegne e risultati",
+      "kind": {
+        "lesson": "Lezione",
+        "game": "Gioco",
+        "mine": "Il mio gioco"
+      },
+      "versions": "{count, plural, one {# versione} other {# versioni}}",
+      "gradedBy": {
+        "score": "Valutato a punteggio",
+        "completion": "Valutato a completamento"
+      },
+      "notGraded": "Senza voto",
+      "changeGrade": "{title}: {grade}. Cambia come si valuta",
+      "done": "Fatto",
+      "notDone": "Non fatto",
+      "practice": "Esercizio",
+      "locked": "Non ancora aperto",
+      "notStarted": "Non iniziato",
+      "trends": {
+        "improving": "In miglioramento",
+        "steady": "Stabile",
+        "support": "Ha bisogno di supporto",
+        "none": "Ancora pochi punteggi"
+      },
+      "finished": "delle consegne finite",
+      "support": "{count, plural, one {studente ha bisogno di supporto} other {studenti hanno bisogno di supporto}}",
+      "month": "{count, plural, one {consegna questo mese} other {consegne questo mese}}",
+      "keyNames": {
+        "score": "Punteggio",
+        "completion": "Completamento",
+        "none": "Senza voto"
+      },
+      "keyScore": "% di risposte giuste",
+      "keyCompletion": "100% quando è finito",
+      "keyNone": "esercizio, non si invia nulla",
+      "keyTrend": "Andamento, dagli ultimi 3 punteggi di ogni studente: Ha bisogno di supporto se la media è sotto il 60%, In miglioramento se l’ultimo supera il primo di 10 punti o più, altrimenti Stabile.",
+      "more": "Il registro completo, il CSV, gli standard, le rubriche e Google Classroom sono qui sotto, come prima.",
+      "fullGradebook": "Registro completo",
+      "noHandouts": "Nessuna consegna in Homeroom nelle ultime {weeks} settimane. Consegna un gioco o una lezione dalla scheda Homeroom.",
+      "gcLinked": "Collegata a “{course}”",
+      "gcRoster": "elenco sincronizzato {when}",
+      "gcRosterNever": "elenco non ancora sincronizzato",
+      "gcGrades": "voti inviati {when}",
+      "gcGradesNever": "nessun voto inviato",
+      "gcOpen": "Apri impostazioni",
+      "gcNotLinked": "Non ancora collegata.",
+      "gcLink": "Collega un corso Classroom",
+      "gradeSaved": "Valutazione cambiata"
     }
   }
 }

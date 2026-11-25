@@ -13607,3 +13607,92 @@ Reading) is listed in the builder as coming later.
   delete) and `tests/unit/homeroom-lessons-browser.test.js` (build an Arithmetic Lab lesson with group versions at
   1366 x 768, Algebra Builder and Crossword on a tablet, the phone, hand it out, Print, the student's card and the real
   game playing that set).
+
+## Homeroom, step 2c: grades to Google Classroom, the Classroom overview, comments and stickers, team desks (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("A class's tabs", "Handouts and lessons": Google Classroom gets the grade the teacher chose;
+"Team desks") and the owner-approved mockup's Classroom view ("Two ways to see progress", "Where results go"). Finishes
+step 2. Migration `0127_homeroom_teams_feedback`.
+- **Google Classroom gets the grade the teacher chose** (`services/gclassroom.js` gradeBasis / gradeOf, used by
+  sendGrades by hand and by the automatic sync, with its retries and log unchanged). A Homeroom handout graded by
+  **Score** sends the % right: the gradebook's Score for that lesson (`services/scores.js`, the same figure as the cell);
+  a student with nothing scored yet (a free-play game played without finishing) gets no grade and is counted "has no
+  score yet" (`notScored`). **Completion** sends the completion grade (steps done of the lesson's steps, so 100 when
+  finished). **Not graded** sends nothing (2a's guard). Every lesson that is not a Homeroom handout keeps the completion
+  grade exactly as before. The Google Classroom page says per lesson what it sends ("Sends a completion grade", "Graded
+  by score in Homeroom: sends the % right", "Not graded in Homeroom: no grade goes to Classroom"; no Send button then),
+  the button reads Send scores for a Score handout, the results and log say "scores sent", and the general text, the
+  automatic sync's hint, the connect list, the privacy line and /teachers' Classroom line say it plainly in 13 languages.
+  `docs/google-classroom.md` is updated.
+- **"Also post to Google Classroom" in the hand-out sheets** (games and lessons), shown when the teacher can post to the
+  class's linked Classroom class (`routes/gclassroom.js` gcCanPost, the condition the assign forms already use). It goes
+  through `gcAfterAssign`, the same path as Classroom's Assign (the sync limit, the class's teachers only), once per
+  class assignment made; `GC.postOf` keeps a lesson from being posted twice. Only Whole class: a handout to some desks
+  is assigned to some students, which Classroom would give the whole course (`someStudents`), so the toggle is off for
+  desks, groups and teams with a line saying why. Unticked by default, as in Classroom's Assign.
+- **The Classroom tab's overview** (`services/homeroom-overview.js`, `routes/homeroom-overview.js`,
+  `public/js/homeroom-overview.js`, `public/css/homeroom-overview.css`) at the top of Progress, for Homeroom teachers of
+  the class only (`canUseClass`); everyone else's Progress page is byte for byte as before, and everything that was there
+  (the full gradebook, CSV, courses, typing, live games; standards, rubrics, student reports, the Google Classroom page)
+  stays below or one tap away, unchanged.
+  - Columns: every Homeroom handout of the last 4 weeks (games, the teacher's own games, lessons; newest first, as in
+    the mockup) with its kind and how it is graded ("Graded by score", "Graded by completion", "Not graded"). Only
+    Homeroom handouts: other assignments have no grading choice, so showing them here would need a grading this page
+    can't honestly state; they stay in the full gradebook. A lesson's versions handed out together (`batch`) are one
+    column; each student's cell is their own version's (the one assigned to them).
+  - Rows: every student, alphabetical by the gradebook's name (roster name, else display name), the teacher's language's
+    collation, case and accents ignored. Never ranked.
+  - Cells: Score the % right (green 80 and up, yellow 60 to 79, rose under 60; finished with nothing to score: Done;
+    not started: –); Completion ✓ Done / Not done; Not graded Practice (✓ when practiced); not assigned to them: a dot;
+    not open yet: 🔒. Tapping a column's name opens the lesson results page; a student opens the student report.
+  - **The trend rule** (`trendOf`, shown under the table): from the student's Score results in this window, oldest to
+    newest, the last 3: none yet: no trend ("Not enough scores yet"); their mean under 60 %: **Needs support** (checked
+    first); 2 or more and the latest at least 10 points above the first of those 3: **Improving**; otherwise **Steady**.
+    A falling score that is still 60 % or more on average reads Steady: the overview flags support, it never ranks.
+  - The three numbers: **handouts finished** (finished cells of every open cell assigned in the window, practice
+    included), **students needing support** (the trend's count) and **handouts this month** (merged handouts since the
+    first of the calendar month, UTC like the stored dates).
+  - **The Google Classroom status line** (school staff while Classroom is on): "Linked to "course" · roster synced
+    {when} · grades sent {when}" (the link's `roster_at`, the newest `gc_posts.grades_at` for that course) and Open
+    settings (the class's Google Classroom page); not linked: "Not linked yet. Link a Classroom class".
+  - **Changing a handout's grading**: its header chip opens a small menu (Score, Completion, Not graded, each with one
+    line) and `POST /api/homeroom/:id/handouts/:clid/grade` changes every version handed out together
+    (`services/homeroom-handouts.js` setGrade); the class's teachers only (the Homeroom gate), audited; the page reloads so
+    the gradebook, the overview and the next Classroom sync all follow.
+- **Comments and stickers on finished work** (`homeroom_feedback`: one row per class lesson and student, comment, sticker,
+  who and when; `setFeedback`, `POST /api/homeroom/:id/handouts/:clid/feedback`). From the desk's sheet on the teacher's
+  board, a finished card gets "Comment or sticker": a comment of at most 140 characters and 2 lines (the instructions'
+  cleaning, blank lines dropped, the site's word and personal-information rules) and/or one of 12 stickers from the
+  owner's sticker library already served at `/img/stickers/` (illustrations without words, so they read in every
+  language: star, thumbs up, heart, bright idea, check, rocket, trophy, medal, crown, fireworks, smiley, rainbow; never a
+  photo). Both empty removes it. Refused on unfinished work (`notFinished`), a handout not on that desk, an unknown
+  sticker, a long or unkind comment. The board shows a small sticker (or 💬) on the card. The student sees their own on
+  their done card (the sticker on its corner, the words in yellow; the desk's fingerprint includes it, so the poll brings
+  it) and on the lesson page ("Your teacher says", `services/lessons.js` lessonNote, a hook Homeroom registers). Never a
+  classmate's; nothing on See the room, the projector or anywhere public. Stored for the parents' view (step 4).
+  Deleted with the class lesson, the class, the school (`BY_CLASS`), the student leaving the class, their account; moved
+  with a merged school account.
+- **Team desks** (`homeroom_rooms.teams`: `[{ id, members, x, y }]`; `services/homeroom.js` saveTeams,
+  `POST /api/homeroom/:id/teams`, the class's teachers only). In Arrange seats, **Make a team**: tap 2 to 6 desks of
+  students in no team (the bar counts them), Make team; the team desk (300 x 150, wider so every name fits) starts where
+  the first one sat and is dragged (or moved with the arrow keys) like a desk; **Split team** is on it. Members keep their
+  own seats, hidden while they are a team, so a split puts everyone back. On the board the team desk shows its members'
+  names (each opens their own desk's sheet) and each handout any member has with "n of m done" (✓ when all are). A game
+  or lesson dropped or tapped onto it goes to every member: target `team`, one class assignment with exactly them
+  (assignments per member as for any handout). A student's desk says "Team: names" (the names classmates see), See the
+  room shows the team desk once with its members' names, and the pad is **the team's pad** (`homeroom_doodles` row with
+  user_id `team:<id>`): any member draws on it. Saves carry the pad version the desk last saw; when a teammate saved
+  since, the server answers 409 with the current pad and the desk adds its own new strokes to it and saves again, so
+  nobody's drawing is lost; the desk's poll brings a teammate's strokes (`pv`). Split removes the team pad; a student
+  leaving the class leaves their team (a team of one is split); a merged account keeps its place.
+- **Who**: every new address is behind the Homeroom gate (the class's own teachers with the plan); students only read
+  their own desk and lesson page. Tests: `tests/unit/homeroom-2c.test.js` (overview columns, merged versions,
+  alphabetical order, cells, the trend rule, the numbers, who sees it; grade change and its auth; comments and stickers
+  saved, cleaned, refused, removed, seen only by their student, desk fingerprint, delete paths; teams make / move /
+  split / refusals / hand-out to a team / See the room / the shared pad and its merge / a leaver),
+  `tests/unit/gclassroom.test.js` (Score, Completion and Not graded by hand and automatically; other lessons
+  unchanged) and `tests/unit/homeroom-2c-browser.test.js` (the overview at 1366 x 768 and on a phone, the Classroom line,
+  the grade chip; comment and sticker from the board to the desk and lesson page on a tablet; a team desk made, moved and
+  handed a game on a tablet, the student's Team line and See the room).
+- **Open**: parents' view of comments and stickers (step 4); the overview's columns are Homeroom handouts only; a team
+  desk shows its first two handouts like any desk, then "+N more" (each member's name opens their full sheet).

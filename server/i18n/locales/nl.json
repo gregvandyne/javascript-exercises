@@ -2149,7 +2149,36 @@
         "removeAll": "Van alle tafels halen",
         "removeAllConfirm": "{title} van alle tafels halen? Het werk van de leerlingen blijft bewaard en komt terug als je het weer uitdeelt.",
         "lesson": "Les",
-        "version": "Versie: {name}"
+        "version": "Versie: {name}",
+        "gcAlso": "Ook in Google Classroom plaatsen",
+        "gcHint": "Het gaat als opdracht naar je gekoppelde Classroom-klas, met het cijfer dat je hier koos.",
+        "gcWholeOnly": "Alleen opdrachten voor de hele klas gaan naar Google Classroom: daar zouden ze iedereen bereiken."
+      },
+      "team": {
+        "label": "Teamtafel",
+        "deskOf": "Teamtafel: {names}",
+        "doneOf": "{done} van {n} klaar",
+        "split": "Team splitsen",
+        "splitConfirm": "De teamtafel van {names} splitsen? Iedereen gaat terug naar de eigen tafel. Het gedeelde blok van het team wordt leeggemaakt.",
+        "splitDone": "Team gesplitst. Iedereen zit weer aan de eigen tafel.",
+        "makeA": "Team maken",
+        "pickLead": "Tik op de tafels van leerlingen die één tafel delen (tot {max})",
+        "picked": "{count, plural, =0 {Nog niemand gekozen} one {# gekozen} other {# gekozen}}",
+        "make": "Team maken",
+        "made": "Teamtafel gemaakt: {names}",
+        "full": "Een team heeft hoogstens {max} leerlingen.",
+        "forNames": "het team {names}",
+        "sheetLead": "Tik op een leerling om diens opdrachten te zien."
+      },
+      "feedback": {
+        "add": "Opmerking of sticker",
+        "edit": "Opmerking of sticker wijzigen",
+        "comment": "Een korte opmerking (optioneel)",
+        "commentPh": "Bijvoorbeeld: Goed gedaan met de resten!",
+        "sticker": "Een sticker (optioneel)",
+        "noSticker": "Geen",
+        "private": "Alleen deze leerling ziet het, op de eigen tafel en de pagina van de les.",
+        "remove": "Verwijderen"
       }
     },
     "stories": {
@@ -4778,7 +4807,24 @@
       "newHandout": "Nieuw van je leraar: {title}",
       "lessonTitle": "Les: {title}",
       "worksheet": "Werkblad · {count, plural, one {# som} other {# sommen}}",
-      "worksheetWords": "Werkblad · {count, plural, one {# woord} other {# woorden}}"
+      "worksheetWords": "Werkblad · {count, plural, one {# woord} other {# woorden}}",
+      "team": "Team: {names}",
+      "teamPad": "Het blok van ons team",
+      "fromTeacher": "Je leraar:",
+      "stickers": {
+        "star": "Ster",
+        "thumbs": "Duim omhoog",
+        "heart": "Hart",
+        "idea": "Goed idee",
+        "check": "Vinkje",
+        "rocket": "Raket",
+        "trophy": "Trofee",
+        "medal": "Medaille",
+        "crown": "Kroon",
+        "fireworks": "Vuurwerk",
+        "smiley": "Smiley",
+        "rainbow": "Regenboog"
+      }
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -4915,6 +4961,21 @@
       "versionsBy": "Versies per groep",
       "asBuilt": "De les zoals gemaakt",
       "scoreHint": "Het cijferoverzicht toont het % goed."
+    },
+    "homeroom-overview": {
+      "title": "Beoordelen op",
+      "score": {
+        "name": "Score",
+        "hint": "Het % goed. Google Classroom krijgt het ook."
+      },
+      "completion": {
+        "name": "Voltooiing",
+        "hint": "100% als het af is."
+      },
+      "none": {
+        "name": "Geen cijfer",
+        "hint": "Oefening: geen cijfer, er wordt niets verstuurd."
+      }
     }
   },
   "favorites": {
@@ -6910,7 +6971,7 @@
       "lead": "Koppel je Google Classroom in een paar klikken. Eerst kan Oomba Academy alleen je klassen en hun leerlingen zien. Er wordt niets geplaatst tot jij plaatsen toestaat.",
       "li1": "Importeer je klassenlijst met één klik, daarna ververst die zichzelf elke 6 uur. Leerlingen worden herkend aan hun Google-account.",
       "li2": "Plaats een les als Classroom-opdracht, met de link en de inleverdatum, of deel hem als lesmateriaal.",
-      "li3": "Voltooiingscijfers gaan terug naar Classroom: het cijfer van elke leerling, op 100, is het deel van de stappen van de les dat hij afrondde, niet hoeveel antwoorden goed waren. Stuur ze zelf, of zet automatische cijfers aan.",
+      "li3": "Cijfers gaan op 100 terug naar Classroom: een voltooiingscijfer (het deel van de stappen dat af is, niet de goede antwoorden), of voor Homeroom-opdrachten het cijfer dat je koos: de score, voltooiing of niets bij oefening. Verstuur ze zelf of zet automatische cijfers aan.",
       "li4": "Plaats een bericht in de stream van de klas als een livegame begint of een les klaarstaat, in je eigen woorden.",
       "li5": "Oomba Academy vraagt Classroom niet om e-mailadressen van leerlingen en stuurt Google nooit de naam, antwoorden of games van een leerling.",
       "note": "Opdrachten, lesmateriaal, cijfers en mededelingen werken zodra je plaatsen toestaat, een aparte stap. Elke leerkracht koppelt een eigen Google-account, en misschien moet de Google-beheerder van je school Oomba Academy eerst toestaan.",
@@ -10545,10 +10606,10 @@
         "courses": "deze klas koppelen aan een van je Classroom-klassen",
         "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
         "post": "lessen daar plaatsen, met een link hierheen en de inleverdatum",
-        "grades": "het voltooiingscijfer van elke leerling voor een les naar Classroom sturen"
+        "grades": "het cijfer van elke leerling naar Classroom sturen (een voltooiingscijfer, of de score die je in Homeroom koos)"
       },
       "button": "Google Classroom koppelen",
-      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een les, het voltooiingscijfer van elke leerling op 100, een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of games van leerlingen.",
+      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een les, het cijfer van elke leerling op 100 (een voltooiingscijfer, of de score die je in Homeroom koos), een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of games van leerlingen.",
       "connectedAs": "Gekoppeld als {email}",
       "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
       "connectedToast": "Google Classroom is gekoppeld.",
@@ -10612,17 +10673,25 @@
       "somePosted": "Hier aan een paar leerlingen toegewezen. Eerder is ze in Google Classroom voor de hele klas geplaatst; cijfers gaan alleen naar de toegewezen leerlingen."
     },
     "grades": {
-      "text": "Dit is een voltooiingscijfer: het deel van de stappen van de les dat een leerling deed, op 100. Goede antwoorden tellen niet mee. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+      "text": "Elke les verstuurt het cijfer waarop hij beoordeeld wordt, op 100. Lessen die in Classroom zijn toegewezen versturen een voltooiingscijfer: het deel van de stappen dat gedaan is, niet de goede antwoorden. Homeroom-opdrachten versturen wat je koos bij het uitdelen: Score verstuurt het % goed, Voltooiing het voltooiingscijfer en Geen cijfer verstuurt niets. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
       "as": "Versturen als",
       "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
       "assigned": "Toegekend cijfer",
       "button": "Voltooiingscijfers versturen",
-      "lastDraft": "Voorlopige voltooiingscijfers verstuurd {when}",
-      "lastAssigned": "Toegekende voltooiingscijfers verstuurd {when}",
+      "lastDraft": "Voorlopige cijfers verstuurd {when}",
+      "lastAssigned": "Toegekende cijfers verstuurd {when}",
       "resultSent": "{count, plural, one {# voltooiingscijfer verstuurd} other {# voltooiingscijfers verstuurd}}",
       "resultNotStarted": "{count, plural, one {# is nog niet begonnen} other {# zijn nog niet begonnen}}",
       "resultNotMatched": "{count, plural, one {# niet in deze klas} other {# niet in deze klas}}",
-      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}"
+      "resultFailed": "{count, plural, one {# kwam niet door} other {# kwamen niet door}}",
+      "buttonScore": "Scores versturen",
+      "resultSentScore": "{count, plural, one {# score verstuurd} other {# scores verstuurd}}",
+      "resultNotScored": "{count, plural, one {# heeft nog geen score} other {# hebben nog geen score}}",
+      "sends": {
+        "completion": "Verstuurt een voltooiingscijfer: het deel van de stappen dat gedaan is.",
+        "score": "In Homeroom beoordeeld op score: verstuurt het % goed.",
+        "none": "Geen cijfer in Homeroom: er gaat geen cijfer naar Classroom."
+      }
     },
     "log": {
       "heading": "Recente synchronisaties",
@@ -10713,7 +10782,7 @@
       "roster": "De leerlingen elke 6 uur bijwerken uit Classroom",
       "rosterHint": "Nieuwe leerlingen komen erbij. Wie Classroom verlaat, staat hierboven zodat jij beslist: niemand wordt vanzelf verwijderd.",
       "grades": "Cijfers automatisch versturen",
-      "gradesHint": "Elke 30 minuten gaan gewijzigde voltooiingscijfers naar Classroom voor lessen die je hier hebt geplaatst, tot 30 dagen na elke inleverdatum.",
+      "gradesHint": "Elke 30 minuten gaan gewijzigde cijfers naar Classroom voor lessen die hiervandaan geplaatst zijn (elk zoals het beoordeeld wordt: een voltooiingscijfer of de score), tot 30 dagen na elke inleverdatum.",
       "by": "De cijfers gaan via de Google Classroom-koppeling van {name}.",
       "save": "Opslaan",
       "saved": "Opgeslagen.",
@@ -14734,7 +14803,16 @@
       "setsFull": "Je hebt het maximale aantal werkbladen dat dit spel kan bewaren. Verwijder er eerst een paar bij Mijn werkbladen in het spel.",
       "tooManyLessons": "Je hebt het maximale aantal lessen dat je kunt bewaren. Verwijder er eerst een.",
       "lessonGone": "Een werkblad van deze les is verwijderd. Open de les, bewaar haar opnieuw en deel haar dan uit.",
-      "lessonOnDesk": "{count, plural, one {# van deze tafels heeft deze les al.} other {# van deze tafels hebben deze les al.}} Haal haar daar eerst weg, of geef haar aan de anderen."
+      "lessonOnDesk": "{count, plural, one {# van deze tafels heeft deze les al.} other {# van deze tafels hebben deze les al.}} Haal haar daar eerst weg, of geef haar aan de anderen.",
+      "teamTooSmall": "Kies minstens 2 tafels voor een team.",
+      "teamTooBig": "Een team heeft hoogstens 6 leerlingen.",
+      "alreadyInTeam": "Een van die leerlingen zit al aan een teamtafel. Splits dat team eerst.",
+      "tooManyTeams": "Deze klas heeft al het maximale aantal teamtafels.",
+      "noTeam": "Die teamtafel is er niet meer.",
+      "commentLong": "Een opmerking mag hoogstens 140 tekens hebben.",
+      "badSticker": "Kies een van de stickers.",
+      "notFinished": "Opmerkingen en stickers zijn voor af werk. Dit is nog niet af.",
+      "padChanged": "Iemand uit je team tekende tegelijk. Jouw tekening is erbij gezet."
     },
     "live": "Live",
     "desk": {
@@ -14853,6 +14931,78 @@
         "multiply": "Vermenigvuldig. Schrijf elk antwoord als één uitdrukking.",
         "factor": "Ontbind elke uitdrukking in factoren."
       }
+    },
+    "stickers": {
+      "star": "Ster",
+      "thumbs": "Duim omhoog",
+      "heart": "Hart",
+      "idea": "Goed idee",
+      "check": "Vinkje",
+      "rocket": "Raket",
+      "trophy": "Trofee",
+      "medal": "Medaille",
+      "crown": "Kroon",
+      "fireworks": "Vuurwerk",
+      "smiley": "Smiley",
+      "rainbow": "Regenboog"
+    },
+    "feedback": {
+      "saved": "Opmerking en sticker bewaard",
+      "removed": "Opmerking en sticker verwijderd"
+    },
+    "overview": {
+      "title": "Overzicht van de klas",
+      "lead": "De laatste {weeks} weken. Elke kolom is iets dat je in Homeroom uitdeelde. Leerlingen staan op alfabet, nooit in een rangorde.",
+      "student": "Leerling",
+      "trend": "Trend",
+      "tableLabel": "Overzicht: opdrachten en resultaten",
+      "kind": {
+        "lesson": "Les",
+        "game": "Spel",
+        "mine": "Mijn spel"
+      },
+      "versions": "{count, plural, one {# versie} other {# versies}}",
+      "gradedBy": {
+        "score": "Beoordeeld op score",
+        "completion": "Beoordeeld op voltooiing"
+      },
+      "notGraded": "Geen cijfer",
+      "changeGrade": "{title}: {grade}. Beoordeling wijzigen",
+      "done": "Klaar",
+      "notDone": "Niet klaar",
+      "practice": "Oefening",
+      "locked": "Nog niet open",
+      "notStarted": "Niet begonnen",
+      "trends": {
+        "improving": "Gaat vooruit",
+        "steady": "Stabiel",
+        "support": "Heeft steun nodig",
+        "none": "Nog te weinig scores"
+      },
+      "finished": "van de opdrachten af",
+      "support": "{count, plural, one {leerling heeft steun nodig} other {leerlingen hebben steun nodig}}",
+      "month": "{count, plural, one {opdracht deze maand} other {opdrachten deze maand}}",
+      "keyNames": {
+        "score": "Score",
+        "completion": "Voltooiing",
+        "none": "Geen cijfer"
+      },
+      "keyScore": "% vragen goed",
+      "keyCompletion": "100% als het af is",
+      "keyNone": "oefening, er wordt niets verstuurd",
+      "keyTrend": "Trend, uit de laatste 3 scores van elke leerling: Heeft steun nodig bij een gemiddelde onder 60%, Gaat vooruit als de laatste 10 punten of meer boven de eerste ligt, anders Stabiel.",
+      "more": "Het volledige cijferoverzicht, CSV, standaarden, rubrics en Google Classroom staan hieronder, zoals altijd.",
+      "fullGradebook": "Volledig cijferoverzicht",
+      "noHandouts": "De laatste {weeks} weken is er niets uitgedeeld in Homeroom. Deel een spel of les uit via het tabblad Homeroom.",
+      "gcLinked": "Gekoppeld aan “{course}”",
+      "gcRoster": "lijst gesynchroniseerd {when}",
+      "gcRosterNever": "lijst nog niet gesynchroniseerd",
+      "gcGrades": "cijfers verstuurd {when}",
+      "gcGradesNever": "nog geen cijfers verstuurd",
+      "gcOpen": "Instellingen openen",
+      "gcNotLinked": "Nog niet gekoppeld.",
+      "gcLink": "Een Classroom-klas koppelen",
+      "gradeSaved": "Beoordeling gewijzigd"
     }
   }
 }

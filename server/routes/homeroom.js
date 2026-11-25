@@ -14,6 +14,13 @@
 //   POST /api/homeroom/:id/handouts            hand out a game: { gameId, to: { kind: all | group | desk, id }, instructions,
 //                                              order: in | any, grade: score | completion | none, dueAt }
 //   POST /api/homeroom/:id/handouts/:clid/remove  take it off one desk ({ studentId }) or off every desk ({})
+// Step 2c (docs/decisions.md "Homeroom, step 2c"):
+//   POST /api/homeroom/:id/handouts            also { gcPost: true }: "Also post to Google Classroom" (routes/gclassroom.js
+//                                              gcAfterAssign, as Classroom's Assign does; never twice: GC.postOf)
+//   POST /api/homeroom/:id/handouts/:clid/feedback  a comment and a sticker on a finished card: { studentId, comment, sticker }
+//   POST /api/homeroom/:id/handouts/:clid/grade     change how it is graded: { grade: score | completion | none } (the
+//                                              Classroom tab's overview; every version handed out together)
+//   POST /api/homeroom/:id/teams               team desks: { action: make, members, x?, y? } | { action: split | move, id, x?, y? }
 // Lessons (step 2b; services/homeroom-lessons.js): the teacher's own, for any of their classes (the class in the address
 // is where they are working: its groups make the versions).
 //   GET  /api/homeroom/:id/lessons             My lessons
@@ -48,6 +55,7 @@ import * as games from '../services/games.js';
 import * as DASH from '../services/dash.js';
 import { toolAccess } from '../services/teacher-tools.js';
 import { config } from '../config.js';
+import { gcAfterAssign, gcCanPost } from './gclassroom.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413 };
@@ -111,6 +119,7 @@ router.get('/class/:id/homeroom', (req, res) => {
     title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
+      gc: gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
       lessons: HL.listMine(u, req.locale), lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u) })}
     <div id="homeroom" class="hr">
       <header class="hr-top">
@@ -157,17 +166,47 @@ router.post('/api/homeroom/:id/live', rateLimit('homeroom-live', 600, 3600e3), (
 const HO_ERR = { pickGame: 'homeroom.errors.pickGame', publishFirst: 'homeroom.errors.publishFirst', badDate: 'homeroom.errors.badDate' };
 const hoFail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(HO_ERR[r.code] || `homeroom.errors.${r.code}`, { count: r.count || 0 }), code: r.code });
 router.get('/api/homeroom/:id/handouts', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(HO.boardView(req.homeroomClass, req.locale)));
-router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), async (req, res) => {
   const x = body(req), c = req.homeroomClass;
   const to = x.to && typeof x.to === 'object' ? { kind: String(x.to.kind || ''), id: String(x.to.id || '') } : null;
   if (x.lessonId) {
     const r = HL.handOutLesson(req.user, c, { lessonId: String(x.lessonId), to, order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null });
     if (!r.ok) return hoFail(req, res, r);
-    return res.json({ ok: true, toast: req.t(r.versions > 1 ? 'homeroom.lessons.handedOutVersions' : 'homeroom.lessons.handedOut', { title: r.lesson.title, count: r.students, versions: r.versions }), ...HO.boardView(c, req.locale) });
+    const also = await alsoPost(req, r.classLessons);
+    const toast = req.t(r.versions > 1 ? 'homeroom.lessons.handedOutVersions' : 'homeroom.lessons.handedOut', { title: r.lesson.title, count: r.students, versions: r.versions });
+    return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
   }
   const r = HO.handOut(req.user, c, { gameId: String(x.gameId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null });
   if (!r.ok) return hoFail(req, res, r);
-  res.json({ ok: true, toast: req.t('homeroom.handout.done', { title: games.localizeGame(r.game, req.locale).title, count: r.students }), ...HO.boardView(c, req.locale) });
+  const also = await alsoPost(req, [r.classLesson]);
+  const toast = req.t('homeroom.handout.done', { title: games.localizeGame(r.game, req.locale).title, count: r.students });
+  res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
+});
+/** "Also post to Google Classroom" (step 2c): each class lesson just made goes to the linked Classroom class through
+ *  the same path as Classroom's Assign (gcAfterAssign: asked for, connected, the class's teacher, the sync limit; a
+ *  handout to some desks is refused there, since in Classroom it would reach the whole course). A lesson is posted once
+ *  (services/gclassroom.js postOf). -> the toast's extra line ('' when not asked). */
+async function alsoPost(req, cls) {
+  const lines = [];
+  for (const cl of cls || []) { const line = await gcAfterAssign(req, cl); if (line && !lines.includes(line)) lines.push(line); }
+  return lines.join(' · ');
+}
+router.post('/api/homeroom/:id/handouts/:clid/feedback', rateLimit('homeroom-feedback', 600, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass;
+  const r = HO.setFeedback(req.user, c, req.params.clid, String(x.studentId || ''), { comment: typeof x.comment === 'string' ? x.comment : '', sticker: typeof x.sticker === 'string' ? x.sticker : '' });
+  if (!r.ok) return hoFail(req, res, r);
+  res.json({ ok: true, feedback: r.feedback, toast: req.t(r.feedback ? 'homeroom.feedback.saved' : 'homeroom.feedback.removed'), ...HO.boardView(c, req.locale) });
+});
+router.post('/api/homeroom/:id/handouts/:clid/grade', rateLimit('homeroom-grade', 300, 3600e3), (req, res) => {
+  const r = HO.setGrade(req.user, req.homeroomClass, req.params.clid, String(body(req).grade || ''));
+  if (!r.ok) return hoFail(req, res, r);
+  res.json({ ok: true, grade: r.grade, ids: r.ids, toast: req.t('homeroom.overview.gradeSaved') });
+});
+router.post('/api/homeroom/:id/teams', rateLimit('homeroom-seats', 600, 3600e3), (req, res) => {
+  const x = body(req);
+  const r = H.saveTeams(req.user, req.homeroomClass, { action: String(x.action || ''), id: String(x.id || ''), members: Array.isArray(x.members) ? x.members.slice(0, 50) : [], x: x.x, y: x.y });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, teams: r.teams, ...(r.team ? { team: r.team } : {}), ...HO.boardView(req.homeroomClass, req.locale) });
 });
 router.post('/api/homeroom/:id/handouts/:clid/remove', rateLimit('homeroom-handout-remove', 600, 3600e3), (req, res) => {
   const c = req.homeroomClass, sid = body(req).studentId ? String(body(req).studentId) : null;
@@ -247,8 +286,8 @@ router.get('/class/:id/desk', (req, res) => {
   page(req, res, {
     title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, cards,
-      strokes: H.doodleOf(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: H.boardState(c.id) })}
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
+      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: H.boardState(c.id) })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
@@ -270,10 +309,18 @@ router.get('/class/:id/desk', (req, res) => {
 });
 router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => {
   // The student's own cards (never anyone else's), sent again only when they changed (hv: the version the page has).
-  const cards = HO.deskView(req.homeroomClass, req.user, req.locale), hv = HO.deskVersion(cards);
-  res.json({ ...H.boardState(req.homeroomClass.id, req.query.v), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }) });
+  const c = req.homeroomClass, cards = HO.deskView(c, req.user, req.locale), hv = HO.deskVersion(cards);
+  // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
+  const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
+  res.json({ ...H.boardState(c.id, req.query.v), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+    ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
 });
-router.post('/api/desk/:id/doodle', rateLimit('homeroom-doodle', 1200, 3600e3), (req, res) => send(req, res, H.saveDoodle(req.user, req.homeroomClass, body(req).strokes)));
+router.post('/api/desk/:id/doodle', rateLimit('homeroom-doodle', 1200, 3600e3), (req, res) => {
+  const x = body(req), r = H.saveDoodle(req.user, req.homeroomClass, x.strokes, { base: x.base === undefined || x.base === null ? null : String(x.base) });
+  // Another team member drew since: the current pad comes back so the page adds its strokes to it (409).
+  if (!r.ok && r.code === 'padChanged') return res.status(409).json({ error: req.t('homeroom.errors.padChanged'), code: r.code, strokes: r.strokes, pv: r.pv });
+  send(req, res, r);
+});
 
 // ---------------------------------------------------------------- "Your class is in Homeroom" on every page
 // A student signed in anywhere on the site hears when a class of theirs goes live: a small script, loaded only for

@@ -2149,7 +2149,36 @@
         "removeAll": "Remove from every desk",
         "removeAllConfirm": "Remove {title} from every desk? Students' work is kept, and it comes back if you hand it out again.",
         "lesson": "Lesson",
-        "version": "Version: {name}"
+        "version": "Version: {name}",
+        "gcAlso": "Also post to Google Classroom",
+        "gcHint": "It goes to your linked Classroom class as an assignment, with the grade you chose here.",
+        "gcWholeOnly": "Only Whole class handouts go to Google Classroom: there it would reach the whole class."
+      },
+      "team": {
+        "label": "Team desk",
+        "deskOf": "Team desk: {names}",
+        "doneOf": "{done} of {n} done",
+        "split": "Split team",
+        "splitConfirm": "Split the team desk of {names}? Each of them goes back to their own desk. The team's shared pad is cleared.",
+        "splitDone": "Team split. Everyone is back at their own desk.",
+        "makeA": "Make a team",
+        "pickLead": "Tap the desks of students who share one desk (up to {max})",
+        "picked": "{count, plural, =0 {None picked yet} one {# picked} other {# picked}}",
+        "make": "Make team",
+        "made": "Team desk made: {names}",
+        "full": "A team can have {max} students at most.",
+        "forNames": "the team {names}",
+        "sheetLead": "Tap a student to see their own handouts."
+      },
+      "feedback": {
+        "add": "Comment or sticker",
+        "edit": "Change comment or sticker",
+        "comment": "A short comment (optional)",
+        "commentPh": "For example: Great work on the remainders!",
+        "sticker": "A sticker (optional)",
+        "noSticker": "None",
+        "private": "Only this student sees it, on their desk and the lesson page.",
+        "remove": "Remove"
       }
     },
     "stories": {
@@ -5061,7 +5090,24 @@
       "newHandout": "New from your teacher: {title}",
       "lessonTitle": "Lesson: {title}",
       "worksheet": "Worksheet · {count, plural, one {# problem} other {# problems}}",
-      "worksheetWords": "Worksheet · {count, plural, one {# word} other {# words}}"
+      "worksheetWords": "Worksheet · {count, plural, one {# word} other {# words}}",
+      "team": "Team: {names}",
+      "teamPad": "Our team's pad",
+      "fromTeacher": "Your teacher:",
+      "stickers": {
+        "star": "Star",
+        "thumbs": "Thumbs up",
+        "heart": "Heart",
+        "idea": "Bright idea",
+        "check": "Check mark",
+        "rocket": "Rocket",
+        "trophy": "Trophy",
+        "medal": "Medal",
+        "crown": "Crown",
+        "fireworks": "Fireworks",
+        "smiley": "Smiley face",
+        "rainbow": "Rainbow"
+      }
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5198,6 +5244,21 @@
       "versionsBy": "Versions by group",
       "asBuilt": "The lesson as built",
       "scoreHint": "The gradebook shows the % right."
+    },
+    "homeroom-overview": {
+      "title": "Grade it by",
+      "score": {
+        "name": "Score",
+        "hint": "The % right. Google Classroom gets it too."
+      },
+      "completion": {
+        "name": "Completion",
+        "hint": "100% when finished."
+      },
+      "none": {
+        "name": "Not graded",
+        "hint": "Practice: no grade, nothing is sent."
+      }
     }
   },
   "favorites": {
@@ -7517,7 +7578,7 @@
       "lead": "Connect your Google Classroom in a few clicks. At first Oomba Academy can only see your classes and their students. It posts nothing until you allow posting.",
       "li1": "Import your roster in one click, and it refreshes itself every 6 hours. Students are matched by their Google account.",
       "li2": "Post a lesson as a Classroom assignment, with its link and due date, or share it as a material.",
-      "li3": "Completion grades flow back to Classroom: each student’s grade out of 100 is the share of the lesson’s steps they finished, not how many answers were right. Send them yourself, or turn on automatic grades.",
+      "li3": "Grades flow back to Classroom out of 100: a completion grade (the share of the lesson’s steps finished, not right answers), or for Homeroom handouts the grade you chose: the score, completion, or nothing for practice. Send them yourself, or turn on automatic grades.",
       "li4": "Post to the class stream when a live game starts or a lesson is ready, in your own words.",
       "li5": "Oomba Academy doesn’t ask Classroom for student emails, and never sends Google a student’s name, answers or games.",
       "note": "Assignments, materials, grades and announcements work once you allow posting, a separate step. Each teacher connects their own Google account, and your school’s Google admin may need to allow Oomba Academy first.",
@@ -11236,10 +11297,10 @@
         "courses": "link this class to one of your Classroom classes",
         "roster": "bring its students in, so they sign in with Google",
         "post": "post lessons there, with a link back here and the due date",
-        "grades": "send each student's lesson completion grade to Classroom"
+        "grades": "send each student's lesson grade to Classroom (a completion grade, or the score you chose in Homeroom)"
       },
       "button": "Connect Google Classroom",
-      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson's title, link and due date, each student's completion grade out of 100, a topic name, and announcements you write. Never students' names, answers or games.",
+      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson's title, link and due date, each student's grade out of 100 (a completion grade, or the score you chose in Homeroom), a topic name, and announcements you write. Never students' names, answers or games.",
       "connectedAs": "Connected as {email}",
       "connectedHint": "This connection is yours: your co-teachers connect their own.",
       "connectedToast": "Google Classroom is connected.",
@@ -11303,17 +11364,25 @@
       "somePosted": "Assigned to some students here. It was posted to the whole class in Google Classroom before that, and grades go only to the students it's assigned to."
     },
     "grades": {
-      "text": "This is a completion grade: the share of the lesson's steps a student has done, out of 100. It doesn't count right answers. Students who haven't started are left out.",
+      "text": "Each lesson sends the grade it is graded by, out of 100. Lessons assigned in Classroom send a completion grade: the share of the lesson's steps a student has done, not right answers. Homeroom handouts send what you chose when you handed them out: Score sends the % right, Completion the completion grade, and Not graded sends nothing. Students who haven't started are left out.",
       "as": "Send as",
       "draft": "Draft grade (you return it in Classroom)",
       "assigned": "Assigned grade",
       "button": "Send completion grades",
-      "lastDraft": "Draft completion grades sent {when}",
-      "lastAssigned": "Assigned completion grades sent {when}",
+      "lastDraft": "Draft grades sent {when}",
+      "lastAssigned": "Assigned grades sent {when}",
       "resultSent": "{count, plural, one {# completion grade sent} other {# completion grades sent}}",
       "resultNotStarted": "{count, plural, one {# hasn't started} other {# haven't started}}",
       "resultNotMatched": "{count, plural, one {# not in this class} other {# not in this class}}",
-      "resultFailed": "{count, plural, one {# didn't go through} other {# didn't go through}}"
+      "resultFailed": "{count, plural, one {# didn't go through} other {# didn't go through}}",
+      "buttonScore": "Send scores",
+      "resultSentScore": "{count, plural, one {# score sent} other {# scores sent}}",
+      "resultNotScored": "{count, plural, one {# has no score yet} other {# have no score yet}}",
+      "sends": {
+        "completion": "Sends a completion grade: the share of steps done.",
+        "score": "Graded by score in Homeroom: sends the % right.",
+        "none": "Not graded in Homeroom: no grade goes to Classroom."
+      }
     },
     "log": {
       "heading": "Recent syncs",
@@ -11404,7 +11473,7 @@
       "roster": "Update the students from Classroom every 6 hours",
       "rosterHint": "New students are added. Students who leave Classroom are listed above for you to remove: no one is removed on their own.",
       "grades": "Send grades automatically",
-      "gradesHint": "Every 30 minutes, completion grades that changed go to Classroom for lessons posted from here, until 30 days after each due date.",
+      "gradesHint": "Every 30 minutes, grades that changed go to Classroom for lessons posted from here (each as it is graded: a completion grade, or the score), until 30 days after each due date.",
       "by": "Grades go with {name}'s Google Classroom connection.",
       "save": "Save",
       "saved": "Saved.",
@@ -15451,7 +15520,16 @@
       "setsFull": "You have the most worksheets this game can keep. Delete some in the game's My worksheets first.",
       "tooManyLessons": "You have the most lessons you can keep. Delete one first.",
       "lessonGone": "A worksheet of this lesson was deleted. Open the lesson, save it again, then hand it out.",
-      "lessonOnDesk": "{count, plural, one {# of these desks already has this lesson.} other {# of these desks already have this lesson.}} Take it off there first, or hand it to the others."
+      "lessonOnDesk": "{count, plural, one {# of these desks already has this lesson.} other {# of these desks already have this lesson.}} Take it off there first, or hand it to the others.",
+      "teamTooSmall": "Pick at least 2 desks for a team.",
+      "teamTooBig": "A team can have 6 students at most.",
+      "alreadyInTeam": "One of those students is already at a team desk. Split that team first.",
+      "tooManyTeams": "This class has the most team desks it can have.",
+      "noTeam": "That team desk isn't there anymore.",
+      "commentLong": "A comment can be 140 characters at most.",
+      "badSticker": "Pick one of the stickers.",
+      "notFinished": "Comments and stickers go on finished work. This one isn't finished yet.",
+      "padChanged": "Your teammate drew at the same time. Your drawing was added to theirs."
     },
     "live": "Live",
     "desk": {
@@ -15570,6 +15648,78 @@
         "multiply": "Multiply. Write each answer as one expression.",
         "factor": "Factor each expression."
       }
+    },
+    "stickers": {
+      "star": "Star",
+      "thumbs": "Thumbs up",
+      "heart": "Heart",
+      "idea": "Bright idea",
+      "check": "Check mark",
+      "rocket": "Rocket",
+      "trophy": "Trophy",
+      "medal": "Medal",
+      "crown": "Crown",
+      "fireworks": "Fireworks",
+      "smiley": "Smiley face",
+      "rainbow": "Rainbow"
+    },
+    "feedback": {
+      "saved": "Comment and sticker saved",
+      "removed": "Comment and sticker removed"
+    },
+    "overview": {
+      "title": "Class overview",
+      "lead": "The last {weeks} weeks. Each column is something you handed out in Homeroom. Students are in alphabetical order, never ranked.",
+      "student": "Student",
+      "trend": "Trend",
+      "tableLabel": "Class overview: handouts and results",
+      "kind": {
+        "lesson": "Lesson",
+        "game": "Game",
+        "mine": "My game"
+      },
+      "versions": "{count, plural, one {# version} other {# versions}}",
+      "gradedBy": {
+        "score": "Graded by score",
+        "completion": "Graded by completion"
+      },
+      "notGraded": "Not graded",
+      "changeGrade": "{title}: {grade}. Change how it is graded",
+      "done": "Done",
+      "notDone": "Not done",
+      "practice": "Practice",
+      "locked": "Not open yet",
+      "notStarted": "Not started",
+      "trends": {
+        "improving": "Improving",
+        "steady": "Steady",
+        "support": "Needs support",
+        "none": "Not enough scores yet"
+      },
+      "finished": "of handouts finished",
+      "support": "{count, plural, one {student needs support} other {students need support}}",
+      "month": "{count, plural, one {handout this month} other {handouts this month}}",
+      "keyNames": {
+        "score": "Score",
+        "completion": "Completion",
+        "none": "Not graded"
+      },
+      "keyScore": "% of questions right",
+      "keyCompletion": "100% when finished",
+      "keyNone": "practice, nothing is sent",
+      "keyTrend": "Trend, from each student's last 3 scores: Needs support when they average under 60%, Improving when the latest is 10 points or more above the first of them, otherwise Steady.",
+      "more": "The full gradebook, CSV, standards, rubrics and Google Classroom are below, the same as before.",
+      "fullGradebook": "Full gradebook",
+      "noHandouts": "Nothing handed out in Homeroom in the last {weeks} weeks. Hand out a game or a lesson from the Homeroom tab.",
+      "gcLinked": "Linked to “{course}”",
+      "gcRoster": "roster synced {when}",
+      "gcRosterNever": "roster not synced yet",
+      "gcGrades": "grades sent {when}",
+      "gcGradesNever": "no grades sent yet",
+      "gcOpen": "Open settings",
+      "gcNotLinked": "Not linked yet.",
+      "gcLink": "Link a Classroom class",
+      "gradeSaved": "Grading changed"
     }
   }
 }

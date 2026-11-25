@@ -2148,7 +2148,36 @@
         "removeAll": "Quitar de todos los pupitres",
         "removeAllConfirm": "¿Quitar {title} de todos los pupitres? El trabajo de los estudiantes se conserva y vuelve si lo repartes otra vez.",
         "lesson": "Lección",
-        "version": "Versión: {name}"
+        "version": "Versión: {name}",
+        "gcAlso": "Publicar también en Google Classroom",
+        "gcHint": "Llega a tu clase de Classroom vinculada como tarea, con la calificación que elegiste aquí.",
+        "gcWholeOnly": "Solo las tareas para toda la clase van a Google Classroom: allí llegarían a toda la clase."
+      },
+      "team": {
+        "label": "Mesa de equipo",
+        "deskOf": "Mesa de equipo: {names}",
+        "doneOf": "{done} de {n} hecho",
+        "split": "Separar el equipo",
+        "splitConfirm": "¿Separar la mesa de equipo de {names}? Cada uno vuelve a su propia mesa. El bloc compartido del equipo se borra.",
+        "splitDone": "Equipo separado. Cada uno ha vuelto a su mesa.",
+        "makeA": "Formar un equipo",
+        "pickLead": "Toca las mesas de los alumnos que comparten una mesa (hasta {max})",
+        "picked": "{count, plural, =0 {Ninguno elegido} one {# elegido} other {# elegidos}}",
+        "make": "Crear equipo",
+        "made": "Mesa de equipo creada: {names}",
+        "full": "Un equipo puede tener {max} alumnos como máximo.",
+        "forNames": "el equipo {names}",
+        "sheetLead": "Toca a un alumno para ver sus tareas."
+      },
+      "feedback": {
+        "add": "Comentario o pegatina",
+        "edit": "Cambiar comentario o pegatina",
+        "comment": "Un comentario corto (opcional)",
+        "commentPh": "Por ejemplo: ¡Muy bien con los restos!",
+        "sticker": "Una pegatina (opcional)",
+        "noSticker": "Ninguna",
+        "private": "Solo lo ve este alumno, en su mesa y en la página de la lección.",
+        "remove": "Quitar"
       }
     },
     "stories": {
@@ -4777,7 +4806,24 @@
       "newHandout": "Nuevo de tu docente: {title}",
       "lessonTitle": "Lección: {title}",
       "worksheet": "Hoja de trabajo · {count, plural, one {# problema} other {# problemas}}",
-      "worksheetWords": "Hoja de trabajo · {count, plural, one {# palabra} other {# palabras}}"
+      "worksheetWords": "Hoja de trabajo · {count, plural, one {# palabra} other {# palabras}}",
+      "team": "Equipo: {names}",
+      "teamPad": "El bloc de nuestro equipo",
+      "fromTeacher": "Tu docente:",
+      "stickers": {
+        "star": "Estrella",
+        "thumbs": "Pulgar arriba",
+        "heart": "Corazón",
+        "idea": "Buena idea",
+        "check": "Marca de visto",
+        "rocket": "Cohete",
+        "trophy": "Trofeo",
+        "medal": "Medalla",
+        "crown": "Corona",
+        "fireworks": "Fuegos artificiales",
+        "smiley": "Cara sonriente",
+        "rainbow": "Arcoíris"
+      }
     },
     "homeroom-area": {
       "label": "Zona del docente",
@@ -4914,6 +4960,21 @@
       "versionsBy": "Versiones por grupo",
       "asBuilt": "La lección tal como la creaste",
       "scoreHint": "El libro de calificaciones muestra el % de aciertos."
+    },
+    "homeroom-overview": {
+      "title": "Calificar por",
+      "score": {
+        "name": "Puntuación",
+        "hint": "El % de aciertos. Google Classroom también lo recibe."
+      },
+      "completion": {
+        "name": "Finalización",
+        "hint": "100 % al terminar."
+      },
+      "none": {
+        "name": "Sin calificar",
+        "hint": "Práctica: sin nota, no se envía nada."
+      }
     }
   },
   "favorites": {
@@ -6909,7 +6970,7 @@
       "lead": "Conecte su Google Classroom en unos pocos clics. Al principio, Oomba Academy solo puede ver sus clases y sus estudiantes. No publica nada hasta que usted permita publicar.",
       "li1": "Importe su lista de estudiantes con un clic, y se actualiza sola cada 6 horas. Los estudiantes se reconocen por su cuenta de Google.",
       "li2": "Publique una lección como tarea de Classroom, con su enlace y su fecha de entrega, o compártala como material.",
-      "li3": "Las calificaciones de finalización vuelven a Classroom: la nota de cada estudiante, sobre 100, es la parte de los pasos de la lección que completó, no cuántas respuestas acertó. Envíelas usted o active las calificaciones automáticas.",
+      "li3": "Las notas vuelven a Classroom sobre 100: una nota de finalización (la parte de los pasos terminados, no las respuestas correctas) o, en las tareas de Homeroom, la que elegiste: la puntuación, la finalización o nada para la práctica. Envíalas tú o activa las notas automáticas.",
       "li4": "Publique en el tablón de la clase cuando empiece un juego en vivo o una lección esté lista, con sus propias palabras.",
       "li5": "Oomba Academy no pide a Classroom los correos de los estudiantes y nunca envía a Google el nombre, las respuestas ni los juegos de un estudiante.",
       "note": "Las tareas, los materiales, las calificaciones y los anuncios funcionan cuando usted permite publicar, un paso aparte. Cada docente conecta su propia cuenta de Google, y puede que el administrador de Google de su escuela tenga que autorizar antes a Oomba Academy.",
@@ -10544,10 +10605,10 @@
         "courses": "vincular esta clase con una de tus clases de Classroom",
         "roster": "traer a sus alumnos, que entrarán con Google",
         "post": "publicar lecciones allí, con un enlace a esta página y la fecha de entrega",
-        "grades": "enviar a Classroom la nota de finalización de cada alumno en una lección"
+        "grades": "enviar la nota de cada alumno a Classroom (de finalización, o la puntuación que elegiste en Homeroom)"
       },
       "button": "Conectar Google Classroom",
-      "privacy": "Solo tú ves esta conexión. Al conectar, Oomba Academy puede leer tus clases y sus alumnos. Solo si permites publicar envía a Classroom lo que publiques: el título, el enlace y la fecha de entrega de una lección, la nota de finalización de cada alumno sobre 100, el nombre de un tema y los anuncios que escribas. Nunca nombres, respuestas ni juegos de los alumnos.",
+      "privacy": "Solo tú ves esta conexión. Al conectar, Oomba Academy puede leer tus clases y sus alumnos. Solo si permites publicar envía a Classroom lo que publiques: el título, el enlace y la fecha de entrega de una lección, la nota de cada alumno sobre 100 (de finalización, o la puntuación elegida en Homeroom), el nombre de un tema y los anuncios que escribas. Nunca nombres, respuestas ni juegos de los alumnos.",
       "connectedAs": "Conectado como {email}",
       "connectedHint": "Esta conexión es tuya: tus compañeros docentes conectan la suya.",
       "connectedToast": "Google Classroom está conectado.",
@@ -10611,17 +10672,25 @@
       "somePosted": "Aquí está asignada a algunos alumnos. Antes se publicó para toda la clase en Google Classroom, y las notas solo se envían a los alumnos asignados."
     },
     "grades": {
-      "text": "Es una nota de finalización: la parte de los pasos de la lección que ha hecho el alumno, sobre 100. No cuenta las respuestas correctas. Los alumnos que no la han empezado se dejan fuera.",
+      "text": "Cada lección envía la nota con la que se califica, sobre 100. Las lecciones asignadas en Classroom envían una nota de finalización: la parte de los pasos hechos, no las respuestas correctas. Las tareas de Homeroom envían lo que elegiste al repartirlas: Puntuación envía el % de aciertos, Finalización la nota de finalización y Sin calificar no envía nada. Los alumnos que no han empezado se dejan fuera.",
       "as": "Enviar como",
       "draft": "Calificación provisional (la devuelves en Classroom)",
       "assigned": "Calificación asignada",
       "button": "Enviar notas de finalización",
-      "lastDraft": "Notas de finalización provisionales enviadas {when}",
-      "lastAssigned": "Notas de finalización asignadas enviadas {when}",
+      "lastDraft": "Notas provisionales enviadas {when}",
+      "lastAssigned": "Notas asignadas enviadas {when}",
       "resultSent": "{count, plural, one {# nota de finalización enviada} other {# notas de finalización enviadas}}",
       "resultNotStarted": "{count, plural, one {# no ha empezado} other {# no han empezado}}",
       "resultNotMatched": "{count, plural, one {# no está en esta clase} other {# no están en esta clase}}",
-      "resultFailed": "{count, plural, one {# no se pudo enviar} other {# no se pudieron enviar}}"
+      "resultFailed": "{count, plural, one {# no se pudo enviar} other {# no se pudieron enviar}}",
+      "buttonScore": "Enviar puntuaciones",
+      "resultSentScore": "{count, plural, one {# puntuación enviada} other {# puntuaciones enviadas}}",
+      "resultNotScored": "{count, plural, one {# aún no tiene puntuación} other {# aún no tienen puntuación}}",
+      "sends": {
+        "completion": "Envía una nota de finalización: la parte de pasos hechos.",
+        "score": "Calificado por puntuación en Homeroom: envía el % de aciertos.",
+        "none": "Sin calificar en Homeroom: no se envía ninguna nota a Classroom."
+      }
     },
     "log": {
       "heading": "Sincronizaciones recientes",
@@ -10712,7 +10781,7 @@
       "roster": "Actualizar los alumnos desde Classroom cada 6 horas",
       "rosterHint": "Se añaden los alumnos nuevos. Los que dejan Classroom aparecen arriba para que los quites tú: nadie se quita solo.",
       "grades": "Enviar notas automáticamente",
-      "gradesHint": "Cada 30 minutos, las notas de finalización que cambiaron van a Classroom para las lecciones publicadas desde aquí, hasta 30 días después de cada fecha de entrega.",
+      "gradesHint": "Cada 30 minutos, las notas que cambiaron van a Classroom para las lecciones publicadas desde aquí (cada una como se califica: nota de finalización o puntuación), hasta 30 días después de cada fecha de entrega.",
       "by": "Las notas se envían con la conexión de Google Classroom de {name}.",
       "save": "Guardar",
       "saved": "Guardado.",
@@ -14733,7 +14802,16 @@
       "setsFull": "Tienes todas las hojas de trabajo que este juego puede guardar. Borra algunas primero en Mis hojas de trabajo del juego.",
       "tooManyLessons": "Tienes todas las lecciones que puedes guardar. Borra una primero.",
       "lessonGone": "Se borró una hoja de trabajo de esta lección. Abre la lección, guárdala otra vez y luego repártela.",
-      "lessonOnDesk": "{count, plural, one {# de estos pupitres ya tiene esta lección.} other {# de estos pupitres ya tienen esta lección.}} Quítala de ahí primero o dásela a los demás."
+      "lessonOnDesk": "{count, plural, one {# de estos pupitres ya tiene esta lección.} other {# de estos pupitres ya tienen esta lección.}} Quítala de ahí primero o dásela a los demás.",
+      "teamTooSmall": "Elige al menos 2 mesas para un equipo.",
+      "teamTooBig": "Un equipo puede tener 6 alumnos como máximo.",
+      "alreadyInTeam": "Uno de esos alumnos ya está en una mesa de equipo. Separa ese equipo primero.",
+      "tooManyTeams": "Esta clase ya tiene el máximo de mesas de equipo.",
+      "noTeam": "Esa mesa de equipo ya no está.",
+      "commentLong": "Un comentario puede tener 140 caracteres como máximo.",
+      "badSticker": "Elige una de las pegatinas.",
+      "notFinished": "Los comentarios y pegatinas van en trabajos terminados. Este aún no lo está.",
+      "padChanged": "Alguien de tu equipo dibujó a la vez. Tu dibujo se añadió al suyo."
     },
     "live": "En vivo",
     "desk": {
@@ -14852,6 +14930,78 @@
         "multiply": "Multiplica. Escribe cada respuesta como una sola expresión.",
         "factor": "Factoriza cada expresión."
       }
+    },
+    "stickers": {
+      "star": "Estrella",
+      "thumbs": "Pulgar arriba",
+      "heart": "Corazón",
+      "idea": "Buena idea",
+      "check": "Marca de visto",
+      "rocket": "Cohete",
+      "trophy": "Trofeo",
+      "medal": "Medalla",
+      "crown": "Corona",
+      "fireworks": "Fuegos artificiales",
+      "smiley": "Cara sonriente",
+      "rainbow": "Arcoíris"
+    },
+    "feedback": {
+      "saved": "Comentario y pegatina guardados",
+      "removed": "Comentario y pegatina quitados"
+    },
+    "overview": {
+      "title": "Resumen de la clase",
+      "lead": "Las últimas {weeks} semanas. Cada columna es algo que repartiste en Homeroom. Los alumnos van en orden alfabético, nunca en un ranking.",
+      "student": "Alumno",
+      "trend": "Tendencia",
+      "tableLabel": "Resumen: tareas y resultados",
+      "kind": {
+        "lesson": "Lección",
+        "game": "Juego",
+        "mine": "Mi juego"
+      },
+      "versions": "{count, plural, one {# versión} other {# versiones}}",
+      "gradedBy": {
+        "score": "Calificado por puntuación",
+        "completion": "Calificado por finalización"
+      },
+      "notGraded": "Sin calificar",
+      "changeGrade": "{title}: {grade}. Cambiar cómo se califica",
+      "done": "Hecho",
+      "notDone": "Sin hacer",
+      "practice": "Práctica",
+      "locked": "Aún no abierto",
+      "notStarted": "Sin empezar",
+      "trends": {
+        "improving": "Mejorando",
+        "steady": "Estable",
+        "support": "Necesita apoyo",
+        "none": "Aún faltan puntuaciones"
+      },
+      "finished": "de las tareas terminadas",
+      "support": "{count, plural, one {alumno necesita apoyo} other {alumnos necesitan apoyo}}",
+      "month": "{count, plural, one {tarea este mes} other {tareas este mes}}",
+      "keyNames": {
+        "score": "Puntuación",
+        "completion": "Finalización",
+        "none": "Sin calificar"
+      },
+      "keyScore": "% de aciertos",
+      "keyCompletion": "100 % al terminar",
+      "keyNone": "práctica, no se envía nada",
+      "keyTrend": "Tendencia, según las últimas 3 puntuaciones de cada alumno: Necesita apoyo si la media es menor del 60 %, Mejorando si la última supera a la primera en 10 puntos o más, si no, Estable.",
+      "more": "El cuaderno de notas completo, el CSV, los estándares, las rúbricas y Google Classroom están debajo, como siempre.",
+      "fullGradebook": "Cuaderno de notas completo",
+      "noHandouts": "No se repartió nada en Homeroom en las últimas {weeks} semanas. Reparte un juego o una lección desde la pestaña Homeroom.",
+      "gcLinked": "Vinculada a «{course}»",
+      "gcRoster": "lista sincronizada {when}",
+      "gcRosterNever": "lista aún sin sincronizar",
+      "gcGrades": "notas enviadas {when}",
+      "gcGradesNever": "aún no se enviaron notas",
+      "gcOpen": "Abrir ajustes",
+      "gcNotLinked": "Aún no vinculada.",
+      "gcLink": "Vincular una clase de Classroom",
+      "gradeSaved": "Calificación cambiada"
     }
   }
 }

@@ -271,5 +271,5 @@ export function handOutLesson(u, c, { lessonId, to, order = 'in', grade = 'score
       r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now(), l.id, b.v ? b.v.label : '', countOf(l.slug, b.s || {}), batch);
   }
   audit(u.id, 'homeroom.lessonHandout', c.id, { lesson: l.id, game: g.slug, target: who.target, students: who.all.length, versions: buckets.size, order, grade });
-  return ok({ students: who.all.length, versions: buckets.size, lesson: l });
+  return ok({ students: who.all.length, versions: buckets.size, lesson: l, classLessons: made.map(id => L.getClassLesson(id)).filter(Boolean) });
 }

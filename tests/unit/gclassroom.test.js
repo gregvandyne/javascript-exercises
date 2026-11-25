@@ -437,7 +437,7 @@ test('send grades: each matched student\'s score as a draft or assigned grade; n
   assert.equal(kidSub.draftGrade, 100); assert.equal(kidSub.assignedGrade, 100);
   assert.match(room.calls.findLast(z => z.method === 'PATCH').query.updateMask, /^draftGrade,assignedGrade$/);
   const pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
-  assert.match(pg, /Assigned completion grades sent/); assert.match(pg, /Sent grades/); assert.match(pg, /Send completion grades/);
+  assert.match(pg, /Assigned grades sent/); assert.match(pg, /Sent grades/); assert.match(pg, /Send completion grades/); assert.match(pg, /Sends a completion grade: the share of steps done/);
   // One grade Google won't take: the rest still go, and the page says so.
   room.failNext(500, { match: /PATCH/ });
   const part = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
@@ -606,7 +606,7 @@ test('full: Connect asks for all six scopes in one consent; all granted, no sepa
   // Before connecting: the page says Connect allows posting too, and nothing "comes later".
   let pg = await pageOf(c, tc);
   assert.match(pg, /post lessons there, with a link back here and the due date/);
-  assert.match(pg, /send each student&#39;s lesson completion grade|send each student's lesson completion grade/);
+  assert.match(pg, /send each student&#39;s lesson grade to Classroom \(a completion grade, or the score you chose in Homeroom\)|send each student's lesson grade to Classroom \(a completion grade, or the score you chose in Homeroom\)/);
   assert.doesNotMatch(pg, /comes later, only if you allow it/);
   // The helper checks that Connect (no write=1) asked for the 2 read + 4 write scopes, with include_granted_scopes.
   const r = await connect(tc, c.id, { write: false });
@@ -1219,4 +1219,61 @@ test('Arithmetic Lab: an activity assigned to a linked class is posted to Classr
   assert.equal(P.get(cl.id, step.id, kid.id).status, 'done'); assert.equal(P.get(cl.id, step.id, kid.id).score, 2);
   await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
   assert.equal(room.courseWork.get(GC.postOf(cl.id).coursework_id).submissions.find(z => z.userId === '400000000000000000081').draftGrade, 100);
+});
+
+// Homeroom, step 2c: "Google Classroom gets the grade the teacher chose". A Homeroom handout graded by Score sends the
+// % right (the gradebook's Score), by Completion the completion grade (100 when finished), Not graded nothing; every
+// other lesson keeps the completion grade, by hand and in the automatic sync.
+test('Homeroom handouts: Score sends the % right, Completion the completion grade, Not graded nothing; other lessons unchanged', async () => {
+  const x = school();
+  const { c, s, admin, cl, steps, tc, kid, teacher } = x;
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '400000000000000000301', kid.id, 'k301@dwes.test', 'dwes.test', Date.now());
+  const two = S.createSchoolAccount({ id: admin.id }, s.id, { rosterName: 'Tia Two' }).user;
+  S.addToClass({ id: admin.id }, c.id, two.id, 'student');
+  q.run('INSERT INTO google_identities(sub, user_id, email, hd, created_at) VALUES (?,?,?,?,?)', '400000000000000000302', two.id, 'k302@dwes.test', 'dwes.test', Date.now());
+  const id = course([{ userId: '400000000000000000301', fullName: 'Kid Here' }, { userId: '400000000000000000302', fullName: 'Tia Two' }]);
+  await connect(tc, c.id); await post(`/api/classes/${c.id}/google-classroom/link`, { courseId: id }, tc);
+  await post(`/api/class-lessons/${cl.id}/google-classroom/post`, {}, tc);
+  // the lesson as a Homeroom handout graded by Score; the kid did 1 of 2 steps and has 7 of 10 points; Tia did a step, no score
+  q.run("INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at) VALUES (?,?,1,'score','all',?,?)", cl.id, c.id, teacher.id, Date.now());
+  assert.ok(P.markDone(kid, cl.id, steps[0].id).ok); assert.ok(P.markDone(getUser(two.id), cl.id, steps[0].id).ok);
+  q.run("INSERT INTO rubric_scores(class_lesson_id, step_id, user_id, rubric_id, snapshot, picks, points, max_points, scored_at) VALUES (?,?,?,?,?,?,?,?,?)", cl.id, '', kid.id, 'rb-x', '{}', '[]', 7, 10, Date.now());
+  assert.equal(GC.gradeBasis(cl.id), 'score');
+  const sub = u => room.courseWork.get(GC.postOf(cl.id).coursework_id).submissions.find(z => z.userId === u);
+  const r = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).json();
+  assert.equal(sub('400000000000000000301').draftGrade, 70, 'the % right, not 50 % of the steps');
+  assert.equal(sub('400000000000000000302').draftGrade, undefined, 'no score yet: nothing sent');
+  assert.match(r.toast, /1 score sent · 1 has no score yet/);
+  let pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, /Graded by score in Homeroom: sends the % right/); assert.match(pg, /Send scores/);
+  // the automatic sync sends the same figure, and nothing when it hasn't changed
+  q.run("UPDATE gc_links SET auto_grades='draft', auto_by=? WHERE class_id=?", teacher.id, c.id);
+  q.run('UPDATE rubric_scores SET points=9 WHERE class_lesson_id=? AND user_id=?', cl.id, kid.id);
+  await GC.autoGrades(Date.now());
+  assert.equal(sub('400000000000000000301').draftGrade, 90);
+  // Completion: the completion grade as for any lesson (50 % of the steps), 100 once finished
+  q.run("UPDATE homeroom_handouts SET grade='completion' WHERE class_lesson_id=?", cl.id);
+  await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc);
+  assert.equal(sub('400000000000000000301').draftGrade, 50); assert.equal(sub('400000000000000000302').draftGrade, 50);
+  assert.ok(P.markDone(kid, cl.id, steps[1].id).ok);
+  const done = await (await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'assigned' }, tc)).json();
+  assert.equal(sub('400000000000000000301').assignedGrade, 100);
+  assert.match(done.toast, /completion grades? sent/);
+  pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, /Sends a completion grade/);
+  // Not graded: nothing goes, by hand (refused) or automatically (quiet)
+  q.run("UPDATE homeroom_handouts SET grade='none' WHERE class_lesson_id=?", cl.id);
+  const before = room.calls.filter(z => z.method === 'PATCH').length;
+  assert.equal((await post(`/api/class-lessons/${cl.id}/google-classroom/grades`, { mode: 'draft' }, tc)).status, 400);
+  await GC.autoGrades(Date.now() + 3600e3);
+  assert.equal(room.calls.filter(z => z.method === 'PATCH').length, before);
+  pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
+  assert.match(pg, /Not graded in Homeroom: no grade goes to Classroom/);
+  // a lesson that is not a Homeroom handout: completion, exactly as before (gradeOf on its own)
+  q.run('DELETE FROM homeroom_handouts WHERE class_lesson_id=?', cl.id);
+  assert.equal(GC.gradeBasis(cl.id), 'completion');
+  assert.equal(GC.gradeOf({ done: 1, total: 2, score: { pct: 90 } }), 50, 'a score never changes a lesson outside Homeroom');
+  assert.equal(GC.gradeOf({ done: 0, total: 2, score: null }), null);
+  assert.equal(GC.gradeOf({ done: 2, total: 2, score: null }, 'score'), null);
+  assert.equal(GC.gradeOf({ done: 2, total: 2, score: { pct: 83 } }, 'score'), 83);
 });

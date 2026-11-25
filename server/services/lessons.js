@@ -564,6 +564,14 @@ export function lessonWait(u, cl, t) {
   for (const fn of waits) { const r = fn(u, cl, t); if (r) return r; }
   return null;
 }
+// The teacher's note on a student's own finished class lesson (Homeroom, step 2c: a short comment and a sticker). The
+// lesson page shows it to that student; a feature registers fn(u, cl) -> { comment, src, sticker } | null.
+const notes = [];
+export const onLessonNote = fn => { if (!notes.includes(fn)) notes.push(fn); };
+export function lessonNote(u, cl) {
+  for (const fn of notes) { const r = fn(u, cl); if (r) return r; }
+  return null;
+}
 // A school account merged into the student's own one (schools.mergeIntoAccount): their place on lists moves with them.
 S.onAccountMerge(({ from, into }) => {
   q.run('UPDATE OR IGNORE class_lesson_students SET user_id=? WHERE user_id=?', into, from);
