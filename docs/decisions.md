@@ -14674,3 +14674,9 @@ section). Step 4b. Migration `0134_homeroom_reading`.
   (Playwright's WebKit is not installed here; the tests use it when it is).
 - **Open**: board ink cannot be selected, moved or erased one line at a time; shapes, notes and text are still placed
   only in the teacher's area.
+
+## Manipulatives: disk palette
+
+The place value disks' palette shows each disk as a plain colored circle with its value written beside it, not inside:
+a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
+and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.
