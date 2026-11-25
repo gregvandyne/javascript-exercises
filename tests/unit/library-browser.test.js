@@ -45,7 +45,7 @@ const shot = async (page, name, fullPage = true) => { if (!SHOTS) return; if (fu
 const pageNo = page => page.textContent('#rd-count').then(t => +/Page (\d+)/.exec(t)[1]);
 
 test('the library: grade chips and search narrow the books', { skip }, async () => {
-  const { ctx, page, errors } = await open(ava, '/library');
+  const { ctx, page, errors } = await open(ava, '/read');
   const all = await page.locator('.lb-card').count();
   assert.equal(all, LIB.books().length);
   assert.deepEqual(await page.$$eval('.lb-levels a', els => els.map(e => e.textContent.trim())), ['All grades', '🌱 Pre-K/K', '🌿 Grade 1', '🪴 Grade 2', '🌳 Grade 3', '🌲 Grades 4-5']);
@@ -53,7 +53,7 @@ test('the library: grade chips and search narrow the books', { skip }, async () 
   await page.waitForURL(/grade=2/);
   const grades = await page.$$eval('.lb-card', els => els.map(e => e.dataset.grade));
   assert.ok(grades.length > 5 && grades.every(l => l === '2'), grades.join());
-  assert.equal(await page.getAttribute('.lb-levels a.on', 'href'), '/library?grade=2');
+  assert.equal(await page.getAttribute('.lb-levels a.on', 'href'), '/read?grade=2');
   assert.ok(await page.locator('.lb-card .lb-g2').count() === grades.length, 'each card shows its grade');
   await page.click('.lb-levels a:has-text("All grades")');
   await page.fill('#lb-q', 'giraffe'); await Promise.all([page.waitForURL(/q=giraffe/), page.press('#lb-q', 'Enter')]);
@@ -133,7 +133,7 @@ test('reading a book to the end, Read to me lighting each word, then the questio
 });
 
 test('a teacher assigns a book from the library to a class; a student reads it; the results show who read it', { skip }, async () => {
-  const t = await open(s.teacher, `/library?class=${s.cls.id}`);
+  const t = await open(s.teacher, `/read?class=${s.cls.id}`);
   assert.match(await t.page.textContent('.lb-forclass'), /Pick a story to assign to 2nd grade/);
   await t.page.click('.lb-card:has(.lb-title:has-text("The Red Raincoat")) a:has-text("Assign")');
   await t.page.waitForURL(/\/library\/sw-0069\/assign\?class=/);
@@ -170,7 +170,7 @@ test('a teacher assigns a book from the library to a class; a student reads it; 
 
 test('phones: no sideways scroll; Back and Next stay above the tab bar; the library is two columns', { skip }, async () => {
   for (const dev of ['iPhone 13', 'Galaxy S9+', 'iPad Mini']) {
-    const lib = await open(ava, '/library', { ...devices[dev] });
+    const lib = await open(ava, '/read', { ...devices[dev] });
     assert.ok(await noSideways(lib.page), `${dev} library`);
     if (dev === 'iPhone 13') {
       const cols = await lib.page.$$eval('.lb-card', els => new Set(els.slice(0, 4).map(e => Math.round(e.getBoundingClientRect().left))).size);

@@ -1,5 +1,5 @@
-// Question sets an official game keeps for a teacher (Algebra Builder's and The Big Divide's; docs/sdk.md "Question sets",
-// docs/decisions.md "Algebra Builder", "Box by Box", "The Big Divide"). A teacher makes a set in the game and saves it; the game's link
+// Question sets an official game keeps for a teacher (Algebra Builder's and Arithmetic Lab's; docs/sdk.md "Question sets",
+// docs/decisions.md "Algebra Builder", "Box by Box", "The Big Divide", "The Big Divide is now Arithmetic Lab"). A teacher makes a set in the game and saves it; the game's link
 // carries only the set's short code (?chapter=s-<10 letters and digits>&lock=1), so the link, its QR code and a lesson
 // step stay short, and the teacher can change the set later under the same link. The frame hands the set to the game
 // (BRB.questionSet) when a link opens it. Each game has its own cleaner (SET_GAMES): a set is only numbers, short math
@@ -36,7 +36,7 @@ export function cleanItems(raw) {
   return out;
 }
 
-// ------------------------------------------------------------ The Big Divide: one activity per set
+// ------------------------------------------------------------ Arithmetic Lab: one activity per set
 // [{ k: 'divide'|'multiply'|'add'|'subtract', p: [[a, b], ...] (1-100 problems the game can work), l: level, c?: 7 flags (level custom),
 //    d?: 1 (a fresh set for each student, made from g), g?: the plan it is made from (only with d),
 //    m?: the method, one of the kind's own (BB_METHODS); left out, or 'standard', is the standard algorithm, so sets
@@ -56,7 +56,7 @@ export const BB_FORMS = ['fraction', 'decimal'];
 export const BB_DEC_METHODS = { divide: ['standard', 'ladder', 'area'], multiply: ['standard', 'area'], add: ['standard'], subtract: ['standard'] };
 const int = v => (Number.isInteger(v) ? v : NaN);
 const digits = n => String(n).length;
-/** The Big Divide's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
+/** Arithmetic Lab's problem rules (the game's own): null when [a, b] is a problem it works, else why not. */
 export function bbCheck(kind, a, b) {
   if (kind === 'divide') {
     if (!Number.isInteger(b) || b < 2 || b > 9999) return 'divisor';
@@ -81,7 +81,7 @@ const placesOf = x => {
 };
 /** x × 10^k as a whole number, from its digits (no floating point): (12.6, 1) -> 126. */
 const scaledInt = (x, k) => { const [i, f = ''] = String(x).split('.'); return Number(i + f.padEnd(k, '0').slice(0, k)); };
-/** The Big Divide's rules for a problem with a decimal in it (the game's own, logic.ts check*): null when it works. */
+/** Arithmetic Lab's rules for a problem with a decimal in it (the game's own, logic.ts check*): null when it works. */
 export function bbDecCheck(kind, a, b) {
   if (kind === 'add' || kind === 'subtract') {
     // a whole number keeps its rule (10 to 9,999); a decimal is more than 0 and under 10,000
@@ -459,7 +459,7 @@ export function cleanCanvasItems(raw, html) {
  *  assign them as they are, from the class page or a folder, as before they kept sets. */
 export const OPEN_SET_GAMES = new Set(['word-hunt', 'typing-pets']);
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['box-by-box', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-pets', cleanTypingItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['arithmetic-lab', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-pets', cleanTypingItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -527,14 +527,14 @@ function insert(gameId, ownerId, items, title, t = now()) {
 // Every call here is the owner's own: anyone else's set reads exactly as a set that isn't there.
 /** A set's class code as a teacher shows it: "C5EXP 1CM9H". */
 export const codeOf = id => { const c = String(id).replace(/^s-/, '').toUpperCase(); return `${c.slice(0, 5)} ${c.slice(5)}`; };
-/** How many questions a set holds: Crossword's words, The Big Divide's problems (a fresh set per student: how many it
+/** How many questions a set holds: Crossword's words, Arithmetic Lab's problems (a fresh set per student: how many it
  *  makes), Algebra Builder's questions. */
 export function sizeOf(slug, items) {
   const a = items[0] || {};
   if (slug === 'crossword' || slug === 'word-hunt') return Array.isArray(a.w) ? a.w.length : 0;
   if (slug === 'atlas-quest') return Array.isArray(a.q) ? a.q.length : 0;
   if (slug === 'typing-pets') return typeof a.x === 'string' ? a.x.length : 0;
-  if (slug === 'box-by-box') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
+  if (slug === 'arithmetic-lab') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
   if (slug === 'mistake-hunt') return items.reduce((n, it) => n + (Array.isArray(it.m) ? it.m.length : 0), 0);
   return items.length;   // Algebra Builder's questions, a classroom activity's problems
 }
@@ -620,7 +620,7 @@ export function labelOf(slug, items) {
   if (slug === 'word-hunt') return `${a.t ? `${a.t}: ` : ''}word hunt, ${a.w.length} words`;
   if (slug === 'atlas-quest') return `${a.t ? `${a.t}: ` : ''}geography quiz, ${a.q.length} question${a.q.length === 1 ? '' : 's'}`;
   if (slug === 'typing-pets') return `${a.t ? `${a.t}: ` : ''}${a.k === 'test' ? `typing test, ${a.n} minute${a.n === 1 ? '' : 's'}` : 'typing lesson'}, ${a.x.length} characters`;
-  if (slug === 'box-by-box') {
+  if (slug === 'arithmetic-lab') {
     const n = sizeOf(slug, items);
     return `${BB_KIND[a.k]}, ${n} problem${n === 1 ? '' : 's'}${a.d ? ' (different for each student)' : ''}, ${a.dec ? 'decimals, ' : ''}${BB_FORM[a.r] ? `${BB_FORM[a.r]}, ` : ''}${BB_METHOD[a.m] ? `${BB_METHOD[a.m]}, ` : ''}${BB_LEVEL[a.l]}`;
   }
@@ -633,14 +633,14 @@ export function labelOf(slug, items) {
   return `${items.length} question${items.length === 1 ? '' : 's'}${kinds ? `: ${kinds}` : ''}`;
 }
 /** What a set game's lesson options open, for the assign page and the lesson's title: a set (its size), one problem, an
- *  activity (The Big Divide: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
+ *  activity (Arithmetic Lab: its label), or null when they open none (the teacher's gallery). params: parseParams() of them. */
 export function describe(gameId, params, slug = 'algebra-builder') {
   const ch = params && params.chapter;
   if (!ch) return null;
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'box-by-box' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-pets') return { kind: 'one', label: labelOf(slug, s.items) };
+    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-pets') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

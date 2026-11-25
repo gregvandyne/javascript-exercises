@@ -81,3 +81,6 @@ export const COURSES = Object.freeze([
 export const courseOfSlug = slug => COURSES.find(c => c.games.some(g => g.slug === slug && !g.shared)) || null;
 /** The slugs of every owned course game: they stay out of the open game lists (rails, search, similar, playing now). */
 export const COURSE_GAME_SLUGS = Object.freeze([...new Set(COURSES.flatMap(c => c.games.filter(g => !g.shared).map(g => g.slug)))]);
+/** A game reached only through its course (a course's own game, or one flagged course_only): never listed on its own
+ *  (Learn's topics and grid, favorites, players' games; docs/decisions.md "Learn and Read"). */
+export const courseOwned = g => !!g && (!!g.course_only || COURSE_GAME_SLUGS.includes(g.slug));

@@ -1,4 +1,5 @@
-// Play and Learn (docs/decisions.md "Play and Learn"): the two shelves of the library and each role's first tab, on
+// Learn and Read (docs/decisions.md "Play and Learn", "Learn and Read"): one Learn page for every game, Read for the
+// Story Library, and each role's first tab, on
 // phones (360, 390) and desktop (1280), light and dark, and in Hebrew (right to left). No sideways scroll, nothing
 // touches (touching.js), every control a 44 px tap target, the top bar fits (topbar-fit.js); the Learn filters work as
 // plain links and with the grade picker; staff see Assign, Host live and Try it, a kid and a student never do; a teacher
@@ -55,18 +56,18 @@ async function check(browser, state, paths, { lang = null } = {}) {
   return [...new Set(problems)];
 }
 
-test('Play and Learn for the signed out, a kid, a student and a teacher: no sideways scroll, nothing touches, 44 px targets', async ({ browser }) => {
+test('Learn and Read for the signed out, a kid, a student and a teacher: no sideways scroll, nothing touches, 44 px targets', async ({ browser }) => {
   const out = await stateFor(browser, null), kid = await stateFor(browser, 'kid');
   const student = await stateFor(browser, 'DemoStudent'), teacher = await stateFor(browser, 'DemoTeacher');
-  expect(await check(browser, out, ['/', '/play', '/learn', '/learn?subject=math', '/learn?how=live'])).toEqual([]);
-  expect(await check(browser, kid, ['/', '/learn', '/learn?grade=K'])).toEqual([]);
-  expect(await check(browser, student, ['/play', '/learn'])).toEqual([]);
-  expect(await check(browser, teacher, ['/play', '/learn', '/learn?how=live', '/teach/assign?game=sum-racer'])).toEqual([]);
-  expect(await check(browser, teacher, ['/learn', '/play'], { lang: 'he' })).toEqual([]);
+  expect(await check(browser, out, ['/', '/learn', '/read', '/learn?subject=math', '/learn?how=live'])).toEqual([]);
+  expect(await check(browser, kid, ['/', '/learn', '/learn?grade=K', '/read'])).toEqual([]);
+  expect(await check(browser, student, ['/learn', '/read'])).toEqual([]);
+  expect(await check(browser, teacher, ['/learn', '/read', '/learn?how=live', '/teach/assign?game=sum-racer'])).toEqual([]);
+  expect(await check(browser, teacher, ['/learn', '/read'], { lang: 'he' })).toEqual([]);
   expect(await check(browser, kid, ['/', '/learn'], { lang: 'he' })).toEqual([]);
 });
 
-test('the tab bars: each role\'s first tab, Play and Learn shared (a teacher\'s in the account menu); \'/\' lands on the first tab', async ({ browser }) => {
+test('the tab bars: each role\'s first tab, Learn and Read shared (a teacher\'s in the account menu); \'/\' lands on the first tab', async ({ browser }) => {
   const tabs = async (state, path) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: state }); const page = await ctx.newPage();
     await page.goto(path);
@@ -77,28 +78,35 @@ test('the tab bars: each role\'s first tab, Play and Learn shared (a teacher\'s 
   };
   const off = l => l.filter(h => h !== '/plans');
   const out = await tabs(await stateFor(browser, null), '/');
-  expect(out.url).toBe('/'); expect(off(out.tabs)).toEqual(['/', '/learn', '/build', '/parents', '/login']); expect(out.cur).toEqual(['/']);
+  expect(out.url).toBe('/'); expect(off(out.tabs)).toEqual(['/learn', '/read', '/build', '/parents', '/login']); expect(out.cur).toEqual(['/learn']);
   const kid = await tabs(await stateFor(browser, 'kid'), '/');
-  expect(kid.url).toBe('/'); expect(off(kid.tabs)).toEqual(['/', '/learn', '/build', '/friends', '/me']);
+  expect(kid.url).toBe('/'); expect(off(kid.tabs)).toEqual(['/learn', '/read', '/build', '/friends', '/me']); expect(kid.cur).toEqual(['/learn']);
   const st = await tabs(await stateFor(browser, 'DemoStudent'), '/');
-  expect(st.url).toBe('/classes'); expect(off(st.tabs)).toEqual(['/classes', '/play', '/learn', '/build', '/me']); expect(st.cur).toEqual(['/classes']);
+  expect(st.url).toBe('/classes'); expect(off(st.tabs)).toEqual(['/classes', '/learn', '/read', '/build', '/me']); expect(st.cur).toEqual(['/classes']);
+  expect((await tabs(await stateFor(browser, 'kid'), '/read')).cur).toEqual(['/read']);
   const teacher = await stateFor(browser, 'DemoTeacher');
   const te = await tabs(teacher, '/');
   // '/' is the Classroom tab; DemoTeacher has one class, which it opens directly. School staff's tab bar is Classroom ·
-  // Build · Live · Me (docs/decisions.md "Teachers' top bar: Classroom, Build, Live"): Play and Learn are the account
-  // menu's two tiles, still open at /play and /learn, where no tab is marked and the tile is.
+  // Build · Live · Me (docs/decisions.md "Teachers' top bar: Classroom, Build, Live"): Learn and Read are the account
+  // menu's two tiles, open at /learn and /read, where no tab is marked and the tile is.
   expect(te.url).toMatch(/^\/(teach|class\/[^/]+)$/); expect(off(te.tabs)).toEqual(['/teach', '/build', '/live', '/me']); expect(te.cur).toEqual(['/teach']);
-  expect(te.tiles).toEqual([['/play', null], ['/learn', null]]);
-  const tl = await tabs(teacher, '/learn'); expect(tl.cur).toEqual([]); expect(tl.tiles).toEqual([['/play', null], ['/learn', 'page']]);
-  const tp = await tabs(teacher, '/play'); expect(tp.cur).toEqual([]); expect(tp.tiles).toEqual([['/play', 'page'], ['/learn', null]]);
+  expect(te.tiles).toEqual([['/learn', null], ['/read', null]]);
+  const tl = await tabs(teacher, '/learn'); expect(tl.cur).toEqual([]); expect(tl.tiles).toEqual([['/learn', 'page'], ['/read', null]]);
+  const tp = await tabs(teacher, '/read'); expect(tp.cur).toEqual([]); expect(tp.tiles).toEqual([['/learn', null], ['/read', 'page']]);
+  const old = await tabs(teacher, '/play'); expect(old.url).toBe('/learn');
 });
 
 test('Learn filters work as links and with the grade picker; staff buttons for the teacher only; assign end to end', async ({ browser }) => {
   // A kid: subject chips are links; the grade picker shows its games straight away; no staff buttons.
   const kctx = await browser.newContext({ viewport: { width: 390, height: 844 }, storageState: await stateFor(browser, 'kid') }); const kp = await kctx.newPage();
   await kp.goto('/learn');
-  await expect(kp.locator('#learn-games .gcard').first()).toBeVisible();
+  // By topic first; the filters are one closed line under the topic chips.
+  await expect(kp.locator('.learn-games-wrap .rail .gcard').first()).toBeVisible();
+  await expect(kp.locator('#filters')).toBeHidden();
+  await kp.locator('.learn-filterbox > summary').click();
   await Promise.all([kp.waitForURL(/subject=math/), kp.locator('#filters a.chip', { hasText: 'Math' }).click()]);
+  await expect(kp.locator('.learn-filterbox')).toHaveAttribute('open', '');
+  await expect(kp.locator('.topic-chips')).toHaveCount(0);
   await expect(kp.locator('#filters a.chip.on')).toHaveText([/Math/, /Any way/]);
   const metas = await kp.locator('#learn-games .gmeta, #live-games .gmeta').allInnerTexts();
   expect(metas.length).toBeGreaterThan(0); for (const m of metas) expect(m).toMatch(/^Math · Grades/);
@@ -112,6 +120,7 @@ test('Learn filters work as links and with the grade picker; staff buttons for t
   // Without scripts the Show button submits the grade.
   const nctx = await browser.newContext({ javaScriptEnabled: false }); const np = await nctx.newPage();
   await np.goto('/learn');
+  await np.locator('.learn-filterbox > summary').click();
   await np.locator('#filters select[name=grade]').selectOption('K');
   await Promise.all([np.waitForURL(/grade=K/), np.locator('#filters button[data-nojs]').click()]);
   await expect(np.locator('#filters select[name=grade]')).toHaveValue('K');

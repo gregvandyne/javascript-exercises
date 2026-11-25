@@ -61,7 +61,7 @@ test('grown-ups go to their own settings page; old links lead to /me/settings', 
   const g = auth.createUser({ username: 'SetGrown', password: 'a-long-password-1', accountType: 'grownup' });
   const r = await get('/me/settings', g); assert.equal(r.status, 302); assert.equal(r.location, '/family/account');
   // The footer's language link and the short-password notice point here.
-  assert.match((await get('/play', kid)).text, /href="\/me\/settings#language"/);
+  assert.match((await get('/learn', kid)).text, /href="\/me\/settings#language"/);
   // /forgot for someone signed in: their password section.
   assert.equal((await get('/forgot', kid)).location, '/me/settings#password');
   // Old /me#language, #appearance, #password, #signout and #teacher-plan links (the hash never reaches the server) are

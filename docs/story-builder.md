@@ -279,7 +279,7 @@ take the story".
   words answer Your words and the theme (the idea is the topic), so the card asks only the reading level, the endings of
   an adventure, and the grade when it was not known.
 - **Where it opens.** With the Oomba chat (`companionFor`), a new book card in that chat (`companion.js storyBook`; a book
-  already being set up there is marked moved), and the page goes to `/library?make=1`, which opens the chat on it.
+  already being set up there is marked moved), and the page goes to `/read?make=1`, which opens the chat on it.
   Without the chat (a teacher without the Teacher plan, a grown-up), the setup page's own steps (`/library/make`) open on
   the choices with these picked (the answers go in the tab's sessionStorage, the page's own store). Either way nothing is
   sent to an AI until the book maker's check has shown exactly what will be sent and the person taps Make my book.
@@ -287,7 +287,7 @@ take the story".
   route. Kids and students get 404 from it, and from every book maker page, API and chat tool, whatever the flag says:
   `storybook.js canMake` never lets them in. With `parent`, a family grown-up may use the book maker too (the fence in
   `routes/family.js` opens its paths only then): make, edit, read and print their own books, at the free daily numbers;
-  they have no classes, so Share with classes is hidden and refused (`canShare`), and `/library` itself stays closed.
+  they have no classes, so Share with classes is hidden and refused (`canShare`), and `/read` (the library, formerly `/library`) itself stays closed.
 - Tests: `tests/unit/story-picture-books.test.js` (the flag, who sees what, refusals, the pre-filled card and its
   skipped steps, the page path, a grown-up's book).
 

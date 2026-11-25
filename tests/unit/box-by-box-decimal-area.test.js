@@ -1,4 +1,4 @@
-// The Big Divide: the area model with decimals (docs/decisions.md "The Big Divide: read aloud, worksheets, every
+// Arithmetic Lab: the area model with decimals (docs/decisions.md "The Big Divide: read aloud, worksheets, every
 // language", the area model for decimals):
 //   - multiplication: each number split by place value (2.3 × 1.4 as 2 + 0.3 by 1 + 0.4), a box for each pair (2, 0.3,
 //     0.8, 0.12, each with its point), then the boxes added (3.22); a number typed with more zeros is the same number;
@@ -18,7 +18,7 @@ import * as G from '../../server/services/game-sets.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const L = await import(path.join(ROOT, 'tools/box-by-box/src/lib/logic.ts'));
 const M = await import(path.join(ROOT, 'tools/box-by-box/src/lib/methods.ts'));
-const clean = G.SET_GAMES.get('box-by-box');
+const clean = G.SET_GAMES.get('arithmetic-lab');
 
 test('decimal multiplication by the area model: place-value parts, a point in each box, then the sum', () => {
   const w = M.buildWork('area', 'multiply', [2.3, 1.4]);
@@ -128,7 +128,7 @@ try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
 let haveBrowser = false;
 if (chromium) { try { const b = await chromium.launch(exe ? { executablePath: exe } : {}); await b.close(); haveBrowser = true; } catch { haveBrowser = false; } }
 const skip = haveBrowser ? false : 'no Chromium installed';
-const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
 let browser = null;
 test.after(async () => { if (browser) await browser.close(); });
 async function openPlain(item, phone = true) {

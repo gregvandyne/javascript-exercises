@@ -86,7 +86,7 @@ test('laptop: a teacher sees three choices; a picture book hides the video\'s ch
     await page.selectOption('#sb-age', '6-8');
     await page.selectOption('#sb-blen', 'medium');
     await page.click('#sb-go');
-    await page.waitForURL(/\/library$/, { timeout: 15000 });
+    await page.waitForURL(/\/read$/, { timeout: 15000 });
     await bookCard(page).waitFor({ timeout: 15000 });
     const text = await bookCard(page).textContent();
     assert.match(text, /How many endings\?|endings/i, 'it asks the endings next');

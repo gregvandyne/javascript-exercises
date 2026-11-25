@@ -1342,7 +1342,27 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS class_lesson_students (class_lesson_id TEXT NOT NULL REFERENCES class_lessons(id) ON DELETE CASCADE,
       user_id TEXT NOT NULL, PRIMARY KEY (class_lesson_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_class_lesson_students_user ON class_lesson_students(user_id);`],
+  // The Big Divide is now Arithmetic Lab (docs/decisions.md "The Big Divide is now Arithmetic Lab"): the official game's
+  // row keeps its id and everything that points at it (plays, scores, saves, question sets, lesson steps, assignments,
+  // folders) and only its slug changes, so the seed import then updates the same row instead of adding a second game.
+  // Stored references are by game id; links and QR codes with the old slug are redirected (services/slug-aliases.js).
+  ['0121_arithmetic_lab_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'box-by-box', 'arithmetic-lab')],
 ];
+
+/** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has
+ *  `from` (a new database: the seed makes the game under `to`). A game someone else made that already has `to` gets the
+ *  next free numbered slug (to-2, to-3...) first, as uniqueSlug would have given it. */
+export function renameSeedSlug(conn, from, to) {
+  const row = conn.prepare("SELECT id FROM games WHERE slug=? AND source='seed'").get(from);
+  if (!row) return;
+  const taken = s => conn.prepare('SELECT 1 FROM games WHERE slug=?').get(s);
+  const other = conn.prepare('SELECT id FROM games WHERE slug=? AND id<>?').get(to, row.id);
+  if (other) {
+    let s, i = 2; do s = `${to}-${i++}`; while (taken(s));
+    conn.prepare('UPDATE games SET slug=? WHERE id=?').run(s, other.id);
+  }
+  conn.prepare('UPDATE games SET slug=? WHERE id=?').run(to, row.id);
+}
 
 /** 0085's backfill (exported for its test): what each lesson is (a ready-made course's copy; one game assigned, by
  *  Assign or the same shape; a live set sent as homework; else a teacher-made lesson), then a folder for each teacher-made

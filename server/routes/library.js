@@ -1,6 +1,6 @@
 // Story Library (services/library.js; docs/decisions.md "Story Library"). Open-licensed picture books, read one page at
 // a time with Read to me, then 3 questions written by Oomba.
-//   GET  /library                  the books: US grade chips (?grade=k|1|2|3|4-5; an old ?level=1-3 link redirects to
+//   GET  /read                     the books (the Read tab; /library answers 301 here): US grade chips (?grade=k|1|2|3|4-5; an old ?level=1-3 link redirects to
 //                                  a grade), search, Read (and Assign for school staff); ?class= keeps a teacher's
 //                                  class for Assign
 //   GET  /library/:id              one book: cover, credits, words to know, Read / Continue, Assign
@@ -16,7 +16,7 @@ import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
 import { avatar, emptyState, staffStudentName } from '../views/components.js';
-import { requireUser } from '../auth.js';
+import { requireUser, isGrownup } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
@@ -191,19 +191,22 @@ function madeShelf(req) {
 }
 
 // ---------------------------------------------------------------- the library
-router.get('/library', (req, res) => {
+// The Read tab (docs/decisions.md "Learn and Read"): the library's shelf is at /read. /library was its address until then:
+// it answers 301 to /read with its query string (?grade=, ?q=, ?class=, ?make=). A book's own pages stay at /library/<id>.
+router.get('/library', (req, res) => { const i = req.originalUrl.indexOf('?'); res.redirect(301, `/read${i >= 0 ? req.originalUrl.slice(i) : ''}`); });
+router.get('/read', (req, res) => {
   const t = req.t, u = req.user;
   const grade = LIB.gradeParam(req.query.grade, req.query.level);
   // An old ?level=N link (before US grades) goes to the grade most of that level's books now have.
   if (req.query.level && !req.query.grade) {
     const p = new URLSearchParams(Object.entries({ grade: grade || '', q: String(req.query.q || ''), class: String(req.query.class || '') }).filter(([, v]) => v)).toString();
-    return res.redirect(301, `/library${p ? `?${p}` : ''}`);
+    return res.redirect(301, `/read${p ? `?${p}` : ''}`);
   }
   const words = String(req.query.q || '').slice(0, 60).trim();
   const list = LIB.search({ grade, q: words });
   const staff = isStaff(u), forClass = classParam(req);
-  const reads = u ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
-  const qs = over => { const p = new URLSearchParams(Object.entries({ grade: grade || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/library${p ? `?${p}` : ''}`; };
+  const reads = readerOf(u) ? new Map(LIB.myReads(u.id, 500).map(x => [x.book.id, x.read])) : new Map();
+  const qs = over => { const p = new URLSearchParams(Object.entries({ grade: grade || '', q: words, class: forClass ? forClass.id : '', ...over }).filter(([, v]) => v)).toString(); return `/read${p ? `?${p}` : ''}`; };
   const chip = (on, href, label) => html`<a class="chip${on ? ' on' : ''}" href="${href}"${on ? raw(' aria-current="true"') : ''}>${label}</a>`;
   const card = bk => bookCard(t, bk, { read: reads.get(bk.id), staff, forClass });
   const body = html`<div class="slib">
@@ -212,7 +215,7 @@ router.get('/library', (req, res) => {
     ${madeShelf(req)}
     ${forClass ? html`<p class="notice lb-forclass">${ico('📌', { size: 18 })} ${t('library.forClass', { class: forClass.name })} <a href="/class/${forClass.id}">${t('library.backToClass')}</a></p>` : ''}
     ${wishBox(t, grade, forClass)}
-    <form class="lb-tools" method="get" action="/library" role="search" aria-label="${t('library.searchLabel')}">
+    <form class="lb-tools" method="get" action="/read" role="search" aria-label="${t('library.searchLabel')}">
       <div class="chips scroll lb-levels" role="group" aria-label="${t('library.gradesLabel')}">
         ${chip(!grade, qs({ grade: '' }), t('library.allGrades'))}
         ${LIB.GRADES.map(g => chip(grade === g, qs({ grade: g }), html`<span aria-hidden="true">${GRADE_ICON[g]}</span> ${gradeName(t, g)}`))}
@@ -223,18 +226,22 @@ router.get('/library', (req, res) => {
         <button class="btn" type="submit">${t('library.searchGo')}</button></div>
     </form>
     ${list.length ? html`<p class="sr-only" role="status">${t('library.found', { count: list.length })}</p><ul class="lb-grid" id="lb-grid">${list.map(card)}</ul>`
-      : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/library">${t('library.allGrades')}</a>` })}</section>`}
+      : html`<section class="panel">${emptyState({ emoji: '🔎', title: t('library.none'), text: t('library.noneText'), action: html`<a class="btn" href="/read">${t('library.allGrades')}</a>` })}</section>`}
     <p class="small muted lb-foot">${t('library.footSources')} ${t('library.footClassics')} · ${t('library.footQuestions')}</p>
   </div>`;
-  page(req, res, { title: t('library.title'), active: 'learn', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js', ...(SB.canMake(u) ? ['/js/storybook-books.js'] : [])], description: t('library.lead', { count: LIB.books().length }) });
+  page(req, res, { title: t('library.title'), active: 'read', body, head: raw(`${CSS}${WISH_CSS}`), scripts: ['/js/library-suggest.js', ...(SB.canMake(u) ? ['/js/storybook-books.js'] : [])], description: t('library.lead', { count: LIB.books().length }) });
 });
 
 // ---------------------------------------------------------------- one book
+/** Who a book's reading is kept for: the person reading, but never a grown-up account (docs/decisions.md "Learn and
+ *  Read": grown-ups read the library, nothing is stored for them, and they see no child's reading here), so a grown-up
+ *  reads exactly as a signed-out visitor does. */
+export const readerOf = u => (u && !isGrownup(u) ? u : null);
 const bookOr404 = (req, res) => { const bk = LIB.getBook(req.params.id); if (!bk) { notFound(req, res); return null; } return bk; };
 router.get('/library/:id', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
   const t = req.t, u = req.user, forClass = classParam(req);
-  const rd = u ? LIB.readOf(u.id, bk.id) : null, st = LIB.stateOf(rd, bk);
+  const rd = readerOf(u) ? LIB.readOf(u.id, bk.id) : null, st = LIB.stateOf(rd, bk);
   const go = st.state === 'reading' ? t('library.continue', { page: st.page }) : t('library.read');
   const body = html`<article class="lb-book panel">
     <div class="lb-book-top">
@@ -251,7 +258,7 @@ router.get('/library/:id', (req, res) => {
     <section class="lb-about" aria-labelledby="ab-h"><h2 id="ab-h">${ico('📝', { size: 28 })} ${t('library.aboutTitle')}</h2><p class="small">${t('library.aboutQuestions')}</p>
       ${credits(t, bk, { full: true })}</section>
   </article>`;
-  page(req, res, { title: bk.title, active: 'learn', body, head: CSS, back: forClass ? `/library?class=${forClass.id}` : '/library', backLabel: t('library.title') });
+  page(req, res, { title: bk.title, active: 'read', body, head: CSS, back: forClass ? `/read?class=${forClass.id}` : '/read', backLabel: t('library.title') });
 });
 
 // ---------------------------------------------------------------- the reader
@@ -269,7 +276,7 @@ export const hasTextPages = bk => bk.pages.some(p => !p.image);
 const pageText = text => String(text).split('\n\n').map((para, i) => html`${i ? raw('<span class="rd-para"></span>') : ''}${para.split('\n').map((line, k) => html`${k ? raw('<br>') : ''}${line}`)}`);
 router.get('/library/:id/read', (req, res) => {
   const bk = bookOr404(req, res); if (!bk) return;
-  const t = req.t, u = req.user;
+  const t = req.t, u = readerOf(req.user);
   const ctx = LIB.assignmentCtx(u, bk, req.query.cl, req.query.step);
   LIB.freshForAssignment(u, bk, ctx);
   const rd = u ? LIB.readOf(u.id, bk.id) : null;
@@ -309,26 +316,26 @@ router.get('/library/:id/read', (req, res) => {
         <div class="rd-opts">${x.choices.map((c, k) => html`<button class="rd-opt" type="button" data-c="${k}" disabled>${c}</button>`)}</div>
         <p class="rd-hint" role="status"></p></li>`)}</ol>
       <div class="rd-done" id="rd-done" hidden><p class="rd-done-msg" role="status"></p>
-        <div class="row"><a class="btn" href="?p=1">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/library'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
+        <div class="row"><a class="btn" href="?p=1">${ico('🔁', { size: 18 })} ${t('library.readAgain')}</a><a class="btn btn-primary" href="${cls ? back.href : '/read'}">${cls ? t('library.backTo', { name: cls.name }) : t('library.moreBooks')}</a></div></div>
       <noscript><p class="notice">${t('library.needJs')}</p></noscript>
     </section>
     ${credits(t, bk)}
   </div>
   ${jsonData('page-data', { book: LIB.forReader(bk), start: p0, ctx: ctx ? { cl: ctx.clId, step: ctx.stepId } : null, signedIn: !!u,
     read: rd ? { page: rd.page, solved: rd.solved, aloud: !!rd.aloud } : null, tts: ttsOnLocales(), backHref: back.href })}`;
-  page(req, res, { title: bk.title, active: 'learn', body, head: CSS, scripts: ['/js/library.js'], mid: true });
+  page(req, res, { title: bk.title, active: 'read', body, head: CSS, scripts: ['/js/library.js'], mid: true });
 });
 
-const ctxOf = (req, bk) => LIB.assignmentCtx(req.user, bk, b(req).cl, b(req).step);
+const ctxOf = (req, bk) => LIB.assignmentCtx(readerOf(req.user), bk, b(req).cl, b(req).step);
 const whole = v => (typeof v === 'number' || (typeof v === 'string' && /^\d{1,4}$/.test(v)) ? +v : NaN);
 router.post('/api/library/:id/progress', rateLimit('library', 600, 60e3), (req, res) => {
   const bk = LIB.getBook(req.params.id); if (!bk) return res.status(404).json({ error: req.t('errors.api.notFound') });
-  const r = LIB.progress(req.user, bk.id, { page: whole(b(req).page), aloud: b(req).aloud === true }, ctxOf(req, bk));
+  const r = LIB.progress(readerOf(req.user), bk.id, { page: whole(b(req).page), aloud: b(req).aloud === true }, ctxOf(req, bk));
   res.json({ ok: r.ok });
 });
 router.post('/api/library/:id/answer', rateLimit('library', 600, 60e3), (req, res) => {
   const bk = LIB.getBook(req.params.id); if (!bk) return res.status(404).json({ error: req.t('errors.api.notFound') });
-  const r = LIB.answer(req.user, bk.id, whole(b(req).i), whole(b(req).c), ctxOf(req, bk));
+  const r = LIB.answer(readerOf(req.user), bk.id, whole(b(req).i), whole(b(req).c), ctxOf(req, bk));
   if (!r.ok) return res.status(400).json({ error: req.t(r.code === 'readFirst' ? 'library.errors.readFirst' : 'errors.api.badRequest'), code: r.code });
   res.json({ ok: true, right: r.right, page: r.page, solved: r.solved, done: r.done, marks: r.marks });
 });
@@ -353,7 +360,7 @@ router.get('/library/:id/assign', requireUser, (req, res) => {
       : html`<p class="muted">${t('teach.assign.none')}</p><p><a class="btn" href="/teach">${t('nav.classroom')}</a></p>`}
     <p class="row"><a class="btn" href="/library/${bk.id}/read">${ico('📖', { size: 18 })} ${t('library.preview')}</a></p>
   </section>`;
-  page(req, res, { title: t('library.assignTitle', { title: bk.title }), active: 'teach', body, head: raw(`${CSS}`), back: pre ? `/library?class=${encodeURIComponent(pre)}` : '/library', backLabel: t('library.title') });
+  page(req, res, { title: t('library.assignTitle', { title: bk.title }), active: 'teach', body, head: raw(`${CSS}`), back: pre ? `/read?class=${encodeURIComponent(pre)}` : '/read', backLabel: t('library.title') });
 });
 router.post('/api/library/assign', requireUser, rateLimit('lesson-new', 120, 3600e3), async (req, res) => {
   const u = req.user;
@@ -386,7 +393,7 @@ export function storyResults(req, res, c, cl, l) {
   <div class="lphead"><div><h2 dir="auto">${ico('📖', { size: 28 })} ${bk.title}</h2>
     <p class="lr-grade">${gradeChip(t, bk.grade)}</p>
     <p class="muted lp-meta"><span>${t('library.results.summary', { started: r.started, finished: r.finished, total: r.students.length })}</span>${dueChip(t, f, cl, { done: r.students.length > 0 && r.finished >= r.students.length })}</p></div>
-    <div class="row"><a class="btn" href="/library/${bk.id}/read">${ico('🖥️', { size: 18 })} ${t('library.results.readTogether')}</a><a class="btn btn-primary" href="/library?class=${c.id}">${ico('📌', { size: 18 })} ${t('library.results.assignAnother')}</a></div></div>
+    <div class="row"><a class="btn" href="/library/${bk.id}/read">${ico('🖥️', { size: 18 })} ${t('library.results.readTogether')}</a><a class="btn btn-primary" href="/read?class=${c.id}">${ico('📌', { size: 18 })} ${t('library.results.assignAnother')}</a></div></div>
   ${!r.students.length ? html`<section class="panel">${emptyState({ emoji: '👩‍🎓', title: t('progress.gradebook.noStudents'), text: t('progress.gradebook.noStudentsText') })}</section>`
     : html`<section class="panel"><div class="gbwrap" tabindex="0" role="region" aria-label="${bk.title}"><table class="tbl lr-table" id="lr-table">
       <thead><tr><th scope="col">${t('school.people.name')}</th><th scope="col">${t('library.results.read')}</th><th scope="col">${t('library.results.questions')}</th><th scope="col">${t('progress.lesson.lastActive')}</th></tr></thead>

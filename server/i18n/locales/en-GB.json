@@ -86,8 +86,8 @@
     },
     "unavailable": {
       "title": "This game isn’t available right now",
-      "text": "It may come back later. Play has more games and puzzles to try.",
-      "play": "Go to Play"
+      "text": "It may come back later. Learn has more games and puzzles to try.",
+      "play": "Go to Learn"
     },
     "shareText": {
       "connectionsClasses": "Only the maker's friends and classmates can open this link."

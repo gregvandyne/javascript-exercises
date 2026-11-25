@@ -54,7 +54,7 @@ test('a teacher cannot send a friend request to a child, by the page or the API;
   await expect(teacher.locator('main a[href="/chat"]')).toContainText('Oomba team');
   await expect(teacher.locator('main')).not.toContainText(oldCode);
   // No Friends door anywhere in the header or tab bar, on any staff page.
-  for (const p of ['/teach', '/school', '/play', '/learn']) {
+  for (const p of ['/teach', '/school', '/learn', '/read']) {
     await teacher.goto(p);
     await expect(teacher.locator('a[href="/friends"], a[href^="/chat/"]:not([href$="/OombaAcademy"])'), p).toHaveCount(0);
   }

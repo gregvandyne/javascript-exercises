@@ -73,7 +73,7 @@ The SDK (`public/sdk/brb-sdk.js`) is loaded before the game's own code and is fr
 | `BRB.voice(lang?)` | The `SpeechSynthesisVoice` `BRB.speak` would use for a language tag (default `BRB.user.lang`), or `null`. |
 | `BRB.gameUrl` | The game's own play page (`https://…/play/<slug>`), or `null` in a preview. A game that shares a link to itself adds lesson parameters to it (`?mode=…&chapter=…&lock=1`, see [Lesson parameters](#lesson-parameters)). |
 | `BRB.copy(textOrPng)` | Copies for the game, which can't use the clipboard itself (it is sandboxed): a link to the game's own play page (`BRB.gameUrl`, with any query, at most 400 characters) or a PNG `Blob` (at most 300 KB, such as that link's QR code). The play page copies only right after a tap. A Promise of `true` when copied, `false` when refused or after 3 s. |
-| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list (Algebra Builder, The Big Divide, Crossword, Mistake Hunt), and Builder classroom activities on Oomba Canvas 1.4.0 (the kit uses them itself: never call them from a Builder game's own code): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
+| `BRB.questionSet` / `BRB.saveQuestionSet(items, id?)` | Official games on the list (Algebra Builder, Arithmetic Lab, Crossword, Mistake Hunt), and Builder classroom activities on Oomba Canvas 1.4.0 (the kit uses them itself: never call them from a Builder game's own code): the teacher's question set a link opened, and saving one. See [Question sets](#question-sets-brbquestionset). |
 | `BRB.wordsFromDoc(file, { kind, level, focus })` | Crossword, Word Hunt (Word Hunt gets the words only, each clue `''`, 2 to 15 letters) and Atlas Quest (Atlas Quest also takes `kind` `'txt'`, a plain text lesson, and its `words` are `[question, answer]`, or `['@map', 'FR']`-style country questions; services/atlas-doc.js), the same grown-ups as `writeClues`: a PDF (at most 5 pages) or Word (.docx) `Blob` of at most 2 MB (`kind` `'pdf'` or `'docx'`); about 5 pages of text are read (15,000 characters), the rest is cut off. `focus` (optional, Crossword and Word Hunt): the teacher's own line for the AI ("Science words only", "Words a 3rd grader should know"), at most 200 characters; the server trims it and runs it through the site's text filter, and the AI uses it only to narrow which words it picks from the document (a plain list ignores it). A Promise of `{ title, words: [[word, clue]], cut, ai }` (`cut`: only the start was read; `ai`: the AI took the words out, `false` for a plain "word - definition" list read as it is) or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `docBad`, `docBig`, `docType`, `docPages`, `docScan` (no text: a scanned page), `docEmpty`, `docNone`, `docLimit` (10 files a day), `focusBad` (the text filter refused the focus line: no AI was asked, and the file does not count), `offline`). The page posts `POST /api/games/:id/words-from-doc`; the file is never stored. |
 | `BRB.canReadDocs` / `BRB.textFromDoc(file, { kind })` | Mistake Hunt only, for grown-ups who may host (`INIT.docText`; never a kid, a student or a guest, and not past the family grown-up fence): the text of a PDF (at most 5 pages) or Word (.docx) `Blob` of at most 2 MB, read on the server with **no AI** (Crossword's readers and limits, its 10 files a day). A Promise of `{ text, cut }` (`cut`: only about the first 5 pages were read) or `{ error }` (`notAllowed`, `docBad`, `docBig`, `docType`, `docPages`, `docScan`, `docEmpty`, `docLimit`, `offline`). The page posts `POST /api/games/:id/text-from-doc`; the file is never stored or logged. |
 | `BRB.proofAi` / `BRB.proofAsk(op, body)` / `BRB.openTrial()` | Mistake Hunt only, for teachers (school staff and the platform admin; `INIT.proofAi`; never a student, a kid, a family grown-up or a guest): `{ access: 'plan' \| 'free', left, plans }` (`left`: free AI requests left today, `null` with the Teacher plan). `proofAsk('draft', { topic, grade, length, n, types, count, seed })` (Power with AI passages, planted by proof-core), `proofAsk('scan', { text })` (Check my passage: flags `{ at, len, was, fix, why }`, nothing changed) and `proofAsk('why', { grade, items })` (why lines) -> a Promise of the server's answer (`ai: false` with a `reason` when the AI did not answer) or `{ error }` (`notAllowed`, `cap`, `names`, `words`, `personal`, `topic`, `short`, `bad`, `slow`, `offline`). The page posts `POST /api/games/:id/proof/draft \| scan \| why`. `openTrial()`: the page opens `/trial`, only right after a tap. **Phase 3, Oomba's chat on a set:** `proofAi.chat` is `'yes'` (Teacher plan holders, testers, the platform admin), `'plan'` (a teacher without the plan while paid plans are on: show the plan note and `openTrial`) or `null`. `proofAsk('chat', { setId?, text, set, retry? })` sends a message with the builder's draft (`set`: `{ T, g, types, n, p: [{ t, x, m }] }`; the server cleans it and builds the AI's context itself) -> `{ chat }` at once (the answer is a job: `chat.pending` until it comes); `proofAsk('chat-get', { setId? })` -> `{ chat }` (ask every 2 s while `pending`); `proofAsk('chat-applied', { setId?, turnId })` marks a change as put in the builder. A turn's `change.set` is the whole new set, every passage's mistakes planted by proof-core on the server. Errors also `teacherPlan`, `chatBusy`, `brief`. The page calls `GET/POST /api/games/:id/proof/chat` and `POST .../proof/chat/applied`. |
@@ -275,7 +275,7 @@ The SDK talks to the page with `postMessage`. Every message is `{ brb: 1, type, 
 | `brb:back` | – | `BRB.back()`: the page navigates back to the course step or class lesson the game was launched from, only right after a tap and only when the play page carries that back context (course step or lesson); otherwise ignored |
 | `brb:online` | – | `BRB.match.menu()`: opens the "Play online" sheet, for online games only, right after a tap |
 | `brb:tts` | `{ id, text, lang, role, rate, pre? }` | AI voices (official games, when on): fetches the line from `/api/tts` and posts the MP3's bytes back (`{ id, ok, buf }`), or `{ id, ok:false, why }`; `pre`: fetch only, no answer |
-| `brb:print` | `{ id, doc }` | `BRB.print` (Crossword, The Big Divide) (see "Printing" below): right after a tap, the server checks `doc` and makes the printable page; the page prints it and answers `brb:printed { id, ok }` or `{ id, error }` |
+| `brb:print` | `{ id, doc }` | `BRB.print` (Crossword, Arithmetic Lab) (see "Printing" below): right after a tap, the server checks `doc` and makes the printable page; the page prints it and answers `brb:printed { id, ok }` or `{ id, error }` |
 
 The parent checks that each message comes from its own game frame (`event.source`), has the expected shape,
 and the server validates and rate-limits every resulting API call (`public/js/play.js`, `public/js/studio.js`, `public/js/admin.js`).
@@ -330,7 +330,7 @@ player is offline or the page is slow (5 s). Messages: `brb:poll {item, choice, 
 `brb:pollResult {n, a, b, total, min}` (or `{n, off: true}`) back.
 
 ## Question sets (`BRB.questionSet`)
-An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, The Big Divide; each with its own
+An official game on the list (`SET_GAMES` in `server/services/game-sets.js`: Algebra Builder, Arithmetic Lab; each with its own
 cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, and a lesson step) opens it:
 `/play/<slug>?chapter=s-<10 letters and digits>&lock=1`.
 - A Builder classroom activity on Oomba Canvas 1.4.0 keeps sets too (a teacher's "worksheets": the kit's own problems,
@@ -340,7 +340,7 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   `{ id, missing: true }` for a code with no set; `null` without one. The items are the game's own shape, as its
   cleaner left them. Algebra Builder: 1 to 20 items `{ a, p, s, l }`: the activity (`solve`, `multiply`, `factor`), the
   problem in the math alphabet (digits, x, `+ - − = ^ ( )` and spaces, at most 40 characters), what students start with
-  (`all` or `none`) and the live balance (true or false). The Big Divide: one item `{ k, p, l, c?, d?, g? }`: `divide` or
+  (`all` or `none`) and the live balance (true or false). Arithmetic Lab: one item `{ k, p, l, c?, d?, g? }`: `divide` or
   `multiply`, up to 100 `[a, b]` problems it can work, the support level, the 7 flags of a custom mix, `d: 1` for a fresh
   set per student and the plan `g` it is made from. No free text in either. Crossword: one item `{ t, w, r, b, h }`: a title,
   3 to 30 `[word, clue]` pairs (the teacher's own words: each word, clue and the title pass the site's text filter when
@@ -355,7 +355,7 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   set, or with `id` their own set changed under the same code. 1 to 20 items (Algebra Builder); 200 sets per player per
   game. `title` (optional, at most 60 characters) is the set's name in its owner's list ("My worksheets", below); it
   passes the site's text filter, and one the filter refuses is left out while the set still saves. Left out, the name
-  stays as it was. Crossword's name is always its puzzle's title (`items[0].t`). The Big Divide sends its activity's
+  stays as it was. Crossword's name is always its puzzle's title (`items[0].t`). Arithmetic Lab sends its activity's
   title.
 - **My worksheets** (the owner's own list of their sets in this game). `BRB.canListSets`: true for school staff and the
   platform admin (`INIT.mySets`; never a student, a child, a guest or a family grown-up, never in a preview); a game
@@ -397,7 +397,7 @@ same rule as `INIT.printKey` (the activity's maker, school staff) and never for 
 preview. Nothing in those controls reaches the server.
 
 ## Printing (`BRB.print`)
-Crossword, The Big Divide and Mistake Hunt (frames where `INIT.print` is set: those official games, not in a preview; each game's
+Crossword, Arithmetic Lab and Mistake Hunt (frames where `INIT.print` is set: those official games, not in a preview; each game's
 printer is in `server/services/game-print.js`), and Builder classroom activities on Oomba Canvas 1.2.0 whose purpose is a
 worksheet or a question generator (also in the Studio's preview; `server/services/canvas-print.js`: the doc is only
 `{ k: 'canvas', seed, n, paper, key }` and the server makes the sheet from the version's own data; `BRB.canPrintKey` is
@@ -407,7 +407,7 @@ true only for the activity's maker and school staff, from `INIT.printKey`). The 
   `bad`, `key`, `tap`, `offline`). Call it from a tap: the page checks `navigator.userActivation` when the message
   arrives and answers `tap` otherwise.
 - `doc` is plain data, never HTML (at most 20,000 characters as JSON; the SDK, the page and the server each check).
-  The Big Divide's: `{ k, p, r?, dec?, m?, key, set, note? }`, an activity's kind, problems and options exactly as a question
+  Arithmetic Lab's: `{ k, p, r?, dec?, m?, key, set, note? }`, an activity's kind, problems and options exactly as a question
   set's item (`cleanBoxItems`: numbers and fixed words only); the server works out the answers for the key
   (`services/box-by-box-print.js`). Crossword's:
   `{ t, w: [[word, clue]], b, g: { w, h, e: [[word index, 'a'|'d', row, col]] }, key, set, note? }`: the title, the words and

@@ -23,7 +23,7 @@ export const GAMES_META = Object.freeze([
   { slug: 'launch-lab', subject: 'math', grades: [6, 7], topics: ['statistics', 'data', 'mean', 'median', 'probability'], standards: ['6.SP.B.5', '7.SP.C.5'], minutes: 15 },
   { slug: 'data-detective', subject: 'math', grades: [3, 5], topics: ['data', 'charts', 'tables', 'graphs', 'evidence'], standards: ['3.MD.B.3', '4.MD.B.4', '5.MD.B.2'], minutes: 12 },
   { slug: 'algebra-builder', subject: 'math', grades: [6, 9], topics: ['algebra', 'algebra tiles', 'equations', 'solve for x', 'multiplying binomials'], standards: ['6.EE.B.7', '7.EE.B.4', 'A.APR.A.1'], minutes: 15 },
-  { slug: 'box-by-box', subject: 'math', grades: [4, 6], topics: ['long division', 'multiplication', 'column addition', 'standard algorithm'], standards: ['4.NBT.B.5', '4.NBT.B.6', '5.NBT.B.5', '5.NBT.B.6', '6.NS.B.2'], minutes: 12 },
+  { slug: 'arithmetic-lab', subject: 'math', grades: [4, 6], topics: ['long division', 'multiplication', 'column addition', 'standard algorithm'], standards: ['4.NBT.B.5', '4.NBT.B.6', '5.NBT.B.5', '5.NBT.B.6', '6.NS.B.2'], minutes: 12 },
   { slug: 'sum-racer', subject: 'math', grades: [1, 5], topics: ['math facts', 'addition', 'subtraction', 'times tables', 'division'], standards: ['1.OA.C.6', '2.OA.B.2', '3.OA.C.7'], minutes: 5 },
   { slug: 'sum-spotter', subject: 'math', grades: [1, 4], topics: ['mental math', 'addition', 'sums', 'times tables'], standards: ['1.OA.C.6', '2.OA.B.2', '3.OA.C.7'], minutes: 5 },
   { slug: 'tug-of-math', subject: 'math', grades: [1, 8], topics: ['math facts', 'addition', 'subtraction', 'multiplication', 'two teams'], standards: ['2.OA.B.2', '3.OA.C.7'], minutes: 5 },

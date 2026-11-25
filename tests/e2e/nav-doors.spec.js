@@ -43,7 +43,7 @@ test('signed out and as a guest: Grown-ups tab, no Friends; the labels fit at 36
             footTeachers: !!document.querySelector('footer.foot a[href="/teachers"]'),
           };
         });
-        const want = ['/', '/learn', '/build', '/parents', '/login'];
+        const want = ['/learn', '/read', '/build', '/parents', '/login'];
         if (JSON.stringify(r.hrefs.filter(h => h !== '/plans')) !== JSON.stringify(want)) problems.push(`${who} ${lang} ${p}: tabs ${r.hrefs.join(' ')}`);
         if (r.cut.length) problems.push(`${who} ${lang} ${p}: cut off ${r.cut.join(', ')}`);
         if (r.wrapped.length) problems.push(`${who} ${lang} ${p}: label on two lines ${r.wrapped.join(', ')}`);
@@ -74,7 +74,7 @@ test('desktop, signed out and as a guest: Parents and Teachers in the top bar, n
     await expect(page.locator('.topnav a[href="/friends"]')).toHaveCount(0);
     await expect(page.locator('.home-intro')).toBeVisible();
     // Play · Learn · Build · Parents · Teachers (Plans when billing is public), Sign in, then ▶ Play now; the search field stays.
-    expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/', '/learn', '/build', '/parents', '/teachers']);
+    expect(await page.locator('.topnav .navlink').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/learn', '/read', '/build', '/parents', '/teachers']);
     await expect(page.locator('.topbar .playnow')).toBeVisible();
     await expect(page.locator('#topq')).toBeVisible();
     const doors = page.locator('.home-intro .doors .door');
@@ -89,24 +89,25 @@ test('desktop, signed out and as a guest: Parents and Teachers in the top bar, n
 });
 
 /** #play (the featured game and the rows) has been scrolled to: its top sits just under the sticky top bar (the page's
- *  scroll-padding), it stays put (the smooth scroll is over), and the hero's Play button is on screen, not under the bar. */
+ *  scroll-padding), it stays put (the smooth scroll is over), and the first game (the topic chips, then a game card)
+ *  is on screen, not under the bar (Learn has no hero any more: docs/decisions.md "Learn and Read"). */
 async function atPlay(page) {
   const at = () => page.evaluate(() => {
     const play = document.getElementById('play').getBoundingClientRect().top;
     const pad = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
     const bar = document.querySelector('.topbar')?.getBoundingClientRect().bottom || 0;
-    const btn = document.querySelector('#play .hero a.btn-big').getBoundingClientRect();
+    const btn = document.querySelector('#play .topic-chips').getBoundingClientRect();
     return { off: Math.round(Math.abs(play - pad)), y: Math.round(scrollY), under: btn.top < bar, out: btn.bottom > innerHeight };
   });
   await expect.poll(async () => { const a = await at(); await page.waitForTimeout(150); const b = await at(); return a.y === b.y && b.off <= 2; }, { timeout: 5000 }).toBe(true);
   const r = await at();
   expect(r.y).toBeGreaterThan(0);
-  expect(r.under || r.out, 'the hero Play button is on screen, clear of the top bar').toBe(false);
-  await expect(page.locator('#play .hero a.btn-big')).toBeInViewport();
+  expect(r.under || r.out, 'the topic chips are on screen, clear of the top bar').toBe(false);
+  await expect(page.locator('#play .rail a.gcard').first()).toBeInViewport();
   expect(new URL(page.url()).hash).toBe('#play');
 }
 
-test('the kid door scrolls down to the featured game and the rows (#play), counted; one more tap plays; nobody signs up', async ({ browser }) => {
+test('the kid door scrolls down to the games by topic (#play), counted; a game is two taps away; nobody signs up', async ({ browser }) => {
   for (const [who, width] of [['signed out', 390], ['guest', 1280], ['signed out', 1280], ['guest', 390]]) {
     const opts = { viewport: { width, height: 800 } };
     const ctx = who === 'guest' ? await guestContext(browser, opts) : await browser.newContext(opts);
@@ -122,8 +123,9 @@ test('the kid door scrolls down to the featured game and the rows (#play), count
     await atPlay(page);
     expect(new URL(page.url()).pathname, 'the same page, not a game').toBe('/');
     if (process.env.BRB_SNAPSHOTS) await page.screenshot({ path: test.info().outputPath(`kid-door-${width}-${who.replace(' ', '-')}.png`) });
-    // Two taps from home to a game, no sign-up.
-    await Promise.all([page.waitForURL(/\/play\/[a-z0-9-]+$/), page.locator('#play .hero a.btn-big').click()]);
+    // A game from the topic rows (Learn's games: there is no featured hero any more), then Play, no sign-up.
+    await Promise.all([page.waitForURL(/\/g\/[a-z0-9-]+$/), page.locator('#play #sec-math a.gcard').first().click()]);
+    await Promise.all([page.waitForURL(/\/play\/[a-z0-9-]+$/), page.locator('#playbtn').click()]);
     await gameFrame(page);
     // The parent and teacher doors open their pages.
     await page.goto('/');

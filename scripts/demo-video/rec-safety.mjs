@@ -1,7 +1,7 @@
 // The parents video's safety scenes, frame by frame (virtual clock):
 //   signup  - "Who's this for?" -> My child -> a made-up name and a password (no email, no age)
 //   friends - the friend code card; typing a friend's code
-//   publish - the Studio's share sheet: Only me / Friends / Everyone
+//   publish - the Studio's share sheet: Only me / Friends (no Everyone while PUBLIC_GAMES is off)
 // node scripts/demo-video/rec-safety.mjs land|port [only]
 import { chromium } from 'playwright';
 import { launchOptions } from '../chromium.js';
@@ -11,7 +11,8 @@ const orient = process.argv[2] || 'land', only = process.argv[3];
 const L = orient === 'land';
 const V = L ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const C = process.env.DEMO_CLIPS || '/tmp/claude-0/demo2/clips';
-const STUDIO = process.env.DEMO_STUDIO || 'X8wmna93Vk';
+const STUDIO = process.env.DEMO_STUDIO;   // a studio MayaMakes built (rec-builder.mjs makes a Category Board)
+if (!STUDIO && (!only || only === 'publish')) { console.error('Set DEMO_STUDIO to one of MayaMakes\'s studio ids.'); process.exit(1); }
 const br = await chromium.launch(launchOptions({ args: ['--use-gl=angle', '--ignore-gpu-blocklist'] }, { headless: true }));
 const mk = async (signedIn) => {
   const ctx = await br.newContext({ viewport: V.viewport, deviceScaleFactor: V.deviceScaleFactor, isMobile: !!V.isMobile, hasTouch: !!V.hasTouch, extraHTTPHeaders: { 'x-forwarded-for': '10.7.8.' + (L ? 1 : 2) } });
@@ -70,6 +71,9 @@ await run('publish', async () => {
     const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const hide = [];
     for (let n; (n = w.nextNode());) if (/building blocks did this/i.test(n.nodeValue)) hide.push(n.parentElement.closest('details') || n.parentElement.closest('div') || n.parentElement);
     for (const e of hide) e.style.setProperty('display', 'none', 'important');
+    // and its arcade next steps: the chips the AI Builder suggests for a board (as rec-builder.mjs shows them)
+    const NEXT = { 'Make it harder': 'Use our spelling words', 'Add a second level': 'Add a fourth team', 'Change the hero to a dragon': 'Make it harder' };
+    for (const b of document.querySelectorAll('button')) { const t = b.textContent.trim(); if (NEXT[t]) b.textContent = NEXT[t]; }
   });
   await cap.frames(8);
   await glide(cap, p, p.locator('#st-publish'), { sec: 0.7, click: true });

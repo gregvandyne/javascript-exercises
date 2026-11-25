@@ -21,11 +21,16 @@ The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: 
    scripts: `MayaMakes` / `secret123`, a teacher for Oomba Live).
    Oomba Live is recorded on a second server whose game clock is slowed to the capture speed:
    `LIVE_CLOCK=0.055 PORT=3350 BRB_DATA_DIR=/tmp/claude-0/demo2/data-live node --import ./scripts/demo-video/slowclock.mjs server/index.js`
+   Both servers run on the default config (`ARCADE` off), so every scene shows only what a visitor can find today.
+   `rec-safety.mjs` opens the studio in `DEMO_STUDIO` (the Category Board MayaMakes built with `rec-builder.mjs`).
 2. Record the clips (each takes `land` or `port`):
-   - `node scripts/demo-video/rec-games.mjs land` - Gulp City, Atlas Quest, Would You Rather, Castle Clash
-   - `node scripts/demo-video/rec-builder.mjs land` - a kid types an idea, the build and the automatic playtest, playing it
+   - `node scripts/demo-video/rec-games.mjs land` - Atlas Quest (the hook's lit globe, a Find it question), Word Hunt,
+     Crossword, Castle Clash
+   - `node scripts/demo-video/rec-builder.mjs land` - a kid describes a Category Board for the class, the build and the
+     automatic playtest, then a question played on the sideways preview
    - `LIVE_B=http://localhost:3350 node scripts/demo-video/rec-live.mjs land` - Oomba Live: the host steps (game, questions,
-     an open room for guests, so phones join with a code and a made-up name), a phone joining, a question and the race
+     an open room for guests, so phones join with a code and a made-up name), a phone joining, a Question Battle question
+     and the top five
    - `node scripts/demo-video/rec-safety.mjs land` - sign-up with a made-up name, a friend code, the publish choices
 3. Captions and cards: `node scripts/demo-video/cards.mjs` (teacher) and `node scripts/demo-video/cards-parents.mjs`.
 4. Cut the silent masters: `node scripts/demo-video/assemble.mjs land|port` (teacher, into `/tmp/claude-0/demo/v2`)

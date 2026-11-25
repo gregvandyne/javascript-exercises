@@ -267,15 +267,20 @@ async function call(p, { method = 'GET', body, user = null } = {}) {
 
 test('pages: the library, a book, the reader and its credits for everyone; Assign only for school staff', async () => {
   const s = librarySeed({ book: null });
-  const lib = await call('/library');
+  const lib = await call('/read');
   assert.equal(lib.status, 200); assert.equal((lib.text.match(/class="lb-card"/g) || []).length, LIB.books().length);
   assert.ok(!lib.text.includes('/assign'), 'no Assign for a visitor');
-  assert.equal((await call('/library?grade=2')).text.match(/class="lb-card"/g).length, LIB.search({ grade: '2' }).length);
-  assert.match((await call('/library?grade=4-5')).text, /class="chip on" href="\/library\?grade=4-5" aria-current="true">[^<]*<span aria-hidden="true">[^<]*<\/span> Grades 4-5/);
-  const old = await call('/library?level=3&q=boat');
-  assert.equal(old.status, 301, 'an old Level link'); assert.equal(old.headers.get('location'), '/library?grade=2&q=boat');
-  assert.ok((await call('/library', { user: s.teacher })).text.includes('/library/sw-0001/assign'));
-  assert.ok(!(await call('/library', { user: s.kids[0] })).text.includes('/assign'));
+  assert.equal((await call('/read?grade=2')).text.match(/class="lb-card"/g).length, LIB.search({ grade: '2' }).length);
+  assert.match((await call('/read?grade=4-5')).text, /class="chip on" href="\/read\?grade=4-5" aria-current="true">[^<]*<span aria-hidden="true">[^<]*<\/span> Grades 4-5/);
+  const old = await call('/read?level=3&q=boat');
+  assert.equal(old.status, 301, 'an old Level link'); assert.equal(old.headers.get('location'), '/read?grade=2&q=boat');
+  // The Read tab (docs/decisions.md "Learn and Read"): /read is the shelf; /library, its old address, answers 301 there with its query.
+  const moved = await call('/library?grade=2&q=boat&class=x');
+  assert.equal(moved.status, 301); assert.equal(moved.headers.get('location'), '/read?grade=2&q=boat&class=x');
+  assert.equal((await call('/library')).headers.get('location'), '/read');
+  assert.match(lib.text, /<a class="tab" href="\/read" aria-current="page">/, 'the Read tab is current');
+  assert.ok((await call('/read', { user: s.teacher })).text.includes('/library/sw-0001/assign'));
+  assert.ok(!(await call('/read', { user: s.kids[0] })).text.includes('/assign'));
   const book = await call('/library/sw-0096');
   assert.match(book.text, new RegExp(`lb-g${LIB.getBook('sw-0096').grade.replace('-', '')}`));
   assert.match(book.text, /About the grade level/); assert.match(book.text, /Oomba&#39;s estimate of the US school grade|Oomba's estimate of the US school grade/);
@@ -284,7 +289,7 @@ test('pages: the library, a book, the reader and its credits for everyone; Assig
   assert.match(book.text, /Pratham Books does not endorse Oomba/); assert.match(book.text, /Bharati Jagannathan/);
   const rd = await call('/library/sw-0001/read');
   assert.equal(rd.status, 200); assert.match(rd.text, /A fawn was racing in the forest\./); assert.match(rd.text, /Translation: Manisha Chaudhry/);
-  assert.match(rd.text, /<a class="btn btn-primary" href="\/library">[^<]*More stories/, 'More stories goes back to the whole library');
+  assert.match(rd.text, /<a class="btn btn-primary" href="\/read">[^<]*More stories/, 'More stories goes back to the whole library');
   const data = JSON.parse(/<script type="application\/json" id="page-data">([^<]*)<\/script>/.exec(rd.text)[1]);
   assert.ok(!JSON.stringify(data).includes('"answer"'), 'no answers on the page');
   assert.equal((await call('/library/sw-9999')).status, 404);

@@ -73,6 +73,10 @@ const GROWNUP_GET = [/^\/(play)?$/, /^\/search$/, /^\/api\/(search|live|me|billi
   // The sign-up's steps (routes/onboarding.js send a signed-in grown-up on to /family) and Sign in with Google (the
   // family account page connects a Google account).
   /^\/signup\/(kid|parent|teacher)(\/[a-z]+)?$/, /^\/auth\/google\/(start|callback)$/, /^\/api\/games\/[^/]+\/(save|leaderboard)$/,
+  // The Story Library (the Read tab; docs/decisions.md "Learn and Read"): the shelf, a book and its reader. Reading only:
+  // routes/library.js keeps nothing for a grown-up (no reading progress, no answers, no points) and shows them no
+  // child's. Never Assign (staff) or the book maker's own paths (GROWNUP_BOOK_GET, behind STORY_PICTURE_BOOKS).
+  /^\/(read|library)$/, /^\/library\/(?!make$|made$)[A-Za-z0-9_-]+(\/read)?$/,
   // Oomba Live: grown-ups host (and join) live games (routes/live.js).
   /^\/(join|live)(\/[^/]+)*$/, /^\/api\/live(\/[^/]+)+$/,
   // Online matches: grown-ups play their own children (and other grown-ups) (routes/match.js).
@@ -91,6 +95,8 @@ const GROWNUP_POST = [/^\/api\/auth\/(login|logout|logout-everywhere|forgot|rese
   /^\/api\/teachers\/school-request$/,   // a parent who is also a teacher may ask us to set up their school
   /^\/api\/number-quest\/placement\/override$/,   // a grown-up's absolute placement override for a linked child (link checked in the route)
   /^\/api\/games\/[^/]+\/(play|heartbeat|leave|save|score|report|poll|print)$/,   // print: Crossword's puzzle (never its answer key)
+  // The Story Library's reader: page turns and the 3 questions (checked, nothing stored for a grown-up), and its book finder.
+  /^\/api\/library\/(?!make\/|made\/)[A-Za-z0-9_-]+\/(progress|answer)$/, /^\/api\/library\/suggest$/,
   /^\/api\/live(\/[^/]+)+$/, /^\/api\/match(\/join|\/[^/]+\/(accept|decline|leave|send))?$/,
   /^\/api\/chat\/oombaacademy$/i];
 // Building games (docs/decisions.md "Grown-ups can build"): the Builder, the Studio and its APIs, and grown-up connections

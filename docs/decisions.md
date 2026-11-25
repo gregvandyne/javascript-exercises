@@ -12954,9 +12954,9 @@ repo's own scripts, same names, formats and sizes as before:
 - **Every other cover** was taken again to check it: all recipes ran but Lantern Mix's, which set a fixed 6:9 mix
   for round 3 while the round's numbers now change; it now sets the round's own right mix. No other cover was stale,
   so the other pictures were left as they were.
-- **Not redone:** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`) still show Atlas
-  Quest's globe and Would You Rather in the old look for a few seconds; they need the voice and music steps in
-  scripts/demo-video/README.md. The four "See it in action" videos show only teaching tools.
+- **Redone since (24 Nov 2026):** the demo and parents videos (`public/video/oomba-demo.mp4`, `oomba-parents.mp4`)
+  were recorded again, see "Demo and parents videos in the new look" below. The four "See it in action" videos show
+  only teaching tools.
 
 
 ## Typing Pets, part 2: numbers and symbols, timed tests, tricky keys, goals, a lesson picker (24 Nov 2026)
@@ -13004,8 +13004,90 @@ Owner: "Continue to work towards feature parity" (with typing.com).
 - **Not done**: assigning to single students (the platform assigns lessons to whole classes), automatic grades from
   the pass mark, typing games, certificates.
 - Tests: `tests/unit/typing.test.js`.
+## Learn and Read: Play and Learn are one page, the Story Library is its own tab (24 Nov 2026)
+- **The owner:** "There really isn't a difference between play and learn anymore is there? Why don't we consolidate
+  those into the same page called Learn and then make Books its own page." Then: the tabs read "Learn · Read · Build".
+- **One Learn page** (`/learn`, routes/teachers.js `learnPage`): by default the games by topic (Play's topic chips and
+  sections from `discover.js focusSections`, each official game from either shelf exactly once, My favorites first for a
+  signed-in player, the courses while COURSES is on, the build banner, My games, "Games by players" while PUBLIC_GAMES is
+  on and signed in only). Under the topic chips, one quiet "Filter the games" line (a `<details>`, `.learn-filterbox`)
+  holds Learn's subject chips, grade picker and "how you play" chips; it is open while a filter is in the address, with
+  the choice in its summary ("Math · Grade 2") and Show all games to go back. A subject or a way to play shows Learn's
+  grid instead of the topics (live class games and learning games, each card with its "Subject · Grades" line), so the
+  two kinds of navigation never stack; a grade alone narrows the topic sections (a game with no grades fits every grade),
+  and a student's roster grade is still picked until they choose Any grade. A game's subject in the grid is its topic's
+  (Sudoku is Math, Castle Clash Thinking) else its Learn subject (live games, Coding), so a filter and a topic agree.
+  The kid's Join door, the subject, "Also on Oomba" and (for visitors, staff and grown-ups) age pages follow as before.
+  **Staff** get exactly the Learn they had: always the grid, filters open, Assign, Host live, Try it, Save and `?std=`.
+  The Books door is gone from Learn. Signed out, `/learn` stays the indexed hub (heading, lead, CollectionPage, hreflang).
+  **Course-owned games** (a course's own games, `COURSE_GAME_SLUGS`, and any game flagged `course_only`) are reached
+  through their course only: `course-catalog.js courseOwned` keeps them out of the topics, the grid, My favorites and
+  players' games on Learn, for every role (the old Learn shelf's rule, now on the whole page).
+- **`/play`** answers 301 to `/learn` with its query string, for everyone; `/<language>/play` to `/<language>/learn`.
+  `/play/<slug>` (playing a game) is another route and unchanged. **`/`** shows the Learn page (not a redirect) to those
+  who land on it (`landingFor` null: guests, kids, the platform admin, and the signed out where the teacher landing page
+  is off), with the home page's title, structured data and, signed out, its heading, three doors (the kid door to
+  `#play`, the games), join door and subject chips. The teacher landing page still answers `/` with no session.
+  "Just Play" on the landing (`JUST_PLAY_URL`) and the signed-out "Play now" go to `/learn` (`#play`). Every page whose
+  `active` was `home`, `play` or `search` makes Learn current; a game page's Back goes to Learn, whichever shelf the game
+  is on. The hidden-game page's button is "Go to Learn". The arcade Play page (hero, Featured, Popular, Top rated, New,
+  Keep playing, Two players, From Learn, Playing now) is gone even with `ARCADE=1`: arcade games then sit in their topic
+  (most under More games). The shelf tag (`games.shelf`, `shelfOf`) stays: search, the subject pages and Learn's grid
+  filters use it.
+- **Read** is the Story Library's tab. **`/read` is its address**; `/library` answers 301 to `/read` with its query
+  (`?grade=`, `?q=`, `?class=`, `?make=1`), and a book keeps its own pages under `/library/<id>` (the reader, Assign, the
+  made-book pages, the APIs), so no saved book link, assignment or lesson step breaks. The heading stays "Story
+  Library". The library's pages make Read current; the companion still knows `/read` as the library page.
+- **Nav** (`shellFor`): signed out Learn · Read · Build · Grown-ups · Sign in (top: Learn · Read · Build · Parents ·
+  Teachers); platform admin Learn · Read · Build · Schools · Me; student Class · Learn · Read · Build · Me (top + Friends);
+  kid Learn · Read · Build · Friends · Me; grown-up Family · Learn · Read · Build · Account (top without Account). Staff
+  are unchanged (Classroom · Build · Tools · Live · Me); their account menu's two tiles are
+  Learn and Read (they were Play and Learn). Icons: Learn 💡 (the Oomba "idea" icon), Read 📚 (books, the library's own
+  heading icon). With STORY_BUILDER on, Stories is after Build in the top bar; where it would make a sixth phone tab
+  (kid, student, platform admin, grown-up) it is in the account menu on phones (`storiesInMenu`, `.acct-phone`), as staff's
+  Teaching tools already were. A class tab's "Done for today?" buttons are Learn and Read.
+- **Grown-ups read the library** (the owner: "parents should get a Read tab"). The family fence (routes/family.js)
+  lets a signed-in grown-up open `/read`, `/library` (its redirect), a book (`/library/<id>`), its reader
+  (`/library/<id>/read`) and the reader's calls (`/api/library/<id>/progress` and `/answer`, and the book finder
+  `/api/library/suggest`). They read **as a visitor does** (`routes/library.js readerOf`): nothing is stored for them (no
+  reading row, no answers, no points), a book always starts fresh, a class step's context never applies, and no child's
+  reading (their own linked child's included) shows on any library page. Read to me uses the device's voice (AI voices
+  stay fenced for grown-ups, as in games). Still closed: Assign and a class's results (staff), and the book maker's
+  paths unless STORY_PICTURE_BOOKS names `parent` (then their own books are on their shelf, as before). Tests:
+  family.test.js ("a grown-up reads"), story-picture-books.test.js, nav-roles.test.js.
+- **Words:** `nav.read` in all 13 languages (Leer, Lire, Lesen, Leggi, Ler, Lezen, Чтение, よむ, 閱讀, קריאה, اقرأ);
+  `game.unavailable.*` say Learn. Gone with the Play page: `nav.play` and the arcade rows' strings (`home.rails.featured`
+  and the rest, `home.categories`, `home.chips.two`, `home.empty.text`, `library.door.title/kids`, `learn.tab.players`).
+- Tests: tests/unit/nav-roles.test.js (every shell, the kid's bars byte for byte, the redirects, `/` per role, Read
+  current on /read and a book, staff unchanged, Stories on phones), shelves.test.js (one page by topic, a game page's
+  Back and Learn tab, filters, roster grade, players' games), home-doors, nav-doors, focus-hide, play-topics-private,
+  teacher-landing, library.test.js (the /library redirect), and the tests that opened /play or /library.
 
 
+
+## Demo and parents videos in the new look (24 Nov 2026)
+
+Owner: "Yes rebuild those videos", then: rework the scenes to use what is on the site now (`ARCADE` off).
+`public/video/oomba-demo.mp4` (/teachers/live) and `oomba-parents.mp4` (/parents) showed Atlas Quest and Would You
+Rather in the look they had before #570, and games the focus on teaching tools has hidden since.
+- **Recorded on the default config** (both servers without `ARCADE`), so every scene shows only what a visitor can find:
+  - Hook (both): Atlas Quest's lit globe instead of Gulp City.
+  - Live (teacher): the teacher picks Question Battle (not Quest Race), Science, Ages 10-11, an open room; a phone joins
+    with a code; a question is answered, revealed, and the top five shows.
+  - Builder (both): MayaMakes describes "A Category Board quiz for my class: animals, space and maps!", the build and the
+    automatic playtest, then a question played on the sideways preview (pick a tile, show the answer, give the points),
+    instead of an arcade game. The replay shows the AI Builder's kind of next steps for a board ("Use our spelling
+    words", "Add a fourth team", "Make it harder") instead of the offline blocks' arcade ones.
+  - Montage (both): Atlas Quest (Find it: a country tapped on the globe), Word Hunt (two words found), Crossword (two
+    words typed), Castle Clash, instead of Gulp City and the solo Would You Rather.
+  - Safety scenes (parents) as before; the publish sheet shows today's choices (Only me, Friends).
+- **Captions:** one changed, the live race line: "Everyone answers. The race is on!" is now "Everyone answers. Who's on
+  top?". The others still fit and are unchanged. The voice-over scripts (`teacher-vo.json`, `parents-vo.json`, not used
+  in these cuts) follow the new scenes.
+- **Same** lengths (57.4 s and 49.3 s), end-card hits (`--hit 101.16 --fade-in 0.5`), the owner's AtlasAudio track, no
+  voice-over (the published cuts had none). Posters and captions replaced; no 16x9 or 9x16 extras in the repository.
+- **Recording fixes:** the Builder presses its preview's keys inside the game's page; a cursor taps, drags and types in
+  the flat games (Atlas Quest, Word Hunt, Crossword, Castle Clash), whose screens are still between moves.
 
 ## Atlas Quest: blank maps that read on a phone, answer keys for grown-ups, and a five-step quiz maker (24 Nov 2026)
 
@@ -13166,6 +13248,37 @@ Owner: "Build for other languages now".
   against that keyboard. Tricky keys count any letter (services/typing.js).
 - **Not done**: the server-side lesson names on Assign stay English; other variants (UK, Swiss, Canadian French,
   Dvorak) and Zhuyin/Pinyin input are later work. AltGr characters are not taught.
+
+## The Big Divide is now Arithmetic Lab (25 Nov 2026)
+Owner: rename The Big Divide to **Arithmetic Lab**, and give it the address `/g/arithmetic-lab`. This time the slug
+changes too, safely for the live database and for every link and QR code already handed out.
+- **The name.** `seed-games/arithmetic-lab.json` (`title`, `l10n.<lang>.title`), `tools/box-by-box/src/lib/name.ts`,
+  `ui.name` in each `tools/box-by-box/src/i18n/<locale>.json`, `server/services/tts-lines.js`, the comments and docs that
+  describe the product, then a rebuild (`npm run build:box-by-box`), `node scripts/covers.js arithmetic-lab` and
+  `node scripts/og-images.js arithmetic-lab.jpg`. Translations: Laboratorio de aritmética, Labo d’arithmétique,
+  Rechenlabor, Laboratório de Aritmética, Laboratorio di aritmetica, Rekenlab, Арифметическая лаборатория, מעבדת החשבון,
+  مختبر الحساب, 算数ラボ, 算術實驗室 (en-GB: Arithmetic Lab). The English tags gain "big divide", so a search for
+  the old name still finds it.
+- **The slug.** `arithmetic-lab` everywhere the code names the game: the seed files (`seed-games/arithmetic-lab.html`
+  and `.json`, as every seed game's files carry its slug), `SEED_GAMES`, `SET_GAMES` and the other game-sets checks,
+  `game-print.js`, `tts-lines.js`, `companion-games.js`, `discover.js` `TOPIC_OF`, the cover recipe, `public/covers` and
+  `public/og`. Internal names stay: the `tools/box-by-box` folder, `npm run build:box-by-box`, `box-by-box-print.js`, the
+  test file names, CSS classes and the `BRB.storage` keys (`box-by-box-activities-v1`...), so saved activities on
+  devices are kept.
+- **The live database: migration 0121** (`server/db.js` `renameSeedSlug`). The official row with `box-by-box` takes
+  `arithmetic-lab`; its id does not change, so plays, scores, saves, question sets, lesson steps, assignments, folders
+  and Classroom posts (all stored by game id) stay with it, and the seed import on the next boot finds the row by its new
+  slug and updates it instead of adding a second game. A member's game that already had `arithmetic-lab` moves to
+  `arithmetic-lab-2` first. A new database has no `box-by-box` row and the seed makes the game as `arithmetic-lab`.
+- **Old links** (`server/services/slug-aliases.js`, `SLUG_ALIASES`). One middleware in `server/app.js`, before the
+  static files and the language prefix, redirects any path with `box-by-box` as a segment or a file name to the same
+  path with `arithmetic-lab`, query string kept: `/play/box-by-box?chapter=s-abc&lock=1` goes to
+  `/play/arithmetic-lab?chapter=s-abc&lock=1`, likewise `/g/...`, `/es/g/...`, `/covers/box-by-box.jpg?v=...`, `/og/...`
+  and the APIs. 301 for GET and HEAD, 308 otherwise (a POST keeps its body). The target is always a path on this site.
+  `games.getGameBySlug` and the AI voice allowlist read the old slug as the new one (a slug passed in a query, such as
+  `/teach/assign?game=box-by-box`, still works), `HIDDEN_GAMES` may name either, and no new game can take `box-by-box`.
+- Saved lesson and assignment titles that were made with the old name keep it, as in the last rename.
+- Tests: `tests/unit/arithmetic-lab-rename.test.js` (the redirects, the migration, no second game after the seed).
 
 ## Algebra Builder: cancel by dropping on the opposite, and x tiles turn to fit the T (25 Nov 2026)
 

@@ -2,7 +2,7 @@
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
-import { page, notFound, landingFor, signedOut } from '../views/layout.js';
+import { page, notFound, signedOut } from '../views/layout.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -61,10 +61,10 @@ const REASON_KEYS = ['scary', 'mean', 'grownup', 'broken', 'copy', 'other'];
 export const reportReasons = (t = tEn) => REASON_KEYS.map(k => [k, t(`game.report.reasons.${k}`)]);
 export const REPORT_REASONS = reportReasons();
 
-/** An official game hidden while ARCADE is off (services/game-focus.js): a calm page with the way to Play, not an error. */
+/** An official game hidden while ARCADE is off (services/game-focus.js): a calm page with the way to Learn, not an error. */
 export function unavailable(req, res) {
   const t = req.t;
-  return page(req, res, { title: t('game.unavailable.title'), body: html`<div class="empty" id="game-unavailable"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('game.unavailable.title')}</h1><p>${t('game.unavailable.text')}</p><a class="btn btn-primary" href="/play">${t('game.unavailable.play')}</a></div>` }, 404);
+  return page(req, res, { title: t('game.unavailable.title'), body: html`<div class="empty" id="game-unavailable"><div class="emo">${ico('🧭', { size: 64 })}</div><h1>${t('game.unavailable.title')}</h1><p>${t('game.unavailable.text')}</p><a class="btn btn-primary" href="/learn">${t('game.unavailable.play')}</a></div>` }, 404);
 }
 function loadViewable(req, res) {
   const g = games.getGameBySlug(req.params.slug);
@@ -180,8 +180,8 @@ router.get('/g/:slug', (req, res) => {
   // Search titles only where this language really has the wording (t.own alone is true for every key in English).
   const written = key => t.has(key) && t.own(key);
   const title = official && written(`seo.games.${g.slug}`) ? t(`seo.games.${g.slug}`) : official && written(`seo.game.kind.${cat.key}`) ? t('seo.game.title', { title: g.title, kind: t(`seo.game.kind.${cat.key}`) }) : g.title;
-  const learnShelf = games.shelfOf(g) === 'learn';
-  page(req, res, { title, active: learnShelf ? 'learn' : 'play', back: learnShelf ? '/learn' : landingFor(u) ? '/play' : '/', backLabel: t(learnShelf ? 'nav.learn' : 'nav.play'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
+  // Every game is on Learn now (docs/decisions.md "Learn and Read"): the Learn tab is current and Back goes there.
+  page(req, res, { title, active: 'learn', back: '/learn', backLabel: t('nav.learn'), body, description: seo.clip(g.description, 158), scripts: ['/js/game.js', ...(u && u.role === 'admin' ? ['/js/admin-game-voices.js'] : [])],
     seo: official ? gameSeo(req, g, d, owner) : null });
 });
 
@@ -469,7 +469,7 @@ router.get('/frame/:token', (req, res) => {
     // A graded Mistake Hunt step (BRB.proofStep; services/proof-steps.js viewFor): the words students see and their
     // saved fixes, never the key or the why lines before they are allowed. Only for the student the token was made for.
     ...(!preview && tok.pf && u && docTextGame(g) ? (() => { const r = progress.proofFor(u, String(tok.pf[0]), String(tok.pf[1])); return r.ok ? { proofStep: r.view } : {}; })() : {}),
-    // Print (BRB.canPrint / BRB.print; Crossword, The Big Divide, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
+    // Print (BRB.canPrint / BRB.print; Crossword, Arithmetic Lab, Mistake Hunt): the play page prints for the frame (POST /api/games/:id/print).
     ...(!preview && printGame(g) ? { print: true } : {}),
     // A classroom activity that prints (canvas-print.js), in the Studio's preview too (its maker): printKey offers the
     // answer key (BRB.canPrintKey) to its maker and school staff only; the print route checks again.
@@ -626,7 +626,7 @@ const printKeyFor = (u, g) => isSchoolStaff(u) || (g.slug === 'atlas-quest' && m
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
 /** Mistake Hunt: a passage from a teacher's document (services/crossword-doc.js textFromFile). */
 const docTextGame = g => setGame(g) && g.slug === 'mistake-hunt';
-/** A game that prints (services/game-print.js): Crossword's puzzles, The Big Divide's worksheets. */
+/** A game that prints (services/game-print.js): Crossword's puzzles, Arithmetic Lab's worksheets. */
 const printGame = g => setGame(g) && PRINTERS.has(g.slug);
 /** A Builder classroom activity that prints (Oomba Canvas 1.2.0 with a worksheet or generator purpose,
  *  services/canvas-print.js): the published version, or (for its maker or an admin) the version they ask for, as in
@@ -776,7 +776,7 @@ router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
 });
 // Print (services/game-print.js): a game's own data -> { html }, the printable page the play page prints for the frame, in
 // the viewer's language. Crossword: its puzzle (its words and clues, the word bank option and the layout as numbers;
-// services/crossword-print.js); The Big Divide: an activity's problems as a question set's item (numbers and fixed
+// services/crossword-print.js); Arithmetic Lab: an activity's problems as a question set's item (numbers and fixed
 // words only; services/box-by-box-print.js). Anyone who can open the game may print (a student, a guest with the sample,
 // a teacher's unsaved draft); the answer key only school staff (BRB.canAssign's check), and in Atlas Quest the grown-ups
 // who may make a quiz (printKeyFor). Words pass the site's text

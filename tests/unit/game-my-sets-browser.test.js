@@ -2,7 +2,7 @@
 // Algebra Builder"): a teacher opens the list, opens a saved set in the game's editor (saving it again keeps its code),
 // renames, duplicates, prints, copies its link and deletes one (with a confirm); the empty list points to making one;
 // a student never sees the button. Crossword runs in the production game frame (the SDK's BRB.mySets and friends post
-// brb:sets to a stand-in play page that keeps the sets); The Big Divide and Algebra Builder run their built pages with
+// brb:sets to a stand-in play page that keeps the sets); Arithmetic Lab and Algebra Builder run their built pages with
 // BRB stubbed, as their own tests do. Screenshots of each list go to MY_SETS_SHOTS when it is set.
 // The tests need a local Chromium; they are skipped when there is none.
 import './_setup.js';
@@ -205,7 +205,7 @@ test('Crossword: a student (no BRB.canListSets) never sees My worksheets', { ski
   } finally { await g.ctx.close(); }
 });
 
-// ---------------------------------------------------------------- The Big Divide and Algebra Builder (BRB stubbed)
+// ---------------------------------------------------------------- Arithmetic Lab and Algebra Builder (BRB stubbed)
 /** A built Svelte game with BRB stubbed as a teacher's frame: the sets in a store (STORE_JS), save, print, copy. */
 async function openBuilt(file, slug, { sets = [], mySets = true, saved = {}, width = 1280 } = {}) {
   const b = await launch();
@@ -242,11 +242,11 @@ async function openBuilt(file, slug, { sets = [], mySets = true, saved = {}, wid
   return { ctx, page, errors, log, store: () => page.evaluate(() => window.__store) };
 }
 
-test('The Big Divide: My worksheets lists the saved activities; open one in the editor and save it under its code; rename, duplicate, print, copy, delete', { skip, timeout: 180_000 }, async () => {
+test('Arithmetic Lab: My worksheets lists the saved activities; open one in the editor and save it under its code; rename, duplicate, print, copy, delete', { skip, timeout: 180_000 }, async () => {
   const A = 's-division23', B = 's-multiply23';
-  const g = await openBuilt('box-by-box.html', 'box-by-box', { sets: [
-    row('box-by-box', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'Week 3 division'),
-    row('box-by-box', B, [{ k: 'multiply', p: [[23, 4], [56, 7]], l: 'onMyOwn', m: 'area' }], '', 86400e3),
+  const g = await openBuilt('arithmetic-lab.html', 'arithmetic-lab', { sets: [
+    row('arithmetic-lab', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'Week 3 division'),
+    row('arithmetic-lab', B, [{ k: 'multiply', p: [[23, 4], [56, 7]], l: 'onMyOwn', m: 'area' }], '', 86400e3),
   ] });
   const { page } = g;
   try {
@@ -281,7 +281,7 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
     await page.locator(`[data-ws-more="${B}"]`).click(); await page.locator(`[data-ws-key="${B}"]`).click();
     pr = (await g.log('print')).at(-1).doc; assert.equal(pr.key, true); assert.equal(pr.m, 'area');
     await page.locator(`[data-ws-more="${A}"]`).click(); await page.locator(`[data-ws-copy="${A}"]`).click();
-    assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/box-by-box?chapter=${A}&lock=1`);
+    assert.equal((await g.log('copy')).at(-1).what, `http://game.test/play/arithmetic-lab?chapter=${A}&lock=1`);
     assert.equal(await page.locator('[role="menu"]').count(), 0, 'a choice closes the menu');
     assert.equal(await page.evaluate(() => document.activeElement.dataset.wsMore), A, 'and the focus is back on More');
     // Rename: refused, then fine
@@ -331,9 +331,9 @@ test('The Big Divide: My worksheets lists the saved activities; open one in the 
   } finally { await g.ctx.close(); }
 });
 
-test('The Big Divide: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
+test('Arithmetic Lab: My worksheets on a phone, with no sideways scroll', { skip, timeout: 120_000 }, async () => {
   const A = 's-division23';
-  const g = await openBuilt('box-by-box.html', 'box-by-box', { width: 375, sets: [row('box-by-box', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'A rather long name for the week 3 division practice')] });
+  const g = await openBuilt('arithmetic-lab.html', 'arithmetic-lab', { width: 375, sets: [row('arithmetic-lab', A, [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }], 'A rather long name for the week 3 division practice')] });
   const { page } = g;
   try {
     await page.getByRole('button', { name: /I’m a teacher/ }).click();
@@ -351,8 +351,8 @@ test('The Big Divide: My worksheets on a phone, with no sideways scroll', { skip
   } finally { await g.ctx.close(); }
 });
 
-test('The Big Divide: a student\'s frame (no BRB.canListSets) has no My worksheets', { skip, timeout: 120_000 }, async () => {
-  const g = await openBuilt('box-by-box.html', 'box-by-box', { mySets: false });
+test('Arithmetic Lab: a student\'s frame (no BRB.canListSets) has no My worksheets', { skip, timeout: 120_000 }, async () => {
+  const g = await openBuilt('arithmetic-lab.html', 'arithmetic-lab', { mySets: false });
   try {
     await g.page.getByRole('button', { name: /I’m a teacher/ }).click();
     await g.page.getByRole('heading', { name: 'Your activities' }).waitFor();

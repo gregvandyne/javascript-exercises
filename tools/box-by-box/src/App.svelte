@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { t, tn } from '$lib/i18n';
-	// The Big Divide. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it
+	// Arithmetic Lab. Opened with an activity (a student link, or a lesson step) it goes straight to the player for it
 	// (Player for the standard algorithms, MethodPlayer for the ladder, area models and partial products);
 	// otherwise it asks who's playing: a teacher goes on to their list of activities, a student to a class code or
 	// practicing alone.

@@ -105,7 +105,7 @@ test('while painting: the reader (a student), the print copy and the card show t
   r = await get(`/library/made/${id}/print`);
   assert.doesNotMatch(r.text, ART_PACK); assert.match(r.text, /sb-painting/);
   // the card on /library/make and /library: the placeholder cover, "Painting pictures", Read still there
-  for (const where of ['/library/make', '/library']) {
+  for (const where of ['/library/make', '/read']) {
     const c = cardOf((await get(where)).text, id);
     assert.ok(c, where);
     assert.match(c, /data-painting="1"/); assert.match(c, /class="lb-cover sb-bcover"[^>]*><div class="sb-art sb-painting"[^>]*aria-hidden="true"/);

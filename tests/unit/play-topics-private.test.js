@@ -1,5 +1,6 @@
 // Play by topic, My favorites, and no public games (docs/decisions.md "Play by topic, My favorites" and "No public games:
-// share with connections and classes"). With ARCADE and PUBLIC_GAMES off (the site's defaults): Play is laid out by
+// share with connections and classes"; Play is the Learn page now: "Learn and Read"). With ARCADE and PUBLIC_GAMES off
+// (the site's defaults): Learn is laid out by
 // topic (Math, Reading and words, Geography, Live class games, Strategy, Classroom tools) with no Popular / Top rated /
 // New rows, each kept game once; a signed-in player's favorites come first; nobody can share a game with everyone (the
 // server refuses 'public' and 'school' and the Studio doesn't offer them); a player's game that was public (or shared
@@ -42,7 +43,7 @@ const cardSlugs = s => [...s.matchAll(/class="gcard[^"]*" href="\/g\/([a-z0-9-]+
 const section = (s, id) => { const i = s.indexOf(`id="${id}-h"`); if (i < 0) return ''; const j = s.indexOf('<section', i); return s.slice(i, j < 0 ? undefined : j); };
 
 const TOPICS = {
-  'sec-math': ['algebra-builder', 'box-by-box', 'sudoku'],
+  'sec-math': ['algebra-builder', 'arithmetic-lab', 'sudoku'],
   'sec-reading': ['crossword', 'mistake-hunt', 'word-hunt', 'word-peek'],
   'sec-geography': ['atlas-quest'],
   'sec-live': ['brain-board', 'question-battle', 'tug-of-math', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live'],
@@ -87,15 +88,17 @@ test('topics come from the subject data, with the small explicit map', () => {
   assert.deepEqual(sections.map(x => x.id), ['math', 'reading', 'geography', 'live', 'strategy', 'tools']);
 });
 
-test('Play is by topic: chips jump to the sections, each kept game once, no Popular / Top rated / New', async () => {
-  for (const who of [null, student('Pia Play'), teacher]) {
-    const r = await req('/play', who);
+test('Learn is by topic: chips jump to the sections, each kept game once, no Popular / Top rated / New', async () => {
+  // Staff keep Learn's grid with Assign and Host live (tests/unit/shelves.test.js); everyone else gets the topics.
+  assert.ok((await req('/learn', teacher)).text.includes('id="learn-games"'), 'staff: the grid, as before');
+  for (const who of [null, student('Pia Play'), kidMaker]) {
+    const r = await req('/learn', who);
     assert.equal(r.status, 200);
     for (const id of ['popular', 'rated', 'new', 'featured', 'playing', 'players']) assert.ok(!r.text.includes(`id="${id}-h"`), `no ${id} row`);
     const cards = cardSlugs(r.text).filter(s => KEPT.includes(s));
     assert.equal(new Set(cards).size, cards.length, `each game once: ${cards.join()}`);
     for (const [sec, slugs] of Object.entries(TOPICS)) {
-      assert.ok(r.text.includes(`href="#${sec}"`), `chip to ${sec}`);
+      assert.ok(r.text.includes(`href="#${sec}-h"`), `chip to ${sec}`);
       assert.deepEqual(cardSlugs(section(r.text, sec)).sort(), [...slugs].sort(), sec);
     }
     for (const name of ['Math', 'Reading and words', 'Geography', 'Live class games', 'Strategy', 'Classroom tools']) assert.ok(r.text.includes(` ${name}</h2>`), name);
@@ -106,9 +109,9 @@ test('Play is by topic: chips jump to the sections, each kept game once, no Popu
 });
 
 // ---------------------------------------------------------------- B. My favorites
-test('My favorites: a student favorites games, they come first on Play; hidden games never show; none, no section', async () => {
+test('My favorites: a student favorites games, they come first on Learn; hidden games never show; none, no section', async () => {
   const pia = student('Fay Fave');
-  let r = await req('/play', pia);
+  let r = await req('/learn', pia);
   assert.ok(!r.text.includes('id="favorites-h"'), 'no favorites yet: no section');
   // The Favorite button is on game pages for students, and it works.
   const page = await req('/g/word-hunt', pia);
@@ -119,11 +122,11 @@ test('My favorites: a student favorites games, they come first on Play; hidden g
   }
   // A favorite from before that is now hidden (ARCADE off) is left out.
   q.run('INSERT INTO likes(game_id, user_id, created_at) VALUES (?,?,?)', G.getGameBySlug('sum-racer').id, pia.id, now());
-  r = await req('/play', pia);
+  r = await req('/learn', pia);
   const favs = cardSlugs(section(r.text, 'favorites'));
   assert.deepEqual(favs.sort(), ['castle-clash', 'word-hunt']);
   assert.ok(r.text.indexOf('id="favorites-h"') < r.text.indexOf('id="sec-math-h"'), 'near the top');
-  assert.ok(r.text.includes('href="#favorites"'));
+  assert.ok(r.text.includes('href="#favorites-h"'));
   assert.ok(!cardSlugs((await req('/favorites', pia)).text).includes('sum-racer'));
 });
 
@@ -204,6 +207,6 @@ test('PUBLIC_GAMES on brings back the old rule and the option', async () => {
     assert.equal(G.canView(schoolmate, oldSchool), true);
     assert.ok(studioState(maker, oldPublic.id).publicGames);
     assert.equal((await req(`/g/${oldPublic.slug}`)).status, 200);
-    assert.ok((await req('/play', stranger)).text.includes('id="players-h"'), 'Games by players is back');
+    assert.ok((await req('/learn', stranger)).text.includes('id="players-h"'), 'Games by players is back');
   } finally { config.publicGames = false; }
 });

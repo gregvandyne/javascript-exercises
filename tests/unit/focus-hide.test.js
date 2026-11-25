@@ -33,7 +33,7 @@ const gameLinks = s => new Set([...s.matchAll(/href="\/(?:g|play)\/([a-z0-9-]+)/
 const hiddenIn = s => [...gameLinks(s)].filter(x => FOCUS.HIDDEN_GAMES.includes(x));
 
 const KEPT = ['brain-board', 'question-battle', 'tug-of-math', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'popcorn-hush', 'quiet-bounce', 'remis-quiet-meadow',
-  'crossword', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'algebra-builder', 'box-by-box', 'atlas-quest', 'castle-clash'];
+  'crossword', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'algebra-builder', 'arithmetic-lab', 'atlas-quest', 'castle-clash'];
 
 // ---------------------------------------------------------------- people
 const boss = auth.createUser({ username: 'FocusBoss', password: 'boss-password-1', role: 'admin' });
@@ -57,15 +57,16 @@ test('the list: every hidden slug is a seed game, none of the kept ones is hidde
   for (const s of FOCUS.HIDDEN_GAMES) assert.equal(G.getGameBySlug(s).status, 'published', s);
 });
 
-test('Play, Learn and search list no hidden game and keep the others', async () => {
+test('Learn (by topic and filtered) and search list no hidden game and keep the others', async () => {
   for (const who of [null, kid, pupil, teacher]) {
-    const play = await get('/play', who), learn = await get('/learn', who);
+    // Play and Learn are one page (docs/decisions.md "Learn and Read"): its topics view and its filtered grid.
+    const play = await get('/learn?how=solo', who), learn = await get('/learn', who);
     assert.equal(play.status, 200); assert.equal(learn.status, 200);
     assert.deepEqual(hiddenIn(play.text), [], `Play for ${who ? who.username : 'a visitor'}`);
     assert.deepEqual(hiddenIn(learn.text), [], `Learn for ${who ? who.username : 'a visitor'}`);
   }
-  const seen = new Set([...gameLinks((await get('/play')).text), ...gameLinks((await get('/learn')).text)]);
-  for (const s of ['crossword', 'word-hunt', 'castle-clash', 'algebra-builder', 'box-by-box', 'tug-of-math', 'atlas-quest']) assert.ok(seen.has(s), `${s} is listed`);
+  const seen = new Set([...gameLinks((await get('/learn?how=solo')).text), ...gameLinks((await get('/learn')).text)]);
+  for (const s of ['crossword', 'word-hunt', 'castle-clash', 'algebra-builder', 'arithmetic-lab', 'tug-of-math', 'atlas-quest']) assert.ok(seen.has(s), `${s} is listed`);
   // The subject chips and pages with nothing left (Music, Computer science) are gone; the others stay.
   const learn = (await get('/learn')).text;
   assert.ok(!learn.includes('/learn/music-games') && !learn.includes('/learn/computer-science'));
@@ -96,11 +97,11 @@ test('the sitemap and Oomba’s game search leave hidden games and courses out',
   assert.ok(searchGames({ topic: 'vocabulary' }).some(x => x.id === 'crossword'));
 });
 
-test('a hidden game’s page and play page say it is not available, with the way to Play; the admin still opens it', async () => {
+test('a hidden game’s page and play page say it is not available, with the way to Learn; the admin still opens it', async () => {
   for (const p of ['/g/sum-racer', '/play/sum-racer', '/g/jungle-cup', '/play/would-you-rather']) {
     const r = await get(p);
     assert.equal(r.status, 404, p);
-    assert.ok(r.text.includes('id="game-unavailable"') && r.text.includes('href="/play"'), p);
+    assert.ok(r.text.includes('id="game-unavailable"') && r.text.includes('href="/learn">Go to Learn'), p);
     assert.ok(r.text.includes('available right now'), p);
   }
   assert.equal((await get('/g/sum-racer', boss)).status, 200);
@@ -210,14 +211,14 @@ test('with ARCADE and COURSES on, everything is back', async () => {
   } finally { config.arcade = false; config.courses = false; }
 });
 
-test('Play shows each kept game once, in sections by topic, with the live and puzzle games on it', async () => {
+test('Learn shows each kept game once, in sections by topic, with the live and puzzle games on it', async () => {
   for (const who of [null, kid]) {
-    const r = await get('/play', who);
+    const r = await get('/learn', who);
     const cards = [...r.text.matchAll(/class="gcard[^"]*" href="\/g\/([a-z0-9-]+)"/g)].map(m => m[1]);
     const official = cards.filter(s => KEPT.includes(s));
     assert.equal(new Set(official).size, official.length, `no repeats: ${official.join()}`);
-    for (const s of ['crossword', 'brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'box-by-box', 'popcorn-hush'])
-      assert.ok(official.includes(s), `${s} is on Play`);
+    for (const s of ['crossword', 'brain-board', 'question-battle', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live', 'tug-of-math', 'mistake-hunt', 'word-hunt', 'sudoku', 'word-peek', 'castle-clash', 'algebra-builder', 'arithmetic-lab', 'popcorn-hush'])
+      assert.ok(official.includes(s), `${s} is on Learn`);
     for (const id of ['sec-math', 'sec-reading', 'sec-geography', 'sec-live', 'sec-strategy', 'sec-tools']) assert.ok(r.text.includes(`id="${id}-h"`), id);
     assert.ok(!r.text.includes('id="popular-h"') && !r.text.includes('id="rated-h"'));
   }

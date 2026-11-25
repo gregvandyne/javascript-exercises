@@ -73,8 +73,8 @@
     "games": "Games",
     "account": "Account",
     "school": "School",
-    "play": "Spelen",
     "learn": "Leren",
+    "read": "Lezen",
     "class": "Klas",
     "classroom": "Klaslokaal",
     "live": "Live",
@@ -562,17 +562,8 @@
       "start": "Begin met bouwen"
     },
     "rails": {
-      "featured": "Uitgelicht",
-      "playing": "Nu gespeeld",
-      "friends": "Van je vrienden",
-      "popular": "Populair",
-      "rated": "Top",
-      "new": "Nieuw",
       "mine": "Mijn games",
-      "favorites": "Mijn favorieten",
-      "keep": "Verder spelen",
-      "two": "Met z’n tweeën",
-      "fromLearn": "Uit Leren: de leukste"
+      "favorites": "Mijn favorieten"
     },
     "hero": {
       "label": "Uitgelichte game",
@@ -581,10 +572,8 @@
       "more": "Meer info",
       "about": "Over {title}"
     },
-    "categories": "Categorieën",
     "empty": {
       "title": "Nog geen games",
-      "text": "Bouw jij de eerste?",
       "action": "Bouw een game"
     },
     "intro": {
@@ -607,9 +596,6 @@
       "todo": "{count, plural, one {# les te doen} other {# lessen te doen}}",
       "continue": "Verder",
       "open": "Open mijn klas"
-    },
-    "chips": {
-      "two": "Met z’n tweeën"
     },
     "focus": {
       "tools": "Klassentools",
@@ -1227,8 +1213,8 @@
     },
     "unavailable": {
       "title": "Deze game is nu niet beschikbaar",
-      "text": "Misschien komt hij later terug. Bij Spelen staan meer games en puzzels om te proberen.",
-      "play": "Naar Spelen"
+      "text": "Misschien komt hij later terug. Bij Leren staan meer games en puzzels om te proberen.",
+      "play": "Naar Leren"
     }
   },
   "play": {
@@ -7077,7 +7063,6 @@
       "games": "Leergames",
       "none": "Er zijn nog geen games voor deze filters.",
       "clear": "Alle games tonen",
-      "players": "Leergames van spelers",
       "meta": "{subject} · {grades}",
       "assign": "Toewijzen",
       "assignCourse": "Aan een klas toewijzen",
@@ -13429,8 +13414,6 @@
     "kindStory": "Verhaal",
     "findStories": "Verhalenbibliotheek",
     "door": {
-      "title": "Verhalenbibliotheek",
-      "kids": "{count} prentenboeken. Lees ze, of tik op Lees voor!",
       "staff": "{count} prentenboeken op niveau, met vragen. Wijs er een toe aan een klas."
     },
     "results": {
