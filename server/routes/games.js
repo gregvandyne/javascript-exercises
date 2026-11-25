@@ -348,7 +348,11 @@ router.get('/play/:slug', (req, res) => {
   // Lesson parameters (?chapter=&band=&mode=&level=&lock=, services/play-params.js): a lesson step's Play link says where
   // the game opens. Only the five known keys with valid values go into the token (o), nothing else from the URL.
   const o = packParams(parseParams(req.query));
-  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}) }, 15 * 60);
+  // A game handed out from a class's Homeroom (services/lessons.js playFrame): back to the student's desk, and the
+  // teacher's instructions again at the top of the game (the game itself is unchanged). Its student's supports (Homeroom
+  // step 3c) ride in the token to the frame (BRB.support: extra time, read aloud, simpler wording, bigger text).
+  const frame = lesson ? L.playFrame(u, lc.cl, lc.step, t) : null;
+  const token = signToken({ v: versionId, g: g.id, u: u ? u.id : null, l: req.locale, ...(inMatch ? { m: inMatch.id } : {}), ...(o ? { o } : {}), ...(lesson && lesson.proof ? { pf: [lesson.cl, lesson.step] } : {}), ...(frame && frame.support ? { sp: frame.support } : {}) }, 15 * 60);
   // An art style the page asks for (?style=cartoon): it goes on to the frame as the Oomba Kit's ?okStyle=, and a game that
   // offers that style (Oomba.three's styles) draws it; every other game ignores it. Only the known style names pass.
   const frameQ = FRAME_STYLES.includes(String(req.query.style || '')) ? `?okStyle=${req.query.style}` : '';
@@ -361,9 +365,6 @@ router.get('/play/:slug', (req, res) => {
   // playbar, and again inside the stage (.fsback) — fullscreen paints only the stage's subtree, so the playbar
   // never shows there, and without the second link a player in fullscreen has no way back but the browser's own
   // escape (the game's own screens offer only Play again / Next).
-  // A game handed out from a class's Homeroom (services/lessons.js playFrame): back to the student's desk, and the
-  // teacher's instructions again at the top of the game (the game itself is unchanged).
-  const frame = lesson ? L.playFrame(u, lc.cl, lc.step, t) : null;
   if (frame) lesson.back = frame.backHref;
   const backHref = lesson ? lesson.back : cstep ? `/courses/${asked.slug}/${cstep.key}#play` : course ? `/courses/${course.slug}` : `/g/${g.slug}`;
   const backLabel = lesson ? (frame ? frame.backLabel : t('progress.play.backToLesson')) : cstep ? t('courses.back', { course: t(`${asked.key}.title`) }) : course ? t('courses.back', { course: t(`${course.key}.title`) }) : t('play.backTo', { title: g.title });
@@ -396,7 +397,7 @@ router.get('/play/:slug', (req, res) => {
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
   ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
-  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: [...(mic ? ['js.match', 'js.loudness'] : ['js.match']), ...(frame && frame.i18n ? frame.i18n : [])] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.
@@ -448,6 +449,8 @@ router.get('/frame/:token', (req, res) => {
     // Typing Zoo: what the student's teacher asks to unlock each next lesson (BRB.classRules: { acc, wpm }; services/typing.js
     // rulesFor, the strictest among their classes), for a signed-in student only, never a preview.
     ...(!preview && u && !u.is_guest && g.source === 'seed' && g.slug === TY.SLUG ? (r => (r ? { classRules: r } : {}))(TY.rulesFor(u.id)) : {}),
+    // A Homeroom student's supports (step 3c; BRB.support and BRB.timeFor in the game): only the four known fields.
+    ...(tok.sp && typeof tok.sp === 'object' ? { support: { time: [150, 200].includes(tok.sp.time) ? tok.sp.time : 100, read: !!tok.sp.read, simple: !!tok.sp.simple, big: !!tok.sp.big } } : {}),
     // Lesson parameters from the token (BRB.params in the game; absent when the game was opened without any).
     ...(hasParams(unpackParams(tok.o)) ? { params: unpackParams(tok.o) } : {}),
     // A question set (services/game-sets.js) a teacher saved in this game, when the link's chapter is its code

@@ -299,13 +299,18 @@ export const classSupport = classId => q.all(`SELECT s.user_id, s.extra_time, s.
   JOIN class_members m ON m.class_id=s.class_id AND m.user_id=s.user_id AND m.status='active' JOIN users u ON u.id=s.user_id WHERE s.class_id=? ORDER BY u.display_name COLLATE NOCASE`, classId);
 /** One student's saved support row, or null. */
 export const supportRow = (classId, userId) => q.get('SELECT extra_time, read_aloud, simple FROM live_support WHERE class_id=? AND user_id=?', classId, userId) || null;
-/** Save one student's support for a class ({ time, read, simple }); all off deletes the row. -> saved (bool). */
+/** Save one student's support for a class ({ time, read, simple }); all off deletes the row. -> saved (bool). Homeroom's
+ *  Bigger text (big_text, services/homeroom-supports.js) is its own column: kept as it is here, and a row that still
+ *  has it stays. */
 export function saveSupport(classId, userId, { time = 100, read = false, simple = false }, by = null) {
   const any = time > 100 || read || simple;
   if (any) q.run(`INSERT INTO live_support(class_id, user_id, extra_time, read_aloud, simple, set_by, updated_at) VALUES (?,?,?,?,?,?,?)
     ON CONFLICT(class_id, user_id) DO UPDATE SET extra_time=excluded.extra_time, read_aloud=excluded.read_aloud, simple=excluded.simple, set_by=excluded.set_by, updated_at=excluded.updated_at`,
   classId, userId, time, read ? 1 : 0, simple ? 1 : 0, by, Date.now());
-  else q.run('DELETE FROM live_support WHERE class_id=? AND user_id=?', classId, userId);
+  else {
+    q.run('UPDATE live_support SET extra_time=100, read_aloud=0, simple=0, set_by=?, updated_at=? WHERE class_id=? AND user_id=?', by, Date.now(), classId, userId);
+    q.run('DELETE FROM live_support WHERE class_id=? AND user_id=? AND big_text=0', classId, userId);
+  }
   return any;
 }
 /** "Clear support": every saved row of the class. -> how many. */

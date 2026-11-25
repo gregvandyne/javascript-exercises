@@ -140,6 +140,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // the day plans they saved by name (docs/decisions.md "Homeroom: the day plan"; a class's plan of today stays with
     // the class, as its handouts do)
     q.run('DELETE FROM homeroom_day_plans WHERE owner_id=?', u.id);
+    // where they helped as an aide (step 3c; the class's sub links and their log stay with the class)
+    q.run('DELETE FROM homeroom_aides WHERE user_id=?', u.id);
     // what they put on their own desk on a class's board (services/homeroom-staged.js; the class's other teachers keep theirs)
     for (const r of q.all('SELECT class_id, staged FROM homeroom_rooms WHERE staged LIKE ?', `%${u.id}%`)) {
       let list = []; try { list = JSON.parse(r.staged) || []; } catch { /* kept as it was */ }

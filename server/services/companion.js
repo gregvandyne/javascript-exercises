@@ -62,6 +62,7 @@ import { toolOf } from '../../public/js/manip-data.js';
 import { REASON_ICON } from '../../public/js/dash-class5.js';
 import * as HR from './homeroom.js';
 import * as HP from './homeroom-plan.js';
+import * as SUP from './homeroom-supports.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -805,6 +806,7 @@ export const PLAN_TOOLS = Object.freeze([
       kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: what to do, one or two short sentences.'),
       pick: PLAN_PICK, groups: { type: 'array', description: 'Work time per group: a version for each group, by the group\'s name.', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } },
   { name: 'useSavedPlan', description: 'Use a day plan the teacher saved before ("use my Fractions day plan again"): it becomes a new card for this class, with Use this plan. Its result lists the saved plans when none fits the name.', input_schema: { type: 'object', required: ['name'], properties: { name: str('Words from the saved plan\'s name.') } } },
+  { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Homeroom supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
 ]);
 export const PLAN_TOOL_NAMES = Object.freeze(PLAN_TOOLS.map(x => x.name));
 /** The newest plan card in this teacher's chat for a class (the draft a change is made to), or null. */
@@ -1072,6 +1074,14 @@ export function runTool(name, input, ctx) {
       if (!r.plan.parts.length) return { result: { error: 'No part could be kept. Use the kinds slides, work, break, exit with minutes.', notLanded: r.notes }, step: { k: 'planNo' } };
       ctx.out.plan = HP.newCard(c, r, ctx.lang, r.savedFrom ? { from: r.savedFrom } : {});
       return { result: { shownOnCard: true, plan: HP.readBack(u, c, r.plan, ctx.lang), ...(r.notes.length ? { changedByTheApp: r.notes } : {}), note: 'The teacher sees the plan as a card with Use this plan, Save plan and Copy. Nothing is on desks yet. Do not repeat every part in words.' }, step: { k: r.savedFrom ? 'planSaved' : 'plan', n: r.plan.parts.length, q: clip(r.savedFrom ? r.savedFrom.name : r.plan.name, 40) } };
+    }
+    // Simpler wording for a handout (Homeroom supports; services/homeroom-supports.js): the text is checked for names.
+    case 'writeSimplerWording': {
+      const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Simpler wording is written on a class\'s Homeroom.' }, step: { k: 'simplerNo' } };
+      const r = SUP.setSimple(u, c, String(i.handoutId || ''), cleanText(u, String(i.text || '').slice(0, SUP.SIMPLE_MAX), ctx.names), { by: 'oomba' });
+      if (!r.ok) return { result: { error: r.code === 'notFound' ? 'No handout of this class has that id.' : 'That wording could not be saved.' }, step: { k: 'simplerNo' } };
+      return { result: { saved: true, text: r.text, note: 'Students with Simpler wording see this on their desk and over the game. Say so in one sentence.' }, step: { k: 'simpler' } };
     }
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }

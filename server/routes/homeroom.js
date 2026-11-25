@@ -76,19 +76,48 @@ import { toolAccess } from '../services/teacher-tools.js';
 import { config } from '../config.js';
 import { gcAfterAssign, gcCanPost } from './gclassroom.js';
 import { markView } from './homeroom-views.js';
+import * as SUP from '../services/homeroom-supports.js';
+import * as HA from '../services/homeroom-aides.js';
+import * as SB from '../services/homeroom-sub.js';
+import { parseCookies } from '../auth.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, tooBig: 413 };
+const STATUS = { notFound: 404, tooBig: 413, forbidden: 403 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`homeroom.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 
 // The gate: a class this person may run Homeroom for, else on to the site's 404 (the page's, or the API's JSON one).
+// Step 3c (docs/decisions.md "Homeroom: supports, aides and sub links"): a class's aide (services/homeroom-aides.js) and
+// a sub with that class's one-day link (services/homeroom-sub.js, the hr_sub cookie) get in too, but only to the
+// addresses listed for them here; everything else of the class's Homeroom answers them 403. The services check again.
+const HELPER_OK = {
+  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports)$/],
+    ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
+  sub: [['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
+};
+/** The sub this request's hr_sub cookie stands for now ({ link, c, actor }), or null. */
+export function subOf(req) {
+  if (req.hrSubOf === undefined) req.hrSubOf = SB.subFromCookie(parseCookies(req)[SB.COOKIE]);
+  return req.hrSubOf;
+}
+const helperMay = (role, req) => {
+  const path = req.originalUrl.split('?')[0], m = req.method === 'HEAD' ? 'GET' : req.method;
+  return (HELPER_OK[role] || []).some(([mm, re]) => mm === m && re.test(path));
+};
+export function forbidden(req, res) {
+  res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
+  if (req.originalUrl.startsWith('/api/')) return res.status(403).json({ error: req.t('homeroom.errors.forbidden'), code: 'forbidden' });
+  return page(req, res, { title: req.t('homeroom.helpers.forbiddenTitle'), body: html`<div class="empty"><div class="emo">${ico('🔒', { size: 56 })}</div><h1>${req.t('homeroom.helpers.forbiddenTitle')}</h1><p>${req.t('homeroom.helpers.forbiddenText')}</p></div>` }, 403);
+}
 const gate = (req, res, next) => {
   const c = S.getClass(req.params.id);
-  if (!H.canUseClass(req.user, c)) return next('router');
+  let role = H.canUseClass(req.user, c) ? 'teacher' : c ? H.helperRole(req.user, c) : null, actor = req.user;
+  if (!role && c) { const x = subOf(req); if (x && x.c.id === c.id) { role = 'sub'; actor = x.actor; req.hrSub = x; } }
+  if (!role) return next('router');
+  if (role !== 'teacher' && !helperMay(role, req)) return forbidden(req, res);
   res.set({ 'X-Robots-Tag': 'noindex, nofollow', 'Cache-Control': 'no-store' });
-  req.homeroomClass = c;
+  req.homeroomClass = c; req.hrRole = role; req.hrActor = actor;
   next();
 };
 router.use(['/class/:id/homeroom', '/api/homeroom/:id'], gate);
@@ -126,28 +155,23 @@ const row = (t, x) => (x.id
   : html`<li class="hr-item hr-later"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span>${x.soon ? html`<span class="hr-soontag">${t('homeroom.panel.comingNext')}</span>` : ''}</li>`);
 
 router.get('/class/:id/homeroom', (req, res) => {
-  const t = req.t, c = req.homeroomClass, u = req.user;
+  const t = req.t, c = req.homeroomClass, u = req.user, aide = req.hrRole === 'aide';
   const room = H.roomOf(c.id);
   // The shared bar's Homeroom buttons (routes/homeroom-views.js): the Live dot, live class's buttons, Arrange seats, ⋯.
-  markView(req, c, 'homeroom', html`<span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
+  // An aide (step 3c) gets the same bar on its own (no Classroom or Dashboard, no Arrange seats) with an Aide chip.
+  const acts = html`<span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
         <span class="hr-plan" id="hr-plan"></span>
         <span class="hr-grow"></span>
         <span class="hr-livebtns" id="hr-livebtns"></span>
-        <button class="btn hr-chunk" type="button" data-hr="seats" data-cv-fold aria-pressed="false" aria-label="${t('homeroom.arrange')}">${ico('🔀', { size: 18 })}<span class="hr-hidephone"> ${t('homeroom.arrange')}</span></button>
-        <div class="hr-morewrap"><button class="btn hr-chunk" type="button" data-hr="menu" aria-expanded="false" aria-haspopup="true" aria-label="${t('homeroom.more')}">⋯</button><div id="hr-menu"></div></div>`);
-  const lists = deskLists(req);
+        ${aide ? '' : html`<button class="btn hr-chunk" type="button" data-hr="seats" data-cv-fold aria-pressed="false" aria-label="${t('homeroom.arrange')}">${ico('🔀', { size: 18 })}<span class="hr-hidephone"> ${t('homeroom.arrange')}</span></button>`}
+        <div class="hr-morewrap"><button class="btn hr-chunk" type="button" data-hr="menu" aria-expanded="false" aria-haspopup="true" aria-label="${t('homeroom.more')}">⋯</button><div id="hr-menu"></div></div>`;
+  if (!aide) markView(req, c, 'homeroom', acts);
+  const lists = aide ? { mine: [], oomba: [] } : deskLists(req);
   const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
-  page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan'],
-    head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
-      gc: gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
-      lessons: HL.listMine(u, req.locale), staged: HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
-      pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c) })}
-    <div id="homeroom" class="hr">
+  const board = html`<div id="homeroom" class="hr${aide ? ' hr-aide' : ''}">
       <div class="hr-stage">
         <div class="rm rm-teacher hr-board" id="hr-board" tabindex="-1" aria-label="${t('homeroom.boardLabel')}"><div class="rm-world" id="hr-world"><p class="muted hr-loading">${t('homeroom.loading')}</p></div></div>
-        <aside class="hr-panel" id="hr-panel" aria-label="${t('homeroom.panel.label')}">
+        <aside class="hr-panel" id="hr-panel" aria-label="${t('homeroom.panel.label')}"${aide ? raw(' hidden') : ''}>
           <h2 class="hr-cap">${t('homeroom.panel.handOut')}</h2>
           <div class="hr-groupchips" id="hr-groupchips"></div>
           <p class="hr-soon small" id="hr-givehint">${ico('👆', { size: 16 })} ${t('homeroom.panel.handOutHint')}</p>
@@ -164,8 +188,59 @@ router.get('/class/:id/homeroom', (req, res) => {
         <div id="hr-dialog"></div>
       </div>
       <noscript><p class="notice warn">${t('homeroom.noscript')}</p></noscript>
-    </div>`,
+    </div>`;
+  // An aide's page: the same board and bar, outside the three views (they see neither Classroom nor Dashboard).
+  const body = aide ? html`<div class="cv" id="cv-aide" data-view="homeroom">
+      <header class="cv-bar" id="cv-bar"><div class="cv-nav"><span class="hr-aidecls" dir="auto">${c.name}</span><span class="hr-aidechip" title="${t('homeroom.helpers.aideChipHint')}">${ico('🧑‍🏫', { size: 18 })} ${t('homeroom.helpers.aideChip')}</span></div>
+        <div class="cv-acts cv-acts-homeroom hr" data-cv-acts="homeroom">${acts}</div></header>
+      <div class="cv-views"><section class="cv-view cv-view-homeroom" data-cv-view="homeroom" aria-label="${t('homeroom.tabs.homeroom')}">${board}</section></div></div>` : board;
+  page(req, res, {
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers'],
+    head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">${aide ? `<link rel="stylesheet" href="/css/class-views.css?v=${VERSION}">` : ''}`),
+    body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
+      gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
+      lessons: aide ? [] : HL.listMine(u, req.locale), staged: aide ? [] : HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: aide ? [] : HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: !aide && hasModel() && liveCanHost(u),
+      pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c),
+      // step 3c: the students' supports, and for the teacher the aides, sub links and "While you were out"
+      supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
+      ...(aide ? {} : { helpers: { aides: HA.listFor(c), subLinks: SB.linksOf(c), notes: SB.notesFor(c), noteMax: SB.NOTE_MAX, aidesMax: HA.AIDES_MAX } }) })}
+    ${body}`,
   });
+});
+
+// ---------------------------------------------------------------- step 3c: supports, aides, sub links
+// Supports (services/homeroom-supports.js): the class's teachers set them; an aide reads them (the gate lets the GET).
+router.get('/api/homeroom/:id/supports', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json({ supports: SUP.supportsOf(req.homeroomClass.id) }));
+router.post('/api/homeroom/:id/supports', rateLimit('homeroom-supports', 600, 3600e3), (req, res) => {
+  const x = body(req), r = SUP.setSupport(req.user, req.homeroomClass, String(x.studentId || ''), { time: x.time, read: x.read, simple: x.simple, big: x.big });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, support: r.support, supports: SUP.supportsOf(req.homeroomClass.id), toast: req.t('homeroom.helpers.supportsSaved') });
+});
+router.post('/api/homeroom/:id/handouts/:clid/simpler', rateLimit('homeroom-simpler', 300, 3600e3), (req, res) => {
+  const r = SUP.setSimple(req.user, req.homeroomClass, req.params.clid, typeof body(req).text === 'string' ? body(req).text : '');
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, text: r.text, simples: Object.fromEntries(SUP.simplesOf(req.homeroomClass.id)), toast: req.t(r.text ? 'homeroom.helpers.simplerSaved' : 'homeroom.helpers.simplerRemoved') });
+});
+// Aides (services/homeroom-aides.js): the class's teachers only (an aide never sees this list).
+const aidesOut = req => ({ aides: HA.listFor(req.homeroomClass), staff: HA.staffToAdd(req.user, req.homeroomClass) });
+router.get('/api/homeroom/:id/aides', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(aidesOut(req)));
+router.post('/api/homeroom/:id/aides', rateLimit('homeroom-aides', 120, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass, a = String(x.action || '');
+  const r = a === 'invite' ? HA.invite(req.user, c, { email: x.email }) : a === 'add' ? HA.addStaff(req.user, c, x.userId) : a === 'remove' ? HA.remove(req.user, c, x.id) : { ok: false, code: 'badAction' };
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, ...aidesOut(req), ...(r.token ? { url: `${requestOrigin(req).replace(/\/$/, '')}/hr/aide/${r.token}` } : {}),
+    toast: req.t({ invite: 'homeroom.helpers.aideInvited', add: 'homeroom.helpers.aideAdded', remove: 'homeroom.helpers.aideRemoved' }[a]) });
+});
+// Sub links (services/homeroom-sub.js): made, listed and revoked by the class's teachers; "While you were out".
+const subOut = req => ({ subLinks: SB.linksOf(req.homeroomClass), notes: SB.notesFor(req.homeroomClass) });
+router.get('/api/homeroom/:id/sub-links', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(subOut(req)));
+router.post('/api/homeroom/:id/sub-links', rateLimit('homeroom-sublinks', 120, 3600e3), (req, res) => {
+  const x = body(req), c = req.homeroomClass, a = String(x.action || '');
+  const r = a === 'create' ? SB.createLink(req.user, c, { day: String(x.day || 'today'), until: String(x.until || ''), pin: String(x.pin ?? ''), note: typeof x.note === 'string' ? x.note : '', tz: String(x.tz || '') })
+    : a === 'revoke' ? SB.revoke(req.user, c, x.id) : a === 'seen' ? SB.markSeen(req.user, c, x.id) : { ok: false, code: 'badAction' };
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, ...subOut(req), ...(r.token ? { url: `${requestOrigin(req).replace(/\/$/, '')}/sub/${r.token}`, link: r.link } : {}),
+    ...(a === 'seen' ? {} : { toast: req.t(a === 'create' ? 'homeroom.helpers.subMade' : 'homeroom.helpers.subRevoked') }) });
 });
 
 router.post('/api/homeroom/:id/seats', rateLimit('homeroom-seats', 600, 3600e3), (req, res) => send(req, res, H.saveSeats(req.user, req.homeroomClass, { preset: body(req).preset, seats: body(req).seats })));
@@ -341,12 +416,14 @@ router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3),
 const dockBtn = (k, icon, label, attrs = '') => html`<button type="button" class="hd-dockbtn" data-hd="${k}"${raw(attrs)}>${ico(icon, { size: 20 })}<span>${label}</span></button>`;
 router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
-  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, cards = HO.deskView(c, u, req.locale);
+  const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, sup = SUP.forDesk(c, u), cards = SUP.applyToCards(c, sup, HO.deskView(c, u, req.locale));
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
-      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: { ...H.boardState(c.id), ...deskLive(c, u), plan: HP.publicView(c) } })}
+      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
+      // step 3c: their own supports (only theirs; See the room never carries anyone's)
+      ...(SUP.anySup(sup) ? { support: sup } : {}), state: { ...H.boardState(c.id), ...deskLive(c, u), plan: HP.deskView(c, sup), support: sup } })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
@@ -370,10 +447,10 @@ router.get('/class/:id/desk', (req, res) => {
 });
 router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => {
   // The student's own cards (never anyone else's), sent again only when they changed (hv: the version the page has).
-  const c = req.homeroomClass, cards = HO.deskView(c, req.user, req.locale), hv = HO.deskVersion(cards);
+  const c = req.homeroomClass, sup = SUP.forDesk(c, req.user), cards = SUP.applyToCards(c, sup, HO.deskView(c, req.user, req.locale)), hv = HO.deskVersion(cards);
   // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
   const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
-  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), plan: HP.publicView(c), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), plan: HP.deskView(c, sup), support: sup, hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
     ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
 });
 // Step 3a: what a desk hears about its own live desk (its hand, its place with the hall pass, its settings, and a team
@@ -411,4 +488,15 @@ onEveryPage(req => (/^\/class\/[^/]+\/desk\/?$/.test(req.path || '') || !H.mayGe
 export function deskLink(req, c) {
   if (!H.canUseDesk(req.user, c)) return '';
   return html`<a class="btn btn-primary" href="/class/${c.id}/desk" id="class-desk-link">${ico('🎒', { size: 18 })} ${req.t('homeroom.desk.link')}</a>`;
+}
+
+/** An aide's own list of where to go (step 3c): the classes they help in, each to its Homeroom, on their My classes
+ *  page (routes/schools.js /teach). '' when they help in none. */
+export function aidePanel(req) {
+  const list = HA.classesFor(req.user);
+  if (!list.length) return '';
+  const t = req.t;
+  return html`<section class="panel hr-aidepanel" aria-labelledby="hr-aidepanelh"><h2 id="hr-aidepanelh">${ico('🤝', { size: 28 })} ${t('homeroom.helpers.aideClasses')}</h2>
+    <p class="small muted">${t('homeroom.helpers.aideClassesText')}</p>
+    <ul class="plain row">${list.map(c => html`<li><a class="btn" href="/class/${c.id}/homeroom">${ico('🏫', { size: 18 })} <span dir="auto">${c.name}</span></a></li>`)}</ul></section>`;
 }
