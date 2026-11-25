@@ -310,7 +310,7 @@ test('the wheel\'s layout: a ring around the finger, moved in up to 36 px near a
 
 // ---------------------------------------------------------------- answer boxes, text boxes, the coordinate grid
 import { ANS, FREE_SIZE, answerSize, freeResize, grownHeight, TEXT_SIZES, TEXT_BOX, textFont, stepTextSize, textBoxFields, textResize, textRect, snapBox,
-  xyRange, xyLines, xySnap, xyMoveLine, OBJ_HEAD, kindOf } from '../../public/js/manip-board.js';
+  xyRange, xyLines, xySnap, xyMoveLine, xyClose, xyNextLn, xyOpenLine, OBJ_HEAD, kindOf } from '../../public/js/manip-board.js';
 
 test('an answer box is sized by its own width and height (never a scale): presets until resized, bounded, inside the space', () => {
   assert.ok(FREE_SIZE.has('answer'));
@@ -359,7 +359,7 @@ test('the coordinate grid: one line per color, a point snaps to the grid, a whol
   assert.deepEqual(xyRange({ four: true }), { lo: -10, hi: 10 }); assert.deepEqual(xyRange({ four: false }), { lo: 0, hi: 12 });
   const B = '#1E88E5', Rd = '#E53935';
   const pts = [{ x: -4, y: -3, color: B }, { x: 2, y: 6, color: Rd }, { x: 0, y: -1, color: B }, { x: 4, y: 1, color: B }];
-  assert.deepEqual(xyLines(pts), [{ color: B, idx: [0, 2, 3] }], 'the lone red point is no line');
+  assert.deepEqual(xyLines(pts), [{ color: B, ln: 0, key: `${B}#0`, idx: [0, 2, 3], closed: false }], 'the lone red point is no line');
   assert.deepEqual(xySnap(3.4, -2.6, -10, 10), { x: 3, y: -3 });
   assert.deepEqual(xySnap(14, -30, -10, 10), { x: 10, y: -10 });
   const moved = xyMoveLine(pts, [0, 2, 3], 3.2, 1.8, -10, 10);
@@ -368,6 +368,17 @@ test('the coordinate grid: one line per color, a point snaps to the grid, a whol
   assert.deepEqual(xyMoveLine(pts, [0, 2, 3], 20, -20, -10, 10).map(p => [p.x, p.y]), [[2, -10], [2, 6], [6, -8], [10, -6]], 'stopped at the edges, its shape kept');
   assert.deepEqual(xyMoveLine(pts, [], 3, 3, -10, 10), pts, 'no line: nothing moves');
   assert.deepEqual(xyMoveLine([{ x: 1, y: 1 }, { x: 5, y: 2 }], [0, 1], -3, 0, 0, 12).map(p => [p.x, p.y]), [[0, 1], [4, 2]], 'first quadrant: never below 0');
+  // A line closed into a shape (3 points or more): its key in shut; the next point of that color starts a new line.
+  const g = { pts: [{ x: 1, y: 1, color: Rd }, { x: 4, y: 1, color: Rd }], shut: [] };
+  assert.equal(xyOpenLine(g, Rd), null, 'two points: nothing to close'); assert.equal(xyClose(g, Rd), false);
+  g.pts.push({ x: 4, y: 5, color: Rd });
+  assert.deepEqual(xyOpenLine(g, Rd), { key: `${Rd}#0`, idx: [0, 1, 2] });
+  assert.equal(xyClose(g, Rd), true); assert.deepEqual(g.shut, [`${Rd}#0`]); assert.equal(g.connect, true);
+  assert.equal(xyLines(g.pts, g.shut)[0].closed, true);
+  assert.equal(xyNextLn(g, Rd), 1, 'the next red point: a new line'); assert.equal(xyNextLn(g, B), 0);
+  g.pts.push({ x: 8, y: 8, color: Rd, ln: 1 }, { x: 9, y: 8, color: Rd, ln: 1 });
+  assert.deepEqual(xyLines(g.pts, g.shut).map(L => [L.key, L.idx, L.closed]), [[`${Rd}#0`, [0, 1, 2], true], [`${Rd}#1`, [3, 4], false]]);
+  assert.equal(xyClose(g, Rd), false, 'the new line has two points');
   // A new grid: three red points on one line, the table on, arrows off.
   const st = OBJECTS['xy-coordinate-board'][0].init();
   assert.equal(xyLines(st.pts).length, 1); assert.equal(st.table, true); assert.equal(st.arrows, false);

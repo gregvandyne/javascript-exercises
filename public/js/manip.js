@@ -17,7 +17,7 @@ import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine,
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine, xyClose, xyOpenLine, xyNextLn,
   rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
@@ -180,6 +180,19 @@ function scaleWithChart(slug, o, s0, pieces) {
     const cx = p.x + p.w / 2, cy = p.y + p.h / 2, k = s / s0;
     p.x = o.x + (cx - o.x) * k - p.w / 2; p.y = o.y + (cy - o.y) * k - p.h / 2;
   }
+}
+/** Bar models: a part's size (at least 0.5, at most BAR_MAX); the selected part (st.pick, while it is there). */
+const BAR_MAX = 999;
+const barValue = v => clamp(round3(+v || 0), 0.5, BAR_MAX);
+const barPick = st => { const p = st && st.pick; return p && Number.isInteger(p.b) && Number.isInteger(p.s) && st.bars[p.b] && st.bars[p.b].segs[p.s] ? p : null; };
+/** The text color with the better contrast on a fill (WCAG relative luminance, as scripts/contrast.js): 'dark' or
+ *  'light'. White on light green was hard to read. */
+function segInk(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || '')); if (!m) return 'light';
+  const ch = i => { const c = parseInt(m[1].slice(i, i + 2), 16) / 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const L = 0.2126 * ch(0) + 0.7152 * ch(2) + 0.0722 * ch(4);
+  // Against white (1) and the dark text #141414 (about 0.007).
+  return (1.05 / (L + 0.05)) >= ((L + 0.05) / 0.057) ? 'light' : 'dark';
 }
 const fmtTotal = n => (Number.isInteger(n) ? n.toLocaleString('en-US') : round3(n).toLocaleString('en-US', { maximumFractionDigits: 3 }));
 
@@ -376,37 +389,74 @@ const IMPL = {
     init: () => ({ bars: [{ name: 'Whole', segs: [{ label: 'Part A', value: 3, color: '#7CB342' }, { label: 'Part B', value: 2, color: '#AED581' }] }, { name: 'Compare', segs: [{ label: 'Red', value: 5, color: '#1E88E5' }] }, { name: 'Other', segs: [{ label: 'Blue', value: 3, color: '#FB8C00' }] }] }),
     total: st => `Longest bar ${Math.max(1, ...st.bars.map(b => b.segs.reduce((s, x) => s + x.value, 0)))}`,
     palette: () => [
-      { label: 'Add a part', color: '#7CB342', run: s => { if (s.bars[0]) s.bars[0].segs.push({ label: 'Part', value: 1, color: '#C0CA33' }); } },
+      // A new part goes on the selected part's bar (else the first bar; a new bar when there is none).
+      { label: 'Add a part', color: '#7CB342', run: s => { const p = barPick(s), b = s.bars[p ? p.b : 0]; if (b) b.segs.push({ label: 'Part', value: 1, color: '#C0CA33' }); else s.bars.push({ name: 'Whole', segs: [{ label: 'Part', value: 1, color: '#C0CA33' }] }); } },
       { label: 'Add a bar', color: '#1E88E5', run: s => { if (s.bars.length < 8) s.bars.push({ name: `Bar ${s.bars.length + 1}`, segs: [{ label: 'Value', value: 2, color: '#90CAF9' }] }); } },
-      { label: 'Part-part-whole', color: '#7CB342', run: s => { s.bars = [{ name: 'Whole', segs: [{ label: 'Part', value: 4, color: '#7CB342' }, { label: 'Part', value: 4, color: '#AED581' }] }]; } },
-      { label: 'Comparison', color: '#FB8C00', run: s => { s.bars = [{ name: 'A', segs: [{ label: 'A', value: 6, color: '#1E88E5' }] }, { name: 'B', segs: [{ label: 'B', value: 4, color: '#FB8C00' }] }]; } },
+      { label: 'Part-part-whole', color: '#7CB342', run: s => { s.bars = [{ name: 'Whole', segs: [{ label: 'Part', value: 4, color: '#7CB342' }, { label: 'Part', value: 4, color: '#AED581' }] }]; s.pick = null; } },
+      { label: 'Comparison', color: '#FB8C00', run: s => { s.bars = [{ name: 'A', segs: [{ label: 'A', value: 6, color: '#1E88E5' }] }, { name: 'B', segs: [{ label: 'B', value: 4, color: '#FB8C00' }] }]; s.pick = null; } },
     ],
-    hint: 'Use - and + to resize a part, and type in a part to rename it.',
+    hint: 'Tap a part\'s number to type its size, or use - and +. Type in a part to rename it. Tap a part to select it, then Delete removes it.',
     note: 'Part-part-whole, comparison and equal groups, for rates, ratios and word problems.',
     board: (st, view) => {
+      const ro = !!view.readOnly, pick = ro ? null : barPick(st);
+      if (!st.bars.length) return `<div class="mp-pad mp-bars"><p class="small muted">No bars yet. Use Add a bar.</p></div>`;
       const maxTotal = Math.max(1, ...st.bars.map(b => b.segs.reduce((s, x) => s + x.value, 0)));
-      return `<div class="mp-pad mp-bars">${st.bars.map((b, bi) => `<div><p class="mp-barname">${esc(b.name)} · total ${b.segs.some(x => x.hide) ? '?' : b.segs.reduce((s, x) => s + x.value, 0)}</p><div class="mp-bar">${b.segs.map((s, si) => `<div class="mp-seg" style="background:${esc(s.color)};width:${(s.value / maxTotal) * 100}%">
-        <input class="mp-seglabel" data-bar="${bi}" data-seg="${si}" value="${esc(s.label)}" maxlength="30" aria-label="Part label in ${esc(b.name)}"${view.readOnly ? ' readonly tabindex="-1"' : ''}>
-        <span class="mp-steps">${view.readOnly || s.hide ? '' : btn('', `data-act="seg" data-bar="${bi}" data-seg="${si}" data-d="-1" aria-label="Make ${esc(s.label)} smaller"`, '−')}<b>${s.hide ? '?' : s.value}</b>${view.readOnly || s.hide ? '' : btn('', `data-act="seg" data-bar="${bi}" data-seg="${si}" data-d="1" aria-label="Make ${esc(s.label)} bigger"`, '+')}</span></div>`).join('')}</div></div>`).join('')}</div>`;
+      const ids = (bi, si) => `data-bar="${bi}" data-seg="${si}"`;
+      return `<div class="mp-pad mp-bars">${st.bars.map((b, bi) => `<div><p class="mp-barname">${esc(b.name)} · total ${b.segs.some(x => x.hide) ? '?' : b.segs.reduce((s, x) => s + x.value, 0)}</p><div class="mp-bar">${b.segs.map((s, si) => {
+        const on = !!pick && pick.b === bi && pick.s === si;
+        // Tap the part (not its name, number or buttons) to select it; its Delete shows under the bar.
+        return `<div class="mp-seg${segInk(s.color) === 'dark' ? ' lite' : ''}${on ? ' on' : ''}" ${ro ? '' : `data-act="segsel" ${ids(bi, si)}`} style="background:${esc(s.color)};width:${(s.value / maxTotal) * 100}%">
+        <input class="mp-seglabel" ${ids(bi, si)} value="${esc(s.label)}" maxlength="30" aria-label="Part label in ${esc(b.name)}"${ro ? ' readonly tabindex="-1"' : ''}>
+        <span class="mp-steps">${ro || s.hide ? `<b>${s.hide ? '?' : s.value}</b>` : `${btn('', `data-act="seg" ${ids(bi, si)} data-d="-1" aria-label="Make ${esc(s.label)} smaller"`, '−')}<input class="mp-segval" type="number" inputmode="decimal" min="0.5" max="${BAR_MAX}" step="any" ${ids(bi, si)} value="${s.value}" aria-label="Size of ${esc(s.label)}" enterkeyhint="done">${btn('', `data-act="seg" ${ids(bi, si)} data-d="1" aria-label="Make ${esc(s.label)} bigger"`, '+')}`}</span></div>`;
+      }).join('')}</div>${pick && pick.b === bi ? `<div class="row mp-segact">${btn('chip mp-segdel', `data-act="segdel" aria-label="Delete the part ${esc(b.segs[pick.s].label)}"`, `🗑 Delete ${esc(b.segs[pick.s].label || 'the part')}`)}${btn('chip', 'data-act="segsel" data-bar="-1" aria-label="Keep the part"', 'Done')}</div>` : ''}</div>`).join('')}</div>`;
     },
-    act: (st, d) => { if (d.act !== 'seg') return false; const s = st.bars[+d.bar] && st.bars[+d.bar].segs[+d.seg]; if (!s) return false; s.value = Math.max(0.5, s.value + +d.d); return true; },
+    act: (st, d, e) => {
+      if (d.act === 'seg') { const s = st.bars[+d.bar] && st.bars[+d.bar].segs[+d.seg]; if (!s) return false; s.value = barValue(s.value + +d.d); return true; }
+      if (d.act === 'segsel') {
+        // Typing in a part's name or number is not a tap on the part.
+        if (e && e.target && e.target.closest && e.target.closest('input')) return false;
+        const p = barPick(st), b = +d.bar, s = +d.seg;
+        st.pick = !(st.bars[b] && st.bars[b].segs[s]) || (p && p.b === b && p.s === s) ? null : { b, s };
+        return true;
+      }
+      if (d.act === 'segdel') {
+        const p = barPick(st); if (!p) return false;
+        // The bar's last part takes the bar with it.
+        st.bars[p.b].segs.splice(p.s, 1); if (!st.bars[p.b].segs.length) st.bars.splice(p.b, 1);
+        st.pick = null; return true;
+      }
+      return false;
+    },
     input: (st, el) => { const s = st.bars[+el.dataset.bar] && st.bars[+el.dataset.bar].segs[+el.dataset.seg]; if (s) s.label = el.value.slice(0, 30); },
+    // A part's typed size, when it is finished (Enter or leaving the field): clamped like - and +.
+    commit: (st, el) => {
+      const s = st.bars[+el.dataset.bar] && st.bars[+el.dataset.bar].segs[+el.dataset.seg]; if (!s) return false;
+      const v = parseFloat(String(el.value).replace(',', '.'));
+      if (!Number.isFinite(v)) { el.value = s.value; return false; }
+      const nv = barValue(v); if (nv === s.value) { el.value = s.value; return false; }
+      s.value = nv; return true;
+    },
   },
 
   'xy-coordinate-board': {
     init: () => OBJECTS['xy-coordinate-board'][0].init(),
-    total: st => `${st.pts.length} points`,
+    total: st => { const n = xyShapes(st).length; return `${st.pts.length} points${n ? ` · ${n} closed ${n === 1 ? 'shape' : 'shapes'}` : ''}`; },
     palette: st => [...XY_COLORS.map(c => ({ label: COLOR_NAME[c], aria: `${COLOR_NAME[c]} points`, color: c, pressed: st.color === c, run: s => { s.color = c; } })),
       { label: st.connect ? 'Lines off' : 'Connect the points', color: '#212121', run: s => { s.connect = !s.connect; } },
-      { label: 'Clear points', color: '#616161', run: s => { s.pts = []; } }],
+      // The current color's line closed into a shape (a triangle, a rectangle): its closing side and a light fill.
+      { label: 'Close the shape', aria: `Close the ${(COLOR_NAME[st.color] || 'current').toLowerCase()} shape`, color: st.color, run: s => {
+        if (xyClose(s, s.color)) return undefined;
+        toast(`Plot 3 points or more in ${(COLOR_NAME[s.color] || 'this color').toLowerCase()} first.`); return false;
+      } },
+      { label: 'Clear points', color: '#616161', run: s => { s.pts = []; s.shut = []; } }],
     settings: st => `${sel('four', [['', 'First quadrant'], ['1', 'All four quadrants']], st.four ? '1' : '', 'Quadrants')}${toggle('labels', st.labels, 'Labels on', 'Labels off')}${toggle('arrows', !!st.arrows, 'Line arrows on', 'Line arrows off')}${toggle('table', st.table !== false, 'Table on', 'Table off')}`,
-    hint: 'Tap the grid to plot a point in the chosen color. Points of one color join into a line. Drag a point to move just that point; drag the line between points to move the whole line. Everything snaps to the grid.',
+    hint: 'Tap the grid to plot a point in the chosen color. Points of one color join into a line. Tap the first point again, or Close the shape, to make a shape; the next tap starts a new line. Drag a point to move just that point; drag a line to move all of it. Everything snaps to the grid.',
     note: 'Ordered pairs, lines and polygons, with a table of every point.',
     board: (st, view = {}) => {
-      const S = XY_S, { lo, hi } = xyRange(st), ro = !!view.readOnly;
-      const px = v => ((v - lo) / (hi - lo)) * S, py = v => S - ((v - lo) / (hi - lo)) * S;
+      const S = XY_S, ro = !!view.readOnly, shapes = xyShapes(st);
+      const shut = shapes.length ? `<p class="small mp-xyshut">${shapes.map(L => `<span><span class="mp-xydot" style="background:${esc(L.color)}"></span>${esc(COLOR_NAME[L.color] || 'A')} shape closed (${L.idx.length} points)</span>`).join(' ')}</p>` : '';
       return `<div class="mp-pad mp-xy"><svg class="mp-grid" ${ro ? '' : `data-xy="${esc(view.oid || '')}"`} width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img" aria-label="Coordinate grid, tap to plot a point">${xySvgInner(st, ro)}</svg>
-        ${st.ask || st.table === false ? '' : `<div class="mp-xytable"><p class="mp-barname">Table</p><table class="mp-table"><thead><tr><th>x</th><th>y</th><th>Point</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody>${st.pts.map((p, i) => `<tr><td><span class="mp-xydot" style="background:${esc(p.color)}"></span>${p.x}</td><td>${p.y}</td><td><b>(${p.x},${p.y})</b></td><td>${ro ? '' : btn('mp-x', `data-act="unpt" data-i="${i}" aria-label="Remove point ${p.x} ${p.y}"`, '✕')}</td></tr>`).join('')}</tbody></table>${st.pts.length ? '' : '<p class="small muted">No points yet. Tap the grid.</p>'}</div>`}</div>`;
+        ${st.ask || st.table === false ? '' : `<div class="mp-xytable"><p class="mp-barname">Table</p><table class="mp-table"><thead><tr><th>x</th><th>y</th><th>Point</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody>${st.pts.map((p, i) => `<tr><td><span class="mp-xydot" style="background:${esc(p.color)}"></span>${p.x}</td><td>${p.y}</td><td><b>(${p.x},${p.y})</b></td><td>${ro ? '' : btn('mp-x', `data-act="unpt" data-i="${i}" aria-label="Remove point ${p.x} ${p.y}"`, '✕')}</td></tr>`).join('')}</tbody></table>${st.pts.length ? shut : '<p class="small muted">No points yet. Tap the grid.</p>'}</div>`}</div>`;
     },
     act: (st, d, e) => {
       if (d.act === 'unpt') { st.pts.splice(+d.i, 1); return true; }
@@ -415,11 +465,16 @@ const IMPL = {
       const svg = e.target.closest('svg.mp-grid'); if (!svg) return false;
       const r = svg.getBoundingClientRect(), { lo, hi } = xyRange(st);
       const p = xySnap(lo + ((e.clientX - r.left) / r.width) * (hi - lo), lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo), lo, hi);
+      // A tap on a spot that has a point is a tap on that point (it may reach here as a tap on the grid): never a
+      // second point there; the first point of the line being drawn closes it into a shape.
+      const hit = st.pts.findIndex(q => q.x === p.x && q.y === p.y);
+      if (hit >= 0) return xyTapPoint(st, hit);
       if (st.pts.length >= XY_MAX) return false;
-      st.pts.push({ ...p, color: st.color });
+      const ln = xyNextLn(st, st.color);
+      st.pts.push({ ...p, color: st.color, ...(ln ? { ln } : {}) });
       return true;
     },
-    onSet: (st, key) => { if (key === 'four') st.pts = []; },
+    onSet: (st, key) => { if (key === 'four') { st.pts = []; st.shut = []; } },
     boardTap: true,
     bind: (el, ctx) => bindGrids(el, ctx),
   },
@@ -451,13 +506,15 @@ const IMPL = {
     palette: st => [{ label: st.start ? 'Start again from here' : 'Start the tracker here', color: '#FFC91F', run: s => { s.start = { h: s.h, m: s.m }; } },
       { label: 'Time tracker +15 min', color: '#FFC91F', run: s => { if (!s.start) s.start = { h: s.h, m: s.m }; Object.assign(s, addMinutes(s, 15)); } },
       { label: 'Reset the tracker', color: '#616161', run: s => { s.start = null; } }],
-    hint: 'Drag near the middle for the red hour hand and near the edge for the blue minute hand. Start the tracker, then move the time on: the yellow shows the minutes since the start, with a light ring for each full hour.',
+    hint: 'Drag near the middle for the red hour hand (it moves the time 5 minutes at a time) and near the edge for the blue minute hand (past 12 it carries the hour). Start the tracker, then move the time on: the yellow shows the minutes since the start, with a light ring for each full hour. Totals: off hides the digital time.',
     note: 'Add more clocks from the palette (each keeps its own time). The time tracker adds 15 minutes to the selected clock.',
     board: (st, view) => {
       const e = clockSector(st), oid = view.oid || '';
       if (st.q) return `<div class="mp-clockwrap q">${clockSvg(st, oid, true)}</div>`;   // a clock to read: its face only
-      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${st.q ? '' : ' · '}` : ''}${st.q && !view.showKeys ? '&nbsp;' : hm(st)}</p>
-        <p class="small mp-elapsed">${st.start && !(st.q && !view.showKeys) ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
+      // Totals: off hides the digital time and the elapsed line, so students read the face.
+      const digits = view.totals !== false;
+      return `<div class="mp-clockwrap">${clockSvg(st, oid, view.readOnly)}<p class="mp-barname">${st.label ? `${esc(st.label)}${digits ? ' · ' : ''}` : ''}${digits ? `<span class="mp-hm">${hm(st)}</span>` : st.label ? '' : '&nbsp;'}</p>
+        <p class="small mp-elapsed">${st.start && digits ? `Start ${hm(st.start)} · Elapsed <b>${e ? Math.floor(e.elapsed / 60) : 0} h ${e ? e.part : 0} min</b>` : '&nbsp;'}</p>
         ${view.readOnly ? '' : `<div class="row mp-chips">${btn('chip', 'data-act="hour" aria-label="One hour later"', 'Hour +')}${btn('chip', 'data-act="min5" aria-label="Five minutes later"', 'Min +5')}</div>`}</div>`;
     },
     act: (st, d) => {
@@ -479,6 +536,7 @@ function geoPegs(board) {
   return out;
 }
 function geoPx(board, p, S) { const span = board === 'circle' ? 6 : board === 'iso' ? 5.5 : 5, sy = board === 'iso' ? 4.35 : span; return { X: 36 + (p.x / span) * (S - 72), Y: 36 + (p.y / sy) * (S - 72) }; }
+const clockLabel = c => { const e = clockSector(c); return `${c.q ? 'Clock: what time is it?' : `Clock showing ${hm(c)}`}${e ? `, ${e.elapsed} minutes since ${hm(c.start)}` : ''}`; };
 /** One clock face. The yellow is the tracked time only (manip-board.js clockSector): one minute-hand sector from the
  *  start's minute to the current minute, clockwise, and a light full ring for each full hour ("+1 h"); none at zero. */
 function clockSvg(c, oid, readOnly) {
@@ -486,10 +544,14 @@ function clockSvg(c, oid, readOnly) {
   const ticks = Array.from({ length: 60 }, (_, i) => { const a = (i * Math.PI) / 30, big = i % 5 === 0; return `<line x1="${cx + (big ? 86 : 92) * Math.cos(a)}" y1="${cy + (big ? 86 : 92) * Math.sin(a)}" x2="${cx + 97 * Math.cos(a)}" y2="${cy + 97 * Math.sin(a)}" stroke="${big ? '#E53935' : 'var(--muted)'}" stroke-width="${big ? 3 : 1.5}"/>`; }).join('');
   const nums = Array.from({ length: 12 }, (_, i) => { const a = (i * Math.PI) / 6 - Math.PI / 2; return `<text x="${cx + 72 * Math.cos(a)}" y="${cy + 72 * Math.sin(a) + 6}" text-anchor="middle" font-size="17" font-weight="700" fill="var(--text)">${i || 12}</text>`; }).join('');
   const e = clockSector(c);
-  const ring = e && e.turns ? `<circle class="mp-cring" cx="${cx}" cy="${cy}" r="80" fill="#FFC91F" fill-opacity=".16"/><text x="${cx}" y="${cy + 44}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--text)">+${e.turns} h</text>` : '';
+  // The "+1 h" sits where no hand is: of twelve spots around the middle, the one farthest from both hands (the bottom
+  // when that is free; at :30 the minute hand covered it there).
+  const away = (a, b) => { const d = Math.abs((((a - b) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI)); return Math.min(d, 2 * Math.PI - d); };
+  const spot = e && e.turns ? Array.from({ length: 12 }, (_, i) => Math.PI / 2 + (i % 2 ? 1 : -1) * Math.ceil(i / 2) * (Math.PI / 6)).reduce((best, a) => (Math.min(away(a, ha), away(a, ma)) > Math.min(away(best, ha), away(best, ma)) + 1e-6 ? a : best)) : 0;
+  const ring = e && e.turns ? `<circle class="mp-cring" cx="${cx}" cy="${cy}" r="80" fill="#FFC91F" fill-opacity=".16"/><text class="mp-cturns" x="${round3(cx + 44 * Math.cos(spot))}" y="${round3(cy + 44 * Math.sin(spot) + 5)}" text-anchor="middle" font-size="15" font-weight="800" fill="var(--text)" pointer-events="none">+${e.turns} h</text>` : '';
   const a0 = e ? (e.from * Math.PI) / 180 - Math.PI / 2 : 0, a1 = e ? a0 + (e.sweep * Math.PI) / 180 : 0;
   const wedge = e && e.part ? `<path class="mp-csector" d="${pie(cx, cy, 80, a0, a1)}" fill="#FFC91F" fill-opacity=".45"/>` : '';
-  return `<svg class="mp-clock" ${readOnly ? '' : `data-clock="${esc(oid)}"`} width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="${c.q ? 'Clock: what time is it?' : `Clock showing ${hm(c)}`}${e ? `, ${e.elapsed} minutes since ${hm(c.start)}` : ''}">
+  return `<svg class="mp-clock" ${readOnly ? '' : `data-clock="${esc(oid)}"`} width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="${clockLabel(c)}">
     <circle cx="${cx}" cy="${cy}" r="100" fill="var(--card)" stroke="var(--text)" stroke-width="3"/>${ring}${wedge}
     ${ticks}${nums}<line x1="${cx}" y1="${cy}" x2="${cx + 56 * Math.cos(ha)}" y2="${cy + 56 * Math.sin(ha)}" stroke="#E53935" stroke-width="8" stroke-linecap="round"/>
     <line x1="${cx}" y1="${cy}" x2="${cx + 84 * Math.cos(ma)}" y2="${cy + 84 * Math.sin(ma)}" stroke="#1E88E5" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="7" fill="var(--text)"/></svg>`;
@@ -500,15 +562,28 @@ function bindClocks(el, ctx) {
   for (const svg of el.querySelectorAll('svg[data-clock]')) {
     let hand = null, before = null;
     const at = e => { const r = svg.getBoundingClientRect(); const dx = ((e.clientX - r.left) / r.width) * 220 - 110, dy = ((e.clientY - r.top) / r.height) * 220 - 110; let a = Math.atan2(dy, dx) + Math.PI / 2; if (a < 0) a += 2 * Math.PI; return { a, dist: Math.hypot(dx, dy) }; };
-    const set = e => {
+    const set = (e, first = false) => {
       const o = ctx.find(svg.dataset.clock); if (!o) return;
       const { a } = at(e), c = o.st;
-      if (hand === 'm') { const m = Math.round((a / (2 * Math.PI)) * 60) % 60; c.m = m; }
-      else { const h = Math.round((a / (2 * Math.PI)) * 12) % 12; c.h = h || 12; }
+      if (hand === 'm') {
+        // The minute hand is followed all the way round: past 12 clockwise is an hour later, back past 12 an hour
+        // earlier (10:55 on to 11:05). The press itself only moves the minutes.
+        const m = Math.round((a / (2 * Math.PI)) * 60) % 60;
+        let d = m - (Math.round(+c.m) || 0);
+        if (d > 30) d -= 60; else if (d < -30) d += 60;
+        if (first) c.m = m; else if (d) Object.assign(c, addMinutes(c, d));
+      } else {
+        // The hour hand moves the time in 5-minute steps (the minute hand follows), the shorter way round.
+        const t = (Math.round((a / (2 * Math.PI)) * 144) * 5) % 720, now = ((((Math.round(+c.h) || 0) % 12) + 12) % 12) * 60 + (Math.round(+c.m) || 0);
+        let d = (((t - now) % 720) + 720) % 720; if (d > 360) d -= 720;
+        if (d) Object.assign(c, addMinutes(c, d));
+      }
       svg.innerHTML = clockSvg(c, o.id, false).replace(/^<svg[^>]*>|<\/svg>$/g, '');
+      svg.setAttribute('aria-label', clockLabel(c));
+      const t = svg.parentElement && svg.parentElement.querySelector('.mp-hm'); if (t) t.textContent = hm(c);
       if (ctx.live) ctx.live();
     };
-    svg.addEventListener('pointerdown', e => { if (ctx.blocked && ctx.blocked()) return; e.stopPropagation(); before = ctx.before(); hand = at(e).dist < 58 ? 'h' : 'm'; svg.setPointerCapture(e.pointerId); set(e); });
+    svg.addEventListener('pointerdown', e => { if (ctx.blocked && ctx.blocked()) return; e.stopPropagation(); before = ctx.before(); hand = at(e).dist < 58 ? 'h' : 'm'; svg.setPointerCapture(e.pointerId); set(e, true); });
     svg.addEventListener('pointermove', e => { if (hand) set(e); });
     const up = () => { if (!hand) return; hand = null; ctx.done(before); };
     svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
@@ -538,8 +613,13 @@ function xySvgInner(st, ro = false) {
     <polygon points="${arrowHead(S - 1, Y0, 1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, 1, 0, -1, 12)}" fill="var(--text)"/>
     ${lo < 0 ? `<polygon points="${arrowHead(1, Y0, -1, 0, 12)}" fill="var(--text)"/><polygon points="${arrowHead(X0, S - 1, 0, 1, 12)}" fill="var(--text)"/>` : ''}
     <text x="${S - 16}" y="${Y0 - 12}" font-size="16" font-weight="800" font-style="italic" fill="var(--text)">x</text><text x="${X0 + 12}" y="${18}" font-size="16" font-weight="800" font-style="italic" fill="var(--text)">y</text>`;
-  const lines = st.connect ? xyLines(st.pts).map(L => {
+  const lines = st.connect ? xyLines(st.pts, st.shut).map(L => {
     const P = L.idx.map(i => st.pts[i]), pts = P.map(p => `${px(p.x)},${py(p.y)}`).join(' ');
+    // A closed shape: its closing side and a light fill in its color (no end arrows: a shape has no ends).
+    if (L.closed) {
+      const hit = ro ? '' : `<polygon class="mp-xyline" data-line="${esc(L.key)}" points="${pts}" fill="none" stroke="transparent" stroke-width="22" stroke-linejoin="round"><title>Drag to move the whole shape</title></polygon>`;
+      return `<g class="mp-xyshape"><polygon points="${pts}" fill="${esc(L.color)}" fill-opacity=".16" stroke="${esc(L.color)}" stroke-width="3" stroke-linejoin="round"/>${hit}</g>`;
+    }
     let ends = '';
     if (st.arrows) {
       const a = P[0], b = P[1], y = P[P.length - 2], z = P[P.length - 1];
@@ -548,13 +628,24 @@ function xySvgInner(st, ro = false) {
       ends = `<line x1="${px(a.x)}" y1="${py(a.y)}" x2="${t1.x}" y2="${t1.y}" stroke="${esc(L.color)}" stroke-width="3"/><line x1="${px(z.x)}" y1="${py(z.y)}" x2="${t2.x}" y2="${t2.y}" stroke="${esc(L.color)}" stroke-width="3"/>
         <polygon points="${arrowHead(t1.x, t1.y, t1.dx, t1.dy)}" fill="${esc(L.color)}"/><polygon points="${arrowHead(t2.x, t2.y, t2.dx, t2.dy)}" fill="${esc(L.color)}"/>`;
     }
-    const hit = ro ? '' : `<polyline class="mp-xyline" data-line="${esc(L.color)}" points="${pts}" fill="none" stroke="transparent" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><title>Drag to move the whole line</title></polyline>`;
+    const hit = ro ? '' : `<polyline class="mp-xyline" data-line="${esc(L.key)}" points="${pts}" fill="none" stroke="transparent" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"><title>Drag to move the whole line</title></polyline>`;
     return `<g><polyline points="${pts}" fill="none" stroke="${esc(L.color)}" stroke-width="3" stroke-linejoin="round"/>${ends}${hit}</g>`;
   }).join('') : '';
   const dots = st.pts.map((p, i) => `<circle cx="${px(p.x)}" cy="${py(p.y)}" r="8" fill="${esc(p.color)}" stroke="#fff" stroke-width="2"/>${st.labels ? `<text x="${px(p.x) + 11}" y="${py(p.y) - 8}" font-size="13" font-weight="700" fill="var(--text)" pointer-events="none">(${p.x},${p.y})</text>` : ''}`).join('');
-  const hits = ro ? '' : st.pts.map((p, i) => `<circle class="mp-xypt" data-pt="${i}" cx="${px(p.x)}" cy="${py(p.y)}" r="17" fill="transparent"><title>Drag to move this point</title></circle>`).join('');
+  // The first point of the line being drawn (3 points or more, Lines on): a dashed ring, a tap there closes the shape.
+  const open = !ro && st.connect ? xyOpenLine(st, st.color) : null, first = open ? st.pts[open.idx[0]] : null;
+  const ring = first ? `<circle class="mp-xyfirst" cx="${px(first.x)}" cy="${py(first.y)}" r="13" fill="none" stroke="${esc(first.color)}" stroke-width="2.5" stroke-dasharray="4 3" pointer-events="none"/>` : '';
+  const hits = ro ? '' : st.pts.map((p, i) => `<circle class="mp-xypt" data-pt="${i}" cx="${px(p.x)}" cy="${py(p.y)}" r="17" fill="transparent"><title>${open && open.idx[0] === i ? 'Tap to close the shape, or drag to move this point' : 'Drag to move this point'}</title></circle>`).join('');
   return `${ticks.map(v => `<line x1="${px(v)}" y1="0" x2="${px(v)}" y2="${S}" stroke="var(--line)" stroke-dasharray="2 4"/><line x1="0" y1="${py(v)}" x2="${S}" y2="${py(v)}" stroke="var(--line)" stroke-dasharray="2 4"/>${v && v !== hi ? `<text x="${px(v) + 3}" y="${xLabY}" font-size="11" fill="var(--muted)">${v}</text><text x="${X0 + 4}" y="${py(v) - 3}" font-size="11" fill="var(--muted)">${v}</text>` : ''}`).join('')}
-    ${axes}${lines}${dots}${hits}`;
+    ${axes}${lines}${ring}${dots}${hits}`;
+}
+/** The grid's closed shapes (Lines on). */
+const xyShapes = st => (st.connect ? xyLines(st.pts, st.shut).filter(L => L.closed) : []);
+/** A tap on point i (not a drag): the first point of the current color's open line closes it into a shape (Lines on);
+ *  any other point adds nothing. -> true when it changed the grid */
+function xyTapPoint(st, i) {
+  const L = st.connect ? xyOpenLine(st, st.color) : null;
+  return !!L && L.idx[0] === i && xyClose(st, st.color);
 }
 /**
  * Dragging on a coordinate grid (solo and room): a point moves alone (its line reshapes to follow it); the line between
@@ -570,7 +661,7 @@ function bindGrids(el, ctx) {
       const pt = e.target.closest('[data-pt]'), ln = !pt && e.target.closest('[data-line]'); if (!pt && !ln) return;
       const o = ctx.find(svg.dataset.xy); if (!o || o.st.q) return;
       e.stopPropagation(); e.preventDefault();
-      const L = ln && xyLines(o.st.pts).find(x => x.color === ln.dataset.line);
+      const L = ln && xyLines(o.st.pts, o.st.shut).find(x => x.key === ln.dataset.line);
       d = { o, at: val(e), pts0: JSON.parse(JSON.stringify(o.st.pts)), i: pt ? +pt.dataset.pt : -1, idx: L ? L.idx : [], before: ctx.before(), moved: false, sx: e.clientX, sy: e.clientY };
       svg.setPointerCapture(e.pointerId);
     });
@@ -584,7 +675,13 @@ function bindGrids(el, ctx) {
       svg.innerHTML = xySvgInner(d.o.st);
       svg.classList.add('dragging');
     });
-    const up = () => { if (!d) return; const x = d; d = null; if (x.moved) xyDragEnd = Date.now(); svg.classList.remove('dragging'); if (x.moved && JSON.stringify(x.pts0) !== JSON.stringify(x.o.st.pts)) ctx.done(x.before); };
+    const up = e => {
+      if (!d) return; const x = d; d = null; if (x.moved) xyDragEnd = Date.now();
+      // A tap (no drag) on the first point of the line being drawn closes the shape (the room sees no click on a point).
+      if (!x.moved && x.i >= 0) { if (e.type === 'pointerup' && xyTapPoint(x.o.st, x.i)) { xyDragEnd = Date.now(); svg.innerHTML = xySvgInner(x.o.st); ctx.done(x.before); } return; }
+      svg.classList.remove('dragging');
+      if (x.moved && JSON.stringify(x.pts0) !== JSON.stringify(x.o.st.pts)) ctx.done(x.before);
+    };
     svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
   }
 }
@@ -1267,6 +1364,12 @@ function bindBoard() {
     if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, {}, e); }); return; }
   });
   root.addEventListener('change', e => {
+    // A typed value inside an object (a bar model's part size), once it is finished.
+    if (e.target.classList.contains('mp-segval') && V.impl.commit) {
+      const objEl = e.target.closest('.mp-obj');
+      change(st => { const o = objEl && st.objects.find(x => x.id === objEl.dataset.oid); return o && !o.st.q ? V.impl.commit(o.st, e.target) : false; });
+      return;
+    }
     const s = e.target.closest('[data-set]'); if (!s) return;
     const k = s.dataset.set, v = s.value;
     change(st => {
@@ -1590,7 +1693,7 @@ function bindPlane() {
     }
     const objEl = e.target.closest('.mp-obj');
     if (objEl) {
-      if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-peg, .mp-seglabel, .mp-bead, .mp-cell, .mp-answer')) return;   // the object's own work
+      if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-peg, .mp-seglabel, .mp-segval, .mp-bead, .mp-cell, .mp-answer')) return;   // the object's own work
       const o = V.st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return;
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }

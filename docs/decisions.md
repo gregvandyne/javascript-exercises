@@ -11282,6 +11282,38 @@ action). Tests: `tests/unit/manip-playthrough-fixes-browser.test.js`, and the pl
   disks (the palette's names in their scenes). The rest were played through again and kept.
 - **A text's move or resize** sets the same flag, so its click is not a tap on the board.
 
+## Manipulatives: a closed shape on the grid, typed bar sizes, a clock whose minute hand carries the hour (25 Nov 2026)
+
+Three gaps that made tasks in `manip-tasks.js` hard to do ("Plot the treasure", "Four quadrant tour", "Part-part-whole:
+pets", the elapsed-time tasks). Tests: `tests/unit/manip-xy-bars-clock-browser.test.js` and the grid block in
+`manip-board.test.js`. The three tutorial videos were re-recorded to show them.
+
+- **Coordinate grid: close the shape.** With Lines on, a tap on the first point of the current color's line (3 points or
+  more; it has a dashed ring) closes it, and so does the palette's **Close the shape** (it turns Lines on; with fewer
+  than 3 points it says so and changes nothing). A closed shape draws its closing side and a light fill in its color;
+  the table says "Red shape closed (3 points)" and the handle's total "3 points · 1 closed shape". A tap on any other
+  point adds nothing. **After a shape is closed, the next tap in that color starts a new line** (chosen over forcing a
+  new color: there are only five, and the teacher can still pick another). A point carries the line it is on (`ln`,
+  absent for the first line) and the grid the closed lines (`shut`: `"<color>#<ln>"`, `manip-board.js xyKey`); the
+  server keeps both (`cleanObjState`). Dragging a point or a whole shape works as before; Undo opens it again. The tap
+  is handled on pointerup in `bindGrids` (the room never sees a click on a point), and a click that lands on a spot
+  with a point is a tap on that point, never a second point there.
+- **Bar models: type a size, delete a part.** A part's number is an inline number field (committed on Enter or
+  leaving it, clamped to 0.5..999 as − and + clamp at 0.5); − and + stay. Tap a part (not its name, number or buttons)
+  to select it; **Delete** (and Done) shows under its bar, never a one-tap delete. The bar's last part takes the bar
+  with it; with no bars the board says to use Add a bar, and Add a part adds to the selected part's bar (else the
+  first; a new bar when there is none). The selection is in the object's state (`pick`), like the number line's dots.
+  Part text is dark on light fills and white on dark ones (`segInk`: the better WCAG contrast, the same formula as
+  `scripts/contrast.js`); white on light green read badly.
+- **Clock: the minute hand carries the hour.** A minute-hand drag is followed continuously: past 12 clockwise is an
+  hour later (10:55 to 11:05), back past 12 an hour earlier; the press itself only moves the minutes, as before. The
+  **hour hand moves the time in 5-minute steps** (the minute hand follows, the shorter way round) instead of snapping
+  to a whole hour, so it always sits between the numbers for the minutes (at 10:30 halfway between 10 and 11); chosen
+  for elapsed time, where the hour hand's creep is the point. The tracker's "+1 h" goes to the free spot of twelve
+  around the middle farthest from both hands (it was under the minute hand at :30). **Totals: off hides the digital
+  time and the elapsed line** on every clock, so students read the face (the room's Totals switch does the same for
+  students).
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,

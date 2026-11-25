@@ -139,7 +139,8 @@ function cleanObjects(list, tool, space, max) {
 }
 /** The fields this page added to an object's own state, kept within their limits: an answer box's typed answer (at most
  *  ANS.max characters) and its size (st.w, st.h: whole pixels within ANS, or absent); a coordinate grid's switches
- *  (arrows, table: true or false) and its points (at most 60, whole numbers on the grid, a color). */
+ *  (arrows, table: true or false), its points (at most 60, whole numbers on the grid, a color, the line `ln` they are on)
+ *  and the lines closed into shapes (shut). */
 const XY_MAXPTS = 60;
 function cleanObjState(k, st0) {
   const st = { ...st0 };
@@ -150,7 +151,9 @@ function cleanObjState(k, st0) {
   if (k === 'xy-coordinate-board') {
     for (const f of ['arrows', 'table', 'connect', 'labels', 'four']) if (f in st) st[f] = !!st[f];
     if ('pts' in st) st.pts = (Array.isArray(st.pts) ? st.pts : []).filter(p => p && typeof p === 'object').slice(0, XY_MAXPTS)
-      .map(p => ({ x: Math.round(num(p.x, -10, 12)), y: Math.round(num(p.y, -10, 12)), color: HEX.test(p.color) ? p.color : '#E53935' }));
+      .map(p => { const ln = Math.round(num(p.ln, 0, XY_MAXPTS)); return { x: Math.round(num(p.x, -10, 12)), y: Math.round(num(p.y, -10, 12)), color: HEX.test(p.color) ? p.color : '#E53935', ...(ln ? { ln } : {}) }; });
+    // The lines closed into shapes: "<color>#<line>" each (manip-board.js xyKey).
+    if ('shut' in st) st.shut = [...new Set((Array.isArray(st.shut) ? st.shut : []).filter(k => typeof k === 'string' && /^#[0-9a-f]{6}#\d{1,2}$/i.test(k)))].slice(0, XY_MAXPTS);
     if ('color' in st && !HEX.test(st.color)) st.color = '#E53935';
   }
   return st;

@@ -167,11 +167,23 @@
 .mp-bars{display:flex;flex-direction:column;gap:18px;max-width:760px}
 .mp-barname{font-weight:800;margin:0 0 4px}
 .mp-bar{display:flex;border:2px solid var(--text);border-radius:8px;overflow-x:auto;background:var(--card-2)}
-.mp-seg{min-width:96px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-inline-end:2px solid color-mix(in srgb,var(--text) 60%,transparent);padding:2px}
+.mp-seg{min-width:124px;height:72px;display:flex;flex-direction:column;align-items:center;justify-content:center;border-inline-end:2px solid color-mix(in srgb,var(--text) 60%,transparent);padding:2px}
 .mp-seg:last-child{border-inline-end:0}
 .mp-seglabel{width:100%;background:transparent;border:0;text-align:center;font:800 .9rem var(--font);color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.mp-steps{display:flex;align-items:center;gap:6px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
-.mp-steps button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.35);color:#fff;font-weight:800;cursor:pointer}
+.mp-steps{display:flex;align-items:center;gap:4px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+.mp-steps button{width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.35);color:#fff;font-weight:800;cursor:pointer;flex:none}
+/* A part's size, typed (or stepped with - and +): a light field with dark digits on any fill. */
+.mp-segval{width:2.9em;height:30px;padding:0 2px;border:1px solid rgba(0,0,0,.35);border-radius:6px;background:rgba(255,255,255,.9);color:#141414;text-align:center;font:800 1rem var(--font);text-shadow:none;-moz-appearance:textfield;appearance:textfield}
+.mp-segval::-webkit-outer-spin-button,.mp-segval::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.mp-segval:focus{outline:3px solid var(--focus);outline-offset:1px}
+/* Dark text on light fills (light green, yellow-green, light blue, orange): white on them was hard to read. */
+.mp-seg.lite .mp-seglabel,.mp-seg.lite .mp-steps{color:#141414;text-shadow:none}
+.mp-seg.lite .mp-steps button{background:rgba(255,255,255,.7);color:#141414;box-shadow:0 0 0 1px rgba(0,0,0,.3)}
+.mp-seg[data-act="segsel"]{cursor:pointer}
+.mp-seg.on{outline:4px solid var(--focus);outline-offset:-4px;box-shadow:inset 0 0 0 6px rgba(255,255,255,.55)}
+.mp-segact{gap:8px;margin:6px 0 0}
+.mp-segdel{color:var(--danger)}
+.mp-xyshut{margin:6px 0 0;display:flex;flex-wrap:wrap;gap:4px 12px}
 .mp-xy{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
 .mp-grid{background:var(--card);border:1px solid var(--line);border-radius:var(--r-sm);height:auto;cursor:crosshair}
 .mp-table{border-collapse:collapse;font-size:.9rem}
