@@ -1,4 +1,4 @@
-// The Big Divide (slug box-by-box): builds tools/box-by-box (a Svelte app) into the single self-contained seed game seed-games/box-by-box.html.
+// Arithmetic Lab (slug arithmetic-lab): builds tools/box-by-box (a Svelte app) into the single self-contained seed game seed-games/arithmetic-lab.html.
 //   cd tools/box-by-box && npm install && node build.mjs          write the game file
 //   node build.mjs --check                                       exit 1 when the committed file is not what the sources build
 // Vite (vite.config.js) bundles the app into one page; then this script
@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../..');
-export const OUT = path.join(ROOT, 'seed-games', 'box-by-box.html');
+export const OUT = path.join(ROOT, 'seed-games', 'arithmetic-lab.html');
 const check = process.argv.includes('--check');
 
 execFileSync(process.execPath, [path.join(HERE, 'node_modules/vite/bin/vite.js'), 'build', '--logLevel', 'warn'], { cwd: HERE, stdio: 'inherit' });
@@ -94,8 +94,8 @@ if (scan.status !== 'pass') throw new Error(`build.mjs: the safety scan says ${s
 
 if (check) {
   const now = fs.existsSync(OUT) ? fs.readFileSync(OUT, 'utf8') : '';
-  if (now !== html) { console.error('seed-games/box-by-box.html is not what tools/box-by-box builds: run node tools/box-by-box/build.mjs'); process.exit(1); }
-  console.log('seed-games/box-by-box.html is up to date');
+  if (now !== html) { console.error('seed-games/arithmetic-lab.html is not what tools/box-by-box builds: run node tools/box-by-box/build.mjs'); process.exit(1); }
+  console.log('seed-games/arithmetic-lab.html is up to date');
 } else {
   fs.writeFileSync(OUT, html);
   console.log(`wrote ${path.relative(ROOT, OUT)} (${(Buffer.byteLength(html) / 1024).toFixed(0)} KB), scan: ${scan.status}`);

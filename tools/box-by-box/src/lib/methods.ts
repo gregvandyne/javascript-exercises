@@ -1,4 +1,4 @@
-// The Big Divide: the other ways to work a problem, chosen per activity (the standard algorithms stay the default and
+// Arithmetic Lab: the other ways to work a problem, chosen per activity (the standard algorithms stay the default and
 // keep their own sheets in logic.ts). Division: the ladder (partial quotients) and the area model (box method), where
 // the student picks how many of the divisor to take away each time, so any sensible path is right. Multiplication: the
 // area model and partial products, where each factor is broken into its place-value parts.

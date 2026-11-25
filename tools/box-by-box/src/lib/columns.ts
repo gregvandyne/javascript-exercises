@@ -1,4 +1,4 @@
-// The Big Divide: addition and subtraction in columns, box by box. Addition carries a 1 into a small box over the next
+// Arithmetic Lab: addition and subtraction in columns, box by box. Addition carries a 1 into a small box over the next
 // column; subtraction regroups (borrows): the digit it borrows from is crossed out and its new digit written over it,
 // and the column that borrows gets a small 1 in front (2 becomes 12). Across zeros (400 − 167), the zeros become 10 and
 // then 9 on the way, each step a box. Decimals line up their points in a column of their own, and the point comes

@@ -72,6 +72,7 @@ import { router as passwordResetRoutes } from './routes/password-reset.js';
 import { pathLocale, privateNoindex } from './seo.js';
 import { compressPublicPages, staticAssets, versionedCache } from './services/compress.js';
 import { canonicalRedirect, hostCheckRoute, HOST_CHECK_PATH } from './domain.js';
+import { slugRedirect } from './services/slug-aliases.js';
 import { hostOnly } from './site.js';
 import { WEBHOOK_PATH as BILLING_WEBHOOK_PATH, webhookHandler as billingWebhook } from './services/billing.js';
 import { billingOn } from './services/stripe.js';
@@ -154,6 +155,9 @@ export function createApp() {
   // The domain move: page loads on an old name (magic-cup.onrender.com) go to PUBLIC_URL. Off until PUBLIC_URL is set
   // and its self-check passed; MOVED_TO_URL and MAINTENANCE_MODE above still win.
   app.use(canonicalRedirect);
+  // A game's old slug (services/slug-aliases.js: /g/box-by-box, /play/box-by-box?..., /covers/box-by-box.jpg) goes to its
+  // new one, before the static files and the language prefix, so every page, file and API of the game is covered.
+  app.use(slugRedirect);
   // Signed-out pages, the sitemap and robots.txt go out compressed (services/compress.js says why not signed-in ones).
   app.use(compressPublicPages);
   app.use(seoRoutes);   // /robots.txt, /sitemap.xml: no session needed

@@ -1,4 +1,4 @@
-// The Big Divide: decimal numbers, as text and as whole numbers of hundredths (or tenths), so the sheets never do
+// Arithmetic Lab: decimal numbers, as text and as whole numbers of hundredths (or tenths), so the sheets never do
 // arithmetic on floating point. No platform calls and no DOM here, so it runs as it is in Node too.
 
 /** How many decimal places a number is written with: 12.6 -> 1, 7 -> 0 (99 for one too small or big to write plainly). */

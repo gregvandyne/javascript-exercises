@@ -12,6 +12,7 @@ import { hasProfanity, personalInfo, looksLikeLinkCode } from './textfilter.js';
 import { COURSE_GAME_SLUGS } from './course-catalog.js';
 import { hiddenSql } from './game-focus.js';
 import { config } from '../config.js';
+import { canonicalSlug, SLUG_ALIASES } from './slug-aliases.js';
 export const CATEGORIES = [
   ['arcade', '🕹️', 'Arcade'], ['sports', '⚽', 'Sports'], ['puzzle', '🧩', 'Puzzle'], ['words', '🔤', 'Words'],
   ['board', '🎲', 'Board'], ['adventure', '🗺️', 'Adventure'], ['learning', '📚', 'Learning'], ['music', '🎵', 'Music'], ['silly', '🤪', 'Silly']
@@ -28,12 +29,13 @@ export const ORIENTATIONS = ['any', 'portrait', 'landscape'];
 export const slugify = s => String(s).toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'game';
 export function uniqueSlug(title, exceptId = null) {
   const base = slugify(title); let s = base, i = 2;
-  while (q.get('SELECT 1 FROM games WHERE slug=? AND id IS NOT ?', s, exceptId)) s = `${base}-${i++}`;
+  while (SLUG_ALIASES.has(s) || q.get('SELECT 1 FROM games WHERE slug=? AND id IS NOT ?', s, exceptId)) s = `${base}-${i++}`;
   return s;
 }
 
 export const getGame = id => (id ? q.get('SELECT * FROM games WHERE id=?', id) : null) || null;
-export const getGameBySlug = slug => q.get('SELECT * FROM games WHERE slug=?', String(slug || '')) || null;
+// An old slug (services/slug-aliases.js) finds the game under its new one.
+export const getGameBySlug = slug => q.get('SELECT * FROM games WHERE slug=?', String(canonicalSlug(slug) || '')) || null;
 export const getVersion = id => (id ? q.get('SELECT * FROM game_versions WHERE id=?', id) : null) || null;
 export const getOwner = game => q.get('SELECT id, username, display_name, avatar, color, photo_at, account_type, is_guest FROM users WHERE id=?', game.owner_id) || null;
 
@@ -413,7 +415,7 @@ export function putSave(gameId, userId, data) {
 export function createGame(ownerId, { title = 'Untitled game', icon = '🎮', cover = 'sunset', category = 'arcade', description = '', tags = '', source = 'studio', orientation = 'any', players_max = 1, slug = null } = {}) {
   const id = uid(10); const t = now();
   q.run('INSERT INTO games(id, slug, owner_id, title, description, icon, cover, category, tags, source, orientation, players_max, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
-    id, slug && !getGameBySlug(slug) ? slug : uniqueSlug(title), ownerId, title, description, icon, COVERS.includes(cover) ? cover : 'sunset', CATEGORY_KEYS.includes(category) ? category : 'arcade', tags, source, orientation, players_max, t, t);
+    id, slug && !SLUG_ALIASES.has(slug) && !getGameBySlug(slug) ? slug : uniqueSlug(title), ownerId, title, description, icon, COVERS.includes(cover) ? cover : 'sunset', CATEGORY_KEYS.includes(category) ? category : 'arcade', tags, source, orientation, players_max, t, t);
   return getGame(id);
 }
 const META_FIELDS = { title: 60, description: 600, icon: 8, cover: 12, category: 12, tags: 200, orientation: 10, players_max: 2 };

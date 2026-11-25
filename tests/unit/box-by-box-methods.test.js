@@ -1,4 +1,4 @@
-// The Big Divide's other methods (docs/decisions.md "The Big Divide: the ladder, area models and partial products"):
+// Arithmetic Lab's other methods (docs/decisions.md "The Big Divide: the ladder, area models and partial products"):
 // the step checkers in tools/box-by-box/src/lib/methods.ts (pure, so Node loads the TypeScript as it is), the method
 // riding in an activity's item, and each method worked in the built game in Chromium, Guided and On my own.
 import test from 'node:test';
@@ -251,7 +251,7 @@ let haveBrowser = false;
 if (chromium) { try { const b = await chromium.launch(exe ? { executablePath: exe } : {}); await b.close(); haveBrowser = true; } catch { haveBrowser = false; } }
 const skip = haveBrowser ? false : 'no Chromium installed';
 
-const html = fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+const html = fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
 let browser = null;
 test.after(async () => { if (browser) await browser.close(); });
 /** The built game opened with a teacher's activity (a question set), as the frame opens it: BRB stubbed, the kit served. */

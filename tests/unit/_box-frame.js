@@ -1,4 +1,4 @@
-// The Big Divide in the production frame (frameDocument, the frame's CSP and sandbox, the real SDK) on a stand-in for
+// Arithmetic Lab in the production frame (frameDocument, the frame's CSP and sandbox, the real SDK) on a stand-in for
 // the play page, on a 390x844 phone: it records what the frame asks the page (brb:tts for the AI voice, brb:print) and
 // answers like the page does. Used by box-by-box-round2.test.js (and its screenshots).
 import fs from 'node:fs';
@@ -12,7 +12,7 @@ const { silentMp3 } = await import('../../server/services/tts.js');
 
 export const HOST = 'http://game.invalid';
 const MP3 = silentMp3(48).toString('base64');
-export const GAME = () => fs.readFileSync(path.join(ROOT, 'seed-games/box-by-box.html'), 'utf8');
+export const GAME = () => fs.readFileSync(path.join(ROOT, 'seed-games/arithmetic-lab.html'), 'utf8');
 
 let chromium = null;
 try { ({ chromium } = await import('playwright')); } catch { chromium = null; }
@@ -34,7 +34,7 @@ export async function openGame(o = {}) {
   const lang = o.lang || 'en';
   const init = {
     user: { displayName: 'T', avatar: 'x', lang, dir: ['ar', 'he'].includes(lang) ? 'rtl' : 'ltr', isGuest: false },
-    game: { id: 'g', title: 'The Big Divide', url: 'https://oomba.test/play/box-by-box' },
+    game: { id: 'g', title: 'Arithmetic Lab', url: 'https://oomba.test/play/arithmetic-lab' },
     save: {}, canSave: true,
     ...(o.set ? { set: { id: 's-abcdefghjk', items: [o.set], mine: false } } : {}),
     ...(o.tts ? { tts: o.tts } : {}),
@@ -64,7 +64,7 @@ addEventListener('message', async e => { const m = e.data; if (!m || m.brb !== 1
   p.on('pageerror', (e) => errors.push(e.message));
   // the page answers as the server would: a line is read only when the game's allowlist has it
   const lines = await import('../../server/services/tts-lines.js');
-  await p.exposeFunction('__allowed', (text, l) => !!lines.allowedLine('box-by-box', l || 'en', text));
+  await p.exposeFunction('__allowed', (text, l) => !!lines.allowedLine('arithmetic-lab', l || 'en', text));
   await p.exposeFunction('__printReply', async (d) => (o.printReply ? o.printReply(d) : { ok: true }));
   await p.goto(HOST + '/');
   const frame = p.frames().find((f) => f.url() === HOST + '/frame');

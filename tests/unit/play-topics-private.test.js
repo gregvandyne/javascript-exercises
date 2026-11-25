@@ -43,7 +43,7 @@ const cardSlugs = s => [...s.matchAll(/class="gcard[^"]*" href="\/g\/([a-z0-9-]+
 const section = (s, id) => { const i = s.indexOf(`id="${id}-h"`); if (i < 0) return ''; const j = s.indexOf('<section', i); return s.slice(i, j < 0 ? undefined : j); };
 
 const TOPICS = {
-  'sec-math': ['algebra-builder', 'box-by-box', 'sudoku'],
+  'sec-math': ['algebra-builder', 'arithmetic-lab', 'sudoku'],
   'sec-reading': ['crossword', 'mistake-hunt', 'word-hunt', 'word-peek'],
   'sec-geography': ['atlas-quest'],
   'sec-live': ['brain-board', 'question-battle', 'tug-of-math', 'doodle-hoot', 'would-you-rather-live', 'atlas-quest-live'],

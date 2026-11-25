@@ -1,4 +1,4 @@
-// "My worksheets" in Crossword, The Big Divide and Algebra Builder (server/services/game-sets.js listMine, remove, rename,
+// "My worksheets" in Crossword, Arithmetic Lab and Algebra Builder (server/services/game-sets.js listMine, remove, rename,
 // duplicate; routes/games.js GET /api/games/:id/sets, DELETE /api/games/:id/sets/:set, POST .../rename, POST
 // .../duplicate; docs/decisions.md "My worksheets in Crossword, The Big Divide and Algebra Builder"): only the owner
 // lists, renames, copies and deletes a set; anyone else's set is a 404, the same as one that isn't there; guests and
@@ -15,7 +15,7 @@ import { createGuest } from '../../server/auth.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const AB = publish(official, '<!doctype html><title>t</title><p>ab</p>', { source: 'seed', slug: 'algebra-builder', title: 'Algebra Builder' });
-const BB = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'box-by-box', title: 'The Big Divide' });
+const BB = publish(official, '<!doctype html><title>t</title><p>bb</p>', { source: 'seed', slug: 'arithmetic-lab', title: 'Arithmetic Lab' });
 const CW = publish(official, '<!doctype html><title>t</title><p>cw</p>', { source: 'seed', slug: 'crossword', title: 'Crossword' });
 const AB_ITEMS = [{ a: 'solve', p: '2x+3=7', s: 'all', l: true }, { a: 'factor', p: 'x^2+3x+2', s: 'none', l: true }];
 const BB_ITEMS = [{ k: 'divide', p: [[84, 4], [96, 3], [125, 5]], l: 'guided' }];
@@ -163,7 +163,7 @@ test('rate limited like saving: 60 a minute per account', async () => {
 test('the frame offers My worksheets to school staff and the platform admin only', async () => {
   reset();
   assert.equal((await frameInit('crossword', teacher)).mySets, true);
-  assert.equal((await frameInit('box-by-box', boss)).mySets, true);
+  assert.equal((await frameInit('arithmetic-lab', boss)).mySets, true);
   assert.equal((await frameInit('algebra-builder', teacher)).mySets, true);
   for (const u of [kid, mia, mum, null, createGuest()]) assert.equal((await frameInit('crossword', u)).mySets, undefined, u ? u.username : 'signed out');
   const other = publish(official, '<!doctype html><title>t</title><p>x</p>', { source: 'seed', slug: 'not-a-set-game-3', title: 'X' });

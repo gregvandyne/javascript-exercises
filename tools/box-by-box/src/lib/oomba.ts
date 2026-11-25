@@ -1,8 +1,8 @@
-// The Big Divide: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit (its sounds
+// Arithmetic Lab: everything that talks to the platform (the BRB SDK in the game frame) and to the Oomba Kit (its sounds
 // and effects), in one place. Every call is optional: outside a game frame (or in an old one) it quietly does nothing.
 //
 // A teacher's activities live in their own game save. Sharing one saves it on Oomba as a question set of one item (the
-// problems and the support, never the title), and the link opens it: /play/box-by-box?chapter=s-xxxxxxxxxx&lock=1
+// problems and the support, never the title), and the link opens it: /play/arithmetic-lab?chapter=s-xxxxxxxxxx&lock=1
 
 import type { Item } from './logic';
 import { t } from './i18n.ts';

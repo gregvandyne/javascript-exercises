@@ -1,5 +1,5 @@
-// The Big Divide (box-by-box): one self-contained page (vite-plugin-singlefile inlines the script and the CSS), which build.mjs turns
-// into seed-games/box-by-box.html. $lib is src/lib.
+// Arithmetic Lab (arithmetic-lab): one self-contained page (vite-plugin-singlefile inlines the script and the CSS), which build.mjs turns
+// into seed-games/arithmetic-lab.html. $lib is src/lib.
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
 import tailwindcss from '@tailwindcss/vite';

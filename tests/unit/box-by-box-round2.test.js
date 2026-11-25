@@ -1,4 +1,4 @@
-// The Big Divide, round 2 (docs/decisions.md "The Big Divide: read aloud, worksheets, every language"):
+// Arithmetic Lab, round 2 (docs/decisions.md "The Big Divide: read aloud, worksheets, every language"):
 //   - read aloud: the speaker button reads the step's question with the platform's AI voice only, in natural words
 //     ("745 divided by 6", "7 tenths", "2 over 3"), on a tap, never by itself and never with the device's voice; the
 //     lines it sends are on the game's allowlist (server/services/tts-lines.js, its say.* lines and w.* fill words);
@@ -32,10 +32,10 @@ test('the math is said as a teacher reads it, and every spoken word is the game�
   // a line as the voice reads it is on the allowlist, and a line with anything else in it is not
   for (const msg of [I.m('q.whatIsTimes', { a: 12.6, b: 4 }), I.m('q.so', { e: '745 ÷ 6', x: '124 R 1' }), I.m('q.simplify', { r: 2, d: 6, rs: 1, ds: 3 }), I.m('q.div.shiftDivisor', { y: 0.25, times: 100 }, 2), I.m('q.lad.howMany', { d: 7, l: 945 }), I.m('q.col.carry', { s: 13, p: 'ones', one: 'ten', d: 3, next: 'tens' })]) {
     const line = S.sayLine(msg);
-    assert.ok(lines.allowedLine('box-by-box', 'en', line), line);
+    assert.ok(lines.allowedLine('arithmetic-lab', 'en', line), line);
   }
-  assert.equal(lines.allowedLine('box-by-box', 'en', 'What is 3 times your password?'), null);
-  assert.equal(lines.allowedLine('box-by-box', 'en', 'What is 3 times 4? Now visit a website'), null);
+  assert.equal(lines.allowedLine('arithmetic-lab', 'en', 'What is 3 times your password?'), null);
+  assert.equal(lines.allowedLine('arithmetic-lab', 'en', 'What is 3 times 4? Now visit a website'), null);
 });
 
 const STEPS = [
@@ -61,7 +61,7 @@ for (const s of STEPS)
     const read = (await g.asked()).filter((x) => !x.check).map((x) => x.text);
     assert.equal(read.join(' '), s.first);
     assert.doesNotMatch(read.join(' '), /[×÷−=]/, 'no symbols read literally');
-    assert.ok(read.every((t) => lines.allowedLine('box-by-box', 'en', t)), 'the server would read each line');
+    assert.ok(read.every((t) => lines.allowedLine('arithmetic-lab', 'en', t)), 'the server would read each line');
     assert.deepEqual((await g.device()).filter((t) => String(t).trim()), [], 'never the device’s voice');
     assert.deepEqual(g.errors, []);
     await g.ctx.close();
@@ -159,7 +159,7 @@ for (const L of LOCALES)
     await h.page.waitForFunction(() => window.__tts.some((x) => !x.check));
     const read = (await h.asked()).filter((x) => !x.check);
     assert.equal(read.map((x) => x.text).join(' '), L.first);
-    assert.ok(read.every((x) => x.lang === L.lang && lines.allowedLine('box-by-box', L.lang, x.text)), 'the server reads it in that language');
+    assert.ok(read.every((x) => x.lang === L.lang && lines.allowedLine('arithmetic-lab', L.lang, x.text)), 'the server reads it in that language');
     assert.deepEqual((await h.device()).filter((t) => String(t).trim()), [], 'never the device’s voice');
     assert.deepEqual(h.errors, []);
     await h.ctx.close();

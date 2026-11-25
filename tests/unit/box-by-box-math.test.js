@@ -1,4 +1,4 @@
-// The Big Divide's new math (docs/decisions.md "The Big Divide: remainders, decimals, addition and subtraction"): the
+// Arithmetic Lab's new math (docs/decisions.md "The Big Divide: remainders, decimals, addition and subtraction"): the
 // sheets in tools/box-by-box/src/lib (pure, so Node loads the TypeScript as it is). Each sheet is checked by working it
 // box by box with its own right digits, and against the numbers worked out another way.
 import test from 'node:test';

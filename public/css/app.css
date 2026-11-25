@@ -2169,7 +2169,7 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .cwp-blank-name{width:2.1in}
 .cwp-gridbox{display:flex;justify-content:center;margin:0 0 12pt}
 .cwp-grid{display:block;width:100%;height:auto;max-height:6.4in;break-inside:avoid}
-/* The teacher's own instructions above the grid (crossword-print.js; as The Big Divide's .bbp-mine); the grid gives up a little height for them. */
+/* The teacher's own instructions above the grid (crossword-print.js; as Arithmetic Lab's .bbp-mine); the grid gives up a little height for them. */
 .cwp-mine{margin:0 0 10pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
 .cwp-mine~.cwp-gridbox .cwp-grid{max-height:5.7in}
 .cwp-grid rect{fill:#fff;stroke:#000;stroke-width:0.45}
@@ -2224,7 +2224,7 @@ body.is-sorting,body.is-sorting *{user-select:none;-webkit-user-select:none;curs
 .atp-k2 .atp-keymap svg{max-height:5in}
 .atp-k3 .atp-keymap svg{max-height:4.3in}
 .atp-key.atp-many .atp-keylist li{margin:0 0 1.5pt}
-/* The Big Divide's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
+/* Arithmetic Lab's worksheet (services/box-by-box-print.js): each problem written as on paper, a square for each digit
    (0.3in), with room to work under it; the answer key smaller, four to a row. */
 .bbp-mine{margin:0 0 6pt;font-size:12.5pt;font-weight:700;white-space:pre-line;overflow-wrap:anywhere}
 .bbp-how{margin:0 0 10pt;font-size:11.5pt}

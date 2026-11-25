@@ -13248,3 +13248,34 @@ Owner: "Build for other languages now".
   against that keyboard. Tricky keys count any letter (services/typing.js).
 - **Not done**: the server-side lesson names on Assign stay English; other variants (UK, Swiss, Canadian French,
   Dvorak) and Zhuyin/Pinyin input are later work. AltGr characters are not taught.
+
+## The Big Divide is now Arithmetic Lab (25 Nov 2026)
+Owner: rename The Big Divide to **Arithmetic Lab**, and give it the address `/g/arithmetic-lab`. This time the slug
+changes too, safely for the live database and for every link and QR code already handed out.
+- **The name.** `seed-games/arithmetic-lab.json` (`title`, `l10n.<lang>.title`), `tools/box-by-box/src/lib/name.ts`,
+  `ui.name` in each `tools/box-by-box/src/i18n/<locale>.json`, `server/services/tts-lines.js`, the comments and docs that
+  describe the product, then a rebuild (`npm run build:box-by-box`), `node scripts/covers.js arithmetic-lab` and
+  `node scripts/og-images.js arithmetic-lab.jpg`. Translations: Laboratorio de aritmética, Labo d’arithmétique,
+  Rechenlabor, Laboratório de Aritmética, Laboratorio di aritmetica, Rekenlab, Арифметическая лаборатория, מעבדת החשבון,
+  مختبر الحساب, 算数ラボ, 算術實驗室 (en-GB: Arithmetic Lab). The English tags gain "big divide", so a search for
+  the old name still finds it.
+- **The slug.** `arithmetic-lab` everywhere the code names the game: the seed files (`seed-games/arithmetic-lab.html`
+  and `.json`, as every seed game's files carry its slug), `SEED_GAMES`, `SET_GAMES` and the other game-sets checks,
+  `game-print.js`, `tts-lines.js`, `companion-games.js`, `discover.js` `TOPIC_OF`, the cover recipe, `public/covers` and
+  `public/og`. Internal names stay: the `tools/box-by-box` folder, `npm run build:box-by-box`, `box-by-box-print.js`, the
+  test file names, CSS classes and the `BRB.storage` keys (`box-by-box-activities-v1`...), so saved activities on
+  devices are kept.
+- **The live database: migration 0121** (`server/db.js` `renameSeedSlug`). The official row with `box-by-box` takes
+  `arithmetic-lab`; its id does not change, so plays, scores, saves, question sets, lesson steps, assignments, folders
+  and Classroom posts (all stored by game id) stay with it, and the seed import on the next boot finds the row by its new
+  slug and updates it instead of adding a second game. A member's game that already had `arithmetic-lab` moves to
+  `arithmetic-lab-2` first. A new database has no `box-by-box` row and the seed makes the game as `arithmetic-lab`.
+- **Old links** (`server/services/slug-aliases.js`, `SLUG_ALIASES`). One middleware in `server/app.js`, before the
+  static files and the language prefix, redirects any path with `box-by-box` as a segment or a file name to the same
+  path with `arithmetic-lab`, query string kept: `/play/box-by-box?chapter=s-abc&lock=1` goes to
+  `/play/arithmetic-lab?chapter=s-abc&lock=1`, likewise `/g/...`, `/es/g/...`, `/covers/box-by-box.jpg?v=...`, `/og/...`
+  and the APIs. 301 for GET and HEAD, 308 otherwise (a POST keeps its body). The target is always a path on this site.
+  `games.getGameBySlug` and the AI voice allowlist read the old slug as the new one (a slug passed in a query, such as
+  `/teach/assign?game=box-by-box`, still works), `HIDDEN_GAMES` may name either, and no new game can take `box-by-box`.
+- Saved lesson and assignment titles that were made with the old name keep it, as in the last rename.
+- Tests: `tests/unit/arithmetic-lab-rename.test.js` (the redirects, the migration, no second game after the seed).
