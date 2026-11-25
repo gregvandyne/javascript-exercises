@@ -7245,7 +7245,7 @@
     "live": {
       "h": "Livespellen in de klas",
       "p1": "Speel een live quizrace of een ander spel dat klaar is voor live op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen), Vragenduel en Breinbord (een bord vol categorieën, van makkelijk naar moeilijk).",
+      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen) en Breinbord (een bord vol categorieën, van makkelijk naar moeilijk).",
       "li2": "Gebruik een startset, typ snel een eigen set of maak van de vragen in een les een livequiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
@@ -7670,7 +7670,7 @@
         },
         "faq": {
           "q2": "Kan mijn kind spelen als het nog niet kan lezen?",
-          "a2": "Bij sommige spelletjes wel. Word Trail en Shark Plank lezen elk woord voor, Word Hunt leest een woord voor als je het aantikt, en Sum Racer en Tug of Math werken met getallen. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
+          "a2": "Bij sommige spelletjes wel. Word Trail en Shark Plank lezen elk woord voor, Word Hunt leest een woord voor als je het aantikt, en Sum Racer werkt met getallen. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
           "q3": "Zijn de cursussen voor deze leeftijd?",
           "a3": "Eén wel. Number Quest, onze rekencursus, begint in groep 2: de Launchpad-straat is voor groep 2 tot en met 4, en de spelletjes daar lezen elke opdracht voor. CS Quest en Cyber Defenders beginnen in groep 5, rond 8 jaar.",
           "q4": "Kan een kind van 6 de AI-Bouwer gebruiken?",
@@ -9402,7 +9402,7 @@
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
-        "p": "Kies Questrace, Vragenduel of Breinbord en daarna de vragen: de vragenbank per vak en leeftijd (6 tot 14 jaar), je eigen vragenset, een set die een collega heeft gedeeld of de vragen uit een van je lessen.",
+        "p": "Kies Questrace of Breinbord en daarna de vragen: de vragenbank per vak en leeftijd (6 tot 14 jaar), je eigen vragenset, een set die een collega heeft gedeeld of de vragen uit een van je lessen.",
         "alt": "De eerste stap om een live spel te starten, ‘Wat wil je spelen?’: Quest Race, Question Battle en Brain Board, elk met het aantal spelers waarvoor het werkt."
       },
       "s2": {
@@ -10347,7 +10347,7 @@
       "kicker": "Live klassengames",
       "h": "Zet het digibord aan",
       "lead": "Warming-ups en exit tickets waar je klas echt naar uitkijkt. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math en meer",
+      "li1": "Quest Race, Brain Board, Would You Rather en meer",
       "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
       "li3": "Scores komen direct in je cijferoverzicht",
       "li4": "Klasspellen: alleen je ingelogde leerlingen. Gastspellen: veilige, verzonnen namen. Geen chat en geen vrije tekst, in geen van beide",

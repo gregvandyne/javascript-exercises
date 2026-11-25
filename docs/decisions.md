@@ -14486,6 +14486,36 @@ everyone else keeps the class page and its tiles exactly as before ("Action tile
   the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
   its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
 - With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.
+- **Phones, later the same day** (owner): the class tabs (Games, Progress, Students, Settings) share the width evenly
+  (a column each, however many there are) with larger icons (30 px) over the label. The Connections chip is left out of
+  Classroom's bar under 640 px, and the Google Classroom button moved up from the foot of the Games tab to a
+  full-width button under Build new game and Find Oomba games (`.classquick-gc`; the foot copy is hidden there, so
+  there is one). Wider screens are unchanged.
+
+## Tug of Math and Question Battle taken off (25 Nov 2026)
+
+Owner: "Remove tug of war and question battle", hidden everywhere rather than deleted (their choice of the three
+offered: hide everywhere, delete completely, or only from Oomba Live).
+
+- **How** (`server/services/game-focus.js` `REMOVED_GAMES`, `removedGames`, `slugRemoved`): the two official games join
+  the hidden list of "Focus: teaching tools first" **whatever ARCADE says**, so every list that already leaves hidden
+  games out leaves these out (Learn, the class's Find Oomba games, search, the sitemap, the subject and age pages,
+  Oomba's game suggestions), their `/g` and `/play` pages say "not available right now", and their Oomba Live modes
+  (`battle`, `tug`) are not offered on `/live` (`modeOpen`). `POST /api/live/sessions` refuses a new room in either mode
+  (404) from any form or saved run, except for the platform admin and a class that has the game assigned, the same
+  exceptions as every hidden game. `/teachers/live` leaves their mode cards out.
+- **Quick game** (`/live/quick`) offered Question Battle and, with the arcade on, Quest Race; with both hidden it offers
+  **Brain Board** (`QUICK_MODES` gains `board`; its starter is a board of five bank subjects, the chosen one first).
+- The landing page's demo game (`demoGame`, ARCADE off) is Brain Board instead of Question Battle. Page copy that
+  named either game (`teachers.live.li1`, `teachersLive.how.s1.p`, `landing.live.li1`, `learn.ages.a5.faq.a2`) no
+  longer does, in every language.
+- **Nothing is deleted**: the games' rows, plays, saves, scores and live results stay; the code stays.
+  `REMOVED_GAMES` (env, comma separated) replaces the list and `REMOVED_GAMES=none` brings both back. Unit tests run
+  with `none` (they describe the code) except `tests/unit/removed-games.test.js`.
+- **Left as they are**: the marketing screenshots of Oomba Live (`scripts/how-shots.js` hosts a Question Battle room;
+  the live picker, lobby and play pictures on `/teachers/live` and the landing page) until they are re-shot, with alt
+  text that says what they show; the standards legend's mention of Tug of Math Live (its past runs still count);
+  CS Quest's warm-up and exit-ticket modes (the courses are hidden while COURSES is off).
 
 ## Homeroom: the notebook (25 Nov 2026)
 

@@ -7245,7 +7245,7 @@
     "live": {
       "h": "Live-Spiele in der Klasse",
       "p1": "Starten Sie ein Live-Quizrennen oder ein anderes Live-Spiel am Beamer. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei.",
-      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen), Fragen-Duell und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
+      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen) und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
       "li2": "Nutzen Sie ein Starterset, tippen Sie schnell eigene Fragen oder machen Sie aus den Fragen einer Unterrichtseinheit ein Live-Quiz.",
       "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen.",
       "more": "So funktioniert Oomba Live"
@@ -7670,7 +7670,7 @@
         },
         "faq": {
           "q2": "Kann mein Kind spielen, wenn es noch nicht lesen kann?",
-          "a2": "Bei einigen Spielen ja. Word Trail und Shark Plank lesen jedes Wort vor, Word Hunt liest ein Wort vor, wenn man es antippt, und Sum Racer und Tug of Math arbeiten mit Zahlen. Menüs und Anleitungen sind geschrieben, deshalb hilft am Anfang ein Erwachsener in der Nähe.",
+          "a2": "Bei einigen Spielen ja. Word Trail und Shark Plank lesen jedes Wort vor, Word Hunt liest ein Wort vor, wenn man es antippt, und Sum Racer arbeitet mit Zahlen. Menüs und Anleitungen sind geschrieben, deshalb hilft am Anfang ein Erwachsener in der Nähe.",
           "q3": "Gibt es die Kurse auch für dieses Alter?",
           "a3": "Einen gibt es. Number Quest, unser Mathekurs, beginnt in der Vorschule: Seine Launchpad-Straße ist für die Vorschule bis Klasse 2, und ihre Spiele lesen jede Anweisung vor. CS Quest und Cyber Defenders beginnen in Klasse 3, mit etwa 8 Jahren.",
           "q4": "Kann ein 6-jähriges Kind den KI-Baumeister benutzen?",
@@ -9402,7 +9402,7 @@
       "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
       "s1": {
         "h": "Spiel und Fragen auswählen",
-        "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann die Fragen: die Fragenbank nach Fach und Alter (6 bis 14), Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
+        "p": "Wählen Sie Quest-Rennen oder Denkbrett und dann die Fragen: die Fragenbank nach Fach und Alter (6 bis 14), Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
         "alt": "Der erste Schritt, um ein Live-Spiel zu starten, „Was möchtest du spielen?“: Quest Race, Question Battle und Brain Board, jeweils mit der passenden Spielerzahl."
       },
       "s2": {
@@ -10347,7 +10347,7 @@
       "kicker": "Live-Klassenspiele",
       "h": "Bring den Beamer zum Leuchten",
       "lead": "Aufwärmrunden und Abschlussfragen, auf die sich deine Klasse wirklich freut. Die Kinder steigen mit einem 7-stelligen Code auf ihrem eigenen Gerät ein.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
+      "li1": "Quest Race, Brain Board, Would You Rather und mehr",
       "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
       "li3": "Punkte landen direkt in deiner Notenübersicht",
       "li4": "Klassenspiele: nur Ihre angemeldeten Schülerinnen und Schüler. Gästespiele: sichere, erfundene Namen. Kein Chat und kein Freitext, in beiden",

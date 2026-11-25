@@ -73,6 +73,12 @@
   .classquick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 var(--s3)}
   .classquick-b{justify-content:center;gap:4px;min-width:0;min-height:44px;padding:6px 8px;font-size:.875rem;line-height:1.2;white-space:normal;text-align:center}
   .classquick-b>span{min-width:0;overflow-wrap:anywhere}
+  /* Google Classroom: a full-width button under the two (instead of at the foot of the Games tab), and the Connections
+     chip is not in the bar (its Google Classroom row is this button's page) */
+  .classquick-gc{grid-column:1/-1;display:flex}
+  .classquick-gc>.btn{flex:1 1 auto;justify-content:center;min-height:44px;font-size:.875rem}
+  .cv[data-view="classroom"] .cv-acts-classroom .classacts{display:none}
+  .cv[data-view="classroom"] :is(.lib-foot,.shelf-phone-tools,.shelf-foot):has(a[href$="/google-classroom"]){display:none}
 }
 
 /* ---- the views */
