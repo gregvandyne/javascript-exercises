@@ -127,7 +127,7 @@ function press(i) {
       await w.say(a, O.t('wins', { name: who(win).name }));
       clear();
       if (vsBot && win === 1) w.lose({ say: O.t('wins', { name: who(1).name }) });
-      // two friends: the card names the winner and shows them; a hot-seat score never goes to the leaderboard
+      // two friends: the card names the winner and shows them; a hot-seat score is never saved as anyone's best
       else w.win(Object.assign({ stars: wins[1 - win] === 0 ? 3 : wins[1 - win] === 1 ? 2 : 1, score: wins[win] * 100 }, vsBot ? {} : { title: O.t('wins', { name: who(win).name }), who: a, submit: false }));
     });
   } else w.after(1600, () => next(w));

@@ -280,7 +280,7 @@ building, wall, crate, platform, tree trunk and rock a solid with `B.solid(mesh)
 
 Oomba Live lets a teacher or grown-up host any live-ready game for a whole class: players join at /join with a code,
 on their own devices. The platform does the room (codes, the lobby, seats, reconnects, the host's controls, a shared
-clock, timed questions, the leaderboard, results, the gradebook and safety); the game uses `Oomba.live` from the
+clock, timed questions, results, the gradebook and safety; there is no leaderboard); the game uses `Oomba.live` from the
 `live` pack. Played alone (not in a live session) every call is safe and the game plays as before. The frame never opens
 a socket: the SDK carries the messages to the page over a private port, and the server checks every one. The wire
 protocol is [live-protocol.md](live-protocol.md).
@@ -299,7 +299,7 @@ reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never 
   `words: ['kind', 'word', ...]` (up to 64, written out in the code) lists every event kind and word the game's `send()`
   uses: a player's events carry only these. `maxPlayers: n` (a number written in the code, 2-60) says how many players
   the game is made for; a room of it never seats more (without it: 30). Design for that many: a whole class is 20-30, so
-  the host's screen must stay readable with everyone in it (top-N leaderboards, only the nearest name tags, players
+  the host's screen must stay readable with everyone in it (class totals, only the nearest name tags, players
   spread out, never stacked), and set a lower number only when the game truly can't hold more (a small arena, turns).
 - `Oomba.live.active`, `.role` (`'player' | 'host' | 'solo'`), `.phase` (`lobby loading countdown playing paused between
   ended`), `.round`, `.view` (`'3d' | '2d'`: draw 2D when it says so), `.me` (`{seat, name, avatar, team, score}`),
@@ -307,9 +307,13 @@ reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never 
   language), `.player(seat)`, `.nameOf(seat)`, `.avatarOf(seat)`, `.now()` (the server's clock), `.since(at)`.
 - `Oomba.live.on(event, fn)` → off. Events: `welcome start round countdown loading pause resume between end` (`{top}`),
   `phase join leave update`, `event` (`{from, kind, data}`), `state`, `question` (`{i, n, q, choices, secs, at,
-  answered}`), `answered`, `answers` (host: `{i, n}`), `reveal` (`{i, answer, counts, top}`), `result` (`{ok, points, rank,
-  score}`), `race`, `leaderboard`, `emote` (`{from, name, me}`; `me` is the player's own), `fix` (the server put you
+  answered}`), `answered`, `answers` (host: `{i, n}`), `reveal` (`{i, answer, counts}`), `result` (`{ok, points,
+  score}`: the player's own), `race`, `emote` (`{from, name, me}`; `me` is the player's own), `fix` (the server put you
   back: `{x, y, z}`).
+- No leaderboards (docs/decisions.md "No leaderboards"): never rank players. `top` in `end`, `reveal` and `leaderboard`
+  is always an empty list and `result.rank` is always 0. A player sees their own result ("You got 8 of 10 right!",
+  counted from `result`), the host's screen the class's totals (right answers from `reveal.counts`), and teams their
+  team scores. Never a podium, a top list, "#1" or "1st place" for a player.
 - Reporting: `Oomba.live.score(n)` (the player's total, it can only rise as fast as `maxScorePerSec` per second of play), `Oomba.live.item(i,
   ok)` (one result per item, for the teacher's per-question view), `Oomba.live.quiz.answer(choice)` (the open question;
   the server times it), `Oomba.live.quiz.current`, `Oomba.live.quiz.answered`, `Oomba.live.quiz.left()` (ms).
@@ -335,13 +339,13 @@ reports results (`score(n)`, `item(i, ok)` or `quiz.answer(choice)`); and never 
   size, members: [seat], mine}]` (`rank` 0 = no players yet, or ranks hidden), `.team(k)`, `.myTeam`, `.teamOf(seat)` → k
   or 0, `.teamStyle(k)` → `{name, color, ink, shape, icon}`, `.teamScoring` (`'avg' | 'sum'`), `.drawShape(ctx, shape, x,
   y, r, fill, stroke)`. Events: `teams` (`{teams, why: 'setup' | 'move' | 'scores' | 'final'}`), `bonus` (`{seat, team,
-  reason, points}`); `leaderboard`, `reveal` and `end` also carry `teams`. `players()` and `.me` carry `team`. Colour is
+  reason, points}`); `reveal` and `end` also carry `teams`. `players()` and `.me` carry `team`. Colour is
   never the only cue: draw the team's shape (`drawShape`) or its name next to its colour; write text on a team colour in
   its `ink`. `crowd()` and `flat()` already draw team rings, nameplate bands and shape badges (`crowd.teamRing(myRig, k)`
   for your own figure). `send(kind, data, {team: true})` sends to the player's own team (the host: `{team: k}`). A
   target a role may not use (a player naming a seat or a team number) drops the event: it is never sent to everyone.
   `ready({ teams: true })` says the game draws its own team UI. The platform keeps team scores; games never add them up.
-  `Oomba.live.names === 'hidden'` on the projector: show avatars, teams and ranks there, never empty name boxes.
+  `Oomba.live.names === 'hidden'` on the projector: show avatars and teams there, never empty name boxes.
 - No typing in a live game: text boxes are read-only and `prompt()` returns null. Show names only from `players()`.
 - A 3D live game also needs a 2D path: add `<meta name="oomba-live" content="2d">`, keep the game's rules and a top-down
   view in a classic `<script>`, and put only the 3D view in the module; draw 2D when `Oomba.live.view === '2d'`.
@@ -351,8 +355,8 @@ const L = Oomba.live;
 L.ready({ quiz: true, hostView: true });
 L.on('question', q => showQuestion(q.q, q.choices));            // big buttons; on a tap: L.quiz.answer(i)
 L.on('reveal', r => markRight(r.answer));
-L.on('result', r => say(r.ok ? 'right' : 'wrong'));
-L.on('end', e => showPodium(e.top));
+L.on('result', r => { asked++; if (r.ok) right++; say(r.ok ? 'right' : 'wrong'); });
+L.on('end', () => showEnd(L.role === 'host' ? classLine() : `You got ${right} of ${asked} right!`));   // never a podium
 ```
 
 ```js

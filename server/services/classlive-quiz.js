@@ -2,8 +2,7 @@
 // Question Battle) and by any game that declares quiz:true. The server owns the clock: a question opens at a server
 // time (at), its deadline is at + secs + 600 ms, and the answer is never sent until the reveal. A device's own measure
 // of how long the player took is trusted only within one round trip of the server's.
-// Part 3: the host's settings (order, count, time, shuffled answers, accuracy-only points, the leaderboard on players'
-// devices), per-seat extra time (support: the seat's own q with its own secs, never in a broadcast), +time, team banking
+// Part 3: the host's settings (order, count, time, shuffled answers, accuracy-only points), per-seat extra time (support: the seat's own q with its own secs, never in a broadcast), +time, team banking
 // (each seat counts for the team it had when the question opened), per-question marks and the dashboard's data.
 import crypto from 'node:crypto';
 import * as sets from './classlive-sets.js';
@@ -180,8 +179,6 @@ export function maybeAllAnswered(s, io) {
 export const points = (elapsed, secs, streak, { accuracy = false } = {}) => (accuracy ? 1000
   : Math.round(500 + 500 * (1 - Math.min(1, elapsed / (secs * 1000)))) + Math.min(STREAK.max, STREAK.step * Math.max(0, streak - 1)));
 
-/** What players may see of the leaderboard (the host's board setting): -> how many top rows (0: none, and no ranks). */
-export const boardRows = (s, all = 10) => { const b = s.settings && s.settings.board; return b === 'off' ? 0 : b === 'top5' ? Math.min(5, all) : all; };
 
 /** Close the question: score it, bank team points, tell everyone the answer and the counts, and each player their own
  *  result. Team scores (ts) go out before the reveal, so a game's reveal event already has them. */
@@ -237,16 +234,15 @@ export function reveal(s, io) {
   s.qz.cur = null;
   s.scoresDirty = false;
   const ranked = rankSeats(s);
-  const top = ranked.slice(0, 5).map(r => [r.seat, r.score]);
-  const rows = boardRows(s, 5);
   io.setPhase(s, 'between');
   io.teamScores(s);
-  io.toHosts(s, { t: 'rv', i: c.i, answer: c.answer, counts, top });
-  io.toPlayers(s, { t: 'rv', i: c.i, answer: c.answer, counts, top: top.slice(0, rows) });
+  // The class's answer counts for everyone; no top players (top stays an empty list for older games and the kit pack;
+  // docs/decisions.md "No leaderboards"). Each player then gets their own result only.
+  io.broadcast(s, { t: 'rv', i: c.i, answer: c.answer, counts, top: [] });
   if (s.race) io.broadcast(s, { t: 'race', p: io.raceList(s) });   // a right answer in the first third of the time is a full step: all right and quick reaches the flag
   for (const r of ranked) {
     const m = mine.get(r.seat) || { ok: false, points: 0, none: true };
-    io.toSeat(s, r.seat, { t: 'you', i: c.i, ok: m.ok, points: m.points, rank: rows ? r.rank : 0, score: r.score, ...(m.none ? { none: true } : {}) });
+    io.toSeat(s, r.seat, { t: 'you', i: c.i, ok: m.ok, points: m.points, rank: 0, score: r.score, ...(m.none ? { none: true } : {}) });
   }
   io.toDash(s, D.dpMsg(s));
   if (s.board && io.boardChanged) io.boardChanged(s);
@@ -274,8 +270,8 @@ export function resume(s, io, shift) {
   if (c) { sendQuestion(s, io); armDeadline(s, io); }
 }
 
-/** Seats in rank order (Quest Race: progress first, then score). score = the seat's score plus bonus points (the
- *  leaderboard's number; the gradebook keeps the score alone). Ties share a rank. */
+/** Seats best first (Quest Race: progress first, then score): only the server's own order (results, saving), never
+ *  shown to anyone as a rank. score = the seat's score plus bonus points (the gradebook keeps the score alone). */
 export function rankSeats(s) {
   const list = [...s.seats.values()].map(seat => ({ seat: seat.no, score: seat.score + (seat.bonus || 0), prog: s.race ? Math.round((s.race.get(seat.no) || { prog: 0 }).prog) : 0 }));
   list.sort((a, b) => (b.prog - a.prog) || (b.score - a.score) || (a.seat - b.seat));

@@ -241,7 +241,7 @@ const CONFIG = {
     easy:   { depth: 0, blockChance: 1, carefulChance: 0.6 },     // mostly random, but always takes a win and always blocks one
     normal: { depth: 4, slipChance: 0.15 },                       // looks 4 moves ahead, sometimes plays its 2nd best move
     hard:   { depth: 7, slipChance: 0 },                          // looks 7 moves ahead with full pruning and a cache
-    pointsPerWin: { easy: 1, normal: 2, hard: 4 }                 // leaderboard points for beating each level
+    pointsPerWin: { easy: 1, normal: 2, hard: 4 }                 // points for beating each level (the player's own best score)
   },
   // Disc colours: a kit hue name, or main / dark / light colour codes for a colour the kit has no hue for.
   discs: [
@@ -1491,7 +1491,7 @@ if (!LEVELS.includes(save.difficulty)) save.difficulty = 'normal';
 if (save.mode !== 'two' && save.mode !== 'robot') save.mode = 'robot';
 if (save.series !== 'single' && save.series !== 'three') save.series = 'single';
 function persist() { try { BRB.storage.set(CONFIG.saveKey, save); } catch (e) { /* ignore */ } }
-/** Leaderboard points: every win against the robot, weighted by level (Hard pays the most). */
+/** Robot points (the player's own best score): every win against the robot, weighted by level (Hard pays the most). */
 function robotPoints() { const p = CONFIG.robot.pointsPerWin; return save.stats.easy.w * p.easy + save.stats.normal.w * p.normal + save.stats.hard.w * p.hard; }
 
 /* =====================================================================================

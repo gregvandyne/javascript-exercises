@@ -25,12 +25,12 @@ scripts (`public/js/live-*.js`), the SDK transport (`public/sdk/brb-sdk.js`) and
 
 | Route | Who | Body / query | Answer |
 |---|---|---|---|
-| `POST /api/live/sessions` (more) | hosts | as above, plus `settings: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes, voices }` (or those as flat form fields; checkboxes post a hidden `0` first), `teams: { n: 2..6, scoring: 'avg'|'sum', presets? }` (or form `teams` = `0`/`2`..`6` and `scoring`) · or `{ again: <ended sid>, shuffle? }` (play again with the lingering players) · or `{ fromRun: <run id>, only: 'missed' }` · or `{ againRun: <run id> }` (a saved class run's teams as the plan) | `{ sid, redirect, moved? }` · 410 `againGone` · 400 `noMissed`/`teamsOff`/`noClass` · 404 `notFound`. |
+| `POST /api/live/sessions` (more) | hosts | as above, plus `settings: { secs, count, shuffleQ, shuffleA, points, late, names, sound, emotes, voices }` (or those as flat form fields; checkboxes post a hidden `0` first), `teams: { n: 2..6, scoring: 'avg'|'sum', presets? }` (or form `teams` = `0`/`2`..`6` and `scoring`) · or `{ again: <ended sid>, shuffle? }` (play again with the lingering players) · or `{ fromRun: <run id>, only: 'missed' }` · or `{ againRun: <run id> }` (a saved class run's teams as the plan) | `{ sid, redirect, moved? }` · 410 `againGone` · 400 `noMissed`/`teamsOff`/`noClass` · 404 `notFound`. |
 | `GET /live/host/:sid/dash` | that host (signed in; others 404, signed out → sign-in) | | The teacher's dashboard (bare, `no-store`). The address holds no token. |
 | `GET/POST/DELETE /api/live/prefs` | hosts | POST `{ settings, teams: { on, n, scoring } }` | `{ settings, teams }` or `{}` (remembered defaults; also saved at every start). |
 | `GET/PUT/DELETE /api/live/classes/:classId/teams` | the class's teachers (404 otherwise, or `LIVE_TEAMS=0`) | PUT `{ n: 2..6, presets: [p], scoring, plan: [[userId, k]] }` | GET `{ classId, students: [{ id, name }], saved: { n, presets, scoring, plan, savedAt } | null }`; PUT `{ ok, toast }`. |
 | `GET/POST/DELETE /api/live/classes/:classId/support` | the class's teachers; 404 unless `LIVE_SAVE_SUPPORT=1` | POST `{ userId, time: 100|150|200, read, simple }` (all off deletes) | GET `{ support: [{ userId, name, time, read, simple }] }`; DELETE `{ cleared }`. |
-| `GET /live/results/:id.csv` (more) | the host (in memory, 10 min) and saved runs as before | | `rank,student,team,score,bonus,correct,answered,q1..qN` (marks `1`/`0`/`-`), a blank line, then `question,right,answered,choice_a..choice_d`. |
+| `GET /live/results/:id.csv` (more) | the host (in memory, 10 min) and saved runs as before | | `student,team,score,bonus,correct,answered,q1..qN` (students by name, never ranked; marks `1`/`0`/`-`), a blank line, then `question,right,answered,choice_a..choice_d`. |
 | `POST /api/live/sets/:id/homework` | hosts who teach the class; 404 `homeworkOff` unless `LIVE_HOMEWORK=1` | `{ classId, opensAt?, dueAt? }` | `{ ok, lessonId, classLessonId, redirect }` · 400 `noClass`/`setIncomplete`. |
 | `GET/POST /api/lessons/:clId/steps/:stepId/quiz` | a student of the class (`LIVE_HOMEWORK`) | POST `{ i, c }` | GET `{ items: [{ q, choices }], marks }` (never the answers); POST `{ ok, answer, next, score }` once per question; 400 `answered`. |
 
@@ -67,7 +67,7 @@ removed, `4404` no session/seat, `4409` replaced by another device, `4413` messa
 | `h` (more) | `eyes {on}`, `say {x: text, 1..120}`, `time {s: 10|20|30}`, `bonus {n: seat | k: 1..6, r: 0..4}`, `rename {n}`, `acc {n, x: 100|150|200, ra: 0|1, sv: 0|1, save?: 1}` | host | 5 (say 1 per 3 s, bonus 1/s, eyes 1/s) | `say`: the host's typed message (`SAY_MAX` 120; spaces squeezed, control and direction characters dropped), refused with `nak blocked` when the text filter (`shownOk`: rude words, contact details, handles, links) won't show it. `BONUS_REASONS = teamwork kindness effort helping listening` (+100). `time`: quiz modes, while playing. `rename`: a seat shown by nickname. `acc`: support (`save` only in class rooms with `LIVE_SAVE_SUPPORT`). |
 | `tm` | `a: on {n?} off count {n} preset {k, p: 0..7} scoring {v: 'avg'|'sum'} choose {v: bool} lock unlock balance shuffle move {s: seat, k: 0..6} last` | host | 10 | Lobby only: on, off, count, preset, scoring, choose, shuffle, last (class rooms). Balance: lobby or `between`. Move: any time (`k: 0` lobby only). Lock: any time. Ignored with `LIVE_TEAMS=0`. Answer: `tms` to everyone (and `tml` to the hosts for `last`). |
 | `pt` | `k: 1..6` | player | 1 | Pick a team: lobby only, the host allows it, not locked, the team under ceil(players / n) + 1. |
-| `cf` | `d: { secs, count, shuffleQ, shuffleA, points, board, late, names, sound, emotes, voices }` (a subset) | host | 5 | Unknown keys and values dropped; `secs count shuffleQ shuffleA points` only in the lobby; `names: 'names'` only in a teacher's own class room. `late` is the room's `autoLock` (after start: off locks now, on unlocks). |
+| `cf` | `d: { secs, count, shuffleQ, shuffleA, points, late, names, sound, emotes, voices }` (a subset) | host | 5 | Unknown keys and values dropped; `secs count shuffleQ shuffleA points` only in the lobby; `names: 'names'` only in a teacher's own class room. `late` is the room's `autoLock` (after start: off locks now, on unlocks). |
 | `ev` (more) | player `to: 'team'`; host `tm: 1..6` | all | 10 | To the sender's own team (and the hosts) / to one team. Relayed with `tm`. The same vocabulary rules. |
 
 Everything else (unknown types, extra fields, out of range, host types from a player) is dropped silently.
@@ -80,14 +80,14 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `pj` / `pu` / `pl` | `p: P` / `p: P` / `n: seat` | Joined / changed (connected, ready, renamed) / left (removed or freed after 60 s). |
 | `s` | `k, ts, p: [[seat, x, y, z, h, a, age], …]` | Changed seats only, ~10 Hz (5 Hz above 40 movers), one string for everyone. `age`: ms since that position arrived, so it was true at `ts - age` (interpolate on that, ~120 ms behind). |
 | `fix` | `p` | Your last accepted position (a move was too fast). |
-| `ph` | `phase, round, seq, at, …` | `lobby loading countdown playing paused between ended`. `countdown.at` = when play starts (server clock). `ended` carries `top: [[seat, score]×5]`. `loading` carries `locked`. |
+| `ph` | `phase, round, seq, at, …` | `lobby loading countdown playing paused between ended`. `countdown.at` = when play starts (server clock). `ended` carries `top: []` (always empty: no leaderboard). `loading` carries `locked`. |
 | `q` | `i, n, q, choices, secs, at` | A question opens at `at` (server ms); deadline `at + secs*1000 + 600`. Sent again with a new `at` after a resume. Never the answer. |
 | `ack` | `i` | Your answer arrived (not whether it was right). |
 | `ac` | `i, n` | Host only: answers so far. |
-| `rv` | `i, answer, counts, top` · or `i, skipped: true` | The reveal (when every connected, ready seat answered, or at the deadline). |
-| `you` | `i, ok, points, rank, score, none?` · at the end `rank, score, of` | Your own result. |
+| `rv` | `i, answer, counts, top: []` · or `i, skipped: true` | The reveal (`top` is always empty: no leaderboard) (when every connected, ready seat answered, or at the deadline). |
+| `you` | `i, ok, points, rank: 0, score, none?` · at the end `rank: 0, score, of, right, total, answered, team?` | Your own result only (`right` of `total` questions asked); `rank` is always 0. |
 | `race` | `p: [[seat, prog 0..1000, gems]]` | Quest Race, after each reveal. |
-| `lb` | `top: [[seat, score]×10], n, you?: [rank, score]` | Game-scored leaderboard, every 2 s while scores change. |
+| `lb` | `top: [], n, you?: [0, score]` | Score update, every 2 s while scores change: each player's own score, never a list or a rank (`top` stays an empty list for older games). |
 | `ev` | `f, k, d` | A relayed event (`f` = sender seat, 0 = host). |
 | `em` | `f, e` | An emote. |
 | `st` | `d` | A shared-state patch (merge it). |
@@ -97,14 +97,14 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `rp` | `n` | Host only: reports so far in this session. |
 | `res` | `id` | Host only: the session ended; results at `/live/results/<id>`. |
 | `bye` | `why` | `removed ended full locked replaced expired restart flood takenDown` (part 4: `cohostOff projectorBusy`); the socket closes. After a normal end the players' `bye ended` comes when the linger ends (up to 2 minutes; the end screen shows at `ph ended` as before). |
-| `wel` (more) | `teams` (the `tms` fields), `ts?` (rows), `settings` (players: `{ board, emotes, names, voices }`; hosts: all, with `late`, `maxPlayers`, `locked`), `eyes`, `lang` (the set's language, for read aloud), `me.acc: { time, read, simple }` (player; PRIVATE) · host: `view`; the dashboard also `dp`, `sup`, `dq?` and no `frame` | `players` and `nameMode` are per view. |
+| `wel` (more) | `teams` (the `tms` fields), `ts?` (rows), `settings` (players: `{ emotes, names, voices }`; hosts: all, with `late`, `maxPlayers`, `locked`), `eyes`, `lang` (the set's language, for read aloud), `me.acc: { time, read, simple }` (player; PRIVATE) · host: `view`; the dashboard also `dp`, `sup`, `dq?` and no `frame` | `players` and `nameMode` are per view. |
 | `tms` | `on, n, teams: [[k, p, size]], m: [[seat, k]], scoring, choose, locked` | Every team setup or membership change (one message, never a `pu` per seat). |
 | `tml` | `ok, uneven?: [sizes] | null` | Hosts: the answer to `tm last` (`ok: false` = no saved teams). |
-| `ts` | `s: [[k, score, rank, sum, avg]], fin?: 1` | Team scores (score = the ranking kind; rank 0 = no members, or the leaderboard is off for players). Before `rv`, with every `lb`, after a bonus, and before `ph ended` (`fin`). |
+| `ts` | `s: [[k, score, rank, sum, avg]], fin?: 1` | Team scores (score = the ranking kind; rank 0 = no members; teams are not single students, so they keep their places). Before `rv`, with every `lb`, after a bonus, and before `ph ended` (`fin`). |
 | `bn` | `n?` or `k?`, `r: 0..4`, `p: 100` | Bonus: a seat's goes to that seat and the hosts only; a team's to everyone. |
 | `eyes` | `on` | Everyone. Players cover the screen; frames see `ph paused` when it paused play. |
 | `say` | `x: text` | Everyone: the host's typed message, as typed (it passed the text filter), shown for 6 s. |
-| `opt` | `board, emotes, names, voices` | Players: the public settings changed. `voices`: `'ai'` (default) or `'device'`, the teacher's choice for reading questions aloud (AI voices, docs/tts-design.md). |
+| `opt` | `emotes, names, voices` | Players: the public settings changed. `voices`: `'ai'` (default) or `'device'`, the teacher's choice for reading questions aloud (AI voices, docs/tts-design.md). |
 | `ros` | `players: [P], nameMode` | Everyone, per view: the names setting changed (replace the roster). |
 | `cf` | `d` (all settings) | Hosts: the settings changed. |
 | `lk` (more) | `locked` | Also when late join is switched after start. |
@@ -116,9 +116,9 @@ Everything else (unknown types, extra fields, out of range, host types from a pl
 | `sup` | `p: [[seat, time, read, simple, saved]]` | Dashboard only: seats with support. |
 
 Changed in part 3 (still v1): `q` goes to a seat with extra time with its own `secs` (the broadcast `q` carries
-nothing per seat). `lb`: players get the top 10 / 5 / none (`board`) and `you: [rank or 0, score]`. `rv`: players get
-`top` cut the same way (the hosts keep 5). `you`: `rank: 0` when the leaderboard is off. Leaderboard scores are score +
-bonus. `ph ended.top` for players obeys `board`. `pj`/`pu`/`ros`/`wel` names are per view (`names: 'hidden'` → `''` on
+nothing per seat). No leaderboard (docs/decisions.md "No leaderboards"; the `board` setting is gone): `lb`, `rv` and
+`ph ended` carry `top: []` for everyone, the projector too, and `you` has `rank: 0`; a player gets only their own
+score (score + bonus). `pj`/`pu`/`ros`/`wel` names are per view (`names: 'hidden'` → `''` on
 the projector). `ac`, `lb`, `rp` and `res` go to both host connections.
 
 Phases: `lobby → (h start) loading → (every connected seat rdy, or 20 s) countdown (3 s) → playing`. Quiz modes: each
@@ -402,7 +402,7 @@ refused). At most 16 players (`CAPACITY.doodle`). `h start` with fewer than 2 se
 - **Shared state `dd`** (every device and the projector, and in `wel.state`): `{ lang, lvl, rds, rd, tn, ph:
   'pick'|'draw'|'reveal'|'wait'|'done', dr: drawer seat, secs, dir: 'ltr'|'rtl', tl: 1 tiles | 0 typing, run: 0|1, end: server ms, left: ms,
   g: [letters per word] | null, hint: letter hints shown, got: [seats that guessed it], order: [seats], rv: { w, e, pts:
-  [[seat, points]], why: 'time'|'all'|'skip'|'gone'|'hid' } | null, top: [[seat, score] × 3] | null }`. The word is in it
+  [[seat, points]], why: 'time'|'all'|'skip'|'gone'|'hid' } | null, top: [] at the end (no podium) | null }`. The word is in it
   only in the reveal (`rv.w`). Sent on each change.
 - **Player → server** (always `to: 'host'`, intercepted by the server; never relayed as sent):
   | kind | data | who / when |

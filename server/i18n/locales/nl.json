@@ -747,7 +747,7 @@
       "heading": "Game-SDK",
       "brb": {
         "p1": "Elke game krijgt een kleine helper die BRB heet. {get} en {set} slaan de voortgang van elke speler op. localStorage werkt ook en wordt in de cloud bewaard.",
-        "p2": "{submit} zet een score op de ranglijst (alleen de beste score telt). {over} beëindigt een ronde.",
+        "p2": "{submit} bewaart de beste score van de speler, die alleen hij zelf ziet. {over} beëindigt een ronde.",
         "p3": "{fx} maken je game levendig.",
         "p4": "{full} en {orient} vragen het netjes aan de pagina.",
         "p5": "{lang} is de taal van de speler (zoals \"fr\" of \"ar\") en {dir} is \"rtl\" voor talen die van rechts naar links gaan, zodat een game de taal van de speler kan spreken."
@@ -1164,11 +1164,6 @@
       "tap": "Tik op een ster.",
       "guest": "Speel als gast om te beoordelen"
     },
-    "leaderboard": {
-      "heading": "Ranglijst",
-      "empty": "Nog geen scores. Wees de eerste!",
-      "signIn": "Log in om de namen van de spelers te zien."
-    },
     "more": {
       "label": "Meer",
       "heading": "Meer zoals deze"
@@ -1215,6 +1210,9 @@
       "title": "Deze game is nu niet beschikbaar",
       "text": "Misschien komt hij later terug. Bij Leren staan meer games en puzzels om te proberen.",
       "play": "Naar Leren"
+    },
+    "best": {
+      "heading": "Jouw beste score"
     }
   },
   "play": {
@@ -6647,7 +6645,7 @@
         "h": "Voordat je het maakt: wat dit account bewaart",
         "keep": "Wat dit account bewaart: de games die je kind maakt, de chats met de Bouwer, plaatjes en bestanden die je kind uploadt, opgeslagen games, scores, beoordelingen en likes, vrienden en chatberichten met vrienden, een profielfoto als je kind die toevoegt, de instellingen, en inlogcookies met de naam van de browser.",
         "ai": "Wat naar Claude van Anthropic gaat (de AI achter de Bouwer): berichten aan de Bouwer, plaatjes en bestanden, profielfoto's (voor een veiligheidscontrole) en games die voor de openbare controle worden ingestuurd. Er worden geen namen of gebruikersnamen meegestuurd. Vriendenchat gaat nooit naar de AI.",
-        "who": "Wie wat ziet: vrienden die je kind met een vriendcode toevoegt, kunnen met je kind chatten en de games voor alleen vrienden zien. Iedereen kan de games spelen die je kind openbaar maakt. De gebruikersnaam van je kind staat bij openbare games en op scorelijsten.",
+        "who": "Wie wat ziet: vrienden die je kind met een vriendcode toevoegt, kunnen met je kind chatten en de games voor alleen vrienden zien. Iedereen kan de games spelen die je kind openbaar maakt. De gebruikersnaam van je kind staat bij de openbare games van je kind.",
         "howLong": "Hoe lang we het bewaren: zolang het account bestaat. We hebben nog geen automatische verwijdertermijnen.",
         "rights": "Wat je kunt doen: zien wat we bewaren en het account verwijderen op je gezinspagina, of contact met ons opnemen.",
         "more": "Lees het volledige privacybeleid"
@@ -8036,7 +8034,7 @@
       "li1": "Dit zijn gemiddelden over veel studies, leeftijden, vakken en spellen. Sommige spellen hielpen veel, en sommige helemaal niet.",
       "li2": "Geen van deze studies heeft Oomba Academy getest. Ze beschrijven leerspellen in het algemeen, geen belofte over één spel, klas of leerling.",
       "li3": "Wouters en collega's vonden dat serious games niet meer motiveerden dan gewone lessen, ook al leerden de leerlingen meer.",
-      "li4": "Gamificatie is niet hetzelfde als een leerspel: het voegt spelelementen toe aan gewone lessen. We nemen het mee omdat punten, sterren en ranglijsten in veel leerspellen zitten, ook in de onze."
+      "li4": "Gamificatie is niet hetzelfde als een leerspel: het voegt spelelementen toe aan gewone lessen. We nemen het mee omdat punten en sterren in veel leerspellen zitten, ook in de onze."
     },
     "use": {
       "h": "Spellen gebruiken zoals het onderzoek aanraadt",
@@ -8316,7 +8314,6 @@
       },
       "cancel": "Annuleren",
       "reportThanks": "Bedankt. Iemand van Oomba Academy kijkt ernaar.",
-      "place": "Je bent {rank}e van de {count}!",
       "late": "Je deed mee na de start.",
       "watchHint": "Dit apparaat kan de 3D-wereld niet tonen, dus je ziet een kaart met iedereen.",
       "removed": "De spelleider heeft je uit dit spel gehaald.",
@@ -8336,8 +8333,8 @@
       "moved": "Je zit nu bij {team}",
       "again": "Wachten op je leraar… Misschien start die een nieuw spel met iedereen hier.",
       "aiVoice": "Voorlezen gebruikt een AI-stem van de computer ({provider}).",
-      "placeTied": "{others, plural, one {Je staat gelijk op plek {rank} met # andere speler!} other {Je staat gelijk op plek {rank} met # andere spelers!}}",
-      "placeZero": "Iedereen gelijk! Niemand scoorde deze keer."
+      "mine": "Je had er {right} van de {total} goed!",
+      "myScore": "Jouw score: {score}"
     },
     "emote": {
       "wave": "Zwaaien",
@@ -8430,7 +8427,7 @@
       "questRace": "Questrace",
       "questRaceText": "Beantwoord vragen en race over een 3D-eiland. Goede antwoorden geven edelstenen en een duwtje vooruit!",
       "battle": "Vragenduel",
-      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst.",
+      "battleText": "Vragen op het grote scherm, antwoorden op elk apparaat en na elke vraag de antwoorden van de klas.",
       "board": "Breinbord",
       "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten.",
       "wyr": "Wat heb je liever? (Live)",
@@ -8644,7 +8641,10 @@
       "playAgainTeams": "Nog eens met deze teams",
       "newGame": "Nieuw spel",
       "homework": "Als huiswerk geven",
-      "votes": "{count, plural, one {# stem} other {# stemmen}}"
+      "votes": "{count, plural, one {# stem} other {# stemmen}}",
+      "classHeading": "De klas",
+      "classPct": "{pct}% van de antwoorden goed",
+      "classRight": "{right} van de {answered} antwoorden goed"
     },
     "sets": {
       "title": "Vragensets",
@@ -8974,10 +8974,6 @@
       "points": "Punten",
       "pointsSpeed": "Snelle antwoorden leveren meer op",
       "pointsAccuracy": "Alleen goede antwoorden (1.000 per stuk)",
-      "board": "Ranglijst op de apparaten",
-      "boardAll": "Tonen",
-      "boardTop5": "Alleen de top 5",
-      "boardOff": "Verbergen",
       "late": "Meedoen na de start mag",
       "names": "Namen op de schermen",
       "namesNames": "Echte namen",
@@ -9401,7 +9397,7 @@
       "join": "Doe je mee aan een spel? Typ hier de code"
     },
     "how": {
-      "h": "Van vragen naar het podium in een paar minuten",
+      "h": "Van vragen naar resultaten in een paar minuten",
       "lead": "Echte schermen van een livespel op een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een spel en je vragen",
@@ -9425,8 +9421,8 @@
       },
       "s5": {
         "h": "Zie wie wat weet",
-        "p": "Na elke vraag een ranglijst, en aan het eind een resultatenpagina per vraag en per leerling.",
-        "alt": "Het scherm op het digibord met de ranglijst en de scores van de leerlingen."
+        "p": "Na elke vraag hoe de klas antwoordde, en aan het eind een resultatenpagina per vraag en per leerling.",
+        "alt": "Het scherm van de beamer met de antwoorden van de klas."
       }
     },
     "modes": {
@@ -9437,7 +9433,7 @@
       },
       "battle": {
         "h": "Vragenduel",
-        "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag een ranglijst."
+        "p": "De klassieker: de vraag op het grote scherm, antwoorden op elk apparaat en na elke vraag de antwoorden van de klas."
       },
       "board": {
         "h": "Breinbord",

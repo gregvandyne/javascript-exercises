@@ -746,7 +746,7 @@
       "heading": "SDK des jeux",
       "brb": {
         "p1": "Chaque jeu reçoit un petit assistant appelé BRB. {get} et {set} sauvegardent la progression de chaque joueur. localStorage marche aussi et il est sauvegardé dans le cloud.",
-        "p2": "{submit} ajoute un score au classement (seulement le meilleur). {over} termine une manche.",
+        "p2": "{submit} enregistre le meilleur score du joueur, que lui seul voit. {over} termine une manche.",
         "p3": "{fx} donnent du peps.",
         "p4": "{full} et {orient} le demandent poliment à la page.",
         "p5": "{lang} est la langue du joueur (comme \"fr\" ou \"ar\") et {dir} vaut \"rtl\" pour les langues qui s’écrivent de droite à gauche : ainsi, un jeu peut parler la langue du joueur."
@@ -1163,11 +1163,6 @@
       "tap": "Touche une étoile.",
       "guest": "Joue en invité pour noter"
     },
-    "leaderboard": {
-      "heading": "Classement",
-      "empty": "Pas encore de scores. À toi de jouer !",
-      "signIn": "Connecte-toi pour voir les noms des joueurs."
-    },
     "more": {
       "label": "Plus",
       "heading": "Dans le même genre"
@@ -1214,6 +1209,9 @@
       "title": "Ce jeu n’est pas disponible pour le moment",
       "text": "Il reviendra peut-être plus tard. Apprendre propose d’autres jeux et casse-têtes à essayer.",
       "play": "Aller à Apprendre"
+    },
+    "best": {
+      "heading": "Ton meilleur score"
     }
   },
   "play": {
@@ -6646,7 +6644,7 @@
         "h": "Avant de le créer : ce que ce compte conserve",
         "keep": "Ce que ce compte conserve : les jeux que crée votre enfant, ses discussions avec le Constructeur, les images et fichiers qu’il envoie, les sauvegardes de jeux, les scores, les notes et « j’aime », les amis et les messages du chat entre amis, une photo de profil s’il en ajoute une, ses réglages, et les cookies de connexion avec le nom du navigateur.",
         "ai": "Ce qui est envoyé à Claude d’Anthropic (l’IA derrière le Constructeur) : les messages pour le Constructeur, les images et fichiers, les photos de profil (pour un contrôle de sécurité) et les jeux envoyés pour la vérification avant publication. Aucun nom ni nom d’utilisateur n’est envoyé. Le chat entre amis n’est jamais envoyé à l’IA.",
-        "who": "Qui voit quoi : les amis qu’il ajoute avec un code ami peuvent discuter avec lui et voir ses jeux réservés aux amis. Tout le monde peut jouer aux jeux qu’il choisit de rendre publics. Son nom d’utilisateur apparaît sur les jeux publics et dans les classements.",
+        "who": "Qui voit quoi : les amis qu’il ajoute avec un code ami peuvent discuter avec lui et voir ses jeux réservés aux amis. Tout le monde peut jouer aux jeux qu’il choisit de rendre publics. Son nom d’utilisateur apparaît sur ses jeux publics.",
         "howLong": "Combien de temps nous le conservons : tant que le compte existe. Nous n’avons pas encore de suppression automatique au bout d’un certain temps.",
         "rights": "Ce que vous pouvez faire : voir ce que nous conservons et supprimer le compte depuis votre page famille, ou nous contacter.",
         "more": "Lire toute la Politique de confidentialité"
@@ -8035,7 +8033,7 @@
       "li1": "Ce sont des moyennes sur de nombreuses études, âges, matières et jeux. Certains jeux ont beaucoup aidé, d’autres pas du tout.",
       "li2": "Aucune de ces études n’a testé Oomba Academy. Elles décrivent les jeux éducatifs en général, pas une promesse pour un jeu, une classe ou un élève en particulier.",
       "li3": "Wouters et ses collègues ont trouvé que les jeux sérieux ne motivaient pas davantage que l’enseignement classique, même si les élèves apprenaient plus.",
-      "li4": "La ludification n’est pas un jeu éducatif : elle ajoute des éléments de jeu à des cours ordinaires. Nous l’incluons parce que les points, les étoiles et les classements font partie de nombreux jeux éducatifs, y compris les nôtres."
+      "li4": "La ludification n’est pas un jeu éducatif : elle ajoute des éléments de jeu à des cours ordinaires. Nous l’incluons parce que les points et les étoiles font partie de nombreux jeux éducatifs, y compris les nôtres."
     },
     "use": {
       "h": "Utiliser les jeux comme le suggère la recherche",
@@ -8315,7 +8313,6 @@
       },
       "cancel": "Annuler",
       "reportThanks": "Merci. Quelqu’un d’Oomba Academy va regarder.",
-      "place": "Tu es {rank} sur {count} !",
       "late": "Tu as rejoint après le début.",
       "watchHint": "Cet appareil ne peut pas afficher le monde en 3D : tu vois une carte avec tout le monde à la place.",
       "removed": "L’animateur t’a retiré de cette partie.",
@@ -8335,8 +8332,8 @@
       "moved": "Tu es maintenant dans l'équipe {team}",
       "again": "On attend ton enseignant… Il va peut-être lancer un autre jeu avec tout le monde ici.",
       "aiVoice": "La lecture utilise une voix IA faite par ordinateur ({provider}).",
-      "placeTied": "{others, plural, one {Tu es ex æquo à la place {rank} avec # autre joueur !} other {Tu es ex æquo à la place {rank} avec # autres joueurs !}}",
-      "placeZero": "Tout le monde est à égalité ! Personne n'a marqué cette fois."
+      "mine": "Tu as eu {right} bonnes réponses sur {total} !",
+      "myScore": "Ton score : {score}"
     },
     "emote": {
       "wave": "Saluer",
@@ -8429,7 +8426,7 @@
       "questRace": "Course aux quêtes",
       "questRaceText": "Réponds aux questions pour traverser une île en 3D. Les bonnes réponses donnent des gemmes et un coup de boost !",
       "battle": "Bataille de questions",
-      "battleText": "Les questions sur le grand écran, les réponses sur chaque appareil, et un classement après chaque question.",
+      "battleText": "Les questions sur le grand écran, les réponses sur chaque appareil, et les réponses de la classe après chacune.",
       "board": "Plateau Cerveau",
       "boardText": "Un plateau de catégories : choisis une case, tout le monde répond. Les grosses cases sont plus difficiles et rapportent plus, et une Étoile chance cachée double les points.",
       "wyr": "Tu préfères ? (En direct)",
@@ -8643,7 +8640,10 @@
       "playAgainTeams": "Rejouer avec ces équipes",
       "newGame": "Nouveau jeu",
       "homework": "Donner en devoir",
-      "votes": "{count, plural, one {# vote} other {# votes}}"
+      "votes": "{count, plural, one {# vote} other {# votes}}",
+      "classHeading": "La classe",
+      "classPct": "{pct} % de bonnes réponses",
+      "classRight": "{right} bonnes réponses sur {answered}"
     },
     "sets": {
       "title": "Séries de questions",
@@ -8973,10 +8973,6 @@
       "points": "Points",
       "pointsSpeed": "Les réponses rapides rapportent plus",
       "pointsAccuracy": "Bonnes réponses seulement (1 000 chacune)",
-      "board": "Classement sur les appareils des joueurs",
-      "boardAll": "L'afficher",
-      "boardTop5": "Top 5 seulement",
-      "boardOff": "Le cacher",
       "late": "Rejoindre après le début est possible",
       "names": "Noms à l'écran",
       "namesNames": "Vrais noms",
@@ -9400,7 +9396,7 @@
       "join": "Rejoindre une partie ? Tapez le code ici"
     },
     "how": {
-      "h": "Des questions au podium en quelques minutes",
+      "h": "Des questions aux résultats en quelques minutes",
       "lead": "De vrais écrans d’une partie en direct dans une école de démonstration aux noms inventés.",
       "s1": {
         "h": "Choisissez un jeu et vos questions",
@@ -9424,8 +9420,8 @@
       },
       "s5": {
         "h": "Voyez qui sait quoi",
-        "p": "Un classement après chaque question et, à la fin, une page de résultats par question et par élève.",
-        "alt": "L’écran du vidéoprojecteur avec le classement et les scores des élèves."
+        "p": "Les réponses de la classe après chaque question et, à la fin, une page de résultats par question et par élève.",
+        "alt": "L’écran du projecteur avec les réponses de la classe."
       }
     },
     "modes": {
@@ -9436,7 +9432,7 @@
       },
       "battle": {
         "h": "Bataille de questions",
-        "p": "Le classique : la question sur le grand écran, les réponses sur chaque appareil et un classement après chaque question."
+        "p": "Le classique : la question sur le grand écran, les réponses sur chaque appareil, et les réponses de la classe après chacune."
       },
       "board": {
         "h": "Plateau Cerveau",

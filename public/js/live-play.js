@@ -1,9 +1,7 @@
 // /live/play/:sid (server/views/live.js playBody; docs/live-protocol.md). The player's page: the socket, the game frame
-// (or, for a 3D game with no 2D path on a device that can't draw 3D, the Watch view: a map of everyone and the
-// leaderboard), phase banners and results announced in a polite live region, emotes, Simple view, Report (fixed reasons
+// (or, for a 3D game with no 2D path on a device that can't draw 3D, the Watch view: a map of everyone), phase banners and results announced in a polite live region, emotes, Simple view, Report (fixed reasons
 // only, never who sent it) and Leave. Nothing for sale and no way to type anything here.
-// Part 3: the player's team (the header band in the team colour, with its shape and name; the team's place when the
-// leaderboard allows ranks), picking a team in the lobby when the host allows it, "Eyes on your teacher" (a cover that
+// Part 3: the player's team (the header band in the team colour, with its shape, name and the team's place), picking a team in the lobby when the host allows it, "Eyes on your teacher" (a cover that
 // makes the game inert), the teacher's typed messages, bonus toasts, Read aloud (for everyone, so it marks nobody out;
 // automatic for a seat whose support says so), and Play again (a private token moves this page to the new game).
 // The seat's own support (me / wel.me.acc) stays on this page: it is never passed into the game frame.
@@ -20,7 +18,7 @@ let simple = (() => { try { return sessionStorage.getItem('lv:simple') === '1'; 
 const says = text => { if (phaseEl) phaseEl.textContent = text || ''; };
 const players = new Map();
 let me = null, phase = 'lobby', seq = 0, cfg = {}, sock = null, frame = null, view = '3d', watching = false, wel = null, frameReq = new Map(), countdownTimer = null, mySeat = 0;
-let teams = teamsOf(null), scores = new Map(), myTeam = 0, opt = { board: 'all', emotes: true }, acc = { time: 100, read: false, simple: false }, question = null, tapped = false, lang = '', lingering = false;
+let teams = teamsOf(null), scores = new Map(), myTeam = 0, opt = { emotes: true }, acc = { time: 100, read: false, simple: false }, question = null, tapped = false, lang = '', lingering = false;
 const TX = D.text || {}, presets = D.presets || [];
 const pics = portraits(D.kit);
 const nm = n => nameOf(D.nicks || [], n);
@@ -153,13 +151,13 @@ function announceResult(m) {
   says(m.ok ? t('js.live-play.right', { points: m.points }) : t('js.live-play.wrong'));
 }
 function place(m) {
-  // the leaderboard off: no place, just the end
-  // a team game says the team's place (drawEndTeams), never "You came 1 out of 6" next to it; a tie says so; nobody
-  // scoring at all is "Everyone tied!" rather than a first place
-  const text = m.team ? '' : m.rank && m.zero ? D.placeZero || '' : m.rank && m.tied ? fill(D.placeTied, { rank: m.rank, others: m.tied })
-    : m.rank ? fill(D.place, { rank: m.rank, count: m.of }) : (D.phases || {}).ended || '';
+  // The player's own result only, never a place among the others (docs/decisions.md "No leaderboards"): "You got 8 of
+  // 10 right!" in a quiz, "Your score: 1200" in a game that scores, else just the end. A team game also lists the
+  // teams (drawEndTeams).
+  const text = m.total > 0 && D.mine ? fill(D.mine, { right: m.right || 0, total: m.total })
+    : m.score > 0 && D.myScore ? fill(D.myScore, { score: m.score }) : (D.phases || {}).ended || '';
   const p = $('lv-place'); if (p) p.textContent = text;
-  says(text);
+  says(text);   // the polite live region: the player hears their own result
 }
 function ended() {
   if (endBox) endBox.hidden = false;
@@ -205,8 +203,8 @@ $('lv-leave').addEventListener('click', async () => {
   location.href = '/join';
 });
 
-// ---- the Watch view: a 2D map of everyone (from the position snapshots) and the leaderboard ----
-const pos = new Map(); let board = [], raceList = [], watchTimer = 0;
+// ---- the Watch view: a 2D map of everyone (from the position snapshots); no list ranking the players ----
+const pos = new Map(); let watchTimer = 0;
 function startWatch() {
   if (!watch) return;
   watch.hidden = false; stage.hidden = true; says(D.watchHint);
@@ -214,12 +212,11 @@ function startWatch() {
   // class on one pixel), easing as they move. Colours come from the theme, text runs the page's direction, and names
   // that would overprint another are left out (mine always shows).
   const view2 = { cx: 0, cz: 0, span: 20 };
-  const list0 = () => (raceList.length ? raceList.slice().sort((a, b2) => b2[1] - a[1]).map(r => [r[0], r[1]]) : board);
   const draw = () => {
     const c = watch.getContext('2d'), W = watch.clientWidth || 320, H = watch.clientHeight || 320, dpr = devicePixelRatio || 1;
     if (watch.width !== Math.round(W * dpr)) { watch.width = Math.round(W * dpr); watch.height = Math.round(H * dpr); }
     const css = getComputedStyle(document.body), rtl = (document.documentElement.dir || 'ltr') === 'rtl';
-    const bg = css.getPropertyValue('--card').trim() || '#ffffff', ink = css.getPropertyValue('--text').trim() || css.color || '#141414';
+    const bg = css.getPropertyValue('--card').trim() || '#ffffff';
     c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, W, H);
     c.fillStyle = bg; c.fillRect(0, 0, W, H);
     let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
@@ -229,7 +226,7 @@ function startWatch() {
       view2.cx += ((x0 + x1) / 2 - view2.cx) * k; view2.cz += ((z0 + z1) / 2 - view2.cz) * k;
       view2.span += (Math.max(20, x1 - x0, z1 - z0) * 1.25 - view2.span) * k;
     }
-    const top = list0().length ? 110 : 0, sc = Math.max(1, Math.min(W, H - top)) / view2.span, oy = top + (H - top) / 2;
+    const top = 0, sc = Math.max(1, Math.min(W, H - top)) / view2.span, oy = top + (H - top) / 2;
     c.font = '700 12px system-ui, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.direction = rtl ? 'rtl' : 'ltr';
     const placed = [], order = [...pos].filter(([seat]) => players.has(seat)).sort((a, b2) => (a[0] === mySeat) - (b2[0] === mySeat)).reverse();
     for (const [seat, p] of order) {
@@ -242,23 +239,12 @@ function startWatch() {
       c.fillStyle = mine ? '#2f6bff' : 'rgba(29,35,64,.85)'; c.fillRect(box[0], box[1], box[2], box[3]);
       c.fillStyle = '#ffffff'; c.fillText(name, x, y - 15, 112);
     }
-    // the top five, in a card at the top that reads from the page's start edge
-    const list = list0();
-    if (list.length) {
-      c.fillStyle = bg; c.globalAlpha = 0.92; c.fillRect(0, 0, W, 104); c.globalAlpha = 1;
-      c.textAlign = 'start'; c.font = '700 14px system-ui, sans-serif'; c.fillStyle = ink;
-      const sx = rtl ? W - 10 : 10;
-      list.slice(0, 5).forEach((r, i) => { const pl = players.get(r[0]); c.fillText(`${i + 1}. ${pl ? nm(pl.name) : ''} ${r[1]}`, sx, 20 + i * 19, W - 20); });
-    }
     watchTimer = requestAnimationFrame(draw);
   };
   cancelAnimationFrame(watchTimer); draw();
 }
 function watchMsg(m) {
   if (m.t === 's') for (const r of m.p) pos.set(r[0], r.slice(1));
-  if (m.t === 'lb') board = m.top || [];
-  if (m.t === 'race') raceList = m.p || [];
-  if (m.t === 'wel' && m.race) raceList = m.race;
 }
 
 // ---------------------------------------------------------------- part 3
@@ -272,7 +258,7 @@ function drawTeam() {
       const use = band.querySelector('use'); if (use) use.setAttribute('href', `#lv-shape-${pr.shape}`);
       band.querySelector('.lv-me-team-name').textContent = `${pr.icon} ${pr.name}`;
       const sc = scores.get(k), ranked = teams.list.filter(x => (scores.get(x.k) || {}).rank > 0).length;
-      band.querySelector('.lv-me-team-rank').textContent = phase !== 'lobby' && opt.board !== 'off' && sc && sc.rank ? fill(TX.rank, { rank: sc.rank, count: ranked || teams.list.length }) : '';
+      band.querySelector('.lv-me-team-rank').textContent = phase !== 'lobby' && sc && sc.rank ? fill(TX.rank, { rank: sc.rank, count: ranked || teams.list.length }) : '';
       band.setAttribute('aria-label', `${TX.team}: ${pr.name}`);
     }
   }
@@ -310,15 +296,15 @@ function drawEndTeams() {
   ol.hidden = !teams.on; if (!teams.on) return;
   ol.textContent = '';
   const rows = teams.list.map(tm => ({ ...tm, ...(scores.get(tm.k) || { score: 0, rank: 0 }) }));
-  const ranks = opt.board !== 'off';
-  rows.sort((a, b) => (ranks ? ((a.rank || 99) - (b.rank || 99)) : 0) || (a.k - b.k));
+  // teams (never single students) keep their totals and places
+  rows.sort((a, b) => ((a.rank || 99) - (b.rank || 99)) || (a.k - b.k));
   for (const r of rows) {
     const pr = presets[r.p]; if (!pr) continue;
     const li = document.createElement('li'); li.className = 'lv-end-team'; paintTeam(li, pr, r.k);
     if (r.k === myTeam) li.classList.add('is-mine');
-    const nmEl = document.createElement('span'); nmEl.textContent = `${ranks && r.rank ? `${r.rank}. ` : ''}${pr.icon} ${pr.name}`;
+    const nmEl = document.createElement('span'); nmEl.textContent = `${r.rank ? `${r.rank}. ` : ''}${pr.icon} ${pr.name}`;
     li.append(shapeSvg(pr.shape), nmEl);
-    if (ranks) { const sc = document.createElement('span'); sc.className = 'lv-end-score'; sc.textContent = `${r.score}${teams.scoring === 'avg' ? ` ${TX.perPlayer}` : ''}`; li.append(sc); }
+    const sc = document.createElement('span'); sc.className = 'lv-end-score'; sc.textContent = `${r.score}${teams.scoring === 'avg' ? ` ${TX.perPlayer}` : ''}`; li.append(sc);
     ol.append(li);
   }
 }

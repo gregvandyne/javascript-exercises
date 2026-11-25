@@ -39,6 +39,46 @@ const round3 = n => Math.round(n * 1000) / 1000;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch { return d; } };
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 
+// ---------------------------------------------------------------- number line helpers
+/** Where the next jump starts (the tapped start, then where each jump landed); null: the next tap picks it. */
+const nlFrom = st => (st.jumpFrom === null || st.jumpFrom === undefined || st.jumpFrom === '' ? null : +st.jumpFrom);
+/** The value on the nearest step under clientX. */
+function nlValue(st, svg, clientX) {
+  const r = svg.getBoundingClientRect(), W = 860, min = +st.min, max = +st.max > min ? +st.max : min + 1, step = +st.step || 1;
+  const raw = min + (((clientX - r.left) / r.width) * W - 30) / (W - 60) * (max - min);
+  return round3(Math.min(max, Math.max(min, Math.round((raw - min) / step) * step + min)));
+}
+/** The selected dot or jump, when it is still there. */
+const nlSel = st => { const s = st.sel; if (!s) return null; const list = s.k === 'j' ? st.jumps : st.points; return Number.isInteger(s.i) && s.i >= 0 && s.i < (list || []).length ? s : null; };
+const nlJumpLabel = j => { const d = round3(j.b - j.a); return `${d > 0 ? '+' : ''}${d}`; };
+const nlNum = n => (n < 0 ? `−${-n}` : `${n}`);
+/** The number sentence of the last chain of jumps (each starting where the one before landed): -2 + 4 - 1 = 1. */
+export function nlSentence(st) {
+  const js = st.jumps || []; if (!js.length) return null;
+  const run = [js[js.length - 1]];
+  for (let i = js.length - 2; i >= 0 && js[i].b === run[0].a; i--) run.unshift(js[i]);
+  const parts = run.map(j => { const d = round3(j.b - j.a); return { op: d < 0 ? '−' : '+', n: Math.abs(d) }; });
+  const end = run[run.length - 1].b;
+  return { text: `${nlNum(run[0].a)} ${parts.map(p => `${p.op} ${p.n}`).join(' ')} = ${nlNum(end)}`,
+    html: `<span>${esc(nlNum(run[0].a))}</span> ${parts.map(p => `<span class="mp-nl-j">${p.op} ${p.n}</span>`).join(' ')} = <b>${esc(nlNum(end))}</b>` };
+}
+/** The faint dot (Points) or dashed arc (Jumps) under the pointer: where a tap would go. Drawn into the board's own svg. */
+function nlHover(e) {
+  const svg = e.target && e.target.closest ? e.target.closest('svg.mp-nl[data-mode]') : null;
+  document.querySelectorAll('svg.mp-nl .mp-nl-ghost').forEach(g => { if (!svg || !svg.contains(g)) g.innerHTML = ''; });
+  if (!svg || e.pointerType === 'touch') return;
+  const g = svg.querySelector('.mp-nl-ghost'); if (!g) return;
+  if (e.target.closest('.mp-nl-pt, .mp-nl-jump, .mp-nl-tag')) { g.innerHTML = ''; return; }
+  const st = { min: +svg.dataset.min, max: +svg.dataset.max, step: +svg.dataset.step };
+  const v = nlValue(st, svg, e.clientX), W = 860, x = n => 30 + ((n - st.min) / (st.max - st.min)) * (W - 60);
+  if (svg.dataset.mode === 'jumps' && svg.dataset.from !== undefined) {
+    const a = +svg.dataset.from; if (v === a) { g.innerHTML = ''; return; }
+    const mx = (x(a) + x(v)) / 2, h = Math.min(120, 26 + Math.abs(x(v) - x(a)) / 9), d = round3(v - a);
+    g.innerHTML = `<path d="M ${x(a)} 102 Q ${mx} ${102 - h * 2} ${x(v)} 102" fill="none" stroke="#FF6B4A" stroke-width="3" stroke-dasharray="7 6" opacity=".6"/><text x="${mx}" y="${102 - h - 7}" text-anchor="middle" font-size="14" font-weight="800" fill="#FF6B4A" opacity=".7">${d > 0 ? '+' : ''}${d}</text>`;
+  } else g.innerHTML = `<circle cx="${x(v)}" cy="110" r="11" fill="#00ACC1" opacity=".35"/><text x="${x(v)}" y="92" text-anchor="middle" font-size="12" fill="var(--text)" opacity=".7">${svg.dataset.mode === 'jumps' ? 'start at' : 'add'} ${v}</text>`;
+}
+if (typeof document !== 'undefined') document.addEventListener('pointermove', nlHover, { passive: true });
+
 // ================================================================ tools
 // Each tool: init() its state; total(st) the chip text; palette(st) [{ label, color, run(st) }]; settings(st) HTML with
 // data-set controls; hint and note (help text); board(st, view) the board's HTML; act(st, data, e) a tap on a [data-act]
@@ -253,33 +293,74 @@ const IMPL = {
   },
 
   'number-lines': {
-    init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null }),
-    total: st => `Points ${st.points.join(', ') || 'none'}`,
+    // Two modes (25 Nov 2026, the owner: "whenever I click it adds a blue dot"): Points puts a dot where you tap;
+    // Jumps chains arcs (the first tap picks the start, each next tap lands a jump from where the last one landed) and
+    // writes the number sentence. Tapping a dot or a jump selects it (never a new dot on top of it); Delete takes it away.
+    init: () => ({ min: -10, max: 10, step: 1, hide: false, points: [3], jumps: [], jumpFrom: null, mode: 'points' }),
+    total: st => { const s = nlSentence(st); return st.mode === 'jumps' && s ? s.text : `Points ${st.points.join(', ') || 'none'}`; },
     palette: () => [{ label: 'Add a point at 0', color: '#00ACC1', run: s => { s.points.push(0); } },
-      { label: 'Start a jump', color: '#FF6B4A', run: s => { s.jumpFrom = s.points[0] ?? s.min; } },
-      { label: 'Clear jumps', color: '#212121', run: s => { s.jumps = []; } }],
+      { label: 'Clear the line', color: '#212121', run: s => { s.points = []; s.jumps = []; s.jumpFrom = null; } }],
     settings: st => `<label class="mp-set"><span>From</span><input class="input input-sm mp-num" type="number" data-set="min" value="${st.min}"></label><label class="mp-set"><span>To</span><input class="input input-sm mp-num" type="number" data-set="max" value="${st.max}"></label>
       ${sel('step', [['1', '1'], ['0.5', '0.5'], ['0.25', '1/4'], ['0.1', '0.1'], ['5', '5'], ['10', '10']], st.step, 'Step')}${toggle('hide', st.hide, 'Show labels', 'Hide labels')}`,
-    hint: 'Tap the line to drop a point on the nearest step. Start a jump, then tap where it lands.',
-    note: 'Open lines (labels hidden), jump arcs for adding and subtracting, and fraction and decimal steps.',
-    board: st => {
+    hint: 'Points: tap the line to put a dot on it. Jumps: tap where to start, then where each jump lands. Tap a dot or a jump to select it, then Delete.',
+    note: 'Open lines (labels hidden), jump arcs that write the number sentence, and fraction and decimal steps.',
+    board: (st, view = {}) => {
       const W = 860, min = +st.min, max = +st.max > +st.min ? +st.max : +st.min + 1, step = +st.step || 1;
       const x = v => 30 + ((v - min) / (max - min)) * (W - 60);
       const ticks = []; for (let v = min; v <= max + 1e-4 && ticks.length < 201; v += step) ticks.push(round3(v));
-      return `<div class="mp-pad mp-scrollx"><svg class="mp-nl" data-w="${W}" width="${W}" height="190" viewBox="0 0 ${W} 190" role="img" aria-label="Number line">
+      const jm = st.mode === 'jumps' && !st.ask, edit = !st.ask && !view.readOnly, from = nlFrom(st);
+      const sent = nlSentence(st), sel = nlSel(st), selJ = sel && sel.k === 'j' ? sel.i : -1, selP = sel && sel.k === 'p' ? sel.i : -1;
+      const help = !edit ? '' : jm ? (from === null ? 'Tap the line where the jumps start.' : `Jumping from <b>${from}</b>. Tap where the next jump lands.`) : 'Tap the line to put a dot on it. Tap a dot or a jump to select it.';
+      const tags = []; // each jump's label kept clear of the ones before it: a short jump over a long one goes higher
+      const arc = (j, i) => {
+        const mx = (x(j.a) + x(j.b)) / 2, d = round3(j.b - j.a), dir = d >= 0 ? 1 : -1;
+        let h = Math.min(120, 26 + Math.abs(x(j.b) - x(j.a)) / 9);
+        while (h < 140 && tags.some(t => Math.abs(t.x - mx) < 48 && Math.abs(t.h - h) < 26)) h += 26;
+        tags.push({ x: mx, h });
+        const path = `M ${x(j.a)} 102 Q ${mx} ${102 - h * 2} ${x(j.b)} 102`;
+        const attrs = edit ? ` data-act="nlsel" data-k="j" data-i="${i}" role="button" aria-pressed="${i === selJ}" aria-label="Select the jump ${d > 0 ? '+' : ''}${d}"` : '';
+        // The arc, then (drawn after every arc) its label: no arc ever crosses a label.
+        return [`<g class="mp-nl-jump${i === selJ ? ' on' : ''}"${attrs}>${i === selJ ? `<path d="${path}" fill="none" stroke="var(--text)" stroke-width="9" stroke-opacity=".18" stroke-linecap="round"/>` : ''}<path d="${path}" fill="none" stroke="transparent" stroke-width="18"/><path d="${path}" fill="none" stroke="#FF6B4A" stroke-width="${i === selJ ? 5 : 3.5}"/><polygon points="${x(j.b)},103 ${x(j.b) - 9 * dir},92 ${x(j.b) + 3 * dir},90" fill="#FF6B4A"/></g>`,
+          `<g class="mp-nl-tag${i === selJ ? ' on' : ''}"${attrs.replace(' role="button"', '').replace(/ aria-[a-z]+="[^"]*"/g, '')}><rect x="${mx - 22}" y="${102 - h - 24}" width="44" height="24" rx="12" fill="var(--card, #fff)" stroke="#FF6B4A" stroke-width="${i === selJ ? 3 : 2}"/><text x="${mx}" y="${102 - h - 7}" text-anchor="middle" font-size="14" font-weight="800" fill="#FF6B4A">${d > 0 ? '+' : ''}${d}</text></g>`];
+      };
+      const arcs = st.jumps.map(arc);
+      return `<div class="mp-pad mp-scrollx">${edit ? `<div class="mp-nl-top"><div class="mp-nl-mode" role="group" aria-label="What a tap does">${btn(`mp-nl-m${jm ? '' : ' on'}`, `data-act="nlmode" data-m="points" aria-pressed="${!jm}"`, '● Points')}${btn(`mp-nl-m${jm ? ' on' : ''}`, `data-act="nlmode" data-m="jumps" aria-pressed="${jm}"`, '↷ Jumps')}</div><p class="mp-nl-help">${help}</p></div>` : ''}
+        <svg class="mp-nl" data-w="${W}" data-min="${min}" data-max="${max}" data-step="${step}" data-mode="${jm ? 'jumps' : 'points'}"${from !== null ? ` data-from="${from}"` : ''} width="${W}" height="${jm || st.jumps.length ? 240 : 190}" viewBox="0 ${jm || st.jumps.length ? -50 : 0} ${W} ${jm || st.jumps.length ? 240 : 190}" role="img" aria-label="Number line">
         <line x1="20" y1="110" x2="${W - 20}" y2="110" stroke="var(--text)" stroke-width="3"/><polygon points="${W - 20},110 ${W - 34},102 ${W - 34},118" fill="var(--text)"/><polygon points="20,110 34,102 34,118" fill="var(--text)"/>
         ${ticks.map(v => `<line x1="${x(v)}" y1="100" x2="${x(v)}" y2="120" stroke="var(--text)" stroke-width="2"/>${st.hide ? '' : `<text x="${x(v)}" y="142" text-anchor="middle" font-size="13" fill="var(--text)">${v}</text>`}`).join('')}
-        ${st.jumps.map(j => { const mx = (x(j.a) + x(j.b)) / 2, h = 34 + Math.abs(x(j.b) - x(j.a)) / 9, d = round3(j.b - j.a); return `<path d="M ${x(j.a)} 100 Q ${mx} ${100 - h} ${x(j.b)} 100" fill="none" stroke="#FF6B4A" stroke-width="3"/><text x="${mx}" y="${92 - h / 2}" text-anchor="middle" font-size="13" font-weight="700" fill="#FF6B4A">${d > 0 ? '+' : ''}${d}</text>`; }).join('')}
-        ${st.points.map(p => `<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="${st.ask ? 22 : 14}" font-weight="800" fill="var(--text)">${st.ask ? '?' : p}</text>`).join('')}
-        ${st.jumpFrom !== null && st.jumpFrom !== undefined ? `<text x="${x(st.jumpFrom)}" y="30" font-size="13" font-weight="700" fill="#FF6B4A">Jump from ${st.jumpFrom}: tap where it lands</text>` : ''}</svg>
-        ${st.ask ? '' : `<div class="row mp-chips">${st.points.map((p, i) => btn('chip', `data-act="unpoint" data-i="${i}" aria-label="Remove point ${p}"`, `${p} ✕`)).join('')}</div>`}</div>`;
+        ${arcs.map(a => a[0]).join('')}${arcs.map(a => a[1]).join('')}
+        ${jm && from !== null && !st.jumps.some(j => j.b === from) ? `<g><circle cx="${x(from)}" cy="110" r="9" fill="#FF6B4A" stroke="#fff" stroke-width="2.5"/><text x="${x(from)}" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="#FF6B4A">start</text></g>` : ''}
+        ${st.points.map((p, i) => `<g class="mp-nl-pt${i === selP ? ' on' : ''}"${edit ? ` data-act="nlsel" data-k="p" data-i="${i}" role="button" aria-pressed="${i === selP}" aria-label="Select the point ${p}"` : ''}><circle cx="${x(p)}" cy="110" r="16" fill="transparent"/>${i === selP ? `<circle cx="${x(p)}" cy="110" r="18" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-dasharray="4 3"/>` : ''}<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/>${st.ask ? `<text x="${x(p)}" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="var(--text)">?</text>` : `<rect x="${x(p) - 17}" y="64" width="34" height="22" rx="8" fill="#00ACC1"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${p}</text>`}</g>`).join('')}
+        <g class="mp-nl-ghost"></g></svg>
+        ${edit && jm && sent ? `<div class="mp-nl-sum" aria-live="polite">${sent.html}</div>` : ''}
+        ${edit ? `<div class="row mp-chips">${sel ? btn('chip mp-nl-del', 'data-act="nldel"', `🗑 Delete ${sel.k === 'p' ? `the dot at ${esc(String(st.points[sel.i]))}` : `the ${esc(nlJumpLabel(st.jumps[sel.i]))} jump`}`) : ''}${jm ? `${btn('chip', `data-act="nlundo" ${st.jumps.length ? '' : 'disabled'}`, '↶ Undo jump')}${btn('chip', `data-act="nlnew" ${from === null ? 'disabled' : ''}`, 'Start from a new number')}${btn('chip', `data-act="nlclearj" ${st.jumps.length || from !== null ? '' : 'disabled'}`, 'Clear jumps')}` : `${btn('chip', `data-act="nlundo" ${st.points.length ? '' : 'disabled'}`, '↶ Undo')}${btn('chip', `data-act="nlclearp" ${st.points.length ? '' : 'disabled'}`, 'Clear dots')}`}</div>` : ''}</div>`;
     },
     act: (st, d, e) => {
-      if (d.act === 'unpoint') { st.points.splice(+d.i, 1); return true; }
-      const svg = e.target.closest('svg.mp-nl'); if (!svg) return false;
-      const r = svg.getBoundingClientRect(), W = 860, min = +st.min, max = +st.max > min ? +st.max : min + 1, step = +st.step || 1;
-      const v = round3(Math.round((min + (((e.clientX - r.left) / r.width) * W - 30) / (W - 60) * (max - min)) / step) * step);
-      if (st.jumpFrom !== null && st.jumpFrom !== undefined) { st.jumps.push({ a: st.jumpFrom, b: v }); st.jumpFrom = null; } else st.points.push(v);
+      if (d.act === 'nlsel') { const k = d.k === 'j' ? 'j' : 'p', i = +d.i; st.sel = st.sel && st.sel.k === k && st.sel.i === i ? null : { k, i }; return true; }
+      if (d.act === 'nldel') {
+        const sel = nlSel(st); st.sel = null; if (!sel) return true;
+        if (sel.k === 'p') { st.points.splice(sel.i, 1); return true; }
+        const [j] = st.jumps.splice(sel.i, 1); if (nlFrom(st) === j.b && !st.jumps.some(x => x.b === j.b)) st.jumpFrom = j.a; return true;
+      }
+      if (d.act && d.act.startsWith('nl')) st.sel = null;
+      if (d.act === 'nlmode') { st.mode = d.m === 'jumps' ? 'jumps' : 'points'; return true; }
+      if (d.act === 'nlundo') {
+        if (st.mode === 'jumps') { const j = st.jumps.pop(); if (!j) return false; st.jumpFrom = j.a; return true; }
+        if (!st.points.length) return false; st.points.pop(); return true;
+      }
+      if (d.act === 'nlnew') { st.jumpFrom = null; return true; }
+      if (d.act === 'nlclearj') { st.jumps = []; st.jumpFrom = null; return true; }
+      if (d.act === 'nlclearp') { st.points = []; return true; }
+      const svg = e && e.target && e.target.closest && e.target.closest('svg.mp-nl'); if (!svg) return false;
+      st.sel = null;
+      const v = nlValue(st, svg, e.clientX);
+      if (st.mode === 'jumps') {
+        const from = nlFrom(st);
+        if (from === null) { st.jumpFrom = v; return true; }
+        if (v === from) return false;
+        st.jumps.push({ a: from, b: v }); st.jumpFrom = v; return true;
+      }
+      st.points.push(v);
       return true;
     },
     boardTap: true,

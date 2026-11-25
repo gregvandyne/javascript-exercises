@@ -15,7 +15,7 @@ _Last updated: 2026-11-11_
 | Drop Four (connect-four, 2 players or a three-level robot) and Happy Putt (18-hole mini golf homage to Happy Gilmore): each built, then verified over several rounds by independent playtest, visual and code review agents in the real sandbox | e2e `seeds.spec.js`, scanner tests, workflow verification logs |
 | Sandbox: opaque origin, no cookies, no network, no parent access, no `allow-same-origin` | e2e `play.spec.js`, unit `scanner.test.js` |
 | Search by title, tag and builder name; builder cards | e2e + unit |
-| Ratings (rolling sum/count), likes, leaderboards, live player counts across two browsers | e2e + unit |
+| Ratings (rolling sum/count), likes, the player's own best score (no leaderboards), live player counts across two browsers | e2e + unit |
 | Studio with mock Builder: questions → chips → game in preview → edit v2 → restore → publish Friends → Public → admin approve → on Home | e2e `studio.spec.js` |
 | **Updating a published game**: update reviewed while strangers keep the old version, then switched after approval | e2e `studio.spec.js`, unit `publish.test.js` |
 | **Inspiration uploads** in the Studio (private, metadata stripped, inspiration only) | e2e `studio.spec.js`, unit `builder-uploads.test.js` |

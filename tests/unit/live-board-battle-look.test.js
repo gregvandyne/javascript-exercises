@@ -46,7 +46,7 @@ const look = frame => frame.evaluate(() => {
 /** Tap an element as a finger would: a real pointer event at its centre, through the frame. */
 async function tap(L, sel) { const bx = await (await L.frame.$(sel)).boundingBox(); await L.page.mouse.click(bx.x + bx.width / 2, bx.y + bx.height / 2); }
 
-test('Brain Board on the projector: the lobby cards, the board as a grid of cards, the question, the counts and the podium', { skip, timeout: 120_000 }, async () => {
+test('Brain Board on the projector: the lobby cards, the board as a grid of cards, the question, the counts and the class end card (no leaderboard)', { skip, timeout: 120_000 }, async () => {
   for (const theme of ['light', 'dark']) {
     const L = await openLive('brain-board.html', { role: 'host', mode: 'board', theme });
     try {
@@ -83,10 +83,10 @@ test('Brain Board on the projector: the lobby cards, the board as a grid of card
       assert.equal(c.bar, theme === 'dark' ? 'rgb(102, 199, 146)' : 'rgb(20, 20, 20)', 'the question in the Now bar');
       await L.send({ t: 'ph', phase: 'between', seq: 5, at: now }, { t: 'rv', i: 13, answer: 1, counts: [1, 4, 1, 0], top: [[3, 1200], [1, 800]] });
       c = await L.frame.evaluate(() => ({ right: [...document.querySelectorAll('#pad .bb-a')].map(x => x.classList.contains('right')), n: [...document.querySelectorAll('#pad .bb-a .n')].map(x => x.textContent), rows: document.querySelectorAll('#rows li').length }));
-      assert.deepEqual(c.right, [false, true, false, false]); assert.deepEqual(c.n, ['1', '4', '1', '0']); assert.equal(c.rows, 2, 'the score widget');
+      assert.deepEqual(c.right, [false, true, false, false]); assert.deepEqual(c.n, ['1', '4', '1', '0']); assert.equal(c.rows, 0, 'no list of players, even if a top list came');
       await L.send({ t: 'ph', phase: 'ended', seq: 9, at: now, top: [[3, 4200], [1, 3900], [2, 3100], [4, 900]] });
-      c = await L.frame.evaluate(() => ({ end: !document.getElementById('end').hidden, steps: document.querySelectorAll('#podium .bb-step').length, rest: [...document.querySelectorAll('#end-list li')].map(x => x.textContent) }));
-      assert.deepEqual(c, { end: true, steps: 3, rest: ['Clever Owl · 900'] });
+      c = await L.frame.evaluate(() => ({ end: !document.getElementById('end').hidden, steps: document.querySelectorAll('#podium .bb-step').length, rest: [...document.querySelectorAll('#end-list li')].map(x => x.textContent), line: document.getElementById('end-line').textContent }));
+      assert.deepEqual(c, { end: true, steps: 0, rest: [], line: 'The class got 4 of 6 answers right' }, 'no podium of players: the class as a whole');
       assert.deepEqual(L.errors, []);
     } finally { await L.ctx.close(); }
   }
@@ -114,12 +114,14 @@ test('Brain Board on a phone: your pick, and a tap on an answer sends one answer
     assert.equal(await L.frame.evaluate(() => document.getElementById('note').textContent), 'Answer locked in!');
     await L.send({ t: 'ack', i: 0 }, { t: 'ph', phase: 'between', seq: 5, at: now }, { t: 'rv', i: 0, answer: 1, counts: [], top: [] }, { t: 'you', i: 0, ok: true, points: 110, rank: 1, score: 110 });
     const r = await L.frame.evaluate(() => ({ note: document.getElementById('note').textContent, cls: document.getElementById('note').className, score: document.getElementById('score').textContent }));
-    assert.deepEqual(r, { note: 'Right! +110 · You are number 1', cls: 'bb-note good', score: '110 points' });
+    assert.deepEqual(r, { note: 'Right! +110', cls: 'bb-note good', score: '110 points' }, 'never a place, even if one came');
+    await L.send({ t: 'ph', phase: 'ended', seq: 9, at: now, top: [] }, { t: 'you', rank: 0, score: 110, of: 6, right: 1, total: 1 });
+    assert.equal(await L.frame.evaluate(() => document.getElementById('end-line').textContent), 'You got 1 of 1 right!');
     assert.deepEqual(L.errors, []);
   } finally { await L.ctx.close(); }
 });
 
-test('Question Battle on the projector: the boss arena, the class in team widgets, answer bars and the podium', { skip, timeout: 120_000 }, async () => {
+test('Question Battle on the projector: the boss arena, the class in team widgets, answer bars and the end (team podium, the class right answers)', { skip, timeout: 120_000 }, async () => {
   for (const theme of ['light', 'dark']) {
     const L = await openLive('question-battle.html', { role: 'host', mode: 'battle', theme });
     try {
@@ -150,8 +152,8 @@ test('Question Battle on the projector: the boss arena, the class in team widget
       assert.deepEqual(s.n, ['1', '0', '4', '1']); assert.equal(s.right, 'C');
       await L.send({ t: 'ts', s: [[1, 1900, 1, 5700, 1900], [2, 1700, 2, 5100, 1700]], fin: 1 }, { t: 'ph', phase: 'ended', seq: 20, at: await L.now(), top: [[3, 4500], [1, 3500], [2, 1000]] });
       await L.page.waitForTimeout(2600);
-      s = await L.frame.evaluate(() => ({ board: !document.getElementById('board').hidden, steps: document.querySelectorAll('#podium .qb-step').length, tboard: !document.getElementById('tboard').hidden, tsteps: document.querySelectorAll('#tpodium .qb-step').length }));
-      assert.deepEqual(s, { board: true, steps: 3, tboard: true, tsteps: 2 });
+      s = await L.frame.evaluate(() => ({ board: !document.getElementById('board').hidden, steps: document.querySelectorAll('#podium .qb-step').length, rows: document.querySelectorAll('#board-list li').length, tboard: !document.getElementById('tboard').hidden, tsteps: document.querySelectorAll('#tpodium .qb-step').length, line: document.getElementById('mvp').textContent }));
+      assert.deepEqual(s, { board: true, steps: 0, rows: 0, tboard: true, tsteps: 2, line: 'The class got 20 of 30 answers right' }, 'teams keep their podium; no podium of players');
       assert.deepEqual(L.errors, []);
     } finally { await L.ctx.close(); }
   }

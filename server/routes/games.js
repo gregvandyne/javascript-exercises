@@ -96,7 +96,8 @@ router.get('/g/:slug', (req, res) => {
   // every viewer. Nothing on this page leads to contacting them, and nothing says which children are theirs.
   const byGrownup = isGrownup(owner);
   const myStars = games.userRating(g.id, u && u.id), liked = games.userLiked(g.id, u && u.id);
-  const lb = games.leaderboard(g.id, 10, u);
+  // The player's own best only: no leaderboard, nobody's score is shown to anyone else (docs/decisions.md "No leaderboards").
+  const best = u && !grownup ? games.myBest(g.id, u.id) : null;
   // Signed out (search engines too), an official game's page suggests only launch games: a child's game title is
   // free text that may hold their name, and this page is indexed.
   const more = games.similar(u, g, 6, { official: !u && g.source === 'seed' });
@@ -166,10 +167,9 @@ router.get('/g/:slug', (req, res) => {
             <p class="small muted" id="ratemsg">${myStars ? t('game.rate.thanks') : t('game.rate.tap')}</p>`
           : html`<p><button class="btn" type="button" data-guest-play="">${t('game.rate.guest')}</button></p>`}
         </section>`}
-        <section class="panel" aria-labelledby="lb-h"><h2 id="lb-h">${ico('🏆', { size: 28 })} ${t('game.leaderboard.heading')}</h2>
-          ${lb.length ? html`<ol class="lb">${lb.map(r => html`<li>${avatar(r, 30)}<span>${u ? r.display_name : ''}</span><span class="sc" dir="ltr">${f.int(r.score)}${r.label ? ' ' + r.label : ''}</span></li>`)}</ol>
-            ${u ? '' : html`<p class="small muted" style="margin:10px 0 0"${fbl('game.leaderboard.signIn')}>${t('game.leaderboard.signIn')}</p>`}` : html`<p class="muted">${t('game.leaderboard.empty')}</p>`}
-        </section>
+        ${best ? html`<section class="panel" aria-labelledby="best-h" id="mybest"><h2 id="best-h">${ico('⭐', { size: 28 })} ${t('game.best.heading')}</h2>
+          <p class="mybest"><b dir="ltr">${f.int(best.score)}</b>${best.label ? html` <span class="muted" dir="auto">${best.label}</span>` : ''}</p>
+        </section>` : ''}
       </div>
       <aside class="stack" aria-label="${t('game.more.label')}">
         ${more.length ? html`<section><h2>${t('game.more.heading')}</h2>${cardGrid(more, {})}</section>` : ''}
@@ -885,17 +885,15 @@ router.post('/api/games/:id/score', requireUser, rateLimit('score', 30, 60e3), (
   const { score, label } = req.body || {};
   if (!Number.isFinite(+score) || +score < 0) return res.status(400).json({ error: req.t('game.api.badScore') });
   // A score only counts after the player actually opened the game (a recorded play in the last 24h): this stops a
-  // script from poisoning a leaderboard without ever loading the game. Scores are still client-reported (see docs/safety.md).
+  // script from filling a child's progress without ever loading the game. Scores are still client-reported (see docs/safety.md).
   if (!games.hasRecentPlay(g.id, req.user.id)) return res.status(400).json({ error: req.t('game.api.badScore') });
-  // Grown-up accounts play, but are on no leaderboard: their scores are never stored.
+  // Grown-up accounts play, but their scores are never stored.
   if (isGrownup(req.user)) return res.json({ ok: true, best: Math.max(0, Math.floor(+score)), improved: false });
   res.json({ ok: true, ...games.submitScore(g.id, req.user.id, +score, label) });
 });
-router.get('/api/games/:id/leaderboard', (req, res) => {
-  const g = apiGame(req, res); if (!g) return;
-  // Children's names only to someone signed in, as on the game page (a signed-out caller may be any scraper).
-  res.json({ rows: games.leaderboard(g.id, 10, req.user).map(r => ({ ...(req.user ? { name: r.display_name } : {}), avatar: r.avatar, score: r.score, label: r.label })) });
-});
+// No leaderboard (docs/decisions.md "No leaderboards"): the old public endpoint answers 410 Gone with nothing in it, so
+// an older page or game that still asks gets no scores. A player's own best comes with the score it submits.
+router.get('/api/games/:id/leaderboard', (req, res) => { const g = apiGame(req, res); if (!g) return; res.status(410).json({ rows: [] }); });
 // Reports: any signed-in player (guests included) can report with a simple reason. N open reports auto-hide the game.
 router.post('/api/games/:id/report', requireUser, rateLimit('report', 10, 3600e3), (req, res) => {
   const t = req.t;

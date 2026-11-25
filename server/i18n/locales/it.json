@@ -747,7 +747,7 @@
       "heading": "SDK per i giochi",
       "brb": {
         "p1": "Ogni gioco riceve un piccolo aiutante chiamato BRB. {get} e {set} salvano i progressi di ogni giocatore. Anche localStorage funziona e viene salvato nel cloud.",
-        "p2": "{submit} aggiunge alla classifica (solo il punteggio migliore). {over} termina una partita.",
+        "p2": "{submit} salva il miglior punteggio del giocatore, che vede solo lui. {over} termina un round.",
         "p3": "{fx} rendono il gioco più vivace.",
         "p4": "{full} e {orient} lo chiedono gentilmente alla pagina.",
         "p5": "{lang} è la lingua del giocatore (come \"fr\" o \"ar\") e {dir} è \"rtl\" per le lingue scritte da destra a sinistra, così un gioco può parlare la lingua del giocatore."
@@ -1164,11 +1164,6 @@
       "tap": "Tocca una stella.",
       "guest": "Gioca come ospite per votare"
     },
-    "leaderboard": {
-      "heading": "Classifica",
-      "empty": "Ancora nessun punteggio. Fai tu il primo!",
-      "signIn": "Accedi per vedere i nomi dei giocatori."
-    },
     "more": {
       "label": "Altro",
       "heading": "Altri giochi simili"
@@ -1215,6 +1210,9 @@
       "title": "Questo gioco non è disponibile ora",
       "text": "Potrebbe tornare più avanti. In Impara ci sono altri giochi e rompicapi da provare.",
       "play": "Vai a Impara"
+    },
+    "best": {
+      "heading": "Il tuo record"
     }
   },
   "play": {
@@ -6647,7 +6645,7 @@
         "h": "Prima di crearlo: cosa conserva questo account",
         "keep": "Cosa conserva questo account: i giochi che vostro figlio o figlia crea, le sue chat con il Costruttore, le immagini e i file che carica, i salvataggi di gioco, i punteggi, i voti e i \"mi piace\", gli amici e i messaggi nella chat con gli amici, una foto del profilo se ne aggiunge una, le sue impostazioni e i cookie di accesso con il nome del browser.",
         "ai": "Cosa va a Claude di Anthropic (l'IA dietro al Costruttore): i messaggi al Costruttore, le immagini e i file, le foto del profilo (per un controllo di sicurezza) e i giochi inviati alla revisione pubblica. Non vengono inviati nomi né nomi utente. La chat con gli amici non va mai all'IA.",
-        "who": "Chi vede cosa: gli amici che aggiunge con un codice amico possono chattare con lui o lei e vedere i suoi giochi riservati agli amici. Chiunque può giocare ai giochi che decide di rendere pubblici. Il suo nome utente compare sui giochi pubblici e nelle classifiche.",
+        "who": "Chi vede cosa: gli amici che aggiunge con un codice amico possono chattare con lui o lei e vedere i suoi giochi riservati agli amici. Chiunque può giocare ai giochi che decide di rendere pubblici. Il suo nome utente compare sui suoi giochi pubblici.",
         "howLong": "Per quanto tempo lo conserviamo: finché l'account esiste. Per ora non ci sono tempi di cancellazione automatica.",
         "rights": "Cosa potete fare: vedere cosa conserviamo ed eliminare l'account dalla pagina della vostra famiglia, oppure contattarci.",
         "more": "Leggete l'Informativa sulla privacy completa"
@@ -8036,7 +8034,7 @@
       "li1": "Sono medie su molti studi, età, materie e giochi. Alcuni giochi hanno aiutato molto, altri per niente.",
       "li2": "Nessuno di questi studi ha testato Oomba Academy. Descrivono i giochi educativi in generale, non una promessa su un singolo gioco, una classe o uno studente.",
       "li3": "Wouters e colleghi hanno trovato che i serious game non motivavano più dell’insegnamento tradizionale, anche se gli studenti imparavano di più.",
-      "li4": "La gamification non è un gioco educativo: aggiunge elementi di gioco a lezioni normali. La includiamo perché punti, stelle e classifiche fanno parte di molti giochi educativi, anche dei nostri."
+      "li4": "La gamification non è un gioco educativo: aggiunge elementi di gioco a lezioni normali. La includiamo perché punti e stelle fanno parte di molti giochi educativi, anche dei nostri."
     },
     "use": {
       "h": "Usare i giochi come suggerisce la ricerca",
@@ -8316,7 +8314,6 @@
       },
       "cancel": "Annulla",
       "reportThanks": "Grazie. Qualcuno di Oomba Academy darà un’occhiata.",
-      "place": "Sei al posto {rank} su {count}!",
       "late": "Hai iniziato a giocare dopo la partenza.",
       "watchHint": "Questo dispositivo non riesce a mostrare il mondo 3D, quindi vedi una mappa con tutti.",
       "removed": "Chi guida la partita ti ha tolto dal gioco.",
@@ -8336,8 +8333,8 @@
       "moved": "Ora sei nella squadra {team}",
       "again": "Aspettiamo l'insegnante… Forse inizierà un altro gioco con tutti quelli che sono qui.",
       "aiVoice": "Leggi usa una voce IA fatta dal computer ({provider}).",
-      "placeTied": "{others, plural, one {Sei a pari merito al posto {rank} con # altro giocatore!} other {Sei a pari merito al posto {rank} con altri # giocatori!}}",
-      "placeZero": "Tutti a pari merito! Questa volta nessuno ha fatto punti."
+      "mine": "Ne hai indovinate {right} su {total}!",
+      "myScore": "Il tuo punteggio: {score}"
     },
     "emote": {
       "wave": "Saluta",
@@ -8430,7 +8427,7 @@
       "questRace": "Corsa delle missioni",
       "questRaceText": "Rispondi alle domande per correre su un’isola in 3D. Le risposte giuste danno gemme e una spinta!",
       "battle": "Sfida a domande",
-      "battleText": "Domande sul grande schermo, risposte su ogni dispositivo e una classifica dopo ognuna.",
+      "battleText": "Domande sul grande schermo, risposte su ogni dispositivo e le risposte della classe dopo ognuna.",
       "board": "Tabellone Cervello",
       "boardText": "Un tabellone di categorie: scegli una casella e rispondono tutti. Le caselle più alte sono più difficili e valgono di più, e una Stella fortunata nascosta raddoppia i punti.",
       "wyr": "Preferiresti? (Dal vivo)",
@@ -8644,7 +8641,10 @@
       "playAgainTeams": "Rigioca con queste squadre",
       "newGame": "Nuovo gioco",
       "homework": "Assegna come compito",
-      "votes": "{count, plural, one {# voto} other {# voti}}"
+      "votes": "{count, plural, one {# voto} other {# voti}}",
+      "classHeading": "La classe",
+      "classPct": "{pct}% di risposte giuste",
+      "classRight": "{right} risposte giuste su {answered}"
     },
     "sets": {
       "title": "Serie di domande",
@@ -8974,10 +8974,6 @@
       "points": "Punti",
       "pointsSpeed": "Le risposte veloci valgono di più",
       "pointsAccuracy": "Solo risposte giuste (1.000 ciascuna)",
-      "board": "Classifica sui dispositivi",
-      "boardAll": "Mostrala",
-      "boardTop5": "Solo i primi 5",
-      "boardOff": "Nascondila",
       "late": "Si può entrare dopo l'inizio",
       "names": "Nomi sugli schermi",
       "namesNames": "Nomi veri",
@@ -9401,7 +9397,7 @@
       "join": "Devi entrare in una partita? Scrivi qui il codice"
     },
     "how": {
-      "h": "Dalle domande al podio in pochi minuti",
+      "h": "Dalle domande ai risultati in pochi minuti",
       "lead": "Schermate reali di una partita dal vivo in una scuola dimostrativa con nomi inventati.",
       "s1": {
         "h": "Scelga un gioco e le domande",
@@ -9425,8 +9421,8 @@
       },
       "s5": {
         "h": "Veda chi sa cosa",
-        "p": "Una classifica dopo ogni domanda e, alla fine, una pagina dei risultati per domanda e per studente.",
-        "alt": "Lo schermo del proiettore con la classifica e i punteggi degli studenti."
+        "p": "Come ha risposto la classe dopo ogni domanda e, alla fine, una pagina dei risultati per domanda e per studente.",
+        "alt": "Lo schermo del proiettore con le risposte della classe."
       }
     },
     "modes": {
@@ -9437,7 +9433,7 @@
       },
       "battle": {
         "h": "Sfida a domande",
-        "p": "Il classico: la domanda sul grande schermo, le risposte su ogni dispositivo e una classifica dopo ciascuna."
+        "p": "Il classico: la domanda sul grande schermo, le risposte su ogni dispositivo e le risposte della classe dopo ognuna."
       },
       "board": {
         "h": "Tabellone Cervello",

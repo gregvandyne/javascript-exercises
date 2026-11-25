@@ -1844,7 +1844,7 @@ function endGame() {
   save.bestLevel[mode] = Math.max(save.bestLevel[mode] || 0, G.level);
   save.dots += G.dotsEaten; save.gloops += G.gloopsEaten; save.games++;
   persist();
-  // Only Classic goes on the leaderboard: Easy scores run higher and would push Classic bests aside.
+  // Only Classic counts as the player's best score: Easy scores run higher and would push Classic bests aside.
   if (mode === 'easy') BRB.gameOver({ won: false });
   else { BRB.score.submit(score, 'points'); BRB.gameOver({ won: false, score }); }
   sfx('lose');

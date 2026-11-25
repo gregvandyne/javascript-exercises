@@ -521,11 +521,12 @@ export function toDash(s, msg) {
 /** Kept for callers from before the dashboard: every host connection. */
 export const toHost = toHosts;
 export const toPlayers = (s, msg) => broadcast(s, msg, { host: false });
-/** Team scores (ts): the hosts with ranks; players with ranks unless the leaderboard is off. */
+/** Team scores (ts), the same for everyone: teams are not individual students, so their totals and places stay. */
 export function teamScores(s, { fin = false } = {}) {
   if (!T.isOn(s)) return;
-  toHosts(s, T.tsMsg(s, { fin }));
-  toPlayers(s, T.tsMsg(s, { fin, ranks: s.settings.board !== 'off' }));
+  const m = T.tsMsg(s, { fin });
+  toHosts(s, m);
+  toPlayers(s, m);
 }
 
 /** The welcome for a seat or a controller connection (conn has just said hello). view: 'projector' | 'dash' for a
@@ -542,7 +543,7 @@ export function welcome(s, seat, view = 'projector', who = null) {
     nameMode: nameModeFor(s, v), audience: s.audience, mode: s.mode, title: s.title, cfg: s.cfg, locked: s.settings.locked, max: s.settings.maxPlayers,
     teams: tms, eyes: s.eyes, lang: s.lang,
   };
-  if (T.isOn(s)) base.ts = T.tsMsg(s, { ranks: !seat || s.settings.board !== 'off' }).s;
+  if (T.isOn(s)) base.ts = T.tsMsg(s).s;
   if (s.qz && s.qz.cur) base.quiz = { q: Q.questionMsg(s, seat), answered: seat ? s.qz.answers.has(seat.no) : s.qz.answers.size };
   if (s.race) base.race = raceList(s);
   const lobbyFrame = s.lobbyByGame ? null : 1;
@@ -1147,7 +1148,7 @@ export function eyes(s, on) {
   return true;
 }
 /** Bonus points (+100, a fixed positive reason): to a seat (only that seat and the hosts hear of it), or to a team
- *  (everyone). Kept apart from the score: leaderboards show score + bonus; the gradebook the score alone. */
+ *  (everyone). Kept apart from the score: a player's own score shows score + bonus; the gradebook the score alone. */
 export function bonus(s, { n = null, k = null, r = 0 } = {}) {
   if (!['lobby', 'loading', 'countdown', 'playing', 'paused', 'between'].includes(s.phase) || !Number.isInteger(r) || r < 0 || r >= P.BONUS_REASONS.length) return false;
   // Tug of Math Live: the rope alone decides the match, so a bonus never moves a team's score (no team bonus; a
@@ -1191,7 +1192,6 @@ export function setSettings(s, d, actor = null) {
   if (changed.includes('names')) broadcastRoster(s);
   if (changed.includes('sound')) toProjector(s, { t: 'snd', on: s.settings.sound });
   if (lock !== null) toHosts(s, { t: 'lk', locked: lock });
-  if (changed.includes('board')) { s.scoresDirty = true; teamScores(s); }
   recordAct(s, actor ? actor.userId : s.host.userId, 'settings');
   return changed;
 }
@@ -1383,30 +1383,20 @@ export function endSession(sid, why = 'ended') {
   let summary = null;
   try { summary = R.summary(s); s.summary = summary; if (s.startedAt) R.save(s, summary); } catch (e) { hooks.log('error', 'live results not saved', { sid: s.id, error: e.message }); }
   if (s.startedAt && T.isOn(s) && !s.tug) { try { T.saveClassTeams(s); } catch (e) { hooks.log('error', 'live class teams not saved', { sid: s.id, error: e.message }); } }
-  // Team scores first (fin), then the end. Players see the top five, or none when the host turned the leaderboard off.
+  // Team scores first (fin), then the end. No individual ranking anywhere (docs/decisions.md "No leaderboards"): `top`
+  // stays an empty list (older games and the kit pack read it) and each player is told only their own result.
   teamScores(s, { fin: true });
-  const top = summary ? summary.players.slice(0, 5).map(p => [p.seat, p.total ?? p.score]) : [];
-  const rows = Q.boardRows(s, 5);
-  const ph = { t: 'ph', phase: 'ended', round: s.round, seq: s.seq, at: s.endedAt };
-  toHosts(s, { ...ph, top });
-  toPlayers(s, { ...ph, top: top.slice(0, rows) });
+  const ph = { t: 'ph', phase: 'ended', round: s.round, seq: s.seq, at: s.endedAt, top: [] };
+  toHosts(s, ph);
+  toPlayers(s, ph);
   for (const seat of s.seats.values()) {
     const me = summary && summary.players.find(p => p.seat === seat.no);
-    // tied: how many others share this place; zero: nobody scored; team: a team game (players see the team's place)
-    if (me) {
-      const sc = p => p.total ?? p.score;
-      // The place a player is told ("You came 2nd out of 7") is among the players still in the game: someone the
-      // teacher removed, or who left, is in the saved results but takes no place and is not counted here.
-      const here = summary.players.filter(p => !p.left);
-      const ahead = p => (p.progress || 0) > (me.progress || 0) || ((p.progress || 0) === (me.progress || 0) && sc(p) > sc(me));
-      const same = p => (p.progress || 0) === (me.progress || 0) && sc(p) === sc(me);
-      const myRank = 1 + here.filter(ahead).length;
-      const tied = here.filter(p => p !== me && same(p)).length;
-      const zero = here.length > 1 && here.every(p => !(p.progress > 0) && !(sc(p) > 0));
-      // Would You Rather has no right answers and no scores: no place, no "Nobody scored", just the end.
-      if (Q.isVote(s)) { sendTo(seat.conn, { t: 'you', rank: 0, score: 0, of: here.length }); continue; }
-      sendTo(seat.conn, { t: 'you', rank: rows ? myRank : 0, score: sc(me), of: here.length, ...(tied ? { tied } : {}), ...(zero ? { zero: 1 } : {}), ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
-    }
+    if (!me) continue;
+    const here = summary.players.filter(p => !p.left);
+    // Would You Rather has no right answers and no scores: just the end.
+    if (Q.isVote(s)) { sendTo(seat.conn, { t: 'you', rank: 0, score: 0, of: here.length }); continue; }
+    // right / total: this player's right answers of the questions asked ("You got 8 of 10 right!"); team: a team game
+    sendTo(seat.conn, { t: 'you', rank: 0, score: me.total ?? me.score, of: here.length, right: me.correct || 0, total: (me.marks || '').length, answered: me.answered || 0, ...(s.tug || T.isOn(s) ? { team: 1 } : {}) });
   }
   // Play again: the seats as they ended (account, nickname, avatar, team) and the bans, kept only while the players'
   // sockets linger (hooks.lingerMs, 2 minutes), then wiped. Removed seats were freed at removal: never in it.
@@ -1506,7 +1496,7 @@ function startTimers() {
 export function stopTimers() { clearInterval(tickTimer); clearInterval(sweepTimer); tickTimer = null; sweepTimer = null; }
 
 /** One snapshot per session per tick: the seats that moved, serialised once, the same string for everyone. Above 40
- *  movers the session drops to every other tick (5 Hz). Slow connections skip a tick. Every 2 s: the leaderboard. */
+ *  movers the session drops to every other tick (5 Hz). Slow connections skip a tick. Every 2 s: the score update (lb: own scores, never a ranking). */
 export function tick() {
   tickNo++;
   for (const s of sessions.values()) {
@@ -1546,15 +1536,14 @@ function watchDoodle(s) {
   if (!s.ddAway) s.ddAway = t;
   if (t - s.ddAway >= hooks.unwatchedMs && !s.doodle.done) { s.ddAutoPaused = doAction(s, 'pause') === true || s.phase === 'paused'; }
 }
-/** The top ten to the hosts; players get the top ten, the top five or nothing (the host's leaderboard setting) and
- *  their own rank (none when the leaderboard is off). Then the team scores. score = score + bonus. */
+/** The scores, every 2 s while they change: each player gets their own score (never a rank), the hosts only how many
+ *  are playing; then the team scores. `top` stays an empty list for older games and the kit pack (no leaderboard:
+ *  docs/decisions.md "No leaderboards"). score = score + bonus. */
 export function leaderboard(s) {
   s.scoresDirty = false;
   const list = R.ranked(s);
-  const top = list.slice(0, 10).map(r => [r.seat, r.score]);
-  const rows = Q.boardRows(s, 10);
-  toHosts(s, { t: 'lb', top, n: list.length });
-  for (const r of list) { const seat = s.seats.get(r.seat); if (seat && seat.conn) sendTo(seat.conn, { t: 'lb', top: top.slice(0, rows), n: list.length, you: [rows ? r.rank : 0, r.score] }); }
+  toHosts(s, { t: 'lb', top: [], n: list.length });
+  for (const r of list) { const seat = s.seats.get(r.seat); if (seat && seat.conn) sendTo(seat.conn, { t: 'lb', top: [], n: list.length, you: [0, r.score] }); }
   teamScores(s);
 }
 

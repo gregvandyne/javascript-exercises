@@ -290,9 +290,9 @@ test('a new nickname for a seat shown by nickname; muted emotes; names per view 
   close(h, d, a, b);
 });
 
-test('settings at start: the first N questions, accuracy-only points, leaderboard off on devices (no ranks, no top), full on the projector', async () => {
-  const s = open(teacher, { mode: 'battle', items: items(7), audience: 'open', settings: { count: 5, points: 'accuracy', board: 'off', shuffleQ: true } });
-  assert.equal(s.settings.board, 'off'); assert.equal(s.settings.count, 5);
+test('settings at start: the first N questions, accuracy-only points; no leaderboard anywhere (no ranks, no top, the projector too)', async () => {
+  const s = open(teacher, { mode: 'battle', items: items(7), audience: 'open', settings: { count: 5, points: 'accuracy', board: 'all', shuffleQ: true } });
+  assert.equal(s.settings.board, undefined, 'the old leaderboard setting is dropped'); assert.equal(s.settings.count, 5);
   const h = await hostSocket(s, teacher);
   const a = await player(s);
   h.send({ t: 'h', a: 'start' }); a.send({ t: 'rdy' });
@@ -302,10 +302,10 @@ test('settings at start: the first N questions, accuracy-only points, leaderboar
   const you = await a.next('you');
   assert.equal(you.points, 1000); assert.equal(you.rank, 0, 'no rank on the device');
   assert.deepEqual((await a.next('rv')).top, []);
-  assert.equal((await h.next('rv')).top.length, 1, 'the projector keeps its top five');
+  assert.deepEqual((await h.next('rv')).top, [], 'no top players on the projector either');
   // Remembered as the host's defaults (at start).
   const prefs = await call('/api/live/prefs', { user: teacher });
-  assert.equal(prefs.json.settings.board, 'off'); assert.equal(prefs.json.settings.count, 5);
+  assert.equal(prefs.json.settings.board, undefined); assert.equal(prefs.json.settings.count, 5);
   close(h, a);
 });
 
@@ -447,9 +447,12 @@ test('play the missed questions again; play again with these teams (a saved clas
   assert.ok(details.startsWith(' id="lv-details">'), 'closed by default');
   assert.ok(details.includes(mia.display_name));
   assert.match(safe, /id="lv-team-podium"/); assert.match(safe, /id="lv-hardest"/); assert.match(safe, /id="lv-review"/);
+  // No leaderboard: the class as a whole (its share of right answers) and teams, never a place for a student.
+  assert.match(safe, /id="lv-class-total"/);
+  assert.ok(!/<th scope="col">Place<\/th><th scope="col">Player/.test(details), 'the student table has no place column');
   const csv = await call(`/live/results/${s.id}.csv`, { user: teacher });
-  assert.match(csv.text, /^rank,student,roster_name,team,score,bonus,correct,answered,q1,q2,q3\r\n/);
-  assert.match(csv.text, /\r\n1,[A-Za-z]+\d*,Mia Pupil,[A-Z][a-z]+ [A-Z][a-z]+,3150,0,3,3,1,1,1\r\n/, 'the class teacher gets the roster name beside the game name');
+  assert.match(csv.text, /^student,roster_name,team,score,bonus,correct,answered,q1,q2,q3\r\n/);
+  assert.match(csv.text, /\r\n[A-Za-z]+\d*,Mia Pupil,[A-Z][a-z]+ [A-Z][a-z]+,3150,0,3,3,1,1,1\r\n/, 'the class teacher gets the roster name beside the game name');
   assert.match(csv.text, /question,right,answered,choice_a/);
   // Missed: question 2 only.
   const m = await call('/api/live/sessions', { method: 'POST', body: { fromRun: s.id, only: 'missed' }, user: teacher });

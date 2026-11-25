@@ -2,9 +2,9 @@
 // address, the roster (portraits and names, marks for ready, late, watching and offline; Remove asks first; no links,
 // profiles or messages anywhere), the host controls (real buttons with keyboard shortcuts, shown by phase), and the
 // game's own host view in a sandboxed frame (role host: the game draws a spectator view, e.g. the cinematic camera of
-// the shared 3D world and the leaderboard). The game's live settings (Oomba.live.ready) go to the server as rdy.cfg.
+// the shared 3D world). The game's live settings (Oomba.live.ready) go to the server as rdy.cfg.
 // Part 3: teams (the Teams row, the Teams sheet with drag and select-then-move, the team board during play), game
-// settings, Eyes up, the typed message to everyone, +time, projector sound, the "Teacher view on your phone" QR, and the podium hold
+// settings, Eyes up, the typed message to everyone, +time, projector sound, the "Teacher view on your phone" QR, and the end hold
 // at the end. This page is on the class's screen: it never shows "needs help", support, marks or a player's bonus.
 // Part 4: co-hosts. The host's "Co-hosts" dialog shows adults' names only behind a gate ("check the class can't see your
 // screen"), and closing it hides them again; no activity line ever shows here. A co-host may use this page when the
@@ -418,7 +418,7 @@ function drawBoard() {
   teamBars(ol, teams.list.map(t => ({ k: t.k, p: t.p, size: sizeOf(t.k), ...(scores.get(t.k) || { score: 0, rank: 0 }) })), presets, { scoring: teams.scoring, text: { perPlayer: TT.perPlayer } });
 }
 
-// ---- the end: hold the game's podium on the big screen, then the results ----
+// ---- the end: hold the game's end screen (the class's results, never a podium of students) on the big screen, then the results ----
 function podiumHold() {
   if (ended) return; ended = true;
   const hold = $('lv-podium-hold'), go = () => { location.href = D.results; };

@@ -11,15 +11,15 @@ const D = await import('../../server/services/classlive-dash.js');
 test.beforeEach(() => reset());
 
 test('defaults per room', () => {
-  assert.deepEqual(ST.DEFAULTS('class', 'accounts'), { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', board: 'all', late: true, names: 'names', sound: true, emotes: true, voices: 'ai' });
+  assert.deepEqual(ST.DEFAULTS('class', 'accounts'), { secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed', late: true, names: 'names', sound: true, emotes: true, voices: 'ai' });
   const open = ST.DEFAULTS('open');
-  assert.equal(open.board, 'top5'); assert.equal(open.late, false); assert.equal(open.names, 'nicknames');
+  assert.equal(open.board, undefined, 'no leaderboard setting'); assert.equal(open.late, false); assert.equal(open.names, 'nicknames');
   assert.equal(ST.DEFAULTS('family').late, true);
 });
 
 test('clean: unknown keys and bad values dropped; lobby-only keys after start; names only for account rooms; form values', () => {
-  assert.deepEqual(ST.clean({ secs: 20, count: 7, board: 'off', evil: 1, points: 'fast', sound: false }), { secs: 20, board: 'off', sound: false });
-  assert.deepEqual(ST.clean({ secs: 20, count: 5, points: 'accuracy', board: 'top5', late: false }, { lobby: false }), { board: 'top5', late: false });
+  assert.deepEqual(ST.clean({ secs: 20, count: 7, board: 'off', evil: 1, points: 'fast', sound: false }), { secs: 20, sound: false }, 'a leaderboard setting is an unknown key now');
+  assert.deepEqual(ST.clean({ secs: 20, count: 5, points: 'accuracy', board: 'top5', late: false }, { lobby: false }), { late: false });
   assert.deepEqual(ST.clean({ names: 'names' }), {}, 'real names only where the room shows account names');
   assert.deepEqual(ST.clean({ names: 'names' }, { nameMode: 'accounts' }), { names: 'names' });
   assert.deepEqual(ST.clean({ secs: '30', shuffleQ: ['0', '1'], shuffleA: '0', emotes: 'on' }), { secs: 30, shuffleQ: true, shuffleA: false, emotes: true });
@@ -36,15 +36,15 @@ test('late join is the existing autoLock: before start it decides the lock at st
   assert.equal(s.settings.locked, true);
   assert.deepEqual(ST.apply(s, { late: false }), { changed: [], lock: null }, 'no change, nothing sent');
   assert.equal(ST.view(s.settings).late, false);
-  assert.deepEqual(ST.publicPart(s.settings), { board: 'top5', emotes: true, names: 'nicknames', voices: 'ai' });
+  assert.deepEqual(ST.publicPart(s.settings), { emotes: true, names: 'nicknames', voices: 'ai' });
   const chosen = ST.initial({ maxPlayers: 30, locked: false, autoLock: false }, 'class', 'accounts', { late: false, board: 'off', bogus: 1 });
-  assert.equal(chosen.autoLock, true); assert.equal(chosen.board, 'off'); assert.equal(chosen.bogus, undefined);
+  assert.equal(chosen.autoLock, true); assert.equal(chosen.board, undefined); assert.equal(chosen.bogus, undefined);
 });
 
 test('remembered defaults: saved, loaded (cleaned), reset', () => {
   assert.equal(ST.loadPrefs(teacher.id), null);
   ST.savePrefs(teacher.id, { settings: { secs: 20, board: 'off', evil: 'x' }, teams: { on: true, n: 4, scoring: 'sum' } });
-  assert.deepEqual(ST.loadPrefs(teacher.id), { settings: { secs: 20, board: 'off' }, teams: { on: true, n: 4, scoring: 'sum' } });
+  assert.deepEqual(ST.loadPrefs(teacher.id), { settings: { secs: 20 }, teams: { on: true, n: 4, scoring: 'sum' } });
   assert.ok(ST.resetPrefs(teacher.id));
   assert.equal(ST.loadPrefs(teacher.id), null);
 });
