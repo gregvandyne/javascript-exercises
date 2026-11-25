@@ -782,7 +782,7 @@ router.post('/api/games/:id/proof/chat', requireUser, rateLimit('proof-ai', 30, 
   if (!docTextGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const b = req.body || {};
   if (typeof b.text !== 'string' || b.text.length > 4000) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'brief' });
-  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry }));
+  proofChatReply(req, res, proofChat.send(req.user, { setId: typeof b.setId === 'string' ? b.setId : null, text: b.text, set: b.set, retry: b.retry, lang: req.locale }));
 });
 router.post('/api/games/:id/proof/chat/applied', requireUser, (req, res) => {
   const g = apiGame(req, res); if (!g) return;

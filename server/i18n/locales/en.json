@@ -15341,6 +15341,10 @@
     }
   },
   "proof": {
+    "chatCheck": {
+      "notBuilt": "Nothing in the set changed: none of the passages passed the checks. Ask again and Oomba will try once more.",
+      "dropped": "{count, plural, one {# passage was left out: it didn’t pass the checks.} other {# passages were left out: they didn’t pass the checks.}}"
+    },
     "assign": {
       "title": "Hand in for a grade",
       "untitled": "Mistake Hunt",

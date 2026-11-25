@@ -13955,10 +13955,33 @@ What changed.
 - **The engine** (`services/oomba-chat.js`): a surface's `apply()` may return `verify` (kept on the turn) and
   `correction` (said after Oomba's words). `kept()` gives drafts without a page tool the same plain report ("12 of 15
   words kept, 3 removed by the filter").
+- **Every other builder that changes something**, the same rule in its own place:
+  - *Books* (the companion's book writer): the merge keeps a page the teacher changed meanwhile; when nothing of the
+    writer's change landed, or some pages stayed, the reply ends with the app's own words and the card says so.
+  - *Dashboard* (Apply on a proposal card): the layout as saved; a widget removed by hand meanwhile is counted as not
+    landed on the card. A new class (createClass) is made only on Create, and its card shows it made (unchanged).
+  - *Mistake Hunt chat* (`services/proof-chat.js`): its reply is written before the server builds the set, so passages
+    the checks left out, or a set that could not be built, are said after it in the teacher's language
+    (`proof.chatCheck.*`) and kept on the turn (`verify`).
+  - *Crossword, Word Hunt, Atlas Quest drafts* (`set-ai.js`, `crossword-doc.js`, `atlas-doc.js`, `routes/games.js`):
+    each answer carries `report` (`VC.kept`: how many the AI sent, how many landed in the list, why the rest did not),
+    and the page says "12 of 15 kept" when some were left out (`js.play.aiKept`; the games' own frames are unchanged).
+  - *The Builder* (games, classroom activities and Canvas, `builder/claude.js`): the tools already answer the model
+    with what saved ("Saved as version 3", "Not saved: ...", "No changes were made"), and the playtest and safety scan
+    already end with honest lines. New: when the last change the AI tried did not save and nothing saved after it, the
+    reply ends with "my last change didn't save, so your game is still version N" (`builder.lastNotSaved`), whatever
+    the AI wrote. The arcade SYSTEM_PROMPT+TOOLS are unchanged (their hash test passes).
+  - Not changed in this pass: the lesson drafter (`lesson-ai.js`; its figure repairs get the leave-out fix through
+    `repairDraft`, but its draft does not yet say how many figures were repaired) and the live question-set drafts
+    (`set-ai.js draftQuestions` / `draftFromLesson`: the editor shows every question, but not how many the checks
+    dropped).
 
 Tests: `tests/unit/companion-verify.test.js` (the owner's flow: question 1 replaced by the name-the-shape question with
 its figure repaired, options kept, the tool's result read back, the reply from it, no "Change undone."; the first draft
 of that test; an edit that cannot land, told to the model and on the card; a second try in one answer; a question deleted
-meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers), and the
+meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers; the drafts'
+counts; a dashboard change after a widget went), `companion-book.test.js` (a book change that does not land),
+`proof-chat.test.js` (left-out passages and a set that could not be built), `builder-claude.test.js` (the last change
+did not save), and the
 owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
 next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).

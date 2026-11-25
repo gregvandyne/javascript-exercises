@@ -420,7 +420,12 @@ export function applyProposal(u, p) {
   if (r.error) return { code: r.error === 'notFound' ? 'notFound' : 'error' };
   const after = new Map(r.layout.widgets.map(w => [w.id, w]));
   audit(u.id, 'companion.dash.apply', l.id, { classId: c.id, ops: p.ops.map(o => `${o.op}:${o.type}`) });
+  // Checked work: the layout as saved. A widget removed or changed by hand since the card was made is not touched; the
+  // card says how many of the planned changes did not land (the lines list what was planned).
+  const landed = touched.filter(x => (x.before === null ? after.has(x.id) : true)).length, missed = p.ops.length - landed;
+  const verify = { ok: missed === 0, landed, notLanded: missed > 0 ? [{ code: 'meanwhile', count: missed }] : [] };
   return {
+    verify,
     change: { kind: 'dash', classId: c.id, layoutId: l.id, lines: p.lines, ids: touched.map(x => x.id).filter(id => after.has(id)) },
     undo: { kind: 'dash', classId: c.id, layoutId: l.id, items: touched.map(x => ({ id: x.id, before: x.before, index: x.index ?? null, after: wkey(after.get(x.id) || null) })) },
   };
@@ -1212,8 +1217,13 @@ async function bookAnswer(user, bookId, { text, history, step, reply0 = '' }) {
     reply: r.reply || reply0,
     apply: () => {
       const a = SB.applyBook(user, bookId, base, r.book, { repaired: r.repaired });
-      if (a.code) return { note: ref };
-      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...a.change }, undo: { kind: 'book', bookId, ...a.undo } };
+      // Checked work: the book as written. Gone meanwhile, or every page the writer changed was changed by the teacher
+      // meanwhile (theirs stays): the app says so after the writer's words, and the card says what did not land.
+      if (a.code) return { note: ref, verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] }, correction: 'The book did not change after all: it is not there anymore.' };
+      const c = a.change, landed = c.added.length + c.changed.length + c.removed + (c.title ? 1 : 0) + (c.first ? c.pages : 0);
+      const verify = { ok: !c.kept && landed > 0, landed, notLanded: c.kept ? [{ code: 'meanwhile', count: c.kept }] : [] };
+      const fix = !landed ? 'The book did not change after all: the pages were changed by hand while Oomba was working, so yours stayed.' : c.kept ? 'Some pages stayed as you left them: they were changed by hand while Oomba was working.' : '';
+      return { note: ref, change: { kind: 'book', bookId, bookKind: row.kind, ...c }, undo: { kind: 'book', bookId, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
     },
   };
 }

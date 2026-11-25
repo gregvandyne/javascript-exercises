@@ -275,3 +275,21 @@ test('the drafts without a page tool (Crossword clues and words, Word Hunt, Atla
   const g = await SA.draftGeoQuiz({ text: 'France is in Europe.', known: new Set(['FR']), client: fake({ title: 'Europe', items: [{ kind: 'cont', country: 'FR', question: '', answer: '' }, { kind: 'cap', country: 'ZZ', question: '', answer: '' }] }) });
   assert.equal(g.asked, 2); assert.equal(g.items.length, 1);
 });
+
+test('a dashboard change applied after a widget was removed by hand: the card says what did not land', async () => {
+  const D = await import('../../server/services/dash.js');
+  const { tFor } = await import('../../server/i18n/index.js');
+  const { getUser } = await import('../../server/auth.js');
+  const boss = teacher();
+  const oak = S.schoolsOf(boss.id)[0];
+  const cls = S.createClass(boss, oak.id, { name: 'Verify 3B', teacherId: boss.id }).class;
+  const l = D.ensureLayouts(getUser(boss.id), cls, tFor('en'))[0];
+  const w = l.widgets[0];
+  // Planned on a card: change that widget and add a timer. Then the teacher removes the widget by hand before Apply.
+  const p = { classId: cls.id, layoutId: l.id, lines: [], ops: [{ op: 'set', id: w.id, type: w.type, settings: {} }, { op: 'add', type: 'timer', settings: {} }] };
+  D.updateLayout(getUser(boss.id), cls, l.id, { widgets: l.widgets.filter(x => x.id !== w.id) });
+  const a = CO.applyProposal(getUser(boss.id), p);
+  assert.equal(a.verify.ok, false);
+  assert.equal(a.verify.landed, 1, 'only the timer landed');
+  assert.deepEqual(a.verify.notLanded, [{ code: 'meanwhile', count: 1 }]);
+});
