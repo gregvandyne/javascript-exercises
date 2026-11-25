@@ -13816,6 +13816,87 @@ editing text inside it, and the menu was `right: 0` under its button whatever si
   line selected near it, scaled, deleted with the key; a tablet by touch; the ⋯ menu inside the screen at 390, 900 x 700,
   1366 x 768 and live; the server's sizes). Chromium only here: Playwright's WebKit is not installed in this environment.
 
+## Homeroom: the teacher's desk (25 Nov 2026)
+
+The owner: "You should also be able to put games on your desk as a teacher without students necessarily there." The
+board's "Teacher's desk" was only a label, and a new class had nowhere to try or line up anything before students joined
+(Whole class was refused with `noStudents`).
+- **My desk is a real desk** (`public/js/homeroom.js`, `public/js/homeroom-seats.js` TEACHER_DESK, now 640 x 108 at the
+  same place under the middle of the teacher's area, ending above the first row's names): dark with a yellow edge,
+  "My desk" and "Only you see this". A game, lesson or tool goes on it by tap-then-tap (pick in the panel, then My desk,
+  or the yellow bar's My desk chip, which also serves phones) or by dragging it there with a mouse or pen. It works with
+  no students in the class. The Manipulatives and Figures, which can't be handed out yet ("Coming next"), are now
+  pickable for My desk only (tapping a student desk says handing out tools comes next).
+- **Cards**: up to 4 on the desk (3 and "+N more", which lists them all). Tapping one: **Play** (a game: `/play/<slug>`),
+  **Preview** (a lesson: its own question set, `/play/<slug>?chapter=<set>&lock=1`, the route a handout opens), **Open**
+  (a tool: `/manipulatives`, `/figures`); **Hand out** (picks it exactly as the panel does, so the yellow bar and the
+  existing hand-out sheets follow: tap a desk, a group or Whole class); **Take off my desk**. A card can also be dragged
+  (mouse, pen and touch, since it sits on the board rather than in the scrolling panel) onto a student desk, a team
+  desk, a group chip or Whole class: the same sheet. Handing out keeps it on My desk (to hand to another group later).
+- **Staged, never assigned** (`services/homeroom-staged.js`; migration `0130_homeroom_staged`:
+  `homeroom_rooms.staged`, JSON `[{ id, kind: game | lesson | tool, ref, by, at }]`, at most 24). No class lesson is
+  made; nothing reaches a student. Only the class's teachers read or change it (`GET/POST /api/homeroom/:id/staged`
+  behind the Homeroom gate; everyone else the site's 404). A co-teacher sees the shared games and tools; a lesson shows
+  only to its owner (lessons are personal), and a game or lesson that is gone or can no longer be handed out isn't
+  shown. The desk page, its state poll, See the room, the projector page and its poll never read the column (tested).
+  Writing it leaves `updated_at` alone, so desks and the projector don't refetch the teacher's area. Kept per class
+  (switching classes reloads that class's desk). Deleting: with the room row (the class, the school: `BY_CLASS`); a
+  teacher's account takes their own items (`services/account-delete.js` 11c2). A table was not needed: the list is
+  small, per class, and only ever read whole.
+- **Whole class with nobody in the class**: `services/homeroom-handouts.js` studentsFor no longer refuses `all` with an
+  empty roster; it is `assignGame` with `[]` as always, so whoever joins gets it on their desk and To do list (tested
+  with a student added afterwards). A lesson to Whole class with no students is one assignment of the lesson as built.
+  The sheets show a calm "No students yet. Students who join will get it." and the button reads "Hand out to the
+  class"; the toast says "{title} is handed out to the class. Students who join will get it." An empty group is still
+  refused.
+- **Also fixed**: dragging a game from the panel with a mouse could start the browser's own image drag on its icon
+  (pointercancel, nothing dropped); `dragstart` is now cancelled on panel items and My desk cards.
+- Tests: `tests/unit/homeroom-staged.test.js` (stage a game, lesson and tool in an empty class, twice is once, take it
+  off, full desk, per class, links; auth for other teachers, students and guests; a co-teacher; nothing on the desk
+  page, desk state, See the room or projector; Whole class with an empty roster for a game and a lesson, then a student
+  joins and has both; account delete and class delete) and `tests/unit/homeroom-staged-browser.test.js` (tablet: stage
+  by tap-then-tap and the bar's chip in an empty class, Preview and Play, Hand out from the card to Whole class with the
+  note, the late student's desk; 1366 x 768: drag onto My desk, drag a card onto a student desk, take it off, Select
+  still edits the area; phone: My desk and its menu, nothing sideways).
+- **Open**: handing out tools (Manipulatives, Figures) is still to come; on a phone the board's Fit makes My desk small
+  (as every desk), so the bar's My desk chip is the easy way there; a co-teacher's own staged lessons are invisible to
+  the other teacher by design.
+## Typing Zoo: the rename, Noto animals, and a pet that walks with you (25 Nov 2026)
+
+Owner: "The pets should be animated and full body that can move around a bit and follow your cursor", then: rename the
+game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked after a comparison of five open sets).
+- **The rename**: Typing Pets is Typing Zoo, slug `typing-zoo` (files, langs folder, cover and share pictures, scripts,
+  server code, tests, every language's title). It uses the slug-rename mechanism Arithmetic Lab added: migration
+  `0129_typing_zoo_slug` (`renameSeedSlug`) gives the existing game row the new slug, so its id and everything keyed
+  by it (plays, saves, favorites, ratings, assignments, lesson steps, sets, the teacher's typing panel) carries over and
+  the seed then finds it by the new slug; `services/slug-aliases.js` sends the old addresses to the new ones for good
+  (301, 308 for a POST), keeping the rest of the path and the query (`/g`, `/play`, `/<lang>/g`, `/covers`, `/og`), and
+  a lookup by the old slug finds the game.
+  The save key stays `typing-pets-v1`, so players keep their pets and progress. The older sections above keep the old
+  name and paths as they were written. Tests: `tests/unit/typing-zoo-rename.test.js`.
+- **The pictures**: Noto Emoji animals by Google (stills: Apache 2.0; animated loops: CC BY 4.0, credited in the pet
+  collection and `docs/media-credits.md`). They are vendored, never hotlinked: `tools/typing-zoo-art/build.py` makes
+  144 px still WebPs (one `art.js`, about 290 KB) and 112 px animated loops (`a-<pet>.js`, 29 pets, loaded only for
+  the pet out walking or just hatched) under `public/vendor/data/typing-zoo-art/<version>/`, loaded as scripts with
+  their sha384 like the other `/vendor/data` packs (the frame's CSP allows no picture from another host and no fetch).
+  The emoji shows until they arrive. Shiny: a gold glow and sparkles over the same picture.
+- **The roster**: 41 pets, all full body. The eight that were faces only became other animals in place (fox → giraffe,
+  panda → elephant, koala → kangaroo, lion → leopard, frog → lizard, unicorn → pony, hamster → chipmunk, bear → hippo);
+  the save loader reads an old pet as its new one. Stand-ins: the duck for the duckling, the cow for the calf, the llama
+  for the alpaca. The alpaca is new, at the end of PETS, so saved pets keep their places; the pet count comes from PETS
+  (the teacher panel reads the game's list). Names in all 12 game languages.
+- **The walking pet**: the chosen pet ("Walk with me" in the collection, `save.out`) or the latest hatched one walks on
+  its own lane under the top bar, so it never covers the typing line, the keyboard or a button (and takes no clicks).
+  One ground line, left and right only: a little hop-walk toward the pointer (on touch, the last tap), turned to face
+  its way, stopping under it, wandering a little when left alone. While the player types it settles at the end of the
+  line, facing it, bounces on a finished line and wobbles on a wrong key. Idle plays the animated loop where there is
+  one, else a gentle breathing bob. Reduced motion (the device, or `BRB.motion`): it stands still, no loop.
+  "Walking pet: off" in the collection hides it (`save.walkOff`). Both save fields are new and optional.
+- **Tried and dropped**: two rounds of hand-drawn SVG pets (a cartoon rig, then a more natural one); the owner chose the
+  Noto set instead.
+- Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
+  never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.
+
 ## Builders check their work: verify after every change (25 Nov 2026)
 
 The owner's report. On a Figures test, the companion was asked for "a multiple choice test asking students to name

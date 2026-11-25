@@ -1,4 +1,4 @@
-// Typing Pets (seed-games/typing-pets.html) and the teacher's typing panel on the class progress page
+// Typing Zoo (seed-games/typing-zoo.html) and the teacher's typing panel on the class progress page
 // (services/typing.js, routes/progress.js): the game passes the scanner and its lessons match the server's list; a save is
 // read back as clean numbers whatever the browser wrote into it; the panel shows only the class's own students, only to
 // the people who may see the class's progress.
@@ -16,7 +16,7 @@ const { scanVersion } = await import('../../server/services/scanner.js');
 const { cleanText } = await import('../../server/services/textfilter.js');
 
 seed({ quiet: true });
-const html = fs.readFileSync('seed-games/typing-pets.html', 'utf8');
+const html = fs.readFileSync('seed-games/typing-zoo.html', 'utf8');
 
 let server, base;
 test.before(async () => { server = createApp().listen(0); server.keepAliveTimeout = 0; await new Promise(r => server.once('listening', r)); base = `http://127.0.0.1:${server.address().port}`; });
@@ -26,16 +26,16 @@ const get = async (who, path) => { const r = await fetch(base + path, { headers:
 
 test('the game passes the scanner, starts the way seed games must, and its lessons are the server\'s', () => {
   assert.equal(scanVersion(html).status, 'pass');
-  assert.match(html, /^<title>Typing Pets<\/title>\n<style>/);
+  assert.match(html, /^<title>Typing Zoo<\/title>\n<style>/);
   const ids = [...html.matchAll(/\{ id: '(l\d\d)'/g)].map(m => m[1]);
   assert.deepEqual(ids, TY.LESSONS, 'LESSONS in the game and in services/typing.js agree');
   const names = [...html.matchAll(/\{ id: 'l\d\d', unit: \d, name: (['"])(.*?)\1/g)].map(m => m[2]);
   assert.deepEqual(names, TY.LESSON_NAMES, 'and their names (the Assign picker)');
   assert.match(html, /const TESTS = \[\{ id: 't1', min: 1 \}, \{ id: 't3', min: 3 \}, \{ id: 't5', min: 5 \}\]/);
   assert.match(html, new RegExp(`SAVE_KEY = '${TY.SAVE_KEY}'`));
-  const meta = JSON.parse(fs.readFileSync('seed-games/typing-pets.json', 'utf8'));
+  const meta = JSON.parse(fs.readFileSync('seed-games/typing-zoo.json', 'utf8'));
   assert.equal(meta.shelf, 'learn');
-  assert.equal(G.getGameBySlug('typing-pets').shelf, 'learn');
+  assert.equal(G.getGameBySlug('typing-zoo').shelf, 'learn');
 });
 
 test('a save reads back as clean numbers; a tampered one is clamped, never trusted', () => {
@@ -52,7 +52,7 @@ test('a save reads back as clean numbers; a tampered one is clamped, never trust
     pets: Object.fromEntries(Array.from({ length: 500 }, (_, i) => [`p${i}`, 1])),
     keys: { '<script>': [1e9, 1e9], f: ['a', 'b'], k: 'nope' }, secs: -1, last: 'soon' });
   assert.equal(bad.done, 1, 'only the game\'s own lesson ids');
-  assert.equal(bad.stars, 3); assert.equal(bad.bestWpm, 200); assert.equal(bad.acc, 0); assert.equal(bad.pets, 40); assert.equal(bad.minutes, 0);
+  assert.equal(bad.stars, 3); assert.equal(bad.bestWpm, 200); assert.equal(bad.acc, 0); assert.equal(bad.pets, TY.PET_COUNT); assert.equal(TY.PET_COUNT, (html.match(/const PETS = \[([\s\S]*?)\n\];/)[1].match(/\['[a-z]+', /g) || []).length, 'the game\'s own pet count'); assert.equal(bad.minutes, 0);
   assert.deepEqual(bad.tricky, [], 'unknown keys are dropped');
   const all = TY.summarize({ done: Object.fromEntries(TY.LESSONS.map(id => [id, { s: 1, w: 10, a: 80 }])) });
   assert.equal(all.next, null, 'every lesson done');
@@ -83,7 +83,7 @@ const ada = S.createSchoolAccount(head, school.id, { rosterName: 'Ada Typer' }).
 const ben = S.createSchoolAccount(head, school.id, { rosterName: 'Ben Later' }).user;
 const outsider = S.createSchoolAccount(head, school.id, { rosterName: 'Olly Outside' }).user;
 for (const p of [ada, ben]) assert.ok(S.addToClass(teacher, klass.id, p.id).ok);
-const game = G.getGameBySlug('typing-pets');
+const game = G.getGameBySlug('typing-zoo');
 const putTyping = (u, save) => G.putSave(game.id, u.id, { [TY.SAVE_KEY]: JSON.stringify(save) });
 
 test('no typing yet: no typing panel on the class progress page', async () => {
@@ -141,7 +141,7 @@ test('Assign: pick one lesson or test (checked against the list), or the whole g
   assert.equal((await assign('chapter=l07&lock=1')).status, 400, 'the same lesson twice');
   const { q } = await import('../../server/db.js');
   const steps = q.all("SELECT s.title, s.options FROM lesson_steps s JOIN lessons l ON l.id=s.lesson_id WHERE s.game_id=? ORDER BY l.created_at", game.id);
-  assert.deepEqual(steps.map(x => [x.title, x.options]), [['Typing Pets', ''], ['Typing Pets: Lesson 7: E and I', 'chapter=l07&lock=1'], ['Typing Pets: 1-minute test', 'chapter=t1&lock=1']]);
+  assert.deepEqual(steps.map(x => [x.title, x.options]), [['Typing Zoo', ''], ['Typing Zoo: Lesson 7: E and I', 'chapter=l07&lock=1'], ['Typing Zoo: 1-minute test', 'chapter=t1&lock=1']]);
 });
 
 // ---------------------------------------------------------------- part 3: teachers' own lessons, pass marks, daily goal
@@ -161,7 +161,7 @@ test('a teacher\'s own lesson: only what the keyboard can type, through the site
   assert.equal(SETS.cleanTypingItems([{ x: 'hello there class', l: 'klingon' }])[0].l, undefined, 'an unknown keyboard is dropped');
   assert.equal(SETS.cleanTypingItems([{ x: 'call me on 555 123 4567 now' }]), null, 'nothing personal');
   assert.equal(SETS.cleanTypingItems([{ x: 'one' }, { x: 'two' }]), null, 'one lesson a set');
-  assert.ok(SETS.SET_GAMES.has('typing-pets') && SETS.OPEN_SET_GAMES.has('typing-pets'));
+  assert.ok(SETS.SET_GAMES.has('typing-zoo') && SETS.OPEN_SET_GAMES.has('typing-zoo'));
 });
 
 test('saving a lesson: teachers only; a student opens it by its code; Assign opens it', async () => {
@@ -170,7 +170,7 @@ test('saving a lesson: teachers only; a student opens it by its code; Assign ope
   const r = await post(teacher, `/api/games/${game.id}/sets`, { items, title: 'Our poem' });
   assert.equal(r.status, 200, JSON.stringify(r.json)); assert.match(r.json.id, SETS.SET_ID);
   assert.equal((await post(teacher, `/api/games/${game.id}/sets`, { items: [{ x: 'price: 5€ <b>' }] })).status, 400);
-  const play = (await get(ada, `/play/typing-pets?chapter=${r.json.id}&lock=1`)).status;
+  const play = (await get(ada, `/play/typing-zoo?chapter=${r.json.id}&lock=1`)).status;
   assert.equal(play, 200);
   const page = (await get(teacher, `/teach/assign?id=${game.id}&class=${klass.id}&opts=chapter%3D${r.json.id}%26lock%3D1`)).text;
   assert.match(page, /Our poem: typing lesson, 32 characters/);
@@ -180,7 +180,7 @@ test('saving a lesson: teachers only; a student opens it by its code; Assign ope
   assert.equal(a.status, 200, JSON.stringify(a.json));
   const { q } = await import('../../server/db.js');
   const step = q.get("SELECT s.title, s.options FROM lesson_steps s WHERE s.game_id=? AND s.options LIKE ?", game.id, `chapter=${r.json.id}%`);
-  assert.deepEqual(step, { title: 'Typing Pets: Our poem: typing lesson, 32 characters (pass 90%)', options: `chapter=${r.json.id}&mode=a90&lock=1` });
+  assert.deepEqual(step, { title: 'Typing Zoo: Our poem: typing lesson, 32 characters (pass 90%)', options: `chapter=${r.json.id}&mode=a90&lock=1` });
 });
 
 test('pass marks: clamped, either part optional, carried in mode', async () => {
@@ -286,7 +286,7 @@ test("unlock minimums: set by the class's teacher, the strictest across a studen
 
 test('units 6 and 7: paragraphs only use typable characters', () => {
   assert.equal(TY.LESSONS.length, 40);
-  const en = JSON.parse(fs.readFileSync('seed-games/typing-pets-langs/en.json', 'utf8'));
+  const en = JSON.parse(fs.readFileSync('seed-games/typing-zoo-langs/en.json', 'utf8'));
   const texts = Object.entries(en.paras);
   assert.deepEqual(texts.map(x => x[0]), TY.LESSONS.slice(28));
   for (const [id, x] of texts) {
@@ -296,7 +296,7 @@ test('units 6 and 7: paragraphs only use typable characters', () => {
 });
 
 // ---------------------------------------------------------------- part 5: other languages and keyboards
-const LANGDIR = 'seed-games/typing-pets-langs';
+const LANGDIR = 'seed-games/typing-zoo-langs';
 const LAYOUTS = JSON.parse(fs.readFileSync(`${LANGDIR}/layouts.json`, 'utf8'));
 const PACKS = fs.readdirSync(LANGDIR).filter(f => f.endsWith('.json') && f !== 'layouts.json').map(f => JSON.parse(fs.readFileSync(`${LANGDIR}/${f}`, 'utf8')));
 /** Everything a layout can type: its keys' normal and Shift characters, the key left of 1, and accented letters. */
@@ -308,9 +308,9 @@ function typableOn(id) {
   return chars;
 }
 
-test('the game holds the language packs exactly as seed-games/typing-pets-langs has them', async () => {
-  const { build } = await import('../../scripts/typing-pets-langs.mjs');
-  assert.equal(build(html), html, 'run node scripts/typing-pets-langs.mjs after changing a pack');
+test('the game holds the language packs exactly as seed-games/typing-zoo-langs has them', async () => {
+  const { build } = await import('../../scripts/typing-zoo-langs.mjs');
+  assert.equal(build(html), html, 'run node scripts/typing-zoo-langs.mjs after changing a pack');
   const want = ['en', 'de', 'es', 'fr', 'it', 'pt', 'nl', 'ru', 'ja', 'zh-Hant', 'ar', 'he'];
   assert.deepEqual(PACKS.map(p => p.lang).sort(), [...want].sort(), 'a pack for every site language');
   for (const id of Object.keys(LAYOUTS)) for (const row of LAYOUTS[id].rows) assert.equal([...row].length % 2, 0, `${id}: pairs`);
@@ -323,7 +323,7 @@ test('every pack: every string in every language, with the same placeholders, an
     assert.ok(LAYOUTS[p.layout], `${p.lang}: layout`);
     assert.deepEqual(Object.keys(p.strings).sort(), Object.keys(en.strings).sort(), `${p.lang}: the same keys`);
     for (const [k, v] of Object.entries(en.strings)) assert.equal(ph(p.strings[k]), ph(v), `${p.lang}.${k} placeholders`);
-    assert.equal(p.pets.length, 40, `${p.lang}: pets`);
+    assert.equal(p.pets.length, TY.PET_COUNT, `${p.lang}: a name for every pet`);
     const ok = typableOn(p.layout);
     const all = [...p.words, ...p.sentences, ...p.marks, ...p.apos, ...Object.values(p.paras)];
     const bad = new Set(all.flatMap(x => [...x].filter(c => !ok.has(c))));

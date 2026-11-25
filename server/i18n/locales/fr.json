@@ -2049,6 +2049,25 @@
       "bigger": "Texte plus grand"
     },
     "homeroom": {
+      "my": {
+        "label": "Mon bureau (vous seul voyez ce qui s’y trouve)",
+        "title": "Mon bureau",
+        "note": "Vous seul le voyez",
+        "empty": "Déposez un jeu ici pour l’essayer d’abord.",
+        "cardLabel": "{title}, sur mon bureau",
+        "play": "Jouer",
+        "preview": "Aperçu",
+        "open": "Ouvrir",
+        "handOut": "Distribuer",
+        "takeOff": "Retirer de mon bureau",
+        "lead": "Sur votre bureau pour l’essayer d’abord. Les élèves ne le voient pas tant que vous ne l’avez pas distribué.",
+        "lessonLead": "Sur votre bureau. L’aperçu ouvre les exercices de la leçon. Les élèves ne le voient pas tant que vous ne l’avez pas distribué.",
+        "toolLead": "Sur votre bureau, à ouvrir quand vous voulez. La distribution des outils arrive bientôt.",
+        "tapWhere": "Touchez maintenant un bureau, un groupe, Toute la classe ou Mon bureau.",
+        "tapMine": "Touchez maintenant Mon bureau pour le garder là.",
+        "toolSoon": "La distribution des outils arrive bientôt. Mettez-le sur Mon bureau pour l’ouvrir de là.",
+        "pickFirst": "Choisissez d’abord un jeu à gauche, puis touchez Mon bureau."
+      },
       "wholeClass": "Toute la classe · {count}",
       "editGroups": "Groupes",
       "groupsTitle": "Groupes",
@@ -2111,6 +2130,8 @@
       "resumed": "Les écrans sont de retour",
       "ended": "Classe terminée",
       "ho": {
+        "noStudentsYet": "Pas encore d’élèves. Ceux qui rejoindront la classe le recevront.",
+        "putClass": "Distribuer à la classe",
         "tapWhere": "Touchez maintenant un bureau, un groupe ou Toute la classe.",
         "cancel": "Annuler",
         "wholeClass": "Toute la classe",
@@ -6052,7 +6073,7 @@
       "readToMe": "Lis-le-moi"
     },
     "typing": {
-      "title": "Animaux Clavier",
+      "title": "Zoo du Clavier",
       "unlockH": "Pour ouvrir chaque leçon suivante :",
       "unlockSummary": "leçon suivante à partir de {what}",
       "goalMins": "Minutes par jour",
@@ -6097,7 +6118,7 @@
       "minutes": "{n} min",
       "missed": "Ratée {pct} % du temps",
       "notYet": "Pas encore commencé",
-      "note": "D’après la progression de chaque élève dans Animaux Clavier, entraînement à la maison compris. La vitesse est en mots par minute ; la précision est la moyenne de ses meilleures leçons. Les touches difficiles sont celles qu’il rate le plus.",
+      "note": "D’après la progression de chaque élève dans Zoo du Clavier, entraînement à la maison compris. La vitesse est en mots par minute ; la précision est la moyenne de ses meilleures leçons. Les touches difficiles sont celles qu’il rate le plus.",
       "assign": "Donner une leçon de frappe"
     },
     "courses": {
@@ -7222,7 +7243,7 @@
       "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
       "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe.",
       "mistakeHunt": "Trouve et corrige les fautes d'un court texte : l'enseignant colle son propre texte, y place des fautes d'orthographe, de grammaire et de ponctuation, puis le partage, l'assigne ou l'imprime.",
-      "typingPets": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
+      "typingZoo": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
     },
     "hubs": {
       "math": {
@@ -14886,6 +14907,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Sur votre bureau. Les élèves ne le voient pas.",
+      "already": "C’est déjà sur votre bureau.",
+      "removed": "Retiré de votre bureau."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Changer de classe",
     "arrange": "Placer les élèves",
@@ -14919,6 +14945,9 @@
       "comingNext": "Bientôt"
     },
     "errors": {
+      "badStage": "Cela ne peut pas aller sur votre bureau.",
+      "deskFull": "Votre bureau est plein. Retirez d’abord quelque chose.",
+      "notStaged": "Ce n’est plus sur votre bureau.",
       "notFound": "Ce Homeroom n’est pas disponible.",
       "badPreset": "Choisissez Rangées, Tables de 4, En U ou En cercle.",
       "badSeats": "Les places n’ont pas pu être enregistrées. Réessayez.",
@@ -15069,6 +15098,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} est distribué à la classe. Les élèves qui la rejoindront le recevront.",
       "done": "{title} est sur {count, plural, one {# bureau} other {# bureaux}}.",
       "removedOne": "Retiré de ce bureau.",
       "removedAll": "Retiré de tous les bureaux. Le travail des élèves est conservé."

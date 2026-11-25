@@ -2052,6 +2052,25 @@
       "bigger": "Bigger text"
     },
     "homeroom": {
+      "my": {
+        "label": "My desk (only you see what's on it)",
+        "title": "My desk",
+        "note": "Only you see this",
+        "empty": "Drop a game here to try it first.",
+        "cardLabel": "{title}, on my desk",
+        "play": "Play",
+        "preview": "Preview",
+        "open": "Open",
+        "handOut": "Hand out",
+        "takeOff": "Take off my desk",
+        "lead": "On your desk to try first. Students don't see it until you hand it out.",
+        "lessonLead": "On your desk. Preview opens the lesson's own problems. Students don't see it until you hand it out.",
+        "toolLead": "On your desk to open any time. Handing out tools comes next.",
+        "tapWhere": "Now tap a desk, a group, Whole class or My desk.",
+        "tapMine": "Now tap My desk to keep it there.",
+        "toolSoon": "Handing out tools comes next. Put it on My desk to open it from there.",
+        "pickFirst": "Pick a game on the left first, then tap My desk."
+      },
       "wholeClass": "Whole class · {count}",
       "editGroups": "Groups",
       "groupsTitle": "Groups",
@@ -2114,6 +2133,8 @@
       "resumed": "Screens are back",
       "ended": "Class ended",
       "ho": {
+        "noStudentsYet": "No students yet. Students who join will get it.",
+        "putClass": "Hand out to the class",
         "tapWhere": "Now tap a desk, a group or Whole class.",
         "cancel": "Cancel",
         "wholeClass": "Whole class",
@@ -6298,7 +6319,7 @@
       "none": "Not started"
     },
     "typing": {
-      "title": "Typing Pets",
+      "title": "Typing Zoo",
       "unlockH": "To open each next lesson:",
       "unlockSummary": "next lesson needs {what}",
       "goalMins": "Minutes a day",
@@ -6343,7 +6364,7 @@
       "minutes": "{n} min",
       "missed": "Missed {pct}% of the time",
       "notYet": "Not started yet",
-      "note": "From each student's own Typing Pets progress, practice at home included. Speed is words a minute (wpm); accuracy is the average of their best lessons. Tricky keys are the ones they miss most.",
+      "note": "From each student's own Typing Zoo progress, practice at home included. Speed is words a minute (wpm); accuracy is the average of their best lessons. Tricky keys are the ones they miss most.",
       "assign": "Assign a typing lesson"
     },
     "courses": {
@@ -7862,7 +7883,7 @@
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
       "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
       "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it.",
-      "typingPets": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
+      "typingZoo": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
     },
     "hubs": {
       "math": {
@@ -15636,6 +15657,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "On your desk. Students don't see it.",
+      "already": "That's already on your desk.",
+      "removed": "Taken off your desk."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Switch class",
     "arrange": "Arrange seats",
@@ -15669,6 +15695,9 @@
       "comingNext": "Coming next"
     },
     "errors": {
+      "badStage": "That can't go on your desk.",
+      "deskFull": "Your desk is full. Take something off first.",
+      "notStaged": "That isn't on your desk anymore.",
       "notFound": "This Homeroom isn't available.",
       "badPreset": "Pick Rows, Tables of 4, U-shape or Circle.",
       "badSeats": "Those seats couldn't be saved. Try again.",
@@ -15819,6 +15848,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} is handed out to the class. Students who join will get it.",
       "done": "{title} is on {count, plural, one {# desk} other {# desks}}.",
       "removedOne": "Taken off that desk.",
       "removedAll": "Removed from every desk. Students' work is kept."

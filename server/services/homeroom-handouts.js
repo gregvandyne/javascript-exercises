@@ -207,7 +207,8 @@ export function studentsFor(c, to) {
   const kind = to && TARGETS.includes(to.kind) ? to.kind : null;
   if (!kind) return fail('badTarget');
   const room = H.roomOf(c.id), ids = room.students.map(s => s.id);
-  if (kind === 'all') return ids.length ? ok({ students: [], target: 'all', all: ids }) : fail('noStudents');
+  // Whole class works with no students yet ([]: whoever joins later gets it, as Classroom's Assign does).
+  if (kind === 'all') return ok({ students: [], target: 'all', all: ids });
   const id = String(to.id || '');
   if (kind === 'desk') return ids.includes(id) ? ok({ students: [id], target: 'desk', all: [id] }) : fail('notInClass');
   if (kind === 'team') { const t = room.teams.find(x => x.id === id); return t ? ok({ students: [...t.members], target: 'team', all: [...t.members] }) : fail('noTeam'); }

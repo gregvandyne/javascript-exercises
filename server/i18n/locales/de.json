@@ -2050,6 +2050,25 @@
       "bigger": "Größere Schrift"
     },
     "homeroom": {
+      "my": {
+        "label": "Mein Pult (nur Sie sehen, was darauf liegt)",
+        "title": "Mein Pult",
+        "note": "Nur Sie sehen das",
+        "empty": "Legen Sie ein Spiel hierher, um es zuerst auszuprobieren.",
+        "cardLabel": "{title}, auf meinem Pult",
+        "play": "Spielen",
+        "preview": "Vorschau",
+        "open": "Öffnen",
+        "handOut": "Austeilen",
+        "takeOff": "Von meinem Pult nehmen",
+        "lead": "Auf Ihrem Pult zum Ausprobieren. Schüler sehen es erst, wenn Sie es austeilen.",
+        "lessonLead": "Auf Ihrem Pult. Die Vorschau öffnet die Aufgaben der Lektion. Schüler sehen es erst, wenn Sie es austeilen.",
+        "toolLead": "Auf Ihrem Pult, jederzeit zu öffnen. Werkzeuge austeilen kommt bald.",
+        "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe, Ganze Klasse oder Mein Pult.",
+        "tapMine": "Tippen Sie jetzt auf Mein Pult, um es dort abzulegen.",
+        "toolSoon": "Werkzeuge austeilen kommt bald. Legen Sie es auf Mein Pult, um es von dort zu öffnen.",
+        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie auf Mein Pult."
+      },
       "wholeClass": "Ganze Klasse · {count}",
       "editGroups": "Gruppen",
       "groupsTitle": "Gruppen",
@@ -2112,6 +2131,8 @@
       "resumed": "Bildschirme sind wieder an",
       "ended": "Stunde beendet",
       "ho": {
+        "noStudentsYet": "Noch keine Schüler. Wer der Klasse beitritt, bekommt es.",
+        "putClass": "An die Klasse austeilen",
         "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe oder Ganze Klasse.",
         "cancel": "Abbrechen",
         "wholeClass": "Ganze Klasse",
@@ -6053,7 +6074,7 @@
       "readToMe": "Vorlesen"
     },
     "typing": {
-      "title": "Tipp-Tiere",
+      "title": "Tipp-Zoo",
       "unlockH": "Für jede nächste Lektion:",
       "unlockSummary": "nächste Lektion ab {what}",
       "goalMins": "Minuten pro Tag",
@@ -6098,7 +6119,7 @@
       "minutes": "{n} Min.",
       "missed": "In {pct}% der Fälle verfehlt",
       "notYet": "Noch nicht begonnen",
-      "note": "Aus dem eigenen Tipp-Tiere-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
+      "note": "Aus dem eigenen Tipp-Zoo-Fortschritt jedes Schülers, Üben zu Hause eingeschlossen. Tempo in Wörtern pro Minute (WpM); die Genauigkeit ist der Schnitt der besten Lektionen. Schwierige Tasten sind die, die am häufigsten verfehlt werden.",
       "assign": "Eine Tipp-Lektion verteilen"
     },
     "courses": {
@@ -7223,7 +7244,7 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingPets": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
     },
     "hubs": {
       "math": {
@@ -14887,6 +14908,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Auf Ihrem Pult. Schüler sehen es nicht.",
+      "already": "Das liegt schon auf Ihrem Pult.",
+      "removed": "Von Ihrem Pult genommen."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Klasse wechseln",
     "arrange": "Sitzplan einrichten",
@@ -14920,6 +14946,9 @@
       "comingNext": "Kommt bald"
     },
     "errors": {
+      "badStage": "Das kann nicht auf Ihr Pult.",
+      "deskFull": "Ihr Pult ist voll. Nehmen Sie zuerst etwas herunter.",
+      "notStaged": "Das liegt nicht mehr auf Ihrem Pult.",
       "notFound": "Dieser Homeroom ist nicht verfügbar.",
       "badPreset": "Wählen Sie Reihen, Vierertische, U-Form oder Kreis.",
       "badSeats": "Der Sitzplan konnte nicht gespeichert werden. Bitte erneut versuchen.",
@@ -15070,6 +15099,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} ist an die Klasse ausgeteilt. Wer der Klasse beitritt, bekommt es.",
       "done": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
       "removedOne": "Von diesem Tisch genommen.",
       "removedAll": "Von allen Tischen entfernt. Die Arbeit der Kinder bleibt erhalten."

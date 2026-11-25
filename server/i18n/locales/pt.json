@@ -2050,6 +2050,25 @@
       "bigger": "Texto maior"
     },
     "homeroom": {
+      "my": {
+        "label": "Minha mesa (só você vê o que está nela)",
+        "title": "Minha mesa",
+        "note": "Só você vê isto",
+        "empty": "Solte um jogo aqui para testá-lo primeiro.",
+        "cardLabel": "{title}, na minha mesa",
+        "play": "Jogar",
+        "preview": "Prévia",
+        "open": "Abrir",
+        "handOut": "Distribuir",
+        "takeOff": "Tirar da minha mesa",
+        "lead": "Na sua mesa para testar primeiro. Os alunos só veem quando você distribuir.",
+        "lessonLead": "Na sua mesa. A prévia abre os exercícios da lição. Os alunos só veem quando você distribuir.",
+        "toolLead": "Na sua mesa para abrir quando quiser. Distribuir ferramentas vem em seguida.",
+        "tapWhere": "Agora toque em uma carteira, um grupo, Turma toda ou Minha mesa.",
+        "tapMine": "Agora toque em Minha mesa para deixá-lo lá.",
+        "toolSoon": "Distribuir ferramentas vem em seguida. Coloque na Minha mesa para abrir de lá.",
+        "pickFirst": "Escolha primeiro um jogo à esquerda e depois toque em Minha mesa."
+      },
       "wholeClass": "Turma toda · {count}",
       "editGroups": "Grupos",
       "groupsTitle": "Grupos",
@@ -2112,6 +2131,8 @@
       "resumed": "As telas voltaram",
       "ended": "Aula encerrada",
       "ho": {
+        "noStudentsYet": "Ainda não há alunos. Quem entrar vai receber.",
+        "putClass": "Distribuir para a turma",
         "tapWhere": "Agora toque em uma carteira, um grupo ou Turma toda.",
         "cancel": "Cancelar",
         "wholeClass": "Turma toda",
@@ -6054,7 +6075,7 @@
       "readToMe": "Ler para mim"
     },
     "typing": {
-      "title": "Bichinhos do Teclado",
+      "title": "Zoo do Teclado",
       "unlockH": "Para abrir cada próxima lição:",
       "unlockSummary": "próxima lição com {what}",
       "goalMins": "Minutos por dia",
@@ -6099,7 +6120,7 @@
       "minutes": "{n} min",
       "missed": "Errou {pct}% das vezes",
       "notYet": "Ainda não começou",
-      "note": "Do progresso de cada aluno em Bichinhos do Teclado, incluindo o treino em casa. A velocidade é em palavras por minuto (ppm); a precisão é a média das melhores lições. Teclas difíceis são as que mais erram.",
+      "note": "Do progresso de cada aluno em Zoo do Teclado, incluindo o treino em casa. A velocidade é em palavras por minuto (ppm); a precisão é a média das melhores lições. Teclas difíceis são as que mais erram.",
       "assign": "Atribuir uma lição de digitação"
     },
     "courses": {
@@ -7224,7 +7245,7 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingPets": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingZoo": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
     },
     "hubs": {
       "math": {
@@ -14888,6 +14909,11 @@
     }
   },
   "homeroom": {
+    "staged": {
+      "added": "Na sua mesa. Os alunos não veem.",
+      "already": "Isso já está na sua mesa.",
+      "removed": "Tirado da sua mesa."
+    },
     "pageTitle": "{class} · Homeroom",
     "switchClass": "Trocar de turma",
     "arrange": "Organizar os lugares",
@@ -14921,6 +14947,9 @@
       "comingNext": "Em breve"
     },
     "errors": {
+      "badStage": "Isso não pode ir para a sua mesa.",
+      "deskFull": "Sua mesa está cheia. Tire algo primeiro.",
+      "notStaged": "Isso não está mais na sua mesa.",
       "notFound": "Este Homeroom não está disponível.",
       "badPreset": "Escolha Fileiras, Mesas de 4, Em U ou Círculo.",
       "badSeats": "Não foi possível salvar os lugares. Tente de novo.",
@@ -15071,6 +15100,7 @@
       }
     },
     "handout": {
+      "forLater": "{title} foi distribuído para a turma. Quem entrar vai receber.",
       "done": "{title} está em {count, plural, one {# carteira} other {# carteiras}}.",
       "removedOne": "Tirado dessa carteira.",
       "removedAll": "Removido de todas as carteiras. O trabalho dos alunos fica guardado."

@@ -617,3 +617,4 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-rename{flex:1}
 .mp-rename input{width:100%;max-width:420px}
 @media (prefers-reduced-motion:reduce){.mp-dpulse{animation:none}}
+.mp-host-who{margin:14px 0 0;line-height:1.45}
