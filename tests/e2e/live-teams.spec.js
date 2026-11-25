@@ -233,7 +233,7 @@ test('team play in Question Battle: the projector team board, Battle\'s team boa
   // CSV: team and question columns
   const href = await host.locator('#lv-details a[download]').getAttribute('href');
   const csv = await (await host.request.get(href)).text();
-  expect(csv.split('\n')[0]).toMatch(/^rank,student,team,score,bonus,correct,answered,q1,q2,q3\b/);
+  expect(csv.split('\n')[0]).toMatch(/^student,team,score,bonus,correct,answered,q1,q2,q3\b/);
   expect(csv).toMatch(/Blue Whales|Orange Tigers|Green Frogs/);
   expect(csv).toContain('question,right,answered');
   // print
@@ -356,7 +356,7 @@ test('the teacher\'s dashboard on a phone: answered status, live bars, needs hel
   for (const p of [a, fr, ar, dash, stu, host]) await p.context().close();
 });
 
-test('game settings: 2 questions, accuracy only, leaderboard off; remembered on the landing; back to standard', async ({ browser }) => {
+test('game settings: 2 questions, accuracy only, never a leaderboard; remembered on the landing; back to standard', async ({ browser }) => {
   test.setTimeout(180_000);
   const host = await signedIn(browser, TEACHER);
   await autoAnswer(host);
@@ -366,7 +366,7 @@ test('game settings: 2 questions, accuracy only, leaderboard off; remembered on 
   await expect(host.locator('#lv-settings')).toBeVisible();
   await host.selectOption('#lv-hs-count', '5');
   await host.selectOption('#lv-hs-points', 'accuracy');
-  await host.selectOption('#lv-hs-board', 'off');
+  await expect(host.locator('#lv-hs-board')).toHaveCount(0);                         // no leaderboard setting: never ranked
   await shot(host, 'settings-dialog');
   await host.locator('#lv-settings button[value="save"]').click();
   const [fa, fb] = [await liveFrame(a), await liveFrame(b)];
@@ -377,15 +377,14 @@ test('game settings: 2 questions, accuracy only, leaderboard off; remembered on 
   await fb.evaluate(c => window.__brbTest.answer(c), (right + 1) % 4);
   await waitPhase(fa, 'between');
   await expect.poll(async () => (await state(fa)).score).toBe(1000);                 // accuracy only: 1000 a right answer
-  await expect(fa.locator('#note')).not.toContainText('number');                      // no rank when the board is off
-  await expect(a.locator('.lv-me-team-rank')).toHaveText('');
+  await expect(fa.locator('#note')).not.toContainText('number');                      // never a player's place
+  await expect(a.locator('.lv-me-team-rank')).toContainText(/Place \d of \d/);         // the team's place stays
   await act(host, 'end');
   // remembered on the landing
   await host.goto('/live');
   await liveStep(host, 'open');
   await host.locator('#lv-settings-landing > summary').click();
   await expect(host.locator('#lv-ls-points')).toHaveValue('accuracy');
-  await expect(host.locator('#lv-ls-board')).toHaveValue('off');
   await expect(host.locator('#lv-teams-n input[value="2"]')).toBeChecked();
   await shot(host, 'landing-settings');
   await host.click('#lv-prefs-reset');

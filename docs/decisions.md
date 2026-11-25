@@ -13896,3 +13896,38 @@ game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked a
   Noto set instead.
 - Tests: `tests/unit/typing-zoo-pets.test.js` (every pet has its pinned picture, an old save, reduced motion, the pet
   never over the line or keyboard at 390 and 1280 px while following a pointer), `tests/unit/typing.test.js`.
+
+## No leaderboards (25 Nov 2026)
+
+The owner said: "Remove the leaderboard from all games." Oomba never ranks students: no list of players by score or
+time, no top five, no "#1" or "1st place", no podium of named players. Scores are still kept for what uses them.
+
+- **The game page.** The Leaderboard panel is gone. A signed-in player sees only their own best ("Your best", from
+  `games.myBest`); nobody sees anyone else's score. `games.leaderboard()` is removed and `GET /api/games/:id/leaderboard`
+  answers 410 with `{ rows: [] }`. `POST /api/games/:id/score` still stores the best score per player (progress, the
+  gradebook, Homeroom and a student's own best read it through services/scores.js); grown-ups' scores are still never
+  stored. The score label is still cleaned (it shows beside the player's own best and in teachers' views).
+- **Oomba Live.** The host's "Leaderboard on players' devices" setting (`board`) is removed (an old remembered value is
+  an unknown key and is dropped). The server keeps scoring, marks, teams and the gradebook as before, but `lb`, `rv` and
+  `ph ended` carry `top: []` for everyone (the projector too: it is the class's screen) and `you.rank` is always 0. At
+  the end each player gets their own result (`you: { right, total, score }`: "You got 8 of 10 right!", or "Your score:
+  1200" in a game without questions); the projector's results page adds the class's share of right answers. Teams are
+  not single students, so team totals, team places and the team podium stay. The results page's "Student details" and
+  the CSV list students by name with no Place column; `live_run_scores.rank` is written as 0 (the column stays).
+- **Live games.** Question Battle, Brain Board and Atlas Quest Live end on a calm card (the class's right answers on the
+  projector, the player's own on a phone, the score in practice) with no top five or podium of players; Brain Board's
+  score column shows teams only. Quest Race in a live room has no places, overtakes, leader crown, "takes the lead"
+  banners or podium of runners (team mode keeps the team podium with no runner on it); the solo practice race against
+  the island bots keeps them. Doodle Hoot Live shows players in join order with no points on the projector (each phone
+  shows its own), and ends on "Great drawing, everyone!" with everyone who played instead of a podium. The Watch view
+  (devices without 3D) no longer lists the top five.
+- **Games played alone.** Leaderboard wording is gone from Beat Lanes, Happy Putt (its pass-the-phone ceremony puts
+  everyone side by side in player order; the champion still wears the jacket), Gulp City (no "Biggest holes" list and
+  no "#3 of 9": the biggest hole still wins against the computer), and comments in the others. Personal bests, stars,
+  Castle Clash's progress, puzzle rating graph and records are unchanged. Winning against the computer or a friend in a
+  two-player game is still a win: that is the game, not a ranking.
+- **The AI builder.** The SDK rules say `BRB.score.submit` saves the player's own best and that games never make a
+  leaderboard, high-score table, podium of players or "1st place" text; the live rules (docs/kit-api.md, rebuilt into
+  kit-rules.js) say `top` is always empty and a live game shows each player's own result and the class's totals.
+- **Left as is.** The kit's live pack (kit/packs/live.js, pinned in shipped kit versions) still has its `leaderboard`
+  event and `leaderboard()` accessor; they only ever carry an empty list now. A new pack build is not needed for that.

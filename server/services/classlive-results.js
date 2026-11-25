@@ -24,12 +24,12 @@ const DAY = 86400e3;
 export const KEEP = { classless: 90 * DAY, reports: 365 * DAY };
 export const REPORT_REASONS = ['scary', 'mean', 'personal', 'other'];
 
-/** Seats in rank order (players still seated). */
+/** Seats best first (players still seated): the order save() and the host's own data use, never shown as a rank. */
 export const ranked = s => rankSeats(s);
 
 /**
  * The results in memory: players { seat, name (as shown in the session: a nickname index or, in a class room, the
- * account name), avatar, score, correct, answered, rank, progress?, scoredBy, left?, kind } and items
+ * account name), avatar, score, correct, answered, progress?, scoredBy, left?, kind } and items
  * { i, q?, right, answered, topWrong? }.
  */
 /** How many questions (or game items) the marks cover: the questions asked, or the items the game reported. */
@@ -52,10 +52,10 @@ export function summary(s) {
     ...(race ? { progress: Math.min(1000, Math.round((race.get(seat.no) || { prog: 0 }).prog)), gems: (race.get(seat.no) || { gems: 0 }).gems } : {}),
     ...(s.seats.has(seat.no) ? {} : { left: true }),
   }));
-  // The leaderboard's order: progress (Quest Race), then score + bonus.
+  // Best first (progress for Quest Race, then score + bonus) only so save() keeps a student's better seat when they
+  // somehow held two. No rank is kept or shown: live games never rank students (docs/decisions.md "No leaderboards");
+  // every page lists players by name.
   rows.sort((a, b) => ((b.progress || 0) - (a.progress || 0)) || (b.total - a.total) || (a.seat - b.seat));
-  let rank = 0, prev = null;
-  rows.forEach((r, i) => { const k = `${r.progress || 0}:${r.total}`; if (k !== prev) { rank = i + 1; prev = k; } r.rank = rank; });
   const items = [...s.itemStats].sort((a, b) => a[0] - b[0]).map(([i, st]) => ({
     i, ...(st.q ? { q: st.q } : {}), right: st.right, answered: st.answered, ...(st.topWrong ? { topWrong: st.topWrong } : {}),
     ...(st.choices ? { choices: st.choices, answer: st.answer, secs: st.secs, counts: st.counts } : {}),
@@ -83,7 +83,7 @@ export function summary(s) {
 /** The run's settings worth keeping (no maxPlayers or lock state). */
 const settingsOf = s => {
   const st = s.settings || {};
-  return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes,
+  return { secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes,
     // Tug of Math Live: its grade and length (a starter id), so "Play again with these teams" plays the same match
     ...(s.tug ? { tug: s.tug.id } : {}),
     // Doodle Hoot Live: its word language, level, rounds and time (a starter id; never a word or a drawing)
@@ -113,7 +113,7 @@ export function save(s, sum = summary(s)) {
     JSON.stringify(sum.settings));
     if (s.cohostEver && Array.isArray(s.log)) saveLog(s, id, classRun);
     if (!classRun) return;
-    // Rank order: a student who somehow held two seats (rows are best first) keeps the better one.
+    // A student who somehow held two seats (rows are best first) keeps the better one.
     const done = new Set();
     for (const p of sum.players) {
       const userId = sum.userOf.get(p.seat);
@@ -121,7 +121,7 @@ export function save(s, sum = summary(s)) {
       done.add(userId);
       const m = S.classMember(s.classId, userId);
       if (!m || m.role !== 'student') continue;
-      q.run('INSERT OR REPLACE INTO live_run_scores(run_id, user_id, score, rank, correct, answered, team, bonus, marks) VALUES (?,?,?,?,?,?,?,?,?)', id, userId, p.score, p.rank, p.correct, p.answered, p.team || 0, p.bonus || 0, p.marks || '');
+      q.run('INSERT OR REPLACE INTO live_run_scores(run_id, user_id, score, rank, correct, answered, team, bonus, marks) VALUES (?,?,?,?,?,?,?,?,?)', id, userId, p.score, 0, p.correct, p.answered, p.team || 0, p.bonus || 0, p.marks || '');
       if (s.clId && s.stepId) { const u = getUser(userId); if (u) progress.gameScore(u, s.clId, s.stepId, p.score, 'live'); }
     }
   });
@@ -169,8 +169,8 @@ export function persisted(u, runId) {
   try { items = JSON.parse(run.items); } catch { /* none */ }
   try { teams = run.teams ? JSON.parse(run.teams) : null; } catch { /* none */ }
   try { settings = run.settings ? JSON.parse(run.settings) : null; } catch { /* none */ }
-  const scores = run.class_id ? q.all(`SELECT r.user_id, r.score, r.rank, r.correct, r.answered, r.team, r.bonus, r.marks, u.display_name, u.username FROM live_run_scores r
-    JOIN users u ON u.id=r.user_id WHERE r.run_id=? ORDER BY r.rank, u.display_name COLLATE NOCASE`, run.id) : [];
+  const scores = run.class_id ? q.all(`SELECT r.user_id, r.score, r.correct, r.answered, r.team, r.bonus, r.marks, u.display_name, u.username FROM live_run_scores r
+    JOIN users u ON u.id=r.user_id WHERE r.run_id=? ORDER BY u.display_name COLLATE NOCASE, u.username`, run.id) : [];
   return { run, items, scores, teams, settings };
 }
 
@@ -192,10 +192,10 @@ export const hardest = (list, n = 3) => (list || []).filter(it => it.answered).s
 // ---------------------------------------------------------------- CSV
 const cell = v => { const s = String(v ?? ''); return /^[=+\-@\t\r]/.test(s) ? `"'${s.replace(/"/g, '""')}"` : /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; };
 /**
- * The results as CSV: rank, student, team, score, bonus, correct, answered, q1..qN (marks: 1 right, 0 wrong, - none),
+ * The results as CSV (students by name, never ranked): student, team, score, bonus, correct, answered, q1..qN (marks: 1 right, 0 wrong, - none),
  * then a blank line and one row per question: question, right, answered, choice_a..d (counts). Cells that a spreadsheet
  * would read as a formula are quoted with a leading apostrophe.
- * x: { players: [{ rank, name, roster?, team (a name), score, bonus, correct, answered, marks }], items }
+ * x: { players: [{ name, roster?, team (a name), score, bonus, correct, answered, marks }], items }
  * roster: the school's roster name, which the route gives only to someone who manages the class; when any player has
  * one, a roster_name column follows student (the name shown in the game).
  */
@@ -203,8 +203,9 @@ export function csv({ players = [], items = [] }) {
   const n = Math.max(0, ...players.map(p => (p.marks || '').length));
   const qs = Array.from({ length: n }, (_, i) => `q${i + 1}`);
   const ro = players.some(p => p.roster);
-  const rows = [['rank', 'student', ...(ro ? ['roster_name'] : []), 'team', 'score', 'bonus', 'correct', 'answered', ...qs],
-    ...players.map(p => [p.rank, p.name, ...(ro ? [p.roster || ''] : []), p.team || '', p.score, p.bonus || 0, p.correct, p.answered, ...Array.from({ length: n }, (_, i) => (p.marks || '')[i] || '-')])];
+  const byName = players.slice().sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), undefined, { sensitivity: 'base' }));
+  const rows = [['student', ...(ro ? ['roster_name'] : []), 'team', 'score', 'bonus', 'correct', 'answered', ...qs],
+    ...byName.map(p => [p.name, ...(ro ? [p.roster || ''] : []), p.team || '', p.score, p.bonus || 0, p.correct, p.answered, ...Array.from({ length: n }, (_, i) => (p.marks || '')[i] || '-')])];
   if (items.length) {
     rows.push([]);
     rows.push(['question', 'right', 'answered', 'choice_a', 'choice_b', 'choice_c', 'choice_d']);

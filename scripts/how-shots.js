@@ -518,7 +518,7 @@ async function liveShots({ person, shot }, ids) {
         made.push({ slug: 'live-play', kind, png: await shot(s.p, `live-play-${kind}`, { names: true }) });
       }
     }
-    // Most are right; a couple miss one, so the leaderboard has an order.
+    // Most are right; a couple miss one, so the results have something to show.
     for (const [k, s] of frames.entries()) {
       const q = (await state(s.f)).question, right = q.choices.indexOf(LIVE_ITEMS[i].choices[0]);
       const pick = (k + i) % 4 === 3 ? (right + 1) % q.choices.length : right;

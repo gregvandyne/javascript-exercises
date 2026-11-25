@@ -5,7 +5,7 @@
 // of the game's list (the drawer and the projector see it), something else (they see only "something else"), then the
 // word; the turn ends as soon as everyone has it, and the reveal shows the word on all three screens. Turn 2: the other
 // player draws, the first reloads mid-turn and gets the drawing replayed, says it out loud, and the drawer taps
-// "Someone said it!" and who. The end: each player's results card, the projector's podium, then the results page. A
+// "Someone said it!" and who. The end: each player's results card, the projector's "everyone who played" (no podium), then the results page. A
 // second test, with letter tiles: the host's Clear drawing, a player hiding a drawing, a late joiner who sees the
 // drawing so far, the host's own "Someone said it!", and Remove on the drawer. LIVE_SHOTS=<dir> saves screenshots.
 import { test, expect } from '@playwright/test';
@@ -84,7 +84,7 @@ async function openRoom(host, { rounds = '1', secs = '60', tiles = false } = {})
   return (await host.locator('#lv-code').textContent()).replace(/\s/g, '');
 }
 
-test('a family room: two players in different places draw and spell, a reload mid-turn, the podium and the results', async ({ browser }) => {
+test('a family room: two players in different places draw and spell, a reload mid-turn, the end and the results', async ({ browser }) => {
   test.setTimeout(240_000);
   const hctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   const host = await hctx.newPage();
@@ -188,12 +188,13 @@ test('a family room: two players in different places draw and spell, a reload mi
   await fb.locator('.dh-sheet .dh-who-btns button').first().tap();
   await until(fa2, s => s.solved && s.word === word2);
   await expect(fa2.locator('.dh-type .dh-say')).toContainText('You got it!');
-  // the end: each player's results card, the projector's podium, then the results page
+  // the end: each player's results card, the projector's "everyone who played" (no podium), then the results page
   await until(hf, s => s.ph === 'done', 30_000);
-  await expect(hf.locator('.dh-podium .nm')).toHaveCount(2);
+  await expect(hf.locator('.dh-people li')).toHaveCount(2);
+  await expect(hf.locator('.dh-podium')).toHaveCount(0);
   await until(fb, s => s.results); await until(fa2, s => s.results);
-  await expect(fb.locator('.ok-win h2')).toContainText(/place!|Well played!/);
-  await shot(host, 'podium-host'); await shot(a, 'results-phone');
+  await expect(fb.locator('.ok-win h2')).toContainText('Well played!');
+  await shot(host, 'end-host'); await shot(a, 'results-phone');
   await host.waitForURL(/\/live\/results\//, { timeout: 30_000 });
   await expect(host.locator('main')).toContainText(/\d+/);
   await shot(host, 'results');

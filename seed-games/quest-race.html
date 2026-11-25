@@ -98,6 +98,7 @@
   [dir="rtl"] .qr-stand { animation-name: qr-side-r; }
   @keyframes qr-side-r { from { transform: translateX(-40px); opacity: 0; } to { transform: none; opacity: 1; } }
   .qr-stand h2 { margin: 0 0 6px; font-size: clamp(16px, 1.6vw, 22px); text-align: center; color: #ffc83d; }
+  .qr-stand li.cl { display: block; text-align: center; }
   .qr-stand ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 5px; }
   .qr-stand li { display: grid; grid-template-columns: 2em 1fr auto; gap: 8px; align-items: center; font-weight: 800; font-size: clamp(14px, 1.5vw, 21px); background: rgba(255,255,255,.08); border-radius: 10px; padding: 4px 8px; }
   .qr-stand li .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -219,9 +220,11 @@ window.SoloBank = (function () {
 <script>
 /* QUEST RACE: an Oomba Live reference game (docs/kit-api.md "Live class games"). Questions on every device; a right
    answer is a gem and a dash along a race path across a 3D island: Sunny Beach, the Jungle, the Volcano Pass, the Sky
-   Bridge and the Castle finish. The projector is a sports broadcast: a director camera, banners ("takes the lead!",
-   "3 in a row!", "Photo finish!"), a mini track with every runner, standings and a podium with fireworks. Phones get a
-   juicy answer pad, a streak meter (3 right in a row is a BOOST), overtakes and their place.
+   Bridge and the Castle finish. The projector is a sports broadcast: a director camera, streak banners ("3 in a row!"),
+   a mini track with every runner, the team podium in team games and fireworks. Phones get a juicy answer pad and a
+   streak meter (3 right in a row is a BOOST). A live class race never ranks students: no places, overtakes, leader or
+   podium of runners, only each player's own result and the class's right answers (docs/decisions.md "No
+   leaderboards"); the practice race against the island bots keeps its places, lead and podium.
    This classic script holds the whole game (rules, the answer pad, the race model, the 2D view): devices that can't
    draw 3D (no WebGL 2 or import maps) and Simple view play it top-down. The module script further down only adds the
    3D view. Played alone (not in a live session) it is a practice race against three island racers.
@@ -248,18 +251,18 @@ window.SoloBank = (function () {
   };
   // new in the showpiece version: broadcast banners, zones, the streak meter, overtakes, practice racers
   var MORE = {
-    en: { lead: '{name} takes the lead!', leadAnon: 'New leader!', streak: '{name}: {n} in a row!', streakAnon: '{n} in a row!', crosses: '{name} crosses the finish line!', wins: '{name} wins the race!', winsAnon: 'We have a winner!', photo: 'Photo finish!', z0: 'Sunny Beach', z1: 'Jungle Run', z2: 'Volcano Pass', z3: 'Sky Bridge', z4: 'Castle Finish', place2: 'Place {rank} of {count}', boost: 'BOOST!', combo: '{n} in a row', comboHint: '3 right in a row = boost!', overtake: 'Overtake!', enc1: 'Next one is yours!', enc2: 'Shake it off and keep running!', enc3: 'Good try! Eyes on the next one!', rightWas: 'Answer: {answer}', watch: 'Locked in! Watch the race', nextSoon: 'Next question coming up…', answeredOf: '{n} of {total} answered', youFinished: 'You crossed the finish line!', again: 'Race again', practice2: 'Practice race against the island racers!', standings: 'Race standings', final: 'Final standings' },
-    es: { lead: '¡{name} toma la delantera!', leadAnon: '¡Nuevo líder!', streak: '¡{name}: {n} seguidas!', streakAnon: '¡{n} seguidas!', crosses: '¡{name} cruza la meta!', wins: '¡{name} gana la carrera!', winsAnon: '¡Ya tenemos ganador!', photo: '¡Final de foto!', z0: 'Playa Soleada', z1: 'Carrera en la Selva', z2: 'Paso del Volcán', z3: 'Puente del Cielo', z4: 'Meta del Castillo', place2: 'Puesto {rank} de {count}', boost: '¡TURBO!', combo: '{n} seguidas', comboHint: '¡3 aciertos seguidos = turbo!', overtake: '¡Adelantamiento!', enc1: '¡La próxima es tuya!', enc2: '¡Sacúdete y sigue corriendo!', enc3: '¡Buen intento! ¡Atento a la próxima!', rightWas: 'Respuesta: {answer}', watch: '¡Respuesta enviada! Mira la carrera', nextSoon: 'Ya viene la siguiente pregunta…', answeredOf: '{n} de {total} respondieron', youFinished: '¡Cruzaste la meta!', again: 'Correr otra vez', practice2: '¡Carrera de práctica contra los corredores de la isla!', standings: 'Clasificación', final: 'Clasificación final' },
-    fr: { lead: '{name} prend la tête !', leadAnon: 'Nouveau leader !', streak: '{name} : {n} de suite !', streakAnon: '{n} de suite !', crosses: '{name} franchit la ligne d’arrivée !', wins: '{name} gagne la course !', winsAnon: 'Nous avons un gagnant !', photo: 'Photo-finish !', z0: 'Plage ensoleillée', z1: 'Course dans la jungle', z2: 'Col du volcan', z3: 'Pont du ciel', z4: 'Arrivée au château', place2: 'Place {rank} sur {count}', boost: 'TURBO !', combo: '{n} de suite', comboHint: '3 bonnes réponses de suite = turbo !', overtake: 'Dépassement !', enc1: 'La prochaine est pour toi !', enc2: 'Secoue-toi et continue de courir !', enc3: 'Bien essayé ! Concentre-toi sur la suivante !', rightWas: 'Réponse : {answer}', watch: 'Réponse envoyée ! Regarde la course', nextSoon: 'La prochaine question arrive…', answeredOf: '{n} sur {total} ont répondu', youFinished: 'Tu as franchi la ligne d’arrivée !', again: 'Recourir', practice2: 'Course d’entraînement contre les coureurs de l’île !', standings: 'Classement', final: 'Classement final' },
-    de: { lead: '{name} geht in Führung!', leadAnon: 'Neue Führung!', streak: '{name}: {n} in Folge!', streakAnon: '{n} in Folge!', crosses: '{name} läuft durchs Ziel!', wins: '{name} gewinnt das Rennen!', winsAnon: 'Wir haben einen Sieger!', photo: 'Fotofinish!', z0: 'Sonnenstrand', z1: 'Dschungellauf', z2: 'Vulkanpass', z3: 'Himmelsbrücke', z4: 'Burgziel', place2: 'Platz {rank} von {count}', boost: 'TURBO!', combo: '{n} in Folge', comboHint: '3 richtig in Folge = Turbo!', overtake: 'Überholt!', enc1: 'Die nächste schaffst du!', enc2: 'Abschütteln und weiterlaufen!', enc3: 'Guter Versuch! Auf zur nächsten!', rightWas: 'Antwort: {answer}', watch: 'Antwort abgegeben! Schau dir das Rennen an', nextSoon: 'Die nächste Frage kommt gleich…', answeredOf: '{n} von {total} haben geantwortet', youFinished: 'Du bist im Ziel!', again: 'Nochmal rennen', practice2: 'Übungsrennen gegen die Inselläufer!', standings: 'Rennstand', final: 'Endstand' },
-    it: { lead: '{name} passa in testa!', leadAnon: 'Nuovo leader!', streak: '{name}: {n} di fila!', streakAnon: '{n} di fila!', crosses: '{name} taglia il traguardo!', wins: '{name} vince la corsa!', winsAnon: 'Abbiamo un vincitore!', photo: 'Fotofinish!', z0: 'Spiaggia del Sole', z1: 'Corsa nella Giungla', z2: 'Passo del Vulcano', z3: 'Ponte del Cielo', z4: 'Traguardo del Castello', place2: 'Posto {rank} su {count}', boost: 'TURBO!', combo: '{n} di fila', comboHint: '3 giuste di fila = turbo!', overtake: 'Sorpasso!', enc1: 'La prossima è tua!', enc2: 'Scrollatela di dosso e continua a correre!', enc3: 'Bel tentativo! Occhi sulla prossima!', rightWas: 'Risposta: {answer}', watch: 'Risposta inviata! Guarda la corsa', nextSoon: 'Sta arrivando la prossima domanda…', answeredOf: '{n} su {total} hanno risposto', youFinished: 'Hai tagliato il traguardo!', again: 'Corri ancora', practice2: 'Corsa di prova contro i corridori dell’isola!', standings: 'Classifica', final: 'Classifica finale' },
-    pt: { lead: '{name} assume a liderança!', leadAnon: 'Novo líder!', streak: '{name}: {n} seguidas!', streakAnon: '{n} seguidas!', crosses: '{name} cruza a linha de chegada!', wins: '{name} vence a corrida!', winsAnon: 'Temos um vencedor!', photo: 'Chegada na foto!', z0: 'Praia do Sol', z1: 'Corrida na Selva', z2: 'Passagem do Vulcão', z3: 'Ponte do Céu', z4: 'Chegada no Castelo', place2: '{rank}º lugar de {count}', boost: 'TURBO!', combo: '{n} seguidas', comboHint: '3 certas seguidas = turbo!', overtake: 'Ultrapassagem!', enc1: 'A próxima é sua!', enc2: 'Deixa pra lá e continue correndo!', enc3: 'Boa tentativa! Atenção na próxima!', rightWas: 'Resposta: {answer}', watch: 'Resposta enviada! Assista à corrida', nextSoon: 'A próxima pergunta já vem…', answeredOf: '{n} de {total} responderam', youFinished: 'Você cruzou a linha de chegada!', again: 'Correr de novo', practice2: 'Corrida de treino contra os corredores da ilha!', standings: 'Classificação', final: 'Classificação final' },
-    nl: { lead: '{name} neemt de leiding!', leadAnon: 'Nieuwe leider!', streak: '{name}: {n} op rij!', streakAnon: '{n} op rij!', crosses: '{name} komt over de finish!', wins: '{name} wint de race!', winsAnon: 'We hebben een winnaar!', photo: 'Fotofinish!', z0: 'Zonnestrand', z1: 'Junglerace', z2: 'Vulkaanpas', z3: 'Hemelbrug', z4: 'Kasteelfinish', place2: 'Plek {rank} van {count}', boost: 'TURBO!', combo: '{n} op rij', comboHint: '3 goed op rij = turbo!', overtake: 'Ingehaald!', enc1: 'De volgende is voor jou!', enc2: 'Schud het van je af en ren door!', enc3: 'Goed geprobeerd! Let op de volgende!', rightWas: 'Antwoord: {answer}', watch: 'Antwoord verstuurd! Kijk naar de race', nextSoon: 'De volgende vraag komt eraan…', answeredOf: '{n} van {total} hebben geantwoord', youFinished: 'Je bent over de finish!', again: 'Nog een keer racen', practice2: 'Oefenrace tegen de eilandrenners!', standings: 'Tussenstand', final: 'Eindstand' },
-    ru: { lead: '{name} выходит вперёд!', leadAnon: 'Новый лидер!', streak: '{name}: {n} подряд!', streakAnon: '{n} подряд!', crosses: '{name} пересекает финиш!', wins: '{name} выигрывает гонку!', winsAnon: 'У нас есть победитель!', photo: 'Фотофиниш!', z0: 'Солнечный пляж', z1: 'Тропа в джунглях', z2: 'Перевал вулкана', z3: 'Небесный мост', z4: 'Финиш у замка', place2: 'Место {rank} из {count}', boost: 'УСКОРЕНИЕ!', combo: '{n} подряд', comboHint: '3 верных подряд = ускорение!', overtake: 'Обгон!', enc1: 'Следующий — твой!', enc2: 'Не грусти, беги дальше!', enc3: 'Хорошая попытка! Следующий вопрос твой!', rightWas: 'Ответ: {answer}', watch: 'Ответ принят! Смотри гонку', nextSoon: 'Скоро следующий вопрос…', answeredOf: 'Ответили: {n} из {total}', youFinished: 'Ты на финише!', again: 'Ещё забег', practice2: 'Тренировочный забег с бегунами острова!', standings: 'Положение в гонке', final: 'Итоги гонки' },
-    ja: { lead: '{name}がトップにたった！', leadAnon: 'あたらしいトップ！', streak: '{name}：{n}れんぞく！', streakAnon: '{n}れんぞく！', crosses: '{name}がゴール！', wins: '{name}のゆうしょう！', winsAnon: 'ゆうしょうがきまった！', photo: 'しゃしんはんてい！', z0: 'おひさまビーチ', z1: 'ジャングルラン', z2: 'かざんのみち', z3: 'そらのはし', z4: 'おしろのゴール', place2: '{count}人中 {rank}位', boost: 'ブースト！', combo: '{n}れんぞく', comboHint: '3もんれんぞくせいかいでブースト！', overtake: 'ぬいた！', enc1: 'つぎはきっとできるよ！', enc2: 'きにしないで はしりつづけよう！', enc3: 'おしかった！つぎのもんだいにしゅうちゅう！', rightWas: 'こたえ：{answer}', watch: 'こたえをおくったよ！レースをみよう', nextSoon: 'つぎのもんだいがくるよ…', answeredOf: '{total}人中 {n}人がこたえた', youFinished: 'ゴールしたよ！', again: 'もういちどはしる', practice2: 'しまのランナーとれんしゅうレース！', standings: 'レースのじゅんい', final: 'さいしゅうじゅんい' },
-    'zh-Hant': { lead: '{name} 取得領先！', leadAnon: '新的領先者！', streak: '{name}：連對 {n} 題！', streakAnon: '連對 {n} 題！', crosses: '{name} 衝過終點線！', wins: '{name} 贏得比賽！', winsAnon: '冠軍出爐了！', photo: '終點拍照定勝負！', z0: '陽光海灘', z1: '叢林奔跑', z2: '火山小徑', z3: '天空之橋', z4: '城堡終點', place2: '第 {rank} 名，共 {count} 人', boost: '加速！', combo: '連對 {n} 題', comboHint: '連對 3 題就能加速！', overtake: '超車！', enc1: '下一題一定可以！', enc2: '別在意，繼續跑！', enc3: '好可惜！專心下一題！', rightWas: '答案：{answer}', watch: '答案已送出！來看比賽吧', nextSoon: '下一題馬上來…', answeredOf: '{total} 人中有 {n} 人作答', youFinished: '你衝過終點線了！', again: '再跑一次', practice2: '和島上的選手來一場練習賽！', standings: '比賽排名', final: '最終排名' },
-    he: { lead: '{name} עולה להובלה!', leadAnon: 'מוביל חדש!', streak: '{name}: {n} ברצף!', streakAnon: '{n} ברצף!', crosses: '{name} חוצה את קו הסיום!', wins: '{name} מנצח במרוץ!', winsAnon: 'יש לנו מנצח!', photo: 'סיום צמוד!', z0: 'החוף השמשי', z1: 'ריצה בג׳ונגל', z2: 'מעבר הר הגעש', z3: 'גשר השמיים', z4: 'סיום בטירה', place2: 'מקום {rank} מתוך {count}', boost: 'טורבו!', combo: '{n} ברצף', comboHint: '3 נכונות ברצף = טורבו!', overtake: 'עקיפה!', enc1: 'הבאה שלכם!', enc2: 'לא נורא, ממשיכים לרוץ!', enc3: 'ניסיון יפה! מתרכזים בבאה!', rightWas: 'התשובה: {answer}', watch: 'התשובה נשלחה! צפו במרוץ', nextSoon: 'השאלה הבאה כבר מגיעה…', answeredOf: '{n} מתוך {total} ענו', youFinished: 'חציתם את קו הסיום!', again: 'לרוץ שוב', practice2: 'מרוץ אימון נגד הרצים של האי!', standings: 'מצב המרוץ', final: 'התוצאות הסופיות' },
-    ar: { lead: '{name} يتصدّر السباق!', leadAnon: 'متصدّر جديد!', streak: '{name}: {n} على التوالي!', streakAnon: '{n} على التوالي!', crosses: '{name} يعبر خط النهاية!', wins: '{name} يفوز بالسباق!', winsAnon: 'لدينا فائز!', photo: 'نهاية متقاربة جداً!', z0: 'الشاطئ المشمس', z1: 'جري في الغابة', z2: 'ممر البركان', z3: 'جسر السماء', z4: 'نهاية القلعة', place2: 'المركز {rank} من {count}', boost: 'تسريع!', combo: '{n} على التوالي', comboHint: '3 إجابات صحيحة متتالية = تسريع!', overtake: 'تجاوز!', enc1: 'السؤال القادم لك!', enc2: 'لا بأس، واصل الجري!', enc3: 'محاولة جيدة! ركّز في السؤال القادم!', rightWas: 'الإجابة: {answer}', watch: 'تم إرسال إجابتك! شاهد السباق', nextSoon: 'السؤال التالي قادم…', answeredOf: 'أجاب {n} من {total}', youFinished: 'عبرت خط النهاية!', again: 'سباق جديد', practice2: 'سباق تدريبي ضد متسابقي الجزيرة!', standings: 'ترتيب السباق', final: 'الترتيب النهائي' },
+    en: { mine: 'You got {right} of {total} right!', classLine: 'The class got {right} of {answered} answers right', lead: '{name} takes the lead!', leadAnon: 'New leader!', streak: '{name}: {n} in a row!', streakAnon: '{n} in a row!', crosses: '{name} crosses the finish line!', wins: '{name} wins the race!', winsAnon: 'We have a winner!', photo: 'Photo finish!', z0: 'Sunny Beach', z1: 'Jungle Run', z2: 'Volcano Pass', z3: 'Sky Bridge', z4: 'Castle Finish', place2: 'Place {rank} of {count}', boost: 'BOOST!', combo: '{n} in a row', comboHint: '3 right in a row = boost!', overtake: 'Overtake!', enc1: 'Next one is yours!', enc2: 'Shake it off and keep running!', enc3: 'Good try! Eyes on the next one!', rightWas: 'Answer: {answer}', watch: 'Locked in! Watch the race', nextSoon: 'Next question coming up…', answeredOf: '{n} of {total} answered', youFinished: 'You crossed the finish line!', again: 'Race again', practice2: 'Practice race against the island racers!', standings: 'Race standings', final: 'Final standings' },
+    es: { mine: '¡Acertaste {right} de {total}!', classLine: 'La clase acertó {right} de {answered} respuestas', lead: '¡{name} toma la delantera!', leadAnon: '¡Nuevo líder!', streak: '¡{name}: {n} seguidas!', streakAnon: '¡{n} seguidas!', crosses: '¡{name} cruza la meta!', wins: '¡{name} gana la carrera!', winsAnon: '¡Ya tenemos ganador!', photo: '¡Final de foto!', z0: 'Playa Soleada', z1: 'Carrera en la Selva', z2: 'Paso del Volcán', z3: 'Puente del Cielo', z4: 'Meta del Castillo', place2: 'Puesto {rank} de {count}', boost: '¡TURBO!', combo: '{n} seguidas', comboHint: '¡3 aciertos seguidos = turbo!', overtake: '¡Adelantamiento!', enc1: '¡La próxima es tuya!', enc2: '¡Sacúdete y sigue corriendo!', enc3: '¡Buen intento! ¡Atento a la próxima!', rightWas: 'Respuesta: {answer}', watch: '¡Respuesta enviada! Mira la carrera', nextSoon: 'Ya viene la siguiente pregunta…', answeredOf: '{n} de {total} respondieron', youFinished: '¡Cruzaste la meta!', again: 'Correr otra vez', practice2: '¡Carrera de práctica contra los corredores de la isla!', standings: 'Clasificación', final: 'Clasificación final' },
+    fr: { mine: 'Tu as eu {right} bonnes réponses sur {total} !', classLine: 'La classe a donné {right} bonnes réponses sur {answered}', lead: '{name} prend la tête !', leadAnon: 'Nouveau leader !', streak: '{name} : {n} de suite !', streakAnon: '{n} de suite !', crosses: '{name} franchit la ligne d’arrivée !', wins: '{name} gagne la course !', winsAnon: 'Nous avons un gagnant !', photo: 'Photo-finish !', z0: 'Plage ensoleillée', z1: 'Course dans la jungle', z2: 'Col du volcan', z3: 'Pont du ciel', z4: 'Arrivée au château', place2: 'Place {rank} sur {count}', boost: 'TURBO !', combo: '{n} de suite', comboHint: '3 bonnes réponses de suite = turbo !', overtake: 'Dépassement !', enc1: 'La prochaine est pour toi !', enc2: 'Secoue-toi et continue de courir !', enc3: 'Bien essayé ! Concentre-toi sur la suivante !', rightWas: 'Réponse : {answer}', watch: 'Réponse envoyée ! Regarde la course', nextSoon: 'La prochaine question arrive…', answeredOf: '{n} sur {total} ont répondu', youFinished: 'Tu as franchi la ligne d’arrivée !', again: 'Recourir', practice2: 'Course d’entraînement contre les coureurs de l’île !', standings: 'Classement', final: 'Classement final' },
+    de: { mine: 'Du hattest {right} von {total} richtig!', classLine: 'Die Klasse hatte {right} von {answered} Antworten richtig', lead: '{name} geht in Führung!', leadAnon: 'Neue Führung!', streak: '{name}: {n} in Folge!', streakAnon: '{n} in Folge!', crosses: '{name} läuft durchs Ziel!', wins: '{name} gewinnt das Rennen!', winsAnon: 'Wir haben einen Sieger!', photo: 'Fotofinish!', z0: 'Sonnenstrand', z1: 'Dschungellauf', z2: 'Vulkanpass', z3: 'Himmelsbrücke', z4: 'Burgziel', place2: 'Platz {rank} von {count}', boost: 'TURBO!', combo: '{n} in Folge', comboHint: '3 richtig in Folge = Turbo!', overtake: 'Überholt!', enc1: 'Die nächste schaffst du!', enc2: 'Abschütteln und weiterlaufen!', enc3: 'Guter Versuch! Auf zur nächsten!', rightWas: 'Antwort: {answer}', watch: 'Antwort abgegeben! Schau dir das Rennen an', nextSoon: 'Die nächste Frage kommt gleich…', answeredOf: '{n} von {total} haben geantwortet', youFinished: 'Du bist im Ziel!', again: 'Nochmal rennen', practice2: 'Übungsrennen gegen die Inselläufer!', standings: 'Rennstand', final: 'Endstand' },
+    it: { mine: 'Ne hai indovinate {right} su {total}!', classLine: 'La classe ha dato {right} risposte giuste su {answered}', lead: '{name} passa in testa!', leadAnon: 'Nuovo leader!', streak: '{name}: {n} di fila!', streakAnon: '{n} di fila!', crosses: '{name} taglia il traguardo!', wins: '{name} vince la corsa!', winsAnon: 'Abbiamo un vincitore!', photo: 'Fotofinish!', z0: 'Spiaggia del Sole', z1: 'Corsa nella Giungla', z2: 'Passo del Vulcano', z3: 'Ponte del Cielo', z4: 'Traguardo del Castello', place2: 'Posto {rank} su {count}', boost: 'TURBO!', combo: '{n} di fila', comboHint: '3 giuste di fila = turbo!', overtake: 'Sorpasso!', enc1: 'La prossima è tua!', enc2: 'Scrollatela di dosso e continua a correre!', enc3: 'Bel tentativo! Occhi sulla prossima!', rightWas: 'Risposta: {answer}', watch: 'Risposta inviata! Guarda la corsa', nextSoon: 'Sta arrivando la prossima domanda…', answeredOf: '{n} su {total} hanno risposto', youFinished: 'Hai tagliato il traguardo!', again: 'Corri ancora', practice2: 'Corsa di prova contro i corridori dell’isola!', standings: 'Classifica', final: 'Classifica finale' },
+    pt: { mine: 'Você acertou {right} de {total}!', classLine: 'A turma acertou {right} de {answered} respostas', lead: '{name} assume a liderança!', leadAnon: 'Novo líder!', streak: '{name}: {n} seguidas!', streakAnon: '{n} seguidas!', crosses: '{name} cruza a linha de chegada!', wins: '{name} vence a corrida!', winsAnon: 'Temos um vencedor!', photo: 'Chegada na foto!', z0: 'Praia do Sol', z1: 'Corrida na Selva', z2: 'Passagem do Vulcão', z3: 'Ponte do Céu', z4: 'Chegada no Castelo', place2: '{rank}º lugar de {count}', boost: 'TURBO!', combo: '{n} seguidas', comboHint: '3 certas seguidas = turbo!', overtake: 'Ultrapassagem!', enc1: 'A próxima é sua!', enc2: 'Deixa pra lá e continue correndo!', enc3: 'Boa tentativa! Atenção na próxima!', rightWas: 'Resposta: {answer}', watch: 'Resposta enviada! Assista à corrida', nextSoon: 'A próxima pergunta já vem…', answeredOf: '{n} de {total} responderam', youFinished: 'Você cruzou a linha de chegada!', again: 'Correr de novo', practice2: 'Corrida de treino contra os corredores da ilha!', standings: 'Classificação', final: 'Classificação final' },
+    nl: { mine: 'Je had er {right} van de {total} goed!', classLine: 'De klas had {right} van de {answered} antwoorden goed', lead: '{name} neemt de leiding!', leadAnon: 'Nieuwe leider!', streak: '{name}: {n} op rij!', streakAnon: '{n} op rij!', crosses: '{name} komt over de finish!', wins: '{name} wint de race!', winsAnon: 'We hebben een winnaar!', photo: 'Fotofinish!', z0: 'Zonnestrand', z1: 'Junglerace', z2: 'Vulkaanpas', z3: 'Hemelbrug', z4: 'Kasteelfinish', place2: 'Plek {rank} van {count}', boost: 'TURBO!', combo: '{n} op rij', comboHint: '3 goed op rij = turbo!', overtake: 'Ingehaald!', enc1: 'De volgende is voor jou!', enc2: 'Schud het van je af en ren door!', enc3: 'Goed geprobeerd! Let op de volgende!', rightWas: 'Antwoord: {answer}', watch: 'Antwoord verstuurd! Kijk naar de race', nextSoon: 'De volgende vraag komt eraan…', answeredOf: '{n} van {total} hebben geantwoord', youFinished: 'Je bent over de finish!', again: 'Nog een keer racen', practice2: 'Oefenrace tegen de eilandrenners!', standings: 'Tussenstand', final: 'Eindstand' },
+    ru: { mine: 'Верных ответов: {right} из {total}!', classLine: 'Верных ответов у класса: {right} из {answered}', lead: '{name} выходит вперёд!', leadAnon: 'Новый лидер!', streak: '{name}: {n} подряд!', streakAnon: '{n} подряд!', crosses: '{name} пересекает финиш!', wins: '{name} выигрывает гонку!', winsAnon: 'У нас есть победитель!', photo: 'Фотофиниш!', z0: 'Солнечный пляж', z1: 'Тропа в джунглях', z2: 'Перевал вулкана', z3: 'Небесный мост', z4: 'Финиш у замка', place2: 'Место {rank} из {count}', boost: 'УСКОРЕНИЕ!', combo: '{n} подряд', comboHint: '3 верных подряд = ускорение!', overtake: 'Обгон!', enc1: 'Следующий — твой!', enc2: 'Не грусти, беги дальше!', enc3: 'Хорошая попытка! Следующий вопрос твой!', rightWas: 'Ответ: {answer}', watch: 'Ответ принят! Смотри гонку', nextSoon: 'Скоро следующий вопрос…', answeredOf: 'Ответили: {n} из {total}', youFinished: 'Ты на финише!', again: 'Ещё забег', practice2: 'Тренировочный забег с бегунами острова!', standings: 'Положение в гонке', final: 'Итоги гонки' },
+    ja: { mine: '{total}もんちゅう {right}もん せいかい！', classLine: 'クラスのせいかい：{answered}こ中 {right}こ', lead: '{name}がトップにたった！', leadAnon: 'あたらしいトップ！', streak: '{name}：{n}れんぞく！', streakAnon: '{n}れんぞく！', crosses: '{name}がゴール！', wins: '{name}のゆうしょう！', winsAnon: 'ゆうしょうがきまった！', photo: 'しゃしんはんてい！', z0: 'おひさまビーチ', z1: 'ジャングルラン', z2: 'かざんのみち', z3: 'そらのはし', z4: 'おしろのゴール', place2: '{count}人中 {rank}位', boost: 'ブースト！', combo: '{n}れんぞく', comboHint: '3もんれんぞくせいかいでブースト！', overtake: 'ぬいた！', enc1: 'つぎはきっとできるよ！', enc2: 'きにしないで はしりつづけよう！', enc3: 'おしかった！つぎのもんだいにしゅうちゅう！', rightWas: 'こたえ：{answer}', watch: 'こたえをおくったよ！レースをみよう', nextSoon: 'つぎのもんだいがくるよ…', answeredOf: '{total}人中 {n}人がこたえた', youFinished: 'ゴールしたよ！', again: 'もういちどはしる', practice2: 'しまのランナーとれんしゅうレース！', standings: 'レースのじゅんい', final: 'さいしゅうじゅんい' },
+    'zh-Hant': { mine: '你答對了 {total} 題中的 {right} 題！', classLine: '全班答對了 {answered} 個答案中的 {right} 個', lead: '{name} 取得領先！', leadAnon: '新的領先者！', streak: '{name}：連對 {n} 題！', streakAnon: '連對 {n} 題！', crosses: '{name} 衝過終點線！', wins: '{name} 贏得比賽！', winsAnon: '冠軍出爐了！', photo: '終點拍照定勝負！', z0: '陽光海灘', z1: '叢林奔跑', z2: '火山小徑', z3: '天空之橋', z4: '城堡終點', place2: '第 {rank} 名，共 {count} 人', boost: '加速！', combo: '連對 {n} 題', comboHint: '連對 3 題就能加速！', overtake: '超車！', enc1: '下一題一定可以！', enc2: '別在意，繼續跑！', enc3: '好可惜！專心下一題！', rightWas: '答案：{answer}', watch: '答案已送出！來看比賽吧', nextSoon: '下一題馬上來…', answeredOf: '{total} 人中有 {n} 人作答', youFinished: '你衝過終點線了！', again: '再跑一次', practice2: '和島上的選手來一場練習賽！', standings: '比賽排名', final: '最終排名' },
+    he: { mine: 'תשובות נכונות: {right} מתוך {total}!', classLine: 'תשובות נכונות של הכיתה: {right} מתוך {answered}', lead: '{name} עולה להובלה!', leadAnon: 'מוביל חדש!', streak: '{name}: {n} ברצף!', streakAnon: '{n} ברצף!', crosses: '{name} חוצה את קו הסיום!', wins: '{name} מנצח במרוץ!', winsAnon: 'יש לנו מנצח!', photo: 'סיום צמוד!', z0: 'החוף השמשי', z1: 'ריצה בג׳ונגל', z2: 'מעבר הר הגעש', z3: 'גשר השמיים', z4: 'סיום בטירה', place2: 'מקום {rank} מתוך {count}', boost: 'טורבו!', combo: '{n} ברצף', comboHint: '3 נכונות ברצף = טורבו!', overtake: 'עקיפה!', enc1: 'הבאה שלכם!', enc2: 'לא נורא, ממשיכים לרוץ!', enc3: 'ניסיון יפה! מתרכזים בבאה!', rightWas: 'התשובה: {answer}', watch: 'התשובה נשלחה! צפו במרוץ', nextSoon: 'השאלה הבאה כבר מגיעה…', answeredOf: '{n} מתוך {total} ענו', youFinished: 'חציתם את קו הסיום!', again: 'לרוץ שוב', practice2: 'מרוץ אימון נגד הרצים של האי!', standings: 'מצב המרוץ', final: 'התוצאות הסופיות' },
+    ar: { mine: 'إجاباتك الصحيحة: {right} من {total}!', classLine: 'إجابات الصف الصحيحة: {right} من {answered}', lead: '{name} يتصدّر السباق!', leadAnon: 'متصدّر جديد!', streak: '{name}: {n} على التوالي!', streakAnon: '{n} على التوالي!', crosses: '{name} يعبر خط النهاية!', wins: '{name} يفوز بالسباق!', winsAnon: 'لدينا فائز!', photo: 'نهاية متقاربة جداً!', z0: 'الشاطئ المشمس', z1: 'جري في الغابة', z2: 'ممر البركان', z3: 'جسر السماء', z4: 'نهاية القلعة', place2: 'المركز {rank} من {count}', boost: 'تسريع!', combo: '{n} على التوالي', comboHint: '3 إجابات صحيحة متتالية = تسريع!', overtake: 'تجاوز!', enc1: 'السؤال القادم لك!', enc2: 'لا بأس، واصل الجري!', enc3: 'محاولة جيدة! ركّز في السؤال القادم!', rightWas: 'الإجابة: {answer}', watch: 'تم إرسال إجابتك! شاهد السباق', nextSoon: 'السؤال التالي قادم…', answeredOf: 'أجاب {n} من {total}', youFinished: 'عبرت خط النهاية!', again: 'سباق جديد', practice2: 'سباق تدريبي ضد متسابقي الجزيرة!', standings: 'ترتيب السباق', final: 'الترتيب النهائي' },
   };
   MORE['en-GB'] = MORE.en;
   Object.keys(STR).forEach(function (k) { var m = MORE[k] || MORE.en; Object.keys(m).forEach(function (x) { STR[k][x] = m[x]; }); });
@@ -273,6 +276,10 @@ window.SoloBank = (function () {
   var reduced = !!(O.settings && O.settings.reduced);
   var host = L.role === 'host';
   var solo = !L.active;
+  // Places, overtakes, the lead and a podium of runners are only for the solo practice race against the island bots: a
+  // live class race never ranks students (docs/decisions.md "No leaderboards"). Teams keep their totals and podium.
+  var ranks = solo;
+  var myRight = 0, myAsked = 0, classRight = 0, classAnswered = 0;
   if (host) document.body.classList.add('qr-host');
   var rtl = (O.dir || 'ltr') === 'rtl';
 
@@ -468,6 +475,7 @@ window.SoloBank = (function () {
     if (host) {
       $('meter').classList.add('qr-hide');
       var counts = rv.counts || [], sum = counts.reduce(function (a, b) { return a + b; }, 0) || 1;
+      if (!solo && typeof rv.answer === 'number') { classRight += counts[rv.answer] || 0; classAnswered += sum === 1 && !counts.length ? 0 : counts.reduce(function (a, b) { return a + (b || 0); }, 0); }
       [].forEach.call(pad.children, function (b, k) {
         var n = counts[k] || 0, ct = document.createElement('span'); ct.className = 'ct'; ct.textContent = n; b.appendChild(ct);
         b.style.setProperty('--f', '0%');
@@ -483,6 +491,7 @@ window.SoloBank = (function () {
   }
   function showResult(r) {
     if (host) return;
+    myAsked++; if (r.ok && !r.none) myRight++;
     if (r.none) { $('note').textContent = t('timeUp'); $('note').className = 'qr-note bad'; myStreak = 0; setCombo(); return; }
     var note = $('note');
     if (r.ok) {
@@ -530,6 +539,12 @@ window.SoloBank = (function () {
       var sc = document.createElement('span'); sc.textContent = tm.rank ? tm.score + (L.teamScoring === 'avg' ? ' ' + t('perPlayer') : '') : '';
       li.append(md, nm, sc); ol.appendChild(li);
     });
+    if (!ranks) {
+      // a live race: the class's right answers (the projector), never a list of runners
+      if (final && classAnswered) { var cl = document.createElement('li'); cl.className = 'cl'; cl.textContent = t('classLine', { right: classRight, answered: classAnswered }); ol.appendChild(cl); }
+      if (!ol.children.length) box.classList.add('qr-hide');
+      return;
+    }
     ranking().slice(0, 5).forEach(function (r, i) {
       var li = document.createElement('li');
       var md = document.createElement('span'); md.className = 'md'; md.textContent = i < 3 ? MEDALS[i] : String(i + 1);
@@ -566,7 +581,7 @@ window.SoloBank = (function () {
     $('gems').classList.toggle('qr-hide', host || !inRace());
     var pl = $('place'), n = R.size;
     var moved = false; R.forEach(function (x) { if (x.target > 0) moved = true; });
-    pl.textContent = !host && inRace() && r && n > 1 && moved ? t('place2', { rank: rankOf(mySeat), count: n }) : '';
+    pl.textContent = ranks && !host && inRace() && r && n > 1 && moved ? t('place2', { rank: rankOf(mySeat), count: n }) : '';
   }
 
   // ---- the race updates: progress, streaks, overtakes, the lead, the finish ----
@@ -583,23 +598,23 @@ window.SoloBank = (function () {
     setGems();
     var mine = R.get(mySeat);
     if (mine && mine.target >= 1000 && !finished) { finished = true; if (!host) { ticker('🏁', t('youFinished'), 'gold'); sfx('levelup'); buzz([40, 40, 80]); } }
-    if (!round) { var top0 = ranking()[0]; leader = top0 && top0.target > 0 ? top0.seat : null; return; }
+    if (!round) { var top0 = ranking()[0]; leader = ranks && top0 && top0.target > 0 ? top0.seat : null; return; }
     // overtakes (phones): my place went up
     var after = mine ? rankOf(mySeat) : 0;
-    if (!host && mine && before && after && after < before && !finished) { ticker('⬆️', t('overtake') + ' +' + (before - after), ''); buzz([15, 30, 15]); }
+    if (ranks && !host && mine && before && after && after < before && !finished) { ticker('⬆️', t('overtake') + ' +' + (before - after), ''); buzz([15, 30, 15]); }
     // the projector (and practice): the lead, streaks, the finish, a photo finish
     var top = ranking()[0];
-    leader = top && top.target > 0 ? top.seat : null;
+    leader = ranks && top && top.target > 0 ? top.seat : null;
     if (host || solo) {
-      if (leader != null && leader !== wasLeader && !fresh.length) { var nm = nameOf(leader); ticker('👑', nm ? t('lead', { name: nm }) : t('leadAnon'), 'gold'); }
+      if (ranks && leader != null && leader !== wasLeader && !fresh.length) { var nm = nameOf(leader); ticker('👑', nm ? t('lead', { name: nm }) : t('leadAnon'), 'gold'); }
       news.slice(0, 2).forEach(function (r) { var nm2 = nameOf(r.seat); ticker('🔥', nm2 ? t('streak', { name: nm2, n: r.streak }) : t('streakAnon', { n: r.streak }), ''); });
-      fresh.sort(function (a, b) { return a.done - b.done; }).forEach(function (r) {
+      if (ranks) fresh.sort(function (a, b) { return a.done - b.done; }).forEach(function (r) {
         var nm3 = nameOf(r.seat);
         if (r.done === 1) ticker('🏆', nm3 ? t('wins', { name: nm3 }) : t('winsAnon'), 'gold long');
         else if (r.done <= 3) ticker('🏁', nm3 ? t('crosses', { name: nm3 }) : t('finish'), '');
       });
       var second = ranking()[1];
-      if (fresh.length && second && (fresh.length > 1 || (top.target - second.target) < 60)) { photoUntil = performance.now() + 4000; ticker('📸', t('photo'), 'gold'); }
+      if (ranks && fresh.length && second && (fresh.length > 1 || (top.target - second.target) < 60)) { photoUntil = performance.now() + 4000; ticker('📸', t('photo'), 'gold'); }
     }
   }
   function resetToStart() { L.players().forEach(function (p) { runner(p.seat); }); setGems(); }
@@ -626,14 +641,15 @@ window.SoloBank = (function () {
     var tms = (e.teams || []).filter(function (x) { return x.size > 0 && x.rank > 0; }).sort(function (a, b) { return a.rank - b.rank || a.team - b.team; });
     endRace(order.length ? order : e.top, tms, e.teams);
   });
-  // the end: the podium (the top three runners, or in team mode the top three teams with their best runner on it)
+  // the end: the podium (practice: the top three runners; a live race: in team mode the top three teams, with no runner
+  // on the steps, and otherwise no podium at all), then each player's own result
   function endRace(order, tms, allTeams) {
     ended = true; phase = 'ended';
-    podium = order.slice(0, 3).map(function (p) { return p.seat; });
+    podium = ranks ? order.slice(0, 3).map(function (p) { return p.seat; }) : [];
     podiumTeams = [];
     if (tms && tms.length) {
       podium = []; tms.slice(0, 3).forEach(function (tm) {
-        var best = order.filter(function (p) { return L.teamOf(p.seat) === tm.team; })[0];
+        var best = ranks ? order.filter(function (p) { return L.teamOf(p.seat) === tm.team; })[0] : null;
         podium.push(best ? best.seat : -99); podiumTeams.push({ team: tm.team, color: tm.color, ink: tm.ink, shape: tm.shape });
       });
     }
@@ -641,14 +657,14 @@ window.SoloBank = (function () {
     showStand(true, allTeams);
     podium.forEach(function (seat, k) { var m = $('medal' + k); m.textContent = MEDALS[k] + (podiumTeams[k] || !(seat < 0 || (seat === mySeat && !host && QR.view !== '2d')) ? '' : ' ' + (nameOf(seat) || '')); m.hidden = true; });
     if (!host) {
-      var rk = rankOf(mySeat), card = $('endcard'); card.classList.remove('qr-hide');
+      var rk = ranks ? rankOf(mySeat) : 0, card = $('endcard'); card.classList.remove('qr-hide');
       $('end-md').textContent = rk && rk <= 3 ? MEDALS[rk - 1] : '🏁';
-      $('end-t').textContent = rk ? t('place', { rank: rk, count: R.size }) : t('finish');
+      $('end-t').textContent = rk ? t('place', { rank: rk, count: R.size }) : myAsked ? t('mine', { right: myRight, total: myAsked }) : t('finish');
       var mine = R.get(mySeat); $('end-s').textContent = mine ? '💎 ' + mine.gems : '';
       $('again').classList.toggle('qr-hide', !solo);
       if (solo) setTimeout(function () { $('again').focus({ preventScroll: true }); }, 100);
     }
-    ticker('🏆', t('podium'), 'gold');
+    if (ranks || podiumTeams.length) ticker('🏆', t('podium'), 'gold');
     if (!reduced) { try { BRB.fx.confetti(); } catch (er) { /* none */ } }
     sfx('win'); buzz([60, 40, 60, 40, 120]);
     // A finished solo practice race is a finished round: report it, so a course mission that sent the
@@ -715,7 +731,7 @@ window.SoloBank = (function () {
       x.beginPath(); x.arc(mx, y, rad - 0.5, 0, Math.PI * 2); x.fillStyle = dotColor(meR.seat); x.fill();
       x.fillStyle = '#1d2340'; x.beginPath(); x.moveTo(mx - 5, y - rad - 9); x.lineTo(mx + 5, y - rad - 9); x.lineTo(mx, y - rad - 3); x.fill();
     }
-    if (lead && lead.target > 0) { x.font = Math.round(H * 0.36) + 'px system-ui'; x.fillText('👑', X(lead.shown / 1000), y - rad - 2); }
+    if (ranks && lead && lead.target > 0) { x.font = Math.round(H * 0.36) + 'px system-ui'; x.fillText('👑', X(lead.shown / 1000), y - rad - 2); }
   }
 
   // ---- moving in the lobby: arrows / WASD, or the on-screen stick ----

@@ -162,7 +162,8 @@ test('the brief: LESSON CONTEXT with goal, details, mistakes, vocabulary, avoid 
 });
 test('the arcade prompt is byte for byte what it was: SYSTEM_PROMPT and TOOLS (the CANVAS RULES are a block of their own)', () => {
   const h = crypto.createHash('sha256').update(`${prompt.SYSTEM_PROMPT}\n${JSON.stringify(prompt.TOOLS)}`).digest('hex');
-  assert.equal(h, '7f22004cb7032aea33c1fcdffae0e9db82b625c223bb7ec81752341492b26d8a');
+  // (changed on purpose for "No leaderboards", docs/decisions.md: BRB.score.submit saves the player's own best, never a leaderboard)
+  assert.equal(h, 'fad88cfe5749eb0c169a6d3dc9ef6a529a45e4d903c52b110d5d27579672eebd');
   assert.doesNotMatch(prompt.SYSTEM_PROMPT, /LESSON CONTEXT|teacher_reference/);
 });
 

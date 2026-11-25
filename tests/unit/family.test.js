@@ -397,7 +397,7 @@ test('billing owner registry: a family is a plan owner while its grown-up exists
 });
 
 // ---------------------------------------------------------------- the rest of the site
-test('grown-ups are on no leaderboard, in no builder search, found by no friend code, have no profile, cannot chat or join a school', async () => {
+test('grown-ups keep no scores, are in no builder search, found by no friend code, have no profile, cannot chat or join a school', async () => {
   const g = grownup('VisibleParent'); const k = kid();
   const gid = publicGame(kid()).id;
   q.run('INSERT INTO plays(id, game_id, user_id, started_at) VALUES (?,?,?,?)', uid(), gid, g.id, Date.now());
@@ -406,9 +406,8 @@ test('grown-ups are on no leaderboard, in no builder search, found by no friend 
   assert.equal(q.get('SELECT COUNT(*) n FROM scores WHERE user_id=?', g.id).n, 0, 'a grown-up score is never stored');
   q.run('INSERT INTO scores(id, game_id, user_id, score, created_at) VALUES (?,?,?,?,?)', uid(), gid, g.id, 5, Date.now());
   q.run('INSERT INTO scores(id, game_id, user_id, score, created_at) VALUES (?,?,?,?,?)', uid(), gid, k.id, 3, Date.now());
-  const lb = games.leaderboard(gid, 50);
-  assert.ok(lb.some(r2 => r2.id === k.id), 'the leaderboard works (a kid is on it)');
-  assert.ok(!lb.some(r2 => r2.id === g.id), 'a grown-up is not');
+  assert.equal(games.myBest(gid, k.id).score, 3, 'a child sees their own best');
+  assert.equal(typeof games.leaderboard, 'undefined', 'there is no leaderboard to be on');
   q.run("INSERT INTO games(id, slug, owner_id, title, status, visibility, created_at, updated_at) VALUES (?,?,?,?,'published','public',?,?)", uid(), `vp-${uid()}`, g.id, 'Parent game', Date.now(), Date.now());
   assert.ok(!games.searchBuilders(null, 'VisibleParent').length);
   assert.equal(friends.addByCode(k, 'ABCDEF').ok, false);
@@ -509,7 +508,7 @@ test('a code can\'t be published elsewhere either: names, game text, score label
   assert.equal(r.status, 400); assert.equal(r.json.field, 'displayName');
   for (const text of ['Win! Type K4P 576U', 'code: K-4-P-5-7-6-U']) assert.equal(TF.cleanText(text).ok, false, text);
   assert.equal(TF.cleanText('Level 2: the best 3 games').ok, true);
-  // Score labels: shown on the public leaderboard, so a code (or personal details) is dropped, the score stays.
+  // Score labels: shown beside the player's own best, so a code (or personal details) is dropped, the score stays.
   assert.equal(games.cleanScoreLabel('K4P-576U'), '');
   assert.equal(games.cleanScoreLabel('call 555 123 4567'), '');
   assert.equal(games.cleanScoreLabel('3 stars'), '3 stars');
@@ -519,7 +518,7 @@ test('a code can\'t be published elsewhere either: names, game text, score label
   assert.equal(sc.status, 200, sc.text);
   assert.equal(q.get('SELECT label FROM scores WHERE game_id=? AND user_id=?', gm.id, k.id).label, '');
   const lb = await call(null, `/api/games/${gm.id}/leaderboard`);
-  assert.ok(!lb.text.includes('K4P'), 'no code on the public leaderboard');
+  assert.equal(lb.status, 410); assert.ok(!lb.text.includes('K4P'), 'no leaderboard, and no code anywhere');
   // The scanner fails a game that asks for a grown-up's code or shows a code.
   const scan = body => scanVersion(`<!doctype html><html><body>${body}</body></html>`).issues.map(i => i.code);
   assert.ok(scan('<p>Type your grown-up code to win a prize!</p>').includes('link_code'));

@@ -63,7 +63,6 @@ export function settingsText(t) {
     title: t('live.settings.title'), more: t('live.settings.more'), remembered: t('live.settings.remembered'), reset: t('live.settings.reset'), save: t('live.settings.save'),
     secs: t('live.settings.secs'), secsSet: t('live.settings.secsSet'), count: t('live.settings.count'), countAll: t('live.settings.countAll'),
     shuffleQ: t('live.settings.shuffleQ'), shuffleA: t('live.settings.shuffleA'), points: t('live.settings.points'), pointsSpeed: t('live.settings.pointsSpeed'), pointsAccuracy: t('live.settings.pointsAccuracy'),
-    board: t('live.settings.board'), boardAll: t('live.settings.boardAll'), boardTop5: t('live.settings.boardTop5'), boardOff: t('live.settings.boardOff'),
     late: t('live.settings.late'), names: t('live.settings.names'), namesNames: t('live.settings.namesNames'), namesNicknames: t('live.settings.namesNicknames'), namesHidden: t('live.settings.namesHidden'), namesHint: t('live.settings.namesHint'),
     sound: t('live.settings.sound'), emotes: t('live.settings.emotes'),
   };
@@ -86,7 +85,6 @@ export function settingsFields(t, { values, quiz = true, accounts = false, idp =
   return html`<div class="lv-settings-main">
     ${sel('secs', secs)}${sel('count', count)}
     ${sel('points', [['speed', t('live.settings.pointsSpeed')], ['accuracy', t('live.settings.pointsAccuracy')]])}
-    ${sel('board', [['all', t('live.settings.boardAll')], ['top5', t('live.settings.boardTop5')], ['off', t('live.settings.boardOff')]])}
   </div>
   <details class="lv-settings-more"><summary>${t('live.settings.more')}</summary>
     ${box('shuffleQ')}${box('shuffleA')}${box('late')}
@@ -224,7 +222,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
     </form>
   </dialog>
   ${shapesSprite()}
-  ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), place: rawT(t)('live.play.place'), placeTied: rawT(t)('live.play.placeTied'), placeZero: rawT(t)('live.play.placeZero'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
+  ${jsonData('lv-play-data', { ...ttsPart(), sid, title, open, nicks, msgs: msgs(t, 'live.play', PLAY_CODES), phases: phaseText(t), emotes: EMOTES, thanks: rawT(t)('live.play.reportThanks'), mine: rawT(t)('live.play.mine'), myScore: rawT(t)('live.play.myScore'), late: rawT(t)('live.play.late'), watchHint: rawT(t)('live.play.watchHint'), kit: KIT(),
     presets: presetsFor(t), bonus: bonusList(t),
     text: { team: rawT(t)('live.play.team'), you: rawT(t)('live.team.you'), moved: rawT(t)('live.play.moved'), rank: rawT(t)('live.team.rank'), full: rawT(t)('live.team.full'), locked: rawT(t)('live.team.locked'), size: rawT(t)('live.team.size'), toastSeat: rawT(t)('live.bonus.toastSeat'), toastTeam: rawT(t)('live.bonus.toastTeam'), read: rawT(t)('live.play.read'), readAgain: rawT(t)('live.play.readAgain'), eyes: rawT(t)('live.play.eyes'), again: rawT(t)('live.play.again'), perPlayer: rawT(t)('live.team.perPlayer') } })}
 </div>`;
@@ -677,6 +675,10 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
       : html`<span class="lv-mark lv-mark-none" title="${t('live.results.markNone')}">–<span class="sr-only"> ${t('live.results.markNone')}</span></span>`);
   const missedOk = quiz && !vote && !map && items.some(it => Array.isArray(it.choices) && it.answered && it.right < it.answered);
   const help = players.filter(p => p.help);
+  // Students by name, never ranked (docs/decisions.md "No leaderboards"); the class as a whole gets totals instead.
+  const byName = players.slice().sort((a, b) => nameOf(a).localeCompare(nameOf(b), req.locale || 'en', { sensitivity: 'base' }));
+  const asked = vote ? [] : items.filter(it => it.answered);
+  const rightAll = asked.reduce((n, it) => n + (it.right || 0), 0), answeredAll = asked.reduce((n, it) => n + (it.answered || 0), 0);
   return html`<div class="lv lv-results" data-lv-page="results" data-run="${id}">
   ${shapesSprite()}
   <h1>${t('live.results.heading', { title })}</h1>
@@ -684,6 +686,9 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   ${gradebook ? html`<p class="notice good">${t('live.results.gradebook')}</p>` : ''}
   ${guestRun ? html`<div class="notice lv-guest-note" id="lv-guest-note" role="note"><p><b>${t('quickLive.results.h')}</b> ${t(saved ? 'quickLive.results.saved' : 'quickLive.results.now')}</p>
     ${keepScores ? html`<p class="lv-guest-act"><a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="/teach/keep-scores">${ico('🪪', { size: 18 })} ${t('quickLive.results.keep')}</a> <span class="small">${t('quickLive.results.keepHint')}</span></p>` : ''}</div>` : ''}
+  ${answeredAll && quiz ? html`<section class="lv-group lv-class-total" id="lv-class-total" aria-labelledby="lv-ct-h"><h2 id="lv-ct-h">${t('live.results.classHeading')}</h2>
+    <p class="lv-class-pct"><b>${t('live.results.classPct', { pct: pctOf(rightAll, answeredAll) })}</b></p>
+    <p class="small muted">${t('live.results.classRight', { right: rightAll, answered: answeredAll })}</p></section>` : ''}
   ${teams.length ? html`<section class="lv-group lv-results-teams" aria-labelledby="lv-rt-h">
     <h2 id="lv-rt-h">${t('live.team.podium')}</h2>
     <ol class="lv-team-podium" id="lv-team-podium">${podium.map(x => html`<li class="lv-step lv-step-${x.rank}" style="--team:${presets[x.p].color};--team-ink:${presets[x.p].ink}"><span class="lv-step-rank">${x.rank}</span>${teamChip(presets, x)}<span class="lv-step-score">${x.score}</span></li>`)}</ol>
@@ -716,9 +721,9 @@ export function resultsBody(req, { id = '', title, mode = '', players = [], item
   ${limited ? html`<p class="notice lv-limited-note" id="lv-limited-note">${t('live.cohost.limitedNote')}</p>` : html`<details class="lv-group lv-details" id="lv-details">
     <summary>${t('live.results.details')}</summary>
     <p class="notice warn">${t('live.results.detailsHint')}</p>
-    ${players.length ? html`<div class="lv-table-wrap"><table class="table lv-table" id="lv-student-table"><thead><tr><th scope="col">${t('live.results.rank')}</th><th scope="col">${t('live.results.player')}</th>${teams.length ? html`<th scope="col">${t('live.results.team')}</th>` : ''}<th scope="col">${t('live.results.score')}</th><th scope="col">${t('live.results.bonus')}</th><th scope="col">${t('live.results.correct')}</th>${saved ? '' : html`<th scope="col">${t('live.results.scoredBy')}</th>`}<th scope="col">${t('live.results.marks')}</th></tr></thead>
-      <tbody>${players.map(p => html`<tr><td>${p.rank}</td><td>${nameOf(p)}${rosterOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? (vote ? t('live.results.votes', { count: p.answered }) : t('live.results.accuracy', { right: p.correct, answered: p.answered })) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
-    ${help.length ? html`<h3>${t('live.results.needsHelp')}</h3><ul class="lv-needs-help" id="lv-needs-help">${help.map(p => html`<li>${nameOf(p)}${rosterOf(p)} <span class="small muted">${t(`live.dash.why.${p.help}`)}</span></li>`)}</ul>` : ''}
+    ${players.length ? html`<div class="lv-table-wrap"><table class="table lv-table" id="lv-student-table"><thead><tr><th scope="col">${t('live.results.player')}</th>${teams.length ? html`<th scope="col">${t('live.results.team')}</th>` : ''}<th scope="col">${t('live.results.score')}</th><th scope="col">${t('live.results.bonus')}</th><th scope="col">${t('live.results.correct')}</th>${saved ? '' : html`<th scope="col">${t('live.results.scoredBy')}</th>`}<th scope="col">${t('live.results.marks')}</th></tr></thead>
+      <tbody>${byName.map(p => html`<tr><td>${nameOf(p)}${rosterOf(p)}${p.left ? html` <span class="small muted">(${t('live.results.left')})</span>` : ''}</td>${teams.length ? html`<td>${chip(p.team)}</td>` : ''}<td>${p.score}</td><td>${p.bonus || 0}</td><td>${p.answered ? (vote ? t('live.results.votes', { count: p.answered }) : t('live.results.accuracy', { right: p.correct, answered: p.answered })) : '–'}</td>${saved ? '' : html`<td>${t(p.scoredBy === 'game' ? 'live.results.byGame' : 'live.results.byLive')}</td>`}<td class="lv-marks" dir="ltr">${[...(p.marks || '')].map(mark)}</td></tr>`)}</tbody></table></div>` : ''}
+    ${help.length ? html`<h3>${t('live.results.needsHelp')}</h3><ul class="lv-needs-help" id="lv-needs-help">${byName.filter(p => p.help).map(p => html`<li>${nameOf(p)}${rosterOf(p)} <span class="small muted">${t(`live.dash.why.${p.help}`)}</span></li>`)}</ul>` : ''}
     ${csv ? html`<p><a class="btn" href="${csv}" download>${t('live.results.csv')}</a></p>` : ''}
   </details>`}
   ${runLog.length ? html`<details class="lv-group lv-run-log" id="lv-run-log"><summary>${t('live.cohost.log.title')}</summary>

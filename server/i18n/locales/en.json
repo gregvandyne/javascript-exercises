@@ -747,7 +747,7 @@
       "heading": "Game SDK",
       "brb": {
         "p1": "Every game gets a small helper called BRB. {get} and {set} save progress for each player. localStorage also works and is saved to the cloud.",
-        "p2": "{submit} adds to the leaderboard (best score only). {over} ends a round.",
+        "p2": "{submit} saves the player's best score, which only they see. {over} ends a round.",
         "p3": "{fx} add juice.",
         "p4": "{full} and {orient} ask the page politely.",
         "p5": "{lang} is the player's language (like \"fr\" or \"ar\") and {dir} is \"rtl\" for right-to-left languages, so a game can speak the player's language."
@@ -1164,11 +1164,6 @@
       "tap": "Tap a star.",
       "guest": "Play as guest to rate"
     },
-    "leaderboard": {
-      "heading": "Leaderboard",
-      "empty": "No scores yet. Be the first!",
-      "signIn": "Sign in to see the players' names."
-    },
     "more": {
       "label": "More",
       "heading": "More like this"
@@ -1215,6 +1210,9 @@
       "title": "This game isn’t available right now",
       "text": "It may come back later. Learn has more games and puzzles to try.",
       "play": "Go to Learn"
+    },
+    "best": {
+      "heading": "Your best"
     }
   },
   "play": {
@@ -6823,7 +6821,7 @@
         "h": "Before you make it: what this account keeps",
         "keep": "What this account keeps: the games your child makes, their Builder chats, pictures and files they upload, game saves, scores, ratings and likes, friends and friend chat messages, a profile photo if they add one, their settings, and sign-in cookies with the browser's name.",
         "ai": "What goes to Anthropic's Claude (the AI behind the Builder): Builder messages, pictures and files, profile photos (for a safety check) and games sent for the public review. No names or usernames are sent. Friend chat never goes to the AI.",
-        "who": "Who sees what: friends they add with a friend code can chat with them and see their friends-only games. Anyone can play the games they choose to make public. Their username shows on public games and leaderboards.",
+        "who": "Who sees what: friends they add with a friend code can chat with them and see their friends-only games. Anyone can play the games they choose to make public. Their username shows on their public games.",
         "howLong": "How long we keep it: as long as the account exists. We have no automatic deletion timers yet.",
         "rights": "What you can do: see what we keep and delete the account from your family page, or contact us.",
         "more": "Read the full Privacy Policy"
@@ -8545,7 +8543,7 @@
       "li1": "These are averages across many studies, ages, subjects and games. Some games helped a lot, and some did not help at all.",
       "li2": "None of these studies tested Oomba Academy. They describe learning games in general, not a promise about any one game, class or student.",
       "li3": "Wouters and colleagues found that serious games were not more motivating than conventional teaching, even though students learned more.",
-      "li4": "Gamification is not the same as a learning game: it adds game elements to ordinary lessons. We include it because points, stars and leaderboards are part of many learning games, including ours."
+      "li4": "Gamification is not the same as a learning game: it adds game elements to ordinary lessons. We include it because points and stars are part of many learning games, including ours."
     },
     "use": {
       "h": "Using games the way the research suggests",
@@ -8825,7 +8823,6 @@
       },
       "cancel": "Cancel",
       "reportThanks": "Thank you. Someone at Oomba Academy will look at it.",
-      "place": "You came {rank} out of {count}!",
       "late": "You joined after the start.",
       "watchHint": "This device can't show the 3D world, so you see a map of everyone instead.",
       "removed": "The host removed you from this game.",
@@ -8845,8 +8842,8 @@
       "moved": "You moved to {team}",
       "again": "Waiting for your teacher… They may start another game with everyone here.",
       "aiVoice": "Read uses a computer-made AI voice ({provider}).",
-      "placeTied": "{others, plural, one {You tied for place {rank} with # other player!} other {You tied for place {rank} with # other players!}}",
-      "placeZero": "Everyone tied! Nobody scored this time."
+      "mine": "You got {right} of {total} right!",
+      "myScore": "Your score: {score}"
     },
     "emote": {
       "wave": "Wave",
@@ -8939,7 +8936,7 @@
       "questRace": "Quest Race",
       "questRaceText": "Answer questions to race across a 3D island. Right answers give gems and a boost!",
       "battle": "Question Battle",
-      "battleText": "Questions on the big screen, answers on every device, and a leaderboard after each one.",
+      "battleText": "Questions on the big screen, answers on every device, and the class's answers after each one.",
       "board": "Brain Board",
       "boardText": "A board of categories: pick a tile, everyone answers. Bigger tiles are harder and worth more, and a hidden Lucky Star doubles the points.",
       "wyr": "Would You Rather? (Live)",
@@ -9153,7 +9150,10 @@
       "playAgainTeams": "Play again with these teams",
       "newGame": "New game",
       "homework": "Assign as homework",
-      "votes": "{count, plural, one {# vote} other {# votes}}"
+      "votes": "{count, plural, one {# vote} other {# votes}}",
+      "classHeading": "The class",
+      "classPct": "{pct}% of answers right",
+      "classRight": "{right} of {answered} answers right"
     },
     "sets": {
       "title": "Question sets",
@@ -9483,10 +9483,6 @@
       "points": "Points",
       "pointsSpeed": "Faster answers score more",
       "pointsAccuracy": "Right answers only (1,000 each)",
-      "board": "Leaderboard on players' devices",
-      "boardAll": "Show it",
-      "boardTop5": "Top 5 only",
-      "boardOff": "Hide it",
       "late": "Players can join after the start",
       "names": "Names on screens",
       "namesNames": "Real names",
@@ -9910,7 +9906,7 @@
       "join": "Joining a game? Type the code here"
     },
     "how": {
-      "h": "From questions to a podium in a few minutes",
+      "h": "From questions to results in a few minutes",
       "lead": "Real screens from a live game in a demo school with made-up names.",
       "s1": {
         "h": "Pick a game and your questions",
@@ -9934,8 +9930,8 @@
       },
       "s5": {
         "h": "See who knows what",
-        "p": "A leaderboard after each question, and at the end a results page by question and by student.",
-        "alt": "The projector screen showing the leaderboard with the students' scores."
+        "p": "How the class answered after each question, and at the end a results page by question and by student.",
+        "alt": "The projector screen showing how the class answered."
       }
     },
     "modes": {
@@ -9946,7 +9942,7 @@
       },
       "battle": {
         "h": "Question Battle",
-        "p": "The classic: the question on the big screen, answers on every device, and a leaderboard after each one."
+        "p": "The classic: the question on the big screen, answers on every device, and the class's answers after each one."
       },
       "board": {
         "h": "Brain Board",

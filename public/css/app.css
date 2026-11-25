@@ -478,11 +478,8 @@ textarea.input{min-height:96px;resize:vertical}
 .linkbtn:hover{background:var(--hover);color:var(--text)}
 .taglist{display:flex;gap:8px;flex-wrap:wrap}
 .tag{padding:4px 12px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:.85rem;font-weight:700}
-.lb{list-style:none;margin:0;padding:0;counter-reset:lb}
-.lb li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);counter-increment:lb}
-.lb li::before{content:counter(lb);width:26px;font-weight:800;color:var(--muted);text-align:center}
-.lb li:nth-child(1)::before{content:"🥇"} .lb li:nth-child(2)::before{content:"🥈"} .lb li:nth-child(3)::before{content:"🥉"}
-.lb .sc{margin-inline-start:auto;font-weight:800}
+.mybest{margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.mybest b{font-size:1.6rem;font-weight:800}
 
 /* play page: Ink chrome in both themes, round a black stage */
 body.playmode{background:#000;padding-bottom:0;overflow:hidden}
@@ -739,7 +736,7 @@ code{overflow-wrap:anywhere}
 :lang(ar) body,:lang(he) body{line-height:1.6}
 /* Text people typed (game titles and descriptions, names, notes) takes its direction from its own letters, so an English
    title reads right in an Arabic page and the other way round. Alignment still follows the page. */
-.gcard .t,.gcard .by,.hero h1,.hero .hero-title,.hero p,.gamehero h1,.nm,.ptitle,.mg-t,.gi-t,.vnotes,.lb li span,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
+.gcard .t,.gcard .by,.hero h1,.hero .hero-title,.hero p,.gamehero h1,.nm,.ptitle,.mg-t,.gi-t,.vnotes,.mygame h3,.pagehead h1,.profilehead h1,.fc-games h3,.mg-note,#st-live .note,.chip,.inboxrow .sub,.tag,.ugc,.st-turns,.pbadge{unicode-bidi:plaintext;text-align:match-parent}
 
 /* Phones: the featured game's picture on top of the hero card, cropped to a band, and the words below it on a solid
    panel, so no picture (a busy game screen) ever shows through the text. */

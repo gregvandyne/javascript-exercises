@@ -11,7 +11,6 @@ export const KEYS = {
   shuffleQ: { bool: true, lobby: true },
   shuffleA: { bool: true, lobby: true },
   points: { values: ['speed', 'accuracy'], lobby: true },
-  board: { values: ['all', 'top5', 'off'] },
   late: { bool: true },
   names: { values: ['names', 'nicknames', 'hidden'] },
   sound: { bool: true },
@@ -21,13 +20,15 @@ export const KEYS = {
 /** Settings that only quiz runs use (hidden for game-mode sessions). */
 export const QUIZ_ONLY = ['secs', 'count', 'shuffleQ', 'shuffleA', 'points', 'voices'];   // voices: only quizzes read aloud
 /** What players' pages are told (opt): nothing else about the room's settings reaches a player. */
-export const PUBLIC = ['board', 'emotes', 'names', 'voices'];
+export const PUBLIC = ['emotes', 'names', 'voices'];
+// No leaderboard setting: live games never rank students (docs/decisions.md "No leaderboards"). A remembered or sent
+// 'board' value is an unknown key now and is dropped by clean().
 
 /** The defaults for a room. nameMode: 'accounts' (a teacher's own class) or 'nicknames'. */
 export function DEFAULTS(audience = 'open', nameMode = 'nicknames') {
   return {
     secs: 0, count: 0, shuffleQ: false, shuffleA: true, points: 'speed',
-    board: audience === 'open' ? 'top5' : 'all', late: audience !== 'open',
+    late: audience !== 'open',
     names: nameMode === 'accounts' ? 'names' : 'nicknames', sound: true, emotes: true, voices: 'ai',
   };
 }
@@ -60,9 +61,9 @@ export function clean(d, { lobby = true, nameMode = 'nicknames' } = {}) {
 }
 
 /** The settings as the host sees them (s.settings with late). */
-export const view = st => ({ secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, board: st.board, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes, voices: st.voices || 'ai', maxPlayers: st.maxPlayers, locked: st.locked });
+export const view = st => ({ secs: st.secs, count: st.count, shuffleQ: st.shuffleQ, shuffleA: st.shuffleA, points: st.points, late: !st.autoLock, names: st.names, sound: st.sound, emotes: st.emotes, voices: st.voices || 'ai', maxPlayers: st.maxPlayers, locked: st.locked });
 /** What players get (opt). */
-export const publicPart = st => ({ board: st.board, emotes: st.emotes, names: st.names, voices: st.voices || 'ai' });
+export const publicPart = st => ({ emotes: st.emotes, names: st.names, voices: st.voices || 'ai' });
 
 /**
  * Apply a clean patch to s.settings. late maps to autoLock: before start it only says whether start locks the room;

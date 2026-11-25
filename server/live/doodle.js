@@ -16,7 +16,7 @@ export const LEVELS = [1, 2, 3];
 export const ROUNDS = [1, 2, 3];
 export const SECS = [60, 80, 100];
 /** The drawer's time to pick one of three words (a random one after it), the reveal after each turn, and how long the
- *  final podium shows before the results. */
+ *  class's end screen shows before the results. */
 export const PICK_MS = 15000, REVEAL_MS = 5000, HOLD_MS = 6000;
 /** A drawer who drops out has this long to come back before the turn moves on; with fewer than 2 players the game
  *  waits this long at most, then ends. */

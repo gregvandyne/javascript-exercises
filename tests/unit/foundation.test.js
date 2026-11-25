@@ -84,7 +84,7 @@ test('scores keep only the best per player', () => {
   assert.equal(games.submitScore(g.id, o.id, 50).improved, true);
   assert.equal(games.submitScore(g.id, o.id, 20).improved, false);
   assert.equal(games.submitScore(g.id, o.id, 70).best, 70);
-  assert.equal(games.leaderboard(g.id).length, 1);
+  assert.equal(games.myBest(g.id, o.id).score, 70, 'the player\'s own best (there is no leaderboard)');
 });
 
 test('saves must be string maps under the size limit', () => {
