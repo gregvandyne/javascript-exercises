@@ -86,7 +86,8 @@ test('text: write it, let go, tap it, tap again and type where tapped; saved and
     const tb = await page.locator('.hr-area [data-text]').boundingBox();
     await page.mouse.click(tb.x + 7, tb.y + tb.height / 2);
     assert.equal(await page.locator('#hr-seltools [data-hrsel="edit"]').count(), 1, `${name}: selected, with Edit`);
-    assert.equal(await page.locator('.hr-sel .hr-h').count(), 8, `${name}: handles on all corners and edges`);
+    assert.equal(await page.locator('.hr-sel .hr-h:not(.hr-h-rot)').count(), 8, `${name}: handles on all corners and edges`);
+    assert.equal(await page.locator('.hr-sel .hr-h-rot').count(), 1, `${name}: and one to turn it`);
     await page.mouse.click(tb.x + 2, tb.y + tb.height / 2);
     await page.keyboard.type('Oh, ');
     await page.keyboard.press('Escape');
@@ -137,7 +138,7 @@ test('an oval: drawn, then selected by its outline (not a new one), resized and 
   for (const { name, browser } of browsers) {
     reset();
     const { ctx, page, errors, at } = await open(browser);
-    await page.click('[data-hrmode="circle"]');
+    await page.click('[data-hrmode="shape"]'); await page.click('#hr-pop [data-hrshape="circle"]');
     await drag(page, at(0.3, 0.2), at(0.5, 0.8));
     await until(() => (area().shapes || []).length === 1, 'oval saved');
     const e = empty(at); await page.mouse.click(e.x, e.y);
@@ -145,7 +146,7 @@ test('an oval: drawn, then selected by its outline (not a new one), resized and 
     // its outline's left end, a few pixels outside the line
     const l = at(0.3, 0.5); await page.mouse.click(l.x - 4, l.y);
     assert.equal(await page.locator('#hr-seltools [data-hrsel="delete"]').count(), 1, `${name}: the oval is selected`);
-    assert.equal(await page.locator('#hr-seltools [data-hrselc]').count(), 4, `${name}: its colors`);
+    assert.equal(await page.locator('#hr-seltools [data-hrpop="line"]').count(), 1, `${name}: its outline`);
     // a press inside it moves it instead of drawing another
     const mid = at(0.4, 0.5); await drag(page, mid, { x: mid.x + 30, y: mid.y });
     await until(() => area().shapes[0].x > 0.3 + 0.005, `${name}: moved`);
@@ -154,7 +155,7 @@ test('an oval: drawn, then selected by its outline (not a new one), resized and 
     const s0 = area().shapes[0], c = await center(page.locator('.hr-h-se'));
     await drag(page, c, { x: c.x + 60, y: c.y - 30 });
     await until(() => area().shapes[0].x2 > s0.x2 + 0.01, `${name}: resized`);
-    await page.click('#hr-seltools [data-hrselc="#1F9D63"]');
+    await page.click('#hr-seltools [data-hrpop="line"]'); await page.click('#hr-pop [data-hrset="c:#1F9D63"]');
     await until(() => area().shapes[0].c === '#1F9D63', `${name}: recolored`);
     await page.click('#hr-seltools [data-hrsel="delete"]');
     await until(() => area().shapes.length === 0, `${name}: deleted`);

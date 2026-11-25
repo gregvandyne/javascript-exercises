@@ -14092,3 +14092,66 @@ did not save), `figures-lesson-step.test.js` (the editor's note from the saved l
 swaps its video in), and the
 owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
 next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).
+
+## Homeroom: board tools (25 Nov 2026)
+
+The owner: "Make the board tools more comprehensive and make sure all of them can be copied and pasted... you should be
+able to fill in shapes, dash the outline, dash lines, different weights, pick from a host of different shapes, etc."
+The teacher's area had Select, Sticky note, Text, Pen, Square, Circle, Line, Undo, 4 colors and A-/A+.
+- **One drawing for everyone** (`public/js/board-shapes.js`, pure, imported by the board, by `homeroom-area.js` for
+  the student desk's window and the projector, and by `services/homeroom.js` for cleaning): shapes, pen lines, notes
+  and text boxes are drawn by the same functions, so students and the projector see exactly what the teacher drew
+  (only the board adds the attributes it selects by). Shapes and pen lines share one SVG layer ordered by `z` (an older
+  board without `z` keeps every pen line under every shape, as before); text boxes sit above them, notes above those.
+- **Shapes picker** (Board tools: Shapes opens a grid; a sheet on a phone): rectangle, rounded rectangle, circle,
+  triangle, right triangle, diamond, pentagon, hexagon, octagon, star, heart, block arrow, double arrow, chevron,
+  speech bubble, thought bubble, plus, parallelogram, trapezoid, cylinder; lines: line, arrow line, double-arrow line,
+  elbow connector, curved connector. Drawn by dragging (Shift keeps a box square, a line at 45 degree steps; a tap
+  puts a middle-sized one there), then back to Select with it selected. Box shapes and text boxes turn with a round
+  handle above them (under them at the area's top edge; Shift: 15 degree steps; 0/90/180/270 snap within 4 degrees);
+  resizing a turned box keeps its far side still. Lines keep their two end handles. Pen lines scale from corners.
+- **Style** (the selected object's toolbar, for one or many; locked ones are skipped): Outline (15 palette colors:
+  black, gray, white, red, coral, orange, yellow, lime, green, teal, sky, blue, purple, pink, brown; "none" only on
+  filled closed shapes; weight thin, medium, thick, extra thick; solid, dashed, dotted; arrowheads none, start, end,
+  both on lines), Fill (none or a palette color, 100/50/25% opacity), Text style (A-/A+, bold, left/center/right, a
+  palette color), Note color (yellow, pink, green, blue, purple). Dots are dashes of 0.01 with round caps (WebKit draws
+  nothing for 0). Arrowheads are drawn polygons, not SVG markers (Safari's marker coloring differs). The last style
+  used is kept per kind (shape, line, pen, text, note) for the next one, in this browser (`localStorage`
+  `oomba-hr-style`, read inside try/catch). The pen's and the shape tool's next style are set from the Board tools'
+  row while the tool is on. Only a stored value that differs from the default is saved.
+- **Copy, cut, paste, duplicate** for every object: Cmd/Ctrl+C, X, V, D; Duplicate in the toolbar, Copy, Cut and
+  Paste in its More menu, Paste in the Board tools (touch). A paste is selected and lands 16 px down and right, 32 px
+  the next time, and so on; once the pointer has moved since the copy, at the pointer. The clip is this browser's
+  (`localStorage` `oomba-hr-clip`), so any Homeroom class in it can paste it. The system clipboard gets the words
+  (text/plain) and the objects (text/html with a `data-oomba-board` attribute); pasting words from elsewhere makes a
+  new text box. Safari copies and pastes only where something is selected or typed, so for those keys the focus goes
+  to a hidden field for a moment (the browser then sends its copy, cut or paste event) and comes back; without a
+  paste event the board's own clip is pasted. Anything pasted is cleaned like a save (`cleanShape`, the style lists,
+  sizes) and gets new ids; counts stay within the limits ("There's no room for more"). The clipboard only ever holds
+  objects from the teacher's own area: students' work is never on it.
+- **Many at once**: Shift, Cmd or Ctrl and a click adds or removes; a drag on the empty area in Select draws a marquee
+  and selects everything it touches (a finger too: two fingers or the desks' part of the board pan); Cmd/Ctrl+A
+  selects everything. A group shows each item's outline and a dashed box, moves together (kept inside the area), is
+  styled, copied, arranged and deleted together; a click on one of them selects just it. More: Bring to front, Send
+  to back (drawings by `z`; notes and text boxes within their own layer), Lock/Unlock (`lk`: no handles, does not
+  move, no style changes or delete; still selectable and copyable). Arrow keys nudge (Shift: 10 px).
+- **Undo and redo**: Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z and Ctrl+Y, and Undo/Redo buttons in the Board tools; every change
+  above is one step (80 kept). Typing keeps the browser's own undo while a note or text box is being edited.
+- **Server** (`services/homeroom.js` saveArea): notes, text and pen lines are still cleaned by the live room's
+  `cleanState` (word rules, counts, sizes), then Homeroom's own fields are added back from strict lists: a pen line's
+  id, weight, dash, `z`, lock (its color from the palette, else black); a text box's color, bold, alignment, rotation,
+  lock; a note's color and lock. Shapes: the kinds above only, corners clamped to the area, palette colors only,
+  numbers clamped (`z` within +-9e6, rotation to -179..180), at most 80 (was 40). Anything else is dropped. A board
+  saved before this is kept exactly as it was and draws as it did (stroke width 5, pen 4, rounded rectangle corners
+  6 px). The Manipulatives live room is unchanged (its own code path; `cleanState` untouched).
+- Toolbar and popovers are chunky (36 px, 44 px on touch), wrap instead of growing past the board, and popovers stay
+  inside the screen; on a phone every popover is a sheet along the bottom with Done. New strings in all 12 languages
+  (`js.homeroom.bt.*`; en-GB only where British spelling differs).
+- Tests: `tests/unit/homeroom-tools.test.js` (every kind and style kept; bad values dropped or clamped; counts; older
+  boards unchanged; the shared drawing) and `tests/unit/homeroom-tools-browser.test.js` (every shape from the picker,
+  Shift square; fill, opacity, dashed, weight, a dashed arrow line, a dotted pen line, the next shape's style; copy,
+  paste, duplicate and cut for a note, a text box, a pen line, a shape and a line by keys and buttons, into another
+  class, words from elsewhere, the copy event's objects; a marquee, Shift-click, group move and style, front and back,
+  Ctrl+A and Delete, undo and redo by keys and buttons; turning a shape and a text box, lock; the student desk's window
+  and the projector drawing exactly what the board draws; the picker and popovers on a phone (sheet), a tablet and a
+  Chromebook with nothing sideways). `homeroom-board-browser.test.js` follows the new picker and Outline popover.
