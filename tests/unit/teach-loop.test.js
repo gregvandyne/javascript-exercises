@@ -3,6 +3,7 @@
 // each teacher only their own), the section on the teacher landing at "/" and on /teachers, the four screenshots and the
 // words in every language.
 import './_setup.js';
+process.env.TEACH_LOOP_CARD = '1';   // the card is off by default; this file tests it switched on
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
@@ -251,4 +252,18 @@ test('deleting an account removes its teaching-loop row', async () => {
   assert.ok(setting(`teach.loop:${u.id}`));
   assert.equal(deleteAccount(u.id, null, { by: 'admin', parentMade: false }).ok, true);
   assert.equal(setting(`teach.loop:${u.id}`), null);
+});
+
+test('off by default (TEACH_LOOP_CARD unset): no card and no small link on /teach or a class, /teach/loop still opens', async () => {
+  const { config } = await import('../../server/config.js');
+  config.teachLoopCard = false;
+  try {
+    const fresh = SC.createSchoolAccount(head, school.id, { rosterName: 'Nell Nocard', role: 'teacher' }).user;
+    for (const p of ['/teach', '/teach?all=1']) {
+      const r = await get(p, fresh); assert.equal(r.status, 200, p);
+      assert.equal(card(r.text), '', `${p}: no card`);
+      assert.doesNotMatch(r.text, /id="teach-loop-link"|tl-compact/, `${p}: no link either`);
+    }
+    assert.equal((await get('/teach/loop', fresh)).status, 200);
+  } finally { config.teachLoopCard = true; }
 });

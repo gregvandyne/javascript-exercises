@@ -299,6 +299,9 @@ export const config = {
   // scripts/story-worker.js, running beside the site). STORY_DAILY_LIMIT: new stories a day per kid account (grown-ups
   // and staff get twice as many); STORY_QUEUE_MAX: stories waiting site-wide before new ones are turned away.
   storyBuilder: parseFlag(process.env.STORY_BUILDER, 'STORY_BUILDER').on,
+  // TEACH_LOOP_CARD=1 shows the "Your teaching loop" card on the Classroom home and a class's Lessons tab (off by
+  // default since 25 Nov 2026: the owner found it not helpful; /teach/loop stays reachable).
+  teachLoopCard: parseFlag(process.env.TEACH_LOOP_CARD, 'TEACH_LOOP_CARD').on,
   // STORY_PICTURE_BOOKS (docs/story-builder.md "Picture books"): who the Story Builder's start offers "Illustrated picture
   // book" and "Choose-your-own-adventure picture book" (a hand-off to the book maker, docs/storybook-builder.md).
   // 'teacher' (the default: school staff and the platform admin), 'teacher,parent' (family grown-ups too, who then may
