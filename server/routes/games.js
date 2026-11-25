@@ -372,6 +372,12 @@ router.get('/play/:slug', (req, res) => {
   // pass the game a number.
   const mic = !inMatch && micGame(g, games.getVersion(versionId)?.html);
   if (mic) res.set('Permissions-Policy', MIC_POLICY);
+  // Played inside Homeroom (?in=hr, docs/decisions.md "Homeroom: one page, three views"): the teacher's board and a
+  // student's desk open a game in a layer over themselves instead of leaving. Only then, and only in a frame of this
+  // site, may the page be framed (by this site alone); its own Back links give way to the layer's, and a game's own
+  // "back" asks the layer to close (public/js/play.js).
+  const embed = req.query.in === 'hr' && req.headers['sec-fetch-dest'] === 'iframe';
+  if (embed) { res.set('Content-Security-Policy', String(res.get('Content-Security-Policy') || '').replace("frame-ancestors 'none'", "frame-ancestors 'self'")); res.removeHeader('X-Frame-Options'); }
   const body = html`
   <header class="playbar">
     <a class="iconbtn" href="${backHref}" aria-label="${backLabel}"><span class="emo flip" aria-hidden="true">←</span><span class="lbl">${t('layout.back')}</span></a>
@@ -388,9 +394,9 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
-  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
+  page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: mic ? ['js.match', 'js.loudness'] : ['js.match'] });
 });
 
 // The frame: no cookies are needed; access comes from the short-lived signed token minted for the play/studio page.

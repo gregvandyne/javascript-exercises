@@ -2206,7 +2206,8 @@
       "sel": {
         "tools": "Ausgewähltes Element",
         "delete": "Ausgewähltes Element löschen"
-      }
+      },
+      "playBack": "Zurück zu Homeroom"
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -4884,7 +4885,8 @@
         "lockedHint": "Er geht gleich wieder auf. Deine Arbeit ist gespeichert.",
         "coming": "Deine Lehrkraft kommt gleich zu dir",
         "passBtn": "Toilettenpass"
-      }
+      },
+      "playBack": "Zurück zu meinem Tisch"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",

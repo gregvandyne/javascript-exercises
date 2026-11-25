@@ -2205,7 +2205,8 @@
       "sel": {
         "tools": "已選取的項目",
         "delete": "刪除已選取的項目"
-      }
+      },
+      "playBack": "回到 Homeroom"
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -4883,7 +4884,8 @@
         "lockedHint": "很快就會打開。你的作品已經存好了。",
         "coming": "老師正走過來",
         "passBtn": "通行證"
-      }
+      },
+      "playBack": "回到我的座位"
     },
     "homeroom-area": {
       "label": "老師區",

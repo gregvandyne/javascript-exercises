@@ -64,7 +64,7 @@ export function startPulse(opts) {
     clearTimeout(P.timer); if (P.stopped) return;
     const now = Date.now();
     // Not live: the desk's own poll says when class starts; the game page asks now and then.
-    if (!document.hidden && (P.live || opts.where === 'game')) {
+    if (!document.hidden && !P.paused && (P.live || opts.where === 'game')) {
       const every = !P.live ? 30000 : BEAT_MS;
       if (now - P.lastSent >= every || (P.live && (P.cur.length || P.pad.length) && now - P.lastSent >= SEND_MS)) send();
     }
@@ -78,6 +78,9 @@ export function startPulse(opts) {
     /** The game moved forward (it saved or scored). */
     step() { P.step++; },
     input: mark,
+    /** The desk's game layer is open: the game page in it pulses instead (never two pulses for one student). */
+    pause() { P.paused = true; },
+    resume() { P.paused = false; P.lastSent = 0; },
     stop() { P.stopped = true; clearTimeout(P.timer); },
   };
 }

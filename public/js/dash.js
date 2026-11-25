@@ -47,6 +47,10 @@ function start() {
   const grid = $('#dash-grid'), say = $('#dash-say');
   const narrow = matchMedia('(max-width: 719px)');
   const announce = msg => { say.textContent = ''; setTimeout(() => { say.textContent = msg; }, 30); };
+  // A Homeroom teacher's dashboard is one view of a page with Homeroom and Classroom (public/js/class-views.js): while
+  // another view is on screen this one is hidden; it checks nothing and takes no keys.
+  const viewEl = root.closest('.cv-view');
+  const away = () => !!(viewEl && viewEl.hidden);
 
   // ---------------------------------------------------------------- grid geometry
   const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
@@ -489,6 +493,7 @@ function start() {
     if (S.selected !== c.dataset.id) { S.selected = c.dataset.id; render(); refocus(); }
   });
   document.addEventListener('keydown', e => {
+    if (away()) return;
     if ((S.editing || (board && S.undo.length > board.base)) && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.target.closest('input,textarea')) { e.preventDefault(); undo(); }
   });
 
@@ -1105,7 +1110,7 @@ function start() {
   // while the regular one was still on its way) is dropped, so a screen never goes back to an older layout's state.
   let pollSeq = 0, pollShown = 0;
   async function poll() {
-    if (document.hidden) return;
+    if (document.hidden || away()) return;
     const mine = ++pollSeq;
     try {
       const sent = Date.now();
@@ -1741,5 +1746,12 @@ function start() {
   stageEl.addEventListener('scroll', stageMark, { passive: true });
   addEventListener('resize', () => requestAnimationFrame(fitRows));
   document.addEventListener('fullscreenchange', () => requestAnimationFrame(fitRows));
+  // Leaving for another view: out of Projector (full screen) and edit mode (saved); back: the live check now, the rows fit.
+  viewEl?.addEventListener('cv:hide', () => {
+    if (document.body.classList.contains('dash-projector')) projector(false);
+    if (S.editing) setEditing(false);
+    stickers?.close(false);
+  });
+  viewEl?.addEventListener('cv:show', () => { poll(); requestAnimationFrame(fitRows); });
   applyBg(); render(); renderLayouts(); if (TEACHER) placeSwitcher(); showLive(); tick();
 }

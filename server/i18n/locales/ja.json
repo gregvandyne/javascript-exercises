@@ -2205,7 +2205,8 @@
       "sel": {
         "tools": "選択中の項目",
         "delete": "選択中の項目を削除"
-      }
+      },
+      "playBack": "Homeroomにもどる"
     },
     "stories": {
       "needIdea": "まずアイデアを書いてね（少しの言葉でだいじょうぶ）。",
@@ -4883,7 +4884,8 @@
         "lockedHint": "すぐにまた開きます。やったことは保存されています。",
         "coming": "先生がそばに来ます",
         "passBtn": "外出パス"
-      }
+      },
+      "playBack": "自分の机にもどる"
     },
     "homeroom-area": {
       "label": "先生のエリア",

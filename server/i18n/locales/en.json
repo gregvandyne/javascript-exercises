@@ -2208,7 +2208,8 @@
       "sel": {
         "tools": "Selected item",
         "delete": "Delete the selected item"
-      }
+      },
+      "playBack": "Back to Homeroom"
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -5199,7 +5200,8 @@
         "lockedHint": "It opens again soon. Your work is saved.",
         "coming": "Your teacher is coming over",
         "passBtn": "Hall pass"
-      }
+      },
+      "playBack": "Back to my desk"
     },
     "homeroom-area": {
       "label": "Teacher's area",

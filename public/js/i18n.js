@@ -11,6 +11,9 @@ export const LANG = data.lang;
 export const DIR = data.dir;
 export const INTL = data.intl;
 export const RTL = DIR === 'rtl';
+/** More strings for a part of the page that arrived later (public/js/class-views.js: a view swapped in without loading
+ *  the page again brings the strings of its scripts). Kept strings are never changed. */
+export function addStrings(more) { for (const [k, v] of Object.entries(more || {})) if (!(k in data.strings)) data.strings[k] = v; }
 /** Translate a key. Unknown keys come back as the key, so a missing string is easy to spot. */
 export function t(key, vars) {
   const msg = data.strings[key];
