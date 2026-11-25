@@ -14225,3 +14225,70 @@ The teacher's area had Select, Sticky note, Text, Pen, Square, Circle, Line, Und
   Ctrl+A and Delete, undo and redo by keys and buttons; turning a shape and a text box, lock; the student desk's window
   and the projector drawing exactly what the board draws; the picker and popovers on a phone (sheet), a tablet and a
   Chromebook with nothing sideways). `homeroom-board-browser.test.js` follows the new picker and Outline popover.
+
+## Homeroom: the day plan (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("The day's plan", the top bar's plan pill), owner-approved: the plan is made through the Oomba
+chat only, and the board has no plan row. Builds on steps 2a, 2b and 3a. Migration `0131_homeroom_day_plan`.
+- **In the chat** (`services/companion.js`; the page type `homeroom`: `views/layout.js` companionPage for
+  `/class/:id/homeroom`, and `public/js/homeroom-plan.js` tells the chat through `public/js/oomba-bus.js` while the
+  Homeroom view is on screen; `pageOf` keeps it only for a class Homeroom lets the teacher into). On that page the AI has
+  two more tools: `draftDayPlan` (the whole plan, parts in order: slides, work time, brain break, exit check, with
+  minutes; work time per group by the groups' names) and `useSavedPlan` ("use my Fractions day plan again"); its page
+  rules ask for the whole plan again for a change ("make work time 20 minutes", "swap the brain break"). Each draft is a
+  card (`note.plan`, drawn in `public/js/companion.js`): the parts with their minutes, what each group gets, Use this plan,
+  Use and start, Save plan, Saved plans and Copy to another class. The card's taps are the companion's `act`
+  (`planUse`, `planStart`, `planSave`, `planPick`, `planCopy`); the board's pill follows them (the `oomba:plan` event).
+- **Checked and clamped** (`services/homeroom-plan.js` cleanPlan): known kinds only; minutes inside each kind's range
+  (slides 1 to 30, work 3 to 60, break 1 to 10, exit check 2 to 15) and 120 in all; at most 8 parts; only the teacher's
+  own lessons, games they may hand out, and the class's own groups; titles without a student's name, a group's name (titles
+  reach the projector) or unkind words. What changed goes back to the AI with the plan read back, so it reports only what
+  landed, and the card says how many things were adjusted.
+- **Without the AI** (no model set up, or it is resting): on a class's Homeroom a request about the plan still gets a card
+  (`fallbackDraft`): a saved plan the words name, a small change to the newest card (minutes of a part, another brain
+  break), or a starting plan from the teacher's own lesson or an Oomba game that fits the topic, with slides, a brain
+  break and an exit check around it. Anything else rests as before.
+- **A lesson that doesn't exist yet**: the AI may ask for one the lesson builder can make without words from anyone
+  (Arithmetic Lab with an operation, Algebra Builder with a mode): Use this plan saves it with `services/homeroom-lessons.js`
+  saveLesson (the builder's defaults and a version per group, as the builder suggests them) and the plan names that lesson
+  from then on. Otherwise a game handout with short instructions. Crossword needs words and clues, so never.
+- **Use this plan** (`usePlan`): each part's handouts go on desks through the existing paths (`handOut` for a game,
+  `handOutLesson` for a lesson; Any order, games graded by completion, lessons by score): one Whole class handout when
+  every group gets the same thing, else one per group, and a student in no group gets the "everyone else" version (else
+  the first) at their own desk. Already on desks is counted, not an error; an empty group is skipped. The plan becomes the
+  class's plan of today (`homeroom_rooms.day_plan`, written without touching `updated_at`, so desks don't refetch the
+  teacher's area). A plan that is running is never replaced (`planRunning`: Finish class first).
+- **The pill** (`public/js/homeroom-plan.js`, in the shared bar after the Live dot): Plan (opens the chat) / Today with
+  Start plan / Now with the part, its countdown and Next, with +5 min and Next beside it / Time's up in Spark yellow /
+  All parts done with Finish class / Class finished. Its menu lists the parts and says calmly how far behind the plan is
+  ("About 4 minutes behind. That's okay..."; also the pill's tooltip); never red. **The timer is the server's** and
+  **never moves on by itself**: `public/js/homeroom-plan-time.js` timing (shared by the server and every page) only says
+  when a part is over; only Next moves on (+5 min adds to the part on now, at most an hour). A reload, another device,
+  the projector and the desks all read the same run. The bar's fit (`public/js/class-views.js`) first drops Arrange
+  seats' word (it is in the ⋯ menu), so the pill keeps its words at 1366 x 768.
+- **Finish class** (the pill's menu, or End class while a plan runs, which offers it): the summary: parts done, minutes
+  used against planned per part and in all, and for each part that handed something out how many of its cards are
+  finished of how many (counts only, never a name or an order of students). Nothing is removed: unfinished handouts stay
+  on desks as homework (the summary says how many).
+- **Saved plans** (`homeroom_day_plans`: the teacher's, by name; the same name again replaces it; at most 50): groups are
+  kept by their identity (a name, or an unnamed default group's key, as lesson versions are), so a saved plan or a copy
+  for another class of the same teacher finds Stretch, On track and Building there; a version whose group the class
+  doesn't have is left out (noted). Gone with the teacher's account. Week plans are step 5.
+- **Privacy**: what the AI sees of the class (`aiContext`): grade, subject, how many students, the group names with how
+  many are in each, the teacher's lesson titles and Oomba game titles (scrubbed of students' names), recent handouts with
+  finished counts, saved plan names. Never a student's name, id or work (tested on everything sent). Oomba never talks to
+  students. The projector's and desks' state carry only `publicView` (the part's kind and title, the next one, the timer);
+  the projector shows Now with its countdown and Next; a desk shows a small Now line without a clock (no Time's up for
+  students).
+- **Who**: `GET/POST /api/homeroom/:id/plan` behind the Homeroom gate (the class's own teachers with the plan); the card's
+  taps check the same gate for the card's class. The Oomba chat sheet sits over the board's panels on Homeroom (it was
+  under the teacher's desk panel on a tablet).
+- Tests: `tests/unit/homeroom-plan.test.js` (the timer: countdown, Time's up that never advances, +5, Next, behind; the
+  checks and clamps; a stand-in AI drafting through the chat with nothing personal sent; Use this plan per group and whole
+  class; Start, +5, Next, Finish class and its summary; handouts kept; the fallback without the AI and its quick changes;
+  Save plan, useSavedPlan, Saved plans, Copy to another class, a lesson the builder makes; who; the projector and desk
+  views; account delete) and `tests/unit/homeroom-plan-browser.test.js` (1366 x 768 and a tablet: the card, a change in
+  the chat, Use this plan, Start, the countdown, Time's up after a reload, the menu, the projector, a desk's Now line,
+  End class offering Finish class, the summary; nothing sideways).
+- **Open**: week plans (step 5); dragging parts around on the card (changes are asked for in the chat, as the spec says);
+  translations of the new strings (English now; the other languages fall back to it).

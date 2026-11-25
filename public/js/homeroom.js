@@ -27,7 +27,10 @@
 //     games, lessons and tools the teacher drops or tap-places there, even with no students in the class, to try them
 //     (Play / Preview) and hand them out later (Hand out picks the item, then a desk, a group or Whole class; or the card
 //     is dragged there). Staged, never assigned: students never see it (POST .../staged).
-// Plans come in a later step (docs/homeroom.md "Build order").
+//   - the day plan (public/js/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): planned in the Oomba chat
+//     only; the top bar's plan pill shows Now with a countdown and Next, +5 min and Next while it runs, Time's up in
+//     yellow (it never moves on by itself), and Finish class with a short summary. End class offers Finish class while a
+//     plan runs.
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
@@ -39,6 +42,7 @@ import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
 import { liveBoard } from '/js/homeroom-live.js';
 import { gamePlayer } from '/js/homeroom-player.js';
+import { planPill } from '/js/homeroom-plan.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -366,7 +370,10 @@ let liveHtml = '';
 const LIVE_TOAST = { start: 'started', bring: 'bringing', back: 'backToDesks', pause: 'paused', resume: 'resumed', end: 'ended' };
 async function liveAction(action) {
   if (H.liveBusy) return;
-  if (action === 'end' && !(await ask({ title: th('endClass'), text: th('endConfirm'), ok: th('endClass') }))) return;
+  // A plan still running: End class offers Finish class (its short summary; unfinished handouts stay as homework).
+  if (action === 'end' && PLAN && PLAN.running()) {
+    if (!(await PLAN.finishForEnd(th('endClass')))) return;
+  } else if (action === 'end' && !(await ask({ title: th('endClass'), text: th('endConfirm'), ok: th('endClass') }))) return;
   H.liveBusy = true;
   try {
     const r = await api(`/api/homeroom/${encodeURIComponent(D.classId)}/live`, { method: 'POST', body: { action } });
@@ -870,8 +877,10 @@ const PL = gamePlayer({
   away: () => H.away,
 });
 
+let PLAN = null;
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
+  PLAN = planPill({ D, H, viewEl });
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
   $('hr-panel').addEventListener('pointerdown', dragStart);
   board.addEventListener('pointerdown', stagedDragStart);

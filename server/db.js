@@ -1459,6 +1459,17 @@ export const MIGRATIONS = [
   // with their account.
   ['0130_homeroom_staged', `
     ALTER TABLE homeroom_rooms ADD COLUMN staged TEXT NOT NULL DEFAULT '[]';`],
+  // Homeroom: the day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js). homeroom_rooms.day_plan:
+  // today's plan of the class as the teacher chose it in the Oomba chat (its parts, the handouts each part put on desks,
+  // and the running timer: which part, when it began, minutes added), held by the server so it survives a reload and
+  // shows on the projector; '' when there is none. Only the class's teachers write it; the projector and desks read only
+  // the part names and the timer. homeroom_day_plans: the plans a teacher saved by name, to use again in any of their
+  // classes (groups kept by their name or default key, never by a student). Gone with the teacher's account.
+  ['0131_homeroom_day_plan', `
+    ALTER TABLE homeroom_rooms ADD COLUMN day_plan TEXT NOT NULL DEFAULT '';
+    CREATE TABLE IF NOT EXISTS homeroom_day_plans (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name TEXT NOT NULL, topic TEXT NOT NULL DEFAULT '', parts TEXT NOT NULL DEFAULT '[]', created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_day_plans_owner ON homeroom_day_plans(owner_id, updated_at);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

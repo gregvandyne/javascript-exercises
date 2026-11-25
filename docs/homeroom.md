@@ -72,6 +72,12 @@ handouts on desks. Changes are asked for in the chat. During class the pill show
 yellow when time is up and never moves on by itself. Finish class shows a short summary; unfinished handouts stay on
 desks as homework; plans can be saved, copied to other sections, and planned for the week.
 
+Built (docs/decisions.md "Homeroom: the day plan"): on a class's Homeroom the Oomba chat drafts the plan as a card
+(Use this plan, Use and start, Save plan, Saved plans, Copy to another class); without the AI a request still gets a
+simple starting plan. The plan pill sits in the top bar after the Live dot; the timer is held by the server, so the
+projector (Now and Next with the countdown) and the desks (a small Now line) show the same part. End class offers
+Finish class while a plan runs. Week plans come in step 5.
+
 ## The student desk
 
 Their square from the live room made into a desk: handouts in order (Next up / Later, or any order), the book they're

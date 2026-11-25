@@ -28,6 +28,7 @@ import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
 import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { nowNextHtml } from '/js/homeroom-plan.js';
 import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
 
@@ -245,6 +246,8 @@ function applyState(st) {
   teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
+  // The day plan's Now / Next (part names only, no clock: docs/decisions.md "Homeroom: the day plan").
+  if ('plan' in st) { const el = $('hd-now'); if (el) { el.hidden = !st.plan; el.innerHTML = nowNextHtml(st.plan, 0, { clockOn: false }); } }
   const areaChanged = 'area' in st;
   if (areaChanged) { S.area = st.area || {}; renderWindow(); }
   if (areaChanged || was !== JSON.stringify([S.live, S.me && S.me.locked])) renderOver();

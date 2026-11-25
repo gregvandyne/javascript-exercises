@@ -837,3 +837,80 @@ button.hr-tname:hover{background:var(--hover)}
 .hd-playing .hd-body{visibility:hidden}
 @media (max-width:600px){.hd>.hr-player{left:8px;right:8px;top:64px;bottom:80px}}
 @media (max-width:819px){.hr-playtop{min-height:52px;padding:6px 8px}.hr-playt{font-size:.95rem}}
+
+/* ---- the day plan (public/js/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): the plan pill in the shared
+   bar (Now with a countdown and Next; Time's up in yellow; never red), its menu, the Finish class summary, and the
+   projector's and a desk's Now / Next */
+.hr-plan{display:inline-flex;align-items:center;gap:8px;flex:none;min-width:0}
+.hr-plan:empty{display:none}
+.hr-planpill{display:inline-flex;align-items:center;gap:8px;max-width:340px;text-align:start;line-height:1.15}
+.hr-pp-t{display:inline-flex;flex-direction:column;min-width:0;overflow:hidden}
+.hr-pp-t b,.hr-pp-l1,.hr-pp-l2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pp-l1{display:flex;align-items:baseline;gap:6px}
+.hr-pp-l1>.hr-pp-cap,.hr-pp-l1>.hr-pp-clock{flex:none}
+.hr-pp-cap{font-weight:700;color:var(--text-2)}
+.hr-pp-sub{font-size:.78rem;font-weight:700;color:var(--text-2)}
+.hr-pp-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-pp-run{border-color:var(--accent-line)!important;box-shadow:0 3px 0 var(--accent-line)!important;background:var(--accent-soft)!important}
+.hr-pp-run.up{background:var(--spark)!important;border-color:var(--spark-press)!important;color:#141414;box-shadow:0 3px 0 var(--spark-press)!important}
+.hr-pp-run.up .hr-pp-cap,.hr-pp-run.up .hr-pp-sub{color:#141414}
+.hr-pp-run.up>.fx{flex:none;box-sizing:content-box;padding:3px;border-radius:999px;background:#FFFDF2}
+.hr-pp-act{flex:none}
+/* (public/js/class-views.js fit(): cv-short first: Arrange seats' word, which is in the ⋯ menu too; then cv-icons: every
+   button's word, the idle pill's too; cv-fold: the running pill's "Now" word, never its part, clock, Next or Time's up) */
+.cv-bar.cv-short .cv-acts-homeroom [data-hr="seats"] .hr-hidephone,.cv-bar.cv-icons .hr-pp-word,.cv-bar.cv-fold :is(.hr-planpill:not(.up) .hr-pp-cap,.hr-pp-sub:not(.hr-pp-l2)){display:none}
+.cv-bar.cv-fold .hr-planpill{max-width:200px}
+/* phones: the bar has no room left in a live class, so the pill floats over the board's top left corner instead
+   (public/js/homeroom-plan.js moves it there): the part and its clock, or Time's up; Next, +5 min, Start and Finish class
+   are in its menu; planning is the Oomba chat's own button, so no Plan pill */
+.hr-stage>.hr-plan{position:absolute;left:8px;top:8px;z-index:62;max-width:calc(100% - 16px)}
+.hr-stage>.hr-plan .hr-planpill{max-width:min(260px,calc(100vw - 32px));box-shadow:var(--shadow-lg)}
+.hr-stage>.hr-plan :is(.hr-pp-l2,.hr-pp-sub,.hr-pp-act,[data-hrplan="ask"]){display:none}
+#hr-planmenu .hr-planmenu{z-index:90;width:min(340px,calc(100vw - 24px));padding:12px}
+.hr-pm-body{display:flex;flex-direction:column;gap:10px;overflow-y:auto}
+.hr-pm-h{display:flex;align-items:center;gap:8px;margin:0;font-size:1.05rem;font-weight:800}
+.hr-pm-h>span:first-of-type{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pm-tot{flex:none;padding:2px 10px;border-radius:999px;background:var(--hover);font-size:.8rem}
+.hr-pm-behind{display:flex;align-items:center;gap:6px;margin:0;padding:8px 10px;border-radius:12px;background:var(--accent-soft);font-weight:700;font-size:.9rem}
+.hr-pm-behind.late{background:var(--spark-soft);color:var(--text)}
+.hr-pm-parts{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none}
+.hr-pm-part,.hr-sum-part{display:flex;align-items:center;gap:10px;min-height:40px;padding:4px 10px;border-radius:12px;background:var(--bg)}
+.hr-pm-part.now{background:var(--accent-soft);box-shadow:inset 0 0 0 2px var(--accent-line)}
+.hr-pm-part.done{opacity:.7}
+.hr-pm-mark{flex:none;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--line);font-weight:900;font-size:.8rem}
+.hr-pm-part.now .hr-pm-mark{background:var(--accent);color:#141414;box-shadow:none}
+.hr-pm-part.done .hr-pm-mark,.hr-sum-part.done .hr-pm-mark{background:var(--accent);color:#141414;box-shadow:none}
+.hr-pm-name{flex:1;min-width:0;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-pm-min{flex:none;font-weight:700;color:var(--text-2);font-size:.88rem}
+.hr-pm-acts{display:flex;flex-wrap:wrap;gap:8px}
+.hr-pm-acts .btn{min-height:44px;border-radius:999px}
+.hr-pm-foot{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:8px}
+.hr-pm-note{margin:0}
+.hr-sum{display:flex;flex-direction:column;gap:12px}
+.hr-sum-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.hr-sum-nums>div{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:20px;background:var(--bg)}
+.hr-sum-nums b{font-size:1.5rem;font-weight:900}
+.hr-sum-parts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.hr-sum-part{align-items:flex-start;padding:8px 12px}
+.hr-sum-b{display:flex;flex-direction:column;gap:2px;flex:1;min-width:0}
+.hr-sum-ho{display:flex;align-items:center;gap:8px;margin-top:2px}
+.hr-sum-bar{flex:0 1 140px;height:10px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden}
+.hr-sum-bar i{display:block;height:100%;background:var(--accent);border-radius:999px}
+.hr-sum-home{display:flex;align-items:center;gap:8px;margin:0;padding:10px 12px;border-radius:14px;background:var(--spark-soft);color:var(--text);font-weight:700}
+/* the projector's Now / Next (names of parts and the timer only) */
+.hr-projplan{margin-inline-start:auto;display:flex;align-items:center;gap:14px;padding:8px 18px;border-radius:20px;background:var(--card);border:3px solid #141414;box-shadow:var(--shadow);font-size:clamp(1rem,2vw,1.5rem)}
+.hr-projplan[hidden]{display:none}
+.hr-projplan.up{background:var(--spark);color:#141414}
+.hr-nn-now,.hr-nn-next{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.hr-nn-cap{font-weight:700;opacity:.75}
+.hr-nn-clock{font-variant-numeric:tabular-nums;font-weight:900}
+.hr-projplan .hr-nn-clock{font-size:1.3em}
+.hr-nn-next{opacity:.8}
+/* a desk's Now line (no clock: students are never hurried by it) */
+.hd-now{display:inline-flex;align-items:center;gap:10px;min-width:0;padding:4px 12px;border-radius:999px;background:var(--accent-soft);font-size:.85rem;font-weight:700;overflow:hidden}
+.hd-now[hidden]{display:none}
+.hd-now b,.hd-now span{overflow:hidden;text-overflow:ellipsis}
+@media (max-width:819px){.hd-now .hr-nn-next{display:none}}
+/* the Oomba chat, where the day plan is made: over the board's floating panels (its own sheet on a tablet would
+   otherwise sit under the teacher's desk panel and the minimap), under menus and popovers */
+body.cv-on-homeroom .oc,body.hr-page .oc{z-index:70}

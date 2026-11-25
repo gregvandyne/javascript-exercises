@@ -48,6 +48,10 @@
 //   GET  /api/homeroom/:id/look/:sid           look at one student's desk: status, current handout, last pulse, their pad
 //   POST /api/desk/:id/pulse                   a desk's or a handout game's pulse: { where, on, idle, step, cur, pad }
 //   POST /api/desk/:id/hand                    their own hand: { action: raise, kind } | { action: lower } | { action: back }
+// The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js; planned in the Oomba chat only):
+//   GET  /api/homeroom/:id/plan                today's plan of the class with its timer (the plan pill)
+//   POST /api/homeroom/:id/plan                { action: start | more | next | finish | clear } -> { plan, summary? }
+//   The projector's and a desk's state carry only the Now / Next part names and the timer (HP.publicView).
 import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
@@ -58,6 +62,7 @@ import * as HO from '../services/homeroom-handouts.js';
 import * as HL from '../services/homeroom-lessons.js';
 import * as HV from '../services/homeroom-live.js';
 import * as HS from '../services/homeroom-staged.js';
+import * as HP from '../services/homeroom-plan.js';
 import crypto from 'node:crypto';
 import { localeInfo } from '../i18n/index.js';
 import { hasModel } from '../builder/anthropic.js';
@@ -125,6 +130,7 @@ router.get('/class/:id/homeroom', (req, res) => {
   const room = H.roomOf(c.id);
   // The shared bar's Homeroom buttons (routes/homeroom-views.js): the Live dot, live class's buttons, Arrange seats, ⋯.
   markView(req, c, 'homeroom', html`<span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
+        <span class="hr-plan" id="hr-plan"></span>
         <span class="hr-grow"></span>
         <span class="hr-livebtns" id="hr-livebtns"></span>
         <button class="btn hr-chunk" type="button" data-hr="seats" data-cv-fold aria-pressed="false" aria-label="${t('homeroom.arrange')}">${ico('🔀', { size: 18 })}<span class="hr-hidephone"> ${t('homeroom.arrange')}</span></button>
@@ -132,12 +138,12 @@ router.get('/class/:id/homeroom', (req, res) => {
   const lists = deskLists(req);
   const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.board-ann', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, room, live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
       lessons: HL.listMine(u, req.locale), staged: HS.stagedFor(u, c, req.locale, t), stagedMax: HS.STAGED_MAX, lessonGames: HL.lessonGames(u, req.locale), lessonsMax: HL.LESSONS_MAX, titleMax: HL.TITLE_MAX, ai: hasModel() && liveCanHost(u),
-      pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX } })}
+      pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c) })}
     <div id="homeroom" class="hr">
       <div class="hr-stage">
         <div class="rm rm-teacher hr-board" id="hr-board" tabindex="-1" aria-label="${t('homeroom.boardLabel')}"><div class="rm-world" id="hr-world"><p class="muted hr-loading">${t('homeroom.loading')}</p></div></div>
@@ -166,6 +172,15 @@ router.post('/api/homeroom/:id/seats', rateLimit('homeroom-seats', 600, 3600e3),
 router.post('/api/homeroom/:id/groups', rateLimit('homeroom-groups', 300, 3600e3), (req, res) => send(req, res, H.saveGroups(req.user, req.homeroomClass, { groups: body(req).groups, members: body(req).members })));
 router.post('/api/homeroom/:id/area', rateLimit('homeroom-area', 1800, 3600e3), (req, res) => send(req, res, H.saveArea(req.user, req.homeroomClass, body(req).state)));
 router.post('/api/homeroom/:id/live', rateLimit('homeroom-live', 600, 3600e3), (req, res) => send(req, res, H.setLive(req.user, req.homeroomClass, String(body(req).action || ''))));
+
+// ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
+// The pill's timer is the server's (a reload, the projector and the desks see the same); it never moves on by itself.
+router.get('/api/homeroom/:id/plan', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json({ plan: HP.teacherView(req.homeroomClass) }));
+router.post('/api/homeroom/:id/plan', rateLimit('homeroom-plan', 600, 3600e3), (req, res) => {
+  const r = HP.runAction(req.user, req.homeroomClass, String(body(req).action || ''));
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, plan: HP.teacherView(req.homeroomClass), ...(r.summary ? { summary: r.summary } : {}) });
+});
 
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
 // The board asks every 2 s while live and visible (1800 an hour); the desks' handouts come again only when they changed.
@@ -302,11 +317,11 @@ router.post('/api/homeroom/:id/lessons/:lid/print', rateLimit('game-print', 60, 
 router.get('/class/:id/homeroom/projector', (req, res) => {
   const t = req.t, c = req.homeroomClass;
   page(req, res, {
-    title: t('homeroom.projector.title', { class: c.name }), bare: true, bodyClass: 'hr-projpage', scripts: ['/js/homeroom-projector.js'], i18n: ['js.homeroom-area'],
+    title: t('homeroom.projector.title', { class: c.name }), bare: true, bodyClass: 'hr-projpage', scripts: ['/js/homeroom-projector.js'], i18n: ['js.homeroom-area', 'js.homeroom-plan'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, state: { ...H.boardState(c.id), signin: signinView(req, c.id) } })}
+    body: html`${jsonData('page-data', { classId: c.id, state: { ...H.boardState(c.id), signin: signinView(req, c.id), plan: HP.publicView(c) } })}
     <div class="hr-proj" id="hr-proj">
-      <header class="hr-projtop"><h1 class="hr-projname" dir="auto">${c.name}</h1><span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span></header>
+      <header class="hr-projtop"><h1 class="hr-projname" dir="auto">${c.name}</h1><span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span><div class="hr-projplan" id="hr-projplan" hidden></div></header>
       <div class="hr-projmain"><div class="hr-projarea" id="hr-projarea"></div>
         <aside class="hr-projsign" id="hr-projsign" hidden aria-labelledby="hr-projsignh"><h2 id="hr-projsignh">${ico('🔑', { size: 28 })} ${t('homeroom.signin.title')}</h2>
           <div class="hr-projqr" id="hr-projqr"></div>
@@ -319,7 +334,7 @@ router.get('/class/:id/homeroom/projector', (req, res) => {
 // changed since sc, the code the page last saw).
 router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => {
   const id = req.homeroomClass.id, si = SI.signinOf(id);
-  res.json({ ...H.boardState(id, req.query.v), signin: signinView(req, id, { qr: !si.open || String(req.query.sc || '') !== si.code }) });
+  res.json({ ...H.boardState(id, req.query.v), signin: signinView(req, id, { qr: !si.open || String(req.query.sc || '') !== si.code }), plan: HP.publicView(req.homeroomClass) });
 });
 
 // ---------------------------------------------------------------- the student desk
@@ -328,14 +343,15 @@ router.get('/class/:id/desk', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
   const room = H.roomForStudent(c, u), device = SI.deviceClass(req.sessionId) === c.id, cards = HO.deskView(c, u, req.locale);
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
-      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: { ...H.boardState(c.id), ...deskLive(c, u) } })}
+      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS }, state: { ...H.boardState(c.id), ...deskLive(c, u), plan: HP.publicView(c) } })}
     <div class="hd" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
         <h1 class="hd-title" dir="auto">${c.name}</h1>
+        <span class="hd-now" id="hd-now" hidden></span>
         <span class="hd-grow"></span><span class="hd-handwrap" id="hd-handwrap"></span>
         ${device ? html`<span class="hd-notyou"><span class="hd-hidephone">${t('homeroom.desk.notYou', { name: u.display_name })}</span><button type="button" class="hd-tool hd-switch" data-hd="switch">${ico('🔄', { size: 18 })} ${t('homeroom.desk.switch')}</button></span>` : ''}
       </header>
@@ -357,7 +373,7 @@ router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3)
   const c = req.homeroomClass, cards = HO.deskView(c, req.user, req.locale), hv = HO.deskVersion(cards);
   // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
   const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
-  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), plan: HP.publicView(c), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
     ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
 });
 // Step 3a: what a desk hears about its own live desk (its hand, its place with the hall pass, its settings, and a team
