@@ -11216,6 +11216,32 @@ one square the viewer may change), with the geometry shared in `public/js/manip-
   a group move and Backspace, saved; a drag outside the square pans). `manip-steps-browser.test.js`'s laptop case now
   pans a locked chart with Space held (a plain drag selects and moves nothing).
 
+## Manipulatives: "How it works" videos and four layout fixes (25 Nov 2026)
+
+Found while recording the number line tutorial at 1280x720.
+
+- **Videos per tool.** `public/js/manip-data.js` `TUTORIALS` (a Set of slugs, `number-lines` for now) says which tools
+  have a video; `tutorialOf(slug)` gives its files, `public/video/manip/manip-<slug>.mp4`, `manip-<slug>-poster.jpg`
+  and `manip-<slug>.en.vtt` (served by the app's plain `express.static` for `public/`, an hour's cache in production;
+  the Dockerfile copies `public/`). A tool with one shows a quiet "▶ How it works" button by its title, and on its All
+  tools card (a button beside the card's link, never inside it). It opens the video in the site's modal sheet
+  (`app.js sheet()`: ✕, Escape, a tap outside, focus back to the button), with poster, controls, `playsinline` and
+  English captions on. Turning on another tool's video: add its three files, then its slug to `TUTORIALS`
+  (`manip-tutorial-browser.test.js` checks every listed slug has its files). Strings `js.manip.how.*`, English only.
+- **The view follows a growing object.** The number line in Jumps (or with its first jump) is taller
+  (`manip-board.js` size()), and its bottom went under the board's frame until Fit. `manip.js keepInView` (after every
+  board render) compares each object's size with the last one; one that grew past the bottom or right of the board's
+  clear area moves the view just enough to show it, or fits when it no longer fits at this zoom. Never while a pointer
+  is down on the board (the sizes are taken again when it lifts, so a resize never jumps the view), and never for an
+  object that was off screen.
+- **Fit leaves the zoom pill clear.** `clearArea()` takes the pill's strip off the bottom (a computer) or the top (a
+  phone, where the pill sits top right); Fit and keepInView use only what is left.
+- **Oomba's chat button off the board.** On screens 821px and wider the tool page keeps a right gutter as wide as the
+  fixed round button (`manipulatives.css`, `body.manip-page .mp-tool`), so the board ends left of it; other pages are
+  unchanged.
+- **The hint follows the mode.** A tool's `hint` may be a function of its state (`hintOf`); the number line's says
+  Points or Jumps to match its switch.
+
 ## Mistake Hunt, Phase 3: Oomba's chat on a set and class insights (22 Nov 2026)
 Phase 3 of the plan the owner approved with the mockup (the Oomba panel beside the builder, the AI card on the results).
 **Gating:** both are **Teacher plan tools** (`services/proof-ai.js planTools`, toolAccess's people: Teacher plan holders,

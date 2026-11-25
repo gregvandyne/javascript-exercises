@@ -3718,6 +3718,11 @@
         "allTools": "← All tools",
         "back": "← Back"
       },
+      "how": {
+        "button": "How it works",
+        "title": "{tool}: how it works",
+        "video": "A short video: how {tool} works"
+      },
       "home": {
         "title": "Math manipulatives",
         "testing": "Testing: only you can see this",
