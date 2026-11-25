@@ -1448,6 +1448,10 @@ export const MIGRATIONS = [
       PRIMARY KEY (class_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_homeroom_live_user ON homeroom_live(user_id);
     ALTER TABLE homeroom_rooms ADD COLUMN pass_minutes INTEGER NOT NULL DEFAULT 5;`],
+  // Typing Pets is now Typing Zoo (docs/decisions.md "Typing Zoo: the rename, Noto animals..."), the same way as 0121:
+  // the official row keeps its id (plays, saves under the kept key 'typing-pets-v1', favorites, ratings, assignments,
+  // lesson steps, sets, the teacher's typing panel) and only its slug changes; old links: services/slug-aliases.js.
+  ['0129_typing_zoo_slug', 'SELECT 1;', conn => renameSeedSlug(conn, 'typing-pets', 'typing-zoo')],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has
