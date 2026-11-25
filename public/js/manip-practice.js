@@ -125,8 +125,10 @@ const TOOLS = {
     vary: (n, i) => (n.eq ? varyEq(n, i) : { fs: n.fs.map((f, j) => { const p = parseFrac(f), d = DENS[(DENS.indexOf(p.d) + i + 1 + j) % (DENS.length - 1) + 1]; return `${Math.min(p.n, d)}/${d}`; }) }),
     cell: (n, box, slug) => {
       if (n.eq) return one('frac-eq', { ...eqState(n.eq), shape: 'circles' }, slug);
-      const placed = n.fs.flatMap(f => { const p = parseFrac(f); return Array.from({ length: p.n }, (_, k) => ({ id: id('p'), d: p.d, rot: (360 / p.d) * k })); });
-      return one('fraction-circles', { placed: box === 'build' ? [] : placed.slice(0, 24), mode: 'frac', rings: false, label: box === 'build' ? `Show ${n.fs.join(' + ')}` : '' }, slug);
+      // Each fraction in its own circle (3/4: three fourths in one circle), so the amounts read apart.
+      let k = 0;
+      const circles = n.fs.map((f, i) => { const p = parseFrac(f); return { id: `c${i + 1}`, ps: Array.from({ length: p.n }, () => ({ id: `p${++k}`, d: p.d })) }; });
+      return one('fraction-circles', { circles: box === 'build' ? [{ id: 'c1', ps: [] }] : circles, sel: null, mode: 'frac', rings: false, label: box === 'build' ? `Show ${n.fs.join(' + ')}` : '' }, slug);
     },
   },
   'fraction-tiles': {

@@ -16,6 +16,7 @@
 import { q, now } from '../db.js';
 import * as M from './manipulatives.js';
 import { toolOf, stepsOf } from '../../public/js/manip-data.js';
+import { fcCircles } from '../../public/js/manip-board.js';
 import { PRACTICE_TABLE, PRACTICE_HELP, PRACTICE_MAX, STEPS_MAX } from '../../public/js/manip-practice.js';
 
 export const CHAT = {
@@ -45,7 +46,13 @@ function objSettings(o) {
     case 'number-lines': return { min: num(st.min), max: num(st.max), step: num(st.step), ...(Array.isArray(st.points) && st.points.length ? { value: num(st.points[0]) } : {}) };
     case 'hundred-board': return Array.isArray(st.picked) && st.picked.length ? { value: (num(st.start) || 1) + (num(st.picked[0]) || 0) } : {};
     case 'rekenreks': return { value: (Array.isArray(st.counts) ? st.counts : []).reduce((s, x) => s + (num(x) || 0), 0) };
-    case 'fraction-circles': return Array.isArray(st.placed) && st.placed.length ? { fractions: counts(st.placed.map(p => num(p && p.d))).map(c => `${c.count}/${c.kind}`) } : {};
+    // Each circle's pieces by size (a circle of 1/2, 1/4, 1/4: "1/2", "2/4"); a board saved before circles held pieces
+    // (placed: one piece a circle) counted by size across the set, as it was read then.
+    case 'fraction-circles': {
+      const fs = !Array.isArray(st.circles) && Array.isArray(st.placed) ? counts(st.placed.map(p => num(p && p.d))).map(c => `${c.count}/${c.kind}`)
+        : fcCircles(st).flatMap(c => counts(c.ps.map(p => p.d)).map(x => `${x.count}/${x.kind}`));
+      return fs.length ? { fractions: fs.slice(0, 12) } : {};
+    }
     case 'frac-eq': return { op: clip(st.op, 8), a: clip(st.a, 12), b: clip(st.b, 12) };
     case 'xy-coordinate-board': return Array.isArray(st.pts) && st.pts.length ? { points: st.pts.slice(0, 8).map(p => ({ x: num(p && p.x), y: num(p && p.y) })) } : {};
     case 'geoboard': { const b = Array.isArray(st.bands) && st.bands[0]; return b && Array.isArray(b.pts) ? { pegs: b.pts.slice(0, 8).map(p => ({ x: num(p && p.x), y: num(p && p.y) })) } : {}; }
