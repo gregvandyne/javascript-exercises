@@ -2918,6 +2918,7 @@
       "aiGo": "Draft questions",
       "aiWorking": "Writing questions…",
       "aiNeedTopic": "Type a topic first.",
+      "addedOf": "Added {n} of the {asked} questions you asked for: the rest didn’t pass the checks or didn’t fit. Check them, then save.",
       "added": "{n, plural, one {Added # question.} other {Added # questions.}} Check them, then save.",
       "pasteTitle": "Paste questions",
       "pasteSheet": "From a spreadsheet: copy the rows and paste them here. One row per question: the question, the right answer, then 1 to 3 wrong answers, and the seconds to answer (optional).",
@@ -3000,6 +3001,7 @@
       "textLoaded": "Loaded the text from {name}.",
       "fileKind": "Choose a PDF or a text file.",
       "tooShort": "Paste a bit more of your lesson first (at least {n} characters).",
+      "draftedOf": "{n} of the {asked} questions you asked for were drafted: the rest didn’t pass the checks or your lesson didn’t have enough for them. Check each one.",
       "drafted": "{n} questions drafted. Check each one.",
       "backConfirm": "Start again? The drafted questions on this page will be lost.",
       "assigned": "Assigned."
@@ -6191,7 +6193,15 @@
       "make": "Draft the lesson",
       "note": "Claude drafts a lesson with steps and matching games. You can change everything before you use it.",
       "done": "Here is your draft. Check every step and change anything you like.",
-      "template": "The AI isn't available right now, so here's a simple template to start from. Change anything you like."
+      "template": "The AI isn't available right now, so here's a simple template to start from. Change anything you like.",
+      "check": {
+        "title": "Oomba checked the saved lesson. Not everything is as the AI wrote it:",
+        "steps": "{saved} of {planned} steps were saved.",
+        "replaced": "{count, plural, one {# figure couldn’t be drawn as written, so a question from its generator is there instead.} other {# figures couldn’t be drawn as written, so questions from their generators are there instead.}}",
+        "dropped": "{count, plural, one {# figure was left out: the app can’t draw it.} other {# figures were left out: the app can’t draw them.}}",
+        "fixed": "{count, plural, one {# figure was drawn without a measure it works out itself.} other {# figures were drawn without a measure they work out themselves.}}",
+        "games": "{count, plural, one {# game step became a text step: that game isn’t one you can use.} other {# game steps became text steps: those games aren’t ones you can use.}}"
+      }
     },
     "assign": {
       "title": "Assign to a class",

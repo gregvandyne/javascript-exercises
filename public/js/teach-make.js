@@ -39,7 +39,9 @@ if (form) {
       const r = await api('/api/teach/make/draft', { method: 'POST', body: { text: lesson, ...(pdf ? { pdf } : {}), level, count: +$('mk-count').value } });
       show(1);
       document.dispatchEvent(new CustomEvent('lv-set-draft', { detail: { title: r.title, grade: level.slice(0, 20), items: r.items } }));
-      toast(t('js.teach-make.drafted', { n: r.items.length }));
+      // Checked work: fewer questions than asked for (the checks left some out, or the lesson had less) is said plainly.
+      const asked = r.report && r.report.asked > r.items.length ? r.report.asked : 0;
+      toast(asked ? t('js.teach-make.draftedOf', { n: r.items.length, asked }) : t('js.teach-make.drafted', { n: r.items.length }));
     } catch (er) { err.textContent = er.message; }
     go.disabled = false; wait.hidden = true;
   });

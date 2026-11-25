@@ -132,6 +132,17 @@ test('the page and its APIs are for grown-ups who may host: a student or a child
   assert.equal(asked, null, 'no child\'s request reaches the AI');
 });
 
+// Checked work (docs/decisions.md "Builders check their work: verify after every change"): 10 asked for, 3 came through
+// the checks; the answer says so, and the page's note says "3 of the 10" rather than taking 3 for the whole draft.
+test('the draft API reports how many of the questions asked for came through the checks', async () => {
+  const r = await post('/api/teach/make/draft', { text: LESSON, level: 'Grade 4', count: 10 }, teacher);
+  assert.equal(r.status, 200);
+  const d = await r.json();
+  assert.equal(d.items.length, 3);
+  assert.equal(d.report.asked, 10); assert.equal(d.report.kept, 3); assert.equal(d.report.partial, true);
+  assert.equal(d.report.text, '3 of 10 questions kept, 7 removed');
+});
+
 test('the draft API: the questions come back, nothing is stored, and the log holds only a count', async () => {
   const sets = q.get('SELECT COUNT(*) AS n FROM live_sets').n;
   const r = await post('/api/teach/make/draft', { text: LESSON, level: 'Grade 4', count: 10 }, teacher);

@@ -13971,17 +13971,27 @@ What changed.
     already end with honest lines. New: when the last change the AI tried did not save and nothing saved after it, the
     reply ends with "my last change didn't save, so your game is still version N" (`builder.lastNotSaved`), whatever
     the AI wrote. The arcade SYSTEM_PROMPT+TOOLS are unchanged (their hash test passes).
-  - Not changed in this pass: the lesson drafter (`lesson-ai.js`; its figure repairs get the leave-out fix through
-    `repairDraft`, but its draft does not yet say how many figures were repaired) and the live question-set drafts
-    (`set-ai.js draftQuestions` / `draftFromLesson`: the editor shows every question, but not how many the checks
-    dropped).
-
+  - *The lesson drafter* (`lesson-ai.js`, `routes/lessons.js`): `figureStep` counts what the checks did (`tally`:
+    asked, kept, fixed, replaced, dropped, steps that became a question or text) and `draftLesson` returns it with the
+    game steps swapped for text. After saving, the route reads the lesson back (`L.steps`) and hands the editor
+    `chk=saved.planned.fixed.replaced.dropped.games`; the editor shows "Oomba checked the saved lesson" with one line per
+    difference (`lessons.ai.check.*`), and nothing when the draft landed as written.
+  - *Live question-set drafts* (`set-ai.js draftQuestions` and `draftFromLesson`, `routes/live.js`): each returns
+    `asked` and the answer carries `report` (`VC.kept`). The set editor's toast counts what it really took ("Added 8 of
+    the 10 questions you asked for", `js.live-sets.addedOf`), and /teach/make says the same (`js.teach-make.draftedOf`).
+  - *Story Builder* (`stories/worker.js`): a story is "done" only with its video, poster and captions on disk and not
+    empty (`versionMissing`). A change is swapped in only when its new version is complete AND it is still being made:
+    before, a change ended meanwhile (the stall check) swapped in its video while the row kept the old words, so the
+    page showed one story and played another. After the swap the row is read back (title, files) and a mismatch is
+    logged.
 Tests: `tests/unit/companion-verify.test.js` (the owner's flow: question 1 replaced by the name-the-shape question with
 its figure repaired, options kept, the tool's result read back, the reply from it, no "Change undone."; the first draft
 of that test; an edit that cannot land, told to the model and on the card; a second try in one answer; a question deleted
 meanwhile, corrected in the reply; Undo; Manipulatives' read-back and left-out items; the shared helpers; the drafts'
 counts; a dashboard change after a widget went), `companion-book.test.js` (a book change that does not land),
 `proof-chat.test.js` (left-out passages and a set that could not be built), `builder-claude.test.js` (the last change
-did not save), and the
+did not save), `figures-lesson-step.test.js` (the editor's note from the saved lesson), `teach-make.test.js` and
+`live-sets-editor.test.js` (the questions asked for vs kept), `story-pipeline.test.js` (a change ended meanwhile never
+swaps its video in), and the
 owner's flow in a real browser in `tests/unit/figures-chat-browser.test.js` (question 1 on screen with its four options
 next to the reply; an edit that cannot land shows the yellow note with Try again, the screen unchanged).

@@ -84,24 +84,32 @@ Objectives: 2 to 4 short lines, one per line.`,
   const block = ((res && res.content) || []).find(c => c.type === 'text');
   let d; try { d = JSON.parse(block ? block.text : '{}'); } catch (e) { logAiFail('lesson draft ai failed', { figures: withFigs }, e, t0); d = null; }
   if (!d || !Array.isArray(d.steps)) return { draft: templateDraft({ topic, grade, subject, minutes }, catalog, t, { figures, lang: figLang }), ai: false, reason: 'error' };
+  // Checked work (docs/decisions.md "Builders check their work"): what the checks did to the AI's draft, counted, so
+  // the lesson editor can say it (a game not in the list, figures redrawn, fixed or left out).
+  const report = { steps: d.steps.length, gamesSwapped: 0, figures: { asked: 0, kept: 0, fixed: 0, replaced: 0, dropped: 0, stepsChanged: 0 } };
+  report.gamesSwapped = d.steps.slice(0, 10).filter(s => s && s.kind === 'game' && !ids.has(s.gameId)).length;
   d.steps = d.steps.slice(0, 10).map(s => ({ ...s, gameId: s.kind === 'game' && ids.has(s.gameId) ? s.gameId : '' }))
     .map(s => (s.kind === 'game' && !s.gameId ? { ...s, kind: 'text' } : s))
-    .map((s, i) => figureStep(s, i, withFigs ? figures : [], figLang))
+    .map((s, i) => figureStep(s, i, withFigs ? figures : [], figLang, report.figures))
     .map(({ figures: f, ...s }) => (s.kind === 'figures' ? { ...s, figures: f } : s));
-  return { draft: d, ai: true };
+  return { draft: d, ai: true, report };
 }
 
-/** One drafted step's figure questions made safe. A figures step: each question through F.repairDraft (only kinds of
+/** One drafted step's figure questions made safe (tally, when given, counts asked, kept, fixed, replaced, dropped and
+ *  stepsChanged). A figures step: each question through F.repairDraft (only kinds of
  *  the catalog given; data that fails OF.check, a wrong answerKey or bad choices: its kind's generator instead); a
  *  question whose kind is not in the catalog loses its figure and keeps its words. No figure left: the step becomes a
  *  written question (the kept questions) or, with none, a text step. Every repair is logged (step, kind, why). */
-export function figureStep(s, i, figures = [], lang = 'en') {
+export function figureStep(s, i, figures = [], lang = 'en', tally = null) {
   if (!s || s.kind !== 'figures') return s;
+  const count = (k, n = 1) => { if (tally) tally[k] += n; };
   const allowed = new Set(figures.map(c => c.id)), list = Array.isArray(s.figures) ? s.figures.slice(0, F.LIMITS.draftMax) : [];
   const keep = [], kept = [];
+  count('asked', list.length);
   list.forEach((x, k) => {
     const kind = x && typeof x.kind === 'string' ? x.kind : '';
     if (!allowed.has(kind)) {
+      count('dropped');
       logRepair({ step: i, item: k, kind: String(kind).slice(0, 30), action: 'figure dropped, question kept', why: 'not in the figure catalog' });
       const qq = x && typeof x.question === 'string' ? x.question.replace(/\s+/g, ' ').trim().slice(0, 400) : '';
       if (qq && !F.textProblem(qq)) kept.push(qq);
@@ -113,7 +121,9 @@ export function figureStep(s, i, figures = [], lang = 'en') {
   const before = F.hooks.log; F.hooks.log = f => logRepair({ step: i, ...f });
   let r;
   try { r = F.repairDraft(keep, { max: F.LIMITS.draftMax, lang }); } finally { F.hooks.log = before; }
+  count('kept', r.items.length - r.repaired - (r.fixed || 0)); count('fixed', r.fixed || 0); count('replaced', r.repaired); count('dropped', r.dropped);
   if (r.items.length) return { ...s, figures: r.items, body: String(s.body || '') };
+  count('stepsChanged');
   if (kept.length) return { ...s, kind: 'question', body: [String(s.body || '').trim(), ...kept].filter(Boolean).join('\n\n'), figures: [] };
   logRepair({ step: i, kind: '', action: 'step became text', why: 'no figure question could be used' });
   return { ...s, kind: 'text', body: String(s.body || s.title || ''), figures: [] };
