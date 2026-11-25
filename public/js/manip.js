@@ -681,7 +681,7 @@ const howButton = tool => (tutorialOf(tool.slug) ? btn('btn btn-sm mp-howbtn', `
 function openHow(slug) {
   const tool = toolOf(slug), v = tutorialOf(slug); if (!tool || !v) return;
   const { el } = sheet({ title: t('js.manip.how.title', { tool: tool.name }), content: `<video class="mp-howvideo" controls playsinline preload="metadata" width="1280" height="720" poster="${esc(v.poster)}" aria-label="${esc(t('js.manip.how.video', { tool: tool.name }))}">
-    <source src="${esc(v.mp4)}" type="video/mp4"><track kind="captions" src="${esc(v.vtt)}" srclang="en" label="English" default></video>` });
+    <source src="${esc(v.mp4)}" type="video/mp4"><track kind="captions" src="${esc(v.vtt)}" srclang="en" label="English"></video>` });
   el.querySelector('.sheet').classList.add('mp-vsheet');
   // Captions on from the start (Safari ignores the default attribute on a track added with the page's HTML).
   const vid = el.querySelector('video'); if (vid && vid.textTracks[0]) vid.textTracks[0].mode = 'showing';

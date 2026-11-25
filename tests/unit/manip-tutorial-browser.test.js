@@ -53,7 +53,7 @@ test('How it works: the button opens the video with captions, Escape closes it; 
   assert.match(v.src, /manip-number-lines\.mp4$/);
   assert.match(v.poster, /manip-number-lines-poster\.jpg$/);
   assert.ok(v.inline && v.controls);
-  assert.deepEqual(v.track, { src: '/video/manip/manip-number-lines.en.vtt', kind: 'captions', def: true });
+  assert.deepEqual(v.track, { src: '/video/manip/manip-number-lines.en.vtt', kind: 'captions', def: false }, 'the captions are burned into the video: the track is there for screen readers and players, off by default so lines never show twice');
   assert.equal(await page.getAttribute('.sheet.mp-vsheet', 'role'), 'dialog');
   assert.match(await page.textContent('.sheet.mp-vsheet h2'), /Number Lines: how it works/);
   // The files are served.
