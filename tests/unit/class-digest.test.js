@@ -317,8 +317,10 @@ test('the Me page: teachers get the weekly summary panel and can change it; /api
   assert.equal(bad.status, 400); assert.equal(bad.json.error, 'Pick a day.');
   const page = await call(ana, '/teach/summary');
   assert.match(page.text, /goes out every Monday at 7:00/);
-  const home = await call(ana, '/teach');
-  assert.match(home.text, /href="\/teach\/summary"/);
+  // The way to the summary is the Me page's panel (and the email); My classes has only Lesson Folder at the top since
+  // "A simpler teacher home".
+  assert.match(me.text, /href="\/teach\/summary"/);
+  assert.doesNotMatch((await call(ana, '/teach')).text, /id="teach-summary"/);
 });
 
 test('/admin/emails: the weekly summary row, its switch, preview and test; admin only', async () => {

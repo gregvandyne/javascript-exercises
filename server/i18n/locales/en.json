@@ -1527,6 +1527,7 @@
   },
   "build": {
     "title": "Build a game",
+    "titleStaff": "Build lessons",
     "hero": {
       "heading": "Make your own game by chatting!",
       "text": "Tell the Builder your idea. It builds the game, and you can keep changing it."
@@ -6326,7 +6327,6 @@
       "plan": {
         "heading": "School plan · {school}"
       },
-      "tools": "Teaching tools",
       "hostLive": "Host a live game"
     },
     "class": {
@@ -11246,9 +11246,9 @@
       "classesN": "{count, plural, one {# class} other {# classes}}",
       "waitingN": "{count, plural, one {# answer waiting} other {# answers waiting}}",
       "caughtUp": "All caught up",
+      "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
       "openLive": "Open live game",
-      "make": "Turn a lesson into a game",
       "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
@@ -15348,7 +15348,6 @@
     "newWithGame": "New folder with this game",
     "savedTo": "Saved to {folder}",
     "already": "Already in {folder}",
-    "assignGame": "Assign a game",
     "assignMine": "Assign from my games",
     "assigned": "Assigned games",
     "kindGame": "Game",

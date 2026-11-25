@@ -1527,6 +1527,7 @@
   },
   "build": {
     "title": "Criar um jogo",
+    "titleStaff": "Criar aulas",
     "hero": {
       "heading": "Crie seu próprio jogo conversando!",
       "text": "Conte sua ideia ao Construtor. Ele cria o jogo, e você pode continuar mudando."
@@ -5337,7 +5338,6 @@
       "plan": {
         "heading": "Plano Escola · {school}"
       },
-      "tools": "Ferramentas para ensinar",
       "hostLive": "Conduzir um jogo ao vivo"
     },
     "class": {
@@ -10538,9 +10538,9 @@
       "classesN": "{count, plural, one {# turma} other {# turmas}}",
       "waitingN": "{count, plural, one {# resposta à espera} other {# respostas à espera}}",
       "caughtUp": "Tudo em dia",
+      "lessonFolder": "Pasta de aulas",
       "openClass": "Abrir a turma",
       "openLive": "Abrir o jogo ao vivo",
-      "make": "Transformar uma aula em jogo",
       "schoolReady": "{school} está pronta, e você é o administrador. Crie sua primeira turma abaixo e depois adicione seus alunos. Vamos revisar sua escola em até 1 dia letivo e enviar um guia curto por e-mail.",
       "allClasses": "Todas as turmas"
     },
@@ -13944,7 +13944,6 @@
     "newWithGame": "Nova pasta com este jogo",
     "savedTo": "Guardado em {folder}",
     "already": "Já está em {folder}",
-    "assignGame": "Atribuir um jogo",
     "assignMine": "Atribuir dos meus jogos",
     "assigned": "Jogos atribuídos",
     "kindGame": "Jogo",

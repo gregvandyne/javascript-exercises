@@ -1527,6 +1527,7 @@
   },
   "build": {
     "title": "Spiel bauen",
+    "titleStaff": "Lektionen bauen",
     "hero": {
       "heading": "Bau dein eigenes Spiel, einfach durch Chatten!",
       "text": "Erzähl dem Baumeister deine Idee. Er baut das Spiel, und du kannst es immer weiter ändern."
@@ -5336,7 +5337,6 @@
       "plan": {
         "heading": "Schulabo · {school}"
       },
-      "tools": "Werkzeuge für den Unterricht",
       "hostLive": "Live-Spiel leiten"
     },
     "class": {
@@ -10537,9 +10537,9 @@
       "classesN": "{count, plural, one {# Klasse} other {# Klassen}}",
       "waitingN": "{count, plural, one {# Antwort wartet} other {# Antworten warten}}",
       "caughtUp": "Alles erledigt",
+      "lessonFolder": "Lektionsordner",
       "openClass": "Klasse öffnen",
       "openLive": "Live-Spiel öffnen",
-      "make": "Aus einer Stunde ein Spiel machen",
       "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
       "allClasses": "Alle Klassen"
     },
@@ -13943,7 +13943,6 @@
     "newWithGame": "Neuer Ordner mit diesem Spiel",
     "savedTo": "In {folder} gespeichert",
     "already": "Schon in {folder}",
-    "assignGame": "Ein Spiel zuweisen",
     "assignMine": "Aus meinen Spielen zuweisen",
     "assigned": "Zugewiesene Spiele",
     "kindGame": "Spiel",

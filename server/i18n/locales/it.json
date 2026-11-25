@@ -1527,6 +1527,7 @@
   },
   "build": {
     "title": "Crea un gioco",
+    "titleStaff": "Crea lezioni",
     "hero": {
       "heading": "Crea il tuo gioco chattando!",
       "text": "Racconta la tua idea al Costruttore. Lui crea il gioco e tu puoi continuare a cambiarlo."
@@ -5336,7 +5337,6 @@
       "plan": {
         "heading": "Piano scuola · {school}"
       },
-      "tools": "Strumenti per insegnare",
       "hostLive": "Conduci un gioco dal vivo"
     },
     "class": {
@@ -10537,9 +10537,9 @@
       "classesN": "{count, plural, one {# classe} other {# classi}}",
       "waitingN": "{count, plural, one {# risposta in attesa} other {# risposte in attesa}}",
       "caughtUp": "Tutto in pari",
+      "lessonFolder": "Cartella delle lezioni",
       "openClass": "Apri la classe",
       "openLive": "Apri il gioco dal vivo",
-      "make": "Trasforma una lezione in un gioco",
       "schoolReady": "{school} è pronta e tu ne sei l'amministratore. Crea qui sotto la tua prima classe, poi aggiungi gli studenti. Daremo un'occhiata alla tua scuola entro 1 giorno di scuola e ti invieremo una breve guida via email.",
       "allClasses": "Tutte le classi"
     },
@@ -13943,7 +13943,6 @@
     "newWithGame": "Nuova cartella con questo gioco",
     "savedTo": "Salvato in {folder}",
     "already": "Già in {folder}",
-    "assignGame": "Assegna un gioco",
     "assignMine": "Assegna dai miei giochi",
     "assigned": "Giochi assegnati",
     "kindGame": "Gioco",

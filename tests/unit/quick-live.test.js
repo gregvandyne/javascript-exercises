@@ -164,7 +164,9 @@ test('the class card has no Quick game button any more ("My classes, simpler"); 
   S.updateClass ? S.updateClass(teacher, cls.id, { grade: '5' }) : q.run('UPDATE classrooms SET grade=? WHERE id=?', '5', cls.id);
   const home = await call('/teach?all=1', { user: teacher });
   assert.doesNotMatch(home.text, /<form class="cc-quick"|⚡ Quick game/, 'no Quick game on the class card');
-  assert.match(home.text, new RegExp(`href="/live\\?class=${cls.id}">📡 Host a live game`), 'Host a live game stays');
+  // "A simpler teacher home": the card's buttons are its views; hosting is the Live tab (and Homeroom's ⋯ menu)
+  assert.doesNotMatch(home.text, new RegExp(`href="/live\\?class=${cls.id}"`), 'no Host a live game on the card');
+  assert.match(home.text, /href="\/live"/, 'the Live tab is in the nav');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   const s = LS.get(r.json.sid);
@@ -302,23 +304,18 @@ test('a staff account\'s password: 12 characters is not enough when it is only d
   assert.equal((await signup({ password: 'purple-otter-1234' })).status, 200);
 });
 
-test('a room open for one class: the teacher\'s other class cards lead back to it and say so, and offer no second room', async () => {
+test('a room open for one class: its card says so and leads back to it; no card offers a room ("A simpler teacher home")', async () => {
   const other = S.createClass(teacher, school.id, { name: 'Tia 6C' }).class;
   let home = await call('/teach', { user: teacher });
-  assert.equal([...home.text.matchAll(/class="btn btn-sm cc-live" href="\/live\?class=/g)].length, 2, 'no room open: Host a live game on both cards');
+  assert.doesNotMatch(home.text, /cc-live|href="\/live\?class=/, 'no Host a live game on the cards');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   home = await call('/teach', { user: teacher });
-  assert.doesNotMatch(home.text, /cc-live" href="\/live\?class=/, 'no card offers a second room');
-  assert.doesNotMatch(home.text, new RegExp(`cc-live" href="/live\\?class=${other.id}"`));
-  const back = [...home.text.matchAll(new RegExp(`<a class="btn btn-sm[^"]*cc-live[^"]*" href="/live/host/${r.json.sid}">`, 'g'))];
-  assert.equal(back.length, 2, 'both cards lead to the open room');
-  const note = home.text.match(new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${r.json.sid}">([^<]*)</p>`));
-  assert.ok(note, 'the other class\'s card says a game is open already'); assert.match(note[1], /You already have a game open/);
-  assert.equal([...home.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the card of the class the room is not for');
-  // another teacher's page is as it was: their own Host button, nothing about this room
+  assert.doesNotMatch(home.text, /cc-live|cc-elsewhere|href="\/live\?class=/, 'no card offers a room');
+  assert.equal([...home.text.matchAll(new RegExp(`<a class="chip-s good" href="/live/host/${r.json.sid}">`, 'g'))].length, 1, 'the class\'s own card leads back to its room');
+  // another teacher's page says nothing about this room
   const theirs = await call('/teach?all=1', { user: teacher2 });
-  assert.match(theirs.text, /class="btn btn-sm cc-live" href="\/live\?class=/); assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
+  assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
   LS.endSession(r.json.sid, 'ended');
   S.deleteClass(teacher, other.id);
 });
