@@ -179,7 +179,7 @@ test('groups: rename, recolor, members; validation and the word rules', async ()
 test('the teacher\'s area: notes, text, pen and shapes, cleaned like the live room\'s', async () => {
   const state = { __ann: { notes: [{ id: 'n1', text: 'Long division today', x: 0.1, y: 0.2, by: 't' }], texts: [{ id: 'x1', text: 'Warm-up', x: 2, y: -1 }, { id: 'x2', text: '   ', x: 0, y: 0 }],
     strokes: [{ c: 'red', pts: [{ x: 0.1, y: 0.1 }, { x: 0.5, y: 0.6 }] }] },
-    shapes: [{ id: 's1', k: 'rect', x: 0.1, y: 0.1, x2: 0.3, y2: 1.4, c: '#1F9D63' }, { id: 's2', k: 'star', x: 0, y: 0, x2: 1, y2: 1 }], extra: 'dropped' };
+    shapes: [{ id: 's1', k: 'rect', x: 0.1, y: 0.1, x2: 0.3, y2: 1.4, c: '#1F9D63' }, { id: 's2', k: 'blob', x: 0, y: 0, x2: 1, y2: 1 }], extra: 'dropped' };
   const r = await as(rivera)(`/api/homeroom/${cls.id}/area`, { body: { state } });
   assert.equal(r.status, 200, r.text);
   const a = H.roomOf(cls.id).area;

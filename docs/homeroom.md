@@ -36,7 +36,9 @@ Teachers without the Teacher plan keep today's class page.
 - Same feel as the Manipulatives live room: dotted board you pan and zoom, floating panels, chunky buttons, zoom pill
   bottom left, minimap bottom right, the Oomba chat button bottom right.
 - Teacher's area (yellow band, "Teacher's area · everyone can see this") across the top: slides (Google Slides links,
-  PDFs and PowerPoint files), sticky notes, text, pen, shapes.
+  PDFs and PowerPoint files), sticky notes, text, pen, and a Shapes picker (25 shapes and lines) with fill, outline
+  weight and dashes, arrowheads, text and note colors, copy and paste, many selected at once, undo and redo
+  (docs/decisions.md "Homeroom: board tools").
 - A desk per student, name above it, border in the student's group color. **Arrange seats** to match the real room:
   Rows, Tables of 4, U-shape, Circle, then drag any desk; each class keeps its own seating. **Team desks**: students who
   share one desk.

@@ -28,7 +28,8 @@ import { config } from '../config.js';
 import { isGrownup, getUser } from '../auth.js';
 import * as S from './schools.js';
 import { teacherPlan } from './teacher-plan.js';
-import { cleanState, textProblem } from './manipulatives.js';
+import { cleanState, textProblem, LIMITS } from './manipulatives.js';
+import { cleanShapes, SHAPES_MAX, PALETTE, noteStyle, textStyle, strokeStyle } from '../../public/js/board-shapes.js';
 import { PRESETS, AREA, NOTE_BOX, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
 
 export { PRESETS, AREA };
@@ -178,29 +179,38 @@ export function saveTeams(u, c, { action, id = '', members = [], x, y } = {}) {
   return fail('badAction');
 }
 
-/** Shapes in the teacher's area (rectangles, circles and lines in its fractions of the area; a pen color). */
-export const SHAPES_MAX = 40;
-const SHAPE_KINDS = ['rect', 'circle', 'line'], HEX = /^#[0-9a-fA-F]{6}$/;
+/** Shapes in the teacher's area (public/js/board-shapes.js: every kind the Shapes picker offers, in fractions of the
+ *  area, with their style from strict lists: palette colors, weights, dashes, arrowheads, rotation, layer order). */
+export { SHAPES_MAX };
 const frac = v => { const n = Number(v); return Number.isFinite(n) ? Math.round(Math.min(1, Math.max(0, n)) * 10000) / 10000 : 0; };
-function cleanShapes(list) {
-  return (Array.isArray(list) ? list : []).filter(s => s && typeof s === 'object' && SHAPE_KINDS.includes(s.k)).slice(0, SHAPES_MAX)
-    .map((s, i) => ({ id: clip(s.id || `s${i}`, 40), k: s.k, x: frac(s.x), y: frac(s.y), x2: frac(s.x2), y2: frac(s.y2), c: HEX.test(s.c) ? s.c : '#141414' }));
-}
+const firstById = list => { const m = new Map(); for (const n of Array.isArray(list) ? list : []) if (n && typeof n === 'object' && !m.has(String(n.id))) m.set(String(n.id), n); return m; };
 /** The teacher's area: sticky notes, text, pen marks (cleaned as the live room's teacher's area is: services/manipulatives.js
- *  cleanState, the site's word rules included) and shapes. -> { ok, area } */
+ *  cleanState, the site's word rules included) and shapes, then Homeroom's own fields on them (board-shapes.js: a note's
+ *  size and color, a text box's color, weight, alignment and rotation, a pen line's id, weight, dash and layer, a lock).
+ *  -> { ok, area } */
 export function saveArea(u, c, state) {
   if (!canUseClass(u, c)) return fail('notFound');
   if (!state || typeof state !== 'object' || Array.isArray(state)) return fail('badState');
   const ann = state.__ann && typeof state.__ann === 'object' ? state.__ann : {};
-  const r = cleanState({ v: 2, objects: [], __ann: { notes: ann.notes, texts: ann.texts, strokes: ann.strokes } }, { w: AREA.w, h: AREA.h, teacher: true });
+  // the pen lines cleanState will keep, in its order (it keeps those with a list of points, up to its limit)
+  const strokesIn = (Array.isArray(ann.strokes) ? ann.strokes : []).filter(s => s && Array.isArray(s.pts)).slice(0, LIMITS.strokes);
+  const r = cleanState({ v: 2, objects: [], __ann: { notes: ann.notes, texts: ann.texts, strokes: strokesIn } }, { w: AREA.w, h: AREA.h, teacher: true });
   if (!r.ok) return r;
   const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes) };
+  const out = area.__ann || {};
   // A sticky note's size (resized in both directions on the board), within NOTE_BOX; the live room's notes have none.
-  const sizes = new Map((Array.isArray(ann.notes) ? ann.notes : []).filter(n => n && typeof n === 'object').map(n => [String(n.id), n]));
-  for (const n of (area.__ann && area.__ann.notes) || []) {
-    const o = sizes.get(String(n.id)), w = o ? Number(o.w) : NaN, h = o ? Number(o.h) : NaN;
+  const notes = firstById(ann.notes), texts = firstById(ann.texts);
+  for (const n of out.notes || []) {
+    const o = notes.get(String(n.id)), w = o ? Number(o.w) : NaN, h = o ? Number(o.h) : NaN;
     if (Number.isFinite(w) && Number.isFinite(h)) { n.w = Math.round(Math.min(NOTE_BOX.wMax, Math.max(NOTE_BOX.wMin, w))); n.h = Math.round(Math.min(NOTE_BOX.hMax, Math.max(NOTE_BOX.hMin, h))); }
+    if (o) Object.assign(n, noteStyle(o));
   }
+  for (const x of out.texts || []) { const o = texts.get(String(x.id)); if (o) Object.assign(x, textStyle(o)); }
+  (out.strokes || []).forEach((s, i) => {
+    const o = strokesIn[i] || {};
+    if (!PALETTE.includes(s.c)) s.c = '#141414';
+    Object.assign(s, o.id ? { id: clip(o.id, 40) } : {}, strokeStyle(o));
+  });
   save(u, c.id, { area: JSON.stringify(area) });
   return ok({ area });
 }
