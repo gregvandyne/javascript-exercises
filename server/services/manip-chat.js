@@ -144,7 +144,7 @@ export function workflowRules(ctx) {
     'box: "answer" when students write an answer under the item, "build" when they build or set it themselves, "none" for something to look at or talk about.',
     `items: at most ${PRACTICE_MAX}, every item different. steps: 1 to ${STEPS_MAX} short steps for the students, in order, one idea each, under 100 characters. title: under 60 characters. label: optional, at most 4 words; usually leave it out.`,
     'Board text is for children: US English, plain and friendly. No names of people, no links, no brands or product names.',
-    'changeBoard takes the WHOLE new board: keep the title, steps and every item the teacher did not ask to change exactly as they are now, and change only what they asked for. Use only the settings listed for this tool; numbers as numbers, lists as arrays. After it, say in one to three short sentences what you changed.',
+    'changeBoard takes the WHOLE new board: keep the title, steps and every item the teacher did not ask to change exactly as they are now, and change only what they asked for. Use only the settings listed for this tool; numbers as numbers, lists as arrays. Its result is the board read back as the page will show it: after it, say in one to three short sentences what is on the board now, only from that result, and say plainly what was left out and why.',
     'The board now (items in the same form as a draft; answerKey is the answer the app expects; "free" lists what was put on the board by hand, not as items):',
     `<board>\n${say({ title: ctx.title || null, ...ctx.board }).slice(0, CHAT.CONTEXT_MAX)}\n</board>`,
   ].join('\n');
@@ -157,6 +157,15 @@ export function buildChange(draft, slug) {
   } catch { return { note: 'notBuilt' }; }
 }
 
+export { PRACTICE_MAX };
+/** A built board read back as the page will show it (services/verify-change.js): the title, the steps and each item in
+ *  the same form the AI sees the board in, so the tool's result says what will actually be on it. */
+export function readBack(slug, change) {
+  const st = parse(change.state, {});
+  const board = boardContext(slug, st);
+  while (say(board).length > CHAT.CONTEXT_MAX && board.items.length) board.items.pop();
+  return { title: change.title, ...board };
+}
 /** The model's answer, checked: a reply (word rules) and, for a change, the board built by the code. */
 export function readAnswer(raw, slug) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new SyntaxError('not an answer');
@@ -173,7 +182,7 @@ export function readAnswer(raw, slug) {
   const state = { ...d.board, __steps: (d.steps || []).map((text, i) => ({ id: `o${Date.now().toString(36)}${i}`, text })) };
   const c = M.cleanState(state, null, slug);
   if (!c.ok) return { reply, change: null, note: 'notBuilt' };
-  return { reply, change: { title: d.title, n: d.n, steps: (d.steps || []).length, capped: !!d.capped, state: c.state } };
+  return { reply, change: { title: d.title, n: d.n, steps: (d.steps || []).length, capped: !!d.capped, state: c.state, asked: d.asked || 0, dropped: Math.max(0, (d.asked || 0) - d.n) } };
 }
 
 // ---------------------------------------------------------------- cleanup

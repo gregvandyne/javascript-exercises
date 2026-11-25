@@ -16,7 +16,10 @@
 //   only while this attempt is still the job's current one. A failure is a calm turn (failed: 'resting' | 'timeout' |
 //   'busy' | 'error' | 'restart' | a check's code) with Try again (the failed pair makes way for the same words again).
 // - Undo: a change carries the surface's undo data on its turn (kept on the newest UNDO_KEPT changes only); undo() hands
-//   it back to the surface, which puts back only what is still as Oomba left it.
+//   it back to the surface, which puts back only what is still as Oomba left it. Only that call marks a change undone.
+// - Checked work (services/verify-change.js): a surface's apply() reads back what it wrote and returns verify (the
+//   turn's card shows what landed and what did not, with why) and, when the write landed other than the AI was told,
+//   correction (the app's own words after Oomba's).
 // - SINGLE INSTANCE, like the Builder: running jobs live in this process. At shutdown a running turn is marked interrupted
 //   (handOff); at boot recover() runs a recent one again (once more) or ends it as failed ('restart').
 // - Kept: the newest HISTORY turns per conversation; finished jobs JOBS_DAYS (for "finished while you were away"); a
@@ -219,7 +222,7 @@ export function addTurn(u, sid, key, { text = '', apply = null, mark = null, me 
       const a = (apply ? apply() : {}) || {};
       if (a.code) { out = fail(a.code); throw ROLLBACK; }
       if (me) turns.push({ id: uid(10), role: 'me', text: clip(me.text, s.textMax), at: now(), ...(me.meta ? { meta: me.meta } : {}) });
-      turns.push({ id: uid(10), role: 'oomba', text: clip(text, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}) });
+      turns.push({ id: uid(10), role: 'oomba', text: withCorrection(text, a.correction, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}), ...(a.verify ? { verify: a.verify } : {}) });
       q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, u), turns)), now(), row.id);
       out = ok();
     })();
@@ -238,7 +241,8 @@ export function undo(u, sid, key, turnId) {
     const t = turns.find(x => x.id === String(turnId || '') && x.change && x.undo && !x.change.undone);
     if (!t) return;
     const r = s.undo(u, ctx, t.undo); if (!r || !r.ok) { out = fail((r && r.code) || 'notFound'); return; }
-    t.change = { ...t.change, undone: true, kept: r.skipped || 0 };
+    // Only the teacher's own Undo (this call) marks a change undone: the card says "Change undone." for nothing else.
+    t.change = { ...t.change, undone: true, by: 'teacher', kept: r.skipped || 0 };
     delete t.undo;
     q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(turns), now(), row.id);
     out = ok({ kept: r.skipped || 0 });
@@ -253,15 +257,20 @@ function setStep(id, attempt, step, t0) {
   q.run("UPDATE oomba_turns SET step=?, steps=? WHERE id=? AND status='running' AND attempt=?", step, JSON.stringify(steps), id, attempt);
   return true;
 }
+/** Oomba's words with the app's own correction after them (services/verify-change.js: what was written for real
+ *  differed from what the AI was told), the correction never cut. */
+const withCorrection = (reply, fix, max) => (fix ? `${clip(reply, Math.max(0, max - fix.length - 2)).trim()}\n\n${fix}`.trim() : clip(reply, max));
 /** Ends a job with Oomba's turn, in one transaction with apply(); an apply() that throws is rolled back and the turn
- *  ends as failed. -> true if this attempt was still the job's current one. */
+ *  ends as failed. apply() may also return verify (the check after writing, shown on the turn's card) and correction
+ *  (said after Oomba's words when the write landed other than the AI was told). -> true if this attempt was still the
+ *  job's current one. */
 function finish(id, attempt, s, { reply = '', apply = null, failed = null }) {
   const end = (why, a) => {
     const r = job(id); if (!r || r.status !== 'running' || r.attempt !== attempt) return false;
     const chat = q.get('SELECT * FROM oomba_chats WHERE id=?', r.chat_id); if (!chat) return false;
     const turns = parse(chat.turns, []);
     if (why) turns.push({ id: uid(10), role: 'oomba', text: '', failed: why, for: r.me_id, at: now() });
-    else turns.push({ id: uid(10), role: 'oomba', text: clip(reply, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}) });
+    else turns.push({ id: uid(10), role: 'oomba', text: withCorrection(reply, a.correction, s.replyMax), at: now(), ...(a.change ? { change: a.change } : {}), ...(a.undo ? { undo: a.undo } : {}), ...(a.note ? { note: a.note } : {}), ...(a.verify ? { verify: a.verify } : {}) });
     q.run('UPDATE oomba_chats SET turns=?, updated_at=? WHERE id=?', JSON.stringify(trim(lim(s, chat.owner_id), turns)), now(), chat.id);
     const steps = parse(r.steps, []), last = s.steps.length - 1;
     if (steps[last] === undefined || steps[last] === null) steps[last] = Math.max(0, now() - (r.started_at || now()));

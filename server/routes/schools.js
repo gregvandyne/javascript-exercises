@@ -758,7 +758,7 @@ function classroomHome(req) {
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
     ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
   <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/build">📁 ${t('folders.myGamesFolders')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
-  ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>`}
+  ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : config.teachLoopCard ? html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>` : ''}
   ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
   <section class="th-sec" id="my-classes" aria-labelledby="my-classes-h"><h2 id="my-classes-h">🍎 ${t('school.teach.title')}</h2>

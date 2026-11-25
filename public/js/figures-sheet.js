@@ -270,6 +270,15 @@ function showMarked() {
   const li = first && app.querySelector(`.fg-item[data-id="${CSS.escape(first.id)}"]`);
   if (li) { li.scrollIntoView({ block: 'center', behavior: 'smooth' }); document.getElementById(`fg-q-${first.id}`)?.focus({ preventScroll: true }); }
 }
+/** Checked work, on the screen (docs/decisions.md "Builders check their work"): every question Oomba's change added or
+ *  changed is drawn on the page now. If one is not, the worksheet is loaded again once; still not, the teacher is told. */
+async function onScreen(x) {
+  const ids = x.change.ids || [];
+  const missing = () => ids.filter(id => !app.querySelector(`.fg-item[data-id="${CSS.escape(id)}"]`));
+  if (!missing().length || tab !== 'sheet' || !app.querySelector('.fg-item[data-id]')) return;
+  await reload();
+  if (missing().length && W && W.items.some(it => ids.includes(it.id))) toast(t('js.figures-sheet.notOnScreen'));
+}
 /** "What changed" under one of Oomba's answers, from the server's summary of the change. */
 function changeHtml(x) {
   const c = x.change, lines = [];
@@ -315,7 +324,7 @@ function chatUi() {
       return undefined;
     },
     // A first draft marks nothing (every question is new); a later change marks the questions it added or changed.
-    onAnswer(x) { if (mine(x)) { marked = new Set(x.change.first ? [] : x.change.ids || []); quoted = ''; } reload(); },
+    onAnswer(x) { if (mine(x)) { marked = new Set(x.change.first ? [] : x.change.ids || []); quoted = ''; } reload().then(() => { if (mine(x)) onScreen(x); }); },
     onUndo() { marked = new Set(); reload(); },
     onQuote(q) { if (!q && quoted) { quoted = ''; draw(); } },
     onSync() { if (!busy) draw(); },

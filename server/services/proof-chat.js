@@ -27,6 +27,7 @@ import { anthropic } from '../builder/anthropic.js';
 import * as aiBudget from './ai-budget.js';
 import { callAi, logAiFail, fallbackReason, AI_CALL } from './ai-call.js';
 import { log } from './log.js';
+import { makeT } from '../i18n/index.js';
 import { jsonIn, textProblem } from './manipulatives.js';
 import { cleanText } from './textfilter.js';
 import { proofCore, proofT } from './proof-core.js';
@@ -169,7 +170,7 @@ export function view(row) {
   if (!row) return { id: null, turns: [], pending: null };
   const turns = parse(row.turns, []).map(x => {
     const c = x.change;
-    return { id: x.id, role: x.role, text: x.text || '', at: x.at, ...(x.failed ? { failed: x.failed, for: x.for || null } : {}), ...(x.note ? { note: x.note } : {}),
+    return { id: x.id, role: x.role, text: x.text || '', at: x.at, ...(x.failed ? { failed: x.failed, for: x.for || null } : {}), ...(x.note ? { note: x.note } : {}), ...(x.verify ? { verify: x.verify } : {}),
       ...(c ? { change: { passages: c.passages, mistakes: c.mistakes, written: c.written, dropped: c.dropped || 0, applied: !!x.applied, set: !x.applied && c.set ? c.set : null } } : {}) };
   });
   return { id: row.id, turns, pending: row.pending_id ? { id: row.pending_id, at: row.pending_at, now: now(), max: longest() } : null };
@@ -209,7 +210,7 @@ export function send(u, body = {}) {
   const res = q.run('UPDATE proof_chats SET turns=?, grade=?, pending_id=?, pending_at=?, updated_at=? WHERE id=? AND pending_id IS NULL',
     JSON.stringify(trim(turns)), String(draft.g), me.id, now(), now(), row.id);
   if (!res.changes) return fail('chatBusy');
-  run(u, row.id, me.id, { draft, saved: row.set_key !== 'new', context: setContext(u, draft) });
+  run(u, row.id, me.id, { draft, saved: row.set_key !== 'new', context: setContext(u, draft), lang: typeof body.lang === 'string' ? body.lang : 'en' });
   return ok({ chat: view(q.get('SELECT * FROM proof_chats WHERE id=?', row.id)) });
 }
 
@@ -336,6 +337,17 @@ export function readAnswer(raw, old, u, seed = 1) {
 }
 const okWrong = m => { const c = cleanText(m.w, 80); return c.ok && c.value === m.w; };
 
+/** Checked work (services/verify-change.js; docs/decisions.md "Builders check their work"): the AI wrote its reply
+ *  before the server built the set, so when nothing could be built, or passages were left out by the checks, the
+ *  reply ends with the app's own words saying so, and the turn carries what landed (verify). */
+function checked(answer, lang = 'en') {
+  const tt = makeT(lang);
+  const add = fix => `${clip(answer.reply, Math.max(0, CHAT.REPLY_MAX - fix.length - 1)).trim()} ${fix}`.trim();
+  if (answer.note === 'notBuilt') return { ...answer, reply: add(tt('proof.chatCheck.notBuilt')), verify: { ok: false, landed: 0, notLanded: [{ code: 'notBuilt' }] } };
+  const c = answer.change;
+  if (c && c.dropped) return { ...answer, reply: add(tt('proof.chatCheck.dropped', { count: c.dropped })), verify: { ok: false, landed: c.passages, notLanded: [{ code: 'filtered', count: c.dropped }] } };
+  return c ? { ...answer, verify: { ok: true, landed: c.passages, notLanded: [] } } : answer;
+}
 function run(u, chatId, turnId, ctx) {
   const p = (async () => {
     const t0 = Date.now();
@@ -349,7 +361,7 @@ function run(u, chatId, turnId, ctx) {
         const res = await callAi(client, { model: config.builderModel, max_tokens: 6000, output_config: { effort: 'low' }, system: system(ctx), messages: messages(turns0) });
         if (res && res.usage) aiBudget.recordUsage(res.model || config.builderModel, res.usage);
         const block = ((res && res.content) || []).find(c => c.type === 'text');
-        answer = readAnswer(jsonIn(block ? block.text : ''), ctx.draft, u, Date.now() % 99991);
+        answer = checked(readAnswer(jsonIn(block ? block.text : ''), ctx.draft, u, Date.now() % 99991), ctx.lang);
         log('info', 'mistake hunt chat ai answered', { chat: chatId, ms: Date.now() - t0, changed: !!answer.change });
       } catch (e) {
         failed = fallbackReason(logAiFail('mistake hunt chat ai failed', { chat: chatId, tool: SLUG }, e, t0));
@@ -359,7 +371,7 @@ function run(u, chatId, turnId, ctx) {
     if (!row || row.pending_id !== turnId) return;   // the set (and its chat) went meanwhile
     const turns = parse(row.turns, []);
     turns.push(answer
-      ? { id: uid(10), role: 'oomba', text: answer.reply, at: now(), ...(answer.change ? { change: answer.change } : {}), ...(answer.note ? { note: answer.note } : {}) }
+      ? { id: uid(10), role: 'oomba', text: answer.reply, at: now(), ...(answer.change ? { change: answer.change } : {}), ...(answer.note ? { note: answer.note } : {}), ...(answer.verify ? { verify: answer.verify } : {}) }
       : { id: uid(10), role: 'oomba', text: '', failed, for: turnId, at: now() });
     q.run('UPDATE proof_chats SET turns=?, pending_id=NULL, pending_at=NULL, updated_at=? WHERE id=? AND pending_id=?', JSON.stringify(trim(turns)), now(), chatId, turnId);
     if (answer) audit(u.id, 'proof.chat', SLUG, { changed: !!answer.change });

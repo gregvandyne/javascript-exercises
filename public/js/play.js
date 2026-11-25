@@ -392,6 +392,12 @@ async function mySetsForGame(m) {
     done({ error: e && e.status === 404 ? 'none' : code === 'title' || code === 'full' ? code : e && e.status === 403 ? 'notAllowed' : 'offline' });
   }
 }
+/** Checked work (services/verify-change.js): when the AI's draft lost some of what it made to the checks, the page says
+ *  how many were kept, so the list in the builder is never taken for the whole draft. */
+function keptNote(r) {
+  if (!r || !(r.asked > r.kept) || !(r.kept > 0)) return;
+  toast(t('js.play.aiKept', { kept: r.kept, asked: r.asked }));
+}
 async function docForGame(m) {
   let out;
   try {
@@ -399,6 +405,7 @@ async function docForGame(m) {
     let bin = ''; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
     const r = await api(`/api/games/${d.gameId}/words-from-doc`, { method: 'POST', body: { kind: m.kind, data: btoa(bin), level: m.level, ...(m.focus ? { focus: m.focus } : {}) } });
     out = { title: String(r.title || ''), words: Array.isArray(r.words) ? r.words.map(p => [String(p[0]), String(p[1])]) : [], cut: r.cut === true, ai: r.ai !== false };
+    keptNote(r.report);
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:doc-done', id: m.id, ...out });
 }
@@ -463,7 +470,7 @@ async function printForGame(m, tapped) {
 }
 async function cluesForGame(m) {
   let out;
-  try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; }
+  try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; keptNote(r.report); }
   catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:clues-done', id: m.id, ...out });
 }
