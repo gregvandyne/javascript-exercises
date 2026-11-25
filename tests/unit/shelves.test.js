@@ -310,6 +310,8 @@ test('staff see Assign, Host live and Try it on Learn; kids, students, grown-ups
     assert.match(s, /href="\/live\?mode=quest-race">📡 Host live<\/a>/);
     assert.doesNotMatch(s, /href="\/teach\/assign\?game=quest-race"/, 'a live mode is hosted, not assigned');
     assert.match(s, /<a class="lcard-try" href="\/play\/sum-racer">▶ Try it<\/a>/);
+    // Live class games: Host live only, no Try it (the owner took it off them, 25 Nov 2026).
+    for (const acts of s.match(/<div class="lcard-acts">[\s\S]*?<\/div>/g).filter(a => a.includes('/live?mode='))) assert.doesNotMatch(acts, /▶ Try it/, acts);
     // One main button per card (Host live for a live mode, else Assign), Try it as a small link.
     for (const acts of s.match(/<div class="lcard-acts">[\s\S]*?<\/div>/g)) assert.equal((acts.match(/class="btn /g) || []).length, 1, acts);
     assert.match(s, /id="course-cs-quest-assign" href="\/teach\/cs-quest"|href="\/teach\/cs-quest" id="course-cs-quest-assign"/);
