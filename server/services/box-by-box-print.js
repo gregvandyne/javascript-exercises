@@ -167,8 +167,9 @@ function howTo(doc, t) {
 
 /** The printable page (a fragment for the play page's print area): the worksheet on its own page(s), and the answer key
  *  on a page of its own after it when asked. t: the viewer's language (req.t); dir, lang: its direction and code. */
-export function boxPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = '' }) {
-  const title = t(`play.printBox.${TITLE[doc.k]}`);
+export function boxPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = '', heading = '' }) {
+  // heading: a Homeroom lesson's own name (services/homeroom-lessons.js) in place of the kind's title
+  const title = heading || t(`play.printBox.${TITLE[doc.k]}`);
   const foot = `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span>${code ? `<span>${esc(t('play.print.code', { code }))}</span>` : ''}${link ? `<span dir="ltr" class="cwp-link">${esc(link)}</span>` : ''}</footer>`;
   const layout = (key) =>
     doc.p

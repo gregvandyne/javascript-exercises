@@ -1294,7 +1294,11 @@
       "figure": "Figure for question {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Map of the world", "car": "Map of the Caribbean", "me": "Map of the Middle East"},
+      "mapOf": {
+        "world": "Map of the world",
+        "car": "Map of the Caribbean",
+        "me": "Map of the Middle East"
+      },
       "untitled": "Geography quiz",
       "mapTitle": "Map of {region}",
       "mapAlt": "Outline map of {region}",
@@ -2143,7 +2147,9 @@
         "best": "Best score {score}",
         "removeOne": "Take off {name}'s desk",
         "removeAll": "Remove from every desk",
-        "removeAllConfirm": "Remove {title} from every desk? Students' work is kept, and it comes back if you hand it out again."
+        "removeAllConfirm": "Remove {title} from every desk? Students' work is kept, and it comes back if you hand it out again.",
+        "lesson": "Lesson",
+        "version": "Version: {name}"
       }
     },
     "stories": {
@@ -5052,7 +5058,10 @@
       "teacherSays": "Teacher:",
       "inOrder": "Do these in order",
       "anyOrder": "Any order",
-      "newHandout": "New from your teacher: {title}"
+      "newHandout": "New from your teacher: {title}",
+      "lessonTitle": "Lesson: {title}",
+      "worksheet": "Worksheet · {count, plural, one {# problem} other {# problems}}",
+      "worksheetWords": "Worksheet · {count, plural, one {# word} other {# words}}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5062,6 +5071,133 @@
       "text": "Your class is in Homeroom.",
       "go": "Go to my desk",
       "close": "Close"
+    },
+    "homeroom-lessons": {
+      "build": "Build a lesson",
+      "editTitle": "Edit lesson",
+      "pickTitle": "Which game or tool?",
+      "pickLead": "Pick a game. You set exactly what students do, and the worksheet is made from it.",
+      "comingLater": "Coming later",
+      "later": {
+        "quiz": "Class quizzes and word games",
+        "mine": "Games I built",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Castle Clash puzzles",
+        "manip": "Manipulatives",
+        "figures": "Figures",
+        "reading": "Reading"
+      },
+      "name": "Lesson name",
+      "namePh": "For example: Long division practice",
+      "op": "Operation",
+      "ops": {
+        "add": "Add",
+        "subtract": "Subtract",
+        "multiply": "Multiply",
+        "divide": "Divide"
+      },
+      "method": "Method",
+      "methods": {
+        "standard": "Standard",
+        "ladder": "Ladder",
+        "area": "Area model",
+        "partial": "Partial products"
+      },
+      "size": "Size",
+      "sizeEach": "{n} digits",
+      "sizeBy": "{a} {op} {b} digits",
+      "count": "Problems",
+      "level": "Help while working",
+      "levels": {
+        "watch": "Watch",
+        "countUp": "Count up",
+        "guided": "Guided",
+        "onMyOwn": "On my own"
+      },
+      "newProblems": "New problems",
+      "activity": "Activity",
+      "modes": {
+        "solve": "Solve",
+        "multiply": "Multiply",
+        "factor": "Factor"
+      },
+      "alLevel": "Level",
+      "alLevels": {
+        "easy": "Easy",
+        "medium": "Medium",
+        "hard": "Hard"
+      },
+      "tiles": "Tiles to start with",
+      "tilesAll": "All the tiles they need",
+      "tilesNone": "No tiles",
+      "words": "Words and clues",
+      "wordsHint": "{min} to {max} words. Each word needs a clue.",
+      "word": "Word {n}",
+      "clue": "Clue for word {n}",
+      "wordPh": "Word",
+      "cluePh": "Clue",
+      "addWord": "Add a word",
+      "removeWord": "Remove word {n}",
+      "bank": "Word bank",
+      "bankShow": "Show it",
+      "bankHide": "Hide it",
+      "bankShown": "word bank",
+      "bankHidden": "no word bank",
+      "hints": "Hints",
+      "hintsOn": "Allowed",
+      "hintsOff": "Off",
+      "versions": "A version for each group?",
+      "versionsYes": "Yes, by group",
+      "versionsNo": "One for everyone",
+      "versionsHint": "Each group starts from your lesson with a suggested change. Change anything.",
+      "versionsOff": "Everyone gets the same worksheet.",
+      "noGroups": "This class has no groups yet. Make groups first to add versions.",
+      "editing": "Version for",
+      "noGroup": "No group",
+      "lean": {
+        "easier": "Easier",
+        "same": "Same",
+        "harder": "Harder"
+      },
+      "instructions": "Instructions for students",
+      "instructionsPh": "For example: Show every step. Check your answer by multiplying.",
+      "preview": "Worksheet preview",
+      "previewOf": "Worksheet preview · {who}",
+      "previewNote": "Students do it on screen, or you print it.",
+      "previewWords": "Type at least {min} words to see the crossword.",
+      "printDraft": "Print",
+      "ai": "Ask Oomba to fill it in",
+      "aiBusy": "Oomba is writing clues…",
+      "aiDone": "{count, plural, one {Oomba wrote # clue.} other {Oomba wrote # clues.}} Check them before saving.",
+      "aiNothing": "Every word has a clue already.",
+      "aiNeedWords": "Type some words first. Oomba writes a clue for each one.",
+      "aiFailed": "Oomba couldn't write clues just now. Try again.",
+      "save": "Save to My lessons",
+      "cancel": "Cancel",
+      "needTitle": "Give the lesson a name.",
+      "problemsN": "{count, plural, one {# problem} other {# problems}}",
+      "wordsN": "{count, plural, one {# word} other {# words}}",
+      "versionsN": "{count, plural, one {# version} other {# versions}}",
+      "empty": "Lessons you build show here.",
+      "more": "More for {title}",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "print": "Print worksheet",
+      "delete": "Delete",
+      "deleteConfirm": "Delete {title}? Desks that have it keep it.",
+      "versionsFor": "Versions for {groups}",
+      "printLead": "The worksheet prints with its class code, so students can also open it on Oomba.",
+      "printWhich": "Which worksheet?",
+      "printLesson": "The lesson",
+      "printKey": "Add the answer key",
+      "printGo": "Print",
+      "full": "You have {count} lessons, the most you can keep. Delete one first.",
+      "giveEyebrow": "Lesson",
+      "giveTitle": "{lesson} for {who}",
+      "versionsBy": "Versions by group",
+      "asBuilt": "The lesson as built",
+      "scoreHint": "The gradebook shows the % right."
     }
   },
   "favorites": {
@@ -15264,7 +15400,6 @@
       "label": "Teacher's desk",
       "handOut": "Hand out to",
       "myLessons": "My lessons",
-      "noLessons": "Lessons you build in Homeroom will show here.",
       "myGames": "Games I built",
       "noGames": "Games you build show here.",
       "oomba": "Oomba games and tools",
@@ -15305,7 +15440,18 @@
       "tooLong": "Instructions can be 300 characters at most.",
       "alreadyOnDesk": "{count, plural, one {# of these desks already has this game.} other {# of these desks already have this game.}} Take it off there first, or hand it to the others.",
       "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
-      "notOnDesk": "That handout isn't on this desk."
+      "notOnDesk": "That handout isn't on this desk.",
+      "noLesson": "That lesson isn't in your lessons anymore.",
+      "badGame": "Lessons can be built for Arithmetic Lab, Algebra Builder and Crossword for now.",
+      "needTitle": "Give the lesson a name.",
+      "titleLong": "The name can be 60 characters at most.",
+      "fewWords": "A crossword needs at least 3 words.",
+      "missingClue": "Every word needs a clue.",
+      "settings": "Those settings couldn't be saved. Check them and try again.",
+      "setsFull": "You have the most worksheets this game can keep. Delete some in the game's My worksheets first.",
+      "tooManyLessons": "You have the most lessons you can keep. Delete one first.",
+      "lessonGone": "A worksheet of this lesson was deleted. Open the lesson, save it again, then hand it out.",
+      "lessonOnDesk": "{count, plural, one {# of these desks already has this lesson.} other {# of these desks already have this lesson.}} Take it off there first, or hand it to the others."
     },
     "live": "Live",
     "desk": {
@@ -15319,7 +15465,9 @@
       "notYou": "Not {name}?",
       "switch": "Switch",
       "backToDesk": "Back to my desk",
-      "fromTeacher": "Your teacher says"
+      "fromTeacher": "Your teacher says",
+      "waitTitle": "Not yet",
+      "waitText": "Finish the one before it on your desk first. Then this one opens."
     },
     "projector": {
       "title": "{class} · Projector"
@@ -15407,6 +15555,21 @@
       "done": "{title} is on {count, plural, one {# desk} other {# desks}}.",
       "removedOne": "Taken off that desk.",
       "removedAll": "Removed from every desk. Students' work is kept."
+    },
+    "lessons": {
+      "handedOut": "{title} is on {count, plural, one {# desk} other {# desks}}.",
+      "handedOutVersions": "{title} is on {count, plural, one {# desk} other {# desks}}, with a version for each group.",
+      "saved": "Lesson saved.",
+      "savedNew": "Saved to My lessons. Tap it, then a desk, to hand it out.",
+      "copyOf": "Copy of {title}",
+      "duplicated": "Lesson copied.",
+      "deleted": "Lesson deleted.",
+      "untitled": "New lesson",
+      "print": {
+        "solve": "Solve for x. Show your steps.",
+        "multiply": "Multiply. Write each answer as one expression.",
+        "factor": "Factor each expression."
+      }
     }
   }
 }

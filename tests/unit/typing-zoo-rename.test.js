@@ -1,6 +1,6 @@
 // Typing Pets became Typing Zoo (docs/decisions.md "Typing Zoo"): the old addresses answer 301 to the new ones keeping
 // the rest of the path and the query string (services/slug-aliases.js, as for Arithmetic Lab), and a database from before the rename keeps
-// everything: migration 0126 gives the same game row the new slug, so a student's save (key 'typing-pets-v1', kept),
+// everything: migration 0127 gives the same game row the new slug, so a student's save (key 'typing-pets-v1', kept),
 // a class assignment and its lesson step, step progress and the teacher's typing panel all still point at that game;
 // seeding again makes no second game.
 import './_setup.js';
@@ -57,7 +57,7 @@ test('a database from before the rename: the same game row, its save, assignment
   const game = G.getGameBySlug('typing-zoo');
   // Back to how it was before the rename: the row under the old slug, the migration not yet run.
   q.run("UPDATE games SET slug='typing-pets', title='Typing Pets' WHERE id=?", game.id);
-  q.run("DELETE FROM migrations WHERE name='0126_typing_zoo_slug'");
+  q.run("DELETE FROM migrations WHERE name='0127_typing_zoo_slug'");
   assert.ok(!q.get("SELECT 1 FROM games WHERE slug='typing-zoo'"));
   const boss = createUser({ username: 'ZooBoss', password: 'secret123', role: 'admin' });
   const school = S.createSchool(boss, { name: 'Zoo Primary' }).school;
@@ -74,7 +74,7 @@ test('a database from before the rename: the same game row, its save, assignment
   const cl = q.get('SELECT id FROM class_lessons WHERE lesson_id=? AND class_id=?', step.lesson_id, klass.id);
   assert.equal((await fetch(`${base}/api/progress/${cl.id}/${step.id}/game`, { method: 'POST', headers: { cookie: cookieFor(kid.id), 'content-type': 'application/json', origin: base }, body: JSON.stringify({ event: 'score', score: 15, label: 'L2 96% 3* 15 wpm' }) })).status, 200);
 
-  migrate();   // the deploy: 0126 runs once
+  migrate();   // the deploy: 0127 runs once
   const now = G.getGameBySlug('typing-zoo');
   assert.equal(now.id, game.id, 'the same game row, now under the new slug');
   assert.ok(!q.get("SELECT 1 FROM games WHERE slug='typing-pets'"), 'nothing left under the old slug');

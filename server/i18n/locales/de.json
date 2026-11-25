@@ -1294,7 +1294,11 @@
       "figure": "Abbildung zu Aufgabe {n}"
     },
     "printAtlas": {
-      "mapOf": {"world": "Weltkarte", "car": "Karte der Karibik", "me": "Karte des Nahen Ostens"},
+      "mapOf": {
+        "world": "Weltkarte",
+        "car": "Karte der Karibik",
+        "me": "Karte des Nahen Ostens"
+      },
       "untitled": "Erdkunde-Quiz",
       "mapTitle": "Karte: {region}",
       "mapAlt": "Umrisskarte: {region}",
@@ -2143,7 +2147,9 @@
         "best": "Bestes Ergebnis {score}",
         "removeOne": "Von {name}s Tisch nehmen",
         "removeAll": "Von allen Tischen entfernen",
-        "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen."
+        "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen.",
+        "lesson": "Stunde",
+        "version": "Version: {name}"
       }
     },
     "stories": {
@@ -4769,7 +4775,10 @@
       "teacherSays": "Lehrkraft:",
       "inOrder": "Der Reihe nach",
       "anyOrder": "Beliebige Reihenfolge",
-      "newHandout": "Neu von deiner Lehrkraft: {title}"
+      "newHandout": "Neu von deiner Lehrkraft: {title}",
+      "lessonTitle": "Stunde: {title}",
+      "worksheet": "Arbeitsblatt · {count, plural, one {# Aufgabe} other {# Aufgaben}}",
+      "worksheetWords": "Arbeitsblatt · {count, plural, one {# Wort} other {# Wörter}}"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -4779,6 +4788,133 @@
       "text": "Deine Klasse ist im Homeroom.",
       "go": "Zu meinem Platz",
       "close": "Schließen"
+    },
+    "homeroom-lessons": {
+      "build": "Stunde erstellen",
+      "editTitle": "Stunde bearbeiten",
+      "pickTitle": "Welches Spiel oder Werkzeug?",
+      "pickLead": "Wählen Sie ein Spiel. Sie legen genau fest, was die Kinder tun, und daraus entsteht das Arbeitsblatt.",
+      "comingLater": "Kommt später",
+      "later": {
+        "quiz": "Klassenquiz und Wortspiele",
+        "mine": "Meine Spiele",
+        "atlas": "Atlas Quest",
+        "sudoku": "Sudoku",
+        "castle": "Castle-Clash-Rätsel",
+        "manip": "Anschauungsmaterial",
+        "figures": "Figuren",
+        "reading": "Lesen"
+      },
+      "name": "Name der Stunde",
+      "namePh": "Zum Beispiel: Schriftliches Dividieren üben",
+      "op": "Rechenart",
+      "ops": {
+        "add": "Addieren",
+        "subtract": "Subtrahieren",
+        "multiply": "Multiplizieren",
+        "divide": "Dividieren"
+      },
+      "method": "Verfahren",
+      "methods": {
+        "standard": "Standard",
+        "ladder": "Leiter",
+        "area": "Flächenmodell",
+        "partial": "Teilprodukte"
+      },
+      "size": "Größe",
+      "sizeEach": "{n} Stellen",
+      "sizeBy": "{a} {op} {b} Stellen",
+      "count": "Aufgaben",
+      "level": "Hilfe beim Rechnen",
+      "levels": {
+        "watch": "Zuschauen",
+        "countUp": "Hochzählen",
+        "guided": "Geführt",
+        "onMyOwn": "Allein"
+      },
+      "newProblems": "Neue Aufgaben",
+      "activity": "Aktivität",
+      "modes": {
+        "solve": "Lösen",
+        "multiply": "Multiplizieren",
+        "factor": "Faktorisieren"
+      },
+      "alLevel": "Stufe",
+      "alLevels": {
+        "easy": "Leicht",
+        "medium": "Mittel",
+        "hard": "Schwer"
+      },
+      "tiles": "Plättchen zu Beginn",
+      "tilesAll": "Alle Plättchen, die sie brauchen",
+      "tilesNone": "Keine Plättchen",
+      "words": "Wörter und Hinweise",
+      "wordsHint": "{min} bis {max} Wörter. Jedes Wort braucht einen Hinweis.",
+      "word": "Wort {n}",
+      "clue": "Hinweis zu Wort {n}",
+      "wordPh": "Wort",
+      "cluePh": "Hinweis",
+      "addWord": "Wort hinzufügen",
+      "removeWord": "Wort {n} entfernen",
+      "bank": "Wortliste",
+      "bankShow": "Zeigen",
+      "bankHide": "Ausblenden",
+      "bankShown": "Wortliste",
+      "bankHidden": "keine Wortliste",
+      "hints": "Tipps",
+      "hintsOn": "Erlaubt",
+      "hintsOff": "Aus",
+      "versions": "Eine Version für jede Gruppe?",
+      "versionsYes": "Ja, nach Gruppe",
+      "versionsNo": "Eine für alle",
+      "versionsHint": "Jede Gruppe beginnt mit Ihrer Stunde und einer vorgeschlagenen Änderung. Sie können alles ändern.",
+      "versionsOff": "Alle bekommen dasselbe Arbeitsblatt.",
+      "noGroups": "Diese Klasse hat noch keine Gruppen. Legen Sie zuerst Gruppen an, um Versionen hinzuzufügen.",
+      "editing": "Version für",
+      "noGroup": "Keine Gruppe",
+      "lean": {
+        "easier": "Leichter",
+        "same": "Gleich",
+        "harder": "Schwerer"
+      },
+      "instructions": "Anleitung für die Kinder",
+      "instructionsPh": "Zum Beispiel: Schreibe jeden Schritt auf. Prüfe dein Ergebnis mit der Multiplikation.",
+      "preview": "Vorschau des Arbeitsblatts",
+      "previewOf": "Vorschau des Arbeitsblatts · {who}",
+      "previewNote": "Die Kinder lösen es am Bildschirm, oder Sie drucken es aus.",
+      "previewWords": "Geben Sie mindestens {min} Wörter ein, um das Kreuzworträtsel zu sehen.",
+      "printDraft": "Drucken",
+      "ai": "Oomba ausfüllen lassen",
+      "aiBusy": "Oomba schreibt Hinweise…",
+      "aiDone": "{count, plural, one {Oomba hat # Hinweis geschrieben.} other {Oomba hat # Hinweise geschrieben.}} Prüfen Sie sie vor dem Speichern.",
+      "aiNothing": "Jedes Wort hat schon einen Hinweis.",
+      "aiNeedWords": "Geben Sie zuerst ein paar Wörter ein. Oomba schreibt zu jedem einen Hinweis.",
+      "aiFailed": "Oomba konnte gerade keine Hinweise schreiben. Versuchen Sie es noch einmal.",
+      "save": "In „Meine Stunden“ speichern",
+      "cancel": "Abbrechen",
+      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "problemsN": "{count, plural, one {# Aufgabe} other {# Aufgaben}}",
+      "wordsN": "{count, plural, one {# Wort} other {# Wörter}}",
+      "versionsN": "{count, plural, one {# Version} other {# Versionen}}",
+      "empty": "Stunden, die Sie erstellen, erscheinen hier.",
+      "more": "Mehr zu {title}",
+      "edit": "Bearbeiten",
+      "duplicate": "Duplizieren",
+      "print": "Arbeitsblatt drucken",
+      "delete": "Löschen",
+      "deleteConfirm": "{title} löschen? Tische, auf denen sie liegt, behalten sie.",
+      "versionsFor": "Versionen für {groups}",
+      "printLead": "Das Arbeitsblatt wird mit seinem Klassencode gedruckt, so können die Kinder es auch in Oomba öffnen.",
+      "printWhich": "Welches Arbeitsblatt?",
+      "printLesson": "Die Stunde",
+      "printKey": "Lösungsblatt dazu",
+      "printGo": "Drucken",
+      "full": "Sie haben {count} Stunden, mehr können Sie nicht speichern. Löschen Sie zuerst eine.",
+      "giveEyebrow": "Stunde",
+      "giveTitle": "{lesson} für {who}",
+      "versionsBy": "Versionen nach Gruppe",
+      "asBuilt": "Die Stunde wie erstellt",
+      "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %."
     }
   },
   "favorites": {
@@ -14547,7 +14683,6 @@
       "label": "Lehrerpult",
       "handOut": "Austeilen an",
       "myLessons": "Meine Stunden",
-      "noLessons": "Stunden, die Sie in Homeroom erstellen, erscheinen hier.",
       "myGames": "Meine Spiele",
       "noGames": "Spiele, die Sie bauen, erscheinen hier.",
       "oomba": "Oomba-Spiele und -Werkzeuge",
@@ -14588,7 +14723,18 @@
       "tooLong": "Hinweise dürfen höchstens 300 Zeichen lang sein.",
       "alreadyOnDesk": "{count, plural, one {# dieser Tische hat dieses Spiel schon.} other {# dieser Tische haben dieses Spiel schon.}} Nehmen Sie es dort zuerst weg oder teilen Sie es den anderen aus.",
       "tooManyHandouts": "In dieser Klasse ist sehr viel ausgeteilt. Entfernen Sie zuerst ein paar alte Aufgaben.",
-      "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch."
+      "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch.",
+      "noLesson": "Diese Stunde ist nicht mehr in Ihren Stunden.",
+      "badGame": "Stunden gibt es vorerst für Arithmetic Lab, Algebra Builder und Kreuzworträtsel.",
+      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "titleLong": "Der Name darf höchstens 60 Zeichen lang sein.",
+      "fewWords": "Ein Kreuzworträtsel braucht mindestens 3 Wörter.",
+      "missingClue": "Jedes Wort braucht einen Hinweis.",
+      "settings": "Diese Einstellungen konnten nicht gespeichert werden. Prüfen Sie sie und versuchen Sie es noch einmal.",
+      "setsFull": "Sie haben so viele Arbeitsblätter, wie dieses Spiel speichern kann. Löschen Sie zuerst einige unter „Meine Arbeitsblätter“ im Spiel.",
+      "tooManyLessons": "Sie haben so viele Stunden, wie Sie speichern können. Löschen Sie zuerst eine.",
+      "lessonGone": "Ein Arbeitsblatt dieser Stunde wurde gelöscht. Öffnen Sie die Stunde, speichern Sie sie noch einmal und teilen Sie sie dann aus.",
+      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diese Stunde schon.} other {# dieser Tische haben diese Stunde schon.}} Nehmen Sie sie dort zuerst weg oder geben Sie sie den anderen."
     },
     "live": "Live",
     "desk": {
@@ -14602,7 +14748,9 @@
       "notYou": "Nicht {name}?",
       "switch": "Wechseln",
       "backToDesk": "Zurück zu meinem Tisch",
-      "fromTeacher": "Deine Lehrkraft sagt"
+      "fromTeacher": "Deine Lehrkraft sagt",
+      "waitTitle": "Noch nicht",
+      "waitText": "Mach zuerst die Aufgabe davor auf deinem Platz fertig. Dann geht diese auf."
     },
     "projector": {
       "title": "{class} · Beamer"
@@ -14690,6 +14838,21 @@
       "done": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
       "removedOne": "Von diesem Tisch genommen.",
       "removedAll": "Von allen Tischen entfernt. Die Arbeit der Kinder bleibt erhalten."
+    },
+    "lessons": {
+      "handedOut": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
+      "handedOutVersions": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}, mit einer Version für jede Gruppe.",
+      "saved": "Stunde gespeichert.",
+      "savedNew": "In „Meine Stunden“ gespeichert. Tippen Sie sie an und dann einen Tisch, um sie auszuteilen.",
+      "copyOf": "Kopie von {title}",
+      "duplicated": "Stunde kopiert.",
+      "deleted": "Stunde gelöscht.",
+      "untitled": "Neue Stunde",
+      "print": {
+        "solve": "Löse nach x auf. Schreibe deine Schritte auf.",
+        "multiply": "Multipliziere. Schreibe jede Antwort als einen Ausdruck.",
+        "factor": "Faktorisiere jeden Ausdruck."
+      }
     }
   }
 }

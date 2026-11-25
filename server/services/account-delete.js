@@ -131,6 +131,8 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // passwords
     q.run('DELETE FROM homeroom_doodles WHERE user_id=?', u.id);
     q.run('DELETE FROM homeroom_signins WHERE user_id=?', u.id);
+    // their Homeroom lessons (step 2b; the lessons' question sets went with 11b)
+    q.run('DELETE FROM homeroom_lessons WHERE owner_id=?', u.id);
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
     // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)

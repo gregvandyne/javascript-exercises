@@ -13544,13 +13544,77 @@ sheet "Game · free play"; the desk cards with Next up, 🔒 Later and the teach
   `tests/unit/homeroom-handouts-browser.test.js` (tap-then-tap on a tablet, drag with a mouse, the phone's bar; the
   student's desk at tablet, 1366 x 768 and phone, the lock, the game with instructions and back).
 
+## Homeroom, step 2b: lessons and the lesson builder (25 Nov 2026)
+
+Spec: `docs/homeroom.md` ("Handouts and lessons": a lesson is exact, built in Homeroom with the tool's own settings, a
+worksheet preview and a version per group; lessons are graded by Score by default) and the owner-approved mockup of the
+builder. Builds on step 2a. Arithmetic Lab, Algebra Builder and Crossword first; the rest of the spec's order (class
+quizzes and word games, games the teacher built, Atlas Quest, Sudoku, Castle Clash puzzles, Manipulatives, Figures,
+Reading) is listed in the builder as coming later.
+- **A lesson is the game's own question sets, never a second format.** Each version of a lesson IS a `game_sets` row of
+  its game (`services/game-sets.js` save, so the game's own cleaner checks it: `cleanBoxItems`, `cleanItems`,
+  `cleanCrossItems` with the text filter), owned by the teacher, also listed in the game's My worksheets, opened as every
+  set is (`?chapter=s-xxxxxxxxxx&lock=1`, `BRB.questionSet`). Migration `0126_homeroom_lessons` only links them
+  (`homeroom_lessons`: owner, game, name, instructions, the builder's settings, `base: { s, set }`,
+  `versions: [{ key, label, s, set }]`) and adds to `homeroom_handouts` `hr_lesson`, `version` (the version's label, for
+  the teacher only), `problems` (for the Score) and `batch` (the versions of one hand-out). Lessons are the teacher's,
+  for any of their classes; they go with their account (`services/account-delete.js`; their sets with `game_sets`). Not
+  in the school delete: they are personal, as `game_sets` are.
+- **The settings and the exact problems** (`public/js/homeroom-lesson-make.js`, shared by the builder and the server):
+  Arithmetic Lab: operation, method (the game's own per operation), size (2, 3, 4 digits; 2 × 1 to 3 × 2; 2 ÷ 1 to
+  4 ÷ 2), 5 to 20 problems, help Watch / Count up / Guided / On my own; Algebra Builder: Solve / Multiply / Factor, Easy /
+  Medium / Hard (its own practice maker, ported), 5 / 8 / 10, the tiles it starts with; Crossword: 3 to 30 words and clues,
+  word bank, hints. Problems are made from a seed, so the preview and the saved set are the same problems ("New
+  problems" is a new seed); the server makes them again from the settings and checks every one.
+- **A version for each group**: the class's groups (Homeroom's, step 1a) each get a copy of the lesson with a suggested
+  change by their place (the first harder, the last easier, the middle as built: Stretch, On track, Building): Arithmetic
+  Lab one size and one help level, Algebra Builder one level, Crossword the word bank off or on. Every setting stays
+  editable per version; students without a group (or a group without a version) get the lesson as built. A version is
+  keyed by its group's identity (its name, or an unnamed default group's key), so the same lesson finds Stretch,
+  On track and Building in every class of the teacher. Group names never reach a student or a worksheet.
+- **The worksheet preview and Print** use the games' own printers (`services/game-print.js`: Arithmetic Lab's and
+  Crossword's pages; `boxPrintHtml` gained `heading` for the lesson's name). Crossword's paper grid is laid out by
+  `crossLayout` (longest words first, most crossings, the seed for ties), checked by the crossword printer as any layout.
+  Algebra Builder has no printer, so its sheet is made in `services/homeroom-lessons.js` on the same paper (the problems
+  with room to work). Print worksheet (the lesson's ⋯ menu) prints one version at a time, with its class code and link,
+  and the answer key when asked (Arithmetic Lab, Crossword), on the page's print area as the play page prints.
+- **"Ask Oomba to fill it in"**: only Crossword has an AI filler today (`services/set-ai.js` draftClues, through the
+  game's own `POST /api/games/:id/clues`): a clue for each word that has none. Only the words go, never a student, a
+  class or a name; the teacher reads every clue before saving. Shown only with a model configured and to grown-ups who
+  may host (as in the game). Arithmetic Lab and Algebra Builder have none, so no button.
+- **Handing out** (`services/homeroom-lessons.js` handOutLesson; the 2a sheet and tap-then-tap / drag): each student is
+  put in their version's bucket, one class assignment per bucket through `services/game-folders.js` assignGame with the
+  set in the step's options and exactly those students (Whole class with one version for everyone stays `[]`). Order
+  and grade as in 2a, **Score by default**. A lesson already on any of the students' desks is refused (`lessonOnDesk`);
+  free play of the same game is its own thing (2a's duplicate check now leaves lessons out). Remove from every desk takes
+  all versions handed out together (`batch`). The teacher's desk sheet shows "Lesson · Version: Stretch".
+- **The student's card**: "Lesson: <name>", "Worksheet · N problems" (Crossword: words); it opens the game at that
+  exact set with the instructions on top and Back to my desk (2a's frame).
+- **Scores**: `services/scores.js` adds a `lesson` item for Score-graded lesson handouts: Arithmetic Lab reports how many
+  it got right (`finished(rightCount)`), so earned = right of N; Crossword and Algebra Builder finish only when everything
+  is right and report no number, so the play page's end now carries `won` and `progress.gameScore` keeps label `won`
+  (earned = N of N). Played without finishing (2 minutes, "I played it"): done, not scored ("–", never 0 %).
+- **2a's open point, fixed**: a waiting In order handout opened from the To do list, the lesson page or a saved play link
+  shows a calm "Not yet: finish the one before it on your desk first" with Back to my desk (`services/lessons.js`
+  lessonWait, a hook Homeroom registers; `views/lesson-wait.js`; used by `routes/progress.js` and `routes/games.js`).
+- **Who**: `GET/POST /api/homeroom/:id/lessons`, `.../lessons/preview`, `.../lessons/:lid/duplicate | delete | print`
+  behind the Homeroom gate; only the lesson's owner (everyone else's lesson reads as one that isn't there, 404).
+- **Open**: in the gradebook each version is its own column under the lesson's name (the Classroom tab's merged columns
+  come later); Crossword and Algebra Builder count a finished run as all right, since they never let a wrong answer
+  stand; the builder for the rest of the spec's order; lessons in the day plan (step 3).
+- Tests: `tests/unit/homeroom-lessons.test.js` (settings and versions, create / edit / duplicate / delete / auth, sets in
+  use kept, hand-out set codes per group, Whole class, refusals, scores, print auth, the wait page, remove all, account
+  delete) and `tests/unit/homeroom-lessons-browser.test.js` (build an Arithmetic Lab lesson with group versions at
+  1366 x 768, Algebra Builder and Crossword on a tablet, the phone, hand it out, Print, the student's card and the real
+  game playing that set).
+
 ## Typing Zoo: the rename, Noto animals, and a pet that walks with you (25 Nov 2026)
 
 Owner: "The pets should be animated and full body that can move around a bit and follow your cursor", then: rename the
 game to Typing Zoo, add an alpaca, and use Google's Noto Emoji animals (picked after a comparison of five open sets).
 - **The rename**: Typing Pets is Typing Zoo, slug `typing-zoo` (files, langs folder, cover and share pictures, scripts,
   server code, tests, every language's title). It uses the slug-rename mechanism Arithmetic Lab added: migration
-  `0126_typing_zoo_slug` (`renameSeedSlug`) gives the existing game row the new slug, so its id and everything keyed
+  `0127_typing_zoo_slug` (`renameSeedSlug`) gives the existing game row the new slug, so its id and everything keyed
   by it (plays, saves, favorites, ratings, assignments, lesson steps, sets, the teacher's typing panel) carries over and
   the seed then finds it by the new slug; `services/slug-aliases.js` sends the old addresses to the new ones for good
   (301, 308 for a POST), keeping the rest of the path and the query (`/g`, `/play`, `/<lang>/g`, `/covers`, `/og`), and

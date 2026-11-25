@@ -465,3 +465,92 @@ a.hd-card:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .hd-cbar{margin-top:auto;height:6px;border-radius:9px;background:var(--line);overflow:hidden}
 .hd-cbar i{display:block;height:100%;background:var(--accent-press);border-radius:9px}
 @media (max-width:600px){.hd-cards{grid-auto-columns:minmax(170px,72%)}}
+
+/* ---- lessons (step 2b): My lessons in the panel, the lesson builder, the lesson's hand-out sheet */
+.hr-lessons{display:flex;flex-direction:column;gap:6px}
+.hr-lrow{display:flex;align-items:stretch;gap:4px;min-width:0}
+.hr-lrow .hr-lesson{flex:1 1 auto;min-width:0}
+.hr-lico{background:var(--accent-soft)}
+.hr-lt{display:flex;flex-direction:column;min-width:0}
+.hr-lesson .hr-itemt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.2}
+.hr-lsub{font-size:12px;font-weight:600;color:var(--muted);line-height:1.25}
+.hr-lmore{flex:none;width:32px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 18px var(--font);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hr-lmore:hover{background:var(--hover)}
+.hr-build{border-style:dashed;box-shadow:none;background:transparent}
+.hr-buildico{background:var(--text);color:var(--card);font-weight:800;font-size:18px}
+.hr-lmenu{display:flex;flex-direction:column;gap:8px}
+.hr-lmenu p{margin:0}
+.hr-lmenuacts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.hr-lmenuacts .btn{justify-content:center}
+.hr-check{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:700;margin-top:8px}
+.hr-check input{width:22px;height:22px;accent-color:var(--accent-press)}
+.hr-lvers{margin:4px 0 0}
+.hr-lvers ul{display:flex;flex-direction:column;gap:6px;margin:4px 0 0;padding:0;list-style:none}
+.hr-lvers li{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--gc,var(--line)) 12%,var(--card));font-size:14px}
+.hr-lvers li span:last-child{color:var(--text-2)}
+/* the builder: wide on a laptop and a tablet, the whole screen on a phone */
+.sheet.hr-lbsheet{width:min(100%,1180px);max-height:94vh;padding-bottom:0}
+.hr-lb{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hr-lbh{margin:4px 0 0;font-size:1.3rem}
+.hr-lbpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:10px}
+.hr-lbgame{display:flex;align-items:center;gap:10px;min-height:64px;padding:10px 12px;border:2px solid var(--line);border-radius:16px;background:var(--card);color:var(--text);font:800 15px var(--font);text-align:start;box-shadow:0 3px 0 var(--line);cursor:pointer;min-width:0}
+button.hr-lbgame:hover{background:var(--hover)}
+button.hr-lbgame:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.hr-lbgame.later{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:4px;background:var(--card-2);color:var(--muted);box-shadow:none;cursor:default}
+.hr-lbgame.later .hr-ico{grid-row:span 2}
+.hr-lbgame.later .hr-soontag{grid-column:2;justify-self:start;margin:0}
+.hr-lbgame.later .hr-ico{filter:grayscale(.7);opacity:.75}
+.hr-lbgame .hr-ico{width:40px;height:40px;border-radius:12px}
+.hr-lbtitle{width:100%;font:800 1.35rem var(--font);border:0;border-bottom:2px dashed var(--line);border-radius:0;background:transparent;padding:6px 2px;min-height:48px}
+.hr-lbtitle:focus{outline:none;border-bottom-color:var(--accent-press)}
+.hr-lbcols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:start}
+.hr-lbset{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hr-lbprev{position:sticky;top:0;display:flex;flex-direction:column;gap:6px;min-width:0;margin-top:10px}
+.hr-lbprevhead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hr-lbprevhead h4{margin:0;font-size:13px;font-weight:800;color:var(--muted)}
+.hr-lbpaperbox{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;max-height:calc(94vh - 300px);min-height:220px;border:2px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 3px 0 var(--line)}
+.hr-lbsizer{position:relative;overflow:hidden}
+.hr-lbpaper{position:absolute;top:0;inset-inline-start:0;width:720px;padding:28px 32px;transform-origin:top left;color:#000;background:#fff}
+[dir="rtl"] .hr-lbpaper{transform-origin:top right}
+.hr-lbpaper .cwp-page+.cwp-page{margin-top:28px;border-top:2px dashed #bbb;padding-top:20px}
+.hr-lbwait{margin:0;padding:12px 0;font-size:22px;color:#555}
+.hr-lbnew{margin-top:8px}
+.hr-vchips{display:flex;flex-wrap:wrap;gap:6px}
+.hr-vchip{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:4px 14px;border:2px solid color-mix(in srgb,var(--gc,var(--line)) 50%,var(--line));border-radius:999px;background:color-mix(in srgb,var(--gc,var(--card-2)) 14%,var(--card));color:var(--text);font:800 14px var(--font);cursor:pointer}
+.hr-vchip.on{border-color:var(--text);box-shadow:0 0 0 2px var(--text)}
+.hr-vchip .rm-dot{width:10px;height:10px}
+.hr-vlean{font-size:12px;font-weight:700;color:var(--muted)}
+.hr-words{display:flex;flex-direction:column;gap:6px;margin:4px 0;padding:0;list-style:none}
+.hr-wrow{display:grid;grid-template-columns:22px minmax(0,1fr) minmax(0,1.6fr) 44px;gap:6px;align-items:center}
+.hr-wn{font-weight:800;color:var(--muted);text-align:end}
+.hr-wrow .input{min-height:44px;min-width:0}
+.hr-wdel{width:44px;height:44px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 20px var(--font);cursor:pointer}
+.hr-lbacts{position:sticky;bottom:0;z-index:2;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin:6px -20px 0;padding:12px 20px calc(14px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
+/* phones: My lessons join the panel's strip */
+@media (max-width:819px){
+  .hr-lessons{flex-direction:row;align-items:center}
+  .hr-lrow,.hr-build{flex:none}
+  .hr-panel .hr-lsub{display:none}
+  .hr-panel .hr-lesson .hr-itemt{display:block;white-space:nowrap}
+  .hr-lmore{min-height:44px}
+}
+@media (max-width:899px){
+  .hr-lbcols{grid-template-columns:minmax(0,1fr)}
+  .hr-lbprev{position:static}
+  .hr-lbpaperbox{max-height:70vh}
+}
+@media (max-width:639px){
+  .sheet-bg:has(.hr-lbsheet){align-items:stretch}
+  .sheet.hr-lbsheet{max-height:none;height:100%;border-radius:0}
+  .hr-lbpick{grid-template-columns:minmax(0,1fr)}
+  .hr-lbtitle{font-size:1.15rem}
+  .hr-wrow{grid-template-columns:22px minmax(0,1fr) 44px}
+  .hr-wrow .hr-wc{grid-column:2}
+  .hr-lbacts .btn{flex:1 1 auto;justify-content:center}
+  .hr-lmenuacts{grid-template-columns:1fr}
+}
+/* Algebra Builder's printed sheet (services/homeroom-lessons.js): the problems two to a row with room to work */
+.abp-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12pt 24pt;margin:0;padding-inline-start:2em}
+.abp-list li{break-inside:avoid;page-break-inside:avoid}
+.abp-p{display:block;font-size:14pt;font-weight:700}
+.abp-work{display:block;height:1.35in;border-bottom:1pt solid #000}

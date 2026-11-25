@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { html, raw, jsonData } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, signedOut } from '../views/layout.js';
+import { lessonWaitPage } from '../views/lesson-wait.js';
 import { inClassLine } from './teachers.js';
 import { coverArt, avatar, cardGrid, statusLabel, categoryLabel } from '../views/components.js';
 import { OFFICIAL } from '../auth.js';
@@ -307,6 +308,10 @@ router.get('/play/:slug', (req, res) => {
   // gets the step's passages (never the key until it is allowed) instead of a game score.
   const proofStep = !!(lc && lc.ok && lc.step.kind === L.PROOF_KIND && g.slug === PS.SLUG && g.source === 'seed');
   const lesson = lc && lc.ok && ((lc.step.kind === 'game' && lc.step.game_id === g.id && !progress.hostedLive(lc.step)) || proofStep) ? { cl: lc.cl.id, step: lc.step.id, back: `/class/${lc.cl.class_id}/lessons/${lc.cl.id}`, ...(proofStep ? { proof: true } : {}) } : null;
+  // A lesson that waits for this student (Homeroom: an In order handout behind unfinished ones; services/lessons.js
+  // lessonWait): the calm message and the way back, not the game.
+  const wait = lesson ? L.lessonWait(u, lc.cl, t) : null;
+  if (wait) return lessonWaitPage(req, res, wait);
   const asked = req.query.course ? courses.getCourse(String(req.query.course)) : null;
   let cstep = null;
   // The step context is honoured for every signed-in player who arrives with one, the game's owner and

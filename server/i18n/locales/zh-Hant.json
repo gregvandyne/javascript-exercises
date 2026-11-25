@@ -1293,7 +1293,11 @@
       "figure": "第{n}題的圖"
     },
     "printAtlas": {
-      "mapOf": {"world": "世界地圖", "car": "加勒比海地圖", "me": "中東地圖"},
+      "mapOf": {
+        "world": "世界地圖",
+        "car": "加勒比海地圖",
+        "me": "中東地圖"
+      },
       "untitled": "地理測驗",
       "mapTitle": "地圖：{region}",
       "mapAlt": "空白地圖：{region}",
@@ -2142,7 +2146,9 @@
         "best": "最佳分數 {score}",
         "removeOne": "從{name}的座位拿走",
         "removeAll": "從所有座位移除",
-        "removeAllConfirm": "要把 {title} 從所有座位移除嗎？學生的作品會保留，再發一次就會回來。"
+        "removeAllConfirm": "要把 {title} 從所有座位移除嗎？學生的作品會保留，再發一次就會回來。",
+        "lesson": "課程",
+        "version": "版本：{name}"
       }
     },
     "stories": {
@@ -4768,7 +4774,10 @@
       "teacherSays": "老師：",
       "inOrder": "依序完成",
       "anyOrder": "不限順序",
-      "newHandout": "老師發了新東西：{title}"
+      "newHandout": "老師發了新東西：{title}",
+      "lessonTitle": "課程：{title}",
+      "worksheet": "學習單 · {count} 題",
+      "worksheetWords": "學習單 · {count} 個詞"
     },
     "homeroom-area": {
       "label": "老師區",
@@ -4778,6 +4787,133 @@
       "text": "你的班級在 Homeroom。",
       "go": "去我的書桌",
       "close": "關閉"
+    },
+    "homeroom-lessons": {
+      "build": "建立課程",
+      "editTitle": "編輯課程",
+      "pickTitle": "要用哪個遊戲或工具？",
+      "pickLead": "選一個遊戲。你決定學生到底要做什麼，學習單就依此產生。",
+      "comingLater": "即將推出",
+      "later": {
+        "quiz": "班級測驗和文字遊戲",
+        "mine": "我做的遊戲",
+        "atlas": "Atlas Quest",
+        "sudoku": "數獨",
+        "castle": "Castle Clash 謎題",
+        "manip": "操作教具",
+        "figures": "圖形",
+        "reading": "閱讀"
+      },
+      "name": "課程名稱",
+      "namePh": "例如：長除法練習",
+      "op": "運算",
+      "ops": {
+        "add": "加法",
+        "subtract": "減法",
+        "multiply": "乘法",
+        "divide": "除法"
+      },
+      "method": "方法",
+      "methods": {
+        "standard": "標準直式",
+        "ladder": "階梯法",
+        "area": "面積模型",
+        "partial": "部分積"
+      },
+      "size": "大小",
+      "sizeEach": "{n} 位數",
+      "sizeBy": "{a} 位數 {op} {b} 位數",
+      "count": "題數",
+      "level": "作答時的幫助",
+      "levels": {
+        "watch": "看示範",
+        "countUp": "往上數",
+        "guided": "引導",
+        "onMyOwn": "自己來"
+      },
+      "newProblems": "換一組題目",
+      "activity": "活動",
+      "modes": {
+        "solve": "解方程式",
+        "multiply": "展開",
+        "factor": "因式分解"
+      },
+      "alLevel": "程度",
+      "alLevels": {
+        "easy": "簡單",
+        "medium": "中等",
+        "hard": "困難"
+      },
+      "tiles": "一開始的方塊",
+      "tilesAll": "所有需要的方塊",
+      "tilesNone": "沒有方塊",
+      "words": "詞語和提示",
+      "wordsHint": "{min} 到 {max} 個詞。每個詞都需要提示。",
+      "word": "第 {n} 個詞",
+      "clue": "第 {n} 個詞的提示",
+      "wordPh": "詞語",
+      "cluePh": "提示",
+      "addWord": "加一個詞",
+      "removeWord": "移除第 {n} 個詞",
+      "bank": "詞庫",
+      "bankShow": "顯示",
+      "bankHide": "隱藏",
+      "bankShown": "有詞庫",
+      "bankHidden": "沒有詞庫",
+      "hints": "提示功能",
+      "hintsOn": "允許",
+      "hintsOff": "關閉",
+      "versions": "每組各一個版本？",
+      "versionsYes": "好，依小組",
+      "versionsNo": "大家都一樣",
+      "versionsHint": "每組都從你的課程開始，並附上建議的調整。任何地方都可以改。",
+      "versionsOff": "每個人拿到同一張學習單。",
+      "noGroups": "這個班級還沒有小組。請先建立小組，才能加入版本。",
+      "editing": "版本對象",
+      "noGroup": "沒有小組",
+      "lean": {
+        "easier": "簡單一點",
+        "same": "相同",
+        "harder": "難一點"
+      },
+      "instructions": "給學生的指示",
+      "instructionsPh": "例如：寫出每個步驟。用乘法檢查答案。",
+      "preview": "學習單預覽",
+      "previewOf": "學習單預覽 · {who}",
+      "previewNote": "學生在螢幕上作答，或由你印出來。",
+      "previewWords": "至少輸入 {min} 個詞才能看到填字遊戲。",
+      "printDraft": "列印",
+      "ai": "請 Oomba 幫忙填",
+      "aiBusy": "Oomba 正在寫提示…",
+      "aiDone": "Oomba 寫了 {count} 個提示。儲存前請檢查。",
+      "aiNothing": "每個詞都已經有提示了。",
+      "aiNeedWords": "請先輸入一些詞。Oomba 會為每個詞寫提示。",
+      "aiFailed": "Oomba 現在無法寫提示。請再試一次。",
+      "save": "存到「我的課程」",
+      "cancel": "取消",
+      "needTitle": "請幫課程取個名字。",
+      "problemsN": "{count} 題",
+      "wordsN": "{count} 個詞",
+      "versionsN": "{count} 個版本",
+      "empty": "你建立的課程會顯示在這裡。",
+      "more": "{title} 的更多選項",
+      "edit": "編輯",
+      "duplicate": "複製",
+      "print": "列印學習單",
+      "delete": "刪除",
+      "deleteConfirm": "要刪除 {title} 嗎？已經發到座位上的會保留。",
+      "versionsFor": "版本：{groups}",
+      "printLead": "學習單會印上班級代碼，學生也可以在 Oomba 上打開。",
+      "printWhich": "要印哪一張？",
+      "printLesson": "這個課程",
+      "printKey": "加上解答",
+      "printGo": "列印",
+      "full": "你有 {count} 個課程，已達上限。請先刪除一個。",
+      "giveEyebrow": "課程",
+      "giveTitle": "給{who}的{lesson}",
+      "versionsBy": "依小組的版本",
+      "asBuilt": "原本的課程",
+      "scoreHint": "成績簿會顯示答對的百分比。"
     }
   },
   "favorites": {
@@ -14546,7 +14682,6 @@
       "label": "老師的桌子",
       "handOut": "發給",
       "myLessons": "我的課程",
-      "noLessons": "你在 Homeroom 建立的課程會顯示在這裡。",
       "myGames": "我做的遊戲",
       "noGames": "你做的遊戲會顯示在這裡。",
       "oomba": "Oomba 遊戲與工具",
@@ -14587,7 +14722,18 @@
       "tooLong": "說明最多 300 個字。",
       "alreadyOnDesk": "其中 {count} 個座位已經有這個遊戲了。請先從那裡拿走，或發給其他人。",
       "tooManyHandouts": "這個班級發下的東西太多了。請先移除一些舊的。",
-      "notOnDesk": "這個座位上沒有這份發下的東西。"
+      "notOnDesk": "這個座位上沒有這份發下的東西。",
+      "noLesson": "這個課程已不在你的課程中。",
+      "badGame": "目前可以為 Arithmetic Lab、Algebra Builder 和填字遊戲建立課程。",
+      "needTitle": "請幫課程取個名字。",
+      "titleLong": "名字最多 60 個字元。",
+      "fewWords": "填字遊戲至少需要 3 個詞。",
+      "missingClue": "每個詞都需要提示。",
+      "settings": "無法儲存這些設定。請檢查後再試一次。",
+      "setsFull": "你的學習單已達這個遊戲能保存的上限。請先到遊戲的「我的學習單」刪除一些。",
+      "tooManyLessons": "你的課程已達上限。請先刪除一個。",
+      "lessonGone": "這個課程的一張學習單已被刪除。請打開課程，再儲存一次，然後再發下去。",
+      "lessonOnDesk": "其中 {count} 個座位已經有這個課程。請先從那裡拿掉，或發給其他人。"
     },
     "live": "直播中",
     "desk": {
@@ -14601,7 +14747,9 @@
       "notYou": "不是 {name}？",
       "switch": "切換",
       "backToDesk": "回到我的座位",
-      "fromTeacher": "老師說"
+      "fromTeacher": "老師說",
+      "waitTitle": "還不行",
+      "waitText": "先完成你座位上前一個任務，這個才會打開。"
     },
     "projector": {
       "title": "{class} · 投影"
@@ -14689,6 +14837,21 @@
       "done": "{title} 已發到 {count} 個座位。",
       "removedOne": "已從那個座位拿走。",
       "removedAll": "已從所有座位移除。學生的作品會保留。"
+    },
+    "lessons": {
+      "handedOut": "{title} 已發到 {count} 個座位。",
+      "handedOutVersions": "{title} 已發到 {count} 個座位，每組各有自己的版本。",
+      "saved": "課程已儲存。",
+      "savedNew": "已存到「我的課程」。點一下課程，再點座位，就能發下去。",
+      "copyOf": "{title} 的副本",
+      "duplicated": "已複製課程。",
+      "deleted": "已刪除課程。",
+      "untitled": "新課程",
+      "print": {
+        "solve": "解出 x。寫出你的步驟。",
+        "multiply": "做乘法。把每個答案寫成一個式子。",
+        "factor": "把每個式子因式分解。"
+      }
     }
   }
 }

@@ -250,7 +250,10 @@ export function gameScore(u, clId, stepId, score, label = '', helped = false) {
   }
   const better = s !== null && (!old || old.score === null || s > old.score);
   const h = better ? { helped: helped ? 1 : 0 } : s !== null && old && s === old.score && old.helped && !helped ? { helped: 0 } : {};
-  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...done(old) }) });
+  // A game that ended won without a number (Crossword, Algebra Builder: they finish only when everything is right) keeps
+  // label 'won', so a Homeroom lesson can count it (services/scores.js); a score that comes later replaces it.
+  const won = s === null && label === 'won' && !(old && (old.label || old.score !== null)) ? { label: 'won' } : {};
+  return ok({ row: upsert(clId, stepId, u.id, { ...(better ? { score: s, label: String(label || '').slice(0, 40) } : {}), ...h, ...won, ...done(old) }) });
 }
 /** A build step: the game the student is making (made once, then reopened). */
 export function buildGame(u, clId, stepId, gameId) {
