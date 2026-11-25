@@ -177,7 +177,9 @@
   "ln_l39": "Signos difíciles",
   "ln_l40": "Carrera de expertos",
   "keyboardL": "Teclado",
-  "keyboardHint": "Elige el idioma y el teclado con el que escribes."
+  "keyboardHint": "Elige el idioma y el teclado con el que escribes.",
+  "shiftKey": "Mayús",
+  "spaceKey": "espacio"
  },
  "words": [
   "a",

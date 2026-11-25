@@ -177,7 +177,9 @@
   "ln_l39": "Lastige leestekens",
   "ln_l40": "Race voor experts",
   "keyboardL": "Toetsenbord",
-  "keyboardHint": "Kies de taal en het toetsenbord waarop je typt."
+  "keyboardHint": "Kies de taal en het toetsenbord waarop je typt.",
+  "shiftKey": "Shift",
+  "spaceKey": "spatie"
  },
  "words": [
   "als",

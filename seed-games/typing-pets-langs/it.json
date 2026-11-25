@@ -177,7 +177,9 @@
   "ln_l39": "Punteggiatura difficile",
   "ln_l40": "Gara da esperti",
   "keyboardL": "Tastiera",
-  "keyboardHint": "Scegli la lingua e la tastiera che usi."
+  "keyboardHint": "Scegli la lingua e la tastiera che usi.",
+  "shiftKey": "Maiusc",
+  "spaceKey": "spazio"
  },
  "words": [
   "a",

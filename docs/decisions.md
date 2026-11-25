@@ -13279,3 +13279,48 @@ changes too, safely for the live database and for every link and QR code already
   `/teach/assign?game=box-by-box`, still works), `HIDDEN_GAMES` may name either, and no new game can take `box-by-box`.
 - Saved lesson and assignment titles that were made with the old name keep it, as in the last rename.
 - Tests: `tests/unit/arithmetic-lab-rename.test.js` (the redirects, the migration, no second game after the seed).
+
+## Algebra Builder: cancel by dropping on the opposite, and x tiles turn to fit the T (25 Nov 2026)
+
+Owner: "if you drop a negative x or 1 or x squared over the top of a positive one, it should negate it and cause both to
+disappear. You should be able to do this with multiple blocks at a time. Also, if you place an x on the descending side
+of the T, it should automatically flip."
+- **Drop to cancel** (`tools/algebra-builder/src/lib/Activity.svelte` `cancelHits`): when tiles are let go, each held
+  tile that covers at least 40% of an opposite tile of the same kind (by the smaller tile's area) pairs with the one it
+  covers most, each board tile at most once, and the pairs zero out with the usual rumble and poof. Works from the
+  tray and for a dragged selection: every held tile that lands on an opposite cancels, the rest of the selection
+  lands as before. Same signs never cancel; locked tiles and copies (Alt-drag) don't; in Solve's balance a pair is
+  always in one pan, since the tiles overlap. Selecting a pair and pressing Zero out still works as before.
+- **x tiles turn to fit the T** (`sideTurn`): an x let go with its middle on the side going down (or just outside it)
+  stands up and joins that side's row; a standing x let go on the top lies flat. It turns with the usual swing, and the
+  sides read it as an x (before, a flat x on the side going down read as a 1 and couldn't be turned there).
+- `seed-games/algebra-builder.html` is rebuilt from the sources (`node build.mjs`).
+- Tests: `tests/unit/algebra-builder-drop-browser.test.js` (real mouse drags: x, x² and 1; three at once; a mixed
+  selection; same signs; the T on a laptop and a phone, then Check).
+
+## Mistake Hunt: a library of sample passages (25 Nov 2026)
+
+Owner: "Create hundreds of sample passages for Mistake Hunt."
+- **320 passages**, 40 for each grade 1-8 and 4 per topic in each grade (animals, science, space, earth and weather,
+  history, around the world, everyday life, sports and games, arts and music, inventions): original, correct US
+  English at the grade's reading level and length (grade 1: 180-380 characters up to grade 8: 550-1,100), factual,
+  kid-appropriate, straight quotes, the Oxford comma. They live in `seed-games/mistake-hunt-samples/grade-<g>.json`
+  (`{ id, g, topic, t, x }`) and `node scripts/mistake-hunt-samples.mjs` writes them into the game between
+  `samples:begin` and `samples:end` (a test fails when the game is out of date).
+- **Mistakes are still planted by code**, never written into the passages: opening one plants its grade's kinds
+  (`P.preset(g)`) and the builder's count for the grade, with a new seed each time, so a passage is a fresh hunt on
+  every play.
+- **Home → Sample passages** (replaces the single Moon sample on the home screen; the Moon passage stays for tests and
+  the cover): grade chips 1-8, topic chips, each passage with its topic, word count and first line. **Play it** plays
+  it as a student (its own saved work, `sample:<id>`); **Use in my set** opens it in the builder with its grade's kinds
+  and count planted, to change, save, print or assign like any set.
+- Every passage is checked like a saved set: tidy text, the site's word filter, enough mistakes for its grade, and
+  `cleanProofItems` accepts it planted with three different seeds (`tests/unit/mistake-hunt-samples.test.js`).
+- Passages were drafted by helper agents against that validator, then reviewed; facts are worth a teacher's glance.
+- **Difficulty levels** (owner: "Create different difficulty levels"; `levelOf(g, lvl)` in the game): **Easy** plants 2
+  fewer mistakes than the grade's count, only kinds taught a grade or more earlier and no sentence mistakes, and tells
+  students how many of each kind; **Medium** is the grade's own kinds and count, telling the total (as before); **Hard**
+  adds kinds from up to two grades on and 3 more mistakes, and tells nothing. Chips in the sample library (Play it and
+  Use in my set plant at the chosen level; each level keeps its own saved work) and in the builder's "Mistakes to
+  plant" card, where they set the kinds, the count and what students are told for the draft's grade (all still
+  changeable by hand). Tested on every sample at Easy and Hard against the server's set rules.
