@@ -13297,3 +13297,23 @@ of the T, it should automatically flip."
 - `seed-games/algebra-builder.html` is rebuilt from the sources (`node build.mjs`).
 - Tests: `tests/unit/algebra-builder-drop-browser.test.js` (real mouse drags: x, x² and 1; three at once; a mixed
   selection; same signs; the T on a laptop and a phone, then Check).
+
+## Mistake Hunt: a library of sample passages (25 Nov 2026)
+
+Owner: "Create hundreds of sample passages for Mistake Hunt."
+- **320 passages**, 40 for each grade 1-8 and 4 per topic in each grade (animals, science, space, earth and weather,
+  history, around the world, everyday life, sports and games, arts and music, inventions): original, correct US
+  English at the grade's reading level and length (grade 1: 180-380 characters up to grade 8: 550-1,100), factual,
+  kid-appropriate, straight quotes, the Oxford comma. They live in `seed-games/mistake-hunt-samples/grade-<g>.json`
+  (`{ id, g, topic, t, x }`) and `node scripts/mistake-hunt-samples.mjs` writes them into the game between
+  `samples:begin` and `samples:end` (a test fails when the game is out of date).
+- **Mistakes are still planted by code**, never written into the passages: opening one plants its grade's kinds
+  (`P.preset(g)`) and the builder's count for the grade, with a new seed each time, so a passage is a fresh hunt on
+  every play.
+- **Home → Sample passages** (replaces the single Moon sample on the home screen; the Moon passage stays for tests and
+  the cover): grade chips 1-8, topic chips, each passage with its topic, word count and first line. **Play it** plays
+  it as a student (its own saved work, `sample:<id>`); **Use in my set** opens it in the builder with its grade's kinds
+  and count planted, to change, save, print or assign like any set.
+- Every passage is checked like a saved set: tidy text, the site's word filter, enough mistakes for its grade, and
+  `cleanProofItems` accepts it planted with three different seeds (`tests/unit/mistake-hunt-samples.test.js`).
+- Passages were drafted by helper agents against that validator, then reviewed; facts are worth a teacher's glance.
