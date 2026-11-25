@@ -2148,7 +2148,36 @@
         "removeAll": "すべての机から外す",
         "removeAllConfirm": "{title}をすべての机から外しますか？児童・生徒の取り組みは残り、また配布すればもどります。",
         "lesson": "レッスン",
-        "version": "バージョン: {name}"
+        "version": "バージョン: {name}",
+        "gcAlso": "Google Classroom にも投稿",
+        "gcHint": "リンクした Classroom のクラスに課題として届きます。成績はここで選んだ方法です。",
+        "gcWholeOnly": "Google Classroom に送れるのはクラス全員への配布だけです（向こうでは全員に届くため）。"
+      },
+      "team": {
+        "label": "チームの机",
+        "deskOf": "チームの机：{names}",
+        "doneOf": "{n}人中{done}人完了",
+        "split": "チームを解散",
+        "splitConfirm": "{names}のチームの机を解散しますか？それぞれ自分の机に戻ります。チームの共有パッドは消えます。",
+        "splitDone": "チームを解散しました。みんな自分の机に戻りました。",
+        "makeA": "チームを作る",
+        "pickLead": "一つの机を使う児童・生徒の机をタップ（{max}人まで）",
+        "picked": "{count, plural, =0 {まだ選んでいません} other {#人を選択}}",
+        "make": "チームにする",
+        "made": "チームの机を作りました：{names}",
+        "full": "チームは最大{max}人です。",
+        "forNames": "チーム（{names}）",
+        "sheetLead": "児童・生徒をタップすると、その子の配布物が見られます。"
+      },
+      "feedback": {
+        "add": "コメントやシール",
+        "edit": "コメントやシールを変える",
+        "comment": "短いコメント（任意）",
+        "commentPh": "例：あまりの計算、よくできました！",
+        "sticker": "シール（任意）",
+        "noSticker": "なし",
+        "private": "この子だけが、自分の机とレッスンのページで見られます。",
+        "remove": "外す"
       }
     },
     "stories": {
@@ -4777,7 +4806,24 @@
       "newHandout": "先生から新しいもの：{title}",
       "lessonTitle": "レッスン: {title}",
       "worksheet": "ワークシート · {count}問",
-      "worksheetWords": "ワークシート · {count}語"
+      "worksheetWords": "ワークシート · {count}語",
+      "team": "チーム：{names}",
+      "teamPad": "チームのパッド",
+      "fromTeacher": "先生より：",
+      "stickers": {
+        "star": "星",
+        "thumbs": "いいね",
+        "heart": "ハート",
+        "idea": "ナイスアイデア",
+        "check": "チェック",
+        "rocket": "ロケット",
+        "trophy": "トロフィー",
+        "medal": "メダル",
+        "crown": "王冠",
+        "fireworks": "花火",
+        "smiley": "にっこり",
+        "rainbow": "虹"
+      }
     },
     "homeroom-area": {
       "label": "先生のエリア",
@@ -4914,6 +4960,21 @@
       "versionsBy": "グループごとのバージョン",
       "asBuilt": "作ったままのレッスン",
       "scoreHint": "成績表に正答率(%)が表示されます。"
+    },
+    "homeroom-overview": {
+      "title": "評価の方法",
+      "score": {
+        "name": "得点",
+        "hint": "正答率（%）。Google Classroom にも送られます。"
+      },
+      "completion": {
+        "name": "完了",
+        "hint": "終わったら100%。"
+      },
+      "none": {
+        "name": "評価なし",
+        "hint": "練習：成績にならず、何も送りません。"
+      }
     }
   },
   "favorites": {
@@ -6909,7 +6970,7 @@
       "lead": "数クリックでGoogle Classroomを接続できます。最初は、Oomba Academyが見られるのはクラスとその生徒だけです。投稿を許可するまで、何も投稿されません。",
       "li1": "名簿は1クリックで取り込め、その後は6時間ごとに自動で更新されます。生徒はGoogleアカウントで照合されます。",
       "li2": "授業をリンクと提出期限つきのClassroomの課題として投稿したり、資料として共有したりできます。",
-      "li3": "完了度の成績がClassroomに戻ります。各生徒の100点満点の成績は、授業のステップをどれだけ終えたかの割合で、正解の数ではありません。自分で送るか、自動送信をオンにできます。",
+      "li3": "成績は100点満点で Classroom に戻ります：完了度の成績（終えたステップの割合で、正解の数ではありません）、または Homeroom の配布物では選んだ方法：得点、完了、練習なら何も送りません。自分で送るか、自動送信をオンにできます。",
       "li4": "ライブゲームが始まるときや授業の準備ができたときに、自分の言葉でクラスのストリームに投稿できます。",
       "li5": "Oomba AcademyはClassroomに生徒のメールアドレスを求めず、生徒の名前、回答、ゲームをGoogleに送ることもありません。",
       "note": "課題、資料、成績、お知らせは、投稿を許可すると使えるようになります（別の手順です）。先生はそれぞれ自分のGoogleアカウントを接続します。学校のGoogle管理者が先にOomba Academyを許可する必要がある場合があります。",
@@ -10544,10 +10605,10 @@
         "courses": "このクラスを Classroom のクラスのひとつとリンクする",
         "roster": "そのクラスの生徒を取り込み、Google でログインできるようにする",
         "post": "ここへのリンクと提出期限つきでレッスンを投稿する",
-        "grades": "レッスンでの各生徒の完了度の成績を Classroom に送る"
+        "grades": "各生徒のレッスンの成績を Classroom に送る（完了度の成績、または Homeroom で選んだ得点）"
       },
       "button": "Google Classroom を接続",
-      "privacy": "この接続はあなただけに見えます。接続すると、Oomba Academy はあなたのクラスとその生徒を読み取れます。投稿を許可した場合にだけ、あなたが投稿するものを Classroom に送ります: レッスンのタイトル、リンク、期限、各生徒の完了度の成績 (100 点満点)、トピック名、あなたが書いたお知らせ。生徒の名前、回答、ゲームは送りません。",
+      "privacy": "この接続はあなただけに見えます。接続すると、Oomba Academy はあなたのクラスとその生徒を読み取れます。投稿を許可した場合にだけ、あなたが投稿するものを Classroom に送ります: レッスンのタイトル、リンク、期限、各生徒の成績 (100 点満点: 完了度の成績、または Homeroom で選んだ得点)、トピック名、あなたが書いたお知らせ。生徒の名前、回答、ゲームは送りません。",
       "connectedAs": "{email} で接続中",
       "connectedHint": "この接続はあなた専用です。ほかの先生はそれぞれ自分で接続します。",
       "connectedToast": "Google Classroom を接続しました。",
@@ -10611,17 +10672,25 @@
       "somePosted": "ここでは一部の生徒に割り当てられています。以前 Google Classroom でクラス全員に投稿済みです。成績は割り当てられた生徒にだけ送られます。"
     },
     "grades": {
-      "text": "これは完了度の成績です。生徒が終えたレッスンのステップの割合 (100 点満点) で、正解の数は数えません。まだ始めていない生徒は送りません。",
+      "text": "レッスンごとに、その評価の方法で100点満点の成績を送ります。クラスで割り当てたレッスンは完了度の成績（終えたステップの割合で、正解の数ではありません）。Homeroom の配布物は配るときに選んだ方法で送ります：得点は正答率、完了は完了度の成績、評価なしは何も送りません。まだ始めていない生徒は送りません。",
       "as": "送り方",
       "draft": "下書きの成績 (Classroom であなたが返却)",
       "assigned": "確定した成績",
       "button": "完了度の成績を送る",
-      "lastDraft": "下書きの完了度の成績を送信: {when}",
-      "lastAssigned": "確定した完了度の成績を送信: {when}",
+      "lastDraft": "下書きの成績を送信：{when}",
+      "lastAssigned": "確定した成績を送信：{when}",
       "resultSent": "{count, plural, other {# 件の完了度の成績を送信}}",
       "resultNotStarted": "{count, plural, other {# 人は未着手}}",
       "resultNotMatched": "{count, plural, other {# 人はこのクラスにいません}}",
-      "resultFailed": "{count, plural, other {# 件は送れませんでした}}"
+      "resultFailed": "{count, plural, other {# 件は送れませんでした}}",
+      "buttonScore": "得点を送る",
+      "resultSentScore": "{count, plural, other {#件の得点を送信}}",
+      "resultNotScored": "{count, plural, other {#人はまだ得点なし}}",
+      "sends": {
+        "completion": "完了度の成績（終えたステップの割合）を送ります。",
+        "score": "Homeroom で得点評価：正答率を送ります。",
+        "none": "Homeroom で評価なし：Classroom に成績は送りません。"
+      }
     },
     "log": {
       "heading": "最近の同期",
@@ -10712,7 +10781,7 @@
       "roster": "6 時間ごとに Classroom から生徒を更新",
       "rosterHint": "新しい生徒は追加されます。Classroom から抜けた生徒は上に表示され、外すかどうかはあなたが決めます。自動で外されることはありません。",
       "grades": "成績を自動で送る",
-      "gradesHint": "30 分ごとに、ここから投稿したレッスンの変わった完了度の成績を Classroom に送ります。各期限の 30 日後まで続きます。",
+      "gradesHint": "30分ごとに、ここから投稿したレッスンで変わった成績を Classroom に送ります（それぞれの評価の方法で：完了度の成績か得点）。各期限の30日後まで続きます。",
       "by": "成績は {name} の Google Classroom 接続で送られます。",
       "save": "保存",
       "saved": "保存しました。",
@@ -14733,7 +14802,16 @@
       "setsFull": "このゲームに保存できるワークシートの上限です。先にゲームの「マイワークシート」でいくつか削除してください。",
       "tooManyLessons": "保存できるレッスンの上限です。先に1つ削除してください。",
       "lessonGone": "このレッスンのワークシートが削除されました。レッスンを開いてもう一度保存してから配ってください。",
-      "lessonOnDesk": "{count}台の机にはすでにこのレッスンがあります。先にそこから外すか、ほかの人に配ってください。"
+      "lessonOnDesk": "{count}台の机にはすでにこのレッスンがあります。先にそこから外すか、ほかの人に配ってください。",
+      "teamTooSmall": "チームには2つ以上の机を選んでください。",
+      "teamTooBig": "チームは最大6人です。",
+      "alreadyInTeam": "その中にすでにチームの机にいる子がいます。先にそのチームを解散してください。",
+      "tooManyTeams": "このクラスはチームの机の上限に達しています。",
+      "noTeam": "そのチームの机はもうありません。",
+      "commentLong": "コメントは140文字までです。",
+      "badSticker": "シールを1つ選んでください。",
+      "notFinished": "コメントやシールは終わった課題に付けられます。これはまだ終わっていません。",
+      "padChanged": "チームの友だちが同時にかいていました。あなたの絵はそこに足されました。"
     },
     "live": "ライブ",
     "desk": {
@@ -14852,6 +14930,78 @@
         "multiply": "かけ算をして、答えを1つの式で書きましょう。",
         "factor": "それぞれの式を因数分解しましょう。"
       }
+    },
+    "stickers": {
+      "star": "星",
+      "thumbs": "いいね",
+      "heart": "ハート",
+      "idea": "ナイスアイデア",
+      "check": "チェック",
+      "rocket": "ロケット",
+      "trophy": "トロフィー",
+      "medal": "メダル",
+      "crown": "王冠",
+      "fireworks": "花火",
+      "smiley": "にっこり",
+      "rainbow": "虹"
+    },
+    "feedback": {
+      "saved": "コメントとシールを保存しました",
+      "removed": "コメントとシールを外しました"
+    },
+    "overview": {
+      "title": "クラスの様子",
+      "lead": "直近{weeks}週間。列はそれぞれ Homeroom で配ったものです。児童・生徒は五十音・アルファベット順で、順位はつけません。",
+      "student": "児童・生徒",
+      "trend": "傾向",
+      "tableLabel": "クラスの様子：配布物と結果",
+      "kind": {
+        "lesson": "レッスン",
+        "game": "ゲーム",
+        "mine": "自作ゲーム"
+      },
+      "versions": "{count, plural, other {#バージョン}}",
+      "gradedBy": {
+        "score": "得点で評価",
+        "completion": "完了で評価"
+      },
+      "notGraded": "評価なし",
+      "changeGrade": "{title}：{grade}。評価の方法を変える",
+      "done": "完了",
+      "notDone": "未完了",
+      "practice": "練習",
+      "locked": "まだ開いていません",
+      "notStarted": "未着手",
+      "trends": {
+        "improving": "伸びている",
+        "steady": "安定",
+        "support": "サポートが必要",
+        "none": "まだ得点が足りません"
+      },
+      "finished": "配布物の完了",
+      "support": "{count, plural, other {人がサポートを必要}}",
+      "month": "{count, plural, other {件（今月の配布）}}",
+      "keyNames": {
+        "score": "得点",
+        "completion": "完了",
+        "none": "評価なし"
+      },
+      "keyScore": "正答率",
+      "keyCompletion": "終わったら100%",
+      "keyNone": "練習、何も送りません",
+      "keyTrend": "傾向は直近3回の得点から：平均が60%未満ならサポートが必要、最新が最初より10ポイント以上高ければ伸びている、それ以外は安定。",
+      "more": "成績表の全体、CSV、スタンダード、ルーブリック、Google Classroom はこれまでどおり下にあります。",
+      "fullGradebook": "成績表の全体",
+      "noHandouts": "直近{weeks}週間、Homeroom で配ったものはありません。Homeroom タブからゲームやレッスンを配りましょう。",
+      "gcLinked": "「{course}」とリンク中",
+      "gcRoster": "名簿の同期：{when}",
+      "gcRosterNever": "名簿はまだ同期していません",
+      "gcGrades": "成績の送信：{when}",
+      "gcGradesNever": "成績はまだ送っていません",
+      "gcOpen": "設定を開く",
+      "gcNotLinked": "まだリンクしていません。",
+      "gcLink": "Classroom のクラスとリンク",
+      "gradeSaved": "評価の方法を変えました"
     }
   }
 }

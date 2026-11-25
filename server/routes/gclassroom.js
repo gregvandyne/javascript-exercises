@@ -232,7 +232,9 @@ function rosterText(t, k) {
     k.left && t('gclassroom.roster.resultLeft', { count: k.left })].filter(Boolean).join(' · ');
 }
 function gradesText(t, k) {
-  return [t('gclassroom.grades.resultSent', { count: k.sent || 0 }), k.notStarted && t('gclassroom.grades.resultNotStarted', { count: k.notStarted }),
+  // Graded by Score (a Homeroom handout, step 2c): the % right went; else completion grades, as always.
+  return [t(k.basis === 'score' ? 'gclassroom.grades.resultSentScore' : 'gclassroom.grades.resultSent', { count: k.sent || 0 }), k.notStarted && t('gclassroom.grades.resultNotStarted', { count: k.notStarted }),
+    k.notScored && t('gclassroom.grades.resultNotScored', { count: k.notScored }),
     k.notMatched && t('gclassroom.grades.resultNotMatched', { count: k.notMatched }), k.failed && t('gclassroom.grades.resultFailed', { count: k.failed })].filter(Boolean).join(' · ');
 }
 function syncLine(req, s) {
@@ -357,12 +359,15 @@ router.get('/class/:id/google-classroom', on, auth.requireUser, async (req, res)
     const some = cl.picked > 0;
     const someNote = some ? html`<p class="small muted gc-some">👥 ${t(p ? 'gclassroom.post.somePosted' : 'gclassroom.post.someNot')}</p>` : '';
     const g = p && p.grades_at ? html`<span class="small muted">${t(p.grades_mode === 'assigned' ? 'gclassroom.grades.lastAssigned' : 'gclassroom.grades.lastDraft', { when: f.ago(p.grades_at) })} · ${gradesText(t, JSON.parse(p.grades_counts || '{}'))}</span>` : '';
+    // What this lesson's grade in Classroom is (step 2c): the % right, the completion grade, or nothing (not graded).
+    const basis = GC.gradeBasis(cl.id);
+    const sends = html`<p class="small gc-sends" data-basis="${basis}">${t(`gclassroom.grades.sends.${basis}`)}</p>`;
     const assignment = !can('coursework') ? '' : p ? html`<div class="gc-lesson-acts">${p.link ? html`<a class="btn btn-sm" href="${p.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.post.open')}</a>` : ''}
-          <form class="gc-gradeform" data-api="/api/class-lessons/${cl.id}/google-classroom/grades" data-reload novalidate>
+          ${sends}${basis === 'none' ? '' : html`<form class="gc-gradeform" data-api="/api/class-lessons/${cl.id}/google-classroom/grades" data-reload novalidate>
             <fieldset class="gc-modes"><legend class="small">${t('gclassroom.grades.as')}</legend>
               <label class="gc-mode"><input type="radio" name="mode" value="draft" checked> <span>${t('gclassroom.grades.draft')}</span></label>
               <label class="gc-mode"><input type="radio" name="mode" value="assigned"> <span>${t('gclassroom.grades.assigned')}</span></label></fieldset>
-            <button class="btn btn-sm btn-primary" type="submit">📤 ${t('gclassroom.grades.button')}</button></form>${g}</div>`
+            <button class="btn btn-sm btn-primary" type="submit">📤 ${t(basis === 'score' ? 'gclassroom.grades.buttonScore' : 'gclassroom.grades.button')}</button></form>`}${g}</div>`
       : some ? '' : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/post" data-reload><button class="btn btn-sm" type="submit">📌 ${t('gclassroom.post.button')}</button></form>`;
     const material = !can('materials') ? '' : m ? html`<span class="gc-mat-done"><span class="chip-s good">📎 ${t('gclassroom.material.shared')}</span>${m.link ? html` <a class="btn btn-sm" href="${m.link}" target="_blank" rel="noopener noreferrer">↗ ${t('gclassroom.material.open')}</a>` : ''}</span>`
       : some ? '' : html`<form data-api="/api/class-lessons/${cl.id}/google-classroom/material" data-reload><button class="btn btn-sm" type="submit">📎 ${t('gclassroom.material.button')}</button></form>`;
@@ -451,9 +456,11 @@ export function gcRosterHint(req, c) {
   if (!GC.enabled() || !GC.mayConnect(req.user)) return '';
   return html`<p class="small gc-hint">🎓 ${tHtml(req.t, 'gclassroom.roster.hint', { link: html`<a href="${pagePath(c.id)}#gc-roster">${req.t('gclassroom.roster.hintLink')}</a>` })}</p>`;
 }
+/** May this teacher post this class's lessons to its linked Classroom class now (connected, allowed to post, linked)? */
+export const gcCanPost = (req, c) => !!(GC.enabled() && req.user && GC.mayConnect(req.user) && GC.linkOf(c.id) && GC.connectionState(req.user.id) === 'ok' && GC.can(req.user.id, 'coursework'));
 /** The assign form: "Also post to Google Classroom", when this teacher is connected, allowed to post, and the class linked. */
 export function gcAssignField(req, c) {
-  if (!GC.enabled() || !GC.mayConnect(req.user) || !GC.linkOf(c.id) || GC.connectionState(req.user.id) !== 'ok' || !GC.can(req.user.id, 'coursework')) return '';
+  if (!gcCanPost(req, c)) return '';
   // Unticked: a post reaches real students in Classroom and can't be taken back from here, so the teacher asks for it.
   return html`<label class="field gc-also wide"><span class="gc-check"><input type="checkbox" name="gcPost" value="1"> <span>🎓 ${req.t('gclassroom.post.also')}</span></span></label>`;
 }

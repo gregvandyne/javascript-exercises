@@ -7,6 +7,10 @@ export const BOARD = { w: 2400, h: 1500, maxW: 6000, maxH: 6000 };
 export const AREA = { x: 420, y: 40, w: 1560, h: 380 };
 export const TEACHER_DESK = { x: 1080, y: 440, w: 240, h: 70 };
 export const DESK = { w: 180, h: 124 };
+/** A team desk (step 2c): students who share one desk. Wider than a desk, so every member's name fits on it. */
+export const TEAM_DESK = { w: 300, h: 150 };
+/** A team has 2 to TEAM_MAX members; a class has at most TEAMS_MAX teams. */
+export const TEAM_MAX = 6, TEAMS_MAX = 30;
 /** Room for a student's name above their desk: no preset puts a desk on the name of the one in front. */
 export const NAME_H = 50;
 /** Where students' desks start (under the teacher's desk), and the middle of the room. */
@@ -76,8 +80,8 @@ export function seatAll(ids, seats = {}, preset = 'rows') {
   return out;
 }
 
-/** The board's size: the default, grown to hold every desk. */
-export function boardSize(seats) {
-  const list = Object.values(seats || {});
-  return { w: Math.max(BOARD.w, ...list.map(p => p.x + DESK.w + 80)), h: Math.max(BOARD.h, ...list.map(p => p.y + DESK.h + 80)) };
+/** The board's size: the default, grown to hold every desk (and every team desk: teams [{ x, y }]). */
+export function boardSize(seats, teams = []) {
+  const list = Object.values(seats || {}), tl = Array.isArray(teams) ? teams : [];
+  return { w: Math.max(BOARD.w, ...list.map(p => p.x + DESK.w + 80), ...tl.map(p => p.x + TEAM_DESK.w + 80)), h: Math.max(BOARD.h, ...list.map(p => p.y + DESK.h + 80), ...tl.map(p => p.y + TEAM_DESK.h + 80)) };
 }

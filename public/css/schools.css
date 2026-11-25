@@ -1242,3 +1242,7 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .ty-pass label { display: inline-flex; align-items: center; gap: 6px; }
 .ty-pass .input { width: 6em; }
 .ty-unlock { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; flex-basis: 100%; }
+/* Homeroom (step 2c): the teacher's comment and sticker on a student's own finished handout, on the lesson page */
+.hr-note .hr-notein{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--spark-soft)}
+.hr-note .hr-notesticker{flex:none;width:88px;height:88px;object-fit:contain}
+.hr-note p{margin:0;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere}

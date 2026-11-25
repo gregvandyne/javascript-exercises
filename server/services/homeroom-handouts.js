@@ -21,6 +21,11 @@
 // "Remove from every desk" takes them all). Its card says "Lesson" and how many problems. A waiting In order handout
 // opened from anywhere else (the To do list, a saved link) shows a calm "Finish the one before it first" (lessonWait).
 //
+// Step 2c (docs/decisions.md "Homeroom, step 2c"): a team desk is a target (every member gets the handout, one class
+// assignment with exactly them); a finished card can get the teacher's short comment and one sticker
+// (homeroom_feedback; setFeedback), shown to that student only (their desk and the lesson page) and stored for their
+// parents' view later; a handout's grading can be changed afterwards from the Classroom tab's overview (setGrade).
+//
 // Who: only the class's own teachers through the Homeroom gate (services/homeroom.js canUseClass) hand out and remove;
 // a student reads only their own desk (canUseDesk), never another desk or a group's name.
 import { q, now, audit } from '../db.js';
@@ -40,7 +45,7 @@ export const GRADES = L.GRADE_MODES;
 export const INSTRUCTIONS_MAX = 300;
 /** Open handouts a class may have at once (a desk shows them all; older ones can be removed). */
 export const HANDOUTS_MAX = 80;
-const TARGETS = ['all', 'group', 'desk'];
+const TARGETS = ['all', 'group', 'desk', 'team'];
 
 /** The teacher's instructions as stored: plain text, at most INSTRUCTIONS_MAX characters and 4 lines, no control or
  *  direction characters, spaces tidied (the same rules as a lesson step's text, shorter). */
@@ -95,7 +100,7 @@ function deskOrder(cards) {
 /** What the teacher's board shows: every open handout ({ id, title, icon, instructions, inOrder, grade, target, due,
  *  students: n }) and each current student's cards ({ desks: { studentId: [{ id, done, pct, score, locked, next }] } }). */
 export function boardView(c, locale = 'en') {
-  const rows = rowsOf(c.id), picks = L.picksIn(c.id), ids = H.studentsOf(c.id).map(s => s.id), prog = progressOf(rows), cache = new Map();
+  const rows = rowsOf(c.id), picks = L.picksIn(c.id), ids = H.studentsOf(c.id).map(s => s.id), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id);
   const handouts = rows.map(r => {
     const g = gameInfo(cache, r.game_id, locale), who = picks.get(r.id);
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
@@ -105,7 +110,8 @@ export function boardView(c, locale = 'en') {
   for (const sid of ids) {
     desks[sid] = deskOrder(rows.filter(r => { const who = picks.get(r.id); return !who || who.has(sid); }).map(r => {
       const p = prog.get(`${r.id}:${sid}`);
-      return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null };
+      const f = fb.get(`${r.id}:${sid}`);
+      return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(f ? { fb: f } : {}) };
     }));
   }
   return { handouts, desks };
@@ -113,7 +119,7 @@ export function boardView(c, locale = 'en') {
 /** One student's desk: their own handouts only, in order, each with what the card shows and where it opens
  *  ({ id, title, icon, instructions, href, done, pct, locked, next, due, ready }). Nothing about anyone else. */
 export function deskView(c, u, locale = 'en') {
-  const rows = rowsOf(c.id).filter(r => L.isOpen(r) && L.assignedTo(r.id, u.id)), prog = progressOf(rows), cache = new Map();
+  const rows = rowsOf(c.id).filter(r => L.isOpen(r) && L.assignedTo(r.id, u.id)), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id, u.id);
   const steps = new Map(rows.length ? q.all(`SELECT s.*, g.slug game_slug, g.status game_status, g.visibility game_visibility, g.source game_source, g.owner_id game_owner,
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
   return deskOrder(rows.map(r => {
@@ -121,11 +127,78 @@ export function deskView(c, u, locale = 'en') {
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
-      done: !!p && p.status === 'done', pct: pctOf(p) };
+      done: !!p && p.status === 'done', pct: pctOf(p), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
   }));
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
-export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}`).join('|');
+export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}`).join('|');
+
+// ---------------------------------------------------------------- comments and stickers (step 2c)
+/** The stickers a teacher can leave on finished work: a small set from the owner's sticker library
+ *  (docs/class-board/sticker-library, served from /img/stickers/: illustrations, no words, never a photo of anyone). */
+export const STICKERS = Object.freeze({
+  star: 'ill/oomba-1.webp', thumbs: 'ill/oomba-3.webp', heart: 'ill/oomba-7.webp', idea: 'ill/oomba-8.webp', check: 'ill/oomba-9.webp', rocket: 'ill/oomba-4.webp',
+  trophy: 'ill/praise-1.webp', medal: 'ill/praise-3.webp', crown: 'ill/praise-4.webp', fireworks: 'ill/praise-5.webp', smiley: 'ill/praise-7.webp', rainbow: 'ill/praise-9.webp',
+});
+export const stickerSrc = k => (STICKERS[k] ? `/img/stickers/${STICKERS[k]}` : '');
+export const COMMENT_MAX = 140;
+/** A comment as stored: one or two short lines of plain text, no blank lines (the instructions' rules, shorter). */
+export function cleanComment(s) {
+  return cleanInstructions(s).split('\n').filter(Boolean).slice(0, 2).join('\n').slice(0, COMMENT_MAX);
+}
+/** Comments and stickers of a class (or one student): Map 'clId:userId' -> { comment, sticker, src, at }. */
+export function feedbackOf(classId, userId = null) {
+  const rows = userId ? q.all('SELECT * FROM homeroom_feedback WHERE class_id=? AND user_id=?', classId, userId) : q.all('SELECT * FROM homeroom_feedback WHERE class_id=?', classId);
+  return new Map(rows.map(r => [`${r.class_lesson_id}:${r.user_id}`, { comment: r.comment, sticker: STICKERS[r.sticker] ? r.sticker : '', src: stickerSrc(r.sticker), at: r.updated_at }]));
+}
+/** One student's comment and sticker on one class lesson (their own, for the lesson page; parents later), or null. */
+export function feedbackFor(clId, userId) {
+  const r = q.get('SELECT * FROM homeroom_feedback WHERE class_lesson_id=? AND user_id=?', String(clId || ''), String(userId || ''));
+  return r ? { comment: r.comment, sticker: STICKERS[r.sticker] ? r.sticker : '', src: stickerSrc(r.sticker), at: r.updated_at } : null;
+}
+/**
+ * The teacher's comment and sticker on a student's finished handout: { comment (at most COMMENT_MAX, cleaned, the
+ * site's word and personal-information rules), sticker (one of STICKERS or '') }; both empty removes it. Only on a
+ * handout of this class that is on that student's desk and finished. The class's teachers only. -> { ok, feedback }
+ */
+export function setFeedback(u, c, clId, studentId, { comment = '', sticker = '' } = {}) {
+  if (!H.canUseClass(u, c)) return fail('notFound');
+  const h = handoutOf(c, clId); if (!h) return fail('notFound');
+  const sid = String(studentId || '');
+  if (!H.studentsOf(c.id).some(s => s.id === sid) || !L.assignedTo(h.class_lesson_id, sid)) return fail('notOnDesk');
+  if (typeof comment !== 'string' || comment.trim().length > COMMENT_MAX) return fail('commentLong');
+  const st = String(sticker || '');
+  if (st && !STICKERS[st]) return fail('badSticker');
+  const done = q.get("SELECT 1 FROM step_progress WHERE class_lesson_id=? AND user_id=? AND status='done'", h.class_lesson_id, sid);
+  if (!done) return fail('notFinished');
+  const text = cleanComment(comment);
+  const bad = textProblem(text); if (bad) return fail(bad);
+  if (!text && !st) {
+    q.run('DELETE FROM homeroom_feedback WHERE class_lesson_id=? AND user_id=?', h.class_lesson_id, sid);
+    audit(u.id, 'homeroom.feedback', c.id, { classLesson: h.class_lesson_id, removed: true });
+    return ok({ feedback: null });
+  }
+  const t = now();
+  q.run(`INSERT INTO homeroom_feedback(class_lesson_id, class_id, user_id, comment, sticker, created_by, created_at, updated_at) VALUES (?,?,?,?,?,?,?,?)
+    ON CONFLICT(class_lesson_id, user_id) DO UPDATE SET comment=excluded.comment, sticker=excluded.sticker, created_by=excluded.created_by, updated_at=excluded.updated_at`,
+  h.class_lesson_id, c.id, sid, text, st, u.id, t, t);
+  audit(u.id, 'homeroom.feedback', c.id, { classLesson: h.class_lesson_id, sticker: st || null, comment: text.length });
+  return ok({ feedback: feedbackFor(h.class_lesson_id, sid) });
+}
+
+// ---------------------------------------------------------------- changing how a handout is graded (step 2c)
+/** A handout's grading afterwards (the Classroom tab's overview): Score, Completion or Not graded, for every version of
+ *  a lesson handed out together (batch). The class's teachers only. -> { ok, grade, ids } */
+export function setGrade(u, c, clId, grade) {
+  if (!H.canUseClass(u, c)) return fail('notFound');
+  if (!GRADES.includes(grade)) return fail('badGrade');
+  const h = handoutOf(c, clId); if (!h) return fail('notFound');
+  const ids = h.batch ? q.all(`SELECT h.class_lesson_id id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
+    WHERE h.class_id=? AND h.batch=?`, c.id, h.batch).map(x => x.id) : [h.class_lesson_id];
+  for (const id of ids) q.run('UPDATE homeroom_handouts SET grade=? WHERE class_lesson_id=?', grade, id);
+  audit(u.id, 'homeroom.grade', c.id, { classLesson: h.class_lesson_id, grade, ...(ids.length > 1 ? { versions: ids.length } : {}) });
+  return ok({ grade, ids });
+}
 
 // ---------------------------------------------------------------- handing out
 /** Who a drop goes to: { kind: 'all' } (the whole class), { kind: 'group', id } (the group's students now), { kind:
@@ -137,6 +210,7 @@ export function studentsFor(c, to) {
   if (kind === 'all') return ids.length ? ok({ students: [], target: 'all', all: ids }) : fail('noStudents');
   const id = String(to.id || '');
   if (kind === 'desk') return ids.includes(id) ? ok({ students: [id], target: 'desk', all: [id] }) : fail('notInClass');
+  if (kind === 'team') { const t = room.teams.find(x => x.id === id); return t ? ok({ students: [...t.members], target: 'team', all: [...t.members] }) : fail('noTeam'); }
   if (!room.groups.some(g => g.id === id)) return fail('badTarget');
   const list = ids.filter(s => room.members[s] === id);
   return list.length ? ok({ students: list, target: 'group', all: list }) : fail('emptyGroup');
@@ -177,7 +251,7 @@ export function handOut(u, c, { gameId, to, instructions = '', order = 'in', gra
   audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, game: g.slug || g.id, target: who.target, students: who.all.length, order, grade });
   return ok({ classLesson: r.classLesson, game: g, students: who.all.length });
 }
-const handoutOf = (c, clId) => q.get(`SELECT h.*, cl.lesson_id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
+export const handoutOf = (c, clId) => q.get(`SELECT h.*, cl.lesson_id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
   WHERE h.class_lesson_id=? AND h.class_id=?`, String(clId || ''), c.id) || null;
 /** Take a handout off one desk (studentId) or off every desk (studentId empty). The class's teachers only. Work done
  *  on it is kept (as when any assignment is removed). -> { ok, removed: 'desk' | 'all' } */
@@ -223,4 +297,13 @@ L.onLessonWait((u, cl, t) => {
   if (!H.canUseDesk(u, c)) return null;
   const card = deskView(c, u).find(x => x.id === cl.id);
   return card && card.locked ? { title: t('homeroom.desk.waitTitle'), text: t('homeroom.desk.waitText'), backHref: `/class/${c.id}/desk`, backLabel: t('homeroom.desk.backToDesk') } : null;
+});
+
+// ---------------------------------------------------------------- the teacher's note on the lesson page (step 2c)
+// A student opening their own finished handout's lesson page sees the comment and sticker their teacher left. Only
+// their own (never a classmate's).
+L.onLessonNote((u, cl) => {
+  if (!u || !cl || !q.get('SELECT 1 FROM homeroom_handouts WHERE class_lesson_id=?', cl.id)) return null;
+  const f = feedbackFor(cl.id, u.id);
+  return f && (f.comment || f.src) ? f : null;
 });

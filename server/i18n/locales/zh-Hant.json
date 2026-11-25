@@ -2148,7 +2148,36 @@
         "removeAll": "從所有座位移除",
         "removeAllConfirm": "要把 {title} 從所有座位移除嗎？學生的作品會保留，再發一次就會回來。",
         "lesson": "課程",
-        "version": "版本：{name}"
+        "version": "版本：{name}",
+        "gcAlso": "同時發布到 Google Classroom",
+        "gcHint": "會以作業形式發布到連結的 Classroom 課程，成績方式依你在這裡的選擇。",
+        "gcWholeOnly": "只有發給全班的作業會發布到 Google Classroom，因為在那裡全班都會收到。"
+      },
+      "team": {
+        "label": "小組桌",
+        "deskOf": "小組桌：{names}",
+        "doneOf": "{n} 人中 {done} 人完成",
+        "split": "拆開小組",
+        "splitConfirm": "要拆開 {names} 的小組桌嗎？每個人都會回到自己的桌子，小組的共用畫板會清空。",
+        "splitDone": "小組已拆開，每個人都回到自己的桌子了。",
+        "makeA": "組成小組",
+        "pickLead": "點選共用一張桌子的學生（最多 {max} 人）",
+        "picked": "{count, plural, =0 {還沒選} other {已選 # 人}}",
+        "make": "組成小組",
+        "made": "已組成小組桌：{names}",
+        "full": "一個小組最多 {max} 人。",
+        "forNames": "小組（{names}）",
+        "sheetLead": "點選學生，看看他的作業。"
+      },
+      "feedback": {
+        "add": "留言或貼紙",
+        "edit": "修改留言或貼紙",
+        "comment": "簡短留言（選填）",
+        "commentPh": "例如：餘數做得很棒！",
+        "sticker": "貼紙（選填）",
+        "noSticker": "不用",
+        "private": "只有這位學生會在自己的桌子和課程頁面看到。",
+        "remove": "移除"
       }
     },
     "stories": {
@@ -4777,7 +4806,24 @@
       "newHandout": "老師發了新東西：{title}",
       "lessonTitle": "課程：{title}",
       "worksheet": "學習單 · {count} 題",
-      "worksheetWords": "學習單 · {count} 個詞"
+      "worksheetWords": "學習單 · {count} 個詞",
+      "team": "小組：{names}",
+      "teamPad": "我們小組的畫板",
+      "fromTeacher": "老師：",
+      "stickers": {
+        "star": "星星",
+        "thumbs": "讚",
+        "heart": "愛心",
+        "idea": "好點子",
+        "check": "打勾",
+        "rocket": "火箭",
+        "trophy": "獎盃",
+        "medal": "獎牌",
+        "crown": "皇冠",
+        "fireworks": "煙火",
+        "smiley": "笑臉",
+        "rainbow": "彩虹"
+      }
     },
     "homeroom-area": {
       "label": "老師區",
@@ -4914,6 +4960,21 @@
       "versionsBy": "依小組的版本",
       "asBuilt": "原本的課程",
       "scoreHint": "成績簿會顯示答對的百分比。"
+    },
+    "homeroom-overview": {
+      "title": "評分方式",
+      "score": {
+        "name": "分數",
+        "hint": "答對的百分比，也會傳到 Google Classroom。"
+      },
+      "completion": {
+        "name": "完成度",
+        "hint": "完成就是 100%。"
+      },
+      "none": {
+        "name": "不評分",
+        "hint": "練習：不打分數，也不會傳送。"
+      }
     }
   },
   "favorites": {
@@ -6909,7 +6970,7 @@
       "lead": "點幾下就能連結你的 Google Classroom。一開始 Oomba Academy 只能看到你的課程和其中的學生。在你允許發布之前，什麼都不會發布。",
       "li1": "點一下就能匯入學生名單，之後每 6 小時自動更新。學生以 Google 帳號比對。",
       "li2": "把課程發布成 Classroom 作業，附上連結和截止日期，或分享為教材。",
-      "li3": "完成度成績會回到 Classroom：每位學生滿分 100 的成績，是他完成課程步驟的比例，不是答對幾題。你可以自己傳送，或開啟自動傳送成績。",
+      "li3": "成績以滿分 100 回到 Classroom：完成度成績（完成課程步驟的比例，不是答對幾題），或 Homeroom 作業依你選的方式：分數、完成度，練習則不傳。你可以自己傳送，或開啟自動傳送。",
       "li4": "在直播遊戲開始或課程準備好時，用你自己的話發布到班級訊息串。",
       "li5": "Oomba Academy 不向 Classroom 索取學生的電子郵件，也絕不會把學生的姓名、答案或遊戲傳給 Google。",
       "note": "作業、教材、成績和公告，要在你允許發布後才能使用，這是另一個步驟。每位老師連結自己的 Google 帳號，學校的 Google 管理員可能需要先允許 Oomba Academy。",
@@ -10544,10 +10605,10 @@
         "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
         "roster": "匯入該課程的學生，讓他們用 Google 登入",
         "post": "在那裡發布課程，附上回到這裡的連結和繳交期限",
-        "grades": "把每位學生的課程完成度成績傳送到 Classroom"
+        "grades": "把每位學生的課程成績傳到 Classroom（完成度成績，或你在 Homeroom 選的分數）"
       },
       "button": "連結 Google Classroom",
-      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和班上的學生。只有在你允許發布時，它才會把你發布的內容送到 Classroom：課程的標題、連結和截止日期、每位學生的完成度成績（滿分 100）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、答案或遊戲。",
+      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和班上的學生。只有在你允許發布時，它才會把你發布的內容送到 Classroom：課程的標題、連結和截止日期、每位學生的成績（滿分 100：完成度成績，或你在 Homeroom 選的分數）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、答案或遊戲。",
       "connectedAs": "已用 {email} 連結",
       "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
       "connectedToast": "已連結 Google Classroom。",
@@ -10611,17 +10672,25 @@
       "somePosted": "這裡只指派給部分學生。先前已在 Google Classroom 發布給全班；成績只會傳給被指派的學生。"
     },
     "grades": {
-      "text": "這是完成度成績：學生完成的課程步驟比例（滿分 100），不計算答對幾題。還沒開始的學生不會傳送。",
+      "text": "每份課程依它的評分方式傳送滿分 100 的成績。在班級頁指派的課程傳送完成度成績（完成步驟的比例，不是答對幾題）。Homeroom 的作業依你發下時的選擇傳送：分數傳答對百分比，完成度傳完成度成績，不評分則不傳送。還沒開始的學生不會傳送。",
       "as": "傳送方式",
       "draft": "草稿成績（由你在 Classroom 發還）",
       "assigned": "正式成績",
       "button": "傳送完成度成績",
-      "lastDraft": "草稿完成度成績已傳送：{when}",
-      "lastAssigned": "正式完成度成績已傳送：{when}",
+      "lastDraft": "草稿成績已傳送：{when}",
+      "lastAssigned": "正式成績已傳送：{when}",
       "resultSent": "{count, plural, other {已傳送 # 筆完成度成績}}",
       "resultNotStarted": "{count, plural, other {# 位還沒開始}}",
       "resultNotMatched": "{count, plural, other {# 位不在這個班級}}",
-      "resultFailed": "{count, plural, other {# 筆未能傳送}}"
+      "resultFailed": "{count, plural, other {# 筆未能傳送}}",
+      "buttonScore": "傳送分數",
+      "resultSentScore": "{count, plural, other {已傳送 # 筆分數}}",
+      "resultNotScored": "{count, plural, other {# 人還沒有分數}}",
+      "sends": {
+        "completion": "傳送完成度成績：完成步驟的比例。",
+        "score": "在 Homeroom 依分數評分：傳送答對百分比。",
+        "none": "在 Homeroom 不評分：不會傳成績到 Classroom。"
+      }
     },
     "log": {
       "heading": "最近的同步",
@@ -10712,7 +10781,7 @@
       "roster": "每 6 小時從 Classroom 更新學生",
       "rosterHint": "新學生會加入。離開 Classroom 的學生會列在上方，由你決定是否移除：不會自動移除任何人。",
       "grades": "自動傳送成績",
-      "gradesHint": "每 30 分鐘，從這裡發布的課程中有變動的完成度成績會傳到 Classroom，直到各截止日期後 30 天。",
+      "gradesHint": "每 30 分鐘，從這裡發布的課程中有變動的成績會傳到 Classroom（依各自的評分方式：完成度成績或分數），直到各截止日後 30 天。",
       "by": "成績會透過 {name} 的 Google Classroom 連結傳送。",
       "save": "儲存",
       "saved": "已儲存。",
@@ -14733,7 +14802,16 @@
       "setsFull": "你的學習單已達這個遊戲能保存的上限。請先到遊戲的「我的學習單」刪除一些。",
       "tooManyLessons": "你的課程已達上限。請先刪除一個。",
       "lessonGone": "這個課程的一張學習單已被刪除。請打開課程，再儲存一次，然後再發下去。",
-      "lessonOnDesk": "其中 {count} 個座位已經有這個課程。請先從那裡拿掉，或發給其他人。"
+      "lessonOnDesk": "其中 {count} 個座位已經有這個課程。請先從那裡拿掉，或發給其他人。",
+      "teamTooSmall": "一個小組至少要選 2 張桌子。",
+      "teamTooBig": "一個小組最多 6 人。",
+      "alreadyInTeam": "其中有學生已經在小組桌了，請先拆開那個小組。",
+      "tooManyTeams": "這個班的小組桌已達上限。",
+      "noTeam": "那張小組桌已經不在了。",
+      "commentLong": "留言最多 140 個字。",
+      "badSticker": "請選一張貼紙。",
+      "notFinished": "留言和貼紙只能給完成的作業，這份還沒完成。",
+      "padChanged": "組員同時在畫，你的畫已經加到他的畫上了。"
     },
     "live": "直播中",
     "desk": {
@@ -14852,6 +14930,78 @@
         "multiply": "做乘法。把每個答案寫成一個式子。",
         "factor": "把每個式子因式分解。"
       }
+    },
+    "stickers": {
+      "star": "星星",
+      "thumbs": "讚",
+      "heart": "愛心",
+      "idea": "好點子",
+      "check": "打勾",
+      "rocket": "火箭",
+      "trophy": "獎盃",
+      "medal": "獎牌",
+      "crown": "皇冠",
+      "fireworks": "煙火",
+      "smiley": "笑臉",
+      "rainbow": "彩虹"
+    },
+    "feedback": {
+      "saved": "已儲存留言和貼紙",
+      "removed": "已移除留言和貼紙"
+    },
+    "overview": {
+      "title": "班級總覽",
+      "lead": "最近 {weeks} 週。每一欄是你在 Homeroom 發下的作業。學生依字母順序排列，從不排名。",
+      "student": "學生",
+      "trend": "趨勢",
+      "tableLabel": "班級總覽：作業與結果",
+      "kind": {
+        "lesson": "課程",
+        "game": "遊戲",
+        "mine": "我的遊戲"
+      },
+      "versions": "{count, plural, other {# 個版本}}",
+      "gradedBy": {
+        "score": "依分數評分",
+        "completion": "依完成度評分"
+      },
+      "notGraded": "不評分",
+      "changeGrade": "{title}：{grade}。變更評分方式",
+      "done": "完成",
+      "notDone": "未完成",
+      "practice": "練習",
+      "locked": "尚未開放",
+      "notStarted": "還沒開始",
+      "trends": {
+        "improving": "進步中",
+        "steady": "穩定",
+        "support": "需要協助",
+        "none": "分數還不夠"
+      },
+      "finished": "作業完成率",
+      "support": "{count, plural, other {位學生需要協助}}",
+      "month": "{count, plural, other {份（本月作業）}}",
+      "keyNames": {
+        "score": "分數",
+        "completion": "完成度",
+        "none": "不評分"
+      },
+      "keyScore": "答對百分比",
+      "keyCompletion": "完成就是 100%",
+      "keyNone": "練習，不會傳送",
+      "keyTrend": "趨勢依每位學生最近 3 次分數：平均低於 60% 為需要協助，最近一次比第一次高 10 分以上為進步中，其餘為穩定。",
+      "more": "完整成績表、CSV、標準、評分規準和 Google Classroom 都在下方，和以前一樣。",
+      "fullGradebook": "完整成績表",
+      "noHandouts": "最近 {weeks} 週沒有在 Homeroom 發作業。可以從 Homeroom 分頁發遊戲或課程。",
+      "gcLinked": "已連結「{course}」",
+      "gcRoster": "名單同步：{when}",
+      "gcRosterNever": "名單還沒同步",
+      "gcGrades": "成績傳送：{when}",
+      "gcGradesNever": "還沒傳送成績",
+      "gcOpen": "開啟設定",
+      "gcNotLinked": "還沒連結。",
+      "gcLink": "連結 Classroom 課程",
+      "gradeSaved": "已變更評分方式"
     }
   }
 }

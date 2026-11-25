@@ -17,6 +17,10 @@
 //     desk or every desk (POST .../handouts/<id>/remove). The desks refresh every so often while the page is open.
 //   - lessons (step 2b; public/js/homeroom-lessons.js): My lessons in the panel, "+ Build a lesson", each lesson handed
 //     out like a game (tap-then-tap or drag) with its own sheet (versions by group, Score by default).
+//   - step 2c: team desks (Arrange seats: Make a team from the desks picked, Split team; a team desk shows its members'
+//     names, is dragged like a desk, and a handout dropped on it goes to every member; POST .../teams); a comment and a
+//     sticker on a finished card (the desk's sheet; POST .../handouts/<id>/feedback); "Also post to Google Classroom" in
+//     the hand-out sheet when the class is linked (Whole class only, as Classroom's Assign).
 // Plans and cursors come in later steps (docs/homeroom.md "Build order").
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -24,7 +28,7 @@ import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPi
 import { inkLine, textBoxHtml, textSizeButton, textBoxPointer, snapText } from '/js/board-ann.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
-import { AREA, TEACHER_DESK, DESK, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
+import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
 
 const D = pageData();
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -43,6 +47,7 @@ const H = {
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', pen: PEN_COLORS[1], hist: [], editing: null, textEdit: null, shapeSel: null, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
+  teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null,
 };
 const $ = id => document.getElementById(id);
 const board = $('hr-board'), worldEl = $('hr-world');
@@ -56,8 +61,15 @@ function renderChips() {
     ${btn('hr-gedit', 'data-hr="groups"', `${iconHtml('🏷️', { size: 16 })} ${esc(th('editGroups'))}`)}`;
 }
 
+// ---------------------------------------------------------------- team desks (step 2c)
+const teamOf = sid => H.teams.find(x => x.members.includes(sid)) || null;
+const teamById = id => H.teams.find(x => x.id === id) || null;
+const soloStudents = () => H.students.filter(s => !teamOf(s.id));
+const nameOfId = sid => (H.students.find(s => s.id === sid) || {}).name || '';
+const teamNames = tm => tm.members.map(nameOfId).filter(Boolean).join(', ');
+
 // ---------------------------------------------------------------- the board
-const world = () => boardSize(H.seats);
+const world = () => boardSize(H.seats, H.teams);
 function areaInner() {
   return `<div class="rm-in hr-areain"><svg class="mp-ink" viewBox="0 0 ${AREA.w} ${AREA.h}" aria-hidden="true">${H.ann.strokes.map(s => inkLine(s, AREA.w, AREA.h)).join('')}</svg>
     <svg class="hr-shapes" viewBox="0 0 ${AREA.w} ${AREA.h}" aria-hidden="true">${H.shapes.map(shapeSvg).join('')}</svg>
@@ -93,7 +105,7 @@ const cardsOf = sid => (H.ho.desks[sid] || []).filter(x => handout(x.id));
 function cardRow(x, sid) {
   const h = handout(x.id), state = x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted');
   const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(h.title)}</span>
-    ${x.done ? `<span class="hr-cdone" aria-hidden="true">✓</span>` : x.locked ? `<span class="hr-clock" aria-hidden="true">${iconHtml('🔒', { size: 12 })}</span>` : `<span class="hr-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`}<span class="sr-only">, ${esc(state)}</span>`;
+    ${x.done ? `<span class="hr-cdone" aria-hidden="true">✓</span>${x.fb && x.fb.src ? `<img class="hr-cfb" src="${esc(x.fb.src)}" alt="" width="18" height="18">` : x.fb && x.fb.comment ? `<span class="hr-cfbc" aria-hidden="true">${iconHtml('💬', { size: 12 })}</span>` : ''}` : x.locked ? `<span class="hr-clock" aria-hidden="true">${iconHtml('🔒', { size: 12 })}</span>` : `<span class="hr-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`}<span class="sr-only">, ${esc(state)}</span>`;
   return H.seatsOpen ? `<span class="hr-card${x.done ? ' done' : ''}">${inner}</span>` : btn(`hr-card${x.done ? ' done' : ''}`, `data-hrho="${esc(x.id)}" data-sid="${esc(sid)}"`, inner);
 }
 function deskInner(s) {
@@ -103,13 +115,35 @@ function deskInner(s) {
       : `<span class="hr-empty">${esc(th('emptyDesk'))}</span>${g ? `<span class="hr-gtag">${esc(groupName(g))}</span>` : ''}`}`;
 }
 function deskHtml(s) {
-  const p = H.seats[s.id] || { x: 0, y: 0 }, g = groupOf(s.id), c = g ? g.color : '';
-  return `<div class="hr-desk${H.deskSel === s.id ? ' sel' : ''}" data-sid="${esc(s.id)}" role="group" aria-label="${esc(th('deskOf', { name: s.name }))}"${H.seatsOpen ? ' tabindex="0"' : ''}
+  const p = H.seats[s.id] || { x: 0, y: 0 }, g = groupOf(s.id), c = g ? g.color : '', picked = H.teamPick && H.teamPick.includes(s.id);
+  return `<div class="hr-desk${H.deskSel === s.id ? ' sel' : ''}${picked ? ' picked' : ''}" data-sid="${esc(s.id)}" role="group" aria-label="${esc(th('deskOf', { name: s.name }))}"${H.seatsOpen ? ' tabindex="0"' : ''}${H.teamPick ? ` aria-pressed="${!!picked}"` : ''}
     style="left:${p.x}px;top:${p.y}px;width:${DESK.w}px;height:${DESK.h}px${c ? `;--gc:${esc(c)}` : ''}">${deskInner(s)}</div>`;
+}
+/** A team desk's handouts: each handout any member has, with how many of them are done (✓ when all are). */
+function teamCards(tm) {
+  const by = new Map();
+  for (const sid of tm.members) for (const x of cardsOf(sid)) { const e = by.get(x.id) || { id: x.id, n: 0, done: 0 }; e.n++; if (x.done) e.done++; by.set(x.id, e); }
+  return [...by.values()];
+}
+function teamInner(tm) {
+  const cards = teamCards(tm), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
+  const names = tm.members.map(sid => { const g = groupOf(sid); return H.seatsOpen || H.teamPick ? `<span class="hr-tname"><span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi></span>`
+    : btn('hr-tname', `data-hrdesk="${esc(sid)}" aria-label="${esc(th('deskOf', { name: nameOfId(sid) }))}"`, `<span class="rm-dot"${g ? ` style="--c:${esc(g.color)}"` : ''}></span><bdi>${esc(nameOfId(sid))}</bdi>`); }).join('');
+  const row = e => { const h = handout(e.id); if (!h) return ''; const all = e.done >= e.n;
+    const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(h.title)}</span><span class="hr-tcount${all ? ' all' : ''}">${all ? '✓' : esc(th('team.doneOf', { done: e.done, n: e.n }))}</span>`;
+    return H.seatsOpen ? `<span class="hr-card${all ? ' done' : ''}">${inner}</span>` : btn(`hr-card${all ? ' done' : ''}`, `data-hrteam="${esc(tm.id)}"`, inner); };
+  return `<span class="hr-name hr-teamcap">${iconHtml('🤝', { size: 16 })} <span>${esc(th('team.label'))}</span></span><div class="hr-tnames">${names}</div>
+    ${cards.length ? `<div class="hr-cards">${shown.map(row).join('')}${many ? `<span class="hr-more">${esc(th('ho.more', { count: cards.length - 2 }))}</span>` : ''}</div>` : ''}
+    ${H.seatsOpen && !H.teamPick ? btn('btn btn-sm hr-split', `data-hrsplit="${esc(tm.id)}"`, `${iconHtml('✂️', { size: 14 })} ${esc(th('team.split'))}`) : ''}`;
+}
+function teamHtml(tm) {
+  return `<div class="hr-desk hr-team${H.deskSel === `team:${tm.id}` ? ' sel' : ''}" data-team="${esc(tm.id)}" role="group" aria-label="${esc(th('team.deskOf', { names: teamNames(tm) }))}"${H.seatsOpen ? ' tabindex="0"' : ''}
+    style="left:${tm.x}px;top:${tm.y}px;width:${TEAM_DESK.w}px;min-height:${TEAM_DESK.h}px">${teamInner(tm)}</div>`;
 }
 /** Only the desks again (fresh progress, a new handout), leaving the teacher's area and its edits alone. */
 function renderDesks() {
-  for (const s of H.students) { const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (el) el.innerHTML = deskInner(s); }
+  for (const s of soloStudents()) { const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(s.id)}"]`); if (el) el.innerHTML = deskInner(s); }
+  for (const tm of H.teams) { const el = worldEl.querySelector(`.hr-team[data-team="${CSS.escape(tm.id)}"]`); if (el) el.innerHTML = teamInner(tm); }
 }
 function renderWorld() {
   const w = world();
@@ -117,7 +151,7 @@ function renderWorld() {
   worldEl.innerHTML = `<section class="rm-area teach editable hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
       <header class="rm-label">✦ ${esc(tm('teacherArea'))} · ${esc(tm('teacherAreaNote'))}</header><div class="hr-areabody">${areaInner()}</div></section>
     <div class="hr-tdesk" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${esc(th('teacherDesk'))}</div>
-    ${H.students.map(deskHtml).join('')}
+    ${soloStudents().map(deskHtml).join('')}${H.teams.map(teamHtml).join('')}
     ${H.students.length ? '' : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + 160}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}`;
   board.classList.toggle('hr-seating', H.seatsOpen);
   applyView();
@@ -146,8 +180,9 @@ function freeBox() {
   return { left, top, w: Math.max(100, s.w - left - 16), h: Math.max(100, s.h - top - bottom) };
 }
 function fit() {
-  const w = world(), xs = [AREA.x, ...Object.values(H.seats).map(p => p.x)], ys = Object.values(H.seats).map(p => p.y + DESK.h);
-  const x0 = Math.min(...xs) - 20, x1 = Math.max(AREA.x + AREA.w, ...Object.values(H.seats).map(p => p.x + DESK.w)) + 20;
+  const seats = [...soloStudents().map(s => ({ ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK })), ...H.teams.map(tm => ({ x: tm.x, y: tm.y, ...TEAM_DESK }))];
+  const w = world(), xs = [AREA.x, ...seats.map(p => p.x)], ys = seats.map(p => p.y + p.h);
+  const x0 = Math.min(...xs) - 20, x1 = Math.max(AREA.x + AREA.w, ...seats.map(p => p.x + p.w)) + 20;
   const rect = { x: x0, y: 0, w: Math.min(w.w, x1) - x0, h: Math.max(AREA.y + AREA.h + 140, ...ys) + 40 };
   H.view = fitView(rect, freeBox(), { pad: 12, zMin: Z_FIT, zMax: 1 });
   applyView();
@@ -156,7 +191,8 @@ function renderMini() {
   const el = $('hr-mini'); if (!el) return;
   if (phone()) { el.innerHTML = ''; return; }
   const items = [{ rect: AREA, cls: 't', c: '#FFD23F' }, { rect: TEACHER_DESK, cls: '', c: '#141414' },
-    ...H.students.map(s => ({ rect: { ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK }, cls: '', c: (groupOf(s.id) || { color: '#B9B3A0' }).color }))];
+    ...soloStudents().map(s => ({ rect: { ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK }, cls: '', c: (groupOf(s.id) || { color: '#B9B3A0' }).color })),
+    ...H.teams.map(tm => ({ rect: { x: tm.x, y: tm.y, ...TEAM_DESK }, cls: '', c: '#B9B3A0' }))];
   el.innerHTML = miniHtml({ world: world(), items, view: H.view, size: size(), width: 150, label: tm('map') });
 }
 function renderZoom() {
@@ -220,11 +256,40 @@ function renderSeatbar() {
   el.hidden = !H.seatsOpen;
   document.querySelector('[data-hr="seats"]')?.setAttribute('aria-pressed', String(H.seatsOpen));
   if (!H.seatsOpen) { el.innerHTML = ''; return; }
+  if (H.teamPick) {
+    const n = H.teamPick.length;
+    el.innerHTML = `<span class="hr-seatlead">${iconHtml('🤝', { size: 18 })} ${esc(th('team.pickLead', { max: TEAM_MAX }))}</span><span class="hr-seathint small" aria-live="polite">${esc(th('team.picked', { count: n }))}</span>
+      ${btn('btn btn-sm hr-chunk', 'data-hr="teamcancel"', esc(th('ho.cancel')))}${btn('btn btn-sm btn-primary hr-chunk hr-done', `data-hr="teammake"${n >= 2 ? '' : ' disabled'}`, esc(th('team.make')))}`;
+    return;
+  }
   el.innerHTML = `<span class="hr-seatlead">${esc(th('seats.lead'))}</span>${PRESETS.map(p => btn(`btn btn-sm hr-chunk${H.preset === p ? ' on' : ''}`, `data-hrpreset="${p}" aria-pressed="${H.preset === p}"`, esc(th(`seats.${p}`)))).join('')}
-    <span class="hr-seathint small">${esc(th('seats.hint'))}</span>${btn('btn btn-sm hr-chunk hr-done', 'data-hr="seatsdone"', esc(th('seats.done')))}`;
+    <span class="hr-seathint small">${esc(th('seats.hint'))}</span>${soloStudents().length >= 2 ? btn('btn btn-sm hr-chunk', 'data-hr="teampick"', `${iconHtml('🤝', { size: 16 })} ${esc(th('team.makeA'))}`) : ''}${btn('btn btn-sm hr-chunk hr-done', 'data-hr="seatsdone"', esc(th('seats.done')))}`;
 }
+async function teamsApi(bodyIn) {
+  try {
+    const r = await api(api2('teams'), { method: 'POST', body: bodyIn });
+    H.teams = r.teams || []; if (r.handouts) H.ho = { handouts: r.handouts, desks: r.desks };
+    return r;
+  } catch (e) { toast(e.message, { bad: true }); return null; }
+}
+async function makeTeam() {
+  const list = H.teamPick || []; if (list.length < 2) return;
+  const r = await teamsApi({ action: 'make', members: list });
+  if (!r) return;
+  H.teamPick = null; renderSeatbar(); renderWorld(); toast(th('team.made', { names: teamNames(r.team) }));
+}
+async function splitTeam(id) {
+  const tm = teamById(id); if (!tm) return;
+  if (!(await ask({ title: th('team.split'), text: th('team.splitConfirm', { names: teamNames(tm) }), ok: th('team.split') }))) return;
+  const r = await teamsApi({ action: 'split', id });
+  if (!r) return;
+  H.deskSel = null; renderSeatbar(); renderWorld(); toast(th('team.splitDone'));
+}
+let teamTimer = null;
+function teamMoved(id) { clearTimeout(teamTimer); const tm = teamById(id); if (!tm) return; teamTimer = setTimeout(() => teamsApi({ action: 'move', id, x: tm.x, y: tm.y }), 300); renderMini(); }
+function moveTeamEl(id) { const el = worldEl.querySelector(`.hr-team[data-team="${CSS.escape(id)}"]`), tm = teamById(id); if (el && tm) { el.style.left = `${tm.x}px`; el.style.top = `${tm.y}px`; } }
 function openSeats(on = !H.seatsOpen) {
-  H.seatsOpen = on; H.deskSel = null; H.menuOpen = false; renderMenu();
+  H.seatsOpen = on; H.deskSel = null; H.menuOpen = false; H.teamPick = null; renderMenu();
   if (on && H.pick) setPick(null);
   if (on && H.mode !== 'move') setMode(H.mode);
   renderSeatbar(); renderWorld();
@@ -352,13 +417,13 @@ const pickFrom = b => ({ id: b.dataset.hritem, icon: b.dataset.icon || '🎮', t
 // ---------------------------------------------------------------- lessons (step 2b)
 const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id === p.id.slice(2)) || null : null);
 const lessonCtx = {
-  D, H, th, api2: path => api2(path), groupName,
+  D, H, th, api2: path => api2(path), groupName, gcField, gcPicked,
   onLessons: list => { H.lessons = list; if (H.pick && H.pick.id.startsWith('L:') && !lessonOfPick(H.pick)) setPick(null); renderLessons(lessonCtx); },
   onHanded: r => { H.ho = { handouts: r.handouts, desks: r.desks }; setPick(null); renderDesks(); toast(r.toast); },
 };
 /** The groups with students in a target, and how many of them have no group (the lesson sheet's versions by group). */
 function groupsIn(to) {
-  const ids = to.kind === 'all' ? H.students.map(s => s.id) : to.kind === 'group' ? H.students.filter(s => H.members[s.id] === to.id).map(s => s.id) : [to.id];
+  const ids = to.kind === 'all' ? H.students.map(s => s.id) : to.kind === 'group' ? H.students.filter(s => H.members[s.id] === to.id).map(s => s.id) : to.kind === 'team' ? (teamById(to.id) || { members: [] }).members : [to.id];
   return { groupsIn: H.groups.map(g => ({ g, n: ids.filter(id => H.members[id] === g.id).length })).filter(x => x.n), none: ids.filter(id => !H.groups.some(g => g.id === H.members[id])).length };
 }
 /** Where a drop or a tap lands: a desk, a group chip or Whole class. */
@@ -367,13 +432,24 @@ function targetAt(el) {
   const chip = el.closest('[data-hrto]');
   if (chip) { const v = chip.dataset.hrto; return v === 'all' ? { kind: 'all' } : { kind: 'group', id: v.slice(6) }; }
   const desk = el.closest('.hr-desk');
-  return desk && !H.seatsOpen ? { kind: 'desk', id: desk.dataset.sid } : null;
+  if (!desk || H.seatsOpen) return null;
+  return desk.dataset.team ? { kind: 'team', id: desk.dataset.team } : { kind: 'desk', id: desk.dataset.sid };
 }
 function whoLabel(to) {
   if (to.kind === 'all') return { label: th('ho.wholeClass'), n: H.students.length };
   if (to.kind === 'group') { const g = H.groups.find(x => x.id === to.id); return { label: g ? groupName(g) : '', n: g ? count(g) : 0 }; }
+  if (to.kind === 'team') { const tm = teamById(to.id); return { label: tm ? th('team.forNames', { names: teamNames(tm) }) : '', n: tm ? tm.members.length : 0 }; }
   const s = H.students.find(x => x.id === to.id); return { label: s ? s.name : '', n: 1 };
 }
+/** "Also post to Google Classroom" (step 2c), when this teacher can post to the class's linked Classroom class. Only a
+ *  Whole class handout goes there (in Classroom it would reach the whole course), as with Classroom's Assign. */
+function gcField(to) {
+  if (!D.gc) return '';
+  const whole = to.kind === 'all';
+  return `<label class="hr-gcalso${whole ? '' : ' off'}"><input type="checkbox" class="hr-gcpost"${whole ? '' : ' disabled'}> <span>${iconHtml('🎓', { size: 18 })} ${esc(th('ho.gcAlso'))}</span></label>
+    <p class="small muted hr-seghint">${esc(th(whole ? 'ho.gcHint' : 'ho.gcWholeOnly'))}</p>`;
+}
+function gcPicked(f) { const c = f.querySelector('.hr-gcpost'); return !!(c && c.checked); }
 /** The handout sheet (the mockup's "Game · free play"): instructions, Order on the desk, Grade it by, a due day. */
 function giveSheet(to) {
   const p = H.pick; if (!p) return;
@@ -397,6 +473,7 @@ function giveSheet(to) {
       <p class="hr-label" id="hrg-grade">${esc(th('ho.grade'))}</p>${seg('grade', [['score', th('ho.score')], ['completion', th('ho.completion')], ['none', th('ho.notGraded')]], 'completion')}
       <p class="small muted hr-seghint" id="hr-gradehint">${esc(th('ho.completionHint'))}</p>
       <label class="hr-label" for="hr-due">${esc(th('ho.due'))}</label><input class="input hr-due" type="date" id="hr-due">
+      ${gcField(to)}
       <p class="err" id="hr-giveerr" aria-live="polite"></p>
       <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(who.n === 1 && to.kind === 'desk' ? th('ho.putOne') : th('ho.putMany', { count: who.n }))}</button></div></form>`,
   });
@@ -418,7 +495,7 @@ function giveSheet(to) {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
-      const r = await api(api2('handouts'), { method: 'POST', body: { gameId: p.id, to, instructions: ins.value, order: val.order, grade: val.grade, dueAt: f.querySelector('#hr-due').value || null } });
+      const r = await api(api2('handouts'), { method: 'POST', body: { gameId: p.id, to, instructions: ins.value, order: val.order, grade: val.grade, dueAt: f.querySelector('#hr-due').value || null, gcPost: gcPicked(f) } });
       H.ho = { handouts: r.handouts, desks: r.desks }; sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
   });
@@ -431,12 +508,13 @@ function giveClick(e) {
   if (e.target.closest('[data-hr="unpick"]')) { setPick(null); return true; }
   const lm = e.target.closest('[data-hrlmore]'); if (lm) { lessonMenu(lessonCtx, lm.dataset.hrlmore); return true; }
   if (e.target.closest('[data-hr="build"]')) { openBuilder(lessonCtx); return true; }
-  const ho = e.target.closest('[data-hrho]'), more = e.target.closest('[data-hrdesk]');
+  const ho = e.target.closest('[data-hrho]'), more = e.target.closest('[data-hrdesk]'), tcard = e.target.closest('[data-hrteam]');
   if (H.pick && !H.seatsOpen) {
     const to = targetAt(e.target);
     if (to) { giveSheet(to); return true; }
   } else if (e.target.closest('[data-hrto]')) { toast(th('ho.pickFirst')); return true; }
   if (ho) { deskSheet(ho.dataset.sid, ho.dataset.hrho); return true; }
+  if (tcard) { teamSheet(tcard.dataset.hrteam); return true; }
   if (more) { deskSheet(more.dataset.hrdesk); return true; }
   return false;
 }
@@ -479,13 +557,40 @@ function deskSheet(sid, first = null) {
         <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}</span></div>
       ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}
       <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
-      <div class="row">${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}</div></li>`; }).join('')}</ol>`
+      ${x.done ? fbBlock(x, edit === x.id) : ''}
+      <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}</div></li>`; }).join('')}</ol>`
       : `<p class="muted">${esc(th('emptyDesk'))}</p>`;
+  };
+  // A comment and a sticker on a finished card (step 2c): shown, or the little editor (one at a time).
+  let edit = null, pickSt = '';
+  const fbBlock = (x, editing) => {
+    const f = x.fb || null;
+    if (!editing) return f ? `<div class="hr-fbshow">${f.src ? `<img src="${esc(f.src)}" alt="${esc(((D.stickers || []).find(z => z.k === f.sticker) || {}).label || '')}" width="48" height="48">` : ''}${f.comment ? `<p dir="auto">${esc(f.comment)}</p>` : ''}</div>` : '';
+    const max = D.commentMax || 140;
+    return `<div class="hr-fbedit" data-fbbox="${esc(x.id)}"><label class="hr-label" for="hr-fbc">${esc(th('feedback.comment'))}</label>
+      <textarea class="input hr-fbc" id="hr-fbc" rows="2" maxlength="${max}" placeholder="${esc(th('feedback.commentPh'))}">${esc(f ? f.comment : '')}</textarea>
+      <p class="hr-label" id="hr-fbsl">${esc(th('feedback.sticker'))}</p>
+      <div class="hr-stickers" role="radiogroup" aria-labelledby="hr-fbsl">${btn(`hr-st none${!pickSt ? ' on' : ''}`, `role="radio" aria-checked="${!pickSt}" data-fbst=""`, esc(th('feedback.noSticker')))}${(D.stickers || []).map(st => btn(`hr-st${pickSt === st.k ? ' on' : ''}`, `role="radio" aria-checked="${pickSt === st.k}" data-fbst="${esc(st.k)}" aria-label="${esc(st.label)}"`, `<img src="${esc(st.src)}" alt="" width="44" height="44" loading="lazy">`)).join('')}</div>
+      <p class="small muted">${esc(th('feedback.private'))}</p><p class="err" id="hr-fberr" aria-live="polite"></p>
+      <div class="row">${btn('btn btn-sm', 'data-fbcancel', esc(th('ho.cancel')))}${f ? btn('btn btn-sm', `data-fbclear="${esc(x.id)}"`, esc(th('feedback.remove'))) : ''}${btn('btn btn-sm btn-primary', `data-fbsave="${esc(x.id)}"`, esc(th('save')))}</div></div>`;
   };
   const sh = sheet({ title: `🎒 ${th('deskOf', { name: s.name })}`, content: `<div class="hr-dsheet">${draw()}</div>` });
   const box = sh.el.querySelector('.hr-dsheet');
   box.querySelector('.hr-ditem.first')?.scrollIntoView({ block: 'nearest' });
+  const saveFb = async (id, comment, sticker) => {
+    try {
+      const r = await api(api2(`handouts/${encodeURIComponent(id)}/feedback`), { method: 'POST', body: { studentId: sid, comment, sticker } });
+      H.ho = { handouts: r.handouts, desks: r.desks }; edit = null; renderDesks(); box.innerHTML = draw(); toast(r.toast);
+    } catch (err) { const el = box.querySelector('#hr-fberr'); if (el) el.textContent = err.message; else toast(err.message, { bad: true }); }
+  };
   box.addEventListener('click', async e => {
+    const fe = e.target.closest('[data-fbedit]');
+    if (fe) { edit = fe.dataset.fbedit; const x = cardsOf(sid).find(c => c.id === edit); pickSt = (x && x.fb && x.fb.sticker) || ''; box.innerHTML = draw(); box.querySelector('#hr-fbc')?.focus(); return; }
+    const st = e.target.closest('[data-fbst]');
+    if (st) { pickSt = st.dataset.fbst; for (const b of box.querySelectorAll('[data-fbst]')) { const on = b === st; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
+    if (e.target.closest('[data-fbcancel]')) { edit = null; box.innerHTML = draw(); return; }
+    const fs = e.target.closest('[data-fbsave]'); if (fs) { saveFb(fs.dataset.fbsave, box.querySelector('#hr-fbc')?.value || '', pickSt); return; }
+    const fc = e.target.closest('[data-fbclear]'); if (fc) { saveFb(fc.dataset.fbclear, '', ''); return; }
     const one = e.target.closest('[data-rm]'), all = e.target.closest('[data-rmall]'); if (!one && !all) return;
     const id = (one || all).dataset[one ? 'rm' : 'rmall'];
     if (all && !(await ask({ title: th('ho.removeAll'), text: th('ho.removeAllConfirm', { title: handout(id)?.title || '' }), ok: th('ho.removeAll') }))) return;
@@ -494,6 +599,14 @@ function deskSheet(sid, first = null) {
       H.ho = { handouts: r.handouts, desks: r.desks }; renderDesks(); box.innerHTML = draw(); toast(r.toast);
     } catch (err) { toast(err.message, { bad: true }); }
   });
+}
+/** A team desk's sheet: its members, each opening their own desk's sheet (their handouts, comments and stickers). */
+function teamSheet(id) {
+  const tm = teamById(id); if (!tm) return;
+  const sh = sheet({ title: `🤝 ${th('team.deskOf', { names: teamNames(tm) })}`, content: `<div class="hr-dsheet"><p class="small muted">${esc(th('team.sheetLead'))}</p><ul class="plain hr-tlist">${tm.members.map(sid => {
+    const cards = cardsOf(sid), done = cards.filter(x => x.done).length;
+    return `<li>${btn('btn hr-chunk hr-tmember', `data-tm="${esc(sid)}"`, `<bdi>${esc(nameOfId(sid))}</bdi> <span class="small muted">${esc(th('team.doneOf', { done, n: cards.length }))}</span>`)}</li>`; }).join('')}</ul></div>` });
+  sh.el.addEventListener('click', e => { const b = e.target.closest('[data-tm]'); if (b) { sh.close(); deskSheet(b.dataset.tm); } });
 }
 // The desks' progress, asked for every so often while the page is open (faster while class is live), never while hidden.
 let pollTimer = null;
@@ -515,6 +628,12 @@ function down(e) {
   if (H.pointers.size === 2) { const [a, b] = [...H.pointers.values()]; H.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return; }
   if (e.target.closest(UI)) return;
   const desk = e.target.closest('.hr-desk');
+  if (H.seatsOpen && desk && desk.dataset.team) {
+    const tm = teamById(desk.dataset.team); if (!tm || H.teamPick) return;
+    H.deskSel = `team:${tm.id}`; for (const d of worldEl.querySelectorAll('.hr-desk.sel')) d.classList.remove('sel'); desk.classList.add('sel');
+    H.gesture = { kind: 'team', id: tm.id, sx: e.clientX, sy: e.clientY, x0: tm.x, y0: tm.y, moved: false };
+    board.setPointerCapture(e.pointerId); e.preventDefault(); return;
+  }
   if (H.seatsOpen && desk) {
     const sid = desk.dataset.sid, p = H.seats[sid] || { x: 0, y: 0 };
     H.deskSel = sid; for (const d of worldEl.querySelectorAll('.hr-desk.sel')) d.classList.remove('sel'); desk.classList.add('sel');
@@ -573,7 +692,8 @@ function move(e) {
   if (!g.moved && g.kind !== 'desk') remember();
   g.moved = true;
   const z = H.view.z;
-  if (g.kind === 'desk') { const p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (p) { H.seats[g.sid] = p; moveDeskEl(g.sid); } return; }
+  if (g.kind === 'desk') { if (H.teamPick) return; const p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (p) { H.seats[g.sid] = p; moveDeskEl(g.sid); } return; }
+  if (g.kind === 'team') { const tm = teamById(g.id), p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (tm && p) { tm.x = p.x; tm.y = p.y; moveTeamEl(g.id); } return; }
   if (g.kind === 'note' || g.kind === 'text') {
     g.it.x = clamp(g.x0 + dx / z / AREA.w, 0, 1 - g.el.offsetWidth / AREA.w); g.it.y = clamp(g.y0 + dy / z / AREA.h, 0, 1 - g.el.offsetHeight / AREA.h);
     g.el.style.left = `${g.it.x * 100}%`; g.el.style.top = `${g.it.y * 100}%`; return;
@@ -598,7 +718,12 @@ function up(e) {
     }
     return;
   }
-  if (g.kind === 'desk') { if (g.moved) seatMoved(g.sid); H.justPanned = true; return; }
+  if (g.kind === 'desk') {
+    // Make a team: a tap picks the desk (or unpicks it).
+    if (H.teamPick) { if (!g.moved) togglePick(g.sid); H.justPanned = true; return; }
+    if (g.moved) seatMoved(g.sid); H.justPanned = true; return;
+  }
+  if (g.kind === 'team') { if (g.moved) teamMoved(g.id); H.justPanned = true; return; }
   if (g.kind === 'ink') { H.ann.strokes = H.ann.strokes.filter(s => s.pts.length > 1); renderArea(); queueSave(); return; }
   if (g.kind === 'shape') {
     const s = g.s, tiny = Math.abs(s.x2 - s.x) * AREA.w < 12 && Math.abs(s.y2 - s.y) * AREA.h < 12;
@@ -613,8 +738,17 @@ function up(e) {
   }
   if (g.kind === 'note') { if (g.moved) queueSave(); else { H.editing = g.it.id; renderArea(); } H.justPanned = true; }
 }
+function togglePick(sid) {
+  const list = H.teamPick; if (!list) return;
+  const i = list.indexOf(sid);
+  if (i >= 0) list.splice(i, 1); else if (list.length < TEAM_MAX) list.push(sid); else { toast(th('team.full', { max: TEAM_MAX }), { bad: true }); return; }
+  const el = worldEl.querySelector(`.hr-desk[data-sid="${CSS.escape(sid)}"]`);
+  if (el) { el.classList.toggle('picked', list.includes(sid)); el.setAttribute('aria-pressed', String(list.includes(sid))); }
+  renderSeatbar();
+}
 function click(e) {
   if (H.justPanned) { H.justPanned = false; if (!e.target.closest(UI)) return; }
+  const sp = e.target.closest('[data-hrsplit]'); if (sp) { splitTeam(sp.dataset.hrsplit); return; }
   if (giveClick(e)) return;
   const mode = e.target.closest('[data-hrmode]'); if (mode) return setMode(mode.dataset.hrmode);
   const pen = e.target.closest('[data-hrpen]'); if (pen) { H.pen = pen.dataset.hrpen; renderTools(); return; }
@@ -645,6 +779,9 @@ function click(e) {
   else if (k === 'clearpen') { if (H.ann.strokes.length) { remember(); H.ann.strokes = []; renderArea(); queueSave(); } }
   else if (k === 'seats') openSeats(true);
   else if (k === 'seatsdone') openSeats(false);
+  else if (k === 'teampick') { H.teamPick = []; H.deskSel = null; renderSeatbar(); renderWorld(); }
+  else if (k === 'teamcancel') { H.teamPick = null; renderSeatbar(); renderWorld(); }
+  else if (k === 'teammake') makeTeam();
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
   else if (k === 'signin') signinSheet();
@@ -657,6 +794,7 @@ function keys(e) {
     if (H.menuOpen) { H.menuOpen = false; renderMenu(); document.querySelector('[data-hr="menu"]')?.focus(); return; }
     if (H.textEdit) { commitText(); return; }
     if (H.editing) { commitNote(); return; }
+    if (H.teamPick) { H.teamPick = null; renderSeatbar(); renderWorld(); return; }
     if (H.seatsOpen) { openSeats(false); return; }
     if (H.mode !== 'move') { setMode(H.mode); return; }
   }
@@ -665,7 +803,13 @@ function keys(e) {
   // Arrange seats from the keyboard: a desk with the focus moves 10 pixels per arrow key (50 with Shift).
   const desk = e.target.closest && e.target.closest('.hr-desk');
   const dir = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
-  if (H.seatsOpen && desk && dir) {
+  if (H.teamPick && desk && desk.dataset.sid && (e.key === 'Enter' || e.key === ' ')) { togglePick(desk.dataset.sid); e.preventDefault(); return; }
+  if (H.seatsOpen && desk && desk.dataset.team && dir) {
+    const tm = teamById(desk.dataset.team), step = e.shiftKey ? 50 : 10;
+    const at = tm && clampSeat({ x: tm.x + dir[0] * step, y: tm.y + dir[1] * step }); if (at) { tm.x = at.x; tm.y = at.y; moveTeamEl(tm.id); teamMoved(tm.id); }
+    e.preventDefault(); return;
+  }
+  if (H.seatsOpen && desk && dir && !H.teamPick) {
     const sid = desk.dataset.sid, p = H.seats[sid], step = e.shiftKey ? 50 : 10;
     const at = clampSeat({ x: p.x + dir[0] * step, y: p.y + dir[1] * step }); if (at) { H.seats[sid] = at; moveDeskEl(sid); seatMoved(sid); }
     e.preventDefault();

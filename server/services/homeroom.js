@@ -17,13 +17,19 @@
 // having Homeroom through one of its teachers), their doodle and working-out pad (homeroom_doodles), live class
 // (liveOf / setLive: only the class's teachers change it, students only read it) and what desks and the projector read
 // (boardState: the live state and the teacher's area, never a name).
+//
+// Step 2c (docs/decisions.md "Homeroom, step 2c"): team desks (homeroom_rooms.teams): students who share one desk. The
+// teacher makes one in Arrange seats from the desks they pick and splits it again; it sits where it is dragged, shows its
+// members' names, and a handout dropped on it goes to every member (services/homeroom-handouts.js studentsFor). Members
+// keep their own seats (hidden while they are in a team, so a split puts them back) and share one doodle pad
+// (homeroom_doodles, user_id 'team:<id>'): any member draws on it.
 import { q, now, audit } from '../db.js';
 import { config } from '../config.js';
 import { isGrownup, getUser } from '../auth.js';
 import * as S from './schools.js';
 import { teacherPlan } from './teacher-plan.js';
 import { cleanState, textProblem } from './manipulatives.js';
-import { PRESETS, AREA, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
+import { PRESETS, AREA, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
 
 export { PRESETS, AREA };
 const ok = (x = {}) => ({ ok: true, ...x });
@@ -61,8 +67,26 @@ export function roomOf(classId) {
   const groups = r ? json(r.groups, []) : DEFAULT_GROUPS.map(g => ({ ...g }));
   const gids = new Set(groups.map(g => g.id)), stored = r ? json(r.members, {}) : {};
   const members = {}; for (const id of ids) if (gids.has(stored[id])) members[id] = stored[id];
-  return { students, preset, seats: seatAll(ids, r ? json(r.seats, {}) : {}, preset), groups, members, area: r ? json(r.area, {}) : {}, updatedAt: r ? r.updated_at : 0 };
+  const seats = seatAll(ids, r ? json(r.seats, {}) : {}, preset);
+  return { students, preset, seats, groups, members, teams: teamsOf(r, ids, seats), area: r ? json(r.area, {}) : {}, updatedAt: r ? r.updated_at : 0 };
 }
+/** The class's team desks as drawn: only current students, a student in one team at most, 2 or more members each. */
+function teamsOf(r, ids, seats = {}) {
+  const now = new Set(ids), used = new Set(), out = [];
+  for (const t of r ? json(r.teams, []) : []) {
+    if (!t || typeof t !== 'object' || !Array.isArray(t.members)) continue;
+    const m = t.members.filter(id => now.has(id) && !used.has(id));
+    if (m.length < 2) continue;
+    m.forEach(id => used.add(id));
+    const at = clampSeat(t) || seats[m[0]] || { x: 0, y: 0 };
+    out.push({ id: String(t.id), members: m, x: at.x, y: at.y });
+  }
+  return out;
+}
+/** The team a student of the class is in now, or null. */
+export const teamOf = (classId, userId) => roomOf(classId).teams.find(t => t.members.includes(userId)) || null;
+/** The key of a team's shared pad in homeroom_doodles. */
+export const teamPadKey = teamId => `team:${teamId}`;
 function save(u, classId, fields) {
   const t = now(), r = rowOf(classId);
   if (!r) q.run('INSERT INTO homeroom_rooms(class_id, groups, created_at, updated_at) VALUES (?,?,?,?)', classId, JSON.stringify(DEFAULT_GROUPS), t, t);
@@ -110,6 +134,48 @@ export function saveGroups(u, c, { groups, members } = {}) {
   save(u, c.id, { groups: JSON.stringify(out), members: JSON.stringify(m) });
   audit(u.id, 'homeroom.groups', c.id, { groups: out.length });
   return ok({ groups: out, members: m });
+}
+
+/**
+ * Team desks (Arrange seats): { action: 'make', members: [studentId...], x?, y? } puts 2 to TEAM_MAX of the class's
+ * students who are in no team yet at one desk (where the first one sat unless x, y are given); { action: 'split', id }
+ * ends a team (its shared pad goes; every member is back at their own desk); { action: 'move', id, x, y } moves it.
+ * The class's teachers only. -> { ok, teams, team? }
+ */
+export function saveTeams(u, c, { action, id = '', members = [], x, y } = {}) {
+  if (!canUseClass(u, c)) return fail('notFound');
+  const room = roomOf(c.id), teams = room.teams.map(t => ({ ...t }));
+  if (action === 'make') {
+    const ids = new Set(room.students.map(s => s.id));
+    const list = [...new Set(Array.isArray(members) ? members.map(String) : [])];
+    if (list.length < 2) return fail('teamTooSmall');
+    if (list.length > TEAM_MAX) return fail('teamTooBig');
+    if (list.some(sid => !ids.has(sid))) return fail('notInClass');
+    if (list.some(sid => teams.some(t => t.members.includes(sid)))) return fail('alreadyInTeam');
+    if (teams.length >= TEAMS_MAX) return fail('tooManyTeams');
+    const at = (x !== undefined && y !== undefined ? clampSeat({ x, y }) : null) || room.seats[list[0]];
+    const team = { id: `t${Math.random().toString(36).slice(2, 10)}`, members: list, x: at.x, y: at.y };
+    teams.push(team);
+    save(u, c.id, { teams: JSON.stringify(teams) });
+    audit(u.id, 'homeroom.team', c.id, { action, members: list.length });
+    return ok({ teams, team });
+  }
+  const t = teams.find(z => z.id === String(id || ''));
+  if (!t) return fail('noTeam');
+  if (action === 'move') {
+    const at = clampSeat({ x, y }); if (!at) return fail('badSeats');
+    Object.assign(t, at);
+    save(u, c.id, { teams: JSON.stringify(teams) });
+    return ok({ teams, team: t });
+  }
+  if (action === 'split') {
+    const rest = teams.filter(z => z !== t);
+    save(u, c.id, { teams: JSON.stringify(rest) });
+    q.run('DELETE FROM homeroom_doodles WHERE class_id=? AND user_id=?', c.id, teamPadKey(t.id));
+    audit(u.id, 'homeroom.team', c.id, { action, members: t.members.length });
+    return ok({ teams: rest });
+  }
+  return fail('badAction');
 }
 
 /** Shapes in the teacher's area (rectangles, circles and lines in its fractions of the area; a pen color). */
@@ -205,17 +271,31 @@ export const mayGetPrompt = u => on() && !!u && !u.is_guest && !!q.get(`SELECT 1
 export function roomForStudent(c, u) {
   const room = roomOf(c.id), names = new Map(S.roster(c.id).filter(p => p.role === 'student').map(p => [p.id, p.display_name]));
   const g = room.groups.find(x => x.id === room.members[u.id]);
-  return { desks: room.students.map(s => ({ id: s.id, name: names.get(s.id) || '', ...room.seats[s.id], ...(s.id === u.id ? { me: true } : {}) })), color: g ? g.color : null };
+  // A team desk (step 2c) is drawn once, with its members' names, where the teacher put it.
+  const inTeam = new Map(room.teams.flatMap(t => t.members.map(m => [m, t])));
+  const mine = inTeam.get(u.id) || null;
+  const desks = room.students.filter(s => !inTeam.has(s.id)).map(s => ({ id: s.id, name: names.get(s.id) || '', ...room.seats[s.id], ...(s.id === u.id ? { me: true } : {}) }));
+  const teams = room.teams.map(t => ({ id: t.id, names: t.members.map(m => names.get(m) || ''), x: t.x, y: t.y, ...(t === mine ? { me: true } : {}) }));
+  return { desks, teams, color: g ? g.color : null, team: mine ? { id: mine.id, names: mine.members.filter(m => m !== u.id).map(m => names.get(m) || '') } : null };
 }
 
 /** The doodle and working-out pad: pen strokes in fractions of a DOODLE.w x DOODLE.h page, a pen color each. */
 export const DOODLE = { w: 900, h: 600, strokes: 150, points: 400, total: 15000, bytes: 400000 };
 export const DOODLE_COLORS = ['#141414', '#1E88E5', '#1F9D63', '#FF6B4A', '#8C6BD1'];
-export const doodleOf = (classId, userId) => json((q.get('SELECT strokes FROM homeroom_doodles WHERE class_id=? AND user_id=?', classId, userId) || {}).strokes, []);
-/** Save a student's pad (theirs only, in a class with Homeroom): at most DOODLE.strokes strokes and DOODLE.total points,
- *  each point inside the page, a known pen color; a stroke of one point is dropped. -> { ok, strokes } */
-export function saveDoodle(u, c, strokes) {
+const padRow = (classId, key) => q.get('SELECT strokes, updated_at FROM homeroom_doodles WHERE class_id=? AND user_id=?', classId, key) || null;
+/** Whose pad a student draws on: their team's (step 2c: shared by every member) or their own. */
+export const padKeyFor = (classId, userId) => { const t = teamOf(classId, userId); return t ? teamPadKey(t.id) : userId; };
+export const doodleOf = (classId, userId) => json((padRow(classId, padKeyFor(classId, userId)) || {}).strokes, []);
+/** The pad's version (when it was last saved; 0: never): a team's desks ask for it to see each other's drawing. */
+export const padVersion = (classId, userId) => (padRow(classId, padKeyFor(classId, userId)) || {}).updated_at || 0;
+/** Save a student's pad (theirs, or their team's: any member writes it; in a class with Homeroom): at most DOODLE.strokes
+ *  strokes and DOODLE.total points, each point inside the page, a known pen color; a stroke of one point is dropped.
+ *  base: the pad version the page last saw; on a team pad another member may have saved since, and then nothing is
+ *  saved and the current pad comes back (padChanged) so the page adds its new strokes to it and saves again.
+ *  -> { ok, strokes, pv } */
+export function saveDoodle(u, c, strokes, { base = null } = {}) {
   if (!canUseDesk(u, c)) return fail('notFound');
+  const key = padKeyFor(c.id, u.id), team = key !== u.id;
   if (!Array.isArray(strokes)) return fail('badState');
   if (strokes.length > DOODLE.strokes) return fail('padFull');
   const out = []; let total = 0;
@@ -227,21 +307,34 @@ export function saveDoodle(u, c, strokes) {
     out.push({ c: DOODLE_COLORS.includes(s.c) ? s.c : DOODLE_COLORS[0], pts });
   }
   const text = JSON.stringify(out); if (text.length > DOODLE.bytes) return fail('padFull');
+  const cur = padRow(c.id, key);
+  if (team && base !== null && cur && String(base) !== String(cur.updated_at)) return { ok: false, code: 'padChanged', strokes: json(cur.strokes, []), pv: cur.updated_at };
+  // A version that always moves on (two saves in one millisecond still differ).
+  const t = Math.max(now(), cur ? cur.updated_at + 1 : 0);
   q.run(`INSERT INTO homeroom_doodles(class_id, user_id, strokes, updated_at) VALUES (?,?,?,?)
-    ON CONFLICT(class_id, user_id) DO UPDATE SET strokes=excluded.strokes, updated_at=excluded.updated_at`, c.id, u.id, text, now());
-  return ok({ strokes: out });
+    ON CONFLICT(class_id, user_id) DO UPDATE SET strokes=excluded.strokes, updated_at=excluded.updated_at`, c.id, key, text, t);
+  return ok({ strokes: out, pv: t });
 }
 
 // A student leaves a class (or the class goes): their desk, group and pad go with them.
 S.onClassLeave(({ classId, userId = null } = {}) => {
   if (!classId) return;
-  if (!userId) { q.run('DELETE FROM homeroom_doodles WHERE class_id=?', classId); return; }
+  if (!userId) { q.run('DELETE FROM homeroom_doodles WHERE class_id=?', classId); q.run('DELETE FROM homeroom_feedback WHERE class_id=?', classId); return; }
   q.run('DELETE FROM homeroom_doodles WHERE class_id=? AND user_id=?', classId, userId);
+  q.run('DELETE FROM homeroom_feedback WHERE class_id=? AND user_id=?', classId, userId);
   const r = rowOf(classId); if (!r) return;
-  const seats = json(r.seats, {}), members = json(r.members, {});
-  if (!(userId in seats) && !(userId in members)) return;
+  const seats = json(r.seats, {}), members = json(r.members, {}), teams = json(r.teams, []);
+  // Their team loses them; a team left with one member is split (its shared pad goes).
+  const inTeam = teams.some(t => t && Array.isArray(t.members) && t.members.includes(userId));
+  if (!(userId in seats) && !(userId in members) && !inTeam) return;
   delete seats[userId]; delete members[userId];
-  q.run('UPDATE homeroom_rooms SET seats=?, members=? WHERE class_id=?', JSON.stringify(seats), JSON.stringify(members), classId);
+  const left = [];
+  for (const t of teams) {
+    if (!t || !Array.isArray(t.members)) continue;
+    const m = t.members.filter(id => id !== userId);
+    if (m.length >= 2) left.push({ ...t, members: m }); else q.run('DELETE FROM homeroom_doodles WHERE class_id=? AND user_id=?', classId, teamPadKey(t.id));
+  }
+  q.run('UPDATE homeroom_rooms SET seats=?, members=?, teams=? WHERE class_id=?', JSON.stringify(seats), JSON.stringify(members), JSON.stringify(left), classId);
 });
 
 // A school account merged into the student's own account: their pad moves with the class membership.
@@ -249,4 +342,11 @@ S.onAccountMerge(({ from, into } = {}) => {
   if (!from || !into) return;
   q.run('UPDATE OR IGNORE homeroom_doodles SET user_id=? WHERE user_id=?', into, from);
   q.run('DELETE FROM homeroom_doodles WHERE user_id=?', from);
+  q.run('UPDATE OR IGNORE homeroom_feedback SET user_id=? WHERE user_id=?', into, from);
+  q.run('DELETE FROM homeroom_feedback WHERE user_id=?', from);
+  // their place on team desks
+  for (const r of q.all("SELECT class_id, teams FROM homeroom_rooms WHERE teams LIKE ?", `%${from}%`)) {
+    const teams = json(r.teams, []).map(t => (t && Array.isArray(t.members) ? { ...t, members: [...new Set(t.members.map(m => (m === from ? into : m)))] } : t));
+    q.run('UPDATE homeroom_rooms SET teams=? WHERE class_id=?', JSON.stringify(teams), r.class_id);
+  }
 });

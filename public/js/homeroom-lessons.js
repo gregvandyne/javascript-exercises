@@ -317,6 +317,7 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
       <p class="hr-label" id="hrlg-grade">${esc(ctx.th('ho.grade'))}</p>${seg('grade', [['score', ctx.th('ho.score')], ['completion', ctx.th('ho.completion')], ['none', ctx.th('ho.notGraded')]], 'score', 'hrlg-grade')}
       <p class="small muted hr-seghint" id="hrlg-gradehint">${esc(tl('scoreHint'))}</p>
       <label class="hr-label" for="hrlg-due">${esc(ctx.th('ho.due'))}</label><input class="input hr-due" type="date" id="hrlg-due">
+      ${ctx.gcField ? ctx.gcField(to) : ''}
       <p class="err" id="hrlg-err" aria-live="polite"></p>
       <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(ctx.th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(who.n === 1 && to.kind === 'desk' ? ctx.th('ho.putOne') : ctx.th('ho.putMany', { count: who.n }))}</button></div></form>`,
   });
@@ -336,7 +337,7 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
-      const r = await api(ctx.api2('handouts'), { method: 'POST', body: { lessonId: l.id, to, order: val.order, grade: val.grade, dueAt: f.querySelector('#hrlg-due').value || null } });
+      const r = await api(ctx.api2('handouts'), { method: 'POST', body: { lessonId: l.id, to, order: val.order, grade: val.grade, dueAt: f.querySelector('#hrlg-due').value || null, gcPost: ctx.gcPicked ? ctx.gcPicked(f) : false } });
       sh.close(); ctx.onHanded(r);
     } catch (err) { f.querySelector('#hrlg-err').textContent = err.message; ok.disabled = false; }
   });

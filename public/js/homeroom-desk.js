@@ -13,6 +13,9 @@
 //     names only, no work);
 //   - live class: Bring everyone to me shows every desk the teacher's area ("Your teacher is showing this"), Pause
 //     screens shows "Eyes on your teacher". Students only read the live state; only the class's teachers change it.
+//   - step 2c: a team desk (students who share one desk): "Team: names" on the desk, one shared pad any member draws on
+//     (the poll brings a teammate's strokes; a save that crossed one adds this desk's new strokes to theirs), the team
+//     desk once in See the room; and the teacher's comment and sticker on a finished card (only this student's own).
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -20,7 +23,7 @@ import { t, api, toast, esc, pageData } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
-import { AREA, TEACHER_DESK, DESK } from '/js/homeroom-seats.js';
+import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -31,6 +34,9 @@ const S = {
   cards: Array.isArray(D.cards) ? D.cards : [], hv: null,
   live: null, area: {}, v: null, view: 'desk', strokes: Array.isArray(D.strokes) ? D.strokes : [], hist: [], pen: P.colors[0],
   cur: null, penSeen: false, saveTimer: null, dirty: false,
+  // a team's shared pad (step 2c): the version last saved or seen, and strokes drawn here since then (added to a
+  // teammate's newer pad when a save crosses theirs)
+  team: D.team || null, pv: D.pv ?? null, fresh: [], saving: false,
 };
 const root = $('hd'), body = $('hd-body'), over = $('hd-over');
 
@@ -40,9 +46,10 @@ function renderDesk() {
   body.innerHTML = `<div class="hd-grid">
     <section class="hd-desk"${color} aria-labelledby="hd-deskh">
       <div class="hd-deskrow"><h2 class="hd-deskh" id="hd-deskh"><span class="rm-dot"${D.color ? ` style="--c:${esc(D.color)}"` : ''}></span><span>${esc(td('deskOf', { name: D.me.name }))}</span></h2><span class="hd-order" id="hd-order"></span></div>
+      ${S.team ? `<p class="hd-team" id="hd-team">${iconHtml('🤝', { size: 18 })} <span><bdi>${esc(td('team', { names: S.team.names.join(', ') }))}</bdi></span></p>` : ''}
       <div id="hd-cards"></div>
       <div class="hd-pad">
-        <div class="hd-padbar"><h3 class="hd-padcap">${esc(td('pad'))}</h3><span class="hd-grow"></span>
+        <div class="hd-padbar"><h3 class="hd-padcap">${esc(td(S.team ? 'teamPad' : 'pad'))}</h3><span class="hd-grow"></span>
           <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${S.pen === c ? ' on' : ''}`, `role="radio" aria-checked="${S.pen === c}" data-hdpen="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"`, `<i style="background:${c}"></i>`)).join('')}</span>
           ${btn('hd-tool', 'data-hd="undo" id="hd-undo"', `${iconHtml('↩', { size: 18 })}<span>${esc(td('undo'))}</span>`)}${btn('hd-tool', 'data-hd="clear" id="hd-clear"', `${iconHtml('🧽', { size: 18 })}<span>${esc(td('clear'))}</span>`)}</div>
         <div class="hd-padbox"><svg class="hd-svg" id="hd-svg" viewBox="0 0 ${P.w} ${P.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(td('padLabel'))}">
@@ -66,10 +73,15 @@ function cardHtml(x) {
   const sub = [kind, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
-    ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
+    ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
   const label = `${title}${x.done ? `, ${td('done')}` : x.locked ? `, ${td('laterHint')}` : x.next ? `, ${td('nextUp')}` : ''}`;
   return x.locked || !x.ready || !x.href ? `<div class="${cls}" role="group" aria-label="${esc(label)}" aria-disabled="true" data-hdcard="${esc(x.id)}">${inner}</div>`
     : `<a class="${cls}" href="${esc(x.href)}" aria-label="${esc(label)}" data-hdcard="${esc(x.id)}">${inner}</a>`;
+}
+/** The teacher's comment and sticker on a finished card (step 2c): only this student's own. */
+function fbHtml(x) {
+  const f = x.done && x.fb; if (!f || (!f.comment && !f.src)) return '';
+  return `<span class="hd-fb">${f.src ? `<img class="hd-fbsticker" src="${esc(f.src)}" alt="${esc(td(`stickers.${f.sticker}`))}" width="56" height="56">` : ''}${f.comment ? `<span class="hd-fbtext" dir="auto"><b>${esc(td('fromTeacher'))}</b> ${esc(f.comment)}</span>` : ''}</span>`;
 }
 function renderCards() {
   const el = $('hd-cards'), ord = $('hd-order'); if (!el) return;
@@ -132,17 +144,34 @@ function padUp(e) {
   S.cur = null; const g = $('hd-cur'); if (g) g.innerHTML = '';
   if (c.s.pts.length < 2) return;
   if (totalPoints() + c.s.pts.length > P.total) { toast(td('padFull'), { bad: true }); return; }
-  remember(); S.strokes.push(c.s); drawInk(); toolsState(); queueSave();
+  remember(); S.strokes.push(c.s); if (S.team) S.fresh.push(c.s); drawInk(); toolsState(); queueSave();
 }
 function queueSave() { S.dirty = true; clearTimeout(S.saveTimer); S.saveTimer = setTimeout(save, 700); }
-async function save() {
-  S.saveTimer = null; if (!S.dirty) return; S.dirty = false;
-  try { await api(`/api/desk/${encodeURIComponent(D.classId)}/doodle`, { method: 'POST', body: { strokes: S.strokes } }); }
-  catch (e) { toast(e.message, { bad: true }); }
+const padBody = () => ({ strokes: S.strokes, ...(S.team ? { base: S.pv } : {}) });
+async function save(tries = 0) {
+  S.saveTimer = null; if (!S.dirty || S.saving) return; S.dirty = false; S.saving = true;
+  try {
+    const r = await api(`/api/desk/${encodeURIComponent(D.classId)}/doodle`, { method: 'POST', body: padBody() });
+    if (r && r.pv !== undefined) S.pv = r.pv;
+    S.fresh = [];
+  } catch (e) {
+    // A teammate saved the shared pad since this desk last saw it: their pad, plus what was drawn here since, saved again.
+    if (e.status === 409 && e.data && Array.isArray(e.data.strokes) && tries < 3) {
+      S.strokes = [...e.data.strokes, ...S.fresh].slice(-P.strokes); S.pv = e.data.pv; S.hist = []; drawInk(); toolsState();
+      S.saving = false; S.dirty = true; return save(tries + 1);
+    }
+    toast(e.message, { bad: true });
+  } finally { S.saving = false; }
 }
 function flush() {
   if (!S.dirty) return; clearTimeout(S.saveTimer); S.dirty = false;
-  try { fetch(`/api/desk/${encodeURIComponent(D.classId)}/doodle`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ strokes: S.strokes }) }); } catch { /* gone */ }
+  try { fetch(`/api/desk/${encodeURIComponent(D.classId)}/doodle`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(padBody()) }); } catch { /* gone */ }
+}
+/** A teammate drew on the shared pad (the poll's strokes): shown here, unless this desk has strokes not saved yet (its
+ *  save then adds them to the teammate's). */
+function teamPad(st) {
+  if (!S.team || st.pv === undefined) return;
+  if (Array.isArray(st.strokes) && !S.dirty && !S.saving && !S.cur && String(st.pv) !== String(S.pv)) { S.strokes = st.strokes; S.pv = st.pv; S.hist = []; S.fresh = []; drawInk(); toolsState(); }
 }
 
 // ---------------------------------------------------------------- overlays: the teacher's area, See the room, live class
@@ -167,16 +196,17 @@ function roomHtml() {
   const desks = D.desks || [];
   return `<div class="hd-over hd-room" role="dialog" aria-modal="false" aria-labelledby="hd-roomh"><div class="hd-overtop"><h2 class="hd-overcap" id="hd-roomh">${iconHtml('🏫', { size: 20 })} ${esc(td('roomTitle', { class: D.className }))}</h2>${btn('btn hr-chunk hd-back', 'data-hd="desk"', `${iconHtml('🎒', { size: 18 })} ${esc(td('back'))}`)}</div>
     <div class="hd-roombox" id="hd-roombox"><div class="hd-front"><span>✦ ${esc(td('teacherArea'))}</span></div><div class="hd-tdesk">${esc(td('teacherDesk'))}</div>
-    ${desks.map(d => `<div class="hd-rdesk${d.me ? ' me' : ''}" data-x="${+d.x || 0}" data-y="${+d.y || 0}"${d.me && D.color ? ` style="--gc:${esc(D.color)}"` : ''}><span class="hd-rname"><bdi>${esc(d.name)}</bdi>${d.me ? ` <b>(${esc(td('you'))})</b>` : ''}</span></div>`).join('')}</div></div>`;
+    ${desks.map(d => `<div class="hd-rdesk${d.me ? ' me' : ''}" data-x="${+d.x || 0}" data-y="${+d.y || 0}"${d.me && D.color ? ` style="--gc:${esc(D.color)}"` : ''}><span class="hd-rname"><bdi>${esc(d.name)}</bdi>${d.me ? ` <b>(${esc(td('you'))})</b>` : ''}</span></div>`).join('')}
+    ${(D.teams || []).map(x => `<div class="hd-rdesk hd-rteam${x.me ? ' me' : ''}" data-x="${+x.x || 0}" data-y="${+x.y || 0}" data-team="1"${x.me && D.color ? ` style="--gc:${esc(D.color)}"` : ''}><span class="hd-rname">${iconHtml('🤝', { size: 14 })} <bdi>${esc(x.names.join(', '))}</bdi>${x.me ? ` <b>(${esc(td('you'))})</b>` : ''}</span></div>`).join('')}</div></div>`;
 }
 /** See the room: desks where the teacher seated them, scaled to the screen; when that would make desks too small to
  *  read (a phone), the same desks in seating order (front row first, left to right) as a simple grid. */
 function placeRoom() {
   const box = $('hd-roombox'); if (!box) return;
-  const desks = [...box.querySelectorAll('.hd-rdesk')], pts = desks.map(el => ({ el, x: +el.dataset.x, y: +el.dataset.y }));
+  const desks = [...box.querySelectorAll('.hd-rdesk')], pts = desks.map(el => ({ el, x: +el.dataset.x, y: +el.dataset.y, ...(el.dataset.team ? TEAM_DESK : DESK) }));
   if (!pts.length) return;
-  const x0 = Math.min(AREA.x, ...pts.map(p => p.x)) - 20, x1 = Math.max(AREA.x + AREA.w, ...pts.map(p => p.x + DESK.w)) + 20;
-  const y1 = Math.max(...pts.map(p => p.y + DESK.h)) + 20, k = box.clientWidth / (x1 - x0);
+  const x0 = Math.min(AREA.x, ...pts.map(p => p.x)) - 20, x1 = Math.max(AREA.x + AREA.w, ...pts.map(p => p.x + p.w)) + 20;
+  const y1 = Math.max(...pts.map(p => p.y + p.h)) + 20, k = box.clientWidth / (x1 - x0);
   const grid = k * DESK.w < 84;
   box.classList.toggle('grid', grid);
   const front = box.querySelector('.hd-front'), tdesk = box.querySelector('.hd-tdesk');
@@ -190,7 +220,7 @@ function placeRoom() {
   const top = AREA.y - 10, band = Math.round(AREA.h * 0.3), up = AREA.h - band;
   const put = (el, r) => Object.assign(el.style, { left: `${(r.x - x0) * k}px`, top: `${(r.y - top) * k}px`, width: `${r.w * k}px`, height: `${r.h * k}px` });
   put(front, { ...AREA, h: band }); put(tdesk, { ...TEACHER_DESK, y: TEACHER_DESK.y - up });
-  for (const p of pts) { put(p.el, { x: p.x, y: p.y - up, w: DESK.w, h: DESK.h }); p.el.style.order = ''; }
+  for (const p of pts) { put(p.el, { x: p.x, y: p.y - up, w: p.w, h: p.h }); p.el.style.order = ''; }
   box.style.height = `${(y1 - up - top) * k + 10}px`;
 }
 
@@ -200,6 +230,7 @@ function applyState(st) {
   const was = JSON.stringify(S.live);
   S.live = st.live || null; S.v = st.v;
   if (Array.isArray(st.cards)) newCards(st.cards);
+  teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
   const areaChanged = 'area' in st;
@@ -210,7 +241,7 @@ let pollTimer = null;
 async function poll() {
   clearTimeout(pollTimer); pollTimer = null;
   if (document.hidden) return;
-  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}&hv=${encodeURIComponent(S.hv ?? '')}`, { background: true })); }
+  try { applyState(await api(`/api/desk/${encodeURIComponent(D.classId)}/state?v=${encodeURIComponent(S.v ?? '')}&hv=${encodeURIComponent(S.hv ?? '')}${S.team ? `&pv=${encodeURIComponent(S.pv ?? '')}` : ''}`, { background: true })); }
   catch (e) {
     // A shared device's sign-in ended (End class, or its time ran out): back to the class sign-in for the next student.
     if (D.device && (e.status === 401 || e.status === 404)) { location.href = '/hr?ended=1'; return; }
@@ -233,8 +264,8 @@ function click(e) {
   if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
   const a = e.target.closest('[data-hd]'); if (!a) return;
   const k = a.dataset.hd;
-  if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); drawInk(); toolsState(); queueSave(); } }
-  else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; drawInk(); toolsState(); queueSave(); } }
+  if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
+  else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
   else if (k === 'desk' || k === 'area' || k === 'room') {
     S.view = k === S.view && k !== 'desk' ? 'desk' : k; renderOver();

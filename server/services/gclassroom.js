@@ -482,8 +482,17 @@ export const shareMaterial = (u, cl, opts) => publish(u, cl, 'material', opts);
 export const GRADE_MODES = ['draft', 'assigned'];
 export const SYNCS_PER_HOUR = 60;
 /** A student's completion grade out of 100: steps done of the lesson's steps (the gradebook's figure), not how many
- *  answers were right. The page and the results call it a completion grade. */
+ *  answers were right. 100 when finished. The page and the results call it a completion grade. */
 export const scoreOf = p => (p.total ? Math.round((100 * Math.min(p.done, p.total)) / p.total) : 0);
+/** What a lesson's grade in Classroom is (Homeroom, step 2c: "Google Classroom gets the grade the teacher chose"):
+ *  'score' for a Homeroom handout graded by Score (the % right, as the gradebook's Score: services/scores.js), 'none' for
+ *  one that is not graded (nothing is sent), and 'completion' for every other lesson, Homeroom handouts graded by
+ *  Completion and every lesson assigned outside Homeroom (unchanged: scoreOf). */
+export const gradeBasis = clId => { const m = L.gradeModeOf(clId); return m === 'score' ? 'score' : m === 'none' ? 'none' : 'completion'; };
+/** A student's grade out of 100 on that basis, or null when there is none to send yet (not started; graded by Score but
+ *  nothing scored yet: a game played without finishing is done, but has no % right). p: a lessonProgress student. */
+export const gradeOf = (p, basis = 'completion') => (basis === 'score' ? (p.score && Number.isFinite(p.score.pct) ? Math.max(0, Math.min(100, p.score.pct)) : null)
+  : basis === 'none' ? null : p.done ? scoreOf(p) : null);
 /** Submission pages read per send (100 each). Paging stops as soon as every student with a grade to send was found. */
 export const SUBMISSION_PAGES = 10;
 /**
@@ -507,13 +516,16 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
   if (!can(u.id, 'coursework')) return fail('needsScope');
   const post = postOf(cl.id); if (!post) return fail('notPosted');
   // Not graded (a Homeroom handout given as practice, services/lessons.js gradeModeOf): no grade ever goes to Classroom.
-  if (L.gradeModeOf(cl.id) === 'none') return auto ? ok({ counts: { sent: 0, notStarted: 0, notMatched: 0, failed: 0, unchanged: 0 }, quiet: true }) : fail('notGraded');
+  const basis = gradeBasis(cl.id);
+  if (basis === 'none') return auto ? ok({ counts: { sent: 0, notStarted: 0, notMatched: 0, failed: 0, unchanged: 0 }, quiet: true }) : fail('notGraded');
   const lp = P.lessonProgress(cl.id);
   const last = new Map(q.all('SELECT * FROM gc_grades WHERE class_lesson_id=? AND coursework_id=?', cl.id, post.coursework_id).map(r => [r.user_id, r]));
-  const changed = p => { const g = last.get(p.id); return !g || g.grade !== scoreOf(p) || (mode === 'assigned' && g.mode !== 'assigned'); };
-  const counts = { sent: 0, notStarted: 0, notMatched: 0, failed: 0, ...(onlyChanged ? { unchanged: 0 } : {}) };
+  // Graded by Score (a Homeroom handout): the % right; else the completion grade, as always. has(p): a grade to send.
+  const grade = p => gradeOf(p, basis), has = p => grade(p) !== null;
+  const changed = p => { const g = last.get(p.id); return !g || g.grade !== grade(p) || (mode === 'assigned' && g.mode !== 'assigned'); };
+  const counts = { sent: 0, notStarted: 0, notMatched: 0, failed: 0, ...(onlyChanged ? { unchanged: 0 } : {}), ...(basis === 'score' ? { notScored: 0, basis } : {}) };
   const retry = fails => q.run("UPDATE gc_posts SET retry_fails=?, retry_at=? WHERE class_lesson_id=? AND kind='assignment'", fails, fails ? at + backoff(fails) : null, cl.id);
-  if (onlyChanged && !lp.students.some(p => p.done && changed(p))) { if (post.retry_at) retry(0); return ok({ counts, quiet: true }); }
+  if (onlyChanged && !lp.students.some(p => has(p) && changed(p))) { if (post.retry_at) retry(0); return ok({ counts, quiet: true }); }
   if (gate && !gate()) return fail('tooManyTries');
   const byUser = new Map(lp.students.map(p => [p.id, p]));
   const base = `/v1/courses/${encodeURIComponent(post.course_id)}/courseWork/${encodeURIComponent(post.coursework_id)}/studentSubmissions`;
@@ -521,7 +533,7 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
     ON CONFLICT(class_lesson_id, user_id) DO UPDATE SET coursework_id=excluded.coursework_id, grade=excluded.grade, mode=excluded.mode, sent_at=excluded.sent_at`, ...a);
   const ids = new Map([...G.identitiesOf([...byUser.keys()]).values()].map(r => [r.sub, r.user_id]));
   // Students with a grade to send who may be on the roster (they signed in with Google): once all are found, stop.
-  const wanted = new Set([...ids.values()].filter(id => { const p = byUser.get(id); return p && p.done && (!onlyChanged || changed(p)); }));
+  const wanted = new Set([...ids.values()].filter(id => { const p = byUser.get(id); return p && has(p) && (!onlyChanged || changed(p)); }));
   let firstError = null;
   try {
     await withToken(u.id, async tk => {
@@ -534,13 +546,15 @@ export async function sendGrades(u, cl, mode, { onlyChanged = false, auto = fals
       for (const sub of subs) {
         const sid = safeId(String(sub && sub.id || '')); const p = byUser.get(ids.get(String(sub && sub.userId || '')));
         if (!sid || !p) { counts.notMatched++; continue; }
-        if (!p.done) { counts.notStarted++; continue; }
+        if (!p.done && !has(p)) { counts.notStarted++; continue; }
+        // Graded by Score, worked on but nothing scored yet (a game played without finishing): no % right to send.
+        if (!has(p)) { counts.notScored++; continue; }
         if (onlyChanged && !changed(p)) { counts.unchanged++; continue; }
-        const grade = scoreOf(p);
+        const g = grade(p);
         try {
-          await C.api(tk, 'PATCH', `${base}/${encodeURIComponent(sid)}`, { query: { updateMask: mode === 'assigned' ? 'draftGrade,assignedGrade' : 'draftGrade' }, body: mode === 'assigned' ? { draftGrade: grade, assignedGrade: grade } : { draftGrade: grade } });
+          await C.api(tk, 'PATCH', `${base}/${encodeURIComponent(sid)}`, { query: { updateMask: mode === 'assigned' ? 'draftGrade,assignedGrade' : 'draftGrade' }, body: mode === 'assigned' ? { draftGrade: g, assignedGrade: g } : { draftGrade: g } });
           counts.sent++;
-          remember(cl.id, p.id, post.coursework_id, grade, mode, now());
+          remember(cl.id, p.id, post.coursework_id, g, mode, now());
         } catch (e) {
           if (e.code === 'auth' || e.code === 'reconnect' || e.code === 'rateLimited' || e.code === 'needsScope') throw e;
           counts.failed++; firstError = firstError || (e.code || 'googleDown');

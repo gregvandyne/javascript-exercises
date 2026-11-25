@@ -2149,7 +2149,36 @@
         "removeAll": "Von allen Tischen entfernen",
         "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen.",
         "lesson": "Stunde",
-        "version": "Version: {name}"
+        "version": "Version: {name}",
+        "gcAlso": "Auch in Google Classroom posten",
+        "gcHint": "Es geht als Aufgabe an Ihre verknüpfte Classroom-Klasse, mit der hier gewählten Bewertung.",
+        "gcWholeOnly": "Nur Aufgaben für die ganze Klasse gehen an Google Classroom: Dort würden sie alle erreichen."
+      },
+      "team": {
+        "label": "Teamtisch",
+        "deskOf": "Teamtisch: {names}",
+        "doneOf": "{done} von {n} fertig",
+        "split": "Team auflösen",
+        "splitConfirm": "Teamtisch von {names} auflösen? Alle gehen zurück an ihren eigenen Tisch. Der gemeinsame Block des Teams wird geleert.",
+        "splitDone": "Team aufgelöst. Alle sind wieder an ihrem eigenen Tisch.",
+        "makeA": "Team bilden",
+        "pickLead": "Tippen Sie auf die Tische der Kinder, die sich einen Tisch teilen (bis zu {max})",
+        "picked": "{count, plural, =0 {Noch keiner gewählt} one {# gewählt} other {# gewählt}}",
+        "make": "Team bilden",
+        "made": "Teamtisch gebildet: {names}",
+        "full": "Ein Team hat höchstens {max} Kinder.",
+        "forNames": "das Team {names}",
+        "sheetLead": "Tippen Sie auf ein Kind, um seine Aufgaben zu sehen."
+      },
+      "feedback": {
+        "add": "Kommentar oder Sticker",
+        "edit": "Kommentar oder Sticker ändern",
+        "comment": "Ein kurzer Kommentar (optional)",
+        "commentPh": "Zum Beispiel: Toll gemacht mit den Resten!",
+        "sticker": "Ein Sticker (optional)",
+        "noSticker": "Keiner",
+        "private": "Nur dieses Kind sieht es, auf seinem Tisch und der Seite der Aufgabe.",
+        "remove": "Entfernen"
       }
     },
     "stories": {
@@ -4778,7 +4807,24 @@
       "newHandout": "Neu von deiner Lehrkraft: {title}",
       "lessonTitle": "Stunde: {title}",
       "worksheet": "Arbeitsblatt · {count, plural, one {# Aufgabe} other {# Aufgaben}}",
-      "worksheetWords": "Arbeitsblatt · {count, plural, one {# Wort} other {# Wörter}}"
+      "worksheetWords": "Arbeitsblatt · {count, plural, one {# Wort} other {# Wörter}}",
+      "team": "Team: {names}",
+      "teamPad": "Block von unserem Team",
+      "fromTeacher": "Deine Lehrkraft:",
+      "stickers": {
+        "star": "Stern",
+        "thumbs": "Daumen hoch",
+        "heart": "Herz",
+        "idea": "Gute Idee",
+        "check": "Haken",
+        "rocket": "Rakete",
+        "trophy": "Pokal",
+        "medal": "Medaille",
+        "crown": "Krone",
+        "fireworks": "Feuerwerk",
+        "smiley": "Smiley",
+        "rainbow": "Regenbogen"
+      }
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -4915,6 +4961,21 @@
       "versionsBy": "Versionen nach Gruppe",
       "asBuilt": "Die Stunde wie erstellt",
       "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %."
+    },
+    "homeroom-overview": {
+      "title": "Bewerten nach",
+      "score": {
+        "name": "Punkte",
+        "hint": "Der Anteil richtiger Antworten in %. Google Classroom bekommt ihn auch."
+      },
+      "completion": {
+        "name": "Abschluss",
+        "hint": "100 %, wenn fertig."
+      },
+      "none": {
+        "name": "Ohne Bewertung",
+        "hint": "Übung: keine Note, nichts wird gesendet."
+      }
     }
   },
   "favorites": {
@@ -6910,7 +6971,7 @@
       "lead": "Verbinden Sie Ihr Google Classroom mit wenigen Klicks. Zuerst sieht Oomba Academy nur Ihre Kurse und deren Schüler. Es wird nichts gepostet, bis Sie das Posten erlauben.",
       "li1": "Importieren Sie Ihre Schülerliste mit einem Klick, danach aktualisiert sie sich alle 6 Stunden von selbst. Schüler werden über ihr Google-Konto erkannt.",
       "li2": "Posten Sie eine Unterrichtseinheit als Classroom-Aufgabe, mit Link und Abgabetermin, oder teilen Sie sie als Material.",
-      "li3": "Abschlussnoten gehen zurück an Classroom: Die Note jedes Schülers von 100 ist der Anteil der Schritte der Einheit, die er geschafft hat, nicht die Zahl der richtigen Antworten. Senden Sie sie selbst oder schalten Sie automatische Noten ein.",
+      "li3": "Noten gehen von 100 zurück an Classroom: eine Abschlussnote (der Anteil der erledigten Schritte, nicht der richtigen Antworten) oder bei Homeroom-Aufgaben die gewählte Bewertung: Punkte, Abschluss oder nichts bei Übungen. Sende sie selbst oder schalte automatische Noten ein.",
       "li4": "Posten Sie im Kurs-Stream, wenn ein Live-Spiel startet oder eine Einheit bereit ist, in Ihren eigenen Worten.",
       "li5": "Oomba Academy fragt Classroom nicht nach E-Mail-Adressen von Schülern und sendet Google nie den Namen, die Antworten oder die Spiele eines Schülers.",
       "note": "Aufgaben, Materialien, Noten und Ankündigungen funktionieren, sobald Sie das Posten erlauben, ein eigener Schritt. Jede Lehrkraft verbindet ihr eigenes Google-Konto, und der Google-Admin Ihrer Schule muss Oomba Academy eventuell zuerst zulassen.",
@@ -10545,10 +10606,10 @@
         "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
         "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
         "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
-        "grades": "die Abschlussnote jedes Kindes für eine Lektion an Classroom senden"
+        "grades": "die Note jedes Kindes für eine Lektion an Classroom senden (Abschlussnote oder die in Homeroom gewählten Punkte)"
       },
       "button": "Google Classroom verbinden",
-      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Abschlussnote jedes Kindes von 100, einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
+      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Note jedes Kindes von 100 (Abschlussnote oder die in Homeroom gewählten Punkte), einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
       "connectedAs": "Verbunden als {email}",
       "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
       "connectedToast": "Google Classroom ist verbunden.",
@@ -10612,17 +10673,25 @@
       "somePosted": "Hier einzelnen Schülern zugewiesen. Vorher wurde sie in Google Classroom für die ganze Klasse gepostet; Noten gehen nur an die zugewiesenen Schüler."
     },
     "grades": {
-      "text": "Das ist eine Abschlussnote: der Anteil der Schritte, die ein Kind erledigt hat, von 100. Richtige Antworten zählen nicht mit. Wer noch nicht angefangen hat, wird ausgelassen.",
+      "text": "Jede Lektion sendet die Note, nach der sie bewertet wird, von 100. Im Klassenbereich zugewiesene Lektionen senden eine Abschlussnote: den Anteil der erledigten Schritte, nicht die richtigen Antworten. Homeroom-Aufgaben senden, was du beim Austeilen gewählt hast: Punkte senden den Anteil richtiger Antworten in %, Abschluss die Abschlussnote, Ohne Bewertung sendet nichts. Wer noch nicht angefangen hat, wird ausgelassen.",
       "as": "Senden als",
       "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
       "assigned": "Zugewiesene Note",
       "button": "Abschlussnoten senden",
-      "lastDraft": "Vorläufige Abschlussnoten gesendet {when}",
-      "lastAssigned": "Zugewiesene Abschlussnoten gesendet {when}",
+      "lastDraft": "Vorläufige Noten gesendet {when}",
+      "lastAssigned": "Zugewiesene Noten gesendet {when}",
       "resultSent": "{count, plural, one {# Abschlussnote gesendet} other {# Abschlussnoten gesendet}}",
       "resultNotStarted": "{count, plural, one {# hat noch nicht angefangen} other {# haben noch nicht angefangen}}",
       "resultNotMatched": "{count, plural, one {# nicht in dieser Klasse} other {# nicht in dieser Klasse}}",
-      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}"
+      "resultFailed": "{count, plural, one {# ist nicht durchgegangen} other {# sind nicht durchgegangen}}",
+      "buttonScore": "Punkte senden",
+      "resultSentScore": "{count, plural, one {# Punktwert gesendet} other {# Punktwerte gesendet}}",
+      "resultNotScored": "{count, plural, one {# hat noch keine Punkte} other {# haben noch keine Punkte}}",
+      "sends": {
+        "completion": "Sendet eine Abschlussnote: den Anteil der erledigten Schritte.",
+        "score": "In Homeroom nach Punkten bewertet: sendet den Anteil richtiger Antworten in %.",
+        "none": "In Homeroom ohne Bewertung: keine Note geht an Classroom."
+      }
     },
     "log": {
       "heading": "Letzte Synchronisierungen",
@@ -10713,7 +10782,7 @@
       "roster": "Die Kinder alle 6 Stunden aus Classroom aktualisieren",
       "rosterHint": "Neue Kinder kommen dazu. Wer Classroom verlässt, steht oben, damit du entscheidest: Niemand wird von selbst entfernt.",
       "grades": "Noten automatisch senden",
-      "gradesHint": "Alle 30 Minuten gehen geänderte Abschlussnoten an Classroom, für Lektionen, die von hier gepostet wurden, bis 30 Tage nach dem jeweiligen Abgabedatum.",
+      "gradesHint": "Alle 30 Minuten gehen geänderte Noten an Classroom, für Lektionen, die von hier gepostet wurden (jede so, wie sie bewertet wird: Abschlussnote oder Punkte), bis 30 Tage nach jedem Fälligkeitsdatum.",
       "by": "Die Noten gehen über die Google-Classroom-Verbindung von {name}.",
       "save": "Speichern",
       "saved": "Gespeichert.",
@@ -14734,7 +14803,16 @@
       "setsFull": "Sie haben so viele Arbeitsblätter, wie dieses Spiel speichern kann. Löschen Sie zuerst einige unter „Meine Arbeitsblätter“ im Spiel.",
       "tooManyLessons": "Sie haben so viele Stunden, wie Sie speichern können. Löschen Sie zuerst eine.",
       "lessonGone": "Ein Arbeitsblatt dieser Stunde wurde gelöscht. Öffnen Sie die Stunde, speichern Sie sie noch einmal und teilen Sie sie dann aus.",
-      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diese Stunde schon.} other {# dieser Tische haben diese Stunde schon.}} Nehmen Sie sie dort zuerst weg oder geben Sie sie den anderen."
+      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diese Stunde schon.} other {# dieser Tische haben diese Stunde schon.}} Nehmen Sie sie dort zuerst weg oder geben Sie sie den anderen.",
+      "teamTooSmall": "Wählen Sie mindestens 2 Tische für ein Team.",
+      "teamTooBig": "Ein Team hat höchstens 6 Kinder.",
+      "alreadyInTeam": "Eines dieser Kinder sitzt schon an einem Teamtisch. Lösen Sie dieses Team zuerst auf.",
+      "tooManyTeams": "Diese Klasse hat schon die meisten möglichen Teamtische.",
+      "noTeam": "Diesen Teamtisch gibt es nicht mehr.",
+      "commentLong": "Ein Kommentar darf höchstens 140 Zeichen haben.",
+      "badSticker": "Wählen Sie einen der Sticker.",
+      "notFinished": "Kommentare und Sticker gibt es für fertige Arbeit. Diese ist noch nicht fertig.",
+      "padChanged": "Jemand aus deinem Team hat gleichzeitig gemalt. Dein Bild wurde dazugelegt."
     },
     "live": "Live",
     "desk": {
@@ -14853,6 +14931,78 @@
         "multiply": "Multipliziere. Schreibe jede Antwort als einen Ausdruck.",
         "factor": "Faktorisiere jeden Ausdruck."
       }
+    },
+    "stickers": {
+      "star": "Stern",
+      "thumbs": "Daumen hoch",
+      "heart": "Herz",
+      "idea": "Gute Idee",
+      "check": "Haken",
+      "rocket": "Rakete",
+      "trophy": "Pokal",
+      "medal": "Medaille",
+      "crown": "Krone",
+      "fireworks": "Feuerwerk",
+      "smiley": "Smiley",
+      "rainbow": "Regenbogen"
+    },
+    "feedback": {
+      "saved": "Kommentar und Sticker gespeichert",
+      "removed": "Kommentar und Sticker entfernt"
+    },
+    "overview": {
+      "title": "Klassenüberblick",
+      "lead": "Die letzten {weeks} Wochen. Jede Spalte ist etwas, das Sie in Homeroom ausgeteilt haben. Die Kinder stehen alphabetisch, nie in einer Rangfolge.",
+      "student": "Kind",
+      "trend": "Tendenz",
+      "tableLabel": "Klassenüberblick: Aufgaben und Ergebnisse",
+      "kind": {
+        "lesson": "Stunde",
+        "game": "Spiel",
+        "mine": "Mein Spiel"
+      },
+      "versions": "{count, plural, one {# Version} other {# Versionen}}",
+      "gradedBy": {
+        "score": "Nach Punkten bewertet",
+        "completion": "Nach Abschluss bewertet"
+      },
+      "notGraded": "Ohne Bewertung",
+      "changeGrade": "{title}: {grade}. Bewertung ändern",
+      "done": "Fertig",
+      "notDone": "Nicht fertig",
+      "practice": "Übung",
+      "locked": "Noch nicht offen",
+      "notStarted": "Nicht angefangen",
+      "trends": {
+        "improving": "Wird besser",
+        "steady": "Gleichmäßig",
+        "support": "Braucht Unterstützung",
+        "none": "Noch zu wenige Punkte"
+      },
+      "finished": "der Aufgaben fertig",
+      "support": "{count, plural, one {Kind braucht Unterstützung} other {Kinder brauchen Unterstützung}}",
+      "month": "{count, plural, one {Aufgabe diesen Monat} other {Aufgaben diesen Monat}}",
+      "keyNames": {
+        "score": "Punkte",
+        "completion": "Abschluss",
+        "none": "Ohne Bewertung"
+      },
+      "keyScore": "% richtige Antworten",
+      "keyCompletion": "100 %, wenn fertig",
+      "keyNone": "Übung, nichts wird gesendet",
+      "keyTrend": "Tendenz aus den letzten 3 Punktwerten jedes Kindes: Braucht Unterstützung bei einem Schnitt unter 60 %, Wird besser, wenn der letzte 10 Punkte oder mehr über dem ersten liegt, sonst Gleichmäßig.",
+      "more": "Das ganze Notenbuch, CSV, Standards, Bewertungsraster und Google Classroom stehen darunter, wie bisher.",
+      "fullGradebook": "Ganzes Notenbuch",
+      "noHandouts": "In den letzten {weeks} Wochen wurde in Homeroom nichts ausgeteilt. Teilen Sie im Tab Homeroom ein Spiel oder eine Lektion aus.",
+      "gcLinked": "Verknüpft mit „{course}“",
+      "gcRoster": "Liste abgeglichen {when}",
+      "gcRosterNever": "Liste noch nicht abgeglichen",
+      "gcGrades": "Noten gesendet {when}",
+      "gcGradesNever": "noch keine Noten gesendet",
+      "gcOpen": "Einstellungen öffnen",
+      "gcNotLinked": "Noch nicht verknüpft.",
+      "gcLink": "Classroom-Klasse verknüpfen",
+      "gradeSaved": "Bewertung geändert"
     }
   }
 }
