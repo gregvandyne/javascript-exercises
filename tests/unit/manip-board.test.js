@@ -274,7 +274,7 @@ test('checking an answer accepts sensible equivalent forms and never needs the a
 test('two-color counters never link: no snap to another counter, only into an EMPTY frame cell; other tools still link', () => {
   const t = SNAP_PX;
   assert.equal(linksPieces('two-color-counters'), false); assert.equal(linksPieces('linking-cubes'), true);
-  assert.deepEqual(snapOpts('two-color-counters'), { link: false });
+  assert.deepEqual(snapOpts('two-color-counters'), { link: false, slug: 'two-color-counters' });
   const a = piece('a', 'pos', 100, 100, 48, 48), b = piece('b', 'neg', 152, 103, 48, 48);
   assert.equal(snapFor([b], [a], [], t, snapOpts('two-color-counters')), null, 'right beside another counter: stays where dropped');
   assert.ok(snapFor([b], [a], [], t, snapOpts('linking-cubes')).to, 'the same drop links other pieces');
@@ -404,4 +404,51 @@ test('charts, tables, frames, mats and graphs start locked wherever they are pla
   assert.equal(migrate('base-ten-blocks', saved).objects[0].locked, undefined, 'an old unlocked chart stays unlocked');
   const old = migrate('base-ten-blocks', { pieces: [], decimal: false });
   assert.equal(old.objects.find(o => o.k === 'pv-chart').locked, undefined, 'a first-format board migrates without a lock');
+});
+
+// ---------------------------------------------------------------- fixes from the tutorial play-throughs (25 Nov 2026)
+import { roundPiece, splitGroup, nearContent, boxesOf, spotIn } from '../../public/js/manip-board.js';
+test('play-through fixes: round pieces per tool, a stick split by adjacency, copies beside, mats near the content, the wheel under the header', () => {
+  // Base ten's decimal 'tenth' is a block; a place value disk's 'tenth' is a disk; a dollar bill is not round.
+  assert.equal(roundPiece('base-ten-blocks', 'tenth'), false);
+  assert.equal(roundPiece('place-value-disks', 'tenth'), true);
+  assert.equal(roundPiece('two-color-counters', 'pos'), true);
+  assert.equal(roundPiece('money', 'dime'), true); assert.equal(roundPiece('money', 'b1'), false);
+  assert.equal(roundPiece('color-tiles', 't0'), false);
+  assert.equal(pieceBox(piece('a', 'tenth', 0, 0, 90, 30), 'base-ten-blocks').round, false);
+
+  // A stick of five cubes, the middle one taken out: two sticks of two, no longer one group.
+  const stick = [0, 1, 2, 3, 4].map(i => piece(`c${i}`, 'c0', 100 + i * 40, 100, 40, 40, { g: 'g1' }));
+  const rest = stick.filter(p => p.id !== 'c2').map(p => ({ ...p }));
+  splitGroup(rest, 'g1');
+  assert.equal(rest[0].g, rest[1].g); assert.equal(rest[2].g, rest[3].g); assert.notEqual(rest[0].g, rest[2].g);
+  assert.ok(rest.every(p => p.g));
+  // The end one taken out: still one stick. One left alone: no group.
+  const tail = stick.slice(0, 4).map(p => ({ ...p })); splitGroup(tail, 'g1'); assert.ok(tail.every(p => p.g === 'g1'));
+  const two = [piece('a', 'c0', 0, 0, 40, 40, { g: 'g2' }), piece('b', 'c0', 200, 0, 40, 40, { g: 'g2' })]; splitGroup(two, 'g2');
+  assert.ok(two.every(p => !p.g), 'pieces that do not touch are in no group');
+
+  // A copy goes beside its original, never on top of it, even when the view is full (beside it anywhere on the plane).
+  const o = { x: 100, y: 100, w: 300, h: 200 }, view = { x: 0, y: 0, w: 420, h: 320 };
+  const spot = nearSpot([o], o, view, WORLD, { gap: 24, order: 'right' });
+  assert.ok(!overlaps({ ...spot, w: 300, h: 200 }, o), JSON.stringify(spot));
+  assert.deepEqual(spot, { x: 424, y: 100 }, 'right of it, the page then shows it');
+
+  // A work mat added with pieces loose goes in view, near them, with the gap placeObject asks for (it was turned down
+  // and put at the plane's top left).
+  const region = { x: 2000, y: 1400, w: 1200, h: 800 };
+  const b = { v: 2, objects: [], pieces: [0, 1, 2, 3].map(i => piece(`p${i}`, 't0', 2300 + i * 58, 1700, 52, 52)) };
+  const mat = placeObject('color-tiles', b, 'mat', region, WORLD);
+  const r = objRect('color-tiles', mat);
+  assert.ok(r.x >= region.x && r.y >= region.y && r.x + r.w <= region.x + region.w && r.y + r.h <= region.y + region.h, `in view: ${JSON.stringify(r)}`);
+  for (const p of b.pieces) assert.ok(!overlaps(r, p), 'on no piece');
+  assert.ok(Math.hypot(r.x - 2300, r.y - 1700) < 700, `near the pieces: ${JSON.stringify(r)}`);
+  assert.ok(nearContent(boxesOf('color-tiles', b, WORLD), 100, 100, { x: 0, y: 0, w: 50, h: 50 }, () => true) === null, 'no room: none');
+  assert.deepEqual(spotIn([], 40, 40, { x: 0, y: 0, w: 400, h: 400 }, { gap: 24 }), { x: 16, y: 16 });
+
+  // The wheel never opens under the site's header (top 64 px).
+  for (const n of [1, 3, 5, 6]) for (const [x, y] of [[195, 70], [195, 20], [4, 70]]) {
+    const L = wheelLayout(x, y, n, 390, 664, 64);
+    assert.ok(L.pts.every(p => p.y - 24 >= 64 && p.y + 24 <= 664 && p.x - 24 >= 0 && p.x + 24 <= 390), `${x},${y} n=${n}`);
+  }
 });
