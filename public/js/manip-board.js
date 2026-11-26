@@ -460,6 +460,9 @@ export function nextPieceSpot(slug, b, d, region, last) {
   const obstacles = [...charts, ...inSlots];   // charts first: a full region's fallback steps on from the last piece
   const clearOf = list => (x, y) => !list.some(o => x < o.x + o.w + ROW_GAP - 1 && x + d.w + ROW_GAP - 1 > o.x && y < o.y + o.h + ROW_GAP - 1 && y + d.h + ROW_GAP - 1 > o.y);
   const free = clearOf(obstacles), freeInSlot = clearOf(inSlots);
+  // Along a row the even gap is kept; above and below only no overlap, so a row started flush under another row (a
+  // piece snapped there) carries on flush under it: arrays and rectangles of cubes and tiles, row by row.
+  const freeRow = (x, y) => !obstacles.some(o => x < o.x + o.w + ROW_GAP - 1 && x + d.w + ROW_GAP - 1 > o.x && y < o.y + o.h && y + d.h > o.y);
   const inside = (x, y) => x >= region.x && y >= region.y && x + d.w <= region.x + region.w && y + d.h <= region.y + region.h;
   if (L) {
     const cx = L.x + L.w / 2, cy = L.y + L.h / 2;
@@ -482,7 +485,7 @@ export function nextPieceSpot(slug, b, d, region, last) {
     for (let i = 0; i < 400; i++) {
       const y = Math.round(mid - d.h / 2);
       if (x + d.w > region.x + region.w || x + d.w > region.x + region.w) { x = runX; mid += rowH + ROW_GAP + 4; rowH = d.h; if (mid - d.h / 2 + d.h > region.y + region.h) break; continue; }
-      if (inside(x, y) && free(x, y)) return { x: Math.round(x), y, runX };
+      if (inside(x, y) && freeRow(x, y)) return { x: Math.round(x), y, runX };
       x += 4;
     }
   }
@@ -661,8 +664,9 @@ export function snapFor(moving, others, slots, t, { link = true, slug = null } =
   }
   return best ? { dx: best.dx, dy: best.dy, to: null, slot: best.slot } : null;
 }
-/** The pieces that move together with p: its snapped group (pieces sharing p.g), else p alone. */
-export const groupOf = (pieces, p) => (p && p.g ? pieces.filter(q => q.g === p.g) : p ? [p] : []);
+/** The pieces that move together with p: its snapped group (pieces sharing p.g), else p alone. A locked piece never
+ *  moves with its group (a cube snapped onto a teacher's locked stick is dragged away alone). */
+export const groupOf = (pieces, p) => (p && p.g ? pieces.filter(q => q.g === p.g && (q === p || !q.locked)) : p ? [p] : []);
 /** Do a tool's pieces link to each other? Two-color counters never do (owner, 21 Nov 2026): a counter snaps only into
  *  an empty frame cell and stays exactly where it is dropped anywhere else, even right beside another counter. */
 export const linksPieces = slug => slug !== 'two-color-counters';
