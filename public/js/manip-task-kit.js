@@ -105,12 +105,14 @@ export function expandedParts(n) {
   return out;
 }
 export const expandedText = n => expandedParts(n).map(fmt).join(' + ');
-/** Does a typed answer match the box's key? box: { key (or keys), kind: 'expanded' | undefined }. */
+/** Does a typed answer match the box's key? box: { key (or keys), kind: 'expanded' | undefined, simplest (a fraction
+ *  in lowest terms only), over (an equivalence "?/8": the numerator, or the fraction over that denominator) }. */
 export function boxMatches(box, typed) {
   const a = clean(typed); if (!a) return false;
   const keys = Array.isArray(box.keys) ? box.keys : [box.key];
   if (box.kind === 'expanded') return keys.some(k => expandedMatches(k, a));
-  return keys.some(k => answerMatches(String(k), a));
+  const opts = { simplest: !!box.simplest, over: Math.max(0, Math.round(+box.over || 0)) };
+  return keys.some(k => answerMatches(String(k), a, opts));
 }
 /**
  * Check a student's work on a variation. tool: the tool file's exports ({ conds: { type: (cond, board) -> bool } }).

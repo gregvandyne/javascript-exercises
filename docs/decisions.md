@@ -15417,3 +15417,66 @@ framework, and Rekenreks and Base Ten Blocks converted completely (all 34 of the
 - **Open**: the other 16 tools (phase 2); translations of the new strings (English, like the task library); a teacher's
   view of each student's answers per question (the gradebook shows the marks); assigning across tools in one set;
   Homeroom's give sheet picking several tasks at once (one task a handout there; several from the Manipulatives page).
+
+### Phase 2: Fraction Circles, Fraction Tiles, Bar Models, Clock
+
+All 66 tasks of the four tools are practice (17, 17, 17 and 16 of them; at least 20 variations each in 50 seeds), played
+through solo and in Homeroom's desk player (`tests/unit/_manip-flow/fraction-circles.js`, `fraction-tiles.js`,
+`bar-models.js`, `clock.js`).
+
+- **Board checks.** Fraction Circles: a circle with exactly these pieces (or this sum, only these sizes, one size), a
+  different circle for each of a list, the whole set's total, the Labels mode, the rings view, n full circles each a
+  different mix ("ways"); read with `fcCircles`, so the old `{ placed }` boards read too, from every set that is not read
+  only. Fraction Tiles: the placed tiles' counts by size, their total (in 120ths, exact), "two ways" (n tiles of one size
+  and the same amount again in other sizes), the Labels mode; the task's own tiles are locked and never count. Bar
+  Models: a bar (by its name) with these part values in order or in any order, its total, n equal parts of v. Clock: a
+  clock (by its label, Start or End) showing h:m, and the time tracker started at a time with n minutes since.
+- **Tool changes for the tasks.**
+  - Fraction Tiles' lengths are now their share of the whole (`manip-data.js` `TILE_WHOLE` = 528 px, so 1/12 is still
+    44 px): before, 1/8, 1/10 and 1/12 were all 44 px wide and eight eighths overshot the whole, so "3/4 = 6/8" did not
+    line up on the wall. Tiles already on saved boards keep the width they were saved with.
+  - Totals: off (every practice question that needs it) now also hides a fraction circle's sum under a circle that is
+    not full ("Circle 2" instead of "3/8"; a full circle still says "1 whole ✓") and each bar's " · total" in a bar
+    model; both gave answers away (`manip.js` `fcCircleHtml`, the bar model's board).
+  - The checker's answer box takes `simplest` (a fraction in lowest terms only, for "Equivalent rename") and `over` (an
+    equivalence "?/12": the numerator or the fraction, for "Equivalent cover"), passed on to `answerMatches`
+    (`manip-task-kit.js` `boxMatches`).
+- **Reworded** (open-ended in the library, checkable now, the same goal):
+  - Fraction Circles: "Cover the whole" (some pieces of one size given: how many of the other size finish one whole;
+    other pairs than thirds and sixths too), "Bigger: 1/3 or 1/4?" (both built, each in its own circle; the bigger
+    picked, or "the same"), "Percent switch" (the percent typed and the decimal picked, Labels switched), "Rings
+    equivalence" (Rings view on; the missing number of a/b = ?/D typed), "Thirds and ninths talk" (predict, then build
+    both circles; other sizes too), "More than a whole" (the mixed number picked), "Compare to a half" (one fraction
+    built: less than, equal to or more than 1/2 picked), "Add unlike pieces" (the same amount again in one size of
+    piece; the sum typed), "Percent pie" (one size of piece, Labels on Decimal; the decimal typed, the fraction
+    picked), "Eighths exploration" (how far past one whole typed), "Fraction of a turn" (how many pieces of a size make
+    a full, half, quarter, three-quarter or a third of a turn, filled in a circle), "Leftover pieces" (some pieces
+    given: the uncovered fraction typed), "Order the pieces" (three pieces in their own circles: the biggest or the
+    smallest picked), "Twelfths clock" (one number of minutes: how many twelfths), "Equivalent cover" (a/b = ?/D typed),
+    "Decimal switch challenge" (the partner's decimal given: built with Labels on Decimal, the fraction picked), "Half
+    and quarter mix" (2 or 3 circles each a different way; how many ways there are in all typed; other pairs of sizes
+    too).
+  - Fraction Tiles: "Prove 1/2 = 2/4" (how many tiles of a size cover a given fraction), "Beat the benchmark" and
+    "Compare with benchmarks" (rows built, the closest to 1 picked), "Build the wall" (the same amount in one or two
+    named rows), "Sum past one whole" (a whole tile and one size, the mixed number picked), "Wall hunt: 3/4" (every
+    equal fraction up to twelfths built; how many fractions typed), "Add thirds and sixths" (traded to one size, the
+    count typed), "Mixed number build" (the mixed number built; how many tiles of its size typed), "Order unlike
+    fractions" (four rows; the order picked), "Decimal tiles" (Labels on Decimal, one decimal size; the count typed),
+    "Half of a half" (half or a quarter of a fraction built and typed), "Equivalent rename" (the fewest tiles of one
+    size; lowest terms typed), "Percent tiles switch" (Labels on Percent, the percent typed; the second way any other
+    sizes).
+  - Bar Models: each bar starts named and its parts labeled (the student sets the values, adds parts where the task asks
+    for equal parts, and types the answer); "Part-part-whole: pets" (other stories too; the unknown part is labeled, not
+    a question mark), "Ratio bars" (scaled to a total amount instead of 25 parts), "Comparison difference" (the
+    equation picked), "Percent bar" (a percent bar and an amount bar), "Rate bar" (1.5 to 3.5 hours).
+  - Clock: "Elapsed time" (minutes typed; the time bar is not checked), "Half past and quarter to" and "Five minutes to"
+    (one time said in words set on the clock; its digital form picked), "Time tracker challenge" (the jumps are
+    checked; "two jumps instead" left to the teacher), "Five-minute reads" (a read-only clock read to the nearest five
+    minutes), "Quarter past journey" (the quarter hours counted with the tracker; the times listed in the explanation),
+    "Minutes to noon" (to the next o'clock, the jump tracked), "Hour hand creep" (the number the hour hand is closest to
+    picked), "Digital mismatch" (same or not picked, the face's time typed), "Half hour intervals" (landing typed, hours
+    picked), "School day timeline" (two clocks; the length picked), "AM PM talk" (one story's time set, AM or PM
+    picked), "Race the minute hand" (passes between two o'clock times counted).
+- Times are on five-minute marks (Hour + and Min +5 reach them; "Backwards time" drags the minute hand back past the
+  12), except a read-only clock to read. Most questions hide the digital time (Totals off); "Elapsed time" and "School
+  day timeline" keep it, since setting two clocks is not the answer there.

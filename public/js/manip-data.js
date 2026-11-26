@@ -50,7 +50,10 @@ export function fracLabel(d, mode = 'frac', whole = '1 whole') {
   if (d === 1) return mode === 'frac' ? whole : mode === 'pct' ? '100%' : '1.0';
   return mode === 'frac' ? `1/${d}` : mode === 'pct' ? `${Math.round(1000 / d) / 10}%` : `${Math.round(1000 / d) / 1000}`;
 }
-const fracTiles = (mode = 'frac') => FRACTION_DENS.map(([d, c]) => pd(`f${d}`, c, fracLabel(d, mode), 1 / d, Math.max(44, 264 / d), 40));
+// A tile's length is its share of the whole (528 px, so a 1/12 tile is still 44 px wide): 8 eighths are as long as 1 whole,
+// so equal fractions line up on a wall (before, 1/8, 1/10 and 1/12 were all 44 px and a row of them overshot the whole).
+export const TILE_WHOLE = 528;
+const fracTiles = (mode = 'frac') => FRACTION_DENS.map(([d, c]) => pd(`f${d}`, c, fracLabel(d, mode), 1 / d, TILE_WHOLE / d, 40));
 const ALGEBRA = [pd('one', '#FFD23F', '1', 1, 34, 34), pd('mone', '#EF9A9A', '−1', -1, 34, 34), pd('x', '#43A047', 'x', 0, 34, 92), pd('mx', '#A5D6A7', '−x', 0, 34, 92),
   pd('x2', '#1E88E5', 'x²', 0, 92, 92), pd('mx2', '#90CAF9', '−x²', 0, 92, 92), pd('y', '#FB8C00', 'y', 0, 92, 34), pd('my', '#FFCC80', '−y', 0, 92, 34),
   pd('xy', '#8E24AA', 'xy', 0, 92, 62), pd('y2', '#5E35B1', 'y²', 0, 62, 62)];
