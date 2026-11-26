@@ -15694,6 +15694,18 @@ asking for 6) and about 40 tasks with slips like "1 beads", "add 1 zero pairs" a
   minutes" once (", which is 95 minutes" only past an hour). `manip-task-variations.test.js` reads every text of 200
   seeds of every practice task for "1 <plural noun>" (with up to two words between: "1 red cubes", "1 unit tiles"),
   "there are 1 ..." and "X, which is X", and names the task, seed and place of any slip.
+- **Second QA round.** "1 times" is gone: kit `times(n)` says "once" ("Tap the 1/2 piece once", "Do that once"; Two-Color
+  Counters says "hold the red counter and pick Delete"), and the wording lint's noun list has "times". Counting hints
+  never list a number past the one they count to ("5, 10, 15, ... until you say 5", "25, 50, 75, ... until you reach
+  75", "0.5, 1, 1.5, ... until you reach 1"): kit `countTo(k, step or nth, tail)` lists up to 4 numbers in full ("5,
+  10, 15") and longer counts as the first 3 and the target ("5, 10, 15, ... until you say 50"), in Rekenreks, Fraction
+  Circles, Fraction Tiles, Money, Number Lines, Number Rods, Clock, Pattern Blocks, Color Tiles and Hundred Board; a
+  lint over 200 seeds checks every "a, b, c, ..." count against the target the line names after the dots, else the
+  variation's answer. Pattern Blocks "Invent a whole" rebuilds a block only from smaller blocks that tile it
+  (`BUILDS`: a hexagon from triangles, parallelograms or trapezoids; a trapezoid or parallelogram from triangles), so
+  never "Rebuild 3 triangles out of trapezoids"; any other pair puts the block beside the whole, and a test checks every
+  rebuild and its count. Number Rods "Rod algebra: r + w" (trains of any one color) is now "Rod algebra: trains of equal
+  rods", key unchanged; no How it works scene finds it by title.
 - **Checks that read the arrangement.** Pattern Blocks "Grow the pattern" checked only the counts, so any heap passed:
   its new `ring` check reads the blocks' real outlines (manip.js's shapes, turned by Rotate) and wants 6 blocks touching
   the hexagon all the way around it, then 6 more each touching the first ring, farther out and all the way around; no

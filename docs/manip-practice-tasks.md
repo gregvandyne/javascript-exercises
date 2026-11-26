@@ -72,6 +72,9 @@ variation on the page, on the server (which re-checks) and in the tests. `make` 
   "3 beads show"); never "1 beads" or "1 zero pairs", and no line that says the same thing twice ("30
   minutes, which is 30 minutes"). The wording test reads every prompt, hint, explanation, box label, choice and board
   `say` of 200 seeds of every task and names the task and seed of any slip.
+- "How many times" goes through kit `times(n)` ("once", "3 times"). A count in a hint goes through kit `countTo`, which
+  never lists a number past the target and lists a short count in full ("5, 10, 15" for 15, "5, 10, 15, ... up to 50"
+  for 50); a lint checks every "a, b, c, ..." count of 200 seeds against the target it names, else the answer.
 - A board check reads the arrangement when the task is about one (Pattern Blocks' `ring`: the flower around the
   hexagon from the blocks' real outlines and turns), so a heap of the right pieces does not pass.
 
