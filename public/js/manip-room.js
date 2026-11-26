@@ -126,7 +126,10 @@ async function checkMine() {
     const r = await api(`/api/manipulatives/live/${R.id}/check`, { method: 'POST', body: { answers } });
     // Everything right: a cheer, never "Try again on the others" (there are none); else how many and a nudge.
     R.checked = r.results; renderArea(R.me);
-    toast(r.right >= r.total ? t('js.manip-room.checkAll', { total: r.total }) : t('js.manip-room.checkResult', { right: r.right, total: r.total }));
+    // One box: "Right!" or "Not right yet. Try again." (never "All 1 right!" or "0 of 1 right").
+    const one = r.total === 1;
+    toast(r.right >= r.total ? (one ? t('js.manip-room.checkOneRight') : t('js.manip-room.checkAll', { total: r.total }))
+      : one ? t('js.manip-room.checkOneWrong') : t('js.manip-room.checkResult', { right: r.right, total: r.total }));
   } catch (e) { toast(e.message, { bad: true }); }
 }
 /** Raised hands changed (the socket, or a read of the room): badges, the student's button, the teacher's list. */
@@ -491,7 +494,9 @@ function renderBar() {
 }
 const handsLabel = () => (R.hands.length ? ` ${t('js.manip-room.handsUpN', { n: R.hands.length })}` : ` ${t('js.manip-room.handsUpNone')}`);
 /** The teacher's ⋯ menu: everything that isn't needed every minute. Its body scrolls (the "Answers checked" list grows
- *  with the class); the session's action (End session, or Reopen room) stays pinned at its foot, always in reach. */
+ *  with the class); the session's action (End session, or Reopen room) stays pinned at its foot, always in reach.
+ *  Inside Homeroom (?in=hr) an ended room has no Reopen: ending took the tool off every desk (services/homeroom-tools.js
+ *  storedOf), so a room opened again there would reach no desk and would block handing out another tool. */
 function renderMenu() {
   const el = document.getElementById('rm-menu'); if (!el) return;
   if (R.role !== 'teacher' || !R.menuOpen) { el.innerHTML = ''; return; }
@@ -506,7 +511,7 @@ function renderMenu() {
     ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
     ${howBtn('rm-mi', { menu: true })}
     <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a></div>
-    <div class="rm-menu-foot">${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div></div>`;
+    ${live ? `<div class="rm-menu-foot">${btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`)}</div>` : inHomeroom() ? '' : `<div class="rm-menu-foot">${btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div>`}</div>`;
 }
 /** "Answers checked: 12 of 16" in the ⋯ menu: one line, closed by default, that opens (a native details) to the names,
  *  those who need help first, each with their score and a mark. Nobody checked yet: the line alone. Shown while checks
@@ -534,13 +539,26 @@ const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').joi
 const objMax = A => (A.key === 't' ? OBJ_MAX : OBJ_MAX_SQUARE);
 function palette(A) {
   const ws = workSize(A);
-  return R.deps.paletteFor(R.room.tool, R.impl, A.st, { osel: R.osel && R.osel.key === A.key ? R.osel.id : null, region: { x: 0, y: 0, w: ws.w, h: ws.h }, space: ws, max: objMax(A), place: d => place(A, d) });
+  return R.deps.paletteFor(R.room.tool, R.impl, A.st, { osel: R.osel && R.osel.key === A.key ? R.osel.id : null, region: regionOf(A), space: ws, max: objMax(A), place: d => place(A, d) });
+}
+/** Where new pieces and objects go in an area: all of it, less the strip the zoom pill covers on screen (as the solo
+ *  board's clearArea), so nothing new lands under Fit and takes its tap; the bigger part, above or below the pill. A
+ *  pill that leaves too little of the area either way: all of it. -> an area rectangle */
+function regionOf(A) {
+  const ws = workSize(A), all = { x: 0, y: 0, w: ws.w, h: ws.h };
+  const pill = document.querySelector('#rm-zoom .rm-zoom'), inner = document.querySelector(`.rm-area[data-key="${CSS.escape(A.key)}"] .rm-in`);
+  if (!pill || !inner || !pill.offsetParent) return all;
+  const zr = pill.getBoundingClientRect(), ir = inner.getBoundingClientRect(), z = R.view.z || 1, m = 6;
+  if (zr.right <= ir.left || zr.left >= ir.right || zr.bottom <= ir.top || zr.top >= ir.bottom) return all;
+  const above = clamp((zr.top - ir.top - m) / z, 0, ws.h), below = clamp((zr.bottom - ir.top + m) / z, 0, ws.h);
+  const best = above >= ws.h - below ? { x: 0, y: 0, w: ws.w, h: above } : { x: 0, y: below, w: ws.w, h: ws.h - below };
+  return best.h >= Math.min(120, ws.h * 0.3) ? best : all;
 }
 /** A new piece in the first free spot of the area: never on a piece, an object or a note already there. */
 function place(A, d) {
   // As on the solo board (manip-pv.js paletteAdd): the last block's column when this one is worth the same, else the
   // square's next free spot (never on a chart), else the chart's column for its value.
-  const ws = workSize(A), r = paletteAdd(R.room.tool, A.st, d, { x: 0, y: 0, w: ws.w, h: ws.h }, A.lastAdd, R.deps.mkPiece, ws);
+  const ws = workSize(A), r = paletteAdd(R.room.tool, A.st, d, regionOf(A), A.lastAdd, R.deps.mkPiece, ws);
   A.lastAdd = r.last;
   return r.p;
 }
@@ -1072,13 +1090,15 @@ async function toolButton(k) {
   }
   if (k === 'end') {
     // The site's own confirm (app.js ask), never the browser's: ending stops every student's square.
-    if (!(await ask({ title: t('js.manip-room.endTitle'), text: t('js.manip-room.endConfirm'), ok: t('js.manip-room.end'), danger: true }))) return;
+    // Inside Homeroom ending takes the tool off every desk (services/homeroom-tools.js storedOf), and it is not reopened.
+    if (!(await ask({ title: t('js.manip-room.endTitle'), text: t(inHomeroom() ? 'js.manip-room.endConfirmHr' : 'js.manip-room.endConfirm'), ok: t('js.manip-room.end'), danger: true }))) return;
     if (!R || R.room.status !== 'active') return;
     try { await api(`/api/manipulatives/live/${R.id}/end`, { method: 'POST', body: {} }); toast(t('js.manip-room.endedMsg')); await refresh(); } catch (e) { toast(e.message, { bad: true }); }
     return;
   }
   // An ended room runs again: the same code, every student's square as it was (services/manipulatives.js reopen).
   if (k === 'reopen') {
+    if (inHomeroom()) return;
     try { await api(`/api/manipulatives/live/${R.id}/reopen`, { method: 'POST', body: {} }); R.menuOpen = false; toast(t('js.manip-room.reopened')); await refresh(); } catch (e) { toast(e.message, { bad: true }); }
     return;
   }

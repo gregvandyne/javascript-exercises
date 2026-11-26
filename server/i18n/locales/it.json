@@ -3911,6 +3911,8 @@
       "showSteps": "Mostra i passaggi",
       "checkResult": "{right} su {total} giuste. Riprova con le altre.",
       "checkAll": "{total, plural, one {Tutto giusto!} other {Tutte e # giuste!}}",
+      "checkOneRight": "Giusto!",
+      "checkOneWrong": "Non ancora giusto. Riprova.",
       "checksSummary": "{total, plural, one {Risposte controllate: {checked} su #} other {Risposte controllate: {checked} su #}}",
       "checkAllRight": "Tutto giusto",
       "checkNeedsHelp": "Ha bisogno di aiuto",
@@ -3924,6 +3926,7 @@
       "pushedMine": "La tua lavagna è stata inviata a tutti gli studenti.",
       "endTitle": "Terminare questa sessione?",
       "endConfirm": "Dopo, gli studenti non potranno più modificare i loro riquadri. Potrai riaprire la stanza più tardi con lo stesso codice.",
+      "endConfirmHr": "Lo strumento verrà tolto da tutti i banchi. Gli studenti conservano il loro lavoro.",
       "pushNoKey": "Scrivi prima le risposte nelle tue caselle di risposta, così gli studenti possono controllare il loro lavoro."
     },
     "figures-editor": {

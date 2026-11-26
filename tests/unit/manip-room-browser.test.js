@@ -213,7 +213,7 @@ test('Fit shows every square of a class of 16, between the bars, at 1440 x 900 a
   M.end(boss, s.id);
 });
 
-test('"Check my answers" with everything right: "All 1 right!", never "Try again on the others"', async t => {
+test('"Check my answers" with everything right: "Right!" (one box), never "Try again on the others"', async t => {
   if (skip) return t.skip(skip);
   const { s, kids } = checkedRoom();
   for (const [i, [dev, opts]] of DEVICES().entries()) {
@@ -226,7 +226,7 @@ test('"Check my answers" with everything right: "All 1 right!", never "Try again
     await page.waitForFunction(() => document.querySelector('.rm-area.mine .mp-answer')?.value === '3', null, { timeout: 8000 });
     await press(page, '[data-rtool="check"]');
     await page.waitForSelector('.toast');
-    assert.equal(await page.locator('.toast').last().textContent(), 'All 1 right!');
+    assert.equal(await page.locator('.toast').last().textContent(), 'Right!');
     await shot(page, `room-toast-${dev}`);
     assert.deepEqual(errors, []);
     await ctx.close();

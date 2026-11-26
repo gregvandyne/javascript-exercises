@@ -3910,6 +3910,8 @@
       "showSteps": "ステップを見る",
       "checkResult": "{total} 問中 {right} 問正解。のこりをもう一度やってみよう。",
       "checkAll": "{total, plural, other {# 問ぜんぶ正解！}}",
+      "checkOneRight": "正解！",
+      "checkOneWrong": "まだ正解じゃないよ。もう一度やってみよう。",
       "checksSummary": "{total, plural, other {答えをたしかめた人: # 人中 {checked} 人}}",
       "checkAllRight": "ぜんぶ正解",
       "checkNeedsHelp": "てつだいが必要",
@@ -3923,6 +3925,7 @@
       "pushedMine": "ボードを全員の生徒に送りました。",
       "endTitle": "このセッションを終了しますか？",
       "endConfirm": "終了すると、生徒は自分のマスを変更できなくなります。あとで同じコードでルームを再開できます。",
+      "endConfirmHr": "このツールがすべての机から外れます。生徒の作業は残ります。",
       "pushNoKey": "生徒が答え合わせできるように、先に解答ボックスに答えを入力してください。"
     },
     "figures-editor": {
