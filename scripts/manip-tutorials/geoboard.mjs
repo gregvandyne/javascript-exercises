@@ -1,8 +1,9 @@
 // The geoboard's quick tutorial (scripts/manip-tutorials.mjs loads it). Task: "Squares of many sizes".
-export default ({ txt, attr, beside, all }) => {
+export default ({ txt, attr, beside, all, count }) => {
   /** A peg on the (first) square board: column c, row r from the top left (manip.js geoPegs: index r * 6 + c). */
   const peg = (c, r) => `#mp-content .mp-peg[data-i="${r * 6 + c}"]`;
-  const band = n => txt('#mp-content .mp-obody p.small', `Current band: ${n} pegs.`);
+  // The band in progress counts its pegs; with none in progress the line is gone.
+  const band = n => (n ? txt('#mp-content .mp-obody p.small', `Current band: ${n} ${n === 1 ? 'peg' : 'pegs'}.`) : count('#mp-content .mp-obody p.small', 0));
   const total = want => txt('#mp-content .mp-otot', want);
   const pal = label => `#mp-palette [aria-label="${label}"]`;
   const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Squares of many sizes' });

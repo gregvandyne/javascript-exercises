@@ -463,3 +463,48 @@ test('play-through fixes: round pieces per tool, a stick split by adjacency, cop
     assert.ok(L.pts.every(p => p.y - 24 >= 64 && p.y + 24 <= 664 && p.x - 24 >= 0 && p.x + 24 <= 390), `${x},${y} n=${n}`);
   }
 });
+
+// ---------------------------------------------------------------- leftovers: the double ten-frame's size, edge taps on the grid
+import { xyTapValue, XY_EDGE, CELL, FRAME_B, FRAME_GAP, objSize } from '../../public/js/manip-board.js';
+
+test('a double ten-frame has its own size (two ten-frames side by side, as drawn), not the work mat\'s; its 20 cells fit inside it', () => {
+  const K = kindOf('two-color-counters', 'double-ten-frame'), mat = kindOf('two-color-counters', 'mat');
+  const z = K.size(K.init());
+  // .mp-frame2: 10 px around, two frames of 5 x 2 cells with a FRAME_B border each, FRAME_GAP apart
+  assert.deepEqual(z, { w: 20 + 2 * (5 * CELL + 2 * FRAME_B) + FRAME_GAP, h: OBJ_HEAD + 20 + 2 * CELL + 2 * FRAME_B });
+  assert.deepEqual(z, { w: 644, h: OBJ_HEAD + 146 });
+  assert.notDeepEqual(z, mat.size(mat.init()));
+  // a saved double ten-frame keeps that size whatever its state says (a mat's w and h are a mat's only)
+  assert.deepEqual(objSize('two-color-counters', { k: 'double-ten-frame', st: { n: 20, w: 300, h: 100 } }), z);
+  // the work mat of every tool that has one still sizes by its own w and h
+  for (const slug of ['base-ten-blocks', 'place-value-disks', 'two-color-counters', 'pattern-blocks']) {
+    assert.deepEqual(objSize(slug, { k: 'mat', st: {} }), { w: 440, h: OBJ_HEAD + 290 }, slug);
+    assert.deepEqual(objSize(slug, { k: 'mat', st: { w: 600, h: 400 } }), { w: 600, h: OBJ_HEAD + 400 }, slug);
+  }
+  // its cells: 20, 2 rows of 5 in each frame, all inside the object, the right frame's after the left one's
+  for (const s of [1, 1.5]) {
+    const o = { id: 'd', k: 'double-ten-frame', x: 100, y: 50, s, st: { n: 20 } }, r = objRect('two-color-counters', o), cells = slotsOf('two-color-counters', o);
+    assert.equal(cells.length, 20);
+    for (const c of cells) assert.ok(c.x >= r.x && c.y >= r.y && c.x + c.w <= r.x + r.w + 1e-9 && c.y + c.h <= r.y + r.h + 1e-9, `cell inside at s=${s}`);
+    assert.equal(cells[10].x - cells[4].x - cells[4].w, (2 * FRAME_B + FRAME_GAP) * s, 'the gap between the frames: two borders and the gap');
+    assert.equal(cells[0].x, 100 + (10 + FRAME_B) * s); assert.equal(cells[5].y - cells[0].y, CELL * s);
+  }
+  // a counter dropped near a right-frame cell snaps into it, centered
+  const o = { id: 'd', k: 'double-ten-frame', x: 0, y: 0, s: 1, st: { n: 20 } }, cells = slotsOf('two-color-counters', o), c = cells[12];
+  const snap = snapFor([piece('u', 'pos', c.x + 10, c.y + 3, 48, 48)], [], cells, SNAP_PX, { link: false, slug: 'two-color-counters' });
+  assert.ok(snap && snap.slot === c, 'into cell 13');
+  assert.equal(c.x + 10 + snap.dx, c.x + (c.w - 48) / 2); assert.equal(c.y + 3 + snap.dy, c.y + (c.h - 48) / 2);
+});
+
+test('a tap on the coordinate grid\'s edge, or a few px outside it, goes onto the nearest grid point in range; farther out, nothing', () => {
+  const r = { left: 100, top: 50, width: 480, height: 480 };   // a 0..12 grid: 40 px a step
+  assert.deepEqual(xyTapValue(r, 100 + 3 * 40 + 6, 50 + 480 - 4 * 40, 0, 12), { x: 3, y: 4 }, 'inside: the nearest point');
+  assert.deepEqual(xyTapValue(r, 100, 50 + 240, 0, 12), { x: 0, y: 6 }, 'right on the left edge');
+  assert.deepEqual(xyTapValue(r, 100 - 5, 50 + 240, 0, 12), { x: 0, y: 6 }, 'just left of it: clamped onto x = 0');
+  assert.deepEqual(xyTapValue(r, 580 + XY_EDGE, 50 - XY_EDGE, 0, 12), { x: 12, y: 12 }, 'just past the top right corner');
+  assert.deepEqual(xyTapValue(r, 100 + 240, 530 + 3, -6, 6), { x: 0, y: -6 }, 'four quadrants: just under the bottom edge');
+  assert.equal(xyTapValue(r, 100 - XY_EDGE - 1, 50 + 240, 0, 12), null, 'too far out');
+  assert.equal(xyTapValue(r, 340, 530 + XY_EDGE + 1, 0, 12), null);
+  assert.equal(xyTapValue({ left: 0, top: 0, width: 0, height: 0 }, 0, 0, 0, 12), null, 'a grid that is not on screen');
+  assert.ok(XY_EDGE >= 4 && XY_EDGE <= 12, 'a few px');
+});

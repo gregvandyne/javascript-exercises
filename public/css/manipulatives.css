@@ -68,7 +68,7 @@
 .mp-main{min-width:0;display:flex;flex-direction:column;gap:12px}
 /* clip, never scroll: a caret or a focused field near the edge must not scroll the board (it shifted everything under the
    pointer, so drags and taps landed in the wrong place) */
-.mp-board{position:relative;height:var(--mp-board-h);min-height:var(--mp-board-min);touch-action:none;user-select:none;-webkit-user-select:none;cursor:default;border-radius:var(--r);background-color:var(--card);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,transparent) 1.2px,transparent 1.3px);background-size:24px 24px;box-shadow:var(--shadow),inset 0 0 0 1px var(--line);overflow:hidden;overflow:clip}
+.mp-board{position:relative;height:var(--mp-board-h);min-height:var(--mp-board-min);touch-action:none;user-select:none;-webkit-user-select:none;cursor:default;border-radius:var(--r);background-color:var(--card);background-image:radial-gradient(circle,color-mix(in srgb,var(--accent) 30%,transparent) 1.2px,transparent 1.3px);background-size:24px 24px;box-shadow:var(--shadow),inset 0 0 0 1px var(--line);overflow:hidden;overflow:clip;isolation:isolate}
 .mp-content{position:relative;min-height:var(--mp-board-min)}
 /* The steps card (public/js/manip-room.js stepCardHtml): pinned above the board, joined to its top edge, never over a
    piece. The live square's strip look: a soft spark tint, a 📌 heading, the step big. */
@@ -730,7 +730,18 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-probnav{gap:8px}
 .mp-streak{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--text)}
 .mp-probdonetext{font-size:1.1rem;margin:4px 0 0}
-.mp-taskacts{gap:8px;margin-top:6px}
+/* A task's buttons (Preview and Assign, or Practice): side by side, one height; on a phone, equal columns across the card.
+   Under the task box's tasks, its links (all the tasks, practice them, the Task library): one row of quiet text links. */
+.mp-taskacts{gap:var(--s2);margin-top:var(--s2);flex-wrap:nowrap}
+.mp-taskacts>.btn{min-height:44px;margin:0}
+@media (max-width:560px){.mp-taskacts{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}.mp-taskacts>.btn{width:100%;padding-inline:var(--s2)}}
+/* (a link's middot sits in the gap before it; the first link of a wrapped line has its dot cut off at the card's edge) */
+.mp-tasknav{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s4);margin-top:var(--s3);padding-top:var(--s1);border-top:1px solid var(--line);clip-path:inset(-8px -8px -8px 0)}
+[dir="rtl"] .mp-tasknav{clip-path:inset(-8px 0 -8px -8px)}
+.mp-tasklink{position:relative;display:inline-flex;align-items:center;min-height:36px;padding:0;border:0;background:none;color:var(--link);font:700 .9rem var(--font);cursor:pointer;text-decoration:none;white-space:nowrap}
+.mp-tasklink:hover{text-decoration:underline;text-underline-offset:3px}
+.mp-tasklink:focus-visible{outline-offset:-2px}
+.mp-tasknav>.mp-tasklink+.mp-tasklink::before{content:"·";position:absolute;inset-inline-start:calc(-1 * var(--s4));inline-size:var(--s4);text-align:center;color:var(--muted);pointer-events:none}
 .mp-tlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0}
 .mp-tlrow{display:flex;gap:10px;align-items:flex-start;padding:12px 14px}
 .mp-tlbody{min-width:0;flex:1}
