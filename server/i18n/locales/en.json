@@ -12678,10 +12678,10 @@
       "does": "What {name} does",
       "adds": "What Oomba adds here",
       "source": "Source: {site}, read on {date}",
-      "kahoot": "Live games run inside the Hub: students at their desks get an invite and join with one tap, no code.",
-      "classroomscreen": "{count} widgets, a screen for every student, points with reasons, and the Hub's desks one tab away.",
-      "brainingcamp": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks.",
-      "more": "See the full comparison"
+      "more": "See the full comparison",
+      "liveGames": "Live games run inside the Hub: students at their desks get an invite and join with one tap, no code.",
+      "classScreen": "{count} widgets, a screen for every student, points with reasons, and the Hub's desks one tab away.",
+      "mathTools": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks."
     },
     "tour": {
       "kicker": "Click-through tour",

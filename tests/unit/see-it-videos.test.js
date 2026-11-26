@@ -33,7 +33,7 @@ test('the four videos, their posters and captions are in public/video and ready'
   assert.ok(VIDEOS.every(v => readyVideos().includes(v) || !videoFiles(v.id).every(f => fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)))));
 });
 
-for (const path of ['/', '/teachers']) {
+for (const path of ['/teachers']) {
   test(`${path}: the "See it in action" section with the four videos`, async () => {
     const page = await get(path);
     assert.equal(page.status, 200);
@@ -70,6 +70,15 @@ for (const path of ['/', '/teachers']) {
     else assert.doesNotMatch(sec, /pv-cta/);
   });
 }
+
+test('/: the same four videos in the homepage\'s own player (posters, captions, no autoplay), and no link into the tools', async () => {
+  const page = await get('/');
+  const sec = page.text.slice(page.text.indexOf('id="videos"'), page.text.indexOf('</section>', page.text.indexOf('id="videos"')));
+  for (const id of ALL) assert.match(sec, new RegExp(`href="/video/oomba-${id}\\.mp4" data-video="/video/oomba-${id}\\.mp4" data-poster="/video/oomba-${id}-poster\\.jpg" data-vtt="/video/oomba-${id}\\.en\\.vtt"`), id);
+  assert.match(sec, /<video class="lp-vd-v" controls playsinline muted preload="none"/);
+  assert.doesNotMatch(sec, /autoplay|\$\d|\u2014/);
+  assert.doesNotMatch(sec, /href="\/(manipulatives|figures|dashboard|class\/)/);
+});
 
 test('in another language: translated words, English captions', async () => {
   const sec = (await get('/es/teachers')).text.match(/id="see-it"[\s\S]*?<\/section>/)[0];

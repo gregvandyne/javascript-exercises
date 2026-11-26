@@ -42,6 +42,8 @@ import { liveOn } from '../services/classlive-sessions.js';
 import * as funnel from '../services/funnel.js';
 import { countable } from '../services/traffic.js';
 import { themedPicture } from '../views/shot.js';
+import { loopShots } from '../views/teacher-loop.js';
+import { enabled as classroomOn } from '../services/gclassroom.js';
 import { plansOn } from '../services/teacher-tools.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
@@ -80,9 +82,9 @@ export const wantsLanding = req => landingAtRoot() && !req.user;
 export const NAMED = ['Kahoot!', 'Classroomscreen', 'Blooket', 'Brainingcamp', 'Typing.com'];
 /** The side-by-side cards: /compare's quotes only (routes/compare.js CELLS), by row. */
 export const VERSUS = [
-  { id: 'kahoot', rows: ['games', 'devices'] },
-  { id: 'classroomscreen', rows: ['dashboard', 'routines'] },
-  { id: 'brainingcamp', rows: ['manip', 'room', 'grades'] },
+  { id: 'kahoot', rows: ['games', 'devices'], adds: 'liveGames' },
+  { id: 'classroomscreen', rows: ['dashboard', 'routines'], adds: 'classScreen' },
+  { id: 'brainingcamp', rows: ['manip', 'room', 'grades'], adds: 'mathTools' },
 ];
 /** The overview video behind the hero's play button. There is no Hub video yet: the class dashboard's is the closest
  *  existing one (the whole class day on one screen). Change it to the Hub's once that video is in public/video. */
@@ -299,6 +301,17 @@ export function renderLanding(req, res) {
     </div>
   </div></section>`;
 
+  // ---- Google Classroom: only while it is on here (every line is teachers.classroom.*, the same words as /teachers), with
+  // the gradebook and feedback screens under it.
+  const classroom = classroomOn() ? html`<section class="lp-sec" id="classroom" aria-labelledby="classroom-h"><div class="lp-wrap">
+    <header class="lp-head">${T('p', 'teachers.classroom.kicker', ' class="lp-eyebrow"')}${T('h2', 'teachers.classroom.h', ' id="classroom-h"')}${T('p', 'teachers.classroom.lead', ' class="lp-sub"')}</header>
+    <div class="lp-card lp-gc">
+      <ul class="lp-list">${['li1', 'li2', 'li3', 'li4', 'li5'].map(k => html`<li><span class="lp-tick" aria-hidden="true">✓</span>${T('span', `teachers.classroom.${k}`)}</li>`)}</ul>
+      <p class="lp-small"><span${fb('teachers.classroom.note')}>${t('teachers.classroom.note')}</span> <a href="/privacy#google">${t('teachers.classroom.privacy')}</a></p>
+    </div>
+    ${loopShots(t, ['gradebook', 'feedback'], theme)}
+  </div></section>` : '';
+
   // ---- 7. side by side: what each product says it does (its own words, as /compare quotes them) and what Oomba adds
   const checked = longDate(req, COMPARE_CHECKED);
   const versus = html`<section class="lp-sec lp-alt" id="side-by-side" aria-labelledby="vs-h"><div class="lp-wrap">
@@ -310,7 +323,7 @@ export function renderLanding(req, res) {
       return html`<article class="lp-card lp-vs-card">
         <h3 lang="en" dir="ltr">${comp.name}</h3>
         <div class="lp-col">${T('b', 'landing.vs.does', '', { name: comp.name })}<ul>${quotes.map(c => html`<li><q lang="en" dir="ltr">${c.src.quote}</q> <a href="${c.src.url}" rel="noopener nofollow" class="lp-src-link" lang="en" dir="ltr">${new URL(c.src.url).hostname.replace(/^www\./, '')}</a></li>`)}</ul></div>
-        <div class="lp-col lp-us">${T('b', 'landing.vs.adds')}${T('p', `landing.vs.${v.id}`, '', { count: WIDGETS.length, tools: MANIP_TOOLS.length, tasks: TASK_COUNT })}</div>
+        <div class="lp-col lp-us">${T('b', 'landing.vs.adds')}${T('p', `landing.vs.${v.adds}`, '', { count: WIDGETS.length, tools: MANIP_TOOLS.length, tasks: TASK_COUNT })}</div>
         <p class="lp-src"${fb('landing.vs.source')}>${t('landing.vs.source', { site: sites.join(', '), date: checked })}</p>
       </article>`;
     })}</div>
@@ -439,7 +452,7 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${header}<main id="lp-main">${hero}${names}${one}${hub}${ask}${tools}${versus}${tour}${videosSec}${safety}${faqSec}${final}</main>${footer}`;
+  const body = html`${header}<main id="lp-main">${hero}${names}${one}${hub}${ask}${tools}${classroom}${versus}${tour}${videosSec}${safety}${faqSec}${final}</main>${footer}`;
   const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
   // The first picture on the screen, fetched before the CSS is read (the collage's big screen).
   const lead = SHOTS['tool-dash'] ? `<link rel="preload" as="image" type="image/webp" href="/img/landing/tool-dash-${SHOTS['tool-dash'].w[0]}.webp" imagesrcset="${esc(shotSrcset('tool-dash'))}" imagesizes="(min-width: 1100px) 660px, 92vw" fetchpriority="high">` : '';

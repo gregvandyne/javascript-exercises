@@ -172,7 +172,8 @@ test('the names appear only on /compare and the homepage: no other file the site
   const src = fs.readFileSync(path.join(ROOT, 'server/routes/landing.js'), 'utf8');
   assert.deepEqual([...new Set(src.match(new RegExp(ANY_NAME.source, 'gi')).map(m => m.toLowerCase()))].sort(), ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com'],
     'routes/landing.js names no product beyond the five');
-  assert.equal((src.match(/Blooket|Typing\.com/g) || []).length, 2, 'Blooket and Typing.com only in NAMED');
+  const code = src.replace(/^\s*(\/\/|\*|\/\*\*).*$/gm, '');
+  assert.equal((code.match(/Blooket|Typing\.com/g) || []).length, 2, 'in the code, Blooket and Typing.com are only in NAMED');
   // The pages around them never name any of the five.
   for (const p of ['/teachers', '/research', '/compliance', '/safety', '/privacy', '/parents', '/learn', '/plans', '/teachers/live', '/search']) {
     const r = await get(p); if (r.status !== 200) continue; assert.doesNotMatch(r.text, ANY_NAME, p);
@@ -188,7 +189,8 @@ test('the homepage names exactly the five products, with the trademark line, and
     assert.ok(text(h).includes('One subscription instead of five: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com'), 'the strip');
     assert.ok(text(h).includes('Kahoot!, Classroomscreen, Blooket, Brainingcamp and Typing.com are trademarks of their owners. Oomba Academy is not affiliated with them.'), 'the trademark line');
     assert.doesNotMatch(h, /<img[^>]*(kahoot|classroomscreen|blooket|brainingcamp|typing\.com)/i, 'no logos');
-    assert.doesNotMatch(text(main(h)), PRICE, 'no prices: "Pay for one plan instead of five" and a link to /compare');
+    // No amounts (the words "prices" and "per teacher per year" may appear, never a figure): "Pay for one plan instead of five" and a link to /compare.
+    assert.doesNotMatch(text(main(h)), /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\/(?:month|mo|year|yr)\b/i, 'no amounts');
     assert.match(h, /Pay for one plan instead of five\. <a href="\/compare">See how we compare<\/a>/);
     // The side-by-side cards: each quote is one /compare shows for that product, with its address and the day it was read.
     const cards = [...h.matchAll(/<article class="lp-card lp-vs-card">([\s\S]*?)<\/article>/g)].map(m => m[1]);

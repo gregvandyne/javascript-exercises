@@ -147,35 +147,16 @@ test('who may see and change it: staff only; students, kids, grown-ups and guest
   TL.markCheck(pupil); assert.equal(setting(`teach.loop:${pupil.id}`), null);
 });
 
-test('the landing at "/": one teaching-loop section after the students build, with the screens (Classroom off), alt text and no prices', async () => {
+test('the landing at "/" has no teaching-loop section any more (docs/decisions.md "Homepage: the one classroom tool for everything"); /teachers keeps it', async () => {
   const s = (await get('/')).text;
   assert.match(s, /<h1 id="lp-h1" class="lp-h1"/);
-  const at = s.indexOf('<section class="lp-sec lp-loop" id="loop"');
-  assert.ok(at > s.indexOf('id="kids"') && at < s.indexOf('id="pricing"'), 'after "Your students build", before pricing (the class-day order)');
-  assert.equal(s.split('class="lp-sec lp-loop"').length, 2, 'once');
-  const sec = s.slice(at, s.indexOf('</section>', at));
-  assert.match(sec, /<h2 id="loop-h">Plan → Play → Check → Feedback<\/h2>/);
-  assert.equal((sec.match(/class="lp-card lp-step lp-loop-step rv"/g) || []).length, 4);
-  for (const w of ['My games and folders', 'New game', 'Assign to a class', 'Gradebook with CSV download', 'Needs attention first', 'Answers to review', 'Written feedback students see']) assert.ok(sec.includes(w), w);
-  assert.ok(!sec.includes('Standards tab'), 'no Standards tab');
-  assert.ok(!/Lesson library|Draft with AI/.test(sec), 'games, not lessons');
-  assert.doesNotMatch(sec, /href="\/(?:class|teach)\//, 'no links into teacher-only pages for signed-out visitors');
-  assert.match(sec, /href="\/signup\?trial=1" data-cta="trial"/);
-  // Two screens side by side (the owner: "only keep two photos here", "The first and 3rd"): the gradebook and the feedback.
-  assert.deepEqual(V.PAIR, ['gradebook', 'feedback']);
-  assert.deepEqual([...sec.matchAll(/teach-loop\/(\w+)\.webp/g)].map(m => m[1]), V.PAIR);
-  for (const name of V.PAIR) {
-    const img = new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800" [^>]*alt="([^"]{30,})" loading="lazy"`).exec(sec);
-    assert.ok(img, name);
-    const file = path.resolve('public/img/teach-loop', `${name}.webp`);
-    assert.ok(fs.existsSync(file), file);
-    assert.ok(fs.statSync(file).size < 80 * 1024, `${name} under 80 KB`);
-    assert.equal(fs.readFileSync(file).subarray(8, 12).toString(), 'WEBP');
-  }
+  assert.doesNotMatch(s, /class="lp-sec lp-loop"/);
   assert.doesNotMatch(s, /\$\d|€\d|£\d|\d+\s*(?:USD|dollars)/i);
-  assert.doesNotMatch(sec, /rubric|Google Classroom|weekly (?:summary|email)|coming soon/i, 'no promises of tools not built');
-  const he = (await get('/he')).text;
-  assert.match(he, /<h2 id="loop-h">תכנון ← משחק ← בדיקה ← משוב<\/h2>/);
+  assert.deepEqual(V.PAIR, ['gradebook', 'feedback']);
+  for (const name of V.PAIR) {
+    const file = path.resolve('public/img/teach-loop', `${name}.webp`);
+    assert.ok(fs.existsSync(file) && fs.statSync(file).size < 80 * 1024, name);
+  }
 });
 
 test('/teachers: the same section; plain words for visitors, real links for staff', async () => {

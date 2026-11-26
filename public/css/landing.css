@@ -419,3 +419,18 @@ button{font:inherit;color:inherit}
 /* The AI chip is ink on cream in the dark theme (as the app's). */
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .lp-chip-ai{background:#FFFDF2;color:#141414}}
 :root[data-theme="dark"] .lp-chip-ai{background:#FFFDF2;color:#141414}
+/* Google Classroom (#classroom, only while it is on): the list, then the gradebook and feedback screens
+   (views/teacher-loop.js loopShots). */
+.lp-gc{padding:clamp(20px,2.4vw,28px)}
+.lp-list{display:grid;gap:10px}
+@media (min-width:900px){.lp-gc .lp-list{grid-template-columns:1fr 1fr;gap:12px 28px}}
+.lp-list li{display:flex;gap:10px;align-items:flex-start;color:var(--text-2)}
+.lp-tick{color:var(--leaf);font-weight:900}
+.lp-gc .lp-small{margin-top:16px}
+.lp-loop-shots{display:grid;gap:clamp(20px,3vw,32px);margin-top:28px}
+@media (min-width:760px){.lp-loop-shots{grid-template-columns:1fr 1fr}}
+.lp-device{margin:0}
+.lp-screen{border-radius:16px;overflow:hidden;border:1px solid var(--line-2);background:var(--card);box-shadow:var(--shadow-lg)}
+.lp-screen picture{display:contents}
+.lp-screen img{width:100%;height:auto}
+.lp-device figcaption{margin-top:10px;font-size:14px;color:var(--muted);text-align:center}

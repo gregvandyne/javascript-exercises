@@ -11104,10 +11104,10 @@
       "does": "Was {name} kann",
       "adds": "Was Oomba hier dazubringt",
       "source": "Quelle: {site}, gelesen am {date}",
-      "kahoot": "Live-Spiele laufen im Hub: Die Kinder an ihren Plätzen bekommen eine Einladung und machen mit einem Tipp mit, ohne Code.",
-      "classroomscreen": "{count} Widgets, ein Bildschirm für jedes Kind, Punkte mit Gründen und die Plätze des Hubs nur einen Tab entfernt.",
-      "brainingcamp": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen.",
-      "more": "Zum ganzen Vergleich"
+      "more": "Zum ganzen Vergleich",
+      "liveGames": "Live-Spiele laufen im Hub: Die Kinder an ihren Plätzen bekommen eine Einladung und machen mit einem Tipp mit, ohne Code.",
+      "classScreen": "{count} Widgets, ein Bildschirm für jedes Kind, Punkte mit Gründen und die Plätze des Hubs nur einen Tab entfernt.",
+      "mathTools": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen."
     },
     "tour": {
       "kicker": "Zum Durchklicken",

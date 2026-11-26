@@ -11103,10 +11103,10 @@
       "does": "Ce que fait {name}",
       "adds": "Ce qu’Oomba ajoute ici",
       "source": "Source : {site}, lu le {date}",
-      "kahoot": "Les jeux en direct se déroulent dans le Hub : les élèves à leur pupitre reçoivent une invitation et rejoignent en un geste, sans code.",
-      "classroomscreen": "{count} widgets, un écran pour chaque élève, des points avec des raisons, et les pupitres du Hub à un onglet.",
-      "brainingcamp": "{tools} manipulables et {tasks} tâches de la maternelle à la 4e, plus les fiches Figures, Oomba qui modifie le tableau à la demande, et chaque outil distribué sur les pupitres du Hub.",
-      "more": "Voir la comparaison complète"
+      "more": "Voir la comparaison complète",
+      "liveGames": "Les jeux en direct se déroulent dans le Hub : les élèves à leur pupitre reçoivent une invitation et rejoignent en un geste, sans code.",
+      "classScreen": "{count} widgets, un écran pour chaque élève, des points avec des raisons, et les pupitres du Hub à un onglet.",
+      "mathTools": "{tools} manipulables et {tasks} tâches de la maternelle à la 4e, plus les fiches Figures, Oomba qui modifie le tableau à la demande, et chaque outil distribué sur les pupitres du Hub."
     },
     "tour": {
       "kicker": "Visite guidée",

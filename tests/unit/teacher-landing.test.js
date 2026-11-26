@@ -234,7 +234,7 @@ test('the page in order: hero, the five named products, in one place, the Hub, A
   for (const id of order) assert.ok(at(id) > 0, id);
   for (let i = 1; i < order.length; i++) assert.ok(at(order[i - 1]) < at(order[i]), `${order[i - 1]} before ${order[i]}`);
   // The hero is every tool (a collage of real screens), not the Hub; the Hub has its own section after it.
-  const hero = s.slice(0, at('names-h'));
+  const hero = s.slice(s.indexOf('<main'), at('names-h'));
   assert.doesNotMatch(hero.replace(/<header[\s\S]*?<\/header>/, ''), /\bHub\b/, 'the first screen does not introduce the Hub');
   for (const n of ['tool-dash', 'tool-manip', 'tool-figures', 'tool-library', 'tool-brain-board']) assert.ok(hero.includes(`/img/landing/${n}-`), n);
   assert.match(hero, /<div class="lp-collage-in" role="img" aria-label="Real screens from Oomba Academy: [^"]+">/);

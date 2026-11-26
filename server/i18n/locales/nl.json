@@ -11104,10 +11104,10 @@
       "does": "Wat {name} doet",
       "adds": "Wat Oomba hier toevoegt",
       "source": "Bron: {site}, gelezen op {date}",
-      "kahoot": "Live spellen draaien in de Hub: leerlingen aan hun tafel krijgen een uitnodiging en doen met één tik mee, zonder code.",
-      "classroomscreen": "{count} widgets, een scherm voor elke leerling, punten met redenen en de tafels van de Hub één tabblad verder.",
-      "brainingcamp": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub.",
-      "more": "Bekijk de hele vergelijking"
+      "more": "Bekijk de hele vergelijking",
+      "liveGames": "Live spellen draaien in de Hub: leerlingen aan hun tafel krijgen een uitnodiging en doen met één tik mee, zonder code.",
+      "classScreen": "{count} widgets, een scherm voor elke leerling, punten met redenen en de tafels van de Hub één tabblad verder.",
+      "mathTools": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub."
     },
     "tour": {
       "kicker": "Klik-rondleiding",

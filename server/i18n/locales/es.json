@@ -11103,10 +11103,10 @@
       "does": "Lo que hace {name}",
       "adds": "Lo que Oomba añade aquí",
       "source": "Fuente: {site}, leído el {date}",
-      "kahoot": "Los juegos en vivo funcionan dentro del Hub: los estudiantes en sus pupitres reciben una invitación y se unen con un toque, sin código.",
-      "classroomscreen": "{count} widgets, una pantalla para cada estudiante, puntos con motivos y los pupitres del Hub a una pestaña.",
-      "brainingcamp": "{tools} manipulativos y {tasks} tareas de K a 8, además de fichas de Figures, Oomba cambiando el tablero cuando lo pides y cada herramienta repartida a los pupitres del Hub.",
-      "more": "Mira la comparación completa"
+      "more": "Mira la comparación completa",
+      "liveGames": "Los juegos en vivo funcionan dentro del Hub: los estudiantes en sus pupitres reciben una invitación y se unen con un toque, sin código.",
+      "classScreen": "{count} widgets, una pantalla para cada estudiante, puntos con motivos y los pupitres del Hub a una pestaña.",
+      "mathTools": "{tools} manipulativos y {tasks} tareas de K a 8, además de fichas de Figures, Oomba cambiando el tablero cuando lo pides y cada herramienta repartida a los pupitres del Hub."
     },
     "tour": {
       "kicker": "Recorrido interactivo",

@@ -182,16 +182,14 @@ test('the Builder’s start offers Classroom lesson and Classroom game only; an 
   assert.match(arc.text, /"canvas":\{"kind":"classgame"/);
 });
 
-test('the landing page leads with the teaching tools: no course links, kept games in the fan', async () => {
+test('the landing page leads with the teaching tools: no course links, the tools and the kept games', async () => {
   const r = await get('/');
   assert.equal(r.status, 200);
   assert.ok(!r.text.includes('/teachers/cs-quest') && !r.text.includes('/teachers/number-quest') && !r.text.includes('/teachers/cyber-defenders'));
-  assert.ok(r.text.includes('/img/landing/crossword-240.webp'));
-  assert.ok(!r.text.includes('/img/landing/robo-route-240.webp') && !r.text.includes('Fraction Factory'));
-  assert.ok(r.text.includes('virtual math manipulatives'));
-  assert.ok(!r.text.includes('<b>30+</b>'));
-  // The tools come before the Builder.
-  if (r.text.includes('id="tools"')) assert.ok(r.text.indexOf('id="tools"') < r.text.indexOf('id="builder"'));
+  assert.ok(r.text.includes('virtual manipulatives'));
+  assert.ok(!r.text.includes('Fraction Factory') && !r.text.includes('<b>30+</b>'));
+  assert.ok(r.text.indexOf('id="tools"') > 0 && r.text.includes('/img/landing/tool-crossword-'));
+  assert.match(r.text, /Word puzzles, math games and live class games, with no sign-up\./, 'Here to play? says what is left');
 });
 
 test('with ARCADE and COURSES on, everything is back', async () => {
@@ -207,7 +205,7 @@ test('with ARCADE and COURSES on, everything is back', async () => {
     const b = await get('/build/new', kid);
     assert.deepEqual([...b.text.matchAll(/class="su-kind" data-kind="([a-z]+)"/g)].map(m => m[1]), ['activity', 'classgame', 'arcade']);
     const land = await get('/');
-    assert.ok(land.text.includes('/teachers/cs-quest') && land.text.includes('<b>30+</b>'));
+    assert.ok(land.text.includes('/teachers/cs-quest'), 'the course links are back in the footer');
   } finally { config.arcade = false; config.courses = false; }
 });
 

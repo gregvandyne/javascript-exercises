@@ -11103,10 +11103,10 @@
       "does": "{name} 能做什麼",
       "adds": "Oomba 在這裡多了什麼",
       "source": "來源：{site}，{date} 閱讀",
-      "kahoot": "即時遊戲就在 Hub 裡進行：學生在桌上收到邀請，點一下就加入，不用代碼。",
-      "classroomscreen": "{count} 個小工具、每位學生自己的畫面、有理由的點數，而且 Hub 的桌子只差一個分頁。",
-      "brainingcamp": "{tools} 種教具和幼兒園到八年級的 {tasks} 個任務，加上 Figures 學習單、你一開口就改白板的 Oomba，而且每個工具都能發到 Hub 的桌上。",
-      "more": "看完整比較"
+      "more": "看完整比較",
+      "liveGames": "即時遊戲就在 Hub 裡進行：學生在桌上收到邀請，點一下就加入，不用代碼。",
+      "classScreen": "{count} 個小工具、每位學生自己的畫面、有理由的點數，而且 Hub 的桌子只差一個分頁。",
+      "mathTools": "{tools} 種教具和幼兒園到八年級的 {tasks} 個任務，加上 Figures 學習單、你一開口就改白板的 Oomba，而且每個工具都能發到 Hub 的桌上。"
     },
     "tour": {
       "kicker": "點選導覽",

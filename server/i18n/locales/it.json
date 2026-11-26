@@ -11104,10 +11104,10 @@
       "does": "Cosa fa {name}",
       "adds": "Cosa aggiunge Oomba qui",
       "source": "Fonte: {site}, letto il {date}",
-      "kahoot": "I giochi dal vivo si svolgono nell’Hub: gli alunni ai banchi ricevono un invito e partecipano con un tocco, senza codice.",
-      "classroomscreen": "{count} widget, uno schermo per ogni alunno, punti con motivi e i banchi dell’Hub a una scheda di distanza.",
-      "brainingcamp": "{tools} manipolabili e {tasks} attività dalla materna alla terza media, più le schede di Figures, Oomba che cambia la lavagna quando lo chiedi e ogni strumento distribuito ai banchi dell’Hub.",
-      "more": "Guarda il confronto completo"
+      "more": "Guarda il confronto completo",
+      "liveGames": "I giochi dal vivo si svolgono nell’Hub: gli alunni ai banchi ricevono un invito e partecipano con un tocco, senza codice.",
+      "classScreen": "{count} widget, uno schermo per ogni alunno, punti con motivi e i banchi dell’Hub a una scheda di distanza.",
+      "mathTools": "{tools} manipolabili e {tasks} attività dalla materna alla terza media, più le schede di Figures, Oomba che cambia la lavagna quando lo chiedi e ogni strumento distribuito ai banchi dell’Hub."
     },
     "tour": {
       "kicker": "Tour interattivo",
