@@ -74,9 +74,12 @@ export function wireCatalog(root, { onPick = null, onSelect = null } = {}) {
     // With All on and nothing searched, each part (Games, Live games, Teaching tools, Lessons) is one grid showing its
     // first few, the recently handed out first; See all shows the rest. A part with nothing in it goes.
     for (const sec of box.querySelectorAll('.hr-csec')) {
-      const lis = [...sec.querySelectorAll('.hr-items > li.hr-cc:not([hidden])')].filter(li => !li.matches('.hr-cbuildplan, .hr-cbuild'));
+      let lis = [...sec.querySelectorAll('.hr-items > li.hr-cc:not([hidden])')].filter(li => !li.matches('.hr-cbuildplan, .hr-cbuild'));
       const more = sec.querySelector(':scope > [data-cseeall]'), isOpen = open.has(sec.dataset.csec);
       if (!busy) {
+        // (practice tasks are found by tool, then task: the Teaching tools chip or a search; under All only the tools)
+        for (const li of lis.filter(x => x.dataset.k === 'task' && !x.dataset.recent)) li.hidden = true;
+        lis = lis.filter(x => !x.hidden);
         const first = [...lis.filter(li => li.dataset.recent), ...lis.filter(li => !li.dataset.recent)];
         first.forEach((li, i) => { li.hidden = !isOpen && i >= FIRST; });
       }
