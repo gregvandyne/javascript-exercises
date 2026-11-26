@@ -4532,7 +4532,8 @@
         "bookDelAsk": "刪除「{q}」前先詢問",
         "book_rename": "已重新命名「{q}」",
         "book_duplicate": "已複製「{q}」",
-        "book_repaint": "已要求重新繪製「{q}」"
+        "book_repaint": "已要求重新繪製「{q}」",
+        "week": "已擬好一週計畫（{n} 天）"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4606,7 +4607,9 @@
         "slow": "一小時內的訊息太多了。請稍等一下再試。",
         "fileGone": "這個附件已經不在了。請重新附加。",
         "other": "出了點問題。你的訊息還在:請稍後再試一次。",
-        "cap": "你今天做書的 Oomba 次數已經用完。你仍然可以自己動手編輯書。明天會有新的次數。"
+        "cap": "你今天做書的 Oomba 次數已經用完。你仍然可以自己動手編輯書。明天會有新的次數。",
+        "pastDay": "那天已經過了。請選今天或本週之後的一天。",
+        "weekPast": "那一週的每一天都已經過了。"
       },
       "quoteN": "第 {n} 題:{text}",
       "questionN": "第 {n} 題",
@@ -4672,6 +4675,48 @@
         "keep": "保留",
         "deleted": "已刪除「{title}」。",
         "kept": "已保留「{title}」。"
+      },
+      "plan": {
+        "fb": {
+          "week": {
+            "start": "這是一個簡單的一週，作為開始：你的教案和課程分配到各天。可以要求修改，例如「星期三是半天」。",
+            "half": "好了。那天現在是半天，時間已縮短。",
+            "swap": "好了。那兩天已互換。",
+            "move": "好了。已移到那一天。",
+            "saved": "這是你儲存的計畫「{name}」，放在一週的每一天。"
+          }
+        }
+      },
+      "week": {
+        "title": "本週計畫",
+        "weekOf": "{topic} 週",
+        "quiz": "小考",
+        "today": "今天",
+        "half": "半天",
+        "noPlan": "沒有計畫",
+        "use": "使用這一週",
+        "saved": "已為這個班的這一週儲存。",
+        "past": "這一週已經結束。",
+        "range": "{from} 至 {to}",
+        "copiedFrom": "複製自 {name}",
+        "next": "複製到下週",
+        "askChanges": "在這裡要求修改，例如「把小考移到星期四」或「星期三是半天」。",
+        "eachMorning": "每天早上，計畫按鈕會有當天的計畫。按下開始之前，什麼都不會發到桌上，各部分也不會自己往下走。",
+        "usedToast": "已儲存 {count} 天。每天早上，計畫按鈕會有當天的計畫。",
+        "skipped": "有 {count} 天已經過了，維持原樣。",
+        "copied": "這是給 {name} 的一週。在使用某天的計畫之前，那裡不會發下任何東西。",
+        "nextDone": "這是同樣的一週，延後一週。修改你想改的，再按「使用這一週」。"
+      },
+      "copy": {
+        "title": "複製到 {cls}",
+        "lead": "這個計畫在那個班使用時會發下的內容。教案到那時才在那個班建立，不是現在。",
+        "leadWeek": "每天的計畫在那個班使用時會發下的內容。教案到那時才在那個班建立，不是現在。",
+        "everyone": "所有人",
+        "nothing": "沒有要發的東西。",
+        "missingEveryone": "{cls} 沒有 {group} 組：發給所有人。",
+        "missingNone": "{cls} 沒有 {group} 組：那個版本不會用到。",
+        "cancel": "取消",
+        "go": "複製到 {cls}"
       }
     },
     "companion-greet": {
@@ -5332,6 +5377,45 @@
           "comingOff": "已移除 {name} 桌上的提示"
         }
       }
+    },
+    "homeroom-plan": {
+      "thisWeek": "本週",
+      "weekLabel": "本週的計畫。打開這一週",
+      "planTodayChat": "在 Oomba 聊天中規劃今天",
+      "putOnDesks": "發到桌上",
+      "fromWeek": "來自本週的計畫，還沒發到桌上。按開始會發下並開始第 1 部分。",
+      "wk": {
+        "none": "沒有計畫",
+        "noneLong": "這天沒有計畫。在聊天中請 Oomba 擬一個。",
+        "swapWith": "與 {day} 互換",
+        "pickSwap": "點選要與 {day} 互換的那一天。",
+        "cancel": "取消",
+        "half": "半天",
+        "inUse": "這是今天的計畫。請在聊天中修改。",
+        "pastDay": "這天已經過了。",
+        "swap": "與另一天互換",
+        "clear": "清空這一天",
+        "clearTitle": "清空 {day}？",
+        "clearText": "那天的計畫會從這一週移除。桌上的東西不會改變。"
+      }
+    },
+    "homeroom-due": {
+      "label": "截止",
+      "none": "沒有截止日",
+      "chipToday": "今天",
+      "chipTomorrow": "明天",
+      "chipFriday": "星期五",
+      "chipPick": "選擇日期",
+      "date": "日期",
+      "time": "時間（選填）",
+      "noneHint": "沒有截止日。會留在桌上直到完成。",
+      "hintDay": "{when} 截止，當天結束時。",
+      "hintTime": "{when} 截止。",
+      "today": "今天",
+      "tomorrow": "明天",
+      "dayTime": "{day} {time}",
+      "due": "{when} 截止",
+      "afterDue": "超過截止"
     }
   },
   "favorites": {
@@ -15311,7 +15395,9 @@
       "deskLocked": "現在暫停畫畫。",
       "notHere": "線要畫在其他學生的桌子和老師區以外。",
       "tooFast": "一次畫太多了。等一下再試一次。",
-      "roomFull": "教室裡的畫已經滿了。"
+      "roomFull": "教室裡的畫已經滿了。",
+      "pastDay": "那天已經過了。請選今天或本週之後的一天。",
+      "weekPast": "那一週的每一天都已經過了。"
     },
     "live": "直播中",
     "desk": {
@@ -15502,7 +15588,9 @@
       "gcOpen": "開啟設定",
       "gcNotLinked": "還沒連結。",
       "gcLink": "連結 Classroom 課程",
-      "gradeSaved": "已變更評分方式"
+      "gradeSaved": "已變更評分方式",
+      "due": "{when} 截止",
+      "afterDue": "超過截止"
     },
     "studentDraw": {
       "savedOn": "學生可以在教室裡畫",

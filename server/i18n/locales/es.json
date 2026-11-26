@@ -4532,7 +4532,8 @@
         "bookDelAsk": "Preguntó antes de eliminar «{q}»",
         "book_rename": "Cambió el nombre de «{q}»",
         "book_duplicate": "Copió «{q}»",
-        "book_repaint": "Pidió volver a pintar «{q}»"
+        "book_repaint": "Pidió volver a pintar «{q}»",
+        "week": "Plan semanal preparado ({n} días)"
       },
       "stepsSum": "{n, plural, one {# paso} other {# pasos}} · {s} s",
       "prog": {
@@ -4606,7 +4607,9 @@
         "slow": "Son muchos mensajes para una hora. Espera un poco y vuelve a intentarlo.",
         "fileGone": "Ese adjunto ya no está. Adjúntalo otra vez.",
         "other": "Algo salió mal. Tu mensaje sigue aquí: inténtalo de nuevo en un momento.",
-        "cap": "Ya usaste los turnos de Oomba de hoy para libros. Puedes seguir editando tus libros a mano. Mañana hay más turnos."
+        "cap": "Ya usaste los turnos de Oomba de hoy para libros. Puedes seguir editando tus libros a mano. Mañana hay más turnos.",
+        "pastDay": "Ese día ya pasó. Elige hoy o un día posterior de esta semana.",
+        "weekPast": "Todos los días de esa semana ya pasaron."
       },
       "quoteN": "Pregunta {n}: {text}",
       "questionN": "Pregunta {n}",
@@ -4672,6 +4675,48 @@
         "keep": "Conservar",
         "deleted": "«{title}» eliminado.",
         "kept": "«{title}» conservado."
+      },
+      "plan": {
+        "fb": {
+          "week": {
+            "start": "Aquí tienes una semana sencilla para empezar: tus planes de clase y lecciones repartidos en los días. Pide cambios, como \"el miércoles es medio día\".",
+            "half": "Listo. Ese día ahora es medio día, con los minutos recortados.",
+            "swap": "Listo. Esos dos días cambiaron de lugar.",
+            "move": "Listo. Se movió a ese día.",
+            "saved": "Aquí está tu plan guardado \"{name}\" en cada día de la semana."
+          }
+        }
+      },
+      "week": {
+        "title": "Plan de esta semana",
+        "weekOf": "Semana de {topic}",
+        "quiz": "Prueba",
+        "today": "Hoy",
+        "half": "Medio día",
+        "noPlan": "Sin plan",
+        "use": "Usar esta semana",
+        "saved": "Guardado para la semana de esta clase.",
+        "past": "Esta semana ya terminó.",
+        "range": "del {from} al {to}",
+        "copiedFrom": "copiado de {name}",
+        "next": "Copiar a la próxima semana",
+        "askChanges": "Pide cambios aquí, como \"mueve la prueba al jueves\" o \"el miércoles es medio día\".",
+        "eachMorning": "Cada mañana, la píldora del plan tiene el plan de ese día. Nada va a los pupitres hasta que toques Empezar, y las partes nunca avanzan solas.",
+        "usedToast": "{count, plural, one {# día guardado.} other {# días guardados.}} Cada mañana, la píldora del plan tiene el plan de ese día.",
+        "skipped": "{count, plural, one {# día ya había pasado y queda como estaba.} other {# días ya habían pasado y quedan como estaban.}}",
+        "copied": "Aquí está la semana para {name}. Allí no se reparte nada hasta que se use el plan de un día.",
+        "nextDone": "Aquí está la misma semana, una semana después. Cambia lo que quieras y toca Usar esta semana."
+      },
+      "copy": {
+        "title": "Copiar a {cls}",
+        "lead": "Lo que este plan repartirá en esa clase cuando se use allí. Los planes de clase se crean allí en ese momento, no ahora.",
+        "leadWeek": "Lo que el plan de cada día repartirá en esa clase cuando se use allí. Los planes de clase se crean allí en ese momento, no ahora.",
+        "everyone": "Todos",
+        "nothing": "Nada que repartir.",
+        "missingEveryone": "No hay grupo {group} en {cls}: va para todos.",
+        "missingNone": "No hay grupo {group} en {cls}: esa versión se deja fuera.",
+        "cancel": "Cancelar",
+        "go": "Copiar a {cls}"
       }
     },
     "companion-greet": {
@@ -5332,6 +5377,45 @@
           "comingOff": "Aviso quitado del pupitre de {name}"
         }
       }
+    },
+    "homeroom-plan": {
+      "thisWeek": "Esta semana",
+      "weekLabel": "Planes de esta semana. Abrir la semana",
+      "planTodayChat": "Planear hoy en el chat de Oomba",
+      "putOnDesks": "Poner en los pupitres",
+      "fromWeek": "Del plan de esta semana, aún no está en los pupitres. Empezar lo pone allí y comienza la parte 1.",
+      "wk": {
+        "none": "sin plan",
+        "noneLong": "No hay plan para este día. Pídele uno a Oomba en el chat.",
+        "swapWith": "Cambiar con {day}",
+        "pickSwap": "Toca el día con el que cambiar {day}.",
+        "cancel": "Cancelar",
+        "half": "Medio día",
+        "inUse": "Es el plan de hoy. Cámbialo en el chat.",
+        "pastDay": "Este día ya pasó.",
+        "swap": "Cambiar con otro día",
+        "clear": "Vaciar este día",
+        "clearTitle": "¿Vaciar {day}?",
+        "clearText": "El plan de ese día sale de la semana. Nada cambia en los pupitres."
+      }
+    },
+    "homeroom-due": {
+      "label": "Entrega",
+      "none": "Sin fecha de entrega",
+      "chipToday": "Hoy",
+      "chipTomorrow": "Mañana",
+      "chipFriday": "Viernes",
+      "chipPick": "Elegir fecha",
+      "date": "Fecha",
+      "time": "Hora (opcional)",
+      "noneHint": "Sin fecha de entrega. Queda en los pupitres hasta que esté hecho.",
+      "hintDay": "Entrega {when}, al final del día.",
+      "hintTime": "Entrega {when}.",
+      "today": "hoy",
+      "tomorrow": "mañana",
+      "dayTime": "{day}, {time}",
+      "due": "Entrega {when}",
+      "afterDue": "después de la entrega"
     }
   },
   "favorites": {
@@ -15311,7 +15395,9 @@
       "deskLocked": "El dibujo está en pausa ahora mismo.",
       "notHere": "Las líneas van fuera de los pupitres de otros estudiantes y del área del docente.",
       "tooFast": "Es mucho dibujo de una vez. Inténtalo de nuevo en un momento.",
-      "roomFull": "El aula tiene todos los dibujos que puede tener."
+      "roomFull": "El aula tiene todos los dibujos que puede tener.",
+      "pastDay": "Ese día ya pasó. Elige hoy o un día posterior de esta semana.",
+      "weekPast": "Todos los días de esa semana ya pasaron."
     },
     "live": "En vivo",
     "desk": {
@@ -15502,7 +15588,9 @@
       "gcOpen": "Abrir ajustes",
       "gcNotLinked": "Aún no vinculada.",
       "gcLink": "Vincular una clase de Classroom",
-      "gradeSaved": "Calificación cambiada"
+      "gradeSaved": "Calificación cambiada",
+      "due": "Entrega {when}",
+      "afterDue": "después de la entrega"
     },
     "studentDraw": {
       "savedOn": "Los estudiantes pueden dibujar en el aula",

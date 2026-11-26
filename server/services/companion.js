@@ -62,6 +62,7 @@ import { toolOf } from '../../public/js/manip-data.js';
 import { REASON_ICON } from '../../public/js/dash-class5.js';
 import * as HR from './homeroom.js';
 import * as HP from './homeroom-plan.js';
+import * as HW from './homeroom-week.js';
 import * as SUP from './homeroom-supports.js';
 
 export const SURFACE = 'companion';
@@ -622,6 +623,8 @@ export function dress(u, chat, t) {
     if (x.change && x.change.kind === 'book') y = { ...y, change: { ...x.change, lines: bookLines(x.change, t) } };
     // A day plan's card: what each part hands out, the groups' names, where the class's plan of today stands.
     if (x.note && x.note.plan) y = { ...y, note: { ...y.note, plan: HP.cardView(u, x.note.plan, t) } };
+    // A week plan's card: Monday to Friday, each day's parts and what they hand out.
+    if (x.note && x.note.week) y = { ...y, note: { ...y.note, week: HW.weekCardView(u, x.note.week, t) } };
     const p = x.note && x.note.pick;
     if (p) {
       const need = pickNeeds(p);
@@ -805,6 +808,13 @@ export const PLAN_TOOLS = Object.freeze([
     parts: { type: 'array', maxItems: HP.PARTS_MAX, items: { type: 'object', required: ['kind', 'minutes'], properties: {
       kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: what to do, one or two short sentences.'),
       pick: PLAN_PICK, groups: { type: 'array', description: 'Work time per group: a version for each group, by the group\'s name.', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } },
+  { name: 'draftWeekPlan', description: 'Draft (or redraft) the week plan for the class whose Homeroom the teacher has open: Monday to Friday (the class\'s school days), each day a SHORT day plan with the same parts as draftDayPlan. The teacher sees a card with the five days and Use this week; nothing is saved before that. Its result is the week read back after the app checked it: report only that.', input_schema: { type: 'object', required: ['days'], properties: {
+    name: str('A short name, like "Fractions week".'), topic: str('The topic, a few words.'), week: { type: 'string', enum: ['this', 'next'], description: 'This school week (the default) or next week.' },
+    days: { type: 'array', maxItems: 5, items: { type: 'object', required: ['day', 'parts'], properties: {
+      day: { type: 'string', enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] }, half: { type: 'boolean', description: 'A half day: at most 60 minutes.' }, name: str('A short name for the day, optional.'),
+      parts: { type: 'array', maxItems: HP.PARTS_MAX, items: { type: 'object', required: ['kind', 'minutes'], properties: {
+        kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: one or two short sentences.'),
+        pick: PLAN_PICK, groups: { type: 'array', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } } } } },
   { name: 'useSavedPlan', description: 'Use a day plan the teacher saved before ("use my Fractions day plan again"): it becomes a new card for this class, with Use this plan. Its result lists the saved plans when none fits the name.', input_schema: { type: 'object', required: ['name'], properties: { name: str('Words from the saved plan\'s name.') } } },
   { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Homeroom supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
 ]);
@@ -813,6 +823,12 @@ export const PLAN_TOOL_NAMES = Object.freeze(PLAN_TOOLS.map(x => x.name));
 export function latestPlan(u, classId, row = chatRow(u)) {
   const turns = row ? parse(row.turns, []) || [] : [];
   for (let k = turns.length - 1; k >= 0; k--) { const p = turns[k].note && turns[k].note.plan; if (p && p.classId === classId && p.plan) return p; }
+  return null;
+}
+/** The newest week card in this teacher's chat for a class (the week a change is made to), or null. */
+export function latestWeek(u, classId, row = chatRow(u)) {
+  const turns = row ? parse(row.turns, []) || [] : [];
+  for (let k = turns.length - 1; k >= 0; k--) { const w = turns[k].note && turns[k].note.week; if (w && w.classId === classId && w.week) return w; }
   return null;
 }
 /** The tools for a page: the general ones and, on a worksheet or board, that page's own. */
@@ -852,7 +868,15 @@ export function runTool(name, input, ctx) {
       const r = pageContext(u, ctx.page, { lang: ctx.lang, names: ctx.names });
       if (ctx.page.type === 'figures-sheet') { const w = F.ownWorksheet(u, ctx.page.sheetId); if (w) r.worksheet = FC.sheetContext(u, w); }
       if (ctx.page.type === 'manip' && ctx.page.board) r.board = { tool: ctx.page.board.tool, title: ctx.page.board.title, ...ctx.page.board.board };
-      if (ctx.page.type === 'homeroom') { const c = S.getClass(ctx.page.classId), d = latestPlan(u, c.id); r.homeroom = HP.aiContext(u, c, { lang: ctx.lang, draft: d && d.plan }); return { result: r, step: { k: 'page', n: 0 } }; }
+      if (ctx.page.type === 'homeroom') {
+        const c = S.getClass(ctx.page.classId), d = latestPlan(u, c.id), w = latestWeek(u, c.id);
+        r.homeroom = HP.aiContext(u, c, { lang: ctx.lang, draft: d && d.plan });
+        // week plans: this school week's dates and, when there is one, the week on the newest card
+        const wk = HW.weekOf(c);
+        r.homeroom.schoolWeek = { thisWeek: wk.start, today: wk.today, days: wk.days.map(x => HW.dayName(x, 'en', true)) };
+        if (w) r.homeroom.weekOnCard = HW.readBackWeek(u, c, w.week, ctx.lang);
+        return { result: r, step: { k: 'page', n: 0 } };
+      }
       if (ctx.page.type === 'manip-live') r.liveRoom = { tool: ctx.page.tool, note: 'The live room is running: Oomba does not change the room\'s boards.' };
       if (r.worksheet) return { result: r, step: { k: 'sheet', n: r.worksheet.questions.length } };
       return { result: r, step: { k: r.dashboard ? 'dash' : 'page', n: r.dashboard ? r.dashboard.widgets.length : 0, q: r.dashboard ? r.dashboard.name : '' } };
@@ -1075,6 +1099,18 @@ export function runTool(name, input, ctx) {
       ctx.out.plan = HP.newCard(c, r, ctx.lang, r.savedFrom ? { from: r.savedFrom } : {});
       return { result: { shownOnCard: true, plan: HP.readBack(u, c, r.plan, ctx.lang), ...(r.notes.length ? { changedByTheApp: r.notes } : {}), note: 'The teacher sees the plan as a card with Use this plan, Save plan and Copy. Nothing is on desks yet. Do not repeat every part in words.' }, step: { k: r.savedFrom ? 'planSaved' : 'plan', n: r.plan.parts.length, q: clip(r.savedFrom ? r.savedFrom.name : r.plan.name, 40) } };
     }
+    // A week plan (services/homeroom-week.js): Monday to Friday, a day plan each, checked like a day plan.
+    case 'draftWeekPlan': {
+      const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Week plans are made on a class\'s Homeroom.' }, step: { k: 'planNo' } };
+      const prev = latestWeek(u, c.id);
+      const r = HW.cleanWeek(u, c, i, { lang: ctx.lang, names: ctx.names });
+      if (prev && !r.week.name) r.week.name = prev.week.name || '';
+      const n = r.week.days.filter(d => d.plan).length;
+      if (!n) return { result: { error: 'No day could be kept. Give Monday to Friday, each with parts (slides, work, break, exit) and minutes.', notLanded: r.notes }, step: { k: 'planNo' } };
+      ctx.out.week = HW.newWeekCard(c, r, ctx.lang);
+      return { result: { shownOnCard: true, week: HW.readBackWeek(u, c, r.week, ctx.lang), ...(r.notes.length ? { changedByTheApp: r.notes } : {}), note: 'The teacher sees the week as a card with Use this week, Copy to another class and Copy to next week. Nothing is saved yet. Do not repeat every day in words.' }, step: { k: 'week', n, q: clip(r.week.name, 40) } };
+    }
     // Simpler wording for a handout (Homeroom supports; services/homeroom-supports.js): the text is checked for names.
     case 'writeSimplerWording': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
@@ -1173,7 +1209,7 @@ function system(u, lang, page, settings) {
 function pageRules(u, page) {
   if (page.type === 'figures-sheet') { const w = F.ownWorksheet(u, page.sheetId); return w ? FC.workflowRules(u, w) : ''; }
   if (page.type === 'manip' && page.board) return MC.workflowRules(page.board);
-  if (page.type === 'homeroom') return HP.workflowRules();
+  if (page.type === 'homeroom') return `${HP.workflowRules()}\n${HW.weekRules()}`;
   return '';
 }
 /** The conversation as the AI sees it: earlier turns' words, and the new message with its file and page. */
@@ -1235,7 +1271,7 @@ export function finalText(content, ctx, web) {
     if (it && cards.length < 4 && !cards.some(c => c.kind === kind && c.id === id)) cards.push(it);
     return '';
   });
-  if (!cards.length && ctx.lastList && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.plan) for (const k of ctx.lastList.slice(0, 3)) cards.push(ctx.seen.get(k));
+  if (!cards.length && ctx.lastList && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.plan && !ctx.out.week) for (const k of ctx.lastList.slice(0, 3)) cards.push(ctx.seen.get(k));
   if (!sources.length && web.found.size && web.searches) for (const s of [...web.found.values()].slice(0, 3)) sources.push(s);
   // Links: only those a tool gave in this answer (the teacher's own pages, from the help map or a navigation target).
   const kept = [];
@@ -1296,8 +1332,19 @@ function withNote(m, note) {
  *  newest card, or a starting plan from the teacher's own lessons and games). null: anything else, or another page. */
 export function planFallback(user, meta, text) {
   const page = pageOf(user, meta && meta.page);
-  if (page.type !== 'homeroom' || !/plan|minute|\bmin\b|break|exit|slides|work ?time|again/i.test(String(text || ''))) return null;
+  if (page.type !== 'homeroom' || !/plan|minute|\bmin\b|break|exit|slides|work ?time|again|week|half[ -]?day|move|swap/i.test(String(text || ''))) return null;
   const c = S.getClass(page.classId), lang = (meta && meta.lang) || 'en', t = tFor(lang);
+  // A week (services/homeroom-week.js fallbackWeek): a change to the newest week card, a saved plan all week, or the
+  // teacher's lessons spread over the days.
+  const w = latestWeek(user, c.id);
+  if (HW.aboutWeek(text) || (w && /\b(move|swap)\b/i.test(String(text || '')))) {
+    const r = HW.fallbackWeek(user, c, text, { lang, draft: w && w.week });
+    const n = r.week.days.filter(d => d.plan).length;
+    if (!n) return null;
+    if (w && !r.week.name) r.week.name = w.week.name || '';
+    const card = HW.newWeekCard(c, r, lang, { how: r.how, ...(r.savedFrom ? { from: r.savedFrom } : {}) });
+    return { reply: t(`js.companion.plan.fb.${r.how}`, { name: r.savedFrom ? r.savedFrom.name : '' }), apply: () => ({ note: { steps: [{ k: 'week', n, q: clip(r.week.name, 40) }], ms: 0, cards: [], week: card } }) };
+  }
   const d = latestPlan(user, c.id);
   const r = HP.fallbackDraft(user, c, text, { lang, draft: d && d.plan });
   if (!r.plan.parts.length) return null;
@@ -1377,11 +1424,11 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const fin = finalText(res && res.content, ctx, web);
   let reply = cleanText(user, fin.text, names);
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
-    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}) };
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -1626,7 +1673,9 @@ export function act(u, turnId, a, value = '') {
  *  (value: its name), planPick (value: a saved plan: a new card), planCopy (value: another class of theirs: a new card for
  *  that class). Only on a class Homeroom lets them into. -> the conversation, and plan (the pill's view), summary, toast */
 function planAct(u, row, turn, a, value) {
+  if (/^planWeek/.test(a)) return weekAct(u, row, turn, a, value);
   const card = turn.note.plan;
+  if (!card) return { ok: false, code: 'notFound' };
   const c = card && S.getClass(card.classId);
   if (!c || !HR.canUseClass(u, c)) return { ok: false, code: 'notFound' };
   const lang = card.lang || 'en', t = tFor(lang);
@@ -1657,10 +1706,48 @@ function planAct(u, row, turn, a, value) {
     if (!r.plan.parts.length) return { ok: false, code: 'noPlan' };
     return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.plan.fromSaved', { name: s.name }), apply: () => ({ note: { plan: HP.newCard(c, r, lang, { from: r.savedFrom }) } }) }));
   }
+  // The copy preview (nothing changes): what each part hands out to whom in that class, and the groups it doesn't have.
+  if (a === 'planCopyPreview') {
+    const r = HP.copyTo(u, c, card.plan, value, { lang });
+    if (!r.ok) return r;
+    return { ok: true, preview: { kind: 'day', classId: r.c.id, className: r.c.name, name: r.plan.name || '', ...HP.previewOf(u, r.c, r.plan, r.notes, lang) } };
+  }
   if (a === 'planCopy') {
     const r = HP.copyTo(u, c, card.plan, value, { lang });
     if (!r.ok) return r;
     return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.plan.copied', { name: r.c.name }), apply: () => ({ note: { plan: HP.newCard(r.c, r, lang, { copiedFrom: c.id }) } }) }));
+  }
+  return { ok: false, code: 'notFound' };
+}
+/** A tap on a week plan's card (services/homeroom-week.js): planWeekUse (the five dated day plans saved for the class;
+ *  the pill picks each up on its day), planWeekCopyPreview / planWeekCopy (value: another class of theirs: what it would
+ *  hand out there, then a new card for that class), planWeekNext (a new card for the week after). -> the conversation,
+ *  plan (the pill's view), toast, preview */
+function weekAct(u, row, turn, a, value) {
+  const card = turn.note.week;
+  const c = card && S.getClass(card.classId);
+  if (!c || !HR.canUseClass(u, c)) return { ok: false, code: 'notFound' };
+  const lang = card.lang || 'en', t = tFor(lang);
+  const told = (r, extra = {}) => ({ ...r, plan: HP.teacherView(c), classId: c.id, ...extra });
+  if (a === 'planWeekUse') {
+    const r = HW.useWeek(u, c, card.week, { lang });
+    if (!r.ok) return r;
+    return told(markNote(u, row, turn.id, { ...turn.note, week: { ...card, state: 'used', usedAt: now() } }), { toast: [t('js.companion.week.usedToast', { count: r.saved }), r.skipped ? t('js.companion.week.skipped', { count: r.skipped }) : ''].filter(Boolean).join(' ') });
+  }
+  if (a === 'planWeekCopyPreview') {
+    const r = HW.copyWeek(u, c, card.week, value, { lang });
+    if (!r.ok) return r;
+    return { ok: true, preview: { kind: 'week', classId: r.c.id, className: r.c.name, name: r.week.name || '', ...HW.previewWeek(u, r.c, r.week, r.notes, lang) } };
+  }
+  if (a === 'planWeekCopy') {
+    const r = HW.copyWeek(u, c, card.week, value, { lang });
+    if (!r.ok) return r;
+    return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.week.copied', { name: r.c.name }), apply: () => ({ note: { week: HW.newWeekCard(r.c, r, lang, { copiedFrom: c.id }) } }) }));
+  }
+  if (a === 'planWeekNext') {
+    const r = HW.nextWeek(u, c, card.week, { lang });
+    if (!r.ok) return r;
+    return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.week.nextDone'), apply: () => ({ note: { week: HW.newWeekCard(c, r, lang) } }) }));
   }
   return { ok: false, code: 'notFound' };
 }

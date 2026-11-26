@@ -42,6 +42,7 @@ import { tFor } from '../i18n/index.js';
 import { timing, MORE_MS, EXTRA_MAX } from '../../public/js/homeroom-plan-time.js';
 import { ARITH, ALGEBRA, fill, suggest, leanOf, groupIdent } from '../../public/js/homeroom-lesson-make.js';
 import { DEFAULT_GROUPS } from '../../public/js/homeroom-seats.js';
+import * as HW from './homeroom-week.js';
 
 export const KINDS = Object.freeze(['slides', 'work', 'break', 'exit']);
 /** Minutes each kind may take (clamped into this), and the starting plan's. */
@@ -62,8 +63,8 @@ const fold = s => String(s || '').normalize('NFKD').replace(/[̀-ͯ]/g, '').toLo
 const words = s => fold(s).split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2);
 
 // ---------------------------------------------------------------- groups and names
-const groupLabel = (g, lang = 'en') => (g && g.name) || (g && g.key ? tFor(lang)(`js.homeroom.groups.${g.key}`) : '') || tFor(lang)('js.homeroom.groups.unnamed');
-const roomGroups = c => H.roomOf(c.id).groups;
+export const groupLabel = (g, lang = 'en') => (g && g.name) || (g && g.key ? tFor(lang)(`js.homeroom.groups.${g.key}`) : '') || tFor(lang)('js.homeroom.groups.unnamed');
+export const roomGroups = c => H.roomOf(c.id).groups;
 /** The class's group a word means: its id, its name or its default key, any case. */
 function groupFor(groups, raw, lang) {
   const v = fold(clip(raw, 40));
@@ -73,7 +74,7 @@ function groupFor(groups, raw, lang) {
 /** Text the teacher (or the AI) wrote for a title: one line, no students' names, the site's word rules; '' when it
  *  fails (the card then shows the part's kind). With groups: a title naming a group is dropped too (titles reach the
  *  projector and desks, group names never do). */
-function cleanTitle(raw, { names = [], groups = [], lang = 'en', max = TITLE_MAX } = {}) {
+export function cleanTitle(raw, { names = [], groups = [], lang = 'en', max = TITLE_MAX } = {}) {
   const v = clip(raw, max);
   if (!v) return '';
   const r = scrub(v, names);
@@ -132,7 +133,7 @@ function pickIcon(u, p) {
  * [{ kind, minutes, title, instructions | note, gameId | lessonId | make | pick, groups: [{ group, gameId | lessonId |
  * make | pick }] | versions }] }. -> { plan, notes: [{ k, part?, ... }] } (notes: what was changed or left out)
  */
-export function cleanPlan(u, c, raw, { lang = 'en', names = studentNames(u), id = null } = {}) {
+export function cleanPlan(u, c, raw, { lang = 'en', names = studentNames(u), id = null, totalMax = TOTAL_MAX } = {}) {
   const groups = roomGroups(c), notes = [];
   const src = raw && typeof raw === 'object' ? raw : {};
   const list = Array.isArray(src.parts) ? src.parts : [];
@@ -149,9 +150,9 @@ export function cleanPlan(u, c, raw, { lang = 'en', names = studentNames(u), id 
     const clamped = Math.max(lo, Math.min(hi, minutes));
     if (clamped !== minutes) notes.push({ k: 'minutes', part: n, from: minutes, to: clamped });
     minutes = clamped;
-    if (total + minutes > TOTAL_MAX) {
-      const room = TOTAL_MAX - total;
-      if (room < lo) { notes.push({ k: 'total', max: TOTAL_MAX, part: n }); break; }
+    if (total + minutes > totalMax) {
+      const room = totalMax - total;
+      if (room < lo) { notes.push({ k: 'total', max: totalMax, part: n }); break; }
       notes.push({ k: 'minutes', part: n, from: minutes, to: room }); minutes = room;
     }
     total += minutes;
@@ -306,20 +307,37 @@ export function fallbackDraft(u, c, text, { lang = 'en', draft = null } = {}) {
 // ---------------------------------------------------------------- saved plans
 const savedRow = (u, id) => q.get('SELECT * FROM homeroom_day_plans WHERE id=? AND owner_id=?', String(id || ''), u.id) || null;
 /** Group ids -> the groups' identities (a name, or an unnamed default group's key), for another class or later. */
-function portable(c, plan) {
+export function portable(c, plan) {
   const groups = roomGroups(c);
   return plan.parts.map(p => ({ ...p, versions: p.versions.map(v => ({ ...v, group: v.group ? groupIdent(groups.find(g => g.id === v.group)) || '' : '' })) }));
 }
-/** A portable plan's parts for this class: each version's group found by its identity; a version whose group the class
- *  doesn't have is left out (noted). -> raw parts for cleanPlan */
-function forClass(c, parts, notes) {
+/** A group identity's name ('n:stretch' -> stretch, 'k:onTrack' -> On track in the teacher's language). */
+const identLabel = (ident, lang = 'en') => (String(ident).startsWith('k:') ? groupLabel({ key: String(ident).slice(2) }, lang) : String(ident).slice(2));
+/** The class's group for an identity: the same identity, else the same name (a default group renamed to its own name, or
+ *  a named group called like a default one, "Stretch" either way). */
+export function groupByIdent(groups, ident, lang = 'en') {
+  const l = fold(identLabel(ident, lang));
+  return groups.find(x => groupIdent(x) === ident) || (l ? groups.find(x => fold(groupLabel(x, lang)) === l) : null) || null;
+}
+/** A portable plan's parts for this class: each version's group found by its identity or name; a version whose group the
+ *  class doesn't have is left out (noted), or, with everyone (copying to another class), goes to everyone else when the
+ *  part has no such version yet ("no Stretch group in 5C: goes to everyone"). -> raw parts for cleanPlan */
+function forClass(c, parts, notes, { everyone = false, lang = 'en', day = undefined } = {}) {
   const groups = roomGroups(c);
-  return (Array.isArray(parts) ? parts : []).map((p, i) => ({ ...p, versions: (p.versions || []).filter(v => {
-    if (!v.group) return true;
-    const g = groups.find(x => groupIdent(x) === v.group);
-    if (!g) { notes.push({ k: 'group', part: i + 1, group: String(v.group).slice(2) }); return false; }
-    v.group = g.id; return true;
-  }).map(v => ({ group: v.group, pick: v.pick })) }));
+  return (Array.isArray(parts) ? parts : []).map((p, i) => {
+    let open = everyone && !(p.versions || []).some(v => !v.group);
+    const versions = [];
+    for (const v0 of p.versions || []) {
+      const v = { group: v0.group, pick: v0.pick };
+      if (!v.group) { versions.push(v); continue; }
+      const g = groupByIdent(groups, v.group, lang);
+      if (g) { v.group = g.id; versions.push(v); continue; }
+      const name = identLabel(v.group, lang);
+      if (open) { open = false; versions.push({ group: '', pick: v.pick }); notes.push({ k: 'groupEveryone', part: i + 1, group: name, ...(day !== undefined ? { day } : {}) }); }
+      else notes.push({ k: 'group', part: i + 1, group: name, ...(day !== undefined ? { day } : {}) });
+    }
+    return { ...p, versions };
+  });
 }
 /** The teacher's saved plans, newest first: [{ id, name, parts, minutes, updated }]. */
 export function listSaved(u) {
@@ -363,14 +381,37 @@ export function fromSaved(u, c, row, { lang = 'en' } = {}) {
   const r = cleanPlan(u, c, { name: row.name, topic: row.topic, parts }, { lang });
   return { plan: r.plan, notes: [...notes, ...r.notes], savedFrom: { id: row.id, name: row.name } };
 }
+/** A plan made for one class, for another class of the same teacher (a copy): the groups found there by name or
+ *  default key; a group it doesn't have gets the "everyone" version. Lessons and handouts are not made here: they are
+ *  made in that class when the plan is used (usePlan). -> { plan, notes } */
+export function planFor(u, from, to, plan, { lang = 'en', day = undefined, totalMax = TOTAL_MAX } = {}) {
+  const notes = [];
+  const parts = forClass(to, portable(from, plan), notes, { everyone: true, lang, day });
+  const r = cleanPlan(u, to, { name: plan.name, topic: plan.topic, parts }, { lang, totalMax });
+  // a version given to everyone that the check then left out (every group there has its own): left out, said so
+  for (const n of notes) if (n.k === 'groupEveryone' && !(r.plan.parts[n.part - 1] && r.plan.parts[n.part - 1].versions.some(v => !v.group))) n.k = 'group';
+  return { plan: r.plan, notes: [...notes, ...r.notes] };
+}
 /** Copy a plan to another class of the same teacher (a section): the groups found there by name. -> { ok, plan, notes, c } */
 export function copyTo(u, from, plan, toId, { lang = 'en' } = {}) {
   const to = S.getClass(String(toId || ''));
-  if (!H.canUseClass(u, from) || !H.canUseClass(u, to) || to.id === from.id) return fail('notFound');
-  const notes = [];
-  const parts = forClass(to, portable(from, plan), notes);
-  const r = cleanPlan(u, to, { name: plan.name, topic: plan.topic, parts }, { lang });
-  return ok({ plan: r.plan, notes: [...notes, ...r.notes], c: to });
+  if (!H.canUseClass(u, from) || !to || !H.canUseClass(u, to) || to.id === from.id) return fail('notFound');
+  return ok({ ...planFor(u, from, to, plan, { lang }), c: to });
+}
+/** What a copy would do in the other class, before it is made (the copy preview): each part with what it hands out to
+ *  whom there, and the groups that class doesn't have ("no Stretch group in 5C: goes to everyone"). Nothing is changed.
+ *  -> { parts: [{ n, kind, title, minutes, give: [{ who, what, type }] }], missing: [{ group, to: 'everyone' | 'none' }] } */
+export function previewOf(u, to, plan, notes, lang = 'en') {
+  const groups = roomGroups(to), seen = new Set(), missing = [];
+  for (const n of notes) {
+    if ((n.k !== 'group' && n.k !== 'groupEveryone') || seen.has(`${n.group}:${n.k}`)) continue;
+    seen.add(`${n.group}:${n.k}`); missing.push({ group: n.group, to: n.k === 'groupEveryone' ? 'everyone' : 'none' });
+  }
+  return {
+    parts: plan.parts.map((p, i) => ({ n: i + 1, kind: p.kind, title: p.title || '', minutes: p.minutes,
+      give: p.versions.map(v => ({ who: v.group ? groupLabel(groups.find(g => g.id === v.group), lang) : '', everyone: !v.group, others: !v.group && p.versions.length > 1, what: pickTitle(u, v.pick, lang), type: v.pick.type })) })),
+    missing: missing.filter(m => m.to === 'everyone' || !seen.has(`${m.group}:groupEveryone`)),
+  };
 }
 /** The other classes of this teacher a plan can be copied to. */
 export const copyTargets = (u, c) => H.switchable(u).filter(x => x.id !== c.id && H.canUseClass(u, S.getClass(x.id)));
@@ -468,7 +509,18 @@ export function runAction(u, c, action, at = now()) {
     if (!role) return fail('notFound');
     if (role !== 'sub' || !SUB_ACTIONS.includes(action)) return fail('forbidden');
   }
-  const p = todayOf(c, at);
+  // A day of a week plan (services/homeroom-week.js) waits for the teacher: Put on desks (use) or Start (both) is theirs.
+  let p = todayOf(c, at), put = null;
+  if (action === 'use' || (action === 'start' && !p)) {
+    const d = p ? null : HW.datedToday(c, at);
+    if (action === 'use' && p) return ok({ plan: p });
+    if (!d) return fail('noPlan');
+    if (!H.canUseClass(u, c)) return fail('forbidden');
+    put = usePlan(u, c, d);
+    if (!put.ok) return put;
+    if (action === 'use') return ok({ plan: put.plan, put });
+    p = todayOf(c, at);
+  }
   if (!p) return fail('noPlan');
   const st = stateOf(p);
   if (action === 'clear') { write(c.id, null); audit(u.id, 'homeroom.plan', c.id, { action }); return ok({ plan: null }); }
@@ -492,7 +544,7 @@ export function runAction(u, c, action, at = now()) {
   } else return fail('badAction');
   write(c.id, p);
   audit(u.id, 'homeroom.plan', c.id, { action, part: p.run ? p.run.idx : null });
-  return ok({ plan: p, ...(action === 'finish' ? { summary: p.summary } : {}) });
+  return ok({ plan: p, ...(put ? { put } : {}), ...(action === 'finish' ? { summary: p.summary } : {}) });
 }
 /** Finish class: each part with its planned and used minutes and, for a part that handed something out, how many of
  *  its handouts' cards are finished out of how many desks got one (counts only: no names, no order of students). */
@@ -514,12 +566,18 @@ export function summaryOf(c, p) {
 // ---------------------------------------------------------------- what pages see
 /** The board's plan pill: today's plan with every part and the timer. The class's teachers only (the Homeroom gate). */
 export function teacherView(c, at = now()) {
-  const p = todayOf(c, at);
-  if (!p) return null;
+  const p = todayOf(c, at), week = HW.stripOf(c, at);
+  if (!p) {
+    // today's day of a week plan, not on desks yet: the pill says Today with Start (week: the strip in its menu)
+    const d = HW.datedToday(c, at);
+    if (!d) return week ? { state: 'none', now: at, week } : null;
+    return { id: d.id, name: d.name || '', state: 'planned', now: at, half: !!d.half, parts: d.parts.map(x => ({ id: x.id, kind: x.kind, title: x.title || '', minutes: x.minutes, handouts: 0 })),
+      run: null, behindMin: 0, endsAt: null, timesUp: false, ...(week ? { week } : {}) };
+  }
   const tm = timing(p.parts, p.finishedAt ? null : p.run, at);
   return { id: p.id, name: p.name || '', state: stateOf(p), now: at, parts: p.parts.map(x => ({ id: x.id, kind: x.kind, title: x.title || '', minutes: x.minutes, handouts: (x.handouts || []).length })),
     run: p.run && !p.finishedAt ? { idx: p.run.idx, startedAt: p.run.startedAt, partAt: p.run.partAt, extra: p.run.extra || 0, done: !!p.run.done } : null,
-    behindMin: tm.behindMin, endsAt: tm.endsAt, timesUp: tm.timesUp, ...(p.summary ? { summary: p.summary } : {}) };
+    behindMin: tm.behindMin, endsAt: tm.endsAt, timesUp: tm.timesUp, ...(p.summary ? { summary: p.summary } : {}), ...(week ? { week } : {}) };
 }
 /** The projector's and the desks' Now / Next: only part kinds, titles and the timer, while a plan runs. Never a name, a
  *  group, a hand or anyone's progress. */
@@ -543,13 +601,18 @@ export function deskView(c, sup = null, at = now()) {
 // ---------------------------------------------------------------- the card in the chat
 /** A plan card for the chat (services/companion.js note.plan): the class it is for and the plan. */
 export const newCard = (c, r, lang = 'en', extra = {}) => ({ id: uid(10), classId: c.id, plan: r.plan, notes: (r.notes || []).slice(0, 10), state: 'draft', lang, ...extra });
+/** A plan's parts as a card draws them: kind, title, minutes, the note, and what each group gets (the groups' names). */
+export function partsView(u, c, plan, tt, lang = 'en') {
+  const groups = roomGroups(c), lab = g => (g && g.name) || (g && g.key ? tt(`js.homeroom.groups.${g.key}`) : tt('js.homeroom.groups.unnamed'));
+  return plan.parts.map(p => ({ kind: p.kind, title: p.title || '', minutes: p.minutes, note: p.note || '',
+    give: p.versions.map(v => ({ who: v.group ? lab(groups.find(g => g.id === v.group)) : p.versions.length > 1 ? tt('js.companion.plan.everyoneElse') : '', what: pickTitle(u, v.pick, lang), icon: pickIcon(u, v.pick), type: v.pick.type })) }));
+}
 /** The card as the teacher's page draws it (services/companion.js dress): names of what each part hands out, the
  *  groups' names, where the class's plan of today stands, the saved plans and the classes it can be copied to. tt: the
  *  page's own strings (req.t). Only for the card's own teacher, who teaches the class. */
 export function cardView(u, card, tt) {
   const c = card && S.getClass(card.classId);
   if (!c || !H.canUseClass(u, c)) return { id: card && card.id, gone: true };
-  const groups = roomGroups(c), lab = g => (g && g.name) || (g && g.key ? tt(`js.homeroom.groups.${g.key}`) : tt('js.homeroom.groups.unnamed'));
   const lang = card.lang || 'en', today = todayOf(c);
   const plan = card.plan || { parts: [] };
   const mine = today && today.id === plan.id;
@@ -558,10 +621,9 @@ export function cardView(u, card, tt) {
     id: card.id, classId: c.id, className: c.name, name: plan.name || '', topic: plan.topic || '', state, savedAs: card.savedAs || null, from: card.from || null, how: card.how || '',
     total: plan.parts.reduce((s, p) => s + p.minutes, 0), changed: (card.notes || []).length,
     otherRunning: !mine && !!today && ['running', 'done'].includes(stateOf(today)),
-    parts: plan.parts.map((p, i) => ({ kind: p.kind, title: p.title || '', minutes: p.minutes, note: p.note || '',
+    parts: partsView(u, c, plan, tt, lang).map((x, i) => ({ ...x,
       now: mine && today.run && !today.finishedAt && !today.run.done && today.run.idx === i,
-      done: mine && !!today.run && (today.run.done || today.run.idx > i),
-      give: p.versions.map(v => ({ who: v.group ? lab(groups.find(g => g.id === v.group)) : p.versions.length > 1 ? tt('js.companion.plan.everyoneElse') : '', what: pickTitle(u, v.pick, lang), icon: pickIcon(u, v.pick), type: v.pick.type })) })),
+      done: mine && !!today.run && (today.run.done || today.run.idx > i) })),
     saved: listSaved(u).slice(0, 6).map(s => ({ id: s.id, name: s.name, minutes: s.minutes })),
     copy: copyTargets(u, c).slice(0, 8),
   };

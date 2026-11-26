@@ -4533,7 +4533,8 @@
         "bookDelAsk": "Gevraagd voor het verwijderen van ‘{q}’",
         "book_rename": "‘{q}’ hernoemd",
         "book_duplicate": "‘{q}’ gekopieerd",
-        "book_repaint": "Gevraagd om ‘{q}’ opnieuw te schilderen"
+        "book_repaint": "Gevraagd om ‘{q}’ opnieuw te schilderen",
+        "week": "Weekplan gemaakt ({n} dagen)"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4607,7 +4608,9 @@
         "slow": "Dat zijn veel berichten in een uur. Wacht even en probeer het dan opnieuw.",
         "fileGone": "Die bijlage is er niet meer. Voeg hem opnieuw toe.",
         "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw.",
-        "cap": "Je hebt de Oomba-beurten van vandaag voor boeken gebruikt. Je kunt je boeken nog met de hand bewerken. Morgen zijn er nieuwe beurten."
+        "cap": "Je hebt de Oomba-beurten van vandaag voor boeken gebruikt. Je kunt je boeken nog met de hand bewerken. Morgen zijn er nieuwe beurten.",
+        "pastDay": "Die dag is voorbij. Kies vandaag of een latere dag deze week.",
+        "weekPast": "Elke dag van die week is al voorbij."
       },
       "quoteN": "Vraag {n}: {text}",
       "questionN": "Vraag {n}",
@@ -4673,6 +4676,48 @@
         "keep": "Houden",
         "deleted": "‘{title}’ verwijderd.",
         "kept": "‘{title}’ gehouden."
+      },
+      "plan": {
+        "fb": {
+          "week": {
+            "start": "Hier is een eenvoudige week om mee te beginnen: je lesplannen en lessen over de dagen verdeeld. Vraag om wijzigingen, zoals \"woensdag is een halve dag\".",
+            "half": "Klaar. Die dag is nu een halve dag, de minuten ingekort.",
+            "swap": "Klaar. Die twee dagen zijn van plek gewisseld.",
+            "move": "Klaar. Het is naar die dag verplaatst.",
+            "saved": "Hier is je bewaarde plan \"{name}\" op elke dag van de week."
+          }
+        }
+      },
+      "week": {
+        "title": "Plan voor deze week",
+        "weekOf": "Week: {topic}",
+        "quiz": "Quiz",
+        "today": "Vandaag",
+        "half": "Halve dag",
+        "noPlan": "Geen plan",
+        "use": "Deze week gebruiken",
+        "saved": "Bewaard voor de week van deze klas.",
+        "past": "Deze week is voorbij.",
+        "range": "{from} tot {to}",
+        "copiedFrom": "gekopieerd van {name}",
+        "next": "Naar volgende week kopiëren",
+        "askChanges": "Vraag hier om wijzigingen, zoals \"zet de quiz op donderdag\" of \"woensdag is een halve dag\".",
+        "eachMorning": "Elke ochtend heeft de planknop het plan van die dag. Er gaat niets op de tafels tot je op Start tikt, en onderdelen gaan nooit vanzelf verder.",
+        "usedToast": "{count, plural, one {# dag bewaard.} other {# dagen bewaard.}} Elke ochtend heeft de planknop het plan van die dag.",
+        "skipped": "{count, plural, one {# dag was al voorbij en blijft zoals hij was.} other {# dagen waren al voorbij en blijven zoals ze waren.}}",
+        "copied": "Hier is de week voor {name}. Daar wordt niets uitgedeeld tot het plan van een dag wordt gebruikt.",
+        "nextDone": "Hier is dezelfde week, een week later. Pas aan wat je wilt en tik dan op Deze week gebruiken."
+      },
+      "copy": {
+        "title": "Kopiëren naar {cls}",
+        "lead": "Wat dit plan in die klas uitdeelt als het daar wordt gebruikt. Lesplannen worden daar dan gemaakt, niet nu.",
+        "leadWeek": "Wat het plan van elke dag in die klas uitdeelt als het daar wordt gebruikt. Lesplannen worden daar dan gemaakt, niet nu.",
+        "everyone": "Iedereen",
+        "nothing": "Niets om uit te delen.",
+        "missingEveryone": "Geen groep {group} in {cls}: gaat naar iedereen.",
+        "missingNone": "Geen groep {group} in {cls}: die versie valt weg.",
+        "cancel": "Annuleren",
+        "go": "Kopiëren naar {cls}"
       }
     },
     "companion-greet": {
@@ -5333,6 +5378,45 @@
           "comingOff": "Melding van de tafel van {name} gehaald"
         }
       }
+    },
+    "homeroom-plan": {
+      "thisWeek": "Deze week",
+      "weekLabel": "Plannen van deze week. Open de week",
+      "planTodayChat": "Vandaag plannen in de Oomba-chat",
+      "putOnDesks": "Op de tafels zetten",
+      "fromWeek": "Uit het plan van deze week, nog niet op de tafels. Start zet het daar en start deel 1.",
+      "wk": {
+        "none": "geen plan",
+        "noneLong": "Geen plan voor deze dag. Vraag Oomba er een in de chat.",
+        "swapWith": "Wisselen met {day}",
+        "pickSwap": "Tik op de dag om {day} mee te wisselen.",
+        "cancel": "Annuleren",
+        "half": "Halve dag",
+        "inUse": "Dit is het plan van vandaag. Pas het aan in de chat.",
+        "pastDay": "Deze dag is voorbij.",
+        "swap": "Wisselen met een andere dag",
+        "clear": "Deze dag leegmaken",
+        "clearTitle": "{day} leegmaken?",
+        "clearText": "Het plan van die dag gaat uit de week. Op de tafels verandert niets."
+      }
+    },
+    "homeroom-due": {
+      "label": "Inleveren",
+      "none": "Geen inleverdatum",
+      "chipToday": "Vandaag",
+      "chipTomorrow": "Morgen",
+      "chipFriday": "Vrijdag",
+      "chipPick": "Kies een datum",
+      "date": "Datum",
+      "time": "Tijd (optioneel)",
+      "noneHint": "Geen inleverdatum. Het blijft op de tafels tot het klaar is.",
+      "hintDay": "Inleveren {when}, aan het eind van de dag.",
+      "hintTime": "Inleveren {when}.",
+      "today": "vandaag",
+      "tomorrow": "morgen",
+      "dayTime": "{day}, {time}",
+      "due": "Inleveren {when}",
+      "afterDue": "na de inleverdatum"
     }
   },
   "favorites": {
@@ -15312,7 +15396,9 @@
       "deskLocked": "Tekenen is nu gepauzeerd.",
       "notHere": "Lijnen horen buiten de tafels van andere leerlingen en het lerarenvak.",
       "tooFast": "Dat is veel tegelijk. Probeer het zo nog eens.",
-      "roomFull": "Het lokaal heeft zoveel tekeningen als erin passen."
+      "roomFull": "Het lokaal heeft zoveel tekeningen als erin passen.",
+      "pastDay": "Die dag is voorbij. Kies vandaag of een latere dag deze week.",
+      "weekPast": "Elke dag van die week is al voorbij."
     },
     "live": "Live",
     "desk": {
@@ -15503,7 +15589,9 @@
       "gcOpen": "Instellingen openen",
       "gcNotLinked": "Nog niet gekoppeld.",
       "gcLink": "Een Classroom-klas koppelen",
-      "gradeSaved": "Beoordeling gewijzigd"
+      "gradeSaved": "Beoordeling gewijzigd",
+      "due": "Inleveren {when}",
+      "afterDue": "na de inleverdatum"
     },
     "studentDraw": {
       "savedOn": "Leerlingen kunnen in het lokaal tekenen",

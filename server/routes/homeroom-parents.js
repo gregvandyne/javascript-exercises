@@ -14,6 +14,7 @@ import { isGrownup } from '../auth.js';
 import * as F from '../services/family.js';
 import * as PV from '../services/homeroom-parents.js';
 import { cleanHtml } from '../services/notebook.js';
+import { dueText } from './homeroom-overview.js';
 
 export const router = Router();
 
@@ -31,7 +32,7 @@ function drawingSvg(strokes, label) {
 const STEP_ICON = { choose: '📚', read: '📖', quiz: '🧩', notes: '📝', done: '✅' };
 function handoutCard(req, x) {
   const t = req.t, f = req.fmt;
-  const meta = [x.given ? t('homeroom.parents.given', { date: f.date(x.given, { month: 'short', day: 'numeric' }) }) : '', x.due ? t('homeroom.parents.due', { date: f.day(x.due, { month: 'short', day: 'numeric' }) }) : ''].filter(Boolean).join(' · ');
+  const meta = [x.given ? t('homeroom.parents.given', { date: f.date(x.given, { month: 'short', day: 'numeric' }) }) : '', x.due ? t('homeroom.parents.due', { date: dueText(f, x.due, x.dueMin) }) : ''].filter(Boolean).join(' · ');
   const grade = x.grade === 'none' ? t('homeroom.parents.grade.none')
     : x.grade === 'score' ? (!x.done ? t('homeroom.parents.grade.scoreLater') : x.pct !== undefined ? t('homeroom.parents.grade.score') : t('homeroom.parents.grade.scoreNone'))
       : t('homeroom.parents.grade.completion');

@@ -15153,3 +15153,73 @@ students to be able to draw outside of their desks."
   pad (notebook drawings, reading notes) keeps Undo and Clear; the sub's view of the room shows neither board ink nor
   objects outside the area (as before); a team's shared pad that two members change at once keeps the newer save's
   erasing only.
+
+## Homeroom: week plans, due dates, copying plans (26 Nov 2026)
+
+Spec: `docs/homeroom.md` build order step 5 ("Beyond the day"), first half (5a); onboarding, Needs a look and Oomba
+follow-ups are 5b. Builds on "Homeroom: the day plan". Planning stays in the Oomba chat and the plan pill: still no plan
+row on the board. Migration `0139_homeroom_week_due`.
+- **Week plans in the chat** (`server/services/homeroom-week.js`; the companion's `draftWeekPlan` tool on a class's
+  Homeroom): "this week's plan" (or next week's) is a card with Monday to Friday, the class's school days in its time zone
+  (the school's zone, else UTC; on Saturday and Sunday the week ahead), each day a short day plan with the same parts as
+  a day plan, drafted from the teacher's topic, the class's grade and groups, their lessons and lesson plans, and saved
+  plans. Changes are asked for in the chat ("move the quiz to Thursday", "Wednesday is a half day", "swap Monday and
+  Tuesday"): the AI sends the whole week again (the week on the newest card is in getPageContext as `weekOnCard`).
+  **Checked and clamped** (`cleanWeek`): known days only (Saturday and a day named twice are left out and noted), each
+  day through the day plan's `cleanPlan` (kinds, minutes, lessons, games, groups, titles without names), a half day at
+  most 60 minutes. **Without the AI** (`fallbackWeek`): the newest card changed by the same three phrases, a saved plan
+  named in the words on every day ("repeat my Fractions plan all week"), or the teacher's lessons (those that fit the
+  topic first, then Oomba games that fit) spread one a day, with slides, a brain break and an exit check (Friday's is a
+  Quiz). A part moved to a day that has one of its kind changes places with it, so both days keep their shape.
+- **Use this week** (`useWeek`, the card's `planWeekUse`) saves five dated day plans (`homeroom_week_days`: class, day
+  'YYYY-MM-DD', the week's Monday, the plan); a day already over is left as it was (counted in the toast). Nothing goes on
+  desks. **Each morning the pill picks up that day's plan** (`HP.teacherView`: state `planned`, "Today: <name>" with
+  Start): Start puts the handouts on desks (`usePlan`, as Use this plan does) and starts part 1; the menu's Put on desks
+  only hands out. Parts still never move on by themselves. A plan already used today wins over the day's dated one. A sub
+  never sees or starts a planned day (subs never hand out).
+- **The week strip** (`stripOf`, in the pill's menu; with no plan today the pill says "This week" and opens it): Mon..Fri
+  chips with each day's minutes; a chip opens its parts; **Swap with another day** then a second chip; **Clear this day**
+  (asked first). A day already over, or today's plan once it is on desks, can't be changed (`pastDay`, `planRunning`).
+  POST `/api/homeroom/:id/plan` `{ action: 'weekSwap', day, with }` / `{ action: 'weekClear', day }` / `{ action: 'use' }`.
+- **Due dates** (`homeroom-handouts.js` `dueOf`, `dueByOf`, `byDue`): every handout but a Manipulatives tool (open practice)
+  can have a due day (`class_lessons.due_at`, as every assignment) and an optional time (`homeroom_handouts.due_min`,
+  minutes after that day's local midnight; NULL is the end of the day; `due_zone`: the setting teacher's browser zone,
+  used only when the school has none). The hand-out sheet's **Due** row (`public/js/homeroom-due.js`, the game, Reading
+  and lesson plan sheets): No due date (the default), Today (the end of the day), Tomorrow, Friday (this week's from
+  Monday to Thursday, else next week's), Pick a date (a date and an optional time). A time without a day is refused
+  (`badDate`). Shown: the student's desk card ("Due Fri", "Due today, 3:00 PM"), the teacher's desk sheet, the parents'
+  view ("Due Fri, Nov 27, 3:00 PM"), the Classroom overview's column header. **The desk's Next up goes by due** when In
+  order isn't set: cards without In order are sorted by when they are due (soonest first, no due date last, then as handed
+  out), In order cards keep their places. **Late is calm and the teacher's only**: the board's desk cards and the
+  overview's cells get "after due" (muted, never red) for work not finished past its due time; students never see it; a
+  handout given on a day the student was marked absent ("Missed while you were out") is never after due by itself.
+  Nothing extends a due date automatically. Unfinished handouts stay on desks at Finish class with their due dates.
+  **Google Classroom**: a handout posted as an assignment gets its due date and time (`classroomDue`: that time where the
+  school is; without a time, the end of the day as before; a past one is left off).
+- **Copying plans** (`HP.planFor`, `previewOf`; `HW.copyWeek`, `previewWeek`, `nextWeek`): a day plan or a week plan to
+  another of the teacher's classes. Groups are matched by their identity (a name, or an unnamed default group's key, as
+  saved plans) or, now, by the same name either way ("Stretch" named in one class, the default Stretch in another). A
+  version whose group the class doesn't have **goes to everyone** when the part has no everyone version yet ("no Stretch
+  group in 5C: goes to everyone"), else it is left out. **The preview first**: Copy to another class shows what each part
+  (each day's parts for a week) will hand out to whom there and the groups it doesn't have (`planCopyPreview`,
+  `planWeekCopyPreview`, nothing changed), then Copy makes a card for that class. Lessons and handouts are made in the
+  target class when its plan is used, never on copy (a lesson plan the builder makes, `make`, too). **Copy to next week**
+  makes the same week a week later as a new card (nothing saved until Use this week).
+- **Privacy**: the AI sees what the day plan's `aiContext` gives plus the school week's dates and the week on the card
+  (lesson and game titles, group names), never a student's name, id or work (tested on everything sent). Oomba never
+  talks to students. Teachers' words: lessons and lesson plans.
+- **Delete paths**: `homeroom_week_days` goes with the class (`onClassLeave` for the class, `school-delete.js` BY_CLASS)
+  and with the teacher who saved it (`account-delete.js`, by `created_by`).
+- Tests: `tests/unit/homeroom-week.test.js` (the school week in the class's zone; the week's checks and clamps; a
+  stand-in AI drafting a week with nothing personal sent; Use this week; the pill picking up each day's plan on its day
+  in Los Angeles time, Start handing out, never moving on by itself, Put on desks; the strip's swap and clear, a past day
+  refused, another teacher refused; the fallback week and its three changes and a saved plan all week; due dates stored,
+  checked, sorted, after due for the teacher only and never for an absent day; the overview; Google Classroom's due date
+  and time; the copy preview, groups by name, a missing group to everyone, nothing made until use; the week copy and Copy
+  to next week; account and class delete) and `tests/unit/homeroom-week-browser.test.js` (1366 x 768, 820 and 390: the
+  week card, Use this week, the pill's week strip and a swap, the copy preview and the copy, the Due row with a date and
+  time and the Friday chip, the student's desk card, the overview's column; nothing sideways).
+- **Open**: copying a saved plan to a class from outside the chat; a school calendar (holidays, days off) for the week's
+  school days (Monday to Friday for now); dragging days on the week card (changes are asked for in the chat); the Due row
+  for a handout already given (due dates are set when handing out); translations beyond the new keys (every locale has
+  them; the day plan's older strings still fall back to English).

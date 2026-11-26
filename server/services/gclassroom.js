@@ -413,12 +413,18 @@ export const someStudents = cl => !!cl && L.studentsOfLesson(cl.id).length > 0;
  *  linked Classroom class doesn't count: it can't be graded from here and the lesson can be posted again). */
 export const postOf = (clId, kind = 'assignment') => q.get('SELECT p.* FROM gc_posts p JOIN gc_links k ON k.class_id=p.class_id AND k.course_id=p.course_id WHERE p.class_lesson_id=? AND p.kind=?', clId, kind) || null;
 export const postsOfClass = (classId, kind = 'assignment') => new Map(q.all('SELECT p.* FROM gc_posts p JOIN gc_links k ON k.class_id=p.class_id AND k.course_id=p.course_id WHERE p.class_id=? AND p.kind=?', classId, kind).map(r => [r.class_lesson_id, r]));
-/** Classroom's due date and time (UTC) for a lesson due at the end of its due day where the school is. Classroom refuses
- *  a due date in the past, so a past one is left off. -> { dueDate, dueTime } or null */
+/** Classroom's due date and time (UTC) for a lesson due at the end of its due day where the school is, or, for a Homeroom
+ *  handout with a due time (homeroom_handouts.due_min, docs/decisions.md "Homeroom: week plans, due dates, copying
+ *  plans"), at that time of the due day (in the school's zone, else the zone of the teacher who set it). Classroom
+ *  refuses a due date in the past, so a past one is left off. -> { dueDate, dueTime } or null */
 export function classroomDue(cl, t = now()) {
   if (!cl.due_at) return null;
-  const tz = typeof cl.tz === 'string' && S.isZone(cl.tz) ? cl.tz : null;
-  const end = (tz ? L.dayBounds(cl.due_at, tz).end : Math.floor(cl.due_at / DAY) * DAY + DAY) - 60e3;
+  const hr = q.get('SELECT due_min, due_zone FROM homeroom_handouts WHERE class_lesson_id=?', cl.id) || {};
+  const tz = typeof cl.tz === 'string' && S.isZone(cl.tz) ? cl.tz : S.isZone(hr.due_zone) ? hr.due_zone : null;
+  const timed = Number.isInteger(hr.due_min) && hr.due_min >= 0 && hr.due_min < 1440;
+  const day = Math.floor(cl.due_at / DAY) * DAY;
+  const end = timed ? (tz ? L.dayBounds(cl.due_at, tz).start : day) + hr.due_min * 60e3
+    : (tz ? L.dayBounds(cl.due_at, tz).end : day + DAY) - 60e3;
   if (end <= t) return null;
   const d = new Date(end);
   return { dueDate: { year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate() }, dueTime: { hours: d.getUTCHours(), minutes: d.getUTCMinutes() } };

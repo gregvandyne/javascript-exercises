@@ -12,7 +12,8 @@
 //   GET  /api/homeroom/:id/state?v=            the live state, and the teacher's area when it changed (the projector)
 //   GET  /api/homeroom/:id/handouts            step 2a: the class's handouts and every desk's cards with progress
 //   POST /api/homeroom/:id/handouts            hand out a game: { gameId, to: { kind: all | group | desk, id }, instructions,
-//                                              order: in | any, grade: score | completion | none, dueAt }
+//                                              order: in | any, grade: score | completion | none, dueAt, dueTime
+//                                              ('HH:MM', optional), tz (the browser's zone) }
 //   POST /api/homeroom/:id/handouts/:clid/remove  take it off one desk ({ studentId }) or off every desk ({})
 // Step 2c (docs/decisions.md "Homeroom, step 2c"):
 //   POST /api/homeroom/:id/handouts            also { gcPost: true }: "Also post to Google Classroom" (routes/gclassroom.js
@@ -59,7 +60,9 @@
 //   POST /api/homeroom/:id/handouts            with { tool, to, instructions }: a Manipulatives tool (its live room)
 // The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js; planned in the Oomba chat only):
 //   GET  /api/homeroom/:id/plan                today's plan of the class with its timer (the plan pill)
-//   POST /api/homeroom/:id/plan                { action: start | more | next | finish | clear } -> { plan, summary? }
+//   POST /api/homeroom/:id/plan                { action: start | more | next | finish | clear | use (today's day of a
+//                                              week plan on desks) | weekSwap { day, with } | weekClear { day } }
+//                                              -> { plan (with week: the pill's week strip), summary?, toast? }
 //   The projector's and a desk's state carry only the Now / Next part names and the timer (HP.publicView).
 // Reading from the desk (docs/decisions.md "Homeroom: reading from the desk"; services/homeroom-reading.js):
 //   POST /api/homeroom/:id/handouts            with { reading: true, bookId ('' for their own choice), to, instructions,
@@ -90,6 +93,7 @@ import * as HL from '../services/homeroom-lessons.js';
 import * as HV from '../services/homeroom-live.js';
 import * as HS from '../services/homeroom-staged.js';
 import * as HP from '../services/homeroom-plan.js';
+import * as WK from '../services/homeroom-week.js';
 import crypto from 'node:crypto';
 import { localeInfo } from '../i18n/index.js';
 import { hasModel } from '../builder/anthropic.js';
@@ -307,7 +311,7 @@ router.get('/class/:id/homeroom', (req, res) => {
         <div class="cv-acts cv-acts-homeroom hr" data-cv-acts="homeroom">${acts}</div></header>
       <div class="cv-views"><section class="cv-view cv-view-homeroom" data-cv-view="homeroom" aria-label="${t('homeroom.tabs.homeroom')}">${board}</section></div></div>` : board;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading', 'js.homeroom-due'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">${aide ? `<link rel="stylesheet" href="/css/class-views.css?v=${VERSION}">` : ''}`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, libraryGrade: HR.libraryGrade(c.grade), live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
@@ -412,9 +416,13 @@ router.post('/api/homeroom/:id/asks', rateLimit('homeroom-hands-t', 1200, 3600e3
 // The pill's timer is the server's (a reload, the projector and the desks see the same); it never moves on by itself.
 router.get('/api/homeroom/:id/plan', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json({ plan: HP.teacherView(req.homeroomClass) }));
 router.post('/api/homeroom/:id/plan', rateLimit('homeroom-plan', 600, 3600e3), (req, res) => {
-  const r = HP.runAction(req.user, req.homeroomClass, String(body(req).action || ''));
+  const x = body(req), action = String(x.action || '');
+  // the pill's week strip (services/homeroom-week.js): swap two days, clear a day
+  const r = /^week[A-Z]/.test(action) ? WK.dayAction(req.user, req.homeroomClass, action, { day: String(x.day || ''), with: String(x.with || '') })
+    : HP.runAction(req.user, req.homeroomClass, action);
   if (!r.ok) return fail(req, res, r.code);
-  res.json({ ok: true, plan: HP.teacherView(req.homeroomClass), ...(r.summary ? { summary: r.summary } : {}) });
+  const put = r.put ? [req.t('js.companion.plan.used', { count: r.put.given }), r.put.already ? req.t('js.companion.plan.already', { count: r.put.already }) : '', r.put.failed.length ? req.t('js.companion.plan.notGiven', { count: r.put.failed.length }) : ''].filter(Boolean).join(' ') : '';
+  res.json({ ok: true, plan: HP.teacherView(req.homeroomClass), ...(r.summary ? { summary: r.summary } : {}), ...(put ? { toast: put } : {}) });
 });
 
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
@@ -468,7 +476,7 @@ router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), 
   const x = body(req), c = req.homeroomClass;
   const to = x.to && typeof x.to === 'object' ? { kind: String(x.to.kind || ''), id: String(x.to.id || '') } : null;
   if (x.reading === true) {
-    const r = HR.handOutReading(req.user, c, { bookId: String(x.bookId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null, title: req.t('homeroom.reading.anyTitle') });
+    const r = HR.handOutReading(req.user, c, { bookId: String(x.bookId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '', title: req.t('homeroom.reading.anyTitle') });
     if (!r.ok) return hoFail(req, res, r);
     const also = await alsoPost(req, [r.classLesson]);
     const toast = r.students ? req.t('homeroom.handout.done', { title: r.title, count: r.students }) : req.t('homeroom.handout.forLater', { title: r.title });
@@ -483,14 +491,14 @@ router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), 
     return res.json({ ok: true, toast: n ? req.t('homeroom.handout.done', { title, count: n }) : req.t('homeroom.handout.forLater', { title }), ...HO.boardView(c, req.locale) });
   }
   if (x.lessonId) {
-    const r = HL.handOutLesson(req.user, c, { lessonId: String(x.lessonId), to, order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null });
+    const r = HL.handOutLesson(req.user, c, { lessonId: String(x.lessonId), to, order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
     if (!r.ok) return hoFail(req, res, r);
     const also = await alsoPost(req, r.classLessons);
     const toast = !r.students ? req.t('homeroom.handout.forLater', { title: r.lesson.title })
       : req.t(r.versions > 1 ? 'homeroom.lessons.handedOutVersions' : 'homeroom.lessons.handedOut', { title: r.lesson.title, count: r.students, versions: r.versions });
     return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
   }
-  const r = HO.handOut(req.user, c, { gameId: String(x.gameId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null });
+  const r = HO.handOut(req.user, c, { gameId: String(x.gameId || ''), to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'completion'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
   if (!r.ok) return hoFail(req, res, r);
   const also = await alsoPost(req, [r.classLesson]);
   const title = games.localizeGame(r.game, req.locale).title;
@@ -620,7 +628,7 @@ router.get('/class/:id/desk', (req, res) => {
   // the notebook (docs/decisions.md "Homeroom: the notebook"): the dock's last button, and a Notes button on each handout
   const nb = NB.canUse(u);
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading', 'js.homeroom-due'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, libraryGrade: HR.libraryGrade(c.grade), color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
       draw: MK.drawOn(c), marks: { strokes: MK.MARKS.strokes, points: MK.MARKS.points }, strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },

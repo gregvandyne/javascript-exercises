@@ -58,6 +58,7 @@ import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/hom
 import { liveBoard } from '/js/homeroom-live.js';
 import { gamePlayer } from '/js/homeroom-player.js';
 import { planPill } from '/js/homeroom-plan.js';
+import { dueField, wireDue, dueLabel, afterDue } from '/js/homeroom-due.js';
 import { helpers as helpersOf } from '/js/homeroom-helpers.js';
 import { bookPicker } from '/js/homeroom-reading.js';
 import { wireCatalog, catalogSheet } from '/js/homeroom-catalog.js';
@@ -783,7 +784,7 @@ function giveSheet(to) {
       <p class="small muted hr-seghint" id="hr-orderhint">${esc(th('ho.inOrderHint'))}</p>
       <p class="hr-label" id="hrg-grade">${esc(th('ho.grade'))}</p>${seg('grade', [['score', th('ho.score')], ['completion', th('ho.completion')], ['none', th('ho.notGraded')]], 'completion')}
       <p class="small muted hr-seghint" id="hr-gradehint">${esc(th('ho.completionHint'))}</p>
-      <label class="hr-label" for="hr-due">${esc(th('ho.due'))}</label><input class="input hr-due" type="date" id="hr-due">
+      ${dueField('hrg')}
       ${gcField(to)}`}
       <p class="err" id="hr-giveerr" aria-live="polite"></p>
       <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(putLabel(to, who))}</button></div></form>`,
@@ -793,11 +794,11 @@ function giveSheet(to) {
   // Reading (step 4b): Completion is the whole routine; Score is the quiz's % right
   if (reading) { hints.score = 'rdScoreHint'; hints.completion = 'rdCompletionHint'; f.querySelector('#hr-gradehint').textContent = th('ho.rdCompletionHint'); }
   if (tool) val.tool = tool;
-  const ins = f.querySelector('#hr-ins');
+  const ins = f.querySelector('#hr-ins'), dueOf = wireDue(f);
   ins.addEventListener('input', () => { f.querySelector('#hr-inscount').textContent = th('ho.left', { count: Math.max(0, max - ins.value.length) }); });
   f.addEventListener('click', e => {
     const b = e.target.closest('[data-seg]');
-    if (b) {
+    if (b && b.dataset.seg) {
       val[b.dataset.seg] = b.dataset.v;
       for (const x of f.querySelectorAll(`[data-seg="${b.dataset.seg}"]`)) { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', String(on)); }
       f.querySelector(b.dataset.seg === 'order' ? '#hr-orderhint' : '#hr-gradehint').textContent = th(`ho.${hints[b.dataset.v]}`);
@@ -809,7 +810,7 @@ function giveSheet(to) {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
-      const common = tool ? { to, instructions: ins.value } : { to, instructions: ins.value, order: val.order, grade: val.grade, dueAt: f.querySelector('#hr-due').value || null, gcPost: gcPicked(f) };
+      const common = tool ? { to, instructions: ins.value } : { to, instructions: ins.value, order: val.order, grade: val.grade, ...dueOf(), gcPost: gcPicked(f) };
       const r = await api(api2('handouts'), { method: 'POST', body: tool ? { tool, ...common } : reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
       H.ho = { handouts: r.handouts, desks: r.desks, tools: r.tools || [], att: r.att, asks: r.asks }; sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
@@ -958,9 +959,9 @@ function deskSheet(sid, first = null) {
     const cards = cardsOf(sid);
     return cards.length ? `<ol class="plain hr-dlist">${cards.map(x => { const h = handout(x.id); return `<li class="hr-ditem${x.id === first ? ' first' : ''}${x.done ? ' done' : ''}">
       <div class="hr-dhead"><span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 20 })}</span><b dir="auto">${esc(h.title)}</b>
-        <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}</span></div>
+        <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}${x.late ? ` <span class="hr-afterdue">${esc(afterDue())}</span>` : ''}</span></div>
       ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}${x.rd ? rdBlock(x, sid, s.name) : ''}
-      <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
+      <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), h.due ? dueLabel(h.due, h.dueMin) : '', x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
       ${x.done ? fbBlock(x, edit === x.id) : ''}
       ${!AIDE && H.simples && H.simples[x.id] ? `<p class="hr-dsimple" dir="auto"><b>${iconHtml('✏️', { size: 14 })} ${esc(th('helpers.simpler'))}:</b> ${esc(H.simples[x.id])}</p>` : ''}
       <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${AIDE ? '' : `${btn('btn btn-sm', `data-simpler="${esc(x.id)}"`, `${iconHtml('✏️', { size: 16 })} ${esc(th('helpers.simpler'))}`)}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}`}</div></li>`; }).join('')}</ol>`

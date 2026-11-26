@@ -109,7 +109,7 @@ export function classView(child, c) {
     const grade = modes.get(x.id) || 'completion', score = grade === 'score' ? SC.total(items.get(`${child.id}:${x.id}`)) : null;
     const r = x.reading || null;
     return {
-      id: x.id, title: x.title, icon: x.icon, instructions: x.instructions || '', given: at.get(x.id) || null, due: x.due || null, done: !!x.done, grade,
+      id: x.id, title: x.title, icon: x.icon, instructions: x.instructions || '', given: at.get(x.id) || null, due: x.due || null, dueMin: x.dueMin ?? null, done: !!x.done, grade,
       ...(score ? { pct: score.pct } : {}), missed: !!x.missed,
       fb: x.fb ? { comment: x.fb.comment || '', src: x.fb.src || '', sticker: x.fb.sticker || '' } : null,
       reading: r ? { book: r.book, step: r.step, ...(r.total ? { right: r.right, total: r.total } : {}) } : null,

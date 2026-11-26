@@ -34,6 +34,8 @@
 //     "Missed while you were out" (handouts given on a day they were marked absent, with the teacher's words); at home
 //     (marked At home, or no live class) no hand or hall pass, and Ask my teacher sends a question the teacher sees in
 //     Hands (pictures in K-2, a few words otherwise).
+//   - due dates (docs/decisions.md "Homeroom: week plans, due dates, copying plans"; public/js/homeroom-due.js): "Due Fri"
+//     on a card, never late; without In order the server sorts the cards by when they are due (Next up is the soonest).
 //   - a shared device (step 1c: signed in with the class sign-in, D.device): "Not you? Switch" signs out and goes back to
 //     the names (POST /api/desk/<class>/switch), and when the teacher ends class (the sign-in ends) the desk goes to the
 //     sign-in page.
@@ -52,6 +54,7 @@ import { gamePlayer } from '/js/homeroom-player.js';
 import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
 import { clock as planClock } from '/js/homeroom-plan-time.js';
 import { readingLayer } from '/js/homeroom-reading.js';
+import { dueLabel } from '/js/homeroom-due.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -105,7 +108,6 @@ function renderDesk() {
 }
 
 // ---------------------------------------------------------------- handouts (step 2a)
-const dayFmt = due => { try { return new Date(due).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }); } catch { return ''; } };
 /** A Reading handout's card: the book's cover (once there is one), "Read: <book>" or "Read a book", and the routine's
  *  steps with the one they are on. */
 function readCardHtml(x, cls, badge, label) {
@@ -114,7 +116,7 @@ function readCardHtml(x, cls, badge, label) {
   const steps = `<span class="hd-csteps" aria-hidden="true">${['read', 'quiz', 'notes'].map((k, i) => `<i class="${i < at ? 'done' : i === at ? 'on' : ''}">${i < at ? '✓ ' : ''}${esc(td(`rd.${k}`))}</i>`).join('')}</span>`;
   const title = bk ? td('rd.readTitle', { title: bk.title }) : x.title;
   const where = rd.step === 'read' && rd.page ? td('rd.page', { page: rd.page, pages: rd.pages }) : '';
-  const sub = [where, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
+  const sub = [where, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const inner = `${badge}${bk ? `<img class="hd-ccover" src="${esc(bk.cover)}" alt="" width="52" height="40" loading="lazy">` : `<span class="hd-cico" aria-hidden="true">${iconHtml('📖', { size: 26 })}</span>`}<b class="hd-ct" dir="auto">${esc(title)}</b>${steps}${sub ? `<span class="hd-csub">${esc(sub)}</span>` : ''}
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
   const lab = `${title}, ${td(`rd.at.${x.done ? 'done' : rd.step || 'read'}`)}${label}`;
@@ -127,7 +129,7 @@ function cardHtml(x) {
   // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
   // (a Manipulatives tool: open practice in its live room, docs/decisions.md "Homeroom: watching desks and the full catalog")
   const kind = x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
-  const sub = [kind, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
+  const sub = [kind, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
     ${x.instructions ? `<span class="hd-cins" dir="auto"><b>${esc(td('teacherSays'))}</b> ${esc(x.instructions)}</span>` : ''}${fbHtml(x)}<span class="hd-cbar" aria-hidden="true"><i style="width:${x.pct}%"></i></span>`;
