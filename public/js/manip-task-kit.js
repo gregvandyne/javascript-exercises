@@ -150,14 +150,16 @@ export function pointMatches(key, typed) {
   return !!a && !!b && a[0] === b[0] && a[1] === b[1];
 }
 /** Does a typed answer match the box's key? box: { key (or keys), kind: 'expanded' | 'poly' | 'factored' | 'point' |
- *  undefined }. */
+ *  undefined, simplest (a fraction in lowest terms only), over (an equivalence "?/8": the numerator, or the fraction
+ *  over that denominator) }. */
 export function boxMatches(box, typed) {
   const a = clean(typed); if (!a) return false;
   const keys = Array.isArray(box.keys) ? box.keys : [box.key];
   if (box.kind === 'expanded') return keys.some(k => expandedMatches(k, a));
   if (box.kind === 'poly' || box.kind === 'factored') return keys.some(k => polyMatches(k, a, { factored: box.kind === 'factored' }));
   if (box.kind === 'point') return keys.some(k => pointMatches(k, a));
-  return keys.some(k => answerMatches(String(k), a));
+  const opts = { simplest: !!box.simplest, over: Math.max(0, Math.round(+box.over || 0)) };
+  return keys.some(k => answerMatches(String(k), a, opts));
 }
 /**
  * Check a student's work on a variation. tool: the tool file's exports ({ conds: { type: (cond, board) -> bool } }).

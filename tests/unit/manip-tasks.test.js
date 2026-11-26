@@ -84,7 +84,7 @@ test('solo practice: the server checks the work itself and keeps counts and the 
   assert.deepEqual(r.json.progress, { solved: 5, tries: 6, streak: 3, best: 3 });
   assert.deepEqual((await as(amy, '/api/manipulatives/state')).json.practice[T5], { solved: 5, tries: 6, streak: 3, best: 3 });
   // refused: an unknown or not-yet-practice task, a bad seed
-  assert.equal((await as(amy, '/api/manipulatives/practice/check', { task: 'clock/elapsed-time', seed: 1, work: {} })).status, 404);
+  assert.equal((await as(amy, '/api/manipulatives/practice/check', { task: 'clock/no-such-task', seed: 1, work: {} })).status, 404);
   assert.equal((await as(amy, '/api/manipulatives/practice/check', { task: T5, seed: 0, work: {} })).status, 400);
   // tolerant: commas and spaces in the box
   const b = sol(TB, 3);
@@ -193,7 +193,7 @@ test('the catalog lists each tool\'s practice tasks as lessons; the hand-out rou
   assert.equal(r.status, 200, r.text); assert.match(r.json.toast, /Show 7 the 5-way/);
   const h = r.json.handouts.find(x => x.manip);
   assert.equal(h.manip.n, 4);
-  const bad = await as(teacher, `/api/homeroom/${cls.id}/handouts`, { task: 'clock/elapsed-time', count: 4, to: { kind: 'all' } });
+  const bad = await as(teacher, `/api/homeroom/${cls.id}/handouts`, { task: 'clock/no-such-task', count: 4, to: { kind: 'all' } });
   assert.equal(bad.json.code, 'pickTask');
   HO.removeHandout(teacher, cls, h.id);
 });
