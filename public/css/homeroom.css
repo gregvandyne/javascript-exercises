@@ -929,9 +929,22 @@ button.hr-tname:hover{background:var(--hover)}
 /* ---- the day plan (public/js/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): the plan pill in the shared
    bar (Now with a countdown and Next; Time's up in yellow; never red), its menu, the Finish class summary, and the
    projector's and a desk's Now / Next */
-.hr-plan{display:inline-flex;align-items:center;gap:8px;flex:none;min-width:0}
+/* (on a short bar the pill shrinks and its part ends in an ellipsis, its clock whole: public/js/class-views.js fit() watches
+   the [data-cv-keep] clock; then cv-pills drops "Now" and the Next line (both in its menu), then cv-pillicon folds it to
+   its icon and clock, and last cv-bare leaves Time's up its yellow hourglass. The full words are in its title and
+   aria-label.) */
+.hr-plan{display:inline-flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0}
 .hr-plan:empty{display:none}
-.hr-planpill{display:inline-flex;align-items:center;gap:8px;max-width:340px;text-align:start;line-height:1.15}
+/* (in the shared bar the pill and its buttons are the bar's own items: the pill shrinks, its buttons stay whole) */
+.cv-acts .hr-plan{display:contents}
+.hr-pp-act{flex:none}
+.hr-planpill{display:inline-flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;max-width:340px;text-align:start;line-height:1.15}
+.hr-planpill>.fx{flex:none}
+.hr-pp-l1>b{min-width:2.5em}
+.cv-bar.cv-pills :is(.hr-pp-run:not(.up) .hr-pp-cap,.hr-pp-run .hr-pp-l2,.hr-planpill:not(.hr-pp-run) .hr-pp-cap),
+.cv-bar.cv-pillicon :is(.hr-pp-run .hr-pp-l1>b,.hr-planpill:not(.hr-pp-run) .hr-pp-t>b){display:none}
+.cv-bar.cv-pills .hr-planpill{padding-inline:12px}
+.cv-bar.cv-bare .hr-pp-run.up .hr-pp-t{display:none}   /* the yellow hourglass alone (Time's up is still read out) */
 .hr-pp-t{display:inline-flex;flex-direction:column;min-width:0;overflow:hidden}
 .hr-pp-t b,.hr-pp-l1,.hr-pp-l2{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hr-pp-l1{display:flex;align-items:baseline;gap:6px}
@@ -1547,12 +1560,23 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-liveplayer[hidden]{display:none}
 .hr-lgcount{font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap}
 .hr-lgend{margin-inline-start:auto}
-.hr-lgpill{flex:none;display:inline-flex;align-items:center;gap:2px;min-height:40px;border-radius:999px;background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark-press);max-width:min(340px,100%);min-width:0}
-.hr-lgopen,.hr-lgx{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:0;background:transparent;color:var(--text);font:800 13px var(--font);cursor:pointer;border-radius:999px;min-width:0}
+/* the live game's pill in the shared bar: on a short bar the game's name ends in an ellipsis while the count and End stay
+   whole (public/js/class-views.js fit() watches the [data-cv-keep] count), then cv-pills makes the count "3/5", then
+   cv-pillicon folds the pill to its icon and "3/5"; the full words are in its title and aria-label */
+.hr-lgpill{flex:0 1 auto;display:inline-flex;align-items:center;gap:2px;min-height:40px;border-radius:999px;background:var(--spark-soft);box-shadow:inset 0 0 0 2px var(--spark-press);max-width:min(420px,100%);min-width:0}
+.hr-lgopen,.hr-lgx{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 12px;border:0;background:transparent;color:var(--text);font:800 13px var(--font);cursor:pointer;border-radius:999px;min-width:0;white-space:nowrap}
+.hr-lgopen{flex:0 1 auto;overflow:hidden}
+.hr-lgopen>.fx,.hr-lgx{flex:none}
 .hr-lgopen:hover,.hr-lgx:hover{background:color-mix(in srgb,var(--spark) 30%,transparent)}
-.hr-lgname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hr-lgn{font-weight:700;color:var(--text-2)}
+.hr-lgname{display:flex;align-items:baseline;gap:4px;min-width:0;overflow:hidden;white-space:nowrap}
+.hr-lgname>b{flex:0 1 auto;min-width:3em;overflow:hidden;text-overflow:ellipsis}
+.hr-lgn{flex:none;font-weight:700;color:var(--text-2)}
+.hr-lgnum{display:none;flex:none;font-variant-numeric:tabular-nums}
 .hr-lgx{border-inline-start:1px solid color-mix(in srgb,var(--spark-press) 50%,transparent);border-radius:0 999px 999px 0}
+.cv-bar.cv-pills .hr-lgn,.cv-bar.cv-pillicon .hr-lgname>b{display:none}
+.cv-bar.cv-pills .hr-lgnum{display:inline}
+.cv-bar.cv-pills :is(.hr-lgopen,.hr-lgx){padding-inline:10px}
+@media (max-width:819px){.hr-lgxt{display:none}}
 .hr-lgin.hr-lgwait{background:var(--card);color:var(--muted);font-weight:700;box-shadow:inset 0 0 0 1px var(--line)}
 .hr-lgin{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);z-index:3;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--spark-soft);color:var(--text);font:800 12px var(--font);white-space:nowrap;box-shadow:0 1px 0 var(--line),inset 0 0 0 1px var(--spark-press)}
 /* a live game on a student's desk: a calm banner with Join for as long as it runs, never covering their work. At the

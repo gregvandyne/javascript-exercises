@@ -78,7 +78,7 @@ export function planPill(ctx) {
     }
     const up = x.timesUp, tip = `${behindText(x.behindMin)}${x.next ? ` · ${tp('next')} ${partName(x.next)}` : ''}`;
     return `${btn(`btn hr-chunk hr-planpill hr-pp-run${up ? ' up' : ''}`, `${menuAttrs} title="${esc(tip)}" aria-label="${esc(up ? tp('upLabel', { part: partName(x.part) }) : tp('nowLabel', { part: partName(x.part) }))}"`,
-      `${ic(up ? '⌛' : '⏱️')}<span class="hr-pp-t"><span class="hr-pp-l1"><span class="hr-pp-cap">${esc(up ? tp('timesUp') : tp('now'))}</span><b dir="auto">${esc(partName(x.part))}</b>${up ? '' : `<span class="hr-pp-clock" data-hrclock>${esc(clock(x.left))}</span>`}</span>${x.next ? `<span class="hr-pp-sub hr-pp-l2">${esc(tp('next'))} <span dir="auto">${esc(partName(x.next))}</span></span>` : `<span class="hr-pp-sub hr-pp-l2">${esc(tp('lastPart'))}</span>`}</span>`)}
+      `${ic(up ? '⌛' : '⏱️')}<span class="hr-pp-t"><span class="hr-pp-l1"><span class="hr-pp-cap">${esc(up ? tp('timesUp') : tp('now'))}</span><b dir="auto" data-cv-keep>${esc(partName(x.part))}</b>${up ? '' : `<span class="hr-pp-clock" data-hrclock data-cv-keep>${esc(clock(x.left))}</span>`}</span>${x.next ? `<span class="hr-pp-sub hr-pp-l2">${esc(tp('next'))} <span dir="auto">${esc(partName(x.next))}</span></span>` : `<span class="hr-pp-sub hr-pp-l2">${esc(tp('lastPart'))}</span>`}</span>`)}
       ${RO ? '' : `${btn('btn hr-chunk hr-pp-act', `data-hrplan="more" aria-label="${esc(tp('moreLabel'))}"`, `<span>${esc(tp('more'))}</span>`)}
       ${btn(`btn hr-chunk hr-pp-act${up ? ' hr-spark' : ''}`, `data-hrplan="next" aria-label="${esc(x.next ? tp('nextLabel', { part: partName(x.next) }) : tp('endLast'))}"`, `${ic('⏭️')}<span class="hr-hidephone"> ${esc(tp('nextBtn'))}</span>`)}`}`;
   }
