@@ -3,7 +3,7 @@
 // tiles (piece-grid.js): rectangles and shapes on a lattice (rows and columns, any turn), colors by place (a border, a
 // split, a symmetric quilt), a pattern row, and rows lined up under a locked row. Every variation hides the board's
 // totals (the tool's "Tiles 12 · Area 12 square units" would give answers away).
-import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural, countTo, endLine } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { OBJ_HEAD } from '../manip-board.js';
 import { piecesOf, inside, partsOf, lineOf, latticeOf, rectOf, shapeKey, cellsOfRows, perimeterOf } from './piece-grid.js';
@@ -291,8 +291,8 @@ export const TASKS = [
       return {
         prompt: `Stage 1 is 1 tile. Each stage adds a border around the stage before: stage 2 is 3 by 3, stage 3 is 5 by 5. Build stage ${k}. ${ask === 'all' ? `How many tiles does stage ${m} have in all?` : `How many tiles does the border of stage ${m} add?`}`,
         setup, answer: { board: [{ t: 'rect', r: s, c: s, say: `Stage ${k} is a ${s} by ${s} square with no gaps.` }], box: { key: String(key), label: ask === 'all' ? 'tiles in all' : 'tiles in the border' } },
-        hints: [`Each side of stage n is (2n − 1) tiles long: stage ${m} is ${2 * m - 1} by ${2 * m - 1}.`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} tiles.` : `Each border adds 8 more than the one before: 8, 16, 24...`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} = ${key}.` : `Stage ${m}'s border: 8 × ${m - 1} = ${key}.`],
-        explain: ask === 'all' ? `The totals are 1, 9, 25, 49...: stage ${m} is ${2 * m - 1} × ${2 * m - 1} = ${key}.` : `The borders add 8, 16, 24...: stage ${m} adds ${(2 * m - 1) ** 2} − ${(2 * m - 3) ** 2} = ${key}.`,
+        hints: [`Each side of stage n is (2n − 1) tiles long: stage ${m} is ${2 * m - 1} by ${2 * m - 1}.`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} tiles.` : `Each border adds 8 more than the one before: ${endLine(countTo(m - 1, 8, null))}`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} = ${key}.` : `Stage ${m}'s border: 8 × ${m - 1} = ${key}.`],
+        explain: ask === 'all' ? `The totals are ${countTo(m, i => (2 * i - 1) ** 2, null)}: stage ${m} is ${2 * m - 1} × ${2 * m - 1} = ${key}.` : `The borders add ${countTo(m - 1, 8, null)}: stage ${m} adds ${(2 * m - 1) ** 2} − ${(2 * m - 3) ** 2} = ${key}.`,
         solution: { board: solvedWith(setup, solid(grid, matIn(setup.objects[0]))), box: String(key) },
       };
     }),

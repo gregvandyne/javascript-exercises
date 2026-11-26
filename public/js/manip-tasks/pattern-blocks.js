@@ -4,7 +4,7 @@
 // square and the thin tan rhombus are not counted in hexagons). The checks count the blocks a student placed (unlocked);
 // locked blocks are the task's own (a hexagon to cover, a design to copy). Every variation hides the board's totals
 // ("Hexagons 1 1/2" would give the answers away).
-import { boardWith, rowPlaces, objSizeOf, fmt } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, countTo, endLine } from '../manip-task-kit.js';
 import { allPieceDefs, HEX_SIXTHS } from '../manip-data.js';
 
 export const SLUG = 'pattern-blocks';
@@ -17,6 +17,9 @@ const pl = k => `${NAME[k]}${k === 'rhom' ? 'es' : 's'}`;
 const nm = (k, n) => `${fmt(n)} ${n === 1 ? NAME[k] : pl(k)}`;
 const one = k => `${/^[aeiou]/.test(NAME[k]) ? 'an' : 'a'} ${NAME[k]}`;
 const S = HEX_SIXTHS;   // value in triangles
+/** The blocks each block can be rebuilt from, edge to edge with no gaps: a hexagon from 6 triangles, 3 parallelograms
+ * or 2 trapezoids; a trapezoid or a parallelogram from triangles. Nothing is rebuilt from a bigger block. */
+export const BUILDS = { hex: ['tri', 'para', 'trap'], trap: ['tri'], para: ['tri'] };
 const gcd = (a, b) => (b ? gcd(b, a % b) : a);
 /** A number of sixths of a hexagon as hexagons: "2", "1 1/2", "2/3". */
 export const hexText = six => { const w = Math.floor(six / 6), r = six % 6, g = gcd(r, 6), f = r ? `${r / g}/${6 / g}` : ''; return w && f ? `${w} ${f}` : f || String(w); };
@@ -222,7 +225,7 @@ export const TASKS = [
         setup, answer: { board: [{ t: 'counts', has, say: `Stage 2 is the hexagon, 6 ${pl(a)} and 6 ${pl(b)}.` },
           { t: 'ring', a, b, say: `Put the 6 ${pl(a)} around the hexagon, one on each side, touching it. Then put the 6 ${pl(b)} around them, each touching a block of the first ring.` }], box: { key: String(n), label: `blocks at stage ${st}` } },
         hints: [`Put a ${NAME[a]} against each side of the hexagon (hold a block and pick Rotate to turn it), then a ${NAME[b]} against each of those. Stage 1 has 1 + 6 = 7 blocks, stage 2 has 7 + 6 = 13.`, 'Each stage adds 6, so stage s has 1 + 6 × s blocks.', `1 + 6 × ${st} = ${n}.`],
-        explain: `The rule is "add 6": 7, 13, 19, ... Stage ${st} has 1 + 6 × ${st} = ${n} blocks.`,
+        explain: `The rule is "add 6": ${endLine(countTo(st, i => 1 + 6 * i, null))} Stage ${st} has 1 + 6 × ${st} = ${n} blocks.`,
         solution: { board: flower(setup, a, b), box: String(n) },
       };
     }),
@@ -497,10 +500,10 @@ export const TASKS = [
     R => {
       let w, k, m, v;
       do { w = R.pick(['tri', 'para', 'trap', 'hex']); k = R.pick(['tri', 'para', 'trap', 'hex']); m = R.int(1, 3); v = m * S[k]; } while (k === w || v / S[w] > 6);
-      const key = frac(v, S[w]), can = v % S[w] === 0, n = v / S[w], what = m === 1 ? one(k) : nm(k, m), wn = pl(w);
+      const key = frac(v, S[w]), can = (BUILDS[k] || []).includes(w), n = v / S[w], what = m === 1 ? one(k) : nm(k, m), wn = pl(w);
       const setup = pbBoard({ mats: [{ label: 'Whole', has: { [w]: 1 } }] });
       return {
-        prompt: `Choose the ${NAME[w]} as 1 whole. ${can ? `Rebuild ${what} out of ${wn}.` : `Put ${what} on the board next to the ${NAME[w]}.`} What ${m === 1 ? 'is' : 'are'} ${what.replace(/^an? /, 'the ')} worth now?`,
+        prompt: `Choose the ${NAME[w]} as 1 whole. ${can ? `Rebuild ${what} out of ${wn}.` : `Put ${what} on the board next to the ${NAME[w]}.`} What ${m === 1 ? 'is' : 'are'} ${m === 1 ? what.replace(/^an? /, 'the ') : `the ${what}`} worth now?`,
         setup, answer: { board: [can ? { t: 'counts', has: { [w]: n }, say: `Use only ${wn} to rebuild ${what}.` } : { t: 'some', has: { [k]: m }, say: `Put ${what} on the board.` }], box: { key, label: 'its value', say: 'Count both in triangles and compare.' } },
         hints: ['Count in triangles: a hexagon is 6, a trapezoid 3, a parallelogram 2, a triangle 1.', `The whole (${one(w)}) is ${S[w]} triangle${S[w] > 1 ? 's' : ''}. ${what[0].toUpperCase()}${what.slice(1)} ${m === 1 ? 'is' : 'are'} ${v} triangle${v > 1 ? 's' : ''}.`, `${v} ÷ ${S[w]} = ${key}.`],
         explain: `${what[0].toUpperCase()}${what.slice(1)} ${m === 1 ? 'is' : 'are'} ${nm('tri', v)} and the whole is ${S[w]}, so ${m === 1 ? 'it is' : 'they are'} worth ${key}. Change the whole and every value changes.`,

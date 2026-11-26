@@ -4,7 +4,7 @@
 // starting where the one before landed, is the number sentence the line writes). A line a student must only read (a
 // point to name) is read only (st.q) with its dot drawn as "?" (st.ask). st.frac labels a line in halves, fourths or
 // eighths as fractions (manip.js nlLabel).
-import { boardWith, rowPlaces, objSizeOf, fmt, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, plural, countTo } from '../manip-task-kit.js';
 
 export const SLUG = 'number-lines';
 const EPS = 2e-3;
@@ -317,7 +317,7 @@ export const TASKS = [
       return {
         prompt: `The line goes from 0 to ${fmt(max)} in steps of ${step}. Put dots at ${list3(pts.map(fmt))}. How many steps is ${fmt(pts[2])} from 0?`,
         setup, answer: { board: [{ t: 'points', at: pts, say: `Put dots at ${list3(pts.map(fmt))}.` }], box: { key: String(ks[2]), label: 'steps' } },
-        hints: [`Each step is ${step}. Count by ${step}s: ${step}, ${2 * step}, ${3 * step}, ...`, `${fmt(pts[2])} ÷ ${step} tells how many steps.`, `${fmt(pts[2])} is ${ks[2]} steps of ${step}: ${ks[2]} × ${step} = ${fmt(pts[2])}.`],
+        hints: [`Each step is ${step}. Count by ${step}s: ${countTo(ks[2], step)}.`, `${fmt(pts[2])} ÷ ${step} tells how many steps.`, `${fmt(pts[2])} is ${ks[2]} steps of ${step}: ${ks[2]} × ${step} = ${fmt(pts[2])}.`],
         explain: `${fmt(pts[2])} = ${ks[2]} × ${step}, so it is ${ks[2]} steps from 0. A step of ${step} fits ${fmt(max)} on one line with room to read every label.`,
         solution: { board: solved(setup, { points: pts }), box: String(ks[2]) },
       };

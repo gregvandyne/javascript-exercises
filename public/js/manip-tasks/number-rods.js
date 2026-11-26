@@ -4,7 +4,7 @@
 // (a row of them is a train, end to end); a rod a student puts out is checked by how many of each length there are, on
 // the whole board or on a labeled work mat ("Way 1", "Train 2": the rods whose middle is on it), and on a mat in order
 // from left to right where the order is the point (3 + 5, then 5 + 3).
-import { boardWith, rowPlaces, objSizeOf } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, countTo, endLine } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { objRect, OBJ_HEAD, WORLD } from '../manip-board.js';
 
@@ -153,7 +153,7 @@ export const TASKS = [
         solution: { board: solved(setup, { loose: [a - b] }), box: String(a - b) },
       };
     }),
-  T('rod-algebra-r-w', 'Rod algebra: r + w', '3.OA.A.1', '3',
+  T('rod-algebra-r-w', 'Rod algebra: trains of equal rods', '3.OA.A.1', '3',
     'White is 1, so each rod is its length. Build a train of equal rods, then find the rod (or orange and one more) that matches it.',
     'Three reds match dark green 6. Repeated addition with rods is multiplication waiting for its name.',
     R => {
@@ -275,7 +275,7 @@ export const TASKS = [
       return {
         prompt: `Build a ${a} by ${b} ${a === b ? 'square' : 'rectangle'}: stack ${b} ${COLOR[a]} rods. How many white rods would fill it?`,
         setup, answer: { board: [{ t: 'rods', has: Array(b).fill(a), say: `Put out ${b} ${COLOR[a]} rods, and no others.` }], box: { key: String(a * b), label: 'white rods' } },
-        hints: [`Each ${rod(a)} is ${a} white rods long.`, `${b} rows of ${a} white rods: count ${a}, ${2 * a}, ${3 * a}, ...`, `${b} × ${a} = ${a * b}.`],
+        hints: [`Each ${rod(a)} is ${a} white rods long.`, `${b} rows of ${a} white rods: count ${endLine(countTo(b, a, null))}`, `${b} × ${a} = ${a * b}.`],
         explain: `${b} rows of ${a} make ${a * b} squares: ${b} × ${a} = ${a * b}${a === b ? `, a square number` : ''}.`,
         solution: { board: solved(setup, { loose: Array(b).fill(a) }), box: String(a * b) },
       };
