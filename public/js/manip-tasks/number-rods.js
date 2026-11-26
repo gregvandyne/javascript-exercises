@@ -102,7 +102,7 @@ export const TASKS = [
           { t: 'mat', label: 'Way 1', has: [a, n - a], say: `On Way 1, put ${A(a)} and the rod that makes ${n}.` },
           { t: 'mat', label: 'Way 2', n: 2, sum: n, say: `On Way 2, put two rods that are ${n} long together.` },
           { t: 'differ', labels: ['Way 1', 'Way 2'], say: 'Way 2 needs different rods from Way 1.' }] },
-        hints: [`Put ${A(a)} on Way 1. Which rod fills the rest of the ${rod(n)}'s length?`, `${a} + ${n - a} = ${n}. For Way 2, try ${A(other[0])}.`, `${other[0]} + ${other[1]} = ${n} too: the ${rod(other[0])} and the ${rod(other[1])}.`],
+        hints: [`Put ${A(a)} on Way 1. Which rod fills the rest of the ${rod(n)}'s length?`, `${a} + ${n - a} = ${n}. For Way 2, try ${A(other[0])}.`, `${other[0]} + ${other[1]} = ${n} too: the ${rod(other[0])} and ${other[0] === other[1] ? 'another one' : `the ${rod(other[1])}`}.`],
         explain: `${a} + ${n - a} = ${n} and ${other[0]} + ${other[1]} = ${n}. Every pair of rods as long as the ${rod(n)} is a way to make ${n}.`,
         solution: { board: solved(setup, { on: { 'Way 1': [a, n - a], 'Way 2': other } }) },
       };
@@ -163,7 +163,7 @@ export const TASKS = [
       return {
         prompt: `White is 1. Make a train of ${k} ${COLOR[r]} rods${sumText}. Then put out ${p > 10 ? 'orange and one more rod' : 'the one rod'} as long as the train. How long is it?`,
         setup, answer: { board: [{ t: 'rods', has: [...Array(k).fill(r), ...match], say: `Put out ${k} ${COLOR[r]} rods and ${p > 10 ? 'orange and the rod' : 'the rod'} that matches them.` }], box: { key: String(p), label: 'how long' } },
-        hints: [`Add ${k} ${COLOR[r]} rods end to end: each is ${r}.`, `${Array(Math.min(k, 6)).fill(r).join(' + ')}${k > 6 ? ' + ...' : ''}: count on by ${r}s.`, `${k} × ${r} = ${p}: ${p > 10 ? `orange and the ${rod(p - 10)}` : `the ${rod(p)}`}.`],
+        hints: [`Add ${k} ${COLOR[r]} rods end to end: each is ${r}.`, `${Array(Math.min(k, 6)).fill(r).join(' + ')}${k > 6 ? ' + ...' : ''}: count on by ${r}s.`, `${k} × ${r} = ${p}: ${p > 10 ? `orange and ${p - 10 === 10 ? 'another orange rod' : `the ${rod(p - 10)}`}` : `the ${rod(p)}`}.`],
         explain: `${k} rods of ${r} make ${p}: ${k} × ${r} = ${p}. A train of equal rods is multiplication.`,
         solution: { board: solved(setup, { loose: [...Array(k).fill(r), ...match] }), box: String(p) },
       };
