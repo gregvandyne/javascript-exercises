@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Carta del mondo",
         "car": "Carta dei Caraibi",
-        "me": "Carta del Medio Oriente"
+        "me": "Carta del Medio Oriente",
+        "us": "Mappa degli Stati Uniti",
+        "ca": "Mappa del Canada"
       },
       "untitled": "Quiz di geografia",
       "mapTitle": "Carta: {region}",
@@ -1315,8 +1317,17 @@
       "fam": "Quale paese è famoso per {thing}?",
       "region": {
         "car": "Caraibi",
-        "me": "Medio Oriente"
-      }
+        "me": "Medio Oriente",
+        "us": "Stati Uniti",
+        "ca": "Canada"
+      },
+      "mapHow_us": "Scrivi il nome di ogni stato numerato.",
+      "mapHow_ca": "Scrivi il nome di ogni provincia o territorio numerato.",
+      "mapHowCoSub": "Quelli piccoli hanno una freccia verso la loro riga.",
+      "capSub": "{name}: qual è la capitale?",
+      "capc_us": "{city} è la capitale di quale stato?",
+      "capc_ca": "{city} è la capitale di quale provincia o territorio?",
+      "abbr": "{name}: qual è la sigla postale?"
     }
   },
   "friends": {
@@ -9800,7 +9811,9 @@
         "eu": "Europa",
         "na": "America del Nord",
         "sa": "America del Sud",
-        "oc": "Oceania"
+        "oc": "Oceania",
+        "us": "Stati Uniti (stati)",
+        "ca": "Canada (province e territori)"
       },
       "level": {
         "easy": "Facile: paesi famosi",
@@ -9817,7 +9830,10 @@
         "find": "Trova {name}",
         "capital": "Trova il paese che ha come capitale {city}",
         "flag": "Trova il paese di questa bandiera",
-        "famous": "Trova il paese famoso per {thing}"
+        "famous": "Trova il paese famoso per {thing}",
+        "findSub": "Trova: {name}",
+        "capital_us": "Trova lo stato che ha come capitale {city}",
+        "capital_ca": "Trova la provincia o il territorio che ha come capitale {city}"
       }
     },
     "cs": {

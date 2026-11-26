@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Wereldkaart",
         "car": "Kaart van het Caribisch gebied",
-        "me": "Kaart van het Midden-Oosten"
+        "me": "Kaart van het Midden-Oosten",
+        "us": "Kaart van de Verenigde Staten",
+        "ca": "Kaart van Canada"
       },
       "untitled": "Aardrijkskundequiz",
       "mapTitle": "Kaart: {region}",
@@ -1315,8 +1317,17 @@
       "fam": "Welk land is beroemd om {thing}?",
       "region": {
         "car": "Caribisch gebied",
-        "me": "Midden-Oosten"
-      }
+        "me": "Midden-Oosten",
+        "us": "Verenigde Staten",
+        "ca": "Canada"
+      },
+      "mapHow_us": "Schrijf de naam van elke genummerde staat op.",
+      "mapHow_ca": "Schrijf de naam van elke genummerde provincie of elk genummerd territorium op.",
+      "mapHowCoSub": "Kleine hebben een pijl naar hun eigen lijn.",
+      "capSub": "Wat is de hoofdstad van {name}?",
+      "capc_us": "{city} is de hoofdstad van welke staat?",
+      "capc_ca": "{city} is de hoofdstad van welke provincie of welk territorium?",
+      "abbr": "Wat is de postafkorting van {name}?"
     }
   },
   "friends": {
@@ -9800,7 +9811,9 @@
         "eu": "Europa",
         "na": "Noord-Amerika",
         "sa": "Zuid-Amerika",
-        "oc": "Oceanië"
+        "oc": "Oceanië",
+        "us": "Verenigde Staten (staten)",
+        "ca": "Canada (provincies en territoria)"
       },
       "level": {
         "easy": "Makkelijk: bekende landen",
@@ -9817,7 +9830,10 @@
         "find": "Vind {name}",
         "capital": "Vind het land met hoofdstad {city}",
         "flag": "Vind het land met deze vlag",
-        "famous": "Vind het land dat beroemd is om {thing}"
+        "famous": "Vind het land dat beroemd is om {thing}",
+        "findSub": "Zoek {name}",
+        "capital_us": "Zoek de staat met als hoofdstad {city}",
+        "capital_ca": "Zoek de provincie of het territorium met als hoofdstad {city}"
       }
     },
     "cs": {

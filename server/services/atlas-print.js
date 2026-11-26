@@ -12,6 +12,10 @@
 //     quiz (BRB.canMake); never a student or a child: the route checks who asks).
 // note: the teacher's own instructions, printed at the top (never on the key). Words in the viewer's language: the
 // page's own (play.print*, server/i18n) and the countries', capitals' and continents' from the game's reviewed packs.
+// A map of US states or of Canada (r 'us' or 'ca', docs/decisions.md "Atlas Quest: US states and Canada") prints the
+// same way: the map as wide as the page, the small states (Rhode Island, Delaware, DC ...) on an arrow to their own line,
+// the other lines carried on over the next page, and the key on a page of its own; its questions ask for a state's
+// capital, the state whose capital a city is, or its postal abbreviation.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -32,11 +36,14 @@ export function core() {
   const html = fs.readFileSync(path.join(ROOT, 'seed-games/atlas-quest.html'), 'utf8');
   const line = html.split('\n').find(l => l.startsWith('window.AtlasData = '));
   const D = JSON.parse(line.slice('window.AtlasData = '.length).replace(/;\s*$/, ''));
+  const pl = html.split('\n').find(l => l.startsWith('window.AtlasPlaces = '));
+  const P = pl ? JSON.parse(pl.slice('window.AtlasPlaces = '.length).replace(/;\s*$/, '')) : null;
   const m = /\/\* atlas-map:begin \*\/([\s\S]*?)\/\* atlas-map:end \*\//.exec(html);
   const box = { window: {} };
   vm.runInNewContext(m[1], box, { timeout: 5000 });
   const by = Object.fromEntries(D.C.map(c => [c[0], { cc: c[0], name: c[1], cap: c[2], fam: c[7], reg: c[9] }]));
-  CORE = { D, by, map: box.window.AtlasMap.make(D) };
+  for (const r of (P && P.P) || []) by[r[0]] = { cc: r[0], name: r[1], cap: r[2], postal: r[3], reg: r[4], sub: r[0].slice(0, 2).toLowerCase() };
+  CORE = { D, P, by, map: box.window.AtlasMap.make(D, P) };
   return CORE;
 }
 
@@ -82,26 +89,32 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
   const capKey = cc => (D.CAPNOTE && D.CAPNOTE[cc] ? `${capital(cc)} (${word(`capnote.${cc}`, D.CAPNOTE[cc])})` : capital(cc));
   const cont = cc => word(CONT[by[cc].reg], CONT[by[cc].reg]);
   const region = doc.r === 'world' ? word('Whole world', 'Whole world') : CONT[doc.r] ? word(CONT[doc.r], CONT[doc.r]) : t(`play.printAtlas.region.${doc.r}`);
-  // "Map of the Caribbean": the world and the two regions that aren't continents have their own words in each language
-  const mapOfKey = `play.printAtlas.mapOf.${doc.r}`, mapOf = ['world', 'car', 'me'].includes(doc.r) && t(mapOfKey) !== mapOfKey ? t(mapOfKey) : t('play.printAtlas.mapTitle', { region });
+  // "Map of the Caribbean": the world, the two regions that aren't continents and the maps of the US and Canada have
+  // their own words in each language
+  const own = ['world', 'car', 'me', 'us', 'ca'].includes(doc.r), sub = doc.r === 'us' || doc.r === 'ca' ? doc.r : '';
+  const mapOfKey = `play.printAtlas.mapOf.${doc.r}`, mapOf = own && t(mapOfKey) !== mapOfKey ? t(mapOfKey) : t('play.printAtlas.mapTitle', { region });
   const title = doc.t || (doc.blank ? mapOf : t('play.printAtlas.untitled'));
   // the map: its countries numbered in the order they were added; small ones on an answer line with an arrow
   const nums = {}; let n = 0;
   for (const x of doc.q) if (x[0] === 'map' && nums[x[1]] === undefined) nums[x[1]] = ++n;
   const co = {}; for (const [cc, lng, lat] of doc.a) if (nums[cc] !== undefined) co[cc] = [lng / 10, lat / 10];
   const showMap = doc.blank || n > 0;
-  const svg = names => map.svg(doc.r, { nums, co, names, label: ['world', 'car', 'me'].includes(doc.r) ? mapOf : t('play.printAtlas.mapAlt', { region }) });
+  const svg = names => map.svg(doc.r, { nums, co, names, label: own ? mapOf : t('play.printAtlas.mapAlt', { region }) });
   const others = doc.q.filter(x => x[0] !== 'map');
   const ask = x => {
     const cc = x[0] === 'own' ? x[3] : x[1];
     if (x[0] === 'own') return esc(x[1]);
+    // a state's or province's questions (their own words: a country's are written for countries in some languages)
+    if (sub && x[0] === 'cap') return esc(t('play.printAtlas.capSub', { name: name(cc) }));
+    if (sub && x[0] === 'capc') return esc(t(`play.printAtlas.capc_${sub}`, { city: capital(cc) }));
+    if (x[0] === 'abbr') return esc(t('play.printAtlas.abbr', { name: name(cc) }));
     if (x[0] === 'cap') return esc(fill(word('What is the capital of {name}?', 'What is the capital of {name}?'), { name: name(cc) }));
     if (x[0] === 'capc') return esc(fill(t('play.printAtlas.capc'), { city: capital(cc) }));
     if (x[0] === 'flag') return `${esc(word('Which country has this flag?', 'Which country has this flag?'))}<img class="atp-flag" src="${esc(flagSrc(D.FLAG[cc]))}" alt="">`;
     if (x[0] === 'cont') return esc(fill(word('Which continent is {name} in?', 'Which continent is {name} in?'), { name: name(cc) }));
     return esc(t('play.printAtlas.fam', { thing: famous(cc) }));
   };
-  const answer = x => (x[0] === 'own' ? x[2] : x[0] === 'cap' ? capKey(x[1]) : x[0] === 'cont' ? cont(x[1]) : name(x[1]));
+  const answer = x => (x[0] === 'own' ? x[2] : x[0] === 'cap' ? capKey(x[1]) : x[0] === 'cont' ? cont(x[1]) : x[0] === 'abbr' ? by[x[1]].postal : name(x[1]));
   // a line under the map for every number that has none on it (a small country's number tag has its line here too)
   const placed = map.layout(doc.r, co).items;
   const lines = Object.keys(nums).filter(cc => !placed[cc] || placed[cc].tag);
@@ -109,7 +122,7 @@ export function atlasPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', li
   // many lines (a whole region's blank map): four columns of lines, carried on over the next page when they don't fit
   const many = lines.length > 18 || n > 30;
   const mapPart = showMap ? `<section class="atp-mapsec${many ? ' atp-many' : ''}">
-${n ? `<h2>${esc(t('play.printAtlas.mapH'))}</h2><p class="atp-how">${esc(t('play.printAtlas.mapHow'))}${Object.keys(co).length ? ' ' + esc(t('play.printAtlas.mapHowCo')) : ''}</p>` : ''}
+${n ? `<h2>${esc(t('play.printAtlas.mapH'))}</h2><p class="atp-how">${esc(t(sub ? `play.printAtlas.mapHow_${sub}` : 'play.printAtlas.mapHow'))}${Object.keys(co).length ? ' ' + esc(t(sub ? 'play.printAtlas.mapHowCoSub' : 'play.printAtlas.mapHowCo')) : ''}</p>` : ''}
 <div class="atp-map">${svg({})}</div>
 ${lines.length ? `<ol class="atp-lines">${lines.map(cc => `<li><b class="cwp-num">${nums[cc]}</b><i class="atp-blank"></i></li>`).join('')}</ol>` : ''}
 </section>` : '';

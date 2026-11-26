@@ -1301,7 +1301,9 @@
       "mapOf": {
         "world": "Carte du monde",
         "car": "Carte des Caraïbes",
-        "me": "Carte du Moyen-Orient"
+        "me": "Carte du Moyen-Orient",
+        "us": "Carte des États-Unis",
+        "ca": "Carte du Canada"
       },
       "untitled": "Quiz de géographie",
       "mapTitle": "Carte : {region}",
@@ -1314,8 +1316,17 @@
       "fam": "Quel pays est célèbre pour {thing} ?",
       "region": {
         "car": "Caraïbes",
-        "me": "Moyen-Orient"
-      }
+        "me": "Moyen-Orient",
+        "us": "États-Unis",
+        "ca": "Canada"
+      },
+      "mapHow_us": "Écris le nom de chaque État numéroté.",
+      "mapHow_ca": "Écris le nom de chaque province ou territoire numéroté.",
+      "mapHowCoSub": "Les petits ont une flèche vers leur propre ligne.",
+      "capSub": "{name} : quelle est sa capitale ?",
+      "capc_us": "{city} est la capitale de quel État ?",
+      "capc_ca": "{city} est la capitale de quelle province ou de quel territoire ?",
+      "abbr": "{name} : quelle est son abréviation postale ?"
     }
   },
   "friends": {
@@ -9799,7 +9810,9 @@
         "eu": "Europe",
         "na": "Amérique du Nord",
         "sa": "Amérique du Sud",
-        "oc": "Océanie"
+        "oc": "Océanie",
+        "us": "États-Unis (États)",
+        "ca": "Canada (provinces et territoires)"
       },
       "level": {
         "easy": "Facile : pays célèbres",
@@ -9816,7 +9829,10 @@
         "find": "Trouve ce pays : {name}",
         "capital": "Trouve le pays dont la capitale est {city}",
         "flag": "Trouve le pays de ce drapeau",
-        "famous": "Trouve le pays célèbre pour {thing}"
+        "famous": "Trouve le pays célèbre pour {thing}",
+        "findSub": "Trouve : {name}",
+        "capital_us": "Trouve l’État dont la capitale est {city}",
+        "capital_ca": "Trouve la province ou le territoire dont la capitale est {city}"
       }
     },
     "cs": {

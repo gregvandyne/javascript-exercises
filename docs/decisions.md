@@ -16026,3 +16026,43 @@ in a "Teach with Atlas Quest" widget under the solo game's home, gated by BRB.ca
 
 Tests: tests/unit/atlas-door-browser.test.js (a teacher from Homeroom Games, Live games and the game page; a student and
 a handout; no plane), tests/unit/make-gate.test.js (the door for grown-ups, the tools behind Build a lesson).
+
+## Atlas Quest: US states and Canada (26 Nov 2026)
+
+The owner asked for what teachers use Seterra for: the 50 US states and DC, their capitals and postal abbreviations,
+and Canada's 13 provinces and territories with their capitals.
+- **Data.** `window.AtlasPlaces` in seed-games/atlas-quest.html, one line after `window.AtlasData`, written by
+  `scripts/atlas-places-build.mjs` from Natural Earth's admin-1 shapes and admin-1 capitals (public domain; see
+  docs/media-credits.md) and the hand-written facts in `scripts/data/atlas-quest/places.json` (51 US rows, 13 Canadian:
+  ISO 3166-2 code, name, capital, postal abbreviation, region, nickname, largest city). Regions: the US Census Bureau's
+  four; Canada's usual five (Atlantic, Central, Prairies, West Coast, North). Largest city by the 2020 US and 2021
+  Canadian censuses; a nickname only where it is official or long and widely used (several provinces have none). DC has
+  no capital of its own: `NO_CAP_Q` (game and `server/live/atlas.js`) now holds `US-DC`. The shapes are projected at
+  build time (US: Albers with Alaska at 0.35 and Hawaii moved into framed insets; Canada: Lambert conformal conic,
+  Statistics Canada's parallels), quantised and simplified along shared borders so neighbours meet: about 61 KB.
+- **Words.** Names and capitals in 11 languages are in a new pack version, `1.1.0-9807c9b0` (1.0.1 plus 127 strings,
+  `scripts/data/atlas-quest/pack-1.1.0.json`, built by `scripts/atlas-pack-build.mjs`); 1.0.0 and 1.0.1 are unchanged.
+  New screen words are in `ATQ_I18N` (12 tables); the printed and live words in server/i18n (en and 11 locales,
+  `scripts/i18n-add-atlas-states.mjs`, added as text so nothing else in a file moves). Nicknames and largest cities are
+  English (the card says so outside English), as the library's facts set is. Pack strings phrased for countries ("Find
+  this country", "the capital of the country...") are never reused for a state.
+- **Maps.** The atlas-map block takes the places as two more frames, `us` and `ca`: a flat frame (no cos(latitude)),
+  only that map's places drawn, Alaska and Hawaii framed (their boxes count as land, so no answer line is put over them).
+  The small places (RI, DE, CT, NJ, MD, MA, VT, NH, DC; PE in Canada) always get the small-place arrow. The US frame
+  has extra Atlantic on the east, where New England's lines go.
+- **Play.** Home has a Map choice (World, United States, Canada). On a map of states the board shows the flat map in
+  place of the globe (regions coloured; drag, pinch, wheel, + and −), each small place with a box to tap and an arrow to
+  it. Four games: Find it, Name it (the one lit up), Capitals (capital of, and capital to state), Abbreviations
+  (codes with the same first letter as wrong answers first). Region chips narrow a game to a region. Hints: the region,
+  then a circle. A tap on a place at home opens its card (capital, region, abbreviation, nickname, largest city).
+- **Teachers.** The quiz maker, blank maps (behind Build a lesson and `CAN_MAKE`, as #650 made them) and the printer take
+  the `us` and `ca` frames: a quiz is on one map (countries, or one country's states; mixing is refused with a message),
+  with the kinds a state has (map, capital, capital to state, `abbr`). `cleanAtlasItems` checks the same. Printing is
+  the same layout: full-width map, lines carried on to the next page, the key on its own page.
+- **Live.** Atlas Quest Live has two more regions, `us` and `ca`: a question's choices are that map's places in one
+  order (`placeCodes`), capital questions ask for the state or province, flag and famous ones become find questions,
+  near misses use the map's own distances (none for Alaska and Hawaii). The live page swaps to that map per question.
+- **Videos.** Atlas Quest has no tutorial scene; the demo videos (`scripts/demo-video/rec-games.mjs`) show a Find it on the world
+  globe, which is unchanged, so they need no re-recording. A re-record would show the new Map row on the home panel.
+
+Tests: tests/unit/atlas-states.test.js (the data, geometry, pack, questions, quizzes, print, live), and the Atlas tests.
