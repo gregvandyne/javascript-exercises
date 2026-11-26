@@ -11,7 +11,7 @@ import { cleanText } from './textfilter.js';
 import { canvasVersion, canvasKit, figureProblems } from './canvaskit.js';
 import { proofCore } from './proof-core.js';
 import { useSetCodes } from '../standards/official-tags.js';
-import { codes as atlasCodes, NO_CAP_Q as ATLAS_NO_CAP } from '../live/atlas.js';
+import { codes as atlasCodes, placeCodes as atlasPlaces, subOf as atlasSubOf, NO_CAP_Q as ATLAS_NO_CAP } from '../live/atlas.js';
 
 export const MAX_ITEMS = 20;
 /** How many sets one account may keep in one game. */
@@ -424,9 +424,13 @@ useSetCodes('mistake-hunt', 'ccss-ela', id => {
 // Countries are ISO codes checked against the game's own list (window.AtlasData; services/../live/atlas.js codes),
 // never a name; the teacher's own words (the title, a question and its answer) pass the site's text filter as
 // Crossword's words do. Capital questions are never about the countries whose capital the game leaves out (NO_CAP_Q).
-export const ATLAS = { max: 60, q: 150, a: 60, title: 60, frames: ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'car', 'me'], kinds: ['map', 'cap', 'capc', 'flag', 'cont', 'fam'] };
-let atlasKnown = null;
+// A quiz of US states or of Canada's provinces and territories (r 'us' or 'ca', docs/decisions.md "Atlas Quest: US
+// states and Canada") asks about that map's places only (ISO 3166-2 codes, 'US-OH'), in the kinds a state has (on the
+// map, its capital, capital to state, its postal abbreviation 'abbr'); a quiz of countries never has a state in it.
+export const ATLAS = { max: 60, q: 150, a: 60, title: 60, frames: ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'car', 'me', 'us', 'ca'], kinds: ['map', 'cap', 'capc', 'flag', 'cont', 'fam', 'abbr'], placeKinds: ['map', 'cap', 'capc', 'abbr'] };
+let atlasKnown = null, atlasPlaceSet = null;
 const atlasCode = cc => { if (!atlasKnown) atlasKnown = new Set(atlasCodes()); return typeof cc === 'string' && atlasKnown.has(cc); };
+const atlasPlace = (cc, map) => { if (!atlasPlaceSet) atlasPlaceSet = new Set(atlasPlaces()); return typeof cc === 'string' && atlasPlaceSet.has(cc) && atlasSubOf(cc) === map; };
 /** The quiz's clean item, or null when it isn't one. opts.empty: a print of a map with no numbers may have no questions;
  *  opts.maxQ: more questions than a quiz holds (a printed blank map numbers a whole region). */
 export function cleanAtlasItems(raw, opts = {}) {
@@ -435,19 +439,22 @@ export function cleanAtlasItems(raw, opts = {}) {
   if (!Array.isArray(it.q) || it.q.length > (opts.maxQ || ATLAS.max) || (!it.q.length && !opts.empty)) return null;
   const r = it.r === undefined ? 'world' : it.r;
   if (!ATLAS.frames.includes(r)) return null;
+  // a map of states asks about its own places; any other frame about countries
+  const sub = r === 'us' || r === 'ca' ? r : '';
+  const known = cc => (sub ? atlasPlace(cc, sub) : atlasCode(cc));
   const q = [], seen = new Set();
   for (const x of it.q) {
     if (!Array.isArray(x)) return null;
     if (x[0] === 'own') {
       if (x.length < 3 || x.length > 4 || typeof x[1] !== 'string' || typeof x[2] !== 'string') return null;
       const qq = x[1].replace(/\s+/g, ' ').trim(), aa = x[2].replace(/\s+/g, ' ').trim(), cc = x[3] === undefined ? '' : x[3];
-      if (!qq || !aa || qq.length > ATLAS.q || aa.length > ATLAS.a || (cc !== '' && !atlasCode(cc))) return null;
+      if (!qq || !aa || qq.length > ATLAS.q || aa.length > ATLAS.a || (cc !== '' && !known(cc))) return null;
       const cq = cleanText(qq, ATLAS.q), ca = cleanText(aa, ATLAS.a);
       if (!cq.ok || !ca.ok) return null;
       q.push(['own', cq.value, ca.value, cc]);
       continue;
     }
-    if (x.length !== 2 || !ATLAS.kinds.includes(x[0]) || !atlasCode(x[1])) return null;
+    if (x.length !== 2 || !(sub ? ATLAS.placeKinds : ATLAS.kinds.filter(k => k !== 'abbr')).includes(x[0]) || !known(x[1])) return null;
     if ((x[0] === 'cap' || x[0] === 'capc') && ATLAS_NO_CAP.has(x[1])) return null;
     const k = `${x[0]}:${x[1]}`;
     if (seen.has(k)) return null;

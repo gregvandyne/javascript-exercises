@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Weltkarte",
         "car": "Karte der Karibik",
-        "me": "Karte des Nahen Ostens"
+        "me": "Karte des Nahen Ostens",
+        "us": "Karte der USA",
+        "ca": "Karte von Kanada"
       },
       "untitled": "Erdkunde-Quiz",
       "mapTitle": "Karte: {region}",
@@ -1315,8 +1317,17 @@
       "fam": "Welches Land ist berühmt für {thing}?",
       "region": {
         "car": "Karibik",
-        "me": "Naher Osten"
-      }
+        "me": "Naher Osten",
+        "us": "USA",
+        "ca": "Kanada"
+      },
+      "mapHow_us": "Schreib den Namen jedes nummerierten Bundesstaats auf.",
+      "mapHow_ca": "Schreib den Namen jeder nummerierten Provinz und jedes nummerierten Territoriums auf.",
+      "mapHowCoSub": "Kleine haben einen Pfeil zu ihrer eigenen Linie.",
+      "capSub": "Was ist die Hauptstadt von {name}?",
+      "capc_us": "{city} ist die Hauptstadt welches Bundesstaats?",
+      "capc_ca": "{city} ist die Hauptstadt welcher Provinz oder welches Territoriums?",
+      "abbr": "Wie lautet die Postabkürzung von {name}?"
     },
     "printFlash": {
       "untitled": "Karteikarten",
@@ -9809,7 +9820,9 @@
         "eu": "Europa",
         "na": "Nordamerika",
         "sa": "Südamerika",
-        "oc": "Ozeanien"
+        "oc": "Ozeanien",
+        "us": "USA (Bundesstaaten)",
+        "ca": "Kanada (Provinzen und Territorien)"
       },
       "level": {
         "easy": "Leicht: bekannte Länder",
@@ -9826,7 +9839,10 @@
         "find": "Finde {name}",
         "capital": "Finde das Land mit der Hauptstadt {city}",
         "flag": "Finde das Land mit dieser Flagge",
-        "famous": "Finde das Land, das berühmt ist für {thing}"
+        "famous": "Finde das Land, das berühmt ist für {thing}",
+        "findSub": "Finde {name}",
+        "capital_us": "Finde den Bundesstaat mit der Hauptstadt {city}",
+        "capital_ca": "Finde die Provinz oder das Territorium mit der Hauptstadt {city}"
       }
     },
     "cs": {

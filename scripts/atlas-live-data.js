@@ -20,10 +20,17 @@ if (!ver) throw new Error('no PACK_VER in atlas-quest.html');
 // [cc, English name, label lat, label lng, region, area (thousand km2), easy 0/1, neighbours]
 const easy = new Set(String(D.EASY || '').split(','));
 const C = D.C.map(c => [c[0], c[1], c[13], c[14], c[9], c[10], easy.has(c[0]) ? 1 : 0, c[11] || '']);
-const data = { C, MAP: D.MAP, FLAG: D.FLAG };
+// the maps of US states and of Canada (window.AtlasPlaces, scripts/atlas-places-build.mjs): [code, English name, label
+// y, label x, map, in an inset (Alaska, Hawaii)], their shapes (flat map units) and their frames, each map's places in
+// Atlas Quest's order (the server's placeCodes(map) and the game share it)
+const pl = src.split('\n').find(l => l.startsWith('window.AtlasPlaces = '));
+const PL = pl ? JSON.parse(pl.slice('window.AtlasPlaces = '.length).replace(/;\s*$/, '')) : { P: [], MAP: {}, MAPS: {} };
+const P = PL.P.map(r => [r[0], r[1], r[6], r[5], r[0].slice(0, 2).toLowerCase(), r[13] ? 1 : 0]);
+const MAPS = Object.fromEntries(Object.entries(PL.MAPS).map(([m, x]) => [m, { frame: x.frame, insets: x.insets, unit: x.unit, small: x.small }]));
+const data = { C, MAP: D.MAP, FLAG: D.FLAG, P, PMAP: PL.MAP, MAPS };
 const block = `/* atlas-live:begin */\nvar AL_PACK_VER = ${JSON.stringify(ver)}, AL_PACK_SRI = ${JSON.stringify(sri)};\nvar AL = ${JSON.stringify(data)};\n/* atlas-live:end */`;
 const html = fs.readFileSync(GAME, 'utf8');
 const re = /\/\* atlas-live:begin \*\/[\s\S]*?\/\* atlas-live:end \*\//;
 if (!re.test(html)) throw new Error('no atlas-live markers in atlas-quest-live.html');
 fs.writeFileSync(GAME, html.replace(re, () => block));
-console.log(`atlas-quest-live: ${C.length} countries, ${Object.keys(D.MAP).length} shapes, ${Object.keys(D.FLAG).length} flags, packs ${ver}`);
+console.log(`atlas-quest-live: ${C.length} countries, ${Object.keys(D.MAP).length} shapes, ${Object.keys(D.FLAG).length} flags, ${P.length} states and provinces, packs ${ver}`);

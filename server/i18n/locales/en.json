@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Map of the world",
         "car": "Map of the Caribbean",
-        "me": "Map of the Middle East"
+        "me": "Map of the Middle East",
+        "us": "Map of the United States",
+        "ca": "Map of Canada"
       },
       "untitled": "Geography quiz",
       "mapTitle": "Map of {region}",
@@ -1315,8 +1317,17 @@
       "fam": "Which country is famous for {thing}?",
       "region": {
         "car": "Caribbean",
-        "me": "Middle East"
-      }
+        "me": "Middle East",
+        "us": "United States",
+        "ca": "Canada"
+      },
+      "mapHow_us": "Write the name of each numbered state.",
+      "mapHow_ca": "Write the name of each numbered province or territory.",
+      "mapHowCoSub": "Small ones have an arrow to their own line.",
+      "capSub": "What is the capital of {name}?",
+      "capc_us": "{city} is the capital of which state?",
+      "capc_ca": "{city} is the capital of which province or territory?",
+      "abbr": "What is the postal abbreviation for {name}?"
     },
     "printFlash": {
       "untitled": "Flashcards",
@@ -11223,7 +11234,9 @@
         "eu": "Europe",
         "na": "North America",
         "sa": "South America",
-        "oc": "Oceania"
+        "oc": "Oceania",
+        "us": "The United States (states)",
+        "ca": "Canada (provinces and territories)"
       },
       "level": {
         "easy": "Easy: famous countries",
@@ -11240,7 +11253,10 @@
         "find": "Find {name}",
         "capital": "Find the country whose capital is {city}",
         "flag": "Find the country with this flag",
-        "famous": "Find the country famous for {thing}"
+        "famous": "Find the country famous for {thing}",
+        "findSub": "Find {name}",
+        "capital_us": "Find the state whose capital is {city}",
+        "capital_ca": "Find the province or territory whose capital is {city}"
       }
     },
     "cs": {

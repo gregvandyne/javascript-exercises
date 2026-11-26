@@ -7,6 +7,11 @@
 // how many players tapped each country. Points: the right country 500-1000 by speed (plus the streak), as in every
 // quiz; a near miss scores a little (closePoints): never a right answer, never a streak.
 // Starter id: 'atlas:<region>:<level>:<kinds joined by +>:<count>:<secs>'.
+// The regions 'us' and 'ca' are Atlas Quest's maps of the US states (and DC) and of Canada's provinces and territories
+// (window.AtlasPlaces, docs/decisions.md "Atlas Quest: US states and Canada"): there a question's choices are that map's
+// places in their one order (placeCodes), a player taps a state on the map of states, and the level makes no difference
+// (every state is on the map). A capital question asks for the state or province whose capital it is; flag and famous
+// questions have nothing to ask about a state, so they become find questions.
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
@@ -15,19 +20,23 @@ import { fileURLToPath } from 'node:url';
 import { tFor } from '../i18n/index.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../..');
-export const REGIONS = ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc'];
+export const REGIONS = ['world', 'af', 'as', 'eu', 'na', 'sa', 'oc', 'us', 'ca'];
+/** The maps of states and provinces among the regions. */
+export const SUB_MAPS = ['us', 'ca'];
 export const LEVELS = ['easy', 'medium', 'hard'];
 export const KINDS = ['find', 'capital', 'flag', 'famous'];
 export const COUNTS = [5, 8, 10, 15, 20];
 export const SECS = [10, 15, 20, 30];
 /** Capitals never asked about (as in Atlas Quest's NO_CAP_Q): disputed (Israel, Palestine), held apart from the
- *  government (Yemen) or not official at all (Nauru). The teacher's quizzes use it too (game-sets.js). */
-export const NO_CAP_Q = new Set(['IL', 'PS', 'YE', 'NR']);
+ *  government (Yemen) or not official at all (Nauru); and the District of Columbia, which has none of its own (it is the
+ *  nation's capital). The teacher's quizzes use it too (game-sets.js). */
+export const NO_CAP_Q = new Set(['IL', 'PS', 'YE', 'NR', 'US-DC']);
 
 let DATA = null;
 /** Atlas Quest's data: { C: [[cc, en, capEn, capLat, capLng, pop, langs, famEn, factEn, reg, area(k km2), borders,
- *  landlocked, labLat, labLng]], EASY, FAR (borders through an overseas part, both ways: 'FR-BR'), packVer }. Shapes
- *  and flags stay in the game. */
+ *  landlocked, labLat, labLng]], EASY, FAR (borders through an overseas part, both ways: 'FR-BR'), P: the states and
+ *  provinces ([code, en, capEn, postal, region, labX, labY, capX, capY, capLat, capLng, nickname, largest, inset]),
+ *  MAPS: their maps ({ us: { unit (km), frame, small, insets } }), packVer }. Shapes and flags stay in the game. */
 export function data() {
   if (DATA) return DATA;
   const html = fs.readFileSync(path.join(ROOT, 'seed-games/atlas-quest.html'), 'utf8');
@@ -35,11 +44,19 @@ export function data() {
   const d = JSON.parse(line.slice('window.AtlasData = '.length).replace(/;\s*$/, ''));
   const ver = (/const PACK_VER = '([^']+)'/.exec(html) || [])[1] || '';
   const far = String(d.FAR || '').split(',').filter(Boolean);
-  DATA = { C: d.C, EASY: new Set(String(d.EASY || '').split(',')), FAR: new Set([...far, ...far.map(p => p.split('-').reverse().join('-'))]), packVer: ver };
+  const pl = html.split('\n').find(l => l.startsWith('window.AtlasPlaces = '));
+  const P = pl ? JSON.parse(pl.slice('window.AtlasPlaces = '.length).replace(/;\s*$/, '')) : { P: [], MAPS: {} };
+  DATA = { C: d.C, EASY: new Set(String(d.EASY || '').split(',')), FAR: new Set([...far, ...far.map(p => p.split('-').reverse().join('-'))]), P: P.P, MAPS: P.MAPS, packVer: ver };
   return DATA;
 }
 /** Every country's code, in the one order the game and the server share (the choices of every question). */
 export const codes = () => data().C.map(c => c[0]);
+/** A state's or province's map ('us', 'ca') from its code ('US-OH'), or '' for a country. */
+export const subOf = cc => { const m = /^(US|CA)-/.exec(String(cc || '')); return m ? m[1].toLowerCase() : ''; };
+/** One map's states or provinces in their one order (the choices of that map's questions); every one without a map. */
+export const placeCodes = map => data().P.filter(r => !map || subOf(r[0]) === map).map(r => r[0]);
+/** A question's choices: the countries, or the states or provinces of a map region. */
+export const choicesFor = region => (SUB_MAPS.includes(region) ? placeCodes(region) : codes());
 
 const packs = new Map();
 /** A language pack's strings (name.XX, cap.XX, fam.XX ...) or {} (English, or no pack). */
@@ -61,7 +78,7 @@ export function packFor(lang = 'en') {
 const word = (p, key, en) => (typeof p[key] === 'string' && p[key] ? p[key] : en);
 /** A country's name in a language (the game's own translation, else English). */
 export function countryName(cc, lang = 'en') {
-  const c = data().C.find(x => x[0] === cc);
+  const c = data().C.find(x => x[0] === cc) || data().P.find(x => x[0] === cc);
   return c ? word(packFor(lang), `name.${cc}`, c[1]) : cc;
 }
 
@@ -72,8 +89,17 @@ export function km(a, b) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 /** Points for a wrong country close to the right one: a neighbour 150 or more (not one that touches only through an
- *  overseas part: France for Brazil), then less with distance, none from 2,000 km. guess, answer: indexes into codes(). */
-export function closePoints(guess, answer) {
+ *  overseas part: France for Brazil), then less with distance, none from 2,000 km. guess, answer: indexes into codes().
+ *  On a map of states (region 'us' or 'ca': indexes into placeCodes(region)) the same, over the map's own distances: a
+ *  state close by (under 600 km apart, Canada's provinces 1,500 km) scores a little; Alaska and Hawaii, drawn in boxes
+ *  away from where they are, never. */
+export function closePoints(guess, answer, region) {
+  if (SUB_MAPS.includes(region)) {
+    const { P, MAPS } = data(), list = P.filter(r => subOf(r[0]) === region), g = list[guess], a = list[answer];
+    if (!g || !a || guess === answer || g[13] || a[13]) return 0;
+    const d = Math.hypot(g[5] - a[5], g[6] - a[6]) * ((MAPS[region] && MAPS[region].unit) || 20), far = region === 'ca' ? 1500 : 600;
+    return d < far ? Math.round(200 * (1 - d / far)) : 0;
+  }
   const { C, FAR } = data(), g = C[guess], a = C[answer];
   if (!g || !a || guess === answer) return 0;
   const d = km([g[13], g[14]], [a[13], a[14]]);
@@ -99,7 +125,8 @@ export const makeId = ({ region = 'world', level = 'easy', kinds = ['find'], cou
 /** The countries a level asks about: easy the famous ones, medium those and every big one, hard every country (tiny
  *  islands too: they are dots on the map). */
 function pool(region, level) {
-  const { C, EASY } = data();
+  const { C, EASY, P } = data();
+  if (SUB_MAPS.includes(region)) return P.filter(r => subOf(r[0]) === region).map((r, i) => ({ c: r, i }));
   return C.map((c, i) => ({ c, i })).filter(({ c }) => (region === 'world' || c[9] === region)
     && (level === 'hard' || EASY.has(c[0]) || (level === 'medium' && (c[10] >= 100 || c[5] >= 10e6))));
 }
@@ -117,8 +144,19 @@ export function atlasItems(id, lang = 'en') {
   if (list.length < p.count) list = pool(p.region, 'hard');
   if (!list.length) return null;
   for (let i = list.length - 1; i > 0; i--) { const j = crypto.randomInt(i + 1); [list[i], list[j]] = [list[j], list[i]]; }
-  const t = tFor(lang), pk = packFor(lang), all = codes(), out = [];
+  const t = tFor(lang), pk = packFor(lang), all = choicesFor(p.region), out = [];
   const kinds = p.kinds.slice();
+  if (SUB_MAPS.includes(p.region)) {
+    // a map of states: find it, or find the one whose capital this is (flags and "famous for" are about countries)
+    for (let i = 0, k = crypto.randomInt(kinds.length); out.length < p.count && i < list.length; i++) {
+      const { c, i: idx } = list[i];
+      let kind = kinds[k++ % kinds.length] === 'capital' ? 'capital' : 'find';
+      if (kind === 'capital' && (NO_CAP_Q.has(c[0]) || !c[2])) kind = 'find';
+      const q = kind === 'capital' ? t(`live.atlas.q.capital_${p.region}`, { city: word(pk, `cap.${c[0]}`, c[2]) }) : t('live.atlas.q.findSub', { name: word(pk, `name.${c[0]}`, c[1]) });
+      out.push({ q, choices: all, answer: idx, secs: p.secs, atlas: { k: kind, reg: p.region } });
+    }
+    return out.length ? out : null;
+  }
   for (let i = 0, k = crypto.randomInt(kinds.length); out.length < p.count && i < list.length * 2; i++) {
     const { c, i: idx } = list[i % list.length];
     if (out.some(x => x.answer === idx)) continue;
