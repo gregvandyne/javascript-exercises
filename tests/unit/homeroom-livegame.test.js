@@ -68,7 +68,7 @@ const C = `/api/homeroom/${cls.id}`;
 const FRAMED = { 'sec-fetch-dest': 'iframe' };
 
 test('Find lessons: Games, Live games, Teaching tools, then lessons; a live game hosts in Homeroom; Typing, not Coding', async () => {
-  const pg = await as(reyes)(`/class/${cls.id}/homeroom`);
+  const pg = await as(reyes)(`/class/${cls.id}/hub`);
   assert.equal(pg.status, 200);
   const at = k => pg.text.indexOf(`data-csec="${k}"`);
   assert.ok(at('games') > 0 && at('games') < at('live') && at('live') < at('tools') && at('tools') < at('lessons'), 'Games, Live games, Teaching tools, then lessons');

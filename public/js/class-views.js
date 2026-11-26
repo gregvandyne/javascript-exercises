@@ -40,9 +40,9 @@ function start() {
   /** Which view an address of this class is ('' for anything else). */
   function viewOf(href) {
     const p = new URL(href, location.href).pathname.replace(/\/+$/, ''), base = `/class/${CID}`;
-    if (p === `${base}/homeroom`) return 'homeroom';
+    if (p === `${base}/hub` || p === `${base}/homeroom`) return 'homeroom';
     if (p === `${base}/dashboard`) return 'dashboard';
-    if (p.startsWith(`${base}/homeroom/`) || p.startsWith(`${base}/dashboard/`)) return '';
+    if (p.startsWith(`${base}/hub/`) || p.startsWith(`${base}/homeroom/`) || p.startsWith(`${base}/dashboard/`)) return '';
     return p === base || p.startsWith(`${base}/`) ? 'classroom' : '';
   }
   // Classroom opens where it was left (this tab only).
@@ -189,7 +189,7 @@ function start() {
     if (opt && opt.dataset.cvHref) { location.href = opt.dataset.cvHref; return; }
     const id = e.target.value; if (!id || id === CID) return;
     const base = `/class/${encodeURIComponent(id)}`;
-    location.href = cur === 'homeroom' ? `${base}/homeroom` : cur === 'dashboard' ? `${base}/dashboard` : base;
+    location.href = cur === 'homeroom' ? `${base}/hub` : cur === 'dashboard' ? `${base}/dashboard` : base;
   });
   // Back and Forward between views. A Classroom address other than the one kept on the page (and not one the Games
   // tab's own list manages, public/js/shelf.js) is loaded as a page.

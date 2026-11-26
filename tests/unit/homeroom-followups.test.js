@@ -210,9 +210,9 @@ test('who sees Needs a look: the teacher and an aide (read only), a sub only liv
   const pl = await as(rivera)(`${API(A.id)}/pulse`);
   assert.ok(pl.json.needs.items.some(x => x.id === ava.id && x.reasons.some(r => r.rule === 'stuck')));
   // the board's page data has it; the projector's page and poll never
-  const pg = await as(rivera)(`/class/${A.id}/homeroom`);
+  const pg = await as(rivera)(`/class/${A.id}/hub`);
   assert.match(pg.text, /"needs":\{"items":\[/);
-  const pj = await as(rivera)(`/class/${A.id}/homeroom/projector`), ps = await as(rivera)(`${API(A.id)}/state`);
+  const pj = await as(rivera)(`/class/${A.id}/hub/projector`), ps = await as(rivera)(`${API(A.id)}/state`);
   for (const x of [pj.text, ps.text]) { assert.ok(!/"needs"|Needs a look|"reasons"/.test(x)); assert.ok(!NAMES.test(x.replace(/Room 6A/g, ''))); }
   // a student's desk and state never carry it
   const desk = await as(ava)(`/api/desk/${A.id}/state`);
@@ -231,19 +231,19 @@ test('who sees Needs a look: the teacher and an aide (read only), a sub only liv
 test('onboarding: the guide once per teacher (kept on the server), Show me around again; the student\'s intro once', async () => {
   config.homeroomOnboarding = true;
   try {
-    const p1 = await as(rivera)(`/class/${A.id}/homeroom`);
+    const p1 = await as(rivera)(`/class/${A.id}/hub`);
     assert.match(p1.text, /"tour":true/);
-    assert.match((await as(rivera)(`/class/${E.id}/homeroom`)).text, /"joinCode":"[^"]+"/, 'the empty class\'s first step has its join code');
+    assert.match((await as(rivera)(`/class/${E.id}/hub`)).text, /"joinCode":"[^"]+"/, 'the empty class\'s first step has its join code');
     assert.equal((await as(rivera)(`${API(A.id)}/tour`, { body: { done: true } })).status, 200);
     assert.equal(IN.seen(rivera, 'tour'), true);
-    assert.match((await as(rivera)(`/class/${E.id}/homeroom`)).text, /"tour":false/, 'once per teacher, every class');
+    assert.match((await as(rivera)(`/class/${E.id}/hub`)).text, /"tour":false/, 'once per teacher, every class');
     assert.equal((await as(other)(`${API(A.id)}/tour`, { body: { done: true } })).status, 404, 'another teacher');
     // an aide gets no guide (their page has neither)
-    assert.ok(!/"tour":/.test((await as(aide)(`/class/${A.id}/homeroom`)).text));
+    assert.ok(!/"tour":/.test((await as(aide)(`/class/${A.id}/hub`)).text));
     assert.equal((await as(aide)(`${API(A.id)}/tour`, { body: { done: true } })).status, 403);
     // again on request (the server forgets it only when asked)
     assert.equal((await as(rivera)(`${API(A.id)}/tour`, { body: { done: false } })).json.seen, false);
-    assert.match((await as(rivera)(`/class/${A.id}/homeroom`)).text, /"tour":true/);
+    assert.match((await as(rivera)(`/class/${A.id}/hub`)).text, /"tour":true/);
     await as(rivera)(`${API(A.id)}/tour`, { body: { done: true } });
     // the student's intro card
     assert.match((await as(cleo)(`/class/${A.id}/desk`)).text, /"intro":true/);

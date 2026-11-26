@@ -81,7 +81,7 @@ const IPHONE = { viewport: { width: 390, height: 664 }, screen: { width: 390, he
   userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' };
 const SIZES = { 390: IPHONE, 820: { viewport: { width: 820, height: 1180 }, hasTouch: true }, 1366: { viewport: { width: 1366, height: 768 } } };
 const chromiumOf = () => (browsers.find(b => b.name === 'chromium') || {}).browser;
-async function open(browser, opts = {}, who = teacher, url = `/class/${cls.id}/homeroom`) {
+async function open(browser, opts = {}, who = teacher, url = `/class/${cls.id}/hub`) {
   const o = browser.browserType().name() === 'chromium' ? opts : Object.fromEntries(Object.entries(opts).filter(([k]) => k !== 'isMobile'));
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, deviceScaleFactor: 1, ...o });
   const [name, value] = cookieOf(who.id).split('='); await ctx.addCookies([{ name, value, url: BASE }]);
@@ -400,7 +400,7 @@ test('the teacher\'s area resized by its corner: saved, desks it would cover mov
     await s.ctx.close();
   }
   // the projector and a student's window follow the new size
-  const p = await open(browser, { viewport: { width: 1366, height: 768 } }, teacher, `/class/${cls.id}/homeroom/projector`);
+  const p = await open(browser, { viewport: { width: 1366, height: 768 } }, teacher, `/class/${cls.id}/hub/projector`);
   await p.page.waitForSelector('.hr-fit');
   const pf = await p.page.evaluate(() => { const f = document.querySelector('.hr-fit'); return { w: +f.dataset.w, h: +f.dataset.h, notes: document.querySelectorAll('.hr-roarea .mp-sticky').length }; });
   assert.deepEqual(pf, { w: area().frame.w, h: area().frame.h, notes: 1 });
@@ -451,7 +451,7 @@ test('a note and a shape outside the teacher\'s area: saved, moved, copied and p
       for (const [w, o] of Object.entries(SIZES)) { const s = await board(browser, o); await shot(s.page, `outside-${w}`); await s.ctx.close(); }
     }
     // the projector: neither
-    const p = await open(browser, {}, teacher, `/class/${cls.id}/homeroom/projector`);
+    const p = await open(browser, {}, teacher, `/class/${cls.id}/hub/projector`);
     await p.page.waitForSelector('.hr-fit');
     assert.equal(await p.page.locator('.hr-roarea .mp-sticky').count(), 0, `${name}: no note on the projector`);
     assert.equal(await p.page.locator('.hr-roarea .hr-draw > *').count(), 0, `${name}: no shape on the projector`);

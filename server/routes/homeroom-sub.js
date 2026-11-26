@@ -58,7 +58,7 @@ router.post('/api/hr/aide/:token', on, rateLimit('hr-aide-join', 30, 3600e3, 'er
   if (!req.user || req.user.is_guest) return res.status(401).json({ error: req.t('homeroom.errors.notAdult'), code: 'notAdult' });
   const r = HA.accept(req.user, req.params.token);
   if (!r.ok) return res.status(r.code === 'inviteGone' ? 410 : 403).json({ error: req.t(`homeroom.errors.${r.code}`), code: r.code });
-  res.json({ ok: true, redirect: `/class/${r.c.id}/homeroom` });
+  res.json({ ok: true, redirect: `/class/${r.c.id}/hub` });
 });
 
 // ---------------------------------------------------------------- subs: the one-day link
@@ -123,7 +123,7 @@ router.get('/sub', subGate, (req, res) => {
         <span class="hr-subplan" id="hr-subplan"></span>
         <span class="hr-grow"></span>
         <span class="hr-livebtns" id="hr-sublive"></span>
-        <a class="btn hr-chunk" href="/class/${x.c.id}/homeroom/projector" target="_blank" rel="noopener" aria-label="${t('homeroom.sub.projector')}" title="${t('homeroom.sub.projector')}">${ico('📽️', { size: 18 })}<span class="hr-subt"> ${t('homeroom.sub.projector')}</span></a>
+        <a class="btn hr-chunk" href="/class/${x.c.id}/hub/projector" target="_blank" rel="noopener" aria-label="${t('homeroom.sub.projector')}" title="${t('homeroom.sub.projector')}">${ico('📽️', { size: 18 })}<span class="hr-subt"> ${t('homeroom.sub.projector')}</span></a>
         <button class="btn hr-chunk" type="button" data-sub="leave" aria-label="${t('homeroom.sub.leave')}" title="${t('homeroom.sub.leave')}">${ico('👋', { size: 18 })}<span class="hr-subt"> ${t('homeroom.sub.leave')}</span></button>
       </header>
       <div class="hr-submain" id="hr-submain"><p class="muted hr-loading">${t('homeroom.loading')}</p></div>

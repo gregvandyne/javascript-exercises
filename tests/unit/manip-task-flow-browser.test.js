@@ -164,7 +164,7 @@ for (const slug of tools) {
     const r = HO.handOutTask(teacher, cls, { tasks: picks, count: 1, to: { kind: 'desk', id: kid.id }, grade: 'score' });
     assert.ok(r.ok, r.code);
     assert.equal(r.n, 5);
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, LAPTOP);
+    const T = await open(teacher, `/class/${cls.id}/hub`, LAPTOP);
     await T.page.waitForSelector('.hr-desk[data-sid]');
     const D = await open(kid, `/class/${cls.id}/desk`, TABLET, true);
     await D.page.click(`.hd-card:has-text("${r.title}")`);
@@ -253,7 +253,7 @@ test('teachers: the task list with notes, Preview and Assign (the dialog), and a
   assert.match(await K.page.textContent('.mp-probof'), /Question 1 of 6/);
   await K.ctx.close();
   // Homeroom: the catalog lists each tool's tasks as lessons; one handed out with 5 questions from the give sheet
-  const B = await open(teacher, `/class/${cls.id}/homeroom`, LAPTOP);
+  const B = await open(teacher, `/class/${cls.id}/hub`, LAPTOP);
   await B.page.waitForSelector('[data-catalog]');
   const item = B.page.locator(`[data-hritem="T:task:${idOf(slug, first)}"]`);
   assert.equal(await item.count(), 1);

@@ -74,7 +74,7 @@ test('B1: a tool on the board and in look; ended by the teacher it comes off eve
   assert.equal(bv.tools.length, 0); assert.equal(bv.room, null);
   assert.ok(!(await deskCards(ada)).some(x => x.tool), 'no card that opens an ended room');
   // reloading Homeroom never opens it again
-  assert.equal((await as(lane)(`/class/${cls.id}/homeroom`)).status, 200);
+  assert.equal((await as(lane)(`/class/${cls.id}/hub`)).status, 200);
   assert.equal(M.getSession(r.session.id).status, 'ended');
   assert.equal(HT.storedOf(cls.id).length, 0);
   // so another tool can be handed out
@@ -100,7 +100,7 @@ test('B1: a tool on the board and in look; ended by the teacher it comes off eve
   assert.equal(HT.storedOf(cls.id).length, 1, 'kept: it ended by itself');
   const card = (await deskCards(ada)).find(x => x.tool);
   assert.ok(card && !card.ready && !card.href, 'until then its card opens nothing');
-  assert.equal((await as(lane)(`/class/${cls.id}/homeroom`)).status, 200);
+  assert.equal((await as(lane)(`/class/${cls.id}/hub`)).status, 200);
   assert.equal(M.getSession(tiles.session.id).status, 'active');
   // End class takes every tool off every desk and ends its room
   H.setLive(lane, cls, 'end');

@@ -79,7 +79,7 @@ test('starting a room for a class with a Homeroom tool on the desks asks first; 
     const dlg = T.page.locator('dialog.ob-dialog');
     await dlg.waitFor();
     const text = await dlg.locator('.ob-dialog-text').textContent();
-    assert.match(text, /Rekenrek/i); assert.match(text, /Homeroom desks/); assert.match(text, /Their work is kept/);
+    assert.match(text, /Rekenrek/i); assert.match(text, /Hub desks/); assert.match(text, /Their work is kept/);
     assert.equal((await dlg.locator('[data-ob="ok"]').textContent()).trim(), 'Start room');
     assert.equal((await dlg.locator('[data-ob="cancel"]').textContent()).trim(), 'Cancel');
     if (process.env.WARN_SHOT) { await T.page.waitForTimeout(600); await T.page.screenshot({ path: process.env.WARN_SHOT }); }

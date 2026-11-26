@@ -16,7 +16,7 @@ import * as DASH from '../services/dash.js';
 import { dashCsp, DASH_TEACHER_POLICY, VIDEO_HOSTS } from '../services/dash-media.js';
 
 export const VIEWS = ['homeroom', 'classroom', 'dashboard'];
-const urlOf = (c, k) => (k === 'homeroom' ? `/class/${c.id}/homeroom` : k === 'dashboard' ? `/class/${c.id}/dashboard` : `/class/${c.id}`);
+const urlOf = (c, k) => (k === 'homeroom' ? `/class/${c.id}/hub` : k === 'dashboard' ? `/class/${c.id}/dashboard` : `/class/${c.id}`);
 const viewsOf = (req, c) => VIEWS.filter(k => k !== 'dashboard' || DASH.isTeacher(req.user, c));
 
 /** The views a class card on My classes (/teach) opens the class in (docs/decisions.md "A simpler teacher home"):

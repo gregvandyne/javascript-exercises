@@ -160,7 +160,7 @@ test('the student\'s notebook says a grown-up sees the class tabs', { timeout: 1
 test('the teacher turns the parents\' view off from the ⋯ menu', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   for (const [name, vp, touch] of VIEWS) {
-    const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, vp, touch);
+    const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, vp, touch);
     await page.waitForSelector('[data-hr="menu"]');
     await page.click('[data-hr="menu"]');
     await page.waitForSelector('[data-hr="parents"]');

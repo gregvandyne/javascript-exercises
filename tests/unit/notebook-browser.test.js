@@ -194,7 +194,7 @@ test('the desk: Notebook in the dock, Notes on a handout opens its page in the c
 test('the teacher reads a student\'s notebook from the desk\'s menu: the same tabs and search, read only', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   for (const [name, vp, touch] of VIEWS) {
-    const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, vp, touch);
+    const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, vp, touch);
     await page.waitForSelector(`[data-hrdmenu="${ben.id}"]`, { state: 'attached' });
     await page.$eval(`[data-hrdmenu="${ben.id}"]`, el => el.click());
     await page.click('.sheet [data-dm="notebook"]');
