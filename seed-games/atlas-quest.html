@@ -2409,8 +2409,9 @@ function showFlat(m) {
     flatBox.appendChild(flatTools);
   }
   flatBox.hidden = false; canvas.style.visibility = 'hidden'; $('#labels').hidden = true; board.dataset.flat = m;
+  $('#litPill').hidden = true;   // the world's countries-lit count means nothing on a map of states
 }
-function hideFlat() { if (flatBox.hidden) return; flatBox.hidden = true; canvas.style.visibility = ''; $('#labels').hidden = false; delete board.dataset.flat; requestAnimationFrame(fitBoard); }
+function hideFlat() { if (flatBox.hidden) return; flatBox.hidden = true; canvas.style.visibility = ''; $('#labels').hidden = false; $('#litPill').hidden = false; delete board.dataset.flat; requestAnimationFrame(fitBoard); }
 /** The marks on the flat map (FL.marks: cc -> hot | wrong | got | reg | pick | near), on a place and on its box. */
 function paintFlat() {
   if (!FL.svg) return;
