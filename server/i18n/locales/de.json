@@ -1317,6 +1317,14 @@
         "car": "Karibik",
         "me": "Naher Osten"
       }
+    },
+    "printFlash": {
+      "untitled": "Karteikarten",
+      "term": "Begriff",
+      "def": "Erklärung",
+      "fronts": "{title}: Vorderseiten",
+      "backs": "{title}: Rückseiten",
+      "how": "Beidseitig drucken (an der langen Kante wenden), dann an den gestrichelten Linien ausschneiden. Jede Rückseite liegt hinter ihrer Vorderseite."
     }
   },
   "friends": {
@@ -7817,7 +7825,8 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier.",
+      "flashcards": "Karteikarten mit Begriff und Erklärung für jedes Fach: selbst erstellen, eine Liste einfügen oder von der KI entwerfen lassen oder aus der fertigen Sammlung wählen, dann mit Umdrehen, Lernen, Paare und Test üben."
     },
     "hubs": {
       "math": {
@@ -15942,6 +15951,25 @@
     },
     "livegame": {
       "ended": "Die Live-Lektion ist beendet."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Karteikarten",
+      "note": "Aus Lernen und Test. Eine Karte gilt als gekonnt, wenn ein Schüler sie zweimal hintereinander richtig eintippt.",
+      "studied": "{done} von {total} haben geübt",
+      "missedTitle": "Am häufigsten falsch",
+      "missedHint": "Lohnt sich, mit der Klasse noch einmal anzuschauen.",
+      "missedBy": "{misses, plural, one {# Mal falsch} other {# Mal falsch}}, {students, plural, one {# Schüler} other {# Schüler}}",
+      "missedNone": "Noch keine Karte falsch.",
+      "table": "Die Karten jedes Schülers",
+      "mastered": "Gekonnt",
+      "learning": "Am Lernen",
+      "missed": "Zuletzt falsch",
+      "fresh": "Noch nicht geübt",
+      "progress": "Fortschritt",
+      "notYet": "Noch nicht begonnen",
+      "barLabel": "{mastered} gekonnt, {learning} am Lernen, {missed} zuletzt falsch, {fresh} noch nicht geübt"
     }
   }
 }

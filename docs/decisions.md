@@ -16050,3 +16050,99 @@ The sections above keep the old name as history.
 Tests: tests/unit/hub-rename.test.js (the redirect with its query, /hub renders, the gate at both addresses, the links,
 no Homeroom in any locale's values), tests/unit/hub-rename-browser.test.js (the teacher's Hub, the student desk, the
 projector and the sign-in page show no Homeroom).
+## Flashcards: Quizlet's core in Crossword's look (26 Nov 2026)
+
+Owner: "Build Flashcards for Oomba Academy (K-8), so Oomba genuinely covers what teachers use Quizlet for": make a set
+(term and definition, an optional picture on the front), paste-import, AI from a topic or a lesson; Flip, Learn, Match and
+Test; assign it, see each student's progress and the cards missed most, print; a starter library; it should look and feel
+like Crossword.
+- **Where it lives.** `seed-games/flashcards.html`, hand-written outside the Oomba Kit like Crossword and Word Hunt, on
+  the Learn shelf (words, grades K-8; migration `0142_flashcards_shelf`), in the Word games hub, seeded last. The look is
+  Crossword's: cream widget cards with a group color on the top edge and the icon chip, the dark Now bar, the dotted
+  mint board, pill buttons, Bricolage Grotesque, light and dark from `BRB.theme`, `BRB.sfx`, its own confetti (none with
+  reduced motion). Its pure core (`flash-core`, tested on its own), the site's QR encoder (Crossword's `crossword-qr`
+  block, copied), its words (English for now) and the starter library (`flash-library`).
+- **A set** is a question set (`game_sets`, `services/game-sets.js cleanFlashItems`): one item `{ t, c: [[term,
+  definition, emoji]], a }`, 2 to 50 cards, a term at most 60 characters (digits and signs allowed: "7 x 8", "H2O"), a
+  definition at most 160, no term twice; every term, definition and the title through the site's text filter. The
+  front's picture is an **emoji** (a picker of 48 plus any emoji pasted; the cleaner keeps emoji characters only). `a`:
+  what Learn and Test ask for (the term from its definition, or the other way: States and capitals asks for the capital).
+  Named after its title like Crossword (rename changes the title, a copy is "Copy of ..."), `labelOf` "Habitats:
+  flashcards, 12 cards", `sizeOf` its cards, `describe` for the Assign page. In `OPEN_SET_GAMES`: without a set the game
+  is its starter library, so it can be assigned or handed out as a whole game too.
+- **Making one** (`BRB.canMake`, the same grown-ups as Crossword): type cards; paste or upload a .txt/.csv two-column list
+  (`flash-core parseList`: a tab, " - " (or an en or em dash), ": ", " = " or the first comma, quotes kept together;
+  bullets, numbers, a header row and repeats dropped); **Draft cards with AI** from a topic (`BRB.draftCards`, `POST
+  /api/games/:id/cards-ai`, `services/set-ai.js draftCards`: the topic in the user message as data inside `<topic>`,
+  through the text filter first (`topicBad`), the question-set model at low effort, counted toward the AI cap, 30 an hour
+  as clues; cards deduplicated, an emoji kept only when it is one) or from **an uploaded lesson** (PDF or Word through
+  Crossword's `words-from-doc` path and its focus line: its limits, 10 files a day, no new prompt). Only the teacher's
+  own words go to the AI, never a student's name or work. Cards land in the list to check, with "Some cards were drafted
+  by AI". Drafts save themselves to Your sets (`BRB.storage 'flashcards-v1'`). Save and get a link: the class code, the
+  link, a QR code, Copy, and Assign to a class. My worksheets (school staff): Open, Edit, Copy link, Duplicate, Rename,
+  Delete (asked on the row, never a browser dialog).
+- **Studying** (anyone who opens a set; progress in the player's own save):
+  - *Flip*: a card that turns over (a 3D turn, instant with reduced motion), Previous and Next, Shuffle, Star the hard
+    ones and Starred only, Definition first, Read aloud (`BRB.speak`, the device's voice); Space flips, the arrows move.
+  - *Learn*: rounds of up to 7 cards, missed ones first. A card below level 1 is multiple choice (4 answers, keys 1-4),
+    from level 1 it is typed; right on multiple choice is level 1, right typed is 2, right typed again is 3 (mastered);
+    any miss is level 0 and the card comes back a few cards later in the same round and in the next. The typed check
+    leaves out case, accents, spaces and end punctuation, reads x, × and * as times, takes a part in brackets or after a
+    slash on its own, and counts one slip in a longer word as right while showing the spelling; "I was right" overrides a
+    miss. A mastery bar (mastered, learning, missed, not studied) on every question. All mastered: one `BRB.gameOver`.
+  - *Match*: up to 6 cards as 12 tiles; tap a term then its definition; a wrong pair adds a second. The player's **own
+    best time** only (kept in their save): no leaderboard, no score sent anywhere (`BRB.gameOver({ won: true })`), as
+    Oomba never ranks students.
+  - *Test*: how many questions and which kinds (multiple choice, true or false, written), all on one page, marked at the
+    end with the score and a review of each answer (the right one under a miss); "Learn the missed ones". One
+    `BRB.gameOver` with the percentage.
+- **Teachers see progress.** A set reaches a class the way every set game's does: Assign (`BRB.assign`, `/teach/assign`,
+  a one-game lesson whose step opens the set) or a Hub handout. Opened from that lesson step, Learn and Test send each
+  card's level and misses (`BRB.flashProgress`; the play page passes it on only with a lesson context, `POST
+  /api/progress/:cl/:step/flash`, `services/flash-progress.js`). No new table: the step's own `step_progress.marks`
+  holds `<levels>:<misses>` (one character a card; misses only go up, so a second device never wipes them), which no
+  other part of a game step reads. The lesson's progress page (`views/flash-step.js`) shows how many studied, the cards
+  missed most (how many times, by how many students: worth reteaching) and each student's cards (mastered, learning,
+  missed last time, not studied, as numbers and a bar), in roster order, never ranked. Students are told on the set's
+  page that their teacher sees which cards they've mastered, never their answers.
+- **Print** (`BRB.print`, `services/flash-print.js`, `play.printFlash.*` in every language): cut-out cards, 8 a sheet,
+  fronts then backs with each row swapped so a long-edge double-sided print puts every back behind its front, dashed
+  cut lines; or a study sheet (a two-column table with Name and Date and the teacher's note). No answer key (the cards
+  are the answers; a request for one is refused).
+- **The Hub** (its code still says homeroom; `public/js/homeroom*.js` not touched). Flashcards is an official Learn game, so the Hub's shared
+  catalog lists it under Oomba lessons, Words, by itself (`deskLists` reads `listVisible` and `SHELF_INFO`): handed out,
+  it opens on the desk with its starter library. A teacher's own set reaches desks exactly as a Crossword set assigned
+  from the game does: Assign makes a class lesson, and class lessons show on desks after the handouts (`classRows`), in
+  the desk's player, with card progress written as above. What would need a Hub edit: building a **Hub lesson** from a
+  Flashcards set (the lesson builder's per-group versions) needs `'flashcards'` in `LESSON_SLUGS` in
+  `public/js/homeroom-lesson-make.js` with its `fill`, `countOf` and editor UI there, plus a `cleanSettings` branch in
+  `services/homeroom-lessons.js` (`gameSets.cleanFlashItems([{ t: title, c: s.cards, a: s.a }])`) and `'cards'` as the
+  card's unit in `homeroom-handouts.js lessonOf`. Left for the session that owns those files.
+- **Sets feed other games** (`game-sets.js flashAs`, unit-tested, no route yet): a set as Crossword's (the cards whose
+  term is a word the grid takes, the definition as its clue, at most 30) or Word Hunt's (those words, 2 to 15 letters, at
+  most 25), each through that game's own cleaner, or null when fewer than 3 fit. The planned door: "Play it as a
+  crossword / word hunt" on a set's page for its owner, `POST /api/games/:id/sets/:set/as/:slug` saving the converted set
+  in that game under the teacher's account and answering its link, and a play-page message to open it after a tap (the
+  frame can't navigate). As a **live game**: the same cards make a live question set (`services/classlive-sets.js`
+  items `{ q, choices, answer, secs }`): the definition as the question, the term and 3 other terms as choices, which
+  Quest Race and Brain Board already play; the door would be "Host live" on the set's page through `BRB.hostLive`.
+- **The starter library**: 24 sets written for Oomba (nothing copied from any other site): sight words (K, grade 1),
+  opposites, baby animals, adding within 10, subtracting within 20, the 7s, mixed multiplication facts, shapes, fraction
+  words, parts of a plant, the solar system, the water cycle, parts of a cell, all 50 states and capitals in four
+  regions, landforms, founding the United States, parts of speech, prefixes, Spanish colors and greetings. A teacher
+  copies one to change it, save it and assign it; every set passes `cleanFlashItems` as it is (tested).
+- **Words.** Site keys (`learn.games.flashcards`, `play.printFlash.*`, `flash.results.*`) in all 12 translated locales.
+  The game's own words are English only for now (the other languages fall back to English); the seed JSON's description
+  is in every language. AI voices read only its cheers (`services/tts-lines.js`); cards are read on the device's voice.
+- Tests: `tests/unit/flashcards.test.js` (the core: paste, the typed check, mastery, options, a test, a match deal; the
+  cleaner, the library, `flashAs`; the routes: save, rename, copy, the Assign page, a student's frame; AI cards: the
+  prompt and the route; card progress and the teacher's page; printing; the SDK and play page; the page and its
+  registration), `tests/unit/flashcards-browser.test.js` (Chromium in the production frame: Flip with the keyboard,
+  Learn to mastery, Match, Test, making and saving a set with paste, AI and a document, a student from a lesson step,
+  a phone in dark mode) and `tests/unit/flashcards-pages-browser.test.js` (the real Assign page, the teacher's progress
+  page on a desktop and a phone in light and dark, the Learn listing).
+- **Not built yet** (to match Quizlet fully): uploaded pictures on cards (needs the photo path's AI safety check and
+  storage before a teacher's picture reaches children; emoji only for now), audio for terms in other voices, the game's
+  own words in the other 12 languages, spaced repetition across days (Learn's levels reset only by "Learn it again"),
+  folders or classes of sets, sharing sets between teachers in a school, diagrams (label an image), "Play it as" doors
+  and the Hub lesson builder (both above), and a Quizlet import (a teacher can paste an exported two-column list).

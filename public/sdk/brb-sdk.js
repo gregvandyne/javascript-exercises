@@ -1118,6 +1118,52 @@
     if (Array.isArray(m.words) && m.words.every(function (p) { return Array.isArray(p) && p.length === 2 && typeof p[0] === 'string' && typeof p[1] === 'string'; })) w({ title: typeof m.title === 'string' ? m.title : '', words: m.words.slice(0, 30), cut: m.cut === true, ai: m.ai !== false });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // Flashcards' "Draft cards with AI" (BRB.canWriteClues: a grown-up who may host, with AI on): BRB.draftCards(topic,
+  // { level, count }) asks the page, which asks the server; a Promise of { title, cards: [[term, definition, emoji]] } or
+  // { error } ('notAllowed', 'aiOff', 'aiFailed', 'topic', 'topicBad' (the site's text filter refused the topic),
+  // 'offline'). The cards are for the teacher to read and edit; nothing is saved.
+  var cardWait = {}, cardSeq = 0;
+  function draftCards(topic, opts) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (INIT.clues !== true) return res({ error: 'notAllowed' });
+      if (typeof topic !== 'string' || !topic.trim() || topic.length > 200) return res({ error: 'topic' });
+      var level = opts && typeof opts.level === 'string' ? opts.level.slice(0, 60) : '';
+      var count = opts && [5, 10, 15, 20, 30].indexOf(opts.count) >= 0 ? opts.count : 10;
+      var n = ++cardSeq, timer = setTimeout(function () { delete cardWait[n]; res({ error: 'offline' }); }, 100000);
+      cardWait[n] = function (r) { clearTimeout(timer); delete cardWait[n]; res(r); };
+      send('brb:cards', { id: n, topic: topic.replace(/\s+/g, ' ').trim(), level: level, count: count });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:cards-done' || typeof m.id !== 'number') return;
+    var w = cardWait[m.id]; if (!w) return;
+    var okCard = function (c) { return Array.isArray(c) && c.length === 3 && typeof c[0] === 'string' && typeof c[1] === 'string' && typeof c[2] === 'string'; };
+    if (Array.isArray(m.cards) && m.cards.every(okCard)) w({ title: typeof m.title === 'string' ? m.title : '', cards: m.cards.slice(0, 30).map(function (c) { return c.slice(); }) });
+    else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
+  // Flashcards' card states for the teacher (docs/sdk.md "Flashcards"): BRB.flashProgress(cards), cards [[level -1..3,
+  // misses]] in the set's own order. Only when the game was opened from the student's lesson step (an assignment or a
+  // Hub handout) does the page send it on (POST /api/progress/:cl/:step/flash); anywhere else nothing leaves the frame.
+  // -> a Promise of { ok: true, mastered, n } or { error } ('notLesson', 'bad', 'offline').
+  var flashWait = {}, flashSeq = 0;
+  function flashProgress(cards) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!Array.isArray(cards) || !cards.length || cards.length > 50) return res({ error: 'bad' });
+      var n = ++flashSeq, timer = setTimeout(function () { delete flashWait[n]; res({ error: 'offline' }); }, 10000);
+      flashWait[n] = function (r) { clearTimeout(timer); delete flashWait[n]; res(r); };
+      send('brb:flash', { id: n, cards: JSON.parse(JSON.stringify(cards)) });
+    });
+  }
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:flash-done' || typeof m.id !== 'number') return;
+    var w = flashWait[m.id]; if (!w) return;
+    if (m.ok === true) w({ ok: true, mastered: +m.mastered || 0, n: +m.n || 0 });
+    else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
   // Mistake Hunt's "Upload a passage" (BRB.canReadDocs: a grown-up who may host): BRB.textFromDoc(file, { kind: 'pdf'|'docx' })
   // -> a Promise of { text, cut } (the document's text, read on the server with no AI; cut: only the first pages were
   // read) or { error } ('notAllowed', 'docBad', 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docLimit',
@@ -1488,6 +1534,8 @@
     hostLive: function () { if (INIT.hostLive !== true) return false; send('brb:hostlive', {}); return true; },
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,
+    draftCards: draftCards,
+    flashProgress: flashProgress,
     wordsFromDoc: wordsFromDoc,
     canReadDocs: INIT.docText === true,
     textFromDoc: textFromDoc,

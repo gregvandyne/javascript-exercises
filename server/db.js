@@ -1608,6 +1608,9 @@ export const MIGRATIONS = [
   ['0141_manip_practice', `
     CREATE TABLE IF NOT EXISTS manip_practice (user_id TEXT NOT NULL, task TEXT NOT NULL, solved INTEGER NOT NULL DEFAULT 0, tries INTEGER NOT NULL DEFAULT 0,
       streak INTEGER NOT NULL DEFAULT 0, best INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, task));`],
+  // Flashcards (seed-games/flashcards.json, docs/decisions.md "Flashcards") is a Learn game: its own shelf step, as each new
+  // Learn game gets. Its sets are game_sets rows and its card progress lives in step_progress.marks: no new table.
+  ['0142_flashcards_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='flashcards';"],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has
