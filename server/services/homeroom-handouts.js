@@ -196,6 +196,13 @@ function deskOrder(cards) {
   }
   return cards;
 }
+/** A desk's cards as the student sees them (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom", F1):
+ *  what is not done yet first, in the order deskOrder gave it (the teacher's order, due dates), then the Manipulatives
+ *  tools handed out (open practice: never done, never Next up), then what is done, so a busy desk never puts new work
+ *  after a row of Done cards. Next up and Later are worked out before: moving a done card never changes them. */
+export function doneLast(cards, tools = []) {
+  return [...cards.filter(x => !x.done), ...tools, ...cards.filter(x => x.done)];
+}
 
 /** What the teacher's board shows: every open handout ({ id, title, icon, instructions, inOrder, grade, target, due,
  *  students: n }) and each current student's cards ({ desks: { studentId: [{ id, done, pct, score, locked, next }] } }). */
@@ -235,9 +242,10 @@ export function deskView(c, u, locale = 'en', { assigned = true } = {}) {
   const steps = new Map(rows.length ? q.all(`SELECT s.*, g.slug game_slug, g.status game_status, g.visibility game_visibility, g.source game_source, g.owner_id game_owner,
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = rds.size ? HR.infosOf(c.id, rds, u.id) : new Map();
-  // (a Manipulatives tool handed out comes after the handouts: open practice, never Next up or Later)
+  // (a Manipulatives tool handed out comes after what is not done yet and before what is done: open practice, never
+  // Next up or Later; doneLast)
   // (without In order the desk's cards come by when they are due: Next up is the one due soonest)
-  return [...deskOrder(byDue(rows.map(r => {
+  return doneLast(deskOrder(byDue(rows.map(r => {
     const p = prog.get(`${r.id}:${u.id}`);
     // A Classroom lesson of several steps (classRows): its card opens the lesson page (never framed), steps done on it.
     if (r.page) {
@@ -263,7 +271,7 @@ export function deskView(c, u, locale = 'en', { assigned = true } = {}) {
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
       done: !!p && p.status === 'done', pct: pctOf(p), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
-  }))), ...HT.deskCards(c, u)];
+  }))), HT.deskCards(c, u));
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
 export const deskVersion = cards => cards.map(x => `${x.id}.${x.dueBy || ''}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${x.missed ? 'm' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');

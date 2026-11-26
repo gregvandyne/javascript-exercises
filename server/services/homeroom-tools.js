@@ -162,7 +162,8 @@ export function boardList(c) {
       session: x.session, open: !!(s && s.status === 'active'), at: x.at };
   });
 }
-/** One student's tool cards (their own desk only): what services/homeroom-handouts.js deskView adds after the handouts. */
+/** One student's tool cards (their own desk only): what services/homeroom-handouts.js deskView puts after
+ *  the handouts not done yet and before the done ones (doneLast). */
 export function deskCards(c, u) {
   return storedOf(c.id).filter(x => forStudent(x, u.id)).map(x => {
     const tl = toolOf(x.tool), s = sessionOf(x), ready = !!(s && s.status === 'active');
