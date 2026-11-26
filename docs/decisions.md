@@ -14938,3 +14938,130 @@ step 4). Step 4d. Migration `0136_homeroom_parents` (one column). Service `servi
   view after a teacher's plan ends (it follows the Homeroom gate, so it goes with it); notifications to grown-ups; the
   Classroom view's student reports are not shown to grown-ups; translations of the new strings (English now; the other
   languages fall back to it).
+
+## Homeroom: watching desks and the full catalog (26 Nov 2026)
+
+The owner: "To be certain, I want to make sure that teachers can see what students are doing in oomba at their desks.
+This should look exactly like manipulatives." And: "Let's make sure all of the games/lessons are available in the
+homeroom." And, during the build: "Manipulatives should be the same experience in homeroom as it is in its actual game."
+
+**Watching desks.** Live class only (the board's 2 s poll already runs only while live and visible). Each solo desk on
+the teacher's board shows, scaled into the desk, what that student has open now; tapping the desk opens it large in the
+look sheet (same live view, above the summary that was there). The Manipulatives live room shows each square because the
+board's state is shared, never pixels; Homeroom shares state wherever it has it, and sends a small picture only where it
+can't:
+- **At their desk**: their cards (as before) and their doodle pad, drawn on the board from the pad's saved strokes
+  (`H.doodleOf`, sent only when its version changed).
+- **Reading** (the desk's reading layer): the page they are on, its picture and its first words, from the book the pulse
+  already names (`liveView` book `pic`, `words`).
+- **A Manipulatives tool** (see below): their square of the tool's live room, drawn by the tool's own code
+  (`public/js/manip.js` `readOnlyBoard`, the live room's `stateOf` and `boardHtml`, read-only) from `manip_work`, with their
+  live-room cursor (`services/manip-live.js` `cursorsOf`, turned into a place on their square). Exactly what the live room
+  draws; a change shows within the board's next poll (about 2 s after the room saves it, half a second after the move).
+- **A game in the in-desk player**: the game runs in a sandboxed, opaque-origin frame, so nothing outside it can read it
+  (by design). The frame's own SDK now answers `brb:snap` (`public/sdk/brb-sdk.js`, "Homeroom: a small picture"): on the
+  next animation frame it draws its own page through an SVG `foreignObject` copy (canvases put in as their pictures, text
+  boxes with their current values), else its biggest canvas alone, scaled to the asked width, as WebP (JPEG where WebP is
+  not available), with the last pointer position. The play page (`public/js/homeroom-pulse.js`) asks only while the
+  server says the desk is watched, and sends it (`POST /api/desk/:id/snap`). Every Oomba game and every Builder game gets
+  it, since the SDK is in every frame; nothing in a game had to change.
+- **The notebook is never shown** (private, as before). A sub's link, the projector, parents, students and other teachers
+  never get any of it.
+
+*Who and when* (`services/homeroom-watch.js`): the board's poll says which desks are on screen and at least 48 px wide
+(`w`), which one is open large (`look`) and which versions it already has (`sv`, `mv`, `pv`), and the answer carries only
+new pictures, boards and pads of those desks. A desk is "watched" for 7 s after a poll named it (`WATCH_MS`), so a hidden
+board, another view, a closed laptop or the end of live class stops everything within seconds. The desk's state poll
+(every 3 s) tells the game in its player when it is watched (`hr:watch`, same origin), so a picture starts within a few
+seconds; the game page's own pulse says so too.
+
+*Limits* (tested): a desk in view: one picture every 5 s (the server refuses one sooner than 4 s), at most 240 px wide and
+24 KB; open large: every 1.5 s, at most 640 px and 110 KB; only `data:image/webp|jpeg|png`; only while live, never while
+Pause screens is on (pause forgets them), never for a student marked absent or at home (their home device); memory only,
+the newest picture per student, gone after 30 s, at End class, a new class, pause, or the student leaving the class.
+Never written to the database (tested by scanning every table), a log line or a file; never recorded. No camera, no
+photos: it is the game drawing its own page.
+
+*Who gets them*: the class's teachers and **aides** (they already look at desks; the board's poll is one of their
+addresses). **Subs: not allowed.** A sub's link has no account and is meant for running the day (hands, the hall pass,
+the plan, calm statuses); a child's screen is more than a one-day visitor needs, the sub's page never shows work, and a
+lost link would show it to whoever holds it. Their poll address is refused (403, tested). If subs turn out to need it,
+it can be added to `routes/homeroom-sub.js` behind the same watch rules.
+
+*Students are told*: "Your teacher can see your screen in Homeroom." on their desk (under their name) and in the player's
+bar over every game and tool. The look sheet says "What they have open in Oomba, a few seconds behind. Never their
+notebook. Nothing is recorded."
+
+*Limits per game type*:
+- Page games (HTML and CSS, the Kit, Oomba Canvas): the whole page as it looks, a frame or two behind. Fonts loaded from
+  elsewhere may draw in a fallback font; pictures the game loads from `/vendor/themes` or `/vendor/art2d` (other than
+  `data:`) don't draw in an SVG picture, so they show empty.
+- Canvas games (2D): the canvas exactly as drawn. WebGL / Three.js / Kit 2 3D games: the canvas is read on the next
+  animation frame, so it is usually right; a game that clears its drawing buffer earlier shows black, and a canvas that
+  drew a picture from our own origin (theme textures) is "tainted" for an opaque-origin frame, so the browser refuses it:
+  the desk then shows the game's name and "Playing ..." instead (no error, nothing sent).
+- Live games (Oomba Live, Quest Race...): not on desks at all (hosted live).
+- Typing games: what is typed shows as it looks in the game (that is the screen); never key by key.
+- Manipulatives: the board exactly as the live room draws it (no picture).
+- Reading: the page, not the reader's exact layout (the book's own picture and words).
+- The desk: the cards and pad, not the exact desk layout (the board's desk is the same cards).
+- Safari may refuse to read a `foreignObject` picture, so a page game there falls back to its canvas, else its name.
+
+*Load* (tests/unit/homeroom-watch-browser.test.js, 30 students, every desk in view and sending at the tile rate, 20 s on
+a 1366 x 768 board): about 0.25 pictures per student per second accepted (the 4 s floor), 2.6 KB for a page game's tile
+picture, the board's poll about 22 KB/s, the board's main thread busy about 1% of the time, the student's page about 0.4%
+(the game frame's own drawing is in another process and was not counted). The cap is 30 x 24 KB per 5 s (144 KB/s) for a
+class of 30 games that draw big pictures; with cursors off above 30 students nothing else changes.
+
+**Manipulatives in Homeroom, the same experience.** A Manipulatives tool handed out IS that tool's live room for the
+class (`services/homeroom-tools.js`): handing it out opens the tool's live room session (`M.createSession`, the teacher as
+host) or uses the one running; `homeroom_rooms.tools` (migration `0137_homeroom_tools`) says which desks have it. On the
+desk it is a card ("Manipulatives · practice", the teacher's words) that opens `/manipulatives#join/<room>` in the desk's
+player: the real page (`?in=hr` in a frame of this site: no site menu or footer, framed by this site only, as the play
+page's `?in=hr`), the student's own square, the same palette, board, pieces, totals, How it works, Check my answers and
+raised hands. Not graded (open practice): it never counts toward Done, Stuck, Today or the gradebook, and the parents'
+view doesn't list it. One Manipulatives room runs per class (the live room's rule), so a second tool waits until the
+first is taken off every desk ("one Manipulatives tool runs in a class at a time"). A room ends by itself after 12 hours;
+the teacher's board opens it again for its host the next time Homeroom opens, squares and all. Look's **Open the room**
+opens the tool's live room as its host in the layer over the board (PDF, Check, push a board, show work). On My desk a
+tool opens its own page in the layer, exactly as on its own page, and hands out from there. Taking a tool off every desk
+ends its room (boards kept, as for any ended room). Account delete takes the teacher's name off it and the student off it.
+Figures stays a teacher's tool on My desk (it makes worksheets; they reach students as a lesson plan).
+
+Changes in the Manipulatives code (owned by another session; kept to additive lines): `public/js/manip.js` starts the
+page only when `#manip` is on the page (an import alone draws nothing) and exports `readOnlyBoard(slug, raw, space)` and
+`growAnswers`; `server/routes/manipulatives.js` GET `/manipulatives` serves `?in=hr` in a frame of this site as a bare page
+(`mp-inhr` body class, `embed: 'hr'` in page data, `frame-ancestors 'self'`). No CSS change.
+
+**The full catalog.** The left panel lists everything a teacher can assign elsewhere, each one a handout that plays in
+the in-desk player: Lessons I built (all of their own games, not the newest 12), each of My folders, Shared with me
+(colleagues' school folders), Favorites, Oomba lessons (exactly Find Oomba lessons' list, the production Focus flags
+applied by `listVisible` and `openSubjects`, grouped by subject with grades on each; an official Learn game with no
+subject chip, or "any subject", under More Oomba lessons; a live-only game listed with Host live), Teaching tools (all 18
+Manipulatives tools by their category, and Figures for My desk), plus My lesson plans and Reading as before. One search
+box (words in the name, subject or category), the grade, and the subject chips (plus Teaching tools) filter every list;
+groups that match open. On a phone the bottom strip starts with **Find lessons**, which opens the same catalog in a
+sheet; a pick there is picked as from the panel.
+
+Audit (a seeded database with the production defaults; Focus hides the arcade and the courses): Oomba lessons before 9
+(the 16 most played that hand out: all 9), after 9 that hand out plus 3 live-only with Host live (12, Find Oomba lessons'
+12); Teaching tools before 0 that hand out (Manipulatives and Figures "Coming next"), after 18 Manipulatives tools that
+hand out and Figures on My desk; own games before the newest 12, after all of them (up to 200); folders, shared folders
+and favorites before 0, after every game in them. Can't run in Homeroom: live-only games (Oomba Live's quizzes, Brain
+Board, Would You Rather Live, Atlas Quest Live: a live game can't sit on one desk; Host live opens them), live quiz,
+memory and word sets (they are hosted live, or sent as homework from Oomba Live, a quiz page that isn't a game in the
+player; the lesson plan builder covers classroom quiz, memory and word lessons), and Figures worksheets as a tool (they
+go out as a lesson plan).
+
+Tests: `tests/unit/homeroom-watch.test.js` (only while live and watched, the size and rate caps, a picture only, look's
+larger cap, nothing in any table, pause, at home, End class; who: teachers and aides yes, students, another class,
+another teacher, guests, the projector and a sub's link no; a tool: its room, cards on the targeted desks only, the board
+gets the board and the cursor, one room per class, already on the desk, the parents' view, taken off, reopened after 12
+hours; the catalog: every category; an account deleted) and `tests/unit/homeroom-watch-browser.test.js` (students
+playing a page game, a canvas game and another game in the player, and one using Base Ten Blocks: live on their tiles
+and in look; the tool's palette is the live room's own; a piece added shows on the tile; the catalog's search, subjects
+and grade, a tool and a folder's game handed out and played, the phone's sheet; 30 students' load). Screenshots at 1366,
+820 and 390.
+- **Open**: team desks show their members' screens in look, not on the team tile; a sub's view of screens (decided
+  against for now); Safari's page-game pictures; a second Manipulatives tool at the same time (needs a room per tool);
+  live quiz sets as desk handouts.

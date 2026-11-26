@@ -17,7 +17,8 @@ export function gamePlayer(opts) {
   let cur = null, el = null;
   const hashId = () => { const m = /^#play=([^&]{1,120})$/.exec(location.hash); try { return m ? decodeURIComponent(m[1]) : null; } catch { return null; } };
   const onPage = () => location.pathname.replace(/\/+$/, '') === opts.path;
-  const src = href => `${href}${href.includes('?') ? '&' : '?'}in=hr`;
+  // (?in=hr goes before a #hash: a Manipulatives tool's address is /manipulatives#<tool> or #join/<room>)
+  const src = href => { const [path, hash] = [href.split('#')[0], href.includes('#') ? href.slice(href.indexOf('#')) : '']; return `${path}${path.includes('?') ? '&' : '?'}in=hr${hash}`; };
   const plain = () => location.pathname + location.search;
   function show(id) {
     if (cur === id && el) return true;
@@ -26,7 +27,7 @@ export function gamePlayer(opts) {
     el = document.createElement('div');
     el.className = 'hr-player'; el.setAttribute('role', 'region'); el.setAttribute('aria-label', x.title || '');
     el.innerHTML = `<div class="hr-playtop"><button type="button" class="btn hr-chunk hr-playback" data-hrplayer="close"><span class="flip" aria-hidden="true">←</span> ${esc(opts.back)}</button>
-      <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span></div>
+      <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span>${opts.note ? `<span class="hr-playnote">${iconHtml('👀', { size: 16 })} <span>${esc(opts.note)}</span></span>` : ''}</div>
       <iframe class="hr-playframe" src="${esc(src(x.href))}" title="${esc(x.title || '')}" allow="fullscreen; autoplay; microphone" allowfullscreen></iframe>`;
     el.querySelector('[data-hrplayer]').addEventListener('click', close);
     opts.host.appendChild(el);

@@ -1560,6 +1560,12 @@ export const MIGRATIONS = [
   // on (1, the default) from the ⋯ menu. Nothing else is stored: what a linked grown-up sees is read from what exists.
   ['0136_homeroom_parents', `
     ALTER TABLE homeroom_rooms ADD COLUMN parents_view INTEGER NOT NULL DEFAULT 1;`],
+  // Homeroom: Manipulatives tools handed out (docs/decisions.md "Homeroom: watching desks and the full catalog";
+  // services/homeroom-tools.js). homeroom_rooms.tools: JSON [{ id, tool, session, target, students, instructions, by, at }],
+  // at most a few per class: each one a Manipulatives tool on some desks, backed by that tool's live room session for the
+  // class (manip_sessions, manip_work hold the boards, as for any live room). Goes with the room row.
+  ['0137_homeroom_tools', `
+    ALTER TABLE homeroom_rooms ADD COLUMN tools TEXT NOT NULL DEFAULT '[]';`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has
