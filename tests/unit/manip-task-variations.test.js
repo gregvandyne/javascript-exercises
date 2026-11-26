@@ -11,7 +11,8 @@ import { TASKS, TOOL_TASKS, practiceTasks, variation, variations, check, taskOf,
 import { shapeProblems, boxMatches, expandedMatches, checkWork, sigOf } from '../../public/js/manip-task-kit.js';
 
 /** Tools whose every task is practice. */
-const CONVERTED = ['rekenreks', 'base-ten-blocks', 'place-value-disks', 'number-lines', 'number-rods', 'money'];
+const CONVERTED = ['rekenreks', 'base-ten-blocks', 'fraction-circles', 'fraction-tiles', 'bar-models', 'clock', 'pattern-blocks', 'geoboard', 'algebra-tiles',
+  'xy-coordinate-board', 'place-value-disks', 'number-lines', 'number-rods', 'money'];
 const SEEDS = 50;
 const json = x => JSON.parse(JSON.stringify(x));
 /** A wrong typed answer for a box: the key plus one (numbers), else a word. */

@@ -105,12 +105,61 @@ export function expandedParts(n) {
   return out;
 }
 export const expandedText = n => expandedParts(n).map(fmt).join(' + ');
-/** Does a typed answer match the box's key? box: { key (or keys), kind: 'expanded' | undefined }. */
+/** An expression in x and y ("3x² − 2x + 4", "(x + 2)(x − 3)", "2(x+1)") as its terms: { 'x^2': 3, 'x': -2, '': 4 },
+ *  or null when it is not one (only digits, x, y, + - * ^ ² and brackets; implicit times). */
+export function polyOf(s) {
+  const src = String(s == null ? '' : s).toLowerCase().replace(/\s+/g, '').replace(/[−–]/g, '-').replace(/[×·]/g, '*').replace(/²/g, '^2');
+  if (!src || /[^0-9.xy+\-*^()]/.test(src)) return null;
+  let i = 0;
+  const key = m => Object.keys(m).filter(v => m[v]).sort().map(v => (m[v] === 1 ? v : `${v}^${m[v]}`)).join('');
+  const mono = k => { const m = {}; for (const [, v, e] of String(k).matchAll(/([xy])(?:\^(\d+))?/g)) m[v] = (m[v] || 0) + (e ? +e : 1); return m; };
+  const mul = (a, b) => { const out = {}; for (const [ka, ca] of Object.entries(a)) for (const [kb, cb] of Object.entries(b)) { const m = mono(ka), n = mono(kb); for (const v in n) m[v] = (m[v] || 0) + n[v]; const k = key(m); out[k] = (out[k] || 0) + ca * cb; } return out; };
+  const add = (a, b, sg = 1) => { const out = { ...a }; for (const [k, c] of Object.entries(b)) out[k] = (out[k] || 0) + sg * c; return out; };
+  const pow = (p) => { if (src[i] !== '^') return p; i++; const m = /^\d+/.exec(src.slice(i)); if (!m || +m[0] > 4) throw 0; i += m[0].length; let r = { '': 1 }; for (let k = 0; k < +m[0]; k++) r = mul(r, p); return r; };
+  const factor = () => {
+    const c = src[i];
+    if (c === '(') { i++; const e = expr(); if (src[i] !== ')') throw 0; i++; return pow(e); }
+    // (a digit right after a letter is its power: "x2" is how a keyboard writes x²)
+    if (c === 'x' || c === 'y') { i++; const d = /^[2-4](?![\d.])/.exec(src.slice(i)); if (d) i++; return pow({ [d ? `${c}^${d[0]}` : c]: 1 }); }
+    const m = /^\d+(\.\d+)?|^\.\d+/.exec(src.slice(i)); if (!m) throw 0;
+    i += m[0].length; return pow({ '': +m[0] });
+  };
+  const term = () => { let p = factor(); while (i < src.length && (src[i] === '*' || src[i] === '(' || src[i] === 'x' || src[i] === 'y' || /[\d.]/.test(src[i]))) { if (src[i] === '*') i++; p = mul(p, factor()); } return p; };
+  const expr = () => {
+    let p = {}, sg = 1;
+    if (src[i] === '+' || src[i] === '-') { sg = src[i] === '-' ? -1 : 1; i++; }
+    p = add(p, term(), sg);
+    while (src[i] === '+' || src[i] === '-') { sg = src[i] === '-' ? -1 : 1; i++; p = add(p, term(), sg); }
+    return p;
+  };
+  try { const p = expr(); if (i !== src.length) return null; return Object.fromEntries(Object.entries(p).filter(([, c]) => Math.abs(c) > 1e-9)); } catch { return null; }
+}
+const samePoly = (a, b) => !!a && !!b && [...new Set([...Object.keys(a), ...Object.keys(b)])].every(k => Math.abs((a[k] || 0) - (b[k] || 0)) < 1e-9);
+/** A typed expression equals the key's (any order, implicit times, x^2 or x²; "x = 4" for a key of 4). factored: it
+ *  must also be written as a product of brackets ("(x + 2)(x + 3)"), not multiplied out. */
+export function polyMatches(key, typed, { factored = false } = {}) {
+  let a = String(typed || '').replace(/\s+/g, '');
+  if (!/=/.test(String(key))) a = a.replace(/^[xy]=/i, '');
+  if (factored && !/\)\*?\(|^\(.+\)(\^2|²)$|^\d+\*?\(.+\)$/.test(a.replace(/[−–]/g, '-'))) return false;
+  return samePoly(polyOf(key), polyOf(a));
+}
+/** An ordered pair typed "(3, -4)", "3,-4" or "( 3 , −4 )" equals the key's. */
+export function pointMatches(key, typed) {
+  const p = s => { const m = /^\(?(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)\)?$/.exec(String(s || '').replace(/\s+/g, '').replace(/[−–]/g, '-')); return m ? [+m[1], +m[2]] : null; };
+  const a = p(typed), b = p(key);
+  return !!a && !!b && a[0] === b[0] && a[1] === b[1];
+}
+/** Does a typed answer match the box's key? box: { key (or keys), kind: 'expanded' | 'poly' | 'factored' | 'point' |
+ *  undefined, simplest (a fraction in lowest terms only), over (an equivalence "?/8": the numerator, or the fraction
+ *  over that denominator) }. */
 export function boxMatches(box, typed) {
   const a = clean(typed); if (!a) return false;
   const keys = Array.isArray(box.keys) ? box.keys : [box.key];
   if (box.kind === 'expanded') return keys.some(k => expandedMatches(k, a));
-  return keys.some(k => answerMatches(String(k), a));
+  if (box.kind === 'poly' || box.kind === 'factored') return keys.some(k => polyMatches(k, a, { factored: box.kind === 'factored' }));
+  if (box.kind === 'point') return keys.some(k => pointMatches(k, a));
+  const opts = { simplest: !!box.simplest, over: Math.max(0, Math.round(+box.over || 0)) };
+  return keys.some(k => answerMatches(String(k), a, opts));
 }
 /**
  * Check a student's work on a variation. tool: the tool file's exports ({ conds: { type: (cond, board) -> bool } }).
