@@ -132,6 +132,7 @@ export const SUBJECTS = [
   { key: 'words', emoji: '🔤', hub: 'word-games' },
   { key: 'maps', emoji: '🌍', hub: null },
   { key: 'code', emoji: '💻', hub: 'computer-science' },
+  { key: 'typing', emoji: '⌨️', hub: null },
   { key: 'thinking', emoji: '♟️', hub: 'strategy-games' },
   { key: 'music', emoji: '🎵', hub: 'music-games' },
 ];
@@ -143,7 +144,7 @@ export const SHELF_INFO = Object.fromEntries(Object.entries({
   'castle-clash': ['thinking', '2-8'], 'sudoku': ['thinking', 'K-8'], 'sum-spotter': ['math', '1-5'], 'loop-lab': ['music', '2-8'],
   'atlas-quest': ['maps', '3-8'], 'atlas-quest-live': ['maps', '3-8'],
   'code-isle': ['code', '4-8'], 'packet-post': ['code', '3-8'], 'inside-the-machine': ['code', '3-8'], 'data-detective': ['code', '3-8'], 'robo-route': ['code', '3-8'],
-  'trick-inbox': ['code', '3-6'], 'typing-zoo': ['code', '1-8'], 'escape-the-post-office': ['code', '3-6'],
+  'trick-inbox': ['code', '3-6'], 'typing-zoo': ['typing', '1-8'], 'escape-the-post-office': ['code', '3-6'],
   'quest-race': ['any', 'K-8'], 'question-battle': ['any', 'K-8'], 'brain-board': ['any', 'K-8'], 'would-you-rather-live': ['any', 'K-8'],
 }).map(([slug, [subject, grades]]) => [slug, { subject, ...band(grades) }]));
 /** Fun Play games a teacher can put on the big screen for a few minutes (the Classroom home's "Brain breaks"). */

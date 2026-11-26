@@ -4,7 +4,7 @@
 // labeled work mat ("Way 1", "Toy 2": the pieces whose middle is on it). Money a student is only shown (savings so far)
 // is locked. The fewest coins and bills are the biggest first; a student who has not met the half dollar (50¢) yet is
 // right with the fewest without it too, except on the task about the half dollar itself.
-import { boardWith, rowPlaces, objSizeOf, fmt, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, plural, countTo } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { objRect, OBJ_HEAD, WORLD } from '../manip-board.js';
 
@@ -197,7 +197,7 @@ export const TASKS = [
       return {
         prompt: `Make ${money(A, true)} using only ${NAMES[kind]}. How many ${NAMES[kind]} do you need?`,
         setup, answer: { board: [{ t: 'counts', has: { [kind]: n }, say: `Use only ${NAMES[kind]}, and make ${money(A, true)}.` }], box: { key: String(n), label: NAMES[kind] } },
-        hints: [`A ${NAME[kind]} is ${v}¢. Count by ${v}s.`, `${v}, ${2 * v}, ${3 * v}, ... until you reach ${A}.`, `${n} ${NAMES[kind]} make ${money(A, true)}: ${n} × ${v} = ${A}.`],
+        hints: [`A ${NAME[kind]} is ${v}¢. Count by ${v}s.`, `Count: ${countTo(n, v, 'until you reach')}.`, `${n} ${NAMES[kind]} make ${money(A, true)}: ${n} × ${v} = ${A}.`],
         explain: `${n} ${NAMES[kind]} × ${v}¢ = ${A}¢${A >= 100 ? ` = ${money(A)}` : ''}.`,
         solution: { board: solved(setup, { loose: Array(n).fill(kind) }), box: String(n) },
       };

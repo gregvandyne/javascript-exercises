@@ -286,6 +286,10 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
+  // A live page Homeroom frames (?in=hr: routes/homeroom-liveembed.js): the same page without the site's chrome (its
+  // menu, footer, banners, a Back link and the Oomba chat), as a bare page has none.
+  const inHr = !!req.hrEmbed && !bare, chromeless = bare || inHr;
+  if (inHr) { back = null; bodyClass = `${bodyClass} lv-inhr`.trim(); }
   // The menus for this person's role (shellFor). Signed out means signed out or a guest: a parent who plays one game
   // becomes a guest (routes/games.js) and must keep every grown-up door.
   const shell = shellFor(u, req);
@@ -333,7 +337,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
     const l = k === 'tools' && t.own('nav.toolsTab') ? { key: 'nav.toolsTab', attr: '' } : label(k);
     return html`<a class="tab" href="${href}" ${cur(k)}${l.attr}><span class="emo" aria-hidden="true">${ico(emo, { size: 30 })}</span><span class="tab-t">${t(l.key)}</span>${badge(k)}</a>`;
   };
-  const nav = bare ? '' : html`
+  const nav = chromeless ? '' : html`
   <a class="skip" href="#main">${t('layout.skip')}</a>
   <header class="topbar">
     <a class="logo" href="/" aria-label="${BRAND}">${appMark()}<span class="logo-lockup" dir="ltr" aria-hidden="true">${wordmark()}<span class="logo-sub">Academy</span></span></a>
@@ -356,19 +360,19 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   </nav>`;
   // A footer word still in English on this language's page reads left to right.
   const fb = key => (t.own(key) ? '' : raw(' lang="en" dir="ltr"'));
-  const foot = bare ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a>${out && familiesOn(req) ? html`<a href="/plans"${fb(tabKey(t, 'plans'))}>${t(tabKey(t, 'plans'))}</a>` : ''}<a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang">${ico('🌐', { size: 16 })} ${info.name}</a>${out ? html`<div class="foot-theme"><span id="foot-theme-head">${t('layout.theme.title')}:</span>${themeLinks(req, { cls: 'foot-themes', labelledby: 'foot-theme-head' })}</div>` : ''}</footer>`;
+  const foot = chromeless ? '' : html`<footer class="foot"><span>${t('layout.footer.tagline')}</span><a href="/safety">${t('layout.footer.safety')}</a><a href="/parents"${fb('layout.footer.parents')}>${t('layout.footer.parents')}</a>${out || staff ? html`<a href="/teachers"${fb('layout.footer.teachers')}>${t('layout.footer.teachers')}</a>` : ''}${out ? html`<a href="/teachers#start"${fb('layout.footer.schools')}>${t('layout.footer.schools')}</a>` : ''}${out || staff ? html`<a href="/research"${fb('research.footer')}>${t('research.footer')}</a><a href="/compliance"${fb('compliance.footer')}>${t('compliance.footer')}</a>` : ''}${config.contactEmail ? html`<a href="/parents#contact">${t('layout.footer.contact')}</a>` : ''}${grownup ? '' : html`<a href="/sdk/">${t('layout.footer.builders')}</a>`}${legalReader(u) ? html`<a href="/terms"${fb('layout.footer.terms')}>${t('layout.footer.terms')}</a>` : ''}<a href="/privacy"${fb('layout.footer.privacy')}>${t('layout.footer.privacy')}</a>${out && familiesOn(req) ? html`<a href="/plans"${fb(tabKey(t, 'plans'))}>${t(tabKey(t, 'plans'))}</a>` : ''}<a href="${grownup ? '/family/account#language' : '/me/settings#language'}" class="foot-lang">${ico('🌐', { size: 16 })} ${info.name}</a>${out ? html`<div class="foot-theme"><span id="foot-theme-head">${t('layout.theme.title')}:</span>${themeLinks(req, { cls: 'foot-themes', labelledby: 'foot-theme-head' })}</div>` : ''}</footer>`;
   const backHtml = back ? html`<a class="backlink" href="${back}"><span class="flip" aria-hidden="true">←</span> ${backLabel || t('layout.back')}</a>` : '';
   // A sign-in that just ended (timed out, or ended on another device) is mentioned once, on whatever page comes next; the
   // sign-in page says it itself.
-  const ended = !bare && req.sessionEnded && req.path !== '/login' ? html`<p class="notice warn pagenote" role="status">${tHtml(t, 'layout.signedOut', { href: `/login?next=${encodeURIComponent(req.originalUrl)}` })}</p>` : '';
+  const ended = !chromeless && req.sessionEnded && req.path !== '/login' ? html`<p class="notice warn pagenote" role="status">${tHtml(t, 'layout.signedOut', { href: `/login?next=${encodeURIComponent(req.originalUrl)}` })}</p>` : '';
   // A build that ended while the builder was away (the page was closed, or they signed out) is mentioned once, on the next
   // page they open. Only for builds they sent themselves; opening that game's Studio first counts as seeing it.
-  const news = !bare && u && !u.is_guest ? buildNews(t, u) : '';
+  const news = !chromeless && u && !u.is_guest ? buildNews(t, u) : '';
   // A parent-made account: the first-sign-in card until the child answers it, and the one-time "new password" note.
-  const made = !bare && u && !u.is_guest ? html`${pwResetNote(req, t)}${madeCard(req, t)}` : '';
+  const made = !chromeless && u && !u.is_guest ? html`${pwResetNote(req, t)}${madeCard(req, t)}` : '';
   // Staff (and the platform admin) who signed in with a short password are asked for a longer one on every page.
-  const shortPw = !bare && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family/account#password' : '/me/settings#password' })}</p>` : '';
-  const oc = u && !u.is_guest ? companionPage(req, { bare, companion, scripts }) : null;
+  const shortPw = !chromeless && u && u.password_short && longPasswordKind(u) ? html`<p class="notice warn pagenote">${tHtml(t, accountKind(u) === 'grownup' ? 'layout.shortPasswordGrownup' : 'layout.shortPassword', { min: STAFF_PASSWORD_MIN, href: grownup ? '/family/account#password' : '/me/settings#password' })}</p>` : '';
+  const oc = u && !u.is_guest ? companionPage(req, { bare: chromeless, companion, scripts }) : null;
   // The companion's microphone (tap to speak) needs this page, and only this page, to allow it ('self', never '*'):
   // only for Teacher plan staff on a page with the bubble; every other page keeps the site's microphone=().
   if (oc && req.res && !req.res.headersSent) { const pp = String(req.res.get('Permissions-Policy') || ''); if (pp.includes('microphone=()')) req.res.set('Permissions-Policy', pp.replace('microphone=()', 'microphone=(self)')); }
@@ -376,7 +380,7 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   if (oc) oc.name = String(myName || '').trim().split(/\s+/)[0].slice(0, 40);
   if (oc) { scripts = [...scripts, '/js/companion.js']; i18n = [...i18n, 'js.oomba-chat', 'js.companion-greet']; head = `${head}<link rel="stylesheet" href="/css/oomba-chat.css?v=${VERSION}"><link rel="stylesheet" href="/css/companion.css?v=${VERSION}">`; }
   // Scripts a feature adds to every page for some people (onEveryPage: Homeroom's "Your class is in Homeroom" prompt).
-  if (u && !u.is_guest && !bare) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
+  if (u && !u.is_guest && !chromeless) for (const fn of everyPage) { const s = fn(req); if (s && !scripts.includes(s)) scripts = [...scripts, s]; }
   const prefixes = ['js.app', ...scripts.map(s => (s.match(/^\/js\/([\w-]+)\.js$/) || [])[1]).filter(Boolean).map(n => `js.${n}`), ...i18n];
   // An explicit Light or Dark choice is on <html> before any CSS loads, so the first paint is right (no flash, no JS).
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;

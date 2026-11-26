@@ -3,7 +3,7 @@
 // board's hundred board object (its start, tenths or whole numbers, the cells covered with a star, and which
 // Multiples of shading is on). Every variation hides the board's totals (the handle bar's "Covered 47 · 1 more 48 ·
 // 10 more 57" would give answers away).
-import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural, countTo, endLine } from '../manip-task-kit.js';
 
 export const SLUG = 'hundred-board';
 
@@ -72,7 +72,7 @@ export const TASKS = [
       return {
         prompt: `Tap Multiples of ${m} to shade them. Count along the shaded numbers to the ${nth(k)} one and cover it. What is ${m} × ${k}?`,
         setup, answer: { board: [{ t: 'mult', m, say: `Turn on Multiples of ${m} in the palette.` }, { t: 'covered', vals: [t], say: `Cover the ${nth(k)} shaded number, and only that one.` }], box: { key: String(t), label: `${m} × ${k}` } },
-        hints: [`Each shaded number is ${m} more than the one before: ${m}, ${2 * m}, ${3 * m}...`, `Count ${k} shaded numbers. ${k > 10 ? `The 10th is ${10 * m}; keep going from there.` : ''}`.trim(), `${m} × ${k} = ${t}.`],
+        hints: [`Each shaded number is ${m} more than the one before: ${endLine(countTo(k, m, null))}`, `Count ${k} shaded numbers. ${k > 10 ? `The 10th is ${10 * m}; keep going from there.` : ''}`.trim(), `${m} × ${k} = ${t}.`],
         explain: `${m} × ${k} = ${t}. The multiples of ${m} make a pattern on the board because each one is ${m} more than the last.`,
         solution: { board: solved(setup, [t], { mult: m }), box: String(t) },
       };

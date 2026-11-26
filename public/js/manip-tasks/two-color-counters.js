@@ -2,7 +2,7 @@
 // keeps its title, code, grade and notes; make(R) gives one variation; conds are this tool's board checks, read from
 // the board's counters (yellow pos +1, red neg -1, blue, green), a ten-frame's cells and a part-part-whole mat's three
 // parts. Every variation hides the board's totals (the tool's "Value 3 · Zero pairs 2" would give answers away).
-import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural, times } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { slotsOf, OBJ_HEAD } from '../manip-board.js';
 import { piecesOf, inside } from './piece-grid.js';
@@ -145,7 +145,7 @@ export const TASKS = [
       return {
         prompt: `The board shows ${a}. To take away ${plural(b, 'red counter')}, first add ${plural(b, 'zero pair')} (a yellow and a red each). Then take away ${b} red. What is ${a} − (−${b})?`,
         setup, answer: { board: [{ t: 'counts', has: has(a + b, 0), say: `Add ${plural(b, 'zero pair')}, then take away the ${plural(b, 'red counter')}.` }], box: intBox(a + b, 'the answer') },
-        hints: [`There are no red counters to take away yet. Add ${b} yellow and ${b} red: that adds 0.`, `Now hold each red counter and pick Delete, ${b} times.`, `${a + b} yellow are left: ${a} − (−${b}) = ${a + b}.`],
+        hints: [`There are no red counters to take away yet. Add ${b} yellow and ${b} red: that adds 0.`, b === 1 ? 'Now hold the red counter and pick Delete.' : `Now hold each red counter and pick Delete, ${b} times.`, `${a + b} yellow are left: ${a} − (−${b}) = ${a + b}.`],
         explain: `${a} − (−${b}) = ${a} + ${b} = ${a + b}. Taking away a red does the same as adding a yellow.`,
         solution: { board: { ...setup, pieces: rowsAt(Array(a + b).fill('pos'), 1700, 1450, 10) }, box: String(a + b) },
       };
@@ -159,7 +159,7 @@ export const TASKS = [
       return {
         prompt: `There are 10 ${noun}. Fill the ten-frame with 10 yellow counters. Then flip ${k} of them to red. How many yellow are left?`,
         setup, answer: { board: [{ t: 'frame', has: has(10 - k, k), say: `Fill all 10 cells, then flip ${plural(k, 'counter')} to red.` }], box: { key: String(10 - k), label: 'yellow left' } },
-        hints: ['Drag a yellow counter into the first cell, then tap the yellow counter in the palette until the frame is full.', `Hold a counter and pick Flip to make it red. Do that ${k} times.`, `10 − ${k} = ${10 - k}, and ${10 - k} + ${k} = 10.`],
+        hints: ['Drag a yellow counter into the first cell, then tap the yellow counter in the palette until the frame is full.', `Hold a counter and pick Flip to make it red. Do that ${times(k)}.`, `10 − ${k} = ${10 - k}, and ${10 - k} + ${k} = 10.`],
         explain: `${10 - k} yellow and ${k} red still make 10: ${10 - k} + ${k} = 10 and 10 − ${k} = ${10 - k}.`,
         solution: { board: { ...setup, pieces: inFrame(o, [...Array(10 - k).fill('pos'), ...Array(k).fill('neg')]) }, box: String(10 - k) },
       };
@@ -233,7 +233,7 @@ export const TASKS = [
       return {
         prompt: `The red counters show −${a}. To take away ${b} yellow, first add ${plural(b, 'zero pair')}. Then take away ${b} yellow. What is −${a} − ${b}?`,
         setup, answer: { board: [{ t: 'counts', has: has(0, a + b), say: `Add ${plural(b, 'zero pair')}, then take away the ${plural(b, 'yellow counter')}.` }], box: intBox(-(a + b), 'the answer') },
-        hints: [`There are no yellow counters to take away. Add ${b} yellow and ${b} red: that adds 0.`, `Now hold each yellow counter and pick Delete, ${b} times.`, `${a + b} red are left: −${a} − ${b} = −${a + b}.`],
+        hints: [`There are no yellow counters to take away. Add ${b} yellow and ${b} red: that adds 0.`, b === 1 ? 'Now hold the yellow counter and pick Delete.' : `Now hold each yellow counter and pick Delete, ${b} times.`, `${a + b} red are left: −${a} − ${b} = −${a + b}.`],
         explain: `−${a} − ${b} = −${a + b}. Taking away ${b} yellow leaves ${b} more red than before.`,
         solution: { board: { ...setup, pieces: rowsAt(Array(a + b).fill('neg'), 1700, 1450, 10) }, box: String(-(a + b)) },
       };

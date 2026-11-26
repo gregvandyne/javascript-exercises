@@ -20,6 +20,7 @@
 //      alone is not progress, nor is drawing on the pad.
 //   4. Typing ('typing'): any input (a key, a tap, a pen stroke) in the last TYPING_MS (10 s).
 //   5. Working ('working'), or At desk ('here') when nothing is on their desk.
+import * as OP from './homeroom-opened.js';
 import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
 import * as H from './homeroom.js';
@@ -89,6 +90,12 @@ export function pulse(u, c, body = {}, at = now()) {
   const live = H.liveOf(c.id);
   if (!live) return ok({ live: null, me: null });
   const m = beatsOf(c.id), old = m.get(u.id) || null, b = old ? { ...old } : {};
+  // the page went (closed, hidden: public/js/homeroom-pulse.js bye): what the board kept of it goes now, and the desk
+  // reads as away until the next pulse (QA round 2, N8)
+  if (body.gone === true) {
+    if (old && (body.where === old.where || body.where === 'desk')) { if (old.where === 'tool') MT.forgetLive(c.id, u.id); if (old.where === 'game') HW.forgetSnap(c.id, u.id); m.delete(u.id); }
+    return ok({ live, me: null, mates: [] });
+  }
   const where = WHERE.includes(body.where) ? body.where : 'desk';
   // (a tool: a tool handout, or a Manipulatives practice set, a handout of its own, open in the player)
   const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) || onDeskLesson(c.id, u.id, body.on) : onDeskLesson(c.id, u.id, body.on)) ? String(body.on) : '';
@@ -105,6 +112,7 @@ export function pulse(u, c, body = {}, at = now()) {
   // the game's own steps forward (it saved or scored) on this page
   if (!fresh && where === 'game' && b.where === 'game' && b.on === on && step > (b.step || 0)) b.progAt = at;
   Object.assign(b, { at, where, on, step, inputAt: at - idle * 1000 });
+  if (where === 'tool' && on) OP.mark(c.id, u.id, on);
   const bk = where === 'reading' && body.book ? LIB.getBook(String(body.book)) : null;
   b.book = bk ? { id: bk.id, page: Math.max(0, Math.min(bk.pages.length, Math.floor(Number(body.page) || 0))) } : null;
   // turning a page counts as moving forward (never time alone)

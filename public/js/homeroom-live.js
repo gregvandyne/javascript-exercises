@@ -216,7 +216,7 @@ export function liveBoard(ctx) {
     return `<ul class="plain hr-tgrd">${rows.map(({ s, card }) => `<li><bdi>${esc(s.name)}</bdi><span>${esc(step(card))}${card.rd.total ? ` · <b>${esc(tl('rd.score', { right: card.rd.right, total: card.rd.total }))}</b>` : ''}</span></li>`).join('')}</ul>`;
   }
   /** A Manipulatives practice set in Today: every student it went to, alphabetical (never ranked), with where they are in
-   *  it (Done, Question 3 of 5, Not started, Stuck) and how many were right first time. */
+   *  it (Done, Question 3 of 5, Started, Not started, Stuck) and how many were right first time. */
   function manipRows(h) {
     const coll = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true }), dd = desks();
     const rows = H.students.map(s => ({ s, card: (H.ho.desks[s.id] || []).find(x => x.id === h.id) })).filter(x => x.card && x.card.qs).sort((a, b) => coll.compare(a.s.name, b.s.name));
@@ -224,7 +224,9 @@ export function liveBoard(ctx) {
     const step = (s, card) => { const q = card.qs, d = dd[s.id];
       if (card.done) return tl('today.setDone', { right: q.right, n: q.n });
       if (d && d.st === 'stuck' && d.on === h.id) return tl('today.stuck');
-      return q.answered || (d && d.on === h.id && d.st !== 'away') ? tl('today.setAt', { i: Math.min(q.n, q.answered + 1), n: q.n, right: q.right }) : tl('today.notStarted'); };
+      if (q.answered) return tl('today.setAt', { i: Math.min(q.n, q.answered + 1), n: q.n, right: q.right });
+      // opened (now or earlier in this live class) with nothing checked yet: Started, never Not started
+      return q.opened || (d && d.on === h.id && d.st !== 'away') ? tl('today.started') : tl('today.notStarted'); };
     return `<ul class="plain hr-tgrd">${rows.map(({ s, card }) => `<li><bdi>${esc(s.name)}</bdi><span>${esc(step(s, card))}</span></li>`).join('')}</ul>`;
   }
   /** Manipulatives tools on desks now (open practice: no counts), each with who has it open. */

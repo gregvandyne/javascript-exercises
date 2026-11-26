@@ -3,7 +3,7 @@
 // (public/js/manip-task-kit.js rngOf): the student's prompt with its numbers, the board to start from, what is right, 2
 // or 3 hints in Oomba's calm voice, the explanation, and the generator's own solution (for the tests and the
 // run-through). conds are this tool's board checks, read from the board's rekenrek objects.
-import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural, countTo } from '../manip-task-kit.js';
 
 export const SLUG = 'rekenreks';
 const NOUNS = ['ladybugs', 'apples', 'frogs', 'stars', 'ducks', 'buttons', 'shells', 'kites'];
@@ -87,7 +87,7 @@ export const TASKS = [
       return {
         prompt: `Cover is on, so you can't see the beads. There are ${total} beads in all. The top row has ${top}. How many beads are on the bottom row?`,
         setup, answer: { box: { key: String(bot), label: 'beads on the bottom row' } },
-        hints: [`Start at ${top}, the top row. How many more to get to ${total}?`, `Count on from ${top}: ${top + 1}, ${top + 2}, ... up to ${total}.`, `${top} + ${bot} = ${total}, so the bottom row has ${bot}.`],
+        hints: [`Start at ${top}, the top row. How many more to get to ${total}?`, `Count on from ${top}: ${countTo(bot, i => top + i)}.`, `${top} + ${bot} = ${total}, so the bottom row has ${bot}.`],
         explain: `${top} + ${bot} = ${total}. When you know the whole and one part, you can find the other part without seeing it.`,
         solution: { board: setup, box: String(bot) },
       };
@@ -132,7 +132,7 @@ export const TASKS = [
       return {
         prompt: `Show ${n} ${noun} as a full row of 10 on the top row and the rest on the bottom row. How many are on the bottom row?`,
         setup, answer: { board: [{ t: 'rows', counts: [10, k], say: `Fill the top row with 10, then put the rest of ${n} on the bottom row.` }], box: { key: String(k), label: 'beads on the bottom row' } },
-        hints: ['Tap the last bead on the top row to fill it: that is 10.', `Ten and how many more make ${n}? Count on: 11, 12, ...`, `10 + ${k} = ${n}. Put ${k} on the bottom row.`],
+        hints: ['Tap the last bead on the top row to fill it: that is 10.', `Ten and how many more make ${n}? Count on from 10: ${countTo(k, i => 10 + i)}.`, `10 + ${k} = ${n}. Put ${k} on the bottom row.`],
         explain: `${n} is ten and ${word10(k)}: 10 + ${k} = ${n}.`,
         solution: { board: solved(setup, [{ counts: [10, k] }]), box: String(k) },
       };
@@ -279,7 +279,7 @@ export const TASKS = [
       return {
         prompt: `Count ${n} ${noun} by fives. Push beads in groups of 5 only, saying 5, 10, 15 as each group lands. How many groups of 5 make ${n}?`,
         setup, answer: { board: [{ t: 'total', n, say: `Show ${n} in all.` }, { t: 'fives', say: 'Use groups of 5: each row shows 0, 5 or 10.' }], box: { key: String(g), label: 'groups of 5' } },
-        hints: ['Tap the 5th bead on a row: 5 beads move together.', `Count by fives as you go: 5, 10, 15, ... until you say ${n}.`, `${plural(g, 'group')} of 5 ${g === 1 ? 'makes' : 'make'} ${n}.`],
+        hints: ['Tap the 5th bead on a row: 5 beads move together.', g === 1 ? 'One group of 5 beads is 5.' : `Count by fives as you go: ${countTo(g, 5, 'until you say')}.`, `${plural(g, 'group')} of 5 ${g === 1 ? 'makes' : 'make'} ${n}.`],
         explain: `${plural(g, 'five')} ${g === 1 ? 'makes' : 'make'} ${n}: ${Array.from({ length: g }, (_, i) => 5 * (i + 1)).join(', ')}.`,
         solution: { board: solved(setup, [{ counts: Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(10, n - 10 * i))) }]), box: String(g) },
       };

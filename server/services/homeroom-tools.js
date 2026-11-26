@@ -75,8 +75,10 @@ export function handOutTool(u, c, { tool, to, instructions = '' } = {}) {
   const list = storedOf(c.id);
   if (list.length >= TOOLS_MAX) return fail('tooManyHandouts');
   // One room per class: the tool's own room when it runs, never one that would end another tool's room.
-  const act = activeOf(c.id);
-  if (act && act.tool !== tl.slug) return fail('oneTool', { tool: (toolOf(act.tool) || {}).name || '' });
+  // (a room of another tool that no handout uses blocks nothing: a new room for this tool ends it)
+  const running = activeOf(c.id), used = running && list.some(x => x.session === running.id);
+  if (running && running.tool !== tl.slug && used) return fail('oneTool', { tool: (toolOf(running.tool) || {}).name || '' });
+  const act = running && running.tool === tl.slug ? running : null;
   const same = list.filter(x => x.tool === tl.slug);
   if (same.some(x => !x.students.length || !who.students.length || who.all.some(id => x.students.includes(id)))) return fail('alreadyOnDesk', { count: 1 });
   let session = act;
@@ -143,6 +145,9 @@ H.onLive(({ by, c, action }) => { if (action === 'end') takeAllOff(by, c); });
 export function roomOf(c) {
   const act = activeOf(c.id); if (!act) return null;
   const tl = toolOf(act.tool), x = storedOf(c.id).find(y => y.session === act.id);
+  // a room no tool handout uses (started or reopened on the Manipulatives page) never blocks Homeroom: the next tool
+  // handed out starts its own room, which ends that one (QA round 2, N1: never an unreachable room in the way)
+  if (!x) return null;
   return { session: act.id, tool: act.tool, title: tl ? tl.name : '', icon: tl ? tl.emoji : '🧮', handout: x ? x.id : '' };
 }
 

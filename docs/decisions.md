@@ -15694,6 +15694,18 @@ asking for 6) and about 40 tasks with slips like "1 beads", "add 1 zero pairs" a
   minutes" once (", which is 95 minutes" only past an hour). `manip-task-variations.test.js` reads every text of 200
   seeds of every practice task for "1 <plural noun>" (with up to two words between: "1 red cubes", "1 unit tiles"),
   "there are 1 ..." and "X, which is X", and names the task, seed and place of any slip.
+- **Second QA round.** "1 times" is gone: kit `times(n)` says "once" ("Tap the 1/2 piece once", "Do that once"; Two-Color
+  Counters says "hold the red counter and pick Delete"), and the wording lint's noun list has "times". Counting hints
+  never list a number past the one they count to ("5, 10, 15, ... until you say 5", "25, 50, 75, ... until you reach
+  75", "0.5, 1, 1.5, ... until you reach 1"): kit `countTo(k, step or nth, tail)` lists up to 4 numbers in full ("5,
+  10, 15") and longer counts as the first 3 and the target ("5, 10, 15, ... until you say 50"), in Rekenreks, Fraction
+  Circles, Fraction Tiles, Money, Number Lines, Number Rods, Clock, Pattern Blocks, Color Tiles and Hundred Board; a
+  lint over 200 seeds checks every "a, b, c, ..." count against the target the line names after the dots, else the
+  variation's answer. Pattern Blocks "Invent a whole" rebuilds a block only from smaller blocks that tile it
+  (`BUILDS`: a hexagon from triangles, parallelograms or trapezoids; a trapezoid or parallelogram from triangles), so
+  never "Rebuild 3 triangles out of trapezoids"; any other pair puts the block beside the whole, and a test checks every
+  rebuild and its count. Number Rods "Rod algebra: r + w" (trains of any one color) is now "Rod algebra: trains of equal
+  rods", key unchanged; no How it works scene finds it by title.
 - **Checks that read the arrangement.** Pattern Blocks "Grow the pattern" checked only the counts, so any heap passed:
   its new `ring` check reads the blocks' real outlines (manip.js's shapes, turned by Rotate) and wants 6 blocks touching
   the hexagon all the way around it, then 6 more each touching the first ring, farther out and all the way around; no
@@ -15847,3 +15859,115 @@ field, underlined tabs, results as bare text. They now wear the same chrome as H
   pill buttons with their bottom edge and the Ink-edged code card, in light and dark; a player at 390 px and on a
   Chromebook never scrolls sideways and every page button is 44 px; Question Battle's and Brain Board's answers on a phone
   are 44 px with a shape. `live-entry.test.js` expects the code field's `input` class.
+## Homeroom: live games inside Homeroom, a simpler Find lessons (26 Nov 2026)
+
+The owner, on the phone's Find lessons sheet: "Let's fix the layout of this to be more intuitive." And: "Make sure Brain
+Board and Would You Rather open up in Homeroom. Currently it takes you outside of it. You should be able to start live
+games directly from the board room. Experience should be seamless." During the build: "The lessons and tools section
+lets label as Games, Teaching Tools section is fine, and then Oomba Lessons should be the bottom", "You should also be
+able to assign multiple lessons at once" and "Let's change Coding to Typing".
+
+**Find lessons** (the laptop's panel and the phone's sheet share it: routes/homeroom.js `catalogHtml`,
+public/js/homeroom-catalog.js). Before: a title, a sentence, search, a grade, subject chips on two rows, then a long list
+of collapsed groups with small chevrons that repeated the chips, and empty groups ("Lessons you build show here")
+taking room. Now:
+- **Search first**, then the grade and **Select** on one row, then **one row of filter chips** that scrolls sideways:
+  All, Recent (only once something was handed out in this browser), Games, each subject, Live games, Teaching tools,
+  My lessons (only with own lessons, folders, shared folders or favorites), Lesson plans.
+- **Cards in a grid**, tappable at once: the icon big, the name (two lines at most), and what it is with its grades
+  ("Words · Grades 1-5", "Live game · Grades K-8", "Manipulatives · Grades K-5", "Practice · Manipulatives · Grade 2",
+  "Lesson", "Lesson plan · 5 problems"). Two cards a row in the panel at 1366 (the panel is 272 px wide, was 240) and on a phone, one in the tablet's narrow
+  panel at 820, three or more in a wide sheet. Cards are at least 96 px wide and 112 px tall.
+- **All**: four parts under plain headers, top to bottom as the owner asked: **Games** (the official Oomba games; the
+  owner's word, which overrides the teachers' "lessons" for this label and its chip), **Live games**, **Teaching tools**,
+  then **Lessons and lesson plans** (the teacher's own lessons, folders, shared folders, favorites, lesson plans) at the
+  bottom. Each part shows its first four (the recently handed out first) with **See all N**; no group headers inside a
+  part. A chip or a search shows one grid of what fits, each card once (a game in a folder and in Favorites shows once);
+  a tool's practice keeps its small header ("Base Ten Blocks: practice lessons") so practice is found by tool, then task.
+- **Empty parts are never shown**. The list ends with a small **Build a lesson** card (/build/new); lesson plans end with
+  **+ Build a lesson plan** (with "Pick a lesson, set it up once, hand it out." while there are none).
+- **Recent**: the last eight cards handed out (or put on My desk) in this browser (localStorage `hr:recent`, a
+  per-viewer convenience) come first in their part and under the Recent chip.
+- My lesson plans moved from the top of the panel into Find lessons' last part (on a phone: the sheet's Lesson plans
+  chip). Reading, Class flow and Board tools stay in the panel under it. Tap a card then a desk, a group or Whole class,
+  and mouse or touch drag, work as before (the cards are the same `[data-hritem]` buttons).
+- **Typing, not Coding**: Find Oomba lessons' "Coding" chip held one visible game, Typing Zoo. Typing Zoo now has its
+  own subject, **Typing** (⌨️, `server/learn.js` SUBJECTS and SHELF_INFO), wherever the subject chips show (Homeroom, the
+  class page's Find Oomba lessons, Play by topic). The coding games (Code Isle, Packet Post, Inside the Machine, Data
+  Detective, Robo Route, Trick Inbox, Escape the Post Office) stay under Coding, which shows only when one of them is
+  visible (today the Focus flags hide them all, so Coding does not show in production).
+
+**Several at once** (public/js/homeroom-multi.js). Select turns each card into a check numbered in the order picked;
+a bar under the cards says "3 selected" with Clear and Hand out. Hand out: the yellow bar asks where (a desk, a group, a
+team or Whole class; never My desk), then one sheet lists them in order, each with its grading (by default Score for
+practice and lesson plans, Completion for the rest) and an optional note, one In order / Any order, one due day, the
+practice's number of questions, Also post to Google Classroom; Put N on desks hands them out one after another in that
+order. Dragging a card of the selection onto a desk or a group hands them all out there with those defaults (no sheet),
+"Handed out to Stretch: 3". Live games are hosted, so Select skips them; Figures stays on My desk; two Manipulatives
+tools at once are refused in the bar ("One Manipulatives tool at a time").
+
+**Live games inside Homeroom** (public/js/homeroom-livegame.js, services/homeroom-livegame.js,
+routes/homeroom-liveembed.js). Before, the live-only games (Brain Board, Would You Rather Live, Atlas Quest Live, Quest
+Race...), live question sets and the ⋯ menu's Host a live lesson went to /live, leaving Homeroom.
+- **The teacher**: a Live games card (each live-only game; the teacher's ready live question sets and the school's shared
+  ones; Host a live lesson for every other kind: quizzes from the question bank, memory and word sets) or the ⋯ menu's
+  Host a live lesson opens the real Oomba Live pages in a layer over the board, as the desk's player does: the landing
+  with the game picked and the class chosen (`/live?mode=board&class=<id>&in=hr`), then, once started, the game's host
+  screen. The address never changes. **Back to Homeroom** folds the layer into a pill in the top bar ("🌟 Live: Brain
+  Board 14 joined" with End; on a phone it floats at the top of the board): the frame keeps running underneath, a tap on
+  the pill opens it again, End ends the game (asked first; `POST /api/homeroom/<class>/livegame/end`, its host only),
+  and the layer's own bar has End too. A reload finds the class's game and shows the pill. Desks of students in the game
+  say **"In Brain Board"** (`GET /api/homeroom/<class>/livegame`: title, players, the class's students connected).
+- **The live pages in a frame** (routes/homeroom-liveembed.js, mounted before routes/live.js): a live page (/live, its
+  host screen, Teacher view, player page, results, sets, co-host invite) asked for with `?in=hr` in a frame of this
+  site is served without the site's menu, footer, banners, Back link or Oomba chat (`req.hrEmbed`, views/layout.js) and
+  may be framed by this site only (`frame-ancestors 'self'`). The live pages move on by themselves (the landing to the
+  host screen, the host screen to its results), so the first one sets `hr_lv` (Path=/live, SameSite=Strict, HttpOnly,
+  12 hours) and later framed live pages in that frame are embedded too. A live page opened on its own (a tab) is exactly
+  as before, cookie or not; another site can never frame it. Nothing in the live pages changed.
+- **Students**: while the class has a live game, the desk's state carries it (`livegame`: title, icon); the desk shows a
+  Join card and opens the game in the desk's player by itself once per game: `POST /api/desk/<class>/livegame` seats them
+  as themselves (the class room's own seating, no code), the seat token goes where the player page reads it
+  (sessionStorage `lv:<sid>`, shared with the same-origin frame), and the player page opens (`/live/play/<sid>?in=hr`).
+  When the game ends (or Leave), the player closes and they are back at their desk ("The live game ended. You are back
+  at your desk."). Student words keep "game".
+- **The projector view**: while the class's game runs, its host screen (join code, QR, the game) fills the projector
+  view, for its host (and co-hosts). A game has one projector screen, so the teacher's layer then shows the Teacher view
+  (/live/host/<sid>/dash) instead, told over a BroadcastChannel in the same browser; when the projector closes, the layer
+  shows the host screen again. A sub's or aide's projector shows the area as before.
+- **Not here**: the day plan has no live parts yet, so a live game is started from Find lessons or the ⋯ menu only; a
+  projector on another computer takes the host screen from the teacher's layer (the layer then shows "offline" until
+  reloaded); the live host screen's own Back link (another session owns those pages) leads to the landing inside the
+  layer.
+
+**QA round 2** (in the same files):
+- N1: a Manipulatives room that no Homeroom tool handout uses (started or reopened on the Manipulatives page) never
+  blocks Homeroom: the board's `room` is null for it and the next tool handed out starts its own room, which ends it
+  (`homeroom-tools.js` `roomOf`, `handOutTool`). A room a handout uses still blocks a second tool, as before.
+- N2: a desk's tile shows a tool first, then what is not done yet (the newest first), then what is done, so a tool
+  handed to a busy desk is never under "+N more".
+- N4: "Your class is in Homeroom" (homeroom-notify.js) sits at the top of the page's content, in its flow, never over a
+  board, its controls or a frame (it floated over the bottom of the page).
+- N8: a desk or a game page that closes or is hidden sends a last pulse (`gone`, fetch keepalive): the board drops that
+  desk's board, picture and status at once (away) instead of 10 to 30 seconds later.
+- `homeroom-qa-browser` on main: #2 (M1) waited for a card titled "Make 67", renamed by #637 ("Make an amount of
+  cents"): stale test, it now picks each card by its handout's id. #3 (M3/M4) and #4 (dark mode) failed only after #2:
+  #2 stopped before its cleanup, leaving Rekenreks and two practice sets on every desk, so #3's new set sat under "+2
+  more" on Cleo's tile (a real tile-order problem, fixed by N2: the newest not-done items first) and #4's Clock was
+  refused by the still-running Rekenreks room (the one-tool rule, correct). All four pass.
+- Today's practice sets: a set a student opened in the player with no answer checked yet says **Started**, never "Not
+  started" (`homeroom-opened.js`: opened sets per class, in memory, until live class ends or starts again).
+
+Changes in files other sessions own, kept additive: `server/views/layout.js` (an embedded live page has no chrome:
+`req.hrEmbed`), `server/app.js` (mounts routes/homeroom-liveembed.js before the live routes), `public/css/app.css` and
+`public/css/notebook.css` (the Homeroom prompt's place). No live page's markup, script or CSS changed.
+
+Tests: `tests/unit/homeroom-livegame.test.js` (Find lessons' order, Typing; the class's game for the board, the
+projector and a desk; join as themselves; End by its host only; nobody else; the framed live pages and the same pages on
+their own; N8; Started) and `tests/unit/homeroom-livegame-browser.test.js` (Find lessons at 1366, 820 and 390: one row of
+chips, cards, See all, chips, search, tap then a desk, a finger dragging a card onto a desk at 390; Select three to a
+group in order, a selection dragged onto a desk, the same at 390; Brain Board hosted from the panel and Would You Rather
+Live from the phone's sheet without leaving the page, students brought in and back at their desks, the pill, "In Brain
+Board", the projector and the Teacher view, End; the standalone /live as before; N2, N4). `homeroom-qa.test.js` expects a
+room with no handout not to block; `homeroom-watch-browser`, `homeroom-lessons-browser`, `homeroom-views-browser` and
+`teachers-say-lessons` follow the new layout.
