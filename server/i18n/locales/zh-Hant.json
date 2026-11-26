@@ -2366,7 +2366,8 @@
         "clear": "清除學生的畫",
         "clearConfirm": "要把所有學生的線從教室移除嗎？",
         "none": "教室裡還沒有畫。"
-      }
+      },
+      "tourMenu": "帶我看看"
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -4533,7 +4534,9 @@
         "book_rename": "已重新命名「{q}」",
         "book_duplicate": "已複製「{q}」",
         "book_repaint": "已要求重新繪製「{q}」",
-        "week": "已擬好一週計畫（{n} 天）"
+        "week": "已擬好一週計畫（{n} 天）",
+        "needs": "看了「需要關心」({n})",
+        "needsNo": "無法打開「需要關心」"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4609,7 +4612,11 @@
         "other": "出了點問題。你的訊息還在:請稍後再試一次。",
         "cap": "你今天做書的 Oomba 次數已經用完。你仍然可以自己動手編輯書。明天會有新的次數。",
         "pastDay": "那天已經過了。請選今天或本週之後的一天。",
-        "weekPast": "那一週的每一天都已經過了。"
+        "weekPast": "那一週的每一天都已經過了。",
+        "planFull": "那天的計畫已經滿了。請先拿掉一個部分。",
+        "needText": "請先寫幾個字。",
+        "areaFull": "老師區已經有 12 張便條了。請先移除一張。",
+        "already": "這已經做好了。"
       },
       "quoteN": "第 {n} 題:{text}",
       "questionN": "第 {n} 題",
@@ -4717,6 +4724,42 @@
         "missingNone": "{cls} 沒有 {group} 組：那個版本不會用到。",
         "cancel": "取消",
         "go": "複製到 {cls}"
+      },
+      "follow": {
+        "title": "下課後:簡短的後續",
+        "titleWeek": "一週結束:簡短的後續",
+        "text": "課上完了。這是下一個上課日的簡短後續:哪些順利、誰可能需要關心,還有幾個點子。在你點選之前,什麼都不會發生。",
+        "textWeek": "這週的計畫完成了。這是下週的簡短後續:哪些順利、誰可能需要關心,還有幾個點子。在你點選之前,什麼都不會發生。",
+        "wentWell": "哪些順利",
+        "finished": "{of} 份作業完成了 {finished} 份",
+        "allDone": "{count, plural, other {# 位學生全部完成}}",
+        "parts": "{total} 個部分完成了 {done} 個",
+        "absent": "{count, plural, other {缺席 # 位,不計入}}",
+        "lookTitle": "{day}可能需要關心",
+        "nobody": "目前「需要關心」沒有任何人。",
+        "lookCount": "{count, plural, other {# 位學生。打開班級的 Homeroom 看看是誰。}}",
+        "ideas": "點子(在你點選之前什麼都不會發生)",
+        "review": "{day}發一份複習課程給 {group} 組",
+        "reviewAsk": "要在{day}的計畫加入給 {group} 組的 {what},共 {minutes} 分鐘嗎?在你開始那個計畫之前,書桌上不會出現任何東西。",
+        "reteach": "{day}再教一次 {part}",
+        "reteachAsk": "要在{day}的計畫加入 {minutes} 分鐘投影片,再教一次 {part} 嗎?",
+        "move": "把沒完成的作業移到{day}的計畫",
+        "moveAsk": "要在{day}的計畫加入 {minutes} 分鐘完成 {what} 嗎?作業會留在書桌上當回家作業。",
+        "note": "傳一則訊息給全班",
+        "noteText": "大家今天都很棒!明天繼續加油。",
+        "noteTitle": "給全班的訊息",
+        "noteLabel": "它會放在老師區,大家都看得到。",
+        "send": "傳送",
+        "confirm": "加入計畫",
+        "added": "已加入{day}的計畫。",
+        "noteDone": "你的訊息已放在老師區。",
+        "addedTag": "已加入",
+        "sent": "已傳送",
+        "private": "只有數字,名字只留在這個畫面上。Oomba 從不和學生說話;除非你傳送或發出,否則學生和家長都收不到任何東西。",
+        "planName": "後續",
+        "reviewTitle": "複習",
+        "reteachTitle": "再教一次:{title}",
+        "finishTitle": "完成今天的作業"
       }
     },
     "companion-greet": {
@@ -5397,6 +5440,10 @@
         "clear": "清空這一天",
         "clearTitle": "清空 {day}？",
         "clearText": "那天的計畫會從這一週移除。桌上的東西不會改變。"
+      },
+      "follow": {
+        "ready": "Oomba 在聊天裡準備了下一個上課日的簡短後續。",
+        "open": "打開 Oomba"
       }
     },
     "homeroom-due": {
@@ -5416,6 +5463,94 @@
       "dayTime": "{day} {time}",
       "due": "{when} 截止",
       "afterDue": "超過截止"
+    },
+    "homeroom-look": {
+      "title": "需要關心",
+      "chip": "{count, plural, other {需要關心:# 位學生}}",
+      "lead": "現在或這週可能需要幫助的學生,以及你可以做的事。只有你和你的助教看得到。",
+      "leadAide": "現在或這週可能需要幫助的學生。只有班上的老師和助教看得到。",
+      "none": "目前沒有人需要關心。",
+      "hidden": "{count, plural, other {已看過或稍後:# 位}}",
+      "seen": "看過了",
+      "snooze": "今天稍後",
+      "snoozeOf": "今天稍後再看 {name}",
+      "supTag": "有支援",
+      "homeTag": "在家",
+      "ask": "請 Oomba 整理一下",
+      "askText": "整理這班誰需要關心,並為每個人提一個小小的下一步。",
+      "noChat": "Oomba 目前無法使用。",
+      "r": {
+        "stuck": "{count, plural, other {卡在「{title}」已 # 分鐘}}",
+        "stuckNo": "{count, plural, other {已卡住 # 分鐘}}",
+        "hand": "{count, plural, other {舉手提問已 # 分鐘}}",
+        "handHelp": "{count, plural, other {舉手求助已 # 分鐘}}",
+        "ask": "{count, plural, other {在家的提問已等了 # 分鐘}}",
+        "askHours": "{count, plural, other {在家的提問已等了 # 小時}}",
+        "tries": "{count, plural, other {「{title}」試了 # 次,最好是 {total} 題答對 {right} 題}}",
+        "reading": "「{title}」閱讀小測驗:第一次 {total} 題答對 {right} 題",
+        "overdue": "{count, plural, other {有 # 項作業已過期限}}"
+      },
+      "a": {
+        "look": "建議:看看他的書桌",
+        "hands": "建議:在「舉手」回覆",
+        "sit": "建議:在旁邊坐幾分鐘,或發一個簡單一點的版本",
+        "readWith": "建議:一起讀一頁",
+        "readAloud": "建議:一起讀一頁,或開啟朗讀",
+        "checkIn": "建議:簡短聊聊過期的作業"
+      },
+      "b": {
+        "look": "看看",
+        "hands": "舉手",
+        "desk": "他的作業",
+        "supports": "支援"
+      },
+      "tour": {
+        "step": "第 {n} 步,共 {total} 步",
+        "next": "下一步",
+        "skip": "略過",
+        "done": "完成",
+        "addStudents": "新增學生",
+        "emptyTitle": "還沒有學生",
+        "emptyText": "學生用這個班級的加入代碼加入,或在「學生」分頁從 Google Classroom 匯入。其他功能都已經可以用了。",
+        "seatsTitle": "照教室排座位",
+        "seatsText": "選擇一排排、4 人桌、U 形或圓形,再把每張書桌拖到學生真正坐的位置。",
+        "areaTitle": "你的老師區",
+        "areaText": "大家都會在自己的書桌和投影上看到。可以加便條和文字,或用白板工具的筆來畫。",
+        "handoutTitle": "發一份課程",
+        "handoutText": "點一份課程,再點一張書桌、一個小組或全班。也可以拖過去,用手指也行。",
+        "mydeskTitle": "我的書桌",
+        "mydeskText": "把課程或工具放在這裡先試試。學生永遠看不到「我的書桌」。",
+        "oombaTitle": "請 Oomba 擬今天的計畫",
+        "oombaText": "告訴 Oomba 你要教什麼,它會擬好計畫。在你點「使用這個計畫」之前,書桌上不會出現任何東西。",
+        "goliveTitle": "大家來 Homeroom",
+        "goliveText": "在這裡開始上課。共用裝置上,學生打開 /hr,輸入 ⋯ 選單裡「學生登入」的快速登入代碼。"
+      }
+    },
+    "homeroom-intro": {
+      "title": "歡迎來到你的書桌!",
+      "ok": "知道了",
+      "deskTitle": "我的書桌:",
+      "desk": "老師發的東西會出現在這裡。從「下一個」開始。",
+      "handTitle": "舉手:",
+      "hand": "有問題、需要幫忙或要上廁所時點它。",
+      "notebookTitle": "筆記本:",
+      "notebook": "你留下的筆記。老師可以看你的筆記本。",
+      "dockTitle": "下面的按鈕:",
+      "dock": "老師區、有書的圖書館,以及看看教室。",
+      "seenTitle": "要知道:",
+      "seen": "在 Homeroom 裡,老師看得到你的螢幕。",
+      "k2": {
+        "title": "嗨!這是你的書桌。",
+        "ok": "好!",
+        "desk": "你的功課在這裡。點「開始」。",
+        "hand": "需要幫忙就點手。",
+        "notebook": "在筆記本裡畫畫或寫字。老師看得到。",
+        "dock": "這些按鈕可以看老師、書和教室。",
+        "seen": "老師看得到你的螢幕。"
+      }
+    },
+    "homeroom-sub": {
+      "needsTitle": "現在需要關心"
     }
   },
   "favorites": {
@@ -15597,6 +15732,11 @@
       "savedOff": "學生不能在教室裡畫",
       "cleared": "已清除學生的畫",
       "removed": "已移除這位學生的畫"
+    },
+    "look": {
+      "seen": "已標為看過。有變化時會再出現。",
+      "snooze": "已延到下一個上課日。",
+      "back": "已回到清單。"
     }
   }
 }

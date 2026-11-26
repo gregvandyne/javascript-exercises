@@ -2367,7 +2367,8 @@
         "clear": "Tekeningen van leerlingen wissen",
         "clearConfirm": "Alle lijnen van leerlingen uit het lokaal halen?",
         "none": "Nog geen tekeningen in het lokaal."
-      }
+      },
+      "tourMenu": "Laat me rondkijken"
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -4534,7 +4535,9 @@
         "book_rename": "‘{q}’ hernoemd",
         "book_duplicate": "‘{q}’ gekopieerd",
         "book_repaint": "Gevraagd om ‘{q}’ opnieuw te schilderen",
-        "week": "Weekplan gemaakt ({n} dagen)"
+        "week": "Weekplan gemaakt ({n} dagen)",
+        "needs": "Even kijken bekeken ({n})",
+        "needsNo": "Kon Even kijken niet openen"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4610,7 +4613,11 @@
         "other": "Er ging iets mis. Je bericht staat er nog: probeer het zo meteen opnieuw.",
         "cap": "Je hebt de Oomba-beurten van vandaag voor boeken gebruikt. Je kunt je boeken nog met de hand bewerken. Morgen zijn er nieuwe beurten.",
         "pastDay": "Die dag is voorbij. Kies vandaag of een latere dag deze week.",
-        "weekPast": "Elke dag van die week is al voorbij."
+        "weekPast": "Elke dag van die week is al voorbij.",
+        "planFull": "Het plan voor die dag is vol. Haal eerst een deel weg.",
+        "needText": "Schrijf eerst een paar woorden.",
+        "areaFull": "Het deel van de leraar heeft al 12 notities. Haal er eerst een weg.",
+        "already": "Dat is al gedaan."
       },
       "quoteN": "Vraag {n}: {text}",
       "questionN": "Vraag {n}",
@@ -4718,6 +4725,42 @@
         "missingNone": "Geen groep {group} in {cls}: die versie valt weg.",
         "cancel": "Annuleren",
         "go": "Kopiëren naar {cls}"
+      },
+      "follow": {
+        "title": "Na de les: een korte vervolgstap",
+        "titleWeek": "Einde van de week: een korte vervolgstap",
+        "text": "De les is klaar. Hier is een korte vervolgstap voor de volgende schooldag: wat goed ging, wie misschien even bekeken moet worden, en een paar ideeën. Er gebeurt niets tot je er een aantikt.",
+        "textWeek": "Het weekplan is klaar. Hier is een korte vervolgstap voor volgende week: wat goed ging, wie misschien even bekeken moet worden, en een paar ideeën. Er gebeurt niets tot je er een aantikt.",
+        "wentWell": "Wat goed ging",
+        "finished": "{finished} van {of} opdrachten af",
+        "allDone": "{count, plural, one {# leerling heeft alles af} other {# leerlingen hebben alles af}}",
+        "parts": "{done} van {total} delen gedaan",
+        "absent": "{count, plural, one {# afwezig, niet meegeteld} other {# afwezig, niet meegeteld}}",
+        "lookTitle": "Misschien even kijken op {day}",
+        "nobody": "Er staat nu niemand bij Even kijken.",
+        "lookCount": "{count, plural, one {# leerling. Open de Homeroom van de klas om te zien wie.} other {# leerlingen. Open de Homeroom van de klas om te zien wie.}}",
+        "ideas": "Ideeën (er gebeurt niets tot je tikt)",
+        "review": "Op {day} een herhalingsles uitdelen aan de groep {group}",
+        "reviewAsk": "{minutes} minuten {what} voor de groep {group} toevoegen aan het plan van {day}? Er komt niets op de tafels tot je dat plan start.",
+        "reteach": "{part} op {day} opnieuw uitleggen",
+        "reteachAsk": "{minutes} minuten dia's om {part} opnieuw uit te leggen toevoegen aan het plan van {day}?",
+        "move": "Onaf werk naar het plan van {day}",
+        "moveAsk": "{minutes} minuten om {what} af te maken toevoegen aan het plan van {day}? De opdrachten blijven als huiswerk op de tafels.",
+        "note": "Stuur de klas een berichtje",
+        "noteText": "Goed gewerkt vandaag, allemaal! Morgen gaan we verder.",
+        "noteTitle": "Een berichtje voor de klas",
+        "noteLabel": "Het komt in het deel van de leraar, waar iedereen het ziet.",
+        "send": "Versturen",
+        "confirm": "Aan het plan toevoegen",
+        "added": "Toegevoegd aan het plan van {day}.",
+        "noteDone": "Je berichtje staat in het deel van de leraar.",
+        "addedTag": "Toegevoegd",
+        "sent": "Verstuurd",
+        "private": "Alleen aantallen, en de namen blijven op dit scherm. Oomba praat nooit met leerlingen; niets bereikt leerlingen of ouders tenzij jij het verstuurt of uitdeelt.",
+        "planName": "Vervolg",
+        "reviewTitle": "Herhaling",
+        "reteachTitle": "Opnieuw uitleggen: {title}",
+        "finishTitle": "Het werk van vandaag afmaken"
       }
     },
     "companion-greet": {
@@ -5398,6 +5441,10 @@
         "clear": "Deze dag leegmaken",
         "clearTitle": "{day} leegmaken?",
         "clearText": "Het plan van die dag gaat uit de week. Op de tafels verandert niets."
+      },
+      "follow": {
+        "ready": "Oomba heeft in de chat een korte vervolgstap voor de volgende schooldag.",
+        "open": "Oomba openen"
       }
     },
     "homeroom-due": {
@@ -5417,6 +5464,94 @@
       "dayTime": "{day}, {time}",
       "due": "Inleveren {when}",
       "afterDue": "na de inleverdatum"
+    },
+    "homeroom-look": {
+      "title": "Even kijken",
+      "chip": "{count, plural, one {Even kijken: # leerling} other {Even kijken: # leerlingen}}",
+      "lead": "Leerlingen die nu of deze week misschien hulp nodig hebben, en iets wat je kunt doen. Alleen jij en je assistenten zien dit.",
+      "leadAide": "Leerlingen die nu of deze week misschien hulp nodig hebben. Alleen de leraren en assistenten van de klas zien dit.",
+      "none": "Er hoeft nu niemand bekeken te worden.",
+      "hidden": "{count, plural, one {# gezien of uitgesteld} other {# gezien of uitgesteld}}",
+      "seen": "Gezien",
+      "snooze": "Vandaag uitstellen",
+      "snoozeOf": "{name} uitstellen voor vandaag",
+      "supTag": "Heeft ondersteuning",
+      "homeTag": "Thuis",
+      "ask": "Vraag Oomba om een samenvatting",
+      "askText": "Vat samen wie er in deze klas even bekeken moet worden, met een kleine volgende stap voor iedereen.",
+      "noChat": "Oomba is nu niet beschikbaar.",
+      "r": {
+        "stuck": "{count, plural, one {Zit al # minuut vast bij {title}} other {Zit al # minuten vast bij {title}}}",
+        "stuckNo": "{count, plural, one {Zit al # minuut vast} other {Zit al # minuten vast}}",
+        "hand": "{count, plural, one {Steekt al # minuut een vinger op met een vraag} other {Steekt al # minuten een vinger op met een vraag}}",
+        "handHelp": "{count, plural, one {Steekt al # minuut een vinger op voor hulp} other {Steekt al # minuten een vinger op voor hulp}}",
+        "ask": "{count, plural, one {Een vraag van thuis wacht al # minuut} other {Een vraag van thuis wacht al # minuten}}",
+        "askHours": "{count, plural, one {Een vraag van thuis wacht al # uur} other {Een vraag van thuis wacht al # uur}}",
+        "tries": "{count, plural, one {# poging bij {title}, beste {right} van {total} goed} other {# pogingen bij {title}, beste {right} van {total} goed}}",
+        "reading": "Leesquiz bij {title}: {right} van {total} goed bij de eerste poging",
+        "overdue": "{count, plural, one {# opdracht na de inleverdatum} other {# opdrachten na de inleverdatum}}"
+      },
+      "a": {
+        "look": "Tip: kijk naar de tafel",
+        "hands": "Tip: beantwoord het bij Vingers",
+        "sit": "Tip: ga een paar minuten naast hem of haar zitten, of geef een makkelijkere versie",
+        "readWith": "Tip: lees samen een bladzijde",
+        "readAloud": "Tip: lees samen een bladzijde, of zet Voorlezen aan",
+        "checkIn": "Tip: even bespreken wat er na de datum nog openstaat"
+      },
+      "b": {
+        "look": "Bekijken",
+        "hands": "Vingers",
+        "desk": "Opdrachten",
+        "supports": "Ondersteuning"
+      },
+      "tour": {
+        "step": "{n} van {total}",
+        "next": "Volgende",
+        "skip": "Overslaan",
+        "done": "Klaar",
+        "addStudents": "Leerlingen toevoegen",
+        "emptyTitle": "Nog geen leerlingen",
+        "emptyText": "Leerlingen doen mee met de code van deze klas, of je haalt ze uit Google Classroom bij het tabblad Leerlingen. De rest werkt al.",
+        "seatsTitle": "Zet de tafels zoals in je lokaal",
+        "seatsText": "Kies Rijen, Groepjes van 4, U-vorm of Kring, en sleep dan elke tafel naar waar die leerling echt zit.",
+        "areaTitle": "Jouw deel van de leraar",
+        "areaText": "Iedereen ziet het op de eigen tafel en op het digibord. Voeg notities en tekst toe, of teken met de pen bij Bordhulpmiddelen.",
+        "handoutTitle": "Een les uitdelen",
+        "handoutText": "Tik op een les en dan op een tafel, een groep of Hele klas. Of sleep hem erheen, ook met je vinger.",
+        "mydeskTitle": "Mijn bureau",
+        "mydeskText": "Leg hier een les of hulpmiddel neer om het eerst te proberen. Leerlingen zien Mijn bureau nooit.",
+        "oombaTitle": "Vraag Oomba om het plan voor vandaag",
+        "oombaText": "Vertel Oomba wat je gaat geven. Oomba maakt het plan, en er komt niets op de tafels tot je op Dit plan gebruiken tikt.",
+        "goliveTitle": "Iedereen naar Homeroom",
+        "goliveText": "Begin hier de les. Op gedeelde apparaten gaan leerlingen naar /hr en typen ze de inlogcode, bij Leerlingen inloggen in het menu ⋯."
+      }
+    },
+    "homeroom-intro": {
+      "title": "Welkom aan je tafel!",
+      "ok": "Begrepen",
+      "deskTitle": "Mijn tafel:",
+      "desk": "wat je leraar uitdeelt, komt hier. Begin bij Nu aan de beurt.",
+      "handTitle": "Vinger opsteken:",
+      "hand": "tik erop voor een vraag, voor hulp of voor de wc.",
+      "notebookTitle": "Schrift:",
+      "notebook": "aantekeningen die je bewaart. Je leraar kan je schrift lezen.",
+      "dockTitle": "De knoppen onderaan:",
+      "dock": "het deel van je leraar, de Bibliotheek met boeken en Bekijk het lokaal.",
+      "seenTitle": "Goed om te weten:",
+      "seen": "Je leraar kan in Homeroom je scherm zien.",
+      "k2": {
+        "title": "Hoi! Dit is jouw tafel.",
+        "ok": "Oké!",
+        "desk": "Je werk staat hier. Tik op Start.",
+        "hand": "Tik op de hand als je hulp nodig hebt.",
+        "notebook": "Teken of schrijf in je schrift. Je leraar kan het zien.",
+        "dock": "Deze knoppen laten je leraar, boeken en het lokaal zien.",
+        "seen": "Je leraar kan je scherm zien."
+      }
+    },
+    "homeroom-sub": {
+      "needsTitle": "Nu even kijken"
     }
   },
   "favorites": {
@@ -15598,6 +15733,11 @@
       "savedOff": "Leerlingen kunnen niet in het lokaal tekenen",
       "cleared": "Tekeningen van leerlingen gewist",
       "removed": "De tekeningen zijn weggehaald"
+    },
+    "look": {
+      "seen": "Gemarkeerd als gezien. Het komt terug als er iets verandert.",
+      "snooze": "Uitgesteld tot de volgende schooldag.",
+      "back": "Weer op de lijst."
     }
   }
 }

@@ -2441,7 +2441,8 @@
         "clear": "Clear students' drawings",
         "clearConfirm": "Take every student's lines off the room?",
         "none": "No drawings on the room yet."
-      }
+      },
+      "tourMenu": "Show me around"
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -4945,7 +4946,9 @@
         "planSaved": "Opened your saved plan {q}",
         "simpler": "Wrote simpler wording for a handout",
         "simplerNo": "Couldn't save that wording",
-        "week": "Drafted a week plan ({n} days)"
+        "week": "Drafted a week plan ({n} days)",
+        "needs": "Looked at Needs a look ({n})",
+        "needsNo": "Couldn't open Needs a look"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5027,7 +5030,11 @@
         "noPlan": "There is no plan to use here.",
         "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
         "pastDay": "That day is over. Pick today or a later day this week.",
-        "weekPast": "Every day of that week is over already."
+        "weekPast": "Every day of that week is over already.",
+        "planFull": "That day's plan is full. Take a part out first.",
+        "needText": "Write a few words first.",
+        "areaFull": "The teacher's area has 12 notes. Remove one first.",
+        "already": "That one is done already."
       },
       "quoteN": "Question {n}: {text}",
       "questionN": "Question {n}",
@@ -5179,6 +5186,42 @@
         "missingNone": "No {group} group in {cls}: that version is left out.",
         "cancel": "Cancel",
         "go": "Copy to {cls}"
+      },
+      "follow": {
+        "title": "After class: a short follow-up",
+        "titleWeek": "End of the week: a short follow-up",
+        "text": "Class is finished. Here is a short follow-up for the next school day: what went well, who might need a look, and a few ideas. Nothing happens until you tap one.",
+        "textWeek": "This week's plan is finished. Here is a short follow-up for next week: what went well, who might need a look, and a few ideas. Nothing happens until you tap one.",
+        "wentWell": "What went well",
+        "finished": "{finished} of {of} handouts finished",
+        "allDone": "{count, plural, one {# student finished everything} other {# students finished everything}}",
+        "parts": "{done} of {total} parts done",
+        "absent": "{count, plural, one {# absent, not counted} other {# absent, not counted}}",
+        "lookTitle": "Might need a look on {day}",
+        "nobody": "Nobody is on Needs a look right now.",
+        "lookCount": "{count, plural, one {# student. Open the class's Homeroom to see who.} other {# students. Open the class's Homeroom to see who.}}",
+        "ideas": "Ideas (nothing happens until you tap)",
+        "review": "Hand out a review lesson on {day} to the {group} group",
+        "reviewAsk": "Add {minutes} minutes of {what} for the {group} group to {day}'s plan? Nothing goes on desks until you start that plan.",
+        "reteach": "Re-teach {part} on {day}",
+        "reteachAsk": "Add {minutes} minutes of slides to re-teach {part} to {day}'s plan?",
+        "move": "Move unfinished work to {day}'s plan",
+        "moveAsk": "Add {minutes} minutes to finish {what} to {day}'s plan? The handouts stay on desks as homework.",
+        "note": "Send a note to the class",
+        "noteText": "Great work today, everyone! Tomorrow we keep going.",
+        "noteTitle": "A note for the class",
+        "noteLabel": "It goes on the teacher's area, where everyone sees it.",
+        "send": "Send",
+        "confirm": "Add to the plan",
+        "added": "Added to {day}'s plan.",
+        "noteDone": "Your note is on the teacher's area.",
+        "addedTag": "Added",
+        "sent": "Sent",
+        "private": "Counts only, and names stay on this screen. Oomba never talks to students; nothing reaches students or parents unless you send it or hand it out.",
+        "planName": "Follow-up",
+        "reviewTitle": "Review",
+        "reteachTitle": "Re-teach: {title}",
+        "finishTitle": "Finish today's work"
       }
     },
     "companion-greet": {
@@ -6072,6 +6115,10 @@
         "clear": "Clear this day",
         "clearTitle": "Clear {day}?",
         "clearText": "That day's plan goes from the week. Nothing on desks changes."
+      },
+      "follow": {
+        "ready": "Oomba has a short follow-up for the next school day in the chat.",
+        "open": "Open Oomba"
       }
     },
     "homeroom-support": {
@@ -6309,7 +6356,8 @@
           "home": "Marked at home",
           "here": "Marked here"
         }
-      }
+      },
+      "needsTitle": "Needs a look now"
     },
     "homeroom-reading": {
       "grades": "Grades",
@@ -6424,6 +6472,91 @@
       "dayTime": "{day}, {time}",
       "due": "Due {when}",
       "afterDue": "after due"
+    },
+    "homeroom-look": {
+      "title": "Needs a look",
+      "chip": "{count, plural, one {Needs a look: # student} other {Needs a look: # students}}",
+      "lead": "Students who may need help now or this week, and something you could do. Only you and your aides see this.",
+      "leadAide": "Students who may need help now or this week. Only the class's teachers and aides see this.",
+      "none": "Nobody needs a look right now.",
+      "hidden": "{count, plural, one {# seen or snoozed} other {# seen or snoozed}}",
+      "seen": "Seen",
+      "snooze": "Snooze today",
+      "snoozeOf": "Snooze {name} for today",
+      "supTag": "Has supports",
+      "homeTag": "At home",
+      "ask": "Ask Oomba to sum this up",
+      "askText": "Sum up who needs a look in this class, with one small next step for each.",
+      "noChat": "Oomba isn't available right now.",
+      "r": {
+        "stuck": "{count, plural, one {Stuck on {title} for # minute} other {Stuck on {title} for # minutes}}",
+        "stuckNo": "{count, plural, one {Stuck for # minute} other {Stuck for # minutes}}",
+        "hand": "{count, plural, one {Hand up with a question for # minute} other {Hand up with a question for # minutes}}",
+        "handHelp": "{count, plural, one {Hand up for help for # minute} other {Hand up for help for # minutes}}",
+        "ask": "{count, plural, one {A question from home has waited # minute} other {A question from home has waited # minutes}}",
+        "askHours": "{count, plural, one {A question from home has waited # hour} other {A question from home has waited # hours}}",
+        "tries": "{count, plural, one {# try on {title}, best {right} of {total} right} other {# tries on {title}, best {right} of {total} right}}",
+        "reading": "Reading quiz on {title}: {right} of {total} right on the first try",
+        "overdue": "{count, plural, one {# handout after due} other {# handouts after due}}"
+      },
+      "a": {
+        "look": "Suggested: look at their desk",
+        "hands": "Suggested: answer it in Hands",
+        "sit": "Suggested: sit with them for a few minutes, or hand out an easier version",
+        "readWith": "Suggested: read a page together",
+        "readAloud": "Suggested: read a page together, or turn on Read aloud",
+        "checkIn": "Suggested: a quick check-in about the work after due"
+      },
+      "b": {
+        "look": "Look",
+        "hands": "Hands",
+        "desk": "Their handouts",
+        "supports": "Supports"
+      },
+      "tour": {
+        "step": "{n} of {total}",
+        "next": "Next",
+        "skip": "Skip",
+        "done": "Done",
+        "addStudents": "Add students",
+        "emptyTitle": "No students yet",
+        "emptyText": "Students join with this class's join code, or bring them in from Google Classroom on the Students tab. Everything else works already.",
+        "seatsTitle": "Arrange seats like your room",
+        "seatsText": "Pick Rows, Tables of 4, U-shape or Circle, then drag any desk to where that student really sits.",
+        "areaTitle": "Your teacher's area",
+        "areaText": "Everyone sees it on their desks and on the projector. Add notes and text, or draw with the pen in Board tools.",
+        "handoutTitle": "Hand out a lesson",
+        "handoutText": "Tap a lesson, then tap a desk, a group or Whole class. Or drag it there; a finger works too.",
+        "mydeskTitle": "My desk",
+        "mydeskText": "Put any lesson or tool here to try it first. Students never see what is on My desk.",
+        "oombaTitle": "Ask Oomba for today's plan",
+        "oombaText": "Tell Oomba what you are teaching. It drafts the plan, and nothing goes on desks until you tap Use this plan.",
+        "goliveTitle": "Everyone to Homeroom",
+        "goliveText": "Start class here. On shared devices students go to /hr and type the quick sign-in code from Students sign in in the ⋯ menu."
+      }
+    },
+    "homeroom-intro": {
+      "title": "Welcome to your desk!",
+      "ok": "Got it",
+      "deskTitle": "My desk:",
+      "desk": "what your teacher hands out lands here. Start with Next up.",
+      "handTitle": "Raise hand:",
+      "hand": "tap it for a question, for help or for the bathroom.",
+      "notebookTitle": "Notebook:",
+      "notebook": "notes you keep. Your teacher can read your notebook.",
+      "dockTitle": "The buttons at the bottom:",
+      "dock": "your teacher's area, the Library with books, and See the room.",
+      "seenTitle": "Good to know:",
+      "seen": "Your teacher can see your screen in Homeroom.",
+      "k2": {
+        "title": "Hi! This is your desk.",
+        "ok": "OK!",
+        "desk": "Your work is here. Tap Start.",
+        "hand": "Tap the hand if you need help.",
+        "notebook": "Draw or write in your notebook. Your teacher can see it.",
+        "dock": "These buttons show your teacher, books and the room.",
+        "seen": "Your teacher can see your screen."
+      }
     }
   },
   "favorites": {
@@ -17268,6 +17401,11 @@
       "savedOff": "Students can't draw on the room",
       "cleared": "Students' drawings cleared",
       "removed": "Their drawings removed"
+    },
+    "look": {
+      "seen": "Marked as seen. It comes back if something changes.",
+      "snooze": "Snoozed until the next school day.",
+      "back": "Back on the list."
     }
   }
 }

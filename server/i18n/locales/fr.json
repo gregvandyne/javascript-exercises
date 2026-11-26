@@ -2366,7 +2366,8 @@
         "clear": "Effacer les dessins des élèves",
         "clearConfirm": "Retirer tous les traits des élèves de la salle ?",
         "none": "Pas encore de dessins dans la salle."
-      }
+      },
+      "tourMenu": "Faire le tour"
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -4533,7 +4534,9 @@
         "book_rename": "« {q} » renommé",
         "book_duplicate": "« {q} » copié",
         "book_repaint": "Demandé à repeindre « {q} »",
-        "week": "Plan de la semaine préparé ({n} jours)"
+        "week": "Plan de la semaine préparé ({n} jours)",
+        "needs": "J’ai regardé À regarder ({n})",
+        "needsNo": "Impossible d’ouvrir À regarder"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4609,7 +4612,11 @@
         "other": "Un problème est survenu. Ton message est toujours là : réessaie dans un instant.",
         "cap": "Vous avez utilisé les tours Oomba du jour pour les livres. Vous pouvez encore modifier vos livres à la main. D'autres tours demain.",
         "pastDay": "Ce jour est passé. Choisis aujourd'hui ou un jour plus tard cette semaine.",
-        "weekPast": "Tous les jours de cette semaine sont déjà passés."
+        "weekPast": "Tous les jours de cette semaine sont déjà passés.",
+        "planFull": "Le plan de ce jour est plein. Retirez d’abord une partie.",
+        "needText": "Écrivez d’abord quelques mots.",
+        "areaFull": "L’espace de l’enseignant a déjà 12 notes. Retirez-en une d’abord.",
+        "already": "C’est déjà fait."
       },
       "quoteN": "Question {n} : {text}",
       "questionN": "Question {n}",
@@ -4717,6 +4724,42 @@
         "missingNone": "Pas de groupe {group} dans {cls} : cette version est laissée de côté.",
         "cancel": "Annuler",
         "go": "Copier vers {cls}"
+      },
+      "follow": {
+        "title": "Après la classe : un petit suivi",
+        "titleWeek": "Fin de semaine : un petit suivi",
+        "text": "La classe est terminée. Voici un petit suivi pour le prochain jour de classe : ce qui a bien marché, qui est peut-être à regarder, et quelques idées. Rien ne se passe avant que vous touchiez l’une d’elles.",
+        "textWeek": "Le plan de la semaine est terminé. Voici un petit suivi pour la semaine prochaine : ce qui a bien marché, qui est peut-être à regarder, et quelques idées. Rien ne se passe avant que vous touchiez l’une d’elles.",
+        "wentWell": "Ce qui a bien marché",
+        "finished": "{finished} activités terminées sur {of}",
+        "allDone": "{count, plural, one {# élève a tout terminé} other {# élèves ont tout terminé}}",
+        "parts": "{done} parties faites sur {total}",
+        "absent": "{count, plural, one {# absent, non compté} other {# absents, non comptés}}",
+        "lookTitle": "Peut-être à regarder {day}",
+        "nobody": "Personne à regarder pour l’instant.",
+        "lookCount": "{count, plural, one {# élève. Ouvrez le Homeroom de la classe pour voir qui.} other {# élèves. Ouvrez le Homeroom de la classe pour voir qui.}}",
+        "ideas": "Idées (rien ne se passe avant que vous touchiez)",
+        "review": "Distribuer une leçon de révision {day} au groupe {group}",
+        "reviewAsk": "Ajouter {minutes} minutes de {what} pour le groupe {group} au plan de {day} ? Rien n’arrive sur les pupitres avant que vous lanciez ce plan.",
+        "reteach": "Réexpliquer {part} {day}",
+        "reteachAsk": "Ajouter {minutes} minutes de diapositives pour réexpliquer {part} au plan de {day} ?",
+        "move": "Reporter le travail non terminé au plan de {day}",
+        "moveAsk": "Ajouter {minutes} minutes pour terminer {what} au plan de {day} ? Les activités restent sur les pupitres comme devoirs.",
+        "note": "Envoyer un mot à la classe",
+        "noteText": "Bravo à tous pour aujourd’hui ! Demain, on continue.",
+        "noteTitle": "Un mot pour la classe",
+        "noteLabel": "Il va dans l’espace de l’enseignant, où tout le monde le voit.",
+        "send": "Envoyer",
+        "confirm": "Ajouter au plan",
+        "added": "Ajouté au plan de {day}.",
+        "noteDone": "Votre mot est dans l’espace de l’enseignant.",
+        "addedTag": "Ajouté",
+        "sent": "Envoyé",
+        "private": "Seulement des nombres, et les noms restent sur cet écran. Oomba ne parle jamais aux élèves ; rien n’arrive aux élèves ni aux parents si vous ne l’envoyez pas ou ne le distribuez pas.",
+        "planName": "Suivi",
+        "reviewTitle": "Révision",
+        "reteachTitle": "Réexpliquer : {title}",
+        "finishTitle": "Terminer le travail du jour"
       }
     },
     "companion-greet": {
@@ -5397,6 +5440,10 @@
         "clear": "Vider ce jour",
         "clearTitle": "Vider {day} ?",
         "clearText": "Le plan de ce jour quitte la semaine. Rien ne change sur les bureaux."
+      },
+      "follow": {
+        "ready": "Oomba a préparé un petit suivi pour le prochain jour de classe, dans la discussion.",
+        "open": "Ouvrir Oomba"
       }
     },
     "homeroom-due": {
@@ -5416,6 +5463,94 @@
       "dayTime": "{day}, {time}",
       "due": "À rendre {when}",
       "afterDue": "après la date limite"
+    },
+    "homeroom-look": {
+      "title": "À regarder",
+      "chip": "{count, plural, one {À regarder : # élève} other {À regarder : # élèves}}",
+      "lead": "Les élèves qui ont peut-être besoin d’aide maintenant ou cette semaine, et une idée de ce que vous pouvez faire. Seuls vous et vos aides le voient.",
+      "leadAide": "Les élèves qui ont peut-être besoin d’aide maintenant ou cette semaine. Seuls les enseignants et les aides de la classe le voient.",
+      "none": "Personne à regarder pour l’instant.",
+      "hidden": "{count, plural, one {# vu ou mis de côté} other {# vus ou mis de côté}}",
+      "seen": "Vu",
+      "snooze": "Plus tard aujourd’hui",
+      "snoozeOf": "Mettre {name} de côté pour aujourd’hui",
+      "supTag": "A des aménagements",
+      "homeTag": "À la maison",
+      "ask": "Demander un résumé à Oomba",
+      "askText": "Résume qui est à regarder dans cette classe, avec une petite étape pour chacun.",
+      "noChat": "Oomba n’est pas disponible pour le moment.",
+      "r": {
+        "stuck": "{count, plural, one {Bloqué sur {title} depuis # minute} other {Bloqué sur {title} depuis # minutes}}",
+        "stuckNo": "{count, plural, one {Bloqué depuis # minute} other {Bloqué depuis # minutes}}",
+        "hand": "{count, plural, one {Main levée pour une question depuis # minute} other {Main levée pour une question depuis # minutes}}",
+        "handHelp": "{count, plural, one {Main levée pour de l’aide depuis # minute} other {Main levée pour de l’aide depuis # minutes}}",
+        "ask": "{count, plural, one {Une question de la maison attend depuis # minute} other {Une question de la maison attend depuis # minutes}}",
+        "askHours": "{count, plural, one {Une question de la maison attend depuis # heure} other {Une question de la maison attend depuis # heures}}",
+        "tries": "{count, plural, one {# essai sur {title}, au mieux {right} sur {total} juste} other {# essais sur {title}, au mieux {right} sur {total} justes}}",
+        "reading": "Quiz de lecture sur {title} : {right} sur {total} au premier essai",
+        "overdue": "{count, plural, one {# activité après l’échéance} other {# activités après l’échéance}}"
+      },
+      "a": {
+        "look": "Idée : regarder son pupitre",
+        "hands": "Idée : répondre dans Mains levées",
+        "sit": "Idée : s’asseoir à côté quelques minutes, ou donner une version plus simple",
+        "readWith": "Idée : lire une page ensemble",
+        "readAloud": "Idée : lire une page ensemble, ou activer la lecture à voix haute",
+        "checkIn": "Idée : un petit point sur le travail en retard"
+      },
+      "b": {
+        "look": "Regarder",
+        "hands": "Mains levées",
+        "desk": "Ses activités",
+        "supports": "Aménagements"
+      },
+      "tour": {
+        "step": "{n} sur {total}",
+        "next": "Suivant",
+        "skip": "Passer",
+        "done": "Terminé",
+        "addStudents": "Ajouter des élèves",
+        "emptyTitle": "Pas encore d’élèves",
+        "emptyText": "Les élèves rejoignent la classe avec son code, ou viennent de Google Classroom depuis l’onglet Élèves. Tout le reste fonctionne déjà.",
+        "seatsTitle": "Placez les pupitres comme dans votre salle",
+        "seatsText": "Choisissez Rangées, Tables de 4, En U ou Cercle, puis faites glisser chaque pupitre là où l’élève est vraiment assis.",
+        "areaTitle": "Votre espace d’enseignant",
+        "areaText": "Tout le monde le voit sur son pupitre et au projecteur. Ajoutez des notes et du texte, ou dessinez au stylo dans Outils du tableau.",
+        "handoutTitle": "Distribuer une leçon",
+        "handoutText": "Touchez une leçon, puis un pupitre, un groupe ou Toute la classe. Ou faites-la glisser ; avec le doigt aussi.",
+        "mydeskTitle": "Mon pupitre",
+        "mydeskText": "Posez ici une leçon ou un outil pour l’essayer d’abord. Les élèves ne voient jamais Mon pupitre.",
+        "oombaTitle": "Demandez à Oomba le plan du jour",
+        "oombaText": "Dites à Oomba ce que vous enseignez. Il prépare le plan, et rien n’arrive sur les pupitres avant que vous touchiez Utiliser ce plan.",
+        "goliveTitle": "Tout le monde dans Homeroom",
+        "goliveText": "Commencez la classe ici. Sur les appareils partagés, les élèves vont sur /hr et tapent le code de connexion rapide, dans Connexion des élèves du menu ⋯."
+      }
+    },
+    "homeroom-intro": {
+      "title": "Bienvenue à ton pupitre !",
+      "ok": "J’ai compris",
+      "deskTitle": "Mon pupitre :",
+      "desk": "ce que ton enseignant distribue arrive ici. Commence par À faire maintenant.",
+      "handTitle": "Lever la main :",
+      "hand": "touche-la pour une question, pour de l’aide ou pour les toilettes.",
+      "notebookTitle": "Cahier :",
+      "notebook": "les notes que tu gardes. Ton enseignant peut lire ton cahier.",
+      "dockTitle": "Les boutons en bas :",
+      "dock": "l’espace de ton enseignant, la Bibliothèque avec des livres, et Voir la classe.",
+      "seenTitle": "Bon à savoir :",
+      "seen": "Ton enseignant peut voir ton écran dans Homeroom.",
+      "k2": {
+        "title": "Coucou ! Voici ton pupitre.",
+        "ok": "D’accord !",
+        "desk": "Ton travail est ici. Touche Commencer.",
+        "hand": "Touche la main si tu as besoin d’aide.",
+        "notebook": "Dessine ou écris dans ton cahier. Ton enseignant peut le voir.",
+        "dock": "Ces boutons montrent ton enseignant, des livres et la classe.",
+        "seen": "Ton enseignant peut voir ton écran."
+      }
+    },
+    "homeroom-sub": {
+      "needsTitle": "À regarder maintenant"
     }
   },
   "favorites": {
@@ -15597,6 +15732,11 @@
       "savedOff": "Les élèves ne peuvent pas dessiner dans la salle",
       "cleared": "Dessins des élèves effacés",
       "removed": "Leurs dessins ont été retirés"
+    },
+    "look": {
+      "seen": "Marqué comme vu. Il revient si quelque chose change.",
+      "snooze": "Mis de côté jusqu’au prochain jour de classe.",
+      "back": "De retour dans la liste."
     }
   }
 }

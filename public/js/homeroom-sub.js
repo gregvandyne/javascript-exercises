@@ -5,6 +5,8 @@
 //     live class (Start class, Pause screens, Bring everyone to me, End class), the projector view and Leave;
 //   - the teacher's note for the sub, and until when the link works;
 //   - hands and the hall pass, answered here (first names only);
+//   - Needs a look, only what is about right now (stuck on a handout, a hand up a long time), first names
+//     (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups");
 //   - the room: the teacher's area and every desk where the teacher seated it, with first names, a calm live status,
 //     a raised hand, and "has supports" with only what the sub needs to act on (for example "Reads aloud").
 // Never grades, progress, handouts, notebooks or anything of another class: the server sends none of it. The page asks
@@ -15,6 +17,7 @@ import { areaHtml, fitAreas } from '/js/homeroom-area.js';
 import { partName } from '/js/homeroom-plan.js';
 import { timing, clock } from '/js/homeroom-plan-time.js';
 import { AREA, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { reasonText } from '/js/homeroom-look.js';
 
 const D = pageData();
 const ts = (k, v) => t(`js.homeroom-sub.${k}`, v);
@@ -89,6 +92,12 @@ function handsHtml() {
     ${p.out ? `<div class="hr-pout"><span><b><bdi>${esc(p.out.name)}</bdi></b> <span class="small">${esc(ts('passFor', { minutes: p.minutes }))}</span></span>${btn('btn btn-sm btn-primary', `data-subhand="back:${esc(p.out.id)}"`, esc(ts('isBack', { name: p.out.name })))}</div>` : `<p class="small muted">${esc(ts('nobodyOut'))}</p>`}
     ${p.line.length ? `<ol class="plain hr-pline">${p.line.map((x, i) => `<li><span>${esc(i ? ts('then') : ts('nextInLine'))} <b><bdi>${esc(x.name)}</bdi></b></span></li>`).join('')}</ol>` : ''}`;
 }
+/** Needs a look now: stuck or a hand up a long time, nothing else (no progress, no grades), first names. */
+function needsHtml() {
+  const list = (S.st && S.st.live && S.st.needs) || [];
+  if (!list.length) return '';
+  return `<h2 class="hr-subh">${ic('🔎', 20)} ${esc(ts('needsTitle'))}</h2><ul class="plain hr-needlist">${list.map(x => `<li class="hr-need"><b><bdi>${esc(x.name)}</bdi></b><ul class="plain hr-needwhy">${x.reasons.map(r => `<li><span class="hr-needr">${esc(reasonText(r))}</span></li>`).join('')}</ul></li>`).join('')}</ul>`;
+}
 function render() {
   const st = S.st; if (!st || !root) return;
   $('hr-live').hidden = !st.live;
@@ -100,12 +109,14 @@ function render() {
     main.innerHTML = `<div class="hr-subgrid"><aside class="hr-subside">
         <section class="hr-subnote" aria-labelledby="hr-subnoteh"><h2 class="hr-subh" id="hr-subnoteh">${ic('📝', 20)} ${esc(ts('noteTitle'))}</h2>${D.note ? `<p dir="auto">${esc(D.note)}</p>` : `<p class="small muted">${esc(ts('noNote'))}</p>`}<p class="small muted">${ic('🕒', 14)} ${esc(D.endOfDay ? ts('untilEnd') : ts('until', { time: D.until }))}</p></section>
         <section class="hr-subhands" id="hr-subhands" aria-live="polite"></section>
+        <section class="hr-subneeds hr-needs" id="hr-subneeds"></section>
         <section class="hr-subatt" id="hr-subatt"></section>
         <p class="small muted hr-subpriv">${ic('🔒', 14)} ${esc(ts('privacy'))}</p></aside>
       <section class="hr-subroom" aria-labelledby="hr-subroomh"><h2 class="hr-subh" id="hr-subroomh">${ic('🏫', 20)} ${esc(ts('room'))}</h2>
         <div class="hr-subarea" id="hr-subarea"></div><div class="hr-subdesks" id="hr-subdesks"></div></section></div>`;
   }
   const hh = handsHtml(); if ($('hr-subhands').dataset.h !== hh) { $('hr-subhands').innerHTML = hh; $('hr-subhands').dataset.h = hh; }
+  const nh = needsHtml(), ne = $('hr-subneeds'); if (ne.dataset.h !== nh) { ne.innerHTML = nh; ne.dataset.h = nh; ne.hidden = !nh; }
   const ah = attHtml(), ae = $('hr-subatt'); if (ae.dataset.h !== ah) { S.attOpen = !!ae.querySelector('.hr-attbox[open]') || S.attOpen; ae.innerHTML = attHtml(); ae.dataset.h = ah; }
   const dk = [...st.desks.map(deskHtml), ...(st.teams || []).map(teamHtml)].join('') || `<p class="muted">${esc(ts('noStudents'))}</p>`;
   if ($('hr-subdesks').dataset.h !== dk) { $('hr-subdesks').innerHTML = dk; $('hr-subdesks').dataset.h = dk; placeDesks(); }

@@ -371,6 +371,10 @@ export const config = {
   // have the Teacher plan. Everyone else sees today's class page and gets the normal 404 at /class/:id/homeroom.
   homeroom: homeroom.on,
   homeroomUsers: String(process.env.HOMEROOM_USERS || '').split(',').map(x => x.trim().toLowerCase()).filter(Boolean),
+  // Homeroom's first-run guide for teachers and the intro card on a student's first desk (docs/decisions.md "Homeroom:
+  // onboarding, Needs a look, Oomba follow-ups"): on unless HOMEROOM_ONBOARDING=0 (the unit tests' setup turns it off so
+  // the older browser tests see the board and the desk as they were; the onboarding tests turn it on).
+  homeroomOnboarding: process.env.HOMEROOM_ONBOARDING !== '0',
   // Figures, the standalone product (docs/decisions.md "Figures opens to all teachers"; services/figures.js): /figures
   // answers the platform admin and every school staff member; everyone else gets the normal 404. FIGURES=0 is the kill
   // switch: it hides Figures (and its "Teaching tools" menu entry) from everyone, the platform admin included.

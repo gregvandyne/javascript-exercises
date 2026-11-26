@@ -21,6 +21,7 @@ import * as S from './schools.js';
 import * as L from './lessons.js';
 import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
+import * as NL from './homeroom-look.js';
 import * as HV from './homeroom-live.js';
 import * as HP from './homeroom-plan.js';
 import * as SUP from './homeroom-supports.js';
@@ -161,7 +162,7 @@ export function firstNames(classId) {
  *  score, a handout's progress, a full name or anything of another class. */
 export function subView(x, { v = null } = {}, at = now()) {
   const { c, link } = x, names = firstNames(c.id), room = H.roomOf(c.id), sup = SUP.supportsOf(c.id);
-  const lv = HV.liveView(c, HO.boardView(c), at), nm = id => names.get(id) || '';
+  const board = HO.boardView(c), lv = HV.liveView(c, board, at), nm = id => names.get(id) || '';
   const inTeam = new Set(room.teams.flatMap(t => t.members));
   // today's attendance (Absent, At home: the sub takes attendance, docs/decisions.md "Homeroom: K-2 mode, absent and at home")
   const att = AT.marksToday(c.id, at);
@@ -176,6 +177,8 @@ export function subView(x, { v = null } = {}, at = now()) {
     pass: { minutes: lv.pass.minutes, out: lv.pass.out ? { id: lv.pass.out.id, name: nm(lv.pass.out.id), at: lv.pass.out.at } : null, line: lv.pass.line.map(y => ({ id: y.id, name: nm(y.id) })) },
     // (a week plan's day not on desks yet, or only the week strip: nothing for a sub, who never hands anything out)
     plan: tv && !['finished', 'none', 'planned'].includes(tv.state) ? { id: tv.id, name: tv.name, state: tv.state, now: tv.now, parts: tv.parts.map(p => ({ id: p.id, kind: p.kind, title: p.title, minutes: p.minutes })), run: tv.run, behindMin: tv.behindMin } : null,
+    // Needs a look (services/homeroom-look.js): only what is about right now (stuck, a hand up a long time), first names
+    needs: NL.listFor(x.actor, c, { role: 'sub', board, live: lv, names, at }).items || [],
     ...H.boardState(c.id, v),
   };
 }

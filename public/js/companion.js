@@ -17,6 +17,11 @@
 //   - the day plan on a class's Homeroom (services/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): a card
 //     with the parts and their minutes, what each group gets, Use this plan, Start plan, Save plan, the saved plans and
 //     Copy to another class. A tap tells the board (the 'oomba:plan' event), whose plan pill follows.
+//   - Homeroom's follow-up after Finish class (services/homeroom-follow.js; docs/decisions.md "Homeroom: onboarding, Needs a
+//     look, Oomba follow-ups"): what went well (counts), who might need a look (the students' names put in here from the
+//     Homeroom page, never in the chat's words), and suggestions the teacher confirms one at a time. An answer about
+//     Needs a look names students "Student A"; the turn says which is which (note.who) and the Homeroom page's names
+//     replace them here, in the browser only.
 import { t, api, esc, toast, ask, askText, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
@@ -89,7 +94,7 @@ function start() {
     body: () => { S.sent = true; stopMic({ cancel: true }); const bk = bookMode(); return { page: pageNow(), ...(via('body') || {}), ...(S.file ? { file: S.file.id } : {}), ...(bk ? { book: bk } : {}) }; },
     errText: code => (['slow', 'fileGone'].includes(code) ? L(`err.${code}`) : null),
     meExtra: x => (x.meta && x.meta.file ? `<span class="oc-file">${ic(x.meta.file.kind === 'image' ? '🖼️' : '📄', 18)} ${esc(x.meta.file.name)}${x.meta.file.pages ? ` <small>${esc(t('js.companion.pages', { n: x.meta.file.pages }))}</small>` : ''}</span>` : ''),
-    format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(text)}`,
+    format: (text, x) => `${x.note && x.note.steps ? stepsHtml(x.note) : ''}${formatText(named(text, x))}`,
     // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
@@ -366,6 +371,7 @@ function start() {
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
     if (n.plan) parts.push(planHtml(x, n.plan));
     if (n.week) parts.push(weekHtml(x, n.week));
+    if (n.follow) parts.push(followHtml(x, n.follow));
     if (n.bookNone) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="/library/make?new=1" data-oc-book>${ic('✨', 16)} ${esc(L('book.make'))}</a></div>`);
     if (n.bookRef && !x.change) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(n.bookRef.href)}">${ic('📖', 16)} ${esc(L('book.open'))}</a></div>`);
     return parts.join('');
@@ -476,6 +482,32 @@ function start() {
       <div class="oc-acts oc-pfoot">${saved}</div>${savedList}${copy}
       ${st === 'draft' ? `<p class="oc-note">${esc(L('plan.askChanges'))}</p>` : ''}</div>`;
   }
+  /** "Student A" back to the student's name, from the Homeroom page's own roster (never from the server's words): only
+   *  on that class's Homeroom, else the placeholder stays. */
+  function named(text, x) {
+    const who = x && x.note && x.note.who; if (!who || !text) return text;
+    return String(text).replace(/\bStudent [A-Z]\d*\b/g, p => (who[p] && via('nameOf', who[p])) || p);
+  }
+  /** Homeroom's follow-up after Finish class: counts of what went well, who might need a look (names from the page),
+   *  and each suggestion as a button the teacher confirms (then ✓ Added). */
+  function followHtml(x, f) {
+    if (f.gone) return `<div class="oc-plan done"><p class="oc-state">${ic('➖', 16)} ${esc(L('plan.gone'))}</p></div>`;
+    const c = f.counts || {}, id = esc(x.id), F = k => `follow.${k}`;
+    const good = [c.of && c.finished ? t('js.companion.follow.finished', { finished: c.finished, of: c.of }) : '', c.allDone ? t('js.companion.follow.allDone', { count: c.allDone }) : '',
+      c.partsTotal ? t('js.companion.follow.parts', { done: c.partsDone, total: c.partsTotal }) : '', c.absent ? t('js.companion.follow.absent', { count: c.absent }) : ''].filter(Boolean);
+    const names = (f.look || []).map(sid => via('nameOf', sid)).filter(Boolean);
+    const look = !f.look || !f.look.length ? `<p class="oc-note">${esc(L(F('nobody')))}</p>`
+      : names.length ? `<ul class="plain oc-flook">${names.map(n => `<li><bdi>${esc(n)}</bdi></li>`).join('')}</ul>` : `<p class="oc-note">${esc(t('js.companion.follow.lookCount', { count: f.look.length }))}</p>`;
+    const sug = (f.sug || []).map(s => (s.state === 'done' ? `<li class="oc-fdone">${ic('✓', 14)} <span>${esc(s.label)}</span> <small>${esc(L(F(s.kind === 'note' ? 'sent' : 'addedTag')))}</small></li>`
+      : `<li><button type="button" class="btn btn-sm oc-fsug" data-c="act" data-act="${s.kind === 'note' ? 'followNote' : 'followDo'}" data-turn="${id}" data-v="${esc(s.id)}" data-confirm="${esc(s.confirm || '')}" data-text="${esc(s.text || '')}">${ic({ review: '📚', reteach: '🧑‍🏫', move: '➡️', note: '🗒️' }[s.kind] || '✨', 16)} <span>${esc(s.label)}</span></button></li>`)).join('');
+    return `<div class="oc-plan oc-follow" role="group" aria-label="${esc(L(F(f.weekEnd ? 'titleWeek' : 'title')))}">
+      <div class="oc-planh">${ic(f.weekEnd ? '🗓️' : '🌟', 20)} <b>${esc(L(F(f.weekEnd ? 'titleWeek' : 'title')))}</b></div>
+      <p class="oc-hsub" dir="auto">${esc(f.className || '')}</p>
+      ${good.length ? `<h4 class="oc-fh">${esc(L(F('wentWell')))}</h4><ul class="plain oc-fgood">${good.map(g => `<li>${ic('✓', 14)} ${esc(g)}</li>`).join('')}</ul>` : ''}
+      <h4 class="oc-fh">${esc(t('js.companion.follow.lookTitle', { day: f.day || '' }))}</h4>${look}
+      ${sug ? `<h4 class="oc-fh">${esc(L(F('ideas')))}</h4><ul class="plain oc-fsugs">${sug}</ul>` : ''}
+      <p class="oc-note">${esc(L(F('private')))}</p></div>`;
+  }
   /** A plan's parts in order: minutes, kind, title, what each group gets, the note. */
   function partsHtml(list) {
     const kind = k => L(`plan.kind.${k}`);
@@ -561,9 +593,16 @@ function start() {
         if (!pr.preview || !(await copyPreview(pr.preview))) return null;
       } catch (e) { chat.showErr(e.message); return null; }
     }
+    // A follow-up's suggestion: asked first (what it will add, and to which day), the note's words written by the teacher
+    if (act === 'followDo' && btn) { if (!(await ask({ title: btn.textContent.trim(), text: btn.dataset.confirm, ok: L('follow.confirm') }))) return null; }
+    if (act === 'followNote' && btn) {
+      const v = await askText({ title: L('follow.noteTitle'), label: L('follow.noteLabel'), value: btn.dataset.text || '', ok: L('follow.send'), max: 300 });
+      if (!v || !v.trim()) return null;
+      btn.dataset.v = v.trim().slice(0, 300);
+    }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^(book|plan)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
       if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {

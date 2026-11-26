@@ -1453,3 +1453,71 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
   .hr-csheet .hr-items{display:flex;flex-direction:column;gap:6px}
   .hr-csheet .hr-catalog,.hr-csheet .hr-cgroup{display:flex;flex-direction:column}
 }
+
+/* ---------------------------------------------------------------- onboarding, Needs a look (docs/decisions.md "Homeroom:
+   onboarding, Needs a look, Oomba follow-ups"). Calm: the site's muted tokens, no red, nothing over the projector. */
+.hr-needchip{gap:4px;background:var(--card-2);border-color:var(--line);color:var(--text-2)}
+.hr-needchip.on{background:var(--accent-soft)}
+.hr-needcnt{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--card);color:var(--text);font:900 12px var(--font);box-shadow:inset 0 0 0 1px var(--line)}
+.hr-tgflag.hr-needs,.hr-needs{display:block;padding:10px 12px;border-radius:14px;background:var(--card-2);color:var(--text);font-size:.9rem;box-shadow:inset 0 0 0 1px var(--line)}
+.hr-needs .hr-flsub{margin:0 0 2px}
+.hr-needs > p{margin:2px 0 6px}
+.hr-needn{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:var(--card);font:900 12px var(--font);box-shadow:inset 0 0 0 1px var(--line)}
+.hr-needlist,.hr-needwhy,.hd-introlist{list-style:none;padding:0}
+.hr-needlist{display:flex;flex-direction:column;gap:8px;margin:0}
+.hr-need{padding:8px 0 0;border-top:1px solid var(--line)}
+.hr-need:first-child{border-top:0;padding-top:0}
+.hr-needtop{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.hr-needtop .hr-lookname{box-shadow:inset 0 0 0 1px var(--line)}
+.hr-needtag{display:inline-flex;align-items:center;gap:3px;min-height:26px;padding:0 8px;border-radius:999px;background:var(--card);color:var(--text-2);font:700 .78rem var(--font)}
+.hr-needsnooze{margin-inline-start:auto}
+.hr-needwhy{display:flex;flex-direction:column;gap:6px;margin:6px 0 0}
+.hr-needwhy > li{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.hr-needr{flex:1 1 100%;font-weight:700;overflow-wrap:anywhere}
+.hr-needa{flex:1 1 auto;color:var(--muted)}
+.hr-needbtns{display:flex;flex-wrap:wrap;gap:6px}
+.hr-needbtns .btn,.hr-needsnooze{min-height:36px}
+.hr-needfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+.hr-needfoot:empty{display:none}
+.hr-neednone{margin:0}
+.hr-subneeds{display:flex;flex-direction:column;gap:6px}
+.hr-subneeds[hidden]{display:none}
+.hr-sum-follow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;padding:10px 12px;border-radius:14px;background:var(--accent-soft);color:var(--text);font-weight:700}
+.hr-sum-follow span{flex:1 1 180px}
+
+/* the first-run guide: a small card beside what it points at, a soft ring around it; no layer over the board */
+.hr-tourring{position:fixed;z-index:2400;border-radius:14px;box-shadow:0 0 0 3px var(--accent),0 0 0 8px color-mix(in srgb,var(--accent) 22%,transparent);pointer-events:none}
+.hr-tour{position:fixed;inset:0 auto auto 0;z-index:2410;width:0;height:0}
+.hr-tourcard{position:fixed;box-sizing:border-box;display:flex;flex-direction:column;gap:8px;padding:14px 16px;border-radius:18px;background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow-lg)}
+.hr-tourstep{margin:0;color:var(--muted);font-weight:700}
+.hr-tourh{margin:0;font-size:1.05rem;display:flex;align-items:center;gap:8px}
+.hr-tourp{margin:0;line-height:1.4}
+.hr-tourcode{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0;padding:8px 10px;border-radius:12px;background:var(--card-2)}
+.hr-tourcode b{font-size:1.1rem;letter-spacing:.06em}
+.hr-touracts{display:flex;justify-content:flex-end;gap:8px}
+.hr-touracts .btn{min-height:44px;min-width:88px}
+
+/* the student's intro card, the first time on their desk */
+.hd-intro-bg{position:fixed;inset:0;z-index:2400;display:grid;place-items:center;padding:16px;background:color-mix(in srgb,var(--bg) 55%,transparent)}
+.hd-intro{box-sizing:border-box;width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;display:flex;flex-direction:column;gap:12px;padding:18px;border-radius:22px;background:var(--card);color:var(--text);border:1px solid var(--line);box-shadow:var(--shadow-lg)}
+.hd-introh{margin:0;display:flex;align-items:center;gap:10px;font-size:1.2rem}
+.hd-introlist{display:flex;flex-direction:column;gap:10px;margin:0}
+.hd-introrow{display:flex;align-items:center;gap:12px}
+.hd-introic{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--card-2)}
+.hd-introt{flex:1;min-width:0;line-height:1.35}
+.hd-introacts{display:flex;justify-content:flex-end}
+.hd-introacts .btn{min-height:48px}
+.hd-intro-bg.k2 .hd-intro{width:min(560px,100%);gap:14px}
+.hd-intro-bg.k2 .hd-introh{font-size:1.5rem}
+.hd-intro-bg.k2 .hd-introic{width:72px;height:72px;border-radius:20px}
+.hd-intro-bg.k2 .hd-introt{font-size:1.15rem;font-weight:700}
+.hd-intro-bg.k2 .hd-introacts{justify-content:center}
+.hd-intro-bg.k2 .hd-introacts .btn{min-height:64px;padding:0 28px;font-size:1.2rem}
+.hd-intro-bg.k2 .hd-introrow{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:6px 12px}
+@media (max-width:600px){
+  .hd-intro{padding:14px}
+  .hd-intro-bg.k2 .hd-introrow{grid-template-columns:auto 1fr}
+  .hd-intro-bg.k2 .hd-introrow .hr-readbtn{grid-column:2;justify-self:start}
+  .hd-intro-bg.k2 .hd-introic{width:56px;height:56px}
+  .hd-intro-bg.k2 .hd-introt{font-size:1.05rem}
+}
