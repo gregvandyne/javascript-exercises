@@ -1482,6 +1482,10 @@
     // (false: a student, a child, a guest, signed out, a preview; hide Make and the drafts list).
     canMake: INIT.make === true,
     canAssign: INIT.canAssign === true,
+    // Atlas Quest's door: "Host live" starts the game's live version (a grown-up who may host while Oomba Live is on;
+    // false: hide it). hostLive() asks the play page, which goes there only after a tap.
+    canHostLive: INIT.hostLive === true,
+    hostLive: function () { if (INIT.hostLive !== true) return false; send('brb:hostlive', {}); return true; },
     canWriteClues: INIT.clues === true,
     writeClues: writeClues,
     wordsFromDoc: wordsFromDoc,

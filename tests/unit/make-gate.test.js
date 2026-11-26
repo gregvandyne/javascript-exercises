@@ -142,7 +142,8 @@ const GAMES = {
   'word-hunt': { key: 'word-hunt-v1', save: { mine: [{ id: 'hold1', t: 'Old draft', w: ['cat', 'dog', 'fish'], s: 0, d: 'easy', r: 1, at: Date.UTC(2026, 10, 20) }] },
     ready: () => window.__brbTest && window.__brbTest.whState && window.__brbTest.whState().screen === 'home' && !!document.querySelector('.wh-home'), make: ['wh-make', 'wh-mine'] },
   'atlas-quest': { key: 'atlas-quest-v1', save: { intro: 1, mine: [{ id: 'qold1', t: 'Old draft', r: 'eu', q: [['map', 'FR'], ['cap', 'DE']], a: [], h: true, at: Date.UTC(2026, 10, 20) }] },
-    ready: () => !!document.querySelector('.aq-teach') && !!document.getElementById('aq-lib'), make: ['aq-make', 'aq-mine'] },
+    // (a grown-up who may make first sees the door, Who is it for?; a student or a child the games, with Maps and more)
+    ready: () => !!document.getElementById('aq-door-play') || (!!document.querySelector('.aq-more') && !!document.getElementById('aq-lib')), make: ['aq-make', 'aq-mine'] },
 };
 
 for (const slug of SLUGS) {
@@ -155,6 +156,12 @@ for (const slug of SLUGS) {
       const o = await open(doc);
       try {
         await o.frame.waitForFunction(cfg.ready, null, { timeout: 90_000 });
+        if (slug === 'atlas-quest') {
+          // the door: Play and Build a lesson for the grown-ups (Host live too when Oomba Live is on), nothing for the others
+          assert.deepEqual(await ids(o.frame, ['aq-door-play', 'aq-door-build']), yes ? ['aq-door-play', 'aq-door-build'] : [], `${who}: the door`);
+          assert.deepEqual(await ids(o.frame, ['aq-make', 'aq-mine', 'aq-ws']), [], `${who}: no teacher tools on the first screen`);
+          if (yes) { await o.frame.click('#aq-door-build'); await o.frame.waitForFunction(() => !!document.querySelector('.aq-teach #aq-make')); }
+        }
         assert.deepEqual(await ids(o.frame, cfg.make), yes ? cfg.make : [], `${slug} ${who}: Make and the drafts list`);
         if (slug === 'atlas-quest') {
           // The other ways into the quiz maker: "Make a quiz" in the library.
@@ -189,7 +196,7 @@ test('Atlas Quest\'s blank map on a phone (390 px): the zoomed map\'s numbers re
   const o = await open(doc, { width: 390, height: 844 });
   try {
     await o.frame.waitForFunction(GAMES['atlas-quest'].ready, null, { timeout: 90_000 });
-    await o.frame.evaluate(() => window.__brbTest.closeDialog());
+    await o.frame.evaluate(() => window.__brbTest.teach());
     for (const reg of ['eu', 'car', 'me', 'world']) {
       await o.frame.evaluate(r => window.__brbTest.blank(r, true, false), reg);
       await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-map'));
@@ -237,7 +244,7 @@ test('Atlas Quest\'s quiz maker is five steps (375 px): Next says why it waits, 
   const fits = async n => assert.ok(await f.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `step ${n}: no sideways scroll at 375 px`);
   try {
     await f.waitForFunction(GAMES['atlas-quest'].ready, null, { timeout: 90_000 });
-    await f.evaluate(() => window.__brbTest.closeDialog());
+    await f.click('#aq-door-build');   // the door: Build a lesson, the teacher's tools
     // a saved draft opens on Check, with its questions
     await f.click('#aq-mine .cw-acts2 button >> nth=0');
     assert.equal(await step(), 4); assert.equal(await f.evaluate(() => document.querySelectorAll('.aq-qrow').length), 2);

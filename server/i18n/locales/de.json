@@ -2348,6 +2348,7 @@
         "delete": "Ausgewähltes Element löschen"
       },
       "playBack": "Zurück zu Homeroom",
+      "liveNotSelect": "Live-Lektionen werden geleitet, nicht ausgeteilt. Schalten Sie Auswählen aus, um eine zu starten.",
       "frame": {
         "resize": "Ziehen, um den Lehrerbereich zu vergrößern oder zu verkleinern",
         "saved": "Lehrerbereich angepasst"
@@ -8910,7 +8911,7 @@
       "boardText": "Ein Brett mit Kategorien: Feld wählen, alle antworten. Größere Felder sind schwerer und bringen mehr, und ein versteckter Glücksstern verdoppelt die Punkte.",
       "wyr": "Was wäre dir lieber? (Live)",
       "wyrText": "Die Klasse stimmt über lustige Fragen ab und sieht, wie sie sich aufteilt und was alle auf Oomba gewählt haben. Keine richtigen Antworten, keine Punkte: einfach darüber reden.",
-      "atlas": "Atlas Quest (Live)",
+      "atlas": "Atlas Quest",
       "atlasText": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land selbst, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Knapp daneben gibt auch ein paar Punkte.",
       "tug": "Tug of Math (Live)",
       "tugText": "Die Klasse teilt sich in zwei Teams. Alle lösen Matheaufgaben für ihre Klasse auf ihrem eigenen Ziffernblock, und jede richtige Antwort zieht am Seil.",
@@ -9783,7 +9784,7 @@
       "play": "Üben oder auf einem Gerät spielen"
     },
     "atlasUi": {
-      "legend": "Atlas Quest (Live)",
+      "legend": "Atlas Quest",
       "region": "Wo auf der Welt",
       "level": "Stufe",
       "kinds": "Fragearten",
@@ -9983,7 +9984,7 @@
         "p": "Zwei Teams ziehen mit richtigen Antworten an einem Seil. Wähle eine Klasse von 1 bis 8; alle lösen eigene Aufgaben auf einem Ziffernblock, und ungleiche Teams ziehen fair."
       },
       "atlas": {
-        "h": "Atlas Quest (Live)",
+        "h": "Atlas Quest",
         "p": "Alle tippen das Land auf ihrer eigenen Weltkarte an: das Land, seine Flagge, seine Hauptstadt oder wofür es berühmt ist. Der große Bildschirm zeigt, wo die ganze Klasse getippt hat, und knapp daneben zählt auch."
       }
     },

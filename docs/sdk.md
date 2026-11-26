@@ -384,6 +384,10 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   `/teach/assign?game=<slug>&opts=<query>`, which says what students will open, makes a one-step lesson named after it
   whose game step carries those options, and offers "Also post to Google Classroom" for a class linked to Classroom.
   Students finish it with `BRB.gameOver` (the step done), which is the Classroom completion grade.
+- `BRB.canHostLive` / `BRB.hostLive()`: Atlas Quest's first screen offers Host live to a grown-up who may host while
+  Oomba Live is on (never a student, a child, a guest, a preview or the Studio's "As a student"). After a tap the page
+  opens the live game's setup (`/live?mode=atlas`); inside Homeroom's layer, Homeroom closes the layer and opens its own
+  live layer for the class instead.
 - `BRB.findQuestionSet(code)` → a Promise of `{ id, items }` or `{ error: 'none' | 'offline' }`: a class code a
   student typed (the set id without `s-`, any case, spaces or dashes; `GET /api/games/:id/sets/:code`, open to anyone
   who can open the game, 30 a minute per address). New codes leave out i, l, o, 0 and 1.

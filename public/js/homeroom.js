@@ -1381,11 +1381,25 @@ const PL = gamePlayer({
   // and the full catalog"; a desk's look opens that tool's live room as its host the same way: lk:<session>)
   find: id => {
     if (/^lk:[A-Za-z0-9_-]{1,40}$/.test(id)) return { href: `/manipulatives#live/${id.slice(3)}`, title: tw('roomTitle'), icon: '🧮' };
+    // a game's door (Atlas Quest's Live games card: Play, Host live, Build a lesson), opened to try, never assigned
+    if (/^door:[a-z0-9-]{1,40}$/.test(id)) { const c = document.querySelector(`[data-hrdoor="${id.slice(5)}"]`); return c ? { href: `/play/${id.slice(5)}`, title: c.querySelector('.hr-itemt')?.textContent || '', icon: c.dataset.icon || '🎮', badge: th('my.previewNote') } : null; }
     // (a card from My desk is a preview: nothing is assigned or saved, and the bar says so)
     const x = stagedById(id); return x && x.href && (!x.tool || x.manip) ? { href: x.href, title: x.title, icon: x.icon, ...(x.tool ? {} : { badge: th('my.previewNote') }) } : null;
   },
   away: () => H.away,
+  // the door's Host live: this class's live layer (public/js/homeroom-livegame.js), the class already chosen
+  hostLive: mode => { if (LGH) LGH.open(`/live?mode=${encodeURIComponent(mode)}&class=${encodeURIComponent(D.classId)}`); },
 });
+// A Live games card that opens a game's door (Atlas Quest): the game over the board, where its first screen asks what
+// for (Play, Host live, Build a lesson). Not while selecting several (a door can't be handed out).
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-hrdoor]');
+  if (!b || e.button > 0 || e.metaKey || e.ctrlKey || e.shiftKey) return;
+  e.preventDefault(); e.stopPropagation();
+  if (b.closest('.hr-cselecting')) { toast(th('liveNotSelect')); return; }
+  b.closest('.sheet-bg')?.querySelector('.close')?.click();
+  PL.open(`door:${b.dataset.hrdoor}`);
+}, true);
 
 // Several at once from Find lessons (public/js/homeroom-multi.js): one sheet, then each on the desks in the order picked.
 const MS = multiSelect({ api2: path => api2(path), setPick: p => setPick(p), whoLabel: to => whoLabel(to), putLabel, emptyNote, gcField, gcPicked,

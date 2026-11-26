@@ -2347,6 +2347,7 @@
         "delete": "Eliminar el elemento seleccionado"
       },
       "playBack": "Volver a Homeroom",
+      "liveNotSelect": "Las lecciones en vivo se dirigen, no se reparten. Desactiva Seleccionar para dirigir una.",
       "frame": {
         "resize": "Arrastra para cambiar el tamaño del área del docente",
         "saved": "Área del docente redimensionada"
@@ -8909,7 +8910,7 @@
       "boardText": "Un tablero de categorías: elige una casilla y todos responden. Las casillas más altas son más difíciles y valen más, y una Estrella de la suerte escondida duplica los puntos.",
       "wyr": "¿Qué prefieres? (En vivo)",
       "wyrText": "La clase vota dilemas divertidos y ve cómo se reparte, y qué eligió todo el mundo en Oomba. Sin respuestas correctas ni puntos: solo para conversar.",
-      "atlas": "Atlas Quest (En vivo)",
+      "atlas": "Atlas Quest",
       "atlasText": "Todos tocan el país en su propio mapa del mundo: encuéntralo, su bandera, su capital o por qué es famoso. Acercarse también suma un poco.",
       "tug": "Tug of Math (En vivo)",
       "tugText": "La clase se divide en dos equipos. Cada uno responde preguntas de matemáticas de su curso en su propio teclado, y cada respuesta correcta tira de la cuerda.",
@@ -9782,7 +9783,7 @@
       "play": "Practicar o jugar en un dispositivo"
     },
     "atlasUi": {
-      "legend": "Atlas Quest (En vivo)",
+      "legend": "Atlas Quest",
       "region": "En qué parte del mundo",
       "level": "Nivel",
       "kinds": "Tipos de pregunta",
@@ -9982,7 +9983,7 @@
         "p": "Dos equipos tiran de una cuerda con respuestas correctas. Elige un curso del 1 al 8; cada jugador responde sus propias preguntas en un teclado, y los equipos desiguales tiran en igualdad."
       },
       "atlas": {
-        "h": "Atlas Quest (En vivo)",
+        "h": "Atlas Quest",
         "p": "Todos tocan el país en su propio mapa del mundo: el país, su bandera, su capital o por qué es famoso. La pantalla grande muestra dónde tocó toda la clase, y acercarse también suma."
       }
     },

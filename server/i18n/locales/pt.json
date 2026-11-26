@@ -2348,6 +2348,7 @@
         "delete": "Excluir o item selecionado"
       },
       "playBack": "Voltar para o Homeroom",
+      "liveNotSelect": "Aulas ao vivo são conduzidas, não distribuídas. Desative Selecionar para conduzir uma.",
       "frame": {
         "resize": "Arraste para mudar o tamanho da área do professor",
         "saved": "Área do professor redimensionada"
@@ -8911,7 +8912,7 @@
       "boardText": "Um tabuleiro de categorias: escolha uma casa e todos respondem. As casas maiores são mais difíceis e valem mais, e uma Estrela da sorte escondida dobra os pontos.",
       "wyr": "O que você prefere? (Ao vivo)",
       "wyrText": "A turma vota em dilemas divertidos e vê como se divide, e o que todo mundo no Oomba escolheu. Sem respostas certas, sem pontos: só para conversar.",
-      "atlas": "Atlas Quest (Ao vivo)",
+      "atlas": "Atlas Quest",
       "atlasText": "Todos tocam o país no seu próprio mapa-múndi: encontre o país, a bandeira, a capital ou aquilo pelo que é famoso. Chegar perto também vale um pouco.",
       "tug": "Tug of Math (Ao vivo)",
       "tugText": "A turma se divide em dois times. Cada um responde perguntas de matemática do seu ano no próprio teclado, e cada resposta certa puxa a corda.",
@@ -9784,7 +9785,7 @@
       "play": "Praticar ou jogar em um aparelho"
     },
     "atlasUi": {
-      "legend": "Atlas Quest (Ao vivo)",
+      "legend": "Atlas Quest",
       "region": "Onde no mundo",
       "level": "Nível",
       "kinds": "Tipos de pergunta",
@@ -9984,7 +9985,7 @@
         "p": "Dois times puxam uma corda com respostas certas. Escolha um ano de 1 a 8; cada jogador responde às próprias perguntas num teclado, e times desiguais puxam de forma justa."
       },
       "atlas": {
-        "h": "Atlas Quest (Ao vivo)",
+        "h": "Atlas Quest",
         "p": "Todos tocam o país no seu próprio mapa-múndi: o país, a bandeira, a capital ou aquilo pelo que é famoso. A tela grande mostra onde a turma toda tocou, e chegar perto também vale."
       }
     },

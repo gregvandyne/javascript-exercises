@@ -27,6 +27,10 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   await page.goto('/play/atlas-quest');
   const f = await gameFrame(page);
   await f.waitForFunction(() => window.__brbTest && window.__brbTest.make && window.BRB.canPrint === true);
+  // the door (docs/decisions.md "Atlas Quest: one door"): Who is it for? Play, then Build a lesson for the quiz maker
+  await expect(f.locator('#aq-door-play')).toBeVisible();
+  await expect(f.locator('#aq-door-build')).toBeVisible();
+  await f.click('#aq-door-play');
   await f.evaluate(() => window.__brbTest.closeDialog());   // Captain Skye's welcome
   // the look: widgets on the dotted board, the globe on its own board card
   await expect(f.locator('#stage.cw-widget #board canvas#view')).toBeVisible();
@@ -43,6 +47,7 @@ test('a teacher: the globe and modes in the widget look, then a quiz made, arrow
   for (let i = 0; i < 10; i++) { await f.evaluate(() => window.__brbTest.answer(true)); await f.evaluate(() => window.__brbTest.next()); }
   await expect(f.locator('#side[data-screen="results"] .cw-wt')).toHaveText('10 of 10 right!');
   await f.click('#aq-home');
+  await f.click('#aq-door-back'); await f.click('#aq-door-build');
   // make a quiz in five steps: 1 Europe's countries, 2 map labels only, 3 a question of the teacher's own, 4 Check
   await f.click('#aq-make');
   await expect(f.locator('#page[data-screen="build"]')).toBeVisible();

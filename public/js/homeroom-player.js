@@ -11,7 +11,8 @@ import { iconHtml } from '/js/icons.js';
 /**
  * opts: { host: element the layer covers, path: the page's own address (no hash), back: the close button's words,
  * find: id -> { href, title, icon } | null (null: not playable here), onOpen(id), onClose(id), away: () => true while
- * the page is not on screen (another view) }. -> { open(id), close(), current(), sync() }
+ * the page is not on screen (another view), hostLive(mode): a game in the layer asked to host its live version }.
+ * -> { open(id), close(), current(), sync() }
  */
 export function gamePlayer(opts) {
   let cur = null, el = null;
@@ -68,7 +69,11 @@ export function gamePlayer(opts) {
   addEventListener('popstate', sync);
   addEventListener('message', e => {
     const f = el && el.querySelector('iframe');
-    if (f && e.source === f.contentWindow && e.origin === location.origin && e.data && e.data.type === 'hr:close') close();
+    if (!f || e.source !== f.contentWindow || e.origin !== location.origin || !e.data) return;
+    if (e.data.type === 'hr:close') close();
+    // a game's door asked to host its live version (Atlas Quest's Host live, play.js brb:hostlive): this layer closes and
+    // the page opens its live layer (opts.hostLive)
+    else if (e.data.type === 'hr:hostlive' && opts.hostLive && /^[a-z-]{1,20}$/.test(String(e.data.mode || ''))) { const mode = e.data.mode; close(); opts.hostLive(mode); }
   });
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape' || !cur || (opts.away && opts.away()) || document.querySelector('.sheet-bg, dialog[open]')) return;
