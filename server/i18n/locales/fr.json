@@ -1327,6 +1327,14 @@
       "capc_us": "{city} est la capitale de quel État ?",
       "capc_ca": "{city} est la capitale de quelle province ou de quel territoire ?",
       "abbr": "{name} : quelle est son abréviation postale ?"
+    },
+    "printFlash": {
+      "untitled": "Cartes mémoire",
+      "term": "Mot",
+      "def": "Définition",
+      "fronts": "{title} : recto",
+      "backs": "{title} : verso",
+      "how": "Imprime en recto verso (retournement sur le bord long), puis découpe le long des pointillés. Chaque verso tombe derrière son recto."
     }
   },
   "friends": {
@@ -7827,7 +7835,8 @@
       "wordTrail": "Les mots anglais les plus fréquents, de la maternelle au CE2, sur un sentier de conte avec Bramble le hérisson : écoute un mot et touche-le, complète une phrase, écris-le avec des lettres, en petites leçons avec une série quotidienne.",
       "crossword": "Transforme n'importe quelle liste de vocabulaire en mots croisés : tape ou importe les mots, ajoute des définitions ou laisse l'IA les écrire, puis partage avec la classe.",
       "mistakeHunt": "Trouve et corrige les fautes d'un court texte : l'enseignant colle son propre texte, y place des fautes d'orthographe, de grammaire et de ponctuation, puis le partage, l'assigne ou l'imprime.",
-      "typingZoo": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal."
+      "typingZoo": "Apprends à taper une touche à la fois, avec une couleur par doigt : 40 petites leçons de la rangée de repos aux phrases, et après chaque leçon un œuf à casser avec un nouvel animal.",
+      "flashcards": "Des cartes mot et définition pour toutes les matières : crée les tiennes, colle une liste ou laisse l'IA les rédiger, ou pars de la bibliothèque prête à l'emploi, puis révise avec Retourner, Apprendre, Associer et Test."
     },
     "hubs": {
       "math": {
@@ -15957,6 +15966,25 @@
     },
     "livegame": {
       "ended": "La leçon en direct est terminée."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Cartes mémoire",
+      "note": "D'après Apprendre et Test. Une carte est maîtrisée quand l'élève la tape juste deux fois de suite.",
+      "studied": "{done} sur {total} ont révisé",
+      "missedTitle": "Cartes les plus ratées",
+      "missedHint": "À revoir avec la classe.",
+      "missedBy": "{misses, plural, one {Ratée # fois} other {Ratée # fois}}, {students, plural, one {# élève} other {# élèves}}",
+      "missedNone": "Aucune carte ratée pour l'instant.",
+      "table": "Les cartes de chaque élève",
+      "mastered": "Maîtrisées",
+      "learning": "En cours",
+      "missed": "Ratées la dernière fois",
+      "fresh": "Pas encore vues",
+      "progress": "Progression",
+      "notYet": "Pas encore commencé",
+      "barLabel": "{mastered} maîtrisées, {learning} en cours, {missed} ratées la dernière fois, {fresh} pas encore vues"
     }
   }
 }

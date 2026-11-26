@@ -396,6 +396,24 @@ cleaner) can keep a teacher's set on Oomba, so one short link (and its QR code, 
   keeps to playing; in Crossword, Word Hunt and Atlas Quest also anyone without `BRB.canMake`), `true` otherwise. A game hides those buttons when they are `false`.
 - Sets go with their owner's account. Nothing about who played is kept.
 
+## Flashcards (`BRB.draftCards`, `BRB.flashProgress`)
+Flashcards' sets are question sets like Crossword's (one item `{ t, c: [[term, definition, emoji]], a }`: a title, 2 to 50
+cards, an emoji or '' for each card's front, and what students answer with in Learn and Test, `'t'` the term or `'d'` the
+definition; `cleanFlashItems` runs every term, definition and the title through the site's text filter and keeps an
+emoji only when it is emoji characters alone). Two calls of its own:
+- `BRB.draftCards(topic, { level, count })` (`BRB.canWriteClues`: a grown-up who may host, AI on) → a Promise of
+  `{ title, cards: [[term, definition, emoji]] }` or `{ error }` (`notAllowed`, `aiOff`, `aiFailed`, `topic`,
+  `topicBad`: the site's text filter refused the topic, `offline`). `count` is 5, 10, 15, 20 or 30. The page posts
+  `POST /api/games/:id/cards-ai`; the topic goes to the AI as data in the user message, never a student's name or work.
+  Nothing is saved: the cards land in the builder for the teacher to check. A lesson document goes through Crossword's
+  `BRB.wordsFromDoc` instead.
+- `BRB.flashProgress(cards)`: each card's state, `[[level, misses]]` in the set's order (level -1 not studied, 0 missed
+  last time, 1 learning, 2 almost, 3 mastered; misses a count). The page passes it on only when the game was opened from
+  the student's own lesson step (an assignment or a Hub handout: `POST /api/progress/:cl/:step/flash`,
+  `services/flash-progress.js`, kept in that step's `step_progress.marks`); anywhere else it answers `{ error:
+  'notLesson' }` and nothing leaves the page. → `{ ok: true, mastered, n }` or `{ error }` (`notLesson`, `bad`,
+  `offline`). The teacher sees each student's cards and the cards missed most on the lesson's progress page.
+
 ## Teacher controls (`BRB.canTeach`)
 A Builder classroom activity on Oomba Canvas 1.3.0 shows its teacher controls (Show answer, Board mode, Help on this
 screen, New set; docs/canvas-api.md) only when `BRB.canTeach` is true: from `INIT.teach`, which the server sets by the

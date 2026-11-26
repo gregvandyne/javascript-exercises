@@ -51,6 +51,8 @@ import { taskOf as taskOfId } from '../../public/js/manip-tasks.js';
 import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
 import * as PI from '../services/proof-insights.js';
 import { plansOn } from '../services/teacher-tools.js';
+import * as FP from '../services/flash-progress.js';
+import { flashResultsHtml } from '../views/flash-step.js';
 /** The class teams editor's script (Oomba Live part 3; the page shows the saved state without it). */
 const CLASS_TEAMS_JS = fs.existsSync(fileURLToPath(new URL('../../public/js/live-class-teams.js', import.meta.url)));
 const liveHostOk = u => liveOn() && liveCanHost(u);
@@ -91,6 +93,13 @@ router.post('/api/progress/:clid/:sid/game', requireUser, rateLimit('progress', 
   const r = event === 'start' ? P.gameStarted(u, clid, sid) : event === 'time' ? P.gameTime(u, clid, sid, seconds)
     : event === 'score' ? P.gameScore(u, clid, sid, score, label, helped) : event === 'end' ? P.gameScore(u, clid, sid, Number.isFinite(+score) && score !== null ? score : null, b(req).won === true ? 'won' : '', helped) : { ok: false, code: 'notFound' };
   send(req, res, r);
+});
+/** Flashcards (services/flash-progress.js): each card's state on the student's own assigned set, from Learn and Test:
+ *  { cards: [[level -1..3, misses]] } in the set's order. -> { ok, mastered, n } */
+router.post('/api/progress/:clid/:sid/flash', requireUser, rateLimit('progress', 240, 60e3), (req, res) => {
+  const r = FP.record(req.user, req.params.clid, req.params.sid, b(req).cards);
+  if (!r.ok) return r.code === 'notFound' ? no(req, res) : res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  res.json({ ok: true, mastered: r.mastered, n: r.n });
 });
 /** Hand in a build step: the game is shared with the lesson's class (so the teacher and the class can play it) and the
  *  step is done. A game the class can already open (school, public, or a class game live in this class) is left as it
@@ -484,6 +493,14 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
       // Oomba's read (Phase 3): counts only to the AI, the code's own read as the fallback; Teacher plan.
       insight: (() => { const c = PI.card(req.user, lp.cl.id, s.id, { t, lang: req.locale || 'en' }); return c.ok ? proofInsightHtml(t, c, { cl: lp.cl, step: s, plans: plansOn() }) : ''; })() });
   });
+  // Flashcards sets (services/flash-progress.js): each student's cards (mastered, learning, missed, not studied) and the
+  // cards the class missed most.
+  const flashes = lp.steps.map((s, i) => ({ s, i })).filter(({ s }) => s.kind === 'game').map(({ s, i }) => {
+    const full = fullSteps.find(x => x.id === s.id) || L.getStep(s.id), set = FP.setOfStep(full);
+    if (!set) return '';
+    const sum = FP.summary(set, lp.students.map(p => p.cells[i]));
+    return flashResultsHtml(t, { step: full, sum, studentsN: lp.students.length, rows: lp.students.map((p, k) => ({ p, r: sum.rows[k] })), nameOf: p => html`<span class="pp">${avatar(p, 28)}${staffStudentName(p)}</span>` });
+  });
   // The whole lesson's rubric: one card per student, scored with the levels, a comment per criterion and feedback.
   const lessonRb = libRubric(l.rubric_id);
   const whole = lessonRb && lp.students.length ? html`<section class="panel answers" id="lesson-rubric" aria-labelledby="lr-h"><h2 id="lr-h">${ico('📏', { size: 28 })} ${t('rubrics.attach.lessonTitle')}</h2>
@@ -515,6 +532,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
   ${questions.length || builds.length ? html`<div id="answers">${answers}${builds}</div>` : ''}
   ${figs}
   ${proofs}
+  ${flashes}
   ${whole}`;
   page(req, res, { title: `${l.title} · ${c.name}`, active: 'classes', body, head: CSS, scripts: ['/js/schools.js'], back: `/class/${c.id}/progress`, backLabel: t('progress.gradebook.title') });
 });

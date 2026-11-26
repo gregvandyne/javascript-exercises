@@ -1327,6 +1327,14 @@
       "capc_us": "¿De qué estado es capital {city}?",
       "capc_ca": "¿De qué provincia o territorio es capital {city}?",
       "abbr": "¿Cuál es la abreviatura postal de {name}?"
+    },
+    "printFlash": {
+      "untitled": "Tarjetas",
+      "term": "Término",
+      "def": "Definición",
+      "fronts": "{title}: frentes",
+      "backs": "{title}: reversos",
+      "how": "Imprime a doble cara (voltear por el borde largo) y recorta por las líneas discontinuas. Cada reverso queda detrás de su frente."
     }
   },
   "friends": {
@@ -7827,7 +7835,8 @@
       "wordTrail": "Las palabras más frecuentes del inglés, de preescolar a 3.º grado, en un sendero de cuento con Bramble, el erizo: escucha una palabra y tócala, completa una frase, deletréala con fichas, en lecciones cortas con racha diaria.",
       "crossword": "Convierte cualquier lista de vocabulario en un crucigrama: escribe o sube las palabras, añade pistas o deja que la IA las escriba, y compártelo con la clase.",
       "mistakeHunt": "Encuentra y corrige los errores de un texto corto: el docente pega su propio texto, siembra errores de ortografía, gramática y puntuación, y luego lo comparte, lo asigna o lo imprime.",
-      "typingZoo": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 40 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva."
+      "typingZoo": "Aprende a escribir con el teclado tecla a tecla, con un color para cada dedo: 40 lecciones cortas de la fila central a las frases y, tras cada lección, un huevo con una mascota nueva.",
+      "flashcards": "Tarjetas de término y definición para cualquier materia: crea las tuyas, pega una lista o deja que la IA las redacte, o empieza con la biblioteca lista, y luego estudia con Voltear, Aprender, Emparejar y Prueba."
     },
     "hubs": {
       "math": {
@@ -15957,6 +15966,25 @@
     },
     "livegame": {
       "ended": "La lección en vivo terminó."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Tarjetas",
+      "note": "De Aprender y Prueba. Una tarjeta está dominada cuando el alumno la escribe bien dos veces seguidas.",
+      "studied": "{done} de {total} han estudiado",
+      "missedTitle": "Tarjetas más falladas",
+      "missedHint": "Vale la pena repasarlas con la clase.",
+      "missedBy": "{misses, plural, one {Fallada # vez} other {Fallada # veces}}, {students, plural, one {# alumno} other {# alumnos}}",
+      "missedNone": "Ninguna tarjeta fallada todavía.",
+      "table": "Las tarjetas de cada alumno",
+      "mastered": "Dominadas",
+      "learning": "Aprendiendo",
+      "missed": "Falladas la última vez",
+      "fresh": "Sin estudiar",
+      "progress": "Progreso",
+      "notYet": "Aún no ha empezado",
+      "barLabel": "{mastered} dominadas, {learning} aprendiendo, {missed} falladas la última vez, {fresh} sin estudiar"
     }
   }
 }

@@ -1328,6 +1328,14 @@
       "capc_us": "{city} is the capital of which state?",
       "capc_ca": "{city} is the capital of which province or territory?",
       "abbr": "What is the postal abbreviation for {name}?"
+    },
+    "printFlash": {
+      "untitled": "Flashcards",
+      "term": "Term",
+      "def": "Definition",
+      "fronts": "{title}: fronts",
+      "backs": "{title}: backs",
+      "how": "Print on both sides (flip on the long edge), then cut along the dashed lines. Each back lands behind its front."
     }
   },
   "friends": {
@@ -9223,7 +9231,8 @@
       "wordTrail": "The sight words, from Pre-primer to Grade 3, on a storybook trail with Bramble the hedgehog: hear a word and tap it, finish a sentence, spell it with letter tiles, in short lessons with a daily streak.",
       "crossword": "Turn any vocabulary list into a crossword: type or upload the words, add clues or let AI write them, and share it with the class.",
       "mistakeHunt": "Find and fix the mistakes in a short passage: teachers paste their own text, plant spelling, grammar and punctuation mistakes, then share, assign or print it.",
-      "typingZoo": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson."
+      "typingZoo": "Learn to type one key at a time, with colors for each finger: 40 short lessons from the home row to numbers and symbols, timed tests, and an egg to crack with a new pet after every lesson.",
+      "flashcards": "Term and definition cards for any subject: make your own, paste a list or let AI draft them, or start from the ready-made library, then study with Flip, Learn, Match and Test."
     },
     "hubs": {
       "math": {
@@ -17702,6 +17711,25 @@
     },
     "livegame": {
       "ended": "The live lesson ended."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Flashcards",
+      "note": "From Learn and Test. Each card counts as mastered once a student types it right twice in a row.",
+      "studied": "{done} of {total} studied",
+      "missedTitle": "Cards missed most",
+      "missedHint": "Worth going over again with the class.",
+      "missedBy": "{misses, plural, one {Missed # time} other {Missed # times}}, {students, plural, one {# student} other {# students}}",
+      "missedNone": "No card missed yet.",
+      "table": "Each student's cards",
+      "mastered": "Mastered",
+      "learning": "Learning",
+      "missed": "Missed last time",
+      "fresh": "Not studied",
+      "progress": "Progress",
+      "notYet": "Not started yet",
+      "barLabel": "{mastered} mastered, {learning} learning, {missed} missed last time, {fresh} not studied"
     }
   }
 }

@@ -1328,6 +1328,14 @@
       "capc_us": "{city} è la capitale di quale stato?",
       "capc_ca": "{city} è la capitale di quale provincia o territorio?",
       "abbr": "{name}: qual è la sigla postale?"
+    },
+    "printFlash": {
+      "untitled": "Schede",
+      "term": "Termine",
+      "def": "Definizione",
+      "fronts": "{title}: fronti",
+      "backs": "{title}: retri",
+      "how": "Stampa fronte e retro (girando sul lato lungo), poi ritaglia lungo le linee tratteggiate. Ogni retro capita dietro il suo fronte."
     }
   },
   "friends": {
@@ -7828,7 +7836,8 @@
       "wordTrail": "Le parole inglesi più frequenti, dalla scuola dell’infanzia alla terza, su un sentiero da fiaba con Bramble il riccio: ascolta una parola e toccala, completa una frase, componila con le lettere, in lezioni brevi con una serie giornaliera.",
       "crossword": "Trasforma qualsiasi lista di vocaboli in un cruciverba: scrivi o carica le parole, aggiungi le definizioni o lasciale scrivere all'IA e condividilo con la classe.",
       "mistakeHunt": "Trova e correggi gli errori in un breve testo: l'insegnante incolla il proprio testo, inserisce errori di ortografia, grammatica e punteggiatura, poi lo condivide, lo assegna o lo stampa.",
-      "typingZoo": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 40 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo."
+      "typingZoo": "Impara a scrivere un tasto alla volta, con un colore per ogni dito: 40 brevi lezioni dalla riga centrale alle frasi e, dopo ogni lezione, un uovo da rompere con un nuovo cucciolo.",
+      "flashcards": "Schede con termine e definizione per ogni materia: creale tu, incolla un elenco o falle scrivere all'IA, oppure parti dalla raccolta pronta, poi studia con Gira, Impara, Abbina e Verifica."
     },
     "hubs": {
       "math": {
@@ -15958,6 +15967,25 @@
     },
     "livegame": {
       "ended": "La lezione dal vivo è finita."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Schede",
+      "note": "Da Impara e Verifica. Una scheda è imparata quando lo studente la scrive giusta due volte di fila.",
+      "studied": "{done} su {total} hanno studiato",
+      "missedTitle": "Schede sbagliate più spesso",
+      "missedHint": "Da ripassare con la classe.",
+      "missedBy": "{misses, plural, one {Sbagliata # volta} other {Sbagliata # volte}}, {students, plural, one {# studente} other {# studenti}}",
+      "missedNone": "Ancora nessuna scheda sbagliata.",
+      "table": "Le schede di ogni studente",
+      "mastered": "Imparate",
+      "learning": "In corso",
+      "missed": "Sbagliate l'ultima volta",
+      "fresh": "Non studiate",
+      "progress": "Progressi",
+      "notYet": "Non ancora iniziato",
+      "barLabel": "{mastered} imparate, {learning} in corso, {missed} sbagliate l'ultima volta, {fresh} non studiate"
     }
   }
 }

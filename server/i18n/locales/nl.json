@@ -1328,6 +1328,14 @@
       "capc_us": "{city} is de hoofdstad van welke staat?",
       "capc_ca": "{city} is de hoofdstad van welke provincie of welk territorium?",
       "abbr": "Wat is de postafkorting van {name}?"
+    },
+    "printFlash": {
+      "untitled": "Flitskaarten",
+      "term": "Begrip",
+      "def": "Uitleg",
+      "fronts": "{title}: voorkanten",
+      "backs": "{title}: achterkanten",
+      "how": "Druk dubbelzijdig af (omslaan langs de lange kant) en knip langs de stippellijnen. Elke achterkant komt achter zijn voorkant."
     }
   },
   "friends": {
@@ -7828,7 +7836,8 @@
       "wordTrail": "De meest gebruikte Engelse woorden, van kleuter tot groep 5, op een sprookjespad met Bramble de egel: luister naar een woord en tik erop, maak een zin af, leg het met letters, in korte lessen met een dagreeks.",
       "crossword": "Maak van elke woordenlijst een kruiswoordpuzzel: typ of upload de woorden, voeg omschrijvingen toe of laat AI ze schrijven, en deel hem met de klas.",
       "mistakeHunt": "Vind en verbeter de fouten in een korte tekst: leraren plakken hun eigen tekst, zetten er spel-, grammatica- en interpunctiefouten in en delen, geven op of printen hem.",
-      "typingZoo": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier."
+      "typingZoo": "Leer typen, één toets tegelijk, met een kleur voor elke vinger: 40 korte lessen van de thuisrij tot zinnen, en na elke les een ei met een nieuw dier.",
+      "flashcards": "Kaartjes met begrip en uitleg voor elk vak: maak ze zelf, plak een lijst of laat AI ze opstellen, of begin met de kant-en-klare verzameling, en oefen met Omdraaien, Leren, Koppelen en Toets."
     },
     "hubs": {
       "math": {
@@ -15958,6 +15967,25 @@
     },
     "livegame": {
       "ended": "De live-les is afgelopen."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Flitskaarten",
+      "note": "Uit Leren en Toets. Een kaart is gekend als een leerling hem twee keer achter elkaar goed typt.",
+      "studied": "{done} van {total} hebben geoefend",
+      "missedTitle": "Vaakst fout",
+      "missedHint": "Goed om met de klas te herhalen.",
+      "missedBy": "{misses, plural, one {# keer fout} other {# keer fout}}, {students, plural, one {# leerling} other {# leerlingen}}",
+      "missedNone": "Nog geen kaart fout.",
+      "table": "De kaarten van elke leerling",
+      "mastered": "Gekend",
+      "learning": "Bezig",
+      "missed": "Vorige keer fout",
+      "fresh": "Nog niet geoefend",
+      "progress": "Voortgang",
+      "notYet": "Nog niet begonnen",
+      "barLabel": "{mastered} gekend, {learning} bezig, {missed} vorige keer fout, {fresh} nog niet geoefend"
     }
   }
 }

@@ -156,6 +156,12 @@ const TYPES = {
   'brb:proof': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.edits) && JSON.stringify(m.edits).length <= 60000 && typeof m.handIn === 'boolean'
     && (m.hint === undefined || (Number.isInteger(m.hint) && m.hint >= 0 && m.hint < 100)),
   'brb:trial': m => true,
+  // BRB.draftCards (Flashcards): the teacher's topic for AI cards (the server checks who may ask and filters the topic).
+  'brb:cards': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.topic === 'string' && m.topic.length >= 1 && m.topic.length <= 200
+    && typeof m.level === 'string' && m.level.length <= 60 && [5, 10, 15, 20, 30].includes(m.count),
+  // BRB.flashProgress (Flashcards): each card's level and misses on the student's own lesson step (the server checks them).
+  'brb:flash': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.cards) && m.cards.length >= 1 && m.cards.length <= 50
+    && m.cards.every(c => Array.isArray(c) && c.length === 2 && Number.isInteger(c[0]) && Number.isInteger(c[1])),
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
   'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
 };
@@ -272,6 +278,8 @@ addEventListener('message', e => {
     case 'brb:set-find': findSetForGame(m); break;
     case 'brb:sets': mySetsForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
+    case 'brb:cards': cardsForGame(m); break;
+    case 'brb:flash': flashForGame(m); break;
     case 'brb:doc': docForGame(m); break;
     case 'brb:textdoc': textDocForGame(m); break;
     case 'brb:proofai': proofAiForGame(m); break;
@@ -478,6 +486,24 @@ async function cluesForGame(m) {
   try { const r = await api(`/api/games/${d.gameId}/clues`, { method: 'POST', body: { words: m.words, level: m.level } }); out = { clues: Array.isArray(r.clues) ? r.clues.map(c => String(c)) : [] }; keptNote(r.report); }
   catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:clues-done', id: m.id, ...out });
+}
+async function cardsForGame(m) {
+  let out;
+  try {
+    const r = await api(`/api/games/${d.gameId}/cards-ai`, { method: 'POST', body: { topic: m.topic, level: m.level, count: m.count } });
+    out = { title: String(r.title || ''), cards: Array.isArray(r.cards) ? r.cards.map(c => [String(c[0]), String(c[1]), String(c[2] || '')]) : [] };
+    keptNote(r.report);
+  } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
+  toFrame({ type: 'brb:cards-done', id: m.id, ...out });
+}
+/** BRB.flashProgress: only a game opened from the student's lesson step passes card states on (services/flash-progress.js). */
+async function flashForGame(m) {
+  const done = out => toFrame({ type: 'brb:flash-done', id: m.id, ...out });
+  if (!d.lesson || d.lesson.proof) return done({ error: 'notLesson' });
+  try {
+    const r = await api(`/api/progress/${d.lesson.cl}/${d.lesson.step}/flash`, { method: 'POST', body: { cards: m.cards }, active: playing() });
+    done({ ok: true, mastered: r.mastered, n: r.n });
+  } catch (e) { done({ error: e && e.status === 400 ? 'bad' : 'offline' }); }
 }
 async function saveSetForGame(m) {
   if (typeof m.id !== 'number') return;
