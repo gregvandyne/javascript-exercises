@@ -20,6 +20,7 @@ import * as games from './games.js';
 import { codeOf } from './game-sets.js';
 import { toolAccess } from './teacher-tools.js';
 import { DEFAULT_GROUPS } from '../../public/js/homeroom-seats.js';
+import { toolOf as manipTool } from '../../public/js/manip-data.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -62,6 +63,14 @@ function viewOf(u, x, locale, t) {
     const set = l.base && l.base.set;
     return { id: x.id, kind: 'lesson', ref: l.id, pick: `L:${l.id}`, title: l.title, icon: g.icon || '📄', lesson: true,
       href: g.slug && set ? `/play/${encodeURIComponent(g.slug)}?chapter=${encodeURIComponent(set)}&lock=1` : null, code: set ? codeOf(set) : '' };
+  }
+  // One Manipulatives tool ('manip:<slug>', docs/decisions.md "Homeroom: watching desks and the full catalog"): it opens
+  // in the player over the board exactly as its own page does, and it can be handed out (services/homeroom-tools.js).
+  const mt = /^manip:([a-z0-9-]{1,40})$/.exec(String(x.ref));
+  if (mt) {
+    const tl = manipTool(mt[1]);
+    if (!tl || !toolOk(u, 'manipulatives')) return null;
+    return { id: x.id, kind: 'tool', ref: x.ref, pick: `T:${x.ref}`, title: tl.name, icon: tl.emoji, href: `/manipulatives#${tl.slug}`, tool: true, manip: tl.slug };
   }
   if (!toolOk(u, x.ref)) return null;
   const tool = TOOLS[x.ref];

@@ -2075,11 +2075,12 @@
         "takeOff": "Take off my desk",
         "lead": "On your desk to try first. Students don't see it until you hand it out.",
         "lessonLead": "On your desk. Preview opens the lesson plan's own problems. Students don't see it until you hand it out.",
-        "toolLead": "On your desk to open any time. Handing out tools comes next.",
+        "toolLead": "On your desk to open any time. Figures makes worksheets: they reach students as a lesson plan.",
         "tapWhere": "Now tap a desk, a group, Whole class or My desk.",
         "tapMine": "Now tap My desk to keep it there.",
-        "toolSoon": "Handing out tools comes next. Put it on My desk to open it from there.",
-        "pickFirst": "Pick a lesson on the left first, then tap My desk."
+        "toolSoon": "Figures makes worksheets for you. Put it on My desk to open it from there.",
+        "pickFirst": "Pick a lesson on the left first, then tap My desk.",
+        "manipLead": "On your desk to open any time, exactly as on its own page. Hand it out and each student works in their own square of its live room."
       },
       "wholeClass": "Whole class · {count}",
       "editGroups": "Groups",
@@ -5633,6 +5634,9 @@
         "seen": "Your teacher saw it",
         "private": "Only your teacher sees this."
       },
+      "seen": "Your teacher can see your screen in Homeroom.",
+      "toolKind": "Manipulatives · practice",
+      "toolNotOpen": "Not open right now. Ask your teacher.",
       "eraseSizes": {
         "S": "Small eraser",
         "M": "Medium eraser",
@@ -5897,7 +5901,7 @@
         "teamPad": "Team pad",
         "padLabel": "{name}’s pad",
         "padEmpty": "Nothing drawn yet",
-        "private": "A summary of what Homeroom knows. It never shows their screen or what they type.",
+        "private": "A summary of what Homeroom knows. Never what they type outside Oomba, and nothing is kept after class.",
         "coming": "I’m coming over",
         "comingOn": "Coming over: tap to take it off",
         "lock": "Lock desk",
@@ -5912,7 +5916,11 @@
           "hideOff": "{name}’s cursor shows again",
           "comingOn": "{name} sees that you’re coming over",
           "comingOff": "Note taken off {name}’s desk"
-        }
+        },
+        "whereTool": "In a Manipulatives tool",
+        "whereReading": "Reading",
+        "openRoom": "Open the room",
+        "screenNote": "What they have open in Oomba, a few seconds behind. Never their notebook. Nothing is recorded."
       },
       "readingBook": "Reading {title}",
       "readingPage": "p. {page}",
@@ -5942,7 +5950,8 @@
         "lead": "Questions students sent from home.",
         "notLive": "Hands and the hall pass come back when class is live.",
         "done": "Answered"
-      }
+      },
+      "inTool": "using {title}"
     },
     "homeroom-plan": {
       "title": "Day plan",
@@ -6322,6 +6331,21 @@
         "drawFirst": "Draw something that happened first.",
         "pickFeel": "Tap how you liked the book."
       }
+    },
+    "homeroom-watch": {
+      "aGame": "a lesson",
+      "aTool": "a tool",
+      "playing": "Playing {title}",
+      "using": "Using {title}",
+      "page": "Page {page} of {pages}",
+      "atDesk": "At their desk: their cards and their pad, as on the board",
+      "roomTitle": "Manipulatives room",
+      "toolEyebrow": "Manipulatives · open practice",
+      "toolLead": "Each student works in their own square of this tool’s live room, as in Manipulatives. You see their boards live on their desks."
+    },
+    "homeroom-catalog": {
+      "title": "Find lessons",
+      "lead": "Search every lesson, lesson plan and tool. Tap one, then a desk, a group or Whole class."
     }
   },
   "favorites": {
@@ -16780,6 +16804,10 @@
       "notHome": "Raise your hand in class. This is for asking from home.",
       "tooManyAsks": "Your teacher has your questions. Wait for an answer first.",
       "atHome": "You're at home today. Ask your teacher a question instead.",
+      "snap": "That picture could not be sent.",
+      "oneTool": "{tool} is running in this class’s Manipulatives room. Take it off every desk first: one Manipulatives tool runs in a class at a time.",
+      "noTools": "Manipulatives needs the Teacher plan.",
+      "badTool": "Pick a Manipulatives tool.",
       "drawOff": "Your teacher hasn't turned on drawing on the room.",
       "deskLocked": "Drawing is paused right now.",
       "notHere": "Lines go outside other students' desks and the teacher's area.",
@@ -17139,6 +17167,19 @@
       },
       "askSent": "Sent to your teacher",
       "atHomeToday": "At home today"
+    },
+    "catalog": {
+      "open": "Find lessons",
+      "search": "Search lessons and tools",
+      "tools": "Teaching tools",
+      "none": "No lessons match. Try another word, subject or grade.",
+      "found": "{count, plural, one {# lesson or tool found} other {# lessons and tools found}}",
+      "allMine": "All my lessons",
+      "shared": "Shared with me",
+      "favorites": "Favorites",
+      "hostLive": "Host live",
+      "myDeskOnly": "My desk",
+      "more": "More Oomba lessons"
     },
     "studentDraw": {
       "savedOn": "Students can draw on the room",

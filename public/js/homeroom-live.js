@@ -20,6 +20,7 @@ import { t, api, toast, esc, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { watcher } from '/js/homeroom-watch.js';
 
 const tl = (k, v) => t(`js.homeroom-live.${k}`, v);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
@@ -34,6 +35,8 @@ export function liveBoard(ctx) {
   const LV = { data: null, timer: null, open: '', hv: '', look: null, lookTimer: null, curTimers: new Map(), curSeen: new Map() };
   const desks = () => (LV.data && LV.data.desks) || {};
   const live = () => !!H.live;
+  // watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): what each desk in view has open
+  const WT = watcher({ worldEl: ctx.worldEl, board: () => ctx.worldEl.closest('.hr-board'), handout: ctx.handout, nameOfId: ctx.nameOfId, repaint: () => paint() });
 
   // ---------------------------------------------------------------- polling
   async function poll() {
@@ -42,8 +45,9 @@ export function liveBoard(ctx) {
     if (!live()) { LV.data = null; paint(); renderPanel(); return; }
     if (!document.hidden) {
       try {
-        const r = await api(ctx.api2(`pulse?hv=${encodeURIComponent(LV.hv)}`), { background: true });
+        const r = await api(ctx.api2(`pulse?hv=${encodeURIComponent(LV.hv)}${H.seatsOpen ? '' : WT.query(LV.look ? LV.look.sid : '')}`), { background: true });
         LV.data = r; LV.hv = r.hv || '';
+        WT.take(r);
         if (r.ho) ctx.setHo(r.ho);
         if (!r.live && H.live) { H.live = null; ctx.renderLive(); }
         paint(); renderPanel(); ctx.renderLive();
@@ -66,7 +70,7 @@ export function liveBoard(ctx) {
       return btn(`hr-lvchip hr-lvread st-${d.st === 'stuck' ? 'stuck' : 'working'}`, `data-hrlook="${esc(sid)}" aria-label="${esc(`${tl('chipLabel', { name, status: stLabel(d.st) })}, ${rdText}, ${tl('readingPage', { page: d.book.page || 1 })}`)}"`,
         `<span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt" dir="auto">${iconHtml('📖', { size: 12 })} ${esc(rdText)}</span><span class="hr-lvpg">${esc(tl('readingPage', { page: d.book.page || 1 }))}</span>`);
     }
-    const what = h && d.st !== 'done' ? `, ${tl(d.where === 'game' ? 'inGame' : 'onDesk', { title: h.title })}` : '';
+    const what = d.tool && d.st !== 'away' ? `, ${tl('inTool', { title: d.tool.title })}` : h && d.st !== 'done' ? `, ${tl(d.where === 'game' ? 'inGame' : 'onDesk', { title: h.title })}` : '';
     // at home (step 4c): the chip says so (and there is no cursor)
     if (d.home) return btn(`hr-lvchip hr-lvhome st-${d.st}`, `data-hrlook="${esc(sid)}" aria-label="${esc(`${tl('chipLabel', { name, status: stLabel(d.st) })}, ${tl('att.home')}${what}`)}"`,
       `${iconHtml('🏠', { size: 12 })}<span class="hr-lvt">${esc(tl('att.home'))}</span><span class="hr-lvpg">${esc(stLabel(d.st))}</span>`);
@@ -112,6 +116,8 @@ export function liveBoard(ctx) {
       }
       el.appendChild(box);
     }
+    WT.paint(dd, on);
+    paintLookScreen();
     paintCursors(on);
   }
 
@@ -297,9 +303,13 @@ export function liveBoard(ctx) {
     const on = x.on ? `<div class="hr-lkon">${iconHtml(x.on.icon, { size: 22 })}<div><b dir="auto">${esc(x.on.title)}</b><span class="small muted">${esc(x.on.done ? tl('look.done') : tl('look.pct', { pct: x.on.pct }))}</span>
         <span class="hr-lvbar big" aria-hidden="true"><i style="width:${x.on.done ? 100 : x.on.pct}%"></i></span></div></div>` : `<p class="muted">${esc(x.total ? tl('look.allDone') : tl('look.nothing'))}</p>`;
     const stuckNote = x.st === 'stuck' ? `<p class="hr-lkstuck">${esc(tl('look.stuckNote', { min: (D.pulse || {}).stuckMin || 3 }))}</p>` : '';
+    const d = desks()[x.id] || {}, room = d.where === 'tool' && WT.boardOf(x.id);
     return `<div class="hr-look" data-look="${esc(x.id)}">
+      <div class="hr-lkbig" data-lkbig>${WT.bigHtml(x.id, d)}</div>
+      ${room && ctx.openRoom ? `<div class="row hr-lkroom">${btn('btn btn-sm hr-chunk', `data-hrroom="${esc(room.session)}"`, `${iconHtml('🧮', { size: 16 })} ${esc(tl('look.openRoom'))}`)}</div>` : ''}
+      <p class="small muted hr-lkseen">${esc(tl('look.screenNote'))}</p>
       <div class="hr-lkhead"><span class="hr-lvchip st-${esc(x.st)} static"><span class="hr-lvdot" aria-hidden="true"></span><span class="hr-lvt">${esc(stLabel(x.st))}</span></span>
-        <span class="small muted">${esc(x.st === 'away' ? tl('look.lastSeen', { when: ago(x.at) }) : `${tl(x.where === 'game' ? 'look.whereGame' : 'look.whereDesk')} · ${tl('look.activity', { when: ago(x.inputAt || x.at) })}`)}</span></div>
+        <span class="small muted">${esc(x.st === 'away' ? tl('look.lastSeen', { when: ago(x.at) }) : `${tl({ game: 'look.whereGame', tool: 'look.whereTool', reading: 'look.whereReading' }[x.where] || 'look.whereDesk')} · ${tl('look.activity', { when: ago(x.inputAt || x.at) })}`)}</span></div>
       ${stuckNote}
       <h3 class="hr-flsub">${esc(tl('look.on'))}</h3>${on}
       <p class="small muted">${esc(tl('look.progress', { done: x.done, total: x.total }))}</p>
@@ -326,7 +336,11 @@ export function liveBoard(ctx) {
         const x = await api(ctx.api2(`look/${encodeURIComponent(sid)}`), { background: true });
         if (!LV.look || LV.look.sid !== sid) return;
         const f = document.activeElement && box.contains(document.activeElement) ? document.activeElement.dataset.hrflag || (document.activeElement.hasAttribute('data-hrlkdesk') ? 'desk' : '') : '';
+        const first = !box.querySelector('.hr-look');
         box.innerHTML = lookHtml(x);
+        // (what they see is at the top: open there)
+        WT.fit(box);
+        if (first) { const sc = box.closest('.sheet'); if (sc) sc.scrollTop = 0; }
         if (f) box.querySelector(f === 'desk' ? '[data-hrlkdesk]' : `[data-hrflag="${f}"]`)?.focus();
       } catch (e) { box.innerHTML = `<p class="err">${esc(e.message)}</p>`; }
     };
@@ -339,12 +353,28 @@ export function liveBoard(ctx) {
         return;
       }
       if (e.target.closest('[data-hrlkdesk]')) { sh.close(); ctx.deskSheet(sid); }
+      const rm = e.target.closest('[data-hrroom]'); if (rm && ctx.openRoom) { sh.close(); ctx.openRoom(rm.dataset.hrroom); }
       if (e.target.closest('[data-hrlksup]')) { sh.close(); ctx.supports(sid); }
     });
     await load();
+    // (the sheet's own first focus may land on a button at the bottom: what they see, at the top, stays in view)
+    setTimeout(() => { if (LV.look && LV.look.sid === sid && box.querySelector('.hr-lkscreen')) { sh.el.querySelector('.close')?.focus({ preventScroll: true }); const sc = box.closest('.sheet'); if (sc) sc.scrollTop = 0; } }, 60);
     LV.lookTimer = setInterval(load, 4000);
+    if (live()) poll();   // the board asks for this desk's large view at once
   }
 
+  /** The look sheet's large view, fresh after each poll (only when what it shows changed). */
+  function paintLookScreen() {
+    if (!LV.look) return;
+    const box = LV.look.sh.el.querySelector('[data-lkbig]'); if (!box) return;
+    const html = WT.bigHtml(LV.look.sid, desks()[LV.look.sid] || {}), key = (/data-key="([^"]*)"/.exec(html) || [])[1] || '';
+    const cur = box.firstElementChild ? box.firstElementChild.dataset.key || '' : '';
+    if (key !== cur || !html) {
+      box.innerHTML = html; WT.fit(box);
+      // (the first time it shows: the sheet opens at the top, where it is)
+      if (html && !cur) { const sc = box.closest('.sheet'); if (sc) sc.scrollTop = 0; }
+    }
+  }
   // ---------------------------------------------------------------- clicks
   function click(e) {
     const p = e.target.closest('[data-hrpanel]'); if (p) { openPanel(p.dataset.hrpanel); return true; }

@@ -188,16 +188,16 @@ test('students drawing on the room: off by default (403), the teacher\'s toggle,
 });
 
 // ---------------------------------------------------------------- touch drag on a phone
-test('an iPhone: a finger drags a lesson out of the strip onto My desk and a desk (after a hold too); a sideways swipe scrolls the strip; a card from My desk; a tap picks', { timeout: 240000 }, async t => {
+test('an iPhone: a finger drags out of the strip and out of the Find lessons sheet onto My desk and desks (after a hold too); a sideways swipe scrolls the strip; a card from My desk; a tap picks', { timeout: 240000 }, async t => {
   if (skip) return t.skip(skip);
   const browser = chromiumOf(); if (!browser) return t.skip('needs Chromium');
   reset();
   q.run('UPDATE homeroom_rooms SET staged=? WHERE class_id=?', '[]', cls.id);
   const { ctx, page, errors } = await board(browser, IPHONE);
-  const item = `[data-hritem="${pizza.id}"]`;
-  // the strip scrolled so the lesson shows
-  await page.evaluate(sel => { const el = document.querySelector(sel), p = document.getElementById('hr-panel'); p.scrollLeft = el.offsetLeft - 40; }, item);
-  await page.waitForTimeout(200);
+  // (on a phone the catalog is the Find lessons sheet; the strip keeps the groups, lesson plans, Reading and the tools)
+  const item = '#hr-panel [data-hritem="R:"]';
+  const show = () => page.evaluate(sel => { const el = document.querySelector(sel), p = document.getElementById('hr-panel'); p.scrollLeft = el.offsetLeft - 40; }, item).then(() => page.waitForTimeout(200));
+  await show();
   // a sideways swipe on it scrolls the strip, drags nothing
   const sx0 = await page.evaluate(() => document.getElementById('hr-panel').scrollLeft);
   const it0 = mid(await box(page, item));
@@ -207,41 +207,48 @@ test('an iPhone: a finger drags a lesson out of the strip onto My desk and a des
   assert.ok(Math.abs(sx1 - sx0) > 40, `the strip scrolled (${sx0} -> ${sx1})`);
   assert.equal(await page.locator('.hr-ghost').count(), 0, 'no drag');
   assert.equal(await page.locator('#hr-givebar:not([hidden])').count(), 0, 'nothing picked');
-  // up out of the strip onto My desk: the ghost follows, My desk is outlined, it lands there
-  await page.evaluate(sel => { const el = document.querySelector(sel), p = document.getElementById('hr-panel'); p.scrollLeft = el.offsetLeft - 40; }, item);
-  await page.waitForTimeout(200);
-  const it = mid(await box(page, item)), my = mid(await box(page, '.hr-tdesk'));
-  const cdp = await finger(ctx, page, [...line(it, { x: it.x, y: it.y - 60 }, 4), ...line({ x: it.x, y: it.y - 60 }, my, 10)], { keep: true });
+  // Read any book, up out of the strip onto Ben's desk: the ghost follows, the desk is outlined, Ben's sheet
+  await show(); await noToasts(page);
+  const it = mid(await box(page, item)), ben = mid(await box(page, `.hr-desk[data-sid="${kids[1].id}"]`));
+  const cdp = await finger(ctx, page, [...line(it, { x: it.x, y: it.y - 60 }, 4), ...line({ x: it.x, y: it.y - 60 }, ben, 10)], { keep: true });
   await page.waitForSelector('.hr-ghost');
-  assert.equal(await page.locator('.hr-tdesk.hr-droptarget').count(), 1, 'My desk is outlined under the finger');
+  assert.equal(await page.locator(`.hr-desk[data-sid="${kids[1].id}"].hr-droptarget`).count(), 1, 'Ben\'s desk is outlined under the finger');
   await shot(page, 'drag-phone-390');
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await page.waitForSelector('.hr-giveform');
+  assert.match(await page.locator('#sheet-title').innerText(), /for Ben/);
+  assert.equal(await page.locator('.hr-ghost').count(), 0, 'the ghost is gone');
+  await page.locator('[data-give="cancel"]').tap(); await page.waitForTimeout(300);
+  await page.locator('#hr-givebar [data-hr="unpick"]').tap();
+  // Find lessons: a hold on Fraction Pizza in the sheet, then onto My desk (the sheet steps aside, then closes)
+  await page.evaluate(() => { const b = document.querySelector('[data-hr="catalog"]'), p = document.getElementById('hr-panel'); p.scrollLeft = b.offsetLeft - 20; });
+  await page.locator('[data-hr="catalog"]').tap();
+  await page.waitForSelector('.hr-csheet [data-cq]');
+  await page.locator('.hr-csheet [data-cq]').fill('Pizza');
+  await page.waitForTimeout(250); await page.keyboard.press('Enter').catch(() => {});
+  await page.evaluate(() => document.activeElement && document.activeElement.blur()); await page.waitForTimeout(300);
+  const sp = `.hr-csheet [data-hritem="${pizza.id}"]`;
+  await page.locator(sp).scrollIntoViewIfNeeded();
+  const pz = mid(await box(page, sp)), my = mid(await box(page, '.hr-tdesk'));
+  const cdp2 = await finger(ctx, page, line(pz, my, 12), { holdMs: 420, keep: true });
+  await page.waitForSelector('.hr-ghost');
+  assert.equal(await page.locator('.hr-csheet').isVisible(), false, 'the sheet stepped aside');
+  await shot(page, 'drag-phone-sheet-390');
+  await cdp2.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await until(() => HS.storedOf(cls.id).length === 1, 'on My desk');
   await page.waitForSelector('.hr-tdesk [data-hrstaged]');
-  assert.equal(await page.locator('.hr-ghost').count(), 0, 'the ghost is gone');
-  // a hold, then onto Ben's desk: Ben's hand-out sheet
-  await page.evaluate(sel => { const el = document.querySelector(sel), p = document.getElementById('hr-panel'); p.scrollLeft = el.offsetLeft - 40; }, item);
-  await page.waitForTimeout(200);
-  const it2 = mid(await box(page, item)), ben = mid(await box(page, `.hr-desk[data-sid="${kids[1].id}"]`));
-  await noToasts(page);
-  await finger(ctx, page, line(it2, ben, 12), { holdMs: 420 });
-  await page.waitForSelector('.hr-giveform');
-  assert.match(await page.locator('#sheet-title').innerText(), /Fraction Pizza for Ben/);
-  await page.locator('[data-give="cancel"]').tap();
-  await page.waitForTimeout(300);
+  assert.equal(await page.locator('.hr-csheet').count(), 0, 'the sheet closed');
   // a card on My desk, by a finger, onto Cleo's desk
-  await noToasts(page);
+  await page.waitForTimeout(300); await noToasts(page);
   const card = mid(await box(page, '.hr-tdesk [data-hrstaged]')), cleo = mid(await box(page, `.hr-desk[data-sid="${kids[2].id}"]`));
   await finger(ctx, page, line(card, cleo, 12));
   await page.waitForSelector('.hr-giveform');
   assert.match(await page.locator('#sheet-title').innerText(), /Fraction Pizza for Cleo/);
-  await page.locator('[data-give="cancel"]').tap();
-  await page.waitForTimeout(300);
-  // a tap still picks (the yellow bar says where to put it): first the pick the drag left is let go
+  await page.locator('[data-give="cancel"]').tap(); await page.waitForTimeout(300);
   await page.locator('#hr-givebar [data-hr="unpick"]').tap();
   await page.waitForSelector('#hr-givebar[hidden]', { state: 'attached' });
-  await page.evaluate(sel => { const el = document.querySelector(sel), p = document.getElementById('hr-panel'); p.scrollLeft = el.offsetLeft - 40; }, item);
-  await page.waitForTimeout(150);
+  // a tap still picks (the yellow bar says where to put it)
+  await show(); await noToasts(page);
   await page.locator(item).tap();
   await page.waitForSelector('#hr-givebar:not([hidden])');
   assert.equal(await page.locator(item).getAttribute('aria-pressed'), 'true');
@@ -255,11 +262,16 @@ test('a tablet\'s tall panel: a finger drags a lesson sideways onto a desk; up a
   const browser = chromiumOf(); if (!browser) return t.skip('needs Chromium');
   reset();
   const { ctx, page, errors } = await board(browser, { viewport: { width: 1180, height: 820 }, hasTouch: true });
-  const item = `[data-hritem="${pizza.id}"]`;
+  // the catalog's search opens Fraction Pizza's group
+  await page.locator('#hr-panel [data-cq]').fill('Pizza'); await page.waitForTimeout(250);
+  await page.evaluate(() => document.activeElement && document.activeElement.blur());
+  const item = `#hr-panel [data-hritem="${pizza.id}"]`;
+  await page.locator('#hr-panel [data-cq]').fill(''); await page.waitForTimeout(250);
+  await page.locator('#hr-panel [data-cq]').fill('Pizza'); await page.waitForTimeout(250);
   await page.locator(item).scrollIntoViewIfNeeded();
   const y0 = await page.evaluate(() => document.getElementById('hr-panel').scrollTop);
   const it = mid(await box(page, item));
-  await finger(ctx, page, line(it, { x: it.x + 3, y: it.y - 150 }, 10));
+  await finger(ctx, page, line(it, { x: it.x + 3, y: it.y + 150 }, 10));
   await page.waitForTimeout(400);
   assert.notEqual(await page.evaluate(() => document.getElementById('hr-panel').scrollTop), y0, 'the panel scrolled');
   assert.equal(await page.locator('#hr-givebar:not([hidden])').count(), 0, 'nothing picked');

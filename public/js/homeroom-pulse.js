@@ -6,8 +6,14 @@
 //   - how many times the game itself moved forward on this page (it saved or scored), never what was saved;
 //   - on the desk: where the pointer is over their own desk and over the pad, as fractions of it, sampled at most 4
 //     times a second and sent in a batch (every 2 s while it moves, else a pulse every 10 s).
-// Never keystrokes, words, answers or the screen. Nothing is sent while class isn't live (the desk's state poll and the
-// pulse's own answer say when it is), while the page is hidden, or for a hidden cursor.
+// Never keystrokes, words or answers. Nothing is sent while class isn't live (the desk's state poll and the pulse's own
+// answer say when it is), while the page is hidden, or for a hidden cursor.
+//
+// Watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): on a handout's game page, while the
+// teacher's board shows this desk (the pulse's answer says so: watch 'tile' or 'look'), a small picture of the game, drawn
+// by the game's own frame (public/sdk/brb-sdk.js, brb:snap), goes to the server at the rate and size it says
+// (services/homeroom-watch.js), and stops when nobody watches, the page is hidden or class ends. Kept in memory there
+// only, for the class's teachers.
 //
 // On the game page (page-data hrPulse, added by services/homeroom-handouts.js's play frame) this file starts itself and
 // also shows the desk's lock, Pause screens and "Your teacher is coming over" over the game.
@@ -18,6 +24,8 @@ import '/js/homeroom-support.js';
 
 const tp = (k, v) => t(`js.homeroom-pulse.${k}`, v);
 const SAMPLE_MS = 250, SEND_MS = 2000, BEAT_MS = 10000, SAMPLES = 8;
+/** The server's limits for a picture (services/homeroom-watch.js TILE.bytes, LOOK.bytes). */
+const SNAP_TILE = 24000, SNAP_MAX = 110000;
 
 /**
  * Start pulsing. opts: { classId, where: 'desk' | 'game', on: () => class lesson id | '', deskEl: () => element whose
@@ -104,13 +112,47 @@ function gamePage(cfg) {
     if (html !== shown) { box.innerHTML = html; shown = html; }
   };
   const over = (icon, title, hint) => `<div class="hd-over hd-pause hp-full" role="status"><div class="hd-pausein">${iconHtml(icon, { size: 64 })}<h2>${esc(title)}</h2><p>${esc(hint)}</p></div></div>`;
-  const pulse = startPulse({ classId: cfg.classId, where: 'game', on: () => cfg.on, onAnswer: draw });
+  const pulse = startPulse({ classId: cfg.classId, where: 'game', on: () => cfg.on, onAnswer: r => { draw(r); setWatch(r); } });
   // The game's own steps forward: it saved or scored (from its frame only; play.js checks and sends them on).
   const frame = () => document.getElementById('gameframe');
   addEventListener('message', e => {
     const f = frame(); if (!f || e.source !== f.contentWindow || !e.data || typeof e.data !== 'object') return;
     if (['brb:save', 'brb:score', 'brb:gameover'].includes(e.data.type)) pulse.step();
+    // the game's small picture (brb-sdk.js): only the one asked for, only a picture, never bigger than the server takes
+    const m = e.data;
+    if (m.type === 'brb:snapped' && SN.wait && m.n === SN.wait.n) {
+      const ok = typeof m.img === 'string' && m.img.length <= SNAP_MAX && /^data:image\/(webp|jpeg|png);base64,/.test(m.img) && Number.isFinite(m.w) && Number.isFinite(m.h);
+      SN.wait.res(ok ? { img: m.img, w: Math.round(m.w), h: Math.round(m.h), cur: Array.isArray(m.cur) && m.cur.length === 2 ? m.cur.map(Number) : null } : null);
+    }
   });
+  // ---- watching: the picture loop (only while the server says the teacher's board shows this desk)
+  const SN = { mode: '', every: 5000, w: 240, q: 0.55, timer: null, n: 0, wait: null };
+  function setWatch(r) {
+    const mode = (r && r.watch) || '';
+    if (mode) { SN.every = Math.max(1000, Number(r.every) || 5000); SN.w = Math.min(640, Math.max(80, Number(r.w) || 240)); }
+    if (mode !== SN.mode) { SN.mode = mode; schedule(mode ? 300 : -1); }
+  }
+  function schedule(ms) { clearTimeout(SN.timer); SN.timer = null; if (ms < 0 || !SN.mode || document.hidden) return; SN.timer = setTimeout(snapNow, ms); }
+  async function snapNow() {
+    const f = frame(); if (!f || !f.contentWindow || !SN.mode) { schedule(SN.every); return; }
+    const n = ++SN.n, mode = SN.mode, t0 = performance.now();
+    const got = await new Promise(res => { SN.wait = { n, res }; setTimeout(() => res(null), 4000); try { f.contentWindow.postMessage({ brb: 1, type: 'brb:snap', n, w: SN.w, q: SN.q }, '*'); } catch { res(null); } });
+    SN.wait = null;
+    if (got && got.img && SN.mode) {
+      // (too big for the tile: a little less quality next time)
+      const cap = mode === 'look' ? SNAP_MAX : SNAP_TILE;
+      if (got.img.length > cap) { SN.q = Math.max(0.25, SN.q - 0.1); schedule(SN.every); return; }
+      try {
+        const r = await api(`/api/desk/${encodeURIComponent(cfg.classId)}/snap`, { method: 'POST', body: { img: got.img, w: got.w, h: got.h, cur: got.cur, on: cfg.on }, background: true });
+        setWatch(r);
+      } catch { /* slow down or not live: the next pulse says */ }
+    }
+    SN.last = performance.now() - t0;
+    schedule(SN.every);
+  }
+  document.addEventListener('visibilitychange', () => schedule(document.hidden ? -1 : 500));
+  // (the desk this page plays in hands on what its state poll heard, every few seconds)
+  addEventListener('message', e => { if (e.source === window.parent && e.source !== window && e.origin === location.origin && e.data && e.data.type === 'hr:watch') setWatch(e.data); });
 }
 const cfg = pageData().hrPulse;
 if (cfg && cfg.classId) gamePage(cfg);

@@ -51,8 +51,9 @@ Teachers without the Teacher plan keep today's class page.
   Rows, Tables of 4, U-shape, Circle, then drag any desk; each class keeps its own seating. **Team desks**: students who
   share one desk.
 - Groups the teacher names (for example Stretch, On track, Building).
-- Left panel (teacher's desk): Hand out to (Whole class, groups), My lesson plans (+ Build a lesson plan), Lessons I
-  built, Oomba lessons and tools, Reading, Class flow (brain break, note, timer, used right away), Board tools.
+- Left panel (teacher's desk): Hand out to (Whole class, groups), My lesson plans (+ Build a lesson plan), the catalog
+  (search, grade, subjects: Lessons I built, My folders, Shared with me, Favorites, Oomba lessons by subject, Teaching
+  tools), Reading, Class flow (brain break, note, timer, used right away), Board tools.
 - **My desk** (the teacher's own desk on the board, under the teacher's area): the teacher drops or tap-places any lesson,
   lesson plan or tool there, even before the class has students, to try it (Play / Preview) and hand it out later (Hand
   out, then a desk, a group or Whole class; or drag the card there). Dragging works by touch too: a short hold or a move
@@ -68,6 +69,19 @@ Teachers without the Teacher plan keep today's class page.
   locked while screens are paused or a desk is locked.
 - **Pause screens** for everyone; for one student: hide cursor, lock desk, remove a sticky they added.
 - **Projector view**: teacher's area, Now/Next timer, slides, brain breaks. Never names, hands, Needs a look or progress.
+
+Built (docs/decisions.md "Homeroom: watching desks and the full catalog"): while class is live each desk on the board
+shows what that student has open, scaled into the desk, as the Manipulatives live room shows each board in its square:
+the game in their player (a small picture the game's own frame draws, every 5 s while the desk is on screen, with their
+pointer), their square of a Manipulatives tool's live room (drawn by the tool's own code, live, with their cursor), the
+page they are reading, or their cards and doodle pad. Tapping the desk opens it large in look (a picture every 1.5 s),
+with Open the room for a tool. Never the notebook; nothing recorded or stored; the class's teachers and aides only (never
+a sub's link, the projector, parents or classmates). Students see "Your teacher can see your screen in Homeroom." on their
+desk and over every game. **Manipulatives tools hand out**: each one is that tool's live room for the class, opened in the
+desk's player exactly as on its own page (one tool at a time per class; open practice, not graded). The left panel's
+catalog lists every lesson a teacher can assign elsewhere (all their own, their folders, shared folders, favorites, every
+Find Oomba lesson by subject, every Manipulatives tool by category, Figures for My desk) with search, grade and subjects;
+on a phone the strip's Find lessons opens it in a sheet.
 
 ## Handouts, lessons and lesson plans
 

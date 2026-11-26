@@ -522,9 +522,9 @@ body.hs-page main#main{min-height:100vh;min-height:100dvh}
    class; or drag it there with a mouse or pen. Desks show their handouts with progress. */
 .hr-give{width:100%;text-align:start;font:inherit;font-weight:800;font-size:14px;color:var(--text);cursor:pointer;touch-action:manipulation}
 /* a finger drags an item out of the panel (homeroom.js dragStart): the panel still scrolls its own way */
-.hr-panel .hr-give{touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.hr-panel .hr-give,.hr-csheet .hr-give{touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 /* (a held icon is no picture to drag: the browser's own drag after a long press would take the finger, pointercancel) */
-.hr-panel .hr-give img,.hr-panel .hr-give svg,.hr-scard img,.hr-scard svg{-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}
+.hr-panel .hr-give img,.hr-panel .hr-give svg,.hr-csheet .hr-give img,.hr-csheet .hr-give svg,.hr-scard img,.hr-scard svg{-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}
 @media (max-width:819px){.hr-panel .hr-give{touch-action:pan-x}}
 .hr-dragging,.hr-dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
 .hr-ghost.touch{transform-origin:24px 64px;box-shadow:0 10px 28px rgba(20,20,20,.28);border-width:3px}
@@ -1355,3 +1355,70 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hd-roomtools[hidden]{display:none}
 .hd-roomtools .hd-tool:disabled{opacity:.45;cursor:default}
 .hd-rphint{flex:1 1 220px;margin:0;color:var(--muted)}
+/* ---- watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): what each student has open,
+   scaled down on their desk, as the Manipulatives live room shows each board in its square; large in look */
+.hr-screen{position:absolute;inset:6px;border-radius:12px;overflow:hidden;background:var(--brand-ink,#141414);pointer-events:none;z-index:1}
+.hr-desk.hr-watching > .hr-cards,.hr-desk.hr-watching > .hr-empty,.hr-desk.hr-watching > .hr-gtag{visibility:hidden}
+.hr-screen[data-kind="tool"],.hr-screen[data-kind="read"]{background:var(--bg)}
+.hr-simg{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.hr-scur{position:absolute;transform:translate(-2px,-2px);display:flex;align-items:flex-start;gap:2px;pointer-events:none;transition:left .4s linear,top .4s linear}
+.hr-scur b{font-size:11px;background:#FF6B4A;color:#fff;border-radius:6px;padding:0 4px;margin-top:10px}
+.hr-stag{position:absolute;inset-inline-start:4px;bottom:4px;max-width:calc(100% - 8px);display:flex;align-items:center;gap:4px;padding:1px 6px;border-radius:999px;background:rgba(20,20,20,.72);color:#fff;font-size:11px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hr-stag span{overflow:hidden;text-overflow:ellipsis}
+.hr-swait{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;font-size:12px;font-weight:800;text-align:center;padding:6px}
+.hr-screen[data-kind="tool"] .hr-swait{color:var(--text)}
+.hr-sfit{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.hr-sfit > .hr-mscreen{position:absolute;left:50%;top:50%;transform-origin:center center;translate:-50% -50%}
+.hr-mscreen{flex:none;pointer-events:none;border-radius:var(--r);background:var(--card)}
+.hr-msq{position:absolute;inset:0}
+.hr-sbox{position:absolute;left:50%;top:50%;translate:-50% -50%}
+.hr-snote{transform:scale(.8);transform-origin:top left}
+.hr-sbusy{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+.hr-sread{position:absolute;inset:0;display:flex;gap:6px;padding:6px;align-items:stretch}
+.hr-sread img{flex:none;max-width:48%;height:100%;object-fit:cover;border-radius:8px}
+.hr-sread p{margin:0;font-size:10px;line-height:1.3;color:var(--text);overflow:hidden;font-weight:700}
+.hr-spad{position:absolute;inset-inline-end:8px;bottom:8px;width:54px;height:36px;border-radius:6px;overflow:hidden;box-shadow:0 0 0 1px var(--line);pointer-events:none}
+.hr-spad svg{width:100%;height:100%;display:block}
+.hr-lkbig:empty{display:none}
+.hr-lkscreen{position:relative;width:100%;aspect-ratio:16/10;max-height:56vh;border-radius:14px;overflow:hidden;background:var(--brand-ink,#141414)}
+.hr-lkscreen[data-kind="tool"],.hr-lkscreen[data-kind="read"],.hr-lkdesk{background:var(--bg)}
+.hr-lkscreen .hr-swait{font-size:15px}
+.hr-lkscreen .hr-stag{font-size:13px;padding:2px 8px}
+.hr-lkscreen .hr-sread p{font-size:15px}
+.hr-lkdesk{display:flex;align-items:center;justify-content:center;gap:8px;aspect-ratio:auto;min-height:64px;font-weight:800;color:var(--muted)}
+.hr-lkseen{margin:0}
+.hr-lkroom{justify-content:flex-end}
+.hr-playnote{margin-inline-start:auto;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:var(--muted)}
+.hd-seen{display:flex;align-items:center;gap:6px;margin:2px 0 6px;font-size:13px;font-weight:700;color:var(--muted)}
+@media (max-width:819px){.hr-playnote span{display:none}}
+
+/* ---- the left panel's catalog: search, a grade, the subjects; lists by kind (laptop: in the panel; phone: a sheet) */
+.hr-catalog{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hr-cfind{display:flex;flex-direction:column;gap:6px;position:sticky;top:-12px;z-index:2;background:var(--card);padding:4px 0 6px;margin-top:4px}
+.hr-cq{min-height:44px}
+.hr-cfilters{display:flex;gap:6px}
+.hr-cg{min-height:40px;flex:1}
+.hr-csubjects{display:flex;flex-wrap:wrap;gap:4px}
+.hr-csubj{min-height:36px;font-size:13px}
+.hr-cgroup{border-radius:14px}
+.hr-cgroup > .hr-items{margin:6px 0 4px}
+.hr-csum{display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 8px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;list-style:none}
+.hr-csum::-webkit-details-marker{display:none}
+.hr-csum::before{content:'›';display:inline-block;transition:transform .15s;font-size:18px;line-height:1;color:var(--muted)}
+.hr-cgroup[open] > .hr-csum::before{transform:rotate(90deg)}
+.hr-csum:hover{background:var(--hover)}
+.hr-ccount{margin-inline-start:auto;font-size:12px;color:var(--muted);font-weight:800}
+.hr-igr{margin-inline-start:auto;flex:none;font-size:11px;font-weight:800;color:var(--muted);white-space:nowrap}
+.hr-liveonly{text-decoration:none;color:inherit;opacity:.85}
+.hr-cnone{margin:4px 0}
+.hr-cphone{display:none}
+.hr-csheet .hr-catalog{gap:8px}
+.hr-csheet .hr-cfind{top:0}
+.hr-csheet .hr-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
+.hr-csheet .hr-cap{display:block}
+@media (max-width:819px){
+  .hr-cphone{display:flex;order:-1;flex:none;border-color:var(--accent-press)}
+  .hr-panel .hr-catalog{display:none}
+  .hr-csheet .hr-items{display:flex;flex-direction:column;gap:6px}
+  .hr-csheet .hr-catalog,.hr-csheet .hr-cgroup{display:flex;flex-direction:column}
+}

@@ -44,9 +44,21 @@ export function firstNameOf(u, rosterName = '') {
 export const TRIAL_TZ = 'America/New_York';
 export const dateWords = (t, dateLocale = 'en-US') => new Date(t).toLocaleDateString(dateLocale, { weekday: 'long', month: 'long', day: 'numeric', timeZone: TRIAL_TZ });
 
+/** The features a line of copy may depend on (a block's or a list item's `when` / `unless`: a name or a list of
+ *  names). The sender (services/nudges.js renderFor) says which are true for this teacher today; anything not given is
+ *  false, so a line about a feature that may be off is left out rather than promised. */
+export const FEATURES = Object.freeze(['hasClass', 'classroom', 'tools', 'chat']);
+const names = x => (x == null ? [] : Array.isArray(x) ? x : [x]);
+/** Does a block or list item apply, given the features? */
+export function applies(b, features = {}) {
+  if (!b || typeof b !== 'object') return true;
+  return names(b.when).every(f => !!features[f]) && names(b.unless).every(f => !features[f]);
+}
+
 /**
  * One email of the trial sequence.
- * vars: { firstName, trialStart, trialEnd (ms), base (the site's origin), unsubscribeUrl, postalAddress, locale }
+ * vars: { firstName, trialStart, trialEnd (ms), base (the site's origin), unsubscribeUrl, postalAddress, locale,
+ *   features ({ hasClass, classroom, tools, chat }: see FEATURES) }
  * -> { subject, preview, html, text, locale }
  */
 export function renderTrial(step, vars = {}) {
@@ -59,13 +71,14 @@ export function renderTrial(step, vars = {}) {
   const greet = v.firstName ? fill(c.greeting, v) : c.greetingNoName;
   const sign = s.sign === 'full' ? c.signFull : c.signShort;
   const htmlBlocks = [], textBlocks = [];
-  for (const b of s.blocks) {
+  const feats = vars.features || {};
+  for (const b of s.blocks.filter(x => applies(x, feats))) {
     if (b.p || b.tour) {
       const t = fill(b.p || b.tour, v);
       htmlBlocks.push(F.p(inline(t)));
       textBlocks.push(plain(t));
     } else if (b.ol || b.ul) {
-      const items = (b.ol || b.ul).map(x => fill(x, v));
+      const items = (b.ol || b.ul).filter(x => applies(x, feats)).map(x => fill(typeof x === 'string' ? x : x.li, v));
       const tag = b.ol ? 'ol' : 'ul';
       htmlBlocks.push(F.list(items.map(inline), { ordered: tag === 'ol' }));
       textBlocks.push(items.map((x, i) => `${b.ol ? `${i + 1}.` : '•'} ${plain(x)}`).join('\n'));

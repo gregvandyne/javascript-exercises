@@ -1502,6 +1502,91 @@
   };
   Object.freeze(BRB.storage); Object.freeze(BRB.score);
   try { Object.defineProperty(window, 'BRB', { value: BRB, writable: false, configurable: false }); } catch (e) { window.BRB = BRB; }
+  // ---- Homeroom: a small picture of the game for the student's own teacher ---------------------------------------
+  // docs/decisions.md "Homeroom: watching desks and the full catalog". Only a Homeroom handout's play page asks (while
+  // the teacher's board shows this desk, at most once a second, public/js/homeroom-pulse.js): the picture is drawn here,
+  // inside the frame, since nothing outside it can read the game. The page is drawn through an SVG picture of its own
+  // copy (canvases put in as their pictures, drawn on the next frame so a WebGL canvas still has its drawing); where the
+  // browser refuses that, the game's biggest canvas alone; where it refuses both (a canvas with pictures from elsewhere),
+  // an empty answer, and the teacher sees the game's name instead. Small (at most 640 pixels wide), nothing kept here,
+  // never sent anywhere but the play page, and never asked for outside Homeroom.
+  (function homeroomSnap() {
+    var cur = null;
+    function at(e) { var w = Math.max(1, window.innerWidth), h = Math.max(1, window.innerHeight); cur = [Math.round(Math.min(1, Math.max(0, e.clientX / w)) * 1000) / 1000, Math.round(Math.min(1, Math.max(0, e.clientY / h)) * 1000) / 1000]; }
+    window.addEventListener('pointermove', at, true); window.addEventListener('pointerdown', at, true);
+    function encode(c, q) {
+      var url = '';
+      try { url = c.toDataURL('image/webp', q); } catch (e) { return ''; }
+      if (url.indexOf('data:image/webp') !== 0) { try { url = c.toDataURL('image/jpeg', q); } catch (e) { return ''; } }
+      return url;
+    }
+    function canvasPic(W, H, q) {
+      var best = null, area = 0, vw = window.innerWidth, vh = window.innerHeight;
+      [].forEach.call(document.querySelectorAll('canvas'), function (c) {
+        var r = c.getBoundingClientRect(), a = Math.max(0, Math.min(r.right, vw) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, vh) - Math.max(r.top, 0));
+        if (a > area) { area = a; best = c; }
+      });
+      if (!best) return '';
+      var out = document.createElement('canvas'); out.width = W; out.height = H;
+      var x = out.getContext('2d'), r = best.getBoundingClientRect(), k = W / Math.max(1, vw);
+      x.fillStyle = getComputedStyle(document.body || document.documentElement).backgroundColor || '#fff'; x.fillRect(0, 0, W, H);
+      try { x.drawImage(best, r.left * k, r.top * k, r.width * k, r.height * k); } catch (e) { return ''; }
+      return encode(out, q);
+    }
+    function domPic(W, H, q, done) {
+      try {
+        var vw = window.innerWidth, vh = window.innerHeight, doc = document.documentElement.cloneNode(true);
+        var src = document.querySelectorAll('canvas'), dst = doc.querySelectorAll('canvas');
+        for (var i = 0; i < src.length && i < dst.length; i++) {
+          var img = document.createElement('img'), r = src[i].getBoundingClientRect();
+          try { img.src = src[i].toDataURL('image/jpeg', 0.7); } catch (e) { img.src = ''; }
+          img.setAttribute('style', (src[i].getAttribute('style') || '') + ';width:' + r.width + 'px;height:' + r.height + 'px');
+          if (src[i].className) img.setAttribute('class', String(src[i].className.baseVal !== undefined ? src[i].className.baseVal : src[i].className));
+          if (src[i].id) img.id = src[i].id;
+          dst[i].parentNode.replaceChild(img, dst[i]);
+        }
+        // what is in a text box now (the copy has only what the page started with)
+        var si = document.querySelectorAll('input, textarea, select'), di = doc.querySelectorAll('input, textarea, select');
+        for (var j = 0; j < si.length && j < di.length; j++) {
+          if (si[j].tagName === 'TEXTAREA') di[j].textContent = si[j].value;
+          else if (si[j].tagName === 'SELECT') { [].forEach.call(di[j].options, function (o, k) { if (k === si[j].selectedIndex) o.setAttribute('selected', ''); else o.removeAttribute('selected'); }); }
+          else if (si[j].type === 'checkbox' || si[j].type === 'radio') { if (si[j].checked) di[j].setAttribute('checked', ''); else di[j].removeAttribute('checked'); }
+          else di[j].setAttribute('value', si[j].value);
+        }
+        [].forEach.call(doc.querySelectorAll('script, noscript, video, audio'), function (n) { n.parentNode && n.parentNode.removeChild(n); });
+        var sx = window.scrollX || 0, sy = window.scrollY || 0;
+        var xml = new XMLSerializer().serializeToString(doc);
+        var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + vw + '" height="' + vh + '"><foreignObject x="' + (-sx) + '" y="' + (-sy) + '" width="' + (vw + sx) + '" height="' + (vh + sy) + '">' + xml + '</foreignObject></svg>';
+        var im = new Image();
+        im.onload = function () {
+          var out = document.createElement('canvas'); out.width = W; out.height = H;
+          var x = out.getContext('2d');
+          x.fillStyle = getComputedStyle(document.body || document.documentElement).backgroundColor || '#fff'; x.fillRect(0, 0, W, H);
+          try { x.drawImage(im, 0, 0, W, H); } catch (e) { done(''); return; }
+          done(encode(out, q));
+        };
+        im.onerror = function () { done(''); };
+        im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      } catch (e) { done(''); }
+    }
+    var busy = false;
+    window.addEventListener('message', function (e) {
+      if (e.source !== parentWin) return;
+      var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:snap' || typeof m.n !== 'number' || busy) return;
+      busy = true;
+      var vw = Math.max(1, window.innerWidth), vh = Math.max(1, window.innerHeight);
+      var W = Math.max(80, Math.min(640, Math.round(+m.w || 240))), H = Math.max(16, Math.min(W * 2, Math.round(W * vh / vw)));
+      var q = Math.max(0.2, Math.min(0.85, +m.q || 0.55));
+      requestAnimationFrame(function () {
+        domPic(W, H, q, function (url) {
+          if (!url) url = canvasPic(W, H, q);
+          busy = false;
+          send('brb:snapped', { n: m.n, img: url || '', w: W, h: H, cur: cur });
+        });
+      });
+    });
+  })();
+
   var readySent = false;
   function ready() {
     // A live frame hands its port to the page with the first brb:ready (and only then).

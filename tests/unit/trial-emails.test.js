@@ -61,10 +61,10 @@ async function call(cookie, path, { method = 'GET', body, headers = {} } = {}) {
 // ---------------------------------------------------------------- templates
 test('templates: every email renders with its approved subject and preview, no placeholder left, a text part, real links with UTM tags, the footer', () => {
   const want = {
-    welcome: ["You're in! Your first game takes 2 minutes", 'Paste a lesson, get a game your class will beg to play.'],
+    welcome: ["You're in! Your first lesson takes 2 minutes", 'Paste what you already teach, get a lesson your class will beg to play.'],
     class: ['Your class is one code away', 'Students join in seconds, with no email addresses needed.'],
-    ideas: ['3 ways teachers are using Oomba this week', 'Warm-ups, review days and student-built games.'],
-    ending: ['Your trial ends in 3 days', 'Keep your classes, games and progress for one simple yearly price.'],
+    ideas: ['3 easy wins for your week', 'A live warm-up, a hands-on lesson and a story to share.'],
+    ending: ['Your trial ends in 3 days', 'Keep the Teacher plan for one simple yearly price.'],
     ended: ['Your trial has ended, but your classes are saved', 'Pick up right where you left off, anytime.'],
     thanks: ["You're all set!", null],
   };
@@ -98,17 +98,71 @@ test('templates: every email renders with its approved subject and preview, no p
   assert.match(T.renderTrial('class', {}).text, /^Hi there,\n/, 'no first name: a plain greeting');
   assert.match(T.renderTrial('class', {}).text, /It's often the moment the room lights up\./);
   assert.doesNotMatch(T.renderTrial('class', {}).text, /most teachers tell us/);
-  assert.match(T.renderTrial('ideas', {}).text, /CS Quest comes with full 45-minute lesson plans, and the other two with teacher notes/);
+  // Updated for the current app (Nov 2026): no courses (COURSES is off), no /learn or /build CTA.
+  assert.doesNotMatch(T.renderTrial('ideas', {}).text, /CS Quest|Number Quest|Cyber Defenders|courses|\/learn/);
+  assert.doesNotMatch(T.renderTrial('ideas', {}).subject, /teachers are using/, 'no claim about what teachers do');
   assert.match(T.renderTrial('ideas', {}).text, /Reply and we'll find 15 minutes/);
   assert.match(T.renderTrial('ended', {}).text, /15-minute call/);
   assert.match(T.renderTrial('ending', { trialEnd: end }).text, /Your free trial ends on Monday, November 23\./);
   assert.match(T.renderTrial('ending', {}).text, /\nGreg\n/); assert.doesNotMatch(T.renderTrial('ending', {}).text, /Founder/);
   assert.equal(T.copyFor('fr').locale, 'en', 'no French copy yet: English');
+  // No em dashes, no prices, no Homeroom, in any email with every feature on or off.
+  const ALL = { hasClass: true, classroom: true, tools: true, chat: true };
+  for (const step of T.TRIAL_STEPS) for (const features of [{}, ALL]) {
+    const m = T.renderTrial(step, { firstName: 'Sam', trialEnd: end, features });
+    for (const part of [m.subject, m.preview, m.text]) {
+      assert.doesNotMatch(part, /\u2014/, `${step}: no em dash`); assert.doesNotMatch(part, /\$\s?\d/, `${step}: no price`);
+      assert.doesNotMatch(part, /Homeroom|notebook|sub link/i, `${step}: Homeroom is not launched`);
+    }
+  }
+  // The feature switches: a line about a feature is there only when it is on.
+  const wl = f => T.renderTrial('welcome', { features: f }).text;
+  assert.match(wl({}), /Make a class:/); assert.doesNotMatch(wl({}), /your class is ready/);
+  assert.match(wl({ hasClass: true }), /Bring your students in:\*{0}.*your class is ready/); assert.doesNotMatch(wl({ hasClass: true }), /Make a class:/);
+  assert.doesNotMatch(wl({}), /Google Classroom/); assert.match(wl({ classroom: true }), /Using Google Classroom\? Connect it from your class page/);
+  assert.doesNotMatch(wl({}), /Teaching tools|Manipulatives/); assert.match(wl({ tools: true }), /Teaching tools in your top bar: virtual math Manipulatives/);
+  assert.match(wl({}), /Build a lesson from what you teach:/); assert.match(wl({}), /\/teach\/make\?utm_/, 'the welcome CTA is Turn a lesson into a game');
+  const id = f => T.renderTrial('ideas', { features: f }).text;
+  assert.match(id({}), /Review day:/); assert.doesNotMatch(id({}), /Manipulatives|Ask Oomba/); assert.match(id({}), /Make Monday's warm-up: .*\/teach\/make\?/);
+  assert.match(id(ALL), /Hands-on math:/); assert.doesNotMatch(id(ALL), /Review day:/); assert.match(id(ALL), /Ask Oomba, the chat/);
+  assert.match(id(ALL), /Try the Manipulatives: .*\/manipulatives\?/); assert.match(id({}), /Story time:/);
+  const en = f => T.renderTrial('ending', { trialEnd: end, features: f }).text;
+  assert.match(en(ALL), /the Manipulatives, Figures, the Oomba chat and more Builder messages/);
+  assert.match(en({ tools: true }), /the Manipulatives, Figures and more Builder messages/);
+  assert.match(en({}), /extras, like more Builder messages/); assert.doesNotMatch(en({}), /Manipulatives/);
+  for (const f of [{}, ALL]) {
+    assert.match(en(f), /stay either way/, 'classes, games and progress are kept with or without the plan');
+    assert.match(en(f), /one yearly price for unlimited students/); assert.match(en(f), /invoice or purchase order/);
+    assert.match(en(f), /Keep the Teacher plan: .*\/me\/settings\?.*#teacher-plan/);
+  }
+  assert.match(T.renderTrial('ended', { features: ALL }).text, /Anything you already assigned keeps working for your students/);
+  assert.doesNotMatch(T.renderTrial('ended', {}).text, /Manipulatives/);
+  assert.match(T.renderTrial('ended', {}).text, /Get the Teacher plan: .*\/trial\?/); assert.doesNotMatch(T.renderTrial('ended', {}).text, /Reactivate/);
+  // The owner's naming (Nov 2026): a teacher's single game is a "lesson"; no teacher-facing "game" left in the copy.
+  for (const step of T.TRIAL_STEPS) assert.doesNotMatch(T.renderTrial(step, { trialEnd: end, features: ALL }).text, /\bgames?\b/i, `${step}: "lesson", not "game"`);
+  assert.equal(T.applies({ when: ['tools', 'chat'] }, { tools: true }), false); assert.equal(T.applies({ when: 'tools', unless: 'chat' }, { tools: true }), true);
   assert.equal(T.firstNameOf({ display_name: 'Ms. Owl' }), 'Ms. Owl', 'a title keeps the whole name');
   assert.equal(T.firstNameOf({ display_name: 'Mr' }), '');
   assert.equal(T.firstNameOf({ display_name: 'cool_kid99' }), '', 'not a name: no greeting by name');
   assert.equal(T.firstNameOf({ display_name: 'TeachX' }, 'Ms Rivera'), 'Ms Rivera', 'a teacher\'s school roster name first');
   assert.equal(T.firstNameOf({ display_name: 'María José' }), 'María');
+});
+
+test('features: what the copy may promise is read from the app today (a class, Google Classroom, the plan tools, the Oomba chat)', () => {
+  const t = teacher();
+  const keep = { googleClientId: config.googleClientId, googleClientSecret: config.googleClientSecret, googleClassroom: config.googleClassroom, billingPublic: config.billingPublic };
+  try {
+    Object.assign(config, { googleClientId: '', googleClientSecret: '', googleClassroom: false, billingPublic: false });
+    assert.deepEqual(N.featuresFor(t), { hasClass: false, classroom: false, tools: false, chat: false }, 'billing off in tests: no plan tools, no chat');
+    assert.doesNotMatch(N.renderFor('welcome', t, null).text, /Manipulatives|Google Classroom/);
+    assert.match(N.renderFor('welcome', t, null).text, /Make a class:/);
+    assert.equal(S.createClass(t, school.id, { name: 'Room 9' }).ok, true);
+    assert.equal(N.featuresFor(t).hasClass, true);
+    assert.match(N.renderFor('welcome', t, null).text, /your class is ready/);
+    Object.assign(config, { googleClientId: 'gid', googleClientSecret: 'gsecret', googleClassroom: true });
+    assert.equal(N.featuresFor(t).classroom, true);
+    assert.match(N.renderFor('welcome', t, null).text, /Using Google Classroom\?/);
+  } finally { Object.assign(config, keep); }
 });
 
 // ---------------------------------------------------------------- sending
@@ -278,7 +332,7 @@ test('a trial that ends without a card gets #5; the rest is canceled', async () 
   assert.equal(N.onTrialEnded(t.id).reason, 'ended');
   await N.runDue(Date.now() + 1000); await N.runDue(Date.now() + 2000);
   assert.deepEqual(templatesTo(t.id), ['trial_ended']);
-  assert.match(sent.at(-1).body.text, /Nothing was charged\. Your classes and games are saved/);
+  assert.match(sent.at(-1).body.text, /Nothing was charged\. Your classes and lessons are saved/);
   assert.equal(N.onTrialConverted(t.id).ok, true, 'paying later still says thank you');
 });
 

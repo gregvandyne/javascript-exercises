@@ -2524,9 +2524,24 @@ async function route() {
   if (!h || !HOST) { await loadState2(); return home(); }
   home();
 }
-if (ALL_PAGE) loadState2().then(boardsPage);
+// Homeroom (docs/decisions.md "Homeroom: watching desks and the full catalog") imports this file only to draw students'
+// boards read-only on the teacher's board (readOnlyBoard below): with no #manip on the page, the page itself never starts.
+if (!ROOT) { /* imported, not the Manipulatives page */ } else if (ALL_PAGE) loadState2().then(boardsPage);
 else {
   window.addEventListener('hashchange', route);
   window.addEventListener('pagehide', () => { if (V) autosave({ keepalive: true }); });
   loadState2().then(route);
 }
+
+/** Homeroom's teacher board (public/js/homeroom-watch.js): a student's square in a live room drawn read-only exactly as
+ *  the live room draws it (public/js/manip-room.js stateOf, then the tool's own boardHtml), from its saved state (the
+ *  parsed JSON) and the square's work space. -> { html, st, ann: { notes, strokes, texts } } or null for an unknown tool. */
+export function readOnlyBoard(slug, raw, space) {
+  const impl = IMPL[slug]; if (!impl) return null;
+  const o = migrate(slug, raw && Object.keys(raw).length ? raw : newBoard(slug, space), { at: { x: 0, y: 0 }, space, from: space }), ann = o.__ann || {};
+  const rest = { ...o }; delete rest.__ann; delete rest.__steps;
+  const st = normalize(slug, impl, rest);
+  return { html: boardHtml(slug, impl, st, { readOnly: true, totals: true }), st,
+    ann: { notes: Array.isArray(ann.notes) ? ann.notes.slice(0, NOTE_MAX) : [], strokes: Array.isArray(ann.strokes) ? ann.strokes : [], texts: Array.isArray(ann.texts) ? ann.texts.slice(0, 30) : [] } };
+}
+export { growAnswers };
