@@ -3894,6 +3894,10 @@
         "moved": "{label} ist in die Spalte {col} gewandert.",
         "needTen": "Braucht 10 zum Tauschen",
         "count": "{n} Teile in {col}"
+      },
+      "host": {
+        "homeroomTool": "{tool} liegt auf den Homeroom-Tischen deiner Schüler. Wenn du diesen Raum startest, verschwindet es von ihren Tischen. Ihre Arbeit bleibt erhalten.",
+        "startRoom": "Raum starten"
       }
     },
     "manip-room": {
@@ -15270,7 +15274,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment.",
-      "emptyArea": "Dein Bereich ist leer. Lege zuerst etwas hinein und sende ihn dann."
+      "emptyArea": "Dein Bereich ist leer. Lege zuerst etwas hinein und sende ihn dann.",
+      "homeroomTool": "{tool} liegt auf den Homeroom-Tischen deiner Schüler. Wenn du diesen Raum startest, verschwindet es von ihren Tischen."
     }
   },
   "proof": {

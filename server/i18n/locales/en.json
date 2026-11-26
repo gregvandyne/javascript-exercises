@@ -3892,7 +3892,9 @@
         "noClasses": "You don't teach a class yet, so there is no class to run a session for.",
         "mine": "Your sessions",
         "board": "Start from a saved board (its tool and steps)",
-        "noBoard": "An empty board"
+        "noBoard": "An empty board",
+        "homeroomTool": "{tool} is on your students’ Homeroom desks. Starting this room takes it off their desks. Their work is kept.",
+        "startRoom": "Start room"
       },
       "boards": {
         "title": "My boards",
@@ -16227,7 +16229,8 @@
       "dueBeforeOpen": "The due day comes before the day it opens.",
       "answered": "That question is already finished.",
       "notYet": "Try the hints first.",
-      "badRequest": "Something was missing. Try again."
+      "badRequest": "Something was missing. Try again.",
+      "homeroomTool": "{tool} is on your students’ Homeroom desks. Starting this room takes it off their desks."
     },
     "assigned": "{title} is assigned to {klass}: {count, plural, one {# question} other {# questions}} for each student.",
     "set": {

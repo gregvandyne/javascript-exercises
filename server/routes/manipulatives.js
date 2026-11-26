@@ -12,7 +12,8 @@
 //   GET  /api/manipulatives/boards/:id          one of the host's own boards (a template comes as a fresh copy)
 //   POST .../boards/:id/delete | rename | duplicate   the owner only
 //   GET  /api/manipulatives/code/:code          a share code: a copy of a template for the opener's own board
-//   POST /api/manipulatives/live                a host starts a session for one of their classes
+//   POST /api/manipulatives/live                a host starts a session for one of their classes (409 homeroomTool when
+//                                               it would take a Homeroom tool off the desks, unless { replace: true })
 //   POST /api/manipulatives/live/join           a student joins (by code, or by id from their class)
 //   GET  /api/manipulatives/live/:id            the session's teacher: every joined student's board; a student: their own
 //   POST /api/manipulatives/live/:id/work       a student sends their board (autosave)
@@ -61,6 +62,7 @@ import * as MT from '../services/manip-tasks.js';
 import * as P from '../services/progress.js';
 import * as L from '../services/lessons.js';
 import * as S from '../services/schools.js';
+import * as HT from '../services/homeroom-tools.js';
 import { teachingTools, planReply } from './figures.js';
 
 export const router = Router();
@@ -132,7 +134,16 @@ router.post('/api/manipulatives/boards/:id/duplicate', hostOnly, rateLimit('mani
 router.get('/api/manipulatives/code/:code', rateLimit('manip-code', 60, 600e3), (req, res) => send(req, res, M.openCode(req.user, req.params.code)));
 
 // ---- live sessions
-router.post('/api/manipulatives/live', hostOnly, rateLimit('manip-live', 60, 3600e3), (req, res) => send(req, res, M.createSession(req.user, body(req))));
+router.post('/api/manipulatives/live', hostOnly, rateLimit('manip-live', 60, 3600e3), (req, res) => {
+  const b = body(req);
+  // One room per class: a new room ends the one running. When that room is a Homeroom tool on the students' desks (it
+  // comes off them), the page asks first: 409 homeroomTool { tool }, and the page sends again with { replace: true }.
+  if (b.replace !== true) {
+    const c = S.getClass(b.classId), hr = c && M.canHostClass(req.user, c) ? HT.roomOf(c) : null;
+    if (hr) return res.status(409).json({ error: req.t('manip.errors.homeroomTool', { tool: hr.title }), code: 'homeroomTool', tool: hr.title });
+  }
+  send(req, res, M.createSession(req.user, b));
+});
 router.post('/api/manipulatives/live/join', rateLimit('manip-join', 30, 600e3), (req, res) => {
   const { code, id } = body(req);
   send(req, res, M.join(req.user, { code: typeof code === 'string' ? code : '', id: typeof id === 'string' ? id : '' }));

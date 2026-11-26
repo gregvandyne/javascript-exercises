@@ -3894,6 +3894,10 @@
         "moved": "{label} foi para a coluna {col}.",
         "needTen": "Precisa de 10 para trocar",
         "count": "{n} peças em {col}"
+      },
+      "host": {
+        "homeroomTool": "{tool} está nas mesas do Homeroom dos seus alunos. Iniciar esta sala tira-o das mesas deles. O trabalho deles é guardado.",
+        "startRoom": "Iniciar sala"
       }
     },
     "manip-room": {
@@ -15271,7 +15275,8 @@
   "manip": {
     "errors": {
       "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento.",
-      "emptyArea": "A sua área está vazia. Coloque algo nela e depois envie."
+      "emptyArea": "A sua área está vazia. Coloque algo nela e depois envie.",
+      "homeroomTool": "{tool} está nas mesas do Homeroom dos seus alunos. Iniciar esta sala tira-o das mesas deles."
     }
   },
   "proof": {

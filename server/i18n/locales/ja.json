@@ -3893,6 +3893,10 @@
         "moved": "{label} を {col} の列に移しました。",
         "needTen": "10こで交換できます",
         "count": "{col}: {n}こ"
+      },
+      "host": {
+        "homeroomTool": "{tool} は生徒の Homeroom の机に出ています。このルームを始めると、机から外れます。生徒の作業は残ります。",
+        "startRoom": "ルームを始める"
       }
     },
     "manip-room": {
@@ -15269,7 +15273,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oombaは前のメッセージにまだ返事をしています。少し待ってください。",
-      "emptyArea": "エリアが空です。何か置いてから送ってください。"
+      "emptyArea": "エリアが空です。何か置いてから送ってください。",
+      "homeroomTool": "{tool} は生徒の Homeroom の机に出ています。このルームを始めると、机から外れます。"
     }
   },
   "proof": {
