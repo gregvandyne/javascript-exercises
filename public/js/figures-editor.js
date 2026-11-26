@@ -13,7 +13,8 @@
 // the kind's real data; a drawing that is not a shape, or not this kind of shape, says so and never changes the figure.
 // The same corners can be a second figure too, plotted on a coordinate grid. Drawn shapes are in undo, redo and presets.
 import { t, api, toast, esc, pageData, ask, askText, copyText, sheet } from '/js/app.js';
-import { flatSolve, solveOf, numText, encodeData } from '/js/figures-catalog.js';
+import { flatSolve, solveOf, numText, encodeData, KINDS } from '/js/figures-catalog.js';
+import { parseNum, numShown, nlValue, nlWiden, nlFit, nlWhere } from '/js/figures-nl.js';
 import { pngWithNotice } from '/js/figures-export.js';
 import { createHistory, historyKey } from '/js/figures-history.js';
 import { moreMenu, menuItem, menuGroup, menuSep, bindMenus } from '/js/figures-menu.js';
@@ -35,6 +36,9 @@ const D = (k, v) => t(`js.figures-editor.draw.${k}`, v);
 
 // ---------------------------------------------------------------- "Draw it": which kinds, the grid's sizes, examples
 const DRAW = K.id in CORNERS, GRIDK = K.id === 'grid';
+// The number line has its own rows for intervals and points (public/js/figures-nl.js), and its range widens itself to
+// fit them (docs/decisions.md "Figures: a friendlier number line").
+const NL = K.id === 'numberLine';
 const SIZES = [6, 8, 10, 12, 16, 20];
 const originFor = n => (GRIDK ? [-n / 2, -n / 2] : [0, 0]);
 const rangeOf = d => ({ x: [d.o[0], d.o[0] + d.n], y: [d.o[1], d.o[1] + d.n] });
@@ -57,7 +61,7 @@ const CHOICE = !!(S && S.answerType === 'choice');
 if (S) Object.assign(st, { data: clone(S.data), hide: S.hide ?? false, question: S.question || '', answerKey: S.answerKey || null, gen: S.gen || null, seed: S.seed || null });
 const snap = () => JSON.stringify({ data: st.data, hide: st.hide, question: st.question, answerKey: st.answerKey, gen: st.gen, seed: st.seed, genResult: st.genResult, draw: st.draw });
 // Undo and redo (public/js/figures-history.js): the last 100 changes to the figure, its question, answer and drawing.
-const hist = createHistory({ snap, restore: s => { Object.assign(st, JSON.parse(s)); if (DRAW) drawApply(); fields(); render(); }, limit: 100, onChange: () => buttons() });
+const hist = createHistory({ snap, restore: s => { Object.assign(st, JSON.parse(s)); st.widen = null; if (DRAW) drawApply(); fields(); render(); }, limit: 100, onChange: () => buttons() });
 function commit(now = false) { hist.commit(now); buttons(); }
 
 // ---------------------------------------------------------------- the page
@@ -74,6 +78,7 @@ app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
   </div></div>
 <div class="fg-ed-grid">
   <section class="panel fg-ed-controls" aria-label="${esc(t('js.figures-editor.controls'))}"><div id="fg-fields"></div>
+    ${NL ? '<div class="fg-nl" id="fg-nl"></div>' : ''}
     <details class="fg-adv" id="fg-adv"><summary>${esc(t('js.figures-editor.advanced'))}</summary>
       <p class="muted fg-small">${esc(t('js.figures-editor.advancedHelp'))}</p>
       <textarea class="input fg-json" id="fg-json" rows="10" spellcheck="false" aria-describedby="fg-json-msg"></textarea><p class="fg-small" id="fg-json-msg" role="status"></p></details>
@@ -95,9 +100,10 @@ app.innerHTML = `<div class="fg-ed-head"><h1>${esc(P.name)}</h1>
     ${GRIDK ? '' : `<section class="panel fg-gridout" id="fg-gridout" aria-labelledby="fg-gridout-h" hidden><h3 class="fg-h" id="fg-gridout-h">${esc(D('gridTitle'))}</h3>
       <div class="fg-ed-figure fg-gridfig" id="fg-gridfig"></div><div class="fg-add" id="fg-gaddbox"></div><p class="notice good fg-small" id="fg-gadded" role="status" hidden></p></section>`}` : ''}
     <div class="panel fg-ed-figure" id="fg-figure" aria-live="polite"></div>
+    <p class="muted fg-small fg-stale-note" id="fg-stale" role="status" hidden>${esc(t('js.figures-editor.stale'))}</p>
     <div class="fg-cant" id="fg-cant" role="alert" hidden></div>
     <p class="sr-only" id="fg-hist-msg" role="status" aria-live="polite"></p>
-    <code class="fg-code" id="fg-code" dir="ltr"></code>
+    <details class="fg-codebox" id="fg-codebox"><summary>${esc(t('js.figures-editor.showCode'))}</summary><p class="muted fg-small">${esc(t('js.figures-editor.codeHelp'))}</p><code class="fg-code" id="fg-code" dir="ltr"></code></details>
   </section>
   <section class="panel fg-ed-side" aria-label="${esc(t('js.figures-editor.answers'))}">
     <h3 class="fg-h"><label for="fg-question">${esc(t('js.figures-editor.question'))}</label></h3>
@@ -139,7 +145,7 @@ function applyPreset(v) {
   const p = v[0] === 'x' ? P.presets[+v.slice(1)] : mine.find(m => `m${m.id}` === v);
   if (!p) return;
   if (DRAW && p.draw && Array.isArray(p.draw.pts)) { startDrawing(p.draw.pts, p.draw.n, p.draw.o); return; }
-  Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null });
+  Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null, widen: null });
   if (DRAW) { st.draw.on = false; drawApply(); }
   fields(); render(); commit(true);
 }
@@ -172,20 +178,161 @@ bindMenus(app, it => {
 // ---------------------------------------------------------------- the controls, from the kind's data
 const SKIP = new Set(['notToScale', 'drawAs', 'hide', 'kind']);
 const typeOf = (k, v) => (K.options && K.options[k] ? 'enum' : K.extra && K.extra[k] ? K.extra[k] : typeof v === 'number' ? 'number' : typeof v === 'boolean' ? 'bool' : typeof v === 'string' ? 'text' : v === undefined ? null : 'json');
+// ---------------------------------------------------------------- number boxes that forgive (public/js/figures-nl.js)
+// A number box is a text box: a phone's number pad has no minus key (and no "/"), so the box opens the decimal pad with a
+// ± key beside it on touch screens, and the number line's from, to and step open the full keyboard for fractions (3/4)
+// and π. What is still being typed ("-", "1/", an empty box) waits quietly; the figure keeps its last good drawing.
+const PI_FIELDS = new Set(NL ? ['from', 'to', 'step'] : []);
+/** Measures that can be below 0 (any kind's example has one below 0, or the measure is a position, a reading or a charge):
+ *  their box has the ± key on a touch screen. */
+const NEG = new Set(['from', 'to', 'min', 'max', 'angle', 'charge', 'start', 'value', 'initial', 'before', 'after', 'yaw', 'pitch', 'trend', 'x', 'y',
+  ...KINDS.flatMap(k => k.presets.flatMap(p => Object.entries(p).filter(([, v]) => typeof v === 'number' && v < 0).map(([key]) => key)))]);
+const PM = t('js.figures-editor.pm');
+/** One number box: its label, the box, the ± key (touch screens), the exact form of a √ length, its message. */
+function numBox({ id, label, value, attrs, pi = false, neg = false, disabled = false }) {
+  // A length given exactly ({ sqrt: 13 }) shows its value, and its exact form under it, until it is typed over; a
+  // fraction or a multiple of π shows as it is written (3/4, π/2).
+  const shown = numShown(value) || (Number.isFinite(lengthValue(value)) ? numText(lengthValue(value), 4) : '');
+  const exact = value && typeof value === 'object' && !Array.isArray(value) && 'sqrt' in value ? lengthLabel(value) : '';
+  return `<label class="fg-num"><span>${esc(label)}</span><span class="fg-numbox"><input class="input" type="text" inputmode="${pi ? 'text' : 'decimal'}" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" dir="ltr" id="${id}" ${attrs} value="${esc(shown)}" aria-describedby="${id}-m"${disabled ? ' disabled' : ''}>${neg && !disabled ? `<button type="button" class="fg-pm" data-pm="${id}" tabindex="-1" aria-label="${esc(PM)}" title="${esc(PM)}">±</button>` : ''}</span>${exact ? `<small class="fg-exact" dir="ltr">= ${esc(exact)}</small>` : ''}<small class="fg-fmsg" id="${id}-m"></small></label>`;
+}
+/** A box being typed in: mode 'ok' (a number), 'partial' (not one yet: the figure waits, nothing is said) or 'bad' (not a
+ *  number: a word under this box only, never a red page). */
+function hold(el, mode) {
+  const m = document.getElementById(`${el.id}-m`);
+  if (mode === 'ok') delete el.dataset.hold; else el.dataset.hold = mode;
+  el.classList.toggle('fg-typo', mode === 'bad');
+  if (m) { m.dataset.typing = mode === 'bad' ? '1' : ''; if (mode !== 'ok') m.textContent = mode === 'bad' ? t('js.figures-editor.typeNumber') : ''; }
+}
+/** A box left: what was not a number goes back to the figure's value (the figure never changed). */
+function settle(el) {
+  const was = !!el.dataset.hold;
+  if (was) hold(el, 'ok');
+  syncBoxes(true);
+  if (was) render();
+}
+/** The boxes show the figure's numbers again (a widened range, a value tidied), except the one being typed in. */
+function syncBoxes(all = false) {
+  const focus = all ? null : document.activeElement;
+  for (const el of app.querySelectorAll('input[data-ty="number"],input[data-nl-num]')) {
+    if (el === focus || el.dataset.hold) continue;
+    const v = el.dataset.f ? st.data[el.dataset.f] : nlGet(el);
+    const want = numShown(v) || (Number.isFinite(lengthValue(v)) ? numText(lengthValue(v), 4) : '');
+    if (el.value !== want && !(el.dataset.f && v && typeof v === 'object' && 'sqrt' in v)) el.value = want;
+  }
+  if (document.activeElement !== $('fg-json')) $('fg-json').value = JSON.stringify(st.data, null, 2);
+}
+// ± on a touch screen: the box keeps its focus (and the keyboard stays up).
+app.addEventListener('pointerdown', e => { if (e.target.closest('[data-pm]')) e.preventDefault(); });
+app.addEventListener('click', e => {
+  const b = e.target.closest('[data-pm]'); if (!b) return;
+  e.preventDefault();
+  const el = document.getElementById(b.dataset.pm); if (!el || el.disabled) return;
+  const v = el.value.trim().replace(/^[−–]/, '-');
+  el.value = v.startsWith('-') ? v.slice(1) : `-${v}`;
+  el.focus({ preventScroll: true });
+  el.dispatchEvent(new Event('input', { bubbles: true }));
+});
+
+// ---------------------------------------------------------------- the number line: its range, intervals and points
+/** The range widens to fit an interval or a point that falls outside it, with a note that says so (and a way back). */
+function widen() {
+  if (!NL) return;
+  const w = nlWiden(st.data);
+  if (w.widened) st.data = w.data;
+  st.widen = w.widened || null;
+}
+const nlList = k => (Array.isArray(st.data[k]) ? st.data[k] : []);
+function nlGet(el) { const it = nlList(el.dataset.list)[+el.dataset.i]; return it ? it[el.dataset.k] : undefined; }
+const NLX = k => t(`js.figures-editor.nl.${k}`);
+const nlRange = () => { const F = nlValue(st.data.from), T = nlValue(st.data.to), S = nlValue(st.data.step === undefined ? 1 : st.data.step); return { F, T, S, n: Number.isFinite(F) && Number.isFinite(T) && S > 0 ? Math.max(0, Math.round((T - F) / S)) : 0 }; };
+const nlTick = i => { const { F, S } = nlRange(); return +(F + i * S).toFixed(10); };
+function nlRows() {
+  const box = $('fg-nl'); if (!box) return;
+  const ends = (side, it) => (it[side] == null ? 'ray' : it[`${side}Closed`] === false ? 'open' : 'closed');
+  const endSel = (i, side, it) => `<label class="fg-block fg-nlend"><span>${esc(NLX(side === 'from' ? 'leftEnd' : 'rightEnd'))}</span><select class="input" data-nl-end data-list="intervals" data-i="${i}" data-k="${side}">${sel([['closed', NLX('closed')], ['open', NLX('open')], ['ray', NLX(side === 'from' ? 'rayLeft' : 'rayRight')]], ends(side, it))}</select></label>`;
+  const ivs = nlList('intervals'), pts = nlList('points');
+  const iv = (it, i) => `<fieldset class="fg-nlrow" data-row="interval ${i + 1}"><legend>${esc(t('js.figures-editor.nl.interval', { n: i + 1 }))}</legend>
+    <div class="fg-nlgrid">${numBox({ id: `fg-iv${i}-from`, label: NLX('from'), value: it.from, attrs: `data-nl-num data-list="intervals" data-i="${i}" data-k="from"`, pi: true, neg: true, disabled: it.from == null })}${endSel(i, 'from', it)}
+    ${numBox({ id: `fg-iv${i}-to`, label: NLX('to'), value: it.to, attrs: `data-nl-num data-list="intervals" data-i="${i}" data-k="to"`, pi: true, neg: true, disabled: it.to == null })}${endSel(i, 'to', it)}</div>
+    <p class="fg-fmsg fg-rowmsg" data-rowmsg></p>
+    <button class="btn btn-sm" type="button" data-act="nldel" data-list="intervals" data-i="${i}">${esc(NLX('remove'))}<span class="sr-only"> ${esc(t('js.figures-editor.nl.interval', { n: i + 1 }))}</span></button></fieldset>`;
+  const pt = (p, i) => `<fieldset class="fg-nlrow" data-row="point ${i + 1}"><legend>${esc(t('js.figures-editor.nl.point', { n: i + 1 }))}</legend>
+    <div class="fg-nlgrid">${numBox({ id: `fg-pt${i}-at`, label: NLX('at'), value: p.at, attrs: `data-nl-num data-list="points" data-i="${i}" data-k="at"`, pi: true, neg: true })}
+    <label class="fg-block"><span>${esc(NLX('letter'))}</span><input class="input" type="text" maxlength="6" autocomplete="off" autocapitalize="off" data-nl-text data-list="points" data-i="${i}" data-k="label" value="${esc(typeof p.label === 'string' ? p.label : '')}"></label>
+    <label class="fg-block"><span>${esc(NLX('mark'))}</span><select class="input" data-nl-mark data-list="points" data-i="${i}">${sel([['dot', NLX('dot')], ['cross', NLX('cross')]], p.mark === 'cross' ? 'cross' : 'dot')}</select></label></div>
+    <label class="fg-switch"><span>${esc(NLX('showValue'))}</span><input type="checkbox" data-nl-value data-list="points" data-i="${i}"${p.value === true ? ' checked' : ''}></label>
+    <p class="fg-fmsg fg-rowmsg" data-rowmsg></p>
+    <button class="btn btn-sm" type="button" data-act="nldel" data-list="points" data-i="${i}">${esc(NLX('remove'))}<span class="sr-only"> ${esc(t('js.figures-editor.nl.point', { n: i + 1 }))}</span></button></fieldset>`;
+  box.innerHTML = `<h3 class="fg-h">${esc(NLX('intervals'))}</h3>${ivs.map(iv).join('')}
+    <button class="btn fg-wide" type="button" data-act="nladd" data-list="intervals"${ivs.length >= 12 ? ' disabled' : ''}>+ ${esc(NLX('addInterval'))}</button>
+    <h3 class="fg-h">${esc(NLX('points'))}</h3>${pts.map(pt).join('')}
+    <button class="btn fg-wide" type="button" data-act="nladd" data-list="points"${pts.length >= 30 ? ' disabled' : ''}>+ ${esc(NLX('addPoint'))}</button>`;
+}
+/** A change to an interval or a point: the data follows, the range widens if it must, the figure redraws. */
+function nlChange({ rows = false, typing = false } = {}) {
+  widen(); changed(); if (rows) nlRows(); render({ typing }); commit(rows); syncBoxes();
+}
+function nlItem(el) {
+  const k = el.dataset.list, list = nlList(k).map(x => ({ ...x }));
+  st.data[k] = list;
+  return list[+el.dataset.i];
+}
+if (NL) {
+  $('fg-nl').addEventListener('input', e => {
+    const el = e.target;
+    if (el.matches('[data-nl-num]')) {
+      const r = parseNum(el.value, { pi: true });
+      if (!('value' in r)) { hold(el, r.bad ? 'bad' : 'partial'); return; }
+      hold(el, 'ok');
+      nlItem(el)[el.dataset.k] = r.value;
+      nlChange({ typing: true });
+    } else if (el.matches('[data-nl-text]')) {
+      const it = nlItem(el), v = el.value.trim();
+      if (v) it.label = v; else delete it.label;
+      nlChange({ typing: true });
+    }
+  });
+  $('fg-nl').addEventListener('change', e => {
+    const el = e.target;
+    if (el.matches('[data-nl-num]')) return settle(el);
+    if (el.matches('[data-nl-end]')) {
+      const it = nlItem(el), side = el.dataset.k, { F, T, S } = nlRange(), step = S > 0 ? S : 1;
+      if (el.value === 'ray') { delete it[side]; delete it[`${side}Closed`]; } else {
+        // An end that ran off the line comes back at the line's own end, always on the right side of the other end.
+        const other = it[side === 'from' ? 'to' : 'from'] == null ? NaN : nlValue(it[side === 'from' ? 'to' : 'from']);
+        if (it[side] == null) it[side] = side === 'from' ? (Number.isFinite(other) && other <= F ? +(other - step).toFixed(10) : Number.isFinite(F) ? st.data.from : 0)
+          : (Number.isFinite(other) && other >= T ? +(other + step).toFixed(10) : Number.isFinite(T) ? st.data.to : 1);
+        if (el.value === 'open') it[`${side}Closed`] = false; else delete it[`${side}Closed`];
+      }
+      nlChange({ rows: true });
+    } else if (el.matches('[data-nl-mark]')) { const it = nlItem(el); if (el.value === 'cross') it.mark = 'cross'; else delete it.mark; nlChange({ rows: true }); }
+    else if (el.matches('[data-nl-value]')) { const it = nlItem(el); if (el.checked) it.value = true; else delete it.value; nlChange({ rows: true }); }
+    else if (el.matches('[data-nl-text]')) commit(true);
+  });
+}
+/** Words for the note under the range: widened to fit, with "Keep 2 to 5" (what does not fit is left out). */
+function nlNote() {
+  const box = $('fg-nlnote'); if (!box) return;
+  const w = st.widen;
+  const html = w ? `<div class="fg-nlnote"><p>${esc(t('js.figures-editor.nl.widened', { from: numShown(w.newFrom), to: numShown(w.newTo) }))}</p><button class="btn btn-sm" type="button" data-act="nlkeep">${esc(t('js.figures-editor.nl.keep', { from: numShown(w.from), to: numShown(w.to) }))}</button></div>` : '';
+  if (box.dataset.last !== html) { box.innerHTML = html; box.dataset.last = html; }
+}
+
 function fields() {
   const ex = K.presets[0], keys = [...new Set([...Object.keys(K.extra || {}), ...Object.keys(ex), ...Object.keys(st.data), ...Object.keys(K.options || {})])].filter(k => !SKIP.has(k));
   const groups = { number: [], enum: [], bool: [], text: [] };
   for (const k of keys) { const ty = typeOf(k, st.data[k] !== undefined ? st.data[k] : ex[k]); if (groups[ty]) groups[ty].push(k); }
   const id = k => `fg-f-${k.replace(/[^\w-]/g, '_')}`;
-  // A length given exactly ({ sqrt: 13 }, [7, 3]) shows its value, and its exact form under it, until it is typed over.
-  const numVal = v => (typeof v === 'number' ? v : Number.isFinite(lengthValue(v)) ? numText(lengthValue(v), 4) : '');
-  const num = k => `<label class="fg-num"><span>${esc(fieldLabel(k))}</span><input class="input" type="number" step="any" inputmode="decimal" id="${id(k)}" data-f="${esc(k)}" data-ty="number" value="${esc(numVal(st.data[k]))}">${lengthLabel(st.data[k]) ? `<small class="fg-exact" dir="ltr">= ${esc(lengthLabel(st.data[k]))}</small>` : ''}</label>`;
+  const num = k => numBox({ id: id(k), label: fieldLabel(k), value: st.data[k], attrs: `data-f="${esc(k)}" data-ty="number"`, pi: PI_FIELDS.has(k), neg: NEG.has(k) });
   const en = k => `<label class="fg-block"><span>${esc(fieldLabel(k))}</span><select class="input" id="${id(k)}" data-f="${esc(k)}" data-ty="enum">${sel([['', t('js.figures-editor.default')], ...K.options[k].filter(o => o !== '').map(o => [o, o])], st.data[k] ?? '')}</select></label>`;
   const bo = k => `<label class="fg-switch"><span>${esc(fieldLabel(k))}</span><input type="checkbox" id="${id(k)}" data-f="${esc(k)}" data-ty="bool"${st.data[k] === true ? ' checked' : ''}></label>`;
   const tx = k => `<label class="fg-block"><span>${esc(fieldLabel(k))}</span><input class="input" type="text" id="${id(k)}" data-f="${esc(k)}" data-ty="text" maxlength="80" value="${esc(typeof st.data[k] === 'string' ? st.data[k] : '')}"></label>`;
   $('fg-fields').innerHTML = (groups.number.length ? `<h3 class="fg-h">${esc(t('js.figures-editor.measures'))}</h3><div class="fg-nums">${groups.number.map(num).join('')}</div>${K.extra ? `<p class="muted fg-small">${esc(t('js.figures-editor.leaveEmpty'))}</p>` : ''}` : '')
     + (groups.enum.length || groups.text.length ? `<h3 class="fg-h">${esc(t('js.figures-editor.options'))}</h3>${groups.enum.map(en).join('')}${groups.text.map(tx).join('')}` : '')
-    + (groups.bool.length ? `<h3 class="fg-h">${esc(t('js.figures-editor.show'))}</h3>${groups.bool.map(bo).join('')}` : '');
+    + (groups.bool.length ? `<h3 class="fg-h">${esc(t('js.figures-editor.show'))}</h3>${groups.bool.map(bo).join('')}` : '')
+    + (NL ? `<p class="muted fg-small">${esc(t('js.figures-editor.nl.typeHelp'))}</p><div id="fg-nlnote" role="status"></div>` : '');
+  if (NL) nlRows();
   const hasJson = keys.some(k => typeOf(k, st.data[k] !== undefined ? st.data[k] : ex[k]) === 'json') || 'drawAs' in st.data;
   if (hasJson && !$('fg-adv').dataset.touched) $('fg-adv').open = !groups.number.length && !groups.enum.length;
   if (document.activeElement !== $('fg-json')) $('fg-json').value = JSON.stringify(st.data, null, 2);
@@ -200,21 +347,28 @@ function fields() {
 $('fg-fields').addEventListener('input', e => {
   const el = e.target.closest('[data-f]'); if (!el) return;
   const k = el.dataset.f, ty = el.dataset.ty, inEx = k in K.presets[0];
-  if (ty === 'number') { if (el.value === '' || !Number.isFinite(+el.value)) delete st.data[k]; else st.data[k] = +el.value; }
-  else if (ty === 'bool') { if (el.checked) st.data[k] = true; else if (inEx) st.data[k] = false; else delete st.data[k]; }
+  if (ty === 'number') {
+    const r = parseNum(el.value, { pi: PI_FIELDS.has(k) });
+    // Still being typed ("-", "1/", an empty box the figure needs): the figure waits, nothing shouts. Not a number: a
+    // word under this box only. A box a kind may leave empty (its "extra" measures) is left out when emptied.
+    if (!('value' in r) && !(r.empty && K.extra && k in K.extra)) { hold(el, r.bad ? 'bad' : 'partial'); return; }
+    hold(el, 'ok');
+    if (r.empty) delete st.data[k]; else st.data[k] = r.value;
+  } else if (ty === 'bool') { if (el.checked) st.data[k] = true; else if (inEx) st.data[k] = false; else delete st.data[k]; }
   else if (ty === 'enum' || ty === 'text') { if (el.value === '') delete st.data[k]; else st.data[k] = el.value; }
   if (ty === 'number') typed();
-  changed(); render(); commit();
-  if (document.activeElement !== $('fg-json')) $('fg-json').value = JSON.stringify(st.data, null, 2);
+  widen();
+  changed(); render({ typing: ty === 'number' || ty === 'text' }); commit();
+  syncBoxes();
 });
-$('fg-fields').addEventListener('change', e => { if (e.target.closest('[data-ty="enum"],[data-ty="bool"]')) fields(); });
+$('fg-fields').addEventListener('change', e => { if (e.target.closest('[data-ty="enum"],[data-ty="bool"]')) fields(); else if (e.target.closest('[data-ty="number"]')) settle(e.target); });
 $('fg-adv').addEventListener('toggle', () => { $('fg-adv').dataset.touched = '1'; });
 $('fg-json').addEventListener('input', () => {
   let o = null, msg = '';
   try { o = JSON.parse($('fg-json').value); if (!o || typeof o !== 'object' || Array.isArray(o)) { o = null; msg = t('js.figures-editor.jsonObject'); } } catch (e) { msg = t('js.figures-editor.jsonBad', { why: String(e.message).slice(0, 120) }); }
   $('fg-json').classList.toggle('bad', !o); $('fg-json-msg').textContent = msg; $('fg-json-msg').classList.toggle('fg-bad', !o);
   if (!o) return;
-  st.data = o; typed(); changed(); render(); commit();
+  st.data = o; st.widen = null; typed(); changed(); if (NL) nlRows(); render({ typing: true }); commit();
 });
 $('fg-json').addEventListener('blur', () => { if (!$('fg-json').classList.contains('bad')) fields(); });
 $('fg-print').addEventListener('change', () => { st.print = $('fg-print').checked; render(); });
@@ -233,20 +387,59 @@ const WHY = [[/cannot make a triangle|has to be longer than/i, 'triangle'], [/18
   [/drawAs|notToScale/, 'drawAs'], [/positive|more than 0|greater than 0|above 0/i, 'positive'], [/between|at most|at least|from .* to|range/i, 'range'], [/leave out|only one of|instead of/i, 'extra'], [/JSON|object|could not be read/i, 'data']];
 const problems = () => { try { return OF.check(K.id, st.data); } catch (e) { return [String(e.message)]; } };
 const opts = () => ({ hide: st.hide === false ? false : st.hide, print: st.print, lang: LANG, title: st.question || P.name });
-function render() {
-  const bad = problems(), box = $('fg-figure');
+/** Each problem in its place: next to the box or row it is about (the number line's ranges, intervals and points; any
+ *  kind's problem that starts with a measure's name), or the page's cannot-draw panel. -> { at: { place: words }, rest }. */
+function place(bad) {
+  const at = {}, rest = [];
+  const box = k => app.querySelector(`#fg-fields [data-f="${CSS.escape(k)}"]`), row = k => app.querySelector(`#fg-nl [data-row="${CSS.escape(k)}"]`);
+  for (const p of bad) {
+    let where = null, words = '';
+    if (NL) { const w = nlWhere(p); where = w.at; words = w.key ? t(`js.figures-editor.nl.why.${w.key}`, w.vars) : t('js.figures-editor.ofSays', { reason: p }); }
+    else { const m = /^"(\w+)"/.exec(p); if (m) { where = m[1]; words = t('js.figures-editor.ofSays', { reason: p }); } }
+    if (where && (box(where) || row(where))) { if (!(where in at)) at[where] = words; } else rest.push(p);
+  }
+  return { at, rest };
+}
+let lastGood = null, cantTimer = 0;
+/** typing: the change came from a box being typed in, so the cannot-draw panel waits a moment (a half-typed number is
+ *  not a mistake yet). */
+function render({ typing = false } = {}) {
+  const bad = problems(), box = $('fg-figure'), { at, rest } = place(bad);
   box.innerHTML = '';
-  box.appendChild(OF.draw(K.id, st.data, opts()));
+  // A problem shown next to its box keeps the last figure that worked on the page, faded, until it is fixed.
+  const stale = bad.length > 0 && !rest.length && lastGood;
+  if (stale) box.appendChild(lastGood.cloneNode(true));
+  else { const svg = OF.draw(K.id, st.data, opts()); box.appendChild(svg); if (!bad.length) lastGood = svg.cloneNode(true); }
+  box.classList.toggle('fg-stale', !!stale);
+  $('fg-stale').hidden = !stale;
   box.classList.toggle('fg-print-on', st.print);
   const cant = $('fg-cant');
-  if (bad.length) {
-    const why = (WHY.find(([re]) => re.test(bad[0])) || [null, 'generic'])[1];
-    cant.innerHTML = `<h3>⚠ ${esc(t(`js.figures-editor.why.${why}.t`))}</h3><p>${esc(t(`js.figures-editor.why.${why}.p`))}</p>
-      <p class="fg-small">${esc(t('js.figures-editor.ofSays', { reason: bad.slice(0, 3).join('; ') }))}</p>
+  clearTimeout(cantTimer);
+  if (rest.length) {
+    const why = (WHY.find(([re]) => re.test(rest[0])) || [null, 'generic'])[1];
+    // The same panel is not built again (a tap on its Undo would land on a button that just left the page).
+    const show = () => {
+      const html = `<h3>⚠ ${esc(t(`js.figures-editor.why.${why}.t`))}</h3><p>${esc(t(`js.figures-editor.why.${why}.p`))}</p>
+      <p class="fg-small">${esc(t('js.figures-editor.ofSays', { reason: rest.slice(0, 3).join('; ') }))}</p>
       <div class="row"><button class="btn btn-primary" type="button" data-act="undo"${hist.canUndo() ? '' : ' disabled'}>${esc(t('js.figures-editor.undoLast'))}</button><button class="btn" type="button" data-act="example">${esc(t('js.figures-editor.backToExample'))}</button>${DRAW && !st.draw.on ? `<button class="btn btn-hot" type="button" data-act="drawit">✏️ ${esc(D('drawInstead'))}</button>` : ''}</div>`;
-    cant.hidden = false;
+      if (cant.dataset.last !== html) { cant.innerHTML = html; cant.dataset.last = html; }
+      cant.hidden = false;
+    };
+    if (typing && cant.hidden) cantTimer = setTimeout(show, 900); else show();
   } else cant.hidden = true;
-  for (const el of document.querySelectorAll('.fg-ed-controls .fg-num input')) el.classList.toggle('bad', bad.length > 0 && el.value !== '');
+  // the words next to each box and row (a box still being typed in keeps its own "Type a number")
+  for (const el of app.querySelectorAll('#fg-fields input[data-ty="number"]')) {
+    const k = el.dataset.f, m = document.getElementById(`${el.id}-m`);
+    el.classList.toggle('bad', k in at);
+    el.setAttribute('aria-invalid', String(k in at));
+    if (m && m.dataset.typing !== '1') m.textContent = at[k] || '';
+  }
+  for (const r of app.querySelectorAll('#fg-nl [data-row]')) {
+    const k = r.dataset.row, m = r.querySelector('[data-rowmsg]');
+    r.classList.toggle('bad', k in at);
+    if (m) m.textContent = at[k] || '';
+  }
+  if (NL) nlNote();
   $('fg-code').textContent = `OF.svg('${K.id}', ${JSON.stringify(st.data)}${st.hide !== false ? `, { hide: ${JSON.stringify(st.hide)} }` : ''})`;
   for (const b of document.querySelectorAll('[data-needs-ok]')) b.disabled = bad.length > 0;
   rendered = true;
@@ -337,17 +530,17 @@ async function pngBlob(scale = 2) {
 const ACTS = {
   undo() { if (hist.undo()) announce('undone'); },
   redo() { if (hist.redo()) announce('redone'); },
-  example() { Object.assign(st, { data: clone(K.presets[0]), gen: null, seed: null, genResult: null, answerKey: null }); if (DRAW) { st.draw.on = false; drawApply(); } fields(); render(); commit(true); },
+  example() { Object.assign(st, { data: clone(K.presets[0]), gen: null, seed: null, genResult: null, answerKey: null, widen: null }); if (DRAW) { st.draw.on = false; drawApply(); } fields(); render(); commit(true); },
   async random(btn) {
     if (!K.gens.length) {
       const list = P.presets.filter(p => canon(p.data) !== canon(st.data)); const p = list[Math.floor(Math.random() * list.length)] || P.presets[0];
-      Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null }); fields(); render(); commit(true);
+      Object.assign(st, { data: clone(p.data), gen: null, seed: null, genResult: null, answerKey: null, widen: null }); fields(); render(); commit(true);
       toast(t('js.figures-editor.noGen')); return;
     }
     btn.disabled = true;
     try {
       const g = await api('/api/figures/gen', { method: 'POST', body: { kind: K.id, ...(S && S.ws ? { ws: S.ws } : {}) } });
-      Object.assign(st, { data: g.data, hide: g.hide, question: g.question, gen: g.gen, seed: g.seed, answerKey: null, genResult: { data: clone(g.data), answer: g.answer, work: g.work } });
+      Object.assign(st, { data: g.data, hide: g.hide, question: g.question, gen: g.gen, seed: g.seed, answerKey: null, widen: null, genResult: { data: clone(g.data), answer: g.answer, work: g.work } });
       fields(); render(); commit(true);
     } catch (e) { toast(e.message, { bad: true }); } finally { btn.disabled = false; }
   },
@@ -364,6 +557,29 @@ const ACTS = {
     const draw = DRAW && st.draw.on && drawn && drawn.ok ? { pts: st.draw.pts, n: st.draw.n, o: st.draw.o } : undefined;
     try { const r = await api('/api/figures/presets', { method: 'POST', body: { kind: K.id, name, data: st.data, ...(draw ? { draw } : {}) } }); mine = [r.preset, ...mine]; presets(); toast(t('js.figures-editor.presetSaved')); }
     catch (e) { toast(e.message, { bad: true }); }
+  },
+  nladd(btn) {
+    const k = btn.dataset.list, list = nlList(k).map(x => ({ ...x })), { n } = nlRange();
+    if (k === 'intervals') { const a = Math.round(n / 4), b = Math.max(a + 1, Math.round((3 * n) / 4)); list.push(n >= 2 ? { from: nlTick(a), to: nlTick(Math.min(b, n)) } : { from: nlTick(0), to: nlTick(n) }); }
+    else {
+      const used = new Set(list.map(p => p.label)), letter = 'ABCDEFGHJKLMNPQRSTUVWXYZ'.split('').find(c => !used.has(c)) || '';
+      const taken = list.map(p => nlValue(p.at)), i = [Math.round(n / 2), ...Array.from({ length: n + 1 }, (_, j) => j)].find(j => !taken.some(v => Math.abs(v - nlTick(j)) < 1e-9));
+      list.push({ at: nlTick(i === undefined ? 0 : i), ...(letter ? { label: letter } : {}) });
+    }
+    st.data[k] = list; nlChange({ rows: true });
+    const rows = $('fg-nl').querySelectorAll(`[data-row^="${k === 'intervals' ? 'interval' : 'point'} "] input[data-nl-num]`);
+    if (rows.length && !matchMedia('(pointer:coarse)').matches) rows[rows.length - (k === 'intervals' ? 2 : 1)].focus({ preventScroll: false });
+  },
+  nldel(btn) {
+    const k = btn.dataset.list, list = nlList(k).filter((_, i) => i !== +btn.dataset.i);
+    if (list.length) st.data[k] = list; else delete st.data[k];
+    nlChange({ rows: true });
+  },
+  nlkeep() {
+    const w = st.widen; if (!w) return;
+    const r = nlFit(st.data, w.fromData, w.toData);
+    st.data = r.data; st.widen = null; changed(); fields(); render(); commit(true);
+    if (r.removed) toast(t('js.figures-editor.nl.removed', { count: r.removed }));
   },
   addto(btn) { btn.closest('details').open = false; addTo(btn.dataset.ws, btn.dataset.out); },
   addnew(btn) { btn.closest('details').open = false; addTo(null, btn.dataset.out); },
@@ -386,6 +602,29 @@ document.addEventListener('keydown', e => {
 });
 /** Undo and redo say what happened to a screen reader (the figure itself changes silently). */
 function announce(what) { const el = $('fg-hist-msg'); if (el) { el.textContent = ''; setTimeout(() => { el.textContent = t(`js.figures-editor.${what}`); }, 30); } }
+
+// ---------------------------------------------------------------- a phone's keyboard
+// While a box has the keyboard up on a phone, the site's bottom tab bar and Oomba's chat button step aside (iOS Safari
+// would float them over the form, just above the keyboard). The visual viewport says when the keyboard is up; a touch
+// screen with no visual viewport counts a focused box as the keyboard.
+let pressing = false;
+const TYPING = 'input:not([type="checkbox"]):not([type="radio"]):not([type="button"]),textarea,select';
+function keyboard() {
+  const a = document.activeElement, vv = window.visualViewport;
+  const focused = !!(a && a.matches && a.matches(TYPING) && app.contains(a));
+  const small = matchMedia('(max-width:820px)').matches;
+  const up = focused && small && (!vv || matchMedia('(pointer:coarse)').matches || vv.height < window.innerHeight - 120);
+  if (!up && pressing) return;   // the press ends first (below)
+  document.body.classList.toggle('fg-kb', up);
+}
+// The tab bar comes back only once a press has ended: a tap that takes the focus away from a box lands where it was
+// aimed, never on the tab bar coming back under the finger.
+const later = () => setTimeout(() => { if (!pressing) keyboard(); }, 120);
+document.addEventListener('pointerdown', () => { pressing = true; }, true);
+for (const ev of ['pointerup', 'pointercancel']) document.addEventListener(ev, () => { pressing = false; later(); }, true);
+document.addEventListener('focusin', keyboard);
+document.addEventListener('focusout', later);
+if (window.visualViewport) window.visualViewport.addEventListener('resize', keyboard);
 
 // ---------------------------------------------------------------- Draw it
 let drawn = null;
