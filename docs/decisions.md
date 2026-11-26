@@ -16008,8 +16008,8 @@ in a "Teach with Atlas Quest" widget under the solo game's home, gated by BRB.ca
   the game (school staff, the platform admin, a family grown-up), from the game page, a link, Homeroom's My desk or
   Homeroom's Live games card. "All options" goes back to it from Play and from Build a lesson. A quiz link or class code
   skips it and plays the quiz; a reload inside the quiz maker comes back to the maker.
-- **Students and children** have only Play, so they go straight to the games (with Maps and more: blank maps without
-  answers, the library and the class-code box). They never see Host live or Build a lesson, and a handed-out Atlas Quest
+- **Students and children** have only Play, so they go straight to the games (with Maps and more: the library and the
+  class-code box; blank maps are teacher-only, in Build a lesson). They never see Host live or Build a lesson, and a handed-out Atlas Quest
   on a desk just plays.
 - **Host live**: the frame's `hostLive` (routes/games.js `hostLiveMode`: Oomba Live on, a grown-up who may host, the live
   game not hidden, never a preview or "As a student"); after a tap the play page opens `/live?mode=atlas`, or, inside
