@@ -8802,6 +8802,8 @@
       "codeForTeachers": "رمز الانضمام",
       "joinAt": "افتح {url} واكتب الرمز",
       "signInFirst": "سجّل الدخول أولًا، ثم اكتب الرمز.",
+      "hrJoin": "ينضم الطلاب الموجودون في Homeroom من مكاتبهم. لا حاجة إلى رمز.",
+      "hrFallback": "لست في Homeroom؟ رمز الانضمام",
       "hideCode": "إخفاء الرمز",
       "showCode": "إظهار الرمز",
       "count": "{count} من {max} لاعبين",

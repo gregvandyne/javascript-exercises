@@ -8802,6 +8802,8 @@
       "codeForTeachers": "Deelnamecode",
       "joinAt": "Ga naar {url} en typ de code",
       "signInFirst": "Log eerst in en typ dan de code.",
+      "hrJoin": "Leerlingen in Homeroom doen mee vanaf hun eigen plek. Geen code nodig.",
+      "hrFallback": "Niet in Homeroom? Code om mee te doen",
       "hideCode": "Code verbergen",
       "showCode": "Code tonen",
       "count": "{count} van {max} spelers",

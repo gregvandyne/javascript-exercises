@@ -230,7 +230,7 @@ export function playBody(req, { sid, title, nicks, open = true } = {}) {
 const phaseText = t => ({ lobby: t('live.play.waiting'), loading: t('live.play.loading'), countdown: t('live.play.countdown'), playing: '', paused: t('live.play.paused'), between: t('live.play.between'), ended: t('live.play.ended') });
 
 /** /live/host/:sid: the projector page. Code, QR, address, roster, controls, the game's host view. */
-export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = false, hasLast = false, ctl = null, gcAnnounce = '' }) {
+export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = false, hasLast = false, ctl = null, gcAnnounce = '', inHr = false }) {
   const t = req.t;
   // part 4: the controller on this page ({ role, tier, cohosts: the feature is on for this room })
   const me = ctl || { role: 'host', tier: 'full', cohosts: false };
@@ -245,13 +245,14 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   const control = a => html`<button class="btn lv-act lv-act-${a}${a === 'start' || a === 'next' ? ' btn-primary' : a === 'end' ? ' btn-danger' : ''}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip', 'clear'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}${a === 'clear' ? raw(` data-confirm="${t('live.host.clearConfirm')}"`) : ''}>${label(a)}</button>`;
   return html`<div class="lv lv-host" data-lv-page="host" data-sid="${s.id}">
   <header class="lv-bar"><a class="btn btn-sm" href="/live"><span class="flip" aria-hidden="true">←</span> ${t('layout.back')}</a><span class="lv-markhome" aria-hidden="true">${appMark()}</span><span class="lv-title">${s.title}</span><span class="lv-livedot">${t('homeroom.live')}</span></header>
-  <section class="lv-joinbox" id="lv-joinbox">
+  <section class="lv-joinbox${inHr ? ' is-hr' : ''}" id="lv-joinbox">
+    ${inHr ? html`<p class="lv-hrjoin">${ico('🏠', { size: 22 })} <span>${t('live.host.hrJoin')}</span></p>` : ''}
     <div class="lv-qr" id="lv-qr">${raw(qrSvg(joinUrl, { title: t('live.host.qrLabel') }))}</div>
     <div class="lv-codebox">
-      <p class="lv-label">${t('live.host.code')}</p>
+      <p class="lv-label">${inHr ? t('live.host.hrFallback') : t('live.host.code')}</p>
       <p class="lv-bigcode" id="lv-code" dir="ltr" translate="no">${groupCode(s.code)}</p>
       <p class="lv-joinat">${t('live.host.joinAt', { url: shown })}</p>
-      ${classSignIn ? html`<p class="lv-joinat small">${t('live.host.signInFirst')}</p>` : ''}
+      ${classSignIn && !inHr ? html`<p class="lv-joinat small">${t('live.host.signInFirst')}</p>` : ''}
       <p class="lv-count" id="lv-count" aria-live="polite">${t('live.host.count', { count: 0, max: s.settings.maxPlayers })}</p>
       <button class="btn btn-sm" type="button" id="lv-hide-code" aria-pressed="false">${t('live.host.hideCode')}</button>
       <span class="lv-joinlinks"><button class="btn btn-sm" type="button" id="lv-copy-link" data-url="${joinUrl}">${ico('🔗', { size: 18 })} ${t('live.host.copyLink')}</button>
@@ -325,7 +326,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
     <form method="dialog" class="stack">
       <h2 id="lv-dash-qr-h">${t('live.dash.qrTitle')}</h2>
       <div class="lv-qr">${raw(qrSvg(dashUrl, { title: t('live.dash.qrTitle') }))}</div>
-      <p class="small" dir="ltr"><a href="/live/host/${s.id}/dash" target="_blank" rel="noopener">${dashUrl.replace(/^https?:\/\//, '')}</a></p>
+      <p class="small lv-dash-link" dir="ltr"><a href="/live/host/${s.id}/dash" target="_blank" rel="noopener" title="${dashUrl}">${dashUrl.replace(/^https?:\/\//, '')}</a></p>
       <p class="small muted">${t('live.dash.qrHint')}</p>
       <a class="btn" id="lv-dash-window" href="/live/host/${s.id}/dash" target="_blank" rel="noopener">${ico('🖥️', { size: 18 })} ${t('live.dash.openWindow')}</a>
       <p class="small muted">${t('live.dash.openWindowHint')}</p>

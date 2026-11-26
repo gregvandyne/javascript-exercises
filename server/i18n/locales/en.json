@@ -10216,6 +10216,8 @@
       "codeForTeachers": "Join code",
       "joinAt": "Go to {url} and type the code",
       "signInFirst": "Sign in first, then type the code.",
+      "hrJoin": "Students in Homeroom join from their desks. No code needed.",
+      "hrFallback": "Not in Homeroom? Join code",
       "hideCode": "Hide code",
       "showCode": "Show code",
       "count": "{count} of {max} players",

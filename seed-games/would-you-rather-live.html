@@ -86,6 +86,17 @@
   .wl-note { margin: 0; text-align: center; font-weight: 800; font-size: clamp(15px, 2.6vh, 26px); min-height: 1.2em; overflow-wrap: anywhere; }
   .wl-talk { --g: var(--g-tools); margin: 0; font-weight: 800; font-size: clamp(16px, 3vh, 32px); width: min(1000px, 100%); }
   .wl-talk span:last-child { overflow-wrap: anywhere; }
+  /* the lobby (live): who has joined, as their characters on one widget (never a name), so Homeroom and /live show the
+     game's own board while the class comes in, not the platform's 3D lobby */
+  .wl-lobby { --g: var(--g-join); flex: 1 1 auto; min-height: 0; width: min(100%, 1400px); margin: 0 auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+  .wl-lobbyh { display: flex; align-items: center; gap: 10px; }
+  .wl-lobbyh h2 { margin: 0; flex: 1; min-width: 0; font-size: clamp(18px, 2.4vw, 28px); font-weight: 800; overflow-wrap: anywhere; }
+  .wl-n { flex: none; padding: 2px 12px; border-radius: 999px; background: var(--card2); font-weight: 800; font-size: clamp(15px, 2vw, 22px); white-space: nowrap; }
+  .wl-crowd { list-style: none; margin: 0; padding: 4px 2px; flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-wrap: wrap; align-content: center; justify-content: center; gap: clamp(6px, 1vw, 12px); }
+  .wl-crowd li { display: grid; place-items: center; padding: 4px; border-radius: 14px; background: var(--card2); animation: wl-join .4s cubic-bezier(.3,1.5,.5,1) both; }
+  .wl-crowd li.me { background: color-mix(in srgb, var(--accent) 30%, var(--card)); }
+  .wl-crowd canvas { display: block; width: clamp(40px, 4vw, 64px); height: clamp(40px, 4vw, 64px); }
+  @keyframes wl-join { from { transform: scale(.4); opacity: 0; } }
   /* the end */
   .wl-sum { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 6px 4px; }
   .wl-sum h2 { margin: 0; font-size: clamp(22px, 4.4vh, 46px); font-weight: 800; text-align: center; padding: 10px 22px; border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
@@ -106,7 +117,7 @@
     .wl-now { min-height: 56px; }
     .wl-c .tx { font-size: clamp(20px, min(6vw, 4.4vh), 46px); }
   }
-  @media (prefers-reduced-motion: reduce) { .wl-c .fill, .wl-c { transition: none; } }
+  @media (prefers-reduced-motion: reduce) { .wl-c .fill, .wl-c { transition: none; } .wl-crowd li { animation: none; } }
 </style>
 </head>
 <body>
@@ -115,6 +126,7 @@
   <div class="wl-now" id="now" hidden><div class="wl-nowtx"><b id="qnum" hidden></b><span id="ask" dir="auto"></span></div><span class="wl-pill" id="count" hidden></span>
     <div class="wl-ring" id="ringbox" hidden aria-hidden="true"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="color-mix(in srgb, var(--on-current) 22%, transparent)" stroke-width="4"/><circle id="ring" cx="18" cy="18" r="15" fill="none" stroke="var(--spark)" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.25" stroke-dashoffset="0"/></svg><b id="secs"></b></div></div>
   <p class="wl-banner" id="banner" role="status" aria-live="polite"></p>
+  <section class="wl-lobby wl-w" id="lobby" hidden aria-labelledby="lobby-h"><div class="wl-lobbyh"><span class="wl-chip" aria-hidden="true">👋</span><h2 id="lobby-h"></h2><span class="wl-n" id="lobby-n"></span></div><ul class="wl-crowd" id="crowd" aria-hidden="true"></ul></section>
   <section class="wl-cards" id="cards" hidden aria-labelledby="title">
     <button class="wl-c wl-w a" id="ca" type="button"><span class="wl-chip" id="taga" aria-hidden="true"></span><span class="tx" id="xa" dir="auto"></span><span class="bar" aria-hidden="true" id="ba" hidden><span class="fill" id="fa"></span></span><span class="pct" id="pa" hidden></span><span class="n" id="na" hidden></span></button>
     <span class="wl-or" id="or" aria-hidden="true"></span>
@@ -182,6 +194,27 @@
   function buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not allowed */ } }
   var connected = function () { return L.players().filter(function (p) { return p.connected; }).length; };
 
+  // ---- the lobby (live): everyone who has joined, as their own characters (no names), until the first dilemma --------
+  var flat = L.flat ? L.flat({ me: true, px: 64 }) : null;
+  function portraitOf(seat) {
+    var c = flat && flat.portrait(seat); if (!c) return null;
+    var img = document.createElement('canvas'); img.width = c.width; img.height = c.height; img.getContext('2d').drawImage(c, 0, 0); return img;
+  }
+  function renderCrowd() {
+    var show = L.active && !Q && (phase === 'lobby' || phase === 'loading' || phase === 'countdown');
+    $('lobby').hidden = !show; if (!show) return;
+    var all = L.players(), ul = $('crowd'), had = {};
+    $('lobby-h').textContent = t('ready'); $('lobby-n').textContent = '👥 ' + O.num(all.length);
+    [].forEach.call(ul.children, function (li) { had[li.dataset.seat] = li; });
+    ul.textContent = '';
+    all.forEach(function (p) {
+      var li = had[p.seat];
+      if (!li) { li = document.createElement('li'); li.dataset.seat = String(p.seat); var img = portraitOf(p.seat); if (img) li.appendChild(img); }
+      li.classList.toggle('me', !!p.me); ul.appendChild(li);
+    });
+  }
+  ['join', 'leave', 'update', 'welcome'].forEach(function (k) { L.on(k, renderCrowd); });
+
   // ---- a dilemma ----------------------------------------------------------------------------------------------------
   function resetCards() {
     ['a', 'b'].forEach(function (k) {
@@ -194,7 +227,7 @@
     // the same dilemma again (a resume, more time): keep the player's vote
     var same = Q && Q.i === q.i && $('pa').hidden;
     Q = q; if (!same) myPick = -1;
-    $('sum').hidden = true; $('cards').hidden = false; $('now').hidden = false; resetCards();
+    $('sum').hidden = true; $('lobby').hidden = true; $('cards').hidden = false; $('now').hidden = false; resetCards();
     $('ask').textContent = q.q || t('title');
     $('xa').textContent = q.choices[0] || ''; $('xb').textContent = q.choices[1] || '';
     $('ca').setAttribute('aria-label', 'A: ' + (q.choices[0] || '')); $('cb').setAttribute('aria-label', 'B: ' + (q.choices[1] || ''));
@@ -298,6 +331,7 @@
     if (phase === 'lobby') { $('cards').hidden = true; $('now').hidden = true; banner(host ? t('title') : t('wait')); }
     if (phase === 'loading' || phase === 'countdown') { $('sum').hidden = true; banner(t('ready')); }
     if (phase === 'paused') clearInterval(ringTimer);
+    renderCrowd();
   });
   // 3, 2, 1, Go! (the Go! goes away by itself, and never covers a question that is already open)
   L.on('countdown', function (e) { var tick = function () { var left = Math.ceil((e.at - L.now()) / 1000); if (left > 0) { banner(String(left)); setTimeout(tick, 250); } else { if (!Q || phase !== 'playing') banner(t('go')); setTimeout(function () { if ($('banner').textContent === t('go')) banner(''); }, 900); } }; tick(); });
@@ -335,9 +369,10 @@
     practice.i++; practice.timer = setTimeout(practiceNext, 2600);
   }
 
-  L.ready({ quiz: true, hostView: true, words: [] });
+  // lobby: the game draws its own lobby (above), so the platform's 3D lobby is never shown before it
+  L.ready({ lobby: true, quiz: true, hostView: true, words: [] });
   if (!L.active) L.on('start', function () { loadPack(startPractice); });
-  else if (phase === 'lobby') banner(host ? t('title') : t('wait'));
+  else { if (phase === 'lobby') banner(host ? t('title') : t('wait')); renderCrowd(); }
   O.test({
     state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, choices: Q.choices.slice(), picked: myPick } : null, revealed: !$('pa').hidden, world: !$('world').hidden, summary: !$('sum').hidden, history: history.length }; },
     start: function () { return true; },

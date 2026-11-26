@@ -7,7 +7,11 @@
 //     390); a selection dragged onto a desk goes there with the defaults;
 //   - Brain Board and Would You Rather Live hosted from Homeroom without leaving it (the address stays on the board), a
 //     student's desk brought into the game by itself and back to the desk when it ends, the pill (fold and open), the
-//     desks' "In Brain Board", the projector showing the game's host screen, End from the pill.
+//     desks' "In Brain Board", the projector showing the game's host screen, End from the pill;
+//   - students already on their desks (one with a game open) and one who opens Homeroom after the start all join by
+//     themselves, the teacher hosting on a phone: no Teacher view popping up, the host screen saying students join from
+//     their desks, the pill counting them; the Teacher view dialog fits a phone (390 and 320), in Homeroom and out;
+//   - every Live games card opens the game's own grid board while the class joins, never the platform's 3D lobby.
 // Screenshots with HR_SHOTS=<dir>. Skipped with no Chromium.
 import './_setup.js';
 import test from 'node:test';
@@ -66,6 +70,7 @@ const typing = made('Typing Zoo', 'typing-zoo', '⌨️');
 // the real live games (their own pages: a live game must be live-ready to host)
 made('Brain Board', 'brain-board', '🌟', fs.readFileSync('seed-games/brain-board.html', 'utf8'));
 made('Would You Rather Live', 'would-you-rather-live', '🤔', fs.readFileSync('seed-games/would-you-rather-live.html', 'utf8'));
+made('Atlas Quest Live', 'atlas-quest-live', '🌍', fs.readFileSync('seed-games/atlas-quest-live.html', 'utf8'));
 const cookieOf = id => { let c = ''; startSession({ append: (k, v2) => { c = v2.split(';')[0]; } }, id); return c; };
 
 let server, BASE;
@@ -381,6 +386,157 @@ test('Would You Rather Live from the ⋯ menu-free catalog on a phone; a desk on
   await T.page.waitForSelector('#hr-lgpill', { state: 'detached', timeout: 20000 });
   assert.deepEqual(T.errors, []); assert.deepEqual(B.errors, []);
   await B.ctx.close(); await T.ctx.close();
+});
+
+// Owner: "Live games started in the homeroom shouldn't require students already in the homeroom to scan the QR code.
+// They should automatically be able to join."
+/** The Teacher view dialog at this width: open from its button, every button's words inside the button, nothing sideways. */
+async function dashDialogFits(page, frame, width) {
+  await page.setViewportSize({ width, height: 844 }); await page.waitForTimeout(250);
+  await frame.locator('[data-lv-act="dash"]').scrollIntoViewIfNeeded();
+  await frame.locator('[data-lv-act="dash"]').click();
+  await frame.locator('#lv-dash-qr[open]').waitFor();
+  const r = await frame.locator('#lv-dash-qr').evaluate(d => {
+    const vw = document.documentElement.clientWidth, b = d.getBoundingClientRect();
+    const btns = [...d.querySelectorAll('.btn')].map(x => { const rr = x.getBoundingClientRect(), range = document.createRange(); range.selectNodeContents(x); const tr = range.getBoundingClientRect(); return { t: x.textContent.trim(), over: x.scrollWidth - x.clientWidth, out: Math.max(rr.left - tr.left, tr.right - rr.right) }; });
+    const link = d.querySelector('.lv-dash-link'), lr = link.getBoundingClientRect();
+    return { vw, left: b.left, right: b.right, sideways: d.scrollWidth - d.clientWidth, btns, link: { left: lr.left, right: lr.right, over: link.scrollWidth > link.clientWidth, ell: getComputedStyle(link).textOverflow } };
+  });
+  assert.ok(r.left >= 0 && r.right <= r.vw + 0.5, `${width}: the dialog is on screen (${r.left}..${r.right} of ${r.vw})`);
+  assert.ok(r.sideways <= 0, `${width}: nothing sideways in the dialog (${r.sideways})`);
+  for (const b of r.btns) assert.ok(b.over <= 0 && b.out <= 1, `${width}: "${b.t}" fits its button (${b.over}, ${b.out})`);
+  assert.ok(r.link.left >= r.left && r.link.right <= r.right + 0.5, `${width}: the address stays inside`);
+  if (r.link.over) assert.equal(r.link.ell, 'ellipsis', `${width}: a long address ends in an ellipsis`);
+  return r;
+}
+const closeDash = frame => frame.locator('#lv-dash-qr button[type="submit"]').click();
+
+test('students already on their desks, and one who opens Homeroom later, join by themselves; the teacher hosts on a phone (390): no Teacher view popping up, the pill counts 3', { timeout: 280000 }, async t => {
+  if (skip) return t.skip(skip);
+  // Ben has a game open on his desk when the live game starts
+  const given = HO.handOut(teacher, cls, { gameId: wordHunt.id, to: { kind: 'desk', id: ben.id } });
+  assert.ok(given.ok || given.code === 'alreadyOnDesk', given.code);   // (an earlier test may have given it already)
+  const A = await open(ada, desk(), PHONE, { touch: true });
+  const B = await open(ben, desk(), PHONE, { touch: true });
+  await A.page.waitForSelector('#hd'); await B.page.waitForSelector('#hd');
+  await B.page.locator('a.hd-card[data-hdcard]').first().tap();
+  await B.page.waitForSelector('.hr-player .hr-playframe');
+  const T = await open(teacher, board(), PHONE, { touch: true });
+  await T.page.waitForSelector('.hr-desk[data-sid]');
+  await T.page.evaluate(() => { const b = document.querySelector('[data-hr="catalog"]'), p = document.getElementById('hr-panel'); p.scrollLeft = b.offsetLeft - 20; });
+  await T.page.locator('[data-hr="catalog"]').tap();
+  await T.page.locator('.hr-csheet [data-csubj="live"]').tap();
+  await T.page.locator('.hr-csheet [data-hrlive*="mode=board"]').tap();
+  await T.page.waitForSelector('.hr-liveplayer:not([hidden]) .hr-liveframe');
+  await startFromLanding(T.page);
+  const s = LS.openForClass(cls.id);
+  assert.ok(s && s.mode === 'board' && s.audience === 'class');
+  const host = T.page.frameLocator('.hr-liveframe');
+  await host.locator('#lv-joinbox').waitFor();
+  // the host screen in Homeroom: students join from their desks; the code stays, small, for anyone not in Homeroom
+  assert.match(await host.locator('.lv-hrjoin').innerText(), /join from their desks/);
+  assert.equal(await host.locator('#lv-joinbox.is-hr').count(), 1);
+  assert.equal(await host.getByText('Sign in first, then type the code.').count(), 0);
+  const qr = await host.locator('#lv-qr').boundingBox();
+  assert.ok(qr.width <= 100, `a small QR (${qr.width})`);
+  // the two already on their desks come in by themselves (Ben's open game makes way), no code typed anywhere
+  for (const [X, who] of [[A, ada], [B, ben]]) {
+    await X.page.waitForFunction(sid => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname === `/live/play/${sid}`; } catch { return false; } }, s.id, { timeout: 25000 });
+    await LSwait(() => [...s.seats.values()].some(x => x.userId === who.id && x.conn), `${who.username} is in the game`, 20000);
+    assert.equal(await X.page.frameLocator('.hr-player .hr-playframe').locator('#lv-code-input, input[name="code"]').count(), 0, 'no code to type');
+  }
+  // the teacher starts; Cleo opens Homeroom after that and is brought in too
+  await host.locator('[data-lv-act="start"]').click();
+  await LSwait(() => s.phase !== 'lobby', 'the game started');
+  const C = await open(cleo, desk(), PHONE, { touch: true });
+  await C.page.waitForFunction(sid => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname === `/live/play/${sid}`; } catch { return false; } }, s.id, { timeout: 25000 });
+  await LSwait(() => [...s.seats.values()].some(x => x.userId === cleo.id && x.conn), 'Cleo is in the game', 20000);
+  await C.page.waitForTimeout(1500); await shot(C.page, 'autojoin-student-390');
+  // nothing popped up over the host screen by itself
+  const hf = T.page.frames().find(f => f.url().includes(`/live/host/${s.id}`));
+  assert.deepEqual(await hf.evaluate(() => [...document.querySelectorAll('dialog[open]')].map(d => d.id)), [], 'no dialog opened by itself');
+  await T.page.waitForFunction(() => /3 joined/.test(document.querySelector('.hr-liveplayer [data-lgcount]').textContent), null, { timeout: 15000 });
+  await hf.evaluate(() => scrollTo(0, 0)); await T.page.waitForTimeout(600); await shot(T.page, 'autojoin-teacher-390');
+  // the pill and the desks
+  await T.page.locator('.hr-liveplayer [data-lg="min"]').tap();
+  await T.page.waitForSelector('#hr-lgpill');
+  await T.page.waitForFunction(() => /3 joined/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
+  for (const k of [ada, ben, cleo]) {
+    await T.page.waitForSelector(`.hr-desk[data-sid="${k.id}"] .hr-lgin`, { timeout: 15000 });
+    assert.match(await T.page.textContent(`.hr-desk[data-sid="${k.id}"] .hr-lgin`), /In Brain Board/);
+  }
+  await T.page.waitForTimeout(400); await shot(T.page, 'autojoin-pill-390');
+  assert.ok(await sideways(T.page) <= 0);
+  // Teacher view stays one tap away, and its dialog fits a phone: 390 and 320, in Homeroom...
+  await T.page.locator('#hr-lgpill [data-lg="restore"]').tap();
+  await T.page.waitForSelector('.hr-liveplayer:not([hidden])');
+  await dashDialogFits(T.page, host, 390);
+  await shot(T.page, 'teacher-view-dialog-390');
+  await closeDash(host);
+  await dashDialogFits(T.page, host, 320);
+  await closeDash(host);
+  // ...and on the host page of its own (outside Homeroom: the same dialog)
+  const O = await open(teacher, `/live/host/${s.id}`, { width: 390, height: 844 });
+  await O.page.waitForSelector('#lv-joinbox');
+  assert.equal(await O.page.locator('#lv-joinbox.is-hr, .lv-hrjoin').count(), 0, 'outside Homeroom: the join box as before');
+  const top = O.page.locator('html');
+  await dashDialogFits(O.page, top, 390);
+  await closeDash(top);
+  await dashDialogFits(O.page, top, 320);
+  await O.page.close();
+  // the game ends: everyone back on their desk
+  LS.endSession(s.id);
+  for (const X of [A, B, C]) await X.page.waitForSelector('.hr-player .hr-playframe[src*="/live/play/"]', { state: 'detached', timeout: 20000 });
+  for (const X of [A, B, C]) assert.deepEqual(X.errors, []);
+  assert.deepEqual(T.errors, []);
+  if (given.ok) HO.removeHandout(teacher, cls, given.classLesson.id);
+  for (const X of [A, B, C, T]) await X.ctx.close();
+});
+
+test('every Live games card opens the game\'s own board while the class joins, never the platform 3D lobby; Would You Rather on a phone', { timeout: 280000 }, async t => {
+  if (skip) return t.skip(skip);
+  const T = await open(teacher, board(), PHONE, { touch: true });
+  await T.page.waitForSelector('.hr-desk[data-sid]');
+  const modes = await T.page.$$eval('#hr-panel [data-hrlive*="mode="]', l => [...new Set(l.map(x => /mode=([a-z-]+)/.exec(x.dataset.hrlive)[1]))]);
+  assert.deepEqual(modes.sort(), ['atlas', 'board', 'wyr'], `the Live games cards: ${modes}`);
+  for (const mode of modes) {
+    await T.page.evaluate(() => { const b = document.querySelector('[data-hr="catalog"]'), p = document.getElementById('hr-panel'); p.scrollLeft = b.offsetLeft - 20; });
+    await T.page.locator('[data-hr="catalog"]').tap();
+    await T.page.locator('.hr-csheet [data-csubj="live"]').tap();
+    await T.page.locator(`.hr-csheet [data-hrlive*="mode=${mode}"]`).tap();
+    await T.page.waitForSelector('.hr-liveplayer:not([hidden]) .hr-liveframe');
+    await startFromLanding(T.page);
+    const s = LS.openForClass(cls.id);
+    assert.equal(s.mode, mode);
+    assert.equal(s.lobbyByGame, true, `${mode}: the game draws its own lobby`);
+    const A = await open(ada, desk(), PHONE, { touch: true });
+    await LSwait(() => [...s.seats.values()].some(x => x.userId === ada.id && x.conn), `${mode}: Ada is in`, 25000);
+    // the host screen's stage is the game's own page (2D, its grid look), not the platform lobby ("Lobby", the 3D world)
+    await T.page.waitForFunction(() => document.querySelector('.hr-liveframe') && true);
+    let titles = [];
+    for (let i = 0; i < 40; i++) {
+      titles = await Promise.all(T.page.frames().filter(f => /\/live\/frame\//.test(f.url())).map(f => f.evaluate(() => [document.title, document.querySelector('meta[name="oomba-live"]')?.content || ''] ).catch(() => ['', ''])));
+      if (titles.length && titles.every(x => x[0])) break;
+      await T.page.waitForTimeout(250);
+    }
+    assert.ok(titles.length >= 1, `${mode}: a game frame`);
+    for (const [title, kind] of titles) { assert.notEqual(title, 'Lobby', `${mode}: not the 3D lobby`); assert.notEqual(kind, '3d', `${mode}: not a 3D world`); }
+    if (mode === 'wyr') {
+      const g = T.page.frames().find(f => /\/live\/frame\//.test(f.url()));
+      await g.waitForFunction(() => !document.getElementById('lobby').hidden, null, { timeout: 15000 });
+      assert.match(await g.evaluate(() => document.getElementById('lobby-n').textContent), /1/);
+      await T.page.waitForTimeout(800); await shot(T.page, 'wyr-host-390');
+      await T.page.frameLocator('.hr-liveframe').locator('#lv-stage').scrollIntoViewIfNeeded(); await T.page.waitForTimeout(500); await shot(T.page, 'wyr-host-stage-390');
+      await A.page.waitForTimeout(500); await shot(A.page, 'wyr-desk-390');
+    }
+    LS.endSession(s.id);
+    await T.page.waitForSelector('.hr-liveplayer [data-lgcount]:empty, #hr-lgpill', { timeout: 20000 }).catch(() => {});
+    await T.page.reload(); await T.page.waitForSelector('.hr-desk[data-sid]');
+    assert.deepEqual(A.errors, []);
+    await A.ctx.close();
+  }
+  assert.deepEqual(T.errors, []);
+  await T.ctx.close();
 });
 
 test('the standalone /live pages are as before outside Homeroom: chrome, no framing', { timeout: 60000 }, async t => {

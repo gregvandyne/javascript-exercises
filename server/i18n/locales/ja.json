@@ -8801,6 +8801,8 @@
       "codeForTeachers": "参加コード",
       "joinAt": "{url} をひらいてコードを入力",
       "signInFirst": "先にログインしてから、コードを入力してね。",
+      "hrJoin": "Homeroom にいる生徒は自分の机から参加します。コードは不要です。",
+      "hrFallback": "Homeroom にいない人は参加コードで",
       "hideCode": "コードをかくす",
       "showCode": "コードを表示",
       "count": "{max}人中 {count}人",

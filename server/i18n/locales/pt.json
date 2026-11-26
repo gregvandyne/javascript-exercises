@@ -8803,6 +8803,8 @@
       "codeForTeachers": "Código para entrar",
       "joinAt": "Acesse {url} e digite o código",
       "signInFirst": "Entre na sua conta primeiro e depois digite o código.",
+      "hrJoin": "Os alunos no Homeroom entram pelas suas mesas. Não precisam de código.",
+      "hrFallback": "Não está no Homeroom? Código para entrar",
       "hideCode": "Esconder código",
       "showCode": "Mostrar código",
       "count": "{count} de {max} jogadores",

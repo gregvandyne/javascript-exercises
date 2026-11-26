@@ -8803,6 +8803,8 @@
       "codeForTeachers": "קוד הצטרפות",
       "joinAt": "היכנסו אל {url} והקלידו את הקוד",
       "signInFirst": "התחברו קודם, ואז הקלידו את הקוד.",
+      "hrJoin": "תלמידים ב-Homeroom מצטרפים מהשולחן שלהם. אין צורך בקוד.",
+      "hrFallback": "לא ב-Homeroom? קוד הצטרפות",
       "hideCode": "הסתרת הקוד",
       "showCode": "הצגת הקוד",
       "count": "{count} מתוך {max} שחקנים",

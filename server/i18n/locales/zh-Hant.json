@@ -8801,6 +8801,8 @@
       "codeForTeachers": "加入代碼",
       "joinAt": "前往 {url} 並輸入代碼",
       "signInFirst": "請先登入，再輸入代碼。",
+      "hrJoin": "在 Homeroom 的學生會從自己的座位加入，不需要代碼。",
+      "hrFallback": "不在 Homeroom？加入代碼",
       "hideCode": "隱藏代碼",
       "showCode": "顯示代碼",
       "count": "{count} / {max} 位玩家",
