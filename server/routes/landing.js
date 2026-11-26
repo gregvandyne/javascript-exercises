@@ -28,8 +28,8 @@
 // the amount to the structured data.
 //
 // The Teacher plan: the Hub (services/homeroom.js canUse), the Manipulatives, Figures and Oomba (services/teacher-tools.js
-// toolAccess) are Teacher plan tools, so their sections carry "Available with the Teacher plan" (a link to /plans) while
-// paid plans are on for everyone, and "Being tried out in a few classrooms now" while they are not, as /compare does.
+// toolAccess) are Teacher plan tools, so their sections always carry "Available with the Teacher plan" (a link to /plans),
+// whether or not paid plans are on for everyone yet (the owner's call).
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw, esc } from '../views/html.js';
@@ -44,7 +44,6 @@ import { countable } from '../services/traffic.js';
 import { themedPicture } from '../views/shot.js';
 import { loopShots } from '../views/teacher-loop.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
-import { plansOn } from '../services/teacher-tools.js';
 import { rateLimit } from '../services/ratelimit.js';
 import { LAYOUT_TEMPLATES, WIDGETS } from '../services/dash.js';
 import { ico, toolIco } from '../views/icon.js';
@@ -150,10 +149,9 @@ export function renderLanding(req, res) {
   const langs = seo.langsWithKey('landing.hero.h1');
   const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(i === 1 && focus.coursesHidden() ? 'landing.focus.faqA1' : `landing.faq.a${i}${i === 2 ? 'free' : ''}`, { count })]);
   const courseLinks = !focus.coursesHidden();
-  const plans = plansOn();
   const trial = (label, { big = false, cls = 'lp-btn-primary' } = {}) => html`<a class="lp-btn ${cls}${big ? ' lp-btn-big' : ''}" href="${TRIAL_URL}" data-cta="trial">${label}</a>`;
   /** The Teacher plan line on the Hub, Ask Oomba, the Manipulatives and Figures. */
-  const planTag = () => (plans ? TH('p', 'landing.plan.on', ' class="lp-plan"', { plans: '/plans' }) : T('p', 'landing.plan.testing', ' class="lp-plan"'));
+  const planTag = () => TH('p', 'landing.plan.on', ' class="lp-plan"', { plans: '/plans' });
   const videos = readyVideos();
   const heroVideo = videos.find(v => v.id === HERO_VIDEO) || videos[0];
   const vidTitle = id => t(`teachers.videos.${id}.title`);

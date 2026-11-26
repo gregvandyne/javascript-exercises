@@ -11057,8 +11057,7 @@
       "compare": "Mira cómo nos comparamos"
     },
     "plan": {
-      "on": "Disponible con el <a href=\"{plans}\">plan Docente</a>",
-      "testing": "Se está probando en algunas aulas ahora"
+      "on": "Disponible con el <a href=\"{plans}\">plan Docente</a>"
     },
     "hub": {
       "kicker": "El Hub",

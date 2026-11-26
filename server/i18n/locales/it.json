@@ -11058,8 +11058,7 @@
       "compare": "Guarda il confronto"
     },
     "plan": {
-      "on": "Disponibile con il <a href=\"{plans}\">piano Insegnante</a>",
-      "testing": "In prova in alcune classi in questo momento"
+      "on": "Disponibile con il <a href=\"{plans}\">piano Insegnante</a>"
     },
     "hub": {
       "kicker": "L’Hub",

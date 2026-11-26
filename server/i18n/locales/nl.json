@@ -11058,8 +11058,7 @@
       "compare": "Bekijk de vergelijking"
     },
     "plan": {
-      "on": "Beschikbaar met het <a href=\"{plans}\">Leerkrachtabonnement</a>",
-      "testing": "Wordt nu in een paar klassen uitgeprobeerd"
+      "on": "Beschikbaar met het <a href=\"{plans}\">Leerkrachtabonnement</a>"
     },
     "hub": {
       "kicker": "De Hub",

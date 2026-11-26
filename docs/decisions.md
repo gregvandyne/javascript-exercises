@@ -16127,8 +16127,8 @@ built from the approved mockup (variant B) with these decisions:
   "Students join free. Plans are on the Plans page."
 - **"Available with the Teacher plan"** (a link to /plans), calm and small, on what the code gates by the plan: the Hub
   (services/homeroom.js `canUse`: HOMEROOM, HOMEROOM_USERS and the Teacher plan), Ask Oomba (`companionFor`), the
-  Manipulatives and Figures (services/teacher-tools.js `toolAccess`), and the Hub tour. While paid plans are not on for
-  everyone (`plansOn()` false) it reads "Being tried out in a few classrooms now", as /compare's tag does. The class
+  Manipulatives and Figures (services/teacher-tools.js `toolAccess`), and the Hub tour. It says so whether or not paid
+  plans are on for everyone yet (`plansOn()`): the owner wants the plan named, not "being tried out". The class
   dashboard, live games, the Builder, Read, typing, geography and the games carry no tag.
 - **"Grammar and proofreading"** is Mistake Hunt (there is no "highlights" game).
 - **The Hub** is the name everywhere on the page, in each language's term from "Homeroom is now the Hub" (ja ハブ, ru Хаб, Hub elsewhere). Calls to action go to the sign-up (`/signup?trial=1`)

@@ -284,7 +284,9 @@ test('the Teacher plan: the Hub, Ask Oomba, the tour, the Manipulatives and Figu
     const cards = tools.split('<article').slice(1);
     assert.deepEqual(cards.map(c => /Teacher plan/.test(c)), [true, true, false, false, false, false, false, false, false, false], 'the Manipulatives and Figures only');
     paid(false);
-    assert.equal((await call(null, '/')).text.match(/Being tried out in a few classrooms now/g).length, 5, 'with paid plans off, "in testing", like /compare');
+    const off = (await call(null, '/')).text;
+    assert.equal((off.match(/<p class="lp-plan">Available with the <a href="\/plans">Teacher plan<\/a><\/p>/g) || []).length, 5, 'with paid plans off too: always the Teacher plan');
+    assert.doesNotMatch(off, /Being tried out in a few classrooms now/);
   } finally { paid(false); }
 });
 

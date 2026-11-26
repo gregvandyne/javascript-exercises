@@ -11057,8 +11057,7 @@
       "compare": "比較を見る"
     },
     "plan": {
-      "on": "<a href=\"{plans}\">Teacher プラン</a>で使えます",
-      "testing": "現在、いくつかのクラスで試験中です"
+      "on": "<a href=\"{plans}\">Teacher プラン</a>で使えます"
     },
     "hub": {
       "kicker": "ハブ",

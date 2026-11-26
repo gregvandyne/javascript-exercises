@@ -12632,8 +12632,7 @@
       "compare": "See how we compare"
     },
     "plan": {
-      "on": "Available with the <a href=\"{plans}\">Teacher plan</a>",
-      "testing": "Being tried out in a few classrooms now"
+      "on": "Available with the <a href=\"{plans}\">Teacher plan</a>"
     },
     "hub": {
       "kicker": "The Hub",

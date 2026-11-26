@@ -11057,8 +11057,7 @@
       "compare": "Voir la comparaison"
     },
     "plan": {
-      "on": "Disponible avec le <a href=\"{plans}\">forfait Enseignant</a>",
-      "testing": "En test dans quelques classes en ce moment"
+      "on": "Disponible avec le <a href=\"{plans}\">forfait Enseignant</a>"
     },
     "hub": {
       "kicker": "Le Hub",

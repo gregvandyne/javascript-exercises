@@ -11057,8 +11057,7 @@
       "compare": "看看我們如何比較"
     },
     "plan": {
-      "on": "包含在<a href=\"{plans}\">教師方案</a>中",
-      "testing": "目前正在幾個班級試用"
+      "on": "包含在<a href=\"{plans}\">教師方案</a>中"
     },
     "hub": {
       "kicker": "Hub",

@@ -11058,8 +11058,7 @@
       "compare": "Zum Vergleich"
     },
     "plan": {
-      "on": "Im <a href=\"{plans}\">Lehrkräfte-Plan</a> enthalten",
-      "testing": "Wird gerade in einigen Klassen erprobt"
+      "on": "Im <a href=\"{plans}\">Lehrkräfte-Plan</a> enthalten"
     },
     "hub": {
       "kicker": "Der Hub",
