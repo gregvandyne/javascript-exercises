@@ -542,8 +542,18 @@ export function placeObject(slug, b, k, region, space) {
   // space's first free spot. One gap for all of them (a spot found with a smaller gap than clear() asks for was turned
   // down, and the mat went to the plane's top left with a fit that zoomed far out: seen recording, 25 Nov 2026).
   const inView = nearContent(boxes, w, h, region, clear);
-  const at = tries.find(p => inside(p.x, p.y, region) && clear(p.x, p.y)) || inView || tries.find(p => inside(p.x, p.y, all) && clear(p.x, p.y)) || spotIn(boxes, w, h, all, { gap: G });
-  return newObject(slug, k, clamp(at.x, 0, space.w - z.w * s), clamp(at.y, 0, space.h - z.h * s), Math.round(s * 1000) / 1000);
+  const at = tries.find(p => inside(p.x, p.y, region) && clear(p.x, p.y)) || inView || tries.find(p => inside(p.x, p.y, all) && clear(p.x, p.y));
+  if (at) return newObject(slug, k, clamp(at.x, 0, space.w - z.w * s), clamp(at.y, 0, space.h - z.h * s), Math.round(s * 1000) / 1000);
+  // No free spot at full size (a live room's square, with a rekenrek across most of it): a smaller gap, then a smaller
+  // object (never below S_MIN), in the free spot nearest what is there, before ever landing on top of something.
+  for (const s2 of [s, s * 0.85, s * 0.7, s * 0.55, S_MIN].filter((x, i, a) => x >= S_MIN && x <= s && a.indexOf(x) === i)) {
+    const w2 = z.w * s2, h2 = z.h * s2, g = 8;
+    const clear2 = (x, y) => !boxes.some(o => x < o.x + o.w + g - 1 && x + w2 + g - 1 > o.x && y < o.y + o.h + g - 1 && y + h2 + g - 1 > o.y);
+    const p = nearContent(boxes, w2, h2, all, clear2, { margin: 6, step: 6 });
+    if (p) return newObject(slug, k, clamp(p.x, 0, space.w - w2), clamp(p.y, 0, space.h - h2), Math.round(s2 * 1000) / 1000);
+  }
+  const last = spotIn(boxes, w, h, all, { gap: G });
+  return newObject(slug, k, clamp(last.x, 0, space.w - z.w * s), clamp(last.y, 0, space.h - z.h * s), Math.round(s * 1000) / 1000);
 }
 /**
  * A board made in one space put into another (a session started from a saved board: the teacher's area; a pushed board:

@@ -3912,7 +3912,18 @@
       "checkAll": "{total, plural, one {Tout est juste !} other {Les # sont justes !}}",
       "checksSummary": "{total, plural, one {Réponses vérifiées : {checked} sur #} other {Réponses vérifiées : {checked} sur #}}",
       "checkAllRight": "Tout juste",
-      "checkNeedsHelp": "A besoin d'aide"
+      "checkNeedsHelp": "A besoin d'aide",
+      "how": "Comment ça marche",
+      "pushMine": "Envoyer mon tableau",
+      "pushMineText": "Envoie ta zone telle qu’elle est maintenant. Rien à enregistrer avant.",
+      "pushEmpty": "Ta zone est vide. Mets-y quelque chose, puis envoie-la.",
+      "pushGoArea": "Aller à ma zone",
+      "pushSaved": "Ou envoyer un tableau enregistré",
+      "pushBuild": "Créer et enregistrer un tableau dans {tool} (ouvre un nouvel onglet)",
+      "pushedMine": "Ton tableau a été envoyé à tous les élèves.",
+      "endTitle": "Terminer cette séance ?",
+      "endConfirm": "Les élèves ne pourront plus modifier leur carré. Tu pourras rouvrir la salle plus tard avec le même code.",
+      "pushNoKey": "Écris d’abord les réponses dans tes cases réponse pour que les élèves puissent vérifier leur travail."
     },
     "figures-editor": {
       "undo": "Annuler",
@@ -5581,6 +5592,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "À regarder maintenant"
+    },
+    "manip-task-list": {
+      "assignedLine": "Assigné à {klass} : {titles}. Chaque élève reçoit {n, plural, one {# question} other {# questions}}."
+    },
+    "manip-task-play": {
+      "more": "Afficher toute la question",
+      "less": "Afficher moins"
     }
   },
   "favorites": {
@@ -15146,7 +15164,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant."
+      "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant.",
+      "emptyArea": "Ta zone est vide. Mets-y quelque chose, puis envoie-la."
     }
   },
   "proof": {

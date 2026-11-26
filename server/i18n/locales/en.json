@@ -4218,8 +4218,18 @@
       "pushTitle": "Push a board to every student",
       "pushText": "Each student can load it into their own square; their work stays until they do.",
       "pushOne": "Push {code}",
-      "noBoards": "No saved board for this tool yet. Build one in the tool on its own and save it.",
+      "noBoards": "No saved boards for this tool yet.",
       "pushed": "Pushed to every student.",
+      "how": "How it works",
+      "pushMine": "Push my board",
+      "pushMineText": "Sends your area just as it is now. Nothing needs saving first.",
+      "pushEmpty": "Your area is empty. Put something in it first, then push it.",
+      "pushGoArea": "Go to my area",
+      "pushSaved": "Or push a saved board",
+      "pushBuild": "Build and save a board in {tool} (opens a new tab)",
+      "pushedMine": "Your board was pushed to every student.",
+      "endTitle": "End this session?",
+      "endConfirm": "Students can't change their squares after this. You can reopen the room later with the same code.",
       "close": "Close",
       "gone": "This session isn't here.",
       "back": "Back",
@@ -4288,7 +4298,8 @@
       "allSteps": "All steps",
       "thisStep": "Just this step",
       "hideSteps": "Hide steps",
-      "showSteps": "Show steps"
+      "showSteps": "Show steps",
+      "pushNoKey": "Type the answers in your answer boxes first so students can check their work."
     },
     "figures-editor": {
       "undo": "Undo",
@@ -6618,7 +6629,9 @@
       "doneScore": "You got {right} of {total} right the first time.",
       "typeFirst": "Type your answer in the box first.",
       "alreadyDone": "That question is already finished.",
-      "offline": "Oomba could not check that. Try again in a moment."
+      "offline": "Oomba could not check that. Try again in a moment.",
+      "more": "Show the whole question",
+      "less": "Show less"
     },
     "manip-task-list": {
       "preview": "Preview",
@@ -6648,6 +6661,7 @@
       "due": "Due (optional)",
       "cancel": "Cancel",
       "assignGo": "Assign",
+      "assignedLine": "Assigned to {klass}: {titles}. Each student gets {n, plural, one {# question} other {# questions}}.",
       "practiceTitle": "Practice",
       "practiceLead": "Pick a tool to practice its tasks, or just play with it.",
       "nTasks": "{n, plural, one {# task to practice} other {# tasks to practice}}",
@@ -16091,6 +16105,7 @@
       "ended": "This session has ended.",
       "noBoard": "Pick one of your saved boards.",
       "otherTool": "That board is for another tool. Push a board made with this session's tool.",
+      "emptyArea": "Your area is empty. Put something in it first, then push it.",
       "brief": "Describe the lesson in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
       "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",

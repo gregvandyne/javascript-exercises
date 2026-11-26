@@ -34,7 +34,7 @@ export function mountPractice(el, ctx, opts) {
   // ---------------------------------------------------------------- a question
   function start(v) {
     stopReading();
-    Object.assign(P, { v, wrong: 0, hints: 0, firstDone: false, result: null, picked: null, typed: '' });
+    Object.assign(P, { v, wrong: 0, hints: 0, firstDone: false, result: null, picked: null, typed: '', open: false });
     ctx.load(v.setup, { totals: v.totals });
     draw();
     requestAnimationFrame(() => el.querySelector('#mp-probt')?.focus({ preventScroll: true }));
@@ -76,7 +76,7 @@ export function mountPractice(el, ctx, opts) {
       <input class="input mp-probbox" id="mp-probbox" autocomplete="off" spellcheck="false" maxlength="100" enterkeyhint="done" inputmode="${a.box.kind === 'expanded' || /[^\d.,]/.test(String(a.box.key)) ? 'text' : 'decimal'}" value="${esc(P.typed)}"${locked ? ' readonly' : ''}>` : '';
     const choice = a.choice ? `<span class="mp-problabel" id="mp-probch">${esc(tp('pick'))}</span><span class="mp-probchoices" role="radiogroup" aria-label="${esc(tp('pick'))}">${a.choice.options.map((o, k) => btn(`chip mp-probchoice${P.picked === k ? ' on' : ''}`, `role="radio" aria-checked="${P.picked === k}" data-pc="${k}"${locked ? ' disabled' : ''}`, esc(o))).join('')}</span>` : '';
     const build = a.board && !a.box && !a.choice ? `<span class="small muted mp-probbuild">${iconHtml('👇', { size: 16 })} ${esc(tp('buildIt'))}</span>` : '';
-    const acts = locked ? '' : `${btn('btn btn-primary mp-probcheck', `data-pp="check"${P.busy ? ' disabled' : ''}`, `${iconHtml('✓', { size: 18 })} ${esc(P.busy ? tp('checking') : tp('check'))}`)}${P.hints < P.v.hints.length ? btn('btn mp-probhint', 'data-pp="hint"', `${iconHtml('💡', { size: 18 })} ${esc(tp('hint'))}`) : ''}`;
+    const acts = locked ? '' : `${btn('btn btn-primary mp-probcheck', `data-pp="check"${P.busy ? ' disabled' : ''}`, `${iconHtml('✓', { size: 18 })} ${esc(P.busy ? tp('checking') : tp('check'))}`)}${P.hints < P.v.hints.length ? btn('btn mp-probhint', `data-pp="hint" aria-label="${esc(tp('hint'))}"`, `${iconHtml('💡', { size: 18 })}<span class="mp-probbtnt"> ${esc(tp('hint'))}</span>`) : ''}`;
     return `${build}${box}${choice}<span class="mp-probacts">${acts}</span>`;
   }
   function sayHtml() {
@@ -94,15 +94,23 @@ export function mountPractice(el, ctx, opts) {
     const v = P.v;
     // (which question this is, for the run-through tests: tests/unit/manip-task-flow-browser.test.js)
     el.dataset.task = v.id; el.dataset.seed = String(v.seed); el.dataset.i = P.mode === 'set' ? String(P.i) : '';
-    el.innerHTML = `<section class="mp-prob panel">
+    // Inside Homeroom's player on a phone (public/css/manipulatives.css .mp-probc): the card is one compact line of the
+    // prompt with the answer row under it, so the board shows on first open; ▾ opens all of it (hints, the explanation)
+    // over the board, never pushing the board down. Elsewhere the fold button is not shown and nothing changes.
+    if (ctx.embed && !P.open) P.foldH = 0;
+    el.innerHTML = `<section class="mp-prob panel${ctx.embed ? ` mp-probc${P.open ? ' open' : ''}` : ''}">
       <div class="mp-probmain"><span class="mp-oomba" aria-hidden="true">${oombaMark(40)}</span>
         <div class="mp-probtext"><p class="mp-probmeta">${metaHtml()}</p><h2 class="mp-prompt" id="mp-probt" tabindex="-1" dir="auto">${esc(v.prompt)}</h2></div>
+        ${ctx.embed ? btn('btn btn-sm mp-probfold', `data-pp="fold" aria-expanded="${!!P.open}" aria-controls="mp-prob" aria-label="${esc(P.open ? tp('less') : tp('more'))}"`, P.open ? '▴' : '▾') : ''}
         <div class="mp-probside">${btn('btn btn-sm mp-probread', `data-pp="read" aria-label="${esc(tp('read'))}"`, `${iconHtml('🔊', { size: 16 })}<span class="mp-probreadt"> ${esc(tp('read'))}</span>`)}${P.mode === 'solo' ? soloNav() : ''}</div></div>
       <div class="mp-probans">${answerHtml()}</div>
       <div class="mp-probsay" role="status" aria-live="polite">${sayHtml()}</div></section>`;
+    // Open over the board: the card's place keeps its folded height, so the board does not move.
+    if (ctx.embed) { if (!P.open) requestAnimationFrame(() => { const sec = el.querySelector('.mp-probc'); if (sec && !P.open) { P.foldH = sec.getBoundingClientRect().height; el.style.minHeight = ''; } }); else el.style.minHeight = P.foldH ? `${P.foldH}px` : ''; }
   }
   function drawFinished() {
     const s = P.set, right = [...s.marks].filter(m => m === '1').length;
+    el.style.minHeight = '';
     stopReading(); clearInterval(timer);
     el.innerHTML = `<section class="mp-prob panel mp-probdone"><div class="mp-probmain"><span class="mp-oomba" aria-hidden="true">${oombaMark(48)}</span>
       <div class="mp-probtext"><h2 class="mp-prompt" id="mp-probt" tabindex="-1">${esc(tp('allDone'))}</h2><p class="mp-probdonetext">${esc(tp('doneScore', { right, total: s.items.length }))}</p></div></div>
@@ -144,6 +152,7 @@ export function mountPractice(el, ctx, opts) {
       try { const r = await api(`/api/manipulatives/set/${encodeURIComponent(P.set.cl)}/${encodeURIComponent(P.set.step)}`, { method: 'POST', body: { i: P.i, action: 'hint' } }); P.hints = r.hint; Object.assign(P.set, { state: r.state }); }
       catch { P.hints += 1; }
     } else P.hints += 1;
+    if (ctx.embed) P.open = true;   // the hint shows (over the board on a phone)
     draw();
   }
   async function doNext() {
@@ -161,6 +170,7 @@ export function mountPractice(el, ctx, opts) {
     const b = e.target.closest('[data-pp], [data-pc]'); if (!b || !el.contains(b)) return;
     if (b.dataset.pc !== undefined) { P.picked = +b.dataset.pc; draw(); el.querySelector(`[data-pc="${P.picked}"]`)?.focus(); return; }
     const k = b.dataset.pp;
+    if (k === 'fold') { P.open = !P.open; draw(); el.querySelector('[data-pp="fold"]')?.focus(); return; }
     if (k === 'check') doCheck();
     else if (k === 'hint') doHint();
     else if (k === 'another') soloNew();

@@ -325,6 +325,20 @@ main.rm-main .fg-tools{margin-bottom:0}
 .rm-banner .rm-x{position:absolute;right:8px;top:8px;min-height:36px;padding:0 10px}
 .rm-back{position:absolute;z-index:70;left:50%;transform:translateX(-50%);bottom:24px;box-shadow:0 4px 0 var(--accent-press),var(--shadow-lg)}
 .rm .mp-viewer,.manip .mp-viewer{cursor:default}
+/* "My square" (and "Back to my square") on the green button: the house is drawn in the same green, so it sits on a light
+   disc (else only its door showed, a dot). */
+.rm .btn-primary svg.fx-oo[data-fx="house"]{background:var(--card);border-radius:50%;padding:2px;box-sizing:content-box}
+/* The student's "How it works" at the top of the palette (the tool page's button: public/js/manip.js openHow). */
+.rm-palhow{width:100%;justify-content:center;margin-bottom:8px}
+/* Push a board: Push my board first, then saved boards, then a link to build one. */
+.rm-pushsheet .mp-viewbox{width:min(560px,100%)}
+.rm-pushsheet h3{margin:14px 0 6px;font-size:1rem}
+.rm-pushown{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:12px 0 4px}
+.rm-pushown p{margin:0}
+.rm-pushempty,.rm-pushnokey{font-weight:700}
+.rm-pushlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+.rm-pushlist li{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
+.rm-pushlist li span{min-width:0;overflow-wrap:anywhere;font-weight:700}
 @media (max-width:899px){
   .rm-hidephone{display:none!important}
   .rm-phoneonly{display:inline-flex!important}
@@ -769,3 +783,56 @@ main.rm-main .fg-tools{margin-bottom:0}
    enough that the problem, the palette and the board share the frame */
 .mp-inhr .mp-practicing>.mp-head{display:none}
 .mp-inhr .manip .mp-practicing{--mp-board-h:clamp(280px,calc(100vh - 400px),640px);--mp-board-min:280px}
+/* the live room inside Homeroom's player (?in=hr, 1280 x 800 leaves the frame about 500 px tall): the palette fits
+   without scrolling: two columns of smaller buttons, and its tools (sticky note, text, pen, undo) as one row of icons
+   (each keeps its name for screen readers) */
+@media (min-width:900px){
+  .mp-inhr .rm-pal{width:244px;padding:8px;top:calc(var(--rm-bar-h,60px) + 18px);max-height:calc(100% - var(--rm-bar-h,60px) - 82px)}
+  .mp-inhr .rm-pal .mp-cap{margin:0 0 4px;font-size:.68rem}
+  .mp-inhr .rm-pal .mp-palette{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px}
+  .mp-inhr .rm-pal .mp-pal{width:auto;min-width:0;min-height:32px;padding:2px 6px;gap:5px;font-size:.78rem;line-height:1.15}
+  .mp-inhr .rm-pal .mp-pal.piece{min-height:32px}
+  .mp-inhr .rm-pal .mp-toolsrow{flex-direction:row;flex-wrap:wrap;gap:4px;margin-top:4px}
+  .mp-inhr .rm-pal .mp-toolsrow .mp-tbtn{width:auto;flex:1 1 0;min-width:36px;min-height:36px;padding:0 6px;justify-content:center}
+  .mp-inhr .rm-pal .mp-toolsrow .mp-tbtn>span.rm-hidephone{display:none}
+  .mp-inhr .rm-pal .rm-palhow{min-height:30px;margin-bottom:4px;font-size:.8rem}
+  .mp-inhr .rm-pal .rm-settings{margin-top:6px}
+}
+/* a student's room inside Homeroom's player: Homeroom's bar has the title and Raise hand, so the room's bar is a small
+   corner of what is still needed (Load it, Check, My square on a phone), and on a phone the palette is one row that
+   scrolls sideways, so the square gets the screen */
+.mp-inhr .rm-bar.rm-barmin{left:auto;right:12px;top:10px;background:transparent;box-shadow:none;backdrop-filter:none;padding:0;gap:6px;flex-wrap:nowrap}
+@media (max-width:899px){
+  .mp-inhr .rm-bar.rm-barmin{right:8px;top:8px}
+  .mp-inhr .rm-barmin .rm-minebar{padding:0 10px;box-shadow:0 3px 0 var(--accent-press),var(--shadow)}
+  .mp-inhr .rm-pal{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:6px;overflow-x:auto;overflow-y:hidden;padding:6px;scrollbar-width:thin}
+  .mp-inhr .rm-pal .mp-palette,.mp-inhr .rm-pal .mp-toolsrow{display:contents}
+  .mp-inhr .rm-pal .mp-pal,.mp-inhr .rm-pal .mp-tbtn{flex:none;min-height:40px}
+  .mp-inhr .rm-pal .rm-pens{flex:none;flex-wrap:nowrap;margin:0}
+  .mp-inhr .rm-pal .rm-pens .chip{white-space:nowrap}
+}
+/* a practice set inside Homeroom's player on a phone (public/js/manip-task-play.js .mp-probc): the card folds to the
+   prompt (two lines) and the answer row, so the board shows on first open; ▾ opens the whole card over the board
+   (hints, the explanation), never pushing it down. Wider screens and the page on its own: unchanged. */
+.mp-probfold{display:none}
+@media (max-width:599px){
+  .mp-inhr .mp-probwrap{position:relative;z-index:30;margin-bottom:8px}
+  .mp-inhr .mp-probc{position:relative}
+  .mp-inhr .mp-probc .mp-probfold{display:inline-flex;position:absolute;top:6px;inset-inline-end:6px;min-width:40px;min-height:40px;padding:0;justify-content:center;font-size:1rem}
+  .mp-inhr .mp-probc .mp-probmain{padding-inline-end:44px}
+  .mp-inhr .mp-probc:not(.open){gap:6px;padding:8px 10px}
+  .mp-inhr .mp-probc:not(.open) .mp-oomba,.mp-inhr .mp-probc:not(.open) .mp-probside,.mp-inhr .mp-probc:not(.open) .mp-probbuild,
+  .mp-inhr .mp-probc:not(.open) .mp-probhints,.mp-inhr .mp-probc:not(.open) .mp-probexplain{display:none}
+  .mp-inhr .mp-probc:not(.open) .mp-probmeta{font-size:.75rem;margin:0}
+  .mp-inhr .mp-probc:not(.open) .mp-probmeta .mp-probtname{display:none}
+  .mp-inhr .mp-probc:not(.open) .mp-prompt{font-size:.98rem;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .mp-inhr .mp-probc:not(.open) .mp-problabel{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .mp-inhr .mp-probc:not(.open) .mp-probans{flex-wrap:nowrap;gap:6px}
+  .mp-inhr .mp-probc:not(.open) .mp-probbox{flex:1 1 80px;min-width:0;min-height:40px}
+  .mp-inhr .mp-probc:not(.open) .mp-probacts{flex:none;flex-wrap:nowrap;gap:6px}
+  .mp-inhr .mp-probc:not(.open) .mp-probacts .btn{min-height:40px;padding:0 12px}
+  .mp-inhr .mp-probc:not(.open) .mp-probbtnt{display:none}
+  .mp-inhr .mp-probc:not(.open) .mp-probchoices{flex-wrap:nowrap;overflow-x:auto}
+  .mp-inhr .mp-probc:not(.open) .mp-probok,.mp-inhr .mp-probc:not(.open) .mp-probno{padding:4px 8px;font-size:.9rem;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
+  .mp-inhr .mp-probc.open{position:absolute;left:0;right:0;top:0;z-index:40;max-height:calc(100vh - 24px);overflow:auto;box-shadow:var(--shadow-lg)}
+}

@@ -3913,7 +3913,18 @@
       "checkAll": "{total, plural, one {Alles goed!} other {Alle # goed!}}",
       "checksSummary": "{total, plural, one {Antwoorden gecontroleerd: {checked} van #} other {Antwoorden gecontroleerd: {checked} van #}}",
       "checkAllRight": "Alles goed",
-      "checkNeedsHelp": "Heeft hulp nodig"
+      "checkNeedsHelp": "Heeft hulp nodig",
+      "how": "Zo werkt het",
+      "pushMine": "Mijn bord sturen",
+      "pushMineText": "Stuurt jouw gebied precies zoals het nu is. Eerst opslaan is niet nodig.",
+      "pushEmpty": "Jouw gebied is leeg. Zet er eerst iets in en stuur het dan.",
+      "pushGoArea": "Naar mijn gebied",
+      "pushSaved": "Of stuur een opgeslagen bord",
+      "pushBuild": "Maak en bewaar een bord in {tool} (opent in een nieuw tabblad)",
+      "pushedMine": "Je bord is naar alle leerlingen gestuurd.",
+      "endTitle": "Deze sessie beëindigen?",
+      "endConfirm": "Daarna kunnen leerlingen hun vak niet meer veranderen. Je kunt de ruimte later weer openen met dezelfde code.",
+      "pushNoKey": "Typ eerst de antwoorden in je antwoordvakken, zodat leerlingen hun werk kunnen controleren."
     },
     "figures-editor": {
       "undo": "Ongedaan maken",
@@ -5582,6 +5593,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "Nu even kijken"
+    },
+    "manip-task-list": {
+      "assignedLine": "Toegewezen aan {klass}: {titles}. Elke leerling krijgt {n, plural, one {# vraag} other {# vragen}}."
+    },
+    "manip-task-play": {
+      "more": "De hele vraag tonen",
+      "less": "Minder tonen"
     }
   },
   "favorites": {
@@ -15147,7 +15165,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even."
+      "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even.",
+      "emptyArea": "Jouw gebied is leeg. Zet er eerst iets in en stuur het dan."
     }
   },
   "proof": {

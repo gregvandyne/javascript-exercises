@@ -42,7 +42,9 @@ export function listView(root, slug, { host, state }) {
     const picked = () => [...root.querySelectorAll('[data-pick]:checked')].map(x => x.dataset.pick);
     const b = root.querySelector('#mp-tlassign'), line = root.querySelector('#mp-tlpicked');
     root.addEventListener('change', e => { if (!e.target.matches('[data-pick]')) return; const k = picked().length; if (b) b.disabled = !k; if (line) line.textContent = k ? tl('picked', { n: k }) : ''; });
-    if (b) b.onclick = () => assignSheet(picked(), state);
+    // Assigned: the ticks go (ticked again they would be assigned twice), and the line says what was assigned to whom.
+    const done = msg => { for (const x of root.querySelectorAll('[data-pick]:checked')) x.checked = false; if (b) b.disabled = true; if (line) line.textContent = msg; };
+    if (b) b.onclick = () => assignSheet(picked(), state, { onDone: done });
   }
 }
 /** Assign buttons anywhere on the page open the sheet (the task box, the Task library, the list). */
@@ -50,8 +52,9 @@ export function bindAssign(state) {
   document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-assign]'); if (b) { e.preventDefault(); assignSheet([b.dataset.assign], state); } });
 }
 
-/** The Assign sheet: the tasks, questions of each, the class, open and due days. */
-export function assignSheet(ids, state) {
+/** The Assign sheet: the tasks, questions of each, the class, open and due days. onDone(what was assigned, in words):
+ *  after it is assigned. */
+export function assignSheet(ids, state, { onDone = null } = {}) {
   const all = Object.entries(TASKS).flatMap(([slug, l]) => l.filter(isPractice).map(task => ({ slug, task, id: idOf(slug, task) })));
   const picked = all.filter(x => ids.includes(x.id));
   if (!picked.length) return;
@@ -75,7 +78,10 @@ export function assignSheet(ids, state) {
     const go = f.querySelector('[type="submit"]'); go.disabled = true;
     try {
       const r = await api('/api/manipulatives/assign', { method: 'POST', body: { classId: f.elements.classId.value, tasks: picked.map(x => x.id), count: +f.elements.count.value, opensAt: f.elements.opensAt.value || null, dueAt: f.elements.dueAt.value || null } });
-      close(); toast(r.toast);
+      // What was assigned, by name, and to which class (the sheet is gone, so the toast and the list's line say it).
+      const sel = f.elements.classId, klass = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+      const msg = r.n ? tl('assignedLine', { klass, titles: picked.map(x => x.task.title).join(', '), n: r.n }) : r.toast;
+      close(); toast(msg); if (onDone) onDone(msg);
     } catch (err) { el.querySelector('#mp-aerr').textContent = err.message; go.disabled = false; }
   };
   requestAnimationFrame(() => f.elements.count.focus());

@@ -3913,7 +3913,18 @@
       "checkAll": "{total, plural, one {Tudo certo!} other {Todas as # certas!}}",
       "checksSummary": "{total, plural, one {Respostas verificadas: {checked} de #} other {Respostas verificadas: {checked} de #}}",
       "checkAllRight": "Tudo certo",
-      "checkNeedsHelp": "Precisa de ajuda"
+      "checkNeedsHelp": "Precisa de ajuda",
+      "how": "Como funciona",
+      "pushMine": "Enviar o meu quadro",
+      "pushMineText": "Envia a sua área tal como está agora. Não é preciso salvar antes.",
+      "pushEmpty": "A sua área está vazia. Coloque algo nela e depois envie.",
+      "pushGoArea": "Ir para a minha área",
+      "pushSaved": "Ou envie um quadro salvo",
+      "pushBuild": "Crie e salve um quadro em {tool} (abre numa nova aba)",
+      "pushedMine": "O seu quadro foi enviado a todos os alunos.",
+      "endTitle": "Encerrar esta sessão?",
+      "endConfirm": "Depois disso, os alunos não podem mudar os seus quadrados. Pode reabrir a sala mais tarde com o mesmo código.",
+      "pushNoKey": "Escreva primeiro as respostas nas suas caixas de resposta para que os alunos possam verificar o trabalho."
     },
     "figures-editor": {
       "undo": "Desfazer",
@@ -5582,6 +5593,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "Dar uma olhada agora"
+    },
+    "manip-task-list": {
+      "assignedLine": "Atribuído a {klass}: {titles}. Cada aluno recebe {n, plural, one {# pergunta} other {# perguntas}}."
+    },
+    "manip-task-play": {
+      "more": "Mostrar a pergunta inteira",
+      "less": "Mostrar menos"
     }
   },
   "favorites": {
@@ -15148,7 +15166,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento."
+      "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento.",
+      "emptyArea": "A sua área está vazia. Coloque algo nela e depois envie."
     }
   },
   "proof": {

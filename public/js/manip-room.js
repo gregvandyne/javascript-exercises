@@ -8,13 +8,13 @@
 // the others are told to read the room again. Cursors travel on the socket (memory only); without a socket the page
 // falls back to short requests.
 // The tools' own code (boards, palettes, taps) comes from public/js/manip.js through open()'s deps.
-import { t, api, toast, esc, copyText } from '/js/app.js';
+import { t, api, toast, esc, copyText, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
-import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H, checkSummary } from '/js/manip-data.js';
+import { toolOf, tutorialOf, roomLayout, layoutOf, instructionNotes, stripHeight, stripFullHeight, STRIP, stepsOf, stepStripTexts, TEACHER_STEP_H, checkSummary } from '/js/manip-data.js';
 import { WORLD, migrate, fitInto, newBoard, objectTool, kindOf, objSize, objRect, boxesOf, bbox, spotIn, slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, OBJ_MAX, OBJ_MAX_SQUARE, S_MIN, S_MAX,
   snapOpts, linksPieces, nearSpot, ANS, FREE_SIZE, freeResize, rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { paletteAdd } from '/js/manip-pv.js';
-import { openWheel, closeWheel, startHold, shake, undoToast, wheelOpen, SLOP } from '/js/manip-wheel.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, hideUndo, wheelOpen, SLOP } from '/js/manip-wheel.js';
 import { clamp, zoomAround, fitView, applyTransform, visible, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
 
 const PEN_COLORS = ['#FF6B4A', '#141414', '#1F9D63', '#1E88E5'];
@@ -24,6 +24,8 @@ let R = null;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s || d; } catch { return d; } };
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const phone = () => window.matchMedia('(max-width: 899px)').matches;
+/** Inside Homeroom's player (?in=hr): its own bar names the work and has Raise hand (public/js/homeroom-player.js). */
+const inHomeroom = () => document.body.classList.contains('mp-inhr');
 
 /** Leave the room: the socket, the timers, the listeners. */
 export function close() {
@@ -33,6 +35,7 @@ export function close() {
   try { if (R.ws) R.ws.close(); } catch { /* gone */ }
   window.removeEventListener('resize', R.onResize);
   document.querySelector('main#main')?.classList.remove('rm-main');
+  hideUndo();   // its Undo belongs to this room
   R = null;
 }
 
@@ -470,6 +473,11 @@ function renderBar() {
       ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `${iconHtml('✋', { size: 18 })}<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
       ${live ? btn('btn btn-hot', 'data-rtool="bring"', `${iconHtml('📍', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
       ${btn('btn rm-menubtn', `data-rtool="menu" aria-expanded="${!!R.menuOpen}" aria-label="${esc(t('js.manip-room.menu'))}"`, '⋯')}`;
+  } else if (inHomeroom()) {
+    // Homeroom's bar replaces this one (Live, the title, Raise hand): only what a student must still reach stays, in a
+    // small corner (load the pushed board, Check my answers, and on a phone the way back to their own square).
+    el.classList.add('rm-barmin');
+    el.innerHTML = `${live ? '' : state}${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}${live && checksOn() && myBoxes().length ? btn('btn btn-hot rm-check', `data-rtool="check" aria-label="${esc(t('js.manip-room.check'))}"`, `${iconHtml('☑', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.check'))}</span><span class="rm-phoneonly"> ${esc(t('js.manip-room.checkShort'))}</span>`) : ''}${btn('btn btn-primary rm-minebar', `data-rtool="mine" aria-label="${esc(t('js.manip-room.mySquareBtn'))}" title="${esc(t('js.manip-room.mySquareBtn'))}"`, iconHtml('🏠', { size: 18 }))}`;
   } else {
     el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>
       ${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
@@ -496,6 +504,7 @@ function renderMenu() {
     ${live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${(R.areas.get('t') || { st: {} }).st.totals !== false}" data-rtool="totals"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.totals'))}`) : ''}
     ${d.total > 1 && live ? btn('rm-mi rm-switch', `role="switch" aria-checked="${!!d.pace}" data-rtool="pace"`, `<span class="rm-knob" aria-hidden="true"></span>${esc(t('js.manip-room.pace'))}`) : ''}
     ${live ? btn('rm-mi', 'data-rtool="push"', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.push'))}`) : ''}
+    ${howBtn('rm-mi', { menu: true })}
     <a class="rm-mi" href="/api/manipulatives/live/${esc(R.id)}/export.pdf" download>${iconHtml('📄', { size: 18 })} ${esc(t('js.manip-room.pdf'))}</a></div>
     <div class="rm-menu-foot">${live ? btn('rm-mi bad', 'data-rtool="end"', `${iconHtml('⏹', { size: 18 })} ${esc(t('js.manip-room.end'))}`) : btn('rm-mi', 'data-rtool="reopen"', `${iconHtml('🔄', { size: 18 })} ${esc(t('js.manip-room.reopen'))}`)}</div></div>`;
 }
@@ -515,6 +524,10 @@ function checksHtml() {
     <ul aria-label="${esc(t('js.manip-room.checksTitle'))}">${sum.rows.map(row).join('')}</ul></details>`;
 }
 const handBtn = cls => btn(`${cls} rm-hand${handUp(R.me) ? ' on' : ''}`, `data-rtool="hand" aria-pressed="${handUp(R.me)}" aria-label="${esc(t('js.manip-room.raiseHand'))}"`, `${iconHtml('✋', { size: 18 })} <span class="rm-handt">${esc(handUp(R.me) ? t('js.manip-room.lowerHand') : t('js.manip-room.raiseHand'))}</span>`);
+/** The tool's "How it works" video (the tool page's button: public/js/manip.js openHow), when it has one. menu: a ⋯
+ *  menu item (the teacher); else a palette button (a student: in the palette's header, or its tools row on a phone). */
+const howBtn = (cls, { menu = false, short = false } = {}) => (!tutorialOf(R.room.tool) || !R.deps.openHow ? ''
+  : btn(cls, `data-rtool="how"${menu ? ' role="menuitem"' : ''} aria-label="${esc(t('js.manip-room.how'))}"`, `${iconHtml('▶️', { size: 18 })}${short ? '' : ` ${esc(t('js.manip-room.how'))}`}`));
 const initials = name => String(name).split(/\s+/).map(w => [...w][0] || '').join('').slice(0, 2).toUpperCase() || '?';
 /** What the palette offers for an area (public/js/manip.js paletteFor): new objects inside it (a student's: only
  *  inside their own square; at most OBJ_MAX_SQUARE there), the selected object's actions, pieces. */
@@ -537,18 +550,19 @@ const settingsOf = (A, st) => (objectTool(R.room.tool) ? (R.deps.target(R.room.t
 function renderPal() {
   const el = document.getElementById('rm-pal'); if (!el) return;
   const A = R.areas.get(R.active), live = R.room.status === 'active';
-  if (!A || !A.editable || !live) { el.innerHTML = R.role === 'student' ? `<div class="mp-toolsrow">${btn('mp-tbtn', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zout"', '−')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zin"', '+')}</div>` : ''; return; }
+  if (!A || !A.editable || !live) { el.innerHTML = R.role === 'student' ? `<div class="mp-toolsrow">${btn('mp-tbtn', 'data-rtool="mine"', `${iconHtml('🏠', { size: 18 })} ${esc(t('js.manip-room.mySquareBtn'))}`)}${howBtn('mp-tbtn')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zout"', '−')}${btn('mp-tbtn rm-phoneonly', 'data-rtool="zin"', '+')}</div>` : ''; return; }
   const items = palette(A), o = objectTool(R.room.tool) ? tgt(A) : null, K = o && kindOf(R.room.tool, o.k);
   const where = R.role === 'teacher' ? t('js.manip-room.addTo', { name: A.name }) : t('js.manip-room.addMine');
   const group = (g, cap) => { const l = items.map((p, i) => ({ p, i })).filter(x => x.p.group === g); return l.length ? `${cap ? `<p class="mp-cap">${esc(cap)}</p>` : ''}<div class="mp-palette">${l.map(({ p, i }) => R.deps.palButton(p, i, label => t('js.manip-room.add', { label }))).join('')}</div>` : ''; };
-  el.innerHTML = `<p class="mp-cap">${esc(where)}</p>${group('add', '')}${group('obj', K ? `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` : '')}${group('piece', '')}
+  const head = R.role === 'student' ? howBtn('btn btn-sm mp-howbtn rm-palhow rm-hidephone') : '';
+  el.innerHTML = `${head}<p class="mp-cap">${esc(where)}</p>${group('add', '')}${group('obj', K ? `${K.name}${o.st.label ? ` · ${o.st.label}` : ''}` : '')}${group('piece', '')}
     <div class="mp-toolsrow">${btn('mp-tbtn', `data-rtool="note" aria-label="${esc(t('js.manip-room.note'))}"${A.ann.notes.length >= NOTE_MAX ? ' disabled' : ''}`, `${iconHtml('🗒️', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.note'))}</span>`)}
       ${btn(`mp-tbtn${R.textMode ? ' on' : ''}`, `data-rtool="text" aria-pressed="${!!R.textMode}" aria-label="${esc(t('js.manip-room.text'))}"`, `<b class="mp-tglyph">T</b><span class="rm-hidephone"> ${esc(t('js.manip-room.text'))}</span>`)}
       ${btn(`mp-tbtn${R.annotate ? ' on' : ''}`, `data-rtool="pen" aria-pressed="${R.annotate}" aria-label="${esc(t('js.manip-room.pen'))}"`, `${iconHtml('✎', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.pen'))}</span>`)}
       ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `${iconHtml('↩', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
       ${R.role === 'teacher' ? `${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}` : ''}
       ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `${iconHtml('📋', { size: 18 })} ${esc(t('js.manip-room.steps'))}`) : ''}
-      ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}` : ''}</div>
+      ${R.role === 'student' ? `${inHomeroom() ? '' : handBtn('mp-tbtn rm-phoneonly')}${howBtn('mp-tbtn rm-phoneonly', { short: true })}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
     ${R.impl.settings && (!objectTool(R.room.tool) || (o && !o.st.q)) ? `<div class="rm-settings">${R.impl.settings(objectTool(R.room.tool) ? o.st : A.st)}</div>` : ''}`;
 }
@@ -1007,6 +1021,7 @@ async function toolButton(k) {
   if (k === 'fit') return fitAll();
   if (k === 'mine') return goMine();
   if (k === 'copycode') { try { await copyText(R.room.code || ''); toast(t('js.manip-room.copied')); } catch { toast(R.room.code || ''); } return; }
+  if (k === 'how') { if (R.menuOpen) { R.menuOpen = false; renderMenu(); renderBar(); } R.deps.openHow(R.room.tool); return; }
   if (k === 'menu') { R.menuOpen = !R.menuOpen; R.handsOpen = false; renderBar(); return; }
   if (k === 'prev' || k === 'next' || k === 'pace') {
     try {
@@ -1056,6 +1071,9 @@ async function toolButton(k) {
     return;
   }
   if (k === 'end') {
+    // The site's own confirm (app.js ask), never the browser's: ending stops every student's square.
+    if (!(await ask({ title: t('js.manip-room.endTitle'), text: t('js.manip-room.endConfirm'), ok: t('js.manip-room.end'), danger: true }))) return;
+    if (!R || R.room.status !== 'active') return;
     try { await api(`/api/manipulatives/live/${R.id}/end`, { method: 'POST', body: {} }); toast(t('js.manip-room.endedMsg')); await refresh(); } catch (e) { toast(e.message, { bad: true }); }
     return;
   }
@@ -1078,17 +1096,51 @@ async function toolButton(k) {
     renderBar();
   }
 }
+/** Is the teacher's area empty (nothing on it to push)? */
+const areaEmpty = A => !A || (!A.st.objects.length && !(A.st.pieces || []).length && !A.ann.strokes.length && !A.ann.texts.some(x => String(x.text || '').trim()));
+/** Push a board (the ⋯ menu): "Push my board" sends the teacher's own area as it is right now (nothing saved first);
+ *  an empty area says so, with a way to it. Then the saved boards for this tool, if any, and a link that opens the tool
+ *  in a new tab to build and save one. The menu closes when the sheet opens. */
 function pushSheet() {
-  const mine = (R.deps.boards || []).filter(b => b.tool === R.room.tool);
+  R.menuOpen = false; renderMenu(); renderBar();
+  const mine = (R.deps.boards || []).filter(b => b.tool === R.room.tool), T = R.areas.get('t'), empty = areaEmpty(T);
+  // The answers typed in the teacher's answer boxes are what "Check my answers" checks against (the server keeps them;
+  // students get empty boxes). Boxes with nothing typed: it can still be pushed, without a key.
+  const boxes = T ? T.st.objects.filter(o => o.k === 'answer' || o.k === 'frac-eq') : [];
+  const noKey = boxes.length && !boxes.some(o => String(o.st.key || o.st.ans || '').trim());
   const box = document.createElement('div');
-  box.className = 'mp-viewer'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip-room.pushTitle'));
+  box.className = 'mp-viewer rm-pushsheet'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip-room.pushTitle'));
+  const own = empty
+    ? `<p class="rm-pushempty">${esc(t('js.manip-room.pushEmpty'))}</p>${btn('btn btn-primary', 'data-pgo', `${iconHtml('📍', { size: 18 })} ${esc(t('js.manip-room.pushGoArea'))}`)}`
+    : `${btn('btn btn-primary', 'data-pushmine', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.pushMine'))}`)}<p class="small muted">${esc(t('js.manip-room.pushMineText'))}</p>${noKey ? `<p class="rm-pushnokey">${esc(t('js.manip-room.pushNoKey'))}</p>` : ''}`;
+  const saved = mine.length
+    ? `<h3>${esc(t('js.manip-room.pushSaved'))}</h3><ul class="rm-pushlist">${mine.map(b => `<li><span>${esc(b.title || '')}</span>${btn('btn btn-sm', `data-push="${esc(b.id)}"`, esc(t('js.manip-room.pushOne', { code: b.code })))}</li>`).join('')}</ul>`
+    : `<p class="small muted">${esc(t('js.manip-room.noBoards'))}</p>`;
   box.innerHTML = `<div class="mp-viewbox panel"><div class="row"><h2>${esc(t('js.manip-room.pushTitle'))}</h2>${btn('btn btn-sm', 'data-close', esc(t('js.manip-room.close')))}</div>
-    <p class="small muted">${esc(t('js.manip-room.pushText'))}</p>${mine.length ? `<div class="row">${mine.map(b => btn('btn btn-primary btn-sm', `data-push="${esc(b.id)}"`, esc(t('js.manip-room.pushOne', { code: b.code })))).join('')}</div>` : `<p><b>${esc(t('js.manip-room.noBoards'))}</b></p>`}</div>`;
+    <p class="small muted">${esc(t('js.manip-room.pushText'))}</p><div class="rm-pushown">${own}</div>${saved}
+    <p><a href="/manipulatives#${encodeURIComponent(R.room.tool)}" target="_blank" rel="noopener">${esc(t('js.manip-room.pushBuild', { tool: R.tool ? R.tool.name : '' }))}</a></p></div>`;
   R.root.appendChild(box);
+  const prev = document.activeElement, shut = () => { box.remove(); document.removeEventListener('keydown', onKey); if (prev && prev.isConnected && prev.focus) prev.focus(); };
+  const onKey = e => { if (e.key === 'Escape') { e.preventDefault(); shut(); } };
+  document.addEventListener('keydown', onKey);
+  box.querySelector('[data-pushmine], [data-pgo], [data-push], [data-close]').focus();
+  const send = async (body, msg, el) => {
+    el.disabled = true;
+    try { await api(`/api/manipulatives/live/${R.id}/push`, { method: 'POST', body }); toast(msg); shut(); } catch (err) { toast(err.message, { bad: true }); el.disabled = false; }
+  };
   box.addEventListener('click', async e => {
-    if (e.target === box || e.target.closest('[data-close]')) return box.remove();
-    const b = e.target.closest('[data-push]'); if (!b) return;
-    try { await api(`/api/manipulatives/live/${R.id}/push`, { method: 'POST', body: { boardId: b.dataset.push } }); toast(t('js.manip-room.pushed')); box.remove(); } catch (err) { toast(err.message, { bad: true }); }
+    if (e.target === box || e.target.closest('[data-close]')) return shut();
+    if (e.target.closest('[data-pgo]')) { shut(); R.active = 't'; const A = R.areas.get('t'); renderWorld(); renderPal(); if (A) fitRect({ x: A.rect.x, y: A.rect.y - 36, w: A.rect.w, h: A.rect.h + 36 }, 12); return; }
+    const m = e.target.closest('[data-pushmine]');
+    if (m) {
+      // The area is saved first (a change still waiting, or a new room's first rekenrek, never saved yet): what is pushed
+      // is the area as it is on the screen.
+      const A = R.areas.get('t');
+      for (let i = 0; i < 40 && A && A.saving; i++) await new Promise(r => setTimeout(r, 50));
+      if (A) { clearTimeout(A.saveTimer); await saveNow('t'); }
+      return send({ own: true }, t('js.manip-room.pushedMine'), m);
+    }
+    const b = e.target.closest('[data-push]'); if (b) return send({ boardId: b.dataset.push }, t('js.manip-room.pushed'), b);
   });
 }
 

@@ -437,11 +437,42 @@ function squareHeightFor(tool, board, lay = {}) {
   const L = roomLayout(tool, lay), f = fitInto(tool, board, WORLD, { w: L.sq.w, h: L.sq.h }, { grow: true });
   return Math.max(L.sq.h, f.h + STRIP_RESERVE);
 }
-export function push(u, id, boardId) {
+/** The host's own area as a board to push ("Push my board"): the teacher's area as it is now, in the big board's
+ *  space (as a saved board is), without what belongs to the room (its steps, sizes, switches, the deck's place) or the
+ *  teacher's sticky notes (every square already shows those as its Instructions). -> board | null (nothing on it) */
+function areaBoard(s) {
+  const room = json(s.room || '{}', {}) || {}, L = roomLayout(s.tool, layoutOf(room));
+  const o = { ...room }; for (const k of ['__steps', 'layout', 'checks', 'totals', DECK_AT, PUSH_KEYS]) delete o[k];
+  // The answers typed in the teacher's own answer boxes become the pushed board's answer key (kept on the server, as a
+  // saved board's key is); the students' copy has every box empty.
+  const keys = keysOf(o.objects);
+  if (Array.isArray(o.objects)) o.objects = o.objects.map(x => { if (!x || !x.st || !(('key' in x.st) || ('ans' in x.st))) return x; const st = { ...x.st }; delete st.key; if ('ans' in st) st.ans = ''; return { ...x, st }; });
+  const steps = stepsOf(room).length, from = { w: L.teacher.w, h: L.teacher.h - (steps ? TEACHER_STEP_H : 0) };
+  // Notes, texts and pen marks are fractions of the area: made fractions of the big board.
+  const ann = o.__ann && typeof o.__ann === 'object' ? o.__ann : {}, f = p => ({ ...p, x: num(p.x, 0, 1) * from.w / WORLD.w, y: num(p.y, 0, 1) * from.h / WORLD.h });
+  o.__ann = { notes: [], texts: (Array.isArray(ann.texts) ? ann.texts : []).filter(x => x && String(x.text || '').trim()).map(f),
+    strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(x => x && Array.isArray(x.pts)).map(x => ({ ...x, pts: x.pts.map(f) })) };
+  const empty = !(Array.isArray(o.objects) && o.objects.length) && !(Array.isArray(o.pieces) && o.pieces.length) && !o.__ann.texts.length && !o.__ann.strokes.length;
+  return empty ? null : { tool: s.tool, code: null, own: true, keys, state: JSON.stringify(o) };
+}
+/** The answer key of a board's objects: an answer box's (or equation's) `key`, else the answer typed in it (the teacher's
+ *  own area). -> { object id: { key, simplest, over } } */
+function keysOf(objects) {
+  const out = {};
+  for (const x of Array.isArray(objects) ? objects : []) {
+    if (!x || !x.st) continue;
+    const k = (typeof x.st.key === 'string' && x.st.key.trim()) || (typeof x.st.ans === 'string' && x.st.ans.trim()) || '';
+    if (k) out[String(x.id)] = { key: k, simplest: !!x.st.simplest, over: x.k === 'frac-eq' && x.st.op === '=' ? +x.st.b || 0 : 0 };
+  }
+  return out;
+}
+/** Push to every student: one of the host's own saved boards (boardId), or ({ own: true }) the host's own area as it is
+ *  right now, with nothing saved first. */
+export function push(u, id, boardId, { own = false } = {}) {
   const s = getSession(id);
   if (!isSessionHost(u, s)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
-  const b = ownBoard(u, boardId); if (!b) return fail('noBoard');
+  const b = own ? areaBoard(s) : ownBoard(u, boardId); if (!b) return fail(own ? 'emptyArea' : 'noBoard');
   if (b.tool !== s.tool) return fail('otherTool');
   const c = cleanState(b.state, null, b.tool); if (!c.ok) return c;
   // The board's steps become the session's deck (the teacher's area), from the first step; students get the board
@@ -451,10 +482,12 @@ export function push(u, id, boardId) {
   // into their square at one scale (public/js/manip-room.js).
   const room = json(s.room || '{}', {}) || {}, lay = layoutOf(room), sh = squareHeightFor(s.tool, migrate(s.tool, o), lay);
   const next = { ...room, layout: { ...lay, sh: Math.max(lay.sh || 0, sh) }, ...(steps && steps.length ? { __steps: steps } : {}) };
+  // Push my board: its answer key stays with the session (PUSH_KEYS); a saved board's is read from the board itself.
+  if (b.own && Object.keys(b.keys).length) next[PUSH_KEYS] = b.keys; else delete next[PUSH_KEYS];
   q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', JSON.stringify(next), now(), s.id);
   if (steps && steps.length) { posOf(s); LIVE.setStep(s.id, 0); keepStep(s.id); }
   // Students get it without the teacher's answers (never sent to a student).
-  q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, state: withoutKeys(JSON.stringify(o)) }), now(), s.id);
+  q.run('UPDATE manip_sessions SET pushed_state=?, pushed_at=? WHERE id=?', JSON.stringify({ tool: b.tool, code: b.code, ...(b.own ? { own: true } : {}), state: withoutKeys(JSON.stringify(o)) }), now(), s.id);
   LIVE.publish(s.id, { t: 'dirty' });
   return ok();
 }
@@ -541,7 +574,11 @@ export function roomFor(u, id) {
   // The deck: the teacher gets every step and where each student is; a student only the steps up to their own (a
   // future step is never sent), and the teacher's area without its steps.
   const tState = json(s.room || '{}', {}) || {}, deck = deckFor(s, tState, who);
-  delete tState[DECK_AT];
+  // Push my board's answer key never leaves the server, and while it is the key, the answers typed in the teacher's
+  // own boxes are not shown to students either.
+  const pk = tState[PUSH_KEYS] && typeof tState[PUSH_KEYS] === 'object' ? tState[PUSH_KEYS] : null;
+  delete tState[DECK_AT]; delete tState[PUSH_KEYS];
+  if (pk && who.role !== 'teacher' && Array.isArray(tState.objects)) tState.objects = tState.objects.map(x => (x && x.st && String(x.id) in pk && 'ans' in x.st ? { ...x, st: { ...x.st, ans: '' } } : x));
   if (who.role !== 'teacher' && tState.__steps) delete tState.__steps;
   if (who.role !== 'teacher' && Array.isArray(tState.objects)) Object.assign(tState, JSON.parse(withoutKeys(tState)));
   return { role: who.role, me: who.key, id: s.id, code: who.role === 'teacher' ? s.code : undefined, tool: s.tool, title: s.title, status: s.status,
@@ -553,6 +590,9 @@ export function roomFor(u, id) {
  *  key (a page never sets it, and none is sent one). Written each time the step, the pace switch or a student's own step
  *  changes, so an ended room that is reopened (or a room after the server restarted) is back on the same step. */
 export const DECK_AT = '__deckAt';
+/** "Push my board"'s answer key ({ object id: { key, simplest, over } }), kept with the teacher's area like DECK_AT:
+ *  the server's own, never taken from a page or sent to one. */
+export const PUSH_KEYS = '__pushKeys';
 function savedStep(s) {
   const at = (json(s.room || '{}', {}) || {})[DECK_AT];
   if (!at || typeof at !== 'object') return { cur: 0, pace: false, mine: new Map() };
@@ -683,6 +723,7 @@ export function saveArea(u, id, key, state) {
   if (key === 't') { if (prev.layout) next.layout = prev.layout; else delete next.layout; } else delete next.layout;
   // The deck's position too (DECK_AT): kept as it was, never taken from a page.
   if (key === 't' && prev[DECK_AT]) next[DECK_AT] = prev[DECK_AT]; else delete next[DECK_AT];
+  if (key === 't' && prev[PUSH_KEYS]) next[PUSH_KEYS] = prev[PUSH_KEYS]; else delete next[PUSH_KEYS];
   const text = JSON.stringify(next);
   if (key === 't') q.run('UPDATE manip_sessions SET room=?, room_at=? WHERE id=?', text, now(), s.id);
   else q.run('UPDATE manip_work SET state=?, updated_at=? WHERE session_id=? AND user_id=?', text, now(), s.id, String(key));
@@ -714,7 +755,12 @@ export function bring(u, id, view = {}) {
  */
 export const CHECK_LIMIT = 5;
 function answerKeys(s) {
-  const p = json(s.pushed_state || 'null', null); if (!p || !p.code) return null;
+  const p = json(s.pushed_state || 'null', null); if (!p) return null;
+  if (p.own) {
+    const pk = (json(s.room || '{}', {}) || {})[PUSH_KEYS], keys = new Map(pk && typeof pk === 'object' ? Object.entries(pk) : []);
+    return keys.size ? keys : null;
+  }
+  if (!p.code) return null;
   const b = q.get('SELECT state FROM manip_boards WHERE code=? AND owner_id=?', normCode(p.code), s.host_id); if (!b) return null;
   const o = json(b.state, {}) || {}, keys = new Map();
   for (const x of Array.isArray(o.objects) ? o.objects : []) if (x && x.st && typeof x.st.key === 'string' && x.st.key) keys.set(String(x.id), { key: x.st.key, simplest: !!x.st.simplest, over: x.k === 'frac-eq' && x.st.op === '=' ? +x.st.b || 0 : 0 });
