@@ -61,8 +61,9 @@ Teachers without the Teacher plan keep today's class page.
   per class. Whole class works with no students yet ("No students yet. Students who join will get it."). Details:
   docs/decisions.md "Homeroom: the teacher's desk".
 - Top bar: class switcher, tabs, Live dot, the plan pill (Today / Now with countdown / Time's up), +5 min and Next
-  during a plan, Today (today at a glance), Hands, the yellow Everyone to Homeroom / Bring everyone to me, and the ⋯
-  menu (Arrange seats, join code, projector view, K-2 desks, Parents' view, Students draw on the room, End class).
+  during a plan, the Needs a look count, Today (today at a glance), Hands, the yellow Everyone to Homeroom / Bring
+  everyone to me, and the ⋯ menu (Arrange seats, join code, projector view, K-2 desks, Parents' view, Students draw on
+  the room, Show me around, End class).
 - **Students draw on the room** (⋯ menu, off by default): when on, students in See the room draw with a pen and erase
   their own lines anywhere outside other students' desks, the teacher's area and My desk; everyone in See the room sees
   them without names, the teacher's board shows whose (Remove, Clear students' drawings); never on the projector;
@@ -184,6 +185,28 @@ attendance. The ⋯ menu's **Parents' view** turns it off or on per class (on by
 reading notes, add "Your grown-up can see the notes in your class tabs" when a grown-up is linked. Accounts a school made
 can't be linked to a family yet, so their grown-ups have no view.
 
+## Onboarding, Needs a look and Oomba follow-ups (step 5b)
+
+Built (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups"):
+- **A first-run guide** the first time a teacher opens Homeroom (once per teacher, kept on the server): six calm coach
+  marks beside the real things (Arrange seats, the teacher's area and its pen, handing out a lesson by tap or drag, My
+  desk, Oomba for today's plan, Everyone to Homeroom and the quick sign-in code), Next and Skip, never a layer over the
+  board, on phones, tablets and laptops; the ⋯ menu's **Show me around** opens it again. A class with no students starts
+  with "No students yet": the join code and Add students (Google Classroom from the Students tab).
+- **The student's intro card** the first time a student opens a desk: where things are, Raise hand, the notebook, "Your
+  teacher can see your screen in Homeroom"; in K-2 big pictures and Read to me on every line.
+- **Needs a look**: a calm list in Today at a glance and a small count chip in the top bar (never on the projector, never
+  to students or parents, never ranked) of students who may need help now or this week, with the reason in plain words
+  and a suggested action: stuck on the same handout (3 minutes, longer with extra time), a hand up 4 minutes, a question
+  from home waiting an hour, several tries on a lesson plan still under half right, a reading quiz under 60 % on the
+  first try, 3 or more handouts after due (never Missed while away). Absent students are never on it. Seen and Snooze
+  today are the teacher's; aides read it; subs see only stuck and hands, with first names. Oomba may sum it up, seeing
+  "Student A" and never a name; the page puts the names back.
+- **Oomba follow-ups**: after Finish class a short card in the chat (what went well as counts, who might need a look
+  tomorrow, names shown by the page), with ideas the teacher confirms one at a time: a review lesson for a group, re-teach
+  a part, move unfinished work (each a part in the next school day's plan) and a note to the class (on the teacher's area
+  once sent). Nothing happens by itself; Oomba never talks to students.
+
 ## Quick sign-in (step 1c)
 
 Students on shared devices go to `/hr` (or scan the QR code), type the class code, tap their name, then type their
@@ -218,5 +241,9 @@ removed, never names. No photos of children. Calm UI. US spelling. No em dashes.
    order, grading choice, results into Progress and Google Classroom, comments and stickers.
 3. Live class: live desks and cursors, hands and hall pass, supports, the day plan through the chat, aides and sub links.
 4. Student side: notebook, reading from the desk, K-2 mode, absent and at-home students, parents' view (all built).
-5. Beyond the day: week plans, due dates, copying plans (5a, built), onboarding, Needs a look and Oomba follow-ups (5b).
-Before launch: privacy policy update and lawyer review, and a 35-student load test.
+5. Beyond the day: week plans, due dates, copying plans (5a, built), onboarding, Needs a look and Oomba follow-ups (5b,
+   built).
+
+Every step of the build order is built. Before launch: the privacy policy update (Needs a look, the follow-ups, watching
+desks and the parents' view) and its lawyer review, and a 35-student load test (the board's pulse now also carries
+Needs a look).

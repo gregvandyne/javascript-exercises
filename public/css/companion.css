@@ -219,3 +219,14 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-cpparts>li{padding:8px 10px;border-radius:12px;background:var(--card-2,var(--bg))}
 .oc-cpday h3{margin:4px 0;font-size:1rem}
 .oc-cpacts{justify-content:flex-end;gap:8px;flex-wrap:wrap}
+
+/* Homeroom's follow-up after Finish class (services/homeroom-follow.js): counts, who might need a look, ideas to confirm */
+.oc-follow .oc-fh{margin:4px 0 0;font-size:.88rem;color:var(--text-2)}
+.oc-fgood,.oc-flook,.oc-fsugs{display:flex;flex-direction:column;gap:4px;margin:0;padding:0;list-style:none}
+.oc-fgood li{display:flex;align-items:center;gap:6px;font-weight:700}
+.oc-flook{flex-direction:row;flex-wrap:wrap;gap:6px}
+.oc-flook li{padding:2px 10px;border-radius:999px;background:var(--card-2);font-weight:700}
+.oc-fsug{width:100%;justify-content:flex-start;text-align:start;white-space:normal;min-height:44px}
+.oc-fdone{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:700}
+.oc-fdone span{flex:1;min-width:0}
+.oc-fdone small{flex:none;padding:2px 8px;border-radius:999px;background:var(--card-2)}

@@ -114,7 +114,7 @@ export function pickOf(u, raw) {
 }
 const samePick = (a, b) => JSON.stringify(a || null) === JSON.stringify(b || null);
 /** What a pick is called (the teacher's language for an Oomba game). */
-function pickTitle(u, p, lang = 'en') {
+export function pickTitle(u, p, lang = 'en') {
   if (!p) return '';
   if (p.type === 'lesson') { const l = HL.getMine(u, p.id); return l ? l.title : ''; }
   if (p.type === 'make') { const g = HL.lessonGame(p.slug); return p.title || (g ? games.localizeGame(g, lang).title : p.slug); }
@@ -182,7 +182,9 @@ export function cleanPlan(u, c, raw, { lang = 'en', names = studentNames(u), id 
       // every group listed: nobody is left for "everyone else" (a student in no group gets the first version: usePlan)
       if (everyGroup && versions.length > 1) versions = versions.filter(v => v.group !== '');
     }
-    parts.push({ id: (typeof p.id === 'string' && /^[A-Za-z0-9_-]{4,16}$/.test(p.id)) ? p.id : uid(8), kind, title, minutes, note, versions });
+    // only: the listed groups get it and nobody else (an Oomba follow-up's review for one group: services/homeroom-follow.js)
+    const only = PICK_KINDS.has(kind) && p.only === true && versions.length > 0 && versions.every(v => v.group);
+    parts.push({ id: (typeof p.id === 'string' && /^[A-Za-z0-9_-]{4,16}$/.test(p.id)) ? p.id : uid(8), kind, title, minutes, note, versions, ...(only ? { only: true } : {}) });
   }
   const name = cleanTitle(src.name, { names, max: NAME_MAX });
   const topic = cleanTitle(src.topic, { names, max: TOPIC_MAX });
@@ -483,7 +485,7 @@ export function usePlan(u, c, plan, { lang = 'en' } = {}) {
       // students in no listed group: the "everyone else" version, else the first listed one, desk by desk
       const listed = new Set(part.versions.filter(x => x.group).map(x => x.group));
       const rest = part.versions.find(x => !x.group) || part.versions[0];
-      for (const s of room.students) if (!listed.has(room.members[s.id])) jobs.push({ pick: rest.pick, to: { kind: 'desk', id: s.id } });
+      if (!part.only) for (const s of room.students) if (!listed.has(room.members[s.id])) jobs.push({ pick: rest.pick, to: { kind: 'desk', id: s.id } });
     }
     for (const j of jobs) {
       const r = giveOne(u, c, j.pick, j.to, { note: part.note, lang, kind: part.kind });

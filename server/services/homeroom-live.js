@@ -118,6 +118,12 @@ export function statusOf(beat, cards = [], at = now()) {
   if (at - (beat.inputAt || 0) <= TYPING_MS) return { st: 'typing', on };
   return { st: cards.length ? 'working' : 'here', on };
 }
+/** Needs a look (services/homeroom-look.js): since when a student has gone without a step forward on what they are on
+ *  (the same moment statusOf counts Stuck from), or null with no pulse in this live class. */
+export function stuckFrom(classId, userId) {
+  const b = rooms.get(classId)?.get(userId);
+  return b ? Math.max(b.progAt || 0, b.onSince || 0, b.since || 0) : null;
+}
 /** A card's state that counts as moving forward when it changes (done, a new score; never the time spent). */
 const cardKey = c => (c ? `${c.id}:${c.done ? 1 : 0}:${c.score ?? ''}` : '');
 

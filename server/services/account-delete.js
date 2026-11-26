@@ -156,6 +156,12 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // the dated day plans of a week plan they saved for a class (docs/decisions.md "Homeroom: week plans, due dates,
     // copying plans"; they name the teacher's own lessons)
     q.run('DELETE FROM homeroom_week_days WHERE created_by=?', u.id);
+    // onboarding, Needs a look, Oomba follow-ups (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba
+    // follow-ups"): what they were shown once (the teacher's guide, the student's intro), a student's Seen and Snooze
+    // marks on Needs a look, and the teacher's name off the marks they made (the class's other teachers keep them)
+    q.run('DELETE FROM homeroom_seen WHERE user_id=?', u.id);
+    q.run('DELETE FROM homeroom_look WHERE user_id=?', u.id);
+    q.run('UPDATE homeroom_look SET set_by=NULL WHERE set_by=?', u.id);
     // where they helped as an aide (step 3c; the class's sub links and their log stay with the class)
     q.run('DELETE FROM homeroom_aides WHERE user_id=?', u.id);
     // what they put on their own desk on a class's board (services/homeroom-staged.js; the class's other teachers keep theirs)

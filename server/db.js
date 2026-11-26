@@ -1590,6 +1590,17 @@ export const MIGRATIONS = [
     CREATE INDEX IF NOT EXISTS idx_homeroom_week_days_by ON homeroom_week_days(created_by);
     ALTER TABLE homeroom_handouts ADD COLUMN due_min INTEGER;
     ALTER TABLE homeroom_handouts ADD COLUMN due_zone TEXT NOT NULL DEFAULT '';`],
+  // Homeroom: onboarding, Needs a look, Oomba follow-ups (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba
+  // follow-ups"). homeroom_seen: what a person has been shown once ('tour': a teacher's Homeroom guide; 'desk': a
+  // student's intro card on their desk), so it is not shown again on another device. homeroom_look: a teacher's Seen
+  // (one reason of one student, by its key: it shows again when the reason changes) or Snooze today (rule and key '*',
+  // the whole student for that school day) on a class's Needs a look list. Gone with the class, the school or the account.
+  ['0140_homeroom_followups', `
+    CREATE TABLE IF NOT EXISTS homeroom_seen (user_id TEXT NOT NULL, what TEXT NOT NULL, at INTEGER NOT NULL, PRIMARY KEY (user_id, what));
+    CREATE TABLE IF NOT EXISTS homeroom_look (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      rule TEXT NOT NULL, key TEXT NOT NULL, state TEXT NOT NULL, day TEXT NOT NULL, set_by TEXT, at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id, rule, key));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_look_user ON homeroom_look(user_id);
+    CREATE INDEX IF NOT EXISTS idx_homeroom_look_by ON homeroom_look(set_by);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

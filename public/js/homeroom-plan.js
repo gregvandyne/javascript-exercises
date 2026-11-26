@@ -170,7 +170,9 @@ export function planPill(ctx) {
       take(r.plan);
       if (action === 'start') toast(r.toast ? `${r.toast} ${tp('startedToast')}` : tp('startedToast'));
       else if (r.toast) toast(r.toast);
-      if (r.summary) { setMenu(false); summarySheet(r.summary); }
+      if (r.summary) { setMenu(false); summarySheet(r.summary, { follow: !!r.follow }); }
+      // Oomba's follow-up card is in the chat now (services/homeroom-follow.js): the panel shows it at once
+      if (r.follow) BUS.whenChat(c => c.refresh());
       return r;
     } catch (e) { toast(e.message, { bad: true }); return null; } finally { P.busy = false; }
   }
@@ -179,7 +181,7 @@ export function planPill(ctx) {
     if (!BUS.chat()) { toast(tp('noChat')); return; }
     BUS.whenChat(c => { c.setMode('open'); setTimeout(() => document.getElementById('oc-in')?.focus(), 50); });
   }
-  function summarySheet(s) {
+  function summarySheet(s, { follow = false } = {}) {
     const rows = s.parts.map(x => `<li class="hr-sum-part${x.done ? ' done' : ''}"><span class="hr-pm-mark" aria-hidden="true">${x.done ? '✓' : x.cut ? '…' : '·'}</span>
       <span class="hr-sum-b"><b dir="auto">${esc(partName(x))}</b><span class="small">${esc(!x.done && !x.cut ? tp('notReached', { planned: x.planned }) : x.used < 1 ? tp('underMin', { planned: x.planned }) : tp('usedOf', { used: x.used, planned: x.planned }))}${x.cut ? ` · ${esc(tp('cut'))}` : ''}</span>
       ${x.of ? `<span class="hr-sum-ho"><span class="hr-sum-bar" role="img" aria-label="${esc(tp('finishedOf', { finished: x.finished, of: x.of }))}"><i style="width:${Math.round((100 * x.finished) / x.of)}%"></i></span><span class="small">${esc(tp('finishedOf', { finished: x.finished, of: x.of }))}</span></span>` : ''}</span></li>`).join('');
@@ -187,6 +189,7 @@ export function planPill(ctx) {
       <div class="hr-sum-nums"><div><b>${esc(tp('partsDone', { done: s.partsDone, total: s.partsTotal }))}</b><span class="small muted">${esc(tp('parts'))}</span></div><div><b>${esc(minutes(s.used))}</b><span class="small muted">${esc(tp('plannedWas', { count: s.planned }))}</span></div>${s.absent ? `<div class="hr-sum-abs"><b>${esc(tp('absentN', { count: s.absent }))}</b><span class="small muted">${esc(tp('absentNote'))}</span></div>` : ''}</div>
       <ol class="plain hr-sum-parts">${rows}</ol>
       <p class="hr-sum-home">${ic('🎒', 18)} <span>${esc(s.homework ? tp('homework', { count: s.homework }) : tp('noHomework'))}</span></p>
+      ${follow ? `<p class="hr-sum-follow">${ic('💬', 18)} <span>${esc(tp('follow.ready'))}</span> ${btn('btn btn-sm btn-primary', 'data-hrplan="follow"', esc(tp('follow.open')))}</p>` : ''}
       <p class="small muted">${esc(tp('summaryPrivate'))}</p></div>` });
   }
   async function finish() { const r = await act('finish'); return r && r.summary; }
@@ -206,6 +209,7 @@ export function planPill(ctx) {
     else if (k === 'wkcancel') { P.wkSwap = null; render(true); }
     else if (k === 'wkclear') act('weekClear', { day: b.dataset.day });
     else if (k === 'ask') openChat();
+    else if (k === 'follow') { document.querySelector('.sheet-bg .close')?.click(); openChat(); }
     else if (k === 'summary') { setMenu(false); if (P.plan && P.plan.summary) summarySheet(P.plan.summary); }
     else act(k);
   }
@@ -223,6 +227,8 @@ export function planPill(ctx) {
     label: () => D.className || '',
     placeholder: () => tp('placeholder'),
     hello: () => tp('hello'),
+    // a follow-up card's students (services/homeroom-follow.js keeps ids): their names, in the browser only
+    nameOf: id => (((D.room && D.room.students) || []).find(x => x.id === id) || {}).name || '',
   };
   const onView = on => { if (RO) return; if (on) BUS.setPage(adapter); else if (BUS.page() === adapter) BUS.setPage(null); };
   // A phone: the bar is full in a live class, so the pill floats over the board (public/css/homeroom.css).

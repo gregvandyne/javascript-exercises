@@ -81,6 +81,14 @@
 //   POST /api/homeroom/:id/attendance          { studentId, status: absent | home | '' (here), tz } for today (a sub: /api/sub)
 //   POST /api/homeroom/:id/asks                { id }: a question from home answered (an aide may too)
 //   POST /api/desk/:id/ask                     a student at home asks: { kind: question | help, text }
+// Onboarding, Needs a look, Oomba follow-ups (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups"):
+//   GET  /api/homeroom/:id/needs               Needs a look (services/homeroom-look.js): the class's teachers and aides
+//                                              (the pulse carries it too while live); a sub's page has its own (subView)
+//   POST /api/homeroom/:id/needs               { studentId, state: seen | snooze | '' (back), rule, key }: the teachers only
+//   POST /api/homeroom/:id/tour                the first-run guide shown ({ done: true }) or to show again ({ done: false })
+//   POST /api/homeroom/:id/plan                with action finish: also Oomba's follow-up card in the teacher's chat
+//                                              (services/companion.js offerFollowUp) -> { follow: true }
+//   POST /api/desk/:id/intro                   the student's intro card shown ({ done: true })
 //   (the books: GET /api/library/books, routes/library.js; free reading's "Reading <book>" is the desk's pulse)
 import { Router } from 'express';
 import { html, raw, jsonData, esc } from '../views/html.js';
@@ -125,6 +133,9 @@ import { SUBJECTS, SHELF_INFO, shelfGrades } from '../learn.js';
 import { openSubjects, slugHidden } from '../services/game-focus.js';
 import { liveGameOf } from '../live/live-games.js';
 import { TOOLS as MANIP_TOOLS, CATS as MANIP_CATS } from '../../public/js/manip-data.js';
+import * as NL from '../services/homeroom-look.js';
+import * as IN from '../services/homeroom-intro.js';
+import { offerFollowUp } from '../services/companion.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413, forbidden: 403, drawOff: 403, deskLocked: 403, notHere: 403, tooFast: 429 };
@@ -137,7 +148,7 @@ const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 // a sub with that class's one-day link (services/homeroom-sub.js, the hr_sub cookie) get in too, but only to the
 // addresses listed for them here; everything else of the class's Homeroom answers them 403. The services check again.
 const HELPER_OK = {
-  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports|marks)$/],
+  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports|marks|needs)$/],
     ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag|asks)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
   sub: [['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
 };
@@ -311,7 +322,7 @@ router.get('/class/:id/homeroom', (req, res) => {
         <div class="cv-acts cv-acts-homeroom hr" data-cv-acts="homeroom">${acts}</div></header>
       <div class="cv-views"><section class="cv-view cv-view-homeroom" data-cv-view="homeroom" aria-label="${t('homeroom.tabs.homeroom')}">${board}</section></div></div>` : board;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading', 'js.homeroom-due'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-look'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">${aide ? `<link rel="stylesheet" href="/css/class-views.css?v=${VERSION}">` : ''}`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, libraryGrade: HR.libraryGrade(c.grade), live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
@@ -325,6 +336,10 @@ router.get('/class/:id/homeroom', (req, res) => {
       ...(aide ? {} : { parents: PV.parentsOn(c) }),
       // students drawing on the room (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board")
       studentDraw: MK.drawOn(c),
+      // onboarding and Needs a look (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups"): the first-run
+      // guide once per teacher (the empty class's own first step: the join code), the list as it is now
+      ...(aide ? {} : { tour: config.homeroomOnboarding && !IN.seen(u, 'tour'), joinCode: c.join_code || '', gcLink: `/class/${encodeURIComponent(c.id)}?tab=students` }),
+      needs: needsOut(req, c),
       k2: AT.classK2(c), k2Students: AT.studentModes(c.id), supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
       ...(aide ? {} : { helpers: { aides: HA.listFor(c), subLinks: SB.linksOf(c), notes: SB.notesFor(c), noteMax: SB.NOTE_MAX, aidesMax: HA.AIDES_MAX } }) })}
     ${body}`,
@@ -422,15 +437,35 @@ router.post('/api/homeroom/:id/plan', rateLimit('homeroom-plan', 600, 3600e3), (
     : HP.runAction(req.user, req.homeroomClass, action);
   if (!r.ok) return fail(req, res, r.code);
   const put = r.put ? [req.t('js.companion.plan.used', { count: r.put.given }), r.put.already ? req.t('js.companion.plan.already', { count: r.put.already }) : '', r.put.failed.length ? req.t('js.companion.plan.notGiven', { count: r.put.failed.length }) : ''].filter(Boolean).join(' ') : '';
-  res.json({ ok: true, plan: HP.teacherView(req.homeroomClass), ...(r.summary ? { summary: r.summary } : {}), ...(put ? { toast: put } : {}) });
+  // Finish class: Oomba's short follow-up card in the teacher's chat (counts, who might need a look, suggestions to confirm)
+  const follow = action === 'finish' && r.summary ? offerFollowUp(req.user, req.homeroomClass, { lang: req.locale }).ok : false;
+  res.json({ ok: true, plan: HP.teacherView(req.homeroomClass), ...(r.summary ? { summary: r.summary } : {}), ...(put ? { toast: put } : {}), ...(follow ? { follow: true } : {}) });
 });
+
+// ---------------------------------------------------------------- Needs a look (services/homeroom-look.js)
+// The class's teachers and aides (an aide reads it); never a sub (their page has the live reasons only), a student, a
+// parent or the projector.
+function needsOut(req, c, { board = null, live = null } = {}) {
+  const r = NL.listFor(req.hrActor || req.user, c, { role: req.hrRole, board, live, lang: req.locale });
+  return r.ok ? { items: r.items, hidden: r.hidden, may: r.may } : { items: [], hidden: 0, may: false };
+}
+router.get('/api/homeroom/:id/needs', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(needsOut(req, req.homeroomClass)));
+router.post('/api/homeroom/:id/needs', rateLimit('homeroom-needs', 600, 3600e3), (req, res) => {
+  const x = body(req), state = String(x.state ?? '');
+  const r = NL.mark(req.user, req.homeroomClass, { studentId: String(x.studentId || ''), state, rule: String(x.rule || ''), key: String(x.key || '') });
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, ...needsOut(req, req.homeroomClass), toast: req.t(`homeroom.look.${state || 'back'}`) });
+});
+// The first-run guide (public/js/homeroom-tour.js): shown once per teacher, again from the ⋯ menu's Show me around.
+router.post('/api/homeroom/:id/tour', rateLimit('homeroom-tour', 120, 3600e3), (req, res) => send(req, res, IN.setSeen(req.user, 'tour', body(req).done !== false)));
 
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
 // The board asks every 2 s while live and visible (1800 an hour); the desks' handouts come again only when they changed.
 const hoPrint = ho => crypto.createHash('sha1').update(JSON.stringify(ho)).digest('base64url').slice(0, 16);
 router.get('/api/homeroom/:id/pulse', rateLimit('homeroom-pulse-t', 5000, 3600e3), (req, res) => {
   const c = req.homeroomClass, ho = HO.boardView(c, req.locale), hv = hoPrint(ho);
-  res.json({ ...HV.liveView(c, ho), hv, ...(String(req.query.hv || '') === hv ? {} : { ho }), ...watchView(req, c) });
+  const live = HV.liveView(c, ho);
+  res.json({ ...live, hv, ...(String(req.query.hv || '') === hv ? {} : { ho }), ...watchView(req, c), needs: needsOut(req, c, { board: ho, live }) });
 });
 // Watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): with its poll the board says which
 // desks it shows (w: ids), which one is open large (look) and what it already has (sv / mv: 'id:version' pairs); the
@@ -628,12 +663,12 @@ router.get('/class/:id/desk', (req, res) => {
   // the notebook (docs/decisions.md "Homeroom: the notebook"): the dock's last button, and a Notes button on each handout
   const nb = NB.canUse(u);
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading', 'js.homeroom-due'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-intro'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, libraryGrade: HR.libraryGrade(c.grade), color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
       draw: MK.drawOn(c), marks: { strokes: MK.MARKS.strokes, points: MK.MARKS.points }, strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
       // step 3c: their own supports (only theirs; See the room never carries anyone's)
-      ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup } })}
+      ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, intro: config.homeroomOnboarding && !IN.seen(u, 'desk'), state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup } })}
     <div class="hd${AT.k2For(c, u.id) ? ' hd-k2' : ''}" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
@@ -690,6 +725,8 @@ const deskCards = (c, u, sup, locale) => AT.markMissed(c, u, SUP.applyToCards(c,
 /** Step 4c: the desk's K-2 mode, whether they are at home (marked, or outside live class: no hands, a question goes as a
  *  note) and their own questions of today. */
 const deskMode = (c, u) => ({ k2: AT.k2For(c, u.id), home: AT.homeOf(c, u.id), asks: AT.myAsks(c, u.id) });
+// The student's intro card (public/js/homeroom-intro.js): shown once, the first time they open their desk.
+router.post('/api/desk/:id/intro', rateLimit('homeroom-intro', 120, 3600e3), (req, res) => send(req, res, IN.setSeen(req.user, 'desk', true)));
 router.post('/api/desk/:id/ask', rateLimit('homeroom-ask', 60, 3600e3), (req, res) => {
   const x = body(req), r = AT.ask(req.user, req.homeroomClass, { kind: String(x.kind || 'question'), text: typeof x.text === 'string' ? x.text : '' });
   if (!r.ok) return fail(req, res, r.code);

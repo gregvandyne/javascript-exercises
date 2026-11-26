@@ -18,6 +18,9 @@ if (process.env.REMOVED_GAMES === undefined) process.env.REMOVED_GAMES = 'none';
 // Public games (PUBLIC_GAMES; services/games.js openToAll) are off on the site; the older tests publish games for everyone,
 // so they are on here too unless a test turns them off first (tests/unit/play-topics-private.test.js).
 if (process.env.PUBLIC_GAMES === undefined) process.env.PUBLIC_GAMES = '1';
+// Homeroom's first-run guide and the student's intro card (HOMEROOM_ONBOARDING; config.homeroomOnboarding) would sit over
+// the board and the desk in the older browser tests: off here unless a test turns it on (homeroom-onboarding tests).
+if (process.env.HOMEROOM_ONBOARDING === undefined) process.env.HOMEROOM_ONBOARDING = '0';
 // Billing off unless a test turns it on against the fake Stripe: exported STRIPE_* settings never reach a test.
 for (const k of Object.keys(NO_STRIPE_ENV)) delete process.env[k];
 // Email off unless a test turns it on with a fake Resend (services/email.js _hooks): exported keys never reach a test.

@@ -55,6 +55,7 @@ import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
 import { clock as planClock } from '/js/homeroom-plan-time.js';
 import { readingLayer } from '/js/homeroom-reading.js';
 import { dueLabel } from '/js/homeroom-due.js';
+import { deskIntro } from '/js/homeroom-intro.js';
 
 const D = pageData();
 const P = D.doodle || { w: 900, h: 600, strokes: 150, points: 400, total: 15000, colors: ['#141414'] };
@@ -687,5 +688,7 @@ function start() {
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
   PL.sync();   // a handout the address names (#play=<card>): open it again
   RL.sync();   // the Library or a Reading handout the address names (#library, #read=<card>)
+  // the first time on this desk: where things are (once per student; services/homeroom-intro.js)
+  if (D.intro && !location.hash) deskIntro({ D, k2: S.k2 });
 }
 if (root && body) start();

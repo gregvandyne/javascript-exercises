@@ -15223,3 +15223,111 @@ row on the board. Migration `0139_homeroom_week_due`.
   school days (Monday to Friday for now); dragging days on the week card (changes are asked for in the chat); the Due row
   for a handout already given (due dates are set when handing out); translations beyond the new keys (every locale has
   them; the day plan's older strings still fall back to English).
+
+## Homeroom: onboarding, Needs a look, Oomba follow-ups (26 Nov 2026)
+
+Spec: `docs/homeroom.md` build order step 5, second half (5b), the last step of the build order. The owner's first idea
+for Homeroom was "Eventually we can layer on AI oversight to help flag students that are struggling": the flags are
+rules on data Homeroom already has, and Oomba only sums them up, with the names taken out. Migration
+`0140_homeroom_followups` (two tables).
+- **The first-run guide** (`public/js/homeroom-tour.js`; `services/homeroom-intro.js`, `homeroom_seen`): the first time a
+  teacher opens Homeroom (once per teacher, not per class: a teacher with five classes sees it once), six calm coach
+  marks, each a small card beside the real thing with a soft ring around it: Arrange seats like your room, Your teacher's
+  area (and the pen in Board tools), Hand out a lesson (tap, or drag; a finger works too), My desk, Ask Oomba for today's
+  plan (the plan pill), Everyone to Homeroom (and the quick sign-in code at /hr from the ⋯ menu's Students sign in).
+  Next and Skip on each, Done on the last, Escape skips. **It never blocks the board**: no layer over it, the ring lets
+  presses through, the card sits beside (or, on a phone, across the top or bottom away from) what it points at; a thing
+  on the board is pointed at only as far as the board shows it. A class with **no students yet** starts with its own
+  step: "No students yet", the class's join code and Add students (the Students tab, where Google Classroom brings them
+  in). Kept on the server (`POST /api/homeroom/:id/tour`), so another device doesn't show it again; the ⋯ menu's **Show me
+  around** opens it any time. Aides get no guide.
+- **The student's intro card** (`public/js/homeroom-intro.js`, `homeroom_seen` 'desk', `POST /api/desk/:id/intro`): the
+  first time a student opens a desk, one card: My desk, Raise hand, the notebook (when they have one), the buttons at the
+  bottom (teacher's area, Library, See the room) and "Your teacher can see your screen in Homeroom." Got it (or Escape)
+  closes it for good. **K-2**: big pictures, a few words a line, Read to me on every line (the device's own voice), a big
+  OK. Students' words: nothing says lesson.
+- **`HOMEROOM_ONBOARDING`** (`config.homeroomOnboarding`, on by default): the unit tests' setup turns it off so the
+  older browser tests see the board and the desk as before; the onboarding tests turn it on.
+- **Needs a look** (`services/homeroom-look.js`): a calm list of students who may need help now or this week, each with
+  the reason in plain words and a suggested action as a button. Rules, computed on the server from existing data
+  (`LOOK`), nothing new collected:
+  - **stuck**: live Stuck (3 minutes without a step forward on the same handout, `homeroom-live.js` statusOf), times
+    their extra time (2x: 6 minutes). Suggests: look at their desk.
+  - **hand**: a hand up with a question or for help for 4 minutes or more (not the bathroom: that is the hall pass's
+    line). Suggests: answer it in Hands.
+  - **ask**: a question from home waiting an hour or more. Suggests: answer it in Hands.
+  - **tries**: "several wrong tries in a row". A game reports one result per try and the best is kept (no per-question
+    history for games), so this is the try count and the best try: a lesson plan graded by Score (Arithmetic Lab: how many
+    right) opened 2 or more times in the last 7 days, the best still under half right. Lessons that end only when
+    everything is right (Crossword, Algebra Builder) have no such number and never trigger it. Suggests: sit with them
+    for a few minutes, or hand out an easier version (their handouts).
+  - **reading**: a Reading handout's quiz, first try, under 60 % right with at least 3 questions. Suggests: read a page
+    together (and Read aloud, from the desk's menu, when they don't have it).
+  - **overdue**: 3 or more handouts "after due" on their desk (`boardView`'s calm late flag, which already never counts a
+    handout given while they were marked absent: Missed while away is never after due by itself). Suggests: a quick
+    check-in (their handouts).
+  Students marked **Absent** today are never on the list. At home: their live status and questions count (no hand).
+  Supports: extra time stretches Stuck, a 🧩 shows on the row, Read aloud changes the reading suggestion.
+  - **Where**: a small count chip in the top bar (🔎 and a number, muted; it opens Today at the list) and a section in
+    Today at a glance (it replaces the old line of stuck names), alphabetical, never ranked, never red. From the board's
+    pulse while live (every 2 s, reusing the pulse's board and live views), else asked every minute.
+  - **Seen** (one reason, by its key: a new handout, one more after due or a new question brings it back) and **Snooze
+    today** (the student, until the class's next school day in its time zone) are the class's teachers'
+    (`homeroom_look`; `POST /api/homeroom/:id/needs`, audited without names); marks older than 30 days are pruned.
+  - **Who**: the class's teachers (and they mark it), an **aide** reads it (no Seen or Snooze: 403), a **sub** sees only
+    what is about right now (stuck, a hand up a long time) with first names on their page (`subView.needs`, no titles,
+    no progress), never a student, a parent, another teacher, the projector (its page and poll carry none of it, tested)
+    or a desk.
+  - **Oomba sums it up** (the chat's `needsLook` tool on a class's Homeroom, and the list's "Ask Oomba to sum this up",
+    which opens the chat with the request ready): the AI gets each student as "Student A", "Student B" (in the list's
+    alphabetical order), the reasons as codes and counts and the handouts' titles with students' names scrubbed; never a
+    name, username or id (tested on every request). The turn keeps which placeholder is which student (`note.who`, never
+    sent to the AI), and the page puts the names back in the browser (`public/js/companion.js` named(), from the Homeroom
+    page's own roster); elsewhere the placeholders stay.
+- **Oomba follow-ups** (`services/homeroom-follow.js`, `companion.js` offerFollowUp and followAct): after **Finish
+  class** (`POST /api/homeroom/:id/plan` finish; a planned day of a week plan finishes the same way, and the last planned
+  day of the week says "End of the week"), Oomba adds a short card to the teacher's chat, made by rules from the plan's
+  summary with **no AI call**: what went well (handouts finished of how many, students who finished everything, parts
+  done; absent students on their own), who might need a look on the next school day (Needs a look without hands, kept as
+  ids: the page shows the names; elsewhere "2 students"), and ideas, each confirmed first in the app's own dialog
+  (Cancel changes nothing), then marked ✓:
+  - **Hand out a review lesson on <day> to the <group> group**: the group with the most unfinished cards (counts of
+    cards; students are never compared); adds a 15-minute work part with that group's version to the next school day's
+    dated plan, for that group only (a plan part's new `only` flag: `usePlan` gives no one else a copy).
+  - **Re-teach <part> on <day>**: the part with the smallest share finished, under 60 % with at least two handouts; adds
+    10 minutes of slides "Re-teach: <part>".
+  - **Move unfinished work to <day>'s plan**: 15 minutes to finish the part with the most left (its handouts stay on
+    desks as homework; using that day's plan counts them as already on desks).
+  - **Send a note to the class**: the teacher writes it (a ready line to edit); it goes on the teacher's area as a sticky
+    note, where everyone sees it. The only one that reaches students, and only once the teacher taps Send.
+  The parts go into `homeroom_week_days` for the class's next school day (Friday's is Monday), a new plan named
+  Follow-up when the day has none, checked by `cleanPlan` (a full day is refused: "That day's plan is full"). The plan
+  pill picks it up that morning; nothing goes on desks until the teacher taps Start or Put on desks. The card's words
+  (which the AI reads as history later) are counts only; the summary sheet says the follow-up is in the chat with Open
+  Oomba. Oomba never talks to students; nothing reaches students or parents unless the teacher sends the note or
+  starts that plan.
+- **Words**: teachers' strings say lesson and lesson plan; students' intro keeps their own words. Every new string is
+  in every locale (`js.homeroom-look`, `js.homeroom-intro`, `js.companion.follow`, and a few in their pages' own
+  namespaces); en-GB needs none.
+- **Deleting**: `homeroom_look` goes with the class and the school (`BY_CLASS`), a student leaving the class, the
+  student's account; a teacher's account leaves the class's marks with their name taken off (`set_by` NULL).
+  `homeroom_seen` goes with the account (`account-delete.js`) and an account merged away.
+- Tests: `tests/unit/homeroom-followups.test.js` (each rule and its threshold, extra time, absent never flagged, Missed
+  while away never after due, alphabetical; Seen, a new key bringing it back, Snooze today and the next day; who:
+  teacher, aide read only, sub live reasons with first names, a student, a parent, another teacher and signed out
+  refused, the projector, the pulse and the page data; the guide and the intro once, again on request, the empty class's
+  join code, aides and other teachers refused; the needsLook tool with a stand-in AI: "Student A" only, no name,
+  username or id in any request, the turn's who; Finish class: the card with no AI call and no names, counts, ids, the
+  suggestions, nothing changed until each is confirmed, review for one group only, re-teach, move, the note, done
+  twice refused, another teacher refused, the AI's next turn without names; the next school day; deleting) and
+  `tests/unit/homeroom-followups-browser.test.js` (1366 x 768, 820 and 390: the guide's six steps beside what they point
+  at, the board zooming under it, Skip, Escape, Show me around, kept on the server, the empty class's step; the intro and
+  the K-2 intro with Read to me; the Needs a look chip and list, an action, Seen, the projector without it; Finish class,
+  the follow-up card with names from the page, Cancel changing nothing, the review in the next school day's plan, the
+  note on the area; nothing sideways).
+- **Open**: per-question history for games ("wrong tries in a row" counts tries and the best try for now); Needs a look
+  from more signals (many hints, a quiz step's run of wrong answers in other kinds of work); the follow-up for a day
+  ended with End class and no plan (Finish class is the trigger); handing out a follow-up's review now with a due date
+  (it goes into the next day's plan); a school calendar for the next school day (Monday to Friday for now). Before
+  launch: the privacy policy update and lawyer review, and a 35-student load test (the pulse now also carries Needs a
+  look).

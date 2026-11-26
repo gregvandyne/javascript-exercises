@@ -15,14 +15,21 @@
 //     out of Needs a look and Today's counts ("2 absent" beside them); an At home desk shows "At home" instead of a
 //     cursor; Today lists who is here, absent or at home (the teacher and a sub change it, an aide only sees it); Hands
 //     also holds questions sent from home, marked At home, answered from there (even when class isn't live).
+//   - Needs a look (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups"; services/homeroom-look.js):
+//     a small count chip in the top bar and a calm list in Today (alphabetical, never ranked): each student with the
+//     reasons in plain words, a suggested action as a button, Seen and Snooze today (the teacher's), and Ask Oomba to
+//     sum this up (the chat gets "Student A", never a name). From the pulse while live, else asked every minute.
 // Nothing here is ever on the projector (its page and poll carry only the teacher's area and the live state).
 import { t, api, toast, esc, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { DESK, TEAM_DESK } from '/js/homeroom-seats.js';
 import { watcher } from '/js/homeroom-watch.js';
+import * as BUS from '/js/oomba-bus.js';
+import { reasonText, ACTS } from '/js/homeroom-look.js';
 
 const tl = (k, v) => t(`js.homeroom-live.${k}`, v);
+const tk = (k, v) => t(`js.homeroom-look.${k}`, v);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const PAD = { w: 900, h: 600 };
 
@@ -32,7 +39,7 @@ const PAD = { w: 900, h: 600 };
  */
 export function liveBoard(ctx) {
   const { D, H } = ctx;
-  const LV = { data: null, timer: null, open: '', hv: '', look: null, lookTimer: null, curTimers: new Map(), curSeen: new Map() };
+  const LV = { data: null, timer: null, open: '', hv: '', look: null, lookTimer: null, curTimers: new Map(), curSeen: new Map(), needs: D.needs || { items: [], hidden: 0, may: false } };
   const desks = () => (LV.data && LV.data.desks) || {};
   const live = () => !!H.live;
   // watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): what each desk in view has open
@@ -49,6 +56,7 @@ export function liveBoard(ctx) {
         LV.data = r; LV.hv = r.hv || '';
         WT.take(r);
         if (r.ho) ctx.setHo(r.ho);
+        if (r.needs) LV.needs = r.needs;
         if (!r.live && H.live) { H.live = null; ctx.renderLive(); }
         paint(); renderPanel(); ctx.renderLive();
       } catch { /* try again */ }
@@ -162,8 +170,10 @@ export function liveBoard(ctx) {
   const handsCount = () => (LV.data ? LV.data.hands.length : 0) + asks().length;
   const handsOn = () => live() || asks().length > 0;
   function topButtons() {
-    const n = handsCount();
-    return `${btn(`btn hr-chunk hr-todaybtn${LV.open === 'today' ? ' on' : ''}`, `data-hrpanel="today" aria-expanded="${LV.open === 'today'}" aria-label="${esc(tl('today.title'))}"`, `${iconHtml('📊', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('today.button'))}</span>`)}
+    const n = handsCount(), k = (LV.needs.items || []).length;
+    // Needs a look's count (never on the projector): calm and small, it opens Today at the list
+    const need = k ? btn(`btn hr-chunk hr-needchip${LV.open === 'today' ? ' on' : ''}`, `data-hrneeds="1" aria-label="${esc(tk('chip', { count: k }))}" title="${esc(tk('chip', { count: k }))}"`, `${iconHtml('🔎', { size: 16 })}<span class="hr-needcnt">${k}</span>`) : '';
+    return `${need}${btn(`btn hr-chunk hr-todaybtn${LV.open === 'today' ? ' on' : ''}`, `data-hrpanel="today" aria-expanded="${LV.open === 'today'}" aria-label="${esc(tl('today.title'))}"`, `${iconHtml('📊', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('today.button'))}</span>`)}
       ${handsOn() ? btn(`btn hr-chunk hr-handsbtn${LV.open === 'hands' ? ' on' : ''}`, `data-hrpanel="hands" aria-expanded="${LV.open === 'hands'}" aria-label="${esc(tl('hands.label', { count: n }))}"`, `${iconHtml('✋', { size: 18 })}<span class="hr-hidephone"> ${esc(tl('hands.button'))}</span>${n ? `<span class="hr-count" aria-hidden="true">${n}</span>` : ''}`) : ''}`;
   }
   function panelEl() {
@@ -223,7 +233,7 @@ export function liveBoard(ctx) {
       <p class="small muted">${esc(tl('att.lead'))}</p><ul class="plain hr-attlist">${list.map(s => `<li class="${ctx.att(s.id) ? `hr-att-${ctx.att(s.id)}` : ''}"><bdi>${esc(s.name)}</bdi>${seg(s)}</li>`).join('')}</ul></details>`;
   }
   function todayHtml() {
-    const list = todayHandouts(), dd = desks(), look = new Set();
+    const list = todayHandouts(), dd = desks();
     const rows = list.map(h => {
       let done = 0, stuck = 0, work = 0, total = 0, absent = 0;
       for (const s of H.students) {
@@ -233,7 +243,7 @@ export function liveBoard(ctx) {
         total++;
         const d = dd[s.id];
         if (card.done) done++;
-        else if (d && d.st === 'stuck' && d.on === h.id) { stuck++; look.add(s.id); }
+        else if (d && d.st === 'stuck' && d.on === h.id) stuck++;
         else if (card.pct > 0 || (d && d.on === h.id && d.st !== 'away')) work++;
       }
       const none = total - done - stuck - work, pc = n => (total ? (100 * n) / total : 0);
@@ -241,14 +251,59 @@ export function liveBoard(ctx) {
         <div class="hr-tgbar" role="img" aria-label="${esc(tl('today.barLabel', { done, work, stuck, none }))}"><i class="d" style="width:${pc(done)}%"></i><i class="w" style="width:${pc(work)}%"></i><i class="s" style="width:${pc(stuck)}%"></i></div>
         <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}${absent ? ` · ${esc(tl('att.nAbsent', { count: absent }))}` : ''}</p>${h.reading ? readingRows(h) : ''}</li>`;
     }).join('');
-    for (const [sid, d] of Object.entries(dd)) if (d.st === 'stuck' && ctx.att(sid) !== 'absent') look.add(sid);
-    const names = [...look].map(id => btn('hr-lookname', `data-hrlook="${esc(id)}"`, `<bdi>${esc(ctx.nameOfId(id))}</bdi>`)).join('');
     return `<header class="hr-flhead"><h2 id="hr-flh">${iconHtml('📊', { size: 20 })} ${esc(tl('today.title'))}</h2>${btn('iconbtn hr-flclose', `data-hrpanel="" aria-label="${esc(tl('close'))}"`, iconHtml('✖️', { size: 16 }))}</header>
       <p class="small muted">${esc(live() ? tl('today.leadLive') : tl('today.lead'))}</p>
       ${rows ? `<ol class="plain hr-tglist">${rows}</ol><div class="hr-tgkey" aria-hidden="true"><span><i class="d"></i>${esc(tl('today.done'))}</span><span><i class="w"></i>${esc(tl('today.working'))}</span><span><i class="s"></i>${esc(tl('today.stuck'))}</span><span><i></i>${esc(tl('today.notStarted'))}</span></div>` : `<p class="muted">${esc(tl('today.none'))}</p>`}
-      ${names ? `<div class="hr-tgflag"><b>${esc(tl('needsLook'))}:</b> ${names}</div>` : ''}
+      ${needsHtml()}
       ${attHtml()}
       ${ctx.aide ? '' : `<p class="small hr-flnote">${esc(tl('today.weeks'))} <a href="/class/${esc(encodeURIComponent(D.classId))}/progress">${esc(tl('today.classroom'))}</a></p>`}`;
+  }
+  /** Needs a look in Today: each student once (alphabetical), the reasons in plain words with a suggested action, Seen
+   *  and Snooze today for the class's teachers; an aide reads it. */
+  function needsHtml() {
+    const N = LV.needs || { items: [] }, may = !!N.may && !ctx.aide;
+    const go = (sid, act, r) => {
+      // the suggested action's button: a look at their desk, Hands, their handouts, their supports
+      const k = act === 'look' ? 'look' : act === 'hands' ? 'hands' : act === 'readWith' && !r.read && ctx.supports && !ctx.aide ? 'supports' : 'desk';
+      return btn('btn btn-sm hr-needgo', `data-hrneedgo="${esc(sid)}:${k}"`, esc(tk(`b.${k}`)));
+    };
+    const rows = (N.items || []).map(x => `<li class="hr-need" data-need="${esc(x.id)}"><div class="hr-needtop">${btn('hr-lookname', `data-hrneedgo="${esc(x.id)}:${x.reasons.some(r => r.live) ? 'look' : 'desk'}"`, `<bdi>${esc(ctx.nameOfId(x.id) || x.name)}</bdi>`)}
+        ${x.sup ? `<span class="hr-needtag" title="${esc(tk('supTag'))}">${iconHtml('🧩', { size: 14 })}<span class="sr-only"> ${esc(tk('supTag'))}</span></span>` : ''}${x.home ? `<span class="hr-needtag">${iconHtml('🏠', { size: 14 })} ${esc(tk('homeTag'))}</span>` : ''}
+        ${may ? btn('btn btn-sm btn-ghost hr-needsnooze', `data-hrneed="snooze:${esc(x.id)}" aria-label="${esc(tk('snoozeOf', { name: ctx.nameOfId(x.id) || x.name }))}"`, esc(tk('snooze'))) : ''}</div>
+      <ul class="plain hr-needwhy">${x.reasons.map(r => { const act = ACTS[r.rule];
+        return `<li><span class="hr-needr" dir="auto">${esc(reasonText(r))}</span><span class="hr-needa small">${esc(tk(`a.${act === 'readWith' && !r.read ? 'readAloud' : act}`))}</span>
+          <span class="hr-needbtns">${go(x.id, act, r)}${may ? btn('btn btn-sm btn-ghost', `data-hrneed="seen:${esc(x.id)}:${esc(r.rule)}:${esc(r.key)}"`, esc(tk('seen'))) : ''}</span></li>`; }).join('')}</ul></li>`).join('');
+    return `<section class="hr-needs hr-tgflag" id="hr-needs" aria-labelledby="hr-needsh"><h3 class="hr-flsub" id="hr-needsh">${iconHtml('🔎', { size: 18 })} ${esc(tk('title'))}${N.items && N.items.length ? ` <span class="hr-needn">${N.items.length}</span>` : ''}</h3>
+      <p class="small muted">${esc(tk(ctx.aide ? 'leadAide' : 'lead'))}</p>
+      ${rows ? `<ul class="plain hr-needlist">${rows}</ul>` : `<p class="small muted hr-neednone">${esc(tk('none'))}</p>`}
+      <div class="hr-needfoot">${N.hidden ? `<span class="small muted">${esc(tk('hidden', { count: N.hidden }))}</span>` : ''}${may && D.chat && rows ? btn('btn btn-sm hr-needask', 'data-hrneedask="1"', `${iconHtml('💬', { size: 16 })} ${esc(tk('ask'))}`) : ''}</div></section>`;
+  }
+  async function needsAct(v) {
+    const [state, studentId, rule = ''] = v.split(':'), key = v.split(':').slice(3).join(':');
+    try {
+      const r = await api(ctx.api2('needs'), { method: 'POST', body: { studentId, state, rule, key } });
+      LV.needs = { items: r.items, hidden: r.hidden, may: r.may };
+      renderPanel(); ctx.renderLive(); toast(r.toast);
+    } catch (e) { toast(e.message, { bad: true }); }
+  }
+  async function pollNeeds() {
+    if (live() || LV.paused || document.hidden) return;
+    try { const r = await api(ctx.api2('needs'), { background: true }); if (JSON.stringify(r) !== JSON.stringify(LV.needs)) { LV.needs = r; ctx.renderLive(); if (LV.open === 'today') renderPanel(); } } catch { /* the next minute */ }
+  }
+  setInterval(pollNeeds, 60000);
+  function needsGo(v) {
+    const [sid, k] = v.split(':');
+    if (k === 'look') look(sid);
+    else if (k === 'hands') { if (LV.open !== 'hands') openPanel('hands'); }
+    else if (k === 'supports' && ctx.supports) ctx.supports(sid);
+    else ctx.deskSheet(sid);
+  }
+  function askOomba() {
+    if (!BUS.chat()) { toast(tk('noChat')); return; }
+    BUS.whenChat(c => {
+      c.setMode('open');
+      setTimeout(() => { const el = document.getElementById('oc-in'); if (el) { el.value = tk('askText'); el.dispatchEvent(new Event('input', { bubbles: true })); el.focus(); } }, 60);
+    });
   }
   function renderPanel() {
     const el = panelEl();
@@ -378,6 +433,10 @@ export function liveBoard(ctx) {
   // ---------------------------------------------------------------- clicks
   function click(e) {
     const p = e.target.closest('[data-hrpanel]'); if (p) { openPanel(p.dataset.hrpanel); return true; }
+    if (e.target.closest('[data-hrneeds]')) { if (LV.open !== 'today') openPanel('today'); const el = document.getElementById('hr-needs'); el?.scrollIntoView({ block: 'nearest' }); el?.querySelector('button')?.focus(); return true; }
+    const nd = e.target.closest('[data-hrneed]'); if (nd) { needsAct(nd.dataset.hrneed); return true; }
+    const ng = e.target.closest('[data-hrneedgo]'); if (ng) { needsGo(ng.dataset.hrneedgo); return true; }
+    if (e.target.closest('[data-hrneedask]')) { askOomba(); return true; }
     if (e.target.closest('[data-hrhands]')) { if (LV.open !== 'hands') openPanel('hands'); return true; }
     const hh = e.target.closest('[data-hrhand]'); if (hh) { handAct(hh.dataset.hrhand); return true; }
     const ak = e.target.closest('[data-hrask]'); if (ak) { answerAsk(ak.dataset.hrask); return true; }
@@ -404,7 +463,9 @@ export function liveBoard(ctx) {
     polling: () => live(),
     /** Homeroom is not on screen (public/js/class-views.js): no pulse until it is again. */
     pause() { LV.paused = true; clearTimeout(LV.timer); LV.timer = null; },
-    resume() { LV.paused = false; if (live()) poll(); },
+    resume() { LV.paused = false; if (live()) poll(); else pollNeeds(); },
+    /** Needs a look as it is now (the board's page data, the pulse, a mark). */
+    needs: () => LV.needs,
     escape() { if (LV.open) { openPanel(LV.open); return true; } return false; },
   };
 }

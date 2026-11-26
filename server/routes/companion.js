@@ -9,6 +9,9 @@
 //                                          'bookStop' | 'bookStart', pick? | value? })
 //                                          a day plan's card (services/homeroom-plan.js): 'planUse' | 'planStart' | 'planSave' |
 //                                          'planPick' | 'planCopy' -> also { plan (the pill's view), classId, toast }
+//                                          an Oomba follow-up's card (services/homeroom-follow.js), each after the teacher
+//                                          confirmed it on the page: 'followDo' (value: a suggestion) | 'followNote' (value:
+//                                          the note's words)
 //   POST /api/companion/resume             the page loaded: a request carried here by Go there continues ({ page, board? })
 //   POST /api/companion/book/new           Make a book: the book maker's first card in this chat
 //   POST /api/companion/chat/new           New chat (the conversation goes to the chat history; one with nothing said goes)
@@ -37,7 +40,7 @@ export const router = Router();
 const body = req => (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body) ? req.body : {});
 const STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, slow: 429, fileGone: 410, cap: 429 };
 // (the day plan's card: services/homeroom-plan.js)
-const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone', 'cap', 'planRunning', 'needName', 'planName', 'tooManyPlans', 'noPlan', 'tooManyHandouts', 'weekPast', 'pastDay'];
+const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone', 'cap', 'planRunning', 'needName', 'planName', 'tooManyPlans', 'noPlan', 'tooManyHandouts', 'weekPast', 'pastDay', 'planFull', 'needText', 'areaFull', 'already'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`js.companion.err.${CODES.includes(r.code) ? r.code : 'other'}`), code: r.code });
 /** Only for Teacher plan staff: anyone else gets a 404 before anything is read. */
 /** The conversation as the page shows it: a point's card with the student's and the class's names and the reason's
@@ -58,7 +61,8 @@ router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 360
 router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), async (req, res) => {
   const b = body(req);
   const v = typeof b.pick === 'string' ? b.pick : typeof b.value === 'string' || typeof b.value === 'number' ? String(b.value) : '';
-  const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, 64));
+  // (a follow-up's note to the class is the teacher's own words: up to its 300 characters)
+  const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, b.act === 'followNote' ? 300 : 64));
   return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}), ...('plan' in r ? { plan: r.plan, classId: r.classId } : {}), ...(r.toast ? { toast: r.toast } : {}), ...(r.preview ? { preview: r.preview } : {}) }) : fail(req, res, r);
 });
 // The page loaded: a request Oomba carried here (Go there) continues, once, on this exact page.

@@ -2367,7 +2367,8 @@
         "clear": "Zeichnungen der Schüler löschen",
         "clearConfirm": "Alle Linien der Schüler aus dem Raum entfernen?",
         "none": "Noch keine Zeichnungen im Raum."
-      }
+      },
+      "tourMenu": "Zeig mir alles"
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -4534,7 +4535,9 @@
         "book_rename": "„{q}“ umbenannt",
         "book_duplicate": "„{q}“ kopiert",
         "book_repaint": "„{q}“ zum neu Malen geschickt",
-        "week": "Wochenplan entworfen ({n} Tage)"
+        "week": "Wochenplan entworfen ({n} Tage)",
+        "needs": "Mal nachsehen angeschaut ({n})",
+        "needsNo": "Mal nachsehen ließ sich nicht öffnen"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4610,7 +4613,11 @@
         "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal.",
         "cap": "Du hast die heutigen Oomba-Runden für Bücher verbraucht. Du kannst deine Bücher weiter von Hand bearbeiten. Morgen gibt es neue Runden.",
         "pastDay": "Dieser Tag ist vorbei. Wähle heute oder einen späteren Tag dieser Woche.",
-        "weekPast": "Jeder Tag dieser Woche ist schon vorbei."
+        "weekPast": "Jeder Tag dieser Woche ist schon vorbei.",
+        "planFull": "Der Plan für diesen Tag ist voll. Nehmen Sie zuerst einen Teil heraus.",
+        "needText": "Schreiben Sie zuerst ein paar Wörter.",
+        "areaFull": "Im Bereich der Lehrkraft sind schon 12 Notizen. Entfernen Sie zuerst eine.",
+        "already": "Das ist schon erledigt."
       },
       "quoteN": "Frage {n}: {text}",
       "questionN": "Frage {n}",
@@ -4718,6 +4725,42 @@
         "missingNone": "Keine Gruppe {group} in {cls}: diese Version fällt weg.",
         "cancel": "Abbrechen",
         "go": "In {cls} kopieren"
+      },
+      "follow": {
+        "title": "Nach dem Unterricht: ein kurzer Ausblick",
+        "titleWeek": "Ende der Woche: ein kurzer Ausblick",
+        "text": "Der Unterricht ist beendet. Hier ein kurzer Ausblick auf den nächsten Schultag: was gut lief, wer vielleicht Hilfe braucht und ein paar Ideen. Nichts passiert, bevor Sie auf eine tippen.",
+        "textWeek": "Der Wochenplan ist beendet. Hier ein kurzer Ausblick auf nächste Woche: was gut lief, wer vielleicht Hilfe braucht und ein paar Ideen. Nichts passiert, bevor Sie auf eine tippen.",
+        "wentWell": "Was gut lief",
+        "finished": "{finished} von {of} Aufgaben fertig",
+        "allDone": "{count, plural, one {# Kind hat alles geschafft} other {# Kinder haben alles geschafft}}",
+        "parts": "{done} von {total} Teilen erledigt",
+        "absent": "{count, plural, one {# abwesend, nicht mitgezählt} other {# abwesend, nicht mitgezählt}}",
+        "lookTitle": "Am {day} vielleicht mal nachsehen",
+        "nobody": "Gerade steht niemand unter Mal nachsehen.",
+        "lookCount": "{count, plural, one {# Kind. Öffnen Sie das Homeroom der Klasse, um zu sehen, wer.} other {# Kinder. Öffnen Sie das Homeroom der Klasse, um zu sehen, wer.}}",
+        "ideas": "Ideen (nichts passiert, bevor Sie tippen)",
+        "review": "Am {day} eine Wiederholungslektion an die Gruppe {group} austeilen",
+        "reviewAsk": "{minutes} Minuten {what} für die Gruppe {group} zum Plan für {day} hinzufügen? Nichts kommt auf die Plätze, bevor Sie diesen Plan starten.",
+        "reteach": "{part} am {day} noch einmal erklären",
+        "reteachAsk": "{minutes} Minuten Folien zum erneuten Erklären von {part} zum Plan für {day} hinzufügen?",
+        "move": "Unfertiges in den Plan für {day} verschieben",
+        "moveAsk": "{minutes} Minuten zum Fertigmachen von {what} zum Plan für {day} hinzufügen? Die Aufgaben bleiben als Hausaufgabe auf den Plätzen.",
+        "note": "Der Klasse eine Nachricht schicken",
+        "noteText": "Toll gemacht heute, alle zusammen! Morgen geht es weiter.",
+        "noteTitle": "Eine Nachricht an die Klasse",
+        "noteLabel": "Sie kommt in den Bereich der Lehrkraft, wo alle sie sehen.",
+        "send": "Senden",
+        "confirm": "Zum Plan hinzufügen",
+        "added": "Zum Plan für {day} hinzugefügt.",
+        "noteDone": "Ihre Nachricht steht im Bereich der Lehrkraft.",
+        "addedTag": "Hinzugefügt",
+        "sent": "Gesendet",
+        "private": "Nur Zahlen, und die Namen bleiben auf diesem Bildschirm. Oomba spricht nie mit Kindern; nichts erreicht Kinder oder Eltern, außer Sie senden oder teilen es aus.",
+        "planName": "Ausblick",
+        "reviewTitle": "Wiederholung",
+        "reteachTitle": "Noch einmal: {title}",
+        "finishTitle": "Die Arbeit von heute fertig machen"
       }
     },
     "companion-greet": {
@@ -5398,6 +5441,10 @@
         "clear": "Diesen Tag leeren",
         "clearTitle": "{day} leeren?",
         "clearText": "Der Plan dieses Tages fällt aus der Woche. Auf den Tischen ändert sich nichts."
+      },
+      "follow": {
+        "ready": "Oomba hat im Chat einen kurzen Ausblick auf den nächsten Schultag.",
+        "open": "Oomba öffnen"
       }
     },
     "homeroom-due": {
@@ -5417,6 +5464,94 @@
       "dayTime": "{day}, {time}",
       "due": "Fällig {when}",
       "afterDue": "nach Fälligkeit"
+    },
+    "homeroom-look": {
+      "title": "Mal nachsehen",
+      "chip": "{count, plural, one {Mal nachsehen: # Kind} other {Mal nachsehen: # Kinder}}",
+      "lead": "Schülerinnen und Schüler, die jetzt oder diese Woche vielleicht Hilfe brauchen, und was Sie tun könnten. Nur Sie und Ihre Assistenzen sehen das.",
+      "leadAide": "Schülerinnen und Schüler, die jetzt oder diese Woche vielleicht Hilfe brauchen. Nur die Lehrkräfte und Assistenzen der Klasse sehen das.",
+      "none": "Gerade muss niemand nachgesehen werden.",
+      "hidden": "{count, plural, one {# gesehen oder zurückgestellt} other {# gesehen oder zurückgestellt}}",
+      "seen": "Gesehen",
+      "snooze": "Heute zurückstellen",
+      "snoozeOf": "{name} für heute zurückstellen",
+      "supTag": "Hat Unterstützung",
+      "homeTag": "Zu Hause",
+      "ask": "Oomba um eine Zusammenfassung bitten",
+      "askText": "Fasse zusammen, wer in dieser Klasse Hilfe brauchen könnte, mit einem kleinen nächsten Schritt für jedes Kind.",
+      "noChat": "Oomba ist gerade nicht verfügbar.",
+      "r": {
+        "stuck": "{count, plural, one {Hängt seit # Minute bei {title}} other {Hängt seit # Minuten bei {title}}}",
+        "stuckNo": "{count, plural, one {Hängt seit # Minute} other {Hängt seit # Minuten}}",
+        "hand": "{count, plural, one {Meldet sich seit # Minute mit einer Frage} other {Meldet sich seit # Minuten mit einer Frage}}",
+        "handHelp": "{count, plural, one {Meldet sich seit # Minute und braucht Hilfe} other {Meldet sich seit # Minuten und braucht Hilfe}}",
+        "ask": "{count, plural, one {Eine Frage von zu Hause wartet seit # Minute} other {Eine Frage von zu Hause wartet seit # Minuten}}",
+        "askHours": "{count, plural, one {Eine Frage von zu Hause wartet seit # Stunde} other {Eine Frage von zu Hause wartet seit # Stunden}}",
+        "tries": "{count, plural, one {# Versuch bei {title}, am besten {right} von {total} richtig} other {# Versuche bei {title}, am besten {right} von {total} richtig}}",
+        "reading": "Lesequiz zu {title}: {right} von {total} richtig beim ersten Versuch",
+        "overdue": "{count, plural, one {# Aufgabe nach dem Abgabetermin} other {# Aufgaben nach dem Abgabetermin}}"
+      },
+      "a": {
+        "look": "Vorschlag: den Platz ansehen",
+        "hands": "Vorschlag: unter Meldungen antworten",
+        "sit": "Vorschlag: ein paar Minuten dazusetzen oder eine leichtere Version austeilen",
+        "readWith": "Vorschlag: eine Seite zusammen lesen",
+        "readAloud": "Vorschlag: eine Seite zusammen lesen oder Vorlesen einschalten",
+        "checkIn": "Vorschlag: kurz über die Arbeit nach dem Termin sprechen"
+      },
+      "b": {
+        "look": "Ansehen",
+        "hands": "Meldungen",
+        "desk": "Aufgaben",
+        "supports": "Unterstützung"
+      },
+      "tour": {
+        "step": "{n} von {total}",
+        "next": "Weiter",
+        "skip": "Überspringen",
+        "done": "Fertig",
+        "addStudents": "Schüler hinzufügen",
+        "emptyTitle": "Noch keine Schülerinnen und Schüler",
+        "emptyText": "Sie treten mit dem Code dieser Klasse bei, oder Sie holen sie im Tab Schüler aus Google Classroom. Alles andere funktioniert schon.",
+        "seatsTitle": "Sitzplan wie in Ihrem Raum",
+        "seatsText": "Wählen Sie Reihen, Vierertische, U-Form oder Kreis und ziehen Sie dann jeden Platz dorthin, wo das Kind wirklich sitzt.",
+        "areaTitle": "Ihr Bereich der Lehrkraft",
+        "areaText": "Alle sehen ihn auf ihrem Platz und am Beamer. Fügen Sie Notizen und Text hinzu oder zeichnen Sie mit dem Stift unter Tafelwerkzeuge.",
+        "handoutTitle": "Eine Lektion austeilen",
+        "handoutText": "Tippen Sie auf eine Lektion, dann auf einen Platz, eine Gruppe oder Ganze Klasse. Oder ziehen Sie sie dorthin, auch mit dem Finger.",
+        "mydeskTitle": "Mein Pult",
+        "mydeskText": "Legen Sie eine Lektion oder ein Werkzeug hierher, um es zuerst auszuprobieren. Die Kinder sehen Mein Pult nie.",
+        "oombaTitle": "Oomba nach dem Plan für heute fragen",
+        "oombaText": "Sagen Sie Oomba, was Sie unterrichten. Oomba entwirft den Plan, und nichts kommt auf die Plätze, bevor Sie auf Diesen Plan nutzen tippen.",
+        "goliveTitle": "Alle ins Homeroom",
+        "goliveText": "Starten Sie hier den Unterricht. Auf geteilten Geräten gehen die Kinder auf /hr und tippen den Anmeldecode ein, unter Anmeldung für Schüler im Menü ⋯."
+      }
+    },
+    "homeroom-intro": {
+      "title": "Willkommen an deinem Platz!",
+      "ok": "Verstanden",
+      "deskTitle": "Mein Platz:",
+      "desk": "hier landet, was deine Lehrkraft austeilt. Fang bei Als Nächstes an.",
+      "handTitle": "Melden:",
+      "hand": "tippe für eine Frage, für Hilfe oder für die Toilette.",
+      "notebookTitle": "Heft:",
+      "notebook": "deine Notizen zum Behalten. Deine Lehrkraft kann dein Heft lesen.",
+      "dockTitle": "Die Knöpfe unten:",
+      "dock": "der Bereich deiner Lehrkraft, die Bibliothek mit Büchern und Den Raum ansehen.",
+      "seenTitle": "Gut zu wissen:",
+      "seen": "Deine Lehrkraft kann im Homeroom deinen Bildschirm sehen.",
+      "k2": {
+        "title": "Hallo! Das ist dein Platz.",
+        "ok": "Okay!",
+        "desk": "Deine Aufgabe ist hier. Tippe auf Los.",
+        "hand": "Tippe auf die Hand, wenn du Hilfe brauchst.",
+        "notebook": "Male oder schreibe in dein Heft. Deine Lehrkraft kann es sehen.",
+        "dock": "Diese Knöpfe zeigen deine Lehrkraft, Bücher und den Raum.",
+        "seen": "Deine Lehrkraft kann deinen Bildschirm sehen."
+      }
+    },
+    "homeroom-sub": {
+      "needsTitle": "Jetzt mal nachsehen"
     }
   },
   "favorites": {
@@ -15598,6 +15733,11 @@
       "savedOff": "Schüler können nicht im Raum zeichnen",
       "cleared": "Zeichnungen der Schüler gelöscht",
       "removed": "Die Zeichnungen wurden entfernt"
+    },
+    "look": {
+      "seen": "Als gesehen markiert. Es kommt zurück, wenn sich etwas ändert.",
+      "snooze": "Bis zum nächsten Schultag zurückgestellt.",
+      "back": "Wieder auf der Liste."
     }
   }
 }

@@ -114,7 +114,7 @@ router.use(['/sub', '/api/sub'], on);
 router.get('/sub', subGate, (req, res) => {
   const t = req.t, x = req.hrSub, tz = SB.zoneFor(x.c);
   page(req, res, {
-    title: t('homeroom.sub.pageTitle', { class: x.c.name }), bare: true, bodyClass: 'hr-page hr-subpage', scripts: ['/js/homeroom-sub.js'], i18n: ['js.homeroom-area', 'js.homeroom-plan'], head: CSS(),
+    title: t('homeroom.sub.pageTitle', { class: x.c.name }), bare: true, bodyClass: 'hr-page hr-subpage', scripts: ['/js/homeroom-sub.js'], i18n: ['js.homeroom-area', 'js.homeroom-plan', 'js.homeroom-look'], head: CSS(),
     body: html`${jsonData('page-data', { classId: x.c.id, className: x.c.name, note: x.link.note, until: fmtTime(req, x.link.ends_at, tz), endOfDay: SB.localDay(tz, x.link.ends_at) !== SB.localDay(tz, x.link.ends_at - 1), state: SB.subView(x) })}
     <div class="hr-sub" id="hr-sub">
       <header class="hr-subtop">

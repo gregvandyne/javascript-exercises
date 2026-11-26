@@ -64,6 +64,8 @@ import * as HR from './homeroom.js';
 import * as HP from './homeroom-plan.js';
 import * as HW from './homeroom-week.js';
 import * as SUP from './homeroom-supports.js';
+import * as FU from './homeroom-follow.js';
+import * as NL from './homeroom-look.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -625,6 +627,9 @@ export function dress(u, chat, t) {
     if (x.note && x.note.plan) y = { ...y, note: { ...y.note, plan: HP.cardView(u, x.note.plan, t) } };
     // A week plan's card: Monday to Friday, each day's parts and what they hand out.
     if (x.note && x.note.week) y = { ...y, note: { ...y.note, week: HW.weekCardView(u, x.note.week, t) } };
+    // An Oomba follow-up after Finish class (services/homeroom-follow.js): counts, the students to look at as ids (the page
+    // puts their names in, in the browser), and the suggestions with what each will do.
+    if (x.note && x.note.follow) y = { ...y, note: { ...y.note, follow: FU.cardView(u, x.note.follow, t) } };
     const p = x.note && x.note.pick;
     if (p) {
       const need = pickNeeds(p);
@@ -816,6 +821,7 @@ export const PLAN_TOOLS = Object.freeze([
         kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: one or two short sentences.'),
         pick: PLAN_PICK, groups: { type: 'array', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } } } } },
   { name: 'useSavedPlan', description: 'Use a day plan the teacher saved before ("use my Fractions day plan again"): it becomes a new card for this class, with Use this plan. Its result lists the saved plans when none fits the name.', input_schema: { type: 'object', required: ['name'], properties: { name: str('Words from the saved plan\'s name.') } } },
+  { name: 'needsLook', description: 'The class\'s Needs a look list (rules the app computed: stuck on a handout, a hand up a long time, a question from home waiting, several tries without getting there, a reading quiz under 60 percent, work piling up after due). Students are placeholders like "Student A": never guess or ask for a name, never compare or rank students, keep it calm and short, and suggest one small next step each. Use it when the teacher asks who needs help, a look, or a summary of the list.', input_schema: { type: 'object', properties: {} } },
   { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Homeroom supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
 ]);
 export const PLAN_TOOL_NAMES = Object.freeze(PLAN_TOOLS.map(x => x.name));
@@ -1110,6 +1116,16 @@ export function runTool(name, input, ctx) {
       if (!n) return { result: { error: 'No day could be kept. Give Monday to Friday, each with parts (slides, work, break, exit) and minutes.', notLanded: r.notes }, step: { k: 'planNo' } };
       ctx.out.week = HW.newWeekCard(c, r, ctx.lang);
       return { result: { shownOnCard: true, week: HW.readBackWeek(u, c, r.week, ctx.lang), ...(r.notes.length ? { changedByTheApp: r.notes } : {}), note: 'The teacher sees the week as a card with Use this week, Copy to another class and Copy to next week. Nothing is saved yet. Do not repeat every day in words.' }, step: { k: 'week', n, q: clip(r.week.name, 40) } };
+    }
+    // Needs a look (services/homeroom-look.js): the list with every student as a placeholder; the turn keeps which
+    // placeholder is which student (note.who) for the page to put the names back in the browser. The AI never sees one.
+    case 'needsLook': {
+      const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Needs a look is on a class\'s Homeroom.' }, step: { k: 'needsNo' } };
+      const v = NL.shown(c, NL.compute(c, { lang: ctx.lang }));
+      const r = NL.forAi(u, v.items);
+      ctx.out.who = { ...(ctx.out.who || {}), ...r.who };
+      return { result: { students: r.students, seenOrSnoozed: v.hidden, note: r.students.length ? 'Write "Student A" and so on exactly as given: the page shows the teacher the real names. No ranking, no comparing.' : 'Nobody is on the list right now: say so in one calm sentence.' }, step: { k: 'needs', n: r.students.length } };
     }
     // Simpler wording for a handout (Homeroom supports; services/homeroom-supports.js): the text is checked for names.
     case 'writeSimplerWording': {
@@ -1428,7 +1444,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
-    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}) };
+    ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}), ...(ctx.out.who ? { who: ctx.out.who } : {}) };
   log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
@@ -1652,6 +1668,7 @@ export function act(u, turnId, a, value = '') {
   }
   if (a === 'pick') return pickOne(u, row, turn, value);
   if (/^plan[A-Z]/.test(a)) return planAct(u, row, turn, a, value);
+  if (/^follow[A-Z]/.test(a)) return followAct(u, row, turn, a, value);
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
@@ -1718,6 +1735,29 @@ function planAct(u, row, turn, a, value) {
     return told(C.addTurn(u, SURFACE, KEY, { text: t('js.companion.plan.copied', { name: r.c.name }), apply: () => ({ note: { plan: HP.newCard(r.c, r, lang, { copiedFrom: c.id }) } }) }));
   }
   return { ok: false, code: 'notFound' };
+}
+/** A tap on a follow-up card (services/homeroom-follow.js), after the teacher confirmed it on the page: followDo (value:
+ *  the suggestion: a part added to the next school day's plan) or followNote (value: the note's words, on the teacher's
+ *  area). Nothing on the card happens without this tap. -> the conversation, plan (the pill's view), toast */
+function followAct(u, row, turn, a, value) {
+  const card = turn.note.follow;
+  if (!card) return { ok: false, code: 'notFound' };
+  const r = a === 'followNote' ? FU.doSuggestion(u, card, 'note', value) : a === 'followDo' && value !== 'note' ? FU.doSuggestion(u, card, value) : { ok: false, code: 'notFound' };
+  if (!r.ok) return r;
+  return { ...markNote(u, row, turn.id, { ...turn.note, follow: r.card }), plan: HP.teacherView(r.c), classId: r.c.id, toast: r.toast };
+}
+/**
+ * After Finish class on a class's Homeroom (routes/homeroom.js): Oomba's follow-up card in the teacher's chat, made by
+ * rules from the finished plan (no AI call). Its words are counts only, never a name (the AI reads past turns' words).
+ * -> { ok } | { ok: false, code }
+ */
+export function offerFollowUp(u, c, { lang = 'en' } = {}) {
+  if (!companionFor(u) || !HR.canUseClass(u, c)) return { ok: false, code: 'notFound' };
+  const card = FU.cardFor(u, c, { lang });
+  if (!card) return { ok: false, code: 'noPlan' };
+  ensureChat(u);
+  const t = tFor(lang);
+  return C.addTurn(u, SURFACE, KEY, { text: t(card.weekEnd ? 'js.companion.follow.textWeek' : 'js.companion.follow.text'), apply: () => ({ note: { follow: card } }) });
 }
 /** A tap on a week plan's card (services/homeroom-week.js): planWeekUse (the five dated day plans saved for the class;
  *  the pill picks each up on its day), planWeekCopyPreview / planWeekCopy (value: another class of theirs: what it would

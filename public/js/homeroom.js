@@ -43,6 +43,9 @@
 //     resizable area, the whole board"): a finger drags out of the panel (dragStart); Board tools' Eraser
 //     (public/js/board-erase.js); the area's edges resize it (frameHandles, area.frame); notes, text and shapes go
 //     anywhere on the board; students' lines on the room when the teacher allows it (public/js/homeroom-marks.js).
+//   - onboarding, Needs a look, Oomba follow-ups (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba
+//     follow-ups"): the first-run guide (public/js/homeroom-tour.js) the first time a teacher opens Homeroom, again from
+//     the ⋯ menu's Show me around; Needs a look's chip and list (public/js/homeroom-live.js).
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
@@ -62,6 +65,7 @@ import { dueField, wireDue, dueLabel, afterDue } from '/js/homeroom-due.js';
 import { helpers as helpersOf } from '/js/homeroom-helpers.js';
 import { bookPicker } from '/js/homeroom-reading.js';
 import { wireCatalog, catalogSheet } from '/js/homeroom-catalog.js';
+import { tour } from '/js/homeroom-tour.js';
 import { AREA, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, FRAME, layout, clampSeat, boardSize, frameOf, cleanFrame, tdeskOf, seatsTop } from '/js/homeroom-seats.js';
 
 const D = pageData();
@@ -566,6 +570,7 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="k2"', `${iconHtml('🧒', { size: 18 })} ${esc(th('k2.menu'))}<span class="hr-mitag">${esc(th(H.k2.on ? 'k2.on' : 'k2.off'))}</span>`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="parents"', `${iconHtml('👪', { size: 18 })} ${esc(th('parents.menu'))}<span class="hr-mitag">${esc(th(H.parents ? 'parents.on' : 'parents.off'))}</span>`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="studentdraw"', `${iconHtml('🖍️', { size: 18 })} ${esc(th('draw.menu'))}<span class="hr-mitag">${esc(th(MK.st.on ? 'draw.on' : 'draw.off'))}</span>`)}`}
+    ${AIDE ? '' : btn('rm-mi', 'role="menuitem" data-hr="tour"', `${iconHtml('🧭', { size: 18 })} ${esc(th('tourMenu'))}`)}
     ${D.hostLive && !AIDE ? `<a class="rm-mi" role="menuitem" href="${esc(D.hostLive)}" data-hr="hostlive">${iconHtml('📡', { size: 18 })} ${esc(th('hostLive'))}</a>` : ''}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
@@ -1240,6 +1245,7 @@ function click(e) {
   else if (k === 'k2') { H.menuOpen = false; renderMenu(); k2Sheet(); }
   else if (k === 'parents') { H.menuOpen = false; renderMenu(); parentsSheet(); }
   else if (k === 'studentdraw') { H.menuOpen = false; renderMenu(); drawSheet(); }
+  else if (k === 'tour') { H.menuOpen = false; renderMenu(); TOUR.start(); }
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }
@@ -1323,7 +1329,7 @@ const PL = gamePlayer({
   away: () => H.away,
 });
 
-let PLAN = null;
+let PLAN = null, TOUR = null;
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   PLAN = planPill({ D, H, viewEl, readOnly: AIDE });
@@ -1359,8 +1365,12 @@ function start() {
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
   PL.sync();   // a game the address names (#play=<card>): open over the board
   if (!AIDE) HLP.notes();   // what a sub did, until Got it
+  // the first-run guide (once per teacher; the ⋯ menu's Show me around opens it again), after the board found its fit
+  TOUR = tour({ D, students: () => H.students.length, away: () => H.away });
+  if (D.tour && !AIDE && !PL.current()) setTimeout(() => { if (!H.away) TOUR.start(); }, 900);
   // (another class: the shared bar's switcher, public/js/class-views.js)
   viewEl?.addEventListener('cv:hide', away);
+  viewEl?.addEventListener('cv:hide', () => TOUR.stop());
   viewEl?.addEventListener('cv:show', back);
   // (a phone turned sideways, a window made narrower: the pen's bar moves between the panel and its own row)
   let rz = null, wasPhone = phone(); window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { renderMini(); ed.place(); if (phone() !== wasPhone) { wasPhone = phone(); renderTools(); } }, 150); });
