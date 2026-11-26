@@ -5663,6 +5663,8 @@
       "restore": "Ouvrir {title}",
       "pill": "En direct : {title}",
       "joined": "{count} connectés",
+      "joinedOf": "{count} connectés sur {total} dans Homeroom",
+      "notYet": "Pas encore là",
       "inGame": "Dans {title}",
       "notSelect": "Les leçons en direct s’animent, elles ne se distribuent pas. Désactivez Sélectionner pour en lancer une."
     },
@@ -5703,7 +5705,12 @@
       "put": "Mettre {count} sur les bureaux"
     },
     "homeroom-livedesk": {
-      "deskLead": "Ta classe joue en direct. Tu rejoins sous ton nom.",
+      "label": "Jeu en direct",
+      "starting": "{title} commence. Rejoins quand tu es prêt.",
+      "going": "Jeu en direct en cours : {title}",
+      "pill": "En direct : {title}",
+      "later": "Plus tard",
+      "joinShort": "Rejoindre",
       "join": "Rejoindre {title}",
       "over": "Le jeu en direct est fini. Tu es de retour à ton bureau."
     }
@@ -8801,7 +8808,7 @@
       "codeForTeachers": "Code pour rejoindre",
       "joinAt": "Va sur {url} et tape le code",
       "signInFirst": "Connecte-toi d’abord, puis tape le code.",
-      "hrJoin": "Les élèves dans Homeroom rejoignent depuis leur bureau. Pas besoin de code.",
+      "hrJoin": "Les élèves dans Homeroom touchent Rejoindre sur leur bureau. Pas besoin de code.",
       "hrFallback": "Pas dans Homeroom ? Code pour rejoindre",
       "hideCode": "Masquer le code",
       "showCode": "Afficher le code",

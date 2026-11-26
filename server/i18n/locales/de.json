@@ -5664,6 +5664,8 @@
       "restore": "{title} öffnen",
       "pill": "Live: {title}",
       "joined": "{count} dabei",
+      "joinedOf": "{count} von {total} in Homeroom dabei",
+      "notYet": "Noch nicht dabei",
       "inGame": "In {title}",
       "notSelect": "Live-Lektionen werden geleitet, nicht ausgeteilt. Schalten Sie Auswählen aus, um eine zu starten."
     },
@@ -5704,7 +5706,12 @@
       "put": "{count} auf die Tische legen"
     },
     "homeroom-livedesk": {
-      "deskLead": "Deine Klasse spielt live. Du machst als du selbst mit.",
+      "label": "Live-Spiel",
+      "starting": "{title} beginnt. Mach mit, wenn du bereit bist.",
+      "going": "Live-Spiel läuft: {title}",
+      "pill": "Live: {title}",
+      "later": "Später",
+      "joinShort": "Mitmachen",
       "join": "{title} beitreten",
       "over": "Das Live-Spiel ist vorbei. Du bist wieder an deinem Tisch."
     }
@@ -8802,7 +8809,7 @@
       "codeForTeachers": "Beitrittscode",
       "joinAt": "Geh auf {url} und gib den Code ein",
       "signInFirst": "Erst anmelden, dann den Code eingeben.",
-      "hrJoin": "Schüler in Homeroom treten von ihrem Platz aus bei. Kein Code nötig.",
+      "hrJoin": "Schüler in Homeroom tippen an ihrem Platz auf Mitmachen. Kein Code nötig.",
       "hrFallback": "Nicht in Homeroom? Code zum Beitreten",
       "hideCode": "Code verbergen",
       "showCode": "Code zeigen",

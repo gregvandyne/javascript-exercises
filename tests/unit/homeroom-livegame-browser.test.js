@@ -6,11 +6,15 @@
 //   - several at once: Select, three cards, Hand out to a group: all three on those desks in the order picked (laptop and
 //     390); a selection dragged onto a desk goes there with the defaults;
 //   - Brain Board and Would You Rather Live hosted from Homeroom without leaving it (the address stays on the board), a
-//     student's desk brought into the game by itself and back to the desk when it ends, the pill (fold and open), the
-//     desks' "In Brain Board", the projector showing the game's host screen, End from the pill;
-//   - students already on their desks (one with a game open) and one who opens Homeroom after the start all join by
-//     themselves, the teacher hosting on a phone: no Teacher view popping up, the host screen saying students join from
-//     their desks, the pill counting them; the Teacher view dialog fits a phone (390 and 320), in Homeroom and out;
+//     student's desk showing a banner with Join (never moved into the game by itself), Join, and back to the desk when
+//     it ends, the pill (fold and open), the desks' "In Brain Board", the projector showing the game's host screen, End
+//     from the pill;
+//   - the invite, on phones (390): two students on their desks (one with a game open) are not moved, both see the
+//     banner and the open game stays; one taps Join (the pill: 1 joined of 2 in Homeroom, "Not joined yet" on the
+//     other's desk), the other folds it with Later, keeps working, then joins; one who opens Homeroom after the start
+//     sees the banner; Leave brings it back; End takes it away. The teacher hosts on a phone: no Teacher view popping
+//     up, the host screen saying students tap Join on their desks; the Teacher view dialog fits a phone (390 and 320),
+//     in Homeroom and out;
 //   - every Live games card opens the game's own grid board while the class joins, never the platform's 3D lobby.
 // Screenshots with HR_SHOTS=<dir>. Skipped with no Chromium.
 import './_setup.js';
@@ -292,7 +296,7 @@ async function startFromLanding(page) {
   await page.waitForFunction(() => { const fr = document.querySelector('.hr-liveframe'); try { return fr.contentWindow.location.pathname.startsWith('/live/host/'); } catch { return false; } }, null, { timeout: 20000 });
 }
 
-test('Brain Board hosted from Homeroom: the layer, the class already chosen, the address stays; desks join by themselves; the pill; the projector; End', { timeout: 280000 }, async t => {
+test('Brain Board hosted from Homeroom: the layer, the class already chosen, the address stays; a desk shows a banner and joins on Join; the pill; the projector; End', { timeout: 280000 }, async t => {
   if (skip) return t.skip(skip);
   const T = await open(teacher, board(), LAPTOP);
   await T.page.waitForSelector('.hr-desk[data-sid]');
@@ -311,20 +315,28 @@ test('Brain Board hosted from Homeroom: the layer, the class already chosen, the
   assert.equal(T.page.url(), url0, 'the address stays on the board');
   const s = LS.openForClass(cls.id);
   assert.ok(s && s.mode === 'board' && s.audience === 'class', 'a Brain Board for the class');
-  // a student's desk: brought in by itself, no code
-  const A = await open(ada, desk(), TABLET, { touch: true });
+  // a student's desk (a laptop, 1366): a banner with Join, nothing opened by itself; Join: in, no code
+  const A = await open(ada, desk(), LAPTOP);
+  await A.page.waitForSelector('#hd-lgbar [data-lgjoin]', { timeout: 15000 });
+  assert.match(await A.page.textContent('#hd-lgbar'), /Brain Board is starting\. Join when you're ready\./);
+  await A.page.waitForTimeout(3500);
+  assert.equal(await A.page.locator('.hr-player').count(), 0, 'not moved into the game by itself');
+  await bannerCalm(A.page);
+  await shot(A.page, 'desk-banner-1366');
+  await A.page.click('#hd-lgbar [data-lgjoin]');
   await A.page.waitForSelector('.hr-player .hr-playframe');
   await A.page.waitForFunction(() => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname.startsWith('/live/play/'); } catch { return false; } }, null, { timeout: 20000 });
   await A.page.frameLocator('.hr-player .hr-playframe').locator('body.lv-player-page').waitFor();
   await LSwait(() => [...s.seats.values()].some(x => x.userId === ada.id && x.conn), 'Ada is in the game');
-  await A.page.waitForTimeout(800); await shot(A.page, 'desk-in-game-820');
+  assert.equal(await A.page.locator('#hd-lgbar').count(), 0, 'no banner over the live game itself');
+  await A.page.waitForTimeout(800); await shot(A.page, 'desk-in-game-1366');
   // the teacher: Back to Homeroom folds it into the pill, with how many joined; desks say In Brain Board
   await T.page.click('.hr-liveplayer [data-lg="min"]');
   await T.page.waitForSelector('#hr-lgpill');
   assert.equal(await T.page.isVisible('.hr-liveplayer'), false);
   await T.page.waitForFunction(() => /1 joined/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
   assert.match(await T.page.textContent('#hr-lgpill'), /Live: Brain Board/);
-  await T.page.waitForSelector(`.hr-desk[data-sid="${ada.id}"] .hr-lgin`, { timeout: 15000 });
+  await T.page.waitForSelector(`.hr-desk[data-sid="${ada.id}"] .hr-lgin:not(.hr-lgwait)`, { timeout: 15000 });
   assert.match(await T.page.textContent(`.hr-desk[data-sid="${ada.id}"] .hr-lgin`), /In Brain Board/);
   assert.equal(await T.page.locator(`.hr-desk[data-sid="${ben.id}"] .hr-lgin`).count(), 0);
   await shot(T.page, 'pill-1366');
@@ -349,14 +361,35 @@ test('Brain Board hosted from Homeroom: the layer, the class already chosen, the
   await T.page.waitForSelector('#hr-lgpill', { state: 'detached' });
   assert.equal(LS.openForClass(cls.id), null);
   await A.page.waitForSelector('.hr-player', { state: 'detached', timeout: 20000 });
-  assert.equal(await A.page.locator('#hd-lgcard').count(), 0);
+  await A.page.waitForSelector('#hd-lgbar', { state: 'detached', timeout: 15000 });
   assert.equal(T.page.url(), url0);
   assert.deepEqual(T.errors, []); assert.deepEqual(A.errors, []);
   await A.ctx.close(); await T.ctx.close();
 });
 async function LSwait(fn, what, ms = 15000) { const t0 = Date.now(); while (!fn()) { if (Date.now() - t0 > ms) throw new Error(`timed out: ${what}`); await new Promise(r => setTimeout(r, 100)); } }
+/** The desk's live game banner: on screen at the top, inside the page's width, over nothing (the desk's work under it,
+ *  an open game's frame under it), its Join big enough to tap. -> its box */
+async function bannerCalm(page) {
+  const r = await page.evaluate(() => {
+    const b = document.getElementById('hd-lgbar'), bb = b.getBoundingClientRect(), j = b.querySelector('[data-lgjoin]').getBoundingClientRect();
+    const pl = document.querySelector('#hd > .hr-player:not(.hr-liveplayer)');
+    const work = pl ? pl.querySelector('.hr-playframe') : document.querySelector('#hd-body .hd-grid');
+    const wb = work.getBoundingClientRect();
+    const hit = document.elementFromPoint(j.x + j.width / 2, j.y + j.height / 2);
+    return { b: { x: bb.x, y: bb.y, w: bb.width, h: bb.height, bottom: bb.bottom, right: bb.right }, vw: innerWidth, vh: innerHeight, workTop: wb.top, jh: j.height, hit: !!(hit && hit.closest('#hd-lgbar')), sideways: document.documentElement.scrollWidth - innerWidth };
+  });
+  assert.ok(r.b.y >= 0 && r.b.bottom <= r.vh * 0.4, `the banner is at the top (${r.b.y}..${r.b.bottom} of ${r.vh})`);
+  assert.ok(r.b.x >= 0 && r.b.right <= r.vw + 0.5, `the banner is inside the page (${r.b.x}..${r.b.right} of ${r.vw})`);
+  assert.ok(r.workTop >= r.b.bottom - 0.5, `the banner covers nothing (it ends at ${r.b.bottom}, the work starts at ${r.workTop})`);
+  assert.ok(r.jh >= 40, `Join is big enough to tap (${r.jh})`);
+  assert.ok(r.hit, 'nothing over Join');
+  assert.ok(r.sideways <= 0, 'nothing sideways');
+  return r.b;
+}
+const inPlay = (page, sid) => page.waitForFunction(id => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname === `/live/play/${id}`; } catch { return false; } }, sid, { timeout: 25000 });
+const seated = (s, who) => LSwait(() => [...s.seats.values()].some(x => x.userId === who.id && x.conn), `${who.username} is in the game`, 20000);
 
-test('Would You Rather Live from the ⋯ menu-free catalog on a phone; a desk on a phone joins; the game ending takes it back to the desk', { timeout: 280000 }, async t => {
+test('Would You Rather Live from the ⋯ menu-free catalog on a phone; a desk on a phone joins from its banner; the game ending takes it back to the desk', { timeout: 280000 }, async t => {
   if (skip) return t.skip(skip);
   const T = await open(teacher, board(), PHONE, { touch: true });
   await T.page.waitForSelector('.hr-desk[data-sid]');
@@ -373,6 +406,9 @@ test('Would You Rather Live from the ⋯ menu-free catalog on a phone; a desk on
   assert.equal(T.page.url(), url0);
   await T.page.waitForTimeout(800); await shot(T.page, 'host-390');
   const B = await open(ben, desk(), PHONE, { touch: true });
+  await B.page.waitForSelector('#hd-lgbar [data-lgjoin]', { timeout: 15000 });
+  assert.equal(await B.page.locator('.hr-player').count(), 0);
+  await B.page.locator('#hd-lgbar [data-lgjoin]').tap();
   await B.page.waitForFunction(() => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname.startsWith('/live/play/'); } catch { return false; } }, null, { timeout: 20000 });
   await LSwait(() => [...s.seats.values()].some(x => x.userId === ben.id && x.conn), 'Ben is in the game');
   await B.page.waitForTimeout(800); await shot(B.page, 'desk-in-game-390');
@@ -383,6 +419,7 @@ test('Would You Rather Live from the ⋯ menu-free catalog on a phone; a desk on
   // the game ends (from the host page itself, or by itself): the desk comes back
   LS.endSession(s.id);
   await B.page.waitForSelector('.hr-player', { state: 'detached', timeout: 20000 });
+  await B.page.waitForSelector('#hd-lgbar', { state: 'detached', timeout: 15000 });
   await T.page.waitForSelector('#hr-lgpill', { state: 'detached', timeout: 20000 });
   assert.deepEqual(T.errors, []); assert.deepEqual(B.errors, []);
   await B.ctx.close(); await T.ctx.close();
@@ -411,9 +448,9 @@ async function dashDialogFits(page, frame, width) {
 }
 const closeDash = frame => frame.locator('#lv-dash-qr button[type="submit"]').click();
 
-test('students already on their desks, and one who opens Homeroom later, join by themselves; the teacher hosts on a phone (390): no Teacher view popping up, the pill counts 3', { timeout: 280000 }, async t => {
+test('the invite on phones (390): nobody is moved; a banner with Join for as long as the game runs; Join, Later, a late student, Leave, End; the pill counts joins; the teacher hosts on a phone', { timeout: 280000 }, async t => {
   if (skip) return t.skip(skip);
-  // Ben has a game open on his desk when the live game starts
+  // Ben has a game open on his desk when the live game starts; Ada is on her desk
   const given = HO.handOut(teacher, cls, { gameId: wordHunt.id, to: { kind: 'desk', id: ben.id } });
   assert.ok(given.ok || given.code === 'alreadyOnDesk', given.code);   // (an earlier test may have given it already)
   const A = await open(ada, desk(), PHONE, { touch: true });
@@ -421,6 +458,7 @@ test('students already on their desks, and one who opens Homeroom later, join by
   await A.page.waitForSelector('#hd'); await B.page.waitForSelector('#hd');
   await B.page.locator('a.hd-card[data-hdcard]').first().tap();
   await B.page.waitForSelector('.hr-player .hr-playframe');
+  const benGame = await B.page.textContent('.hr-player .hr-playt b');
   const T = await open(teacher, board(), PHONE, { touch: true });
   await T.page.waitForSelector('.hr-desk[data-sid]');
   await T.page.evaluate(() => { const b = document.querySelector('[data-hr="catalog"]'), p = document.getElementById('hr-panel'); p.scrollLeft = b.offsetLeft - 20; });
@@ -433,48 +471,92 @@ test('students already on their desks, and one who opens Homeroom later, join by
   assert.ok(s && s.mode === 'board' && s.audience === 'class');
   const host = T.page.frameLocator('.hr-liveframe');
   await host.locator('#lv-joinbox').waitFor();
-  // the host screen in Homeroom: students join from their desks; the code stays, small, for anyone not in Homeroom
-  assert.match(await host.locator('.lv-hrjoin').innerText(), /join from their desks/);
+  // the host screen in Homeroom: students tap Join on their desks; the code stays, small, for anyone not in Homeroom
+  assert.match(await host.locator('.lv-hrjoin').innerText(), /tap Join on their desks/);
   assert.equal(await host.locator('#lv-joinbox.is-hr').count(), 1);
-  assert.equal(await host.getByText('Sign in first, then type the code.').count(), 0);
   const qr = await host.locator('#lv-qr').boundingBox();
   assert.ok(qr.width <= 100, `a small QR (${qr.width})`);
-  // the two already on their desks come in by themselves (Ben's open game makes way), no code typed anywhere
-  for (const [X, who] of [[A, ada], [B, ben]]) {
-    await X.page.waitForFunction(sid => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname === `/live/play/${sid}`; } catch { return false; } }, s.id, { timeout: 25000 });
-    await LSwait(() => [...s.seats.values()].some(x => x.userId === who.id && x.conn), `${who.username} is in the game`, 20000);
-    assert.equal(await X.page.frameLocator('.hr-player .hr-playframe').locator('#lv-code-input, input[name="code"]').count(), 0, 'no code to type');
+  // neither is moved: both see the banner, and Ben's open game is still there
+  for (const X of [A, B]) {
+    await X.page.waitForSelector('#hd-lgbar [data-lgjoin]', { timeout: 15000 });
+    assert.match(await X.page.textContent('#hd-lgbar'), /Brain Board is starting\. Join when you're ready\./);
   }
-  // the teacher starts; Cleo opens Homeroom after that and is brought in too
+  await A.page.waitForTimeout(4000);   // (a desk's poll is every 3 s while a game runs: more than one went by)
+  assert.equal(await A.page.locator('.hr-player').count(), 0, 'Ada is not moved into the game');
+  assert.equal(await B.page.textContent('.hr-player .hr-playt b'), benGame, 'Ben\'s open game is still there');
+  assert.doesNotMatch(await B.page.$eval('.hr-player .hr-playframe', f => f.src), /\/live\/play\//);
+  assert.equal([...s.seats.values()].filter(x => x.userId === ada.id || x.userId === ben.id).length, 0, 'no seat taken by itself');
+  const bb = await bannerCalm(B.page);
+  assert.ok(bb.h <= 110, `the banner is not tall over his game (${bb.h})`);
+  await bannerCalm(A.page);
+  await shot(B.page, 'invite-desk-open-game-390'); await shot(A.page, 'invite-desk-390');
+  // Ada taps Join: in the game as herself, no code; the pill counts her
+  await A.page.locator('#hd-lgbar [data-lgjoin]').tap();
+  await inPlay(A.page, s.id); await seated(s, ada);
+  assert.equal(await A.page.frameLocator('.hr-player .hr-playframe').locator('#lv-code-input, input[name="code"]').count(), 0, 'no code to type');
+  assert.equal(await A.page.locator('#hd-lgbar').count(), 0, 'no banner over the game she is in');
+  await T.page.waitForFunction(() => /1 joined of 2 in Homeroom/.test(document.querySelector('.hr-liveplayer [data-lgcount]').textContent), null, { timeout: 15000 });
+  await T.page.locator('.hr-liveplayer [data-lg="min"]').tap();
+  await T.page.waitForSelector('#hr-lgpill');
+  await T.page.waitForFunction(() => /1 joined of 2 in Homeroom/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
+  await T.page.waitForSelector(`.hr-desk[data-sid="${ada.id}"] .hr-lgin:not(.hr-lgwait)`, { timeout: 15000 });
+  assert.match(await T.page.textContent(`.hr-desk[data-sid="${ada.id}"] .hr-lgin`), /In Brain Board/);
+  await T.page.waitForSelector(`.hr-desk[data-sid="${ben.id}"] .hr-lgin.hr-lgwait`, { timeout: 15000 });
+  assert.match(await T.page.textContent(`.hr-desk[data-sid="${ben.id}"] .hr-lgin`), /Not joined yet/);
+  const pb = await box(T.page, '#hr-lgpill');
+  assert.ok(pb.x >= 0 && pb.x + pb.width <= 390.5, `the pill fits the phone (${pb.x}..${pb.x + pb.width})`);
+  assert.ok(await sideways(T.page) <= 0);
+  await T.page.waitForTimeout(400); await shot(T.page, 'invite-teacher-pill-390');
+  // Ben keeps working: Later folds the banner into a small pill that stays, over his game
+  await B.page.locator('#hd-lgbar [data-lglater]').tap();
+  await B.page.waitForSelector('#hd-lgbar.hd-lgsmall [data-lgjoin]');
+  assert.match(await B.page.textContent('#hd-lgbar'), /Live: Brain Board/);
+  assert.equal(await B.page.locator('#hd-lgbar [data-lglater]').count(), 0, 'no way to send it away for good');
+  const small = await bannerCalm(B.page);
+  assert.ok(small.h < bb.h, `smaller (${small.h} < ${bb.h})`);
+  await B.page.waitForTimeout(3500);
+  assert.equal(await B.page.textContent('.hr-player .hr-playt b'), benGame, 'still his game');
+  assert.equal(await B.page.locator('#hd-lgbar.hd-lgsmall').count(), 1, 'the pill stays');
+  await shot(B.page, 'invite-desk-later-390');
+  // ...then joins
+  await B.page.locator('#hd-lgbar [data-lgjoin]').tap();
+  await inPlay(B.page, s.id); await seated(s, ben);
+  await T.page.waitForFunction(() => /2 joined of 2 in Homeroom/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
+  // the teacher starts; Cleo opens Homeroom after that: the banner, nothing opened by itself; Join
+  await T.page.locator('#hr-lgpill [data-lg="restore"]').tap();
+  await T.page.waitForSelector('.hr-liveplayer:not([hidden])');
   await host.locator('[data-lv-act="start"]').click();
   await LSwait(() => s.phase !== 'lobby', 'the game started');
   const C = await open(cleo, desk(), PHONE, { touch: true });
-  await C.page.waitForFunction(sid => { const fr = document.querySelector('.hr-player .hr-playframe'); try { return fr.contentWindow.location.pathname === `/live/play/${sid}`; } catch { return false; } }, s.id, { timeout: 25000 });
-  await LSwait(() => [...s.seats.values()].some(x => x.userId === cleo.id && x.conn), 'Cleo is in the game', 20000);
-  await C.page.waitForTimeout(1500); await shot(C.page, 'autojoin-student-390');
+  await C.page.waitForSelector('#hd-lgbar [data-lgjoin]', { timeout: 15000 });
+  assert.match(await C.page.textContent('#hd-lgbar'), /Live game going on: Brain Board/);
+  await C.page.waitForTimeout(3500);
+  assert.equal(await C.page.locator('.hr-player').count(), 0, 'Cleo is not moved into the game');
+  await bannerCalm(C.page);
+  await shot(C.page, 'invite-late-390');
+  // her notebook open (a sheet over the desk on a phone): the banner stays in sight, Join under nothing
+  await C.page.locator('.hd-nbbtn').tap();
+  await C.page.waitForSelector('#nb:not([hidden])');
+  await C.page.waitForTimeout(300);
+  assert.ok(await C.page.evaluate(() => { const j = document.querySelector('#hd-lgbar [data-lgjoin]').getBoundingClientRect(), e = document.elementFromPoint(j.x + j.width / 2, j.y + j.height / 2); return j.width > 0 && !!(e && e.closest('#hd-lgbar')); }), 'the banner shows over the notebook\'s sheet');
+  await shot(C.page, 'invite-notebook-390');
+  await C.page.evaluate(() => document.querySelector('[data-nb-open]').click());
+  await C.page.waitForSelector('#nb', { state: 'hidden' });
+  await C.page.locator('#hd-lgbar [data-lgjoin]').tap();
+  await inPlay(C.page, s.id); await seated(s, cleo);
+  await C.page.waitForTimeout(1500); await shot(C.page, 'invite-student-in-game-390');
   // nothing popped up over the host screen by itself
   const hf = T.page.frames().find(f => f.url().includes(`/live/host/${s.id}`));
   assert.deepEqual(await hf.evaluate(() => [...document.querySelectorAll('dialog[open]')].map(d => d.id)), [], 'no dialog opened by itself');
   await T.page.waitForFunction(() => /3 joined/.test(document.querySelector('.hr-liveplayer [data-lgcount]').textContent), null, { timeout: 15000 });
-  await hf.evaluate(() => scrollTo(0, 0)); await T.page.waitForTimeout(600); await shot(T.page, 'autojoin-teacher-390');
-  // the pill and the desks
-  await T.page.locator('.hr-liveplayer [data-lg="min"]').tap();
-  await T.page.waitForSelector('#hr-lgpill');
-  await T.page.waitForFunction(() => /3 joined/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
-  for (const k of [ada, ben, cleo]) {
-    await T.page.waitForSelector(`.hr-desk[data-sid="${k.id}"] .hr-lgin`, { timeout: 15000 });
-    assert.match(await T.page.textContent(`.hr-desk[data-sid="${k.id}"] .hr-lgin`), /In Brain Board/);
-  }
-  await T.page.waitForTimeout(400); await shot(T.page, 'autojoin-pill-390');
-  assert.ok(await sideways(T.page) <= 0);
+  await hf.evaluate(() => scrollTo(0, 0)); await T.page.waitForTimeout(600); await shot(T.page, 'invite-teacher-390');
   // Teacher view stays one tap away, and its dialog fits a phone: 390 and 320, in Homeroom...
-  await T.page.locator('#hr-lgpill [data-lg="restore"]').tap();
-  await T.page.waitForSelector('.hr-liveplayer:not([hidden])');
   await dashDialogFits(T.page, host, 390);
   await shot(T.page, 'teacher-view-dialog-390');
   await closeDash(host);
   await dashDialogFits(T.page, host, 320);
   await closeDash(host);
+  await T.page.setViewportSize(PHONE);
   // ...and on the host page of its own (outside Homeroom: the same dialog)
   const O = await open(teacher, `/live/host/${s.id}`, { width: 390, height: 844 });
   await O.page.waitForSelector('#lv-joinbox');
@@ -484,9 +566,27 @@ test('students already on their desks, and one who opens Homeroom later, join by
   await closeDash(top);
   await dashDialogFits(O.page, top, 320);
   await O.page.close();
-  // the game ends: everyone back on their desk
-  LS.endSession(s.id);
-  for (const X of [A, B, C]) await X.page.waitForSelector('.hr-player .hr-playframe[src*="/live/play/"]', { state: 'detached', timeout: 20000 });
+  // Leave (the game's own button): back to the desk, the banner back to join again
+  const af = A.page.frameLocator('.hr-player .hr-playframe');
+  await af.locator('#lv-leave').click();
+  await af.locator('dialog[open] [data-ob="ok"]').click();
+  await A.page.waitForSelector('.hr-player', { state: 'detached', timeout: 15000 });
+  await A.page.waitForSelector('#hd-lgbar:not(.hd-lgsmall) [data-lgjoin]', { timeout: 15000 });
+  assert.match(await A.page.textContent('#hd-lgbar'), /Live game going on: Brain Board/);
+  // Back to my desk from the game: Ben's own game again, the banner over it
+  await B.page.locator('.hr-player .hr-playback').tap();
+  await B.page.waitForFunction(t0 => { const b = document.querySelector('.hr-player .hr-playt b'); return b && b.textContent === t0; }, benGame, { timeout: 15000 });
+  await B.page.waitForSelector('#hd-lgbar [data-lgjoin]', { timeout: 15000 });
+  await bannerCalm(B.page);
+  // End from the pill: the banner goes everywhere; Cleo, in it, is back on her desk; Ben's game stays open
+  await T.page.locator('.hr-liveplayer [data-lg="min"]').tap();
+  await T.page.locator('#hr-lgpill [data-lg="end"]').tap();
+  await T.page.locator('dialog[open] [data-ob="ok"]').tap();
+  await T.page.waitForSelector('#hr-lgpill', { state: 'detached' });
+  assert.equal(LS.openForClass(cls.id), null);
+  await C.page.waitForSelector('.hr-player', { state: 'detached', timeout: 20000 });
+  for (const X of [A, B, C]) await X.page.waitForSelector('#hd-lgbar', { state: 'detached', timeout: 20000 });
+  assert.equal(await B.page.textContent('.hr-player .hr-playt b'), benGame, 'Ben\'s game is still open');
   for (const X of [A, B, C]) assert.deepEqual(X.errors, []);
   assert.deepEqual(T.errors, []);
   if (given.ok) HO.removeHandout(teacher, cls, given.classLesson.id);
@@ -510,6 +610,7 @@ test('every Live games card opens the game\'s own board while the class joins, n
     assert.equal(s.mode, mode);
     assert.equal(s.lobbyByGame, true, `${mode}: the game draws its own lobby`);
     const A = await open(ada, desk(), PHONE, { touch: true });
+    await A.page.locator('#hd-lgbar [data-lgjoin]').tap({ timeout: 15000 });
     await LSwait(() => [...s.seats.values()].some(x => x.userId === ada.id && x.conn), `${mode}: Ada is in`, 25000);
     // the host screen's stage is the game's own page (2D, its grid look), not the platform lobby ("Lobby", the 3D world)
     await T.page.waitForFunction(() => document.querySelector('.hr-liveframe') && true);

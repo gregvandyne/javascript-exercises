@@ -1,6 +1,7 @@
 // Homeroom: live games inside Homeroom, a simpler Find lessons (docs/decisions.md), on the server:
-//   - the class's live game for the board (title, players, who of the class is in it, its host), the projector (its host
-//     screen's address for its host only) and a desk (a seat as themselves, no code); End from the pill (its host only);
+//   - the class's live game for the board (title, players, who of the class is in it, how many are in Homeroom, who has
+//     not joined yet, its host), the projector (its host screen's address for its host only) and a desk (nothing taken
+//     by its poll; Join: a seat as themselves, no code); End from the pill (its host only);
 //     nobody else (another class's student, another teacher, an aide for End);
 //   - the live pages framed by Homeroom (?in=hr in a frame, then the cookie in the same frame): no site menu or footer,
 //     framed by this site only; the same pages on their own exactly as before (no framing, the chrome);
@@ -88,7 +89,11 @@ test('the class\'s live game: the board, the projector, a desk joins as themselv
   assert.equal(g.sid, s.id); assert.equal(g.host, true); assert.equal(g.icon, '🌟'); assert.deepEqual(g.in, []);
   // a desk: the game to join, then a seat as themselves (no code)
   const st = (await as(ada)(`/api/desk/${cls.id}/state`)).json;
-  assert.equal(st.livegame.sid, s.id); assert.equal(st.livegame.seated, false);
+  assert.equal(st.livegame.sid, s.id); assert.equal(st.livegame.seated, false); assert.equal(st.livegame.lobby, true);
+  // (nobody is seated by the desk's poll: the student taps Join; the board counts them as in Homeroom, not joined yet)
+  assert.equal(s.byUser.has(ada.id), false);
+  g = (await as(reyes)(`${C}/livegame`)).json.game;
+  assert.equal(g.here, 1); assert.deepEqual(g.waiting, [ada.id]); assert.equal(g.players, 0);
   const j = await as(ada)(`/api/desk/${cls.id}/livegame`, { body: {} });
   assert.equal(j.status, 200, j.text);
   assert.equal(j.json.play, `/live/play/${s.id}`); assert.ok(j.json.tok);
@@ -96,7 +101,7 @@ test('the class\'s live game: the board, the projector, a desk joins as themselv
   // (connected seats count as in it: the board's "In Brain Board")
   const seat = s.seats.get(s.byUser.get(ada.id)); seat.conn = { readyState: 1, send() {}, close() {} };
   g = (await as(reyes)(`${C}/livegame`)).json.game;
-  assert.deepEqual(g.in, [ada.id]); assert.equal(g.players, 1);
+  assert.deepEqual(g.in, [ada.id]); assert.equal(g.players, 1); assert.equal(g.here, 1); assert.deepEqual(g.waiting, []);
   seat.conn = null;
   // the projector: the host screen's address for its host
   const pj = (await as(reyes)(`${C}/state`)).json.livegame;
