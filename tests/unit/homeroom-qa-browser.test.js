@@ -134,12 +134,14 @@ test('M1: on a phone the player is the whole screen under one bar, and the board
   if (skip) return t.skip(skip);
   H.setLive(teacher, cls, 'start');
   assert.ok(HT.handOutTool(teacher, cls, { tool: 'rekenreks', to: { kind: 'all' }, instructions: 'Show 7.' }).ok);
-  for (const id of ['money/make-67-cents', 'clock/elapsed-time']) assert.ok(HO.handOutTask(teacher, cls, { tasks: [id], count: 2, to: { kind: 'all' }, order: 'any' }).ok);
+  // (each card by its handout's id, never its title: task titles are the Manipulatives side's to rename, as #637 did)
+  const card = {};
+  for (const id of ['money/make-67-cents', 'clock/elapsed-time']) { const r = HO.handOutTask(teacher, cls, { tasks: [id], count: 2, to: { kind: 'all' }, order: 'any' }); assert.ok(r.ok, r.code); card[id.split('/')[0]] = `.hd-card[data-hdcard="${r.classLesson.id}"]`; }
   const results = [];
-  for (const [title, name, boardSel] of [['Rekenreks', 'rekenreks', '.rm-area.mine'], ['Make 67', 'money', '.mp-board'], ['Elapsed', 'clock', '.mp-board']]) {
+  for (const [sel, name, boardSel] of [['.hd-card:has-text("Rekenreks")', 'rekenreks', '.rm-area.mine'], [card.money, 'money', '.mp-board'], [card.clock, 'clock', '.mp-board']]) {
     const s = await open(cleo, desk(), PHONE, { touch: true });
     await s.page.waitForSelector('.hd-card');
-    await s.page.click(`.hd-card:has-text("${title}")`);
+    await s.page.click(sel);
     await s.page.waitForSelector('.hr-playframe');
     const f = s.page.frameLocator('.hr-playframe');
     await f.locator(boardSel).first().waitFor({ timeout: 25000 });

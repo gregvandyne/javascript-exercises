@@ -15833,7 +15833,7 @@ taking room. Now:
   My lessons (only with own lessons, folders, shared folders or favorites), Lesson plans.
 - **Cards in a grid**, tappable at once: the icon big, the name (two lines at most), and what it is with its grades
   ("Words · Grades 1-5", "Live game · Grades K-8", "Manipulatives · Grades K-5", "Practice · Manipulatives · Grade 2",
-  "Lesson", "Lesson plan · 5 problems"). Two cards a row in the panel at 1366 and on a phone, one in the tablet's narrow
+  "Lesson", "Lesson plan · 5 problems"). Two cards a row in the panel at 1366 (the panel is 272 px wide, was 240) and on a phone, one in the tablet's narrow
   panel at 820, three or more in a wide sheet. Cards are at least 96 px wide and 112 px tall.
 - **All**: four parts under plain headers, top to bottom as the owner asked: **Games** (the official Oomba games; the
   owner's word, which overrides the teachers' "lessons" for this label and its chip), **Live games**, **Teaching tools**,
@@ -15907,6 +15907,11 @@ Race...), live question sets and the ⋯ menu's Host a live lesson went to /live
   board, its controls or a frame (it floated over the bottom of the page).
 - N8: a desk or a game page that closes or is hidden sends a last pulse (`gone`, fetch keepalive): the board drops that
   desk's board, picture and status at once (away) instead of 10 to 30 seconds later.
+- `homeroom-qa-browser` on main: #2 (M1) waited for a card titled "Make 67", renamed by #637 ("Make an amount of
+  cents"): stale test, it now picks each card by its handout's id. #3 (M3/M4) and #4 (dark mode) failed only after #2:
+  #2 stopped before its cleanup, leaving Rekenreks and two practice sets on every desk, so #3's new set sat under "+2
+  more" on Cleo's tile (a real tile-order problem, fixed by N2: the newest not-done items first) and #4's Clock was
+  refused by the still-running Rekenreks room (the one-tool rule, correct). All four pass.
 - Today's practice sets: a set a student opened in the player with no answer checked yet says **Started**, never "Not
   started" (`homeroom-opened.js`: opened sets per class, in memory, until live class ends or starts again).
 

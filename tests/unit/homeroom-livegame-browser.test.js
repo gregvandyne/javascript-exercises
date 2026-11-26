@@ -242,7 +242,7 @@ test('several at once: Select three, Hand out to a group, all three on those des
   await T.page.mouse.move(from.x, from.y); await T.page.mouse.down();
   for (const p of line(from, to, 12)) await T.page.mouse.move(p.x, p.y);
   await T.page.mouse.up();
-  await T.page.waitForFunction(() => /Handed out/.test(document.getElementById('toasts').textContent), null, { timeout: 10000 });
+  await T.page.waitForFunction(() => /Handed out to Cleo: 2/.test(document.getElementById('toasts').textContent), null, { timeout: 10000 });
   assert.deepEqual(cardsOf(cleo.id).map(x => x.title).filter(x => x !== 'Sudoku'), ['Typing Zoo', 'Word Hunt']);
   assert.equal(await T.page.locator('.hrm-form').count(), 0, 'no sheet for a drop');
   assert.deepEqual(T.errors, []);
