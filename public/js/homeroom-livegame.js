@@ -154,19 +154,26 @@ export function liveHost(opts) {
  * A student's desk. opts: { classId, PL: the desk's game player, td: the desk's strings } -> { apply(state.livegame),
  * find(id) for the player, card() }
  */
+const RETRY_MS = 15000;
 export function liveDesk(opts) {
   let game = null, joining = false;
   const tried = new Set();
   const store = (sid, tok) => { try { sessionStorage.setItem(`lv:${sid}`, tok); } catch { /* the play page asks again */ } };
   const id = () => (game ? `live:${game.sid}` : '');
   async function join(auto) {
-    if (!game || joining) return;
+    if (!game || joining) return false;
     joining = true;
+    const sid = game.sid;
     try {
       const r = await api(`/api/desk/${encodeURIComponent(opts.classId)}/livegame`, { method: 'POST', body: {} });
       store(r.sid, r.tok);
       if (game && game.sid === r.sid) { opts.PL.open(`live:${r.sid}`); watchFrame(); }
-    } catch (e) { if (!auto) toast(e.message, { bad: true }); } finally { joining = false; card(); }
+    } catch (e) {
+      if (!auto) toast(e.message, { bad: true });
+      // (brought in by itself and it did not work: a blip, or the room full or locked for now; try again a little later)
+      else setTimeout(() => { tried.delete(sid); if (game && game.sid === sid) apply(game); }, RETRY_MS);
+    } finally { joining = false; card(); }
+    return true;
   }
   /** The play page left (Leave, the game gone): back to the desk. */
   function watchFrame() {
@@ -187,13 +194,13 @@ export function liveDesk(opts) {
     if (c.innerHTML !== h) c.innerHTML = h;
   }
   function apply(lg) {
-    const was = game;
     game = lg && lg.sid ? lg : null;
     const cur = String(opts.PL.current() || '');
     // the game ended (or another began): the player goes back to the desk
     if (cur.startsWith('live:') && (!game || cur !== id())) { opts.PL.close(); if (!game) toast(tdk('over')); }
-    // a new game: brought in once by itself (a student who left it can come back with the card)
-    if (game && (!was || was.sid !== game.sid) && !tried.has(game.sid) && !cur) { tried.add(game.sid); join(true); }
+    // a game running: brought in by itself, once per game, whatever else is open in the player (a handout, a tool): the
+    // whole class plays it now. A student who left it (Leave, or Back to my desk) comes back with the card.
+    if (game && !tried.has(game.sid) && String(opts.PL.current() || '') !== id() && !joining) { tried.add(game.sid); join(true); }
     card();
   }
   return { apply, card, find: x => (game && x === id() ? { href: `/live/play/${game.sid}`, title: game.title, icon: game.icon || '📡' } : null), opened: watchFrame };

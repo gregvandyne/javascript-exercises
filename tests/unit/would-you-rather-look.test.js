@@ -40,7 +40,8 @@ test('would-you-rather look: the dashboard tokens, the font and the dotted board
   const { KIT_PACKS, KIT_LATEST } = await import('../../server/services/kit.js');
   const m = LIVE.match(/\/vendor\/oomba-kit\/([\d.]+)\/packs\/live\.js" integrity="([^"]+)"/);
   assert.ok(m, 'the live pack is loaded'); assert.equal(m[1], KIT_LATEST); assert.equal(m[2], KIT_PACKS[KIT_LATEST].live);
-  assert.match(LIVE, /L\.ready\(\{ quiz: true, hostView: true, words: \[\] \}\)/);
+  // (its own lobby: never the platform 3D lobby before the first dilemma, in Homeroom or on /live)
+  assert.match(LIVE, /L\.ready\(\{ lobby: true, quiz: true, hostView: true, words: \[\] \}\)/);
   assert.match(LIVE, /\/\* wyr-live:begin \*\/[\s\S]*\/\* wyr-live:end \*\//);
 });
 

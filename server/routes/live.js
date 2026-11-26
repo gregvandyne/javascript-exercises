@@ -406,7 +406,10 @@ router.get('/live/host/:sid', on, requireAnyAccount, (req, res) => {
     body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
       teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId), ctl: ctlInfo(s, req.user),
       // Google Classroom (routes/gclassroom.js): the host of a class game can announce it in the linked Classroom stream.
-      gcAnnounce: role === 'host' ? gcLiveAnnounce(req, s) : '' }), scripts: ['/js/live-host.js'] });
+      gcAnnounce: role === 'host' ? gcLiveAnnounce(req, s) : '',
+      // Inside Homeroom (its layer or its projector view: routes/homeroom-liveembed.js): the class's students join from
+      // their desks by themselves, so the join box says so and keeps the code small, for anyone not in Homeroom
+      inHr: !!req.hrEmbed && s.audience === 'class' }), scripts: ['/js/live-host.js'] });
 });
 
 // ---------------------------------------------------------------- the teacher's dashboard (part 3)

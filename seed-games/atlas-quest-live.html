@@ -424,7 +424,7 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
     $('qnum').hidden = !total; $('qnum').textContent = t('qnum', { n: q.i + 1, total: total });
     banner('');
     if (host) { $('count').hidden = false; $('count').textContent = t('answered', { n: 0, total: connected() }); $('note').textContent = ''; $('lock').hidden = true; }
-    else { $('lock').hidden = state.locked; $('lock').disabled = true; $('note').hidden = false; $('note').textContent = state.locked ? t('locked') : t('tap'); }
+    else { $('count').hidden = true; $('lock').hidden = state.locked; $('lock').disabled = true; $('note').hidden = false; $('note').textContent = state.locked ? t('locked') : t('tap'); }
     $('zoom').hidden = host;
     if (!same) fit(REGION_BOX[state.region] || REGION_BOX.world);
     if (!host && !state.locked && state.pick >= 0) $('lock').disabled = false;
@@ -510,6 +510,12 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   L.on('question', function (q) { show(q); });
   // the flag or the region came after the question: show them (keeps the player's pick)
   L.on('state', function () { if (!Q || state.answer >= 0) return; var a = atl(Q.i); if (a && ((host && flagOf(Q.i) && $('flag').hidden) || a.reg !== state.region)) show(Q, a); });
+  // the lobby (live): how many have joined, on the top bar, until the first question (the map is the game's own board)
+  function lobbyCount() {
+    if (!L.active || Q || !(phase === 'lobby' || phase === 'loading' || phase === 'countdown')) return;
+    $('count').hidden = false; $('count').textContent = '👥 ' + O.num(L.players().length);
+  }
+  ['join', 'leave', 'update', 'welcome', 'phase'].forEach(function (k) { L.on(k, lobbyCount); });
   L.on('answers', function (a) { if (host && Q && a.i === Q.i) $('count').textContent = t('answered', { n: a.n, total: Math.max(a.n, connected()) }); });
   L.on('reveal', function (r) { if (r.skipped) { clearInterval(ringTimer); return; } reveal(r); });
   L.on('result', result);
@@ -547,11 +553,12 @@ var AL = {"C":[["AF","Afghanistan",33.83,66,"as",652.2,1,"IR,PK,TM,UZ,TJ,CN"],["
   var titled = function () { return t('title') + (L.active ? ' (' + t('live') + ')' : ''); };
   $('title').textContent = titled();
   document.title = t('title');
-  L.ready({ quiz: true, hostView: true, words: [] });
+  // lobby: the game draws its own lobby (the map, the title, how many joined), so the platform's 3D lobby is never shown
+  L.ready({ lobby: true, quiz: true, hostView: true, words: [] });
   loadNames(function () { $('title').textContent = titled(); });
   document.body.classList.toggle('host', host);
   if (!L.active) { $('zoom').hidden = false; L.on('start', function () { loadNames(startPractice); }); }
-  else { $('zoom').hidden = host; if (phase === 'lobby') banner(host ? t('title') : t('wait')); }
+  else { $('zoom').hidden = host; if (phase === 'lobby') banner(host ? t('title') : t('wait')); lobbyCount(); }
   O.test({
     state: function () { return { role: L.role, phase: phase, question: Q ? { i: Q.i, q: Q.q } : null, pick: state.pick, picked: state.pick >= 0 ? CODES[state.pick] : null, locked: state.locked, answer: state.answer >= 0 ? CODES[state.answer] : null, region: state.region, score: myScore, board: false, end: !$('end').hidden, view: { cx: view.cx, cy: view.cy, k: view.k },
       // alone only (no class): the practice question's country, for tests and the cover picture

@@ -8802,6 +8802,8 @@
       "codeForTeachers": "Beitrittscode",
       "joinAt": "Geh auf {url} und gib den Code ein",
       "signInFirst": "Erst anmelden, dann den Code eingeben.",
+      "hrJoin": "Schüler in Homeroom treten von ihrem Platz aus bei. Kein Code nötig.",
+      "hrFallback": "Nicht in Homeroom? Code zum Beitreten",
       "hideCode": "Code verbergen",
       "showCode": "Code zeigen",
       "count": "{count} von {max} Spielenden",
