@@ -20,6 +20,7 @@ practice and assign").
 | Unit tests (50 seeds of every practice task) | `tests/unit/manip-task-variations.test.js` |
 | Browser run-through (every task solo, a set of 5 in Homeroom) | `tests/unit/manip-task-flow-browser.test.js` |
 | Per-tool "how to build the answer" for the run-through | `tests/unit/_manip-flow/<slug>.js` (+ `common.js`) |
+| The piece tools' board reading (sticks, rows and columns, shapes) and hands (drag to a place, drop beside a piece) | `public/js/manip-tasks/piece-grid.js`, `tests/unit/_manip-flow/pieces.js` |
 
 ## The task file format
 
