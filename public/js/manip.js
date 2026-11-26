@@ -56,6 +56,23 @@ function nlValue(st, svg, clientX) {
 }
 /** The selected dot or jump, when it is still there. */
 const nlSel = st => { const s = st.sel; if (!s) return null; const list = s.k === 'j' ? st.jumps : st.points; return Number.isInteger(s.i) && s.i >= 0 && s.i < (list || []).length ? s : null; };
+/** A long line labels every fifth tick only (more labels than this ran into each other). */
+const NL_LABELS = 41;
+/** A value's label on the line: a fraction over the step's denominator on a fraction line (st.frac, a step of 1/2, 1/4
+ *  or 1/8: 0, 1/4, 2/4, 3/4, 1, 5/4), else the number. */
+function nlLabel(st, v) {
+  const den = Math.round(1 / (+st.step || 1));
+  if (!st.frac || den < 2 || Math.abs(den * (+st.step) - 1) > 1e-6) return String(v);
+  const k = Math.round(v * den);
+  return k % den === 0 ? String(k / den) : `${k}/${den}`;
+}
+/** Jumps: a tap at v starts the jumps there, or lands the next jump there. -> false when nothing changed */
+function nlJumpTo(st, v) {
+  const from = nlFrom(st);
+  if (from === null) { st.jumpFrom = v; return true; }
+  if (v === from) return false;
+  st.jumps.push({ a: from, b: v }); st.jumpFrom = v; return true;
+}
 const nlJumpLabel = j => { const d = round3(j.b - j.a); return `${d > 0 ? '+' : ''}${d}`; };
 const nlNum = n => (n < 0 ? `−${-n}` : `${n}`);
 /** The number sentence of the last chain of jumps (each starting where the one before landed): -2 + 4 - 1 = 1. */
@@ -323,7 +340,7 @@ const IMPL = {
     palette: () => [{ label: 'Add a point at 0', color: '#00ACC1', run: s => { s.points.push(0); } },
       { label: 'Clear the line', color: '#212121', run: s => { s.points = []; s.jumps = []; s.jumpFrom = null; } }],
     settings: st => `<label class="mp-set"><span>From</span><input class="input input-sm mp-num" type="number" data-set="min" value="${st.min}"></label><label class="mp-set"><span>To</span><input class="input input-sm mp-num" type="number" data-set="max" value="${st.max}"></label>
-      ${sel('step', [['1', '1'], ['0.5', '0.5'], ['0.25', '1/4'], ['0.1', '0.1'], ['5', '5'], ['10', '10']], st.step, 'Step')}${toggle('hide', st.hide, 'Show labels', 'Hide labels')}`,
+      ${sel('step', [['1', '1'], ['0.5', '0.5'], ['0.25', '1/4'], ['0.125', '1/8'], ['0.1', '0.1'], ['5', '5'], ['10', '10'], ['25', '25'], ['50', '50'], ['100', '100']], st.step, 'Step')}${toggle('hide', st.hide, 'Show labels', 'Hide labels')}`,
     // The hint follows the switch (a function of the line's state: renderChrome's hintOf).
     hint: st => (st && st.mode === 'jumps' ? 'Jumps: tap where to start, then where each jump lands. Tap a jump to select it, then Delete. Switch to Points to put dots on the line.'
       : 'Points: tap the line to put a dot on it. Tap a dot to select it, then Delete. Switch to Jumps to make jumps.'),
@@ -351,15 +368,18 @@ const IMPL = {
       return `<div class="mp-pad mp-scrollx">${edit ? `<div class="mp-nl-top"><div class="mp-nl-mode" role="group" aria-label="What a tap does">${btn(`mp-nl-m${jm ? '' : ' on'}`, `data-act="nlmode" data-m="points" aria-pressed="${!jm}"`, '● Points')}${btn(`mp-nl-m${jm ? ' on' : ''}`, `data-act="nlmode" data-m="jumps" aria-pressed="${jm}"`, '↷ Jumps')}</div><p class="mp-nl-help">${help}</p></div>` : ''}
         <svg class="mp-nl" data-w="${W}" data-min="${min}" data-max="${max}" data-step="${step}" data-mode="${jm ? 'jumps' : 'points'}"${from !== null ? ` data-from="${from}"` : ''} width="${W}" height="${jm || st.jumps.length ? 240 : 190}" viewBox="0 ${jm || st.jumps.length ? -50 : 0} ${W} ${jm || st.jumps.length ? 240 : 190}" role="img" aria-label="Number line">
         <line x1="20" y1="110" x2="${W - 20}" y2="110" stroke="var(--text)" stroke-width="3"/><polygon points="${W - 20},110 ${W - 34},102 ${W - 34},118" fill="var(--text)"/><polygon points="20,110 34,102 34,118" fill="var(--text)"/>
-        ${ticks.map(v => `<line x1="${x(v)}" y1="100" x2="${x(v)}" y2="120" stroke="var(--text)" stroke-width="2"/>${st.hide ? '' : `<text x="${x(v)}" y="142" text-anchor="middle" font-size="13" fill="var(--text)">${v}</text>`}`).join('')}
+        ${ticks.map((v, i) => `<line x1="${x(v)}" y1="100" x2="${x(v)}" y2="120" stroke="var(--text)" stroke-width="2"/>${st.hide || (ticks.length > NL_LABELS && i % 5) ? '' : `<text x="${x(v)}" y="142" text-anchor="middle" font-size="13" fill="var(--text)">${nlLabel(st, v)}</text>`}`).join('')}
         ${arcs.map(a => a[0]).join('')}${arcs.map(a => a[1]).join('')}
         ${jm && from !== null && !st.jumps.some(j => j.b === from) ? `<g><circle cx="${x(from)}" cy="110" r="9" fill="#FF6B4A" stroke="#fff" stroke-width="2.5"/><text x="${x(from)}" y="168" text-anchor="middle" font-size="12" font-weight="700" fill="#FF6B4A">start</text></g>` : ''}
-        ${st.points.map((p, i) => `<g class="mp-nl-pt${i === selP ? ' on' : ''}"${edit ? ` data-act="nlsel" data-k="p" data-i="${i}" role="button" aria-pressed="${i === selP}" aria-label="Select the point ${p}"` : ''}><circle cx="${x(p)}" cy="110" r="16" fill="transparent"/>${i === selP ? `<circle cx="${x(p)}" cy="110" r="18" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-dasharray="4 3"/>` : ''}<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/>${st.ask ? `<text x="${x(p)}" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="var(--text)">?</text>` : `<rect x="${x(p) - 17}" y="64" width="34" height="22" rx="8" fill="#00ACC1"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${p}</text>`}</g>`).join('')}
+        ${st.points.map((p, i) => `<g class="mp-nl-pt${i === selP ? ' on' : ''}"${edit ? ` data-act="nlsel" data-k="p" data-i="${i}" role="button" aria-pressed="${i === selP}" aria-label="Select the point ${p}"` : ''}><circle cx="${x(p)}" cy="110" r="16" fill="transparent"/>${i === selP ? `<circle cx="${x(p)}" cy="110" r="18" fill="none" stroke="var(--text)" stroke-width="2.5" stroke-dasharray="4 3"/>` : ''}<circle cx="${x(p)}" cy="110" r="11" fill="#00ACC1" stroke="#fff" stroke-width="2.5"/>${st.ask ? `<text x="${x(p)}" y="80" text-anchor="middle" font-size="22" font-weight="800" fill="var(--text)">?</text>` : `<rect x="${x(p) - 17}" y="64" width="34" height="22" rx="8" fill="#00ACC1"/><text x="${x(p)}" y="80" text-anchor="middle" font-size="14" font-weight="800" fill="#fff">${nlLabel(st, p)}</text>`}</g>`).join('')}
         <g class="mp-nl-ghost"></g></svg>
         ${edit && jm && sent ? `<div class="mp-nl-sum" aria-live="polite">${sent.html}</div>` : ''}
         ${edit ? `<div class="row mp-chips">${sel ? btn('chip mp-nl-del', 'data-act="nldel"', `🗑 Delete ${sel.k === 'p' ? `the dot at ${esc(String(st.points[sel.i]))}` : `the ${esc(nlJumpLabel(st.jumps[sel.i]))} jump`}`) : ''}${jm ? `${btn('chip', `data-act="nlundo" ${st.jumps.length ? '' : 'disabled'}`, '↶ Undo jump')}${btn('chip', `data-act="nlnew" ${from === null ? 'disabled' : ''}`, 'Start from a new number')}${btn('chip', `data-act="nlclearj" ${st.jumps.length || from !== null ? '' : 'disabled'}`, 'Clear jumps')}` : `${btn('chip', `data-act="nlundo" ${st.points.length ? '' : 'disabled'}`, '↶ Undo')}${btn('chip', `data-act="nlclearp" ${st.points.length ? '' : 'disabled'}`, 'Clear dots')}`}</div>` : ''}</div>`;
     },
     act: (st, d, e) => {
+      // In Jumps a tap on a dot is a tap on the line there (a jump starts or lands on it: "plot 0.3, then jump from 0.3"
+      // could not start on its own dot before); in Points it selects the dot.
+      if (d.act === 'nlsel' && d.k !== 'j' && st.mode === 'jumps' && Number.isFinite(+st.points[+d.i])) { st.sel = null; return nlJumpTo(st, +st.points[+d.i]); }
       if (d.act === 'nlsel') { const k = d.k === 'j' ? 'j' : 'p', i = +d.i; st.sel = st.sel && st.sel.k === k && st.sel.i === i ? null : { k, i }; return true; }
       if (d.act === 'nldel') {
         const sel = nlSel(st); st.sel = null; if (!sel) return true;
@@ -378,12 +398,7 @@ const IMPL = {
       const svg = e && e.target && e.target.closest && e.target.closest('svg.mp-nl'); if (!svg) return false;
       st.sel = null;
       const v = nlValue(st, svg, e.clientX);
-      if (st.mode === 'jumps') {
-        const from = nlFrom(st);
-        if (from === null) { st.jumpFrom = v; return true; }
-        if (v === from) return false;
-        st.jumps.push({ a: from, b: v }); st.jumpFrom = v; return true;
-      }
+      if (st.mode === 'jumps') return nlJumpTo(st, v);
       st.points.push(v);
       return true;
     },

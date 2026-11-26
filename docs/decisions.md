@@ -15417,3 +15417,55 @@ framework, and Rekenreks and Base Ten Blocks converted completely (all 34 of the
 - **Open**: the other 16 tools (phase 2); translations of the new strings (English, like the task library); a teacher's
   view of each student's answers per question (the gradebook shows the marks); assigning across tools in one set;
   Homeroom's give sheet picking several tasks at once (one task a handout there; several from the Manipulatives page).
+
+### Phase 2: Place Value Disks, Number Lines, Number rods, Money
+
+All 67 tasks of these four tools are practice now (17, 17, 17 and 16), by the checklist in `docs/manip-practice-tasks.md`.
+Each run-through (`tests/unit/_manip-flow/<slug>.js`; number rods and money share `_manip-flow/mats.js`, which drags a new
+piece to its place on a labeled work mat) plays every task solo and a set of 5 in Homeroom's desk player.
+
+- **Board checks.** Place Value Disks: total, fewest disks, exact counts, every disk in its own column of a chart (charts
+  of any columns, Hundred thousands to Thousandths). Number Lines: the dots (exactly these, or one between two given),
+  the last chain of jumps (start, landing, how many, each jump's size, direction). Number rods: the rods put out (how many
+  of each length), on a labeled mat (exact rods, or n rods adding to a length, or an order left to right), different
+  trains on different mats. Money: the amount (on a mat or in all), the fewest coins and bills (the fewest without the
+  half dollar counts too, except on Half dollar talk), more pieces than another mat, exact counts, only some kinds, an
+  order left to right.
+- **Tool changes for the tasks** (shared files): `manip-data.js` Place Value Disks Break and Regroup every place, the
+  million down (they stopped at the thousands; Disk race to a million regroups ten 100,000 disks into a million disk);
+  Money has a half dollar (50¢, round, after the quarter in the palette: Half dollar talk is about it; `manip-board.js`
+  draws it round). `manip.js` Number Lines: a tap on a dot in Jumps starts or lands a jump there (it selected the dot,
+  so "plot 0.3, then jump from 0.3" could not start); a line with more than 41 ticks labels every fifth one (a -20 to 30
+  temperature line's labels ran into each other); `st.frac` labels a line in halves, fourths or eighths as fractions (0,
+  1/4, 2/4, 3/4, 1, 5/4; the fraction tasks' lines, decimals before); the Step menu also has 1/8, 25, 50 and 100.
+- **Reworded tasks** (open-ended or one fixed example in the library; checkable now, the same goal).
+  - Place Value Disks: Build 40,206 (pick the empty place; the why is the explanation), Decimal disks 0.405 (after the
+    Break, how many 0.01 disks), Disk race to a million (some disks of one place, 10 to 100,000: add to ten, Regroup, the
+    new disk's value), Write it three ways (expanded form typed), Decimal compare (two locked charts: the greater typed,
+    the deciding column picked), Smallest and largest (build the largest; the difference from the smallest typed),
+    Thousandths build (build, add some 0.001 disks, Regroup: the number typed), Population talk (the town already built:
+    add the newcomers), Disk fractions link (break a 0.1 disk, pick the equal decimal: 0.xy0, 0.x0y or 0.0xy), Round the
+    disks (locked chart: rounded number typed, deciding column picked), Break in two ways (build, Break a ten: the ones
+    typed), Missing disk mystery (locked chart and a claim: the number typed, right or not picked).
+  - Number Lines: Jump to add (two jumps through 10, how far in all), Mystery point and Estimate the point (no partner,
+    no reveal: a read-only line, labels hidden, the dot drawn as "?", ticks or quarter marks to count; the number
+    typed), Fractions on the line (which two dots are the same distance from 1: a choice), Negative jumps (the landing
+    typed, then one more jump to a given number), Fraction between fractions (a dot between two given ones; "defend"
+    left out), Negative ordering and Halves and quarters (the smallest, the one at a whole number: a choice), Inequality
+    line (a dot on every whole number in between, then which test number belongs), Scale the line (a line with a given
+    step: how many steps the last dot is from 0).
+  - Number rods: Rod staircase (two two-rod trains as long as a rod: Way 1 with a given rod, Way 2 different), Trains for
+    10 (a rod of 6 to 10, Train 1 starts with a given rod; no sentences typed), If orange is 1 (two rods of given
+    tenths, together typed as a fraction), Fraction of a rod (two fractions of a whole rod of 4, 6, 8 or 9), Rod
+    equations (both sides built on Left and Right: True or False), Decimals with orange as 1 (two rods, the greater
+    value typed), Commutative trains (both orders checked left to right, the length typed), Rod word problem (a choice:
+    same, or which is longer), Square numbers with rods (squares and near-square rectangles of stacked rods), Missing rod
+    (no hand: the given rod and the whole, the mystery rod put out), Ratio rods (two or three times a pair, the second
+    train's length typed), Equivalence trains (two trains, then does a third one match: a choice).
+  - Money: Make 67 cents (Way 1 fewest, Way 2 more coins, Way 1's coins typed), Coin exchange and Bill exchange (ten
+    pennies for a dime, ten dimes for $1, ten $1 bills for $10; there is no $100 bill, so the ten $10s step is left
+    out), Budget build (no labels; always affordable, the leftover built and typed), Make a dollar (one kind of coin a
+    question, the count typed), Coin values sort (one of each of 3 or 4 coins or the $1 bill in a row by value, the total
+    typed), Two ways to pay (only dimes and pennies, and the fewest: which a shopkeeper likes better), Budget left over
+    (the total cost built and typed, then can you buy all three), Half dollar talk (the fewest coins with the half
+    dollar, how many, and what it is called).

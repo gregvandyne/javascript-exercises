@@ -585,8 +585,8 @@ export function reframe(slug, b, from, to, pad = 12) { return fitInto(slug, b, f
 export const SNAP_PX = 14;
 /** Round pieces, per tool (a piece kind means something only inside its tool: base ten's 'tenth' is a long block, place
  *  value disks' 'tenth' is a disk). Money's bills (b1, b5...) are not round. */
-const ROUND_KINDS = { 'two-color-counters': /^(pos|neg|blue|green)$/, 'place-value-disks': /^(m|hth|tth|th|h|t|o|tenth|hund|thou)$/, money: /^(penny|nickel|dime|quarter)$/ };
-const ROUNDISH = /^(pos|neg|blue|green|m|hth|tth|th|h|t|o|tenth|hund|thou|penny|nickel|dime|quarter)$/;
+const ROUND_KINDS = { 'two-color-counters': /^(pos|neg|blue|green)$/, 'place-value-disks': /^(m|hth|tth|th|h|t|o|tenth|hund|thou)$/, money: /^(penny|nickel|dime|quarter|half)$/ };
+const ROUNDISH = /^(pos|neg|blue|green|m|hth|tth|th|h|t|o|tenth|hund|thou|penny|nickel|dime|quarter|half)$/;
 /** Is a piece of this kind drawn round in this tool? (No tool given: any round kind, the old rule.) */
 export const roundPiece = (slug, kind) => (slug ? !!(ROUND_KINDS[slug] && ROUND_KINDS[slug].test(String(kind || ''))) : ROUNDISH.test(String(kind || '')));
 /** A piece's rectangle as it lies (a quarter turn swaps width and height). null when turned at an odd angle (no snap). */
