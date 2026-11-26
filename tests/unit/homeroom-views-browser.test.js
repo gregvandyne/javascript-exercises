@@ -80,7 +80,7 @@ const sideways = page => page.evaluate(() => document.documentElement.scrollWidt
 
 test('Homeroom -> Classroom -> Dashboard -> Homeroom without loading the page again; Back, Forward, reload', { timeout: 180000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`);
+  const { ctx, page, errors } = await open(`/class/${cls.id}/hub`);
   await page.waitForSelector('.hr-desk');
   await page.evaluate(() => { window.__sentinel = 'still here'; });
   const zoom0 = await page.evaluate(() => document.querySelector('#hr-zoom .rm-pct')?.textContent);
@@ -106,7 +106,7 @@ test('Homeroom -> Classroom -> Dashboard -> Homeroom without loading the page ag
   await shot(page, '1366-dashboard');
 
   await goView(page, 'homeroom');
-  assert.equal(new URL(page.url()).pathname, `/class/${cls.id}/homeroom`);
+  assert.equal(new URL(page.url()).pathname, `/class/${cls.id}/hub`);
   const after = await page.evaluate(() => ({ t: document.getElementById('hr-world').style.transform, pct: document.querySelector('#hr-zoom .rm-pct').textContent }));
   assert.deepEqual(after, before, 'zoom and place kept');
   assert.equal(await page.evaluate(() => window.__sentinel), 'still here', 'never loaded again');
@@ -129,7 +129,7 @@ test('Homeroom -> Classroom -> Dashboard -> Homeroom without loading the page ag
 test('keys go to the view on screen, once: Delete on Homeroom deletes one note, never while Classroom is on screen', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   H.saveArea(teacher, cls, { __ann: { notes: [{ id: 'n1', text: 'One', x: 0.1, y: 0.2 }, { id: 'n2', text: 'Two', x: 0.5, y: 0.2 }], texts: [], strokes: [] }, shapes: [] });
-  const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`);
+  const { ctx, page, errors } = await open(`/class/${cls.id}/hub`);
   await page.waitForSelector('.hr-desk');
   // there and back twice: nothing bound twice
   for (let i = 0; i < 2; i++) { await goView(page, 'classroom'); await goView(page, 'dashboard'); await goView(page, 'homeroom'); }
@@ -170,12 +170,12 @@ test('Classroom keeps its tab and scroll; deep links and a reload on every view;
   assert.equal(new URL(page.url()).search, '?tab=students');
   assert.ok(Math.abs(await page.evaluate(() => scrollY) - y) < 4, 'scroll kept');
   // a new page on Homeroom (same tab): Classroom opens where it was left
-  await page.goto(`${BASE}/class/${cls.id}/homeroom`); await shown(page, 'homeroom');
+  await page.goto(`${BASE}/class/${cls.id}/hub`); await shown(page, 'homeroom');
   assert.match(await page.getAttribute('#cv-bar a[data-cv-go="classroom"]', 'href'), /\?tab=students$/);
   await goView(page, 'classroom');
   assert.equal(new URL(page.url()).search, '?tab=students');
   // each view by its address and after a reload
-  for (const [k, u] of [['homeroom', `/class/${cls.id}/homeroom`], ['dashboard', `/class/${cls.id}/dashboard`], ['classroom', `/class/${cls.id}/progress`]]) {
+  for (const [k, u] of [['homeroom', `/class/${cls.id}/hub`], ['dashboard', `/class/${cls.id}/dashboard`], ['classroom', `/class/${cls.id}/progress`]]) {
     await page.goto(`${BASE}${u}`); await shown(page, k);
     await page.reload(); await shown(page, k);
     assert.equal(await sideways(page), 0, k);
@@ -191,7 +191,7 @@ test('Classroom keeps its tab and scroll; deep links and a reload on every view;
 test('the shared bar: same place and height on every view at 1366 x 768, 1000 x 600 and a phone; nothing sideways', { timeout: 180000 }, async t => {
   if (skip) return t.skip(skip);
   for (const [name, viewport] of [['1366', { width: 1366, height: 768 }], ['1000', { width: 1000, height: 600 }], ['phone', { width: 390, height: 844 }]]) {
-    const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`, { viewport, touch: name === 'phone' });
+    const { ctx, page, errors } = await open(`/class/${cls.id}/hub`, { viewport, touch: name === 'phone' });
     await page.waitForSelector('.hr-desk');
     const bar = await barBox(page);
     if (name !== '1366') await shot(page, `${name}-homeroom`);
@@ -212,7 +212,7 @@ test('the shared bar: same place and height on every view at 1366 x 768, 1000 x 
   }
   // a frame in the middle of a switch (the fade)
   if (SHOTS) {
-    const { ctx, page } = await open(`/class/${cls.id}/homeroom`);
+    const { ctx, page } = await open(`/class/${cls.id}/hub`);
     await page.waitForSelector('.hr-desk'); await goView(page, 'dashboard'); await goView(page, 'homeroom');
     await page.click('#cv-bar a[data-cv-go="dashboard"]'); await page.waitForTimeout(150);
     await shot(page, 'midswitch');
@@ -243,7 +243,7 @@ test('the shared bar fits at 390, 820, 1024 and 1366 on every view (and live): n
   try {
     for (const width of [390, 820, 1024, 1366]) {
       const viewport = { width, height: width < 600 ? 844 : width === 820 ? 1180 : 768 }, touch = width < 1366;
-      const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`, { viewport, touch });
+      const { ctx, page, errors } = await open(`/class/${cls.id}/hub`, { viewport, touch });
       await page.waitForSelector('.hr-desk');
       const bar = await barBox(page);
       for (const k of ['homeroom', 'classroom', 'dashboard']) {
@@ -258,7 +258,7 @@ test('the shared bar fits at 390, 820, 1024 and 1366 on every view (and live): n
       assert.deepEqual(errors, [], `${width}`);
       await ctx.close();
       // a live class: more buttons in Homeroom's bar (Today, Hands, Pause screens, Bring everyone to me)
-      const live = await open(`/class/${cls2.id}/homeroom`, { viewport, touch });
+      const live = await open(`/class/${cls2.id}/hub`, { viewport, touch });
       await live.page.waitForSelector('#hr-livebtns .hr-pausebtn');
       await live.page.waitForTimeout(200);
       assert.deepEqual(await clippedInBar(live.page), [], `${width} live: every button whole`);
@@ -291,7 +291,7 @@ test('Classroom on a phone is calm: no Live button, Build and Find in one row, O
   await page.selectOption('#hr-class', { label: 'All classes' });
   await page.waitForURL(/\/teach\?all=1$/);
   // Homeroom's ⋯ menu: Host a live game, the address the tile had, opened in Homeroom's layer
-  await page.goto(`${BASE}/class/${cls.id}/homeroom`); await page.waitForSelector('.hr-desk');
+  await page.goto(`${BASE}/class/${cls.id}/hub`); await page.waitForSelector('.hr-desk');
   await page.click('[data-hr="menu"]');
   const host = page.locator('#hr-menu a[data-hr="hostlive"]');
   assert.equal(await host.getAttribute('href'), `/live?class=${cls.id}`);
@@ -323,7 +323,7 @@ test('a teacher without Homeroom: the class page and the dashboard as before', {
 test('play inside Homeroom: Play on a My desk card opens the game over the board; Back, Escape and a reload', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   const st = HS.stage(teacher, cls, { pick: game.id }); assert.ok(st.ok, st.code);
-  const { ctx, page, errors } = await open(`/class/${cls.id}/homeroom`);
+  const { ctx, page, errors } = await open(`/class/${cls.id}/hub`);
   await page.waitForSelector('[data-hrstaged]');
   await page.evaluate(() => { window.__sentinel = 'kept'; });
   await page.click('[data-hr="zin"]');
@@ -335,7 +335,7 @@ test('play inside Homeroom: Play on a My desk card opens the game over the board
   const frame = page.frameLocator('.hr-player iframe');
   await frame.locator('#stage').waitFor({ timeout: 10000 });
   assert.equal(await frame.locator('.playbar > a.iconbtn').first().isVisible(), false, 'the game page\'s own Back gives way to the layer\'s');
-  assert.match(await page.textContent('.hr-playback'), /Back to Homeroom/);
+  assert.match(await page.textContent('.hr-playback'), /Back to the Hub/);
   await shot(page, 'player-teacher');
   // Escape closes (the game in the frame keeps its own keys: here the layer's bar has the focus); the board is as it was
   await page.focus('.hr-playback'); await page.keyboard.press('Escape');
@@ -346,12 +346,12 @@ test('play inside Homeroom: Play on a My desk card opens the game over the board
   await page.click('[data-hrstaged]'); await page.click('[data-sm="play"]'); await page.waitForSelector('.hr-player');
   await page.goBack(); await page.waitForSelector('.hr-player', { state: 'detached' });
   assert.equal(await page.evaluate(() => window.__sentinel), 'kept', 'never left the page');
-  await page.goto(`${BASE}/class/${cls.id}/homeroom#play=${encodeURIComponent(st.id || HS.storedOf(cls.id)[0].id)}`);
+  await page.goto(`${BASE}/class/${cls.id}/hub#play=${encodeURIComponent(st.id || HS.storedOf(cls.id)[0].id)}`);
   await page.reload();
   await page.waitForSelector('.hr-player iframe');
   await page.click('.hr-playback'); await page.waitForSelector('.hr-player', { state: 'detached' });
   // a phone: the layer under the shared bar
-  const ph = await open(`/class/${cls.id}/homeroom`, { viewport: { width: 390, height: 844 }, touch: true });
+  const ph = await open(`/class/${cls.id}/hub`, { viewport: { width: 390, height: 844 }, touch: true });
   await ph.page.waitForSelector('[data-hrstaged]', { state: 'attached' });
   await ph.page.evaluate(id => { location.hash = `play=${encodeURIComponent(id)}`; }, HS.storedOf(cls.id)[0].id);
   await ph.page.reload(); await ph.page.waitForSelector('.hr-player iframe');

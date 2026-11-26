@@ -207,7 +207,7 @@ test('the board: an Absent desk and an At home desk; Today\'s attendance; a ques
   assert.deepEqual(C.errors, []);
   await C.ctx.close();
   for (const [vp, w, touch] of SIZES) {
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, vp, touch);
+    const T = await open(teacher, `/class/${cls.id}/hub`, vp, touch);
     await T.page.waitForSelector(`.hr-desk.hr-att-absent[data-sid="${dev.id}"] .hr-attchip`);
     assert.match(await T.page.textContent(`.hr-desk[data-sid="${dev.id}"]`), /Absent today/);
     await atHome(T.page, cleo.id);
@@ -256,7 +256,7 @@ test('the board: an Absent desk and an At home desk; Today\'s attendance; a ques
   const fin = HP.runAction(teacher, cls, 'finish');
   assert.equal(fin.summary.absent, 1);
   for (const [vp, w, touch] of SIZES) {
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, vp, touch);
+    const T = await open(teacher, `/class/${cls.id}/hub`, vp, touch);
     await T.page.waitForSelector('#hr-plan [data-hrplan]');
     if (!(await T.page.locator('#hr-plan [data-hrplan="summary"]').count())) await T.page.click('#hr-plan [data-hrplan="menu"]');
     await T.page.locator('[data-hrplan="summary"]').first().click();

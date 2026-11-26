@@ -126,7 +126,7 @@ async function askForPlan(page, words) {
 test('1366 x 768: plan in the chat, Use this plan, Start, the pill counts down, Time\'s up after a reload, Next, End class offers Finish class', { timeout: 200000 }, async t => {
   if (skip) return t.skip(skip);
   standIn();
-  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/homeroom`, { width: 1366, height: 768 });
+  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/hub`, { width: 1366, height: 768 });
   await page.waitForSelector('[data-hrplan="ask"]');
   await page.waitForTimeout(500);
   assert.match(await page.locator('#hr-plan').innerText(), /Plan/);
@@ -184,7 +184,7 @@ test('1366 x 768: plan in the chat, Use this plan, Start, the pill counts down, 
   await page.keyboard.press('Escape');
   // the projector: Now / Next, nothing else
   const proj = await ctx.newPage();
-  await proj.goto(`${BASE}/class/${A.id}/homeroom/projector`);
+  await proj.goto(`${BASE}/class/${A.id}/hub/projector`);
   await proj.waitForSelector('#hr-projplan:not([hidden])');
   assert.match(await proj.locator('#hr-projplan').innerText(), /Time's up[\s\S]*What is a fraction\?[\s\S]*Next:[\s\S]*Work time/);
   assert.doesNotMatch(await proj.locator('body').innerText(), /Ava|Stretch|Fraction Pizza/);
@@ -228,7 +228,7 @@ test('1366 x 768: plan in the chat, Use this plan, Start, the pill counts down, 
 test('a tablet, 820 wide: the card, the pill, Time\'s up and the summary fit, nothing sideways', { timeout: 200000 }, async t => {
   if (skip) return t.skip(skip);
   standIn();
-  const { ctx, page, errors } = await open(teacher, `/class/${T.id}/homeroom`, { width: 820, height: 1180 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${T.id}/hub`, { width: 820, height: 1180 }, true);
   await page.waitForSelector('[data-hrplan="ask"]');
   await page.tap('[data-hrplan="ask"]');
   await page.locator('#oc').waitFor();
@@ -275,7 +275,7 @@ test('a phone, 390 wide, a live class: the pill is its clock, its menu has the r
   assert.ok(HP.runAction(teacher, T, 'start').ok);
   H.setLive(teacher, T, 'start');
   try {
-    const { ctx, page, errors } = await open(teacher, `/class/${T.id}/homeroom`, { width: 390, height: 844 }, true);
+    const { ctx, page, errors } = await open(teacher, `/class/${T.id}/hub`, { width: 390, height: 844 }, true);
     await page.waitForSelector('#hr-plan .hr-pp-run');
     await page.waitForSelector('#hr-livebtns .hr-pausebtn');
     await page.waitForTimeout(300);

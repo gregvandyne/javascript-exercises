@@ -83,7 +83,7 @@ const previewReady = page => page.waitForFunction(() => !!document.querySelector
 
 test('the teacher builds an Arithmetic Lab lesson with a version for each group at 1366 x 768', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
   // (no empty line taking room: the Build a lesson plan card at the bottom of Find lessons, with what it does)
   assert.match(await page.locator('#hr-lessons').innerText(), /Build a lesson plan[\s\S]*set it up once/i);
@@ -164,7 +164,7 @@ test('the teacher builds an Arithmetic Lab lesson with a version for each group 
 test('Algebra Builder and Crossword builders on a tablet; the builder full screen on a phone', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   config.anthropicKey = 'sk-test-not-used';   // the Ask Oomba button shows (nothing is called in this test)
-  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1180, height: 820 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-desk');
   await page.tap('#hr-panel [data-hr="build"]');
   await page.tap('[data-lbgame="algebra-builder"]');
@@ -194,7 +194,7 @@ test('Algebra Builder and Crossword builders on a tablet; the builder full scree
   await ctx.close();
   config.anthropicKey = '';
   // The phone: the builder is the whole screen, one column, no sideways scroll.
-  const P = await open(teacher, `/class/${cls.id}/homeroom`, { width: 390, height: 844 }, true);
+  const P = await open(teacher, `/class/${cls.id}/hub`, { width: 390, height: 844 }, true);
   await P.page.waitForSelector('.hr-desk');
   // lesson plans are in Find lessons (the phone's sheet): its Lesson plans chip, tap one, the yellow bar offers Whole
   // class and the groups

@@ -73,7 +73,7 @@ async function open(who, path, viewport, { touch = false, dark = false } = {}) {
   return { ctx, page, errors };
 }
 const LAPTOP = { width: 1280, height: 800 }, PHONE = { width: 390, height: 844 };
-const board = () => `/class/${cls.id}/homeroom`, desk = () => `/class/${cls.id}/desk`;
+const board = () => `/class/${cls.id}/hub`, desk = () => `/class/${cls.id}/desk`;
 const api = (s, path, body) => s.page.evaluate(async ([p, b]) => { const r = await fetch(p, b ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) } : {}); return { status: r.status, json: await r.json() }; }, [path, body || null]);
 /** Pick a catalog item and a target, as a tap does (the panel's own click handling). */
 async function pickAndGive(T, item, to = 'all') {

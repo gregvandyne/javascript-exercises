@@ -75,7 +75,7 @@ async function open(who, path, viewport) {
   return { ctx, page, errors };
 }
 const LAPTOP = { width: 1366, height: 768 }, PHONE = { width: 390, height: 844 };
-const board = () => `/class/${cls.id}/homeroom`, desk = () => `/class/${cls.id}/desk`;
+const board = () => `/class/${cls.id}/hub`, desk = () => `/class/${cls.id}/desk`;
 /** The game's own sandboxed frame (/frame/<token>), wherever it is nested (the play page, or Homeroom's layer). */
 async function gameFrame(page, ms = 60000) {
   const t0 = Date.now();

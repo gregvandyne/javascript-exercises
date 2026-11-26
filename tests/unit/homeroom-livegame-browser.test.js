@@ -95,7 +95,7 @@ async function open(who, path, viewport, { touch = false, ctx = null } = {}) {
   return { ctx, page, errors };
 }
 const LAPTOP = { width: 1366, height: 768 }, TABLET = { width: 820, height: 1180 }, PHONE = { width: 390, height: 844 };
-const board = () => `/class/${cls.id}/homeroom`, desk = () => `/class/${cls.id}/desk`;
+const board = () => `/class/${cls.id}/hub`, desk = () => `/class/${cls.id}/desk`;
 const sideways = page => page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
 const box = (page, sel) => page.locator(sel).first().boundingBox();
 const mid = b => ({ x: b.x + b.width / 2, y: b.y + b.height / 2 });
@@ -346,7 +346,7 @@ test('Brain Board hosted from Homeroom: the layer, the class already chosen, the
   assert.match(await framePath(T.page), new RegExp(`^/live/host/${s.id}`));
   await T.page.click('.hr-liveplayer [data-lg="min"]');
   // the projector view: the game's host screen over it; the teacher's layer takes the Teacher view
-  const Pj = await open(teacher, `/class/${cls.id}/homeroom/projector`, LAPTOP, { ctx: T.ctx });
+  const Pj = await open(teacher, `/class/${cls.id}/hub/projector`, LAPTOP, { ctx: T.ctx });
   await Pj.page.waitForSelector('.hr-projliveframe');
   await Pj.page.frameLocator('.hr-projliveframe').locator('body.lv-projector').waitFor({ timeout: 20000 });
   await Pj.page.waitForTimeout(1200); await shot(Pj.page, 'projector-1366');
@@ -495,10 +495,10 @@ test('the invite on phones (390): nobody is moved; a banner with Join for as lon
   await inPlay(A.page, s.id); await seated(s, ada);
   assert.equal(await A.page.frameLocator('.hr-player .hr-playframe').locator('#lv-code-input, input[name="code"]').count(), 0, 'no code to type');
   assert.equal(await A.page.locator('#hd-lgbar').count(), 0, 'no banner over the game she is in');
-  await T.page.waitForFunction(() => /1 joined of 2 in Homeroom/.test(document.querySelector('.hr-liveplayer [data-lgcount]').textContent), null, { timeout: 15000 });
+  await T.page.waitForFunction(() => /1 joined of 2 in the Hub/.test(document.querySelector('.hr-liveplayer [data-lgcount]').textContent), null, { timeout: 15000 });
   await T.page.locator('.hr-liveplayer [data-lg="min"]').tap();
   await T.page.waitForSelector('#hr-lgpill');
-  await T.page.waitForFunction(() => /1 joined of 2 in Homeroom/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
+  await T.page.waitForFunction(() => /1 joined of 2 in the Hub/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
   await T.page.waitForSelector(`.hr-desk[data-sid="${ada.id}"] .hr-lgin:not(.hr-lgwait)`, { timeout: 15000 });
   assert.match(await T.page.textContent(`.hr-desk[data-sid="${ada.id}"] .hr-lgin`), /In Brain Board/);
   await T.page.waitForSelector(`.hr-desk[data-sid="${ben.id}"] .hr-lgin.hr-lgwait`, { timeout: 15000 });
@@ -521,7 +521,7 @@ test('the invite on phones (390): nobody is moved; a banner with Join for as lon
   // ...then joins
   await B.page.locator('#hd-lgbar [data-lgjoin]').tap();
   await inPlay(B.page, s.id); await seated(s, ben);
-  await T.page.waitForFunction(() => /2 joined of 2 in Homeroom/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
+  await T.page.waitForFunction(() => /2 joined of 2 in the Hub/.test(document.getElementById('hr-lgpill').textContent), null, { timeout: 15000 });
   // the teacher starts; Cleo opens Homeroom after that: the banner, nothing opened by itself; Join
   await T.page.locator('#hr-lgpill [data-lg="restore"]').tap();
   await T.page.waitForSelector('.hr-liveplayer:not([hidden])');

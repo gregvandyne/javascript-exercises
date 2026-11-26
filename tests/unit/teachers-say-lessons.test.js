@@ -52,7 +52,7 @@ test('a teacher\'s key pages say "lesson", never "game"', async () => {
   for (const w of ['Build new lesson', 'Find Oomba lessons', 'Lessons for this class', '1 item, in the order students see it']) assert.ok(v.includes(w), `class page: ${w}`);
   noGame(v, 'class page');
   // Homeroom: the left panel, and the strings its scripts show
-  const hr = await call(`/class/${cls.id}/homeroom`, { user: tia });
+  const hr = await call(`/class/${cls.id}/hub`, { user: tia });
   assert.equal(hr.status, 200);
   const panel = visible(hr.text.slice(hr.text.indexOf('class="hr-panel'), hr.text.indexOf('</aside>', hr.text.indexOf('class="hr-panel'))));
   for (const w of ['Tap a lesson, then a desk', 'My lesson plans', 'Games', 'Lessons and lesson plans', 'Host a live lesson']) assert.ok(panel.includes(w), `Homeroom panel: ${w}`);

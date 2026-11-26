@@ -151,9 +151,9 @@ const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 // a sub with that class's one-day link (services/homeroom-sub.js, the hr_sub cookie) get in too, but only to the
 // addresses listed for them here; everything else of the class's Homeroom answers them 403. The services check again.
 const HELPER_OK = {
-  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports|marks|needs)$/],
+  aide: [['GET', /^\/class\/[^/]+\/(?:homeroom|hub)\/?$/], ['GET', /^\/class\/[^/]+\/(?:homeroom|hub)\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports|marks|needs)$/],
     ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag|asks)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
-  sub: [['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
+  sub: [['GET', /^\/class\/[^/]+\/(?:homeroom|hub)\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
 };
 /** The sub this request's hr_sub cookie stands for now ({ link, c, actor }), or null. */
 export function subOf(req) {
@@ -179,7 +179,14 @@ const gate = (req, res, next) => {
   req.homeroomClass = c; req.hrRole = role; req.hrActor = actor;
   next();
 };
-router.use(['/class/:id/homeroom', '/api/homeroom/:id'], gate);
+router.use(['/class/:id/hub', '/class/:id/homeroom', '/api/homeroom/:id'], gate);
+// The Hub was called Homeroom (docs/decisions.md "Homeroom is now the Hub"): an old address of a page,
+// /class/:id/homeroom and everything under it, moves for good to the same place under /class/:id/hub, its query kept.
+// Only pages move; the API keeps its /api/homeroom/... addresses.
+router.get(/^\/class\/([^/]+)\/homeroom(\/.*)?$/, (req, res) => {
+  const [path, ...q] = req.originalUrl.split('?');
+  res.redirect(301, path.replace(/^(\/class\/[^/]+\/)homeroom/, '$1hub') + (q.length ? `?${q.join('?')}` : ''));
+});
 
 // The desk's gate: one of the class's own students, the class having Homeroom; else on to the site's 404.
 const deskGate = (req, res, next) => {
@@ -339,7 +346,7 @@ function catalogHtml(req, lists) {
   </div>`;
 }
 
-router.get('/class/:id/homeroom', (req, res) => {
+router.get('/class/:id/hub', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user, aide = req.hrRole === 'aide';
   const room = H.roomOf(c.id);
   // The shared bar's Homeroom buttons (routes/homeroom-views.js): the Live dot, live class's buttons, Arrange seats, ⋯.
@@ -715,7 +722,7 @@ router.post('/api/desk/:id/livegame', rateLimit('homeroom-livegame-join', 300, 3
 // ---------------------------------------------------------------- the projector view
 // The teacher's area as big as the screen, the class's name and the Live dot: never a name, a desk, a hand or progress.
 // No site bar or chat (bare), so nothing of the teacher's own screen shows either.
-router.get('/class/:id/homeroom/projector', (req, res) => {
+router.get('/class/:id/hub/projector', (req, res) => {
   const t = req.t, c = req.homeroomClass, u = req.user;
   page(req, res, {
     title: t('homeroom.projector.title', { class: c.name }), bare: true, bodyClass: 'hr-projpage', scripts: ['/js/homeroom-projector.js'], i18n: ['js.homeroom-area', 'js.homeroom-plan'],
@@ -873,5 +880,5 @@ export function aidePanel(req) {
   const t = req.t;
   return html`<section class="panel hr-aidepanel" aria-labelledby="hr-aidepanelh"><h2 id="hr-aidepanelh">${ico('🤝', { size: 28 })} ${t('homeroom.helpers.aideClasses')}</h2>
     <p class="small muted">${t('homeroom.helpers.aideClassesText')}</p>
-    <ul class="plain row">${list.map(c => html`<li><a class="btn" href="/class/${c.id}/homeroom">${ico('🏫', { size: 18 })} <span dir="auto">${c.name}</span></a></li>`)}</ul></section>`;
+    <ul class="plain row">${list.map(c => html`<li><a class="btn" href="/class/${c.id}/hub">${ico('🏫', { size: 18 })} <span dir="auto">${c.name}</span></a></li>`)}</ul></section>`;
 }

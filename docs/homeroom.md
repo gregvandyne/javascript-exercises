@@ -1,6 +1,11 @@
-# Homeroom
+# The Hub (formerly Homeroom)
 
-Approved by the owner on 2026-11-25. Homeroom is the place a teacher runs a class from: one big board, built on the
+Named the Hub on 2026-11-26 (docs/decisions.md "Homeroom is now the Hub"): what users see says "the Hub" in running
+text and "Hub" where a label is short (the tab, Everyone to the Hub). Its page is `/class/:id/hub` (the old
+`/class/:id/homeroom` addresses redirect there). Code, files, flags, keys and API paths keep the name homeroom, and so
+does most of this spec and the decisions it points to.
+
+Approved by the owner on 2026-11-25. Homeroom (now the Hub) is the place a teacher runs a class from: one big board, built on the
 Manipulatives live room, with a desk for every student placed where they really sit, a teacher's area across the top,
 and every Oomba lesson, tool and lesson plan on the teacher's desk as a handout. Planning runs through the Oomba chat.
 
@@ -21,7 +26,7 @@ Clickable mockups (owner-approved look and behavior): the teacher's Homeroom, th
 
 For Teacher plan teachers a class has three tabs:
 
-- **Homeroom**: running today (the board, desks, handouts, live class, today at a glance).
+- **Hub** (was Homeroom): running today (the board, desks, handouts, live class, today at a glance).
 - **Classroom**: the calm, simple overview over weeks. One column per handout (lesson plan, lesson, quiz, reading, own
   lesson) with how it is graded; one row per student, alphabetical, never ranked; trends; summary numbers; the Google Classroom
   status line. Everything that exists today stays one tap away and unchanged: the full gradebook and CSV, student
@@ -61,7 +66,7 @@ Teachers without the Teacher plan keep today's class page.
   per class. Whole class works with no students yet ("No students yet. Students who join will get it."). Details:
   docs/decisions.md "Homeroom: the teacher's desk".
 - Top bar: class switcher, tabs, Live dot, the plan pill (Today / Now with countdown / Time's up), +5 min and Next
-  during a plan, the Needs a look count, Today (today at a glance), Hands, the yellow Everyone to Homeroom / Bring
+  during a plan, the Needs a look count, Today (today at a glance), Hands, the yellow Everyone to the Hub (was Everyone to Homeroom) / Bring
   everyone to me, and the ⋯ menu (Arrange seats, join code, projector view, K-2 desks, Parents' view, Students draw on
   the room, Show me around, End class).
 - **Students draw on the room** (⋯ menu, off by default): when on, students in See the room draw with a pen and erase
@@ -77,7 +82,7 @@ the game in their player (a small picture the game's own frame draws, every 5 s 
 pointer), their square of a Manipulatives tool's live room (drawn by the tool's own code, live, with their cursor), the
 page they are reading, or their cards and doodle pad. Tapping the desk opens it large in look (a picture every 1.5 s),
 with Open the room for a tool. Never the notebook; nothing recorded or stored; the class's teachers and aides only (never
-a sub's link, the projector, parents or classmates). Students see "Your teacher can see your screen in Homeroom." on their
+a sub's link, the projector, parents or classmates). Students see "Your teacher can see your screen in the Hub." on their
 desk and over every game. **Manipulatives tools hand out**: each one is that tool's live room for the class, opened in the
 desk's player exactly as on its own page (one tool at a time per class; open practice, not graded). The left panel's
 catalog lists every lesson a teacher can assign elsewhere (all their own, their folders, shared folders, favorites, every
@@ -210,11 +215,11 @@ can't be linked to a family yet, so their grown-ups have no view.
 Built (docs/decisions.md "Homeroom: onboarding, Needs a look, Oomba follow-ups"):
 - **A first-run guide** the first time a teacher opens Homeroom (once per teacher, kept on the server): six calm coach
   marks beside the real things (Arrange seats, the teacher's area and its pen, handing out a lesson by tap or drag, My
-  desk, Oomba for today's plan, Everyone to Homeroom and the quick sign-in code), Next and Skip, never a layer over the
+  desk, Oomba for today's plan, Everyone to the Hub and the quick sign-in code), Next and Skip, never a layer over the
   board, on phones, tablets and laptops; the ⋯ menu's **Show me around** opens it again. A class with no students starts
   with "No students yet": the join code and Add students (Google Classroom from the Students tab).
 - **The student's intro card** the first time a student opens a desk: where things are, Raise hand, the notebook, "Your
-  teacher can see your screen in Homeroom"; in K-2 big pictures and Read to me on every line.
+  teacher can see your screen in the Hub"; in K-2 big pictures and Read to me on every line.
 - **Needs a look**: a calm list in Today at a glance and a small count chip in the top bar (never on the projector, never
   to students or parents, never ranked) of students who may need help now or this week, with the reason in plain words
   and a suggested action: stuck on the same handout (3 minutes, longer with extra time), a hand up 4 minutes, a question

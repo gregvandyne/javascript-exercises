@@ -98,9 +98,9 @@ const tourFits = page => page.evaluate(() => {
 test('the first-run guide at 1366, 820 and 390: six steps, Next and Skip, the board still works, kept on the server, Show me around', { timeout: 240000 }, async t => {
   if (skip) return t.skip(skip);
   IN.setSeen(teacher, 'tour', false);
-  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/homeroom`, LAPTOP);
+  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/hub`, LAPTOP);
   await page.waitForSelector('.hr-tourcard', { timeout: 8000 });
-  const want = ['Arrange seats like your room', "Your teacher's area", 'Hand out a lesson', 'My desk', "Ask Oomba for today's plan", 'Everyone to Homeroom'];
+  const want = ['Arrange seats like your room', "Your teacher's area", 'Hand out a lesson', 'My desk', "Ask Oomba for today's plan", 'Everyone to the Hub'];
   for (const [i, title] of want.entries()) {
     await page.waitForFunction(x => (document.querySelector('.hr-tourh')?.textContent || '').includes(x), title);
     assert.match(await page.locator('.hr-tourstep').innerText(), new RegExp(`${i + 1} of 6`));
@@ -139,7 +139,7 @@ test('the first-run guide at 1366, 820 and 390: six steps, Next and Skip, the bo
   // a tablet and a phone (touch): the same steps, nothing sideways, Skip
   for (const [vp, tag] of [[TABLET, '820'], [PHONE, '390']]) {
     IN.setSeen(teacher, 'tour', false);
-    const T = await open(teacher, `/class/${A.id}/homeroom`, vp, true);
+    const T = await open(teacher, `/class/${A.id}/hub`, vp, true);
     await T.page.waitForSelector('.hr-tourcard', { timeout: 8000 });
     for (let i = 0; i < 6; i++) {
       assert.ok(await tourFits(T.page), `${tag}: step ${i + 1} fits`);
@@ -154,7 +154,7 @@ test('the first-run guide at 1366, 820 and 390: six steps, Next and Skip, the bo
   }
   // the empty class: its own first step, the join code and Google Classroom
   IN.setSeen(teacher, 'tour', false);
-  const em = await open(teacher, `/class/${E.id}/homeroom`, LAPTOP);
+  const em = await open(teacher, `/class/${E.id}/hub`, LAPTOP);
   await em.page.waitForSelector('.hr-tourcard', { timeout: 8000 });
   const first = await em.page.locator('.hr-tourcard').innerText();
   assert.match(first, /No students yet[\s\S]*join code[\s\S]*Google Classroom/);
@@ -172,7 +172,7 @@ test('the student\'s intro card on a first desk (and the K-2 one with pictures a
     const D = await open(kid, `/class/${A.id}/desk`, vp, vp !== LAPTOP);
     await D.page.waitForSelector('.hd-intro', { timeout: 8000 });
     const txt = await D.page.locator('.hd-intro').innerText();
-    assert.match(txt, /Welcome to your desk![\s\S]*My desk:[\s\S]*Raise hand:[\s\S]*Notebook:[\s\S]*The buttons at the bottom:[\s\S]*Your teacher can see your screen in Homeroom\./);
+    assert.match(txt, /Welcome to your desk![\s\S]*My desk:[\s\S]*Raise hand:[\s\S]*Notebook:[\s\S]*The buttons at the bottom:[\s\S]*Your teacher can see your screen in the Hub\./);
     assert.doesNotMatch(txt, /lesson/i, 'students keep their own words');
     assert.ok(await noSideways(D.page));
     await settle(D.page); await shot(D.page, `intro-${tag}`);
@@ -213,7 +213,7 @@ test('Needs a look: the chip in the top bar, the list in Today with reasons and 
   for (const g of [pizza, sudoku, ladder]) assert.ok(HO.handOut(teacher, A, { gameId: g.id, to: { kind: 'desk', id: dev.id }, dueAt: yesterday }).ok);
   assert.ok(AT.ask(eli, A, { kind: 'question', text: 'Which page do I read?' }, now() - 2 * 3600e3).ok);
   for (const [vp, tag] of [[LAPTOP, '1366'], [TABLET, '820'], [PHONE, '390']]) {
-    const T = await open(teacher, `/class/${A.id}/homeroom`, vp, vp !== LAPTOP);
+    const T = await open(teacher, `/class/${A.id}/hub`, vp, vp !== LAPTOP);
     await T.page.waitForSelector('.hr-needchip');
     assert.match(await T.page.locator('.hr-needchip').getAttribute('aria-label'), /Needs a look: 2 students/);
     const color = await T.page.locator('.hr-needchip').evaluate(el => getComputedStyle(el).backgroundColor);
@@ -239,7 +239,7 @@ test('Needs a look: the chip in the top bar, the list in Today with reasons and 
       assert.match(await T.page.locator('#hr-needs').innerText(), /1 seen or snoozed/);
       // the projector: no chip, no list, no names
       const proj = await T.ctx.newPage();
-      await proj.goto(`${BASE}/class/${A.id}/homeroom/projector`); await proj.waitForTimeout(600);
+      await proj.goto(`${BASE}/class/${A.id}/hub/projector`); await proj.waitForTimeout(600);
       assert.doesNotMatch(await proj.locator('body').innerText(), /Needs a look|Dev|Eli|after due/);
       await proj.close();
       // back on the list for the other sizes
@@ -261,7 +261,7 @@ test('Finish class: Oomba\'s follow-up card in the chat, names from the page; a 
   const ids = HP.todayOf(A).parts[1].handouts, card0 = HO.boardView(A).desks[ava.id].find(k => ids.includes(k.id));
   const st0 = q.get('SELECT s.id FROM class_lessons cl JOIN lesson_steps s ON s.lesson_id=cl.lesson_id WHERE cl.id=?', card0.id).id;
   P.gameTime(ava, card0.id, st0, 60); P.gameTime(ava, card0.id, st0, 60);
-  const T = await open(teacher, `/class/${A.id}/homeroom`, LAPTOP);
+  const T = await open(teacher, `/class/${A.id}/hub`, LAPTOP);
   await T.page.waitForSelector('#hr-plan [data-hrplan="menu"]');
   await T.page.click('#hr-plan [data-hrplan="menu"]');
   await T.page.click('.hr-planmenu [data-hrplan="finish"]');
@@ -301,7 +301,7 @@ test('Finish class: Oomba\'s follow-up card in the chat, names from the page; a 
   await T.ctx.close();
   // the same card at 820 and 390 (the chat keeps it)
   for (const [vp, tag] of [[TABLET, '820'], [PHONE, '390']]) {
-    const P2 = await open(teacher, `/class/${A.id}/homeroom`, vp, true);
+    const P2 = await open(teacher, `/class/${A.id}/hub`, vp, true);
     await P2.page.waitForSelector('#hr-plan');
     await P2.page.evaluate(async () => { const B = await import('/js/oomba-bus.js'); B.whenChat(c => c.setMode('open')); });
     await P2.page.waitForSelector('#oc .oc-follow');

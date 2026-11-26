@@ -16008,8 +16008,8 @@ in a "Teach with Atlas Quest" widget under the solo game's home, gated by BRB.ca
   the game (school staff, the platform admin, a family grown-up), from the game page, a link, Homeroom's My desk or
   Homeroom's Live games card. "All options" goes back to it from Play and from Build a lesson. A quiz link or class code
   skips it and plays the quiz; a reload inside the quiz maker comes back to the maker.
-- **Students and children** have only Play, so they go straight to the games (with Maps and more: blank maps without
-  answers, the library and the class-code box). They never see Host live or Build a lesson, and a handed-out Atlas Quest
+- **Students and children** have only Play, so they go straight to the games (with Maps and more: the library and the
+  class-code box; blank maps are teacher-only, in Build a lesson). They never see Host live or Build a lesson, and a handed-out Atlas Quest
   on a desk just plays.
 - **Host live**: the frame's `hostLive` (routes/games.js `hostLiveMode`: Oomba Live on, a grown-up who may host, the live
   game not hidden, never a preview or "As a student"); after a tap the play page opens `/live?mode=atlas`, or, inside
@@ -16066,3 +16066,27 @@ and Canada's 13 provinces and territories with their capitals.
   globe, which is unchanged, so they need no re-recording. A re-record would show the new Map row on the home panel.
 
 Tests: tests/unit/atlas-states.test.js (the data, geometry, pack, questions, quizzes, print, live), and the Atlas tests.
+
+## Homeroom is now the Hub (26 Nov 2026)
+
+The owner approved renaming the classroom feature: Homeroom (now the Hub) is called the Hub everywhere users see it.
+The sections above keep the old name as history.
+
+- **Words**: "the Hub" with a capital H in running text ("Your class is in the Hub."), and "Hub" alone where a label is
+  short (the tab reads Hub; the button is Everyone to the Hub; page titles are "<class> · Hub"). Oomba's chat is told to
+  call the page the Hub and never Homeroom.
+- **Other languages**, one term each: de "der Hub" (in den Hub, im Hub, Hub-Tafel), fr "le Hub" (au Hub, dans le Hub),
+  es "el Hub" (al Hub, en el Hub, del Hub), it "l'Hub" (nell'Hub, all'Hub, dell'Hub), pt "o Hub" (no Hub, ao Hub),
+  nl "de Hub" (naar de Hub, Hub-bord), ru "Хаб" (declined: в Хаб, в Хабе, Хаба), ja "ハブ", and "Hub" as a loanword in
+  ar, he and zh-Hant (as those already keep Classroom and Homeroom in Latin letters). en-GB had no Homeroom strings.
+- **Addresses**: the page is `/class/:id/hub` (and `/hub/projector`, `/hub/signin`, `/hub/signin/cards/:k`). Every
+  `/class/:id/homeroom...` page address answers a 301 to the same place under `/hub`, its query kept, for anyone the
+  gate lets in (anyone else still gets the 404, never a redirect). No page takes a POST, so nothing else is kept on the
+  old path. The API stays at `/api/homeroom/...`. Links the app makes (tabs, class cards, the aides' list, the sub
+  link, the sign-in page, the projector menu, the game layer's address) point to `/hub`.
+- **Unchanged on purpose**: file names, CSS classes, data attributes, JS identifiers, DB tables, the flags (HOMEROOM,
+  HOMEROOM_USERS, HOMEROOM_ONBOARDING), i18n key names, test ids and the companion's "homeroom" page type.
+
+Tests: tests/unit/hub-rename.test.js (the redirect with its query, /hub renders, the gate at both addresses, the links,
+no Homeroom in any locale's values), tests/unit/hub-rename-browser.test.js (the teacher's Hub, the student desk, the
+projector and the sign-in page show no Homeroom).

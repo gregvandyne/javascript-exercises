@@ -53,7 +53,7 @@ test('Google Classroom: a section on "/" and on /teachers with the same words, o
     assert.match(gc, /can only see your classes and their students\. It posts nothing until you allow posting\./, 'read-only connect first');
     assert.match(gc, /refreshes itself every 6 hours/, 'the roster refresh (GC.ROSTER_EVERY)');
     assert.match(gc, /as a Classroom assignment, with its link and due date, or share it as a material/);
-    assert.match(gc, /Grades flow back to Classroom out of 100: a completion grade \(the share of the lesson plan(?:’|&#39;)s steps finished, not right answers\), or for Homeroom handouts the grade you chose/, 'completion grades and Homeroom grades, said plainly');
+    assert.match(gc, /Grades flow back to Classroom out of 100: a completion grade \(the share of the lesson plan(?:’|&#39;)s steps finished, not right answers\), or for Hub handouts the grade you chose/, 'completion grades and Hub grades, said plainly');
     assert.match(gc, /doesn(?:’|&#39;)t ask Classroom for student emails, and never sends Google a student(?:’|&#39;)s name, answers or games/);
     assert.match(gc, /once you allow posting, a separate step/);
     assert.match(gc, /href="\/privacy#google"/);

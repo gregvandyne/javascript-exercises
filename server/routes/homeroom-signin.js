@@ -50,7 +50,7 @@ const gate = (req, res, next) => {
   req.homeroomClass = c;
   next();
 };
-router.use(['/class/:id/homeroom/signin', '/api/homeroom/:id/signin'], gate);
+router.use(['/class/:id/hub/signin', '/api/homeroom/:id/signin'], gate);
 
 /** What the teacher's sign-in box and the projector show: the code, the QR code of /hr#<code>, the short address. */
 export function signinView(req, classId, { qr = true } = {}) {
@@ -71,7 +71,7 @@ router.post('/api/homeroom/:id/signin', rateLimit('homeroom-signin', 120, 3600e3
 
 const picRow = (req, pics, size = 40) => raw(pics.map((k, i) => `<span class="hs-cardpic"><span class="hs-cardn">${i + 1}</span>${iconHtml(SI.PICTURES.find(p => p.key === k).emoji, { size, label: req.t(`homeroom.signin.pics.${k}`) })}<span class="hs-cardpicname">${esc(req.t(`homeroom.signin.pics.${k}`))}</span></span>`).join(''));
 
-router.get('/class/:id/homeroom/signin', (req, res) => {
+router.get('/class/:id/hub/signin', (req, res) => {
   const t = req.t, c = req.homeroomClass;
   const rows = SI.teacherRows(c), v = signinView(req, c.id), early = SI.earlyGrade(c.grade);
   const base = `/api/homeroom/${c.id}/signin/students`;
@@ -82,7 +82,7 @@ router.get('/class/:id/homeroom/signin', (req, res) => {
     title: t('homeroom.signin.panel.title', { class: c.name }), active: 'classes', bodyClass: 'hs-teach', head: CSS(), scripts: ['/js/homeroom-signin-panel.js'],
     body: html`${jsonData('page-data', { classId: c.id, signin: v })}
     <div class="hs-panel">
-      <div class="hs-panelhead">${homeroomTabs(req, c, 'homeroom')}<a class="btn hr-chunk" href="/class/${c.id}/homeroom"><span class="flip" aria-hidden="true">←</span> ${t('homeroom.signin.panel.back')}</a></div>
+      <div class="hs-panelhead">${homeroomTabs(req, c, 'homeroom')}<a class="btn hr-chunk" href="/class/${c.id}/hub"><span class="flip" aria-hidden="true">←</span> ${t('homeroom.signin.panel.back')}</a></div>
       <h1>${ico('🔑', { size: 32 })} ${t('homeroom.signin.panel.heading')}</h1>
       <p class="muted">${t('homeroom.signin.panel.lead')}</p>
       <section class="hs-box" id="hs-box" aria-labelledby="hs-boxh"><h2 id="hs-boxh">${t('homeroom.signin.title')}</h2><div id="hs-code"></div></section>
@@ -104,13 +104,13 @@ router.get('/class/:id/homeroom/signin', (req, res) => {
   });
 });
 const studentOf = req => String(req.params.uid || '');
-const cardOf = (req, c, r) => `/class/${c.id}/homeroom/signin/cards/${SI.keepCards(req.user, c, [r])}`;
+const cardOf = (req, c, r) => `/class/${c.id}/hub/signin/cards/${SI.keepCards(req.user, c, [r])}`;
 router.post('/api/homeroom/:id/signin/students/:uid', rateLimit('homeroom-signin-mode', 300, 3600e3), (req, res) => {
   const c = req.homeroomClass, r = SI.setMode(req.user, c, studentOf(req), String(body(req).mode || ''));
   if (!r.ok) return fail(req, res, r.code);
   const row = SI.teacherRows(c).find(x => x.id === req.params.uid);
   if (r.pics) return res.json({ ok: true, redirect: cardOf(req, c, { name: row.name, shows: row.shows, pics: r.pics }) });
-  res.json({ ok: true, redirect: `/class/${c.id}/homeroom/signin`, toast: req.t('homeroom.signin.panel.saved') });
+  res.json({ ok: true, redirect: `/class/${c.id}/hub/signin`, toast: req.t('homeroom.signin.panel.saved') });
 });
 router.post('/api/homeroom/:id/signin/students/:uid/picture', rateLimit('homeroom-signin-pic', 300, 3600e3), (req, res) => {
   const c = req.homeroomClass, r = SI.newPicture(req.user, c, studentOf(req));
@@ -126,9 +126,9 @@ router.post('/api/homeroom/:id/signin/students/:uid/unlock', rateLimit('homeroom
 router.post('/api/homeroom/:id/signin/cards', rateLimit('homeroom-signin-cards', 20, 3600e3), (req, res) => {
   const c = req.homeroomClass, r = SI.classCards(req.user, c);
   if (!r.ok) return fail(req, res, r.code);
-  res.json({ ok: true, redirect: `/class/${c.id}/homeroom/signin/cards/${SI.keepCards(req.user, c, r.cards)}` });
+  res.json({ ok: true, redirect: `/class/${c.id}/hub/signin/cards/${SI.keepCards(req.user, c, r.cards)}` });
 });
-router.get('/class/:id/homeroom/signin/cards/:k', (req, res, next) => {
+router.get('/class/:id/hub/signin/cards/:k', (req, res, next) => {
   const t = req.t, c = req.homeroomClass, cards = SI.cardsFor(req.user, c, req.params.k);
   if (!cards) return next('router');
   const site = `${siteHost(req).replace(/^www\./, '')}/hr`;
@@ -136,7 +136,7 @@ router.get('/class/:id/homeroom/signin/cards/:k', (req, res, next) => {
     title: t('homeroom.signin.cards.title'), active: 'classes', bodyClass: 'hs-teach', head: CSS(), scripts: ['/js/print.js'],
     body: html`<div class="hs-panel">
       <div class="pagehead noprint hs-cardsbar"><div><h1>${ico('🪪', { size: 32 })} ${t('homeroom.signin.cards.title')}</h1><p class="muted">${t('homeroom.signin.cards.count', { count: cards.length })}</p></div>
-        <div class="row"><button class="btn btn-primary hr-chunk" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('homeroom.signin.cards.print')}</button><a class="btn hr-chunk" href="/class/${c.id}/homeroom/signin">${t('homeroom.signin.cards.back')}</a></div></div>
+        <div class="row"><button class="btn btn-primary hr-chunk" type="button" data-print>${ico('🖨️', { size: 18 })} ${t('homeroom.signin.cards.print')}</button><a class="btn hr-chunk" href="/class/${c.id}/hub/signin">${t('homeroom.signin.cards.back')}</a></div></div>
       <p class="notice warn noprint">${t('homeroom.signin.cards.once')}</p>
       <div class="hs-cards">${cards.map(x => html`<div class="hs-card">
         <div class="hs-cardtop"><span dir="auto">${c.name}</span><span dir="ltr">${site}</span></div>

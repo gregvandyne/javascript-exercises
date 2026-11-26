@@ -167,7 +167,7 @@ test('a Reading handout: Read, the quiz, 3 notes, on a tablet, a Chromebook and 
 
 test('the teacher: Choose a book, hand it out, the board\'s step, Today, the 3 notes, the Classroom column', { timeout: 200000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
   await page.click('[data-hr="pickbook"]');
   await page.waitForSelector('.hr-booksheet .rdp-book');
@@ -209,7 +209,7 @@ test('the teacher: Choose a book, hand it out, the board\'s step, Today, the 3 n
   await ctx.close();
   // the board on a tablet and a phone
   for (const [name, vp, touch] of [VIEWS[0], VIEWS[2]]) {
-    const o = await open(teacher, `/class/${cls.id}/homeroom`, vp, touch);
+    const o = await open(teacher, `/class/${cls.id}/hub`, vp, touch);
     await o.page.waitForSelector('.hr-desk .hr-rdc'); await o.page.waitForTimeout(400);
     await shot(o.page, `teacher-board-${name}`);
     assert.deepEqual(o.errors, []); await o.ctx.close();

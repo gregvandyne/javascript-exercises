@@ -54,7 +54,7 @@ async function open(browser, viewport = { width: 1366, height: 768 }, touch = fa
   const ctx = await browser.newContext({ viewport, deviceScaleFactor: 1, hasTouch: touch });
   const [name, value] = cookieOf(teacher.id).split('='); await ctx.addCookies([{ name, value, url: BASE }]);
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', e => errors.push(String(e)));
-  await page.goto(`${BASE}/class/${cls.id}/homeroom`); await page.waitForSelector('.hr-desk'); await page.waitForTimeout(400);
+  await page.goto(`${BASE}/class/${cls.id}/hub`); await page.waitForSelector('.hr-desk'); await page.waitForTimeout(400);
   const b = await page.locator('.hr-area').boundingBox();
   const at = (fx, fy) => ({ x: b.x + b.width * fx, y: b.y + b.height * fy });
   return { ctx, page, errors, at, box: b };
