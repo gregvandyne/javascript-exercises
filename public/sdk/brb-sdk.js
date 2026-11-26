@@ -1164,6 +1164,42 @@
     if (m.ok === true) w({ ok: true, mastered: +m.mastered || 0, n: +m.n || 0 });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
   });
+  // Flashcards' pictures (docs/sdk.md "Flashcards"; services/flash-pics.js). BRB.flashPics: { upload, paint, left } for
+  // the grown-ups who may add pictures (Storybook's rule), null for everyone else (students and children: emoji only).
+  // BRB.flashPicUpload(base64 JPEG) -> { ref, width, height }; BRB.flashPaint([{ subject, note? }]) -> { refs: [ref |
+  // null], more, left } (queued: show a placeholder until it is painted); BRB.flashPicState(refs) -> { pics: { ref:
+  // { state, reason } } }; BRB.flashPicUrl(ref, setId) -> { url: a data: URL } | { painting: true } | { error }, for
+  // anyone who may open that set (the page fetches it: the frame can't). Each a Promise; { error } on a refusal.
+  var fpicWait = {}, fpicSeq = 0;
+  function fpicAsk(type, body, ms, open) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!open && !INIT.flashPics) return res({ error: 'notAllowed' });
+      var n = ++fpicSeq, timer = setTimeout(function () { delete fpicWait[n]; res({ error: 'offline' }); }, ms);
+      fpicWait[n] = function (r) { clearTimeout(timer); delete fpicWait[n]; res(r); };
+      var m = body || {}; m.id = n; send(type, m);
+    });
+  }
+  var REF = /^img:[A-Za-z0-9]{10,40}$/;
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:fpic-done' || typeof m.id !== 'number') return;
+    var w = fpicWait[m.id]; if (!w) return;
+    if (typeof m.error === 'string') return w({ error: m.error });
+    if (typeof m.url === 'string' && /^data:image\/(jpeg|png);base64,/.test(m.url)) return w({ url: m.url });
+    if (m.painting === true) return w({ painting: true });
+    if (typeof m.ref === 'string' && REF.test(m.ref)) return w({ ref: m.ref, width: +m.width || 0, height: +m.height || 0 });
+    if (Array.isArray(m.refs)) return w({ refs: m.refs.map(function (x) { return typeof x === 'string' && REF.test(x) ? x : null; }), more: +m.more || 0, left: +m.left || 0 });
+    if (m.pics && typeof m.pics === 'object') { var out = {}; Object.keys(m.pics).forEach(function (k) { var v = m.pics[k]; if (REF.test(k) && v && typeof v.state === 'string') out[k] = { state: v.state, reason: typeof v.reason === 'string' ? v.reason : '' }; }); return w({ pics: out }); }
+    w({ error: 'offline' });
+  });
+  function flashPicUpload(data) { return typeof data === 'string' && data.length <= 2200000 ? fpicAsk('brb:fpic-up', { data: data.replace(/^data:image\/jpeg;base64,/, '') }, 60000) : Promise.resolve({ error: 'imgBig' }); }
+  function flashPaint(asks) {
+    if (!Array.isArray(asks) || !asks.length || asks.length > 30) return Promise.resolve({ error: 'bad' });
+    return fpicAsk('brb:fpic-paint', { asks: asks.map(function (a) { return { subject: String(a && a.subject || '').slice(0, 80), note: String(a && a.note || '').slice(0, 120) }; }) }, 20000);
+  }
+  function flashPicState(refs) { return fpicAsk('brb:fpic-state', { refs: (refs || []).filter(function (r) { return REF.test(r); }).slice(0, 100) }, 10000); }
+  function flashPicUrl(ref, set) { return REF.test(String(ref)) ? fpicAsk('brb:fpic-get', { ref: ref, set: /^s-[a-z0-9]{10}$/.test(set || '') ? set : '' }, 20000, true) : Promise.resolve({ error: 'none' }); }
   // Mistake Hunt's "Upload a passage" (BRB.canReadDocs: a grown-up who may host): BRB.textFromDoc(file, { kind: 'pdf'|'docx' })
   // -> a Promise of { text, cut } (the document's text, read on the server with no AI; cut: only the first pages were
   // read) or { error } ('notAllowed', 'docBad', 'docBig', 'docType', 'docPages', 'docScan', 'docEmpty', 'docLimit',
@@ -1527,6 +1563,13 @@
     // "Make your own" (Crossword, Word Hunt, Atlas Quest): the builder and its drafts, for grown-ups who may host only
     // (false: a student, a child, a guest, signed out, a preview; hide Make and the drafts list).
     canMake: INIT.make === true,
+    // Flashcards: a student's or a child's own sets (no class code, link, share or assign for anyone else).
+    makePrivate: INIT.make === true && INIT.makePrivate === true,
+    flashPics: INIT.flashPics && typeof INIT.flashPics === 'object' ? { upload: INIT.flashPics.upload === true, paint: INIT.flashPics.paint === true, left: +INIT.flashPics.left || 0 } : null,
+    flashPicUpload: flashPicUpload,
+    flashPaint: flashPaint,
+    flashPicState: flashPicState,
+    flashPicUrl: flashPicUrl,
     canAssign: INIT.canAssign === true,
     // Atlas Quest's door: "Host live" starts the game's live version (a grown-up who may host while Oomba Live is on;
     // false: hide it). hostLive() asks the play page, which goes there only after a tap.

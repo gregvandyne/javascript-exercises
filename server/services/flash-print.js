@@ -8,6 +8,9 @@
 //           back lands behind its own front; dashed lines to cut along.
 //   'list'  a study sheet: the terms and definitions in a two-column table, with Name and Date.
 // There is no answer key: the cards are the answers. note: the teacher's own instructions, printed on the study sheet.
+// Pictures (services/flash-pics.js): a card's own picture ('img:<id>') prints on its side as an <img> from our own
+// route, only where the caller's picSrc gives one (this viewer may see it); a picture they may not see, or one still
+// being painted, is left off. Its alt text is the card's own words.
 import { cleanFlashItems, SET_ID } from './game-sets.js';
 import { cleanPrintNote } from './print-note.js';
 import { cleanText } from './textfilter.js';
@@ -35,15 +38,21 @@ export function cleanFlashPrintDoc(raw) {
 }
 
 const foot = (t, code, link) => `<footer class="cwp-foot"><span>${esc(t('play.print.made'))}</span>${code ? `<span>${esc(t('play.print.code', { code }))}</span>` : ''}${link ? `<span dir="ltr" class="cwp-link">${esc(link)}</span>` : ''}</footer>`;
-const face = (text, pic, cls) => `<div class="fcp-card ${cls}">${pic ? `<span class="fcp-pic" aria-hidden="true">${esc(pic)}</span>` : ''}<span class="fcp-text" dir="auto">${esc(text)}</span></div>`;
+/** A side's picture: an emoji, or our own picture (its src from picSrc; '' when this viewer may not see it). */
+function picHtml(pic, alt, picSrc, cls) {
+  if (!pic) return '';
+  if (pic.startsWith('img:')) { const src = picSrc ? picSrc(pic) : ''; return src && /^\/api\/games\/[\w-]+\/flash-pics\/[A-Za-z0-9]+(\?set=s-[a-z0-9]+)?$/.test(src) ? `<img class="${cls}-img" src="${esc(src)}" alt="${esc(alt)}">` : ''; }
+  return `<span class="${cls}" aria-hidden="true">${esc(pic)}</span>`;
+}
 
-export function flashPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = '' }) {
+export function flashPrintHtml(doc, { t, dir = 'ltr', lang = 'en', code = '', link = '', picSrc = null }) {
+  const face = (text, pic, cls) => `<div class="fcp-card ${cls}">${picHtml(pic, text, picSrc, 'fcp-pic')}<span class="fcp-text" dir="auto">${esc(text)}</span></div>`;
   const title = doc.t || t('play.printFlash.untitled');
   const head = `<header class="cwp-head"><h1 dir="auto">${esc(title)}</h1><p class="cwp-lines"><span class="cwp-line">${esc(t('play.print.name'))}<i class="cwp-blank cwp-blank-name"></i></span><span class="cwp-line">${esc(t('play.print.date'))}<i class="cwp-blank"></i></span></p></header>`;
   let body;
   if (doc.as === 'list') {
     body = `<section class="cwp-page fcp-sheet">${head}${doc.note ? `<p class="cwp-mine" dir="auto">${esc(doc.note)}</p>` : ''}
-<table class="fcp-table"><thead><tr><th scope="col">${esc(t('play.printFlash.term'))}</th><th scope="col">${esc(t('play.printFlash.def'))}</th></tr></thead><tbody>${doc.c.map(([w, d, p]) => `<tr><td dir="auto">${p ? `<span aria-hidden="true">${esc(p)}</span> ` : ''}<b>${esc(w)}</b></td><td dir="auto">${esc(d)}</td></tr>`).join('')}</tbody></table>
+<table class="fcp-table"><thead><tr><th scope="col">${esc(t('play.printFlash.term'))}</th><th scope="col">${esc(t('play.printFlash.def'))}</th></tr></thead><tbody>${doc.c.map(([w, d, p, bp]) => `<tr><td dir="auto">${p ? `${picHtml(p, w, picSrc, 'fcp-tpic')} ` : ''}<b>${esc(w)}</b></td><td dir="auto">${bp ? `${picHtml(bp, d, picSrc, 'fcp-tpic')} ` : ''}${esc(d)}</td></tr>`).join('')}</tbody></table>
 ${foot(t, code, link)}</section>`;
   } else {
     const pages = [];
@@ -55,7 +64,7 @@ ${foot(t, code, link)}</section>`;
       const backs = [];
       for (let r = 0; r < chunk.length; r += 2) backs.push(chunk[r + 1], chunk[r]);
       pages.push(`<section class="cwp-page fcp-cards">${i ? '' : `<p class="fcp-how">${esc(t('play.printFlash.how'))}</p>`}<p class="fcp-side">${esc(t('play.printFlash.fronts', { title }))}</p><div class="fcp-grid">${fronts}</div>${foot(t, code, link)}</section>`);
-      pages.push(`<section class="cwp-page fcp-cards"><p class="fcp-side">${esc(t('play.printFlash.backs', { title }))}</p><div class="fcp-grid" dir="ltr">${backs.map(x => (x ? face(x[1], '', 'fcp-back') : '<div class="fcp-card fcp-blank"></div>')).join('')}</div></section>`);
+      pages.push(`<section class="cwp-page fcp-cards"><p class="fcp-side">${esc(t('play.printFlash.backs', { title }))}</p><div class="fcp-grid" dir="ltr">${backs.map(x => (x ? face(x[1], x[3] || '', 'fcp-back') : '<div class="fcp-card fcp-blank"></div>')).join('')}</div></section>`);
     }
     body = pages.join('');
   }

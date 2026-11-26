@@ -431,20 +431,33 @@ export async function addPic(u, bookId, bytes, name = '') {
   if (!canMake(u)) return fail('notFound');
   let book = null;
   if (bookId) { book = ownBook(u, bookId); if (!book) return fail('notFound'); }
-  let clean;
-  try { clean = cleanJpeg(bytes, { maxBytes: PIC_LIMITS.maxBytes, maxSide: PIC_LIMITS.maxSide }); } catch (e) { return fail(e instanceof PhotoError && e.code === 'tooBig' ? 'imgBig' : 'imgType'); }
   const n = book ? q.get("SELECT COUNT(*) n FROM made_book_pics WHERE book_id=? AND kind='upload'", book.id).n : q.get('SELECT COUNT(*) n FROM made_book_pics WHERE owner_id=? AND book_id IS NULL', u.id).n;
-  if (n >= (book ? PIC_LIMITS.perBook : SETUP_LIMITS.pics)) return fail('imgFull');
-  if (!take(u, { key: `${today()}:pic`, cap: PIC_LIMITS.perDay })) return fail('imgLimit');
-  const verdict = hooks.screenImage ? await hooks.screenImage(clean) : await companionScreenImage(clean);
-  if (verdict !== 'allow') {
-    if (verdict !== 'resting') audit(u.id, 'storybook.pic.refused', book ? book.id : '', { verdict });
-    return fail(verdict === 'person' ? 'imgPerson' : verdict === 'personal_info' ? 'imgPersonal' : verdict === 'resting' ? 'imgResting' : 'imgUnsafe');
-  }
-  const size = jpegSize(clean) || {}, id = uid(14);
+  const r = await checkUpload(u, bytes, { full: n >= (book ? PIC_LIMITS.perBook : SETUP_LIMITS.pics), ref: book ? book.id : '', what: 'storybook.pic.refused' });
+  if (!r.ok) return r;
+  const clean = r.bytes, size = r.size, id = uid(14);
   const shown = scrub(tidy(name, 80), studentNames(u)).text || 'picture.jpg';
   q.run('INSERT INTO made_book_pics(id, owner_id, book_id, name, width, height, bytes, created_at) VALUES (?,?,?,?,?,?,?,?)', id, u.id, book ? book.id : null, shown, size.width || 0, size.height || 0, clean, now());
   return ok({ pic: { id, name: shown, width: size.width || 0, height: size.height || 0 } });
+}
+/**
+ * The checks every picture a grown-up uploads passes, here and in Flashcards (services/flash-pics.js): the file checks
+ * (cleanJpeg: JPEG only, PIC_LIMITS' size, every metadata segment removed), the day's picture checks (PIC_LIMITS.perDay,
+ * one count for books and flashcards), then the companion's picture check (no person at all; nothing unsafe or private).
+ * full: the caller's own "no room" (checked before a picture check is spent). A refused picture is never kept.
+ * -> { ok, bytes, size: { width, height } } | fail ('imgType' | 'imgBig' | 'imgLimit' | 'imgFull' | 'imgPerson' | 'imgPersonal' | 'imgUnsafe' | 'imgResting')
+ */
+export async function checkUpload(u, bytes, { full = false, ref = '', what = 'storybook.pic.refused' } = {}) {
+  let clean;
+  try { clean = cleanJpeg(bytes, { maxBytes: PIC_LIMITS.maxBytes, maxSide: PIC_LIMITS.maxSide }); } catch (e) { return fail(e instanceof PhotoError && e.code === 'tooBig' ? 'imgBig' : 'imgType'); }
+  if (full) return fail('imgFull');
+  if (!take(u, { key: `${today()}:pic`, cap: PIC_LIMITS.perDay })) return fail('imgLimit');
+  const verdict = hooks.screenImage ? await hooks.screenImage(clean) : await companionScreenImage(clean);
+  if (verdict !== 'allow') {
+    if (verdict !== 'resting') audit(u.id, what, ref, { verdict });
+    return fail(verdict === 'person' ? 'imgPerson' : verdict === 'personal_info' ? 'imgPersonal' : verdict === 'resting' ? 'imgResting' : 'imgUnsafe');
+  }
+  const sz = jpegSize(clean) || {};
+  return ok({ bytes: clean, size: { width: sz.width || 0, height: sz.height || 0 } });
 }
 /** A book's own pictures (for the editor's picker). */
 export const picsOf = bookId => q.all("SELECT id, name, width, height FROM made_book_pics WHERE book_id=? AND kind='upload' ORDER BY created_at", bookId);

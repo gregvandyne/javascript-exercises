@@ -390,6 +390,44 @@ async function drawJob(job) {
   if (old && old.pic_id && old.pic_id !== id) q.run("DELETE FROM made_book_pics WHERE id=? AND kind!='upload'", old.pic_id);
 }
 
+// ---------------------------------------------------------------- one picture for another maker (Flashcards)
+/**
+ * One picture from words, for a maker that is not a book (services/flash-pics.js: a flashcard), through exactly the
+ * book pictures' path: the picture model on (active), Google's pacing (a 429 pauses this whole queue too; a quota of
+ * zero falls back), the owner's daily pictures (the same '<day>:draw' count as their books: taken when it is drawn,
+ * given back when nothing came), the AI budget (recordImage), a JPEG at most MAX_W wide and the companion's picture
+ * check on what came back. prompt: from storybook-gemini.js (cardPrompt), the owner's own words only.
+ * -> { ok: true, img: { bytes, mime, width, height } } | { ok: false, reason, retryAt? } (reason as REASONS; 'wait':
+ *    Google asked us to wait, try again at retryAt)
+ */
+export async function paintOne(u, prompt, { aspect = '4:3', what = 'flash' } = {}) {
+  if (!u || !SB.canMake(u)) return { ok: false, reason: 'nokey' };
+  const st = active(); if (!st.on) return { ok: false, reason: st.reason };
+  if (now() < pace.until) return { ok: false, reason: 'wait', retryAt: pace.until };
+  if (quotaHeld()) return { ok: false, reason: 'notset' };
+  if (!SB.take(u, { key: dayKey(), cap: capOf(u) })) return { ok: false, reason: 'limit' };
+  const r = await G.generate({ prompt, refs: [], aspect });
+  if (r.usage || r.ok || r.code === 'blocked') aiBudget.recordImage(G.model(), r.usage, r.ok ? 1 : 0);
+  if (!r.ok) {
+    if (r.code === 'blocked') { audit(u.id, `${what}.draw.blocked`, '', { why: String(r.why || '').slice(0, 40) }); return { ok: false, reason: 'blocked' }; }
+    giveBack(u);
+    warn(`${what} picture model failed`, { why: r.why, code: r.code, ...(r.http ? { http: r.http, status: r.gstatus || null, metric: r.metric || null, retryMs: r.retryMs } : {}) });
+    if (r.code === 'quota_zero') { quotaZero(r); return { ok: false, reason: 'notset' }; }
+    if (r.code === 'rate_limited') return { ok: false, reason: 'wait', retryAt: rateLimited(r.retryMs) };
+    return { ok: false, reason: r.code === 'nokey' ? 'nokey' : 'error' };
+  }
+  pace.streak = 0; pace.quotaAt = 0;
+  let img;
+  try { img = await toJpeg(r.bytes); } catch { img = null; }
+  if (!img) return { ok: false, reason: 'error' };
+  const verdict = hooks.screenImage ? await hooks.screenImage(img.bytes, img.mime) : await companionScreenImage(img.bytes, img.mime);
+  if (verdict !== 'allow') {
+    if (verdict !== 'resting') audit(u.id, `${what}.draw.refused`, '', { verdict });
+    return { ok: false, reason: verdict === 'resting' ? 'resting' : 'refused' };
+  }
+  return { ok: true, img };
+}
+
 // ---------------------------------------------------------------- the file: JPEG, at most 1600 px wide
 // Painted pictures were kept as WebP until 24 Nov 2026; on the owner's iPhone they showed as broken images ("?"), so
 // they are now kept as JPEG, which every browser shows. A WebP kept before is turned into a JPEG the first time it is

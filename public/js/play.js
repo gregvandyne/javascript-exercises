@@ -162,6 +162,13 @@ const TYPES = {
   // BRB.flashProgress (Flashcards): each card's level and misses on the student's own lesson step (the server checks them).
   'brb:flash': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.cards) && m.cards.length >= 1 && m.cards.length <= 50
     && m.cards.every(c => Array.isArray(c) && c.length === 2 && Number.isInteger(c[0]) && Number.isInteger(c[1])),
+  // BRB.flashPics (Flashcards' pictures, services/flash-pics.js): upload a JPEG the frame made (base64), ask Oomba to
+  // paint some, fetch one to show (our own route only: the frame can't load it itself), or the owner's states.
+  'brb:fpic-up': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.data === 'string' && m.data.length >= 8 && m.data.length <= 2200000,
+  'brb:fpic-paint': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.asks) && m.asks.length >= 1 && m.asks.length <= 30
+    && m.asks.every(a => a && typeof a === 'object' && typeof a.subject === 'string' && a.subject.length <= 80 && (a.note === undefined || (typeof a.note === 'string' && a.note.length <= 120))),
+  'brb:fpic-get': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.ref === 'string' && /^img:[A-Za-z0-9]{10,40}$/.test(m.ref) && (m.set === '' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set))),
+  'brb:fpic-state': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.refs) && m.refs.length >= 1 && m.refs.length <= 100 && m.refs.every(r => typeof r === 'string' && /^img:[A-Za-z0-9]{10,40}$/.test(r)),
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
   'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
 };
@@ -279,6 +286,7 @@ addEventListener('message', e => {
     case 'brb:sets': mySetsForGame(m); break;
     case 'brb:clues': cluesForGame(m); break;
     case 'brb:cards': cardsForGame(m); break;
+    case 'brb:fpic-up': case 'brb:fpic-paint': case 'brb:fpic-get': case 'brb:fpic-state': flashPicForGame(m); break;
     case 'brb:flash': flashForGame(m); break;
     case 'brb:doc': docForGame(m); break;
     case 'brb:textdoc': textDocForGame(m); break;
@@ -472,6 +480,9 @@ async function printForGame(m, tapped) {
     let area = document.getElementById('print-area');
     if (!area) { area = document.createElement('div'); area.id = 'print-area'; area.className = 'print-area'; document.body.appendChild(area); }
     area.innerHTML = r.html;   // the server's own page: every word in it is escaped there
+    // Flashcards' pictures: wait (a few seconds at most) for them to load, so they are on the paper.
+    const imgs = [...area.querySelectorAll('img')].filter(i => !i.complete);
+    if (imgs.length) await Promise.race([Promise.all(imgs.map(i => new Promise(ok => { i.addEventListener('load', ok, { once: true }); i.addEventListener('error', ok, { once: true }); }))), new Promise(ok => setTimeout(ok, 4000))]);
     document.body.classList.add('printing');
     const after = () => { document.body.classList.remove('printing'); area.innerHTML = ''; removeEventListener('afterprint', after); };
     addEventListener('afterprint', after);
@@ -495,6 +506,29 @@ async function cardsForGame(m) {
     keptNote(r.report);
   } catch (e) { out = { error: (e.data && e.data.code) || (e.status ? 'aiFailed' : 'offline') }; }
   toFrame({ type: 'brb:cards-done', id: m.id, ...out });
+}
+/** BRB.flashPics: Flashcards' pictures. The frame (an opaque origin) can't load our pictures, so the page fetches each
+ *  one from our own route and hands it in as a data: URL (kept for this page's life). */
+const flashPicCache = new Map();
+async function flashPicForGame(m) {
+  const done = out => toFrame({ type: 'brb:fpic-done', id: m.id, ...out });
+  const base = `/api/games/${d.gameId}/flash-pics`;
+  const fail = e => done({ error: (e && e.data && e.data.code) || (e && e.status ? 'failed' : 'offline') });
+  try {
+    if (m.type === 'brb:fpic-up') { const r = await api(base, { method: 'POST', body: { data: m.data } }); return done({ ref: String(r.ref), width: +r.width || 0, height: +r.height || 0 }); }
+    if (m.type === 'brb:fpic-paint') { const r = await api(`${base}/paint`, { method: 'POST', body: { asks: m.asks } }); return done({ refs: (r.refs || []).map(x => (typeof x === 'string' ? x : null)), more: +r.more || 0, left: +r.left || 0 }); }
+    if (m.type === 'brb:fpic-state') { const r = await api(`${base}/state?refs=${encodeURIComponent(m.refs.join(','))}`); return done({ pics: r.pics && typeof r.pics === 'object' ? r.pics : {} }); }
+    const key = `${m.ref}|${m.set}`;
+    if (flashPicCache.has(key)) return done({ url: flashPicCache.get(key) });
+    const res = await fetch(`${base}/${m.ref.slice(4)}${m.set ? `?set=${m.set}` : ''}`, { credentials: 'same-origin' });
+    if (res.status === 202) return done({ painting: true });
+    if (!res.ok) return done({ error: 'none' });
+    const blob = await res.blob();
+    if (!/^image\/(jpeg|png)$/.test(blob.type)) return done({ error: 'none' });
+    const url = await new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result)); fr.onerror = no; fr.readAsDataURL(blob); });
+    flashPicCache.set(key, url);
+    done({ url });
+  } catch (e) { fail(e); }
 }
 /** BRB.flashProgress: only a game opened from the student's lesson step passes card states on (services/flash-progress.js). */
 async function flashForGame(m) {

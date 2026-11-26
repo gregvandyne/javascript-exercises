@@ -112,6 +112,26 @@
   .fc-x, .fc-emobtn { width: 44px; height: 46px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-weight: 800; font-size: 1.2em; padding: 0; }
   .fc-x:hover { border-color: var(--coral); color: var(--coral); }
   .fc-emobtn:empty::before { content: '＋'; color: var(--muted); font-size: .8em; }
+  .fc-erow.fc-haspic { grid-template-columns: 2em 46px 46px minmax(7em, 1fr) minmax(10em, 1.6fr) 44px; }
+  .fc-picbtn { width: 44px; height: 46px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-size: 1.15em; padding: 0; }
+  .fc-picbtn[aria-expanded="true"], .fc-emobtn[aria-expanded="true"] { border-color: var(--sky); }
+  .fc-emobtn .fc-img { width: 36px; height: 36px; border-radius: 8px; vertical-align: middle; }
+  .fc-emobtn .fc-img.fc-painting, .fc-emobtn .fc-img.fc-nopic { font-size: 0; padding: 0; }
+  .fc-rowpics { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 10px; }
+  .fc-rowpics figure { margin: 0; display: flex; align-items: center; gap: 8px; padding: 4px 10px 4px 4px; border-radius: 12px; background: var(--card2); font-weight: 700; font-size: .85rem; color: var(--muted); }
+  .fc-rowpics .fc-img { width: 64px; height: 48px; border-radius: 8px; }
+  .fc-picpanel { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 10px; padding: 12px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-picpanel .fc-lab { margin: 0; }
+  .fc-img { display: inline-flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 12px; background: var(--card2); flex: none; }
+  .fc-img img { display: block; width: 100%; height: 100%; object-fit: contain; }
+  .fc-img.fc-painting { border: 2px dashed var(--line); color: var(--muted); font-weight: 700; font-size: .8rem; text-align: center; padding: 4px; line-height: 1.2; }
+  .fc-img.fc-nopic { border: 2px dashed var(--coral); color: var(--muted); font-size: .75rem; text-align: center; padding: 4px; }
+  .fc-face .fc-img { width: min(78%, 320px); height: clamp(90px, 22vh, 190px); background: transparent; }
+  .fc-q .fc-img { width: min(80%, 280px); height: clamp(90px, 20vh, 170px); }
+  .fc-tile .fc-img { width: 100%; height: 78px; background: transparent; }
+  .fc-tile.fc-imgtile { padding: 6px; }
+  .fc-tq .fc-img { width: 120px; height: 90px; margin-block: 4px; }
+  .fc-terms .fc-img { width: 40px; height: 30px; border-radius: 6px; vertical-align: middle; margin-inline-end: 6px; }
   .fc-picker { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--r-sm); background: var(--card2); }
   .fc-picks { display: flex; flex-wrap: wrap; gap: 4px; }
   .fc-picks button { width: 44px; height: 44px; border-radius: 10px; border: 0; background: var(--card); font-size: 1.3em; }
@@ -248,6 +268,12 @@
     .fc-erow { grid-template-columns: 1.6em 46px 1fr 44px; }
     .fc-erow .fc-def { grid-column: 3 / 4; }
     .fc-erow .fc-x { grid-row: 1; grid-column: 4; }
+    .fc-erow.fc-haspic { grid-template-columns: 1.6em 46px 1fr 44px; }
+    .fc-erow.fc-haspic .fc-emobtn { grid-row: 1; grid-column: 2; }
+    .fc-erow.fc-haspic .fc-picbtn { grid-row: 2; grid-column: 2; }
+    .fc-erow.fc-haspic .fc-termin { grid-row: 1; grid-column: 3; }
+    .fc-erow.fc-haspic .fc-def { grid-row: 2; grid-column: 3; }
+    .fc-face .fc-img { height: clamp(80px, 18vh, 150px); }
     .fc-choices { grid-template-columns: 1fr; }
     .fc-terms li { grid-template-columns: 1fr 44px; }
     .fc-terms li span { grid-column: 1; }
@@ -697,7 +723,17 @@ var I18N = {
     "pasteH": "Paste or upload a list", "pasteP": "One card a line: the term, then its definition after a tab, a comma or \" - \". A spreadsheet's two columns paste straight in.",
     "pastePh": "photosynthesis - how plants make food from sunlight\nhabitat, where an animal lives\n7 x 8\t56", "addThese": "Add these cards", "added": "Cards added: {n}", "addedNone": "No cards found. Put one term on each line.",
     "uploadList": "Upload a list (.txt or .csv)", "fileBig": "That file is too big for a list.", "fileRead": "Read. Check the list, then press Add these cards.",
-    "cardsH2": "Your cards ({n} of {max})", "cardsP": "A term on the front, its definition on the back. Tap ＋ to put an emoji on the front.", "aiNote": "Some cards were drafted by AI. Check them before sharing.",
+    "cardsH2": "Your cards ({n} of {max})", "cardsP": "A term on the front, its definition on the back. Tap ＋ to put an emoji on the front.", "cardsPicP": "A term on the front, its definition on the back. Tap ＋ for an emoji, or 🖼️ for a picture on either side.",
+    "picAdd": "Picture for card {n}", "picSide": "Put the picture on", "picFront": "The front (term)", "picBack": "The back (definition)", "picUpload": "Upload a picture", "picPaintL": "Or Oomba paints it", "picPaintPh": "What should it show? (optional)",
+    "picPaint": "Paint it", "picRemove": "Remove the picture", "picChecking": "Checking your picture…", "picAdded": "Picture added.", "picPainting": "Oomba is painting…", "picQueued": "Oomba is painting it. It appears on the card when it's ready.",
+    "picNoPaint": "Oomba couldn't paint this one. Try again or upload a picture.", "picLeft": "Pictures Oomba can paint today: {n}", "picNoneLeft": "That's all the pictures Oomba can paint today. Upload one, or try again tomorrow.",
+    "picOff": "Oomba can't paint pictures right now. You can upload one.", "picWords": "Please reword that.", "picPerson": "Pictures can't show people. Try a picture of a thing, an animal or a place.",
+    "picUnsafe": "That picture can't be used here.", "picPersonal": "That picture shows private details (a name, a school or an address).", "picBig": "That picture is too big. Try a smaller one.", "picType": "Pick a photo or picture file (JPEG or PNG).",
+    "picDayLimit": "That's all the pictures you can check today. Try again tomorrow.", "picResting": "Pictures can't be checked right now. Try again in a little while.", "picFull": "You have too many pictures. Remove some from your sets first.", "picFailed": "That didn't work. Try again.",
+    "aiPics": "Add pictures: Oomba paints one for each card", "aiPicsQueued": "Oomba is painting {n} pictures. They appear on the cards when they're ready.", "aiPicsSome": "{n} cards kept their emoji: that's all the pictures Oomba can paint today.",
+    "picKeep": "Save the set to keep its pictures.", "picOf": "Picture: {w}",
+    "makeOwnSub": "Type or paste terms and definitions, and add emoji", "saveOwn": "Save my set", "savedOwn": "Saved. Only you can see your sets.", "ownNote": "Your sets are just for you. Nobody else can open them.",
+    "answerWithOwn": "In Learn and Test, answer with", "ownFull": "You have 50 sets. Delete one to save another.", "aiNote": "Some cards were drafted by AI. Check them before sharing.",
     "termPh": "Term", "defPh": "Definition", "termN": "Term {n}", "defN": "Definition {n}", "delCard": "Delete card {n}", "addCard": "Add a card", "pic": "Picture for the front", "picFor": "Picture for card {n}", "picOwn": "Or paste an emoji", "use": "Use", "picNone": "No picture", "picOnly": "Only an emoji can go on the front.",
     "answerWith": "In Learn and Test, students answer with", "answerTerm": "The term (they see the definition)", "answerDef": "The definition (they see the term)",
     "studyIt": "Study it", "saveLink": "Save and get a link", "saveChanges": "Save changes", "saving": "Saving…", "saved": "Saved! Share it with your class.",
@@ -820,6 +856,9 @@ window.FLASH_LIBRARY = [
   // "Make your own" (BRB.canMake): the builder and Your sets, for teachers and grown-ups who may host only. A student
   // studies a teacher's link or class code and the starter library.
   var CAN_MAKE = B.canMake === true, CAN_AI = B.canWriteClues === true;
+  // A student's or a child's own sets (BRB.makePrivate): no AI, no pictures, nothing to share; saved for them only.
+  // Pictures (BRB.flashPics: { upload, paint, left }): the grown-ups who may add them (Storybook's rule); null otherwise.
+  var PRIVATE = B.makePrivate === true, PICS = !PRIVATE && B.flashPics && B.flashPics.upload ? B.flashPics : null;
   function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v && typeof s === 'string') s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
   var DIR = USER.dir === 'rtl' ? 'rtl' : 'ltr';
   document.documentElement.lang = LANG; document.documentElement.dir = DIR;
@@ -842,6 +881,33 @@ window.FLASH_LIBRARY = [
   function toast(s) { toastBox.textContent = s; toastBox.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastBox.hidden = true; }, 2800); }
   var codeOf = function (id) { var s = String(id || '').replace(/^s-/, '').toUpperCase(); return s.slice(0, 5) + ' ' + s.slice(5); };
   function linkOf(id) { return B.gameUrl ? B.gameUrl + '?chapter=' + id + '&lock=1' : ''; }
+
+  /* ---------- pictures: an emoji, or one of our own ('img:<id>', fetched by the page: BRB.flashPicUrl) ---------- */
+  var isImg = function (v) { return typeof v === 'string' && /^img:[A-Za-z0-9]{10,40}$/.test(v); };
+  /** A card as this page keeps it: [term, definition, front picture, back picture]. */
+  function cardOf(x) { return [String(x[0] || ''), String(x[1] || ''), x[2] || '', x[3] || '']; }
+  var PIC_URL = {};
+  /** A side's picture as an element (null for none): an emoji, or a box that fills with the picture (a "painting"
+   *  placeholder while Oomba paints it, polled until it is ready; nothing if it can't be shown, or in the editor a note).
+   *  alt: the card's own words on that side. */
+  function picEl(v, alt, setId, editing) {
+    if (!v) return null;
+    if (!isImg(v)) { var e = el('span', 'fc-pic', v); e.setAttribute('aria-hidden', 'true'); return e; }
+    var box = el('span', 'fc-img'); box.dataset.ref = v;
+    var put = function (url) { box.className = 'fc-img'; box.textContent = ''; var im = el('img'); im.src = url; im.alt = alt ? t('picOf', { w: alt }) : ''; im.decoding = 'async'; box.appendChild(im); };
+    var tries = 0;
+    var ask = function () {
+      if (PIC_URL[v]) return put(PIC_URL[v]);
+      if (!B.flashPicUrl) return;
+      B.flashPicUrl(v, setId || '').then(function (r) {
+        if (r && r.url) { PIC_URL[v] = r.url; put(r.url); return; }
+        if (r && r.painting) { box.className = 'fc-img fc-painting'; box.textContent = '🎨 ' + t('picPainting'); if (tries++ < 200) setTimeout(function () { if (box.isConnected) ask(); }, tries < 10 ? 3000 : 8000); return; }
+        if (editing) { box.className = 'fc-img fc-nopic'; box.textContent = t('picNoPaint'); } else box.remove();
+      });
+    };
+    ask();
+    return box;
+  }
 
   /* ---------- the save (BRB.storage: the player's own game save, on every device they sign in on) ----------
      mine: the teacher's drafts ({ id, set, t, lvl, c: [[term, def, pic]], a, ai, at, note }); prog: per set key
@@ -900,9 +966,9 @@ window.FLASH_LIBRARY = [
   }
 
   function setFromItems(it, id, opts) {
-    return { key: id, t: it.t || '', c: (it.c || []).map(function (x) { return [x[0], x[1], x[2] || '']; }), a: it.a === 'd' ? 'd' : 't', set: id, link: !!(opts && opts.link), mine: !!(opts && opts.mine) };
+    return { key: id, t: it.t || '', c: (it.c || []).map(cardOf), a: it.a === 'd' ? 'd' : 't', set: id, link: !!(opts && opts.link), mine: !!(opts && opts.mine) };
   }
-  function libSet(x) { return { key: 'lib:' + x.id, t: x.t, c: x.c.map(function (y) { return [y[0], y[1], y[2] || '']; }), a: x.a === 'd' ? 'd' : 't', lib: x.id, set: '' }; }
+  function libSet(x) { return { key: 'lib:' + x.id, t: x.t, c: x.c.map(cardOf), a: x.a === 'd' ? 'd' : 't', lib: x.id, set: '' }; }
 
   function begin() {
     var qs = B.questionSet;
@@ -919,7 +985,7 @@ window.FLASH_LIBRARY = [
     var c = card(screen('home'));
     head(c, '🗂️', t('homeH'), 'class');
     c.appendChild(el('p', 'fc-sub', t('tag')));
-    if (CAN_MAKE) c.appendChild(bigBtn('fc-big fc-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'fc-make'));
+    if (CAN_MAKE) c.appendChild(bigBtn('fc-big fc-go', '✏️', t('make'), t(CAN_AI ? 'makeSub' : 'makeOwnSub'), function () { sfx('select'); edit(null); }, 'fc-make'));
     if (B.canListSets && B.mySets) c.appendChild(bigBtn('fc-big', '📚', t('ws'), t('wsSub'), function () { sfx('select'); showSheets(); }, 'fc-ws'));
     if (B.canFindSet !== false) drawCode(c);
     c.appendChild(bigBtn('fc-big', '🧠', t('lib'), t('libSub', { n: LIB.length }), function () { sfx('select'); showLibrary(); }, 'fc-lib'));
@@ -951,14 +1017,14 @@ window.FLASH_LIBRARY = [
   function drawMine(c) {
     var sec = el('section', 'fc-mine'); sec.id = 'fc-mine'; sec.setAttribute('aria-labelledby', 'fc-mine-h');
     var h = el('h3', '', t('mine')); h.id = 'fc-mine-h'; sec.appendChild(h);
-    sec.appendChild(el('p', 'fc-note', USER.isGuest ? '🔒 ' + t('guestKeep') : t('mineNote')));
+    sec.appendChild(el('p', 'fc-note', USER.isGuest ? '🔒 ' + t('guestKeep') : t('mineNote') + (PRIVATE ? ' ' + t('ownNote') : '')));
     var ul = el('ul', 'fc-list');
     SAVE.mine.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).forEach(function (m) {
       var li = el('li'), name = el('span', 'fc-name'), title = m.t || t('untitled');
       name.appendChild(el('b', '', title)); name.dir = 'auto';
       var bits = [t('nCards', { n: m.c.length })];
       if (m.at && dateFmt) bits.push(dateFmt.format(new Date(m.at)));
-      if (m.set) bits.push(t('classCode') + ' ' + codeOf(m.set));
+      if (m.set && !PRIVATE) bits.push(t('classCode') + ' ' + codeOf(m.set));
       name.appendChild(el('small', '', bits.join(' · '))); li.appendChild(name);
       var acts = el('span', 'fc-acts2');
       var eb = btn('fc-btn fc-sm', '✏️ ' + t('editIt'), function () { sfx('select'); edit(m); }); eb.setAttribute('aria-label', t('editIt') + ': ' + title); eb.dataset.edit = m.id;
@@ -970,6 +1036,8 @@ window.FLASH_LIBRARY = [
       db.addEventListener('click', function () {
         if (db.dataset.sure !== '1') { db.dataset.sure = '1'; db.textContent = t('delSure'); db.classList.add('fc-danger'); announce(t('delSure')); return; }
         SAVE.mine = SAVE.mine.filter(function (x) { return x.id !== m.id; }); delete SAVE.prog['d:' + m.id]; persist();
+        // a student's own set goes from Oomba too (a teacher's saved set stays in My worksheets, where it may be assigned)
+        if (PRIVATE && m.set && B.deleteQuestionSet) { B.deleteQuestionSet(m.set); delete SAVE.prog[m.set]; persist(); }
         toast(t('deleted')); announce(t('deleted')); showHome();
         var mh = document.getElementById('fc-mine-h'); if (mh) { mh.tabIndex = -1; mh.focus(); } else focusTop();
       });
@@ -1026,7 +1094,7 @@ window.FLASH_LIBRARY = [
       b.appendChild(e); b.appendChild(el('span', '', t('mode.' + m[0]))); b.appendChild(el('small', '', t('mode.' + m[0] + 'Sub'))); modes.appendChild(b);
     });
     c.appendChild(modes);
-    if (set.link && set.set) c.appendChild(el('p', 'fc-note', '🧑‍🏫 ' + t('teacherSees')));
+    if (set.link && set.set && !set.mine) c.appendChild(el('p', 'fc-note', '🧑‍🏫 ' + t('teacherSees')));
     // the teacher's tools: edit (or copy a library or someone else's set to make it theirs), print, share
     var tools = el('div', 'fc-row fc-wrap');
     if (CAN_MAKE) {
@@ -1041,7 +1109,7 @@ window.FLASH_LIBRARY = [
       tools.appendChild(btn('fc-btn fc-sm', '🖨️ ' + t('printCards'), function () { printIt(set, 'cards'); }, 'fc-print'));
       tools.appendChild(btn('fc-btn fc-sm fc-quiet', '📄 ' + t('printList'), function () { printIt(set, 'list'); }, 'fc-printlist'));
     }
-    if (set.set && (set.mine || CAN_MAKE)) {
+    if (set.set && (set.mine || CAN_MAKE) && !PRIVATE) {
       var share = el('div', 'fc-share'); share.id = 'fc-sharebox';
       tools.appendChild(btn('fc-btn fc-sm', '🔗 ' + t('share'), function () { drawShare(share, set.set); share.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }, 'fc-share'));
       c.appendChild(tools); c.appendChild(share);
@@ -1051,8 +1119,10 @@ window.FLASH_LIBRARY = [
     var th = el('h3', '', t('cardsH', { n: n })); th.id = 'fc-terms-h'; sec.appendChild(th);
     var ul = el('ul', 'fc-terms'); ul.id = 'fc-terms';
     set.c.forEach(function (x, i) {
-      var li = el('li'), w = el('b', '', (x[2] ? x[2] + ' ' : '') + x[0]); w.dir = 'auto';
-      var d = el('span', '', x[1]); d.dir = 'auto';
+      var li = el('li'), w = el('b'), fp = picEl(x[2], x[0], set.set); w.dir = 'auto';
+      if (fp) { w.appendChild(fp); if (!isImg(x[2])) w.appendChild(document.createTextNode(' ')); }
+      w.appendChild(document.createTextNode(x[0]));
+      var d = el('span'), bp = picEl(x[3], x[1], set.set); d.dir = 'auto'; if (bp) d.appendChild(bp); d.appendChild(document.createTextNode(x[1]));
       li.appendChild(w); li.appendChild(d); li.appendChild(starBtn(set, i)); ul.appendChild(li);
     });
     sec.appendChild(ul); c.appendChild(sec);
@@ -1107,8 +1177,8 @@ window.FLASH_LIBRARY = [
     if (f.starred) top.appendChild(el('span', 'fc-note', '★ ' + t('starredOnly')));
     c.appendChild(top);
     var stage = el('div', 'fc-stage'), fl = btn('fc-flip' + (f.turned ? ' fc-turned' : ''), '', function () { turn(); }, 'fc-card');
-    var front = f.defFirst ? [x[1], '', t('defSide')] : [x[0], x[2], t('termSide')], back = f.defFirst ? [x[0], x[2], t('termSide')] : [x[1], '', t('defSide')];
-    var face = function (cls, v) { var d = el('div', 'fc-face ' + cls); d.appendChild(el('span', 'fc-side', v[2])); if (v[1]) { var pc = el('span', 'fc-pic', v[1]); pc.setAttribute('aria-hidden', 'true'); d.appendChild(pc); } var tx = el('span', 'fc-txt', v[0]); tx.dir = 'auto'; d.appendChild(tx); d.appendChild(el('span', 'fc-tap', t('tapFlip'))); return d; };
+    var front = f.defFirst ? [x[1], x[3], t('defSide')] : [x[0], x[2], t('termSide')], back = f.defFirst ? [x[0], x[2], t('termSide')] : [x[1], x[3], t('defSide')];
+    var face = function (cls, v) { var d = el('div', 'fc-face ' + cls); d.appendChild(el('span', 'fc-side', v[2])); var pc = picEl(v[1], v[0], set.set); if (pc) d.appendChild(pc); var tx = el('span', 'fc-txt', v[0]); tx.dir = 'auto'; d.appendChild(tx); d.appendChild(el('span', 'fc-tap', t('tapFlip'))); return d; };
     var fa = face('fc-front', front), fb = face('fc-back', back);
     fa.setAttribute('aria-hidden', String(!!f.turned)); fb.setAttribute('aria-hidden', String(!f.turned));
     fl.appendChild(fa); fl.appendChild(fb);
@@ -1185,7 +1255,7 @@ window.FLASH_LIBRARY = [
     var q = el('div', 'fc-q'); q.id = 'fc-q';
     q.appendChild(el('small', '', t(kind === 'mc' ? 'pick' : 'typeIt')));
     var shown = F.sideOf(x, showSide());
-    if (showSide() === 't' && x[2]) { var pc = el('span', 'fc-pic', x[2]); pc.setAttribute('aria-hidden', 'true'); q.appendChild(pc); }
+    var pc = picEl(showSide() === 't' ? x[2] : x[3], shown, set.set); if (pc) q.appendChild(pc);
     var tx = el('span', 'fc-txt', shown); tx.dir = 'auto'; tx.id = 'fc-prompt'; q.appendChild(tx);
     q.appendChild(btn('fc-btn fc-sm fc-quiet', '🔊 ' + t('readAloud'), function () { say(shown); }, 'fc-say'));
     c.appendChild(q);
@@ -1312,8 +1382,12 @@ window.FLASH_LIBRARY = [
     M.tick = setInterval(function () { tm.textContent = secs(Date.now() - M.start + M.penalty); }, 100);
     tiles.forEach(function (tl) {
       var x = set.c[tl.i], b = btn('fc-tile', '');
-      if (tl.side === 't' && x[2]) { var pc = el('span', 'fc-pic', x[2]); pc.setAttribute('aria-hidden', 'true'); b.appendChild(pc); }
-      var s = el('span', '', tl.side === 't' ? x[0] : (x[1].length > 90 ? x[1].slice(0, 88) + '…' : x[1])); s.dir = 'auto'; b.appendChild(s);
+      // a term's own picture stands in for the term (its name stays the tile's label for a screen reader)
+      if (tl.side === 't' && isImg(x[2])) { b.classList.add('fc-imgtile'); b.setAttribute('aria-label', x[0]); var im = picEl(x[2], x[0], set.set); if (im) b.appendChild(im); }
+      else {
+        if (tl.side === 't' && x[2]) { var pc = el('span', 'fc-pic', x[2]); pc.setAttribute('aria-hidden', 'true'); b.appendChild(pc); }
+        var s = el('span', '', tl.side === 't' ? x[0] : (x[1].length > 90 ? x[1].slice(0, 88) + '…' : x[1])); s.dir = 'auto'; b.appendChild(s);
+      }
       b.dataset.i = tl.i; b.dataset.side = tl.side; b.setAttribute('aria-pressed', 'false');
       b.addEventListener('click', function () { pickTile(b); });
       board.appendChild(b);
@@ -1390,7 +1464,9 @@ window.FLASH_LIBRARY = [
     qs.forEach(function (q, k) {
       var x = set.c[q.i], li = el('li', 'fc-tq'); li.dataset.q = k; li.dataset.kind = q.kind;
       var h = el('h3', ''); h.appendChild(el('span', '', String(k + 1) + '.')); h.appendChild(el('small', '', t('kind.' + q.kind))); li.appendChild(h);
-      var tx = el('span', 'fc-txt', (other === 't' && x[2] ? x[2] + ' ' : '') + F.sideOf(x, other)); tx.dir = 'auto'; li.appendChild(tx);
+      var qp = other === 't' ? x[2] : x[3], tx = el('span', 'fc-txt', (qp && !isImg(qp) ? qp + ' ' : '') + F.sideOf(x, other)); tx.dir = 'auto';
+      if (isImg(qp)) { var qi = picEl(qp, F.sideOf(x, other), set.set); if (qi) li.appendChild(qi); }
+      li.appendChild(tx);
       var name = 'fc-q' + k;
       if (q.kind === 'mc') {
         var opts = el('div', 'fc-opts'); opts.setAttribute('role', 'radiogroup'); opts.setAttribute('aria-label', t('kind.mc') + ' ' + (k + 1));
@@ -1454,8 +1530,10 @@ window.FLASH_LIBRARY = [
   /* ---------- the builder: paste or upload a list, AI from a topic or a lesson, cards with an emoji, options ---------- */
   var PICKS = ['🍎', '🐶', '🐱', '🐸', '🦋', '🌳', '🌻', '🌍', '☀️', '🌙', '⭐', '🪐', '🔥', '💧', '❄️', '⚡', '🌋', '🏔️', '🌊', '🦕', '🧬', '🔬', '🧲', '⚖️', '➕', '➖', '✖️', '➗', '🔢', '📏', '🔺', '🟦', '⚪', '🕒', '💰', '🏛️', '🗽', '🗺️', '🚂', '✈️', '🎵', '🎨', '📖', '✏️', '💬', '❤️', '😀', '🏠'];
   function edit(m, copy) {
-    S.draft = m ? { id: copy ? '' : m.id || '', set: copy ? '' : m.set || '', t: m.t || '', lvl: m.lvl || '', c: m.c.map(function (x) { return [x[0], x[1], x[2] || '']; }), a: m.a === 'd' ? 'd' : 't', ai: !!m.ai, note: m.note || '' }
-      : { id: '', set: '', t: '', lvl: '', c: [['', '', ''], ['', '', ''], ['', '', '']], a: 't', ai: false, note: '' };
+    // a copy keeps the emoji but not someone else's pictures (a set shows only its own maker's pictures)
+    var strip = function (v) { return copy && isImg(v) ? '' : v || ''; };
+    S.draft = m ? { id: copy ? '' : m.id || '', set: copy ? '' : m.set || '', t: m.t || '', lvl: m.lvl || '', c: m.c.map(function (x) { var y = cardOf(x); return [y[0], y[1], strip(y[2]), strip(y[3])]; }), a: m.a === 'd' ? 'd' : 't', ai: !!m.ai, note: m.note || '' }
+      : { id: '', set: '', t: '', lvl: '', c: [['', '', '', ''], ['', '', '', ''], ['', '', '', '']], a: 't', ai: false, note: '' };
     if (!S.draft.id) S.draft.id = 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
     showBuild();
   }
@@ -1465,7 +1543,7 @@ window.FLASH_LIBRARY = [
     clearTimeout(saveTimer);
     var go = function () {
       if (!d.c.some(function (x) { return x[0].trim() || x[1].trim(); }) && !d.t) return;
-      var rec = { id: d.id, set: d.set, t: d.t, lvl: d.lvl, c: d.c.filter(function (x) { return x[0].trim() || x[1].trim(); }).map(function (x) { return [x[0], x[1], x[2] || '']; }), a: d.a, ai: d.ai, note: d.note, at: Date.now() };
+      var rec = { id: d.id, set: d.set, t: d.t, lvl: d.lvl, c: d.c.filter(function (x) { return x[0].trim() || x[1].trim(); }).map(cardOf), a: d.a, ai: d.ai, note: d.note, at: Date.now() };
       var k = -1; SAVE.mine.forEach(function (m, i) { if (m.id === d.id) k = i; });
       if (k >= 0) SAVE.mine[k] = rec; else SAVE.mine.push(rec);
       if (SAVE.mine.length > MAX_MINE) SAVE.mine.sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).length = MAX_MINE;
@@ -1474,7 +1552,7 @@ window.FLASH_LIBRARY = [
     if (now) go(); else saveTimer = setTimeout(go, 900);
   }
   /** The draft's cards as a set takes them: both sides filled, spaces tidied. */
-  function cleanCards(list) { return list.map(function (x) { return [String(x[0] || '').replace(/\s+/g, ' ').trim(), String(x[1] || '').replace(/\s+/g, ' ').trim(), x[2] || '']; }).filter(function (x) { return x[0] || x[1]; }); }
+  function cleanCards(list) { return list.map(function (x) { var c = [String(x[0] || '').replace(/\s+/g, ' ').trim(), String(x[1] || '').replace(/\s+/g, ' ').trim(), x[2] || '']; if (x[3]) c.push(x[3]); return c; }).filter(function (x) { return x[0] || x[1]; }); }
   /** What is wrong with a draft before it can be studied or saved, or '' (the server checks again, with the text filter). */
   function problem(d) {
     var c = cleanCards(d.c), seen = {}, bad = '';
@@ -1527,12 +1605,13 @@ window.FLASH_LIBRARY = [
     // the cards
     var cs = el('section', 'fc-sec'); cs.setAttribute('aria-labelledby', 'fc-cards-h');
     var chh = el('h3', ''); chh.id = 'fc-cards-h'; cs.appendChild(chh);
-    cs.appendChild(el('p', 'fc-note', t('cardsP')));
+    cs.appendChild(el('p', 'fc-note', t(PICS ? 'cardsPicP' : 'cardsP')));
+    if (PICS && !d.set) cs.appendChild(el('p', 'fc-note', '🖼️ ' + t('picKeep')));
     if (d.ai) cs.appendChild(el('p', 'fc-note', '✨ ' + t('aiNote')));
     var rows = el('ol', 'fc-rows'); rows.id = 'fc-rows'; cs.appendChild(rows);
     cs.appendChild(btn('fc-btn fc-sm', '➕ ' + t('addCard'), function () {
       if (d.c.length >= F.MAX) { toast(t('tooMany', { n: F.MAX })); return; }
-      d.c.push(['', '', '']); drawRows(); var r = rows.lastChild && rows.lastChild.querySelector('.fc-termin'); if (r) r.focus();
+      d.c.push(['', '', '', '']); drawRows(); var r = rows.lastChild && rows.lastChild.querySelector('.fc-termin'); if (r) r.focus();
     }, 'fc-addcard'));
     c.appendChild(cs);
     function drawRows() {
@@ -1543,7 +1622,7 @@ window.FLASH_LIBRARY = [
     drawRows();
     // options
     var os = el('section', 'fc-sec');
-    os.appendChild(el('span', 'fc-lab', t('answerWith')));
+    os.appendChild(el('span', 'fc-lab', t(PRIVATE ? 'answerWithOwn' : 'answerWith')));
     var rg = el('div', 'fc-radio'); rg.setAttribute('role', 'radiogroup'); rg.setAttribute('aria-label', t('answerWith'));
     [['t', t('answerTerm')], ['d', t('answerDef')]].forEach(function (o) {
       var lab = el('label'), r = el('input'); r.type = 'radio'; r.name = 'fc-a'; r.value = o[0]; r.id = 'fc-a-' + o[0]; r.checked = d.a === o[0];
@@ -1557,11 +1636,11 @@ window.FLASH_LIBRARY = [
       var bad = problem(d); if (bad) { msg.textContent = bad; sfx('wrong', { volume: 0.4 }); return; }
       remember(d, true); showSet(draftSet(localFor({ draft: d.id }) || d));
     }, 'fc-studyit'));
-    if (B.canSaveSet !== false && B.saveQuestionSet) foot.appendChild(btn('fc-btn fc-go fc-main', '🔗 ' + t(d.set ? 'saveChanges' : 'saveLink'), function () { saveSet(); }, 'fc-save'));
+    if (B.canSaveSet !== false && B.saveQuestionSet) foot.appendChild(btn('fc-btn fc-go fc-main', (PRIVATE ? '💾 ' : '🔗 ') + t(d.set ? 'saveChanges' : PRIVATE ? 'saveOwn' : 'saveLink'), function () { saveSet(); }, 'fc-save'));
     c.appendChild(foot);
     var smsg = el('p', 'fc-msg'); smsg.id = 'fc-savemsg'; smsg.setAttribute('role', 'status'); c.appendChild(smsg);
     var share = el('div', 'fc-share'); share.id = 'fc-sharebox'; c.appendChild(share);
-    if (d.set) drawShare(share, d.set);
+    if (d.set && !PRIVATE) drawShare(share, d.set);
     if (USER.isGuest) c.appendChild(el('p', 'fc-note', '🔒 ' + t('guestKeep')));
     focusTop();
   }
@@ -1572,15 +1651,16 @@ window.FLASH_LIBRARY = [
     d.c = d.c.filter(function (x) { return x[0].trim() || x[1].trim(); });
     list.forEach(function (x) {
       if (!x[0] || seen[F.key(x[0])] || d.c.length >= F.MAX) return;
-      seen[F.key(x[0])] = 1; d.c.push([String(x[0]).slice(0, F.TERM), String(x[1] || '').slice(0, F.DEF), x[2] || '']); n++;
+      seen[F.key(x[0])] = 1; d.c.push([String(x[0]).slice(0, F.TERM), String(x[1] || '').slice(0, F.DEF), x[2] || '', '']); n++;
     });
-    if (!d.c.length) d.c.push(['', '', '']);
+    if (!d.c.length) d.c.push(['', '', '', '']);
     return n;
   }
   function editRow(d, i, redraw) {
-    var x = d.c[i], li = el('li', 'fc-erow'); li.dataset.row = i;
+    var x = d.c[i], li = el('li', 'fc-erow' + (PICS ? ' fc-haspic' : '')); li.dataset.row = i;
+    if (x.length < 4) x[3] = x[3] || '';
     li.appendChild(el('span', 'fc-n', String(i + 1)));
-    var eb = btn('fc-emobtn', x[2] || ''); eb.setAttribute('aria-label', t('picFor', { n: i + 1 })); eb.title = t('pic'); eb.dataset.emo = i; eb.setAttribute('aria-expanded', 'false');
+    var eb = btn('fc-emobtn', isImg(x[2]) ? '' : x[2] || ''); eb.setAttribute('aria-label', t('picFor', { n: i + 1 })); eb.title = t('pic'); eb.dataset.emo = i; eb.setAttribute('aria-expanded', 'false');
     var tw = el('input', 'fc-in fc-termin'); tw.value = x[0]; tw.maxLength = F.TERM; tw.placeholder = t('termPh'); tw.setAttribute('aria-label', t('termN', { n: i + 1 })); tw.dir = 'auto';
     var td = el('textarea', 'fc-in fc-def'); td.value = x[1]; td.maxLength = F.DEF; td.rows = 1; td.placeholder = t('defPh'); td.setAttribute('aria-label', t('defN', { n: i + 1 })); td.dir = 'auto';
     tw.addEventListener('input', function () { x[0] = tw.value; remember(d); });
@@ -1590,7 +1670,7 @@ window.FLASH_LIBRARY = [
     eb.addEventListener('click', function () {
       var open = li.querySelector('.fc-picker'); if (open) { open.remove(); eb.setAttribute('aria-expanded', 'false'); return; }
       var pk = el('div', 'fc-picker'), grid = el('div', 'fc-picks'); grid.setAttribute('role', 'group'); grid.setAttribute('aria-label', t('pic'));
-      var pick = function (v) { x[2] = v; eb.textContent = v; pk.remove(); eb.setAttribute('aria-expanded', 'false'); remember(d); eb.focus(); };
+      var pick = function (v) { x[2] = v; eb.textContent = v; pk.remove(); eb.setAttribute('aria-expanded', 'false'); remember(d); drawPics(); eb.focus(); };
       PICKS.forEach(function (e) { var b = btn('', e, function () { pick(e); }); b.setAttribute('aria-label', e); grid.appendChild(b); });
       pk.appendChild(grid);
       var row = el('div', 'fc-row fc-wrap'), own = el('input', 'fc-in'); own.maxLength = 16; own.placeholder = t('picOwn'); own.setAttribute('aria-label', t('picOwn')); own.style.width = '9em';
@@ -1598,9 +1678,103 @@ window.FLASH_LIBRARY = [
       row.appendChild(own); row.appendChild(okb); row.appendChild(btn('fc-btn fc-sm fc-quiet', t('picNone'), function () { pick(''); })); pk.appendChild(row);
       li.appendChild(pk); eb.setAttribute('aria-expanded', 'true'); var f = grid.querySelector('button'); if (f) f.focus();
     });
-    li.appendChild(eb); li.appendChild(tw); li.appendChild(td); li.appendChild(del);
+    li.appendChild(eb);
+    var pb = null;
+    if (PICS) {
+      pb = btn('fc-picbtn', '🖼️', function () { togglePanel(); }); pb.setAttribute('aria-label', t('picAdd', { n: i + 1 })); pb.title = t('picAdd', { n: i + 1 }); pb.dataset.pic = i; pb.setAttribute('aria-expanded', 'false');
+      li.appendChild(pb);
+    }
+    li.appendChild(tw); li.appendChild(td); li.appendChild(del);
+    // the card's pictures under it (one a side), and the picture panel: which side, upload, Oomba paints it, remove
+    var strip = el('div', 'fc-rowpics'); strip.dataset.pics = i; li.appendChild(strip);
+    function drawPics() {
+      strip.innerHTML = '';
+      [[2, t('termSide'), x[0]], [3, t('defSide'), x[1]]].forEach(function (sd) {
+        if (!isImg(x[sd[0]])) return;
+        var fig = el('figure'); fig.dataset.side = sd[0] === 2 ? 'front' : 'back';
+        var im = picEl(x[sd[0]], sd[2], '', true); if (im) fig.appendChild(im);
+        fig.appendChild(el('figcaption', '', sd[1])); strip.appendChild(fig);
+      });
+      strip.hidden = !strip.children.length;
+      eb.textContent = isImg(x[2]) ? '' : x[2] || '';
+      if (isImg(x[2])) { var th = picEl(x[2], x[0], '', true); if (th) eb.appendChild(th); }
+    }
+    drawPics();
+    function togglePanel() {
+      var open = li.querySelector('.fc-picpanel'); if (open) { open.remove(); pb.setAttribute('aria-expanded', 'false'); pb.focus(); return; }
+      var pp = el('div', 'fc-picpanel'); pp.setAttribute('role', 'group'); pp.setAttribute('aria-label', t('picAdd', { n: i + 1 }));
+      var side = isImg(x[2]) && !isImg(x[3]) ? 3 : 2;   // the front first (a term-to-picture card); the back once the front has one
+      pp.appendChild(el('span', 'fc-lab', t('picSide')));
+      var rg = el('div', 'fc-radio'); rg.setAttribute('role', 'radiogroup'); rg.setAttribute('aria-label', t('picSide'));
+      [[2, t('picFront')], [3, t('picBack')]].forEach(function (o) {
+        var lab = el('label'), r = el('input'); r.type = 'radio'; r.name = 'fc-ps-' + i; r.value = String(o[0]); r.checked = side === o[0]; r.id = 'fc-ps-' + i + '-' + o[0];
+        r.addEventListener('change', function () { side = o[0]; }); lab.appendChild(r); lab.appendChild(document.createTextNode(o[1])); rg.appendChild(lab);
+      });
+      pp.appendChild(rg);
+      var pmsg = el('p', 'fc-msg'); pmsg.setAttribute('role', 'status'); pmsg.id = 'fc-picmsg-' + i;
+      var set = function (ref) { x[side] = ref; remember(d, true); drawPics(); };
+      var row1 = el('div', 'fc-row fc-wrap');
+      var up = el('label', 'fc-btn fc-sm fc-file'), upi = el('input'); upi.type = 'file'; upi.accept = 'image/jpeg,image/png,image/webp,image/gif'; upi.id = 'fc-picup-' + i;
+      up.appendChild(document.createTextNode('📷 ' + t('picUpload'))); up.appendChild(upi);
+      upi.addEventListener('change', function () {
+        var f = upi.files && upi.files[0]; upi.value = ''; if (!f) return;
+        if (!/^image\//.test(f.type)) { pmsg.textContent = t('picType'); return; }
+        up.classList.add('fc-busy'); pmsg.textContent = t('picChecking');
+        toJpeg(f).then(function (data) {
+          if (!data) { up.classList.remove('fc-busy'); pmsg.textContent = t('picType'); return; }
+          return B.flashPicUpload(data).then(function (r) {
+            up.classList.remove('fc-busy');
+            if (!r || !r.ref) { pmsg.textContent = t(picErr(r && r.error)); sfx('wrong', { volume: 0.3 }); return; }
+            set(r.ref); pmsg.textContent = t('picAdded'); announce(t('picAdded'));
+          });
+        });
+      });
+      row1.appendChild(up); pp.appendChild(row1);
+      if (PICS.paint) {
+        var pl = el('label', 'fc-lab', '🎨 ' + t('picPaintL')), pi = el('input', 'fc-in'); pl.htmlFor = 'fc-paintin-' + i; pi.id = 'fc-paintin-' + i; pi.maxLength = 120; pi.placeholder = t('picPaintPh'); pi.dir = 'auto';
+        var row2 = el('div', 'fc-row fc-wrap');
+        var go = btn('fc-btn fc-sm fc-ai', '🎨 ' + t('picPaint'), function () {
+          var subject = (side === 2 ? x[0] : x[1]).replace(/\s+/g, ' ').trim().slice(0, 80);
+          if (!subject && !pi.value.trim()) { tw.focus(); pmsg.textContent = t('fillBoth', { n: i + 1 }); return; }
+          go.disabled = true; pmsg.textContent = '…';
+          B.flashPaint([{ subject: subject || pi.value, note: subject ? pi.value : '' }]).then(function (r) {
+            go.disabled = false;
+            if (!r || !r.refs || !r.refs[0]) { pmsg.textContent = t(r && r.more ? 'picNoneLeft' : picErr(r && r.error)); sfx('wrong', { volume: 0.3 }); return; }
+            PICS.left = r.left; set(r.refs[0]); pmsg.textContent = t('picQueued'); announce(t('picQueued'));
+            var lf = document.getElementById('fc-picleft-' + i); if (lf) lf.textContent = t('picLeft', { n: r.left });
+          });
+        }, 'fc-paint-' + i);
+        row2.appendChild(pi); row2.appendChild(go);
+        pp.appendChild(pl); pp.appendChild(row2);
+        var lf = el('p', 'fc-note', t('picLeft', { n: PICS.left })); lf.id = 'fc-picleft-' + i; pp.appendChild(lf);
+      }
+      pp.appendChild(btn('fc-btn fc-sm fc-quiet', t('picRemove'), function () { if (isImg(x[side])) { set(''); pmsg.textContent = ''; } }, 'fc-picrm-' + i));
+      pp.appendChild(pmsg);
+      li.appendChild(pp); pb.setAttribute('aria-expanded', 'true');
+      var first = rg.querySelector('input:checked'); if (first) first.focus();
+    }
     return li;
   }
+  /** A picture file -> a JPEG (base64, at most 1600 px a side and about 1.4 MB, the server's limits), drawn on a canvas
+   *  here so no camera details (location, device) ever leave the device. -> Promise of the base64 or null. */
+  function toJpeg(file) {
+    return new Promise(function (res) {
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        try {
+          var k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+          c.width = Math.max(1, Math.round(im.naturalWidth * k)); c.height = Math.max(1, Math.round(im.naturalHeight * k));
+          var g = c.getContext('2d'); g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height); g.drawImage(im, 0, 0, c.width, c.height);
+          var q = 0.86, out = c.toDataURL('image/jpeg', q);
+          while (out.length > 1.9e6 && q > 0.4) { q -= 0.12; out = c.toDataURL('image/jpeg', q); }
+          URL.revokeObjectURL(url); res(out.length > 2.05e6 ? null : out.replace(/^data:image\/jpeg;base64,/, ''));
+        } catch (e) { URL.revokeObjectURL(url); res(null); }
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); res(null); };
+      im.src = url;
+    });
+  }
+  var picErr = function (e) { return ({ imgBig: 'picBig', imgType: 'picType', imgLimit: 'picDayLimit', imgFull: 'picFull', full: 'picFull', imgPerson: 'picPerson', imgPersonal: 'picPersonal', imgUnsafe: 'picUnsafe', imgResting: 'picResting', nokey: 'picOff', resting: 'picOff', limit: 'picNoneLeft', words: 'picWords', names: 'picWords', personal: 'picWords', offline: 'offline' })[e] || 'picFailed'; };
   /** "✨ Draft with AI": from a topic (BRB.draftCards) or a lesson document (BRB.wordsFromDoc, Crossword's path). The
    *  cards land in the list to check; nothing is saved. Only the teacher's own words go: never a student's. */
   function aiBox(d) {
@@ -1622,12 +1796,30 @@ window.FLASH_LIBRARY = [
         go.disabled = false;
         if (!r || r.error) { msg.textContent = t(aiErr(r && r.error)); if (r && r.error === 'topicBad') ti.focus(); return; }
         if (!d.t.trim() && r.title) d.t = r.title.slice(0, 60);
-        var n = addCards(d, r.cards); d.ai = true; remember(d, true);
-        showBuild(); var m = document.getElementById('fc-aimsg'); if (m) m.textContent = t('aiAdded', { n: n }); announce(t('aiAdded', { n: n }));
-        var first = document.querySelector('#fc-rows .fc-termin'); if (first) first.scrollIntoView({ block: 'center' });
+        var n = addCards(d, r.cards); d.ai = true;
+        var after = function (more) {
+          remember(d, true);
+          showBuild(); var m = document.getElementById('fc-aimsg'), said = t('aiAdded', { n: n }) + (more ? ' ' + more : ''); if (m) m.textContent = said; announce(said);
+          var first = document.querySelector('#fc-rows .fc-termin'); if (first) first.scrollIntoView({ block: 'center' });
+        };
+        // "Add pictures": Oomba paints one for each new card (queued; each card shows a placeholder until it is ready)
+        if (n && pics && pics.checked && B.flashPaint) {
+          var added = d.c.slice(-n); go.disabled = true;
+          B.flashPaint(added.map(function (x) { return { subject: x[0], note: x[1].slice(0, 120) }; })).then(function (pr) {
+            go.disabled = false;
+            var q = 0; if (pr && pr.refs) pr.refs.forEach(function (ref, k) { if (ref && added[k]) { added[k][2] = ref; q++; } });
+            if (pr && pr.left != null && PICS) PICS.left = pr.left;
+            after(q ? t('aiPicsQueued', { n: q }) + (pr.more ? ' ' + t('aiPicsSome', { n: pr.more }) : '') : t(picErr(pr && (pr.more ? 'limit' : pr.error))));
+          });
+        } else after('');
       });
     }, 'fc-draft');
     row.appendChild(go); box.appendChild(row);
+    var pics = null;
+    if (PICS && PICS.paint) {
+      var pt = el('label', 'fc-toggle'); pics = el('input'); pics.type = 'checkbox'; pics.id = 'fc-aipics';
+      pt.appendChild(pics); pt.appendChild(document.createTextNode('🎨 ' + t('aiPics'))); box.appendChild(pt);
+    }
     // a lesson document: its word list and definitions, or its key terms
     var ff = el('div', 'fc-field'), fl = el('label', '', t('focusL')), fi = el('input', 'fc-in'); fl.htmlFor = 'fc-focus'; fi.id = 'fc-focus'; fi.maxLength = 200; fi.placeholder = t('focusPh'); fi.dir = 'auto';
     ff.appendChild(fl); ff.appendChild(fi);
@@ -1664,13 +1856,14 @@ window.FLASH_LIBRARY = [
       if (r && r.id) {
         var was = d.set; d.set = r.id; remember(d, true); SHEETS.list = null;
         if (!was && SAVE.prog['d:' + d.id]) { SAVE.prog[r.id] = SAVE.prog['d:' + d.id]; delete SAVE.prog['d:' + d.id]; persist(); }
+        if (PRIVATE) { sfx('win', { volume: 0.4 }); msg.textContent = t('savedOwn'); announce(t('savedOwn')); b.textContent = '💾 ' + t('saveChanges'); return; }
         sfx('win', { volume: 0.4 }); msg.textContent = t('saved'); announce(t('saved')); b.textContent = '🔗 ' + t('saveChanges');
         var sh = document.getElementById('fc-sharebox'); drawShare(sh, r.id);
         sh.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); var cp = document.getElementById('fc-copy') || document.getElementById('fc-assign'); if (cp) cp.focus({ preventScroll: true });
         return;
       }
       var e = r && r.error;
-      msg.textContent = t(e === 'guest' ? 'saveGuest' : e === 'bad' ? 'saveBad' : e === 'full' ? 'saveFull' : e === 'notYours' ? 'saveNotYours' : 'offline');
+      msg.textContent = t(e === 'guest' ? 'saveGuest' : e === 'bad' ? 'saveBad' : e === 'full' ? (PRIVATE ? 'ownFull' : 'saveFull') : e === 'notYours' ? 'saveNotYours' : 'offline');
       sfx('wrong', { volume: 0.4 });
     });
   }
@@ -1704,7 +1897,7 @@ window.FLASH_LIBRARY = [
   /* ---------- print (BRB.print: the play page prints; the frame can't) ---------- */
   function printIt(set, as) {
     if (!B.print) return;
-    var doc = { t: set.t || '', c: set.c.map(function (x) { return [x[0], x[1], x[2] || '']; }), a: set.a, as: as, set: set.set || '' };
+    var doc = { t: set.t || '', c: set.c.map(function (x) { var c = [x[0], x[1], x[2] || '']; if (x[3]) c.push(x[3]); return c; }), a: set.a, as: as, set: set.set || '' };
     var m = localFor(set); if (m && m.note) doc.note = m.note;
     sfx('select');
     var p = B.print(doc); if (!p) return;
@@ -1803,7 +1996,7 @@ window.FLASH_LIBRARY = [
       flip: S.flip ? { at: S.flip.at, turned: S.flip.turned, order: flipOrder() } : null,
       learn: S.learn && S.screen === 'learn' ? { i: S.learn.i, kind: S.learn.kind, answer: F.sideOf(S.set.c[S.learn.i], askSide()), queue: S.learn.queue.slice() } : null,
       test: S.test ? S.test.qs.map(function (q) { return { i: q.i, kind: q.kind, truth: q.truth, answer: F.sideOf(S.set.c[q.i], askSide()) }; }) : null,
-      draft: S.draft ? cleanCards(S.draft.c).length : 0, draftSet: S.draft ? S.draft.set || '' : '', mine: SAVE.mine.length, library: LIB.length,
+      draft: S.draft ? cleanCards(S.draft.c).length : 0, draftCards: S.draft ? S.draft.c.map(cardOf) : [], setCards: S.set ? S.set.c.map(cardOf) : [], private: PRIVATE, pics: !!PICS, draftSet: S.draft ? S.draft.set || '' : '', mine: SAVE.mine.length, library: LIB.length,
     };
   }
   window.__brbTest = Object.assign(window.__brbTest || {}, {

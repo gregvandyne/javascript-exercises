@@ -30,6 +30,8 @@ import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
+import * as flashPics from '../services/flash-pics.js';
+import { PIC_LIMITS as BOOK_PIC } from '../services/storybook.js';
 import { draftClues, draftCards, CARDS, DOC_FOCUS_MAX } from '../services/set-ai.js';
 import * as VC from '../services/verify-change.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
@@ -473,6 +475,12 @@ router.get('/frame/:token', (req, res) => {
     // staff, the platform admin, a family grown-up: the same people as live games), with AI on or off. Never a student,
     // a child, a guest or a signed-out player, never in a preview. A student with a link or a class code plays as before.
     ...(!preview && makeGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`) ? { make: true } : {}),
+    // Flashcards' "Make your own" is open to students and children too (docs/decisions.md "Flashcards: students make
+    // sets"): any signed-in player who is not a guest, with no AI (no clues), no pictures, and their sets their own only
+    // (makePrivate: BRB.makePrivate; no class code, link, share or assign for others). Never a guest, never a preview.
+    ...(!preview && selfMake(u, g) && !liveCanHost(u) ? { make: true, makePrivate: true } : {}),
+    // Flashcards' pictures (BRB.flashPics: services/flash-pics.js info): Storybook's picture makers who may save sets.
+    ...(!preview && cardsGame(g) && fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && flashPics.info(u) ? { flashPics: flashPics.info(u) } : {}),
     // Atlas Quest's door (BRB.canHostLive / BRB.hostLive): "Host live" next to Play and Build a lesson, for grown-ups who
     // may host while Oomba Live is on; the play page opens the live game's setup (in Homeroom, its live layer).
     ...(!preview && !tok.st && hostLiveMode(u, g) ? { hostLive: true } : {}),
@@ -548,7 +556,7 @@ const setKind = g => (setGame(g) ? g.slug : canvasSetVersion(g) ? gameSets.CANVA
  *  "Make your own" (makeGame) by grown-ups who may host only, as its builder is theirs (BRB.canMake). */
 function setRights(g, u, kind = setKind(g)) {
   if (!kind) return {};
-  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u))) && (!makeGame(g) || mayMake(u));
+  const save = fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && (kind !== gameSets.CANVAS_KIND || (!!u && !u.is_guest && isStaff(u))) && (!makeGame(g) || mayMake(u) || selfMake(u, g));
   return { ...(save ? {} : { setSave: false }), ...(fenceLets(u, 'GET', `/api/games/${g.id}/sets/code`) ? {} : { setFind: false }) };
 }
 /** INIT.set for a link's chapter. kind: the frame's (a classroom activity's worksheet opens only in its published
@@ -556,6 +564,8 @@ function setRights(g, u, kind = setKind(g)) {
 function setFor(g, chapter, u, kind) {
   if (!chapter || !gameSets.SET_ID.test(chapter) || !kind) return {};
   const s = gameSets.get(g.id, chapter);
+  // A student's or a child's own flashcard set opens for them only (anyone else: as a code with no set).
+  if (s && privateSet(g, s) && !(u && s.ownerId === u.id)) return { set: { id: chapter, missing: true } };
   return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
 }
 // A class code a student typed in the game (BRB.findQuestionSet): the set, to play straight away. Anyone who can open the
@@ -565,7 +575,7 @@ router.get('/api/games/:id/sets/:code', rateLimit('game-set-code', 30, 60e3, 'er
   if (!setKind(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   const id = gameSets.codeToId(req.params.code);
   const s = id && gameSets.get(g.id, id);
-  if (!s) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
+  if (!s || (privateSet(g, s) && !(req.user && req.user.id === s.ownerId))) return res.status(404).json({ error: req.t('game.api.notFound'), code: 'noSet' });
   res.json({ id: s.id, items: s.items });
 });
 router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3), (req, res) => {
@@ -579,10 +589,13 @@ router.post('/api/games/:id/sets', requireUser, rateLimit('game-sets', 60, 60e3)
   if (canvas && !isStaff(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   // Crossword, Word Hunt and Atlas Quest: "Make your own" is for grown-ups who may host (BRB.canMake), never a student or
   // a child, so a set is theirs to save too (a student still opens one by its code).
-  if (makeGame(g) && !mayMake(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  // Flashcards: students and children too (selfMake), their own sets only, at most FLASH.ownSets of them; every word
+  // through the site's text filter in cleanFlashItems, as a teacher's (rude words, personal details, links).
+  if (makeGame(g) && !mayMake(req.user) && !selfMake(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  const own = cardsGame(g) && !mayMake(req.user);
   const b = req.body || {}, id = b.id === undefined || b.id === null ? null : String(b.id);
   if (id !== null && !gameSets.SET_ID.test(id)) return res.status(400).json({ error: req.t('errors.api.badRequest') });
-  const r = gameSets.save(g.id, req.user.id, b.items, id, kind, { ...(typeof b.title === 'string' ? { title: b.title } : {}), ...(canvas ? { html: canvasSetVersion(g).html } : {}) });
+  const r = gameSets.save(g.id, req.user.id, b.items, id, kind, { ...(typeof b.title === 'string' ? { title: b.title } : {}), ...(canvas ? { html: canvasSetVersion(g).html } : {}), ...(own ? { max: gameSets.FLASH.ownSets } : {}) });
   if (r.error) return res.status(r.error === 'notYours' ? 404 : 400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id });
 });
@@ -631,7 +644,7 @@ router.post('/api/games/:id/sets/:set/duplicate', requireUser, rateLimit('game-s
   const was = gameSets.get(g.id, id);
   if (!was || was.ownerId !== req.user.id) return noSet(req, res);
   const name = req.t('game.sets.copyOf', { title: was.title || gameSets.labelOf(g.kind, was.items) });
-  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.kind);
+  const r = gameSets.duplicate(g.id, req.user.id, id, name, g.kind, cardsGame(g) && !mayMake(req.user) ? gameSets.FLASH.ownSets : gameSets.MAX_PER_OWNER);
   if (r.error === 'notYours') return noSet(req, res);
   if (r.error) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.error });
   res.json({ id: r.id, set: gameSets.oneMine(g.id, req.user.id, r.id, g.kind) });
@@ -647,6 +660,11 @@ const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-zoo
 const cardsGame = g => setGame(g) && g.slug === 'flashcards';
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
+/** Flashcards: anyone signed in who is not a guest makes their own sets (students and children: private, no AI, no
+ *  pictures; docs/decisions.md "Flashcards: students make sets"). */
+const selfMake = (u, g) => cardsGame(g) && !!u && !u.is_guest && !u.banned;
+/** A flashcard set made by a student or a child (its owner may not host): theirs alone, never opened by anyone else. */
+const privateSet = (g, s) => cardsGame(g) && !!s && !liveCanHost(getUser(s.ownerId));
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
  *  a family grown-up, the platform admin), the same check as INIT.make. Never a student, a child, a guest or signed out. */
 /** A solo game whose first screen (its door: Play, Host live, Build a lesson) can start its live game: Atlas Quest, whose
@@ -711,6 +729,55 @@ router.post('/api/games/:id/cards-ai', requireUser, rateLimit('game-clues', 30, 
   if (!r.ok) return res.status(r.code === 'topic' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
   audit(req.user.id, 'game.cards_ai', g.id, { count: r.cards.length });
   res.json({ title: r.title, cards: r.cards, report: VC.kept({ asked: r.asked, kept: r.cards.length, removed: { 'left out by the checks': r.asked - r.cards.length }, noun: 'cards' }) });
+});
+// Flashcards' pictures (services/flash-pics.js; docs/decisions.md "Flashcards: pictures"). Storybook's picture makers
+// who may save sets only (flashPics.canPicture, and the grown-up fence on saving sets); never a student, a child or a
+// guest (403 'notAllowed'). Nothing here is saved on a set: a card names a picture ('img:<id>') and the set is saved as usual.
+const picMaker = (req, res) => {
+  const g = apiGame(req, res); if (!g) return null;
+  if (!cardsGame(g)) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
+  if (!flashPics.canPicture(req.user) || !fenceLets(req.user, 'POST', `/api/games/${g.id}/sets`)) { res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' }); return null; }
+  return g;
+};
+const PIC_STATUS = { imgBig: 413, imgLimit: 429, imgResting: 503, imgType: 400, imgFull: 400, nokey: 503, resting: 503, limit: 429, notAllowed: 403 };
+// Upload: body { data: the JPEG the browser made, base64 }. The same checks as a book's picture (storybook.js
+// checkUpload: no person in it, nothing unsafe or private). -> { ref, width, height } | { code }
+router.post('/api/games/:id/flash-pics', requireUser, rateLimit('flash-pic', 20, 60e3), async (req, res) => {
+  const g = picMaker(req, res); if (!g) return;
+  const b = req.body || {};
+  if (typeof b.data !== 'string' || !/^[A-Za-z0-9+/]+=*$/.test(b.data)) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'imgType' });
+  if (b.data.length > Math.ceil(BOOK_PIC.maxBytes / 3) * 4 + 4) return res.status(413).json({ error: req.t('errors.api.badRequest'), code: 'imgBig' });
+  const r = await flashPics.upload(req.user, Buffer.from(b.data, 'base64'));
+  if (!r.ok) return res.status(PIC_STATUS[r.code] || 422).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'flash.pic', g.id, { kind: 'upload' });
+  res.json({ ref: r.ref, width: r.width, height: r.height });
+});
+// "Oomba paints it": body { asks: [{ subject: the card's term, note?: a short line }] } (1-30). Queued; each comes back
+// as a ref to show a "painting" placeholder for (null: not queued: the day's pictures used, or words the checks refused).
+router.post('/api/games/:id/flash-pics/paint', requireUser, rateLimit('flash-paint', 20, 60e3), (req, res) => {
+  const g = picMaker(req, res); if (!g) return;
+  const r = flashPics.paint(req.user, (req.body || {}).asks);
+  if (!r.ok) return res.status(PIC_STATUS[r.code] || 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'flash.pic', g.id, { kind: 'paint', queued: r.refs.filter(Boolean).length, more: r.more });
+  res.json({ refs: r.refs, more: r.more, left: flashPics.info(req.user).left });
+});
+// The owner's pictures' state (the editor's placeholders): ?refs=img:a,img:b -> { pics: { ref: { state, reason } } }
+router.get('/api/games/:id/flash-pics/state', requireUser, rateLimit('flash-pic-state', 120, 60e3), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!cardsGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  res.json({ pics: flashPics.stateOf(req.user, String(req.query.refs || '').split(',').slice(0, 100)) });
+});
+// One picture: its owner, or anyone with the set whose cards name it (?set=, a set of the picture's owner: a student
+// studying an assigned set). Still being painted: 202 { painting: true }. Anything else: 404.
+router.get('/api/games/:id/flash-pics/:pic', rateLimit('flash-pic-get', 240, 60e3, 'errors.api.slowDown', { byIp: true }), (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!cardsGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  const sid = String(req.query.set || '');
+  const set = gameSets.SET_ID.test(sid) ? gameSets.get(g.id, sid) : null;
+  const r = flashPics.pictureFor(req.user, req.params.pic, set && !(privateSet(g, set) && !(req.user && req.user.id === set.ownerId)) ? set : null);
+  if (!r) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (r.painting) return res.status(202).json({ painting: true });
+  res.set('Cache-Control', 'private, max-age=86400').set('X-Content-Type-Options', 'nosniff').type(r.pic.mime === 'image/png' ? 'image/png' : 'image/jpeg').send(Buffer.from(r.pic.bytes));
 });
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
@@ -867,11 +934,14 @@ router.post('/api/games/:id/print', rateLimit('game-print', 20, 60e3, 'errors.ap
   const r = printer.clean((req.body || {}).doc);
   if (!r.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: r.code });
   if (r.doc.key && !printKeyFor(req.user, g)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'key' });
-  // The footer's class code and link: only for a set of this game that is on Oomba.
-  const s = r.doc.set && gameSets.get(g.id, r.doc.set);
+  // The footer's class code and link: only for a set of this game that is on Oomba (never a student's own set).
+  const found = r.doc.set && gameSets.get(g.id, r.doc.set);
+  const s = found && !privateSet(g, found) ? found : null;
   const code = s ? s.id.slice(2).toUpperCase().replace(/^(.{5})/, '$1 ') : '';
   const link = s ? `${requestOrigin(req)}/play/${g.slug}?chapter=${s.id}&lock=1` : '';
-  res.json({ html: printer.html(r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, code, link }) });
+  // Flashcards' pictures: each one this viewer may see (its owner, or the set that names it), from our own route only.
+  const picSrc = cardsGame(g) ? ref => (flashPics.pictureFor(req.user, ref, found || null) || {}).pic ? `/api/games/${g.id}/flash-pics/${String(ref).slice(4)}${found ? `?set=${found.id}` : ''}` : '' : null;
+  res.json({ html: printer.html(r.doc, { t: req.t, dir: localeInfo(req.locale).dir, lang: req.locale, code, link, ...(picSrc ? { picSrc } : {}) }) });
 });
 const pollGame = g => polls.POLL_GAMES.has(g.slug) && g.source === 'seed' && (games.getOwner(g) || {}).username === OFFICIAL;
 router.post('/api/games/:id/poll', requireUser, rateLimit('poll', 240, 60e3), (req, res) => {
