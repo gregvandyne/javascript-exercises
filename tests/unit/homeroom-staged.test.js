@@ -98,7 +98,9 @@ test('a game, a lesson and a tool on the teacher\'s desk in a class with no stud
   const page = await as(rivera)(`/class/${empty.id}/homeroom`);
   assert.equal(page.status, 200);
   assert.match(page.text, /"staged":\[\{"id":"d[a-z0-9]+","kind":"game"/);
-  assert.match(page.text, /data-hritem="T:manipulatives"/, 'a tool in the panel can be picked for My desk');
+  // (every Manipulatives tool is in the panel's catalog now, each one handed out or put on My desk: docs/decisions.md
+  // "Homeroom: watching desks and the full catalog")
+  assert.match(page.text, /data-hritem="T:manip:base-ten-blocks"/, 'a tool in the panel can be picked for My desk');
 });
 
 test('kept per class and between visits; take it off; a full desk', async () => {

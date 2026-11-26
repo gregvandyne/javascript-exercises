@@ -42,6 +42,7 @@ import { gameHidden, mayOpenHidden } from './game-focus.js';
 import * as HR from './homeroom-reading.js';
 import * as LIB from './library.js';
 import * as AT from './homeroom-attendance.js';
+import * as HT from './homeroom-tools.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -125,7 +126,9 @@ export function boardView(c, locale = 'en') {
   }
   // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at
   // home"): the board dims an absent desk and leaves it out of its counts
-  return { handouts, desks, att: AT.marksToday(c.id), asks: AT.openAsks(c.id) };
+  // Manipulatives tools handed out (services/homeroom-tools.js): their own list, never in the desks' cards (a tool is open
+  // practice: it never counts toward Done, Stuck or Today's counts)
+  return { handouts, desks, tools: HT.boardList(c), att: AT.marksToday(c.id), asks: AT.openAsks(c.id) };
 }
 /** One student's desk: their own handouts only, in order, each with what the card shows and where it opens
  *  ({ id, title, icon, instructions, href, done, pct, locked, next, due, ready }). Nothing about anyone else. */
@@ -134,7 +137,8 @@ export function deskView(c, u, locale = 'en') {
   const steps = new Map(rows.length ? q.all(`SELECT s.*, g.slug game_slug, g.status game_status, g.visibility game_visibility, g.source game_source, g.owner_id game_owner,
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = rds.size ? HR.infosOf(c.id, rds, u.id) : new Map();
-  return deskOrder(rows.map(r => {
+  // (a Manipulatives tool handed out comes after the handouts: open practice, never Next up or Later)
+  return [...deskOrder(rows.map(r => {
     const p = prog.get(`${r.id}:${u.id}`);
     // A Reading handout (services/homeroom-reading.js): it opens the desk's reading layer, the routine's step on the card.
     if (r.step_kind === 'story') {
@@ -148,7 +152,7 @@ export function deskView(c, u, locale = 'en') {
     return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
       done: !!p && p.status === 'done', pct: pctOf(p), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
-  }));
+  })), ...HT.deskCards(c, u)];
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
 export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${x.missed ? 'm' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');

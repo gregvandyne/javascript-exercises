@@ -288,7 +288,8 @@ export function setLive(u, c, action) {
     save(u, c.id, f);
   }
   audit(u.id, 'homeroom.live', c.id, { action });
-  if (action === 'start' || action === 'end') for (const fn of liveHooks) fn({ by: u, c, action, wasLive: !!cur });
+  // (pause too: watching desks forgets its pictures, services/homeroom-watch.js)
+  if (action === 'start' || action === 'end' || action === 'pause') for (const fn of liveHooks) fn({ by: u, c, action, wasLive: !!cur });
   return ok({ live: liveOf(c.id) });
 }
 /** What a desk or the projector reads every few seconds: the live state and, when it changed since version v (the

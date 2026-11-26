@@ -138,6 +138,8 @@ test('with a mouse a game can be dragged onto a desk; the board at 1366 x 768 an
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
+  // (the panel's catalog lists every lesson by subject: the search finds it and opens its list)
+  await page.fill('#hr-cq', 'sudoku');
   const from = await page.locator(`[data-hritem="${sudoku.id}"]`).boundingBox(), to = await page.locator(`.hr-desk[data-sid="${kids[9].id}"]`).boundingBox();
   await page.mouse.move(from.x + 20, from.y + 15); await page.mouse.down();
   await page.mouse.move(to.x + to.width / 2, to.y + to.height / 2, { steps: 12 });
@@ -153,7 +155,9 @@ test('with a mouse a game can be dragged onto a desk; the board at 1366 x 768 an
   await ctx.close();
   const P = await open(teacher, `/class/${cls.id}/homeroom`, { width: 390, height: 844 }, true);
   await P.page.waitForSelector('.hr-desk');
-  await P.page.tap(`[data-hritem="${lab.id}"]`);
+  // (a phone's strip opens the whole catalog in a sheet: Find lessons; a lesson picked there is picked)
+  await P.page.tap('[data-hr="catalog"]');
+  await P.page.tap(`.hr-csheet [data-hritem="${lab.id}"]`);
   await P.page.waitForSelector('#hr-givebar:not([hidden])');
   assert.ok(await noSideways(P.page));
   await settle(P.page); await shot(P.page, 'teacher-picked-phone');

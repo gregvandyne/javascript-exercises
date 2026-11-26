@@ -26,6 +26,8 @@ import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
 import * as LIB from './library.js';
 import * as AT from './homeroom-attendance.js';
+import * as HT from './homeroom-tools.js';
+import * as HW from './homeroom-watch.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -41,7 +43,8 @@ export const PASS_DEFAULT = 5, PASS_MIN = 1, PASS_MAX = 20;
 export const COMING_MS = 5 * 60e3;
 // 'reading': the desk's reading layer is open (docs/decisions.md "Homeroom: reading from the desk"), on a Reading handout
 // (on) or reading freely from the dock's Library; it says which book and page, so the board shows "Reading <book>".
-const WHERE = ['desk', 'game', 'reading'];
+// 'tool': a Manipulatives tool handed out is open in the desk's player (services/homeroom-tools.js), on: its handout.
+const WHERE = ['desk', 'game', 'reading', 'tool'];
 const FLAGS = { lock: 'locked', hide: 'hidden', coming: 'coming_at' };
 
 // ---------------------------------------------------------------- pulses (memory only)
@@ -76,7 +79,7 @@ export function pulse(u, c, body = {}, at = now()) {
   if (!live) return ok({ live: null, me: null });
   const m = beatsOf(c.id), old = m.get(u.id) || null, b = old ? { ...old } : {};
   const where = WHERE.includes(body.where) ? body.where : 'desk';
-  const on = body.on && handoutIn(c.id, body.on) ? String(body.on) : '';
+  const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) : handoutIn(c.id, body.on)) ? String(body.on) : '';
   const idle = Math.min(3600, Math.max(0, Number(body.idle) || 0));
   const step = Math.max(0, Math.min(1e6, Math.floor(Number(body.step) || 0)));
   // Back after being away (or the first pulse of this live class): a fresh start, so nobody is "stuck" from before.
@@ -98,7 +101,9 @@ export function pulse(u, c, body = {}, at = now()) {
     if (cur.length || pad.length) b.curAt = at;
   } else { b.cur = []; b.pad = []; }
   m.set(u.id, b);
-  return ok({ live, me: mineOf(c, u.id, at), mates: matesOf(c, u.id, at) });
+  // (watching, docs/decisions.md "Homeroom: watching desks and the full catalog": whether the teacher's board shows this
+  // desk now, so a game's play page sends its small picture: services/homeroom-watch.js)
+  return ok({ live, me: mineOf(c, u.id, at), mates: matesOf(c, u.id, at), ...HW.askFor(c, u.id, at) });
 }
 
 /** The status of one student from their pulse and their desk's cards (HO.boardView's desks[id]), at a time. Pure, so
@@ -259,6 +264,9 @@ export function liveView(c, board = HO.boardView(c), at = now()) {
   const live = H.liveOf(c.id);
   if (!live) return { live: null, desks: {}, ...handsView(c), cursors: false, now: at };
   const m = beatsOf(c.id), rows = new Map(rowsOf(c.id).map(r => [r.user_id, r])), cursors = cursorsOn(c.id), desks = {}, att = board.att || AT.marksToday(c.id, at);
+  // what each desk's live view has now (the board asks for the new ones of the desks it shows): a game's picture (sv),
+  // a Manipulatives board (mv); services/homeroom-watch.js, services/homeroom-tools.js
+  const sv = HW.versionsOf(c, at), mv = HT.versionsOf(c), tools = new Map((board.tools || []).map(x => [x.id, x]));
   for (const s of H.studentsOf(c.id)) {
     const b = m.get(s.id), cards = board.desks[s.id] || [];
     // Absent today: a dimmed desk, never Stuck, Not here or counted (docs/decisions.md "Homeroom: K-2 mode, absent and at
@@ -266,16 +274,27 @@ export function liveView(c, board = HO.boardView(c), at = now()) {
     if (att[s.id] === 'absent') { desks[s.id] = { st: 'absent', on: '', where: '', at: b ? b.at : 0, hand: '', pass: '', absent: true, ...flagsOf(rows.get(s.id)) }; continue; }
     // a card that moved forward (done, a new score) counts as progress for Stuck
     if (b) { const k = cardKey(cards.find(x => x.id === b.on) || cards.find(x => x.next)); if (b.cardKey !== k) { if (b.cardKey !== null && b.cardKey !== undefined) b.progAt = at; b.cardKey = k; } }
-    const { st, on } = statusOf(b, cards, at), r = rows.get(s.id) || {};
+    const { st: st0, on } = statusOf(b, cards, at), r = rows.get(s.id) || {};
+    // (in a Manipulatives tool with nothing else on their desk: working, not "At desk")
+    const st = st0 === 'here' && b && b.where === 'tool' ? 'working' : st0;
     const bk = b && st !== 'away' && b.where === 'reading' && b.book ? LIB.getBook(b.book.id) : null;
     const home = att[s.id] === 'home';
     desks[s.id] = { st, on, where: b && st !== 'away' ? b.where : '', at: b ? b.at : 0, hand: home ? '' : r.hand || '', pass: home ? '' : r.pass || '', ...flagsOf(r), ...(home ? { home: true } : {}),
-      ...(bk ? { book: { id: bk.id, title: bk.title, cover: bk.cover.src, page: b.book.page, pages: bk.pages.length } } : {}),
+      ...(bk ? { book: { id: bk.id, title: bk.title, cover: bk.cover.src, page: b.book.page, pages: bk.pages.length, ...pageOf(bk, b.book.page) } } : {}),
+      ...(b && st !== 'away' && b.where === 'tool' && tools.get(b.on) ? { tool: { id: b.on, slug: tools.get(b.on).tool, title: tools.get(b.on).title, icon: tools.get(b.on).icon } } : {}),
+      ...(!home && sv[s.id] ? { sv: sv[s.id] } : {}), ...(mv.has(s.id) ? { mv: mv.get(s.id) } : {}),
       ...(cursors && b && !home && !r.hidden && st !== 'away' && b.cur && b.cur.length && at - (b.curAt || 0) < SAMPLE_SPAN + 6000 ? { cur: b.cur.map(([t, x, y]) => [at - t, x, y]) } : {}) };
   }
   return { live, desks, ...handsView(c), cursors, now: at };
 }
 
+/** The page a student has open in the reader (watching desks: the board draws it as they see it): its picture and the
+ *  start of its words. Page 0 is the cover. */
+function pageOf(bk, page) {
+  const p = page > 0 ? bk.pages[Math.min(bk.pages.length, page) - 1] : null;
+  const img = p ? (typeof p.image === 'string' ? p.image : p.image && p.image.src) : bk.cover.src;
+  return { pic: img || bk.cover.src, words: p ? String(p.text || '').slice(0, 160) : '' };
+}
 /** Look at one student's desk (the teacher's panel): what the server already knows, and their pad as a read-only
  *  drawing. Never their screen or their keys. */
 export function lookAt(u, c, studentId, locale = 'en') {

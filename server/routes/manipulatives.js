@@ -72,11 +72,16 @@ const hostOnly = (req, res, next) => (req.manipRole === 'host' ? next() : fail(r
 const CSS = raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}">`);
 router.get('/manipulatives', (req, res) => {
   const t = req.t;
+  // Opened inside Homeroom (?in=hr in a frame of this site: a student's tool handout on their desk, a teacher's tool on
+  // My desk; docs/decisions.md "Homeroom: watching desks and the full catalog"): the same page and the same tool, with
+  // no site menu or footer, and only then may this site (and only it) frame it, as the play page's ?in=hr.
+  const embed = req.query.in === 'hr' && req.headers['sec-fetch-dest'] === 'iframe';
+  if (embed) { res.set('Content-Security-Policy', String(res.get('Content-Security-Policy') || '').replace("frame-ancestors 'none'", "frame-ancestors 'self'")); res.removeHeader('X-Frame-Options'); }
   // "Teaching tools: Manipulatives · Figures" for someone who can open both (routes/figures.js).
-  const tools = teachingTools(req, 'manip');
+  const tools = embed ? '' : teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: 'manip-page',
-    body: html`${tools}${jsonData('page-data', { role: req.manipRole })}
+    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: embed ? 'manip-page mp-inhr' : 'manip-page', ...(embed ? { bare: true } : {}),
+    body: html`${tools}${jsonData('page-data', { role: req.manipRole, ...(embed ? { embed: 'hr' } : {}) })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
 });

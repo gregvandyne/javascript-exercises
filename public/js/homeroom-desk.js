@@ -80,6 +80,7 @@ function renderDesk() {
   body.innerHTML = `<div class="hd-grid">
     <section class="hd-desk"${color} aria-labelledby="hd-deskh">
       <div class="hd-deskrow"><h2 class="hd-deskh" id="hd-deskh"><span class="rm-dot"${D.color ? ` style="--c:${esc(D.color)}"` : ''}></span><span>${esc(td('deskOf', { name: D.me.name }))}</span></h2><span class="hd-order" id="hd-order"></span></div>
+      <p class="hd-seen">${iconHtml('👀', { size: 16 })} <span>${esc(td('seen'))}</span></p>
       ${S.team ? `<p class="hd-team" id="hd-team">${iconHtml('🤝', { size: 18 })} <span><bdi>${esc(td('team', { names: S.team.names.join(', ') }))}</bdi></span></p>` : ''}
       <div id="hd-cards"></div>
       <div class="hd-pad">
@@ -118,7 +119,8 @@ function cardHtml(x) {
   const cls = `hd-card${x.next ? ' next' : ''}${x.locked ? ' locked' : ''}${x.done ? ' done' : ''}${x.ready ? '' : ' notready'}`;
   const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
   // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
-  const kind = !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
+  // (a Manipulatives tool: open practice in its live room, docs/decisions.md "Homeroom: watching desks and the full catalog")
+  const kind = x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
   const sub = [kind, x.due ? td('due', { date: dayFmt(x.due) }) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
@@ -329,6 +331,9 @@ function applyState(st) {
   S.live = st.live || null; S.v = st.v;
   liveDesk(st);
   if (Array.isArray(st.cards)) newCards(st.cards);
+  // watching desks (docs/decisions.md "Homeroom: watching desks and the full catalog"): the game open in the player sends
+  // its small picture while the teacher's board shows this desk; the desk's poll says so sooner than the game's pulse
+  if (st.watch) { const f = root.querySelector('.hr-playframe'); try { if (f && f.contentWindow) f.contentWindow.postMessage({ type: 'hr:watch', ...st.watch }, location.origin); } catch { /* the frame is going */ } }
   teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
@@ -553,8 +558,11 @@ function setDock(k) { for (const b of root.querySelectorAll('.hd-dockbtn[data-hd
 const PL = gamePlayer({
   host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
   find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
-  onOpen: () => { root.classList.add('hd-playing'); if (PULSE) PULSE.pause(); },
-  onClose: () => { root.classList.remove('hd-playing'); if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
+  note: td('seen'),
+  // A Manipulatives tool is the tool's own page (it has no pulse of its own): the desk keeps pulsing and says so
+  // (where: tool), so the teacher's board shows that student's square in the tool's room.
+  onOpen: id => { root.classList.add('hd-playing'); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else if (PULSE) PULSE.pause(); },
+  onClose: () => { root.classList.remove('hd-playing'); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
 });
 
 function start() {
@@ -569,7 +577,7 @@ function start() {
     if (e.key === 'Escape' && S.askMenu) { S.askMenu = false; renderHand(); root.querySelector('[data-hd="ask"]')?.focus(); return; }
     if (e.key === 'Escape' && S.view !== 'desk') { S.view = 'desk'; renderOver(); }
   });
-  PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', extra: () => RL.pulse(), deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
+  PULSE = startPulse({ classId: D.classId, where: 'desk', on: () => '', extra: () => (S.tool ? { where: 'tool', on: S.tool } : RL.pulse()), deskEl: () => root.querySelector('.hd-desk'), padEl: () => $('hd-svg'),
     onAnswer: r => liveDesk({ live: r.live, me: r.me, mates: r.mates }) });
   PULSE.setLive(S.live, S.me);
   setInterval(() => { tick(); if (S.plan && S.plan.mine) renderNow(); }, 1000);

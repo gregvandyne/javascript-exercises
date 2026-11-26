@@ -158,6 +158,15 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
       const left = Array.isArray(list) ? list.filter(x => !x || x.by !== u.id) : [];
       q.run('UPDATE homeroom_rooms SET staged=? WHERE class_id=?', JSON.stringify(left), r.class_id);
     }
+    // Manipulatives tools handed out (services/homeroom-tools.js): their name off the handouts they gave and off the
+    // desks they were on (the handout stays with the class, as a game's does)
+    for (const r of q.all('SELECT class_id, tools FROM homeroom_rooms WHERE tools LIKE ?', `%${u.id}%`)) {
+      let list = []; try { list = JSON.parse(r.tools) || []; } catch { /* kept as it was */ }
+      // (a handout that was only theirs goes: an empty list would mean the whole class)
+      const left = (Array.isArray(list) ? list : []).filter(x => x && typeof x === 'object' && !(Array.isArray(x.students) && x.students.length === 1 && x.students[0] === u.id))
+        .map(x => ({ ...x, by: x.by === u.id ? '' : x.by, students: Array.isArray(x.students) ? x.students.filter(id => id !== u.id) : [] }));
+      q.run('UPDATE homeroom_rooms SET tools=? WHERE class_id=?', JSON.stringify(left), r.class_id);
+    }
     // 11d. Figures: their worksheets (question sets), presets and "Power with AI" switch
     forgetFigures(u.id);
     // 11e. Oomba, the teaching companion: their conversation, its attached texts and pictures (services/companion.js)
