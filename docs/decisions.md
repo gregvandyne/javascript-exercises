@@ -16026,3 +16026,67 @@ in a "Teach with Atlas Quest" widget under the solo game's home, gated by BRB.ca
 
 Tests: tests/unit/atlas-door-browser.test.js (a teacher from Homeroom Games, Live games and the game page; a student and
 a handout; no plane), tests/unit/make-gate.test.js (the door for grown-ups, the tools behind Build a lesson).
+
+## Homepage: the one classroom tool for everything (26 Nov 2026)
+
+The owner approved a new teacher homepage at "/" (server/routes/landing.js, public/css/landing.css, public/js/landing.js),
+built from the approved mockup (variant B) with these decisions:
+
+- **Light by default.** The cream-and-mint look. Dark stays available: the site's theme switch (`?theme=dark`, the
+  cookie, the footer's Light and Dark links) sets `html[data-theme]`, and with nothing picked the device's
+  `prefers-color-scheme` decides. The CSS has both palettes from the same tokens; the Hub screenshot has a dark capture.
+  The old landing was dark by default.
+- **The hero is every tool, not the Hub** (owner, later the same day): "The one classroom tool for everything." with
+  "Live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper. One login, one class
+  list, one plan." The picture is a collage of real screens (the class dashboard, the Manipulatives, Figures, Read, a
+  live game, the Oomba chat). Meta title "Oomba Academy: the one classroom tool for everything". The Hub has its own
+  section after the strip and the ten things ("Run it all from the Hub."), and the tour after it ("Try the Hub before you
+  sign up.").
+- **Order:** hero, "One subscription instead of five" strip, ten things in one place, the Hub, Ask Oomba, the tools,
+  side by side, the Hub tour, videos, safety, questions (kept for the FAQ structured data, with the /parents and
+  /teachers doors), the last call, the footer with "Here to play?" (Just Play for kids, so `/#play` still lands).
+  Pricing cards, the dashboard layout tour, "How it works", the Builder demo, the teaching loop and "Why games work"
+  left the page (their words left the locale files).
+- **Naming products: the second exception** to "never name other products" (the first is /compare). The homepage names
+  exactly five, as plain text and never a logo: "One subscription instead of five: Kahoot!, Classroomscreen, Blooket,
+  Brainingcamp, Typing.com" (`NAMED` in routes/landing.js; "Classroomscreen" as compare.js spells it). Side-by-side cards
+  for Kahoot!, Classroomscreen and Brainingcamp only (`VERSUS`): "What X does" is only the words /compare already quotes
+  from that product's own website (`CELLS` in routes/compare.js, by row), each with its address, and the card says
+  "Source: <site>, read on <COMPARE_CHECKED>" in small type; "What Oomba adds here" is Oomba's own. Blooket and
+  Typing.com get no card (no sourced facts yet). The footer: "Kahoot!, Classroomscreen, Blooket, Brainingcamp and
+  Typing.com are trademarks of their owners. Oomba Academy is not affiliated with them." The names stay out of the locale
+  files (`{name}`, `{names}`). tests/unit/compare.test.js allows routes/landing.js and checks it names no product beyond
+  the five, that "/" shows exactly those five with the trademark line and only /compare's quotes, and that every other
+  page and file still names none. Legal: docs/legal-review.md "Homepage naming five products".
+- **No cost line, no prices.** Competitor prices are not verified and amounts appear only on /plans. The strip says
+  "Pay for one plan instead of five. See how we compare" (a link to /compare); the band under the ten things says
+  "Students join free. Plans are on the Plans page."
+- **"Available with the Teacher plan"** (a link to /plans), calm and small, on what the code gates by the plan: the Hub
+  (services/homeroom.js `canUse`: HOMEROOM, HOMEROOM_USERS and the Teacher plan), Ask Oomba (`companionFor`), the
+  Manipulatives and Figures (services/teacher-tools.js `toolAccess`), and the Hub tour. While paid plans are not on for
+  everyone (`plansOn()` false) it reads "Being tried out in a few classrooms now", as /compare's tag does. The class
+  dashboard, live games, the Builder, Read, typing, geography and the games carry no tag.
+- **"Grammar and proofreading"** is Mistake Hunt (there is no "highlights" game).
+- **The Hub** is the name everywhere on the page ("Hub" in every language). Calls to action go to the sign-up (`/signup?trial=1`)
+  and `#tour`, never to a class URL (the Hub's route may change).
+- **Screenshots:** `scripts/landing-shots.mjs` captures the real app on an in-memory database with made-up people and a
+  stand-in AI, and writes public/img/landing/<name>-<w>.webp at 1x and 2x plus `shots.json` (widths and height, so
+  every `<img>` has its size). Nothing on a page is edited before a capture, so screens captured before the Hub rename
+  still say Homeroom; run the script again after it. The dashboard is captured at 9:40 on a school morning (the
+  browser's clock only). The collage's big screen is preloaded with high priority; everything below the first screen
+  loads lazily.
+- **The Hub tour** (public/js/landing.js `startTour`): six steps on real screenshots (Arrange seats, Hand out a lesson,
+  Watch every desk, Answer hands, Ask Oomba, Finish class), each with yellow hotspot dots and a dark callout, a stepper,
+  Back and Next, the arrow keys (mirrored right to left), Home and End, a swipe on the picture, a progress bar and a
+  polite live region. Back and Next keep the focus on themselves; a step picked in the stepper moves the focus to its
+  heading. On phones the callout sits under the picture. Without script it is the list of all six steps. Only the Hub
+  has a tour for now; tool tours are for later.
+- **Videos:** the four tool videos (views/see-it.js `readyVideos`) and the 18 How it works videos of the manipulatives,
+  each a link to its .mp4 that public/js/landing.js opens in one `<dialog>` with its poster and English captions (muted,
+  nothing loaded until opened; Escape, the × or a click outside closes it and the focus goes back). There is no Hub video
+  yet: `HERO_VIDEO` is the class dashboard's (under a minute), the closest to "the whole day on one screen"; the hero's
+  button says "Watch the overview".
+
+Tests: tests/unit/teacher-landing.test.js (the page, its order, screenshots, Teacher plan lines, the tour and videos
+as sent), tests/unit/landing-tour-browser.test.js (the tour by mouse and keyboard, the phone layout, the video player),
+tests/unit/compare.test.js (the names).

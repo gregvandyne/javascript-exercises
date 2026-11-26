@@ -925,27 +925,10 @@
     }
   },
   "landing": {
-    "dash": {
-      "li3": "Maths tools on the big screen: fraction bars, number lines, geoboards, place value and more.",
-      "shotAlt": "A class dashboard on the projector: the clock, today's goal, the timetable with Maths now and break next, class jobs and a mood check-in."
-    },
     "hero": {
-      "kicker": "For teachers · ages 5 to 14"
-    },
-    "demo": {
-      "lessonTitle": "Equivalent fractions · Year 5",
-      "step3": "Playtesting on phone, tablet and computer"
-    },
-    "how": {
-      "s1": {
-        "p": "Paste your lesson text, upload a PDF, a picture or a text file, or describe what your class should practise, in your own words."
-      },
-      "s2": {
-        "p": "Check-ins, timers, quick checks, the help queue, groups and maths tools, from morning meeting to home time. Switch layouts in one tap."
-      }
-    },
-    "builder": {
-      "msg": "Make a playable lesson from this plan for my Year 5 class. Ten minutes, three levels, and end with the exit ticket questions."
+      "kicker": "For teachers · ages 5 to 14",
+      "lead": "Live games, maths manipulatives, worksheets, picture books, a class dashboard and an AI helper. One login, one class list, one plan.",
+      "collageAlt": "Real screens from Oomba Academy: a class dashboard, fraction tiles on a maths board, a worksheet with figures drawn to scale, the picture book library and a live class game."
     },
     "courses": {
       "nq": {
@@ -956,39 +939,44 @@
         "p": "A full programme a teacher with no computing background can run: 45-minute lessons, each with a plan, a game chapter, a live warm-up and an exit ticket. CSTA levels 1B and 2."
       }
     },
-    "why": {
-      "b3": {
-        "p": "“One more round” feels like play, not a worksheet, so pupils practise more, without the weight of a mark."
-      }
-    },
     "faq": {
       "a1": "An interactive learning platform for ages 5 to 14. Teachers turn their own lesson plans into playable lessons with an AI Builder, run live class lessons, and use ready-made courses in maths, computing and online safety.",
       "a4": "Almost any lesson plan: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practise. The Builder uses your material as a reference and makes a playable lesson around it."
     },
-    "live": {
-      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the join code and a QR code."
-    },
     "tools": {
-      "kicker": "Teaching tools",
       "h": "Hands-on math, every student at once",
-      "lead": "Virtual manipulatives your students move themselves, a live room where you see everyone’s work on one screen, and Oomba to draft worksheets with figures drawn to scale.",
-      "li1": "18 virtual manipulatives, from base ten blocks that regroup to fraction pieces and clocks",
-      "li2": "Live math rooms: each student builds in their own square while you see every square on the board",
-      "li3": "Saved boards with share codes, and 300 ready-made tasks for grades K-8",
-      "li4": "Oomba, your teaching companion: describe a worksheet and get exact figures with the answers worked out",
-      "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
-      "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
-      "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
+      "lead": "Virtual manipulatives your students move themselves, a live room where you see everyone’s work on one screen, and Oomba to draft worksheets with figures drawn to scale."
     },
     "nav": {
       "tools": "Teaching tools"
     },
     "focus": {
-      "manipulatives": "virtual maths manipulatives",
       "play": "Word puzzles, maths games and live class games, with no sign-up.",
-      "freeLi1": "Every ready-made lesson, puzzle and classroom tool",
-      "faqA1": "A teaching platform for Reception to Year 9: a class dashboard to run the day, virtual maths manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder.",
-      "demoCredit": "Art from {title}, one of Oomba’s ready-made lessons."
+      "faqA1": "A teaching platform for Reception to Year 9: a class dashboard to run the day, virtual maths manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder."
+    },
+    "meta": {
+      "description": "Live games, maths manipulatives, worksheets, picture books, a class dashboard and an AI helper for K-8 teachers. One login, one class list, one plan.",
+      "imageAlt": "Oomba Academy: live games, maths manipulatives, worksheets, picture books and a class dashboard in one place."
+    },
+    "one": {
+      "h": "Live games, a class dashboard, maths manipulatives and typing, in one place."
+    },
+    "hub": {
+      "lead": "One shared class board: your area at the front and a desk for every student, arranged the way your room really sits. Hand out lessons, live games and maths tools, then see every desk at once.",
+      "f1": {
+        "p": "Tap a lesson, a live game or a maths tool, then a desk, a group or the whole class. Or drag it there."
+      }
+    },
+    "ask": {
+      "lead": "Oomba is the chat on your teacher pages. It plans your day, builds worksheets, changes a maths board, makes books and gives points. You confirm anything that matters, and Undo is one tap away."
+    },
+    "tour": {
+      "s1": {
+        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to where it really sits. Groups keep their colours."
+      },
+      "s2": {
+        "p": "Tap a lesson, a game or a maths tool, then a desk, a group or the whole class. Or drag it there."
+      }
     }
   },
   "standards": {

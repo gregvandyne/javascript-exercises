@@ -1,7 +1,8 @@
 // The teacher landing page at "/" (server/routes/landing.js, docs/decisions.md "Teacher landing page"): what a visitor
 // with no session (and a search engine) gets at "/", what everyone with a session still gets, "Just Play" (/learn), the
-// search tags, the structured data, the sitemap, the click counts, and the honesty rules (no prices on "/", no ratings,
-// reviews or testimonials).
+// search tags, the structured data, the sitemap, the click counts, the honesty rules (no prices on "/", no ratings,
+// reviews or testimonials), and the page itself (docs/decisions.md "Homepage: the one classroom tool for everything"):
+// its sections in order, the screenshots, the Teacher plan lines, the tour and the videos as sent, before any script.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -51,11 +52,11 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
     assert.ok(isLanding(r.text), ua);
     assert.equal(r.text.match(/<h1\b/g).length, 1, 'one h1');
     assert.doesNotMatch(r.text, /lp-floats?\b|lp-bob/, 'no game covers floating round the hero (too distracting)');
-    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">One screen to run your class\. Lessons to make it stick\.<\/h1>/);
+    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">The one classroom tool for everything\.<\/h1>/);
     assert.match(r.text, /<meta name="robots" content="index, follow, max-image-preview:large">/);
     assert.match(r.text, new RegExp(`<link rel="canonical" href="${base}/">`));
-    assert.match(r.text, /<title>Class dashboards and interactive lessons for teachers · Oomba Academy<\/title>/);
-    assert.match(r.text, /<meta name="description" content="One screen to run your class day, [^"]{40,}">/);
+    assert.match(r.text, /<title>Oomba Academy: the one classroom tool for everything<\/title>/);
+    assert.match(r.text, /<meta name="description" content="Live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper [^"]{40,}">/);
     assert.match(r.text, /<meta property="og:image" content="[^"]+\/og\/landing\.jpg">/);
     assert.match(r.text, /<meta name="twitter:card" content="summary_large_image">/);
     for (const lm of ['<header class="lp-bar"', '<main id="lp-main">', '<footer class="lp-foot">', '<nav class="lp-nav"']) assert.ok(r.text.includes(lm), lm);
@@ -63,28 +64,28 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
   }
 });
 
-test('the top bar: Just Play (JUST_PLAY_URL) and Start free trial; every trial button asks who\'s signing up; pricing to /plans', async () => {
+test('the top bar: the sections and Start free trial; every trial button asks who\'s signing up; Just Play in the menu and the footer', async () => {
   const s = (await call(null, '/')).text;
   const bar = /<header class="lp-bar"[\s\S]*?<\/header>/.exec(s)[0];
   assert.equal(L.JUST_PLAY_URL, '/learn', 'Just Play opens Learn (every game; /play answers 301 there)');
   assert.equal(L.TRIAL_URL, '/signup?trial=1');
-  assert.match(bar, /<a class="lp-btn lp-btn-ghost lp-btn-sm lp-justplay" href="\/learn" data-cta="play">Just Play /);
+  assert.deepEqual([.../<nav class="lp-nav"[\s\S]*?<\/nav>/.exec(bar)[0].matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['#hub', '#tools', '#ask', '#tour', '#videos', '/compare']);
   // The link has a name of its own: on a phone only its short, aria-hidden words show.
   assert.match(bar, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial"><span class="lp-long">Start free trial<\/span>/);
-  assert.ok(bar.indexOf('lp-justplay') < bar.indexOf('href="/signup?trial=1"'), 'Just Play, then the trial, at the right');
+  assert.match(bar, /<nav class="lp-menu-panel"[\s\S]*href="\/learn" data-cta="play">Just Play/, 'Just Play for kids, in the menu');
   const trials = [...s.matchAll(/<a [^>]*data-cta="trial"[^>]*>/g)].map(m => /href="([^"]+)"/.exec(m[0])[1]);
-  assert.ok(trials.length >= 5); assert.ok(trials.every(h => h === '/signup?trial=1'), trials.join());
+  assert.ok(trials.length >= 4); assert.ok(trials.every(h => h === '/signup?trial=1'), trials.join());
   assert.match(s, /href="\/plans" data-cta="pricing"/);
   assert.match(s, /No card needed[\s\S]*Cancel anytime[\s\S]*Unlimited students/, 'the trust line');
   assert.match(s, /href="mailto:Greg@oomba\.ai\?subject=/, 'schools: talk to us');
   assert.match(s, /<section class="lp-play" id="play"[\s\S]*?href="\/learn"/, 'old "/#play" links land on a way to the games');
-  for (const p of ['/teachers', '/teachers/cs-quest', '/teachers/number-quest', '/teachers/cyber-defenders', '/parents', '/learn', '/privacy', '/terms']) assert.ok(s.includes(`href="${p}"`), `links ${p}`);
+  for (const p of ['/teachers', '/parents', '/learn', '/privacy', '/terms', '/compare']) assert.ok(s.includes(`href="${p}"`), `links ${p}`);
 });
 
 test('under the questions: a box each for /parents and /teachers, in their own words, the whole box a link', async () => {
   const s = (await call(null, '/')).text;
-  const faq = /<section class="lp-sec" id="faq"[\s\S]*?<\/section>/.exec(s)[0];
-  const doors = [...faq.matchAll(/<a class="lp-card lp-door rv" href="([^"]+)">([\s\S]*?)<\/a>/g)];
+  const faq = /<section class="lp-sec lp-alt" id="faq"[\s\S]*?<\/section>/.exec(s)[0];
+  const doors = [...faq.matchAll(/<a class="lp-card lp-door" href="([^"]+)">([\s\S]*?)<\/a>/g)];
   assert.deepEqual(doors.map(m => m[1]), ['/parents', '/teachers']);
   assert.match(doors[0][2], /For parents[\s\S]*<h3>Fun learning games for kids 5–14, safe by design<\/h3>[\s\S]*No chat with strangers/);
   assert.match(doors[1][2], /For teachers[\s\S]*<h3>Fun, interactive lessons your class will ask for<\/h3>[\s\S]*Sign in with Google/);
@@ -112,7 +113,8 @@ test('honest page: no prices on "/" (LANDING_SHOW_PRICE off), no ratings, review
   const s = (await call(null, '/')).text;
   assert.doesNotMatch(s, /\$\d|€\d|£\d|\d+\s*(?:USD|dollars)/i, 'no amounts: kids may open "/" too, prices live on /plans');
   assert.doesNotMatch(s, /aggregateRating|ratingValue|reviewCount|"@type":"Review"|itemprop="review"|★|☆|testimonial|trusted by|\d[\d,.]*\+?\s*(?:teachers|schools|students) (?:use|love|trust)/i);
-  assert.match(s, /One simple yearly price/);
+  assert.match(s, /Pay for one plan instead of five\. <a href="\/compare">See how we compare<\/a>/, 'no cost line: a link to /compare');
+  assert.match(s, /Plans are on the <a href="\/plans">Plans page<\/a>/);
   const app = nodes(s).find(x => x['@type'] === 'SoftwareApplication');
   assert.ok(app); assert.equal(app.offers, undefined, 'no price in the structured data either');
   assert.equal(app.aggregateRating, undefined);
@@ -140,9 +142,12 @@ test('every language: hreflang for all 13, /es is the Spanish landing (its own c
   const es = await call(null, '/es', { ua: GOOGLEBOT });
   assert.ok(isLanding(es.text));
   assert.match(es.text, /<html lang="es" dir="ltr"/);
-  assert.match(es.text, /<h1 id="lp-h1" class="lp-h1">Una pantalla para dirigir tu clase/);
+  assert.match(es.text, /<h1 id="lp-h1" class="lp-h1">La única herramienta de clase para todo\.<\/h1>/);
   assert.match(es.text, new RegExp(`<link rel="canonical" href="${base}/es">`));
-  assert.doesNotMatch(es.text, / lang="en" dir="ltr">(?!Roediger|Hattie|Fraction)/, 'nothing left in English but the citations and a game name');
+  // Nothing left in English but names: the products, the manipulatives' names, the videos' titles, the quotes from the
+  // other products' own websites and their addresses.
+  const rest = es.text.replace(/<(li|h3|span|q|a)\b[^>]*lang="en" dir="ltr"[^>]*>[^<]*<\/\1>/g, '').replace(/<h2 id="lp-vd-h" class="lp-vd-h" lang="en" dir="ltr"><\/h2>/, '');
+  assert.doesNotMatch(rest, / lang="en" dir="ltr"/, 'every sentence is in Spanish');
   for (const c of ['ar', 'he']) assert.match((await call(null, `/${c}`)).text, new RegExp(`<html lang="${c}" dir="rtl"`));
 });
 
@@ -208,68 +213,94 @@ test('the page works without JavaScript and loads nothing from elsewhere', async
   }
   const lazy = [...s.matchAll(/<img\b[^>]*>/g)].filter(m => /loading="lazy"/.test(m[0])).length;
   assert.ok(lazy >= 10, 'pictures below the first screen load lazily');
-  assert.match(s, /<figure class="lp-demo" data-stage="done"/, 'the hero shows the whole lesson → game picture before any script');
+  // The first screen's pictures load at once, the big one first (preloaded, high priority); none of them lazily.
+  const hero = s.slice(s.indexOf('<section class="lp-hero'), s.indexOf('</section>', s.indexOf('<section class="lp-hero')));
+  assert.doesNotMatch(hero, /loading="lazy"/);
+  assert.match(s, /<link rel="preload" as="image" type="image\/webp" href="\/img\/landing\/tool-dash-640\.webp" imagesrcset="[^"]+" imagesizes="[^"]+" fetchpriority="high">/);
+  // The tour without script: every step with its picture, words and step number; the buttons are the script's.
+  const tour = s.slice(s.indexOf('id="tour"'), s.indexOf('</section>', s.indexOf('id="tour"')));
+  assert.equal([...tour.matchAll(/<li class="lp-tstep" data-step="\d"/g)].length, 6);
+  assert.equal([...tour.matchAll(/<span class="lp-tipbtns" hidden>/g)].length, 6);
+  assert.doesNotMatch(tour, /class="lp-card lp-tour is-on"/);
+  // Each video link opens the video file itself without script; the player is a <dialog>.
+  for (const m of s.matchAll(/<a class="[^"]*" href="([^"]+)" data-video="([^"]+)"/g)) { assert.equal(m[1], m[2]); assert.match(m[1], /^\/video\/.+\.mp4$/); }
+  assert.match(s, /<dialog class="lp-vd" id="lp-vd" aria-labelledby="lp-vd-h">/);
 });
 
-test('class dashboards: a section with the real screenshots, in every language, linked from the wide top bar', async () => {
-  const fs = await import('node:fs');
-  const s = (await call(null, '/')).text;
-  assert.match(s, /<section class="lp-sec lp-split lp-split-rev" id="dashboards" aria-labelledby="dash-h">/);
-  assert.match(s, /<nav class="lp-nav"[^>]*>\s*<a href="#dashboards">Dashboards<\/a>/, 'first in the top bar');
-  assert.match(s, /<nav class="lp-menu-panel"[\s\S]*?<a href="#dashboards">Dashboards<\/a>/, 'and in the menu (phones)');
-  for (const f of ['dash-teacher-d-1024', 'dash-teacher-d-2048', 'dash-student-p-390', 'dash-student-p-780']) {
-    assert.ok(s.includes(`/img/how/${f}.webp`), f);
-    assert.ok(fs.existsSync(new URL(`../../public/img/how/${f}.webp`, import.meta.url)), `${f}.webp is in the repo`);
-  }
-  // Every language has the section's words (no English fallback marks inside it).
-  for (const code of ['de', 'ar', 'ja']) {
-    const page = (await call(null, `/${code}`)).text;
-    const sec = page.slice(page.indexOf('id="dashboards"'), page.indexOf('</section>', page.indexOf('id="dashboards"')));
-    assert.ok(sec.length > 200, code);
-    assert.doesNotMatch(sec, /lang="en"/, `${code}: the dashboards section is translated`);
-  }
-});
-
-test('the layout tour: every ready-made layout with its real screenshot and widgets, then every widget; complete without script', async () => {
-  const fs = await import('node:fs');
-  const D = await import('../../server/services/dash.js');
-  const s = (await call(null, '/')).text;
-  const sec = s.slice(s.indexOf('id="dash-tour"'), s.indexOf('</section>', s.indexOf('id="dash-tour"')));
-  assert.ok(sec.length > 500);
-  for (const x of D.LAYOUT_TEMPLATES) {
-    assert.ok(sec.includes(`/img/how/dash-layout-${x.id}-d-1024.webp`), x.id);
-    assert.ok(fs.existsSync(new URL(`../../public/img/how/dash-layout-${x.id}-d-2048.webp`, import.meta.url)), `${x.id} picture is in the repo`);
-  }
-  assert.equal([...sec.matchAll(/class="lp-dt-item"/g)].length, D.LAYOUT_TEMPLATES.length);
-  // Every widget is named once in the rows, with the real count in the heading.
-  const rows = sec.slice(sec.indexOf('class="lp-dt-widgets"'));
-  assert.equal([...rows.matchAll(/<li>/g)].length, D.WIDGETS.length);
-  assert.match(rows, new RegExp(`>${D.WIDGETS.length} widgets to build your own<`));
-  // The deck is the script's (.is-tour); the page as sent is the plain list.
-  assert.doesNotMatch(sec, /is-tour/);
-  const ar = (await call(null, '/ar')).text;
-  const arSec = ar.slice(ar.indexOf('id="dash-tour"'), ar.indexOf('</section>', ar.indexOf('id="dash-tour"')));
-  assert.doesNotMatch(arSec, /lang="en"/, 'translated');
-});
-
-test('the story: the class day in five steps that lead to their sections in order, and a menu for phones that needs no script', async () => {
+test('the page in order: hero, the five named products, in one place, the Hub, Ask Oomba, the tools, side by side, the tour, videos, safety, questions', async () => {
   const s = (await call(null, '/')).text;
   const at = id => s.indexOf(`id="${id}"`);
-  const order = ['how', 'dashboards', 'dash-tour', 'builder', 'kids', 'pricing', 'faq'];
+  const order = ['lp-h1', 'names-h', 'one', 'hub', 'ask', 'tools', 'side-by-side', 'tour', 'videos', 'safety', 'faq', 'final-h'];
   for (const id of order) assert.ok(at(id) > 0, id);
   for (let i = 1; i < order.length; i++) assert.ok(at(order[i - 1]) < at(order[i]), `${order[i - 1]} before ${order[i]}`);
-  // Five steps, each a link to a section on the page.
-  const steps = [...s.slice(at('how')).matchAll(/<a class="lp-jlink" href="#([\w-]+)">/g)].map(m => m[1]).slice(0, 5);
-  assert.equal(steps.length, 5);
-  for (const id of steps) assert.ok(at(id) > 0, `step goes to #${id}`);
-  assert.deepEqual([steps[0], steps[1], steps[2], steps[4]], ['dashboards', 'dash-tour', 'builder', 'kids']);
-  // The menu: a <details> (opens without JavaScript) with every section, sign in and Just Play.
-  const menu = s.slice(s.indexOf('<details class="lp-menu"'), s.indexOf('</details>'));
-  assert.ok(menu.length > 100, 'menu');
-  for (const id of ['how', 'dashboards', 'builder', 'kids', 'pricing', 'faq']) assert.match(menu, new RegExp(`href="#${id}"`), id);
-  assert.match(menu, /href="\/login"/); assert.match(menu, /href="\/learn"/);
-  // The hero shows the class dashboard (the lesson → game loop is in the Builder section now, still complete before any script).
-  const hero = s.slice(0, at('how'));
-  assert.match(hero, /class="lp-hstage"/); assert.match(hero, /dash-teacher-d-1024\.webp/);
-  assert.ok(s.indexOf('class="lp-demo"') > at('builder'), 'the demo is in the Builder section');
+  // The hero is every tool (a collage of real screens), not the Hub; the Hub has its own section after it.
+  const hero = s.slice(0, at('names-h'));
+  assert.doesNotMatch(hero.replace(/<header[\s\S]*?<\/header>/, ''), /\bHub\b/, 'the first screen does not introduce the Hub');
+  for (const n of ['tool-dash', 'tool-manip', 'tool-figures', 'tool-library', 'tool-brain-board']) assert.ok(hero.includes(`/img/landing/${n}-`), n);
+  assert.match(hero, /<div class="lp-collage-in" role="img" aria-label="Real screens from Oomba Academy: [^"]+">/);
+  assert.match(s, /<h2 id="hub-h">Run it all from the Hub\.<\/h2>/);
+  assert.match(s, /<h2 id="tour-h">Try the Hub before you sign up\.<\/h2>/);
+  // The numbers come from the code.
+  const { TOOLS } = await import('../../public/js/manip-data.js'); const D = await import('../../server/services/dash.js');
+  assert.match(hero, new RegExp(`<li><b>${TOOLS.length}</b><span>virtual manipulatives</span></li>`));
+  assert.match(hero, new RegExp(`<li><b>${D.WIDGETS.length}</b><span>dashboard widgets</span></li>`));
+  // Grammar and proofreading is Mistake Hunt; there is no "highlights" game.
+  assert.match(s, /Grammar and proofreading<\/h3><p>Mistake Hunt plants mistakes/);
+});
+
+test('the screenshots: every one at 1x and 2x WebP with its size, in the repo, and the Hub\'s in both themes', async () => {
+  const fs = await import('node:fs');
+  const shots = JSON.parse(fs.readFileSync(new URL('../../public/img/landing/shots.json', import.meta.url), 'utf8'));
+  let bytes = 0;
+  for (const [name, { w }] of Object.entries(shots)) for (const x of w) {
+    const f = new URL(`../../public/img/landing/${name}-${x}.webp`, import.meta.url);
+    assert.ok(fs.existsSync(f), `${name}-${x}.webp`); bytes += fs.statSync(f).size;
+  }
+  assert.ok(bytes < 3_000_000, `all the landing screenshots together are ${bytes} bytes`);
+  const s = (await call(null, '/')).text;
+  for (const m of s.matchAll(/<img[^>]*src="\/img\/landing\/([a-z-]+)-(\d+)\.webp"[^>]*>/g)) {
+    assert.equal(+m[2], shots[m[1]].w[0], m[1]);
+    assert.match(m[0], new RegExp(`srcset="/img/landing/${m[1]}-${shots[m[1]].w[0]}\\.webp ${shots[m[1]].w[0]}w, /img/landing/${m[1]}-${shots[m[1]].w[1]}\\.webp ${shots[m[1]].w[1]}w"`));
+    assert.match(m[0], new RegExp(`width="${shots[m[1]].w[0]}" height="${shots[m[1]].h}"`));
+  }
+  // The Hub: the dark capture for the dark theme (picked, or the device's own with nothing picked); light by default.
+  assert.match(s, /<source data-scheme="dark" data-media="" media="\(prefers-color-scheme: dark\)"[^>]*srcset="\/img\/landing\/hub-dark-1200\.webp/);
+  assert.doesNotMatch(s, /<html[^>]*data-theme=/, 'no theme picked: the device decides, light unless it prefers dark');
+  assert.match(s, /<meta name="color-scheme" content="light dark">/);
+  assert.match((await call(null, '/', { headers: { cookie: 'theme=dark' } })).text, /<html lang="en" dir="ltr" data-theme="dark"/);
+  assert.match((await call(null, '/', { headers: { cookie: 'theme=light' } })).text, /<html lang="en" dir="ltr" data-theme="light"[\s\S]*<a href="\?theme=light" rel="nofollow" aria-current="true">/);
+});
+
+test('the Teacher plan: the Hub, Ask Oomba, the tour, the Manipulatives and Figures say so (a link to /plans); nothing else does', async () => {
+  const { config } = await import('../../server/config.js');
+  const paid = on => { config.stripeApiKey = on ? 'rk_test_fake' : ''; config.stripeWebhookSecret = on ? 'whsec_fake_l' : ''; config.billingPublic = on; };
+  try {
+    paid(true);
+    const s = (await call(null, '/')).text;
+    const tags = s.match(/<p class="lp-plan">Available with the <a href="\/plans">Teacher plan<\/a><\/p>/g) || [];
+    assert.equal(tags.length, 5, 'the Hub, Ask Oomba, the Manipulatives, Figures and the tour');
+    for (const id of ['hub', 'ask', 'tour']) { const sec = s.slice(s.indexOf(`id="${id}"`), s.indexOf('</section>', s.indexOf(`id="${id}"`))); assert.match(sec, /Available with the <a href="\/plans">Teacher plan<\/a>/, id); }
+    const tools = s.slice(s.indexOf('id="tools"'), s.indexOf('</section>', s.indexOf('id="tools"')));
+    const cards = tools.split('<article').slice(1);
+    assert.deepEqual(cards.map(c => /Teacher plan/.test(c)), [true, true, false, false, false, false, false, false, false, false], 'the Manipulatives and Figures only');
+    paid(false);
+    assert.equal((await call(null, '/')).text.match(/Being tried out in a few classrooms now/g).length, 5, 'with paid plans off, "in testing", like /compare');
+  } finally { paid(false); }
+});
+
+test('the tour and the videos as sent: six steps on real screens, hotspots, progress; the tool videos and the 18 How it works', async () => {
+  const s = (await call(null, '/')).text;
+  const tour = s.slice(s.indexOf('id="tour"'), s.indexOf('</section>', s.indexOf('id="tour"')));
+  assert.deepEqual([...tour.matchAll(/<button type="button" class="lp-step" data-go="\d"[^>]*><i aria-hidden="true">\d<\/i><span>([^<]+)<\/span>/g)].map(m => m[1]),
+    ['Arrange seats', 'Hand out a lesson', 'Watch every desk', 'Answer hands', 'Ask Oomba', 'Finish class']);
+  for (const n of ['tour-seats', 'tour-handout', 'tour-watch', 'tour-hands', 'tour-oomba', 'tour-finish']) assert.ok(tour.includes(`/img/landing/${n}-1100.webp`), n);
+  assert.ok([...tour.matchAll(/<span class="lp-hot" style="left:[\d.]+%;top:[\d.]+%" aria-hidden="true">\d<\/span>/g)].length >= 6);
+  assert.match(tour, /role="progressbar" aria-label="The Hub tour" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"/);
+  assert.match(tour, /<p class="sr-only" aria-live="polite" data-tour-live><\/p>/);
+  const vids = s.slice(s.indexOf('id="videos"'), s.indexOf('</section>', s.indexOf('id="videos"')));
+  assert.equal([...vids.matchAll(/class="lp-vid( lp-vid-big)?" href="\/video\/oomba-[a-z]+\.mp4"/g)].length, 4);
+  assert.match(vids, new RegExp(`class="lp-vid lp-vid-big" href="/video/oomba-${L.HERO_VIDEO}\\.mp4"`), 'the overview first');
+  assert.equal([...vids.matchAll(/class="lp-how" href="\/video\/manip\/manip-[a-z-]+\.mp4" data-video="[^"]+" data-poster="\/video\/manip\/manip-[a-z-]+-poster\.jpg" data-vtt="\/video\/manip\/manip-[a-z-]+\.en\.vtt"/g)].length, 18);
+  // The hero's play button: the overview video (the class dashboard's until the Hub's is recorded).
+  assert.match(s, new RegExp(`<a class="lp-playbtn" href="/video/oomba-${L.HERO_VIDEO}\\.mp4" data-video=`));
 });

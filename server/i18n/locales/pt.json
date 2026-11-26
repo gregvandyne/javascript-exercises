@@ -10735,124 +10735,49 @@
     }
   },
   "landing": {
-    "dtour": {
-      "kicker": "Layouts prontos",
-      "h": "Um layout para cada momento do dia",
-      "lead": "Comece a manhã, dê uma aula, conduza o trabalho em grupo, passe ao trabalho em silêncio e faça um intervalo divertido. Troque com um toque, e as telas dos alunos acompanham.",
-      "widgets": "{count} widgets para montar o seu"
-    },
-    "dash": {
-      "kicker": "Novo: painéis da turma",
-      "h": "Uma tela para o dia letivo inteiro",
-      "lead": "Coloque um painel da turma no projetor: o relógio, o horário de hoje, o objetivo do dia e {count} widgets para escolher. Cada aluno também ganha sua própria tela, com os widgets que você fixar.",
-      "li1": "Layouts prontos para a manhã, uma aula, trabalho em grupo, trabalho em silêncio e um intervalo divertido, ou arraste widgets para montar o seu.",
-      "li2": "Cronômetros, sorteio de nomes, criador de grupos, medidor de voz, fila de ajuda e perguntas rápidas.",
-      "li3": "Ferramentas de matemática na tela grande: barras de frações, retas numéricas, geoplanos, valor posicional e mais.",
-      "li4": "Fixe widgets na tela de cada aluno ou envie para a turma uma aula, um plano de aula ou um link com um toque.",
-      "li5": "Nenhuma IA. Os alunos aparecem com o nome Oomba, e o que um aluno digita fica na tela dele.",
-      "shotAlt": "Um painel da turma no projetor: o relógio, o objetivo do dia, o horário com Matemática agora e Recreio a seguir, as tarefas da turma e um registro de humor."
-    },
     "meta": {
-      "title": "Painéis da turma e aulas interativas para professores · Oomba Academy",
-      "description": "Uma tela para conduzir o dia da turma, um Construtor com IA que transforma seus planos de aula em aulas para jogar, aulas ao vivo e jogos que seus alunos criam. 14 dias grátis, sem cartão.",
-      "imageAlt": "Oomba Academy para professores: uma tela para conduzir a turma e aulas para o aprendizado ficar."
+      "title": "Oomba Academy: a única ferramenta de sala de aula para tudo",
+      "description": "Jogos ao vivo, materiais manipuláveis de matemática, fichas, livros ilustrados, um painel da turma e um assistente de IA para professores do K ao 8º ano. Um login, uma lista de turma, um plano.",
+      "imageAlt": "Oomba Academy: jogos ao vivo, materiais manipuláveis de matemática, fichas, livros ilustrados e um painel da turma em um só lugar."
     },
     "nav": {
-      "dashboards": "Painéis",
       "label": "Site para professores",
       "home": "Início da Oomba Academy",
       "skip": "Ir para o conteúdo",
-      "how": "Como funciona",
-      "builder": "Construtor",
-      "courses": "Cursos",
       "live": "Aulas ao vivo",
-      "pricing": "Preços",
       "faq": "Dúvidas",
       "signIn": "Entrar",
       "justPlay": "Só jogar",
       "trial": "Teste grátis",
       "trialShort": "Teste grátis",
       "menu": "Menu",
-      "kids": "Alunos criam",
-      "tools": "Ferramentas de ensino"
+      "tools": "Ferramentas de ensino",
+      "hub": "O Hub",
+      "ask": "Pergunte ao Oomba",
+      "tour": "Tour",
+      "videos": "Vídeos",
+      "compare": "Comparar"
     },
     "hero": {
-      "kicker": "Para professores · da educação infantil ao 8º ano",
-      "h1": "Uma tela para conduzir sua turma. Aulas para o aprendizado ficar.",
-      "lead": "Configure o painel da turma em um minuto e conduza o dia todo por ele. Transforme qualquer plano de aula numa aula para jogar com o Construtor com IA, jogue ao vivo no projetor e deixe seus alunos criarem os próprios jogos.",
-      "cta": "Comece seu teste grátis de 14 dias",
-      "how": "Veja como funciona",
+      "kicker": "Para professores do K ao 8º ano",
+      "h1": "A única ferramenta de sala de aula para tudo.",
+      "lead": "Jogos ao vivo, materiais manipuláveis de matemática, fichas, livros ilustrados, um painel da turma e um assistente de IA. Um login, uma lista de turma, um plano.",
+      "cta": "Comece grátis",
       "trustCard": "Sem cartão",
       "trustCancel": "Cancele quando quiser",
       "trustStudents": "Alunos ilimitados",
-      "cBuildTag": "Builder de IA",
-      "cBuild": "Seu plano de frações agora é uma aula para jogar",
-      "cLiveTag": "Aula ao vivo",
-      "cLive": "Sua turma está entrando"
+      "tour": "Faça o tour",
+      "watch": "Veja a apresentação",
+      "watchSub": "Menos de um minuto: o painel da turma",
+      "collageAlt": "Telas reais da Oomba Academy: um painel da turma, barras de frações em um quadro de matemática, uma ficha com figuras em escala, a biblioteca de livros ilustrados e um jogo ao vivo da turma."
     },
     "facts": {
-      "games": "aulas prontas",
-      "courses": "cursos completos com planos de aula",
-      "languages": "idiomas para alunos e professores",
-      "installs": "instalações: funciona no navegador"
-    },
-    "demo": {
-      "label": "Ilustração: um plano de aula virando uma aula para jogar",
-      "lessonTag": "Seu plano de aula",
-      "lessonTitle": "Frações equivalentes · 4º ano",
-      "lessonBody": "Os alunos mostram que 1/2, 2/4 e 4/8 representam a mesma quantidade, com pizzas, barras e retas numéricas. Tíquete de saída: três perguntas rápidas.",
-      "file": "aula-fracoes.pdf",
-      "builderTag": "Construtor IA",
-      "step1": "Lendo seu plano de aula",
-      "step2": "Criando as fases",
-      "step3": "Testando no celular, tablet e computador",
-      "step4": "Pronto para jogar",
-      "gameTag": "Sua aula",
-      "gameMeta": "Pronto para jogar ao vivo ou passar para a turma",
-      "host": "Jogar ao vivo",
-      "assign": "Passar",
-      "credit": "Arte de Fraction Factory, uma das aulas prontas da Oomba."
-    },
-    "how": {
-      "kicker": "Como funciona",
-      "h": "Todo o seu dia de aula, em um só lugar",
-      "lead": "Comece pela tela que fica aberta o dia todo e depois traga as aulas. Cada passo funciona sozinho, e juntos funcionam ainda melhor.",
-      "s1": {
-        "h": "Configure o painel da turma",
-        "p": "Abra sua turma e seis layouts prontos estarão à sua espera. Coloque no projetor, e cada aluno ganha a própria tela."
-      },
-      "s2": {
-        "h": "Conduza o dia por ele",
-        "p": "Registro de humor, cronômetros, perguntas rápidas, fila de ajuda, grupos e ferramentas de matemática, da roda da manhã à saída. Troque de layout com um toque."
-      },
-      "s3": {
-        "h": "Transforme seus planos em aulas para jogar",
-        "p": "Cole um plano de aula ou envie um PDF. O Construtor com IA o transforma numa aula para jogar, testa e guarda cada versão."
-      },
-      "see": "Ver",
-      "s4": {
-        "h": "Jogue ao vivo com a turma",
-        "p": "Aquecimentos e tíquetes de saída na tela grande. Os alunos entram pelos próprios aparelhos, e as notas vão para o seu diário."
-      },
-      "s5": {
-        "h": "Deixe os alunos criarem também",
-        "p": "Adicione um passo “Criar um jogo” a um plano de aula. Os alunos projetam, testam e consertam o próprio jogo, e depois os colegas jogam."
-      }
-    },
-    "builder": {
-      "kicker": "O Construtor IA",
-      "h": "Entra seu plano de aula, sai uma aula para jogar",
-      "lead": "Fale com o Construtor como com um assistente de ensino que também cria aulas. Ele guarda cada versão, então você sempre pode voltar.",
-      "you": "Você",
-      "msg": "Faça uma aula para jogar com este plano para o meu 4º ano. Dez minutos, três níveis, e termine com as perguntas do bilhete de saída.",
-      "bot": "Pronto! A versão 1 está pronta: três fases, da mais fácil para a mais difícil, com o tíquete de saída no final. Toque em Jogar para testar.",
-      "li1": "Entende planos de aula, PDFs, imagens e arquivos de texto que você envia",
-      "li2": "Responde no seu idioma, e no de cada aluno",
-      "li3": "Testa cada versão nos tamanhos de celular, tablet e computador",
-      "li4": "Privado até você compartilhar: só você, suas turmas ou, depois da revisão de uma pessoa da nossa equipe, todo mundo",
-      "li5": "Os alunos também podem criar: descrever, testar e consertar um jogo é planejar, escrever e depurar, sem programar",
-      "shotAlt": "O Estúdio Oomba: o chat do Construtor à esquerda diz que a versão 2 está pronta, e a aula roda à direita numa prévia do tamanho de um celular.",
-      "caption": "O Estúdio de verdade: o Construtor à esquerda, sua aula à direita."
+      "languages": "idiomas",
+      "manip": "materiais manipuláveis virtuais",
+      "tasks": "tarefas de prática",
+      "figures": "tipos de figuras",
+      "books": "livros ilustrados",
+      "widgets": "widgets do painel"
     },
     "courses": {
       "kicker": "Cursos prontos",
@@ -10875,101 +10800,42 @@
       },
       "link": "Guia do professor"
     },
-    "live": {
-      "kicker": "Aulas ao vivo para a turma",
-      "h": "Acenda o projetor",
-      "lead": "Aquecimentos e tíquetes de saída que a turma espera ansiosa. Os alunos entram pelos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Quest Race, Brain Board, Would You Rather e mais",
-      "li2": "Use um conjunto de perguntas pronto, escreva o seu ou deixe a IA fazer um rascunho para você editar",
-      "li3": "As pontuações vão direto para o seu boletim",
-      "li4": "Aulas da turma: só seus alunos com login. Aulas de convidados: nomes inventados e seguros. Sem chat e sem digitação em nenhuma",
-      "link": "Como funcionam as aulas ao vivo",
-      "shotAlt": "Uma sala de Question Battle ao vivo: a tela grande mostra o personagem contra quem a turma joga, o código para entrar e um QR code."
-    },
-    "why": {
-      "kicker": "Por que os jogos funcionam",
-      "h": "A diversão é o caminho. A aprendizagem é o destino.",
-      "lead": "Bons jogos educativos se apoiam em algumas ideias bem estudadas da ciência da aprendizagem.",
-      "b1": {
-        "h": "Prática de recordação",
-        "p": "Responder para ganhar puxa o conhecimento de volta da memória, e lembrar de algo é uma das formas mais confiáveis de fixá-lo."
-      },
-      "b2": {
-        "h": "Retorno imediato",
-        "p": "Cada resposta recebe uma reação na hora, então os erros são corrigidos enquanto o raciocínio ainda está fresco."
-      },
-      "b3": {
-        "h": "Repetição sem pressão",
-        "p": "“Mais uma rodada” parece brincadeira, não lista de exercícios, então os alunos praticam mais, sem o peso de uma nota."
-      },
-      "b4": {
-        "h": "Todo mundo participa",
-        "p": "Um jogo dá a vez a cada aluno, inclusive aos que quase nunca levantam a mão."
-      },
-      "b5": {
-        "h": "Criar é aprender",
-        "p": "Para construir um jogo sobre um assunto, é preciso entendê-lo bem o bastante para ensiná-lo a um computador."
-      },
-      "sources": "Para saber mais"
-    },
     "safety": {
       "kicker": "Segurança e privacidade",
-      "h": "Feito para a sala de aula, seguro desde a origem",
-      "lead": "Pensado para crianças de 5 a 14 anos, com as turmas sob o seu controle.",
-      "li1": "Sem anúncios e sem cookies de publicidade ou rastreamento",
-      "li2": "Os alunos nunca precisam de e-mail, e nunca perguntamos idade ou endereço",
-      "li3": "O nome real de um aluno, se você colocar, só é visto pela equipe da sua escola",
-      "li4": "Você aprova quem entra nas suas turmas, e nenhum aluno conversa com desconhecidos",
-      "li5": "Cada jogo roda num ambiente isolado, e uma pessoa da nossa equipe revisa qualquer jogo antes de ele ficar público",
-      "li6": "O que os alunos digitam passa por filtros, e as imagens que enviam são verificadas e perdem os dados de localização",
-      "links": "Leia <a href=\"{safety}\">como protegemos as crianças</a> e nosso <a href=\"{privacy}\">aviso de privacidade</a>."
-    },
-    "everywhere": {
-      "h": "Funciona onde a turma estiver",
-      "devices": "Chromebooks, iPads, notebooks, celulares e a lousa digital, direto no navegador. Nada para instalar.",
-      "languages": "{count} idiomas, entre eles espanhol, árabe, português e francês. Cada aluno escolhe o seu.",
-      "voicesH": "Leitura em voz alta",
-      "voices": "Vozes naturais de IA leem em voz alta cada aula oficial."
+      "h": "Feito para crianças. Vendido para professores.",
+      "links": "Leia <a href=\"{safety}\">como protegemos as crianças</a> e nosso <a href=\"{privacy}\">aviso de privacidade</a>.",
+      "c1": {
+        "h": "Sem anúncios, nunca",
+        "p": "Sem publicidade e sem cookies de rastreamento."
+      },
+      "c2": {
+        "h": "Nada é vendido às crianças",
+        "p": "Os alunos nunca veem planos nem preços."
+      },
+      "c3": {
+        "h": "Nomes reais ficam privados",
+        "p": "Só a equipe da sua escola vê o nome real de um aluno. Nunca em público."
+      },
+      "c4": {
+        "h": "IA sem nomes",
+        "p": "O Oomba nunca recebe o nome de um aluno e nunca fala com os alunos."
+      },
+      "c5": {
+        "h": "Sem rankings",
+        "p": "Sem placares. Pontos e progresso nunca são ranqueados."
+      },
+      "c6": {
+        "h": "Ver não é gravar",
+        "p": "As carteiras ao vivo nunca são guardadas, e os alunos sabem que você pode ver."
+      }
     },
     "pricing": {
-      "kicker": "Preços",
-      "h": "Um preço simples por professor. Todos os alunos incluídos.",
-      "lead": "Nunca cobramos por aluno. Teste tudo grátis por 14 dias.",
       "teacher": {
         "name": "Professor",
-        "price": "Um preço anual simples",
-        "priceShown": "{price} por ano",
-        "trial": "14 dias grátis · sem cartão",
-        "li1": "Alunos ilimitados, sem cobrança por aluno",
-        "li2": "300 criações de aulas com IA por dia para sua turma",
-        "li3": "Todos os cursos, mais de 30 aulas prontas e aulas ao vivo para a turma",
-        "li4": "Turmas, planos de aula, progresso e o diário de notas",
-        "li5": "Todos os idiomas, todos os aparelhos",
-        "cta": "Comece seu teste grátis",
-        "plans": "Ver planos e preços",
-        "plus": "Tudo do Grátis, e mais:"
+        "trial": "14 dias grátis · sem cartão"
       },
       "schools": {
-        "name": "Escolas e redes",
-        "price": "O mesmo preço por professor",
-        "priceShown": "{price} por professor por ano",
-        "li1": "Cada professor tem o plano Professor completo",
-        "li2": "Pagamento por fatura ou ordem de compra",
-        "li3": "Contas escolares e cartões de acesso para imprimir",
-        "li4": "Ajudamos a configurar sua escola",
-        "cta": "Fale com a gente",
-        "form": "Configure sua escola",
         "subject": "Oomba Academy para a nossa escola"
-      },
-      "leadFree": "Nunca há taxa por aluno. O básico é grátis para todo professor, e o Plano Professor adiciona criações de aulas com IA para a turma toda.",
-      "free": {
-        "name": "Grátis",
-        "price": "Sempre grátis",
-        "li1": "Todas as aulas e os três cursos",
-        "li2": "Turmas, planos de aula, progresso e o diário de notas",
-        "li3": "Mensagens diárias grátis do Builder para você e seus alunos",
-        "li4": "Contas da escola e cartões de acesso para imprimir",
-        "liLive": "Aulas ao vivo para a turma no projetor"
       }
     },
     "faq": {
@@ -10995,9 +10861,8 @@
       "a2free": "Comece um teste grátis de 14 dias do Plano Professor sem cartão. Tudo do plano está incluído enquanto durar, e no fim você decide se assina. Se não assinar, só as criações extras com IA param: as aulas, suas turmas, planos de aula e progresso continuam grátis, e nada é apagado."
     },
     "final": {
-      "h": "Sua próxima aula pode ser aquela que eles pedem para jogar de novo",
-      "p": "Grátis por 14 dias. Sem cartão, sem cobrança por aluno.",
-      "cta": "Comece seu teste grátis de 14 dias"
+      "h": "Comande a aula de amanhã pelo Hub.",
+      "p": "Monte sua sala em poucos minutos. Seus alunos participam de graça."
     },
     "play": {
       "h": "Veio jogar?",
@@ -11005,7 +10870,6 @@
       "cta": "Só jogar"
     },
     "footer": {
-      "tagline": "Aulas interativas para 5 a 14 anos e um Construtor com IA que transforma seus planos em aulas para jogar.",
       "teachers": "Para professores",
       "product": "Explore",
       "about": "Sobre",
@@ -11022,37 +10886,284 @@
       "theme": "Tema",
       "dark": "Escuro",
       "light": "Claro",
-      "preferredSource": "Adicione a Oomba como fonte preferida no Google"
-    },
-    "kids": {
-      "kicker": "Alunos criadores",
-      "h": "Seus alunos também criam jogos",
-      "lead": "Para criar um jogo sobre um tema, é preciso entendê-lo bem o bastante para ensiná-lo. Adicione um passo “Criar um jogo” a qualquer plano de aula, e seus alunos descrevem, testam e melhoram o próprio jogo com o Construtor, sem escrever código.",
-      "li1": "Um passo “Criar um jogo” nos seus planos de aula, com a ideia da qual os alunos partem",
-      "li2": "Cada aluno cria no próprio Estúdio, e você vê o progresso junto com o resto do plano de aula",
-      "li3": "A turma joga os jogos uns dos outros: um jogo de revisão do tema da semana funciona muito bem",
-      "li4": "Privado até ser compartilhado: com a turma, ou com todos só depois que uma pessoa da nossa equipe revisar",
-      "shotAlt": "O Studio de um aluno: o Builder avisa que a versão 2 está pronta, e o jogo roda numa prévia do tamanho de um celular.",
-      "caption": "O Studio de um aluno: ele descreve, o Builder cria, ele testa."
+      "preferredSource": "Adicione a Oomba como fonte preferida no Google",
+      "trademarks": "{names} são marcas de seus respectivos donos. A Oomba Academy não tem vínculo com eles."
     },
     "tools": {
-      "kicker": "Ferramentas de ensino",
-      "h": "Matemática na mão, com todos os alunos ao mesmo tempo",
-      "lead": "Materiais manipuláveis virtuais que seus alunos movem sozinhos, uma sala ao vivo onde você vê o trabalho de todos em uma tela só, e o Oomba para criar folhas de atividades com figuras em escala.",
-      "li1": "18 materiais manipuláveis virtuais, do material dourado que reagrupa a peças de frações e relógios",
-      "li2": "Salas de matemática ao vivo: cada aluno monta no seu próprio quadrado enquanto você vê todos os quadrados no quadro",
-      "li3": "Quadros salvos com códigos de compartilhamento, e 300 atividades prontas da educação infantil ao 8.º ano",
-      "li4": "Oomba, seu companheiro de ensino: descreva uma folha de atividades e receba figuras exatas com as respostas resolvidas",
-      "shotAlt": "Uma sessão ao vivo de material dourado na tela do professor: a área do professor no alto e os quadrados de quatro alunos embaixo, cada um com placas de centenas e barras de dezenas num quadro de valor posicional.",
-      "plan": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba fazem parte do plano Professor.",
-      "testing": "Os materiais manipuláveis, suas salas ao vivo, o Figures e o Oomba estão sendo testados em algumas turmas agora."
+      "h": "Uau, faz tudo isso.",
+      "lead": "Cada ferramenta é distribuída às carteiras no Hub, e o Oomba consegue comandar a maioria delas.",
+      "manip": {
+        "h": "{count} manipuláveis",
+        "p": "Blocos de base dez que se reagrupam, barras de frações, barras numéricas, geoplanos, relógios e mais. {tasks} tarefas de prática do K ao 8º ano, e um vídeo Como funciona para cada ferramenta.",
+        "alt": "Barras de frações no quadro de manipuláveis: um inteiro, metades, quartos e terços alinhados.",
+        "c1": "Salas ao vivo",
+        "c2": "{count} tarefas",
+        "c3": "{count} vídeos"
+      },
+      "figures": {
+        "h": "Figures",
+        "p": "Fichas e provas com figuras em escala: formas, gráficos, retas numéricas e diagramas de ciências e economia. {count} tipos, respostas resolvidas. Imprima ou atribua.",
+        "alt": "Uma ficha do Figures sobre área e ângulos: um retângulo, uma figura composta e um transferidor, cada um com sua resposta.",
+        "c1": "Fichas",
+        "c2": "Provas"
+      },
+      "games": {
+        "h": "Jogos de aprendizagem",
+        "p": "Palavras cruzadas com sua lista de palavras, Word Hunt, Word Peek, Sudoku, problemas de xadrez, Arithmetic Lab e Algebra Builder.",
+        "alt": "Palavras cruzadas com as dicas na horizontal e na vertical e o banco de palavras."
+      },
+      "grammar": {
+        "h": "Gramática e revisão",
+        "p": "O Mistake Hunt coloca erros no seu próprio texto, ou escolha entre 320 textos de exemplo do 1º ao 8º ano. Os alunos encontram, corrigem e entendem o porquê.",
+        "alt": "Mistake Hunt: criar uma série de textos, minhas fichas, um código de turma e os textos de exemplo."
+      },
+      "read": {
+        "h": "Ler",
+        "p": "{count} livros ilustrados e clássicos com Leia para mim e perguntas. E um criador de livros para os seus.",
+        "alt": "A Biblioteca de Histórias: livros ilustrados por ano, cada um com Ler e Atribuir."
+      },
+      "live": {
+        "h": "Ao vivo",
+        "p": "Brain Board, Você prefere, Atlas Quest e Doodle Hoot em qualquer aparelho. No Hub, os alunos nas carteiras entram com um toque.",
+        "alt": "Brain Board, um jogo ao vivo de tabuleiro de categorias, com seu código."
+      },
+      "build": {
+        "h": "Construtor",
+        "p": "Descreva ou anexe seu plano de aula. Receba uma aula prática ou um jogo para a sala toda, como um tabuleiro de categorias, bingo ou cartões.",
+        "alt": "O Construtor pergunta o que você vai criar: uma aula ou um jogo para a turma."
+      },
+      "dash": {
+        "h": "Painel",
+        "p": "A tela do projetor para o dia: {count} widgets, {layouts} layouts prontos, pontos com motivos e uma tela para cada aluno.",
+        "alt": "Um painel da turma: o relógio, a meta do dia, a agenda, as tarefas da turma e um registro de humor."
+      },
+      "typing": {
+        "h": "Typing Zoo",
+        "p": "40 lições, do F e J até frases completas, testes cronometrados, suas próprias lições e notas mínimas. Um bichinho nasce enquanto aprendem.",
+        "alt": "Typing Zoo: as lições por fileira do teclado e suas próprias lições de digitação."
+      },
+      "atlas": {
+        "h": "Atlas Quest",
+        "p": "Gire um globo 3D e acenda os 195 países: encontrar, bandeiras, capitais e cultura. Crie seus próprios quizzes de geografia e imprima mapas mudos.",
+        "alt": "Atlas Quest: um globo 3D ao lado dos modos de jogo."
+      }
     },
     "focus": {
-      "manipulatives": "materiais manipuláveis virtuais de matemática",
       "play": "Palavras cruzadas, jogos de matemática e jogos ao vivo com a turma, sem cadastro.",
-      "freeLi1": "Todas as aulas prontas, enigmas e ferramentas de sala",
-      "faqA1": "Uma plataforma de ensino da educação infantil ao 8º ano: um painel da turma para o dia, materiais manipuláveis virtuais de matemática, figuras em escala, criadores de enigmas como Crossword, aulas ao vivo e uma biblioteca de histórias. Os professores também podem transformar os próprios planos de aula em aulas para jogar com um Construtor com IA.",
-      "demoCredit": "Arte de {title}, uma das aulas prontas da Oomba."
+      "faqA1": "Uma plataforma de ensino da educação infantil ao 8º ano: um painel da turma para o dia, materiais manipuláveis virtuais de matemática, figuras em escala, criadores de enigmas como Crossword, aulas ao vivo e uma biblioteca de histórias. Os professores também podem transformar os próprios planos de aula em aulas para jogar com um Construtor com IA."
+    },
+    "names": {
+      "lead": "Uma assinatura em vez de cinco:",
+      "line": "Pague um plano em vez de cinco. <a href=\"{compare}\">Veja a comparação</a>"
+    },
+    "one": {
+      "kicker": "E muito mais",
+      "h": "Jogos ao vivo, um painel da turma, manipuláveis de matemática e digitação, em um só lugar.",
+      "lead": "Além de leitura, geografia, gramática e um criador de jogos. Um login, uma lista de turma, e tudo é distribuído pelo Hub.",
+      "live": {
+        "h": "Quizzes ao vivo",
+        "p": "Tabuleiros de categorias, Você prefere, jogos de mapa e de desenho em qualquer aparelho."
+      },
+      "dash": {
+        "h": "Painéis para a tela da turma",
+        "p": "Cronômetros, medidor de barulho, sorteio e {count} widgets."
+      },
+      "points": {
+        "h": "Pontos de comportamento",
+        "p": "Pontos com 12 motivos positivos, para um aluno ou a turma toda."
+      },
+      "manip": {
+        "h": "Manipuláveis de matemática",
+        "p": "{tools} ferramentas, {tasks} tarefas e salas ao vivo."
+      },
+      "figures": {
+        "h": "Criador de fichas",
+        "p": "Figuras em escala, com as respostas resolvidas."
+      },
+      "typing": {
+        "h": "Prática de digitação",
+        "p": "40 lições, testes cronometrados e suas próprias lições."
+      },
+      "read": {
+        "h": "Biblioteca de leitura",
+        "p": "Livros ilustrados com Leia para mim e perguntas."
+      },
+      "geo": {
+        "h": "Jogos de geografia",
+        "p": "Países, bandeiras e capitais em um globo 3D."
+      },
+      "build": {
+        "h": "Criador de jogos",
+        "p": "Transforme um plano de aula em um jogo."
+      },
+      "grammar": {
+        "h": "Prática de gramática",
+        "p": "Textos para revisar feitos a partir dos seus próprios textos."
+      },
+      "foot": "Um login. Uma lista de turma. Um plano por professor.",
+      "footSub": "Os alunos participam de graça. Os planos estão na <a href=\"{plans}\">página de Planos</a>.",
+      "compare": "Veja a comparação"
+    },
+    "plan": {
+      "on": "Disponível com o <a href=\"{plans}\">plano Professor</a>",
+      "testing": "Em teste em algumas salas de aula agora"
+    },
+    "hub": {
+      "kicker": "O Hub",
+      "h": "Comande tudo pelo Hub.",
+      "lead": "Um quadro compartilhado da turma: sua área na frente e uma carteira para cada aluno, organizadas como a sala realmente é. Distribua aulas, jogos ao vivo e ferramentas de matemática, e veja todas as carteiras de uma vez.",
+      "nowPill": "Agora",
+      "nowTitle": "Frações na reta numérica",
+      "nowNext": "Depois: Prática",
+      "shotAlt": "O Hub: a área do professor com duas notas, Minha mesa e 16 carteiras de alunos em mesas de quatro, cada uma mostrando o que o aluno está fazendo, com duas mãos levantadas.",
+      "f1": {
+        "h": "Distribua qualquer coisa",
+        "p": "Toque em uma aula, um jogo ao vivo ou uma ferramenta de matemática, depois em uma carteira, um grupo ou a turma toda. Ou arraste até lá."
+      },
+      "f2": {
+        "h": "Veja cada carteira ao vivo",
+        "p": "Cada carteira mostra o que aquele aluno tem aberto. Toque em uma para ver de perto. Nada é gravado."
+      },
+      "f3": {
+        "h": "Fila de ajuda e passe de corredor",
+        "p": "As mãos levantadas entram em fila, na ordem. Precisa de atenção mostra com calma quem pode estar travado."
+      },
+      "f4": {
+        "h": "Um plano do dia que controla o tempo",
+        "p": "Slides, tempo de trabalho, uma pausa e uma checagem final, com Agora e Depois no projetor."
+      },
+      "f5": {
+        "h": "Pontos, nunca rankings",
+        "p": "Dê um ponto por trabalho em equipe ou gentileza. Cada aluno vê os seus, nunca um placar."
+      },
+      "m1": {
+        "h": "Cadernos",
+        "p": "Um caderno para cada aluno. Os alunos sabem quem pode vê-lo."
+      },
+      "m2": {
+        "h": "Leitura na carteira",
+        "p": "Ler, um quiz, três anotações. Você vê a página em que estão."
+      },
+      "m3": {
+        "h": "Auxiliares e links para substitutos",
+        "p": "Um link de um dia para um substituto. As ações ficam registradas."
+      },
+      "m4": {
+        "h": "Apoios e carteiras do K ao 2º ano",
+        "p": "Tempo extra, leitura em voz alta, palavras mais simples e texto maior."
+      }
+    },
+    "ask": {
+      "kicker": "Pergunte ao Oomba",
+      "h": "Diga, e acontece.",
+      "lead": "O Oomba é o chat das suas páginas de professor. Ele planeja seu dia, cria fichas, muda um quadro de matemática, faz livros e dá pontos. Você confirma o que importa, e Desfazer está a um toque.",
+      "box": "Peça o plano de hoje ou da semana",
+      "send": "Enviar",
+      "p1": {
+        "say": "Planeje hoje: frações na reta numérica, uns 35 minutos",
+        "then": "Um cartão de plano: slides, tempo de trabalho, uma pausa e uma checagem final. Usar este plano coloca tudo nas carteiras."
+      },
+      "p2": {
+        "say": "Planeje esta semana. Quarta é meio período.",
+        "then": "De segunda a sexta, cada dia com um plano curto. Troque dias ou copie para outra turma."
+      },
+      "p3": {
+        "say": "Dê à turma toda um ponto por trabalho em equipe",
+        "then": "O ponto é dado, com Desfazer. Aparece no painel e nos pontos de cada aluno."
+      },
+      "p4": {
+        "say": "Faça uma ficha sobre área de retângulos para o 4º ano",
+        "then": "O Figures abre com o pedido preenchido: questões em escala e respostas resolvidas."
+      },
+      "p5": {
+        "say": "Mostre 3/4 e 6/8 com barras de frações",
+        "then": "Em um quadro de manipuláveis, as peças aparecem na hora."
+      },
+      "p6": {
+        "say": "Faça um livro ilustrado sobre o ciclo da água para o 2º ano",
+        "then": "O criador de livros escreve e pinta as imagens. Mude qualquer página pedindo."
+      },
+      "p7": {
+        "say": "Abra o painel da Sala 14 e adicione um cronômetro de 5 minutos",
+        "then": "O Oomba se oferece para abrir a Sala 14 e fazer lá, e depois mostra a mudança com Aplicar."
+      },
+      "p8": {
+        "say": "Quem precisa de atenção hoje?",
+        "then": "Quem parece travado, mãos levantadas há um tempo, quizzes abaixo de 60%. Os nomes aparecem só na sua tela."
+      },
+      "r1": "O Oomba nunca vê os nomes dos alunos",
+      "r2": "O Oomba nunca fala com os alunos",
+      "r3": "Nada muda sem o seu toque ou um Desfazer",
+      "planAlt": "O chat do Oomba com um cartão de plano Dia de frações: 8 minutos de slides, 20 de trabalho, uma pausa de 3 minutos e uma checagem final de 5 minutos.",
+      "pointAlt": "O chat do Oomba: a turma toda ganhou um ponto por Trabalho em equipe, com Desfazer.",
+      "note": "Telas reais: o chat do Oomba com um cartão de plano e depois um ponto para a turma toda."
+    },
+    "vs": {
+      "kicker": "Lado a lado",
+      "h": "Já usa um desses? Veja o que o Oomba acrescenta.",
+      "lead": "O que cada produto diz que faz, com as próprias palavras do site dele, e o que o Oomba acrescenta no mesmo ponto.",
+      "does": "O que {name} faz",
+      "adds": "O que o Oomba acrescenta aqui",
+      "source": "Fonte: {site}, lido em {date}",
+      "kahoot": "Os jogos ao vivo acontecem dentro do Hub: os alunos nas carteiras recebem um convite e entram com um toque, sem código.",
+      "classroomscreen": "{count} widgets, uma tela para cada aluno, pontos com motivos e as carteiras do Hub a uma aba de distância.",
+      "brainingcamp": "{tools} manipuláveis e {tasks} tarefas do K ao 8º ano, além das fichas do Figures, o Oomba mudando o quadro quando você pede e cada ferramenta distribuída às carteiras do Hub.",
+      "more": "Veja a comparação completa"
+    },
+    "tour": {
+      "kicker": "Tour interativo",
+      "h": "Experimente o Hub antes de se cadastrar.",
+      "lead": "Um passeio curto por telas reais. Toque nos pontos amarelos ou em Próximo.",
+      "label": "O tour do Hub",
+      "stepOf": "Passo {n} de {total}",
+      "back": "Voltar",
+      "next": "Próximo",
+      "again": "Começar de novo",
+      "note": "Telas reais do aplicativo com alunos inventados.",
+      "s1": {
+        "t": "Organizar os lugares",
+        "h": "Igual à sua sala de verdade",
+        "p": "Escolha fileiras, mesas de quatro, um U ou um círculo, ou arraste uma carteira até onde ela fica de verdade. Os grupos mantêm suas cores.",
+        "alt": "Organizar os lugares no Hub: fileiras, mesas de quatro, em U e em círculo, com as carteiras em mesas de quatro."
+      },
+      "s2": {
+        "t": "Distribuir uma aula",
+        "h": "Toque, depois uma carteira",
+        "p": "Toque em uma aula, um jogo ou uma ferramenta de matemática, depois em uma carteira, um grupo ou a turma toda. Ou arraste até lá.",
+        "alt": "Mistake Hunt escolhido no Hub: agora toque em uma carteira, um grupo, Turma toda ou Minha mesa."
+      },
+      "s3": {
+        "t": "Ver cada carteira",
+        "h": "Cada carteira, ao vivo",
+        "p": "Cada carteira mostra o que o aluno tem aberto, aqui o Arithmetic Lab. Carteiras tracejadas ainda não chegaram. Toque em uma carteira para ver de perto.",
+        "alt": "O Hub com cada carteira ao vivo: a maioria jogando Arithmetic Lab, dois ainda não chegaram."
+      },
+      "s4": {
+        "t": "Responder às mãos",
+        "h": "Mãos levantadas, em ordem",
+        "p": "Uma pergunta e um pedido de ajuda, na ordem em que chegaram. Respondido os tira da fila. O passe de corredor também fica aqui, e nunca no projetor.",
+        "alt": "O painel Mãos levantadas: Cleo tem uma pergunta, Gus precisa de ajuda, e o passe de corredor."
+      },
+      "s5": {
+        "t": "Pergunte ao Oomba",
+        "h": "Planeje com o Oomba",
+        "p": "Peça o plano de hoje. O Oomba faz um cartão, e nada vai para as carteiras até você tocar em Usar este plano.",
+        "alt": "O chat do Oomba ao lado do Hub com um cartão de plano Dia de frações e Usar este plano."
+      },
+      "s6": {
+        "t": "Encerrar a aula",
+        "h": "Encerrar a aula",
+        "p": "Encerrar a aula mostra um breve resumo e termina a aula. O que não foi concluído fica nas carteiras como lição de casa.",
+        "alt": "Encerrar a aula no Hub: mostra um breve resumo e termina a aula."
+      }
+    },
+    "videos": {
+      "kicker": "Veja em ação",
+      "h": "Vídeos curtos em telas reais.",
+      "lead": "Todo vídeo tem legendas, e o som fica desligado até você ligar.",
+      "howH": "Como funciona, um vídeo por manipulável",
+      "play": "Assistir ao vídeo: {title}",
+      "close": "Fechar o vídeo"
     }
   },
   "teach": {
