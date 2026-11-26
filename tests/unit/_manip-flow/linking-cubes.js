@@ -52,7 +52,7 @@ const RECIPES = {
   },
   'cube-bar-graph': async (ui, v) => sticks(ui, v, cond(v, 'bars').bars.map(x => run(x.kind, x.n))),
   'arrays-for-12': async (ui, v) => { const r = cond(v, 'rect'), [k] = Object.keys(cond(v, 'counts').has); await array(ui, v, r.r, r.c, k); },
-  'staircase-sums': async (ui, v) => sticks(ui, v, cond(v, 'sticks').sizes.map(n => run('c3', n))),
+  'staircase-sums': async (ui, v) => sticks(ui, v, cond(v, 'sticks').sizes.map(n => run('c3', n)), { gap: 70 }),
   'train-lengths': async (ui, v) => sticks(ui, v, cond(v, 'sticks').sizes.map((n, i) => run(`c${i}`, n))),
   'measure-with-cubes': async (ui, v) => { for (const c of v.answer.board) await sticks(ui, v, [run('c1', c.sizes[0])], { label: c.on }); },
   'make-a-meter-of-cubes': async (ui, v) => {
@@ -67,7 +67,7 @@ const RECIPES = {
     await center(ui); await dropBeside(ui, newest(ui), ui.scope.locator('#mp-content .mp-piece.locked').last(), 'right');
     for (const k of ks.slice(1)) await add(ui, PAL(k));
   },
-  'equal-groups': async (ui, v) => sticks(ui, v, cond(v, 'sticks').sizes.map(n => run('c2', n)), { gap: 60 }),
+  'equal-groups': async (ui, v) => sticks(ui, v, cond(v, 'sticks').sizes.map(n => run('c2', n)), { gap: 70 }),
   'cube-fractions': async (ui, v) => sticks(ui, v, [kindsOf(cond(v, 'stickHas').has)]),
   'perimeter-with-cubes': async (ui, v) => {
     const c = cond(v, 'inside'), [k] = Object.keys(cond(v, 'counts').has);
