@@ -353,7 +353,8 @@ export function createSession(u, { classId, tool, title, boardId = null } = {}) 
   if (boardId && !b) return fail('noBoard');
   const tl = toolOf(b ? b.tool : tool); if (!tl) return fail('badTool');
   prune();
-  // One running session per class: a new one ends the one before it.
+  // One running session per class: a new one ends the one before it. (Started from the Manipulatives page, the route
+  // asks the teacher first when that room is a Homeroom tool on the students' desks: routes/manipulatives.js.)
   q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE class_id=? AND status='active'", now(), c.id);
   const id = uid(12), code = newCode();
   // A saved board was made on the big solo board: it goes into the teacher's area, made smaller if it must be.

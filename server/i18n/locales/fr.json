@@ -3893,6 +3893,10 @@
         "moved": "{label} est allé dans la colonne {col}.",
         "needTen": "Il en faut 10 pour échanger",
         "count": "{n} pièces dans {col}"
+      },
+      "host": {
+        "homeroomTool": "{tool} est sur les bureaux Homeroom de vos élèves. Lancer cette salle le retire de leurs bureaux. Leur travail est conservé.",
+        "startRoom": "Lancer la salle"
       }
     },
     "manip-room": {
@@ -15269,7 +15273,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba répond encore à ton dernier message. Attends un instant.",
-      "emptyArea": "Ta zone est vide. Mets-y quelque chose, puis envoie-la."
+      "emptyArea": "Ta zone est vide. Mets-y quelque chose, puis envoie-la.",
+      "homeroomTool": "{tool} est sur les bureaux Homeroom de vos élèves. Lancer cette salle le retire de leurs bureaux."
     }
   },
   "proof": {

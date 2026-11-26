@@ -3893,6 +3893,10 @@
         "moved": "{label} 移到 {col} 欄。",
         "needTen": "需要 10 個才能交換",
         "count": "{col} 有 {n} 個"
+      },
+      "host": {
+        "homeroomTool": "{tool} 正在學生的 Homeroom 桌上。開始這個教室會把它從他們的桌上移除。他們的作業會保留。",
+        "startRoom": "開始教室"
       }
     },
     "manip-room": {
@@ -15269,7 +15273,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。",
-      "emptyArea": "你的區域是空的。先放點東西進去，再傳送。"
+      "emptyArea": "你的區域是空的。先放點東西進去，再傳送。",
+      "homeroomTool": "{tool} 正在學生的 Homeroom 桌上。開始這個教室會把它從他們的桌上移除。"
     }
   },
   "proof": {

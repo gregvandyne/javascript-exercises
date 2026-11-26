@@ -3894,6 +3894,10 @@
         "moved": "{label} ging naar de kolom {col}.",
         "needTen": "Er zijn 10 nodig om te ruilen",
         "count": "{n} stukken in {col}"
+      },
+      "host": {
+        "homeroomTool": "{tool} ligt op de Homeroom-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels. Hun werk blijft bewaard.",
+        "startRoom": "Ruimte starten"
       }
     },
     "manip-room": {
@@ -15270,7 +15274,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even.",
-      "emptyArea": "Jouw gebied is leeg. Zet er eerst iets in en stuur het dan."
+      "emptyArea": "Jouw gebied is leeg. Zet er eerst iets in en stuur het dan.",
+      "homeroomTool": "{tool} ligt op de Homeroom-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels."
     }
   },
   "proof": {
