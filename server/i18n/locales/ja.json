@@ -5261,7 +5261,8 @@
         "notHere": "ほかの机と先生のエリアの外に描いてください。"
       },
       "manipKind": "練習 · {count}問",
-      "pageKind": "レッスン · {count, plural, other {# ステップ}}"
+      "pageKind": "レッスン · {count, plural, other {# ステップ}}",
+      "worksheetCards": "単語カード · {count}枚"
     },
     "homeroom-area": {
       "label": "先生のエリア",
@@ -5398,7 +5399,35 @@
       "asBuilt": "作ったままの授業プラン",
       "scoreHint": "成績表に正答率(%)が表示されます。",
       "kind": "授業プラン",
-      "buildText": "レッスンを選び、一度設定して配ります。"
+      "buildText": "レッスンを選び、一度設定して配ります。",
+      "cards": "カード",
+      "cardsHint": "{min}〜{max}枚。どの用語にも説明が必要です。",
+      "term": "用語{n}",
+      "def": "用語{n}の説明",
+      "termPh": "用語",
+      "defPh": "説明",
+      "addCard": "カードを追加",
+      "removeCard": "カード{n}を外す",
+      "paste": "リストを貼り付け",
+      "pasteHint": "1行に1枚：用語のあとに、タブ、カンマ、または「 - 」で区切って説明。表計算の2列もそのまま貼り付けられます。",
+      "pastePh": "すみか - 動物がくらす場所\nえもの, つかまえられる動物",
+      "pasteAdd": "このカードを追加",
+      "pasteAdded": "{count}枚追加しました。",
+      "pasteNone": "カードが見つかりません。1行に1つの用語を書いてください。",
+      "mySets": "自分のカードセットを使う",
+      "mySetsLead": "カードがこのレッスンにコピーされます。自由に変更できます。",
+      "mySetsLoading": "セットを読み込み中…",
+      "mySetsFailed": "いまはセットを読み込めませんでした。もう一度お試しください。",
+      "mySetsNone": "保存したカードセットはまだありません。Flashcards で作るか、ここにカードを入力してください。",
+      "mySetsUsed": "{title}のカードを入れました。自由に変更できます。",
+      "untitledSet": "名前のないセット",
+      "answer": "「学ぶ」と「テスト」で生徒が答えるのは",
+      "answerTerm": "用語",
+      "answerDef": "説明",
+      "answersTerm": "用語で答える",
+      "answersDef": "説明で答える",
+      "cardsN": "{count}枚",
+      "previewCards": "学習シートを見るには、カードを{min}枚以上入力してください。"
     },
     "homeroom-overview": {
       "title": "評価の方法",
@@ -15805,7 +15834,7 @@
       "tooManyHandouts": "このクラスでは配布物がたくさん開いています。先に古いものを外してください。",
       "notOnDesk": "この配布物はこの机にありません。",
       "noLesson": "その授業プランはもう自分の授業プランにありません。",
-      "badGame": "授業プランは今のところ Arithmetic Lab、Algebra Builder、Crossword で作れます。",
+      "badGame": "授業プランは今のところ Arithmetic Lab、Algebra Builder、Crossword、Flashcards で作れます。",
       "needTitle": "授業プランに名前をつけてください。",
       "titleLong": "名前は60文字までです。",
       "fewWords": "クロスワードには3語以上が必要です。",
@@ -15842,7 +15871,10 @@
       "oneToolSet": "一度に選べるのは1つの教具の課題だけです。",
       "noLiveGame": "そのライブゲームは終わりました。",
       "liveFull": "そのライブゲームは満員です。",
-      "liveLocked": "そのライブゲームは今ロックされています。"
+      "liveLocked": "そのライブゲームは今ロックされています。",
+      "fewCards": "カードセットには2枚以上のカードが必要です。",
+      "missingDef": "どのカードにも説明が必要です。",
+      "sameCard": "同じ用語は1枚のカードにだけ入れられます。"
     },
     "live": "ライブ",
     "desk": {

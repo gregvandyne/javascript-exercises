@@ -5262,7 +5262,8 @@
         "notHere": "Disegna fuori dagli altri banchi e dall'area dell'insegnante."
       },
       "manipKind": "Esercizio · {count, plural, one {# esercizio} other {# esercizi}}",
-      "pageKind": "Lezione · {count, plural, one {# passo} other {# passi}}"
+      "pageKind": "Lezione · {count, plural, one {# passo} other {# passi}}",
+      "worksheetCards": "Carte · {count, plural, one {# carta} other {# carte}}"
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",
@@ -5399,7 +5400,35 @@
       "asBuilt": "Il piano di lezione come creato",
       "scoreHint": "Il registro mostra la % di risposte giuste.",
       "kind": "Piano di lezione",
-      "buildText": "Scegli una lezione, impostala una volta, distribuiscila."
+      "buildText": "Scegli una lezione, impostala una volta, distribuiscila.",
+      "cards": "Carte",
+      "cardsHint": "Da {min} a {max} carte. Ogni termine ha bisogno di una definizione.",
+      "term": "Termine {n}",
+      "def": "Definizione del termine {n}",
+      "termPh": "Termine",
+      "defPh": "Definizione",
+      "addCard": "Aggiungi una carta",
+      "removeCard": "Togli la carta {n}",
+      "paste": "Incolla un elenco",
+      "pasteHint": "Una carta per riga: il termine, poi la definizione dopo un tab, una virgola o \" - \". Due colonne di un foglio di calcolo si incollano così come sono.",
+      "pastePh": "habitat - dove vive un animale\npreda, un animale che viene cacciato",
+      "pasteAdd": "Aggiungi queste carte",
+      "pasteAdded": "{count, plural, one {# carta aggiunta.} other {# carte aggiunte.}}",
+      "pasteNone": "Nessuna carta trovata. Metti un termine per riga.",
+      "mySets": "Usa uno dei miei mazzi di carte",
+      "mySetsLead": "Le sue carte vengono copiate in questa lezione. Cambia quello che vuoi.",
+      "mySetsLoading": "Caricamento dei tuoi mazzi…",
+      "mySetsFailed": "Non è stato possibile caricare i tuoi mazzi. Riprova.",
+      "mySetsNone": "Non hai ancora mazzi di carte salvati. Creane uno in Flashcards o scrivi le carte qui.",
+      "mySetsUsed": "Le carte di {title} sono state aggiunte. Cambia quello che vuoi.",
+      "untitledSet": "Mazzo senza nome",
+      "answer": "In Impara e Verifica, gli studenti rispondono con",
+      "answerTerm": "Il termine",
+      "answerDef": "La definizione",
+      "answersTerm": "rispondono con il termine",
+      "answersDef": "rispondono con la definizione",
+      "cardsN": "{count, plural, one {# carta} other {# carte}}",
+      "previewCards": "Scrivi almeno {min} carte per vedere il foglio di studio."
     },
     "homeroom-overview": {
       "title": "Valuta per",
@@ -15806,7 +15835,7 @@
       "tooManyHandouts": "Questa classe ha molte consegne aperte. Togline prima qualcuna vecchia.",
       "notOnDesk": "Questa consegna non è su questo banco.",
       "noLesson": "Questo piano di lezione non è più tra i tuoi piani di lezione.",
-      "badGame": "Per ora si possono creare piani di lezione per Arithmetic Lab, Algebra Builder e Crossword.",
+      "badGame": "Per ora si possono creare piani di lezione per Arithmetic Lab, Algebra Builder, Crossword e Flashcards.",
       "needTitle": "Dai un nome al piano di lezione.",
       "titleLong": "Il nome può avere al massimo 60 caratteri.",
       "fewWords": "Un cruciverba ha bisogno di almeno 3 parole.",
@@ -15843,7 +15872,10 @@
       "oneToolSet": "Scegli attività di un solo strumento alla volta.",
       "noLiveGame": "Quel gioco dal vivo è finito.",
       "liveFull": "Quel gioco dal vivo è pieno.",
-      "liveLocked": "Quel gioco dal vivo è bloccato ora."
+      "liveLocked": "Quel gioco dal vivo è bloccato ora.",
+      "fewCards": "Un mazzo di carte ha bisogno di almeno 2 carte.",
+      "missingDef": "Ogni carta ha bisogno di una definizione.",
+      "sameCard": "Ogni termine può stare su una sola carta."
     },
     "live": "In diretta",
     "desk": {

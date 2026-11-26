@@ -102,13 +102,17 @@ export function classItems(classId, { userId = null } = {}) {
   // A Homeroom lesson graded by Score (services/homeroom-lessons.js): its problems are the points. Arithmetic Lab reports
   // how many the student got right; Crossword and Algebra Builder finish only once everything is right (the play page's
   // end with won: label 'won'), so a finished run is all of them. Played without finishing (2 minutes, or "I played
-  // it"): not scored, so it reads "–", never 0 %.
+  // it"): not scored, so it reads "–", never 0 %. Flashcards reports a percent (Learn all mastered: 100, a Test: its % right;
+  // the best is kept), so the cards earned are that share of the cards; a Match round alone ends won with no number:
+  // done, not scored.
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.score, p.label, h.problems n, g.slug, s.title, s.position pos FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL
       JOIN homeroom_handouts h ON h.class_lesson_id=c.id AND h.hr_lesson IS NOT NULL AND h.grade='score' AND h.problems>0
       JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id AND s.kind='game' JOIN games g ON g.id=s.game_id
       WHERE c.class_id=? AND p.status='done' AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
-    const earned = r.slug === 'arithmetic-lab' ? (r.score === null ? null : Math.min(r.score, r.n)) : r.label === 'won' || r.score !== null ? r.n : null;
+    const earned = r.slug === 'arithmetic-lab' ? (r.score === null ? null : Math.min(r.score, r.n))
+      : r.slug === 'flashcards' ? (r.score === null ? null : Math.round((Math.min(r.score, 100) * r.n) / 100))
+        : r.label === 'won' || r.score !== null ? r.n : null;
     if (earned !== null) add(r.u, r.cl, { kind: 'lesson', stepId: r.sid, title: r.title || '', stepKind: 'game', pos: r.pos, earned, possible: r.n });
   }
   for (const a of out.values()) a.sort((x, y) => x.pos - y.pos);

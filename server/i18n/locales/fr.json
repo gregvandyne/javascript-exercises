@@ -5261,7 +5261,8 @@
         "notHere": "Dessine en dehors des autres bureaux et de l'espace de l'enseignant."
       },
       "manipKind": "Entraînement · {count, plural, one {# exercice} other {# exercices}}",
-      "pageKind": "Leçon · {count, plural, one {# étape} other {# étapes}}"
+      "pageKind": "Leçon · {count, plural, one {# étape} other {# étapes}}",
+      "worksheetCards": "Cartes · {count, plural, one {# carte} other {# cartes}}"
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
@@ -5398,7 +5399,35 @@
       "asBuilt": "Le plan de cours tel que créé",
       "scoreHint": "Le carnet de notes montre le % de bonnes réponses.",
       "kind": "Plan de cours",
-      "buildText": "Choisissez une leçon, réglez-la une fois, distribuez-la."
+      "buildText": "Choisissez une leçon, réglez-la une fois, distribuez-la.",
+      "cards": "Cartes",
+      "cardsHint": "De {min} à {max} cartes. Chaque terme a besoin d'une définition.",
+      "term": "Terme {n}",
+      "def": "Définition du terme {n}",
+      "termPh": "Terme",
+      "defPh": "Définition",
+      "addCard": "Ajouter une carte",
+      "removeCard": "Retirer la carte {n}",
+      "paste": "Coller une liste",
+      "pasteHint": "Une carte par ligne : le terme, puis sa définition après une tabulation, une virgule ou \" - \". Deux colonnes d'un tableur se collent telles quelles.",
+      "pastePh": "habitat - là où vit un animal\nproie, un animal qui est chassé",
+      "pasteAdd": "Ajouter ces cartes",
+      "pasteAdded": "{count, plural, one {# carte ajoutée.} other {# cartes ajoutées.}}",
+      "pasteNone": "Aucune carte trouvée. Mets un terme par ligne.",
+      "mySets": "Utiliser un de mes jeux de cartes",
+      "mySetsLead": "Ses cartes sont copiées dans cette leçon. Change ce que tu veux.",
+      "mySetsLoading": "Chargement de tes jeux…",
+      "mySetsFailed": "Tes jeux n'ont pas pu se charger. Réessaie.",
+      "mySetsNone": "Tu n'as pas encore de jeu de cartes enregistré. Crées-en un dans Flashcards ou tape les cartes ici.",
+      "mySetsUsed": "Les cartes de {title} sont ajoutées. Change ce que tu veux.",
+      "untitledSet": "Jeu sans nom",
+      "answer": "Dans Apprendre et Test, les élèves répondent avec",
+      "answerTerm": "Le terme",
+      "answerDef": "La définition",
+      "answersTerm": "réponse : le terme",
+      "answersDef": "réponse : la définition",
+      "cardsN": "{count, plural, one {# carte} other {# cartes}}",
+      "previewCards": "Tape au moins {min} cartes pour voir la fiche d'étude."
     },
     "homeroom-overview": {
       "title": "Noter selon",
@@ -15805,7 +15834,7 @@
       "tooManyHandouts": "Cette classe a beaucoup de documents distribués. Retirez d’abord les anciens.",
       "notOnDesk": "Ce document n’est pas sur ce bureau.",
       "noLesson": "Ce plan de cours n’est plus dans vos plans de cours.",
-      "badGame": "Pour l’instant, on peut créer des plans de cours pour Arithmetic Lab, Algebra Builder et Crossword.",
+      "badGame": "Pour l’instant, on peut créer des plans de cours pour Arithmetic Lab, Algebra Builder, Crossword et Flashcards.",
       "needTitle": "Donnez un nom au plan de cours.",
       "titleLong": "Le nom peut faire 60 caractères au maximum.",
       "fewWords": "Des mots croisés ont besoin d'au moins 3 mots.",
@@ -15842,7 +15871,10 @@
       "oneToolSet": "Choisis les tâches d’un seul outil à la fois.",
       "noLiveGame": "Ce jeu en direct est terminé.",
       "liveFull": "Ce jeu en direct est complet.",
-      "liveLocked": "Ce jeu en direct est verrouillé pour le moment."
+      "liveLocked": "Ce jeu en direct est verrouillé pour le moment.",
+      "fewCards": "Un jeu de cartes a besoin d'au moins 2 cartes.",
+      "missingDef": "Chaque carte a besoin d'une définition.",
+      "sameCard": "Chaque terme ne peut être que sur une seule carte."
     },
     "live": "En direct",
     "desk": {

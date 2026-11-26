@@ -3,17 +3,18 @@
 // settings, the problems it shows in the worksheet preview, a version for each group) and the server
 // (services/homeroom-lessons.js: it checks every setting and every problem again, and turns them into the game's own
 // question set, which services/game-sets.js cleans as any set). Numbers, fixed words and the teacher's crossword words
-// only; nothing here knows who will play.
+// and flashcards only; nothing here knows who will play.
 //
 //   arithmetic-lab   { op, method, size, count, level, problems: [[a, b]], seed }  ->  one item { k, p, l, m? }
 //   algebra-builder  { mode, level, count, tiles, problems: ['2x+3=7'], seed }     ->  [{ a, p, s, l }]
 //   crossword        { words: [[word, clue]], bank, hints, seed }                  ->  one item { t, w, r, b, h }
+//   flashcards       { cards: [[term, definition, emoji]], a: 't'|'d', seed }       ->  one item { t, c, a }
 //
 // A lesson is exact: the problems are made once (from a seed, so the builder's preview and the saved set are the same
 // problems) and every student of a version gets those. "New problems" is a new seed.
 
 /** The games a lesson can be built for now, in the spec's order; the rest of the order comes later. */
-export const LESSON_SLUGS = ['arithmetic-lab', 'algebra-builder', 'crossword'];
+export const LESSON_SLUGS = ['arithmetic-lab', 'algebra-builder', 'crossword', 'flashcards'];
 /** What comes next in the builder (docs/homeroom.md "Lesson builder order"), shown as coming later. */
 export const LATER = ['quiz', 'atlas-quest', 'sudoku', 'manipulatives', 'figures', 'reading'];
 
@@ -33,6 +34,9 @@ export const ARITH = {
 };
 export const ALGEBRA = { modes: ['solve', 'multiply', 'factor'], levels: ['easy', 'medium', 'hard'], counts: [5, 8, 10], tiles: ['all', 'none'] };
 export const CROSS = { min: 3, max: 30, word: 24, clue: 150 };
+/** Flashcards' limits (services/game-sets.js FLASH): cards, a term's and a definition's length. a: what students answer
+ *  with in Learn and Test, 't' the term (they see the definition) or 'd' the definition. */
+export const FLASH = { min: 2, max: 50, term: 60, def: 160, answers: ['t', 'd'] };
 
 // ---------------------------------------------------------------- a seeded random (the same problems from a seed)
 export function rng(seed) {
@@ -136,10 +140,12 @@ const oneOf = (v, list, d) => (list.includes(v) ? v : d);
 export function defaults(slug, seed = newSeed()) {
   if (slug === 'arithmetic-lab') return fill(slug, { op: 'divide', method: 'standard', size: '3/1', count: 10, level: 'guided', seed });
   if (slug === 'algebra-builder') return fill(slug, { mode: 'solve', level: 'easy', count: 5, tiles: 'all', seed });
+  if (slug === 'flashcards') return { cards: [], a: 't', seed };
   return { words: [], bank: true, hints: true, seed };
 }
 /** The settings with every choice checked and the problems made again when they don't match (a changed size, count or
- *  seed, or problems that were never made). Crossword's words are kept as typed (the server checks them). */
+ *  seed, or problems that were never made). Crossword's words and the flashcards are kept as typed (the server checks
+ *  them). */
 export function fill(slug, s = {}) {
   const seed = cleanSeed(s.seed);
   if (slug === 'arithmetic-lab') {
@@ -155,15 +161,49 @@ export function fill(slug, s = {}) {
     const ok = Array.isArray(s.problems) && s.problems.length === count && s.problems.every(p => typeof p === 'string' && made.includes(p));
     return { mode, level, count, tiles, seed, problems: ok ? s.problems.slice() : made };
   }
+  if (slug === 'flashcards') {
+    const cards = Array.isArray(s.cards) ? s.cards.filter(x => Array.isArray(x) && (x.length === 2 || x.length === 3))
+      .map(([w, d, p]) => [String(w ?? '').slice(0, 80), String(d ?? '').slice(0, 200), typeof p === 'string' ? p.slice(0, 32) : '']).slice(0, FLASH.max) : [];
+    return { cards, a: oneOf(s.a, FLASH.answers, 't'), seed };
+  }
   const words = Array.isArray(s.words) ? s.words.filter(x => Array.isArray(x) && x.length === 2).map(([w, c]) => [String(w ?? '').slice(0, 40), String(c ?? '').slice(0, 200)]).slice(0, CROSS.max) : [];
   return { words, bank: s.bank !== false, hints: s.hints !== false, seed };
 }
-/** How many problems (Crossword: words) the settings make. */
-export const countOf = (slug, s) => (slug === 'crossword' ? (s.words || []).length : (s.problems || []).length);
+/** How many problems (Crossword: words; Flashcards: cards) the settings make. */
+export const countOf = (slug, s) => (slug === 'crossword' ? (s.words || []).length : slug === 'flashcards' ? (s.cards || []).length : (s.problems || []).length);
+/** What a lesson counts: 'words' (Crossword), 'cards' (Flashcards) or 'problems'. */
+export const unitOf = slug => (slug === 'crossword' ? 'words' : slug === 'flashcards' ? 'cards' : 'problems');
+
+/** A pasted list of cards (Flashcards' own reading of one, seed-games/flashcards.html parseList): one card a line, the
+ *  term, then its definition after a tab, " - " (or a dash with spaces), ": ", " = " or the first comma. Bullets,
+ *  numbers and a header row go; a term twice is kept once. -> [[term, definition]] (a definition may be ''). */
+export function parseCards(text, max = FLASH.max) {
+  const out = [], seen = new Set(), key = w => w.normalize('NFC').toLocaleLowerCase();
+  const split = line => {
+    let m;
+    if (line.includes('\t')) { m = line.split('\t'); return [m[0], m.slice(1).join(' ')]; }
+    if ((m = /^(.+?)\s+[-\u2013\u2014]\s+(.+)$/.exec(line))) return [m[1], m[2]];
+    if ((m = /^([^:]+?):\s+(.+)$/.exec(line)) && !/^\d+$/.test(m[1].trim())) return [m[1], m[2]];
+    if ((m = /^(.+?)\s+=\s+(.+)$/.exec(line))) return [m[1], m[2]];
+    const c = line.indexOf(',');
+    return c > 0 ? [line.slice(0, c), line.slice(c + 1)] : [line, ''];
+  };
+  String(text || '').replace(/^\ufeff/, '').replace(/\r\n?/g, '\n').split('\n').forEach((raw, n) => {
+    if (out.length >= max) return;
+    const line = raw.replace(/^\s*(?:[-*\u2022\u25cf\u25aa]|\d{1,3}[.)])\s+/, '').trim();
+    if (!line) return;
+    const [a, b] = split(line), w = a.replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim(), d = b.replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim();
+    if (n === 0 && /^(term|word|front|question|vocab(ulary)?)s?$/i.test(w) && (!d || /^(definition|meaning|back|answer|clue)s?$/i.test(d))) return;
+    if (!w || seen.has(key(w))) return;
+    seen.add(key(w)); out.push([w.slice(0, FLASH.term), d.slice(0, FLASH.def)]);
+  });
+  return out;
+}
 
 /** A version for a group, made from the base: steps up or down (offset > 0: harder, < 0: easier), as a suggestion the
  *  teacher can change. Arithmetic Lab: the size one step and the help one step; Algebra Builder: the level; Crossword:
- *  the word bank on for an easier version, off for a harder one. New problems (a new seed) for any change. */
+ *  the word bank on for an easier version, off for a harder one; Flashcards: the same cards (the teacher changes a
+ *  group's cards). New problems (a new seed) for any change. */
 export function suggest(slug, base, offset, seed = newSeed()) {
   const b = fill(slug, base);
   if (!offset) return { ...b };
@@ -173,6 +213,7 @@ export function suggest(slug, base, offset, seed = newSeed()) {
     return fill(slug, { ...b, size: step(names, b.size, offset), level: step(ARITH.levels, b.level, offset), seed, problems: null });
   }
   if (slug === 'algebra-builder') return fill(slug, { ...b, level: step(ALGEBRA.levels, b.level, offset), seed, problems: null });
+  if (slug === 'flashcards') return { ...b, cards: b.cards.map(x => x.slice()) };
   return { ...b, bank: offset < 0 ? true : offset > 0 ? false : b.bank, hints: offset < 0 ? true : b.hints };
 }
 /** Which way a group's version leans by its place among the groups: the first harder, the last easier, the middle as

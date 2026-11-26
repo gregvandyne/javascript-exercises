@@ -5262,7 +5262,8 @@
         "notHere": "Desenhe fora das outras carteiras e da área do professor."
       },
       "manipKind": "Prática · {count, plural, one {# problema} other {# problemas}}",
-      "pageKind": "Lição · {count, plural, one {# etapa} other {# etapas}}"
+      "pageKind": "Lição · {count, plural, one {# etapa} other {# etapas}}",
+      "worksheetCards": "Cartões · {count, plural, one {# cartão} other {# cartões}}"
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -5399,7 +5400,35 @@
       "asBuilt": "O plano de aula como foi criado",
       "scoreHint": "O boletim mostra a % de acertos.",
       "kind": "Plano de aula",
-      "buildText": "Escolha uma aula, prepare uma vez e distribua."
+      "buildText": "Escolha uma aula, prepare uma vez e distribua.",
+      "cards": "Cartões",
+      "cardsHint": "De {min} a {max} cartões. Cada termo precisa de uma definição.",
+      "term": "Termo {n}",
+      "def": "Definição do termo {n}",
+      "termPh": "Termo",
+      "defPh": "Definição",
+      "addCard": "Adicionar um cartão",
+      "removeCard": "Tirar o cartão {n}",
+      "paste": "Colar uma lista",
+      "pasteHint": "Um cartão por linha: o termo e depois a definição, após um tab, uma vírgula ou \" - \". Duas colunas de uma planilha podem ser coladas direto.",
+      "pastePh": "habitat - onde um animal vive\npresa, um animal que é caçado",
+      "pasteAdd": "Adicionar estes cartões",
+      "pasteAdded": "{count, plural, one {# cartão adicionado.} other {# cartões adicionados.}}",
+      "pasteNone": "Nenhum cartão encontrado. Coloque um termo em cada linha.",
+      "mySets": "Usar um dos meus conjuntos de cartões",
+      "mySetsLead": "Os cartões são copiados para esta aula. Mude o que quiser.",
+      "mySetsLoading": "Carregando seus conjuntos…",
+      "mySetsFailed": "Não deu para carregar seus conjuntos agora. Tente de novo.",
+      "mySetsNone": "Você ainda não tem conjuntos de cartões salvos. Crie um no Flashcards ou digite os cartões aqui.",
+      "mySetsUsed": "Os cartões de {title} foram adicionados. Mude o que quiser.",
+      "untitledSet": "Conjunto sem nome",
+      "answer": "Em Aprender e Teste, os alunos respondem com",
+      "answerTerm": "O termo",
+      "answerDef": "A definição",
+      "answersTerm": "respondem com o termo",
+      "answersDef": "respondem com a definição",
+      "cardsN": "{count, plural, one {# cartão} other {# cartões}}",
+      "previewCards": "Digite pelo menos {min} cartões para ver a folha de estudo."
     },
     "homeroom-overview": {
       "title": "Avaliar por",
@@ -15807,7 +15836,7 @@
       "tooManyHandouts": "Esta turma tem muitas entregas abertas. Remova algumas antigas primeiro.",
       "notOnDesk": "Essa entrega não está nesta carteira.",
       "noLesson": "Esse plano de aula não está mais nos seus planos de aula.",
-      "badGame": "Por enquanto, dá para criar planos de aula para Arithmetic Lab, Algebra Builder e Crossword.",
+      "badGame": "Por enquanto, dá para criar planos de aula para Arithmetic Lab, Algebra Builder, Crossword e Flashcards.",
       "needTitle": "Dê um nome ao plano de aula.",
       "titleLong": "O nome pode ter no máximo 60 caracteres.",
       "fewWords": "Palavras cruzadas precisam de pelo menos 3 palavras.",
@@ -15844,7 +15873,10 @@
       "oneToolSet": "Escolha tarefas de uma só ferramenta de cada vez.",
       "noLiveGame": "Esse jogo ao vivo terminou.",
       "liveFull": "Esse jogo ao vivo está cheio.",
-      "liveLocked": "Esse jogo ao vivo está trancado agora."
+      "liveLocked": "Esse jogo ao vivo está trancado agora.",
+      "fewCards": "Um conjunto de cartões precisa de pelo menos 2 cartões.",
+      "missingDef": "Cada cartão precisa de uma definição.",
+      "sameCard": "Cada termo só pode estar em um cartão."
     },
     "live": "Ao vivo",
     "desk": {

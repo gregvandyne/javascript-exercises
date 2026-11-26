@@ -5841,7 +5841,8 @@
         "notHere": "Draw outside other desks and the teacher's area."
       },
       "manipKind": "Practice · {count, plural, one {# problem} other {# problems}}",
-      "pageKind": "Lesson · {count, plural, one {# step} other {# steps}}"
+      "pageKind": "Lesson · {count, plural, one {# step} other {# steps}}",
+      "worksheetCards": "Flashcards · {count, plural, one {# card} other {# cards}}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5978,7 +5979,35 @@
       "asBuilt": "The lesson plan as built",
       "scoreHint": "The gradebook shows the % right.",
       "kind": "Lesson plan",
-      "buildText": "Pick a lesson, set it up once, hand it out."
+      "buildText": "Pick a lesson, set it up once, hand it out.",
+      "cards": "Cards",
+      "cardsHint": "{min} to {max} cards. Each term needs a definition.",
+      "term": "Term {n}",
+      "def": "Definition for term {n}",
+      "termPh": "Term",
+      "defPh": "Definition",
+      "addCard": "Add a card",
+      "removeCard": "Remove card {n}",
+      "paste": "Paste a list",
+      "pasteHint": "One card a line: the term, then its definition after a tab, a comma or \" - \". Two columns from a spreadsheet paste straight in.",
+      "pastePh": "habitat - where an animal lives\nprey, an animal that is hunted",
+      "pasteAdd": "Add these cards",
+      "pasteAdded": "{count, plural, one {# card added.} other {# cards added.}}",
+      "pasteNone": "No cards found. Put one term on each line.",
+      "mySets": "Use one of my flashcard sets",
+      "mySetsLead": "Its cards are copied into this lesson. Change anything.",
+      "mySetsLoading": "Loading your sets…",
+      "mySetsFailed": "Your sets couldn't load just now. Try again.",
+      "mySetsNone": "You have no saved flashcard sets yet. Make one in Flashcards, or type the cards here.",
+      "mySetsUsed": "The cards from {title} are in. Change anything.",
+      "untitledSet": "Untitled set",
+      "answer": "In Learn and Test, students answer with",
+      "answerTerm": "The term",
+      "answerDef": "The definition",
+      "answersTerm": "answer with the term",
+      "answersDef": "answer with the definition",
+      "cardsN": "{count, plural, one {# card} other {# cards}}",
+      "previewCards": "Type at least {min} cards to see the study sheet."
     },
     "homeroom-overview": {
       "title": "Grade it by",
@@ -17351,7 +17380,7 @@
       "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
       "notOnDesk": "That handout isn't on this desk.",
       "noLesson": "That lesson plan isn't in your lesson plans anymore.",
-      "badGame": "Lesson plans can be built for Arithmetic Lab, Algebra Builder and Crossword for now.",
+      "badGame": "Lesson plans can be built for Arithmetic Lab, Algebra Builder, Crossword and Flashcards for now.",
       "needTitle": "Give the lesson plan a name.",
       "titleLong": "The name can be 60 characters at most.",
       "fewWords": "A crossword needs at least 3 words.",
@@ -17413,7 +17442,10 @@
       "oneToolSet": "Pick tasks of one tool at a time.",
       "noLiveGame": "That live game has ended.",
       "liveFull": "That live game is full.",
-      "liveLocked": "That live game is locked right now."
+      "liveLocked": "That live game is locked right now.",
+      "fewCards": "A flashcard set needs at least 2 cards.",
+      "missingDef": "Every card needs a definition.",
+      "sameCard": "Each term can be on one card only."
     },
     "live": "Live",
     "desk": {

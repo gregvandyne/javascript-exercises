@@ -5261,7 +5261,8 @@
         "notHere": "請畫在別人的桌子和老師區以外。"
       },
       "manipKind": "練習 · {count} 題",
-      "pageKind": "課程 · {count, plural, other {# 個步驟}}"
+      "pageKind": "課程 · {count, plural, other {# 個步驟}}",
+      "worksheetCards": "字卡 · {count} 張卡"
     },
     "homeroom-area": {
       "label": "老師區",
@@ -5398,7 +5399,35 @@
       "asBuilt": "原本建立的教案",
       "scoreHint": "成績簿會顯示答對的百分比。",
       "kind": "教案",
-      "buildText": "選一個課程，設定一次，就能發下去。"
+      "buildText": "選一個課程，設定一次，就能發下去。",
+      "cards": "卡片",
+      "cardsHint": "{min} 到 {max} 張卡。每個詞語都需要解釋。",
+      "term": "第 {n} 個詞語",
+      "def": "第 {n} 個詞語的解釋",
+      "termPh": "詞語",
+      "defPh": "解釋",
+      "addCard": "加一張卡",
+      "removeCard": "移除第 {n} 張卡",
+      "paste": "貼上清單",
+      "pasteHint": "一行一張卡：先寫詞語，再用定位字元、逗號或「 - 」隔開寫解釋。試算表的兩欄可以直接貼上。",
+      "pastePh": "棲息地 - 動物生活的地方\n獵物, 被捕食的動物",
+      "pasteAdd": "加入這些卡",
+      "pasteAdded": "已加入 {count} 張卡。",
+      "pasteNone": "找不到卡片。每一行寫一個詞語。",
+      "mySets": "使用我的字卡組",
+      "mySetsLead": "卡片會複製到這堂課裡，可以隨意修改。",
+      "mySetsLoading": "正在載入你的字卡組…",
+      "mySetsFailed": "目前無法載入你的字卡組，請再試一次。",
+      "mySetsNone": "你還沒有儲存的字卡組。可以在 Flashcards 裡做一組，或在這裡輸入卡片。",
+      "mySetsUsed": "已加入「{title}」的卡片，可以隨意修改。",
+      "untitledSet": "未命名的字卡組",
+      "answer": "在「學習」和「測驗」中，學生要回答",
+      "answerTerm": "詞語",
+      "answerDef": "解釋",
+      "answersTerm": "回答詞語",
+      "answersDef": "回答解釋",
+      "cardsN": "{count} 張卡",
+      "previewCards": "輸入至少 {min} 張卡，就能看到學習單。"
     },
     "homeroom-overview": {
       "title": "評分方式",
@@ -15805,7 +15834,7 @@
       "tooManyHandouts": "這個班級發下的東西太多了。請先移除一些舊的。",
       "notOnDesk": "這個座位上沒有這份發下的東西。",
       "noLesson": "這份教案已經不在你的教案裡了。",
-      "badGame": "目前可以為 Arithmetic Lab、Algebra Builder 和 Crossword 製作教案。",
+      "badGame": "目前可以為 Arithmetic Lab、Algebra Builder、Crossword 和 Flashcards 製作教案。",
       "needTitle": "請替教案取個名字。",
       "titleLong": "名字最多 60 個字元。",
       "fewWords": "填字遊戲至少需要 3 個詞。",
@@ -15842,7 +15871,10 @@
       "oneToolSet": "一次只能選同一個教具的任務。",
       "noLiveGame": "這個即時遊戲已結束。",
       "liveFull": "這個即時遊戲已額滿。",
-      "liveLocked": "這個即時遊戲目前已鎖定。"
+      "liveLocked": "這個即時遊戲目前已鎖定。",
+      "fewCards": "一組字卡至少要有 2 張卡。",
+      "missingDef": "每張卡都需要解釋。",
+      "sameCard": "每個詞語只能放在一張卡上。"
     },
     "live": "直播中",
     "desk": {

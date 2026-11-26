@@ -8,7 +8,9 @@
 //     default; removing every desk takes all the versions handed out together;
 //   - the desk card says Lesson and how many problems; scores flow into the Score (Arithmetic Lab: right of N;
 //     Crossword: won); the preview and Print (owner only); an In order handout waits on the lesson page, the To do link
-//     and the play page; the account's lessons go with it.
+//     and the play page; the account's lessons go with it;
+//   - Flashcards: the cards through the game's own cleanFlashItems, the study sheet as the worksheet, a desk card of
+//     cards ('cards'), the set opens in Flashcards, a Test's % right is that share of the cards in the Score.
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -63,7 +65,7 @@ function made(title, slug) {
   q.run("UPDATE games SET status='published', visibility='public', published_version_id=?, source='seed', shelf='learn', slug=? WHERE id=?", v.id, slug, g.id);
   return games.getGame(g.id);
 }
-const LAB = made('Arithmetic Lab', 'arithmetic-lab'), AB = made('Algebra Builder', 'algebra-builder'), CW = made('Crossword', 'crossword');
+const LAB = made('Arithmetic Lab', 'arithmetic-lab'), AB = made('Algebra Builder', 'algebra-builder'), CW = made('Crossword', 'crossword'), FC = made('Flashcards', 'flashcards');
 // Groups in Room 5: Stretch (Ava, Ben), On track (Cleo), Building (Dev); Eli in none.
 const room = H.roomOf(cls.id), [stretch, onTrack, building] = room.groups;
 assert.ok(H.saveGroups(rivera, cls, { groups: room.groups, members: { [kids[0].id]: stretch.id, [kids[1].id]: stretch.id, [kids[2].id]: onTrack.id, [kids[3].id]: building.id } }).ok);
@@ -298,4 +300,67 @@ test('Remove from every desk takes all the versions handed out together; the acc
   assert.ok(res.ok, JSON.stringify(res));
   assert.equal(q.get('SELECT COUNT(*) n FROM homeroom_lessons WHERE owner_id=?', t.id).n, 0);
   assert.equal(q.get('SELECT COUNT(*) n FROM game_sets WHERE owner_id=?', t.id).n, 0);
+});
+
+const CARDS = [['habitat', 'Where an animal lives'], ['predator', 'An animal that hunts'], ['prey', 'An animal that is hunted'], ['forest', 'Lots of trees together'], ['pond', 'A small body of still water']];
+test('Flashcards: cleanSettings uses the game\'s own cleanFlashItems; refusals; the builder\'s paste reader', () => {
+  assert.ok(M.LESSON_SLUGS.includes('flashcards'));
+  const c = HL.cleanSettings('flashcards', { cards: CARDS, a: 'd', seed: 4 }, '  Habitat   words ');
+  assert.ok(c.ok, JSON.stringify(c));
+  assert.deepEqual(c.items, G.cleanFlashItems([{ t: 'Habitat words', c: CARDS, a: 'd' }]), 'one item { t, c, a }, exactly the game\'s own clean set');
+  assert.deepEqual(c.items[0].c[0], ['habitat', 'Where an animal lives', ''], 'cards come back as [term, definition, emoji]');
+  assert.equal(c.items[0].t, 'Habitat words'); assert.equal(c.items[0].a, 'd');
+  assert.equal(c.s.cards.length, 5); assert.equal(M.countOf('flashcards', c.s), 5); assert.equal(M.unitOf('flashcards'), 'cards');
+  // an emoji on the front is kept; an unknown answer side reads as the term; empty rows are left out
+  const e = HL.cleanSettings('flashcards', { cards: [['sun', 'Our star', '☀️'], ['moon', 'It goes around Earth'], ['', ''], ['', '  ']], a: 'x' });
+  assert.ok(e.ok, JSON.stringify(e)); assert.equal(e.items[0].a, 't'); assert.equal(e.items[0].c[0][2], '☀️'); assert.equal(e.items[0].c.length, 2);
+  assert.equal(HL.cleanSettings('flashcards', { cards: CARDS.slice(0, 1) }).code, 'fewCards');
+  assert.equal(HL.cleanSettings('flashcards', { cards: [...CARDS.slice(0, 2), ['ocean', '']] }).code, 'missingDef');
+  assert.equal(HL.cleanSettings('flashcards', { cards: [...CARDS.slice(0, 2), ['Habitat', 'again']] }).code, 'sameCard');
+  assert.equal(HL.cleanSettings('flashcards', { cards: [...CARDS.slice(0, 2), ['ocean', 'Call 555-123-4567 now']] }).code, 'words');
+  assert.equal(HL.cleanSettings('flashcards', 'nope').code, 'settings');
+  // at most 50 cards (fill keeps the first 50), and a version for a group starts as the same cards
+  const many = Array.from({ length: 60 }, (_, i) => [`term ${i}`, `meaning ${i}`]);
+  assert.equal(HL.cleanSettings('flashcards', { cards: many }).items[0].c.length, 50);
+  assert.deepEqual(M.suggest('flashcards', { cards: CARDS, a: 't' }, 1).cards.map(x => x.slice(0, 2)), CARDS);
+  assert.deepEqual(M.defaults('flashcards', 3), { cards: [], a: 't', seed: 3 });
+  // the builder's paste reader: tab, " - ", ": ", the first comma; bullets, numbers and a header row go; no term twice
+  assert.deepEqual(M.parseCards('Term, Definition\n- habitat - where an animal lives\n2. prey: an animal that is hunted\nforest\tlots of trees\nroot, holds the plant, in soil\nhabitat, again\nlonely'),
+    [['habitat', 'where an animal lives'], ['prey', 'an animal that is hunted'], ['forest', 'lots of trees'], ['root', 'holds the plant, in soil'], ['lonely', '']]);
+});
+
+test('Flashcards lessons: saved as a Flashcards set, the study sheet, a desk card of cards, the Score from a Test', async () => {
+  const r = await as(rivera)(`${api()}/lessons`, { body: { slug: 'flashcards', title: 'Habitat words', instructions: 'Learn until every card is mastered.', base: { cards: CARDS, a: 't', seed: 2 } } });
+  assert.equal(r.status, 200, r.text);
+  const l = HL.getMine(rivera, r.json.id), set = G.get(FC.id, l.base.set);
+  assert.equal(set.ownerId, rivera.id); assert.equal(set.items[0].t, 'Habitat words'); assert.deepEqual(set.items[0].c.map(x => x[0]), CARDS.map(x => x[0]));
+  const row = r.json.lessons.find(x => x.id === l.id);
+  assert.equal(row.n, 5); assert.equal(row.slug, 'flashcards');
+  // refusals come back as words for the teacher
+  const few = await as(rivera)(`${api()}/lessons`, { body: { slug: 'flashcards', title: 'X', base: { cards: CARDS.slice(0, 1) } } });
+  assert.equal(few.json.code, 'fewCards'); assert.match(few.json.error, /at least 2 cards/);
+  assert.match((await as(rivera)(`${api()}/lessons`, { body: { slug: 'flashcards', title: 'X', base: { cards: [['a', 'b'], ['c', '']] } } })).json.error, /Every card needs a definition/);
+  // the preview and Print: Flashcards' study sheet, the cards in a table, never an answer key
+  const pv = await as(rivera)(`${api()}/lessons/preview`, { body: { slug: 'flashcards', title: 'Habitat words', instructions: 'Study!', settings: { cards: CARDS } } });
+  assert.equal(pv.status, 200, pv.text); assert.match(pv.json.html, /fcp-table/); assert.match(pv.json.html, /Where an animal lives/); assert.match(pv.json.html, /Study!/);
+  const pr = await as(rivera)(`${api()}/lessons/${l.id}/print`, { body: { version: '', key: true } });
+  assert.equal(pr.status, 200, pr.text); assert.match(pr.json.html, new RegExp(G.codeOf(l.base.set))); assert.doesNotMatch(pr.json.html, /cwp-key/);
+  // handed out to Ava's desk, graded by Score: the card says cards, the step opens the set in Flashcards
+  const h = await as(rivera)(`${api()}/handouts`, { body: { lessonId: l.id, to: { kind: 'desk', id: kids[0].id } } });
+  assert.equal(h.status, 200, h.text);
+  const hh = h.json.handouts.find(x => x.title === 'Habitat words');
+  assert.equal(hh.unit, 'cards'); assert.equal(hh.n, 5); assert.equal(hh.grade, 'score');
+  const card = HO.deskView(cls, kids[0]).find(x => x.title === 'Habitat words');
+  assert.equal(card.lesson, true); assert.equal(card.unit, 'cards'); assert.equal(card.n, 5); assert.equal(card.instructions, 'Learn until every card is mastered.');
+  assert.match(card.href, new RegExp(`^/play/flashcards\\?lesson=.+&step=.+&chapter=${l.base.set}&lock=1$`));
+  // a Match round alone (won, no number): done, not scored; then a Test at 60 %: 3 of the 5 cards
+  const step = L.steps(L.getClassLesson(card.id).lesson_id)[0];
+  const cellOf = () => { const g = P.classProgress(cls.id), col = g.lessons.findIndex(x => x.id === card.id); return g.students.find(p => p.id === kids[0].id).cells[col]; };
+  assert.ok(P.gameScore(kids[0], card.id, step.id, null, 'won').ok);
+  assert.equal(cellOf().done, 1); assert.equal(cellOf().score, null);
+  assert.ok(P.gameScore(kids[0], card.id, step.id, 60).ok);
+  assert.deepEqual([cellOf().score.earned, cellOf().score.possible, cellOf().score.pct], [3, 5, 60]);
+  // Learn until every card is mastered ends with 100: all of them
+  assert.ok(P.gameScore(kids[0], card.id, step.id, 100).ok);
+  assert.equal(cellOf().score.pct, 100);
 });

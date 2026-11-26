@@ -48,6 +48,7 @@ import * as M from './manipulatives.js';
 import * as MT from './manip-tasks.js';
 import { toolOf } from '../../public/js/manip-data.js';
 import { taskOf } from '../../public/js/manip-tasks.js';
+import { unitOf } from '../../public/js/homeroom-lesson-make.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -175,8 +176,8 @@ function gameInfo(cache, id, locale) {
 }
 /** Title as students see it: an Oomba game in their language, a teacher's own game by its name, a lesson by its own. */
 const titleOf = (r, g) => (r.hl || r.step_kind === 'story' ? r.title : g && g.source === 'seed' ? g.title : r.title || (g ? g.title : ''));
-/** A lesson's card: how many of what ('words' for Crossword, else 'problems'). */
-const lessonOf = (r, g) => (r.hl ? { lesson: true, n: r.problems || 0, unit: g && g.slug === 'crossword' ? 'words' : 'problems' } : {});
+/** A lesson's card: how many of what ('words' for Crossword, 'cards' for Flashcards, else 'problems'). */
+const lessonOf = (r, g) => (r.hl ? { lesson: true, n: r.problems || 0, unit: unitOf(g && g.slug) } : {});
 /** step_progress for these handouts: Map 'clId:userId' -> row. */
 function progressOf(rows) {
   if (!rows.length) return new Map();
