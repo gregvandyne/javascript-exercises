@@ -825,8 +825,13 @@ test('"Check my answers" says so when everything is right; otherwise how many an
   assert.equal(translate('en', 'js.manip-room.checkResult', { right: 3, total: 4 }), '3 of 4 right. Try again on the others.');
   // The page picks the message: all right never says "Try again".
   const src = fs.readFileSync(path.join(ROOT, 'public/js/manip-room.js'), 'utf8');
-  assert.match(src, /r\.right >= r\.total \? t\('js\.manip-room\.checkAll', \{ total: r\.total \}\) : t\('js\.manip-room\.checkResult'/);
+  // One box: "Right!" or "Not right yet. Try again." (never "All 1 right!" or "0 of 1 right").
+  assert.match(src, /r\.right >= r\.total \? \(one \? t\('js\.manip-room\.checkOneRight'\) : t\('js\.manip-room\.checkAll', \{ total: r\.total \}\)\)\s*: one \? t\('js\.manip-room\.checkOneWrong'\) : t\('js\.manip-room\.checkResult'/);
+  assert.equal(translate('en', 'js.manip-room.checkOneRight'), 'Right!');
+  assert.equal(translate('en', 'js.manip-room.checkOneWrong'), 'Not right yet. Try again.');
   for (const code of CODES) {
+    const r1 = translate(code, 'js.manip-room.checkOneRight'), w1 = translate(code, 'js.manip-room.checkOneWrong');
+    assert.ok(r1 && w1 && r1 !== w1 && !/[{}]|\u2014|^js\./.test(r1 + w1), `${code}: ${r1} / ${w1}`);
     const all = translate(code, 'js.manip-room.checkAll', { total: 1 }), some = translate(code, 'js.manip-room.checkResult', { right: 3, total: 4 });
     assert.ok(!/[{}]/.test(all) && !/[{}]/.test(some), `${code}: ${all} / ${some}`);
     assert.notEqual(all, some, code);
