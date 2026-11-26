@@ -10,8 +10,9 @@
 // shows the game's host screen (it takes the projector's place: one per game), the layer shows the Teacher view
 // (/live/host/<sid>/dash) instead, told over a BroadcastChannel in this browser.
 //
-// A student's desk (liveDesk): while the class has a live game the desk shows a Join card and opens the game in the
-// desk's player by itself once (a seat for them as themselves: no code), and closes it when the game ends.
+// A student's desk (liveDesk): while the class has a live game the desk shows a banner with Join for as long as it runs
+// (never moving them into it by itself); Join opens it in the desk's player (a seat for them as themselves: no code),
+// and the game ending closes it.
 //
 // The projector view (liveProjector): the game's host screen over the whole page while it runs (its host only).
 import { api, esc, toast, ask, t } from '/js/app.js';
@@ -82,6 +83,9 @@ export function liveHost(opts) {
     catch (e) { toast(e.message, { bad: true }); } finally { busy = false; }
   }
   function act(k) { if (k === 'min') minimize(); else if (k === 'end') endGame(); else if (k === 'restore') restore(); }
+  // "3 joined of 5 in Homeroom" (of the class's students on their desks or in it), or "3 joined" while players from
+  // outside Homeroom (a code) are in it too
+  const joined = g => (g.here && g.players === (g.in || []).length ? tl('joinedOf', { count: g.players, total: g.here }) : tl('joined', { count: g.players }));
   /** The pill in the top bar while a game runs and its layer is folded away; the layer's own bar says the same. */
   function pill() {
     let p = document.getElementById('hr-lgpill');
@@ -90,27 +94,31 @@ export function liveHost(opts) {
     else {
       if (!p) { p = document.createElement('span'); p.id = 'hr-lgpill'; p.className = 'hr-lgpill'; p.addEventListener('click', e => { const b = e.target.closest('[data-lg]'); if (b) act(b.dataset.lg); }); place(p); }
       else if (p.dataset.phone !== String(phone())) place(p);
-      const h = `<button type="button" class="hr-lgopen" data-lg="restore" aria-label="${esc(tl('restore', { title: game.title }))}">${iconHtml(game.icon || '📡', { size: 18 })}<span class="hr-lgname"><b>${esc(tl('pill', { title: game.title }))}</b> <span class="hr-lgn">${esc(tl('joined', { count: game.players }))}</span></span></button>${game.host ? `<button type="button" class="hr-lgx" data-lg="end" aria-label="${esc(tl('endTitle', { title: game.title }))}">${iconHtml('⏹️', { size: 14 })}<span class="hr-hidephone"> ${esc(tl('end'))}</span></button>` : ''}`;
+      const h = `<button type="button" class="hr-lgopen" data-lg="restore" aria-label="${esc(tl('restore', { title: game.title }))}">${iconHtml(game.icon || '📡', { size: 18 })}<span class="hr-lgname"><b>${esc(tl('pill', { title: game.title }))}</b> <span class="hr-lgn">${esc(joined(game))}</span></span></button>${game.host ? `<button type="button" class="hr-lgx" data-lg="end" aria-label="${esc(tl('endTitle', { title: game.title }))}">${iconHtml('⏹️', { size: 14 })}<span class="hr-hidephone"> ${esc(tl('end'))}</span></button>` : ''}`;
       if (p.innerHTML !== h) p.innerHTML = h;
     }
     if (el) {
       el.querySelector('[data-lgtitle]').textContent = game ? game.title : tl('setup');
-      el.querySelector('[data-lgcount]').textContent = game ? tl('joined', { count: game.players }) : '';
+      el.querySelector('[data-lgcount]').textContent = game ? joined(game) : '';
       el.querySelector('[data-lg="end"]').hidden = !(game && game.host);
     }
   }
   // (on a phone the bar is full: the pill floats at the top of the board, as the plan pill does)
   const phone = () => matchMedia('(max-width: 819px)').matches;
   function place(p) { p.dataset.phone = String(phone()); if (phone()) opts.stage.appendChild(p); else { const at = opts.slot(); if (at) at.after(p); } }
-  /** "In Brain Board" on the desks of students in the game. */
+  /** "In Brain Board" on the desks of students in the game; a quiet "Not joined yet" on those at their desks who have
+   *  not tapped Join (yet: they may be finishing something). */
   function paint() {
-    const ids = new Set(game ? game.in : []);
+    const ids = new Set(game ? game.in : []), wait = new Set(game ? game.waiting || [] : []);
     for (const d of opts.desks()) {
-      const on = ids.has(d.dataset.sid);
+      const on = ids.has(d.dataset.sid), later = !on && wait.has(d.dataset.sid);
       let c = d.querySelector(':scope > .hr-lgin');
-      if (on && !c) { c = document.createElement('span'); c.className = 'hr-lgin'; d.appendChild(c); }
-      if (on) { const h = `${iconHtml(game.icon || '📡', { size: 14 })} ${esc(tl('inGame', { title: game.title }))}`; if (c.innerHTML !== h) c.innerHTML = h; }
-      else if (c) c.remove();
+      if ((on || later) && !c) { c = document.createElement('span'); c.className = 'hr-lgin'; d.appendChild(c); }
+      if (on || later) {
+        c.classList.toggle('hr-lgwait', later);
+        const h = on ? `${iconHtml(game.icon || '📡', { size: 14 })} ${esc(tl('inGame', { title: game.title }))}` : esc(tl('notYet'));
+        if (c.innerHTML !== h) c.innerHTML = h;
+      } else if (c) c.remove();
       d.classList.toggle('hr-inlive', on);
     }
   }
@@ -151,58 +159,93 @@ export function liveHost(opts) {
 }
 
 /**
- * A student's desk. opts: { classId, PL: the desk's game player, td: the desk's strings } -> { apply(state.livegame),
- * find(id) for the player, card() }
+ * A student's desk. Nothing opens by itself (the owner: "it shouldn't just move their students' screens into the live
+ * game... they should be able to finish up whatever they're doing before they move into the game"). While the class has
+ * a live game the desk shows a banner: "<Game> is starting. Join when you're ready." while it is in its lobby, "Live game
+ * going on: <Game>" after that, with Join. It stays for as long as the game runs: at the top of the desk (sticky, in the
+ * flow, so it covers nothing), under the player's bar over an open game or the Library, under the top of See the room
+ * and the teacher's area. Later folds it into a small pill that stays; it never goes away for good. Join opens the game
+ * in the desk's player as themselves (no code), in place of whatever was open, as switching does (the open game's page
+ * saves as it goes). Leave, or Back to my desk, brings the banner back; the game ending takes it away (and the player
+ * back to the desk).
+ * opts: { classId, PL: the desk's game player, root, body: the desk's scrolling body, over: the overlays' holder,
+ * beforeJoin(): close what the player cannot replace (the Library) } -> { apply(state.livegame), find(id), card(),
+ * opened() }
  */
-const RETRY_MS = 15000;
 export function liveDesk(opts) {
-  let game = null, joining = false;
-  const tried = new Set();
+  let game = null, joining = false, el = null;
   const store = (sid, tok) => { try { sessionStorage.setItem(`lv:${sid}`, tok); } catch { /* the play page asks again */ } };
+  const smallKey = sid => `hd-lgsmall:${sid}`;
+  const isSmall = () => { try { return !!game && sessionStorage.getItem(smallKey(game.sid)) === '1'; } catch { return false; } };
+  const setSmall = on => { try { if (on) sessionStorage.setItem(smallKey(game.sid), '1'); else sessionStorage.removeItem(smallKey(game.sid)); } catch { /* the banner stays large */ } };
   const id = () => (game ? `live:${game.sid}` : '');
-  async function join(auto) {
-    if (!game || joining) return false;
-    joining = true;
-    const sid = game.sid;
+  const inGame = () => !!game && String(opts.PL.current() || '') === id();
+  async function join() {
+    if (!game || joining) return;
+    joining = true; card();
     try {
       const r = await api(`/api/desk/${encodeURIComponent(opts.classId)}/livegame`, { method: 'POST', body: {} });
       store(r.sid, r.tok);
-      if (game && game.sid === r.sid) { opts.PL.open(`live:${r.sid}`); watchFrame(); }
-    } catch (e) {
-      if (!auto) toast(e.message, { bad: true });
-      // (brought in by itself and it did not work: a blip, or the room full or locked for now; try again a little later)
-      else setTimeout(() => { tried.delete(sid); if (game && game.sid === sid) apply(game); }, RETRY_MS);
-    } finally { joining = false; card(); }
-    return true;
+      if (game && game.sid === r.sid && opts.beforeJoin) await opts.beforeJoin();
+      if (game && game.sid === r.sid) { setSmall(false); opts.PL.open(`live:${r.sid}`); watchFrame(); }
+    } catch (e) { toast(e.message, { bad: true }); }
+    finally { joining = false; card(); }
   }
-  /** The play page left (Leave, the game gone): back to the desk. */
+  /** The play page left (Leave, the game gone): back to the desk, and the banner (large: Join made it so). */
   function watchFrame() {
     const f = document.querySelector('.hr-player .hr-playframe'); if (!f || f.dataset.lgw) return;
     f.dataset.lgw = '1';
-    f.addEventListener('load', () => { const p = pathOf(f); if (p === 'blank') return; if (!/^\/live\/play\//.test(p) && String(opts.PL.current() || '').startsWith('live:')) opts.PL.close(); });
+    f.addEventListener('load', () => { const p = pathOf(f); if (p === 'blank') return; if (!/^\/live\/play\//.test(p) && String(opts.PL.current() || '').startsWith('live:')) opts.PL.close({ now: true }); });
+  }
+  function make() {
+    el = document.createElement('div'); el.id = 'hd-lgbar'; el.className = 'hd-lgbar'; el.setAttribute('role', 'region');
+    el.innerHTML = '<span class="hd-lgico" aria-hidden="true"></span><span class="hd-lgt" dir="auto" aria-live="polite"></span><span class="hd-lgbtns"></span>';
+    el.addEventListener('click', e => {
+      if (e.target.closest('[data-lgjoin]')) join();
+      else if (e.target.closest('[data-lglater]')) { setSmall(true); card(); el.querySelector('[data-lgjoin]')?.focus({ preventScroll: true }); }
+    });
+  }
+  /** Where the banner goes now: [parent, the element it goes after (null: first)] or null (nowhere to show it). */
+  function spot() {
+    const ov = opts.over && opts.over.querySelector(':scope > .hd-over');
+    if (ov) { const top = ov.querySelector(':scope > .hd-overtop'); return top ? [ov, top] : null; }   // (a Pause screen, the lock: none)
+    const pl = opts.root.querySelector(':scope > .hr-player:not(.hr-liveplayer)');
+    if (pl) { const top = pl.querySelector(':scope > .hr-playtop'); return top ? [pl, top] : null; }
+    return opts.body ? [opts.body, null] : null;
+  }
+  function place() {
+    if (!el) return;
+    const at = spot();
+    if (!at) { if (el.parentNode) el.remove(); return; }
+    const [parent, after] = at;
+    if (el.parentNode === parent && el.previousElementSibling === after) return;
+    if (after) after.after(el); else parent.prepend(el);
   }
   function card() {
-    let c = document.getElementById('hd-lgcard');
-    const on = !!game && opts.PL.current() !== id();
-    if (!on) { if (c) c.remove(); return; }
-    if (!c) {
-      c = document.createElement('div'); c.id = 'hd-lgcard'; c.className = 'hd-lgcard'; c.setAttribute('role', 'status');
-      c.addEventListener('click', e => { if (e.target.closest('[data-lgjoin]')) join(false); });
-      (document.getElementById('hd') || document.body).appendChild(c);
-    }
-    const h = `${iconHtml(game.icon || '📡', { size: 28 })}<span class="hd-lgt"><b dir="auto">${esc(game.title)}</b><span>${esc(tdk('deskLead'))}</span></span><button type="button" class="btn btn-primary hr-chunk" data-lgjoin>${esc(tdk('join', { title: game.title }))}</button>`;
-    if (c.innerHTML !== h) c.innerHTML = h;
+    const on = !!game && !inGame();
+    if (!on) { if (el) { el.remove(); el = null; } return; }
+    if (!el) make();
+    const small = isSmall();
+    el.classList.toggle('hd-lgsmall', small);
+    el.setAttribute('aria-label', tdk('label'));
+    const ico = iconHtml(game.icon || '📡', { size: small ? 20 : 24 });
+    const icoEl = el.querySelector('.hd-lgico'); if (icoEl.innerHTML !== ico) icoEl.innerHTML = ico;
+    const words = small ? tdk('pill', { title: game.title }) : tdk(game.lobby ? 'starting' : 'going', { title: game.title });
+    const tEl = el.querySelector('.hd-lgt'); if (tEl.textContent !== words) tEl.textContent = words;
+    const b = `${small ? '' : `<button type="button" class="btn btn-sm hd-lglater" data-lglater>${esc(tdk('later'))}</button>`}<button type="button" class="btn btn-primary btn-sm hr-chunk hd-lgjoin" data-lgjoin aria-label="${esc(tdk('join', { title: game.title }))}"${joining ? ' disabled' : ''}>${esc(tdk('joinShort'))}</button>`;
+    const bEl = el.querySelector('.hd-lgbtns'); if (bEl.innerHTML !== b) bEl.innerHTML = b;
+    place();
   }
   function apply(lg) {
     game = lg && lg.sid ? lg : null;
     const cur = String(opts.PL.current() || '');
     // the game ended (or another began): the player goes back to the desk
     if (cur.startsWith('live:') && (!game || cur !== id())) { opts.PL.close(); if (!game) toast(tdk('over')); }
-    // a game running: brought in by itself, once per game, whatever else is open in the player (a handout, a tool): the
-    // whole class plays it now. A student who left it (Leave, or Back to my desk) comes back with the card.
-    if (game && !tried.has(game.sid) && String(opts.PL.current() || '') !== id() && !joining) { tried.add(game.sid); join(true); }
     card();
   }
+  // (the player, the Library, See the room come and go, and the desk redraws its body: the banner follows)
+  const mo = new MutationObserver(() => { if (el) place(); });
+  for (const n of [opts.root, opts.over, opts.body]) if (n) mo.observe(n, { childList: true });
   return { apply, card, find: x => (game && x === id() ? { href: `/live/play/${game.sid}`, title: game.title, icon: game.icon || '📡' } : null), opened: watchFrame };
 }
 

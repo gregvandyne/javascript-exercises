@@ -676,11 +676,21 @@ const PL = gamePlayer({
   // (where: tool), so the teacher's board shows that student's square in the tool's room.
   // While it is open the desk's own top bar steps aside: its Raise hand moves into the player's bar (one bar: Back, the
   // title, Raise hand), and on a phone the site's bars and the dock go too, so the game has the whole screen (hd-full).
-  onOpen: id => { root.classList.add('hd-playing', 'hd-gameplay'); document.body.classList.add('hd-full'); handTo(PL.slot()); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else if (PULSE) PULSE.pause(); },
+  // (opened in place of another, as Join on the live game's banner does: the tool it replaced is not open any more)
+  onOpen: id => { root.classList.add('hd-playing', 'hd-gameplay'); document.body.classList.add('hd-full'); handTo(PL.slot()); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else { S.tool = ''; if (PULSE) PULSE.pause(); } },
   onClose: () => { root.classList.remove('hd-playing', 'hd-gameplay'); document.body.classList.remove('hd-full'); handTo(null); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; if (LGD) LGD.card(); poll(); },
 });
-// Live games inside Homeroom: the class's live game comes to the desk by itself (a Join card, and the player once).
-const LGD = liveDeskGame({ classId: D.classId, PL });
+// Live games inside Homeroom: while the class's live game runs, a banner with Join at the top of the desk (never opened
+// by itself); Join opens it in the player. The Library and See the room step aside for it, as the player needs.
+const LGD = liveDeskGame({ classId: D.classId, PL, root, body, over,
+  beforeJoin: () => new Promise(done => {
+    if (S.view !== 'desk') { S.view = 'desk'; renderOver(); }
+    if (!RL.current()) { done(); return; }
+    // (the Library closes by going Back when it made a history entry: the game opens once that has happened)
+    let t = 0; const go = () => { clearTimeout(t); removeEventListener('popstate', go); done(); };
+    addEventListener('popstate', go); t = setTimeout(go, 500);
+    RL.close(); if (!RL.current()) setTimeout(go, 0);
+  }) });
 /** Raise hand in the player's bar (slot) or back in the desk's top bar (null). */
 let handEl = null;
 function handTo(slot) {

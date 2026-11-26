@@ -5664,6 +5664,8 @@
       "restore": "Apri {title}",
       "pill": "Dal vivo: {title}",
       "joined": "{count} collegati",
+      "joinedOf": "{count} collegati su {total} in Homeroom",
+      "notYet": "Non ancora entrato",
       "inGame": "In {title}",
       "notSelect": "Le lezioni dal vivo si conducono, non si distribuiscono. Disattiva Seleziona per avviarne una."
     },
@@ -5704,7 +5706,12 @@
       "put": "Metti {count} sui banchi"
     },
     "homeroom-livedesk": {
-      "deskLead": "La tua classe gioca dal vivo. Entri come te stesso.",
+      "label": "Gioco dal vivo",
+      "starting": "{title} sta per iniziare. Entra quando sei pronto.",
+      "going": "Gioco dal vivo in corso: {title}",
+      "pill": "Dal vivo: {title}",
+      "later": "Più tardi",
+      "joinShort": "Entra",
       "join": "Entra in {title}",
       "over": "Il gioco dal vivo è finito. Sei di nuovo al tuo banco."
     }
@@ -8802,7 +8809,7 @@
       "codeForTeachers": "Codice per entrare",
       "joinAt": "Vai su {url} e scrivi il codice",
       "signInFirst": "Prima accedi, poi scrivi il codice.",
-      "hrJoin": "Gli studenti in Homeroom si uniscono dal loro banco. Nessun codice.",
+      "hrJoin": "Gli studenti in Homeroom toccano Entra sul loro banco. Nessun codice.",
       "hrFallback": "Non è in Homeroom? Codice per entrare",
       "hideCode": "Nascondi codice",
       "showCode": "Mostra codice",
