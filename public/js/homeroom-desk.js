@@ -65,8 +65,9 @@ const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs
 const S = {
   cards: Array.isArray(D.cards) ? D.cards : [], hv: null,
   live: null, area: {}, v: null, view: 'desk', strokes: Array.isArray(D.strokes) ? D.strokes : [], hist: [], pen: P.colors[0],
-  // the pad's eraser (public/js/board-erase.js): it takes only what it passes over; its size (S, M, L)
-  tool: 'pen', eraser: 'M',
+  // the pad's pen or eraser (public/js/board-erase.js): the eraser takes only what it passes over; its size (S, M, L).
+  // (Never S.tool: that is the Manipulatives tool open on the desk, which the pulse reports as where: tool.)
+  padTool: 'pen', eraser: 'M', tool: '',
   cur: null, penSeen: false, saveTimer: null, dirty: false,
   // a team's shared pad (step 2c): the version last saved or seen, and strokes drawn here since then (added to a
   // teammate's newer pad when a save crosses theirs)
@@ -95,7 +96,7 @@ function renderDesk() {
       <div class="hd-pad">
         <div class="hd-padbar"><h3 class="hd-padcap">${esc(td(S.team ? 'teamPad' : 'pad'))}</h3><span class="hd-grow"></span>
           <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${S.pen === c ? ' on' : ''}`, `role="radio" aria-checked="${S.pen === c}" data-hdpen="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"`, `<i style="background:${c}"></i>`)).join('')}</span>
-          <span class="hd-erasewrap">${btn(`hd-tool hd-erasebtn${S.tool === 'erase' ? ' on' : ''}`, `data-hd="erase" id="hd-erase" aria-pressed="${S.tool === 'erase'}"`, `${ERASE_ICON}<span>${esc(td('erase'))}</span>`)}<span class="hd-ersz" id="hd-ersz"${S.tool === 'erase' ? '' : ' hidden'} role="group" aria-label="${esc(td('eraseSize'))}">${Object.keys(PAD_ERASER).map(k => btn(`hd-erszb${S.eraser === k ? ' on' : ''}`, `data-hdersz="${k}" aria-pressed="${S.eraser === k}" aria-label="${esc(td(`eraseSizes.${k}`))}"`, `<i style="--d:${6 + Object.keys(PAD_ERASER).indexOf(k) * 6}px"></i>`)).join('')}</span></span>
+          <span class="hd-erasewrap">${btn(`hd-tool hd-erasebtn${S.padTool === 'erase' ? ' on' : ''}`, `data-hd="erase" id="hd-erase" aria-pressed="${S.padTool === 'erase'}"`, `${ERASE_ICON}<span>${esc(td('erase'))}</span>`)}<span class="hd-ersz" id="hd-ersz"${S.padTool === 'erase' ? '' : ' hidden'} role="group" aria-label="${esc(td('eraseSize'))}">${Object.keys(PAD_ERASER).map(k => btn(`hd-erszb${S.eraser === k ? ' on' : ''}`, `data-hdersz="${k}" aria-pressed="${S.eraser === k}" aria-label="${esc(td(`eraseSizes.${k}`))}"`, `<i style="--d:${6 + Object.keys(PAD_ERASER).indexOf(k) * 6}px"></i>`)).join('')}</span></span>
           ${btn('hd-tool', 'data-hd="undo" id="hd-undo"', `${iconHtml('↩', { size: 18 })}<span>${esc(td('undo'))}</span>`)}${btn('hd-tool', 'data-hd="clear" id="hd-clear"', `${iconHtml('🧽', { size: 18 })}<span>${esc(td('clear'))}</span>`)}</div>
         <div class="hd-padbox"><svg class="hd-svg" id="hd-svg" viewBox="0 0 ${P.w} ${P.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(td('padLabel'))}">
           <rect class="hd-paper" x="1" y="1" width="${P.w - 2}" height="${P.h - 2}" rx="14"/><g id="hd-ink"></g><g id="hd-cur"></g><g id="hd-mates" aria-hidden="true"></g></svg></div>
@@ -218,7 +219,7 @@ const svg = () => $('hd-svg');
 const PAD_ERASER = { S: 10, M: 22, L: 44 };
 const ERASE_ICON = '<svg class="hr-gl" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5l4 4a2 2 0 0 1 0 2.8L12 18.8H7.2l-3-3a2 2 0 0 1 0-2.8L12.7 4.5a2 2 0 0 1 2.8 0z"/><path d="M9 9l6 6"/><path d="M12 18.8h8"/></svg>';
 function setPadTool(tool) {
-  S.tool = tool;
+  S.padTool = tool;
   for (const b of root.querySelectorAll('[data-hdpen]')) { const on = tool === 'pen' && b.dataset.hdpen === S.pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }
   const e = $('hd-erase'); if (e) { e.classList.toggle('on', tool === 'erase'); e.setAttribute('aria-pressed', String(tool === 'erase')); }
   const z = $('hd-ersz'); if (z) z.hidden = tool !== 'erase';
@@ -247,10 +248,10 @@ function padDown(e) {
   // A pencil in use: a palm resting on the screen draws nothing.
   if (e.pointerType === 'touch' && S.penSeen) return;
   if (e.button > 0) return;
-  if (S.tool !== 'erase' && (S.strokes.length >= P.strokes || totalPoints() >= P.total - 2)) { toast(td('padFull'), { bad: true }); return; }
+  if (S.padTool !== 'erase' && (S.strokes.length >= P.strokes || totalPoints() >= P.total - 2)) { toast(td('padFull'), { bad: true }); return; }
   const p = at(e); if (!p) return;
   e.preventDefault();
-  if (S.tool === 'erase') {
+  if (S.padTool === 'erase') {
     remember(); S.cur = { id: e.pointerId, erase: true, last: p, changed: padErase([p]) };
     try { svg().setPointerCapture(e.pointerId); } catch { /* gone */ }
     return;
@@ -614,7 +615,7 @@ function click(e) {
   const k = a.dataset.hd;
   if (k === 'hand') { S.handMenu = !S.handMenu; renderHand(); if (S.handMenu) $('hd-handmenu')?.querySelector('button')?.focus(); return; }
   if (k === 'ask') { S.askMenu = !S.askMenu; renderHand(); if (S.askMenu) $('hd-askmenu')?.querySelector('button, input')?.focus(); return; }
-  if (k === 'erase') { setPadTool(S.tool === 'erase' ? 'pen' : 'erase'); return; }
+  if (k === 'erase') { setPadTool(S.padTool === 'erase' ? 'pen' : 'erase'); return; }
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
