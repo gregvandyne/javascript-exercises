@@ -606,7 +606,7 @@ test('full: Connect asks for all six scopes in one consent; all granted, no sepa
   // Before connecting: the page says Connect allows posting too, and nothing "comes later".
   let pg = await pageOf(c, tc);
   assert.match(pg, /post lesson plans there, with a link back here and the due date/);
-  assert.match(pg, /send each student&#39;s lesson plan grade to Classroom \(a completion grade, or the score you chose in Homeroom\)|send each student's lesson plan grade to Classroom \(a completion grade, or the score you chose in Homeroom\)/);
+  assert.match(pg, /send each student&#39;s lesson plan grade to Classroom \(a completion grade, or the score you chose in the Hub\)|send each student's lesson plan grade to Classroom \(a completion grade, or the score you chose in the Hub\)/);
   assert.doesNotMatch(pg, /comes later, only if you allow it/);
   // The helper checks that Connect (no write=1) asked for the 2 read + 4 write scopes, with include_granted_scopes.
   const r = await connect(tc, c.id, { write: false });
@@ -1245,7 +1245,7 @@ test('Homeroom handouts: Score sends the % right, Completion the completion grad
   assert.equal(sub('400000000000000000302').draftGrade, undefined, 'no score yet: nothing sent');
   assert.match(r.toast, /1 score sent · 1 has no score yet/);
   let pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
-  assert.match(pg, /Graded by score in Homeroom: sends the % right/); assert.match(pg, /Send scores/);
+  assert.match(pg, /Graded by score in the Hub: sends the % right/); assert.match(pg, /Send scores/);
   // the automatic sync sends the same figure, and nothing when it hasn't changed
   q.run("UPDATE gc_links SET auto_grades='draft', auto_by=? WHERE class_id=?", teacher.id, c.id);
   q.run('UPDATE rubric_scores SET points=9 WHERE class_lesson_id=? AND user_id=?', cl.id, kid.id);
@@ -1268,7 +1268,7 @@ test('Homeroom handouts: Score sends the % right, Completion the completion grad
   await GC.autoGrades(Date.now() + 3600e3);
   assert.equal(room.calls.filter(z => z.method === 'PATCH').length, before);
   pg = await (await get(`/class/${c.id}/google-classroom`, tc)).text();
-  assert.match(pg, /Not graded in Homeroom: no grade goes to Classroom/);
+  assert.match(pg, /Not graded in the Hub: no grade goes to Classroom/);
   // a lesson that is not a Homeroom handout: completion, exactly as before (gradeOf on its own)
   q.run('DELETE FROM homeroom_handouts WHERE class_lesson_id=?', cl.id);
   assert.equal(GC.gradeBasis(cl.id), 'completion');

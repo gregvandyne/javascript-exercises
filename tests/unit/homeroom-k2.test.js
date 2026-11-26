@@ -95,7 +95,7 @@ test('K-2 mode: on by grade, the class turned on or off, one student over the cl
   assert.ok(AT.setClassK2(rivera, g4, '').ok);
   assert.equal(AT.k2For(g4, fay.id), false);
   // the teacher's page has the setting; the notebook of a K-2 student draws or types
-  const hp = await as(rivera)(`/class/${k1.id}/homeroom`);
+  const hp = await as(rivera)(`/class/${k1.id}/hub`);
   assert.match(hp.text, /"k2":\{"mode":"","auto":true,"on":true\}/);
   assert.equal(NB.mine(ava).k2, true);
   assert.equal(NB.mine(fay).k2, undefined);

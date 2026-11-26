@@ -157,7 +157,7 @@ async function main() {
   const snap = async (target, name) => { const f = path.join(PNG, `${name}.png`); await target.screenshot({ path: f }); made.push(name); console.log('  captured', name); };
   const run = async (k, fn) => { if (!want(k)) return; try { await fn(); } catch (e) { console.log('FAILED', k, e.message.slice(0, 300)); } };
   const clickText = (page, re) => page.locator('button, a, [role="button"], [role="tab"], summary').filter({ hasText: re }).first().click();
-  const hubUrl = id => `/class/${id}/homeroom`;
+  const hubUrl = id => `/class/${id}/hub`;
 
   const menu = async (page, re) => { await page.locator('.hr-chunk', { hasText: '⋯' }).first().click(); await page.waitForTimeout(500); await page.locator('.rm-mi').filter({ hasText: re }).first().click(); };
 

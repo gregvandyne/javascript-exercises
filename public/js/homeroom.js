@@ -592,7 +592,7 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="studentdraw"', `${iconHtml('🖍️', { size: 18 })} ${esc(th('draw.menu'))}<span class="hr-mitag">${esc(th(MK.st.on ? 'draw.on' : 'draw.off'))}</span>`)}`}
     ${AIDE ? '' : btn('rm-mi', 'role="menuitem" data-hr="tour"', `${iconHtml('🧭', { size: 18 })} ${esc(th('tourMenu'))}`)}
     ${D.hostLive && !AIDE ? `<a class="rm-mi" role="menuitem" href="${esc(D.hostLive)}" data-hr="hostlive">${iconHtml('📡', { size: 18 })} ${esc(th('hostLive'))}</a>` : ''}
-    <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
+    <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/hub/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
   placePopover(el.firstElementChild, document.querySelector('[data-hr="menu"]'));
   el.querySelector('button')?.focus();
@@ -1376,7 +1376,7 @@ function back() {
 
 // A game from My desk, played over the board (public/js/homeroom-player.js): the board stays as it is underneath.
 const PL = gamePlayer({
-  host: $('hr-stage') || board?.parentElement, path: `/class/${encodeURIComponent(D.classId)}/homeroom`, back: th('playBack'),
+  host: $('hr-stage') || board?.parentElement, path: `/class/${encodeURIComponent(D.classId)}/hub`, back: th('playBack'),
   // (a Manipulatives tool opens its own page, the same tool, in the layer: docs/decisions.md "Homeroom: watching desks
   // and the full catalog"; a desk's look opens that tool's live room as its host the same way: lk:<session>)
   find: id => {

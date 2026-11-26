@@ -77,7 +77,7 @@ test('live class: desk status and cursors on the board, a hand raised and answer
   H.setLive(teacher, cls, 'start');
   const ho = HO.handOut(teacher, cls, { gameId: g.id, to: { kind: 'all' } });
   assert.ok(ho.ok, ho.code);
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, LAPTOP);
+  const T = await open(teacher, `/class/${cls.id}/hub`, LAPTOP);
   const A = await open(ada, `/class/${cls.id}/desk`, TABLET, true);
   const B = await open(ben, `/class/${cls.id}/desk`, TABLET, true);
   const C = await open(cleo, `/class/${cls.id}/desk`, TABLET, true);
@@ -193,7 +193,7 @@ test('live class: desk status and cursors on the board, a hand raised and answer
   await T.page.click('[data-hrpanel="today"]');
 
   // a tablet board too
-  const T2 = await open(teacher, `/class/${cls.id}/homeroom`, TABLET, true);
+  const T2 = await open(teacher, `/class/${cls.id}/hub`, TABLET, true);
   await T2.page.waitForSelector('.hr-lvchip', { timeout: 10000 });
   assert.ok(await noSideways(T2.page) <= 0);
   await shot(T2.page, 'teacher-live-board-tablet');
@@ -205,7 +205,7 @@ test('phones: the board live and the desk with the hand menu and the hall pass, 
   if (skip) return t.skip(skip);
   H.setLive(teacher, cls, 'start');
   HV.raiseHand(dev, cls, 'help');
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, PHONE, true);
+  const T = await open(teacher, `/class/${cls.id}/hub`, PHONE, true);
   await T.page.waitForSelector('.hr-handsbtn .hr-count', { timeout: 10000 });
   assert.ok(await noSideways(T.page) <= 0, 'board');
   await shot(T.page, 'teacher-live-board-phone');
@@ -252,7 +252,7 @@ test('phones: the board live and the desk with the hand menu and the hall pass, 
   await L.page.click('.hd-handbtn'); await L.page.waitForSelector('.hd-handmenu');
   await shot(L.page, 'student-raise-menu-laptop');
   // the teacher's look panel on a tablet
-  const T3 = await open(teacher, `/class/${cls.id}/homeroom`, TABLET, true);
+  const T3 = await open(teacher, `/class/${cls.id}/hub`, TABLET, true);
   await T3.page.waitForSelector(`.hr-desk[data-sid="${ada.id}"] .hr-lvchip`, { timeout: 10000 });
   await T3.page.click(`.hr-desk[data-sid="${ada.id}"] .hr-lvchip`);
   await T3.page.waitForSelector('.hr-look'); await T3.page.waitForTimeout(600);

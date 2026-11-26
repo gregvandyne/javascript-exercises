@@ -171,12 +171,18 @@ for (const slug of SLUGS) {
           await o.frame.waitForFunction(() => !!document.querySelector('.aq-libbody'));
           const quiz = await o.frame.evaluate(() => document.querySelector('.aq-libbody').textContent.includes('Make a quiz'));
           assert.equal(quiz, yes, `${slug} ${who}: Make a quiz in the library`);
-          // Blank maps: everyone prints the blank map; only the grown-ups get "Show answers" and the printed key
+          // Blank maps are a teacher's tool: the grown-ups get the map with "Show answers" and the printed key; a student
+          // or a child has no Blank maps button, and the blank map screen sends them home
+          if (!yes) assert.deepEqual(await ids(o.frame, ['aq-blank']), [], `${who}: no Blank maps button`);
           await o.frame.evaluate(() => window.__brbTest.blank('eu', true, true));
-          await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-print'));
-          assert.deepEqual(await ids(o.frame, ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key']),
-            yes ? ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key'] : ['aq-bl-print', 'aq-bl-zoom'], `${slug} ${who}: the blank map's answers`);
-          if (!yes) assert.equal(await o.frame.evaluate(() => /Luxembourg/.test(document.querySelector('[data-screen="blank"]').textContent + document.getElementById('aq-bl-map').innerHTML)), false, `${who}: no country names anywhere`);
+          if (yes) {
+            await o.frame.waitForFunction(() => !!document.getElementById('aq-bl-print'));
+            assert.deepEqual(await ids(o.frame, ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key']),
+              ['aq-bl-print', 'aq-bl-zoom', 'aq-bl-showkey', 'aq-bl-answers', 'aq-bl-key'], `${slug} ${who}: the blank map's answers`);
+          } else {
+            await o.frame.waitForTimeout(300);
+            assert.equal(await o.frame.evaluate(() => !!document.querySelector('[data-screen="blank"]') || !!document.getElementById('aq-bl-print')), false, `${who}: no blank map`);
+          }
         }
         if (process.env.MAKE_SHOTS && slug === 'crossword' && (who === 'teacher' || who === 'student')) {
           fs.mkdirSync(process.env.MAKE_SHOTS, { recursive: true });

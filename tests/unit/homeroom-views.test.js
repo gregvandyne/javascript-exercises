@@ -39,7 +39,7 @@ const kid = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Ada' }).u
 const sections = text => [...text.matchAll(/<section class="cv-view[^"]*" data-cv-view="(\w+)"[^>]*>/g)].map(m => [m[1], !/ hidden/.test(m[0])]);
 
 test('each address is the same page: the shared bar and the view area, that view shown and the others empty', async () => {
-  const cases = [['homeroom', `/class/${cls.id}/homeroom`, /id="hr-board"/], ['classroom', `/class/${cls.id}`, /<nav class="tabs classtabs"/], ['dashboard', `/class/${cls.id}/dashboard`, /id="dash-grid"/]];
+  const cases = [['homeroom', `/class/${cls.id}/hub`, /id="hr-board"/], ['classroom', `/class/${cls.id}`, /<nav class="tabs classtabs"/], ['dashboard', `/class/${cls.id}/dashboard`, /id="dash-grid"/]];
   for (const [view, url, inside] of cases) {
     const r = await get(lane, url);
     assert.equal(r.status, 200, url);
@@ -47,7 +47,7 @@ test('each address is the same page: the shared bar and the view area, that view
     assert.match(r.text, /<header class="cv-bar" id="cv-bar">/);
     // the switcher has her two classes; the pill's three items are links to the three addresses
     assert.match(r.text, /<select class="input cv-class" id="hr-class" data-cv-switch[^>]*>.*4B Math.*5C Science.*<\/select>/s);
-    for (const [k, href] of [['homeroom', `/class/${cls.id}/homeroom`], ['classroom', `/class/${cls.id}`], ['dashboard', `/class/${cls.id}/dashboard`]]) {
+    for (const [k, href] of [['homeroom', `/class/${cls.id}/hub`], ['classroom', `/class/${cls.id}`], ['dashboard', `/class/${cls.id}/dashboard`]]) {
       assert.match(r.text, new RegExp(`<a href="${href}" data-cv-go="${k}"${k === view ? ' aria-current="page"' : ''}>`), `${view}: ${k}`);
     }
     assert.deepEqual(sections(r.text), [['homeroom', view === 'homeroom'], ['classroom', view === 'classroom'], ['dashboard', view === 'dashboard']]);
@@ -62,7 +62,7 @@ test('each address is the same page: the shared bar and the view area, that view
     assert.match(r.h.get('vary') || '', /X-View/);
   }
   // each view's buttons in the bar
-  const hr = await get(lane, `/class/${cls.id}/homeroom`);
+  const hr = await get(lane, `/class/${cls.id}/hub`);
   assert.match(hr.text, /data-cv-acts="homeroom">.*data-hr="seats".*data-hr="menu"/s); assert.doesNotMatch(hr.text, /hr-top/);
   const room = await get(lane, `/class/${cls.id}`);
   // Classroom's bar: no Live button (Host a live game is in Homeroom's ⋯ menu); the Connections chip only (none here:
@@ -86,7 +86,7 @@ test('each address is the same page: the shared bar and the view area, that view
 
 test('X-View: only the view, its buttons, styles, scripts at the page\'s own addresses and their strings', async () => {
   const H = { 'X-View': '1' };
-  const hr = await get(lane, `/class/${cls.id}/homeroom`, H);
+  const hr = await get(lane, `/class/${cls.id}/hub`, H);
   assert.equal(hr.status, 200); assert.ok(hr.json, 'JSON');
   assert.match(hr.h.get('cache-control'), /no-store/); assert.match(hr.h.get('vary') || '', /X-View/);
   assert.equal(hr.json.view, 'homeroom');
@@ -130,13 +130,13 @@ test('the Classroom view is calm: one small header line, Build and Find as two s
   const x = await get(lane, `/class/${cls.id}`, { 'X-View': '1' });
   assert.match(x.json.body, /class="classquick"/); assert.doesNotMatch(x.json.body, /classtiles|class="backlink"/);
   // Host a live game: in Homeroom's ⋯ menu (its page data has the address the tile had)
-  const hr = await get(lane, `/class/${cls.id}/homeroom`);
+  const hr = await get(lane, `/class/${cls.id}/hub`);
   const data = JSON.parse(hr.text.match(/<script type="application\/json" id="page-data">([\s\S]*?)<\/script>/)[1]);
   assert.equal(data.hostLive, `/live?class=${cls.id}`);
   const { config: cfg } = await import('../../server/config.js');
   cfg.liveClassroom = false;
   try {
-    const off = await get(lane, `/class/${cls.id}/homeroom`);
+    const off = await get(lane, `/class/${cls.id}/hub`);
     assert.equal(JSON.parse(off.text.match(/<script type="application\/json" id="page-data">([\s\S]*?)<\/script>/)[1]).hostLive, '', 'live games off: no Host a live game');
   } finally { cfg.liveClassroom = true; }
 });
@@ -149,7 +149,7 @@ test('everyone else: the pages as before, the header ignored', async () => {
   assert.doesNotMatch(dash.text, /dash-inviews/);
   const x = await get(plain, `/class/${plainCls.id}/dashboard`, { 'X-View': '1' });
   assert.equal(x.json, null, 'the whole page, never JSON'); assert.match(x.text, /<!doctype html>/);
-  assert.equal((await get(plain, `/class/${cls.id}/homeroom`, { 'X-View': '1' })).status, 404);
+  assert.equal((await get(plain, `/class/${cls.id}/hub`, { 'X-View': '1' })).status, 404);
   // a student of the class: their class page and their own dashboard, unchanged
   const k = await get(kid, `/class/${cls.id}`);
   assert.equal(k.status, 200); assert.doesNotMatch(k.text, /id="cv"|hr-tabs/);

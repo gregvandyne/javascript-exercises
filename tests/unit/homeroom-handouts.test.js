@@ -256,7 +256,7 @@ test('remove: from one desk (the last one off removes it), from every desk; work
 });
 
 test('the teacher\'s board: games are buttons to hand out; the Manipulatives and Figures come next; deleting a school takes the rows', async () => {
-  const r = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const r = await as(rivera)(`/class/${cls.id}/hub`);
   assert.equal(r.status, 200);
   assert.match(r.text, new RegExp(`data-hritem="${sudoku.id}"`));
   assert.match(r.text, /Tap a lesson, then a desk, a group or Whole class/);

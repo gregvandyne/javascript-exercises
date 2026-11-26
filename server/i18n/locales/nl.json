@@ -2242,7 +2242,7 @@
         "done": "Klaar",
         "saved": "Plaatsen bewaard voor {class}"
       },
-      "everyone": "Iedereen naar Homeroom",
+      "everyone": "Iedereen naar de Hub",
       "bring": "Iedereen bij mij",
       "back": "Terug naar de tafels",
       "pause": "Schermen pauzeren",
@@ -2347,7 +2347,7 @@
         "tools": "Geselecteerd item",
         "delete": "Geselecteerd item verwijderen"
       },
-      "playBack": "Terug naar Homeroom",
+      "playBack": "Terug naar de Hub",
       "liveNotSelect": "Live-lessen start je, je deelt ze niet uit. Zet Selecteren uit om er een te starten.",
       "frame": {
         "resize": "Sleep om het lerarenvak groter of kleiner te maken",
@@ -3897,7 +3897,7 @@
         "count": "{n} stukken in {col}"
       },
       "host": {
-        "homeroomTool": "{tool} ligt op de Homeroom-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels. Hun werk blijft bewaard.",
+        "homeroomTool": "{tool} ligt op de Hub-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels. Hun werk blijft bewaard.",
         "startRoom": "Ruimte starten"
       }
     },
@@ -4823,7 +4823,7 @@
         "absent": "{count, plural, one {# afwezig, niet meegeteld} other {# afwezig, niet meegeteld}}",
         "lookTitle": "Misschien even kijken op {day}",
         "nobody": "Er staat nu niemand bij Even kijken.",
-        "lookCount": "{count, plural, one {# leerling. Open de Homeroom van de klas om te zien wie.} other {# leerlingen. Open de Homeroom van de klas om te zien wie.}}",
+        "lookCount": "{count, plural, one {# leerling. Open de Hub van de klas om te zien wie.} other {# leerlingen. Open de Hub van de klas om te zien wie.}}",
         "ideas": "Ideeën (er gebeurt niets tot je tikt)",
         "review": "Op {day} een herhalingsles uitdelen aan de groep {group}",
         "reviewAsk": "{minutes} minuten {what} voor de groep {group} toevoegen aan het plan van {day}? Er komt niets op de tafels tot je dat plan start.",
@@ -5129,7 +5129,7 @@
     },
     "homeroom-signin-panel": {
       "closed": "Inloggen is gesloten",
-      "closedHint": "Het gaat vanzelf open als je de les start met Iedereen naar Homeroom.",
+      "closedHint": "Het gaat vanzelf open als je de les start met Iedereen naar de Hub.",
       "open": "Inloggen openen",
       "goTo": "Ga naar",
       "enterCode": "en typ deze code:",
@@ -5250,7 +5250,7 @@
       "empty": "Je leraar heeft hier nog niets neergezet."
     },
     "homeroom-notify": {
-      "text": "Je klas is in Homeroom.",
+      "text": "Je klas is in de Hub.",
       "go": "Naar mijn tafel",
       "close": "Sluiten"
     },
@@ -5497,7 +5497,7 @@
         "teamPad": "Kladblok van het team",
         "padLabel": "Kladblok van {name}",
         "padEmpty": "Nog niets getekend",
-        "private": "Een overzicht van wat Homeroom weet. Nooit het scherm of wat er getypt wordt.",
+        "private": "Een overzicht van wat de Hub weet. Nooit het scherm of wat er getypt wordt.",
         "coming": "Ik kom eraan",
         "comingOn": "Onderweg: tik om weg te halen",
         "lock": "Tafel op slot",
@@ -5618,7 +5618,7 @@
         "mydeskText": "Leg hier een les of hulpmiddel neer om het eerst te proberen. Leerlingen zien Mijn bureau nooit.",
         "oombaTitle": "Vraag Oomba om het plan voor vandaag",
         "oombaText": "Vertel Oomba wat je gaat geven. Oomba maakt het plan, en er komt niets op de tafels tot je op Dit plan gebruiken tikt.",
-        "goliveTitle": "Iedereen naar Homeroom",
+        "goliveTitle": "Iedereen naar de Hub",
         "goliveText": "Begin hier de les. Op gedeelde apparaten gaan leerlingen naar /hr en typen ze de inlogcode, bij Leerlingen inloggen in het menu ⋯."
       }
     },
@@ -5634,7 +5634,7 @@
       "dockTitle": "De knoppen onderaan:",
       "dock": "het deel van je leraar, de Bibliotheek met boeken en Bekijk het lokaal.",
       "seenTitle": "Goed om te weten:",
-      "seen": "Je leraar kan in Homeroom je scherm zien.",
+      "seen": "Je leraar kan in de Hub je scherm zien.",
       "k2": {
         "title": "Hoi! Dit is jouw tafel.",
         "ok": "Oké!",
@@ -5657,7 +5657,7 @@
     },
     "homeroom-livegame": {
       "layer": "Live-les",
-      "back": "Terug naar Homeroom",
+      "back": "Terug naar de Hub",
       "setup": "Live-les instellen",
       "end": "Beëindigen",
       "endTitle": "{title} beëindigen?",
@@ -5665,7 +5665,7 @@
       "restore": "{title} openen",
       "pill": "Live: {title}",
       "joined": "{count} doen mee",
-      "joinedOf": "{count} van {total} in Homeroom doen mee",
+      "joinedOf": "{count} van {total} in de Hub doen mee",
       "notYet": "Nog niet mee",
       "inGame": "In {title}",
       "notSelect": "Live-lessen start je, je deelt ze niet uit. Zet Selecteren uit om er een te starten."
@@ -7717,7 +7717,7 @@
       "lead": "Koppel je Google Classroom in een paar klikken. Eerst kan Oomba Academy alleen je klassen en hun leerlingen zien. Er wordt niets geplaatst tot jij plaatsen toestaat.",
       "li1": "Importeer je klassenlijst met één klik, daarna ververst die zichzelf elke 6 uur. Leerlingen worden herkend aan hun Google-account.",
       "li2": "Plaats een lesplan als Classroom-opdracht, met link en inleverdatum, of deel het als lesmateriaal.",
-      "li3": "Cijfers gaan terug naar Classroom op 100: een afrondingscijfer (het deel van de stappen van het lesplan dat af is, niet de goede antwoorden), of voor Homeroom-uitdelingen het cijfer dat je koos: de score, afronding of niets bij oefenen. Stuur ze zelf of zet automatische cijfers aan.",
+      "li3": "Cijfers gaan terug naar Classroom op 100: een afrondingscijfer (het deel van de stappen van het lesplan dat af is, niet de goede antwoorden), of voor Hub-uitdelingen het cijfer dat je koos: de score, afronding of niets bij oefenen. Stuur ze zelf of zet automatische cijfers aan.",
       "li4": "Plaats een bericht in de stream van de klas als een liveles begint of een lesplan klaarstaat, in je eigen woorden.",
       "li5": "Oomba Academy vraagt Classroom niet om e-mailadressen van leerlingen en stuurt Google nooit de naam, antwoorden of games van een leerling.",
       "note": "Opdrachten, lesmateriaal, cijfers en mededelingen werken zodra je plaatsen toestaat, een aparte stap. Elke leerkracht koppelt een eigen Google-account, en misschien moet de Google-beheerder van je school Oomba Academy eerst toestaan.",
@@ -8810,8 +8810,8 @@
       "codeForTeachers": "Deelnamecode",
       "joinAt": "Ga naar {url} en typ de code",
       "signInFirst": "Log eerst in en typ dan de code.",
-      "hrJoin": "Leerlingen in Homeroom tikken op Meedoen op hun eigen plek. Geen code nodig.",
-      "hrFallback": "Niet in Homeroom? Code om mee te doen",
+      "hrJoin": "Leerlingen in de Hub tikken op Meedoen op hun eigen plek. Geen code nodig.",
+      "hrFallback": "Niet in de Hub? Code om mee te doen",
       "hideCode": "Code verbergen",
       "showCode": "Code tonen",
       "count": "{count} van {max} spelers",
@@ -11535,10 +11535,10 @@
         "courses": "deze klas koppelen aan een van je Classroom-klassen",
         "roster": "de leerlingen ervan hierheen halen, die inloggen met Google",
         "post": "daar lesplannen plaatsen, met een link terug naar hier en de inleverdatum",
-        "grades": "het cijfer van elke leerling voor een lesplan naar Classroom sturen (afronding of de score die je in Homeroom koos)"
+        "grades": "het cijfer van elke leerling voor een lesplan naar Classroom sturen (afronding of de score die je in de Hub koos)"
       },
       "button": "Google Classroom koppelen",
-      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een lesplan, het cijfer van elke leerling op 100 (afronding of de score die je in Homeroom koos), een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of spellen van leerlingen.",
+      "privacy": "Alleen jij ziet deze koppeling. Door te koppelen kan Oomba Academy je klassen en hun leerlingen lezen. Alleen als je plaatsen toestaat, stuurt het naar Classroom wat jij plaatst: de titel, link en inleverdatum van een lesplan, het cijfer van elke leerling op 100 (afronding of de score die je in de Hub koos), een onderwerpnaam en aankondigingen die je schrijft. Nooit namen, antwoorden of spellen van leerlingen.",
       "connectedAs": "Gekoppeld als {email}",
       "connectedHint": "Deze koppeling is van jou: je collega's koppelen hun eigen account.",
       "connectedToast": "Google Classroom is gekoppeld.",
@@ -11602,7 +11602,7 @@
       "somePosted": "Hier aan een paar leerlingen toegewezen. Eerder is ze in Google Classroom voor de hele klas geplaatst; cijfers gaan alleen naar de toegewezen leerlingen."
     },
     "grades": {
-      "text": "Elk lesplan stuurt het cijfer waarop het wordt beoordeeld, op 100. Lesplannen die in Classroom zijn toegewezen, sturen een afrondingscijfer: het deel van de stappen van het lesplan dat een leerling heeft gedaan, niet de goede antwoorden. Homeroom-uitdelingen sturen wat je bij het uitdelen koos: Score stuurt het % goed, Afronding het afrondingscijfer, en Niet beoordeeld stuurt niets. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
+      "text": "Elk lesplan stuurt het cijfer waarop het wordt beoordeeld, op 100. Lesplannen die in Classroom zijn toegewezen, sturen een afrondingscijfer: het deel van de stappen van het lesplan dat een leerling heeft gedaan, niet de goede antwoorden. Hub-uitdelingen sturen wat je bij het uitdelen koos: Score stuurt het % goed, Afronding het afrondingscijfer, en Niet beoordeeld stuurt niets. Leerlingen die nog niet begonnen zijn, worden overgeslagen.",
       "as": "Versturen als",
       "draft": "Voorlopig cijfer (jij geeft het terug in Classroom)",
       "assigned": "Toegekend cijfer",
@@ -11618,8 +11618,8 @@
       "resultNotScored": "{count, plural, one {# heeft nog geen score} other {# hebben nog geen score}}",
       "sends": {
         "completion": "Verstuurt een voltooiingscijfer: het deel van de stappen dat gedaan is.",
-        "score": "In Homeroom beoordeeld op score: verstuurt het % goed.",
-        "none": "Geen cijfer in Homeroom: er gaat geen cijfer naar Classroom."
+        "score": "In de Hub beoordeeld op score: verstuurt het % goed.",
+        "none": "Geen cijfer in de Hub: er gaat geen cijfer naar Classroom."
       }
     },
     "log": {
@@ -15396,7 +15396,7 @@
     "errors": {
       "chatBusy": "Oomba beantwoordt je vorige bericht nog. Wacht even.",
       "emptyArea": "Jouw gebied is leeg. Zet er eerst iets in en stuur het dan.",
-      "homeroomTool": "{tool} ligt op de Homeroom-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels."
+      "homeroomTool": "{tool} ligt op de Hub-tafels van je leerlingen. Als je deze ruimte start, verdwijnt het van hun tafels."
     }
   },
   "proof": {
@@ -15721,16 +15721,16 @@
       "already": "Dat ligt al op je bureau.",
       "removed": "Van je bureau gehaald."
     },
-    "pageTitle": "{class} · Homeroom",
+    "pageTitle": "{class} · Hub",
     "switchClass": "Andere klas",
     "arrange": "Plaatsen indelen",
     "more": "Meer",
-    "boardLabel": "Homeroom-bord. Sleep om te bewegen, scrol of knijp om te zoomen.",
+    "boardLabel": "Hub-bord. Sleep om te bewegen, scrol of knijp om te zoomen.",
     "loading": "Het lokaal wordt klaargezet…",
-    "noscript": "Homeroom heeft JavaScript nodig.",
+    "noscript": "De Hub heeft JavaScript nodig.",
     "tabs": {
       "label": "Weergaven van de klas",
-      "homeroom": "Homeroom",
+      "homeroom": "Hub",
       "classroom": "Klaslokaal",
       "dashboard": "Dashboard"
     },
@@ -15755,7 +15755,7 @@
       "badStage": "Dat kan niet op je bureau.",
       "deskFull": "Je bureau is vol. Haal er eerst iets af.",
       "notStaged": "Dat ligt niet meer op je bureau.",
-      "notFound": "Deze Homeroom is niet beschikbaar.",
+      "notFound": "Deze Hub is niet beschikbaar.",
       "badPreset": "Kies Rijen, Groepjes van 4, U-vorm of Kring.",
       "badSeats": "De plaatsen konden niet worden bewaard. Probeer het opnieuw.",
       "badGroups": "De groepen konden niet worden bewaard. Probeer het opnieuw.",
@@ -15765,7 +15765,7 @@
       "badState": "Dat kon niet worden bewaard. Probeer het opnieuw.",
       "tooBig": "Het lerarendeel is te vol. Haal iets weg en probeer het opnieuw.",
       "badAction": "Dat lukte niet. Probeer het opnieuw.",
-      "notLive": "Start de les eerst met Iedereen naar Homeroom.",
+      "notLive": "Start de les eerst met Iedereen naar de Hub.",
       "padFull": "Je blok is vol. Wis het om verder te tekenen.",
       "pickGame": "Die les kan niet worden uitgedeeld. Kies een andere.",
       "publishFirst": "Publiceer deze les eerst en deel hem dan uit.",
@@ -15878,7 +15878,7 @@
       },
       "panel": {
         "title": "{class} · Inloggen",
-        "back": "Terug naar Homeroom",
+        "back": "Terug naar de Hub",
         "heading": "Inloggen",
         "lead": "Op gedeelde apparaten openen leerlingen het inloggen van de klas, tikken op hun naam en typen dan hun wachtwoord of tikken hun plaatjes.",
         "students": "Leerlingen",
@@ -15959,7 +15959,7 @@
     },
     "overview": {
       "title": "Overzicht van de klas",
-      "lead": "De laatste {weeks} weken. Elke kolom is iets dat je in Homeroom uitdeelde. Leerlingen staan op alfabet, nooit in een rangorde.",
+      "lead": "De laatste {weeks} weken. Elke kolom is iets dat je in de Hub uitdeelde. Leerlingen staan op alfabet, nooit in een rangorde.",
       "student": "Leerling",
       "trend": "Trend",
       "tableLabel": "Overzicht: opdrachten en resultaten",
@@ -16000,7 +16000,7 @@
       "keyTrend": "Trend, uit de laatste 3 scores van elke leerling: Heeft steun nodig bij een gemiddelde onder 60%, Gaat vooruit als de laatste 10 punten of meer boven de eerste ligt, anders Stabiel.",
       "more": "Het volledige cijferoverzicht, CSV, standaarden, rubrics en Google Classroom staan hieronder, zoals altijd.",
       "fullGradebook": "Volledig cijferoverzicht",
-      "noHandouts": "De laatste {weeks} weken is er niets uitgedeeld in Homeroom. Deel een les of lesplan uit via het tabblad Homeroom.",
+      "noHandouts": "De laatste {weeks} weken is er niets uitgedeeld in de Hub. Deel een les of lesplan uit via het tabblad Hub.",
       "gcLinked": "Gekoppeld aan “{course}”",
       "gcRoster": "lijst gesynchroniseerd {when}",
       "gcRosterNever": "lijst nog niet gesynchroniseerd",

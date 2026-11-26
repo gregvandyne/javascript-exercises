@@ -122,7 +122,7 @@ test('create, list and edit a lesson: real question sets, one per version; only 
   const list = r.json.lessons;
   assert.equal(list.length, 1); assert.equal(list[0].n, 10); assert.equal(list[0].versions.length, 3);
   // The board's page carries My lessons and the lesson games.
-  const page = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const page = await as(rivera)(`/class/${cls.id}/hub`);
   assert.match(page.text, /id="hr-lessons"/); assert.match(page.text, /Long division practice/); assert.match(page.text, /"lessonGames":\[\{"slug":"arithmetic-lab"/);
   // Edit: a new name and an easier base; the sets stay the same (nothing opens them yet).
   const easier = M.fill('arithmetic-lab', { ...baseS, size: '2/1', problems: null });

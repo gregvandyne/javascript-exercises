@@ -48,7 +48,7 @@ test('the top of /teach: one Lesson Folder button to /build, nothing else', asyn
 test('class cards: Homeroom, Classroom and Dashboard for a teacher who passes the Homeroom gate; Classroom and Dashboard for everyone else', async () => {
   const r = await get('/teach', greg);
   for (const c of classes[greg.id]) {
-    assert.deepEqual(cardViews(r.text, c), [`homeroom /class/${c.id}/homeroom`, `classroom /class/${c.id}`, `dashboard /class/${c.id}/dashboard`]);
+    assert.deepEqual(cardViews(r.text, c), [`homeroom /class/${c.id}/hub`, `classroom /class/${c.id}`, `dashboard /class/${c.id}/dashboard`]);
   }
   assert.match(r.text, /class="cc-acts cc-views cc-views-3"/);
   assert.match(r.text, /<span class="cc-school small muted">Admin University<\/span><a class="cc-name cc-link" href="[^"]+"><b>4B Math<\/b><\/a>/, 'the school and the class name stay');
@@ -57,15 +57,15 @@ test('class cards: Homeroom, Classroom and Dashboard for a teacher who passes th
   for (const u of [listed, pat]) {
     const t = (await get('/teach', u)).text;
     for (const c of classes[u.id]) assert.deepEqual(cardViews(t, c), [`classroom /class/${c.id}`, `dashboard /class/${c.id}/dashboard`], u.username);
-    assert.ok(!t.includes('/homeroom"'), 'no Homeroom link at all'); assert.match(t, /class="cc-acts cc-views cc-views-2"/);
+    assert.ok(!t.includes('/hub"'), 'no Homeroom link at all'); assert.match(t, /class="cc-acts cc-views cc-views-2"/);
   }
   // the flag off: nobody gets Homeroom
   config.homeroom = false;
   try { assert.ok(!(await get('/teach', greg)).text.includes('data-view="homeroom"')); } finally { config.homeroom = true; }
   // each button opens what it says
   const [c] = classes[greg.id];
-  for (const path of [`/class/${c.id}/homeroom`, `/class/${c.id}`, `/class/${c.id}/dashboard`]) assert.equal((await get(path, greg)).status, 200, path);
-  assert.equal((await get(`/class/${classes[pat.id][0].id}/homeroom`, pat)).status, 404, 'no Homeroom without the gate');
+  for (const path of [`/class/${c.id}/hub`, `/class/${c.id}`, `/class/${c.id}/dashboard`]) assert.equal((await get(path, greg)).status, 200, path);
+  assert.equal((await get(`/class/${classes[pat.id][0].id}/hub`, pat)).status, 404, 'no Homeroom without the gate');
 });
 
 test('what left /teach is still reachable: the summary, the Live tab, /build; /build says "Build lessons" to staff and "Build a game" to a kid', async () => {

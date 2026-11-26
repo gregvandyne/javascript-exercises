@@ -440,7 +440,7 @@ export function companionPage(req, { bare = false, companion = null, scripts = [
   const bk = /^\/library\/make\/([A-Za-z0-9_-]{6,40})$/.exec(p);
   if (bk) return { type: 'book', bookId: bk[1] };
   // a class's Homeroom: the day plan's tools there (checked again on the server: services/companion.js pageOf)
-  const hr = /^\/class\/([A-Za-z0-9_-]{1,64})\/homeroom\/?$/.exec(p);
+  const hr = /^\/class\/([A-Za-z0-9_-]{1,64})\/hub\/?$/.exec(p);
   if (hr) return { type: 'homeroom', classId: hr[1] };
   const m = /^\/class\/([A-Za-z0-9_-]{1,64})(\/dashboard)?/.exec(p);
   if (m) return { type: m[2] ? 'dashboard' : 'class', classId: m[1] };

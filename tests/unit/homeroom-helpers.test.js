@@ -150,7 +150,7 @@ test('aides: an invite link keeps only its hash, works once, for staff accounts 
   assert.equal(out.status, 200); assert.match(out.text, /Sign in to join/);
   // Ms Far (another school's teacher, no Teacher plan) joins; the link stops working
   const j = await as(far)(`/api/hr/aide/${token}`, { body: {} });
-  assert.equal(j.status, 200); assert.equal(j.json.redirect, `/class/${cls.id}/homeroom`);
+  assert.equal(j.status, 200); assert.equal(j.json.redirect, `/class/${cls.id}/hub`);
   assert.ok(HA.isAide(far, cls));
   assert.equal(H.helperRole(far, cls), 'aide');
   assert.equal((await as(kim)(`/api/hr/aide/${token}`, { body: {} })).status, 410, 'once');
@@ -164,11 +164,11 @@ test('aides: an invite link keeps only its hash, works once, for staff accounts 
   assert.equal(HA.isAide(kim, otherCls), false, 'one class only');
   // their own list of where to go: My classes
   const teach = await as(far)('/teach');
-  assert.equal(teach.status, 200); assert.match(teach.text, /Classes you help in/); assert.ok(teach.text.includes(`/class/${cls.id}/homeroom`));
+  assert.equal(teach.status, 200); assert.match(teach.text, /Classes you help in/); assert.ok(teach.text.includes(`/class/${cls.id}/hub`));
 });
 
 test('aides: see desks, live status, hands, a look, comments; everything else is 403', async () => {
-  const p = await as(far)(`/class/${cls.id}/homeroom`);
+  const p = await as(far)(`/class/${cls.id}/hub`);
   assert.equal(p.status, 200);
   assert.match(p.text, /hr-aidechip/); assert.match(p.text, /"role":"aide"/);
   assert.ok(!p.text.includes('data-cv-go'), 'no Classroom or Dashboard tabs');
@@ -198,7 +198,7 @@ test('aides: see desks, live status, hands, a look, comments; everything else is
   for (const [path, body] of no) { const r = await fa(path, { body }); assert.equal(r.status, 403, `${path}: ${r.status}`); assert.equal(r.json.code, 'forbidden'); }
   for (const path of [`${C(cls.id)}/lessons`, `${C(cls.id)}/staged`, `${C(cls.id)}/aides`, `${C(cls.id)}/sub-links`, `${C(cls.id)}/signin`]) assert.equal((await fa(path)).status, 403, path);
   assert.equal((await fa(`${C(cls.id)}/desk-flag`, { body: { studentId: ben.id, flag: 'lock', on: true } })).status, 403, 'locking a desk is the teacher\'s');
-  assert.equal((await fa(`/class/${cls.id}/homeroom/signin`)).status, 403);
+  assert.equal((await fa(`/class/${cls.id}/hub/signin`)).status, 403);
   // the services say so too
   assert.equal(HO.setGrade(far, cls, cl, 'none').code, 'notFound');
   assert.equal(H.setLive(far, cls, 'end').code, 'forbidden');
@@ -208,7 +208,7 @@ test('aides: see desks, live status, hands, a look, comments; everything else is
   assert.equal((await fa(`/class/${cls.id}`)).status, 404);
   assert.equal((await fa(`/class/${cls.id}/progress`)).status, 404);
   // another class: not an aide there
-  assert.equal((await fa(`/class/${otherCls.id}/homeroom`)).status, 404);
+  assert.equal((await fa(`/class/${otherCls.id}/hub`)).status, 404);
   assert.ok(H.setLive(rivera, cls, 'end').ok);
 });
 
@@ -216,9 +216,9 @@ test('aides: removed at once', async () => {
   const list = (await as(rivera)(`${C(cls.id)}/aides`)).json.aides;
   const kimRow = list.find(a => a.name === 'Mr Kim');
   assert.ok(kimRow);
-  assert.equal((await as(kim)(`/class/${cls.id}/homeroom`)).status, 200);
+  assert.equal((await as(kim)(`/class/${cls.id}/hub`)).status, 200);
   assert.ok((await as(rivera)(`${C(cls.id)}/aides`, { body: { action: 'remove', id: kimRow.id } })).json.ok);
-  assert.equal((await as(kim)(`/class/${cls.id}/homeroom`)).status, 404);
+  assert.equal((await as(kim)(`/class/${cls.id}/hub`)).status, 404);
   assert.equal(HA.isAide(kim, cls), false);
 });
 
@@ -283,9 +283,9 @@ test('sub links: first names only; Start, Next, +5, hands and the pass; everythi
   assert.equal((await sub('/api/sub/hands', { body: { action: 'minutes', minutes: 20 } })).status, 403, 'the pass length stays the teacher\'s');
   assert.ok((await sub('/api/sub/hands', { body: { action: 'back', studentId: cleo.id } })).json.ok);
   // the projector is theirs; nothing else of the class's Homeroom is
-  assert.equal((await sub(`/class/${cls.id}/homeroom/projector`)).status, 200);
+  assert.equal((await sub(`/class/${cls.id}/hub/projector`)).status, 200);
   assert.equal((await sub(`${C(cls.id)}/state`)).status, 200);
-  for (const path of [`/class/${cls.id}/homeroom`, `${C(cls.id)}/handouts`, `${C(cls.id)}/pulse`, `${C(cls.id)}/supports`, `${C(cls.id)}/look/${ava.id}`, `${C(cls.id)}/plan`, `${C(cls.id)}/lessons`, `/class/${cls.id}/homeroom/signin`]) {
+  for (const path of [`/class/${cls.id}/hub`, `${C(cls.id)}/handouts`, `${C(cls.id)}/pulse`, `${C(cls.id)}/supports`, `${C(cls.id)}/look/${ava.id}`, `${C(cls.id)}/plan`, `${C(cls.id)}/lessons`, `/class/${cls.id}/hub/signin`]) {
     assert.equal((await sub(path)).status, 403, path);
   }
   for (const [path, body] of [[`${C(cls.id)}/seats`, { seats: {} }], [`${C(cls.id)}/handouts`, { gameId: pizza.id, to: { kind: 'all' } }], [`${C(cls.id)}/hands`, { action: 'answer', studentId: ava.id }], [`${C(cls.id)}/live`, { action: 'end' }], [`${C(cls.id)}/plan`, { action: 'next' }], [`${C(cls.id)}/supports`, { studentId: ava.id }], [`${C(cls.id)}/sub-links`, { action: 'create' }]]) {
@@ -295,7 +295,7 @@ test('sub links: first names only; Start, Next, +5, hands and the pass; everythi
   // (no account: the site's sign-in, never the class)
   for (const path of [`/class/${cls.id}`, `/class/${cls.id}/desk`]) assert.ok([302, 404].includes((await sub(path)).status), path);
   assert.equal((await sub(`/api/homeroom/${otherCls.id}/state`)).status, 404);
-  assert.equal((await sub(`/class/${otherCls.id}/homeroom/projector`)).status, 404);
+  assert.equal((await sub(`/class/${otherCls.id}/hub/projector`)).status, 404);
   // End class is theirs at the end of the day
   assert.ok((await sub('/api/sub/live', { body: { action: 'end' } })).json.ok);
   // logged, and summed up for the teacher
@@ -303,7 +303,7 @@ test('sub links: first names only; Start, Next, +5, hands and the pass; everythi
   assert.equal(notes.length, 1);
   const n = notes[0].counts;
   assert.equal(n.open, 1); assert.equal(n['live:start'], 1); assert.equal(n['live:end'], 1); assert.equal(n['plan:next'], 1); assert.equal(n['plan:more'], 1); assert.equal(n['hand:pass'], 1); assert.equal(n['hand:back'], 1);
-  const tp = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const tp = await as(rivera)(`/class/${cls.id}/hub`);
   assert.match(tp.text, /"notes":\[\{"id":/);
   assert.ok((await as(rivera)(`${C(cls.id)}/sub-links`, { body: { action: 'seen', id: notes[0].id } })).json.ok);
   assert.equal(SB.notesFor(cls).length, 0, 'Got it');

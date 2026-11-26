@@ -2242,7 +2242,7 @@
         "done": "Pronto",
         "saved": "Lugares salvos para {class}"
       },
-      "everyone": "Todos para o Homeroom",
+      "everyone": "Todos para o Hub",
       "bring": "Trazer todos para mim",
       "back": "Voltar às carteiras",
       "pause": "Pausar telas",
@@ -2347,7 +2347,7 @@
         "tools": "Item selecionado",
         "delete": "Excluir o item selecionado"
       },
-      "playBack": "Voltar para o Homeroom",
+      "playBack": "Voltar para o Hub",
       "liveNotSelect": "Aulas ao vivo são conduzidas, não distribuídas. Desative Selecionar para conduzir uma.",
       "frame": {
         "resize": "Arraste para mudar o tamanho da área do professor",
@@ -3897,7 +3897,7 @@
         "count": "{n} peças em {col}"
       },
       "host": {
-        "homeroomTool": "{tool} está nas mesas do Homeroom dos seus alunos. Iniciar esta sala tira-o das mesas deles. O trabalho deles é guardado.",
+        "homeroomTool": "{tool} está nas mesas do Hub dos seus alunos. Iniciar esta sala tira-o das mesas deles. O trabalho deles é guardado.",
         "startRoom": "Iniciar sala"
       }
     },
@@ -4823,7 +4823,7 @@
         "absent": "{count, plural, one {# ausente, não contado} other {# ausentes, não contados}}",
         "lookTitle": "Talvez precisem de uma olhada na {day}",
         "nobody": "Ninguém em Dar uma olhada agora.",
-        "lookCount": "{count, plural, one {# aluno. Abra o Homeroom da turma para ver quem.} other {# alunos. Abra o Homeroom da turma para ver quem.}}",
+        "lookCount": "{count, plural, one {# aluno. Abra o Hub da turma para ver quem.} other {# alunos. Abra o Hub da turma para ver quem.}}",
         "ideas": "Ideias (nada acontece até você tocar)",
         "review": "Entregar uma aula de revisão na {day} ao grupo {group}",
         "reviewAsk": "Adicionar {minutes} minutos de {what} para o grupo {group} ao plano de {day}? Nada vai para as carteiras até você começar esse plano.",
@@ -5129,7 +5129,7 @@
     },
     "homeroom-signin-panel": {
       "closed": "A entrada está fechada",
-      "closedHint": "Ela abre sozinha quando você começa a aula com Todos para o Homeroom.",
+      "closedHint": "Ela abre sozinha quando você começa a aula com Todos para o Hub.",
       "open": "Abrir entrada",
       "goTo": "Acessem",
       "enterCode": "e digitem este código:",
@@ -5250,7 +5250,7 @@
       "empty": "Seu professor ainda não colocou nada aqui."
     },
     "homeroom-notify": {
-      "text": "Sua turma está no Homeroom.",
+      "text": "Sua turma está no Hub.",
       "go": "Ir para a minha carteira",
       "close": "Fechar"
     },
@@ -5497,7 +5497,7 @@
         "teamPad": "Bloco da equipe",
         "padLabel": "Bloco de {name}",
         "padEmpty": "Nada desenhado ainda",
-        "private": "Um resumo do que o Homeroom sabe. Nunca mostra a tela nem o que é digitado.",
+        "private": "Um resumo do que o Hub sabe. Nunca mostra a tela nem o que é digitado.",
         "coming": "Estou indo aí",
         "comingOn": "A caminho: toque para tirar",
         "lock": "Travar mesa",
@@ -5618,7 +5618,7 @@
         "mydeskText": "Coloque aqui qualquer aula ou ferramenta para testar primeiro. Os alunos nunca veem a Minha mesa.",
         "oombaTitle": "Peça ao Oomba o plano de hoje",
         "oombaText": "Conte ao Oomba o que você vai ensinar. Ele prepara o plano, e nada vai para as carteiras até você tocar em Usar este plano.",
-        "goliveTitle": "Todos para o Homeroom",
+        "goliveTitle": "Todos para o Hub",
         "goliveText": "Comece a aula aqui. Em aparelhos compartilhados, os alunos vão a /hr e digitam o código de entrada rápida, em Entrada dos alunos no menu ⋯."
       }
     },
@@ -5634,7 +5634,7 @@
       "dockTitle": "Os botões embaixo:",
       "dock": "a área do professor, a Biblioteca com livros e Ver a sala.",
       "seenTitle": "É bom saber:",
-      "seen": "Seu professor pode ver a sua tela no Homeroom.",
+      "seen": "Seu professor pode ver a sua tela no Hub.",
       "k2": {
         "title": "Oi! Esta é a sua carteira.",
         "ok": "Tá bom!",
@@ -5657,7 +5657,7 @@
     },
     "homeroom-livegame": {
       "layer": "Aula ao vivo",
-      "back": "Voltar ao Homeroom",
+      "back": "Voltar ao Hub",
       "setup": "Preparar uma aula ao vivo",
       "end": "Encerrar",
       "endTitle": "Encerrar {title}?",
@@ -5665,7 +5665,7 @@
       "restore": "Abrir {title}",
       "pill": "Ao vivo: {title}",
       "joined": "{count} entraram",
-      "joinedOf": "{count} de {total} no Homeroom entraram",
+      "joinedOf": "{count} de {total} no Hub entraram",
       "notYet": "Ainda não entrou",
       "inGame": "Em {title}",
       "notSelect": "Aulas ao vivo são conduzidas, não distribuídas. Desative Selecionar para conduzir uma."
@@ -7718,7 +7718,7 @@
       "lead": "Conecte seu Google Classroom em poucos cliques. No início, a Oomba Academy só consegue ver suas turmas e os alunos delas. Nada é publicado até você permitir a publicação.",
       "li1": "Importe sua lista de alunos com um clique, e ela se atualiza sozinha a cada 6 horas. Os alunos são reconhecidos pela conta do Google.",
       "li2": "Publique um plano de aula como atividade do Classroom, com link e prazo, ou compartilhe como material.",
-      "li3": "As notas voltam ao Classroom de 0 a 100: uma nota de conclusão (a parte dos passos do plano de aula terminados, não as respostas certas) ou, nas atividades do Homeroom, a nota que você escolheu: a pontuação, a conclusão ou nada para praticar. Envie você mesmo ou ligue as notas automáticas.",
+      "li3": "As notas voltam ao Classroom de 0 a 100: uma nota de conclusão (a parte dos passos do plano de aula terminados, não as respostas certas) ou, nas atividades do Hub, a nota que você escolheu: a pontuação, a conclusão ou nada para praticar. Envie você mesmo ou ligue as notas automáticas.",
       "li4": "Publique no mural da turma quando uma aula ao vivo começar ou um plano de aula estiver pronto, com suas palavras.",
       "li5": "A Oomba Academy não pede ao Classroom o e-mail dos alunos e nunca envia ao Google o nome, as respostas ou os jogos de um aluno.",
       "note": "Atividades, materiais, notas e avisos funcionam quando você permite a publicação, uma etapa à parte. Cada professor conecta a própria conta do Google, e talvez o administrador do Google da sua escola precise autorizar a Oomba Academy antes.",
@@ -8811,8 +8811,8 @@
       "codeForTeachers": "Código para entrar",
       "joinAt": "Acesse {url} e digite o código",
       "signInFirst": "Entre na sua conta primeiro e depois digite o código.",
-      "hrJoin": "Os alunos no Homeroom tocam em Entrar nas suas mesas. Não precisam de código.",
-      "hrFallback": "Não está no Homeroom? Código para entrar",
+      "hrJoin": "Os alunos no Hub tocam em Entrar nas suas mesas. Não precisam de código.",
+      "hrFallback": "Não está no Hub? Código para entrar",
       "hideCode": "Esconder código",
       "showCode": "Mostrar código",
       "count": "{count} de {max} jogadores",
@@ -11536,10 +11536,10 @@
         "courses": "vincular esta turma a uma das suas turmas do Classroom",
         "roster": "trazer os alunos dela, que entram com o Google",
         "post": "publicar lá planos de aula, com um link de volta para cá e o prazo",
-        "grades": "enviar ao Classroom a nota de cada aluno num plano de aula (conclusão ou a pontuação escolhida no Homeroom)"
+        "grades": "enviar ao Classroom a nota de cada aluno num plano de aula (conclusão ou a pontuação escolhida no Hub)"
       },
       "button": "Conectar o Google Classroom",
-      "privacy": "Só você vê esta conexão. Conectar permite que a Oomba Academy leia suas turmas e os alunos delas. Só se você permitir publicar, ela envia ao Classroom o que você publica: o título, o link e o prazo de um plano de aula, a nota de cada aluno de 0 a 100 (conclusão ou a pontuação escolhida no Homeroom), um nome de tema e os avisos que você escreve. Nunca nomes, respostas ou jogos dos alunos.",
+      "privacy": "Só você vê esta conexão. Conectar permite que a Oomba Academy leia suas turmas e os alunos delas. Só se você permitir publicar, ela envia ao Classroom o que você publica: o título, o link e o prazo de um plano de aula, a nota de cada aluno de 0 a 100 (conclusão ou a pontuação escolhida no Hub), um nome de tema e os avisos que você escreve. Nunca nomes, respostas ou jogos dos alunos.",
       "connectedAs": "Conectado como {email}",
       "connectedHint": "Esta conexão é sua: seus colegas professores conectam a deles.",
       "connectedToast": "O Google Classroom está conectado.",
@@ -11603,7 +11603,7 @@
       "somePosted": "Aqui está atribuída a alguns alunos. Antes foi publicada para a turma toda no Google Classroom, e as notas vão só para os alunos atribuídos."
     },
     "grades": {
-      "text": "Cada plano de aula envia a nota pela qual é avaliado, de 0 a 100. Os planos de aula atribuídos no Classroom enviam uma nota de conclusão: a parte dos passos do plano de aula que o aluno fez, não as respostas certas. As atividades do Homeroom enviam o que você escolheu ao distribuí-las: Pontuação envia o % de acertos, Conclusão a nota de conclusão, e Sem nota não envia nada. Os alunos que não começaram ficam de fora.",
+      "text": "Cada plano de aula envia a nota pela qual é avaliado, de 0 a 100. Os planos de aula atribuídos no Classroom enviam uma nota de conclusão: a parte dos passos do plano de aula que o aluno fez, não as respostas certas. As atividades do Hub enviam o que você escolheu ao distribuí-las: Pontuação envia o % de acertos, Conclusão a nota de conclusão, e Sem nota não envia nada. Os alunos que não começaram ficam de fora.",
       "as": "Enviar como",
       "draft": "Nota provisória (você devolve no Classroom)",
       "assigned": "Nota atribuída",
@@ -11619,8 +11619,8 @@
       "resultNotScored": "{count, plural, one {# ainda não tem pontuação} other {# ainda não têm pontuação}}",
       "sends": {
         "completion": "Envia uma nota de conclusão: a parte das etapas feitas.",
-        "score": "Avaliado por pontuação no Homeroom: envia a % de acertos.",
-        "none": "Sem nota no Homeroom: nenhuma nota vai para o Classroom."
+        "score": "Avaliado por pontuação no Hub: envia a % de acertos.",
+        "none": "Sem nota no Hub: nenhuma nota vai para o Classroom."
       }
     },
     "log": {
@@ -15397,7 +15397,7 @@
     "errors": {
       "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento.",
       "emptyArea": "A sua área está vazia. Coloque algo nela e depois envie.",
-      "homeroomTool": "{tool} está nas mesas do Homeroom dos seus alunos. Iniciar esta sala tira-o das mesas deles."
+      "homeroomTool": "{tool} está nas mesas do Hub dos seus alunos. Iniciar esta sala tira-o das mesas deles."
     }
   },
   "proof": {
@@ -15722,16 +15722,16 @@
       "already": "Isso já está na sua mesa.",
       "removed": "Tirado da sua mesa."
     },
-    "pageTitle": "{class} · Homeroom",
+    "pageTitle": "{class} · Hub",
     "switchClass": "Trocar de turma",
     "arrange": "Organizar os lugares",
     "more": "Mais",
-    "boardLabel": "Quadro do Homeroom. Arraste para se mover, role ou faça pinça para dar zoom.",
+    "boardLabel": "Quadro do Hub. Arraste para se mover, role ou faça pinça para dar zoom.",
     "loading": "Preparando a sala…",
-    "noscript": "O Homeroom precisa do JavaScript ativado.",
+    "noscript": "O Hub precisa do JavaScript ativado.",
     "tabs": {
       "label": "Visões da turma",
-      "homeroom": "Homeroom",
+      "homeroom": "Hub",
       "classroom": "Turma",
       "dashboard": "Painel"
     },
@@ -15756,7 +15756,7 @@
       "badStage": "Isso não pode ir para a sua mesa.",
       "deskFull": "Sua mesa está cheia. Tire algo primeiro.",
       "notStaged": "Isso não está mais na sua mesa.",
-      "notFound": "Este Homeroom não está disponível.",
+      "notFound": "Este Hub não está disponível.",
       "badPreset": "Escolha Fileiras, Mesas de 4, Em U ou Círculo.",
       "badSeats": "Não foi possível salvar os lugares. Tente de novo.",
       "badGroups": "Não foi possível salvar os grupos. Tente de novo.",
@@ -15766,7 +15766,7 @@
       "badState": "Não foi possível salvar. Tente de novo.",
       "tooBig": "A área do professor está cheia demais. Tire algo e tente de novo.",
       "badAction": "Não deu certo. Tente de novo.",
-      "notLive": "Primeiro comece a aula com Todos para o Homeroom.",
+      "notLive": "Primeiro comece a aula com Todos para o Hub.",
       "padFull": "Seu bloco está cheio. Limpe para continuar desenhando.",
       "pickGame": "Essa aula não pode ser distribuída. Escolha outra.",
       "publishFirst": "Publique esta aula primeiro e depois distribua.",
@@ -15879,7 +15879,7 @@
       },
       "panel": {
         "title": "{class} · Entrada",
-        "back": "Voltar ao Homeroom",
+        "back": "Voltar ao Hub",
         "heading": "Entrada",
         "lead": "Em aparelhos compartilhados, os alunos abrem a entrada da turma, tocam no próprio nome e depois digitam a senha ou tocam nas figuras da senha.",
         "students": "Alunos",
@@ -15960,7 +15960,7 @@
     },
     "overview": {
       "title": "Visão geral da turma",
-      "lead": "As últimas {weeks} semanas. Cada coluna é algo que você distribuiu no Homeroom. Os alunos estão em ordem alfabética, nunca em ranking.",
+      "lead": "As últimas {weeks} semanas. Cada coluna é algo que você distribuiu no Hub. Os alunos estão em ordem alfabética, nunca em ranking.",
       "student": "Aluno",
       "trend": "Tendência",
       "tableLabel": "Visão geral: tarefas e resultados",
@@ -16001,7 +16001,7 @@
       "keyTrend": "Tendência, pelas últimas 3 pontuações de cada aluno: Precisa de apoio se a média fica abaixo de 60%, Melhorando se a última passa a primeira em 10 pontos ou mais, senão Estável.",
       "more": "O boletim completo, o CSV, os padrões, as rubricas e o Google Classroom estão abaixo, como antes.",
       "fullGradebook": "Boletim completo",
-      "noHandouts": "Nada foi distribuído no Homeroom nas últimas {weeks} semanas. Distribua uma aula ou um plano de aula pela aba Homeroom.",
+      "noHandouts": "Nada foi distribuído no Hub nas últimas {weeks} semanas. Distribua uma aula ou um plano de aula pela aba Hub.",
       "gcLinked": "Vinculada a “{course}”",
       "gcRoster": "lista sincronizada {when}",
       "gcRosterNever": "lista ainda não sincronizada",

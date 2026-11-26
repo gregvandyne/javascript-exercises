@@ -80,7 +80,7 @@ test('the code: only the class\'s teachers open, extend and close it; live class
   for (const u of [ava, other, null]) {
     assert.equal((await signin(u, cls, 'open')).status, 404, u ? u.username : 'signed out');
     assert.equal((await as(u)(`/api/homeroom/${cls.id}/signin`)).status, 404);
-    assert.equal((await as(u)(`/class/${cls.id}/homeroom/signin`)).status, 404);
+    assert.equal((await as(u)(`/class/${cls.id}/hub/signin`)).status, 404);
   }
   assert.equal((await signin(rivera, cls, 'nope')).status, 400);
   assert.equal(SI.classForCode(s.code).id, cls.id);
@@ -181,7 +181,7 @@ test('picture passwords: set by the teacher, right pictures sign in, wrong ones 
     assert.equal((await as(u)(`/api/homeroom/${cls.id}/signin/cards`, { body: {} })).status, 404);
   }
   const set = await as(rivera)(`/api/homeroom/${cls.id}/signin/students/${cleo.id}`, { body: { mode: 'picture' } });
-  assert.equal(set.status, 200); assert.match(set.json.redirect, new RegExp(`^/class/${cls.id}/homeroom/signin/cards/`), 'a card for the new picture password');
+  assert.equal(set.status, 200); assert.match(set.json.redirect, new RegExp(`^/class/${cls.id}/hub/signin/cards/`), 'a card for the new picture password');
   const card = await as(rivera)(set.json.redirect);
   assert.equal(card.status, 200); assert.match(card.text, /Cleo Park/); assert.match(card.text, /Your button: Cleo P/);
   assert.equal((await as(other)(set.json.redirect)).status, 404, 'cards only for the teacher who made them');
@@ -204,7 +204,7 @@ test('picture passwords: set by the teacher, right pictures sign in, wrong ones 
   q.run('UPDATE homeroom_signins SET locked_until=NULL WHERE user_id=?', cleo.id);
   const locked = await tryPics(pics);
   assert.equal(locked.status, 423); assert.equal(locked.json.code, 'locked');
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom/signin`)).text, /Locked after too many tries/);
+  assert.match((await as(rivera)(`/class/${cls.id}/hub/signin`)).text, /Locked after too many tries/);
   assert.equal((await as(rivera)(`/api/homeroom/${cls.id}/signin/students/${cleo.id}/unlock`, { body: {} })).status, 200);
   assert.equal((await tryPics(['bear'])).status, 400, 'not three pictures');
   const good = await tryPics(pics);
@@ -230,7 +230,7 @@ test('grade K to 2: school accounts start with picture passwords ("ask" until ma
   assert.equal(SI.howOf(cls, ava).mode, 'password');
   const code = await openCode(kinder);
   assert.equal((await grid(code)).json.students[0].how, 'ask', 'no picture password made yet');
-  const p = await as(rivera)(`/class/${kinder.id}/homeroom/signin`);
+  const p = await as(rivera)(`/class/${kinder.id}/hub/signin`);
   assert.equal(p.status, 200); assert.match(p.text, /grade K to 2/); assert.match(p.text, /Bea Long/); assert.match(p.text, /No picture password yet/);
   const cards = await as(rivera)(`/api/homeroom/${kinder.id}/signin/cards`, { body: {} });
   assert.equal(cards.status, 200);
@@ -281,7 +281,7 @@ test('Google from the class sign-in: a class-device session only for a student o
 
 test('the projector shows the code and its QR while open; a desk never gets the code', async () => {
   const code = await openCode(cls);
-  const p = await as(rivera)(`/class/${cls.id}/homeroom/projector`);
+  const p = await as(rivera)(`/class/${cls.id}/hub/projector`);
   assert.ok(p.text.includes(code)); assert.match(p.text, /Students sign in/);
   const st = (await as(rivera)(`/api/homeroom/${cls.id}/state`)).json;
   assert.equal(st.signin.code, code); assert.match(st.signin.qr, /^<svg/);
