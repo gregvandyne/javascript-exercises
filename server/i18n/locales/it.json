@@ -3894,6 +3894,10 @@
         "moved": "{label} è passato nella colonna {col}.",
         "needTen": "Ne servono 10 per cambiare",
         "count": "{n} pezzi in {col}"
+      },
+      "host": {
+        "homeroomTool": "{tool} è sui banchi Homeroom dei tuoi studenti. Avviare questa stanza lo toglie dai loro banchi. Il loro lavoro viene conservato.",
+        "startRoom": "Avvia la stanza"
       }
     },
     "manip-room": {
@@ -15270,7 +15274,8 @@
   "manip": {
     "errors": {
       "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento.",
-      "emptyArea": "La tua area è vuota. Mettici qualcosa, poi inviala."
+      "emptyArea": "La tua area è vuota. Mettici qualcosa, poi inviala.",
+      "homeroomTool": "{tool} è sui banchi Homeroom dei tuoi studenti. Avviare questa stanza lo toglie dai loro banchi."
     }
   },
   "proof": {

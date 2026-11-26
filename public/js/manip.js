@@ -2372,7 +2372,7 @@ function home() {
   const host = document.getElementById('mp-host');
   if (host) host.onsubmit = async e => {
     e.preventDefault(); const f = new FormData(host);
-    try { const r = await api('/api/manipulatives/live', { method: 'POST', body: { classId: f.get('classId'), tool: f.get('tool'), title: f.get('title'), boardId: f.get('boardId') || null } }); await loadState2(); location.hash = `live/${r.session.id}`; }
+    try { const r = await startRoom({ classId: f.get('classId'), tool: f.get('tool'), title: f.get('title'), boardId: f.get('boardId') || null }); if (!r) return; await loadState2(); location.hash = `live/${r.session.id}`; }
     catch (err) { toast(err.message, { bad: true }); }
   };
   document.getElementById('mp-homeredeem').onsubmit = e => { e.preventDefault(); redeem(document.getElementById('mp-home-code').value); };
@@ -2493,7 +2493,7 @@ async function boardAction(r, act, li) {
       await api(`${base}/reopen`, { method: 'POST', body: {} }); await loadState2(); openRow(`live/${r.id}`); return;
     } else if (act === 'start') {
       if (STATE.classes.length === 1) {
-        const s = await api('/api/manipulatives/live', { method: 'POST', body: { classId: STATE.classes[0].id, boardId: r.id } });
+        const s = await startRoom({ classId: STATE.classes[0].id, boardId: r.id }); if (!s) return;
         await loadState2(); openRow(`live/${s.session.id}`); return;
       }
       // Several classes: the room form on the home, with this template picked; the teacher picks the class.
@@ -2504,6 +2504,16 @@ async function boardAction(r, act, li) {
   } catch (e) { toast(e.message, { bad: true }); }
 }
 /** The home's room form with a template picked, for a teacher with several classes to pick from. */
+/** Start a live room for a class. The class's room running now ends; when that room is a Homeroom tool on the
+ *  students' desks the server answers 409 homeroomTool, and the site's own question box asks first (Cancel: nothing
+ *  changes). -> the server's answer, or null when the teacher cancelled. */
+async function startRoom(body) {
+  try { return await api('/api/manipulatives/live', { method: 'POST', body }); } catch (e) {
+    if (!(e.status === 409 && e.data && e.data.code === 'homeroomTool')) throw e;
+    if (!await ask({ text: t('js.manip.host.homeroomTool', { tool: e.data.tool || '' }), ok: t('js.manip.host.startRoom'), danger: true })) return null;
+    return api('/api/manipulatives/live', { method: 'POST', body: { ...body, replace: true } });
+  }
+}
 function pickClassFor(id) {
   const f = document.getElementById('mp-host'); if (!f) return;
   f.elements.boardId.value = id; f.scrollIntoView({ behavior: 'smooth', block: 'center' }); f.elements.classId.focus(); toast(t('js.manip.boards.pickClass'));
