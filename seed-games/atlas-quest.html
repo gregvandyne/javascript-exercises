@@ -2295,9 +2295,8 @@ function renderHome() {
   }
   c.appendChild(grid);
   c.appendChild(h('p', 'cw-note', tr('Drag to spin the globe, pinch to zoom, tap a country to read its file.')));
-  // Maps and more: blank maps, the library, a class code (a teacher's own tools are in Build a lesson, behind the door)
+  // Maps and more: the library and a class code (blank maps and a teacher's own tools are in Build a lesson, behind the door)
   const t2 = h('section', 'cw-widget aq-panel aq-more'); side.appendChild(t2); whead(t2, '🧭', tw('moreH'), 'time', 'h2');
-  if (B.canPrint && B.print) t2.appendChild(bigBtn('cw-big', '🗺️', tw('blankH'), tw('blankSub'), () => { sfx('pick'); showBlank(); }, 'aq-blank'));
   t2.appendChild(bigBtn('cw-big', '📖', tw('libH'), tw('libSub'), () => { sfx('pick'); showLibrary(); }, 'aq-lib'));
   if (B.canFindSet !== false) drawCode(t2);
   renderLit();
@@ -2946,6 +2945,7 @@ function printIt(it, key, mapOnly, set, note) {
 const BL = { key: false };
 const keyOk = () => CAN_MAKE || B.canAssign === true;
 function showBlank(reg, numbered, key) {
+  if (!CAN_MAKE) { goHome(); return; }   // blank maps are a teacher's tool (Build a lesson)
   reg = reg || (SAVE.settings.region !== 'all' ? SAVE.settings.region : 'eu'); numbered = numbered !== false;
   if (key !== undefined) BL.key = key === true;
   const c = pageCard('blank');
