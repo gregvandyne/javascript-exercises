@@ -87,7 +87,7 @@ export function handOutTool(u, c, { tool, to, instructions = '' } = {}) {
     const old = same.map(sessionOf).find(s => s && M.isSessionHost(u, s));
     if (old) { const r = M.reopen(u, old.id); if (!r.ok) return r; session = M.getSession(old.id); }
     else {
-      const r = M.createSession(u, { classId: c.id, tool: tl.slug, title: `${tl.name} · Homeroom` });
+      const r = M.createSession(u, { classId: c.id, tool: tl.slug, title: `${tl.name} · Hub` });
       if (!r.ok) return r;
       session = M.getSession(r.session.id);
     }

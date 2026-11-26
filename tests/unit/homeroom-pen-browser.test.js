@@ -56,7 +56,7 @@ const until = async (fn, what) => { for (let i = 0; i < 40; i++) { if (fn()) ret
 const shot = async (page, name) => { if (SHOTS) { fs.mkdirSync(SHOTS, { recursive: true }); await page.screenshot({ path: path.join(SHOTS, `${name}.png`) }); } };
 const IPHONE = { viewport: { width: 390, height: 664 }, screen: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true,
   userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1' };
-async function open(browser, opts = {}, who = teacher, url = `/class/${cls.id}/homeroom`) {
+async function open(browser, opts = {}, who = teacher, url = `/class/${cls.id}/hub`) {
   // (isMobile is Chromium's only: WebKit gets the same size and touch without it)
   const o = browser.browserType().name() === 'chromium' ? opts : Object.fromEntries(Object.entries(opts).filter(([k]) => k !== 'isMobile'));
   const ctx = await browser.newContext({ viewport: { width: 1366, height: 768 }, deviceScaleFactor: 1, ...o });
@@ -233,7 +233,7 @@ test('a student\'s See the room shows the board\'s pen lines; the projector does
   await shot(page, `after-${chromium.name}-1366-seetheroom`);
   assert.deepEqual(errors, []);
   await ctx.close();
-  const pj = await open(chromium.browser, {}, teacher, `/class/${cls.id}/homeroom/projector`);
+  const pj = await open(chromium.browser, {}, teacher, `/class/${cls.id}/hub/projector`);
   await pj.page.waitForSelector('#hr-projarea .hr-roarea'); await pj.page.waitForTimeout(300);
   assert.equal(await pj.page.locator('#hr-projarea polyline').count(), 1, 'the projector: only the area\'s own line');
   assert.equal(await pj.page.locator('polyline[stroke="#E53935"]').count(), 0, 'never the board ink');

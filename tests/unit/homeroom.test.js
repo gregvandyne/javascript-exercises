@@ -53,7 +53,7 @@ test('the gate: flag off hides Homeroom from everyone, the platform admin too', 
   try {
     for (const u of [boss, rivera]) {
       assert.equal(H.canUse(u), false, u.username);
-      assert.equal((await as(u)(`/class/${cls.id}/homeroom`)).status, 404);
+      assert.equal((await as(u)(`/class/${cls.id}/hub`)).status, 404);
       assert.equal((await as(u)(`/api/homeroom/${cls.id}/seats`, { body: { seats: {} } })).status, 404);
       assert.doesNotMatch((await as(u)(`/class/${cls.id}`)).text, /class="hr-tabs"/, 'the class page is unchanged');
     }
@@ -73,24 +73,24 @@ test('the gate: flag on + allowlist + Teacher plan; the class\'s own teachers on
   assert.equal(H.canUseClass(head, cls), false, 'a school admin who does not teach the class');
   for (const k of kids) assert.equal(H.canUse(k), false);
 
-  const page = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const page = await as(rivera)(`/class/${cls.id}/hub`);
   assert.equal(page.status, 200);
-  assert.match(page.text, /<nav class="hr-tabs"[^>]*>.*Homeroom.*Classroom.*Dashboard/s);
+  assert.match(page.text, /<nav class="hr-tabs"[^>]*>.*Hub.*Classroom.*Dashboard/s);
   assert.match(page.text, /Teacher(&#39;|')s desk/);
   assert.match(page.text, /\/js\/homeroom\.js/);
   assert.match(page.text, /noindex/);
   for (const k of kids) assert.ok(page.text.includes(k.id), 'every student has a desk in the page data');
   // The class page: the Homeroom | Classroom | Dashboard row for her, nothing new for anyone else.
   const classPage = await as(rivera)(`/class/${cls.id}`);
-  assert.match(classPage.text, /class="hr-tabs"/); assert.match(classPage.text, new RegExp(`href="/class/${cls.id}/homeroom"`));
+  assert.match(classPage.text, /class="hr-tabs"/); assert.match(classPage.text, new RegExp(`href="/class/${cls.id}/hub"`));
   for (const u of [noPlan, head, kids[0]]) {
-    assert.equal((await as(u)(`/class/${cls.id}/homeroom`)).status, 404, u.username);
+    assert.equal((await as(u)(`/class/${cls.id}/hub`)).status, 404, u.username);
     assert.equal((await as(u)(`/api/homeroom/${cls.id}/groups`, { body: { groups: [] } })).status, 404, u.username);
     const r = await as(u)(`/class/${cls.id}`);
-    assert.equal(r.status, 200); assert.doesNotMatch(r.text, /class="hr-tabs"|\/homeroom"/, u.username);
+    assert.equal(r.status, 200); assert.doesNotMatch(r.text, /class="hr-tabs"|\/hub"/, u.username);
   }
-  assert.equal((await as(other)(`/class/${cls.id}/homeroom`)).status, 404);
-  assert.equal((await as(null)(`/class/${cls.id}/homeroom`)).status, 404);
+  assert.equal((await as(other)(`/class/${cls.id}/hub`)).status, 404);
+  assert.equal((await as(null)(`/class/${cls.id}/hub`)).status, 404);
   // '*' lets every Teacher plan teacher in (still not one without the plan).
   gateOn(['*']);
   try { assert.equal(H.canUse(offList), true); assert.equal(H.canUse(noPlan), false); } finally { gateOn(); }
@@ -134,7 +134,7 @@ test('seating: saved and loaded per class; only that class\'s teachers; bad inpu
   assert.deepEqual(room.seats[kids[1].id], seats[kids[1].id]);
   assert.equal(H.roomOf(otherCls.id).preset, 'rows', 'each class keeps its own seating');
   // The page carries it back.
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom`)).text, /"preset":"circle"/);
+  assert.match((await as(rivera)(`/class/${cls.id}/hub`)).text, /"preset":"circle"/);
 
   for (const body of [{ preset: 'stadium', seats: {} }, { seats: [] }, { seats: { [kids[0].id]: { x: 'left', y: 3 } } }, {}]) {
     const bad = await as(rivera)(`/api/homeroom/${cls.id}/seats`, { body });
@@ -207,6 +207,6 @@ test('the class page: a Homeroom teacher keeps every class tab working (Classroo
   // are unchanged.
   assert.equal(d.status, 200); assert.match(d.text, /class="hr-tabs"/); assert.match(d.text, /id="dash-grid"/);
   // In Spanish.
-  const es = await fetch(`${base}/class/${cls.id}/homeroom`, { headers: { cookie: `${cookieFor(rivera.id)}; lang=es` } });
+  const es = await fetch(`${base}/class/${cls.id}/hub`, { headers: { cookie: `${cookieFor(rivera.id)}; lang=es` } });
   assert.match(await es.text(), /Organizar los asientos/);
 });

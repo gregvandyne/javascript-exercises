@@ -80,7 +80,7 @@ const classLessons = c => q.get('SELECT COUNT(*) n FROM class_lessons WHERE clas
 
 test('a tablet, a class with no students: stage on My desk, preview, hand out to Whole class from the card', { timeout: 150000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(teacher, `/class/${empty.id}/homeroom`, { width: 1180, height: 820 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${empty.id}/hub`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-tdesk');
   assert.match(await page.locator('.hr-tdesk').innerText(), /My desk[\s\S]*Drop a lesson here/);
   // Tap Sudoku, then My desk.
@@ -116,7 +116,7 @@ test('a tablet, a class with no students: stage on My desk, preview, hand out to
   assert.match(await page.locator('.hr-player iframe').getAttribute('src'), /^\/play\/sudoku-td\?in=hr$/);
   assert.equal(classLessons(empty), 0);
   await page.locator('.hr-playback').tap(); await page.waitForSelector('.hr-player', { state: 'detached' });
-  await page.goto(`${BASE}/class/${empty.id}/homeroom`);
+  await page.goto(`${BASE}/class/${empty.id}/hub`);
   await page.waitForSelector('.hr-tdesk [data-hrstaged]');
   assert.equal(await page.locator('.hr-tdesk [data-hrstaged]').count(), 3, 'kept between visits');
   // Hand out from the card: then Whole class. The sheet says nobody is in the class yet.
@@ -151,7 +151,7 @@ test('a tablet, a class with no students: stage on My desk, preview, hand out to
 
 test('a mouse at 1366 x 768: drag onto My desk, drag a card onto a student\'s desk, take it off; Select still edits', { timeout: 150000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(teacher, `/class/${full.id}/homeroom`, { width: 1366, height: 768 });
+  const { ctx, page, errors } = await open(teacher, `/class/${full.id}/hub`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
   assert.equal(await page.locator('.hr-tdesk [data-hrstaged]').count(), 0, 'each class has its own desk');
   // drag Fraction Pizza from the panel onto My desk
@@ -198,7 +198,7 @@ test('a mouse at 1366 x 768: drag onto My desk, drag a card onto a student\'s de
 
 test('a phone: My desk, its menu, nothing sideways', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
-  const { ctx, page, errors } = await open(teacher, `/class/${empty.id}/homeroom`, { width: 390, height: 844 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${empty.id}/hub`, { width: 390, height: 844 }, true);
   await page.waitForSelector('.hr-tdesk [data-hrstaged]');
   assert.ok(await noSideways(page));
   await page.tap('[data-hr="fit"]').catch(() => {});

@@ -70,7 +70,7 @@ const smallTargets = (page, sel, min) => page.evaluate(([s, m]) => [...document.
 
 test('the teacher: Students sign in from the ⋯ menu, the Sign-in panel, the cards, the projector', { timeout: 180000 }, async t => {
   if (skip) return t.skip(skip);
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
+  const T = await open(teacher, `/class/${cls.id}/hub`, { width: 1366, height: 768 });
   await T.page.waitForSelector('.hr-desk');
   await T.page.click('[data-hr="menu"]'); await T.page.click('[data-hr="signin"]');
   await T.page.waitForSelector('.sheet .hs-closed');
@@ -81,7 +81,7 @@ test('the teacher: Students sign in from the ⋯ menu, the Sign-in panel, the ca
   await shot(T.page, 'teacher-sheet');
   await T.page.keyboard.press('Escape');
   // The Sign-in panel: the box, every student, Password / Picture password.
-  await T.page.goto(`${BASE}/class/${cls.id}/homeroom/signin`);
+  await T.page.goto(`${BASE}/class/${cls.id}/hub/signin`);
   await T.page.waitForSelector('#hs-code .hs-qr svg');
   assert.equal(await T.page.locator('.hs-row').count(), kids.length);
   assert.equal(await T.page.locator('#hs-early').count(), 1, 'grade 1: picture passwords to start');
@@ -95,7 +95,7 @@ test('the teacher: Students sign in from the ⋯ menu, the Sign-in panel, the ca
   await T.page.waitForURL(/\/signin\/cards\//);
   assert.equal(await T.page.locator('.hs-card').count(), 1);
   // The whole class's cards, printed.
-  await T.page.goto(`${BASE}/class/${cls.id}/homeroom/signin`);
+  await T.page.goto(`${BASE}/class/${cls.id}/hub/signin`);
   await T.page.locator('form[data-api$="/signin/cards"] button').click();
   await T.page.click('dialog.ob-dialog [data-ob="ok"]');
   await T.page.waitForURL(/\/signin\/cards\//);
@@ -107,7 +107,7 @@ test('the teacher: Students sign in from the ⋯ menu, the Sign-in panel, the ca
   // The cards made new pictures: give Ada a known one again for the student test.
   Object.assign(adaPics, SI.newPicture(teacher, cls, ada.id).pics);
   // The projector: the code and QR beside the teacher's area.
-  const P = await open(teacher, `/class/${cls.id}/homeroom/projector`, { width: 1280, height: 720 });
+  const P = await open(teacher, `/class/${cls.id}/hub/projector`, { width: 1280, height: 720 });
   await P.page.waitForSelector('#hr-projsign:not([hidden]) svg');
   assert.equal((await P.page.textContent('#hr-projcode')).replace(/\s/g, ''), code);
   await P.page.waitForTimeout(300);

@@ -30,7 +30,7 @@ function boxHtml(v, { panelLink = '' } = {}) {
 
 /** Draw the box into el and keep it working. -> { refresh } */
 export function signinBox(el, classId, v, { panelLink = false } = {}) {
-  const link = panelLink ? `<a class="btn hr-chunk" href="/class/${esc(encodeURIComponent(classId))}/homeroom/signin">${iconHtml('⚙️', { size: 18 })} ${esc(tp('settings'))}</a>` : '';
+  const link = panelLink ? `<a class="btn hr-chunk" href="/class/${esc(encodeURIComponent(classId))}/hub/signin">${iconHtml('⚙️', { size: 18 })} ${esc(tp('settings'))}</a>` : '';
   let cur = v, busy = false;
   const draw = () => { el.innerHTML = boxHtml(cur, { panelLink: link }); };
   el.addEventListener('click', async e => {

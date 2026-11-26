@@ -95,7 +95,7 @@ test('a game, a lesson and a tool on the teacher\'s desk in a class with no stud
   assert.equal((await stagedApi(rivera, empty, { action: 'add', pick: 'T:hammer' })).json.code, 'badStage');
   assert.equal((await stagedApi(rivera, empty, { action: 'fly' })).json.code, 'badAction');
   // the page has it, and the board draws My desk
-  const page = await as(rivera)(`/class/${empty.id}/homeroom`);
+  const page = await as(rivera)(`/class/${empty.id}/hub`);
   assert.equal(page.status, 200);
   assert.match(page.text, /"staged":\[\{"id":"d[a-z0-9]+","kind":"game"/);
   // (every Manipulatives tool is in the panel's catalog now, each one handed out or put on My desk: docs/decisions.md
@@ -149,7 +149,7 @@ test('only the class\'s teachers; a co-teacher sees the games, not another teach
   assert.deepEqual(P.toDoFor(second.id, kid2.id), [], 'nothing to do');
   const proj = await as(rivera)(`/api/homeroom/${second.id}/state`);
   assert.ok(!leak(proj.text), 'the projector\'s poll');
-  assert.ok(!leak((await as(rivera)(`/class/${second.id}/homeroom/projector`)).text), 'the projector page');
+  assert.ok(!leak((await as(rivera)(`/class/${second.id}/hub/projector`)).text), 'the projector page');
   assert.equal(classLessons(second), 0);
 });
 

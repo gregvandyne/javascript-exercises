@@ -279,7 +279,7 @@ test('team desks: make, move, split; a handout on a team goes to every member; t
   assert.equal((await as(mia)(`/api/desk/${cls.id}/state`)).json.pv, undefined);
   // the teacher's board has the team; the class page data too
   assert.equal(H.roomOf(cls.id).teams.length, 1);
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom`)).text, new RegExp(`"teams":\\[\\{"id":"${t1.id}"`));
+  assert.match((await as(rivera)(`/class/${cls.id}/hub`)).text, new RegExp(`"teams":\\[\\{"id":"${t1.id}"`));
 
   // split: back at their own desks, the shared pad is gone
   r = await team({ action: 'split', id: t1.id });
@@ -306,5 +306,5 @@ test('Also post to Google Classroom: asked for without a linked class, the hando
   assert.equal(r.status, 200, r.text);
   assert.doesNotMatch(r.json.toast, /Google Classroom/);
   // the board says whether the toggle shows (it needs Classroom on, connected, allowed and linked)
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom`)).text, /"gc":false/);
+  assert.match((await as(rivera)(`/class/${cls.id}/hub`)).text, /"gc":false/);
 });

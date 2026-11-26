@@ -161,7 +161,7 @@ test('in the chat: Oomba drafts a card; the AI sees groups and titles, never a s
   assert.ok(j.ok);
   // what the AI got: tools for plans, the class's groups and counts, titles; no student's name or id
   assert.ok(calls[0].tools.some(t => t.name === 'draftDayPlan') && calls[0].tools.some(t => t.name === 'useSavedPlan'));
-  assert.match(calls[0].system, /Day plans \(this page is the class's Homeroom\)/);
+  assert.match(calls[0].system, /Day plans \(this page is the class's Hub\)/);
   const sent = JSON.stringify(calls);
   assert.doesNotMatch(sent, NAMES, 'never a student name');
   for (const k of [...kids, eli]) { assert.ok(!sent.includes(k.id), 'never a student id'); assert.ok(!sent.includes(k.username), 'never a username'); }
@@ -355,13 +355,13 @@ test('who: only the class\'s teachers; the projector and desks get part names an
   assert.deepEqual(Object.keys(proj.json.plan).sort(), ['done', 'endsAt', 'next', 'now', 'part', 'timesUp']);
   assert.deepEqual(proj.json.plan.part, { kind: 'work', title: 'Pizza fractions' });
   assert.deepEqual(proj.json.plan.next, { kind: 'exit', title: '' });
-  const projPage = await as(rivera)(`/class/${A.id}/homeroom/projector`);
+  const projPage = await as(rivera)(`/class/${A.id}/hub/projector`);
   assert.match(projPage.text, /id="hr-projplan"/);
   const desk = await as(kids[0])(`/api/desk/${A.id}/state`);
   assert.deepEqual(desk.json.plan.part, { kind: 'work', title: 'Pizza fractions' });
   for (const body of [JSON.stringify(proj.json.plan), JSON.stringify(desk.json.plan)]) { assert.doesNotMatch(body, NAMES); assert.doesNotMatch(body, /Stretch|Building|Fraction Pizza|Sudoku/); }
   // the board's page carries the pill's view; the companion knows this page is a Homeroom
-  const board = await as(rivera)(`/class/${A.id}/homeroom`);
+  const board = await as(rivera)(`/class/${A.id}/hub`);
   assert.match(board.text, /id="hr-plan"/);
   assert.match(board.text, /&quot;type&quot;:&quot;homeroom&quot;|"type":"homeroom"/);
   assert.equal(CO.pageOf(rivera, page(A)).type, 'homeroom');

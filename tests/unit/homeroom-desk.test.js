@@ -109,7 +109,7 @@ test('live class: only the class\'s teachers change it; students only read it; i
   assert.equal((await live(rivera, cls, 'resume')).json.live.paused, false);
   assert.equal((await live(rivera, cls, 'back')).json.live.bring, false);
   // The teacher's page shows it live.
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom`)).text, /"live":\{"since"/);
+  assert.match((await as(rivera)(`/class/${cls.id}/hub`)).text, /"live":\{"since"/);
   assert.equal((await live(rivera, cls, 'end')).json.live, null);
   assert.equal((await as(kids[0])(`/api/desk/${cls.id}/state`)).json.live, null);
 
@@ -174,7 +174,7 @@ test('the doodle pad: saved and loaded per student, cleaned and limited, only by
 test('the projector view: the class\'s teachers only; the teacher\'s area and the class, never a student\'s name or desk', async () => {
   H.saveArea(rivera, cls, { __ann: { notes: [{ id: 'n1', text: 'Long division', x: 0.1, y: 0.1, by: 't' }] } });
   H.saveSeats(rivera, cls, { preset: 'pods', seats: {} });
-  const p = await as(rivera)(`/class/${cls.id}/homeroom/projector`);
+  const p = await as(rivera)(`/class/${cls.id}/hub/projector`);
   assert.equal(p.status, 200);
   assert.match(p.text, /Room 4B/); assert.match(p.text, /Long division/); assert.match(p.text, /homeroom-projector\.js/);
   const everyone = [...S.roster(cls.id).filter(x => x.role === 'student')];
@@ -188,7 +188,7 @@ test('the projector view: the class\'s teachers only; the teacher\'s area and th
   assert.equal(st.status, 200); assert.equal(st.json.area.__ann.notes[0].text, 'Long division');
   for (const k of everyone) assert.ok(!st.text.includes(k.id) && !st.text.includes(k.display_name));
   for (const u of [kids[0], other, noPlan, null]) {
-    assert.equal((await as(u)(`/class/${cls.id}/homeroom/projector`)).status, 404);
+    assert.equal((await as(u)(`/class/${cls.id}/hub/projector`)).status, 404);
     assert.equal((await as(u)(`/api/homeroom/${cls.id}/state`)).status, 404);
   }
 });

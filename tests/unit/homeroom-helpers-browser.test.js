@@ -82,7 +82,7 @@ const noSideways = page => page.evaluate(() => document.documentElement.scrollWi
 test('supports from a desk\'s menu, the student\'s desk with Bigger text and Read to me', { timeout: 240000 }, async t => {
   if (skip) return t.skip(skip);
   for (const [vp, w] of [[WIDE, 1366], [TAB, 820]]) {
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, vp);
+    const T = await open(teacher, `/class/${cls.id}/hub`, vp);
     await T.page.waitForSelector(`.hr-namebtn[data-hrdmenu="${ada.id}"]`);
     await T.page.click(`.hr-namebtn[data-hrdmenu="${ada.id}"]`);
     await T.page.waitForSelector('.hr-supbox');
@@ -140,7 +140,7 @@ test('an aide\'s Homeroom: the Aide chip, the board and Hands, nothing that chan
   H.setLive(teacher, cls, 'start');
   q.run("INSERT INTO homeroom_live(class_id, user_id, hand, hand_at, updated_at) VALUES (?,?,?,?,?) ON CONFLICT(class_id,user_id) DO UPDATE SET hand=excluded.hand, hand_at=excluded.hand_at", cls.id, cleo.id, 'help', now(), now());
   for (const [vp, w] of [[WIDE, 1366], [TAB, 820]]) {
-    const A = await open(aide, `/class/${cls.id}/homeroom`, vp);
+    const A = await open(aide, `/class/${cls.id}/hub`, vp);
     await A.page.waitForSelector('.hr-aidechip');
     await A.page.waitForSelector('.hr-desk');
     assert.equal(await A.page.isVisible('#hr-panel'), false, 'no hand-out panel');
@@ -164,7 +164,7 @@ test('Sub link for today, the sub\'s page, and "While you were out"', { timeout:
   H.setLive(teacher, cls, 'end');
   let url = '';
   for (const [vp, w] of [[WIDE, 1366], [TAB, 820]]) {
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, vp);
+    const T = await open(teacher, `/class/${cls.id}/hub`, vp);
     await T.page.waitForSelector('.hr-desk');
     await T.page.click('[data-hr="menu"]');
     await T.page.click('[data-hr="sublink"]');
@@ -205,7 +205,7 @@ test('Sub link for today, the sub\'s page, and "While you were out"', { timeout:
     await U.ctx.close();
   }
   for (const [vp, w] of [[WIDE, 1366], [TAB, 820]]) {
-    const T = await open(teacher, `/class/${cls.id}/homeroom`, vp);
+    const T = await open(teacher, `/class/${cls.id}/hub`, vp);
     await T.page.waitForSelector('.hr-outnote');
     const text = await T.page.textContent('.hr-outnote');
     assert.match(text, /While you were out/); assert.match(text, /Answered 1 hand/); assert.match(text, /Started class/);

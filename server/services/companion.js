@@ -808,12 +808,12 @@ export const PAGE_TOOLS = Object.freeze({
 // The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js): on a class's Homeroom only.
 const PLAN_PICK = { type: 'object', description: 'What it hands out: ONE of gameId (a game id from getPageContext or searchGames), lessonId (one of the teacher\'s lessons) or make (a new lesson: { slug: "arithmetic-lab", op: add | subtract | multiply | divide, title } or { slug: "algebra-builder", mode: solve | multiply | factor, title }).', properties: { gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } };
 export const PLAN_TOOLS = Object.freeze([
-  { name: 'draftDayPlan', description: 'Draft (or redraft) the day plan for the class whose Homeroom the teacher has open: the WHOLE plan, parts in order (slides, work time, brain break, exit check), with minutes. The teacher sees it as a card with Use this plan; nothing goes on desks before that. Its result is the plan read back after the app checked it (minutes clamped, unknown games or groups left out): report only that.', input_schema: { type: 'object', required: ['parts'], properties: {
+  { name: 'draftDayPlan', description: 'Draft (or redraft) the day plan for the class whose Hub the teacher has open: the WHOLE plan, parts in order (slides, work time, brain break, exit check), with minutes. The teacher sees it as a card with Use this plan; nothing goes on desks before that. Its result is the plan read back after the app checked it (minutes clamped, unknown games or groups left out): report only that.', input_schema: { type: 'object', required: ['parts'], properties: {
     name: str('A short name, like "Fractions day".'), topic: str('The topic, a few words.'),
     parts: { type: 'array', maxItems: HP.PARTS_MAX, items: { type: 'object', required: ['kind', 'minutes'], properties: {
       kind: { type: 'string', enum: HP.KINDS }, minutes: { type: 'integer' }, title: str('Short, never a group or student name.'), instructions: str('For a game handout: what to do, one or two short sentences.'),
       pick: PLAN_PICK, groups: { type: 'array', description: 'Work time per group: a version for each group, by the group\'s name.', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } },
-  { name: 'draftWeekPlan', description: 'Draft (or redraft) the week plan for the class whose Homeroom the teacher has open: Monday to Friday (the class\'s school days), each day a SHORT day plan with the same parts as draftDayPlan. The teacher sees a card with the five days and Use this week; nothing is saved before that. Its result is the week read back after the app checked it: report only that.', input_schema: { type: 'object', required: ['days'], properties: {
+  { name: 'draftWeekPlan', description: 'Draft (or redraft) the week plan for the class whose Hub the teacher has open: Monday to Friday (the class\'s school days), each day a SHORT day plan with the same parts as draftDayPlan. The teacher sees a card with the five days and Use this week; nothing is saved before that. Its result is the week read back after the app checked it: report only that.', input_schema: { type: 'object', required: ['days'], properties: {
     name: str('A short name, like "Fractions week".'), topic: str('The topic, a few words.'), week: { type: 'string', enum: ['this', 'next'], description: 'This school week (the default) or next week.' },
     days: { type: 'array', maxItems: 5, items: { type: 'object', required: ['day', 'parts'], properties: {
       day: { type: 'string', enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] }, half: { type: 'boolean', description: 'A half day: at most 60 minutes.' }, name: str('A short name for the day, optional.'),
@@ -822,7 +822,7 @@ export const PLAN_TOOLS = Object.freeze([
         pick: PLAN_PICK, groups: { type: 'array', items: { type: 'object', required: ['group'], properties: { group: str('The group\'s name.'), gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } } } } } } } } } } } },
   { name: 'useSavedPlan', description: 'Use a day plan the teacher saved before ("use my Fractions day plan again"): it becomes a new card for this class, with Use this plan. Its result lists the saved plans when none fits the name.', input_schema: { type: 'object', required: ['name'], properties: { name: str('Words from the saved plan\'s name.') } } },
   { name: 'needsLook', description: 'The class\'s Needs a look list (rules the app computed: stuck on a handout, a hand up a long time, a question from home waiting, several tries without getting there, a reading quiz under 60 percent, work piling up after due). Students are placeholders like "Student A": never guess or ask for a name, never compare or rank students, keep it calm and short, and suggest one small next step each. Use it when the teacher asks who needs help, a look, or a summary of the list.', input_schema: { type: 'object', properties: {} } },
-  { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Homeroom supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
+  { name: 'writeSimplerWording', description: 'Write the simpler wording of a handout\'s instructions (Hub supports: students with Simpler wording see it instead). Use it when the teacher asks for simpler words, an easier version or a version for a reader who needs it. handoutId comes from getPageContext (handoutsWithInstructions). Short sentences, everyday words, the same task; at most 4 short lines. Never a student\'s name. Its result is the text as saved.', input_schema: { type: 'object', required: ['handoutId', 'text'], properties: { handoutId: str('A handout id from getPageContext.'), text: str('The simpler wording.') } } },
 ]);
 export const PLAN_TOOL_NAMES = Object.freeze(PLAN_TOOLS.map(x => x.name));
 /** The newest plan card in this teacher's chat for a class (the draft a change is made to), or null. */
@@ -1090,7 +1090,7 @@ export function runTool(name, input, ctx) {
     // ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
     case 'draftDayPlan': case 'useSavedPlan': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
-      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Day plans are made on a class\'s Homeroom.' }, step: { k: 'planNo' } };
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Day plans are made on a class\'s Hub.' }, step: { k: 'planNo' } };
       let r;
       if (name === 'useSavedPlan') {
         const row = HP.findSaved(u, String(i.name || ''));
@@ -1108,7 +1108,7 @@ export function runTool(name, input, ctx) {
     // A week plan (services/homeroom-week.js): Monday to Friday, a day plan each, checked like a day plan.
     case 'draftWeekPlan': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
-      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Week plans are made on a class\'s Homeroom.' }, step: { k: 'planNo' } };
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Week plans are made on a class\'s Hub.' }, step: { k: 'planNo' } };
       const prev = latestWeek(u, c.id);
       const r = HW.cleanWeek(u, c, i, { lang: ctx.lang, names: ctx.names });
       if (prev && !r.week.name) r.week.name = prev.week.name || '';
@@ -1121,7 +1121,7 @@ export function runTool(name, input, ctx) {
     // placeholder is which student (note.who) for the page to put the names back in the browser. The AI never sees one.
     case 'needsLook': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
-      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Needs a look is on a class\'s Homeroom.' }, step: { k: 'needsNo' } };
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Needs a look is on a class\'s Hub.' }, step: { k: 'needsNo' } };
       const v = NL.shown(c, NL.compute(c, { lang: ctx.lang }));
       const r = NL.forAi(u, v.items);
       ctx.out.who = { ...(ctx.out.who || {}), ...r.who };
@@ -1130,7 +1130,7 @@ export function runTool(name, input, ctx) {
     // Simpler wording for a handout (Homeroom supports; services/homeroom-supports.js): the text is checked for names.
     case 'writeSimplerWording': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
-      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Simpler wording is written on a class\'s Homeroom.' }, step: { k: 'simplerNo' } };
+      if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Simpler wording is written on a class\'s Hub.' }, step: { k: 'simplerNo' } };
       const r = SUP.setSimple(u, c, String(i.handoutId || ''), cleanText(u, String(i.text || '').slice(0, SUP.SIMPLE_MAX), ctx.names), { by: 'oomba' });
       if (!r.ok) return { result: { error: r.code === 'notFound' ? 'No handout of this class has that id.' : 'That wording could not be saved.' }, step: { k: 'simplerNo' } };
       return { result: { saved: true, text: r.text, note: 'Students with Simpler wording see this on their desk and over the game. Say so in one sentence.' }, step: { k: 'simpler' } };
@@ -1196,7 +1196,7 @@ function system(u, lang, page, settings) {
     'You are Oomba, a warm and practical teaching sidekick on Oomba Academy, talking with a teacher. Help them find lessons, books and lesson plans on Oomba, change their classroom dashboard, and plan their teaching. Be brief: two to five short sentences, or a short list.',
     `Write in ${L[lang] || 'English (US)'} unless the teacher writes in another language. Plain words. Never use em dashes.`,
     // docs/decisions.md "Teachers say lessons": the words teachers see everywhere else on their pages.
-    'Words: with teachers, call a single playable thing on Oomba (an Oomba game, a game the teacher built, a live class game, a handout) a "lesson", and a lesson with several steps (read, play, build steps) or a Homeroom lesson made in the lesson builder a "lesson plan". Never say "game" for these to the teacher; tools and markers keep their own names ([[game:<id>]], searchGames). A game a student built is still a game.',
+    'Words: with teachers, call a single playable thing on Oomba (an Oomba game, a game the teacher built, a live class game, a handout) a "lesson", and a lesson with several steps (read, play, build steps) or a Hub lesson made in the lesson builder a "lesson plan". Call the class page where a teacher runs class (the "homeroom" page type) "the Hub", or "Hub" where a label is short (its tab, Everyone to the Hub); it used to be called Homeroom, so never say Homeroom to the teacher. Never say "game" for these to the teacher; tools and markers keep their own names ([[game:<id>]], searchGames). A game a student built is still a game.',
     'Students\' names are never sent to you: a placeholder like "[student 1]" stands where one was (the same number is the same student in this chat; a plain "[student]" is someone Oomba cannot give points to). Never ask for, guess or repeat a student\'s name, and never ask for students\' work, answers or photos of people.',
     'Points: when the teacher asks to give a point to a student or the whole class, call givePoint (target "class" or the placeholder exactly as written, and the reason). The card in the chat shows who got it, with Undo, or a short choice when something is unclear. In your answer say it briefly ("Done!" or "Pick on the card"), never the placeholder. If the teacher named someone who is not a placeholder, that person is not one of their students: say so calmly and give nothing.',
     'Use your tools before you answer: getPageContext to see where the teacher is, the search tools to find real things on Oomba. Only recommend games, books and lessons your tools returned. Mention one as a card by writing its marker on its own line: [[game:<id>]], [[book:<id>]], [[lesson:<id>]] or [[gen:<id>]]. At most four cards. Say why the best one fits (grade, standard, minutes).',

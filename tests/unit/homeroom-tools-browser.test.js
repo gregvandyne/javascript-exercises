@@ -59,7 +59,7 @@ async function context(viewport = { width: 1366, height: 768 }, touch = false) {
 }
 async function board(ctx, c = cls) {
   const page = await ctx.newPage(); const errors = []; page.on('pageerror', e => errors.push(String(e)));
-  await page.goto(`${BASE}/class/${c.id}/homeroom`); await page.waitForSelector('.hr-desk, .hr-nostudents'); await page.waitForTimeout(400);
+  await page.goto(`${BASE}/class/${c.id}/hub`); await page.waitForSelector('.hr-desk, .hr-nostudents'); await page.waitForTimeout(400);
   const b = await page.locator('.hr-area').boundingBox();
   const at = (fx, fy) => ({ x: b.x + b.width * fx, y: b.y + b.height * fy });
   return { page, errors, at, box: b };
@@ -345,7 +345,7 @@ test('the student desk\'s window and the projector draw exactly what the board d
   // the projector
   const P = await T.ctx.newPage();
   const perr = []; P.on('pageerror', e => perr.push(String(e)));
-  await P.goto(`${BASE}/class/${cls.id}/homeroom/projector`); await P.waitForSelector('.hr-projarea .hr-draw');
+  await P.goto(`${BASE}/class/${cls.id}/hub/projector`); await P.waitForSelector('.hr-projarea .hr-draw');
   assert.equal(await drawn(P, '.hr-projarea .hr-draw'), onBoard, 'the projector draws the same');
   assert.deepEqual(await styles(P, '.hr-projarea'), bs);
   await shot(P, 'projector');
