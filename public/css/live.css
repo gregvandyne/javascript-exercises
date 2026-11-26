@@ -552,3 +552,95 @@ body[data-lv-mode="doodle"] #toasts { inset-block-end: auto; inset-block-start: 
 .lv-wiz .su-nav[hidden] { display: none; }
 .lv-wiz .lv-recent-wrap[hidden] { display: none; }
 .lv-tabpanel > .lv-msg { border: 0; padding: 0; }
+
+/* ================================================================ The new look (docs/decisions.md "Live games: the new
+   look"): the same Oomba chrome as Homeroom, the class views and Manipulatives. Cream cards on the page with no hairline
+   and a soft shadow, 20px corners, chunky pill buttons with a bottom edge, fields in the site's look, a bold join code
+   card on the projector, pill tabs in the Teacher view, calm result cards. Tokens only, so dark mode follows; the games'
+   own art inside the frame is unchanged. */
+/* cards */
+.lv-panel, .lv-joinbox, .lv-controls, .lv-teamsbox, .lv-dialog, .lv-setlist li, .lv-cohost-row, .lv-dash-card,
+.lv-results > .lv-group, .lv-results > .lv-details, .lv-results > .lv-run-log, .lv-results > .lv-homework, .lv-sets .lv-panel {
+  border: 0; border-radius: var(--r); background: var(--card); box-shadow: var(--shadow);
+}
+.lv-player, .lv-dbar, .lv-tbar, .lv-bar:not(header) { border: 2px solid var(--line); border-radius: var(--r-sm); }
+.lv-dash-card[data-team] { border-inline-start: 6px solid var(--team); }
+.lv-dbar.is-right, .lv-bar-right { border: 3px solid var(--ok); }
+.lv-setlist li { padding: 12px 16px; min-block-size: 56px; }
+.lv-cohost-row { padding: 10px 14px; }
+.lv-dialog { padding: 20px; box-shadow: var(--shadow-lg); }
+.lv-dialog::backdrop { background: color-mix(in srgb, var(--brand-ink) 45%, transparent); }
+/* chunky pill buttons: the plain ones get a 2px edge and a bottom edge like Homeroom's, all of them press down */
+.lv .btn { font-weight: 800; border-radius: 999px; }
+.lv .btn:not(.btn-primary):not(.btn-hot):not(.btn-danger):not(.btn-danger-solid):not(.btn-ghost):not([aria-pressed="true"]):not(.is-on):not(.lv-team-btn) {
+  background: var(--card); box-shadow: inset 0 0 0 2px var(--line), 0 3px 0 var(--line);
+}
+.lv .btn:not(.btn-primary):not(.btn-hot):not(.btn-danger):not(.btn-danger-solid):not(.btn-ghost):not([aria-pressed="true"]):not(.is-on):not(.lv-team-btn):hover { background: var(--hover); }
+.lv .btn:not(.btn-primary):not(.btn-hot):not(.btn-danger):not(.btn-danger-solid):not(.btn-ghost):not([aria-pressed="true"]):not(.is-on):not(.lv-team-btn):active { box-shadow: inset 0 0 0 2px var(--line), 0 1px 0 var(--line); }
+.lv .btn-danger { background: var(--card); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--danger) 45%, transparent), 0 3px 0 color-mix(in srgb, var(--danger) 45%, transparent); }
+.lv .btn-danger:active { box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--danger) 45%, transparent), 0 1px 0 color-mix(in srgb, var(--danger) 45%, transparent); }
+.lv .btn[aria-pressed="true"]:not(.lv-team-btn), .lv .btn.is-on { background: var(--current); color: var(--on-current); box-shadow: 0 3px 0 var(--accent-press); }
+.lv .btn-big { border-radius: 999px; }
+/* the projector's and the player's header: a card bar with the app mark and the Live dot */
+header.lv-bar { padding: 8px 12px; border: 0; border-radius: var(--r); background: var(--card); box-shadow: var(--shadow); min-block-size: 60px; }
+header.lv-bar .lv-title { font-size: 1.15rem; }
+.lv-markhome { display: inline-flex; flex: none; border-radius: var(--r-sm); }
+.lv-markhome svg { inline-size: 40px; block-size: 40px; display: block; }
+.lv-livedot { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; background: var(--card-2); font-weight: 800; color: var(--ok); white-space: nowrap; }
+.lv-livedot::before { content: ''; inline-size: 10px; block-size: 10px; border-radius: 50%; background: var(--danger); box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 22%, transparent); }
+/* the stage: a calm card-2 well behind the game while it loads (the game draws over all of it) */
+.lv-stage { background: var(--card-2); border-radius: var(--r); box-shadow: var(--shadow); }
+/* the join code card on the projector: an Ink edge like Homeroom's class sign-in card, the code in big Bricolage */
+.lv-host > .lv-joinbox { border: 3px solid var(--text); border-radius: 24px; padding: 18px; box-shadow: var(--shadow-lg); }
+.lv-bigcode { font-family: var(--font); letter-spacing: .1em; }
+.lv-label { font-weight: 800; text-transform: uppercase; letter-spacing: .08em; font-size: .85rem; color: var(--text-2); }
+.lv-joinat { font-weight: 700; }
+.lv-qr { box-shadow: 0 0 0 2px var(--line); }
+.lv-count { display: inline-flex; align-items: center; gap: 6px; padding: 4px 14px; border-radius: 999px; background: var(--accent-soft); color: var(--accent-ink); }
+/* the controls: section rules in the site's hairline, the message field in the site's look */
+.lv-controls { padding: 16px; }
+.lv-rosterbox > .lv-h2 { text-align: start; font-size: 1.15rem; }
+/* the join page: a bigger, friendlier code field and one centred card */
+.lv-join { max-inline-size: 560px; }
+.lv-join .lv-top { justify-content: center; padding-block: 8px; }
+.lv-join .lv-panel { padding: 24px; gap: 14px; }
+.lv-code-input { min-block-size: 72px; border-radius: var(--r); border-width: 3px; font-weight: 800; letter-spacing: .18em; }
+.lv-card .lv-portrait { background: var(--accent-soft); border-radius: 50%; }
+/* the player's page: the waiting and status line as a soft pill, emotes as one row of chunky chips */
+.lv-play .lv-phase:not(:empty) { align-self: center; padding: 6px 18px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-size: 1.1rem; }
+.lv-emotes { justify-content: center; }
+.lv-emotes .btn { min-block-size: 48px; }
+.lv-me { padding: 2px 12px 2px 2px; padding-inline: 2px 12px; border-radius: 999px; background: var(--card-2); }
+.lv-end { gap: 14px; padding: 24px; }
+.lv-end .lv-place { font-size: clamp(1.4rem, 5vw, 2rem); }
+/* the Teacher view: a card bar and pill tabs (like Homeroom's tabs) */
+.lv-dash-bar { background: var(--bg); border-block-end: 0; padding-block: 12px 8px; }
+.lv-dash-code { padding: 2px 12px; border-radius: 999px; background: var(--card); box-shadow: inset 0 0 0 2px var(--line); letter-spacing: .06em; }
+.lv-tabs { gap: 6px; padding: 4px; border: 0; border-radius: 999px; background: var(--card-2); box-shadow: inset 0 0 0 2px var(--line); }
+.lv-tab { border: 0; border-radius: 999px; padding-inline: 16px; color: var(--text-2); }
+.lv-tab[aria-selected="true"] { background: var(--current); color: var(--on-current); }
+.lv-tab:focus-visible { outline-offset: 2px; }
+@media (min-width: 900px) { .lv-dash > .lv-tabpanel { border: 0; border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; } }
+/* results: every section a card, the class's share of right answers big and calm */
+.lv-results > .lv-group, .lv-results > .lv-details, .lv-results > .lv-run-log, .lv-results > .lv-homework { padding: 20px; }
+.lv-results > .lv-group > h2 { margin: 0 0 4px; }
+.lv-class-total { gap: 4px; }
+.lv-class-pct { margin: 0; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 800; color: var(--accent-ink); }
+.lv-class-pct b { font-weight: 800; }
+.lv-results-acts { padding-block: 4px; }
+/* the sets and Make pages: rows as cards with room to breathe */
+.lv-setlist { gap: 10px; }
+.mk-steps li { border-radius: 999px; }
+.mk-steps li[aria-current="step"] { background: var(--current); border-color: var(--current); color: var(--on-current); }
+@media print {
+  .lv-results > .lv-group, .lv-results > .lv-details { box-shadow: none; border: 1px solid #000; }
+}
+/* a player's card sits inside the Teacher view's card: an edge instead of a second shadow */
+.lv-dash-card { box-shadow: none; border: 2px solid var(--line); border-radius: var(--r-sm); background: var(--card); }
+.lv-dash-card[data-team] { border-inline-start: 6px solid var(--team); }
+/* phones and narrow windows: the header keeps one row (the app mark steps aside) */
+.lv-host > header.lv-bar { flex-wrap: nowrap; }
+.lv-host > header.lv-bar .lv-title { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 600px) { .lv-markhome { display: none; } }
+/* /teach/make uses .lv-controls as a plain button row inside its card: no second card there */
+.lv-make .lv-controls { background: none; box-shadow: none; border: 0; padding: 0; }

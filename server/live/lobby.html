@@ -6,14 +6,14 @@
 <meta name="oomba-live" content="2d">
 <title>Lobby</title>
 <style>
-  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #1d2340; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #bfe8ff; font-family: var(--ok-font, system-ui, sans-serif); color: #141414; }
   #view, #flat { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
   [hidden] { display: none !important; }
-  .lb-banner { position: fixed; inset-inline: 0; inset-block-start: max(10px, env(safe-area-inset-top)); margin: 0 auto; width: max-content; max-width: 92vw; background: #1d2340; color: #fff; border-radius: 18px; padding: 8px 18px; font-weight: 800; font-size: clamp(16px, 4vw, 26px); text-align: center; }
+  .lb-banner { position: fixed; inset-inline: 0; inset-block-start: max(10px, env(safe-area-inset-top)); margin: 0 auto; width: max-content; max-width: 92vw; background: #141414; color: #FFFDF2; border-radius: 999px; padding: 8px 18px; font-weight: 800; font-size: clamp(16px, 4vw, 26px); text-align: center; }
   .lb-banner:empty { display: none; }
   .lb-stick { position: fixed; inset-block-end: 18px; inset-inline-start: 18px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,.35); border: 3px solid rgba(29,35,64,.25); touch-action: none; }
   .lb-teams { position: fixed; inset-inline: 0; inset-block-end: max(10px, env(safe-area-inset-bottom)); display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; padding-inline: 150px 10px; pointer-events: none; }
-  .lb-team { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-weight: 800; border: 2px solid #1d2340; }
+  .lb-team { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px; font-weight: 800; border: 2px solid #141414; }
   .lb-team canvas { width: 20px; height: 20px; }
   @media (max-width: 500px) { .lb-teams { padding-inline: 10px; inset-block-end: auto; inset-block-start: 64px; } }
   .lb-stick i { position: absolute; left: 35px; top: 35px; width: 50px; height: 50px; border-radius: 50%; background: rgba(29,35,64,.55); }

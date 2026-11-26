@@ -15769,3 +15769,34 @@ push-board dead end, End session's confirmation and the answer box's place, were
 - **Asked of the Manipulatives side**: inside Homeroom (`mp-inhr`), drop the room's own Live bar and Raise hand and the
   second "My square" (Homeroom's player bar has them), and on a phone put a practice set's card below the board or make
   it collapsible, so more of the board shows above the fold.
+
+## Live games: the new look (26 Nov 2026)
+
+The owner: "Make sure all live games have the new UI look. Currently it looks like it's in the old version." The live
+pages already used the site's tokens, but in the older shapes: hairline-bordered boxes, flat buttons, a plain white code
+field, underlined tabs, results as bare text. They now wear the same chrome as Homeroom, the class views and Manipulatives.
+- **Where**: every live surface: the projector (lobby with the join code and QR, question, reveal, Brain Board's board,
+  Would You Rather Live, Atlas Quest Live, Tug of Math Live, Doodle Hoot Live, Quest Race, question set games), the Teacher
+  view (`/live/host/:sid/dash`), `/join` and the player's page, the results page, `/live/sets`, `/teach/make`, the "Host a
+  live lesson" landing (`/live`) and the quick game (`/live/quick`). One block at the end of `public/css/live.css` and a
+  few markup touches in `server/views/live.js`; no game logic, socket message or data changed.
+- **Look**: Cream cards (`--card`) on the page (`--bg`) with no hairline and the soft `--shadow`, 20px corners
+  (`--r`); every plain button a chunky pill with a 2px `--line` edge and a 3px bottom edge that presses down, Mint primary
+  on its Leaf edge, End game in the danger edge, a pressed toggle (Sound on, Eyes up while on) an Ink pill (`--current`).
+  The projector's header is a card with the Oomba app mark (hidden on phones) and the red Live dot (`homeroom.live`, no new
+  string). The join code card has Homeroom's class sign-in look: a 3px Ink edge (`--text`, so Cream in dark), 24px
+  corners, the code in big Bricolage with wide tracking, "N of M players" in a Mint pill. `/join`'s code field is a real
+  `.input` (3px edge, 72px tall). The Teacher view has pill tabs and its Start in Mint, End game in red, Eyes up with its
+  Oomba icon (it printed a raw emoji). Results: each section is a card and the class's share of right answers is big and
+  calm in `--accent-ink`. The stage behind a loading game is `--card-2` instead of a fixed sky blue. Everything is a token,
+  so dark mode follows (theme.test.js: no theme rules outside app.css); reduced motion is app.css's global rule.
+- **Games keep their art**: Question Battle, Brain Board, Quest Race, Atlas Quest, Would You Rather, Tug of Math and
+  Doodle Hoot already had the Crossword classroom look (24 Nov) and draw inside the frame as before; their answer tiles
+  keep a shape beside each color. The platform lobby (`server/live/lobby.html`) keeps its meadow; its banner and team chips
+  are Ink on Cream instead of the old navy.
+- **No rankings**: unchanged ("No leaderboards"): calm "everyone's answers" summaries, teams only on the team podium.
+- **Tests**: `tests/unit/live-look-browser.test.js` (Chromium, the live socket on the upgrade listener as in
+  server/index.js): the projector, `/join` and the player page use Bricolage Grotesque, the page, card and text colors,
+  pill buttons with their bottom edge and the Ink-edged code card, in light and dark; a player at 390 px and on a
+  Chromebook never scrolls sideways and every page button is 44 px; Question Battle's and Brain Board's answers on a phone
+  are 44 px with a shape. `live-entry.test.js` expects the code field's `input` class.
