@@ -144,9 +144,15 @@ export function assign(u, { classId, tasks, count, opensAt = null, dueAt = null 
 export const hrefOf = (clId, stepId) => `/manipulatives#set/${encodeURIComponent(clId)}/${encodeURIComponent(stepId)}`;
 
 // ---------------------------------------------------------------- live boards for Homeroom's watching desks (memory only)
-/** classId -> Map(sid -> { v, at, on (class lesson), slug, state, space, i, n, prompt, box }) */
+/** classId -> Map(sid -> { v, at, on (class lesson), title, slug, state, space, i, n, prompt, box, key }). The board and
+ *  the problem it is for come in one push and are kept as one entry (key: the task and variation), so they are never
+ *  shown apart. The page pushes only when something changed, so an entry lasts while its set stays open in the desk's
+ *  player: Homeroom shows it only while the desk's pulse says that set is open (services/homeroom-tools.js boardsOf),
+ *  and forgets it when the player closes or moves on (services/homeroom-live.js pulse), at End class, when the student
+ *  leaves the class, and after LIVE_MS with no push at all. */
 const live = new Map();
-export const LIVE_MS = 60e3;
+export const LIVE_MS = 20 * 60e3;
+let liveV = 0;
 export const _resetLive = () => live.clear();
 /** A student's board on an assigned set, from the page: only their own open assignment, small, memory only. */
 export function putLive(u, clId, { state, space, i, n, prompt, box } = {}) {
@@ -158,18 +164,20 @@ export function putLive(u, clId, { state, space, i, n, prompt, box } = {}) {
   if (!json || json.length > WORK_MAX) return fail('tooBig');
   const qs = setFor(step, u.id), k = Math.max(0, Math.min(qs.length - 1, Math.floor(Number(i)) || 0)), x = qs[k] && taskOf(qs[k].id);
   if (!x) return fail('notFound');
-  const v = variation(qs[k].id, qs[k].seed);
+  const v = variation(qs[k].id, qs[k].seed), lesson = L.getLesson(cl.lesson_id);
   const sp = space && typeof space === 'object' ? { w: Math.max(50, Math.min(4000, Math.round(+space.w) || 600)), h: Math.max(50, Math.min(2400, Math.round(+space.h) || 400)) } : { w: 600, h: 400 };
   let r = live.get(c.id); if (!r) { r = new Map(); live.set(c.id, r); }
-  const old = r.get(u.id);
-  r.set(u.id, { v: (old ? old.v : 0) + 1, at: now(), on: cl.id, slug: x.slug, state: json, space: sp, i: k, n: qs.length, prompt: v.prompt, box: typeof box === 'string' ? box.slice(0, 100) : '' });
+  r.set(u.id, { v: ++liveV, at: now(), on: cl.id, title: (lesson && lesson.title) || x.task.title, slug: x.slug, state: json, space: sp, i: k, n: qs.length, prompt: v.prompt, key: `${qs[k].id}:${qs[k].seed}`,
+    box: typeof box === 'string' ? box.slice(0, 100) : '' });
   return ok();
 }
-/** The fresh boards of these students (Map sid -> entry), for the teacher's board. */
+/** The boards of these students still kept (Map sid -> entry), for the teacher's board. */
 export function liveOf(classId, sids) {
   const r = live.get(classId), out = new Map(); if (!r) return out;
   for (const sid of sids) { const e = r.get(sid); if (!e) continue; if (now() - e.at > LIVE_MS) { r.delete(sid); continue; } out.set(sid, e); }
   return out;
 }
+/** Is this student's set finished (its step_progress done)? A finished set's board is not shown. */
+export const setDone = (clId, userId) => !!q.get("SELECT 1 FROM step_progress WHERE class_lesson_id=? AND user_id=? AND status='done' LIMIT 1", String(clId || ''), String(userId || ''));
 export const forgetLive = (classId, sid = null) => { if (!sid) live.delete(classId); else { const r = live.get(classId); if (r) r.delete(sid); } };
 S.onClassLeave(({ classId, userId = null } = {}) => { if (classId) forgetLive(classId, userId); });

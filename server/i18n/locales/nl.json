@@ -2077,7 +2077,8 @@
         "tapWhere": "Tik nu op een tafel, een groep, Hele klas of Mijn bureau.",
         "tapMine": "Tik nu op Mijn bureau om het daar te leggen.",
         "toolSoon": "Hulpmiddelen uitdelen komt hierna. Leg het op Mijn bureau om het daar te openen.",
-        "pickFirst": "Kies eerst links een les en tik dan op Mijn bureau."
+        "pickFirst": "Kies eerst links een les en tik dan op Mijn bureau.",
+        "previewNote": "Voorbeeld: je antwoorden worden niet bewaard"
       },
       "wholeClass": "Hele klas · {count}",
       "editGroups": "Groepen",
@@ -2300,7 +2301,18 @@
         "gcAlso": "Ook in Google Classroom plaatsen",
         "gcHint": "Het gaat als opdracht naar je gekoppelde Classroom-klas, met het cijfer dat je hier koos.",
         "gcWholeOnly": "Alleen opdrachten voor de hele klas gaan naar Google Classroom: daar zouden ze iedereen bereiken.",
-        "taskScoreHint": "Score: hoeveel vragen de eerste keer goed waren."
+        "taskScoreHint": "Score: hoeveel vragen de eerste keer goed waren.",
+        "toolChip": "Oefenen",
+        "toolState": "Vrij oefenen",
+        "toolMeta": "Materialen · vrij oefenen",
+        "roomOpen": "Ruimte open",
+        "roomClosed": "Ruimte voorlopig dicht",
+        "openRoom": "Ruimte openen",
+        "fromClassroom": "Toegewezen in Classroom. Wijzig of verwijder het daar.",
+        "oneToolBusy": "{tool} ligt nu op de tafels. Eén materiaal tegelijk: haal het van alle tafels om {next} uit te delen.",
+        "oneToolRoom": "Er loopt een {tool}-ruimte in deze klas. Eén ruimte tegelijk: sluit die om {next} uit te delen.",
+        "takeOffAll": "Van alle tafels halen",
+        "openThatRoom": "Die ruimte openen"
       },
       "team": {
         "label": "Teamtafel",
@@ -2377,7 +2389,8 @@
         "count": "Vragen",
         "countHint": "1 tot 10 vragen per leerling.",
         "preview": "Probeer het"
-      }
+      },
+      "endConfirmTools": "Les voor iedereen beëindigen? Tafels en het leraarsgedeelte blijven zoals ze zijn. Materialen op de tafels ({tools}) gaan eraf en hun ruimte sluit."
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -5177,7 +5190,8 @@
         "full": "Meer kun je niet tekenen. Gum eerst wat lijnen.",
         "notHere": "Teken buiten de andere tafels en het lerarenvak."
       },
-      "manipKind": "Oefenen · {count, plural, one {# som} other {# sommen}}"
+      "manipKind": "Oefenen · {count, plural, one {# som} other {# sommen}}",
+      "pageKind": "Les · {count, plural, one {# stap} other {# stappen}}"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -5387,7 +5401,11 @@
         "notStarted": "Niet begonnen",
         "none": "Vandaag is nog niets uitgedeeld.",
         "weeks": "Voortgang over weken staat op het tabblad Klas.",
-        "classroom": "Klas openen"
+        "classroom": "Klas openen",
+        "setDone": "Klaar · {right} van {n} in één keer goed",
+        "setAt": "Vraag {i} van {n} · {right} in één keer goed",
+        "toolOpen": "{count, plural, one {# heeft het open} other {# hebben het open}}",
+        "toolLine": "Materialen · vrij oefenen, telt niet mee"
       },
       "hands": {
         "label": "{count, plural, =0 {Handen, geen omhoog} one {Handen, # omhoog} other {Handen, # omhoog}}",
@@ -5440,7 +5458,9 @@
           "hideOff": "De cursor van {name} is weer zichtbaar",
           "comingOn": "{name} ziet dat je eraan komt",
           "comingOff": "Melding van de tafel van {name} gehaald"
-        }
+        },
+        "toolNow": "Nu open · vrij oefenen",
+        "toolOn": "Op hun tafel · vrij oefenen"
       }
     },
     "homeroom-plan": {

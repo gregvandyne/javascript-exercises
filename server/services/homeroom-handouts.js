@@ -122,6 +122,30 @@ function rowsOf(classId) {
       JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story','manip')
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
 }
+/** Class lessons assigned to the class in Classroom (Assign on the class page, Assign from the Manipulatives page, a
+ *  game's Assign, Google Classroom's) that are not Homeroom handouts: they show on desks too, after the handouts
+ *  (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom"). The same shape as rowsOf, with cls (from
+ *  Classroom; never removed from Homeroom: Classroom changes it) and page (a lesson of several steps, or of another kind
+ *  of step: its card opens the lesson page; a Manipulatives practice set or a one-game lesson opens in the desk's player
+ *  like a handout). */
+function classRows(classId) {
+  return q.all(`SELECT cl.id, 0 in_order, NULL grade, '' target, cl.assigned_at created_at, NULL hl, '' version, 0 problems, '' batch, NULL due_min, '' due_zone, cl.due_at, cl.opens_at, cl.lesson_id,
+      l.title ltitle, (SELECT COUNT(*) FROM lesson_steps x WHERE x.lesson_id=cl.lesson_id) nsteps, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id, s.items
+      FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id JOIN lesson_steps s ON s.id=(SELECT y.id FROM lesson_steps y WHERE y.lesson_id=cl.lesson_id ORDER BY y.position LIMIT 1)
+      WHERE cl.class_id=? AND cl.removed_at IS NULL AND NOT EXISTS (SELECT 1 FROM homeroom_handouts h WHERE h.class_lesson_id=cl.id) ORDER BY cl.assigned_at, cl.id`, classId)
+    .map(r => {
+      const one = r.nsteps === 1 && (r.step_kind === 'manip' || r.step_kind === 'game');
+      return { ...r, cls: true, grade: r.step_kind === 'manip' ? 'score' : 'completion', ...(one ? (r.step_kind === 'manip' ? { title: r.ltitle || r.title } : {}) : { page: true, title: r.ltitle || r.title, step_kind: 'page' }) };
+    });
+}
+/** Steps done per student on Classroom lessons of several steps: Map 'clId:userId' -> count. */
+function stepsDone(rows) {
+  const ids = rows.filter(r => r.page).map(r => r.id); if (!ids.length) return new Map();
+  return new Map(q.all(`SELECT class_lesson_id cl, user_id u, COUNT(*) n FROM step_progress WHERE status='done' AND class_lesson_id IN (${ids.map(() => '?').join(',')}) GROUP BY class_lesson_id, user_id`, ...ids).map(r => [`${r.cl}:${r.u}`, r.n]));
+}
+/** A Classroom lesson of several steps on a desk: done when every step is, else how many steps are done. */
+const pageProg = (r, n) => ({ done: !!r.nsteps && n >= r.nsteps, pct: r.nsteps ? Math.min(r.nsteps && n >= r.nsteps ? 100 : 95, Math.round((100 * n) / r.nsteps)) : 0 });
+const PAGE_ICON = '📚';
 const READ_ICON = '📖';
 /** A Manipulatives practice set's part of a handout: { manip: { slug (the tool), tasks, n (questions) } } or {}. */
 function manipPart(r) {
@@ -136,6 +160,11 @@ function manipPct(p, r) {
   if (!p) return 0; if (p.status === 'done') return 100;
   const m = manipPart(r).manip, n = m ? m.n : 0, done = [...String(p.marks || '')].filter(ch => ch === '1' || ch === '0').length;
   return n ? Math.min(95, Math.round((100 * done) / n)) : 0;
+}
+/** A practice set's questions for one student (Today at a glance): { answered, right (first time), n }. */
+function manipQs(p, r) {
+  const m = manipPart(r).manip, n = m ? m.n : 0, marks = [...String((p && p.marks) || '')];
+  return { answered: marks.filter(ch => ch === '1' || ch === '0').length, right: marks.filter(ch => ch === '1').length, n };
 }
 /** A Reading handout's own part of a handout: the book it names ({ book: card | null }, null for their own choice). */
 const readingPart = r => (r.step_kind === 'story' ? { reading: { book: HR.bookCard(r.story_id ? LIB.getBook(r.story_id) : null) } } : {});
@@ -169,13 +198,13 @@ function deskOrder(cards) {
 
 /** What the teacher's board shows: every open handout ({ id, title, icon, instructions, inOrder, grade, target, due,
  *  students: n }) and each current student's cards ({ desks: { studentId: [{ id, done, pct, score, locked, next }] } }). */
-export function boardView(c, locale = 'en') {
-  const rows = rowsOf(c.id), picks = L.picksIn(c.id), ids = H.studentsOf(c.id).map(s => s.id), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id);
+export function boardView(c, locale = 'en', { assigned = true } = {}) {
+  const rows = [...rowsOf(c.id), ...(assigned ? classRows(c.id) : [])], picks = L.picksIn(c.id), ids = H.studentsOf(c.id).map(s => s.id), prog = progressOf(rows.filter(r => !r.page)), stepsN = stepsDone(rows), cache = new Map(), fb = feedbackOf(c.id);
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = HR.infosOf(c.id, rds);
   const handouts = rows.map(r => {
     const g = r.game_id ? gameInfo(cache, r.game_id, locale) : null, who = picks.get(r.id);
-    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : r.step_kind === 'manip' ? manipIcon(r) : (g && g.icon) || '🎮', ...readingPart(r), ...manipPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, ...dueFields(c, r),
-      students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
+    return { id: r.id, title: titleOf(r, g), icon: r.page ? PAGE_ICON : r.step_kind === 'story' ? READ_ICON : r.step_kind === 'manip' ? manipIcon(r) : (g && g.icon) || '🎮', ...readingPart(r), ...manipPart(r), instructions: r.page ? '' : r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target || (who ? 'desk' : 'all'), ...dueFields(c, r),
+      students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}), ...(r.cls ? { cls: true } : {}), ...(r.page ? { page: true, n: r.nsteps } : {}) };
   });
   const desks = {}, t = now(), dueBy = new Map(handouts.map(h => [h.id, h.dueBy])), excused = new Set(AT.missedPairs(c.id, t));
   for (const sid of ids) {
@@ -185,20 +214,23 @@ export function boardView(c, locale = 'en') {
       const done = !!p && p.status === 'done', by = dueBy.get(r.id);
       // after due (the teacher's board only, said calmly): not finished past its due time, unless it was given while they
       // were absent ("Missed while you were out" is never after due by itself)
+      if (r.page) { const pp = pageProg(r, stepsN.get(`${r.id}:${sid}`) || 0); return { id: r.id, inOrder: false, done: pp.done, pct: pp.pct, score: null, ...(!pp.done && !!by && t > by && !excused.has(`${sid}:${r.id}`) ? { late: true } : {}) }; }
       const late = !done && !!by && t > by && !excused.has(`${sid}:${r.id}`);
-      return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : r.step_kind === 'manip' ? manipPct(p, r) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
+      return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : r.step_kind === 'manip' ? manipPct(p, r) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}),
+        ...(r.step_kind === 'manip' ? { qs: manipQs(p, r) } : {}) };
     }));
   }
   // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at
   // home"): the board dims an absent desk and leaves it out of its counts
   // Manipulatives tools handed out (services/homeroom-tools.js): their own list, never in the desks' cards (a tool is open
   // practice: it never counts toward Done, Stuck or Today's counts)
-  return { handouts, desks, tools: HT.boardList(c), att: AT.marksToday(c.id), asks: AT.openAsks(c.id) };
+  // room: the Manipulatives room running in the class now (one at a time: the hand-out sheet says so up front)
+  return { handouts, desks, tools: HT.boardList(c), room: HT.roomOf(c), att: AT.marksToday(c.id), asks: AT.openAsks(c.id) };
 }
 /** One student's desk: their own handouts only, in order, each with what the card shows and where it opens
  *  ({ id, title, icon, instructions, href, done, pct, locked, next, due, ready }). Nothing about anyone else. */
-export function deskView(c, u, locale = 'en') {
-  const rows = rowsOf(c.id).filter(r => L.isOpen(r) && L.assignedTo(r.id, u.id)), prog = progressOf(rows), cache = new Map(), fb = feedbackOf(c.id, u.id);
+export function deskView(c, u, locale = 'en', { assigned = true } = {}) {
+  const rows = [...rowsOf(c.id), ...(assigned ? classRows(c.id) : [])].filter(r => L.isOpen(r) && L.assignedTo(r.id, u.id)), prog = progressOf(rows.filter(r => !r.page)), stepsN = stepsDone(rows), cache = new Map(), fb = feedbackOf(c.id, u.id);
   const steps = new Map(rows.length ? q.all(`SELECT s.*, g.slug game_slug, g.status game_status, g.visibility game_visibility, g.source game_source, g.owner_id game_owner,
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = rds.size ? HR.infosOf(c.id, rds, u.id) : new Map();
@@ -206,6 +238,11 @@ export function deskView(c, u, locale = 'en') {
   // (without In order the desk's cards come by when they are due: Next up is the one due soonest)
   return [...deskOrder(byDue(rows.map(r => {
     const p = prog.get(`${r.id}:${u.id}`);
+    // A Classroom lesson of several steps (classRows): its card opens the lesson page (never framed), steps done on it.
+    if (r.page) {
+      const pp = pageProg(r, stepsN.get(`${r.id}:${u.id}`) || 0);
+      return { id: r.id, title: r.title, icon: PAGE_ICON, instructions: '', inOrder: false, ...dueFields(c, r), ready: true, page: true, cls: true, n: r.nsteps, href: `/class/${encodeURIComponent(c.id)}/lessons/${encodeURIComponent(r.id)}`, done: pp.done, pct: pp.pct };
+    }
     // A Reading handout (services/homeroom-reading.js): it opens the desk's reading layer, the routine's step on the card.
     if (r.step_kind === 'story') {
       const rd = infos.get(`${r.id}:${u.id}`);

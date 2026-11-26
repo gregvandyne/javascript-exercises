@@ -137,8 +137,9 @@ body.cv-page.dash-projector .dash-acts .dash-now{font-size:2.2rem}
 /* phones */
 @media (max-width:819px){
   .cv-bar{position:relative;top:auto;padding:8px}
-  #cv-bar .cv-class{max-width:none}
-  .cv-acts{max-width:70%;gap:6px}
+  /* (the switcher keeps room for a class's name: "Room 12", not "Room"; a long name ends in an ellipsis) */
+  #cv-bar .cv-class{max-width:none;flex:1 1 128px;min-width:128px;padding-inline:12px 28px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
+  .cv-acts{max-width:calc(100% - 136px);gap:6px}
   .cv-acts .btn{padding-inline:10px}
   .cv-acts .hr-grow{display:none}
   .cv-acts .hr-sparkt,.cv-acts .cv-btnt{display:none}

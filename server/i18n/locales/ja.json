@@ -2076,7 +2076,8 @@
         "tapWhere": "次に机、グループ、クラス全員、または自分の机をタップしてください。",
         "tapMine": "次に自分の机をタップして置いておきましょう。",
         "toolSoon": "ツールを配る機能は次に登場します。自分の机に置けば、そこから開けます。",
-        "pickFirst": "まず左でレッスンを選んでから、「自分の机」をタップしてください。"
+        "pickFirst": "まず左でレッスンを選んでから、「自分の机」をタップしてください。",
+        "previewNote": "プレビュー: 答えは保存されません"
       },
       "wholeClass": "クラス全員 · {count}",
       "editGroups": "グループ",
@@ -2299,7 +2300,18 @@
         "gcAlso": "Google Classroom にも投稿",
         "gcHint": "リンクした Classroom のクラスに課題として届きます。成績はここで選んだ方法です。",
         "gcWholeOnly": "Google Classroom に送れるのはクラス全員への配布だけです（向こうでは全員に届くため）。",
-        "taskScoreHint": "得点: 最初の確認で正解した問題の数。"
+        "taskScoreHint": "得点: 最初の確認で正解した問題の数。",
+        "toolChip": "練習",
+        "toolState": "自由練習",
+        "toolMeta": "算数ブロックなど · 自由練習",
+        "roomOpen": "ルームは開いています",
+        "roomClosed": "ルームは今は閉じています",
+        "openRoom": "ルームを開く",
+        "fromClassroom": "Classroom で課題になっています。変更や削除はそちらで。",
+        "oneToolBusy": "{tool} が今机に出ています。一度に使える教具は一つです: {next} を配るには、すべての机から外してください。",
+        "oneToolRoom": "このクラスで {tool} のルームが開いています。一度に一つのルームだけです: {next} を配るには終了してください。",
+        "takeOffAll": "すべての机から外す",
+        "openThatRoom": "そのルームを開く"
       },
       "team": {
         "label": "チームの机",
@@ -2376,7 +2388,8 @@
         "count": "問題数",
         "countHint": "生徒一人につき1から10問。",
         "preview": "試してみる"
-      }
+      },
+      "endConfirmTools": "全員の授業を終了しますか? 机と先生のエリアはそのままです。机の上の教具({tools})は外され、そのルームも終了します。"
     },
     "stories": {
       "needIdea": "まずアイデアを書いてね（少しの言葉でだいじょうぶ）。",
@@ -5176,7 +5189,8 @@
         "full": "これ以上は描けません。先にいくつか線を消してください。",
         "notHere": "ほかの机と先生のエリアの外に描いてください。"
       },
-      "manipKind": "練習 · {count}問"
+      "manipKind": "練習 · {count}問",
+      "pageKind": "レッスン · {count, plural, other {# ステップ}}"
     },
     "homeroom-area": {
       "label": "先生のエリア",
@@ -5386,7 +5400,11 @@
         "notStarted": "まだ",
         "none": "今日はまだ何も配っていません。",
         "weeks": "何週間かの進み具合は「クラス」タブで見られます。",
-        "classroom": "クラスを開く"
+        "classroom": "クラスを開く",
+        "setDone": "完了 · {n} 問中 {right} 問が一回目で正解",
+        "setAt": "{n} 問中 {i} 問目 · 一回目で {right} 問正解",
+        "toolOpen": "{count, plural, other {# 人が開いています}}",
+        "toolLine": "教具 · 自由練習、数に入りません"
       },
       "hands": {
         "label": "{count, plural, =0 {挙手：なし} other {挙手：#人}}",
@@ -5439,7 +5457,9 @@
           "hideOff": "{name} のカーソルをまた表示します",
           "comingOn": "{name} に向かっていることが見えます",
           "comingOff": "{name} のつくえからメモを消しました"
-        }
+        },
+        "toolNow": "いま開いています · 自由練習",
+        "toolOn": "机にあります · 自由練習"
       }
     },
     "homeroom-plan": {
