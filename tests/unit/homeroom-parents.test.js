@@ -164,7 +164,7 @@ test('refused: other families, a pending request, the child, a classmate, a teac
   try { assert.equal((await as(mom)(P_)).status, 404); } finally { config.stripeApiKey = key; }
   // the grown-up fence lets this one address through, nothing else of Homeroom
   assert.equal(grownupMay('GET', P_), true);
-  assert.equal(grownupMay('GET', `/class/${cls.id}/homeroom`), false);
+  assert.equal(grownupMay('GET', `/class/${cls.id}/hub`), false);
   assert.equal(grownupMay('GET', `/class/${cls.id}/desk`), false);
   assert.equal(grownupMay('GET', `/api/notebook/of/${mia.id}`), false);
   assert.equal((await as(mom)(`/api/notebook/of/${mia.id}`)).status, 404);
@@ -176,7 +176,7 @@ test('the /family page links to the class work; the teacher turns the view off a
   assert.equal(fam.status, 200); assert.ok(fam.text.includes(`href="${P_}"`), 'the child\'s row links to the class work');
   // the switch: on by default, the class's teachers only
   assert.equal(PV.parentsOn(cls), true);
-  const page = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const page = await as(rivera)(`/class/${cls.id}/hub`);
   assert.match(page.text, /"parents":true/);
   assert.equal((await as(aide)(`/api/homeroom/${cls.id}/parents`, { body: { on: false } })).status, 403);
   assert.equal((await as(other)(`/api/homeroom/${cls.id}/parents`, { body: { on: false } })).status, 404);

@@ -112,7 +112,7 @@ test('templates: every email renders with its approved subject and preview, no p
     const m = T.renderTrial(step, { firstName: 'Sam', trialEnd: end, features });
     for (const part of [m.subject, m.preview, m.text]) {
       assert.doesNotMatch(part, /\u2014/, `${step}: no em dash`); assert.doesNotMatch(part, /\$\s?\d/, `${step}: no price`);
-      assert.doesNotMatch(part, /Homeroom|notebook|sub link/i, `${step}: Homeroom is not launched`);
+      assert.doesNotMatch(part, /Homeroom|the Hub|notebook|sub link/i, `${step}: the Hub is not launched`);
     }
   }
   // The feature switches: a line about a feature is there only when it is on.

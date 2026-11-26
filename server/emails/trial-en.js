@@ -15,7 +15,7 @@
 // left out rather than promised.
 //
 // update (Nov 2026): the whole sequence was checked against the app as it is after "Focus: teaching tools first",
-// "Classroom focus: the Builder without the kit", "Learn and Read" and "No public games" (docs/decisions.md). Homeroom is
+// "Classroom focus: the Builder without the kit", "Learn and Read" and "No public games" (docs/decisions.md). The Hub (once Homeroom) is
 // not mentioned anywhere: it is not launched (HOMEROOM plus HOMEROOM_USERS; privacy update and lawyer review first).
 
 // Owner's request (November 2026): offer a walkthrough call in #1, #2 and #5, and a short line in #3.

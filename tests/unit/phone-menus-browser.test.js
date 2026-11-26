@@ -153,7 +153,7 @@ test('phone: the sheet closes with its close button, a tap on the dimmed page an
 test('phone: the profile menu is whole above the class page\'s shared bar on all three views; first and last items tappable', { timeout: 150000 }, async t => {
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(`/class/${cls.id}`);
-  for (const [k, url] of [['classroom', `/class/${cls.id}`], ['homeroom', `/class/${cls.id}/homeroom`], ['dashboard', `/class/${cls.id}/dashboard`]]) {
+  for (const [k, url] of [['classroom', `/class/${cls.id}`], ['homeroom', `/class/${cls.id}/hub`], ['dashboard', `/class/${cls.id}/dashboard`]]) {
     await page.goto(`${BASE}${url}`);
     assert.ok(await page.isVisible('#cv-bar'), `${k}: the shared bar`);
     await page.tap('.acctpick > summary');

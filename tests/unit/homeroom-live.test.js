@@ -127,7 +127,7 @@ test('pulses: only while live; the board gets statuses and cursors, desks and th
   assert.equal(pr.status, 200);
   for (const k of kids) assert.ok(!pr.text.includes(k.id) && !pr.text.includes(k.display_name), 'no student on the projector');
   assert.doesNotMatch(pr.text, /question|hand|bathroom|stuck|typing/i);
-  const page = await as(rivera)(`/class/${cls.id}/homeroom/projector`);
+  const page = await as(rivera)(`/class/${cls.id}/hub/projector`);
   assert.doesNotMatch(page.text, /homeroom-live|hr-lvchip|Hands up/);
   HV.lowerHand(ben, cls);
 });

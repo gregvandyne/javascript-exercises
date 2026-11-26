@@ -187,7 +187,7 @@ test('authorization: only the student writes; their class\'s teacher reads; aide
   S.removeFromClass(boss, cls.id, ben.id);
   assert.equal((await as(rivera)(`/api/notebook/of/${ben.id}`)).status, 403);
   // the teacher's Homeroom page carries the notebook's strings; the desk has its Notebook button
-  assert.match((await as(rivera)(`/class/${cls.id}/homeroom`)).text, /"js\.notebook\.title"|My notebook/);
+  assert.match((await as(rivera)(`/class/${cls.id}/hub`)).text, /"js\.notebook\.title"|My notebook/);
   const desk = await as(ava)(`/class/${cls.id}/desk`);
   assert.match(desk.text, /data-nb-open/); assert.match(desk.text, /\/js\/notebook\.js/);
 });

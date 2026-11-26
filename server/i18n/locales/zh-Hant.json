@@ -2249,7 +2249,7 @@
         "done": "完成",
         "saved": "已儲存 {class} 的座位"
       },
-      "everyone": "大家來 Homeroom",
+      "everyone": "大家來 Hub",
       "bring": "大家看過來",
       "back": "回到座位",
       "pause": "暫停螢幕",
@@ -2354,7 +2354,7 @@
         "tools": "已選取的項目",
         "delete": "刪除已選取的項目"
       },
-      "playBack": "回到 Homeroom",
+      "playBack": "回到 Hub",
       "liveNotSelect": "即時課程是主持的，不是發下去的。關閉選取後再主持。",
       "frame": {
         "resize": "拖曳以調整老師區的大小",
@@ -3904,7 +3904,7 @@
         "count": "{col} 有 {n} 個"
       },
       "host": {
-        "homeroomTool": "{tool} 正在學生的 Homeroom 桌上。開始這個教室會把它從他們的桌上移除。他們的作業會保留。",
+        "homeroomTool": "{tool} 正在學生的 Hub 桌上。開始這個教室會把它從他們的桌上移除。他們的作業會保留。",
         "startRoom": "開始教室"
       }
     },
@@ -4830,7 +4830,7 @@
         "absent": "{count, plural, other {缺席 # 位,不計入}}",
         "lookTitle": "{day}可能需要關心",
         "nobody": "目前「需要關心」沒有任何人。",
-        "lookCount": "{count, plural, other {# 位學生。打開班級的 Homeroom 看看是誰。}}",
+        "lookCount": "{count, plural, other {# 位學生。打開班級的 Hub 看看是誰。}}",
         "ideas": "點子(在你點選之前什麼都不會發生)",
         "review": "{day}發一份複習課程給 {group} 組",
         "reviewAsk": "要在{day}的計畫加入給 {group} 組的 {what},共 {minutes} 分鐘嗎?在你開始那個計畫之前,書桌上不會出現任何東西。",
@@ -5136,7 +5136,7 @@
     },
     "homeroom-signin-panel": {
       "closed": "登入已關閉",
-      "closedHint": "用「大家來 Homeroom」開始上課時會自動開放。",
+      "closedHint": "用「大家來 Hub」開始上課時會自動開放。",
       "open": "開放登入",
       "goTo": "前往",
       "enterCode": "並輸入這個代碼：",
@@ -5257,7 +5257,7 @@
       "empty": "老師還沒有在這裡放東西。"
     },
     "homeroom-notify": {
-      "text": "你的班級在 Homeroom。",
+      "text": "你的班級在 Hub。",
       "go": "去我的書桌",
       "close": "關閉"
     },
@@ -5504,7 +5504,7 @@
         "teamPad": "小組筆記板",
         "padLabel": "{name} 的筆記板",
         "padEmpty": "還沒有畫任何東西",
-        "private": "這是 Homeroom 知道的摘要，不會顯示螢幕或打的字。",
+        "private": "這是 Hub 知道的摘要，不會顯示螢幕或打的字。",
         "coming": "我過去找你",
         "comingOn": "前往中：點一下取消",
         "lock": "鎖住桌面",
@@ -5625,7 +5625,7 @@
         "mydeskText": "把課程或工具放在這裡先試試。學生永遠看不到「我的書桌」。",
         "oombaTitle": "請 Oomba 擬今天的計畫",
         "oombaText": "告訴 Oomba 你要教什麼,它會擬好計畫。在你點「使用這個計畫」之前,書桌上不會出現任何東西。",
-        "goliveTitle": "大家來 Homeroom",
+        "goliveTitle": "大家來 Hub",
         "goliveText": "在這裡開始上課。共用裝置上,學生打開 /hr,輸入 ⋯ 選單裡「學生登入」的快速登入代碼。"
       }
     },
@@ -5641,7 +5641,7 @@
       "dockTitle": "下面的按鈕:",
       "dock": "老師區、有書的圖書館,以及看看教室。",
       "seenTitle": "要知道:",
-      "seen": "在 Homeroom 裡,老師看得到你的螢幕。",
+      "seen": "在 Hub 裡,老師看得到你的螢幕。",
       "k2": {
         "title": "嗨!這是你的書桌。",
         "ok": "好!",
@@ -5664,7 +5664,7 @@
     },
     "homeroom-livegame": {
       "layer": "即時課程",
-      "back": "回到 Homeroom",
+      "back": "回到 Hub",
       "setup": "設定即時課程",
       "end": "結束",
       "endTitle": "要結束 {title} 嗎？",
@@ -5672,7 +5672,7 @@
       "restore": "開啟 {title}",
       "pill": "即時：{title}",
       "joined": "{count} 人加入",
-      "joinedOf": "Homeroom 的 {total} 人中有 {count} 人加入",
+      "joinedOf": "Hub 的 {total} 人中有 {count} 人加入",
       "notYet": "尚未加入",
       "inGame": "在 {title} 中",
       "notSelect": "即時課程是主持的，不是發下去的。關閉選取後再主持。"
@@ -7724,7 +7724,7 @@
       "lead": "點幾下就能連結你的 Google Classroom。一開始 Oomba Academy 只能看到你的課程和其中的學生。在你允許發布之前，什麼都不會發布。",
       "li1": "點一下就能匯入學生名單，之後每 6 小時自動更新。學生以 Google 帳號比對。",
       "li2": "把教案發布為 Classroom 作業，附上連結和截止日，或分享為教材。",
-      "li3": "成績會以滿分 100 傳回 Classroom：完成度成績（教案步驟完成的比例，不是答對多少），或 Homeroom 發放內容的你選的方式：得分、完成度，或練習用不評分。可以自己傳送，也能開啟自動傳送。",
+      "li3": "成績會以滿分 100 傳回 Classroom：完成度成績（教案步驟完成的比例，不是答對多少），或 Hub 發放內容的你選的方式：得分、完成度，或練習用不評分。可以自己傳送，也能開啟自動傳送。",
       "li4": "即時課程開始或教案準備好時，用你自己的話發到班級訊息串。",
       "li5": "Oomba Academy 不向 Classroom 索取學生的電子郵件，也絕不會把學生的姓名、答案或遊戲傳給 Google。",
       "note": "作業、教材、成績和公告，要在你允許發布後才能使用，這是另一個步驟。每位老師連結自己的 Google 帳號，學校的 Google 管理員可能需要先允許 Oomba Academy。",
@@ -8818,8 +8818,8 @@
       "codeForTeachers": "加入代碼",
       "joinAt": "前往 {url} 並輸入代碼",
       "signInFirst": "請先登入，再輸入代碼。",
-      "hrJoin": "在 Homeroom 的學生在自己的座位點「加入」，不需要代碼。",
-      "hrFallback": "不在 Homeroom？加入代碼",
+      "hrJoin": "在 Hub 的學生在自己的座位點「加入」，不需要代碼。",
+      "hrFallback": "不在 Hub？加入代碼",
       "hideCode": "隱藏代碼",
       "showCode": "顯示代碼",
       "count": "{count} / {max} 位玩家",
@@ -11432,10 +11432,10 @@
         "courses": "把這個班級連結到你在 Classroom 的其中一個課程",
         "roster": "匯入該課程的學生，讓他們用 Google 登入",
         "post": "在那裡發布教案，附上回到這裡的連結和截止日",
-        "grades": "把每位學生的教案成績傳到 Classroom（完成度，或你在 Homeroom 選的得分）"
+        "grades": "把每位學生的教案成績傳到 Classroom（完成度，或你在 Hub 選的得分）"
       },
       "button": "連結 Google Classroom",
-      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和學生。只有在你允許發布時，才會把你發布的內容傳到 Classroom：教案的標題、連結和截止日、每位學生滿分 100 的成績（完成度或你在 Homeroom 選的得分）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、回答或遊戲。",
+      "privacy": "只有你看得到這個連結。連結後，Oomba Academy 可以讀取你的班級和學生。只有在你允許發布時，才會把你發布的內容傳到 Classroom：教案的標題、連結和截止日、每位學生滿分 100 的成績（完成度或你在 Hub 選的得分）、主題名稱，以及你寫的公告。絕不傳送學生的姓名、回答或遊戲。",
       "connectedAs": "已用 {email} 連結",
       "connectedHint": "這是你自己的連結：其他協同老師要各自連結。",
       "connectedToast": "已連結 Google Classroom。",
@@ -11499,7 +11499,7 @@
       "somePosted": "這裡只指派給部分學生。先前已在 Google Classroom 發布給全班；成績只會傳給被指派的學生。"
     },
     "grades": {
-      "text": "每份教案會依它的評分方式傳送滿分 100 的成績。在 Classroom 指派的教案傳送完成度成績：學生完成教案步驟的比例，而不是答對多少。Homeroom 的發放內容會傳送你發放時選的方式：得分傳送答對百分比，完成度傳送完成度成績，不評分則不傳送。還沒開始的學生不會列入。",
+      "text": "每份教案會依它的評分方式傳送滿分 100 的成績。在 Classroom 指派的教案傳送完成度成績：學生完成教案步驟的比例，而不是答對多少。Hub 的發放內容會傳送你發放時選的方式：得分傳送答對百分比，完成度傳送完成度成績，不評分則不傳送。還沒開始的學生不會列入。",
       "as": "傳送方式",
       "draft": "草稿成績（由你在 Classroom 發還）",
       "assigned": "正式成績",
@@ -11515,8 +11515,8 @@
       "resultNotScored": "{count, plural, other {# 人還沒有分數}}",
       "sends": {
         "completion": "傳送完成度成績：完成步驟的比例。",
-        "score": "在 Homeroom 依分數評分：傳送答對百分比。",
-        "none": "在 Homeroom 不評分：不會傳成績到 Classroom。"
+        "score": "在 Hub 依分數評分：傳送答對百分比。",
+        "none": "在 Hub 不評分：不會傳成績到 Classroom。"
       }
     },
     "log": {
@@ -15293,7 +15293,7 @@
     "errors": {
       "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。",
       "emptyArea": "你的區域是空的。先放點東西進去，再傳送。",
-      "homeroomTool": "{tool} 正在學生的 Homeroom 桌上。開始這個教室會把它從他們的桌上移除。"
+      "homeroomTool": "{tool} 正在學生的 Hub 桌上。開始這個教室會把它從他們的桌上移除。"
     }
   },
   "proof": {
@@ -15618,16 +15618,16 @@
       "already": "這已經在你的桌子上了。",
       "removed": "已從你的桌子拿走。"
     },
-    "pageTitle": "{class} · Homeroom",
+    "pageTitle": "{class} · Hub",
     "switchClass": "切換班級",
     "arrange": "安排座位",
     "more": "更多",
-    "boardLabel": "Homeroom 白板。拖曳來移動，捲動或雙指縮放。",
+    "boardLabel": "Hub 白板。拖曳來移動，捲動或雙指縮放。",
     "loading": "正在布置教室…",
-    "noscript": "Homeroom 需要開啟 JavaScript。",
+    "noscript": "Hub 需要開啟 JavaScript。",
     "tabs": {
       "label": "班級檢視",
-      "homeroom": "Homeroom",
+      "homeroom": "Hub",
       "classroom": "班級",
       "dashboard": "儀表板"
     },
@@ -15652,7 +15652,7 @@
       "badStage": "這個不能放在你的桌子上。",
       "deskFull": "你的桌子滿了。請先拿走一些東西。",
       "notStaged": "這已經不在你的桌子上了。",
-      "notFound": "這個 Homeroom 無法使用。",
+      "notFound": "這個 Hub 無法使用。",
       "badPreset": "請選擇排排坐、四人一桌、U 形或圓形。",
       "badSeats": "無法儲存座位，請再試一次。",
       "badGroups": "無法儲存分組，請再試一次。",
@@ -15662,7 +15662,7 @@
       "badState": "無法儲存，請再試一次。",
       "tooBig": "老師區太滿了。請移除一些東西再試一次。",
       "badAction": "沒有成功，請再試一次。",
-      "notLive": "請先按「大家來 Homeroom」開始上課。",
+      "notLive": "請先按「大家來 Hub」開始上課。",
       "padFull": "你的筆記板滿了，清除後才能繼續畫。",
       "pickGame": "這個課程不能發下去。請選別的。",
       "publishFirst": "請先發布這個課程，再發下去。",
@@ -15775,7 +15775,7 @@
       },
       "panel": {
         "title": "{class} · 登入",
-        "back": "回到 Homeroom",
+        "back": "回到 Hub",
         "heading": "登入",
         "lead": "在共用裝置上，學生打開班級登入，點自己的名字，再輸入密碼或點選圖案密碼。",
         "students": "學生",
@@ -15856,7 +15856,7 @@
     },
     "overview": {
       "title": "班級總覽",
-      "lead": "最近 {weeks} 週。每一欄是你在 Homeroom 發下的作業。學生依字母順序排列，從不排名。",
+      "lead": "最近 {weeks} 週。每一欄是你在 Hub 發下的作業。學生依字母順序排列，從不排名。",
       "student": "學生",
       "trend": "趨勢",
       "tableLabel": "班級總覽：作業與結果",
@@ -15897,7 +15897,7 @@
       "keyTrend": "趨勢依每位學生最近 3 次分數：平均低於 60% 為需要協助，最近一次比第一次高 10 分以上為進步中，其餘為穩定。",
       "more": "完整成績表、CSV、標準、評分規準和 Google Classroom 都在下方，和以前一樣。",
       "fullGradebook": "完整成績表",
-      "noHandouts": "最近 {weeks} 週沒有在 Homeroom 發作業。可以從 Homeroom 分頁發課程或教案。",
+      "noHandouts": "最近 {weeks} 週沒有在 Hub 發作業。可以從 Hub 分頁發課程或教案。",
       "gcLinked": "已連結「{course}」",
       "gcRoster": "名單同步：{when}",
       "gcRosterNever": "名單還沒同步",

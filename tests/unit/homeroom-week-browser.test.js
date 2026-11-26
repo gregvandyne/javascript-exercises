@@ -110,7 +110,7 @@ const schoolDay = wk.days.includes(wk.today);
 test('1366 x 768: the week card, Use this week, the pill\'s week strip, the copy preview, a due date from the hand-out sheet on the desk and the overview', { timeout: 220000 }, async t => {
   if (skip) return t.skip(skip);
   standIn();
-  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/homeroom`, { width: 1366, height: 768 });
+  const { ctx, page, errors } = await open(teacher, `/class/${A.id}/hub`, { width: 1366, height: 768 });
   await page.waitForSelector('#hr-plan [data-hrplan]');
   await openChat(page);
   const n = await page.locator('.oc-week').count();
@@ -232,7 +232,7 @@ for (const [w, h, touch] of [[820, 1180, true], [390, 844, true]]) {
   test(`${w} wide: the week card, the week strip, the Due row, the desk card and the copy preview fit`, { timeout: 200000 }, async t => {
     if (skip) return t.skip(skip);
     standIn();
-    const { ctx, page, errors } = await open(teacher, `/class/${A.id}/homeroom`, { width: w, height: h }, touch);
+    const { ctx, page, errors } = await open(teacher, `/class/${A.id}/hub`, { width: w, height: h }, touch);
     await page.waitForSelector('#hr-plan [data-hrplan]');
     await page.waitForTimeout(400);
     // the week strip

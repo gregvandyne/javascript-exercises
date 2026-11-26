@@ -3,7 +3,7 @@
 Teachers can connect their Google Classroom, link an Oomba class to one of their Classroom classes ("courses" in
 Google's words), import its students (and keep them up to date every 6 hours), and, once they allow posting: post a
 lesson as a Classroom assignment (a link back to the lesson, with its due date) or share it as a material, send each
-student's lesson grade as a draft or assigned grade (a completion grade, or for Homeroom handouts the grade the
+student's lesson grade as a draft or assigned grade (a completion grade, or for Hub handouts the grade the
 teacher chose; by hand or automatically), file Oomba's posts under a topic, and
 post announcements to the class stream. It sits on top of **Sign in with Google** and is **off** until you set it up. Code: `server/services/gclassroom.js` (logic), `server/services/gclassroom-client.js`
 (the only file that talks to Google), `server/routes/gclassroom.js` (the class's Google Classroom page and APIs).
@@ -27,8 +27,8 @@ Decisions: docs/decisions.md "Google Classroom sync".
     is said in the panel, with **Reconnect Classroom** where that is the fix.
   - **Lessons in Classroom:** the topic's name for this class ("Oomba Academy" by default, in the teacher's language),
     then each lesson with **Post to Google Classroom** and, once posted, what its grade is ("Sends a completion grade",
-    or for a Homeroom handout graded by Score "Sends the % right", or Not graded: nothing) and **Send completion grades**
-    / **Send scores** (draft or assigned), and **Share as material**. Homeroom's hand-out sheet has the same "Also post
+    or for a Hub handout graded by Score "Sends the % right", or Not graded: nothing) and **Send completion grades**
+    / **Send scores** (draft or assigned), and **Share as material**. The Hub's hand-out sheet has the same "Also post
     to Google Classroom" for Whole class handouts (docs/decisions.md "Homeroom, step 2c").
   - **Post to the class stream:** three templates the teacher completes before sending: a live game starting now (the
     code of the live game open for this class), a lesson that is ready (title and link), or their own message.
@@ -134,7 +134,7 @@ lost). To rotate the key, set the new one and tell teachers to reconnect.
   - (A lesson that opens later is sent as a draft scheduled for its opening day, either way.)
   - **Grades:** for each student on the teacher's own Classroom roster who is in the Oomba class and has started the
     lesson, a grade out of 100. Every lesson sends a completion grade (steps done of the lesson's steps, not right
-    answers; 100 when finished), except Homeroom handouts, which send the grade the teacher chose when handing them out
+    answers; 100 when finished), except Hub handouts, which send the grade the teacher chose when handing them out
     (services/gclassroom.js gradeBasis / gradeOf): **Score** sends the % right (the gradebook's Score for that lesson;
     a student with nothing scored yet, such as a game played without finishing, gets no grade and is counted "has no
     score yet"), **Completion** the completion grade, and **Not graded** nothing at all. Automatic grades send

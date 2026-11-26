@@ -120,7 +120,7 @@ test('the pad: a doodle is drawn and saved; the teacher\'s area and See the room
 
 test('live class: the teacher\'s top bar reaches every desk; the prompt on another page; the projector view', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
+  const T = await open(teacher, `/class/${cls.id}/hub`, { width: 1366, height: 768 });
   await T.page.waitForSelector('.hr-desk');
   const other = await open(kids[1], '/classes', { width: 1180, height: 820 }, true);
   const desk = await open(me, `/class/${cls.id}/desk`, { width: 1180, height: 820 }, true);
@@ -146,10 +146,10 @@ test('live class: the teacher\'s top bar reaches every desk; the prompt on anoth
   await shot(T.page, 'teacher-live-paused');
   // The ⋯ menu: the projector view and End class.
   await T.page.click('[data-hr="menu"]');
-  const proj = T.page.locator('#hr-menu a[href$="/homeroom/projector"]');
+  const proj = T.page.locator('#hr-menu a[href$="/hub/projector"]');
   assert.equal(await proj.getAttribute('target'), '_blank');
   await shot(T.page, 'teacher-menu');
-  const P = await open(teacher, `/class/${cls.id}/homeroom/projector`, { width: 1366, height: 768 });
+  const P = await open(teacher, `/class/${cls.id}/hub/projector`, { width: 1366, height: 768 });
   await P.page.waitForSelector('.hr-projarea .mp-sticky');
   const text = await P.page.evaluate(() => document.body.innerText);
   for (const k of kids) assert.ok(!text.includes(k.display_name), 'no student names on the projector');
@@ -158,7 +158,7 @@ test('live class: the teacher\'s top bar reaches every desk; the prompt on anoth
   await shot(P.page, 'projector');
   // The live top bar on a tablet and a phone: nothing sideways.
   for (const [name, vp] of [['tablet', { width: 820, height: 1180 }], ['phone', { width: 390, height: 844 }]]) {
-    const x = await open(teacher, `/class/${cls.id}/homeroom`, vp, true);
+    const x = await open(teacher, `/class/${cls.id}/hub`, vp, true);
     await x.page.waitForSelector('[data-hr="resume"]');
     assert.ok(await x.page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${name}: no sideways scroll while live`);
     await shot(x.page, `teacher-live-${name}`);

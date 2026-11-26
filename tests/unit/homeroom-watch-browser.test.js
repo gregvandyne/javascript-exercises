@@ -106,11 +106,11 @@ test('watching: games and a Manipulatives tool live on the desk tiles and in loo
   for (const [g, k] of [[sumRacer, ada], [factory, ben], [atlas, dev]]) assert.ok(HO.handOut(teacher, cls, { gameId: g.id, to: { kind: 'desk', id: k.id } }).ok);
   const tool = HT.handOutTool(teacher, cls, { tool: 'base-ten-blocks', to: { kind: 'desk', id: cleo.id }, instructions: 'Show 46.' });
   assert.ok(tool.ok, tool.code);
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, LAPTOP);
+  const T = await open(teacher, `/class/${cls.id}/hub`, LAPTOP);
   await T.page.waitForSelector('.hr-desk[data-sid]');
   const A = await playOnDesk(ada, 'Sum Racer'), B = await playOnDesk(ben, 'Fraction Factory'), Dv = await playOnDesk(dev, 'Atlas Quest');
   // the desk says so, plainly
-  assert.match(await A.page.textContent('.hr-playnote'), /Your teacher can see your screen in Homeroom/);
+  assert.match(await A.page.textContent('.hr-playnote'), /Your teacher can see your screen in the Hub/);
   const C = await playOnDesk(cleo, 'Base Ten Blocks');
   // Ada plays: a tap on 12 in the game itself
   const gf = A.page.frameLocator('.hr-playframe').frameLocator('#gameframe');
@@ -195,7 +195,7 @@ test('watching: games and a Manipulatives tool live on the desk tiles and in loo
 
 test('the catalog: search, subjects and grade on a laptop, the phone\'s sheet; a tool and a folder\'s game hand out and play', { timeout: 280000 }, async t => {
   if (skip) return t.skip(skip);
-  const T = await open(teacher, `/class/${cls.id}/homeroom`, LAPTOP);
+  const T = await open(teacher, `/class/${cls.id}/hub`, LAPTOP);
   await T.page.waitForSelector('[data-catalog]');
   for (const k of ['s-math', 's-words', 's-maps', 'mine', 'f-0', 'm-0', 'm-1']) assert.equal(await T.page.locator(`[data-cgroup="${k}"]`).count(), 1, k);
   await T.page.fill('#hr-cq', 'base ten');
@@ -245,7 +245,7 @@ test('the catalog: search, subjects and grade on a laptop, the phone\'s sheet; a
   await D.page.frameLocator('.hr-playframe').locator('#rm-pal [data-pal]').first().waitFor({ timeout: 20000 });
   assert.match(await D.page.textContent('.hd-card:has-text("Color Tiles")').catch(() => 'Manipulatives'), /Manipulatives|Color Tiles/);
   // the phone: Find lessons opens the catalog in a sheet; a pick there shows the yellow bar
-  const P = await open(teacher, `/class/${cls.id}/homeroom`, PHONE, true);
+  const P = await open(teacher, `/class/${cls.id}/hub`, PHONE, true);
   await P.page.click('[data-hr="catalog"]');
   await P.page.waitForSelector('.hr-csheet [data-cq]');
   await P.page.fill('.hr-csheet [data-cq]', 'sum');
@@ -271,7 +271,7 @@ test('30 students: the board\'s network and CPU while every desk sends pictures'
   H.setLive(teacher, big, 'start');
   // a real tile picture of the page game, made once in the browser
   const A = await open(many[0], `/class/${big.id}/desk`, TABLET, true);
-  const T = await open(teacher, `/class/${big.id}/homeroom`, LAPTOP);
+  const T = await open(teacher, `/class/${big.id}/hub`, LAPTOP);
   await T.page.waitForSelector('.hr-desk[data-sid]');
   await T.page.click('[data-hr="fit"]').catch(() => {});
   await A.page.click('.hd-card:has-text("Sum Racer")');

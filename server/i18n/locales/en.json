@@ -2253,7 +2253,7 @@
         "done": "Done",
         "saved": "Seating saved for {class}"
       },
-      "everyone": "Everyone to Homeroom",
+      "everyone": "Everyone to the Hub",
       "bring": "Bring everyone to me",
       "back": "Back to desks",
       "pause": "Pause screens",
@@ -2360,7 +2360,7 @@
         "tools": "Selected item",
         "delete": "Delete the selected item"
       },
-      "playBack": "Back to Homeroom",
+      "playBack": "Back to the Hub",
       "liveNotSelect": "Live lessons are hosted, not handed out. Turn off Select to host one.",
       "helpers": {
         "aides": "Aides",
@@ -3902,7 +3902,7 @@
         "mine": "Your sessions",
         "board": "Start from a saved board (its tool and steps)",
         "noBoard": "An empty board",
-        "homeroomTool": "{tool} is on your students’ Homeroom desks. Starting this room takes it off their desks. Their work is kept.",
+        "homeroomTool": "{tool} is on your students’ Hub desks. Starting this room takes it off their desks. Their work is kept.",
         "startRoom": "Start room"
       },
       "boards": {
@@ -5227,7 +5227,7 @@
         "copyTo": "Copy to another class",
         "fromName": "From your saved plan \"{name}\"",
         "fromSaved": "Here is your saved plan \"{name}\" for this class.",
-        "copied": "Here is the plan for {name}. Open that class's Homeroom to start it there, or use it from here.",
+        "copied": "Here is the plan for {name}. Open that class's Hub to start it there, or use it from here.",
         "changed": "{count, plural, one {Oomba adjusted # thing so the plan fits this class.} other {Oomba adjusted # things so the plan fits this class.}}",
         "askChanges": "Ask for changes here, like \"make work time 20 minutes\" or \"swap the brain break\".",
         "used": "{count, plural, =0 {The plan is ready.} one {# handout is on desks.} other {# handouts are on desks.}}",
@@ -5291,7 +5291,7 @@
         "absent": "{count, plural, one {# absent, not counted} other {# absent, not counted}}",
         "lookTitle": "Might need a look on {day}",
         "nobody": "Nobody is on Needs a look right now.",
-        "lookCount": "{count, plural, one {# student. Open the class's Homeroom to see who.} other {# students. Open the class's Homeroom to see who.}}",
+        "lookCount": "{count, plural, one {# student. Open the class's Hub to see who.} other {# students. Open the class's Hub to see who.}}",
         "ideas": "Ideas (nothing happens until you tap)",
         "review": "Hand out a review lesson on {day} to the {group} group",
         "reviewAsk": "Add {minutes} minutes of {what} for the {group} group to {day}'s plan? Nothing goes on desks until you start that plan.",
@@ -5597,7 +5597,7 @@
     },
     "homeroom-signin-panel": {
       "closed": "Sign-in is closed",
-      "closedHint": "It opens by itself when you start class with Everyone to Homeroom.",
+      "closedHint": "It opens by itself when you start class with Everyone to the Hub.",
       "open": "Open sign-in",
       "goTo": "Go to",
       "enterCode": "and type this code:",
@@ -5810,7 +5810,7 @@
         "seen": "Your teacher saw it",
         "private": "Only your teacher sees this."
       },
-      "seen": "Your teacher can see your screen in Homeroom.",
+      "seen": "Your teacher can see your screen in the Hub.",
       "toolKind": "Manipulatives · practice",
       "toolNotOpen": "Not open right now. Ask your teacher.",
       "eraseSizes": {
@@ -5837,7 +5837,7 @@
       "empty": "Your teacher hasn't put anything here yet."
     },
     "homeroom-notify": {
-      "text": "Your class is in Homeroom.",
+      "text": "Your class is in the Hub.",
       "go": "Go to my desk",
       "close": "Close"
     },
@@ -6085,7 +6085,7 @@
         "teamPad": "Team pad",
         "padLabel": "{name}’s pad",
         "padEmpty": "Nothing drawn yet",
-        "private": "A summary of what Homeroom knows. Never what they type outside Oomba, and nothing is kept after class.",
+        "private": "A summary of what the Hub knows. Never what they type outside Oomba, and nothing is kept after class.",
         "coming": "I’m coming over",
         "comingOn": "Coming over: tap to take it off",
         "lock": "Lock desk",
@@ -6270,7 +6270,7 @@
       "aideSince": "Aide since {day}",
       "inviteUntil": "Invite open until {day}",
       "removeAide": "Remove {name}",
-      "aidesLead": "An aide helps in this class's Homeroom. They don't need the Teacher plan.",
+      "aidesLead": "An aide helps in this class's Hub. They don't need the Teacher plan.",
       "aideCan": "Can see desks and live status, answer hands and the hall pass, look at a student's desk, and leave comments and stickers.",
       "aideCannot": "Can't change grades or grading, remove handouts, edit groups or seating, plan with Oomba, see billing, end class or read notebooks.",
       "noAides": "No aides yet.",
@@ -6289,7 +6289,7 @@
       "add": "Add",
       "noStaff": "No other teachers at your school to add.",
       "removeTitle": "Remove this aide?",
-      "removeText": "They stop seeing this class's Homeroom at once.",
+      "removeText": "They stop seeing this class's Hub at once.",
       "copied": "Copied",
       "copyHand": "Press Ctrl+C or Cmd+C to copy",
       "subTitle": "Sub link for today",
@@ -6635,7 +6635,7 @@
         "mydeskText": "Put any lesson or tool here to try it first. Students never see what is on My desk.",
         "oombaTitle": "Ask Oomba for today's plan",
         "oombaText": "Tell Oomba what you are teaching. It drafts the plan, and nothing goes on desks until you tap Use this plan.",
-        "goliveTitle": "Everyone to Homeroom",
+        "goliveTitle": "Everyone to the Hub",
         "goliveText": "Start class here. On shared devices students go to /hr and type the quick sign-in code from Students sign in in the ⋯ menu."
       }
     },
@@ -6651,7 +6651,7 @@
       "dockTitle": "The buttons at the bottom:",
       "dock": "your teacher's area, the Library with books, and See the room.",
       "seenTitle": "Good to know:",
-      "seen": "Your teacher can see your screen in Homeroom.",
+      "seen": "Your teacher can see your screen in the Hub.",
       "k2": {
         "title": "Hi! This is your desk.",
         "ok": "OK!",
@@ -6728,7 +6728,7 @@
     },
     "homeroom-livegame": {
       "layer": "Live lesson",
-      "back": "Back to Homeroom",
+      "back": "Back to the Hub",
       "setup": "Set up a live lesson",
       "end": "End",
       "endTitle": "End {title}?",
@@ -6736,7 +6736,7 @@
       "restore": "Open {title}",
       "pill": "Live: {title}",
       "joined": "{count} joined",
-      "joinedOf": "{count} joined of {total} in Homeroom",
+      "joinedOf": "{count} joined of {total} in the Hub",
       "notYet": "Not joined yet",
       "inGame": "In {title}",
       "notSelect": "Live lessons are hosted, not handed out. Turn off Select to host one."
@@ -9120,7 +9120,7 @@
       "lead": "Connect your Google Classroom in a few clicks. At first Oomba Academy can only see your classes and their students. It posts nothing until you allow posting.",
       "li1": "Import your roster in one click, and it refreshes itself every 6 hours. Students are matched by their Google account.",
       "li2": "Post a lesson plan as a Classroom assignment, with its link and due date, or share it as a material.",
-      "li3": "Grades flow back to Classroom out of 100: a completion grade (the share of the lesson plan’s steps finished, not right answers), or for Homeroom handouts the grade you chose: the score, completion, or nothing for practice. Send them yourself, or turn on automatic grades.",
+      "li3": "Grades flow back to Classroom out of 100: a completion grade (the share of the lesson plan’s steps finished, not right answers), or for Hub handouts the grade you chose: the score, completion, or nothing for practice. Send them yourself, or turn on automatic grades.",
       "li4": "Post to the class stream when a live lesson starts or a lesson plan is ready, in your own words.",
       "li5": "Oomba Academy doesn’t ask Classroom for student emails, and never sends Google a student’s name, answers or games.",
       "note": "Assignments, materials, grades and announcements work once you allow posting, a separate step. Each teacher connects their own Google account, and your school’s Google admin may need to allow Oomba Academy first.",
@@ -10233,8 +10233,8 @@
       "codeForTeachers": "Join code",
       "joinAt": "Go to {url} and type the code",
       "signInFirst": "Sign in first, then type the code.",
-      "hrJoin": "Students in Homeroom tap Join on their desks. No code needed.",
-      "hrFallback": "Not in Homeroom? Join code",
+      "hrJoin": "Students in the Hub tap Join on their desks. No code needed.",
+      "hrFallback": "Not in the Hub? Join code",
       "hideCode": "Hide code",
       "showCode": "Show code",
       "count": "{count} of {max} players",
@@ -12912,10 +12912,10 @@
         "courses": "link this class to one of your Classroom classes",
         "roster": "bring its students in, so they sign in with Google",
         "post": "post lesson plans there, with a link back here and the due date",
-        "grades": "send each student's lesson plan grade to Classroom (a completion grade, or the score you chose in Homeroom)"
+        "grades": "send each student's lesson plan grade to Classroom (a completion grade, or the score you chose in the Hub)"
       },
       "button": "Connect Google Classroom",
-      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson plan's title, link and due date, each student's grade out of 100 (a completion grade, or the score you chose in Homeroom), a topic name, and announcements you write. Never students' names, answers or games.",
+      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson plan's title, link and due date, each student's grade out of 100 (a completion grade, or the score you chose in the Hub), a topic name, and announcements you write. Never students' names, answers or games.",
       "connectedAs": "Connected as {email}",
       "connectedHint": "This connection is yours: your co-teachers connect their own.",
       "connectedToast": "Google Classroom is connected.",
@@ -12979,7 +12979,7 @@
       "somePosted": "Assigned to some students here. It was posted to the whole class in Google Classroom before that, and grades go only to the students it's assigned to."
     },
     "grades": {
-      "text": "Each lesson plan sends the grade it is graded by, out of 100. Lesson plans assigned in Classroom send a completion grade: the share of the lesson plan's steps a student has done, not right answers. Homeroom handouts send what you chose when you handed them out: Score sends the % right, Completion the completion grade, and Not graded sends nothing. Students who haven't started are left out.",
+      "text": "Each lesson plan sends the grade it is graded by, out of 100. Lesson plans assigned in Classroom send a completion grade: the share of the lesson plan's steps a student has done, not right answers. Hub handouts send what you chose when you handed them out: Score sends the % right, Completion the completion grade, and Not graded sends nothing. Students who haven't started are left out.",
       "as": "Send as",
       "draft": "Draft grade (you return it in Classroom)",
       "assigned": "Assigned grade",
@@ -12995,8 +12995,8 @@
       "resultNotScored": "{count, plural, one {# has no score yet} other {# have no score yet}}",
       "sends": {
         "completion": "Sends a completion grade: the share of steps done.",
-        "score": "Graded by score in Homeroom: sends the % right.",
-        "none": "Not graded in Homeroom: no grade goes to Classroom."
+        "score": "Graded by score in the Hub: sends the % right.",
+        "none": "Not graded in the Hub: no grade goes to Classroom."
       }
     },
     "log": {
@@ -16249,7 +16249,7 @@
       "answered": "That question is already finished.",
       "notYet": "Try the hints first.",
       "badRequest": "Something was missing. Try again.",
-      "homeroomTool": "{tool} is on your students’ Homeroom desks. Starting this room takes it off their desks."
+      "homeroomTool": "{tool} is on your students’ Hub desks. Starting this room takes it off their desks."
     },
     "assigned": "{title} is assigned to {klass}: {count, plural, one {# question} other {# questions}} for each student.",
     "set": {
@@ -17162,16 +17162,16 @@
       "already": "That's already on your desk.",
       "removed": "Taken off your desk."
     },
-    "pageTitle": "{class} · Homeroom",
+    "pageTitle": "{class} · Hub",
     "switchClass": "Switch class",
     "arrange": "Arrange seats",
     "more": "More",
-    "boardLabel": "Homeroom board. Drag to move around, scroll or pinch to zoom.",
+    "boardLabel": "Hub board. Drag to move around, scroll or pinch to zoom.",
     "loading": "Setting up the room…",
-    "noscript": "Homeroom needs JavaScript turned on.",
+    "noscript": "The Hub needs JavaScript turned on.",
     "tabs": {
       "label": "Class views",
-      "homeroom": "Homeroom",
+      "homeroom": "Hub",
       "classroom": "Classroom",
       "dashboard": "Dashboard"
     },
@@ -17198,7 +17198,7 @@
       "badStage": "That can't go on your desk.",
       "deskFull": "Your desk is full. Take something off first.",
       "notStaged": "That isn't on your desk anymore.",
-      "notFound": "This Homeroom isn't available.",
+      "notFound": "This Hub isn't available.",
       "badPreset": "Pick Rows, Tables of 4, U-shape or Circle.",
       "badSeats": "Those seats couldn't be saved. Try again.",
       "badGroups": "Those groups couldn't be saved. Try again.",
@@ -17208,7 +17208,7 @@
       "badState": "That couldn't be saved. Try again.",
       "tooBig": "The teacher's area is too full. Remove something and try again.",
       "badAction": "That didn't work. Try again.",
-      "notLive": "Start class first with Everyone to Homeroom.",
+      "notLive": "Start class first with Everyone to the Hub.",
       "padFull": "Your pad is full. Clear it to keep drawing.",
       "pickGame": "That lesson can't be handed out. Pick another one.",
       "publishFirst": "Publish this lesson first, then hand it out.",
@@ -17347,7 +17347,7 @@
       },
       "panel": {
         "title": "{class} · Sign-in",
-        "back": "Back to Homeroom",
+        "back": "Back to the Hub",
         "heading": "Sign-in",
         "lead": "On shared devices, students go to the class sign-in, tap their name, then type their password or tap their picture password.",
         "students": "Students",
@@ -17428,7 +17428,7 @@
     },
     "overview": {
       "title": "Class overview",
-      "lead": "The last {weeks} weeks. Each column is something you handed out in Homeroom. Students are in alphabetical order, never ranked.",
+      "lead": "The last {weeks} weeks. Each column is something you handed out in the Hub. Students are in alphabetical order, never ranked.",
       "student": "Student",
       "trend": "Trend",
       "tableLabel": "Class overview: handouts and results",
@@ -17470,7 +17470,7 @@
       "keyTrend": "Trend, from each student's last 3 scores: Needs support when they average under 60%, Improving when the latest is 10 points or more above the first of them, otherwise Steady.",
       "more": "The full gradebook, CSV, standards, rubrics and Google Classroom are below, the same as before.",
       "fullGradebook": "Full gradebook",
-      "noHandouts": "Nothing handed out in Homeroom in the last {weeks} weeks. Hand out a lesson or a lesson plan from the Homeroom tab.",
+      "noHandouts": "Nothing handed out in the Hub in the last {weeks} weeks. Hand out a lesson or a lesson plan from the Hub tab.",
       "gcLinked": "Linked to “{course}”",
       "gcRoster": "roster synced {when}",
       "gcRosterNever": "roster not synced yet",
@@ -17505,7 +17505,7 @@
       "inviteTitle": "Help in {class} as an aide",
       "inviteText": "You'll see the class's desks and live status, answer hands and the hall pass, look at a student's desk and leave comments and stickers. The class's teacher can remove you anytime.",
       "aideClasses": "Classes you help in",
-      "aideClassesText": "You're an aide in these classes. Open their Homeroom to see desks, hands and the hall pass."
+      "aideClassesText": "You're an aide in these classes. Open their Hub to see desks, hands and the hall pass."
     },
     "sub": {
       "laterTitle": "This sub link isn't open yet",
@@ -17561,7 +17561,7 @@
         "step": "Step",
         "quiz": "Quiz (first try)",
         "noBook": "Not picked yet",
-        "notes": "Their 3 notes are a page in their notebook. Open it from their desk's menu in Homeroom (Notebook)."
+        "notes": "Their 3 notes are a page in their notebook. Open it from their desk's menu in the Hub (Notebook)."
       },
       "errors": {
         "notFound": "That reading isn't on your desk.",
@@ -17589,7 +17589,7 @@
     "parents": {
       "title": "{name}'s class work",
       "heading": "{name}'s class work",
-      "lead": "What {name}'s teacher shares from Homeroom: handouts, the teacher's comments, books read and notes from the class's tab. Read only. Only {name}'s own work, never anyone else's.",
+      "lead": "What {name}'s teacher shares from the Hub: handouts, the teacher's comments, books read and notes from the class's tab. Read only. Only {name}'s own work, never anyone else's.",
       "open": "Class work",
       "back": "Family",
       "classes": "Classes",
@@ -17630,7 +17630,7 @@
       "noHandouts": "No handouts yet.",
       "noReading": "No books read with the class yet.",
       "noNotes": "{name} hasn't written class notes yet.",
-      "none": "Nothing from school here yet. When {name}'s teacher uses Homeroom, their class work shows here.",
+      "none": "Nothing from school here yet. When {name}'s teacher uses the Hub, their class work shows here.",
       "foot": "Read only. The teacher can turn this view off for a class.",
       "savedOn": "Parents' view on",
       "savedOff": "Parents' view off"

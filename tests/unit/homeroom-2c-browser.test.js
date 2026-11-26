@@ -150,7 +150,7 @@ test('the overview on a phone: no sideways scroll; the table scrolls in its own 
 test('a comment and a sticker on a finished card: the teacher\'s board, then the student\'s desk and lesson page', { timeout: 120000 }, async t => {
   if (skip) return t.skip(skip);
   const ava = by('Ava Diaz');
-  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1180, height: 820 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-desk');
   await page.evaluate(() => document.querySelector('[data-hr="fit"]')?.click());
   await page.locator(`.hr-desk[data-sid="${ava.id}"] .hr-more, .hr-desk[data-sid="${ava.id}"] [data-hrho]`).first().tap();
@@ -186,7 +186,7 @@ test('a comment and a sticker on a finished card: the teacher\'s board, then the
 test('team desks on a tablet: make a team, hand a game to it, the student sees "Team" and the team desk once', { timeout: 150000 }, async t => {
   if (skip) return t.skip(skip);
   const [ben, cleo] = [by('Ben Cole'), by('Cleo Park')];
-  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1180, height: 820 }, true);
+  const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/hub`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-desk');
   await page.tap('[data-hr="seats"]');
   await page.waitForSelector('[data-hr="teampick"]');

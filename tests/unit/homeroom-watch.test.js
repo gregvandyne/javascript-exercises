@@ -146,7 +146,7 @@ test('who gets pictures: the class\'s teachers and aides; never a student, anoth
   assert.ok(!desk.text.includes('data:image/webp'));
   const proj = await as(rivera)(`${C(cls.id)}/state`);
   assert.equal(proj.status, 200); assert.ok(!proj.text.includes('data:image/webp') && !proj.text.includes('"screens"'));
-  const projPage = await as(rivera)(`/class/${cls.id}/homeroom/projector`);
+  const projPage = await as(rivera)(`/class/${cls.id}/hub/projector`);
   assert.ok(!projPage.text.includes('data:image/webp'));
   // a sub's link: the board's poll is not one of its addresses (403), its own state has no pictures
   const link = await as(rivera)(`${C(cls.id)}/sub-links`, { body: { action: 'create', day: 'today' } });
@@ -225,7 +225,7 @@ test('a Manipulatives tool: its live room, cards on the targeted desks, the boar
   const it2 = HT.storedOf(cls.id)[0];
   q.run("UPDATE manip_sessions SET status='ended', opened_at=?, ended_at=? WHERE id=?", Date.now() - 13 * 3600e3, Date.now(), it2.session);
   assert.ok(!(await as(cleo)(`/api/desk/${cls.id}/state`)).json.cards.find(x => x.tool).ready);
-  assert.equal((await as(rivera)(`/class/${cls.id}/homeroom`)).status, 200);
+  assert.equal((await as(rivera)(`/class/${cls.id}/hub`)).status, 200);
   assert.equal(M.getSession(it2.session).status, 'active');
   assert.ok(HT.removeTool(rivera, cls, it2.id).ok);
 });
@@ -239,7 +239,7 @@ test('the catalog: every Find Oomba lesson, each Manipulatives tool, Figures, ow
   assert.ok(F.addGame(other, sf.folder.id, colleague.id).ok);
   assert.ok(F.shareFolder(other, sf.folder.id, oak.id).ok);
   q.run('INSERT INTO likes(user_id, game_id, created_at) VALUES (?,?,?)', rivera.id, wordHunt.id, Date.now());
-  const pg = await as(rivera)(`/class/${cls.id}/homeroom`);
+  const pg = await as(rivera)(`/class/${cls.id}/hub`);
   assert.equal(pg.status, 200);
   const has = (id, label) => assert.ok(pg.text.includes(`data-hritem="${id}"`), label);
   for (const g of [sumRacer, wordHunt, atlas, sudoku]) has(g.id, g.slug);
@@ -254,8 +254,8 @@ test('the catalog: every Find Oomba lesson, each Manipulatives tool, Figures, ow
   assert.ok((await as(cleo)(`/api/desk/${cls.id}/state`)).json.cards.some(x => x.tool === 'fraction-tiles'));
   assert.ok(HT.removeTool(rivera, cls, r.json.tools[0].id).ok);
   // an aide's page has no catalog; a student never gets the page
-  assert.ok(!(await as(kim)(`/class/${cls.id}/homeroom`)).text.includes('data-catalog'));
-  assert.equal((await as(ava)(`/class/${cls.id}/homeroom`)).status, 404);
+  assert.ok(!(await as(kim)(`/class/${cls.id}/hub`)).text.includes('data-catalog'));
+  assert.equal((await as(ava)(`/class/${cls.id}/hub`)).status, 404);
 });
 
 test('an account deleted: its name goes from the tool handouts, and a handout only it had goes', async () => {
