@@ -28,6 +28,7 @@
 //
 // Who: only the class's own teachers through the Homeroom gate (services/homeroom.js canUseClass) hand out and remove;
 // a student reads only their own desk (canUseDesk), never another desk or a group's name.
+import * as OP from './homeroom-opened.js';
 import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
@@ -217,7 +218,7 @@ export function boardView(c, locale = 'en', { assigned = true } = {}) {
       if (r.page) { const pp = pageProg(r, stepsN.get(`${r.id}:${sid}`) || 0); return { id: r.id, inOrder: false, done: pp.done, pct: pp.pct, score: null, ...(!pp.done && !!by && t > by && !excused.has(`${sid}:${r.id}`) ? { late: true } : {}) }; }
       const late = !done && !!by && t > by && !excused.has(`${sid}:${r.id}`);
       return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : r.step_kind === 'manip' ? manipPct(p, r) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}),
-        ...(r.step_kind === 'manip' ? { qs: manipQs(p, r) } : {}) };
+        ...(r.step_kind === 'manip' ? { qs: { ...manipQs(p, r), ...(OP.has(c.id, sid, r.id) ? { opened: true } : {}) } } : {}) };
     }));
   }
   // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at

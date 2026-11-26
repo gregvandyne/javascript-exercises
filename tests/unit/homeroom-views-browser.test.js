@@ -290,14 +290,20 @@ test('Classroom on a phone is calm: no Live button, Build and Find in one row, O
   // All classes (the switcher's last option): the list of classes
   await page.selectOption('#hr-class', { label: 'All classes' });
   await page.waitForURL(/\/teach\?all=1$/);
-  // Homeroom's ⋯ menu: Host a live game, to the address the tile had
+  // Homeroom's ⋯ menu: Host a live game, the address the tile had, opened in Homeroom's layer
   await page.goto(`${BASE}/class/${cls.id}/homeroom`); await page.waitForSelector('.hr-desk');
   await page.click('[data-hr="menu"]');
   const host = page.locator('#hr-menu a[data-hr="hostlive"]');
   assert.equal(await host.getAttribute('href'), `/live?class=${cls.id}`);
   assert.equal((await host.textContent()).trim(), 'Host a live lesson');
   await shot(page, 'phone-homeroom-menu');
-  await Promise.all([page.waitForURL(/\/live\?class=/), host.click()]);
+  // (it opens inside Homeroom: the live host pages in a layer over the board, the address stays: docs/decisions.md
+  // "Homeroom: live games inside Homeroom, a simpler Find lessons")
+  const at = page.url();
+  await host.click();
+  await page.waitForSelector('.hr-liveplayer:not([hidden]) .hr-liveframe');
+  assert.equal(page.url(), at);
+  assert.match(await page.$eval('.hr-liveframe', f => f.src), /\/live\?class=.*&in=hr$/);
   assert.deepEqual(errors, []);
   await ctx.close();
 });

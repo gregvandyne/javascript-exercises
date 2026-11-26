@@ -85,8 +85,9 @@ test('the teacher builds an Arithmetic Lab lesson with a version for each group 
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
-  assert.match(await page.locator('#hr-lessons').innerText(), /Lesson plans you build show here/);
-  await page.click('[data-hr="build"]');
+  // (no empty line taking room: the Build a lesson plan card at the bottom of Find lessons, with what it does)
+  assert.match(await page.locator('#hr-lessons').innerText(), /Build a lesson plan[\s\S]*set it up once/i);
+  await page.click('#hr-panel [data-hr="build"]');
   await page.waitForSelector('[data-lbgame="arithmetic-lab"]');
   assert.equal(await page.locator('.hr-lbgame.later').count(), 8, 'the rest of the spec\'s order, coming later');
   await settle(page); await shot(page, 'builder-pick-laptop');
@@ -165,7 +166,7 @@ test('Algebra Builder and Crossword builders on a tablet; the builder full scree
   config.anthropicKey = 'sk-test-not-used';   // the Ask Oomba button shows (nothing is called in this test)
   const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1180, height: 820 }, true);
   await page.waitForSelector('.hr-desk');
-  await page.tap('[data-hr="build"]');
+  await page.tap('#hr-panel [data-hr="build"]');
   await page.tap('[data-lbgame="algebra-builder"]');
   await previewReady(page);
   await page.fill('#hrl-title', 'Solving equations');
@@ -175,7 +176,7 @@ test('Algebra Builder and Crossword builders on a tablet; the builder full scree
   await settle(page); await shot(page, 'builder-algebra-tablet');
   assert.ok(await noSideways(page));
   await page.tap('[data-lb="cancel"]');
-  await page.tap('[data-hr="build"]');
+  await page.tap('#hr-panel [data-hr="build"]');
   await page.tap('[data-lbgame="crossword"]');
   await page.fill('#hrl-title', 'Habitats');
   const words = [['habitat', 'Where an animal lives'], ['predator', 'An animal that hunts'], ['prey', 'An animal that is hunted'], ['forest', 'Lots of trees growing together']];
@@ -195,15 +196,19 @@ test('Algebra Builder and Crossword builders on a tablet; the builder full scree
   // The phone: the builder is the whole screen, one column, no sideways scroll.
   const P = await open(teacher, `/class/${cls.id}/homeroom`, { width: 390, height: 844 }, true);
   await P.page.waitForSelector('.hr-desk');
-  // My lessons in the phone's panel strip: tap a lesson, the yellow bar offers Whole class and the groups
-  await P.page.locator('[data-hritem^="L:"]').first().scrollIntoViewIfNeeded();
-  await P.page.locator('[data-hritem^="L:"]').first().tap();
+  // lesson plans are in Find lessons (the phone's sheet): its Lesson plans chip, tap one, the yellow bar offers Whole
+  // class and the groups
+  await P.page.evaluate(() => { const b = document.querySelector('[data-hr="catalog"]'), p = document.getElementById('hr-panel'); p.scrollLeft = b.offsetLeft - 20; });
+  await P.page.tap('[data-hr="catalog"]');
+  await P.page.tap('.hr-csheet [data-csubj="plans"]');
+  await P.page.locator('.hr-csheet [data-hritem^="L:"]').first().tap();
   await P.page.waitForSelector('#hr-givebar:not([hidden])');
   assert.ok(await noSideways(P.page));
   await settle(P.page); await shot(P.page, 'lesson-picked-phone');
   await P.page.tap('[data-hr="unpick"]');
-  await P.page.locator('[data-hr="build"]').scrollIntoViewIfNeeded();
-  await P.page.tap('[data-hr="build"]');
+  await P.page.tap('[data-hr="catalog"]');
+  await P.page.tap('.hr-csheet [data-csubj="plans"]');
+  await P.page.tap('.hr-csheet [data-hr="build"]');
   await P.page.tap('[data-lbgame="arithmetic-lab"]');
   await P.page.waitForFunction(() => !!document.querySelector('#hrl-paper .cwp'));
   const sheetBox = await P.page.locator('.hr-lbsheet').boundingBox();

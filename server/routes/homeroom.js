@@ -136,10 +136,12 @@ import { TOOLS as MANIP_TOOLS, CATS as MANIP_CATS } from '../../public/js/manip-
 import { practiceTasks } from '../../public/js/manip-tasks.js';
 import * as NL from '../services/homeroom-look.js';
 import * as IN from '../services/homeroom-intro.js';
+import * as SETS from '../services/classlive-sets.js';
+import * as LG from '../services/homeroom-livegame.js';
 import { offerFollowUp } from '../services/companion.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, tooBig: 413, forbidden: 403, drawOff: 403, deskLocked: 403, notHere: 403, tooFast: 429 };
+const STATUS = { noLiveGame: 404, liveFull: 409, liveLocked: 409, notFound: 404, tooBig: 413, forbidden: 403, drawOff: 403, deskLocked: 403, notHere: 403, tooFast: 429 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`homeroom.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -221,19 +223,30 @@ function deskLists(req) {
   const shared = F.sharedWith(u).map(f => ({ name: f.name, by: f.owner_name || '', items: gamesFrom(F.gamesIn(u, f.id)) })).filter(f => f.items.length);
   const favorites = gamesFrom(games.favorites(u, u.id, 100));
   // Oomba lessons: the same list as Find Oomba lessons (routes/game-shelf.js oombaPane), every one of them
-  const host = liveOn() && liveCanHost(u);
-  const oomba = [];
+  const host = liveOn() && liveCanHost(u) && !req.homeroomClass.archived_at;
+  const cls = encodeURIComponent(req.homeroomClass.id);
+  const oomba = [], live = [];
   for (const g of games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 200 })) {
-    // (an official Learn game with no subject yet is listed too, under More Oomba lessons: a superset of Find Oomba lessons)
+    // (an official Learn game with no subject yet is listed too, under More games: a superset of Find Oomba lessons)
     const info = SHELF_INFO[g.slug] || { subject: 'more' }; if (seen.has(g.id)) continue;
     seen.add(g.id);
     const gr = shelfGrades(g.slug), grades = gr ? { from: gradeNum(gr.from), to: gradeNum(gr.to) } : null;
     if (HO.handable(u, g)) oomba.push({ ...gameItem(g), subject: info.subject, grades });
-    else { const lg = liveGameOf(g); if (lg && !lg.play && host && !slugHidden(g.slug)) oomba.push({ ...gameItem(g), subject: info.subject, grades, live: `/live?mode=${lg.mode}&class=${req.homeroomClass.id}` }); }
+    // a live-only game (Brain Board, Would You Rather Live, Atlas Quest Live, Quest Race...): hosted inside Homeroom
+    // (docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find lessons"), the class already chosen
+    else { const lg = liveGameOf(g); if (lg && !lg.play && host && !slugHidden(g.slug)) live.push({ ...gameItem(g), subject: info.subject, grades, live: `/live?mode=${lg.mode}&class=${cls}` }); }
+  }
+  if (host) {
+    // the teacher's own live question sets (and the school's shared ones): the landing opens with the set picked
+    const sets = SETS.listFor(u);
+    for (const x of [...sets.mine, ...sets.school].filter(x => x.ready).slice(0, 24)) live.push({ icon: '❓', title: x.title, kindKey: 'liveSet', live: `/live?set=${encodeURIComponent(`set:${x.id}`)}&class=${cls}` });
+    // and every other kind of live lesson (quizzes from the question bank, memory and word sets, quick live): the landing
+    live.push({ icon: '📡', title: t('homeroom.catalog.hostAny'), kindKey: 'liveAny', live: `/live?class=${cls}` });
   }
   const subjects = openSubjects(SUBJECTS, SHELF_INFO).filter(x => oomba.some(g => g.subject === x.key));
-  // (a lesson for any subject, a live quiz, or one with a subject that has no chip yet: More Oomba lessons)
+  // (a lesson for any subject, a live quiz, or one with a subject that has no chip yet: More games)
   for (const g of oomba) if (!subjects.some(x => x.key === g.subject)) g.subject = 'more';
+  for (const g of live) if (g.subject && !subjects.some(x => x.key === g.subject)) g.subject = 'more';
   const more = oomba.some(g => g.subject === 'more');
   const manip = toolAccess(u, config.manipulatives) === 'yes';
   const tools = manip ? MANIP_TOOLS.map(tl => ({ id: `T:manip:${tl.slug}`, icon: tl.emoji, title: tl.name, cat: tl.cat, grades: gradesOf(tl.grades), gradesText: tl.grades })) : [];
@@ -241,46 +254,82 @@ function deskLists(req) {
   // hands out N questions, each student their own variations
   const tasks = manip ? practiceTasks().map(x => ({ id: `T:task:${x.id}`, icon: MANIP_TOOLS.find(tl => tl.slug === x.slug).emoji, title: x.task.title, tool: x.slug, grades: { from: gradeNum(x.task.grade), to: gradeNum(x.task.grade) }, ccss: x.task.ccss })) : [];
   const figures = toolAccess(u, config.figures) === 'yes' ? [{ id: 'T:figures', icon: '📐', title: t('homeroom.panel.figures'), mineOnly: true }] : [];
-  return { mine, folders, shared, favorites, oomba, subjects, more, tools, tasks, figures };
+  return { mine, folders, shared, favorites, oomba, live, subjects, more, tools, tasks, figures };
 }
 const gradeLabel = (t, g) => (!g ? '' : g.from === g.to ? (g.from ? t('learn.tab.gradeN', { n: g.from }) : t('learn.tab.gradeK')) : t('learn.grades', { from: g.from ? String(g.from) : 'K', to: g.to ? String(g.to) : 'K' }));
 const searchText = (...parts) => parts.filter(Boolean).join(' ').toLowerCase();
-const row = (t, x) => {
-  const g = x.grades || null, data = raw(` data-q="${esc(searchText(x.title, x.sub))}"${x.subject ? ` data-subject="${esc(x.subject)}"` : ''}${g ? ` data-gf="${g.from}" data-gt="${g.to}"` : ''}`);
-  if (x.live) return html`<li${data}><a class="hr-item hr-liveonly" href="${x.live}"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span><span class="hr-soontag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></a></li>`;
-  if (!x.id) return html`<li class="hr-item hr-later"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></li>`;
-  return html`<li${data}><button type="button" class="hr-item hr-give" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span>${g ? html`<span class="hr-igr">${gradeLabel(t, g)}</span>` : ''}${x.mineOnly ? html`<span class="hr-soontag">${t('homeroom.catalog.myDeskOnly')}</span>` : ''}</button></li>`;
+/**
+ * One card of the catalog (docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find lessons"): its icon
+ * big, its name (two lines at most), and a short line saying what it is and for which grades. k: what kind it is (game,
+ * live, tool, task, figures, mine), which the filter chips read. A card that hands out is a [data-hritem] button (tap
+ * it, then a desk; or drag it there; in Select mode, tap several); a live game is a [data-hrlive] button that hosts it
+ * in a layer over the board (public/js/homeroom-livegame.js).
+ */
+const row = (t, x, k, kindLine = '') => {
+  const g = x.grades || null, data = raw(` class="hr-cc" data-k="${k}" data-q="${esc(searchText(x.title, x.sub))}"${x.subject ? ` data-subject="${esc(x.subject)}"` : ''}${g ? ` data-gf="${g.from}" data-gt="${g.to}"` : ''}`);
+  const line = [kindLine, g ? gradeLabel(t, g) : ''].filter(Boolean).join(' · ');
+  const inner = html`<span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 28 })}</span><span class="hr-ctext"><span class="hr-itemt" dir="auto">${x.title}</span>${line ? html`<span class="hr-ckind">${line}</span>` : ''}</span>`;
+  if (x.live) return html`<li${data}><button type="button" class="hr-item hr-ccard hr-livecard" data-hrlive="${x.live}" data-icon="${x.icon}">${inner}<span class="hr-ctag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></button></li>`;
+  return html`<li${data}><button type="button" class="hr-item hr-give hr-ccard" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false">${inner}${x.mineOnly ? html`<span class="hr-ctag">${t('homeroom.catalog.myDeskOnly')}</span>` : ''}<span class="hr-ccheck" aria-hidden="true"></span></button></li>`;
 };
-/** The catalog's markup (the panel's lists): search and filters, then each list; an open <details> per group. */
+/** A row of the panel's own short lists (Reading, Class flow): an item that hands out, or one that is used right away. */
+const plainRow = x => (!x.id ? html`<li class="hr-item hr-later"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></li>`
+  : html`<li><button type="button" class="hr-item hr-give" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false"><span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 18 })}</span><span class="hr-itemt" dir="auto">${x.title}</span></button></li>`);
+/**
+ * The catalog's markup: search first, a grade, one row of filter chips that scrolls sideways (All, Recent, Games, each
+ * subject, Live games, Teaching tools, My lessons, Lesson plans), Select (several at once), then the cards. With All on,
+ * the cards are in groups under plain headers (Games by subject, Live games, Teaching tools by category and each tool's
+ * practice, then the teacher's own lessons and lesson plans at the bottom), each showing its first few with See all;
+ * a chip or a search shows one grid of what fits. Empty groups are never shown; a Build a lesson card ends the list.
+ */
 function catalogHtml(req, lists) {
   const t = req.t, L = lists;
-  const items = list => html`<ul class="hr-items">${list.map(x => row(t, x))}</ul>`;
-  const group = (key, label, list, { open = false, count = true } = {}) => (list.length ? html`<details class="hr-cgroup" data-cgroup="${key}"${open ? raw(' open') : ''}><summary class="hr-csum"><span dir="auto">${label}</span>${count ? html`<span class="hr-ccount" data-ccount>${list.length}</span>` : ''}</summary>${items(list)}</details>` : '');
-  const bySubject = [...L.subjects.map(x => group(`s-${x.key}`, html`${x.emoji} ${t(`learn.tab.subjects.${x.key}`)}`, L.oomba.filter(g => g.subject === x.key).map(g => ({ ...g, sub: t(`learn.tab.subjects.${g.subject}`) })), { open: x.key === 'math' })),
-    L.more ? group('s-more', html`✨ ${t('homeroom.catalog.more')}`, L.oomba.filter(g => g.subject === 'more'), { open: !L.subjects.length }) : ''];
-  const byCat = MANIP_CATS.map((name, i) => group(`m-${i}`, name, L.tools.filter(x => x.cat === i).map(x => ({ ...x, sub: `manipulatives ${name}` }))));
-  // a tool's practice tasks under it, one group a tool (they hand out as graded lessons)
+  const cards = (list, k, kind) => html`<ul class="hr-items hr-cgrid">${list.map(x => row(t, x, k, typeof kind === 'function' ? kind(x) : kind))}</ul>`;
+  const group = (key, label, list, k, kind = '', { head = false } = {}) => (list.length ? html`<div class="hr-cgroup" data-cgroup="${key}"${head ? raw(' data-keephead') : ''}><h3 class="hr-csum"><span dir="auto">${label}</span><span class="hr-ccount" data-ccount>${list.length}</span></h3>${cards(list, k, kind)}</div>` : '');
+  const seeAll = html`<button type="button" class="hr-seeall" data-cseeall hidden data-all="${t('homeroom.catalog.seeAll', { count: 2 }).replace('2', '{n}')}" data-fewer="${t('homeroom.catalog.fewer')}"></button>`;
+  const subjName = key => (key === 'more' ? t('homeroom.catalog.moreGames') : t(`learn.tab.subjects.${key}`));
+  const gameKind = x => subjName(x.subject);
+  const bySubject = [...L.subjects.map(x => group(`s-${x.key}`, html`${x.emoji} ${t(`learn.tab.subjects.${x.key}`)}`, L.oomba.filter(g => g.subject === x.key).map(g => ({ ...g, sub: t(`learn.tab.subjects.${g.subject}`) })), 'game', gameKind)),
+    L.more ? group('s-more', html`✨ ${t('homeroom.catalog.moreGames')}`, L.oomba.filter(g => g.subject === 'more'), 'game', gameKind) : ''];
+  const liveKind = x => t(x.kindKey === 'liveSet' ? 'homeroom.catalog.kind.liveSet' : x.kindKey === 'liveAny' ? 'homeroom.catalog.kind.liveAny' : 'homeroom.catalog.kind.live');
+  const byCat = MANIP_CATS.map((name, i) => group(`m-${i}`, name, L.tools.filter(x => x.cat === i).map(x => ({ ...x, sub: `manipulatives ${name}` })), 'tool', t('homeroom.catalog.kind.tool'), { head: true }));
+  // each tool's practice under it: find the tool, then its tasks (they hand out as graded lessons)
   const taskGroups = [...new Set(L.tasks.map(x => x.tool))].map(slug => { const tl = L.tools.find(x => x.id === `T:manip:${slug}`);
-    return group(`mt-${slug}`, html`${tl ? tl.icon : '🧮'} ${t('homeroom.catalog.toolLessons', { tool: tl ? tl.title : slug })}`, L.tasks.filter(x => x.tool === slug).map(x => ({ ...x, sub: `manipulatives ${tl ? tl.title : ''} ${x.ccss}` }))); });
+    return group(`mt-${slug}`, html`${tl ? tl.icon : '🧮'} ${t('homeroom.catalog.toolLessons', { tool: tl ? tl.title : slug })}`, L.tasks.filter(x => x.tool === slug).map(x => ({ ...x, sub: `manipulatives ${tl ? tl.title : ''} ${x.ccss}` })), 'task', t('homeroom.catalog.kind.practice'), { head: true }); });
+  const lessonKind = t('homeroom.catalog.kind.lesson');
   const total = L.mine.length + L.oomba.length + L.tools.length + L.tasks.length + L.figures.length + L.favorites.length + L.folders.reduce((n, f) => n + f.items.length, 0) + L.shared.reduce((n, f) => n + f.items.length, 0);
+  const hasMine = L.mine.length || L.folders.length || L.shared.length || L.favorites.length;
+  const chips = [{ key: '', label: t('learn.tab.subjects.all') }, { key: 'recent', label: t('homeroom.catalog.recent'), emoji: '🕘', hidden: true },
+    ...(L.oomba.length ? [{ key: 'games', label: t('homeroom.catalog.games'), emoji: '🎮' }] : []),
+    ...L.subjects.map(x => ({ key: x.key, label: t(`learn.tab.subjects.${x.key}`), emoji: x.emoji })),
+    ...(L.live.length ? [{ key: 'live', label: t('homeroom.catalog.live'), emoji: '📡' }] : []),
+    ...(L.tools.length ? [{ key: 'tools', label: t('homeroom.catalog.tools'), emoji: '🧮' }] : []),
+    ...(hasMine ? [{ key: 'mine', label: t('homeroom.catalog.mine'), emoji: '🧑‍🏫' }] : []),
+    { key: 'plans', label: t('homeroom.catalog.plans'), emoji: '📄' }];
   return html`<div class="hr-catalog" data-catalog>
     <div class="hr-cfind" role="search">
       <label class="sr-only" for="hr-cq">${t('homeroom.catalog.search')}</label>
       <input class="input hr-cq" id="hr-cq" type="search" data-cq placeholder="${t('homeroom.catalog.search')}" autocomplete="off">
-      <div class="hr-cfilters"><label class="sr-only" for="hr-cg">${t('learn.tab.grade')}</label>
-        <select class="input hr-cg" id="hr-cg" data-cg>${[['', t('learn.tab.gradeAny')], ...['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => [String(gradeNum(g)), g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}">${l}</option>`)}</select></div>
-      <div class="hr-csubjects" role="group" aria-label="${t('learn.tab.subject')}">${[{ key: '', label: t('learn.tab.subjects.all') }, ...L.subjects.map(x => ({ key: x.key, label: t(`learn.tab.subjects.${x.key}`), emoji: x.emoji })), ...(L.tools.length ? [{ key: 'tools', label: t('homeroom.catalog.tools'), emoji: '🧮' }] : [])].map(x => html`<button type="button" class="chip hr-csubj${x.key ? '' : ' on'}" data-csubj="${x.key}" aria-pressed="${x.key ? 'false' : 'true'}">${x.emoji ? html`<span aria-hidden="true">${x.emoji}</span> ` : ''}${x.label}</button>`)}</div>
+      <div class="hr-cfrow"><label class="sr-only" for="hr-cg">${t('learn.tab.grade')}</label>
+        <select class="input hr-cg" id="hr-cg" data-cg>${[['', t('learn.tab.gradeAny')], ...['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => [String(gradeNum(g)), g === 'K' ? t('learn.tab.gradeK') : t('learn.tab.gradeN', { n: g })])].map(([v, l]) => html`<option value="${v}">${l}</option>`)}</select>
+        <button type="button" class="chip hr-cselect" data-cselect aria-pressed="false">${ico('☑️', { size: 14 })} ${t('homeroom.multi.select')}</button></div>
+      <div class="hr-csubjects" role="group" aria-label="${t('homeroom.catalog.filters')}">${chips.map(x => html`<button type="button" class="chip hr-csubj${x.key ? '' : ' on'}" data-csubj="${x.key}" aria-pressed="${x.key ? 'false' : 'true'}"${x.hidden ? raw(' hidden') : ''}>${x.emoji ? html`<span aria-hidden="true">${x.emoji}</span> ` : ''}${x.label}</button>`)}</div>
       <p class="small muted hr-cnone" data-cnone hidden>${t('homeroom.catalog.none')}</p>
       <p class="sr-only" aria-live="polite" data-cstatus data-one="${t('homeroom.catalog.found', { count: 1 })}" data-many="${t('homeroom.catalog.found', { count: 2 }).replace('2', '{n}')}"></p>
     </div>
-    <h2 class="hr-cap">${t('homeroom.panel.myGames')}</h2>
-    ${L.mine.length ? group('mine', t('homeroom.catalog.allMine'), L.mine, { open: true }) : html`<p class="hr-empty small">${t('homeroom.panel.noGames')}</p>`}
-    ${L.folders.map((f, i) => group(`f-${i}`, html`📁 ${f.name}`, f.items))}
-    ${L.shared.length ? html`<h2 class="hr-cap">${t('homeroom.catalog.shared')}</h2>${L.shared.map((f, i) => group(`sh-${i}`, html`🤝 ${f.name}${f.by ? html` · ${f.by}` : ''}`, f.items))}` : ''}
-    ${L.favorites.length ? group('fav', html`❤️ ${t('homeroom.catalog.favorites')}`, L.favorites) : ''}
-    <h2 class="hr-cap">${t('homeroom.panel.oomba')}</h2>
-    ${bySubject}
-    ${L.tools.length || L.figures.length ? html`<h2 class="hr-cap" data-ctools>${t('homeroom.catalog.tools')}</h2>${byCat}${taskGroups}${L.figures.length ? items(L.figures) : ''}` : ''}
+    ${L.oomba.length ? html`<section class="hr-csec" data-csec="games"><h2 class="hr-cap">${t('homeroom.catalog.games')}</h2>${bySubject}${seeAll}</section>` : ''}
+    ${L.live.length ? html`<section class="hr-csec" data-csec="live"><h2 class="hr-cap">${t('homeroom.catalog.live')}</h2>${group('live', html`📡 ${t('homeroom.catalog.liveLead')}`, L.live, 'live', liveKind)}${seeAll}</section>` : ''}
+    ${L.tools.length || L.figures.length ? html`<section class="hr-csec" data-csec="tools"><h2 class="hr-cap" data-ctools>${t('homeroom.catalog.tools')}</h2>${byCat}${taskGroups}${L.figures.length ? group('figures', html`📐 ${t('homeroom.panel.figures')}`, L.figures, 'figures') : ''}${seeAll}</section>` : ''}
+    <section class="hr-csec" data-csec="lessons"><h2 class="hr-cap">${t('homeroom.catalog.lessons')}</h2>
+      ${L.mine.length ? group('mine', html`🧑‍🏫 ${t('homeroom.catalog.allMine')}`, L.mine, 'mine', lessonKind) : ''}
+      ${L.folders.map((f, i) => group(`f-${i}`, html`📁 ${f.name}`, f.items, 'mine', lessonKind))}
+      ${L.shared.map((f, i) => group(`sh-${i}`, html`🤝 ${f.name}${f.by ? html` · ${f.by}` : ''}`, f.items, 'mine', lessonKind))}
+      ${L.favorites.length ? group('fav', html`❤️ ${t('homeroom.catalog.favorites')}`, L.favorites, 'mine', lessonKind) : ''}
+      <div class="hr-cgroup" data-cgroup="plans" data-plans><h3 class="hr-csum"><span>📄 ${t('homeroom.panel.myLessons')}</span><span class="hr-ccount" data-ccount></span></h3><div id="hr-lessons" class="hr-lessons"></div></div>
+      ${seeAll}
+      <ul class="hr-items hr-cgrid hr-cend"><li class="hr-cc hr-cbuild" data-k="build"><a class="hr-item hr-ccard hr-buildcard" href="/build/new"><span class="hr-ico hr-buildico" aria-hidden="true">+</span><span class="hr-ctext"><span class="hr-itemt">${t('homeroom.catalog.buildLesson')}</span><span class="hr-ckind">${t('homeroom.catalog.buildLessonText')}</span></span></a></li></ul>
+    </section>
+    <div class="hr-cselbar" data-cselbar hidden role="status"></div>
     <span hidden data-ctotal="${total}"></span>
   </div>`;
 }
@@ -300,7 +349,7 @@ router.get('/class/:id/homeroom', (req, res) => {
   const lists = aide ? null : deskLists(req);
   // a tool handed out yesterday: its room (ended by itself after 12 hours) opens again for its host (services/homeroom-tools.js)
   if (!aide) HT.keepOpen(u, c);
-  const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(x => row(t, x))}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
+  const section = (k, items, empty = '') => html`<h2 class="hr-cap">${t(`homeroom.panel.${k}`)}</h2>${items.length ? html`<ul class="hr-items">${items.map(plainRow)}</ul>` : empty ? html`<p class="hr-empty small">${empty}</p>` : ''}`;
   const board = html`<div id="homeroom" class="hr${aide ? ' hr-aide' : ''}">
       <div class="hr-stage">
         <div class="rm rm-teacher hr-board" id="hr-board" tabindex="-1" aria-label="${t('homeroom.boardLabel')}"><div class="rm-world" id="hr-world"><p class="muted hr-loading">${t('homeroom.loading')}</p></div></div>
@@ -308,7 +357,7 @@ router.get('/class/:id/homeroom', (req, res) => {
           <h2 class="hr-cap">${t('homeroom.panel.handOut')}</h2>
           <div class="hr-groupchips" id="hr-groupchips"></div>
           <p class="hr-soon small" id="hr-givehint">${ico('👆', { size: 16 })} ${t('homeroom.panel.handOutHint')}</p>
-          <h2 class="hr-cap">${t('homeroom.panel.myLessons')}</h2><div id="hr-lessons" class="hr-lessons"></div>
+          ${lists ? '' : html`<div id="hr-lessons" class="hr-lessons" hidden></div>`}
           <button type="button" class="hr-item hr-cphone" data-hr="catalog">${ico('🔎', { size: 18 })}<span class="hr-itemt">${t('homeroom.catalog.open')}</span></button>
           ${lists ? catalogHtml(req, lists) : ''}
           ${section('reading', [{ id: 'R:', icon: '📖', title: t('homeroom.panel.readAny') }])}
@@ -329,7 +378,7 @@ router.get('/class/:id/homeroom', (req, res) => {
         <div class="cv-acts cv-acts-homeroom hr" data-cv-acts="homeroom">${acts}</div></header>
       <div class="cv-views"><section class="cv-view cv-view-homeroom" data-cv-view="homeroom" aria-label="${t('homeroom.tabs.homeroom')}">${board}</section></div></div>` : board;
   page(req, res, {
-    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-look'],
+    title: t('homeroom.pageTitle', { class: c.name }), active: 'classes', bodyClass: aide ? 'hr-page cv-page cv-on-homeroom hr-aidepage' : 'hr-page', scripts: ['/js/homeroom.js'], i18n: ['js.manip-room', 'js.manip', 'js.board-ann', 'js.homeroom-watch', 'js.homeroom-catalog', 'js.homeroom-livegame', 'js.homeroom-multi', 'js.homeroom-signin-panel', 'js.homeroom-lessons', 'js.homeroom-live', 'js.homeroom-plan', 'js.homeroom-helpers', 'js.notebook', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-look'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">${aide ? `<link rel="stylesheet" href="/css/class-views.css?v=${VERSION}">` : ''}`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, role: aide ? 'aide' : 'teacher', room, libraryGrade: HR.libraryGrade(c.grade), live: H.liveOf(c.id), handouts: HO.boardView(c, req.locale), instructionsMax: HO.INSTRUCTIONS_MAX,
       gc: aide ? false : gcCanPost(req, c), stickers: Object.keys(HO.STICKERS).map(k => ({ k, src: HO.stickerSrc(k), label: t(`homeroom.stickers.${k}`) })), commentMax: HO.COMMENT_MAX,
@@ -647,15 +696,26 @@ router.post('/api/homeroom/:id/lessons/:lid/print', rateLimit('game-print', 60, 
   res.json({ html: r.html });
 });
 
+// ---------------------------------------------------------------- live games inside Homeroom
+// docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find lessons" (services/homeroom-livegame.js): the
+// board's pill and its desks' "In Brain Board" (the class's teachers), End from the pill (its host), and a desk's seat
+// (one of the class's own students, signed in: no code).
+router.get('/api/homeroom/:id/livegame', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json({ game: LG.boardView(req.homeroomClass, req.user) }));
+router.post('/api/homeroom/:id/livegame/end', rateLimit('homeroom-live', 600, 3600e3), (req, res) => {
+  const r = LG.end(req.homeroomClass, req.user);
+  send(req, res, r.ok ? { ...r, toast: req.t('homeroom.livegame.ended') } : r);
+});
+router.post('/api/desk/:id/livegame', rateLimit('homeroom-livegame-join', 300, 3600e3), (req, res) => send(req, res, LG.join(req.homeroomClass, req.user, req.locale)));
+
 // ---------------------------------------------------------------- the projector view
 // The teacher's area as big as the screen, the class's name and the Live dot: never a name, a desk, a hand or progress.
 // No site bar or chat (bare), so nothing of the teacher's own screen shows either.
 router.get('/class/:id/homeroom/projector', (req, res) => {
-  const t = req.t, c = req.homeroomClass;
+  const t = req.t, c = req.homeroomClass, u = req.user;
   page(req, res, {
     title: t('homeroom.projector.title', { class: c.name }), bare: true, bodyClass: 'hr-projpage', scripts: ['/js/homeroom-projector.js'], i18n: ['js.homeroom-area', 'js.homeroom-plan'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
-    body: html`${jsonData('page-data', { classId: c.id, state: { ...H.boardState(c.id), signin: signinView(req, c.id), plan: HP.publicView(c) } })}
+    body: html`${jsonData('page-data', { classId: c.id, state: { ...H.boardState(c.id), signin: signinView(req, c.id), plan: HP.publicView(c), livegame: LG.projectorView(c, req.hrRole === 'sub' ? null : u) } })}
     <div class="hr-proj" id="hr-proj">
       <header class="hr-projtop"><h1 class="hr-projname" dir="auto">${c.name}</h1><span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span><div class="hr-projplan" id="hr-projplan" hidden></div></header>
       <div class="hr-projmain"><div class="hr-projarea" id="hr-projarea"></div>
@@ -670,7 +730,7 @@ router.get('/class/:id/homeroom/projector', (req, res) => {
 // changed since sc, the code the page last saw).
 router.get('/api/homeroom/:id/state', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => {
   const id = req.homeroomClass.id, si = SI.signinOf(id);
-  res.json({ ...H.boardState(id, req.query.v), signin: signinView(req, id, { qr: !si.open || String(req.query.sc || '') !== si.code }), plan: HP.publicView(req.homeroomClass) });
+  res.json({ ...H.boardState(id, req.query.v), signin: signinView(req, id, { qr: !si.open || String(req.query.sc || '') !== si.code }), plan: HP.publicView(req.homeroomClass), livegame: LG.projectorView(req.homeroomClass, req.hrRole === 'sub' ? null : req.user) });
 });
 
 // ---------------------------------------------------------------- the student desk
@@ -681,12 +741,12 @@ router.get('/class/:id/desk', (req, res) => {
   // the notebook (docs/decisions.md "Homeroom: the notebook"): the dock's last button, and a Notes button on each handout
   const nb = NB.canUse(u);
   page(req, res, {
-    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-intro'],
+    title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-livedesk', 'js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading', 'js.homeroom-due', 'js.homeroom-intro'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, libraryGrade: HR.libraryGrade(c.grade), color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
       draw: MK.drawOn(c), marks: { strokes: MK.MARKS.strokes, points: MK.MARKS.points }, strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
       // step 3c: their own supports (only theirs; See the room never carries anyone's)
-      ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, intro: config.homeroomOnboarding && !IN.seen(u, 'desk'), state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup } })}
+      ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, intro: config.homeroomOnboarding && !IN.seen(u, 'desk'), state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup, livegame: LG.deskView(c, u) } })}
     <div class="hd${AT.k2For(c, u.id) ? ' hd-k2' : ''}" id="hd">
       <header class="hd-top hd-float">
         <span class="hr-livedot" id="hr-live"${H.liveOf(c.id) ? '' : raw(' hidden')}>${t('homeroom.live')}</span>
@@ -715,7 +775,7 @@ router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3)
   const c = req.homeroomClass, sup = SUP.forDesk(c, req.user), cards = deskCards(c, req.user, sup, req.locale), hv = HO.deskVersion(cards);
   // A team desk's shared pad (step 2c): its version, and its strokes when another member drew since pv.
   const team = H.teamOf(c.id, req.user.id), pv = team ? H.padVersion(c.id, req.user.id) : null;
-  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), ...deskMode(c, req.user), plan: HP.deskView(c, sup), support: sup, hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
+  res.json({ ...H.boardState(c.id, req.query.v), ...deskLive(c, req.user), ...deskMode(c, req.user), plan: HP.deskView(c, sup), support: sup, livegame: LG.deskView(c, req.user), hv, ...(String(req.query.hv ?? '') === hv ? {} : { cards }),
     ...(team ? { pv, team: team.id, ...(String(req.query.pv ?? '') === String(pv) ? {} : { strokes: H.doodleOf(c.id, req.user.id) }) } : {}) });
 });
 // ---------------------------------------------------------------- reading from the desk (services/homeroom-reading.js)

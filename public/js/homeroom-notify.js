@@ -4,6 +4,7 @@
 // minute), every half minute while a class is live (so the prompt goes when class ends), and never while the tab is
 // hidden. Closing the prompt hides it for that class's session of live class. Only while a class is live, never on the
 // desk itself or in a page the desk's player frames (routes/homeroom.js leaves it out there too), and small on a phone.
+// It sits at the top of the page's content, never floating over a board or its controls.
 import { t, api, esc } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 
@@ -26,7 +27,9 @@ function render(c) {
     <a class="btn btn-primary hr-notify-go" href="/class/${encodeURIComponent(c.id)}/desk">${esc(tn('go'))}</a>
     <button type="button" class="hr-notify-x" aria-label="${esc(tn('close'))}">×</button>`;
   box.querySelector('.hr-notify-x').addEventListener('click', () => { try { sessionStorage.setItem(closedKey(c), '1'); } catch { /* private mode */ } render(null); });
-  document.body.appendChild(box);
+  // at the top of the page, in its flow (never over a board, its controls or a frame)
+  const main = document.getElementById('main');
+  if (main) main.prepend(box); else document.body.prepend(box);
 }
 async function check() {
   clearTimeout(timer); timer = null;

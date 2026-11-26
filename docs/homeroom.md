@@ -51,9 +51,9 @@ Teachers without the Teacher plan keep today's class page.
   Rows, Tables of 4, U-shape, Circle, then drag any desk; each class keeps its own seating. **Team desks**: students who
   share one desk.
 - Groups the teacher names (for example Stretch, On track, Building).
-- Left panel (teacher's desk): Hand out to (Whole class, groups), My lesson plans (+ Build a lesson plan), the catalog
-  (search, grade, subjects: Lessons I built, My folders, Shared with me, Favorites, Oomba lessons by subject, Teaching
-  tools), Reading, Class flow (brain break, note, timer, used right away), Board tools.
+- Left panel (teacher's desk): Hand out to (Whole class, groups), Find lessons (search, grade, Select, filter chips;
+  cards: Games, Live games, Teaching tools, then Lessons and lesson plans with + Build a lesson plan), Reading, Class
+  flow (brain break, note, timer, used right away), Board tools.
 - **My desk** (the teacher's own desk on the board, under the teacher's area): the teacher drops or tap-places any lesson,
   lesson plan or tool there, even before the class has students, to try it (Play / Preview) and hand it out later (Hand
   out, then a desk, a group or Whole class; or drag the card there). Dragging works by touch too: a short hold or a move
@@ -93,6 +93,16 @@ hand). **Class lessons on the desk**: a class lesson assigned in Classroom (Assi
 Manipulatives page) that is not a handout shows on the student's desk and the teacher's board after the handouts, with
 the same card and progress (a practice set or a one-game lesson opens in the desk's player; a lesson of several steps
 opens its lesson page); it is changed or removed in Classroom, and a handout is never shown twice.
+
+Built (docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find lessons"): **Find lessons** is search
+first, one row of filter chips (All, Recent, Games, each subject, Live games, Teaching tools, My lessons, Lesson plans),
+then cards in a grid: under All, Games, Live games, Teaching tools, then the teacher's lessons and lesson plans at the
+bottom, each part's first four with See all; empty parts never show; a Build a lesson card ends it. **Select** hands out
+several at once (one sheet, in the order picked; or dragged onto a desk or a group). **Live games are hosted inside
+Homeroom**: the real live pages in a layer over the board (the class chosen, the address unchanged), folded into a pill
+in the top bar ("Live: Brain Board 14 joined", End) while the teacher works on the board; desks in the game say "In
+Brain Board"; students are brought into the game on their desks by themselves (no code) and back to their desk when it
+ends; the projector view shows the game's host screen while it runs.
 
 ## Handouts, lessons and lesson plans
 

@@ -51,6 +51,7 @@ import { roomPen } from '/js/homeroom-marks.js';
 import { nowNextHtml } from '/js/homeroom-plan.js';
 import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
+import { liveDesk as liveDeskGame } from '/js/homeroom-livegame.js';
 import { readBtn, wireRead, bigText } from '/js/homeroom-support.js';
 import { clock as planClock } from '/js/homeroom-plan-time.js';
 import { readingLayer } from '/js/homeroom-reading.js';
@@ -417,6 +418,7 @@ function applyState(st) {
   teamPad(st);
   if (st.hv !== undefined) S.hv = st.hv;
   const dot = $('hr-live'); if (dot) dot.hidden = !S.live;
+  if ('livegame' in st) { S.livegame = st.livegame || null; LGD.apply(S.livegame); }
   // The day plan's Now / Next (part names only, no clock: docs/decisions.md "Homeroom: the day plan"); with extra time
   // (step 3c) their own longer clock for the part on now.
   if ('plan' in st) { S.plan = st.plan || null; S.planSkew = S.plan ? Date.now() - S.plan.now : 0; renderNow(); }
@@ -453,7 +455,7 @@ async function poll() {
     // A shared device's sign-in ended (End class, or its time ran out): back to the class sign-in for the next student.
     if (D.device && (e.status === 401 || e.status === 404)) { location.href = '/hr?ended=1'; return; }
   }
-  pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
+  pollTimer = setTimeout(poll, S.live || S.livegame ? 3000 : 6000);
 }
 
 // ---------------------------------------------------------------- live class: the hand, the hall pass, the lock (step 3a)
@@ -654,15 +656,18 @@ function setDock(k) { for (const b of root.querySelectorAll('.hd-dockbtn[data-hd
 const PL = gamePlayer({
   host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
   // (a Classroom lesson of several steps opens its own lesson page, which is never framed: x.page)
-  find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked && !x.page ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
+  // (a live game of the class: its player page, a seat as themselves: public/js/homeroom-livegame.js)
+  find: id => { if (String(id).startsWith('live:')) return LGD ? LGD.find(id) : null; const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked && !x.page ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
   note: td('seen'),
   // A Manipulatives tool is the tool's own page (it has no pulse of its own): the desk keeps pulsing and says so
   // (where: tool), so the teacher's board shows that student's square in the tool's room.
   // While it is open the desk's own top bar steps aside: its Raise hand moves into the player's bar (one bar: Back, the
   // title, Raise hand), and on a phone the site's bars and the dock go too, so the game has the whole screen (hd-full).
   onOpen: id => { root.classList.add('hd-playing', 'hd-gameplay'); document.body.classList.add('hd-full'); handTo(PL.slot()); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else if (PULSE) PULSE.pause(); },
-  onClose: () => { root.classList.remove('hd-playing', 'hd-gameplay'); document.body.classList.remove('hd-full'); handTo(null); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
+  onClose: () => { root.classList.remove('hd-playing', 'hd-gameplay'); document.body.classList.remove('hd-full'); handTo(null); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; if (LGD) LGD.card(); poll(); },
 });
+// Live games inside Homeroom: the class's live game comes to the desk by itself (a Join card, and the player once).
+const LGD = liveDeskGame({ classId: D.classId, PL });
 /** Raise hand in the player's bar (slot) or back in the desk's top bar (null). */
 let handEl = null;
 function handTo(slot) {
@@ -701,6 +706,8 @@ function start() {
   window.addEventListener('pagehide', () => { flush(); RP.flush(); });
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
   PL.sync();   // a handout the address names (#play=<card>): open it again
+  if (String(PL.current() || '').startsWith('live:')) LGD.opened();
+  LGD.apply(S.livegame);
   RL.sync();   // the Library or a Reading handout the address names (#library, #read=<card>)
   // the first time on this desk: where things are (once per student; services/homeroom-intro.js)
   if (D.intro && !location.hash) deskIntro({ D, k2: S.k2 });

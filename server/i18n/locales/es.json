@@ -2311,7 +2311,8 @@
         "oneToolBusy": "{tool} está en los pupitres ahora. Un manipulativo a la vez: quítalo de todos los pupitres para repartir {next}.",
         "oneToolRoom": "Hay una sala de {tool} abierta en esta clase. Una sala a la vez: ciérrala para repartir {next}.",
         "takeOffAll": "Quitarlo de todos los pupitres",
-        "openThatRoom": "Abrir esa sala"
+        "openThatRoom": "Abrir esa sala",
+        "multiNotMine": "Varias a la vez van a pupitres, un grupo o toda la clase, no a Mi escritorio."
       },
       "team": {
         "label": "Mesa de equipo",
@@ -5308,7 +5309,6 @@
       "problemsN": "{count, plural, one {# problema} other {# problemas}}",
       "wordsN": "{count, plural, one {# palabra} other {# palabras}}",
       "versionsN": "{count, plural, one {# versión} other {# versiones}}",
-      "empty": "Los planes de clase que crees aparecen aquí.",
       "more": "Más opciones de {title}",
       "edit": "Editar",
       "duplicate": "Duplicar",
@@ -5326,7 +5326,9 @@
       "giveTitle": "{lesson} para {who}",
       "versionsBy": "Versiones por grupo",
       "asBuilt": "El plan de clase tal como se creó",
-      "scoreHint": "El libro de calificaciones muestra el % de aciertos."
+      "scoreHint": "El libro de calificaciones muestra el % de aciertos.",
+      "kind": "Plan de clase",
+      "buildText": "Elige una lección, prepárala una vez y repártela."
     },
     "homeroom-overview": {
       "title": "Calificar por",
@@ -5404,7 +5406,8 @@
         "setDone": "Terminado · {right} de {n} bien a la primera",
         "setAt": "Pregunta {i} de {n} · {right} bien a la primera",
         "toolOpen": "{count, plural, one {# lo tiene abierto} other {# lo tienen abierto}}",
-        "toolLine": "Manipulativos · práctica libre, no cuenta"
+        "toolLine": "Manipulativos · práctica libre, no cuenta",
+        "started": "Empezado"
       },
       "hands": {
         "label": "{count, plural, =0 {Manos, ninguna arriba} one {Manos, # arriba} other {Manos, # arriba}}",
@@ -5599,6 +5602,60 @@
     "manip-task-play": {
       "more": "Mostrar toda la pregunta",
       "less": "Mostrar menos"
+    },
+    "homeroom-livegame": {
+      "layer": "Lección en vivo",
+      "back": "Volver a Homeroom",
+      "setup": "Preparar una lección en vivo",
+      "end": "Terminar",
+      "endTitle": "¿Terminar {title}?",
+      "endText": "El juego termina ahora para todos y verás los resultados.",
+      "restore": "Abrir {title}",
+      "pill": "En vivo: {title}",
+      "joined": "{count} dentro",
+      "inGame": "En {title}",
+      "notSelect": "Las lecciones en vivo se dirigen, no se reparten. Desactiva Seleccionar para dirigir una."
+    },
+    "homeroom-multi": {
+      "selected": "{count} seleccionadas",
+      "hint": "Toca las lecciones en el orden en que irán a los pupitres.",
+      "oneTool": "Un manipulativo a la vez: deja solo uno.",
+      "clear": "Borrar",
+      "handOut": "Repartir",
+      "notThis": "Figures se queda en Mi escritorio, así que no se elige con otras.",
+      "nItems": "Lecciones elegidas: {count}",
+      "done": "Repartido a {who}: {count}",
+      "emptyTarget": "Todavía no hay estudiantes ahí.",
+      "toolNote": "Práctica libre, sin nota",
+      "score": "Puntuación",
+      "completion": "Completado",
+      "notGraded": "Sin nota",
+      "gradeFor": "Calificar {title} por",
+      "title": "Repartir {count} a {who}",
+      "lead": "Irán a los pupitres en este orden. Cada una conserva su forma de calificar.",
+      "toolBusy": "{tool} está en los pupitres. Un manipulativo a la vez: quítalo primero de todos.",
+      "kind": {
+        "game": "Lección",
+        "lesson": "Plan de clase",
+        "task": "Práctica",
+        "tool": "Manipulativos",
+        "reading": "Lectura",
+        "mine": "Mi escritorio"
+      },
+      "addNote": "Añadir una nota",
+      "noteFor": "Una nota para {title}",
+      "count": "Preguntas en cada práctica",
+      "order": "Orden en el pupitre",
+      "inOrder": "En orden",
+      "anyOrder": "Cualquier orden",
+      "orderHint": "En orden: una tras otra, como arriba.",
+      "cancel": "Cancelar",
+      "put": "Poner {count} en los pupitres"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "Tu clase está jugando en vivo. Entras con tu nombre.",
+      "join": "Entrar en {title}",
+      "over": "El juego en vivo terminó. Volviste a tu pupitre."
     }
   },
   "favorites": {
@@ -8045,7 +8102,8 @@
         "code": "Programación",
         "thinking": "Pensar",
         "music": "Música",
-        "any": "Cualquier materia"
+        "any": "Cualquier materia",
+        "typing": "Mecanografía"
       },
       "grade": "Grado",
       "gradeAny": "Cualquier grado",
@@ -15508,8 +15566,6 @@
       "handOut": "Repartir a",
       "myLessons": "Mis planes de clase",
       "myGames": "Lecciones que creé",
-      "noGames": "Las lecciones que crees aparecen aquí.",
-      "oomba": "Lecciones y herramientas de Oomba",
       "manipulatives": "Manipulativos",
       "figures": "Figuras",
       "reading": "Lectura",
@@ -15586,7 +15642,10 @@
       "pickTask": "Elige una tarea para practicar.",
       "tooManyTasks": "Elige 6 tareas o menos.",
       "badCount": "Elige de 1 a 10 preguntas.",
-      "oneToolSet": "Elige tareas de una sola herramienta a la vez."
+      "oneToolSet": "Elige tareas de una sola herramienta a la vez.",
+      "noLiveGame": "Ese juego en vivo terminó.",
+      "liveFull": "Ese juego en vivo está lleno.",
+      "liveLocked": "Ese juego en vivo está cerrado ahora."
     },
     "live": "En vivo",
     "desk": {
@@ -15791,6 +15850,36 @@
       "seen": "Marcado como visto. Vuelve si algo cambia.",
       "snooze": "Pospuesto hasta el próximo día de clase.",
       "back": "De nuevo en la lista."
+    },
+    "catalog": {
+      "games": "Juegos",
+      "moreGames": "Más juegos",
+      "live": "Juegos en vivo",
+      "liveLead": "En vivo para toda la clase",
+      "hostAny": "Dirigir una lección en vivo",
+      "kind": {
+        "live": "Juego en vivo",
+        "liveSet": "Serie de quiz en vivo",
+        "liveAny": "Quiz, series y más",
+        "tool": "Manipulativos",
+        "practice": "Práctica · Manipulativos",
+        "lesson": "Lección"
+      },
+      "recent": "Recientes",
+      "mine": "Mis lecciones",
+      "plans": "Planes de clase",
+      "lessons": "Lecciones y planes de clase",
+      "filters": "Filtros",
+      "seeAll": "Ver los {count}",
+      "fewer": "Ver menos",
+      "buildLesson": "Crear una lección",
+      "buildLessonText": "Haz la tuya en el Builder"
+    },
+    "multi": {
+      "select": "Seleccionar"
+    },
+    "livegame": {
+      "ended": "La lección en vivo terminó."
     }
   }
 }

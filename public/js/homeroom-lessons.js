@@ -50,10 +50,14 @@ export function printHtml(html) {
 export function renderLessons(ctx) {
   const el = document.getElementById('hr-lessons'); if (!el) return;
   const list = ctx.H.lessons;
-  el.innerHTML = `${list.length ? `<ul class="hr-items">${list.map(l => `<li class="hr-lrow"><button type="button" class="hr-item hr-give hr-lesson" data-hritem="L:${esc(l.id)}" data-icon="${esc(l.icon)}" aria-pressed="${ctx.H.pick && ctx.H.pick.id === `L:${l.id}`}">
-      <span class="hr-ico hr-lico" aria-hidden="true">${iconHtml(l.icon, { size: 18 })}</span><span class="hr-lt"><span class="hr-itemt" dir="auto">${esc(l.title)}</span><span class="hr-lsub">${esc([tl(l.slug === 'crossword' ? 'wordsN' : 'problemsN', { count: l.n }), l.versions.length ? tl('versionsN', { count: l.versions.length }) : ''].filter(Boolean).join(' · '))}</span></span></button>
-      ${btn('hr-lmore', `data-hrlmore="${esc(l.id)}" aria-label="${esc(tl('more', { title: l.title }))}"`, '⋯')}</li>`).join('')}</ul>` : `<p class="hr-empty small">${esc(tl('empty'))}</p>`}
-    ${btn('hr-item hr-build', 'data-hr="build"', `<span class="hr-ico hr-buildico" aria-hidden="true">+</span><span class="hr-itemt">${esc(tl('build'))}</span>`)}`;
+  // (cards like the rest of Find lessons: docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find
+  // lessons"; nothing yet is just the Build a lesson plan card, never an empty line taking room)
+  el.innerHTML = `<ul class="hr-items hr-cgrid">${list.map(l => `<li class="hr-lrow hr-cc" data-k="plan" data-q="${esc(String(l.title || '').toLowerCase())}"><button type="button" class="hr-item hr-give hr-lesson hr-ccard" data-hritem="L:${esc(l.id)}" data-icon="${esc(l.icon)}" aria-pressed="${ctx.H.pick && ctx.H.pick.id === `L:${l.id}`}">
+      <span class="hr-ico hr-lico" aria-hidden="true">${iconHtml(l.icon, { size: 28 })}</span><span class="hr-ctext hr-lt"><span class="hr-itemt" dir="auto">${esc(l.title)}</span><span class="hr-ckind hr-lsub">${esc([tl('kind'), tl(l.slug === 'crossword' ? 'wordsN' : 'problemsN', { count: l.n }), l.versions.length ? tl('versionsN', { count: l.versions.length }) : ''].filter(Boolean).join(' · '))}</span></span><span class="hr-ccheck" aria-hidden="true"></span></button>
+      ${btn('hr-lmore', `data-hrlmore="${esc(l.id)}" aria-label="${esc(tl('more', { title: l.title }))}"`, '⋯')}</li>`).join('')}
+    <li class="hr-cc hr-cbuildplan" data-k="plan" data-q="${esc(tl('build').toLowerCase())}">${btn('hr-item hr-build hr-ccard', 'data-hr="build"', `<span class="hr-ico hr-buildico" aria-hidden="true">+</span><span class="hr-ctext"><span class="hr-itemt">${esc(tl('build'))}</span>${list.length ? '' : `<span class="hr-ckind">${esc(tl('buildText'))}</span>`}</span>`)}</li></ul>`;
+  // the catalog's filters apply to the new cards too
+  el.closest('[data-catalog]')?.dispatchEvent(new CustomEvent('hr:catalog'));
 }
 /** A lesson's ⋯ sheet: Edit, Duplicate, Print worksheet (each version), Delete. */
 export function lessonMenu(ctx, id) {

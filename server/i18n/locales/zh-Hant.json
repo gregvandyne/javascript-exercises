@@ -2311,7 +2311,8 @@
         "oneToolBusy": "{tool} 目前在桌上。一次只能用一種教具：要發下 {next}，請先從所有桌上移除。",
         "oneToolRoom": "這個班級有一間 {tool} 教室正在進行。一次只能一間：要發下 {next}，請先結束它。",
         "takeOffAll": "從所有桌上移除",
-        "openThatRoom": "開啟那間教室"
+        "openThatRoom": "開啟那間教室",
+        "multiNotMine": "一次多個只能發到座位、小組或全班，不能放到我的桌子。"
       },
       "team": {
         "label": "小組桌",
@@ -5308,7 +5309,6 @@
       "problemsN": "{count} 題",
       "wordsN": "{count} 個詞",
       "versionsN": "{count} 個版本",
-      "empty": "你建立的教案會顯示在這裡。",
       "more": "{title} 的更多選項",
       "edit": "編輯",
       "duplicate": "複製",
@@ -5326,7 +5326,9 @@
       "giveTitle": "給{who}的{lesson}",
       "versionsBy": "依小組的版本",
       "asBuilt": "原本建立的教案",
-      "scoreHint": "成績簿會顯示答對的百分比。"
+      "scoreHint": "成績簿會顯示答對的百分比。",
+      "kind": "教案",
+      "buildText": "選一個課程，設定一次，就能發下去。"
     },
     "homeroom-overview": {
       "title": "評分方式",
@@ -5404,7 +5406,8 @@
         "setDone": "完成 · {n} 題中 {right} 題第一次就答對",
         "setAt": "第 {i} 題，共 {n} 題 · {right} 題第一次就答對",
         "toolOpen": "{count, plural, other {# 人開啟中}}",
-        "toolLine": "教具 · 自由練習，不計入"
+        "toolLine": "教具 · 自由練習，不計入",
+        "started": "已開始"
       },
       "hands": {
         "label": "{count, plural, =0 {舉手：沒有} other {舉手：# 人}}",
@@ -5599,6 +5602,60 @@
     "manip-task-play": {
       "more": "顯示完整題目",
       "less": "收合"
+    },
+    "homeroom-livegame": {
+      "layer": "即時課程",
+      "back": "回到 Homeroom",
+      "setup": "設定即時課程",
+      "end": "結束",
+      "endTitle": "要結束 {title} 嗎？",
+      "endText": "所有人的遊戲會立刻結束，你會看到結果。",
+      "restore": "開啟 {title}",
+      "pill": "即時：{title}",
+      "joined": "{count} 人加入",
+      "inGame": "在 {title} 中",
+      "notSelect": "即時課程是主持的，不是發下去的。關閉選取後再主持。"
+    },
+    "homeroom-multi": {
+      "selected": "已選取 {count} 個",
+      "hint": "依照要放到座位的順序點選課程。",
+      "oneTool": "一次只能一種操作教具，請只留一個。",
+      "clear": "清除",
+      "handOut": "發下去",
+      "notThis": "Figures 只放在我的桌子，不能和其他一起選。",
+      "nItems": "已選課程：{count}",
+      "done": "已發給 {who}：{count}",
+      "emptyTarget": "那裡還沒有學生。",
+      "toolNote": "自由練習，不計分",
+      "score": "分數",
+      "completion": "完成",
+      "notGraded": "不計分",
+      "gradeFor": "{title} 的評分方式",
+      "title": "發 {count} 個給 {who}",
+      "lead": "會依這個順序放到座位，各自保留評分方式。",
+      "toolBusy": "{tool} 正在座位上。一次只能一種教具：請先從所有座位移除。",
+      "kind": {
+        "game": "課程",
+        "lesson": "教案",
+        "task": "練習",
+        "tool": "操作教具",
+        "reading": "閱讀",
+        "mine": "我的桌子"
+      },
+      "addNote": "加上說明",
+      "noteFor": "給 {title} 的說明",
+      "count": "每個練習的題數",
+      "order": "座位上的順序",
+      "inOrder": "依序",
+      "anyOrder": "任意順序",
+      "orderHint": "依序：照上面的順序一個接一個。",
+      "cancel": "取消",
+      "put": "把 {count} 個放到座位"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "你的班級正在即時遊戲。你會用自己的名字加入。",
+      "join": "加入 {title}",
+      "over": "即時遊戲結束了，你回到自己的座位。"
     }
   },
   "favorites": {
@@ -8045,7 +8102,8 @@
         "code": "程式",
         "thinking": "思考",
         "music": "音樂",
-        "any": "任何科目"
+        "any": "任何科目",
+        "typing": "打字"
       },
       "grade": "年級",
       "gradeAny": "任何年級",
@@ -15508,8 +15566,6 @@
       "handOut": "發給",
       "myLessons": "我的教案",
       "myGames": "我做的課程",
-      "noGames": "你做的課程會顯示在這裡。",
-      "oomba": "Oomba 課程與工具",
       "manipulatives": "操作教具",
       "figures": "圖形",
       "reading": "閱讀",
@@ -15586,7 +15642,10 @@
       "pickTask": "請選一個要練習的任務。",
       "tooManyTasks": "最多選 6 個任務。",
       "badCount": "請選 1 到 10 題。",
-      "oneToolSet": "一次只能選同一個教具的任務。"
+      "oneToolSet": "一次只能選同一個教具的任務。",
+      "noLiveGame": "這個即時遊戲已結束。",
+      "liveFull": "這個即時遊戲已額滿。",
+      "liveLocked": "這個即時遊戲目前已鎖定。"
     },
     "live": "直播中",
     "desk": {
@@ -15791,6 +15850,36 @@
       "seen": "已標為看過。有變化時會再出現。",
       "snooze": "已延到下一個上課日。",
       "back": "已回到清單。"
+    },
+    "catalog": {
+      "games": "遊戲",
+      "moreGames": "更多遊戲",
+      "live": "即時遊戲",
+      "liveLead": "全班一起即時進行",
+      "hostAny": "主持即時課程",
+      "kind": {
+        "live": "即時遊戲",
+        "liveSet": "即時測驗題組",
+        "liveAny": "測驗、題組等",
+        "tool": "操作教具",
+        "practice": "練習 · 操作教具",
+        "lesson": "課程"
+      },
+      "recent": "最近",
+      "mine": "我的課程",
+      "plans": "教案",
+      "lessons": "課程與教案",
+      "filters": "篩選",
+      "seeAll": "顯示全部（{count}）",
+      "fewer": "顯示較少",
+      "buildLesson": "製作課程",
+      "buildLessonText": "在 Builder 自己製作"
+    },
+    "multi": {
+      "select": "選取"
+    },
+    "livegame": {
+      "ended": "即時課程已結束。"
     }
   }
 }

@@ -2312,7 +2312,8 @@
         "oneToolBusy": "{tool} ligt nu op de tafels. Eén materiaal tegelijk: haal het van alle tafels om {next} uit te delen.",
         "oneToolRoom": "Er loopt een {tool}-ruimte in deze klas. Eén ruimte tegelijk: sluit die om {next} uit te delen.",
         "takeOffAll": "Van alle tafels halen",
-        "openThatRoom": "Die ruimte openen"
+        "openThatRoom": "Die ruimte openen",
+        "multiNotMine": "Meerdere tegelijk gaan naar tafels, een groep of de hele klas, niet naar Mijn bureau."
       },
       "team": {
         "label": "Teamtafel",
@@ -5309,7 +5310,6 @@
       "problemsN": "{count, plural, one {# som} other {# sommen}}",
       "wordsN": "{count, plural, one {# woord} other {# woorden}}",
       "versionsN": "{count, plural, one {# versie} other {# versies}}",
-      "empty": "Lesplannen die je maakt, verschijnen hier.",
       "more": "Meer voor {title}",
       "edit": "Bewerken",
       "duplicate": "Dupliceren",
@@ -5327,7 +5327,9 @@
       "giveTitle": "{lesson} voor {who}",
       "versionsBy": "Versies per groep",
       "asBuilt": "Het lesplan zoals gemaakt",
-      "scoreHint": "Het cijferoverzicht toont het % goed."
+      "scoreHint": "Het cijferoverzicht toont het % goed.",
+      "kind": "Lesplan",
+      "buildText": "Kies een les, stel hem één keer in, deel hem uit."
     },
     "homeroom-overview": {
       "title": "Beoordelen op",
@@ -5405,7 +5407,8 @@
         "setDone": "Klaar · {right} van {n} in één keer goed",
         "setAt": "Vraag {i} van {n} · {right} in één keer goed",
         "toolOpen": "{count, plural, one {# heeft het open} other {# hebben het open}}",
-        "toolLine": "Materialen · vrij oefenen, telt niet mee"
+        "toolLine": "Materialen · vrij oefenen, telt niet mee",
+        "started": "Begonnen"
       },
       "hands": {
         "label": "{count, plural, =0 {Handen, geen omhoog} one {Handen, # omhoog} other {Handen, # omhoog}}",
@@ -5600,6 +5603,60 @@
     "manip-task-play": {
       "more": "De hele vraag tonen",
       "less": "Minder tonen"
+    },
+    "homeroom-livegame": {
+      "layer": "Live-les",
+      "back": "Terug naar Homeroom",
+      "setup": "Live-les instellen",
+      "end": "Beëindigen",
+      "endTitle": "{title} beëindigen?",
+      "endText": "Het spel stopt nu voor iedereen en je ziet de resultaten.",
+      "restore": "{title} openen",
+      "pill": "Live: {title}",
+      "joined": "{count} doen mee",
+      "inGame": "In {title}",
+      "notSelect": "Live-lessen start je, je deelt ze niet uit. Zet Selecteren uit om er een te starten."
+    },
+    "homeroom-multi": {
+      "selected": "{count} geselecteerd",
+      "hint": "Tik de lessen aan in de volgorde waarin ze op de tafels komen.",
+      "oneTool": "Eén rekenmateriaal tegelijk: houd er één.",
+      "clear": "Wissen",
+      "handOut": "Uitdelen",
+      "notThis": "Figures blijft op Mijn bureau en kies je niet samen met andere.",
+      "nItems": "Gekozen lessen: {count}",
+      "done": "Uitgedeeld aan {who}: {count}",
+      "emptyTarget": "Daar zijn nog geen leerlingen.",
+      "toolNote": "Vrij oefenen, geen cijfer",
+      "score": "Score",
+      "completion": "Afgerond",
+      "notGraded": "Geen cijfer",
+      "gradeFor": "{title} beoordelen op",
+      "title": "{count} uitdelen aan {who}",
+      "lead": "Ze komen in deze volgorde op de tafels. Elk houdt zijn eigen beoordeling.",
+      "toolBusy": "{tool} staat nu op de tafels. Eén rekenmateriaal tegelijk: haal het eerst van alle tafels.",
+      "kind": {
+        "game": "Les",
+        "lesson": "Lesplan",
+        "task": "Oefenen",
+        "tool": "Rekenmateriaal",
+        "reading": "Lezen",
+        "mine": "Mijn bureau"
+      },
+      "addNote": "Notitie toevoegen",
+      "noteFor": "Een notitie bij {title}",
+      "count": "Vragen per oefening",
+      "order": "Volgorde op de tafel",
+      "inOrder": "Op volgorde",
+      "anyOrder": "Willekeurige volgorde",
+      "orderHint": "Op volgorde: de een na de ander, zoals hierboven.",
+      "cancel": "Annuleren",
+      "put": "{count} op de tafels zetten"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "Je klas speelt live. Je doet mee als jezelf.",
+      "join": "Meedoen met {title}",
+      "over": "Het live-spel is afgelopen. Je bent terug aan je tafel."
     }
   },
   "favorites": {
@@ -8046,7 +8103,8 @@
         "code": "Programmeren",
         "thinking": "Nadenken",
         "music": "Muziek",
-        "any": "Elk vak"
+        "any": "Elk vak",
+        "typing": "Typen"
       },
       "grade": "Grade",
       "gradeAny": "Elke grade",
@@ -15509,8 +15567,6 @@
       "handOut": "Uitdelen aan",
       "myLessons": "Mijn lesplannen",
       "myGames": "Mijn lessen",
-      "noGames": "Lessen die je bouwt, verschijnen hier.",
-      "oomba": "Oomba-lessen en -hulpmiddelen",
       "manipulatives": "Manipulatieven",
       "figures": "Figuren",
       "reading": "Lezen",
@@ -15587,7 +15643,10 @@
       "pickTask": "Kies een taak om te oefenen.",
       "tooManyTasks": "Kies hoogstens 6 taken.",
       "badCount": "Kies 1 tot 10 vragen.",
-      "oneToolSet": "Kies taken van één hulpmiddel tegelijk."
+      "oneToolSet": "Kies taken van één hulpmiddel tegelijk.",
+      "noLiveGame": "Dat live-spel is afgelopen.",
+      "liveFull": "Dat live-spel is vol.",
+      "liveLocked": "Dat live-spel is nu op slot."
     },
     "live": "Live",
     "desk": {
@@ -15792,6 +15851,36 @@
       "seen": "Gemarkeerd als gezien. Het komt terug als er iets verandert.",
       "snooze": "Uitgesteld tot de volgende schooldag.",
       "back": "Weer op de lijst."
+    },
+    "catalog": {
+      "games": "Spellen",
+      "moreGames": "Meer spellen",
+      "live": "Live-spellen",
+      "liveLead": "Live voor de hele klas",
+      "hostAny": "Live-les starten",
+      "kind": {
+        "live": "Live-spel",
+        "liveSet": "Live-quizset",
+        "liveAny": "Quizzen, sets en meer",
+        "tool": "Rekenmateriaal",
+        "practice": "Oefenen · Rekenmateriaal",
+        "lesson": "Les"
+      },
+      "recent": "Recent",
+      "mine": "Mijn lessen",
+      "plans": "Lesplannen",
+      "lessons": "Lessen en lesplannen",
+      "filters": "Filters",
+      "seeAll": "Alle {count} tonen",
+      "fewer": "Minder tonen",
+      "buildLesson": "Een les maken",
+      "buildLessonText": "Maak je eigen in de Builder"
+    },
+    "multi": {
+      "select": "Selecteren"
+    },
+    "livegame": {
+      "ended": "De live-les is afgelopen."
     }
   }
 }

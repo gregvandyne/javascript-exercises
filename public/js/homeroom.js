@@ -64,7 +64,9 @@ import { planPill } from '/js/homeroom-plan.js';
 import { dueField, wireDue, dueLabel, afterDue } from '/js/homeroom-due.js';
 import { helpers as helpersOf } from '/js/homeroom-helpers.js';
 import { bookPicker } from '/js/homeroom-reading.js';
-import { wireCatalog, catalogSheet } from '/js/homeroom-catalog.js';
+import { wireCatalog, catalogSheet, noteRecent } from '/js/homeroom-catalog.js';
+import { liveHost } from '/js/homeroom-livegame.js';
+import { multiSelect } from '/js/homeroom-multi.js';
 import { tour } from '/js/homeroom-tour.js';
 import { AREA, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, FRAME, layout, clampSeat, boardSize, frameOf, cleanFrame, tdeskOf, seatsTop } from '/js/homeroom-seats.js';
 
@@ -157,8 +159,14 @@ function cardRow(x, sid) {
 /** Today's attendance mark of a student ('absent' | 'home' | ''), from the board's handouts view (step 4c). */
 const attOf = sid => ((H.ho && H.ho.att) || {})[sid] || '';
 const attChip = sid => { const a = attOf(sid); return a ? `<span class="hr-attchip ${a}">${iconHtml(a === 'absent' ? '📅' : '🏠', { size: 14 })} ${esc(th(`att.${a}`))}</span>` : ''; };
+/** A desk's cards in the order its tile shows them (QA round 2, N2): a tool first (it is on the tile above, never under
+ *  "+N more"), then what is not done yet, the newest handed out first, then what is done. */
+function deskFirst(list) {
+  const at = x => (handout(x.id) || {}).at || 0;
+  return [...list.filter(x => !x.done).sort((a, b) => at(b) - at(a)), ...list.filter(x => x.done)];
+}
 function deskInner(s) {
-  const g = groupOf(s.id), c = g ? g.color : '', rows = [...cardsOf(s.id).map(x => ['h', x]), ...toolsOf(s.id).map(x => ['t', x])], cards = rows, many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
+  const g = groupOf(s.id), c = g ? g.color : '', rows = [...toolsOf(s.id).map(x => ['t', x]), ...deskFirst(cardsOf(s.id)).map(x => ['h', x])], cards = rows, many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
   // (the name opens the desk's menu, step 3c: supports, handouts, a look; a plain name while seats are arranged)
   const nm = `<span class="rm-dot"${c ? ` style="--c:${esc(c)}"` : ''}></span><bdi>${esc(s.name)}</bdi>${HLP ? HLP.supIcon(s.id) : ''}`;
   return `${H.seatsOpen ? `<span class="hr-name">${nm}</span>` : btn('hr-name hr-namebtn', `data-hrdmenu="${esc(s.id)}" aria-label="${esc(th('helpers.deskMenu', { name: s.name }))}" aria-haspopup="dialog"`, nm)}${attChip(s.id)}
@@ -251,6 +259,7 @@ function renderDesks() {
   }
   for (const tm of H.teams) { const el = worldEl.querySelector(`.hr-team[data-team="${CSS.escape(tm.id)}"]`); if (el) el.innerHTML = teamInner(tm); }
   LV.paint();
+  if (LGH) LGH.paint();
 }
 function renderWorld() {
   ed.clear();   // a fresh board: nothing selected or being typed in
@@ -723,7 +732,7 @@ function renderGivebar() {
   // The groups and Whole class again in the bar, so they are one tap away wherever the panel is scrolled (a phone).
   const onMine = H.pick && H.staged.some(x => x.pick === H.pick.id);
   const chips = [...(H.pick && mineOnly(H.pick) ? [] : [btn('hr-gchip whole', 'data-hrto="all"', esc(th('ho.wholeClass'))), ...H.groups.filter(g => count(g)).map(g => btn('hr-gchip', `data-hrto="group:${esc(g.id)}" style="--gc:${esc(g.color)}"`, `<span class="rm-dot" style="--c:${esc(g.color)}"></span>${esc(groupName(g))}`))]),
-    ...(onMine || (H.pick && (H.pick.id.startsWith('R:') || H.pick.id.startsWith('T:task:'))) ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
+    ...(onMine || (H.pick && (H.pick.multi || H.pick.id.startsWith('R:') || H.pick.id.startsWith('T:task:'))) ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
   el.innerHTML = H.pick ? `<span class="hr-giveico" aria-hidden="true">${iconHtml(H.pick.icon, { size: 20 })}</span><span class="hr-givet"><b dir="auto">${esc(H.pick.title)}</b> <span>${esc(th(mineOnly(H.pick) ? 'my.tapMine' : onMine ? 'ho.tapWhere' : 'my.tapWhere'))}</span></span>
     <span class="hr-giveto">${chips}</span>${btn('btn btn-sm hr-chunk', 'data-hr="unpick"', esc(th('ho.cancel')))}` : '';
 }
@@ -736,7 +745,7 @@ const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id
 const lessonCtx = {
   D, H, th, api2: path => api2(path), groupName, gcField, gcPicked, emptyNote, putLabel,
   onLessons: list => { H.lessons = list; if (H.pick && H.pick.id.startsWith('L:') && !lessonOfPick(H.pick)) setPick(null); renderLessons(lessonCtx); },
-  onHanded: r => { H.ho = hoOf(r); setPick(null); renderDesks(); toast(r.toast); },
+  onHanded: r => { if (H.pick) noteRecent(H.pick.id); H.ho = hoOf(r); setPick(null); renderDesks(); toast(r.toast); },
 };
 /** The groups with students in a target, and how many of them have no group (the lesson sheet's versions by group). */
 function groupsIn(to) {
@@ -774,6 +783,8 @@ function gcPicked(f) { const c = f.querySelector('.hr-gcpost'); return !!(c && c
 /** The handout sheet (the mockup's "Game · free play"): instructions, Order on the desk, Grade it by, a due day. */
 function giveSheet(to) {
   const p = H.pick; if (!p) return;
+  // several at once (public/js/homeroom-multi.js): one sheet for all of them
+  if (p.multi) { if (to.kind === 'me') { toast(th('ho.multiNotMine')); return; } H.giving = true; renderGivebar(); MS.sheet(to, p.multi); return; }
   if (to.kind === 'me' && p.id.startsWith('R:')) { toast(th('rd.notMine')); return; }
   // a Manipulatives task (docs/decisions.md "Manipulatives: tasks you can practice and assign"): its Preview is on the
   // Manipulatives page; on desks it is a graded lesson of N questions, each student their own
@@ -852,7 +863,7 @@ function giveSheet(to) {
     try {
       const common = tool ? { to, instructions: ins.value } : { to, instructions: ins.value, order: val.order, grade: val.grade, ...dueOf(), gcPost: gcPicked(f) };
       const r = await api(api2('handouts'), { method: 'POST', body: tool ? { tool, ...common } : task ? { task, count: +f.querySelector('#hr-tcount').value || 5, ...common } : reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
-      H.ho = hoOf(r); sh.close(); setPick(null); renderDesks(); toast(r.toast);
+      noteRecent(p.id); H.ho = hoOf(r); sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
   });
   requestAnimationFrame(() => ins.focus());
@@ -905,7 +916,7 @@ function dragStart(e) {
   // (the phone's Find lessons sheet, public/js/homeroom-catalog.js: it scrolls up and down, and steps aside once a drag
   // starts so the board shows; it closes at the drop)
   const sheetBg = item.closest('.sheet-bg');
-  H.drag = { p: pickFrom(item), sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, id: e.pointerId, ghost: null, dropped: false, touch, armed: !touch, strip: !sheetBg && phone(), sheetBg, v: { x: 0, y: 0 } };
+  H.drag = { p: (MS.has(item.dataset.hritem) && MS.pick()) || pickFrom(item), sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, id: e.pointerId, ghost: null, dropped: false, touch, armed: !touch, strip: !sheetBg && phone(), sheetBg, v: { x: 0, y: 0 } };
   if (touch) H.drag.hold = setTimeout(() => { const d = H.drag; if (d && d.id === e.pointerId && !d.ghost && !d.dropped) { d.armed = true; lift(d); } }, HOLD_MS);
 }
 function stagedDragStart(e) {
@@ -987,7 +998,9 @@ function dragEnd(e) {
   setTimeout(() => { if (H.drag === d) H.drag = null; }, 400);
   if (e.type !== 'pointerup') { setPick(null); return; }
   // held and let go where it started: picked, as a tap picks it (the tap's click may not come after a long press)
-  if (d.touch && !d.staged && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 12) { setPick(d.p); return; }
+  if (d.touch && !d.staged && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 12) { if (!MS.on()) setPick(d.p); else setPick(null); return; }
+  // a selection dropped on a desk, a team, a group or Whole class: all of them, with the sheet's defaults
+  if (d.p.multi) { const at = targetAt(document.elementFromPoint(e.clientX, e.clientY)); if (at && at.kind !== 'me') MS.direct(at, d.p.multi); else { setPick(null); if (at) toast(th('ho.multiNotMine')); } return; }
   const to = targetAt(document.elementFromPoint(e.clientX, e.clientY));
   // a card dragged off My desk and dropped back on it: nothing to do
   if (to && !(d.staged && to.kind === 'me')) giveSheet(to); else setPick(null);
@@ -1281,7 +1294,7 @@ function click(e) {
   else if (k === 'menu') { H.menuOpen = !H.menuOpen; renderMenu(); }
   else if (k === 'groups') groupsSheet();
   else if (k === 'pickbook') bookSheet();
-  else if (k === 'catalog') catalogSheet(b => { if (H.seatsOpen) openSeats(false); setPick(pickFrom(b)); });
+  else if (k === 'catalog') catalogSheet(b => { if (H.seatsOpen) openSeats(false); setPick(pickFrom(b)); }, { select: MS, other: (e, close) => { if (!e.target.closest('[data-hr="build"], [data-hrlmore]')) return false; close(); giveClick(e); return true; } });
   else if (k === 'signin') signinSheet();
   else if (k === 'aides') { H.menuOpen = false; renderMenu(); HLP.aidesSheet(); }
   else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }
@@ -1295,6 +1308,7 @@ function click(e) {
 function keys(e) {
   if (e.key === 'Escape') {
     if (H.pick && !H.giving) { setPick(null); return; }
+    if (LGH && LGH.escape()) return;
     if (LV.escape()) return;
     if (H.menuOpen) { H.menuOpen = false; renderMenu(); document.querySelector('[data-hr="menu"]')?.focus(); return; }
     if (H.teamPick) { H.teamPick = null; renderSeatbar(); renderWorld(); return; }
@@ -1373,12 +1387,19 @@ const PL = gamePlayer({
   away: () => H.away,
 });
 
+// Several at once from Find lessons (public/js/homeroom-multi.js): one sheet, then each on the desks in the order picked.
+const MS = multiSelect({ api2: path => api2(path), setPick: p => setPick(p), whoLabel: to => whoLabel(to), putLabel, emptyNote, gcField, gcPicked,
+  room: () => (H.ho && H.ho.room ? { ...H.ho.room, title: H.ho.room.title || '' } : null),
+  onHanded: r => { if (H.pick && H.pick.multi) noteRecent(H.pick.multi.map(x => x.id)); H.ho = hoOf(r); renderDesks(); },
+  onClosed: () => { H.giving = false; renderGivebar(); } });
+// Live games inside Homeroom (public/js/homeroom-livegame.js): hosted in a layer over the board, folded into a pill.
+let LGH = null;
 let PLAN = null, TOUR = null;
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');
   PLAN = planPill({ D, H, viewEl, readOnly: AIDE });
   renderChips(); renderTools(); renderZoom(); renderSeatbar(); renderLive(); renderWorld(); renderGivebar(); renderLessons(lessonCtx);
-  wireCatalog($('hr-panel'));
+  wireCatalog($('hr-panel'), { onSelect: MS });
   $('hr-panel').addEventListener('pointerdown', dragStart);
   // (and from the phone's Find lessons sheet: its items are the panel's, in a sheet over the board)
   document.addEventListener('pointerdown', e => { if (e.target.closest && e.target.closest('.hr-csheet [data-hritem]')) dragStart(e); });
@@ -1407,6 +1428,7 @@ function start() {
   document.addEventListener('copy', clip(e => ed.onCopy(e, false))); document.addEventListener('cut', clip(e => ed.onCopy(e, true))); document.addEventListener('paste', clip(e => ed.onPaste(e)));
   // The minimap sits outside the board: a press on it moves the view there.
   $('hr-mini').addEventListener('pointerdown', e => { if (!e.target.closest('.rm-mini')) return; const p = miniPoint(e, world()), s = size(); H.view.x = s.w / 2 - p.x * H.view.z; H.view.y = s.h / 2 - p.y * H.view.z; applyView(); });
+  if (D.hostLive && !AIDE) LGH = liveHost({ classId: D.classId, stage: $('hr-stage') || board.parentElement, slot: () => document.getElementById('hr-plan'), desks: () => [...worldEl.querySelectorAll('.hr-desk[data-sid]')], away: () => H.away, closeMenu: () => { if (H.menuOpen) { H.menuOpen = false; renderMenu(); } } });
   PL.sync();   // a game the address names (#play=<card>): open over the board
   if (!AIDE) HLP.notes();   // what a sub did, until Got it
   // the first-run guide (once per teacher; the ⋯ menu's Show me around opens it again), after the board found its fit
