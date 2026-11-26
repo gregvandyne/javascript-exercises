@@ -4,7 +4,7 @@
 // Every variation hides the board's totals (a practice board: no total gives an answer away). Disks a student must
 // only read (a chart to compare, a claim to check) are locked and laid out in their columns here (the page lays out
 // only the unlocked ones).
-import { boardWith, rowPlaces, objSizeOf, fmt, expandedText } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, expandedText, plural } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { slotsOf } from '../manip-board.js';
 import { valueOf, columnsOf, columnOf, stepsApart, fitColumn, FIT } from '../manip-pv.js';
@@ -121,7 +121,7 @@ const built = (n, what = fmt(n)) => [
   { t: 'inChart', say: 'Put every disk in its own column of the chart.' }];
 const PLACE_WORD = { 10000: 'ten thousand', 1000: 'thousand', 100: 'hundred', 10: 'ten' };
 export const TASKS = [
-  T('build-40-206', 'Build 40,206', '4.NBT.A.2', '4',
+  T('build-40-206', 'Build a 5-digit number', '4.NBT.A.2', '4',
     'Build a five-digit number with a zero in it, using the fewest disks. Which place has no disk?',
     'The thousands and tens columns sit empty: the zeros hold those places. Disks make the placeholder zero visible because the column is there but has no disk.',
     R => {
@@ -158,12 +158,12 @@ export const TASKS = [
       return {
         prompt: `The chart shows ${a}. Take away ${b}. When there are not enough ones, hold a 10 disk and pick Break. What is left?`,
         setup, answer: { board: [{ t: 'total', n: left, say: `Take away disks worth ${b}, so the chart shows what is left.` }], box: { key: String(left), label: 'what is left' } },
-        hints: [`You need to take away ${bo} ones, but there ${a % 10 === 1 ? 'is' : 'are'} only ${a % 10}. Hold a 10 disk and pick Break: it becomes ten 1 disks.`, `Now take away ${bt} disk${bt === 1 ? '' : 's'} of 10 and ${bo} disks of 1.`, `${a} - ${b} = ${left}.`],
+        hints: [`You need to take away ${plural(bo, 'one')}, but there ${a % 10 === 1 ? 'is' : 'are'} only ${a % 10}. Hold a 10 disk and pick Break: it becomes ten disks of 1.`, `Now take away ${plural(bt, 'disk')} of 10 and ${plural(bo, 'disk')} of 1.`, `${a} - ${b} = ${left}.`],
         explain: `${a} - ${b} = ${left}. Breaking one ten into ten ones gives enough ones to take away, and the total stays the same until you do.`,
         solution: { board: solved(setup, hasOf(left)), box: String(left) },
       };
     }),
-  T('decimal-disks-0-405', 'Decimal disks 0.405', '5.NBT.A.3b', '5',
+  T('decimal-disks-0-405', 'Decimal disks to thousandths', '5.NBT.A.3b', '5',
     'Build a decimal with tenth, hundredth and thousandth disks. Break one 0.1 disk: how many 0.01 disks are there now?',
     'Two zeros in one small number is a rich discussion: one is a placeholder, one shows an empty column. Ask which is which.',
     R => {
@@ -174,7 +174,7 @@ export const TASKS = [
         prompt: `Build ${dec(t)} in the chart with 0.1, 0.01 and 0.001 disks. Then hold a 0.1 disk and pick Break. How many 0.01 disks are there now?`,
         setup, answer: { board: [{ t: 'total', n: t / 1000, say: `The disks should still show ${dec(t)}.` }, { t: 'counts', has: want, say: 'Build the number, then break one 0.1 disk into ten 0.01 disks.' }], box: { key: String(y + 10), label: '0.01 disks' } },
         hints: [`${dec(t)} is ${hasText(hasOf(t / 1000))}.`, 'Hold a 0.1 disk and pick Break: it becomes ten 0.01 disks.', `${y} + 10 = ${y + 10} disks of 0.01, and the total is still ${dec(t)}.`],
-        explain: `One tenth is ten hundredths, so ${dec(t)} is also ${x - 1} tenths, ${y + 10} hundredths and ${z} thousandths.`,
+        explain: `One tenth is ten hundredths, so ${dec(t)} is also ${plural(x - 1, 'tenth')}, ${y + 10} hundredths and ${plural(z, 'thousandth')}.`,
         solution: { board: solved(setup, want), box: String(y + 10) },
       };
     }),
@@ -227,7 +227,7 @@ export const TASKS = [
       return {
         prompt: `The chart shows ${fmt(a)}. Take away ${b}. Hold a disk and pick Break, one place at a time, until you can take ${b} away. What is left?`,
         setup, answer: { board: [{ t: 'total', n: left, say: `Take away disks worth ${b}, so the chart shows what is left.` }], box: { key: String(left), label: 'what is left' } },
-        hints: ['There are no hundreds, tens or ones yet. Break a 1,000 disk into ten 100 disks.', 'Then break a 100 disk into ten 10 disks, and a 10 disk into ten 1 disks.', `Now take away ${b}: ${fmt(a)} - ${b} = ${fmt(left)}.`],
+        hints: ['There are no hundreds, tens or ones yet. Break a 1,000 disk into ten disks of 100.', 'Then break a 100 disk into ten disks of 10, and a 10 disk into ten disks of 1.', `Now take away ${b}: ${fmt(a)} - ${b} = ${fmt(left)}.`],
         explain: `${fmt(a)} - ${b} = ${fmt(left)}. Each break trades one disk for ten of the next place, so the total stays ${fmt(a)} until you take away.`,
         solution: { board: solved(setup, hasOf(left)), box: String(left) },
       };
@@ -351,10 +351,10 @@ export const TASKS = [
       const tens = R.int(2, 9), ones = R.int(0, 9), n = 10 * tens + ones, want = { t: tens - 1, o: ones + 10 };
       const setup = diskBoard({ charts: [{ cols: C3 }] });
       return {
-        prompt: `Build ${n} as ${tens} disks of 10 and ${ones} disks of 1. Then hold a 10 disk and pick Break to show ${n} a second way. How many disks of 1 are there now?`,
-        setup, answer: { board: [{ t: 'total', n, say: `The disks should still show ${n}.` }, { t: 'counts', has: want, say: 'Build the number, then break one 10 disk into ten 1 disks.' }], box: { key: String(ones + 10), label: 'disks of 1' } },
-        hints: [`Put ${tens} disks of 10 in Tens and ${ones} disks of 1 in Ones.`, 'Hold a 10 disk and pick Break: it becomes ten disks of 1.', `${ones} + 10 = ${ones + 10}. So ${n} is ${tens - 1} tens and ${ones + 10} ones.`],
-        explain: `${tens} tens and ${ones} ones, or ${tens - 1} tens and ${ones + 10} ones: both are ${n}. Breaking changes how it looks, not how much it is.`,
+        prompt: `Build ${n} as ${plural(tens, 'disk')} of 10 and ${plural(ones, 'disk')} of 1. Then hold a 10 disk and pick Break to show ${n} a second way. How many disks of 1 are there now?`,
+        setup, answer: { board: [{ t: 'total', n, say: `The disks should still show ${n}.` }, { t: 'counts', has: want, say: 'Build the number, then break one 10 disk into ten disks of 1.' }], box: { key: String(ones + 10), label: 'disks of 1' } },
+        hints: [`Put ${plural(tens, 'disk')} of 10 in Tens and ${plural(ones, 'disk')} of 1 in Ones.`, 'Hold a 10 disk and pick Break: it becomes ten disks of 1.', `${ones} + 10 = ${ones + 10}. So ${n} is ${plural(tens - 1, 'ten')} and ${ones + 10} ones.`],
+        explain: `${plural(tens, 'ten')} and ${plural(ones, 'one')}, or ${plural(tens - 1, 'ten')} and ${ones + 10} ones: both are ${n}. Breaking changes how it looks, not how much it is.`,
         solution: { board: solved(setup, want), box: String(ones + 10) },
       };
     }),

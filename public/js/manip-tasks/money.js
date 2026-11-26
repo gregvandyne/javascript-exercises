@@ -4,7 +4,7 @@
 // labeled work mat ("Way 1", "Toy 2": the pieces whose middle is on it). Money a student is only shown (savings so far)
 // is locked. The fewest coins and bills are the biggest first; a student who has not met the half dollar (50¢) yet is
 // right with the fewest without it too, except on the task about the half dollar itself.
-import { boardWith, rowPlaces, objSizeOf, fmt } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, plural } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { objRect, OBJ_HEAD, WORLD } from '../manip-board.js';
 
@@ -127,7 +127,7 @@ function countUp(p, pay) {
 /** A price in quarters of a dollar from lo to hi cents. */
 const priceQ = (R, lo, hi) => 25 * R.int(Math.ceil(lo / 25), Math.floor(hi / 25));
 export const TASKS = [
-  T('make-67-cents', 'Make 67 cents', '2.MD.C.8', '2',
+  T('make-67-cents', 'Make an amount of cents', '2.MD.C.8', '2',
     'Make an amount two ways: Way 1 with the fewest coins, Way 2 with more coins. How many coins does Way 1 use?',
     'Fewest coins means biggest coins first. Children who start with pennies need the exchange idea: ten pennies become a dime.',
     R => {
@@ -246,7 +246,7 @@ export const TASKS = [
           { t: 'total', label: D, n: A, say: `${D} should make ${A}¢.` }, { t: 'only', label: D, kinds: ['dime', 'penny'], say: `${D}: only dimes and pennies.` },
           { t: 'total', label: F, n: A, say: `${F} should make ${A}¢.` }, { t: 'fewest', label: F, either: true, say: `${F}: start with the biggest coins you can.` }],
         choice: { options: labels, correct: f, say: 'Count the coins on each mat. Which is quicker to count and carry?' } },
-        hints: [`${D}: ${Math.floor(A / 10)} dimes and ${A % 10} pennies.`, `${F}: ${listText(few)}.`, `${F} uses ${few.length} coins and ${D} uses ${dp.length}: a shopkeeper likes fewer coins.`],
+        hints: [`${D}: ${plural(Math.floor(A / 10), 'dime')} and ${plural(A % 10, 'penny', 'pennies')}.`, `${F}: ${listText(few)}.`, `${F} uses ${few.length} coins and ${D} uses ${dp.length}: a shopkeeper likes fewer coins.`],
         explain: `Both make ${A}¢, but ${F} uses ${few.length} coins and ${D} uses ${dp.length}. Fewer coins are quicker to count, so ${F} is better.`,
         solution: { board: solved(setup, { on: { [D]: dp, [F]: few } }), choice: f },
       };
@@ -260,8 +260,8 @@ export const TASKS = [
       return {
         prompt: `There ${tens === 1 ? 'is 1 $10 bill' : `are ${tens} $10 bills`} and ${ones} $1 bills. Trade ten $1 bills for one $10 bill: hold a $1 bill and pick Delete ten times, then add a $10 bill. How much money is it?`,
         setup, answer: { board: [{ t: 'counts', has: want, say: 'Take away ten $1 bills and add one $10 bill.' }], box: { key: money(c), label: 'how much money' } },
-        hints: ['Ten $1 bills are $10, the same as one $10 bill.', `After the trade: ${tens + 1} $10 bills and ${ones - 10} $1 bill${ones - 10 === 1 ? '' : 's'}.`, `${tens + 1} tens and ${ones - 10} ones: $${fmt(c / 100)}.`],
-        explain: `$${fmt(c / 100)} is ${tens + 1} tens and ${ones - 10} ones. Ten of one bill make one of the next, just like place value.`,
+        hints: ['Ten $1 bills are $10, the same as one $10 bill.', `After the trade: ${plural(tens + 1, '$10 bill')} and ${plural(ones - 10, '$1 bill')}.`, `${plural(tens + 1, 'ten')} and ${plural(ones - 10, 'one')}: $${fmt(c / 100)}.`],
+        explain: `$${fmt(c / 100)} is ${plural(tens + 1, 'ten')} and ${plural(ones - 10, 'one')}. Ten of one bill make one of the next, just like place value.`,
         solution: { board: traded(setup, want), box: money(c) },
       };
     }),
@@ -344,9 +344,9 @@ export const TASKS = [
       const d = R.int(1, 9), c = R.chance(0.7) ? R.int(1, 9) : R.int(10, 99), t = 100 * d + c, setup = moneyBoard({});
       return {
         prompt: `Build ${d} dollar${d === 1 ? '' : 's'} and ${c} cent${c === 1 ? '' : 's'} with bills and coins. Then write it as a money amount with a decimal point.`,
-        setup, answer: { board: [{ t: 'total', n: t, say: `Build ${d} dollars and ${c} cents.` }], box: { key: money(t), label: 'the amount' } },
-        hints: [`The dollars go before the point: ${d}.`, `Cents are hundredths: they take two places after the point.${c < 10 ? ` ${c} cents is 0${c}.` : ''}`, `${d} dollars and ${c} cents is ${money(t)}.`],
-        explain: `${money(t)}: ${d} dollars, then ${c} cents in the two places after the point.${c < 10 ? ` Without the 0 it would read $${d}.${c}0, which is ${c * 10} cents.` : ''}`,
+        setup, answer: { board: [{ t: 'total', n: t, say: `Build ${plural(d, 'dollar')} and ${plural(c, 'cent')}.` }], box: { key: money(t), label: 'the amount' } },
+        hints: [`The dollars go before the point: ${d}.`, `Cents are hundredths: they take two places after the point.${c < 10 ? ` ${plural(c, 'cent')} is 0${c}.` : ''}`, `${plural(d, 'dollar')} and ${plural(c, 'cent')} is ${money(t)}.`],
+        explain: `${money(t)}: ${plural(d, 'dollar')}, then ${plural(c, 'cent')} in the two places after the point.${c < 10 ? ` Without the 0 it would read $${d}.${c}0, which is ${c * 10} cents.` : ''}`,
         solution: { board: solved(setup, { loose: fewestOf(t, NO_HALF) }), box: money(t) },
       };
     }),
@@ -360,8 +360,8 @@ export const TASKS = [
         prompt: `It costs ${money(P)}. You pay with a $${pay} bill. Make the change with the fewest coins and bills you can. How many coins and bills is that?`,
         setup, answer: { board: [{ t: 'total', n: C, say: `The coins and bills should be the change from $${pay}.00.` }, { t: 'fewest', either: true, say: 'Use the biggest bills and coins that fit first.' }],
           box: { key: String(few.length), keys: [String(few.length), String(fewestOf(C).length)], label: 'coins and bills' } },
-        hints: [`The change is $${pay}.00 - ${money(P)} = ${money(C)}.`, 'Take the biggest bill or coin that fits, then the next biggest, and so on.', `${listText(few)}: ${few.length} pieces.`],
-        explain: `${money(C)} is ${listText(few)}: ${few.length} pieces. The biggest pieces first always gives the fewest.`,
+        hints: [`The change is $${pay}.00 - ${money(P)} = ${money(C)}.`, 'Take the biggest bill or coin that fits, then the next biggest, and so on.', `${listText(few)}: ${plural(few.length, 'piece')}.`],
+        explain: `${money(C)} is ${listText(few)}: ${plural(few.length, 'piece')}. The biggest pieces first always gives the fewest.`,
         solution: { board: solved(setup, { loose: few }), box: String(few.length) },
       };
     }),

@@ -1,4 +1,4 @@
-// Money: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Make 67 cents" (two different ways, then compare how
+// Money: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Make an amount of cents" (two different ways, then compare how
 // many coins each way takes).
 const coins = label => `#mp-content .mp-piece[aria-label="Piece ${label}"]`;
 const coin = (label, n = 0) => page => page.locator(coins(label)).nth(n);
@@ -65,12 +65,12 @@ export default h => {
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 16) },
-          { scroll: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make 67 cents' }), center: true },
-          { spot: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make 67 cents' }),
-            expect: txt('#mp-tasks .mp-task:has-text("Make 67 cents") p.muted', /^Teacher note: /) },
-          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make 67 cents' }).locator('p').nth(1) },
+          { scroll: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make an amount of cents' }), center: true },
+          { spot: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make an amount of cents' }),
+            expect: txt('#mp-tasks .mp-task:has-text("Make an amount of cents") p.muted', /^Teacher note: /) },
+          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make an amount of cents' }).locator('p').nth(1) },
           { wait: 700 },
-          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make 67 cents' }).locator('p.muted') },
+          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Make an amount of cents' }).locator('p.muted') },
           { wait: 1500 },
         ] },
       ],

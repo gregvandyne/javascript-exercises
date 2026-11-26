@@ -190,7 +190,7 @@ test('the catalog lists each tool\'s practice tasks as lessons; the hand-out rou
   assert.match(page, /data-hritem="T:task:rekenreks\/show-7-the-5-way"/);
   assert.match(page, /Rekenreks: practice lessons/);
   const r = await as(teacher, `/api/homeroom/${cls.id}/handouts`, { task: T5, count: 4, to: { kind: 'all' }, grade: 'score' });
-  assert.equal(r.status, 200, r.text); assert.match(r.json.toast, /Show 7 the 5-way/);
+  assert.equal(r.status, 200, r.text); assert.match(r.json.toast, /Show a number the 5-way/);
   const h = r.json.handouts.find(x => x.manip);
   assert.equal(h.manip.n, 4);
   const bad = await as(teacher, `/api/homeroom/${cls.id}/handouts`, { task: 'clock/no-such-task', count: 4, to: { kind: 'all' } });

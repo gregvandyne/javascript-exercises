@@ -64,7 +64,7 @@ export const conds = {
 // (every variation hides the totals: a practice board: no total gives an answer away; each row still shows its own count)
 const T = (key, title, ccss, grade, prompt, notes, make) => ({ key, title, ccss, grade, prompt, notes, make: R => ({ totals: false, ...make(R) }) });
 export const TASKS = [
-  T('show-7-the-5-way', 'Show 7 the 5-way', 'K.OA.A.3', 'K',
+  T('show-7-the-5-way', 'Show a number the 5-way', 'K.OA.A.3', 'K',
     'Show a number from 6 to 10 on one row: push all 5 red beads first, then count on with white beads. Type how many white beads you used.',
     'Watch for children who count beads one by one from the left. Prompt them to trust the full red group of 5 and count on, which is the whole point of the 5-structure.',
     R => {
@@ -92,7 +92,7 @@ export const TASKS = [
         solution: { board: setup, box: String(bot) },
       };
     }),
-  T('two-ways-to-make-10', 'Two ways to make 10', '1.OA.C.6', '1',
+  T('two-ways-to-make-10', 'Two ways to make a number', '1.OA.C.6', '1',
     'Show the same number two different ways, using both rows of each rekenrek: Way 1 starts with the beads it names on the top row, Way 2 uses a different split.',
     'Children often only find 5 + 5. Nudge them to slide one bead at a time and notice each new split keeps the total at 10.',
     R => {
@@ -137,7 +137,7 @@ export const TASKS = [
         solution: { board: solved(setup, [{ counts: [10, k] }]), box: String(k) },
       };
     }),
-  T('make-9-three-ways', 'Make 9 three ways', '1.OA.C.6', '1',
+  T('make-9-three-ways', 'Make a number three ways', '1.OA.C.6', '1',
     'Show the same number three ways: on one row, on two rows, and with Cover hiding the beads.',
     'Seeing the same total in different arrangements builds flexibility. Ask which way makes 9 easiest to see at a glance and why.',
     R => {
@@ -156,7 +156,7 @@ export const TASKS = [
         solution: { board: solved(setup, [{ label: 'Way 1', counts: [n] }, { label: 'Way 2', counts: [a, n - a] }, { label: 'Way 3', counts: n > 10 ? [10, n - 10] : [n], covered: true }]) },
       };
     }),
-  T('count-back-from-18', 'Count back from 18', '1.OA.C.5', '1',
+  T('count-back-from-18', 'Count back from a teen number', '1.OA.C.5', '1',
     'Start from a teen number across two rows. Slide beads back to take some away. Where do you land?',
     'Counting back across the ten boundary is the hard part. Encourage landing on 10 first, then counting back the rest.',
     R => {
@@ -184,7 +184,7 @@ export const TASKS = [
         solution: { board: solved(setup, [{ counts }]), box: String(2 * a + 1) },
       };
     }),
-  T('missing-part-to-15', 'Missing part to 15', '1.OA.D.8', '1',
+  T('missing-part-to-15', 'Missing part to a teen number', '1.OA.D.8', '1',
     'The top row shows some beads. How many more are needed to reach the total? Build the missing part underneath.',
     'Missing-addend problems prepare for subtraction as finding a difference, not just taking away.',
     R => {
@@ -209,11 +209,11 @@ export const TASKS = [
         setup, answer: { board: [{ t: 'rows', counts: [top, bot], say: `Share ${n} between the rows: ${odd ? 'the top row gets the extra one' : 'both rows the same'}.` }],
           choice: { options: ['Even', 'Odd'], correct: odd } },
         hints: [`Put beads on the rows one pair at a time, one on each row, until you reach ${n}.`, odd ? 'Is one bead left without a partner?' : 'Does every bead have a partner on the other row?', `${top} and ${bot}: ${odd ? 'one bead has no partner, so it is odd' : 'every bead has a partner, so it is even'}.`],
-        explain: `${n} is ${odd ? 'odd' : 'even'}: ${odd ? `${bot} pairs and one left over` : `${bot} pairs, none left over`}.`,
+        explain: `${n} is ${odd ? 'odd' : 'even'}: ${odd ? `${plural(bot, 'pair')} and one left over` : `${bot} pairs, none left over`}.`,
         solution: { board: solved(setup, [{ counts: [top, bot] }]), choice: odd },
       };
     }),
-  T('three-numbers-to-20', 'Three numbers to 20', '2.OA.B.2', '2',
+  T('three-numbers-to-20', 'Add three numbers within 20', '2.OA.B.2', '2',
     'Use three rows to show three numbers. Find a pair that makes 10 first, then add the last row.',
     'Hunting for a ten first is a key mental strategy. Let children rearrange the order and notice the total stays the same.',
     R => {
@@ -237,12 +237,12 @@ export const TASKS = [
       return {
         prompt: `Show ${top} on the top row and ${bot} on the bottom row. How many more is ${hi} than ${lo}?`,
         setup, answer: { board: [{ t: 'rows', counts: [top, bot], say: `Put ${top} on the top row and ${bot} on the bottom row.` }], box: { key: String(d), label: 'how many more' } },
-        hints: [`Line up the rows. ${lo} beads on each row match.`, `Count the beads on the ${bigTop ? 'top' : 'bottom'} row that have no partner.`, `${hi} - ${lo} = ${d}.`],
-        explain: `${hi} is ${d} more than ${lo}: the ${d} beads with no partner show the difference.`,
+        hints: [`Line up the rows. ${plural(lo, 'bead')} on each row ${lo === 1 ? 'matches' : 'match'}.`, `Count the beads on the ${bigTop ? 'top' : 'bottom'} row that have no partner.`, `${hi} - ${lo} = ${d}.`],
+        explain: `${hi} is ${d} more than ${lo}: the ${plural(d, 'bead')} with no partner ${d === 1 ? 'shows' : 'show'} the difference.`,
         solution: { board: solved(setup, [{ counts: [top, bot] }]), box: String(d) },
       };
     }),
-  T('build-20-hide-10', 'Build 20, hide 10', 'K.NBT.A.1', 'K',
+  T('build-20-hide-10', 'Build a teen number, then hide it', 'K.NBT.A.1', 'K',
     'Fill the top row with 10 and put some beads on the bottom row. Turn on Cover. How many are hidden, without counting one by one?',
     'A full covered row must be 10 because every row holds 10. This moves children from counting to reasoning about structure.',
     R => {
@@ -279,8 +279,8 @@ export const TASKS = [
       return {
         prompt: `Count ${n} ${noun} by fives. Push beads in groups of 5 only, saying 5, 10, 15 as each group lands. How many groups of 5 make ${n}?`,
         setup, answer: { board: [{ t: 'total', n, say: `Show ${n} in all.` }, { t: 'fives', say: 'Use groups of 5: each row shows 0, 5 or 10.' }], box: { key: String(g), label: 'groups of 5' } },
-        hints: ['Tap the 5th bead on a row: 5 beads move together.', `Count by fives as you go: 5, 10, 15, ... until you say ${n}.`, `${g} groups of 5 make ${n}.`],
-        explain: `${g} fives make ${n}: ${Array.from({ length: g }, (_, i) => 5 * (i + 1)).join(', ')}.`,
+        hints: ['Tap the 5th bead on a row: 5 beads move together.', `Count by fives as you go: 5, 10, 15, ... until you say ${n}.`, `${plural(g, 'group')} of 5 ${g === 1 ? 'makes' : 'make'} ${n}.`],
+        explain: `${plural(g, 'five')} ${g === 1 ? 'makes' : 'make'} ${n}: ${Array.from({ length: g }, (_, i) => 5 * (i + 1)).join(', ')}.`,
         solution: { board: solved(setup, [{ counts: Array.from({ length: 5 }, (_, i) => Math.max(0, Math.min(10, n - 10 * i))) }]), box: String(g) },
       };
     }),
@@ -298,7 +298,7 @@ export const TASKS = [
         solution: { board: solved(setup, [{ counts: [a, b] }]), box: String(a + b) },
       };
     }),
-  T('half-of-10-half-of-20', 'Half of 10, half of 20', '2.G.A.3', '2',
+  T('half-of-10-half-of-20', 'Half of an even number', '2.G.A.3', '2',
     'Show half of a number on the rekenrek. How are the halves of 10 and 20 related?',
     'Half of 20 uses the same five-bead group in each row. This plants the idea that halves scale with the whole.',
     R => {

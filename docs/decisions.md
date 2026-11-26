@@ -15661,6 +15661,46 @@ shading.
   the row above before), so arrays and rectangles of cubes and tiles are built row by row; and a locked piece never
   moves with its snapped group (`groupOf`: a cube snapped onto a locked stick is dragged away alone).
 
+### Titles and wording
+
+QA found titles that disagreed with the question they showed ("Build 1,139" asking for 1,896, "Show 7 the 5-way"
+asking for 6) and about 40 tasks with slips like "1 beads", "add 1 zero pairs" and "30 minutes, which is 30 minutes".
+- **Titles name the skill, never a number the variation changes** (titles show on desk cards, the player header and the
+  lists). Keys, codes, grades and notes stay, so saved progress and assigned sets are untouched. 39 renamed (old ->
+  new): Rekenreks: "Show 7 the 5-way" -> "Show a number the 5-way", "Two ways to make 10" -> "Two ways to make a
+  number", "Make 9 three ways" -> "Make a number three ways", "Count back from 18" -> "Count back from a teen number",
+  "Missing part to 15" -> "Missing part to a teen number", "Three numbers to 20" -> "Add three numbers within 20",
+  "Build 20, hide 10" -> "Build a teen number, then hide it", "Half of 10, half of 20" -> "Half of an even number";
+  Linking Cubes: "Build and break 8" -> "Build and break a number", "Arrays for 12" -> "Arrays for a number", "Cube
+  trains for 15" -> "Cube trains for a teen number"; Color Tiles: "Area challenge 20" -> "Area challenge"; Hundred
+  Board: "10 more, 10 less" -> "1 or 10 more or less", "Multiples of 6 pattern" -> "Multiples pattern", "Skip count by
+  3s" -> "Skip count on the board", "Add 9 trick" -> "Add or subtract 9 or 11"; Base Ten Blocks: "Build 1,139" -> "Build
+  a 4-digit number", "346 + 278 with blocks" -> "Add 3-digit numbers with blocks", "Decimal build 2.35" -> "Build a
+  decimal", "Build and read 2,048" -> "Build and read a 4-digit number", "Area model 13 x 12" -> "Area model for 2-digit
+  products", "Decimal add 1.7 + 0.85" -> "Add decimals with blocks"; Place Value Disks: "Build 40,206" -> "Build a
+  5-digit number", "Decimal disks 0.405" -> "Decimal disks to thousandths"; Number rods: "Trains for 10" -> "Trains for
+  a rod"; Fraction Circles: "Bigger: 1/3 or 1/4?" -> "Which fraction is bigger?", "Half and quarter mix" -> "Mix two
+  piece sizes"; Fraction Tiles: "Prove 1/2 = 2/4" -> "Prove two fractions are equal", "Wall hunt: 3/4" -> "Wall hunt:
+  equal fractions", "Half of a half" -> "Half or quarter of a fraction"; Number Lines: "Jump strategy 48 + 25" -> "Jump
+  strategy for adding"; Money: "Make 67 cents" -> "Make an amount of cents"; Algebra Tiles: "Build (x+4)(x+3)" -> "Build
+  a product of two binomials", "Solve x + 3 = 7" -> "Solve a one-step equation", "Factor x² + 5x + 6" -> "Factor a
+  trinomial"; Geoboard: "Triangles of area 1" -> "Triangles of a given area"; Pattern Blocks: "Thirds in three ways" ->
+  "Fractions of a hexagon"; Clock: "Half past and quarter to" -> "Half and quarter hours", "Five minutes to" -> "Minutes
+  to the hour". A test checks that any number a practice title still names ("Multiply by 10", "Change from 10") is in
+  every variation's prompt. The How it works scenes that find a task by its title (Linking Cubes, Hundred Board,
+  Fraction Circles, Fraction Tiles, Number Lines, Money) follow the new titles.
+- **Wording.** Every count before a noun goes through `manip-task-kit.js` `plural` (with the verb matching: "1 bead
+  shows"), in prompts, hints, explanations, box labels, choices and the board's `say`; Clock's elapsed time says "45
+  minutes" once (", which is 95 minutes" only past an hour). `manip-task-variations.test.js` reads every text of 200
+  seeds of every practice task for "1 <plural noun>" (with up to two words between: "1 red cubes", "1 unit tiles"),
+  "there are 1 ..." and "X, which is X", and names the task, seed and place of any slip.
+- **Checks that read the arrangement.** Pattern Blocks "Grow the pattern" checked only the counts, so any heap passed:
+  its new `ring` check reads the blocks' real outlines (manip.js's shapes, turned by Rotate) and wants 6 blocks touching
+  the hexagon all the way around it, then 6 more each touching the first ring, farther out and all the way around; no
+  two blocks on one spot. The run-through builds the flower by hand (Rotate on the wheel, then a drag), solo and in
+  Homeroom; unit tests show a row, a pile, a stack and an outer ring pulled away all fail. Geoboard "Squares of many
+  sizes" already asked for the smallest, middle or biggest square's area by seed; a test now keeps all three in use.
+
 ## Homeroom: QA fixes for Manipulatives in Homeroom (26 Nov 2026)
 
 A full QA walkthrough of Manipulatives inside Homeroom (teacher at 1280x800, students at 1280x800 and 390x844) found a

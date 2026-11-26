@@ -1,4 +1,4 @@
-// Fraction tiles: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Prove 1/2 = 2/4" (a 1/2 tile, covered exactly
+// Fraction tiles: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Prove two fractions are equal" (a 1/2 tile, covered exactly
 // by 1/4 tiles).
 const tiles = label => `#mp-content .mp-piece[aria-label="Piece ${label}"]`;
 const tile = (label, n = 0) => page => page.locator(tiles(label)).nth(n);
@@ -74,12 +74,12 @@ export default h => {
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 17) },
-          { scroll: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove 1/2 = 2/4' }), center: true },
-          { spot: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove 1/2 = 2/4' }),
-            expect: txt('#mp-tasks .mp-task:has-text("Prove 1/2 = 2/4") p.muted', /^Teacher note: /) },
-          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove 1/2 = 2/4' }).locator('p').nth(1) },
+          { scroll: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove two fractions are equal' }), center: true },
+          { spot: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove two fractions are equal' }),
+            expect: txt('#mp-tasks .mp-task:has-text("Prove two fractions are equal") p.muted', /^Teacher note: /) },
+          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove two fractions are equal' }).locator('p').nth(1) },
           { wait: 700 },
-          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove 1/2 = 2/4' }).locator('p.muted') },
+          { move: page => page.locator('#mp-tasks .mp-task', { hasText: 'Prove two fractions are equal' }).locator('p.muted') },
           { wait: 1500 },
         ] },
       ],

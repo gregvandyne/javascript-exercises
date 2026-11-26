@@ -107,7 +107,7 @@ export const TASKS = [
         solution: { board: solved(setup, { on: { 'Way 1': [a, n - a], 'Way 2': other } }) },
       };
     }),
-  T('trains-for-10', 'Trains for 10', '2.OA.B.2', '2',
+  T('trains-for-10', 'Trains for a rod', '2.OA.B.2', '2',
     'Build three different two-rod trains, each as long as the rod given. Train 1 starts with the rod it names.',
     'Trains must align at both ends. Mismatched ends are the most common error and the easiest to self-check.',
     R => {

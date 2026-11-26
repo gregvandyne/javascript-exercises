@@ -16,7 +16,7 @@ const plus = (c, d) => ofMin(toMin(c) + d);
 /** A clock to start from that is not already at t (a five-minute mark some way off). */
 const away = (R, t) => plus(t, 5 * R.int(3, 140));
 /** A duration in words: "1 hour 15 minutes", "45 minutes", "2 hours". */
-const dur = n => { const h = Math.floor(n / 60), m = n % 60; return [h ? `${h} ${h === 1 ? 'hour' : 'hours'}` : '', m ? `${m} minutes` : ''].filter(Boolean).join(' ') || '0 minutes'; };
+const dur = n => { const h = Math.floor(n / 60), m = n % 60; return [h ? `${h} ${h === 1 ? 'hour' : 'hours'}` : '', m ? `${m} ${m === 1 ? 'minute' : 'minutes'}` : ''].filter(Boolean).join(' ') || '0 minutes'; };
 const hmin = n => `${Math.floor(n / 60)} h ${n % 60} min`;
 /** A random time on a five-minute mark, hours lo to hi (1 to 12). */
 const any5 = (R, lo = 1, hi = 12) => at(R.int(lo, hi), 5 * R.int(0, 11));
@@ -68,12 +68,12 @@ export const TASKS = [
       return {
         prompt: `Set the Start clock to ${hm(s)} and the End clock to ${hm(e)}. How many minutes are between them?`,
         setup, answer: { board: [{ t: 'time', label: 'Start', ...s, say: `Set the Start clock to ${hm(s)}.` }, { t: 'time', label: 'End', ...e, say: `Set the End clock to ${hm(e)}.` }], box: { key: String(n), label: 'minutes' } },
-        hints: [SET, s.m ? `From ${hm(s)} to ${hm(nx)} is ${60 - s.m} minutes. Then count on to ${hm(e)}.` : `Count the hours from ${hm(s)}, then the minutes up to ${hm(e)}.`, `It is ${dur(n)}: ${n} minutes.`],
-        explain: `From ${hm(s)} to ${hm(e)} is ${dur(n)}, which is ${n} minutes.`,
+        hints: [SET, s.m ? `From ${hm(s)} to ${hm(nx)} is ${60 - s.m} minutes. Then count on to ${hm(e)}.` : `Count the hours from ${hm(s)}, then the minutes up to ${hm(e)}.`, n >= 60 ? `It is ${dur(n)}: ${n} minutes.` : `It is ${n} minutes.`],
+        explain: `From ${hm(s)} to ${hm(e)} is ${dur(n)}${n >= 60 ? `, which is ${n} minutes` : ''}.`,
         solution: { board: solved(setup, [s, e]), box: String(n) },
       };
     }, true),
-  T('half-past-and-quarter-to', 'Half past and quarter to', '2.MD.C.7', '2',
+  T('half-past-and-quarter-to', 'Half and quarter hours', '2.MD.C.7', '2',
     'Set the clock to a time said in words, like half past 7 or quarter to 8. Pick the digital time.',
     'The hour hand creeps: at quarter to 8 it nearly touches 8. That creep is exactly what children miss when reading clocks.',
     R => {
@@ -114,7 +114,7 @@ export const TASKS = [
         sig: `${exact ? 'e' : 'n'}${hm(t)}`,
         setup, answer: { box: { key: hm(near), label: 'the time', say: 'Look at the short red hand for the hour, then count the long blue hand by fives.' } },
         hints: ['The short red hand shows the hour. The long blue hand shows the minutes.', `Count by fives from the 12 to the blue hand: 5, 10, 15, ...${exact ? '' : ' It is near a big red mark: pick the closest one.'}`, `The hand is ${exact ? 'on' : 'nearest'} the ${m5 / 5}: ${m5} minutes. The time is ${hm(near)}.`],
-        explain: `The minute hand ${exact ? 'points' : 'is closest'} to the ${m5 / 5}, and ${m5 / 5} fives make ${m5} minutes. The hour hand is past the ${h}, so it is ${hm(near)}.`,
+        explain: `The minute hand ${exact ? 'points' : 'is closest'} to the ${m5 / 5}, and ${m5 / 5} ${m5 === 5 ? 'five makes' : 'fives make'} ${m5} minutes. The hour hand is past the ${h}, so it is ${hm(near)}.`,
         solution: { board: setup, box: hm(near) },
       };
     }),
@@ -216,7 +216,7 @@ export const TASKS = [
         solution: { board: solved(setup, [s, e]), choice: ch.correct },
       };
     }, true),
-  T('five-minutes-to', 'Five minutes to', '2.MD.C.7', '2',
+  T('five-minutes-to', 'Minutes to the hour', '2.MD.C.7', '2',
     'Set a "to" time, like ten to 5 or five to 5. Pick the digital time.',
     '4:50 and 4:55. To times name the coming hour, which is why the hour hand nearly touches 5.',
     R => {

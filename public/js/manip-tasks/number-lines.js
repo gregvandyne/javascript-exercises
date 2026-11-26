@@ -4,7 +4,7 @@
 // starting where the one before landed, is the number sentence the line writes). A line a student must only read (a
 // point to name) is read only (st.q) with its dot drawn as "?" (st.ask). st.frac labels a line in halves, fourths or
 // eighths as fractions (manip.js nlLabel).
-import { boardWith, rowPlaces, objSizeOf, fmt } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, plural } from '../manip-task-kit.js';
 
 export const SLUG = 'number-lines';
 const EPS = 2e-3;
@@ -103,7 +103,7 @@ export const TASKS = [
       return {
         prompt: `The labels are hidden. The line goes from 0 to ${fmt(max)}, and each tick is ${fmt(step)} more than the one before. What number is the point at?`, sig: `${max} ${v}`,
         setup, answer: { box: { key: String(v), label: 'the number' } },
-        hints: [`The middle tick is halfway: ${fmt(max / 2)}. Is the point before or after it?`, `Count the ticks from 0 to the point, ${fmt(step)} each time.`, `The point is ${v / step} ticks from 0: ${v / step} × ${fmt(step)} = ${fmt(v)}.`],
+        hints: [`The middle tick is halfway: ${fmt(max / 2)}. Is the point before or after it?`, `Count the ticks from 0 to the point, ${fmt(step)} each time.`, `The point is ${plural(v / step, 'tick')} from 0: ${v / step} × ${fmt(step)} = ${fmt(v)}.`],
         explain: `The point is at ${fmt(v)}. The ends and the halfway mark are anchors, and each tick adds ${fmt(step)}.`,
         solution: { board: setup, box: String(v) },
       };
@@ -133,7 +133,7 @@ export const TASKS = [
       return {
         prompt: `Jumps is on. Start at ${a} and make a jump of −${d}. Where do you land? Then make one more jump that lands exactly on ${sn(t)}.`,
         setup, answer: { board: [{ t: 'chain', from: a, to: t, sizes: [-d, t - L], say: `Tap ${a}, jump ${d} to the left, then jump to ${sn(t)}.` }], box: { key: String(L), label: 'where you land' } },
-        hints: [`Tap ${a} to start. A jump of −${d} goes ${d} to the left.`, `${a} to 0 is ${a} steps. ${d - a} more steps to the left land on ${sn(L)}.`, `You land on ${sn(L)}. Then tap ${sn(t)} for the last jump.`],
+        hints: [`Tap ${a} to start. A jump of −${d} goes ${d} to the left.`, `${a} to 0 is ${plural(a, 'step')}. ${plural(d - a, 'more step', 'more steps')} to the left ${d - a === 1 ? 'lands' : 'land'} on ${sn(L)}.`, `You land on ${sn(L)}. Then tap ${sn(t)} for the last jump.`],
         explain: `${a} − ${d} = ${sn(L)}: ${a} back to 0, then ${d - a} more below 0. From ${sn(L)}, a jump of ${t - L > 0 ? '+' : '−'}${Math.abs(t - L)} lands on ${sn(t)}.`,
         solution: { board: solved(setup, { chain: [a, L, t] }), box: String(L) },
       };
@@ -162,8 +162,8 @@ export const TASKS = [
       return {
         prompt: `On the 0 to 1 line, put dots at ${list3(pts.map(fmt))}. Then switch to Jumps and jump from ${fmt(a / 10)} to ${fmt(c / 10)}. How big is the jump?`,
         setup, answer: { board: [{ t: 'points', at: pts, say: `Put dots at ${list3(pts.map(fmt))}.` }, { t: 'chain', from: a / 10, to: c / 10, n: 1, say: `Switch to Jumps, tap ${fmt(a / 10)}, then tap ${fmt(c / 10)}.` }], box: { key: fmt((c - a) / 10), label: 'the jump' } },
-        hints: ['Each tick is one tenth: 0.1.', `Count the tenths from ${fmt(a / 10)} to ${fmt(c / 10)}.`, `That is ${c - a} tenths: a jump of ${fmt((c - a) / 10)}.`],
-        explain: `${fmt(a / 10)} + ${fmt((c - a) / 10)} = ${fmt(c / 10)}. ${c - a} steps of one tenth make ${fmt((c - a) / 10)}.`,
+        hints: ['Each tick is one tenth: 0.1.', `Count the tenths from ${fmt(a / 10)} to ${fmt(c / 10)}.`, `That is ${plural(c - a, 'tenth')}: a jump of ${fmt((c - a) / 10)}.`],
+        explain: `${fmt(a / 10)} + ${fmt((c - a) / 10)} = ${fmt(c / 10)}. ${plural(c - a, 'step')} of one tenth ${c - a === 1 ? 'makes' : 'make'} ${fmt((c - a) / 10)}.`,
         solution: { board: solved(setup, { points: pts, chain: [a / 10, c / 10] }), box: fmt((c - a) / 10) },
       };
     }),
@@ -175,8 +175,8 @@ export const TASKS = [
       return {
         prompt: `The line shows temperatures from −20° to 30°. Put dots at ${sn(lo)}°, 0° and ${hi}°. How many degrees warmer is ${hi}° than ${sn(lo)}°?`,
         setup, answer: { board: [{ t: 'points', at: [lo, 0, hi], say: `Put dots at ${sn(lo)}, 0 and ${hi}.` }], box: { key: String(hi - lo), label: 'degrees warmer' } },
-        hints: [`Count in two parts: from ${sn(lo)}° up to 0°, then from 0° up to ${hi}°.`, `${sn(lo)}° to 0° is ${-lo} degrees. 0° to ${hi}° is ${hi} degrees.`, `${-lo} + ${hi} = ${hi - lo} degrees.`],
-        explain: `${hi}° is ${hi - lo} degrees warmer than ${sn(lo)}°: ${-lo} degrees up to 0, then ${hi} more.`,
+        hints: [`Count in two parts: from ${sn(lo)}° up to 0°, then from 0° up to ${hi}°.`, `${sn(lo)}° to 0° is ${plural(-lo, 'degree')}. 0° to ${hi}° is ${plural(hi, 'degree')}.`, `${-lo} + ${hi} = ${hi - lo} degrees.`],
+        explain: `${hi}° is ${hi - lo} degrees warmer than ${sn(lo)}°: ${plural(-lo, 'degree')} up to 0, then ${hi} more.`,
         solution: { board: solved(setup, { points: [lo, 0, hi] }), box: String(hi - lo) },
       };
     }),
@@ -194,7 +194,7 @@ export const TASKS = [
         solution: { board: solved(setup, { points: [(a + 1) / 8] }) },
       };
     }),
-  T('jump-strategy-48-25', 'Jump strategy 48 + 25', '2.NBT.B.5', '2',
+  T('jump-strategy-48-25', 'Jump strategy for adding', '2.NBT.B.5', '2',
     'Start at a number. Jump the tens, then jump to the next ten, then jump the rest. Where do you land?',
     '48 + 20 = 68, +2 = 70, +3 = 73. Landing on a ten mid-addition is the bridging strategy on a line.',
     R => {
@@ -217,8 +217,8 @@ export const TASKS = [
       return {
         prompt: `On this time line, 2:30 is at 2.5 and 5:00 is at 5. Put dots at the times ${clock(S)} and ${clock(E)}. How many hours is it from ${clock(S)} to ${clock(E)}?`,
         setup, answer: { board: [{ t: 'points', at: [S, E], say: `Put dots at ${fmt(S)} and ${fmt(E)}.` }], box: { key: fmt(E - S), label: 'hours' } },
-        hints: [`${clock(S)} is at ${fmt(S)} and ${clock(E)} is at ${fmt(E)}. Each tick is half an hour.`, `Count the half hours from ${fmt(S)} to ${fmt(E)}: there are ${e - s}.`, `${e - s} half hours is ${fmt(E - S)} hours.`],
-        explain: `From ${clock(S)} to ${clock(E)} is ${fmt(E - S)} hours: ${fmt(E)} - ${fmt(S)} = ${fmt(E - S)}.`,
+        hints: [`${clock(S)} is at ${fmt(S)} and ${clock(E)} is at ${fmt(E)}. Each tick is half an hour.`, `Count the half hours from ${fmt(S)} to ${fmt(E)}: there are ${e - s}.`, `${plural(e - s, 'half hour')} is ${plural(E - S, 'hour')}.`],
+        explain: `From ${clock(S)} to ${clock(E)} is ${plural(E - S, 'hour')}: ${fmt(E)} - ${fmt(S)} = ${fmt(E - S)}.`,
         solution: { board: solved(setup, { points: [S, E] }), box: fmt(E - S) },
       };
     }),

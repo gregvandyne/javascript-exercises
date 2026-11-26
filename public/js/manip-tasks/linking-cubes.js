@@ -95,7 +95,7 @@ const run = (k, n) => Array(n).fill(k);
 /** The numbers said counting on from a to n ("4, 5, 6" or "4, 5, ... up to 9"). */
 const countOn = (a, n) => (n - a <= 3 ? Array.from({ length: n - a }, (_, i) => a + 1 + i).join(', ') : `${a + 1}, ${a + 2}, ... up to ${n}`);
 export const TASKS = [
-  T('build-and-break-8', 'Build and break 8', 'K.OA.A.3', 'K',
+  T('build-and-break-8', 'Build and break a number', 'K.OA.A.3', 'K',
     'Make a number as two sticks, two different ways: on Way 1 the split it names, on Way 2 a different split.',
     'Record every split on the board. Children see that 8 stays 8 however it is split, the foundation of number bonds.',
     R => {
@@ -125,11 +125,11 @@ export const TASKS = [
         setup, answer: { board: [{ t: 'bars', bars: ks.map((kind, i) => ({ kind, n: ns[i] })), say: 'Make one stick for each color, with one cube for each vote.' }],
           choice: { options: ks.map(k => cap(name(k))), correct: hi, say: 'Which bar is the longest?' }, box: { key: String(d), label: `more than ${name(ks[lo])}` } },
         hints: ['Make each bar in its own row, starting at the same left edge.', `The longest bar has the most. Line it up with the ${name(ks[lo])} bar.`, `${ns[hi]} − ${ns[lo]} = ${d}.`],
-        explain: `${cap(name(ks[hi]))} has ${ns[hi]} and ${name(ks[lo])} has ${ns[lo]}. The ${d} cubes with no partner show how many more.`,
+        explain: `${cap(name(ks[hi]))} has ${ns[hi]} and ${name(ks[lo])} has ${ns[lo]}. The ${plural(d, 'cube')} with no partner ${d === 1 ? 'shows' : 'show'} how many more.`,
         solution: { board: solvedWith(setup, sticksOn(setup.objects[0], ks.map((k, i) => run(k, ns[i])))), choice: hi, box: String(d) },
       };
     }),
-  T('arrays-for-12', 'Arrays for 12', '3.OA.B.5', '3',
+  T('arrays-for-12', 'Arrays for a number', '3.OA.B.5', '3',
     'Build a number of cubes as an array with a given number of rows. How many cubes are in each row?',
     '2 × 6, 3 × 4 and their turns. Children discover factor pairs concretely before the word factor is introduced.',
     R => {
@@ -196,13 +196,13 @@ export const TASKS = [
       const setup = cubesBoard([{ w: 900, h: 420 }]);
       return {
         prompt: `Build ${n} cubes: snap them into sticks of 10${j ? ' and leave the extra cubes loose' : ''}. Count by tens as you go. A line of 100 cubes is 10 sticks of 10. How many more cubes would make 100?`,
-        setup, answer: { board: [{ t: 'tens', k, extra: j, say: `Make ${k} sticks of exactly 10${j ? ` and ${j} more cubes` : ''}.` }], box: { key: String(100 - n), label: 'more cubes' } },
-        hints: [`${n} is ${k} tens${j ? ` and ${j} ones` : ''}: make ${k} sticks of 10.`, `Count on by tens from ${n}: ${n + 10}, ${n + 20}, ... How far to 100?`, `${n} + ${100 - n} = 100.`],
+        setup, answer: { board: [{ t: 'tens', k, extra: j, say: `Make ${k} sticks of exactly 10${j ? ` and ${plural(j, 'more cube', 'more cubes')}` : ''}.` }], box: { key: String(100 - n), label: 'more cubes' } },
+        hints: [`${n} is ${k} tens${j ? ` and ${plural(j, 'one')}` : ''}: make ${k} sticks of 10.`, `Count on by tens from ${n}: ${n + 10}, ${n + 20}, ... How far to 100?`, `${n} + ${100 - n} = 100.`],
         explain: `${n} + ${100 - n} = 100. 100 cubes is 10 sticks of 10${j ? '' : `, and you have ${k}, so ${10 - k} more sticks`}.`,
         solution: { board: solvedWith(setup, [...sticksOn(setup.objects[0], Array(k).fill(run(kind, 10)), 70), ...rowOf(run(kind, j), matIn(setup.objects[0]).x, matIn(setup.objects[0]).y + k * 70 + 40).map((p, i) => ({ ...p, x: p.x + i * 20 }))]), box: String(100 - n) },
       };
     }),
-  T('cube-trains-for-15', 'Cube trains for 15', '1.NBT.B.2b', '1',
+  T('cube-trains-for-15', 'Cube trains for a teen number', '1.NBT.B.2b', '1',
     'Build a teen number as a ten-stick in one color and a stick of the rest in another color. How many cubes are in the second stick?',
     'The ten-plus split is the teen number structure. Other splits are valid but the ten split is the most useful.',
     R => {
@@ -212,7 +212,7 @@ export const TASKS = [
         prompt: `Build ${n} as two sticks: a ten-stick of ${name(a)} cubes and a stick of ${name(b)} cubes for the rest. How many ${name(b)} cubes are there? ${n} = 10 + ?`,
         setup, answer: { board: [{ t: 'bars', bars: [{ kind: a, n: 10 }, { kind: b, n: n - 10 }], say: `Make a stick of 10 ${name(a)} cubes and a stick of ${name(b)} cubes for the rest.` }], box: { key: String(n - 10), label: `${name(b)} cubes` } },
         hints: [`Make the ten-stick first: 10 ${name(a)} cubes.`, `Count on from 10 with ${name(b)} cubes until you reach ${n}, in a new stick.`, `${n} = 10 + ${n - 10}.`],
-        explain: `${n} is 1 ten and ${n - 10} ones: 10 + ${n - 10} = ${n}.`,
+        explain: `${n} is 1 ten and ${plural(n - 10, 'one')}: 10 + ${n - 10} = ${n}.`,
         solution: { board: solvedWith(setup, sticksOn(setup.objects[0], [run(a, 10), run(b, n - 10)])), box: String(n - 10) },
       };
     }),
@@ -259,7 +259,7 @@ export const TASKS = [
       return {
         prompt: 'Look at the pile of cubes. First pick your estimate. Then snap the cubes into sticks of 10 and count exactly. How many cubes are there?', sig: String(n) + list.join(''),
         setup, answer: { choice: { options: opts.map(x => `About ${x}`), correct: opts.indexOf(near), say: 'Which estimate is closest to your count?' }, box: { key: String(n), label: 'cubes' } },
-        hints: ['Drag cubes end to end to make sticks of 10.', `Count the sticks by tens, then count the loose cubes on: ${Math.floor(n / 10) * 10}, then ones.`, `${Math.floor(n / 10)} tens and ${n % 10} ones: ${n}, about ${near}.`],
+        hints: ['Drag cubes end to end to make sticks of 10.', `Count the sticks by tens, then count the loose cubes on: ${Math.floor(n / 10) * 10}, then ones.`, `${plural(Math.floor(n / 10), 'ten')} and ${plural(n % 10, 'one')}: ${n}, about ${near}.`],
         explain: `${Math.floor(n / 10)} sticks of 10 and ${n % 10} more make ${n}. The closest estimate is about ${near}.`,
         solution: { board: setup, choice: opts.indexOf(near), box: String(n) },
       };
@@ -286,9 +286,9 @@ export const TASKS = [
       const setup = cubesBoard();
       return {
         prompt: `Build one stick of ${n} cubes: ${a} ${name(A)} and ${n - a} ${name(B)}. What fraction of the stick is ${name(A)}?`,
-        setup, answer: { board: [{ t: 'stickHas', has: { [A]: a, [B]: n - a }, say: `Make one stick: ${a} ${name(A)} and ${n - a} ${name(B)} cubes.` }], box: { key: `${a}/${n}`, label: `fraction ${name(A)}`, say: 'The whole stick is the bottom number; the colored cubes are the top number.' } },
-        hints: [`The whole stick has ${n} cubes, so each cube is 1/${n} of it.`, `${a} cubes are ${name(A)}: that is ${a} of the ${n} equal parts.`, `${a}/${n} of the stick is ${name(A)}.`],
-        explain: `Each cube is 1/${n} of the stick. ${a} ${name(A)} cubes make ${a}/${n}, and the ${name(B)} make ${n - a}/${n}.`,
+        setup, answer: { board: [{ t: 'stickHas', has: { [A]: a, [B]: n - a }, say: `Make one stick: ${a} ${name(A)} and ${plural(n - a, `${name(B)} cube`)}.` }], box: { key: `${a}/${n}`, label: `fraction ${name(A)}`, say: 'The whole stick is the bottom number; the colored cubes are the top number.' } },
+        hints: [`The whole stick has ${n} cubes, so each cube is 1/${n} of it.`, `${plural(a, 'cube')} ${a === 1 ? 'is' : 'are'} ${name(A)}: that is ${a} of the ${n} equal parts.`, `${a}/${n} of the stick is ${name(A)}.`],
+        explain: `Each cube is 1/${n} of the stick. ${plural(a, `${name(A)} cube`)} ${a === 1 ? 'makes' : 'make'} ${a}/${n}, and the ${name(B)} make ${n - a}/${n}.`,
         solution: { board: solvedWith(setup, sticksOn(setup.objects[0], [[...run(A, a), ...run(B, n - a)]])), box: `${a}/${n}` },
       };
     }),
@@ -319,7 +319,7 @@ export const TASKS = [
       const [A, B, C] = colors(R, 3), a = R.int(1, 6), b = R.int(1, 6), c = R.int(1, 6), n = a + b + c;
       const setup = cubesBoard();
       return {
-        prompt: `Build one stick with ${a} ${name(A)}, ${b} ${name(B)} and ${c} ${name(C)} cubes. How many cubes are in the stick? ${a} + ${b} + ${c} = ?`,
+        prompt: `Build one stick with ${a} ${name(A)}, ${b} ${name(B)} and ${plural(c, `${name(C)} cube`)}. How many cubes are in the stick? ${a} + ${b} + ${c} = ?`,
         setup, answer: { board: [{ t: 'stickHas', has: { [A]: a, [B]: b, [C]: c }, say: `Make one stick: ${a} ${name(A)}, ${b} ${name(B)} and ${c} ${name(C)}.` }], box: { key: String(n), label: 'cubes' } },
         hints: ['Tap the colors one after another: each cube joins the stick.', `Add two parts first: ${a} + ${b} = ${a + b}.`, `${a + b} + ${c} = ${n}.`],
         explain: `${a} + ${b} + ${c} = ${n}. You can add the parts in any order: ${b} + ${c} = ${b + c} first, then ${a} + ${b + c} = ${n}, works too.`,

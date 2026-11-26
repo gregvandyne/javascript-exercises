@@ -80,7 +80,7 @@ const MULTS = []; for (const b of [1, 2, 3, 4, 5, 6]) for (const D of DENS) if (
 const STUFF = ['a ribbon', 'a chocolate bar', 'a garden path', 'a board'];
 
 export const TASKS = [
-  T('prove-1-2-2-4', 'Prove 1/2 = 2/4', '3.NF.A.3b', '3',
+  T('prove-1-2-2-4', 'Prove two fractions are equal', '3.NF.A.3b', '3',
     'A fraction is on the board in tiles. Cover it exactly with smaller tiles of one size. How many do you need?',
     'Exact cover, no gaps and no overlaps, is the proof standard. Children should check edges align before claiming equivalence.',
     R => {
@@ -146,7 +146,7 @@ export const TASKS = [
         solution: { board: solved(setup, [[1, 1], [L, r]]), choice: ch.correct },
       };
     }),
-  T('wall-hunt-3-4', 'Wall hunt: 3/4', '4.NF.A.1', '4',
+  T('wall-hunt-3-4', 'Wall hunt: equal fractions', '4.NF.A.1', '4',
     'On the fraction wall, find every fraction equal to a given one, up to twelfths. Build each one in its own row. How many names does it have?',
     '6/8 and 9/12 join 3/4. The wall edge alignment is the evidence children should cite.',
     R => {
@@ -192,7 +192,7 @@ export const TASKS = [
       return {
         prompt: `The tiles show ${fr(a, b)} + ${fr(c, d)}. Trade the 1/${b} tiles for 1/${d} tiles, so the sum is all 1/${d} tiles. How many 1/${d} tiles is the sum?`,
         setup, answer: { board: [{ t: 'counts', has: { [d]: k }, say: `Trade every 1/${b} tile for 1/${d} tiles of the same length.` }], box: { key: String(k), label: `1/${d} tiles` } },
-        hints: [`One 1/${b} tile is as long as ${d / b} tiles of 1/${d}.`, `Delete the ${tiles(a, b)} (hold one, then Delete) and add ${a * (d / b)} tiles of 1/${d} instead.`, `${fr(a * (d / b), d)} + ${fr(c, d)} = ${fr(k, d)}: ${k} tiles.`],
+        hints: [`One 1/${b} tile is as long as ${d / b} tiles of 1/${d}.`, `Delete the ${tiles(a, b)} (hold one, then Delete) and add ${a * (d / b)} tiles of 1/${d} instead.`, `${fr(a * (d / b), d)} + ${fr(c, d)} = ${fr(k, d)}: ${plural(k, 'tile')}.`],
         explain: `${fr(a, b)} + ${fr(c, d)} = ${fr(k, d)}${low(k, d) !== fr(k, d) ? ` = ${low(k, d)}` : ''}. With one size of tile you can count the sum.`,
         solution: { board: solved(setup, [[d, k]]), box: String(k) },
       };
@@ -218,7 +218,7 @@ export const TASKS = [
       return {
         prompt: `Show ${g} groups of ${fr(a, b)} with 1/${b} tiles, in one row under the whole tile. What is ${g} × ${fr(a, b)}?`,
         setup, answer: { board: [{ t: 'counts', has: { [b]: n }, say: `Make ${g} groups of ${tiles(a, b)}.` }], box: { key: fr(n, b), label: `${g} × ${fr(a, b)}` } },
-        hints: [`One group is ${tiles(a, b)}. Make ${g} groups: ${g} × ${a} tiles.`, `That is ${n} tiles of 1/${b}.${n > b ? ` ${b} of them are as long as the whole tile.` : ''}`, `${g} × ${fr(a, b)} = ${fr(n, b)}${mixed(n, b) !== fr(n, b) ? ` = ${mixed(n, b)}` : ''}.`],
+        hints: [`One group is ${tiles(a, b)}. Make ${g} groups of ${a}.`, `That is ${plural(n, `tile of 1/${b}`, `tiles of 1/${b}`)}.${n > b ? ` ${b} of them are as long as the whole tile.` : ''}`, `${g} × ${fr(a, b)} = ${fr(n, b)}${mixed(n, b) !== fr(n, b) ? ` = ${mixed(n, b)}` : ''}.`],
         explain: `${g} × ${fr(a, b)} = ${fr(n, b)}${mixed(n, b) !== fr(n, b) ? ` = ${mixed(n, b)}` : ''}: ${g} groups of ${a} make ${n} tiles of 1/${b}.`,
         solution: { board: solved(setup, [[b, n]]), box: fr(n, b) },
       };
@@ -262,12 +262,12 @@ export const TASKS = [
       return {
         prompt: `Switch Labels to Decimal. Build ${dec(x)} using only ${dec(1 / d)} tiles. How many ${dec(1 / d)} tiles did you use?`,
         setup, answer: { board: [{ t: 'mode', modes: ['dec'], say: 'Switch Labels under the board to Decimal.' }, { t: 'counts', has: { [d]: k }, say: `Use only ${dec(1 / d)} tiles to make ${dec(x)}.` }], box: { key: String(k), label: 'tiles' } },
-        hints: [`Change Labels to Decimal. Find the tile that says ${dec(1 / d)}.`, `Count by ${dec(1 / d)}: ${[1, 2, 3].map(i => dec(i / d)).join(', ')}, ... until you reach ${dec(x)}.`, `${k} × ${dec(1 / d)} = ${dec(x)}: ${k} tiles.`],
+        hints: [`Change Labels to Decimal. Find the tile that says ${dec(1 / d)}.`, `Count by ${dec(1 / d)}: ${[1, 2, 3].map(i => dec(i / d)).join(', ')}, ... until you reach ${dec(x)}.`, `${k} × ${dec(1 / d)} = ${dec(x)}: ${plural(k, 'tile')}.`],
         explain: `${dec(x)} = ${k} × ${dec(1 / d)} = ${mixed(k, d)}. The ${dec(1 / d)} tile is the 1/${d} tile with its decimal name.`,
         solution: { board: solved(setup, [[d, k]], 'dec'), box: String(k) },
       };
     }),
-  T('half-of-a-half', 'Half of a half', '5.NF.B.4', '5',
+  T('half-of-a-half', 'Half or quarter of a fraction', '5.NF.B.4', '5',
     'Cover a fraction exactly with tiles half its size or smaller. What is half (or a quarter) of it?',
     'Each halving doubles the denominator. The pattern 2, 4, 8 prepares for fraction multiplication by a half.',
     R => {
@@ -290,8 +290,8 @@ export const TASKS = [
       const a = R.int(1, d - 2), c = R.int(1, d - a - 1), left = d - a - c, setup = tileBoard({ loose: [[d, d]] });
       return {
         prompt: `A ${food} is cut into ${d} equal parts: ${d} tiles of 1/${d}. ${who} eats ${a}, a friend eats ${c}. Delete the parts they ate. What fraction is left?`,
-        setup, answer: { board: [{ t: 'counts', has: { [d]: left }, say: `Take away ${a} and then ${c} tiles: hold a tile, then Delete.` }], box: { key: fr(left, d), label: 'left' } },
-        hints: [`Delete ${a} tiles for ${who}, then ${c} for the friend.`, `${a} + ${c} = ${a + c} parts eaten. Count the tiles left.`, `${fr(d, d)} - ${fr(a + c, d)} = ${fr(left, d)}.`],
+        setup, answer: { board: [{ t: 'counts', has: { [d]: left }, say: `Take away ${a} and then ${plural(c, 'tile')}: hold a tile, then Delete.` }], box: { key: fr(left, d), label: 'left' } },
+        hints: [`Delete ${plural(a, 'tile')} for ${who}, then ${c} for the friend.`, `${a} + ${c} = ${a + c} parts eaten. Count the tiles left.`, `${fr(d, d)} - ${fr(a + c, d)} = ${fr(left, d)}.`],
         explain: `${fr(a, d)} + ${fr(c, d)} = ${fr(a + c, d)} eaten, so ${fr(left, d)} is left.`,
         solution: { board: solved(setup, [[d, left]]), box: fr(left, d) },
       };

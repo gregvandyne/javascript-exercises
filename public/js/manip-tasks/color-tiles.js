@@ -166,7 +166,7 @@ export const TASKS = [
       const setup = tilesBoard([{ label: 'Rectangle 1', w: 660, h: 300 }, { label: 'Rectangle 2', w: 660, h: 300 }]);
       const [o1, o2] = setup.objects;
       return {
-        prompt: `Use ${n} tiles on each mat. On Rectangle 1, build ${rr} ${rr === 1 ? 'row' : 'rows'} of ${cc} ${name(k1)} tiles. On Rectangle 2, build a different rectangle with ${n} tiles. What is the perimeter of Rectangle 1?`,
+        prompt: `Use ${n} tiles on each mat. On Rectangle 1, build ${rr} ${rr === 1 ? 'row' : 'rows'} of ${plural(cc, `${name(k1)} tile`)}. On Rectangle 2, build a different rectangle with ${n} tiles. What is the perimeter of Rectangle 1?`,
         setup, answer: { board: [
           { t: 'rect', on: 'Rectangle 1', r: rr, c: cc, say: `On Rectangle 1, build ${rr} ${rr === 1 ? 'row' : 'rows'} of ${cc} with no gaps.` },
           { t: 'counts', on: 'Rectangle 1', has: { [k1]: n }, say: `Use ${name(k1)} tiles on Rectangle 1.` },
@@ -187,7 +187,7 @@ export const TASKS = [
         prompt: `Build a solid rectangle, ${r} ${r === 1 ? 'row' : 'rows'} of ${c}. Make exactly ${k}/${n} of it ${name(B)} and the rest ${name(A)}.`,
         setup, answer: { board: [{ t: 'rect', r, c, say: `Build ${r} ${r === 1 ? 'row' : 'rows'} of ${c} tiles with no gaps.` }, { t: 'counts', has: { [A]: n - k, [B]: k }, say: `${k}/${n}: ${k} of the ${n} tiles ${name(B)}.` }] },
         hints: [`The whole rectangle has ${n} tiles, so each tile is 1/${n}.`, `${k}/${n} means ${k} of the ${n} tiles.`, `Make ${plural(k, 'tile')} ${name(B)} and ${plural(n - k, 'tile')} ${name(A)}.`],
-        explain: `The whole is ${n} tiles, so ${k} ${name(B)} tiles are ${k}/${n} of it and the ${name(A)} tiles are ${n - k}/${n}.`,
+        explain: `The whole is ${n} tiles, so ${plural(k, `${name(B)} tile`)} ${k === 1 ? 'is' : 'are'} ${k}/${n} of it and the ${name(A)} tiles are ${n - k}/${n}.`,
         solution: { board: solvedWith(setup, solid(grid, matIn(setup.objects[0]))) },
       };
     }),
@@ -291,7 +291,7 @@ export const TASKS = [
       return {
         prompt: `Stage 1 is 1 tile. Each stage adds a border around the stage before: stage 2 is 3 by 3, stage 3 is 5 by 5. Build stage ${k}. ${ask === 'all' ? `How many tiles does stage ${m} have in all?` : `How many tiles does the border of stage ${m} add?`}`,
         setup, answer: { board: [{ t: 'rect', r: s, c: s, say: `Stage ${k} is a ${s} by ${s} square with no gaps.` }], box: { key: String(key), label: ask === 'all' ? 'tiles in all' : 'tiles in the border' } },
-        hints: [`Stage n is a square ${'2n − 1'} tiles on a side: stage ${m} is ${2 * m - 1} by ${2 * m - 1}.`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} tiles.` : `Each border adds 8 more than the one before: 8, 16, 24...`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} = ${key}.` : `Stage ${m}'s border: 8 × ${m - 1} = ${key}.`],
+        hints: [`Each side of stage n is (2n − 1) tiles long: stage ${m} is ${2 * m - 1} by ${2 * m - 1}.`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} tiles.` : `Each border adds 8 more than the one before: 8, 16, 24...`, ask === 'all' ? `${2 * m - 1} × ${2 * m - 1} = ${key}.` : `Stage ${m}'s border: 8 × ${m - 1} = ${key}.`],
         explain: ask === 'all' ? `The totals are 1, 9, 25, 49...: stage ${m} is ${2 * m - 1} × ${2 * m - 1} = ${key}.` : `The borders add 8, 16, 24...: stage ${m} adds ${(2 * m - 1) ** 2} − ${(2 * m - 3) ** 2} = ${key}.`,
         solution: { board: solvedWith(setup, solid(grid, matIn(setup.objects[0]))), box: String(key) },
       };
@@ -311,7 +311,7 @@ export const TASKS = [
         solution: { board: solvedWith(setup, gridOf([Array(k).fill(B)], first.x, first.y + S)), box: String(k) },
       };
     }),
-  T('area-challenge-20', 'Area challenge 20', '4.MD.A.3', '4',
+  T('area-challenge-20', 'Area challenge', '4.MD.A.3', '4',
     'Use a number of tiles to make the rectangle with the smallest possible perimeter, or the largest. What is its perimeter?',
     'Compact shapes minimize perimeter, long thin shapes maximize it. Same area, very different borders.',
     R => {
@@ -366,7 +366,7 @@ export const TASKS = [
         prompt: `The ${r} by ${c} rectangle of ${n} tiles is the whole. Some tiles are blue. What percent of the whole is ${not ? 'not blue' : 'blue'}?`, sig: `${n} ${k} ${not}`,
         setup, answer: { box: { key: String(want), keys: [String(want), `${want}%`], label: 'percent' } },
         hints: [n === 100 ? 'Each tile is 1 out of 100: 1 percent.' : `Each tile is 1 out of ${n}, which is ${100 / n} out of 100: ${100 / n} percent.`, `Count the blue tiles: ${k}. ${not ? `Then ${n - k} are not blue.` : ''}`.trim(), `${not ? n - k : k} out of ${n} is ${want} out of 100: ${want}%.`],
-        explain: `${k} of ${n} tiles are blue: ${pct}%. The rest, ${n - k} tiles, are ${100 - pct}%. Together they make 100%.`,
+        explain: `${k} of ${n} tiles are blue: ${pct}%. The rest, ${plural(n - k, 'tile')}, ${n - k === 1 ? 'is' : 'are'} ${100 - pct}%. Together they make 100%.`,
         solution: { board: setup, box: String(want) },
       };
     }),

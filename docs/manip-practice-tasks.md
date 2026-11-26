@@ -17,7 +17,7 @@ practice and assign").
 | Solo progress, assigning, a student's set, live boards for Homeroom | `server/services/manip-tasks.js` |
 | Checking an assigned set (marks, score, done) | `server/services/progress.js` `manipFor`, `manipAnswer` |
 | Homeroom handout of a task | `server/services/homeroom-handouts.js` `handOutTask` |
-| Unit tests (50 seeds of every practice task) | `tests/unit/manip-task-variations.test.js` |
+| Unit tests (50 seeds of every practice task; 200 for the wording) | `tests/unit/manip-task-variations.test.js` |
 | Browser run-through (every task solo, a set of 5 in Homeroom) | `tests/unit/manip-task-flow-browser.test.js` |
 | Per-tool "how to build the answer" for the run-through | `tests/unit/_manip-flow/<slug>.js` (+ `common.js`) |
 | The piece tools' board reading (sticks, rows and columns, shapes) and hands (drag to a place, drop beside a piece) | `public/js/manip-tasks/piece-grid.js`, `tests/unit/_manip-flow/pieces.js` |
@@ -29,7 +29,7 @@ export const SLUG = 'rekenreks';
 export const conds = { /* this tool's board checks, see below */ };
 export const TASKS = [
   { key: 'show-7-the-5-way',            // stable forever: the task id is '<slug>/<key>' (saved progress, assigned sets)
-    title: 'Show 7 the 5-way',           // kept from the library
+    title: 'Show a number the 5-way',    // the skill, never a number the variation changes (desk cards, the player, lists)
     ccss: 'K.OA.A.3', grade: 'K',        // kept
     prompt: 'Show a number from 6 to 10 ...',   // what the task list shows (a summary of the practice)
     notes: 'Watch for children who ...',        // teacher notes, teachers only
@@ -62,10 +62,18 @@ variation on the page, on the server (which re-checks) and in the tests. `make` 
 - At least 20 genuinely different variations (numbers and contexts) per task; the unit test counts distinct ones in 50
   seeds. A set never repeats one (`setOf` by `sigOf`: the prompt, or `sig`).
 - Numbers right for the task's grade (K: to 10, sometimes 20; grade 1: to 20; grade 2: to 1,000; and so on).
-- Keep the task's title, CCSS code, grade and teaching goal. An open-ended task ("explain to a partner", "record two
+- Keep the task's key, CCSS code, grade and teaching goal. A title names the skill and holds for every variation: no
+  number that changes with the seed ("Build a 4-digit number", not "Build 1,139"); a test checks that any number a
+  title names is in every prompt. An open-ended task ("explain to a partner", "record two
   ways") is reworded into something checkable that keeps its goal: two labeled objects that must show different ways
   (`Way 1`, `Way 2`), a choice question, or a box. Say which ones you reworded in your report.
 - No em dashes; US spelling; kids' words. The `solution.board` must be reachable through the real UI.
+- A count before a noun goes through `manip-task-kit.js` `plural(n, 'bead')`, and the verb matches ("1 bead shows",
+  "3 beads show"); never "1 beads" or "1 zero pairs", and no line that says the same thing twice ("30
+  minutes, which is 30 minutes"). The wording test reads every prompt, hint, explanation, box label, choice and board
+  `say` of 200 seeds of every task and names the task and seed of any slip.
+- A board check reads the arrangement when the task is about one (Pattern Blocks' `ring`: the flower around the
+  hexagon from the blocks' real outlines and turns), so a heap of the right pieces does not pass.
 
 ## The checker API
 

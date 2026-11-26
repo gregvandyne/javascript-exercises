@@ -119,7 +119,7 @@ export const TASKS = [
         solution: { board: solved(setup, [[...of(k, b), ...of(m, s)]]), box: String(ans) },
       };
     }),
-  T('bigger-1-3-or-1-4', 'Bigger: 1/3 or 1/4?', '3.NF.A.3d', '3',
+  T('bigger-1-3-or-1-4', 'Which fraction is bigger?', '3.NF.A.3d', '3',
     'Show two fractions with the same numerator, each in its own circle, like 1/3 and 1/4. Which is bigger?',
     'The classic error is 1/4 is bigger because 4 is bigger. The overlap settles it: more pieces means each piece is smaller.',
     R => {
@@ -160,7 +160,7 @@ export const TASKS = [
         prompt: fwd ? `Open the Rings view. In the ring for 1/${b}, ${fr(a, b)} ends on a line. It is the same line as ?/${D} in the ring for 1/${D}. What is the missing number?`
           : `Open the Rings view. In the ring for 1/${D}, ${fr(k, D)} ends on a line. It is the same line as ?/${b} in the ring for 1/${b}. What is the missing number?`,
         setup, answer: { board: [{ t: 'rings', on: true, say: 'Tap Rings view in the palette.' }], box: { key: String(fwd ? k : a), label: 'the missing number' } },
-        hints: ['Tap Rings view in the palette. Each ring is one piece size.', fwd ? `Count ${a} parts of the 1/${b} ring from the top, going clockwise. Follow that line to the 1/${D} ring.` : `Count ${k} parts of the 1/${D} ring from the top, going clockwise. Follow that line to the 1/${b} ring.`, `${fr(a, b)} = ${fr(k, D)}. The missing number is ${fwd ? k : a}.`],
+        hints: ['Tap Rings view in the palette. Each ring is one piece size.', fwd ? `Count ${plural(a, 'part')} of the 1/${b} ring from the top, going clockwise. Follow that line to the 1/${D} ring.` : `Count ${plural(k, 'part')} of the 1/${D} ring from the top, going clockwise. Follow that line to the 1/${b} ring.`, `${fr(a, b)} = ${fr(k, D)}. The missing number is ${fwd ? k : a}.`],
         explain: `${fr(a, b)} = ${fr(k, D)}: each 1/${b} part is ${D / b} parts of 1/${D}, so they end on the same line.`,
         solution: { board: solved(setup, [[]], { rings: true }), box: String(fwd ? k : a) },
       };
@@ -189,7 +189,7 @@ export const TASKS = [
       const right = `${w} ${fr(r, d)}`, ch = options(R, right, [`${w + 1} ${fr(r, d)}`, d - r !== r ? `${w} ${fr(d - r, d)}` : '', `${w} ${fr(r, n)}`, `${r} ${fr(w, d)}`]);
       return {
         prompt: `Build ${fr(n, d)} with 1/${d} pieces. When a circle is full, the next pieces go into a new circle. Which mixed number is ${fr(n, d)}?`,
-        setup, answer: { board: [{ t: 'total', u: n * U(d), only: [d], say: `Use ${n} pieces of 1/${d} in all, and only 1/${d} pieces.` }], choice: { ...ch, say: 'Count the full circles, then the pieces in the last one.' } },
+        setup, answer: { board: [{ t: 'total', u: n * U(d), only: [d], say: `Use ${pieces(n, d)} in all, and only 1/${d} pieces.` }], choice: { ...ch, say: 'Count the full circles, then the pieces in the last one.' } },
         hints: [`Tap the 1/${d} piece ${n} times.`, `${d} pieces of 1/${d} fill a circle: that is 1 whole.`, `${n} = ${w > 1 ? `${w} × ${d}` : d} + ${r}, so ${fr(n, d)} = ${right}.`],
         explain: `${fr(n, d)} = ${right}: ${w === 1 ? 'one full circle' : `${w} full circles`} and ${fr(r, d)} more.`,
         solution: { board: solved(setup, [...Array.from({ length: w }, () => of(d, d)), of(r, d)]), choice: ch.correct },
@@ -204,7 +204,7 @@ export const TASKS = [
       return {
         prompt: `Show ${fr(n, d)} in a circle. Is ${fr(n, d)} less than, equal to, or more than 1/2 of the circle?`,
         setup, answer: { board: [{ t: 'circle', counts: { [d]: n }, say: `Show ${fr(n, d)} with 1/${d} pieces.` }], choice: { options: opts, correct: c, say: 'Does the covered part reach halfway around the circle?' } },
-        hints: [`Put ${pieces(n, d)} in the circle.`, d % 2 ? `Half the circle would be ${(d - 1) / 2} and a half pieces of 1/${d}.` : `Half the circle is ${d / 2} pieces of 1/${d}.`, `${n} pieces is ${['less than', 'the same as', 'more than'][c]} half of ${d} pieces, so ${fr(n, d)} is ${opts[c].toLowerCase()}.`],
+        hints: [`Put ${pieces(n, d)} in the circle.`, d % 2 ? `Half the circle would be ${(d - 1) / 2} and a half pieces of 1/${d}.` : `Half the circle is ${pieces(d / 2, d)}.`, `${plural(n, 'piece')} is ${['less than', 'the same as', 'more than'][c]} half of ${d} pieces, so ${fr(n, d)} is ${opts[c].toLowerCase()}.`],
         explain: `${fr(n, d)} is ${opts[c].toLowerCase()}: ${c === 1 ? 'it covers exactly half the circle' : `it covers ${c ? 'more' : 'less'} than halfway around the circle`}.`,
         solution: { board: solved(setup, [of(n, d)]), choice: c },
       };
@@ -250,7 +250,7 @@ export const TASKS = [
       const s = a + b + c, r = s - 8, setup = fcBoard();
       return {
         prompt: `Build ${fr(a, 8)}, then add ${fr(b, 8)}, then ${fr(c, 8)} more. You pass one whole. How much more than one whole is it?`,
-        setup, answer: { board: [{ t: 'total', u: s * U(8), only: [8], say: `Add ${a}, then ${b}, then ${c} pieces of 1/8.` }], box: { key: fr(r, 8), label: 'more than one whole' } },
+        setup, answer: { board: [{ t: 'total', u: s * U(8), only: [8], say: `Add ${a}, then ${b}, then ${pieces(c, 8)}.` }], box: { key: fr(r, 8), label: 'more than one whole' } },
         hints: [`Tap the 1/8 piece ${a} times, then ${b} times, then ${c} times.`, `${a} + ${b} + ${c} = ${s} eighths. 8 of them fill the first circle.`, `${fr(s, 8)} = 1 and ${fr(r, 8)}. It is ${fr(r, 8)} more than one whole.`],
         explain: `${fr(a, 8)} + ${fr(b, 8)} + ${fr(c, 8)} = ${fr(s, 8)} = 1 ${fr(r, 8)}: one full circle and ${fr(r, 8)} more.`,
         solution: { board: solved(setup, [of(8, 8), of(r, 8)]), box: fr(r, 8) },
@@ -266,8 +266,8 @@ export const TASKS = [
       return {
         prompt: `Turn ${thing} by 1/${d} pieces. Each 1/${d} piece is 1/${d} of a full turn. How many 1/${d} pieces make ${nm}? Fill that much of a circle to check.`,
         setup, answer: { board: [{ t: 'circle', counts: { [d]: k }, say: `Fill ${nm} of one circle with 1/${d} pieces.` }], box: { key: String(k), label: `1/${d} pieces` } },
-        hints: [`Add 1/${d} pieces one at a time. They go around from the top, clockwise.`, `A full turn is ${d} pieces of 1/${d}.${f ? ` ${nm[0].toUpperCase()}${nm.slice(1)} is ${f} of the ${d} pieces.` : ''}`, `${k} pieces of 1/${d} make ${nm}: ${k} × ${+(360 / d).toFixed(1)}° = ${+(t * 360).toFixed(1)}°.`],
-        explain: `${nm[0].toUpperCase()}${nm.slice(1)} is ${+(t * 360).toFixed(1)}°. Each 1/${d} piece turns ${+(360 / d).toFixed(1)}°, so ${k} pieces make it.`,
+        hints: [`Add 1/${d} pieces one at a time. They go around from the top, clockwise.`, `A full turn is ${d} pieces of 1/${d}.${f ? ` ${nm[0].toUpperCase()}${nm.slice(1)} is ${f} of the ${d} pieces.` : ''}`, `${pieces(k, d)} ${k === 1 ? 'makes' : 'make'} ${nm}: ${k} × ${+(360 / d).toFixed(1)}° = ${+(t * 360).toFixed(1)}°.`],
+        explain: `${nm[0].toUpperCase()}${nm.slice(1)} is ${+(t * 360).toFixed(1)}°. Each 1/${d} piece turns ${+(360 / d).toFixed(1)}°, so ${plural(k, 'piece')} ${k === 1 ? 'makes' : 'make'} it.`,
         solution: { board: solved(setup, [of(k, d)]), box: String(k) },
       };
     }),
@@ -308,8 +308,8 @@ export const TASKS = [
       return {
         prompt: `The circle is a clock face: each 1/12 piece is 5 minutes. ${what} ${m} minutes. Show ${m} minutes with 1/12 pieces. How many pieces did you use?`,
         setup, answer: { board: [{ t: 'circle', counts: { 12: k }, say: `Show ${m} minutes with 1/12 pieces in one circle.` }], box: { key: String(k), label: '1/12 pieces' } },
-        hints: ['Each 1/12 piece is 5 minutes, like the space between two numbers on a clock.', `Count by fives as you add pieces: 5, 10, 15, ... up to ${m}.`, `${m} ÷ 5 = ${k} pieces.`],
-        explain: `${k} pieces of 5 minutes make ${m} minutes: ${fr(k, 12)} of an hour.`,
+        hints: ['Each 1/12 piece is 5 minutes, like the space between two numbers on a clock.', `Count by fives as you add pieces: 5, 10, 15, ... up to ${m}.`, `${m} ÷ 5 = ${plural(k, 'piece')}.`],
+        explain: `${plural(k, 'piece')} of 5 minutes ${k === 1 ? 'makes' : 'make'} ${m} minutes: ${fr(k, 12)} of an hour.`,
         solution: { board: solved(setup, [of(k, 12)]), box: String(k) },
       };
     }, false),
@@ -338,12 +338,12 @@ export const TASKS = [
         prompt: `${who} says: "My amount is ${dec(x)} of a circle${w ? ' (more than one whole)' : ''}." Switch Labels to Decimal and build ${dec(x)}. Which fraction is the same amount?`,
         setup, answer: { board: [{ t: 'total', u: Math.round(x * FC_WHOLE), say: `Build ${dec(x)} in all.` }, { t: 'mode', modes: ['dec'], say: 'Switch Labels under the board to Decimal.' }],
           choice: { ...ch, say: 'Look at the pieces you used: how many, and what size?' } },
-        hints: ['Switch Labels to Decimal. Each piece in the palette now shows its decimal.', `${w ? 'Use the whole piece (1.0) for the 1, then ' : ''}${n} pieces of ${dec(1 / d)} make ${dec(n / d)}.`, `${dec(x)} = ${right}.`],
-        explain: `${dec(x)} = ${right}. ${w ? 'One whole and ' : ''}${n} pieces of 1/${d}, each ${dec(1 / d)}.`,
+        hints: ['Switch Labels to Decimal. Each piece in the palette now shows its decimal.', `${w ? 'Use the whole piece (1.0) for the 1, then ' : ''}${plural(n, `piece of ${dec(1 / d)}`, `pieces of ${dec(1 / d)}`)} ${n === 1 ? 'makes' : 'make'} ${dec(n / d)}.`, `${dec(x)} = ${right}.`],
+        explain: `${dec(x)} = ${right}. ${w ? 'One whole and ' : ''}${pieces(n, d)}, each ${dec(1 / d)}.`,
         solution: { board: solved(setup, [...(w ? [[1]] : []), of(n, d)], { mode: 'dec' }), choice: ch.correct },
       };
     }, false),
-  T('half-and-quarter-mix', 'Half and quarter mix', '4.NF.B.3d', '4',
+  T('half-and-quarter-mix', 'Mix two piece sizes', '4.NF.B.3d', '4',
     'Cover a whole using only halves and quarters (or two other sizes), a different way in each circle. How many different ways are there in all?',
     'Possibilities include 1/2 + 1/4 + 1/4 and four quarters. Systematic searching can be modeled by fixing the number of halves first.',
     R => {

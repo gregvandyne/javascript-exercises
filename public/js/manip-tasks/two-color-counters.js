@@ -85,6 +85,10 @@ const sign = n => (n < 0 ? `−${-n}` : String(n));
 /** An integer answer box: "-3" (or "−3"); a positive one also as "+3". */
 const intBox = (n, label) => ({ key: String(n), ...(n > 0 ? { keys: [String(n), `+${n}`] } : {}), label });
 const has = (pos, neg) => ({ pos, neg });
+/** "3 yellow and 4 red counters"; with a single one, "3 yellow counters and 1 red counter". */
+const yr = (y, r) => (y === 1 || r === 1 ? `${plural(y, 'yellow counter')} and ${plural(r, 'red counter')}` : `${y} yellow and ${r} red counters`);
+/** "1 apple" / "3 apples" for the NOUNS above. */
+const things = (n, noun) => (n === 1 ? `1 ${noun === 'leaves' ? 'leaf' : noun.replace(/s$/, '')}` : `${n} ${noun}`);
 /** The numbers said counting on from a to n ("4, 5, 6" or "4, 5, ... up to 9"). */
 const countOn = (a, n) => (n - a <= 3 ? Array.from({ length: n - a }, (_, i) => a + 1 + i).join(', ') : `${a + 1}, ${a + 2}, ... up to ${n}`);
 export const TASKS = [
@@ -95,9 +99,9 @@ export const TASKS = [
       const n = R.int(1, 9), kind = R.pick(['pos', 'neg']), noun = R.pick(NOUNS);
       const setup = countersBoard([{ k: 'ten-frame' }]), o = setup.objects[0];
       return {
-        prompt: `There are ${n} ${noun}. Show ${n} with ${COLOR[kind]} counters on the ten-frame: fill the top row first, then the bottom row. How many more make 10?`,
-        setup, answer: { board: [{ t: 'frame', has: { [kind]: n }, order: true, say: `Put ${n} ${COLOR[kind]} counters in the frame, starting at the top left.` }], box: { key: String(10 - n), label: 'more to make 10' } },
-        hints: ['Tap a counter in the palette, then drag it into the first cell. The next ones go into the next cells.', n >= 5 ? `The top row holds 5. Put ${n - 5} more on the bottom row.` : `Fill ${n} cells of the top row.`, `${n} cells are full and ${10 - n} are empty. ${n} + ${10 - n} = 10.`],
+        prompt: `There ${n === 1 ? 'is' : 'are'} ${things(n, noun)}. Show ${n} with ${COLOR[kind]} counters on the ten-frame: fill the top row first, then the bottom row. How many more make 10?`,
+        setup, answer: { board: [{ t: 'frame', has: { [kind]: n }, order: true, say: `Put ${plural(n, `${COLOR[kind]} counter`)} in the frame, starting at the top left.` }], box: { key: String(10 - n), label: 'more to make 10' } },
+        hints: ['Tap a counter in the palette, then drag it into the first cell. The next ones go into the next cells.', n >= 5 ? `The top row holds 5. Put ${n - 5} more on the bottom row.` : `Fill ${plural(n, 'cell')} of the top row.`, `${plural(n, 'cell')} ${n === 1 ? 'is' : 'are'} full and ${10 - n} are empty. ${n} + ${10 - n} = 10.`],
         explain: `${n} + ${10 - n} = 10. The empty cells show how many more make 10.`,
         solution: { board: { ...setup, pieces: inFrame(o, Array(n).fill(kind)) }, box: String(10 - n) },
       };
@@ -109,10 +113,10 @@ export const TASKS = [
       let a, b; do { a = R.int(1, 9); b = R.int(1, 9); } while (a === b);
       const setup = countersBoard([{ k: 'mat' }]);
       return {
-        prompt: `Show ${a} + (−${b}): put out ${a} yellow and ${b} red counters. Pair each red with a yellow to make zero pairs. What is ${a} + (−${b})?`,
-        setup, answer: { board: [{ t: 'counts', has: has(a, b), say: `Put out ${a} yellow and ${b} red counters.` }], box: intBox(a - b, 'the sum') },
-        hints: ['A yellow is +1 and a red is −1. One of each makes a zero pair, worth 0.', `Make ${Math.min(a, b)} zero pairs. What is left over?`, `${Math.abs(a - b)} ${a > b ? 'yellow' : 'red'} ${Math.abs(a - b) === 1 ? 'is' : 'are'} left, so ${a} + (−${b}) = ${sign(a - b)}.`],
-        explain: `${a} + (−${b}) = ${sign(a - b)}. The ${Math.min(a, b)} zero pairs are worth 0; the leftover ${a > b ? 'yellow' : 'red'} counters give the answer.`,
+        prompt: `Show ${a} + (−${b}): put out ${yr(a, b)}. Pair each red with a yellow to make zero pairs. What is ${a} + (−${b})?`,
+        setup, answer: { board: [{ t: 'counts', has: has(a, b), say: `Put out ${yr(a, b)}.` }], box: intBox(a - b, 'the sum') },
+        hints: ['A yellow is +1 and a red is −1. One of each makes a zero pair, worth 0.', `Make ${plural(Math.min(a, b), 'zero pair')}. What is left over?`, `${Math.abs(a - b)} ${a > b ? 'yellow' : 'red'} ${Math.abs(a - b) === 1 ? 'is' : 'are'} left, so ${a} + (−${b}) = ${sign(a - b)}.`],
+        explain: `${a} + (−${b}) = ${sign(a - b)}. The ${plural(Math.min(a, b), 'zero pair')} ${Math.min(a, b) === 1 ? 'is' : 'are'} worth 0; the leftover ${a > b ? 'yellow' : 'red'} counters give the answer.`,
         solution: { board: { ...setup, pieces: rowsAt([...Array(a).fill('pos'), ...Array(b).fill('neg')], 1700, 1500, 10) }, box: String(a - b) },
       };
     }),
@@ -139,8 +143,8 @@ export const TASKS = [
       const setup = countersBoard([{ k: 'mat' }]);
       setup.pieces = rowsAt(Array(a).fill('pos'), 1700, 1450, 10);
       return {
-        prompt: `The board shows ${a}. To take away ${b} red counters, first add ${b} zero pairs (a yellow and a red each). Then take away ${b} red. What is ${a} − (−${b})?`,
-        setup, answer: { board: [{ t: 'counts', has: has(a + b, 0), say: `Add ${b} zero pairs, then take away the ${b} red counters.` }], box: intBox(a + b, 'the answer') },
+        prompt: `The board shows ${a}. To take away ${plural(b, 'red counter')}, first add ${plural(b, 'zero pair')} (a yellow and a red each). Then take away ${b} red. What is ${a} − (−${b})?`,
+        setup, answer: { board: [{ t: 'counts', has: has(a + b, 0), say: `Add ${plural(b, 'zero pair')}, then take away the ${plural(b, 'red counter')}.` }], box: intBox(a + b, 'the answer') },
         hints: [`There are no red counters to take away yet. Add ${b} yellow and ${b} red: that adds 0.`, `Now hold each red counter and pick Delete, ${b} times.`, `${a + b} yellow are left: ${a} − (−${b}) = ${a + b}.`],
         explain: `${a} − (−${b}) = ${a} + ${b} = ${a + b}. Taking away a red does the same as adding a yellow.`,
         solution: { board: { ...setup, pieces: rowsAt(Array(a + b).fill('pos'), 1700, 1450, 10) }, box: String(a + b) },
@@ -154,7 +158,7 @@ export const TASKS = [
       const setup = countersBoard([{ k: 'ten-frame' }]), o = setup.objects[0];
       return {
         prompt: `There are 10 ${noun}. Fill the ten-frame with 10 yellow counters. Then flip ${k} of them to red. How many yellow are left?`,
-        setup, answer: { board: [{ t: 'frame', has: has(10 - k, k), say: `Fill all 10 cells, then flip ${k} counters to red.` }], box: { key: String(10 - k), label: 'yellow left' } },
+        setup, answer: { board: [{ t: 'frame', has: has(10 - k, k), say: `Fill all 10 cells, then flip ${plural(k, 'counter')} to red.` }], box: { key: String(10 - k), label: 'yellow left' } },
         hints: ['Drag a yellow counter into the first cell, then tap the yellow counter in the palette until the frame is full.', `Hold a counter and pick Flip to make it red. Do that ${k} times.`, `10 − ${k} = ${10 - k}, and ${10 - k} + ${k} = 10.`],
         explain: `${10 - k} yellow and ${k} red still make 10: ${10 - k} + ${k} = 10 and 10 − ${k} = ${10 - k}.`,
         solution: { board: { ...setup, pieces: inFrame(o, [...Array(10 - k).fill('pos'), ...Array(k).fill('neg')]) }, box: String(10 - k) },
@@ -168,9 +172,9 @@ export const TASKS = [
       const setup = countersBoard([{ k: 'mat' }]);
       setup.pieces = rowsAt(Array(a).fill('neg'), 1700, 1450, 10);
       return {
-        prompt: `The red counters show −${a}. Add ${b} yellow counters. You may take away each zero pair as you make it. What is −${a} + ${b}?`,
-        setup, answer: { board: [{ t: 'value', n: b - a, say: `Add ${b} yellow counters to the −${a}.` }], box: intBox(b - a, 'the sum') },
-        hints: [`Add ${b} yellow counters. Each yellow with a red makes a zero pair.`, `${plural(Math.min(a, b), 'zero pair')} ${Math.min(a, b) === 1 ? 'is' : 'are'} worth 0. What is left over?`, `${Math.abs(b - a)} ${b > a ? 'yellow' : 'red'} left: −${a} + ${b} = ${sign(b - a)}.`],
+        prompt: `The red counters show −${a}. Add ${plural(b, 'yellow counter')}. You may take away each zero pair as you make it. What is −${a} + ${b}?`,
+        setup, answer: { board: [{ t: 'value', n: b - a, say: `Add ${plural(b, 'yellow counter')} to the −${a}.` }], box: intBox(b - a, 'the sum') },
+        hints: [`Add ${plural(b, 'yellow counter')}. Each yellow with a red makes a zero pair.`, `${plural(Math.min(a, b), 'zero pair')} ${Math.min(a, b) === 1 ? 'is' : 'are'} worth 0. What is left over?`, `${Math.abs(b - a)} ${b > a ? 'yellow' : 'red'} left: −${a} + ${b} = ${sign(b - a)}.`],
         explain: `−${a} + ${b} = ${sign(b - a)}. The zero pairs cancel; the leftover ${b > a ? 'yellow' : 'red'} counters give the answer.`,
         solution: { board: { ...setup, pieces: rowsAt([...Array(a).fill('neg'), ...Array(b).fill('pos')], 1700, 1450, 10) }, box: String(b - a) },
       };
@@ -198,10 +202,10 @@ export const TASKS = [
       const setup = countersBoard([{ k: 'mat', label: 'Bag' }]), o = setup.objects[0];
       const options = ['Yellow', 'Red', 'Equally likely'], correct = y > r ? 0 : y < r ? 1 : 2;
       return {
-        prompt: `Put ${y} yellow and ${r} red counters on the Bag mat. You pick one counter without looking. Which color is more likely?`,
-        setup, answer: { board: [{ t: 'counts', has: has(y, r), say: `Put ${y} yellow and ${r} red counters on the mat.` }], choice: { options, correct, say: 'Which color has more counters in the bag?' } },
+        prompt: `Put ${yr(y, r)} on the Bag mat. You pick one counter without looking. Which color is more likely?`,
+        setup, answer: { board: [{ t: 'counts', has: has(y, r), say: `Put ${yr(y, r)} on the mat.` }], choice: { options, correct, say: 'Which color has more counters in the bag?' } },
         hints: ['Each counter has the same chance to be picked.', 'The color with more counters is more likely. The same number: equally likely.', `${y} yellow and ${r} red: ${correct === 2 ? 'the same, so they are equally likely' : `${options[correct].toLowerCase()} is more likely`}.`],
-        explain: `Yellow has ${y} chances out of ${y + r} and red has ${r} out of ${y + r}. ${correct === 2 ? 'They are equally likely.' : `${options[correct]} is more likely.`}`,
+        explain: `Yellow has ${plural(y, 'chance')} out of ${y + r} and red has ${r} out of ${y + r}. ${correct === 2 ? 'They are equally likely.' : `${options[correct]} is more likely.`}`,
         solution: { board: { ...setup, pieces: rowsAt([...Array(y).fill('pos'), ...Array(r).fill('neg')], o.x + 16, o.y + OBJ_HEAD + 16, 7) }, choice: correct },
       };
     }),
@@ -227,8 +231,8 @@ export const TASKS = [
       const setup = countersBoard([{ k: 'mat' }]);
       setup.pieces = rowsAt(Array(a).fill('neg'), 1700, 1450, 10);
       return {
-        prompt: `The red counters show −${a}. To take away ${b} yellow, first add ${b} zero pairs. Then take away ${b} yellow. What is −${a} − ${b}?`,
-        setup, answer: { board: [{ t: 'counts', has: has(0, a + b), say: `Add ${b} zero pairs, then take away the ${b} yellow counters.` }], box: intBox(-(a + b), 'the answer') },
+        prompt: `The red counters show −${a}. To take away ${b} yellow, first add ${plural(b, 'zero pair')}. Then take away ${b} yellow. What is −${a} − ${b}?`,
+        setup, answer: { board: [{ t: 'counts', has: has(0, a + b), say: `Add ${plural(b, 'zero pair')}, then take away the ${plural(b, 'yellow counter')}.` }], box: intBox(-(a + b), 'the answer') },
         hints: [`There are no yellow counters to take away. Add ${b} yellow and ${b} red: that adds 0.`, `Now hold each yellow counter and pick Delete, ${b} times.`, `${a + b} red are left: −${a} − ${b} = −${a + b}.`],
         explain: `−${a} − ${b} = −${a + b}. Taking away ${b} yellow leaves ${b} more red than before.`,
         solution: { board: { ...setup, pieces: rowsAt(Array(a + b).fill('neg'), 1700, 1450, 10) }, box: String(-(a + b)) },
@@ -244,7 +248,7 @@ export const TASKS = [
       return {
         prompt: `Lay out ${n} counters. Make ${k}/${d} of them red and the rest yellow. How many counters are red?`,
         setup, answer: { board: [{ t: 'counts', has: has(n - red, red), say: `Use ${n} counters with ${k}/${d} of them red.` }], box: { key: String(red), label: 'red counters' } },
-        hints: [`Split the ${n} counters into ${d} equal groups. How many are in each group?`, `Each group has ${n / d}. ${k}/${d} means ${k} of those groups.`, `${k} groups of ${n / d} is ${red}: make ${red} red and ${n - red} yellow.`],
+        hints: [`Split the ${n} counters into ${d} equal groups. How many are in each group?`, `Each group has ${n / d}. ${k}/${d} means ${k} of those groups.`, `${plural(k, 'group')} of ${n / d} ${k === 1 ? 'is' : 'makes'} ${red}: make ${red} red and ${n - red} yellow.`],
         explain: `${n} ÷ ${d} = ${n / d} in each group, so ${k}/${d} of ${n} is ${k} × ${n / d} = ${red}.`,
         solution: { board: { ...setup, pieces: rowsAt([...Array(red).fill('neg'), ...Array(n - red).fill('pos')], 1700, 1450, n / d) }, box: String(red) },
       };
@@ -341,9 +345,9 @@ export const TASKS = [
       let a, b; do { a = R.int(1, 12); b = R.int(1, 12); } while (a === b);
       const setup = countersBoard([{ k: 'mat' }]), big = a > b ? 'pos' : 'neg';
       return {
-        prompt: `Show +${a} and −${b}: ${a} yellow and ${b} red counters. Take away the zero pairs until one color is left. What is ${a} + (−${b})?`,
+        prompt: `Show +${a} and −${b}: ${yr(a, b)}. Take away the zero pairs until one color is left. What is ${a} + (−${b})?`,
         setup, answer: { board: [{ t: 'counts', has: a > b ? has(a - b, 0) : has(0, b - a), say: `Show ${a} yellow and ${b} red, then take away every zero pair.` }], box: intBox(a - b, 'the sum') },
-        hints: [`Put out ${a} yellow and ${b} red. Then take away a yellow and a red together, again and again.`, `After ${Math.min(a, b)} zero pairs, only ${COLOR[big]} counters are left.`, `${Math.abs(a - b)} ${COLOR[big]} left: ${a} + (−${b}) = ${sign(a - b)}.`],
+        hints: [`Put out ${a} yellow and ${b} red. Then take away a yellow and a red together, again and again.`, `After ${plural(Math.min(a, b), 'zero pair')}, only ${COLOR[big]} counters are left.`, `${Math.abs(a - b)} ${COLOR[big]} left: ${a} + (−${b}) = ${sign(a - b)}.`],
         explain: `${a} + (−${b}) = ${sign(a - b)}. There are more ${COLOR[big]} counters, so the leftovers are ${COLOR[big]} and the answer is ${a > b ? 'positive' : 'negative'}.`,
         solution: { board: { ...setup, pieces: rowsAt(Array(Math.abs(a - b)).fill(big), 1700, 1450, 10) }, box: String(a - b) },
       };

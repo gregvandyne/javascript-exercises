@@ -5,7 +5,7 @@
 // one unit apart; the circular board has 12 rim pegs and its center (3, 3). A shape is read with its repeated pegs and
 // straight-through pegs taken out, so tapping a peg in the middle of a side changes nothing. Every variation hides the
 // board's totals ("Area about 4.0" would give the answers away).
-import { boardWith, rowPlaces, objSizeOf } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
 
 export const SLUG = 'geoboard';
 const COLORS = { Red: '#E53935', Blue: '#1E88E5', Green: '#43A047', Orange: '#FB8C00', Purple: '#8E24AA' };
@@ -256,8 +256,8 @@ export const TASKS = [
       return {
         prompt: `Make three squares with sides ${s[0]}, ${s[1]} and ${s[2]} units long. Count the unit squares inside: what is the area of the ${which} one?`,
         setup, answer: { board: shapeCheck(s.map(x => ({ square: true, area: x * x })), `Make three closed squares, with sides ${s.join(', ')} units long.`), box: { key: String(a), label: 'square units' } },
-        hints: [`${cornerHint} Pegs next to each other are 1 unit apart.`, `The ${which} square has sides ${s[ask]} long: ${s[ask]} rows of ${s[ask]} unit squares.`, `${s[ask]} × ${s[ask]} = ${a}.`],
-        explain: `A square with sides ${s[ask]} long holds ${s[ask]} rows of ${s[ask]} unit squares: ${a} square units. Doubling the side makes the area 4 times as big.`,
+        hints: [`${cornerHint} Pegs next to each other are 1 unit apart.`, `The ${which} square has sides ${s[ask]} long: ${plural(s[ask], 'row')} of ${plural(s[ask], 'unit square')}.`, `${s[ask]} × ${s[ask]} = ${a}.`],
+        explain: `A square with sides ${s[ask]} long holds ${plural(s[ask], 'row')} of ${plural(s[ask], 'unit square')}: ${plural(a, 'square unit')}. Doubling the side makes the area 4 times as big.`,
         solution: { board: solved(setup, [rectPts(0, 0, s[0], s[0]), rectPts(5 - s[1], 5 - s[1], s[1], s[1]), rectPts(0, 5 - s[2], s[2], s[2])]), box: String(a) },
       };
     }),
@@ -268,10 +268,10 @@ export const TASKS = [
       const a = R.int(1, 5), b = R.int(a, 5), kind = R.pick(['obtuse', 'acute']), setup = geoBoard(ONE), area = (a * b) / 2;
       const other = kind === 'obtuse' ? [[0, 5], [1, 4], [4, 5]] : [[0, 5], [4, 5], [2, 2]];
       return {
-        prompt: `Make a triangle with a right angle whose two sides along the grid are ${a} and ${b} units long. Then make a triangle with no right angle, with one angle ${kind === 'obtuse' ? 'bigger than' : 'and every angle smaller than'} a right angle. What is the area of the right triangle?`,
+        prompt: `Make a triangle with a right angle whose two sides along the grid are ${a === b ? `both ${plural(a, 'unit')}` : `${a} and ${plural(b, 'unit')}`} long. Then make a triangle with no right angle, with one angle ${kind === 'obtuse' ? 'bigger than' : 'and every angle smaller than'} a right angle. What is the area of the right triangle?`,
         setup, answer: { board: shapeCheck([{ sides: 3, right: true, legs: [a, b] }, { sides: 3, right: false, [kind]: true }], `Make a right triangle with sides ${a} and ${b}, and a triangle with no right angle (${kind === 'obtuse' ? 'one wide angle' : 'all angles narrow'}).`), box: { key: fmtA(area), label: 'square units' } },
         hints: ['A right angle is a square corner, like the corner of the board. Go along one grid line, then turn onto the other.', `The right triangle is half of a ${a} by ${b} rectangle.`, `${a} × ${b} = ${a * b}, and half of that is ${fmtA(area)}.`],
-        explain: `The right triangle is half of a ${a} by ${b} rectangle: ${a * b} ÷ 2 = ${fmtA(area)} square units. The grid lines meet at right angles, so a corner along them is always a right angle.`,
+        explain: `The right triangle is half of a ${a} by ${b} rectangle: ${a * b} ÷ 2 = ${fmtA(area)} square ${area === 1 ? 'unit' : 'units'}. The grid lines meet at right angles, so a corner along them is always a right angle.`,
         solution: { board: solved(setup, [[[0, 0], [a, 0], [0, b]], other]), box: fmtA(area) },
       };
     }),
@@ -322,7 +322,7 @@ export const TASKS = [
         solution: { board: solved(setup, [sh.pts]), box: String(sh.perim) },
       };
     }),
-  T('triangles-of-area-1', 'Triangles of area 1', '3.MD.C.6', '3',
+  T('triangles-of-area-1', 'Triangles of a given area', '3.MD.C.6', '3',
     'Make two different triangles with the area given (or one with a right angle and one without). Count whole and half squares to check.',
     'Right triangles covering half of a 2 by 1 rectangle work. Half-unit counting must be explicit.',
     R => {
@@ -356,7 +356,7 @@ export const TASKS = [
       for (let a = 1; a <= 5; a++) for (const q of ['equi', 'which']) items.push({ a, q });
       const it = R.pick(items), setup = geoBoard(ONE);
       const spec = it.a ? { sides: 3, iso: true, right: true, legs: [it.a, it.a] } : { sides: 3, base: it.b, area: (it.b * it.h) / 2 };
-      const make = it.a ? `an isosceles triangle with a right angle and two sides ${it.a} units long` : `an isosceles triangle with a base ${it.b} units long and a height of ${it.h}`;
+      const make = it.a ? `an isosceles triangle with a right angle and two sides ${plural(it.a, 'unit')} long` : `an isosceles triangle with a base ${it.b} units long and a height of ${it.h}`;
       const sol = it.a ? [[0, 5], [it.a, 5], [0, 5 - it.a]] : [[0, 5], [it.b, 5], [it.b / 2, 5 - it.h]];
       const choice = it.q === 'equi' ? { options: ['Yes', 'No'], correct: 1, say: 'Try to make all three sides the same length. Do the pegs ever line up?' }
         : { ...shuffled(R, [it.a ? 'The two sides at the right angle' : 'The two slanted sides', it.a ? 'The longest side and one short side' : 'The base and one slanted side', 'All three sides'], it.a ? 'The two sides at the right angle' : 'The two slanted sides'), say: 'Compare how far each side goes across and up.' };
@@ -379,7 +379,7 @@ export const TASKS = [
         return {
           prompt: `Make a parallelogram: a top and bottom side ${w} unit${w > 1 ? 's' : ''} long, and slanted sides that each step ${a} across for every ${b} up. How do the pegs show that two sides are parallel?`,
           setup, answer: { board: shapeCheck([{ sides: 4, pairs: 2, step: [a, b], lens: [w, w] }], `Make a parallelogram with sides ${w} long and slanted sides stepping ${a} across and ${b} up.`), choice },
-          hints: [`Start with the bottom side: ${w} pegs along a row.`, `From each end, go ${a} across and ${b} up the same way. Join the tops.`, 'Both slanted sides step the same way, so they never meet: they are parallel.'],
+          hints: [`Start with the bottom side: ${plural(w, 'peg')} along a row.`, `From each end, go ${a} across and ${b} up the same way. Join the tops.`, 'Both slanted sides step the same way, so they never meet: they are parallel.'],
           explain: `Sides that step the same amount across and up (${a} across, ${b} up) point the same way, so they never meet. A parallelogram has two pairs of them.`,
           solution: { board: solved(setup, [[[0, 5], [w, 5], [w + a, 5 - b], [a, 5 - b]]]), choice: choice.correct },
         };
@@ -499,7 +499,7 @@ export const TASKS = [
       const box = { deg: { key: String(d), label: 'degrees' }, frac: { key: f, label: 'fraction of a turn' }, pegs: { key: String(k), label: 'spaces between pegs' } }[q];
       return {
         prompt: `${base}`, setup, answer: { board, box },
-        hints: ['The 12 rim pegs split a full turn into 12 equal parts, each 30 degrees.', q === 'frac' ? `${d} ÷ 30 = ${k} parts out of 12.` : `${f} of 12 parts is ${k} part${k > 1 ? 's' : ''}.`, { deg: `${k} × 30 = ${d}.`, frac: `${k}/12 = ${f}.`, pegs: `It goes around ${k} space${k > 1 ? 's' : ''}.` }[q] + (k > 6 ? ' Go around through each rim peg, then back to the center.' : '')],
+        hints: ['The 12 rim pegs split a full turn into 12 equal parts, each 30 degrees.', q === 'frac' ? `${d} ÷ 30 = ${plural(k, 'part')} out of 12.` : `${f} of 12 parts is ${k} part${k > 1 ? 's' : ''}.`, { deg: `${k} × 30 = ${d}.`, frac: `${k}/12 = ${f}.`, pegs: `It goes around ${k} space${k > 1 ? 's' : ''}.` }[q] + (k > 6 ? ' Go around through each rim peg, then back to the center.' : '')],
         explain: `${k} of the 12 equal parts of the turn: ${k}/12 = ${f} of a turn, and ${k} × 30 = ${d} degrees.`,
         solution: { board: solved(setup, [fan]), box: box.key },
       };
@@ -582,7 +582,7 @@ export const TASKS = [
         prompt: `The bottom-left peg is (0, 0). What are the coordinates of the ${pick.w} corner of the shape?`, sig: `${JSON.stringify(P)} ${pick.w}`,
         setup, answer: { box: { key, kind: 'point', label: 'coordinates, like (2, 3)', say: 'Count across from (0, 0) first, then up.' } },
         hints: [`Find the ${pick.w} corner.`, 'Count the pegs across from the left edge, then the pegs up from the bottom row.', `It is ${pick.p[0]} across and ${5 - pick.p[1]} up: ${xy(pick.p)}.`],
-        explain: `The corner is ${pick.p[0]} pegs across and ${5 - pick.p[1]} pegs up from (0, 0), so it is ${xy(pick.p)}.`,
+        explain: `The corner is ${plural(pick.p[0], 'peg')} across and ${plural(5 - pick.p[1], 'peg')} up from (0, 0), so it is ${xy(pick.p)}.`,
         solution: { box: key },
       };
     }),
