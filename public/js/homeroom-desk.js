@@ -163,6 +163,19 @@ function renderCards() {
   el.className = cards.length ? 'hd-cardsbox' : '';
   el.innerHTML = cards.length ? `${missedHtml}${rest.length ? `<div class="hd-cards">${rest.map(cardHtml).join('')}</div>` : ''}`
     : `<div class="hd-emptydesk">${iconHtml('🎒', { size: 28 })}<p><b>${esc(td('empty'))}</b><span>${esc(td('emptyText'))}</span></p></div>`;
+  showNext(el);
+}
+/** Each row of cards scrolled so Next up (else the first card not done) is in view, when the desk opens or its cards
+ *  change: never a row of Done cards with the work off to the side (F1). Only the row scrolls, never the page. */
+function showNext(el) {
+  for (const row of el.querySelectorAll('.hd-cards')) {
+    const card = row.querySelector('.hd-card.next') || row.querySelector('.hd-card:not(.done)');
+    if (!card) continue;
+    const r = row.getBoundingClientRect(), c = card.getBoundingClientRect(), pad = parseFloat(getComputedStyle(row).paddingInlineStart) || 0;
+    // in view already (its start shows, and its end too unless it is wider than the row): left as it is
+    if (c.left >= r.left - 1 && c.right <= r.right + 1) continue;
+    row.scrollBy({ left: c.left - r.left - pad, behavior: 'instant' });
+  }
 }
 
 // ---------------------------------------------------------------- K-2 mode (step 4c)

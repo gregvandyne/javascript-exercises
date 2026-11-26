@@ -8,7 +8,9 @@
 //   - M3: a set assigned from the Manipulatives page is on the student's desk and the teacher's board, and opens in the
 //     desk's player;
 //   - M4: look shows the set's board with its own question while it is open, and nothing once the player closes;
-//   - dark mode: desks and their edges stand out from the board, My desk is not cream, the header's globe shows.
+//   - dark mode: desks and their edges stand out from the board, My desk is not cream, the header's globe shows;
+//   - F1: on a phone, a busy desk (18 sets done, a Classroom lesson) shows Next up and a tool just handed out first,
+//     in view without scrolling, the Done cards after them.
 // Screenshots with HR_SHOTS=<dir>. Skipped with no Chromium.
 import './_setup.js';
 import test from 'node:test';
@@ -29,6 +31,7 @@ const H = await import('../../server/services/homeroom.js');
 const HO = await import('../../server/services/homeroom-handouts.js');
 const HT = await import('../../server/services/homeroom-tools.js');
 const M = await import('../../server/services/manipulatives.js');
+const L = await import('../../server/services/lessons.js');
 const MT = await import('../../server/services/manip-tasks.js');
 const TOOLS = await import('./_tools-plan.js');
 TOOLS.plansOn();
@@ -239,4 +242,47 @@ test('dark mode: desks stand out from the board, My desk is dark, the globe show
   await A.page.waitForSelector('.hd-desk');
   await shot(A.page, 'dark-desk');
   await T.ctx.close(); await A.ctx.close();
+});
+
+test('F1: on a phone a busy desk shows Next up and the new tool first, in view, the Done cards after', { timeout: 280000 }, async t => {
+  if (skip) return t.skip(skip);
+  const room = S.createClass(boss, oak.id, { name: 'Room 22', teacherId: teacher.id }).class;
+  const leo = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Leo' }).user.id); S.addToClass(boss, room.id, leo.id);
+  for (let k = 0; k < 18; k++) {
+    const r = HO.handOutTask(teacher, room, { tasks: ['clock/elapsed-time'], count: 1, to: { kind: 'all' } }); assert.ok(r.ok, r.code);
+    const step = q.get('SELECT * FROM lesson_steps WHERE lesson_id=?', r.classLesson.lesson_id);
+    q.run("INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, started_at, updated_at) VALUES (?,?,?, 'done', ?, ?) ON CONFLICT DO UPDATE SET status='done'", r.classLesson.id, step.id, leo.id, Date.now(), Date.now());
+  }
+  const l = L.createLesson(teacher, oak.id, { title: 'Place value week' }).lesson;
+  L.addStep(teacher, l.id, { kind: 'text', title: 'Read this', body: 'Tens and ones.' });
+  L.addStep(teacher, l.id, { kind: 'text', title: 'Then this', body: 'Hundreds.' });
+  const lesson = L.assign(teacher, room.id, l.id, {}); assert.ok(lesson.ok, lesson.code);
+  const tool = HT.handOutTool(teacher, room, { tool: 'rekenreks', to: { kind: 'all' } }); assert.ok(tool.ok, tool.code);
+  const A = await open(leo, `/class/${room.id}/desk`, PHONE, { touch: true });
+  await A.page.waitForSelector('.hd-cards .hd-card');
+  const seen = await A.page.evaluate(() => {
+    const row = document.querySelector('.hd-cards'), r = row.getBoundingClientRect(), vw = document.documentElement.clientWidth;
+    const box = el => { const c = el.getBoundingClientRect(); return { left: c.left, right: c.right, shown: Math.min(c.right, r.right, vw) - Math.max(c.left, r.left, 0) }; };
+    const cards = [...row.querySelectorAll('.hd-card')];
+    return { n: cards.length, scroll: row.scrollLeft, first: cards[0].dataset.hdcard, next: box(row.querySelector('.hd-card.next')), nextIdx: cards.indexOf(row.querySelector('.hd-card.next')),
+      tool: box(cards.find(c => /Rekenreks/.test(c.textContent))), toolIdx: cards.findIndex(c => /Rekenreks/.test(c.textContent)),
+      doneFrom: cards.findIndex(c => c.classList.contains('done')), allDoneAfter: cards.slice(2).every(c => c.classList.contains('done')), pageW: document.documentElement.scrollWidth, vw };
+  });
+  assert.equal(seen.n, 20);
+  assert.equal(seen.first, lesson.classLesson.id, 'Next up is the first card');
+  assert.equal(seen.nextIdx, 0); assert.equal(seen.toolIdx, 1); assert.equal(seen.doneFrom, 2); assert.ok(seen.allDoneAfter);
+  assert.ok(seen.scroll <= 4, `the row at its start (the cards' snap only): ${seen.scroll}`);
+  assert.ok(seen.next.left >= 0 && seen.next.right <= seen.vw, `Next up in view: ${JSON.stringify(seen.next)}`);
+  assert.ok(seen.tool.shown >= 60, `the new tool shows without scrolling: ${JSON.stringify(seen.tool)}`);
+  assert.ok(seen.pageW <= seen.vw, 'no page scroll');
+  await shot(A.page, 'f1-busy-desk-phone');
+  // the desk's poll brings a new set while the row was scrolled to the Done cards: the row shows Next up again
+  await A.page.evaluate(() => { document.querySelector('.hd-cards').scrollLeft = 4000; });
+  const r2 = HO.handOutTask(teacher, room, { tasks: ['money/make-67-cents'], count: 1, to: { kind: 'all' } }); assert.ok(r2.ok, r2.code);
+  await A.page.waitForSelector(`.hd-cards .hd-card.next[data-hdcard="${r2.classLesson.id}"]`, { timeout: 15000 });
+  const after = await A.page.evaluate(() => { const row = document.querySelector('.hd-cards'), r = row.getBoundingClientRect(), c = row.querySelector('.hd-card.next').getBoundingClientRect(); return { inView: c.left >= r.left - 1 && c.right <= r.right + 1, n: row.querySelectorAll('.hd-card').length }; });
+  assert.ok(after.inView, 'Next up in view after a refresh'); assert.equal(after.n, 21);
+  assert.ok(M.end(teacher, tool.session.id).ok);
+  assert.deepEqual(A.errors, []);
+  await A.ctx.close();
 });

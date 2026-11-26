@@ -167,7 +167,8 @@ test('the desk: in order, Next up, In order waits for the ones before, Any order
   d = deskOf(kids[3]); assert.ok(d[0].pct > 0 && d[0].pct < 100); assert.equal(d[1].locked, true);
   assert.ok(P.gameScore(kids[3], d[0].id, step.id, 12).ok);
   d = deskOf(kids[3]);
-  assert.deepEqual(d.map(x => [!!x.next, !!x.locked, x.done, x.pct]), [[false, false, true, 100], [true, false, false, 0]]);
+  // (a done card moves after what is not done yet: Word Ladder, Next up now, comes first)
+  assert.deepEqual(d.map(x => [x.title, !!x.next, !!x.locked, x.done, x.pct]), [['Word Ladder', true, false, false, 0], ['Sudoku Garden', false, false, true, 100]]);
   // Ava: Fraction Pizza (any order) then Word Ladder (in order): Word Ladder waits while Fraction Pizza is open.
   d = deskOf(kids[0]);
   assert.deepEqual(d.map(x => [x.title, !!x.next, !!x.locked]), [['Fraction Pizza', true, false], ['Word Ladder', false, true]]);
@@ -184,7 +185,7 @@ test('an Any order card after an unfinished one stays open', async () => {
 });
 
 test('the play page: the instructions on top and Back to my desk, for the student only', async () => {
-  const d = deskOf(kids[3])[0];
+  const d = deskOf(kids[3]).find(x => x.title === 'Sudoku Garden');
   const r = await as(kids[3])(d.href);
   assert.equal(r.status, 200, r.text.slice(0, 300));
   assert.match(r.text, /class="playnote"/); assert.match(r.text, /Try a Medium puzzle\./); assert.match(r.text, /has-playnote/);

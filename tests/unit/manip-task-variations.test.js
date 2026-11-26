@@ -147,6 +147,27 @@ test('wording lint catches the slips it is for', () => {
   assert.doesNotMatch('1 hour 30 minutes, which is 90 minutes', TAUTOLOGY);
 });
 
+// Two rods of one color named together: "orange and another orange rod", never "orange and the orange rod" or "a red rod
+// and a red rod" (number rods' tasks name the second rod with "another").
+const SAME_ROD = /\b((?:light |dark )?[a-z]+)(?: rod)? and (?:the|an?) \1 rod\b/;
+test('wording: two rods of one color are "X and another X rod" (number rods, 200 seeds each)', () => {
+  assert.match('5 × 4 = 20: orange and the orange rod.', SAME_ROD);
+  assert.match('Put out the red rod and the red rod.', SAME_ROD);
+  assert.doesNotMatch('5 × 4 = 20: orange and another orange rod.', SAME_ROD);
+  assert.doesNotMatch('orange and the yellow rod', SAME_ROD);
+  const bad = new Map();
+  for (const { id } of practiceTasks().filter(x => x.id.startsWith('number-rods/'))) for (let s = 1; s <= LINT_SEEDS; s++) {
+    for (const [where, t] of textsOf(variation(id, s))) {
+      const m = t.match(SAME_ROD);
+      if (m && !bad.has(`${id} ${where}`)) bad.set(`${id} ${where}`, `${id} seed ${s} ${where}: "${m[0]}" in "${t}"`);
+    }
+  }
+  assert.deepEqual([...bad.values()], []);
+  // the task QA found it in: 5 × 4 = 20 says "orange and another orange rod"
+  const v = Array.from({ length: LINT_SEEDS }, (_, i) => variation('number-rods/rod-algebra-r-w', i + 1)).find(x => x.answer.box.key === '20');
+  if (v) assert.match(v.hints[2], /: orange and another orange rod\.$/);
+});
+
 // Counting hints never list a number past the one they count to ("5, 10, 15, ... until you say 5"), and never trail
 // "..." after reaching it ("25, 50, 75, ... until you reach 75"): kit countTo lists up to 4 numbers in full. The target
 // is the one the line names after the dots ("until you reach 75", "up to 40", "How far to 100?"), else the variation's

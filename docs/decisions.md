@@ -15781,6 +15781,16 @@ push-board dead end, End session's confirmation and the answer box's place, were
 - **Asked of the Manipulatives side**: inside Homeroom (`mp-inhr`), drop the room's own Live bar and Raise hand and the
   second "My square" (Homeroom's player bar has them), and on a phone put a practice set's card below the board or make
   it collapsible, so more of the board shows above the fold.
+- **QA round 3**: F1, a busy desk put new work last (18 sets done, a Classroom lesson, then Rekenreks: on a phone Next
+  up was card 19 and the tool card 20, every card in view "Done"). A student's desk now shows what is not done yet first
+  (the teacher's order and due dates, In order and Later as before), then the tools handed out (open practice, never Next
+  up), then the Done cards (`homeroom-handouts.js` `doneLast`, after `deskOrder`, so moving a done card never changes
+  Next up or Later). When the desk opens or its cards change, each row scrolls so Next up (else the first card not done)
+  is in view (`homeroom-desk.js` `showNext`, the row only). The teacher's board keeps its own order: the tiles show a tool
+  first (N2), the desk's sheet lists every handout as handed out. O2: number rods name a second rod of the same color as
+  "another" ("orange and another orange rod"), in every task that names two rods (`manip-tasks/number-rods.js` `second`).
+  Tests: `homeroom-qa.test.js` and `homeroom-qa-browser.test.js` (F1 at 390x844), `manip-task-variations.test.js` (a
+  same-color lint over 200 seeds).
 
 ## Figures: a friendlier number line (26 Nov 2026)
 

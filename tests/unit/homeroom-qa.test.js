@@ -179,3 +179,38 @@ test('M4: a set\'s board comes with its own problem, only while that set is open
   H.setLive(lane, cls, 'end');
   assert.equal(MT.liveOf(cls.id, [ada.id]).size, 0, 'End class forgets the boards');
 });
+
+test('F1: a busy desk puts what is not done first, a new tool next, and the Done cards last', async () => {
+  // the order itself: Next up and Later are worked out on the teacher's order, then the done cards move back
+  const ord = HO.doneLast([{ id: 'a', done: true }, { id: 'b', next: true }, { id: 'c', locked: true }, { id: 'd', done: true }, { id: 'e' }], [{ id: 't', practice: true }]);
+  assert.deepEqual(ord.map(x => x.id), ['b', 'c', 'e', 't', 'a', 'd']);
+  assert.deepEqual(HO.doneLast([], [{ id: 't' }]).map(x => x.id), ['t']);
+  // Leo's desk: 18 finished sets, a Classroom lesson, then Rekenreks handed to the class
+  const room = S.createClass(boss, oak.id, { name: 'Room 4', teacherId: lane.id }).class;
+  const leo = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Leo' }).user.id); S.addToClass(boss, room.id, leo.id);
+  const sets = [];
+  for (let k = 0; k < 18; k++) {
+    const r = HO.handOutTask(lane, room, { tasks: ['clock/elapsed-time'], count: 1, to: { kind: 'all' } }); assert.ok(r.ok, r.code);
+    const step = q.get('SELECT * FROM lesson_steps WHERE lesson_id=?', r.classLesson.lesson_id);
+    q.run("INSERT INTO step_progress(class_lesson_id, step_id, user_id, status, started_at, updated_at) VALUES (?,?,?, 'done', ?, ?) ON CONFLICT DO UPDATE SET status='done'", r.classLesson.id, step.id, leo.id, Date.now(), Date.now());
+    sets.push(r.classLesson.id);
+  }
+  const l = L.createLesson(lane, oak.id, { title: 'Place value week' }).lesson;
+  L.addStep(lane, l.id, { kind: 'text', title: 'Read this', body: 'Tens and ones.' });
+  L.addStep(lane, l.id, { kind: 'text', title: 'Then this', body: 'Hundreds.' });
+  const lesson = L.assign(lane, room.id, l.id, {}); assert.ok(lesson.ok, lesson.code);
+  const tool = HT.handOutTool(lane, room, { tool: 'rekenreks', to: { kind: 'all' } }); assert.ok(tool.ok, tool.code);
+  const cards = (await as(leo)(`/api/desk/${room.id}/state`)).json.cards;
+  assert.equal(cards.length, 20);
+  assert.deepEqual(cards.slice(0, 2).map(x => x.id), [lesson.classLesson.id, tool.item.id], 'Next up, then the new tool');
+  assert.ok(cards[0].next && !cards[0].done);
+  assert.ok(cards[1].tool === 'rekenreks' && !cards[1].next);
+  assert.deepEqual(cards.slice(2).map(x => x.id).sort(), [...sets].sort(), 'the Done cards last');
+  assert.ok(cards.slice(2).every(x => x.done));
+  // the teacher's board keeps its own order (the tile puts the tool first: homeroom.js deskFirst), every card there
+  const bv = HO.boardView(room);
+  assert.equal(bv.desks[leo.id].length, 19);
+  assert.ok(bv.desks[leo.id].find(x => x.id === lesson.classLesson.id).next);
+  assert.equal(bv.tools.length, 1);
+  assert.ok(M.end(lane, tool.session.id).ok);
+});
