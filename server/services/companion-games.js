@@ -33,6 +33,7 @@ export const GAMES_META = Object.freeze([
   { slug: 'word-hunt', subject: 'ela', grades: [1, 8], topics: ['word search', 'spelling', 'vocabulary', 'themes', 'your own word list'], standards: ['L.2.2', 'L.3.2'], minutes: 10 },
   { slug: 'word-peek', subject: 'ela', grades: [3, 8], topics: ['vocabulary', 'spelling', 'guess the word'], standards: ['L.3.2', 'L.4.2'], minutes: 5 },
   { slug: 'crossword', subject: 'ela', grades: [2, 8], topics: ['vocabulary', 'definitions', 'spelling', 'your own word list'], standards: ['L.3.4', 'L.4.4', 'L.5.4'], minutes: 15 },
+  { slug: 'flashcards', subject: 'ela', grades: [0, 8], topics: ['flashcards', 'vocabulary', 'sight words', 'math facts', 'study', 'review', 'any subject', 'your own word list', 'states and capitals'], standards: ['L.3.4', 'L.4.6', 'RF.K.3'], minutes: 10 },
   { slug: 'doodle-hoot', subject: 'ela', grades: [0, 5], topics: ['vocabulary', 'drawing', 'spelling', 'draw and guess'], standards: ['L.1.5', 'L.2.5'], minutes: 10, live: true },
   { slug: 'atlas-quest', subject: 'social studies', grades: [3, 8], topics: ['geography', 'countries', 'flags', 'capitals', 'world map', 'your own geography quiz', 'blank maps', 'printable worksheet'], standards: ['geography'], minutes: 10 },
   { slug: 'atlas-quest-live', subject: 'social studies', grades: [3, 8], topics: ['geography', 'countries', 'flags', 'capitals', 'map'], standards: ['geography'], minutes: 10, live: true },

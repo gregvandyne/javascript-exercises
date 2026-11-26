@@ -30,7 +30,7 @@ import * as match from '../services/match.js';
 import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
-import { draftClues, DOC_FOCUS_MAX } from '../services/set-ai.js';
+import { draftClues, draftCards, CARDS, DOC_FOCUS_MAX } from '../services/set-ai.js';
 import * as VC from '../services/verify-change.js';
 import { wordsFromFile, textFromFile, LIMITS as CW_DOC } from '../services/crossword-doc.js';
 import { quizFromFile } from '../services/atlas-doc.js';
@@ -483,6 +483,9 @@ router.get('/frame/:token', (req, res) => {
     // Word Hunt's "Upload a word list (PDF or Word)" (BRB.canWriteClues / BRB.wordsFromDoc; no AI clues there): the same
     // grown-ups and the same path as Crossword's, words only.
     ...(!preview && huntGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
+    // Flashcards' "Draft cards with AI" (BRB.canWriteClues / BRB.draftCards) and its document upload (BRB.wordsFromDoc,
+    // Crossword's path: a word list and its definitions): the same grown-ups, where the fence lets both calls through.
+    ...(!preview && cardsGame(g) && liveCanHost(u) && hasModel() && fenceLets(u, 'POST', `/api/games/${g.id}/cards-ai`) && fenceLets(u, 'POST', `/api/games/${g.id}/words-from-doc`) ? { clues: true } : {}),
     // Mistake Hunt's "Upload a passage" (BRB.canReadDocs / BRB.textFromDoc): the text of a PDF or Word file, no AI, for the
     // same grown-ups as Crossword's word lists (who may host), where the fence lets the call through.
     ...(!preview && docTextGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/text-from-doc`) ? { docText: true } : {}),
@@ -639,7 +642,9 @@ const cluesGame = g => setGame(g) && g.slug === 'crossword';
 /** Word Hunt: a teacher's word list from a document (the words only), through Crossword's path. */
 const huntGame = g => setGame(g) && g.slug === 'word-hunt';
 /** The games with a "Make your own" builder (INIT.make / BRB.canMake): their sets are made by grown-ups who may host. */
-const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-zoo']);
+const MAKE_GAMES = new Set(['crossword', 'word-hunt', 'atlas-quest', 'typing-zoo', 'flashcards']);
+/** Flashcards: a teacher's term and definition cards (docs/decisions.md "Flashcards"). */
+const cardsGame = g => setGame(g) && g.slug === 'flashcards';
 const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
@@ -686,6 +691,27 @@ router.post('/api/games/:id/clues', requireUser, rateLimit('game-clues', 30, 360
   const got = r.clues.filter(Boolean).length;
   res.json({ clues: r.clues, report: VC.kept({ asked: r.asked || b.words.length, kept: got, removed: { 'left blank by the checks': (r.asked || b.words.length) - got }, noun: 'clues' }) });
 });
+// Flashcards from a topic (services/set-ai.js draftCards): Claude drafts term and definition cards for the builder's list
+// only (nothing is saved here). Body { topic (the teacher's own line, at most 200 characters, through the site's text
+// filter: 400 'topicBad' before any AI), level, count (5, 10, 15, 20 or 30) }. -> { title, cards: [[term, def, emoji]] } |
+// { code }. Grown-ups who may host only; 30 an hour each, as clues. The topic is never stored or logged.
+router.post('/api/games/:id/cards-ai', requireUser, rateLimit('game-clues', 30, 3600e3), async (req, res) => {
+  const g = apiGame(req, res); if (!g) return;
+  if (!cardsGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
+  const b = req.body || {};
+  if (typeof b.topic !== 'string' || b.topic.length > 400) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'topic' });
+  const topic = b.topic.replace(/\s+/g, ' ').trim().slice(0, CARDS.topic).trim();
+  if (topic.length < 2) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'topic' });
+  const ct = cleanText(topic, CARDS.topic);
+  if (!ct.ok) return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'topicBad' });
+  let r;
+  try { r = await draftCards({ topic: ct.value, level: typeof b.level === 'string' ? b.level : '', count: +b.count, locale: req.locale }); }
+  catch { r = { ok: false, code: 'aiFailed' }; }
+  if (!r.ok) return res.status(r.code === 'topic' ? 400 : 503).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  audit(req.user.id, 'game.cards_ai', g.id, { count: r.cards.length });
+  res.json({ title: r.title, cards: r.cards, report: VC.kept({ asked: r.asked, kept: r.cards.length, removed: { 'left out by the checks': r.asked - r.cards.length }, noun: 'cards' }) });
+});
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,
 // else one small AI call. Grown-ups who may host only (staff, a signed-in grown-up), never a kid or a guest; 10 a day
@@ -704,7 +730,7 @@ function docFocus(v) {
 router.post('/api/games/:id/words-from-doc', requireUser, rateLimit('game-doc', 20, 60e3), async (req, res) => {
   const g = apiGame(req, res); if (!g) return;
   const atlas = atlasDocGame(g);
-  if (!cluesGame(g) && !huntGame(g) && !atlas) return res.status(404).json({ error: req.t('game.api.notFound') });
+  if (!cluesGame(g) && !huntGame(g) && !atlas && !cardsGame(g)) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (!liveCanHost(req.user)) return res.status(403).json({ error: req.t('errors.api.badRequest'), code: 'notAllowed' });
   const b = req.body || {}, max = CW_DOC.bytes;   // 2 MB either way (base64 inside the site's 3 MB JSON limit)
   // Atlas Quest also takes a plain text lesson (.txt).

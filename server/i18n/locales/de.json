@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Weltkarte",
         "car": "Karte der Karibik",
-        "me": "Karte des Nahen Ostens"
+        "me": "Karte des Nahen Ostens",
+        "us": "Karte der USA",
+        "ca": "Karte von Kanada"
       },
       "untitled": "Erdkunde-Quiz",
       "mapTitle": "Karte: {region}",
@@ -1315,8 +1317,25 @@
       "fam": "Welches Land ist berühmt für {thing}?",
       "region": {
         "car": "Karibik",
-        "me": "Naher Osten"
-      }
+        "me": "Naher Osten",
+        "us": "USA",
+        "ca": "Kanada"
+      },
+      "mapHow_us": "Schreib den Namen jedes nummerierten Bundesstaats auf.",
+      "mapHow_ca": "Schreib den Namen jeder nummerierten Provinz und jedes nummerierten Territoriums auf.",
+      "mapHowCoSub": "Kleine haben einen Pfeil zu ihrer eigenen Linie.",
+      "capSub": "Was ist die Hauptstadt von {name}?",
+      "capc_us": "{city} ist die Hauptstadt welches Bundesstaats?",
+      "capc_ca": "{city} ist die Hauptstadt welcher Provinz oder welches Territoriums?",
+      "abbr": "Wie lautet die Postabkürzung von {name}?"
+    },
+    "printFlash": {
+      "untitled": "Karteikarten",
+      "term": "Begriff",
+      "def": "Erklärung",
+      "fronts": "{title}: Vorderseiten",
+      "backs": "{title}: Rückseiten",
+      "how": "Beidseitig drucken (an der langen Kante wenden), dann an den gestrichelten Linien ausschneiden. Jede Rückseite liegt hinter ihrer Vorderseite."
     }
   },
   "friends": {
@@ -7817,7 +7836,8 @@
       "wordTrail": "Die häufigsten englischen Wörter (Sichtwörter) von der Vorschule bis Klasse 3 auf einem Märchenpfad mit Bramble, dem Igel: Wort hören und antippen, Satz ergänzen, mit Buchstaben legen, in kurzen Lektionen mit Tagesserie.",
       "crossword": "Mach aus jeder Vokabelliste ein Kreuzworträtsel: Wörter eintippen oder hochladen, Hinweise ergänzen oder von der KI schreiben lassen und mit der Klasse teilen.",
       "mistakeHunt": "Finde und verbessere die Fehler in einem kurzen Text: Lehrkräfte fügen ihren eigenen Text ein, bauen Rechtschreib-, Grammatik- und Zeichensetzungsfehler ein und teilen, verteilen oder drucken ihn.",
-      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier."
+      "typingZoo": "Lerne Tippen, eine Taste nach der anderen, mit einer Farbe für jeden Finger: 40 kurze Lektionen von der Grundreihe bis zu Sätzen und nach jeder Lektion ein Ei mit einem neuen Tier.",
+      "flashcards": "Karteikarten mit Begriff und Erklärung für jedes Fach: selbst erstellen, eine Liste einfügen oder von der KI entwerfen lassen oder aus der fertigen Sammlung wählen, dann mit Umdrehen, Lernen, Paare und Test üben."
     },
     "hubs": {
       "math": {
@@ -9800,7 +9820,9 @@
         "eu": "Europa",
         "na": "Nordamerika",
         "sa": "Südamerika",
-        "oc": "Ozeanien"
+        "oc": "Ozeanien",
+        "us": "USA (Bundesstaaten)",
+        "ca": "Kanada (Provinzen und Territorien)"
       },
       "level": {
         "easy": "Leicht: bekannte Länder",
@@ -9817,7 +9839,10 @@
         "find": "Finde {name}",
         "capital": "Finde das Land mit der Hauptstadt {city}",
         "flag": "Finde das Land mit dieser Flagge",
-        "famous": "Finde das Land, das berühmt ist für {thing}"
+        "famous": "Finde das Land, das berühmt ist für {thing}",
+        "findSub": "Finde {name}",
+        "capital_us": "Finde den Bundesstaat mit der Hauptstadt {city}",
+        "capital_ca": "Finde die Provinz oder das Territorium mit der Hauptstadt {city}"
       }
     },
     "cs": {
@@ -16053,6 +16078,25 @@
     },
     "livegame": {
       "ended": "Die Live-Lektion ist beendet."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Karteikarten",
+      "note": "Aus Lernen und Test. Eine Karte gilt als gekonnt, wenn ein Schüler sie zweimal hintereinander richtig eintippt.",
+      "studied": "{done} von {total} haben geübt",
+      "missedTitle": "Am häufigsten falsch",
+      "missedHint": "Lohnt sich, mit der Klasse noch einmal anzuschauen.",
+      "missedBy": "{misses, plural, one {# Mal falsch} other {# Mal falsch}}, {students, plural, one {# Schüler} other {# Schüler}}",
+      "missedNone": "Noch keine Karte falsch.",
+      "table": "Die Karten jedes Schülers",
+      "mastered": "Gekonnt",
+      "learning": "Am Lernen",
+      "missed": "Zuletzt falsch",
+      "fresh": "Noch nicht geübt",
+      "progress": "Fortschritt",
+      "notYet": "Noch nicht begonnen",
+      "barLabel": "{mastered} gekonnt, {learning} am Lernen, {missed} zuletzt falsch, {fresh} noch nicht geübt"
     }
   }
 }

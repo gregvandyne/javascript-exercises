@@ -74,11 +74,11 @@ test('the myths and weak claims are gone, in English and in every new pack', () 
   }
 });
 
-test('capital questions: never about Israel, Palestine, Yemen or Nauru, in the game, live and the teacher\'s quizzes', () => {
+test('capital questions: never about Israel, Palestine, Yemen, Nauru or the District of Columbia, in the game, live and the teacher\'s quizzes', () => {
   const game = new Set(JSON.parse(GAME.match(/const NO_CAP_Q = new Set\((\[[^\]]*\])\)/)[1].replace(/'/g, '"')));
-  assert.deepEqual(game, new Set(['IL', 'PS', 'YE', 'NR']));
+  assert.deepEqual(game, new Set(['IL', 'PS', 'YE', 'NR', 'US-DC']));
   assert.deepEqual(ATL.NO_CAP_Q, game, 'server/live/atlas.js has the same list');
-  for (const cc of game) for (const k of ['cap', 'capc']) assert.equal(cleanAtlasItems([{ t: '', r: 'world', q: [[k, cc]] }]), null, `${k} ${cc}`);
+  for (const cc of game) for (const k of ['cap', 'capc']) assert.equal(cleanAtlasItems([{ t: '', r: cc.startsWith('US-') ? 'us' : 'world', q: [[k, cc]] }]), null, `${k} ${cc}`);
   for (let n = 0; n < 20; n++) {
     for (const it of ATL.atlasItems('atlas:world:hard:capital:20:20', 'en')) assert.ok(it.atlas.k !== 'capital' || !game.has(ATL.codes()[it.answer]));
   }

@@ -210,7 +210,7 @@ export function reveal(s, io) {
     } else {
       seat.streak = 0; seat.wrongRun = (seat.wrongRun || 0) + 1;
       // Atlas Quest Live: a near miss scores a little (never a right answer, never a streak).
-      if (isMap(s)) { p = accuracy ? 0 : closePoints(a.c, c.answer); seat.score += p; }
+      if (isMap(s)) { p = accuracy ? 0 : closePoints(a.c, c.answer, c.atlas && c.atlas.reg); seat.score += p; }
     }
     seat.items.set(c.i, a.ok);
     pts.set(seat.no, p);

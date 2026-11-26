@@ -1258,3 +1258,12 @@ details.coursepanel>summary>.small{flex:1 1 auto}
 .hr-note .hr-notein{display:flex;align-items:center;gap:var(--s3);padding:var(--s3) var(--s4);border-radius:var(--r-sm);background:var(--spark-soft)}
 .hr-note .hr-notesticker{flex:none;width:88px;height:88px;object-fit:contain}
 .hr-note p{margin:0;font-weight:700;white-space:pre-wrap;overflow-wrap:anywhere}
+/* Flashcards on a lesson's progress page (views/flash-step.js): cards missed most, and each student's cards as a bar. */
+.fc-missed{display:flex;flex-direction:column;gap:6px;margin:8px 0 14px}
+.fc-missed li{display:grid;grid-template-columns:minmax(8em,1fr) 2fr auto;gap:4px 12px;align-items:baseline;padding:8px 12px;border-radius:12px;background:var(--card2,#F9F6EB)}
+.fc-n{white-space:nowrap;font-weight:700}
+.fc-bar{display:flex;min-width:8em;height:12px;border-radius:999px;overflow:hidden;background:var(--line,#E2DDCB)}
+.fc-b3{background:#1F9D63}.fc-b1{background:#FFD23F}.fc-b0{background:#C8432F}
+.fc-dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:middle}
+.fc-key{display:flex;flex-wrap:wrap;gap:4px 16px}
+@media (max-width:640px){.fc-missed li{grid-template-columns:1fr}.fc-n{white-space:normal}}

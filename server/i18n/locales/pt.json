@@ -1302,7 +1302,9 @@
       "mapOf": {
         "world": "Mapa-múndi",
         "car": "Mapa do Caribe",
-        "me": "Mapa do Oriente Médio"
+        "me": "Mapa do Oriente Médio",
+        "us": "Mapa dos Estados Unidos",
+        "ca": "Mapa do Canadá"
       },
       "untitled": "Quiz de geografia",
       "mapTitle": "Mapa: {region}",
@@ -1315,8 +1317,25 @@
       "fam": "Qual país é famoso por {thing}?",
       "region": {
         "car": "Caribe",
-        "me": "Oriente Médio"
-      }
+        "me": "Oriente Médio",
+        "us": "Estados Unidos",
+        "ca": "Canadá"
+      },
+      "mapHow_us": "Escreva o nome de cada estado numerado.",
+      "mapHow_ca": "Escreva o nome de cada província ou território numerado.",
+      "mapHowCoSub": "Os pequenos têm uma seta para a própria linha.",
+      "capSub": "{name}: qual é a capital?",
+      "capc_us": "{city} é a capital de qual estado?",
+      "capc_ca": "{city} é a capital de qual província ou território?",
+      "abbr": "{name}: qual é a sigla postal?"
+    },
+    "printFlash": {
+      "untitled": "Cartões",
+      "term": "Termo",
+      "def": "Definição",
+      "fronts": "{title}: frentes",
+      "backs": "{title}: versos",
+      "how": "Imprima frente e verso (virando pela borda longa) e recorte nas linhas tracejadas. Cada verso fica atrás da sua frente."
     }
   },
   "friends": {
@@ -7818,7 +7837,8 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingZoo": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingZoo": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo.",
+      "flashcards": "Cartões de termo e definição para qualquer matéria: crie os seus, cole uma lista ou deixe a IA escrever, ou comece pela biblioteca pronta, e estude com Virar, Aprender, Combinar e Teste."
     },
     "hubs": {
       "math": {
@@ -9801,7 +9821,9 @@
         "eu": "Europa",
         "na": "América do Norte",
         "sa": "América do Sul",
-        "oc": "Oceania"
+        "oc": "Oceania",
+        "us": "Estados Unidos (estados)",
+        "ca": "Canadá (províncias e territórios)"
       },
       "level": {
         "easy": "Fácil: países famosos",
@@ -9818,7 +9840,10 @@
         "find": "Encontre {name}",
         "capital": "Encontre o país cuja capital é {city}",
         "flag": "Encontre o país desta bandeira",
-        "famous": "Encontre o país famoso por {thing}"
+        "famous": "Encontre o país famoso por {thing}",
+        "findSub": "Encontre: {name}",
+        "capital_us": "Encontre o estado cuja capital é {city}",
+        "capital_ca": "Encontre a província ou o território cuja capital é {city}"
       }
     },
     "cs": {
@@ -16054,6 +16079,25 @@
     },
     "livegame": {
       "ended": "A aula ao vivo terminou."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Cartões",
+      "note": "De Aprender e Teste. Um cartão está dominado quando o aluno digita certo duas vezes seguidas.",
+      "studied": "{done} de {total} estudaram",
+      "missedTitle": "Cartões mais errados",
+      "missedHint": "Vale revisar com a turma.",
+      "missedBy": "{misses, plural, one {Errado # vez} other {Errado # vezes}}, {students, plural, one {# aluno} other {# alunos}}",
+      "missedNone": "Nenhum cartão errado ainda.",
+      "table": "Os cartões de cada aluno",
+      "mastered": "Dominados",
+      "learning": "Aprendendo",
+      "missed": "Errados da última vez",
+      "fresh": "Não estudados",
+      "progress": "Progresso",
+      "notYet": "Ainda não começou",
+      "barLabel": "{mastered} dominados, {learning} aprendendo, {missed} errados da última vez, {fresh} não estudados"
     }
   }
 }

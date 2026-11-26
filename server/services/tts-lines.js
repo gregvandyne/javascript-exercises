@@ -166,6 +166,9 @@ export const GAMES = {
   'arithmetic-lab': { title: 'Arithmetic Lab', role: 'friendly', spoken: /^say\./, fills: /^w\./ },
   // Crossword reads nothing aloud: its clues are the teacher's own words, shown on the screen.
   'crossword': { title: 'Crossword', role: 'friendly', spoken: /(?!)/ },
+  // Flashcards: the cards are the teacher's own words (read on the device's voice from the card's 🔊); the AI voice reads
+  // only the game's own cheers.
+  'flashcards': { title: 'Flashcards', role: 'friendly', spoken: /^cheer\d$/ },
   // Mistake Hunt reads nothing aloud yet: its passages are the teacher's own words (a "proof" read-aloud context is Phase 4).
   'mistake-hunt': { title: 'Mistake Hunt', role: 'friendly', spoken: /(?!)/ },
   // Jungle Cup: the story, the people's lines and the finale (d.*, story.*, end.*), each speaker's role from its VOICES block.
