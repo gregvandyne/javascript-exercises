@@ -2348,6 +2348,7 @@
         "delete": "Geselecteerd item verwijderen"
       },
       "playBack": "Terug naar Homeroom",
+      "liveNotSelect": "Live-lessen start je, je deelt ze niet uit. Zet Selecteren uit om er een te starten.",
       "frame": {
         "resize": "Sleep om het lerarenvak groter of kleiner te maken",
         "saved": "Lerarenvak aangepast"
@@ -8903,7 +8904,7 @@
       "boardText": "Een bord vol categorieën: kies een vakje en iedereen antwoordt. Grotere vakjes zijn moeilijker en leveren meer op, en een verstopte Geluksster verdubbelt de punten.",
       "wyr": "Wat heb je liever? (Live)",
       "wyrText": "De klas stemt over grappige dilemma’s en ziet hoe de stemmen verdeeld zijn, en wat iedereen op Oomba koos. Geen goede antwoorden, geen punten: gewoon praten.",
-      "atlas": "Atlas Quest (Live)",
+      "atlas": "Atlas Quest",
       "atlasText": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land zelf, de vlag, de hoofdstad of waar het beroemd om is. Er net naast levert ook een beetje op.",
       "tug": "Tug of Math (Live)",
       "tugText": "De klas wordt verdeeld in twee teams. Iedereen beantwoordt rekenvragen voor zijn groep op een eigen toetsenblok, en elk goed antwoord trekt aan het touw.",
@@ -9776,7 +9777,7 @@
       "play": "Oefenen of spelen op één apparaat"
     },
     "atlasUi": {
-      "legend": "Atlas Quest (Live)",
+      "legend": "Atlas Quest",
       "region": "Waar op de wereld",
       "level": "Niveau",
       "kinds": "Soorten vragen",
@@ -9976,7 +9977,7 @@
         "p": "Twee teams trekken met goede antwoorden aan een touw. Kies een niveau van groep 3 tot klas 2; iedereen beantwoordt eigen vragen op een toetsenblok, en ongelijke teams trekken eerlijk."
       },
       "atlas": {
-        "h": "Atlas Quest (Live)",
+        "h": "Atlas Quest",
         "p": "Iedereen tikt het land aan op zijn eigen wereldkaart: het land, de vlag, de hoofdstad of waar het beroemd om is. Het grote scherm laat zien waar de hele klas tikte, en er net naast telt ook."
       }
     },

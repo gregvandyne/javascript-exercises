@@ -15981,3 +15981,35 @@ Live from the phone's sheet without leaving the page, students brought in and ba
 Board", the projector and the Teacher view, End; the standalone /live as before; N2, N4). `homeroom-qa.test.js` expects a
 room with no handout not to block; `homeroom-watch-browser`, `homeroom-lessons-browser`, `homeroom-views-browser` and
 `teachers-say-lessons` follow the new layout.
+
+## Atlas Quest: one door (26 Nov 2026)
+
+The owner: "always have the different options when you click in there, to make it easy". Atlas Quest was three things
+(the solo game, the live game "Atlas Quest (Live)" at `/live?mode=atlas`, and the teacher tools from #570/#579 that sat
+in a "Teach with Atlas Quest" widget under the solo game's home, gated by BRB.canMake). Now there is one door.
+
+- **The door** (seed-games/atlas-quest.html `showDoor`, in Algebra Builder's first-screen pattern: a heading and big
+  cards with an icon chip, who it is for, what it does and a go line): "Who is it for?" with **Play** (the games),
+  **Host live** (BRB.canHostLive / BRB.hostLive) and **Build a lesson** (BRB.canMake: Make a quiz, blank maps, the
+  library, My worksheets and Your quizzes, beside the globe). It shows every time a grown-up who may host or make opens
+  the game (school staff, the platform admin, a family grown-up), from the game page, a link, Homeroom's My desk or
+  Homeroom's Live games card. "All options" goes back to it from Play and from Build a lesson. A quiz link or class code
+  skips it and plays the quiz; a reload inside the quiz maker comes back to the maker.
+- **Students and children** have only Play, so they go straight to the games (with Maps and more: blank maps without
+  answers, the library and the class-code box). They never see Host live or Build a lesson, and a handed-out Atlas Quest
+  on a desk just plays.
+- **Host live**: the frame's `hostLive` (routes/games.js `hostLiveMode`: Oomba Live on, a grown-up who may host, the live
+  game not hidden, never a preview or "As a student"); after a tap the play page opens `/live?mode=atlas`, or, inside
+  Homeroom's layer, posts `hr:hostlive` and Homeroom closes the game layer and opens its own live layer and pill for the
+  class (`/live?mode=atlas&class=<id>`).
+- **Homeroom Find lessons** keeps Atlas Quest in both places. Under Games it hands out as before (tap the card, then a
+  desk; My desk, then Play shows the door). Under Live games the card is named Atlas Quest and opens the door over the
+  board (`data-hrdoor`); with no solo game it falls back to the live setup as before.
+- **One name**: "Atlas Quest (Live)" is "Atlas Quest" everywhere a teacher sees it (the live game's title, /live's mode,
+  the teachers' live page); the Live group or badge already says it is live.
+- **No plane**: the paper plane, its dotted trail, its shadow and puffs, and the plane paints in the passport are gone
+  (the owner found them too busy). A right answer turns the globe to the country; the map, the globe, the questions and
+  the flags are unchanged. The live game never had a plane.
+
+Tests: tests/unit/atlas-door-browser.test.js (a teacher from Homeroom Games, Live games and the game page; a student and
+a handout; no plane), tests/unit/make-gate.test.js (the door for grown-ups, the tools behind Build a lesson).

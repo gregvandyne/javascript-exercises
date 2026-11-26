@@ -42,7 +42,7 @@ export const GAMES = {
   // I18N block of their own file; every line in the block is the game's own, so the whole table is spoken. Roles:
   // the game's host or character where it has one (its VOICES block, where present), narrator where it has none.
   'atlas-quest': { title: 'Atlas Quest', role: 'narrator', spoken: /./ },
-  'atlas-quest-live': { title: 'Atlas Quest (Live)', role: 'narrator', spoken: /./ },
+  'atlas-quest-live': { title: 'Atlas Quest', role: 'narrator', spoken: /./ },
   // Balance Bridge (Number Quest Launchpad, grades 1-2): every instruction, story, hint and answer line is spoken, in
   // the friendly voice (its VOICES block). What the number chip shows (show.*), the button labels (btn.*), the chapter
   // names and the round counter are shown, never read.

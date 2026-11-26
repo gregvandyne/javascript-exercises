@@ -226,7 +226,11 @@ function deskLists(req) {
   const host = liveOn() && liveCanHost(u) && !req.homeroomClass.archived_at;
   const cls = encodeURIComponent(req.homeroomClass.id);
   const oomba = [], live = [];
-  for (const g of games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 200 })) {
+  const learn = games.listVisible(u, { shelf: 'learn', official: true, order: 'plays', limit: 200 });
+  // Atlas Quest has one door (docs/decisions.md "Atlas Quest: one door"): its Live games card opens the game's first
+  // screen (Play, Host live, Build a lesson) over the board, named as the game is; with no solo game, the live setup.
+  const doors = { 'atlas-quest-live': learn.find(x => x.slug === 'atlas-quest' && x.source === 'seed') || null };
+  for (const g of learn) {
     // (an official Learn game with no subject yet is listed too, under More games: a superset of Find Oomba lessons)
     const info = SHELF_INFO[g.slug] || { subject: 'more' }; if (seen.has(g.id)) continue;
     seen.add(g.id);
@@ -234,7 +238,7 @@ function deskLists(req) {
     if (HO.handable(u, g)) oomba.push({ ...gameItem(g), subject: info.subject, grades });
     // a live-only game (Brain Board, Would You Rather Live, Atlas Quest Live, Quest Race...): hosted inside Homeroom
     // (docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find lessons"), the class already chosen
-    else { const lg = liveGameOf(g); if (lg && !lg.play && host && !slugHidden(g.slug)) live.push({ ...gameItem(g), subject: info.subject, grades, live: `/live?mode=${lg.mode}&class=${cls}` }); }
+    else { const lg = liveGameOf(g); if (lg && !lg.play && host && !slugHidden(g.slug)) { const door = doors[g.slug]; live.push({ ...gameItem(g), subject: info.subject, grades, ...(door ? { title: title(door), door: door.slug } : { live: `/live?mode=${lg.mode}&class=${cls}` }) }); } }
   }
   if (host) {
     // the teacher's own live question sets (and the school's shared ones): the landing opens with the set picked
@@ -269,6 +273,7 @@ const row = (t, x, k, kindLine = '') => {
   const g = x.grades || null, data = raw(` class="hr-cc" data-k="${k}" data-q="${esc(searchText(x.title, x.sub))}"${x.subject ? ` data-subject="${esc(x.subject)}"` : ''}${g ? ` data-gf="${g.from}" data-gt="${g.to}"` : ''}`);
   const line = [kindLine, g ? gradeLabel(t, g) : ''].filter(Boolean).join(' · ');
   const inner = html`<span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 28 })}</span><span class="hr-ctext"><span class="hr-itemt" dir="auto">${x.title}</span>${line ? html`<span class="hr-ckind">${line}</span>` : ''}</span>`;
+  if (x.door) return html`<li${data}><button type="button" class="hr-item hr-ccard hr-livecard" data-hrdoor="${x.door}" data-icon="${x.icon}">${inner}<span class="hr-ctag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></button></li>`;
   if (x.live) return html`<li${data}><button type="button" class="hr-item hr-ccard hr-livecard" data-hrlive="${x.live}" data-icon="${x.icon}">${inner}<span class="hr-ctag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></button></li>`;
   return html`<li${data}><button type="button" class="hr-item hr-give hr-ccard" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false">${inner}${x.mineOnly ? html`<span class="hr-ctag">${t('homeroom.catalog.myDeskOnly')}</span>` : ''}<span class="hr-ccheck" aria-hidden="true"></span></button></li>`;
 };

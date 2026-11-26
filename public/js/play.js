@@ -133,6 +133,8 @@ const TYPES = {
   'brb:set-save': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.items) && m.items.length <= 20 && JSON.stringify(m.items).length <= 20000 && (m.set === null || m.set === undefined || typeof m.set === 'string')
     && (m.title === undefined || (typeof m.title === 'string' && m.title.length <= 60)),
   'brb:assign': m => typeof m.opts === 'string',
+  // BRB.hostLive (Atlas Quest's door: Host live): no data; the page knows the game's live mode (page-data hostLive).
+  'brb:hostlive': m => true,
   // BRB.mySets and friends ("My worksheets"): the teacher's own sets (the server checks whose they are).
   'brb:sets': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['list', 'delete', 'rename', 'duplicate'].includes(m.op)
     && (m.op === 'list' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set))) && (m.op !== 'rename' || (typeof m.title === 'string' && m.title.length <= 200)),
@@ -279,6 +281,9 @@ addEventListener('message', e => {
     // BRB.print (Crossword): the frame can't print, so the page does, only right after a tap.
     case 'brb:print': printForGame(m, tappedJustNow('brb-print-at', 2000)); break;
     // BRB.assign (a teacher in a set game): after a tap, the game's Assign page with the problem or set it opens at.
+    // BRB.hostLive (a grown-up who may host, in a game whose door offers Host live): after a tap, the live game's setup
+    // on /live, the mode the server named for this page; inside Homeroom's layer, Homeroom opens its own live layer.
+    case 'brb:hostlive': if (/^[a-z-]{1,20}$/.test(d.hostLive || '') && tappedJustNow('brb-hostlive-at', 2000)) { if (d.embed && parent !== window) parent.postMessage({ type: 'hr:hostlive', mode: d.hostLive }, location.origin); else location.href = `/live?mode=${encodeURIComponent(d.hostLive)}`; } break;
     case 'brb:assign': if (typeof m.opts === 'string' && m.opts.length <= 200 && /^[a-z0-9=&-]*$/.test(m.opts) && tappedJustNow('brb-assign-at', 2000)) location.href = `/teach/assign?game=${encodeURIComponent(d.slug)}&opts=${encodeURIComponent(m.opts)}`; break;
   }
 });

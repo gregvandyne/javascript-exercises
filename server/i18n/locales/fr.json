@@ -2347,6 +2347,7 @@
         "delete": "Supprimer l’élément sélectionné"
       },
       "playBack": "Retour à Homeroom",
+      "liveNotSelect": "Les leçons en direct s’animent, elles ne se distribuent pas. Désactivez Sélectionner pour en lancer une.",
       "frame": {
         "resize": "Tirez pour redimensionner l'espace de l'enseignant",
         "saved": "Espace de l'enseignant redimensionné"
@@ -8902,7 +8903,7 @@
       "boardText": "Un plateau de catégories : choisis une case, tout le monde répond. Les grosses cases sont plus difficiles et rapportent plus, et une Étoile chance cachée double les points.",
       "wyr": "Tu préfères ? (En direct)",
       "wyrText": "La classe vote sur des dilemmes amusants et voit comment elle se partage, et ce qu’ont choisi tous les joueurs d’Oomba. Pas de bonne réponse, pas de points : on discute.",
-      "atlas": "Atlas Quest (En direct)",
+      "atlas": "Atlas Quest",
       "atlasText": "Chacun touche le pays sur sa propre carte du monde : trouve-le, son drapeau, sa capitale ou ce qui le rend célèbre. Viser juste à côté rapporte un peu aussi.",
       "tug": "Tug of Math (En direct)",
       "tugText": "La classe se partage en deux équipes. Chacun répond à des questions de maths de son niveau sur son propre pavé, et chaque bonne réponse tire la corde.",
@@ -9775,7 +9776,7 @@
       "play": "S’entraîner ou jouer sur un appareil"
     },
     "atlasUi": {
-      "legend": "Atlas Quest (En direct)",
+      "legend": "Atlas Quest",
       "region": "Où dans le monde",
       "level": "Niveau",
       "kinds": "Types de questions",
@@ -9975,7 +9976,7 @@
         "p": "Deux équipes tirent une corde avec de bonnes réponses. Choisis un niveau de 1 à 8 ; chaque joueur répond à ses propres questions sur un pavé, et des équipes inégales tirent à armes égales."
       },
       "atlas": {
-        "h": "Atlas Quest (En direct)",
+        "h": "Atlas Quest",
         "p": "Chacun touche le pays sur sa propre carte du monde : le pays, son drapeau, sa capitale ou ce qui le rend célèbre. Le grand écran montre où toute la classe a touché, et viser tout près rapporte aussi."
       }
     },

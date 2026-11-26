@@ -44,7 +44,7 @@ import fs from 'node:fs';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { gameReady as gameLiveReady } from '../services/classlive-check.js';
-import { liveGameOf } from '../live/live-games.js';
+import { liveGameOf, LIVE_GAMES } from '../live/live-games.js';
 import { playData as ttsPlayData, frameData as ttsFrameData, listedGame as ttsListed, builtGame as ttsBuilt } from './tts.js';
 import { parseParams, packParams, unpackParams, hasParams } from '../services/play-params.js';
 import * as ttsGames from '../services/tts-games.js';
@@ -395,7 +395,7 @@ router.get('/play/:slug', (req, res) => {
     <template id="gameframe-tpl"><iframe id="gameframe" title="${g.title}" data-src="/frame/${token}${frameQ}" sandbox="${SANDBOX}" allow="fullscreen; autoplay" allowfullscreen referrerpolicy="no-referrer"></iframe></template>
   </div>
   <div class="orient-hint ${g.orientation === 'landscape' ? 'show' : ''}" id="orient" role="dialog" aria-labelledby="orient-h" aria-describedby="orient-p"><div><div class="emo">${ico('📱', { size: 56 })}</div><h2 id="orient-h">${t('play.turn.heading')}</h2><p id="orient-p">${t('play.turn.text')}</p><button class="btn" type="button" id="orient-ok">${t('play.turn.ok')}</button></div></div>
-  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}) })}`;
+  ${jsonData('page-data', { gameId: g.id, slug: g.slug, title: g.title, signedIn: !!u, myStars: games.userRating(g.id, u && u.id), canSave: !!u, lesson, match: inMatch, polls: !!(u && pollGame(g)), online: !!(u && onlineGame(u, g.id)), ...(cstep ? { cstep: { course: asked.slug, step: cstep.key } } : {}), ...((cstep || lesson) ? { backHref, backLabel } : {}), ...(ttsData ? { tts: ttsData } : {}), ...(mic ? { mic: true } : {}), ...(printGame(g) || canvasPrintVersion(g, u, null) ? { print: true } : {}), ...(frame && frame.data ? frame.data : {}), ...(embed ? { embed: 'hr' } : {}), ...(hostLiveMode(u, g) ? { hostLive: hostLiveMode(u, g) } : {}) })}`;
   // (keyboard: Doodle Hoot's guess box; an on-screen keyboard shrinks the page, so the box and the drawing stay in view)
   page(req, res, { title: g.title, bare: true, keyboard: g.slug === 'doodle-hoot', bodyClass: `playmode ${g.orientation === 'landscape' ? 'wants-landscape' : ''}${frame && frame.note ? ' has-playnote' : ''}${embed ? ' play-embed' : ''}`, body, scripts: ['/js/play.js', ...(frame && frame.script ? [frame.script] : [])], i18n: [...(mic ? ['js.match', 'js.loudness'] : ['js.match']), ...(frame && frame.i18n ? frame.i18n : [])] });
 });
@@ -473,6 +473,9 @@ router.get('/frame/:token', (req, res) => {
     // staff, the platform admin, a family grown-up: the same people as live games), with AI on or off. Never a student,
     // a child, a guest or a signed-out player, never in a preview. A student with a link or a class code plays as before.
     ...(!preview && makeGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`) ? { make: true } : {}),
+    // Atlas Quest's door (BRB.canHostLive / BRB.hostLive): "Host live" next to Play and Build a lesson, for grown-ups who
+    // may host while Oomba Live is on; the play page opens the live game's setup (in Homeroom, its live layer).
+    ...(!preview && !tok.st && hostLiveMode(u, g) ? { hostLive: true } : {}),
     // Crossword's "Write clues with AI" (BRB.canWriteClues / BRB.writeClues): grown-ups who may host, with a model set.
     // The fence has the last word: a family grown-up may host, but these calls are school tools (routes/family.js).
     // Atlas Quest's "Upload a geography lesson" rides on the same flag and the same document call (BRB.wordsFromDoc).
@@ -641,6 +644,14 @@ const makeGame = g => setGame(g) && MAKE_GAMES.has(g.slug);
 const mayMake = u => !!u && liveCanHost(u);
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
  *  a family grown-up, the platform admin), the same check as INIT.make. Never a student, a child, a guest or signed out. */
+/** A solo game whose first screen (its door: Play, Host live, Build a lesson) can start its live game: Atlas Quest, whose
+ *  live game is Oomba Live's 'atlas' mode (live/live-games.js). -> that mode for a grown-up who may host while Oomba Live
+ *  is on and the live game is not hidden, else null. */
+const DOOR_LIVE = { 'atlas-quest': 'atlas-quest-live' };
+function hostLiveMode(u, g) {
+  const slug = g && g.source === 'seed' && Object.hasOwn(DOOR_LIVE, g.slug) ? DOOR_LIVE[g.slug] : null;
+  return slug && liveOn() && liveCanHost(u) && !focus.slugHidden(slug) ? LIVE_GAMES[slug].mode : null;
+}
 const printKeyFor = (u, g) => isSchoolStaff(u) || (g.slug === 'atlas-quest' && makeGame(g) && mayMake(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`));
 /** Atlas Quest: questions from a teacher's geography lesson (services/atlas-doc.js quizFromFile), through words-from-doc. */
 const atlasDocGame = g => setGame(g) && g.slug === 'atlas-quest';
