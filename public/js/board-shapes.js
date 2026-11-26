@@ -12,7 +12,7 @@
 //   note   { id, text, x, y, w, h, nc (pink | green | blue | purple; yellow when absent), lk }
 // z orders the drawings (shapes and pen lines share one layer); text boxes sit above them and sticky notes above those.
 import { textFont } from './manip-board.js';
-import { NOTE_BOX, TEXT_NEW } from './homeroom-seats.js';
+import { NOTE_BOX, TEXT_NEW, OBJ_FRAC } from './homeroom-seats.js';
 
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -196,7 +196,9 @@ export function textHtml(x, o = {}) {
 }
 
 // ---------------------------------------------------------------- cleaning (the server, and anything pasted)
-const frac = v => { const n = Number(v); return Number.isFinite(n) ? Math.round(clamp(n, 0, 1) * 10000) / 10000 : 0; };
+// (fractions of the default area from its top left; an object may sit anywhere on the board, so they reach past 0..1)
+const fracIn = (v, lo, hi) => { const n = Number(v); return Number.isFinite(n) && v !== null && v !== '' ? Math.round(clamp(n, lo, hi) * 10000) / 10000 : 0; };
+export const fracX = v => fracIn(v, OBJ_FRAC.x0, OBJ_FRAC.x1), fracY = v => fracIn(v, OBJ_FRAC.y0, OBJ_FRAC.y1);
 const clip = (s, n) => String(s ?? '').replace(/[\u0000-\u001f\u007f‪-‮⁦-⁩]/g, '').slice(0, n);
 const zClean = v => (Number.isFinite(+v) && v !== null && v !== '' && typeof v !== 'boolean' ? { z: Math.round(clamp(+v, -Z_MAX, Z_MAX)) } : {});
 const rotClean = v => { const n = Number(v); if (!Number.isFinite(n) || typeof v === 'boolean') return {}; const d = Math.round(((n % 360) + 540) % 360 - 180); return d && d !== -180 ? { r: d } : d === -180 ? { r: 180 } : {}; };
@@ -217,10 +219,36 @@ export function cleanShape(s, i = 0) {
   const line = isLine(s.k), f = !line && colorOk(s.f) ? s.f : null;
   const c = colorOk(s.c) || (s.c === 'none' && f) ? s.c : '#141414';
   return {
-    id: clip(s.id || `s${i}`, 40), k: s.k, x: frac(s.x), y: frac(s.y), x2: frac(s.x2), y2: frac(s.y2), c,
+    id: clip(s.id || `s${i}`, 40), k: s.k, x: fracX(s.x), y: fracY(s.y), x2: fracX(s.x2), y2: fracY(s.y2), c,
     ...(f ? { f, ...(s.fo === 50 || s.fo === 25 ? { fo: s.fo } : {}) } : {}),
     ...(WEIGHTS.includes(s.w) && s.w !== 'M' ? { w: s.w } : {}), ...(s.d === 'dash' || s.d === 'dot' ? { d: s.d } : {}),
     ...(line && ['start', 'end', 'both'].includes(s.a) ? { a: s.a } : {}), ...(line ? {} : rotClean(s.r)), ...zClean(s.z), ...(s.lk === 1 || s.lk === true ? { lk: 1 } : {}),
   };
 }
 export const cleanShapes = list => (Array.isArray(list) ? list : []).filter(s => s && typeof s === 'object' && SHAPE_KINDS.includes(s.k)).slice(0, SHAPES_MAX).map(cleanShape);
+
+// ---------------------------------------------------------------- the teacher's area and the rest of the board
+// Objects are kept in fractions of the default area (AREA, from its top left; homeroom-seats.js) and may sit anywhere on
+// the board (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board"). One whose middle is
+// inside the teacher's area (its frame, however the teacher sized it) is the area's: on every desk's window and the
+// projector. Anything else is on the board only: the teacher's and the aide's board and a student's See the room.
+/** An object's middle in board pixels. kind: note | text | shape | stroke; A: the default area { x, y, w, h }. */
+export function middleOf(kind, o, A) {
+  if (kind === 'shape') { const b = boxOf(o, A.w, A.h); return { x: A.x + b.x + b.w / 2, y: A.y + b.y + b.h / 2 }; }
+  if (kind === 'stroke') {
+    const xs = (o.pts || []).map(p => +p.x || 0), ys = (o.pts || []).map(p => +p.y || 0);
+    if (!xs.length) return { x: A.x, y: A.y };
+    return { x: A.x + ((Math.min(...xs) + Math.max(...xs)) / 2) * A.w, y: A.y + ((Math.min(...ys) + Math.max(...ys)) / 2) * A.h };
+  }
+  const w = Number.isFinite(+o.w) ? +o.w : kind === 'note' ? NOTE_BOX.w : TEXT_NEW.w, h = Number.isFinite(+o.h) ? +o.h : kind === 'note' ? NOTE_BOX.h : TEXT_NEW.h;
+  return { x: A.x + (+o.x || 0) * A.w + w / 2, y: A.y + (+o.y || 0) * A.h + h / 2 };
+}
+/** Is this object the teacher's area's (its middle inside the frame fr, board pixels)? */
+export const inFrame = (kind, o, A, fr) => { const m = middleOf(kind, o, A); return m.x >= fr.x && m.x <= fr.x + fr.w && m.y >= fr.y && m.y <= fr.y + fr.h; };
+/** An area's objects split: { inside, outside }, each { notes, texts, strokes, shapes } in their saved order. */
+export function splitObjects(area, A, fr) {
+  const a = (area && area.__ann) || {}, shapes = (area && Array.isArray(area.shapes)) ? area.shapes : [];
+  const part = (list, kind) => { const i = [], o = []; for (const x of Array.isArray(list) ? list : []) (inFrame(kind, x, A, fr) ? i : o).push(x); return [i, o]; };
+  const [ni, no] = part(a.notes, 'note'), [ti, to] = part(a.texts, 'text'), [si, so] = part(a.strokes, 'stroke'), [hi, ho] = part(shapes, 'shape');
+  return { inside: { notes: ni, texts: ti, strokes: si, shapes: hi }, outside: { notes: no, texts: to, strokes: so, shapes: ho } };
+}

@@ -51,7 +51,8 @@ test('bad values are dropped or clamped: colors from the palette only, the lists
     { id: 'e', k: 'blob', x: 0, y: 0, x2: 1, y2: 1 }, null, 'rect', { k: 'rect', x: 0, y: 0, x2: 1, y2: 1, c: '<script>' },
   ] });
   const [r1, r2, r3, r4, r5] = a.shapes;
-  assert.deepEqual(r1, { id: 'a', k: 'rect', x: 0, y: 1, x2: 0, y2: 0.5, c: '#141414', r: 40, z: 9e6 });
+  // (corners anywhere on the board, kept inside it: x past its left edge is -AREA.x / AREA.w)
+  assert.deepEqual(r1, { id: 'a', k: 'rect', x: -0.2692, y: 9, x2: 0, y2: 0.5, c: '#141414', r: 40, z: 9e6 });
   assert.equal(r2.c, '#141414', 'no outline needs a fill');
   assert.deepEqual([r3.c, r3.f, r3.r, r3.z], ['none', '#D6457A', 170, undefined]);
   assert.deepEqual(r4, { id: 'd', k: 'line', x: 0, y: 0, x2: 1, y2: 1, c: '#141414' }, 'a line has no fill, no rotation, no bad arrowheads');

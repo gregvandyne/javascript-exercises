@@ -28,6 +28,7 @@ export const GL = {
   all: svg('<rect x="4" y="4" width="16" height="16" rx="2" stroke-dasharray="3 3"/><path d="M9 12l2 2 4-4"/>'),
   more: svg('<circle cx="5" cy="12" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="19" cy="12" r="1.6" fill="currentColor"/>'),
   caret: svg('<path d="M7 10l5 5 5-5"/>', 12),
+  eraser: svg('<path d="M15.5 4.5l4 4a2 2 0 0 1 0 2.8L12 18.8H7.2l-3-3a2 2 0 0 1 0-2.8L12.7 4.5a2 2 0 0 1 2.8 0z"/><path d="M9 9l6 6"/><path d="M12 18.8h8"/>'),
   clear: svg('<path d="M14.5 4.5l5 5L11 18H7l-3-3 10.5-10.5z"/><path d="M9 10l5 5"/><path d="M11 18h9"/>'),
   al: { l: svg('<path d="M4 6h16M4 10h10M4 14h16M4 18h10"/>'), c: svg('<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>'), r: svg('<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>') },
 };

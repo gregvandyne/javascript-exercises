@@ -2333,7 +2333,41 @@
         "tools": "Ausgewähltes Element",
         "delete": "Ausgewähltes Element löschen"
       },
-      "playBack": "Zurück zu Homeroom"
+      "playBack": "Zurück zu Homeroom",
+      "frame": {
+        "resize": "Ziehen, um den Lehrerbereich zu vergrößern oder zu verkleinern",
+        "saved": "Lehrerbereich angepasst"
+      },
+      "erase": {
+        "tool": "Radierer",
+        "hint": "Über einen Teil einer Stiftlinie fahren, um nur diesen Teil zu löschen. Tippe auf Auswählen, wenn du fertig bist.",
+        "size": "Radierergröße",
+        "sizes": {
+          "S": "Kleiner Radierer",
+          "M": "Mittlerer Radierer",
+          "L": "Großer Radierer"
+        }
+      },
+      "draw": {
+        "menu": "Schüler zeichnen im Raum",
+        "title": "Schüler zeichnen im Raum",
+        "on": "An",
+        "off": "Aus",
+        "lead": "Wenn das an ist, können Schüler in „Den Raum ansehen“ mit einem Stift zeichnen, überall außerhalb der Tische anderer, und ihre eigenen Linien radieren.",
+        "modeOn": "An für diese Klasse",
+        "modeOff": "Aus für diese Klasse",
+        "what": {
+          "where": "Nie auf den Tischen anderer, im Lehrerbereich oder auf Mein Tisch.",
+          "seen": "Alle in „Den Raum ansehen“ sehen die Linien ohne Namen; deine Tafel zeigt, von wem sie sind. Nie auf dem Beamer.",
+          "locked": "Zeichnen stoppt, solange du die Bildschirme pausierst oder einen Tisch sperrst."
+        },
+        "whose": "Zeichnungen der Schüler",
+        "lines": "{count, plural, one {# Linie} other {# Linien}}",
+        "remove": "Entfernen",
+        "clear": "Zeichnungen der Schüler löschen",
+        "clearConfirm": "Alle Linien der Schüler aus dem Raum entfernen?",
+        "none": "Noch keine Zeichnungen im Raum."
+      }
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -5018,7 +5052,23 @@
         "coming": "Deine Lehrkraft kommt gleich zu dir",
         "passBtn": "Toilettenpass"
       },
-      "playBack": "Zurück zu meinem Tisch"
+      "playBack": "Zurück zu meinem Tisch",
+      "eraseSizes": {
+        "S": "Kleiner Radierer",
+        "M": "Mittlerer Radierer",
+        "L": "Großer Radierer"
+      },
+      "erase": "Radierer",
+      "eraseSize": "Radierergröße",
+      "room": {
+        "pen": "Zeichnen",
+        "erase": "Meine Linien radieren",
+        "hint": "Zeichne überall außerhalb der anderen Tische. Alle in „Den Raum ansehen“ sehen es.",
+        "locked": "Deine Lehrkraft hat das Zeichnen gerade pausiert.",
+        "bigger": "Dreh dein Gerät quer oder nimm einen größeren Bildschirm, um im Raum zu zeichnen.",
+        "full": "Mehr kannst du nicht zeichnen. Radiere zuerst ein paar Linien.",
+        "notHere": "Zeichne außerhalb der anderen Tische und des Lehrerbereichs."
+      }
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -15257,7 +15307,12 @@
       "passAlready": "Du hast schon einen Platz für den Toilettenpass.",
       "badMinutes": "Wähle zwischen 1 und 20 Minuten.",
       "noHand": "Diese Hand ist schon unten.",
-      "noPass": "Kein Pass und kein Platz in der Reihe."
+      "noPass": "Kein Pass und kein Platz in der Reihe.",
+      "drawOff": "Deine Lehrkraft hat das Zeichnen im Raum nicht eingeschaltet.",
+      "deskLocked": "Zeichnen ist gerade pausiert.",
+      "notHere": "Linien gehören außerhalb der Tische anderer und des Lehrerbereichs.",
+      "tooFast": "Das ist viel auf einmal. Versuch es gleich noch einmal.",
+      "roomFull": "Im Raum ist kein Platz für mehr Zeichnungen."
     },
     "live": "Live",
     "desk": {
@@ -15449,6 +15504,12 @@
       "gcNotLinked": "Noch nicht verknüpft.",
       "gcLink": "Classroom-Klasse verknüpfen",
       "gradeSaved": "Bewertung geändert"
+    },
+    "studentDraw": {
+      "savedOn": "Schüler können im Raum zeichnen",
+      "savedOff": "Schüler können nicht im Raum zeichnen",
+      "cleared": "Zeichnungen der Schüler gelöscht",
+      "removed": "Die Zeichnungen wurden entfernt"
     }
   }
 }

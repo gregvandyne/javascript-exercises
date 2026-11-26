@@ -1566,6 +1566,17 @@ export const MIGRATIONS = [
   // class (manip_sessions, manip_work hold the boards, as for any live room). Goes with the room row.
   ['0137_homeroom_tools', `
     ALTER TABLE homeroom_rooms ADD COLUMN tools TEXT NOT NULL DEFAULT '[]';`],
+  // Homeroom: students draw on the room (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole
+  // board"; services/homeroom-marks.js). homeroom_rooms.student_draw: the class's teachers let students draw outside
+  // their desks in See the room (1) or not (0, the default); marks_v moves on every change to students' lines (the
+  // room's updated_at stays, so desks don't fetch the teacher's area again). homeroom_marks: one student's lines in a
+  // class, in board pixels.
+  ['0138_homeroom_marks', `
+    ALTER TABLE homeroom_rooms ADD COLUMN student_draw INTEGER NOT NULL DEFAULT 0;
+    ALTER TABLE homeroom_rooms ADD COLUMN marks_v INTEGER NOT NULL DEFAULT 0;
+    CREATE TABLE IF NOT EXISTS homeroom_marks (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
+      strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_marks_user ON homeroom_marks(user_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

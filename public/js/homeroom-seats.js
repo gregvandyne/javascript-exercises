@@ -22,6 +22,31 @@ export const NAME_H = 50;
 /** Where students' desks start (under the teacher's desk), and the middle of the room. */
 export const SEATS_TOP = 600, MID_X = AREA.x + AREA.w / 2;
 export const PRESETS = ['rows', 'pods', 'u', 'circle'];
+/** The teacher's area resized by the teacher (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole
+ *  board"): its top stays where it is; its left edge, width and height are the class's (area.frame), within these.
+ *  Board objects keep their place and size on the board (they are stored in units of the default AREA from its top
+ *  left), so a bigger area shows more of the board and a smaller one less; My desk stays centered under it. */
+export const FRAME = { wMin: 720, wMax: 3200, hMin: 240, hMax: 1100 };
+/** An object may be placed anywhere on the board: its fractions (of AREA, from AREA's top left) within these. */
+export const OBJ_FRAC = { x0: -AREA.x / AREA.w, x1: (BOARD.maxW - AREA.x) / AREA.w, y0: -AREA.y / AREA.h, y1: (BOARD.maxH - AREA.y) / AREA.h };
+const num = (v, d) => (v !== null && v !== '' && typeof v !== 'boolean' && Number.isFinite(+v) ? +v : d);
+const clampN = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
+/** The teacher's area as the board draws it: { x, y, w, h } in board pixels (AREA when the class never resized it). */
+export function frameOf(area) {
+  const f = area && typeof area === 'object' ? area.frame : null;
+  if (!f || typeof f !== 'object') return { ...AREA };
+  const w = Math.round(clampN(num(f.w, AREA.w), FRAME.wMin, FRAME.wMax)), h = Math.round(clampN(num(f.h, AREA.h), FRAME.hMin, FRAME.hMax));
+  return { x: Math.round(clampN(num(f.x, AREA.x), 0, BOARD.maxW - w)), y: AREA.y, w, h };
+}
+/** A frame as it may be stored ({ x, w, h }), or null when it is the default (an older board has none). */
+export function cleanFrame(f) {
+  const r = frameOf({ frame: f });
+  return r.x === AREA.x && r.w === AREA.w && r.h === AREA.h ? null : { x: r.x, w: r.w, h: r.h };
+}
+/** My desk under the middle of the area (TEACHER_DESK for the default area). */
+export const tdeskOf = fr => ({ x: Math.max(0, Math.round(fr.x + fr.w / 2 - TEACHER_DESK.w / 2)), y: fr.y + fr.h + 16, w: TEACHER_DESK.w, h: TEACHER_DESK.h });
+/** Where the students' desks start under an area of this size (SEATS_TOP for the default area). */
+export const seatsTop = fr => Math.max(SEATS_TOP, tdeskOf(fr).y + TEACHER_DESK.h + 56);
 /** At most this many groups a class; group colors the teacher picks from (calm, readable on the card color). */
 export const GROUPS_MAX = 8, GROUP_NAME_MAX = 30;
 export const GROUP_COLORS = ['#8C6BD1', '#1F9D63', '#3F8FCF', '#E8833A', '#D6457A', '#6D4C41', '#00897B', '#5D5A50'];
@@ -31,8 +56,8 @@ export const DEFAULT_GROUPS = [{ id: 'g1', key: 'stretch', name: '', color: '#8C
 const round10 = v => Math.round(v / 10) * 10;
 
 /** The top-left corners of n desks in a preset (unknown presets: rows). -> [{ x, y }] */
-export function layout(kind, n) {
-  const out = [], W = DESK.w, H = DESK.h;
+export function layout(kind, n, top = SEATS_TOP) {
+  const out = [], W = DESK.w, H = DESK.h, dy = Math.max(0, top - SEATS_TOP);
   if (n <= 0) return out;
   if (kind === 'pods') {
     // Tables of 4 (2 by 2), three tables to a row; a last table may have fewer desks.
@@ -61,7 +86,7 @@ export function layout(kind, n) {
   }
   // A big class can reach past the left edge (a wide U): the whole layout moves right, never one desk onto another.
   const dx = Math.max(0, 40 - Math.min(...out.map(p => p.x)));
-  return out.map(p => ({ x: round10(p.x + dx), y: Math.max(SEATS_TOP, round10(p.y)) }));
+  return out.map(p => ({ x: round10(p.x + dx), y: Math.max(SEATS_TOP + dy, round10(p.y + dy)) }));
 }
 
 /** A desk's place as it may be stored: whole numbers, inside the board, never above the students' part of the room. */
@@ -73,21 +98,22 @@ export function clampSeat(p) {
 
 /** Every student a desk: their saved place, else the next free spot of the class's preset (new students join the room
  *  without moving anyone). ids: the roster's students in order; seats: { id: { x, y } }. -> { id: { x, y } } */
-export function seatAll(ids, seats = {}, preset = 'rows') {
+export function seatAll(ids, seats = {}, preset = 'rows', top = SEATS_TOP) {
   const out = {}, missing = [];
   for (const id of ids) { const p = seats && seats[id] ? clampSeat(seats[id]) : null; if (p) out[id] = p; else missing.push(id); }
   if (!missing.length) return out;
-  const taken = Object.values(out), spots = layout(preset, ids.length + missing.length);
+  const taken = Object.values(out), spots = layout(preset, ids.length + missing.length, top);
   const free = spots.filter(s => !taken.some(t => Math.abs(t.x - s.x) < DESK.w && Math.abs(t.y - s.y) < DESK.h + NAME_H - 10));
   // More students than free spots in the preset: under everyone else, in rows.
-  const lowest = Math.max(SEATS_TOP, ...taken.map(t => t.y + DESK.h + 60));
+  const lowest = Math.max(top, ...taken.map(t => t.y + DESK.h + 60));
   const extra = layout('rows', missing.length).map(s => ({ x: s.x, y: s.y - SEATS_TOP + lowest }));
   missing.forEach((id, i) => { out[id] = free[i] || extra[i]; });
   return out;
 }
 
 /** The board's size: the default, grown to hold every desk (and every team desk: teams [{ x, y }]). */
-export function boardSize(seats, teams = []) {
-  const list = Object.values(seats || {}), tl = Array.isArray(teams) ? teams : [];
-  return { w: Math.max(BOARD.w, ...list.map(p => p.x + DESK.w + 80), ...tl.map(p => p.x + TEAM_DESK.w + 80)), h: Math.max(BOARD.h, ...list.map(p => p.y + DESK.h + 80), ...tl.map(p => p.y + TEAM_DESK.h + 80)) };
+export function boardSize(seats, teams = [], frame = AREA) {
+  const list = Object.values(seats || {}), tl = Array.isArray(teams) ? teams : [], td = tdeskOf(frame);
+  return { w: Math.max(BOARD.w, frame.x + frame.w + 80, ...list.map(p => p.x + DESK.w + 80), ...tl.map(p => p.x + TEAM_DESK.w + 80)),
+    h: Math.max(BOARD.h, td.y + td.h + 200, ...list.map(p => p.y + DESK.h + 80), ...tl.map(p => p.y + TEAM_DESK.h + 80)) };
 }

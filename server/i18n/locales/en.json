@@ -2407,6 +2407,40 @@
         "modeOn": "On for this class",
         "modeOff": "Off for this class",
         "how": "Students are told in their notebook when a grown-up can see their class notes."
+      },
+      "frame": {
+        "resize": "Pull to resize the teacher's area",
+        "saved": "Teacher's area resized"
+      },
+      "erase": {
+        "tool": "Eraser",
+        "hint": "Rub over part of a pen line to erase just that part. Tap Select when you're done.",
+        "size": "Eraser size",
+        "sizes": {
+          "S": "Small eraser",
+          "M": "Medium eraser",
+          "L": "Large eraser"
+        }
+      },
+      "draw": {
+        "menu": "Students draw on the room",
+        "title": "Students draw on the room",
+        "on": "On",
+        "off": "Off",
+        "lead": "When this is on, students can draw with a pen in See the room, anywhere outside other students' desks, and erase their own lines.",
+        "modeOn": "On for this class",
+        "modeOff": "Off for this class",
+        "what": {
+          "where": "Never on other students' desks, the teacher's area or My desk.",
+          "seen": "Everyone in See the room sees the lines, without names; your board shows whose they are. Never on the projector.",
+          "locked": "Drawing stops while you pause screens or lock a desk."
+        },
+        "whose": "Students' drawings",
+        "lines": "{count, plural, one {# line} other {# lines}}",
+        "remove": "Remove",
+        "clear": "Clear students' drawings",
+        "clearConfirm": "Take every student's lines off the room?",
+        "none": "No drawings on the room yet."
       }
     },
     "stories": {
@@ -5602,7 +5636,23 @@
       },
       "seen": "Your teacher can see your screen in Homeroom.",
       "toolKind": "Manipulatives · practice",
-      "toolNotOpen": "Not open right now. Ask your teacher."
+      "toolNotOpen": "Not open right now. Ask your teacher.",
+      "eraseSizes": {
+        "S": "Small eraser",
+        "M": "Medium eraser",
+        "L": "Large eraser"
+      },
+      "erase": "Eraser",
+      "eraseSize": "Eraser size",
+      "room": {
+        "pen": "Draw",
+        "erase": "Erase my lines",
+        "hint": "Draw anywhere outside other desks. Everyone in See the room sees it.",
+        "locked": "Your teacher paused drawing for now.",
+        "bigger": "Turn your device sideways or use a bigger screen to draw on the room.",
+        "full": "That's as much as you can draw. Erase some lines first.",
+        "notHere": "Draw outside other desks and the teacher's area."
+      }
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -16757,7 +16807,12 @@
       "snap": "That picture could not be sent.",
       "oneTool": "{tool} is running in this class’s Manipulatives room. Take it off every desk first: one Manipulatives tool runs in a class at a time.",
       "noTools": "Manipulatives needs the Teacher plan.",
-      "badTool": "Pick a Manipulatives tool."
+      "badTool": "Pick a Manipulatives tool.",
+      "drawOff": "Your teacher hasn't turned on drawing on the room.",
+      "deskLocked": "Drawing is paused right now.",
+      "notHere": "Lines go outside other students' desks and the teacher's area.",
+      "tooFast": "That's a lot of drawing at once. Try again in a moment.",
+      "roomFull": "The room has as many drawings as it can hold."
     },
     "live": "Live",
     "desk": {
@@ -17125,6 +17180,12 @@
       "hostLive": "Host live",
       "myDeskOnly": "My desk",
       "more": "More Oomba lessons"
+    },
+    "studentDraw": {
+      "savedOn": "Students can draw on the room",
+      "savedOff": "Students can't draw on the room",
+      "cleared": "Students' drawings cleared",
+      "removed": "Their drawings removed"
     }
   }
 }

@@ -42,7 +42,11 @@ Teachers without the Teacher plan keep today's class page.
 - Teacher's area (yellow band, "Teacher's area · everyone can see this") across the top: slides (Google Slides links,
   PDFs and PowerPoint files), sticky notes, text, pen, and a Shapes picker (25 shapes and lines) with fill, outline
   weight and dashes, arrowheads, text and note colors, copy and paste, many selected at once, undo and redo
-  (docs/decisions.md "Homeroom: board tools").
+  (docs/decisions.md "Homeroom: board tools"). An Eraser beside the pen takes only what it passes over (a line it
+  crosses is cut in two). The teacher resizes the area by its edges and bottom corners (saved per class; desks it grows
+  over move down, My desk stays under its middle; the projector and desks' windows follow). Notes, text, shapes and
+  lines also go anywhere else on the board, around the desks: the teacher's and aide's board and students' See the room
+  show them, never the projector (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board").
 - A desk per student, name above it, border in the student's group color. **Arrange seats** to match the real room:
   Rows, Tables of 4, U-shape, Circle, then drag any desk; each class keeps its own seating. **Team desks**: students who
   share one desk.
@@ -52,12 +56,17 @@ Teachers without the Teacher plan keep today's class page.
   tools), Reading, Class flow (brain break, note, timer, used right away), Board tools.
 - **My desk** (the teacher's own desk on the board, under the teacher's area): the teacher drops or tap-places any lesson,
   lesson plan or tool there, even before the class has students, to try it (Play / Preview) and hand it out later (Hand
-  out, then a desk, a group or Whole class; or drag the card there). Staged, not assigned: students never see it. Kept
+  out, then a desk, a group or Whole class; or drag the card there). Dragging works by touch too: a short hold or a move
+  out of the panel (a phone's strip still scrolls sideways), a ghost under the finger, the target outlined. Staged, not assigned: students never see it. Kept
   per class. Whole class works with no students yet ("No students yet. Students who join will get it."). Details:
   docs/decisions.md "Homeroom: the teacher's desk".
 - Top bar: class switcher, tabs, Live dot, the plan pill (Today / Now with countdown / Time's up), +5 min and Next
   during a plan, Today (today at a glance), Hands, the yellow Everyone to Homeroom / Bring everyone to me, and the ⋯
-  menu (Arrange seats, join code, projector view, End class).
+  menu (Arrange seats, join code, projector view, K-2 desks, Parents' view, Students draw on the room, End class).
+- **Students draw on the room** (⋯ menu, off by default): when on, students in See the room draw with a pen and erase
+  their own lines anywhere outside other students' desks, the teacher's area and My desk; everyone in See the room sees
+  them without names, the teacher's board shows whose (Remove, Clear students' drawings); never on the projector;
+  locked while screens are paused or a desk is locked.
 - **Pause screens** for everyone; for one student: hide cursor, lock desk, remove a sticky they added.
 - **Projector view**: teacher's area, Now/Next timer, slides, brain breaks. Never names, hands, Needs a look or progress.
 
@@ -100,7 +109,7 @@ Finish class while a plan runs. Week plans come in step 5.
 ## The student desk
 
 Their square from the live room made into a desk: handouts in order (Next up / Later, or any order), the book they're
-reading, a doodle and working-out pad, a small window on the teacher's area, Raise hand (question, help, bathroom via
+reading, a doodle and working-out pad (pens, an eraser that takes only what it passes over, Undo, Clear), a small window on the teacher's area, Raise hand (question, help, bathroom via
 the hall pass queue), and a dock (My desk, Teacher's area, Library, See the room). Students can zoom out to see every
 desk (classmates' notes show without their words) and change only their own or their team's. The **notebook** opens
 from the green corner button on every Oomba page: running notes across sessions, tabs, search, highlight. The teacher

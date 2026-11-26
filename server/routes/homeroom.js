@@ -38,6 +38,8 @@
 //   GET  /api/desk/:id/state?v=&hv=            the live state, the teacher's area when it changed, and the student's own
 //                                              handout cards when they changed (hv: the cards' version the page has)
 //   POST /api/desk/:id/doodle                  their doodle and working-out pad: { strokes }
+//   GET  /api/desk/:id/marks?v=                See the room's lines: { on, v, locked, mine?, others? } (no names)
+//   POST /api/desk/:id/marks                   their own lines on the room: { strokes } (when the teacher allows it)
 //                                              (the desk's Notebook and a handout's Notes: routes/notebook.js)
 //   GET  /api/homeroom-live                    the live classes of this student with Homeroom (the prompt on every page)
 // Step 3a, live class (services/homeroom-live.js; docs/decisions.md "Homeroom, step 3a"):
@@ -68,6 +70,9 @@
 //   GET  /api/desk/:id/reading/:clid/quiz      the quiz's questions (never the answers; written once per book if needed)
 // K-2 mode, absent and at home (docs/decisions.md "Homeroom: K-2 mode, absent and at home"; services/homeroom-attendance.js):
 //   POST /api/homeroom/:id/parents             the parents' view on or off: { on: true | false } (step 4d)
+//   POST /api/homeroom/:id/student-draw        students may draw on the room in See the room: { on: true | false }
+//   GET  /api/homeroom/:id/marks?v=            students' lines on the room, with whose: { on, v, marks? }
+//   POST /api/homeroom/:id/marks               { action: remove, studentId } | { action: clear }
 //   POST /api/homeroom/:id/k2                  the class's K-2 desks: { mode: '' (by grade) | on | off }, or one student's:
 //                                              { studentId, mode: '' (as the class) | on | off }
 //   POST /api/homeroom/:id/attendance          { studentId, status: absent | home | '' (here), tz } for today (a sub: /api/sub)
@@ -108,6 +113,7 @@ import * as HR from '../services/homeroom-reading.js';
 import { readingResultsPage } from './homeroom-reading.js';
 import * as AT from '../services/homeroom-attendance.js';
 import * as PV from '../services/homeroom-parents.js';
+import * as MK from '../services/homeroom-marks.js';
 import * as HT from '../services/homeroom-tools.js';
 import * as HW from '../services/homeroom-watch.js';
 import * as F from '../services/game-folders.js';
@@ -117,7 +123,7 @@ import { liveGameOf } from '../live/live-games.js';
 import { TOOLS as MANIP_TOOLS, CATS as MANIP_CATS } from '../../public/js/manip-data.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, tooBig: 413, forbidden: 403 };
+const STATUS = { notFound: 404, tooBig: 413, forbidden: 403, drawOff: 403, deskLocked: 403, notHere: 403, tooFast: 429 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`homeroom.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -127,7 +133,7 @@ const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
 // a sub with that class's one-day link (services/homeroom-sub.js, the hr_sub cookie) get in too, but only to the
 // addresses listed for them here; everything else of the class's Homeroom answers them 403. The services check again.
 const HELPER_OK = {
-  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports)$/],
+  aide: [['GET', /^\/class\/[^/]+\/homeroom\/?$/], ['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/(state|handouts|plan|pulse|supports|marks)$/],
     ['GET', /^\/api\/homeroom\/[^/]+\/look\/[^/]+$/], ['POST', /^\/api\/homeroom\/[^/]+\/(hands|desk-flag|asks)$/], ['POST', /^\/api\/homeroom\/[^/]+\/handouts\/[^/]+\/feedback$/]],
   sub: [['GET', /^\/class\/[^/]+\/homeroom\/projector\/?$/], ['GET', /^\/api\/homeroom\/[^/]+\/state$/]],
 };
@@ -313,6 +319,8 @@ router.get('/class/:id/homeroom', (req, res) => {
       // K-2 mode: the class's setting and each student's own (step 4c)
       // the parents' view (step 4d): on unless the class's teachers turned it off
       ...(aide ? {} : { parents: PV.parentsOn(c) }),
+      // students drawing on the room (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board")
+      studentDraw: MK.drawOn(c),
       k2: AT.classK2(c), k2Students: AT.studentModes(c.id), supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
       ...(aide ? {} : { helpers: { aides: HA.listFor(c), subLinks: SB.linksOf(c), notes: SB.notesFor(c), noteMax: SB.NOTE_MAX, aidesMax: HA.AIDES_MAX } }) })}
     ${body}`,
@@ -372,6 +380,21 @@ router.post('/api/homeroom/:id/parents', rateLimit('homeroom-parents-set', 300, 
   const r = PV.setParents(req.user, req.homeroomClass, body(req).on);
   if (!r.ok) return fail(req, res, r.code);
   res.json({ ok: true, parents: r.parents, toast: req.t(r.parents ? 'homeroom.parents.savedOn' : 'homeroom.parents.savedOff') });
+});
+// Students drawing on the room (services/homeroom-marks.js): the class's teachers turn it on or off, see every
+// student's lines with their name (an aide too: the gate lets the GET), and remove one student's or everyone's.
+router.post('/api/homeroom/:id/student-draw', rateLimit('homeroom-draw-set', 300, 3600e3), (req, res) => {
+  const r = MK.setDraw(req.user, req.homeroomClass, body(req).on);
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, on: r.on, toast: req.t(r.on ? 'homeroom.studentDraw.savedOn' : 'homeroom.studentDraw.savedOff') });
+});
+router.get('/api/homeroom/:id/marks', rateLimit('homeroom-state', 3000, 3600e3), (req, res) => res.json(MK.forBoard(req.homeroomClass, req.query.v)));
+router.post('/api/homeroom/:id/marks', rateLimit('homeroom-marks-t', 600, 3600e3), (req, res) => {
+  const x = body(req), a = String(x.action || '');
+  if (a !== 'remove' && a !== 'clear') return fail(req, res, 'badAction');
+  const r = MK.removeMarks(req.user, req.homeroomClass, a === 'remove' ? String(x.studentId || '') || null : null);
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, ...MK.forBoard(req.homeroomClass), toast: req.t(a === 'clear' ? 'homeroom.studentDraw.cleared' : 'homeroom.studentDraw.removed') });
 });
 router.post('/api/homeroom/:id/attendance', rateLimit('homeroom-attendance', 1200, 3600e3), (req, res) => {
   const x = body(req), c = req.homeroomClass;
@@ -600,7 +623,7 @@ router.get('/class/:id/desk', (req, res) => {
     title: t('homeroom.desk.pageTitle', { class: c.name }), active: 'classes', bodyClass: 'hr-page hd-page', scripts: ['/js/homeroom-desk.js'], i18n: ['js.homeroom-area', 'js.homeroom-pulse', 'js.homeroom-plan', 'js.homeroom-support', 'js.homeroom-reading'],
     head: raw(`<link rel="stylesheet" href="/css/manipulatives.css?v=${VERSION}"><link rel="stylesheet" href="/css/homeroom.css?v=${VERSION}">`),
     body: html`${jsonData('page-data', { classId: c.id, className: c.name, me: { id: u.id, name: u.display_name }, device, notebook: nb, libraryGrade: HR.libraryGrade(c.grade), color: room.color, desks: room.desks, teams: room.teams, team: room.team, cards,
-      strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
+      draw: MK.drawOn(c), marks: { strokes: MK.MARKS.strokes, points: MK.MARKS.points }, strokes: H.doodleOf(c.id, u.id), pv: H.padVersion(c.id, u.id), doodle: { w: H.DOODLE.w, h: H.DOODLE.h, strokes: H.DOODLE.strokes, points: H.DOODLE.points, total: H.DOODLE.total, colors: H.DOODLE_COLORS },
       // step 3c: their own supports (only theirs; See the room never carries anyone's)
       ...(SUP.anySup(sup) ? { support: sup } : {}), askMax: AT.ASK_MAX, state: { ...H.boardState(c.id), ...deskLive(c, u), ...deskMode(c, u), plan: HP.deskView(c, sup), support: sup } })}
     <div class="hd${AT.k2For(c, u.id) ? ' hd-k2' : ''}" id="hd">
@@ -687,6 +710,9 @@ router.post('/api/desk/:id/hand', rateLimit('homeroom-hand', 300, 3600e3), (req,
   if (a === 'lower' || a === 'back') return send(req, res, HV.lowerHand(req.user, c, { back: a === 'back' }));
   fail(req, res, 'badAction');
 });
+// Their lines on the room in See the room (services/homeroom-marks.js), when the class's teachers allow it.
+router.get('/api/desk/:id/marks', rateLimit('homeroom-desk-state', 3000, 3600e3), (req, res) => res.json(MK.forStudent(req.homeroomClass, req.user, req.query.v)));
+router.post('/api/desk/:id/marks', rateLimit('homeroom-marks', 900, 3600e3), (req, res) => send(req, res, MK.saveMine(req.user, req.homeroomClass, body(req).strokes)));
 router.post('/api/desk/:id/doodle', rateLimit('homeroom-doodle', 1200, 3600e3), (req, res) => {
   const x = body(req), r = H.saveDoodle(req.user, req.homeroomClass, x.strokes, { base: x.base === undefined || x.base === null ? null : String(x.base) });
   // Another team member drew since: the current pad comes back so the page adds its strokes to it (409).

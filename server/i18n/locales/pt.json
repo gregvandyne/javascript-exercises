@@ -2333,7 +2333,41 @@
         "tools": "Item selecionado",
         "delete": "Excluir o item selecionado"
       },
-      "playBack": "Voltar para o Homeroom"
+      "playBack": "Voltar para o Homeroom",
+      "frame": {
+        "resize": "Arraste para mudar o tamanho da área do professor",
+        "saved": "Área do professor redimensionada"
+      },
+      "erase": {
+        "tool": "Borracha",
+        "hint": "Passe sobre parte de um traço para apagar só essa parte. Toque em Selecionar quando terminar.",
+        "size": "Tamanho da borracha",
+        "sizes": {
+          "S": "Borracha pequena",
+          "M": "Borracha média",
+          "L": "Borracha grande"
+        }
+      },
+      "draw": {
+        "menu": "Alunos desenham na sala",
+        "title": "Alunos desenham na sala",
+        "on": "Ligado",
+        "off": "Desligado",
+        "lead": "Quando ligado, os alunos podem desenhar com uma caneta em Ver a sala, em qualquer lugar fora das carteiras dos outros, e apagar as próprias linhas.",
+        "modeOn": "Ligado para esta turma",
+        "modeOff": "Desligado para esta turma",
+        "what": {
+          "where": "Nunca nas carteiras de outros alunos, na área do professor ou em Minha mesa.",
+          "seen": "Todos em Ver a sala veem as linhas, sem nomes; seu quadro mostra de quem são. Nunca no projetor.",
+          "locked": "O desenho para enquanto você pausa as telas ou trava uma carteira."
+        },
+        "whose": "Desenhos dos alunos",
+        "lines": "{count, plural, one {# linha} other {# linhas}}",
+        "remove": "Remover",
+        "clear": "Apagar os desenhos dos alunos",
+        "clearConfirm": "Tirar da sala as linhas de todos os alunos?",
+        "none": "Ainda não há desenhos na sala."
+      }
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -5018,7 +5052,23 @@
         "coming": "Seu professor está vindo até você",
         "passBtn": "Passe de saída"
       },
-      "playBack": "Voltar para minha carteira"
+      "playBack": "Voltar para minha carteira",
+      "eraseSizes": {
+        "S": "Borracha pequena",
+        "M": "Borracha média",
+        "L": "Borracha grande"
+      },
+      "erase": "Borracha",
+      "eraseSize": "Tamanho da borracha",
+      "room": {
+        "pen": "Desenhar",
+        "erase": "Apagar minhas linhas",
+        "hint": "Desenhe em qualquer lugar fora das outras carteiras. Todos veem em Ver a sala.",
+        "locked": "Seu professor pausou o desenho por enquanto.",
+        "bigger": "Vire o aparelho de lado ou use uma tela maior para desenhar na sala.",
+        "full": "Você não pode desenhar mais. Apague algumas linhas primeiro.",
+        "notHere": "Desenhe fora das outras carteiras e da área do professor."
+      }
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -15258,7 +15308,12 @@
       "passAlready": "Você já tem um lugar com o passe de saída.",
       "badMinutes": "Escolha entre 1 e 20 minutos.",
       "noHand": "Essa mão já está abaixada.",
-      "noPass": "Não está com o passe nem na fila."
+      "noPass": "Não está com o passe nem na fila.",
+      "drawOff": "Seu professor não ligou o desenho na sala.",
+      "deskLocked": "O desenho está pausado agora.",
+      "notHere": "As linhas ficam fora das carteiras dos outros alunos e da área do professor.",
+      "tooFast": "É muito desenho de uma vez. Tente de novo daqui a pouco.",
+      "roomFull": "A sala já tem todos os desenhos que cabem."
     },
     "live": "Ao vivo",
     "desk": {
@@ -15450,6 +15505,12 @@
       "gcNotLinked": "Ainda não vinculada.",
       "gcLink": "Vincular uma turma do Classroom",
       "gradeSaved": "Avaliação alterada"
+    },
+    "studentDraw": {
+      "savedOn": "Os alunos podem desenhar na sala",
+      "savedOff": "Os alunos não podem desenhar na sala",
+      "cleared": "Desenhos dos alunos apagados",
+      "removed": "Os desenhos foram removidos"
     }
   }
 }
