@@ -15770,6 +15770,52 @@ push-board dead end, End session's confirmation and the answer box's place, were
   second "My square" (Homeroom's player bar has them), and on a phone put a practice set's card below the board or make
   it collapsible, so more of the board shows above the fold.
 
+## Figures: a friendlier number line (26 Nov 2026)
+
+The owner tried the number line editor on an iPhone: changing "from" to 2 on the example (an interval from -3 to 4)
+filled the page with the red "cannot be drawn" box, the generated `OF.svg(...)` line showed under the figure, the page
+was wider than the phone with Oomba's chat button half off it, the tab bar floated over the form with the keyboard up,
+and the number pad had no minus key, so -3 could not be typed at all. What changed (editor code only:
+`public/js/figures-editor.js`, the new `public/js/figures-nl.js`, `public/css/figures.css`; Oomba Figures itself and
+every file in `figures/SHIPPED.json` are unchanged, so no new version):
+
+- **The code is for builders.** It sits behind "Advanced: show code", closed by default, with one line saying what it is.
+- **Number boxes forgive.** Every kind's number box is a text box (`inputmode="decimal"`), not `type="number"`: it takes
+  -3 (a hyphen or a true minus), 2.5 or 2,5, and fractions 3/4 (stored as `[3, 4]`, as Oomba Figures writes them).
+  On a touch screen a measure that can be below 0 (any kind's example has one below 0, or it is a position, a reading or
+  a charge) has a ± key beside its box that keeps the keyboard up. The number line's from, to and step, and its rows,
+  open the full keyboard instead, for 3/4 and π (2π, π/2 become `{ pi: k }`). Half-typed numbers ("-", "1/", an empty
+  box the figure needs) change nothing and say nothing; words that are not numbers get "Type a number" under that box
+  only; leaving the box puts the figure's number back. A box a kind may leave empty (its `extra` measures) still means
+  "leave it out" when emptied.
+- **Problems next to their box, the last good figure kept.** A number line problem Oomba Figures reports (its English
+  `check()` words) is placed next to its box or row in the reader's language (`nlWhere`: "to" before "from", a step of
+  0 or one that does not land on the end, more than 100 gaps, "every", an interval the wrong way round, a value past
+  the end); any kind's problem that starts with a measure's quoted name goes next to that box too. While every problem
+  has a place, the figure shows the last drawing that worked, faded, with one line saying so, and downloads stay off.
+  Problems with no place (a triangle that cannot close, the number line's sequence) still use the cannot-draw panel with
+  Undo, as before; it now waits a moment while a box is being typed in, and is not rebuilt while it shows (a tap on its
+  Undo used to land on a button that had just been replaced).
+- **The range widens itself.** An interval end or a point outside the line widens it on its own tick grid (`nlWiden`;
+  fractions stay fractions; not for π lines or past 100 ticks, where the row says so instead), with a note: "Range
+  widened to -3 to 5 so everything fits." and "Keep 2 to 5", which keeps the teacher's range and leaves out what does
+  not fit (`nlFit`, with a toast saying how many). The box being typed in keeps what was typed until it is left.
+  Undo covers all of it.
+- **Intervals and points have rows.** They were only in the JSON box. Now each interval has From and To with each end
+  Closed ●, Open ○ or running off the line (an arrow; the box greys out), and each point has its place, a letter, Dot or
+  Cross and "Show its value". Add and Remove; at most 12 intervals and 30 points, as Oomba Figures allows. The sequence,
+  sets (colors) and size stay in "Advanced (data)".
+- **The phone.** Boxes are 16px on a phone (iOS zoomed into the 14px boxes, which is what left the page wider than the
+  screen and the chat button half off it). While a box has the keyboard (focus on a small or touch screen, or the
+  visual viewport shrunk), `body.fg-kb` hides the tab bar and the chat bubble; they come back only once a press has ended,
+  so the tap that leaves a box lands where it was aimed. The figure's frame is shorter on a phone.
+- **The drawing was checked, not changed.** Ticks, numbers (counted from 0, true minus signs, no float noise), open and
+  closed circles, shading and arrows are right for the cases in `tests/unit/figures-nl-editor.test.js`, through the
+  shipped number line.
+- Tests: `tests/unit/figures-nl-editor.test.js` (parsing, widening, Keep, every problem placed and translated, the
+  drawing cases) and `tests/unit/figures-nl-browser.test.js` (390x844 and 1366: no sideways scroll, 16px boxes, code
+  hidden, -3 typed and with ±, the owner's case widens with no panel and Keep goes back, reversed and zero inline with
+  the faded figure, rows with open, closed and arrow ends, the tab bar not over a focused box, a thermometer's ± key).
 ## Homeroom: live games inside Homeroom, a simpler Find lessons (26 Nov 2026)
 
 The owner, on the phone's Find lessons sheet: "Let's fix the layout of this to be more intuitive." And: "Make sure Brain
