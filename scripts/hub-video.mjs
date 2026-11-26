@@ -493,7 +493,7 @@ async function film({ open, ctxs, errors, W0, BASE }) {
   await S.click('#hr-plan [data-hrplan="start"]', says('#hr-plan', /Now[\s\S]*Fractions on a number line[\s\S]*\d:\d\d/));
   await S.wait(1200); await S.peek('plan');
   S.say('The Now bar shows the part you are on and the time left.');
-  await S.spot('#hr-plan'); await S.wait(2000);
+  await S.spot('#hr-plan .hr-planpill'); await S.wait(2000);
   await S.click('#hr-plan [data-hrplan="next"]', says('#hr-plan', /Now[\s\S]*Practice in pairs/));
   await kidDo(7, async p => { await p.waitForSelector('#hd-now:not([hidden])', { timeout: 10000 }); if (!/Practice in pairs/.test(await p.textContent('#hd-now'))) throw new Error('the desk\'s Now is not the second part'); });
   await S.wait(1300); await S.peek('next');
