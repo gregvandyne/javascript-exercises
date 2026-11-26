@@ -15414,6 +15414,136 @@ framework, and Rekenreks and Base Ten Blocks converted completely (all 34 of the
   right first time on the card and the desk sheet; a teacher's list, Preview, the Assign dialog and the class lesson it
   makes, a student's Start from the lesson page, a task handed out from Homeroom's catalog with 5 questions and Score).
   Screenshots at 1366, 820 and 390.
+- **Open**: the other 16 tools (phase 2); translations of the new strings (English, like the task library); a teacher's
+  view of each student's answers per question (the gradebook shows the marks); assigning across tools in one set;
+  Homeroom's give sheet picking several tasks at once (one task a handout there; several from the Manipulatives page).
+
+### Phase 2: Fraction Circles, Fraction Tiles, Bar Models, Clock
+
+All 66 tasks of the four tools are practice (17, 17, 17 and 16 of them; at least 20 variations each in 50 seeds), played
+through solo and in Homeroom's desk player (`tests/unit/_manip-flow/fraction-circles.js`, `fraction-tiles.js`,
+`bar-models.js`, `clock.js`).
+
+- **Board checks.** Fraction Circles: a circle with exactly these pieces (or this sum, only these sizes, one size), a
+  different circle for each of a list, the whole set's total, the Labels mode, the rings view, n full circles each a
+  different mix ("ways"); read with `fcCircles`, so the old `{ placed }` boards read too, from every set that is not read
+  only. Fraction Tiles: the placed tiles' counts by size, their total (in 120ths, exact), "two ways" (n tiles of one size
+  and the same amount again in other sizes), the Labels mode; the task's own tiles are locked and never count. Bar
+  Models: a bar (by its name) with these part values in order or in any order, its total, n equal parts of v. Clock: a
+  clock (by its label, Start or End) showing h:m, and the time tracker started at a time with n minutes since.
+- **Tool changes for the tasks.**
+  - Fraction Tiles' lengths are now their share of the whole (`manip-data.js` `TILE_WHOLE` = 528 px, so 1/12 is still
+    44 px): before, 1/8, 1/10 and 1/12 were all 44 px wide and eight eighths overshot the whole, so "3/4 = 6/8" did not
+    line up on the wall. Tiles already on saved boards keep the width they were saved with.
+  - Totals: off (every practice question that needs it) now also hides a fraction circle's sum under a circle that is
+    not full ("Circle 2" instead of "3/8"; a full circle still says "1 whole ✓") and each bar's " · total" in a bar
+    model; both gave answers away (`manip.js` `fcCircleHtml`, the bar model's board).
+  - The checker's answer box takes `simplest` (a fraction in lowest terms only, for "Equivalent rename") and `over` (an
+    equivalence "?/12": the numerator or the fraction, for "Equivalent cover"), passed on to `answerMatches`
+    (`manip-task-kit.js` `boxMatches`).
+- **Reworded** (open-ended in the library, checkable now, the same goal):
+  - Fraction Circles: "Cover the whole" (some pieces of one size given: how many of the other size finish one whole;
+    other pairs than thirds and sixths too), "Bigger: 1/3 or 1/4?" (both built, each in its own circle; the bigger
+    picked, or "the same"), "Percent switch" (the percent typed and the decimal picked, Labels switched), "Rings
+    equivalence" (Rings view on; the missing number of a/b = ?/D typed), "Thirds and ninths talk" (predict, then build
+    both circles; other sizes too), "More than a whole" (the mixed number picked), "Compare to a half" (one fraction
+    built: less than, equal to or more than 1/2 picked), "Add unlike pieces" (the same amount again in one size of
+    piece; the sum typed), "Percent pie" (one size of piece, Labels on Decimal; the decimal typed, the fraction
+    picked), "Eighths exploration" (how far past one whole typed), "Fraction of a turn" (how many pieces of a size make
+    a full, half, quarter, three-quarter or a third of a turn, filled in a circle), "Leftover pieces" (some pieces
+    given: the uncovered fraction typed), "Order the pieces" (three pieces in their own circles: the biggest or the
+    smallest picked), "Twelfths clock" (one number of minutes: how many twelfths), "Equivalent cover" (a/b = ?/D typed),
+    "Decimal switch challenge" (the partner's decimal given: built with Labels on Decimal, the fraction picked), "Half
+    and quarter mix" (2 or 3 circles each a different way; how many ways there are in all typed; other pairs of sizes
+    too).
+  - Fraction Tiles: "Prove 1/2 = 2/4" (how many tiles of a size cover a given fraction), "Beat the benchmark" and
+    "Compare with benchmarks" (rows built, the closest to 1 picked), "Build the wall" (the same amount in one or two
+    named rows), "Sum past one whole" (a whole tile and one size, the mixed number picked), "Wall hunt: 3/4" (every
+    equal fraction up to twelfths built; how many fractions typed), "Add thirds and sixths" (traded to one size, the
+    count typed), "Mixed number build" (the mixed number built; how many tiles of its size typed), "Order unlike
+    fractions" (four rows; the order picked), "Decimal tiles" (Labels on Decimal, one decimal size; the count typed),
+    "Half of a half" (half or a quarter of a fraction built and typed), "Equivalent rename" (the fewest tiles of one
+    size; lowest terms typed), "Percent tiles switch" (Labels on Percent, the percent typed; the second way any other
+    sizes).
+  - Bar Models: each bar starts named and its parts labeled (the student sets the values, adds parts where the task asks
+    for equal parts, and types the answer); "Part-part-whole: pets" (other stories too; the unknown part is labeled, not
+    a question mark), "Ratio bars" (scaled to a total amount instead of 25 parts), "Comparison difference" (the
+    equation picked), "Percent bar" (a percent bar and an amount bar), "Rate bar" (1.5 to 3.5 hours).
+  - Clock: "Elapsed time" (minutes typed; the time bar is not checked), "Half past and quarter to" and "Five minutes to"
+    (one time said in words set on the clock; its digital form picked), "Time tracker challenge" (the jumps are
+    checked; "two jumps instead" left to the teacher), "Five-minute reads" (a read-only clock read to the nearest five
+    minutes), "Quarter past journey" (the quarter hours counted with the tracker; the times listed in the explanation),
+    "Minutes to noon" (to the next o'clock, the jump tracked), "Hour hand creep" (the number the hour hand is closest to
+    picked), "Digital mismatch" (same or not picked, the face's time typed), "Half hour intervals" (landing typed, hours
+    picked), "School day timeline" (two clocks; the length picked), "AM PM talk" (one story's time set, AM or PM
+    picked), "Race the minute hand" (passes between two o'clock times counted).
+- Times are on five-minute marks (Hour + and Min +5 reach them; "Backwards time" drags the minute hand back past the
+  12), except a read-only clock to read. Most questions hide the digital time (Totals off); "Elapsed time" and "School
+  day timeline" keep it, since setting two clocks is not the answer there.
+
+### Phase 2: Pattern Blocks, Geoboard, Algebra Tiles, XY Coordinate Board
+
+All 64 tasks of these four tools are practice now (`public/js/manip-tasks/<slug>.js`), each with its title, code, grade
+and teacher notes kept, at least 20 variations, a run-through helper (`tests/unit/_manip-flow/<slug>.js`) and every
+task played solo and in Homeroom. No tool changed (`manip.js`, `manip-board.js` and `manip-data.js` as they were).
+
+- **Board checks.** Pattern Blocks: `counts` (exactly these blocks placed, none of another kind) and `some` (at least
+  these): the blocks a student placed (unlocked) are counted, not where they sit, since a block's outline is a
+  rectangle on the board and a cover cannot be checked edge to edge. Geoboard: `shapes`: closed bands (Close the band;
+  the band being stretched is not a shape yet) that fit specs (sides, area, square or rectangle sizes, a right angle or
+  none, the legs at it, isosceles, an angle of 45, 90 or 135, sides on the grid lines with a perimeter, a pentomino in
+  any turn, exact corners, a color, parallel pairs and their step, the inside angle at the circular board's center),
+  one band each, all different shapes or growing areas when asked; a band's repeated pegs and straight-through pegs are
+  taken out first. Algebra Tiles: `tiles` (exactly these) and `net` (worth these terms, zero pairs allowed), on the
+  whole board or on the Left or Right work mat (the tile's middle on it). XY Coordinate Board: `pts` (plotted), `line`
+  (a line through these points in order, or closed into a shape: #615's Close the shape), `four` and `count` (n points
+  with x = v or y = v).
+- **The answer box learned three kinds** (`manip-task-kit.js` `boxMatches`, shared): `poly` (an expression in x and y
+  in any order: "x^2 + 7x + 12", "x²+7x+12", "x2 + 7x + 12", "12 + 7x + x²"; "x = 4" for a key of 4), `factored` (the
+  same, written as a product of brackets: "(x + 2)(x + 3)"; the multiplied-out form does not count) and `point` ("(3,
+  -4)", "3, −4"). `polyOf`, `polyMatches` and `pointMatches` are exported for the tests.
+- **Reworded tasks** (open-ended in the library, checkable now, the same goal). Pattern Blocks: "Cover the hexagon" (each
+  question names the blocks to use, one kind or some trapezoids and parallelograms with triangles for the rest; how
+  many triangles), "Fraction trading" (build the same amount as a locked design with one kind of block; how many),
+  "Symmetric design" (no share code: build the mirror half with the same blocks; blocks in the whole design), "Grow the
+  pattern" (each stage adds a ring of 6; build stage 2, predict a later stage), "Build a larger hexagon" (the blocks
+  given, triangles for the rest of the 24), "Angle sums" (every block's corners: how many close the turn, or how many
+  degrees k corners make), "Design with value" (one count given, find the other), "Rhombus talk" (put the blocks down and
+  pick an angle size; the library's "both equal 2 triangles in area" is left out: the tan rhombus is not), "Pattern
+  train" (the count of one shape; the order is not checked), "Fill the outline" (the tool has no outlines: a big
+  triangle of s × s small triangles in words; the triangles needed and which way uses fewer blocks), "Thirds in three
+  ways" (one block a question, any fraction of a hexagon to 2), "Square from blocks" (no worth in triangles, which the
+  square has none of: a shape r squares down and c across, how many squares, is it a square), "Deci blocks link" (the
+  parallelogram as 1 gives tidy decimals: build a decimal with one kind, or read a design's value), "Border a hexagon"
+  (any block bordered with squares: how many squares, a corner gap's degrees, the block that fills it, how many
+  fillers), "Invent a whole" (any block as the whole, rebuilt where it can be). Geoboard: "Squares of many sizes" (three
+  squares of given sides; the area of one), "Right angle hunt" (a right triangle with given legs and a triangle with a
+  wide or only narrow angles; the right triangle's area), "Same area, different shape" (the kinds named), "Perimeter
+  puzzle" (the biggest perimeter, 2A + 2, typed; or beat a partner's rectangle), "Triangles of area 1" (areas 1 to 10,
+  two different triangles, or one with a right angle and one without), "Isosceles hunt" (given base and height, or a
+  right isosceles triangle; can all three sides be equal on this board, or which sides are equal), "Parallel bands" (a
+  band here always closes into a shape, so a parallelogram with a given step or a trapezoid with given parallel sides;
+  how the pegs show parallel), "Area by splitting" (the polygon on a read-only Shape board, a second board to split it
+  on; the area typed, the split not checked), "Smallest perimeter" (areas 2 to 20; the perimeter typed), "Angle sizes"
+  (a shape in a named color with a 45, 90 or 135 degree angle; what the other angles add to), "Mirror shape" (the shape
+  given; its mirror checked corner by corner; the rule picked), "Pentomino try" (copy the shown pentomino in any turn,
+  make a different one), "Circle board fractions" (one fraction of the turn a question; degrees, fraction or spaces),
+  "Rectangle ratios" (4 by 6 does not fit the 5-unit board: pairs that fit; the bigger area, how many times the area or
+  the perimeter), "Pick a perimeter" (two shapes, the second with more area; the biggest area typed; or an exact
+  perimeter and area), "Coordinates on pegs" (no partner: build from coordinates, or read a corner's coordinates).
+  Algebra Tiles: every task's numbers vary; the area-model and factoring rectangles are not checked as rectangles (as
+  phase 1's "Area model 13 x 12"): the tiles are counted and the expression or the product is typed; the zero-pair tasks
+  start with the tiles on the board; the equations sit on Left and Right mats, each side's tiles checked and x typed;
+  "Negative area talk" (which regions are negative: a choice), "Like terms sort" (the sum typed, the groups not
+  checked), "Inequality tiles" (the values of x: a choice), "Two variable terms" (why they cannot merge: a choice; the
+  tool's x and y tiles are the same size turned, so the reason is "different unknowns", not "different lengths"),
+  "Square a binomial" (the expression, one middle region or the corner). XY Coordinate Board: every task's points vary;
+  "Plot the treasure" and "Four quadrant tour" (closed in order; the shape picked), "Growing pattern table" (predict y
+  for x from 6 to 12), "Same x, same y" and "Line of points" (what the points make: a choice), "Reflections" (one
+  reflection typed), "Shape translation" (one moved corner typed), "Table to graph" (the rule picked), "Negative slope
+  talk" (the direction picked, the fall typed), "Ordered pair story" (a given walk: the distance in all, between two
+  hours, or the rest hour), "Symmetry points" (a point plotted on the mirror line, x = typed).
+
 ### Phase 2: Two-Color Counters, Linking Cubes, Color Tiles, Hundred Board
 
 All 68 tasks of these four tools are practice now (17 each), every one played through solo and in a Homeroom set
@@ -15478,6 +15608,3 @@ shading.
   row now carries on that row flush under it (`nextPieceSpot`'s row checks overlap only above and below; it jumped past
   the row above before), so arrays and rectangles of cubes and tiles are built row by row; and a locked piece never
   moves with its snapped group (`groupOf`: a cube snapped onto a locked stick is dragged away alone).
-- **Open**: the other 16 tools (phase 2); translations of the new strings (English, like the task library); a teacher's
-  view of each student's answers per question (the gradebook shows the marks); assigning across tools in one set;
-  Homeroom's give sheet picking several tasks at once (one task a handout there; several from the Manipulatives page).

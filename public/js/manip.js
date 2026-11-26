@@ -402,12 +402,13 @@ const IMPL = {
     ],
     hint: 'Tap a part\'s number to type its size, or use - and +. Type in a part to rename it. Tap a part to select it, then Delete removes it.',
     note: 'Part-part-whole, comparison and equal groups, for rates, ratios and word problems.',
+    // Totals: off (a practice question) hides each bar's total, which would give the answer away.
     board: (st, view) => {
       const ro = !!view.readOnly, pick = ro ? null : barPick(st);
       if (!st.bars.length) return `<div class="mp-pad mp-bars"><p class="small muted">No bars yet. Use Add a bar.</p></div>`;
       const maxTotal = Math.max(1, ...st.bars.map(b => b.segs.reduce((s, x) => s + x.value, 0)));
       const ids = (bi, si) => `data-bar="${bi}" data-seg="${si}"`;
-      return `<div class="mp-pad mp-bars">${st.bars.map((b, bi) => `<div><p class="mp-barname">${esc(b.name)} · total ${b.segs.some(x => x.hide) ? '?' : b.segs.reduce((s, x) => s + x.value, 0)}</p><div class="mp-bar">${b.segs.map((s, si) => {
+      return `<div class="mp-pad mp-bars">${st.bars.map((b, bi) => `<div><p class="mp-barname">${esc(b.name)}${view.totals === false ? '' : ` · total ${b.segs.some(x => x.hide) ? '?' : b.segs.reduce((s, x) => s + x.value, 0)}`}</p><div class="mp-bar">${b.segs.map((s, si) => {
         const on = !!pick && pick.b === bi && pick.s === si;
         // Tap the part (not its name, number or buttons) to select it; its Delete shows under the bar.
         return `<div class="mp-seg${segInk(s.color) === 'dark' ? ' lite' : ''}${on ? ' on' : ''}" ${ro ? '' : `data-act="segsel" ${ids(bi, si)}`} style="background:${esc(s.color)};width:${(s.value / maxTotal) * 100}%">
@@ -716,8 +717,9 @@ function fcWedge(p, a0, ci, st, edit) {
 }
 /** One circle: its outline (the part not yet covered), its pieces edge to edge from 12 o'clock going clockwise, and
  *  its sum under it ("3/4", "1 whole ✓"; none on a practice question, where it would give the answer away). */
-function fcCircleHtml(c, ci, st, edit) {
-  const on = edit && !!st.sel && st.sel.c === c.id, u = fcUsed(c), lab = fcCircleLabel(c, st.mode);
+function fcCircleHtml(c, ci, st, edit, hide = false) {
+  // hide (Totals off, a practice question): no sum under a circle that is not full, which would give the answer away.
+  const on = edit && !!st.sel && st.sel.c === c.id, u = fcUsed(c), hid = hide && u !== FC_WHOLE, lab = hid ? (u ? `Circle ${ci + 1}` : 'Empty') : fcCircleLabel(c, st.mode);
   let a = -Math.PI / 2, top = '';
   const wedges = c.ps.map(p => {
     const w = fcWedge(p, a, ci, st, edit);
@@ -727,9 +729,9 @@ function fcCircleHtml(c, ci, st, edit) {
   });
   const bg = `<circle class="mp-fcbg" cx="${FC_C}" cy="${FC_C}" r="${FC_R}"${edit ? ` data-act="fcsel" data-c="${esc(c.id)}"` : ''}/>`;
   const ring = on ? `<circle class="mp-fcring" cx="${FC_C}" cy="${FC_C}" r="${FC_R + 5}"/>` : '';
-  const sum = st.q ? '' : edit ? btn(`mp-fcsum${u === FC_WHOLE ? ' full' : ''}${on ? ' on' : ''}`, `data-act="fcsel" data-c="${esc(c.id)}" aria-pressed="${on}" aria-label="${esc(`Circle ${ci + 1}: ${fcSentence(c, st.mode)}. Select the circle`)}"`, esc(lab))
+  const sum = st.q ? '' : edit ? btn(`mp-fcsum${u === FC_WHOLE ? ' full' : ''}${on ? ' on' : ''}`, `data-act="fcsel" data-c="${esc(c.id)}" aria-pressed="${on}" aria-label="${esc(`Circle ${ci + 1}${hid ? '' : `: ${fcSentence(c, st.mode)}`}. Select the circle`)}"`, esc(lab))
     : `<span class="mp-fcsum${u === FC_WHOLE ? ' full' : ''}">${esc(lab)}</span>`;
-  return `<div class="mp-fcc${on ? ' on' : ''}" data-fcc="${esc(c.id)}"><svg class="mp-fcsvg" width="160" height="160" viewBox="0 0 160 160" role="group" aria-label="${esc(`Circle ${ci + 1}${st.q ? '' : `: ${fcSentence(c, st.mode)}`}`)}">${bg}${wedges.join('')}${top}${ring}</svg>${sum}</div>`;
+  return `<div class="mp-fcc${on ? ' on' : ''}" data-fcc="${esc(c.id)}"><svg class="mp-fcsvg" width="160" height="160" viewBox="0 0 160 160" role="group" aria-label="${esc(`Circle ${ci + 1}${st.q || hid ? '' : `: ${fcSentence(c, st.mode)}`}`)}">${bg}${wedges.join('')}${top}${ring}</svg>${sum}</div>`;
 }
 /** A fraction set: its circles, three a row, and a footer with Delete for what is selected and a short tip. */
 function fcBoardHtml(st, view) {
@@ -740,7 +742,7 @@ function fcBoardHtml(st, view) {
   const tip = !any ? 'Tap a piece in the palette to put it in a circle. Pieces fill a circle from the top, going clockwise.'
     : selP ? 'Drag it onto another circle to move it there.' : selC >= 0 ? 'New pieces go into this circle.' : 'Tap a piece to select it. Drag a piece onto another circle to move it.';
   const foot = st.q ? '' : `<div class="mp-fcfoot">${edit ? del : ''}<p class="${any ? 'mp-fctip small muted' : 'mp-empty'}">${esc(tip)}</p></div>`;
-  return `<div class="mp-pad mp-fc"${edit ? ` data-fcset="${esc(view.oid || '')}"` : ''}><div class="mp-fcgrid">${cs.map((c, i) => fcCircleHtml(c, i, st, edit)).join('')}</div>${foot}</div>`;
+  return `<div class="mp-pad mp-fc"${edit ? ` data-fcset="${esc(view.oid || '')}"` : ''}><div class="mp-fcgrid">${cs.map((c, i) => fcCircleHtml(c, i, st, edit, view.totals === false)).join('')}</div>${foot}</div>`;
 }
 /** The rings view: one ring for each size, all in one circle, so equal fractions end on the same line. */
 function fcRingsHtml() {

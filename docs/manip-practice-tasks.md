@@ -80,8 +80,9 @@ check(v, { board, box, choice })   // -> { correct, partial, parts: { board?, bo
   feedback. Rekenreks has `rows`, `pair`, `total`, `oneRow`, `split`, `fives`, `covered` (a `label` picks a labeled
   rekenrek); Base Ten Blocks has `total`, `fewest`, `counts`, `inChart`.
 - `box`: `manip-practice.js` `answerMatches` (numbers with or without commas, any equal fraction or decimal ("1/2" =
-  "0.5"), times "3:05" / "half past 3", money "$1.25" / "125¢"), or `expandedMatches` for `kind: 'expanded'`. Spaces
-  never matter.
+  "0.5"), times "3:05" / "half past 3", money "$1.25" / "125¢"), or `expandedMatches` for `kind: 'expanded'`; `kind:
+  'poly'` an expression in x and y in any order ("x^2 + 7x + 12", "x = 4" for 4), `kind: 'factored'` the same written as
+  a product of brackets, `kind: 'point'` an ordered pair ("(3, -4)", "3,-4"). Spaces never matter.
 - `choice`: the index picked.
 - `feedback` is never the answer; an empty box says "Type your answer in the box."; no choice says "Pick an answer.".
 
