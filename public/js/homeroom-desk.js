@@ -132,7 +132,7 @@ function cardHtml(x) {
   // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
   // (a Manipulatives tool: open practice in its live room, docs/decisions.md "Homeroom: watching desks and the full catalog")
   // (a lesson assigned in Classroom with several steps: its lesson page, steps done)
-  const kind = x.page ? td('pageKind', { count: x.n || 0 }) : x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
+  const kind = x.page ? td('pageKind', { count: x.n || 0 }) : x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : x.unit === 'cards' ? 'worksheetCards' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
   const sub = [kind, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>

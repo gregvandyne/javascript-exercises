@@ -1,5 +1,5 @@
 // Homeroom lessons, step 2b (docs/homeroom.md "Handouts and lessons"; docs/decisions.md "Homeroom, step 2b"): a teacher
-// builds a lesson in Homeroom for Arithmetic Lab, Algebra Builder or Crossword with that game's own settings (shared with
+// builds a lesson in Homeroom for Arithmetic Lab, Algebra Builder, Crossword or Flashcards with that game's own settings (shared with
 // the builder: public/js/homeroom-lesson-make.js), a name, instructions and, when they want, a version for each group;
 // keeps it in My lessons (theirs, for any of their classes: edit, duplicate, delete); prints its worksheet; and hands it
 // out like a game, each student getting their group's version.
@@ -13,7 +13,8 @@
 //   - handing out (handOutLesson) makes one class assignment per version through services/game-folders.js assignGame
 //     with the set in the step's options, exactly the students of that version, and a homeroom_handouts row (in_order,
 //     grade (Score by default for lessons), hr_lesson, version, problems, batch: the versions of one hand-out);
-//   - the worksheet is the game's own printer (services/game-print.js: Arithmetic Lab's and Crossword's pages);
+//   - the worksheet is the game's own printer (services/game-print.js: Arithmetic Lab's and Crossword's pages,
+//     Flashcards' study sheet: the terms and definitions in a table, no answer key since the cards are the answers);
 //     Algebra Builder has no printer, so its sheet is made here on the same paper (the cwp page frame).
 // Who: only a teacher Homeroom lets in (services/homeroom.js canUse) has lessons, and only their own: anyone else's
 // lesson reads exactly as one that isn't there. Nothing here knows a student: a set is numbers and the teacher's words.
@@ -52,7 +53,9 @@ export function lessonGames(u, locale = 'en') {
 }
 
 // ---------------------------------------------------------------- checking what the builder sends
-/** A version's or the base's settings -> { ok, s (filled), items (the game's clean set) } | fail('settings'|'words'). */
+/** A version's or the base's settings -> { ok, s (filled), items (the game's clean set) } | fail('settings'|'words'|...).
+ *  Flashcards: the cards through the game's own cleaner, cleanFlashItems([{ t, c: [[term, definition, emoji]], a }])
+ *  (one item; null for too few or too many cards, a term twice, an empty side or words the text filter refuses). */
 export function cleanSettings(slug, raw, title = '') {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return fail('settings');
   const s = fill(slug, raw);
@@ -65,6 +68,15 @@ export function cleanSettings(slug, raw, title = '') {
     items = gameSets.cleanCrossItems([{ t: String(title).slice(0, gameSets.CROSS.title), w: s.words, r: s.seed, b: s.bank, h: s.hints }]);
     if (!items) return fail('words');
     s.words = items[0].w;
+  } else if (slug === 'flashcards') {
+    const cards = s.cards.filter(([w, d]) => w.trim() || d.trim());
+    if (cards.length < gameSets.FLASH.min) return fail('fewCards');
+    if (cards.some(([w, d]) => !w.trim() || !d.trim())) return fail('missingDef');
+    const keys = cards.map(([w]) => gameSets.flashKey(w));
+    if (new Set(keys).size !== keys.length) return fail('sameCard');
+    items = gameSets.cleanFlashItems([{ t: String(title).replace(/\s+/g, ' ').trim().slice(0, gameSets.FLASH.title), c: cards, a: s.a }]);
+    if (!items) return fail('words');
+    s.cards = items[0].c;
   }
   return items ? ok({ s, items }) : fail('settings');
 }
@@ -211,7 +223,10 @@ export function sheetHtml(slug, settings, { title = '', note = '', set = '', key
   const printer = PRINTERS.get(slug);
   const doc = slug === 'arithmetic-lab'
     ? { k: s.op, p: s.problems, ...(s.method !== 'standard' ? { m: s.method } : {}), ...(note ? { note } : {}), ...(set ? { set } : {}), key: !!key }
-    : { t: String(title).slice(0, gameSets.CROSS.title), w: s.words, b: s.bank, g: crossLayout(s.words.map(w => w[0]), s.seed), ...(note ? { note } : {}), ...(set ? { set } : {}), key: !!key };
+    : slug === 'flashcards'
+      // the study sheet (the terms and definitions); never an answer key: the cards are the answers
+      ? { t: c.items[0].t, c: s.cards, a: s.a, as: 'list', ...(note ? { note } : {}), ...(set ? { set } : {}), key: false }
+      : { t: String(title).slice(0, gameSets.CROSS.title), w: s.words, b: s.bank, g: crossLayout(s.words.map(w => w[0]), s.seed), ...(note ? { note } : {}), ...(set ? { set } : {}), key: !!key };
   const r = printer.clean(doc);
   if (!r.ok) return fail('settings');
   return ok({ html: printer.html(r.doc, { ...ctx, heading: title }), n: countOf(slug, s), s });

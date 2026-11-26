@@ -5262,7 +5262,8 @@
         "notHere": "Zeichne außerhalb der anderen Tische und des Lehrerbereichs."
       },
       "manipKind": "Üben · {count, plural, one {# Aufgabe} other {# Aufgaben}}",
-      "pageKind": "Lektion · {count, plural, one {# Schritt} other {# Schritte}}"
+      "pageKind": "Lektion · {count, plural, one {# Schritt} other {# Schritte}}",
+      "worksheetCards": "Karteikarten · {count, plural, one {# Karte} other {# Karten}}"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -5399,7 +5400,35 @@
       "asBuilt": "Der Unterrichtsplan wie erstellt",
       "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %.",
       "kind": "Unterrichtsplan",
-      "buildText": "Lektion wählen, einmal einrichten, austeilen."
+      "buildText": "Lektion wählen, einmal einrichten, austeilen.",
+      "cards": "Karten",
+      "cardsHint": "{min} bis {max} Karten. Jeder Begriff braucht eine Erklärung.",
+      "term": "Begriff {n}",
+      "def": "Erklärung zu Begriff {n}",
+      "termPh": "Begriff",
+      "defPh": "Erklärung",
+      "addCard": "Karte hinzufügen",
+      "removeCard": "Karte {n} entfernen",
+      "paste": "Liste einfügen",
+      "pasteHint": "Eine Karte pro Zeile: der Begriff, dann seine Erklärung nach einem Tab, einem Komma oder \" - \". Zwei Spalten aus einer Tabelle lassen sich direkt einfügen.",
+      "pastePh": "Lebensraum - wo ein Tier lebt\nBeute, ein Tier, das gejagt wird",
+      "pasteAdd": "Diese Karten hinzufügen",
+      "pasteAdded": "{count, plural, one {# Karte hinzugefügt.} other {# Karten hinzugefügt.}}",
+      "pasteNone": "Keine Karten gefunden. Schreib einen Begriff pro Zeile.",
+      "mySets": "Einen meiner Kartensätze nutzen",
+      "mySetsLead": "Die Karten werden in diese Stunde kopiert. Ändere, was du willst.",
+      "mySetsLoading": "Deine Sätze werden geladen…",
+      "mySetsFailed": "Deine Sätze konnten gerade nicht geladen werden. Versuch es noch einmal.",
+      "mySetsNone": "Du hast noch keine gespeicherten Kartensätze. Erstell einen in Flashcards oder tipp die Karten hier ein.",
+      "mySetsUsed": "Die Karten aus {title} sind drin. Ändere, was du willst.",
+      "untitledSet": "Satz ohne Namen",
+      "answer": "Bei Lernen und Test antworten die Schüler mit",
+      "answerTerm": "Dem Begriff",
+      "answerDef": "Der Erklärung",
+      "answersTerm": "Antwort: der Begriff",
+      "answersDef": "Antwort: die Erklärung",
+      "cardsN": "{count, plural, one {# Karte} other {# Karten}}",
+      "previewCards": "Tipp mindestens {min} Karten ein, um den Lernzettel zu sehen."
     },
     "homeroom-overview": {
       "title": "Bewerten nach",
@@ -15695,7 +15724,7 @@
       "tooManyHandouts": "In dieser Klasse ist sehr viel ausgeteilt. Entfernen Sie zuerst ein paar alte Aufgaben.",
       "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch.",
       "noLesson": "Dieser Unterrichtsplan ist nicht mehr bei Ihren Unterrichtsplänen.",
-      "badGame": "Unterrichtspläne lassen sich vorerst für Arithmetic Lab, Algebra Builder und Crossword bauen.",
+      "badGame": "Unterrichtspläne lassen sich vorerst für Arithmetic Lab, Algebra Builder, Crossword und Flashcards bauen.",
       "needTitle": "Geben Sie dem Unterrichtsplan einen Namen.",
       "titleLong": "Der Name darf höchstens 60 Zeichen lang sein.",
       "fewWords": "Ein Kreuzworträtsel braucht mindestens 3 Wörter.",
@@ -15732,7 +15761,10 @@
       "oneToolSet": "Wähle Aufgaben von nur einem Werkzeug auf einmal.",
       "noLiveGame": "Dieses Live-Spiel ist vorbei.",
       "liveFull": "Dieses Live-Spiel ist voll.",
-      "liveLocked": "Dieses Live-Spiel ist gerade gesperrt."
+      "liveLocked": "Dieses Live-Spiel ist gerade gesperrt.",
+      "fewCards": "Ein Kartensatz braucht mindestens 2 Karten.",
+      "missingDef": "Jede Karte braucht eine Erklärung.",
+      "sameCard": "Jeder Begriff darf nur auf einer Karte stehen."
     },
     "live": "Live",
     "desk": {
