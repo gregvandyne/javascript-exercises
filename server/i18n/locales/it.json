@@ -3900,7 +3900,17 @@
       "checkAll": "{total, plural, one {Tutto giusto!} other {Tutte e # giuste!}}",
       "checksSummary": "{total, plural, one {Risposte controllate: {checked} su #} other {Risposte controllate: {checked} su #}}",
       "checkAllRight": "Tutto giusto",
-      "checkNeedsHelp": "Ha bisogno di aiuto"
+      "checkNeedsHelp": "Ha bisogno di aiuto",
+      "how": "Come funziona",
+      "pushMine": "Invia la mia lavagna",
+      "pushMineText": "Invia la tua area così com’è adesso. Non serve salvare prima.",
+      "pushEmpty": "La tua area è vuota. Mettici qualcosa, poi inviala.",
+      "pushGoArea": "Vai alla mia area",
+      "pushSaved": "Oppure invia una lavagna salvata",
+      "pushBuild": "Crea e salva una lavagna in {tool} (si apre in una nuova scheda)",
+      "pushedMine": "La tua lavagna è stata inviata a tutti gli studenti.",
+      "endTitle": "Terminare questa sessione?",
+      "endConfirm": "Dopo, gli studenti non potranno più modificare i loro riquadri. Potrai riaprire la stanza più tardi con lo stesso codice."
     },
     "figures-editor": {
       "undo": "Annulla",
@@ -5562,6 +5572,9 @@
     },
     "homeroom-sub": {
       "needsTitle": "Da guardare ora"
+    },
+    "manip-task-list": {
+      "assignedLine": "Assegnato a {klass}: {titles}. Ogni studente riceve {n, plural, one {# domanda} other {# domande}}."
     }
   },
   "favorites": {
@@ -15127,7 +15140,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento."
+      "chatBusy": "Oomba sta ancora rispondendo al tuo ultimo messaggio. Aspetta un momento.",
+      "emptyArea": "La tua area è vuota. Mettici qualcosa, poi inviala."
     }
   },
   "proof": {

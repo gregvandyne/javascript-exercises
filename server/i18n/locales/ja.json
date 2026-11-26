@@ -3899,7 +3899,17 @@
       "checkAll": "{total, plural, other {# 問ぜんぶ正解！}}",
       "checksSummary": "{total, plural, other {答えをたしかめた人: # 人中 {checked} 人}}",
       "checkAllRight": "ぜんぶ正解",
-      "checkNeedsHelp": "てつだいが必要"
+      "checkNeedsHelp": "てつだいが必要",
+      "how": "使い方",
+      "pushMine": "自分のボードを送る",
+      "pushMineText": "今のエリアをそのまま送ります。先に保存する必要はありません。",
+      "pushEmpty": "エリアが空です。何か置いてから送ってください。",
+      "pushGoArea": "自分のエリアへ",
+      "pushSaved": "または保存したボードを送る",
+      "pushBuild": "{tool}でボードを作って保存する（新しいタブで開きます）",
+      "pushedMine": "ボードを全員の生徒に送りました。",
+      "endTitle": "このセッションを終了しますか？",
+      "endConfirm": "終了すると、生徒は自分のマスを変更できなくなります。あとで同じコードでルームを再開できます。"
     },
     "figures-editor": {
       "undo": "元に戻す",
@@ -5561,6 +5571,9 @@
     },
     "homeroom-sub": {
       "needsTitle": "今、見てあげて"
+    },
+    "manip-task-list": {
+      "assignedLine": "{klass}に割り当てました：{titles}。各生徒に{n, plural, other {#問}}が出ます。"
     }
   },
   "favorites": {
@@ -15126,7 +15139,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oombaは前のメッセージにまだ返事をしています。少し待ってください。"
+      "chatBusy": "Oombaは前のメッセージにまだ返事をしています。少し待ってください。",
+      "emptyArea": "エリアが空です。何か置いてから送ってください。"
     }
   },
   "proof": {

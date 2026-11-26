@@ -3899,7 +3899,17 @@
       "checkAll": "{total, plural, other {# 題全部答對！}}",
       "checksSummary": "{total, plural, other {已檢查答案：# 人中 {checked} 人}}",
       "checkAllRight": "全部答對",
-      "checkNeedsHelp": "需要幫忙"
+      "checkNeedsHelp": "需要幫忙",
+      "how": "使用方式",
+      "pushMine": "傳送我的白板",
+      "pushMineText": "依目前的樣子傳送你的區域，不用先儲存。",
+      "pushEmpty": "你的區域是空的。先放點東西進去，再傳送。",
+      "pushGoArea": "前往我的區域",
+      "pushSaved": "或傳送已儲存的白板",
+      "pushBuild": "在{tool}中建立並儲存白板（在新分頁開啟）",
+      "pushedMine": "你的白板已傳送給所有學生。",
+      "endTitle": "要結束這個課堂嗎？",
+      "endConfirm": "結束後，學生無法再修改自己的方格。之後可以用同一個代碼重新開啟教室。"
     },
     "figures-editor": {
       "undo": "復原",
@@ -5561,6 +5571,9 @@
     },
     "homeroom-sub": {
       "needsTitle": "現在需要關心"
+    },
+    "manip-task-list": {
+      "assignedLine": "已指派給{klass}：{titles}。每位學生會拿到{n, plural, other {# 題}}。"
     }
   },
   "favorites": {
@@ -15126,7 +15139,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。"
+      "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。",
+      "emptyArea": "你的區域是空的。先放點東西進去，再傳送。"
     }
   },
   "proof": {

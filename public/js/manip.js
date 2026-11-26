@@ -22,7 +22,7 @@ import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSec
   snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyTapValue, XY_EDGE, xyMoveLine, xyClose, xyOpenLine, xyNextLn,
   rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
-import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
+import { openWheel, closeWheel, startHold, shake, undoToast, hideUndo, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
 import * as CHAT from '/js/manip-chat.js';
 import { FC_DENS, FC_MAX, FC_WHOLE, fcLoad, fcAdd, fcNewCircle, fcMove, fcDelete, fcFind, fcFits, fcUsed, fcTotal, fcAmount, fcCircleLabel } from '/js/manip-board.js';
 import { inkLine, textBoxHtml, textSizeButton, growText, textBoxPointer, snapText } from '/js/board-ann.js';
@@ -39,7 +39,11 @@ let STATE = { boards: [], recent: [], classes: [], sessions: [], draft: null, et
 const STATE_REF = { get practice() { return STATE.practice; }, get assignTo() { return STATE.assignTo; } };
 let V = null;          // the open board (tool view)
 let timers = [];       // intervals and timeouts of the current view
-const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x); } timers = []; CHAT.detach(); if (V && V.play) { V.play.destroy(); V.play = null; } };
+// Leaving a board (another tool, a task, the home): its "Deleted · Undo" goes too (its Undo belongs to that board, and
+// would undo something on the next one).
+const clear = () => { for (const x of timers) { clearInterval(x); clearTimeout(x); } timers = []; CHAT.detach(); if (V && V.play) { V.play.destroy(); V.play = null; } hideUndo(); };
+/** The tool last opened: a different one takes the page's toasts about the last one with it (openTool). */
+let lastSlug = null;
 const clamp = (v, lo, hi) => Math.min(Math.max(lo, v), Math.max(lo, hi));
 const round3 = n => Math.round(n * 1000) / 1000;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s; } catch { return d; } };
@@ -889,6 +893,8 @@ function setStatus(msg, bad = false) { const el = document.getElementById('mp-st
 
 function openTool(slug, { restore = null, boardId = null, title = '', practice = null } = {}) {
   clear();
+  if (lastSlug && lastSlug !== slug) for (const x of document.querySelectorAll('#toasts .toast')) x.remove();
+  lastSlug = slug;
   const tool = toolOf(slug); if (!tool) return home();
   // practice: a task to practice (public/js/manip-task-play.js): { mode: 'solo', id } or { mode: 'set', cl, step, data }
   V = { tool, boardId, title, practice, impl: IMPL[slug], st: null, ann: { notes: [], strokes: [], texts: [] }, hist: [], annHist: [], sel: null, osel: null, annotate: false, annMode: 'pen', pen: PEN_COLORS[0], editing: null, draftOpen: false, tasksOpen: false, view: { x: 0, y: 0, z: 1 } };
@@ -2332,7 +2338,7 @@ async function liveRoom(id, joinFirst) {
   if (HOST) CHAT.attachLive();
   try {
     if (joinFirst) { await api('/api/manipulatives/live/join', { method: 'POST', body: { id } }); history.replaceState(null, '', `#live/${id}`); }
-    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan, selPillHtml, wheelMove, carried, drawSelBox });
+    await ROOM.open(ROOT, id, { palButton, bindTrayDrag, dropAt, IMPL, mkPiece, breakPiece, regroup, settleBoard, scaleWithChart, newId, boards: STATE.boards, openHow, normalize, boardHtml, paletteFor, pieceAction, objectAction, joinGroup, target, inkLine, pieceWheel, objWheel, wheelItems, wheelRun, wheelKey, objName, growAnswer, growAnswers, sizeObjEl, textBoxHtml, textBoxPointer, textSizeButton, growText, snapText, othersThan, selPillHtml, wheelMove, carried, drawSelBox });
   } catch (e) { ROOT.innerHTML = `<div class="empty"><h1>${esc(e.status === 409 ? t('js.manip.live.ended') : t('js.manip.live.gone'))}</h1><p><a href="#">${esc(t('js.manip.nav.back'))}</a></p></div>`; }
 }
 

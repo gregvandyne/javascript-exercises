@@ -143,7 +143,8 @@ test('the teacher\'s ⋯ menu with 16 answers checked: inside the screen, End se
     await shot(page, `room-menu-open-${dev}`);
     if (dev === '390') {
       // End the session from the menu, then Reopen room, both in reach; the room comes back on Step 2 of 3.
-      await press(page, '.rm-menu [data-rtool="end"]'); await page.waitForSelector('.rm-menu [data-rtool="reopen"]');
+      // End session asks first, in the site's own dialog.
+      await press(page, '.rm-menu [data-rtool="end"]'); await press(page, 'dialog.ob-dialog [data-ob="ok"]'); await page.waitForSelector('.rm-menu [data-rtool="reopen"]');
       // Ended: the check results are gone (memory only), so no "Answers checked" line at all (never "0 of 16").
       assert.equal(await page.locator('.rm-menu .rm-checks').count(), 0, 'no Answers checked line in an ended room');
       assert.ok(await reachable(page, '.rm-menu [data-rtool="reopen"]'), 'Reopen room can be clicked');

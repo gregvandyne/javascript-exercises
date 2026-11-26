@@ -437,11 +437,27 @@ function squareHeightFor(tool, board, lay = {}) {
   const L = roomLayout(tool, lay), f = fitInto(tool, board, WORLD, { w: L.sq.w, h: L.sq.h }, { grow: true });
   return Math.max(L.sq.h, f.h + STRIP_RESERVE);
 }
-export function push(u, id, boardId) {
+/** The host's own area as a board to push ("Push my board"): the teacher's area as it is now, in the big board's
+ *  space (as a saved board is), without what belongs to the room (its steps, sizes, switches, the deck's place) or the
+ *  teacher's sticky notes (every square already shows those as its Instructions). -> board | null (nothing on it) */
+function areaBoard(s) {
+  const room = json(s.room || '{}', {}) || {}, L = roomLayout(s.tool, layoutOf(room));
+  const o = { ...room }; for (const k of ['__steps', 'layout', 'checks', 'totals', DECK_AT]) delete o[k];
+  const steps = stepsOf(room).length, from = { w: L.teacher.w, h: L.teacher.h - (steps ? TEACHER_STEP_H : 0) };
+  // Notes, texts and pen marks are fractions of the area: made fractions of the big board.
+  const ann = o.__ann && typeof o.__ann === 'object' ? o.__ann : {}, f = p => ({ ...p, x: num(p.x, 0, 1) * from.w / WORLD.w, y: num(p.y, 0, 1) * from.h / WORLD.h });
+  o.__ann = { notes: [], texts: (Array.isArray(ann.texts) ? ann.texts : []).filter(x => x && String(x.text || '').trim()).map(f),
+    strokes: (Array.isArray(ann.strokes) ? ann.strokes : []).filter(x => x && Array.isArray(x.pts)).map(x => ({ ...x, pts: x.pts.map(f) })) };
+  const empty = !(Array.isArray(o.objects) && o.objects.length) && !(Array.isArray(o.pieces) && o.pieces.length) && !o.__ann.texts.length && !o.__ann.strokes.length;
+  return empty ? null : { tool: s.tool, code: null, state: JSON.stringify(o) };
+}
+/** Push to every student: one of the host's own saved boards (boardId), or ({ own: true }) the host's own area as it is
+ *  right now, with nothing saved first. */
+export function push(u, id, boardId, { own = false } = {}) {
   const s = getSession(id);
   if (!isSessionHost(u, s)) return fail('notFound');
   if (s.status !== 'active') return fail('ended');
-  const b = ownBoard(u, boardId); if (!b) return fail('noBoard');
+  const b = own ? areaBoard(s) : ownBoard(u, boardId); if (!b) return fail(own ? 'emptyArea' : 'noBoard');
   if (b.tool !== s.tool) return fail('otherTool');
   const c = cleanState(b.state, null, b.tool); if (!c.ok) return c;
   // The board's steps become the session's deck (the teacher's area), from the first step; students get the board

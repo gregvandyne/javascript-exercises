@@ -3900,7 +3900,17 @@
       "checkAll": "{total, plural, one {Alles richtig!} other {Alle # richtig!}}",
       "checksSummary": "{total, plural, one {Antworten geprüft: {checked} von #} other {Antworten geprüft: {checked} von #}}",
       "checkAllRight": "Alles richtig",
-      "checkNeedsHelp": "Braucht Hilfe"
+      "checkNeedsHelp": "Braucht Hilfe",
+      "how": "So funktioniert es",
+      "pushMine": "Mein Brett senden",
+      "pushMineText": "Sendet deinen Bereich genau so, wie er jetzt ist. Vorher muss nichts gespeichert werden.",
+      "pushEmpty": "Dein Bereich ist leer. Lege zuerst etwas hinein und sende ihn dann.",
+      "pushGoArea": "Zu meinem Bereich",
+      "pushSaved": "Oder ein gespeichertes Brett senden",
+      "pushBuild": "Ein Brett in {tool} bauen und speichern (öffnet einen neuen Tab)",
+      "pushedMine": "Dein Brett wurde an alle Schüler gesendet.",
+      "endTitle": "Diese Sitzung beenden?",
+      "endConfirm": "Danach können die Schüler ihre Felder nicht mehr ändern. Du kannst den Raum später mit demselben Code wieder öffnen."
     },
     "figures-editor": {
       "undo": "Rückgängig",
@@ -5562,6 +5572,9 @@
     },
     "homeroom-sub": {
       "needsTitle": "Jetzt mal nachsehen"
+    },
+    "manip-task-list": {
+      "assignedLine": "Zugewiesen an {klass}: {titles}. Jeder Schüler bekommt {n, plural, one {# Frage} other {# Fragen}}."
     }
   },
   "favorites": {
@@ -15127,7 +15140,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment."
+      "chatBusy": "Oomba beantwortet noch deine letzte Nachricht. Warte einen Moment.",
+      "emptyArea": "Dein Bereich ist leer. Lege zuerst etwas hinein und sende ihn dann."
     }
   },
   "proof": {
