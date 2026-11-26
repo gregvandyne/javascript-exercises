@@ -177,8 +177,9 @@ for (const r of rows) {
   out.P.push([cc, en, capEn, postal, reg, r1(lab[0]), r1(lab[1]), r1(capXY[0]), r1(capXY[1]), capLL ? r2(capLL[1]) : 0, capLL ? r2(capLL[0]) : 0, nick, big, US_INSET[cc] ? 1 : 0]);
 }
 // the frames: the shapes' box and a little sea round it; the US's inset boxes (Alaska, Hawaii) drawn as frames
-// [west, south, east, north] in map units: the US gets the Atlantic off New England, where the small states' answer lines go
-const pad = { us: [1.2, 1.2, 15, 1.2], ca: [1.6, 1.6, 1.6, 1.6] };
+// [west, south, east, north] in map units: the US gets the Atlantic off New England, where the small states' answer lines go,
+// and a little sea under Alaska's and Hawaii's boxes so they never sit on the map's own border
+const pad = { us: [1.2, 3.5, 35, 1.2], ca: [1.6, 1.6, 1.6, 1.6] };
 for (const m of ['us', 'ca']) {
   const b = box[m], p = pad[m];
   const f = [Math.floor((b[0] - p[0]) * 10) / 10, Math.floor((b[1] - p[1]) * 10) / 10, Math.ceil((b[2] + p[2]) * 10) / 10, Math.ceil((b[3] + p[3]) * 10) / 10];
