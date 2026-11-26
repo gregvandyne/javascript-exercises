@@ -16018,6 +16018,11 @@
       "progress": "Progressi",
       "notYet": "Non ancora iniziato",
       "barLabel": "{mastered} imparate, {learning} in corso, {missed} sbagliate l'ultima volta, {fresh} non studiate"
+    },
+    "shared": {
+      "title": "Flashcard condivise con la classe",
+      "cards": "{count, plural, one {# carta} other {# carte}}",
+      "hidden": "Nascosto alla classe"
     }
   }
 }

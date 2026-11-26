@@ -421,8 +421,17 @@ emoji only when it is emoji characters alone). Two calls of its own:
   setId)` → `{ url }` (a `data:` URL the page fetched from our route), `{ painting: true }` or `{ error }`, for anyone
   who may open that set. The frame can't load our pictures itself (it has no origin), so the page fetches each one.
 - Students and children (`BRB.makePrivate`): `BRB.canMake` is true for them in Flashcards only, with `makePrivate`:
-  their own sets, saved with `BRB.saveQuestionSet` but never opened by anyone else (no class code, link, share or
-  assign), no AI and no pictures.
+  their own sets, saved with `BRB.saveQuestionSet` but never opened by anyone else (no class code, link or assign), no
+  AI and no pictures. They may delete one (`BRB.deleteQuestionSet`), which also stops it being shared.
+- Sharing with a class (`BRB.flashShare`, services/flash-share.js): `{ list: 'class', classes: [{ id, name }] }` for a
+  student in a class (they may share their own sets with the classes they pick; "Shared by my class"), `{ list:
+  'students', classes: [] }` for a class's teachers and aides ("Shared by students"), `null` for everyone else (a child
+  on a family account, a guest). `BRB.flashShareMine()` → `{ classes, sets: { setId: [{ id, on, hidden }] } }`;
+  `BRB.flashShareSet(set, classId, on)` → `{ classes: [{ id, name, on, hidden }] }`; `BRB.flashSharedList()` → `{ list,
+  sets: [{ id, title, n, items, by, classId, className, at, hidden?, canHide? }] }` (`by`: the display name for
+  classmates, the roster name for teachers; the cards checked again, with no pictures); `BRB.flashShareHide(set,
+  classId, hidden)` → `{ ok, hidden }` (the class's teachers). `{ error }` on a refusal (`none`, `hidden`, `bad`,
+  `forbidden`, `offline`). A shared set opened by its link has `BRB.questionSet.shared: { by, cls }`.
 
 ## Teacher controls (`BRB.canTeach`)
 A Builder classroom activity on Oomba Canvas 1.3.0 shows its teacher controls (Show answer, Board mode, Help on this

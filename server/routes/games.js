@@ -31,6 +31,7 @@ import * as polls from '../services/polls.js';
 import * as TY from '../services/typing.js';
 import * as gameSets from '../services/game-sets.js';
 import * as flashPics from '../services/flash-pics.js';
+import * as flashShare from '../services/flash-share.js';
 import { PIC_LIMITS as BOOK_PIC } from '../services/storybook.js';
 import { draftClues, draftCards, CARDS, DOC_FOCUS_MAX } from '../services/set-ai.js';
 import * as VC from '../services/verify-change.js';
@@ -477,8 +478,12 @@ router.get('/frame/:token', (req, res) => {
     ...(!preview && makeGame(g) && liveCanHost(u) && fenceLets(u, 'POST', `/api/games/${g.id}/save`) ? { make: true } : {}),
     // Flashcards' "Make your own" is open to students and children too (docs/decisions.md "Flashcards: students make
     // sets"): any signed-in player who is not a guest, with no AI (no clues), no pictures, and their sets their own only
-    // (makePrivate: BRB.makePrivate; no class code, link, share or assign for others). Never a guest, never a preview.
+    // (makePrivate: BRB.makePrivate; no class code, link or assign for others; a student may share one with their class: flashShare below). Never a guest, never a preview.
     ...(!preview && selfMake(u, g) && !liveCanHost(u) ? { make: true, makePrivate: true } : {}),
+    // Flashcards shared with a class (BRB.flashShare; services/flash-share.js): a student in a class gets the classes
+    // they may share their own sets with and "Shared by my class"; a class's teachers and aides get "Shared by students".
+    // A child on a family account is in no class: nothing.
+    ...(!preview && !tok.st && cardsGame(g) ? shareInit(u) : {}),
     // Flashcards' pictures (BRB.flashPics: services/flash-pics.js info): Storybook's picture makers who may save sets.
     ...(!preview && cardsGame(g) && fenceLets(u, 'POST', `/api/games/${g.id}/sets`) && flashPics.info(u) ? { flashPics: flashPics.info(u) } : {}),
     // Atlas Quest's door (BRB.canHostLive / BRB.hostLive): "Host live" next to Play and Build a lesson, for grown-ups who
@@ -565,7 +570,11 @@ function setFor(g, chapter, u, kind) {
   if (!chapter || !gameSets.SET_ID.test(chapter) || !kind) return {};
   const s = gameSets.get(g.id, chapter);
   // A student's or a child's own flashcard set opens for them only (anyone else: as a code with no set).
-  if (s && privateSet(g, s) && !(u && s.ownerId === u.id)) return { set: { id: chapter, missing: true } };
+  // Shared with a class (services/flash-share.js): its teachers, aides and classmates open it too (pictures left off).
+  if (s && privateSet(g, s) && !(u && s.ownerId === u.id)) {
+    const sh = flashShare.openFor(u, g.id, s.id);
+    return { set: sh ? { id: s.id, items: sh.items, mine: false, shared: { by: sh.by, cls: sh.className } } : { id: chapter, missing: true } };
+  }
   return { set: s ? { id: s.id, items: s.items, mine: !!u && s.ownerId === u.id } : { id: chapter, missing: true } };
 }
 // A class code a student typed in the game (BRB.findQuestionSet): the set, to play straight away. Anyone who can open the
@@ -665,6 +674,13 @@ const mayMake = u => !!u && liveCanHost(u);
 const selfMake = (u, g) => cardsGame(g) && !!u && !u.is_guest && !u.banned;
 /** A flashcard set made by a student or a child (its owner may not host): theirs alone, never opened by anyone else. */
 const privateSet = (g, s) => cardsGame(g) && !!s && !liveCanHost(getUser(s.ownerId));
+/** INIT.flashShare: { classes: [{ id, name }], list: 'class' } for a student who makes their own sets and is in a
+ *  class; { classes: [], list: 'students' } for a grown-up who teaches (or is an aide in) a class; else nothing. */
+function shareInit(u) {
+  if (!u || u.is_guest || u.banned) return {};
+  if (!liveCanHost(u)) { const classes = flashShare.shareClasses(u); return classes.length ? { flashShare: { classes, list: 'class' } } : {}; }
+  return flashShare.teacherClasses(u).length ? { flashShare: { classes: [], list: 'students' } } : {};
+}
 /** Who may print a game's answer key: school staff; in Atlas Quest also the grown-ups who may make a quiz there (BRB.canMake:
  *  a family grown-up, the platform admin), the same check as INIT.make. Never a student, a child, a guest or signed out. */
 /** A solo game whose first screen (its door: Play, Host live, Build a lesson) can start its live game: Atlas Quest, whose
@@ -778,6 +794,50 @@ router.get('/api/games/:id/flash-pics/:pic', rateLimit('flash-pic-get', 240, 60e
   if (!r) return res.status(404).json({ error: req.t('game.api.notFound') });
   if (r.painting) return res.status(202).json({ painting: true });
   res.set('Cache-Control', 'private, max-age=86400').set('X-Content-Type-Options', 'nosniff').type(r.pic.mime === 'image/png' ? 'image/png' : 'image/jpeg').send(Buffer.from(r.pic.bytes));
+});
+// Flashcards shared with a class (services/flash-share.js; docs/decisions.md "Flashcards: students share with their
+// class"). Every call checks the class membership and the role on the server; a guest, signed out, another class or
+// anyone else gets 404, as a set that isn't there. Nothing here is seen by any AI.
+const shareGame = (req, res) => {
+  const g = apiGame(req, res); if (!g) return null;
+  if (!cardsGame(g) || !req.user || req.user.is_guest || req.user.banned) { res.status(404).json({ error: req.t('game.api.notFound') }); return null; }
+  return g;
+};
+const SHARE_STATUS = { notFound: 404, noClass: 404, forbidden: 403, bad: 400, hidden: 409 };
+const shareFail = (req, res, code) => res.status(SHARE_STATUS[code] || 400).json({ error: req.t(SHARE_STATUS[code] === 404 ? 'game.api.notFound' : 'errors.api.badRequest'), code });
+// A student's share switches: the classes they may share with and, per set of theirs, where it is shared or hidden.
+router.get('/api/games/:id/flash-share/mine', requireUser, rateLimit('flash-share-list', 120, 60e3), (req, res) => {
+  const g = shareGame(req, res); if (!g) return;
+  if (liveCanHost(req.user)) return shareFail(req, res, 'noClass');
+  res.json({ classes: flashShare.shareClasses(req.user), sets: flashShare.mineFor(req.user, g.id) });
+});
+// "Shared by my class" (a student) or "Shared by students" (a class's teachers and aides).
+router.get('/api/games/:id/flash-share/list', requireUser, rateLimit('flash-share-list', 120, 60e3), (req, res) => {
+  const g = shareGame(req, res); if (!g) return;
+  if (!liveCanHost(req.user)) return res.json({ list: 'class', sets: flashShare.listForStudent(req.user, g.id) });
+  res.json({ list: 'students', classes: flashShare.teacherClasses(req.user), sets: flashShare.listForTeacher(req.user, g.id) });
+});
+// Share one of the student's own sets with one of their classes, or stop: body { classId, on }. -> { classes }
+router.post('/api/games/:id/flash-share/:set', requireUser, rateLimit('flash-share', 60, 60e3), (req, res) => {
+  const g = shareGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const s = gameSets.get(g.id, id);
+  if (!s || s.ownerId !== req.user.id || !privateSet(g, s)) return noSet(req, res);
+  const b = req.body || {};
+  if (typeof b.on !== 'boolean' || typeof b.classId !== 'string') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'bad' });
+  const r = flashShare.setShare(req.user, g.id, id, b.classId, b.on);
+  if (!r.ok) return shareFail(req, res, r.code);
+  res.json({ classes: r.classes });
+});
+// A class's teacher takes a shared set off the class's list (or puts it back): body { classId, hidden }. -> { hidden }
+router.post('/api/games/:id/flash-share/:set/hide', requireUser, rateLimit('flash-share', 60, 60e3), (req, res) => {
+  const g = shareGame(req, res); if (!g) return;
+  const id = setIdOf(req, res); if (!id) return;
+  const b = req.body || {};
+  if (typeof b.hidden !== 'boolean' || typeof b.classId !== 'string') return res.status(400).json({ error: req.t('errors.api.badRequest'), code: 'bad' });
+  const r = flashShare.hide(req.user, g.id, id, b.classId, b.hidden);
+  if (!r.ok) return shareFail(req, res, r.code);
+  res.json({ hidden: r.hidden });
 });
 // Crossword words from a word list or document (services/crossword-doc.js wordsFromFile): a PDF (at most 5 pages) or a
 // Word file, at most 2 MB; its text read here (at most about 5 pages), a plain "word - definition" list used without AI,

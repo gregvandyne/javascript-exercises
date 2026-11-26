@@ -1624,6 +1624,15 @@ export const MIGRATIONS = [
       created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
     CREATE INDEX IF NOT EXISTS idx_flash_pics_owner ON flash_pics(owner_id, created_at);
     CREATE INDEX IF NOT EXISTS idx_flash_pics_state ON flash_pics(state, updated_at);`],
+  // A student's own flashcard set shared with one of their classes (services/flash-share.js; docs/decisions.md
+  // "Flashcards: students share with their class"). One row per set and class, off by default (no row). hidden_at: the
+  // class's teacher took it off that class's list (it stays the student's). Rows go with the set, the account, the
+  // student leaving the class and the class being deleted; reads check the class membership again every time.
+  ['0144_flash_shares', `
+    CREATE TABLE IF NOT EXISTS flash_shares (set_id TEXT NOT NULL, class_id TEXT NOT NULL, owner_id TEXT NOT NULL,
+      shared_at INTEGER NOT NULL, hidden_at INTEGER, hidden_by TEXT, PRIMARY KEY(set_id, class_id));
+    CREATE INDEX IF NOT EXISTS idx_flash_shares_class ON flash_shares(class_id, shared_at);
+    CREATE INDEX IF NOT EXISTS idx_flash_shares_owner ON flash_shares(owner_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

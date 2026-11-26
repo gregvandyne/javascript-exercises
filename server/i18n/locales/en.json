@@ -17762,6 +17762,11 @@
       "progress": "Progress",
       "notYet": "Not started yet",
       "barLabel": "{mastered} mastered, {learning} learning, {missed} missed last time, {fresh} not studied"
+    },
+    "shared": {
+      "title": "Flashcards they shared with the class",
+      "cards": "{count, plural, one {# card} other {# cards}}",
+      "hidden": "Hidden from the class"
     }
   }
 }

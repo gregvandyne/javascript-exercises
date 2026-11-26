@@ -16017,6 +16017,11 @@
       "progress": "進み具合",
       "notYet": "まだ始めていません",
       "barLabel": "覚えた {mastered}、学習中 {learning}、前回まちがえた {missed}、未学習 {fresh}"
+    },
+    "shared": {
+      "title": "クラスに共有したフラッシュカード",
+      "cards": "{count, plural, other {#枚}}",
+      "hidden": "クラスには非表示"
     }
   }
 }
