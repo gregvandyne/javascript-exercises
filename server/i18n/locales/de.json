@@ -3910,7 +3910,8 @@
       "pushBuild": "Ein Brett in {tool} bauen und speichern (öffnet einen neuen Tab)",
       "pushedMine": "Dein Brett wurde an alle Schüler gesendet.",
       "endTitle": "Diese Sitzung beenden?",
-      "endConfirm": "Danach können die Schüler ihre Felder nicht mehr ändern. Du kannst den Raum später mit demselben Code wieder öffnen."
+      "endConfirm": "Danach können die Schüler ihre Felder nicht mehr ändern. Du kannst den Raum später mit demselben Code wieder öffnen.",
+      "pushNoKey": "Trage zuerst die Antworten in deine Antwortfelder ein, damit die Schüler ihre Arbeit prüfen können."
     },
     "figures-editor": {
       "undo": "Rückgängig",

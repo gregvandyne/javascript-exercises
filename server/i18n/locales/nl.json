@@ -3910,7 +3910,8 @@
       "pushBuild": "Maak en bewaar een bord in {tool} (opent in een nieuw tabblad)",
       "pushedMine": "Je bord is naar alle leerlingen gestuurd.",
       "endTitle": "Deze sessie beëindigen?",
-      "endConfirm": "Daarna kunnen leerlingen hun vak niet meer veranderen. Je kunt de ruimte later weer openen met dezelfde code."
+      "endConfirm": "Daarna kunnen leerlingen hun vak niet meer veranderen. Je kunt de ruimte later weer openen met dezelfde code.",
+      "pushNoKey": "Typ eerst de antwoorden in je antwoordvakken, zodat leerlingen hun werk kunnen controleren."
     },
     "figures-editor": {
       "undo": "Ongedaan maken",

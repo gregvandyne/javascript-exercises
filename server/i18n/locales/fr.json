@@ -3909,7 +3909,8 @@
       "pushBuild": "Créer et enregistrer un tableau dans {tool} (ouvre un nouvel onglet)",
       "pushedMine": "Ton tableau a été envoyé à tous les élèves.",
       "endTitle": "Terminer cette séance ?",
-      "endConfirm": "Les élèves ne pourront plus modifier leur carré. Tu pourras rouvrir la salle plus tard avec le même code."
+      "endConfirm": "Les élèves ne pourront plus modifier leur carré. Tu pourras rouvrir la salle plus tard avec le même code.",
+      "pushNoKey": "Écris d’abord les réponses dans tes cases réponse pour que les élèves puissent vérifier leur travail."
     },
     "figures-editor": {
       "undo": "Annuler",

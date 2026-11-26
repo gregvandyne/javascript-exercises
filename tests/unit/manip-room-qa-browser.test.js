@@ -68,6 +68,41 @@ test('push { own: true }: the teacher\'s area as it is, without the room\'s own 
   assert.equal(M.push(kids[0], s.id, null, { own: true }).ok, false);
 });
 
+test('push { own: true } with answers typed in the teacher\'s boxes: they are the answer key; students get empty boxes; Check marks right and wrong', () => {
+  const { s, kids } = room('K1');
+  const kid3 = getUser(S.createSchoolAccount(boss, oak.id, { rosterName: 'Mina K1' }).user.id); S.addToClass(boss, M.getSession(s.id).class_id, kid3.id); assert.ok(M.join(kid3, { code: s.code }).ok);
+  const area = { v: 2, checks: true, objects: [{ id: 'r1', k: 'rekenreks', x: 40, y: 40, s: 1, st: { rows: 2, beads: 10 } },
+    { id: 'a1', k: 'answer', x: 700, y: 40, s: 1, st: { ans: '13', size: 'S' } }, { id: 'a2', k: 'answer', x: 700, y: 200, s: 1, st: { ans: '', size: 'S' } }] };
+  assert.ok(M.saveArea(boss, s.id, 't', area).ok);
+  assert.ok(M.push(boss, s.id, null, { own: true }).ok);
+  // The students' copy: every box empty, no key, nowhere.
+  const pushed = M.roomFor(kids[0], s.id).pushed;
+  assert.ok(!pushed.includes('13'), 'the answer never reaches a student');
+  assert.deepEqual(JSON.parse(JSON.parse(pushed).state).objects.filter(o => o.k === 'answer').map(o => o.st.ans), ['', '']);
+  // Nor in the teacher's area as students see it (it is the key now), nor in what the teacher's page is sent.
+  const tArea = JSON.parse(M.roomFor(kids[0], s.id).teacher.state);
+  assert.equal(tArea.objects.find(o => o.id === 'a1').st.ans, '');
+  assert.equal(tArea.__pushKeys, undefined);
+  const hostArea = JSON.parse(M.roomFor(boss, s.id).teacher.state);
+  assert.equal(hostArea.objects.find(o => o.id === 'a1').st.ans, '13', 'the teacher still sees their answer');
+  assert.equal(hostArea.__pushKeys, undefined);
+  // The teacher's area saved again (the page never sends the key): the key is kept.
+  assert.ok(M.saveArea(boss, s.id, 't', hostArea).ok);
+  // Students check: only the filled box counts.
+  assert.deepEqual(M.checkAnswers(kids[0], s.id, { a1: '13', a2: 'x' }), { ok: true, results: { a1: true }, right: 1, total: 1 });
+  assert.deepEqual(M.checkAnswers(kids[1], s.id, { a1: '12' }), { ok: true, results: { a1: false }, right: 0, total: 1 });
+  assert.deepEqual(M.checkAnswers(kid3, s.id, {}), { ok: true, results: { a1: false }, right: 0, total: 1 });
+  // A saved board pushed after it: its own key again, the area's is dropped.
+  const saved = M.saveBoard(boss, { tool: 'rekenreks', title: 'Key 7', state: { v: 2, objects: [{ id: 'b1', k: 'answer', x: 10, y: 10, s: 1, st: { ans: '', size: 'S', key: '7' } }] } }).board;
+  assert.ok(M.push(boss, s.id, saved.id).ok);
+  assert.deepEqual(M.checkAnswers(kids[0], s.id, { b1: '7' }), { ok: true, results: { b1: true }, right: 1, total: 1 });
+  // Boxes with nothing typed: it can still be pushed, without a key.
+  const { s: s2, kids: k2 } = room('K2');
+  assert.ok(M.saveArea(boss, s2.id, 't', { v: 2, checks: true, objects: [{ id: 'a1', k: 'answer', x: 10, y: 10, s: 1, st: { ans: '', size: 'S' } }] }).ok);
+  assert.ok(M.push(boss, s2.id, null, { own: true }).ok);
+  assert.deepEqual(M.checkAnswers(k2[0], s2.id, { a1: '1' }), { ok: false, code: 'noAnswers' });
+});
+
 // ---------------------------------------------------------------- in a browser
 let server, BASE;
 test.before(async () => {
@@ -130,6 +165,15 @@ test('Push a board: Push my board, the saved boards and a link to build one; the
   await page.click('.rm-pushsheet [data-pgo]');
   assert.equal(await page.locator('.rm-pushsheet').count(), 0);
   assert.match(await page.locator('#rm-pal .mp-cap').first().textContent(), /Teacher's area/i);
+  // Answer boxes with nothing typed: one plain line says so (it can still be pushed).
+  assert.equal(await page.locator('.rm-pushnokey').count(), 0);
+  await page.keyboard.press('Escape');
+  assert.ok(M.saveArea(boss, s.id, 't', { v: 2, objects: [{ id: 'a9', k: 'answer', x: 10, y: 10, s: 1, st: { ans: '', size: 'S' } }] }).ok);
+  await page.reload(); await page.waitForSelector('.rm-area[data-key="t"] .mp-obj'); await page.waitForTimeout(300);
+  await menu(page); await page.click('.rm-menu [data-rtool="push"]'); await page.waitForSelector('.rm-pushsheet [data-pushmine]');
+  assert.equal((await page.locator('.rm-pushnokey').textContent()).trim(), 'Type the answers in your answer boxes first so students can check their work.');
+  await shot(page, 'push-sheet-nokey');
+  await page.keyboard.press('Escape');
   // Escape closes the sheet too.
   await menu(page); await page.click('.rm-menu [data-rtool="push"]'); await page.waitForSelector('.rm-pushsheet');
   await page.keyboard.press('Escape'); assert.equal(await page.locator('.rm-pushsheet').count(), 0);

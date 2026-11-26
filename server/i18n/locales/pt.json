@@ -3910,7 +3910,8 @@
       "pushBuild": "Crie e salve um quadro em {tool} (abre numa nova aba)",
       "pushedMine": "O seu quadro foi enviado a todos os alunos.",
       "endTitle": "Encerrar esta sessão?",
-      "endConfirm": "Depois disso, os alunos não podem mudar os seus quadrados. Pode reabrir a sala mais tarde com o mesmo código."
+      "endConfirm": "Depois disso, os alunos não podem mudar os seus quadrados. Pode reabrir a sala mais tarde com o mesmo código.",
+      "pushNoKey": "Escreva primeiro as respostas nas suas caixas de resposta para que os alunos possam verificar o trabalho."
     },
     "figures-editor": {
       "undo": "Desfazer",

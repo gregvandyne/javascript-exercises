@@ -335,7 +335,7 @@ main.rm-main .fg-tools{margin-bottom:0}
 .rm-pushsheet h3{margin:14px 0 6px;font-size:1rem}
 .rm-pushown{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin:12px 0 4px}
 .rm-pushown p{margin:0}
-.rm-pushempty{font-weight:700}
+.rm-pushempty,.rm-pushnokey{font-weight:700}
 .rm-pushlist{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
 .rm-pushlist li{display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0}
 .rm-pushlist li span{min-width:0;overflow-wrap:anywhere;font-weight:700}

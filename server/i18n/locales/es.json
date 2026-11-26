@@ -3909,7 +3909,8 @@
       "pushBuild": "Crea y guarda un tablero en {tool} (se abre en una pestaña nueva)",
       "pushedMine": "Tu tablero se envió a todos los alumnos.",
       "endTitle": "¿Terminar esta sesión?",
-      "endConfirm": "Después, los alumnos no podrán cambiar sus cuadros. Puedes volver a abrir la sala más tarde con el mismo código."
+      "endConfirm": "Después, los alumnos no podrán cambiar sus cuadros. Puedes volver a abrir la sala más tarde con el mismo código.",
+      "pushNoKey": "Escribe primero las respuestas en tus casillas de respuesta para que los alumnos puedan comprobar su trabajo."
     },
     "figures-editor": {
       "undo": "Deshacer",

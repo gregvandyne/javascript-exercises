@@ -1097,11 +1097,15 @@ const areaEmpty = A => !A || (!A.st.objects.length && !(A.st.pieces || []).lengt
 function pushSheet() {
   R.menuOpen = false; renderMenu(); renderBar();
   const mine = (R.deps.boards || []).filter(b => b.tool === R.room.tool), T = R.areas.get('t'), empty = areaEmpty(T);
+  // The answers typed in the teacher's answer boxes are what "Check my answers" checks against (the server keeps them;
+  // students get empty boxes). Boxes with nothing typed: it can still be pushed, without a key.
+  const boxes = T ? T.st.objects.filter(o => o.k === 'answer' || o.k === 'frac-eq') : [];
+  const noKey = boxes.length && !boxes.some(o => String(o.st.key || o.st.ans || '').trim());
   const box = document.createElement('div');
   box.className = 'mp-viewer rm-pushsheet'; box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', t('js.manip-room.pushTitle'));
   const own = empty
     ? `<p class="rm-pushempty">${esc(t('js.manip-room.pushEmpty'))}</p>${btn('btn btn-primary', 'data-pgo', `${iconHtml('📍', { size: 18 })} ${esc(t('js.manip-room.pushGoArea'))}`)}`
-    : `${btn('btn btn-primary', 'data-pushmine', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.pushMine'))}`)}<p class="small muted">${esc(t('js.manip-room.pushMineText'))}</p>`;
+    : `${btn('btn btn-primary', 'data-pushmine', `${iconHtml('📤', { size: 18 })} ${esc(t('js.manip-room.pushMine'))}`)}<p class="small muted">${esc(t('js.manip-room.pushMineText'))}</p>${noKey ? `<p class="rm-pushnokey">${esc(t('js.manip-room.pushNoKey'))}</p>` : ''}`;
   const saved = mine.length
     ? `<h3>${esc(t('js.manip-room.pushSaved'))}</h3><ul class="rm-pushlist">${mine.map(b => `<li><span>${esc(b.title || '')}</span>${btn('btn btn-sm', `data-push="${esc(b.id)}"`, esc(t('js.manip-room.pushOne', { code: b.code })))}</li>`).join('')}</ul>`
     : `<p class="small muted">${esc(t('js.manip-room.noBoards'))}</p>`;

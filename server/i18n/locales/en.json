@@ -4285,7 +4285,8 @@
       "allSteps": "All steps",
       "thisStep": "Just this step",
       "hideSteps": "Hide steps",
-      "showSteps": "Show steps"
+      "showSteps": "Show steps",
+      "pushNoKey": "Type the answers in your answer boxes first so students can check their work."
     },
     "figures-editor": {
       "undo": "Undo",
