@@ -215,6 +215,25 @@ export function liveBoard(ctx) {
     const step = (card) => { const rd = card.rd; return card.done ? tl('rd.done') : rd.step === 'read' ? (rd.page ? tl('readingPage', { page: rd.page }) : tl('rd.notStarted')) : tl(`rd.${rd.step}`); };
     return `<ul class="plain hr-tgrd">${rows.map(({ s, card }) => `<li><bdi>${esc(s.name)}</bdi><span>${esc(step(card))}${card.rd.total ? ` · <b>${esc(tl('rd.score', { right: card.rd.right, total: card.rd.total }))}</b>` : ''}</span></li>`).join('')}</ul>`;
   }
+  /** A Manipulatives practice set in Today: every student it went to, alphabetical (never ranked), with where they are in
+   *  it (Done, Question 3 of 5, Not started, Stuck) and how many were right first time. */
+  function manipRows(h) {
+    const coll = new Intl.Collator(document.documentElement.lang || undefined, { sensitivity: 'base', numeric: true }), dd = desks();
+    const rows = H.students.map(s => ({ s, card: (H.ho.desks[s.id] || []).find(x => x.id === h.id) })).filter(x => x.card && x.card.qs).sort((a, b) => coll.compare(a.s.name, b.s.name));
+    if (!rows.length) return '';
+    const step = (s, card) => { const q = card.qs, d = dd[s.id];
+      if (card.done) return tl('today.setDone', { right: q.right, n: q.n });
+      if (d && d.st === 'stuck' && d.on === h.id) return tl('today.stuck');
+      return q.answered || (d && d.on === h.id && d.st !== 'away') ? tl('today.setAt', { i: Math.min(q.n, q.answered + 1), n: q.n, right: q.right }) : tl('today.notStarted'); };
+    return `<ul class="plain hr-tgrd">${rows.map(({ s, card }) => `<li><bdi>${esc(s.name)}</bdi><span>${esc(step(s, card))}</span></li>`).join('')}</ul>`;
+  }
+  /** Manipulatives tools on desks now (open practice: no counts), each with who has it open. */
+  function toolsToday() {
+    const list = (H.ho.tools || []); if (!list.length) return '';
+    const dd = desks();
+    return list.map(x => { const n = Object.values(dd).filter(d => d && d.where === 'tool' && d.tool && d.tool.id === x.id).length;
+      return `<li class="hr-tg"><div class="hr-tgh"><b dir="auto">${iconHtml(x.icon, { size: 16 })} ${esc(x.title)}</b><span>${esc(tl('today.toolOpen', { count: n }))}</span></div><p class="hr-tgnums small">${esc(tl('today.toolLine'))}</p></li>`; }).join('');
+  }
   /** Today's handouts: handed out since the start of the teacher's day, or since this live class started. */
   function todayHandouts() {
     const d0 = new Date(); d0.setHours(0, 0, 0, 0);
@@ -249,8 +268,8 @@ export function liveBoard(ctx) {
       const none = total - done - stuck - work, pc = n => (total ? (100 * n) / total : 0);
       return `<li class="hr-tg"><div class="hr-tgh"><b dir="auto">${iconHtml(h.icon, { size: 16 })} ${esc(h.title)}</b><span>${esc(tl('today.doneOf', { done, total }))}</span></div>
         <div class="hr-tgbar" role="img" aria-label="${esc(tl('today.barLabel', { done, work, stuck, none }))}"><i class="d" style="width:${pc(done)}%"></i><i class="w" style="width:${pc(work)}%"></i><i class="s" style="width:${pc(stuck)}%"></i></div>
-        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}${absent ? ` · ${esc(tl('att.nAbsent', { count: absent }))}` : ''}</p>${h.reading ? readingRows(h) : ''}</li>`;
-    }).join('');
+        <p class="hr-tgnums small">${esc(tl('today.nums', { done, work, stuck, none }))}${absent ? ` · ${esc(tl('att.nAbsent', { count: absent }))}` : ''}</p>${h.reading ? readingRows(h) : h.manip ? manipRows(h) : ''}</li>`;
+    }).join('') + toolsToday();
     return `<header class="hr-flhead"><h2 id="hr-flh">${iconHtml('📊', { size: 20 })} ${esc(tl('today.title'))}</h2>${btn('iconbtn hr-flclose', `data-hrpanel="" aria-label="${esc(tl('close'))}"`, iconHtml('✖️', { size: 16 }))}</header>
       <p class="small muted">${esc(live() ? tl('today.leadLive') : tl('today.lead'))}</p>
       ${rows ? `<ol class="plain hr-tglist">${rows}</ol><div class="hr-tgkey" aria-hidden="true"><span><i class="d"></i>${esc(tl('today.done'))}</span><span><i class="w"></i>${esc(tl('today.working'))}</span><span><i class="s"></i>${esc(tl('today.stuck'))}</span><span><i></i>${esc(tl('today.notStarted'))}</span></div>` : `<p class="muted">${esc(tl('today.none'))}</p>`}
@@ -355,10 +374,15 @@ export function liveBoard(ctx) {
   };
   function lookHtml(x) {
     const fl = x.flags || {};
-    const on = x.on ? `<div class="hr-lkon">${iconHtml(x.on.icon, { size: 22 })}<div><b dir="auto">${esc(x.on.title)}</b><span class="small muted">${esc(x.on.done ? tl('look.done') : tl('look.pct', { pct: x.on.pct }))}</span>
-        <span class="hr-lvbar big" aria-hidden="true"><i style="width:${x.on.done ? 100 : x.on.pct}%"></i></span></div></div>` : `<p class="muted">${esc(x.total ? tl('look.allDone') : tl('look.nothing'))}</p>`;
+    // a Manipulatives tool on their desk (open practice, never counted in done of total): shown as what they have, the
+    // one open now first, with its room a tap away
+    const tools = (x.tools || []).slice().sort((a, b) => Number(b.now) - Number(a.now));
+    const toolRows = tools.map(y => `<div class="hr-lkon hr-lktool">${iconHtml(y.icon, { size: 22 })}<div><b dir="auto">${esc(y.title)}</b><span class="small muted">${esc(y.now ? tl('look.toolNow') : tl('look.toolOn'))}</span></div></div>`).join('');
+    const nowTool = tools.find(y => y.now);
+    const on = nowTool && !x.on ? toolRows : x.on ? `<div class="hr-lkon">${iconHtml(x.on.icon, { size: 22 })}<div><b dir="auto">${esc(x.on.title)}</b><span class="small muted">${esc(x.on.done ? tl('look.done') : tl('look.pct', { pct: x.on.pct }))}</span>
+        <span class="hr-lvbar big" aria-hidden="true"><i style="width:${x.on.done ? 100 : x.on.pct}%"></i></span></div></div>${toolRows}` : toolRows || `<p class="muted">${esc(x.total ? tl('look.allDone') : tl('look.nothing'))}</p>`;
     const stuckNote = x.st === 'stuck' ? `<p class="hr-lkstuck">${esc(tl('look.stuckNote', { min: (D.pulse || {}).stuckMin || 3 }))}</p>` : '';
-    const d = desks()[x.id] || {}, b0 = d.where === 'tool' && WT.boardOf(x.id), room = b0 && b0.session ? b0 : null;   // (a practice set has no room: its board only)
+    const d = desks()[x.id] || {}, b0 = d.where === 'tool' && WT.boardOf(x.id), t0 = (x.tools || []).find(y => y.now && y.open), room = b0 && b0.session ? b0 : t0 ? { session: t0.session } : null;   // (a practice set has no room: its board only)
     return `<div class="hr-look" data-look="${esc(x.id)}">
       <div class="hr-lkbig" data-lkbig>${WT.bigHtml(x.id, d)}</div>
       ${room && ctx.openRoom ? `<div class="row hr-lkroom">${btn('btn btn-sm hr-chunk', `data-hrroom="${esc(room.session)}"`, `${iconHtml('🧮', { size: 16 })} ${esc(tl('look.openRoom'))}`)}</div>` : ''}
@@ -367,7 +391,7 @@ export function liveBoard(ctx) {
         <span class="small muted">${esc(x.st === 'away' ? tl('look.lastSeen', { when: ago(x.at) }) : `${tl({ game: 'look.whereGame', tool: 'look.whereTool', reading: 'look.whereReading' }[x.where] || 'look.whereDesk')} · ${tl('look.activity', { when: ago(x.inputAt || x.at) })}`)}</span></div>
       ${stuckNote}
       <h3 class="hr-flsub">${esc(tl('look.on'))}</h3>${on}
-      <p class="small muted">${esc(tl('look.progress', { done: x.done, total: x.total }))}</p>
+      ${x.total ? `<p class="small muted">${esc(tl('look.progress', { done: x.done, total: x.total }))}</p>` : ''}
       ${x.hand || x.pass ? `<p class="hr-lkhand">${iconHtml(x.pass || x.hand === 'bathroom' ? '🚻' : '✋', { size: 18 })} ${esc(x.pass === 'out' ? tl('pass.outShort') : x.pass === 'line' ? tl('pass.lineShort') : kindLabel(x.hand))}</p>` : ''}
       <h3 class="hr-flsub">${esc(x.team ? tl('look.teamPad') : tl('look.pad'))}</h3>
       <div class="hr-lkpad"><svg viewBox="0 0 ${PAD.w} ${PAD.h}" role="img" aria-label="${esc(tl('look.padLabel', { name: x.name }))}"><rect x="1" y="1" width="${PAD.w - 2}" height="${PAD.h - 2}" rx="14" class="hd-paper"/>${(x.strokes || []).map(s => inkLine(s, PAD.w, PAD.h)).join('')}</svg>${(x.strokes || []).length ? '' : `<span class="hr-lkempty small muted">${esc(tl('look.padEmpty'))}</span>`}</div>
@@ -411,6 +435,7 @@ export function liveBoard(ctx) {
       const rm = e.target.closest('[data-hrroom]'); if (rm && ctx.openRoom) { sh.close(); ctx.openRoom(rm.dataset.hrroom); }
       if (e.target.closest('[data-hrlksup]')) { sh.close(); ctx.supports(sid); }
     });
+    LV.look.load = load;
     await load();
     // (the sheet's own first focus may land on a button at the bottom: what they see, at the top, stays in view)
     setTimeout(() => { if (LV.look && LV.look.sid === sid && box.querySelector('.hr-lkscreen')) { sh.el.querySelector('.close')?.focus({ preventScroll: true }); const sc = box.closest('.sheet'); if (sc) sc.scrollTop = 0; } }, 60);
@@ -423,9 +448,12 @@ export function liveBoard(ctx) {
     if (!LV.look) return;
     const box = LV.look.sh.el.querySelector('[data-lkbig]'); if (!box) return;
     const html = WT.bigHtml(LV.look.sid, desks()[LV.look.sid] || {}), key = (/data-key="([^"]*)"/.exec(html) || [])[1] || '';
-    const cur = box.firstElementChild ? box.firstElementChild.dataset.key || '' : '';
+    const cur = box.firstElementChild ? box.firstElementChild.dataset.key || '' : '', kindWas = box.firstElementChild ? box.firstElementChild.dataset.kind || '' : '';
     if (key !== cur || !html) {
       box.innerHTML = html; WT.fit(box);
+      // (what they have open changed: the status and the line under it follow now, not at the next 4 s refresh)
+      const kind = box.firstElementChild ? box.firstElementChild.dataset.kind || '' : '';
+      if (kind !== kindWas && LV.look.load && Date.now() - (LV.look.loadedAt || 0) > 2500) { LV.look.loadedAt = Date.now(); LV.look.load(); }
       // (the first time it shows: the sheet opens at the top, where it is)
       if (html && !cur) { const sc = box.closest('.sheet'); if (sc) sc.scrollTop = 0; }
     }

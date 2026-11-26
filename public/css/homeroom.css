@@ -184,11 +184,11 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 @media (max-width:819px){.hr-stl{display:none}.hr-seltools{gap:3px;padding:4px}}
 
 /* the teacher's own desk ("My desk"): staged games, lessons and tools; only the teacher sees what is on it */
-.hr-tdesk{position:absolute;box-sizing:border-box;border-radius:18px;border:3px solid var(--spark-press);background:var(--text);color:var(--card);box-shadow:0 4px 0 var(--spark-press),var(--shadow);padding:8px 12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.hr-tdesk{position:absolute;box-sizing:border-box;border-radius:18px;border:3px solid var(--spark-press);background:var(--tdesk);color:var(--tdesk-ink);box-shadow:0 4px 0 var(--spark-press),var(--shadow);padding:8px 12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
 .hr-tdeskcap{display:flex;align-items:center;gap:8px;min-width:0;font-size:20px;line-height:1.1;white-space:nowrap}
 .hr-tdeskcap b{font-weight:900}
 .hr-tdesknote{margin-inline-start:auto;font-size:14px;font-weight:700;opacity:.75;overflow:hidden;text-overflow:ellipsis}
-.hr-tdeskempty{flex:1;display:grid;place-items:center;text-align:center;border:2px dashed color-mix(in srgb,var(--card) 40%,transparent);border-radius:12px;font-size:16px;font-weight:700;opacity:.85;padding:0 8px}
+.hr-tdeskempty{flex:1;display:grid;place-items:center;text-align:center;border:2px dashed color-mix(in srgb,var(--tdesk-ink) 40%,transparent);border-radius:12px;font-size:16px;font-weight:700;opacity:.85;padding:0 8px}
 .hr-scards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .hr-scard{display:flex;align-items:center;gap:6px;min-width:0;height:48px;padding:0 10px;border:0;border-radius:12px;background:var(--card);color:var(--text);font:800 15px var(--font);text-align:start;cursor:grab;touch-action:none;box-shadow:0 2px 0 var(--spark-press)}
 .hr-scard:hover{background:var(--spark-soft)}
@@ -202,7 +202,7 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 .hr-slist .btn{width:100%;justify-content:flex-start;min-height:48px}
 .hr-givebar .hr-gchip.mine{background:#141414;color:#FFFDF2}
 .hr-emptynote{display:flex;align-items:center;gap:8px;margin:10px 0 4px;padding:10px 12px;border-radius:12px;background:var(--spark-soft);color:var(--text);font-weight:700}
-.hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--line));background:var(--card);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
+.hr-desk{position:absolute;border-radius:18px;border:3px solid var(--gc,var(--desk-edge));background:var(--desk);box-shadow:var(--shadow);padding:10px 12px;display:flex;flex-direction:column;justify-content:space-between}
 .hr-name{position:absolute;inset-inline-start:6px;top:-34px;display:flex;align-items:center;gap:6px;font-weight:800;font-size:17px;color:var(--text);white-space:nowrap;max-width:180px;overflow:hidden;text-overflow:ellipsis}
 .hr-desk .rm-dot{flex:none;background:var(--c,var(--line))}
 .hr-desk .hr-empty{font-size:14px}
@@ -298,7 +298,7 @@ main.rm-main>#hd{flex:1 1 auto;min-height:0}
 .hd-svg{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;display:block}
 /* The pad is a sheet of paper in both themes, so every pen color shows. */
 .hd-paper{fill:var(--brand-cream);stroke:var(--edge);stroke-width:2;stroke-dasharray:10 8}
-.hd-side{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px;border:3px solid #141414;border-radius:20px;background:color-mix(in srgb,var(--spark) 22%,var(--card));align-self:start}
+.hd-side{display:flex;flex-direction:column;gap:8px;min-height:0;padding:12px;border:3px solid var(--text);border-radius:20px;background:color-mix(in srgb,var(--spark) 22%,var(--card));align-self:start}
 .hd-wintop{display:flex;align-items:center;gap:8px}
 .hd-areah{flex:1;margin:0;font-size:.9rem;font-weight:800;color:var(--warn-ink)}
 .hd-open{width:48px;height:48px;display:grid;place-items:center;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);cursor:pointer}
@@ -333,8 +333,8 @@ main.rm-main>#hd{flex:1 1 auto;min-height:0}
 .hd-room{overflow-y:auto}
 .hd-roombox{position:relative;flex:none;width:100%}
 .hd-front{position:absolute;display:flex;align-items:flex-start;justify-content:flex-end;padding:6px 10px;border-radius:14px;background:color-mix(in srgb,var(--spark) 18%,var(--card));box-shadow:inset 0 0 0 2px var(--spark-press);font-size:.8rem;font-weight:800;color:var(--warn-ink)}
-.hd-tdesk{position:absolute;display:grid;place-items:center;border-radius:10px;background:var(--text);color:var(--card);font-size:.75rem;font-weight:800;overflow:hidden;white-space:nowrap}
-.hd-rdesk{position:absolute;border:3px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow)}
+.hd-tdesk{position:absolute;display:grid;place-items:center;border-radius:10px;background:var(--tdesk);color:var(--tdesk-ink);font-size:.75rem;font-weight:800;overflow:hidden;white-space:nowrap}
+.hd-rdesk{position:absolute;border:3px solid var(--desk-edge);border-radius:12px;background:var(--desk);box-shadow:var(--shadow)}
 .hd-rdesk.me{border-color:var(--gc,var(--text));box-shadow:0 0 0 3px var(--text)}
 .hd-rname{position:absolute;inset-inline-start:2px;bottom:calc(100% + 2px);max-width:calc(100% + 30px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:800}
 /* a phone: the desks in seating order as a grid (the teacher's area across the top) */
@@ -885,6 +885,34 @@ button.hr-tname:hover{background:var(--hover)}
 .hd-playing .hd-body{visibility:hidden}
 @media (max-width:600px){.hd>.hr-player{left:8px;right:8px;top:64px;bottom:80px}}
 @media (max-width:819px){.hr-playtop{min-height:52px;padding:6px 8px}.hr-playt{font-size:.95rem}}
+/* one compact bar over the game (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom"): the title wraps
+   to two lines rather than being cut short, a preview says so, and on a desk the top bar steps aside while a game or a
+   tool is open (its Raise hand sits in the player's bar), so Live and Raise hand are never there twice */
+.hr-playtop{position:relative;z-index:2}
+.hr-playt{flex:1 1 auto}
+.hr-playt b{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.15;overflow-wrap:anywhere}
+.hr-playslot{display:flex;align-items:center;flex:none}
+.hr-playslot:empty{display:none}
+.hr-playbadge{display:inline-flex;align-items:center;gap:6px;flex:none;padding:4px 10px;border-radius:999px;background:var(--spark-soft);color:var(--text);font-size:13px;font-weight:800}
+.hd-gameplay>.hd-top{display:none}
+.hd-gameplay>.hr-player{top:12px}
+.hd-gameplay>.hd-notewrap{top:84px;z-index:31}
+/* a phone: the game gets the whole screen under that one bar (the site's bars, the dock and the class prompt step aside
+   until Back), so the board shows on first open without scrolling inside the frame */
+@media (max-width:819px){
+  body.hd-full{padding-bottom:0}
+  body.hd-full .topbar,body.hd-full .tabbar,body.hd-full .hr-notify{display:none}
+  .hd-gameplay>.hd-dock{display:none}
+  .hd-gameplay>.hr-player{position:fixed;left:0;right:0;top:0;bottom:0;height:100vh;height:100dvh;border-radius:0;z-index:1000;box-shadow:none}
+  .hd-gameplay>.hd-notewrap{position:fixed;top:60px;z-index:1001}
+  /* (Pause screens, the lock and Bring everyone to me still cover the game, as they cover the desk) */
+  .hd-gameplay #hd-over>.hd-over{position:fixed;z-index:1002}
+  .hr-playtop{gap:8px;min-height:52px;padding:4px 8px}
+  .hr-playback{padding:0 14px}
+  .hr-playbackt{display:none}
+  .hr-playbadge{font-size:12px;white-space:normal;max-width:34vw;line-height:1.15}
+  .hr-playslot .hd-handbtn{min-height:44px;padding:0 12px}
+}
 
 /* ---- the day plan (public/js/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): the plan pill in the shared
    bar (Now with a countdown and Next; Time's up in yellow; never red), its menu, the Finish class summary, and the
@@ -1444,6 +1472,9 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-liveonly{text-decoration:none;color:inherit;opacity:.85}
 .hr-cnone{margin:4px 0}
 .hr-cphone{display:none}
+/* (a long name wraps to a second line in the laptop's panel and the sheet, never cut to "Two-Colo...") */
+.hr-catalog .hr-itemt{white-space:normal;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;line-height:1.2;overflow-wrap:anywhere}
+.hr-catalog .hr-item{min-height:44px;height:auto}
 .hr-csheet .hr-catalog{gap:8px}
 .hr-csheet .hr-cfind{top:0}
 .hr-csheet .hr-items{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px}
@@ -1527,3 +1558,13 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-sprob{position:absolute;inset-inline:0;top:0;z-index:2;margin:0;padding:8px 12px;max-height:64px;overflow:hidden;background:var(--card);border-bottom:1px solid var(--line);font-size:13px;line-height:1.35;color:var(--text)}
 .hr-sprob + .hr-sfit{top:64px}
 .hr-sprobbox{display:inline-block;margin-inline-start:6px;padding:0 6px;border-radius:999px;background:var(--hover);font-weight:700}
+
+/* ---- Manipulatives in Homeroom, QA fixes (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom") */
+/* a tool on a desk: its card (open practice: a small Practice chip in place of a bar) */
+.hr-toolcard .hr-cchip{margin-inline-start:auto;flex:none;padding:1px 7px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:11px;font-weight:800}
+.hr-dcls{display:flex;align-items:center;gap:6px;margin:6px 0 0;color:var(--muted)}
+/* the hand-out sheet: one Manipulatives room at a time, said up front with the way to take the other one off */
+.hr-onetool{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;margin:8px 0;padding:10px 12px;border-radius:var(--r-sm);background:var(--warn-bg);color:var(--warn-ink);font-weight:700}
+.hr-onetool p{margin:0;flex:1 1 200px;min-width:0}
+.hr-onetoolbox:empty{display:none}
+.hr-lktool + .hr-lktool{margin-top:6px}

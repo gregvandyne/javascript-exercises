@@ -488,9 +488,11 @@ function watchView(req, c) {
   HW.watch(c, { tiles, look });
   const want = [...new Set([...tiles, ...(look ? [look] : [])])], att = AT.marksToday(c.id);
   const screens = HW.snapsFor(c, haveOf(req.query.sv)), mv = haveOf(req.query.mv), boards = {}, bcur = {};
-  for (const [sid, b] of HT.boardsOf(c, want.filter(id => !att[id]))) {
+  // (only the board of what the desk has open now: services/homeroom-tools.js boardsOf; bcur lists every desk with one,
+  // so the board drops the boards of the others)
+  for (const [sid, b] of HT.boardsOf(c, want.filter(id => !att[id]), sid => HV.beatOf(c.id, sid))) {
     bcur[sid] = b.cur;
-    if (mv[sid] !== b.v) boards[sid] = { tool: b.tool, session: b.session, state: b.state, v: b.v, space: b.space, ...(b.prob ? { prob: b.prob } : {}) };
+    if (mv[sid] !== b.v) boards[sid] = { tool: b.tool, session: b.session, state: b.state, v: b.v, space: b.space, on: b.on, title: b.title, ...(b.prob ? { prob: b.prob } : {}) };
   }
   for (const sid of Object.keys(screens)) if (!want.includes(sid)) delete screens[sid];
   // their doodle pad (or their team's), as the desk shows it, when it changed
@@ -789,7 +791,8 @@ router.get('/api/homeroom-live', rateLimit('homeroom-live-check', 600, 3600e3), 
   res.set('Cache-Control', 'no-store');
   res.json({ live: req.user ? H.liveDesksFor(req.user) : [] });
 });
-onEveryPage(req => (/^\/class\/[^/]+\/desk\/?$/.test(req.path || '') || !H.mayGetPrompt(req.user) ? null : '/js/homeroom-notify.js'));
+// (never on the desk itself, nor in a page the desk's player frames: ?in=hr)
+onEveryPage(req => (/^\/class\/[^/]+\/desk\/?$/.test(req.path || '') || (req.query && req.query.in === 'hr') || !H.mayGetPrompt(req.user) ? null : '/js/homeroom-notify.js'));
 
 /** A student's class page: the way to their desk (routes/schools.js studentClass). '' when the class has no Homeroom. */
 export function deskLink(req, c) {

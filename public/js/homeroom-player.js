@@ -26,8 +26,10 @@ export function gamePlayer(opts) {
     hide(false);
     el = document.createElement('div');
     el.className = 'hr-player'; el.setAttribute('role', 'region'); el.setAttribute('aria-label', x.title || '');
-    el.innerHTML = `<div class="hr-playtop"><button type="button" class="btn hr-chunk hr-playback" data-hrplayer="close"><span class="flip" aria-hidden="true">←</span> ${esc(opts.back)}</button>
-      <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span>${opts.note ? `<span class="hr-playnote">${iconHtml('👀', { size: 16 })} <span>${esc(opts.note)}</span></span>` : ''}</div>
+    // (one compact bar: the way back, the title (two lines at most, never cut short on a phone), a preview's label, and a
+    // slot the desk fills with its Raise hand, so nothing above the game says it twice)
+    el.innerHTML = `<div class="hr-playtop"><button type="button" class="btn hr-chunk hr-playback" data-hrplayer="close" aria-label="${esc(opts.back)}"><span class="flip" aria-hidden="true">←</span> <span class="hr-playbackt">${esc(opts.back)}</span></button>
+      <span class="hr-playt" dir="auto">${iconHtml(x.icon || '🎮', { size: 20 })} <b>${esc(x.title || '')}</b></span>${x.badge ? `<span class="hr-playbadge">${iconHtml('👀', { size: 16 })} <span>${esc(x.badge)}</span></span>` : ''}${opts.note ? `<span class="hr-playnote">${iconHtml('👀', { size: 16 })} <span>${esc(opts.note)}</span></span>` : ''}<span class="hr-playslot"></span></div>
       <iframe class="hr-playframe" src="${esc(src(x.href))}" title="${esc(x.title || '')}" allow="fullscreen; autoplay; microphone" allowfullscreen></iframe>`;
     el.querySelector('[data-hrplayer]').addEventListener('click', close);
     opts.host.appendChild(el);
@@ -70,5 +72,5 @@ export function gamePlayer(opts) {
     if (e.key !== 'Escape' || !cur || (opts.away && opts.away()) || document.querySelector('.sheet-bg, dialog[open]')) return;
     e.preventDefault(); e.stopImmediatePropagation(); close();
   }, true);
-  return { open, close, sync, current: () => cur };
+  return { open, close, sync, current: () => cur, slot: () => (el ? el.querySelector('.hr-playslot') : null) };
 }

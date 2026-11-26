@@ -130,7 +130,8 @@ function cardHtml(x) {
   const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
   // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
   // (a Manipulatives tool: open practice in its live room, docs/decisions.md "Homeroom: watching desks and the full catalog")
-  const kind = x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
+  // (a lesson assigned in Classroom with several steps: its lesson page, steps done)
+  const kind = x.page ? td('pageKind', { count: x.n || 0 }) : x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
   const sub = [kind, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>
@@ -152,7 +153,8 @@ function fbHtml(x) {
 function renderCards() {
   const el = $('hd-cards'), ord = $('hd-order'); if (!el) return;
   const cards = S.cards, missed = cards.filter(x => x.missed), rest = cards.filter(x => !x.missed);
-  if (ord) { const left = cards.filter(x => !x.done); ord.textContent = !left.length ? '' : left.some(x => x.inOrder) ? td('inOrder') : td('anyOrder'); ord.hidden = !left.length || S.k2; }
+  // (In order / Any order is about handouts: a Manipulatives tool is open practice, never in an order)
+  if (ord) { const left = cards.filter(x => !x.done && !x.practice); ord.textContent = !left.length ? '' : left.some(x => x.inOrder) ? td('inOrder') : td('anyOrder'); ord.hidden = !left.length || S.k2; }
   // "Missed while you were out" (step 4c): handouts given on a day they were marked absent, with the teacher's words
   const missedHtml = missed.length ? `<section class="hd-missed" aria-labelledby="hd-missedh"><h3 class="hd-missedh" id="hd-missedh">${iconHtml('📬', { size: S.k2 ? 26 : 20 })} <span>${esc(td('missed.title'))}</span></h3>
     <p class="hd-missedlead">${esc(td(S.k2 ? 'missed.leadK2' : 'missed.lead'))}</p><div class="${S.k2 ? 'hd-k2tiles' : 'hd-cards'}">${missed.map(x => (S.k2 ? k2Tile(x, true) : cardHtml(x))).join('')}</div></section>` : '';
@@ -651,13 +653,24 @@ RP.st.on = !!D.draw;
 function setDock(k) { for (const b of root.querySelectorAll('.hd-dockbtn[data-hd]')) b.setAttribute('aria-pressed', String(b.dataset.hd === k)); }
 const PL = gamePlayer({
   host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
-  find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
+  // (a Classroom lesson of several steps opens its own lesson page, which is never framed: x.page)
+  find: id => { const x = S.cards.find(c => c.id === id); return x && x.href && x.ready && !x.locked && !x.page ? { href: x.href, title: x.lesson ? td('lessonTitle', { title: x.title }) : x.title, icon: x.lesson ? '📄' : x.icon } : null; },
   note: td('seen'),
   // A Manipulatives tool is the tool's own page (it has no pulse of its own): the desk keeps pulsing and says so
   // (where: tool), so the teacher's board shows that student's square in the tool's room.
-  onOpen: id => { root.classList.add('hd-playing'); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else if (PULSE) PULSE.pause(); },
-  onClose: () => { root.classList.remove('hd-playing'); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
+  // While it is open the desk's own top bar steps aside: its Raise hand moves into the player's bar (one bar: Back, the
+  // title, Raise hand), and on a phone the site's bars and the dock go too, so the game has the whole screen (hd-full).
+  onOpen: id => { root.classList.add('hd-playing', 'hd-gameplay'); document.body.classList.add('hd-full'); handTo(PL.slot()); const x = S.cards.find(c => c.id === id); if (x && x.tool) S.tool = id; else if (PULSE) PULSE.pause(); },
+  onClose: () => { root.classList.remove('hd-playing', 'hd-gameplay'); document.body.classList.remove('hd-full'); handTo(null); S.tool = ''; if (PULSE) PULSE.resume(); S.hv = ''; poll(); },
 });
+/** Raise hand in the player's bar (slot) or back in the desk's top bar (null). */
+let handEl = null;
+function handTo(slot) {
+  const w = handEl || (handEl = $('hd-handwrap')); if (!w) return;
+  if (slot) { slot.appendChild(w); return; }
+  const top = root.querySelector('.hd-top'), grow = top && top.querySelector('.hd-grow');
+  if (grow) grow.after(w); else if (top) top.appendChild(w);
+}
 
 function start() {
   document.querySelector('main#main')?.classList.add('rm-main');

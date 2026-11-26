@@ -2077,7 +2077,8 @@
         "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe, Ganze Klasse oder Mein Pult.",
         "tapMine": "Tippen Sie jetzt auf Mein Pult, um es dort abzulegen.",
         "toolSoon": "Werkzeuge austeilen kommt bald. Legen Sie es auf Mein Pult, um es von dort zu öffnen.",
-        "pickFirst": "Wählen Sie zuerst links eine Lektion und tippen Sie dann auf Mein Pult."
+        "pickFirst": "Wählen Sie zuerst links eine Lektion und tippen Sie dann auf Mein Pult.",
+        "previewNote": "Vorschau: Deine Antworten werden nicht gespeichert"
       },
       "wholeClass": "Ganze Klasse · {count}",
       "editGroups": "Gruppen",
@@ -2300,7 +2301,18 @@
         "gcAlso": "Auch in Google Classroom posten",
         "gcHint": "Es geht als Aufgabe an Ihre verknüpfte Classroom-Klasse, mit der hier gewählten Bewertung.",
         "gcWholeOnly": "Nur Aufgaben für die ganze Klasse gehen an Google Classroom: Dort würden sie alle erreichen.",
-        "taskScoreHint": "Punkte: wie viele Fragen beim ersten Mal richtig waren."
+        "taskScoreHint": "Punkte: wie viele Fragen beim ersten Mal richtig waren.",
+        "toolChip": "Üben",
+        "toolState": "Freies Üben",
+        "toolMeta": "Manipulative · freies Üben",
+        "roomOpen": "Raum offen",
+        "roomClosed": "Raum vorerst geschlossen",
+        "openRoom": "Raum öffnen",
+        "fromClassroom": "Im Klassenraum zugewiesen. Dort ändern oder entfernen.",
+        "oneToolBusy": "{tool} liegt gerade auf den Tischen. Immer nur ein Manipulativ: Nimm es von allen Tischen, um {next} auszuteilen.",
+        "oneToolRoom": "In dieser Klasse läuft ein {tool}-Raum. Immer nur ein Raum: Beende ihn, um {next} auszuteilen.",
+        "takeOffAll": "Von allen Tischen nehmen",
+        "openThatRoom": "Diesen Raum öffnen"
       },
       "team": {
         "label": "Teamtisch",
@@ -2377,7 +2389,8 @@
         "count": "Fragen",
         "countHint": "1 bis 10 Fragen für jedes Kind.",
         "preview": "Ausprobieren"
-      }
+      },
+      "endConfirmTools": "Unterricht für alle beenden? Tische und der Bereich der Lehrkraft bleiben, wie sie sind. Manipulative auf den Tischen ({tools}) werden entfernt und ihr Raum endet."
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -5166,7 +5179,8 @@
         "full": "Mehr kannst du nicht zeichnen. Radiere zuerst ein paar Linien.",
         "notHere": "Zeichne außerhalb der anderen Tische und des Lehrerbereichs."
       },
-      "manipKind": "Üben · {count, plural, one {# Aufgabe} other {# Aufgaben}}"
+      "manipKind": "Üben · {count, plural, one {# Aufgabe} other {# Aufgaben}}",
+      "pageKind": "Lektion · {count, plural, one {# Schritt} other {# Schritte}}"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -5376,7 +5390,11 @@
         "notStarted": "Nicht begonnen",
         "none": "Heute wurde noch nichts verteilt.",
         "weeks": "Den Fortschritt über Wochen zeigt der Tab Klassenzimmer.",
-        "classroom": "Klassenzimmer öffnen"
+        "classroom": "Klassenzimmer öffnen",
+        "setDone": "Fertig · {right} von {n} beim ersten Mal richtig",
+        "setAt": "Frage {i} von {n} · {right} beim ersten Mal richtig",
+        "toolOpen": "{count, plural, one {# hat es offen} other {# haben es offen}}",
+        "toolLine": "Manipulative · freies Üben, wird nicht gezählt"
       },
       "hands": {
         "label": "{count, plural, =0 {Hände, keine oben} one {Hände, # oben} other {Hände, # oben}}",
@@ -5429,7 +5447,9 @@
           "hideOff": "Zeiger von {name} ist wieder sichtbar",
           "comingOn": "{name} sieht, dass du kommst",
           "comingOff": "Hinweis von {name}s Tisch entfernt"
-        }
+        },
+        "toolNow": "Gerade offen · freies Üben",
+        "toolOn": "Auf dem Tisch · freies Üben"
       }
     },
     "homeroom-plan": {

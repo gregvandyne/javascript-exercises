@@ -210,18 +210,20 @@ test('a Manipulatives tool: its live room, cards on the targeted desks, the boar
   // a student never sees another desk's board; the projector never carries one
   assert.ok(!(await as(ben)(`/api/desk/${cls.id}/state`)).text.includes('"pieces"'));
   assert.equal((await boardPoll(ava, `w=${ava.id}`)).status, 404);
+  // End class takes every tool off every desk and ends its room (docs/decisions.md "Homeroom: QA fixes for
+  // Manipulatives in Homeroom"): the card goes, and nothing is left to take off
   H.setLive(rivera, cls, 'end');
-  // taken off every desk: the card goes and the room ends
+  assert.equal(HT.storedOf(cls.id).length, 0);
   const off = await as(rivera)(`${C(cls.id)}/handouts/${item.id}/remove`, { body: {} });
-  assert.equal(off.status, 200, off.text);
-  assert.equal(off.json.tools.length, 0);
+  assert.equal(off.status, 404, off.text);
+  assert.equal((await as(rivera)(`${C(cls.id)}/handouts`)).json.tools.length, 0);
   assert.equal(M.getSession(s.id).status, 'ended');
   assert.ok(!((await as(ava)(`/api/desk/${cls.id}/state`)).json.cards || []).some(x => x.tool));
   // now another tool may run
   assert.ok(HT.handOutTool(rivera, cls, { tool: 'color-tiles', to: { kind: 'all' } }).ok);
-  // a room that ended by itself (12 hours) opens again when the teacher opens Homeroom
+  // a room that ended by itself (its 12 hours ran out) opens again when the teacher opens Homeroom
   const it2 = HT.storedOf(cls.id)[0];
-  q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE id=?", Date.now(), it2.session);
+  q.run("UPDATE manip_sessions SET status='ended', opened_at=?, ended_at=? WHERE id=?", Date.now() - 13 * 3600e3, Date.now(), it2.session);
   assert.ok(!(await as(cleo)(`/api/desk/${cls.id}/state`)).json.cards.find(x => x.tool).ready);
   assert.equal((await as(rivera)(`/class/${cls.id}/homeroom`)).status, 200);
   assert.equal(M.getSession(it2.session).status, 'active');
