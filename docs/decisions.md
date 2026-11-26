@@ -15543,3 +15543,68 @@ task played solo and in Homeroom. No tool changed (`manip.js`, `manip-board.js` 
   reflection typed), "Shape translation" (one moved corner typed), "Table to graph" (the rule picked), "Negative slope
   talk" (the direction picked, the fall typed), "Ordered pair story" (a given walk: the distance in all, between two
   hours, or the rest hour), "Symmetry points" (a point plotted on the mirror line, x = typed).
+
+### Phase 2: Two-Color Counters, Linking Cubes, Color Tiles, Hundred Board
+
+All 68 tasks of these four tools are practice now (17 each), every one played through solo and in a Homeroom set
+(`tests/unit/_manip-flow/<slug>.js`). The piece tools' board checks read the pieces the way they lie
+(`public/js/manip-tasks/piece-grid.js`, shared by the three): sticks are cubes end to end in one straight line (snapped,
+or tapped in from the palette a few pixels apart); rectangles, arrays and shapes are tiles or cubes on a lattice of rows
+and columns, any turn, no gaps; a part-part-whole mat's whole and two parts and a ten-frame's cells are read from the
+mat's own geometry. The Hundred Board's checks read the covered cells (as numbers, whole or tenths) and the Multiples of
+shading.
+
+- **Reworded** (open-ended in the library, checkable now, the same goal):
+  - Two-Color Counters: "Fill the ten-frame" (a number 1 to 9, top row first; how many more make 10, typed; the "other
+    way" dropped), "Part-part-whole hunt" (the two parts built; pick the subtraction the mat also shows), "Subtracting a
+    negative" and "Negative take away" (zero pairs added and the counters taken away: the board is checked; the answer
+    typed instead of explained), "Make 10 in a frame" (fill, flip some: how many yellow are left), "Two colors, one total"
+    (the library's "no zero pairs" contradicted itself: exactly t counters with value v, how many red), "Probability
+    counters" (the bag built; More likely is a choice with Equally likely), "Groups of counters" (the counters checked;
+    how many in each of the new groups, typed), "Fraction of a set" (one fraction a question, sets of 6 to 20),
+    "Pattern with counters" (stages 1 to 3-5 built; how many counters by a later stage), "Balance the mat" (the empty part
+    filled: the mat's parts are checked; the subtraction typed), "Zero pair detective" (zero pairs taken away until one
+    color is left, then the value), "Double and halve" (double: add a red for each yellow; or halve: flip half), "Counters
+    for data" (the sorting is not checked: the color with the most is a choice, how many more than the fewest is typed),
+    "Add unlike signs" (zero pairs taken away, only the leftover color stays; the sum typed instead of explained).
+  - Linking Cubes: "Build and break 8" (two labeled mats: Way 1 a given split into two sticks, Way 2 another), "Cube bar
+    graph" (the votes are given; a bar per color is checked; the most is a choice, how many more is typed), "Arrays for
+    12" (one array with a given number of rows, 12 to 30 cubes; cubes in a row typed), "Staircase sums" (3 to 5 steps
+    built; the cubes for a bigger staircase typed), "Train lengths" (the order is not asked; longest minus shortest),
+    "Measure with cubes" (the objects are labeled mats with their length in cubes given: a train on each, which is longer
+    and by how many), "Make a meter of cubes" (100 cubes is too long a build: 20 to 49 cubes as sticks of 10 and loose
+    ones, then how many more make 100), "Cube trains for 15" (the ten-stick in one color and the rest in another; the
+    second split dropped), "Volume by cubes" (one layer built as an array, the box's cubes typed), "Symmetry tower" (a
+    locked half in colors; the mirror half joined to it; where the mirror line is, a choice), "Estimate then count" (the
+    estimate is a choice, the exact count typed; snapping is not checked), "Cube fractions" (one stick a question),
+    "Perimeter with cubes" (locked black cubes lie around the card's edges; the card is covered and the cubes around it
+    counted), "Number bond tower" (one stick, three colors; the total typed), "Scaling a model" (a locked two-color model
+    instead of a chair; the bigger model's colors checked), "Missing cubes" (the seen part locked; the missing part built
+    as one stick).
+  - Color Tiles: "Copy the pattern" (a locked AB, ABB, AAB or ABC row extended by 2 to 4 tiles; the change to ABB
+    dropped), "Area of a rectangle" (built; the area is a choice, the perimeter typed), "Same area, different perimeter"
+    (Rectangle 1 given, Rectangle 2 any other rectangle of the same tiles on its own mat; Rectangle 1's perimeter typed),
+    "Tile the fraction" (one rectangle a question), "Odd and even areas" (one number a question: the rectangle built, Yes
+    or No a choice), "Tile a letter" (a locked letter instead of the student's initial: area typed, perimeter a choice),
+    "Halves of rectangles" (one way a question; tiles in half typed), "Tile symmetry quilt" (a locked quarter completed
+    to two lines of symmetry; the partner swap dropped), "Growing border" (stage 2 or 3 built; a later stage's total or
+    border typed), "Fraction wall tiles" (a locked whole row; one fraction row under it, lined up at the left; the
+    equivalent numerator typed), "Area challenge 20" (any number of tiles, smallest or largest perimeter a question),
+    "Tile number line" (a locked numbered row of 20; the jump's tiles under it; its length typed), "Cover without gaps"
+    (the L-shaped card described by its rows and cut corner; the L built, checked in any turn; the tiles typed; "how did
+    you check" dropped), "Percent tiles" (a 100-tile build is too long: a locked whole of 20, 25, 50 or 100 tiles with
+    some blue; the percent blue or not blue typed), "Ratio tiles" (the ratio built k times; the red tiles typed).
+  - Hundred Board: "10 more, 10 less" (numbers hidden, the number starred; the one asked covered and typed),
+    "Multiples of 6 pattern" (Multiples of 3 to 9 on, one multiple covered; the predictions past 100 dropped), "Decimal
+    slide" (the board starts in tenths), "Skip count by 3s" (by 2, 3, 4, 5 or 10; what comes next; "from memory"
+    dropped), "Prime hunt intro" (up to 20 to 48; how many stay uncovered), "Add 9 trick" (also 11, and subtracting;
+    the why is the explanation), "Number neighbors" and "Decimal neighbors" (all four covered, one typed), "Between
+    tens" (the two tens covered; the closer one a choice, the distance typed), "Square numbers" (a range of squares; one
+    gap typed), "Counting in 25s" (boards from 1 to 900; where k more 25s land), "Odd even checkerboard" (Multiples of 2
+    on and the number covered; Even or Odd a choice), "Subtract across rows" (the library said "right three" for 52 −
+    23: the ones go left; corrected), "Hundred board race" (the five calls are given, no partner), "Missing row"
+    (numbers hidden: the row covered, one of its numbers typed).
+- **Tool changes for the tasks** (`public/js/manip-board.js`): a palette piece that follows one dropped flush under a
+  row now carries on that row flush under it (`nextPieceSpot`'s row checks overlap only above and below; it jumped past
+  the row above before), so arrays and rectangles of cubes and tiles are built row by row; and a locked piece never
+  moves with its snapped group (`groupOf`: a cube snapped onto a locked stick is dragged away alone).
