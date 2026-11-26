@@ -189,3 +189,33 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-pfoot{margin-top:0}
 .oc-pmore summary{cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:36px;font-weight:700;font-size:.88rem;color:var(--text-2)}
 .oc-pmore[open] summary{color:var(--text)}
+/* A week plan (services/homeroom-week.js; docs/decisions.md "Homeroom: week plans, due dates, copying plans"): Monday
+   to Friday, each a short day plan that opens to its parts; the copy preview before copying to another class. */
+.oc-wdays{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.oc-wday{border-radius:14px;background:var(--card-2,var(--bg))}
+.oc-wday.today{box-shadow:inset 0 0 0 2px var(--accent-line)}
+.oc-wday.past{opacity:.72}
+.oc-wday summary{display:grid;grid-template-columns:44px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:48px;padding:6px 10px;cursor:pointer;list-style:none}
+.oc-wday summary::-webkit-details-marker{display:none}
+.oc-wday details[open] summary{border-bottom:1px solid var(--line)}
+.oc-wday details>.oc-pparts{padding:8px}
+.oc-wday .oc-ppart{background:var(--card)}
+.oc-wnone{display:grid;grid-template-columns:44px minmax(0,1fr);align-items:center;gap:8px;min-height:40px;padding:4px 10px;font-size:.88rem}
+.oc-wdn{display:flex;flex-direction:column;line-height:1.1}
+.oc-wdn small{font-size:.7rem;font-weight:800;color:var(--accent-ink)}
+.oc-wdb{display:flex;flex-direction:column;gap:3px;min-width:0}
+.oc-wname{font-weight:700;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-wkinds{display:flex;flex-wrap:wrap;gap:3px}
+.oc-wk{padding:0 6px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1px var(--line);font-size:.7rem;font-weight:700;white-space:nowrap;color:var(--text-2)}
+.oc-wk.k-work{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent-line)}
+.oc-wk.k-break{background:var(--spark-soft)}
+.oc-wtot{display:flex;flex-direction:column;align-items:flex-end;font-size:.8rem;font-weight:800;white-space:nowrap}
+.oc-wtot small{font-size:.7rem;font-weight:800;color:var(--warn-ink)}
+.oc-copyprev{display:flex;flex-direction:column;gap:10px}
+.oc-copyprev p{margin:0}
+.oc-cpmiss{display:flex;flex-direction:column;gap:4px;margin:0;padding:8px 10px;border-radius:12px;background:var(--spark-soft);list-style:none}
+.oc-cpmiss li{display:flex;gap:6px;align-items:flex-start;font-size:.9rem;font-weight:600}
+.oc-cpparts{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.oc-cpparts>li{padding:8px 10px;border-radius:12px;background:var(--card-2,var(--bg))}
+.oc-cpday h3{margin:4px 0;font-size:1rem}
+.oc-cpacts{justify-content:flex-end;gap:8px;flex-wrap:wrap}

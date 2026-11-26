@@ -119,8 +119,9 @@ export function infosOf(classId, rds = readingOf(classId), userId = null) {
  * The class's teachers only. A student never has the same book (or two free choices) open twice.
  * -> { ok, classLesson, book, students } | { ok: false, code, count? }
  */
-export function handOutReading(u, c, { bookId = '', to, instructions = '', order = 'in', grade = 'completion', dueAt = null, title = 'Read a book' } = {}) {
+export function handOutReading(u, c, { bookId = '', to, instructions = '', order = 'in', grade = 'completion', dueAt = null, dueTime = null, tz = '', title = 'Read a book' } = {}) {
   if (!H.canUseClass(u, c)) return fail('notFound');
+  const due = HO.dueOf({ dueAt, dueTime, tz }); if (!due.ok) return due;
   if (!['in', 'any'].includes(order)) return fail('badOrder');
   if (!HO.GRADES.includes(grade)) return fail('badGrade');
   if (typeof instructions !== 'string' || instructions.trim().length > HO.INSTRUCTIONS_MAX) return fail('tooLong');
@@ -144,6 +145,7 @@ export function handOutReading(u, c, { bookId = '', to, instructions = '', order
   if (!r.ok) { L.deleteLesson(u, made.lesson.id); return r; }
   q.run('INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at) VALUES (?,?,?,?,?,?,?)',
     r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now());
+  HO.setDue([r.classLesson.id], due);
   audit(u.id, 'homeroom.reading', c.id, { classLesson: r.classLesson.id, book: story || null, target: who.target, students: who.all.length, order, grade });
   return ok({ classLesson: r.classLesson, book, title: name, students: who.all.length });
 }

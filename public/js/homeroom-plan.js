@@ -11,6 +11,10 @@
 //     The timer is the server's (a reload, another device and the projector agree); the page only counts down between
 //     polls. On the Homeroom view the Oomba chat knows this class's Homeroom is on screen (public/js/oomba-bus.js), so
 //     its plan tools are there.
+//     Week plans (docs/decisions.md "Homeroom: week plans, due dates, copying plans"; services/homeroom-week.js): on a
+//     day of a saved week the pill has that day's plan ("Today", Start; the menu's Put on desks only hands out), and the
+//     menu has the week strip (Mon..Fri chips: open a day, swap two days, clear one). With no plan today but a week, the
+//     pill says "This week" and opens the strip. Still no plan row on the board.
 //   - nowNextHtml(view): the projector's and the desk's Now / Next line: part names and the timer only.
 import { t, api, esc, toast, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
@@ -41,7 +45,8 @@ export function planPill(ctx) {
   const { D } = ctx;
   // An aide (step 3c) sees the plan and its timer but changes nothing: no Start, +5 min, Next, Finish, Clear or chat.
   const RO = !!ctx.readOnly;
-  const P = { plan: D.plan || null, skew: D.plan ? Date.now() - D.plan.now : 0, menu: false, busy: false, sig: '', timer: null };
+  // week: the menu's week strip (services/homeroom-week.js stripOf): the day open in it, and the day being swapped
+  const P = { plan: D.plan || null, skew: D.plan ? Date.now() - D.plan.now : 0, menu: false, busy: false, sig: '', timer: null, wkSel: null, wkSwap: null };
   const host = () => document.getElementById('hr-plan');
   const path = `/api/homeroom/${encodeURIComponent(D.classId)}/plan`;
   const at = () => Date.now() - P.skew;
@@ -57,10 +62,12 @@ export function planPill(ctx) {
   // ---------------------------------------------------------------- the pill
   function pillHtml() {
     const p = P.plan, x = tm();
-    if (!p && RO) return '';
+    if ((!p || p.state === 'none') && RO) return '';
+    // no plan today, but a week plan: the pill opens the week strip (and Plan today in the chat from there)
+    if (p && p.state === 'none') return btn('btn hr-chunk hr-planpill', `data-hrplan="menu" aria-expanded="${P.menu}" aria-haspopup="true" aria-label="${esc(tp('weekLabel'))}"`, `${ic('🗓️')}<span class="hr-pp-word"> ${esc(tp('thisWeek'))}</span>`);
     if (!p) return btn('btn hr-chunk hr-planpill', `data-hrplan="ask" aria-label="${esc(tp('askLabel'))}" title="${esc(tp('askLabel'))}"`, `${ic('🗓️')}<span class="hr-pp-word"> ${esc(tp('planToday'))}</span>`);
     const menuAttrs = `data-hrplan="menu" aria-expanded="${P.menu}" aria-haspopup="true"`;
-    if (p.state === 'ready') {
+    if (p.state === 'ready' || p.state === 'planned') {
       return `${btn('btn hr-chunk hr-planpill', `${menuAttrs} aria-label="${esc(tp('todayLabel', { name: p.name || tp('title'), minutes: x.plannedMin }))}"`, `${ic('🗓️')}<span class="hr-pp-t"><span class="hr-pp-cap">${esc(tp('today'))}</span> <b dir="auto">${esc(p.name || tp('title'))}</b> <span class="hr-pp-sub">${esc(minutes(x.plannedMin))}</span></span>`)}
         ${RO ? '' : btn('btn hr-chunk hr-spark hr-pp-act', `data-hrplan="start" aria-label="${esc(tp('start'))}"`, `${ic('▶️')}<span class="hr-hidephone"> ${esc(tp('start'))}</span>`)}`;
     }
@@ -79,7 +86,7 @@ export function planPill(ctx) {
   function render(force = false) {
     const el = host(); if (!el) return;
     const x = tm(), p = P.plan;
-    const sig = JSON.stringify([p && p.id, p && p.state, p && p.run && p.run.idx, p && p.run && p.run.extra, x && x.timesUp, x && x.done, x && x.behindMin, P.menu]);
+    const sig = JSON.stringify([p && p.id, p && p.state, p && p.run && p.run.idx, p && p.run && p.run.extra, x && x.timesUp, x && x.done, x && x.behindMin, P.menu, p && p.week && JSON.stringify(p.week), P.wkSel, P.wkSwap]);
     if (force || sig !== P.sig) {
       const f = document.activeElement && el.contains(document.activeElement) ? document.activeElement.dataset.hrplan : null;
       P.sig = sig; el.innerHTML = pillHtml();
@@ -94,23 +101,53 @@ export function planPill(ctx) {
     if (!el) { el = document.createElement('div'); el.id = 'hr-planmenu'; document.body.appendChild(el); }
     return el;
   }
+  /** The week strip (Mon..Fri chips): a day opens its parts here, and can be swapped with another day or cleared. Never
+   *  a plan row on the board: planning stays in the chat and this pill. */
+  function weekHtml(w) {
+    if (!w || !w.days) return '';
+    const sel = w.days.find(d => d.date === P.wkSel) || null;
+    const chips = w.days.map(d => {
+      const lab = `${dayOf(d.date)}${d.plan ? `, ${d.plan.name || tp('title')}, ${minutes(d.plan.minutes)}` : `, ${tp('wk.none')}`}`;
+      const target = P.wkSwap && P.wkSwap !== d.date && !d.past;
+      return `<button type="button" class="hr-wk-chip${d.today ? ' today' : ''}${d.past ? ' past' : ''}${d.plan ? '' : ' empty'}${d.used ? ' used' : ''}${sel && sel.date === d.date ? ' sel' : ''}${target ? ' target' : ''}" data-hrplan="wkday" data-day="${esc(d.date)}" aria-pressed="${!!sel && sel.date === d.date}" aria-label="${esc(target ? tp('wk.swapWith', { day: dayOf(d.date, true) }) : lab)}">
+        <b>${esc(dayOf(d.date))}</b><small>${d.plan ? esc(minutes(d.plan.minutes)) : '·'}</small>${d.today ? `<i class="hr-wk-dot" aria-hidden="true"></i>` : ''}</button>`;
+    }).join('');
+    let open = '';
+    if (P.wkSwap) open = `<p class="hr-wk-note">${ic('🔁', 16)} ${esc(tp('wk.pickSwap', { day: dayOf(P.wkSwap, true) }))}</p>${btn('btn btn-sm btn-ghost', 'data-hrplan="wkcancel"', esc(tp('wk.cancel')))}`;
+    else if (sel) {
+      const pl = sel.plan;
+      open = `<p class="hr-wk-h2"><b>${esc(dayOf(sel.date, true))}</b>${pl ? ` · <span dir="auto">${esc(pl.name || tp('title'))}</span> · ${esc(minutes(pl.minutes))}${pl.half ? ` · ${esc(tp('wk.half'))}` : ''}` : ''}</p>
+        ${pl ? `<ol class="plain hr-wk-parts">${pl.parts.map(q => `<li><span dir="auto">${esc(partName(q))}</span><span class="hr-pm-min">${esc(minutes(q.minutes))}</span></li>`).join('')}</ol>` : `<p class="small muted">${esc(tp('wk.noneLong'))}</p>`}
+        ${sel.used ? `<p class="small muted">${esc(tp('wk.inUse'))}</p>` : sel.past ? `<p class="small muted">${esc(tp('wk.pastDay'))}</p>` : RO ? ''
+          : `<div class="hr-wk-acts">${btn('btn btn-sm', `data-hrplan="wkswap" data-day="${esc(sel.date)}"`, `${ic('🔁', 16)} ${esc(tp('wk.swap'))}`)}${pl ? btn('btn btn-sm btn-ghost', `data-hrplan="wkclear" data-day="${esc(sel.date)}"`, esc(tp('wk.clear'))) : ''}</div>`}`;
+    }
+    return `<section class="hr-wk" aria-labelledby="hr-wkh"><h3 class="hr-wk-h" id="hr-wkh">${ic('🗓️', 16)} ${esc(tp('thisWeek'))}</h3>
+      <div class="hr-wk-days">${chips}</div>${open ? `<div class="hr-wk-open">${open}</div>` : ''}</section>`;
+  }
+  const dayOf = (iso, long = false) => { try { return new Date(`${iso}T00:00:00Z`).toLocaleDateString(document.documentElement.lang || undefined, { weekday: long ? 'long' : 'short', timeZone: 'UTC' }); } catch { return iso; } };
   function menuHtml() {
     const p = P.plan, x = tm();
+    if (p.state === 'none') {
+      return `<div class="rm-menu panel hr-planmenu" role="dialog" aria-labelledby="hr-wkh"><div class="hr-pm-body">${weekHtml(p.week)}
+        <div class="hr-pm-foot">${RO ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="ask"', `${ic('💬', 16)} ${esc(tp('planTodayChat'))}`)}</div></div></div>`;
+    }
     const rows = p.parts.map((q, i) => {
       const done = p.run && (p.run.done || i < p.run.idx), now = p.state === 'running' && !x.done && i === x.idx;
       return `<li class="hr-pm-part${now ? ' now' : ''}${done ? ' done' : ''}"><span class="hr-pm-mark" aria-hidden="true">${done ? '✓' : now ? '▶' : i + 1}</span><span class="hr-pm-name" dir="auto">${esc(partName(q))}</span><span class="hr-pm-min">${esc(minutes(q.minutes))}${now && p.run.extra ? ` <small>${esc(tp('added', { count: Math.round(p.run.extra / 60e3) }))}</small>` : ''}</span></li>`;
     }).join('');
     const running = p.state === 'running' && !x.done;
-    const acts = RO ? '' : p.state === 'ready' ? btn('btn btn-primary', 'data-hrplan="start"', `${ic('▶️', 16)} ${esc(tp('start'))}`)
+    const acts = RO ? '' : p.state === 'planned' ? `${btn('btn btn-primary', 'data-hrplan="start"', `${ic('▶️', 16)} ${esc(tp('start'))}`)}${btn('btn', 'data-hrplan="use"', `${ic('🎒', 16)} ${esc(tp('putOnDesks'))}`)}`
+      : p.state === 'ready' ? btn('btn btn-primary', 'data-hrplan="start"', `${ic('▶️', 16)} ${esc(tp('start'))}`)
       : running ? `${btn('btn', 'data-hrplan="more"', esc(tp('more')))}${btn('btn btn-primary', 'data-hrplan="next"', `${ic('⏭️', 16)} ${esc(x.next ? tp('nextTo', { part: partName(x.next) }) : tp('endLast'))}`)}${btn('btn', 'data-hrplan="finish"', `${ic('🏁', 16)} ${esc(tp('finish'))}`)}`
         : p.state === 'done' ? btn('btn btn-primary', 'data-hrplan="finish"', `${ic('🏁', 16)} ${esc(tp('finish'))}`)
           : p.summary ? btn('btn btn-primary', 'data-hrplan="summary"', `${ic('🏁', 16)} ${esc(tp('showSummary'))}`) : '';
     return `<div class="rm-menu panel hr-planmenu" role="dialog" aria-labelledby="hr-pmh"><div class="hr-pm-body">
       <h2 class="hr-pm-h" id="hr-pmh">${ic('🗓️', 20)} <span dir="auto">${esc(p.name || tp('title'))}</span> <span class="hr-pm-tot">${esc(minutes(x.plannedMin))}</span></h2>
       ${p.run && p.state !== 'finished' ? `<p class="hr-pm-behind${x.behindMin > 0 ? ' late' : ''}">${ic(x.behindMin > 0 ? '🐢' : '👍', 16)} ${esc(x.behindMin > 0 ? tp('behindLong', { count: x.behindMin }) : tp('onTimeLong'))}</p>` : ''}
+      ${p.state === 'planned' ? `<p class="small muted hr-pm-note">${esc(tp('fromWeek'))}</p>` : ''}
       <ol class="plain hr-pm-parts">${rows}</ol>
-      <div class="hr-pm-acts">${acts}</div>
-      <div class="hr-pm-foot">${RO ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="ask"', `${ic('💬', 16)} ${esc(tp('change'))}`)}${RO || p.state === 'running' || p.state === 'done' ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="clear"', esc(tp('clear')))}</div>
+      <div class="hr-pm-acts">${acts}</div>${weekHtml(p.week)}
+      <div class="hr-pm-foot">${RO ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="ask"', `${ic('💬', 16)} ${esc(tp('change'))}`)}${RO || ['running', 'done', 'planned'].includes(p.state) ? '' : btn('btn btn-sm btn-ghost', 'data-hrplan="clear"', esc(tp('clear')))}</div>
       ${p.state === 'running' && x.timesUp ? `<p class="small muted hr-pm-note">${esc(tp('neverMoves'))}</p>` : ''}</div></div>`;
   }
   function renderMenu() {
@@ -118,18 +155,21 @@ export function planPill(ctx) {
     if (!P.menu || !P.plan || !b) { P.menu = false; el.innerHTML = ''; return; }
     el.innerHTML = menuHtml();
     placePopover(el.firstElementChild, b);
+    el.querySelector('.hr-wk-open')?.scrollIntoView({ block: 'nearest' });
   }
   function setMenu(on) { P.menu = on; render(true); if (!on) renderMenu(); else menuEl().querySelector('button')?.focus(); }
 
   // ---------------------------------------------------------------- acting
-  async function act(action) {
+  async function act(action, extra = {}) {
     if (P.busy) return null;
     if (action === 'clear' && !(await ask({ title: tp('clearTitle'), text: tp('clearText'), ok: tp('clear') }))) return null;
+    if (action === 'weekClear' && !(await ask({ title: tp('wk.clearTitle', { day: dayOf(extra.day, true) }), text: tp('wk.clearText'), ok: tp('wk.clear') }))) return null;
     P.busy = true;
     try {
-      const r = await api(path, { method: 'POST', body: { action } });
+      const r = await api(path, { method: 'POST', body: { action, ...extra } });
       take(r.plan);
-      if (action === 'start') toast(tp('startedToast'));
+      if (action === 'start') toast(r.toast ? `${r.toast} ${tp('startedToast')}` : tp('startedToast'));
+      else if (r.toast) toast(r.toast);
       if (r.summary) { setMenu(false); summarySheet(r.summary); }
       return r;
     } catch (e) { toast(e.message, { bad: true }); return null; } finally { P.busy = false; }
@@ -155,7 +195,16 @@ export function planPill(ctx) {
     const b = e.target.closest('[data-hrplan]'); if (!b) { if (P.menu && !e.target.closest('#hr-planmenu')) setMenu(false); return; }
     const k = b.dataset.hrplan;
     if (k === 'menu') setMenu(!P.menu);
+    else if (k === 'wkday') {
+      const d = b.dataset.day, w = P.plan && P.plan.week, day = w && w.days.find(x => x.date === d);
+      if (P.wkSwap && !RO) { if (d !== P.wkSwap && day && !day.past) { const a = P.wkSwap; P.wkSwap = null; P.wkSel = d; act('weekSwap', { day: a, with: d }); } return; }
+      P.wkSel = P.wkSel === d ? null : d; render(true);
+      menuEl().querySelector(`[data-day="${CSS.escape(d)}"]`)?.focus();
+    }
     else if (RO) return;
+    else if (k === 'wkswap') { P.wkSwap = b.dataset.day; render(true); menuEl().querySelector('.hr-wk-chip.target')?.focus(); }
+    else if (k === 'wkcancel') { P.wkSwap = null; render(true); }
+    else if (k === 'wkclear') act('weekClear', { day: b.dataset.day });
     else if (k === 'ask') openChat();
     else if (k === 'summary') { setMenu(false); if (P.plan && P.plan.summary) summarySheet(P.plan.summary); }
     else act(k);

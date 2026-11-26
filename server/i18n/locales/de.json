@@ -4533,7 +4533,8 @@
         "bookDelAsk": "Vor dem Löschen von „{q}“ nachgefragt",
         "book_rename": "„{q}“ umbenannt",
         "book_duplicate": "„{q}“ kopiert",
-        "book_repaint": "„{q}“ zum neu Malen geschickt"
+        "book_repaint": "„{q}“ zum neu Malen geschickt",
+        "week": "Wochenplan entworfen ({n} Tage)"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4607,7 +4608,9 @@
         "slow": "Das sind viele Nachrichten in einer Stunde. Warte ein wenig und versuch es dann noch einmal.",
         "fileGone": "Dieser Anhang ist nicht mehr da. Häng ihn noch einmal an.",
         "other": "Etwas ist schiefgelaufen. Deine Nachricht ist noch da: Versuch es gleich noch einmal.",
-        "cap": "Du hast die heutigen Oomba-Runden für Bücher verbraucht. Du kannst deine Bücher weiter von Hand bearbeiten. Morgen gibt es neue Runden."
+        "cap": "Du hast die heutigen Oomba-Runden für Bücher verbraucht. Du kannst deine Bücher weiter von Hand bearbeiten. Morgen gibt es neue Runden.",
+        "pastDay": "Dieser Tag ist vorbei. Wähle heute oder einen späteren Tag dieser Woche.",
+        "weekPast": "Jeder Tag dieser Woche ist schon vorbei."
       },
       "quoteN": "Frage {n}: {text}",
       "questionN": "Frage {n}",
@@ -4673,6 +4676,48 @@
         "keep": "Behalten",
         "deleted": "„{title}“ gelöscht.",
         "kept": "„{title}“ behalten."
+      },
+      "plan": {
+        "fb": {
+          "week": {
+            "start": "Hier ist eine einfache Woche zum Start: deine Unterrichtspläne und Lektionen über die Tage verteilt. Bitte um Änderungen, etwa \"Mittwoch ist ein halber Tag\".",
+            "half": "Erledigt. Dieser Tag ist jetzt ein halber Tag, die Minuten sind gekürzt.",
+            "swap": "Erledigt. Die beiden Tage haben getauscht.",
+            "move": "Erledigt. Es ist auf diesen Tag verschoben.",
+            "saved": "Hier ist dein gespeicherter Plan \"{name}\" an jedem Tag der Woche."
+          }
+        }
+      },
+      "week": {
+        "title": "Plan für diese Woche",
+        "weekOf": "Woche: {topic}",
+        "quiz": "Quiz",
+        "today": "Heute",
+        "half": "Halber Tag",
+        "noPlan": "Kein Plan",
+        "use": "Diese Woche verwenden",
+        "saved": "Für die Woche dieser Klasse gespeichert.",
+        "past": "Diese Woche ist vorbei.",
+        "range": "{from} bis {to}",
+        "copiedFrom": "kopiert aus {name}",
+        "next": "In die nächste Woche kopieren",
+        "askChanges": "Bitte hier um Änderungen, etwa \"verschiebe das Quiz auf Donnerstag\" oder \"Mittwoch ist ein halber Tag\".",
+        "eachMorning": "Jeden Morgen hat die Plan-Pille den Plan des Tages. Nichts kommt auf die Tische, bevor du auf Start tippst, und Teile gehen nie von selbst weiter.",
+        "usedToast": "{count, plural, one {# Tag gespeichert.} other {# Tage gespeichert.}} Jeden Morgen hat die Plan-Pille den Plan des Tages.",
+        "skipped": "{count, plural, one {# Tag war schon vorbei und bleibt, wie er war.} other {# Tage waren schon vorbei und bleiben, wie sie waren.}}",
+        "copied": "Hier ist die Woche für {name}. Dort wird nichts ausgeteilt, bevor der Plan eines Tages verwendet wird.",
+        "nextDone": "Hier ist dieselbe Woche, eine Woche später. Ändere, was du willst, dann tippe auf Diese Woche verwenden."
+      },
+      "copy": {
+        "title": "In {cls} kopieren",
+        "lead": "Was dieser Plan in jener Klasse austeilt, wenn er dort verwendet wird. Unterrichtspläne werden dann dort erstellt, nicht jetzt.",
+        "leadWeek": "Was der Plan jedes Tages in jener Klasse austeilt, wenn er dort verwendet wird. Unterrichtspläne werden dann dort erstellt, nicht jetzt.",
+        "everyone": "Alle",
+        "nothing": "Nichts zum Austeilen.",
+        "missingEveryone": "Keine Gruppe {group} in {cls}: geht an alle.",
+        "missingNone": "Keine Gruppe {group} in {cls}: diese Version fällt weg.",
+        "cancel": "Abbrechen",
+        "go": "In {cls} kopieren"
       }
     },
     "companion-greet": {
@@ -5333,6 +5378,45 @@
           "comingOff": "Hinweis von {name}s Tisch entfernt"
         }
       }
+    },
+    "homeroom-plan": {
+      "thisWeek": "Diese Woche",
+      "weekLabel": "Pläne dieser Woche. Woche öffnen",
+      "planTodayChat": "Heute im Oomba-Chat planen",
+      "putOnDesks": "Auf die Tische",
+      "fromWeek": "Aus dem Plan dieser Woche, noch nicht auf den Tischen. Start legt ihn dorthin und startet Teil 1.",
+      "wk": {
+        "none": "kein Plan",
+        "noneLong": "Kein Plan für diesen Tag. Bitte Oomba im Chat um einen.",
+        "swapWith": "Tauschen mit {day}",
+        "pickSwap": "Tippe auf den Tag, mit dem {day} tauschen soll.",
+        "cancel": "Abbrechen",
+        "half": "Halber Tag",
+        "inUse": "Das ist der Plan von heute. Ändere ihn im Chat.",
+        "pastDay": "Dieser Tag ist vorbei.",
+        "swap": "Mit einem anderen Tag tauschen",
+        "clear": "Diesen Tag leeren",
+        "clearTitle": "{day} leeren?",
+        "clearText": "Der Plan dieses Tages fällt aus der Woche. Auf den Tischen ändert sich nichts."
+      }
+    },
+    "homeroom-due": {
+      "label": "Fällig",
+      "none": "Kein Fälligkeitsdatum",
+      "chipToday": "Heute",
+      "chipTomorrow": "Morgen",
+      "chipFriday": "Freitag",
+      "chipPick": "Datum wählen",
+      "date": "Datum",
+      "time": "Uhrzeit (optional)",
+      "noneHint": "Kein Fälligkeitsdatum. Es bleibt auf den Tischen, bis es fertig ist.",
+      "hintDay": "Fällig {when}, am Ende des Tages.",
+      "hintTime": "Fällig {when}.",
+      "today": "heute",
+      "tomorrow": "morgen",
+      "dayTime": "{day}, {time}",
+      "due": "Fällig {when}",
+      "afterDue": "nach Fälligkeit"
     }
   },
   "favorites": {
@@ -15312,7 +15396,9 @@
       "deskLocked": "Zeichnen ist gerade pausiert.",
       "notHere": "Linien gehören außerhalb der Tische anderer und des Lehrerbereichs.",
       "tooFast": "Das ist viel auf einmal. Versuch es gleich noch einmal.",
-      "roomFull": "Im Raum ist kein Platz für mehr Zeichnungen."
+      "roomFull": "Im Raum ist kein Platz für mehr Zeichnungen.",
+      "pastDay": "Dieser Tag ist vorbei. Wähle heute oder einen späteren Tag dieser Woche.",
+      "weekPast": "Jeder Tag dieser Woche ist schon vorbei."
     },
     "live": "Live",
     "desk": {
@@ -15503,7 +15589,9 @@
       "gcOpen": "Einstellungen öffnen",
       "gcNotLinked": "Noch nicht verknüpft.",
       "gcLink": "Classroom-Klasse verknüpfen",
-      "gradeSaved": "Bewertung geändert"
+      "gradeSaved": "Bewertung geändert",
+      "due": "Fällig {when}",
+      "afterDue": "nach Fälligkeit"
     },
     "studentDraw": {
       "savedOn": "Schüler können im Raum zeichnen",

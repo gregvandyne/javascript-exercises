@@ -1577,6 +1577,19 @@ export const MIGRATIONS = [
     CREATE TABLE IF NOT EXISTS homeroom_marks (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, user_id TEXT NOT NULL,
       strokes TEXT NOT NULL DEFAULT '[]', updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id));
     CREATE INDEX IF NOT EXISTS idx_homeroom_marks_user ON homeroom_marks(user_id);`],
+  // Homeroom: week plans, due dates, copying plans (docs/decisions.md "Homeroom: week plans, due dates, copying plans";
+  // services/homeroom-week.js). homeroom_week_days: a class's day plan for one school day (day: 'YYYY-MM-DD' in the
+  // class's time zone), saved by Use this week; the plan pill picks up the day's plan on that day (nothing goes on desks
+  // until the teacher taps Start or Put on desks). week: that week's Monday. Gone with the class, the school or the
+  // teacher who made it. homeroom_handouts.due_min: a due time (minutes after the due day's local midnight); NULL is
+  // the end of the due day (class_lessons.due_at keeps the day, as for every assignment); due_zone: the zone of the teacher
+  // who set it, for a school without one.
+  ['0139_homeroom_week_due', `
+    CREATE TABLE IF NOT EXISTS homeroom_week_days (class_id TEXT NOT NULL REFERENCES classrooms(id) ON DELETE CASCADE, day TEXT NOT NULL,
+      week TEXT NOT NULL, plan TEXT NOT NULL, created_by TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL, PRIMARY KEY (class_id, day));
+    CREATE INDEX IF NOT EXISTS idx_homeroom_week_days_by ON homeroom_week_days(created_by);
+    ALTER TABLE homeroom_handouts ADD COLUMN due_min INTEGER;
+    ALTER TABLE homeroom_handouts ADD COLUMN due_zone TEXT NOT NULL DEFAULT '';`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

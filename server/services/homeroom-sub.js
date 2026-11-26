@@ -174,7 +174,8 @@ export function subView(x, { v = null } = {}, at = now()) {
     hands: lv.hands.map(h => ({ id: h.id, name: nm(h.id), kind: h.kind, at: h.at })),
     asks: (lv.asks || []).map(x => ({ id: x.id, sid: x.sid, name: nm(x.sid), kind: x.kind, text: x.text, at: x.at })),
     pass: { minutes: lv.pass.minutes, out: lv.pass.out ? { id: lv.pass.out.id, name: nm(lv.pass.out.id), at: lv.pass.out.at } : null, line: lv.pass.line.map(y => ({ id: y.id, name: nm(y.id) })) },
-    plan: tv && tv.state !== 'finished' ? { id: tv.id, name: tv.name, state: tv.state, now: tv.now, parts: tv.parts.map(p => ({ id: p.id, kind: p.kind, title: p.title, minutes: p.minutes })), run: tv.run, behindMin: tv.behindMin } : null,
+    // (a week plan's day not on desks yet, or only the week strip: nothing for a sub, who never hands anything out)
+    plan: tv && !['finished', 'none', 'planned'].includes(tv.state) ? { id: tv.id, name: tv.name, state: tv.state, now: tv.now, parts: tv.parts.map(p => ({ id: p.id, kind: p.kind, title: p.title, minutes: p.minutes })), run: tv.run, behindMin: tv.behindMin } : null,
     ...H.boardState(c.id, v),
   };
 }

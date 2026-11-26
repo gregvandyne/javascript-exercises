@@ -37,7 +37,7 @@ export const router = Router();
 const body = req => (req.body && typeof req.body === 'object' && !Buffer.isBuffer(req.body) ? req.body : {});
 const STATUS = { notFound: 404, chatBusy: 409, otherBusy: 409, slow: 429, fileGone: 410, cap: 429 };
 // (the day plan's card: services/homeroom-plan.js)
-const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone', 'cap', 'planRunning', 'needName', 'planName', 'tooManyPlans', 'noPlan', 'tooManyHandouts'];
+const CODES = ['words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'slow', 'fileGone', 'cap', 'planRunning', 'needName', 'planName', 'tooManyPlans', 'noPlan', 'tooManyHandouts', 'weekPast', 'pastDay'];
 const fail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`js.companion.err.${CODES.includes(r.code) ? r.code : 'other'}`), code: r.code });
 /** Only for Teacher plan staff: anyone else gets a 404 before anything is read. */
 /** The conversation as the page shows it: a point's card with the student's and the class's names and the reason's
@@ -59,7 +59,7 @@ router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600
   const b = body(req);
   const v = typeof b.pick === 'string' ? b.pick : typeof b.value === 'string' || typeof b.value === 'number' ? String(b.value) : '';
   const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, 64));
-  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}), ...('plan' in r ? { plan: r.plan, classId: r.classId } : {}), ...(r.toast ? { toast: r.toast } : {}) }) : fail(req, res, r);
+  return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}), ...('plan' in r ? { plan: r.plan, classId: r.classId } : {}), ...(r.toast ? { toast: r.toast } : {}), ...(r.preview ? { preview: r.preview } : {}) }) : fail(req, res, r);
 });
 // The page loaded: a request Oomba carried here (Go there) continues, once, on this exact page.
 router.post('/api/companion/resume', may, rateLimit('companion-act', 300, 3600e3), (req, res) => {

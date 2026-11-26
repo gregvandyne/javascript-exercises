@@ -90,6 +90,11 @@ on a phone the strip's Find lessons opens it in a sheet.
   and a version per group.
 - Each handout: In order or Any order on the desk; graded by Score (% right or rubric points), Completion (100% when
   finished) or Not graded. Defaults: lesson plans by score, free play by completion. Google Classroom gets the chosen grade.
+- **Due** (every handout but a Manipulatives tool, which is ungraded practice): No due date, Today (the end of the day),
+  Tomorrow, Friday, or Pick a date with an optional time. The desk card says "Due Fri"; without In order the desk's Next up
+  is the one due soonest; the parents' view and the Classroom overview's column show it; Google Classroom gets it as the
+  coursework's due date and time. Late is the teacher's only, calm ("after due", never red), and never for work given
+  while a student was absent. Unfinished handouts stay as homework with their due dates.
 - Lesson plan builder order: Arithmetic Lab, Algebra Builder, Crossword; then classroom quiz/memory/word and own lessons; then
   Atlas Quest, Sudoku, Castle Clash puzzles; then Manipulatives and Figures; then Reading.
 
@@ -104,7 +109,17 @@ Built (docs/decisions.md "Homeroom: the day plan"): on a class's Homeroom the Oo
 (Use this plan, Use and start, Save plan, Saved plans, Copy to another class); without the AI a request still gets a
 simple starting plan. The plan pill sits in the top bar after the Live dot; the timer is held by the server, so the
 projector (Now and Next with the countdown) and the desks (a small Now line) show the same part. End class offers
-Finish class while a plan runs. Week plans come in step 5.
+Finish class while a plan runs.
+
+Built (docs/decisions.md "Homeroom: week plans, due dates, copying plans"): **week plans** through the same chat: "this
+week's plan" is a card with Monday to Friday (the class's school days), each day a short day plan; changes are asked for
+in the chat ("move the quiz to Thursday", "Wednesday is a half day"); without the AI a request still gets a week (a saved
+plan repeated, or the teacher's lessons spread over the days). **Use this week** saves five dated day plans; each morning
+the pill has that day's plan ("Today", Start: nothing is on desks and nothing starts until the teacher taps Start or Put
+on desks; parts never move on by themselves). The pill's menu has the **week strip** (Mon..Fri chips): open a day, swap
+two days, clear one; still no plan row on the board. **Copying**: a day or week plan to another class shows a preview
+first (what goes to whom there; "no Stretch group in 5C: goes to everyone"); lessons and handouts are made there only
+when the plan is used. **Copy to next week** for a week plan.
 
 ## The student desk
 
@@ -203,5 +218,5 @@ removed, never names. No photos of children. Calm UI. US spelling. No em dashes.
    order, grading choice, results into Progress and Google Classroom, comments and stickers.
 3. Live class: live desks and cursors, hands and hall pass, supports, the day plan through the chat, aides and sub links.
 4. Student side: notebook, reading from the desk, K-2 mode, absent and at-home students, parents' view (all built).
-5. Beyond the day: week plans, due dates, copying plans, onboarding, Needs a look and Oomba follow-ups.
+5. Beyond the day: week plans, due dates, copying plans (5a, built), onboarding, Needs a look and Oomba follow-ups (5b).
 Before launch: privacy policy update and lawyer review, and a 35-student load test.

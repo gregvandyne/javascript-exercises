@@ -17,7 +17,7 @@
 //   - the day plan on a class's Homeroom (services/homeroom-plan.js; docs/decisions.md "Homeroom: the day plan"): a card
 //     with the parts and their minutes, what each group gets, Use this plan, Start plan, Save plan, the saved plans and
 //     Copy to another class. A tap tells the board (the 'oomba:plan' event), whose plan pill follows.
-import { t, api, esc, toast, ask, askText } from '/js/app.js';
+import { t, api, esc, toast, ask, askText, sheet } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { mountChat } from '/js/oomba-chat.js';
 import * as BUS from '/js/oomba-bus.js';
@@ -365,6 +365,7 @@ function start() {
     if (n.book) parts.push(bookHtml(x, n.book));
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
     if (n.plan) parts.push(planHtml(x, n.plan));
+    if (n.week) parts.push(weekHtml(x, n.week));
     if (n.bookNone) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="/library/make?new=1" data-oc-book>${ic('✨', 16)} ${esc(L('book.make'))}</a></div>`);
     if (n.bookRef && !x.change) parts.push(`<div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(n.bookRef.href)}">${ic('📖', 16)} ${esc(L('book.open'))}</a></div>`);
     return parts.join('');
@@ -454,9 +455,7 @@ function start() {
     if (p.gone) return `<div class="oc-plan done"><p class="oc-state">${ic('➖', 16)} ${esc(L('plan.gone'))}</p></div>`;
     const id = esc(x.id);
     const b = (act, label, { v = '', primary = false, ghost = false, icon = '', off = false } = {}) => `<button type="button" class="btn btn-sm${primary ? ' btn-primary' : ''}${ghost ? ' btn-ghost' : ''}" data-c="act" data-act="${act}" data-turn="${id}"${v !== '' ? ` data-v="${esc(v)}"` : ''}${off ? ' disabled' : ''}>${icon ? `${ic(icon, 16)} ` : ''}${esc(label)}</button>`;
-    const kind = k => L(`plan.kind.${k}`);
-    const parts = p.parts.map(q => `<li class="oc-ppart k-${esc(q.kind)}${q.now ? ' now' : ''}${q.done ? ' done' : ''}"><span class="oc-pmin">${q.done ? ic('✓', 14) : ''}${esc(t('js.companion.plan.min', { count: q.minutes }))}</span><span class="oc-pb"><b>${esc(kind(q.kind))}</b>${q.title ? `<span dir="auto">${esc(q.title)}</span>` : ''}${q.now ? `<span class="oc-tag oc-pnow">${esc(L('plan.nowTag'))}</span>` : ''}</span>
-      ${q.give.length ? `<ul class="plain oc-pgive">${q.give.map(g => `<li>${ic(g.icon || '🎮', 16)} <span>${g.who ? `<b dir="auto">${esc(g.who)}:</b> ` : ''}<span dir="auto">${esc(g.what)}</span>${g.type === 'make' ? ` <small>${esc(L('plan.newLesson'))}</small>` : g.type === 'lesson' ? ` <small>${esc(L('plan.lesson'))}</small>` : ''}</span></li>`).join('')}</ul>` : ''}${q.note ? `<p class="oc-pnote" dir="auto">${esc(q.note)}</p>` : ''}</li>`).join('');
+    const parts = partsHtml(p.parts);
     const st = p.state;
     let acts;
     if (st === 'draft') acts = p.otherRunning ? `<p class="oc-note">${esc(L('plan.otherRunning'))}</p>` : `${b('planUse', L('plan.use'), { primary: true, icon: '🎒' })}${b('planStart', L('plan.useStart'), { icon: '▶️' })}`;
@@ -476,6 +475,57 @@ function start() {
       <div class="oc-acts oc-pacts">${acts}</div>
       <div class="oc-acts oc-pfoot">${saved}</div>${savedList}${copy}
       ${st === 'draft' ? `<p class="oc-note">${esc(L('plan.askChanges'))}</p>` : ''}</div>`;
+  }
+  /** A plan's parts in order: minutes, kind, title, what each group gets, the note. */
+  function partsHtml(list) {
+    const kind = k => L(`plan.kind.${k}`);
+    return list.map(q => `<li class="oc-ppart k-${esc(q.kind)}${q.now ? ' now' : ''}${q.done ? ' done' : ''}"><span class="oc-pmin">${q.done ? ic('✓', 14) : ''}${esc(t('js.companion.plan.min', { count: q.minutes }))}</span><span class="oc-pb"><b>${esc(kind(q.kind))}</b>${q.title ? `<span dir="auto">${esc(q.title)}</span>` : ''}${q.now ? `<span class="oc-tag oc-pnow">${esc(L('plan.nowTag'))}</span>` : ''}</span>
+      ${q.give.length ? `<ul class="plain oc-pgive">${q.give.map(g => `<li>${ic(g.icon || '🎮', 16)} <span>${g.who ? `<b dir="auto">${esc(g.who)}:</b> ` : ''}<span dir="auto">${esc(g.what)}</span>${g.type === 'make' ? ` <small>${esc(L('plan.newLesson'))}</small>` : g.type === 'lesson' ? ` <small>${esc(L('plan.lesson'))}</small>` : ''}</span></li>`).join('')}</ul>` : ''}${q.note ? `<p class="oc-pnote" dir="auto">${esc(q.note)}</p>` : ''}</li>`).join('');
+  }
+  // ---------------------------------------------------------------- a week plan (services/homeroom-week.js)
+  /** The week card: Monday to Friday, each a short day plan (open a day for its parts), Use this week, Copy to next
+   *  week, Copy to another class (with a preview first). */
+  function weekHtml(x, w) {
+    if (w.gone) return `<div class="oc-plan done"><p class="oc-state">${ic('➖', 16)} ${esc(L('plan.gone'))}</p></div>`;
+    const id = esc(x.id);
+    const b = (act, label, { v = '', primary = false, ghost = false, icon = '' } = {}) => `<button type="button" class="btn btn-sm${primary ? ' btn-primary' : ''}${ghost ? ' btn-ghost' : ''}" data-c="act" data-act="${act}" data-turn="${id}"${v !== '' ? ` data-v="${esc(v)}"` : ''}>${icon ? `${ic(icon, 16)} ` : ''}${esc(label)}</button>`;
+    const kinds = d => d.parts.map(q => `<span class="oc-wk k-${esc(q.kind)}">${esc(t(`js.companion.plan.kind.${q.kind}`))} ${esc(t('js.companion.plan.min', { count: q.minutes }))}</span>`).join('');
+    const days = w.days.map(d => `<li class="oc-wday${d.today ? ' today' : ''}${d.past ? ' past' : ''}${d.parts ? '' : ' empty'}">
+      ${d.parts ? `<details><summary><span class="oc-wdn"><b>${esc(d.day)}</b>${d.today ? `<small>${esc(L('week.today'))}</small>` : ''}</span><span class="oc-wdb"><span class="oc-wname" dir="auto">${esc(d.name || L('plan.title'))}</span><span class="oc-wkinds">${kinds(d)}</span></span><span class="oc-wtot">${esc(t('js.companion.plan.min', { count: d.total }))}${d.half ? `<small>${esc(L('week.half'))}</small>` : ''}</span></summary>
+        <ol class="plain oc-pparts">${partsHtml(d.parts)}</ol></details>`
+    : `<div class="oc-wnone"><span class="oc-wdn"><b>${esc(d.day)}</b></span><span class="muted">${esc(L('week.noPlan'))}</span></div>`}</li>`).join('');
+    const acts = w.state === 'used' ? `<p class="oc-state">${ic('✓', 16)} ${esc(L('week.saved'))}</p>`
+      : w.past ? `<p class="oc-state">${ic('➖', 16)} ${esc(L('week.past'))}</p>` : b('planWeekUse', L('week.use'), { primary: true, icon: '🗓️' });
+    const copy = (w.copy || []).length ? `<details class="oc-pmore"><summary>${ic('📋', 16)} ${esc(L('plan.copyTo'))}</summary><div class="oc-acts">${w.copy.map(c => b('planWeekCopy', c.name, { v: c.id })).join('')}</div></details>` : '';
+    const range = w.days.length ? t('js.companion.week.range', { from: dayShort(w.days[0].date), to: dayShort(w.days[w.days.length - 1].date) }) : '';
+    return `<div class="oc-plan oc-week" role="group" aria-label="${esc(w.name || L('week.title'))}">
+      <div class="oc-planh">${ic('🗓️', 20)} <b dir="auto">${esc(w.name || L('week.title'))}</b><span class="oc-tag">${esc(range)}</span></div>
+      <p class="oc-hsub" dir="auto">${esc(w.className)}${w.copiedFrom ? ` · ${esc(t('js.companion.week.copiedFrom', { name: w.copiedFrom }))}` : ''}</p>
+      <ol class="plain oc-wdays">${days}</ol>
+      ${w.changed ? `<p class="oc-note">${esc(t('js.companion.plan.changed', { count: w.changed }))}</p>` : ''}
+      <div class="oc-acts oc-pacts">${acts}</div>
+      <div class="oc-acts oc-pfoot">${b('planWeekNext', L('week.next'), { ghost: true, icon: '⏭️' })}</div>${copy}
+      ${w.state !== 'used' ? `<p class="oc-note">${esc(L('week.askChanges'))}</p>` : `<p class="oc-note">${esc(L('week.eachMorning'))}</p>`}</div>`;
+  }
+  const dayShort = iso => { try { return new Date(`${iso}T00:00:00Z`).toLocaleDateString(document.documentElement.lang || undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' }); } catch { return iso; } };
+  /** The copy preview: what will be handed out where in the other class, and any group it doesn't have. -> true to copy */
+  function copyPreview(pv) {
+    return new Promise(done => {
+      let yes = false;
+      const give = g => `<li>${ic(g.type === 'make' ? '✨' : g.type === 'lesson' ? '📄' : '🎮', 16)} <span>${g.who ? `<b dir="auto">${esc(g.who)}:</b> ` : g.others ? `<b>${esc(L('plan.everyoneElse'))}:</b> ` : `<b>${esc(L('copy.everyone'))}:</b> `}<span dir="auto">${esc(g.what)}</span></span></li>`;
+      const partRows = parts => parts.filter(q => q.give.length).map(q => `<li><b>${esc(L(`plan.kind.${q.kind}`))}</b>${q.title ? ` <span dir="auto">${esc(q.title)}</span>` : ''}<ul class="plain oc-pgive">${q.give.map(give).join('')}</ul></li>`).join('');
+      const body = pv.kind === 'week' ? pv.days.filter(d => d.parts.length).map(d => `<section class="oc-cpday"><h3>${esc(d.day)}${d.name ? ` · <span dir="auto">${esc(d.name)}</span>` : ''}</h3>${partRows(d.parts) ? `<ul class="plain oc-cpparts">${partRows(d.parts)}</ul>` : `<p class="small muted">${esc(L('copy.nothing'))}</p>`}</section>`).join('')
+        : partRows(pv.parts) ? `<ul class="plain oc-cpparts">${partRows(pv.parts)}</ul>` : `<p class="small muted">${esc(L('copy.nothing'))}</p>`;
+      const miss = (pv.missing || []).map(m => `<li>${ic('ℹ️', 16)} <span>${esc(t(`js.companion.copy.${m.to === 'everyone' ? 'missingEveryone' : 'missingNone'}`, { group: m.group, cls: pv.className }))}</span></li>`).join('');
+      const sh = sheet({ title: `📋 ${t('js.companion.copy.title', { cls: pv.className })}`, onClose: () => done(yes), content: `<div class="oc-copyprev">
+        <p class="small muted">${esc(L(pv.kind === 'week' ? 'copy.leadWeek' : 'copy.lead'))}</p>
+        ${miss ? `<ul class="plain oc-cpmiss">${miss}</ul>` : ''}${body}
+        <div class="row oc-cpacts"><button type="button" class="btn" data-cp="no">${esc(L('copy.cancel'))}</button><button type="button" class="btn btn-primary" data-cp="yes">${ic('📋', 16)} ${esc(t('js.companion.copy.go', { cls: pv.className }))}</button></div></div>` });
+      sh.el.classList.add('oc-copysheet');
+      // (the sheet puts the focus on its first button, at the bottom: the preview is read from the top)
+      setTimeout(() => { for (const el of [sh.el.querySelector('.sheet'), sh.el.querySelector('.sheet-body')]) if (el) el.scrollTop = 0; sh.el.querySelector('[data-cp="yes"]')?.focus({ preventScroll: true }); }, 60);
+      sh.el.addEventListener('click', e => { const c = e.target.closest('[data-cp]'); if (!c) return; yes = c.dataset.cp === 'yes'; sh.close(); });
+    });
   }
   // "Something else" on the book card's theme: Use this theme sends the teacher's own theme (bookTheme).
   document.addEventListener('input', e => {
@@ -503,6 +553,13 @@ function start() {
       const v = await askText({ title: L('plan.saveTitle'), label: L('plan.saveLabel'), value: (p && (p.name || p.topic)) || '', ok: L('plan.save'), max: 60 });
       if (!v || !v.trim()) return null;
       btn.dataset.v = v.trim().slice(0, 60);
+    }
+    // Copying a plan or a week to another class: the preview first (what goes where there, groups it doesn't have).
+    if ((act === 'planCopy' || act === 'planWeekCopy') && btn && btn.dataset.v) {
+      try {
+        const pr = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act: act === 'planCopy' ? 'planCopyPreview' : 'planWeekCopyPreview', value: btn.dataset.v } });
+        if (!pr.preview || !(await copyPreview(pr.preview))) return null;
+      } catch (e) { chat.showErr(e.message); return null; }
     }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {

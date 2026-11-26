@@ -153,6 +153,9 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     // the day plans they saved by name (docs/decisions.md "Homeroom: the day plan"; a class's plan of today stays with
     // the class, as its handouts do)
     q.run('DELETE FROM homeroom_day_plans WHERE owner_id=?', u.id);
+    // the dated day plans of a week plan they saved for a class (docs/decisions.md "Homeroom: week plans, due dates,
+    // copying plans"; they name the teacher's own lessons)
+    q.run('DELETE FROM homeroom_week_days WHERE created_by=?', u.id);
     // where they helped as an aide (step 3c; the class's sub links and their log stay with the class)
     q.run('DELETE FROM homeroom_aides WHERE user_id=?', u.id);
     // what they put on their own desk on a class's board (services/homeroom-staged.js; the class's other teachers keep theirs)

@@ -12,6 +12,7 @@
 // Group names are the teacher's words for the teacher: they are never printed on a worksheet or shown to a student.
 import { t, api, toast, esc, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
+import { dueField, wireDue } from '/js/homeroom-due.js';
 import { ARITH, ALGEBRA, CROSS, defaults, fill, suggest, leanOf, groupIdent, countOf, newSeed } from '/js/homeroom-lesson-make.js';
 
 const tl = (k, v) => t(`js.homeroom-lessons.${k}`, v);
@@ -316,12 +317,12 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
       <p class="small muted hr-seghint" id="hrlg-orderhint">${esc(ctx.th('ho.inOrderHint'))}</p>
       <p class="hr-label" id="hrlg-grade">${esc(ctx.th('ho.grade'))}</p>${seg('grade', [['score', ctx.th('ho.score')], ['completion', ctx.th('ho.completion')], ['none', ctx.th('ho.notGraded')]], 'score', 'hrlg-grade')}
       <p class="small muted hr-seghint" id="hrlg-gradehint">${esc(tl('scoreHint'))}</p>
-      <label class="hr-label" for="hrlg-due">${esc(ctx.th('ho.due'))}</label><input class="input hr-due" type="date" id="hrlg-due">
+      ${dueField('hrlg')}
       ${ctx.gcField ? ctx.gcField(to) : ''}
       <p class="err" id="hrlg-err" aria-live="polite"></p>
       <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(ctx.th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(ctx.putLabel ? ctx.putLabel(to, who) : who.n === 1 && to.kind === 'desk' ? ctx.th('ho.putOne') : ctx.th('ho.putMany', { count: who.n }))}</button></div></form>`,
   });
-  const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'score' };
+  const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'score' }, dueOf = wireDue(f);
   const hints = { in: ctx.th('ho.inOrderHint'), any: ctx.th('ho.anyOrderHint'), score: tl('scoreHint'), completion: ctx.th('ho.completionHint'), none: ctx.th('ho.notGradedHint') };
   f.addEventListener('click', e => {
     const b = e.target.closest('[data-lbseg]');
@@ -337,7 +338,7 @@ export function lessonGiveSheet(ctx, l, to, who, { groupsIn, none, onClose }) {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
-      const r = await api(ctx.api2('handouts'), { method: 'POST', body: { lessonId: l.id, to, order: val.order, grade: val.grade, dueAt: f.querySelector('#hrlg-due').value || null, gcPost: ctx.gcPicked ? ctx.gcPicked(f) : false } });
+      const r = await api(ctx.api2('handouts'), { method: 'POST', body: { lessonId: l.id, to, order: val.order, grade: val.grade, ...dueOf(), gcPost: ctx.gcPicked ? ctx.gcPicked(f) : false } });
       sh.close(); ctx.onHanded(r);
     } catch (err) { f.querySelector('#hrlg-err').textContent = err.message; ok.disabled = false; }
   });

@@ -234,13 +234,15 @@ export function printLesson(u, id, versionKey, { key = false } = {}, ctx) {
 
 // ---------------------------------------------------------------- handing a lesson out
 /**
- * Hand out a lesson: { lessonId, to: { kind: all | group | desk, id }, order: in | any, grade (Score by default), dueAt }.
+ * Hand out a lesson: { lessonId, to: { kind: all | group | desk, id }, order: in | any, grade (Score by default), dueAt,
+ * dueTime, tz (services/homeroom-handouts.js dueOf) }.
  * Each student gets their group's version (or the base): one class assignment per version, through assignGame with the
  * version's set in the game step's options. Whole class with one version for everyone stays the whole class ([]).
  * Refused while any of its students already has this lesson on their desk. -> { ok, students, versions, lesson }
  */
-export function handOutLesson(u, c, { lessonId, to, order = 'in', grade = 'score', dueAt = null } = {}) {
+export function handOutLesson(u, c, { lessonId, to, order = 'in', grade = 'score', dueAt = null, dueTime = null, tz = '' } = {}) {
   if (!H.canUseClass(u, c)) return fail('notFound');
+  const due = HO.dueOf({ dueAt, dueTime, tz }); if (!due.ok) return due;
   if (!['in', 'any'].includes(order)) return fail('badOrder');
   if (!HO.GRADES.includes(grade)) return fail('badGrade');
   const l = getMine(u, lessonId); if (!l) return fail('noLesson');
@@ -272,6 +274,7 @@ export function handOutLesson(u, c, { lessonId, to, order = 'in', grade = 'score
     q.run('INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at, hr_lesson, version, problems, batch) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
       r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now(), l.id, b.v ? b.v.label : '', countOf(l.slug, b.s || {}), batch);
   }
+  HO.setDue(made, due);
   audit(u.id, 'homeroom.lessonHandout', c.id, { lesson: l.id, game: g.slug, target: who.target, students: who.all.length, versions: buckets.size, order, grade });
   return ok({ students: who.all.length, versions: buckets.size, lesson: l, classLessons: made.map(id => L.getClassLesson(id)).filter(Boolean) });
 }

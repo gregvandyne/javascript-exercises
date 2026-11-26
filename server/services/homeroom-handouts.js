@@ -52,6 +52,49 @@ export const INSTRUCTIONS_MAX = 300;
 export const HANDOUTS_MAX = 80;
 const TARGETS = ['all', 'group', 'desk', 'team'];
 
+// ---------------------------------------------------------------- due dates (docs/decisions.md "Homeroom: week plans,
+// due dates, copying plans"). A handout's due day is its class assignment's (class_lessons.due_at, as every assignment);
+// a due time is Homeroom's own (homeroom_handouts.due_min: minutes after that day's local midnight, NULL: the end of the
+// day), counted in the school's time zone, else the zone of the teacher who set it (due_zone), else UTC. Students only
+// ever see when it is due ("Due Fri"), never late; the teacher sees "after due" calmly; a handout given while a student
+// was absent ("Missed while you were out") is never after due by itself.
+/** 'HH:MM' (24 hours) -> minutes after midnight; '' or null -> null; anything else -> undefined. */
+export function dueMinOf(v) {
+  if (v === null || v === undefined || v === '') return null;
+  const m = /^([01]?\d|2[0-3]):([0-5]\d)$/.exec(String(v).trim());
+  return m ? Number(m[1]) * 60 + Number(m[2]) : undefined;
+}
+/** The zone a handout's due time is counted in. */
+const dueZoneOf = (c, z) => S.zoneOf(S.getSchool(c.school_id)) || (S.isZone(z) ? z : 'UTC');
+/** The instant a handout is due: the due day's local midnight plus due_min, else the end of the due day. null: no due day. */
+export function dueByOf(c, dueAt, dueMin, zone = '') {
+  if (!dueAt) return null;
+  const { start, end } = L.dayBounds(dueAt, dueZoneOf(c, zone));
+  return Number.isInteger(dueMin) && dueMin >= 0 && dueMin < 1440 ? start + dueMin * 60e3 : end;
+}
+/** A hand-out's due time checked (a time needs a day). -> { ok, min, zone } | fail('badDate') */
+export function dueOf({ dueAt = null, dueTime = null, tz = '' } = {}) {
+  const min = dueMinOf(dueTime);
+  if (min === undefined || (min !== null && !dueAt)) return fail('badDate');
+  return ok({ min, zone: S.isZone(tz) ? tz : '' });
+}
+/** The due time on handouts just made (their class assignment holds the day). */
+export function setDue(ids, due) {
+  if (!due || due.min === null) return;
+  for (const id of ids) q.run('UPDATE homeroom_handouts SET due_min=?, due_zone=? WHERE class_lesson_id=?', due.min, due.zone || '', id);
+}
+/** What pages get about a row's due date: { due (the day), dueMin, dueBy (the instant) } or {}. */
+const dueFields = (c, r) => (r.due_at ? { due: r.due_at, dueMin: Number.isInteger(r.due_min) ? r.due_min : null, dueBy: dueByOf(c, r.due_at, r.due_min, r.due_zone) } : { due: null });
+/** Cards without In order sorted by when they are due (soonest first, then as handed out); In order cards keep their places. */
+export function byDue(cards) {
+  const slots = [], free = [];
+  cards.forEach((x, i) => { if (!x.inOrder) { slots.push(i); free.push([x, i]); } });
+  free.sort((a, b) => (a[0].dueBy ?? Infinity) - (b[0].dueBy ?? Infinity) || a[1] - b[1]);
+  const out = [...cards];
+  slots.forEach((at, k) => { out[at] = free[k][0]; });
+  return out;
+}
+
 /** The teacher's instructions as stored: plain text, at most INSTRUCTIONS_MAX characters and 4 lines, no control or
  *  direction characters, spaces tidied (the same rules as a lesson step's text, shorter). */
 export function cleanInstructions(s) {
@@ -70,7 +113,7 @@ export function handable(u, g) {
 /** The class's open handouts in the order they were handed out, each with its game step (or a Reading handout's story
  *  step: services/homeroom-reading.js) and who it is for. */
 function rowsOf(classId) {
-  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id
+  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, h.due_min, h.due_zone, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id
       FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
       JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story')
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
@@ -113,15 +156,19 @@ export function boardView(c, locale = 'en') {
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = HR.infosOf(c.id, rds);
   const handouts = rows.map(r => {
     const g = r.game_id ? gameInfo(cache, r.game_id, locale) : null, who = picks.get(r.id);
-    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : (g && g.icon) || '🎮', ...readingPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, due: r.due_at || null,
+    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : (g && g.icon) || '🎮', ...readingPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, ...dueFields(c, r),
       students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
   });
-  const desks = {};
+  const desks = {}, t = now(), dueBy = new Map(handouts.map(h => [h.id, h.dueBy])), excused = new Set(AT.missedPairs(c.id, t));
   for (const sid of ids) {
     desks[sid] = deskOrder(rows.filter(r => { const who = picks.get(r.id); return !who || who.has(sid); }).map(r => {
       const p = prog.get(`${r.id}:${sid}`);
       const f = fb.get(`${r.id}:${sid}`), rd = r.step_kind === 'story' ? infos.get(`${r.id}:${sid}`) : null;
-      return { id: r.id, inOrder: !!r.in_order, done: !!p && p.status === 'done', pct: rd ? HR.pctOfInfo(rd) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
+      const done = !!p && p.status === 'done', by = dueBy.get(r.id);
+      // after due (the teacher's board only, said calmly): not finished past its due time, unless it was given while they
+      // were absent ("Missed while you were out" is never after due by itself)
+      const late = !done && !!by && t > by && !excused.has(`${sid}:${r.id}`);
+      return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
     }));
   }
   // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at
@@ -138,24 +185,25 @@ export function deskView(c, u, locale = 'en') {
       g.published_version_id IS NOT NULL game_live, g.hidden_reason!='' game_hidden FROM lesson_steps s LEFT JOIN games g ON g.id=s.game_id WHERE s.id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.step_id)).map(s => [s.id, s]) : []);
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = rds.size ? HR.infosOf(c.id, rds, u.id) : new Map();
   // (a Manipulatives tool handed out comes after the handouts: open practice, never Next up or Later)
-  return [...deskOrder(rows.map(r => {
+  // (without In order the desk's cards come by when they are due: Next up is the one due soonest)
+  return [...deskOrder(byDue(rows.map(r => {
     const p = prog.get(`${r.id}:${u.id}`);
     // A Reading handout (services/homeroom-reading.js): it opens the desk's reading layer, the routine's step on the card.
     if (r.step_kind === 'story') {
       const rd = infos.get(`${r.id}:${u.id}`);
-      return { id: r.id, title: titleOf(r, null), icon: READ_ICON, instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready: true, reading: rd,
+      return { id: r.id, title: titleOf(r, null), icon: READ_ICON, instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready: true, reading: rd,
         href: `/class/${c.id}/desk#read=${encodeURIComponent(r.id)}`, done: !!p && p.status === 'done', pct: HR.pctOfInfo(rd),
         ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
     }
     const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id);
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
-    return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, due: r.due_at || null, ready, ...lessonOf(r, g),
+    return { id: r.id, title: titleOf(r, g), icon: (g && g.icon) || '🎮', instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready, ...lessonOf(r, g),
       href: ready ? `/play/${s.game_slug}?lesson=${encodeURIComponent(r.id)}&step=${encodeURIComponent(s.id)}${s.options ? `&${s.options}` : ''}` : null,
       done: !!p && p.status === 'done', pct: pctOf(p), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
-  })), ...HT.deskCards(c, u)];
+  }))), ...HT.deskCards(c, u)];
 }
 /** A short fingerprint of a desk (the poll sends the cards again only when it changed). */
-export const deskVersion = cards => cards.map(x => `${x.id}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${x.missed ? 'm' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');
+export const deskVersion = cards => cards.map(x => `${x.id}.${x.dueBy || ''}.${x.done ? 1 : 0}.${x.pct}.${x.locked ? 1 : 0}.${x.ready ? 1 : 0}.${x.fb ? `${x.fb.at}` : ''}.${x.simpler ? 's' : ''}${x.missed ? 'm' : ''}${String(x.instructions || '').length}${x.reading ? `.${x.reading.step}.${x.reading.page}.${x.reading.book ? x.reading.book.id : ''}` : ''}`).join('|');
 
 // ---------------------------------------------------------------- comments and stickers (step 2c)
 /** The stickers a teacher can leave on finished work: a small set from the owner's sticker library
@@ -254,11 +302,13 @@ function alreadyHave(c, gameId, ids) {
   return ids.filter(id => open.some(r => !picks.has(r.id) || picks.get(r.id).has(id)));
 }
 /**
- * Hand out a game: { gameId, to, instructions, order: 'in' | 'any', grade: 'score' | 'completion' | 'none', dueAt }.
+ * Hand out a game: { gameId, to, instructions, order: 'in' | 'any', grade: 'score' | 'completion' | 'none', dueAt, dueTime
+ * ('HH:MM', optional; needs dueAt), tz (the teacher's browser's zone, for a school without one) }.
  * The class's teachers only (the Homeroom gate). -> { ok, classLesson, handout } | { ok: false, code, count? }
  */
-export function handOut(u, c, { gameId, to, instructions = '', order = 'in', grade = 'completion', dueAt = null } = {}) {
+export function handOut(u, c, { gameId, to, instructions = '', order = 'in', grade = 'completion', dueAt = null, dueTime = null, tz = '' } = {}) {
   if (!H.canUseClass(u, c)) return fail('notFound');
+  const due = dueOf({ dueAt, dueTime, tz }); if (!due.ok) return due;
   if (!['in', 'any'].includes(order)) return fail('badOrder');
   if (!GRADES.includes(grade)) return fail('badGrade');
   if (typeof instructions !== 'string' || instructions.trim().length > INSTRUCTIONS_MAX) return fail('tooLong');
@@ -274,6 +324,7 @@ export function handOut(u, c, { gameId, to, instructions = '', order = 'in', gra
   if (!r.ok) return r;
   q.run('INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at) VALUES (?,?,?,?,?,?,?)',
     r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now());
+  setDue([r.classLesson.id], due);
   audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, game: g.slug || g.id, target: who.target, students: who.all.length, order, grade });
   return ok({ classLesson: r.classLesson, game: g, students: who.all.length });
 }

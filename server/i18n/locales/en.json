@@ -4944,7 +4944,8 @@
         "planNo": "Couldn't draft that plan",
         "planSaved": "Opened your saved plan {q}",
         "simpler": "Wrote simpler wording for a handout",
-        "simplerNo": "Couldn't save that wording"
+        "simplerNo": "Couldn't save that wording",
+        "week": "Drafted a week plan ({n} days)"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5024,7 +5025,9 @@
         "planName": "That name can't be used. Try another one.",
         "tooManyPlans": "You have a lot of saved plans. Delete some old ones first.",
         "noPlan": "There is no plan to use here.",
-        "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first."
+        "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
+        "pastDay": "That day is over. Pick today or a later day this week.",
+        "weekPast": "Every day of that week is over already."
       },
       "quoteN": "Question {n}: {text}",
       "questionN": "Question {n}",
@@ -5136,8 +5139,46 @@
           "start": "Here is a simple plan to start from, made from your lesson plans and lessons. Ask for changes, like \"make work time 20 minutes\".",
           "minutes": "Done. The minutes are changed on the new card.",
           "break": "Done. Here is a different brain break.",
-          "saved": "Here is your saved plan \"{name}\" for this class."
+          "saved": "Here is your saved plan \"{name}\" for this class.",
+          "week": {
+            "start": "Here is a simple week to start from, your lesson plans and lessons spread over the days. Ask for changes, like \"Wednesday is a half day\".",
+            "half": "Done. That day is a half day now, its minutes cut to fit.",
+            "swap": "Done. Those two days have changed places.",
+            "move": "Done. It moved to that day.",
+            "saved": "Here is your saved plan \"{name}\" on every day of the week."
+          }
         }
+      },
+      "week": {
+        "title": "This week's plan",
+        "weekOf": "{topic} week",
+        "quiz": "Quiz",
+        "today": "Today",
+        "half": "Half day",
+        "noPlan": "No plan",
+        "use": "Use this week",
+        "saved": "Saved for this class's week.",
+        "past": "This week is over.",
+        "range": "{from} to {to}",
+        "copiedFrom": "copied from {name}",
+        "next": "Copy to next week",
+        "askChanges": "Ask for changes here, like \"move the quiz to Thursday\" or \"Wednesday is a half day\".",
+        "eachMorning": "Each morning the plan pill has that day's plan. Nothing goes on desks until you tap Start, and parts never move on by themselves.",
+        "usedToast": "{count, plural, one {# day saved.} other {# days saved.}} Each morning the plan pill has that day's plan.",
+        "skipped": "{count, plural, one {# day was over already and stays as it was.} other {# days were over already and stay as they were.}}",
+        "copied": "Here is the week for {name}. Nothing is handed out there until a day's plan is used.",
+        "nextDone": "Here is the same week, a week later. Change anything, then tap Use this week."
+      },
+      "copy": {
+        "title": "Copy to {cls}",
+        "lead": "What this plan will hand out in that class when it is used there. Lesson plans are made in that class then, not now.",
+        "leadWeek": "What each day's plan will hand out in that class when it is used there. Lesson plans are made in that class then, not now.",
+        "everyone": "Everyone",
+        "nothing": "Nothing to hand out.",
+        "missingEveryone": "No {group} group in {cls}: goes to everyone.",
+        "missingNone": "No {group} group in {cls}: that version is left out.",
+        "cancel": "Cancel",
+        "go": "Copy to {cls}"
       }
     },
     "companion-greet": {
@@ -6000,8 +6041,8 @@
       "noHomework": "Every handout of the plan is finished.",
       "summaryPrivate": "Counts only. Students are never ranked.",
       "endFinish": "A plan is still running. Finish class shows a short summary and ends class. Unfinished handouts stay on desks as homework.",
-      "placeholder": "Ask for today's plan, or a change to it",
-      "hello": "Ask me for today's plan. I'll draft slides, work time for your groups, a brain break and an exit check.",
+      "placeholder": "Ask for today's or this week's plan",
+      "hello": "Ask me for today's plan or this week's. I'll draft slides, work time for your groups, a brain break and an exit check.",
       "noChat": "The Oomba chat isn't on for your account.",
       "kind": {
         "slides": "Slides",
@@ -6012,7 +6053,26 @@
       "underMin": "Under a minute of {planned} min",
       "cut": "on when class finished",
       "absentN": "{count} absent",
-      "absentNote": "not counted as unfinished"
+      "absentNote": "not counted as unfinished",
+      "thisWeek": "This week",
+      "weekLabel": "This week's plans. Open the week",
+      "planTodayChat": "Plan today in the Oomba chat",
+      "putOnDesks": "Put on desks",
+      "fromWeek": "From this week's plan, not on desks yet. Start puts it there and starts part 1.",
+      "wk": {
+        "none": "no plan",
+        "noneLong": "No plan for this day. Ask Oomba in the chat for one.",
+        "swapWith": "Swap with {day}",
+        "pickSwap": "Tap the day to swap {day} with.",
+        "cancel": "Cancel",
+        "half": "Half day",
+        "inUse": "This is today's plan. Change it in the chat.",
+        "pastDay": "This day is over.",
+        "swap": "Swap with another day",
+        "clear": "Clear this day",
+        "clearTitle": "Clear {day}?",
+        "clearText": "That day's plan goes from the week. Nothing on desks changes."
+      }
     },
     "homeroom-support": {
       "read": "Read to me",
@@ -6346,6 +6406,24 @@
     "homeroom-catalog": {
       "title": "Find lessons",
       "lead": "Search every lesson, lesson plan and tool. Tap one, then a desk, a group or Whole class."
+    },
+    "homeroom-due": {
+      "label": "Due",
+      "none": "No due date",
+      "chipToday": "Today",
+      "chipTomorrow": "Tomorrow",
+      "chipFriday": "Friday",
+      "chipPick": "Pick a date",
+      "date": "Date",
+      "time": "Time (optional)",
+      "noneHint": "No due date. It stays on desks until it is done.",
+      "hintDay": "Due {when}, at the end of the day.",
+      "hintTime": "Due {when}.",
+      "today": "today",
+      "tomorrow": "tomorrow",
+      "dayTime": "{day}, {time}",
+      "due": "Due {when}",
+      "afterDue": "after due"
     }
   },
   "favorites": {
@@ -16812,7 +16890,9 @@
       "deskLocked": "Drawing is paused right now.",
       "notHere": "Lines go outside other students' desks and the teacher's area.",
       "tooFast": "That's a lot of drawing at once. Try again in a moment.",
-      "roomFull": "The room has as many drawings as it can hold."
+      "roomFull": "The room has as many drawings as it can hold.",
+      "pastDay": "That day is over. Pick today or a later day this week.",
+      "weekPast": "Every day of that week is over already."
     },
     "live": "Live",
     "desk": {
@@ -17006,7 +17086,9 @@
       "gcNotLinked": "Not linked yet.",
       "gcLink": "Link a Classroom class",
       "gradeSaved": "Grading changed",
-      "quiz": "Quiz {right}/{total}"
+      "quiz": "Quiz {right}/{total}",
+      "due": "Due {when}",
+      "afterDue": "after due"
     },
     "helpers": {
       "forbiddenTitle": "Only the class's teacher can open this",

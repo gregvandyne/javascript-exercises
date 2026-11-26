@@ -571,6 +571,13 @@ span.hr-card{cursor:inherit}
 .hr-segb.on{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 3px 0 #000}
 .hr-seghint{margin:2px 0 0}
 .hr-due{max-width:220px}
+.hr-duechips .hr-segb{padding:0 14px}
+.hr-duepick{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.hr-duepick[hidden]{display:none}
+.hr-duef{display:flex;flex-direction:column;gap:2px;flex:1 1 150px;max-width:220px;font-weight:700}
+.hr-duef .input{width:100%}
+/* after due: the teacher's only, calm (muted, never red) */
+.hr-afterdue{display:inline-block;margin-inline-start:4px;padding:0 8px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);color:var(--muted);font-size:.78rem;font-weight:800}
 .hr-giveacts{justify-content:flex-end;margin-top:12px;gap:8px}
 /* a desk's sheet */
 .hr-dlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
@@ -926,6 +933,30 @@ button.hr-tname:hover{background:var(--hover)}
 .hr-pm-acts .btn{min-height:44px;border-radius:999px}
 .hr-pm-foot{display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid var(--line);padding-top:8px}
 .hr-pm-note{margin:0}
+/* The plan pill's week strip (services/homeroom-week.js stripOf): Mon..Fri chips in the menu; a day opens its parts and
+   can be swapped or cleared. Never a plan row on the board (docs/decisions.md "Homeroom: week plans, due dates, copying plans"). */
+.hr-wk{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+.hr-planmenu .hr-pm-body>.hr-wk:first-child{border-top:0;padding-top:0}
+.hr-wk-h{display:flex;align-items:center;gap:6px;margin:0;font-size:.95rem;font-weight:800}
+.hr-wk-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.hr-wk-chip{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-height:52px;padding:4px 2px;border:2px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:800 .88rem var(--font);cursor:pointer;box-shadow:0 2px 0 var(--line)}
+.hr-wk-chip small{font-size:.72rem;font-weight:700;color:var(--text-2);white-space:nowrap}
+.hr-wk-chip.empty{background:var(--bg);border-style:dashed}
+.hr-wk-chip.empty small{color:var(--muted)}
+.hr-wk-chip.today{border-color:var(--accent-line)}
+.hr-wk-chip.used{background:var(--accent-soft)}
+.hr-wk-chip.past{opacity:.6}
+.hr-wk-chip.sel{background:var(--text);border-color:var(--text);color:var(--card);box-shadow:0 2px 0 #000}
+.hr-wk-chip.sel small{color:var(--card)}
+.hr-wk-chip.target{border-color:var(--spark-press);background:var(--spark-soft)}
+.hr-wk-dot{position:absolute;top:4px;inset-inline-end:5px;width:7px;height:7px;border-radius:999px;background:var(--accent-line)}
+.hr-wk-open{display:flex;flex-direction:column;gap:6px;padding:8px 10px;border-radius:12px;background:var(--bg)}
+.hr-wk-open p{margin:0}
+.hr-wk-h2{font-size:.9rem}
+.hr-wk-parts{display:flex;flex-direction:column;gap:2px;margin:0;padding:0;list-style:none;font-size:.88rem}
+.hr-wk-parts li{display:flex;justify-content:space-between;gap:8px}
+.hr-wk-acts{display:flex;flex-wrap:wrap;gap:6px}
+.hr-wk-note{display:flex;align-items:center;gap:6px;font-weight:700;font-size:.88rem}
 .hr-sum{display:flex;flex-direction:column;gap:12px}
 .hr-sum-nums{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .hr-sum-nums>div{display:flex;flex-direction:column;gap:2px;padding:12px 14px;border-radius:20px;background:var(--bg)}
