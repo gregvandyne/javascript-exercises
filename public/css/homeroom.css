@@ -1522,3 +1522,8 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
   .hd-intro-bg.k2 .hd-introic{width:56px;height:56px}
   .hd-intro-bg.k2 .hd-introt{font-size:1.05rem}
 }
+/* A Manipulatives practice set in look (docs/decisions.md "Manipulatives: tasks you can practice and assign"): the
+   problem they are on above their board, and what they typed. */
+.hr-sprob{position:absolute;inset-inline:0;top:0;z-index:2;margin:0;padding:8px 12px;max-height:64px;overflow:hidden;background:var(--card);border-bottom:1px solid var(--line);font-size:13px;line-height:1.35;color:var(--text)}
+.hr-sprob + .hr-sfit{top:64px}
+.hr-sprobbox{display:inline-block;margin-inline-start:6px;padding:0 6px;border-radius:999px;background:var(--hover);font-weight:700}

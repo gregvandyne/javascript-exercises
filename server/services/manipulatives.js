@@ -90,11 +90,21 @@ export function studentSessions(u) {
     WHERE c.archived_at IS NULL AND (s.status='active' AND s.opened_at>? OR s.ended_at>?) ORDER BY s.created_at DESC`, u.id, u.id, t - SESSION_HOURS * HOUR, t - SESSION_HOURS * HOUR);
   return rows.filter(s => (s.status === 'active' || s.joined) && isStudentOf(u, s.class_id) && hostStill(getUser(s.host_id)));
 }
+/** A student who may practice Manipulatives tasks on their own (docs/decisions.md "Manipulatives: tasks you can
+ *  practice and assign"): an active student of a class (not archived) that has a teacher who may use Manipulatives (the
+ *  teacher's Teacher plan covers their students' practice, as it covers the live rooms they host). */
+export function canPractice(u) {
+  if (!on() || !u || u.is_guest || u.banned) return false;
+  const rows = q.all(`SELECT DISTINCT t.user_id FROM class_members m JOIN classrooms c ON c.id=m.class_id AND c.archived_at IS NULL
+    JOIN class_members t ON t.class_id=m.class_id AND t.role='teacher' AND t.status='active'
+    WHERE m.user_id=? AND m.role='student' AND m.status='active'`, u.id);
+  return rows.some(r => toolAccess(getUser(r.user_id), on()) === 'yes');
+}
 /** 'host' | 'student' | 'plan' (school staff without the Teacher plan: the plan page) | null (null: the normal 404). */
 export function roleOf(u) {
   const a = toolAccess(u, on());
   if (a === 'yes') return 'host';
-  if (studentSessions(u).length) return 'student';
+  if (studentSessions(u).length || canPractice(u)) return 'student';
   return a === 'plan' ? 'plan' : null;
 }
 

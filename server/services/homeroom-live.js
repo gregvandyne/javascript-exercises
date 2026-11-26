@@ -79,7 +79,8 @@ export function pulse(u, c, body = {}, at = now()) {
   if (!live) return ok({ live: null, me: null });
   const m = beatsOf(c.id), old = m.get(u.id) || null, b = old ? { ...old } : {};
   const where = WHERE.includes(body.where) ? body.where : 'desk';
-  const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) : handoutIn(c.id, body.on)) ? String(body.on) : '';
+  // (a tool: a tool handout, or a Manipulatives practice set, a handout of its own, open in the player)
+  const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) || handoutIn(c.id, body.on) : handoutIn(c.id, body.on)) ? String(body.on) : '';
   const idle = Math.min(3600, Math.max(0, Number(body.idle) || 0));
   const step = Math.max(0, Math.min(1e6, Math.floor(Number(body.step) || 0)));
   // Back after being away (or the first pulse of this live class): a fresh start, so nobody is "stuck" from before.
@@ -273,6 +274,8 @@ export function liveView(c, board = HO.boardView(c), at = now()) {
   // what each desk's live view has now (the board asks for the new ones of the desks it shows): a game's picture (sv),
   // a Manipulatives board (mv); services/homeroom-watch.js, services/homeroom-tools.js
   const sv = HW.versionsOf(c, at), mv = HT.versionsOf(c), tools = new Map((board.tools || []).map(x => [x.id, x]));
+  // Manipulatives practice sets handed out: watched like a tool (their own board in the player)
+  for (const h of board.handouts || []) if (h.manip) tools.set(h.id, { tool: h.manip.slug, title: h.title, icon: h.icon });
   for (const s of H.studentsOf(c.id)) {
     const b = m.get(s.id), cards = board.desks[s.id] || [];
     // Absent today: a dimmed desk, never Stuck, Not here or counted (docs/decisions.md "Homeroom: K-2 mode, absent and at

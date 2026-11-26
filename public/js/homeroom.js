@@ -712,12 +712,13 @@ function renderGivebar() {
   // The groups and Whole class again in the bar, so they are one tap away wherever the panel is scrolled (a phone).
   const onMine = H.pick && H.staged.some(x => x.pick === H.pick.id);
   const chips = [...(H.pick && mineOnly(H.pick) ? [] : [btn('hr-gchip whole', 'data-hrto="all"', esc(th('ho.wholeClass'))), ...H.groups.filter(g => count(g)).map(g => btn('hr-gchip', `data-hrto="group:${esc(g.id)}" style="--gc:${esc(g.color)}"`, `<span class="rm-dot" style="--c:${esc(g.color)}"></span>${esc(groupName(g))}`))]),
-    ...(onMine || (H.pick && H.pick.id.startsWith('R:')) ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
+    ...(onMine || (H.pick && (H.pick.id.startsWith('R:') || H.pick.id.startsWith('T:task:'))) ? [] : [btn('hr-gchip mine', 'data-hrto="me"', `${iconHtml('🧑‍🏫', { size: 14 })} ${esc(th('my.title'))}`)])].join('');
   el.innerHTML = H.pick ? `<span class="hr-giveico" aria-hidden="true">${iconHtml(H.pick.icon, { size: 20 })}</span><span class="hr-givet"><b dir="auto">${esc(H.pick.title)}</b> <span>${esc(th(mineOnly(H.pick) ? 'my.tapMine' : onMine ? 'ho.tapWhere' : 'my.tapWhere'))}</span></span>
     <span class="hr-giveto">${chips}</span>${btn('btn btn-sm hr-chunk', 'data-hr="unpick"', esc(th('ho.cancel')))}` : '';
 }
-/** A pick that only goes on My desk (Figures: a teacher's tool); every Manipulatives tool ('T:manip:<slug>') hands out. */
-const mineOnly = p => !!p && p.id.startsWith('T:') && !p.id.startsWith('T:manip:');
+/** A pick that only goes on My desk (Figures: a teacher's tool); every Manipulatives tool ('T:manip:<slug>') and task
+ *  ('T:task:<tool>/<key>') hands out. */
+const mineOnly = p => !!p && p.id.startsWith('T:') && !p.id.startsWith('T:manip:') && !p.id.startsWith('T:task:');
 const pickFrom = b => ({ id: b.dataset.hritem, icon: b.dataset.icon || '🎮', title: b.querySelector('.hr-itemt')?.textContent || '' });
 // ---------------------------------------------------------------- lessons (step 2b)
 const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id === p.id.slice(2)) || null : null);
@@ -763,11 +764,15 @@ function gcPicked(f) { const c = f.querySelector('.hr-gcpost'); return !!(c && c
 function giveSheet(to) {
   const p = H.pick; if (!p) return;
   if (to.kind === 'me' && p.id.startsWith('R:')) { toast(th('rd.notMine')); return; }
+  // a Manipulatives task (docs/decisions.md "Manipulatives: tasks you can practice and assign"): its Preview is on the
+  // Manipulatives page; on desks it is a graded lesson of N questions, each student their own
+  if (to.kind === 'me' && p.id.startsWith('T:task:')) { toast(th('task.notMine')); return; }
   if (to.kind === 'me') { stagePick(p); return; }
   if (mineOnly(p)) { toast(th('my.toolSoon')); return; }
   // a Manipulatives tool (docs/decisions.md "Homeroom: watching desks and the full catalog"): its live room for the class,
   // open practice (no order, grade or due day), the teacher's words on the card
   const tool = p.id.startsWith('T:manip:') ? p.id.slice(8) : '';
+  const task = p.id.startsWith('T:task:') ? p.id.slice(7) : '';
   const reading = p.id.startsWith('R:');
   const who = whoLabel(to);
   // Whole class works with nobody in the class yet: it waits for whoever joins (the sheet says so).
@@ -781,22 +786,25 @@ function giveSheet(to) {
   const sh = sheet({
     title: `${p.icon} ${th('ho.title', { game: p.title, who: who.label })}`,
     onClose: () => { H.giving = false; renderGivebar(); },
-    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(tool ? tw('toolEyebrow') : th(reading ? 'rd.eyebrow' : 'ho.eyebrow'))}</p><p class="small muted">${esc(tool ? tw('toolLead') : th(reading ? (p.id === 'R:' ? 'rd.leadAny' : 'rd.leadBook') : 'ho.lead'))}</p>${emptyNote(to, who)}
+    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(tool ? tw('toolEyebrow') : task ? th('task.eyebrow') : th(reading ? 'rd.eyebrow' : 'ho.eyebrow'))}</p><p class="small muted">${esc(tool ? tw('toolLead') : task ? th('task.lead') : th(reading ? (p.id === 'R:' ? 'rd.leadAny' : 'rd.leadBook') : 'ho.lead'))}</p>${emptyNote(to, who)}
+      ${task ? `<label class="hr-label" for="hr-tcount">${esc(th('task.count'))}</label><input class="input hr-tcount" id="hr-tcount" type="number" min="1" max="10" value="5" inputmode="numeric">
+      <p class="small muted hr-seghint">${esc(th('task.countHint'))} <a href="/manipulatives#practice/${esc(task)}" target="_blank" rel="noopener">${esc(th('task.preview'))}</a></p>` : ''}
       <label class="hr-label" for="hr-ins">${esc(th('ho.instructions'))}</label>
       <textarea class="input hr-ins" id="hr-ins" rows="3" maxlength="${max}" placeholder="${esc(th('ho.instructionsPh'))}"></textarea>
       <p class="small muted hr-count" id="hr-inscount" aria-live="polite">${esc(th('ho.left', { count: max }))}</p>
       ${tool ? '' : `<p class="hr-label" id="hrg-order">${esc(th('ho.order'))}</p>${seg('order', [['in', th('ho.inOrder')], ['any', th('ho.anyOrder')]], 'in')}
       <p class="small muted hr-seghint" id="hr-orderhint">${esc(th('ho.inOrderHint'))}</p>
-      <p class="hr-label" id="hrg-grade">${esc(th('ho.grade'))}</p>${seg('grade', [['score', th('ho.score')], ['completion', th('ho.completion')], ['none', th('ho.notGraded')]], 'completion')}
-      <p class="small muted hr-seghint" id="hr-gradehint">${esc(th('ho.completionHint'))}</p>
+      <p class="hr-label" id="hrg-grade">${esc(th('ho.grade'))}</p>${seg('grade', [['score', th('ho.score')], ['completion', th('ho.completion')], ['none', th('ho.notGraded')]], task ? 'score' : 'completion')}
+      <p class="small muted hr-seghint" id="hr-gradehint">${esc(th(task ? 'ho.taskScoreHint' : 'ho.completionHint'))}</p>
       ${dueField('hrg')}
       ${gcField(to)}`}
       <p class="err" id="hr-giveerr" aria-live="polite"></p>
       <div class="row hr-giveacts">${btn('btn', 'data-give="cancel"', esc(th('ho.cancel')))}<button class="btn btn-primary hr-giveok" type="submit">${esc(putLabel(to, who))}</button></div></form>`,
   });
-  const f = sh.el.querySelector('form'), val = { order: 'in', grade: 'completion' };
+  const f = sh.el.querySelector('form'), val = { order: 'in', grade: task ? 'score' : 'completion' };
   const hints = { in: 'inOrderHint', any: 'anyOrderHint', score: 'scoreHint', completion: 'completionHint', none: 'notGradedHint' };
   // Reading (step 4b): Completion is the whole routine; Score is the quiz's % right
+  if (task) hints.score = 'taskScoreHint';
   if (reading) { hints.score = 'rdScoreHint'; hints.completion = 'rdCompletionHint'; f.querySelector('#hr-gradehint').textContent = th('ho.rdCompletionHint'); }
   if (tool) val.tool = tool;
   const ins = f.querySelector('#hr-ins'), dueOf = wireDue(f);
@@ -816,7 +824,7 @@ function giveSheet(to) {
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
       const common = tool ? { to, instructions: ins.value } : { to, instructions: ins.value, order: val.order, grade: val.grade, ...dueOf(), gcPost: gcPicked(f) };
-      const r = await api(api2('handouts'), { method: 'POST', body: tool ? { tool, ...common } : reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
+      const r = await api(api2('handouts'), { method: 'POST', body: tool ? { tool, ...common } : task ? { task, count: +f.querySelector('#hr-tcount').value || 5, ...common } : reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
       H.ho = { handouts: r.handouts, desks: r.desks, tools: r.tools || [], att: r.att, asks: r.asks }; sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
   });

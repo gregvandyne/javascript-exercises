@@ -9,7 +9,8 @@
 //            times their extra time when they have that support (2x: 6 minutes);
 //   hand     live class: a hand up (a question or help) for handMs, 4 minutes;
 //   ask      a question sent from home still waiting after askMs, an hour;
-//   tries    a lesson plan graded by Score opened triesPlays times (2) or more in the last 7 days, the best result still
+//   tries    a Manipulatives practice set handed out: manipRun (3) or more wrong checks in a row this week; or
+//            a lesson plan graded by Score opened triesPlays times (2) or more in the last 7 days, the best result still
 //            under triesPct (50 %) right ("several wrong tries in a row": a game reports one result per try, the best is
 //            kept, so this is the try count and the best try);
 //   reading  a Reading handout's quiz, first try, under readingPct (60 %) right with at least readingMin (3) questions;
@@ -32,7 +33,7 @@ import { scrub, studentNames } from '../builder/lesson.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
-export const LOOK = Object.freeze({ stuckMs: HV.STUCK_MS, handMs: 4 * 60e3, askMs: 60 * 60e3, triesPlays: 2, triesPct: 50, readingPct: 60, readingMin: 3, overdue: 3, weekMs: 7 * 86400e3 });
+export const LOOK = Object.freeze({ stuckMs: HV.STUCK_MS, handMs: 4 * 60e3, askMs: 60 * 60e3, triesPlays: 2, triesPct: 50, manipRun: 3, readingPct: 60, readingMin: 3, overdue: 3, weekMs: 7 * 86400e3 });
 export const RULES = Object.freeze(['stuck', 'hand', 'ask', 'tries', 'reading', 'overdue']);
 /** The reasons that are about right now (a sub sees only these). */
 export const LIVE_RULES = Object.freeze(['stuck', 'hand']);
@@ -53,6 +54,16 @@ function triesOf(c, at) {
     if (r.slug !== 'arithmetic-lab' || r.score === null || r.score === undefined) continue;
     const right = Math.min(r.score, r.n);
     if ((100 * right) / r.n < LOOK.triesPct) out.set(`${r.u}:${r.cl}`, { plays: r.plays, right, total: r.n });
+  }
+  // A Manipulatives practice set (services/manip-tasks.js; progress.manipAnswer keeps each check): wrong checks in a row
+  // (LOOK.manipRun or more, this week): the count is the run, and how many are right first time so far of all.
+  for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.marks, p.answer FROM step_progress p
+      JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL JOIN homeroom_handouts h ON h.class_lesson_id=cl.id
+      JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=cl.lesson_id AND s.kind='manip'
+      WHERE cl.class_id=? AND p.updated_at>=?`, c.id, at - LOOK.weekMs)) {
+    let a = {}; try { a = JSON.parse(r.answer || '{}') || {}; } catch { a = {}; }
+    const run = Math.floor(+a.run) || 0, m = String(r.marks || '');
+    if (run >= LOOK.manipRun) out.set(`${r.u}:${r.cl}`, { plays: run, right: [...m].filter(ch => ch === '1').length, total: m.length });
   }
   return out;
 }

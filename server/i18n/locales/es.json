@@ -2298,7 +2298,8 @@
         "version": "Versión: {name}",
         "gcAlso": "Publicar también en Google Classroom",
         "gcHint": "Llega a tu clase de Classroom vinculada como tarea, con la calificación que elegiste aquí.",
-        "gcWholeOnly": "Solo las tareas para toda la clase van a Google Classroom: allí llegarían a toda la clase."
+        "gcWholeOnly": "Solo las tareas para toda la clase van a Google Classroom: allí llegarían a toda la clase.",
+        "taskScoreHint": "Puntuación: cuántas preguntas acertaron a la primera."
       },
       "team": {
         "label": "Mesa de equipo",
@@ -2367,7 +2368,15 @@
         "clearConfirm": "¿Quitar del aula las líneas de todos los estudiantes?",
         "none": "Todavía no hay dibujos en el aula."
       },
-      "tourMenu": "Muéstrame cómo funciona"
+      "tourMenu": "Muéstrame cómo funciona",
+      "task": {
+        "notMine": "Prueba una tarea en la página de Manipulativos. En los pupitres es una lección de preguntas.",
+        "eyebrow": "Manipulativos · lección de práctica",
+        "lead": "Cada estudiante recibe sus propias preguntas con números distintos. Oomba revisa cada respuesta y da pistas; cuenta la primera revisión de cada pregunta.",
+        "count": "Preguntas",
+        "countHint": "De 1 a 10 preguntas para cada estudiante.",
+        "preview": "Pruébala"
+      }
     },
     "stories": {
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
@@ -5155,7 +5164,8 @@
         "bigger": "Gira tu dispositivo o usa una pantalla más grande para dibujar en el aula.",
         "full": "No puedes dibujar más. Borra algunas líneas primero.",
         "notHere": "Dibuja fuera de los otros pupitres y del área del docente."
-      }
+      },
+      "manipKind": "Práctica · {count, plural, one {# problema} other {# problemas}}"
     },
     "homeroom-area": {
       "label": "Zona del docente",
@@ -6186,7 +6196,8 @@
       "quiz": "Responder preguntas del quiz",
       "figures": "Responder preguntas de figuras",
       "figureStep": "Preguntas con figuras",
-      "proofread": "Corrección de textos"
+      "proofread": "Corrección de textos",
+      "manip": "Práctica con manipulativos"
     },
     "library": {
       "title": "Biblioteca de planes de clase",
@@ -15532,7 +15543,11 @@
       "tooFast": "Es mucho dibujo de una vez. Inténtalo de nuevo en un momento.",
       "roomFull": "El aula tiene todos los dibujos que puede tener.",
       "pastDay": "Ese día ya pasó. Elige hoy o un día posterior de esta semana.",
-      "weekPast": "Todos los días de esa semana ya pasaron."
+      "weekPast": "Todos los días de esa semana ya pasaron.",
+      "pickTask": "Elige una tarea para practicar.",
+      "tooManyTasks": "Elige 6 tareas o menos.",
+      "badCount": "Elige de 1 a 10 preguntas.",
+      "oneToolSet": "Elige tareas de una sola herramienta a la vez."
     },
     "live": "En vivo",
     "desk": {

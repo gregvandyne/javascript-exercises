@@ -2299,7 +2299,8 @@
         "version": "Versão: {name}",
         "gcAlso": "Publicar também no Google Classroom",
         "gcHint": "Vai para a turma do Classroom vinculada como atividade, com a nota que você escolheu aqui.",
-        "gcWholeOnly": "Só tarefas para a turma toda vão para o Google Classroom: lá chegariam a todos."
+        "gcWholeOnly": "Só tarefas para a turma toda vão para o Google Classroom: lá chegariam a todos.",
+        "taskScoreHint": "Pontuação: quantas perguntas acertaram à primeira."
       },
       "team": {
         "label": "Mesa da equipe",
@@ -2368,7 +2369,15 @@
         "clearConfirm": "Tirar da sala as linhas de todos os alunos?",
         "none": "Ainda não há desenhos na sala."
       },
-      "tourMenu": "Mostre como funciona"
+      "tourMenu": "Mostre como funciona",
+      "task": {
+        "notMine": "Experimente uma tarefa na página de Materiais manipuláveis. Nas carteiras, é uma lição de perguntas.",
+        "eyebrow": "Materiais manipuláveis · lição de prática",
+        "lead": "Cada aluno recebe as suas próprias perguntas, com números diferentes. O Oomba verifica cada resposta e dá dicas; conta a primeira verificação de cada pergunta.",
+        "count": "Perguntas",
+        "countHint": "De 1 a 10 perguntas para cada aluno.",
+        "preview": "Experimentar"
+      }
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -5156,7 +5165,8 @@
         "bigger": "Vire o aparelho de lado ou use uma tela maior para desenhar na sala.",
         "full": "Você não pode desenhar mais. Apague algumas linhas primeiro.",
         "notHere": "Desenhe fora das outras carteiras e da área do professor."
-      }
+      },
+      "manipKind": "Prática · {count, plural, one {# problema} other {# problemas}}"
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -6188,7 +6198,8 @@
       "quiz": "Responder às perguntas do quiz",
       "figures": "Responder perguntas de figuras",
       "figureStep": "Questões com figuras",
-      "proofread": "Revisão de texto"
+      "proofread": "Revisão de texto",
+      "manip": "Prática com materiais manipuláveis"
     },
     "library": {
       "title": "Biblioteca de planos de aula",
@@ -15534,7 +15545,11 @@
       "tooFast": "É muito desenho de uma vez. Tente de novo daqui a pouco.",
       "roomFull": "A sala já tem todos os desenhos que cabem.",
       "pastDay": "Esse dia já passou. Escolha hoje ou um dia depois nesta semana.",
-      "weekPast": "Todos os dias dessa semana já passaram."
+      "weekPast": "Todos os dias dessa semana já passaram.",
+      "pickTask": "Escolha uma tarefa para praticar.",
+      "tooManyTasks": "Escolha 6 tarefas ou menos.",
+      "badCount": "Escolha de 1 a 10 perguntas.",
+      "oneToolSet": "Escolha tarefas de uma só ferramenta de cada vez."
     },
     "live": "Ao vivo",
     "desk": {

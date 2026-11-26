@@ -67,10 +67,10 @@ export function classItems(classId, { userId = null } = {}) {
   }
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.step_id sid, p.marks, p.status, s.title, s.kind, s.position pos, s.rubric FROM step_progress p
       JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
-      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','figures','proofread','question','build') AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
+      WHERE c.class_id=? AND p.marks!='' AND s.kind IN ('quiz','story','figures','proofread','manip','question','build') AND ${L.assignedSql('c.id', 'p.user_id')} ${userId ? 'AND p.user_id=?' : ''}`, classId, ...who)) {
     const base = { stepId: r.sid, title: r.title || '', stepKind: r.kind, pos: r.pos };
     // A Story Library book's 3 questions (services/library.js): 1 point each, right on the first try.
-    if (r.kind === L.QUIZ_KIND || r.kind === 'story' || r.kind === L.FIGURES_KIND || r.kind === L.PROOF_KIND) {
+    if (r.kind === L.QUIZ_KIND || r.kind === 'story' || r.kind === L.FIGURES_KIND || r.kind === L.PROOF_KIND || r.kind === L.MANIP_KIND) {
       if (r.status === 'done' && !/[^01]/.test(r.marks)) add(r.u, r.cl, { kind: 'quiz', ...base, earned: digits(r.marks, /1/), possible: r.marks.length });
       continue;
     }

@@ -40,6 +40,13 @@
 //                                               (services/manip-drafts.js), one at a time; -> the job
 //   GET  /api/manipulatives/draft               the host's draft now (running, or ended and not seen yet) and the estimate
 //   POST /api/manipulatives/draft/:id/seen      the host saw how it ended
+//   Tasks you can practice and assign (services/manip-tasks.js; docs/decisions.md "Manipulatives: tasks you can practice
+//   and assign"):
+//   POST /api/manipulatives/practice/check      solo practice: { task, seed, work, first } checked here, the counts kept
+//   POST /api/manipulatives/assign              a host assigns tasks to a class: { classId, tasks, count, opensAt, dueAt }
+//   GET  /api/manipulatives/set/:clid/:sid      an assigned set for its student: the questions (ids and seeds), marks
+//   POST /api/manipulatives/set/:clid/:sid      { i, action: check | hint | next, work }: checked here (progress.manipAnswer)
+//   POST /api/manipulatives/set/:clid/:sid/live the student's board now, for Homeroom's watching desks (memory only)
 //   (Oomba on a board is the site's one companion chat: services/companion.js with the board workflow of
 //   services/manip-chat.js; no chat routes of its own.)
 import { Router } from 'express';
@@ -49,10 +56,14 @@ import { page, VERSION } from '../views/layout.js';
 import { rateLimit } from '../services/ratelimit.js';
 import * as M from '../services/manipulatives.js';
 import * as D from '../services/manip-drafts.js';
+import * as MT from '../services/manip-tasks.js';
+import * as P from '../services/progress.js';
+import * as L from '../services/lessons.js';
+import * as S from '../services/schools.js';
 import { teachingTools, planReply } from './figures.js';
 
 export const router = Router();
-const STATUS = { notFound: 404, chatBusy: 409, ended: 409, notEnded: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404 };
+const STATUS = { notFound: 404, chatBusy: 409, ended: 409, notEnded: 409, aiFailed: 503, tooBig: 413, slow: 429, checkSlow: 429, noAnswers: 404, answered: 409, notYet: 409 };
 const fail = (req, res, code) => res.status(STATUS[code] || 400).json({ error: req.t(`manip.errors.${code}`), code });
 const send = (req, res, r) => (r.ok ? res.json(r) : fail(req, res, r.code));
 const body = req => (req.body && typeof req.body === 'object' ? req.body : {});
@@ -80,7 +91,7 @@ router.get('/manipulatives', (req, res) => {
   // "Teaching tools: Manipulatives · Figures" for someone who can open both (routes/figures.js).
   const tools = embed ? '' : teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: embed ? 'manip-page mp-inhr' : 'manip-page', ...(embed ? { bare: true } : {}),
+    title: t('manip.title'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann', 'js.manip-task-play', 'js.manip-task-list'], bodyClass: embed ? 'manip-page mp-inhr' : 'manip-page', ...(embed ? { bare: true } : {}),
     body: html`${tools}${jsonData('page-data', { role: req.manipRole, ...(embed ? { embed: 'hr' } : {}) })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
@@ -92,7 +103,7 @@ router.get('/manipulatives/boards', (req, res, next) => {
   if (req.manipRole !== 'host') return next('router');
   const t = req.t, tools = teachingTools(req, 'manip');
   page(req, res, {
-    title: t('manip.boardsTitle'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann'], bodyClass: 'manip-page',
+    title: t('manip.boardsTitle'), active: null, head: tools ? raw(`${CSS}<link rel="stylesheet" href="/css/figures.css?v=${VERSION}">`) : CSS, scripts: ['/js/manip.js'], i18n: ['js.manip-room', 'js.manip-chat', 'js.board-ann', 'js.manip-task-play', 'js.manip-task-list'], bodyClass: 'manip-page',
     body: html`${tools}${jsonData('page-data', { role: req.manipRole, view: 'boards' })}
       <div id="manip" class="manip" data-role="${req.manipRole}"><p class="muted">${t('manip.loading')}</p></div>`,
   });
@@ -101,8 +112,10 @@ router.get('/manipulatives/boards', (req, res, next) => {
 router.get('/api/manipulatives/state', (req, res) => {
   const u = req.user;
   // ?all=1: every template (the All boards page); the home gets the newest 100 and the count.
-  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u, { all: req.query.all === '1' }), templateCount: M.countBoards(u), recent: M.listRecent(u), classes: M.hostClasses(u), sessions: M.hostSessions(u), draft: D.current(u), eta: D.eta() });
-  res.json({ role: 'student', sessions: M.studentSessions(u).map(s => ({ id: s.id, tool: s.tool, title: s.title, status: s.status, className: s.class_name, joined: !!s.joined })) });
+  // practice: the person's own counts per task (solo practice); assignTo: the classes a host can assign tasks to
+  if (req.manipRole === 'host') return res.json({ role: 'host', boards: M.listBoards(u, { all: req.query.all === '1' }), templateCount: M.countBoards(u), recent: M.listRecent(u), classes: M.hostClasses(u), sessions: M.hostSessions(u), draft: D.current(u), eta: D.eta(),
+    practice: MT.progressOf(u), assignTo: MT.assignClasses(u).map(c => ({ id: c.id, name: c.name })) });
+  res.json({ role: 'student', sessions: M.studentSessions(u).map(s => ({ id: s.id, tool: s.tool, title: s.title, status: s.status, className: s.class_name, joined: !!s.joined })), practice: MT.progressOf(u) });
 });
 
 // ---- boards
@@ -153,6 +166,35 @@ router.post('/api/manipulatives/live/:id/show', hostOnly, (req, res) => send(req
 router.post('/api/manipulatives/live/:id/hand', (req, res) => send(req, res, M.hand(req.user, req.params.id, { up: !!body(req).up, key: typeof body(req).key === 'string' ? body(req).key : null })));
 router.post('/api/manipulatives/live/:id/check', (req, res) => send(req, res, M.checkAnswers(req.user, req.params.id, body(req).answers)));
 router.post('/api/manipulatives/live/:id/cursor', rateLimit('manip-cursor', 3600, 3600e3), (req, res) => send(req, res, M.moveCursor(req.user, req.params.id, body(req))));
+
+// ---- tasks: solo practice, assigning, assigned sets (services/manip-tasks.js, services/progress.js manipAnswer)
+router.post('/api/manipulatives/practice/check', rateLimit('manip-practice', 1200, 3600e3), (req, res) => {
+  const x = body(req);
+  send(req, res, MT.practiceCheck(req.user, { task: String(x.task || ''), seed: x.seed, work: x.work, first: x.first === true }));
+});
+router.post('/api/manipulatives/assign', hostOnly, rateLimit('lesson-new', 120, 3600e3), (req, res) => {
+  const x = body(req);
+  const r = MT.assign(req.user, { classId: String(x.classId || ''), tasks: x.tasks, count: x.count, opensAt: x.opensAt || null, dueAt: x.dueAt || null });
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : 400).json({ error: req.t(`manip.errors.${r.code}`), code: r.code });
+  const c = S.getClass(r.classLesson.class_id);
+  res.json({ ok: true, classLesson: { id: r.classLesson.id }, n: r.n, toast: req.t('manip.assigned', { title: r.title, klass: c ? c.name : '', count: r.n }) });
+});
+/** An assigned set as its student opens it: the questions (ids and seeds: the page makes each one from the shared task
+ *  files), their marks, and the lesson's title, due day and the way back. */
+router.get('/api/manipulatives/set/:clid/:sid', rateLimit('manip-set', 3000, 3600e3), (req, res) => {
+  const r = P.manipFor(req.user, req.params.clid, req.params.sid);
+  if (!r.ok) return fail(req, res, r.code);
+  const cl = L.getClassLesson(req.params.clid), st = L.getStep(req.params.sid), c = S.getClass(cl.class_id);
+  res.json({ ...r, title: st.title, body: st.body || '', className: c ? c.name : '', due: cl.due_at || null, back: `/class/${c.id}/lessons/${cl.id}` });
+});
+router.post('/api/manipulatives/set/:clid/:sid', rateLimit('manip-set-check', 1200, 3600e3), (req, res) => {
+  const x = body(req);
+  send(req, res, P.manipAnswer(req.user, req.params.clid, req.params.sid, x.i, String(x.action || ''), x.work));
+});
+router.post('/api/manipulatives/set/:clid/:sid/live', rateLimit('manip-set-live', 3000, 3600e3), (req, res) => {
+  const x = body(req);
+  send(req, res, MT.putLive(req.user, req.params.clid, { state: x.state, space: x.space, i: x.i, box: x.box }));
+});
 
 // ---- the AI lesson drafter
 // A draft runs on the server (services/manip-drafts.js): the answer is the job, and the page asks how it is going.

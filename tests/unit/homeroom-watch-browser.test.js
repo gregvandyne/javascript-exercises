@@ -201,7 +201,9 @@ test('the catalog: search, subjects and grade on a laptop, the phone\'s sheet; a
   await T.page.fill('#hr-cq', 'base ten');
   await T.page.waitForTimeout(100);
   const shown = await T.page.$$eval('#hr-panel .hr-items > li:not([hidden]) .hr-itemt', l => l.map(x => x.textContent.trim()));
-  assert.deepEqual(shown, ['Base Ten Blocks']);
+  // the tool, and its practice tasks as lessons (docs/decisions.md "Manipulatives: tasks you can practice and assign")
+  const { TASKS } = await import('../../public/js/manip-tasks.js');
+  assert.deepEqual(shown, ['Base Ten Blocks', ...TASKS['base-ten-blocks'].filter(x => x.make).map(x => x.title)]);
   await T.page.waitForTimeout(300);
   await shot(T.page, 'catalog-search-1366');
   await T.page.fill('#hr-cq', '');

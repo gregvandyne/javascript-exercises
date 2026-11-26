@@ -2304,7 +2304,8 @@
         "gcHint": "It goes to your linked Classroom class as an assignment, with the grade you chose here.",
         "gcWholeOnly": "Only Whole class handouts go to Google Classroom: there it would reach the whole class.",
         "rdScoreHint": "The quiz's % right, first try.",
-        "rdCompletionHint": "100% when they finish Read, Quiz and 3 notes."
+        "rdCompletionHint": "100% when they finish Read, Quiz and 3 notes.",
+        "taskScoreHint": "Score: how many questions they got right the first time."
       },
       "team": {
         "label": "Team desk",
@@ -2442,7 +2443,15 @@
         "clearConfirm": "Take every student's lines off the room?",
         "none": "No drawings on the room yet."
       },
-      "tourMenu": "Show me around"
+      "tourMenu": "Show me around",
+      "task": {
+        "notMine": "Preview a task on the Manipulatives page. On desks it is a lesson of questions.",
+        "eyebrow": "Manipulatives · practice lesson",
+        "lead": "Each student gets their own questions with different numbers. Oomba checks every answer and gives hints; their first check on each question is what counts.",
+        "count": "Questions",
+        "countHint": "1 to 10 questions for each student.",
+        "preview": "Preview it"
+      }
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -4056,7 +4065,9 @@
         "allGrades": "All grades",
         "count": "{n, plural, one {# task} other {# tasks}}",
         "none": "No task matches. Try a tool name like Clock, or a code like 3.NF.",
-        "open": "Open the tool"
+        "open": "Open the tool",
+        "practiceList": "Practice these tasks",
+        "setGone": "This practice is not open for you."
       },
       "live": {
         "ended": "This session has ended.",
@@ -5736,7 +5747,8 @@
         "bigger": "Turn your device sideways or use a bigger screen to draw on the room.",
         "full": "That's as much as you can draw. Erase some lines first.",
         "notHere": "Draw outside other desks and the teacher's area."
-      }
+      },
+      "manipKind": "Practice · {count, plural, one {# problem} other {# problems}}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -6449,7 +6461,9 @@
       "atDesk": "At their desk: their cards and their pad, as on the board",
       "roomTitle": "Manipulatives room",
       "toolEyebrow": "Manipulatives · open practice",
-      "toolLead": "Each student works in their own square of this tool’s live room, as in Manipulatives. You see their boards live on their desks."
+      "toolLead": "Each student works in their own square of this tool’s live room, as in Manipulatives. You see their boards live on their desks.",
+      "question": "Question {i} of {n}",
+      "typed": "Typed: {box}"
     },
     "homeroom-catalog": {
       "title": "Find lessons",
@@ -6557,6 +6571,67 @@
         "dock": "These buttons show your teacher, books and the room.",
         "seen": "Your teacher can see your screen."
       }
+    },
+    "manip-task-play": {
+      "qOf": "Question {i} of {n}",
+      "streak": "{n} right in a row",
+      "solved": "Solved {n}",
+      "backTasks": "Back to tasks",
+      "grade": "Grade {grade}",
+      "backDesk": "Back to my desk",
+      "backLesson": "Back to the lesson",
+      "yourAnswer": "Your answer: {what}",
+      "pick": "Pick one:",
+      "buildAndAnswer": "Use the board below, then answer here and press Check.",
+      "buildIt": "Show it on the board below, then press Check.",
+      "hintN": "Hint {n}:",
+      "correct": "Correct!",
+      "notYet": "Not yet.",
+      "finish": "Finish",
+      "next": "Next question",
+      "tryAnother": "Try another",
+      "read": "Read to me",
+      "checking": "Checking",
+      "check": "Check",
+      "hint": "A hint, please",
+      "allDone": "All done!",
+      "doneScore": "You got {right} of {total} right the first time.",
+      "typeFirst": "Type your answer in the box first.",
+      "alreadyDone": "That question is already finished.",
+      "offline": "Oomba could not check that. Try again in a moment."
+    },
+    "manip-task-list": {
+      "preview": "Preview",
+      "assign": "Assign",
+      "practice": "Practice",
+      "streak": "{n} right in a row",
+      "solved": "Solved {n}",
+      "title": "{tool}: practice",
+      "openTool": "Open the tool",
+      "allTools": "All tools",
+      "leadHost": "{n, plural, one {# task} other {# tasks}} to practice. Preview one as students see it, or assign questions to a class: each student gets their own numbers, and Oomba checks every answer and gives hints.",
+      "lead": "Pick a task to practice. Every time you get new numbers.",
+      "noneYet": "Practice for this tool is coming soon. You can still use the tool on your own.",
+      "assignPicked": "Assign the ticked tasks",
+      "pick": "Pick {title}",
+      "grade": "Grade {grade}",
+      "teacherNote": "Teacher note:",
+      "soon": "Practice coming soon",
+      "picked": "{n, plural, one {# task ticked} other {# tasks ticked}}",
+      "assignTitle": "Assign practice",
+      "assignLead": "Each student gets their own questions with different numbers. Oomba checks every answer and gives hints; their first check on each question is what counts.",
+      "count": "Questions of each task",
+      "total": "{n, plural, one {# question} other {# questions}} for each student",
+      "klass": "Class",
+      "noClasses": "You have no classes to assign to yet.",
+      "opens": "Opens (optional)",
+      "due": "Due (optional)",
+      "cancel": "Cancel",
+      "assignGo": "Assign",
+      "practiceTitle": "Practice",
+      "practiceLead": "Pick a tool to practice its tasks, or just play with it.",
+      "nTasks": "{n, plural, one {# task to practice} other {# tasks to practice}}",
+      "freePlay": "Free play"
     }
   },
   "favorites": {
@@ -7193,7 +7268,8 @@
       "quiz": "Answer quiz questions",
       "figures": "Answer figure questions",
       "figureStep": "Figure questions",
-      "proofread": "Proofreading"
+      "proofread": "Proofreading",
+      "manip": "Manipulatives practice"
     },
     "library": {
       "title": "Lesson plan library",
@@ -16003,7 +16079,27 @@
       "noAnswers": "There are no answers to check on this board.",
       "noTitle": "Type a name first.",
       "notEnded": "End the room before you delete it.",
-      "chatBusy": "Oomba is still answering your last message. Wait a moment."
+      "chatBusy": "Oomba is still answering your last message. Wait a moment.",
+      "pickTask": "Pick a task to practice.",
+      "tooManyTasks": "Pick 6 tasks or fewer.",
+      "badCount": "Pick 1 to 10 questions of each task (30 in all at most).",
+      "oneToolSet": "Pick tasks of one tool at a time.",
+      "noClass": "Pick one of your classes.",
+      "badDate": "That date does not look right.",
+      "dueBeforeOpen": "The due day comes before the day it opens.",
+      "answered": "That question is already finished.",
+      "notYet": "Try the hints first.",
+      "badRequest": "Something was missing. Try again."
+    },
+    "assigned": "{title} is assigned to {klass}: {count, plural, one {# question} other {# questions}} for each student.",
+    "set": {
+      "doneScore": "Finished: {right} of {total} right the first time.",
+      "review": "Open it",
+      "continue": "Keep going",
+      "start": "Start",
+      "progress": "{done} of {total} questions done",
+      "preview": "Preview: {title}",
+      "teacherNote": "Each student gets their own {count, plural, one {# question} other {# questions}} with different numbers. Their first check on each question is what counts."
     }
   },
   "figures": {
@@ -17025,7 +17121,11 @@
       "tooFast": "That's a lot of drawing at once. Try again in a moment.",
       "roomFull": "The room has as many drawings as it can hold.",
       "pastDay": "That day is over. Pick today or a later day this week.",
-      "weekPast": "Every day of that week is over already."
+      "weekPast": "Every day of that week is over already.",
+      "pickTask": "Pick a task to practice.",
+      "tooManyTasks": "Pick 6 tasks or fewer.",
+      "badCount": "Pick 1 to 10 questions.",
+      "oneToolSet": "Pick tasks of one tool at a time."
     },
     "live": "Live",
     "desk": {
@@ -17394,7 +17494,8 @@
       "favorites": "Favorites",
       "hostLive": "Host live",
       "myDeskOnly": "My desk",
-      "more": "More Oomba lessons"
+      "more": "More Oomba lessons",
+      "toolLessons": "{tool}: practice lessons"
     },
     "studentDraw": {
       "savedOn": "Students can draw on the room",

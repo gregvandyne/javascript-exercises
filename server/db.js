@@ -1601,6 +1601,13 @@ export const MIGRATIONS = [
       rule TEXT NOT NULL, key TEXT NOT NULL, state TEXT NOT NULL, day TEXT NOT NULL, set_by TEXT, at INTEGER NOT NULL, PRIMARY KEY (class_id, user_id, rule, key));
     CREATE INDEX IF NOT EXISTS idx_homeroom_look_user ON homeroom_look(user_id);
     CREATE INDEX IF NOT EXISTS idx_homeroom_look_by ON homeroom_look(set_by);`],
+  // Manipulatives: tasks you can practice and assign (docs/decisions.md "Manipulatives: tasks you can practice and assign";
+  // services/manip-tasks.js). manip_practice: a person's solo practice of one task ('<tool>/<key>'): how many they solved,
+  // how many checks, the current run of right-first-time answers and the best run. Counts only (never the work). Gone with
+  // the account. Assigned sets need no table: a lesson step of kind 'manip' and step_progress, as every graded step.
+  ['0141_manip_practice', `
+    CREATE TABLE IF NOT EXISTS manip_practice (user_id TEXT NOT NULL, task TEXT NOT NULL, solved INTEGER NOT NULL DEFAULT 0, tries INTEGER NOT NULL DEFAULT 0,
+      streak INTEGER NOT NULL DEFAULT 0, best INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL, PRIMARY KEY (user_id, task));`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

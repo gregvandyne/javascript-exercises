@@ -14,6 +14,8 @@ import * as S from '../services/schools.js';
 import * as L from '../services/lessons.js';
 import * as FS from '../services/figures-steps.js';
 import * as PS from '../services/proof-steps.js';
+import * as MT from '../services/manip-tasks.js';
+import { taskOf as taskOfId } from '../../public/js/manip-tasks.js';
 import * as F from '../services/figures.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
@@ -94,7 +96,7 @@ export function assignToField(t, classes, { idp, picked = [], shown = '' } = {})
 }
 const send = (req, res, r, extra = {}) => (r.ok ? res.json({ ok: true, ...extra }) : err(req, res, r.code, r.code === 'notFound' ? 404 : 400));
 const no = (req, res) => (req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('lessons.errors.notFound') }) : notFound(req, res, req.t('lessons.errors.notFound')));
-const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', figures: '📐', proofread: '🔎' };
+const KIND_ICON = { game: '🎮', build: '🛠️', text: '📖', question: '✍️', quiz: '🧩', figures: '📐', proofread: '🔎', manip: '🧮' };
 const isoDay = t => (t ? new Date(t).toISOString().slice(0, 10) : '');
 const paras = text => String(text || '').split(/\n{2,}/).filter(Boolean).map(p => html`<p dir="auto">${p.split('\n').map((line, i) => html`${i ? raw('<br>') : ''}${line}`)}</p>`);
 /** "Subject (optional)": the field name and the shared "(optional)" word. */
@@ -316,8 +318,8 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
       ${ccOf(s.id).length || gameOf(s).length || needsGrade(s) ? html`<div class="std-stepcodes">${ccChips(ccOf(s.id))}${gameOf(s).map(([fw, codes]) => codeChips(t, fw, codes, { label: t('standards.lesson.gameCodes', { framework: fwName(t, fw) }) }))}${needsGrade(s) ? html`<p class="small muted">${t('standards.lesson.gameNeedsGrade')}</p>` : ''}</div>` : ''}
       ${s.kind === 'build' ? html`<p class="sc-build" dir="auto">${ico('💬', { size: 18 })} “${s.body}”</p>` : s.body ? html`<div class="sc-body ${s.kind === 'question' ? 'q-text' : ''}">${paras(s.body)}</div>` : ''}
       ${R.STEP_KINDS.includes(s.kind) ? rubricChip(s.rubric_id) : ''}
-      ${s.kind === L.FIGURES_KIND ? figureStepView(s, work) : s.kind === L.PROOF_KIND ? proofStepView(s, work) : ''}
-      ${edit && !L.HANDIN_KINDS.includes(s.kind) ? html`<details><summary class="small">${ico('✏️', { size: 18 })} ${t('lessons.step.edit')}</summary>
+      ${s.kind === L.FIGURES_KIND ? figureStepView(s, work) : s.kind === L.PROOF_KIND ? proofStepView(s, work) : s.kind === L.MANIP_KIND ? manipStepView(s) : ''}
+      ${edit && !L.HANDIN_KINDS.includes(s.kind) && s.kind !== L.MANIP_KIND ? html`<details><summary class="small">${ico('✏️', { size: 18 })} ${t('lessons.step.edit')}</summary>
         <form class="formgrid stepgrid" data-kind="${s.kind}" data-api="/api/lesson-steps/${s.id}" data-reload novalidate>${stepFields(t, pick, s, `s${s.id}`, { rubrics })}
           <div class="formacts"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}
@@ -347,6 +349,9 @@ router.get('/teach/lessons/:id', requireUser, (req, res) => {
           <div class="field wide"><label for="s${s.id}-b">${t('lessons.step.bodyFigures')}</label><textarea class="input" id="s${s.id}-b" name="body" rows="2" maxlength="4000">${s.body || ''}</textarea></div>
           <div class="formacts wide"><button class="btn btn-primary" type="submit">${t('school.save')}</button><button class="btn btn-danger" type="submit" form="sd-${s.id}">${t('lessons.step.delete')}</button></div></form>
         <form id="sd-${s.id}" hidden data-api="/api/lesson-steps/${s.id}/delete" data-reload data-confirm="${work ? t('lessons.step.deleteWorkConfirm', { n: work }) : t('lessons.step.deleteConfirm')}"></form></details>` : ''}`; };
+  // A Manipulatives practice set (services/manip-tasks.js): its tasks and how many questions of each, each with Preview.
+  const manipStepView = s => { const sn = MT.snapOf(s) || { tasks: [], n: 0 }; return html`<p class="small muted">${ico('🧮', { size: 18 })} ${t('manip.set.teacherNote', { count: MT.countOf(s) })}</p>
+    <div class="row">${sn.tasks.map(id => html`<a class="btn btn-sm" href="/manipulatives#practice/${id}">${ico('👀', { size: 18 })} ${t('manip.set.preview', { title: (taskOfId(id) || { task: { title: id } }).task.title })}</a>`)}</div>`; };
   const drafted = req.query.drafted;
   const progressLinks = listOf(t, assigned, a => html`<a href="/class/${a.class_id}/progress/${a.id}">${a.name}</a>`);
   const body = html`
@@ -512,7 +517,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
   const staff = S.schoolsOf(u.id).some(s => s.id === c.school_id && s.role !== 'student');
   // A game step shows its game's own emoji (a game's picture, never an icon); the other kinds their icon.
   const iconOf = cl => { const e = icon(cl); return cl.kind === 'game' && cl.first_game ? e : ico(e, { size: 18 }); };
-  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : cl.kind === 'figures' ? '📐' : cl.kind === 'proofread' ? '🔎' : '📚'; };
+  const icon = cl => { const g = cl.kind === 'game' && cl.first_game ? games.getGame(cl.first_game) : null; return g ? (g.icon || '🎮') : cl.kind === 'homework' ? '📝' : cl.kind === 'story' ? '📖' : cl.kind === 'figures' ? '📐' : cl.kind === 'proofread' ? '🔎' : cl.kind === 'manip' ? '🧮' : '📚'; };
   const pane = () => {
     const sums = count ? P.lessonSummaries(c.id) : {};
     const lessonRow = (cl, i, n) => {

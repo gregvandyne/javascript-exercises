@@ -42,8 +42,13 @@ export const FIGURES_KIND = 'figures';
  *  (lesson_steps.items), so later edits to the set never change it. Marked by the server (progress.proofAnswer);
  *  show_answers is the teacher's "Show answers after the due date", as for a figures step. */
 export const PROOF_KIND = 'proofread';
+/** Manipulatives practice (services/manip-tasks.js; docs/decisions.md "Manipulatives: tasks you can practice and
+ *  assign"): made only by a Manipulatives task's Assign (or a Homeroom handout of one), with a snapshot of which tasks and
+ *  how many questions of each (lesson_steps.items: { v, tasks: [id], n }). Each student gets their own seeded variations;
+ *  the server checks every answer (progress.manipAnswer: marks one character a question, score = % right first time). */
+export const MANIP_KIND = 'manip';
 /** Step kinds made from a snapshot (never from the step editor): their questions can't be edited there. */
-export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND, PROOF_KIND];
+export const SNAPSHOT_KINDS = [QUIZ_KIND, FIGURES_KIND, PROOF_KIND, MANIP_KIND];
 /** Snapshot kinds a student hands in once and the server marks (marks '1'/'0', score = % right), with "Show answers
  *  after the due date" (lesson_steps.show_answers). */
 export const HANDIN_KINDS = [FIGURES_KIND, PROOF_KIND];
@@ -167,7 +172,7 @@ export function cleanLesson(fields = {}, old = {}) {
 /** What a lesson row is (0085_game_folders): 'game' (one assigned game), 'course' (a ready-made course's copy),
  *  'homework' (a live question set sent as homework), 'lesson' (a teacher-made lesson, no longer offered), 'story' (one
  *  Story Library book: services/library.js), 'figures' (a Figures worksheet: services/figures-steps.js). */
-export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story', 'figures', 'proofread'];
+export const LESSON_KINDS = ['lesson', 'game', 'course', 'homework', 'story', 'figures', 'proofread', 'manip'];
 export function createLesson(u, schoolId, { title, folderId = null, summary = '', subject = '', grade = '', objectives = '', templateKey = '', templateVersion = 0, kind = '' }) {
   if (!isStaffOf(u, schoolId)) return fail('notFound');
   const c = cleanLesson({ title, summary, subject, grade, objectives, templateKey, templateVersion }); if (!c.ok) return c;
@@ -280,7 +285,7 @@ export function copyLesson(u, lessonId, { folderId } = {}) {
       const id = uid(10); stepIds.set(s.id, id);
       q.run(`INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, options, standards, template, rubric, rubric_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         id, r.lesson.id, s.position, s.kind, s.title, s.body, s.game_id, s.minutes, now(),
-        SNAPSHOT_KINDS.includes(s.kind) ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : HANDIN_KINDS.includes(s.kind) ? s.items || '' : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
+        SNAPSHOT_KINDS.includes(s.kind) ? s.set_id || null : null, s.kind === QUIZ_KIND ? quizItemsFor(s) : HANDIN_KINDS.includes(s.kind) || s.kind === MANIP_KIND ? s.items || '' : '', s.options || '', s.standards || '', s.template || '', s.rubric || '',
         R.STEP_KINDS.includes(s.kind) ? rubricFor(s.rubric_id) : null);
       // A figures step keeps its snapshot as it is (the worksheet may have changed since), its version and its switch.
       if (HANDIN_KINDS.includes(s.kind)) q.run('UPDATE lesson_steps SET of_version=?, show_answers=? WHERE id=?', s.of_version || '', s.show_answers ? 1 : 0, id);
@@ -408,6 +413,16 @@ export function addProofStep(u, lessonId, { title = '', setId = null, items, sho
   q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, set_id, items, show_answers) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
     id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), PROOF_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), setId || null,
     JSON.stringify(items), showAnswers ? 1 : 0);
+  touch(l.id);
+  return ok({ step: getStep(id) });
+}
+/** A Manipulatives practice step from its snapshot ({ v, tasks, n }: services/manip-tasks.js). -> { ok, step } */
+export function addManipStep(u, lessonId, { title = '', items, minutes = 0, body = '' }) {
+  const l = getLesson(lessonId); if (!canEditLesson(u, l)) return fail('notFound');
+  if (!items || !Array.isArray(items.tasks) || !items.tasks.length || !(items.n > 0)) return fail('stepKind');
+  const id = uid(10);
+  q.run('INSERT INTO lesson_steps(id, lesson_id, position, kind, title, body, game_id, minutes, created_at, items) VALUES (?,?,?,?,?,?,?,?,?,?)',
+    id, l.id, nextPos('lesson_steps', 'lesson_id=?', l.id), MANIP_KIND, clip(title, 100), clipText(body, 4000), null, Math.max(0, Math.min(240, Math.round(+minutes || 0))), now(), JSON.stringify(items));
   touch(l.id);
   return ok({ step: getStep(id) });
 }

@@ -46,6 +46,8 @@ import * as FS from '../services/figures-steps.js';
 import { classroomOverview } from './homeroom-overview.js';
 import { figuresStepHtml } from '../views/figures-step.js';
 import * as PS from '../services/proof-steps.js';
+import * as MT from '../services/manip-tasks.js';
+import { taskOf as taskOfId } from '../../public/js/manip-tasks.js';
 import { proofStudentHtml, proofTeacherHtml, proofResultsHtml, proofInsightHtml } from '../views/proof-step.js';
 import * as PI from '../services/proof-insights.js';
 import { plansOn } from '../services/teacher-tools.js';
@@ -382,7 +384,7 @@ router.get('/class/:cid/progress/:clid', requireUser, (req, res) => {
     const isDone = x.status === 'done';
     const reviewed = x.reviewed_at ? t('progress.lesson.read') : t('progress.lesson.new');
     // A quiz the site checked: how many were right and the % (the same figure the student saw).
-    const qz = s.kind === L.QUIZ_KIND || L.HANDIN_KINDS.includes(s.kind) ? P.quizResult(x) : null;
+    const qz = s.kind === L.QUIZ_KIND || s.kind === L.MANIP_KIND || L.HANDIN_KINDS.includes(s.kind) ? P.quizResult(x) : null;
     const extra = qz ? html`<span class="st-score st-quiz" title="${t('progress.lesson.quizScore', qz)}"><span dir="ltr" aria-hidden="true">${qz.right}/${qz.total} · ${qz.pct}%</span><span class="sr-only">${t('progress.lesson.quizScore', qz)}</span></span>`
       : s.kind === 'game' && x.score !== null ? html`<span class="st-score" dir="ltr">${f.int(x.score)}${x.label ? ` ${x.label}` : ''}</span>${x.helped ? html`<span class="st-helped" title="${t('progress.lesson.helped')}">${ico('👀', { size: 18 })}<span class="sr-only">${t('progress.lesson.helped')}</span></span>` : ''}`
       : s.kind === 'question' && x.answer ? html`<span class="${x.reviewed_at ? 'st-read' : 'chip-s warn'}" title="${reviewed}"><span aria-hidden="true">${x.reviewed_at ? '✔️' : '✍️'}</span><span class="sr-only">${reviewed}</span></span>` : '';
@@ -621,6 +623,12 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
     if (s.kind === L.FIGURES_KIND) return figuresStepHtml(t, FS.viewFor(s, cl, x, { lang: req.locale || 'en' }), { student: { api: `${api(s)}/figures` }, stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at, dueOver: FS.dueOver(cl) });
     // A graded Mistake Hunt set (services/proof-steps.js): played in the game, handed in there; the score shows here.
     if (s.kind === L.PROOF_KIND) return proofStudentHtml(t, PS.viewFor(s, cl, x), { href: `/play/${PS.SLUG}?lesson=${cl.id}&step=${s.id}`, showAnswers: !!s.show_answers, dueSet: !!cl.due_at, dueOver: PS.dueOver(cl) });
+    // A Manipulatives practice set (services/manip-tasks.js): done on the Manipulatives page, one question at a time.
+    if (s.kind === L.MANIP_KIND) {
+      const n = MT.countOf(s), m = String((x && x.marks) || ''), answered = [...m].filter(ch => ch === '1' || ch === '0').length, qz = P.quizResult(x);
+      return isDone ? html`<p class="sc-score">${ico('🏆', { size: 18 })} ${t('manip.set.doneScore', { right: qz ? qz.right : 0, total: n })}</p><div class="row"><a class="btn" href="${MT.hrefOf(cl.id, s.id)}">${ico('🧮', { size: 18 })} ${t('manip.set.review')}</a></div>`
+        : html`<div class="row"><a class="btn btn-primary btn-big" href="${MT.hrefOf(cl.id, s.id)}">▶ ${t(answered ? 'manip.set.continue' : 'manip.set.start')}</a></div><p class="small muted">${t('manip.set.progress', { done: answered, total: n })}</p>`;
+    }
     if (s.kind === 'question') return html`
       <form class="answerform" data-api="${api(s)}/answer" data-reload novalidate>
         <label class="sr-only" for="ans-${s.id}">${t('progress.student.yourAnswer')}</label>
@@ -643,6 +651,8 @@ router.get('/class/:cid/lessons/:clid', requireUser, (req, res) => {
   };
   const preview = s => (s.kind === L.FIGURES_KIND ? figuresStepHtml(t, FS.viewFor(s, cl, null, { lang: req.locale || 'en', teacher: true }), { stepId: s.id, showAnswers: !!s.show_answers, dueSet: !!cl.due_at })
     : s.kind === L.PROOF_KIND ? proofTeacherHtml(t, PS.viewFor(s, cl, null, { teacher: true }), { showAnswers: !!s.show_answers, lang: req.locale || 'en' })
+    // A Manipulatives practice set: the teacher tries each task on the Manipulatives page (Preview)
+    : s.kind === L.MANIP_KIND ? html`<div class="row">${(MT.snapOf(s) || { tasks: [] }).tasks.map(id => html`<a class="btn" href="/manipulatives#practice/${id}">${ico('🧮', { size: 18 })} ${t('manip.set.preview', { title: (taskOfId(id) || { task: { title: id } }).task.title })}</a>`)}</div><p class="small muted">${t('manip.set.teacherNote', { count: MT.countOf(s) })}</p>`
     : s.kind !== 'game' ? '' : !L.playableBy(s, c.school_id, c.id) ? html`<p class="notice warn">${t('lessons.view.notReady')}</p>`
     : s.game_slug ? html`<div class="row"><a class="btn" href="${playHref(s, null)}">▶ ${t('lessons.view.play', { title: s.game_title })}</a>${hostLive(s)}</div>` : '');
   const quizLive = teacher && liveHostOk(u) && st.some(s => s.kind === 'question')

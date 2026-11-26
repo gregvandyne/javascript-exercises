@@ -2298,7 +2298,8 @@
         "version": "Version : {name}",
         "gcAlso": "Publier aussi dans Google Classroom",
         "gcHint": "Il part comme devoir dans votre cours Classroom lié, avec la note choisie ici.",
-        "gcWholeOnly": "Seuls les documents pour toute la classe vont dans Google Classroom : là-bas, ils arriveraient à tout le monde."
+        "gcWholeOnly": "Seuls les documents pour toute la classe vont dans Google Classroom : là-bas, ils arriveraient à tout le monde.",
+        "taskScoreHint": "Score : combien de questions sont justes du premier coup."
       },
       "team": {
         "label": "Bureau d’équipe",
@@ -2367,7 +2368,15 @@
         "clearConfirm": "Retirer tous les traits des élèves de la salle ?",
         "none": "Pas encore de dessins dans la salle."
       },
-      "tourMenu": "Faire le tour"
+      "tourMenu": "Faire le tour",
+      "task": {
+        "notMine": "Essaie une tâche sur la page Matériel de manipulation. Sur les bureaux, c’est une leçon de questions.",
+        "eyebrow": "Matériel de manipulation · leçon d’entraînement",
+        "lead": "Chaque élève reçoit ses propres questions, avec d’autres nombres. Oomba vérifie chaque réponse et donne des indices ; c’est la première vérification de chaque question qui compte.",
+        "count": "Questions",
+        "countHint": "De 1 à 10 questions par élève.",
+        "preview": "L’essayer"
+      }
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -5155,7 +5164,8 @@
         "bigger": "Tourne ton appareil ou utilise un plus grand écran pour dessiner dans la salle.",
         "full": "Tu ne peux pas dessiner plus. Efface d'abord quelques traits.",
         "notHere": "Dessine en dehors des autres bureaux et de l'espace de l'enseignant."
-      }
+      },
+      "manipKind": "Entraînement · {count, plural, one {# exercice} other {# exercices}}"
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
@@ -6186,7 +6196,8 @@
       "quiz": "Répondre aux questions du quiz",
       "figures": "Répondre à des questions sur des figures",
       "figureStep": "Questions avec figures",
-      "proofread": "Correction de texte"
+      "proofread": "Correction de texte",
+      "manip": "Entraînement avec du matériel de manipulation"
     },
     "library": {
       "title": "Bibliothèque de plans de cours",
@@ -15532,7 +15543,11 @@
       "tooFast": "Ça fait beaucoup d'un coup. Réessaie dans un instant.",
       "roomFull": "La salle a autant de dessins qu'elle peut en contenir.",
       "pastDay": "Ce jour est passé. Choisis aujourd'hui ou un jour plus tard cette semaine.",
-      "weekPast": "Tous les jours de cette semaine sont déjà passés."
+      "weekPast": "Tous les jours de cette semaine sont déjà passés.",
+      "pickTask": "Choisis une tâche à pratiquer.",
+      "tooManyTasks": "Choisis 6 tâches au plus.",
+      "badCount": "Choisis de 1 à 10 questions.",
+      "oneToolSet": "Choisis les tâches d’un seul outil à la fois."
     },
     "live": "En direct",
     "desk": {
