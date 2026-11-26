@@ -102,8 +102,9 @@ const givenAt = classId => new Map(q.all('SELECT class_lesson_id id, created_at 
  */
 export function classView(child, c) {
   const at = givenAt(c.id), modes = new Map(q.all('SELECT class_lesson_id id, grade FROM homeroom_handouts WHERE class_id=?', c.id).map(r => [r.id, r.grade]));
-  // (a Manipulatives tool on the desk is open practice in a live room: not class work for the parents' view)
-  const cards = AT.markMissed(c, child, HO.deskView(c, child).filter(x => !x.tool));
+  // (a Manipulatives tool on the desk is open practice in a live room: not class work for the parents' view; a
+  // Manipulatives practice set (manip) is graded class work and shows)
+  const cards = AT.markMissed(c, child, HO.deskView(c, child).filter(x => !x.tool || x.manip));
   const items = SC.classItems(c.id, { userId: child.id });
   const handouts = cards.map(x => {
     const grade = modes.get(x.id) || 'completion', score = grade === 'score' ? SC.total(items.get(`${child.id}:${x.id}`)) : null;

@@ -358,7 +358,7 @@ export function liveBoard(ctx) {
     const on = x.on ? `<div class="hr-lkon">${iconHtml(x.on.icon, { size: 22 })}<div><b dir="auto">${esc(x.on.title)}</b><span class="small muted">${esc(x.on.done ? tl('look.done') : tl('look.pct', { pct: x.on.pct }))}</span>
         <span class="hr-lvbar big" aria-hidden="true"><i style="width:${x.on.done ? 100 : x.on.pct}%"></i></span></div></div>` : `<p class="muted">${esc(x.total ? tl('look.allDone') : tl('look.nothing'))}</p>`;
     const stuckNote = x.st === 'stuck' ? `<p class="hr-lkstuck">${esc(tl('look.stuckNote', { min: (D.pulse || {}).stuckMin || 3 }))}</p>` : '';
-    const d = desks()[x.id] || {}, room = d.where === 'tool' && WT.boardOf(x.id);
+    const d = desks()[x.id] || {}, b0 = d.where === 'tool' && WT.boardOf(x.id), room = b0 && b0.session ? b0 : null;   // (a practice set has no room: its board only)
     return `<div class="hr-look" data-look="${esc(x.id)}">
       <div class="hr-lkbig" data-lkbig>${WT.bigHtml(x.id, d)}</div>
       ${room && ctx.openRoom ? `<div class="row hr-lkroom">${btn('btn btn-sm hr-chunk', `data-hrroom="${esc(room.session)}"`, `${iconHtml('🧮', { size: 16 })} ${esc(tl('look.openRoom'))}`)}</div>` : ''}

@@ -2298,7 +2298,8 @@
         "version": "版本：{name}",
         "gcAlso": "同時發布到 Google Classroom",
         "gcHint": "會以作業形式發布到連結的 Classroom 課程，成績方式依你在這裡的選擇。",
-        "gcWholeOnly": "只有發給全班的作業會發布到 Google Classroom，因為在那裡全班都會收到。"
+        "gcWholeOnly": "只有發給全班的作業會發布到 Google Classroom，因為在那裡全班都會收到。",
+        "taskScoreHint": "分數：第一次就答對的題數。"
       },
       "team": {
         "label": "小組桌",
@@ -2367,7 +2368,15 @@
         "clearConfirm": "要把所有學生的線從教室移除嗎？",
         "none": "教室裡還沒有畫。"
       },
-      "tourMenu": "帶我看看"
+      "tourMenu": "帶我看看",
+      "task": {
+        "notMine": "請在教具頁面試做任務。發到桌上時，它是一份題目課程。",
+        "eyebrow": "教具 · 練習課程",
+        "lead": "每位學生拿到自己的題目，數字都不同。Oomba 會檢查每個答案並給提示；每題以第一次檢查為準。",
+        "count": "題數",
+        "countHint": "每位學生 1 到 10 題。",
+        "preview": "試試看"
+      }
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -5155,7 +5164,8 @@
         "bigger": "把裝置轉成橫向，或用大一點的螢幕，就能在教室裡畫。",
         "full": "不能再畫了。先擦掉一些線。",
         "notHere": "請畫在別人的桌子和老師區以外。"
-      }
+      },
+      "manipKind": "練習 · {count} 題"
     },
     "homeroom-area": {
       "label": "老師區",
@@ -6186,7 +6196,8 @@
       "quiz": "回答測驗題目",
       "figures": "回答圖形題",
       "figureStep": "圖形題",
-      "proofread": "文章校對"
+      "proofread": "文章校對",
+      "manip": "教具練習"
     },
     "library": {
       "title": "教案庫",
@@ -15532,7 +15543,11 @@
       "tooFast": "一次畫太多了。等一下再試一次。",
       "roomFull": "教室裡的畫已經滿了。",
       "pastDay": "那天已經過了。請選今天或本週之後的一天。",
-      "weekPast": "那一週的每一天都已經過了。"
+      "weekPast": "那一週的每一天都已經過了。",
+      "pickTask": "請選一個要練習的任務。",
+      "tooManyTasks": "最多選 6 個任務。",
+      "badCount": "請選 1 到 10 題。",
+      "oneToolSet": "一次只能選同一個教具的任務。"
     },
     "live": "直播中",
     "desk": {

@@ -19,6 +19,7 @@ import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
 import * as M from './manipulatives.js';
 import * as LIVE from './manip-live.js';
+import * as MT from './manip-tasks.js';
 import { toolOf, roomLayout, layoutOf, instructionNotes, stripHeight } from '../../public/js/manip-data.js';
 import { DEFAULT_GROUPS } from '../../public/js/homeroom-seats.js';
 
@@ -145,7 +146,10 @@ function squareOf(s, slot) {
  * or null }. Only students with a tool handout on their desk who joined its room.
  */
 export function boardsOf(c, sids) {
-  const out = new Map(), list = storedOf(c.id); if (!list.length || !sids.length) return out;
+  const out = new Map(), list = storedOf(c.id);
+  // a Manipulatives practice set open in the desk's player (services/manip-tasks.js putLive): its board and the problem
+  for (const [sid, e] of MT.liveOf(c.id, sids)) out.set(sid, { tool: e.slug, session: '', state: e.state, v: e.at, space: e.space, cur: null, prob: { i: e.i, n: e.n, prompt: e.prompt, box: e.box } });
+  if (!list.length || !sids.length) return out;
   for (const x of list) {
     const s = sessionOf(x); if (!s) continue;
     const want = sids.filter(id => forStudent(x, id) && !out.has(id)); if (!want.length) continue;
@@ -163,6 +167,7 @@ export function boardsOf(c, sids) {
 /** A student's board version only (the board's 2 s poll: is there something new to draw?). Map sid -> v. */
 export function versionsOf(c) {
   const out = new Map();
+  for (const [sid, e] of MT.liveOf(c.id, H.studentsOf(c.id).map(s => s.id))) out.set(sid, e.at);
   for (const x of storedOf(c.id)) for (const w of q.all('SELECT user_id, updated_at FROM manip_work WHERE session_id=?', x.session)) if (forStudent(x, w.user_id) && !out.has(w.user_id)) out.set(w.user_id, w.updated_at);
   return out;
 }

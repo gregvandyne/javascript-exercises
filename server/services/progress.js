@@ -8,6 +8,8 @@
 //   quiz      every question is answered (checked here, once each)
 //   figures   the student hands in their answers to a Figures worksheet (marked here: services/figures-steps.js)
 //   proofread the student hands in their fixes to a Mistake Hunt passage set (marked here: services/proof-steps.js)
+//   manip     every question of a Manipulatives practice set is finished: right, or moved on from after the last hint
+//             (checked here: manipAnswer; services/manip-tasks.js)
 // Teachers (and school admins) see everything for their class, can write feedback on answers and mark them reviewed.
 // Students see only their own progress. Removing a lesson from a class keeps its progress (it comes back if the
 // lesson is assigned again); deleting a step or a lesson deletes the progress on it.
@@ -21,6 +23,8 @@ import * as R from './rubrics.js';
 import * as SC from './scores.js';
 import * as FS from './figures-steps.js';
 import * as PS from './proof-steps.js';
+import * as MT from './manip-tasks.js';
+import { variation as manipVariation, check as manipCheck } from '../../public/js/manip-tasks.js';
 
 const ok = (extra = {}) => ({ ok: true, ...extra });
 const fail = code => ({ ok: false, code });
@@ -77,7 +81,7 @@ export function markDone(u, clId, stepId, isDone = true) {
   const c = context(u, clId, stepId); if (!c.ok) return c;
   if (c.step.kind === 'question') return fail('answerFirst');
   if (c.step.kind === 'story') return fail('notFound');   // done by reading to the end and answering (storyStep)
-  if (L.HANDIN_KINDS.includes(c.step.kind)) return fail('notFound');   // done by handing in (figuresAnswer, proofAnswer)
+  if (L.HANDIN_KINDS.includes(c.step.kind) || c.step.kind === L.MANIP_KIND) return fail('notFound');   // done by handing in (figuresAnswer, proofAnswer) or answering (manipAnswer)
   if (hostedLive(c.step)) return fail('notFound');   // the live run writes this cell
   const old = get(clId, stepId, u.id);
   if (!isDone) return ok({ row: upsert(clId, stepId, u.id, { status: 'started', done_at: null }) });
@@ -390,7 +394,7 @@ export function classProgress(classId, t = now()) {
   // some: assigned to some students; picked: how many of the class's students now.
   for (const cl of lessons) { cl.some = picks.has(cl.id); cl.picked = cl.some ? students.filter(p => picks.get(cl.id).has(p.id)).length : 0; }
   const counts = q.all(`SELECT p.class_lesson_id cl, p.user_id u, SUM(p.status='done') done, SUM(p.answer!='' AND p.reviewed_at IS NULL AND s.kind='question') toread, MAX(p.updated_at) last,
-      AVG(CASE WHEN s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures','proofread') AND p.status='done' AND p.score IS NOT NULL) quizzes,
+      AVG(CASE WHEN s.kind IN ('quiz','figures','proofread','manip') AND p.status='done' AND p.score IS NOT NULL THEN p.score END) quiz, SUM(s.kind IN ('quiz','figures','proofread','manip') AND p.status='done' AND p.score IS NOT NULL) quizzes,
       SUM(p.helped) helped
     FROM step_progress p JOIN class_lessons c ON c.id=p.class_lesson_id AND c.removed_at IS NULL JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=c.lesson_id
     WHERE c.class_id=? AND ${L.assignedSql('c.id', 'p.user_id')} GROUP BY p.class_lesson_id, p.user_id`, classId);
@@ -399,7 +403,7 @@ export function classProgress(classId, t = now()) {
   const pts = R.classTotals(classId), withRubric = R.lessonsWithRubrics([...new Set(lessons.map(cl => cl.lesson_id))]);
   // Quiz and figures steps (checked by the site: score = % right): the lesson's quiz score is the mean of its finished ones.
   const lessonIds = [...new Set(lessons.map(cl => cl.lesson_id))];
-  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures','proofread') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
+  const withQuiz = new Set(lessonIds.length ? q.all(`SELECT DISTINCT lesson_id FROM lesson_steps WHERE kind IN ('quiz','figures','proofread','manip') AND lesson_id IN (${lessonIds.map(() => '?').join(',')})`, ...lessonIds).map(r => r.lesson_id) : []);
   for (const cl of lessons) { cl.hasRubric = withRubric.has(cl.lesson_id); cl.hasQuiz = withQuiz.has(cl.lesson_id); }
   // Scores (services/scores.js): the scored items of each lesson, and steps first done after the due day ended.
   const items = SC.classItems(classId), lateN = SC.lateSteps(classId, lessons), excused = excusedIn(classId);
@@ -496,4 +500,56 @@ export function firstNewAnswers(classId) {
 export function lessonSummaries(classId) {
   const gb = classProgress(classId);
   return Object.fromEntries(gb.lessons.map((cl, i) => [cl.id, { done: gb.students.filter(p => p.cells[i].total && p.cells[i].done >= p.cells[i].total).length, students: gb.students.filter(p => !p.cells[i].na).length, some: !!cl.some, toRead: gb.students.reduce((n, p) => n + (p.cells[i].toRead || 0), 0) }]));
+}
+
+// ---------------------------------------------------------------- Manipulatives practice sets (services/manip-tasks.js)
+// One question at a time on the Manipulatives page (public/js/manip-task-play.js). Each check is the server's: it makes
+// the student's variation again from the step and the student (MT.setFor) and checks their board, box and choice with the
+// same checker as the page. step_progress.marks: one character a question ('-' open, '1' right on the first check with
+// no hint asked for, '0' right later or moved on from after the last hint); answer: JSON { s: [{ w (wrong checks), h
+// (hints shown) }], run (wrong checks in a row, for Homeroom's Needs a look) }. Done when no question is open: score = %
+// of '1', label 'manip' (the gradebook reads marks as for a quiz).
+const manipState = (row, n) => {
+  let a = {}; try { a = JSON.parse((row && row.answer) || '{}') || {}; } catch { a = {}; }
+  const s = Array.from({ length: n }, (_, i) => { const x = Array.isArray(a.s) && a.s[i] && typeof a.s[i] === 'object' ? a.s[i] : {}; return { w: Math.max(0, Math.floor(+x.w) || 0), h: Math.max(0, Math.floor(+x.h) || 0) }; });
+  return { s, run: Math.max(0, Math.floor(+a.run) || 0), marks: ((row && row.marks) || '').padEnd(n, '-').slice(0, n) };
+};
+const manipOut = (qs, st, row) => ({ items: qs, marks: st.marks, state: st.s, score: row && row.status === 'done' ? row.score : null, done: !!row && row.status === 'done' });
+/** The student's set: { items: [{ id, seed }], marks, state: [{ w, h }], score, done }. */
+export function manipFor(u, clId, stepId) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.MANIP_KIND) return fail('notFound');
+  const qs = MT.setFor(c.step, u.id); if (!qs.length) return fail('notFound');
+  const row = get(clId, stepId, u.id);
+  return ok(manipOut(qs, manipState(row, qs.length), row));
+}
+/**
+ * One action on question i: 'check' (work: { board, box, choice }), 'hint' (show the next hint) or 'next' (move on after
+ * every hint was shown: the question counts as not right first time). -> { ok, correct?, partial?, feedback?, hint (how
+ * many hints to show), explain (true once it may be shown), marks, state, score, done }
+ */
+export function manipAnswer(u, clId, stepId, i, action, work) {
+  const c = context(u, clId, stepId); if (!c.ok) return c;
+  if (c.step.kind !== L.MANIP_KIND) return fail('notFound');
+  const qs = MT.setFor(c.step, u.id), n = qs.length;
+  if (!Number.isInteger(i) || i < 0 || i >= n || !['check', 'hint', 'next'].includes(action)) return fail('badRequest');
+  const old = get(clId, stepId, u.id), st = manipState(old, n);
+  if (st.marks[i] !== '-') return fail('answered');
+  const v = manipVariation(qs[i].id, qs[i].seed), hints = v.hints.length, x = st.s[i];
+  let r = null, mark = null;
+  if (action === 'hint') x.h = Math.min(hints, Math.max(x.h, x.w) + 1);
+  else if (action === 'next') { if (Math.max(x.h, x.w) < hints) return fail('notYet'); mark = '0'; }
+  else {
+    r = manipCheck(v, MT.cleanWork(work));
+    if (r.correct) { mark = x.w === 0 && x.h === 0 ? '1' : '0'; st.run = 0; }
+    else { x.w += 1; st.run += 1; }
+  }
+  if (mark) st.marks = st.marks.slice(0, i) + mark + st.marks.slice(i + 1);
+  const finished = !st.marks.includes('-');
+  const score = finished ? Math.round((100 * [...st.marks].filter(m => m === '1').length) / n) : null;
+  const answer = JSON.stringify({ s: st.s, run: st.run });
+  const row = upsert(clId, stepId, u.id, finished ? { answer, score, label: 'manip', ...done(old) } : { answer, ...(old ? {} : { status: 'started' }) });
+  q.run('UPDATE step_progress SET marks=? WHERE class_lesson_id=? AND step_id=? AND user_id=?', st.marks, clId, stepId, u.id);
+  const shown = Math.min(hints, Math.max(x.h, x.w));
+  return ok({ ...(r ? { correct: r.correct, partial: r.partial, feedback: r.feedback, parts: r.parts } : {}), hint: shown, explain: !!mark || shown >= hints, ...manipOut(qs, st, { ...row, marks: st.marks }) });
 }

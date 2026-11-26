@@ -2299,7 +2299,8 @@
         "version": "Versione: {name}",
         "gcAlso": "Pubblica anche su Google Classroom",
         "gcHint": "Arriva al corso Classroom collegato come compito, con il voto scelto qui.",
-        "gcWholeOnly": "Solo le consegne a tutta la classe vanno su Google Classroom: lì arriverebbero a tutti."
+        "gcWholeOnly": "Solo le consegne a tutta la classe vanno su Google Classroom: lì arriverebbero a tutti.",
+        "taskScoreHint": "Punteggio: quante domande hanno fatto giuste al primo colpo."
       },
       "team": {
         "label": "Banco di squadra",
@@ -2368,7 +2369,15 @@
         "clearConfirm": "Togliere dall'aula le linee di tutti gli studenti?",
         "none": "Ancora nessun disegno nell'aula."
       },
-      "tourMenu": "Fammi fare un giro"
+      "tourMenu": "Fammi fare un giro",
+      "task": {
+        "notMine": "Prova un’attività nella pagina dei materiali manipolativi. Sui banchi è una lezione di domande.",
+        "eyebrow": "Materiali manipolativi · lezione di esercizio",
+        "lead": "Ogni studente riceve domande proprie con numeri diversi. Oomba controlla ogni risposta e dà suggerimenti; conta il primo controllo di ogni domanda.",
+        "count": "Domande",
+        "countHint": "Da 1 a 10 domande per ogni studente.",
+        "preview": "Provala"
+      }
     },
     "stories": {
       "needIdea": "Prima scrivi la tua idea (bastano poche parole).",
@@ -5156,7 +5165,8 @@
         "bigger": "Gira il dispositivo o usa uno schermo più grande per disegnare nell'aula.",
         "full": "Non puoi disegnare di più. Cancella prima qualche linea.",
         "notHere": "Disegna fuori dagli altri banchi e dall'area dell'insegnante."
-      }
+      },
+      "manipKind": "Esercizio · {count, plural, one {# esercizio} other {# esercizi}}"
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",
@@ -6187,7 +6197,8 @@
       "quiz": "Rispondi alle domande del quiz",
       "figures": "Rispondere a domande sulle figure",
       "figureStep": "Domande con figure",
-      "proofread": "Correzione di testi"
+      "proofread": "Correzione di testi",
+      "manip": "Esercizio con materiali manipolativi"
     },
     "library": {
       "title": "Libreria dei piani di lezione",
@@ -15533,7 +15544,11 @@
       "tooFast": "È tanto disegno tutto insieme. Riprova tra un momento.",
       "roomFull": "L'aula ha tutti i disegni che può contenere.",
       "pastDay": "Quel giorno è passato. Scegli oggi o un giorno successivo di questa settimana.",
-      "weekPast": "Tutti i giorni di quella settimana sono già passati."
+      "weekPast": "Tutti i giorni di quella settimana sono già passati.",
+      "pickTask": "Scegli un’attività da esercitare.",
+      "tooManyTasks": "Scegli al massimo 6 attività.",
+      "badCount": "Scegli da 1 a 10 domande.",
+      "oneToolSet": "Scegli attività di un solo strumento alla volta."
     },
     "live": "In diretta",
     "desk": {

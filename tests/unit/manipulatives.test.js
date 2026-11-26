@@ -71,7 +71,8 @@ test('migrations 0092 and 0093: there once, in order, their tables and columns e
 test('hidden: signed out, students without a session, teachers, grown-ups get the normal 404; the admin gets a noindex page', async () => {
   const w = world();
   const grown = createUser({ username: 'ManipParent', password: 'secret123', accountType: 'grownup' });
-  for (const who of [null, w.a1, w.T, grown]) {
+  // (b1's teacher T may not use Manipulatives: no practice for b1; a1's class is the admin's, see below)
+  for (const who of [null, w.b1, w.T, grown]) {
     const page = await as(who)('/manipulatives');
     assert.equal(page.status, 404, `page for ${who ? who.username : 'signed out'}`);
     assert.doesNotMatch(page.text, /Math manipulatives|manip\.js|manipulatives\.css/, 'the normal 404 page, nothing of the tool');
@@ -84,10 +85,16 @@ test('hidden: signed out, students without a session, teachers, grown-ups get th
   assert.match(ok.text, /<meta name="robots" content="noindex/);
   assert.match(ok.text, /\/js\/manip\.js/);
   await withFlags({ manipulatives: false }, async () => assert.equal((await as(boss)('/manipulatives')).status, 404, 'MANIPULATIVES=0 hides it from the admin too'));
-  await withFlags({ manipulativesUsers: [w.T.username.toLowerCase(), w.a1.username.toLowerCase()] }, async () => {
+  await withFlags({ manipulativesUsers: [w.T.username.toLowerCase(), w.b1.username.toLowerCase()] }, async () => {
     assert.equal((await as(w.T)('/manipulatives')).status, 200, 'an allowlisted teacher');
-    assert.equal((await as(w.a1)('/manipulatives')).status, 404, 'the allowlist is for staff only');
+    // (docs/decisions.md "Manipulatives: tasks you can practice and assign": the students of a class whose teacher may
+    // use Manipulatives practice its tasks, as students, never as hosts)
+    const b = await as(w.b1)('/manipulatives');
+    assert.equal(b.status, 200, 'their teacher may use it: practice');
+    assert.match(b.text, /data-role="student"/, 'the allowlist is for staff only: a student is a student');
   });
+  await withFlags({ manipulativesUsers: [w.b1.username.toLowerCase()] }, async () => assert.equal((await as(w.b1)('/manipulatives')).status, 404, 'a student on the list alone: nothing'));
+  assert.match((await as(w.a1)('/manipulatives')).text, /data-role="student"/, 'the admin\'s class: practice');
 });
 
 test('no link to it anywhere: menus, the home page, the sitemap and robots.txt', async () => {
@@ -488,7 +495,9 @@ test('content: 18 tools, 300 tasks with their codes, Number rods, US spelling, g
   assert.ok(all.every(x => x.title && x.prompt && x.notes && /^(K|[1-8]|HS)[.A-Z-]/.test(x.ccss) && /^(K|[1-8])$/.test(x.grade)), 'grades K-8, a code on every task');
   assert.equal(all.filter(x => x.ccss.startsWith('HS')).length, 6, 'the high-school codes are kept');
   assert.ok(TOOLS.every(x => /^(K|\d)-\d$/.test(x.grades) && +x.grades.split('-')[1] <= 8));
-  const files = ['public/js/manip.js', 'public/js/manip-room.js', 'server/services/manip-socket.js', 'server/services/manip-live.js', 'public/js/manip-data.js', 'public/js/manip-tasks.js', 'public/css/manipulatives.css', 'server/services/manipulatives.js', 'server/routes/manipulatives.js'];
+  const files = ['public/js/manip.js', 'public/js/manip-room.js', 'server/services/manip-socket.js', 'server/services/manip-live.js', 'public/js/manip-data.js', 'public/js/manip-tasks.js', 'public/css/manipulatives.css', 'server/services/manipulatives.js', 'server/routes/manipulatives.js',
+    // (each tool's tasks in its own file, and the practice code: docs/decisions.md "Manipulatives: tasks you can practice and assign")
+    ...fs.readdirSync(path.join(ROOT, 'public/js/manip-tasks')).map(f => `public/js/manip-tasks/${f}`), 'public/js/manip-task-kit.js', 'public/js/manip-task-play.js', 'public/js/manip-task-list.js', 'server/services/manip-tasks.js'];
   const text = files.map(f => fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n');
   assert.doesNotMatch(text, /cuisenaire|miro\b|polypad|mathigon|didax|hand2mind/i);
   assert.doesNotMatch(text, /—/, 'no em dashes');

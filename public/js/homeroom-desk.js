@@ -130,7 +130,7 @@ function cardHtml(x) {
   const badge = x.done ? `<span class="hd-badge done">✓ ${esc(td('done'))}</span>` : x.next ? `<span class="hd-badge next">${esc(td('nextUp'))}</span>` : x.locked ? `<span class="hd-badge later">${iconHtml('🔒', { size: 12 })} ${esc(td('later'))}</span>` : '';
   // A lesson (step 2b): "Lesson: <name>" and "Worksheet · N problems"; a game: free play.
   // (a Manipulatives tool: open practice in its live room, docs/decisions.md "Homeroom: watching desks and the full catalog")
-  const kind = x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
+  const kind = x.manip ? td('manipKind', { count: x.n || 0 }) : x.tool ? (x.ready ? td('toolKind') : td('toolNotOpen')) : !x.ready ? td('notReady') : x.lesson ? td(x.unit === 'words' ? 'worksheetWords' : 'worksheet', { count: x.n || 0 }) : td('freePlay');
   const sub = [kind, x.due ? dueLabel(x.due, x.dueMin) : ''].filter(Boolean).join(' · ');
   const title = x.lesson ? td('lessonTitle', { title: x.title }) : x.title;
   const inner = `${badge}<span class="hd-cico" aria-hidden="true">${iconHtml(x.lesson ? '📄' : x.icon, { size: 26 })}</span><b class="hd-ct" dir="auto">${esc(title)}</b><span class="hd-csub">${esc(sub)}</span>

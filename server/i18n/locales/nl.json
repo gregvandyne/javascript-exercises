@@ -2299,7 +2299,8 @@
         "version": "Versie: {name}",
         "gcAlso": "Ook in Google Classroom plaatsen",
         "gcHint": "Het gaat als opdracht naar je gekoppelde Classroom-klas, met het cijfer dat je hier koos.",
-        "gcWholeOnly": "Alleen opdrachten voor de hele klas gaan naar Google Classroom: daar zouden ze iedereen bereiken."
+        "gcWholeOnly": "Alleen opdrachten voor de hele klas gaan naar Google Classroom: daar zouden ze iedereen bereiken.",
+        "taskScoreHint": "Score: hoeveel vragen de eerste keer goed waren."
       },
       "team": {
         "label": "Teamtafel",
@@ -2368,7 +2369,15 @@
         "clearConfirm": "Alle lijnen van leerlingen uit het lokaal halen?",
         "none": "Nog geen tekeningen in het lokaal."
       },
-      "tourMenu": "Laat me rondkijken"
+      "tourMenu": "Laat me rondkijken",
+      "task": {
+        "notMine": "Probeer een taak uit op de pagina Materialen. Op de tafels is het een les met vragen.",
+        "eyebrow": "Materialen · oefenles",
+        "lead": "Elke leerling krijgt eigen vragen met andere getallen. Oomba controleert elk antwoord en geeft tips; de eerste controle van elke vraag telt.",
+        "count": "Vragen",
+        "countHint": "1 tot 10 vragen per leerling.",
+        "preview": "Probeer het"
+      }
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -5156,7 +5165,8 @@
         "bigger": "Draai je apparaat of gebruik een groter scherm om in het lokaal te tekenen.",
         "full": "Meer kun je niet tekenen. Gum eerst wat lijnen.",
         "notHere": "Teken buiten de andere tafels en het lerarenvak."
-      }
+      },
+      "manipKind": "Oefenen · {count, plural, one {# som} other {# sommen}}"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -6187,7 +6197,8 @@
       "quiz": "Quizvragen beantwoorden",
       "figures": "Vragen over figuren beantwoorden",
       "figureStep": "Vragen bij figuren",
-      "proofread": "Tekst nakijken"
+      "proofread": "Tekst nakijken",
+      "manip": "Oefenen met materialen"
     },
     "library": {
       "title": "Bibliotheek met lesplannen",
@@ -15533,7 +15544,11 @@
       "tooFast": "Dat is veel tegelijk. Probeer het zo nog eens.",
       "roomFull": "Het lokaal heeft zoveel tekeningen als erin passen.",
       "pastDay": "Die dag is voorbij. Kies vandaag of een latere dag deze week.",
-      "weekPast": "Elke dag van die week is al voorbij."
+      "weekPast": "Elke dag van die week is al voorbij.",
+      "pickTask": "Kies een taak om te oefenen.",
+      "tooManyTasks": "Kies hoogstens 6 taken.",
+      "badCount": "Kies 1 tot 10 vragen.",
+      "oneToolSet": "Kies taken van één hulpmiddel tegelijk."
     },
     "live": "Live",
     "desk": {

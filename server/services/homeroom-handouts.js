@@ -43,6 +43,10 @@ import * as HR from './homeroom-reading.js';
 import * as LIB from './library.js';
 import * as AT from './homeroom-attendance.js';
 import * as HT from './homeroom-tools.js';
+import * as M from './manipulatives.js';
+import * as MT from './manip-tasks.js';
+import { toolOf } from '../../public/js/manip-data.js';
+import { taskOf } from '../../public/js/manip-tasks.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -113,12 +117,26 @@ export function handable(u, g) {
 /** The class's open handouts in the order they were handed out, each with its game step (or a Reading handout's story
  *  step: services/homeroom-reading.js) and who it is for. */
 function rowsOf(classId) {
-  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, h.due_min, h.due_zone, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id
+  return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, h.due_min, h.due_zone, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id, s.items
       FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
-      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story')
+      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story','manip')
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
 }
 const READ_ICON = '📖';
+/** A Manipulatives practice set's part of a handout: { manip: { slug (the tool), tasks, n (questions) } } or {}. */
+function manipPart(r) {
+  if (r.step_kind !== 'manip') return {};
+  const snap = MT.snapOf({ items: r.items });
+  if (!snap) return {};
+  return { manip: { slug: taskOf(snap.tasks[0]).slug, tasks: snap.tasks, n: snap.tasks.length * snap.n } };
+}
+const manipIcon = r => { const m = manipPart(r).manip, tl = m && toolOf(m.slug); return (tl && tl.emoji) || '🧮'; };
+/** How far along a set is: the questions finished of all (100 once done). */
+function manipPct(p, r) {
+  if (!p) return 0; if (p.status === 'done') return 100;
+  const m = manipPart(r).manip, n = m ? m.n : 0, done = [...String(p.marks || '')].filter(ch => ch === '1' || ch === '0').length;
+  return n ? Math.min(95, Math.round((100 * done) / n)) : 0;
+}
 /** A Reading handout's own part of a handout: the book it names ({ book: card | null }, null for their own choice). */
 const readingPart = r => (r.step_kind === 'story' ? { reading: { book: HR.bookCard(r.story_id ? LIB.getBook(r.story_id) : null) } } : {});
 function gameInfo(cache, id, locale) {
@@ -132,7 +150,7 @@ const lessonOf = (r, g) => (r.hl ? { lesson: true, n: r.problems || 0, unit: g &
 /** step_progress for these handouts: Map 'clId:userId' -> row. */
 function progressOf(rows) {
   if (!rows.length) return new Map();
-  return new Map(q.all(`SELECT class_lesson_id cl, user_id u, status, seconds, score, plays FROM step_progress WHERE class_lesson_id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.id))
+  return new Map(q.all(`SELECT class_lesson_id cl, user_id u, status, seconds, score, plays, marks FROM step_progress WHERE class_lesson_id IN (${rows.map(() => '?').join(',')})`, ...rows.map(r => r.id))
     .map(p => [`${p.cl}:${p.u}`, p]));
 }
 /** How far along: 100 when done, else play time toward the 2 minutes that count a game as done (never 100). */
@@ -156,7 +174,7 @@ export function boardView(c, locale = 'en') {
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = HR.infosOf(c.id, rds);
   const handouts = rows.map(r => {
     const g = r.game_id ? gameInfo(cache, r.game_id, locale) : null, who = picks.get(r.id);
-    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : (g && g.icon) || '🎮', ...readingPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, ...dueFields(c, r),
+    return { id: r.id, title: titleOf(r, g), icon: r.step_kind === 'story' ? READ_ICON : r.step_kind === 'manip' ? manipIcon(r) : (g && g.icon) || '🎮', ...readingPart(r), ...manipPart(r), instructions: r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target, ...dueFields(c, r),
       students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}) };
   });
   const desks = {}, t = now(), dueBy = new Map(handouts.map(h => [h.id, h.dueBy])), excused = new Set(AT.missedPairs(c.id, t));
@@ -168,7 +186,7 @@ export function boardView(c, locale = 'en') {
       // after due (the teacher's board only, said calmly): not finished past its due time, unless it was given while they
       // were absent ("Missed while you were out" is never after due by itself)
       const late = !done && !!by && t > by && !excused.has(`${sid}:${r.id}`);
-      return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
+      return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : r.step_kind === 'manip' ? manipPct(p, r) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}) };
     }));
   }
   // today's attendance marks and the questions waiting from home (docs/decisions.md "Homeroom: K-2 mode, absent and at
@@ -194,6 +212,13 @@ export function deskView(c, u, locale = 'en') {
       return { id: r.id, title: titleOf(r, null), icon: READ_ICON, instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready: true, reading: rd,
         href: `/class/${c.id}/desk#read=${encodeURIComponent(r.id)}`, done: !!p && p.status === 'done', pct: HR.pctOfInfo(rd),
         ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
+    }
+    // A Manipulatives practice set (services/manip-tasks.js): opens the Manipulatives page in the desk's player, where the
+    // student answers one question at a time; the board watches it like a tool (tool: its slug)
+    if (r.step_kind === 'manip') {
+      const mp = manipPart(r).manip;
+      return { id: r.id, title: titleOf(r, null), icon: manipIcon(r), instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready: !!mp, manip: true, n: mp ? mp.n : 0, tool: mp ? mp.slug : '',
+        href: mp ? MT.hrefOf(r.id, r.step_id) : null, done: !!p && p.status === 'done', pct: manipPct(p, r), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
     }
     const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id);
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
@@ -327,6 +352,33 @@ export function handOut(u, c, { gameId, to, instructions = '', order = 'in', gra
   setDue([r.classLesson.id], due);
   audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, game: g.slug || g.id, target: who.target, students: who.all.length, order, grade });
   return ok({ classLesson: r.classLesson, game: g, students: who.all.length });
+}
+/**
+ * Hand out Manipulatives practice (docs/decisions.md "Manipulatives: tasks you can practice and assign"): { tasks (task
+ * ids), count (questions of each), to, instructions, order, grade (Score by default), dueAt, dueTime, tz }. A class
+ * assignment like any handout (services/manip-tasks.js makeAssignment: a 'manip' lesson for exactly these students) and
+ * a homeroom_handouts row (problems: how many questions). Only a teacher who may use Manipulatives.
+ * -> { ok, classLesson, title, n, students } | { ok: false, code }
+ */
+export function handOutTask(u, c, { tasks, count = 5, to, instructions = '', order = 'in', grade = 'score', dueAt = null, dueTime = null, tz = '' } = {}) {
+  if (!H.canUseClass(u, c)) return fail('notFound');
+  if (!M.canHostClass(u, c)) return fail('noTools');
+  const due = dueOf({ dueAt, dueTime, tz }); if (!due.ok) return due;
+  if (!['in', 'any'].includes(order)) return fail('badOrder');
+  if (!GRADES.includes(grade)) return fail('badGrade');
+  if (typeof instructions !== 'string' || instructions.trim().length > INSTRUCTIONS_MAX) return fail('tooLong');
+  const text = cleanInstructions(instructions);
+  const bad = textProblem(text); if (bad) return fail(bad);
+  const pick = MT.cleanPick({ tasks, count }); if (!pick.ok) return pick;
+  const who = studentsFor(c, to); if (!who.ok) return who;
+  if (openCount(c.id) >= HANDOUTS_MAX) return fail('tooManyHandouts');
+  const r = MT.makeAssignment(u, c, { tasks: pick.tasks, count: pick.n, students: who.students, dueAt: dueAt || null, body: text });
+  if (!r.ok) return r;
+  q.run('INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at, problems) VALUES (?,?,?,?,?,?,?,?)',
+    r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now(), r.n);
+  setDue([r.classLesson.id], due);
+  audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, tasks: pick.tasks, n: r.n, target: who.target, students: who.all.length, order, grade });
+  return ok({ classLesson: r.classLesson, title: r.title, n: r.n, students: who.all.length });
 }
 export const handoutOf = (c, clId) => q.get(`SELECT h.*, cl.lesson_id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
   WHERE h.class_lesson_id=? AND h.class_id=?`, String(clId || ''), c.id) || null;

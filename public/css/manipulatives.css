@@ -687,3 +687,74 @@ main.rm-main .fg-tools{margin-bottom:0}
 .mp-nl .mp-nl-jump:not(.on):hover path:last-of-type{stroke-width:5}
 .mp-nl-del{background:var(--text);color:var(--bg);border-color:var(--text)}
 .mp-nl .mp-nl-ghost{pointer-events:none}
+
+/* Tasks you can practice and assign (public/js/manip-task-play.js, public/js/manip-task-list.js; docs/decisions.md
+   "Manipulatives: tasks you can practice and assign"): the problem card above the board, calm and compact so the board
+   stays in view: Oomba's mark and the prompt, the answer row (box, choices, Check, a hint), then what Oomba says (green
+   for right, never red for not yet). */
+.mp-probwrap{display:block;margin-bottom:12px}
+/* a shorter board while practicing, so the problem and the board fit on one screen */
+.manip .mp-practicing{--mp-board-h:clamp(340px,calc(100vh - 330px),720px);--mp-board-min:320px}
+.mp-prob{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-color:var(--accent-line)}
+.mp-probmain{display:flex;gap:12px;align-items:flex-start}
+.mp-oomba{flex:none;line-height:0;margin-top:2px}
+.mp-probtext{min-width:0;flex:1}
+.mp-probmeta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 2px;font-size:.85rem;color:var(--muted)}
+.mp-probtname{font-weight:800;color:var(--text)}
+.mp-probof{font-weight:800;color:var(--text)}
+.mp-probdots{display:inline-flex;gap:5px;flex-wrap:wrap}
+.mp-probdots i{width:12px;height:12px;border-radius:50%;background:var(--hover);border:1px solid var(--line)}
+.mp-probdots i.on{background:var(--spark);border-color:var(--spark)}
+.mp-probdots i.ok{background:var(--ok);border-color:var(--ok)}
+.mp-probdots i.done{background:var(--muted);border-color:var(--muted)}
+.mp-prompt{font-size:1.15rem;line-height:1.4;font-weight:700;margin:0}
+.mp-prompt:focus{outline:none}
+.mp-probside{flex:none;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:330px}
+.mp-probside .btn{min-height:40px}
+.mp-probans{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.mp-problabel{font-weight:700;margin:0}
+.mp-probbox{width:200px;max-width:100%;font-size:1.15rem;min-height:44px}
+.mp-probchoices{display:inline-flex;flex-wrap:wrap;gap:8px}
+.mp-probchoice{min-height:44px;padding:0 16px;font-size:1rem}
+.mp-probchoice.on{background:var(--current);color:var(--on-current);border-color:var(--current)}
+.mp-probacts{display:inline-flex;flex-wrap:wrap;gap:8px}
+.mp-probacts:empty,.mp-probsay:empty{display:none}
+.mp-probacts .btn,.mp-probnav .btn{min-height:44px}
+.mp-probbuild{margin:0}
+.mp-probsay{display:flex;flex-direction:column;gap:6px}
+.mp-probsay p{margin:0}
+.mp-probok{padding:8px 12px;border-radius:var(--r-sm);background:var(--ok-bg);color:var(--ok);font-size:1.05rem}
+.mp-probno{padding:8px 12px;border-radius:var(--r-sm);background:var(--card-2);border:1px solid var(--line)}
+.mp-probhints{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:4px}
+.mp-probexplain{padding:8px 12px;border-radius:var(--r-sm);background:var(--hover)}
+.mp-probnav{gap:8px}
+.mp-streak{display:inline-flex;align-items:center;gap:4px;font-weight:700;color:var(--text)}
+.mp-probdonetext{font-size:1.1rem;margin:4px 0 0}
+.mp-taskacts{gap:8px;margin-top:6px}
+.mp-tlist{display:flex;flex-direction:column;gap:10px;margin:0;padding:0}
+.mp-tlrow{display:flex;gap:10px;align-items:flex-start;padding:12px 14px}
+.mp-tlbody{min-width:0;flex:1}
+.mp-tlbody p{margin:0 0 4px}
+.mp-tlhead{gap:8px;flex-wrap:wrap}
+.mp-tltitle{font-size:1.05rem}
+.mp-tlpick{display:flex;align-items:center;min-height:44px;min-width:32px}
+.mp-tlpick input{width:20px;height:20px}
+.mp-tlbar{gap:10px;margin-bottom:10px}
+.mp-assign{display:flex;flex-direction:column;gap:10px}
+.mp-assignlist{display:flex;flex-direction:column;gap:6px;margin:0;padding:0}
+.mp-assignlist li{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mp-adates{display:flex;gap:10px;flex-wrap:wrap}
+.mp-practools .mp-toolgrid{margin-bottom:8px}
+@media (max-width:899px){
+  .mp-prob{padding:10px 12px}
+  .mp-probmain{flex-wrap:wrap}
+  .mp-probtext{flex:1 1 calc(100% - 56px)}
+  .mp-probside{max-width:none;width:100%;justify-content:flex-start}
+  .mp-prompt{font-size:1.05rem}
+  .mp-probbox{flex:1 1 140px;width:auto}
+}
+@media (max-width:480px){.mp-probreadt{display:none}.mp-oomba svg{width:32px;height:32px}}
+/* inside Homeroom's player (?in=hr): the player's bar already names the work, so no tool heading, and a board short
+   enough that the problem, the palette and the board share the frame */
+.mp-inhr .mp-practicing>.mp-head{display:none}
+.mp-inhr .manip .mp-practicing{--mp-board-h:clamp(280px,calc(100vh - 400px),640px);--mp-board-min:280px}

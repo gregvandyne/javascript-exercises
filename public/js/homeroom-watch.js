@@ -86,7 +86,10 @@ export function watcher(ctx) {
       const b = W.boards[sid], title = d.tool ? d.tool.title : tw('aTool');
       if (b) {
         const w = size === 'big' ? 560 : 168, h = size === 'big' ? 380 : 110;
-        return { kind: 'tool', key: `t${b.v}:${(W.bcur[sid] || []).join(',')}:${W.manip ? 1 : 0}:${size}`, html: `<div class="hr-sfit">${boardHtml(sid, b, w, h, name)}</div><span class="hr-stag">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: 12 })} <span dir="auto">${esc(title)}</span></span>` };
+        // a Manipulatives practice set (services/manip-tasks.js): the problem they are on, and what they typed (look)
+        const pr = b.prob, prob = !pr ? '' : size === 'big' ? `<p class="hr-sprob"><b>${esc(tw('question', { i: pr.i + 1, n: pr.n }))}</b> <span dir="auto">${esc(pr.prompt)}</span>${pr.box ? ` <span class="hr-sprobbox">${esc(tw('typed', { box: pr.box }))}</span>` : ''}</p>` : '';
+        const tag = pr ? `${title} · ${tw('question', { i: pr.i + 1, n: pr.n })}` : title;
+        return { kind: 'tool', key: `t${b.v}:${(W.bcur[sid] || []).join(',')}:${W.manip ? 1 : 0}:${size}`, html: `${prob}<div class="hr-sfit">${boardHtml(sid, b, w, h, name)}</div><span class="hr-stag">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: 12 })} <span dir="auto">${esc(tag)}</span></span>` };
       }
       return { kind: 'tool', key: `tx${d.on}`, html: `<div class="hr-swait">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: size === 'big' ? 40 : 22 })}<span dir="auto">${esc(tw('using', { title }))}</span></div>` };
     }

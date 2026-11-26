@@ -2299,7 +2299,8 @@
         "version": "Version: {name}",
         "gcAlso": "Auch in Google Classroom posten",
         "gcHint": "Es geht als Aufgabe an Ihre verknüpfte Classroom-Klasse, mit der hier gewählten Bewertung.",
-        "gcWholeOnly": "Nur Aufgaben für die ganze Klasse gehen an Google Classroom: Dort würden sie alle erreichen."
+        "gcWholeOnly": "Nur Aufgaben für die ganze Klasse gehen an Google Classroom: Dort würden sie alle erreichen.",
+        "taskScoreHint": "Punkte: wie viele Fragen beim ersten Mal richtig waren."
       },
       "team": {
         "label": "Teamtisch",
@@ -2368,7 +2369,15 @@
         "clearConfirm": "Alle Linien der Schüler aus dem Raum entfernen?",
         "none": "Noch keine Zeichnungen im Raum."
       },
-      "tourMenu": "Zeig mir alles"
+      "tourMenu": "Zeig mir alles",
+      "task": {
+        "notMine": "Probiere eine Aufgabe auf der Seite Anschauungsmaterial aus. Auf den Tischen ist sie eine Lektion mit Fragen.",
+        "eyebrow": "Anschauungsmaterial · Übungslektion",
+        "lead": "Jedes Kind bekommt eigene Fragen mit anderen Zahlen. Oomba prüft jede Antwort und gibt Tipps; es zählt die erste Prüfung jeder Frage.",
+        "count": "Fragen",
+        "countHint": "1 bis 10 Fragen für jedes Kind.",
+        "preview": "Ausprobieren"
+      }
     },
     "stories": {
       "needIdea": "Schreib zuerst deine Idee (ein paar Wörter reichen).",
@@ -5156,7 +5165,8 @@
         "bigger": "Dreh dein Gerät quer oder nimm einen größeren Bildschirm, um im Raum zu zeichnen.",
         "full": "Mehr kannst du nicht zeichnen. Radiere zuerst ein paar Linien.",
         "notHere": "Zeichne außerhalb der anderen Tische und des Lehrerbereichs."
-      }
+      },
+      "manipKind": "Üben · {count, plural, one {# Aufgabe} other {# Aufgaben}}"
     },
     "homeroom-area": {
       "label": "Bereich der Lehrkraft",
@@ -6187,7 +6197,8 @@
       "quiz": "Quizfragen beantworten",
       "figures": "Fragen zu Abbildungen beantworten",
       "figureStep": "Fragen zu Abbildungen",
-      "proofread": "Korrekturlesen"
+      "proofread": "Korrekturlesen",
+      "manip": "Üben mit Anschauungsmaterial"
     },
     "library": {
       "title": "Bibliothek der Unterrichtspläne",
@@ -15533,7 +15544,11 @@
       "tooFast": "Das ist viel auf einmal. Versuch es gleich noch einmal.",
       "roomFull": "Im Raum ist kein Platz für mehr Zeichnungen.",
       "pastDay": "Dieser Tag ist vorbei. Wähle heute oder einen späteren Tag dieser Woche.",
-      "weekPast": "Jeder Tag dieser Woche ist schon vorbei."
+      "weekPast": "Jeder Tag dieser Woche ist schon vorbei.",
+      "pickTask": "Wähle eine Aufgabe zum Üben.",
+      "tooManyTasks": "Wähle höchstens 6 Aufgaben.",
+      "badCount": "Wähle 1 bis 10 Fragen.",
+      "oneToolSet": "Wähle Aufgaben von nur einem Werkzeug auf einmal."
     },
     "live": "Live",
     "desk": {

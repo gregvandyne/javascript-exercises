@@ -25,6 +25,7 @@ import { q, now, audit } from '../db.js';
 import * as S from './schools.js';
 import * as L from './lessons.js';
 import * as PS from './proof-steps.js';
+import { codesOf as manipCodesOf } from './manip-tasks.js';
 import * as FW from '../standards/frameworks.js';
 import * as OT from '../standards/official-tags.js';
 
@@ -126,7 +127,9 @@ export function classView(classId, framework, { grade = '' } = {}) {
     const fallback = [...new Set([...own, ...whole])];
     // A graded Mistake Hunt set (services/proof-steps.js): one mark a mistake, credited to that mistake's Common Core code.
     const items = s.kind === L.QUIZ_KIND ? L.quizItemsOf(s).map(it => { const c = it && typeof it.cat === 'string' ? valid(it.cat) : null; return c ? [c] : fallback; })
-      : s.kind === L.PROOF_KIND ? PS.codesOf(s).map(c => { const v = valid(c); return v ? [v] : []; }) : [];
+      : s.kind === L.PROOF_KIND ? PS.codesOf(s).map(c => { const v = valid(c); return v ? [v] : []; })
+        // a Manipulatives practice set (services/manip-tasks.js): one mark a question, credited to its task's code
+        : s.kind === L.MANIP_KIND ? manipCodesOf(s).map(c => { const v = valid(c); return v ? [v] : []; }) : [];
     stepInfo.set(s.id, { ...s, practice, items, run: [...new Set([...own, ...whole, ...game])], gameCover, game: gameCover.length ? s.game_slug : null });
   }
   // Coverage: which assigned lessons / official games / live runs / courses hit each code.
@@ -152,8 +155,8 @@ export function classView(classId, framework, { grade = '' } = {}) {
     seen.add(r.user_id);
     const s = stepInfo.get(r.step_id); if (!s) continue;
     const at = r.done_at || r.updated_at || 0;
-    if (r.status === 'done' && s.kind !== L.QUIZ_KIND && s.kind !== L.PROOF_KIND) for (const c of s.practice) { const x = cell(c, r.user_id); x.practiced = true; x.last = Math.max(x.last, at); }
-    if (s.kind === L.QUIZ_KIND || s.kind === L.PROOF_KIND) {
+    if (r.status === 'done' && s.kind !== L.QUIZ_KIND && s.kind !== L.PROOF_KIND && s.kind !== L.MANIP_KIND) for (const c of s.practice) { const x = cell(c, r.user_id); x.practiced = true; x.last = Math.max(x.last, at); }
+    if (s.kind === L.QUIZ_KIND || s.kind === L.PROOF_KIND || s.kind === L.MANIP_KIND) {
       const ms = String(r.marks || '');
       s.items.forEach((codes, i) => { const m = ms[i]; if (m !== '1' && m !== '0') return; for (const c of codes) mark(c, r.user_id, m === '1' ? 1 : 0, 1, r.updated_at || at); });
     }

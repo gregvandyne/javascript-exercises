@@ -127,6 +127,9 @@ export function deleteAccount(childId, actor, { by = 'grownup', parentMade = tru
     forgetGameSets(u.id);
     // 11c. virtual math manipulatives: their saved boards, their work in sessions, the sessions they ran
     forgetManipulatives(u.id);
+    // and their solo practice counts on Manipulatives tasks (docs/decisions.md "Manipulatives: tasks you can practice and
+    // assign"; their answers on assigned sets are class work in step_progress, kept with the class as every lesson's)
+    q.run('DELETE FROM manip_practice WHERE user_id=?', u.id);
     // 11c2. Homeroom: their doodle and working-out pads (one per class desk), their class sign-in settings and picture
     // passwords
     q.run('DELETE FROM homeroom_doodles WHERE user_id=?', u.id);

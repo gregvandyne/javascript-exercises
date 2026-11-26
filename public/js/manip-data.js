@@ -103,9 +103,11 @@ export function paletteName(slug, d) {
 }
 /** Every piece a tool can ever hold, in any of its settings (to look a saved piece up by its kind). */
 export const allPieceDefs = slug => (slug === 'base-ten-blocks' ? [...BASE10, ...BASE10_DEC] : pieceDefs(slug));
-/** Break one piece into ten of the next size down (and Regroup ten back into one). */
+/** Break one piece into ten of the next size down (and Regroup ten back into one). Base ten's decimal blocks too (a one
+ *  into ten tenths...; docs/decisions.md "Manipulatives: tasks you can practice and assign": the decimal tasks break a
+ *  tenth and regroup hundredths, which the chart's trading alone did before). */
 export const BREAKS = {
-  'base-ten-blocks': { cube: 'flat', flat: 'rod', rod: 'unit' },
+  'base-ten-blocks': { cube: 'flat', flat: 'rod', rod: 'unit', one: 'tenth', tenth: 'hundredth', hundredth: 'thousandth' },
   'place-value-disks': { th: 'h', h: 't', t: 'o', o: 'tenth', tenth: 'hund', hund: 'thou' },
 };
 

@@ -15331,3 +15331,89 @@ rules on data Homeroom already has, and Oomba only sums them up, with the names 
   (it goes into the next day's plan); a school calendar for the next school day (Monday to Friday for now). Before
   launch: the privacy policy update and lawyer review, and a 35-student load test (the pulse now also carries Needs a
   look).
+
+## Manipulatives: tasks you can practice and assign (26 Nov 2026)
+
+The owner: "All manipulative tasks need to be turned into actual question and answer submissions that teachers can
+assign and students can practice with. [...] There should be multiple variations of each task where a teacher could
+assign 5 questions for task 1 and 5 different variations of that would be assigned. [...] There should be two options
+like try another [...] or click back to task list [...]. Oomba should also be able to tell a user whether their answer is
+correct or not with hints if users get stuck. The experience should be the exact same in the homeroom." Phase 1: the
+framework, and Rekenreks and Base Ten Blocks converted completely (all 34 of their tasks); phase 2 converts the other
+16 tools by the checklist in `docs/manip-practice-tasks.md` (the file format, the checker API, the test helpers).
+
+- **Task model.** Each tool's tasks are in their own file (`public/js/manip-tasks/<slug>.js`, shared by the page, the
+  server and the tests; `public/js/manip-tasks.js` puts them together as `TASKS` as before, so the AI drafter and the task
+  library keep working). Every task keeps its title, CCSS code, grade and teacher notes and gets a stable key (its id is
+  `<tool>/<key>`). A practice task has `make(R)`: a seeded variation (`public/js/manip-task-kit.js` `rngOf`, never
+  `Math.random`), with the student's prompt, the board to start from, what is right (board conditions, an answer box,
+  a choice, or several), 2 or 3 hints, an explanation and its own solution. At least 20 distinct variations per task
+  (tested on 50 seeds), never the same twice in a set.
+- **One checker**, `check(v, { board, box, choice })` -> `{ correct, partial, parts, feedback }`: each tool's board
+  conditions (Rekenreks: rows, a pair, a total, one row, a split, groups of five, Cover; Base Ten Blocks: total, fewest
+  blocks, counts of each block, every block in its own column of a place-value chart), the box through the existing
+  `answerMatches` (commas, equal fractions and decimals, times, money) and expanded form, and the choice. The feedback
+  names what to look at, never the answer.
+- **Students practice on their own** at `/manipulatives#practice/<tool>` (the tool's task list) and
+  `#practice/<tool>/<key>` (a problem): the board set up, Oomba's mark and the prompt, Read to me (the device's voice),
+  the answer box or choices, Check, "A hint, please"; then "Correct!" with the explanation, or "Not yet." with what to
+  look at and the next hint; Try another (new numbers, not one just seen) and Back to tasks always at hand. A small "3
+  right in a row" (or "Solved 5") per task, never a ranking. The server checks every solo answer and keeps only counts
+  per person per task (`manip_practice`, migration `0141_manip_practice`: solved, checks, the current run of
+  right-first-time answers, the best run); the page checks itself only when the server can't be reached.
+- **Who gets in.** The page now also opens for a student of a class that has a teacher who may use Manipulatives
+  (`services/manipulatives.js` `canPractice`: the teacher's Teacher plan covers their students' practice, as it covers
+  the live rooms they host), with every tool to practice or play with on its own (nothing saved). A practice board is
+  never saved as a teacher's board, and the board's Oomba chat is off on it (Oomba never chats with students; a
+  teacher's Preview shows what students see).
+- **Assigning.** On a tool's task list a teacher sees the notes, codes and grades, Preview (try it yourself) and Assign
+  (one task, or several ticked of one tool): how many questions of each (5 by default, 1 to 10, 30 in all), the class,
+  open and due days. It makes a class lesson like every assignment (a lesson of kind `manip` with one `manip` step whose
+  snapshot names the tasks and the count; the class page and the student's To do list show it). Each student gets their
+  own seeded questions (the step and the student pick the seeds), answered on the Manipulatives page one at a time,
+  every answer checked by the server. Marks: right on the first check with no hint asked for counts; a question is
+  finished when it is right, or after the last hint ("Next question"); score = % right first time; done when every
+  question is finished. Because it is `step_progress` marks and score, the gradebook, the Classroom overview column,
+  Google Classroom (by the chosen grading) and the parents' view show it with no change; the class Standards tab credits
+  each question to its task's code.
+- **Homeroom, exactly the same.** The left panel lists each tool's practice tasks as lessons ("Rekenreks: practice
+  lessons", teachers' words) under Teaching tools. Handing one out (a desk, a group, a team or Whole class; In order;
+  Score by default, Completion or Not graded; a due day and time) asks how many questions (5 by default) and makes the
+  same class lesson for exactly those students (`homeroom-handouts.js` `handOutTask`). The desk card ("Practice · 5
+  problems") opens the real Manipulatives page in the desk's player (`?in=hr`), the same card and board as on its own;
+  the finished screen has "Back to my desk". The teacher's watching desks show the student's board and, in look, the
+  question they are on and what they typed, live (the page sends its board, cut to what is on it, every 1.5 s while it
+  changes; memory only, gone after a minute, never stored: `services/manip-tasks.js` `putLive`, drawn by
+  `homeroom-tools.js` `boardsOf` with the tool's own code). Needs a look's "tries" now also counts 3 or more wrong checks
+  in a row on a practice set this week. Tool free-play handouts (the live room) stay as they were; task practice is the
+  graded kind.
+- **Reworded tasks** (open-ended in the library, checkable now, the same goal): Rekenreks "Two ways to make 10" (two
+  labeled rekenreks, Way 1 starting with a given top row, Way 2 a different split), "Make 9 three ways" (three labeled
+  rekenreks: one row, two rows, Cover on), "Hidden beads" (Cover on and read only: the whole and one part given, the
+  hidden part typed), "Even or odd check" (build the pairs, then pick Even or Odd), "Build 20, hide 10" (a full row and
+  some more, Cover on, how many hidden; the K standard is 11 to 19), "Half of 10, half of 20" (half of an even number to
+  20); Base Ten Blocks "Build 1,139" (build, then Break one flat: the counts are checked), "Decimal build 2.35" (break a
+  tenth: how many hundredths now), "Build and read 2,048" (expanded form typed), "Add with one regroup" (which column
+  made you regroup: a choice), "Compare two builds" (the larger number typed and the deciding column picked; the
+  blocks are locked), "Area model 13 x 12" (the product typed; the rectangle is not checked), "Factors with flats" (rows
+  of a given width: how many rows), "Divide by sharing" (the share typed), "Zero in the middle" (which place is empty: a
+  choice), "Estimate the build" (the exact number typed from locked blocks, totals hidden).
+- **A tool change for the tasks.** Base Ten Blocks' decimal blocks now Break and Regroup like the whole-number ones (a
+  one into ten tenths, a tenth into ten hundredths, a hundredth into ten thousandths; `manip-data.js` `BREAKS`): the
+  decimal tasks ask for it, and before only the chart's trading could do it.
+- **Deleting.** `manip_practice` goes with the account (`account-delete.js`); assigned sets are class work in
+  `step_progress`, kept and deleted with the class like every lesson's; live boards are memory only (gone when a student
+  leaves the class).
+- Tests: `tests/unit/manip-task-variations.test.js` (all 300 tasks keep their fields and unique ids; every practice task,
+  50 seeds: the shape, the same variation for the same seed, its solution passes, also after JSON, the starting board, a
+  wrong number and the other choice fail with a calm line, 20 distinct, a set never repeats; expanded form and tolerant
+  input) and `tests/unit/manip-task-flow-browser.test.js` (per tool, `MANIP_FLOW_TOOLS`: every task opened from the
+  tool's list as a student, built through the real UI by `tests/unit/_manip-flow/<slug>.js`, Check: Correct, Try
+  another: new numbers, one wrong: Not yet and a hint, right after all, Back to tasks, the counts kept by the server; a
+  set of 5 handed out in Homeroom answered in the desk's player, the board and the problem in the teacher's look, 4 of 5
+  right first time on the card and the desk sheet; a teacher's list, Preview, the Assign dialog and the class lesson it
+  makes, a student's Start from the lesson page, a task handed out from Homeroom's catalog with 5 questions and Score).
+  Screenshots at 1366, 820 and 390.
+- **Open**: the other 16 tools (phase 2); translations of the new strings (English, like the task library); a teacher's
+  view of each student's answers per question (the gradebook shows the marks); assigning across tools in one set;
+  Homeroom's give sheet picking several tasks at once (one task a handout there; several from the Manipulatives page).

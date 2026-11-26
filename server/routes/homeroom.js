@@ -133,6 +133,7 @@ import { SUBJECTS, SHELF_INFO, shelfGrades } from '../learn.js';
 import { openSubjects, slugHidden } from '../services/game-focus.js';
 import { liveGameOf } from '../live/live-games.js';
 import { TOOLS as MANIP_TOOLS, CATS as MANIP_CATS } from '../../public/js/manip-data.js';
+import { practiceTasks } from '../../public/js/manip-tasks.js';
 import * as NL from '../services/homeroom-look.js';
 import * as IN from '../services/homeroom-intro.js';
 import { offerFollowUp } from '../services/companion.js';
@@ -236,8 +237,11 @@ function deskLists(req) {
   const more = oomba.some(g => g.subject === 'more');
   const manip = toolAccess(u, config.manipulatives) === 'yes';
   const tools = manip ? MANIP_TOOLS.map(tl => ({ id: `T:manip:${tl.slug}`, icon: tl.emoji, title: tl.name, cat: tl.cat, grades: gradesOf(tl.grades), gradesText: tl.grades })) : [];
+  // each tool's practice tasks as lessons (docs/decisions.md "Manipulatives: tasks you can practice and assign"): a task
+  // hands out N questions, each student their own variations
+  const tasks = manip ? practiceTasks().map(x => ({ id: `T:task:${x.id}`, icon: MANIP_TOOLS.find(tl => tl.slug === x.slug).emoji, title: x.task.title, tool: x.slug, grades: { from: gradeNum(x.task.grade), to: gradeNum(x.task.grade) }, ccss: x.task.ccss })) : [];
   const figures = toolAccess(u, config.figures) === 'yes' ? [{ id: 'T:figures', icon: '📐', title: t('homeroom.panel.figures'), mineOnly: true }] : [];
-  return { mine, folders, shared, favorites, oomba, subjects, more, tools, figures };
+  return { mine, folders, shared, favorites, oomba, subjects, more, tools, tasks, figures };
 }
 const gradeLabel = (t, g) => (!g ? '' : g.from === g.to ? (g.from ? t('learn.tab.gradeN', { n: g.from }) : t('learn.tab.gradeK')) : t('learn.grades', { from: g.from ? String(g.from) : 'K', to: g.to ? String(g.to) : 'K' }));
 const searchText = (...parts) => parts.filter(Boolean).join(' ').toLowerCase();
@@ -255,7 +259,10 @@ function catalogHtml(req, lists) {
   const bySubject = [...L.subjects.map(x => group(`s-${x.key}`, html`${x.emoji} ${t(`learn.tab.subjects.${x.key}`)}`, L.oomba.filter(g => g.subject === x.key).map(g => ({ ...g, sub: t(`learn.tab.subjects.${g.subject}`) })), { open: x.key === 'math' })),
     L.more ? group('s-more', html`✨ ${t('homeroom.catalog.more')}`, L.oomba.filter(g => g.subject === 'more'), { open: !L.subjects.length }) : ''];
   const byCat = MANIP_CATS.map((name, i) => group(`m-${i}`, name, L.tools.filter(x => x.cat === i).map(x => ({ ...x, sub: `manipulatives ${name}` }))));
-  const total = L.mine.length + L.oomba.length + L.tools.length + L.figures.length + L.favorites.length + L.folders.reduce((n, f) => n + f.items.length, 0) + L.shared.reduce((n, f) => n + f.items.length, 0);
+  // a tool's practice tasks under it, one group a tool (they hand out as graded lessons)
+  const taskGroups = [...new Set(L.tasks.map(x => x.tool))].map(slug => { const tl = L.tools.find(x => x.id === `T:manip:${slug}`);
+    return group(`mt-${slug}`, html`${tl ? tl.icon : '🧮'} ${t('homeroom.catalog.toolLessons', { tool: tl ? tl.title : slug })}`, L.tasks.filter(x => x.tool === slug).map(x => ({ ...x, sub: `manipulatives ${tl ? tl.title : ''} ${x.ccss}` }))); });
+  const total = L.mine.length + L.oomba.length + L.tools.length + L.tasks.length + L.figures.length + L.favorites.length + L.folders.reduce((n, f) => n + f.items.length, 0) + L.shared.reduce((n, f) => n + f.items.length, 0);
   return html`<div class="hr-catalog" data-catalog>
     <div class="hr-cfind" role="search">
       <label class="sr-only" for="hr-cq">${t('homeroom.catalog.search')}</label>
@@ -273,7 +280,7 @@ function catalogHtml(req, lists) {
     ${L.favorites.length ? group('fav', html`❤️ ${t('homeroom.catalog.favorites')}`, L.favorites) : ''}
     <h2 class="hr-cap">${t('homeroom.panel.oomba')}</h2>
     ${bySubject}
-    ${L.tools.length || L.figures.length ? html`<h2 class="hr-cap" data-ctools>${t('homeroom.catalog.tools')}</h2>${byCat}${L.figures.length ? items(L.figures) : ''}` : ''}
+    ${L.tools.length || L.figures.length ? html`<h2 class="hr-cap" data-ctools>${t('homeroom.catalog.tools')}</h2>${byCat}${taskGroups}${L.figures.length ? items(L.figures) : ''}` : ''}
     <span hidden data-ctotal="${total}"></span>
   </div>`;
 }
@@ -483,7 +490,7 @@ function watchView(req, c) {
   const screens = HW.snapsFor(c, haveOf(req.query.sv)), mv = haveOf(req.query.mv), boards = {}, bcur = {};
   for (const [sid, b] of HT.boardsOf(c, want.filter(id => !att[id]))) {
     bcur[sid] = b.cur;
-    if (mv[sid] !== b.v) boards[sid] = { tool: b.tool, session: b.session, state: b.state, v: b.v, space: b.space };
+    if (mv[sid] !== b.v) boards[sid] = { tool: b.tool, session: b.session, state: b.state, v: b.v, space: b.space, ...(b.prob ? { prob: b.prob } : {}) };
   }
   for (const sid of Object.keys(screens)) if (!want.includes(sid)) delete screens[sid];
   // their doodle pad (or their team's), as the desk shows it, when it changed
@@ -524,6 +531,15 @@ router.post('/api/homeroom/:id/handouts', rateLimit('lesson-new', 120, 3600e3), 
     const title = (HT.boardList(c).find(y => y.id === r.item.id) || {}).title || '';
     const n = to && to.kind === 'all' ? H.studentsOf(c.id).length : HO.studentsFor(c, to).all.length;
     return res.json({ ok: true, toast: n ? req.t('homeroom.handout.done', { title, count: n }) : req.t('homeroom.handout.forLater', { title }), ...HO.boardView(c, req.locale) });
+  }
+  // Manipulatives practice (docs/decisions.md "Manipulatives: tasks you can practice and assign"): a task's questions,
+  // each student their own variations, graded like any handout.
+  if (x.task || x.tasks) {
+    const r = HO.handOutTask(req.user, c, { tasks: x.tasks || [String(x.task)], count: x.count, to, instructions: typeof x.instructions === 'string' ? x.instructions : '', order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
+    if (!r.ok) return hoFail(req, res, r);
+    const also = await alsoPost(req, [r.classLesson]);
+    const toast = r.students ? req.t('homeroom.handout.done', { title: r.title, count: r.students }) : req.t('homeroom.handout.forLater', { title: r.title });
+    return res.json({ ok: true, toast: also ? `${toast} · ${also}` : toast, ...HO.boardView(c, req.locale) });
   }
   if (x.lessonId) {
     const r = HL.handOutLesson(req.user, c, { lessonId: String(x.lessonId), to, order: String(x.order || 'in'), grade: String(x.grade || 'score'), dueAt: x.dueAt ? String(x.dueAt) : null, dueTime: x.dueTime ? String(x.dueTime) : null, tz: typeof x.tz === 'string' ? x.tz.slice(0, 64) : '' });
