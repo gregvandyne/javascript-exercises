@@ -1611,6 +1611,19 @@ export const MIGRATIONS = [
   // Flashcards (seed-games/flashcards.json, docs/decisions.md "Flashcards") is a Learn game: its own shelf step, as each new
   // Learn game gets. Its sets are game_sets rows and its card progress lives in step_progress.marks: no new table.
   ['0142_flashcards_shelf', "UPDATE games SET shelf='learn' WHERE source='seed' AND slug='flashcards';"],
+  // Flashcards pictures (services/flash-pics.js; docs/decisions.md "Flashcards: pictures"). flash_pics: a grown-up's own
+  // card pictures, an uploaded JPEG (kind 'upload': cleaned, no metadata, checked for people as book pictures are) or one
+  // Oomba paints (kind 'paint': state queued, drawing, done or fallback with a reason; subject and note: the words it is
+  // painted from). A card names one by its id ('img:<id>'); a set shows only its own owner's pictures. They go with the
+  // set that used them, with the account, and (never used by a saved set) after FLASH_PIC_KEEP_DAYS.
+  ['0143_flash_pics', `
+    CREATE TABLE IF NOT EXISTS flash_pics (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      kind TEXT NOT NULL DEFAULT 'upload', state TEXT NOT NULL DEFAULT 'done', reason TEXT NOT NULL DEFAULT '',
+      subject TEXT NOT NULL DEFAULT '', note TEXT NOT NULL DEFAULT '', bytes BLOB, mime TEXT NOT NULL DEFAULT 'image/jpeg',
+      width INTEGER NOT NULL DEFAULT 0, height INTEGER NOT NULL DEFAULT 0, attempts INTEGER NOT NULL DEFAULT 0, not_before INTEGER,
+      created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL);
+    CREATE INDEX IF NOT EXISTS idx_flash_pics_owner ON flash_pics(owner_id, created_at);
+    CREATE INDEX IF NOT EXISTS idx_flash_pics_state ON flash_pics(state, updated_at);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

@@ -267,15 +267,28 @@ export function cleanHuntItems(raw) {
 }
 
 // ---------------------------------------------------------------- Flashcards: one set of term and definition cards
-// [{ t: title ('' allowed), c: [[term, definition, pic], ...] (2-50), a: what students answer with in Learn and Test
-//    ('t' the term, from its definition; 'd' the definition, from its term) }]. pic: '' or one emoji for the card's
-// front (a picture, never text: emoji characters only, at most 16 code points). As Crossword's, a teacher's own words:
+// [{ t: title ('' allowed), c: [[term, definition, front, back?], ...] (2-50), a: what students answer with in Learn and Test
+//    ('t' the term, from its definition; 'd' the definition, from its term) }]. front: '' or one emoji (a picture, never
+// text: emoji characters only, at most 16 code points) or one of our own pictures ('img:<id>', services/flash-pics.js:
+// an id in our storage, never a URL); back (left out when empty): the same for the definition's side. One picture a
+// side at most. A set made before pictures ([term, definition, emoji]) reads exactly as it did. As Crossword's, a teacher's own words:
 // every term, definition and the title pass the site's text filter (docs/decisions.md "Flashcards"). Terms may hold
 // digits and signs ("7 x 8", "H2O"), unlike a crossword's words; no term twice (case and spaces aside).
-export const FLASH = { min: 2, max: 50, term: 60, def: 160, title: 60, pic: 16 };
+// ownSets: the sets a student or a child keeps (their own, private; a teacher keeps MAX_PER_OWNER).
+export const FLASH = { min: 2, max: 50, term: 60, def: 160, title: 60, pic: 16, ownSets: 50 };
 /** One emoji (a person, a flag, a keycap or a ZWJ sequence included) and nothing else, or ''. */
 const PIC = /^(?:\p{Extended_Pictographic}|\p{Regional_Indicator}|[#*0-9]\u{FE0F}?\u{20E3})(?:[\u{FE0F}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}\u{20E3}]|\u{200D}\p{Extended_Pictographic}|\p{Regional_Indicator})*$/u;
 export const flashPic = v => (typeof v === 'string' && v && [...v].length <= FLASH.pic && PIC.test(v) ? v : '');
+/** One of our own card pictures: 'img:<id>' (an id flash-pics.js made). Never a URL, a path or anything else. */
+export const FLASH_IMG = /^img:[A-Za-z0-9]{10,40}$/;
+/** A card side's picture as stored: '' | an emoji | 'img:<id>'; null when it is neither. */
+const flashSide = v => (v === '' ? '' : FLASH_IMG.test(v) ? v : flashPic(v) || null);
+/** The picture ids a flashcard set's cards name (both sides). */
+export function flashRefs(items) {
+  const out = new Set(), a = Array.isArray(items) && items[0];
+  if (a && Array.isArray(a.c)) for (const x of a.c) for (const v of [x[2], x[3]]) if (typeof v === 'string' && FLASH_IMG.test(v)) out.add(v.slice(4));
+  return out;
+}
 /** A term's key for "no term twice": case, accents kept, spaces and punctuation at the ends ignored. */
 export const flashKey = w => String(w).normalize('NFC').toLocaleLowerCase().replace(/\s+/g, ' ').trim();
 export function cleanFlashItems(raw) {
@@ -285,18 +298,18 @@ export function cleanFlashItems(raw) {
   if (!Array.isArray(it.c) || it.c.length < FLASH.min || it.c.length > FLASH.max) return null;
   const cards = [], seen = new Set();
   for (const x of it.c) {
-    if (!Array.isArray(x) || x.length < 2 || x.length > 3 || typeof x[0] !== 'string' || typeof x[1] !== 'string') return null;
-    if (x.length === 3 && typeof x[2] !== 'string') return null;
+    if (!Array.isArray(x) || x.length < 2 || x.length > 4 || typeof x[0] !== 'string' || typeof x[1] !== 'string') return null;
+    if (x.slice(2).some(v => typeof v !== 'string')) return null;
     const w = x[0].normalize('NFC').replace(/\s+/g, ' ').trim(), d = x[1].replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' / ').trim();
     if (!w || w.length > FLASH.term || !d || d.length > FLASH.def) return null;
-    const pic = x.length === 3 ? x[2] : '';
-    if (pic && !flashPic(pic)) return null;
+    const pic = flashSide(x.length >= 3 ? x[2] : ''), back = flashSide(x.length === 4 ? x[3] : '');
+    if (pic === null || back === null) return null;
     const key = flashKey(w);
     if (seen.has(key)) return null;
     seen.add(key);
     const cw = cleanText(w, FLASH.term), cd = cleanText(d, FLASH.def);
     if (!cw.ok || !cd.ok) return null;
-    cards.push([cw.value, cd.value, pic]);
+    cards.push(back ? [cw.value, cd.value, pic, back] : [cw.value, cd.value, pic]);
   }
   let t = '';
   if (it.t !== undefined && it.t !== '') {
@@ -562,8 +575,10 @@ export function cleanTitle(raw) {
  *  -> { id } | { error: 'bad'|'notYours'|'full' } */
 export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-builder', opts = {}) {
   const clean = slug === CANVAS_KIND ? raw => cleanCanvasItems(raw, opts.html) : SET_GAMES.get(slug);
-  const items = clean ? clean(rawItems) : null;
+  let items = clean ? clean(rawItems) : null;
   if (!items) return { error: 'bad' };
+  // Flashcards: a card shows only its owner's own pictures; one that isn't theirs (a copy of someone else's set) is left off.
+  if (slug === 'flashcards') items = ownFlashPics(ownerId, items);
   const t = now();
   const named = slug === 'crossword' || slug === 'word-hunt' || slug === 'atlas-quest' || slug === 'flashcards' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
   const title = named && named.ok ? named.value : null;
@@ -572,16 +587,36 @@ export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-build
     if (!was || was.ownerId !== ownerId) return { error: 'notYours' };
     if (title === null) q.run('UPDATE game_sets SET items=?, updated_at=? WHERE id=?', JSON.stringify(items), t, id);
     else q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), title, t, id);
+    if (slug === 'flashcards') dropFlashPics(ownerId, flashRefs(was.items));
     return { id };
   }
-  return insert(gameId, ownerId, items, title || '', t);
+  return insert(gameId, ownerId, items, title || '', t, opts.max);
 }
-function insert(gameId, ownerId, items, title, t = now()) {
-  if (q.get('SELECT COUNT(*) n FROM game_sets WHERE game_id=? AND owner_id=?', gameId, ownerId).n >= MAX_PER_OWNER) return { error: 'full' };
+function insert(gameId, ownerId, items, title, t = now(), max = MAX_PER_OWNER) {
+  if (q.get('SELECT COUNT(*) n FROM game_sets WHERE game_id=? AND owner_id=?', gameId, ownerId).n >= Math.min(max || MAX_PER_OWNER, MAX_PER_OWNER)) return { error: 'full' };
   let nid = newId();
   while (q.get('SELECT 1 FROM game_sets WHERE id=?', nid)) nid = newId();
   q.run('INSERT INTO game_sets(id, game_id, owner_id, items, title, created_at, updated_at) VALUES (?,?,?,?,?,?,?)', nid, gameId, ownerId, JSON.stringify(items), title, t, t);
   return { id: nid };
+}
+
+// ---------------------------------------------------------------- Flashcards' pictures in sets (services/flash-pics.js)
+/** The cards with every 'img:' picture that is not the owner's own left off (as '' on its side). */
+function ownFlashPics(ownerId, items) {
+  const refs = [...flashRefs(items)];
+  if (!refs.length) return items;
+  const mine = new Set(q.all(`SELECT id FROM flash_pics WHERE owner_id=? AND id IN (${refs.map(() => '?').join(',')})`, ownerId, ...refs).map(r => r.id));
+  const keep = v => (typeof v === 'string' && FLASH_IMG.test(v) && !mine.has(v.slice(4)) ? '' : v);
+  return [{ ...items[0], c: items[0].c.map(x => { const front = keep(x[2]), back = x.length === 4 ? keep(x[3]) : ''; return back ? [x[0], x[1], front, back] : [x[0], x[1], front]; }) }];
+}
+/** The owner's pictures among ids that none of their sets uses any more are deleted. */
+export function dropFlashPics(ownerId, ids) {
+  if (!ids || !ids.size) return 0;
+  const used = new Set();
+  for (const r of q.all(`SELECT items FROM game_sets WHERE owner_id=? AND items LIKE '%"img:%'`, ownerId)) { let it; try { it = JSON.parse(r.items); } catch { continue; } for (const x of flashRefs(it)) used.add(x); }
+  let n = 0;
+  for (const id of ids) if (!used.has(id)) n += q.run('DELETE FROM flash_pics WHERE id=? AND owner_id=?', id, ownerId).changes;
+  return n;
 }
 
 // ---------------------------------------------------------------- the owner's own list ("My worksheets")
@@ -623,8 +658,11 @@ function own(gameId, ownerId, id) {
 }
 /** Delete the owner's set: its link and class code stop working. -> true, or false when it isn't theirs. */
 export function remove(gameId, ownerId, id) {
-  if (!own(gameId, ownerId, id)) return false;
+  const s = own(gameId, ownerId, id);
+  if (!s) return false;
   q.run('DELETE FROM game_sets WHERE id=? AND owner_id=?', id, ownerId);
+  // A flashcard set's pictures go with it (unless another of the owner's sets uses them too).
+  dropFlashPics(ownerId, flashRefs(s.items));
   // Oomba's chat on a Mistake Hunt set goes with the set (services/proof-chat.js).
   q.run('DELETE FROM proof_chats WHERE owner_id=? AND set_key=?', ownerId, id);
   return true;
@@ -649,7 +687,7 @@ export function rename(gameId, ownerId, id, rawTitle, slug = 'algebra-builder') 
 }
 /** A copy of the owner's set under a new code, named title (the caller's "Copy of ..."; cut to TITLE_MAX).
  *  -> { id } | { error: 'notYours'|'full' } */
-export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') {
+export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder', max = MAX_PER_OWNER) {
   const s = own(gameId, ownerId, id);
   if (!s) return { error: 'notYours' };
   const c = cleanTitle(String(title || '').slice(0, TITLE_MAX));
@@ -659,11 +697,11 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') 
   if (slug === 'word-hunt') items = cleanHuntItems([{ ...items[0], t: name }]) || items;
   if (slug === 'atlas-quest') items = cleanAtlasItems([{ ...items[0], t: name }]) || items;
   if (slug === 'flashcards') items = cleanFlashItems([{ ...items[0], t: name }]) || items;
-  return insert(gameId, ownerId, items, name);
+  return insert(gameId, ownerId, items, name, now(), max);
 }
 
 /** An account's sets go with it. */
-export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); q.run('DELETE FROM proof_ai_drafts WHERE user_id=?', userId); }
+export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM flash_pics WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); q.run('DELETE FROM proof_ai_drafts WHERE user_id=?', userId); }
 
 const ACT_NAME = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' };
 const FROM = { p: '+', q: '=', e: '^', o: '(', c: ')' };

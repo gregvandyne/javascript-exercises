@@ -121,7 +121,8 @@ test('saving, naming, renaming and copying a set through the routes; the Assign 
   assert.equal(r.status, 200, r.text);
   assert.equal(G.get(g.id, r.json.id).title, 'Habitats', 'named after its title');
   assert.equal((await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: [{ c: [['a', 'b']] }] }, user: teacher })).status, 400);
-  assert.equal((await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: ITEMS }, user: mia })).status, 403, 'a student never saves a set');
+  // A student saves their own set now (private: tests/unit/flashcards-students.test.js); never over a teacher's.
+  assert.equal((await call(`/api/games/${g.id}/sets`, { method: 'POST', body: { items: ITEMS, id: r.json.id }, user: mia })).status, 404, 'a student never changes a teacher\'s set');
   const rn = await call(`/api/games/${g.id}/sets/${r.json.id}/rename`, { method: 'POST', body: { title: 'Food webs' }, user: teacher });
   assert.equal(rn.status, 200); assert.equal(G.get(g.id, r.json.id).items[0].t, 'Food webs');
   const dup = await call(`/api/games/${g.id}/sets/${r.json.id}/duplicate`, { method: 'POST', body: {}, user: teacher });
@@ -132,7 +133,7 @@ test('saving, naming, renaming and copying a set through the routes; the Assign 
   const page = await call(`/play/flashcards?chapter=${r.json.id}&lock=1`, { user: mia });
   const fr = await call(/data-src="(\/frame\/[^"]+?)"/.exec(page.text)[1].replace(/&amp;/g, '&'), { user: mia });
   const init = JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(fr.text)[1]);
-  assert.equal(init.set.id, r.json.id); assert.equal(init.set.items[0].c.length, 4); assert.equal(init.make, undefined, 'a student gets no builder'); assert.equal(init.print, true);
+  assert.equal(init.set.id, r.json.id); assert.equal(init.set.items[0].c.length, 4); assert.equal(init.make, true, 'a student gets their own builder'); assert.equal(init.makePrivate, true, 'their own sets only'); assert.equal(init.clues, undefined); assert.equal(init.flashPics, undefined); assert.equal(init.print, true);
   const tf = await call(/data-src="(\/frame\/[^"]+?)"/.exec((await call('/play/flashcards', { user: teacher })).text)[1].replace(/&amp;/g, '&'), { user: teacher });
   const ti = JSON.parse(/window\.__BRB_INIT__=(\{.*?\});<\/script>/.exec(tf.text)[1]);
   assert.equal(ti.make, true); assert.equal(ti.canAssign, true); assert.equal(ti.mySets, true); assert.equal(ti.clues, undefined, 'no AI without a model');
