@@ -3910,6 +3910,8 @@
       "showSteps": "Afficher les étapes",
       "checkResult": "{right} sur {total} justes. Réessaie les autres.",
       "checkAll": "{total, plural, one {Tout est juste !} other {Les # sont justes !}}",
+      "checkOneRight": "Juste !",
+      "checkOneWrong": "Pas encore juste. Réessaie.",
       "checksSummary": "{total, plural, one {Réponses vérifiées : {checked} sur #} other {Réponses vérifiées : {checked} sur #}}",
       "checkAllRight": "Tout juste",
       "checkNeedsHelp": "A besoin d'aide",
@@ -3923,6 +3925,7 @@
       "pushedMine": "Ton tableau a été envoyé à tous les élèves.",
       "endTitle": "Terminer cette séance ?",
       "endConfirm": "Les élèves ne pourront plus modifier leur carré. Tu pourras rouvrir la salle plus tard avec le même code.",
+      "endConfirmHr": "L’outil sera retiré de tous les bureaux. Les élèves gardent leur travail.",
       "pushNoKey": "Écris d’abord les réponses dans tes cases réponse pour que les élèves puissent vérifier leur travail."
     },
     "figures-editor": {

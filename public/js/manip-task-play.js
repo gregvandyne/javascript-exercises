@@ -103,7 +103,7 @@ export function mountPractice(el, ctx, opts) {
         <div class="mp-probtext"><p class="mp-probmeta">${metaHtml()}</p><h2 class="mp-prompt" id="mp-probt" tabindex="-1" dir="auto">${esc(v.prompt)}</h2></div>
         ${ctx.embed ? btn('btn btn-sm mp-probfold', `data-pp="fold" aria-expanded="${!!P.open}" aria-controls="mp-prob" aria-label="${esc(P.open ? tp('less') : tp('more'))}"`, P.open ? '▴' : '▾') : ''}
         <div class="mp-probside">${btn('btn btn-sm mp-probread', `data-pp="read" aria-label="${esc(tp('read'))}"`, `${iconHtml('🔊', { size: 16 })}<span class="mp-probreadt"> ${esc(tp('read'))}</span>`)}${P.mode === 'solo' ? soloNav() : ''}</div></div>
-      <div class="mp-probans">${answerHtml()}</div>
+      <div class="mp-probans${v.answer.choice ? ' mp-probhaschoice' : ''}">${answerHtml()}</div>
       <div class="mp-probsay" role="status" aria-live="polite">${sayHtml()}</div></section>`;
     // Open over the board: the card's place keeps its folded height, so the board does not move.
     if (ctx.embed) { if (!P.open) requestAnimationFrame(() => { const sec = el.querySelector('.mp-probc'); if (sec && !P.open) { P.foldH = sec.getBoundingClientRect().height; el.style.minHeight = ''; } }); else el.style.minHeight = P.foldH ? `${P.foldH}px` : ''; }

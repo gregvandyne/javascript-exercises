@@ -3910,6 +3910,8 @@
       "showSteps": "顯示步驟",
       "checkResult": "{total} 題答對 {right} 題。再試試其他題。",
       "checkAll": "{total, plural, other {# 題全部答對！}}",
+      "checkOneRight": "答對了！",
+      "checkOneWrong": "還不對喔。再試一次。",
       "checksSummary": "{total, plural, other {已檢查答案：# 人中 {checked} 人}}",
       "checkAllRight": "全部答對",
       "checkNeedsHelp": "需要幫忙",
@@ -3923,6 +3925,7 @@
       "pushedMine": "你的白板已傳送給所有學生。",
       "endTitle": "要結束這個課堂嗎？",
       "endConfirm": "結束後，學生無法再修改自己的方格。之後可以用同一個代碼重新開啟教室。",
+      "endConfirmHr": "這個工具會從所有桌上移除。學生的作品會保留。",
       "pushNoKey": "請先在答案框中輸入答案，學生才能檢查自己的作答。"
     },
     "figures-editor": {
