@@ -3,7 +3,7 @@
 // read from the board's clocks (h 1 to 12 and m; the time tracker's start; a clock by its label, Start or End). A
 // practice clock to read is read only (q: its face only). Most variations hide the digital time (Totals off), so the
 // face is read; times are on five-minute marks, which Hour + and Min +5 reach, except a read-only clock to read.
-import { boardWith, rowPlaces, objSizeOf } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, countTo, endLine } from '../manip-task-kit.js';
 
 export const SLUG = 'clock';
 const num = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
@@ -113,7 +113,7 @@ export const TASKS = [
         prompt: exact ? 'Read the clock. What time does it show? Type it like 3:25.' : 'Read the clock to the nearest five minutes. Type it like 3:25.',
         sig: `${exact ? 'e' : 'n'}${hm(t)}`,
         setup, answer: { box: { key: hm(near), label: 'the time', say: 'Look at the short red hand for the hour, then count the long blue hand by fives.' } },
-        hints: ['The short red hand shows the hour. The long blue hand shows the minutes.', `Count by fives from the 12 to the blue hand: 5, 10, 15, ...${exact ? '' : ' It is near a big red mark: pick the closest one.'}`, `The hand is ${exact ? 'on' : 'nearest'} the ${m5 / 5}: ${m5} minutes. The time is ${hm(near)}.`],
+        hints: ['The short red hand shows the hour. The long blue hand shows the minutes.', `Count by fives from the 12 to the blue hand: ${endLine(countTo(m5 / 5, 5, null))}${exact ? '' : ' It is near a big red mark: pick the closest one.'}`, `The hand is ${exact ? 'on' : 'nearest'} the ${m5 / 5}: ${m5} minutes. The time is ${hm(near)}.`],
         explain: `The minute hand ${exact ? 'points' : 'is closest'} to the ${m5 / 5}, and ${m5 / 5} ${m5 === 5 ? 'five makes' : 'fives make'} ${m5} minutes. The hour hand is past the ${h}, so it is ${hm(near)}.`,
         solution: { board: setup, box: hm(near) },
       };

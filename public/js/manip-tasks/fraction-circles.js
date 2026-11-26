@@ -2,7 +2,7 @@
 // its title, code, grade and notes; make(R) gives one variation from a seeded random source; conds are this tool's board
 // checks, read from the board's fraction sets (their circles, each with its pieces: manip-board.js fcCircles, which also
 // reads the old { placed } format). A practice board has one fraction set to work in, one fraction to a circle.
-import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural, countTo, times } from '../manip-task-kit.js';
 import { fcCircles, FC_WHOLE } from '../manip-board.js';
 
 export const SLUG = 'fraction-circles';
@@ -190,7 +190,7 @@ export const TASKS = [
       return {
         prompt: `Build ${fr(n, d)} with 1/${d} pieces. When a circle is full, the next pieces go into a new circle. Which mixed number is ${fr(n, d)}?`,
         setup, answer: { board: [{ t: 'total', u: n * U(d), only: [d], say: `Use ${pieces(n, d)} in all, and only 1/${d} pieces.` }], choice: { ...ch, say: 'Count the full circles, then the pieces in the last one.' } },
-        hints: [`Tap the 1/${d} piece ${n} times.`, `${d} pieces of 1/${d} fill a circle: that is 1 whole.`, `${n} = ${w > 1 ? `${w} × ${d}` : d} + ${r}, so ${fr(n, d)} = ${right}.`],
+        hints: [`Tap the 1/${d} piece ${times(n)}.`, `${d} pieces of 1/${d} fill a circle: that is 1 whole.`, `${n} = ${w > 1 ? `${w} × ${d}` : d} + ${r}, so ${fr(n, d)} = ${right}.`],
         explain: `${fr(n, d)} = ${right}: ${w === 1 ? 'one full circle' : `${w} full circles`} and ${fr(r, d)} more.`,
         solution: { board: solved(setup, [...Array.from({ length: w }, () => of(d, d)), of(r, d)]), choice: ch.correct },
       };
@@ -251,7 +251,7 @@ export const TASKS = [
       return {
         prompt: `Build ${fr(a, 8)}, then add ${fr(b, 8)}, then ${fr(c, 8)} more. You pass one whole. How much more than one whole is it?`,
         setup, answer: { board: [{ t: 'total', u: s * U(8), only: [8], say: `Add ${a}, then ${b}, then ${pieces(c, 8)}.` }], box: { key: fr(r, 8), label: 'more than one whole' } },
-        hints: [`Tap the 1/8 piece ${a} times, then ${b} times, then ${c} times.`, `${a} + ${b} + ${c} = ${s} eighths. 8 of them fill the first circle.`, `${fr(s, 8)} = 1 and ${fr(r, 8)}. It is ${fr(r, 8)} more than one whole.`],
+        hints: [`Tap the 1/8 piece ${times(a)}, then ${times(b)}, then ${times(c)}.`, `${a} + ${b} + ${c} = ${s} eighths. 8 of them fill the first circle.`, `${fr(s, 8)} = 1 and ${fr(r, 8)}. It is ${fr(r, 8)} more than one whole.`],
         explain: `${fr(a, 8)} + ${fr(b, 8)} + ${fr(c, 8)} = ${fr(s, 8)} = 1 ${fr(r, 8)}: one full circle and ${fr(r, 8)} more.`,
         solution: { board: solved(setup, [of(8, 8), of(r, 8)]), box: fr(r, 8) },
       };
@@ -279,7 +279,7 @@ export const TASKS = [
       return {
         prompt: `Put ${pieces(k, d)} in a circle, without going over a whole. What fraction of the circle is not covered?`,
         setup, answer: { board: [{ t: 'circle', counts: { [d]: k }, say: `Put ${pieces(k, d)} in one circle.` }], box: { key: fr(d - k, d), label: 'not covered' } },
-        hints: [`Tap the 1/${d} piece ${k} times.`, `A whole circle is ${d} pieces of 1/${d}. How many more would fill it?`, `${d} - ${k} = ${d - k}, so ${fr(d - k, d)} is not covered.`],
+        hints: [`Tap the 1/${d} piece ${times(k)}.`, `A whole circle is ${d} pieces of 1/${d}. How many more would fill it?`, `${d} - ${k} = ${d - k}, so ${fr(d - k, d)} is not covered.`],
         explain: `${fr(k, d)} + ${fr(d - k, d)} = 1 whole, so ${fr(d - k, d)} is left uncovered.`,
         solution: { board: solved(setup, [of(k, d)]), box: fr(d - k, d) },
       };
@@ -308,7 +308,7 @@ export const TASKS = [
       return {
         prompt: `The circle is a clock face: each 1/12 piece is 5 minutes. ${what} ${m} minutes. Show ${m} minutes with 1/12 pieces. How many pieces did you use?`,
         setup, answer: { board: [{ t: 'circle', counts: { 12: k }, say: `Show ${m} minutes with 1/12 pieces in one circle.` }], box: { key: String(k), label: '1/12 pieces' } },
-        hints: ['Each 1/12 piece is 5 minutes, like the space between two numbers on a clock.', `Count by fives as you add pieces: 5, 10, 15, ... up to ${m}.`, `${m} ÷ 5 = ${plural(k, 'piece')}.`],
+        hints: ['Each 1/12 piece is 5 minutes, like the space between two numbers on a clock.', k === 1 ? 'One 1/12 piece is 5 minutes.' : `Count by fives as you add pieces: ${countTo(k, 5)}.`, `${m} ÷ 5 = ${plural(k, 'piece')}.`],
         explain: `${plural(k, 'piece')} of 5 minutes ${k === 1 ? 'makes' : 'make'} ${m} minutes: ${fr(k, 12)} of an hour.`,
         solution: { board: solved(setup, [of(k, 12)]), box: String(k) },
       };

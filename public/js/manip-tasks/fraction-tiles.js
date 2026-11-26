@@ -2,7 +2,7 @@
 // its title, code, grade and notes; make(R) gives one variation from a seeded random source; conds are this tool's board
 // checks, read from the board's tiles (kind f<d>, worth 1/d; locked tiles are the task's own and never count) and its
 // Labels setting (mode: frac, pct, dec). Every variation hides the board's totals (they would give the answers away).
-import { boardWith, plural } from '../manip-task-kit.js';
+import { boardWith, plural, countTo } from '../manip-task-kit.js';
 import { allPieceDefs, fracLabel } from '../manip-data.js';
 import { WORLD } from '../manip-board.js';
 
@@ -262,7 +262,7 @@ export const TASKS = [
       return {
         prompt: `Switch Labels to Decimal. Build ${dec(x)} using only ${dec(1 / d)} tiles. How many ${dec(1 / d)} tiles did you use?`,
         setup, answer: { board: [{ t: 'mode', modes: ['dec'], say: 'Switch Labels under the board to Decimal.' }, { t: 'counts', has: { [d]: k }, say: `Use only ${dec(1 / d)} tiles to make ${dec(x)}.` }], box: { key: String(k), label: 'tiles' } },
-        hints: [`Change Labels to Decimal. Find the tile that says ${dec(1 / d)}.`, `Count by ${dec(1 / d)}: ${[1, 2, 3].map(i => dec(i / d)).join(', ')}, ... until you reach ${dec(x)}.`, `${k} × ${dec(1 / d)} = ${dec(x)}: ${plural(k, 'tile')}.`],
+        hints: [`Change Labels to Decimal. Find the tile that says ${dec(1 / d)}.`, k === 1 ? `One ${dec(1 / d)} tile is ${dec(x)}.` : `Count by ${dec(1 / d)}: ${countTo(k, i => dec(i / d), 'until you reach')}.`, `${k} × ${dec(1 / d)} = ${dec(x)}: ${plural(k, 'tile')}.`],
         explain: `${dec(x)} = ${k} × ${dec(1 / d)} = ${mixed(k, d)}. The ${dec(1 / d)} tile is the 1/${d} tile with its decimal name.`,
         solution: { board: solved(setup, [[d, k]], 'dec'), box: String(k) },
       };

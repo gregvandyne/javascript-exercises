@@ -39,6 +39,18 @@ export const word = n => NUM_WORDS[n] || fmt(n);
 /** A count and its noun: plural(1, 'bead') -> '1 bead', plural(3, 'bead') -> '3 beads' (every "<count> <noun>" a student reads). */
 export const plural = (n, one, many = `${one}s`) => `${fmt(n)} ${+n === 1 ? one : many}`;
 /** Turns a string id-ish ("Show 7 the 5-way") into a stable key ("show-7-the-5-way"). */
+/** Counting toward the k-th number, never past it: nth(i) is the i-th number said. Up to 4 numbers are listed in full
+ * ("5, 10, 15" for 15); more give the first 3 and the target ("5, 10, 15, ... up to 50", `tail` 'until you say' etc.,
+ * or null for just "5, 10, 15, ..." when the target is the answer). */
+export function countTo(k, nth, tail = 'up to') {
+  const said = i => (typeof nth === 'function' ? nth(i) : fmt(nth * i));
+  if (k <= 4) return Array.from({ length: Math.max(1, k) }, (_, i) => said(i + 1)).join(', ');
+  return `${[1, 2, 3].map(said).join(', ')}, ...${tail ? ` ${tail} ${said(k)}` : ''}`;
+}
+/** A line ends with one period: "5, 10, 15, ..." keeps its dots. */
+export const endLine = t => (/[.?!]$/.test(t) ? t : `${t}.`);
+/** How many times: "once", "3 times". */
+export const times = n => (+n === 1 ? 'once' : `${fmt(n)} times`);
 export const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
 
 // ---------------------------------------------------------------- tasks and variations

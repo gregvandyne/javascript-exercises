@@ -112,7 +112,7 @@ const PLURALS = ['beads', 'cubes', 'tiles', 'disks', 'units', 'rows', 'columns',
   'slices', 'triangles', 'hexagons', 'trapezoids', 'rhombuses', 'parallelograms', 'corners', 'chances', 'bills', 'dollars',
   'cents', 'pennies', 'nickels', 'dimes', 'quarters', 'sticks', 'trains', 'cards', 'pens', 'stickers', 'books', 'cookies',
   'grapes', 'crayons', 'apples', 'marbles', 'shells', 'balloons', 'stars', 'ladybugs', 'frogs', 'ducks', 'buttons',
-  'kites', 'ways', 'shapes', 'cakes', 'pizzas', 'tortillas', 'sandwiches', 'ribbons', 'whole numbers', 'lines'];
+  'kites', 'ways', 'shapes', 'cakes', 'pizzas', 'tortillas', 'sandwiches', 'ribbons', 'whole numbers', 'lines', 'times'];
 // up to two words between the 1 and the noun: a color, "unit", "x", "zero", "square", "more", "$10", "half", "narrow"...
 const ONE_PLURAL = new RegExp(`(?<![\\d$.,/−-])\\b1 (?:(?!(?:and|or|to|of|by|than|in|on|at|from|is|are|for|with|then|as|so|each|the|a|an)\\b)(?:\\$\\d+|[a-z²]+) ){0,2}?(?:${PLURALS.join('|')})\\b`);
 const THERE_ARE_1 = /\bthere are 1 [a-z]/i;
@@ -138,13 +138,73 @@ test('wording: no "1 beads" and no "X, which is X" in any practice task (200 see
 test('wording lint catches the slips it is for', () => {
   assert.match('There are 1 leaves.', THERE_ARE_1);
   assert.doesNotMatch('There are 1 + 5 = 6 equal parts.', THERE_ARE_1);
-  for (const t of ['There are 1 marbles.', 'Make 1 zero pairs.', 'build 4 rows of 1 blue tiles', '1 fives make 5 minutes', 'a 1 by 1 corner of 1 unit tiles', '3 tens and 1 ones'])
+  for (const t of ['There are 1 marbles.', 'Make 1 zero pairs.', 'Tap the 1/2 piece 1 times.', 'build 4 rows of 1 blue tiles', '1 fives make 5 minutes', 'a 1 by 1 corner of 1 unit tiles', '3 tens and 1 ones'])
     assert.match(t, ONE_PLURAL, t);
-  for (const t of ['1 bead', '11 beads', '$1 bills', '0.1 disks', '1/2 pieces', '21 cubes', 'is 1 more than 3', '1 less than 40', '10 groups of 1 make 10', 'sides 1 and 3 units long', '1 x² tile and 2 x tiles', 'taking away 1 yellow leaves 1 more red'])
+  for (const t of ['1 bead', '11 beads', '$1 bills', '0.1 disks', '1/2 pieces', '21 cubes', 'is 1 more than 3', '1 less than 40', '10 groups of 1 make 10', 'sides 1 and 3 units long', '1 x² tile and 2 x tiles', 'taking away 1 yellow leaves 1 more red', 'The corner is −1 times 5'])
     assert.doesNotMatch(t, ONE_PLURAL, t);
   assert.match('It is 30 minutes, which is 30 minutes.', TAUTOLOGY);
   assert.doesNotMatch('$4.10, which is 10 cents', TAUTOLOGY);
   assert.doesNotMatch('1 hour 30 minutes, which is 90 minutes', TAUTOLOGY);
+});
+
+// Counting hints never list a number past the one they count to ("5, 10, 15, ... until you say 5"), and never trail
+// "..." after reaching it ("25, 50, 75, ... until you reach 75"): kit countTo lists up to 4 numbers in full. The target
+// is the one the line names after the dots ("until you reach 75", "up to 40", "How far to 100?"), else the variation's
+// answer (the minutes of a time). Counting down ("4, 3, ... or 0") is not checked.
+const NUM = String.raw`\$?\d+(?:,\d{3})*(?:\.\d+)?¢?(?!\d|:\d)`;
+const SEQ = new RegExp(String.raw`(?<![\w.$:/])(${NUM}(?:, ${NUM})+)(,? ?\.\.\.)?(.{0,60})`, 'g');
+const TARGET = new RegExp(String.raw`^\S*\s*(?:[^.]*?\b(?:until you (?:reach|say|get to)|up to|to) )(${NUM})`);
+const valOf = t => Number(String(t).replace(/[$¢,]/g, ''));
+const answerOf = v => { const k = v.answer && v.answer.box && String(v.answer.box.key); if (!k) return null; const t = k.match(/^\d+:(\d\d)$/); const n = t ? +t[1] : valOf(k); return Number.isFinite(n) ? n : null; };
+export function countingSlips(t, answer) {
+  const out = [];
+  for (const m of t.matchAll(SEQ)) {
+    if (!m[2]) continue; // a list in full ("3, 4 and 6 cubes") is not a count
+    const nums = m[1].split(', ').map(valOf);
+    if (nums.some((n, i) => i && n <= nums[i - 1])) continue;
+    const named = m[2] && m[3].match(TARGET), target = named ? valOf(named[1]) : answer;
+    if (target == null) continue;
+    if (nums.some(n => n > target)) out.push(`lists past ${target}`);
+    else if (nums.includes(target)) out.push(`"..." after reaching ${target}`);
+  }
+  return out;
+}
+test(`counting: no hint lists a number past the one it counts to (${LINT_SEEDS} seeds each)`, () => {
+  const bad = new Map();
+  for (const { id } of practiceTasks()) for (let s = 1; s <= LINT_SEEDS; s++) {
+    const v = variation(id, s), ans = answerOf(v);
+    for (const [where, t] of textsOf(v)) {
+      const slips = countingSlips(t, ans);
+      if (slips.length && !bad.has(`${id} ${where}`)) bad.set(`${id} ${where}`, `${id} seed ${s} ${where}: ${slips[0]} in "${t}"`);
+    }
+  }
+  assert.deepEqual([...bad.values()], []);
+});
+test('counting lint catches the slips it is for', () => {
+  assert.equal(countingSlips('Count by fives as you go: 5, 10, 15, ... until you say 5.', null).length, 1);
+  assert.equal(countingSlips('25, 50, 75, ... until you reach 75.', null).length, 1);
+  assert.equal(countingSlips('Count by 0.5: 0.5, 1, 1.5, ... until you reach 1.', null).length, 1);
+  assert.equal(countingSlips('2 rows of 4 white rods: count 4, 8, 12, ...', 8).length, 1);
+  for (const t of ['Count by fives as you go: 5, 10, 15, ... until you say 50.', 'Count: 25, 50, 75.', 'Count on by tens from 38: 48, 58, ... How far to 100?',
+    'You can use 4, 3, ... or 0 pieces of 1/4.', 'Count by fives from the 12 to the blue hand: 5, 10, 15, ...', '3:15, 3:30, 3:45, 4:00, ... Count each jump until 5:00.'])
+    assert.deepEqual(countingSlips(t, 40), [], t);
+});
+
+// Pattern Blocks "Invent a whole": a block is only rebuilt from smaller blocks that tile it (never "Rebuild 3 triangles
+// out of trapezoids"), with the right count.
+test('pattern blocks "Invent a whole": every rebuild can be built, with the right count', () => {
+  const SIX = { triangle: 1, parallelogram: 2, trapezoid: 3, hexagon: 6 }, MAKES = { hexagon: ['triangle', 'parallelogram', 'trapezoid'], trapezoid: ['triangle'], parallelogram: ['triangle'] };
+  const KIND = { triangle: 'tri', parallelogram: 'para', trapezoid: 'trap', hexagon: 'hex' };
+  let rebuilds = 0;
+  for (let s = 1; s <= LINT_SEEDS; s++) {
+    const v = variation('pattern-blocks/invent-a-whole', s), m = v.prompt.match(/Rebuild (an?|\d+) (\w+?)s? out of (\w+?)s\./);
+    if (!m) { assert.match(v.prompt, /Put (an?|\d+) \w+ on the board next to the/, v.prompt); continue; }
+    rebuilds++;
+    const n = /^an?$/.test(m[1]) ? 1 : +m[1], shape = m[2], from = m[3];
+    assert.ok((MAKES[shape] || []).includes(from), `seed ${s}: ${v.prompt}`);
+    assert.deepEqual(v.answer.board[0].has, { [KIND[from]]: (n * SIX[shape]) / SIX[from] }, `seed ${s}: ${v.prompt}`);
+  }
+  assert.ok(rebuilds >= 40, `some rebuilds (${rebuilds})`);
 });
 
 // Checks that read the arrangement, not just the counts.
