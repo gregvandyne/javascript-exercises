@@ -257,7 +257,8 @@ test('teachers: the task list with notes, Preview and Assign (the dialog), and a
   await B.page.waitForSelector('[data-catalog]');
   const item = B.page.locator(`[data-hritem="T:task:${idOf(slug, first)}"]`);
   assert.equal(await item.count(), 1);
-  await B.page.locator(`[data-cgroup="mt-${slug}"] summary`).click();
+  // Find lessons lists a tool's practice under the tool (See all); bring this one into view
+  await B.page.evaluate(i => { const el = document.querySelector(`[data-hritem="${i}"]`); for (let n = el; n; n = n.parentElement) { if (n.hidden) n.hidden = false; if (n.tagName === 'DETAILS') n.open = true; } el.scrollIntoView({ block: 'center' }); }, `T:task:${idOf(slug, first)}`);
   await item.click();
   await B.page.click('[data-hrto="all"]');
   await B.page.waitForSelector('#hr-tcount');
