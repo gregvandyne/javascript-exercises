@@ -62,6 +62,29 @@ test('the projector and the player page use the shared tokens, light and dark; a
     assert.deepEqual(bar, { bg: C.card, radius: '20px', live: true, mark: true }, `${theme}: the header is a card with the app mark and the Live dot`);
     const stage = await host.evaluate(() => getComputedStyle(document.getElementById('lv-stage')).borderTopLeftRadius);
     assert.equal(stage, '20px');
+    // the game fills the stage card at every size, and again after the window is resized and back (no padding, border or
+    // max width on the stage takes room from the frame); measured once the frame has settled (2 s and two frames)
+    const fill = async () => {
+      await host.waitForTimeout(2000);
+      const fr = host.frames().find(f => /\/live\/frame\//.test(f.url()));
+      if (fr) await fr.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
+      const box = await host.evaluate(() => { const s = document.getElementById('lv-stage'), i = s.querySelector('iframe'), a = s.getBoundingClientRect(), b = i.getBoundingClientRect();
+        // the stage fills its place in the page: beside the code card on a wide screen, the header's width when stacked
+        const g = document.querySelector('.lv-host'), bar = g.querySelector(':scope > header.lv-bar').getBoundingClientRect(), jb = g.querySelector(':scope > .lv-joinbox').getBoundingClientRect();
+        const gap = parseFloat(getComputedStyle(g).columnGap) || 0, side = jb.top < a.top + 1 && jb.left > a.right;
+        const room = side ? jb.left - gap - bar.left : bar.width;
+        return { stage: s.clientWidth, iframe: i.clientWidth, outer: Math.round(a.width), room: Math.round(room), dx: [b.left - a.left, a.right - b.right, b.top - a.top, a.bottom - b.bottom].map(Math.round) }; });
+      const inner = fr ? await fr.evaluate(() => [innerWidth, document.documentElement.clientWidth]) : null;
+      return { ...box, inner };
+    };
+    for (const [w, hh] of [[1366, 768], [820, 1180], [390, 844], [1200, 768], [1366, 768]]) {
+      await host.setViewportSize({ width: w, height: hh });
+      const f = await fill();
+      assert.ok(Math.abs(f.outer - f.room) <= 1, `${theme} ${w}: the stage takes all its room in the page (${JSON.stringify(f)})`);
+      assert.equal(f.iframe, f.stage, `${theme} ${w}: the game frame is as wide as the stage (${JSON.stringify(f)})`);
+      assert.deepEqual(f.dx, [0, 0, 0, 0], `${theme} ${w}: the frame covers the stage edge to edge`);
+      assert.ok(f.inner && f.inner[0] === f.stage && f.inner[1] === f.stage, `${theme} ${w}: the game's own window is the stage's width (${JSON.stringify(f)})`);
+    }
 
     // a player on a phone, then on a Chromebook
     for (const [w, hgt] of [[390, 844], [1366, 768]]) {
