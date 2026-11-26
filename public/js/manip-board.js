@@ -296,6 +296,17 @@ export function xyClose(st, color) {
 }
 /** A point dragged to (x, y) grid values: on the nearest grid point, inside the grid. -> { x, y } */
 export const xySnap = (x, y, lo, hi) => ({ x: clamp(Math.round(num(x)), lo, hi), y: clamp(Math.round(num(y)), lo, hi) });
+/** How far outside the grid's plot area (screen px) a tap still counts as a tap on its edge. */
+export const XY_EDGE = 8;
+/**
+ * A tap at (x, y) on the screen against the grid's plot area r ({ left, top, width, height }): inside it, or just outside
+ * it (within tol px), counts. -> its place as grid values (snapped onto the nearest grid point, clamped into lo..hi) | null
+ */
+export function xyTapValue(r, x, y, lo, hi, tol = XY_EDGE) {
+  if (!r || !(r.width > 0) || !(r.height > 0)) return null;
+  if (x < r.left - tol || x > r.left + r.width + tol || y < r.top - tol || y > r.top + r.height + tol) return null;
+  return xySnap(lo + ((x - r.left) / r.width) * (hi - lo), lo + (1 - (y - r.top) / r.height) * (hi - lo), lo, hi);
+}
 /**
  * A whole line moved by (dx, dy) grid values: every point of it moves by the same whole number of grid steps, and the
  * move is cut short so no point leaves the grid (the line keeps its shape). pts: all the points; idx: the line's.
@@ -310,7 +321,9 @@ export function xyMoveLine(pts, idx, dx, dy, lo, hi) {
 }
 export const PV_COL = { w: 136, gap: 6, pad: 10, h: 236 };
 function matSize(st) { return { w: clamp(num(st && st.w, 440), 160, 1600), h: OBJ_HEAD + clamp(num(st && st.h, 290), 80, 1200) }; }
-OBJECTS['base-ten-blocks'][1].size = matSize; OBJECTS['place-value-disks'][1].size = matSize; OBJECTS['two-color-counters'][2].size = matSize;
+// Every work mat sizes by its state (w, h). Found by kind, not by place in the list: a double ten-frame keeps its own
+// size (frameSize(20): two ten-frames side by side), never the mat's.
+for (const slug of ['base-ten-blocks', 'place-value-disks', 'two-color-counters']) OBJECTS[slug].find(k => k.k === 'mat').size = matSize;
 /** A fraction like "3/4", "1 1/2" or "2": { n, d } (improper), or null. */
 export function parseFrac(s) {
   const m = String(s == null ? '' : s).trim().match(/^(?:(\d{1,2})\s+)?(\d{1,3})(?:\s*\/\s*(\d{1,3}))?$/);
@@ -329,7 +342,11 @@ function fracEqSize(st) {
 }
 function pvSize(st) { const n = clamp((st && Array.isArray(st.cols) ? st.cols : PV10).length, 1, 8); return { w: PV_COL.pad * 2 + n * PV_COL.w + (n - 1) * PV_COL.gap, h: OBJ_HEAD + PV_COL.pad * 2 + PV_COL.h }; }
 export const CELL = 60;
-function frameSize(n) { return n > 10 ? { w: 20 + 10 * CELL + 12, h: OBJ_HEAD + 20 + 2 * CELL } : { w: 20 + 5 * CELL, h: OBJ_HEAD + 20 + (n > 5 ? 2 : 1) * CELL }; }
+/** A double ten-frame as drawn (manipulatives.css .mp-frame2): 10 px around, two ten-frames (5 x 2 cells and a FRAME_B
+ *  border each) side by side, FRAME_GAP apart. */
+export const FRAME_B = 3, FRAME_GAP = 12;
+const DOUBLE_W = 5 * CELL + 2 * FRAME_B;   // one of its ten-frames, border and all
+function frameSize(n) { return n > 10 ? { w: 20 + 2 * DOUBLE_W + FRAME_GAP, h: OBJ_HEAD + 20 + 2 * CELL + 2 * FRAME_B } : { w: 20 + 5 * CELL, h: OBJ_HEAD + 20 + (n > 5 ? 2 : 1) * CELL }; }
 
 export const kindsOf = slug => OBJECTS[slug] || [];
 export const kindOf = (slug, k) => kindsOf(slug).find(x => x.k === k) || null;
@@ -611,8 +628,8 @@ export function slotsOf(slug, o) {
     return Array.from({ length: n }, (_, i) => ({ kind: 'cell', x: X + (10 + (i % 5) * CELL) * s, y: Y + (OBJ_HEAD + 10 + Math.floor(i / 5) * CELL) * s, w: CELL * s, h: CELL * s }));
   }
   if (o.k === 'double-ten-frame') {
-    // Two ten-frames side by side (12 px apart): cells 0-9 the left one, 10-19 the right one.
-    return Array.from({ length: 20 }, (_, i) => { const f = Math.floor(i / 10), j = i % 10; return { kind: 'cell', x: X + (10 + f * (5 * CELL + 12) + (j % 5) * CELL) * s, y: Y + (OBJ_HEAD + 10 + Math.floor(j / 5) * CELL) * s, w: CELL * s, h: CELL * s }; });
+    // Two ten-frames side by side (FRAME_GAP apart, each inside its FRAME_B border): cells 0-9 the left one, 10-19 the right one.
+    return Array.from({ length: 20 }, (_, i) => { const f = Math.floor(i / 10), j = i % 10; return { kind: 'cell', x: X + (10 + FRAME_B + f * (DOUBLE_W + FRAME_GAP) + (j % 5) * CELL) * s, y: Y + (OBJ_HEAD + 10 + FRAME_B + Math.floor(j / 5) * CELL) * s, w: CELL * s, h: CELL * s }; });
   }
   return [];
 }

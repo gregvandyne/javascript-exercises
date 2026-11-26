@@ -686,6 +686,7 @@ function down(e) {
       if (n && canEditNote(A, n)) { R.gesture = { kind: 'note', key: A.key, n, el: noteEl, sx: e.clientX, sy: e.clientY, x0: +n.x || 0, y0: +n.y || 0, inner, moved: false }; rm.setPointerCapture(e.pointerId); e.preventDefault(); return; }
     }
     if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-seglabel, .mp-segval')) return;   // a tap on the tool itself
+    if (R.impl.edgeTap && R.impl.edgeTap(e)) return;   // a tap on the grid's edge, just outside it
     const objEl = !R.textMode && e.target.closest('.mp-obj');
     if (objEl) {
       const o = A.st.objects.find(x => x.id === objEl.dataset.oid);
@@ -940,7 +941,7 @@ function click(e) {
   const objEl = e.target.closest('.mp-content .mp-obj');
   const act = e.target.closest('.mp-content [data-act]');
   if (act && objEl) { edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, act.dataset, e); }); return; }
-  if (R.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, {}, e); });
+  if (R.impl.boardTap && objEl && (e.target.closest('svg.mp-nl, svg.mp-grid') || (R.impl.edgeTap && R.impl.edgeTap(e)))) edit(A.key, (st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; return R.impl.act(o.st, {}, e); });
 }
 /** Finish the text being written: kept with its words, gone if empty; saved. */
 function commitText() {

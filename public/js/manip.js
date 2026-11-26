@@ -19,7 +19,7 @@ import { PAGE_TEMPLATES, homeLists, byTool } from '/js/manip-library.js';
 import { stepsOf } from '/js/manip-data.js';
 import { WORLD, OBJECTS, kindsOf, kindOf, objectTool, objSize, objRect, clockSector, addMinutes, migrate, newBoard, boxesOf, bbox, spotIn, placeObject,
   slotsOf, snapFor, groupOf, pieceBox, SNAP_PX, S_MIN, S_FLOOR, S_MAX, OBJ_MAX, OBJ_HEAD, UNDER, parseFrac, EQ_BAR,
-  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyMoveLine, xyClose, xyOpenLine, xyNextLn,
+  snapOpts, linksPieces, FRAMES, seatedIn, nearSpot, splitGroup, roundPiece, startLock, ANS, FREE_SIZE, answerSize, freeResize, grownHeight, textRect, textBoxFields, xyRange, xyLines, xySnap, xyTapValue, XY_EDGE, xyMoveLine, xyClose, xyOpenLine, xyNextLn,
   rectFrom, inRect, selCount, selKeep, selMoving, selMove, selDelete } from '/js/manip-board.js';
 import { settleCharts, chartInfo, strayIds, inChart, homeFor, placeAtHome, columnHome, paletteAdd } from '/js/manip-pv.js';
 import { openWheel, closeWheel, startHold, shake, undoToast, icon, SLOP, wheelOpen } from '/js/manip-wheel.js';
@@ -483,9 +483,9 @@ const IMPL = {
       if (d.act === 'unpt') { st.pts.splice(+d.i, 1); return true; }
       // The tap that ends a drag of a point or a line plots nothing; nor does a tap on a point or a line.
       if (Date.now() - xyDragEnd < 300 || e.target.closest('[data-pt], [data-line]')) return false;
-      const svg = e.target.closest('svg.mp-grid'); if (!svg) return false;
-      const r = svg.getBoundingClientRect(), { lo, hi } = xyRange(st);
-      const p = xySnap(lo + ((e.clientX - r.left) / r.width) * (hi - lo), lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo), lo, hi);
+      // A tap just outside the grid (a few px, on its edge) goes onto the nearest grid point on that edge.
+      const svg = e.target.closest('svg.mp-grid') || xyEdgeGrid(e); if (!svg) return false;
+      const { lo, hi } = xyRange(st), p = xyTapValue(xyPlotBox(svg), e.clientX, e.clientY, lo, hi); if (!p) return false;
       // A tap on a spot that has a point is a tap on that point (it may reach here as a tap on the grid): never a
       // second point there; the first point of the line being drawn closes it into a shape.
       const hit = st.pts.findIndex(q => q.x === p.x && q.y === p.y);
@@ -497,6 +497,7 @@ const IMPL = {
     },
     onSet: (st, key) => { if (key === 'four') { st.pts = []; st.shut = []; } },
     boardTap: true,
+    edgeTap: e => !!xyEdgeGrid(e),
     bind: (el, ctx) => bindGrids(el, ctx),
   },
 
@@ -512,10 +513,11 @@ const IMPL = {
     board: (st, view) => {
       const S = 400, pegs = geoPegs(st.board), P = p => geoPx(st.board, p, S);
       const all = [...st.bands, ...(st.band.length > 1 ? [{ pts: st.band, color: st.color, open: true }] : [])];
+      // The band in progress counts its pegs, only while there is one to stretch (not on a read-only board).
       return `<div class="mp-pad"><svg class="mp-geo" width="${S}" height="${S}" viewBox="0 0 ${S} ${S}" role="img" aria-label="Geoboard, tap pegs to stretch a band">
         ${all.map(b => `<${b.open ? 'polyline' : 'polygon'} points="${b.pts.map(p => { const q = P(p); return `${q.X},${q.Y}`; }).join(' ')}" fill="${st.fill && !b.open ? esc(b.color) : 'none'}" fill-opacity=".35" stroke="${esc(b.color)}" stroke-width="5" stroke-linejoin="round"/>`).join('')}
         ${pegs.map((p, i) => { const q = P(p); return `<g><circle cx="${q.X}" cy="${q.Y}" r="17" fill="transparent" ${view.readOnly ? '' : `data-act="peg" data-i="${i}" role="button" aria-label="Peg ${i + 1}" class="mp-peg"`}/><circle cx="${q.X}" cy="${q.Y}" r="8.5" fill="#5D4037" stroke="#fff" stroke-width="2" pointer-events="none"/></g>`; }).join('')}</svg>
-        <p class="small muted">Current band: ${st.band.length} pegs.</p></div>`;
+        ${view.readOnly || !st.band.length ? '' : `<p class="small muted">Current band: ${st.band.length} ${st.band.length === 1 ? 'peg' : 'pegs'}.</p>`}</div>`;
     },
     act: (st, d) => { if (d.act !== 'peg') return false; const p = geoPegs(st.board)[+d.i]; if (p) st.band.push(p); return !!p; },
     onSet: (st, key) => { if (key === 'board') { st.bands = []; st.band = []; } },
@@ -616,6 +618,21 @@ const XY_COLORS = ['#E53935', '#1E88E5', '#43A047', '#FB8C00', '#8E24AA'];
 const COLOR_NAME = { '#E53935': 'Red', '#1E88E5': 'Blue', '#43A047': 'Green', '#FB8C00': 'Orange', '#8E24AA': 'Purple' };
 const XY_S = 440, XY_MAX = 60;
 let xyDragEnd = 0;
+/** A grid's plot area on the screen: its box inside its border (the viewBox fills that, not the border). */
+function xyPlotBox(svg) {
+  const r = svg.getBoundingClientRect(), cs = getComputedStyle(svg), k = r.width / (parseFloat(cs.width) || r.width || 1);
+  const bl = (parseFloat(cs.borderLeftWidth) || 0) * k, br = (parseFloat(cs.borderRightWidth) || 0) * k, bt = (parseFloat(cs.borderTopWidth) || 0) * k, bb = (parseFloat(cs.borderBottomWidth) || 0) * k;
+  return { left: r.left + bl, top: r.top + bt, width: r.width - bl - br, height: r.height - bt - bb };
+}
+/** The grid a tap just outside it (within XY_EDGE px) belongs to: a tap in the grid's own margin, never one on its
+ *  table, its labels or a control (those plot nothing). An editable grid only. -> svg | null */
+function xyEdgeGrid(e) {
+  const t = e.target, pad = t && t.closest && t.closest('.mp-xy');
+  if (!pad || t.closest('svg.mp-grid, .mp-xytable, .mp-xyshut, button, input, select, a, label, p, table')) return null;
+  const svg = pad.querySelector(':scope > svg.mp-grid[data-xy]'); if (!svg) return null;
+  const r = xyPlotBox(svg), x = e.clientX, y = e.clientY;
+  return x >= r.left - XY_EDGE && x <= r.left + r.width + XY_EDGE && y >= r.top - XY_EDGE && y <= r.top + r.height + XY_EDGE ? svg : null;
+}
 /** An arrowhead at (x, y) pointing along (dx, dy) (screen pixels), as a polygon's points. */
 function arrowHead(x, y, dx, dy, size = 13) {
   const n = Math.hypot(dx, dy) || 1, ux = dx / n, uy = dy / n, bx = x - ux * size, by = y - uy * size;
@@ -676,7 +693,7 @@ function xyTapPoint(st, i) {
 function bindGrids(el, ctx) {
   for (const svg of el.querySelectorAll('svg[data-xy]')) {
     let d = null;
-    const val = e => { const o = ctx.find(svg.dataset.xy), r = svg.getBoundingClientRect(), { lo, hi } = xyRange(o.st); return { x: lo + ((e.clientX - r.left) / r.width) * (hi - lo), y: lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo) }; };
+    const val = e => { const o = ctx.find(svg.dataset.xy), r = xyPlotBox(svg), { lo, hi } = xyRange(o.st); return { x: lo + ((e.clientX - r.left) / r.width) * (hi - lo), y: lo + (1 - (e.clientY - r.top) / r.height) * (hi - lo) }; };
     svg.addEventListener('pointerdown', e => {
       if ((ctx.blocked && ctx.blocked()) || e.button > 0) return;
       const pt = e.target.closest('[data-pt]'), ln = !pt && e.target.closest('[data-line]'); if (!pt && !ln) return;
@@ -903,7 +920,7 @@ function openTool(slug, { restore = null, boardId = null, title = '', practice =
         <div class="mp-settings" id="mp-settings"></div>
         <div class="mp-share" id="mp-share"></div>
         <section class="mp-tasks panel" id="mp-tasks" aria-label="${esc(t('js.manip.tasks.boxLabel'))}"></section>
-        <p class="small muted mp-note">${esc(V.impl.note || '')}</p>
+        ${practice ? '' : `<p class="small muted mp-note">${esc(V.impl.note || '')}</p>`}
       </div>
     </div></div>`;
   bindBoard();
@@ -1167,11 +1184,14 @@ function renderChrome() {
   ].join('');
   const set = document.getElementById('mp-settings');
   const settings = objectTool(slug) ? (o && !o.st.q && V.impl.settings ? V.impl.settings(o.st) : '') : V.impl.settings ? V.impl.settings(V.st) : '';
-  set.innerHTML = `${settings}${V.noTotals ? '' : btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}<p class="small muted mp-hint">${esc(hintOf(V.impl, objectTool(slug) ? o && o.st : V.st))}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`;
+  set.innerHTML = `${settings}${V.noTotals ? '' : btn('chip', `data-view="totals" aria-pressed="${V.totals !== false}"`, esc(V.totals !== false ? t('js.manip.view.totalsOn') : t('js.manip.view.totalsOff')))}${helpHtml(slug, o)}`;
   renderAnnBar(); renderDraft(); renderSteps(); renderStepCard();
 }
 /** A tool's help text under its settings: a string, or a function of the state it describes (the number line's mode). */
 const hintOf = (impl, st) => (typeof impl.hint === 'function' ? impl.hint(st || {}) : impl.hint) || '';
+/** The help text under the settings, on every tool; none while practicing (the task's own card and hints do that job). */
+const helpHtml = (slug, o) => (V.practice ? ''
+  : `<p class="small muted mp-hint">${esc(hintOf(V.impl, objectTool(slug) ? o && o.st : V.st))}${V.impl.pieces ? ` ${esc(t('js.manip.board.pieceHint'))}` : ''}</p>`);
 function renderTotal() {
   const el = document.getElementById('mp-total'); if (!el) return;
   const slug = V.tool.slug;
@@ -1510,7 +1530,7 @@ function bindBoard() {
     const objEl = e.target.closest('#mp-content .mp-obj');
     const act = e.target.closest('#mp-content [data-act]');
     if (act && objEl) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, act.dataset, e); }); return; }
-    if (V.impl.boardTap && objEl && e.target.closest('svg.mp-nl, svg.mp-grid')) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, {}, e); }); return; }
+    if (V.impl.boardTap && objEl && (e.target.closest('svg.mp-nl, svg.mp-grid') || (V.impl.edgeTap && V.impl.edgeTap(e)))) { change((st, v) => { const o = st.objects.find(x => x.id === objEl.dataset.oid); if (!o || o.st.q) return false; v.osel = o.id; v.many = null; return V.impl.act(o.st, {}, e); }); return; }
   });
   root.addEventListener('change', e => {
     // A typed value inside an object (a bar model's part size), once it is finished.
@@ -1848,6 +1868,7 @@ function bindPlane() {
     const objEl = e.target.closest('.mp-obj');
     if (objEl) {
       if (e.target.closest('[data-act], svg.mp-nl, svg.mp-grid, svg[data-clock], .mp-peg, .mp-seglabel, .mp-segval, .mp-bead, .mp-cell, .mp-answer')) return;   // the object's own work
+      if (V.impl.edgeTap && V.impl.edgeTap(e)) return;   // a tap on the grid's edge, just outside it: a point there
       const o = V.st.objects.find(x => x.id === objEl.dataset.oid); if (!o) return;
       e.preventDefault();
       if (e.button === 2) { soloObjMenu(o.id, e.clientX, e.clientY); return; }
@@ -2294,12 +2315,14 @@ function renderDraft() {
   // One chat everywhere: Try again on a draft that failed (or its starting board) opens Oomba with the words in its box.
   { const re0 = DJ.retry && DJ.retry.tool === V.tool.slug ? DJ.retry : null; V.draftOpen = false; DJ.retry = null; el.innerHTML = ''; CHAT.ask(re0 ? re0.brief : ''); return; }
 }
+/** The tool's ready-made tasks under its board: each task's Preview and Assign (or Practice) side by side, then one row
+ *  of quiet links (all the tasks, practice them, the Task library). */
 function renderTasksBox() {
   const el = document.getElementById('mp-tasks'), tasks = TASKS[V.tool.slug] || [];
   if (!tasks.length || V.practice) { el.hidden = true; return; }
   const shown = V.tasksOpen ? tasks : tasks.slice(0, 1);
   el.innerHTML = `<h2>${esc(t('js.manip.tasks.boxTitle'))}</h2>${shown.map(x => `<div class="mp-task"><p><b>${esc(x.title)}</b> <span class="mp-tag">${esc(x.ccss)}</span> <span class="mp-tag">${esc(t('js.manip.grade', { grade: x.grade }))}</span></p><p class="small">${esc(x.prompt)}</p>${HOST ? `<p class="small muted"><b>${esc(t('js.manip.tasks.teacherNote'))}</b> ${esc(x.notes)}</p>` : ''}${TL.actionsHtml(V.tool.slug, x, HOST)}</div>`).join('')}
-    <div class="row">${btn('btn btn-sm', 'id="mp-tasksmore"', esc(V.tasksOpen ? t('js.manip.tasks.less') : t('js.manip.tasks.all', { n: tasks.length })))}${HOST ? `<a class="small" href="#tasks">${esc(t('js.manip.tasks.library'))}</a>` : ''}${tasks.some(isPractice) ? `<a class="small" href="#practice/${esc(V.tool.slug)}">${esc(t('js.manip.tasks.practiceList'))}</a>` : ''}</div>`;
+    <div class="mp-tasknav">${btn('mp-tasklink', 'id="mp-tasksmore"', esc(V.tasksOpen ? t('js.manip.tasks.less') : t('js.manip.tasks.all', { n: tasks.length })))}${tasks.some(isPractice) ? `<a class="mp-tasklink" href="#practice/${esc(V.tool.slug)}">${esc(t('js.manip.tasks.practiceList'))}</a>` : ''}${HOST ? `<a class="mp-tasklink" href="#tasks">${esc(t('js.manip.tasks.library'))}</a>` : ''}</div>`;
   document.getElementById('mp-tasksmore').onclick = () => { V.tasksOpen = !V.tasksOpen; renderTasksBox(); };
 }
 
