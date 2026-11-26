@@ -3912,6 +3912,8 @@
       "showSteps": "Schritte zeigen",
       "checkResult": "{right} von {total} richtig. Versuch es bei den anderen noch einmal.",
       "checkAll": "{total, plural, one {Alles richtig!} other {Alle # richtig!}}",
+      "checkOneRight": "Richtig!",
+      "checkOneWrong": "Noch nicht richtig. Versuch es noch einmal.",
       "checksSummary": "{total, plural, one {Antworten geprüft: {checked} von #} other {Antworten geprüft: {checked} von #}}",
       "checkAllRight": "Alles richtig",
       "checkNeedsHelp": "Braucht Hilfe",
@@ -3925,6 +3927,7 @@
       "pushedMine": "Dein Brett wurde an alle Schüler gesendet.",
       "endTitle": "Diese Sitzung beenden?",
       "endConfirm": "Danach können die Schüler ihre Felder nicht mehr ändern. Du kannst den Raum später mit demselben Code wieder öffnen.",
+      "endConfirmHr": "Damit wird das Werkzeug von allen Tischen genommen. Die Schüler behalten ihre Arbeit.",
       "pushNoKey": "Trage zuerst die Antworten in deine Antwortfelder ein, damit die Schüler ihre Arbeit prüfen können."
     },
     "figures-editor": {

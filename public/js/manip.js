@@ -1290,11 +1290,14 @@ function renderInk() { document.getElementById('mp-ink').innerHTML = V.ann.strok
 const Z_MIN = 0.15, Z_MAX = 2.5;
 function vpSize() { const b = document.getElementById('mp-board'); return b ? { w: b.clientWidth || 800, h: b.clientHeight || 480 } : { w: 800, h: 480 }; }
 function toWorld(cx, cy) { const r = document.getElementById('mp-board').getBoundingClientRect(); return { x: (cx - r.left - V.view.x) / V.view.z, y: (cy - r.top - V.view.y) / V.view.z }; }
-/** The part of the plane on screen (a plane rectangle, inside the plane). */
+/** The part of the plane on screen and clear of the zoom pill (clearArea: its strip at the top on a phone, at the
+ *  bottom on a computer), a plane rectangle inside the plane: where new pieces, objects and notes go, so none lands
+ *  under the pill, which would then take its tap (QA: a red counter under "Fit" on a phone). */
 function viewRegion() {
   if (!V || !V.view) return { x: 0, y: 0, w: WORLD.w, h: WORLD.h };
-  const s = vpSize(), v = V.view, x = clamp(-v.x / v.z, 0, WORLD.w - 200), y = clamp(-v.y / v.z, 0, WORLD.h - 200);
-  return { x, y, w: Math.max(200, Math.min(s.w / v.z, WORLD.w - x)), h: Math.max(200, Math.min(s.h / v.z, WORLD.h - y)) };
+  const c = clearArea(), top = c.top ? c.top + 6 : 0, bottom = c.bottom < c.h ? c.bottom - 6 : c.bottom, v = V.view;
+  const x = clamp(-v.x / v.z, 0, WORLD.w - 200), y = clamp((top - v.y) / v.z, 0, WORLD.h - 200);
+  return { x, y, w: Math.max(200, Math.min(c.w / v.z, WORLD.w - x)), h: Math.max(200, Math.min((bottom - Math.max(top, v.y + y * v.z)) / v.z, WORLD.h - y)) };
 }
 function applyView() {
   const w = document.getElementById('mp-world'); if (!w || !V) return;

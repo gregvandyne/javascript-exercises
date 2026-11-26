@@ -3912,6 +3912,8 @@
       "showSteps": "Stappen tonen",
       "checkResult": "{right} van de {total} goed. Probeer de andere nog eens.",
       "checkAll": "{total, plural, one {Alles goed!} other {Alle # goed!}}",
+      "checkOneRight": "Goed!",
+      "checkOneWrong": "Nog niet goed. Probeer het nog eens.",
       "checksSummary": "{total, plural, one {Antwoorden gecontroleerd: {checked} van #} other {Antwoorden gecontroleerd: {checked} van #}}",
       "checkAllRight": "Alles goed",
       "checkNeedsHelp": "Heeft hulp nodig",
@@ -3925,6 +3927,7 @@
       "pushedMine": "Je bord is naar alle leerlingen gestuurd.",
       "endTitle": "Deze sessie beëindigen?",
       "endConfirm": "Daarna kunnen leerlingen hun vak niet meer veranderen. Je kunt de ruimte later weer openen met dezelfde code.",
+      "endConfirmHr": "Het materiaal wordt dan van alle tafels gehaald. Leerlingen houden hun werk.",
       "pushNoKey": "Typ eerst de antwoorden in je antwoordvakken, zodat leerlingen hun werk kunnen controleren."
     },
     "figures-editor": {

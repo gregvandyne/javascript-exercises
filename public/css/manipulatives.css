@@ -833,6 +833,12 @@ main.rm-main .fg-tools{margin-bottom:0}
   .mp-inhr .mp-probc:not(.open) .mp-probacts .btn{min-height:40px;padding:0 12px}
   .mp-inhr .mp-probc:not(.open) .mp-probbtnt{display:none}
   .mp-inhr .mp-probc:not(.open) .mp-probchoices{flex-wrap:nowrap;overflow-x:auto}
+  /* choices (with or without an answer box): a line of their own under the box and Check, full width, wrapping, so the
+     box keeps a usable width and no choice hides off to the side (QA: a 43 px box and a choice row that scrolled) */
+  .mp-inhr .mp-probc:not(.open) .mp-probhaschoice{flex-wrap:wrap}
+  .mp-inhr .mp-probc:not(.open) .mp-probhaschoice .mp-probbox{flex:1 1 120px;min-width:120px}
+  .mp-inhr .mp-probc:not(.open) .mp-probhaschoice .mp-probchoices{order:1;flex:1 1 100%;flex-wrap:wrap;overflow:visible;gap:6px}
+  .mp-inhr .mp-probc:not(.open) .mp-probhaschoice .mp-probchoice{min-height:36px;padding:4px 12px;font-size:.9rem;white-space:normal;text-align:start;max-width:100%}
   .mp-inhr .mp-probc:not(.open) .mp-probok,.mp-inhr .mp-probc:not(.open) .mp-probno{padding:4px 8px;font-size:.9rem;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical;overflow:hidden}
   .mp-inhr .mp-probc.open{position:absolute;left:0;right:0;top:0;z-index:40;max-height:calc(100vh - 24px);overflow:auto;box-shadow:var(--shadow-lg)}
 }

@@ -3911,6 +3911,8 @@
       "showSteps": "Mostrar los pasos",
       "checkResult": "{right} de {total} bien. Inténtalo otra vez con las demás.",
       "checkAll": "{total, plural, one {¡Todo bien!} other {¡Las # bien!}}",
+      "checkOneRight": "¡Bien!",
+      "checkOneWrong": "Todavía no está bien. Inténtalo otra vez.",
       "checksSummary": "{total, plural, one {Respuestas comprobadas: {checked} de #} other {Respuestas comprobadas: {checked} de #}}",
       "checkAllRight": "Todo bien",
       "checkNeedsHelp": "Necesita ayuda",
@@ -3924,6 +3926,7 @@
       "pushedMine": "Tu tablero se envió a todos los alumnos.",
       "endTitle": "¿Terminar esta sesión?",
       "endConfirm": "Después, los alumnos no podrán cambiar sus cuadros. Puedes volver a abrir la sala más tarde con el mismo código.",
+      "endConfirmHr": "Así se quita la herramienta de todos los pupitres. Los alumnos conservan su trabajo.",
       "pushNoKey": "Escribe primero las respuestas en tus casillas de respuesta para que los alumnos puedan comprobar su trabajo."
     },
     "figures-editor": {
