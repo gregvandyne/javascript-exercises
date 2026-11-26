@@ -13,9 +13,6 @@ const DEFS = Object.fromEntries(allPieceDefs(SLUG).map(d => [d.kind, d]));
 export const COLOR = ['', 'white', 'red', 'light green', 'purple', 'yellow', 'dark green', 'black', 'brown', 'blue', 'orange'];
 const rod = n => `${COLOR[n]} rod`;
 const A = n => `${['orange'].includes(COLOR[n]) ? 'an' : 'a'} ${rod(n)}`;
-/** The second of two rods named together: "another red rod" when it is the first one's color, else "the blue rod" (or,
- *  with a: true, "a blue rod"). "Orange and another orange rod", never "orange and the orange rod". */
-const second = (first, n, { a = false } = {}) => (first === n ? `another ${rod(n)}` : a ? A(n) : `the ${rod(n)}`);
 
 // ---------------------------------------------------------------- the board
 const num = (v, d = 0) => (Number.isFinite(+v) ? +v : d);
@@ -105,7 +102,7 @@ export const TASKS = [
           { t: 'mat', label: 'Way 1', has: [a, n - a], say: `On Way 1, put ${A(a)} and the rod that makes ${n}.` },
           { t: 'mat', label: 'Way 2', n: 2, sum: n, say: `On Way 2, put two rods that are ${n} long together.` },
           { t: 'differ', labels: ['Way 1', 'Way 2'], say: 'Way 2 needs different rods from Way 1.' }] },
-        hints: [`Put ${A(a)} on Way 1. Which rod fills the rest of the ${rod(n)}'s length?`, `${a} + ${n - a} = ${n}. For Way 2, try ${A(other[0])}.`, `${other[0]} + ${other[1]} = ${n} too: the ${rod(other[0])} and ${second(other[0], other[1])}.`],
+        hints: [`Put ${A(a)} on Way 1. Which rod fills the rest of the ${rod(n)}'s length?`, `${a} + ${n - a} = ${n}. For Way 2, try ${A(other[0])}.`, `${other[0]} + ${other[1]} = ${n} too: the ${rod(other[0])} and ${other[0] === other[1] ? 'another one' : `the ${rod(other[1])}`}.`],
         explain: `${a} + ${n - a} = ${n} and ${other[0]} + ${other[1]} = ${n}. Every pair of rods as long as the ${rod(n)} is a way to make ${n}.`,
         solution: { board: solved(setup, { on: { 'Way 1': [a, n - a], 'Way 2': other } }) },
       };
@@ -166,7 +163,7 @@ export const TASKS = [
       return {
         prompt: `White is 1. Make a train of ${k} ${COLOR[r]} rods${sumText}. Then put out ${p > 10 ? 'orange and one more rod' : 'the one rod'} as long as the train. How long is it?`,
         setup, answer: { board: [{ t: 'rods', has: [...Array(k).fill(r), ...match], say: `Put out ${k} ${COLOR[r]} rods and ${p > 10 ? 'orange and the rod' : 'the rod'} that matches them.` }], box: { key: String(p), label: 'how long' } },
-        hints: [`Add ${k} ${COLOR[r]} rods end to end: each is ${r}.`, `${Array(Math.min(k, 6)).fill(r).join(' + ')}${k > 6 ? ' + ...' : ''}: count on by ${r}s.`, `${k} × ${r} = ${p}: ${p > 10 ? `orange and ${second(10, p - 10)}` : `the ${rod(p)}`}.`],
+        hints: [`Add ${k} ${COLOR[r]} rods end to end: each is ${r}.`, `${Array(Math.min(k, 6)).fill(r).join(' + ')}${k > 6 ? ' + ...' : ''}: count on by ${r}s.`, `${k} × ${r} = ${p}: ${p > 10 ? `orange and ${p - 10 === 10 ? 'another orange rod' : `the ${rod(p - 10)}`}` : `the ${rod(p)}`}.`],
         explain: `${k} rods of ${r} make ${p}: ${k} × ${r} = ${p}. A train of equal rods is multiplication.`,
         solution: { board: solved(setup, { loose: [...Array(k).fill(r), ...match] }), box: String(p) },
       };
@@ -178,7 +175,7 @@ export const TASKS = [
       let a, b; do { a = R.int(2, 9); b = R.int(2, 9); } while (a + b <= 10);
       const s = a + b, setup = rodBoard({ refs: [[a, b], [10]] });
       return {
-        prompt: `The train of ${A(a)} and ${second(a, b, { a: true })} is longer than the orange rod under it. Put out the one rod that fills the gap at the end of orange. How much longer is the train?`,
+        prompt: `The train of ${A(a)} and ${A(b)} is longer than the orange rod under it. Put out the one rod that fills the gap at the end of orange. How much longer is the train?`,
         setup, answer: { board: [{ t: 'rods', has: [s - 10], say: 'Put out one rod as long as the gap.' }], box: { key: String(s - 10), label: 'how much longer' } },
         hints: [`The train is ${a} + ${b} = ${s} long. Orange is 10.`, `Try rods at the end of orange until one fits exactly.`, `${s} − 10 = ${s - 10}: the ${rod(s - 10)}.`],
         explain: `${a} + ${b} = ${s}, and ${s} − 10 = ${s - 10}. The rod that fills the gap measures how much longer the train is.`,
@@ -195,7 +192,7 @@ export const TASKS = [
       return {
         prompt: `The ${rod(W)} is 1 whole. Put out the rod that is ${fr(x, W)} of it and the rod that is ${fr(y, W)} of it.`,
         setup, answer: { board: [{ t: 'rods', has: [x, y], say: `Put out the rod for ${fr(x, W)} and the rod for ${fr(y, W)}, and no others.` }] },
-        hints: [`The ${rod(W)} is ${W} white rods long, so one white rod is 1/${W}.`, `${fr(x, W)} of ${W} is ${x}, and ${fr(y, W)} of ${W} is ${y}.`, `Put out the ${rod(x)} and ${second(x, y)}.`],
+        hints: [`The ${rod(W)} is ${W} white rods long, so one white rod is 1/${W}.`, `${fr(x, W)} of ${W} is ${x}, and ${fr(y, W)} of ${W} is ${y}.`, `Put out the ${rod(x)} and the ${rod(y)}.`],
         explain: `${fr(x, W)} of the ${rod(W)} is ${x} long (the ${rod(x)}), and ${fr(y, W)} is ${y} long (the ${rod(y)}). Lay them beside it to check.`,
         solution: { board: solved(setup, { loose: [x, y] }) },
       };
@@ -213,10 +210,10 @@ export const TASKS = [
       return {
         prompt: `Is ${a} + ${b} = ${c} + ${d} true? Build ${a} + ${b} on Left and ${c} + ${d} on Right. Then pick.`,
         setup, answer: { board: [
-          { t: 'mat', label: 'Left', has: [a, b], say: `On Left, put the ${rod(a)} and ${second(a, b)}.` },
-          { t: 'mat', label: 'Right', has: [c, d], say: `On Right, put the ${rod(c)} and ${second(c, d)}.` }],
+          { t: 'mat', label: 'Left', has: [a, b], say: `On Left, put the ${rod(a)} and the ${rod(b)}.` },
+          { t: 'mat', label: 'Right', has: [c, d], say: `On Right, put the ${rod(c)} and the ${rod(d)}.` }],
         choice: { options, correct: ok ? 0 : 1, say: 'Line up the two trains at the left. Do they end at the same place?' } },
-        hints: [`Left: the ${rod(a)} and ${second(a, b)}. Right: the ${rod(c)} and ${second(c, d)}.`, 'Line the trains up at the left and look at the right ends.', ok ? `Both are ${a + b} long, so it is true.` : `${a} + ${b} = ${a + b} but ${c} + ${d} = ${c + d}, so it is false.`],
+        hints: [`Left: the ${rod(a)} and the ${rod(b)}. Right: the ${rod(c)} and the ${rod(d)}.`, 'Line the trains up at the left and look at the right ends.', ok ? `Both are ${a + b} long, so it is true.` : `${a} + ${b} = ${a + b} but ${c} + ${d} = ${c + d}, so it is false.`],
         explain: ok ? `${a} + ${b} = ${a + b} and ${c} + ${d} = ${a + b}: the same length, so the equation is true.` : `${a} + ${b} = ${a + b} but ${c} + ${d} = ${c + d}. The trains are different lengths, so the equation is false.`,
         solution: { board: solved(setup, { on: { Left: [a, b], Right: [c, d] } }), choice: ok ? 0 : 1 },
       };
@@ -259,10 +256,10 @@ export const TASKS = [
       const options = ['They are the same length', 'Ribbon 1 is longer', 'Ribbon 2 is longer'], correct = s1 === s2 ? 0 : s1 > s2 ? 1 : 2;
       const setup = rodBoard({ mats: [{ label: 'Ribbon 1', w: 700 }, { label: 'Ribbon 2', w: 700 }] });
       return {
-        prompt: `Ribbon 1 is ${A(a)} and ${second(a, b, { a: true })} long. Ribbon 2 is ${A(c)} and ${second(c, d, { a: true })} long. Build each ribbon on its mat. Are they the same length?`,
+        prompt: `Ribbon 1 is ${A(a)} and ${A(b)} long. Ribbon 2 is ${A(c)} and ${A(d)} long. Build each ribbon on its mat. Are they the same length?`,
         setup, answer: { board: [
-          { t: 'mat', label: 'Ribbon 1', has: [a, b], say: `On Ribbon 1, put the ${rod(a)} and ${second(a, b)}.` },
-          { t: 'mat', label: 'Ribbon 2', has: [c, d], say: `On Ribbon 2, put the ${rod(c)} and ${second(c, d)}.` }],
+          { t: 'mat', label: 'Ribbon 1', has: [a, b], say: `On Ribbon 1, put the ${rod(a)} and the ${rod(b)}.` },
+          { t: 'mat', label: 'Ribbon 2', has: [c, d], say: `On Ribbon 2, put the ${rod(c)} and the ${rod(d)}.` }],
         choice: { options, correct, say: 'Add each ribbon\'s two rods, or line them up and look.' } },
         hints: [`Ribbon 1 is ${a} + ${b}. Ribbon 2 is ${c} + ${d}.`, 'Line up both ribbons at the left and compare the right ends.', `${a} + ${b} = ${s1} and ${c} + ${d} = ${s2}.`],
         explain: s1 === s2 ? `${a} + ${b} = ${c} + ${d} = ${s1}: the same length.` : `${a} + ${b} = ${s1} and ${c} + ${d} = ${s2}, so Ribbon ${s1 > s2 ? 1 : 2} is longer by ${Math.abs(s1 - s2)}.`,
