@@ -140,8 +140,15 @@ function start() {
   // (cv-icons), then the clock (cv-noclock), then a button the ⋯ menu also has (cv-fold, Arrange seats), then gives the
   // pill a row of its own (cv-two; under 1024 px it always has). Before all of these, Homeroom's Arrange seats loses its word
   // (cv-short: the ⋯ menu also has it), so the day plan pill (public/js/homeroom-plan.js) and the other buttons keep theirs.
-  // Again after a resize, a view change and any change to the bar's buttons (Homeroom's live buttons come and go).
-  const TIGHT = ['cv-short', 'cv-icons', 'cv-noclock', 'cv-fold', 'cv-two'], twoRows = matchMedia('(max-width: 1023px)');
+  // The Hub's pills (the day plan's, the live game's: public/js/homeroom-livegame.js) shrink first, their words ending in
+  // an ellipsis; a pill's part that must stay whole ([data-cv-keep]: the plan's clock, the live game's count) cut off
+  // counts as not fitting. After the buttons' words the pills drop their small words (cv-pills: "Now", the Next line,
+  // "3 joined of 5 in the Hub" becomes "3/5"), the class switcher narrows (cv-slim), the plan's +5 min goes to its menu
+  // (cv-lean), the tabs and the switcher get smaller (cv-snug), the pills fold to their icon and count (cv-pillicon),
+  // then the plan's Next goes to its menu and End shows its icon (cv-bare: the Oomba chat open on a 1024 px laptop). On a laptop the bar stays one row, the Oomba chat open beside it or not.
+  // Again after a resize (the window's or the bar's: the chat opening narrows the page), a view change and any change to
+  // the bar's buttons (Homeroom's live buttons come and go).
+  const TIGHT = ['cv-short', 'cv-icons', 'cv-noclock', 'cv-fold', 'cv-pills', 'cv-slim', 'cv-lean', 'cv-snug', 'cv-pillicon', 'cv-bare', 'cv-two'], twoRows = matchMedia('(max-width: 1023px)');
   function overflows() {
     const a = acts(cur);
     if (bar.scrollWidth > bar.clientWidth + 1) return true;
@@ -151,6 +158,10 @@ function start() {
     for (const el of a.querySelectorAll('button, a, select, summary, .dash-now, .hr-livedot')) {
       const b = el.getBoundingClientRect();
       if (b.width && (b.left < r.left - 1 || b.right > r.right + 1)) return true;
+    }
+    for (const el of a.querySelectorAll('[data-cv-keep]')) {
+      const b = el.getBoundingClientRect(), p = el.parentElement.getBoundingClientRect();
+      if (b.width && (b.left < p.left - 1 || b.right > p.right + 1)) return true;
     }
     return false;
   }
@@ -166,6 +177,8 @@ function start() {
   const refit = () => { if (!fitting) fitting = requestAnimationFrame(() => { fitting = 0; fit(); }); };
   fit();
   addEventListener('resize', refit);
+  let barW = 0;
+  if (window.ResizeObserver) new ResizeObserver(([e]) => { const w = Math.round(e.contentRect.width); if (w !== barW) { barW = w; refit(); } }).observe(bar);
   new MutationObserver(refit).observe(bar, { childList: true, subtree: true });
   document.fonts?.ready.then(refit, () => {});
   document.addEventListener('cv:view', refit);

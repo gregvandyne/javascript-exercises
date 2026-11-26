@@ -10,9 +10,11 @@
 /* ---- the shared bar: class switcher, Homeroom | Classroom | Dashboard, then the view's own buttons */
 /* (sticky under the site's bar on a laptop or tablet: Classroom scrolls, and the pill stays at hand) */
 .cv-bar{position:sticky;top:var(--top);z-index:80;display:flex;align-items:center;gap:8px 12px;min-height:71px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
-.cv-nav{display:flex;align-items:center;gap:8px 12px;flex:none;min-width:0}
+/* (the switcher and the tabs are the bar's own items: on a short bar, the Oomba chat open beside it, public/js/class-views.js
+   fit() narrows the switcher, its name ending in an ellipsis (cv-slim, cv-snug); the tabs stay whole and on its row) */
+.cv-nav{display:contents}
 /* (the id: the class page's stylesheet makes every select.input 50px tall) */
-#cv-bar .cv-class{width:auto;min-width:0;max-width:240px;height:46px;min-height:0;border-radius:999px;font-weight:800;font-size:1.05rem;padding-block:6px;padding-inline:16px 36px}
+#cv-bar .cv-class{flex:none;width:auto;min-width:0;max-width:240px;height:46px;min-height:0;border-radius:999px;font-weight:800;font-size:1.05rem;padding-block:6px;padding-inline:16px 36px;text-overflow:ellipsis;white-space:nowrap;overflow:hidden}
 .cv-bar .hr-tabs{margin:0;flex:none}
 .cv-bar .hr-tabs a[aria-busy="true"]{cursor:progress;opacity:.7}
 .cv-acts{display:none;align-items:center;flex-wrap:nowrap;gap:8px;flex:1 1 auto;min-width:0;
@@ -61,6 +63,23 @@
 .cv-bar.cv-fold .cv-acts{max-width:calc(100% - 96px)}
 .cv-bar.cv-fold .cv-acts .btn{padding-inline:8px}
 .cv-bar.cv-fold .hr-livedot{font-size:0;gap:0;padding-inline:4px}   /* the red dot alone (its word is still read out) */
+/* the Hub's pills drop their small words (public/css/homeroom.css cv-pills), the switcher narrows (cv-slim), the day
+   plan's +5 min is only in its menu (cv-lean), the bar gets snugger (cv-snug: the tabs and the switcher smaller), the
+   pills fold to their icon and count (cv-pillicon); last, on a laptop with the Oomba chat open beside the bar (1024 px:
+   664 px for the bar), the day plan's Next is only in its menu too and End is its icon (cv-bare) */
+.cv-bar.cv-lean .cv-acts [data-hrplan="more"]{display:none}
+.cv-bar.cv-bare .cv-acts :is([data-hrplan="next"],.hr-lgxt){display:none}
+.cv-bar.cv-snug .cv-acts{gap:6px}
+.cv-bar.cv-snug .cv-acts .btn{padding-inline:6px}
+.cv-bar.cv-snug .cv-acts :is(.hr-lgopen,.hr-lgx){padding-inline:8px}
+/* (the switcher and the tabs only on a laptop: a tablet's switcher and tabs have rows of their own) */
+@media (min-width:1024px){
+  .cv-bar.cv-snug{padding-inline:8px;gap:6px}
+  .cv-bar.cv-snug .hr-tabs a{padding:0 7px;font-size:.875rem}
+  #cv-bar.cv-slim .cv-class{max-width:9.5rem}
+  #cv-bar.cv-snug .cv-class{max-width:7.5rem;padding-inline:12px 26px;font-size:.95rem}
+  #cv-bar.cv-bare .cv-class{max-width:6rem}
+}
 
 /* ---- Classroom's header (routes/schools.js classHeader; docs/decisions.md "A calmer Classroom view on phones"): the
    class's name is the switcher's, so one small line (the school, the class, its students); on phones Build new game and

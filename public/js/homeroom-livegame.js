@@ -94,7 +94,10 @@ export function liveHost(opts) {
     else {
       if (!p) { p = document.createElement('span'); p.id = 'hr-lgpill'; p.className = 'hr-lgpill'; p.addEventListener('click', e => { const b = e.target.closest('[data-lg]'); if (b) act(b.dataset.lg); }); place(p); }
       else if (p.dataset.phone !== String(phone())) place(p);
-      const h = `<button type="button" class="hr-lgopen" data-lg="restore" aria-label="${esc(tl('restore', { title: game.title }))}">${iconHtml(game.icon || '📡', { size: 18 })}<span class="hr-lgname"><b>${esc(tl('pill', { title: game.title }))}</b> <span class="hr-lgn">${esc(joined(game))}</span></span></button>${game.host ? `<button type="button" class="hr-lgx" data-lg="end" aria-label="${esc(tl('endTitle', { title: game.title }))}">${iconHtml('⏹️', { size: 14 })}<span class="hr-hidephone"> ${esc(tl('end'))}</span></button>` : ''}`;
+      // (a short bar: the title ends in an ellipsis, then the count becomes "3/5", then the pill folds to its icon and
+      // "3/5"; public/js/class-views.js fit() keeps the count and End whole. The full words are in its title and read out.)
+      const n = joined(game), short = game.here && game.players === (game.in || []).length ? `${game.players}/${game.here}` : String(game.players);
+      const h = `<button type="button" class="hr-lgopen" data-lg="restore" title="${esc(`${tl('pill', { title: game.title })} · ${n}`)}" aria-label="${esc(`${tl('restore', { title: game.title })}, ${n}`)}">${iconHtml(game.icon || '📡', { size: 18 })}<span class="hr-lgname"><b data-cv-keep>${esc(tl('pill', { title: game.title }))}</b> <span class="hr-lgn" data-cv-keep>${esc(n)}</span><span class="hr-lgnum" data-cv-keep aria-hidden="true">${esc(short)}</span></span></button>${game.host ? `<button type="button" class="hr-lgx" data-lg="end" title="${esc(tl('endTitle', { title: game.title }))}" aria-label="${esc(tl('endTitle', { title: game.title }))}">${iconHtml('⏹️', { size: 14 })}<span class="hr-lgxt"> ${esc(tl('end'))}</span></button>` : ''}`;
       if (p.innerHTML !== h) p.innerHTML = h;
     }
     if (el) {
