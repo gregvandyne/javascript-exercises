@@ -68,7 +68,77 @@ export const conds = {
   counts: (c, b) => { const ps = mine(b); return KINDS.every(k => countOf(ps, k) === num(c.has && c.has[k])); },
   /** At least these many of each kind named (others may be there too). */
   some: (c, b) => { const ps = mine(b); return Object.entries(c.has || {}).every(([k, n]) => countOf(ps, k) >= num(n)); },
+  /** A flower around the hexagon (c.a the inner ring's kind, c.b the outer's): 6 blocks touching the hexagon all the way
+   *  around it, then 6 more each touching the inner ring, all the way around and farther out. Not a heap of the right
+   *  counts beside it. */
+  ring: (c, b) => ringOk(b, c.a, c.b),
 };
+
+// ---------------------------------------------------------------- the board's geometry (for the shape checks)
+/** Each block's outline on its w x h box (manip.js SHAPES, the clip-path polygons), in fractions of the box. */
+const OUTLINE = { hex: [[0.25, 0], [0.75, 0], [1, 0.5], [0.75, 1], [0.25, 1], [0, 0.5]], trap: [[0.25, 0], [0.75, 0], [1, 1], [0, 1]], tri: [[0.5, 0], [1, 1], [0, 1]],
+  para: [[0.25, 0], [1, 0], [0.75, 1], [0, 1]], rhom: [[0.12, 0], [1, 0], [0.88, 1], [0, 1]], sq: [[0, 0], [1, 0], [1, 1], [0, 1]] };
+const OUTLINE_FLIPPED = { para: [[0, 0], [0.75, 0], [1, 1], [0.25, 1]] };
+/** A block on the plane: its middle and its corners (its outline turned by rot degrees, clockwise, about the middle). */
+export function shapeOf(p) {
+  const w = num(p.w, DEFS[p.kind] ? DEFS[p.kind].w : 40), h = num(p.h, DEFS[p.kind] ? DEFS[p.kind].h : 40), cx = num(p.x) + w / 2, cy = num(p.y) + h / 2;
+  const a = (num(p.rot) * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a);
+  const out = ((p.flipped && OUTLINE_FLIPPED[p.kind]) || OUTLINE[p.kind] || OUTLINE.sq).map(([fx, fy]) => { const x = (fx - 0.5) * w, y = (fy - 0.5) * h; return [cx + x * cos - y * sin, cy + x * sin + y * cos]; });
+  return { kind: p.kind, cx, cy, pts: out, size: Math.min(w, h) };
+}
+const segPt = ([ax, ay], [bx, by], [px, py]) => { const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy, t = L ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L)) : 0; return Math.hypot(ax + t * dx - px, ay + t * dy - py); };
+const cross = (o, a, b) => (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]);
+const segsCross = (a, b, c, d) => cross(a, b, c) * cross(a, b, d) < 0 && cross(c, d, a) * cross(c, d, b) < 0;
+const edges = P => P.map((q, i) => [q, P[(i + 1) % P.length]]);
+const inPoly = (P, [x, y]) => { let n = false; for (const [[ax, ay], [bx, by]] of edges(P)) if ((ay > y) !== (by > y) && x < ((bx - ax) * (y - ay)) / (by - ay) + ax) n = !n; return n; };
+/** How far apart two blocks' outlines are (0 when they touch or overlap). */
+export function gapOf(A, B) {
+  const ea = edges(A.pts), eb = edges(B.pts);
+  if (ea.some(([a, b]) => eb.some(([c, d]) => segsCross(a, b, c, d))) || inPoly(A.pts, B.pts[0]) || inPoly(B.pts, A.pts[0])) return 0;
+  return Math.min(...ea.flatMap(([a, b]) => B.pts.map(q => segPt(a, b, q))), ...eb.flatMap(([a, b]) => A.pts.map(q => segPt(a, b, q))));
+}
+/** Blocks this close count as touching: a block placed by hand beside another, a snapped one flush. */
+const TOUCH = 10;
+/** The largest gap, in degrees, between the directions of these blocks from a middle (360 for none): a ring goes all the way around. */
+const widestGap = (list, o) => { const a = list.map(p => (Math.atan2(p.cy - o.cy, p.cx - o.cx) * 180) / Math.PI).sort((x, y) => x - y); return a.length ? Math.max(...a.map((x, i) => (i ? x - a[i - 1] : x + 360 - a[a.length - 1]))) : 360; };
+function ringOk(b, ka, kb) {
+  const all = ((b && Array.isArray(b.pieces)) ? b.pieces : []).filter(p => p && typeof p === 'object' && DEFS[p.kind]);
+  const hubP = all.find(p => p.kind === 'hex' && p.locked) || all.find(p => p.kind === 'hex'); if (!hubP) return false;
+  const hub = shapeOf(hubP), ps = mine(b).filter(p => p !== hubP).map(shapeOf), d = s => Math.hypot(s.cx - hub.cx, s.cy - hub.cy);
+  const inner = ps.filter(s => s.kind === ka).sort((x, y) => d(x) - d(y)).slice(0, 6), outer = ps.filter(s => !inner.includes(s) && s.kind === kb);
+  if (inner.length !== 6 || outer.length !== 6) return false;
+  // no two blocks on top of each other (a heap): their middles at least half a block apart
+  if (ps.some((s, i) => ps.some((q, j) => j > i && Math.hypot(s.cx - q.cx, s.cy - q.cy) < 0.5 * Math.min(s.size, q.size)))) return false;
+  if (!inner.every(s => gapOf(s, hub) <= TOUCH) || widestGap(inner, hub) > 100) return false;
+  const near = Math.min(...inner.map(d));
+  return outer.every(s => d(s) > near && inner.some(q => gapOf(s, q) <= TOUCH)) && widestGap(outer, hub) > 0 && widestGap(outer, hub) <= 100;
+}
+/** Where each block of a ring goes: 6 of `kind` around `inside` (the hexagon, or the ring before), one on each side,
+ *  its inner side flush against it (for the solutions; the run-through builds them by hand: Rotate, then a drag). */
+const INNER = { trap: { e: [[0.25, 0], [0.75, 0]], n: -90 }, tri: { e: [[0, 1], [1, 1]], n: 90 }, sq: { e: [[0, 1], [1, 1]], n: 90 }, para: { e: [[1, 0], [0.75, 1]], n: 30 } };
+function ringAround(hub, inside, kind) {
+  const D = DEFS[kind], { e, n } = INNER[kind], out = [];
+  for (let k = 0; k < 6; k++) {
+    const phi = -90 + 60 * k, u = [Math.cos((phi * Math.PI) / 180), Math.sin((phi * Math.PI) / 180)];
+    // how far out the shape inside reaches in this direction (from the hexagon's middle)
+    const reach = Math.max(...inside.flatMap(s => s.pts).map(([x, y]) => (x - hub.cx) * u[0] + (y - hub.cy) * u[1]));
+    const rot = (((phi + 180 - n) % 360) + 360) % 360, a = (rot * Math.PI) / 180, cos = Math.cos(a), sin = Math.sin(a);
+    const mx = ((e[0][0] + e[1][0]) / 2 - 0.5) * D.w, my = ((e[0][1] + e[1][1]) / 2 - 0.5) * D.h;   // the inner side's middle, from the box's middle
+    const tx = hub.cx + (reach + 1) * u[0], ty = hub.cy + (reach + 1) * u[1];
+    const cx = tx - (mx * cos - my * sin), cy = ty - (mx * sin + my * cos);
+    out.push({ ...block(kind, cx - D.w / 2, cy - D.h / 2, false), rot, x: Math.round(cx - D.w / 2), y: Math.round(cy - D.h / 2) });
+  }
+  return out;
+}
+/** The flower of stage 2 on the setup's board: ring 1 of `a` around the hexagon, ring 2 of `b` around ring 1. */
+function flower(setup, a, b) {
+  const s = JSON.parse(JSON.stringify(setup)), hub = shapeOf(s.pieces.find(p => p.kind === 'hex'));
+  const r1 = ringAround(hub, [hub], a);
+  // ring 2 reaches past the ring-1 block on the same side
+  const r2 = r1.map((p, k) => ringAround(hub, [shapeOf(p)], b)[k]);
+  s.pieces.push(...[...r1, ...r2].map((p, i) => ({ ...p, id: `s${i + 1}` })));
+  return s;
+}
 
 // ---------------------------------------------------------------- the tasks
 const T = (key, title, ccss, grade, prompt, notes, make) => ({ key, title, ccss, grade, prompt, notes, make: R => ({ totals: false, ...make(R) }) });
@@ -148,11 +218,12 @@ export const TASKS = [
       const ring = ['trap', 'tri', 'sq', 'para'], a = R.pick(ring), b = R.pick(ring), st = R.int(3, 10), n = 1 + 6 * st;
       const has = a === b ? { [a]: 12 } : { [a]: 6, [b]: 6 }, setup = pbBoard({ loose: { has: { hex: 1 } } });
       return {
-        prompt: `A flower starts with 1 hexagon. Stage 1 adds a ring of 6 ${pl(a)}. Stage 2 adds a ring of 6 ${pl(b)}. Each stage adds 6 more blocks. Build stage 2. How many blocks will stage ${st} have?`,
-        setup, answer: { board: [{ t: 'counts', has, say: `Stage 2 is the hexagon, 6 ${pl(a)} and 6 ${pl(b)}.` }], box: { key: String(n), label: `blocks at stage ${st}` } },
-        hints: ['Make a table: stage 1 has 1 + 6 = 7 blocks, stage 2 has 7 + 6 = 13.', 'Each stage adds 6, so stage s has 1 + 6 × s blocks.', `1 + 6 × ${st} = ${n}.`],
+        prompt: `A flower starts with 1 hexagon. Stage 1 adds a ring of 6 ${pl(a)} around it, one on each side. Stage 2 adds a ring of 6 ${pl(b)} around that. Each stage adds 6 more blocks. Build stage 2. How many blocks will stage ${st} have?`,
+        setup, answer: { board: [{ t: 'counts', has, say: `Stage 2 is the hexagon, 6 ${pl(a)} and 6 ${pl(b)}.` },
+          { t: 'ring', a, b, say: `Put the 6 ${pl(a)} around the hexagon, one on each side, touching it. Then put the 6 ${pl(b)} around them, each touching a block of the first ring.` }], box: { key: String(n), label: `blocks at stage ${st}` } },
+        hints: [`Put a ${NAME[a]} against each side of the hexagon (hold a block and pick Rotate to turn it), then a ${NAME[b]} against each of those. Stage 1 has 1 + 6 = 7 blocks, stage 2 has 7 + 6 = 13.`, 'Each stage adds 6, so stage s has 1 + 6 × s blocks.', `1 + 6 × ${st} = ${n}.`],
         explain: `The rule is "add 6": 7, 13, 19, ... Stage ${st} has 1 + 6 × ${st} = ${n} blocks.`,
-        solution: { board: solved(setup, has), box: String(n) },
+        solution: { board: flower(setup, a, b), box: String(n) },
       };
     }),
   T('trapezoid-whole', 'Trapezoid whole', '4.NF.A.1', '4',
@@ -169,8 +240,8 @@ export const TASKS = [
       return {
         prompt: `If ${listOf(w).replace(/^1 /, 'one ')} ${Object.values(w).reduce((s, x) => s + x, 0) > 1 ? 'are' : 'is'} 1 whole, what fraction ${Object.values(part)[0] > 1 ? 'are' : 'is'} ${listOf(part).replace(/^1 /, 'one ')}?`,
         setup, answer: { box: { key, label: 'fraction of the whole', say: 'Count the whole and the part in triangles, then compare.' } },
-        hints: ['Use triangles as the measure: a hexagon is 6, a trapezoid 3, a parallelogram 2.', `The whole is ${wv} triangles and the part is ${pv} triangles.`, `${pv} out of ${wv} is ${pv}/${wv}${key !== `${pv}/${wv}` ? `, which is ${key}` : ''}.`],
-        explain: `The part is ${pv} triangles and the whole is ${wv} triangles, so the part is ${pv}/${wv}${key !== `${pv}/${wv}` ? ` = ${key}` : ''} of the whole. A different whole gives the same block a different fraction.`,
+        hints: ['Use triangles as the measure: a hexagon is 6, a trapezoid 3, a parallelogram 2.', `The whole is ${nm('tri', wv)} and the part is ${nm('tri', pv)}.`, `${pv} out of ${wv} is ${pv}/${wv}${key !== `${pv}/${wv}` ? `, which is ${key}` : ''}.`],
+        explain: `The part is ${nm('tri', pv)} and the whole is ${nm('tri', wv)}, so the part is ${pv}/${wv}${key !== `${pv}/${wv}` ? ` = ${key}` : ''} of the whole. A different whole gives the same block a different fraction.`,
         solution: { box: key },
       };
     }),
@@ -184,7 +255,7 @@ export const TASKS = [
       return {
         prompt: `A hexagon with sides twice as long as the yellow one covers 24 triangles, as much as 4 yellow hexagons. Build it with ${given}, then fill the rest with triangles. How many triangles do you need?`,
         setup, answer: { board: [{ t: 'counts', has, say: `Use ${given}, and triangles for the rest.` }], box: { key: String(t), label: 'triangles' } },
-        hints: ['Count everything in triangles: a hexagon is 6, a trapezoid 3, a parallelogram 2.', `${given} cover ${24 - t} triangles.`, `24 - ${24 - t} = ${t}. Add ${t} triangles.`],
+        hints: ['Count everything in triangles: a hexagon is 6, a trapezoid 3, a parallelogram 2.', `${given} cover ${24 - t} triangles.`, `24 - ${24 - t} = ${t}. Add ${nm('tri', t)}.`],
         explain: `${24 - t} + ${t} = 24 triangles, the same as 4 yellow hexagons. When the sides double, the area is 2 × 2 = 4 times as big.`,
         solution: { board: solved(setup, has), box: String(t) },
       };
@@ -229,7 +300,7 @@ export const TASKS = [
       const has = { [p[0]]: a, [p[1]]: b }, bn = pl(p[1]), setup = pbBoard({});
       return {
         prompt: `Build a design worth exactly ${hexText(v)} hexagon${v === 6 ? '' : 's'} using only ${bn} and ${nm(p[0], a)}. How many ${bn} do you need?`,
-        setup, answer: { board: [{ t: 'counts', has, say: `Use ${nm(p[0], a)} and ${bn} only, worth ${hexText(v)} hexagons in all.` }], box: { key: String(b), label: bn } },
+        setup, answer: { board: [{ t: 'counts', has, say: `Use ${nm(p[0], a)} and ${bn} only, worth ${v < 6 ? `${hexText(v)} of a hexagon` : `${hexText(v)} ${v === 6 ? 'hexagon' : 'hexagons'}`} in all.` }], box: { key: String(b), label: bn } },
         hints: [`Count in triangles: ${hexText(v)} hexagon${v === 6 ? ' is' : 's are'} ${v} triangles.`, `${nm(p[0], a)} make ${a * S[p[0]]} triangles. ${v - a * S[p[0]]} are left.`, S[p[1]] === 1 ? `Each triangle is 1, so you need ${b}.` : `Each ${NAME[p[1]]} is ${S[p[1]]} triangles: ${v - a * S[p[0]]} ÷ ${S[p[1]]} = ${b}.`],
         explain: `${a} × ${frac(S[p[0]], 6)} + ${b} × ${frac(S[p[1]], 6)} = ${hexText(v)}. Counting in triangles (sixths) makes the fractions easy to add.`,
         solution: { board: solved(setup, has), box: String(b) },
@@ -255,7 +326,7 @@ export const TASKS = [
         const cn = cornerOf(it.k, it.deg);
         prompt = `${put} How big is the ${cn} of the ${NAME[it.k]}?`; choice = degs(it.deg, [30, 60, 90, 120, 150]);
         hints = ['Fit the tan rhombus\'s narrow corner into it: that corner is 30 degrees.', `Count how many 30 degree corners fill the ${cn}.`, `The ${cn} of the ${NAME[it.k]} is ${it.deg} degrees.`];
-        explain = `The ${NAME[it.k]}'s ${cn} is ${it.deg} degrees: ${it.deg / 30} narrow corners of the tan rhombus fit in it.`;
+        explain = `The ${NAME[it.k]}'s ${cn} is ${it.deg} degrees: ${it.deg === 30 ? '1 narrow corner of the tan rhombus fits' : `${it.deg / 30} narrow corners of the tan rhombus fit`} in it.`;
       } else if (it.q === 'fit') {
         const n = it.deg / 30, cn = cornerOf(it.k, it.deg);
         prompt = `${put} How many narrow corners of the tan rhombus (30 degrees each) fit into the ${cn} of the ${NAME[it.k]}?`;
@@ -312,12 +383,12 @@ export const TASKS = [
       return {
         prompt: `A ${noun} with sides ${o.s} triangles long is ${all} small triangles. Fill it with ${given} and triangles. How many triangles? Which way uses fewer blocks?`,
         setup: pbBoard({}), answer: { board: [{ t: 'counts', has, say: `Use ${given}, and triangles for the rest.` }], box: { key: String(tri), label: 'triangles' }, choice: { ...choice, say: 'Count the blocks each way.' } },
-        hints: [`A trapezoid covers 3 small triangles and a parallelogram covers 2.`, `${given} cover ${all - tri}. ${all} - ${all - tri} = ${tri} triangles.`, `Only triangles: ${all} blocks. Your mix: ${o.t + o.p + tri} blocks.`],
+        hints: [`A trapezoid covers 3 small triangles and a parallelogram covers 2.`, `${given} cover ${all - tri}. ${all} - ${all - tri} = ${nm('tri', tri)}.`, `Only triangles: ${all} blocks. Your mix: ${o.t + o.p + tri} blocks.`],
         explain: `${all} triangles, or ${o.t + o.p + tri} blocks with the mix: bigger blocks cover more, so fewer blocks fill the ${noun}.`,
         solution: { board: solved(pbBoard({}), has), box: String(tri), choice: choice.correct },
       };
     }),
-  T('thirds-in-three-ways', 'Thirds in three ways', '3.NF.A.3b', '3',
+  T('thirds-in-three-ways', 'Fractions of a hexagon', '3.NF.A.3b', '3',
     'Show a fraction of the hexagon using only the block named. How many of that block is it? (Each question names a different block, so the same fraction is shown different ways.)',
     'One whole, three representations of a third. Equivalence across shapes is deeper than within one shape.',
     R => {
@@ -327,7 +398,7 @@ export const TASKS = [
       return {
         prompt: `The hexagon is 1 whole. Show ${it.n}/${it.d} of a hexagon using only ${kn}. How many ${kn} is that?`,
         setup, answer: { board: [{ t: 'counts', has: { [it.k]: c }, say: `Use only ${kn} to show ${it.n}/${it.d}.` }], box: { key: String(c), label: kn } },
-        hints: [`One ${NAME[it.k]} is ${frac(S[it.k], 6)} of the hexagon.`, `${it.n}/${it.d} of a hexagon is ${it.v} triangles' worth.`, `${it.v} ÷ ${S[it.k]} = ${c} ${c === 1 ? NAME[it.k] : kn}.`],
+        hints: [`One ${NAME[it.k]} is ${frac(S[it.k], 6)} of the hexagon.`, `${it.n}/${it.d} of a hexagon is ${nm('tri', it.v)}' worth.`, `${it.v} ÷ ${S[it.k]} = ${c} ${c === 1 ? NAME[it.k] : kn}.`],
         explain: `${c} × ${frac(S[it.k], 6)} = ${it.n}/${it.d}. The same fraction can be shown with different blocks.`,
         solution: { board: solved(setup, { [it.k]: c }), box: String(c) },
       };
@@ -432,7 +503,7 @@ export const TASKS = [
         prompt: `Choose the ${NAME[w]} as 1 whole. ${can ? `Rebuild ${what} out of ${wn}.` : `Put ${what} on the board next to the ${NAME[w]}.`} What ${m === 1 ? 'is' : 'are'} ${what.replace(/^an? /, 'the ')} worth now?`,
         setup, answer: { board: [can ? { t: 'counts', has: { [w]: n }, say: `Use only ${wn} to rebuild ${what}.` } : { t: 'some', has: { [k]: m }, say: `Put ${what} on the board.` }], box: { key, label: 'its value', say: 'Count both in triangles and compare.' } },
         hints: ['Count in triangles: a hexagon is 6, a trapezoid 3, a parallelogram 2, a triangle 1.', `The whole (${one(w)}) is ${S[w]} triangle${S[w] > 1 ? 's' : ''}. ${what[0].toUpperCase()}${what.slice(1)} ${m === 1 ? 'is' : 'are'} ${v} triangle${v > 1 ? 's' : ''}.`, `${v} ÷ ${S[w]} = ${key}.`],
-        explain: `${what[0].toUpperCase()}${what.slice(1)} ${m === 1 ? 'is' : 'are'} ${v} triangles and the whole is ${S[w]}, so ${m === 1 ? 'it is' : 'they are'} worth ${key}. Change the whole and every value changes.`,
+        explain: `${what[0].toUpperCase()}${what.slice(1)} ${m === 1 ? 'is' : 'are'} ${nm('tri', v)} and the whole is ${S[w]}, so ${m === 1 ? 'it is' : 'they are'} worth ${key}. Change the whole and every value changes.`,
         solution: { board: solved(setup, can ? { [w]: n } : { [k]: m }), box: key },
       };
     }),

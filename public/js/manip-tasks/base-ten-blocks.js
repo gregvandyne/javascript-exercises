@@ -2,7 +2,7 @@
 // its title, code, grade and notes; make(R) gives one variation; conds are this tool's board checks, read from the
 // board's pieces (values by kind, manip-pv.js valueOf) and its place-value charts (manip-pv.js columnsOf / columnOf).
 // Every variation hides the board's totals (a practice board: no total gives an answer away).
-import { boardWith, rowPlaces, objSizeOf, fmt, expandedText } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, fmt, expandedText, plural } from '../manip-task-kit.js';
 import { allPieceDefs } from '../manip-data.js';
 import { slotsOf } from '../manip-board.js';
 import { valueOf, columnsOf, columnOf, stepsApart } from '../manip-pv.js';
@@ -100,7 +100,7 @@ const hasText = has => Object.entries(has).filter(([, n]) => n).map(([k, n]) => 
 // ---------------------------------------------------------------- the tasks
 const T = (key, title, ccss, grade, prompt, notes, make) => ({ key, title, ccss, grade, prompt, notes, make: R => ({ totals: false, ...make(R) }) });
 export const TASKS = [
-  T('build-1-139', 'Build 1,139', '2.NBT.A.1', '2',
+  T('build-1-139', 'Build a 4-digit number', '2.NBT.A.1', '2',
     'Build a number in the place-value chart, then Break one hundreds flat into ten rods. The total does not change.',
     'Breaking conserves the total: that is the regrouping idea. Have children read the new form aloud (10 hundreds becomes 9 hundreds and 10 rods).',
     R => {
@@ -113,7 +113,7 @@ export const TASKS = [
           { t: 'inChart', say: 'Put every block in its own column of the chart.' },
           { t: 'counts', has: want, say: 'Break one flat into ten rods.' }] },
         hints: [`${fmt(n)} is ${hasText(hasOf(n))}. Put each block in its column.`, 'Hold a flat in Hundreds, then pick Break: it becomes ten rods in Tens.', `Now you have ${hasText(want)}. Still ${fmt(n)}!`],
-        explain: `${fmt(n)} is 1 thousand, ${h} hundreds, ${t} tens and ${o} ones. One hundred is ten tens, so after the break it is ${h - 1} hundreds and ${t + 10} tens: the same number.`,
+        explain: `${fmt(n)} is 1 thousand, ${plural(h, 'hundred')}, ${plural(t, 'ten')} and ${plural(o, 'one')}. One hundred is ten tens, so after the break it is ${plural(h - 1, 'hundred')} and ${t + 10} tens: the same number.`,
         solution: { board: solved(setup, want) },
       };
     }),
@@ -124,14 +124,14 @@ export const TASKS = [
       const f = R.int(10, 19), r = R.int(0, 9), u = R.int(0, 9), n = 100 * f + 10 * r + u;
       const setup = tenBoard({ charts: [{ has: { flat: f, rod: r, unit: u } }] }), want = { cube: 1, flat: f - 10, rod: r, unit: u };
       return {
-        prompt: `The chart has ${f} flats, ${r} rods and ${u} units. Tap a flat, then tap Regroup 10 → 1 to make ten flats into one 1,000 cube. What number do the blocks show?`,
+        prompt: `The chart has ${f} flats, ${plural(r, 'rod')} and ${plural(u, 'unit')}. Tap a flat, then tap Regroup 10 → 1 to make ten flats into one 1,000 cube. What number do the blocks show?`,
         setup, answer: { board: [{ t: 'counts', has: want, say: 'Regroup ten flats into one cube.' }], box: { key: String(n), label: 'the number' } },
-        hints: ['Tap one flat in the Hundreds column, then tap Regroup 10 → 1 in the palette.', `Ten flats are 10 hundreds: 1,000. Now count: 1 cube, ${f - 10} flats, ${r} rods, ${u} units.`, `1,000 + ${(f - 10) * 100} + ${r * 10} + ${u} = ${fmt(n)}.`],
+        hints: ['Tap one flat in the Hundreds column, then tap Regroup 10 → 1 in the palette.', `Ten flats are 10 hundreds: 1,000. Now count: 1 cube, ${plural(f - 10, 'flat')}, ${plural(r, 'rod')}, ${plural(u, 'unit')}.`, `1,000 + ${(f - 10) * 100} + ${r * 10} + ${u} = ${fmt(n)}.`],
         explain: `Ten flats make one cube worth 1,000 units. The total stays ${fmt(n)}: regrouping never changes the number.`,
         solution: { board: solved(setup, want), box: String(n) },
       };
     }),
-  T('346-278-with-blocks', '346 + 278 with blocks', '2.NBT.B.7', '2',
+  T('346-278-with-blocks', 'Add 3-digit numbers with blocks', '2.NBT.B.7', '2',
     'Add two numbers with blocks. Regroup whenever a column reaches ten, then type the sum.',
     'Insist the written algorithm step happens at the same moment as the physical regroup, so the carrying digit has a meaning.',
     R => {
@@ -146,7 +146,7 @@ export const TASKS = [
         solution: { board: solved(setup, hasOf(s)), box: String(s) },
       };
     }),
-  T('decimal-build-2-35', 'Decimal build 2.35', '5.NBT.A.3', '5',
+  T('decimal-build-2-35', 'Build a decimal', '5.NBT.A.3', '5',
     'In decimals, build a number with ones, tenths and hundredths. Break a tenth and say what the total is made of now.',
     'The flat is now worth 1, so every piece shrinks by a factor of 100. Naming the new unit before building prevents the classic decimal confusion.',
     R => {
@@ -155,12 +155,12 @@ export const TASKS = [
       return {
         prompt: `Build ${dec(h)} in the chart with ones, tenths and hundredths. Then hold a tenth and pick Break. How many hundredths are there now?`,
         setup, answer: { board: [{ t: 'total', n: h / 100, say: `The blocks should show ${dec(h)}.` }, { t: 'counts', has: want, say: 'Break one tenth into ten hundredths.' }], box: { key: String(z + 10), label: 'hundredths' } },
-        hints: [`${dec(h)} is ${x} ones, ${y} tenths and ${z} hundredths.`, 'Hold a tenth and pick Break: it becomes ten hundredths.', `${z} + 10 = ${z + 10} hundredths, and the total is still ${dec(h)}.`],
-        explain: `One tenth is ten hundredths, so ${dec(h)} is also ${x} ones, ${y - 1} tenths and ${z + 10} hundredths.`,
+        hints: [`${dec(h)} is ${plural(x, 'one')}, ${plural(y, 'tenth')} and ${plural(z, 'hundredth')}.`, 'Hold a tenth and pick Break: it becomes ten hundredths.', `${z} + 10 = ${z + 10} hundredths, and the total is still ${dec(h)}.`],
+        explain: `One tenth is ten hundredths, so ${dec(h)} is also ${plural(x, 'one')}, ${plural(y - 1, 'tenth')} and ${z + 10} hundredths.`,
         solution: { board: solved(setup, want), box: String(z + 10) },
       };
     }),
-  T('build-and-read-2-048', 'Build and read 2,048', '4.NBT.A.2', '4',
+  T('build-and-read-2-048', 'Build and read a 4-digit number', '4.NBT.A.2', '4',
     'Build a four-digit number with the fewest blocks, then type it in expanded form.',
     'Expanded form should mirror the blocks: 2000 + 40 + 8, with an empty hundreds place that still needs its zero in standard form.',
     R => {
@@ -201,7 +201,7 @@ export const TASKS = [
       return {
         prompt: `The chart shows ${a}. Take away ${b}. Break a flat or a rod when you need more. What is left?`,
         setup, answer: { board: [{ t: 'total', n: left, say: `Take away blocks worth ${b}.` }], box: { key: String(left), label: 'what is left' } },
-        hints: [`You need ${bo} units but there ${o === 1 ? 'is' : 'are'} only ${o}. There are no rods, so break a flat into ten rods first.`, 'Then break a rod into ten units. Now take away the rods and units.', `${a} - ${b} = ${left}.`],
+        hints: [`You need ${plural(bo, 'unit')} but there ${o === 1 ? 'is' : 'are'} only ${o}. There are no rods, so break a flat into ten rods first.`, 'Then break a rod into ten units. Now take away the rods and units.', `${a} - ${b} = ${left}.`],
         explain: `${a} - ${b} = ${left}. With no tens, you break a hundred into ten tens, then a ten into ten ones, before taking away.`,
         solution: { board: solved(setup, hasOf(left)), box: String(left) },
       };
@@ -214,12 +214,12 @@ export const TASKS = [
       return {
         prompt: `${n} is ${hasText(has)}. Build ten times as much with the fewest blocks: each block becomes the next bigger block. What is 10 × ${n}?`,
         setup, answer: { board: [{ t: 'total', n: m, say: `Build 10 × ${n} with blocks.` }, { t: 'fewest', say: 'Use the fewest blocks: no ten of a kind.' }], box: { key: String(m), label: '10 times' } },
-        hints: ['Ten units are a rod, ten rods are a flat: ten times a block is the next block up.', `So ${has.rod} rods become ${has.rod} flats and ${has.unit} units become ${has.unit} rods.`, `10 × ${n} = ${m}.`],
-        explain: `10 × ${n} = ${m}. Every block moved one place bigger: ${has.rod} tens became ${has.rod} hundreds and ${has.unit} ones became ${has.unit} tens.`,
+        hints: ['Ten units are a rod, ten rods are a flat: ten times a block is the next block up.', `So ${plural(has.rod, 'rod')} ${has.rod === 1 ? 'becomes' : 'become'} ${plural(has.rod, 'flat')} and ${plural(has.unit, 'unit')} ${has.unit === 1 ? 'becomes' : 'become'} ${plural(has.unit, 'rod')}.`, `10 × ${n} = ${m}.`],
+        explain: `10 × ${n} = ${m}. Every block moved one place bigger: ${plural(has.rod, 'ten')} became ${plural(has.rod, 'hundred')} and ${plural(has.unit, 'one')} became ${plural(has.unit, 'ten')}.`,
         solution: { board: solved(setup, hasOf(m)), box: String(m) },
       };
     }),
-  T('area-model-13-x-12', 'Area model 13 x 12', '4.NBT.B.5', '4',
+  T('area-model-13-x-12', 'Area model for 2-digit products', '4.NBT.B.5', '4',
     'Use flats, rods and units to build a rectangle for a two-digit product and add its four parts.',
     'Regions are 100, 20, 30 and 6, totalling 156. The model shows where partial products come from.',
     R => {
@@ -252,7 +252,7 @@ export const TASKS = [
         solution: { board: setup, box: String(big), choice: at },
       };
     }),
-  T('decimal-add-1-7-0-85', 'Decimal add 1.7 + 0.85', '5.NBT.B.7', '5',
+  T('decimal-add-1-7-0-85', 'Add decimals with blocks', '5.NBT.B.7', '5',
     'In decimals, build two numbers, combine them, and regroup hundredths into tenths (and tenths into ones). Type the sum.',
     'Regrouping works the same to the right of the decimal point. Children must name the new unit before building.',
     R => {
@@ -262,7 +262,7 @@ export const TASKS = [
       return {
         prompt: `The chart shows ${dec(a)}. Add ${dec(b)} with blocks. Regroup ten hundredths into a tenth (and ten tenths into a one). What is ${dec(a)} + ${dec(b)}?`,
         setup, answer: { board: [{ t: 'total', n: s / 100, say: `Add blocks for ${dec(b)}.` }, { t: 'fewest', say: 'Regroup any ten of a kind into one bigger block.' }], box: { key: dec(s), label: 'the sum' } },
-        hints: [`${dec(b)} is ${Math.floor(b / 10)} tenths and ${b % 10} hundredths.`, `Hundredths: ${a % 10} + ${b % 10} is ten or more, so regroup ten of them into a tenth.`, `${dec(a)} + ${dec(b)} = ${dec(s)}.`],
+        hints: [`${dec(b)} is ${plural(Math.floor(b / 10), 'tenth')} and ${plural(b % 10, 'hundredth')}.`, `Hundredths: ${a % 10} + ${b % 10} is ten or more, so regroup ten of them into a tenth.`, `${dec(a)} + ${dec(b)} = ${dec(s)}.`],
         explain: `${dec(a)} + ${dec(b)} = ${dec(s)}. Ten hundredths make one tenth, just like ten ones make one ten.`,
         solution: { board: solved(setup, decHasOf(s)), box: dec(s) },
       };
@@ -349,7 +349,7 @@ export const TASKS = [
       return {
         prompt: 'Look at the blocks. Count by flats, rods and units, not one by one. What number do they show?', sig: String(n),
         setup, answer: { box: { key: String(n), label: 'the number' } },
-        hints: ['Start with the flats: each one is 100.', `${has.flat} flats are ${has.flat * 100}. Then count the rods by tens.`, `${has.flat * 100} + ${has.rod * 10} + ${has.unit} = ${n}.`],
+        hints: ['Start with the flats: each one is 100.', `${plural(has.flat, 'flat')} ${has.flat === 1 ? 'is' : 'are'} ${has.flat * 100}. Then count the rods by tens.`, `${has.flat * 100} + ${has.rod * 10} + ${has.unit} = ${n}.`],
         explain: `${hasText(has)}: ${has.flat * 100} + ${has.rod * 10} + ${has.unit} = ${n}.`,
         solution: { board: setup, box: String(n) },
       };

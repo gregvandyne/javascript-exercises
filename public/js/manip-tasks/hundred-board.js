@@ -3,7 +3,7 @@
 // board's hundred board object (its start, tenths or whole numbers, the cells covered with a star, and which
 // Multiples of shading is on). Every variation hides the board's totals (the handle bar's "Covered 47 · 1 more 48 ·
 // 10 more 57" would give answers away).
-import { boardWith, rowPlaces, objSizeOf } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
 
 export const SLUG = 'hundred-board';
 
@@ -48,7 +48,7 @@ const ORD = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 
 const inner = R => { let n; do { n = R.int(12, 89); } while (n % 10 === 0 || n % 10 === 1); return n; };
 const MOVES = { left: [-1, 'left of'], right: [1, 'right of'], above: [-10, 'above'], below: [10, 'below'] };
 export const TASKS = [
-  T('10-more-10-less', '10 more, 10 less', '1.NBT.C.5', '1',
+  T('10-more-10-less', '1 or 10 more or less', '1.NBT.C.5', '1',
     'The numbers are hidden and one number is covered. Cover the number that is 1 more, 1 less, 10 more or 10 less, without seeing the numbers.',
     'Moving down a row adds 10, the board\'s key structure. If a child counts on their fingers for 10 more, point at the column pattern.',
     R => {
@@ -64,7 +64,7 @@ export const TASKS = [
         solution: { board: solved(setup, [t]), box: String(t) },
       };
     }),
-  T('multiples-of-6-pattern', 'Multiples of 6 pattern', '3.OA.D.9', '3',
+  T('multiples-of-6-pattern', 'Multiples pattern', '3.OA.D.9', '3',
     'Turn on the shading for multiples of a number. Use the pattern to find and cover one of its multiples.',
     'The diagonal drift surprises children. Link it to 6 being 10 − 4, or to two columns of 3s combining.',
     R => {
@@ -106,7 +106,7 @@ export const TASKS = [
         solution: { board: solved(setup, [x, t]), box: d1(t) },
       };
     }),
-  T('skip-count-by-3s', 'Skip count by 3s', '2.NBT.A.2', '2',
+  T('skip-count-by-3s', 'Skip count on the board', '2.NBT.A.2', '2',
     'Skip count on the board: cover each number you say, then say the number that comes next.',
     'The board shows why the pattern drifts diagonally: 3 does not divide 10, so each row shifts.',
     R => {
@@ -134,7 +134,7 @@ export const TASKS = [
         solution: { board: solved(setup, vals), box: String(left.length) },
       };
     }),
-  T('add-9-trick', 'Add 9 trick', '2.NBT.B.5', '2',
+  T('add-9-trick', 'Add or subtract 9 or 11', '2.NBT.B.5', '2',
     'Cover a number. Add or subtract 9 or 11 by moving one row and then one cell. Cover where you land.',
     'Adding 10 then subtracting 1 is the strategy; the board move makes it unforgettable.',
     R => {
@@ -172,7 +172,7 @@ export const TASKS = [
         prompt: `${n} sits between two tens. Cover those two tens. Which one is ${n} closer to? How many steps away is it?`,
         setup, answer: { board: [{ t: 'covered', vals: [lo, hi], say: `Cover the ten just before ${n} and the ten just after it, and nothing else.` }],
           choice: { options: [String(lo), String(hi)], correct: close, say: 'Count the steps from the number to each ten.' }, box: { key: String(dist), label: 'steps to the closer ten' } },
-        hints: [`The tens around ${n} are ${lo} and ${hi}.`, `From ${n} back to ${lo} is ${n - lo} steps; on to ${hi} is ${hi - n}.`, `${n} is closer to ${close ? hi : lo}, ${dist} steps away.`],
+        hints: [`The tens around ${n} are ${lo} and ${hi}.`, `From ${n} back to ${lo} is ${plural(n - lo, 'step')}; on to ${hi} is ${hi - n}.`, `${n} is closer to ${close ? hi : lo}, ${plural(dist, 'step')} away.`],
         explain: `${n} is ${n - lo} from ${lo} and ${hi - n} from ${hi}, so it is closer to ${close ? hi : lo}: that is ${n} rounded to the nearest ten.`,
         solution: { board: solved(setup, [lo, hi]), choice: close, box: String(dist) },
       };

@@ -1,8 +1,8 @@
-// Fraction circles: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Half and quarter mix" (cover a whole using
+// Fraction circles: the tutorial scene (scripts/manip-tutorials.mjs). Task: "Mix two piece sizes" (cover a whole using
 // only halves and quarters, in as many ways as you can): 1/2 + 1/4 + 1/4 fills one circle, four quarters fill the next,
 // the two circles side by side; a piece selected, then Delete; a piece dragged into the other circle.
 const SET = '#mp-content .mp-obj.k-fraction-circles';
-const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Half and quarter mix' });
+const TASK = page => page.locator('#mp-tasks .mp-task', { hasText: 'Mix two piece sizes' });
 const circle = i => page => page.locator(`${SET} .mp-fcc`).nth(i).locator('svg');
 /** Piece n of circle i (its label: the middle of its wedge). */
 const piece = (i, n) => page => page.locator(`${SET} .mp-fcc`).nth(i).locator('.mp-fcp').nth(n).locator('text');
@@ -24,7 +24,7 @@ export default h => {
         { say: 'Today’s task: cover a whole using only halves and quarters.', do: [
           { click: '#mp-tasksmore', expect: count('#mp-tasks .mp-task', 17) },
           { scroll: TASK, center: true },
-          { spot: TASK, ms: 2400, expect: txt('#mp-tasks .mp-task:has-text("Half and quarter mix") p.small', /^Cover a whole using only halves and quarters/) },
+          { spot: TASK, ms: 2400, expect: txt('#mp-tasks .mp-task:has-text("Mix two piece sizes") p.small', /^Cover a whole using only halves and quarters/) },
           { wait: 500 },
           { scroll: '#mp-board' },
         ] },

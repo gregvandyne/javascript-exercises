@@ -15,6 +15,7 @@ const CONVERTED = ['rekenreks', 'base-ten-blocks', 'fraction-circles', 'fraction
   'xy-coordinate-board', 'two-color-counters', 'linking-cubes', 'color-tiles', 'hundred-board',
   'place-value-disks', 'number-lines', 'number-rods', 'money'];
 const SEEDS = 50;
+const LINT_SEEDS = 200;
 const json = x => JSON.parse(JSON.stringify(x));
 /** A wrong typed answer for a box: the key plus one (numbers), else a word. */
 const wrongBox = box => { const k = String(box.key).replace(/,/g, ''); return /^\d+(\.\d+)?$/.test(k) ? String(Number(k) + 1) : 'nope'; };
@@ -84,6 +85,94 @@ for (const { slug, task, id } of practiceTasks()) {
     assert.ok(TOOL_TASKS[slug].conds);
   });
 }
+
+// Titles show on desk cards, the player header and lists, for every variation: a title names the skill, never a number
+// that changes with the seed ("Build 1,139" asking for 1,896). A number in a title is in every variation's prompt (or,
+// for "1 or 10 more or less", one of them is); "a 4-digit number" and "within 20" name a size, not a number.
+test('titles: any number a practice title names is in every variation it gives', () => {
+  const bad = [];
+  for (const { id, task } of practiceTasks()) {
+    const t = task.title.replace(/\d-digit/g, '').replace(/within \d+/g, '');
+    const nums = t.match(/\d[\d,.]*(?:\/\d+)?/g);
+    if (!nums) continue;
+    for (let s = 1; s <= SEEDS; s++) {
+      const p = variation(id, s).prompt, has = nums.map(n => p.includes(n.replace(/[.,]$/, '')));
+      if (/ or /.test(t) ? !has.some(Boolean) : !has.every(Boolean)) { bad.push(`${id} "${task.title}" seed ${s}: ${p}`); break; }
+    }
+  }
+  assert.deepEqual(bad, []);
+});
+
+// Wording lint: a count of 1 never comes before a plural noun ("1 beads", "1 red cubes", "1 zero pairs"), and no
+// line says the same thing twice ("30 minutes, which is 30 minutes"). Over 200 seeds of every practice task, every
+// text a student reads: the prompt, the hints, the explanation, the box's label and say, the choices and the board's say.
+const PLURALS = ['beads', 'cubes', 'tiles', 'disks', 'units', 'rows', 'columns', 'fives', 'tens', 'ones', 'hundreds', 'thousands',
+  'tenths', 'hundredths', 'thousandths', 'flats', 'rods', 'pairs', 'squares', 'minutes', 'hours', 'coins', 'pieces', 'blocks',
+  'counters', 'groups', 'jumps', 'points', 'sides', 'pegs', 'parts', 'circles', 'bars', 'cells', 'steps', 'ticks', 'degrees',
+  'slices', 'triangles', 'hexagons', 'trapezoids', 'rhombuses', 'parallelograms', 'corners', 'chances', 'bills', 'dollars',
+  'cents', 'pennies', 'nickels', 'dimes', 'quarters', 'sticks', 'trains', 'cards', 'pens', 'stickers', 'books', 'cookies',
+  'grapes', 'crayons', 'apples', 'marbles', 'shells', 'balloons', 'stars', 'ladybugs', 'frogs', 'ducks', 'buttons',
+  'kites', 'ways', 'shapes', 'cakes', 'pizzas', 'tortillas', 'sandwiches', 'ribbons', 'whole numbers', 'lines'];
+// up to two words between the 1 and the noun: a color, "unit", "x", "zero", "square", "more", "$10", "half", "narrow"...
+const ONE_PLURAL = new RegExp(`(?<![\\d$.,/−-])\\b1 (?:(?!(?:and|or|to|of|by|than|in|on|at|from|is|are|for|with|then|as|so|each|the|a|an)\\b)(?:\\$\\d+|[a-z²]+) ){0,2}?(?:${PLURALS.join('|')})\\b`);
+const THERE_ARE_1 = /\bthere are 1 [a-z]/i;
+const TAUTOLOGY = /(?<![\w.$:¢])([\w.:¢$]+(?: [\w.:¢$]+){0,3}),? which is \1(?![\w:¢]|\.\d)/;
+/** Every text of a variation a student reads, as [where, text]. */
+export function textsOf(v) {
+  const a = v.answer || {}, out = [['prompt', v.prompt], ...(v.hints || []).map((h, i) => [`hint ${i + 1}`, h]), ['explain', v.explain]];
+  if (a.box) out.push(['box label', a.box.label], ['box say', a.box.say]);
+  if (a.choice) { (a.choice.options || []).forEach((o, i) => out.push([`choice ${i + 1}`, typeof o === 'string' ? o : (o && (o.label || o.text)) || ''])); out.push(['choice say', a.choice.say]); }
+  for (const c of a.board || []) out.push(['board say', c && c.say]);
+  return out.filter(([, t]) => typeof t === 'string' && t);
+}
+test('wording: no "1 beads" and no "X, which is X" in any practice task (200 seeds each)', () => {
+  const bad = new Map(); // one line for each task and place: the first seed that slips
+  for (const { id } of practiceTasks()) for (let s = 1; s <= LINT_SEEDS; s++) {
+    for (const [where, t] of textsOf(variation(id, s))) {
+      const m = t.match(ONE_PLURAL) || t.match(THERE_ARE_1) || t.match(TAUTOLOGY);
+      if (m && !bad.has(`${id} ${where}`)) bad.set(`${id} ${where}`, `${id} seed ${s} ${where}: "${m[0]}" in "${t}"`);
+    }
+  }
+  assert.deepEqual([...bad.values()], []);
+});
+test('wording lint catches the slips it is for', () => {
+  assert.match('There are 1 leaves.', THERE_ARE_1);
+  assert.doesNotMatch('There are 1 + 5 = 6 equal parts.', THERE_ARE_1);
+  for (const t of ['There are 1 marbles.', 'Make 1 zero pairs.', 'build 4 rows of 1 blue tiles', '1 fives make 5 minutes', 'a 1 by 1 corner of 1 unit tiles', '3 tens and 1 ones'])
+    assert.match(t, ONE_PLURAL, t);
+  for (const t of ['1 bead', '11 beads', '$1 bills', '0.1 disks', '1/2 pieces', '21 cubes', 'is 1 more than 3', '1 less than 40', '10 groups of 1 make 10', 'sides 1 and 3 units long', '1 x² tile and 2 x tiles', 'taking away 1 yellow leaves 1 more red'])
+    assert.doesNotMatch(t, ONE_PLURAL, t);
+  assert.match('It is 30 minutes, which is 30 minutes.', TAUTOLOGY);
+  assert.doesNotMatch('$4.10, which is 10 cents', TAUTOLOGY);
+  assert.doesNotMatch('1 hour 30 minutes, which is 90 minutes', TAUTOLOGY);
+});
+
+// Checks that read the arrangement, not just the counts.
+test('pattern blocks "Grow the pattern": the flower passes, a heap of the right blocks does not', () => {
+  const id = 'pattern-blocks/grow-the-pattern';
+  for (let s = 1; s <= SEEDS; s++) {
+    const v = variation(id, s), sol = v.solution.board, mineOf = b => b.pieces.filter(p => !p.locked), hub = sol.pieces.find(p => p.kind === 'hex');
+    const moved = f => { const b = json(sol); mineOf(b).forEach(f); return check(v, { ...v.solution, board: b }); };
+    assert.ok(check(v, v.solution).correct, `${id} seed ${s}: the flower passes`);
+    // placed by hand: a few pixels off everywhere still counts
+    assert.ok(moved((p, i) => { p.x += [3, -2, 0, 2][i % 4]; p.y += [-2, 3, 2, 0][i % 4]; }).correct, `${id} seed ${s}: a hand-placed flower passes`);
+    // the right counts in a row, away from the hexagon
+    let r = moved((p, i) => { p.x = 100 + 110 * i; p.y = 300; p.rot = 0; });
+    assert.equal(r.correct, false, `${id} seed ${s}: a row of the blocks fails`); assert.match(r.feedback, /around the hexagon/);
+    // a pile against one side of the hexagon
+    assert.equal(moved((p, i) => { p.x = hub.x + 100 + (i % 3) * 30; p.y = hub.y - 20 + Math.floor(i / 3) * 30; p.rot = 0; }).correct, false, `${id} seed ${s}: a pile beside the hexagon fails`);
+    // all 12 stacked on one spot touching the hexagon
+    assert.equal(moved(p => { p.x = hub.x + hub.w; p.y = hub.y; }).correct, false, `${id} seed ${s}: a stack fails`);
+    // the inner ring right, the outer ring pulled away from it
+    const inner = new Set(mineOf(sol).slice(0, 6).map(p => p.id));
+    assert.equal(moved(p => { if (!inner.has(p.id)) { const dx = p.x + p.w / 2 - hub.x - hub.w / 2, dy = p.y + p.h / 2 - hub.y - hub.h / 2, k = 60 / Math.hypot(dx, dy); p.x += dx * k; p.y += dy * k; } }).correct, false, `${id} seed ${s}: an outer ring not touching the first fails`);
+  }
+});
+test('geoboard "Squares of many sizes": the area asked is of the smallest, the middle or the biggest square', () => {
+  const asked = new Set();
+  for (let s = 1; s <= SEEDS; s++) asked.add(variation('geoboard/squares-of-many-sizes', s).prompt.match(/area of the (\w+) one/)[1]);
+  assert.deepEqual([...asked].sort(), ['biggest', 'middle', 'smallest']);
+});
 
 test('expanded form: any order, commas and spaces, zero terms optional', () => {
   assert.ok(expandedMatches(2048, '2000 + 40 + 8'));

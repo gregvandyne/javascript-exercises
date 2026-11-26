@@ -1,4 +1,4 @@
-// Linking Cubes: a quick tour (scripts/manip-tutorials.mjs plays it). The task: "Build and break 8"
+// Linking Cubes: a quick tour (scripts/manip-tutorials.mjs plays it). The task: "Build and break a number"
 // (public/js/manip-tasks.js): a stick of 8 in two colors, split into two parts, then split a different way.
 export default ({ txt, count, sel, all }) => {
   const PIECE = '#mp-content .mp-piece';
@@ -21,7 +21,7 @@ export default ({ txt, count, sel, all }) => {
     return JSON.stringify(got) === JSON.stringify(want) || `sticks of [${got}], wanted [${want}]`;
   };
   const onBoard = (dx, dy) => async page => { const b = await page.locator('#mp-board').boundingBox(); return { x: b.x + dx, y: b.y + dy }; };
-  const task = page => page.locator('#mp-tasks .mp-task', { hasText: 'Build and break 8' });
+  const task = page => page.locator('#mp-tasks .mp-task', { hasText: 'Build and break a number' });
   const tap = (label, n) => ({ click: pal(label), expect: count(PIECE, n) });
   const join = (i, ...want) => ({ drag: cube(i), to: against(i), expect: groups(...want) });
   let before = null;
@@ -63,7 +63,7 @@ export default ({ txt, count, sel, all }) => {
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { scroll: task, center: true },
-          { spot: task, expect: txt('#mp-tasks .mp-task:has-text("Build and break 8") p.muted', /^Teacher note: Record every split on the board\./) },
+          { spot: task, expect: txt('#mp-tasks .mp-task:has-text("Build and break a number") p.muted', /^Teacher note: Record every split on the board\./) },
           { move: page => task(page).locator('p').nth(1) },
           { wait: 900 },
           { move: page => task(page).locator('p.muted') },

@@ -3,7 +3,7 @@
 // checks, read from the board's bar models (bars by name, each part's typed value). A practice bar model starts with its
 // bars named and its parts labeled, every part to find at 1; the student types (or steps) each part's value, adds parts
 // where the task asks for equal parts, and types the answer. Every variation hides the bars' totals.
-import { boardWith, rowPlaces, objSizeOf } from '../manip-task-kit.js';
+import { boardWith, rowPlaces, objSizeOf, plural } from '../manip-task-kit.js';
 
 export const SLUG = 'bar-models';
 const C = ['#7CB342', '#1E88E5', '#FB8C00', '#8E24AA', '#00897B', '#C0CA33'];
@@ -110,7 +110,7 @@ export const TASKS = [
       return {
         prompt: `The bar is split into ${n} equal parts and the whole is ${W}. Type each part's value. What is ${a}/${n} of ${W}?`,
         setup, answer: { board: [{ t: 'equal', bar: 'Whole', n, v: u, say: `Every part is the same, and the ${n} parts make ${W}.` }], box: { key: String(a * u), label: `${a}/${n} of ${W}` } },
-        hints: [`${typeIt} All ${n} parts are equal.`, `One part is ${W} ÷ ${n} = ${u}.`, `${a} parts: ${a} × ${u} = ${a * u}.`],
+        hints: [`${typeIt} All ${n} parts are equal.`, `One part is ${W} ÷ ${n} = ${u}.`, `${plural(a, 'part')}: ${a} × ${u} = ${a * u}.`],
         explain: `1/${n} of ${W} is ${u}, so ${a}/${n} of ${W} is ${a} × ${u} = ${a * u}.`,
         solution: { board: solved(setup, { Whole: Array(n).fill(u) }), box: String(a * u) },
       };
@@ -137,8 +137,8 @@ export const TASKS = [
       const setup = barBoard([[`Whole ${food}`, [['Eaten'], ['Left']]]]);
       return {
         prompt: `A whole ${food} has ${d} equal slices and ${e} are eaten. Set Eaten and Left on the bar in slices. What fraction of the ${food} is left?`,
-        setup, answer: { board: [{ t: 'segs', bar: `Whole ${food}`, values: [e, d - e], say: `Eaten is ${e} slices; Left is the rest of the ${d}.` }], box: { key: `${d - e}/${d}`, label: 'fraction left' } },
-        hints: [`${typeIt} Eaten is ${e}.`, `Left is the rest: ${d} - ${e} = ${d - e} slices.`, `${d - e} of ${d} equal slices: ${d - e}/${d}.`],
+        setup, answer: { board: [{ t: 'segs', bar: `Whole ${food}`, values: [e, d - e], say: `Eaten is ${plural(e, 'slice')}; Left is the rest of the ${d}.` }], box: { key: `${d - e}/${d}`, label: 'fraction left' } },
+        hints: [`${typeIt} Eaten is ${e}.`, `Left is the rest: ${d} - ${e} = ${plural(d - e, 'slice')}.`, `${d - e} of ${d} equal slices: ${d - e}/${d}.`],
         explain: `${e}/${d} eaten and ${d - e}/${d} left make ${d}/${d}, the whole ${food}.`,
         solution: { board: solved(setup, { [`Whole ${food}`]: [e, d - e] }), box: `${d - e}/${d}` },
       };
@@ -263,7 +263,7 @@ export const TASKS = [
         prompt: `${what} travels ${r} miles in 1 hour. Set each part of the Miles bar for ${h}.5 hours at the same speed. How many miles in ${h}.5 hours?`,
         setup, answer: { board: [{ t: 'segs', bar: 'Miles', values: [...Array(h).fill(r), r / 2], say: `Each hour part is ${r}; the half hour part is half of that.` }], box: { key: String(r * h + r / 2), label: 'miles' } },
         hints: [`${typeIt} Each hour is ${r}.`, `A half hour is half of ${r}: ${r / 2}.`, `${h} × ${r} + ${r / 2} = ${r * h + r / 2}.`],
-        explain: `${h}.5 × ${r} = ${r * h + r / 2} miles: ${h} hour parts of ${r} and a half part of ${r / 2}.`,
+        explain: `${h}.5 × ${r} = ${r * h + r / 2} miles: ${plural(h, 'one-hour part')} of ${r} and a half part of ${r / 2}.`,
         solution: { board: solved(setup, { Miles: [...Array(h).fill(r), r / 2] }), box: String(r * h + r / 2) },
       };
     }),

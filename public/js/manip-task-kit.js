@@ -36,7 +36,8 @@ export function rngOf(id, seed) {
 export const fmt = n => (Number.isInteger(n) ? n.toLocaleString('en-US') : String(+n.toFixed(6)));
 const NUM_WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
 export const word = n => NUM_WORDS[n] || fmt(n);
-export const plural = (n, one, many = `${one}s`) => `${fmt(n)} ${n === 1 ? one : many}`;
+/** A count and its noun: plural(1, 'bead') -> '1 bead', plural(3, 'bead') -> '3 beads' (every "<count> <noun>" a student reads). */
+export const plural = (n, one, many = `${one}s`) => `${fmt(n)} ${+n === 1 ? one : many}`;
 /** Turns a string id-ish ("Show 7 the 5-way") into a stable key ("show-7-the-5-way"). */
 export const slugify = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
 

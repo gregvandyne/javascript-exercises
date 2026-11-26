@@ -1,11 +1,11 @@
-// Hundred Board: a quick tour (scripts/manip-tutorials.mjs plays it). The task: "10 more, 10 less"
+// Hundred Board: a quick tour (scripts/manip-tutorials.mjs plays it). The task: "1 or 10 more or less"
 // (public/js/manip-tasks.js): cover 47, name 1 more, 1 less, 10 more and 10 less, then uncover and check.
 export default ({ txt, count, sel, attr, all }) => {
   const OBJ = '#mp-content .mp-obj.k-hundred-board';
   const cell = i => `${OBJ} .mp-cell[data-i="${i}"]`;
   const pal = label => page => page.locator('#mp-palette .mp-pal', { hasText: label }).first();
   const total = want => txt(`${OBJ} .mp-otot`, want);
-  const task = page => page.locator('#mp-tasks .mp-task', { hasText: '10 more, 10 less' });
+  const task = page => page.locator('#mp-tasks .mp-task', { hasText: '1 or 10 more or less' });
   const below = (css, dy = 24) => async page => { const b = await page.locator(css).first().boundingBox(); return { x: b.x + b.width / 2, y: b.y + b.height + dy }; };
   return {
     'hundred-board': {
@@ -51,7 +51,7 @@ export default ({ txt, count, sel, attr, all }) => {
         ] },
         { say: 'Every task has its prompt and a teacher note, below the board.', do: [
           { scroll: task, center: true },
-          { spot: task, expect: txt('#mp-tasks .mp-task:has-text("10 more, 10 less") p.muted', /^Teacher note: Moving down a row adds 10/) },
+          { spot: task, expect: txt('#mp-tasks .mp-task:has-text("1 or 10 more or less") p.muted', /^Teacher note: Moving down a row adds 10/) },
           { move: page => task(page).locator('p').nth(1) },
           { wait: 900 },
           { move: page => task(page).locator('p.muted') },
