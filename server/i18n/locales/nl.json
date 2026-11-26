@@ -5262,7 +5262,8 @@
         "notHere": "Teken buiten de andere tafels en het lerarenvak."
       },
       "manipKind": "Oefenen · {count, plural, one {# som} other {# sommen}}",
-      "pageKind": "Les · {count, plural, one {# stap} other {# stappen}}"
+      "pageKind": "Les · {count, plural, one {# stap} other {# stappen}}",
+      "worksheetCards": "Kaarten · {count, plural, one {# kaart} other {# kaarten}}"
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -5399,7 +5400,35 @@
       "asBuilt": "Het lesplan zoals gemaakt",
       "scoreHint": "Het cijferoverzicht toont het % goed.",
       "kind": "Lesplan",
-      "buildText": "Kies een les, stel hem één keer in, deel hem uit."
+      "buildText": "Kies een les, stel hem één keer in, deel hem uit.",
+      "cards": "Kaarten",
+      "cardsHint": "{min} tot {max} kaarten. Elk begrip heeft een betekenis nodig.",
+      "term": "Begrip {n}",
+      "def": "Betekenis van begrip {n}",
+      "termPh": "Begrip",
+      "defPh": "Betekenis",
+      "addCard": "Kaart toevoegen",
+      "removeCard": "Kaart {n} weghalen",
+      "paste": "Lijst plakken",
+      "pasteHint": "Eén kaart per regel: het begrip, dan de betekenis na een tab, een komma of \" - \". Twee kolommen uit een spreadsheet plak je zo in.",
+      "pastePh": "leefgebied - waar een dier woont\nprooi, een dier waarop gejaagd wordt",
+      "pasteAdd": "Deze kaarten toevoegen",
+      "pasteAdded": "{count, plural, one {# kaart toegevoegd.} other {# kaarten toegevoegd.}}",
+      "pasteNone": "Geen kaarten gevonden. Zet één begrip op elke regel.",
+      "mySets": "Een van mijn kaartensets gebruiken",
+      "mySetsLead": "De kaarten worden naar deze les gekopieerd. Verander wat je wilt.",
+      "mySetsLoading": "Je sets worden geladen…",
+      "mySetsFailed": "Je sets konden nu niet laden. Probeer het opnieuw.",
+      "mySetsNone": "Je hebt nog geen opgeslagen kaartensets. Maak er een in Flashcards of typ de kaarten hier.",
+      "mySetsUsed": "De kaarten uit {title} staan erin. Verander wat je wilt.",
+      "untitledSet": "Set zonder naam",
+      "answer": "Bij Leren en Toets antwoorden leerlingen met",
+      "answerTerm": "Het begrip",
+      "answerDef": "De betekenis",
+      "answersTerm": "antwoord met het begrip",
+      "answersDef": "antwoord met de betekenis",
+      "cardsN": "{count, plural, one {# kaart} other {# kaarten}}",
+      "previewCards": "Typ minstens {min} kaarten om het leerblad te zien."
     },
     "homeroom-overview": {
       "title": "Beoordelen op",
@@ -15695,7 +15724,7 @@
       "tooManyHandouts": "Deze klas heeft veel uitgedeelde opdrachten open. Haal eerst wat oude weg.",
       "notOnDesk": "Die opdracht ligt niet op deze tafel.",
       "noLesson": "Dat lesplan staat niet meer bij je lesplannen.",
-      "badGame": "Lesplannen kun je voorlopig maken voor Arithmetic Lab, Algebra Builder en Crossword.",
+      "badGame": "Lesplannen kun je voorlopig maken voor Arithmetic Lab, Algebra Builder, Crossword en Flashcards.",
       "needTitle": "Geef het lesplan een naam.",
       "titleLong": "De naam mag hoogstens 60 tekens lang zijn.",
       "fewWords": "Een kruiswoordpuzzel heeft minstens 3 woorden nodig.",
@@ -15732,7 +15761,10 @@
       "oneToolSet": "Kies taken van één hulpmiddel tegelijk.",
       "noLiveGame": "Dat live-spel is afgelopen.",
       "liveFull": "Dat live-spel is vol.",
-      "liveLocked": "Dat live-spel is nu op slot."
+      "liveLocked": "Dat live-spel is nu op slot.",
+      "fewCards": "Een kaartenset heeft minstens 2 kaarten nodig.",
+      "missingDef": "Elke kaart heeft een betekenis nodig.",
+      "sameCard": "Elk begrip mag maar op één kaart staan."
     },
     "live": "Live",
     "desk": {

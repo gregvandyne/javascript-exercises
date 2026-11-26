@@ -680,6 +680,18 @@ button.hr-lbgame:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)
 .hr-wn{font-weight:800;color:var(--muted);text-align:end}
 .hr-wrow .input{min-height:44px;min-width:0}
 .hr-wdel{width:44px;height:44px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 20px var(--font);cursor:pointer}
+/* Flashcards: a pasted list and the teacher's own saved sets */
+.hr-fsets{margin:2px 0}
+.hr-fsetlist{padding:10px 12px;border:2px solid var(--line);border-radius:14px;background:var(--card-2)}
+.hr-fsetlist p{margin:0 0 6px}
+.hr-fsetitems{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none;max-height:240px;overflow-y:auto}
+.hr-fsetb{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:44px;padding:6px 12px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:800 14px var(--font);text-align:start;cursor:pointer}
+.hr-fsetb:hover{background:var(--hover)}
+.hr-fsetb span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hr-fsetn{flex:none;font-size:13px;font-weight:700;color:var(--muted)}
+.hr-fpaste{margin-top:4px}
+.hr-fpaste summary{display:flex;align-items:center;min-height:44px;font-weight:800;cursor:pointer}
+.hr-fpaste .row{margin-top:6px}
 .hr-lbacts{position:sticky;bottom:0;z-index:2;justify-content:flex-end;flex-wrap:wrap;gap:8px;margin:6px -20px 0;padding:12px 20px calc(14px + env(safe-area-inset-bottom));background:var(--card);border-top:1px solid var(--line)}
 /* phones: My lessons join the panel's strip */
 @media (max-width:819px){

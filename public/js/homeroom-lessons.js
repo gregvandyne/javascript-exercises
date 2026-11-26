@@ -2,18 +2,20 @@
 // My lessons in the board's left panel, the lesson builder and the lesson's hand-out sheet. Used by public/js/homeroom.js.
 //   - My lessons: each lesson is a handout like a game (tap it, then a desk, a group or Whole class; or drag it there),
 //     with ⋯ for Edit, Duplicate, Print worksheet and Delete; "+ Build a lesson" under them.
-//   - The builder (the owner-approved mockup): pick Arithmetic Lab, Algebra Builder or Crossword (the rest of the spec's
+//   - The builder (the owner-approved mockup): pick Arithmetic Lab, Algebra Builder, Crossword or Flashcards (the rest of the spec's
 //     order is listed as coming later), then that game's own settings (public/js/homeroom-lesson-make.js), "A version for
 //     each group?" (each group starts from the lesson with a suggested easier or harder change, every bit editable), the
 //     instructions and a live worksheet preview made by the game's own printer (POST .../lessons/preview). Crossword has
 //     "Ask Oomba to fill it in": clues for the teacher's words (the game's own AI clue writer, POST /api/games/:id/clues;
-//     only the words go, never anything about a student). "Save to My lessons".
+//     only the words go, never anything about a student). Flashcards: terms and definitions typed or pasted as a list, or
+//     one of the teacher's saved flashcard sets (GET /api/games/:id/sets) copied in to change; the preview is the game's
+//     study sheet. "Save to My lessons".
 //   - The lesson's hand-out sheet: who gets which version, the order on the desk and the grading (Score by default).
 // Group names are the teacher's words for the teacher: they are never printed on a worksheet or shown to a student.
 import { t, api, toast, esc, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { dueField, wireDue } from '/js/homeroom-due.js';
-import { ARITH, ALGEBRA, CROSS, defaults, fill, suggest, leanOf, groupIdent, countOf, newSeed } from '/js/homeroom-lesson-make.js';
+import { ARITH, ALGEBRA, CROSS, FLASH, defaults, fill, suggest, leanOf, groupIdent, countOf, unitOf, parseCards, newSeed } from '/js/homeroom-lesson-make.js';
 
 const tl = (k, v) => t(`js.homeroom-lessons.${k}`, v);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
@@ -31,6 +33,7 @@ export function sizeText(op, name) {
 export function summary(slug, s) {
   if (slug === 'arithmetic-lab') return [tl(`ops.${s.op}`), sizeText(s.op, s.size), ...(s.method && s.method !== 'standard' ? [tl(`methods.${s.method}`)] : []), tl('problemsN', { count: countOf(slug, s) }), tl(`levels.${s.level}`)].join(' · ');
   if (slug === 'algebra-builder') return [tl(`modes.${s.mode}`), tl(`alLevels.${s.level}`), tl('problemsN', { count: countOf(slug, s) })].join(' · ');
+  if (slug === 'flashcards') return [tl('cardsN', { count: countOf(slug, s) }), s.a === 'd' ? tl('answersDef') : tl('answersTerm')].join(' · ');
   return [tl('wordsN', { count: countOf(slug, s) }), s.bank ? tl('bankShown') : tl('bankHidden')].join(' · ');
 }
 
@@ -53,7 +56,7 @@ export function renderLessons(ctx) {
   // (cards like the rest of Find lessons: docs/decisions.md "Homeroom: live games inside Homeroom, a simpler Find
   // lessons"; nothing yet is just the Build a lesson plan card, never an empty line taking room)
   el.innerHTML = `<ul class="hr-items hr-cgrid">${list.map(l => `<li class="hr-lrow hr-cc" data-k="plan" data-q="${esc(String(l.title || '').toLowerCase())}"><button type="button" class="hr-item hr-give hr-lesson hr-ccard" data-hritem="L:${esc(l.id)}" data-icon="${esc(l.icon)}" aria-pressed="${ctx.H.pick && ctx.H.pick.id === `L:${l.id}`}">
-      <span class="hr-ico hr-lico" aria-hidden="true">${iconHtml(l.icon, { size: 28 })}</span><span class="hr-ctext hr-lt"><span class="hr-itemt" dir="auto">${esc(l.title)}</span><span class="hr-ckind hr-lsub">${esc([tl('kind'), tl(l.slug === 'crossword' ? 'wordsN' : 'problemsN', { count: l.n }), l.versions.length ? tl('versionsN', { count: l.versions.length }) : ''].filter(Boolean).join(' · '))}</span></span><span class="hr-ccheck" aria-hidden="true"></span></button>
+      <span class="hr-ico hr-lico" aria-hidden="true">${iconHtml(l.icon, { size: 28 })}</span><span class="hr-ctext hr-lt"><span class="hr-itemt" dir="auto">${esc(l.title)}</span><span class="hr-ckind hr-lsub">${esc([tl('kind'), tl(`${unitOf(l.slug)}N`, { count: l.n }), l.versions.length ? tl('versionsN', { count: l.versions.length }) : ''].filter(Boolean).join(' · '))}</span></span><span class="hr-ccheck" aria-hidden="true"></span></button>
       ${btn('hr-lmore', `data-hrlmore="${esc(l.id)}" aria-label="${esc(tl('more', { title: l.title }))}"`, '⋯')}</li>`).join('')}
     <li class="hr-cc hr-cbuildplan" data-k="plan" data-q="${esc(tl('build').toLowerCase())}">${btn('hr-item hr-build hr-ccard', 'data-hr="build"', `<span class="hr-ico hr-buildico" aria-hidden="true">+</span><span class="hr-ctext"><span class="hr-itemt">${esc(tl('build'))}</span>${list.length ? '' : `<span class="hr-ckind">${esc(tl('buildText'))}</span>`}</span>`)}</li></ul>`;
   // the catalog's filters apply to the new cards too
@@ -81,7 +84,7 @@ export function lessonMenu(ctx, id) {
 }
 /** Print worksheet: which version (Everyone, or a group's), with or without the answer key, then the page prints. */
 function printSheet(ctx, l) {
-  const keyable = l.slug !== 'algebra-builder';
+  const keyable = l.slug !== 'algebra-builder' && l.slug !== 'flashcards';
   const opts = [...l.versions.map(v => [v.key, v.label]), ['', l.versions.length ? tl('noGroup') : tl('printLesson')]];
   const sh = sheet({ title: `🖨️ ${tl('print')}`, content: `<form class="hr-giveform hr-lprint" novalidate><p class="small muted">${esc(tl('printLead'))}</p>
     ${opts.length > 1 ? `<p class="hr-label" id="hrp-which">${esc(tl('printWhich'))}</p>${seg('v', opts, '', 'hrp-which')}` : ''}
@@ -134,6 +137,8 @@ function builderForm(ctx, sh, box, game, lesson) {
   if (lesson) for (const v of lesson.versions) S.versions.set(v.key, { key: v.key, label: v.label, s: fill(slug, v.s) });
   S.on = S.versions.size > 0;
   if (slug === 'crossword' && !S.base.words.length) S.base.words = [['', ''], ['', ''], ['', '']];
+  if (slug === 'flashcards' && !S.base.cards.length) S.base.cards = [['', '', ''], ['', '', ''], ['', '', '']];
+  const typed = slug === 'crossword' || slug === 'flashcards';   // kept as typed while editing (the server checks them)
   const curSettings = () => (S.cur && S.versions.get(S.cur) ? S.versions.get(S.cur).s : S.base);
   const setCur = s => { if (S.cur && S.versions.get(S.cur)) S.versions.get(S.cur).s = s; else S.base = s; };
   const max = ctx.D.instructionsMax || 300;
@@ -197,6 +202,19 @@ function builderForm(ctx, sh, box, game, lesson) {
         <p class="hr-label" id="hrl-n">${esc(tl('count'))}</p>${seg('count', ALGEBRA.counts.map(v => [v, String(v)]), s.count, 'hrl-n')}
         <p class="hr-label" id="hrl-ti">${esc(tl('tiles'))}</p>${seg('tiles', [['all', tl('tilesAll')], ['none', tl('tilesNone')]], s.tiles, 'hrl-ti')}
         <div class="row hr-lbnew">${btn('btn btn-sm', 'data-lb="new"', `${iconHtml('🔀', { size: 16 })} ${esc(tl('newProblems'))}`)}</div>`;
+    } else if (slug === 'flashcards') {
+      h = `<p class="hr-label" id="hrl-cards">${esc(tl('cards'))}</p><p class="small muted hr-seghint">${esc(tl('cardsHint', { min: FLASH.min, max: FLASH.max }))}</p>
+        ${game.id ? `<div class="row hr-fsets">${btn('btn btn-sm', 'data-lb="mysets" aria-expanded="false" aria-controls="hrl-mysets"', `${iconHtml('🗂️', { size: 16 })} ${esc(tl('mySets'))}`)}</div><div id="hrl-mysets" class="hr-fsetlist" hidden></div>` : ''}
+        <ol class="hr-words plain" aria-labelledby="hrl-cards">${s.cards.map(([w, d, p], i) => `<li class="hr-wrow"><span class="hr-wn" aria-hidden="true">${p ? esc(p) : i + 1}</span>
+          <input class="input hr-ww" data-lbt="${i}" maxlength="${FLASH.term}" value="${esc(w)}" placeholder="${esc(tl('termPh'))}" aria-label="${esc(tl('term', { n: i + 1 }))}" autocomplete="off" dir="auto">
+          <input class="input hr-wc" data-lbd="${i}" maxlength="${FLASH.def}" value="${esc(d)}" placeholder="${esc(tl('defPh'))}" aria-label="${esc(tl('def', { n: i + 1 }))}" autocomplete="off" dir="auto">
+          ${btn('hr-wdel', `data-lbcdel="${i}" aria-label="${esc(tl('removeCard', { n: i + 1 }))}"`, '×')}</li>`).join('')}</ol>
+        ${s.cards.length < FLASH.max ? btn('btn btn-sm', 'data-lb="addcard"', `+ ${esc(tl('addCard'))}`) : ''}
+        <details class="hr-fpaste"><summary>${esc(tl('paste'))}</summary>
+          <p class="small muted hr-seghint" id="hrl-pastehint">${esc(tl('pasteHint'))}</p>
+          <textarea class="input hr-ins" id="hrl-paste" rows="4" dir="auto" aria-label="${esc(tl('paste'))}" aria-describedby="hrl-pastehint" placeholder="${esc(tl('pastePh'))}"></textarea>
+          <div class="row">${btn('btn btn-sm', 'data-lb="pasteadd"', esc(tl('pasteAdd')))}</div></details>
+        <p class="hr-label" id="hrl-an">${esc(tl('answer'))}</p>${seg('a', [['t', tl('answerTerm')], ['d', tl('answerDef')]], s.a, 'hrl-an')}`;
     } else {
       h = `<p class="hr-label">${esc(tl('words'))}</p><p class="small muted hr-seghint">${esc(tl('wordsHint', { min: CROSS.min, max: CROSS.max }))}</p>
         <ol class="hr-words plain">${s.words.map(([w, c], i) => `<li class="hr-wrow"><span class="hr-wn" aria-hidden="true">${i + 1}</span>
@@ -218,7 +236,7 @@ function builderForm(ctx, sh, box, game, lesson) {
     else if (name === 'level' && slug === 'algebra-builder') { s.level = value; s.problems = null; }
     else if (name === 'bank' || name === 'hints') s[name] = value === '1';
     else s[name] = value;
-    setCur(slug === 'crossword' ? s : fill(slug, s));
+    setCur(typed ? s : fill(slug, s));
     drawFields(); queuePreview();
   }
 
@@ -233,6 +251,16 @@ function builderForm(ctx, sh, box, game, lesson) {
   }
   async function preview() {
     const seq = ++S.seq, s = curSettings();
+    if (slug === 'flashcards') {
+      const cards = s.cards.filter(([w, d]) => w.trim() || d.trim());
+      if (cards.filter(([w]) => w.trim()).length < FLASH.min) { $('hrl-paper').innerHTML = `<p class="hr-lbwait">${esc(tl('previewCards', { min: FLASH.min }))}</p>`; scalePaper(); return; }
+      try {
+        const r = await api(ctx.api2('lessons/preview'), { method: 'POST', background: true, body: { slug, title: $('hrl-title').value, instructions: $('hrl-ins').value, settings: { ...s, cards: cards.filter(([w]) => w.trim()).map(([w, d, p]) => [w, d.trim() ? d : '…', p]) } } });
+        if (seq !== S.seq) return;
+        S.html = r.html; $('hrl-paper').innerHTML = r.html;
+      } catch (err) { if (seq === S.seq) $('hrl-paper').innerHTML = `<p class="hr-lbwait">${esc(err.message)}</p>`; }
+      scalePaper(); return;
+    }
     const words = slug === 'crossword' ? s.words.filter(([w, c]) => w.trim() || c.trim()) : null;
     if (slug === 'crossword' && words.filter(([w]) => w.trim()).length < CROSS.min) { $('hrl-paper').innerHTML = `<p class="hr-lbwait">${esc(tl('previewWords', { min: CROSS.min }))}</p>`; scalePaper(); return; }
     try {
@@ -261,7 +289,48 @@ function builderForm(ctx, sh, box, game, lesson) {
   }
 
   // ---- saving
-  const cleanWords = s => (slug === 'crossword' ? { ...s, words: s.words.filter(([w, c]) => w.trim() || c.trim()).map(([w, c]) => [w.trim(), c.trim()]) } : s);
+  const cleanWords = s => (slug === 'crossword' ? { ...s, words: s.words.filter(([w, c]) => w.trim() || c.trim()).map(([w, c]) => [w.trim(), c.trim()]) }
+    : slug === 'flashcards' ? { ...s, cards: s.cards.filter(([w, d]) => w.trim() || d.trim()).map(([w, d, p]) => [w.trim(), d.trim(), p || '']) } : s);
+
+  // ---- Flashcards: a pasted list, and the teacher's own saved sets
+  function addCards(list) {
+    const s = curSettings(), have = new Set(s.cards.map(([w]) => w.trim().toLocaleLowerCase()).filter(Boolean));
+    s.cards = s.cards.filter(([w, d]) => w.trim() || d.trim());
+    let n = 0;
+    for (const [w, d, p] of list) {
+      if (s.cards.length >= FLASH.max) break;
+      if (have.has(w.toLocaleLowerCase())) continue;
+      have.add(w.toLocaleLowerCase()); s.cards.push([w, d, p || '']); n++;
+    }
+    if (!s.cards.length) s.cards.push(['', '', '']);
+    return n;
+  }
+  function pasteAdd() {
+    const ta = $('hrl-paste'), list = parseCards(ta.value);
+    if (!list.length) { toast(tl('pasteNone'), { bad: true }); ta.focus(); return; }
+    const n = addCards(list);
+    drawFields(); queuePreview(); toast(tl('pasteAdded', { count: n }));
+  }
+  let mySets = null;
+  async function showMySets(b) {
+    const el = $('hrl-mysets'); if (!el) return;
+    if (!el.hidden) { el.hidden = true; b.setAttribute('aria-expanded', 'false'); return; }
+    el.hidden = false; b.setAttribute('aria-expanded', 'true');
+    if (!mySets) {
+      el.innerHTML = `<p class="small muted">${esc(tl('mySetsLoading'))}</p>`;
+      try { mySets = ((await api(`/api/games/${encodeURIComponent(game.id)}/sets`)).sets || []).filter(x => x.items && x.items[0] && Array.isArray(x.items[0].c)); } catch { el.innerHTML = `<p class="small muted">${esc(tl('mySetsFailed'))}</p>`; return; }
+    }
+    el.innerHTML = mySets.length ? `<p class="small muted">${esc(tl('mySetsLead'))}</p><ul class="hr-fsetitems plain">${mySets.map((x, i) => `<li>${btn('hr-fsetb', `data-lbset="${i}"`, `<span dir="auto">${esc(x.title || x.items[0].t || tl('untitledSet'))}</span><span class="hr-fsetn">${esc(tl('cardsN', { count: x.items[0].c.length }))}</span>`)}</li>`).join('')}</ul>`
+      : `<p class="small muted">${esc(tl('mySetsNone'))}</p>`;
+  }
+  function useSet(i) {
+    const x = mySets && mySets[+i]; if (!x) return;
+    const it = x.items[0], s = curSettings();
+    s.cards = []; addCards(it.c.map(c => [String(c[0] || ''), String(c[1] || ''), String(c[2] || '')]).filter(([w]) => w));
+    s.a = it.a === 'd' ? 'd' : 't';
+    if (!$('hrl-title').value.trim() && (x.title || it.t)) $('hrl-title').value = String(x.title || it.t).slice(0, ctx.D.titleMax || 60);
+    drawFields(); queuePreview(); toast(tl('mySetsUsed', { title: x.title || it.t || tl('untitledSet') }));
+  }
   async function save() {
     const err = $('hrl-err'); err.textContent = '';
     const title = $('hrl-title').value.trim();
@@ -280,6 +349,10 @@ function builderForm(ctx, sh, box, game, lesson) {
     if (sg) { if (sg.dataset.lbseg === 'on') setOn(sg.dataset.v === '1'); else change(sg.dataset.lbseg, sg.dataset.v); return; }
     const v = e.target.closest('[data-lbv]');
     if (v) { S.cur = v.dataset.lbv; drawVersions(); drawFields(); queuePreview(); return; }
+    const cdel = e.target.closest('[data-lbcdel]');
+    if (cdel) { const s = curSettings(); s.cards.splice(+cdel.dataset.lbcdel, 1); if (!s.cards.length) s.cards.push(['', '', '']); drawFields(); queuePreview(); return; }
+    const us = e.target.closest('[data-lbset]');
+    if (us) { useSet(us.dataset.lbset); return; }
     const del = e.target.closest('[data-lbdel]');
     if (del) { const s = curSettings(); s.words.splice(+del.dataset.lbdel, 1); if (!s.words.length) s.words.push(['', '']); drawFields(); queuePreview(); return; }
     const a = e.target.closest('[data-lb]'); if (!a) return;
@@ -289,11 +362,16 @@ function builderForm(ctx, sh, box, game, lesson) {
     else if (k === 'ai') aiFill();
     else if (k === 'print') { if (S.html) printHtml(S.html); }
     else if (k === 'new') { setCur(fill(slug, { ...curSettings(), seed: newSeed(), problems: null })); drawFields(); queuePreview(); }
+    else if (k === 'addcard') { curSettings().cards.push(['', '', '']); drawFields(); box.querySelector(`[data-lbt="${curSettings().cards.length - 1}"]`)?.focus(); }
+    else if (k === 'pasteadd') pasteAdd();
+    else if (k === 'mysets') showMySets(a);
     else if (k === 'addword') { curSettings().words.push(['', '']); drawFields(); box.querySelector(`[data-lbw="${curSettings().words.length - 1}"]`)?.focus(); }
   });
   box.addEventListener('input', e => {
     const w = e.target.closest('[data-lbw],[data-lbc]');
     if (w) { const s = curSettings(), i = +(w.dataset.lbw ?? w.dataset.lbc); s.words[i][w.dataset.lbw !== undefined ? 0 : 1] = w.value; queuePreview(); return; }
+    const f = e.target.closest('[data-lbt],[data-lbd]');
+    if (f) { const s = curSettings(), i = +(f.dataset.lbt ?? f.dataset.lbd); s.cards[i][f.dataset.lbt !== undefined ? 0 : 1] = f.value; queuePreview(); return; }
     if (e.target.id === 'hrl-title' || e.target.id === 'hrl-ins') queuePreview();
   });
   let rz = null; const onResize = () => { clearTimeout(rz); rz = setTimeout(scalePaper, 100); };
