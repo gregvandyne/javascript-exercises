@@ -2076,7 +2076,8 @@
         "tapWhere": "Ahora toca un pupitre, un grupo, Toda la clase o Mi escritorio.",
         "tapMine": "Ahora toca Mi escritorio para dejarlo ahí.",
         "toolSoon": "Repartir herramientas llega pronto. Ponlo en Mi escritorio para abrirlo desde ahí.",
-        "pickFirst": "Elige primero una lección a la izquierda y luego toca Mi escritorio."
+        "pickFirst": "Elige primero una lección a la izquierda y luego toca Mi escritorio.",
+        "previewNote": "Vista previa: tus respuestas no se guardan"
       },
       "wholeClass": "Toda la clase · {count}",
       "editGroups": "Grupos",
@@ -2299,7 +2300,18 @@
         "gcAlso": "Publicar también en Google Classroom",
         "gcHint": "Llega a tu clase de Classroom vinculada como tarea, con la calificación que elegiste aquí.",
         "gcWholeOnly": "Solo las tareas para toda la clase van a Google Classroom: allí llegarían a toda la clase.",
-        "taskScoreHint": "Puntuación: cuántas preguntas acertaron a la primera."
+        "taskScoreHint": "Puntuación: cuántas preguntas acertaron a la primera.",
+        "toolChip": "Práctica",
+        "toolState": "Práctica libre",
+        "toolMeta": "Manipulativos · práctica libre",
+        "roomOpen": "Sala abierta",
+        "roomClosed": "Sala cerrada por ahora",
+        "openRoom": "Abrir la sala",
+        "fromClassroom": "Asignada en Classroom. Cámbiala o quítala allí.",
+        "oneToolBusy": "{tool} está en los pupitres ahora. Un manipulativo a la vez: quítalo de todos los pupitres para repartir {next}.",
+        "oneToolRoom": "Hay una sala de {tool} abierta en esta clase. Una sala a la vez: ciérrala para repartir {next}.",
+        "takeOffAll": "Quitarlo de todos los pupitres",
+        "openThatRoom": "Abrir esa sala"
       },
       "team": {
         "label": "Mesa de equipo",
@@ -2376,7 +2388,8 @@
         "count": "Preguntas",
         "countHint": "De 1 a 10 preguntas para cada estudiante.",
         "preview": "Pruébala"
-      }
+      },
+      "endConfirmTools": "¿Terminar la clase para todos? Los pupitres y el área del docente se quedan como están. Los manipulativos de los pupitres ({tools}) se quitan y su sala termina."
     },
     "stories": {
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
@@ -3899,7 +3912,18 @@
       "checkAll": "{total, plural, one {¡Todo bien!} other {¡Las # bien!}}",
       "checksSummary": "{total, plural, one {Respuestas comprobadas: {checked} de #} other {Respuestas comprobadas: {checked} de #}}",
       "checkAllRight": "Todo bien",
-      "checkNeedsHelp": "Necesita ayuda"
+      "checkNeedsHelp": "Necesita ayuda",
+      "how": "Cómo funciona",
+      "pushMine": "Enviar mi tablero",
+      "pushMineText": "Envía tu zona tal como está ahora. No hace falta guardar nada antes.",
+      "pushEmpty": "Tu zona está vacía. Pon algo en ella y luego envíala.",
+      "pushGoArea": "Ir a mi zona",
+      "pushSaved": "O enviar un tablero guardado",
+      "pushBuild": "Crea y guarda un tablero en {tool} (se abre en una pestaña nueva)",
+      "pushedMine": "Tu tablero se envió a todos los alumnos.",
+      "endTitle": "¿Terminar esta sesión?",
+      "endConfirm": "Después, los alumnos no podrán cambiar sus cuadros. Puedes volver a abrir la sala más tarde con el mismo código.",
+      "pushNoKey": "Escribe primero las respuestas en tus casillas de respuesta para que los alumnos puedan comprobar su trabajo."
     },
     "figures-editor": {
       "undo": "Deshacer",
@@ -5165,7 +5189,8 @@
         "full": "No puedes dibujar más. Borra algunas líneas primero.",
         "notHere": "Dibuja fuera de los otros pupitres y del área del docente."
       },
-      "manipKind": "Práctica · {count, plural, one {# problema} other {# problemas}}"
+      "manipKind": "Práctica · {count, plural, one {# problema} other {# problemas}}",
+      "pageKind": "Lección · {count, plural, one {# paso} other {# pasos}}"
     },
     "homeroom-area": {
       "label": "Zona del docente",
@@ -5375,7 +5400,11 @@
         "notStarted": "Sin empezar",
         "none": "Hoy todavía no se repartió nada.",
         "weeks": "El progreso de varias semanas está en la pestaña Clase.",
-        "classroom": "Abrir Clase"
+        "classroom": "Abrir Clase",
+        "setDone": "Terminado · {right} de {n} bien a la primera",
+        "setAt": "Pregunta {i} de {n} · {right} bien a la primera",
+        "toolOpen": "{count, plural, one {# lo tiene abierto} other {# lo tienen abierto}}",
+        "toolLine": "Manipulativos · práctica libre, no cuenta"
       },
       "hands": {
         "label": "{count, plural, =0 {Manos, ninguna arriba} one {Manos, # arriba} other {Manos, # arriba}}",
@@ -5428,7 +5457,9 @@
           "hideOff": "El cursor de {name} se ve otra vez",
           "comingOn": "{name} ve que vas para allá",
           "comingOff": "Aviso quitado del pupitre de {name}"
-        }
+        },
+        "toolNow": "Abierto ahora · práctica libre",
+        "toolOn": "En su pupitre · práctica libre"
       }
     },
     "homeroom-plan": {
@@ -5561,6 +5592,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "Revisar ahora"
+    },
+    "manip-task-list": {
+      "assignedLine": "Asignado a {klass}: {titles}. Cada alumno recibe {n, plural, one {# pregunta} other {# preguntas}}."
+    },
+    "manip-task-play": {
+      "more": "Mostrar toda la pregunta",
+      "less": "Mostrar menos"
     }
   },
   "favorites": {
@@ -15126,7 +15164,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba todavía está respondiendo tu último mensaje. Espera un momento."
+      "chatBusy": "Oomba todavía está respondiendo tu último mensaje. Espera un momento.",
+      "emptyArea": "Tu zona está vacía. Pon algo en ella y luego envíala."
     }
   },
   "proof": {

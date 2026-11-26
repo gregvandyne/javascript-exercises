@@ -46,6 +46,9 @@ export function watcher(ctx) {
     for (const [sid, x] of Object.entries(r.screens || {})) W.screens[sid] = { ...x, at: now - (x.age || 0) };
     for (const [sid, x] of Object.entries(r.boards || {})) { W.boards[sid] = x; W.drawn.delete(sid); }
     W.bcur = r.bcur || {};
+    // a board the server no longer has for that desk (the player closed, the set is done, another one opened) goes:
+    // bcur names every desk that still has one
+    for (const sid of Object.keys(W.boards)) if (!(sid in W.bcur)) delete W.boards[sid];
     for (const [sid, x] of Object.entries(r.pads || {})) W.pads[sid] = x;
     // a picture a little old is still them; one older than 30 s is not shown (the server stops sending it too)
     for (const [sid, x] of Object.entries(W.screens)) if (now - x.at > 30e3) delete W.screens[sid];
@@ -78,18 +81,21 @@ export function watcher(ctx) {
     if (!d || d.st === 'away' || d.absent || d.home) return null;
     const name = size === 'big' ? '' : '';
     if (d.where === 'game') {
-      const s = W.screens[sid], h = d.on ? ctx.handout(d.on) : null, title = h ? h.title : tw('aGame');
+      // (a picture is of the game it was drawn in: one of another handout than the desk has open now is not shown)
+      const s0 = W.screens[sid], s = s0 && (!s0.on || !d.on || s0.on === d.on) ? s0 : null, h = d.on ? ctx.handout(d.on) : null, title = h ? h.title : tw('aGame');
       if (s) return { kind: 'game', key: `g${s.v}`, html: `<img class="hr-simg" src="${esc(s.img)}" alt="" width="${s.w}" height="${s.h}">${curDot(s.cur, name)}<span class="hr-stag">${iconHtml(h ? h.icon : '🎮', { size: 12 })} <span dir="auto">${esc(title)}</span></span>` };
       return { kind: 'game', key: `gx${d.on}`, html: `<div class="hr-swait">${iconHtml(h ? h.icon : '🎮', { size: size === 'big' ? 40 : 22 })}<span dir="auto">${esc(tw('playing', { title }))}</span></div>` };
     }
     if (d.where === 'tool') {
-      const b = W.boards[sid], title = d.tool ? d.tool.title : tw('aTool');
+      // the board and its problem come as one (services/homeroom-tools.js boardsOf), and only while that very handout is
+      // open: one for another handout than the desk has open is never shown, and its label is its own title
+      const b0 = W.boards[sid], open = d.tool ? d.tool.id : '', b = b0 && (!b0.on || !open || b0.on === open) ? b0 : null, title = (b && b.title) || (d.tool ? d.tool.title : tw('aTool'));
       if (b) {
         const w = size === 'big' ? 560 : 168, h = size === 'big' ? 380 : 110;
         // a Manipulatives practice set (services/manip-tasks.js): the problem they are on, and what they typed (look)
         const pr = b.prob, prob = !pr ? '' : size === 'big' ? `<p class="hr-sprob"><b>${esc(tw('question', { i: pr.i + 1, n: pr.n }))}</b> <span dir="auto">${esc(pr.prompt)}</span>${pr.box ? ` <span class="hr-sprobbox">${esc(tw('typed', { box: pr.box }))}</span>` : ''}</p>` : '';
         const tag = pr ? `${title} · ${tw('question', { i: pr.i + 1, n: pr.n })}` : title;
-        return { kind: 'tool', key: `t${b.v}:${(W.bcur[sid] || []).join(',')}:${W.manip ? 1 : 0}:${size}`, html: `${prob}<div class="hr-sfit">${boardHtml(sid, b, w, h, name)}</div><span class="hr-stag">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: 12 })} <span dir="auto">${esc(tag)}</span></span>` };
+        return { kind: 'tool', key: `t${b.v}:${b.on || ''}:${(W.bcur[sid] || []).join(',')}:${W.manip ? 1 : 0}:${size}`, html: `${prob}<div class="hr-sfit">${boardHtml(sid, b, w, h, name)}</div><span class="hr-stag">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: 12 })} <span dir="auto">${esc(tag)}</span></span>` };
       }
       return { kind: 'tool', key: `tx${d.on}`, html: `<div class="hr-swait">${iconHtml(d.tool ? d.tool.icon : '🧮', { size: size === 'big' ? 40 : 22 })}<span dir="auto">${esc(tw('using', { title }))}</span></div>` };
     }

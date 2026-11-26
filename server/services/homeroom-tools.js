@@ -11,9 +11,14 @@
 //     (public/js/homeroom-watch.js), and the student's live-room cursor (services/manip-live.js) on it; the room itself
 //     (PDF, Check, push a board, show work) stays a tap away (Open the room).
 // One Manipulatives room runs per class (the live room's rule), so a second tool waits until the first is taken off
-// every desk. A session ends on its own after 12 hours (SESSION_HOURS): the teacher's board opens it again (reopen) for
-// its host the next time they open Homeroom, so a tool handed out yesterday still works today. Only the class's own
-// teachers (who may host Manipulatives) hand out or take off a tool; a student sees only the cards on their own desk.
+// every desk (the hand-out sheet says which tool runs, with Take it off every desk right there: roomOf). A session ends
+// on its own after 12 hours (SESSION_HOURS): only that automatic end is undone, the teacher's board opening it again
+// (reopen) for its host the next time they open Homeroom, so a tool handed out yesterday still works today. A room the
+// teacher ended (End session in the room, from look's Open the room or the Manipulatives page; another room started in
+// the class) takes its tool off every desk: its handout goes (tidy), so it never opens again by itself and no student
+// keeps a card that opens an ended room. End class takes every tool off the desks and ends its room (docs/decisions.md
+// "Homeroom: QA fixes for Manipulatives in Homeroom"). Only the class's own teachers (who may host Manipulatives) hand
+// out or take off a tool; a student sees only the cards on their own desk.
 import { q, now, audit } from '../db.js';
 import * as H from './homeroom.js';
 import * as HO from './homeroom-handouts.js';
@@ -30,10 +35,18 @@ const json = (s, d) => { try { const v = JSON.parse(s); return v ?? d; } catch {
 export const TOOLS_MAX = 8;
 export const ID_RE = /^mt[a-z0-9]{8}$/;
 
-/** What is stored for the class. */
+const HOUR = 3600e3;
+/** Did this room end by itself (its 12 hours ran out), not because someone ended it? (prune ends it at or after
+ *  opened_at + SESSION_HOURS; a teacher's End session, or another room started in the class, ends it before that.) */
+export const endedByItself = s => !!s && s.status !== 'active' && (s.ended_at || 0) - (s.opened_at || s.created_at || 0) >= M.SESSION_HOURS * HOUR - 60e3;
+/** What is stored for the class, tidied: a handout whose room is gone or was ended by someone (not by itself) is taken
+ *  off every desk (written back), so the class can hand out another tool and students lose its card. */
 export function storedOf(classId) {
   const r = q.get('SELECT tools FROM homeroom_rooms WHERE class_id=?', classId);
-  return (r ? json(r.tools, []) : []).filter(x => x && typeof x === 'object' && ID_RE.test(x.id) && toolOf(x.tool) && x.session);
+  const all = (r ? json(r.tools, []) : []).filter(x => x && typeof x === 'object' && ID_RE.test(x.id) && toolOf(x.tool) && x.session);
+  const keep = all.filter(x => { const s = M.getSession(x.session); return s && (s.status === 'active' || endedByItself(s)); });
+  if (keep.length !== all.length) q.run('UPDATE homeroom_rooms SET tools=? WHERE class_id=?', JSON.stringify(keep), classId);
+  return keep;
 }
 function write(classId, list) {
   const t = now();
@@ -101,15 +114,36 @@ export function removeTool(u, c, id, studentId = null) {
   return ok({ removed });
 }
 /** The teacher opened Homeroom: a tool handout's room that ended by itself (12 hours) opens again for its host, unless
- *  another room runs in the class now. */
+ *  another room runs in the class now. Never a room someone ended (storedOf has taken those off the desks). */
 export function keepOpen(u, c) {
   if (!canGive(u, c)) return;
-  const act = activeOf(c.id);
+  if (activeOf(c.id)) return;
   for (const x of storedOf(c.id)) {
     const s = sessionOf(x);
-    if (!s || s.status === 'active' || (act && act.id !== s.id) || !M.isSessionHost(u, s)) continue;
+    if (!s || !endedByItself(s) || !M.isSessionHost(u, s)) continue;
     if (M.reopen(u, s.id).ok) break;
   }
+}
+/** End class (services/homeroom.js setLive 'end'): every tool comes off every desk and its room ends (its boards are
+ *  kept, as for any ended room). -> how many tool handouts came off */
+export function takeAllOff(by, c) {
+  const list = storedOf(c.id); if (!list.length) return 0;
+  write(c.id, []);
+  const t = now();
+  for (const id of new Set(list.map(x => x.session))) {
+    const s = M.getSession(id);
+    if (s && s.status === 'active') { q.run("UPDATE manip_sessions SET status='ended', ended_at=? WHERE id=? AND status='active'", t, s.id); LIVE.forget(s.id); }
+  }
+  audit(by ? by.id : null, 'homeroom.toolsOff', c.id, { tools: list.map(x => x.tool), why: 'endClass' });
+  return list.length;
+}
+H.onLive(({ by, c, action }) => { if (action === 'end') takeAllOff(by, c); });
+/** The Manipulatives room running in the class now (one at a time): { session, tool, title, icon, handout (the tool
+ *  handout on desks that uses it, or '') } or null. The hand-out sheet shows it before a second tool is picked. */
+export function roomOf(c) {
+  const act = activeOf(c.id); if (!act) return null;
+  const tl = toolOf(act.tool), x = storedOf(c.id).find(y => y.session === act.id);
+  return { session: act.id, tool: act.tool, title: tl ? tl.name : '', icon: tl ? tl.emoji : '🧮', handout: x ? x.id : '' };
 }
 
 // ---------------------------------------------------------------- what the board and the desk read
@@ -143,22 +177,32 @@ function squareOf(s, slot) {
 /**
  * Each of these students' Manipulatives board in the class's tool rooms (the teacher's board, for the desks it shows):
  * Map sid -> { tool, session, state (the saved JSON), v (when it changed), space, cur: [x, y] fractions of the work space
- * or null }. Only students with a tool handout on their desk who joined its room.
+ * or null, on (the handout it belongs to), title, prob? }. Only students with a tool handout on their desk who joined its
+ * room, or with a practice set open in the desk's player.
+ * beatOf(sid) -> { where, on } | null (services/homeroom-live.js beatOf): when given, a board is sent only while the
+ * desk's own pulse says that very handout is open in the player (where 'tool', the same on), so a board and the problem
+ * it shows always go together with what the desk has open: never yesterday's set, another tool's board, or a board
+ * after the player closed (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom").
  */
-export function boardsOf(c, sids) {
+export function boardsOf(c, sids, beatOf = null) {
   const out = new Map(), list = storedOf(c.id);
-  // a Manipulatives practice set open in the desk's player (services/manip-tasks.js putLive): its board and the problem
-  for (const [sid, e] of MT.liveOf(c.id, sids)) out.set(sid, { tool: e.slug, session: '', state: e.state, v: e.at, space: e.space, cur: null, prob: { i: e.i, n: e.n, prompt: e.prompt, box: e.box } });
+  const openOn = (sid, on) => { if (!beatOf) return true; const b = beatOf(sid); return !!b && b.where === 'tool' && b.on === on; };
+  // a Manipulatives practice set open in the desk's player (services/manip-tasks.js putLive): its board and the problem,
+  // pushed together (one entry: the board of question i with question i's words); a finished set shows none
+  for (const [sid, e] of MT.liveOf(c.id, sids)) {
+    if (!openOn(sid, e.on) || MT.setDone(e.on, sid)) continue;
+    out.set(sid, { tool: e.slug, session: '', state: e.state, v: e.v, space: e.space, cur: null, on: e.on, title: e.title || '', prob: { i: e.i, n: e.n, prompt: e.prompt, box: e.box, key: e.key || '' } });
+  }
   if (!list.length || !sids.length) return out;
   for (const x of list) {
     const s = sessionOf(x); if (!s) continue;
-    const want = sids.filter(id => forStudent(x, id) && !out.has(id)); if (!want.length) continue;
+    const want = sids.filter(id => forStudent(x, id) && !out.has(id) && openOn(id, x.id)); if (!want.length) continue;
     const rows = q.all(`SELECT user_id, state, slot, updated_at FROM manip_work WHERE session_id=? AND user_id IN (${want.map(() => '?').join(',')})`, s.id, ...want);
     const curs = s.status === 'active' ? LIVE.cursorsOf(s.id) : [];
     for (const w of rows) {
       const sq = squareOf(s, w.slot), cc = curs.find(k => k.k === w.user_id);
       const cur = cc ? [(cc.x - sq.rect.x) / sq.rect.w, (cc.y - sq.rect.y - sq.top) / Math.max(1, sq.space.h)] : null;
-      out.set(w.user_id, { tool: s.tool, session: s.id, state: w.state, v: w.updated_at, space: sq.space,
+      out.set(w.user_id, { tool: s.tool, session: s.id, state: w.state, v: w.updated_at, space: sq.space, on: x.id, title: (toolOf(x.tool) || {}).name || '',
         cur: cur && cur.every(v => v >= 0 && v <= 1) ? cur.map(v => Math.round(v * 1000) / 1000) : null });
     }
   }
@@ -167,7 +211,7 @@ export function boardsOf(c, sids) {
 /** A student's board version only (the board's 2 s poll: is there something new to draw?). Map sid -> v. */
 export function versionsOf(c) {
   const out = new Map();
-  for (const [sid, e] of MT.liveOf(c.id, H.studentsOf(c.id).map(s => s.id))) out.set(sid, e.at);
+  for (const [sid, e] of MT.liveOf(c.id, H.studentsOf(c.id).map(s => s.id))) out.set(sid, e.v);
   for (const x of storedOf(c.id)) for (const w of q.all('SELECT user_id, updated_at FROM manip_work WHERE session_id=?', x.session)) if (forStudent(x, w.user_id) && !out.has(w.user_id)) out.set(w.user_id, w.updated_at);
   return out;
 }

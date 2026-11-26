@@ -16,7 +16,8 @@
 //   POST /api/manipulatives/live/join           a student joins (by code, or by id from their class)
 //   GET  /api/manipulatives/live/:id            the session's teacher: every joined student's board; a student: their own
 //   POST /api/manipulatives/live/:id/work       a student sends their board (autosave)
-//   POST /api/manipulatives/live/:id/push       the teacher pushes one of their saved boards to every student
+//   POST /api/manipulatives/live/:id/push       the teacher pushes one of their saved boards ({ boardId }) or their own area
+//                                               as it is now ({ own: true }) to every student
 //   POST /api/manipulatives/live/:id/end        the teacher ends the session
 //   POST /api/manipulatives/live/:id/reopen     the teacher reopens an ended room (same code, same squares)
 //   POST /api/manipulatives/live/:id/rename     the teacher renames a room;  POST .../live/:id/delete an ended room
@@ -143,7 +144,7 @@ router.get('/api/manipulatives/live/:id', (req, res) => {
   return v ? res.json({ ok: true, role: 'student', session: v }) : fail(req, res, 'notFound');
 });
 router.post('/api/manipulatives/live/:id/work', rateLimit('manip-work', 900, 3600e3), (req, res) => send(req, res, M.submitWork(req.user, req.params.id, body(req).state)));
-router.post('/api/manipulatives/live/:id/push', hostOnly, rateLimit('manip-push', 120, 3600e3), (req, res) => send(req, res, M.push(req.user, req.params.id, body(req).boardId)));
+router.post('/api/manipulatives/live/:id/push', hostOnly, rateLimit('manip-push', 120, 3600e3), (req, res) => send(req, res, M.push(req.user, req.params.id, body(req).boardId, { own: body(req).own === true })));
 router.post('/api/manipulatives/live/:id/end', hostOnly, (req, res) => send(req, res, M.end(req.user, req.params.id)));
 router.post('/api/manipulatives/live/:id/reopen', hostOnly, rateLimit('manip-live', 60, 3600e3), (req, res) => send(req, res, M.reopen(req.user, req.params.id)));
 router.post('/api/manipulatives/live/:id/rename', hostOnly, rateLimit('manip-rename', 120, 3600e3), (req, res) => send(req, res, M.renameSession(req.user, req.params.id, body(req).title)));

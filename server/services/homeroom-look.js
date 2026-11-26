@@ -9,7 +9,8 @@
 //            times their extra time when they have that support (2x: 6 minutes);
 //   hand     live class: a hand up (a question or help) for handMs, 4 minutes;
 //   ask      a question sent from home still waiting after askMs, an hour;
-//   tries    a Manipulatives practice set handed out: manipRun (3) or more wrong checks in a row this week; or
+//   tries    a Manipulatives practice set (handed out, or assigned from the Manipulatives page or Classroom): manipRun (3)
+//            or more wrong checks in a row this week; or
 //            a lesson plan graded by Score opened triesPlays times (2) or more in the last 7 days, the best result still
 //            under triesPct (50 %) right ("several wrong tries in a row": a game reports one result per try, the best is
 //            kept, so this is the try count and the best try);
@@ -58,7 +59,7 @@ function triesOf(c, at) {
   // A Manipulatives practice set (services/manip-tasks.js; progress.manipAnswer keeps each check): wrong checks in a row
   // (LOOK.manipRun or more, this week): the count is the run, and how many are right first time so far of all.
   for (const r of q.all(`SELECT p.user_id u, p.class_lesson_id cl, p.marks, p.answer FROM step_progress p
-      JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL JOIN homeroom_handouts h ON h.class_lesson_id=cl.id
+      JOIN class_lessons cl ON cl.id=p.class_lesson_id AND cl.removed_at IS NULL
       JOIN lesson_steps s ON s.id=p.step_id AND s.lesson_id=cl.lesson_id AND s.kind='manip'
       WHERE cl.class_id=? AND p.updated_at>=?`, c.id, at - LOOK.weekMs)) {
     let a = {}; try { a = JSON.parse(r.answer || '{}') || {}; } catch { a = {}; }

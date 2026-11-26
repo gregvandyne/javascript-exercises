@@ -2077,7 +2077,8 @@
         "tapWhere": "Agora toque em uma carteira, um grupo, Turma toda ou Minha mesa.",
         "tapMine": "Agora toque em Minha mesa para deixá-lo lá.",
         "toolSoon": "Distribuir ferramentas vem em seguida. Coloque na Minha mesa para abrir de lá.",
-        "pickFirst": "Escolha primeiro uma aula à esquerda e depois toque em Minha mesa."
+        "pickFirst": "Escolha primeiro uma aula à esquerda e depois toque em Minha mesa.",
+        "previewNote": "Prévia: suas respostas não são salvas"
       },
       "wholeClass": "Turma toda · {count}",
       "editGroups": "Grupos",
@@ -2300,7 +2301,18 @@
         "gcAlso": "Publicar também no Google Classroom",
         "gcHint": "Vai para a turma do Classroom vinculada como atividade, com a nota que você escolheu aqui.",
         "gcWholeOnly": "Só tarefas para a turma toda vão para o Google Classroom: lá chegariam a todos.",
-        "taskScoreHint": "Pontuação: quantas perguntas acertaram à primeira."
+        "taskScoreHint": "Pontuação: quantas perguntas acertaram à primeira.",
+        "toolChip": "Prática",
+        "toolState": "Prática livre",
+        "toolMeta": "Manipuláveis · prática livre",
+        "roomOpen": "Sala aberta",
+        "roomClosed": "Sala fechada por enquanto",
+        "openRoom": "Abrir a sala",
+        "fromClassroom": "Atribuída no Classroom. Altere ou remova por lá.",
+        "oneToolBusy": "{tool} está nas carteiras agora. Um manipulável de cada vez: tire-o de todas as carteiras para distribuir {next}.",
+        "oneToolRoom": "Há uma sala de {tool} aberta nesta turma. Uma sala de cada vez: encerre-a para distribuir {next}.",
+        "takeOffAll": "Tirar de todas as carteiras",
+        "openThatRoom": "Abrir essa sala"
       },
       "team": {
         "label": "Mesa da equipe",
@@ -2377,7 +2389,8 @@
         "count": "Perguntas",
         "countHint": "De 1 a 10 perguntas para cada aluno.",
         "preview": "Experimentar"
-      }
+      },
+      "endConfirmTools": "Encerrar a aula para todos? As carteiras e a área do professor ficam como estão. Os manipuláveis nas carteiras ({tools}) saem e a sala deles termina."
     },
     "stories": {
       "needIdea": "Escreva sua ideia primeiro (poucas palavras bastam).",
@@ -3900,7 +3913,18 @@
       "checkAll": "{total, plural, one {Tudo certo!} other {Todas as # certas!}}",
       "checksSummary": "{total, plural, one {Respostas verificadas: {checked} de #} other {Respostas verificadas: {checked} de #}}",
       "checkAllRight": "Tudo certo",
-      "checkNeedsHelp": "Precisa de ajuda"
+      "checkNeedsHelp": "Precisa de ajuda",
+      "how": "Como funciona",
+      "pushMine": "Enviar o meu quadro",
+      "pushMineText": "Envia a sua área tal como está agora. Não é preciso salvar antes.",
+      "pushEmpty": "A sua área está vazia. Coloque algo nela e depois envie.",
+      "pushGoArea": "Ir para a minha área",
+      "pushSaved": "Ou envie um quadro salvo",
+      "pushBuild": "Crie e salve um quadro em {tool} (abre numa nova aba)",
+      "pushedMine": "O seu quadro foi enviado a todos os alunos.",
+      "endTitle": "Encerrar esta sessão?",
+      "endConfirm": "Depois disso, os alunos não podem mudar os seus quadrados. Pode reabrir a sala mais tarde com o mesmo código.",
+      "pushNoKey": "Escreva primeiro as respostas nas suas caixas de resposta para que os alunos possam verificar o trabalho."
     },
     "figures-editor": {
       "undo": "Desfazer",
@@ -5166,7 +5190,8 @@
         "full": "Você não pode desenhar mais. Apague algumas linhas primeiro.",
         "notHere": "Desenhe fora das outras carteiras e da área do professor."
       },
-      "manipKind": "Prática · {count, plural, one {# problema} other {# problemas}}"
+      "manipKind": "Prática · {count, plural, one {# problema} other {# problemas}}",
+      "pageKind": "Lição · {count, plural, one {# etapa} other {# etapas}}"
     },
     "homeroom-area": {
       "label": "Área do professor",
@@ -5376,7 +5401,11 @@
         "notStarted": "Sem começar",
         "none": "Nada foi distribuído hoje ainda.",
         "weeks": "O progresso ao longo das semanas está na aba Turma.",
-        "classroom": "Abrir Turma"
+        "classroom": "Abrir Turma",
+        "setDone": "Concluído · {right} de {n} certas de primeira",
+        "setAt": "Pergunta {i} de {n} · {right} certas de primeira",
+        "toolOpen": "{count, plural, one {# está com ele aberto} other {# estão com ele aberto}}",
+        "toolLine": "Manipuláveis · prática livre, não conta"
       },
       "hands": {
         "label": "{count, plural, =0 {Mãos, nenhuma levantada} one {Mãos, # levantada} other {Mãos, # levantadas}}",
@@ -5429,7 +5458,9 @@
           "hideOff": "O cursor de {name} aparece de novo",
           "comingOn": "{name} vê que você está indo",
           "comingOff": "Aviso tirado da mesa de {name}"
-        }
+        },
+        "toolNow": "Aberto agora · prática livre",
+        "toolOn": "Na carteira · prática livre"
       }
     },
     "homeroom-plan": {
@@ -5562,6 +5593,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "Dar uma olhada agora"
+    },
+    "manip-task-list": {
+      "assignedLine": "Atribuído a {klass}: {titles}. Cada aluno recebe {n, plural, one {# pergunta} other {# perguntas}}."
+    },
+    "manip-task-play": {
+      "more": "Mostrar a pergunta inteira",
+      "less": "Mostrar menos"
     }
   },
   "favorites": {
@@ -15128,7 +15166,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento."
+      "chatBusy": "O Oomba ainda está respondendo à sua última mensagem. Espere um momento.",
+      "emptyArea": "A sua área está vazia. Coloque algo nela e depois envie."
     }
   },
   "proof": {

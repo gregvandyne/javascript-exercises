@@ -78,6 +78,22 @@ test('objects keep their own state; a board made big fits into a square (pushes,
   assert.ok(geo.s < 1 && geo.s >= 0.35);
 });
 
+test('a live room\'s square with a rekenrek across it: a new answer box (or rekenrek) finds a free spot, smaller if it must, never on top', () => {
+  const sq = { w: 600, h: 340 }, region = { x: 0, y: 0, ...sq };
+  const b = newBoard('rekenreks', sq);
+  for (const k of ['answer', 'rekenreks', 'answer']) {
+    const o = placeObject('rekenreks', b, k, region, sq);
+    const r = objRect('rekenreks', o);
+    assert.ok(r.x >= 0 && r.y >= 0 && r.x + r.w <= sq.w + 0.5 && r.y + r.h <= sq.h + 0.5, `${k}: inside the square`);
+    for (const x of b.objects) assert.ok(!overlaps(r, objRect('rekenreks', x)), `${k}: not on ${x.k}`);
+    assert.ok(o.s >= 0.35);
+    b.objects.push(o);
+  }
+  // On the big board there is room: full size, as before.
+  const big = newBoard('rekenreks', WORLD), o = placeObject('rekenreks', big, 'answer', { x: 0, y: 0, w: WORLD.w, h: WORLD.h }, WORLD);
+  assert.equal(o.s, 1);
+});
+
 test('magnetic drops: flush edge to edge, lined up; into slots; groups; nothing far away; a square\'s pieces only', () => {
   const t = SNAP_PX;   // at 100% zoom
   // Linking cubes: dropped 9 px right of a cube and 5 px low: flush on its right, tops lined up.

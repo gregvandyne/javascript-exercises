@@ -2080,7 +2080,8 @@
         "tapMine": "Now tap My desk to keep it there.",
         "toolSoon": "Figures makes worksheets for you. Put it on My desk to open it from there.",
         "pickFirst": "Pick a lesson on the left first, then tap My desk.",
-        "manipLead": "On your desk to open any time, exactly as on its own page. Hand it out and each student works in their own square of its live room."
+        "manipLead": "On your desk to open any time, exactly as on its own page. Hand it out and each student works in their own square of its live room.",
+        "previewNote": "Preview: your answers aren’t saved"
       },
       "wholeClass": "Whole class · {count}",
       "editGroups": "Groups",
@@ -2305,7 +2306,18 @@
         "gcWholeOnly": "Only Whole class handouts go to Google Classroom: there it would reach the whole class.",
         "rdScoreHint": "The quiz's % right, first try.",
         "rdCompletionHint": "100% when they finish Read, Quiz and 3 notes.",
-        "taskScoreHint": "Score: how many questions they got right the first time."
+        "taskScoreHint": "Score: how many questions they got right the first time.",
+        "toolChip": "Practice",
+        "toolState": "Open practice",
+        "toolMeta": "Manipulatives · open practice",
+        "roomOpen": "Room open",
+        "roomClosed": "Room closed for now",
+        "openRoom": "Open the room",
+        "fromClassroom": "Assigned in Classroom. Change or remove it there.",
+        "oneToolBusy": "{tool} is on desks now. One Manipulatives tool at a time: take it off every desk to hand out {next}.",
+        "oneToolRoom": "A {tool} room is running in this class. One room at a time: end it to hand out {next}.",
+        "takeOffAll": "Take it off every desk",
+        "openThatRoom": "Open that room"
       },
       "team": {
         "label": "Team desk",
@@ -2451,7 +2463,8 @@
         "count": "Questions",
         "countHint": "1 to 10 questions for each student.",
         "preview": "Preview it"
-      }
+      },
+      "endConfirmTools": "End class for everyone? Desks and the teacher’s area stay as they are. Manipulatives on desks ({tools}) come off and their room ends."
     },
     "stories": {
       "needIdea": "Write your idea first (a few words is enough).",
@@ -4205,8 +4218,18 @@
       "pushTitle": "Push a board to every student",
       "pushText": "Each student can load it into their own square; their work stays until they do.",
       "pushOne": "Push {code}",
-      "noBoards": "No saved board for this tool yet. Build one in the tool on its own and save it.",
+      "noBoards": "No saved boards for this tool yet.",
       "pushed": "Pushed to every student.",
+      "how": "How it works",
+      "pushMine": "Push my board",
+      "pushMineText": "Sends your area just as it is now. Nothing needs saving first.",
+      "pushEmpty": "Your area is empty. Put something in it first, then push it.",
+      "pushGoArea": "Go to my area",
+      "pushSaved": "Or push a saved board",
+      "pushBuild": "Build and save a board in {tool} (opens a new tab)",
+      "pushedMine": "Your board was pushed to every student.",
+      "endTitle": "End this session?",
+      "endConfirm": "Students can't change their squares after this. You can reopen the room later with the same code.",
       "close": "Close",
       "gone": "This session isn't here.",
       "back": "Back",
@@ -4275,7 +4298,8 @@
       "allSteps": "All steps",
       "thisStep": "Just this step",
       "hideSteps": "Hide steps",
-      "showSteps": "Show steps"
+      "showSteps": "Show steps",
+      "pushNoKey": "Type the answers in your answer boxes first so students can check their work."
     },
     "figures-editor": {
       "undo": "Undo",
@@ -5748,7 +5772,8 @@
         "full": "That's as much as you can draw. Erase some lines first.",
         "notHere": "Draw outside other desks and the teacher's area."
       },
-      "manipKind": "Practice · {count, plural, one {# problem} other {# problems}}"
+      "manipKind": "Practice · {count, plural, one {# problem} other {# problems}}",
+      "pageKind": "Lesson · {count, plural, one {# step} other {# steps}}"
     },
     "homeroom-area": {
       "label": "Teacher's area",
@@ -5959,7 +5984,11 @@
         "notStarted": "Not started",
         "none": "Nothing handed out today yet.",
         "weeks": "Progress over weeks is in the Classroom tab.",
-        "classroom": "Open Classroom"
+        "classroom": "Open Classroom",
+        "setDone": "Done · {right} of {n} right first time",
+        "setAt": "Question {i} of {n} · {right} right first time",
+        "toolOpen": "{count, plural, one {# has it open} other {# have it open}}",
+        "toolLine": "Manipulatives · open practice, not counted"
       },
       "hands": {
         "label": "{count, plural, =0 {Hands, none up} one {Hands, # up} other {Hands, # up}}",
@@ -6016,7 +6045,9 @@
         "whereTool": "In a Manipulatives tool",
         "whereReading": "Reading",
         "openRoom": "Open the room",
-        "screenNote": "What they have open in Oomba, a few seconds behind. Never their notebook. Nothing is recorded."
+        "screenNote": "What they have open in Oomba, a few seconds behind. Never their notebook. Nothing is recorded.",
+        "toolNow": "Open now · open practice",
+        "toolOn": "On their desk · open practice"
       },
       "readingBook": "Reading {title}",
       "readingPage": "p. {page}",
@@ -6598,7 +6629,9 @@
       "doneScore": "You got {right} of {total} right the first time.",
       "typeFirst": "Type your answer in the box first.",
       "alreadyDone": "That question is already finished.",
-      "offline": "Oomba could not check that. Try again in a moment."
+      "offline": "Oomba could not check that. Try again in a moment.",
+      "more": "Show the whole question",
+      "less": "Show less"
     },
     "manip-task-list": {
       "preview": "Preview",
@@ -6628,6 +6661,7 @@
       "due": "Due (optional)",
       "cancel": "Cancel",
       "assignGo": "Assign",
+      "assignedLine": "Assigned to {klass}: {titles}. Each student gets {n, plural, one {# question} other {# questions}}.",
       "practiceTitle": "Practice",
       "practiceLead": "Pick a tool to practice its tasks, or just play with it.",
       "nTasks": "{n, plural, one {# task to practice} other {# tasks to practice}}",
@@ -16071,6 +16105,7 @@
       "ended": "This session has ended.",
       "noBoard": "Pick one of your saved boards.",
       "otherTool": "That board is for another tool. Push a board made with this session's tool.",
+      "emptyArea": "Your area is empty. Put something in it first, then push it.",
       "brief": "Describe the lesson in a few words first.",
       "names": "Leave students' names out of the description: names never go to the AI.",
       "aiFailed": "The AI couldn't draft that lesson just now. Try again in a moment.",

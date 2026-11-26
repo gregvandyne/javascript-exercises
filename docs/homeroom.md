@@ -84,6 +84,16 @@ catalog lists every lesson a teacher can assign elsewhere (all their own, their 
 Find Oomba lesson by subject, every Manipulatives tool by category, Figures for My desk) with search, grade and subjects;
 on a phone the strip's Find lessons opens it in a sheet.
 
+Built (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom"): a tool on desks has its card on each desk,
+in the desk's sheet (Open the room, Remove from this desk, Remove from every desk) and in look. A room the teacher ended
+(or another room started in the class) takes its tool off every desk; only a room that ended by itself after 12 hours
+opens again. End class takes every tool off. The hand-out sheet says which tool runs before a second one is picked, with
+Take it off every desk right there. On a phone the desk's player fills the screen under one bar (Back, the title, Raise
+hand). **Class lessons on the desk**: a class lesson assigned in Classroom (Assign on the class page or from the
+Manipulatives page) that is not a handout shows on the student's desk and the teacher's board after the handouts, with
+the same card and progress (a practice set or a one-game lesson opens in the desk's player; a lesson of several steps
+opens its lesson page); it is changed or removed in Classroom, and a handout is never shown twice.
+
 ## Handouts, lessons and lesson plans
 
 - A **lesson** handout (a game, to students) is free play with optional instructions. A **lesson plan** is exact: built

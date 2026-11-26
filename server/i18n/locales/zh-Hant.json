@@ -2076,7 +2076,8 @@
         "tapWhere": "現在點一張桌子、一個小組、全班或我的桌子。",
         "tapMine": "現在點我的桌子，把它放在那裡。",
         "toolSoon": "發放工具的功能即將推出。放到我的桌子上，就能從那裡開啟。",
-        "pickFirst": "先在左邊選一個課程，再點「我的桌子」。"
+        "pickFirst": "先在左邊選一個課程，再點「我的桌子」。",
+        "previewNote": "預覽：你的答案不會儲存"
       },
       "wholeClass": "全班 · {count}",
       "editGroups": "分組",
@@ -2299,7 +2300,18 @@
         "gcAlso": "同時發布到 Google Classroom",
         "gcHint": "會以作業形式發布到連結的 Classroom 課程，成績方式依你在這裡的選擇。",
         "gcWholeOnly": "只有發給全班的作業會發布到 Google Classroom，因為在那裡全班都會收到。",
-        "taskScoreHint": "分數：第一次就答對的題數。"
+        "taskScoreHint": "分數：第一次就答對的題數。",
+        "toolChip": "練習",
+        "toolState": "自由練習",
+        "toolMeta": "教具 · 自由練習",
+        "roomOpen": "教室開放中",
+        "roomClosed": "教室暫時關閉",
+        "openRoom": "開啟教室",
+        "fromClassroom": "已在 Classroom 指派。請到那裡修改或移除。",
+        "oneToolBusy": "{tool} 目前在桌上。一次只能用一種教具：要發下 {next}，請先從所有桌上移除。",
+        "oneToolRoom": "這個班級有一間 {tool} 教室正在進行。一次只能一間：要發下 {next}，請先結束它。",
+        "takeOffAll": "從所有桌上移除",
+        "openThatRoom": "開啟那間教室"
       },
       "team": {
         "label": "小組桌",
@@ -2376,7 +2388,8 @@
         "count": "題數",
         "countHint": "每位學生 1 到 10 題。",
         "preview": "試試看"
-      }
+      },
+      "endConfirmTools": "要為所有人結束課堂嗎？桌子和老師區域都會保持原樣。桌上的教具（{tools}）會移除，教室也會結束。"
     },
     "stories": {
       "needIdea": "先寫下你的點子（幾個字就夠了）。",
@@ -3899,7 +3912,18 @@
       "checkAll": "{total, plural, other {# 題全部答對！}}",
       "checksSummary": "{total, plural, other {已檢查答案：# 人中 {checked} 人}}",
       "checkAllRight": "全部答對",
-      "checkNeedsHelp": "需要幫忙"
+      "checkNeedsHelp": "需要幫忙",
+      "how": "使用方式",
+      "pushMine": "傳送我的白板",
+      "pushMineText": "依目前的樣子傳送你的區域，不用先儲存。",
+      "pushEmpty": "你的區域是空的。先放點東西進去，再傳送。",
+      "pushGoArea": "前往我的區域",
+      "pushSaved": "或傳送已儲存的白板",
+      "pushBuild": "在{tool}中建立並儲存白板（在新分頁開啟）",
+      "pushedMine": "你的白板已傳送給所有學生。",
+      "endTitle": "要結束這個課堂嗎？",
+      "endConfirm": "結束後，學生無法再修改自己的方格。之後可以用同一個代碼重新開啟教室。",
+      "pushNoKey": "請先在答案框中輸入答案，學生才能檢查自己的作答。"
     },
     "figures-editor": {
       "undo": "復原",
@@ -5165,7 +5189,8 @@
         "full": "不能再畫了。先擦掉一些線。",
         "notHere": "請畫在別人的桌子和老師區以外。"
       },
-      "manipKind": "練習 · {count} 題"
+      "manipKind": "練習 · {count} 題",
+      "pageKind": "課程 · {count, plural, other {# 個步驟}}"
     },
     "homeroom-area": {
       "label": "老師區",
@@ -5375,7 +5400,11 @@
         "notStarted": "未開始",
         "none": "今天還沒有發放任何內容。",
         "weeks": "幾週來的進度請看「班級」分頁。",
-        "classroom": "開啟班級"
+        "classroom": "開啟班級",
+        "setDone": "完成 · {n} 題中 {right} 題第一次就答對",
+        "setAt": "第 {i} 題，共 {n} 題 · {right} 題第一次就答對",
+        "toolOpen": "{count, plural, other {# 人開啟中}}",
+        "toolLine": "教具 · 自由練習，不計入"
       },
       "hands": {
         "label": "{count, plural, =0 {舉手：沒有} other {舉手：# 人}}",
@@ -5428,7 +5457,9 @@
           "hideOff": "{name} 的游標重新顯示",
           "comingOn": "{name} 會看到你正過去",
           "comingOff": "已移除 {name} 桌上的提示"
-        }
+        },
+        "toolNow": "正在開啟 · 自由練習",
+        "toolOn": "在桌上 · 自由練習"
       }
     },
     "homeroom-plan": {
@@ -5561,6 +5592,13 @@
     },
     "homeroom-sub": {
       "needsTitle": "現在需要關心"
+    },
+    "manip-task-list": {
+      "assignedLine": "已指派給{klass}：{titles}。每位學生會拿到{n, plural, other {# 題}}。"
+    },
+    "manip-task-play": {
+      "more": "顯示完整題目",
+      "less": "收合"
     }
   },
   "favorites": {
@@ -15126,7 +15164,8 @@
   },
   "manip": {
     "errors": {
-      "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。"
+      "chatBusy": "Oomba 還在回覆你上一則訊息,請稍等。",
+      "emptyArea": "你的區域是空的。先放點東西進去，再傳送。"
     }
   },
   "proof": {
