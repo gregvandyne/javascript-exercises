@@ -63,6 +63,8 @@ const PATTERN = [pd('hex', '#FFD23F', 'Hexagon', 1, 96, 84), pd('trap', '#E53935
  *  not a whole number of triangles), so they count 0 and the total says they are left out. */
 export const HEX_SIXTHS = { hex: 6, trap: 3, para: 2, tri: 1 };
 const MONEY = [pd('penny', '#B87333', '1¢', 1, 40, 40), pd('nickel', '#9E9E9E', '5¢', 5, 44, 44), pd('dime', '#BDBDBD', '10¢', 10, 36, 36), pd('quarter', '#90A4AE', '25¢', 25, 48, 48),
+  // The half dollar (50¢): the Half dollar talk task is about the one coin worth 50 cents.
+  pd('half', '#B0BEC5', '50¢', 50, 54, 54),
   pd('b1', '#A5D6A7', '$1', 100, 110, 48), pd('b5', '#81C784', '$5', 500, 110, 48), pd('b10', '#66BB6A', '$10', 1000, 110, 48), pd('b20', '#43A047', '$20', 2000, 110, 48)];
 
 /** The pieces a tool places, for its settings (opts: { decimal, mode }). [] for tools without pieces. */
@@ -100,7 +102,7 @@ export function paletteName(slug, d) {
   if (slug === 'algebra-tiles') return r(L, '', `${L} tile`);
   if (slug === 'fraction-tiles') return r(L, '', `${L} tile`);
   if (slug === 'number-rods') return r(String(d.value), ROD_NAMES[d.value - 1] || '', `Rod ${d.value}, ${ROD_NAMES[d.value - 1] || ''}`);
-  if (slug === 'money') return r(L, { penny: 'Penny', nickel: 'Nickel', dime: 'Dime', quarter: 'Quarter' }[k] || 'Bill');
+  if (slug === 'money') return r(L, { penny: 'Penny', nickel: 'Nickel', dime: 'Dime', quarter: 'Quarter', half: 'Half dollar' }[k] || 'Bill');
   if (slug === 'pattern-blocks') return r('', L);
   return r(L, '');
 }
@@ -111,7 +113,9 @@ export const allPieceDefs = slug => (slug === 'base-ten-blocks' ? [...BASE10, ..
  *  tenth and regroup hundredths, which the chart's trading alone did before). */
 export const BREAKS = {
   'base-ten-blocks': { cube: 'flat', flat: 'rod', rod: 'unit', one: 'tenth', tenth: 'hundredth', hundredth: 'thousandth' },
-  'place-value-disks': { th: 'h', h: 't', t: 'o', o: 'tenth', tenth: 'hund', hund: 'thou' },
+  // Place value disks: every place, the million down to the thousandth (the race to a million regroups ten 100,000
+  // disks into a million disk; before, Break and Regroup stopped at the thousands).
+  'place-value-disks': { m: 'hth', hth: 'tth', tth: 'th', th: 'h', h: 't', t: 'o', o: 'tenth', tenth: 'hund', hund: 'thou' },
 };
 
 /** The pattern blocks' value in hexagons, as a whole number and sixths in lowest terms ("1 2/3", "1/2", "0"), and how
