@@ -51,9 +51,11 @@ export function gamePlayer(opts) {
     if (hashId() !== id) history.pushState({ ...(history.state || {}), hrplay: id }, '', `${plain()}#play=${encodeURIComponent(id)}`);
     return true;
   }
-  function close() {
+  /** now: hide it here and now, without going Back (the frame moved on by itself, as a live game's Leave does: that put
+   *  the frame's own page in the history, so Back would only take the frame back) */
+  function close(o) {
     if (!cur) return;
-    if (history.state && history.state.hrplay === cur && hashId() === cur) { history.back(); return; }   // popstate hides it
+    if (!(o && o.now === true) && history.state && history.state.hrplay === cur && hashId() === cur) { history.back(); return; }   // popstate hides it
     hide();
     if (hashId()) history.replaceState(history.state, '', plain());
   }

@@ -6728,6 +6728,8 @@
       "restore": "Open {title}",
       "pill": "Live: {title}",
       "joined": "{count} joined",
+      "joinedOf": "{count} joined of {total} in Homeroom",
+      "notYet": "Not joined yet",
       "inGame": "In {title}",
       "notSelect": "Live lessons are hosted, not handed out. Turn off Select to host one."
     },
@@ -6768,7 +6770,12 @@
       "put": "Put {count} on desks"
     },
     "homeroom-livedesk": {
-      "deskLead": "Your class is playing live. You join as you.",
+      "label": "Live game",
+      "starting": "{title} is starting. Join when you're ready.",
+      "going": "Live game going on: {title}",
+      "pill": "Live: {title}",
+      "later": "Later",
+      "joinShort": "Join",
       "join": "Join {title}",
       "over": "The live game ended. You are back at your desk."
     }
@@ -10217,7 +10224,7 @@
       "codeForTeachers": "Join code",
       "joinAt": "Go to {url} and type the code",
       "signInFirst": "Sign in first, then type the code.",
-      "hrJoin": "Students in Homeroom join from their desks. No code needed.",
+      "hrJoin": "Students in Homeroom tap Join on their desks. No code needed.",
       "hrFallback": "Not in Homeroom? Join code",
       "hideCode": "Hide code",
       "showCode": "Show code",

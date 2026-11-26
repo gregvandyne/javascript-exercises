@@ -5665,6 +5665,8 @@
       "restore": "{title} openen",
       "pill": "Live: {title}",
       "joined": "{count} doen mee",
+      "joinedOf": "{count} van {total} in Homeroom doen mee",
+      "notYet": "Nog niet mee",
       "inGame": "In {title}",
       "notSelect": "Live-lessen start je, je deelt ze niet uit. Zet Selecteren uit om er een te starten."
     },
@@ -5705,7 +5707,12 @@
       "put": "{count} op de tafels zetten"
     },
     "homeroom-livedesk": {
-      "deskLead": "Je klas speelt live. Je doet mee als jezelf.",
+      "label": "Live-spel",
+      "starting": "{title} begint. Doe mee als je klaar bent.",
+      "going": "Live-spel bezig: {title}",
+      "pill": "Live: {title}",
+      "later": "Later",
+      "joinShort": "Meedoen",
       "join": "Meedoen met {title}",
       "over": "Het live-spel is afgelopen. Je bent terug aan je tafel."
     }
@@ -8803,7 +8810,7 @@
       "codeForTeachers": "Deelnamecode",
       "joinAt": "Ga naar {url} en typ de code",
       "signInFirst": "Log eerst in en typ dan de code.",
-      "hrJoin": "Leerlingen in Homeroom doen mee vanaf hun eigen plek. Geen code nodig.",
+      "hrJoin": "Leerlingen in Homeroom tikken op Meedoen op hun eigen plek. Geen code nodig.",
       "hrFallback": "Niet in Homeroom? Code om mee te doen",
       "hideCode": "Code verbergen",
       "showCode": "Code tonen",

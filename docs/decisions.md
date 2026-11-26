@@ -15935,12 +15935,25 @@ Race...), live question sets and the ⋯ menu's Host a live lesson went to /live
   host screen, the host screen to its results), so the first one sets `hr_lv` (Path=/live, SameSite=Strict, HttpOnly,
   12 hours) and later framed live pages in that frame are embedded too. A live page opened on its own (a tab) is exactly
   as before, cookie or not; another site can never frame it. Nothing in the live pages changed.
-- **Students**: while the class has a live game, the desk's state carries it (`livegame`: title, icon); the desk shows a
-  Join card and opens the game in the desk's player by itself once per game: `POST /api/desk/<class>/livegame` seats them
-  as themselves (the class room's own seating, no code), the seat token goes where the player page reads it
-  (sessionStorage `lv:<sid>`, shared with the same-origin frame), and the player page opens (`/live/play/<sid>?in=hr`).
-  When the game ends (or Leave), the player closes and they are back at their desk ("The live game ended. You are back
-  at your desk."). Student words keep "game".
+- **Students**: while the class has a live game, the desk's state carries it (`livegame`: title, icon, `lobby`). The
+  desk never opens it by itself and never replaces what is open (the owner: "it shouldn't just move their students'
+  screens into the live game... they should be able to finish up whatever they're doing before they move into the
+  game"). It shows a calm banner instead, for as long as the game runs: "Brain Board is starting. Join when you're
+  ready." while the game is in its lobby, "Live game going on: Brain Board" after that (also for a student who opens
+  Homeroom later), with Join. It sits at the top of the desk (sticky in the desk's scrolling body, in the flow, so it
+  covers no work), under the player's bar over an open game or the Library, and under the top of See the room and the
+  teacher's area; with the notebook's sheet open on a phone it rides above the sheet. Later folds it into a small pill
+  that stays (per game, sessionStorage `hd-lgsmall:<sid>`); it cannot be sent away for good. Join seats them:
+  `POST /api/desk/<class>/livegame` as themselves (the class room's own seating, no code), the seat token goes where the
+  player page reads it (sessionStorage `lv:<sid>`, shared with the same-origin frame), and the player page opens
+  (`/live/play/<sid>?in=hr`) in place of whatever was open, as switching does (the open game saves as it goes; Back to
+  my desk from the live game opens it again). Leave or Back brings the banner back, large, to join again; the game
+  ending closes the player and the banner ("The live game ended. You are back at your desk."). Student words keep
+  "game". The host screen in Homeroom says "Students in Homeroom tap Join on their desks. No code needed."
+- **The teacher's count**: the pill says "3 joined of 5 in Homeroom" (5: the class's students on their desks or in the
+  game; the desk's state poll marks a desk as seen while a game runs, kept in memory for 25 s), or "3 joined" while
+  players from outside Homeroom (a code) are in it. Desks say "In Brain Board" for those in it and a quiet "Not joined
+  yet" for those at their desks who have not tapped Join.
 - **The projector view**: while the class's game runs, its host screen (join code, QR, the game) fills the projector
   view, for its host (and co-hosts). A game has one projector screen, so the teacher's layer then shows the Teacher view
   (/live/host/<sid>/dash) instead, told over a BroadcastChannel in the same browser; when the projector closes, the layer

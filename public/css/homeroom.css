@@ -1541,12 +1541,31 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-lgname{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hr-lgn{font-weight:700;color:var(--text-2)}
 .hr-lgx{border-inline-start:1px solid color-mix(in srgb,var(--spark-press) 50%,transparent);border-radius:0 999px 999px 0}
+.hr-lgin.hr-lgwait{background:var(--card);color:var(--muted);font-weight:700;box-shadow:inset 0 0 0 1px var(--line)}
 .hr-lgin{position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);z-index:3;display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;background:var(--spark-soft);color:var(--text);font:800 12px var(--font);white-space:nowrap;box-shadow:0 1px 0 var(--line),inset 0 0 0 1px var(--spark-press)}
-.hd-lgcard{position:absolute;z-index:31;left:50%;top:84px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;width:min(560px,calc(100% - 24px));padding:12px 14px;border-radius:18px;background:var(--spark-soft);color:var(--text);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--spark-press)}
-.hd-lgt{display:flex;flex-direction:column;flex:1 1 auto;min-width:0}
-.hd-lgt span{font-size:13px;color:var(--text-2)}
-@media (max-width:600px){.hd-lgcard{top:64px;flex-wrap:wrap}.hd-lgcard .btn{flex:1 1 100%}}
-.hd-full .hd-lgcard{display:none}
+/* a live game on a student's desk: a calm banner with Join for as long as it runs, never covering their work. At the
+   top of the desk's scrolling body (sticky), under the player's bar over an open game or the Library, or under the top
+   of See the room; Later folds it into a small pill that stays. */
+.hd-lgbar{display:flex;align-items:center;gap:10px;min-width:0;padding:8px 8px 8px 14px;border-radius:16px;background:var(--spark-soft);color:var(--text);box-shadow:inset 0 0 0 2px var(--spark-press)}
+.hd-body>.hd-lgbar{position:sticky;top:0;z-index:5;margin-bottom:10px;box-shadow:var(--shadow),inset 0 0 0 2px var(--spark-press)}
+.hd-body:has(>.hd-lgbar){display:flex;flex-direction:column}
+.hd-body>.hd-lgbar+.hd-grid{flex:1 1 0;min-height:0;height:auto}
+@media (max-width:900px),(max-aspect-ratio:1/1){.hd-body>.hd-lgbar+.hd-grid{flex:none}}
+.hr-player>.hd-lgbar{flex:none;border-radius:0;box-shadow:inset 0 -1px 0 var(--line);padding:6px 8px 6px 12px}
+.hd-over>.hd-lgbar{flex:none}
+.hd-lgico{flex:none;display:inline-grid;place-items:center}
+.hd-lgt{flex:1 1 auto;min-width:0;font-weight:800;line-height:1.25;overflow-wrap:anywhere}
+.hd-lgbtns{flex:none;display:inline-flex;align-items:center;gap:6px}
+.hd-lgbtns .btn{min-height:44px}
+.hd-lglater{background:transparent;box-shadow:none;color:var(--text-2)}
+.hd-lglater:hover{background:color-mix(in srgb,var(--spark) 30%,transparent)}
+.hd-lgbar.hd-lgsmall{align-self:flex-start;width:max-content;max-width:100%;gap:8px;padding:4px 4px 4px 12px;border-radius:999px}
+.hd-lgsmall .hd-lgt{font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hd-lgsmall .hd-lgbtns .btn{min-height:40px;border-radius:999px}
+.hr-player>.hd-lgbar.hd-lgsmall{align-self:stretch;width:auto;border-radius:0;background:var(--card);padding:4px 8px}
+@media (max-width:600px){.hd-lgbar{padding:6px 6px 6px 10px;gap:8px}.hd-lgt{font-size:.92rem}}
+/* the notebook's sheet on a phone covers the desk's top: the banner, small, rides above it */
+@media (max-width:899px){body.nb-on .hd-body>.hd-lgbar{position:fixed;z-index:86;left:8px;right:8px;top:8px;margin:0}}
 .hr-projlive{position:fixed;inset:0;z-index:200;background:var(--brand-ink,#141414)}
 .hr-projliveframe{width:100%;height:100%;border:0;display:block}
 .hr-stage>.hr-lgpill{position:absolute;right:8px;top:56px;z-index:62;max-width:calc(100% - 16px);box-shadow:var(--shadow-lg),inset 0 0 0 2px var(--spark-press)}

@@ -5664,6 +5664,8 @@
       "restore": "{title}を開く",
       "pill": "ライブ：{title}",
       "joined": "{count}人参加",
+      "joinedOf": "Homeroom の{total}人中{count}人参加",
+      "notYet": "まだ参加していません",
       "inGame": "{title}に参加中",
       "notSelect": "ライブレッスンは配らずに進行します。選択をオフにして始めてください。"
     },
@@ -5704,7 +5706,12 @@
       "put": "{count}件を机に置く"
     },
     "homeroom-livedesk": {
-      "deskLead": "クラスでライブ中。自分の名前で参加します。",
+      "label": "ライブゲーム",
+      "starting": "{title}が始まります。準備ができたら参加しよう。",
+      "going": "ライブゲーム中：{title}",
+      "pill": "ライブ：{title}",
+      "later": "あとで",
+      "joinShort": "参加",
       "join": "{title}に参加",
       "over": "ライブゲームが終わりました。自分の机に戻りました。"
     }
@@ -8802,7 +8809,7 @@
       "codeForTeachers": "参加コード",
       "joinAt": "{url} をひらいてコードを入力",
       "signInFirst": "先にログインしてから、コードを入力してね。",
-      "hrJoin": "Homeroom にいる生徒は自分の机から参加します。コードは不要です。",
+      "hrJoin": "Homeroom にいる生徒は自分の机で「参加」をタップします。コードは不要です。",
       "hrFallback": "Homeroom にいない人は参加コードで",
       "hideCode": "コードをかくす",
       "showCode": "コードを表示",

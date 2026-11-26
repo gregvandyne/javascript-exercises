@@ -5664,6 +5664,8 @@
       "restore": "開啟 {title}",
       "pill": "即時：{title}",
       "joined": "{count} 人加入",
+      "joinedOf": "Homeroom 的 {total} 人中有 {count} 人加入",
+      "notYet": "尚未加入",
       "inGame": "在 {title} 中",
       "notSelect": "即時課程是主持的，不是發下去的。關閉選取後再主持。"
     },
@@ -5704,7 +5706,12 @@
       "put": "把 {count} 個放到座位"
     },
     "homeroom-livedesk": {
-      "deskLead": "你的班級正在即時遊戲。你會用自己的名字加入。",
+      "label": "即時遊戲",
+      "starting": "{title} 即將開始。準備好再加入。",
+      "going": "即時遊戲進行中：{title}",
+      "pill": "即時：{title}",
+      "later": "稍後",
+      "joinShort": "加入",
       "join": "加入 {title}",
       "over": "即時遊戲結束了，你回到自己的座位。"
     }
@@ -8802,7 +8809,7 @@
       "codeForTeachers": "加入代碼",
       "joinAt": "前往 {url} 並輸入代碼",
       "signInFirst": "請先登入，再輸入代碼。",
-      "hrJoin": "在 Homeroom 的學生會從自己的座位加入，不需要代碼。",
+      "hrJoin": "在 Homeroom 的學生在自己的座位點「加入」，不需要代碼。",
       "hrFallback": "不在 Homeroom？加入代碼",
       "hideCode": "隱藏代碼",
       "showCode": "顯示代碼",
