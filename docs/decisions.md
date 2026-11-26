@@ -15480,3 +15480,66 @@ through solo and in Homeroom's desk player (`tests/unit/_manip-flow/fraction-cir
 - Times are on five-minute marks (Hour + and Min +5 reach them; "Backwards time" drags the minute hand back past the
   12), except a read-only clock to read. Most questions hide the digital time (Totals off); "Elapsed time" and "School
   day timeline" keep it, since setting two clocks is not the answer there.
+
+### Phase 2: Pattern Blocks, Geoboard, Algebra Tiles, XY Coordinate Board
+
+All 64 tasks of these four tools are practice now (`public/js/manip-tasks/<slug>.js`), each with its title, code, grade
+and teacher notes kept, at least 20 variations, a run-through helper (`tests/unit/_manip-flow/<slug>.js`) and every
+task played solo and in Homeroom. No tool changed (`manip.js`, `manip-board.js` and `manip-data.js` as they were).
+
+- **Board checks.** Pattern Blocks: `counts` (exactly these blocks placed, none of another kind) and `some` (at least
+  these): the blocks a student placed (unlocked) are counted, not where they sit, since a block's outline is a
+  rectangle on the board and a cover cannot be checked edge to edge. Geoboard: `shapes`: closed bands (Close the band;
+  the band being stretched is not a shape yet) that fit specs (sides, area, square or rectangle sizes, a right angle or
+  none, the legs at it, isosceles, an angle of 45, 90 or 135, sides on the grid lines with a perimeter, a pentomino in
+  any turn, exact corners, a color, parallel pairs and their step, the inside angle at the circular board's center),
+  one band each, all different shapes or growing areas when asked; a band's repeated pegs and straight-through pegs are
+  taken out first. Algebra Tiles: `tiles` (exactly these) and `net` (worth these terms, zero pairs allowed), on the
+  whole board or on the Left or Right work mat (the tile's middle on it). XY Coordinate Board: `pts` (plotted), `line`
+  (a line through these points in order, or closed into a shape: #615's Close the shape), `four` and `count` (n points
+  with x = v or y = v).
+- **The answer box learned three kinds** (`manip-task-kit.js` `boxMatches`, shared): `poly` (an expression in x and y
+  in any order: "x^2 + 7x + 12", "x²+7x+12", "x2 + 7x + 12", "12 + 7x + x²"; "x = 4" for a key of 4), `factored` (the
+  same, written as a product of brackets: "(x + 2)(x + 3)"; the multiplied-out form does not count) and `point` ("(3,
+  -4)", "3, −4"). `polyOf`, `polyMatches` and `pointMatches` are exported for the tests.
+- **Reworded tasks** (open-ended in the library, checkable now, the same goal). Pattern Blocks: "Cover the hexagon" (each
+  question names the blocks to use, one kind or some trapezoids and parallelograms with triangles for the rest; how
+  many triangles), "Fraction trading" (build the same amount as a locked design with one kind of block; how many),
+  "Symmetric design" (no share code: build the mirror half with the same blocks; blocks in the whole design), "Grow the
+  pattern" (each stage adds a ring of 6; build stage 2, predict a later stage), "Build a larger hexagon" (the blocks
+  given, triangles for the rest of the 24), "Angle sums" (every block's corners: how many close the turn, or how many
+  degrees k corners make), "Design with value" (one count given, find the other), "Rhombus talk" (put the blocks down and
+  pick an angle size; the library's "both equal 2 triangles in area" is left out: the tan rhombus is not), "Pattern
+  train" (the count of one shape; the order is not checked), "Fill the outline" (the tool has no outlines: a big
+  triangle of s × s small triangles in words; the triangles needed and which way uses fewer blocks), "Thirds in three
+  ways" (one block a question, any fraction of a hexagon to 2), "Square from blocks" (no worth in triangles, which the
+  square has none of: a shape r squares down and c across, how many squares, is it a square), "Deci blocks link" (the
+  parallelogram as 1 gives tidy decimals: build a decimal with one kind, or read a design's value), "Border a hexagon"
+  (any block bordered with squares: how many squares, a corner gap's degrees, the block that fills it, how many
+  fillers), "Invent a whole" (any block as the whole, rebuilt where it can be). Geoboard: "Squares of many sizes" (three
+  squares of given sides; the area of one), "Right angle hunt" (a right triangle with given legs and a triangle with a
+  wide or only narrow angles; the right triangle's area), "Same area, different shape" (the kinds named), "Perimeter
+  puzzle" (the biggest perimeter, 2A + 2, typed; or beat a partner's rectangle), "Triangles of area 1" (areas 1 to 10,
+  two different triangles, or one with a right angle and one without), "Isosceles hunt" (given base and height, or a
+  right isosceles triangle; can all three sides be equal on this board, or which sides are equal), "Parallel bands" (a
+  band here always closes into a shape, so a parallelogram with a given step or a trapezoid with given parallel sides;
+  how the pegs show parallel), "Area by splitting" (the polygon on a read-only Shape board, a second board to split it
+  on; the area typed, the split not checked), "Smallest perimeter" (areas 2 to 20; the perimeter typed), "Angle sizes"
+  (a shape in a named color with a 45, 90 or 135 degree angle; what the other angles add to), "Mirror shape" (the shape
+  given; its mirror checked corner by corner; the rule picked), "Pentomino try" (copy the shown pentomino in any turn,
+  make a different one), "Circle board fractions" (one fraction of the turn a question; degrees, fraction or spaces),
+  "Rectangle ratios" (4 by 6 does not fit the 5-unit board: pairs that fit; the bigger area, how many times the area or
+  the perimeter), "Pick a perimeter" (two shapes, the second with more area; the biggest area typed; or an exact
+  perimeter and area), "Coordinates on pegs" (no partner: build from coordinates, or read a corner's coordinates).
+  Algebra Tiles: every task's numbers vary; the area-model and factoring rectangles are not checked as rectangles (as
+  phase 1's "Area model 13 x 12"): the tiles are counted and the expression or the product is typed; the zero-pair tasks
+  start with the tiles on the board; the equations sit on Left and Right mats, each side's tiles checked and x typed;
+  "Negative area talk" (which regions are negative: a choice), "Like terms sort" (the sum typed, the groups not
+  checked), "Inequality tiles" (the values of x: a choice), "Two variable terms" (why they cannot merge: a choice; the
+  tool's x and y tiles are the same size turned, so the reason is "different unknowns", not "different lengths"),
+  "Square a binomial" (the expression, one middle region or the corner). XY Coordinate Board: every task's points vary;
+  "Plot the treasure" and "Four quadrant tour" (closed in order; the shape picked), "Growing pattern table" (predict y
+  for x from 6 to 12), "Same x, same y" and "Line of points" (what the points make: a choice), "Reflections" (one
+  reflection typed), "Shape translation" (one moved corner typed), "Table to graph" (the rule picked), "Negative slope
+  talk" (the direction picked, the fall typed), "Ordered pair story" (a given walk: the distance in all, between two
+  hours, or the rest hour), "Symmetry points" (a point plotted on the mirror line, x = typed).
