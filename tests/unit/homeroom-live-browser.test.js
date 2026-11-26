@@ -107,6 +107,17 @@ test('live class: desk status and cursors on the board, a hand raised and answer
   assert.match(await T.page.locator(`.hr-desk[data-sid="${kids[7].id}"] .hr-lvchip`).innerText(), /Not here/);
   assert.equal(await T.page.locator('.hr-handsbtn .hr-count').innerText(), '1');
   await T.page.waitForSelector(`.hr-cur[data-cur="${ada.id}"]`, { timeout: 8000 });
+  // (the cursor sits on Ada's own desk tile, painted over it and its live screen: the pad's pen is not a Manipulatives
+  // tool, so the desk reports where: desk and its samples are kept)
+  await T.page.waitForTimeout(1200);
+  const curAt = await T.page.evaluate(id => {
+    const c = document.querySelector(`.hr-cur[data-cur="${id}"]`), d = document.querySelector(`.hr-desk[data-sid="${id}"]`).getBoundingClientRect();
+    const r = c.getBoundingClientRect(), x = r.left + 4, y = r.top + 4, L = c.parentElement;
+    L.style.pointerEvents = 'auto'; c.style.pointerEvents = 'auto';
+    const top = document.elementFromPoint(x, y); L.style.pointerEvents = ''; c.style.pointerEvents = '';
+    return { inside: x >= d.left && x <= d.right && y >= d.top && y <= d.bottom, onTop: !!(top && top.closest('.hr-cur')) };
+  }, ada.id);
+  assert.deepEqual(curAt, { inside: true, onTop: true });
   await shot(T.page, 'teacher-live-board-laptop');
   await T.page.click('.hr-handsbtn');
   await T.page.waitForSelector('.hr-hrow');
