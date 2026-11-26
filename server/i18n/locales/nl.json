@@ -16132,6 +16132,11 @@
       "progress": "Voortgang",
       "notYet": "Nog niet begonnen",
       "barLabel": "{mastered} gekend, {learning} bezig, {missed} vorige keer fout, {fresh} nog niet geoefend"
+    },
+    "shared": {
+      "title": "Flashcards gedeeld met de klas",
+      "cards": "{count, plural, one {# kaart} other {# kaarten}}",
+      "hidden": "Verborgen voor de klas"
     }
   }
 }

@@ -85,6 +85,21 @@ export function pagePrompt(p, style) {
   ].filter(Boolean).join('\n');
 }
 
+/**
+ * One flashcard's picture (services/flash-pics.js): the card's own words only (its term, or the grown-up's short line
+ * for it), in the same house style, one clear subject on a plain background so it reads at a glance on a small card.
+ */
+export function cardPrompt(p, style) {
+  return [
+    'Draw one picture for a children\'s learning flashcard.',
+    HOUSE_STYLE,
+    styleLine(style).replace('This book\'s own look (keep it on every picture of the book;', 'This set\'s own look (keep it on every picture of the set;'),
+    `What the picture shows: ${clean(p.subject)}.`,
+    p.note ? `More about it: ${clean(p.note)}` : '',
+    'Composition: one clear subject, large and centered, fully visible, on a plain, light, simple background, so the picture is easy to recognize at a glance on a small card. If the subject is an idea rather than a thing, show one simple, friendly scene that makes it clear.',
+  ].filter(Boolean).join('\n');
+}
+
 const SAFETY = ['HARM_CATEGORY_HARASSMENT', 'HARM_CATEGORY_HATE_SPEECH', 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'HARM_CATEGORY_DANGEROUS_CONTENT']
   .map(category => ({ category, threshold: 'BLOCK_LOW_AND_ABOVE' }));
 /**

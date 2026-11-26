@@ -16133,6 +16133,11 @@
       "progress": "התקדמות",
       "notYet": "עוד לא התחיל",
       "barLabel": "{mastered} נלמדו, {learning} בלמידה, {missed} טעות בפעם הקודמת, {fresh} עוד לא תורגלו"
+    },
+    "shared": {
+      "title": "כרטיסיות ששיתף עם הכיתה",
+      "cards": "{count, plural, one {כרטיס אחד} two {# כרטיסים} other {# כרטיסים}}",
+      "hidden": "מוסתר מהכיתה"
     }
   }
 }

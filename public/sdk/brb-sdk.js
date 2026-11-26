@@ -1032,7 +1032,8 @@
   function setsAsk(op, set, title) {
     if (typeof Promise !== 'function') return null;
     return new Promise(function (res) {
-      if (INIT.mySets !== true) return res({ error: 'notAllowed' });
+      // A student's or a child's own Flashcards set (BRB.makePrivate) may be deleted by them too (no list, no rename).
+      if (INIT.mySets !== true && !(op === 'delete' && INIT.makePrivate === true && INIT.make === true)) return res({ error: 'notAllowed' });
       if (op !== 'list' && (typeof set !== 'string' || !SET_RE.test(set))) return res({ error: 'none' });
       if (op === 'rename' && (typeof title !== 'string' || title.length > 200)) return res({ error: 'title' });
       var n = ++mineSeq, timer = setTimeout(function () { delete mineWait[n]; res({ error: 'offline' }); }, 10000);
@@ -1064,7 +1065,10 @@
     // The game's own shape (the server cleaned it for this game): a frozen copy.
     var freeze = function (v) { if (v && typeof v === 'object') { Object.keys(v).forEach(function (k) { freeze(v[k]); }); Object.freeze(v); } return v; };
     var items = Array.isArray(s.items) ? freeze(JSON.parse(JSON.stringify(s.items))) : Object.freeze([]);
-    return Object.freeze({ id: s.id, items: items, mine: s.mine === true });
+    // shared: a student's Flashcards set shared with the viewer's class ({ by: the sharer's name as this viewer may see
+    // it, cls: the class's name}; services/flash-share.js).
+    var sh = s.shared && typeof s.shared === 'object' ? Object.freeze({ by: String(s.shared.by || ''), cls: String(s.shared.cls || '') }) : null;
+    return Object.freeze(sh ? { id: s.id, items: items, mine: s.mine === true, shared: sh } : { id: s.id, items: items, mine: s.mine === true });
   })(INIT.set);
   // Crossword's "Write clues with AI" (BRB.canWriteClues: a grown-up who may host, with AI on): BRB.writeClues(words,
   // { level }) asks the page, which asks the server; a Promise of { clues: [string] } (same order, '' where none) or
@@ -1163,6 +1167,83 @@
     var w = flashWait[m.id]; if (!w) return;
     if (m.ok === true) w({ ok: true, mastered: +m.mastered || 0, n: +m.n || 0 });
     else w({ error: typeof m.error === 'string' ? m.error : 'offline' });
+  });
+  // Flashcards' pictures (docs/sdk.md "Flashcards"; services/flash-pics.js). BRB.flashPics: { upload, paint, left } for
+  // the grown-ups who may add pictures (Storybook's rule), null for everyone else (students and children: emoji only).
+  // BRB.flashPicUpload(base64 JPEG) -> { ref, width, height }; BRB.flashPaint([{ subject, note? }]) -> { refs: [ref |
+  // null], more, left } (queued: show a placeholder until it is painted); BRB.flashPicState(refs) -> { pics: { ref:
+  // { state, reason } } }; BRB.flashPicUrl(ref, setId) -> { url: a data: URL } | { painting: true } | { error }, for
+  // anyone who may open that set (the page fetches it: the frame can't). Each a Promise; { error } on a refusal.
+  var fpicWait = {}, fpicSeq = 0;
+  function fpicAsk(type, body, ms, open) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!open && !INIT.flashPics) return res({ error: 'notAllowed' });
+      var n = ++fpicSeq, timer = setTimeout(function () { delete fpicWait[n]; res({ error: 'offline' }); }, ms);
+      fpicWait[n] = function (r) { clearTimeout(timer); delete fpicWait[n]; res(r); };
+      var m = body || {}; m.id = n; send(type, m);
+    });
+  }
+  var REF = /^img:[A-Za-z0-9]{10,40}$/;
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:fpic-done' || typeof m.id !== 'number') return;
+    var w = fpicWait[m.id]; if (!w) return;
+    if (typeof m.error === 'string') return w({ error: m.error });
+    if (typeof m.url === 'string' && /^data:image\/(jpeg|png);base64,/.test(m.url)) return w({ url: m.url });
+    if (m.painting === true) return w({ painting: true });
+    if (typeof m.ref === 'string' && REF.test(m.ref)) return w({ ref: m.ref, width: +m.width || 0, height: +m.height || 0 });
+    if (Array.isArray(m.refs)) return w({ refs: m.refs.map(function (x) { return typeof x === 'string' && REF.test(x) ? x : null; }), more: +m.more || 0, left: +m.left || 0 });
+    if (m.pics && typeof m.pics === 'object') { var out = {}; Object.keys(m.pics).forEach(function (k) { var v = m.pics[k]; if (REF.test(k) && v && typeof v.state === 'string') out[k] = { state: v.state, reason: typeof v.reason === 'string' ? v.reason : '' }; }); return w({ pics: out }); }
+    w({ error: 'offline' });
+  });
+  function flashPicUpload(data) { return typeof data === 'string' && data.length <= 2200000 ? fpicAsk('brb:fpic-up', { data: data.replace(/^data:image\/jpeg;base64,/, '') }, 60000) : Promise.resolve({ error: 'imgBig' }); }
+  function flashPaint(asks) {
+    if (!Array.isArray(asks) || !asks.length || asks.length > 30) return Promise.resolve({ error: 'bad' });
+    return fpicAsk('brb:fpic-paint', { asks: asks.map(function (a) { return { subject: String(a && a.subject || '').slice(0, 80), note: String(a && a.note || '').slice(0, 120) }; }) }, 20000);
+  }
+  function flashPicState(refs) { return fpicAsk('brb:fpic-state', { refs: (refs || []).filter(function (r) { return REF.test(r); }).slice(0, 100) }, 10000); }
+  function flashPicUrl(ref, set) { return REF.test(String(ref)) ? fpicAsk('brb:fpic-get', { ref: ref, set: /^s-[a-z0-9]{10}$/.test(set || '') ? set : '' }, 20000, true) : Promise.resolve({ error: 'none' }); }
+  // Flashcards shared with a class (docs/sdk.md "Flashcards"; services/flash-share.js). BRB.flashShare: { classes: [{ id,
+  // name }], list: 'class' } for a student in a class (they may share their own sets; "Shared by my class"), { classes:
+  // [], list: 'students' } for a class's teachers and aides ("Shared by students"), null for everyone else.
+  // BRB.flashShareMine() -> { classes, sets: { setId: [{ id, on, hidden }] } }; BRB.flashSharedList() -> { list, sets:
+  // [{ id, title, n, items, by, classId, className, at, hidden?, canHide? }] }; BRB.flashShareSet(set, classId, on) ->
+  // { classes: [{ id, name, on, hidden }] }; BRB.flashShareHide(set, classId, hidden) -> { ok, hidden }. Each a
+  // Promise; { error } on a refusal ('none', 'hidden', 'bad', 'forbidden', 'offline').
+  var shareWait = {}, shareSeq = 0;
+  function shareAsk(op, set, cls, on) {
+    if (typeof Promise !== 'function') return null;
+    return new Promise(function (res) {
+      if (!INIT.flashShare) return res({ error: 'notAllowed' });
+      if ((op === 'set' || op === 'hide') && (!SET_RE.test(String(set)) || !/^[A-Za-z0-9_-]{1,40}$/.test(String(cls)))) return res({ error: 'none' });
+      var n = ++shareSeq, timer = setTimeout(function () { delete shareWait[n]; res({ error: 'offline' }); }, 10000);
+      shareWait[n] = function (r) { clearTimeout(timer); delete shareWait[n]; res(r); };
+      var m = { id: n, op: op }; if (op === 'set' || op === 'hide') { m.set = set; m.cls = cls; m.on = on === true; }
+      send('brb:fshare', m);
+    });
+  }
+  var cleanShared = function (x) {
+    if (!x || typeof x !== 'object' || typeof x.id !== 'string' || !SET_RE.test(x.id) || !Array.isArray(x.items)) return null;
+    var o = { id: x.id, title: String(x.title || ''), n: +x.n || 0, items: JSON.parse(JSON.stringify(x.items)), by: String(x.by || ''), classId: String(x.classId || ''), className: String(x.className || ''), at: +x.at || 0 };
+    if (x.hidden !== undefined) o.hidden = x.hidden === true;
+    if (x.canHide !== undefined) o.canHide = x.canHide === true;
+    return o;
+  };
+  var cleanClass = function (c) { return c && typeof c.id === 'string' ? { id: c.id, name: String(c.name || ''), on: c.on === true, hidden: c.hidden === true } : null; };
+  window.addEventListener('message', function (e) {
+    if (e.source !== parentWin) return;
+    var m = e.data; if (!m || typeof m !== 'object' || m.brb !== 1 || m.type !== 'brb:fshare-done' || typeof m.id !== 'number') return;
+    var w = shareWait[m.id]; if (!w) return;
+    if (typeof m.error === 'string') return w({ error: m.error });
+    if (m.ok === true) return w({ ok: true, hidden: m.hidden === true });
+    if (typeof m.list === 'string' && Array.isArray(m.sets)) return w({ list: m.list, sets: m.sets.map(cleanShared).filter(Boolean) });
+    if (Array.isArray(m.classes) && m.sets && typeof m.sets === 'object') {
+      var sets = {}; Object.keys(m.sets).forEach(function (k) { if (SET_RE.test(k) && Array.isArray(m.sets[k])) sets[k] = m.sets[k].map(cleanClass).filter(Boolean); });
+      return w({ classes: m.classes.map(cleanClass).filter(Boolean), sets: sets });
+    }
+    if (Array.isArray(m.classes)) return w({ classes: m.classes.map(cleanClass).filter(Boolean) });
+    w({ error: 'offline' });
   });
   // Mistake Hunt's "Upload a passage" (BRB.canReadDocs: a grown-up who may host): BRB.textFromDoc(file, { kind: 'pdf'|'docx' })
   // -> a Promise of { text, cut } (the document's text, read on the server with no AI; cut: only the first pages were
@@ -1527,6 +1608,19 @@
     // "Make your own" (Crossword, Word Hunt, Atlas Quest): the builder and its drafts, for grown-ups who may host only
     // (false: a student, a child, a guest, signed out, a preview; hide Make and the drafts list).
     canMake: INIT.make === true,
+    // Flashcards: a student's or a child's own sets (no class code, link or assign; a student may share one with their class: BRB.flashShare).
+    makePrivate: INIT.make === true && INIT.makePrivate === true,
+    flashPics: INIT.flashPics && typeof INIT.flashPics === 'object' ? { upload: INIT.flashPics.upload === true, paint: INIT.flashPics.paint === true, left: +INIT.flashPics.left || 0 } : null,
+    flashPicUpload: flashPicUpload,
+    flashPaint: flashPaint,
+    flashPicState: flashPicState,
+    flashPicUrl: flashPicUrl,
+    flashShare: INIT.flashShare && typeof INIT.flashShare === 'object' && (INIT.flashShare.list === 'class' || INIT.flashShare.list === 'students')
+      ? Object.freeze({ list: INIT.flashShare.list, classes: Object.freeze((Array.isArray(INIT.flashShare.classes) ? INIT.flashShare.classes : []).map(function (c) { return Object.freeze({ id: String(c.id), name: String(c.name || '') }); })) }) : null,
+    flashShareMine: function () { return shareAsk('mine'); },
+    flashSharedList: function () { return shareAsk('list'); },
+    flashShareSet: function (set, cls, on) { return shareAsk('set', set, cls, on); },
+    flashShareHide: function (set, cls, hidden) { return shareAsk('hide', set, cls, hidden); },
     canAssign: INIT.canAssign === true,
     // Atlas Quest's door: "Host live" starts the game's live version (a grown-up who may host while Oomba Live is on;
     // false: hide it). hostLive() asks the play page, which goes there only after a tap.

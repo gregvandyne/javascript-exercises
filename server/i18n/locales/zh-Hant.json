@@ -16131,6 +16131,11 @@
       "progress": "進度",
       "notYet": "還沒開始",
       "barLabel": "已學會 {mastered}，學習中 {learning}，上次答錯 {missed}，還沒練習 {fresh}"
+    },
+    "shared": {
+      "title": "與全班分享的單字卡",
+      "cards": "{count, plural, other {# 張卡片}}",
+      "hidden": "已對全班隱藏"
     }
   }
 }

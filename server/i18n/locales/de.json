@@ -16132,6 +16132,11 @@
       "progress": "Fortschritt",
       "notYet": "Noch nicht begonnen",
       "barLabel": "{mastered} gekonnt, {learning} am Lernen, {missed} zuletzt falsch, {fresh} noch nicht geübt"
+    },
+    "shared": {
+      "title": "Mit der Klasse geteilte Lernkarten",
+      "cards": "{count, plural, one {# Karte} other {# Karten}}",
+      "hidden": "Für die Klasse ausgeblendet"
     }
   }
 }

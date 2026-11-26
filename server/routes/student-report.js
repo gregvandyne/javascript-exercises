@@ -16,6 +16,8 @@ import { classHeader } from './schools.js';
 import { fwName } from '../views/standards.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { ico } from '../views/icon.js';
+import { getGameBySlug } from '../services/games.js';
+import { sharedByStudent } from '../services/flash-share.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -43,6 +45,8 @@ router.get('/class/:id/student/:uid', requireUser, (req, res) => {
   // A lesson assigned to some students that leaves this one out (counted nowhere: services/progress.js classProgress).
   const notAssigned = html`<span class="muted gb-na" aria-hidden="true">–</span><span class="sr-only">${t('gradebook.notAssigned')}</span>`;
   const stepName = a => a.title || t(`lessons.kinds.${a.kind}`);
+  // Flashcards this student shared with this class (services/flash-share.js): their titles, to open in the game.
+  const fg = getGameBySlug('flashcards'), shared = fg ? sharedByStudent(c, p.id, fg.id) : [];
   const body = html`<div class="noprint">${classHeader(req, c, 'progress')}</div>
   <article class="printdoc sp-page" id="student-report">
     <div class="row printbar sp-tools"><a class="btn btn-sm" href="/class/${c.id}/progress">← ${t('gradebook.student.back')}</a>
@@ -85,6 +89,8 @@ router.get('/class/:id/student/:uid', requireUser, (req, res) => {
         ${rep.notes.map(n => html`<li class="answercard is-read"><div class="ac-head"><b dir="auto">${n.lesson}</b><span class="small muted" dir="auto">${n.sid ? n.title || t('rubrics.gradebook.key') : t('rubrics.attach.lessonTitle')}</span><span class="small muted">${f.ago(n.scored_at)}</span></div>
           <div class="feedback"><b>${ico('💬', { size: 18 })} ${t('gradebook.student.feedback')}</b><p dir="auto">${n.feedback}</p></div></li>`)}</ul>`
         : html`<p class="muted">${t('gradebook.student.noAnswers')}</p>`}</section>
+    ${shared.length ? html`<section class="panel noprint" id="sp-flash" aria-labelledby="sp-flash-h"><h2 id="sp-flash-h">${ico('🗂️', { size: 28 })} ${t('flash.shared.title')}</h2>
+      <ul class="plain sp-live">${shared.map(x => html`<li><a href="/play/flashcards?chapter=${x.id}&amp;lock=1" dir="auto">${x.title || t('flash.results.title')}</a> <span class="small muted">${t('flash.shared.cards', { count: x.n })}</span>${x.hidden ? html` <span class="chip-s">${t('flash.shared.hidden')}</span>` : ''}</li>`)}</ul></section>` : ''}
     ${liveOn() || rep.live.length ? html`<section class="panel" aria-labelledby="sp-live-h"><h2 id="sp-live-h">${ico('📡', { size: 28 })} ${t('live.panel.title')}</h2>
       ${rep.live.length ? html`<ul class="plain sp-live">${rep.live.map(({ run, result }) => html`<li><a href="/live/results/${run.id}" dir="auto">${run.title || t('live.results.title')}</a> <span class="small muted">${f.day(run.ended_at, SHORT)}</span>
         ${result ? html`<b class="gb-num" dir="ltr">${result.right}/${result.total}</b>` : html`<span>✓ ${t('gradebook.live.keyPlayed')}</span>`}${run.linked ? html` <span class="chip-s" title="${t('gradebook.live.linked')}">${ico('📚', { size: 18 })}<span class="sr-only"> ${t('gradebook.live.linked')}</span></span>` : ''}</li>`)}</ul>`

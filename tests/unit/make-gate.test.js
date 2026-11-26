@@ -64,6 +64,28 @@ test('the frame: make (BRB.canMake) for grown-ups who may host, AI on or off; ne
   }
 });
 
+// Flashcards is the one "Make your own" game open to students and children too (docs/decisions.md "Flashcards: students
+// make sets"): Make for them, their own sets only (makePrivate), never AI or pictures; never a guest or signed out.
+const FLASH = publish(official, html('flashcards'), { source: 'seed', slug: 'flashcards', title: 'Flashcards' });
+test('Flashcards: Make for grown-ups who may host, and for a student and a child (their own sets, no AI); never a guest or signed out', async () => {
+  reset();
+  for (const key of ['', 'test-key']) await withKey(key, async () => {
+    for (const [who, u, grown] of WHO) {
+      const { init } = await frameFor('flashcards', fresh(u));
+      const kidLike = who === 'student' || who === 'child';
+      assert.equal(init.make, grown || kidLike ? true : undefined, `${who} make (AI ${key ? 'on' : 'off'})`);
+      assert.equal(init.makePrivate, kidLike ? true : undefined, `${who} makePrivate`);
+      if (kidLike) { assert.equal(init.clues, undefined, `${who}: no AI`); assert.equal(init.flashPics, undefined, `${who}: no pictures`); assert.notEqual(init.setSave, false, `${who} saves their own sets`); }
+      if (!grown && !kidLike) assert.equal(init.setSave, false, `${who}: no set saving`);
+    }
+  });
+  const items = [{ t: 'Mine', c: [['cat', 'a pet', ''], ['dog', 'another pet', '']] }];
+  for (const [who, u, status] of [['student', mia, 200], ['child', kid, 200], ['guest', guest, 403], ['signed out', null, 401]]) {
+    assert.equal((await call(`/api/games/${FLASH.id}/sets`, { method: 'POST', body: { items }, user: u })).status, status, `flashcards ${who}`);
+  }
+  for (const u of [mia, kid]) assert.equal((await call(`/api/games/${FLASH.id}/cards-ai`, { method: 'POST', body: { topic: 'pets' }, user: u })).status, 403);
+});
+
 test('the SDK: BRB.canMake is INIT.make, true only when the frame says so', () => {
   const sdk = fs.readFileSync(path.join(ROOT, 'public/sdk/brb-sdk.js'), 'utf8');
   assert.match(sdk, /canMake: INIT\.make === true/);

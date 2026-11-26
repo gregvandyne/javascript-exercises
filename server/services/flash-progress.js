@@ -75,7 +75,8 @@ export function record(u, clId, stepId, cards) {
  *  cards: [{ i, term, def, pic, misses, students, mastered }] sorted by misses (most first), totals } */
 export function summary(set, cells) {
   const cards = set.items[0].c, n = cards.length;
-  const per = cards.map((c, i) => ({ i, term: c[0], def: c[1], pic: c[2] || '', misses: 0, students: 0, mastered: 0 }));
+  // pic: the card's emoji (one of our pictures, 'img:<id>', is left out of this list)
+  const per = cards.map((c, i) => ({ i, term: c[0], def: c[1], pic: c[2] && !String(c[2]).startsWith('img:') ? c[2] : '', misses: 0, students: 0, mastered: 0 }));
   const rows = cells.map(x => {
     if (!x || !x.marks) return { mastered: 0, learning: 0, missed: 0, fresh: n, pct: 0, started: !!x };
     const m = readMarks(x.marks, n);

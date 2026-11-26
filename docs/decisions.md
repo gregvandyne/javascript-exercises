@@ -16255,3 +16255,59 @@ like Crossword.
   own words in the other 12 languages, spaced repetition across days (Learn's levels reset only by "Learn it again"),
   folders or classes of sets, sharing sets between teachers in a school, diagrams (label an image), "Play it as" doors
   and the Hub lesson builder (both above), and a Quizlet import (a teacher can paste an exported two-column list).
+
+## Flashcards: pictures, and students make sets (26 Nov 2026)
+The owner: "Add the pictures capability as well to the flashcards" and "Let students build flashcards too."
+- **Pictures reuse the Storybook's pieces, not a new pipeline.** An upload passes storybook.js `checkUpload` (split out
+  of `addPic`, which now calls it): JPEG only, `PIC_LIMITS`' size, metadata removed, one daily count of picture checks
+  with books, and the companion's picture check, which refuses any photo with a person in it (so never a photo of a
+  child), anything unsafe or private. "Oomba paints it" goes through storybook-draw.js `paintOne`: the picture model,
+  Google's pacing, the owner's daily pictures (the same count as their books), the AI budget and the same check on what
+  comes back; the prompt is storybook-gemini.js `cardPrompt` in the house style, from the card's own words after the book
+  maker's word rules and names check. Painting is queued (services/flash-pics.js), with a "painting" placeholder.
+- **Who:** the Storybook's makers (school staff, the platform admin), less family grown-ups: their flashcards live in
+  their own save (the grown-up fence keeps them from saving sets), so a picture would belong to no set. Never a
+  student, a child or a guest: the Storybook gives them no pictures either.
+- **Kept:** `flash_pics` (migration 0143), the owner's own. A card names one as `'img:<id>'`; `cleanFlashItems` takes
+  that or an emoji on each side and never a URL; saving a set drops refs that are not the owner's (a copy of someone
+  else's set keeps its emoji only). Who sees one: its owner, or anyone with a set of the owner's whose cards name it
+  (an assigned set's students). It goes with the set that used it, with the account (`forgetUser`), or after 30 days
+  when no saved set ever used it.
+- **Study and print:** pictures show in Flip, Learn, Match (a term's picture stands in for the term; its name stays the
+  tile's label) and Test, with alt text from the card's words; printing puts them on the cut-out cards and the study sheet.
+- **Students and children make their own sets** (`INIT.makePrivate`): type, paste, emoji, study, print and delete. No
+  AI (draft cards, a lesson file: 403 on the server), no pictures, nothing to share: their sets open for them only (a
+  class code or link answers as a set that isn't there), at most `FLASH.ownSets` (50) sets, with the same 50 cards and
+  character limits and the site's text filter on every word when saved. A teacher's set stays read-only for them; they
+  may copy it into their own. A guest saves nothing (as before). Teachers seeing a student's own sets is left for later.
+
+## Flashcards: students share with their class (26 Nov 2026)
+The owner: teachers see a student's own sets only when the student shares them with the class; shared sets are visible
+to the teacher and to classmates.
+- **The switch.** On one of their own saved sets, a student in a class turns on "Share with my class" and off any time
+  (several classes: a switch for each, they pick). Off by default; per set. A child on a family account is in no class,
+  so gets no switch. Kept in `flash_shares` (migration 0144), one row per set and class; `services/flash-share.js`.
+- **Who sees it.** The class's teachers (its own teachers and the school's admins, `S.canManageClass`) and its aides
+  (`homeroom-aides.js isAide`) open, study, print and copy it; the class's other students open, study and copy it
+  (Copy and edit makes a set of their own). Nobody else: the class code still never opens a student's set, and the link
+  opens it only for those people (`setFor`); another class, a guest or signed out get 404 or "not there". Every read
+  checks the membership again; unsharing, deleting the set (the game's delete now reaches the server for students
+  too), the student leaving the class (`onClassLeave`) and the class being deleted take it away at once.
+- **Where.** Students: "Shared by my class" on Flashcards' home. Teachers: "Shared by students" on Flashcards' home
+  (next to Your sets), each with Open and Hide from class; and the student's page in the class views lists the sets
+  they shared with that class.
+- **Names.** Classmates see the sharer's display name, the name the class page and the Hub already show classmates
+  (live games show no stricter rule inside a class); teachers see the roster name, else the display name, as class views do.
+- **Teacher control.** A teacher of the class (never an aide) hides a shared set from the class: it stays the
+  student's, off that class's list only, and the teacher can show it again. The student's switch for that class
+  becomes "Your teacher took this set off the list for {class}. It's still yours to study and change." Turning it on
+  again does not undo the teacher's choice.
+- **Safety.** Sharing runs the cards through `cleanFlashItems` (the site's text filter) again and refuses links; every
+  read does the same and leaves any picture off (students have none). Nothing here goes to any AI, and the sharer's
+  name is never written into a set (a copy keeps the set's own title).
+- **Words.** The game's new words are English, as the rest of its table; the student's page uses `flash.shared.*`
+  in every locale.
+- Tests: `tests/unit/flashcards-share.test.js` (the switch, share and unshare, several classes, leaving the class,
+  deleting, hiding, 404s for another class, a guest and signed out, the filter, pictures and links, the student's
+  page) and `tests/unit/flashcards-share-browser.test.js` (390 and 1366 in Chromium: share, a classmate studies and
+  copies it, the teacher hides it, it is gone for the classmate).
