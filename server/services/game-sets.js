@@ -665,6 +665,8 @@ export function remove(gameId, ownerId, id) {
   dropFlashPics(ownerId, flashRefs(s.items));
   // Oomba's chat on a Mistake Hunt set goes with the set (services/proof-chat.js).
   q.run('DELETE FROM proof_chats WHERE owner_id=? AND set_key=?', ownerId, id);
+  // A flashcard set shared with a class stops being shared at once (services/flash-share.js).
+  q.run('DELETE FROM flash_shares WHERE set_id=?', id);
   return true;
 }
 /** Rename the owner's set ('' takes the name away). Crossword's and Word Hunt's name is its puzzle's title, so that changes too.
@@ -701,7 +703,7 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder', 
 }
 
 /** An account's sets go with it. */
-export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM flash_pics WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); q.run('DELETE FROM proof_ai_drafts WHERE user_id=?', userId); }
+export function forgetUser(userId) { q.run('DELETE FROM game_sets WHERE owner_id=?', userId); q.run('DELETE FROM flash_pics WHERE owner_id=?', userId); q.run('DELETE FROM flash_shares WHERE owner_id=?', userId); q.run('DELETE FROM proof_chats WHERE owner_id=?', userId); q.run('DELETE FROM proof_ai_drafts WHERE user_id=?', userId); }
 
 const ACT_NAME = { solve: 'Solve', multiply: 'Multiply', factor: 'Factor' };
 const FROM = { p: '+', q: '=', e: '^', o: '(', c: ')' };

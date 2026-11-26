@@ -16018,6 +16018,11 @@
       "progress": "التقدّم",
       "notYet": "لم يبدأ بعد",
       "barLabel": "متقنة {mastered}، قيد التعلّم {learning}، خطأ في المرة السابقة {missed}، لم تُدرس {fresh}"
+    },
+    "shared": {
+      "title": "بطاقات شاركها مع الصف",
+      "cards": "{count, plural, zero {لا بطاقات} one {بطاقة واحدة} two {بطاقتان} few {# بطاقات} many {# بطاقة} other {# بطاقة}}",
+      "hidden": "مخفية عن الصف"
     }
   }
 }

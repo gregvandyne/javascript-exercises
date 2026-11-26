@@ -105,6 +105,17 @@
   .fc-name small { font-weight: 600; color: var(--muted); }
   .fc-acts2 { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
   .fc-mine { display: flex; flex-direction: column; gap: 8px; border-top: 2px solid var(--line); padding-top: 14px; }
+  /* Sharing with a class (BRB.flashShare): the student's switch, and the shared lists */
+  .fc-shareme { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--r-sm); background: var(--mint-t); }
+  .fc-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 52px; padding: 8px 12px; border: 0; border-radius: var(--r-sm); background: var(--card); text-align: start; font-weight: 800; overflow-wrap: anywhere; }
+  .fc-knob { flex: none; position: relative; width: 52px; height: 30px; border-radius: 999px; background: var(--line); transition: background .2s; }
+  .fc-knob::after { content: ''; position: absolute; top: 3px; inset-inline-start: 3px; width: 24px; height: 24px; border-radius: 50%; background: var(--card); box-shadow: 0 1px 3px rgba(20,20,20,.3); transition: transform .2s; }
+  .fc-switch[aria-checked="true"] .fc-knob { background: var(--green); }
+  .fc-switch[aria-checked="true"] .fc-knob::after { transform: translateX(22px); }
+  [dir="rtl"] .fc-switch[aria-checked="true"] .fc-knob::after { transform: translateX(-22px); }
+  .fc-switch[disabled] { opacity: .6; cursor: wait; }
+  .fc-sharetag { display: inline-block; margin-inline-start: 6px; padding: 0 8px; border-radius: 999px; background: var(--mint-t); color: var(--accent-ink); font-size: .85em; font-weight: 800; white-space: nowrap; }
+  .fc-sharetag.fc-off { background: var(--hover); color: var(--muted); }
   .fc-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
   .fc-erow { display: grid; grid-template-columns: 2em 46px minmax(7em, 1fr) minmax(10em, 1.6fr) 44px; gap: 6px; align-items: start; }
   .fc-n { font-weight: 800; text-align: center; padding-top: 12px; color: var(--muted); }
@@ -258,7 +269,7 @@
   .fc-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
   .fc-confetti i { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 2px; animation: fc-fall var(--t, 1.6s) ease-in var(--d, 0s) forwards; }
   @keyframes fc-fall { to { transform: translate(var(--x, 0), 105vh) rotate(var(--r, 360deg)); } }
-  @media (prefers-reduced-motion: reduce) { .fc-flip, .fc-mbar i, .fc-tile { transition: none; } .fc-shake, .fc-confetti i { animation: none; } .fc-confetti { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .fc-flip, .fc-mbar i, .fc-tile, .fc-knob, .fc-knob::after { transition: none; } .fc-shake, .fc-confetti i { animation: none; } .fc-confetti { display: none; } }
   @media (max-width: 760px) {
     .fc-modes { grid-template-columns: 1fr 1fr; }
     .fc-board { grid-template-columns: repeat(3, 1fr); }
@@ -741,7 +752,14 @@ var I18N = {
     "needTwo": "A set needs at least 2 cards.", "tooMany": "A set holds up to {n} cards.", "fillBoth": "Card {n} needs a term and a definition.", "termLong": "Card {n}: the term is longer than {max} characters.", "defLong": "Card {n}: the definition is longer than {max} characters.", "twice": "\"{w}\" is in the set twice.",
     "printBad": "This set can't be printed. Check it for rude words, personal details or links.", "printAgain": "Press Print again.",
     "open": "Open", "wsDup": "Duplicate", "dupDone": "Copied.", "rename": "Rename", "renameSave": "Save", "renamed": "Renamed.", "renameBad": "That name can't be used.", "cancel": "Cancel", "keep": "Keep it",
-    "wsDelAsk": "Delete \"{t}\"? Its class code and link stop working.", "wsDeleted": "Deleted.", "wsLoading": "Loading…", "wsFailed": "Couldn't load your sets. Try again.", "wsEmpty": "No saved sets yet.", "actFailed": "That didn't work. Try again."
+    "wsDelAsk": "Delete \"{t}\"? Its class code and link stop working.", "wsDeleted": "Deleted.", "wsLoading": "Loading…", "wsFailed": "Couldn't load your sets. Try again.", "wsEmpty": "No saved sets yet.", "actFailed": "That didn't work. Try again.",
+    "cs.h": "Share with my class", "cs.one": "Your teacher and classmates in {cls} can open it, study it and copy it. You can turn it off any time.", "cs.many": "Pick the classes to share it with. Their teachers and classmates can open it, study it and copy it. You can turn it off any time.",
+    "cs.switch": "Share with my class", "cs.on": "Shared with {cls}.", "cs.off": "Not shared any more.", "cs.hidden": "Your teacher took this set off the list for {cls}. It's still yours to study and change.",
+    "cs.saveFirst": "Save your set to share it with your class.", "cs.bad": "Some words in this set can't be shared. Check the cards and save it again.", "cs.chip": "Shared", "ownNoteShare": "Your sets are just for you unless you share one with your class.",
+    "cs.classH": "Shared by my class", "cs.classSub": "Sets your classmates chose to share. Open one to study it, or copy it into your own sets.", "cs.classNone": "Nothing shared yet. When a classmate shares a set, it shows up here.",
+    "cs.from": "From {by}", "cs.aClassmate": "A classmate", "cs.studentsH": "Shared by students", "cs.studentsSub": "Sets your students chose to share with their class. Open one to study it, print it or copy it into your own sets.",
+    "cs.studentsNone": "No student has shared a set yet.", "cs.hide": "Hide from class", "cs.show": "Show again", "cs.hiddenTag": "Hidden from the class", "cs.hiddenDone": "Hidden from {cls}. It's still the student's set.", "cs.shownDone": "Back on the list for {cls}.",
+    "cs.sharedBy": "Shared by {by} in {cls}", "cs.loadFailed": "Couldn't load the shared sets. Try again."
   },
   "en-GB": {
     "libSub": "{n} sets from Reception to Year 9: sight words, maths facts, science, US states and more", "subj.math": "Maths", "levelPh": "Year 5", "libMeta": "US grades {grade} · {n} cards",
@@ -856,9 +874,13 @@ window.FLASH_LIBRARY = [
   // "Make your own" (BRB.canMake): the builder and Your sets, for teachers and grown-ups who may host only. A student
   // studies a teacher's link or class code and the starter library.
   var CAN_MAKE = B.canMake === true, CAN_AI = B.canWriteClues === true;
-  // A student's or a child's own sets (BRB.makePrivate): no AI, no pictures, nothing to share; saved for them only.
+  // A student's or a child's own sets (BRB.makePrivate): no AI, no pictures, no class code or link; saved for them only, unless a student shares one with their class.
   // Pictures (BRB.flashPics: { upload, paint, left }): the grown-ups who may add them (Storybook's rule); null otherwise.
   var PRIVATE = B.makePrivate === true, PICS = !PRIVATE && B.flashPics && B.flashPics.upload ? B.flashPics : null;
+  // Sharing with a class (BRB.flashShare): a student in a class shares their own sets ('class'); a class's teachers and
+  // aides see what students shared ('students'). null: neither (a child on a family account, a guest, anyone else).
+  var SHARE = B.flashShare && (B.flashShare.list === 'class' || B.flashShare.list === 'students') ? B.flashShare : null;
+  var MY_CLASSES = SHARE && SHARE.list === 'class' && PRIVATE ? SHARE.classes : [];
   function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v && typeof s === 'string') s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
   var DIR = USER.dir === 'rtl' ? 'rtl' : 'ltr';
   document.documentElement.lang = LANG; document.documentElement.dir = DIR;
@@ -966,7 +988,9 @@ window.FLASH_LIBRARY = [
   }
 
   function setFromItems(it, id, opts) {
-    return { key: id, t: it.t || '', c: (it.c || []).map(cardOf), a: it.a === 'd' ? 'd' : 't', set: id, link: !!(opts && opts.link), mine: !!(opts && opts.mine) };
+    var o = { key: id, t: it.t || '', c: (it.c || []).map(cardOf), a: it.a === 'd' ? 'd' : 't', set: id, link: !!(opts && opts.link), mine: !!(opts && opts.mine) };
+    if (opts && opts.shared) { o.shared = opts.shared; o.link = false; }
+    return o;
   }
   function libSet(x) { return { key: 'lib:' + x.id, t: x.t, c: x.c.map(cardOf), a: x.a === 'd' ? 'd' : 't', lib: x.id, set: '' }; }
 
@@ -975,7 +999,7 @@ window.FLASH_LIBRARY = [
     if (qs) {
       if (qs.missing) return showMissing();
       var it = qs.items && qs.items[0];
-      if (it && Array.isArray(it.c)) return showSet(setFromItems(it, qs.id, { link: true, mine: qs.mine }));
+      if (it && Array.isArray(it.c)) return showSet(setFromItems(it, qs.id, qs.shared ? { shared: { by: qs.shared.by, cls: qs.shared.cls } } : { link: true, mine: qs.mine }));
     }
     showHome();
   }
@@ -989,6 +1013,7 @@ window.FLASH_LIBRARY = [
     if (B.canListSets && B.mySets) c.appendChild(bigBtn('fc-big', '📚', t('ws'), t('wsSub'), function () { sfx('select'); showSheets(); }, 'fc-ws'));
     if (B.canFindSet !== false) drawCode(c);
     c.appendChild(bigBtn('fc-big', '🧠', t('lib'), t('libSub', { n: LIB.length }), function () { sfx('select'); showLibrary(); }, 'fc-lib'));
+    if (SHARE) drawShared(c);
     if (CAN_MAKE && SAVE.mine.length) drawMine(c);
     else if (CAN_MAKE && USER.isGuest) c.appendChild(el('p', 'fc-note', '🔒 ' + t('guestKeep')));
     if (S.back === 'home') { S.back = ''; focusTop(); }
@@ -1017,7 +1042,7 @@ window.FLASH_LIBRARY = [
   function drawMine(c) {
     var sec = el('section', 'fc-mine'); sec.id = 'fc-mine'; sec.setAttribute('aria-labelledby', 'fc-mine-h');
     var h = el('h3', '', t('mine')); h.id = 'fc-mine-h'; sec.appendChild(h);
-    sec.appendChild(el('p', 'fc-note', USER.isGuest ? '🔒 ' + t('guestKeep') : t('mineNote') + (PRIVATE ? ' ' + t('ownNote') : '')));
+    sec.appendChild(el('p', 'fc-note', USER.isGuest ? '🔒 ' + t('guestKeep') : t('mineNote') + (PRIVATE ? ' ' + t(MY_CLASSES.length ? 'ownNoteShare' : 'ownNote') : '')));
     var ul = el('ul', 'fc-list');
     SAVE.mine.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).forEach(function (m) {
       var li = el('li'), name = el('span', 'fc-name'), title = m.t || t('untitled');
@@ -1025,7 +1050,8 @@ window.FLASH_LIBRARY = [
       var bits = [t('nCards', { n: m.c.length })];
       if (m.at && dateFmt) bits.push(dateFmt.format(new Date(m.at)));
       if (m.set && !PRIVATE) bits.push(t('classCode') + ' ' + codeOf(m.set));
-      name.appendChild(el('small', '', bits.join(' · '))); li.appendChild(name);
+      var sm = el('small', '', bits.join(' · ')); name.appendChild(sm); li.appendChild(name);
+      if (m.set && MY_CLASSES.length) { li.dataset.mset = m.set; sharedTag(sm, m.set); }
       var acts = el('span', 'fc-acts2');
       var eb = btn('fc-btn fc-sm', '✏️ ' + t('editIt'), function () { sfx('select'); edit(m); }); eb.setAttribute('aria-label', t('editIt') + ': ' + title); eb.dataset.edit = m.id;
       var sb = btn('fc-btn fc-sm fc-go', '▶️ ' + t('study'), function () {
@@ -1037,7 +1063,8 @@ window.FLASH_LIBRARY = [
         if (db.dataset.sure !== '1') { db.dataset.sure = '1'; db.textContent = t('delSure'); db.classList.add('fc-danger'); announce(t('delSure')); return; }
         SAVE.mine = SAVE.mine.filter(function (x) { return x.id !== m.id; }); delete SAVE.prog['d:' + m.id]; persist();
         // a student's own set goes from Oomba too (a teacher's saved set stays in My worksheets, where it may be assigned)
-        if (PRIVATE && m.set && B.deleteQuestionSet) { B.deleteQuestionSet(m.set); delete SAVE.prog[m.set]; persist(); }
+        // (and stops being shared with any class at once)
+        if (PRIVATE && m.set && B.deleteQuestionSet) { B.deleteQuestionSet(m.set); delete SAVE.prog[m.set]; if (MINE_SHARED) delete MINE_SHARED[m.set]; persist(); }
         toast(t('deleted')); announce(t('deleted')); showHome();
         var mh = document.getElementById('fc-mine-h'); if (mh) { mh.tabIndex = -1; mh.focus(); } else focusTop();
       });
@@ -1094,7 +1121,8 @@ window.FLASH_LIBRARY = [
       b.appendChild(e); b.appendChild(el('span', '', t('mode.' + m[0]))); b.appendChild(el('small', '', t('mode.' + m[0] + 'Sub'))); modes.appendChild(b);
     });
     c.appendChild(modes);
-    if (set.link && set.set && !set.mine) c.appendChild(el('p', 'fc-note', '🧑‍🏫 ' + t('teacherSees')));
+    if (set.shared) c.appendChild(el('p', 'fc-note', '👫 ' + t('cs.sharedBy', { by: set.shared.by || t('cs.aClassmate'), cls: set.shared.cls || '' })));
+    else if (set.link && set.set && !set.mine) c.appendChild(el('p', 'fc-note', '🧑‍🏫 ' + t('teacherSees')));
     // the teacher's tools: edit (or copy a library or someone else's set to make it theirs), print, share
     var tools = el('div', 'fc-row fc-wrap');
     if (CAN_MAKE) {
@@ -1109,11 +1137,13 @@ window.FLASH_LIBRARY = [
       tools.appendChild(btn('fc-btn fc-sm', '🖨️ ' + t('printCards'), function () { printIt(set, 'cards'); }, 'fc-print'));
       tools.appendChild(btn('fc-btn fc-sm fc-quiet', '📄 ' + t('printList'), function () { printIt(set, 'list'); }, 'fc-printlist'));
     }
-    if (set.set && (set.mine || CAN_MAKE) && !PRIVATE) {
+    if (set.set && (set.mine || CAN_MAKE) && !PRIVATE && !set.shared) {
       var share = el('div', 'fc-share'); share.id = 'fc-sharebox';
       tools.appendChild(btn('fc-btn fc-sm', '🔗 ' + t('share'), function () { drawShare(share, set.set); share.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }, 'fc-share'));
       c.appendChild(tools); c.appendChild(share);
     } else if (tools.children.length) c.appendChild(tools);
+    // a student's own set: "Share with my class" (only once it is saved on Oomba)
+    if (PRIVATE && MY_CLASSES.length && (set.mine || set.draft) && !set.shared) drawShareMe(c, set);
     // every card, with a star for the hard ones
     var sec = el('section', 'fc-sec'); sec.setAttribute('aria-labelledby', 'fc-terms-h');
     var th = el('h3', '', t('cardsH', { n: n })); th.id = 'fc-terms-h'; sec.appendChild(th);
@@ -1894,6 +1924,104 @@ window.FLASH_LIBRARY = [
     } catch (e) { return null; }
   }
 
+  /* ---------- sharing with a class (BRB.flashShare; the server checks who may do what) ---------- */
+  var MINE_SHARED = null;   // the student's own sets shared somewhere: { setId: [{ id, on, hidden }] } (BRB.flashShareMine)
+  function loadMine(fn) {
+    if (MINE_SHARED) return fn(MINE_SHARED);
+    var p = B.flashShareMine && B.flashShareMine(); if (!p) return;
+    p.then(function (r) { if (r && r.sets) { MINE_SHARED = r.sets; fn(MINE_SHARED); } });
+  }
+  /** "Shared" on a row of Your sets, when that set is shared with a class. */
+  function sharedTag(small, id) {
+    loadMine(function (all) {
+      var on = (all[id] || []).some(function (x) { return x.on; });
+      if (on && small.isConnected && !small.querySelector('.fc-sharetag')) small.appendChild(el('span', 'fc-sharetag', '👫 ' + t('cs.chip')));
+    });
+  }
+  function clsName(id) { var c = MY_CLASSES.filter(function (x) { return x.id === id; })[0]; return c ? c.name : ''; }
+  /** The student's switches for one of their own sets: one for each class they are in (a single class: "Share with my
+   *  class"); a class whose teacher took it off the list says so instead. Off by default. */
+  function drawShareMe(c, set) {
+    var sec = el('section', 'fc-shareme'); sec.id = 'fc-shareme'; sec.setAttribute('aria-labelledby', 'fc-shareme-h');
+    var h = el('h3', '', '👫 ' + t('cs.h')); h.id = 'fc-shareme-h'; sec.appendChild(h);
+    var msg = el('p', 'fc-msg'); msg.id = 'fc-sharemsg'; msg.setAttribute('role', 'status');
+    c.appendChild(sec);
+    if (!set.set) { sec.appendChild(el('p', 'fc-note', t('cs.saveFirst'))); return; }
+    sec.appendChild(el('p', 'fc-note', MY_CLASSES.length === 1 ? t('cs.one', { cls: MY_CLASSES[0].name }) : t('cs.many')));
+    var box = el('div', 'fc-row fc-wrap'); box.id = 'fc-switches'; sec.appendChild(box); sec.appendChild(msg);
+    var draw = function (state) {
+      box.innerHTML = '';
+      state.forEach(function (x) {
+        if (x.hidden) { var n = el('p', 'fc-note fc-sharehidden', '🌿 ' + t('cs.hidden', { cls: x.name || clsName(x.id) })); n.dataset.cls = x.id; box.appendChild(n); return; }
+        var label = MY_CLASSES.length === 1 ? t('cs.switch') : (x.name || clsName(x.id));
+        var sw = btn('fc-switch', '', null); sw.setAttribute('role', 'switch'); sw.setAttribute('aria-checked', String(!!x.on)); sw.dataset.cls = x.id;
+        var tx = el('span', '', label); tx.dir = 'auto'; sw.appendChild(tx); var k = el('span', 'fc-knob'); k.setAttribute('aria-hidden', 'true'); sw.appendChild(k);
+        sw.addEventListener('click', function () {
+          var want = sw.getAttribute('aria-checked') !== 'true'; sw.disabled = true; msg.textContent = '';
+          B.flashShareSet(set.set, x.id, want).then(function (r) {
+            sw.disabled = false;
+            if (r && r.classes) {
+              MINE_SHARED = MINE_SHARED || {}; MINE_SHARED[set.set] = r.classes.filter(function (y) { return y.on || y.hidden; }).map(function (y) { return { id: y.id, on: y.on, hidden: y.hidden }; });
+              draw(r.classes); sfx('select'); var s2 = want ? t('cs.on', { cls: x.name || clsName(x.id) }) : t('cs.off'); msg.textContent = s2; announce(s2);
+              var again = box.querySelector('[data-cls="' + x.id + '"]'); if (again && again.focus) again.focus({ preventScroll: true });
+              return;
+            }
+            msg.textContent = t(r && r.error === 'bad' ? 'cs.bad' : 'actFailed'); sfx('wrong', { volume: 0.4 });
+          });
+        });
+        box.appendChild(sw);
+      });
+    };
+    var start = MY_CLASSES.map(function (x) { return { id: x.id, name: x.name, on: false, hidden: false }; });
+    draw(start); [].forEach.call(box.querySelectorAll('.fc-switch'), function (b) { b.disabled = true; });
+    MINE_SHARED = null;
+    loadMine(function (all) {
+      var rows = all[set.set] || [];
+      draw(start.map(function (x) { var r = rows.filter(function (y) { return y.id === x.id; })[0]; return r ? { id: x.id, name: x.name, on: r.on, hidden: r.hidden } : x; }));
+    });
+  }
+  /** "Shared by my class" (a student) or "Shared by students" (a class's teachers and aides), on the home screen. */
+  function drawShared(c) {
+    var teach = SHARE.list === 'students', sec = el('section', 'fc-mine'); sec.id = 'fc-shared'; sec.setAttribute('aria-labelledby', 'fc-shared-h');
+    var h = el('h3', '', (teach ? '🧑‍🎓 ' : '👫 ') + t(teach ? 'cs.studentsH' : 'cs.classH')); h.id = 'fc-shared-h'; sec.appendChild(h);
+    sec.appendChild(el('p', 'fc-note', t(teach ? 'cs.studentsSub' : 'cs.classSub')));
+    var msg = el('p', 'fc-msg'); msg.setAttribute('role', 'status'); msg.textContent = t('wsLoading'); sec.appendChild(msg);
+    var ul = el('ul', 'fc-list'); ul.id = 'fc-sharedlist'; sec.appendChild(ul); c.appendChild(sec);
+    var p = B.flashSharedList && B.flashSharedList(); if (!p) { msg.textContent = ''; return; }
+    p.then(function (r) {
+      if (!ul.isConnected) return;
+      if (!r || !Array.isArray(r.sets)) { msg.textContent = t('cs.loadFailed'); return; }
+      msg.textContent = r.sets.length ? '' : t(teach ? 'cs.studentsNone' : 'cs.classNone');
+      var many = {}; r.sets.forEach(function (s) { many[s.classId] = 1; }); many = Object.keys(many).length > 1 || teach;
+      r.sets.forEach(function (s) { ul.appendChild(sharedRow(s, many, teach)); });
+    });
+  }
+  function sharedRow(s, many, teach) {
+    var it = s.items[0] || {}, title = s.title || it.t || t('untitled'), li = el('li'); li.dataset.shared = s.id; li.dataset.cls = s.classId; li.style.flexWrap = 'wrap';
+    var name = el('span', 'fc-name'), b = el('b', '', title); b.dir = 'auto'; name.appendChild(b);
+    var bits = [t('nCards', { n: s.n }), teach ? s.by : t('cs.from', { by: s.by || t('cs.aClassmate') })]; if (many) bits.push(s.className);
+    var sm = el('small', '', bits.join(' · ')); sm.dir = 'auto'; name.appendChild(sm);
+    if (teach && s.hidden) sm.appendChild(el('span', 'fc-sharetag fc-off', t('cs.hiddenTag')));
+    li.appendChild(name);
+    var acts = el('span', 'fc-acts2');
+    var ob = btn('fc-btn fc-sm fc-go', '▶️ ' + t('open'), function () { sfx('select'); showSet(setFromItems(it, s.id, { shared: { by: s.by, cls: s.className } })); });
+    ob.setAttribute('aria-label', t('open') + ': ' + title); ob.dataset.open = s.id; acts.appendChild(ob);
+    if (teach && s.canHide) {
+      var hb = btn('fc-btn fc-sm fc-quiet', s.hidden ? '👁️ ' + t('cs.show') : '🙈 ' + t('cs.hide'), function () {
+        hb.disabled = true;
+        B.flashShareHide(s.id, s.classId, !s.hidden).then(function (r) {
+          hb.disabled = false;
+          if (!r || !r.ok) { toast(t('actFailed')); return; }
+          s.hidden = r.hidden; var fresh = sharedRow(s, many, teach); li.replaceWith(fresh);
+          var say = t(r.hidden ? 'cs.hiddenDone' : 'cs.shownDone', { cls: s.className }); toast(say); announce(say);
+          var fb = fresh.querySelector('[data-hide]'); if (fb) fb.focus({ preventScroll: true });
+        });
+      });
+      hb.dataset.hide = s.id; hb.setAttribute('aria-label', (s.hidden ? t('cs.show') : t('cs.hide')) + ': ' + title); acts.appendChild(hb);
+    }
+    li.appendChild(acts); return li;
+  }
+
   /* ---------- print (BRB.print: the play page prints; the frame can't) ---------- */
   function printIt(set, as) {
     if (!B.print) return;
@@ -1996,7 +2124,7 @@ window.FLASH_LIBRARY = [
       flip: S.flip ? { at: S.flip.at, turned: S.flip.turned, order: flipOrder() } : null,
       learn: S.learn && S.screen === 'learn' ? { i: S.learn.i, kind: S.learn.kind, answer: F.sideOf(S.set.c[S.learn.i], askSide()), queue: S.learn.queue.slice() } : null,
       test: S.test ? S.test.qs.map(function (q) { return { i: q.i, kind: q.kind, truth: q.truth, answer: F.sideOf(S.set.c[q.i], askSide()) }; }) : null,
-      draft: S.draft ? cleanCards(S.draft.c).length : 0, draftCards: S.draft ? S.draft.c.map(cardOf) : [], setCards: S.set ? S.set.c.map(cardOf) : [], private: PRIVATE, pics: !!PICS, draftSet: S.draft ? S.draft.set || '' : '', mine: SAVE.mine.length, library: LIB.length,
+      draft: S.draft ? cleanCards(S.draft.c).length : 0, draftCards: S.draft ? S.draft.c.map(cardOf) : [], setCards: S.set ? S.set.c.map(cardOf) : [], private: PRIVATE, pics: !!PICS, share: SHARE ? SHARE.list : '', shared: !!(S.set && S.set.shared), draftSet: S.draft ? S.draft.set || '' : '', mine: SAVE.mine.length, library: LIB.length,
     };
   }
   window.__brbTest = Object.assign(window.__brbTest || {}, {

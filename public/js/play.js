@@ -169,6 +169,10 @@ const TYPES = {
     && m.asks.every(a => a && typeof a === 'object' && typeof a.subject === 'string' && a.subject.length <= 80 && (a.note === undefined || (typeof a.note === 'string' && a.note.length <= 120))),
   'brb:fpic-get': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && typeof m.ref === 'string' && /^img:[A-Za-z0-9]{10,40}$/.test(m.ref) && (m.set === '' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set))),
   'brb:fpic-state': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && Array.isArray(m.refs) && m.refs.length >= 1 && m.refs.length <= 100 && m.refs.every(r => typeof r === 'string' && /^img:[A-Za-z0-9]{10,40}$/.test(r)),
+  // BRB.flashShare (Flashcards shared with a class, services/flash-share.js): a student's switches ('mine'), the list
+  // ('list'), sharing one of their sets with a class or not ('set'), a teacher hiding one from a class ('hide').
+  'brb:fshare': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && ['mine', 'list', 'set', 'hide'].includes(m.op)
+    && (m.op === 'mine' || m.op === 'list' || (typeof m.set === 'string' && /^s-[a-z0-9]{10}$/.test(m.set) && typeof m.cls === 'string' && /^[A-Za-z0-9_-]{1,40}$/.test(m.cls) && typeof m.on === 'boolean')),
   // BRB.print (Crossword): the puzzle as plain data, at most 20,000 characters (the server checks every part of it).
   'brb:print': m => Number.isInteger(m.id) && m.id > 0 && m.id < 1e9 && !!m.doc && typeof m.doc === 'object' && !Array.isArray(m.doc) && JSON.stringify(m.doc).length <= 20000,
 };
@@ -288,6 +292,7 @@ addEventListener('message', e => {
     case 'brb:cards': cardsForGame(m); break;
     case 'brb:fpic-up': case 'brb:fpic-paint': case 'brb:fpic-get': case 'brb:fpic-state': flashPicForGame(m); break;
     case 'brb:flash': flashForGame(m); break;
+    case 'brb:fshare': flashShareForGame(m); break;
     case 'brb:doc': docForGame(m); break;
     case 'brb:textdoc': textDocForGame(m); break;
     case 'brb:proofai': proofAiForGame(m); break;
@@ -529,6 +534,19 @@ async function flashPicForGame(m) {
     flashPicCache.set(key, url);
     done({ url });
   } catch (e) { fail(e); }
+}
+/** BRB.flashShare: Flashcards shared with a class. The server checks who may do what (services/flash-share.js). */
+async function flashShareForGame(m) {
+  const done = out => toFrame({ type: 'brb:fshare-done', id: m.id, ...out });
+  if (!d.signedIn) return done({ error: 'none' });
+  const base = `/api/games/${d.gameId}/flash-share`;
+  try {
+    if (m.op === 'mine') { const r = await api(`${base}/mine`); return done({ classes: Array.isArray(r.classes) ? r.classes : [], sets: r.sets && typeof r.sets === 'object' ? r.sets : {} }); }
+    if (m.op === 'list') { const r = await api(`${base}/list`); return done({ list: String(r.list || ''), sets: Array.isArray(r.sets) ? r.sets : [] }); }
+    if (m.op === 'set') { const r = await api(`${base}/${m.set}`, { method: 'POST', body: { classId: m.cls, on: m.on } }); return done({ classes: Array.isArray(r.classes) ? r.classes : [] }); }
+    const r = await api(`${base}/${m.set}/hide`, { method: 'POST', body: { classId: m.cls, hidden: m.on } });
+    done({ hidden: r.hidden === true, ok: true });
+  } catch (e) { done({ error: (e && e.data && e.data.code) || (e && e.status === 404 ? 'none' : e && e.status ? 'failed' : 'offline') }); }
 }
 /** BRB.flashProgress: only a game opened from the student's lesson step passes card states on (services/flash-progress.js). */
 async function flashForGame(m) {

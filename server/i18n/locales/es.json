@@ -16017,6 +16017,11 @@
       "progress": "Progreso",
       "notYet": "Aún no ha empezado",
       "barLabel": "{mastered} dominadas, {learning} aprendiendo, {missed} falladas la última vez, {fresh} sin estudiar"
+    },
+    "shared": {
+      "title": "Tarjetas que compartió con la clase",
+      "cards": "{count, plural, one {# tarjeta} other {# tarjetas}}",
+      "hidden": "Oculto para la clase"
     }
   }
 }
