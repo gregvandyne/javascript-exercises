@@ -327,14 +327,17 @@ export const WELCOME_DAYS = 30;
 export const TEACHER_WAIT_DAYS = 3;
 export const WELCOME_AUDIENCES = ['kid', 'grownup', 'teacher'];
 export const WELCOME_KEYS = { kid: 'team.welcome', grownup: 'team.welcome.grownup', teacher: 'team.welcome.teacher' };
+// update (Nov 2026): the three default welcomes no longer offer the courses (COURSES is off) or the arcade's math
+// racing, use the tab names of today (Learn, Read, Build), and say "lesson" for a teacher's single game (the owner's
+// naming). An admin-saved text on the Team inbox tab still wins over these.
 export const DEFAULT_WELCOME = `Hi {name}! 👋
 
 Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hi.
 
 Here are a few fun things to try:
-• Play: lots of free games, from math racing to geography and chess.
-• Build: tap Build, tell the AI your game idea, and it makes it for you to play and share with friends.
-• Learn: try a course like Number Quest (math), CS Quest (coding) or Cyber Defenders (staying safe online).
+• Learn: games by topic, from math and words to geography and chess.
+• Read: picture books to read on your own or to have read to you.
+• Build: tap Build, tell the AI your idea, and it makes a game for you to play and share with friends.
 
 Got a question, or something that felt confusing? Just write back here. I read every message!
 
@@ -344,9 +347,9 @@ export const DEFAULT_WELCOME_GROWNUP = `Hi {name}! 👋
 Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hello personally.
 
 A few things your family can try:
-• Play: lots of free learning games, from math racing to geography and chess.
+• Learn: learning games by topic, from math and words to geography and chess.
+• Read: the Story Library, picture books by grade with Read to me and a few questions at the end.
 • Build: kids describe a game idea in their own words and our AI builder makes it, ready to play and share with friends.
-• Learn: free courses like Number Quest (math), CS Quest (computer science) and Cyber Defenders (online safety).
 
 From your Family page you can add your kids or link the accounts they already have. If our team ever writes to your child, you get a copy.
 
@@ -358,9 +361,9 @@ export const DEFAULT_WELCOME_TEACHER = `Hi {name}! 👋
 Welcome to Oomba Academy! I'm Greg from the Oomba team, and I'm glad you're here.
 
 Here's what your class can do:
-• Free courses mapped to standards, with teacher notes: Number Quest (math, Common Core), CS Quest (computer science, CSTA, with 45-minute lessons) and Cyber Defenders (online safety, CYBER.ORG).
-• Live games for warm-ups and exit tickets, hosted from your screen.
-• A game builder where students describe their idea and our AI makes it.
+• Build a lesson from what you already teach: paste your notes, check the questions Oomba drafts, then host it live as a warm-up or exit ticket.
+• A Class dashboard for your board, with a timer, your schedule, class jobs and points.
+• The Story Library: picture books by grade to read together or assign, and a book maker to make your own.
 
 Would a quick demo or a training session for you or your staff help? Reply here with a couple of times that work and I'll set it up.
 

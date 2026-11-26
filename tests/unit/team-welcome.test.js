@@ -33,7 +33,7 @@ test('parents: a new grown-up gets the parents\' welcome at their first sign-in,
   assert.equal(w.length, 1);
   assert.match(w[0].body, new RegExp(`^Hi ${g.display_name.split(' ')[0]}! 👋\\n\\nWelcome to Oomba Academy!`));
   assert.match(w[0].body, PARENT); assert.doesNotMatch(w[0].body, KID); assert.doesNotMatch(w[0].body, TEACHER);
-  assert.match(w[0].body, /Family page/); assert.match(w[0].body, /\n• Play: /);
+  assert.match(w[0].body, /Family page/); assert.match(w[0].body, /\n• Learn: /); assert.doesNotMatch(w[0].body, /Number Quest|CS Quest|Cyber Defenders|course/);
   const a = q.get("SELECT * FROM audit_log WHERE action='team.welcome' AND target=?", g.id);
   assert.equal(JSON.parse(a.details).audience, 'grownup');
   // Signing in again: no second one.

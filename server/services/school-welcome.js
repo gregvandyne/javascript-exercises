@@ -7,6 +7,11 @@
 import { esc } from '../views/html.js';
 import * as F from './email-frame.js';
 import * as E from './email.js';
+import { config } from '../config.js';
+import { googleEnabled } from '../oidc.js';
+
+/** Is Google Classroom sync on (GOOGLE_CLASSROOM with Sign in with Google)? The email names it only then. */
+export const classroomOn = () => googleEnabled() && !!config.googleClassroom;
 
 /** The first word of a name, for "Hi Ana" (a title keeps the word after it: "Ms Rivera"). */
 export function greetName(name) {
@@ -17,10 +22,12 @@ export function greetName(name) {
 
 /**
  * The email. t: the translator for the request's language. { name, school, username, setUrl (a new school account's
- * "choose your password" link) | null (their own account: they sign in as usual), schoolUrl, loginUrl, days }
+ * "choose your password" link) | null (their own account: they sign in as usual), schoolUrl, loginUrl, days, classroom
+ * (say teachers can connect Google Classroom; default: whether it is on here. Update, Nov 2026: the line was there even
+ * with Classroom sync off) }
  * -> { subject, html, text }
  */
-export function schoolWelcomeEmail(t, { name, school, username, setUrl = null, schoolUrl, loginUrl, days = 7 }) {
+export function schoolWelcomeEmail(t, { name, school, username, setUrl = null, schoolUrl, loginUrl, days = 7, classroom = classroomOn() }) {
   const k = key => `schoolWelcome.email.${key}`;
   const first = greetName(name);
   const v = { name: first, school, username, days };
@@ -28,7 +35,7 @@ export function schoolWelcomeEmail(t, { name, school, username, setUrl = null, s
   const intro = t(k('intro'), v);
   const signIn = setUrl ? [t(k('newAccount'), v), t(k('setExpires'), v)] : [t(k('ownAccount'), v)];
   const steps = ['step1', 'step2', 'step3', 'step4'].map(s => t(k(s), v));
-  const teach = [t(k('teachersText'), v), t(k('google'), v)];
+  const teach = [t(k('teachersText'), v), ...(classroom ? [t(k('google'), v)] : [])];
   const help = t(k('help'), v), bye = t(k('bye'), v);
   const button = setUrl ? t(k('setButton'), v) : t(k('signInButton'), v);
   const buttonUrl = setUrl || loginUrl;
