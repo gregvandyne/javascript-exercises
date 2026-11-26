@@ -2332,7 +2332,41 @@
         "tools": "Élément sélectionné",
         "delete": "Supprimer l’élément sélectionné"
       },
-      "playBack": "Retour à Homeroom"
+      "playBack": "Retour à Homeroom",
+      "frame": {
+        "resize": "Tirez pour redimensionner l'espace de l'enseignant",
+        "saved": "Espace de l'enseignant redimensionné"
+      },
+      "erase": {
+        "tool": "Gomme",
+        "hint": "Passez sur une partie d'un trait de stylo pour n'effacer que cette partie. Touchez Sélectionner quand vous avez fini.",
+        "size": "Taille de la gomme",
+        "sizes": {
+          "S": "Petite gomme",
+          "M": "Gomme moyenne",
+          "L": "Grande gomme"
+        }
+      },
+      "draw": {
+        "menu": "Les élèves dessinent dans la salle",
+        "title": "Les élèves dessinent dans la salle",
+        "on": "Activé",
+        "off": "Désactivé",
+        "lead": "Quand c'est activé, les élèves peuvent dessiner au stylo dans Voir la salle, partout en dehors des bureaux des autres, et effacer leurs propres traits.",
+        "modeOn": "Activé pour cette classe",
+        "modeOff": "Désactivé pour cette classe",
+        "what": {
+          "where": "Jamais sur les bureaux des autres élèves, l'espace de l'enseignant ou Mon bureau.",
+          "seen": "Tous ceux qui regardent la salle voient les traits, sans noms ; votre tableau montre à qui ils sont. Jamais sur le projecteur.",
+          "locked": "Le dessin s'arrête quand vous mettez les écrans en pause ou verrouillez un bureau."
+        },
+        "whose": "Dessins des élèves",
+        "lines": "{count, plural, one {# trait} other {# traits}}",
+        "remove": "Retirer",
+        "clear": "Effacer les dessins des élèves",
+        "clearConfirm": "Retirer tous les traits des élèves de la salle ?",
+        "none": "Pas encore de dessins dans la salle."
+      }
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -5017,7 +5051,23 @@
         "coming": "Ton enseignant arrive vers toi",
         "passBtn": "Laissez-passer"
       },
-      "playBack": "Retour à mon pupitre"
+      "playBack": "Retour à mon pupitre",
+      "eraseSizes": {
+        "S": "Petite gomme",
+        "M": "Gomme moyenne",
+        "L": "Grande gomme"
+      },
+      "erase": "Gomme",
+      "eraseSize": "Taille de la gomme",
+      "room": {
+        "pen": "Dessiner",
+        "erase": "Effacer mes traits",
+        "hint": "Dessine partout en dehors des autres bureaux. Tout le monde le voit dans Voir la salle.",
+        "locked": "Ton enseignant a mis le dessin en pause pour l'instant.",
+        "bigger": "Tourne ton appareil ou utilise un plus grand écran pour dessiner dans la salle.",
+        "full": "Tu ne peux pas dessiner plus. Efface d'abord quelques traits.",
+        "notHere": "Dessine en dehors des autres bureaux et de l'espace de l'enseignant."
+      }
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
@@ -15256,7 +15306,12 @@
       "passAlready": "Tu as déjà une place pour le laissez-passer.",
       "badMinutes": "Choisis entre 1 et 20 minutes.",
       "noHand": "Cette main est déjà baissée.",
-      "noPass": "Pas de laissez-passer ni de place dans la file."
+      "noPass": "Pas de laissez-passer ni de place dans la file.",
+      "drawOff": "Ton enseignant n'a pas activé le dessin dans la salle.",
+      "deskLocked": "Le dessin est en pause pour le moment.",
+      "notHere": "Les traits vont en dehors des bureaux des autres élèves et de l'espace de l'enseignant.",
+      "tooFast": "Ça fait beaucoup d'un coup. Réessaie dans un instant.",
+      "roomFull": "La salle a autant de dessins qu'elle peut en contenir."
     },
     "live": "En direct",
     "desk": {
@@ -15448,6 +15503,12 @@
       "gcNotLinked": "Pas encore lié.",
       "gcLink": "Lier un cours Classroom",
       "gradeSaved": "Notation modifiée"
+    },
+    "studentDraw": {
+      "savedOn": "Les élèves peuvent dessiner dans la salle",
+      "savedOff": "Les élèves ne peuvent pas dessiner dans la salle",
+      "cleared": "Dessins des élèves effacés",
+      "removed": "Leurs dessins ont été retirés"
     }
   }
 }

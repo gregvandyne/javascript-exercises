@@ -51,7 +51,8 @@ export function roomInk(box, ink, o) {
   const list = Array.isArray(ink) ? ink : [];
   if (!o || !list.length) { el?.remove(); return; }
   if (!el) { el = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); el.setAttribute('class', 'hd-rink'); el.setAttribute('aria-hidden', 'true'); box.append(el); }
-  const { x0, top, band, up, k } = o, areaEnd = AREA.y + AREA.h, squeeze = (AREA.y + band - top) / Math.max(1, areaEnd - top);
+  // (fr: the teacher's area as the teacher sized it, homeroom-seats.js frameOf; AREA when not given)
+  const { x0, top, band, up, k } = o, fr = o.fr || AREA, areaEnd = fr.y + fr.h, squeeze = (fr.y + band - top) / Math.max(1, areaEnd - top);
   const map = p => ({ x: (p.x - x0) * k, y: ((p.y <= areaEnd ? top + (p.y - top) * squeeze : p.y - up) - top) * k });
   el.innerHTML = inkSvg(list, map);
 }

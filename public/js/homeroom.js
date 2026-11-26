@@ -39,6 +39,10 @@
 //   - step 4c (docs/decisions.md "Homeroom: K-2 mode, absent and at home"): today's attendance on the desks (an Absent
 //     desk dimmed with "Absent today", an "At home" chip), marked from the desk's menu and Today; K-2 desks in the ⋯ menu
 //     (by the class's grade, on or off; per student from the desk's menu).
+//   - touch drag, the eraser, the resizable area, the whole board (docs/decisions.md "Homeroom: touch drag, eraser,
+//     resizable area, the whole board"): a finger drags out of the panel (dragStart); Board tools' Eraser
+//     (public/js/board-erase.js); the area's edges resize it (frameHandles, area.frame); notes, text and shapes go
+//     anywhere on the board; students' lines on the room when the teacher allows it (public/js/homeroom-marks.js).
 import { t, api, toast, esc, pageData, sheet, ask } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { clamp, zoomAround, fitView, applyTransform, miniHtml, miniPoint, zoomPillHtml } from '/js/board-view.js';
@@ -46,6 +50,8 @@ import { areaEditor, MAX } from '/js/homeroom-board.js';
 import { INK, inkSvg } from '/js/homeroom-ink.js';
 import { GL, shapeIcon, toolStyleHtml, tb } from '/js/homeroom-board-ui.js';
 import { PICKS, isLine } from '/js/board-shapes.js';
+import { eraseStrokes, ERASER, ERASER_SIZES } from '/js/board-erase.js';
+import { marksLayer } from '/js/homeroom-marks.js';
 import { placePopover } from '/js/popover-place.js';
 import { signinBox } from '/js/homeroom-signin-panel.js';
 import { renderLessons, lessonMenu, openBuilder, lessonGiveSheet } from '/js/homeroom-lessons.js';
@@ -54,7 +60,7 @@ import { gamePlayer } from '/js/homeroom-player.js';
 import { planPill } from '/js/homeroom-plan.js';
 import { helpers as helpersOf } from '/js/homeroom-helpers.js';
 import { bookPicker } from '/js/homeroom-reading.js';
-import { AREA, TEACHER_DESK, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, layout, clampSeat, boardSize } from '/js/homeroom-seats.js';
+import { AREA, DESK, TEAM_DESK, TEAM_MAX, PRESETS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, FRAME, layout, clampSeat, boardSize, frameOf, cleanFrame, tdeskOf, seatsTop } from '/js/homeroom-seats.js';
 
 const D = pageData();
 // An aide (step 3c; docs/decisions.md "Homeroom: supports, aides and sub links"): the same board to watch and help, with
@@ -62,7 +68,7 @@ const D = pageData();
 // buttons, End class); the server refuses those to an aide anyway.
 const AIDE = D.role === 'aide';
 const Z_MIN = 0.12, Z_MAX = 2.5, Z_FIT = 0.05;
-const MODES = ['note', 'text', 'pen', 'shape'];
+const MODES = ['note', 'text', 'pen', 'erase', 'shape'];
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const phone = () => window.matchMedia('(max-width: 819px)').matches;
 const tm = (k, v) => t(`js.manip-room.${k}`, v);
@@ -74,6 +80,8 @@ const H = {
   students: room.students || [], seats: room.seats || {}, preset: room.preset || 'rows', groups: room.groups || [], members: room.members || {},
   ann: { notes: [], texts: [], strokes: [], ...((room.area || {}).__ann || {}) }, shapes: Array.isArray((room.area || {}).shapes) ? room.area.shapes : [],
   ink: Array.isArray((room.area || {}).ink) ? room.area.ink : [],
+  // the teacher's area as the teacher sized it ({ x, y, w, h } board pixels; AREA for a board never resized)
+  frame: frameOf(room.area || {}),
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', hist: [], redo: [], sels: [], edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
   ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
@@ -108,7 +116,8 @@ const nameOfId = sid => (H.students.find(s => s.id === sid) || {}).name || '';
 const teamNames = tm => tm.members.map(nameOfId).filter(Boolean).join(', ');
 
 // ---------------------------------------------------------------- the board
-const world = () => boardSize(H.seats, H.teams);
+const world = () => boardSize(H.seats, H.teams, H.frame);
+const tdesk = () => tdeskOf(H.frame);
 function areaInner() { return `<div class="rm-in hr-areain">${ed.html()}</div>`; }
 const handout = id => H.ho.handouts.find(h => h.id === id) || null;
 const cardsOf = sid => (H.ho.desks[sid] || []).filter(x => handout(x.id));
@@ -228,18 +237,37 @@ function renderDesks() {
 }
 function renderWorld() {
   ed.clear();   // a fresh board: nothing selected or being typed in
-  const w = world();
+  const w = world(), f = H.frame, td = tdesk();
   worldEl.style.width = `${w.w}px`; worldEl.style.height = `${w.h}px`;
-  worldEl.innerHTML = `<section class="rm-area teach${AIDE ? '' : ' editable'} hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${AREA.x}px;top:${AREA.y}px;width:${AREA.w}px;height:${AREA.h}px" aria-label="${esc(tm('teacherArea'))}">
-      <header class="rm-label">✦ ${esc(tm('teacherArea'))} · ${esc(tm('teacherAreaNote'))}</header><div class="hr-areabody">${areaInner()}</div></section>
-    <div class="hr-tdesk" id="hr-tdesk"${AIDE ? ' hidden' : ''} role="group" aria-label="${esc(th('my.label'))}" style="left:${TEACHER_DESK.x}px;top:${TEACHER_DESK.y}px;width:${TEACHER_DESK.w}px;height:${TEACHER_DESK.h}px">${tdeskInner()}</div>
+  // The teacher's area at the size the teacher gave it, its objects in the default area's units from AREA's top left
+  // (homeroom-seats.js frameOf): they may sit anywhere on the board, inside it or around the desks. The teacher pulls
+  // its edges and corners to resize it (frameHandles).
+  worldEl.innerHTML = `<section class="rm-area teach${AIDE ? '' : ' editable'} hr-area${H.mode !== 'move' && MODES.includes(H.mode) ? ' drawing' : ''}" data-key="t" style="left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px" aria-label="${esc(tm('teacherArea'))}">
+      <header class="rm-label">✦ ${esc(tm('teacherArea'))} · ${esc(tm('teacherAreaNote'))}</header><div class="hr-areabody" style="left:${AREA.x - f.x}px;top:${AREA.y - f.y}px;width:${AREA.w}px;height:${AREA.h}px">${areaInner()}</div>${frameHandles()}</section>
+    <div class="hr-tdesk" id="hr-tdesk"${AIDE ? ' hidden' : ''} role="group" aria-label="${esc(th('my.label'))}" style="left:${td.x}px;top:${td.y}px;width:${td.w}px;height:${td.h}px">${tdeskInner()}</div>
     ${soloStudents().map(deskHtml).join('')}${H.teams.map(teamHtml).join('')}
-    ${H.students.length ? '' : AIDE ? `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))}</p>` : `<p class="hr-nostudents" style="left:${AREA.x}px;top:${TEACHER_DESK.y + TEACHER_DESK.h + 46}px;width:${AREA.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}
-    <svg class="hr-ink" id="hr-ink" aria-hidden="true" focusable="false"></svg>`;
+    ${H.students.length ? '' : AIDE ? `<p class="hr-nostudents" style="left:${f.x}px;top:${td.y + td.h + 46}px;width:${f.w}px">${esc(th('noStudents'))}</p>` : `<p class="hr-nostudents" style="left:${f.x}px;top:${td.y + td.h + 46}px;width:${f.w}px">${esc(th('noStudents'))} <a href="/class/${esc(D.classId)}?tab=students">${esc(th('addStudents'))}</a></p>`}
+    <svg class="hr-ink" id="hr-ink" aria-hidden="true" focusable="false"></svg><svg class="hr-ink hr-smarks" id="hr-smarks" aria-hidden="true" focusable="false"></svg>`;
   board.classList.toggle('hr-seating', H.seatsOpen);
   renderInk();
   applyView();
   LV.paint();
+}
+/** The area's resize handles (the teacher's, never an aide's): its right and left edges, its bottom and the bottom
+ *  corners (its top stays put). */
+function frameHandles() {
+  if (AIDE) return '';
+  return ['e', 'w', 's', 'se', 'sw'].map(h => `<span class="hr-fh hr-fh-${h}" data-hrframe="${h}" role="presentation" title="${esc(th('frame.resize'))}"></span>`).join('');
+}
+/** The area's place and size after its edges moved: the area, its objects' layer, My desk and the empty-room note. */
+function placeFrame() {
+  const f = H.frame, td = tdesk(), sec = worldEl.querySelector('.hr-area'), body = sec && sec.querySelector('.hr-areabody'), my = $('hr-tdesk');
+  if (sec) Object.assign(sec.style, { left: `${f.x}px`, top: `${f.y}px`, width: `${f.w}px`, height: `${f.h}px` });
+  if (body) Object.assign(body.style, { left: `${AREA.x - f.x}px`, top: `${AREA.y - f.y}px` });
+  if (my) Object.assign(my.style, { left: `${td.x}px`, top: `${td.y}px` });
+  const ns = worldEl.querySelector('.hr-nostudents'); if (ns) Object.assign(ns.style, { left: `${f.x}px`, top: `${td.y + td.h + 46}px`, width: `${f.w}px` });
+  const w = world(); worldEl.style.width = `${w.w}px`; worldEl.style.height = `${w.h}px`;
+  ed.renderSel(); renderMini();
 }
 function renderArea() {
   const el = worldEl.querySelector('.hr-areabody'); if (!el) return;
@@ -250,6 +278,7 @@ function renderInk() {
   const el = $('hr-ink'); if (!el) return;
   const w = world(); el.setAttribute('width', w.w); el.setAttribute('height', w.h); el.setAttribute('viewBox', `0 0 ${w.w} ${w.h}`);
   el.innerHTML = inkSvg(H.ink);
+  MK.render();
 }
 
 // ---------------------------------------------------------------- the view
@@ -271,16 +300,26 @@ function freeBox() {
 }
 function fit() {
   const seats = [...soloStudents().map(s => ({ ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK })), ...H.teams.map(tm => ({ x: tm.x, y: tm.y, ...TEAM_DESK }))];
-  const w = world(), xs = [AREA.x, ...seats.map(p => p.x)], ys = seats.map(p => p.y + p.h);
-  const x0 = Math.min(...xs) - 20, x1 = Math.max(AREA.x + AREA.w, ...seats.map(p => p.x + p.w)) + 20;
-  const rect = { x: x0, y: 0, w: Math.min(w.w, x1) - x0, h: Math.max(TEACHER_DESK.y + TEACHER_DESK.h + (H.students.length ? 12 : 90), ...ys) + 40 };
+  // (and whatever the teacher put outside the area: notes, text, shapes, pen lines)
+  const ob = boardStuff(), f = H.frame, td = tdesk(), w = world(), xs = [f.x, ...seats.map(p => p.x), ...ob.map(p => p.x)], ys = [...seats.map(p => p.y + p.h), ...ob.map(p => p.y)];
+  const x0 = Math.max(0, Math.min(...xs) - 20), x1 = Math.max(f.x + f.w, ...seats.map(p => p.x + p.w), ...ob.map(p => p.x)) + 20;
+  const rect = { x: x0, y: 0, w: Math.min(w.w, x1) - x0, h: Math.max(td.y + td.h + (H.students.length ? 12 : 90), ...ys) + 40 };
   H.view = fitView(rect, freeBox(), { pad: 12, zMin: Z_FIT, zMax: 1 });
   applyView();
+}
+/** The corners of what is drawn on the board outside the area, in board pixels (fit() shows them too). */
+function boardStuff() {
+  const out = [], P = (x, y) => out.push({ x: AREA.x + x * AREA.w, y: AREA.y + y * AREA.h });
+  for (const n of [...H.ann.notes, ...H.ann.texts]) { P(+n.x || 0, +n.y || 0); P((+n.x || 0) + (+n.w || 200) / AREA.w, (+n.y || 0) + (+n.h || 60) / AREA.h); }
+  for (const o of H.shapes) { P(o.x, o.y); P(o.x2, o.y2); }
+  for (const o of H.ann.strokes) for (const p of o.pts) P(p.x, p.y);
+  for (const k of H.ink) for (const p of k.pts) out.push(p);
+  return out;
 }
 function renderMini() {
   const el = $('hr-mini'); if (!el) return;
   if (phone()) { el.innerHTML = ''; return; }
-  const items = [{ rect: AREA, cls: 't', c: '#FFD23F' }, { rect: TEACHER_DESK, cls: '', c: '#141414' },
+  const items = [{ rect: H.frame, cls: 't', c: '#FFD23F' }, { rect: tdesk(), cls: '', c: '#141414' },
     ...soloStudents().map(s => ({ rect: { ...(H.seats[s.id] || { x: 0, y: 0 }), ...DESK }, cls: '', c: (groupOf(s.id) || { color: '#B9B3A0' }).color })),
     ...H.teams.map(tm => ({ rect: { x: tm.x, y: tm.y, ...TEAM_DESK }, cls: '', c: '#B9B3A0' }))];
   el.innerHTML = miniHtml({ world: world(), items, view: H.view, size: size(), width: 150, label: tm('map') });
@@ -295,34 +334,36 @@ function renderTools() {
   const pick = PICKS.find(p => p.id === H.shapePick) || PICKS[0], shapeOpen = !!(H.pop && H.pop.kind === 'shapes');
   const act = (k, glyph, label, dis) => btn('mp-tbtn hr-tool', `data-hr="${k}" aria-label="${esc(label)}" title="${esc(label)}"${dis ? ' disabled' : ''}`, `${glyph}<span> ${esc(label)}</span>`);
   const style = H.mode === 'pen' ? toolStyleHtml('pen', H.style.pen, H.pop && H.pop.for === 'pen' ? H.pop.kind : null)
+    : H.mode === 'erase' ? eraserSizes()
     : H.mode === 'shape' ? toolStyleHtml('shape', { ...(isLine(pick.k) ? H.style.line : H.style.shape), closed: !isLine(pick.k) }, H.pop && H.pop.for === 'shape' ? H.pop.kind : null) : '';
   // On a phone the pen's (or a shape's) style, undo, redo and Clear the pen are their own bar above the zoom pill
   // (#hr-penbar: icons, 44px targets), not more buttons at the end of the sideways strip.
   const bar = !!style && phone();
-  $('hr-tools').innerHTML = `<div class="hr-toolgrid">${tool('move', iconHtml('👆', { size: 18 }), th('select'))}${tool('note', iconHtml('🗒️', { size: 18 }), tm('note'))}${tool('text', '<b class="mp-tglyph">T</b>', tm('text'))}${tool('pen', iconHtml('✎', { size: 18 }), tm('pen'))}
+  $('hr-tools').innerHTML = `<div class="hr-toolgrid">${tool('move', iconHtml('👆', { size: 18 }), th('select'))}${tool('note', iconHtml('🗒️', { size: 18 }), tm('note'))}${tool('text', '<b class="mp-tglyph">T</b>', tm('text'))}${tool('pen', iconHtml('✎', { size: 18 }), tm('pen'))}${tool('erase', GL.eraser, th('erase.tool'))}
       ${tool('shape', shapeIcon(pick.id, 20), tb('shapes'), ` aria-haspopup="true" aria-expanded="${shapeOpen}" title="${esc(tb('shapes'))}"`)}
       ${act('undo', GL.undo, tm('undo'), !H.hist.length)}${act('redo', GL.redo, tb('redo'), !H.redo.length)}${act('paste', GL.paste, tb('paste'), false)}</div>
-    ${style && !bar ? `<div class="row rm-pens hr-toolrow">${style}${H.mode === 'pen' ? btn('chip', 'data-hr="clearpen"', esc(tm('clearPen'))) : ''}</div>` : ''}
-    <p class="hr-toolhint small">${esc(H.mode === 'move' ? tb('hintSelect') : H.mode === 'pen' ? th('hintDraw') : H.mode === 'shape' ? tb('hintShape') : th('hintPlace'))}</p>`;
+    ${style && !bar ? `<div class="row rm-pens hr-toolrow">${style}${H.mode === 'pen' || H.mode === 'erase' ? btn('chip', 'data-hr="clearpen"', esc(tm('clearPen'))) : ''}</div>` : ''}
+    <p class="hr-toolhint small">${esc(H.mode === 'move' ? tb('hintSelect') : H.mode === 'pen' ? th('hintDraw') : H.mode === 'erase' ? th('erase.hint') : H.mode === 'shape' ? tb('hintShape') : th('hintPlace'))}</p>`;
   let pb = $('hr-penbar');
   if (!bar) { if (pb) { pb.hidden = true; pb.innerHTML = ''; } return; }
   if (!pb) { pb = document.createElement('div'); pb.id = 'hr-penbar'; pb.className = 'rm-float hr-penbar'; pb.setAttribute('role', 'toolbar'); board.after(pb); }
-  pb.setAttribute('aria-label', H.mode === 'pen' ? tm('pen') : tb('shapes'));
+  pb.setAttribute('aria-label', H.mode === 'pen' ? tm('pen') : H.mode === 'erase' ? th('erase.tool') : tb('shapes'));
   const icon = (k, glyph, label, dis) => btn('hr-pbb', `data-hr="${k}" aria-label="${esc(label)}" title="${esc(label)}"${dis ? ' disabled' : ''}`, glyph);
-  pb.innerHTML = `${style}${icon('undo', GL.undo, tm('undo'), !H.hist.length)}${icon('redo', GL.redo, tb('redo'), !H.redo.length)}${H.mode === 'pen' ? icon('clearpen', GL.clear, tm('clearPen'), !H.ann.strokes.length && !H.ink.length) : ''}`;
+  pb.innerHTML = `${style}${icon('undo', GL.undo, tm('undo'), !H.hist.length)}${icon('redo', GL.redo, tb('redo'), !H.redo.length)}${H.mode === 'pen' || H.mode === 'erase' ? icon('clearpen', GL.clear, tm('clearPen'), !H.ann.strokes.length && !H.ink.length) : ''}`;
   pb.hidden = false;
 }
 function setMode(m, { on = false } = {}) {
   H.mode = on ? m : H.mode === m ? 'move' : m;
   ed.clear(); if (H.pop && H.pop.for !== 'sel' && !(on && m === 'shape')) ed.closePop();
-  board.classList.toggle('inking', H.mode !== 'move'); board.classList.toggle('hr-penon', H.mode === 'pen');
+  board.classList.toggle('inking', H.mode !== 'move'); board.classList.toggle('hr-penon', H.mode === 'pen'); board.classList.toggle('hr-eraseon', H.mode === 'erase');
+  if (H.mode !== 'erase') eraserCursor(null);
   renderTools(); renderArea();
   // a phone: the strip shows the board tools from their first one (Select), not cut at the screen's edge
   const panel = $('hr-panel'), tools = $('hr-tools');
   if (phone() && panel && tools && H.mode !== 'move') panel.scrollLeft = Math.max(0, tools.offsetLeft - 8);
   worldEl.querySelector('.hr-area')?.classList.toggle('drawing', H.mode !== 'move');
 }
-const snapshot = () => JSON.stringify({ ann: H.ann, shapes: H.shapes, ink: H.ink });
+const snapshot = () => JSON.stringify({ ann: H.ann, shapes: H.shapes, ink: H.ink, frame: H.frame });
 // Undo and redo (Cmd/Ctrl+Z, Shift+Cmd/Ctrl+Z or Ctrl+Y, and the Board tools' buttons): a snapshot of the area before
 // each change. remember() before a change; forget() when it turned out to change nothing (the redo list comes back).
 let redoKept = null;
@@ -332,17 +373,28 @@ let saveTimer = null;
 function queueSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveArea, 450); renderTools(); }
 async function saveArea() {
   saveTimer = null;
-  const state = { __ann: { notes: H.ann.notes, strokes: H.ann.strokes, texts: H.ann.texts.filter(x => String(x.text || '').trim()) }, shapes: H.shapes, ink: H.ink };
+  const fr = cleanFrame(H.frame);
+  const state = { __ann: { notes: H.ann.notes, strokes: H.ann.strokes, texts: H.ann.texts.filter(x => String(x.text || '').trim()) }, shapes: H.shapes, ink: H.ink, ...(fr ? { frame: fr } : {}) };
   try { await api(`/api/homeroom/${encodeURIComponent(D.classId)}/area`, { method: 'POST', body: { state } }); } catch (e) { toast(e.message, { bad: true }); }
 }
-function restore(snap) { const o = JSON.parse(snap); H.ann = o.ann; H.shapes = o.shapes; H.ink = o.ink || []; H.sels = []; H.edit = false; renderArea(); queueSave(); }
+function restore(snap) {
+  const o = JSON.parse(snap), was = JSON.stringify(H.frame);
+  H.ann = o.ann; H.shapes = o.shapes; H.ink = o.ink || []; H.frame = o.frame || frameOf({}); H.sels = []; H.edit = false;
+  if (JSON.stringify(H.frame) !== was) renderWorld(); else renderArea();
+  queueSave();
+}
 function undo() { ed.finishEdit(); const last = H.hist.pop(); if (!last) return; H.redo.push(snapshot()); restore(last); }
 function redo() { ed.finishEdit(); const next = H.redo.pop(); if (!next) return; H.hist.push(snapshot()); restore(next); }
-/** A point inside the teacher's area, as fractions of it (null outside). */
+/** A point inside the teacher's area (its frame, as the teacher sized it), as fractions of the default area from its top
+ *  left, kept inside the frame (null outside it; pad: how far outside still counts, in parts of the frame). */
 function inArea(cx, cy, pad = 0) {
-  const p = toWorld(cx, cy), x = (p.x - AREA.x) / AREA.w, y = (p.y - AREA.y) / AREA.h;
-  return x < -pad || y < -pad || x > 1 + pad || y > 1 + pad ? null : { x: clamp(x, 0, 1), y: clamp(y, 0, 1) };
+  const p = toWorld(cx, cy), f = H.frame, px = pad * f.w, py = pad * f.h;
+  if (p.x < f.x - px || p.y < f.y - py || p.x > f.x + f.w + px || p.y > f.y + f.h + py) return null;
+  return { x: (clamp(p.x, f.x, f.x + f.w) - AREA.x) / AREA.w, y: (clamp(p.y, f.y, f.y + f.h) - AREA.y) / AREA.h };
 }
+/** A point anywhere on the board, as fractions of the default area from its top left (notes, text and shapes go
+ *  anywhere: docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board"). */
+function boardFrac(cx, cy) { const p = onBoard(cx, cy); return { x: (p.x - AREA.x) / AREA.w, y: (p.y - AREA.y) / AREA.h }; }
 /** A point on the board, in board pixels, kept inside the board. */
 function onBoard(cx, cy) { const p = toWorld(cx, cy), w = world(); return { x: Math.round(clamp(p.x, 0, w.w) * 10) / 10, y: Math.round(clamp(p.y, 0, w.h) * 10) / 10 }; }
 // The pen anywhere on the board (docs/decisions.md "Homeroom: the pen anywhere on the board"): a line started outside
@@ -363,12 +415,44 @@ function inkEnd() {
 }
 /** A second finger came down while a line was being drawn: that was the start of a pinch or a pan, not a line. */
 function inkCancel(g) {
+  // (an erase just started: everything it took comes back)
+  if (g.kind === 'erase') { const snap = H.hist.pop(); if (snap) { const o = JSON.parse(snap); H.ann.strokes = o.ann.strokes; H.ink = o.ink || []; } if (redoKept) H.redo = redoKept; redoKept = null; renderArea(); renderTools(); return; }
   if (g.kind === 'bink') { H.ink.pop(); forget(); renderInk(); }
   else { H.ann.strokes.pop(); forget(); renderArea(); }
 }
+// ---------------------------------------------------------------- the eraser (public/js/board-erase.js)
+// Erases only what it passes over: the teacher's area's pen lines and board ink are cut where it crosses them. Its size
+// (S, M, L) is a radius on the screen, so it feels the same at every zoom; one press is one undo step.
+H.eraser = (() => { try { const v = localStorage.getItem('oomba-hr-eraser'); return ERASER_SIZES.includes(v) ? v : 'M'; } catch { return 'M'; } })();
+function eraserSizes() {
+  return `<div class="hr-seg2 hr-erasesz" role="group" aria-label="${esc(th('erase.size'))}">${ERASER_SIZES.map(k => btn(`hr-segb2${H.eraser === k ? ' on' : ''}`, `data-hrerase="${k}" aria-pressed="${H.eraser === k}" aria-label="${esc(th(`erase.sizes.${k}`))}" title="${esc(th(`erase.sizes.${k}`))}"`, `<span class="hr-erdot" style="--d:${Math.round(ERASER[k] * 0.9) + 4}px"></span>`)).join('')}</div>`;
+}
+const r5 = v => Math.round(v * 1e5) / 1e5, r1 = v => Math.round(v * 10) / 10;
+/** Erase along the eraser's last move (board pixels). -> whether anything changed */
+function eraseAlong(path) {
+  const r = ERASER[H.eraser] / H.view.z;
+  const a = eraseStrokes(H.ann.strokes, path, r, { toPx: p => ({ x: AREA.x + p.x * AREA.w, y: AREA.y + p.y * AREA.h }), fromPx: p => ({ x: r5((p.x - AREA.x) / AREA.w), y: r5((p.y - AREA.y) / AREA.h) }), newId: () => `p-${newId()}`, maxPts: 600 });
+  const k = eraseStrokes(H.ink, path, r, { fromPx: p => ({ x: r1(p.x), y: r1(p.y) }), newId: () => `k${newId()}`, maxPts: INK.points });
+  if (!a.changed && !k.changed) return false;
+  if (a.strokes.length > MAX.stroke || k.strokes.length > INK.strokes) { if (!H.eraseFull) toast(th('tooMany'), { bad: true }); H.eraseFull = true; return false; }
+  if (a.changed) { H.ann.strokes = a.strokes; ed.redrawSvg(); }
+  if (k.changed) { H.ink = k.strokes; renderInk(); }
+  return true;
+}
+/** The eraser's ring under the pointer (null hides it). */
+function eraserCursor(e) {
+  let el = $('hr-erasecur');
+  if (!e) { if (el) el.hidden = true; return; }
+  if (!el) { el = document.createElement('div'); el.id = 'hr-erasecur'; el.className = 'hr-erasecur'; el.setAttribute('aria-hidden', 'true'); board.append(el); }
+  const r = board.getBoundingClientRect(), d = ERASER[H.eraser] * 2;
+  Object.assign(el.style, { width: `${d}px`, height: `${d}px`, left: `${e.clientX - r.left - d / 2}px`, top: `${e.clientY - r.top - d / 2}px` });
+  el.hidden = false;
+}
 /** Back to Select after a note, a text or a shape is placed (the pen stays on until Select or Escape). */
-function backToSelect() { H.mode = 'move'; board.classList.remove('inking', 'hr-penon'); worldEl.querySelector('.hr-area')?.classList.remove('drawing'); renderTools(); }
+function backToSelect() { H.mode = 'move'; board.classList.remove('inking', 'hr-penon', 'hr-eraseon'); worldEl.querySelector('.hr-area')?.classList.remove('drawing'); renderTools(); }
 const ed = areaEditor({ H, AREA, board, stage: $('hr-stage') || board?.parentElement, worldEl, zoom: () => H.view.z, remember, forget, snapshot, queueSave, renderArea, undo, redo,
+  bounds: () => { const w = world(); return { x0: -AREA.x, y0: -AREA.y, x1: w.w - AREA.x, y1: w.h - AREA.y }; },
+  framePx: () => ({ x: H.frame.x - AREA.x, y: H.frame.y - AREA.y, w: H.frame.w, h: H.frame.h }),
   renderPanel: () => renderTools(), setMode: m => setMode(m, { on: true }),
   areaPt: (cx, cy) => { const p = toWorld(cx, cy); return { x: p.x - AREA.x, y: p.y - AREA.y }; } });
 
@@ -422,7 +506,7 @@ async function saveSeats(body) {
   catch (e) { toast(e.message, { bad: true }); }
 }
 async function usePreset(p) {
-  const spots = layout(p, H.students.length), seats = {};
+  const spots = layout(p, H.students.length, seatsTop(H.frame)), seats = {};
   H.students.forEach((s, i) => { seats[s.id] = spots[i]; });
   H.seats = seats; H.preset = p; renderSeatbar(); renderWorld(); fit();
   await saveSeats({ preset: p, seats });
@@ -477,7 +561,8 @@ function renderMenu() {
     ${btn('rm-mi', 'role="menuitem" data-hr="aides"', `${iconHtml('🤝', { size: 18 })} ${esc(th('helpers.aides'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="sublink"', `${iconHtml('🔗', { size: 18 })} ${esc(th('helpers.subMenu'))}`)}
     ${btn('rm-mi', 'role="menuitem" data-hr="k2"', `${iconHtml('🧒', { size: 18 })} ${esc(th('k2.menu'))}<span class="hr-mitag">${esc(th(H.k2.on ? 'k2.on' : 'k2.off'))}</span>`)}
-    ${btn('rm-mi', 'role="menuitem" data-hr="parents"', `${iconHtml('👪', { size: 18 })} ${esc(th('parents.menu'))}<span class="hr-mitag">${esc(th(H.parents ? 'parents.on' : 'parents.off'))}</span>`)}`}
+    ${btn('rm-mi', 'role="menuitem" data-hr="parents"', `${iconHtml('👪', { size: 18 })} ${esc(th('parents.menu'))}<span class="hr-mitag">${esc(th(H.parents ? 'parents.on' : 'parents.off'))}</span>`)}
+    ${btn('rm-mi', 'role="menuitem" data-hr="studentdraw"', `${iconHtml('🖍️', { size: 18 })} ${esc(th('draw.menu'))}<span class="hr-mitag">${esc(th(MK.st.on ? 'draw.on' : 'draw.off'))}</span>`)}`}
     ${D.hostLive && !AIDE ? `<a class="rm-mi" role="menuitem" href="${esc(D.hostLive)}" data-hr="hostlive">${iconHtml('📡', { size: 18 })} ${esc(th('hostLive'))}</a>` : ''}
     <a class="rm-mi" role="menuitem" href="/class/${esc(encodeURIComponent(D.classId))}/homeroom/projector" target="_blank" rel="noopener" data-hr="projector">${iconHtml('📽️', { size: 18 })} ${esc(th('projector'))}</a>
     ${H.live && !AIDE ? btn('rm-mi hr-end', 'role="menuitem" data-hr="end"', `${iconHtml('⏹️', { size: 18 })} ${esc(th('endClass'))}`) : ''}</div></div>`;
@@ -520,6 +605,36 @@ function parentsSheet() {
       const r = await api(api2('parents'), { method: 'POST', body: { on: b.dataset.parents === '1' } });
       H.parents = !!r.parents; toast(r.toast);
       const box = body.querySelector('.hr-parbox'); if (box) box.outerHTML = draw();
+    } catch (err) { toast(err.message, { bad: true }); }
+  });
+}
+// Students drawing on the room (services/homeroom-marks.js): off by default; when on, students in See the room draw
+// with a pen (and erase their own lines) outside other students' desks. The sheet: on or off, whose lines are on the
+// room (Remove), and Clear students' drawings.
+function drawSheet() {
+  const st = MK.st;
+  const draw = () => {
+    const list = st.marks.filter(m => m.strokes.length);
+    return `<div class="hr-k2box hr-drawbox"><p class="small muted">${esc(th('draw.lead'))}</p>
+    <div class="hr-seg hr-k2seg" role="radiogroup" aria-label="${esc(th('draw.menu'))}">${[true, false].map(on => btn(`hr-segb${st.on === on ? ' on' : ''}`, `role="radio" aria-checked="${st.on === on}" data-drawon="${on ? 1 : 0}"`, esc(th(on ? 'draw.modeOn' : 'draw.modeOff')))).join('')}</div>
+    <ul class="hr-k2what small">${['where', 'seen', 'locked'].map(k => `<li>${esc(th(`draw.what.${k}`))}</li>`).join('')}</ul>
+    <p class="hr-parcap small"><b>${esc(th('draw.whose'))}</b></p>
+    ${list.length ? `<ul class="plain hr-drawlist">${list.map(m => `<li><bdi>${esc(m.name)}</bdi> <span class="small muted">${esc(th('draw.lines', { count: m.strokes.length }))}</span>${btn('btn btn-sm', `data-drawrm="${esc(m.id)}"`, `${iconHtml('↩️', { size: 14 })} ${esc(th('draw.remove'))}`)}</li>`).join('')}</ul>
+      <div class="row">${btn('btn btn-sm btn-danger', 'data-drawclear', `${iconHtml('🧽', { size: 16 })} ${esc(th('draw.clear'))}`)}</div>` : `<p class="small muted">${esc(th('draw.none'))}</p>`}</div>`;
+  };
+  const sh = sheet({ title: `🖍️ ${th('draw.title')}`, content: draw() });
+  const body = sh.el.querySelector('.sheet-body') || sh.el;
+  const redraw = () => { const box = body.querySelector('.hr-drawbox'); if (box) box.outerHTML = draw(); };
+  body.addEventListener('click', async e => {
+    const on = e.target.closest('[data-drawon]'), rm = e.target.closest('[data-drawrm]'), clear = e.target.closest('[data-drawclear]');
+    if (!on && !rm && !clear) return;
+    try {
+      if (on) { const r = await api(api2('student-draw'), { method: 'POST', body: { on: on.dataset.drawon === '1' } }); st.on = !!r.on; toast(r.toast); MK.poll(); }
+      else {
+        if (clear && !(await ask({ title: th('draw.clear'), text: th('draw.clearConfirm'), ok: th('draw.clear') }))) return;
+        const r = await api(api2('marks'), { method: 'POST', body: clear ? { action: 'clear' } : { action: 'remove', studentId: rm.dataset.drawrm } }); MK.take(r); toast(r.toast);
+      }
+      redraw();
     } catch (err) { toast(err.message, { bad: true }); }
   });
 }
@@ -726,41 +841,101 @@ function giveClick(e) {
   if (more) { deskSheet(more.dataset.hrdesk); return true; }
   return false;
 }
-// Drag with a mouse or a pen (a finger scrolls the panel, so touch uses tap-then-tap).
+// Dragging a game, lesson, tool or book onto My desk, a desk, a team desk, a group chip or Whole class (docs/decisions.md
+// "Homeroom: touch drag, eraser, resizable area, the whole board"): pointer events for every pointer (iOS Safari has no
+// HTML drag and drop for this), a ghost under the finger or the pointer, the target outlined, and the board panning by
+// itself near its edges. A mouse or a pen drags at once. A finger in the panel waits for a short hold, or for a clear
+// move across the way the panel scrolls (up out of a phone's sideways strip, sideways out of the tall panel): a move
+// the way it scrolls is a scroll (the browser takes the finger: pointercancel), so a sideways swipe still scrolls the
+// strip. A card on My desk sits on the board, so a finger drags it at once (dragStaged). A tap still picks.
+const HOLD_MS = 280, EDGE = 48, PAN_SPEED = 16;
 function dragStart(e) {
   const item = e.target.closest('[data-hritem]');
-  if (!item || e.pointerType === 'touch' || e.button > 0 || H.seatsOpen) return;
-  H.drag = { p: pickFrom(item), sx: e.clientX, sy: e.clientY, ghost: null, dropped: false };
+  if (!item || e.button > 0 || H.seatsOpen || AIDE || (H.drag && !H.drag.dropped)) return;
+  const touch = e.pointerType === 'touch';
+  H.drag = { p: pickFrom(item), sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, id: e.pointerId, ghost: null, dropped: false, touch, armed: !touch, strip: phone(), v: { x: 0, y: 0 } };
+  if (touch) H.drag.hold = setTimeout(() => { const d = H.drag; if (d && d.id === e.pointerId && !d.ghost && !d.dropped) { d.armed = true; lift(d); } }, HOLD_MS);
 }
 function stagedDragStart(e) {
   const card = e.target.closest('[data-hrstaged]');
-  if (!card || e.button > 0 || H.seatsOpen || H.pick) return;
+  if (!card || e.button > 0 || H.seatsOpen || (H.drag && !H.drag.dropped)) return;
   const x = stagedById(card.dataset.hrstaged); if (!x || x.tool) return;
-  H.drag = { p: pickOfStaged(x), sx: e.clientX, sy: e.clientY, ghost: null, dropped: false, staged: true };
+  H.drag = { p: pickOfStaged(x), sx: e.clientX, sy: e.clientY, x: e.clientX, y: e.clientY, id: e.pointerId, ghost: null, dropped: false, staged: true, touch: e.pointerType === 'touch', armed: true, v: { x: 0, y: 0 } };
 }
-function dragMove(e) {
-  const d = H.drag; if (!d || d.dropped) return;
-  if (!d.ghost) {
-    if (Math.abs(e.clientX - d.sx) + Math.abs(e.clientY - d.sy) < 8) return;
-    d.ghost = document.createElement('div'); d.ghost.className = 'hr-ghost'; d.ghost.setAttribute('aria-hidden', 'true');
-    d.ghost.innerHTML = `${iconHtml(d.p.icon, { size: 18 })}<span dir="auto">${esc(d.p.title)}</span>`; document.body.appendChild(d.ghost);
-    setPick(d.p);
-  }
-  d.ghost.style.transform = `translate(${e.clientX + 12}px, ${e.clientY + 12}px)`;
-  for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget');
-  const under = document.elementFromPoint(e.clientX, e.clientY), at = under && (under.closest('[data-hrto]') || under.closest('.hr-desk') || (d.staged ? null : under.closest('.hr-tdesk')));
+/** The drag starts: the ghost, the item picked (the yellow bar and its chips show), the board's targets outlined. */
+function lift(d) {
+  d.ghost = document.createElement('div'); d.ghost.className = `hr-ghost${d.touch ? ' touch' : ''}`; d.ghost.setAttribute('aria-hidden', 'true');
+  d.ghost.innerHTML = `${iconHtml(d.p.icon, { size: 18 })}<span dir="auto">${esc(d.p.title)}</span>`; document.body.appendChild(d.ghost);
+  $('homeroom').classList.add('hr-dragging');
+  setPick(d.p); placeGhost(d); markTarget(d);
+}
+// (a finger: the ghost above it, where the finger does not cover it)
+function placeGhost(d) { if (d.ghost) d.ghost.style.transform = d.touch ? `translate(${d.x - 24}px, ${d.y - 64}px)` : `translate(${d.x + 12}px, ${d.y + 12}px)`; }
+function targetUnder(d) {
+  const under = document.elementFromPoint(d.x, d.y);
+  return under && (under.closest('[data-hrto]') || under.closest('.hr-desk') || (d.staged ? null : under.closest('.hr-tdesk')));
+}
+function markTarget(d) {
+  const at = targetUnder(d);
+  for (const el of document.querySelectorAll('.hr-droptarget')) if (el !== at) el.classList.remove('hr-droptarget');
   if (at) at.classList.add('hr-droptarget');
 }
-function dragEnd(e) {
-  const d = H.drag; if (!d || d.dropped) return;
-  if (!d.ghost) { H.drag = null; return; }
-  d.ghost.remove(); d.dropped = true;
+function cancelDrag() {
+  const d = H.drag; if (!d) return;
+  clearTimeout(d.hold); d.ghost?.remove(); H.drag = null; $('homeroom').classList.remove('hr-dragging');
   for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget');
-  const to = e.type === 'pointerup' ? targetAt(document.elementFromPoint(e.clientX, e.clientY)) : null;
+}
+/** Near the free part of the board's edges (not over the panel or the bars), the board pans toward that edge. */
+let panRaf = null;
+function autoPan(d) {
+  const r = board.getBoundingClientRect(), fb = freeBox(), L = r.left + fb.left, T = r.top + fb.top, R = L + fb.w, B = T + fb.h;
+  let vx = 0, vy = 0;
+  if (d.x >= L && d.x <= R && d.y >= T && d.y <= B) {
+    if (d.x < L + EDGE) vx = PAN_SPEED * (1 - (d.x - L) / EDGE); else if (d.x > R - EDGE) vx = -PAN_SPEED * (1 - (R - d.x) / EDGE);
+    if (d.y < T + EDGE) vy = PAN_SPEED * (1 - (d.y - T) / EDGE); else if (d.y > B - EDGE) vy = -PAN_SPEED * (1 - (B - d.y) / EDGE);
+  }
+  // (only once the pointer rests near the edge a moment: passing through on the way to a desk pans nothing)
+  if (vx || vy) d.edgeAt = d.edgeAt || Date.now(); else d.edgeAt = 0;
+  d.v = { x: vx, y: vy };
+  if ((vx || vy) && !panRaf) panRaf = requestAnimationFrame(panStep);
+}
+const EDGE_WAIT = 350;
+function panStep() {
+  panRaf = null;
+  const d = H.drag; if (!d || !d.ghost || d.dropped || !(d.v.x || d.v.y)) return;
+  if (Date.now() - d.edgeAt >= EDGE_WAIT) { H.view.x += d.v.x; H.view.y += d.v.y; applyView(); markTarget(d); }
+  panRaf = requestAnimationFrame(panStep);
+}
+function dragMove(e) {
+  const d = H.drag; if (!d || d.dropped || e.pointerId !== d.id) return;
+  d.x = e.clientX; d.y = e.clientY;
+  if (!d.ghost) {
+    const dx = e.clientX - d.sx, dy = e.clientY - d.sy;
+    if (Math.abs(dx) + Math.abs(dy) < (d.touch ? 10 : 8)) return;
+    if (!d.armed) {
+      // a finger before the hold: across the panel's scrolling drags, along it scrolls (and is let go)
+      const along = d.strip ? Math.abs(dx) : Math.abs(dy), across = d.strip ? Math.abs(dy) : Math.abs(dx);
+      if (across > along * 1.2) d.armed = true; else { cancelDrag(); return; }
+    }
+    lift(d);
+  }
+  placeGhost(d); markTarget(d); autoPan(d);
+}
+function dragEnd(e) {
+  const d = H.drag; if (!d || d.dropped || (e.pointerId !== undefined && e.pointerId !== d.id)) return;
+  clearTimeout(d.hold);
+  if (!d.ghost) { H.drag = null; return; }
+  d.ghost.remove(); d.dropped = true; d.v = { x: 0, y: 0 };
+  $('homeroom').classList.remove('hr-dragging');
+  for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget');
   H.justPanned = false;
+  setTimeout(() => { if (H.drag === d) H.drag = null; }, 400);
+  if (e.type !== 'pointerup') { setPick(null); return; }
+  // held and let go where it started: picked, as a tap picks it (the tap's click may not come after a long press)
+  if (d.touch && !d.staged && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < 12) { setPick(d.p); return; }
+  const to = targetAt(document.elementFromPoint(e.clientX, e.clientY));
   // a card dragged off My desk and dropped back on it: nothing to do
   if (to && !(d.staged && to.kind === 'me')) giveSheet(to); else setPick(null);
-  setTimeout(() => { if (H.drag === d) H.drag = null; }, 400);
 }
 /** A desk's handouts: each with its state and instructions, and Remove from this desk / from every desk. */
 function deskSheet(sid, first = null) {
@@ -855,7 +1030,7 @@ const UI = 'button, a, input, select, textarea, label, .hr-panel, .hr-seatbar, .
 const PEN_UI = '.hr-panel, .hr-seatbar, .rm-float, .rm-menu, .hr-seltools, .hr-pop, .hr-penbar, .hr-givebar, .hr-fl, .hr-outnotes, .hr-plan, .hr-player';
 function down(e) {
   H.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  if (H.pointers.size === 2) { if (H.gesture && (H.gesture.kind === 'ink' || H.gesture.kind === 'bink')) inkCancel(H.gesture); const [a, b] = [...H.pointers.values()]; H.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return; }
+  if (H.pointers.size === 2) { if (H.gesture && (H.gesture.kind === 'ink' || H.gesture.kind === 'bink' || H.gesture.kind === 'erase')) inkCancel(H.gesture); const [a, b] = [...H.pointers.values()]; H.gesture = { kind: 'pinch', d: Math.hypot(a.x - b.x, a.y - b.y), cx: (a.x + b.x) / 2, cy: (a.y + b.y) / 2 }; return; }
   if (H.pointers.size > 2) return;
   // The pen draws anywhere on the board, over the desks too (one finger draws; two pan and zoom). Only the floating
   // tools and menus keep their presses.
@@ -866,7 +1041,22 @@ function down(e) {
     if (inkStart(onBoard(e.clientX, e.clientY))) { H.gesture = { kind: 'bink' }; board.setPointerCapture(e.pointerId); }
     return;
   }
+  if (H.mode === 'erase' && e.button === 0 && !AIDE && !H.seatsOpen && !e.target.closest(PEN_UI)) {
+    ed.clear(); e.preventDefault(); remember(); H.eraseFull = false;
+    const p = toWorld(e.clientX, e.clientY);
+    H.gesture = { kind: 'erase', last: p, changed: eraseAlong([p]) };
+    eraserCursor(e); board.setPointerCapture(e.pointerId); return;
+  }
   if (e.target.closest(UI)) return;
+  // the teacher's area's edges and corners resize it (Select only)
+  const fh = e.target.closest('[data-hrframe]');
+  if (fh && !AIDE && !H.seatsOpen && H.mode === 'move') {
+    ed.clear(); remember();
+    H.gesture = { kind: 'frame', h: fh.dataset.hrframe, sx: e.clientX, sy: e.clientY, f0: { ...H.frame }, moved: false };
+    board.setPointerCapture(e.pointerId); e.preventDefault(); return;
+  }
+  // a card on My desk is dragged (any pointer, a finger too: dragStaged), not the board under it
+  if (e.target.closest('[data-hrstaged]') && !H.seatsOpen) return;
   const desk = e.target.closest('.hr-desk');
   if (H.seatsOpen && desk && desk.dataset.team) {
     const tm = teamById(desk.dataset.team); if (!tm || H.teamPick) return;
@@ -880,7 +1070,8 @@ function down(e) {
     H.gesture = { kind: 'desk', sid, sx: e.clientX, sy: e.clientY, x0: p.x, y0: p.y, moved: false };
     board.setPointerCapture(e.pointerId); e.preventDefault(); return;
   }
-  const at = AIDE ? null : inArea(e.clientX, e.clientY);
+  // a note, a text box or a shape goes anywhere on the board (the pen chose above: the area's own line or board ink)
+  const at = AIDE || H.mode === 'move' ? null : boardFrac(e.clientX, e.clientY);
   if (at && !H.seatsOpen && H.mode !== 'move') {
     ed.clear();
     if (H.mode === 'pen') { if (ed.penStart(at)) { H.gesture = { kind: 'ink' }; board.setPointerCapture(e.pointerId); } return; }
@@ -901,6 +1092,7 @@ function down(e) {
 }
 function move(e) {
   if (H.pointers.has(e.pointerId)) H.pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (H.mode === 'erase' && e.pointerType !== 'touch') eraserCursor(e);
   ed.hoverAt(e);
   if (ed.move(e)) return;
   const g = H.gesture; if (!g) return;
@@ -913,13 +1105,19 @@ function move(e) {
   if (g.kind === 'pan') { if (Math.abs(dx) + Math.abs(dy) > 4) g.moved = true; H.view.x = g.x0 + dx; H.view.y = g.y0 + dy; applyView(); return; }
   if (g.kind === 'ink') { ed.penMove(inArea(e.clientX, e.clientY, 1)); return; }
   if (g.kind === 'bink') { inkMove(onBoard(e.clientX, e.clientY)); return; }
-  if (g.kind === 'shape') { const p = inArea(e.clientX, e.clientY, 1); if (p) ed.shapeMove(p, e.shiftKey); return; }
+  if (g.kind === 'erase') {
+    const evs = typeof e.getCoalescedEvents === 'function' && e.getCoalescedEvents().length ? e.getCoalescedEvents() : [e];
+    for (const ev of evs) { const p = toWorld(ev.clientX, ev.clientY); if (eraseAlong([g.last, p])) g.changed = true; g.last = p; }
+    eraserCursor(e); return;
+  }
+  if (g.kind === 'shape') { ed.shapeMove(boardFrac(e.clientX, e.clientY), e.shiftKey); return; }
+  if (g.kind === 'frame') { if (Math.abs(dx) + Math.abs(dy) > 3) g.moved = true; if (g.moved) { H.frame = pulledFrame(g, dx / H.view.z, dy / H.view.z); placeFrame(); } return; }
   if (!g.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
   if (!g.moved && g.kind !== 'desk') remember();
   g.moved = true;
   const z = H.view.z;
-  if (g.kind === 'desk') { if (H.teamPick) return; const p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (p) { H.seats[g.sid] = p; moveDeskEl(g.sid); } return; }
-  if (g.kind === 'team') { const tm = teamById(g.id), p = clampSeat({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (tm && p) { tm.x = p.x; tm.y = p.y; moveTeamEl(g.id); } return; }
+  if (g.kind === 'desk') { if (H.teamPick) return; const p = seatAt({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (p) { H.seats[g.sid] = p; moveDeskEl(g.sid); } return; }
+  if (g.kind === 'team') { const tm = teamById(g.id), p = seatAt({ x: Math.round((g.x0 + dx / z) / 10) * 10, y: Math.round((g.y0 + dy / z) / 10) * 10 }); if (tm && p) { tm.x = p.x; tm.y = p.y; moveTeamEl(g.id); } return; }
 }
 function up(e) {
   H.pointers.delete(e.pointerId);
@@ -945,13 +1143,42 @@ function up(e) {
     if (g.moved) seatMoved(g.sid); H.justPanned = true; return;
   }
   if (g.kind === 'team') { if (g.moved) teamMoved(g.id); H.justPanned = true; return; }
+  if (g.kind === 'frame') { H.justPanned = true; if (!g.moved || JSON.stringify(g.f0) === JSON.stringify(H.frame)) { forget(); return; } frameDone(g.f0); return; }
   if (g.kind === 'ink') { ed.penEnd(); H.justPanned = true; return; }
   if (g.kind === 'bink') { inkEnd(); H.justPanned = true; return; }
+  if (g.kind === 'erase') { H.justPanned = true; if (e.pointerType === 'touch') eraserCursor(null); if (g.changed) { renderArea(); queueSave(); } else forget(); return; }
   if (g.kind === 'shape') {
     // A shape is drawn by dragging; a tap with a shape tool puts a middle-sized one there. Then back to Select, the new
     // shape selected (its handles show how to resize it).
     const r = ed.shapeEnd(); backToSelect(); renderArea(); if (r) ed.selectNew(r); H.justPanned = true; return;
   }
+}
+/** A desk's place while seats are arranged: clampSeat, and never up into the teacher's area or My desk. */
+function seatAt(p) { const q = clampSeat(p); if (q) q.y = Math.max(q.y, seatsTop(H.frame)); return q; }
+/** The area with one handle pulled by (dx, dy) board pixels, within FRAME (its top stays put). */
+function pulledFrame(g, dx, dy) {
+  const f0 = g.f0; let { x, w, h } = f0;
+  if (g.h.includes('e')) w = clamp(f0.w + dx, FRAME.wMin, FRAME.wMax);
+  if (g.h.includes('w')) { w = clamp(f0.w - dx, FRAME.wMin, Math.min(FRAME.wMax, f0.x + f0.w)); x = f0.x + f0.w - w; }
+  if (g.h.includes('s')) h = clamp(f0.h + dy, FRAME.hMin, FRAME.hMax);
+  return frameOf({ frame: { x: Math.round(x), w: Math.round(w), h: Math.round(h) } });
+}
+/** The area was resized (from f0): saved with the area; desks it would now cover move down, with the board's pen lines
+ *  and objects under the area (the room keeps its shape); a smaller area leaves the desks where they are. */
+function frameDone(f0) {
+  const top = seatsTop(H.frame), ys = [...soloStudents().map(s => (H.seats[s.id] || {}).y), ...H.teams.map(tm => tm.y)].filter(Number.isFinite);
+  const dy = ys.length ? Math.ceil((top - Math.min(...ys)) / 10) * 10 : 0;
+  if (dy > 0) {
+    const under = f0.y + f0.h;
+    for (const sid of Object.keys(H.seats)) H.seats[sid] = { x: H.seats[sid].x, y: H.seats[sid].y + dy };
+    for (const tm of H.teams) tm.y += dy;
+    for (const k of H.ink) if (Math.min(...k.pts.map(p => p.y)) >= under) k.pts = k.pts.map(p => ({ x: p.x, y: Math.round((p.y + dy) * 10) / 10 }));
+    ed.shiftBelow(under, dy);
+    saveSeats({ seats: H.seats });
+    for (const tm of H.teams) teamsApi({ action: 'move', id: tm.id, x: tm.x, y: tm.y });
+  }
+  renderWorld(); queueSave();
+  toast(th('frame.saved'));
 }
 function togglePick(sid) {
   const list = H.teamPick; if (!list) return;
@@ -970,6 +1197,8 @@ function click(e) {
   // the Shapes button opens the picker (a shape picked there turns the tool on)
   if (mode) { if (mode.dataset.hrmode === 'shape') { ed.openPop('shapes', 'shape'); return; } return setMode(mode.dataset.hrmode); }
   const preset = e.target.closest('[data-hrpreset]'); if (preset) return usePreset(preset.dataset.hrpreset);
+  const esz = e.target.closest('[data-hrerase]');
+  if (esz) { H.eraser = esz.dataset.hrerase; try { localStorage.setItem('oomba-hr-eraser', H.eraser); } catch { /* this page only */ } renderTools(); return; }
   if (ed.click(e)) return;
   const a = e.target.closest('[data-hr]'); if (!a) { if (H.menuOpen && !e.target.closest('.hr-morewrap')) { H.menuOpen = false; renderMenu(); } return; }
   const k = a.dataset.hr;
@@ -994,6 +1223,7 @@ function click(e) {
   else if (k === 'sublink') { H.menuOpen = false; renderMenu(); HLP.subSheet(); }
   else if (k === 'k2') { H.menuOpen = false; renderMenu(); k2Sheet(); }
   else if (k === 'parents') { H.menuOpen = false; renderMenu(); parentsSheet(); }
+  else if (k === 'studentdraw') { H.menuOpen = false; renderMenu(); drawSheet(); }
   else if (k === 'golive') liveAction('start');
   else if (['bring', 'back', 'pause', 'resume', 'end'].includes(k)) liveAction(k);
 }
@@ -1013,12 +1243,12 @@ function keys(e) {
   if (H.teamPick && desk && desk.dataset.sid && (e.key === 'Enter' || e.key === ' ')) { togglePick(desk.dataset.sid); e.preventDefault(); return; }
   if (H.seatsOpen && desk && desk.dataset.team && dir) {
     const tm = teamById(desk.dataset.team), step = e.shiftKey ? 50 : 10;
-    const at = tm && clampSeat({ x: tm.x + dir[0] * step, y: tm.y + dir[1] * step }); if (at) { tm.x = at.x; tm.y = at.y; moveTeamEl(tm.id); teamMoved(tm.id); }
+    const at = tm && seatAt({ x: tm.x + dir[0] * step, y: tm.y + dir[1] * step }); if (at) { tm.x = at.x; tm.y = at.y; moveTeamEl(tm.id); teamMoved(tm.id); }
     e.preventDefault(); return;
   }
   if (H.seatsOpen && desk && dir && !H.teamPick) {
     const sid = desk.dataset.sid, p = H.seats[sid], step = e.shiftKey ? 50 : 10;
-    const at = clampSeat({ x: p.x + dir[0] * step, y: p.y + dir[1] * step }); if (at) { H.seats[sid] = at; moveDeskEl(sid); seatMoved(sid); }
+    const at = seatAt({ x: p.x + dir[0] * step, y: p.y + dir[1] * step }); if (at) { H.seats[sid] = at; moveDeskEl(sid); seatMoved(sid); }
     e.preventDefault();
   }
 }
@@ -1042,6 +1272,9 @@ const LV = liveBoard({ att: attOf, markAtt: AIDE ? null : markAtt,
   setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
 });
 
+// Students' lines on the room (public/js/homeroom-marks.js), over the desks, with whose they are.
+const MK = marksLayer({ url: api2('marks'), svg: () => $('hr-smarks'), size: () => world(), away: () => H.away, every: 6000 });
+MK.st.on = !!D.studentDraw;
 // Step 3c: supports, simpler wording, aides, sub links, While you were out (public/js/homeroom-helpers.js).
 const HLP = helpersOf({ D, H, api2: path => api2(path), aide: AIDE, att: attOf, markAtt, nameOfId, renderDesks: () => renderDesks(), deskSheet: sid => deskSheet(sid), look: sid => LV.look(sid), live: () => !!H.live });
 
@@ -1049,15 +1282,15 @@ const HLP = helpersOf({ D, H, api2: path => api2(path), aide: AIDE, att: attOf, 
 function away() {
   H.away = true; ed.finishEdit();
   if (H.menuOpen) { H.menuOpen = false; renderMenu(); }
-  if (H.drag) { H.drag.ghost?.remove(); H.drag = null; for (const el of document.querySelectorAll('.hr-droptarget')) el.classList.remove('hr-droptarget'); }
+  if (H.drag) cancelDrag();
   H.gesture = null; H.pointers.clear();
-  clearTimeout(pollTimer); pollTimer = null; LV.pause();
+  clearTimeout(pollTimer); pollTimer = null; LV.pause(); MK.stop();
 }
 /** Back on screen: the same view of the board, and the desks asked for now. */
 function back() {
   H.away = false;
   applyView(); renderMini();
-  pollHandouts(); LV.resume();
+  pollHandouts(); LV.resume(); MK.poll();
 }
 
 // A game from My desk, played over the board (public/js/homeroom-player.js): the board stays as it is underneath.
@@ -1077,8 +1310,13 @@ function start() {
   // a game's icon is a picture: the browser's own image drag would cancel ours (pointercancel)
   document.addEventListener('dragstart', e => { if (e.target.closest && e.target.closest('[data-hritem], [data-hrstaged]')) e.preventDefault(); });
   document.addEventListener('pointermove', dragMove); document.addEventListener('pointerup', dragEnd); document.addEventListener('pointercancel', dragEnd);
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && !H.away) pollHandouts(); });
+  // while a finger drags, the page and the panel do not scroll under it (iOS Safari: a touchmove's preventDefault), and
+  // a long press opens no menu
+  document.addEventListener('touchmove', e => { if (H.drag && H.drag.ghost && !H.drag.dropped) e.preventDefault(); }, { passive: false });
+  document.addEventListener('contextmenu', e => { if (H.drag && e.target.closest && e.target.closest('[data-hritem], [data-hrstaged]')) e.preventDefault(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && !H.away) { pollHandouts(); MK.poll(); } });
   pollTimer = setTimeout(pollHandouts, pollEvery());
+  MK.poll();
   if (H.live) LV.onLive();
   requestAnimationFrame(fit);
   board.addEventListener('pointerdown', down);

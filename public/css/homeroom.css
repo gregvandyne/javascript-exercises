@@ -66,7 +66,28 @@ main.rm-main>#homeroom{flex:1 1 auto;min-height:0;display:flex;flex-direction:co
 .hr-mini{right:96px;bottom:12px}
 
 /* the board's contents */
-.hr-areabody{position:absolute;inset:0}
+.hr-areabody{position:absolute;left:0;top:0;width:100%;height:100%}
+/* the whole board (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole board"): the area's objects
+   may sit anywhere on the board, so on the teacher's board its layer is not clipped and sits over the desks; only the
+   objects take presses (the rest of the layer lets them through to the desks under it). */
+.hr-board .hr-area{z-index:3}
+.hr-board .hr-area>.hr-areabody,.hr-board .hr-area>.hr-areabody>.rm-in{pointer-events:none;overflow:visible}
+.hr-board .hr-area .hr-obj{pointer-events:auto}
+/* the area's edges and corners resize it (the teacher's board, Select only) */
+.hr-fh{position:absolute;z-index:45;touch-action:none;--fh:calc(14px * var(--iz,1))}
+.hr-fh::after{content:"";position:absolute;border-radius:999px;background:var(--spark-press);opacity:.55;transition:opacity .12s}
+.hr-fh:hover::after,.hr-fh:active::after{opacity:1}
+.hr-fh-e,.hr-fh-w{top:20%;bottom:20%;width:var(--fh);cursor:ew-resize}
+.hr-fh-e{right:calc(var(--fh) / -2)}.hr-fh-w{left:calc(var(--fh) / -2)}
+.hr-fh-e::after,.hr-fh-w::after{left:35%;right:35%;top:30%;bottom:30%}
+.hr-fh-s{left:25%;right:25%;height:var(--fh);bottom:calc(var(--fh) / -2);cursor:ns-resize}
+.hr-fh-s::after{top:35%;bottom:35%;left:35%;right:35%}
+.hr-fh-se,.hr-fh-sw{width:calc(var(--fh) * 2);height:calc(var(--fh) * 2);bottom:calc(var(--fh) * -1)}
+.hr-fh-se{right:calc(var(--fh) * -1);cursor:nwse-resize}.hr-fh-sw{left:calc(var(--fh) * -1);cursor:nesw-resize}
+.hr-fh-se::after,.hr-fh-sw::after{inset:30%;border-radius:50%;background:#fff;box-shadow:0 0 0 calc(3px * var(--iz,1)) var(--spark-press);opacity:.9}
+.hr-board.inking .hr-fh,.hr-seating .hr-fh{display:none}
+@media (pointer:coarse){.hr-fh{--fh:calc(26px * var(--iz,1))}}
+.hr-roobjs{position:absolute}
 .hr-shapes{position:absolute;inset:0;width:100%;height:100%;z-index:24;pointer-events:none;overflow:visible}
 /* Editing the teacher's area (public/js/homeroom-board.js): objects are hit-tested in JS (a generous margin around pen
    lines and outlines), so the drawings themselves take no presses; a selected object has an outline, handles that keep
@@ -500,6 +521,13 @@ body.hs-page main#main{min-height:100vh;min-height:100dvh}
 /* ---- handing out (step 2a): the panel's games are buttons; tap one (it stays picked), then a desk, a group or Whole
    class; or drag it there with a mouse or pen. Desks show their handouts with progress. */
 .hr-give{width:100%;text-align:start;font:inherit;font-weight:800;font-size:14px;color:var(--text);cursor:pointer;touch-action:manipulation}
+/* a finger drags an item out of the panel (homeroom.js dragStart): the panel still scrolls its own way */
+.hr-panel .hr-give{touch-action:pan-y;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* (a held icon is no picture to drag: the browser's own drag after a long press would take the finger, pointercancel) */
+.hr-panel .hr-give img,.hr-panel .hr-give svg,.hr-scard img,.hr-scard svg{-webkit-user-drag:none;user-drag:none;pointer-events:none;-webkit-touch-callout:none}
+@media (max-width:819px){.hr-panel .hr-give{touch-action:pan-x}}
+.hr-dragging,.hr-dragging *{cursor:grabbing!important;-webkit-user-select:none;user-select:none}
+.hr-ghost.touch{transform-origin:24px 64px;box-shadow:0 10px 28px rgba(20,20,20,.28);border-width:3px}
 .hr-give:hover{background:var(--hover)}
 .hr-give[aria-pressed="true"]{border-color:var(--accent-press);box-shadow:0 0 0 3px var(--accent-press);background:var(--accent-soft)}
 .hr-later{opacity:.75}
@@ -1290,3 +1318,40 @@ a.hd-card.hd-k2start:hover{background:var(--accent-hover)}
 .hr-subatt .hr-attbox{margin-top:0;background:var(--card)}
 .hr-sum-nums>.hr-sum-abs{grid-column:1/-1;flex-direction:row;align-items:baseline;gap:10px}
 .hr-sum-nums>.hr-sum-abs b{font-size:1.2rem}
+
+/* ---- the eraser, the resizable area, the whole board, students drawing on the room (docs/decisions.md "Homeroom: touch
+   drag, eraser, resizable area, the whole board"). The eraser's ring follows the pointer (a finger: while pressing). */
+.hr-erasecur{position:absolute;z-index:57;pointer-events:none;box-sizing:border-box;border-radius:50%;border:2px solid var(--text);background:color-mix(in srgb,var(--card) 45%,transparent);box-shadow:0 0 0 1px var(--card)}
+.hr-erasecur[hidden]{display:none}
+.hr-board.hr-eraseon,.hr-board.hr-eraseon .rm-world *{cursor:cell}
+@media (pointer:fine){.hr-board.hr-eraseon,.hr-board.hr-eraseon .rm-world *{cursor:none}}
+.hr-erdot{display:block;width:var(--d);height:var(--d);box-sizing:border-box;border-radius:50%;border:2px solid currentColor;background:color-mix(in srgb,currentColor 12%,transparent)}
+.hr-erasesz .hr-segb2{min-width:44px}
+/* students' lines on the room, over the desks (with whose they are, for the teacher) */
+.hr-smarks{z-index:31}
+.hr-smarks .hr-mark{opacity:.9}
+.hr-drawlist{display:flex;flex-direction:column;gap:6px;margin:4px 0 10px}
+.hr-drawlist li{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hr-drawlist li .btn{margin-inline-start:auto}
+/* the desk's pad: the eraser and its sizes */
+.hd-erasewrap{display:inline-flex;align-items:center;gap:4px}
+.hd-tool.on{background:var(--text);color:var(--card);border-color:var(--text)}
+.hd-ersz{display:inline-flex;align-items:center;gap:2px}
+.hd-ersz[hidden]{display:none}
+.hd-erszb{display:inline-grid;place-items:center;width:36px;height:36px;padding:0;border:2px solid transparent;border-radius:999px;background:transparent;color:var(--text);cursor:pointer}
+.hd-erszb.on{border-color:var(--text);background:var(--card-2)}
+.hd-erszb i{display:block;width:var(--d);height:var(--d);border-radius:50%;border:2px solid currentColor}
+@media (pointer:coarse){.hd-erszb{width:44px;height:44px}}
+.hd-svg.erasing{cursor:cell}
+/* See the room: the teacher's objects outside the area, students' lines, and the pen when the teacher allows it */
+.hd-robjs{position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.hd-robjsvg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.hd-robj{position:absolute;transform-origin:0 0}
+.hd-robj>.mp-sticky,.hd-robj>.mp-text{position:absolute;left:0;top:0;pointer-events:none}
+.hd-rmarks{position:absolute;left:0;top:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+.hd-rmarks .hd-rmo .hr-mark{opacity:.85}
+.hd-roombox.hd-drawing{touch-action:none;cursor:crosshair}
+.hd-roomtools{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 10px;padding:8px 10px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow)}
+.hd-roomtools[hidden]{display:none}
+.hd-roomtools .hd-tool:disabled{opacity:.45;cursor:default}
+.hd-rphint{flex:1 1 220px;margin:0;color:var(--muted)}

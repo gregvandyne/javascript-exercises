@@ -58,11 +58,12 @@ const meets = (a, b) => a.x <= b.x + b.w && b.x <= a.x + a.w && a.y <= b.y + b.h
 /** A box (from b0) with one handle pulled by (dx, dy): n, s, e, w and the corners; never smaller than min, never out of
  *  the area. */
 export function pullBox(b0, h, dx, dy, min, area) {
-  let { x, y, w, h: hh } = b0;
+  // (area: { w, h } its right and bottom edges, x0 and y0 its left and top, 0 when absent)
+  let { x, y, w, h: hh } = b0; const x0 = area.x0 || 0, y0 = area.y0 || 0;
   if (h.includes('e')) w = clamp(b0.w + dx, min.w, area.w - b0.x);
   if (h.includes('s')) hh = clamp(b0.h + dy, min.h, area.h - b0.y);
-  if (h.includes('w')) { const nx = clamp(b0.x + dx, 0, b0.x + b0.w - min.w); w = b0.w + b0.x - nx; x = nx; }
-  if (h.includes('n')) { const ny = clamp(b0.y + dy, 0, b0.y + b0.h - min.h); hh = b0.h + b0.y - ny; y = ny; }
+  if (h.includes('w')) { const nx = clamp(b0.x + dx, x0, b0.x + b0.w - min.w); w = b0.w + b0.x - nx; x = nx; }
+  if (h.includes('n')) { const ny = clamp(b0.y + dy, y0, b0.y + b0.h - min.h); hh = b0.h + b0.y - ny; y = ny; }
   return { x, y, w: Math.min(w, min.wMax || Infinity), h: Math.min(hh, min.hMax || Infinity) };
 }
 /** The same for a box turned by deg degrees around its middle: the handle moves in the box's own direction and the
@@ -100,7 +101,7 @@ const readText = el => String(el.innerText || '').replace(/\r/g, '').replace(/\n
 /** Anything pasted, made safe and given fresh ids (the server cleans it again). -> { k, o } or null */
 function cleanItem(x) {
   if (!x || typeof x !== 'object' || !x.o || typeof x.o !== 'object') return null;
-  const o = x.o, f = v => clamp(Number.isFinite(+v) ? +v : 0, 0, 1), sized = Number.isFinite(+o.w) && Number.isFinite(+o.h);
+  const o = x.o, f = v => clamp(Number.isFinite(+v) ? +v : 0, -1e6, 1e6), sized = Number.isFinite(+o.w) && Number.isFinite(+o.h);
   if (x.k === 'shape') { const s = B.cleanShape(o); return s ? { k: 'shape', o: s } : null; }
   if (x.k === 'stroke') {
     const pts = (Array.isArray(o.pts) ? o.pts : []).slice(0, 600).filter(p => p && typeof p === 'object').map(p => ({ x: f(p.x), y: f(p.y) }));
@@ -121,6 +122,12 @@ function cleanItem(x) {
  */
 export function areaEditor(ctx) {
   const { H, AREA } = ctx, W = AREA.w, HH = AREA.h;
+  // Objects may sit anywhere on the board (docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole
+  // board"): area pixels reach past the area's edges, within the board (ctx.bounds: { x0, y0, x1, y1 } in area pixels).
+  const BB = () => (ctx.bounds ? ctx.bounds() : { x0: 0, y0: 0, x1: W, y1: HH });
+  const fx = v => { const b = BB(); return clamp(v, b.x0 / W, b.x1 / W); }, fy = v => { const b = BB(); return clamp(v, b.y0 / HH, b.y1 / HH); };
+  /** Is this area-pixel point inside the teacher's area (its frame, however the teacher sized it)? */
+  const inFramePx = (p, tol = 0) => (ctx.framePx ? ((f) => p.x >= f.x - tol && p.y >= f.y - tol && p.x <= f.x + f.w + tol && p.y <= f.y + f.h + tol)(ctx.framePx()) : p.x >= -tol && p.y >= -tol && p.x <= W + tol && p.y <= HH + tol);
   let g = null;   // the press being dragged: { kind: 'drag' | 'resize' | 'rotate' | 'marquee' | 'none', ... }
   let drawing = null, pending = null, pasteTimer = null, toolsHtml = '', popHtmlNow = '', popAnchor = null;
   const hover = { p: null, moved: false };
@@ -203,7 +210,7 @@ export function areaEditor(ctx) {
     const out = all.map(h => { const p = rot({ x: xs[h.includes('w') ? 'w' : h.includes('e') ? 'e' : 'm'], y: ys[h.includes('n') ? 'n' : h.includes('s') ? 's' : 'm'] }, c, deg); return [h, p.x, p.y]; });
     if (turnable(s, o)) {
       // above it, or under it when above would be outside the area (the area clips what is outside it)
-      const off = 30 / Math.max(0.2, ctx.zoom()), ok = q => q.x >= 6 && q.y >= 6 && q.x <= W - 6 && q.y <= HH - 6;
+      const off = 30 / Math.max(0.2, ctx.zoom()), bb = BB(), ok = q => q.x >= bb.x0 + 6 && q.y >= bb.y0 + 6 && q.x <= bb.x1 - 6 && q.y <= bb.y1 - 6;
       const top = rot({ x: c.x, y: b.y - pad - off }, c, deg), under = rot({ x: c.x, y: b.y + b.h + pad + off }, c, deg);
       const p = ok(top) || !ok(under) ? top : under; out.push(['rot', p.x, p.y]);
     }
@@ -378,7 +385,7 @@ export function areaEditor(ctx) {
   function add(kind, at) {
     ctx.remember();
     const b = kind === 'note' ? NOTE_BOX : TEXT_NEW;
-    const o = { id: newId(kind === 'note' ? 'n' : 'x'), text: '', x: clamp(at.x, 0, 1 - b.w / W), y: clamp(at.y - (kind === 'text' ? 14 / HH : 0), 0, 1 - b.h / HH), w: b.w, h: b.h, by: 't', ...clone(H.style[kind] || {}) };
+    const bb = BB(), o = { id: newId(kind === 'note' ? 'n' : 'x'), text: '', x: clamp(at.x, bb.x0 / W, (bb.x1 - b.w) / W), y: clamp(at.y - (kind === 'text' ? 14 / HH : 0), bb.y0 / HH, (bb.y1 - b.h) / HH), w: b.w, h: b.h, by: 't', ...clone(H.style[kind] || {}) };
     LIST[kind]().push(o);
     finishEdit(); H.sels = [{ k: kind, id: o.id }]; ctx.renderArea(); startEdit(null, null, { fresh: true });
   }
@@ -402,18 +409,18 @@ export function areaEditor(ctx) {
       if (B.isLine(s.k)) { const l = Math.hypot(dx, dy), a = Math.round(Math.atan2(dy, dx) / (Math.PI / 4)) * (Math.PI / 4); dx = Math.cos(a) * l; dy = Math.sin(a) * l; }
       else {
         // as big as the pointer asks, but never past the area's edge (so it stays square there too)
-        const sx = Math.sign(dx || 1), sy = Math.sign(dy || 1), room = Math.min(sx > 0 ? W - s.x * W : s.x * W, sy > 0 ? HH - s.y * HH : s.y * HH);
+        const bb = BB(), sx = Math.sign(dx || 1), sy = Math.sign(dy || 1), room = Math.min(sx > 0 ? bb.x1 - s.x * W : s.x * W - bb.x0, sy > 0 ? bb.y1 - s.y * HH : s.y * HH - bb.y0);
         const m = Math.min(Math.max(Math.abs(dx), Math.abs(dy)), room); dx = sx * m; dy = sy * m;
       }
     }
-    s.x2 = clamp(s.x + dx / W, 0, 1); s.y2 = clamp(s.y + dy / HH, 0, 1); redrawSvg();
+    s.x2 = fx(s.x + dx / W); s.y2 = fy(s.y + dy / HH); redrawSvg();
   }
   /** Let go: a tap puts a middle-sized one there. -> the new shape's ref */
   function shapeEnd() {
     const s = drawing; drawing = null; if (!s) return null;
     if (Math.abs(s.x2 - s.x) * W < 12 && Math.abs(s.y2 - s.y) * HH < 12) {
       const wide = ['rect', 'rrect', 'speech', 'arrow', 'darrow', 'para', 'trap', 'chevron', 'cloud'].includes(s.k), w = B.isLine(s.k) || wide ? 160 : 120, h = B.isLine(s.k) ? 0 : wide ? 100 : 120;
-      s.x = clamp(s.x, 0, 1 - w / W); s.y = clamp(s.y, 0, 1 - h / HH); s.x2 = s.x + w / W; s.y2 = s.y + h / HH;
+      const bb = BB(); s.x = clamp(s.x, bb.x0 / W, (bb.x1 - w) / W); s.y = clamp(s.y, bb.y0 / HH, (bb.y1 - h) / HH); s.x2 = s.x + w / W; s.y2 = s.y + h / HH;
     }
     ctx.queueSave();
     return { k: 'shape', id: s.id };
@@ -500,14 +507,14 @@ export function areaEditor(ctx) {
     const bx = x => (x.k === 'shape' ? B.boxOf(x.o, W, HH) : x.k === 'stroke' ? union(x.o.pts.map(p => ({ x: p.x * W, y: p.y * HH, w: 0, h: 0 }))) : { x: x.o.x * W, y: x.o.y * HH, w: +x.o.w, h: +x.o.h });
     const u = union(items.map(bx));
     let dx = at ? at.x - u.x : offset, dy = at ? at.y - u.y : offset;
-    dx = clamp(dx, -u.x, W - u.x - u.w); dy = clamp(dy, -u.y, HH - u.y - u.h);
+    const bb = BB(); dx = clamp(dx, bb.x0 - u.x, bb.x1 - u.x - u.w); dy = clamp(dy, bb.y0 - u.y, bb.y1 - u.y - u.h);
     let z = topZ();
     const refs = [];
     for (const x of items) {
       const o = x.o; o.id = newId({ note: 'n', text: 'x', shape: 's', stroke: 'p' }[x.k]);
-      if (x.k === 'shape') { o.x = clamp(o.x + dx / W, 0, 1); o.x2 = clamp(o.x2 + dx / W, 0, 1); o.y = clamp(o.y + dy / HH, 0, 1); o.y2 = clamp(o.y2 + dy / HH, 0, 1); o.z = ++z; }
-      else if (x.k === 'stroke') { o.pts = o.pts.map(p => ({ x: clamp(p.x + dx / W, 0, 1), y: clamp(p.y + dy / HH, 0, 1) })); o.z = ++z; }
-      else { o.x = clamp(o.x + dx / W, 0, 1); o.y = clamp(o.y + dy / HH, 0, 1); }
+      if (x.k === 'shape') { o.x = fx(o.x + dx / W); o.x2 = fx(o.x2 + dx / W); o.y = fy(o.y + dy / HH); o.y2 = fy(o.y2 + dy / HH); o.z = ++z; }
+      else if (x.k === 'stroke') { o.pts = o.pts.map(p => ({ x: fx(p.x + dx / W), y: fy(p.y + dy / HH) })); o.z = ++z; }
+      else { o.x = fx(o.x + dx / W); o.y = fy(o.y + dy / HH); }
       LIST[x.k]().push(o); refs.push({ k: x.k, id: o.id });
     }
     H.sels = refs; ctx.renderArea(); ctx.queueSave();
@@ -525,7 +532,7 @@ export function areaEditor(ctx) {
   function pasteText(text) {
     const v = String(text).replace(/\r/g, '').slice(0, MAXCH.text); if (!v.trim()) return;
     const w = clamp(Math.round(Math.min(...[600, 40 + Math.max(...v.split('\n').map(l => l.length)) * 10])), 160, 600), lines = v.split('\n').length;
-    const at = hover.moved && hover.p ? hover.p : { x: 40, y: 40 }; hover.moved = false;
+    const fp = ctx.framePx ? ctx.framePx() : { x: 0, y: 0 }, at = hover.moved && hover.p ? hover.p : { x: fp.x + 40, y: fp.y + 40 }; hover.moved = false;
     pasteItems([{ k: 'text', o: { text: v, x: at.x / W, y: at.y / HH, w, h: Math.min(380, 28 * lines + 12), ...clone(H.style.text) } }], { offset: 0 });
   }
   function duplicate() {
@@ -614,7 +621,7 @@ export function areaEditor(ctx) {
   function nudge(dx, dy) {
     const list = free(); if (!list.length) return;
     const u = union(list.map(aabb)); if (!u) return;
-    const mx = clamp(dx, -u.x, W - u.x - u.w), my = clamp(dy, -u.y, HH - u.y - u.h); if (!mx && !my) return;
+    const bb = BB(), mx = clamp(dx, bb.x0 - u.x, bb.x1 - u.x - u.w), my = clamp(dy, bb.y0 - u.y, bb.y1 - u.y - u.h); if (!mx && !my) return;
     ctx.remember(); for (const s of list) moveBy(s, find(s), clone(find(s)), box(s), mx, my);
     redrawSvg(); renderSel(); ctx.queueSave();
   }
@@ -646,7 +653,7 @@ export function areaEditor(ctx) {
   /** Hover: where a paste lands (the pointer, once it moved). */
   function hoverAt(e) {
     const p = ctx.areaPt(e.clientX, e.clientY);
-    const inA = p.x >= 0 && p.y >= 0 && p.x <= W && p.y <= HH;
+    const bb = BB(), inA = p.x >= bb.x0 && p.y >= bb.y0 && p.x <= bb.x1 && p.y <= bb.y1;
     if (inA && (!hover.p || Math.hypot(p.x - hover.p.x, p.y - hover.p.y) > 4)) { hover.p = p; hover.moved = true; } else if (!inA) { hover.p = null; hover.moved = false; }
   }
   /** A press on the board in Select. -> true when it was on an object, a handle or the empty area. */
@@ -658,8 +665,9 @@ export function areaEditor(ctx) {
       ctx.remember(); closePop();
       g = { kind: hEl.dataset.hrh === 'rot' ? 'rotate' : 'resize', h: hEl.dataset.hrh, id: e.pointerId, sx: e.clientX, sy: e.clientY, b0: box(s1), o: clone(find(s1)), s: s1, moved: false };
     } else {
-      if (p.x < -tol || p.y < -tol || p.x > W + tol || p.y > HH + tol) return false;
+      // an object anywhere on the board, else the empty teacher's area (a marquee); the rest of the board pans
       const s = hit(p, tol, e.target, adding);
+      if (!s && !inFramePx(p)) return false;
       closePop();
       if (!s) { g = { kind: 'marquee', id: e.pointerId, sx: e.clientX, sy: e.clientY, p0: p, base: adding ? [...H.sels] : [], adding, moved: false }; }
       else if (adding) {
@@ -698,7 +706,7 @@ export function areaEditor(ctx) {
     }
     if (g.kind === 'drag') {
       const u = g.u; if (!u) return true;
-      const mx = clamp(dx, -u.x, W - u.x - u.w), my = clamp(dy, -u.y, HH - u.y - u.h);
+      const bb = BB(), mx = clamp(dx, bb.x0 - u.x, bb.x1 - u.x - u.w), my = clamp(dy, bb.y0 - u.y, bb.y1 - u.y - u.h);
       for (const it of g.items) { const o = find(it.r); if (o) moveBy(it.r, o, it.o, it.b, mx, my); }
       if (g.items.some(it => !typed(it.r))) redrawSvg();
     } else if (g.kind === 'rotate') {
@@ -717,15 +725,16 @@ export function areaEditor(ctx) {
       const fix = g.h === 'a' ? { x: g.o.x2 * W, y: g.o.y2 * HH } : { x: g.o.x * W, y: g.o.y * HH };
       let q = { x: (g.h === 'a' ? g.o.x : g.o.x2) * W + dx, y: (g.h === 'a' ? g.o.y : g.o.y2) * HH + dy };
       if (keep) { const l = Math.hypot(q.x - fix.x, q.y - fix.y), a = Math.round(Math.atan2(q.y - fix.y, q.x - fix.x) / (Math.PI / 4)) * (Math.PI / 4); q = { x: fix.x + Math.cos(a) * l, y: fix.y + Math.sin(a) * l }; }
-      q = { x: clamp(q.x / W, 0, 1), y: clamp(q.y / HH, 0, 1) };
+      q = { x: fx(q.x / W), y: fy(q.y / HH) };
       if (g.h === 'a') { o.x = q.x; o.y = q.y; } else { o.x2 = q.x; o.y2 = q.y; }
       redrawSvg(); return;
     }
     const min = s.k === 'note' ? { w: NOTE_BOX.wMin, h: NOTE_BOX.hMin, wMax: NOTE_BOX.wMax, hMax: NOTE_BOX.hMax } : s.k === 'text' ? { w: TEXT_BOX.wMin, h: TEXT_BOX.hMin, wMax: TEXT_BOX.wMax, hMax: TEXT_BOX.hMax } : { w: 8, h: 8 };
     // a text box or note can be made shorter than its words only down to what they need (its height is a minimum)
     const deg = turnOf(s, g.o);
-    let b1 = pullTurned(b0, g.h, dx, dy, min, AREA, deg, keep);
-    if (deg) { b1.x = clamp(b1.x, 0, W - b1.w); b1.y = clamp(b1.y, 0, HH - b1.h); }
+    const bb = BB();
+    let b1 = pullTurned(b0, g.h, dx, dy, min, { x0: bb.x0, y0: bb.y0, w: bb.x1, h: bb.y1 }, deg, keep);
+    if (deg) { b1.x = clamp(b1.x, bb.x0, bb.x1 - b1.w); b1.y = clamp(b1.y, bb.y0, bb.y1 - b1.h); }
     if (typed(s)) {
       o.x = b1.x / W; o.y = b1.y / HH; o.w = Math.round(b1.w); o.h = Math.round(b1.h);
       const el = elOf(s); if (el) Object.assign(el.style, { left: `${o.x * 100}%`, top: `${o.y * 100}%`, width: `${o.w}px`, minHeight: `${o.h}px` });
@@ -735,7 +744,7 @@ export function areaEditor(ctx) {
       Object.assign(o, { x: fx ? X[1] : X[0], x2: fx ? X[0] : X[1], y: fy ? Y[1] : Y[0], y2: fy ? Y[0] : Y[1] }); redrawSvg();
     } else {
       const kx = b0.w > 1 ? b1.w / b0.w : 1, ky = b0.h > 1 ? b1.h / b0.h : 1;
-      o.pts = g.o.pts.map(q => ({ x: clamp((b1.x + (q.x * W - b0.x) * kx) / W, 0, 1), y: clamp((b1.y + (q.y * HH - b0.y) * ky) / HH, 0, 1) })); redrawSvg();
+      o.pts = g.o.pts.map(q => ({ x: fx((b1.x + (q.x * W - b0.x) * kx) / W), y: fy((b1.y + (q.y * HH - b0.y) * ky) / HH) })); redrawSvg();
     }
   }
   function up(e) {
@@ -800,11 +809,19 @@ export function areaEditor(ctx) {
     else if (e.key === 'Enter' && typed(one())) { startEdit(); e.preventDefault(); }
     else if (dir && !e.target.closest('.hr-desk')) { const st = e.shiftKey ? 10 : 1; nudge(dir[0] * st, dir[1] * st); e.preventDefault(); }
   }
+  /** Objects whose top is under a board line (board pixels) move down by dy board pixels (the teacher's area grew over
+   *  the desks, and the desks moved down: what was drawn around them goes with them). */
+  function shiftBelow(line, dy) {
+    const ly = (line - AREA.y) / HH, k = dy / HH;
+    for (const n of [...H.ann.notes, ...H.ann.texts]) if (+n.y >= ly) n.y = fy(+n.y + k);
+    for (const o of H.shapes) if (Math.min(o.y, o.y2) >= ly) { o.y = fy(o.y + k); o.y2 = fy(o.y2 + k); }
+    for (const o of H.ann.strokes) if (o.pts.length && Math.min(...o.pts.map(p => p.y)) >= ly) o.pts = o.pts.map(p => ({ x: p.x, y: fy(p.y + k) }));
+  }
   /** After a new drawing (the shape just drawn, the pen line): selected. */
   const selectNew = s => { H.sels = [s]; renderSel(); };
   // a press outside a popover closes it
   document.addEventListener('pointerdown', e => { if (H.pop && !e.target.closest('#hr-pop, [data-hrpop], [data-hrmode="shape"]')) closePop(); }, true);
 
-  return { html, renderSel, place, down, move, up, click, key, clear, finishEdit, add, selectNew, find, redrawSvg, normalize, hoverAt, onCopy, onPaste, closePop, openPop,
+  return { html, renderSel, place, down, move, up, click, key, clear, finishEdit, add, selectNew, find, redrawSvg, normalize, hoverAt, onCopy, onPaste, closePop, openPop, shiftBelow,
     shapeStart, shapeMove, shapeEnd, penStart, penMove, penEnd, values, pasteButton };
 }

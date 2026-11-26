@@ -41,8 +41,11 @@ import { t, api, toast, esc, pageData } from '/js/app.js';
 import { iconHtml } from '/js/icons.js';
 import { inkLine } from '/js/board-ann.js';
 import { areaHtml, fitAreas } from '/js/homeroom-area.js';
-import { AREA, TEACHER_DESK, DESK, TEAM_DESK } from '/js/homeroom-seats.js';
+import { AREA, DESK, TEAM_DESK, frameOf, tdeskOf } from '/js/homeroom-seats.js';
 import { roomInk } from '/js/homeroom-ink.js';
+import { splitObjects, shapeSvg, strokeSvg, drawings, noteHtml, textHtml } from '/js/board-shapes.js';
+import { eraseStrokes } from '/js/board-erase.js';
+import { roomPen } from '/js/homeroom-marks.js';
 import { nowNextHtml } from '/js/homeroom-plan.js';
 import { startPulse } from '/js/homeroom-pulse.js';
 import { gamePlayer } from '/js/homeroom-player.js';
@@ -58,6 +61,8 @@ const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs
 const S = {
   cards: Array.isArray(D.cards) ? D.cards : [], hv: null,
   live: null, area: {}, v: null, view: 'desk', strokes: Array.isArray(D.strokes) ? D.strokes : [], hist: [], pen: P.colors[0],
+  // the pad's eraser (public/js/board-erase.js): it takes only what it passes over; its size (S, M, L)
+  tool: 'pen', eraser: 'M',
   cur: null, penSeen: false, saveTimer: null, dirty: false,
   // a team's shared pad (step 2c): the version last saved or seen, and strokes drawn here since then (added to a
   // teammate's newer pad when a save crosses theirs)
@@ -85,6 +90,7 @@ function renderDesk() {
       <div class="hd-pad">
         <div class="hd-padbar"><h3 class="hd-padcap">${esc(td(S.team ? 'teamPad' : 'pad'))}</h3><span class="hd-grow"></span>
           <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${S.pen === c ? ' on' : ''}`, `role="radio" aria-checked="${S.pen === c}" data-hdpen="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"`, `<i style="background:${c}"></i>`)).join('')}</span>
+          <span class="hd-erasewrap">${btn(`hd-tool hd-erasebtn${S.tool === 'erase' ? ' on' : ''}`, `data-hd="erase" id="hd-erase" aria-pressed="${S.tool === 'erase'}"`, `${ERASE_ICON}<span>${esc(td('erase'))}</span>`)}<span class="hd-ersz" id="hd-ersz"${S.tool === 'erase' ? '' : ' hidden'} role="group" aria-label="${esc(td('eraseSize'))}">${Object.keys(PAD_ERASER).map(k => btn(`hd-erszb${S.eraser === k ? ' on' : ''}`, `data-hdersz="${k}" aria-pressed="${S.eraser === k}" aria-label="${esc(td(`eraseSizes.${k}`))}"`, `<i style="--d:${6 + Object.keys(PAD_ERASER).indexOf(k) * 6}px"></i>`)).join('')}</span></span>
           ${btn('hd-tool', 'data-hd="undo" id="hd-undo"', `${iconHtml('↩', { size: 18 })}<span>${esc(td('undo'))}</span>`)}${btn('hd-tool', 'data-hd="clear" id="hd-clear"', `${iconHtml('🧽', { size: 18 })}<span>${esc(td('clear'))}</span>`)}</div>
         <div class="hd-padbox"><svg class="hd-svg" id="hd-svg" viewBox="0 0 ${P.w} ${P.h}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${esc(td('padLabel'))}">
           <rect class="hd-paper" x="1" y="1" width="${P.w - 2}" height="${P.h - 2}" rx="14"/><g id="hd-ink"></g><g id="hd-cur"></g><g id="hd-mates" aria-hidden="true"></g></svg></div>
@@ -203,6 +209,24 @@ function toolsState() {
 
 // ---------------------------------------------------------------- the pad
 const svg = () => $('hd-svg');
+/** The pad's eraser radius by size, in the page's pixels (900 x 600). */
+const PAD_ERASER = { S: 10, M: 22, L: 44 };
+const ERASE_ICON = '<svg class="hr-gl" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 4.5l4 4a2 2 0 0 1 0 2.8L12 18.8H7.2l-3-3a2 2 0 0 1 0-2.8L12.7 4.5a2 2 0 0 1 2.8 0z"/><path d="M9 9l6 6"/><path d="M12 18.8h8"/></svg>';
+function setPadTool(tool) {
+  S.tool = tool;
+  for (const b of root.querySelectorAll('[data-hdpen]')) { const on = tool === 'pen' && b.dataset.hdpen === S.pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); }
+  const e = $('hd-erase'); if (e) { e.classList.toggle('on', tool === 'erase'); e.setAttribute('aria-pressed', String(tool === 'erase')); }
+  const z = $('hd-ersz'); if (z) z.hidden = tool !== 'erase';
+  svg()?.classList.toggle('erasing', tool === 'erase');
+}
+/** Erase along the eraser's last move on the pad (fractions of the page). -> whether anything changed */
+function padErase(path) {
+  const r = eraseStrokes(S.strokes, path.map(p => ({ x: p.x * P.w, y: p.y * P.h })), PAD_ERASER[S.eraser] || 22,
+    { toPx: p => ({ x: p.x * P.w, y: p.y * P.h }), fromPx: p => ({ x: Math.round(p.x / P.w * 1e4) / 1e4, y: Math.round(p.y / P.h * 1e4) / 1e4 }), maxPts: P.points });
+  if (!r.changed) return false;
+  if (r.strokes.length > P.strokes || r.strokes.reduce((n, s) => n + s.pts.length, 0) > P.total) { toast(td('padFull'), { bad: true }); return false; }
+  S.strokes = r.strokes; drawInk(); return true;
+}
 function drawInk() { const g = $('hd-ink'); if (g) g.innerHTML = S.strokes.map(s => inkLine(s, P.w, P.h)).join(''); }
 /** A pointer's place on the page, as fractions of it (the page keeps its shape on every screen). */
 function at(e) {
@@ -218,15 +242,21 @@ function padDown(e) {
   // A pencil in use: a palm resting on the screen draws nothing.
   if (e.pointerType === 'touch' && S.penSeen) return;
   if (e.button > 0) return;
-  if (S.strokes.length >= P.strokes || totalPoints() >= P.total - 2) { toast(td('padFull'), { bad: true }); return; }
+  if (S.tool !== 'erase' && (S.strokes.length >= P.strokes || totalPoints() >= P.total - 2)) { toast(td('padFull'), { bad: true }); return; }
   const p = at(e); if (!p) return;
   e.preventDefault();
+  if (S.tool === 'erase') {
+    remember(); S.cur = { id: e.pointerId, erase: true, last: p, changed: padErase([p]) };
+    try { svg().setPointerCapture(e.pointerId); } catch { /* gone */ }
+    return;
+  }
   S.cur = { id: e.pointerId, s: { c: S.pen, pts: [p] } };
   try { svg().setPointerCapture(e.pointerId); } catch { /* gone */ }
 }
 function padMove(e) {
   const c = S.cur; if (!c || c.id !== e.pointerId) return;
   const evs = typeof e.getCoalescedEvents === 'function' ? e.getCoalescedEvents() : [e];
+  if (c.erase) { for (const ev of evs.length ? evs : [e]) { const p = at(ev); if (p) { if (padErase([c.last, p])) c.changed = true; c.last = p; } } return; }
   for (const ev of evs.length ? evs : [e]) {
     if (c.s.pts.length >= P.points) break;
     const p = at(ev), last = c.s.pts[c.s.pts.length - 1];
@@ -237,6 +267,7 @@ function padMove(e) {
 function padUp(e) {
   const c = S.cur; if (!c || c.id !== e.pointerId) return;
   S.cur = null; const g = $('hd-cur'); if (g) g.innerHTML = '';
+  if (c.erase) { if (c.changed) { S.fresh = []; toolsState(); queueSave(); } else S.hist.pop(); return; }
   if (c.s.pts.length < 2) return;
   if (totalPoints() + c.s.pts.length > P.total) { toast(td('padFull'), { bad: true }); return; }
   remember(); S.strokes.push(c.s); if (S.team) S.fresh.push(c.s); drawInk(); toolsState(); queueSave();
@@ -288,10 +319,13 @@ function renderOver() {
   root.classList.toggle('hd-covered', !!html);
   for (const b of root.querySelectorAll('.hd-dockbtn[data-hd]')) b.setAttribute('aria-pressed', String(b.dataset.hd === S.view));
   if (html) { fitAreas(over); placeRoom(); }
+  // See the room's pen: its lines asked for while the room is on screen, what was drawn saved when it goes
+  if ($('hd-roombox')) { renderRoomTools(); RP.poll(); } else RP.flush();
 }
 function roomHtml() {
   const desks = D.desks || [];
   return `<div class="hd-over hd-room" role="dialog" aria-modal="false" aria-labelledby="hd-roomh"><div class="hd-overtop"><h2 class="hd-overcap" id="hd-roomh">${iconHtml('🏫', { size: 20 })} ${esc(td('roomTitle', { class: D.className }))}</h2>${btn('btn hr-chunk hd-back', 'data-hd="desk"', `${iconHtml('🎒', { size: 18 })} ${esc(td('back'))}`)}</div>
+    <div class="hd-roomtools" id="hd-roomtools" hidden></div>
     <div class="hd-roombox" id="hd-roombox"><div class="hd-front"><span>✦ ${esc(td('teacherArea'))}</span></div><div class="hd-tdesk">${esc(td('teacherDesk'))}</div>
     ${desks.map(d => `<div class="hd-rdesk${d.me ? ' me' : ''}" data-x="${+d.x || 0}" data-y="${+d.y || 0}"${d.me && D.color ? ` style="--gc:${esc(D.color)}"` : ''}><span class="hd-rname"><bdi>${esc(d.name)}</bdi>${d.me ? ` <b>(${esc(td('you'))})</b>` : ''}</span></div>`).join('')}
     ${(D.teams || []).map(x => `<div class="hd-rdesk hd-rteam${x.me ? ' me' : ''}" data-x="${+x.x || 0}" data-y="${+x.y || 0}" data-team="1"${x.me && D.color ? ` style="--gc:${esc(D.color)}"` : ''}><span class="hd-rname">${iconHtml('🤝', { size: 14 })} <bdi>${esc(x.names.join(', '))}</bdi>${x.me ? ` <b>(${esc(td('you'))})</b>` : ''}</span></div>`).join('')}</div></div>`;
@@ -302,7 +336,8 @@ function placeRoom() {
   const box = $('hd-roombox'); if (!box) return;
   const desks = [...box.querySelectorAll('.hd-rdesk')], pts = desks.map(el => ({ el, x: +el.dataset.x, y: +el.dataset.y, ...(el.dataset.team ? TEAM_DESK : DESK) }));
   if (!pts.length) return;
-  const x0 = Math.min(AREA.x, ...pts.map(p => p.x)) - 20, x1 = Math.max(AREA.x + AREA.w, ...pts.map(p => p.x + p.w)) + 20;
+  const fr = frameOf(S.area);
+  const x0 = Math.min(fr.x, ...pts.map(p => p.x)) - 20, x1 = Math.max(fr.x + fr.w, ...pts.map(p => p.x + p.w)) + 20;
   const y1 = Math.max(...pts.map(p => p.y + p.h)) + 20, k = box.clientWidth / (x1 - x0);
   const grid = k * DESK.w < 84;
   box.classList.toggle('grid', grid);
@@ -310,16 +345,55 @@ function placeRoom() {
   if (grid) {
     for (const el of [front, tdesk, ...desks]) el.removeAttribute('style');
     pts.sort((a, b) => (Math.abs(a.y - b.y) < DESK.h / 2 ? a.x - b.x : a.y - b.y)).forEach((p, i) => { p.el.style.order = String(i + 2); if (p.el.classList.contains('me') && D.color) p.el.style.setProperty('--gc', D.color); });
-    box.style.height = ''; roomInk(box, null);
+    box.style.height = ''; roomInk(box, null); S.roomMap = null; roomObjects(box, null); RP.render(); renderRoomTools();
     return;
   }
   // The front of the room as a low band (the area's words aren't shown here), everything under it moved up to match.
-  const top = AREA.y - 10, band = Math.round(AREA.h * 0.3), up = AREA.h - band;
+  // The teacher's area at the size the teacher gave it (homeroom-seats.js frameOf), My desk under its middle.
+  const top = fr.y - 10, band = Math.round(fr.h * 0.3), up = fr.h - band;
   const put = (el, r) => Object.assign(el.style, { left: `${(r.x - x0) * k}px`, top: `${(r.y - top) * k}px`, width: `${r.w * k}px`, height: `${r.h * k}px` });
-  put(front, { ...AREA, h: band }); put(tdesk, { ...TEACHER_DESK, y: TEACHER_DESK.y - up });
+  const td0 = tdeskOf(fr);
+  put(front, { ...fr, h: band }); put(tdesk, { ...td0, y: td0.y - up });
   for (const p of pts) { put(p.el, { x: p.x, y: p.y - up, w: p.w, h: p.h }); p.el.style.order = ''; }
   box.style.height = `${(y1 - up - top) * k + 10}px`;
-  roomInk(box, S.area && S.area.ink, { x0, top, band, up, k });   // the teacher's pen lines around the desks
+  S.roomMap = { x0, top, band, up, k, fr };
+  roomInk(box, S.area && S.area.ink, { x0, top, band, up, k, fr });   // the teacher's pen lines around the desks
+  roomObjects(box, S.roomMap);   // the teacher's notes, text and shapes outside the area
+  RP.render();   // students' lines on the room
+}
+/** The teacher's notes, text boxes, shapes and pen lines placed outside the teacher's area (board-shapes.js
+ *  splitObjects), where they are on the room: beside the area pressed into its band, under it moved up with the desks. */
+function roomObjects(box, m) {
+  box.querySelector(':scope > .hd-robjs')?.remove();
+  if (!m) return;
+  const out = splitObjects(S.area, AREA, m.fr).outside;
+  if (!out.notes.length && !out.texts.length && !out.shapes.length && !out.strokes.length) return;
+  const end = m.fr.y + m.fr.h, squeeze = (m.fr.y + m.band - m.top) / Math.max(1, end - m.top);
+  const mapY = y => (y <= end ? m.top + (y - m.top) * squeeze : y - m.up) - m.top;
+  const bx = f => AREA.x + f * AREA.w - m.x0, by = f => mapY(AREA.y + f * AREA.h);
+  // (shapes and lines in the room's own pixels, so the SVG scales them, their widths too)
+  const moved = drawings(out.shapes, out.strokes).map(d => (d.kind === 'shape' ? shapeSvg({ ...d.o, x: bx(d.o.x), y: by(d.o.y), x2: bx(d.o.x2), y2: by(d.o.y2) }, 1, 1)
+    : strokeSvg({ ...d.o, pts: d.o.pts.map(p => ({ x: bx(p.x), y: by(p.y) })) }, 1, 1))).join('');
+  const W = box.clientWidth / m.k, Hh = (box.clientHeight || 1) / m.k;
+  const html = (list, f) => list.map(o => `<div class="hd-robj" style="left:${bx(o.x) * m.k}px;top:${by(o.y) * m.k}px;transform:scale(${m.k})">${f({ ...o, x: 0, y: 0 }, { ro: true })}</div>`).join('');
+  const el = document.createElement('div'); el.className = 'hd-robjs'; el.setAttribute('aria-hidden', 'true');
+  el.innerHTML = `<svg class="hd-robjsvg" viewBox="0 0 ${W} ${Hh}" preserveAspectRatio="none">${moved}</svg>${html(out.texts, textHtml)}${html(out.notes, noteHtml)}`;
+  box.append(el);
+}
+/** See the room's pen (public/js/homeroom-marks.js): shown when the class's teachers let students draw on the room. */
+function renderRoomTools() {
+  const el = $('hd-roomtools'); if (!el) return;
+  const st = RP.st, can = st.on && !st.locked && !!S.roomMap;
+  el.hidden = !st.on;
+  if (!st.on) { el.innerHTML = ''; return; }
+  // (the phone's grid of names has no board to draw on: only how to get one)
+  if (!S.roomMap) { el.innerHTML = `<p class="hd-rphint small">${iconHtml('✎', { size: 16 })} ${esc(td('room.bigger'))}</p>`; return; }
+  const tb = (v, cls, label, inner, on) => btn(`hd-tool ${cls}${on ? ' on' : ''}`, `data-hdrp="${v}" aria-pressed="${!!on}" aria-label="${esc(label)}" title="${esc(label)}"${can ? '' : ' disabled'}`, inner);
+  el.innerHTML = `${tb('pen', 'hd-rppen', td('room.pen'), `${iconHtml('✎', { size: 18 })}<span>${esc(td('room.pen'))}</span>`, st.tool === 'pen')}
+    <span class="hd-pens" role="radiogroup" aria-label="${esc(td('pens'))}">${P.colors.map((c, i) => btn(`hd-pen${st.tool === 'pen' && st.color === c ? ' on' : ''}`, `role="radio" aria-checked="${st.tool === 'pen' && st.color === c}" data-hdrp="${c}" aria-label="${esc(td('penColor', { n: i + 1 }))}"${can ? '' : ' disabled'}`, `<i style="background:${c}"></i>`)).join('')}</span>
+    ${tb('erase', 'hd-rperase', td('room.erase'), `${ERASE_ICON}<span>${esc(td('room.erase'))}</span>`, st.tool === 'erase')}
+    ${btn('hd-tool', `data-hdrp="undo" aria-label="${esc(td('undo'))}"${can && st.hist.length ? '' : ' disabled'}`, `${iconHtml('↩', { size: 18 })}<span>${esc(td('undo'))}</span>`)}
+    <p class="hd-rphint small">${esc(td(st.locked ? 'room.locked' : 'room.hint'))}</p>`;
 }
 
 // ---------------------------------------------------------------- live state
@@ -519,7 +593,12 @@ function click(e) {
   const note = e.target.closest('[data-hdnote]');
   if (note) { window.dispatchEvent(new CustomEvent('notebook:open', { detail: { classId: D.classId, handout: note.dataset.hdnote } })); return; }
   const pen = e.target.closest('[data-hdpen]');
-  if (pen) { S.pen = pen.dataset.hdpen; for (const b of root.querySelectorAll('[data-hdpen]')) { const on = b === pen; b.classList.toggle('on', on); b.setAttribute('aria-checked', String(on)); } return; }
+  if (pen) { S.pen = pen.dataset.hdpen; setPadTool('pen'); return; }
+  const esz = e.target.closest('[data-hdersz]');
+  if (esz) { S.eraser = esz.dataset.hdersz; for (const b of root.querySelectorAll('[data-hdersz]')) { const on = b === esz; b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); } return; }
+  // See the room's pen (public/js/homeroom-marks.js), when the teacher lets students draw on the room
+  const rp = e.target.closest('[data-hdrp]');
+  if (rp) { const v = rp.dataset.hdrp; if (v === 'undo') RP.undo(); else if (v.startsWith('#')) RP.setColor(v); else RP.setTool(v); return; }
   const hk = e.target.closest('[data-hdhand]'); if (hk) { handAction(hk.dataset.hdhand); return; }
   const ak = e.target.closest('[data-hdask]'); if (ak) { sendAsk(ak.dataset.hdask); return; }
   if (S.askMenu && !e.target.closest('.hd-handwrap')) { S.askMenu = false; renderHand(); }
@@ -527,6 +606,7 @@ function click(e) {
   const k = a.dataset.hd;
   if (k === 'hand') { S.handMenu = !S.handMenu; renderHand(); if (S.handMenu) $('hd-handmenu')?.querySelector('button')?.focus(); return; }
   if (k === 'ask') { S.askMenu = !S.askMenu; renderHand(); if (S.askMenu) $('hd-askmenu')?.querySelector('button, input')?.focus(); return; }
+  if (k === 'erase') { setPadTool(S.tool === 'erase' ? 'pen' : 'erase'); return; }
   if (k === 'undo') { const last = S.hist.pop(); if (last) { S.strokes = JSON.parse(last); S.fresh.pop(); drawInk(); toolsState(); queueSave(); } }
   else if (k === 'clear') { if (S.strokes.length) { remember(); S.strokes = []; S.fresh = []; drawInk(); toolsState(); queueSave(); } }
   else if (k === 'switch') switchUser(a);
@@ -549,6 +629,16 @@ const RL = readingLayer({
   onClose: () => { root.classList.remove('hd-playing'); setDock(S.view); S.hv = ''; poll(); },
   onChange: () => { S.hv = ''; poll(); },
 });
+// Students' lines on the room (public/js/homeroom-marks.js; services/homeroom-marks.js): when the class's teachers allow
+// it, a pen and an eraser for their own lines in See the room, outside other students' desks.
+const RP = roomPen({
+  url: `/api/desk/${encodeURIComponent(D.classId)}/marks`, box: () => $('hd-roombox'), map: () => S.roomMap || null,
+  desks: [...(D.desks || []).map(d => ({ x: +d.x || 0, y: +d.y || 0, me: !!d.me })), ...(D.teams || []).map(x => ({ x: +x.x || 0, y: +x.y || 0, team: true, me: !!x.me }))],
+  colors: P.colors, limits: (D.marks || { strokes: 40, points: 300 }),
+  words: { full: td('room.full'), notHere: td('room.notHere'), locked: td('room.locked') },
+  onChange: () => renderRoomTools(),
+});
+RP.st.on = !!D.draw;
 function setDock(k) { for (const b of root.querySelectorAll('.hd-dockbtn[data-hd]')) b.setAttribute('aria-pressed', String(b.dataset.hd === k)); }
 const PL = gamePlayer({
   host: root, path: `/class/${encodeURIComponent(D.classId)}/desk`, back: td('playBack'),
@@ -577,9 +667,13 @@ function start() {
   body.addEventListener('pointerdown', padDown);
   body.addEventListener('pointermove', padMove);
   body.addEventListener('pointerup', padUp); body.addEventListener('pointercancel', padUp);
+  // See the room's pen (RP): presses on the room's board while the pen or the eraser is on
+  over.addEventListener('pointerdown', e => { if (e.target.closest('#hd-roombox')) RP.down(e); });
+  over.addEventListener('pointermove', e => RP.move(e));
+  over.addEventListener('pointerup', e => RP.up(e)); over.addEventListener('pointercancel', e => RP.up(e));
   let rz = null; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { fitAreas(root); placeRoom(); }, 120); });
   document.addEventListener('visibilitychange', () => { if (document.hidden) flush(); else poll(); });
-  window.addEventListener('pagehide', flush);
+  window.addEventListener('pagehide', () => { flush(); RP.flush(); });
   pollTimer = setTimeout(poll, S.live ? 3000 : 6000);
   PL.sync();   // a handout the address names (#play=<card>): open it again
   RL.sync();   // the Library or a Reading handout the address names (#library, #read=<card>)

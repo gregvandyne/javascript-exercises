@@ -29,9 +29,9 @@ import { isGrownup, getUser } from '../auth.js';
 import * as S from './schools.js';
 import { teacherPlan } from './teacher-plan.js';
 import { cleanState, textProblem, LIMITS } from './manipulatives.js';
-import { cleanShapes, SHAPES_MAX, PALETTE, noteStyle, textStyle, strokeStyle } from '../../public/js/board-shapes.js';
+import { cleanShapes, SHAPES_MAX, PALETTE, noteStyle, textStyle, strokeStyle, fracX, fracY } from '../../public/js/board-shapes.js';
 import { cleanInk } from '../../public/js/homeroom-ink.js';
-import { PRESETS, AREA, NOTE_BOX, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll } from '../../public/js/homeroom-seats.js';
+import { PRESETS, AREA, NOTE_BOX, DEFAULT_GROUPS, GROUP_COLORS, GROUPS_MAX, GROUP_NAME_MAX, TEAM_MAX, TEAMS_MAX, clampSeat, seatAll, cleanFrame, frameOf, seatsTop } from '../../public/js/homeroom-seats.js';
 
 export { PRESETS, AREA };
 const ok = (x = {}) => ({ ok: true, ...x });
@@ -86,8 +86,10 @@ export function roomOf(classId) {
   const groups = r ? json(r.groups, []) : DEFAULT_GROUPS.map(g => ({ ...g }));
   const gids = new Set(groups.map(g => g.id)), stored = r ? json(r.members, {}) : {};
   const members = {}; for (const id of ids) if (gids.has(stored[id])) members[id] = stored[id];
-  const seats = seatAll(ids, r ? json(r.seats, {}) : {}, preset);
-  return { students, preset, seats, groups, members, teams: teamsOf(r, ids, seats), area: r ? json(r.area, {}) : {}, updatedAt: r ? r.updated_at : 0 };
+  const area = r ? json(r.area, {}) : {};
+  // (a student who joins sits under the teacher's area, however tall the teacher made it)
+  const seats = seatAll(ids, r ? json(r.seats, {}) : {}, preset, seatsTop(frameOf(area)));
+  return { students, preset, seats, groups, members, teams: teamsOf(r, ids, seats), area, updatedAt: r ? r.updated_at : 0 };
 }
 /** The class's team desks as drawn: only current students, a student in one team at most, 2 or more members each. */
 function teamsOf(r, ids, seats = {}) {
@@ -217,18 +219,28 @@ export function saveArea(u, c, state) {
   if (!r.ok) return r;
   // Pen lines drawn elsewhere on the board (public/js/homeroom-ink.js), in board pixels; an older board has none.
   const ink = cleanInk(state.ink);
-  const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes), ...(ink.length ? { ink } : {}) };
+  // The area's size (the teacher resizes it on the board; public/js/homeroom-seats.js frameOf), only when not the default.
+  const frame = cleanFrame(state.frame);
+  const area = { ...JSON.parse(r.state), shapes: cleanShapes(state.shapes), ...(ink.length ? { ink } : {}), ...(frame ? { frame } : {}) };
   const out = area.__ann || {};
+  // Notes, text and pen lines may sit anywhere on the board (docs/decisions.md "Homeroom: touch drag, eraser, resizable
+  // area, the whole board"): cleanState keeps the live room's places (inside its area), so the places the teacher gave
+  // them come back here, kept inside the board (board-shapes.js fracX / fracY).
+  // (a place inside the default area stays exactly as cleanState kept it)
+  const ext = (v, cur, f) => { const n = v === null || v === '' || typeof v === 'boolean' ? NaN : Number(v); return Number.isFinite(n) && (n < 0 || n > 1) ? f(n) : cur; };
+  const place = (o, n) => { if (o) { n.x = ext(o.x, n.x, fracX); n.y = ext(o.y, n.y, fracY); } };
   // A sticky note's size (resized in both directions on the board), within NOTE_BOX; the live room's notes have none.
   const notes = firstById(ann.notes), texts = firstById(ann.texts);
   for (const n of out.notes || []) {
     const o = notes.get(String(n.id)), w = o ? Number(o.w) : NaN, h = o ? Number(o.h) : NaN;
     if (Number.isFinite(w) && Number.isFinite(h)) { n.w = Math.round(Math.min(NOTE_BOX.wMax, Math.max(NOTE_BOX.wMin, w))); n.h = Math.round(Math.min(NOTE_BOX.hMax, Math.max(NOTE_BOX.hMin, h))); }
     if (o) Object.assign(n, noteStyle(o));
+    place(o, n);
   }
-  for (const x of out.texts || []) { const o = texts.get(String(x.id)); if (o) Object.assign(x, textStyle(o)); }
+  for (const x of out.texts || []) { const o = texts.get(String(x.id)); if (o) { Object.assign(x, textStyle(o)); place(o, x); } }
   (out.strokes || []).forEach((s, i) => {
     const o = strokesIn[i] || {};
+    if (Array.isArray(o.pts) && o.pts.length >= s.pts.length) s.pts = s.pts.map((p, k) => ({ x: ext(o.pts[k] && o.pts[k].x, p.x, fracX), y: ext(o.pts[k] && o.pts[k].y, p.y, fracY) }));
     if (!PALETTE.includes(s.c)) s.c = '#141414';
     Object.assign(s, o.id ? { id: clip(o.id, 40) } : {}, strokeStyle(o));
   });

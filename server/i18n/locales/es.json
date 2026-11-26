@@ -2332,7 +2332,41 @@
         "tools": "Elemento seleccionado",
         "delete": "Eliminar el elemento seleccionado"
       },
-      "playBack": "Volver a Homeroom"
+      "playBack": "Volver a Homeroom",
+      "frame": {
+        "resize": "Arrastra para cambiar el tamaño del área del docente",
+        "saved": "Área del docente redimensionada"
+      },
+      "erase": {
+        "tool": "Borrador",
+        "hint": "Pasa por encima de una parte de un trazo para borrar solo esa parte. Toca Seleccionar cuando termines.",
+        "size": "Tamaño del borrador",
+        "sizes": {
+          "S": "Borrador pequeño",
+          "M": "Borrador mediano",
+          "L": "Borrador grande"
+        }
+      },
+      "draw": {
+        "menu": "Los estudiantes dibujan en el aula",
+        "title": "Los estudiantes dibujan en el aula",
+        "on": "Sí",
+        "off": "No",
+        "lead": "Cuando está activado, los estudiantes pueden dibujar con un lápiz en Ver el aula, en cualquier lugar fuera de los pupitres de los demás, y borrar sus propias líneas.",
+        "modeOn": "Activado para esta clase",
+        "modeOff": "Desactivado para esta clase",
+        "what": {
+          "where": "Nunca en los pupitres de otros estudiantes, el área del docente ni Mi escritorio.",
+          "seen": "Todos en Ver el aula ven las líneas, sin nombres; tu tablero muestra de quién son. Nunca en el proyector.",
+          "locked": "El dibujo se detiene mientras pausas las pantallas o bloqueas un pupitre."
+        },
+        "whose": "Dibujos de los estudiantes",
+        "lines": "{count, plural, one {# línea} other {# líneas}}",
+        "remove": "Quitar",
+        "clear": "Borrar los dibujos de los estudiantes",
+        "clearConfirm": "¿Quitar del aula las líneas de todos los estudiantes?",
+        "none": "Todavía no hay dibujos en el aula."
+      }
     },
     "stories": {
       "needIdea": "Primero escribe tu idea (bastan unas palabras).",
@@ -5017,7 +5051,23 @@
         "coming": "Tu maestro viene a tu lugar",
         "passBtn": "Pase de pasillo"
       },
-      "playBack": "Volver a mi pupitre"
+      "playBack": "Volver a mi pupitre",
+      "eraseSizes": {
+        "S": "Borrador pequeño",
+        "M": "Borrador mediano",
+        "L": "Borrador grande"
+      },
+      "erase": "Borrador",
+      "eraseSize": "Tamaño del borrador",
+      "room": {
+        "pen": "Dibujar",
+        "erase": "Borrar mis líneas",
+        "hint": "Dibuja en cualquier lugar fuera de los otros pupitres. Todos lo ven en Ver el aula.",
+        "locked": "Tu docente pausó el dibujo por ahora.",
+        "bigger": "Gira tu dispositivo o usa una pantalla más grande para dibujar en el aula.",
+        "full": "No puedes dibujar más. Borra algunas líneas primero.",
+        "notHere": "Dibuja fuera de los otros pupitres y del área del docente."
+      }
     },
     "homeroom-area": {
       "label": "Zona del docente",
@@ -15256,7 +15306,12 @@
       "passAlready": "Ya tienes un lugar con el pase de pasillo.",
       "badMinutes": "Elige entre 1 y 20 minutos.",
       "noHand": "Esa mano ya está abajo.",
-      "noPass": "No tiene el pase ni un lugar en la fila."
+      "noPass": "No tiene el pase ni un lugar en la fila.",
+      "drawOff": "Tu docente no ha activado el dibujo en el aula.",
+      "deskLocked": "El dibujo está en pausa ahora mismo.",
+      "notHere": "Las líneas van fuera de los pupitres de otros estudiantes y del área del docente.",
+      "tooFast": "Es mucho dibujo de una vez. Inténtalo de nuevo en un momento.",
+      "roomFull": "El aula tiene todos los dibujos que puede tener."
     },
     "live": "En vivo",
     "desk": {
@@ -15448,6 +15503,12 @@
       "gcNotLinked": "Aún no vinculada.",
       "gcLink": "Vincular una clase de Classroom",
       "gradeSaved": "Calificación cambiada"
+    },
+    "studentDraw": {
+      "savedOn": "Los estudiantes pueden dibujar en el aula",
+      "savedOff": "Los estudiantes no pueden dibujar en el aula",
+      "cleared": "Dibujos de los estudiantes borrados",
+      "removed": "Se quitaron sus dibujos"
     }
   }
 }

@@ -184,9 +184,11 @@ test('the teacher\'s area: notes, text, pen and shapes, cleaned like the live ro
   assert.equal(r.status, 200, r.text);
   const a = H.roomOf(cls.id).area;
   assert.equal(a.__ann.notes[0].text, 'Long division today');
-  assert.deepEqual(a.__ann.texts.map(x => [x.text, x.x, x.y]), [['Warm-up', 1, 0]], 'empty texts go; places stay inside the area');
+  // (objects may sit anywhere on the board: docs/decisions.md "Homeroom: touch drag, eraser, resizable area, the whole
+  // board"; a place past the board's top is kept at its edge, -AREA.y / AREA.h)
+  assert.deepEqual(a.__ann.texts.map(x => [x.text, x.x, x.y]), [['Warm-up', 2, -0.1053]], 'empty texts go; places stay inside the board');
   assert.equal(a.__ann.strokes[0].c, '#FF6B4A', 'a bad pen color becomes the default');
-  assert.deepEqual(a.shapes, [{ id: 's1', k: 'rect', x: 0.1, y: 0.1, x2: 0.3, y2: 1, c: '#1F9D63' }]);
+  assert.deepEqual(a.shapes, [{ id: 's1', k: 'rect', x: 0.1, y: 0.1, x2: 0.3, y2: 1.4, c: '#1F9D63' }]);
   assert.equal(a.extra, undefined);
   const rude = await as(rivera)(`/api/homeroom/${cls.id}/area`, { body: { state: { __ann: { notes: [{ id: 'n', text: 'email me at a@b.com', x: 0, y: 0 }] } } } });
   assert.equal(rude.status, 400); assert.equal(rude.json.code, 'personal');

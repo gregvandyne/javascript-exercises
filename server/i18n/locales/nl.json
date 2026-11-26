@@ -2333,7 +2333,41 @@
         "tools": "Geselecteerd item",
         "delete": "Geselecteerd item verwijderen"
       },
-      "playBack": "Terug naar Homeroom"
+      "playBack": "Terug naar Homeroom",
+      "frame": {
+        "resize": "Sleep om het lerarenvak groter of kleiner te maken",
+        "saved": "Lerarenvak aangepast"
+      },
+      "erase": {
+        "tool": "Gum",
+        "hint": "Wrijf over een deel van een penlijn om alleen dat deel te wissen. Tik op Selecteren als je klaar bent.",
+        "size": "Grootte van de gum",
+        "sizes": {
+          "S": "Kleine gum",
+          "M": "Middelgrote gum",
+          "L": "Grote gum"
+        }
+      },
+      "draw": {
+        "menu": "Leerlingen tekenen in het lokaal",
+        "title": "Leerlingen tekenen in het lokaal",
+        "on": "Aan",
+        "off": "Uit",
+        "lead": "Als dit aan staat, kunnen leerlingen in Bekijk het lokaal met een pen tekenen, overal buiten de tafels van anderen, en hun eigen lijnen gummen.",
+        "modeOn": "Aan voor deze klas",
+        "modeOff": "Uit voor deze klas",
+        "what": {
+          "where": "Nooit op tafels van andere leerlingen, het lerarenvak of Mijn bureau.",
+          "seen": "Iedereen in Bekijk het lokaal ziet de lijnen, zonder namen; jouw bord laat zien van wie ze zijn. Nooit op de beamer.",
+          "locked": "Tekenen stopt zolang je de schermen pauzeert of een tafel vergrendelt."
+        },
+        "whose": "Tekeningen van leerlingen",
+        "lines": "{count, plural, one {# lijn} other {# lijnen}}",
+        "remove": "Weghalen",
+        "clear": "Tekeningen van leerlingen wissen",
+        "clearConfirm": "Alle lijnen van leerlingen uit het lokaal halen?",
+        "none": "Nog geen tekeningen in het lokaal."
+      }
     },
     "stories": {
       "needIdea": "Schrijf eerst je idee (een paar woorden is genoeg).",
@@ -5018,7 +5052,23 @@
         "coming": "Je leraar komt naar je toe",
         "passBtn": "Gangpas"
       },
-      "playBack": "Terug naar mijn tafel"
+      "playBack": "Terug naar mijn tafel",
+      "eraseSizes": {
+        "S": "Kleine gum",
+        "M": "Middelgrote gum",
+        "L": "Grote gum"
+      },
+      "erase": "Gum",
+      "eraseSize": "Grootte van de gum",
+      "room": {
+        "pen": "Tekenen",
+        "erase": "Mijn lijnen gummen",
+        "hint": "Teken overal buiten de andere tafels. Iedereen in Bekijk het lokaal ziet het.",
+        "locked": "Je leraar heeft tekenen even gepauzeerd.",
+        "bigger": "Draai je apparaat of gebruik een groter scherm om in het lokaal te tekenen.",
+        "full": "Meer kun je niet tekenen. Gum eerst wat lijnen.",
+        "notHere": "Teken buiten de andere tafels en het lerarenvak."
+      }
     },
     "homeroom-area": {
       "label": "Deel van de leraar",
@@ -15257,7 +15307,12 @@
       "passAlready": "Je hebt al een plek voor de gangpas.",
       "badMinutes": "Kies tussen 1 en 20 minuten.",
       "noHand": "Die hand is al omlaag.",
-      "noPass": "Geen pas en geen plek in de rij."
+      "noPass": "Geen pas en geen plek in de rij.",
+      "drawOff": "Je leraar heeft tekenen in het lokaal niet aangezet.",
+      "deskLocked": "Tekenen is nu gepauzeerd.",
+      "notHere": "Lijnen horen buiten de tafels van andere leerlingen en het lerarenvak.",
+      "tooFast": "Dat is veel tegelijk. Probeer het zo nog eens.",
+      "roomFull": "Het lokaal heeft zoveel tekeningen als erin passen."
     },
     "live": "Live",
     "desk": {
@@ -15449,6 +15504,12 @@
       "gcNotLinked": "Nog niet gekoppeld.",
       "gcLink": "Een Classroom-klas koppelen",
       "gradeSaved": "Beoordeling gewijzigd"
+    },
+    "studentDraw": {
+      "savedOn": "Leerlingen kunnen in het lokaal tekenen",
+      "savedOff": "Leerlingen kunnen niet in het lokaal tekenen",
+      "cleared": "Tekeningen van leerlingen gewist",
+      "removed": "De tekeningen zijn weggehaald"
     }
   }
 }

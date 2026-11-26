@@ -14900,3 +14900,89 @@ step 4). Step 4d. Migration `0136_homeroom_parents` (one column). Service `servi
   view after a teacher's plan ends (it follows the Homeroom gate, so it goes with it); notifications to grown-ups; the
   Classroom view's student reports are not shown to grown-ups; translations of the new strings (English now; the other
   languages fall back to it).
+
+## Homeroom: touch drag, eraser, resizable area, the whole board (26 Nov 2026)
+
+The owner, on an iPhone in Safari: "I cannot drag and drop games on mobile onto my desk" and "I am unable to drag and
+drop games and lessons on mobile"; "Erasing for the pencil in homeroom is all or nothing. There should be a way to use an
+eraser for just removing parts of a drawing"; "Make the teacher's desk adjustable for size"; "Allow shapes and text and
+everything to be drawn outside of the teacher's desk"; and "This should be a toggle for teachers to decide if they want
+students to be able to draw outside of their desks."
+- **Why touch drag failed**: dragging out of the left panel was mouse and pen only on purpose (`public/js/homeroom.js`
+  dragStart returned for `pointerType === 'touch'`: "a finger scrolls the panel, so touch uses tap-then-tap"), and the
+  panel's items were `touch-action: manipulation`, so any finger move was the browser's scroll (pointercancel). iOS
+  Safari has no HTML drag and drop to fall back on. A card on My desk did start a drag by touch, but the board's own
+  one-finger pan started on the same press and moved the board under it. A held icon could also start the browser's own
+  picture drag after a long press.
+- **Touch drag** (pointer events for every pointer): a mouse or a pen drags at once, as before. A finger in the panel
+  drags after a short hold (280 ms) or a clear move across the way the panel scrolls: up out of a phone's sideways strip
+  (`touch-action: pan-x` on its items), sideways out of a tablet's or laptop's tall panel (`pan-y`); a move the way it
+  scrolls is the browser's scroll, so a sideways swipe still scrolls the strip and drags nothing. While a finger drags,
+  `touchmove` is cancelled (no page or panel scroll under it) and a long press opens no menu. A ghost follows the finger
+  (above it, where the finger does not cover it), the target under it is outlined (My desk, a desk, a team desk, a
+  group chip, Whole class, the yellow bar's chips), and the board pans by itself once the finger rests near the free
+  board's edge (not over the panel or the bars; passing through pans nothing). Held and let go in place, it is picked
+  as a tap picks it. A card on My desk drags by a finger at once (the board no longer pans from it), also while
+  something is picked. Taps still pick (tap-then-tap). Icons in the panel and on My desk are not draggable pictures.
+- **Eraser** (`public/js/board-erase.js`, pure): Board tools' Eraser, next to Pen, takes only what it passes over: each
+  pen line loses what lies within the eraser's radius of its path and is split into the pieces left (cut at the
+  eraser's edge, not at the nearest recorded point; the first piece keeps the line's id, every piece its style). Small,
+  medium and large (a radius on the screen, so it feels the same at any zoom; kept in this browser). It erases the
+  teacher's area's pen lines and board ink alike, one undo step per press, saved and synced with the area by the same
+  POST, cleaned by the server as any line (`cleanState`, `cleanInk`); a cut that would pass the line limits is refused
+  ("There's no room for more"). On a phone its sizes, Undo, Redo and Clear the pen are the pen's own bar. Clear the pen
+  stays. The student desk's doodle pad had the same all or nothing Undo and Clear: it has an Eraser too (three sizes,
+  undo, the pad's own limits).
+- **The teacher's area resizes** (`public/js/homeroom-seats.js` FRAME, frameOf, tdeskOf, seatsTop): handles on its right
+  and left edges, its bottom and its bottom corners, for the teacher in Select (not an aide; hidden while drawing or
+  arranging seats). Its top stays; width 720 to 3200, height 240 to 1100 board pixels. Saved per class with the area
+  (`area.frame { x, w, h }`, only when not the default; undo puts it back). Objects keep their place and size on the
+  board: they are stored in units of the default area from its top left, so a bigger area shows more of the board and
+  text stays the size it was written (the projector fits the whole area to its screen). My desk stays centered under
+  it. When it grows over the desks, every desk and team desk moves down below My desk, with the board's pen lines and
+  objects that were under the area; a smaller area leaves them where they are (a gap). New students and the seating
+  presets start under it too (`seatAll` and `layout` take the top). The projector, a desk's window on the area and
+  Bring everyone to me draw it at its size (`public/js/homeroom-area.js`). My desk itself is not resizable (it is a
+  fixed tray of cards under the area's middle).
+- **The whole board**: sticky notes, text boxes, shapes and lines go anywhere on the board, like the pen's board ink:
+  the tools place them where the teacher presses (over a desk too), and select, move, resize, turn, style, copy, paste,
+  duplicate, arrange, lock, undo and redo work the same as inside the area. They are the same objects in the same lists
+  (fractions may now reach past 0..1, kept inside the board: `board-shapes.js` fracX / fracY; the server restores the
+  places `cleanState` would clamp). One whose middle is inside the area is the area's (on every desk's window and the
+  projector, clipped to the area); anything else is on the board only: the teacher's and the aide's board and a
+  student's See the room (beside the area pressed into its band, under it moved up with the desks), never the projector
+  or a desk's window (`splitObjects`). On the teacher's board the objects' layer sits over the desks; a press on empty
+  board outside the area still pans, a marquee still starts only inside the area. Fit shows them. Older boards load
+  unchanged. The board has no image or slide objects yet (slides are the day plan's), so there were none to move out.
+- **Students draw on the room** (`services/homeroom-marks.js`, `public/js/homeroom-marks.js`; migration
+  `0137_homeroom_marks`: `homeroom_rooms.student_draw` (0 by default) and `marks_v`, table `homeroom_marks` (class,
+  student, their lines in board pixels)). The ⋯ menu's Students draw on the room (beside Parents' view and K-2 desks):
+  On or Off for this class, off by default, and Off is today's behavior. When on, See the room shows a pen (the pad's
+  five colors), Erase my lines and Undo: a student draws anywhere on the room's board outside other students' desks
+  (and their names), the teacher's area and My desk; a line stops at those and goes on after. Everyone in See the room
+  sees the lines without names; the teacher's and the aide's board draw them over the desks with whose they are (a
+  title a mouse shows); the sheet lists each student's lines with Remove, and Clear students' drawings. Never the
+  projector or a desk's window. Locked while screens are paused or that student's desk is locked (and the tools say
+  so). The server checks everything again: off answers 403 `drawOff`, paused or locked 403 `deskLocked`, a new point on
+  another desk, the area or My desk 403 `notHere` (a piece of a line they already had keeps its place, so erasing after
+  the teacher moved desks still works), 40 lines, 300 points a line and 4000 points a student, 900 lines a class, 30
+  saves a minute (429 `tooFast`, and the route's own hourly limit). Writes leave the room's `updated_at` alone, so desks
+  and the projector do not fetch the area again. A phone's See the room is a grid of names with no board: it says to
+  turn the phone or use a bigger screen. Deleted with the class (school-delete.js BY_CLASS), the student's account
+  (account-delete.js), a student leaving the class and an account merge. An aide reads them (GET only).
+- Strings in all 12 languages (`js.homeroom.frame|erase|draw.*`, `js.homeroom-desk.erase*|room.*`, `homeroom.errors.*`,
+  `homeroom.studentDraw.*`). Teachers' words only ("lines", "drawings", "room"); nothing new says game or lesson.
+- Tests: `tests/unit/homeroom-touch-browser.test.js` (the eraser's cuts; the server's switch, 403 when off, another
+  desk and the area refused, too much, the rate limit, paused screens, whose for the teacher and none for students,
+  remove and clear; an iPhone: a sideways swipe scrolls the strip, a finger drags onto My desk with the ghost and the
+  outline, after a hold onto a desk, a card from My desk onto a desk, a tap picks; a tablet's tall panel; the eraser on
+  a board line and an area line, saved, after a reload, undone, by a finger on a phone, the desk's pad; the area resized
+  by its corner and left edge, the desks moved down, My desk centered, the projector and a desk's window following; a
+  note and a shape outside the area, moved, copied, pasted, undone, not on the projector, in See the room; the toggle
+  sheet, a student drawing and erasing in See the room, the teacher's board showing whose, Clear and Off), with
+  `homeroom.test.js` and `homeroom-tools.test.js` updated for places outside the area. Chromium only here (Playwright's
+  WebKit is not installed; the tests use it when it is).
+- **Open**: the teacher's eraser does not erase students' lines (Remove or Clear in the sheet does); the K-2 drawing
+  pad (notebook drawings, reading notes) keeps Undo and Clear; the sub's view of the room shows neither board ink nor
+  objects outside the area (as before); a team's shared pad that two members change at once keeps the newer save's
+  erasing only.

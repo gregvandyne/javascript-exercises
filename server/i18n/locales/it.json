@@ -2333,7 +2333,41 @@
         "tools": "Elemento selezionato",
         "delete": "Elimina l’elemento selezionato"
       },
-      "playBack": "Torna a Homeroom"
+      "playBack": "Torna a Homeroom",
+      "frame": {
+        "resize": "Trascina per ridimensionare l'area dell'insegnante",
+        "saved": "Area dell'insegnante ridimensionata"
+      },
+      "erase": {
+        "tool": "Gomma",
+        "hint": "Passa sopra una parte di un tratto per cancellare solo quella parte. Tocca Seleziona quando hai finito.",
+        "size": "Dimensione della gomma",
+        "sizes": {
+          "S": "Gomma piccola",
+          "M": "Gomma media",
+          "L": "Gomma grande"
+        }
+      },
+      "draw": {
+        "menu": "Gli studenti disegnano nell'aula",
+        "title": "Gli studenti disegnano nell'aula",
+        "on": "Attivo",
+        "off": "Disattivo",
+        "lead": "Quando è attivo, gli studenti possono disegnare con una penna in Vedi l'aula, ovunque fuori dai banchi degli altri, e cancellare le proprie linee.",
+        "modeOn": "Attivo per questa classe",
+        "modeOff": "Disattivo per questa classe",
+        "what": {
+          "where": "Mai sui banchi degli altri studenti, nell'area dell'insegnante o su La mia cattedra.",
+          "seen": "Tutti in Vedi l'aula vedono le linee, senza nomi; la tua lavagna mostra di chi sono. Mai sul proiettore.",
+          "locked": "Il disegno si ferma quando metti in pausa gli schermi o blocchi un banco."
+        },
+        "whose": "Disegni degli studenti",
+        "lines": "{count, plural, one {# linea} other {# linee}}",
+        "remove": "Rimuovi",
+        "clear": "Cancella i disegni degli studenti",
+        "clearConfirm": "Togliere dall'aula le linee di tutti gli studenti?",
+        "none": "Ancora nessun disegno nell'aula."
+      }
     },
     "stories": {
       "needIdea": "Prima scrivi la tua idea (bastano poche parole).",
@@ -5018,7 +5052,23 @@
         "coming": "L’insegnante sta arrivando da te",
         "passBtn": "Permesso di uscita"
       },
-      "playBack": "Torna al mio banco"
+      "playBack": "Torna al mio banco",
+      "eraseSizes": {
+        "S": "Gomma piccola",
+        "M": "Gomma media",
+        "L": "Gomma grande"
+      },
+      "erase": "Gomma",
+      "eraseSize": "Dimensione della gomma",
+      "room": {
+        "pen": "Disegna",
+        "erase": "Cancella le mie linee",
+        "hint": "Disegna ovunque fuori dagli altri banchi. Tutti lo vedono in Vedi l'aula.",
+        "locked": "Il tuo insegnante ha messo in pausa il disegno per ora.",
+        "bigger": "Gira il dispositivo o usa uno schermo più grande per disegnare nell'aula.",
+        "full": "Non puoi disegnare di più. Cancella prima qualche linea.",
+        "notHere": "Disegna fuori dagli altri banchi e dall'area dell'insegnante."
+      }
     },
     "homeroom-area": {
       "label": "Area dell’insegnante",
@@ -15257,7 +15307,12 @@
       "passAlready": "Hai già un posto per il permesso di uscita.",
       "badMinutes": "Scegli tra 1 e 20 minuti.",
       "noHand": "Quella mano è già abbassata.",
-      "noPass": "Non ha il permesso né un posto in fila."
+      "noPass": "Non ha il permesso né un posto in fila.",
+      "drawOff": "Il tuo insegnante non ha attivato il disegno nell'aula.",
+      "deskLocked": "Il disegno è in pausa in questo momento.",
+      "notHere": "Le linee vanno fuori dai banchi degli altri studenti e dall'area dell'insegnante.",
+      "tooFast": "È tanto disegno tutto insieme. Riprova tra un momento.",
+      "roomFull": "L'aula ha tutti i disegni che può contenere."
     },
     "live": "In diretta",
     "desk": {
@@ -15449,6 +15504,12 @@
       "gcNotLinked": "Non ancora collegata.",
       "gcLink": "Collega un corso Classroom",
       "gradeSaved": "Valutazione cambiata"
+    },
+    "studentDraw": {
+      "savedOn": "Gli studenti possono disegnare nell'aula",
+      "savedOff": "Gli studenti non possono disegnare nell'aula",
+      "cleared": "Disegni degli studenti cancellati",
+      "removed": "I disegni sono stati rimossi"
     }
   }
 }
