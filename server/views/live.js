@@ -153,7 +153,7 @@ export function joinBody(req, { googleOn = false, bad = false, nicks = [] } = {}
     <p class="lv-intro">${t('live.join.intro')}</p>
     <form class="stack" id="lv-join" method="get" action="/join" novalidate data-lv-join>
       <div class="field"><label for="jc">${t(googleOn ? 'live.join.codeLabelBoth' : 'live.join.codeLabel')}</label>
-        <input id="jc" name="code" class="lv-code-input" inputmode="${googleOn ? 'text' : 'numeric'}" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" dir="ltr" required aria-describedby="lv-err"></div>
+        <input id="jc" name="code" class="input lv-code-input" inputmode="${googleOn ? 'text' : 'numeric'}" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" dir="ltr" required aria-describedby="lv-err"></div>
       <p class="err lv-err" id="lv-err" role="alert">${bad ? t('live.join.badCode') : ''}</p>
       <button class="btn btn-primary btn-block btn-big" type="submit">${t('live.join.go')}</button>
     </form>
@@ -244,7 +244,7 @@ export function hostBody(req, { s, origin, token, nicks, classSignIn, teamsOn = 
   const label = a => (s.doodle && a === 'skip' ? t('live.host.skipTurn') : t(`live.host.${a}`));
   const control = a => html`<button class="btn lv-act lv-act-${a}${a === 'start' || a === 'next' ? ' btn-primary' : a === 'end' ? ' btn-danger' : ''}" type="button" data-lv-act="${a}" aria-keyshortcuts="${keys[a]}"${['resume', 'unlock', 'pause', 'next', 'skip', 'clear'].includes(a) ? raw(' hidden') : ''}${a === 'end' ? raw(` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`) : ''}${a === 'clear' ? raw(` data-confirm="${t('live.host.clearConfirm')}"`) : ''}>${label(a)}</button>`;
   return html`<div class="lv lv-host" data-lv-page="host" data-sid="${s.id}">
-  <header class="lv-bar"><a class="btn btn-sm" href="/live"><span class="flip" aria-hidden="true">←</span> ${t('layout.back')}</a><span class="lv-title">${s.title}</span></header>
+  <header class="lv-bar"><a class="btn btn-sm" href="/live"><span class="flip" aria-hidden="true">←</span> ${t('layout.back')}</a><span class="lv-markhome" aria-hidden="true">${appMark()}</span><span class="lv-title">${s.title}</span><span class="lv-livedot">${t('homeroom.live')}</span></header>
   <section class="lv-joinbox" id="lv-joinbox">
     <div class="lv-qr" id="lv-qr">${raw(qrSvg(joinUrl, { title: t('live.host.qrLabel') }))}</div>
     <div class="lv-codebox">
@@ -374,7 +374,7 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
   // the controls but no needs help, support or account names.
   const me = ctl || { role: 'host', tier: 'full', cohosts: false };
   const full = me.tier === 'full';
-  const act = (a, label, extra = '') => html`<button class="btn btn-sm lv-act lv-act-${a}" type="button" data-lv-act="${a}"${raw(extra)}>${label}</button>`;
+  const act = (a, label, extra = '', cls = a === 'end' ? ' btn-danger' : '') => html`<button class="btn btn-sm lv-act lv-act-${a}${cls}" type="button" data-lv-act="${a}"${raw(extra)}>${label}</button>`;
   const tabs = ['players', 'question', 'teams', 'messages', 'settings', ...(me.cohosts || me.role === 'cohost' ? ['cohosts'] : [])];
   return html`<div class="lv lv-dash" data-lv-page="dash" data-sid="${s.id}">
   <header class="lv-dash-bar">
@@ -382,10 +382,10 @@ export function dashBody(req, { s, token, nicks, presets, saveSupport = false, c
     <span class="lv-dash-code" id="lv-dash-code" dir="ltr" translate="no">${groupCode(s.code)}</span>
     <span class="lv-phase" id="lv-dash-phase" role="status" aria-live="polite"></span>
     <div class="lv-dash-acts" role="toolbar" aria-label="${t('live.host.controls')}">
-      ${act('start', t('live.host.start'))}${act('pause', t('live.host.pause'), ' hidden')}${act('resume', t('live.host.resume'), ' hidden')}
+      ${act('start', t('live.host.start'), '', ' btn-primary')}${act('pause', t('live.host.pause'), ' hidden')}${act('resume', t('live.host.resume'), ' hidden')}
       ${s.tug ? '' : s.doodle ? html`${act('skip', t('live.host.skipTurn'), ' hidden')}${act('clear', t('live.host.clear'), ` hidden data-confirm="${t('live.host.clearConfirm')}"`)}` : html`${act('next', s.quiz ? t('live.time.revealNow') : t('live.host.next'), ' hidden')}${act('skip', t('live.host.skip'), ' hidden')}`}
       ${s.quiz ? html`<button class="btn btn-sm" type="button" data-lv-time="10" hidden>${t('live.time.add', { s: 10 })}</button>` : ''}
-      ${act('eyes', `👀 ${t('live.host.eyes')}`, ' aria-pressed="false"')}
+      ${act('eyes', html`${ico('👀', { size: 18 })} ${t('live.host.eyes')}`, ' aria-pressed="false"')}
       ${act('lock', t('live.host.lock'))}${act('unlock', t('live.host.unlock'), ' hidden')}
       ${act('end', t('live.host.end'), ` data-confirm="${t(me.role === 'cohost' ? 'live.cohost.endConfirm' : 'live.host.endConfirm')}"`)}
     </div>

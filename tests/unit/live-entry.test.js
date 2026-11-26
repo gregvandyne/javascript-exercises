@@ -92,5 +92,5 @@ test('the game page\'s Join box: /join?code=…&go=1 goes on to the join page, w
   const plain = await get('/join?code=1234567');
   assert.equal(plain.headers.get('location'), '/join#1234567', 'a QR or typed code still waits for Next');
   const join = await (await get('/join')).text();
-  assert.match(join, /id="jc" name="code" class="lv-code-input" inputmode="(numeric|text)" autocomplete="off"/);
+  assert.match(join, /id="jc" name="code" class="input lv-code-input" inputmode="(numeric|text)" autocomplete="off"/);
 });
