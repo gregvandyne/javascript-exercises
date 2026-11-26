@@ -91,7 +91,7 @@ const H = {
   frame: frameOf(room.area || {}),
   view: { x: 0, y: 0, z: 0.5 }, mode: 'move', hist: [], redo: [], sels: [], edit: false, gesture: null, pointers: new Map(),
   justPanned: false, menuOpen: false, seatsOpen: false, deskSel: null, live: D.live || null, liveBusy: false,
-  ho: D.handouts || { handouts: [], desks: {} }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
+  ho: { handouts: [], desks: {}, tools: [], room: null, att: {}, asks: [], ...(D.handouts || {}) }, pick: null, drag: null, giving: false, lessons: Array.isArray(D.lessons) ? D.lessons : [],
   teams: Array.isArray(room.teams) ? room.teams : [], teamPick: null, staged: Array.isArray(D.staged) ? D.staged : [], away: false,
   // step 4c: the class's K-2 setting ({ mode, auto, on }) and each student's own ({ id: 'on' | 'off' })
   k2: D.k2 || { mode: '', auto: false, on: false }, k2Students: D.k2Students || {},
@@ -126,8 +126,18 @@ const teamNames = tm => tm.members.map(nameOfId).filter(Boolean).join(', ');
 const world = () => boardSize(H.seats, H.teams, H.frame);
 const tdesk = () => tdeskOf(H.frame);
 function areaInner() { return `<div class="rm-in hr-areain">${ed.html()}</div>`; }
+/** The board's handouts view as the server sent it (services/homeroom-handouts.js boardView), every part kept. */
+const hoOf = r => ({ handouts: r.handouts || [], desks: r.desks || {}, tools: r.tools || [], room: r.room || null, att: r.att || {}, asks: r.asks || [] });
 const handout = id => H.ho.handouts.find(h => h.id === id) || null;
 const cardsOf = sid => (H.ho.desks[sid] || []).filter(x => handout(x.id));
+/** Manipulatives tools on this desk (services/homeroom-tools.js boardList: ids null is the whole class): open practice,
+ *  shown after the handouts with Remove from this desk and from every desk in the desk's sheet. */
+const toolsOf = sid => (H.ho.tools || []).filter(x => !x.ids || x.ids.includes(sid));
+const toolById = id => (H.ho.tools || []).find(x => x.id === id) || null;
+function toolRow(x, sid) {
+  const inner = `<span class="hr-cico" aria-hidden="true">${iconHtml(x.icon, { size: 14 })}</span><span class="hr-ct" dir="auto">${esc(x.title)}</span><span class="hr-cchip">${esc(th('ho.toolChip'))}</span><span class="sr-only">, ${esc(th('ho.toolState'))}</span>`;
+  return H.seatsOpen ? `<span class="hr-card hr-toolcard">${inner}</span>` : btn('hr-card hr-toolcard', `data-hrho="${esc(x.id)}" data-sid="${esc(sid)}"`, inner);
+}
 /** A handout on a desk: its icon and name, a bar (or ✓ when done, 🔒 while it waits for the ones before it). */
 /** A Reading handout's step for a student (step 4b): "Reading p. 12", "Quiz", "Notes", "Done" (or "Picking a book"). */
 const rdStep = rd => (!rd ? '' : rd.step === 'read' ? (rd.page ? th('rd.readingPage', { page: rd.page }) : th('rd.notStarted')) : th(`rd.${rd.step}`));
@@ -148,11 +158,11 @@ function cardRow(x, sid) {
 const attOf = sid => ((H.ho && H.ho.att) || {})[sid] || '';
 const attChip = sid => { const a = attOf(sid); return a ? `<span class="hr-attchip ${a}">${iconHtml(a === 'absent' ? '📅' : '🏠', { size: 14 })} ${esc(th(`att.${a}`))}</span>` : ''; };
 function deskInner(s) {
-  const g = groupOf(s.id), c = g ? g.color : '', cards = cardsOf(s.id), many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
+  const g = groupOf(s.id), c = g ? g.color : '', rows = [...cardsOf(s.id).map(x => ['h', x]), ...toolsOf(s.id).map(x => ['t', x])], cards = rows, many = cards.length > 3, shown = many ? cards.slice(0, 2) : cards;
   // (the name opens the desk's menu, step 3c: supports, handouts, a look; a plain name while seats are arranged)
   const nm = `<span class="rm-dot"${c ? ` style="--c:${esc(c)}"` : ''}></span><bdi>${esc(s.name)}</bdi>${HLP ? HLP.supIcon(s.id) : ''}`;
   return `${H.seatsOpen ? `<span class="hr-name">${nm}</span>` : btn('hr-name hr-namebtn', `data-hrdmenu="${esc(s.id)}" aria-label="${esc(th('helpers.deskMenu', { name: s.name }))}" aria-haspopup="dialog"`, nm)}${attChip(s.id)}
-    ${cards.length ? `<div class="hr-cards">${shown.map(x => cardRow(x, s.id)).join('')}${many ? (H.seatsOpen ? `<span class="hr-more">${esc(th('ho.more', { count: cards.length - 2 }))}</span>` : btn('hr-more', `data-hrdesk="${esc(s.id)}"`, esc(th('ho.more', { count: cards.length - 2 })))) : ''}</div>`
+    ${cards.length ? `<div class="hr-cards">${shown.map(([k, x]) => (k === 't' ? toolRow(x, s.id) : cardRow(x, s.id))).join('')}${many ? (H.seatsOpen ? `<span class="hr-more">${esc(th('ho.more', { count: cards.length - 2 }))}</span>` : btn('hr-more', `data-hrdesk="${esc(s.id)}"`, esc(th('ho.more', { count: cards.length - 2 })))) : ''}</div>`
       : `<span class="hr-empty">${esc(th('emptyDesk'))}</span>${g ? `<span class="hr-gtag">${esc(groupName(g))}</span>` : ''}`}`;
 }
 function deskHtml(s) {
@@ -481,7 +491,7 @@ function renderSeatbar() {
 async function teamsApi(bodyIn) {
   try {
     const r = await api(api2('teams'), { method: 'POST', body: bodyIn });
-    H.teams = r.teams || []; if (r.handouts) H.ho = { handouts: r.handouts, desks: r.desks };
+    H.teams = r.teams || []; if (r.handouts) H.ho = hoOf(r);
     return r;
   } catch (e) { toast(e.message, { bad: true }); return null; }
 }
@@ -546,13 +556,14 @@ async function liveAction(action) {
   // A plan still running: End class offers Finish class (its short summary; unfinished handouts stay as homework).
   if (action === 'end' && PLAN && PLAN.running()) {
     if (!(await PLAN.finishForEnd(th('endClass')))) return;
-  } else if (action === 'end' && !(await ask({ title: th('endClass'), text: th('endConfirm'), ok: th('endClass') }))) return;
+  } else if (action === 'end' && !(await ask({ title: th('endClass'), text: (H.ho.tools || []).length ? th('endConfirmTools', { tools: [...new Set(H.ho.tools.map(x => x.title))].join(', ') }) : th('endConfirm'), ok: th('endClass') }))) return;
   H.liveBusy = true;
   try {
     const r = await api(`/api/homeroom/${encodeURIComponent(D.classId)}/live`, { method: 'POST', body: { action } });
     const was = !!H.live;
     H.live = r.live || null; renderLive(); toast(th(LIVE_TOAST[action]));
     if (was !== !!H.live) LV.onLive();
+    if (action === 'end') pollHandouts();   // (End class took the tools off the desks)
   } catch (e) { toast(e.message, { bad: true }); } finally { H.liveBusy = false; }
 }
 
@@ -725,7 +736,7 @@ const lessonOfPick = p => (p && p.id.startsWith('L:') ? H.lessons.find(l => l.id
 const lessonCtx = {
   D, H, th, api2: path => api2(path), groupName, gcField, gcPicked, emptyNote, putLabel,
   onLessons: list => { H.lessons = list; if (H.pick && H.pick.id.startsWith('L:') && !lessonOfPick(H.pick)) setPick(null); renderLessons(lessonCtx); },
-  onHanded: r => { H.ho = { handouts: r.handouts, desks: r.desks }; setPick(null); renderDesks(); toast(r.toast); },
+  onHanded: r => { H.ho = hoOf(r); setPick(null); renderDesks(); toast(r.toast); },
 };
 /** The groups with students in a target, and how many of them have no group (the lesson sheet's versions by group). */
 function groupsIn(to) {
@@ -783,10 +794,16 @@ function giveSheet(to) {
   if (lesson) { lessonGiveSheet(lessonCtx, lesson, to, who, { ...groupsIn(to), onClose: () => { H.giving = false; renderGivebar(); } }); return; }
   const seg = (name, opts, on) => `<div class="hr-seg" role="radiogroup" aria-labelledby="hrg-${name}">${opts.map(([v, label]) => btn(`hr-segb${v === on ? ' on' : ''}`, `role="radio" aria-checked="${v === on}" data-seg="${name}" data-v="${v}"`, esc(label))).join('')}</div>`;
   const max = D.instructionsMax || 300;
+  // One Manipulatives room per class: a tool while another tool's room runs says so up front, with the way to take that
+  // one off every desk right there (never a refusal at Put on desks)
+  const busy = () => { const rm = H.ho.room; return tool && rm && rm.tool !== tool ? rm : null; };
+  const busyHtml = () => { const rm = busy(); if (!rm) return '';
+    return `<div class="hr-onetool" role="note">${iconHtml(rm.icon, { size: 20 })}<p>${esc(th(rm.handout ? 'ho.oneToolBusy' : 'ho.oneToolRoom', { tool: rm.title, next: p.title }))}</p>
+      ${rm.handout ? btn('btn btn-sm', `data-give="takeoff" data-id="${esc(rm.handout)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.takeOffAll'))}`) : btn('btn btn-sm', `data-give="room" data-id="${esc(rm.session)}"`, `${iconHtml('🧮', { size: 16 })} ${esc(th('ho.openThatRoom'))}`)}</div>`; };
   const sh = sheet({
     title: `${p.icon} ${th('ho.title', { game: p.title, who: who.label })}`,
     onClose: () => { H.giving = false; renderGivebar(); },
-    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(tool ? tw('toolEyebrow') : task ? th('task.eyebrow') : th(reading ? 'rd.eyebrow' : 'ho.eyebrow'))}</p><p class="small muted">${esc(tool ? tw('toolLead') : task ? th('task.lead') : th(reading ? (p.id === 'R:' ? 'rd.leadAny' : 'rd.leadBook') : 'ho.lead'))}</p>${emptyNote(to, who)}
+    content: `<form class="hr-giveform" novalidate><p class="hr-eyebrow">${esc(tool ? tw('toolEyebrow') : task ? th('task.eyebrow') : th(reading ? 'rd.eyebrow' : 'ho.eyebrow'))}</p><p class="small muted">${esc(tool ? tw('toolLead') : task ? th('task.lead') : th(reading ? (p.id === 'R:' ? 'rd.leadAny' : 'rd.leadBook') : 'ho.lead'))}</p>${emptyNote(to, who)}<div class="hr-onetoolbox">${busyHtml()}</div>
       ${task ? `<label class="hr-label" for="hr-tcount">${esc(th('task.count'))}</label><input class="input hr-tcount" id="hr-tcount" type="number" min="1" max="10" value="5" inputmode="numeric">
       <p class="small muted hr-seghint">${esc(th('task.countHint'))} <a href="/manipulatives#practice/${esc(task)}" target="_blank" rel="noopener">${esc(th('task.preview'))}</a></p>` : ''}
       <label class="hr-label" for="hr-ins">${esc(th('ho.instructions'))}</label>
@@ -818,14 +835,24 @@ function giveSheet(to) {
       return;
     }
     if (e.target.closest('[data-give="cancel"]')) sh.close();
+    const off = e.target.closest('[data-give="takeoff"]');
+    if (off) {
+      off.disabled = true;
+      api(api2(`handouts/${encodeURIComponent(off.dataset.id)}/remove`), { method: 'POST', body: {} })
+        .then(r => { H.ho = hoOf(r); renderDesks(); toast(r.toast); f.querySelector('.hr-onetoolbox').innerHTML = busyHtml(); f.querySelector('.hr-giveok').disabled = !!busy(); })
+        .catch(err => { off.disabled = false; f.querySelector('#hr-giveerr').textContent = err.message; });
+      return;
+    }
+    const rm = e.target.closest('[data-give="room"]'); if (rm) { sh.close(); PL.open(`lk:${rm.dataset.id}`); }
   });
+  f.querySelector('.hr-giveok').disabled = !!busy();
   f.addEventListener('submit', async e => {
     e.preventDefault();
     const ok = f.querySelector('.hr-giveok'); ok.disabled = true;
     try {
       const common = tool ? { to, instructions: ins.value } : { to, instructions: ins.value, order: val.order, grade: val.grade, ...dueOf(), gcPost: gcPicked(f) };
       const r = await api(api2('handouts'), { method: 'POST', body: tool ? { tool, ...common } : task ? { task, count: +f.querySelector('#hr-tcount').value || 5, ...common } : reading ? { reading: true, bookId: p.id.slice(2), ...common } : { gameId: p.id, ...common } });
-      H.ho = { handouts: r.handouts, desks: r.desks, tools: r.tools || [], att: r.att, asks: r.asks }; sh.close(); setPick(null); renderDesks(); toast(r.toast);
+      H.ho = hoOf(r); sh.close(); setPick(null); renderDesks(); toast(r.toast);
     } catch (err) { f.querySelector('#hr-giveerr').textContent = err.message; ok.disabled = false; }
   });
   requestAnimationFrame(() => ins.focus());
@@ -968,16 +995,23 @@ function dragEnd(e) {
 /** A desk's handouts: each with its state and instructions, and Remove from this desk / from every desk. */
 function deskSheet(sid, first = null) {
   const s = H.students.find(x => x.id === sid); if (!s) return;
+  // a Manipulatives tool on the desk: open practice in its room (Open the room as its host), Remove from this desk or
+  // from every desk (docs/decisions.md "Homeroom: QA fixes for Manipulatives in Homeroom")
+  const toolItem = x => `<li class="hr-ditem hr-dtool${x.id === first ? ' first' : ''}"><div class="hr-dhead"><span class="hr-cico" aria-hidden="true">${iconHtml(x.icon, { size: 20 })}</span><b dir="auto">${esc(x.title)}</b>
+      <span class="hr-dstate">${esc(th('ho.toolState'))}</span></div>${x.instructions ? `<p class="hr-dins" dir="auto">${esc(x.instructions)}</p>` : ''}
+      <p class="small muted">${esc([th('ho.toolMeta'), x.ids ? th('ho.onDesks', { count: x.students }) : th('ho.wholeClass'), th(x.open ? 'ho.roomOpen' : 'ho.roomClosed')].join(' · '))}</p>
+      ${AIDE ? '' : `<div class="row">${x.open ? btn('btn btn-sm', `data-hrroom="${esc(x.session)}"`, `${iconHtml('🧮', { size: 16 })} ${esc(th('ho.openRoom'))}`) : ''}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}</div>`}</li>`;
   const draw = () => {
-    const cards = cardsOf(sid);
-    return cards.length ? `<ol class="plain hr-dlist">${cards.map(x => { const h = handout(x.id); return `<li class="hr-ditem${x.id === first ? ' first' : ''}${x.done ? ' done' : ''}">
+    const cards = cardsOf(sid), tools = toolsOf(sid);
+    return cards.length || tools.length ? `<ol class="plain hr-dlist">${cards.map(x => { const h = handout(x.id); return `<li class="hr-ditem${x.id === first ? ' first' : ''}${x.done ? ' done' : ''}">
       <div class="hr-dhead"><span class="hr-cico" aria-hidden="true">${iconHtml(h.icon, { size: 20 })}</span><b dir="auto">${esc(h.title)}</b>
         <span class="hr-dstate">${esc(x.done ? th('ho.done') : x.locked ? th('ho.later') : x.pct ? th('ho.pct', { pct: x.pct }) : th('ho.notStarted'))}${x.late ? ` <span class="hr-afterdue">${esc(afterDue())}</span>` : ''}</span></div>
       ${h.instructions ? `<p class="hr-dins" dir="auto">${esc(h.instructions)}</p>` : ''}${x.rd ? rdBlock(x, sid, s.name) : ''}
       <p class="small muted">${esc([...(h.lesson ? [th('ho.lesson'), ...(h.version ? [th('ho.version', { name: h.version })] : [])] : []), th(h.inOrder ? 'ho.inOrder' : 'ho.anyOrder'), th(`ho.${{ score: 'score', completion: 'completion', none: 'notGraded' }[h.grade]}`), h.target === 'all' ? th('ho.wholeClass') : th('ho.onDesks', { count: h.students }), h.due ? dueLabel(h.due, h.dueMin) : '', x.score !== null && x.score !== undefined ? th('ho.best', { score: x.score }) : ''].filter(Boolean).join(' · '))}</p>
       ${x.done ? fbBlock(x, edit === x.id) : ''}
       ${!AIDE && H.simples && H.simples[x.id] ? `<p class="hr-dsimple" dir="auto"><b>${iconHtml('✏️', { size: 14 })} ${esc(th('helpers.simpler'))}:</b> ${esc(H.simples[x.id])}</p>` : ''}
-      <div class="row">${x.done && edit !== x.id ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${AIDE ? '' : `${btn('btn btn-sm', `data-simpler="${esc(x.id)}"`, `${iconHtml('✏️', { size: 16 })} ${esc(th('helpers.simpler'))}`)}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}`}</div></li>`; }).join('')}</ol>`
+      ${h.cls ? `<p class="small hr-dcls">${iconHtml('📌', { size: 14 })} ${esc(th('ho.fromClassroom'))}</p>` : ''}
+      <div class="row">${x.done && edit !== x.id && !h.page ? btn('btn btn-sm', `data-fbedit="${esc(x.id)}"`, `${iconHtml('💬', { size: 16 })} ${esc(th(x.fb ? 'feedback.edit' : 'feedback.add'))}`) : ''}${AIDE || h.cls ? '' : `${btn('btn btn-sm', `data-simpler="${esc(x.id)}"`, `${iconHtml('✏️', { size: 16 })} ${esc(th('helpers.simpler'))}`)}${btn('btn btn-sm', `data-rm="${esc(x.id)}"`, `${iconHtml('↩️', { size: 16 })} ${esc(th('ho.removeOne', { name: s.name }))}`)}${btn('btn btn-sm btn-danger', `data-rmall="${esc(x.id)}"`, `${iconHtml('🗑️', { size: 16 })} ${esc(th('ho.removeAll'))}`)}`}</div></li>`; }).join('')}${tools.map(toolItem).join('')}</ol>`
       : `<p class="muted">${esc(th('emptyDesk'))}</p>`;
   };
   // A Reading handout (step 4b): the book, the step, the quiz's result, and its 3 notes (a page of the student's notebook,
@@ -1007,7 +1041,7 @@ function deskSheet(sid, first = null) {
   const saveFb = async (id, comment, sticker) => {
     try {
       const r = await api(api2(`handouts/${encodeURIComponent(id)}/feedback`), { method: 'POST', body: { studentId: sid, comment, sticker } });
-      H.ho = { handouts: r.handouts, desks: r.desks }; edit = null; renderDesks(); box.innerHTML = draw(); toast(r.toast);
+      H.ho = hoOf(r); edit = null; renderDesks(); box.innerHTML = draw(); toast(r.toast);
     } catch (err) { const el = box.querySelector('#hr-fberr'); if (el) el.textContent = err.message; else toast(err.message, { bad: true }); }
   };
   box.addEventListener('click', async e => {
@@ -1021,12 +1055,13 @@ function deskSheet(sid, first = null) {
     const fs = e.target.closest('[data-fbsave]'); if (fs) { saveFb(fs.dataset.fbsave, box.querySelector('#hr-fbc')?.value || '', pickSt); return; }
     const fc = e.target.closest('[data-fbclear]'); if (fc) { saveFb(fc.dataset.fbclear, '', ''); return; }
     const sp = e.target.closest('[data-simpler]'); if (sp) { sh.close(); HLP.simplerSheet(handout(sp.dataset.simpler)); return; }
+    const rr = e.target.closest('[data-hrroom]'); if (rr) { sh.close(); PL.open(`lk:${rr.dataset.hrroom}`); return; }
     const one = e.target.closest('[data-rm]'), all = e.target.closest('[data-rmall]'); if (!one && !all) return;
     const id = (one || all).dataset[one ? 'rm' : 'rmall'];
-    if (all && !(await ask({ title: th('ho.removeAll'), text: th('ho.removeAllConfirm', { title: handout(id)?.title || '' }), ok: th('ho.removeAll') }))) return;
+    if (all && !(await ask({ title: th('ho.removeAll'), text: th('ho.removeAllConfirm', { title: handout(id)?.title || toolById(id)?.title || '' }), ok: th('ho.removeAll') }))) return;
     try {
       const r = await api(api2(`handouts/${encodeURIComponent(id)}/remove`), { method: 'POST', body: one ? { studentId: sid } : {} });
-      H.ho = { handouts: r.handouts, desks: r.desks }; renderDesks(); box.innerHTML = draw(); toast(r.toast);
+      H.ho = hoOf(r); renderDesks(); box.innerHTML = draw(); toast(r.toast);
     } catch (err) { toast(err.message, { bad: true }); }
   });
 }
@@ -1048,7 +1083,7 @@ async function pollHandouts() {
   if (LV.polling()) { pollTimer = setTimeout(pollHandouts, pollEvery()); return; }
   try {
     const r = await api(api2('handouts'), { background: true });
-    if (JSON.stringify(r) !== JSON.stringify(H.ho)) { H.ho = r; renderDesks(); renderLive(); }
+    const ho = hoOf(r); if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); renderLive(); }
   } catch { /* try again later */ }
   pollTimer = setTimeout(pollHandouts, pollEvery());
 }
@@ -1290,7 +1325,7 @@ async function markAtt(sid, status) {
   let tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch { /* the school's zone, else UTC */ }
   try {
     const r = await api(api2('attendance'), { method: 'POST', body: { studentId: sid, status, tz } });
-    if (r.handouts) H.ho = { handouts: r.handouts, desks: r.desks, att: r.att, asks: r.asks || [] };
+    if (r.handouts) H.ho = hoOf(r);
     renderDesks(); LV.refresh(); toast(r.toast);
     return true;
   } catch (e) { toast(e.message, { bad: true }); return false; }
@@ -1299,7 +1334,7 @@ async function markAtt(sid, status) {
 // ---------------------------------------------------------------- live class: watching desks (step 3a)
 const LV = liveBoard({ att: attOf, markAtt: AIDE ? null : markAtt,
   D, H, th, api2: path => api2(path), worldEl, renderLive: () => renderLive(), deskSheet: sid => deskSheet(sid), groupOf, nameOfId, teamOf, handout, aide: AIDE, supports: sid => HLP.deskMenu(sid), supportsLabel: th('helpers.supports'),
-  setHo: ho => { if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
+  setHo: r => { const ho = hoOf(r); if (JSON.stringify(ho) !== JSON.stringify(H.ho)) { H.ho = ho; renderDesks(); } },
   // look's Open the room: the tool's Manipulatives live room, as its host, in the layer over the board
   openRoom: AIDE ? null : session => PL.open(`lk:${session}`),
 });
@@ -1332,7 +1367,8 @@ const PL = gamePlayer({
   // and the full catalog"; a desk's look opens that tool's live room as its host the same way: lk:<session>)
   find: id => {
     if (/^lk:[A-Za-z0-9_-]{1,40}$/.test(id)) return { href: `/manipulatives#live/${id.slice(3)}`, title: tw('roomTitle'), icon: '🧮' };
-    const x = stagedById(id); return x && x.href && (!x.tool || x.manip) ? { href: x.href, title: x.title, icon: x.icon } : null;
+    // (a card from My desk is a preview: nothing is assigned or saved, and the bar says so)
+    const x = stagedById(id); return x && x.href && (!x.tool || x.manip) ? { href: x.href, title: x.title, icon: x.icon, ...(x.tool ? {} : { badge: th('my.previewNote') }) } : null;
   },
   away: () => H.away,
 });

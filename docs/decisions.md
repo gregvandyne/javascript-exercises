@@ -15660,3 +15660,72 @@ shading.
   row now carries on that row flush under it (`nextPieceSpot`'s row checks overlap only above and below; it jumped past
   the row above before), so arrays and rectangles of cubes and tiles are built row by row; and a locked piece never
   moves with its snapped group (`groupOf`: a cube snapped onto a locked stick is dragged away alone).
+
+## Homeroom: QA fixes for Manipulatives in Homeroom (26 Nov 2026)
+
+A full QA walkthrough of Manipulatives inside Homeroom (teacher at 1280x800, students at 1280x800 and 390x844) found a
+blocker and several smaller problems. What changed, finding by finding (the Manipulatives page's own items, such as the
+push-board dead end, End session's confirmation and the answer box's place, were fixed on that side):
+
+- **A tool on a desk can be managed (B1).** A Manipulatives tool handed out now shows a card on each desk it is on
+  (teacher's board: its name and a small Practice chip, never a bar), in the desk's sheet (Open practice, its words, Whole
+  class or how many desks, Room open, with Open the room, Remove from <name>'s desk and Remove from every desk), and in
+  look (what is on their desk, the one open now first, and Open the room; "Nothing on their desk yet" only when nothing
+  is). Before, the board stored the tools and never drew them, so nothing could take one off and no second tool could
+  ever be handed out.
+- **Ended means ended.** Only a room that ended by itself (its 12 hours ran out: `homeroom-tools.js` `endedByItself`, the
+  room's `ended_at` at least 12 hours after it was opened) opens again when the teacher opens Homeroom. A room someone
+  ended (End session from look's Open the room or the Manipulatives page, or another room started in the class) takes
+  its tool off every desk (`storedOf` drops the handout), so the class can hand out another tool, the board's reload
+  never brings it back, and no student keeps a card that would open an ended room. Before, `keepOpen` reopened any ended
+  room for its host. No migration: the session's own times tell the two apart.
+- **End class takes the tools off.** End class (the teacher, an aide never, a sub's link as before) takes every tool off
+  every desk and ends its room (`takeAllOff`, on `homeroom.js` `onLive`); its confirmation says which tools come off.
+  Boards are kept as for any ended room.
+- **One tool at a time, said up front.** The board's handouts view carries `room` (the Manipulatives room running in the
+  class: its tool, and the tool handout using it, if any). The hand-out sheet for another tool says "Rekenreks is on
+  desks now. One Manipulatives tool at a time: take it off every desk to hand out Money." with Take it off every desk
+  right there (or Open that room for a room started on the Manipulatives page), and Put on desks waits until then,
+  instead of failing at submit. The server keeps its `oneTool` check.
+- **The desk's player on a phone (M1).** While a game, a tool or a practice set is open on a desk, the desk's own top
+  bar steps aside and its Raise hand moves into the player's bar: one bar, Back (an arrow on a phone), the title (two
+  lines at most, never cut short), the "your teacher can see your screen" eye, Raise hand. On a phone (under 820 px) the
+  site's bars, the dock and the class prompt step aside too and the player fills the screen (100dvh), so the board shows
+  on first open without scrolling inside the frame (390x844: a tool's room 100 %, a practice set's board about 74 %
+  under its card). Back brings the desk and its bars back. Live and Raise hand are never shown twice by Homeroom.
+- **Class lessons on the desk (M3).** A class lesson assigned in Classroom (Assign on the class page, Assign from the
+  Manipulatives page, a game's Assign, Google Classroom's) that is not a Homeroom handout now shows on the student's desk
+  and the teacher's board after the handouts (`homeroom-handouts.js` `classRows`), with the same card and progress:
+  a Manipulatives practice set and a one-game lesson open in the desk's player like a handout; a lesson of several steps
+  (or of another kind of step) shows "Lesson · N steps" and opens its lesson page (never framed). A class lesson that is a
+  handout shows once, as the handout. The teacher's sheet says "Assigned in Classroom. Change or remove it there." (no
+  Remove buttons in Homeroom). They count in Today, Needs a look and the live status like handouts; the day plan's
+  counts, Finish class and Oomba's follow-ups, and the parents' view's handouts keep to Homeroom handouts
+  (`boardView`/`deskView` `{ assigned: false }`).
+- **Look never shows a stale or mismatched board (M4).** A practice set's board and its problem are one entry, pushed
+  together (`manip-tasks.js` `putLive`: the task and variation as `key`, the set's own `title`). The watching desks get a
+  Manipulatives board only while the desk's own pulse says that very handout is open in the player (`homeroom-live.js`
+  `beatOf`; `homeroom-tools.js` `boardsOf(c, sids, beatOf)`), never once its set is done, and the label is the board's
+  own title. When the player closes or moves on, the desk's pulse says so and the kept board (or a game's picture) is
+  forgotten at once; the page drops boards the poll no longer lists (`bcur`). With nothing to draw, a desk shows "Using
+  <tool>" or nothing, never a mismatched pair. Kept in memory only, as before (End class, leaving the class, or 20
+  minutes with no push at all).
+- **Smaller items.** Needs a look's three-wrong-checks-in-a-row rule counts sets assigned from the Manipulatives page
+  too (it needed a Homeroom handout before). Today shows each practice set's students alphabetically with where they are
+  ("Question 2 of 5 · 1 right first time", Done, Stuck, Not started; never ranked) and each tool on desks with how many
+  have it open (not counted). The "Your class is in Homeroom" prompt never shows inside the desk's player or on the desk,
+  and is one small line on a phone. Dark mode: desks have their own tokens (`--desk`, `--desk-edge`, `--tdesk`,
+  `--tdesk-ink` in app.css's two blocks), so desks stand out from the board and My desk is dark; the header's globe
+  icon takes the text color (`scripts/icons/oomba-art.mjs`). "Any order" is about handouts only (hidden when only open
+  practice is left). Catalog names wrap to two lines on a laptop. The class switcher keeps room for the class's name on
+  a phone. A Preview from My desk says "Preview: your answers aren't saved" in the player's bar.
+- Tests: `tests/unit/homeroom-qa.test.js` (a tool on the board and in look; ended by the teacher it comes off and stays
+  ended, ended by itself it opens again; another room started takes it off; End class; a set from Manipulatives on the
+  desk and the board, never twice; a several-step lesson's card; a board with its own problem only while that set is
+  open, not for another set, after Back or once done; three wrong checks in Needs a look) and
+  `tests/unit/homeroom-qa-browser.test.js` (B1 through the board's own sheet and dialog, M1 at 390x844 for a tool's room
+  and two practice sets, M3 and M4 with look, dark mode contrast). `homeroom-watch.test.js` now expects End class to take
+  the tool off, and a 12-hour end to be a real one.
+- **Asked of the Manipulatives side**: inside Homeroom (`mp-inhr`), drop the room's own Live bar and Raise hand and the
+  second "My square" (Homeroom's player bar has them), and on a phone put a practice set's card below the board or make
+  it collapsible, so more of the board shows above the fold.

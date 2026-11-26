@@ -208,7 +208,7 @@ export function aiContext(u, c, { lang = 'en', draft = null } = {}) {
   const names = studentNames(u), room = H.roomOf(c.id);
   const safe = s => scrub(clip(s, 80), names).text;
   const count = gid => Object.values(room.members).filter(x => x === gid).length;
-  const board = HO.boardView(c, lang), since = now() - 14 * 86400e3;
+  const board = HO.boardView(c, lang, { assigned: false }), since = now() - 14 * 86400e3;
   const recent = board.handouts.filter(h => (h.at || 0) >= since).slice(-10).map(h => {
     let finished = 0, of = 0;
     for (const cards of Object.values(board.desks)) { const x = cards.find(k => k.id === h.id); if (x) { of++; if (x.done) finished++; } }
@@ -552,7 +552,7 @@ export function runAction(u, c, action, at = now()) {
  *  its handouts' cards are finished out of how many desks got one (counts only: no names, no order of students). */
 export function summaryOf(c, p) {
   // (students marked absent today are counted on their own, never as unfinished: "2 absent")
-  const board = HO.boardView(c), att = board.att || {}, absent = Object.values(att).filter(x => x === 'absent').length;
+  const board = HO.boardView(c, 'en', { assigned: false }), att = board.att || {}, absent = Object.values(att).filter(x => x === 'absent').length;
   const byLog = new Map((p.run && p.run.log || []).map(x => [x.idx, x]));
   const parts = p.parts.map((part, i) => {
     const l = byLog.get(i);

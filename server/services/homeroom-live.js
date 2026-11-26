@@ -28,6 +28,8 @@ import * as LIB from './library.js';
 import * as AT from './homeroom-attendance.js';
 import * as HT from './homeroom-tools.js';
 import * as HW from './homeroom-watch.js';
+import * as MT from './manip-tasks.js';
+import * as L from './lessons.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -67,6 +69,15 @@ export function cleanSamples(list, at) {
   return pts.sort((a, b) => a[0] - b[0]).map(([dt, x, y]) => [at - (last - dt), x, y]);
 }
 const handoutIn = (classId, id) => !!id && !!q.get('SELECT 1 FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL WHERE h.class_lesson_id=? AND h.class_id=?', String(id), classId);
+/** A class lesson of this class on this student's desk (a handout, or a class lesson assigned to them in Classroom:
+ *  services/homeroom-handouts.js deskView shows both). */
+const onDeskLesson = (classId, userId, id) => handoutIn(classId, id) || (!!id && !!q.get('SELECT 1 FROM class_lessons WHERE id=? AND class_id=? AND removed_at IS NULL', String(id), classId) && L.assignedTo(String(id), userId));
+/** What a student's desk has open now, by its last pulse in this live class: { where, on } or null (not here). The
+ *  board's watching desks show a Manipulatives board only while it matches (services/homeroom-tools.js boardsOf). */
+export function beatOf(classId, userId, at = now()) {
+  const b = rooms.get(classId)?.get(userId);
+  return b && at - b.at <= HERE_MS ? { where: b.where, on: b.on } : null;
+}
 
 /**
  * A desk's (or a handout's game page's) pulse: { where: desk | game, on: class lesson id or '', idle: seconds since
@@ -80,7 +91,11 @@ export function pulse(u, c, body = {}, at = now()) {
   const m = beatsOf(c.id), old = m.get(u.id) || null, b = old ? { ...old } : {};
   const where = WHERE.includes(body.where) ? body.where : 'desk';
   // (a tool: a tool handout, or a Manipulatives practice set, a handout of its own, open in the player)
-  const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) || handoutIn(c.id, body.on) : handoutIn(c.id, body.on)) ? String(body.on) : '';
+  const on = body.on && (where === 'tool' ? HT.onDesk(c, u.id, body.on) || onDeskLesson(c.id, u.id, body.on) : onDeskLesson(c.id, u.id, body.on)) ? String(body.on) : '';
+  // the player closed or moved on (another handout, back to the desk): what the board kept of the old one goes, so look
+  // never shows a board or a picture of something that is no longer open (docs/decisions.md "Homeroom: QA fixes for
+  // Manipulatives in Homeroom")
+  if (old && (old.where !== where || old.on !== on)) { if (old.where === 'tool') MT.forgetLive(c.id, u.id); if (old.where === 'game') HW.forgetSnap(c.id, u.id); }
   const idle = Math.min(3600, Math.max(0, Number(body.idle) || 0));
   const step = Math.max(0, Math.min(1e6, Math.floor(Number(body.step) || 0)));
   // Back after being away (or the first pulse of this live class): a fresh start, so nobody is "stuck" from before.
@@ -313,9 +328,11 @@ export function lookAt(u, c, studentId, locale = 'en') {
   const board = HO.boardView(c, locale), view = liveView(c, board), d = view.desks[sid] || { st: 'away', on: '' };
   const cards = board.desks[sid] || [], card = cards.find(x => x.id === d.on) || null, h = card ? board.handouts.find(x => x.id === card.id) : null;
   const b = rooms.get(c.id)?.get(sid);
+  // Manipulatives tools on their desk (open practice: never counted in done / total), and the one open now
+  const tools = (board.tools || []).filter(x => !x.ids || x.ids.includes(sid)).map(x => ({ id: x.id, title: x.title, icon: x.icon, open: x.open, session: x.session, now: !!(d.tool && d.tool.id === x.id) }));
   return ok({ id: sid, name: s.name, st: d.st, where: d.where || '', at: d.at || 0, inputAt: b && b.inputAt > 0 ? Math.round(b.inputAt) : 0, flags: { locked: !!d.locked, hidden: !!d.hidden, coming: !!d.coming },
     hand: d.hand || '', pass: d.pass || '', on: card ? { id: card.id, title: h ? h.title : '', icon: h ? h.icon : '🎮', pct: card.pct, done: card.done, locked: !!card.locked } : null,
-    done: cards.filter(x => x.done).length, total: cards.length, team: !!H.teamOf(c.id, sid), strokes: H.doodleOf(c.id, sid) });
+    tools, done: cards.filter(x => x.done).length, total: cards.length, team: !!H.teamOf(c.id, sid), strokes: H.doodleOf(c.id, sid) });
 }
 
 // ---------------------------------------------------------------- cleaning up
@@ -323,6 +340,7 @@ export function lookAt(u, c, studentId, locale = 'en') {
 export function clearClass(classId) {
   q.run('DELETE FROM homeroom_live WHERE class_id=?', classId);
   rooms.delete(classId);
+  MT.forgetLive(classId);
 }
 H.onLive(({ c, action, wasLive }) => { if (action === 'end' || (action === 'start' && !wasLive)) clearClass(c.id); });
 S.onClassLeave(({ classId, userId = null } = {}) => {

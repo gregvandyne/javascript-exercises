@@ -2076,7 +2076,8 @@
         "tapWhere": "Touchez maintenant un bureau, un groupe, Toute la classe ou Mon bureau.",
         "tapMine": "Touchez maintenant Mon bureau pour le garder là.",
         "toolSoon": "La distribution des outils arrive bientôt. Mettez-le sur Mon bureau pour l’ouvrir de là.",
-        "pickFirst": "Choisissez d’abord une leçon à gauche, puis touchez Mon bureau."
+        "pickFirst": "Choisissez d’abord une leçon à gauche, puis touchez Mon bureau.",
+        "previewNote": "Aperçu : tes réponses ne sont pas enregistrées"
       },
       "wholeClass": "Toute la classe · {count}",
       "editGroups": "Groupes",
@@ -2299,7 +2300,18 @@
         "gcAlso": "Publier aussi dans Google Classroom",
         "gcHint": "Il part comme devoir dans votre cours Classroom lié, avec la note choisie ici.",
         "gcWholeOnly": "Seuls les documents pour toute la classe vont dans Google Classroom : là-bas, ils arriveraient à tout le monde.",
-        "taskScoreHint": "Score : combien de questions sont justes du premier coup."
+        "taskScoreHint": "Score : combien de questions sont justes du premier coup.",
+        "toolChip": "Entraînement",
+        "toolState": "Entraînement libre",
+        "toolMeta": "Manipulables · entraînement libre",
+        "roomOpen": "Salle ouverte",
+        "roomClosed": "Salle fermée pour l’instant",
+        "openRoom": "Ouvrir la salle",
+        "fromClassroom": "Assignée dans Classroom. Modifiez-la ou retirez-la là-bas.",
+        "oneToolBusy": "{tool} est sur les bureaux en ce moment. Un seul manipulable à la fois : retirez-le de tous les bureaux pour distribuer {next}.",
+        "oneToolRoom": "Une salle {tool} est ouverte dans cette classe. Une seule salle à la fois : fermez-la pour distribuer {next}.",
+        "takeOffAll": "Le retirer de tous les bureaux",
+        "openThatRoom": "Ouvrir cette salle"
       },
       "team": {
         "label": "Bureau d’équipe",
@@ -2376,7 +2388,8 @@
         "count": "Questions",
         "countHint": "De 1 à 10 questions par élève.",
         "preview": "L’essayer"
-      }
+      },
+      "endConfirmTools": "Terminer la classe pour tout le monde ? Les bureaux et l’espace de l’enseignant restent tels quels. Les manipulables sur les bureaux ({tools}) sont retirés et leur salle se ferme."
     },
     "stories": {
       "needIdea": "Écris d’abord ton idée (quelques mots suffisent).",
@@ -5165,7 +5178,8 @@
         "full": "Tu ne peux pas dessiner plus. Efface d'abord quelques traits.",
         "notHere": "Dessine en dehors des autres bureaux et de l'espace de l'enseignant."
       },
-      "manipKind": "Entraînement · {count, plural, one {# exercice} other {# exercices}}"
+      "manipKind": "Entraînement · {count, plural, one {# exercice} other {# exercices}}",
+      "pageKind": "Leçon · {count, plural, one {# étape} other {# étapes}}"
     },
     "homeroom-area": {
       "label": "Espace de l’enseignant",
@@ -5375,7 +5389,11 @@
         "notStarted": "Pas commencé",
         "none": "Rien n’a encore été distribué aujourd’hui.",
         "weeks": "Les progrès sur plusieurs semaines sont dans l’onglet Classe.",
-        "classroom": "Ouvrir Classe"
+        "classroom": "Ouvrir Classe",
+        "setDone": "Terminé · {right} sur {n} justes du premier coup",
+        "setAt": "Question {i} sur {n} · {right} justes du premier coup",
+        "toolOpen": "{count, plural, one {# l’a ouvert} other {# l’ont ouvert}}",
+        "toolLine": "Manipulables · entraînement libre, non compté"
       },
       "hands": {
         "label": "{count, plural, =0 {Mains, aucune levée} one {Mains, # levée} other {Mains, # levées}}",
@@ -5428,7 +5446,9 @@
           "hideOff": "Le curseur de {name} est de nouveau visible",
           "comingOn": "{name} voit que tu arrives",
           "comingOff": "Message retiré du bureau de {name}"
-        }
+        },
+        "toolNow": "Ouvert maintenant · entraînement libre",
+        "toolOn": "Sur son bureau · entraînement libre"
       }
     },
     "homeroom-plan": {

@@ -110,6 +110,8 @@ export function versionsOf(c, at = now()) {
 }
 /** End class, a new class, the student leaving: forget. */
 export function clearClass(classId) { rooms.delete(classId); }
+/** The student's game closed or another opened (services/homeroom-live.js pulse): its picture goes. */
+export function forgetSnap(classId, sid) { const r = rooms.get(classId); if (r) r.snaps.delete(sid); }
 export function forget(classId, sid) { const r = rooms.get(classId); if (r) { r.snaps.delete(sid); r.tiles.delete(sid); r.look.delete(sid); } }
 H.onLive(({ c, action, wasLive }) => { if (action === 'end' || (action === 'start' && !wasLive) || action === 'pause') clearClass(c.id); });
 S.onClassLeave(({ classId, userId = null } = {}) => { if (!classId) return; if (userId) forget(classId, userId); else clearClass(classId); });

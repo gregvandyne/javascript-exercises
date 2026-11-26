@@ -49,7 +49,7 @@ export function cardFor(u, c, { lang = 'en', at = now() } = {}) {
   if (!H.canUseClass(u, c)) return null;
   const p = HP.todayOf(c, at);
   if (!p || !p.finishedAt) return null;
-  const sum = p.summary || HP.summaryOf(c, p), board = HO.boardView(c, lang), att = board.att || {};
+  const sum = p.summary || HP.summaryOf(c, p), board = HO.boardView(c, lang, { assigned: false }), att = board.att || {};
   const room = H.roomOf(c.id), present = room.students.filter(s => att[s.id] !== 'absent');
   const ids = p.parts.flatMap(x => x.handouts || []);
   const cardsOf = sid => (board.desks[sid] || []).filter(k => ids.includes(k.id));
