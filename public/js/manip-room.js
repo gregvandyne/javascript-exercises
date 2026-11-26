@@ -24,6 +24,8 @@ let R = null;
 const parse = (s, d) => { try { return typeof s === 'string' ? JSON.parse(s) : s || d; } catch { return d; } };
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 const phone = () => window.matchMedia('(max-width: 899px)').matches;
+/** Inside Homeroom's player (?in=hr): its own bar names the work and has Raise hand (public/js/homeroom-player.js). */
+const inHomeroom = () => document.body.classList.contains('mp-inhr');
 
 /** Leave the room: the socket, the timers, the listeners. */
 export function close() {
@@ -471,6 +473,11 @@ function renderBar() {
       ${live ? btn(`btn rm-handsbtn${R.hands.length ? ' on' : ''}`, 'id="rm-hands" data-rtool="hands"', `${iconHtml('✋', { size: 18 })}<span class="rm-handt">${esc(handsLabel())}</span>`) : ''}
       ${live ? btn('btn btn-hot', 'data-rtool="bring"', `${iconHtml('📍', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.bring'))}</span>`) : ''}
       ${btn('btn rm-menubtn', `data-rtool="menu" aria-expanded="${!!R.menuOpen}" aria-label="${esc(t('js.manip-room.menu'))}"`, '⋯')}`;
+  } else if (inHomeroom()) {
+    // Homeroom's bar replaces this one (Live, the title, Raise hand): only what a student must still reach stays, in a
+    // small corner (load the pushed board, Check my answers, and on a phone the way back to their own square).
+    el.classList.add('rm-barmin');
+    el.innerHTML = `${live ? '' : state}${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}${live && checksOn() && myBoxes().length ? btn('btn btn-hot rm-check', `data-rtool="check" aria-label="${esc(t('js.manip-room.check'))}"`, `${iconHtml('☑', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.check'))}</span><span class="rm-phoneonly"> ${esc(t('js.manip-room.checkShort'))}</span>`) : ''}${btn('btn btn-primary rm-minebar', `data-rtool="mine" aria-label="${esc(t('js.manip-room.mySquareBtn'))}" title="${esc(t('js.manip-room.mySquareBtn'))}"`, iconHtml('🏠', { size: 18 }))}`;
   } else {
     el.innerHTML = `${state}<h1>${esc(room.title)}</h1><span class="rm-grow"></span>
       ${pushed ? `${btn('btn btn-sm btn-primary', 'data-rtool="loadpush"', esc(t('js.manip-room.loadPush')))}${btn('btn btn-sm', 'data-rtool="keeppush"', esc(t('js.manip-room.keep')))}` : ''}
@@ -555,7 +562,7 @@ function renderPal() {
       ${btn('mp-tbtn', `data-rtool="undo"${R.hist.length ? '' : ' disabled'} aria-label="${esc(t('js.manip-room.undo'))}"`, `${iconHtml('↩', { size: 18 })}<span class="rm-hidephone"> ${esc(t('js.manip-room.undo'))}</span>`)}
       ${R.role === 'teacher' ? `${btn('mp-tbtn rm-phoneonly', `data-rtool="zout" aria-label="${esc(t('js.manip-room.zoomOut'))}"`, '−')}${btn('mp-tbtn rm-phoneonly', `data-rtool="zin" aria-label="${esc(t('js.manip-room.zoomIn'))}"`, '+')}` : ''}
       ${R.role === 'teacher' && A.key === 't' ? btn('mp-tbtn rm-hidephone', 'data-rtool="steps"', `${iconHtml('📋', { size: 18 })} ${esc(t('js.manip-room.steps'))}`) : ''}
-      ${R.role === 'student' ? `${handBtn('mp-tbtn rm-phoneonly')}${howBtn('mp-tbtn rm-phoneonly', { short: true })}` : ''}</div>
+      ${R.role === 'student' ? `${inHomeroom() ? '' : handBtn('mp-tbtn rm-phoneonly')}${howBtn('mp-tbtn rm-phoneonly', { short: true })}` : ''}</div>
     ${R.annotate ? `<div class="row rm-pens">${PEN_COLORS.map(c => btn(`mp-pen${R.pen === c ? ' on' : ''}`, `data-rpen="${c}" style="background:${c}" aria-label="${esc(t('js.manip-room.penColor', { color: c }))}"`, '')).join('')}${btn('chip', 'data-rtool="clearpen"', esc(t('js.manip-room.clearPen')))}</div>` : ''}
     ${R.impl.settings && (!objectTool(R.room.tool) || (o && !o.st.q)) ? `<div class="rm-settings">${R.impl.settings(objectTool(R.room.tool) ? o.st : A.st)}</div>` : ''}`;
 }

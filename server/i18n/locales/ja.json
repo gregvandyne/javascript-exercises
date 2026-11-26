@@ -5595,6 +5595,10 @@
     },
     "manip-task-list": {
       "assignedLine": "{klass}に割り当てました：{titles}。各生徒に{n, plural, other {#問}}が出ます。"
+    },
+    "manip-task-play": {
+      "more": "問題をすべて表示",
+      "less": "閉じる"
     }
   },
   "favorites": {

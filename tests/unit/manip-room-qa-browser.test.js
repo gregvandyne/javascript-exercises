@@ -319,3 +319,65 @@ test('the phone\'s "My square" button: its house shows whole on the green button
   assert.deepEqual(errors, []);
   await ctx.close();
 });
+
+// ---------------------------------------------------------------- inside Homeroom's player on a phone (?in=hr in its frame)
+/** A page holding the player's frame: 390 x 844 less the player's bar (53 px), as Homeroom draws it on a phone. */
+async function inPlayer(who, hash) {
+  const s = await open(who, '/robots.txt', { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+  await s.page.setContent(`<body style="margin:0"><div style="height:53px"></div><iframe id="f" src="${BASE}/manipulatives?in=hr${hash}" style="width:390px;height:791px;border:0;display:block"></iframe></body>`);
+  return { ...s, f: s.page.frameLocator('#f') };
+}
+const topOf = (f, sel) => f.locator(sel).first().evaluate(el => { const r = el.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, h: r.height, vh: innerHeight }; });
+
+test('the room in Homeroom\'s player on a phone: no second bar or Raise hand, My square in a corner, the palette one row', async t => {
+  if (skip) return t.skip(skip);
+  const { s, kids } = room('HR1');
+  const P = await inPlayer(kids[0], `#live/${s.id}`);
+  await P.f.locator('.rm-area.mine').waitFor(); await P.page.waitForTimeout(600);
+  const bar = await P.f.locator('#rm-bar').evaluate(el => ({ text: el.innerText.trim(), h1: !!el.querySelector('h1'), hand: !!el.querySelector('[data-rtool="hand"]') }));
+  assert.deepEqual(bar, { text: '', h1: false, hand: false }, 'only the icon of My square is left');
+  assert.equal(await P.f.locator('[data-rtool="hand"]').count(), 0, 'no Raise hand anywhere in the room');
+  assert.equal(await P.f.locator('#rm-bar [data-rtool="mine"]').isVisible(), true, 'My square, in a corner');
+  const pal = await topOf(P.f, '#rm-pal');
+  assert.ok(pal.h <= 64, `the palette is one row (${pal.h} px)`);
+  assert.equal(await P.f.locator('#rm-pal [data-rtool="pen"]').count(), 1, 'its tools are still there (scroll sideways)');
+  const sq = await topOf(P.f, '.rm-area.mine');
+  assert.ok(sq.top >= 0 && sq.bottom <= pal.bottom - pal.h, 'the square shows whole above the palette');
+  if (SHOTS) await P.page.screenshot({ path: `${SHOTS}/hr-phone-room.png` });
+  // My square still brings the student back to their own square.
+  await P.f.locator('#rm-bar [data-rtool="mine"]').tap();
+  assert.deepEqual(P.errors, []);
+  await P.ctx.close();
+});
+
+test('a practice question in Homeroom\'s player on a phone: the card folds, the board shows; ▾ and a hint open over the board without moving it', async t => {
+  if (skip) return t.skip(skip);
+  for (const hash of ['#practice/money/make-67-cents', '#practice/clock/elapsed-time', '#practice/base-ten-blocks/build-1-139', '#practice/number-lines/jump-to-add']) {
+    const P = await inPlayer(boss, hash);
+    await P.f.locator('#mp-prob .mp-prompt').waitFor(); await P.f.locator('.mp-board').waitFor(); await P.page.waitForTimeout(500);
+    const b0 = await topOf(P.f, '.mp-board');
+    assert.ok(b0.top >= 0 && b0.top < b0.vh * 0.5, `${hash}: the board's top shows without scrolling (${Math.round(b0.top)} of ${b0.vh})`);
+    assert.ok(Math.min(b0.vh, b0.bottom) - b0.top >= 300, `${hash}: most of the board shows`);
+    if (hash.includes('money') && SHOTS) await P.page.screenshot({ path: `${SHOTS}/hr-phone-set-money.png` });
+    // ▾: the whole card over the board; the board stays where it was
+    await P.f.locator('[data-pp="fold"]').tap();
+    await P.f.locator('.mp-probc.open').waitFor();
+    assert.ok(Math.abs((await topOf(P.f, '.mp-board')).top - b0.top) < 1, 'the board stays');
+    await P.f.locator('[data-pp="fold"]').tap();
+    await P.f.locator('.mp-probc:not(.open)').waitFor();
+    // a hint: shown, over the board; the board does not move
+    await P.f.locator('[data-pp="hint"]').tap();
+    await P.f.locator('.mp-probc.open .mp-probhints li').first().waitFor();
+    assert.equal(await P.f.locator('.mp-probhints li').first().isVisible(), true);
+    assert.ok(Math.abs((await topOf(P.f, '.mp-board')).top - b0.top) < 1, `${hash}: a hint never pushes the board down`);
+    if (hash.includes('money') && SHOTS) await P.page.screenshot({ path: `${SHOTS}/hr-phone-set-hint.png` });
+    assert.deepEqual(P.errors, []);
+    await P.ctx.close();
+  }
+  // The page on its own (not in Homeroom): no fold button, the card as before.
+  const { ctx, page } = await open(boss, '/manipulatives#practice/money/make-67-cents', { viewport: { width: 390, height: 844 } });
+  await page.waitForSelector('#mp-prob .mp-prompt');
+  assert.equal(await page.locator('.mp-probfold').count(), 0);
+  assert.equal(await page.locator('.mp-oomba').first().isVisible(), true);
+  await ctx.close();
+});

@@ -5595,6 +5595,10 @@
     },
     "manip-task-list": {
       "assignedLine": "已指派給{klass}：{titles}。每位學生會拿到{n, plural, other {# 題}}。"
+    },
+    "manip-task-play": {
+      "more": "顯示完整題目",
+      "less": "收合"
     }
   },
   "favorites": {

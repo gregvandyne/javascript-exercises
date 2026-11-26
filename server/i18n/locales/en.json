@@ -6629,7 +6629,9 @@
       "doneScore": "You got {right} of {total} right the first time.",
       "typeFirst": "Type your answer in the box first.",
       "alreadyDone": "That question is already finished.",
-      "offline": "Oomba could not check that. Try again in a moment."
+      "offline": "Oomba could not check that. Try again in a moment.",
+      "more": "Show the whole question",
+      "less": "Show less"
     },
     "manip-task-list": {
       "preview": "Preview",

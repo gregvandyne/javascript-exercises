@@ -5596,6 +5596,10 @@
     },
     "manip-task-list": {
       "assignedLine": "הוקצה ל-{klass}: {titles}. כל תלמיד יקבל {n, plural, one {שאלה אחת} other {# שאלות}}."
+    },
+    "manip-task-play": {
+      "more": "להציג את כל השאלה",
+      "less": "להציג פחות"
     }
   },
   "favorites": {

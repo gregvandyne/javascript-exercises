@@ -5596,6 +5596,10 @@
     },
     "manip-task-list": {
       "assignedLine": "تم التعيين إلى {klass}: {titles}. يحصل كل طالب على {n, plural, zero {# سؤال} one {سؤال واحد} two {سؤالين} few {# أسئلة} many {# سؤالًا} other {# سؤال}}."
+    },
+    "manip-task-play": {
+      "more": "عرض السؤال كاملًا",
+      "less": "عرض أقل"
     }
   },
   "favorites": {

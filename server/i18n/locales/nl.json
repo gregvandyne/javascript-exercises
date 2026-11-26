@@ -5596,6 +5596,10 @@
     },
     "manip-task-list": {
       "assignedLine": "Toegewezen aan {klass}: {titles}. Elke leerling krijgt {n, plural, one {# vraag} other {# vragen}}."
+    },
+    "manip-task-play": {
+      "more": "De hele vraag tonen",
+      "less": "Minder tonen"
     }
   },
   "favorites": {

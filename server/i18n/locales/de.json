@@ -5596,6 +5596,10 @@
     },
     "manip-task-list": {
       "assignedLine": "Zugewiesen an {klass}: {titles}. Jeder Schüler bekommt {n, plural, one {# Frage} other {# Fragen}}."
+    },
+    "manip-task-play": {
+      "more": "Die ganze Aufgabe zeigen",
+      "less": "Weniger zeigen"
     }
   },
   "favorites": {

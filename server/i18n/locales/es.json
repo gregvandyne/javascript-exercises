@@ -5595,6 +5595,10 @@
     },
     "manip-task-list": {
       "assignedLine": "Asignado a {klass}: {titles}. Cada alumno recibe {n, plural, one {# pregunta} other {# preguntas}}."
+    },
+    "manip-task-play": {
+      "more": "Mostrar toda la pregunta",
+      "less": "Mostrar menos"
     }
   },
   "favorites": {

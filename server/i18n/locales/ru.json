@@ -5595,6 +5595,10 @@
     },
     "manip-task-list": {
       "assignedLine": "Назначено классу {klass}: {titles}. Каждый ученик получит {n, plural, one {# вопрос} few {# вопроса} many {# вопросов} other {# вопроса}}."
+    },
+    "manip-task-play": {
+      "more": "Показать весь вопрос",
+      "less": "Свернуть"
     }
   },
   "favorites": {
