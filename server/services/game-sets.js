@@ -266,6 +266,61 @@ export function cleanHuntItems(raw) {
   return [{ t, w: words, s, d, r, b: it.b !== false }];
 }
 
+// ---------------------------------------------------------------- Flashcards: one set of term and definition cards
+// [{ t: title ('' allowed), c: [[term, definition, pic], ...] (2-50), a: what students answer with in Learn and Test
+//    ('t' the term, from its definition; 'd' the definition, from its term) }]. pic: '' or one emoji for the card's
+// front (a picture, never text: emoji characters only, at most 16 code points). As Crossword's, a teacher's own words:
+// every term, definition and the title pass the site's text filter (docs/decisions.md "Flashcards"). Terms may hold
+// digits and signs ("7 x 8", "H2O"), unlike a crossword's words; no term twice (case and spaces aside).
+export const FLASH = { min: 2, max: 50, term: 60, def: 160, title: 60, pic: 16 };
+/** One emoji (a person, a flag, a keycap or a ZWJ sequence included) and nothing else, or ''. */
+const PIC = /^(?:\p{Extended_Pictographic}|\p{Regional_Indicator}|[#*0-9]\u{FE0F}?\u{20E3})(?:[\u{FE0F}\u{1F3FB}-\u{1F3FF}\u{E0020}-\u{E007F}\u{20E3}]|\u{200D}\p{Extended_Pictographic}|\p{Regional_Indicator})*$/u;
+export const flashPic = v => (typeof v === 'string' && v && [...v].length <= FLASH.pic && PIC.test(v) ? v : '');
+/** A term's key for "no term twice": case, accents kept, spaces and punctuation at the ends ignored. */
+export const flashKey = w => String(w).normalize('NFC').toLocaleLowerCase().replace(/\s+/g, ' ').trim();
+export function cleanFlashItems(raw) {
+  if (!Array.isArray(raw) || raw.length !== 1 || !raw[0] || typeof raw[0] !== 'object' || Array.isArray(raw[0])) return null;
+  const it = raw[0];
+  if (Object.keys(it).some(k => !['t', 'c', 'a'].includes(k))) return null;
+  if (!Array.isArray(it.c) || it.c.length < FLASH.min || it.c.length > FLASH.max) return null;
+  const cards = [], seen = new Set();
+  for (const x of it.c) {
+    if (!Array.isArray(x) || x.length < 2 || x.length > 3 || typeof x[0] !== 'string' || typeof x[1] !== 'string') return null;
+    if (x.length === 3 && typeof x[2] !== 'string') return null;
+    const w = x[0].normalize('NFC').replace(/\s+/g, ' ').trim(), d = x[1].replace(/[ \t]+/g, ' ').replace(/\s*\n\s*/g, ' / ').trim();
+    if (!w || w.length > FLASH.term || !d || d.length > FLASH.def) return null;
+    const pic = x.length === 3 ? x[2] : '';
+    if (pic && !flashPic(pic)) return null;
+    const key = flashKey(w);
+    if (seen.has(key)) return null;
+    seen.add(key);
+    const cw = cleanText(w, FLASH.term), cd = cleanText(d, FLASH.def);
+    if (!cw.ok || !cd.ok) return null;
+    cards.push([cw.value, cd.value, pic]);
+  }
+  let t = '';
+  if (it.t !== undefined && it.t !== '') {
+    if (typeof it.t !== 'string' || it.t.length > FLASH.title) return null;
+    const ct = cleanText(it.t.replace(/\s+/g, ' '), FLASH.title);
+    if (!ct.ok) return null;
+    t = ct.value;
+  }
+  if (it.a !== undefined && it.a !== 't' && it.a !== 'd') return null;
+  return [{ t, c: cards, a: it.a === 'd' ? 'd' : 't' }];
+}
+/** A flashcard set as another game's set (docs/decisions.md "Flashcards", "Sets feed other games"): the cards whose term
+ *  is a word the game takes, with the definition as Crossword's clue. -> that game's clean items, or null when too few
+ *  cards fit (Crossword 3, Word Hunt 3). */
+export function flashAs(slug, items) {
+  const a = items && items[0];
+  if (!a || !Array.isArray(a.c)) return null;
+  const fits = a.c.filter(([w]) => CROSS_WORD.test(w) && [...crossLetters(w)].length >= 2);
+  if (slug === 'crossword') return cleanCrossItems([{ t: a.t, w: uniqueBy(fits, ([w]) => crossLetters(w)).slice(0, CROSS.max).map(([w, d]) => [w, d.slice(0, CROSS.clue)]), r: 1, b: false, h: true }]);
+  if (slug === 'word-hunt') return cleanHuntItems([{ t: a.t, w: uniqueBy(fits.filter(([w]) => [...crossLetters(w)].length <= HUNT.letters), ([w]) => crossLetters(w)).slice(0, HUNT.max).map(([w]) => w), s: 0, d: 'medium', r: 1, b: true }]);
+  return null;
+}
+const uniqueBy = (list, key) => { const seen = new Set(); return list.filter(x => { const k = key(x); if (seen.has(k)) return false; seen.add(k); return true; }); };
+
 // ---------------------------------------------------------------- Mistake Hunt: a set of passages to proofread
 // [{ t: the passage's title ('' allowed), x: the teacher's correct text, g: grade 0 (K) to 8,
 //    m: [{ a, b: a token range of x (end exclusive), w: what students see there, k: the mistake type, p?: 1 pinned,
@@ -455,11 +510,11 @@ export function cleanCanvasItems(raw, html) {
   return JSON.parse(JSON.stringify(out));
 }
 
-/** Set games that are also whole games without a set (Word Hunt's own themes and daily puzzle): a teacher may still
- *  assign them as they are, from the class page or a folder, as before they kept sets. */
-export const OPEN_SET_GAMES = new Set(['word-hunt', 'typing-zoo']);
+/** Set games that are also whole games without a set (Word Hunt's own themes and daily puzzle, Flashcards' starter
+ *  library): a teacher may still assign them as they are, from the class page or a folder, as before they kept sets. */
+export const OPEN_SET_GAMES = new Set(['word-hunt', 'typing-zoo', 'flashcards']);
 /** Official games that may keep question sets (slug -> the cleaner of their sets). */
-export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['arithmetic-lab', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-zoo', cleanTypingItems]]);
+export const SET_GAMES = new Map([['algebra-builder', cleanItems], ['arithmetic-lab', cleanBoxItems], ['crossword', cleanCrossItems], ['mistake-hunt', cleanProofItems], ['word-hunt', cleanHuntItems], ['atlas-quest', cleanAtlasItems], ['typing-zoo', cleanTypingItems], ['flashcards', cleanFlashItems]]);
 
 // New codes leave out letters and digits that read alike (i l 1, o 0), since a student may type one as a class code.
 // (Codes made before keep working: SET_ID still takes any letter or digit.)
@@ -503,7 +558,7 @@ export function save(gameId, ownerId, rawItems, id = null, slug = 'algebra-build
   const items = clean ? clean(rawItems) : null;
   if (!items) return { error: 'bad' };
   const t = now();
-  const named = slug === 'crossword' || slug === 'word-hunt' || slug === 'atlas-quest' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
+  const named = slug === 'crossword' || slug === 'word-hunt' || slug === 'atlas-quest' || slug === 'flashcards' ? { ok: true, value: items[0].t } : opts.title === undefined ? null : cleanTitle(opts.title);
   const title = named && named.ok ? named.value : null;
   if (id) {
     const was = get(gameId, id);
@@ -533,6 +588,7 @@ export function sizeOf(slug, items) {
   const a = items[0] || {};
   if (slug === 'crossword' || slug === 'word-hunt') return Array.isArray(a.w) ? a.w.length : 0;
   if (slug === 'atlas-quest') return Array.isArray(a.q) ? a.q.length : 0;
+  if (slug === 'flashcards') return Array.isArray(a.c) ? a.c.length : 0;
   if (slug === 'typing-zoo') return typeof a.x === 'string' ? a.x.length : 0;
   if (slug === 'arithmetic-lab') return a.d ? (a.p.length || (a.k === 'divide' ? 16 : 12)) : a.p.length;
   if (slug === 'mistake-hunt') return items.reduce((n, it) => n + (Array.isArray(it.m) ? it.m.length : 0), 0);
@@ -577,8 +633,8 @@ export function rename(gameId, ownerId, id, rawTitle, slug = 'algebra-builder') 
     const items = (slug === 'crossword' ? cleanCrossItems : cleanHuntItems)([{ ...s.items[0], t: c.value }]);
     if (!items) return { error: 'title' };
     q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), c.value, now(), id);
-  } else if (slug === 'atlas-quest') {   // Atlas Quest's name is its quiz's title too
-    const items = cleanAtlasItems([{ ...s.items[0], t: c.value }]);
+  } else if (slug === 'atlas-quest' || slug === 'flashcards') {   // Atlas Quest's (and Flashcards') name is its quiz's title too
+    const items = (slug === 'flashcards' ? cleanFlashItems : cleanAtlasItems)([{ ...s.items[0], t: c.value }]);
     if (!items) return { error: 'title' };
     q.run('UPDATE game_sets SET items=?, title=?, updated_at=? WHERE id=?', JSON.stringify(items), c.value, now(), id);
   } else q.run('UPDATE game_sets SET title=?, updated_at=? WHERE id=?', c.value, now(), id);
@@ -595,6 +651,7 @@ export function duplicate(gameId, ownerId, id, title, slug = 'algebra-builder') 
   if (slug === 'crossword') items = cleanCrossItems([{ ...items[0], t: name }]) || items;
   if (slug === 'word-hunt') items = cleanHuntItems([{ ...items[0], t: name }]) || items;
   if (slug === 'atlas-quest') items = cleanAtlasItems([{ ...items[0], t: name }]) || items;
+  if (slug === 'flashcards') items = cleanFlashItems([{ ...items[0], t: name }]) || items;
   return insert(gameId, ownerId, items, name);
 }
 
@@ -618,6 +675,7 @@ export function labelOf(slug, items) {
   const a = items[0];
   if (slug === 'crossword') return `${a.t ? `${a.t}: ` : ''}crossword, ${a.w.length} words`;
   if (slug === 'word-hunt') return `${a.t ? `${a.t}: ` : ''}word hunt, ${a.w.length} words`;
+  if (slug === 'flashcards') return `${a.t ? `${a.t}: ` : ''}flashcards, ${a.c.length} card${a.c.length === 1 ? '' : 's'}`;
   if (slug === 'atlas-quest') return `${a.t ? `${a.t}: ` : ''}geography quiz, ${a.q.length} question${a.q.length === 1 ? '' : 's'}`;
   if (slug === 'typing-zoo') return `${a.t ? `${a.t}: ` : ''}${a.k === 'test' ? `typing test, ${a.n} minute${a.n === 1 ? '' : 's'}` : 'typing lesson'}, ${a.x.length} characters`;
   if (slug === 'arithmetic-lab') {
@@ -640,7 +698,7 @@ export function describe(gameId, params, slug = 'algebra-builder') {
   if (SET_ID.test(ch)) {
     const s = get(gameId, ch);
     if (!s) return null;
-    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-zoo') return { kind: 'one', label: labelOf(slug, s.items) };
+    if (slug === 'crossword' || slug === 'word-hunt' || slug === 'arithmetic-lab' || slug === 'mistake-hunt' || slug === 'atlas-quest' || slug === 'typing-zoo' || slug === 'flashcards') return { kind: 'one', label: labelOf(slug, s.items) };
     return { kind: 'set', n: s.items.length };
   }
   if (slug !== 'algebra-builder') return null;

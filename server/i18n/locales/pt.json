@@ -1317,6 +1317,14 @@
         "car": "Caribe",
         "me": "Oriente Médio"
       }
+    },
+    "printFlash": {
+      "untitled": "Cartões",
+      "term": "Termo",
+      "def": "Definição",
+      "fronts": "{title}: frentes",
+      "backs": "{title}: versos",
+      "how": "Imprima frente e verso (virando pela borda longa) e recorte nas linhas tracejadas. Cada verso fica atrás da sua frente."
     }
   },
   "friends": {
@@ -7818,7 +7826,8 @@
       "wordTrail": "As palavras mais usadas do inglês, da pré-escola ao 3º ano, numa trilha de livro de histórias com Bramble, o ouriço: ouça uma palavra e toque nela, complete uma frase, soletre com letras, em lições curtas com sequência diária.",
       "crossword": "Transforme qualquer lista de vocabulário em palavras cruzadas: digite ou envie as palavras, escreva as dicas ou deixe a IA escrever e compartilhe com a turma.",
       "mistakeHunt": "Encontre e corrija os erros de um texto curto: o professor cola o próprio texto, planta erros de ortografia, gramática e pontuação e depois compartilha, atribui ou imprime.",
-      "typingZoo": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo."
+      "typingZoo": "Aprenda a digitar uma tecla de cada vez, com uma cor para cada dedo: 40 lições curtas da fileira do meio até frases e, depois de cada lição, um ovo com um bichinho novo.",
+      "flashcards": "Cartões de termo e definição para qualquer matéria: crie os seus, cole uma lista ou deixe a IA escrever, ou comece pela biblioteca pronta, e estude com Virar, Aprender, Combinar e Teste."
     },
     "hubs": {
       "math": {
@@ -15943,6 +15952,25 @@
     },
     "livegame": {
       "ended": "A aula ao vivo terminou."
+    }
+  },
+  "flash": {
+    "results": {
+      "title": "Cartões",
+      "note": "De Aprender e Teste. Um cartão está dominado quando o aluno digita certo duas vezes seguidas.",
+      "studied": "{done} de {total} estudaram",
+      "missedTitle": "Cartões mais errados",
+      "missedHint": "Vale revisar com a turma.",
+      "missedBy": "{misses, plural, one {Errado # vez} other {Errado # vezes}}, {students, plural, one {# aluno} other {# alunos}}",
+      "missedNone": "Nenhum cartão errado ainda.",
+      "table": "Os cartões de cada aluno",
+      "mastered": "Dominados",
+      "learning": "Aprendendo",
+      "missed": "Errados da última vez",
+      "fresh": "Não estudados",
+      "progress": "Progresso",
+      "notYet": "Ainda não começou",
+      "barLabel": "{mastered} dominados, {learning} aprendendo, {missed} errados da última vez, {fresh} não estudados"
     }
   }
 }

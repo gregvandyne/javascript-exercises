@@ -1,0 +1,1819 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap">
+<style>
+  /* Flashcards: a plain page in Crossword's look (docs/decisions.md "Flashcards"): the classroom dashboard's widgets
+     (cream cards with a group color on the top edge and the icon chip), the dark Now bar, a dotted mint board, pill
+     buttons, Bricolage Grotesque, light and dark from BRB.theme. No game engine: every screen is this page's own DOM. */
+  :root {
+    --paper: #E1F1E1; --dots: #66C792; --card: #FFFDF2; --card2: #F9F6EB; --hover: #EFEBDC; --ink: #141414; --line: #E2DDCB; --muted: #5B584F;
+    --green: #1F9D63; --accent: #66C792; --mint-t: #E1F1E1; --accent-ink: #0F5A37; --current: #141414; --on-current: #FFFDF2;
+    --sky: #5AA9D6; --sky-t: #DCEDF7; --sky-s: #A8D2EC; --coral: #C8432F; --coral-t: #FBE0DA; --grape: #6E56C9; --grape-t: #ECE7FA; --grape-l: #C9BDF0; --spark: #FFD23F; --spark-t: #FFF3C4; --focus: #2563EB;
+    --g-time: #5AA9D6; --g-class: #66C792; --g-tools: #FFD23F; --g-show: #F28C6B; --g-check: #9B8CE0; --g-join: #4FB6A8;
+    --shadow: 0 1px 0 rgba(20,20,20,.04), 0 4px 16px rgba(20,20,20,.06); --r: 20px; --r-sm: 12px;
+    --font: 'Bricolage Grotesque', ui-rounded, system-ui, -apple-system, 'Segoe UI', sans-serif;
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --paper: #141414; --dots: #2E5A41; --card: #1E1E1B; --card2: #262622; --hover: #2C2C27; --ink: #FFFDF2; --line: #36352F; --muted: #B8B3A1;
+    --green: #66C792; --accent: #66C792; --mint-t: #1F3A2B; --accent-ink: #8FDDB0; --current: #66C792; --on-current: #141414;
+    --sky-t: #1B3342; --sky-s: #2C5A75; --coral: #FF8A7D; --coral-t: #4A2420; --grape: #B9A2FF; --grape-t: #342A52; --grape-l: #5B4A8F; --spark-t: #4A3F14; --focus: #8AB4FF;
+    --shadow: 0 1px 0 rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.32);
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background-color: var(--paper); background-image: radial-gradient(var(--dots) 1.5px, transparent 1.6px); background-size: 22px 22px; color: var(--ink); font-family: var(--font); line-height: 1.3; -webkit-text-size-adjust: 100%; }
+  body { padding: 0 12px calc(16px + env(safe-area-inset-bottom)); }
+  :where(button, input, textarea, select) { font: inherit; color: var(--ink); -webkit-tap-highlight-color: transparent; }
+  button { touch-action: manipulation; cursor: pointer; }
+  :where(button, input, textarea, select, a):focus-visible, .fc-file:focus-within { outline: 3px solid var(--focus); outline-offset: 2px; }
+  [tabindex="-1"]:focus { outline: none; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  .fc-head { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 10px; padding: 10px 0; }
+  .fc-logo { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; font-weight: 800; font-size: 1.25em; letter-spacing: -.01em; }
+  .fc-logo svg { width: 36px; height: 36px; flex: none; }
+  .fc-icon { width: 46px; height: 46px; border-radius: 50%; border: 0; background: var(--card); box-shadow: var(--shadow); display: grid; place-items: center; font-size: 1.15em; }
+  .fc { max-width: 1100px; margin: 0 auto; }
+  .fc-widget { --g: var(--g-class); background: var(--card); color: var(--ink); border-radius: var(--r); padding: 16px;
+    box-shadow: inset 0 4px 0 color-mix(in srgb, var(--g) 75%, var(--card)), 0 0 0 1px color-mix(in srgb, var(--line) 70%, transparent), var(--shadow); }
+  .fc-wh { display: flex; align-items: center; gap: 10px; min-height: 40px; flex-wrap: wrap; }
+  .fc-wicon { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; background: color-mix(in srgb, var(--g) 26%, var(--card)); font-size: 1.3rem; line-height: 1; }
+  .fc .fc-wt { flex: 1 1 8em; min-width: 0; margin: 0; font-size: 1.2rem; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .fc-card { width: min(100%, 620px); margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  .fc-card.fc-wide { width: min(100%, 920px); }
+  .fc h3 { margin: 0; font-size: 1.08em; font-weight: 800; }
+  .fc-sub { margin: -6px 0 0; color: var(--muted); font-weight: 600; }
+  .fc-lead { margin: 0; text-align: center; font-weight: 700; font-size: 1.1em; }
+  .fc-note { margin: 0; font-weight: 600; font-size: .92em; color: var(--muted); }
+  .fc-msg { margin: 0; font-weight: 700; }
+  .fc-msg:empty { display: none; }
+  .fc-err { color: var(--coral); }
+  .fc-ok { color: var(--green); }
+  .fc-row { display: flex; gap: 8px; align-items: center; }
+  .fc-wrap { flex-wrap: wrap; }
+  .fc-center { justify-content: center; }
+  .fc-big { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 72px; padding: 12px 16px; border-radius: 18px; border: 0; background: var(--card2); text-align: start; }
+  .fc-big:hover { background: var(--hover); }
+  .fc-big .fc-emo { font-size: 1.8em; flex: none; }
+  .fc-big span:last-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .fc-big b { font-size: 1.12em; font-weight: 800; }
+  .fc-big small { font-weight: 600; color: var(--muted); }
+  .fc-big.fc-go { background: var(--current); color: var(--on-current); }
+  .fc-big.fc-go small { color: inherit; opacity: .85; }
+  .fc-btn { min-height: 46px; padding: 6px 18px; border-radius: 999px; border: 2px solid var(--ink); background: var(--card); font-weight: 800;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px; text-align: center; overflow-wrap: anywhere; }
+  .fc-btn:hover { background: var(--card2); }
+  .fc-btn.fc-go { background: var(--green); border-color: var(--green); color: #fff; }
+  :root[data-theme="dark"] .fc-btn.fc-go { color: #10261A; }
+  .fc-btn.fc-quiet { border-color: var(--line); }
+  .fc-btn.fc-sm { min-height: 44px; padding: 4px 14px; font-size: .95em; }
+  .fc-btn.fc-danger { background: var(--coral-t); border-color: var(--coral); color: var(--coral); }
+  .fc-btn.fc-ai { background: var(--ink); border-color: var(--ink); color: var(--card); }
+  .fc-btn[aria-pressed="true"] { background: var(--current); border-color: var(--current); color: var(--on-current); }
+  .fc-btn:active, .fc-big:active { transform: translateY(1px); }
+  .fc-btn:disabled { opacity: .55; cursor: default; }
+  .fc-main { width: 100%; min-height: 56px; font-size: 1.1em; }
+  .fc-in { min-height: 46px; padding: 8px 12px; border-radius: var(--r-sm); border: 2px solid var(--line); background: var(--card); min-width: 0; }
+  .fc-in:focus { border-color: var(--ink); }
+  .fc-in[aria-invalid="true"] { border-color: var(--coral); }
+  .fc-code { display: flex; flex-direction: column; gap: 6px; padding: 14px 16px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-code label { font-weight: 800; font-size: 1.12em; }
+  .fc-code small { font-weight: 600; color: var(--muted); }
+  .fc-code .fc-in { flex: 1; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  .fc-sec { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-field { display: flex; flex-direction: column; gap: 4px; }
+  .fc-field label, .fc-lab { font-weight: 800; }
+  .fc-meta { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+  .fc-meta > :only-child { grid-column: 1 / -1; }
+  .fc-paste { width: 100%; resize: vertical; min-height: 110px; }
+  .fc-file { position: relative; cursor: pointer; }
+  .fc-file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; }
+  .fc-file.fc-busy { opacity: .75; cursor: progress; }
+  /* AI in the widget look: a cream card with a Spark top edge and a dark AI chip, calm (no glow, no motion) */
+  .fc-aibox { display: flex; flex-direction: column; gap: 10px; padding: 14px; border-radius: var(--r-sm); background: var(--card); box-shadow: inset 0 4px 0 var(--spark), 0 0 0 1px var(--line), 0 4px 14px rgba(20,20,20,.07); }
+  .fc-aichip { display: inline-block; margin-inline-end: 4px; padding: 1px 10px; border-radius: 999px; background: var(--ink); color: var(--card); font-size: .85em; font-weight: 800; line-height: 1.5; white-space: nowrap; }
+  .fc-airow { display: grid; grid-template-columns: 1fr auto auto; gap: 8px; align-items: end; }
+  .fc-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .fc-list li { display: flex; align-items: center; gap: 10px; padding: 8px 8px 8px 14px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-name { flex: 1; min-width: 0; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+  .fc-name small { font-weight: 600; color: var(--muted); }
+  .fc-acts2 { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+  .fc-mine { display: flex; flex-direction: column; gap: 8px; border-top: 2px solid var(--line); padding-top: 14px; }
+  .fc-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .fc-erow { display: grid; grid-template-columns: 2em 46px minmax(7em, 1fr) minmax(10em, 1.6fr) 44px; gap: 6px; align-items: start; }
+  .fc-n { font-weight: 800; text-align: center; padding-top: 12px; color: var(--muted); }
+  .fc-def { resize: vertical; min-height: 46px; width: 100%; }
+  .fc-x, .fc-emobtn { width: 44px; height: 46px; border-radius: 12px; border: 2px solid var(--line); background: var(--card); font-weight: 800; font-size: 1.2em; padding: 0; }
+  .fc-x:hover { border-color: var(--coral); color: var(--coral); }
+  .fc-emobtn:empty::before { content: '＋'; color: var(--muted); font-size: .8em; }
+  .fc-picker { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 8px; padding: 10px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-picks { display: flex; flex-wrap: wrap; gap: 4px; }
+  .fc-picks button { width: 44px; height: 44px; border-radius: 10px; border: 0; background: var(--card); font-size: 1.3em; }
+  .fc-picks button:hover { background: var(--hover); }
+  .fc-radio { display: flex; gap: 14px; flex-wrap: wrap; }
+  .fc-radio label, .fc-toggle { display: flex; align-items: center; gap: 8px; font-weight: 700; min-height: 44px; cursor: pointer; }
+  .fc-radio input, .fc-toggle input { width: 22px; height: 22px; accent-color: var(--green); }
+  .fc-foot { gap: 10px; flex-wrap: wrap; }
+  .fc-foot .fc-main { flex: 1 1 14em; width: auto; }
+  .fc-share { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px; border-radius: var(--r-sm); background: var(--mint-t); }
+  .fc-share:empty { display: none; }
+  .fc-share .fc-row { width: 100%; justify-content: center; }
+  .fc-link { flex: 1; min-width: 12em; font-size: .9em; }
+  .fc-codebig { margin: 0; display: flex; flex-direction: column; align-items: center; font-weight: 700; }
+  .fc-codebig b { font-size: 1.8em; letter-spacing: 3px; }
+  canvas.fc-qr { width: 180px; height: 180px; image-rendering: pixelated; border-radius: 12px; border: 2px solid var(--line); }
+
+  /* the library */
+  .fc-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .fc-chip { min-height: 40px; padding: 4px 14px; border-radius: 999px; border: 2px solid var(--line); background: var(--card); font-weight: 800; }
+  .fc-chip[aria-pressed="true"] { background: var(--current); border-color: var(--current); color: var(--on-current); }
+  .fc-libgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+  .fc-libset { --g: var(--g-class); display: flex; align-items: center; gap: 12px; min-height: 76px; padding: 12px 14px; border: 0; border-radius: var(--r-sm); background: var(--card2); text-align: start;
+    box-shadow: inset 4px 0 0 color-mix(in srgb, var(--g) 80%, var(--card2)); }
+  .fc-libset:hover { background: var(--hover); }
+  .fc-libset .fc-emo { font-size: 1.8em; flex: none; }
+  .fc-libset span:last-child { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .fc-libset b { font-weight: 800; overflow-wrap: anywhere; }
+  .fc-libset small { color: var(--muted); font-weight: 600; }
+
+  /* a set's page: the four ways to study */
+  .fc-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .fc-mode { --g: var(--g-time); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; min-height: 104px; padding: 12px 8px; border: 0; border-radius: 18px; background: var(--card2); font-weight: 800; font-size: 1.05em; text-align: center;
+    box-shadow: inset 0 4px 0 color-mix(in srgb, var(--g) 75%, var(--card2)); }
+  .fc-mode:hover { background: var(--hover); }
+  .fc-mode .fc-emo { font-size: 1.9em; line-height: 1; }
+  .fc-mode small { font-weight: 600; color: var(--muted); font-size: .82em; }
+  .fc-terms { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+  .fc-terms li { display: grid; grid-template-columns: minmax(6em, 1fr) 2fr 44px; gap: 10px; align-items: center; padding: 8px 8px 8px 14px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-terms b { overflow-wrap: anywhere; }
+  .fc-terms span { color: var(--muted); font-weight: 600; overflow-wrap: anywhere; }
+  .fc-starbtn { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; font-size: 1.25em; color: var(--muted); }
+  .fc-starbtn[aria-pressed="true"] { color: #E2A400; }
+  :root[data-theme="dark"] .fc-starbtn[aria-pressed="true"] { color: var(--spark); }
+  .fc-starbtn:hover { background: var(--hover); }
+
+  /* the Now bar: what to do next, dark as the dashboard's schedule block */
+  .fc-now { width: 100%; min-height: 64px; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 10px 16px; border-radius: var(--r-sm); background: var(--current); color: var(--on-current); }
+  .fc-now b { font-weight: 800; text-transform: uppercase; letter-spacing: .04em; font-size: .85rem; opacity: .9; }
+  .fc-now span { font-size: clamp(1.05rem, 2.2vw, 1.3rem); font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+  .fc-top { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .fc-prog { font-weight: 800; padding: 4px 12px; border-radius: 999px; background: var(--card2); white-space: nowrap; font-size: .9rem; }
+
+  /* Flip: a card that turns over */
+  .fc-stage { perspective: 1400px; width: 100%; }
+  .fc-flip { position: relative; width: 100%; height: clamp(230px, 46vh, 380px); border: 0; padding: 0; background: none; transform-style: preserve-3d; transition: transform .5s cubic-bezier(.2,.7,.3,1); border-radius: 22px; }
+  .fc-flip.fc-turned { transform: rotateY(180deg); }
+  .fc-face { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 22px 26px; border-radius: 22px; background: var(--card);
+    box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g-time) 75%, var(--card)), 0 0 0 2px var(--line), var(--shadow); backface-visibility: hidden; -webkit-backface-visibility: hidden; overflow: auto; }
+  .fc-back { transform: rotateY(180deg); box-shadow: inset 0 5px 0 color-mix(in srgb, var(--g-check) 75%, var(--card)), 0 0 0 2px var(--line), var(--shadow); }
+  .fc-face .fc-pic { font-size: clamp(2.6rem, 8vw, 4.2rem); line-height: 1; }
+  .fc-face .fc-txt { font-size: clamp(1.3rem, 4vw, 2.3rem); font-weight: 800; text-align: center; overflow-wrap: anywhere; line-height: 1.2; }
+  .fc-back .fc-txt { font-size: clamp(1.1rem, 3vw, 1.6rem); font-weight: 700; }
+  .fc-face .fc-side { position: absolute; top: 12px; inset-inline-start: 16px; font-size: .8rem; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .fc-face .fc-tap { position: absolute; bottom: 10px; font-size: .85rem; font-weight: 700; color: var(--muted); }
+  .fc-tools { justify-content: center; flex-wrap: wrap; }
+  .fc-kbd { font-size: .85em; color: var(--muted); font-weight: 600; text-align: center; margin: 0; }
+
+  /* Learn */
+  .fc-mastery { display: flex; flex-direction: column; gap: 6px; }
+  .fc-mbar { display: flex; height: 14px; border-radius: 999px; overflow: hidden; background: var(--line); }
+  .fc-mbar i { display: block; height: 100%; transition: width .4s ease; }
+  .fc-m3 { background: var(--green); } .fc-m1 { background: var(--spark); } .fc-m0 { background: var(--coral); }
+  .fc-mkey { display: flex; flex-wrap: wrap; gap: 4px 14px; font-weight: 700; font-size: .9em; }
+  .fc-mkey span::before { content: ''; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-inline-end: 6px; background: var(--line); vertical-align: middle; }
+  .fc-mkey .k3::before { background: var(--green); } .fc-mkey .k1::before { background: var(--spark); } .fc-mkey .k0::before { background: var(--coral); }
+  .fc-q { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 22px 18px; border-radius: 18px; background: var(--card2); text-align: center; }
+  .fc-q .fc-pic { font-size: 3rem; line-height: 1; }
+  .fc-q .fc-txt { font-size: clamp(1.2rem, 3.4vw, 1.8rem); font-weight: 800; overflow-wrap: anywhere; }
+  .fc-q small { font-weight: 700; color: var(--muted); }
+  .fc-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fc-choice { display: flex; align-items: center; gap: 10px; min-height: 64px; padding: 10px 14px; border-radius: var(--r-sm); border: 2px solid var(--line); background: var(--card); font-weight: 700; text-align: start; overflow-wrap: anywhere; }
+  .fc-choice:hover:not(:disabled) { border-color: var(--ink); }
+  .fc-choice .fc-k { flex: none; width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--card2); font-size: .85em; font-weight: 800; }
+  .fc-choice.fc-right { border-color: var(--green); background: var(--mint-t); }
+  .fc-choice.fc-wrong { border-color: var(--coral); background: var(--coral-t); }
+  .fc-choice:disabled { cursor: default; }
+  .fc-type { display: flex; gap: 8px; }
+  .fc-type .fc-in { flex: 1; font-size: 1.15em; font-weight: 700; }
+  .fc-fb { display: flex; flex-direction: column; gap: 6px; padding: 12px 14px; border-radius: var(--r-sm); font-weight: 700; }
+  .fc-fb:empty { display: none; }
+  .fc-fb.fc-good { background: var(--mint-t); }
+  .fc-fb.fc-bad { background: var(--coral-t); }
+  .fc-fb b { font-weight: 800; }
+  .fc-shake { animation: fc-shake .35s ease; }
+  @keyframes fc-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+  /* Match */
+  .fc-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .fc-tile { min-height: 96px; padding: 8px 10px; border-radius: var(--r-sm); border: 2px solid var(--line); background: var(--card); font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center; overflow-wrap: anywhere; font-size: .95em; transition: opacity .25s ease, transform .25s ease; }
+  .fc-tile .fc-pic { font-size: 1.6em; line-height: 1; }
+  .fc-tile[aria-pressed="true"] { border-color: var(--sky); background: var(--sky-t); }
+  .fc-tile.fc-bad { border-color: var(--coral); background: var(--coral-t); }
+  .fc-tile.fc-gone { opacity: 0; transform: scale(.9); pointer-events: none; }
+  .fc-timer { font-size: 1.5em; font-weight: 800; font-variant-numeric: tabular-nums; }
+
+  /* Test */
+  .fc-tq { display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: var(--r-sm); background: var(--card2); }
+  .fc-tq h3 { display: flex; gap: 8px; align-items: baseline; }
+  .fc-tq h3 small { font-weight: 700; color: var(--muted); font-size: .8em; }
+  .fc-tq .fc-txt { font-size: 1.15em; font-weight: 800; overflow-wrap: anywhere; }
+  .fc-opts { display: flex; flex-direction: column; gap: 6px; }
+  .fc-opt { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 6px 12px; border-radius: 10px; background: var(--card); font-weight: 700; cursor: pointer; overflow-wrap: anywhere; }
+  .fc-opt input { width: 20px; height: 20px; accent-color: var(--green); flex: none; }
+  .fc-tq.fc-r-ok { box-shadow: inset 4px 0 0 var(--green); }
+  .fc-tq.fc-r-no { box-shadow: inset 4px 0 0 var(--coral); }
+  .fc-review { font-weight: 700; margin: 0; }
+  .fc-score { font-size: 2.6em; font-weight: 800; text-align: center; margin: 0; }
+  .fc-done { text-align: center; align-items: center; }
+  .fc-stars { font-size: 2.4em; letter-spacing: 6px; color: var(--spark); text-shadow: 0 2px 0 rgba(0,0,0,.15); }
+
+  .fc-toast { position: fixed; left: 50%; top: 12px; transform: translateX(-50%); z-index: 20; max-width: min(92vw, 560px); padding: 10px 18px; border-radius: 16px; background: var(--ink); color: var(--paper); font-weight: 700; text-align: center; box-shadow: 0 6px 20px rgba(0,0,0,.2); pointer-events: none; }
+  .fc-toast[hidden] { display: none; }
+  .fc-confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 15; }
+  .fc-confetti i { position: absolute; top: -12px; width: 10px; height: 14px; border-radius: 2px; animation: fc-fall var(--t, 1.6s) ease-in var(--d, 0s) forwards; }
+  @keyframes fc-fall { to { transform: translate(var(--x, 0), 105vh) rotate(var(--r, 360deg)); } }
+  @media (prefers-reduced-motion: reduce) { .fc-flip, .fc-mbar i, .fc-tile { transition: none; } .fc-shake, .fc-confetti i { animation: none; } .fc-confetti { display: none; } }
+  @media (max-width: 760px) {
+    .fc-modes { grid-template-columns: 1fr 1fr; }
+    .fc-board { grid-template-columns: repeat(3, 1fr); }
+    .fc-meta { grid-template-columns: 1fr; }
+    .fc-airow { grid-template-columns: 1fr 1fr; }
+    .fc-airow > :first-child { grid-column: 1 / -1; }
+    .fc-erow { grid-template-columns: 1.6em 46px 1fr 44px; }
+    .fc-erow .fc-def { grid-column: 3 / 4; }
+    .fc-erow .fc-x { grid-row: 1; grid-column: 4; }
+    .fc-choices { grid-template-columns: 1fr; }
+    .fc-terms li { grid-template-columns: 1fr 44px; }
+    .fc-terms li span { grid-column: 1; }
+    .fc-terms li .fc-starbtn { grid-row: 1 / span 2; grid-column: 2; }
+    .fc-card { padding: 14px 12px 16px; }
+  }
+  @media (max-width: 420px) { .fc-board { grid-template-columns: repeat(2, 1fr); } .fc-tile { min-height: 84px; } }
+</style>
+</head>
+<body>
+<header class="fc-head">
+  <div class="fc-logo"><svg viewBox="0 0 36 36" aria-hidden="true"><rect x="1" y="1" width="34" height="34" rx="9" fill="var(--accent)"/><rect x="9" y="7" width="20" height="14" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5" transform="rotate(-8 19 14)"/><rect x="7" y="14" width="20" height="14" rx="3" fill="var(--card)" stroke="var(--ink)" stroke-width="1.5"/><path d="M12 21h10" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round"/></svg><span id="fc-apptitle">Flashcards</span></div>
+  <button class="fc-icon" type="button" id="fc-sound" aria-pressed="true">🔊</button>
+</header>
+<main class="fc" id="fc" aria-live="off"></main>
+<div class="fc-toast" id="fc-toast" role="status" hidden></div>
+<div class="sr" id="fc-said" aria-live="polite"></div>
+<script>
+/* flash-core:begin */
+/* Flashcards' pure core (no page, no SDK; tests/unit/flashcards.test.js runs it on its own): reading a pasted
+   two-column list, checking a typed answer, the Learn mode's mastery rules and rounds, multiple-choice options, a Test's
+   questions and a Match deal. A card is [term, definition, emoji]. A side is 't' (the term) or 'd' (the definition). */
+(function (root) {
+  'use strict';
+  var MAX = 50, TERM = 60, DEF = 160;
+  /** A seeded random number from 0 to 1 (mulberry32), so a test can repeat a deal. */
+  function rng(seed) {
+    var a = (seed >>> 0) || 1;
+    return function () { a = (a + 0x6D2B79F5) >>> 0; var t = a; t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function shuffle(list, rnd) { var a = list.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor((rnd || Math.random)() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  var key = function (s) { return String(s || '').normalize('NFC').toLocaleLowerCase().replace(/\s+/g, ' ').trim(); };
+
+  /* ---------- a pasted or uploaded list ---------- */
+  // One card a line: the term, then its definition after a tab, " - " (or an en or em dash with spaces), ": ", " = "
+  // or the first comma (a spreadsheet's two columns, quotes allowed). Bullets, numbers and a header row are dropped; a
+  // line with nothing after its term keeps an empty definition (to type, or for AI). At most 50 cards, no term twice.
+  var HEADER = /^(term|word|front|question|vocab(ulary)?)s?$/i, HEADER2 = /^(definition|meaning|back|answer|clue)s?$/i;
+  function csvCells(line) {
+    var out = [], cur = '', q = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (q) { if (ch === '"' && line[i + 1] === '"') { cur += '"'; i++; } else if (ch === '"') q = false; else cur += ch; }
+      else if (ch === '"' && !cur.trim()) { q = true; cur = ''; }
+      else if (ch === ',') { out.push(cur); cur = ''; }
+      else cur += ch;
+    }
+    out.push(cur); return out;
+  }
+  function splitLine(line) {
+    var m;
+    if (line.indexOf('\t') >= 0) { m = line.split('\t'); return [m[0], m.slice(1).join(' ')]; }
+    m = /^(.+?)\s+[-\u2013\u2014]\s+(.+)$/.exec(line); if (m) return [m[1], m[2]];
+    m = /^([^:]+?):\s+(.+)$/.exec(line); if (m && !/^\d+$/.test(m[1].trim())) return [m[1], m[2]];
+    m = /^(.+?)\s+=\s+(.+)$/.exec(line); if (m) return [m[1], m[2]];
+    if (line.indexOf(',') >= 0) { var c = csvCells(line); return [c[0], c.slice(1).join(', ')]; }
+    return [line, ''];
+  }
+  function parseList(text) {
+    var out = [], seen = {};
+    String(text || '').replace(/^\ufeff/, '').replace(/\r\n?/g, '\n').split('\n').forEach(function (raw, n) {
+      if (out.length >= MAX) return;
+      var line = raw.replace(/^\s*(?:[-*\u2022\u25cf\u25aa]|\d{1,3}[.)])\s+/, '').trim();
+      if (!line) return;
+      var p = splitLine(line), t = String(p[0]).replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim(), d = String(p[1] || '').replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim();
+      if (n === 0 && HEADER.test(t) && (!d || HEADER2.test(d))) return;
+      if (!t || seen[key(t)]) return;
+      seen[key(t)] = 1; out.push({ t: t.slice(0, TERM), d: d.slice(0, DEF) });
+    });
+    return out;
+  }
+
+  /* ---------- a typed answer ---------- */
+  /** What counts when comparing: accents, case, spaces and punctuation aside; x, \u00d7 and * all mean times. */
+  function norm(s) {
+    return String(s || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().replace(/[\u00d7*]/g, 'x').replace(/\u00f7/g, '/')
+      .replace(/[^\p{L}\p{N}+\-/=.%x ]/gu, ' ').replace(/(\D)\.(?=\s|$)/g, '$1').replace(/\s+/g, ' ').trim().replace(/(\d) ?([x+\-/=]) ?(?=\d)/g, '$1$2').replace(/^(?:the|a|an|to) /, '');
+  }
+  function edits(a, b) {
+    if (Math.abs(a.length - b.length) > 2) return 3;
+    var prev = [], cur, i, j; for (j = 0; j <= b.length; j++) prev[j] = j;
+    for (i = 1; i <= a.length; i++) { cur = [i]; for (j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; }
+    return prev[b.length];
+  }
+  /** -> 'right' | 'close' (one slip in a longer answer: counted right, the spelling shown) | 'wrong'. An answer in
+   *  brackets or after a slash in the card ("to move (as birds do)", "fall / autumn") may be left out or used alone. */
+  function check(typed, answer) {
+    var t = norm(typed); if (!t) return 'wrong';
+    var whole = norm(answer), parts = [whole, norm(String(answer).replace(/\([^)]*\)/g, ' '))].concat(String(answer).split(/\s*[/;]\s*/).map(norm));
+    if (parts.indexOf(t) >= 0) return 'right';
+    var slip = parts.some(function (p) { return p.length >= 6 && edits(t, p) <= (p.length >= 12 ? 2 : 1); });
+    return slip ? 'close' : 'wrong';
+  }
+
+  /* ---------- Learn: mastery ---------- */
+  // A card's level: -1 not studied yet, 0 missed last time, 1 learning (right on multiple choice), 2 almost (right once
+  // typed), 3 mastered (right typed twice in a row). Below 1 a card is asked as multiple choice, from 1 typed; any miss
+  // takes it back to 0, and it comes back in the same round and the next one.
+  var kindFor = function (lv) { return lv >= 1 ? 'type' : 'mc'; };
+  function after(lv, kind, right) {
+    if (!right) return 0;
+    if (kind === 'mc') return Math.max(lv, 1);
+    return lv >= 2 ? 3 : 2;
+  }
+  function counts(levels) {
+    var c = { fresh: 0, missed: 0, learning: 0, mastered: 0 };
+    levels.forEach(function (l) { if (l >= 3) c.mastered++; else if (l >= 1) c.learning++; else if (l === 0) c.missed++; else c.fresh++; });
+    return c;
+  }
+  /** The next round's cards (at most size): missed ones first (the most missed first), then the ones nearly there, then
+   *  the ones learning, then new ones in the set's order; shuffled. [] when every card is mastered. */
+  function round(levels, misses, size, rnd) {
+    var rank = function (i) { var l = levels[i]; return l === 0 ? 0 : l === 2 ? 1 : l === 1 ? 2 : 3; };
+    var open = levels.map(function (l, i) { return i; }).filter(function (i) { return levels[i] < 3; });
+    open.sort(function (a, b) { return rank(a) - rank(b) || (rank(a) === 0 ? (misses[b] || 0) - (misses[a] || 0) : 0) || a - b; });
+    return shuffle(open.slice(0, size || 7), rnd);
+  }
+  /** Where a missed card goes back in the round's queue: a few cards later (the end when the queue is short). */
+  var again = function (queueLeft) { return Math.min(queueLeft, 2); };
+
+  /* ---------- options ---------- */
+  var sideOf = function (card, side) { return side === 't' ? card[0] : card[1]; };
+  /** Multiple-choice options for card i on the answer side: the right one and up to n-1 others, all different, shuffled.
+   *  -> [{ i, text }] */
+  function choices(cards, i, side, n, rnd) {
+    var seen = {}, right = sideOf(cards[i], side), out = [];
+    seen[norm(right)] = 1;
+    shuffle(cards.map(function (c, j) { return j; }).filter(function (j) { return j !== i; }), rnd).forEach(function (j) {
+      var x = sideOf(cards[j], side), k = norm(x);
+      if (out.length < (n || 4) - 1 && k && !seen[k]) { seen[k] = 1; out.push({ i: j, text: x }); }
+    });
+    out.push({ i: i, text: right });
+    return shuffle(out, rnd);
+  }
+
+  /* ---------- Test ---------- */
+  /** A test: n questions (cards picked at random), each of one of the kinds asked for ('mc', 'tf', 'written'), the kinds
+   *  dealt in turn. A true-or-false question shows the card with its own answer or with another card's (half and half).
+   *  -> [{ i, kind, options?, shown?, truth? }] */
+  function testOf(cards, opts, rnd) {
+    var kinds = (opts.kinds || ['mc', 'tf', 'written']).filter(function (k) { return ['mc', 'tf', 'written'].indexOf(k) >= 0; });
+    if (!kinds.length) kinds = ['mc'];
+    var side = opts.side === 'd' ? 'd' : 't', n = Math.max(1, Math.min(cards.length, opts.n || 10));
+    var pick = shuffle(cards.map(function (c, j) { return j; }), rnd).slice(0, n), deal = shuffle(kinds, rnd);
+    return pick.map(function (i, k) {
+      var kind = cards.length < 2 && deal[k % deal.length] !== 'written' ? 'written' : deal[k % deal.length];
+      if (kind === 'mc') return { i: i, kind: kind, options: choices(cards, i, side, 4, rnd) };
+      if (kind === 'tf') {
+        var others = cards.map(function (c, j) { return j; }).filter(function (j) { return j !== i && norm(sideOf(cards[j], side)) !== norm(sideOf(cards[i], side)); });
+        var truth = !others.length || (rnd || Math.random)() < 0.5, j = truth ? i : others[Math.floor((rnd || Math.random)() * others.length)];
+        return { i: i, kind: kind, shown: sideOf(cards[j], side), truth: truth };
+      }
+      return { i: i, kind: 'written' };
+    });
+  }
+  /** One test answer -> true when right. a: the option's card index (mc), true/false (tf) or the typed text (written). */
+  function mark(cards, q, a, side) {
+    if (q.kind === 'mc') return a === q.i;
+    if (q.kind === 'tf') return a === q.truth;
+    return check(a, sideOf(cards[q.i], side === 'd' ? 'd' : 't')) !== 'wrong';
+  }
+
+  /* ---------- Match ---------- */
+  /** A Match board: up to n cards (6) as 2n tiles, each card once as its term and once as its definition, shuffled.
+   *  -> [{ i, side }] */
+  function deal(cards, n, rnd) {
+    var pick = shuffle(cards.map(function (c, j) { return j; }), rnd).slice(0, Math.min(n || 6, cards.length)), tiles = [];
+    pick.forEach(function (i) { tiles.push({ i: i, side: 't' }); tiles.push({ i: i, side: 'd' }); });
+    return shuffle(tiles, rnd);
+  }
+
+  root.FlashCore = { MAX: MAX, TERM: TERM, DEF: DEF, rng: rng, shuffle: shuffle, key: key, parseList: parseList, norm: norm, check: check,
+    kindFor: kindFor, after: after, counts: counts, round: round, again: again, sideOf: sideOf, choices: choices, testOf: testOf, mark: mark, deal: deal };
+})(window);
+/* flash-core:end */
+</script>
+<script>
+/* crossword-qr:begin */
+/* The site's own QR encoder (server/services/qr.js), for the share screen's QR code: byte mode, versions 1-40. */
+(function (root) {
+  'use strict';
+  var utf8 = function (s) { return Array.from(new TextEncoder().encode(s)); };
+// A small QR code maker (ISO/IEC 18004) for the live host screen's join link, so no dependency and no outside service
+// is needed. Byte mode, error correction level M, versions 1-40. By default at most version 6 (106 bytes:
+// a 7-digit join link is 30, version 3); the classroom dashboard's QR widget asks for up to MAX_DASH_VERSION
+// so a teacher's own website address fits (see docs/decisions.md "Classroom dashboards: any website in the QR code").
+// The mask with the lowest penalty is chosen. Pure module; the input is only our own addresses and approved links.
+
+// ---------------------------------------------------------------- GF(256) and Reed-Solomon
+const EXP = new Uint8Array(512), LOG = new Uint8Array(256);
+{ let x = 1; for (let i = 0; i < 255; i++) { EXP[i] = x; LOG[x] = i; x <<= 1; if (x & 0x100) x ^= 0x11d; } for (let i = 255; i < 512; i++) EXP[i] = EXP[i - 255]; }
+const mul = (a, b) => (a && b ? EXP[LOG[a] + LOG[b]] : 0);
+function generator(n) {
+  let g = [1];
+  for (let i = 0; i < n; i++) {
+    const next = new Array(g.length + 1).fill(0);
+    for (let j = 0; j < g.length; j++) { next[j] ^= g[j]; next[j + 1] ^= mul(g[j], EXP[i]); }
+    g = next;
+  }
+  return g;
+}
+/** The n error correction codewords for data (an array of bytes). */
+function rsEncode(data, n) {
+  const g = generator(n);
+  const rem = new Array(n).fill(0);
+  for (const d of data) {
+    const f = d ^ rem[0];
+    rem.shift(); rem.push(0);
+    for (let j = 0; j < n; j++) rem[j] ^= mul(g[j + 1], f);
+  }
+  return rem;
+}
+
+// ---------------------------------------------------------------- versions, level M
+// [data codewords per block, blocks, EC codewords per block, alignment centre or 0] for versions 1-6 (every block the
+// same size), kept as they were; layout(version) works out any version from the standard's level M table.
+const VERSIONS = { 1: [16, 1, 10, 0], 2: [28, 1, 16, 18], 3: [44, 1, 26, 22], 4: [32, 2, 18, 26], 5: [43, 2, 24, 30], 6: [27, 4, 16, 34] };
+// ISO/IEC 18004 table 9, level M: error correction codewords per block and number of blocks, versions 1-40.
+const EC_M = [10, 16, 26, 18, 24, 16, 18, 22, 22, 26, 30, 22, 22, 24, 24, 28, 28, 26, 26, 26, 26, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28, 28];
+const BLOCKS_M = [1, 1, 1, 2, 2, 4, 4, 4, 5, 5, 5, 8, 9, 9, 10, 10, 11, 13, 14, 16, 17, 17, 18, 20, 21, 23, 25, 26, 28, 29, 31, 33, 35, 37, 38, 40, 43, 45, 47, 49];
+const MAX_VERSION = 40;
+/** The dashboard QR widget's largest code: version 13 (69 x 69 modules, 331 bytes), still readable from a classroom
+ *  seat on a projector; a longer address gets "too long" instead of a code too dense to scan. */
+const MAX_DASH_VERSION = 13;
+/** The centres of the alignment patterns along one axis (ISO/IEC 18004 annex E). */
+function alignment(version) {
+  if (version === 1) return [];
+  const n = Math.floor(version / 7) + 2, size = 17 + 4 * version;
+  const step = version === 32 ? 26 : Math.ceil((version * 4 + 4) / (n * 2 - 2)) * 2;
+  const out = [6];
+  for (let pos = size - 7; out.length < n; pos -= step) out.splice(1, 0, pos);
+  return out;
+}
+/** Codewords in a symbol of this version (data and error correction): the modules left after every function pattern. */
+function rawCodewords(version) {
+  let bits = (16 * version + 128) * version + 64;
+  if (version >= 2) { const n = Math.floor(version / 7) + 2; bits -= (25 * n - 10) * n - 55; if (version >= 7) bits -= 36; }
+  return Math.floor(bits / 8);
+}
+/** -> { data: [data codewords of each block], ec: EC codewords per block }. Short blocks come first (one data codeword
+ *  fewer than the long ones), as the standard orders them. */
+function layout(version) {
+  const ec = EC_M[version - 1], blocks = BLOCKS_M[version - 1], total = rawCodewords(version);
+  const short = blocks - (total % blocks), shortLen = Math.floor(total / blocks) - ec;
+  return { data: Array.from({ length: blocks }, (_, b) => shortLen + (b < short ? 0 : 1)), ec };
+}
+/** How many bytes fit (byte mode: 4 mode bits, an 8-bit length below version 10 and 16-bit from 10). */
+function capacity(version) {
+  const cap = layout(version).data.reduce((a, b) => a + b, 0);
+  return Math.floor((cap * 8 - 4 - (version < 10 ? 8 : 16)) / 8);
+}
+/** The 18 version information bits (versions 7 and up): BCH code of the version. */
+function versionBits(version) {
+  let rem = version;
+  for (let i = 0; i < 12; i++) rem = (rem << 1) ^ ((rem >>> 11) * 0x1f25);
+  return (version << 12) | rem;
+}
+/** The 15 format bits for level M and a mask (BCH code, then the fixed XOR). */
+function formatBits(mask) {
+  const data = (0 << 3) | mask;   // level M is 00
+  let rem = data;
+  for (let i = 0; i < 10; i++) rem = (rem << 1) ^ ((rem >>> 9) * 0x537);
+  return ((data << 10) | rem) ^ 0x5412;
+}
+
+/** The data codewords: byte mode, length, the bytes, terminator, padding. */
+function dataCodewords(bytes, version) {
+  const cap = layout(version).data.reduce((a, b) => a + b, 0);
+  const bits = [];
+  const put = (v, n) => { for (let i = n - 1; i >= 0; i--) bits.push((v >>> i) & 1); };
+  put(4, 4); put(bytes.length, version < 10 ? 8 : 16);
+  for (const b of bytes) put(b, 8);
+  for (let i = 0; i < 4 && bits.length < cap * 8; i++) bits.push(0);
+  while (bits.length % 8) bits.push(0);
+  const out = [];
+  for (let i = 0; i < bits.length; i += 8) out.push(bits.slice(i, i + 8).reduce((a, b) => (a << 1) | b, 0));
+  for (let p = 0; out.length < cap; p++) out.push(p % 2 ? 0x11 : 0xec);
+  return out;
+}
+
+/** All codewords in order: data blocks interleaved, then their error correction interleaved. */
+function codewords(bytes, version) {
+  const { data: lens, ec } = layout(version);
+  const data = dataCodewords(bytes, version);
+  const parts = [];
+  for (let b = 0, at = 0; b < lens.length; at += lens[b], b++) parts.push(data.slice(at, at + lens[b]));
+  const ecs = parts.map(p => rsEncode(p, ec));
+  const out = [];
+  for (let i = 0; i < Math.max(...lens); i++) for (const p of parts) if (i < p.length) out.push(p[i]);
+  for (let i = 0; i < ec; i++) for (const e of ecs) out.push(e[i]);
+  return out;
+}
+
+const MASKS = [
+  (x, y) => (x + y) % 2 === 0, (x, y) => y % 2 === 0, x => x % 3 === 0, (x, y) => (x + y) % 3 === 0,
+  (x, y) => (Math.floor(x / 3) + Math.floor(y / 2)) % 2 === 0, (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
+  (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0, (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
+];
+
+function build(version, words, mask) {
+  const size = 17 + 4 * version;
+  const m = Array.from({ length: size }, () => new Array(size).fill(false));
+  const fn = Array.from({ length: size }, () => new Array(size).fill(false));
+  const set = (x, y, v) => { m[y][x] = v; fn[y][x] = true; };
+  // Finder patterns and their separators.
+  for (const [cx, cy] of [[3, 3], [size - 4, 3], [3, size - 4]]) {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const x = cx + dx, y = cy + dy;
+      if (x < 0 || y < 0 || x >= size || y >= size) continue;
+      const d = Math.max(Math.abs(dx), Math.abs(dy));
+      set(x, y, d !== 2 && d !== 4);
+    }
+  }
+  // Timing patterns.
+  for (let i = 8; i < size - 8; i++) { set(6, i, i % 2 === 0); set(i, 6, i % 2 === 0); }
+  // The alignment patterns (none over the finders).
+  const al = alignment(version), last = al.length - 1;
+  for (let i = 0; i <= last; i++) for (let j = 0; j <= last; j++) {
+    if ((i === 0 && j === 0) || (i === 0 && j === last) || (i === last && j === 0)) continue;
+    for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) set(al[i] + dx, al[j] + dy, Math.max(Math.abs(dx), Math.abs(dy)) !== 1);
+  }
+  // The version information (versions 7 and up), bottom left and top right.
+  if (version >= 7) {
+    const vb = versionBits(version);
+    for (let i = 0; i < 18; i++) { const v = ((vb >>> i) & 1) === 1, a = size - 11 + (i % 3), b = Math.floor(i / 3); set(a, b, v); set(b, a, v); }
+  }
+  // Format bits (reserved now, drawn after the data) and the dark module.
+  const drawFormat = bits => {
+    const b = i => ((bits >>> i) & 1) === 1;
+    for (let i = 0; i <= 5; i++) set(8, i, b(i));
+    set(8, 7, b(6)); set(8, 8, b(7)); set(7, 8, b(8));
+    for (let i = 9; i < 15; i++) set(14 - i, 8, b(i));
+    for (let i = 0; i < 8; i++) set(size - 1 - i, 8, b(i));
+    for (let i = 8; i < 15; i++) set(8, size - 15 + i, b(i));
+    set(8, size - 8, true);
+  };
+  drawFormat(0);
+  // Data, in the zigzag from the bottom right, skipping the vertical timing column.
+  let i = 0;
+  const total = words.length * 8;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right = 5;
+    for (let vert = 0; vert < size; vert++) {
+      for (let j = 0; j < 2; j++) {
+        const x = right - j;
+        const up = ((right + 1) & 2) === 0;
+        const y = up ? size - 1 - vert : vert;
+        if (fn[y][x]) continue;
+        const bit = i < total ? ((words[i >>> 3] >>> (7 - (i & 7))) & 1) === 1 : false;
+        i++;
+        m[y][x] = bit !== MASKS[mask](x, y);
+      }
+    }
+  }
+  drawFormat(formatBits(mask));
+  return m;
+}
+
+/** The ISO penalty score of a finished symbol (lower is easier to read). */
+function penalty(m) {
+  const size = m.length;
+  let p = 0, dark = 0;
+  const lines = [];
+  for (let y = 0; y < size; y++) { lines.push(m[y]); lines.push(m.map(r => r[y])); }
+  for (const line of lines) {
+    let run = 1;
+    for (let i = 1; i <= size; i++) {
+      if (i < size && line[i] === line[i - 1]) run++;
+      else { if (run >= 5) p += 3 + (run - 5); run = 1; }
+    }
+    const s = line.map(v => (v ? '1' : '0')).join('');
+    // (the finder-like patterns, written as runs so no string of digits reads like a phone number)
+    const F = (0x5d).toString(2), Z = '0'.repeat(4);   // the finder pattern and four light modules
+    for (const pat of [F + Z, Z + F]) { let k = s.indexOf(pat); while (k >= 0) { p += 40; k = s.indexOf(pat, k + 1); } }
+  }
+  for (let y = 0; y < size - 1; y++) for (let x = 0; x < size - 1; x++) {
+    const v = m[y][x];
+    if (v === m[y][x + 1] && v === m[y + 1][x] && v === m[y + 1][x + 1]) p += 3;
+  }
+  for (const r of m) for (const v of r) if (v) dark++;
+  p += Math.floor(Math.abs((dark * 100) / (size * size) - 50) / 5) * 10;
+  return p;
+}
+
+/** Whether text fits a code of at most this version. */
+const fits = (text, max = 6) => utf8(String(text)).length <= capacity(Math.min(MAX_VERSION, max));
+/** text -> { version, size, mask, modules: boolean[][] } (true = dark). Throws when it doesn't fit version max (by
+ *  default 6: 106 bytes). version and mask force those (tests compare with a reference encoder). */
+function qr(text, { max = 6, version: want = 0, mask: only = -1 } = {}) {
+  const bytes = utf8(String(text));
+  let version = 0;
+  for (let v = want || 1; v <= (want || Math.min(MAX_VERSION, max)) && !version; v++) if (bytes.length <= capacity(v)) version = v;
+  if (!version) throw new Error('too long for a small QR code');
+  const words = codewords(bytes, version);
+  let best = null;
+  for (let mask = 0; mask < 8; mask++) {
+    if (only >= 0 && mask !== only) continue;
+    const modules = build(version, words, mask);
+    const score = penalty(modules);
+    if (!best || score < best.score) best = { version, size: modules.length, mask, modules, score };
+  }
+  return best;
+}
+
+/** An inline SVG of the code (4 modules of quiet zone), for the host screen. title: the accessible name. */
+  root.CrosswordQR = { qr: qr, fits: fits };
+})(window);
+/* crossword-qr:end */
+</script>
+<script>
+// ==== I18N START ====
+// The game's own words (en is the fallback for a missing key). Only English so far: the other site languages read these
+// English words until their tables are added (docs/decisions.md "Flashcards", what is left). {x} takes a value.
+var I18N = {
+  "en": {
+    "title": "Flashcards", "tag": "Make a set, then study it four ways: Flip, Learn, Match and Test.", "homeH": "What would you like to do?", "sound": "Sound on or off",
+    "make": "Make a set", "makeSub": "Type, paste or upload terms and definitions, or let AI draft them", "ws": "My worksheets", "wsSub": "Every set you saved on Oomba: open, edit, share, copy or delete.",
+    "code": "I have a class code", "codeSub": "Type the code your teacher gave you.", "codePh": "Class code", "go": "Go", "codeBad": "We couldn't find that code. Check it and try again.", "offline": "Can't reach Oomba right now. Try again in a moment.",
+    "lib": "Ready-made sets", "libSub": "{n} sets for kindergarten to grade 8: sight words, math facts, science, states and more", "libNote": "Pick a set to study. Teachers can copy one to change it and assign it.", "libSubjects": "Subjects", "libMeta": "Grades {grade} · {n} cards",
+    "subj.all": "All", "subj.words": "Words", "subj.math": "Math", "subj.science": "Science", "subj.social": "Social studies", "subj.lang": "Languages",
+    "mine": "Your sets", "mineNote": "Drafts save themselves as you work, in your own account.", "guestKeep": "Sign in to keep your sets.", "untitled": "Flashcards", "nCards": "Cards: {n}", "classCode": "Class code",
+    "editIt": "Edit", "study": "Study", "del": "Delete", "delSure": "Sure?", "deleted": "Deleted.", "missing": "This set isn't there any more. Ask your teacher for a new link.", "back": "Back",
+    "setMeta": "{n} cards · {mastered} mastered", "cardsH": "All cards ({n})", "star": "Star this card", "starIt": "Star", "teacherSees": "Your teacher sees which cards you've mastered, never your answers.",
+    "copyEdit": "Copy and edit", "printCards": "Print cards", "printList": "Print a study sheet", "share": "Share", "shareH": "Share with your students", "link": "Link", "copy": "Copy link", "copied": "Link copied.", "qrAlt": "QR code for the link",
+    "assign": "Assign to a class", "assignNote": "Students' progress on each card shows on the lesson's progress page.",
+    "mode.flip": "Flip", "mode.flipSub": "Turn the cards over", "mode.learn": "Learn", "mode.learnSub": "Until you know them all", "mode.match": "Match", "mode.matchSub": "Beat your own time", "mode.test": "Test", "mode.testSub": "Check what you know",
+    "masteryLabel": "{mastered} mastered, {learning} learning, {missed} missed last time, {fresh} not studied", "kMastered": "Mastered {n}", "kLearning": "Learning {n}", "kMissed": "Missed {n}", "kFresh": "Not studied {n}",
+    "nOf": "{i} of {n}", "termSide": "Term", "defSide": "Definition", "tapFlip": "Tap to flip", "prev": "Previous", "next": "Next", "flipIt": "Flip", "shuffle": "Shuffle", "starredOnly": "Starred cards only", "starredOnlyN": "Starred only ({n})",
+    "noStars": "Star a card first: tap ☆ on the hard ones.", "defFirst": "Definition first", "readAloud": "Read aloud", "keys": "Keyboard: Space flips, the arrow keys move.", "flipEnd": "That's the last card. Shuffle or go back to the start.",
+    "pick": "Pick the answer", "typeIt": "Type the answer", "yourAnswer": "Your answer", "check": "Check", "dontKnow": "I don't know", "keysMc": "Keyboard: press 1 to 4 to pick.", "keysType": "Keyboard: Enter checks, then Enter goes on.",
+    "cheer1": "Correct!", "cheer2": "Nice work!", "cheer3": "You got it!", "gotMastered": "Mastered! You typed it right twice.", "closeSpell": "Watch the spelling: {w}", "notQuite": "Not quite.", "answerWas": "The answer: {w}", "youTyped": "You typed: {w}",
+    "override": "I was right", "counted": "Counted as right.", "continue": "Continue", "roundDone": "Round done: {right} right out of {asked}.", "roundNext": "Missed cards come back next round, until every card is mastered.", "nextRound": "Next round",
+    "allMastered": "You mastered all {n} cards!", "learnAgain": "Learn it again",
+    "matchHow": "Tap a term, then its definition. A wrong pair adds a second. Try to beat your own best time.", "yourBest": "Your best: {s} seconds", "startMatch": "Start", "pairsLeft": "Pairs left: {n}", "matchKeys": "Keyboard: Tab to a tile, Enter to pick it.",
+    "noMatch": "Not a pair. Try again.", "newBest": "A new personal best!", "firstTime": "Your first time. Play again to beat it!", "penalty": "Includes {n} seconds for wrong pairs.", "playAgain": "Play again", "toSet": "Back to the set",
+    "testCount": "How many questions", "testKinds": "Kinds of questions", "kind.mc": "Multiple choice", "kind.tf": "True or false", "kind.written": "Written", "pickKind": "Pick at least one kind of question.", "startTest": "Start the test",
+    "testNow": "Test", "testHow": "{n} questions. Answer them all, then press Submit.", "tfIs": "Is the answer: {w}?", "true": "True", "false": "False", "submit": "Submit", "unanswered": "{n} left without an answer. Submit anyway?", "submitAnyway": "Submit anyway",
+    "testScore": "{right} right out of {n}", "retake": "Take another test", "learnMissed": "Learn the missed ones", "review": "Review", "noAnswer": "(no answer)", "youSaid": "Your answer: {w}", "tfYou": "{w}: {a}", "rightAnswer": "Right answer: {w}",
+    "buildH": "Make a set", "titleL": "Set name", "titlePh": "Unit 3 vocabulary", "levelL": "Grade or level (for AI)", "levelPh": "Grade 4",
+    "aiH": "Draft cards with AI", "aiP": "Type a topic, or upload your own lesson. The cards go into your list below for you to check. Only your words go to the AI, never your students' names or work.",
+    "topicL": "Topic", "topicPh": "Parts of a plant", "countL": "Cards", "draftAi": "Draft cards", "topicNeed": "Type a topic first.", "topicBad": "Please reword your topic.", "aiWorking": "Drafting cards…", "aiAdded": "Cards added: {n}. Check each one.",
+    "aiOff": "AI isn't available right now. Type or paste your cards.", "aiFailed": "The AI couldn't draft cards this time. Try again or reword the topic.",
+    "focusL": "What should the AI focus on? (optional)", "focusPh": "For example: science words only", "uploadDoc": "Upload a lesson (PDF or Word)", "docLimits": "Up to 2 MB, about 5 pages.", "docWorking": "Reading your lesson…",
+    "docAdded": "Cards added: {n}. Check each one.", "docAddedCut": "Cards added: {n}. Only about the first 5 pages were read.", "docSomeEmpty": "Some have no definition yet: type one in.",
+    "docOld": "Old .doc files can't be read. Save it as .docx or PDF.", "docType": "Pick a PDF or Word (.docx) file.", "docBig": "That file is over 2 MB.", "docPages": "That PDF has more than 5 pages.", "docScan": "We couldn't find any text in that PDF (is it a scan?).",
+    "docEmpty": "That file has no text.", "docNone": "We couldn't find terms in that file.", "docLimit": "That's 10 files today. Try again tomorrow.", "focusBad": "Please reword your focus.",
+    "pasteH": "Paste or upload a list", "pasteP": "One card a line: the term, then its definition after a tab, a comma or \" - \". A spreadsheet's two columns paste straight in.",
+    "pastePh": "photosynthesis - how plants make food from sunlight\nhabitat, where an animal lives\n7 x 8\t56", "addThese": "Add these cards", "added": "Cards added: {n}", "addedNone": "No cards found. Put one term on each line.",
+    "uploadList": "Upload a list (.txt or .csv)", "fileBig": "That file is too big for a list.", "fileRead": "Read. Check the list, then press Add these cards.",
+    "cardsH2": "Your cards ({n} of {max})", "cardsP": "A term on the front, its definition on the back. Tap ＋ to put an emoji on the front.", "aiNote": "Some cards were drafted by AI. Check them before sharing.",
+    "termPh": "Term", "defPh": "Definition", "termN": "Term {n}", "defN": "Definition {n}", "delCard": "Delete card {n}", "addCard": "Add a card", "pic": "Picture for the front", "picFor": "Picture for card {n}", "picOwn": "Or paste an emoji", "use": "Use", "picNone": "No picture", "picOnly": "Only an emoji can go on the front.",
+    "answerWith": "In Learn and Test, students answer with", "answerTerm": "The term (they see the definition)", "answerDef": "The definition (they see the term)",
+    "studyIt": "Study it", "saveLink": "Save and get a link", "saveChanges": "Save changes", "saving": "Saving…", "saved": "Saved! Share it with your class.",
+    "saveGuest": "Sign in to save your set.", "saveBad": "Something in the set can't be saved. Check for rude words, personal details or links.", "saveFull": "You have 200 sets here. Delete one to save another.", "saveNotYours": "That set belongs to someone else. Copy it to make your own.",
+    "needTwo": "A set needs at least 2 cards.", "tooMany": "A set holds up to {n} cards.", "fillBoth": "Card {n} needs a term and a definition.", "termLong": "Card {n}: the term is longer than {max} characters.", "defLong": "Card {n}: the definition is longer than {max} characters.", "twice": "\"{w}\" is in the set twice.",
+    "printBad": "This set can't be printed. Check it for rude words, personal details or links.", "printAgain": "Press Print again.",
+    "open": "Open", "wsDup": "Duplicate", "dupDone": "Copied.", "rename": "Rename", "renameSave": "Save", "renamed": "Renamed.", "renameBad": "That name can't be used.", "cancel": "Cancel", "keep": "Keep it",
+    "wsDelAsk": "Delete \"{t}\"? Its class code and link stop working.", "wsDeleted": "Deleted.", "wsLoading": "Loading…", "wsFailed": "Couldn't load your sets. Try again.", "wsEmpty": "No saved sets yet.", "actFailed": "That didn't work. Try again."
+  },
+  "en-GB": {
+    "libSub": "{n} sets from Reception to Year 9: sight words, maths facts, science, US states and more", "subj.math": "Maths", "levelPh": "Year 5", "libMeta": "US grades {grade} · {n} cards",
+    "codeSub": "Type the code your teacher gave you.", "teacherSees": "Your teacher sees which cards you've mastered, never your answers.", "assignNote": "Pupils' progress on each card shows on the lesson's progress page."
+  }
+};
+// ==== I18N END ====
+</script>
+<script>
+/* flash-library:begin */
+/* The starter library: ready-made sets for kindergarten to grade 8, written for Oomba (never copied from another
+   site's sets). s: subject (words, math, science, social, lang), g: grades, e: the set's picture, a: what Learn and
+   Test ask for ('t' the term from its definition, 'd' the definition from its term), c: [term, definition, emoji].
+   English (US) content; a teacher copies a set to change it, save it and assign it. */
+window.FLASH_LIBRARY = [
+  { id: 'sight-k', s: 'words', g: 'K', e: '👀', t: 'Sight words: kindergarten', a: 't', c: [
+    ['the', 'I see ___ sun.', '☀️'], ['and', 'cats ___ dogs', '🐱'], ['a', 'I have ___ hat.', '🎩'], ['I', '___ am happy.', '😀'], ['see', 'I can ___ a bird.', '🐦'],
+    ['can', 'You ___ run fast.', '🏃'], ['is', 'The ball ___ red.', '🔴'], ['to', 'We go ___ school.', '🏫'], ['go', 'Ready, set, ___!', '🚦'], ['we', '___ like to play.', '🤝'],
+    ['my', 'This is ___ dog.', '🐶'], ['it', 'Pick ___ up.', '🧸']] },
+  { id: 'sight-1', s: 'words', g: '1', e: '📖', t: 'Sight words: grade 1', a: 't', c: [
+    ['said', '"Hi!" ___ Sam.', '💬'], ['was', 'The cake ___ good.', '🍰'], ['they', '___ play in the park.', '🛝'], ['have', 'I ___ two hands.', '✋'], ['come', 'Please ___ here.', '👋'],
+    ['here', 'Put the box ___.', '📦'], ['what', '___ is your name?', '❓'], ['there', 'The cat is over ___.', '🐈'], ['from', 'A gift ___ Grandma.', '🎁'], ['were', 'We ___ at the zoo.', '🦁'],
+    ['look', '___ at the stars!', '⭐'], ['play', 'Let\'s ___ a game.', '🎲']] },
+  { id: 'opposites', s: 'words', g: 'K-1', e: '↔️', t: 'Opposites', a: 't', c: [
+    ['hot', 'the opposite of cold', '🔥'], ['big', 'the opposite of small', '🐘'], ['up', 'the opposite of down', '⬆️'], ['day', 'the opposite of night', '🌞'], ['fast', 'the opposite of slow', '🐇'],
+    ['happy', 'the opposite of sad', '😀'], ['open', 'the opposite of closed', '🚪'], ['full', 'the opposite of empty', '🥛'], ['wet', 'the opposite of dry', '💧'], ['loud', 'the opposite of quiet', '📢']] },
+  { id: 'baby-animals', s: 'science', g: 'K-2', e: '🐣', t: 'Baby animals', a: 't', c: [
+    ['calf', 'a baby cow', '🐄'], ['kitten', 'a baby cat', '🐱'], ['puppy', 'a baby dog', '🐶'], ['chick', 'a baby chicken', '🐥'], ['foal', 'a baby horse', '🐴'],
+    ['lamb', 'a baby sheep', '🐑'], ['tadpole', 'a baby frog', '🐸'], ['cub', 'a baby bear or lion', '🐻'], ['duckling', 'a baby duck', '🦆'], ['joey', 'a baby kangaroo', '🦘']] },
+  { id: 'add-10', s: 'math', g: 'K-1', e: '➕', t: 'Adding within 10', a: 'd', c: [
+    ['1 + 1', '2', '➕'], ['2 + 3', '5', '➕'], ['4 + 4', '8', '➕'], ['5 + 2', '7', '➕'], ['3 + 6', '9', '➕'], ['6 + 4', '10', '➕'],
+    ['2 + 2', '4', '➕'], ['7 + 1', '8', '➕'], ['5 + 5', '10', '➕'], ['3 + 3', '6', '➕'], ['0 + 9', '9', '➕'], ['4 + 2', '6', '➕']] },
+  { id: 'sub-20', s: 'math', g: '1-2', e: '➖', t: 'Subtracting within 20', a: 'd', c: [
+    ['10 - 4', '6', '➖'], ['12 - 5', '7', '➖'], ['15 - 7', '8', '➖'], ['9 - 3', '6', '➖'], ['14 - 6', '8', '➖'], ['18 - 9', '9', '➖'],
+    ['11 - 2', '9', '➖'], ['13 - 8', '5', '➖'], ['16 - 7', '9', '➖'], ['20 - 10', '10', '➖']] },
+  { id: 'times-7', s: 'math', g: '3', e: '✖️', t: 'Times table: 7s', a: 'd', c: [
+    ['7 x 1', '7', '✖️'], ['7 x 2', '14', '✖️'], ['7 x 3', '21', '✖️'], ['7 x 4', '28', '✖️'], ['7 x 5', '35', '✖️'], ['7 x 6', '42', '✖️'],
+    ['7 x 7', '49', '✖️'], ['7 x 8', '56', '✖️'], ['7 x 9', '63', '✖️'], ['7 x 10', '70', '✖️']] },
+  { id: 'times-mixed', s: 'math', g: '3-4', e: '🔢', t: 'Multiplication facts: mixed', a: 'd', c: [
+    ['6 x 8', '48', ''], ['9 x 4', '36', ''], ['3 x 7', '21', ''], ['8 x 8', '64', ''], ['6 x 7', '42', ''], ['9 x 9', '81', ''],
+    ['4 x 6', '24', ''], ['12 x 3', '36', ''], ['7 x 9', '63', ''], ['8 x 5', '40', ''], ['6 x 6', '36', ''], ['11 x 4', '44', '']] },
+  { id: 'shapes', s: 'math', g: 'K-2', e: '🔺', t: 'Shapes', a: 't', c: [
+    ['circle', 'a round flat shape with no corners', '⚪'], ['triangle', 'a flat shape with 3 sides and 3 corners', '🔺'], ['square', 'a flat shape with 4 equal sides and 4 square corners', '🟦'],
+    ['rectangle', 'a flat shape with 4 sides and 4 square corners, 2 long sides and 2 short', '🚪'], ['hexagon', 'a flat shape with 6 sides', '🐝'], ['cube', 'a solid shape with 6 square faces, like a die', '🎲'],
+    ['sphere', 'a solid shape that is round like a ball', '⚽'], ['cone', 'a solid shape with a circle at one end and a point at the other', '🍦']] },
+  { id: 'fractions', s: 'math', g: '3-5', e: '🍕', t: 'Fraction words', a: 't', c: [
+    ['numerator', 'the top number of a fraction: how many parts you have', '🍕'], ['denominator', 'the bottom number of a fraction: how many equal parts make the whole', '🥧'],
+    ['equivalent fractions', 'fractions that name the same amount, like 1/2 and 2/4', '⚖️'], ['unit fraction', 'a fraction with 1 on top, like 1/3', '1️⃣'],
+    ['mixed number', 'a whole number and a fraction together, like 2 1/2', '🧁'], ['improper fraction', 'a fraction whose top number is bigger than its bottom number, like 7/4', '🔝'],
+    ['simplest form', 'a fraction whose top and bottom have no common factor but 1', '✨'], ['common denominator', 'the same bottom number shared by two or more fractions', '🤝']] },
+  { id: 'plant-parts', s: 'science', g: '2-3', e: '🌱', t: 'Parts of a plant', a: 't', c: [
+    ['roots', 'hold the plant in the soil and take in water', '🪴'], ['stem', 'holds the plant up and carries water to the leaves', '🌿'], ['leaf', 'makes food for the plant using sunlight', '🍃'],
+    ['flower', 'makes seeds so new plants can grow', '🌸'], ['seed', 'a tiny new plant with food stored around it', '🌰'], ['fruit', 'the part that grows around seeds and protects them', '🍎'],
+    ['pollen', 'a yellow powder flowers share to make seeds', '🐝']] },
+  { id: 'solar-system', s: 'science', g: '3-5', e: '🪐', t: 'The solar system', a: 't', c: [
+    ['Sun', 'the star at the center of our solar system', '☀️'], ['Mercury', 'the smallest planet and the closest to the Sun', '🪨'], ['Venus', 'the hottest planet, covered in thick clouds', '🌕'],
+    ['Earth', 'the third planet from the Sun, the only one known to have life', '🌍'], ['Mars', 'the red planet, with dusty deserts and giant volcanoes', '🔴'],
+    ['Jupiter', 'the biggest planet, a gas giant with a Great Red Spot', '🟠'], ['Saturn', 'a gas giant famous for its bright rings', '🪐'], ['Uranus', 'an ice giant that spins on its side', '🔵'],
+    ['Neptune', 'the farthest planet from the Sun, cold and windy', '💨'], ['Moon', 'Earth\'s natural satellite, which orbits Earth about once a month', '🌙']] },
+  { id: 'water-cycle', s: 'science', g: '4-5', e: '💧', t: 'The water cycle', a: 't', c: [
+    ['evaporation', 'when the Sun heats water and it turns into water vapor', '♨️'], ['condensation', 'when water vapor cools and turns into tiny drops that form clouds', '☁️'],
+    ['precipitation', 'water falling from clouds as rain, snow, sleet or hail', '🌧️'], ['collection', 'when water gathers in oceans, lakes, rivers and underground', '🌊'],
+    ['transpiration', 'when plants give off water vapor from their leaves', '🌳'], ['water vapor', 'water as an invisible gas in the air', '💨'], ['runoff', 'rain or melted snow that flows over the ground into streams', '🏞️']] },
+  { id: 'cells', s: 'science', g: '6-8', e: '🔬', t: 'Parts of a cell', a: 't', c: [
+    ['nucleus', 'the control center of the cell, which holds its DNA', '🧬'], ['cell membrane', 'the thin layer around a cell that controls what goes in and out', '🫧'],
+    ['cell wall', 'a stiff layer outside the membrane in plant cells that gives support', '🧱'], ['cytoplasm', 'the jelly-like fluid that fills the cell', '💧'],
+    ['mitochondria', 'parts of the cell that release energy from food', '⚡'], ['chloroplast', 'the part of a plant cell where photosynthesis happens', '🍃'],
+    ['vacuole', 'a sac that stores water, food or waste', '🫙'], ['ribosome', 'a tiny part of the cell that builds proteins', '🔩']] },
+  { id: 'states-ne', s: 'social', g: '4-5', e: '🗽', t: 'States and capitals: Northeast', a: 'd', c: [
+    ['Maine', 'Augusta', ''], ['New Hampshire', 'Concord', ''], ['Vermont', 'Montpelier', ''], ['Massachusetts', 'Boston', ''], ['Rhode Island', 'Providence', ''],
+    ['Connecticut', 'Hartford', ''], ['New York', 'Albany', ''], ['New Jersey', 'Trenton', ''], ['Pennsylvania', 'Harrisburg', '']] },
+  { id: 'states-south', s: 'social', g: '4-5', e: '🌴', t: 'States and capitals: South', a: 'd', c: [
+    ['Delaware', 'Dover', ''], ['Maryland', 'Annapolis', ''], ['Virginia', 'Richmond', ''], ['West Virginia', 'Charleston', ''], ['North Carolina', 'Raleigh', ''], ['South Carolina', 'Columbia', ''],
+    ['Georgia', 'Atlanta', ''], ['Florida', 'Tallahassee', ''], ['Kentucky', 'Frankfort', ''], ['Tennessee', 'Nashville', ''], ['Alabama', 'Montgomery', ''], ['Mississippi', 'Jackson', ''],
+    ['Arkansas', 'Little Rock', ''], ['Louisiana', 'Baton Rouge', ''], ['Oklahoma', 'Oklahoma City', ''], ['Texas', 'Austin', '']] },
+  { id: 'states-midwest', s: 'social', g: '4-5', e: '🌽', t: 'States and capitals: Midwest', a: 'd', c: [
+    ['Ohio', 'Columbus', ''], ['Indiana', 'Indianapolis', ''], ['Illinois', 'Springfield', ''], ['Michigan', 'Lansing', ''], ['Wisconsin', 'Madison', ''], ['Minnesota', 'Saint Paul', ''],
+    ['Iowa', 'Des Moines', ''], ['Missouri', 'Jefferson City', ''], ['North Dakota', 'Bismarck', ''], ['South Dakota', 'Pierre', ''], ['Nebraska', 'Lincoln', ''], ['Kansas', 'Topeka', '']] },
+  { id: 'states-west', s: 'social', g: '4-5', e: '🏔️', t: 'States and capitals: West', a: 'd', c: [
+    ['Montana', 'Helena', ''], ['Idaho', 'Boise', ''], ['Wyoming', 'Cheyenne', ''], ['Colorado', 'Denver', ''], ['New Mexico', 'Santa Fe', ''], ['Arizona', 'Phoenix', ''], ['Utah', 'Salt Lake City', ''],
+    ['Nevada', 'Carson City', ''], ['California', 'Sacramento', ''], ['Oregon', 'Salem', ''], ['Washington', 'Olympia', ''], ['Alaska', 'Juneau', ''], ['Hawaii', 'Honolulu', '']] },
+  { id: 'landforms', s: 'social', g: '2-4', e: '⛰️', t: 'Landforms and water', a: 't', c: [
+    ['mountain', 'a very high, steep landform that rises above the land around it', '🏔️'], ['valley', 'low land between hills or mountains', '🏞️'], ['island', 'land with water all around it', '🏝️'],
+    ['peninsula', 'land with water on three sides', '🗺️'], ['plain', 'a large area of flat land', '🌾'], ['plateau', 'high, flat land that rises steeply on at least one side', '🟫'],
+    ['canyon', 'a deep valley with steep sides, often cut by a river', '🪨'], ['delta', 'land built up from mud and sand where a river meets the sea', '🔺']] },
+  { id: 'founding', s: 'social', g: '5-8', e: '📜', t: 'Founding the United States', a: 't', c: [
+    ['Declaration of Independence', 'the 1776 document saying the 13 colonies were free from Great Britain', '📜'], ['Constitution', 'the plan for the United States government, written in 1787', '🏛️'],
+    ['Bill of Rights', 'the first ten amendments to the Constitution, which protect people\'s rights', '✍️'], ['amendment', 'a change or addition to the Constitution', '➕'],
+    ['legislative branch', 'Congress, the part of government that makes laws', '🏛️'], ['executive branch', 'the President and the departments that carry out laws', '🦅'],
+    ['judicial branch', 'the courts, which decide what laws mean', '⚖️'], ['checks and balances', 'the way each branch can limit the power of the others', '🔁']] },
+  { id: 'parts-speech', s: 'words', g: '2-5', e: '🔤', t: 'Parts of speech', a: 't', c: [
+    ['noun', 'a word for a person, place, thing or idea', '🏠'], ['verb', 'a word for an action or a state of being', '🏃'], ['adjective', 'a word that describes a noun', '🎨'],
+    ['adverb', 'a word that describes a verb, often ending in -ly', '🐢'], ['pronoun', 'a word that takes the place of a noun, like she or they', '👉'], ['preposition', 'a word that shows where or when, like under or after', '📦'],
+    ['conjunction', 'a word that joins words or ideas, like and, but or so', '🔗'], ['interjection', 'a word that shows a strong feeling, like wow', '❗']] },
+  { id: 'prefixes', s: 'words', g: '3-5', e: '🧩', t: 'Prefixes', a: 't', c: [
+    ['un-', 'not, as in unhappy', '🙃'], ['re-', 'again, as in redo', '🔁'], ['pre-', 'before, as in preview', '⏮️'], ['dis-', 'not or the opposite of, as in disagree', '🚫'],
+    ['mis-', 'wrongly, as in misspell', '❌'], ['non-', 'not, as in nonstop', '⛔'], ['sub-', 'under or below, as in submarine', '⬇️'], ['over-', 'too much, as in overcook', '🔥']] },
+  { id: 'spanish-colors', s: 'lang', g: 'K-5', e: '🎨', t: 'Spanish: colors', a: 'd', c: [
+    ['rojo', 'red', '🔴'], ['azul', 'blue', '🔵'], ['verde', 'green', '🟢'], ['amarillo', 'yellow', '🟡'], ['anaranjado', 'orange', '🟠'], ['morado', 'purple', '🟣'],
+    ['negro', 'black', '⚫'], ['blanco', 'white', '⚪'], ['rosado', 'pink', '🌸'], ['café', 'brown', '🟤']] },
+  { id: 'spanish-greet', s: 'lang', g: 'K-5', e: '👋', t: 'Spanish: greetings', a: 'd', c: [
+    ['hola', 'hello', '👋'], ['adiós', 'goodbye', '🙋'], ['buenos días', 'good morning', '🌅'], ['buenas noches', 'good night', '🌙'], ['por favor', 'please', '🙏'],
+    ['gracias', 'thank you', '💐'], ['¿Cómo estás?', 'How are you?', '❓'], ['me llamo', 'my name is', '📛']] },
+];
+/* flash-library:end */
+</script>
+<script>
+(function () {
+  'use strict';
+  var F = window.FlashCore, QR = window.CrosswordQR, B = window.BRB || {}, LIB = window.FLASH_LIBRARY || [];
+  var USER = B.user || {}, LANG = USER.lang || 'en', W = I18N[LANG] || I18N[LANG.split('-')[0]] || I18N.en;
+  // "Make your own" (BRB.canMake): the builder and Your sets, for teachers and grown-ups who may host only. A student
+  // studies a teacher's link or class code and the starter library.
+  var CAN_MAKE = B.canMake === true, CAN_AI = B.canWriteClues === true;
+  function t(k, v) { var s = W[k] != null ? W[k] : I18N.en[k] != null ? I18N.en[k] : k; if (v && typeof s === 'string') s = s.replace(/\{(\w+)\}/g, function (m, x) { return v[x] != null ? String(v[x]) : m; }); return s; }
+  var DIR = USER.dir === 'rtl' ? 'rtl' : 'ltr';
+  document.documentElement.lang = LANG; document.documentElement.dir = DIR;
+  var darkMq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
+  function applyTheme() { var th = B.theme === 'light' || B.theme === 'dark' ? B.theme : (darkMq && darkMq.matches ? 'dark' : 'light'); document.documentElement.dataset.theme = th; }
+  applyTheme(); if (darkMq && darkMq.addEventListener) darkMq.addEventListener('change', applyTheme);
+  document.title = t('title'); document.getElementById('fc-apptitle').textContent = t('title');
+  var motionMq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+  var reduced = function () { return !!(motionMq && motionMq.matches); };
+  var SOUND = { select: 'click', wrong: 'hit', right: 'coin', flip: 'click', win: 'win', match: 'powerup' };
+  function sfx(n, o) { try { if (SOUND[n] && B.sfx && !B.sfx.muted) B.sfx.play(SOUND[n], o); } catch (e) { /* no sound */ } }
+  var soundBtn = document.getElementById('fc-sound');
+  function showSound() { var off = !!(B.sfx && B.sfx.muted); soundBtn.textContent = off ? '🔇' : '🔊'; soundBtn.setAttribute('aria-pressed', String(!off)); soundBtn.setAttribute('aria-label', t('sound')); soundBtn.title = t('sound'); }
+  soundBtn.addEventListener('click', function () { if (B.sfx && B.sfx.mute) B.sfx.mute(); showSound(); sfx('select'); });
+  showSound();
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function btn(cls, text, fn, id) { var b = el('button', cls, text); b.type = 'button'; if (id) b.id = id; if (fn) b.addEventListener('click', fn); return b; }
+  var saidBox = document.getElementById('fc-said'), toastBox = document.getElementById('fc-toast'), toastTimer = 0;
+  function announce(s) { saidBox.textContent = ''; setTimeout(function () { saidBox.textContent = s; }, 30); }
+  function toast(s) { toastBox.textContent = s; toastBox.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(function () { toastBox.hidden = true; }, 2800); }
+  var codeOf = function (id) { var s = String(id || '').replace(/^s-/, '').toUpperCase(); return s.slice(0, 5) + ' ' + s.slice(5); };
+  function linkOf(id) { return B.gameUrl ? B.gameUrl + '?chapter=' + id + '&lock=1' : ''; }
+
+  /* ---------- the save (BRB.storage: the player's own game save, on every device they sign in on) ----------
+     mine: the teacher's drafts ({ id, set, t, lvl, c: [[term, def, pic]], a, ai, at, note }); prog: per set key
+     ('s-...' a saved set, 'lib:<id>' a library set, 'd:<id>' a draft) { lv: [levels], ms: [misses], st: [starred], best: ms } */
+  var SAVE_KEY = 'flashcards-v1', MAX_MINE = 60, MAX_PROG = 80;
+  function load() { try { var s = B.storage && B.storage.get(SAVE_KEY); return s && typeof s === 'object' ? s : {}; } catch (e) { return {}; } }
+  var SAVE = load();
+  SAVE = { mine: Array.isArray(SAVE.mine) ? SAVE.mine.filter(function (m) { return m && Array.isArray(m.c); }) : [], prog: SAVE.prog && typeof SAVE.prog === 'object' ? SAVE.prog : {} };
+  function persist() {
+    var keys = Object.keys(SAVE.prog);
+    if (keys.length > MAX_PROG) keys.sort(function (a, b) { return (SAVE.prog[a].at || 0) - (SAVE.prog[b].at || 0); }).slice(0, keys.length - MAX_PROG).forEach(function (k) { delete SAVE.prog[k]; });
+    try { if (B.storage) B.storage.set(SAVE_KEY, SAVE); } catch (e) { /* the save is full or off */ }
+  }
+
+  /* ---------- state ---------- */
+  // S.set: the set being studied { key, t, c, a, set (its Oomba id, if saved), lib, mine, link (opened by a link or a
+  // class code: card states then go to the student's lesson step, BRB.flashProgress) }
+  var S = { screen: 'home', set: null, draft: null, back: null, learn: null, test: null, match: null, flip: null };
+  var D = { fc: document.getElementById('fc') };
+  function screen(name) { D.fc.innerHTML = ''; D.fc.dataset.screen = name; S.screen = name; window.scrollTo(0, 0); stopTimers(); return D.fc; }
+  function card(root, wide) { var c = el('div', 'fc-card fc-widget' + (wide ? ' fc-wide' : '')); root.appendChild(c); return c; }
+  function head(box, icon, title, g, tag) {
+    if (g) box.style.setProperty('--g', 'var(--g-' + g + ')');
+    var h = el('div', 'fc-wh'), ic = el('span', 'fc-wicon', icon), tt = el(tag || 'h2', 'fc-wt', title);
+    ic.setAttribute('aria-hidden', 'true'); tt.dir = 'auto';
+    h.appendChild(ic); h.appendChild(tt); box.insertBefore(h, box.firstChild); return h;
+  }
+  function focusTop(x) { var h = x || D.fc.querySelector('h2'); if (h) { if (!x) h.tabIndex = -1; try { h.focus({ preventScroll: true }); } catch (e) { /* gone */ } } }
+  function bigBtn(cls, emo, title, sub, fn, id) {
+    var b = btn(cls, '', fn, id), e = el('span', 'fc-emo', emo), tx = el('span'); e.setAttribute('aria-hidden', 'true');
+    tx.appendChild(el('b', '', title)); if (sub) tx.appendChild(el('small', '', sub)); b.appendChild(e); b.appendChild(tx); return b;
+  }
+  function backBtn(fn) { return btn('fc-btn fc-quiet fc-sm', '‹ ' + t('back'), fn, 'fc-back'); }
+  var timers = [];
+  function later(fn, ms) { var id = setTimeout(fn, ms); timers.push(id); return id; }
+  function stopTimers() { timers.forEach(clearTimeout); timers = []; if (S.match && S.match.tick) { clearInterval(S.match.tick); S.match.tick = 0; } }
+
+  /* ---------- progress for one set (this player's own; teachers see a student's only through their lesson step) ---------- */
+  function progOf(set) {
+    var p = SAVE.prog[set.key], n = set.c.length;
+    if (!p || !Array.isArray(p.lv) || p.lv.length !== n) p = { lv: set.c.map(function () { return -1; }), ms: set.c.map(function () { return 0; }), st: [], best: 0 };
+    if (!Array.isArray(p.ms) || p.ms.length !== n) p.ms = set.c.map(function () { return 0; });
+    if (!Array.isArray(p.st)) p.st = [];
+    p.st = p.st.filter(function (i) { return i >= 0 && i < n; });
+    SAVE.prog[set.key] = p; return p;
+  }
+  function touch(set) { var p = progOf(set); p.at = Date.now(); persist(); }
+  // Card states to the student's lesson step (only a set opened by its link or class code; the play page sends it on
+  // only when the game was opened from that lesson step, and does nothing anywhere else).
+  var reportTimer = 0;
+  function report(set, now) {
+    if (!set || !set.link || !set.set || !B.flashProgress) return;
+    clearTimeout(reportTimer);
+    var go = function () { var p = progOf(set); B.flashProgress(p.lv.map(function (l, i) { return [l, p.ms[i] || 0]; })); };
+    if (now) go(); else reportTimer = setTimeout(go, 1500);
+  }
+
+  function setFromItems(it, id, opts) {
+    return { key: id, t: it.t || '', c: (it.c || []).map(function (x) { return [x[0], x[1], x[2] || '']; }), a: it.a === 'd' ? 'd' : 't', set: id, link: !!(opts && opts.link), mine: !!(opts && opts.mine) };
+  }
+  function libSet(x) { return { key: 'lib:' + x.id, t: x.t, c: x.c.map(function (y) { return [y[0], y[1], y[2] || '']; }), a: x.a === 'd' ? 'd' : 't', lib: x.id, set: '' }; }
+
+  function begin() {
+    var qs = B.questionSet;
+    if (qs) {
+      if (qs.missing) return showMissing();
+      var it = qs.items && qs.items[0];
+      if (it && Array.isArray(it.c)) return showSet(setFromItems(it, qs.id, { link: true, mine: qs.mine }));
+    }
+    showHome();
+  }
+
+  /* ---------- home ---------- */
+  function showHome() {
+    var c = card(screen('home'));
+    head(c, '🗂️', t('homeH'), 'class');
+    c.appendChild(el('p', 'fc-sub', t('tag')));
+    if (CAN_MAKE) c.appendChild(bigBtn('fc-big fc-go', '✏️', t('make'), t('makeSub'), function () { sfx('select'); edit(null); }, 'fc-make'));
+    if (B.canListSets && B.mySets) c.appendChild(bigBtn('fc-big', '📚', t('ws'), t('wsSub'), function () { sfx('select'); showSheets(); }, 'fc-ws'));
+    if (B.canFindSet !== false) drawCode(c);
+    c.appendChild(bigBtn('fc-big', '🧠', t('lib'), t('libSub', { n: LIB.length }), function () { sfx('select'); showLibrary(); }, 'fc-lib'));
+    if (CAN_MAKE && SAVE.mine.length) drawMine(c);
+    else if (CAN_MAKE && USER.isGuest) c.appendChild(el('p', 'fc-note', '🔒 ' + t('guestKeep')));
+    if (S.back === 'home') { S.back = ''; focusTop(); }
+  }
+  function drawCode(c) {
+    var box = el('div', 'fc-code'), lab = el('label', '', '🔑 ' + t('code')), row = el('div', 'fc-row'), inp = el('input', 'fc-in');
+    lab.htmlFor = 'fc-codein'; inp.id = 'fc-codein'; inp.autocomplete = 'off'; inp.autocapitalize = 'characters'; inp.spellcheck = false; inp.maxLength = 14; inp.placeholder = t('codePh');
+    var msg = el('p', 'fc-msg'); msg.setAttribute('role', 'status');
+    var go = btn('fc-btn fc-go', t('go'), function () {
+      var code = inp.value.trim(); if (!code) { inp.focus(); return; }
+      if (!B.findQuestionSet) { msg.textContent = t('offline'); return; }
+      go.disabled = true; msg.textContent = '…';
+      B.findQuestionSet(code).then(function (r) {
+        go.disabled = false;
+        var it = r && r.items && r.items[0];
+        if (r && r.error) { msg.textContent = t(r.error === 'offline' ? 'offline' : 'codeBad'); sfx('wrong', { volume: 0.4 }); return; }
+        if (!it || !Array.isArray(it.c)) { msg.textContent = t('codeBad'); return; }
+        sfx('select'); showSet(setFromItems(it, r.id, { link: true }));
+      });
+    }, 'fc-codego');
+    inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go.click(); } });
+    row.appendChild(inp); row.appendChild(go); box.appendChild(lab); box.appendChild(el('small', '', t('codeSub'))); box.appendChild(row); box.appendChild(msg);
+    c.appendChild(box);
+  }
+  var dateFmt = (function () { try { return new Intl.DateTimeFormat(LANG, { day: 'numeric', month: 'short', year: 'numeric' }); } catch (e) { return null; } })();
+  function drawMine(c) {
+    var sec = el('section', 'fc-mine'); sec.id = 'fc-mine'; sec.setAttribute('aria-labelledby', 'fc-mine-h');
+    var h = el('h3', '', t('mine')); h.id = 'fc-mine-h'; sec.appendChild(h);
+    sec.appendChild(el('p', 'fc-note', USER.isGuest ? '🔒 ' + t('guestKeep') : t('mineNote')));
+    var ul = el('ul', 'fc-list');
+    SAVE.mine.slice().sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).forEach(function (m) {
+      var li = el('li'), name = el('span', 'fc-name'), title = m.t || t('untitled');
+      name.appendChild(el('b', '', title)); name.dir = 'auto';
+      var bits = [t('nCards', { n: m.c.length })];
+      if (m.at && dateFmt) bits.push(dateFmt.format(new Date(m.at)));
+      if (m.set) bits.push(t('classCode') + ' ' + codeOf(m.set));
+      name.appendChild(el('small', '', bits.join(' · '))); li.appendChild(name);
+      var acts = el('span', 'fc-acts2');
+      var eb = btn('fc-btn fc-sm', '✏️ ' + t('editIt'), function () { sfx('select'); edit(m); }); eb.setAttribute('aria-label', t('editIt') + ': ' + title); eb.dataset.edit = m.id;
+      var sb = btn('fc-btn fc-sm fc-go', '▶️ ' + t('study'), function () {
+        if (problem(m)) { edit(m); return; }
+        sfx('select'); showSet(draftSet(m));
+      }); sb.setAttribute('aria-label', t('study') + ': ' + title); sb.dataset.study = m.id;
+      var db = btn('fc-btn fc-sm fc-quiet', '🗑️', null); db.setAttribute('aria-label', t('del') + ': ' + title); db.title = t('del'); db.dataset.del = m.id;
+      db.addEventListener('click', function () {
+        if (db.dataset.sure !== '1') { db.dataset.sure = '1'; db.textContent = t('delSure'); db.classList.add('fc-danger'); announce(t('delSure')); return; }
+        SAVE.mine = SAVE.mine.filter(function (x) { return x.id !== m.id; }); delete SAVE.prog['d:' + m.id]; persist();
+        toast(t('deleted')); announce(t('deleted')); showHome();
+        var mh = document.getElementById('fc-mine-h'); if (mh) { mh.tabIndex = -1; mh.focus(); } else focusTop();
+      });
+      db.addEventListener('blur', function () { if (db.dataset.sure === '1') { db.dataset.sure = ''; db.textContent = '🗑️'; db.classList.remove('fc-danger'); } });
+      acts.appendChild(eb); acts.appendChild(sb); acts.appendChild(db); li.appendChild(acts); ul.appendChild(li);
+    });
+    sec.appendChild(ul); c.appendChild(sec);
+  }
+  function draftSet(m) { return { key: m.set || 'd:' + m.id, t: m.t || '', c: cleanCards(m.c), a: m.a === 'd' ? 'd' : 't', set: m.set || '', mine: true, draft: m.id }; }
+  function showMissing() {
+    var c = card(screen('missing'));
+    head(c, '🔍', t('title'), 'show'); c.appendChild(el('p', 'fc-lead', t('missing')));
+    c.appendChild(btn('fc-btn fc-go', t('back'), function () { showHome(); }));
+    focusTop();
+  }
+
+  /* ---------- the starter library: ready-made sets by subject ---------- */
+  var SUBJ = { words: 'var(--g-class)', math: 'var(--g-time)', science: 'var(--g-join)', social: 'var(--g-show)', lang: 'var(--g-check)' };
+  function showLibrary(subject) {
+    var c = card(screen('library'), true);
+    head(c, '🧠', t('lib'), 'check').appendChild(backBtn(function () { S.back = 'home'; showHome(); }));
+    c.appendChild(el('p', 'fc-sub', t('libNote')));
+    var chips = el('div', 'fc-chips'); chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', t('libSubjects'));
+    var grid = el('div', 'fc-libgrid'); grid.id = 'fc-libgrid';
+    var cur = subject || '';
+    var draw = function () {
+      grid.innerHTML = '';
+      LIB.filter(function (x) { return !cur || x.s === cur; }).forEach(function (x) {
+        var b = bigBtn('fc-libset', x.e, x.t, t('libMeta', { grade: x.g, n: x.c.length }), function () { sfx('select'); S.libFrom = cur; showSet(libSet(x)); });
+        b.dataset.lib = x.id; b.style.setProperty('--g', SUBJ[x.s] || 'var(--g-class)'); grid.appendChild(b);
+      });
+      [].forEach.call(chips.children, function (ch) { ch.setAttribute('aria-pressed', String(ch.dataset.s === cur)); });
+    };
+    ['', 'words', 'math', 'science', 'social', 'lang'].forEach(function (s) {
+      var ch = btn('fc-chip', t(s ? 'subj.' + s : 'subj.all'), function () { cur = s; draw(); }); ch.dataset.s = s; chips.appendChild(ch);
+    });
+    c.appendChild(chips); c.appendChild(grid); draw(); focusTop();
+  }
+
+  /* ---------- a set's page: the four ways to study, the cards, and the teacher's tools ---------- */
+  function showSet(set) {
+    S.set = set; var p = progOf(set), n = set.c.length;
+    var c = card(screen('set'), true);
+    var h = head(c, '🗂️', set.t || t('untitled'), 'time');
+    h.appendChild(backBtn(function () { if (set.lib) showLibrary(S.libFrom); else if (set.draft && CAN_MAKE) { S.back = 'home'; showHome(); } else { S.back = 'home'; showHome(); } }));
+    var cnt = F.counts(p.lv);
+    c.appendChild(el('p', 'fc-sub', t('setMeta', { n: n, mastered: cnt.mastered })));
+    c.appendChild(masteryBar(p.lv));
+    var modes = el('div', 'fc-modes');
+    [['flip', '🔁', 'g-time'], ['learn', '🎯', 'g-check'], ['match', '🧩', 'g-tools'], ['test', '📝', 'g-show']].forEach(function (m) {
+      var b = btn('fc-mode', '', function () { sfx('select'); ({ flip: startFlip, learn: startLearn, match: startMatch, test: setupTest })[m[0]](); }, 'fc-m-' + m[0]);
+      b.style.setProperty('--g', 'var(--' + m[2] + ')');
+      var e = el('span', 'fc-emo', m[1]); e.setAttribute('aria-hidden', 'true');
+      b.appendChild(e); b.appendChild(el('span', '', t('mode.' + m[0]))); b.appendChild(el('small', '', t('mode.' + m[0] + 'Sub'))); modes.appendChild(b);
+    });
+    c.appendChild(modes);
+    if (set.link && set.set) c.appendChild(el('p', 'fc-note', '🧑‍🏫 ' + t('teacherSees')));
+    // the teacher's tools: edit (or copy a library or someone else's set to make it theirs), print, share
+    var tools = el('div', 'fc-row fc-wrap');
+    if (CAN_MAKE) {
+      var own = set.draft || (set.mine && set.set);
+      tools.appendChild(btn('fc-btn fc-sm', own ? '✏️ ' + t('editIt') : '📑 ' + t('copyEdit'), function () {
+        sfx('select');
+        var m = own ? (localFor(set) || { id: '', set: set.set, t: set.t, c: set.c, a: set.a }) : { id: '', set: '', t: set.t, c: set.c, a: set.a };
+        edit(m, !own);
+      }, 'fc-edit'));
+    }
+    if (B.canPrint && B.print) {
+      tools.appendChild(btn('fc-btn fc-sm', '🖨️ ' + t('printCards'), function () { printIt(set, 'cards'); }, 'fc-print'));
+      tools.appendChild(btn('fc-btn fc-sm fc-quiet', '📄 ' + t('printList'), function () { printIt(set, 'list'); }, 'fc-printlist'));
+    }
+    if (set.set && (set.mine || CAN_MAKE)) {
+      var share = el('div', 'fc-share'); share.id = 'fc-sharebox';
+      tools.appendChild(btn('fc-btn fc-sm', '🔗 ' + t('share'), function () { drawShare(share, set.set); share.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); }, 'fc-share'));
+      c.appendChild(tools); c.appendChild(share);
+    } else if (tools.children.length) c.appendChild(tools);
+    // every card, with a star for the hard ones
+    var sec = el('section', 'fc-sec'); sec.setAttribute('aria-labelledby', 'fc-terms-h');
+    var th = el('h3', '', t('cardsH', { n: n })); th.id = 'fc-terms-h'; sec.appendChild(th);
+    var ul = el('ul', 'fc-terms'); ul.id = 'fc-terms';
+    set.c.forEach(function (x, i) {
+      var li = el('li'), w = el('b', '', (x[2] ? x[2] + ' ' : '') + x[0]); w.dir = 'auto';
+      var d = el('span', '', x[1]); d.dir = 'auto';
+      li.appendChild(w); li.appendChild(d); li.appendChild(starBtn(set, i)); ul.appendChild(li);
+    });
+    sec.appendChild(ul); c.appendChild(sec);
+    focusTop();
+  }
+  function starBtn(set, i, onChange) {
+    var p = progOf(set), on = p.st.indexOf(i) >= 0, b = btn('fc-starbtn', on ? '★' : '☆');
+    b.setAttribute('aria-pressed', String(on)); b.setAttribute('aria-label', t('star') + ': ' + set.c[i][0]); b.title = t('star');
+    b.addEventListener('click', function () {
+      var q = progOf(set), k = q.st.indexOf(i);
+      if (k >= 0) q.st.splice(k, 1); else q.st.push(i);
+      touch(set); var now = k < 0; b.textContent = now ? '★' : '☆'; b.setAttribute('aria-pressed', String(now)); sfx('select');
+      if (onChange) onChange(now);
+    });
+    return b;
+  }
+  function masteryBar(levels, id) {
+    var c = F.counts(levels), n = levels.length || 1, box = el('div', 'fc-mastery'); if (id) box.id = id;
+    var bar = el('div', 'fc-mbar'); bar.setAttribute('role', 'img');
+    bar.setAttribute('aria-label', t('masteryLabel', { mastered: c.mastered, learning: c.learning, missed: c.missed, fresh: c.fresh }));
+    [['fc-m3', c.mastered], ['fc-m1', c.learning], ['fc-m0', c.missed]].forEach(function (x) { var i = el('i', x[0]); i.style.width = (100 * x[1] / n) + '%'; bar.appendChild(i); });
+    var key = el('div', 'fc-mkey'); key.setAttribute('aria-hidden', 'true');
+    key.appendChild(el('span', 'k3', t('kMastered', { n: c.mastered }))); key.appendChild(el('span', 'k1', t('kLearning', { n: c.learning })));
+    key.appendChild(el('span', 'k0', t('kMissed', { n: c.missed }))); key.appendChild(el('span', '', t('kFresh', { n: c.fresh })));
+    box.appendChild(bar); box.appendChild(key); return box;
+  }
+  function modeHead(c, icon, name, g) {
+    var h = head(c, icon, (S.set.t || t('untitled')) + ': ' + t('mode.' + name), g);
+    h.appendChild(backBtn(function () { showSet(S.set); })); return h;
+  }
+  function nowBar(label, text, id) { var b = el('div', 'fc-now'); if (id) b.id = id; b.appendChild(el('b', '', label)); var s = el('span', '', text); s.dir = 'auto'; b.appendChild(s); return b; }
+  /** Read a card's words aloud (the device's voice through the SDK; the cards are the teacher's own words). */
+  function say(text) { try { if (B.speak) B.speak(text, { lang: LANG }); } catch (e) { /* no speech */ } }
+
+  /* ---------- Flip ---------- */
+  function startFlip() {
+    var set = S.set, p = progOf(set);
+    S.flip = S.flip && S.flip.key === set.key ? S.flip : { key: set.key, order: set.c.map(function (x, i) { return i; }), at: 0, turned: false, shuffled: false, starred: false, defFirst: false };
+    drawFlip();
+  }
+  function flipOrder() {
+    var f = S.flip, p = progOf(S.set);
+    var list = f.starred ? f.order.filter(function (i) { return p.st.indexOf(i) >= 0; }) : f.order;
+    return list.length ? list : f.order;
+  }
+  function drawFlip() {
+    var set = S.set, f = S.flip, p = progOf(set), order = flipOrder();
+    if (f.at >= order.length) f.at = order.length - 1; if (f.at < 0) f.at = 0;
+    var i = order[f.at], x = set.c[i];
+    var c = card(screen('flip'), true); modeHead(c, '🔁', 'flip', 'time');
+    var top = el('div', 'fc-top'); var prog = el('span', 'fc-prog', t('nOf', { i: f.at + 1, n: order.length })); prog.id = 'fc-count'; top.appendChild(prog);
+    if (f.starred) top.appendChild(el('span', 'fc-note', '★ ' + t('starredOnly')));
+    c.appendChild(top);
+    var stage = el('div', 'fc-stage'), fl = btn('fc-flip' + (f.turned ? ' fc-turned' : ''), '', function () { turn(); }, 'fc-card');
+    var front = f.defFirst ? [x[1], '', t('defSide')] : [x[0], x[2], t('termSide')], back = f.defFirst ? [x[0], x[2], t('termSide')] : [x[1], '', t('defSide')];
+    var face = function (cls, v) { var d = el('div', 'fc-face ' + cls); d.appendChild(el('span', 'fc-side', v[2])); if (v[1]) { var pc = el('span', 'fc-pic', v[1]); pc.setAttribute('aria-hidden', 'true'); d.appendChild(pc); } var tx = el('span', 'fc-txt', v[0]); tx.dir = 'auto'; d.appendChild(tx); d.appendChild(el('span', 'fc-tap', t('tapFlip'))); return d; };
+    var fa = face('fc-front', front), fb = face('fc-back', back);
+    fa.setAttribute('aria-hidden', String(!!f.turned)); fb.setAttribute('aria-hidden', String(!f.turned));
+    fl.appendChild(fa); fl.appendChild(fb);
+    fl.setAttribute('aria-label', (f.turned ? back : front)[2] + ': ' + (f.turned ? back : front)[0] + '. ' + t('tapFlip'));
+    stage.appendChild(fl); c.appendChild(stage);
+    var tools = el('div', 'fc-row fc-tools');
+    tools.appendChild(btn('fc-btn', '‹ ' + t('prev'), function () { move(-1); }, 'fc-prev'));
+    tools.appendChild(btn('fc-btn fc-go', '🔁 ' + t('flipIt'), function () { turn(); }, 'fc-flipbtn'));
+    tools.appendChild(btn('fc-btn', t('next') + ' ›', function () { move(1); }, 'fc-next'));
+    c.appendChild(tools);
+    var more = el('div', 'fc-row fc-tools');
+    var sh = btn('fc-btn fc-sm', '🔀 ' + t('shuffle'), function () {
+      f.shuffled = !f.shuffled; f.order = f.shuffled ? F.shuffle(set.c.map(function (y, k) { return k; })) : set.c.map(function (y, k) { return k; }); f.at = 0; f.turned = false; sfx('select'); drawFlip(); focusIt('fc-shuffle');
+    }, 'fc-shuffle'); sh.setAttribute('aria-pressed', String(f.shuffled)); more.appendChild(sh);
+    var starred = p.st.indexOf(i) >= 0, st = btn('fc-btn fc-sm', (starred ? '★ ' : '☆ ') + t('starIt'), function () {
+      var q = progOf(set), k = q.st.indexOf(i); if (k >= 0) q.st.splice(k, 1); else q.st.push(i); touch(set); sfx('select');
+      if (f.starred && k >= 0) { drawFlip(); focusIt('fc-star'); return; }
+      st.textContent = (k < 0 ? '★ ' : '☆ ') + t('starIt'); st.setAttribute('aria-pressed', String(k < 0));
+      var so2 = document.getElementById('fc-staronly'); if (so2) so2.textContent = '★ ' + t('starredOnlyN', { n: q.st.length });
+    }, 'fc-star');
+    st.setAttribute('aria-pressed', String(starred)); more.appendChild(st);
+    var so = btn('fc-btn fc-sm', '★ ' + t('starredOnlyN', { n: p.st.length }), function () { if (!progOf(set).st.length) { toast(t('noStars')); return; } f.starred = !f.starred; f.at = 0; f.turned = false; drawFlip(); focusIt('fc-staronly'); }, 'fc-staronly');
+    so.setAttribute('aria-pressed', String(f.starred)); more.appendChild(so);
+    var df = btn('fc-btn fc-sm', '↔ ' + t('defFirst'), function () { f.defFirst = !f.defFirst; f.turned = false; drawFlip(); focusIt('fc-deffirst'); }, 'fc-deffirst');
+    df.setAttribute('aria-pressed', String(f.defFirst)); more.appendChild(df);
+    more.appendChild(btn('fc-btn fc-sm fc-quiet', '🔊 ' + t('readAloud'), function () { say((f.turned ? back : front)[0]); }, 'fc-say'));
+    c.appendChild(more);
+    c.appendChild(el('p', 'fc-kbd', t('keys')));
+    if (S.focusFlip) { S.focusFlip = false; fl.focus({ preventScroll: true }); }
+  }
+  function focusIt(id) { var e = document.getElementById(id); if (e) e.focus({ preventScroll: true }); }
+  function turn() {
+    var f = S.flip; f.turned = !f.turned; sfx('flip', { volume: 0.4 });
+    var fl = document.getElementById('fc-card'); if (!fl) return;
+    fl.classList.toggle('fc-turned', f.turned);
+    var faces = fl.querySelectorAll('.fc-face'); faces[0].setAttribute('aria-hidden', String(f.turned)); faces[1].setAttribute('aria-hidden', String(!f.turned));
+    var shown = faces[f.turned ? 1 : 0]; fl.setAttribute('aria-label', shown.querySelector('.fc-side').textContent + ': ' + shown.querySelector('.fc-txt').textContent + '. ' + t('tapFlip'));
+    announce(shown.querySelector('.fc-txt').textContent);
+  }
+  function move(d) {
+    var f = S.flip, n = flipOrder().length, to = f.at + d;
+    if (to < 0 || to >= n) { if (to >= n) { toast(t('flipEnd')); announce(t('flipEnd')); } return; }
+    f.at = to; f.turned = false; sfx('select', { volume: 0.4 }); var had = document.activeElement && document.activeElement.id; drawFlip();
+    focusIt(had === 'fc-prev' || had === 'fc-next' ? had : 'fc-card');
+    touch(S.set);
+  }
+  document.addEventListener('keydown', function (e) {
+    if (S.screen !== 'flip') return;
+    var tag = e.target && e.target.tagName; if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (e.key === ' ' || e.key === 'Spacebar') { e.preventDefault(); turn(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); move(DIR === 'rtl' ? -1 : 1); }
+    else if (e.key === 'ArrowLeft') { e.preventDefault(); move(DIR === 'rtl' ? 1 : -1); }
+  });
+
+  /* ---------- Learn: multiple choice first, then typed; missed cards come back; mastery shown ---------- */
+  var ROUND = 7;
+  function startLearn() {
+    var set = S.set, p = progOf(set);
+    if (F.counts(p.lv).mastered === set.c.length) return learnDone(true);
+    S.learn = { queue: F.round(p.lv, p.ms, ROUND), done: 0, right: 0, asked: 0, again: {} };
+    askNext();
+  }
+  /** What a question shows and what it asks for: the set's choice (answer with the term from its definition, or the
+   *  other way round). */
+  var askSide = function () { return S.set.a === 'd' ? 'd' : 't'; };
+  var showSide = function () { return S.set.a === 'd' ? 't' : 'd'; };
+  function askNext() {
+    var L = S.learn, set = S.set, p = progOf(set);
+    if (!L.queue.length) return roundDone();
+    var i = L.queue[0], x = set.c[i], kind = F.kindFor(p.lv[i]);
+    L.i = i; L.kind = kind; L.answered = false;
+    var c = card(screen('learn'), true); modeHead(c, '🎯', 'learn', 'check');
+    c.appendChild(masteryBar(p.lv, 'fc-mastery'));
+    var q = el('div', 'fc-q'); q.id = 'fc-q';
+    q.appendChild(el('small', '', t(kind === 'mc' ? 'pick' : 'typeIt')));
+    var shown = F.sideOf(x, showSide());
+    if (showSide() === 't' && x[2]) { var pc = el('span', 'fc-pic', x[2]); pc.setAttribute('aria-hidden', 'true'); q.appendChild(pc); }
+    var tx = el('span', 'fc-txt', shown); tx.dir = 'auto'; tx.id = 'fc-prompt'; q.appendChild(tx);
+    q.appendChild(btn('fc-btn fc-sm fc-quiet', '🔊 ' + t('readAloud'), function () { say(shown); }, 'fc-say'));
+    c.appendChild(q);
+    var fb = el('div', 'fc-fb'); fb.id = 'fc-fb'; fb.setAttribute('role', 'status');
+    if (kind === 'mc') {
+      var box = el('div', 'fc-choices'); box.id = 'fc-choices';
+      F.choices(set.c, i, askSide(), 4).forEach(function (o, k) {
+        var b = btn('fc-choice', '', function () { answer(o.i === i, b, o.text); });
+        b.dataset.right = String(o.i === i); var kk = el('span', 'fc-k', String(k + 1)); kk.setAttribute('aria-hidden', 'true'); b.appendChild(kk); var s = el('span', '', o.text); s.dir = 'auto'; b.appendChild(s);
+        box.appendChild(b);
+      });
+      c.appendChild(box);
+      var first = box.querySelector('button'); if (first) first.focus({ preventScroll: true });
+    } else {
+      var row = el('div', 'fc-type'), inp = el('input', 'fc-in'), lab = el('label', 'sr', t('yourAnswer'));
+      inp.id = 'fc-ans'; lab.htmlFor = 'fc-ans'; inp.autocomplete = 'off'; inp.spellcheck = false; inp.setAttribute('autocapitalize', 'off'); inp.maxLength = 200; inp.dir = 'auto';
+      var go = btn('fc-btn fc-go', t('check'), function () { var v = inp.value.trim(); if (!v) { inp.focus(); return; } typed(v); }, 'fc-checkbtn');
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); if (!L.answered) go.click(); else { var cn = document.getElementById('fc-continue'); if (cn) cn.click(); } } });
+      row.appendChild(lab); row.appendChild(inp); row.appendChild(go); c.appendChild(row);
+      c.appendChild(btn('fc-btn fc-sm fc-quiet', t('dontKnow'), function () { typed(''); }, 'fc-dontknow'));
+      inp.focus({ preventScroll: true });
+    }
+    c.appendChild(fb);
+    c.appendChild(el('p', 'fc-kbd', kind === 'mc' ? t('keysMc') : t('keysType')));
+  }
+  document.addEventListener('keydown', function (e) {
+    if (S.screen !== 'learn' || !S.learn || S.learn.kind !== 'mc' || S.learn.answered) return;
+    var n = +e.key; if (!(n >= 1 && n <= 4)) return;
+    var b = document.querySelectorAll('#fc-choices .fc-choice')[n - 1]; if (b) { e.preventDefault(); b.click(); }
+  });
+  function typed(v) {
+    var L = S.learn, x = S.set.c[L.i], want = F.sideOf(x, askSide()), r = v ? F.check(v, want) : 'wrong';
+    var inp = document.getElementById('fc-ans'); if (inp) { inp.readOnly = true; inp.setAttribute('aria-invalid', String(r === 'wrong')); }
+    var go = document.getElementById('fc-checkbtn'); if (go) go.disabled = true;
+    var dk = document.getElementById('fc-dontknow'); if (dk) dk.remove();
+    answer(r !== 'wrong', null, v, r === 'close' ? want : '');
+  }
+  function answer(right, b, text, close) {
+    var L = S.learn, set = S.set, p = progOf(set), i = L.i, want = F.sideOf(set.c[i], askSide());
+    if (L.answered) return; L.answered = true; L.asked++;
+    L.prevLevel = p.lv[i];
+    p.lv[i] = F.after(p.lv[i], L.kind, right);
+    if (!right) { p.ms[i] = (p.ms[i] || 0) + 1; }
+    touch(set); report(set);
+    L.queue.shift();
+    if (!right && !L.again[i]) { L.again[i] = 1; L.queue.splice(F.again(L.queue.length), 0, i); }
+    if (right) L.right++;
+    [].forEach.call(document.querySelectorAll('#fc-choices .fc-choice'), function (x) { x.disabled = true; if (x.dataset.right === 'true') x.classList.add('fc-right'); });
+    if (b && !right) { b.classList.add('fc-wrong'); if (!reduced()) b.classList.add('fc-shake'); }
+    var fb = document.getElementById('fc-fb'); fb.innerHTML = ''; fb.className = 'fc-fb ' + (right ? 'fc-good' : 'fc-bad');
+    var bar = document.getElementById('fc-mastery'); if (bar) bar.replaceWith(masteryBar(p.lv, 'fc-mastery'));
+    if (right) {
+      fb.appendChild(el('b', '', '✅ ' + t(p.lv[i] === 3 ? 'gotMastered' : 'cheer' + (L.right % 3 + 1))));
+      if (close) { var cl = el('span', '', t('closeSpell', { w: close })); cl.dir = 'auto'; fb.appendChild(cl); }
+      sfx('right', { volume: 0.5 }); announce(t('right'));
+    } else {
+      fb.appendChild(el('b', '', '❌ ' + t('notQuite')));
+      var ans = el('span', '', t('answerWas', { w: want })); ans.dir = 'auto'; fb.appendChild(ans);
+      if (L.kind === 'type' && text) {
+        var mine = el('span', 'fc-note', t('youTyped', { w: text })); mine.dir = 'auto'; fb.appendChild(mine);
+        fb.appendChild(btn('fc-btn fc-sm fc-quiet', t('override'), function () { override(); }, 'fc-override'));
+      }
+      sfx('wrong', { volume: 0.4 }); announce(t('notQuite') + ' ' + t('answerWas', { w: want }));
+    }
+    var cont = btn('fc-btn fc-go fc-main', t('continue'), function () { askNext(); }, 'fc-continue');
+    fb.appendChild(cont);
+    if (right && L.kind === 'mc' && !close) later(function () { if (S.screen === 'learn' && document.getElementById('fc-continue') === cont) askNext(); }, 1100);
+    else cont.focus({ preventScroll: true });
+  }
+  /** "I was right": a typed answer the check missed (a synonym, a typo the teacher would accept) counts as right. */
+  function override() {
+    var L = S.learn, set = S.set, p = progOf(set), i = L.i;
+    p.lv[i] = F.after(L.prevLevel != null ? L.prevLevel : 1, 'type', true);
+    p.ms[i] = Math.max(0, (p.ms[i] || 1) - 1); L.right++;
+    var k = L.queue.lastIndexOf(i); if (k >= 0 && L.again[i]) { L.queue.splice(k, 1); delete L.again[i]; }
+    touch(set); report(set);
+    var fb = document.getElementById('fc-fb'); fb.className = 'fc-fb fc-good'; fb.innerHTML = '';
+    fb.appendChild(el('b', '', '✅ ' + t('counted')));
+    var bar = document.getElementById('fc-mastery'); if (bar) bar.replaceWith(masteryBar(p.lv, 'fc-mastery'));
+    var cont = btn('fc-btn fc-go fc-main', t('continue'), function () { askNext(); }, 'fc-continue'); fb.appendChild(cont); cont.focus({ preventScroll: true });
+  }
+  function roundDone() {
+    var set = S.set, p = progOf(set), cnt = F.counts(p.lv), L = S.learn;
+    report(set, true);
+    if (cnt.mastered === set.c.length) return learnDone(false);
+    var c = card(screen('learnround'), true); modeHead(c, '🎯', 'learn', 'check');
+    c.appendChild(el('p', 'fc-lead', t('roundDone', { right: L.right, asked: L.asked })));
+    c.appendChild(masteryBar(p.lv, 'fc-mastery'));
+    c.appendChild(el('p', 'fc-note', t('roundNext')));
+    var row = el('div', 'fc-row fc-wrap fc-center');
+    row.appendChild(btn('fc-btn fc-go fc-main', t('nextRound'), function () { sfx('select'); startLearn(); }, 'fc-nextround'));
+    c.appendChild(row); focusIt('fc-nextround');
+  }
+  function learnDone(already) {
+    var set = S.set, p = progOf(set);
+    var c = card(screen('learndone'), true); c.classList.add('fc-done'); modeHead(c, '🎉', 'learn', 'class');
+    c.appendChild(el('div', 'fc-stars', '★★★'));
+    c.appendChild(el('p', 'fc-lead', t('allMastered', { n: set.c.length })));
+    if (!already) { sfx('win', { volume: 0.6 }); confetti(); try { if (B.gameOver) B.gameOver({ won: true, score: 100 }); } catch (e) { /* no SDK */ } announce(t('allMastered', { n: set.c.length })); }
+    var row = el('div', 'fc-row fc-wrap fc-center');
+    row.appendChild(btn('fc-btn fc-go', '📝 ' + t('mode.test'), function () { setupTest(); }, 'fc-totest'));
+    row.appendChild(btn('fc-btn', '🔄 ' + t('learnAgain'), function () { var q = progOf(set); q.lv = q.lv.map(function () { return -1; }); touch(set); report(set, true); startLearn(); }, 'fc-learnagain'));
+    c.appendChild(row); focusTop();
+  }
+
+  /* ---------- Match: a timed tile match; the player's own best time only (never a leaderboard) ---------- */
+  function startMatch() {
+    var set = S.set, p = progOf(set);
+    var c = card(screen('match'), true); modeHead(c, '🧩', 'match', 'tools');
+    if (set.c.length < 2) { c.appendChild(el('p', 'fc-lead', t('needTwo'))); return; }
+    c.appendChild(el('p', 'fc-lead', t('matchHow')));
+    if (p.best) c.appendChild(el('p', 'fc-note fc-center', '⏱️ ' + t('yourBest', { s: secs(p.best) })));
+    c.appendChild(btn('fc-btn fc-go fc-main', '▶️ ' + t('startMatch'), function () { playMatch(); }, 'fc-matchgo'));
+    focusIt('fc-matchgo');
+  }
+  var secs = function (ms) { return (Math.round(ms / 100) / 10).toFixed(1); };
+  function playMatch() {
+    var set = S.set, tiles = F.deal(set.c, 6);
+    var c = card(screen('matchplay'), true); modeHead(c, '🧩', 'match', 'tools');
+    var top = el('div', 'fc-top'), tm = el('span', 'fc-timer', '0.0'); tm.id = 'fc-timer'; tm.setAttribute('aria-hidden', 'true');
+    top.appendChild(el('span', 'fc-prog', t('pairsLeft', { n: tiles.length / 2 }))); top.appendChild(tm); c.appendChild(top);
+    var board = el('div', 'fc-board'); board.id = 'fc-board';
+    var M = S.match = { start: Date.now(), penalty: 0, sel: null, left: tiles.length / 2, tick: 0 };
+    M.tick = setInterval(function () { tm.textContent = secs(Date.now() - M.start + M.penalty); }, 100);
+    tiles.forEach(function (tl) {
+      var x = set.c[tl.i], b = btn('fc-tile', '');
+      if (tl.side === 't' && x[2]) { var pc = el('span', 'fc-pic', x[2]); pc.setAttribute('aria-hidden', 'true'); b.appendChild(pc); }
+      var s = el('span', '', tl.side === 't' ? x[0] : (x[1].length > 90 ? x[1].slice(0, 88) + '…' : x[1])); s.dir = 'auto'; b.appendChild(s);
+      b.dataset.i = tl.i; b.dataset.side = tl.side; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', function () { pickTile(b); });
+      board.appendChild(b);
+    });
+    c.appendChild(board);
+    c.appendChild(el('p', 'fc-kbd', t('matchKeys')));
+    var first = board.querySelector('button'); if (first) first.focus({ preventScroll: true });
+  }
+  function pickTile(b) {
+    var M = S.match; if (!M || b.classList.contains('fc-gone')) return;
+    if (M.sel === b) { b.setAttribute('aria-pressed', 'false'); M.sel = null; return; }
+    if (!M.sel) { M.sel = b; b.setAttribute('aria-pressed', 'true'); sfx('select', { volume: 0.3 }); return; }
+    var a = M.sel; M.sel = null;
+    if (a.dataset.i === b.dataset.i && a.dataset.side !== b.dataset.side) {
+      [a, b].forEach(function (x) { x.classList.add('fc-gone'); x.setAttribute('aria-pressed', 'false'); x.disabled = true; });
+      M.left--; sfx('match', { volume: 0.4 });
+      var pr = document.querySelector('[data-screen="matchplay"] .fc-prog'); if (pr) pr.textContent = t('pairsLeft', { n: M.left });
+      announce(t('pairsLeft', { n: M.left }));
+      if (!M.left) return matchDone();
+      var next = document.querySelector('#fc-board .fc-tile:not(.fc-gone)'); if (next) next.focus({ preventScroll: true });
+    } else {
+      M.penalty += 1000; sfx('wrong', { volume: 0.3 }); announce(t('noMatch'));
+      [a, b].forEach(function (x) { x.setAttribute('aria-pressed', 'false'); x.classList.add('fc-bad'); });
+      later(function () { a.classList.remove('fc-bad'); b.classList.remove('fc-bad'); }, 450);
+    }
+  }
+  function matchDone() {
+    var set = S.set, M = S.match, ms = Date.now() - M.start + M.penalty, p = progOf(set);
+    clearInterval(M.tick); M.tick = 0;
+    var best = !p.best || ms < p.best, was = p.best;
+    if (best) p.best = ms; touch(set);
+    var c = card(screen('matchdone'), true); c.classList.add('fc-done'); modeHead(c, '🧩', 'match', 'tools');
+    var big = el('p', 'fc-score', secs(ms) + ' s'); big.id = 'fc-time'; c.appendChild(big);
+    c.appendChild(el('p', 'fc-lead', best ? (was ? t('newBest') : t('firstTime')) : t('yourBest', { s: secs(p.best) })));
+    if (M.penalty) c.appendChild(el('p', 'fc-note', t('penalty', { n: M.penalty / 1000 })));
+    if (best) { sfx('win', { volume: 0.5 }); confetti(); }
+    try { if (B.gameOver) B.gameOver({ won: true }); } catch (e) { /* no SDK */ }
+    var row = el('div', 'fc-row fc-wrap fc-center');
+    row.appendChild(btn('fc-btn fc-go', '🔄 ' + t('playAgain'), function () { playMatch(); }, 'fc-matchagain'));
+    row.appendChild(btn('fc-btn', '‹ ' + t('toSet'), function () { showSet(set); }));
+    c.appendChild(row); announce(big.textContent); focusIt('fc-matchagain');
+  }
+
+  /* ---------- Test: multiple choice, true or false and written, marked at the end with a review ---------- */
+  function setupTest() {
+    var set = S.set, n = set.c.length;
+    var c = card(screen('testsetup'), true); modeHead(c, '📝', 'test', 'show');
+    var f = el('div', 'fc-sec');
+    var nf = el('div', 'fc-field'), nl = el('label', '', t('testCount')), ns = el('select', 'fc-in'); nl.htmlFor = 'fc-tn'; ns.id = 'fc-tn';
+    [5, 10, 15, 20, 30, 50].filter(function (k) { return k < n; }).concat([n]).forEach(function (k) { var o = el('option', '', String(k)); o.value = k; if (k === Math.min(10, n)) o.selected = true; ns.appendChild(o); });
+    nf.appendChild(nl); nf.appendChild(ns); f.appendChild(nf);
+    f.appendChild(el('span', 'fc-lab', t('testKinds')));
+    var kinds = el('div', 'fc-radio');
+    [['mc', t('kind.mc')], ['tf', t('kind.tf')], ['written', t('kind.written')]].forEach(function (k) {
+      var lab = el('label'), cb = el('input'); cb.type = 'checkbox'; cb.checked = true; cb.value = k[0]; cb.id = 'fc-tk-' + k[0];
+      lab.appendChild(cb); lab.appendChild(document.createTextNode(k[1])); kinds.appendChild(lab);
+    });
+    f.appendChild(kinds);
+    var msg = el('p', 'fc-msg fc-err'); msg.setAttribute('role', 'alert'); f.appendChild(msg);
+    c.appendChild(f);
+    c.appendChild(btn('fc-btn fc-go fc-main', '▶️ ' + t('startTest'), function () {
+      var ks = [].filter.call(kinds.querySelectorAll('input'), function (x) { return x.checked; }).map(function (x) { return x.value; });
+      if (!ks.length) { msg.textContent = t('pickKind'); return; }
+      sfx('select'); takeTest(F.testOf(set.c, { n: +ns.value, kinds: ks, side: askSide() }));
+    }, 'fc-teststart'));
+    focusTop();
+  }
+  function takeTest(qs) {
+    var set = S.set, side = askSide(), other = showSide();
+    S.test = { qs: qs, answers: qs.map(function () { return null; }) };
+    var c = card(screen('test'), true); modeHead(c, '📝', 'test', 'show');
+    c.appendChild(nowBar(t('testNow'), t('testHow', { n: qs.length })));
+    var list = el('ol', 'fc-rows'); list.id = 'fc-test';
+    qs.forEach(function (q, k) {
+      var x = set.c[q.i], li = el('li', 'fc-tq'); li.dataset.q = k; li.dataset.kind = q.kind;
+      var h = el('h3', ''); h.appendChild(el('span', '', String(k + 1) + '.')); h.appendChild(el('small', '', t('kind.' + q.kind))); li.appendChild(h);
+      var tx = el('span', 'fc-txt', (other === 't' && x[2] ? x[2] + ' ' : '') + F.sideOf(x, other)); tx.dir = 'auto'; li.appendChild(tx);
+      var name = 'fc-q' + k;
+      if (q.kind === 'mc') {
+        var opts = el('div', 'fc-opts'); opts.setAttribute('role', 'radiogroup'); opts.setAttribute('aria-label', t('kind.mc') + ' ' + (k + 1));
+        q.options.forEach(function (o, j) { var lab = el('label', 'fc-opt'), r = el('input'); r.type = 'radio'; r.name = name; r.value = String(o.i); r.id = name + '-' + j; r.addEventListener('change', function () { S.test.answers[k] = o.i; }); lab.appendChild(r); var s = el('span', '', o.text); s.dir = 'auto'; lab.appendChild(s); opts.appendChild(lab); });
+        li.appendChild(opts);
+      } else if (q.kind === 'tf') {
+        var shown = el('p', 'fc-review'); shown.dir = 'auto'; shown.textContent = t('tfIs', { w: q.shown }); li.appendChild(shown);
+        var tf = el('div', 'fc-opts fc-radio'); tf.setAttribute('role', 'radiogroup'); tf.setAttribute('aria-label', t('kind.tf') + ' ' + (k + 1));
+        [[true, t('true')], [false, t('false')]].forEach(function (v, j) { var lab = el('label', 'fc-opt'), r = el('input'); r.type = 'radio'; r.name = name; r.id = name + '-' + j; r.addEventListener('change', function () { S.test.answers[k] = v[0]; }); lab.appendChild(r); lab.appendChild(document.createTextNode(v[1])); tf.appendChild(lab); });
+        li.appendChild(tf);
+      } else {
+        var lab = el('label', 'sr', t('yourAnswer') + ' ' + (k + 1)), inp = el('input', 'fc-in'); inp.id = name; lab.htmlFor = name; inp.autocomplete = 'off'; inp.spellcheck = false; inp.maxLength = 200; inp.dir = 'auto';
+        inp.setAttribute('autocapitalize', 'off'); inp.addEventListener('input', function () { S.test.answers[k] = inp.value; });
+        li.appendChild(lab); li.appendChild(inp);
+      }
+      list.appendChild(li);
+    });
+    c.appendChild(list);
+    var msg = el('p', 'fc-msg'); msg.id = 'fc-testmsg'; msg.setAttribute('role', 'status');
+    var sub = btn('fc-btn fc-go fc-main', '✅ ' + t('submit'), function () {
+      var open = S.test.answers.filter(function (a) { return a === null || a === ''; }).length;
+      if (open && sub.dataset.sure !== '1') { sub.dataset.sure = '1'; msg.textContent = t('unanswered', { n: open }); sub.textContent = '✅ ' + t('submitAnyway'); announce(msg.textContent); return; }
+      markTest();
+    }, 'fc-submit');
+    c.appendChild(msg); c.appendChild(sub);
+    focusTop();
+  }
+  function markTest() {
+    var set = S.set, T = S.test, side = askSide(), p = progOf(set), right = 0;
+    var results = T.qs.map(function (q, k) {
+      var a = T.answers[k], ok = a !== null && a !== '' && F.mark(set.c, q, a, side);
+      if (ok) { right++; if (p.lv[q.i] < 1) p.lv[q.i] = 1; } else { p.lv[q.i] = 0; p.ms[q.i] = (p.ms[q.i] || 0) + 1; }
+      return ok;
+    });
+    touch(set); report(set, true);
+    var pct = Math.round((100 * right) / T.qs.length);
+    try { if (B.gameOver) B.gameOver({ won: true, score: pct }); } catch (e) { /* no SDK */ }
+    var c = card(screen('testdone'), true); modeHead(c, '📝', 'test', 'show');
+    var sc = el('p', 'fc-score', pct + '%'); sc.id = 'fc-score'; c.appendChild(sc);
+    c.appendChild(el('p', 'fc-lead', t('testScore', { right: right, n: T.qs.length })));
+    if (pct === 100) { sfx('win', { volume: 0.5 }); confetti(); } else sfx('right', { volume: 0.4 });
+    var row = el('div', 'fc-row fc-wrap fc-center');
+    row.appendChild(btn('fc-btn fc-go', '🔄 ' + t('retake'), function () { setupTest(); }, 'fc-retake'));
+    if (right < T.qs.length) row.appendChild(btn('fc-btn', '🎯 ' + t('learnMissed'), function () { startLearn(); }, 'fc-learnmissed'));
+    c.appendChild(row);
+    c.appendChild(el('h3', '', t('review')));
+    var list = el('ol', 'fc-rows'); list.id = 'fc-review';
+    T.qs.forEach(function (q, k) {
+      var x = set.c[q.i], ok = results[k], li = el('li', 'fc-tq ' + (ok ? 'fc-r-ok' : 'fc-r-no')), a = T.answers[k];
+      var h = el('h3', ''); h.appendChild(el('span', '', (ok ? '✅ ' : '❌ ') + (k + 1) + '.')); h.appendChild(el('small', '', t('kind.' + q.kind))); li.appendChild(h);
+      var tx = el('span', 'fc-txt', F.sideOf(x, showSide())); tx.dir = 'auto'; li.appendChild(tx);
+      var mine = a === null || a === '' ? t('noAnswer') : q.kind === 'mc' ? F.sideOf(set.c[a], side) : q.kind === 'tf' ? t('tfYou', { w: q.shown, a: t(a ? 'true' : 'false') }) : a;
+      var you = el('p', 'fc-review', t('youSaid', { w: mine })); you.dir = 'auto'; li.appendChild(you);
+      if (!ok) { var rt = el('p', 'fc-review fc-ok', t('rightAnswer', { w: F.sideOf(x, side) })); rt.dir = 'auto'; li.appendChild(rt); }
+      list.appendChild(li);
+    });
+    c.appendChild(list);
+    announce(t('testScore', { right: right, n: T.qs.length })); focusIt('fc-retake');
+  }
+
+  /* ---------- the builder: paste or upload a list, AI from a topic or a lesson, cards with an emoji, options ---------- */
+  var PICKS = ['🍎', '🐶', '🐱', '🐸', '🦋', '🌳', '🌻', '🌍', '☀️', '🌙', '⭐', '🪐', '🔥', '💧', '❄️', '⚡', '🌋', '🏔️', '🌊', '🦕', '🧬', '🔬', '🧲', '⚖️', '➕', '➖', '✖️', '➗', '🔢', '📏', '🔺', '🟦', '⚪', '🕒', '💰', '🏛️', '🗽', '🗺️', '🚂', '✈️', '🎵', '🎨', '📖', '✏️', '💬', '❤️', '😀', '🏠'];
+  function edit(m, copy) {
+    S.draft = m ? { id: copy ? '' : m.id || '', set: copy ? '' : m.set || '', t: m.t || '', lvl: m.lvl || '', c: m.c.map(function (x) { return [x[0], x[1], x[2] || '']; }), a: m.a === 'd' ? 'd' : 't', ai: !!m.ai, note: m.note || '' }
+      : { id: '', set: '', t: '', lvl: '', c: [['', '', ''], ['', '', ''], ['', '', '']], a: 't', ai: false, note: '' };
+    if (!S.draft.id) S.draft.id = 'm' + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36);
+    showBuild();
+  }
+  function localFor(set) { return SAVE.mine.filter(function (m) { return (set.draft && m.id === set.draft) || (set.set && m.set === set.set); })[0] || null; }
+  var saveTimer = 0;
+  function remember(d, now) {
+    clearTimeout(saveTimer);
+    var go = function () {
+      if (!d.c.some(function (x) { return x[0].trim() || x[1].trim(); }) && !d.t) return;
+      var rec = { id: d.id, set: d.set, t: d.t, lvl: d.lvl, c: d.c.filter(function (x) { return x[0].trim() || x[1].trim(); }).map(function (x) { return [x[0], x[1], x[2] || '']; }), a: d.a, ai: d.ai, note: d.note, at: Date.now() };
+      var k = -1; SAVE.mine.forEach(function (m, i) { if (m.id === d.id) k = i; });
+      if (k >= 0) SAVE.mine[k] = rec; else SAVE.mine.push(rec);
+      if (SAVE.mine.length > MAX_MINE) SAVE.mine.sort(function (a, b) { return (b.at || 0) - (a.at || 0); }).length = MAX_MINE;
+      persist();
+    };
+    if (now) go(); else saveTimer = setTimeout(go, 900);
+  }
+  /** The draft's cards as a set takes them: both sides filled, spaces tidied. */
+  function cleanCards(list) { return list.map(function (x) { return [String(x[0] || '').replace(/\s+/g, ' ').trim(), String(x[1] || '').replace(/\s+/g, ' ').trim(), x[2] || '']; }).filter(function (x) { return x[0] || x[1]; }); }
+  /** What is wrong with a draft before it can be studied or saved, or '' (the server checks again, with the text filter). */
+  function problem(d) {
+    var c = cleanCards(d.c), seen = {}, bad = '';
+    if (c.length < 2) return t('needTwo');
+    if (c.length > F.MAX) return t('tooMany', { n: F.MAX });
+    c.forEach(function (x, i) {
+      if (bad) return;
+      if (!x[0] || !x[1]) bad = t('fillBoth', { n: i + 1 });
+      else if (x[0].length > F.TERM) bad = t('termLong', { n: i + 1, max: F.TERM });
+      else if (x[1].length > F.DEF) bad = t('defLong', { n: i + 1, max: F.DEF });
+      else if (seen[F.key(x[0])]) bad = t('twice', { w: x[0] });
+      seen[F.key(x[0])] = 1;
+    });
+    return bad;
+  }
+  function showBuild() {
+    var d = S.draft, c = card(screen('build'), true);
+    head(c, '✏️', t('buildH'), 'tools').appendChild(backBtn(function () { remember(d, true); S.back = 'home'; showHome(); }));
+    var meta = el('div', 'fc-meta');
+    var tf = el('div', 'fc-field'), tl = el('label', '', t('titleL')), ti = el('input', 'fc-in'); tl.htmlFor = 'fc-title'; ti.id = 'fc-title'; ti.maxLength = 60; ti.value = d.t; ti.placeholder = t('titlePh'); ti.dir = 'auto';
+    ti.addEventListener('input', function () { d.t = ti.value; remember(d); });
+    tf.appendChild(tl); tf.appendChild(ti); meta.appendChild(tf);
+    if (CAN_AI) {
+      var lf = el('div', 'fc-field'), ll = el('label', '', t('levelL')), li = el('input', 'fc-in'); ll.htmlFor = 'fc-level'; li.id = 'fc-level'; li.maxLength = 60; li.value = d.lvl; li.placeholder = t('levelPh');
+      li.addEventListener('input', function () { d.lvl = li.value; remember(d); });
+      lf.appendChild(ll); lf.appendChild(li); meta.appendChild(lf);
+    }
+    c.appendChild(meta);
+    if (CAN_AI) c.appendChild(aiBox(d));
+    // paste or upload a two-column list
+    var ps = el('section', 'fc-sec'); ps.setAttribute('aria-labelledby', 'fc-paste-h');
+    var ph = el('h3', '', '📋 ' + t('pasteH')); ph.id = 'fc-paste-h'; ps.appendChild(ph);
+    ps.appendChild(el('p', 'fc-note', t('pasteP')));
+    var ta = el('textarea', 'fc-in fc-paste'); ta.id = 'fc-paste'; ta.placeholder = t('pastePh'); ta.setAttribute('aria-labelledby', 'fc-paste-h'); ta.dir = 'auto'; ps.appendChild(ta);
+    var pr = el('div', 'fc-row fc-wrap'), pmsg = el('p', 'fc-msg'); pmsg.id = 'fc-pastemsg'; pmsg.setAttribute('role', 'status');
+    pr.appendChild(btn('fc-btn fc-go fc-sm', '➕ ' + t('addThese'), function () {
+      var got = F.parseList(ta.value);
+      if (!got.length) { pmsg.textContent = t('addedNone'); return; }
+      var n = addCards(d, got.map(function (x) { return [x.t, x.d, '']; }));
+      ta.value = ''; pmsg.textContent = t('added', { n: n }); announce(pmsg.textContent); drawRows(); remember(d);
+    }, 'fc-addthese'));
+    var up = el('label', 'fc-btn fc-sm fc-quiet fc-file'), upi = el('input'); upi.type = 'file'; upi.accept = '.txt,.csv,.tsv,text/plain,text/csv'; upi.id = 'fc-upload';
+    up.appendChild(document.createTextNode('📄 ' + t('uploadList'))); up.appendChild(upi);
+    upi.addEventListener('change', function () {
+      var f = upi.files && upi.files[0]; upi.value = ''; if (!f) return;
+      if (f.size > 200000) { pmsg.textContent = t('fileBig'); return; }
+      f.text().then(function (s) { ta.value = s; pmsg.textContent = t('fileRead'); ta.focus(); });
+    });
+    pr.appendChild(up); ps.appendChild(pr); ps.appendChild(pmsg); c.appendChild(ps);
+    // the cards
+    var cs = el('section', 'fc-sec'); cs.setAttribute('aria-labelledby', 'fc-cards-h');
+    var chh = el('h3', ''); chh.id = 'fc-cards-h'; cs.appendChild(chh);
+    cs.appendChild(el('p', 'fc-note', t('cardsP')));
+    if (d.ai) cs.appendChild(el('p', 'fc-note', '✨ ' + t('aiNote')));
+    var rows = el('ol', 'fc-rows'); rows.id = 'fc-rows'; cs.appendChild(rows);
+    cs.appendChild(btn('fc-btn fc-sm', '➕ ' + t('addCard'), function () {
+      if (d.c.length >= F.MAX) { toast(t('tooMany', { n: F.MAX })); return; }
+      d.c.push(['', '', '']); drawRows(); var r = rows.lastChild && rows.lastChild.querySelector('.fc-termin'); if (r) r.focus();
+    }, 'fc-addcard'));
+    c.appendChild(cs);
+    function drawRows() {
+      chh.textContent = t('cardsH2', { n: cleanCards(d.c).length, max: F.MAX });
+      rows.innerHTML = '';
+      d.c.forEach(function (x, i) { rows.appendChild(editRow(d, i, drawRows)); });
+    }
+    drawRows();
+    // options
+    var os = el('section', 'fc-sec');
+    os.appendChild(el('span', 'fc-lab', t('answerWith')));
+    var rg = el('div', 'fc-radio'); rg.setAttribute('role', 'radiogroup'); rg.setAttribute('aria-label', t('answerWith'));
+    [['t', t('answerTerm')], ['d', t('answerDef')]].forEach(function (o) {
+      var lab = el('label'), r = el('input'); r.type = 'radio'; r.name = 'fc-a'; r.value = o[0]; r.id = 'fc-a-' + o[0]; r.checked = d.a === o[0];
+      r.addEventListener('change', function () { d.a = o[0]; remember(d); }); lab.appendChild(r); lab.appendChild(document.createTextNode(o[1])); rg.appendChild(lab);
+    });
+    os.appendChild(rg); c.appendChild(os);
+    // study it, save and share
+    var msg = el('p', 'fc-msg fc-err'); msg.id = 'fc-buildmsg'; msg.setAttribute('role', 'alert'); c.appendChild(msg);
+    var foot = el('div', 'fc-row fc-foot');
+    foot.appendChild(btn('fc-btn', '▶️ ' + t('studyIt'), function () {
+      var bad = problem(d); if (bad) { msg.textContent = bad; sfx('wrong', { volume: 0.4 }); return; }
+      remember(d, true); showSet(draftSet(localFor({ draft: d.id }) || d));
+    }, 'fc-studyit'));
+    if (B.canSaveSet !== false && B.saveQuestionSet) foot.appendChild(btn('fc-btn fc-go fc-main', '🔗 ' + t(d.set ? 'saveChanges' : 'saveLink'), function () { saveSet(); }, 'fc-save'));
+    c.appendChild(foot);
+    var smsg = el('p', 'fc-msg'); smsg.id = 'fc-savemsg'; smsg.setAttribute('role', 'status'); c.appendChild(smsg);
+    var share = el('div', 'fc-share'); share.id = 'fc-sharebox'; c.appendChild(share);
+    if (d.set) drawShare(share, d.set);
+    if (USER.isGuest) c.appendChild(el('p', 'fc-note', '🔒 ' + t('guestKeep')));
+    focusTop();
+  }
+  /** Cards into the draft: into empty rows first, never a term twice, at most 50. -> how many went in. */
+  function addCards(d, list) {
+    var seen = {}, n = 0;
+    d.c.forEach(function (x) { if (x[0].trim()) seen[F.key(x[0])] = 1; });
+    d.c = d.c.filter(function (x) { return x[0].trim() || x[1].trim(); });
+    list.forEach(function (x) {
+      if (!x[0] || seen[F.key(x[0])] || d.c.length >= F.MAX) return;
+      seen[F.key(x[0])] = 1; d.c.push([String(x[0]).slice(0, F.TERM), String(x[1] || '').slice(0, F.DEF), x[2] || '']); n++;
+    });
+    if (!d.c.length) d.c.push(['', '', '']);
+    return n;
+  }
+  function editRow(d, i, redraw) {
+    var x = d.c[i], li = el('li', 'fc-erow'); li.dataset.row = i;
+    li.appendChild(el('span', 'fc-n', String(i + 1)));
+    var eb = btn('fc-emobtn', x[2] || ''); eb.setAttribute('aria-label', t('picFor', { n: i + 1 })); eb.title = t('pic'); eb.dataset.emo = i; eb.setAttribute('aria-expanded', 'false');
+    var tw = el('input', 'fc-in fc-termin'); tw.value = x[0]; tw.maxLength = F.TERM; tw.placeholder = t('termPh'); tw.setAttribute('aria-label', t('termN', { n: i + 1 })); tw.dir = 'auto';
+    var td = el('textarea', 'fc-in fc-def'); td.value = x[1]; td.maxLength = F.DEF; td.rows = 1; td.placeholder = t('defPh'); td.setAttribute('aria-label', t('defN', { n: i + 1 })); td.dir = 'auto';
+    tw.addEventListener('input', function () { x[0] = tw.value; remember(d); });
+    td.addEventListener('input', function () { x[1] = td.value.replace(/\n/g, ' '); remember(d); });
+    var del = btn('fc-x', '✕', function () { d.c.splice(i, 1); if (!d.c.length) d.c.push(['', '', '']); redraw(); remember(d); var r = document.querySelector('#fc-rows [data-row="' + Math.max(0, i - 1) + '"] .fc-termin'); if (r) r.focus(); });
+    del.setAttribute('aria-label', t('delCard', { n: i + 1 }));
+    eb.addEventListener('click', function () {
+      var open = li.querySelector('.fc-picker'); if (open) { open.remove(); eb.setAttribute('aria-expanded', 'false'); return; }
+      var pk = el('div', 'fc-picker'), grid = el('div', 'fc-picks'); grid.setAttribute('role', 'group'); grid.setAttribute('aria-label', t('pic'));
+      var pick = function (v) { x[2] = v; eb.textContent = v; pk.remove(); eb.setAttribute('aria-expanded', 'false'); remember(d); eb.focus(); };
+      PICKS.forEach(function (e) { var b = btn('', e, function () { pick(e); }); b.setAttribute('aria-label', e); grid.appendChild(b); });
+      pk.appendChild(grid);
+      var row = el('div', 'fc-row fc-wrap'), own = el('input', 'fc-in'); own.maxLength = 16; own.placeholder = t('picOwn'); own.setAttribute('aria-label', t('picOwn')); own.style.width = '9em';
+      var okb = btn('fc-btn fc-sm', t('use'), function () { var v = own.value.trim(); if (!/^\p{Extended_Pictographic}/u.test(v) && !/^\p{Regional_Indicator}/u.test(v)) { own.setAttribute('aria-invalid', 'true'); toast(t('picOnly')); return; } pick(Array.from(v).slice(0, 8).join('')); });
+      row.appendChild(own); row.appendChild(okb); row.appendChild(btn('fc-btn fc-sm fc-quiet', t('picNone'), function () { pick(''); })); pk.appendChild(row);
+      li.appendChild(pk); eb.setAttribute('aria-expanded', 'true'); var f = grid.querySelector('button'); if (f) f.focus();
+    });
+    li.appendChild(eb); li.appendChild(tw); li.appendChild(td); li.appendChild(del);
+    return li;
+  }
+  /** "✨ Draft with AI": from a topic (BRB.draftCards) or a lesson document (BRB.wordsFromDoc, Crossword's path). The
+   *  cards land in the list to check; nothing is saved. Only the teacher's own words go: never a student's. */
+  function aiBox(d) {
+    var box = el('section', 'fc-aibox'); box.setAttribute('aria-labelledby', 'fc-ai-h');
+    var h = el('h3', ''); h.id = 'fc-ai-h'; h.appendChild(el('span', 'fc-aichip', '✨ AI')); h.appendChild(document.createTextNode(t('aiH'))); box.appendChild(h);
+    box.appendChild(el('p', 'fc-note', t('aiP')));
+    var row = el('div', 'fc-airow');
+    var tf = el('div', 'fc-field'), tl = el('label', '', t('topicL')), ti = el('input', 'fc-in'); tl.htmlFor = 'fc-topic'; ti.id = 'fc-topic'; ti.maxLength = 200; ti.placeholder = t('topicPh'); ti.dir = 'auto';
+    tf.appendChild(tl); tf.appendChild(ti); row.appendChild(tf);
+    var nf = el('div', 'fc-field'), nl = el('label', '', t('countL')), ns = el('select', 'fc-in'); nl.htmlFor = 'fc-count'; ns.id = 'fc-count';
+    [5, 10, 15, 20, 30].forEach(function (k) { var o = el('option', '', String(k)); o.value = k; if (k === 10) o.selected = true; ns.appendChild(o); });
+    nf.appendChild(nl); nf.appendChild(ns); row.appendChild(nf);
+    var msg = el('p', 'fc-msg'); msg.id = 'fc-aimsg'; msg.setAttribute('role', 'status');
+    var go = btn('fc-btn fc-ai', '✨ ' + t('draftAi'), function () {
+      var topic = ti.value.replace(/\s+/g, ' ').trim(); if (topic.length < 2) { ti.focus(); msg.textContent = t('topicNeed'); return; }
+      if (!B.draftCards) return;
+      go.disabled = true; msg.textContent = t('aiWorking');
+      B.draftCards(topic, { level: d.lvl || '', count: +ns.value }).then(function (r) {
+        go.disabled = false;
+        if (!r || r.error) { msg.textContent = t(aiErr(r && r.error)); if (r && r.error === 'topicBad') ti.focus(); return; }
+        if (!d.t.trim() && r.title) d.t = r.title.slice(0, 60);
+        var n = addCards(d, r.cards); d.ai = true; remember(d, true);
+        showBuild(); var m = document.getElementById('fc-aimsg'); if (m) m.textContent = t('aiAdded', { n: n }); announce(t('aiAdded', { n: n }));
+        var first = document.querySelector('#fc-rows .fc-termin'); if (first) first.scrollIntoView({ block: 'center' });
+      });
+    }, 'fc-draft');
+    row.appendChild(go); box.appendChild(row);
+    // a lesson document: its word list and definitions, or its key terms
+    var ff = el('div', 'fc-field'), fl = el('label', '', t('focusL')), fi = el('input', 'fc-in'); fl.htmlFor = 'fc-focus'; fi.id = 'fc-focus'; fi.maxLength = 200; fi.placeholder = t('focusPh'); fi.dir = 'auto';
+    ff.appendChild(fl); ff.appendChild(fi);
+    var up = el('label', 'fc-btn fc-ai fc-file'), upi = el('input'); upi.type = 'file'; upi.accept = '.pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document'; upi.id = 'fc-doc';
+    up.appendChild(document.createTextNode('📄 ' + t('uploadDoc'))); up.appendChild(upi);
+    upi.addEventListener('change', function () {
+      var f = upi.files && upi.files[0]; upi.value = ''; if (!f || !B.wordsFromDoc) return;
+      var kind = /\.pdf$/i.test(f.name) ? 'pdf' : /\.docx$/i.test(f.name) ? 'docx' : '';
+      if (!kind) { msg.textContent = t(/\.doc$/i.test(f.name) ? 'docOld' : 'docType'); return; }
+      if (f.size > 2 * 1024 * 1024) { msg.textContent = t('docBig'); return; }
+      up.classList.add('fc-busy'); msg.textContent = t('docWorking');
+      B.wordsFromDoc(f, { kind: kind, level: d.lvl || '', focus: fi.value }).then(function (r) {
+        up.classList.remove('fc-busy');
+        if (!r || r.error) { msg.textContent = t(aiErr(r && r.error)); return; }
+        if (!d.t.trim() && r.title) d.t = r.title.slice(0, 60);
+        var n = addCards(d, r.words.map(function (w) { return [w[0], w[1], '']; })); if (r.ai) d.ai = true; remember(d, true);
+        showBuild(); var m = document.getElementById('fc-aimsg'); if (m) m.textContent = t(r.cut ? 'docAddedCut' : 'docAdded', { n: n }) + (r.words.some(function (w) { return !w[1]; }) ? ' ' + t('docSomeEmpty') : '');
+      });
+    });
+    var dr = el('div', 'fc-row fc-wrap'); dr.appendChild(up); dr.appendChild(el('span', 'fc-note', t('docLimits')));
+    box.appendChild(ff); box.appendChild(dr); box.appendChild(msg);
+    return box;
+  }
+  var aiErr = function (e) { return ({ aiOff: 'aiOff', topic: 'topicNeed', topicBad: 'topicBad', focusBad: 'focusBad', docBig: 'docBig', docType: 'docType', docPages: 'docPages', docScan: 'docScan', docEmpty: 'docEmpty', docNone: 'docNone', docLimit: 'docLimit', offline: 'offline', notAllowed: 'aiOff' })[e] || 'aiFailed'; };
+
+  function saveSet() {
+    var d = S.draft, msg = document.getElementById('fc-savemsg'), b = document.getElementById('fc-save'), err = document.getElementById('fc-buildmsg');
+    var bad = problem(d); if (bad) { err.textContent = bad; sfx('wrong', { volume: 0.4 }); return; }
+    err.textContent = ''; remember(d, true);
+    b.disabled = true; msg.textContent = t('saving');
+    var cards = cleanCards(d.c);
+    B.saveQuestionSet([{ t: d.t.replace(/\s+/g, ' ').trim(), c: cards, a: d.a }], d.set || undefined).then(function (r) {
+      b.disabled = false;
+      if (r && r.id) {
+        var was = d.set; d.set = r.id; remember(d, true); SHEETS.list = null;
+        if (!was && SAVE.prog['d:' + d.id]) { SAVE.prog[r.id] = SAVE.prog['d:' + d.id]; delete SAVE.prog['d:' + d.id]; persist(); }
+        sfx('win', { volume: 0.4 }); msg.textContent = t('saved'); announce(t('saved')); b.textContent = '🔗 ' + t('saveChanges');
+        var sh = document.getElementById('fc-sharebox'); drawShare(sh, r.id);
+        sh.scrollIntoView({ block: 'center', behavior: reduced() ? 'auto' : 'smooth' }); var cp = document.getElementById('fc-copy') || document.getElementById('fc-assign'); if (cp) cp.focus({ preventScroll: true });
+        return;
+      }
+      var e = r && r.error;
+      msg.textContent = t(e === 'guest' ? 'saveGuest' : e === 'bad' ? 'saveBad' : e === 'full' ? 'saveFull' : e === 'notYours' ? 'saveNotYours' : 'offline');
+      sfx('wrong', { volume: 0.4 });
+    });
+  }
+  function drawShare(sec, id) {
+    sec.innerHTML = '';
+    sec.appendChild(el('h3', '', '🔗 ' + t('shareH')));
+    var code = el('p', 'fc-codebig'); code.appendChild(el('span', '', t('classCode'))); var cb = el('b', '', codeOf(id)); cb.id = 'fc-classcode'; cb.dir = 'ltr'; code.appendChild(cb); sec.appendChild(code);
+    var link = linkOf(id);
+    if (link) {
+      var row = el('div', 'fc-row fc-wrap'), inp = el('input', 'fc-in fc-link'); inp.readOnly = true; inp.value = link; inp.id = 'fc-link'; inp.dir = 'ltr'; inp.setAttribute('aria-label', t('link'));
+      row.appendChild(inp);
+      row.appendChild(btn('fc-btn', '📋 ' + t('copy'), function () { if (B.copy) B.copy(link).then(function (ok) { toast(ok ? t('copied') : link); }); }, 'fc-copy'));
+      sec.appendChild(row);
+      var q = qrCanvas(link); if (q) { q.id = 'fc-qr'; sec.appendChild(q); }
+    }
+    if (B.canAssign && B.assign) {
+      sec.appendChild(btn('fc-btn fc-go', '📚 ' + t('assign'), function () { B.assign('chapter=' + id + '&lock=1'); }, 'fc-assign'));
+      sec.appendChild(el('p', 'fc-note', t('assignNote')));
+    }
+  }
+  function qrCanvas(text) {
+    try {
+      var q = QR.qr(text, { max: 10 }), n = q.size + 8, px = 6, c = el('canvas', 'fc-qr'), g;
+      c.width = n * px; c.height = n * px; c.setAttribute('role', 'img'); c.setAttribute('aria-label', t('qrAlt'));
+      g = c.getContext('2d'); g.fillStyle = '#ffffff'; g.fillRect(0, 0, c.width, c.height); g.fillStyle = '#000000';
+      for (var y = 0; y < q.size; y++) for (var x = 0; x < q.size; x++) if (q.modules[y][x]) g.fillRect((x + 4) * px, (y + 4) * px, px, px);
+      return c;
+    } catch (e) { return null; }
+  }
+
+  /* ---------- print (BRB.print: the play page prints; the frame can't) ---------- */
+  function printIt(set, as) {
+    if (!B.print) return;
+    var doc = { t: set.t || '', c: set.c.map(function (x) { return [x[0], x[1], x[2] || '']; }), a: set.a, as: as, set: set.set || '' };
+    var m = localFor(set); if (m && m.note) doc.note = m.note;
+    sfx('select');
+    var p = B.print(doc); if (!p) return;
+    p.then(function (r) { if (r && r.ok) return; var e = r && r.error, s = t(e === 'bad' ? 'printBad' : e === 'tap' ? 'printAgain' : 'offline'); toast(s); announce(s); });
+  }
+
+  /* ---------- My worksheets: the sets this teacher saved on Oomba (BRB.mySets) ---------- */
+  var SHEETS = { list: null, busy: false };
+  function showSheets(focusId) {
+    var c = card(screen('sheets'), true);
+    head(c, '📚', t('ws'), 'class').appendChild(backBtn(function () { S.back = 'home'; showHome(); }));
+    c.appendChild(el('p', 'fc-sub', t('wsSub')));
+    var msg = el('p', 'fc-msg'); msg.id = 'fc-ws-msg'; msg.setAttribute('role', 'status'); c.appendChild(msg);
+    var box = el('div', 'fc-mine'); box.id = 'fc-sheets'; box.style.borderTop = '0'; c.appendChild(box);
+    if (!SHEETS.list) {
+      msg.textContent = t('wsLoading');
+      var p = B.mySets && B.mySets(); if (!p) return;
+      p.then(function (r) {
+        if (S.screen !== 'sheets') return;
+        if (!r || !Array.isArray(r.sets)) { msg.textContent = t('wsFailed'); return; }
+        SHEETS.list = r.sets; msg.textContent = ''; drawSheets(box, focusId);
+      });
+      return;
+    }
+    drawSheets(box, focusId);
+  }
+  function drawSheets(box, focusId) {
+    box.innerHTML = '';
+    var list = SHEETS.list || [];
+    if (!list.length) {
+      box.appendChild(el('p', 'fc-lead', t('wsEmpty')));
+      if (CAN_MAKE) box.appendChild(bigBtn('fc-big fc-go', '✏️', t('make'), t('makeSub'), function () { edit(null); }, 'fc-ws-make'));
+      focusTop(); return;
+    }
+    var ul = el('ul', 'fc-list'); box.appendChild(ul);
+    list.forEach(function (s) {
+      var it = s.items[0] || {}, title = s.title || it.t || t('untitled'), li = el('li'); li.dataset.set = s.id;
+      var name = el('span', 'fc-name'); name.appendChild(el('b', '', title)); name.dir = 'auto';
+      name.appendChild(el('small', '', [t('nCards', { n: s.n })].concat([t('classCode') + ' ' + (s.code || codeOf(s.id))]).join(' · '))); li.appendChild(name);
+      var acts = el('span', 'fc-acts2'), say2 = el('p', 'fc-msg'); say2.setAttribute('role', 'status');
+      var asSet = function () { return setFromItems(it, s.id, { mine: true }); };
+      acts.appendChild(btn('fc-btn fc-sm fc-go', '▶️ ' + t('open'), function () { sfx('select'); showSet(asSet()); }));
+      acts.appendChild(btn('fc-btn fc-sm', '✏️ ' + t('editIt'), function () { var m = localFor({ set: s.id }); edit(m || { id: '', set: s.id, t: it.t, c: it.c, a: it.a }); }));
+      if (B.copy && B.gameUrl) acts.appendChild(btn('fc-btn fc-sm fc-quiet', '📋 ' + t('copy'), function () { B.copy(linkOf(s.id)).then(function (ok) { toast(ok ? t('copied') : linkOf(s.id)); }); }));
+      acts.appendChild(btn('fc-btn fc-sm fc-quiet', '📑 ' + t('wsDup'), function () {
+        if (SHEETS.busy) return; SHEETS.busy = true;
+        B.duplicateQuestionSet(s.id).then(function (r) { SHEETS.busy = false; if (r && r.id) { SHEETS.list = null; showSheets(r.id); toast(t('dupDone')); } else say2.textContent = t(r && r.error === 'full' ? 'saveFull' : 'actFailed'); });
+      }));
+      acts.appendChild(btn('fc-btn fc-sm fc-quiet', '🏷️ ' + t('rename'), function () {
+        if (li.querySelector('.fc-rename')) return;
+        var f = el('div', 'fc-row fc-wrap fc-rename'), inp = el('input', 'fc-in'); inp.maxLength = 60; inp.value = title; inp.setAttribute('aria-label', t('rename')); inp.dir = 'auto';
+        var ok = btn('fc-btn fc-go fc-sm', t('renameSave'), function () {
+          B.renameQuestionSet(s.id, inp.value.replace(/\s+/g, ' ').trim()).then(function (r) {
+            if (r && r.ok) { SAVE.mine.forEach(function (m) { if (m.set === s.id) m.t = r.title || ''; }); persist(); SHEETS.list = null; showSheets(s.id); toast(t('renamed')); return; }
+            say2.textContent = t(r && r.error === 'title' ? 'renameBad' : 'actFailed'); inp.focus();
+          });
+        });
+        inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); ok.click(); } else if (e.key === 'Escape') { e.preventDefault(); f.remove(); } });
+        f.appendChild(inp); f.appendChild(ok); f.appendChild(btn('fc-btn fc-quiet fc-sm', t('cancel'), function () { f.remove(); }));
+        li.appendChild(f); inp.focus(); inp.select();
+      }));
+      var del = btn('fc-btn fc-sm fc-quiet', '🗑️', null); del.setAttribute('aria-label', t('del') + ': ' + title); del.dataset.wsDel = s.id;
+      del.addEventListener('click', function () {
+        if (li.querySelector('.fc-wsconfirm')) return;
+        var f = el('div', 'fc-sec fc-wsconfirm'); f.appendChild(el('p', 'fc-msg', t('wsDelAsk', { t: title })));
+        var r = el('div', 'fc-row fc-wrap');
+        r.appendChild(btn('fc-btn fc-danger fc-sm', '🗑️ ' + t('del'), function () {
+          B.deleteQuestionSet(s.id).then(function (x) {
+            if (x && (x.ok || x.error === 'none')) { SAVE.mine = SAVE.mine.filter(function (m) { return m.set !== s.id; }); persist(); SHEETS.list = (SHEETS.list || []).filter(function (y) { return y.id !== s.id; }); showSheets(); toast(t('wsDeleted')); return; }
+            say2.textContent = t('actFailed');
+          });
+        }, 'fc-ws-delyes'));
+        r.appendChild(btn('fc-btn fc-quiet fc-sm', t('keep'), function () { f.remove(); del.focus(); }, 'fc-ws-delno'));
+        f.appendChild(r); li.appendChild(f); announce(t('wsDelAsk', { t: title }));
+      });
+      acts.appendChild(del); li.appendChild(acts); li.appendChild(say2); li.style.flexWrap = 'wrap';
+      ul.appendChild(li);
+    });
+    var fx = focusId && box.querySelector('[data-set="' + focusId + '"] button'); if (fx) fx.focus(); else focusTop();
+  }
+
+  /* ---------- confetti (none with reduced motion) ---------- */
+  function confetti() {
+    if (reduced()) return;
+    var box = el('div', 'fc-confetti'), colors = ['#66C792', '#FFD23F', '#5AA9D6', '#F28C6B', '#9B8CE0'];
+    for (var i = 0; i < 70; i++) { var c = el('i'); c.style.left = Math.random() * 100 + '%'; c.style.background = colors[i % colors.length]; c.style.setProperty('--x', (Math.random() * 200 - 100) + 'px'); c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg'); c.style.setProperty('--d', (Math.random() * 0.5) + 's'); c.style.setProperty('--t', (1.2 + Math.random()) + 's'); box.appendChild(c); }
+    document.body.appendChild(box); setTimeout(function () { box.remove(); }, 2800);
+  }
+
+  /* ---------- test hooks (window.__brbTest) ---------- */
+  function testState() {
+    var p = S.set ? progOf(S.set) : null;
+    return {
+      screen: S.screen, title: S.set ? S.set.t : '', cards: S.set ? S.set.c.length : 0, set: S.set ? S.set.set || '' : '', link: !!(S.set && S.set.link),
+      levels: p ? p.lv.slice() : [], misses: p ? p.ms.slice() : [], starred: p ? p.st.slice() : [], best: p ? p.best || 0 : 0,
+      flip: S.flip ? { at: S.flip.at, turned: S.flip.turned, order: flipOrder() } : null,
+      learn: S.learn && S.screen === 'learn' ? { i: S.learn.i, kind: S.learn.kind, answer: F.sideOf(S.set.c[S.learn.i], askSide()), queue: S.learn.queue.slice() } : null,
+      test: S.test ? S.test.qs.map(function (q) { return { i: q.i, kind: q.kind, truth: q.truth, answer: F.sideOf(S.set.c[q.i], askSide()) }; }) : null,
+      draft: S.draft ? cleanCards(S.draft.c).length : 0, draftSet: S.draft ? S.draft.set || '' : '', mine: SAVE.mine.length, library: LIB.length,
+    };
+  }
+  window.__brbTest = Object.assign(window.__brbTest || {}, {
+    fcState: testState,
+    fcLib: function (id) { var x = LIB.filter(function (y) { return y.id === id; })[0]; if (x) showSet(libSet(x)); return testState(); },
+    fcFlip: function (i) { startFlip(); for (var k = 0; k < (i || 0); k++) move(1); return testState(); },
+    fcTurn: function () { turn(); return testState(); },
+  });
+  begin();
+})();
+</script>
+</body>
+</html>
