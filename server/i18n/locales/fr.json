@@ -2311,7 +2311,8 @@
         "oneToolBusy": "{tool} est sur les bureaux en ce moment. Un seul manipulable à la fois : retirez-le de tous les bureaux pour distribuer {next}.",
         "oneToolRoom": "Une salle {tool} est ouverte dans cette classe. Une seule salle à la fois : fermez-la pour distribuer {next}.",
         "takeOffAll": "Le retirer de tous les bureaux",
-        "openThatRoom": "Ouvrir cette salle"
+        "openThatRoom": "Ouvrir cette salle",
+        "multiNotMine": "Plusieurs à la fois vont sur des bureaux, un groupe ou toute la classe, pas sur Mon bureau."
       },
       "team": {
         "label": "Bureau d’équipe",
@@ -5354,7 +5355,6 @@
       "problemsN": "{count, plural, one {# exercice} other {# exercices}}",
       "wordsN": "{count, plural, one {# mot} other {# mots}}",
       "versionsN": "{count, plural, one {# version} other {# versions}}",
-      "empty": "Les plans de cours que vous créez s’affichent ici.",
       "more": "Plus pour {title}",
       "edit": "Modifier",
       "duplicate": "Dupliquer",
@@ -5372,7 +5372,9 @@
       "giveTitle": "{lesson} pour {who}",
       "versionsBy": "Versions par groupe",
       "asBuilt": "Le plan de cours tel que créé",
-      "scoreHint": "Le carnet de notes montre le % de bonnes réponses."
+      "scoreHint": "Le carnet de notes montre le % de bonnes réponses.",
+      "kind": "Plan de cours",
+      "buildText": "Choisissez une leçon, réglez-la une fois, distribuez-la."
     },
     "homeroom-overview": {
       "title": "Noter selon",
@@ -5450,7 +5452,8 @@
         "setDone": "Terminé · {right} sur {n} justes du premier coup",
         "setAt": "Question {i} sur {n} · {right} justes du premier coup",
         "toolOpen": "{count, plural, one {# l’a ouvert} other {# l’ont ouvert}}",
-        "toolLine": "Manipulables · entraînement libre, non compté"
+        "toolLine": "Manipulables · entraînement libre, non compté",
+        "started": "Commencé"
       },
       "hands": {
         "label": "{count, plural, =0 {Mains, aucune levée} one {Mains, # levée} other {Mains, # levées}}",
@@ -5645,6 +5648,60 @@
     "manip-task-play": {
       "more": "Afficher toute la question",
       "less": "Afficher moins"
+    },
+    "homeroom-livegame": {
+      "layer": "Leçon en direct",
+      "back": "Retour à Homeroom",
+      "setup": "Préparer une leçon en direct",
+      "end": "Terminer",
+      "endTitle": "Terminer {title} ?",
+      "endText": "La partie se termine maintenant pour tous et vous voyez les résultats.",
+      "restore": "Ouvrir {title}",
+      "pill": "En direct : {title}",
+      "joined": "{count} connectés",
+      "inGame": "Dans {title}",
+      "notSelect": "Les leçons en direct s’animent, elles ne se distribuent pas. Désactivez Sélectionner pour en lancer une."
+    },
+    "homeroom-multi": {
+      "selected": "{count} sélectionnés",
+      "hint": "Touchez les leçons dans l’ordre où elles iront sur les bureaux.",
+      "oneTool": "Un seul matériel de manipulation à la fois : gardez-en un.",
+      "clear": "Effacer",
+      "handOut": "Distribuer",
+      "notThis": "Figures reste sur Mon bureau : il ne se choisit pas avec d’autres.",
+      "nItems": "Leçons choisies : {count}",
+      "done": "Distribué à {who} : {count}",
+      "emptyTarget": "Pas encore d’élèves ici.",
+      "toolNote": "Exercice libre, non noté",
+      "score": "Score",
+      "completion": "Achèvement",
+      "notGraded": "Non noté",
+      "gradeFor": "Noter {title} par",
+      "title": "Distribuer {count} à {who}",
+      "lead": "Elles vont sur les bureaux dans cet ordre. Chacune garde sa notation.",
+      "toolBusy": "{tool} est sur les bureaux. Un seul matériel à la fois : retirez-le d’abord de tous les bureaux.",
+      "kind": {
+        "game": "Leçon",
+        "lesson": "Plan de cours",
+        "task": "Exercice",
+        "tool": "Matériel de manipulation",
+        "reading": "Lecture",
+        "mine": "Mon bureau"
+      },
+      "addNote": "Ajouter une note",
+      "noteFor": "Une note pour {title}",
+      "count": "Questions par exercice",
+      "order": "Ordre sur le bureau",
+      "inOrder": "Dans l’ordre",
+      "anyOrder": "N’importe quel ordre",
+      "orderHint": "Dans l’ordre : l’une après l’autre, comme ci-dessus.",
+      "cancel": "Annuler",
+      "put": "Mettre {count} sur les bureaux"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "Ta classe joue en direct. Tu rejoins sous ton nom.",
+      "join": "Rejoindre {title}",
+      "over": "Le jeu en direct est fini. Tu es de retour à ton bureau."
     }
   },
   "favorites": {
@@ -8091,7 +8148,8 @@
         "code": "Code",
         "thinking": "Réflexion",
         "music": "Musique",
-        "any": "Toutes matières"
+        "any": "Toutes matières",
+        "typing": "Dactylographie"
       },
       "grade": "Niveau",
       "gradeAny": "Tous niveaux",
@@ -15554,8 +15612,6 @@
       "handOut": "Distribuer à",
       "myLessons": "Mes plans de cours",
       "myGames": "Leçons que j’ai créées",
-      "noGames": "Les leçons que vous créez s’affichent ici.",
-      "oomba": "Leçons et outils Oomba",
       "manipulatives": "Manipulables",
       "figures": "Figures",
       "reading": "Lecture",
@@ -15632,7 +15688,10 @@
       "pickTask": "Choisis une tâche à pratiquer.",
       "tooManyTasks": "Choisis 6 tâches au plus.",
       "badCount": "Choisis de 1 à 10 questions.",
-      "oneToolSet": "Choisis les tâches d’un seul outil à la fois."
+      "oneToolSet": "Choisis les tâches d’un seul outil à la fois.",
+      "noLiveGame": "Ce jeu en direct est terminé.",
+      "liveFull": "Ce jeu en direct est complet.",
+      "liveLocked": "Ce jeu en direct est verrouillé pour le moment."
     },
     "live": "En direct",
     "desk": {
@@ -15837,6 +15896,36 @@
       "seen": "Marqué comme vu. Il revient si quelque chose change.",
       "snooze": "Mis de côté jusqu’au prochain jour de classe.",
       "back": "De retour dans la liste."
+    },
+    "catalog": {
+      "games": "Jeux",
+      "moreGames": "Plus de jeux",
+      "live": "Jeux en direct",
+      "liveLead": "En direct pour toute la classe",
+      "hostAny": "Animer une leçon en direct",
+      "kind": {
+        "live": "Jeu en direct",
+        "liveSet": "Série de quiz en direct",
+        "liveAny": "Quiz, séries et plus",
+        "tool": "Matériel de manipulation",
+        "practice": "Exercice · Matériel de manipulation",
+        "lesson": "Leçon"
+      },
+      "recent": "Récents",
+      "mine": "Mes leçons",
+      "plans": "Plans de cours",
+      "lessons": "Leçons et plans de cours",
+      "filters": "Filtres",
+      "seeAll": "Voir les {count}",
+      "fewer": "Voir moins",
+      "buildLesson": "Créer une leçon",
+      "buildLessonText": "Créez la vôtre dans le Builder"
+    },
+    "multi": {
+      "select": "Sélectionner"
+    },
+    "livegame": {
+      "ended": "La leçon en direct est terminée."
     }
   }
 }

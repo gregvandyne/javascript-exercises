@@ -2392,12 +2392,12 @@ img.fx[src*="/graduation-cap"],img.fx[src*="/footprints"],img.fx[src*="/ninja"],
 .hr-tabs a[aria-current="page"]{background:var(--text);color:var(--card)}
 /* Homeroom's "Your class is in Homeroom. Go to my desk" (public/js/homeroom-notify.js): a calm card at the bottom of any
    page for a student whose class went live, above the tab bar on phones. */
-.hr-notify{position:fixed;z-index:900;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 10px 10px 18px;border-radius:20px;background:var(--text);color:var(--card);box-shadow:var(--shadow-lg);font-weight:700}
+/* (at the top of the page, in its flow: never over a board, its controls or a frame; QA round 2, N4) */
+.hr-notify{position:relative;z-index:5;margin:8px auto;width:max-content;max-width:calc(100vw - 32px);display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 10px 10px 18px;border-radius:20px;background:var(--text);color:var(--card);box-shadow:var(--shadow-lg);font-weight:700}
 .hr-notify-t{display:inline-flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0}
 .hr-notify-go{min-height:48px}
 .hr-notify-x{width:48px;height:48px;border:0;border-radius:50%;background:transparent;color:inherit;font:800 24px/1 var(--font);cursor:pointer}
 .hr-notify-x:hover{background:color-mix(in srgb,var(--card) 16%,transparent)}
-@media (max-width:820px){.hr-notify{bottom:calc(var(--tabbar) + 12px + env(safe-area-inset-bottom))}}
 /* a phone: one small line (the class's name, Go to my desk, close), so it never covers a board */
 @media (max-width:600px){.hr-notify{flex-wrap:nowrap;gap:6px;padding:4px 4px 4px 12px;border-radius:16px;font-size:13px;max-width:calc(100vw - 24px)}
   .hr-notify-t{flex-wrap:nowrap;min-width:0;overflow:hidden;white-space:nowrap}.hr-notify-t b{overflow:hidden;text-overflow:ellipsis}.hr-notify-more{display:none}

@@ -87,8 +87,13 @@ test('B1: a tool on the board and in look; ended by the teacher it comes off eve
   const other = M.createSession(lane, { classId: cls.id, tool: 'clock', title: 'Clock' });
   assert.ok(other.ok);
   assert.equal(HT.storedOf(cls.id).length, 0);
-  assert.deepEqual({ tool: HT.roomOf(cls).tool, handout: HT.roomOf(cls).handout }, { tool: 'clock', handout: '' });
-  assert.ok(M.end(lane, other.session.id).ok);
+  // (QA round 2, N1) a room no handout uses never blocks: no room for the board, and the next tool hands out, ending it
+  assert.equal(HT.roomOf(cls), null);
+  const reken = HT.handOutTool(lane, cls, { tool: 'rekenreks', to: { kind: 'all' } });
+  assert.ok(reken.ok, reken.code);
+  assert.equal(M.getSession(other.session.id).status, 'ended');
+  assert.equal(HT.roomOf(cls).tool, 'rekenreks');
+  assert.ok(HT.removeTool(lane, cls, reken.item.id).ok);
   // a room that ended by itself (12 hours, nobody chose it) opens again when the teacher opens Homeroom
   const tiles = HT.handOutTool(lane, cls, { tool: 'color-tiles', to: { kind: 'all' } });
   q.run("UPDATE manip_sessions SET status='ended', opened_at=?, ended_at=? WHERE id=?", Date.now() - 13 * 3600e3, Date.now(), tiles.session.id);

@@ -2317,7 +2317,8 @@
         "oneToolBusy": "{tool} is on desks now. One Manipulatives tool at a time: take it off every desk to hand out {next}.",
         "oneToolRoom": "A {tool} room is running in this class. One room at a time: end it to hand out {next}.",
         "takeOffAll": "Take it off every desk",
-        "openThatRoom": "Open that room"
+        "openThatRoom": "Open that room",
+        "multiNotMine": "Several at once go to desks, a group or Whole class, not My desk."
       },
       "team": {
         "label": "Team desk",
@@ -5936,7 +5937,6 @@
       "problemsN": "{count, plural, one {# problem} other {# problems}}",
       "wordsN": "{count, plural, one {# word} other {# words}}",
       "versionsN": "{count, plural, one {# version} other {# versions}}",
-      "empty": "Lesson plans you build show here.",
       "more": "More for {title}",
       "edit": "Edit",
       "duplicate": "Duplicate",
@@ -5954,7 +5954,9 @@
       "giveTitle": "{lesson} for {who}",
       "versionsBy": "Versions by group",
       "asBuilt": "The lesson plan as built",
-      "scoreHint": "The gradebook shows the % right."
+      "scoreHint": "The gradebook shows the % right.",
+      "kind": "Lesson plan",
+      "buildText": "Pick a lesson, set it up once, hand it out."
     },
     "homeroom-overview": {
       "title": "Grade it by",
@@ -6033,7 +6035,8 @@
         "setDone": "Done · {right} of {n} right first time",
         "setAt": "Question {i} of {n} · {right} right first time",
         "toolOpen": "{count, plural, one {# has it open} other {# have it open}}",
-        "toolLine": "Manipulatives · open practice, not counted"
+        "toolLine": "Manipulatives · open practice, not counted",
+        "started": "Started"
       },
       "hands": {
         "label": "{count, plural, =0 {Hands, none up} one {Hands, # up} other {Hands, # up}}",
@@ -6711,6 +6714,60 @@
       "practiceLead": "Pick a tool to practice its tasks, or just play with it.",
       "nTasks": "{n, plural, one {# task to practice} other {# tasks to practice}}",
       "freePlay": "Free play"
+    },
+    "homeroom-livegame": {
+      "layer": "Live lesson",
+      "back": "Back to Homeroom",
+      "setup": "Set up a live lesson",
+      "end": "End",
+      "endTitle": "End {title}?",
+      "endText": "The live lesson ends for everyone now, and you see the results.",
+      "restore": "Open {title}",
+      "pill": "Live: {title}",
+      "joined": "{count} joined",
+      "inGame": "In {title}",
+      "notSelect": "Live lessons are hosted, not handed out. Turn off Select to host one."
+    },
+    "homeroom-multi": {
+      "selected": "{count} selected",
+      "hint": "Tap lessons in the order they go on the desks.",
+      "oneTool": "One Manipulatives tool at a time: keep just one.",
+      "clear": "Clear",
+      "handOut": "Hand out",
+      "notThis": "Figures stays on My desk, so it is not picked with others.",
+      "nItems": "Lessons picked: {count}",
+      "done": "Handed out to {who}: {count}",
+      "emptyTarget": "No students there yet.",
+      "toolNote": "Open practice, not graded",
+      "score": "Score",
+      "completion": "Completion",
+      "notGraded": "Not graded",
+      "gradeFor": "Grade {title} by",
+      "title": "Hand out {count} to {who}",
+      "lead": "They go on the desks in this order. Each keeps its own grading.",
+      "toolBusy": "{tool} is on desks now. One Manipulatives tool at a time: take it off every desk first.",
+      "kind": {
+        "game": "Lesson",
+        "lesson": "Lesson plan",
+        "task": "Practice",
+        "tool": "Manipulatives",
+        "reading": "Reading",
+        "mine": "My desk"
+      },
+      "addNote": "Add a note",
+      "noteFor": "A note for {title}",
+      "count": "Questions in each practice",
+      "order": "Order on the desk",
+      "inOrder": "In order",
+      "anyOrder": "Any order",
+      "orderHint": "In order: one after another, as listed above.",
+      "cancel": "Cancel",
+      "put": "Put {count} on desks"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "Your class is playing live. You join as you.",
+      "join": "Join {title}",
+      "over": "The live game ended. You are back at your desk."
     }
   },
   "favorites": {
@@ -9508,7 +9565,8 @@
         "code": "Coding",
         "thinking": "Thinking",
         "music": "Music",
-        "any": "Any subject"
+        "any": "Any subject",
+        "typing": "Typing"
       },
       "grade": "Grade",
       "gradeAny": "Any grade",
@@ -17100,8 +17158,6 @@
       "handOut": "Hand out to",
       "myLessons": "My lesson plans",
       "myGames": "Lessons I built",
-      "noGames": "Lessons you build show here.",
-      "oomba": "Oomba lessons and tools",
       "manipulatives": "Manipulatives",
       "figures": "Figures",
       "reading": "Reading",
@@ -17205,7 +17261,10 @@
       "pickTask": "Pick a task to practice.",
       "tooManyTasks": "Pick 6 tasks or fewer.",
       "badCount": "Pick 1 to 10 questions.",
-      "oneToolSet": "Pick tasks of one tool at a time."
+      "oneToolSet": "Pick tasks of one tool at a time.",
+      "noLiveGame": "That live game has ended.",
+      "liveFull": "That live game is full.",
+      "liveLocked": "That live game is locked right now."
     },
     "live": "Live",
     "desk": {
@@ -17574,8 +17633,29 @@
       "favorites": "Favorites",
       "hostLive": "Host live",
       "myDeskOnly": "My desk",
-      "more": "More Oomba lessons",
-      "toolLessons": "{tool}: practice lessons"
+      "toolLessons": "{tool}: practice lessons",
+      "games": "Games",
+      "moreGames": "More games",
+      "live": "Live games",
+      "liveLead": "Hosted live for the whole class",
+      "hostAny": "Host a live lesson",
+      "kind": {
+        "live": "Live game",
+        "liveSet": "Live quiz set",
+        "liveAny": "Quizzes, sets and more",
+        "tool": "Manipulatives",
+        "practice": "Practice · Manipulatives",
+        "lesson": "Lesson"
+      },
+      "recent": "Recent",
+      "mine": "My lessons",
+      "plans": "Lesson plans",
+      "lessons": "Lessons and lesson plans",
+      "filters": "Filters",
+      "seeAll": "See all {count}",
+      "fewer": "Show fewer",
+      "buildLesson": "Build a lesson",
+      "buildLessonText": "Make your own in the Builder"
     },
     "studentDraw": {
       "savedOn": "Students can draw on the room",
@@ -17587,6 +17667,12 @@
       "seen": "Marked as seen. It comes back if something changes.",
       "snooze": "Snoozed until the next school day.",
       "back": "Back on the list."
+    },
+    "multi": {
+      "select": "Select"
+    },
+    "livegame": {
+      "ended": "The live lesson ended."
     }
   }
 }

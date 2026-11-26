@@ -55,8 +55,10 @@ test('a teacher\'s key pages say "lesson", never "game"', async () => {
   const hr = await call(`/class/${cls.id}/homeroom`, { user: tia });
   assert.equal(hr.status, 200);
   const panel = visible(hr.text.slice(hr.text.indexOf('class="hr-panel'), hr.text.indexOf('</aside>', hr.text.indexOf('class="hr-panel'))));
-  for (const w of ['Tap a lesson, then a desk', 'My lesson plans', 'Lessons I built', 'Lessons you build show here.', 'Oomba lessons and tools']) assert.ok(panel.includes(w), `Homeroom panel: ${w}`);
-  noGame(panel, 'Homeroom panel');
+  for (const w of ['Tap a lesson, then a desk', 'My lesson plans', 'Games', 'Lessons and lesson plans', 'Host a live lesson']) assert.ok(panel.includes(w), `Homeroom panel: ${w}`);
+  // (the owner named Find lessons' official games "Games", and its live ones "Live games": docs/decisions.md "Homeroom:
+  // live games inside Homeroom, a simpler Find lessons"; every other word there is "lesson")
+  noGame(panel.replace(/\b(Games|More games|Live games?)\b/g, ''), 'Homeroom panel');
   const js = strings(hr.text);
   assert.equal(js['js.homeroom-lessons.build'], 'Build a lesson plan');
   assert.equal(js['js.homeroom.ho.eyebrow'], 'Lesson · free play');

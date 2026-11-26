@@ -228,7 +228,9 @@ test('the catalog: search, subjects and grade on a laptop, the phone\'s sheet; a
   assert.ok(it && !it.students.length);
   // a folder's game to one desk
   await T.page.fill('#hr-cq', 'spelling');
-  await T.page.click(`[data-cgroup="f-0"] [data-hritem="${myGame.id}"]`);
+  // (Find lessons lists each card once: the game is in Lessons I built and in the folder; the search shows it once)
+  assert.equal(await T.page.locator(`[data-cgroup="f-0"] [data-hritem="${myGame.id}"]`).count(), 1, 'in the folder');
+  await T.page.click(`#hr-panel [data-hritem="${myGame.id}"]:visible`);
   await T.page.click(`.hr-desk[data-sid="${dev.id}"]`, { position: { x: 30, y: 30 } });
   await T.page.waitForSelector('.hr-giveform');
   await T.page.click('[data-seg="order"][data-v="any"]');   // (Dev still has Atlas Quest open)

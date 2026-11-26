@@ -2311,7 +2311,8 @@
         "oneToolBusy": "{tool} が今机に出ています。一度に使える教具は一つです: {next} を配るには、すべての机から外してください。",
         "oneToolRoom": "このクラスで {tool} のルームが開いています。一度に一つのルームだけです: {next} を配るには終了してください。",
         "takeOffAll": "すべての机から外す",
-        "openThatRoom": "そのルームを開く"
+        "openThatRoom": "そのルームを開く",
+        "multiNotMine": "まとめて配れるのは机、グループ、クラス全員です。自分の机には置けません。"
       },
       "team": {
         "label": "チームの机",
@@ -5354,7 +5355,6 @@
       "problemsN": "{count}問",
       "wordsN": "{count}語",
       "versionsN": "{count}バージョン",
-      "empty": "作った授業プランがここに表示されます。",
       "more": "{title}のその他の操作",
       "edit": "編集",
       "duplicate": "複製",
@@ -5372,7 +5372,9 @@
       "giveTitle": "{who}への{lesson}",
       "versionsBy": "グループごとのバージョン",
       "asBuilt": "作ったままの授業プラン",
-      "scoreHint": "成績表に正答率(%)が表示されます。"
+      "scoreHint": "成績表に正答率(%)が表示されます。",
+      "kind": "授業プラン",
+      "buildText": "レッスンを選び、一度設定して配ります。"
     },
     "homeroom-overview": {
       "title": "評価の方法",
@@ -5450,7 +5452,8 @@
         "setDone": "完了 · {n} 問中 {right} 問が一回目で正解",
         "setAt": "{n} 問中 {i} 問目 · 一回目で {right} 問正解",
         "toolOpen": "{count, plural, other {# 人が開いています}}",
-        "toolLine": "教具 · 自由練習、数に入りません"
+        "toolLine": "教具 · 自由練習、数に入りません",
+        "started": "開始済み"
       },
       "hands": {
         "label": "{count, plural, =0 {挙手：なし} other {挙手：#人}}",
@@ -5645,6 +5648,60 @@
     "manip-task-play": {
       "more": "問題をすべて表示",
       "less": "閉じる"
+    },
+    "homeroom-livegame": {
+      "layer": "ライブレッスン",
+      "back": "Homeroomに戻る",
+      "setup": "ライブレッスンの準備",
+      "end": "終了",
+      "endTitle": "{title}を終了しますか？",
+      "endText": "全員のゲームが今終わり、結果が表示されます。",
+      "restore": "{title}を開く",
+      "pill": "ライブ：{title}",
+      "joined": "{count}人参加",
+      "inGame": "{title}に参加中",
+      "notSelect": "ライブレッスンは配らずに進行します。選択をオフにして始めてください。"
+    },
+    "homeroom-multi": {
+      "selected": "{count}件選択",
+      "hint": "机に並べる順にレッスンをタップします。",
+      "oneTool": "算数ツールは一度に1つだけです。1つにしてください。",
+      "clear": "クリア",
+      "handOut": "配る",
+      "notThis": "Figuresは自分の机に置くものなので、ほかと一緒には選べません。",
+      "nItems": "選んだレッスン：{count}",
+      "done": "{who}に配りました：{count}",
+      "emptyTarget": "まだ生徒がいません。",
+      "toolNote": "自由練習、採点なし",
+      "score": "スコア",
+      "completion": "完了",
+      "notGraded": "採点なし",
+      "gradeFor": "{title}の採点方法",
+      "title": "{who}に{count}件配る",
+      "lead": "この順で机に並びます。採点方法はそれぞれのままです。",
+      "toolBusy": "{tool}が机に出ています。算数ツールは一度に1つです。先にすべての机から外してください。",
+      "kind": {
+        "game": "レッスン",
+        "lesson": "授業プラン",
+        "task": "練習",
+        "tool": "算数ツール",
+        "reading": "読書",
+        "mine": "自分の机"
+      },
+      "addNote": "メモを追加",
+      "noteFor": "{title}へのメモ",
+      "count": "各練習の問題数",
+      "order": "机での順番",
+      "inOrder": "順番に",
+      "anyOrder": "好きな順",
+      "orderHint": "順番に：上のリストの順に1つずつ。",
+      "cancel": "キャンセル",
+      "put": "{count}件を机に置く"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "クラスでライブ中。自分の名前で参加します。",
+      "join": "{title}に参加",
+      "over": "ライブゲームが終わりました。自分の机に戻りました。"
     }
   },
   "favorites": {
@@ -8091,7 +8148,8 @@
         "code": "プログラミング",
         "thinking": "考える",
         "music": "音楽",
-        "any": "どの教科でも"
+        "any": "どの教科でも",
+        "typing": "タイピング"
       },
       "grade": "学年",
       "gradeAny": "すべての学年",
@@ -15554,8 +15612,6 @@
       "handOut": "配布先",
       "myLessons": "自分の授業プラン",
       "myGames": "自分で作ったレッスン",
-      "noGames": "作ったレッスンがここに表示されます。",
-      "oomba": "Oomba のレッスンとツール",
       "manipulatives": "操作教材",
       "figures": "図形",
       "reading": "読書",
@@ -15632,7 +15688,10 @@
       "pickTask": "練習する課題を選んでください。",
       "tooManyTasks": "課題は6つまで選べます。",
       "badCount": "問題数は1から10までです。",
-      "oneToolSet": "一度に選べるのは1つの教具の課題だけです。"
+      "oneToolSet": "一度に選べるのは1つの教具の課題だけです。",
+      "noLiveGame": "そのライブゲームは終わりました。",
+      "liveFull": "そのライブゲームは満員です。",
+      "liveLocked": "そのライブゲームは今ロックされています。"
     },
     "live": "ライブ",
     "desk": {
@@ -15837,6 +15896,36 @@
       "seen": "確認済みにしました。何か変わればまた出ます。",
       "snooze": "次の授業日まで後回しにしました。",
       "back": "リストに戻しました。"
+    },
+    "catalog": {
+      "games": "ゲーム",
+      "moreGames": "ほかのゲーム",
+      "live": "ライブゲーム",
+      "liveLead": "クラス全員でライブ",
+      "hostAny": "ライブレッスンを始める",
+      "kind": {
+        "live": "ライブゲーム",
+        "liveSet": "ライブクイズのセット",
+        "liveAny": "クイズやセットなど",
+        "tool": "算数ツール",
+        "practice": "練習 · 算数ツール",
+        "lesson": "レッスン"
+      },
+      "recent": "最近",
+      "mine": "自分のレッスン",
+      "plans": "授業プラン",
+      "lessons": "レッスンと授業プラン",
+      "filters": "絞り込み",
+      "seeAll": "すべて表示（{count}）",
+      "fewer": "少なく表示",
+      "buildLesson": "レッスンを作る",
+      "buildLessonText": "Builderで自分で作る"
+    },
+    "multi": {
+      "select": "選択"
+    },
+    "livegame": {
+      "ended": "ライブレッスンが終わりました。"
     }
   }
 }

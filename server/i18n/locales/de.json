@@ -2312,7 +2312,8 @@
         "oneToolBusy": "{tool} liegt gerade auf den Tischen. Immer nur ein Manipulativ: Nimm es von allen Tischen, um {next} auszuteilen.",
         "oneToolRoom": "In dieser Klasse läuft ein {tool}-Raum. Immer nur ein Raum: Beende ihn, um {next} auszuteilen.",
         "takeOffAll": "Von allen Tischen nehmen",
-        "openThatRoom": "Diesen Raum öffnen"
+        "openThatRoom": "Diesen Raum öffnen",
+        "multiNotMine": "Mehrere auf einmal gehen an Tische, eine Gruppe oder die ganze Klasse, nicht an Mein Tisch."
       },
       "team": {
         "label": "Teamtisch",
@@ -5355,7 +5356,6 @@
       "problemsN": "{count, plural, one {# Aufgabe} other {# Aufgaben}}",
       "wordsN": "{count, plural, one {# Wort} other {# Wörter}}",
       "versionsN": "{count, plural, one {# Version} other {# Versionen}}",
-      "empty": "Unterrichtspläne, die Sie erstellen, erscheinen hier.",
       "more": "Mehr zu {title}",
       "edit": "Bearbeiten",
       "duplicate": "Duplizieren",
@@ -5373,7 +5373,9 @@
       "giveTitle": "{lesson} für {who}",
       "versionsBy": "Versionen nach Gruppe",
       "asBuilt": "Der Unterrichtsplan wie erstellt",
-      "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %."
+      "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %.",
+      "kind": "Unterrichtsplan",
+      "buildText": "Lektion wählen, einmal einrichten, austeilen."
     },
     "homeroom-overview": {
       "title": "Bewerten nach",
@@ -5451,7 +5453,8 @@
         "setDone": "Fertig · {right} von {n} beim ersten Mal richtig",
         "setAt": "Frage {i} von {n} · {right} beim ersten Mal richtig",
         "toolOpen": "{count, plural, one {# hat es offen} other {# haben es offen}}",
-        "toolLine": "Manipulative · freies Üben, wird nicht gezählt"
+        "toolLine": "Manipulative · freies Üben, wird nicht gezählt",
+        "started": "Begonnen"
       },
       "hands": {
         "label": "{count, plural, =0 {Hände, keine oben} one {Hände, # oben} other {Hände, # oben}}",
@@ -5646,6 +5649,60 @@
     "manip-task-play": {
       "more": "Die ganze Aufgabe zeigen",
       "less": "Weniger zeigen"
+    },
+    "homeroom-livegame": {
+      "layer": "Live-Lektion",
+      "back": "Zurück zu Homeroom",
+      "setup": "Live-Lektion einrichten",
+      "end": "Beenden",
+      "endTitle": "{title} beenden?",
+      "endText": "Das Spiel endet jetzt für alle, und Sie sehen die Ergebnisse.",
+      "restore": "{title} öffnen",
+      "pill": "Live: {title}",
+      "joined": "{count} dabei",
+      "inGame": "In {title}",
+      "notSelect": "Live-Lektionen werden geleitet, nicht ausgeteilt. Schalten Sie Auswählen aus, um eine zu starten."
+    },
+    "homeroom-multi": {
+      "selected": "{count} ausgewählt",
+      "hint": "Tippen Sie Lektionen in der Reihenfolge an, in der sie auf die Tische kommen.",
+      "oneTool": "Ein Anschauungsmaterial zur Zeit: Behalten Sie nur eins.",
+      "clear": "Leeren",
+      "handOut": "Austeilen",
+      "notThis": "Figures bleibt auf Mein Tisch und wird nicht mit anderen ausgewählt.",
+      "nItems": "Ausgewählte Lektionen: {count}",
+      "done": "Ausgeteilt an {who}: {count}",
+      "emptyTarget": "Dort sind noch keine Schüler.",
+      "toolNote": "Freies Üben, ohne Bewertung",
+      "score": "Punkte",
+      "completion": "Abschluss",
+      "notGraded": "Ohne Bewertung",
+      "gradeFor": "{title} bewerten nach",
+      "title": "{count} an {who} austeilen",
+      "lead": "Sie kommen in dieser Reihenfolge auf die Tische. Jede behält ihre eigene Bewertung.",
+      "toolBusy": "{tool} ist gerade auf den Tischen. Ein Anschauungsmaterial zur Zeit: Nehmen Sie es zuerst von allen Tischen.",
+      "kind": {
+        "game": "Lektion",
+        "lesson": "Unterrichtsplan",
+        "task": "Übung",
+        "tool": "Anschauungsmaterial",
+        "reading": "Lesen",
+        "mine": "Mein Tisch"
+      },
+      "addNote": "Notiz hinzufügen",
+      "noteFor": "Eine Notiz zu {title}",
+      "count": "Fragen pro Übung",
+      "order": "Reihenfolge auf dem Tisch",
+      "inOrder": "Der Reihe nach",
+      "anyOrder": "Beliebige Reihenfolge",
+      "orderHint": "Der Reihe nach: eins nach dem anderen, wie oben.",
+      "cancel": "Abbrechen",
+      "put": "{count} auf die Tische legen"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "Deine Klasse spielt live. Du machst als du selbst mit.",
+      "join": "{title} beitreten",
+      "over": "Das Live-Spiel ist vorbei. Du bist wieder an deinem Tisch."
     }
   },
   "favorites": {
@@ -8092,7 +8149,8 @@
         "code": "Programmieren",
         "thinking": "Denken",
         "music": "Musik",
-        "any": "Jedes Fach"
+        "any": "Jedes Fach",
+        "typing": "Tippen"
       },
       "grade": "Klassenstufe",
       "gradeAny": "Jede Stufe",
@@ -15555,8 +15613,6 @@
       "handOut": "Austeilen an",
       "myLessons": "Meine Unterrichtspläne",
       "myGames": "Meine Lektionen",
-      "noGames": "Lektionen, die Sie bauen, erscheinen hier.",
-      "oomba": "Oomba-Lektionen und -Werkzeuge",
       "manipulatives": "Arbeitsmittel",
       "figures": "Figuren",
       "reading": "Lesen",
@@ -15633,7 +15689,10 @@
       "pickTask": "Wähle eine Aufgabe zum Üben.",
       "tooManyTasks": "Wähle höchstens 6 Aufgaben.",
       "badCount": "Wähle 1 bis 10 Fragen.",
-      "oneToolSet": "Wähle Aufgaben von nur einem Werkzeug auf einmal."
+      "oneToolSet": "Wähle Aufgaben von nur einem Werkzeug auf einmal.",
+      "noLiveGame": "Dieses Live-Spiel ist vorbei.",
+      "liveFull": "Dieses Live-Spiel ist voll.",
+      "liveLocked": "Dieses Live-Spiel ist gerade gesperrt."
     },
     "live": "Live",
     "desk": {
@@ -15838,6 +15897,36 @@
       "seen": "Als gesehen markiert. Es kommt zurück, wenn sich etwas ändert.",
       "snooze": "Bis zum nächsten Schultag zurückgestellt.",
       "back": "Wieder auf der Liste."
+    },
+    "catalog": {
+      "games": "Spiele",
+      "moreGames": "Weitere Spiele",
+      "live": "Live-Spiele",
+      "liveLead": "Live für die ganze Klasse",
+      "hostAny": "Live-Lektion starten",
+      "kind": {
+        "live": "Live-Spiel",
+        "liveSet": "Live-Quizset",
+        "liveAny": "Quizze, Sets und mehr",
+        "tool": "Anschauungsmaterial",
+        "practice": "Übung · Anschauungsmaterial",
+        "lesson": "Lektion"
+      },
+      "recent": "Zuletzt",
+      "mine": "Meine Lektionen",
+      "plans": "Unterrichtspläne",
+      "lessons": "Lektionen und Unterrichtspläne",
+      "filters": "Filter",
+      "seeAll": "Alle {count} zeigen",
+      "fewer": "Weniger zeigen",
+      "buildLesson": "Lektion erstellen",
+      "buildLessonText": "Im Builder selbst gestalten"
+    },
+    "multi": {
+      "select": "Auswählen"
+    },
+    "livegame": {
+      "ended": "Die Live-Lektion ist beendet."
     }
   }
 }

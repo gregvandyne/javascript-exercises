@@ -2312,7 +2312,8 @@
         "oneToolBusy": "{tool} è sui banchi ora. Un manipolativo alla volta: toglilo da tutti i banchi per distribuire {next}.",
         "oneToolRoom": "In questa classe c’è una stanza di {tool} aperta. Una stanza alla volta: chiudila per distribuire {next}.",
         "takeOffAll": "Toglilo da tutti i banchi",
-        "openThatRoom": "Apri quella stanza"
+        "openThatRoom": "Apri quella stanza",
+        "multiNotMine": "Più elementi insieme vanno ai banchi, a un gruppo o a tutta la classe, non alla Mia cattedra."
       },
       "team": {
         "label": "Banco di squadra",
@@ -5355,7 +5356,6 @@
       "problemsN": "{count, plural, one {# esercizio} other {# esercizi}}",
       "wordsN": "{count, plural, one {# parola} other {# parole}}",
       "versionsN": "{count, plural, one {# versione} other {# versioni}}",
-      "empty": "I piani di lezione che crei appaiono qui.",
       "more": "Altro per {title}",
       "edit": "Modifica",
       "duplicate": "Duplica",
@@ -5373,7 +5373,9 @@
       "giveTitle": "{lesson} per {who}",
       "versionsBy": "Versioni per gruppo",
       "asBuilt": "Il piano di lezione come creato",
-      "scoreHint": "Il registro mostra la % di risposte giuste."
+      "scoreHint": "Il registro mostra la % di risposte giuste.",
+      "kind": "Piano di lezione",
+      "buildText": "Scegli una lezione, impostala una volta, distribuiscila."
     },
     "homeroom-overview": {
       "title": "Valuta per",
@@ -5451,7 +5453,8 @@
         "setDone": "Fatto · {right} su {n} giuste al primo colpo",
         "setAt": "Domanda {i} di {n} · {right} giuste al primo colpo",
         "toolOpen": "{count, plural, one {# lo ha aperto} other {# lo hanno aperto}}",
-        "toolLine": "Manipolativi · pratica libera, non conteggiata"
+        "toolLine": "Manipolativi · pratica libera, non conteggiata",
+        "started": "Iniziato"
       },
       "hands": {
         "label": "{count, plural, =0 {Mani, nessuna alzata} one {Mani, # alzata} other {Mani, # alzate}}",
@@ -5646,6 +5649,60 @@
     "manip-task-play": {
       "more": "Mostra tutta la domanda",
       "less": "Mostra meno"
+    },
+    "homeroom-livegame": {
+      "layer": "Lezione dal vivo",
+      "back": "Torna a Homeroom",
+      "setup": "Prepara una lezione dal vivo",
+      "end": "Termina",
+      "endTitle": "Terminare {title}?",
+      "endText": "Il gioco finisce ora per tutti e vedi i risultati.",
+      "restore": "Apri {title}",
+      "pill": "Dal vivo: {title}",
+      "joined": "{count} collegati",
+      "inGame": "In {title}",
+      "notSelect": "Le lezioni dal vivo si conducono, non si distribuiscono. Disattiva Seleziona per avviarne una."
+    },
+    "homeroom-multi": {
+      "selected": "{count} selezionati",
+      "hint": "Tocca le lezioni nell’ordine in cui andranno sui banchi.",
+      "oneTool": "Un materiale manipolativo alla volta: tienine solo uno.",
+      "clear": "Cancella",
+      "handOut": "Distribuisci",
+      "notThis": "Figures resta sulla Mia cattedra, quindi non si sceglie con altri.",
+      "nItems": "Lezioni scelte: {count}",
+      "done": "Distribuito a {who}: {count}",
+      "emptyTarget": "Non ci sono ancora studenti lì.",
+      "toolNote": "Pratica libera, senza voto",
+      "score": "Punteggio",
+      "completion": "Completamento",
+      "notGraded": "Senza voto",
+      "gradeFor": "Valuta {title} per",
+      "title": "Distribuisci {count} a {who}",
+      "lead": "Vanno sui banchi in quest’ordine. Ognuna mantiene la sua valutazione.",
+      "toolBusy": "{tool} è sui banchi. Un materiale alla volta: toglilo prima da tutti i banchi.",
+      "kind": {
+        "game": "Lezione",
+        "lesson": "Piano di lezione",
+        "task": "Esercizio",
+        "tool": "Materiali manipolativi",
+        "reading": "Lettura",
+        "mine": "La mia cattedra"
+      },
+      "addNote": "Aggiungi una nota",
+      "noteFor": "Una nota per {title}",
+      "count": "Domande per esercizio",
+      "order": "Ordine sul banco",
+      "inOrder": "In ordine",
+      "anyOrder": "Qualsiasi ordine",
+      "orderHint": "In ordine: una dopo l’altra, come sopra.",
+      "cancel": "Annulla",
+      "put": "Metti {count} sui banchi"
+    },
+    "homeroom-livedesk": {
+      "deskLead": "La tua classe gioca dal vivo. Entri come te stesso.",
+      "join": "Entra in {title}",
+      "over": "Il gioco dal vivo è finito. Sei di nuovo al tuo banco."
     }
   },
   "favorites": {
@@ -8092,7 +8149,8 @@
         "code": "Programmazione",
         "thinking": "Ragionamento",
         "music": "Musica",
-        "any": "Ogni materia"
+        "any": "Ogni materia",
+        "typing": "Dattilografia"
       },
       "grade": "Classe",
       "gradeAny": "Ogni classe",
@@ -15555,8 +15613,6 @@
       "handOut": "Consegna a",
       "myLessons": "I miei piani di lezione",
       "myGames": "Lezioni che ho creato",
-      "noGames": "Le lezioni che crei appaiono qui.",
-      "oomba": "Lezioni e strumenti Oomba",
       "manipulatives": "Materiali manipolativi",
       "figures": "Figure",
       "reading": "Lettura",
@@ -15633,7 +15689,10 @@
       "pickTask": "Scegli un’attività da esercitare.",
       "tooManyTasks": "Scegli al massimo 6 attività.",
       "badCount": "Scegli da 1 a 10 domande.",
-      "oneToolSet": "Scegli attività di un solo strumento alla volta."
+      "oneToolSet": "Scegli attività di un solo strumento alla volta.",
+      "noLiveGame": "Quel gioco dal vivo è finito.",
+      "liveFull": "Quel gioco dal vivo è pieno.",
+      "liveLocked": "Quel gioco dal vivo è bloccato ora."
     },
     "live": "In diretta",
     "desk": {
@@ -15838,6 +15897,36 @@
       "seen": "Segnato come visto. Torna se qualcosa cambia.",
       "snooze": "Rimandato al prossimo giorno di scuola.",
       "back": "Di nuovo nella lista."
+    },
+    "catalog": {
+      "games": "Giochi",
+      "moreGames": "Altri giochi",
+      "live": "Giochi dal vivo",
+      "liveLead": "Dal vivo per tutta la classe",
+      "hostAny": "Conduci una lezione dal vivo",
+      "kind": {
+        "live": "Gioco dal vivo",
+        "liveSet": "Serie di quiz dal vivo",
+        "liveAny": "Quiz, serie e altro",
+        "tool": "Materiali manipolativi",
+        "practice": "Esercizio · Materiali manipolativi",
+        "lesson": "Lezione"
+      },
+      "recent": "Recenti",
+      "mine": "Le mie lezioni",
+      "plans": "Piani di lezione",
+      "lessons": "Lezioni e piani di lezione",
+      "filters": "Filtri",
+      "seeAll": "Vedi tutti ({count})",
+      "fewer": "Mostra meno",
+      "buildLesson": "Crea una lezione",
+      "buildLessonText": "Creane una tua nel Builder"
+    },
+    "multi": {
+      "select": "Seleziona"
+    },
+    "livegame": {
+      "ended": "La lezione dal vivo è finita."
     }
   }
 }

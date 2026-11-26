@@ -82,7 +82,15 @@ export function startPulse(opts) {
     }
     P.timer = setTimeout(loop, 500);
   }
-  document.addEventListener('visibilitychange', () => { if (!document.hidden && P.live) send(); });
+  // The page goes (the tab closed, another page, or hidden): one last word, so the teacher's board drops this desk's
+  // board, picture and status at once instead of a few seconds later (QA round 2, N8). Only while live.
+  function bye() {
+    if (!P.live || P.stopped || P.paused) return;
+    P.lastSent = 0;
+    try { fetch(`/api/desk/${encodeURIComponent(opts.classId)}/pulse`, { method: 'POST', keepalive: true, credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ where: opts.where, gone: true }) }); } catch { /* gone */ }
+  }
+  addEventListener('pagehide', bye);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) bye(); else if (P.live) send(); });
   P.timer = setTimeout(loop, opts.where === 'game' ? 400 : 1500);
   return {
     /** The desk's state poll heard the live state and its own live desk. */

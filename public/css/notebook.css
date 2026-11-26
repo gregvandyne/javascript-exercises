@@ -11,7 +11,6 @@
 .nb-btn:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
 .nb-btn[hidden],.nb[hidden]{display:none}
 /* the "Your class is in Homeroom" prompt keeps clear of the corner button */
-@media (max-width:640px){body.nb-has .hr-notify{left:16px;transform:none;max-width:calc(100vw - 112px)}}
 
 .nb{position:fixed;z-index:85;inset-inline-end:12px;top:calc(var(--top) + 8px);bottom:12px;width:min(460px,calc(100vw - 24px));display:flex;flex-direction:column;min-height:0;background:var(--card);color:var(--text);border:2px solid var(--line);border-radius:var(--r);box-shadow:0 16px 48px rgba(20,20,20,.22);overflow:hidden}
 .nb-head{flex:none;display:flex;align-items:center;gap:10px;padding:10px 10px 6px 16px}
