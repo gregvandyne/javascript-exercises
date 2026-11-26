@@ -452,6 +452,31 @@ on(document, 'keydown', e => {
   for (const d of document.querySelectorAll('details.cx-menu[open]')) { d.open = false; d.querySelector('summary').focus(); }
 });
 
+// The ⋯ menus of assigned items and teacher lists (details.shelf-menu, details.inline-menu) are bottom sheets on a phone
+// (app.css): each gets a close button at its top (shown on phones only), and Escape closes it. A tap on the dimmed page
+// is a tap on the menu's own ⋯, so it closes natively. Delegated, so menus swapped in later (class views) get it too.
+const SHEETS = 'details.shelf-menu, details.inline-menu';
+const sheetPanel = d => [...d.children].find(c => c.matches('.shelf-menu-panel, .menu'));
+on(document, 'toggle', e => {
+  const d = e.target;
+  if (!(d instanceof HTMLDetailsElement) || !d.open || !d.matches(SHEETS)) return;
+  const p = sheetPanel(d); if (!p) return;
+  if (!p.querySelector(':scope > .sheet-x')) {
+    const x = document.createElement('div'); x.className = 'sheet-x';
+    x.innerHTML = `<button class="btn btn-sm btn-ghost" type="button" aria-label="${esc(t('js.app.close'))}" title="${esc(t('js.app.close'))}">${iconHtml('✖️', { size: 18 })}</button>`;
+    x.firstChild.addEventListener('click', () => { d.open = false; const s = d.querySelector('summary'); if (s) s.focus(); });
+    p.prepend(x);
+  }
+  p.scrollTop = 0;
+}, true);
+on(document, 'keydown', e => {
+  if (e.key !== 'Escape' || e.defaultPrevented) return;
+  for (const d of document.querySelectorAll('details.shelf-menu[open], details.inline-menu[open]')) {
+    if (!matchMedia('(max-width:639px)').matches) continue;
+    d.open = false; const s = d.querySelector('summary'); if (s) s.focus();
+  }
+});
+
 // ---- Folders (docs/decisions.md "Folders: drag to reorder, save in a pop-up"), loaded only where they are used, with this
 // file's version: "Save to folder" links open a pop-up (public/js/folder-save.js; without script, or with a modifier
 // key for a new tab, the link opens the page), and lists marked data-reorder can be dragged (public/js/reorder.js).
