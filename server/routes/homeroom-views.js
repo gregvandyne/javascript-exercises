@@ -19,6 +19,11 @@ export const VIEWS = ['homeroom', 'classroom', 'dashboard'];
 const urlOf = (c, k) => (k === 'homeroom' ? `/class/${c.id}/homeroom` : k === 'dashboard' ? `/class/${c.id}/dashboard` : `/class/${c.id}`);
 const viewsOf = (req, c) => VIEWS.filter(k => k !== 'dashboard' || DASH.isTeacher(req.user, c));
 
+/** The views a class card on My classes (/teach) opens the class in (docs/decisions.md "A simpler teacher home"):
+ *  Homeroom for a teacher Homeroom lets into the class, Classroom always, Dashboard for the class's own teacher. */
+export const cardViews = (req, c) => VIEWS.filter(k => k === 'classroom' || (k === 'homeroom' ? H.canUseClass(req.user, c) : DASH.isTeacher(req.user, c)))
+  .map(k => ({ k, href: urlOf(c, k) }));
+
 /** The Homeroom | Classroom | Dashboard pill (real links: without script each opens its page). '' for anyone Homeroom
  *  does not let into this class. */
 export function homeroomTabs(req, c, active) {

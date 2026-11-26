@@ -85,7 +85,7 @@ test('the teacher builds an Arithmetic Lab lesson with a version for each group 
   if (skip) return t.skip(skip);
   const { ctx, page, errors } = await open(teacher, `/class/${cls.id}/homeroom`, { width: 1366, height: 768 });
   await page.waitForSelector('.hr-desk');
-  assert.match(await page.locator('#hr-lessons').innerText(), /Lessons you build show here/);
+  assert.match(await page.locator('#hr-lessons').innerText(), /Lesson plans you build show here/);
   await page.click('[data-hr="build"]');
   await page.waitForSelector('[data-lbgame="arithmetic-lab"]');
   assert.equal(await page.locator('.hr-lbgame.later').count(), 8, 'the rest of the spec\'s order, coming later');
@@ -140,7 +140,7 @@ test('the teacher builds an Arithmetic Lab lesson with a version for each group 
   // a desk's sheet names the version for the teacher
   await page.locator(`.hr-desk[data-sid="${kids[5].id}"] .hr-card`).first().click();
   await page.waitForSelector('.hr-dsheet');
-  assert.match(await page.locator('.hr-dsheet').innerText(), /Lesson · Version: Building/);
+  assert.match(await page.locator('.hr-dsheet').innerText(), /Lesson plan · Version: Building/);
   await settle(page); await shot(page, 'desk-sheet-laptop');
   await page.keyboard.press('Escape');
   // Print worksheet: the lesson's ⋯ menu, Building's version, the print area filled.

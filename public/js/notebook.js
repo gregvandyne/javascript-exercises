@@ -3,7 +3,8 @@
 //   - the green corner button at the bottom right of every page a student with a notebook sees (where teachers have the
 //     Oomba chat; Oomba never talks to students), above the phone's tab bar. On the desk it is the dock's last button.
 //     It opens the notebook the way the chat opens: a panel on the right on laptops and tablets, a sheet on phones;
-//   - "Your teacher can read your notebook" at the top, plainly, whenever the student is in a class;
+//   - "Your teacher can read your notebook" at the top, plainly, whenever the student is in a class (and, with a linked
+//     grown-up who has the parents' view, that the grown-up can see the class tabs' notes);
 //   - tabs (their own, named by them, and one per class for handout notes), search across every note, simple formatting
 //     (bold, a list, a checklist) and four highlighters on the words picked, saved by itself a moment after typing
 //     stops and when the page is left. Pasted text comes in as plain words. The server cleans every page again.
@@ -74,7 +75,7 @@ function shell() {
   const st = S.student;
   const title = S.ro ? tn('ofStudent', { name: st ? st.name : '' }) : tn('title');
   const lead = S.ro ? `<p class="nb-lead nb-ro">${ic('👀', 18)} <span>${esc(tn('readOnly'))}</span></p>`
-    : S.data && S.data.teacherReads ? `<p class="nb-lead">${ic('🔒', 18)} <span>${esc(tn('teacherReads'))}</span></p>` : '';
+    : S.data && (S.data.teacherReads || S.data.parentsRead) ? `<p class="nb-lead">${ic('🔒', 18)} <span>${esc([S.data.teacherReads ? tn('teacherReads') : '', S.data.parentsRead ? tn('parentsRead') : ''].filter(Boolean).join(' '))}</span></p>` : '';
   const tools = S.ro ? '' : k2() ? `<div class="nb-tools nb-k2tools" role="toolbar" aria-label="${esc(tn('format'))}">
       <button type="button" class="nb-tool" data-nbf="bold" aria-label="${esc(tn('bold'))}" title="${esc(tn('bold'))}">${SVG.bold}<span>${esc(tn('k2.bold'))}</span></button>
       <button type="button" class="nb-tool nb-hl" data-nbf="hl" data-hl="hl-y" style="--nb-hl:#FFE066" aria-label="${esc(tn('highlightN', { n: 1, color: tn('colors.hl-y') }))}" title="${esc(tn('colors.hl-y'))}">${SVG.pen}<span>${esc(tn('k2.highlight'))}</span></button>

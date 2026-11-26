@@ -518,7 +518,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
     const lessonRow = (cl, i, n) => {
       const sm = sums[cl.id] || { done: 0, students: 0, toRead: 0 };
       return html`<li class="cl-row" id="cl-${cl.id}">
-      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${iconOf(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
+      <a class="cl-main" href="/class/${c.id}/progress/${cl.id}"><b dir="auto"><span aria-hidden="true">${iconOf(cl)}</span> ${cl.title}</b><span class="small muted cl-meta">${cl.kind === 'game' ? html`<span>${ico('🎮', { size: 18 })} ${t('folders.kindGame')}</span>` : cl.kind === 'story' ? html`<span>${ico('📖', { size: 18 })} ${t('library.kindStory')}</span>` : html`<span>${staff && ['lesson', 'course'].includes(cl.kind) ? `${t('lessons.class.kindPlan')} · ` : ''}${t('lessons.stepsN', { count: cl.steps })}${cl.minutes ? ` · ${t('lessons.minutesN', { count: cl.minutes })}` : ''}</span>`}
         ${cl.opens_at && !L.isOpen(cl) ? html`<span class="chip-s">${ico('🔒', { size: 18 })} ${t('lessons.class.opensOn', { date: f.day(cl.opens_at) })}</span>` : ''}${dueChip(t, f, cl, { done: !sm.students || sm.done >= sm.students })}</span>
         ${cl.picked ? html`<span class="small cl-stats"><span class="chip-s cl-some">${ico('👥', { size: 18 })} ${t('lessons.class.someStudents', { count: sm.students })}</span></span>` : ''}
         ${sm.students ? html`<span class="small cl-stats"><span>${t('lessons.class.doneOf', { done: sm.done, students: sm.students })}</span>${sm.toRead ? html`<span class="chip-s warn">${ico('✍️', { size: 18 })} ${t('lessons.class.toReview', { count: sm.toRead })}</span>` : ''}</span>` : ''}</a>
@@ -537,7 +537,7 @@ export function assignedPane(req, c, { tools = '' } = {}) {
           <form data-api="/api/class-lessons/${cl.id}/delete" data-reload data-confirm="${t('lessons.class.unassignConfirm', { name: cl.title })}"><button class="btn btn-sm btn-danger" type="submit">${t('lessons.class.unassign')}</button></form>
         </div></details></span></li>`;
     };
-    return html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p class="small muted">${t('folders.gamesN', { count })}</p></div>${tools ? html`<div class="shelf-tools shelf-phone-tools">${tools}</div>` : ''}</div>
+    return html`<div class="shelf-head"><div class="shelf-title"><h2 id="shelf-h" tabindex="-1" dir="auto">${t('folders.assignedTo', { class: c.name })}</h2><p class="small muted">${t(staff ? 'folders.assignedItemsN' : 'folders.gamesN', { count })}</p></div>${tools ? html`<div class="shelf-tools shelf-phone-tools">${tools}</div>` : ''}</div>
       ${count ? '' : html`<div class="cl-none"><span class="emo">${ico('🎮', { size: 20 })}</span><div><b>${t('folders.classEmpty')}</b>${staff ? html`<p class="small muted">${t('folders.classEmptyText')}</p>` : ''}</div></div>`}
       ${plan.map((g, gi) => g.unit || g.lessons.length ? html`<div class="unit">
         ${g.unit ? html`<div class="unit-head"><h3>${ico('🗂️', { size: 22 })} ${g.unit.name}</h3><span class="acts">

@@ -4,7 +4,9 @@
     "titleHome": "Lernspiele für Kinder: spielen und bauen · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
     "description": "Kostenlose, lustige Lernspiele für Kinder von 5 bis 14. Direkt im Browser spielen und mit dem KI-Baumeister eigene Spiele bauen.",
+    "descriptionForTeachers": "Interaktive Lektionen für 5- bis 14-Jährige im Browser, ein Klassen-Dashboard für den ganzen Tag und ein KI-Baumeister, der mit Ihnen Lektionen baut.",
     "skip": "Direkt zu den Spielen",
+    "skipForTeachers": "Direkt zum Inhalt",
     "mainNav": "Hauptmenü",
     "signIn": "Anmelden",
     "meLabel": "Ich: {name}",
@@ -18,7 +20,9 @@
     "badgeNew": "{count} neu",
     "search": {
       "label": "Spiele und Spielemacher suchen",
-      "placeholder": "Spiele suchen"
+      "labelForTeachers": "Lektionen und Spielemacher suchen",
+      "placeholder": "Spiele suchen",
+      "placeholderForTeachers": "Lektionen suchen"
     },
     "lang": {
       "title": "Sprache",
@@ -49,9 +53,11 @@
     },
     "build": {
       "ready": "Dein Spiel „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
+      "readyForTeachers": "Ihre Lektion „{title}“ ist fertig! <a href=\"{href}\">Öffnen</a>",
       "question": "Der Baumeister hat eine Frage zu „{title}“. <a href=\"{href}\">Öffnen</a>",
       "stopped": "„{title}“ wurde gestoppt, bevor es fertig war. <a href=\"{href}\">Öffne es, um weiterzumachen</a>",
-      "many": "Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>"
+      "many": "Der Baumeister hat Neuigkeiten zu einigen deiner Spiele. <a href=\"{href}\">Zu „Meine Spiele“</a>",
+      "manyForTeachers": "Der Baumeister hat Neuigkeiten zu einigen Ihrer Lektionen. <a href=\"{href}\">Zum Lektionsordner</a>"
     },
     "shortPasswordGrownup": "Ihr Passwort ist kürzer als {min} Zeichen. Bitte <a href=\"{href}\">wählen Sie ein längeres</a>."
   },
@@ -574,6 +580,7 @@
     },
     "empty": {
       "title": "Noch keine Spiele",
+      "titleForTeachers": "Noch keine Lektionen",
       "action": "Spiel bauen"
     },
     "intro": {
@@ -1527,14 +1534,19 @@
   },
   "build": {
     "title": "Spiel bauen",
+    "titleForTeachers": "Lektionen bauen",
     "hero": {
       "heading": "Bau dein eigenes Spiel, einfach durch Chatten!",
-      "text": "Erzähl dem Baumeister deine Idee. Er baut das Spiel, und du kannst es immer weiter ändern."
+      "headingForTeachers": "Bauen Sie eine Lektion, einfach durch Chatten!",
+      "text": "Erzähl dem Baumeister deine Idee. Er baut das Spiel, und du kannst es immer weiter ändern.",
+      "textForTeachers": "Erzählen Sie dem Baumeister Ihre Idee. Er baut die Lektion, und Sie können sie immer weiter ändern."
     },
     "newGame": "Neues Spiel",
+    "newGameForTeachers": "Neue Lektion",
     "updateWaiting": "Update wartet auf Prüfung",
     "changed": "Geändert {when}",
     "empty": "Tipp auf „Neues Spiel“, um eins anzufangen. Deine Spiele erscheinen dann hier.",
+    "emptyForTeachers": "Tippen Sie auf „Neue Lektion“, um eine anzufangen. Ihre Lektionen erscheinen dann hier.",
     "rename": "Umbenennen",
     "delete": "Löschen",
     "status": {
@@ -2052,7 +2064,7 @@
         "label": "Mein Pult (nur Sie sehen, was darauf liegt)",
         "title": "Mein Pult",
         "note": "Nur Sie sehen das",
-        "empty": "Legen Sie ein Spiel hierher, um es zuerst auszuprobieren.",
+        "empty": "Legen Sie eine Lektion hierher, um sie zuerst auszuprobieren.",
         "cardLabel": "{title}, auf meinem Pult",
         "play": "Spielen",
         "preview": "Vorschau",
@@ -2060,12 +2072,12 @@
         "handOut": "Austeilen",
         "takeOff": "Von meinem Pult nehmen",
         "lead": "Auf Ihrem Pult zum Ausprobieren. Schüler sehen es erst, wenn Sie es austeilen.",
-        "lessonLead": "Auf Ihrem Pult. Die Vorschau öffnet die Aufgaben der Lektion. Schüler sehen es erst, wenn Sie es austeilen.",
+        "lessonLead": "Auf Ihrem Pult. Die Vorschau öffnet die Aufgaben des Unterrichtsplans. Schüler sehen ihn erst, wenn Sie ihn austeilen.",
         "toolLead": "Auf Ihrem Pult, jederzeit zu öffnen. Werkzeuge austeilen kommt bald.",
         "tapWhere": "Tippen Sie jetzt auf einen Tisch, eine Gruppe, Ganze Klasse oder Mein Pult.",
         "tapMine": "Tippen Sie jetzt auf Mein Pult, um es dort abzulegen.",
         "toolSoon": "Werkzeuge austeilen kommt bald. Legen Sie es auf Mein Pult, um es von dort zu öffnen.",
-        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie auf Mein Pult."
+        "pickFirst": "Wählen Sie zuerst links eine Lektion und tippen Sie dann auf Mein Pult."
       },
       "wholeClass": "Ganze Klasse · {count}",
       "editGroups": "Gruppen",
@@ -2237,7 +2249,7 @@
       "endClass": "Stunde beenden",
       "endConfirm": "Die Stunde für alle beenden? Die Plätze und der Bereich der Lehrkraft bleiben, wie sie sind.",
       "projector": "Beameransicht öffnen",
-      "hostLive": "Live-Spiel starten",
+      "hostLive": "Live-Lektion leiten",
       "started": "Die Stunde läuft. Die Schüler sehen einen Hinweis, an ihren Platz zu gehen.",
       "bringing": "Alle sehen den Bereich der Lehrkraft",
       "backToDesks": "Die Schüler sind wieder an ihren Plätzen",
@@ -2251,9 +2263,9 @@
         "cancel": "Abbrechen",
         "wholeClass": "Ganze Klasse",
         "emptyGroup": "In dieser Gruppe ist noch niemand.",
-        "pickFirst": "Wählen Sie zuerst links ein Spiel, dann tippen Sie hier.",
+        "pickFirst": "Wählen Sie zuerst links eine Lektion und tippen Sie dann hier.",
         "title": "{game} für {who}",
-        "eyebrow": "Spiel · freies Spielen",
+        "eyebrow": "Lektion · freies Spielen",
         "lead": "Die Kinder spielen frei. Geben Sie Hinweise, wenn sie etwas Bestimmtes tun sollen.",
         "instructions": "Hinweise (optional)",
         "instructionsPh": "Zum Beispiel: Rechne 3 schriftliche Divisionen mit Rest und zeige eine auf deinem Block.",
@@ -2283,7 +2295,7 @@
         "removeOne": "Von {name}s Tisch nehmen",
         "removeAll": "Von allen Tischen entfernen",
         "removeAllConfirm": "{title} von allen Tischen entfernen? Die Arbeit der Kinder bleibt erhalten und kommt zurück, wenn Sie es wieder austeilen.",
-        "lesson": "Stunde",
+        "lesson": "Unterrichtsplan",
         "version": "Version: {name}",
         "gcAlso": "Auch in Google Classroom posten",
         "gcHint": "Es geht als Aufgabe an Ihre verknüpfte Classroom-Klasse, mit der hier gewählten Bewertung.",
@@ -2312,7 +2324,7 @@
         "commentPh": "Zum Beispiel: Toll gemacht mit den Resten!",
         "sticker": "Ein Sticker (optional)",
         "noSticker": "Keiner",
-        "private": "Nur dieses Kind sieht es, auf seinem Tisch und der Seite der Aufgabe.",
+        "private": "Nur dieses Kind sieht es, auf seinem Tisch und der Seite des Unterrichtsplans.",
         "remove": "Entfernen"
       },
       "select": "Auswählen",
@@ -2396,15 +2408,19 @@
     "build": {
       "gettingReady": "Wird vorbereitet…",
       "renameTitle": "Spiel umbenennen",
+      "renameTitleForTeachers": "Lektion umbenennen",
       "nameLabel": "Name des Spiels",
+      "nameLabelForTeachers": "Name der Lektion",
       "save": "Speichern",
       "renamed": "Name gespeichert",
       "deleteTitle": "Dieses Spiel löschen?",
+      "deleteTitleForTeachers": "Diese Lektion löschen?",
       "deleteText": "„{title}“ ist dann für immer weg. Das kannst du nicht rückgängig machen.",
       "deleteLive": "Andere können es dann nicht mehr finden.",
       "keep": "Behalten",
       "deleteYes": "Löschen",
-      "deleted": "Spiel gelöscht"
+      "deleted": "Spiel gelöscht",
+      "deletedForTeachers": "Lektion gelöscht"
     },
     "me": {
       "lookingGood": "Sieht super aus!",
@@ -2974,6 +2990,7 @@
     },
     "live-sets": {
       "replaceOpen": "Du hast schon ein Live-Spiel offen. Beenden und dieses öffnen?",
+      "replaceOpenForTeachers": "Sie haben schon eine Live-Lektion offen. Diese beenden und die neue öffnen?",
       "edit": "Bearbeiten",
       "new": "Neue Fragenrunde",
       "title": "Titel",
@@ -3036,9 +3053,10 @@
         "lobby": "Es wartet noch in der Lobby.",
         "players": "{count, plural, =0 {Niemand ist verbunden.} one {# Spieler ist verbunden.} other {# Spieler sind verbunden.}}",
         "back": "Zurück zu diesem Spiel",
-        "replace": "Beenden und das neue Spiel öffnen"
+        "replace": "Beenden und das neue Spiel öffnen",
+        "replaceForTeachers": "Beenden und die neue Lektion öffnen"
       },
-      "why": "Aus deiner Stunde:"
+      "why": "Aus Ihren Notizen:"
     },
     "match": {
       "title": "{title} online spielen",
@@ -3093,7 +3111,7 @@
       "pdfReady": "{name} ist bereit zum Senden.",
       "textLoaded": "Der Text aus {name} wurde geladen.",
       "fileKind": "Wähle ein PDF oder eine Textdatei.",
-      "tooShort": "Füge zuerst etwas mehr von deiner Stunde ein (mindestens {n} Zeichen).",
+      "tooShort": "Fügen Sie zuerst etwas mehr von Ihren Notizen ein (mindestens {n} Zeichen).",
       "drafted": "{n} Fragen entworfen. Prüfe jede einzelne.",
       "backConfirm": "Neu anfangen? Die entworfenen Fragen auf dieser Seite gehen verloren.",
       "assigned": "Aufgegeben."
@@ -4363,11 +4381,11 @@
       "historyDelete": "Diesen Chat löschen",
       "historyDeleteAsk": "Diesen Chat endgültig löschen? Er kann nicht wiederhergestellt werden.",
       "historyDeleteOk": "Löschen",
-      "hello": "Hallo! Ich bin Oomba, deine Hilfe beim Unterrichten. Frag mich nach einem Spiel, einem Buch, einer Änderung an deinem Dashboard oder Hilfe bei einer Stunde.",
+      "hello": "Hallo! Ich bin Oomba, deine Hilfe beim Unterrichten. Frag mich nach einer Lektion, einem Buch, einer Änderung an deinem Dashboard oder Hilfe bei einem Unterrichtsplan.",
       "idea": {
         "game": {
-          "label": "Ein Spiel finden",
-          "text": "Gib mir ein Spiel zu Brüchen für die 3. Klasse, etwa 10 Minuten"
+          "label": "Lektion finden",
+          "text": "Gib mir eine Lektion zu Brüchen für die 3. Klasse, etwa 10 Minuten"
         },
         "book": {
           "label": "Ein Buch finden",
@@ -4378,8 +4396,8 @@
           "text": "Füge meinem Dashboard einen 5-Minuten-Timer und Klassendienste hinzu"
         },
         "plan": {
-          "label": "Eine Stunde planen",
-          "text": "Hilf mir, eine 30-minütige Stunde zu planen über "
+          "label": "Unterrichtsplan erstellen",
+          "text": "Hilf mir bei einem 30-minütigen Unterrichtsplan zum Thema "
         },
         "dashTimer": {
           "label": "5-Minuten-Timer hinzufügen",
@@ -4442,10 +4460,10 @@
         "explain": "Nachgeschaut, wie Oomba Academy funktioniert",
         "page": "Diese Seite gelesen",
         "dash": "Dein Layout {q} gelesen ({n} Widgets)",
-        "games": "Spiele gesucht: {q}",
+        "games": "Lektionen gesucht: {q}",
         "books": "In der Story Library gesucht",
         "booksLevel": "Lesestufe {q} zugeordnet",
-        "lessons": "Stunden und Arbeitsblätter gesucht",
+        "lessons": "Unterrichtspläne und Arbeitsblätter gesucht",
         "propose": "Eine Änderung zum Prüfen vorbereitet",
         "dashNo": "Diese Dashboard-Änderung ließ sich nicht planen",
         "brief": "Eine Beschreibung geschrieben",
@@ -5012,14 +5030,14 @@
       "close": "Schließen"
     },
     "homeroom-lessons": {
-      "build": "Stunde erstellen",
-      "editTitle": "Stunde bearbeiten",
-      "pickTitle": "Welches Spiel oder Werkzeug?",
-      "pickLead": "Wählen Sie ein Spiel. Sie legen genau fest, was die Kinder tun, und daraus entsteht das Arbeitsblatt.",
+      "build": "Unterrichtsplan erstellen",
+      "editTitle": "Unterrichtsplan bearbeiten",
+      "pickTitle": "Welche Lektion oder welches Werkzeug?",
+      "pickLead": "Wählen Sie eine Lektion. Sie legen genau fest, was die Kinder tun, und daraus entsteht das Arbeitsblatt.",
       "comingLater": "Kommt später",
       "later": {
-        "quiz": "Klassenquiz und Wortspiele",
-        "mine": "Meine Spiele",
+        "quiz": "Klassenquiz und Worträtsel",
+        "mine": "Meine Lektionen",
         "atlas": "Atlas Quest",
         "sudoku": "Sudoku",
         "castle": "Castle-Clash-Rätsel",
@@ -5027,7 +5045,7 @@
         "figures": "Figuren",
         "reading": "Lesen"
       },
-      "name": "Name der Stunde",
+      "name": "Name des Unterrichtsplans",
       "namePh": "Zum Beispiel: Schriftliches Dividieren üben",
       "op": "Rechenart",
       "ops": {
@@ -5089,7 +5107,7 @@
       "versions": "Eine Version für jede Gruppe?",
       "versionsYes": "Ja, nach Gruppe",
       "versionsNo": "Eine für alle",
-      "versionsHint": "Jede Gruppe beginnt mit Ihrer Stunde und einer vorgeschlagenen Änderung. Sie können alles ändern.",
+      "versionsHint": "Jede Gruppe startet mit Ihrem Unterrichtsplan und einer vorgeschlagenen Änderung. Ändern Sie, was Sie wollen.",
       "versionsOff": "Alle bekommen dasselbe Arbeitsblatt.",
       "noGroups": "Diese Klasse hat noch keine Gruppen. Legen Sie zuerst Gruppen an, um Versionen hinzuzufügen.",
       "editing": "Version für",
@@ -5112,13 +5130,13 @@
       "aiNothing": "Jedes Wort hat schon einen Hinweis.",
       "aiNeedWords": "Geben Sie zuerst ein paar Wörter ein. Oomba schreibt zu jedem einen Hinweis.",
       "aiFailed": "Oomba konnte gerade keine Hinweise schreiben. Versuchen Sie es noch einmal.",
-      "save": "In „Meine Stunden“ speichern",
+      "save": "In Meine Unterrichtspläne speichern",
       "cancel": "Abbrechen",
-      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "needTitle": "Geben Sie dem Unterrichtsplan einen Namen.",
       "problemsN": "{count, plural, one {# Aufgabe} other {# Aufgaben}}",
       "wordsN": "{count, plural, one {# Wort} other {# Wörter}}",
       "versionsN": "{count, plural, one {# Version} other {# Versionen}}",
-      "empty": "Stunden, die Sie erstellen, erscheinen hier.",
+      "empty": "Unterrichtspläne, die Sie erstellen, erscheinen hier.",
       "more": "Mehr zu {title}",
       "edit": "Bearbeiten",
       "duplicate": "Duplizieren",
@@ -5128,14 +5146,14 @@
       "versionsFor": "Versionen für {groups}",
       "printLead": "Das Arbeitsblatt wird mit seinem Klassencode gedruckt, so können die Kinder es auch in Oomba öffnen.",
       "printWhich": "Welches Arbeitsblatt?",
-      "printLesson": "Die Stunde",
+      "printLesson": "Der Unterrichtsplan",
       "printKey": "Lösungsblatt dazu",
       "printGo": "Drucken",
-      "full": "Sie haben {count} Stunden, mehr können Sie nicht speichern. Löschen Sie zuerst eine.",
-      "giveEyebrow": "Stunde",
+      "full": "Sie haben {count} Unterrichtspläne, mehr können Sie nicht speichern. Löschen Sie zuerst einen.",
+      "giveEyebrow": "Unterrichtsplan",
       "giveTitle": "{lesson} für {who}",
       "versionsBy": "Versionen nach Gruppe",
-      "asBuilt": "Die Stunde wie erstellt",
+      "asBuilt": "Der Unterrichtsplan wie erstellt",
       "scoreHint": "Im Notenbuch steht der Anteil richtiger Antworten in %."
     },
     "homeroom-overview": {
@@ -5239,7 +5257,7 @@
         "nothing": "Noch nichts auf dem Tisch.",
         "stuckNote": "Seit {min} Minuten kein Schritt weiter bei dieser Aufgabe.",
         "lastSeen": "Zuletzt gesehen {when}",
-        "whereGame": "Im Spiel",
+        "whereGame": "In der Lektion",
         "whereDesk": "Am Tisch",
         "activity": "zuletzt aktiv {when}",
         "on": "Arbeitet an",
@@ -5298,7 +5316,8 @@
     "live": {
       "title": "Deine Lehrkraft hat ein Live-Spiel gestartet!",
       "join": "Jetzt mitmachen",
-      "chip": "Jetzt live"
+      "chip": "Jetzt live",
+      "chipForTeachers": "Jetzt Live-Lektion"
     },
     "tab": {
       "todo": "Zu erledigen",
@@ -5333,11 +5352,11 @@
       "noneAdmin": "Sie unterrichten noch keine Klasse",
       "noneAdminText": "Klassen, die Sie unterrichten, erscheinen hier. Alle Klassen von {school} finden Sie unter „Meine Schule“.",
       "makeGame": "Spiel bauen",
+      "makeGameForTeachers": "Lektion machen",
       "plan": {
         "heading": "Schulabo · {school}"
       },
-      "tools": "Werkzeuge für den Unterricht",
-      "hostLive": "Live-Spiel leiten"
+      "hostLive": "Live-Lektion leiten"
     },
     "class": {
       "new": "Neue Klasse",
@@ -5375,7 +5394,7 @@
       "removeConfirm": "{name} aus dieser Klasse entfernen? Die Arbeiten aus dieser Klasse bleiben erhalten.",
       "noStudentsText": "Geben Sie unten die Namen ein, um Schulkonten und Anmeldekarten zu erstellen.",
       "details": "Details zur Klasse",
-      "teachersText": "Weitere Lehrkräfte können diese Klasse gemeinsam mit Ihnen führen: Lektionen, Schüler und Fortschritt.",
+      "teachersText": "Co-Lehrkräfte können diese Klasse mit Ihnen führen: Lektionen, Unterrichtspläne, Kinder und Fortschritt.",
       "removeTeacher": "{name} aus dieser Klasse entfernen",
       "archiveTitle": "Diese Klasse archivieren",
       "archiveText": "Archivierte Klassen sind für Schüler ausgeblendet und erscheinen unten auf der Seite „Meine Klassen“ unter „Archivierte Klassen“. Alles bleibt erhalten, und Sie können die Klasse jederzeit wiederherstellen.",
@@ -5412,6 +5431,7 @@
       "askNoAdmin": "{school} hat noch keinen Schuladmin. Bitten Sie das Oomba-Academy-Team, einen zu ernennen; diese Person kann dann auf der Schulseite unter „Personen“ das Kollegium eintragen.",
       "archivedToast": "{name} archiviert",
       "lessons": "Lektionen",
+      "lessonsForTeachers": "Unterrichtspläne",
       "lastActivity": "Zuletzt aktiv",
       "noActivity": "noch nichts",
       "noStudentsPick": "Wähle unten Schüler, die schon an {school} sind, oder lege für neue Schüler Konten und Anmeldekarten an.",
@@ -5428,7 +5448,7 @@
       "declineConfirm": "@{name} ablehnen?",
       "inClass": "In dieser Klasse",
       "otherAccounts": "Andere Schulkonten",
-      "mergeHint": "Wenn Sie eines auswählen, wird es mit @{name} zusammengeführt: Das Schulkonto funktioniert dann nicht mehr, und seine Klassen und Spiele werden übernommen.",
+      "mergeHint": "Wenn Sie eines wählen, wird es mit @{name} zusammengeführt: Das Schulkonto funktioniert nicht mehr, und seine Klassen und Lektionen ziehen um.",
       "mergeConfirm": "@{account} mit @{name} zusammenführen? @{account} funktioniert dann nicht mehr.",
       "approved": "@{name} ist der Klasse beigetreten"
     },
@@ -5442,7 +5462,7 @@
       "schoolAccount": "Schulkonto",
       "ownAccount": "eigenes Konto",
       "addStaff": "Lehrkraft oder Schuladmin hinzufügen",
-      "addStaffText": "Verwenden Sie den echten Namen, unter dem Schüler und Kollegium die Person kennen. Schulkonten folgen den Sicherheitsregeln der Schule; wer Spiele öffentlich teilen möchte, sollte ein eigenes Konto verwenden.",
+      "addStaffText": "Verwenden Sie den echten Namen, so wie Kinder und Kollegium ihn kennen. Schulkonten folgen den Sicherheitsregeln der Schule; Mitarbeitende, die Lektionen öffentlich teilen möchten, sollten ihr eigenes Konto nutzen.",
       "realName": "Echter Name",
       "existing": "Oomba-Academy-Name der Person",
       "existingPlaceholder": "z. B. FrauWeber",
@@ -5506,8 +5526,8 @@
       "chatHint": "Schulkonten chatten nur mit Klassenkameraden, die sie als Freunde hinzugefügt haben. Nachrichten werden gefiltert, und Lehrkräfte und Schulpersonal sind nie im Chat.",
       "timeZone": "Zeitzone",
       "timeZoneNone": "Nicht festgelegt (UTC)",
-      "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Lektionen um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
-      "timeZoneHint": "Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
+      "timeZoneUnset": "Legen Sie die Zeitzone Ihrer Schule fest, damit Unterrichtspläne um Mitternacht beginnen und Fälligkeitstermine bei Ihnen um Mitternacht enden. Bis dahin ist niemand zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind.",
+      "timeZoneHint": "Unterrichtspläne beginnen und Fälligkeitstermine enden um Mitternacht in dieser Zeitzone. Dort ist es jetzt {time}.",
       "groupSchool": "Schule",
       "groupClasses": "Klassen und Beitreten",
       "chatHintOff": "Die Voreinstellung. Schulkonten können mit niemandem chatten. Spielen und Bauen geht weiterhin.",
@@ -5533,7 +5553,7 @@
       "later": "Am Handy? Diese Karten bleiben 24 Stunden für dich (nur für dich) hier: Öffne sie auf einem Schulcomputer wieder über den Tab „Schüler“ der Klasse und drucke sie, oder nutze am Handy Teilen › Drucken › Als PDF sichern.",
       "again": "{count, plural, one {Anmeldekarte von heute: noch hier zum Drucken.} other {# Anmeldekarten von heute: noch hier zum Drucken.}}",
       "open": "Karten öffnen",
-      "next": "Als Nächstes: ein erstes Spiel zuweisen"
+      "next": "Als Nächstes: eine erste Lektion zuweisen"
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder es ist für dieses Konto nicht zugänglich.",
@@ -5584,8 +5604,10 @@
     },
     "classTabs": {
       "lessons": "Lektionen",
+      "lessonsForTeachers": "Unterrichtspläne",
       "progress": "Fortschritt",
       "games": "Spiele",
+      "gamesForTeachers": "Lektionen",
       "students": "Schüler",
       "settings": "Einstellungen",
       "standards": "Standards"
@@ -5889,6 +5911,7 @@
     "assignedN": "{count, plural, one {in # Klasse} other {in # Klassen}}",
     "kinds": {
       "game": "Ein Spiel spielen",
+      "gameForTeachers": "Eine Lektion spielen",
       "build": "Ein Spiel bauen",
       "text": "Lesen oder mitmachen",
       "question": "Eine Frage beantworten",
@@ -5898,16 +5921,16 @@
       "proofread": "Korrekturlesen"
     },
     "library": {
-      "title": "Lektionsbibliothek",
-      "mine": "Meine Lektionen",
+      "title": "Bibliothek der Unterrichtspläne",
+      "mine": "Meine Unterrichtspläne",
       "shared": "Vom Kollegium geteilt",
-      "top": "Lektionsbibliothek",
+      "top": "Bibliothek der Unterrichtspläne",
       "path": "Ordner",
-      "newLesson": "Neue Lektion",
-      "newLessonPlaceholder": "Titel der Lektion, z. B. Brüche zum Aufwärmen",
-      "empty": "Hier gibt es noch keine Lektionen",
-      "emptyText": "Erstellen Sie eine neue Lektion, lassen Sie die KI einen Entwurf schreiben, oder kopieren Sie eine Lektion, die jemand aus dem Kollegium geteilt hat.",
-      "find": "Lektion suchen",
+      "newLesson": "Neuer Unterrichtsplan",
+      "newLessonPlaceholder": "Titel des Unterrichtsplans, z. B. Aufwärmen mit Brüchen",
+      "empty": "Hier gibt es noch keine Unterrichtspläne",
+      "emptyText": "Erstellen Sie einen neuen Unterrichtsplan, lassen Sie die KI einen entwerfen oder kopieren Sie einen, den eine Kollegin oder ein Kollege geteilt hat.",
+      "find": "Unterrichtsplan finden",
       "readyMade": "Fertige Kurse",
       "numberQuest": "Number Quest (Mathe, Vorschule bis Klasse 8)"
     },
@@ -5916,12 +5939,12 @@
       "new": "Neuer Ordner",
       "newPlaceholder": "Neuer Ordner, z. B. Brüche",
       "delete": "Ordner löschen",
-      "deleteConfirm": "Den Ordner {name} löschen? Die Lektionen und Ordner darin rücken eine Ebene nach oben.",
+      "deleteConfirm": "Den Ordner {name} löschen? Die Unterrichtspläne und Ordner darin rücken eine Ebene nach oben.",
       "hint": "Ordner sind nur für Sie. Schüler sehen sie nie.",
-      "why": "Ordner sortieren Ihre eigene Lektionsbibliothek, und ihre Lektionen können in jede Klasse. Einheiten auf der Seite einer Klasse legen die Reihenfolge fest, die die Schüler sehen."
+      "why": "Ordner sortieren Ihre eigene Bibliothek der Unterrichtspläne, und ihre Unterrichtspläne können in jede Klasse. Einheiten auf einer Klassenseite legen die Reihenfolge fest, die die Kinder sehen."
     },
     "lesson": {
-      "title": "Titel der Lektion",
+      "title": "Titel des Unterrichtsplans",
       "summary": "Zusammenfassung",
       "objectives": "Lernziele",
       "objectivesHint": "Ein Lernziel pro Zeile",
@@ -5930,66 +5953,66 @@
       "share": "Mit meiner Schule teilen",
       "sharedChip": "Geteilt",
       "duplicate": "Kopie erstellen",
-      "delete": "Lektion löschen",
-      "deleteConfirm": "Die Lektion {name} löschen? Das kann nicht rückgängig gemacht werden.",
-      "deleteAssignedConfirm": "Die Lektion {name} löschen? Sie wird auch aus {count, plural, one {# Klasse} other {# Klassen}} entfernt. Das kann nicht rückgängig gemacht werden.",
+      "delete": "Unterrichtsplan löschen",
+      "deleteConfirm": "Den Unterrichtsplan {name} löschen? Das lässt sich nicht rückgängig machen.",
+      "deleteAssignedConfirm": "Den Unterrichtsplan {name} löschen? Er wird auch aus {count, plural, one {# Klasse} other {# Klassen}} entfernt. Das lässt sich nicht rückgängig machen.",
       "unshare": "Nicht mehr teilen",
       "sharedToast": "Mit Ihrer Schule geteilt. Das Kollegium kann die Lektion jetzt kopieren.",
       "unsharedToast": "Wird nicht mehr geteilt.",
       "sharedStatus": "Mit Ihrer Schule geteilt",
       "editDetails": "Details bearbeiten",
       "copiedNotice": "Das ist Ihre Kopie. Benennen Sie sie unter „Details bearbeiten“ um.",
-      "deleteWorkConfirm": "Die Lektion {name} löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} darin werden gelöscht. Das kann nicht rückgängig gemacht werden.",
-      "deleteLiveConfirm": "Die Lektion {name} löschen? Sie ist in {count, plural, one {# Klasse} other {# Klassen}}, und die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} darin werden gelöscht. Das kann nicht rückgängig gemacht werden. Um die Arbeiten zu behalten, entfernen Sie die Lektion stattdessen aus der Klasse."
+      "deleteWorkConfirm": "Den Unterrichtsplan {name} löschen? {n, plural, one {Die Arbeit von # Kind} other {Die Arbeit von # Kindern}} darin wird gelöscht. Das lässt sich nicht rückgängig machen.",
+      "deleteLiveConfirm": "Den Unterrichtsplan {name} löschen? Er ist in {count, plural, one {# Klasse} other {# Klassen}}, und {n, plural, one {die Arbeit von # Kind} other {die Arbeit von # Kindern}} darin wird gelöscht. Das lässt sich nicht rückgängig machen. Um die Arbeiten zu behalten, entfernen Sie ihn stattdessen aus der Klasse."
     },
     "step": {
       "add": "Schritt hinzufügen",
       "addButton": "Hinzufügen",
       "kind": "Typ",
       "title": "Titel des Schritts (optional)",
-      "game": "Spiel",
-      "myGames": "Meine Spiele",
+      "game": "Lektion",
+      "myGames": "Meine Lektionen",
       "schoolGames": "In meiner Schule geteilt",
       "classGames": "Mit meinen Klassen geteilt",
-      "siteGames": "Oomba-Academy-Spiele",
+      "siteGames": "Oomba-Academy-Lektionen",
       "minutes": "Minuten",
       "edit": "Schritt bearbeiten",
       "delete": "Schritt löschen",
       "deleteConfirm": "Diesen Schritt löschen?",
-      "notShared": "Ihre Klasse kann dieses Spiel noch nicht öffnen",
+      "notShared": "Ihre Klasse kann diese Lektion noch nicht öffnen",
       "notSharedHint": "Teilen Sie es zuerst mit Ihrer Schule, oder öffnen Sie es im Studio und tippen Sie auf „Freigeben“.",
       "classOnly": "Nur die Klassen, mit denen es geteilt ist, können es spielen",
-      "hiddenGame": "Ein Spiel, das du nicht öffnen kannst",
+      "hiddenGame": "Eine Lektion, die Sie nicht öffnen können",
       "shareGame": "Mit meiner Schule teilen",
       "openStudio": "Im Studio öffnen",
-      "newGameIdea": "Ihre Idee für das Spiel",
+      "newGameIdea": "Ihre Idee für die Lektion",
       "newGamePlaceholder": "z. B. ein Quiz mit 10 Fragen zu Brüchen für die 4. Klasse",
       "newGameButton": "Baumeister öffnen",
-      "newGameNote": "Die Lektion bekommt einen Spiel-Schritt, und das Studio öffnet sich mit Ihrer Idee. Geben Sie das Spiel für Ihre Schule frei, wenn es fertig ist.",
+      "newGameNote": "Der Unterrichtsplan bekommt einen Lektions-Schritt, und das Studio öffnet sich mit Ihrer Idee. Geben Sie die Lektion für Ihre Schule frei, wenn sie fertig ist.",
       "bodyText": "Was die Schüler lesen oder tun",
       "bodyQuestion": "Die Frage",
       "bodyBuild": "Idee, die die Schüler dem Baumeister geben",
       "bodyGame": "Anleitung (optional)",
       "buildHint": "z. B. „ein Quiz mit 8 Fragen über die Planeten“",
-      "newGameLink": "Ein neues Spiel für die Schüler bauen",
+      "newGameLink": "Eine neue Lektion zum Spielen machen",
       "deleteWorkConfirm": "Diesen Schritt löschen? Die Arbeiten von {n, plural, one {# Schüler} other {# Schülern}} dazu werden gelöscht. Das kann nicht rückgängig gemacht werden.",
-      "liveGames": "Live-Spiele für die Klasse (du leitest sie)",
-      "otherGames": "Weitere Spiele",
+      "liveGames": "Live-Lektionen für die Klasse (Sie leiten sie)",
+      "otherGames": "Weitere Lektionen",
       "bodyFigures": "Hinweise für die Schüler (optional)",
-      "figuresHint": "Als Nächstes öffnet sich der Abbildungs-Baukasten: Wähle Abbildungen, stelle Zahlen und Antworten ein und dann In der Lektion speichern.",
+      "figuresHint": "Als Nächstes öffnet sich der Figures-Baukasten: Figuren wählen, Zahlen und Antworten festlegen, dann In Unterrichtsplan speichern.",
       "editFigures": "Fragen bearbeiten",
       "printFigures": "Drucken",
       "figuresStarted": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind.",
       "more": "Mehr",
-      "figuresSaved": "Fragen zu Abbildungen in der Lektion gespeichert."
+      "figuresSaved": "Figures-Fragen im Unterrichtsplan gespeichert."
     },
     "ai": {
       "button": "Mit KI entwerfen",
-      "topic": "Worum geht es in der Lektion?",
+      "topic": "Worum geht es im Unterrichtsplan?",
       "topicPlaceholder": "z. B. Der Wasserkreislauf",
       "minutes": "Minuten",
-      "make": "Lektion entwerfen",
-      "note": "Claude entwirft eine Lektion mit Schritten und passenden Spielen. Sie können alles ändern, bevor Sie sie verwenden.",
+      "make": "Unterrichtsplan entwerfen",
+      "note": "Claude entwirft einen Unterrichtsplan mit Schritten und passenden Lektionen. Sie können alles ändern, bevor Sie ihn verwenden.",
       "done": "Hier ist Ihr Entwurf. Prüfen Sie jeden Schritt, und ändern Sie, was Sie möchten.",
       "template": "Die KI ist gerade nicht verfügbar. Hier ist eine einfache Vorlage für den Anfang. Ändern Sie, was Sie möchten."
     },
@@ -6000,12 +6023,12 @@
       "due": "Fällig am (optional)",
       "button": "Zuweisen",
       "noClasses": "Sie unterrichten an dieser Schule noch keine Klasse.",
-      "note": "Die Schüler sehen die Lektion ab dem Tag, an dem sie sichtbar wird. Spätere Änderungen erscheinen in jeder Klasse.",
+      "note": "Die Kinder sehen den Unterrichtsplan ab dem Tag, an dem er öffnet. Spätere Änderungen erscheinen in jeder Klasse.",
       "done": "Der Klasse {class} zugewiesen",
       "restored": "Wieder der Klasse {class} zugewiesen. Die früheren Arbeiten der Schüler sind wieder da.",
       "changeDates": "Termine ändern",
-      "allClasses": "Diese Lektion ist in all Ihren Klassen.",
-      "zoneNote": "{zone, select, none {Die Tage werden in UTC gezählt, und niemand ist zu spät, bis 36 Stunden nach Beginn des Fälligkeitstags vergangen sind. Ein Schuladmin kann die Zeitzone der Schule in den Einstellungen festlegen.} other {Lektionen beginnen und Fälligkeitstermine enden um Mitternacht in {zone}.}}",
+      "allClasses": "Dieser Unterrichtsplan ist in all Ihren Klassen.",
+      "zoneNote": "{zone, select, none {Tage werden in UTC gezählt, und niemand ist zu spät, bevor 36 Stunden nach Beginn des Fälligkeitstags vergangen sind. Eine Schuladministration kann die Zeitzone der Schule in den Einstellungen festlegen.} other {Unterrichtspläne öffnen und Fälligkeiten enden um Mitternacht in {zone}.}}",
       "zoneUnset": "Abgabetermine enden vorerst um Mitternacht UTC, weil die Zeitzone deiner Schule noch nicht eingestellt ist.",
       "zoneSet": "Zeitzone einstellen",
       "zoneAsk": "Eine Schuladministration kann sie in den Einstellungen der Schule festlegen.",
@@ -6020,33 +6043,34 @@
       "noStudents": "Diese Klasse hat noch keine Schüler."
     },
     "class": {
-      "title": "Lektionen",
-      "assign": "Lektion zuweisen",
-      "library": "Lektionsbibliothek",
+      "title": "Unterrichtspläne",
+      "kindPlan": "Unterrichtsplan",
+      "assign": "Unterrichtsplan zuweisen",
+      "library": "Bibliothek der Unterrichtspläne",
       "unit": "Einheit",
       "unitName": "Name der Einheit",
       "newUnit": "Neue Einheit",
       "newUnitPlaceholder": "Neue Einheit, z. B. Brüche",
-      "emptyUnit": "Noch keine Lektionen in dieser Einheit.",
+      "emptyUnit": "Noch keine Unterrichtspläne in dieser Einheit.",
       "deleteUnit": "Einheit löschen",
-      "deleteUnitConfirm": "Die Einheit {name} löschen? Ihre Lektionen bleiben in der Klasse.",
+      "deleteUnitConfirm": "Die Einheit {name} löschen? Ihre Unterrichtspläne bleiben in der Klasse.",
       "opensOn": "Ab {date}",
       "dueOn": "Bis {date}",
-      "editLesson": "Lektion bearbeiten",
+      "editLesson": "Unterrichtsplan bearbeiten",
       "unassign": "Aus Klasse entfernen",
       "unassignConfirm": "{name} aus dieser Klasse entfernen? Die Schüler sehen die Lektion dann nicht mehr. Die Arbeiten der Schüler bleiben erhalten und sind wieder da, wenn Sie die Lektion erneut zuweisen.",
-      "empty": "Noch keine Lektionen",
-      "emptyText": "Erstellen Sie eine neue Lektion für diese Klasse, oder lassen Sie die KI einen Entwurf schreiben, den Sie dann prüfen.",
-      "allIn": "All Ihre Lektionen sind in dieser Klasse.",
-      "sharedHint": "Sie möchten eine Lektion aus dem Kollegium? Erstellen Sie zuerst unter {tab} eine Kopie.",
-      "unitHint": "Einheiten gruppieren die Lektionen dieser Klasse. Die Schüler sehen sie.",
+      "empty": "Noch keine Unterrichtspläne",
+      "emptyText": "Erstellen Sie einen neuen Unterrichtsplan für diese Klasse oder lassen Sie die KI einen entwerfen, den Sie dann prüfen.",
+      "allIn": "Alle Ihre Unterrichtspläne sind in dieser Klasse.",
+      "sharedHint": "Sie möchten den Unterrichtsplan einer Kollegin oder eines Kollegen? Kopieren Sie ihn zuerst unter {tab}.",
+      "unitHint": "Einheiten fassen die Unterrichtspläne dieser Klasse zusammen. Die Kinder sehen sie.",
       "doneOf": "{done} von {students} fertig",
       "toReview": "{count} zu prüfen",
       "dueToday": "Heute fällig",
       "late": "Überfällig",
       "removedGroup": "Aus dieser Klasse entfernt",
-      "readyMade": "Eine fertige Stunde nehmen",
-      "unitWhy": "Einheiten gruppieren die Lektionen dieser Klasse, in der Reihenfolge, in der die Schüler sie sehen. Ordner sortieren nur Ihre eigene Lektionsbibliothek.",
+      "readyMade": "Fertigen Unterrichtsplan verwenden",
+      "unitWhy": "Einheiten fassen die Unterrichtspläne dieser Klasse zusammen, in der Reihenfolge, die die Kinder sehen. Ordner sortieren nur Ihre eigene Bibliothek der Unterrichtspläne.",
       "someStudents": "{count, plural, one {# Schüler} other {# Schüler}}"
     },
     "view": {
@@ -6058,7 +6082,7 @@
     "shared": {
       "copy": "In meine Bibliothek kopieren",
       "empty": "Noch nichts vom Kollegium geteilt",
-      "emptyText": "Lektionen, die andere Lehrkräfte teilen, erscheinen hier. Lektionen, die Sie teilen, sind unter „Meine Lektionen“ mit 🏫 Geteilt markiert."
+      "emptyText": "Unterrichtspläne, die andere Lehrkräfte teilen, erscheinen hier. Unterrichtspläne, die Sie teilen, sind in Meine Unterrichtspläne mit 🏫 Geteilt markiert."
     },
     "template": {
       "warmup": "Aufwärmen",
@@ -6073,20 +6097,20 @@
     },
     "errors": {
       "notFound": "Das haben wir nicht gefunden, oder Sie können es nicht öffnen.",
-      "lessonTitle": "Geben Sie der Lektion einen Titel.",
+      "lessonTitle": "Geben Sie dem Unterrichtsplan einen Titel.",
       "folderName": "Geben Sie dem Ordner einen Namen.",
       "unitName": "Geben Sie der Einheit einen Namen.",
       "folderLoop": "Ein Ordner kann nicht in sich selbst liegen.",
       "stepKind": "Wählen Sie einen Typ für den Schritt.",
-      "pickGame": "Wählen Sie ein Spiel für diesen Schritt.",
+      "pickGame": "Wählen Sie eine Lektion für diesen Schritt.",
       "buildPrompt": "Schreiben Sie die Idee auf, die die Schüler dem Baumeister geben.",
       "stepText": "Schreiben Sie die Anleitung für diesen Schritt.",
-      "tooManySteps": "Eine Lektion kann bis zu 40 Schritte haben.",
+      "tooManySteps": "Ein Unterrichtsplan kann bis zu 40 Schritte haben.",
       "badDate": "Dieses Datum sieht nicht richtig aus.",
-      "topic": "Geben Sie ein, worum es in der Lektion geht.",
-      "aiFailed": "Die KI kann das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal, oder erstellen Sie die Lektion selbst.",
+      "topic": "Schreiben Sie, worum es im Unterrichtsplan geht.",
+      "aiFailed": "Die KI konnte das gerade nicht entwerfen. Versuchen Sie es in einer Minute noch einmal oder erstellen Sie den Unterrichtsplan selbst.",
       "questionText": "Schreiben Sie die Frage auf, die die Schüler beantworten sollen.",
-      "alreadyAssigned": "Diese Lektion ist schon in {class}. Ändern Sie die Termine über das Menü ⋯ auf der Klassenseite unter „Lektionen“.",
+      "alreadyAssigned": "Dieser Unterrichtsplan ist schon in {class}. Ändern Sie seine Daten über das Menü ⋯ im Tab Unterrichtspläne der Klasse.",
       "pickStudents": "Hake mindestens einen Schüler an oder wähle Ganze Klasse.",
       "notInClass": "Du kannst nur Schüler dieser Klasse auswählen."
     },
@@ -6129,18 +6153,18 @@
     },
     "gradebook": {
       "title": "Fortschritt",
-      "text": "Erledigte Schritte jedes Schülers in jeder Lektion. Öffnen Sie eine Lektion, um Punkte zu sehen und Antworten zu prüfen.",
+      "text": "Schritte, die jedes Kind in jedem Unterrichtsplan erledigt hat. Öffnen Sie einen Unterrichtsplan, um Punkte zu sehen und Antworten durchzugehen.",
       "csv": "Herunterladen (CSV)",
       "overall": "Gesamt",
       "toRead": "{count, plural, one {# Antwort zu prüfen} other {# Antworten zu prüfen}}",
-      "noLessons": "Noch keine Lektionen",
-      "noLessonsText": "Weisen Sie unter „Lektionen“ eine Lektion zu, dann sehen Sie hier, wie weit jeder Schüler ist.",
+      "noLessons": "Noch keine Unterrichtspläne",
+      "noLessonsText": "Weisen Sie im Tab Unterrichtspläne einen Unterrichtsplan zu, dann sehen Sie hier, wie es jedem Kind geht.",
       "noStudents": "Noch keine Schüler",
       "noStudentsText": "Fügen Sie unter „Schüler“ Schüler hinzu, dann erscheint hier ihr Fortschritt.",
       "toReviewList": "Antworten zu prüfen:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz-Ergebnis: {pct} % richtig",
-      "quizOverall": "Quiz-Ergebnis über alle Lektionen: {pct} %"
+      "quizOverall": "Quiz-Punkte über alle Unterrichtspläne: {pct} %"
     },
     "lesson": {
       "finished": "{done} von {total} Schülern fertig",
@@ -6897,7 +6921,7 @@
       "print": {
         "title": "Schulabo: eine Seite für den Schuladmin",
         "heading": "Oomba Academy Schulabo",
-        "intro": "Eine Lehrkraft an Ihrer Schule wünscht sich ein Schulabo bei Oomba Academy: Lernspiele für 5- bis 14-Jährige und ein Baumeister, mit dem Schüler eigene Spiele bauen. Hier steht, was es kostet und wie Sie es einrichten.",
+        "intro": "Eine Lehrkraft an Ihrer Schule wünscht sich ein Schulabo bei Oomba Academy: interaktive Lektionen für 5- bis 14-Jährige und ein Baumeister, mit dem Schüler eigene Spiele bauen. Hier steht, was es kostet und wie man es einrichtet.",
         "printButton": "Drucken oder als PDF speichern",
         "back": "Zurück zu den Schulabos",
         "cost": "Was es kostet",
@@ -7036,7 +7060,7 @@
       "imageAlt": "Oomba Academy: Lernspiele für Kinder, die Spaß machen"
     },
     "teachers": {
-      "imageAlt": "Oomba Academy für Lehrkräfte: interaktive Lernspiele für den Unterricht, die Spaß machen"
+      "imageAlt": "Oomba Academy für Lehrkräfte: interaktive Lektionen für den Unterricht"
     },
     "game": {
       "title": "{title}: kostenloses {kind} für Kinder",
@@ -7065,11 +7089,11 @@
     }
   },
   "teachers": {
-    "title": "Interaktive Lernspiele für den Unterricht",
-    "description": "Werbefreie Lernspiele für 5- bis 14-Jährige, die in jedem Browser laufen, auch auf Chromebooks, dazu Mathe-Arbeitsmittel, ein Klassen-Dashboard und ein KI-Baumeister für Spiele.",
+    "title": "Interaktive Lektionen für den Unterricht",
+    "description": "Werbefreie interaktive Lektionen für 5- bis 14-Jährige, die in jedem Browser laufen, auch auf Chromebooks, dazu Mathe-Materialien, ein Klassen-Dashboard und ein KI-Baumeister.",
     "kicker": "🍎 Für Lehrkräfte",
-    "h1": "Interaktive Lernspiele, die Ihre Klasse lieben wird",
-    "lead": "Lernspiele, Mathe-Arbeitsmittel, die Sie live mit Ihrer Klasse nutzen, und ein Klassen-Dashboard für den ganzen Tag, für 5- bis 14-Jährige. Alles läuft im Browser, auch auf Chromebooks, und Ihre Klasse kann mit unserem KI-Baumeister eigene Spiele bauen.",
+    "h1": "Interaktive Lektionen, die Ihre Klasse lieben wird",
+    "lead": "Interaktive Lektionen, Mathe-Materialien, die Sie live mit Ihrer Klasse nutzen, und ein Klassen-Dashboard für den ganzen Tag, für 5- bis 14-Jährige. Alles läuft im Browser, auch auf Chromebooks, und Ihre Klasse kann mit unserem KI-Baumeister eigene Spiele bauen.",
     "badges": {
       "ads": "Keine Werbung",
       "browser": "Läuft in jedem Browser, auch auf Chromebooks",
@@ -7078,10 +7102,10 @@
     },
     "cta": {
       "start": "Lehrkraft-Konto erstellen",
-      "try": "Jetzt ein Spiel testen, ohne Anmeldung"
+      "try": "Jetzt eine Lektion ausprobieren, ohne Anmeldung"
     },
     "subjects": {
-      "h": "Lernspiele nach Fächern"
+      "h": "Lektionen nach Fach"
     },
     "how": {
       "h": "So funktioniert es in Ihrer Klasse",
@@ -7089,7 +7113,7 @@
       "s1": {
         "h": "Ihre Klassen an einem Ort",
         "p": "Sobald Ihre Schule eingerichtet ist, fügt Ihr Schuladmin die Lehrkräfte hinzu, und jede Lehrkraft legt ihre Klassen unter „Meine Klassen“ an.",
-        "alt": "Die Klassenraum-Startseite von Ms. Rivera: drei Klassen und zwei wartende Antworten, Schaltflächen für den Wochenüberblick und ein Live-Spiel sowie die Karte des Unterrichtskreislaufs mit Planen, Spielen, Prüfen und Rückmelden."
+        "alt": "Die Klassen-Startseite von Frau Rivera: drei Klassen und zwei wartende Antworten, Buttons für die Wochenübersicht und eine Live-Lektion, und die Karte des Unterrichtskreislaufs mit Planen, Spielen, Prüfen und Rückmeldung."
       },
       "s2": {
         "h": "Schüler treten mit einem Code oder mit Anmeldekarten bei",
@@ -7098,19 +7122,19 @@
         "alt": "Der Reiter „Schüler“ einer Klasse: Ein Schüler, @StarGecko, möchte mit dem Klassencode beitreten, mit einem Feld für seinen echten Namen und den Knöpfen „Annehmen“ und „Ablehnen“. Darunter die Klassenliste mit 5 Schülern und ein Knopf für neue Anmeldekarten."
       },
       "s3": {
-        "h": "Eine Lektion in Schritten planen",
-        "p": "Lektionen verbinden kurze Lesetexte, ein Lernspiel, eine Aufgabe zum Spielebauen und schriftliche Fragen. Weisen Sie eine Lektion mit Abgabedatum einer Klasse zu.",
-        "alt": "Die Liste „Schritte“ im Lektionseditor: Schritt 1, „Aufwärmen: Pizzastücke“, und Schritt 2, „Den Nenner behalten, den Zähler addieren“, jeweils mit Text, Minuten und einem Knopf „Schritt bearbeiten“."
+        "h": "Einen Unterrichtsplan in Schritten erstellen",
+        "p": "Unterrichtspläne mischen kurze Texte, eine Lektion zum Spielen, eine Bauaufgabe und schriftliche Fragen. Weisen Sie einen mit Fälligkeitsdatum einer Klasse zu.",
+        "alt": "Die Schrittliste im Editor für Unterrichtspläne: Schritt 1, „Aufwärmen: Pizzastücke“, und Schritt 2, „Unten behalten, oben addieren“, jeweils mit Text, Minuten und einem Button Schritt bearbeiten."
       },
       "s4": {
         "h": "Schüler spielen, bauen und antworten",
-        "p": "Jeder Schüler bearbeitet die Lektion in seinem eigenen Tempo, auf jedem Gerät.",
-        "alt": "Die Ansicht einer Lektion für Schüler: Der Spielschritt „Kopfrechnen zum Aufwärmen“ ist als „Fertig“ markiert, mit einer Bestpunktzahl von 47 und einem Knopf „Sum Racer spielen“. Danach folgen ein Bauschritt mit dem Knopf „Jetzt bauen“ und eine schriftliche Frage, das Exit-Ticket."
+        "p": "Jedes Kind arbeitet den Unterrichtsplan in seinem eigenen Tempo auf jedem Gerät durch.",
+        "alt": "Die Ansicht eines Kindes von einem Unterrichtsplan: Der Spiel-Schritt „Kopfrechnen zum Aufwärmen“ ist erledigt, mit bester Punktzahl 47 und einem Button Sum Racer spielen. Danach folgen ein Bau-Schritt mit dem Button Bauen beginnen und eine schriftliche Frage, das Exit-Ticket."
       },
       "s5": {
         "h": "Fortschritt und Notenübersicht ansehen",
-        "p": "Die Notenübersicht zeigt Fortschritt, Spielpunkte und schriftliche Antworten jedes Schülers. Geben Sie Feedback oder laden Sie sie als CSV herunter.",
-        "alt": "Der Tab Fortschritt der Klasse: Links zu den Kursen und zum Verlauf der Live-Spiele, eine Schaltfläche Herunterladen (CSV), die Antworten zum Durchsehen und die Notentabelle mit den erledigten Schritten jedes Kindes in jeder Lektion."
+        "p": "Das Notenbuch zeigt Fortschritt, Punkte in Lektionen und schriftliche Antworten jedes Kindes. Geben Sie Rückmeldung oder laden Sie es als CSV herunter.",
+        "alt": "Der Tab Fortschritt der Klasse: Links zu den Kursen und zum Verlauf der Live-Lektionen, ein Button Herunterladen (CSV), die Antworten zum Durchsehen und die Notentabelle mit den erledigten Schritten jedes Kindes in jedem Unterrichtsplan."
       },
       "s6": {
         "h": "Mit den Werkzeugen unterrichten",
@@ -7129,8 +7153,8 @@
       "li1": "Klassen mit Klassencode: Schüler mit eigenem Konto treten mit dem Code bei, und Sie nehmen sie an.",
       "li2": "Keine E-Mail-Adresse der Schüler nötig: Sie können Schulkonten für eine ganze Klasse anlegen und die Anmeldekarten ausdrucken.",
       "li3": "Über Google anmelden für Schulen, die Google-Konten und Chromebooks nutzen.",
-      "li4": "Lektionen in Schritten: etwas lesen, ein Spiel spielen, ein Spiel bauen. Sie sehen Fortschritt, Punkte und schriftliche Antworten jedes Schülers.",
-      "li5": "Teilen Sie ein Spiel nur mit Ihren Klassen, dann bleibt es in Ihrer Klasse."
+      "li4": "Unterrichtspläne in Schritten: etwas lesen, eine Lektion spielen, ein Spiel bauen. Sie sehen den Fortschritt, die Punkte und die schriftlichen Antworten jedes Kindes.",
+      "li5": "Teilen Sie eine Lektion nur mit Ihren Klassen, damit sie in Ihrer Klasse bleibt."
     },
     "safe": {
       "h": "Von Grund auf sicher",
@@ -7143,7 +7167,7 @@
     },
     "uses": {
       "h": "Ideen für den Einsatz",
-      "p": "Lehrkräfte bauen ein Spiel überall dort in den Schultag ein, wo ein paar Minuten konzentriertes Spielen helfen:",
+      "p": "Lehrkräfte bauen eine Lektion überall dort in den Tag ein, wo ein paar Minuten konzentriertes Spielen helfen:",
       "li1": "Zum Einstieg in die Stunde",
       "li2": "Kurze Pausen zwischendurch",
       "li3": "Für alle, die früher fertig sind",
@@ -7158,7 +7182,7 @@
     },
     "start": {
       "h": "Ihre Schule einrichten",
-      "p1": "Schüler können jedes Spiel sofort ausprobieren, ohne Anmeldung.",
+      "p1": "Die Kinder können jede Lektion sofort ausprobieren, ohne Anmeldung.",
       "plans": "Mehr für deine Klassen? Teste den Lehrkraft-Plan {days} Tage kostenlos, ohne Karte: unbegrenzt viele Schülerinnen und Schüler und {daily} KI-Spielbauten am Tag für die Klasse.",
       "email": "Schreiben Sie uns, um Ihre Schule einzurichten",
       "subject": "Meine Schule bei Oomba Academy einrichten",
@@ -7167,7 +7191,7 @@
     "faq": {
       "h": "Häufige Fragen von Lehrkräften",
       "q1": "Ist Oomba Academy für Lehrkräfte kostenlos?",
-      "a1": "Ja. Spielen, Klassen, Lektionen und Fortschritt sind kostenlos, und jedes Schülerkonto bekommt jeden Tag kostenlose Nachrichten an den Baumeister.",
+      "a1": "Ja. Spielen, Klassen, Unterrichtspläne und Fortschritt sind kostenlos, und jedes Schulkonto bekommt jeden Tag kostenlose Baumeister-Nachrichten.",
       "q2": "Brauchen Schüler zum Spielen ein Konto oder eine E-Mail-Adresse?",
       "a2": "Nein. Alle können sofort spielen. Für Ihre Klassen können Sie Schulkonten ohne E-Mail-Adresse anlegen und Anmeldekarten dafür ausdrucken.",
       "q3": "Funktioniert es auf Chromebooks und im Schulnetz?",
@@ -7175,19 +7199,19 @@
       "q4": "Wie schützen Sie die Daten der Schüler?",
       "a4": "Wir fragen Schüler nie nach E-Mail-Adresse, Alter oder Wohnadresse. Es gibt keine Werbung und keine Tracking-Cookies, und den echten Namen eines Schülers sieht nur das Personal seiner Schule. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
       "q5": "Für welches Alter und welche Klassen ist es gedacht?",
-      "a5": "Oomba Academy ist für die Vorschule bis Klasse 8 gemacht, also für etwa 5- bis 14-Jährige. Spiele wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, reicht von der Vorschule bis Klasse 8, CS Quest und Cyber Defenders beginnen ab Klasse 3.",
+      "a5": "Oomba Academy ist für den Kindergarten bis zur 8. Klasse gemacht, etwa 5 bis 14 Jahre. Lektionen wie Shark Plank und die ersten Strecken von Sum Racer passen zu den Jüngsten. Number Quest, der Mathekurs, reicht vom Kindergarten bis zur 8. Klasse, CS Quest und Cyber Defenders beginnen in der 3. Klasse.",
       "q6": "Wie füge ich meine Klasse hinzu?",
       "a6": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten. Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus.",
       "a6google": "Schreiben Sie uns zuerst, damit wir Ihre Schule einrichten. Legen Sie dann eine Klasse an und geben Sie den Klassencode an Schüler mit eigenem Konto weiter, oder legen Sie Schulkonten für die ganze Klasse an und drucken Sie Anmeldekarten aus. Schulen, die Google nutzen, können Schüler auch über Google anmelden lassen.",
       "q7": "Können Schüler eigene Spiele bauen? Wer sieht sie?",
       "a7": "Ja. Ein neues Spiel sieht nur der Schüler, der es gebaut hat. Er kann es mit seiner Klasse teilen, und ein Spiel für alle wird geprüft, bevor andere es spielen können.",
       "q8": "Kann ich Fortschritt und Punkte verfolgen?",
-      "a8": "Ja. Lektionen speichern den Fortschritt, die Spielpunkte und die schriftlichen Antworten jedes Schülers. Sie sehen sie in der Klasse unter „Fortschritt“ und können den Lektionsfortschritt jedes Schülers als Tabelle (CSV) herunterladen.",
+      "a8": "Ja. Unterrichtspläne speichern Fortschritt, Punkte in Lektionen und schriftliche Antworten jedes Kindes. Sie sehen sie im Tab Fortschritt der Klasse und können den Fortschritt jedes Kindes in einem Unterrichtsplan als Tabelle (CSV) herunterladen.",
       "q9": "Welche Sprachen gibt es?",
       "a9": "{count} Sprachen, darunter Englisch, Spanisch, Französisch, Arabisch, Russisch, Hebräisch und Japanisch. Jeder Schüler wählt seine eigene.",
       "a4google": "Schüler tippen nie eine E-Mail-Adresse ein, und wir fragen nie nach ihrem Alter oder ihrer Wohnadresse. Wenn Ihre Schule „Über Google anmelden“ nutzt, speichern wir die schulische Google-E-Mail-Adresse jedes Schülers nur, um sein Konto zu erkennen. Es gibt keine Werbung und keine Tracking-Cookies. Unsere <a href=\"{href}\">Datenschutzerklärung</a> listet genau auf, was wir speichern.",
       "q1paid": "Ist Oomba Academy für Lehrkräfte kostenlos?",
-      "a1paid": "Spielen, Klassen, Lektionen, Lernfortschritt und Oomba Live sind kostenlos, und alle Schülerinnen und Schüler bekommen jeden Tag kostenlose Nachrichten an den Baumeister. Der optionale Lehrkraft-Plan fügt für deine Klassen einen gemeinsamen täglichen Vorrat an KI-Spielbauten hinzu, mit unbegrenzt vielen Schülerinnen und Schülern. Teste ihn 14 Tage kostenlos, ohne Karte. Die Preise stehen auf der Seite mit den Plänen."
+      "a1paid": "Spielen, Klassen, Unterrichtspläne, Fortschritt und Oomba Live sind kostenlos, und jedes Kind bekommt jeden Tag kostenlose Baumeister-Nachrichten. Der optionale Lehrkraft-Plan fügt einen gemeinsamen täglichen Vorrat an KI-Bauten für Ihre Klassen hinzu, mit beliebig vielen Kindern. Testen Sie ihn 14 Tage kostenlos, ohne Karte. Preise stehen auf der Seite der Pläne."
     },
     "setup": {
       "lead": "Erzählen Sie uns kurz von Ihrer Schule. Wir richten sie innerhalb von 1 Schultag ein und antworten Ihnen per E-Mail mit den nächsten Schritten.",
@@ -7212,11 +7236,11 @@
       "thanks": {
         "h": "Vielen Dank! Ihre Anfrage ist bei uns angekommen.",
         "p1": "Wir richten deine Schule bis zum Ende des nächsten Schultags ein und antworten an die angegebene E-Mail-Adresse, mit deinen Anmeldedaten und den nächsten Schritten.",
-        "p2": "Probieren Sie in der Zwischenzeit ein Spiel mit Ihrer Klasse aus: Die Schüler können sofort spielen, ganz ohne Anmeldung.",
+        "p2": "Probieren Sie in der Zwischenzeit eine Lektion mit Ihrer Klasse aus: Die Kinder können sofort spielen, ohne Anmeldung.",
         "todayH": "Das kannst du heute schon tun, während du wartest",
-        "todayLive": "<a href=\"{href}\">Ein Live-Spiel mit der Klasse leiten</a>: Schüler machen mit einem Code auf jedem Gerät mit, ganz ohne Konto.",
-        "todayPlay": "<a href=\"{href}\">Ein Spiel mit deiner Klasse spielen</a>: Schüler können sofort spielen, ohne Anmeldung.",
-        "todayHow": "<a href=\"{href}\">Sehen, wie Klassen, Anmeldekarten und Stunden funktionieren</a>, damit du bereit bist, wenn deine Schule eingerichtet ist."
+        "todayLive": "<a href=\"{href}\">Eine Live-Lektion für die Klasse leiten</a>: Die Kinder machen mit einem Code auf jedem Gerät mit, ohne Konten.",
+        "todayPlay": "<a href=\"{href}\">Eine Lektion mit Ihrer Klasse spielen</a>: Die Kinder können sofort spielen, ohne Anmeldung.",
+        "todayHow": "<a href=\"{href}\">Sehen, wie Klassen, Anmeldekarten und Unterrichtspläne funktionieren</a>, damit Sie bereit sind, wenn Ihre Schule eingerichtet ist."
       },
       "errors": {
         "school": "Geben Sie den Namen Ihrer Schule ein (2 bis 100 Zeichen).",
@@ -7243,10 +7267,10 @@
       "signupCta": "Mein Lehrkräftekonto erstellen"
     },
     "live": {
-      "h": "Live-Spiele in der Klasse",
-      "p1": "Starten Sie ein Live-Quizrennen oder ein anderes Live-Spiel am Beamer. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei.",
-      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen), Fragen-Duell und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
-      "li2": "Nutzen Sie ein Starterset, tippen Sie schnell eigene Fragen oder machen Sie aus den Fragen einer Unterrichtseinheit ein Live-Quiz.",
+      "h": "Live-Lektionen für die Klasse",
+      "p1": "Leiten Sie ein Live-Quizrennen oder jede live-fähige Lektion am Beamer. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit.",
+      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen) und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
+      "li2": "Nutzen Sie ein Start-Fragenset, tippen Sie schnell eines ein oder machen Sie aus den Fragen eines Unterrichtsplans ein Live-Quiz.",
       "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen.",
       "more": "So funktioniert Oomba Live"
     },
@@ -7259,9 +7283,9 @@
       "h": "Funktioniert mit Ihrem Google Classroom",
       "lead": "Verbinden Sie Ihr Google Classroom mit wenigen Klicks. Zuerst sieht Oomba Academy nur Ihre Kurse und deren Schüler. Es wird nichts gepostet, bis Sie das Posten erlauben.",
       "li1": "Importieren Sie Ihre Schülerliste mit einem Klick, danach aktualisiert sie sich alle 6 Stunden von selbst. Schüler werden über ihr Google-Konto erkannt.",
-      "li2": "Posten Sie eine Unterrichtseinheit als Classroom-Aufgabe, mit Link und Abgabetermin, oder teilen Sie sie als Material.",
-      "li3": "Noten gehen von 100 zurück an Classroom: eine Abschlussnote (der Anteil der erledigten Schritte, nicht der richtigen Antworten) oder bei Homeroom-Aufgaben die gewählte Bewertung: Punkte, Abschluss oder nichts bei Übungen. Sende sie selbst oder schalte automatische Noten ein.",
-      "li4": "Posten Sie im Kurs-Stream, wenn ein Live-Spiel startet oder eine Einheit bereit ist, in Ihren eigenen Worten.",
+      "li2": "Posten Sie einen Unterrichtsplan als Classroom-Aufgabe, mit Link und Abgabedatum, oder teilen Sie ihn als Material.",
+      "li3": "Noten fließen von 100 zurück an Classroom: eine Abschlussnote (der Anteil der erledigten Schritte des Unterrichtsplans, nicht die richtigen Antworten) oder bei Homeroom-Aufgaben die gewählte Note: die Punkte, den Abschluss oder nichts zum Üben. Senden Sie sie selbst oder schalten Sie automatische Noten ein.",
+      "li4": "Posten Sie im Stream der Klasse, wenn eine Live-Lektion beginnt oder ein Unterrichtsplan bereit ist, mit Ihren eigenen Worten.",
       "li5": "Oomba Academy fragt Classroom nicht nach E-Mail-Adressen von Schülern und sendet Google nie den Namen, die Antworten oder die Spiele eines Schülers.",
       "note": "Aufgaben, Materialien, Noten und Ankündigungen funktionieren, sobald Sie das Posten erlauben, ein eigener Schritt. Jede Lehrkraft verbindet ihr eigenes Google-Konto, und der Google-Admin Ihrer Schule muss Oomba Academy eventuell zuerst zulassen.",
       "privacy": "Was an Google geht"
@@ -7300,7 +7324,7 @@
       "lead": "Echte Bildschirme aus einer Demo-Klasse: eine Mathe-Tafel, die Oomba mit Ihnen baut, dieselbe Tafel live auf dem Gerät jedes Kindes und ein Dashboard für den ganzen Schultag.",
       "board": {
         "h": "Mathe-Arbeitsmittel mit Oomba",
-        "p": "Zehnersystem-Blöcke, Bruchteile, Uhren und mehr auf einer Tafel. Sagen Sie Oomba, was Sie vorhaben, und es legt die Tafel für Sie an.",
+        "p": "Zehnerblöcke, Bruchteile, Uhren und mehr auf einer Tafel. Sagen Sie Oomba, was Sie unterrichten, und es legt die Tafel für Sie an.",
         "alt": "Die Arbeitsmittel auf einem Laptop: vier Uhren auf halb, jede mit einem Antwortfeld, und daneben der Chat mit Oomba, der sagt, dass er die Tafel gemacht hat.",
         "open": "Arbeitsmittel öffnen"
       },
@@ -7670,7 +7694,7 @@
         },
         "faq": {
           "q2": "Kann mein Kind spielen, wenn es noch nicht lesen kann?",
-          "a2": "Bei einigen Spielen ja. Word Trail und Shark Plank lesen jedes Wort vor, Word Hunt liest ein Wort vor, wenn man es antippt, und Sum Racer und Tug of Math arbeiten mit Zahlen. Menüs und Anleitungen sind geschrieben, deshalb hilft am Anfang ein Erwachsener in der Nähe.",
+          "a2": "Bei einigen Spielen ja. Word Trail und Shark Plank lesen jedes Wort vor, Word Hunt liest ein Wort vor, wenn man es antippt, und Sum Racer arbeitet mit Zahlen. Menüs und Anleitungen sind geschrieben, deshalb hilft am Anfang ein Erwachsener in der Nähe.",
           "q3": "Gibt es die Kurse auch für dieses Alter?",
           "a3": "Einen gibt es. Number Quest, unser Mathekurs, beginnt in der Vorschule: Seine Launchpad-Straße ist für die Vorschule bis Klasse 2, und ihre Spiele lesen jede Anweisung vor. CS Quest und Cyber Defenders beginnen in Klasse 3, mit etwa 8 Jahren.",
           "q4": "Kann ein 6-jähriges Kind den KI-Baumeister benutzen?",
@@ -8347,7 +8371,9 @@
     },
     "host": {
       "title": "Live-Spiel",
+      "titleForTeachers": "Live-Lektion",
       "code": "Spielcode",
+      "codeForTeachers": "Beitrittscode",
       "joinAt": "Geh auf {url} und gib den Code ein",
       "signInFirst": "Erst anmelden, dann den Code eingeben.",
       "hideCode": "Code verbergen",
@@ -8362,7 +8388,9 @@
       "unlock": "Raum öffnen",
       "locked": "Raum geschlossen",
       "autoLock": "Der Raum schließt sich, wenn das Spiel startet.",
+      "autoLockForTeachers": "Der Raum wird gesperrt, wenn die Lektion beginnt.",
       "end": "Spiel beenden",
+      "endForTeachers": "Lektion beenden",
       "skipTurn": "Zug überspringen",
       "clear": "Bild löschen",
       "clearConfirm": "Das Bild auf allen Bildschirmen löschen?",
@@ -8371,18 +8399,23 @@
       "playToo": "Selbst mitspielen",
       "hidCount": "Spieler, die dieses Bild ausblenden: {count}",
       "endConfirm": "Das Spiel für alle beenden?",
+      "endConfirmForTeachers": "Die Lektion für alle beenden?",
       "remove": "Entfernen",
       "removeConfirm": "Diese Person aus dem Spiel nehmen?",
+      "removeConfirmForTeachers": "Diesen Spieler aus der Lektion entfernen?",
       "ready": "Bereit",
       "late": "Nach dem Start dazugekommen",
       "watching": "Sieht die Karte",
       "offline": "Getrennt",
       "empty": "Noch niemand ist beigetreten.",
       "qrLabel": "QR-Code zum Beitreten",
+      "qrLabelForTeachers": "QR-Code zum Beitreten der Lektion",
       "answers": "{count, plural, one {# Antwort} other {# Antworten}}",
       "players": "Spielende",
       "controls": "Spielsteuerung",
+      "controlsForTeachers": "Steuerung der Lektion",
       "reports": "Jemand hat in diesem Spiel etwas gemeldet. Bitte prüfe, ob alles in Ordnung ist.",
+      "reportsForTeachers": "Ein Spieler hat in dieser Lektion etwas gemeldet. Bitte prüfen Sie, ob alles in Ordnung ist.",
       "eyes": "Augen nach vorn",
       "teacherView": "Lehreransicht",
       "soundOn": "Ton an",
@@ -8395,16 +8428,23 @@
     },
     "landing": {
       "title": "Live-Spiel leiten",
+      "titleForTeachers": "Live-Lektion leiten",
       "heading": "Live-Spiel leiten",
+      "headingForTeachers": "Live-Lektion leiten",
       "intro": "Wähle ein Spiel und wer mitspielen darf, dann öffne den Raum. Die Spielenden gehen auf {url} und geben den Code ein.",
+      "introForTeachers": "Wählen Sie eine Lektion und wer mitmachen darf, und öffnen Sie dann den Raum. Die Spieler gehen auf {url} und geben den Code ein.",
       "modes": "Sofort spielbereit",
       "official": "Spiele von Oomba Academy",
+      "officialForTeachers": "Oomba-Academy-Lektionen",
       "mine": "Meine Spiele",
+      "mineForTeachers": "Meine Lektionen",
       "shared": "Mit meinen Klassen geteilt",
       "none": "Hier gibt es noch keine Live-Spiele.",
+      "noneForTeachers": "Hier gibt es noch keine Lektionen für live.",
       "usesQuestions": "Nutzt ein Fragenset",
       "questions": "Fragen",
       "questionsLabel": "Fragenset (für Quizspiele)",
+      "questionsLabelForTeachers": "Fragenset (für Quiz-Lektionen)",
       "starters": "Startersets",
       "mySets": "Meine Fragensets",
       "schoolSets": "An meiner Schule geteilt",
@@ -8420,9 +8460,11 @@
       "openHint": "Gäste bekommen einen ausgedachten Namen aus einer sicheren Liste. Niemand kann chatten oder tippen.",
       "open": "Raum öffnen",
       "recent": "Letzte Live-Spiele",
+      "recentForTeachers": "Letzte Live-Lektionen",
       "best": "Am besten für {min}–{max} Spieler",
       "teamsAbove": "Mehr als {n} Spieler? Mit Teams klappt es am besten.",
-      "maxHint": "Dieses Spiel hat Platz für bis zu {max} Spieler."
+      "maxHint": "Dieses Spiel hat Platz für bis zu {max} Spieler.",
+      "maxHintForTeachers": "Diese Lektion nimmt bis zu {max} Spieler auf."
     },
     "mode": {
       "questRace": "Quest-Rennen",
@@ -8603,6 +8645,7 @@
     },
     "results": {
       "title": "Ergebnisse des Live-Spiels",
+      "titleForTeachers": "Ergebnisse der Live-Lektion",
       "heading": "Ergebnisse: {title}",
       "rank": "Platz",
       "player": "Spieler/in",
@@ -8610,6 +8653,7 @@
       "correct": "Richtige Antworten",
       "scoredBy": "Gewertet von",
       "byGame": "dem Spiel",
+      "byGameForTeachers": "die Lektion",
       "byLive": "Oomba Live",
       "questions": "Fragen",
       "accuracy": "{right} von {answered} richtig",
@@ -8641,6 +8685,7 @@
       "stillHere": "{count, plural, one {# Spieler ist noch da} other {# Spieler sind noch da}}",
       "playAgainTeams": "Nochmal mit diesen Teams",
       "newGame": "Neues Spiel",
+      "newGameForTeachers": "Neue Lektion",
       "homework": "Als Hausaufgabe geben",
       "votes": "{count, plural, one {# Stimme} other {# Stimmen}}",
       "classHeading": "Die Klasse",
@@ -8657,23 +8702,32 @@
       "school": "An meiner Schule geteilt",
       "schoolHint": "Sets, die andere Lehrkräfte an deiner Schule geteilt haben. Mach eine Kopie, um eines zu ändern.",
       "copy": "Kopie erstellen",
-      "fromLesson": "Aus meiner Stunde"
+      "fromLesson": "Aus meinen Notizen"
     },
     "api": {
       "off": "Live-Spiele sind gerade ausgeschaltet.",
+      "offForTeachers": "Live-Lektionen sind gerade ausgeschaltet.",
       "notHost": "Nur Lehrkräfte und Erwachsene können Live-Spiele leiten.",
       "notTeacher": "Wähle eine deiner eigenen Klassen.",
       "noFamily": "Richte zuerst deine Familie ein.",
       "notFound": "Wir finden dieses Spiel nicht.",
+      "notFoundForTeachers": "Wir finden diese Lektion nicht.",
       "notPublished": "Veröffentliche das Spiel zuerst.",
+      "notPublishedForTeachers": "Veröffentlichen Sie die Lektion zuerst.",
       "notPublic": "Alle mit dem Code können nur öffentliche Spiele spielen. Wähle stattdessen deine Klasse oder Familie.",
+      "notPublicForTeachers": "Mit dem Code allein lassen sich nur öffentliche Lektionen spielen. Wählen Sie stattdessen Ihre Klasse.",
       "notShared": "Teile das Spiel zuerst mit dieser Klasse oder Familie.",
+      "notSharedForTeachers": "Teilen Sie die Lektion zuerst mit dieser Klasse.",
       "notReady": "Dieses Spiel ist noch nicht bereit für live.",
+      "notReadyForTeachers": "Diese Lektion ist noch nicht für live bereit.",
       "noSet": "Wähle ein Fragenset.",
       "setIncomplete": "Bei einigen Fragen fehlen noch die Antworten.",
       "busy": "Gerade laufen zu viele Live-Spiele. Versuch es in ein paar Minuten noch mal.",
+      "busyForTeachers": "Gerade laufen zu viele Live-Lektionen. Versuchen Sie es in ein paar Minuten noch einmal.",
       "hasOpen": "Du hast schon ein Live-Spiel offen. Beende es zuerst oder geh zurück dorthin.",
+      "hasOpenForTeachers": "Sie haben schon eine Live-Lektion offen. Beenden Sie sie zuerst oder kehren Sie zu ihr zurück.",
       "mode": "Wähle ein Spiel.",
+      "modeForTeachers": "Wählen Sie eine Lektion.",
       "audience": "Wähle, wer mitspielen darf.",
       "set": {
         "title": "Gib dem Set einen Titel.",
@@ -8683,7 +8737,7 @@
         "choices": "Frage {n} braucht 2 bis 4 Antworten, und die richtige muss ausgewählt sein.",
         "sameChoice": "Frage {n} hat zwei gleiche Antworten.",
         "tooBig": "Dieses Set ist zu groß.",
-        "noQuestions": "Diese Unterrichtseinheit hat keine Frageschritte.",
+        "noQuestions": "Dieser Unterrichtsplan hat keine Fragen-Schritte.",
         "notFound": "Wir finden dieses Set nicht.",
         "topic": "Gib zuerst ein Thema ein.",
         "aiOff": "Das Entwerfen mit KI ist gerade nicht verfügbar. Du kannst deine Fragen trotzdem eintippen oder einfügen.",
@@ -8694,25 +8748,33 @@
       "needTwo": "Zum Start braucht es zwei Spieler.",
       "tugTeams": "Tug of Math braucht zwei Teams, und Teams sind auf dieser Seite ausgeschaltet.",
       "teamsOff": "Dieses Spiel hatte keine Teams.",
+      "teamsOffForTeachers": "Diese Lektion hatte keine Teams.",
       "againGone": "Die Spieler sind gegangen. Starten Sie lieber ein neues Spiel.",
+      "againGoneForTeachers": "Die Spieler sind gegangen. Starten Sie stattdessen eine neue Lektion.",
       "homeworkOff": "Hausaufgaben aus Fragensets sind ausgeschaltet.",
       "noClass": "Wählen Sie eine Ihrer Klassen.",
       "cohost": {
         "cohostRoom": "Co-Hosts gibt es für Klassen- und Familienspiele.",
+        "cohostRoomForTeachers": "Co-Leitungen gibt es für Lektionen mit Klassen.",
         "notEligible": "Diese Person kann dieses Spiel nicht mitleiten.",
+        "notEligibleForTeachers": "Diese Person kann diese Lektion nicht mitleiten.",
         "full": "Dieses Spiel hat schon 3 Co-Hosts.",
+        "fullForTeachers": "Diese Lektion hat schon 3 Co-Leitungen.",
         "already": "Diese Person ist schon eingeladen oder leitet mit.",
         "notCohost": "Diese Person ist kein Co-Host dieses Spiels.",
+        "notCohostForTeachers": "Diese Person leitet diese Lektion nicht mit.",
         "hasOpen": "Diese Person leitet gerade ein anderes Live-Spiel.",
+        "hasOpenForTeachers": "Diese Person leitet gerade eine andere Live-Lektion.",
         "gone": "Diese Einladung ist abgelaufen.",
         "self": "Du bist schon der Host."
       },
       "notForClass": "Dieses Spiel ist zum Spaß, nicht für den Unterricht. Wähle einen Quizmodus oder eins deiner Spiele.",
+      "notForClassForTeachers": "Das hier ist zum Spaß, nicht für den Unterricht. Wählen Sie einen Quiz-Modus oder eine Ihrer eigenen Lektionen.",
       "make": {
         "pdfBad": "Diese Datei lässt sich nicht lesen. Wähle ein PDF bis 2 MB.",
-        "lessonShort": "Füge zuerst etwas mehr von deiner Stunde ein (einen Absatz oder mehr).",
-        "lessonLong": "Diese Stunde ist zu lang. Füge jeweils eine Stunde ein (bis 20.000 Zeichen).",
-        "lessonThin": "In dieser Stunde stand zu wenig, um Fragen daraus zu schreiben. Füge mehr ein und versuche es noch einmal.",
+        "lessonShort": "Fügen Sie zuerst etwas mehr von Ihren Notizen ein (einen Absatz oder mehr).",
+        "lessonLong": "Diese Notizen sind zu lang. Fügen Sie die Notizen für eine Stunde nach der anderen ein (bis zu 20.000 Zeichen).",
+        "lessonThin": "In diesen Notizen stand nicht genug, um Fragen daraus zu schreiben. Fügen Sie mehr davon ein und versuchen Sie es noch einmal.",
         "aiOff": "Das Entwerfen mit KI ist gerade nicht verfügbar. Du kannst deine Fragen weiterhin unter Meine Fragensätze eintippen oder einfügen.",
         "aiFailed": "Die KI konnte diesmal keine Fragen schreiben. Versuche es gleich noch einmal."
       }
@@ -8865,8 +8927,9 @@
     },
     "entry": {
       "host": "Live-Spiel starten",
+      "hostForTeachers": "Live-Lektion leiten",
       "hostLive": "Live spielen",
-      "quizLesson": "Live-Quiz zu dieser Stunde",
+      "quizLesson": "Diesen Unterrichtsplan live abfragen",
       "fromLesson": "Live-Quiz aus diesen Fragen machen",
       "family": "Live mit Familie oder Gruppe spielen",
       "familyText": "Starte ein Spiel auf einem großen Bildschirm. Alle machen mit einem Code auf ihrem eigenen Gerät mit. Niemand kann chatten oder tippen.",
@@ -8877,6 +8940,7 @@
       "studioFixText": "Repariere den Live-Teil dieses Spiels für Oomba Live, damit eine Lehrkraft oder ein Erwachsener es leiten kann: {issue}.",
       "badge": "Live",
       "badgeLong": "Live-Klassenspiel",
+      "badgeLongForTeachers": "Live-Lektion für die Klasse",
       "howJoin": "Deine Lehrkraft zeigt einen Code an der Tafel. Tippe ihn hier ein, um mitzuspielen.",
       "teacherHost": "Lehrkraft? Starte es live mit deiner Klasse",
       "solo": "Allein üben",
@@ -8892,7 +8956,8 @@
       "live_raw": "es spricht auf eine nicht erlaubte Art mit der Seite"
     },
     "panel": {
-      "title": "Live-Spiele"
+      "title": "Live-Spiele",
+      "titleForTeachers": "Live-Lektionen"
     },
     "team": {
       "preset": {
@@ -8934,6 +8999,7 @@
       "shuffle": "Mischen",
       "choose": "Spieler wählen ihr Team",
       "chooseHint": "Nur bevor das Spiel startet.",
+      "chooseHintForTeachers": "Nur bevor die Lektion beginnt.",
       "lock": "Teams sperren",
       "unlock": "Teams entsperren",
       "locked": "Die Teams sind gesperrt",
@@ -8944,6 +9010,7 @@
       "saved": "Teams gespeichert.",
       "savedCount": "{count, plural, one {Teams für # Kind gespeichert.} other {Teams für # Kinder gespeichert.}}",
       "notSaved": "Noch keine gespeicherten Teams. Die Teams aus Ihrem letzten Live-Spiel mit dieser Klasse werden auch hier gespeichert.",
+      "notSavedForTeachers": "Noch keine gespeicherten Teams. Die Teams aus Ihrer letzten Live-Lektion mit dieser Klasse werden auch hier gespeichert.",
       "moveHere": "Hierher",
       "selectHint": "Ziehen Sie einen Spieler in ein Team, oder wählen Sie einen Spieler und dann „Hierher“.",
       "moved": "{name} → {team}",
@@ -8959,10 +9026,13 @@
       "madeFor": "Für Teams gemacht",
       "none": "Teams sind aus.",
       "editor": "Teams für Live-Spiele",
-      "editorHint": "Stellen Sie die Tischgruppen vor dem Unterricht zusammen. Im Live-Spiel bringt „Letzte Teams nehmen“ alle wieder in ihre Gruppe."
+      "editorForTeachers": "Teams für Live-Lektionen",
+      "editorHint": "Stellen Sie die Tischgruppen vor dem Unterricht zusammen. Im Live-Spiel bringt „Letzte Teams nehmen“ alle wieder in ihre Gruppe.",
+      "editorHintForTeachers": "Legen Sie Ihre Tischgruppen vor dem Unterricht an. In einer Live-Lektion setzt „Letzte Teams verwenden“ alle wieder in diese Gruppen."
     },
     "settings": {
       "title": "Spieleinstellungen",
+      "titleForTeachers": "Einstellungen der Lektion",
       "open": "Einstellungen",
       "more": "Weitere Einstellungen",
       "secs": "Zeit pro Frage",
@@ -8982,8 +9052,10 @@
       "namesHidden": "Keine Namen auf der Leinwand",
       "namesHint": "Ihre Lehreransicht zeigt immer die Namen Ihrer Schülerinnen und Schüler.",
       "sound": "Spielgeräusche auf der Leinwand",
+      "soundForTeachers": "Töne der Lektion auf dem großen Bildschirm",
       "emotes": "Emotes",
       "remembered": "Ihre Auswahl wird für Ihr nächstes Live-Spiel gemerkt.",
+      "rememberedForTeachers": "Ihre Auswahl wird für Ihre nächste Live-Lektion gespeichert.",
       "reset": "Zurück zu den Standardeinstellungen",
       "save": "Speichern",
       "voices": "Stimmen zum Vorlesen",
@@ -9078,6 +9150,7 @@
       "open": "Co-Hosts",
       "title": "Co-Hosts",
       "intro": "Eine andere Lehrkraft deiner Schule kann dieses Spiel von ihrem eigenen Gerät aus mitleiten, mit denselben Spielsteuerungen wie du.",
+      "introForTeachers": "Eine andere Lehrkraft Ihrer Schule kann diese Lektion von ihrem eigenen Gerät aus mitleiten, mit derselben Steuerung wie Sie.",
       "introFamily": "Ein anderer Erwachsener aus deiner Familie kann dieses Spiel von seinem eigenen Gerät aus mitleiten.",
       "max": "Bis zu 3 Co-Hosts.",
       "gate": "Hier stehen die Namen von Erwachsenen. Prüfe, dass die Klasse deinen Bildschirm nicht sieht.",
@@ -9105,24 +9178,34 @@
       "link": "Link für deinen Co-Host",
       "linkHint": "Sie öffnen ihn auf ihrem eigenen Gerät und sind dabei mit ihrem eigenen Konto angemeldet. Er funktioniert nur für die eingeladene Person.",
       "full": "Dieses Spiel hat schon 3 Co-Hosts.",
+      "fullForTeachers": "Diese Lektion hat schon 3 Co-Leitungen.",
       "inviteTitle": "Ein Live-Spiel mitleiten",
+      "inviteTitleForTeachers": "Eine Live-Lektion mitleiten",
       "inviteText": "{name} hat dich eingeladen, „{title}“ mitzuleiten.",
       "inviteFull": "Du bekommst dieselben Spielsteuerungen wie der Host und siehst Schülerdetails.",
+      "inviteFullForTeachers": "Sie bekommen dieselbe Steuerung wie die Leitung und sehen Angaben zu den Kindern.",
       "inviteLimited": "Du bekommst dieselben Spielsteuerungen wie der Host. Schülerdetails bleiben bei den Lehrkräften der Klasse.",
+      "inviteLimitedForTeachers": "Sie bekommen dieselbe Steuerung wie die Leitung. Angaben zu den Kindern bleiben bei den Lehrkräften der Klasse.",
       "accept": "Annehmen",
       "decline": "Nein, danke",
       "youCohost": "Co-Host · {host} ist Host",
       "youCohostShort": "Du leitest dieses Spiel mit.",
+      "youCohostShortForTeachers": "Sie leiten diese Lektion mit.",
       "youHost": "Du bist der Host.",
       "roleHost": "Host",
       "roleCohost": "Co-Host",
       "leave": "Nicht mehr mitleiten",
       "leaveConfirm": "Dieses Spiel nicht mehr mitleiten?",
+      "leaveConfirmForTeachers": "Nicht mehr bei dieser Lektion mitleiten?",
       "left": "Du leitest nicht mehr mit.",
       "removed": "Du bist kein Co-Host dieses Spiels mehr.",
+      "removedForTeachers": "Sie leiten diese Lektion nicht mehr mit.",
       "endConfirm": "Das Spiel für alle beenden? Du bist Co-Host: Es endet auch für den Host.",
+      "endConfirmForTeachers": "Die Lektion für alle beenden? Sie leiten mit: Das beendet sie auch für die Leitung.",
       "projBusy": "Das Spiel läuft schon auf einem anderen Bildschirm. Hilf über die Lehrkraft-Ansicht mit.",
+      "projBusyForTeachers": "Die Lektion ist schon auf einem anderen Bildschirm. Nutzen Sie die Lehrkraft-Ansicht, um mitzuleiten.",
       "projBack": "Der Host hat den großen Bildschirm zurückgenommen. Hilf über die Lehrkraft-Ansicht mit.",
+      "projBackForTeachers": "Die Leitung hat den großen Bildschirm zurückgenommen. Nutzen Sie die Lehrkraft-Ansicht, um bei der Lektion mitzuhelfen.",
       "landingInvite": "{name} hat dich eingeladen, „{title}“ mitzuleiten.",
       "landingOn": "Du leitest „{title}“ mit.",
       "openInvite": "Einladung ansehen",
@@ -9135,14 +9218,18 @@
       "player": "ein Spieler",
       "log": {
         "title": "Wer dieses Spiel geleitet hat",
+        "titleForTeachers": "Wer diese Lektion geleitet hat",
         "former": "Ein früherer Co-Host",
         "player": "ein Spieler",
         "team": "ein Team"
       },
       "act": {
         "start": "{name} hat das Spiel gestartet",
+        "startForTeachers": "{name} hat die Lektion gestartet",
         "pause": "{name} hat das Spiel pausiert",
+        "pauseForTeachers": "{name} hat die Lektion pausiert",
         "resume": "{name} hat das Spiel fortgesetzt",
+        "resumeForTeachers": "{name} hat die Lektion fortgesetzt",
         "next": "{name} ist weitergegangen",
         "skip": "{name} hat die Frage übersprungen",
         "clear": "{name} hat das Bild gelöscht",
@@ -9150,6 +9237,7 @@
         "unlock": "{name} hat den Raum geöffnet",
         "kick": "{name} hat {player} entfernt",
         "end": "{name} hat das Spiel beendet",
+        "endForTeachers": "{name} hat die Lektion beendet",
         "eyesOn": "{name} hat um Aufmerksamkeit gebeten",
         "eyesOff": "{name} hat „Augen nach vorn“ beendet",
         "say": "{name} hat eine Nachricht geschickt",
@@ -9216,7 +9304,8 @@
       "level": "Stufe",
       "count": "Anzahl der Fragen",
       "boardSubjects": "Fächer auf dem Brett (2 bis 6)",
-      "bankHint": "Jedes Spiel neue Fragen, passend für jedes Alter geschrieben."
+      "bankHint": "Jedes Spiel neue Fragen, passend für jedes Alter geschrieben.",
+      "bankHintForTeachers": "Jede Runde neue Fragen, für jede Altersgruppe geschrieben."
     },
     "wyrUi": {
       "legend": "Was wäre dir lieber? (Live)",
@@ -9251,6 +9340,7 @@
       "secs": "Zeit zum Malen",
       "secsN": "{n} Sekunden",
       "hint": "Alle malen reihum, während die anderen raten. Die Spieler kommen mit dem Code auf ihrem eigenen Gerät dazu, egal wo sie sind. Getippte Antworten gehen nur ans Spiel: Wer malt, sieht eine Antwort nur, wenn sie eines der Wörter des Spiels ist, und es gibt keinen Chat.",
+      "hintForTeachers": "Alle zeichnen abwechselnd, während die anderen raten. Die Spieler machen mit dem Code auf ihrem eigenen Gerät mit, wo auch immer sie sind. Getippte Rateversuche gehen nur an die Lektion: Wer zeichnet, sieht einen Versuch nur, wenn er eines der Wörter der Lektion ist, und es gibt keinen Chat.",
       "guess": "So wird geraten",
       "guessType": "Tippen auf der eigenen Tastatur",
       "guessTiles": "Buchstabenkärtchen (leichter)",
@@ -9299,31 +9389,31 @@
       "preset": "Nach dem Stundenplan voreingestellt. Du kannst alles noch ändern."
     },
     "make": {
-      "title": "Mach aus deiner Stunde ein Spiel",
-      "heading": "Mach aus deiner Stunde ein Spiel",
-      "lead": "Füge eine Stunde ein, die du schon unterrichtest. Oomba entwirft die Fragen, du prüfst jede Antwort, dann spielt deine Klasse.",
+      "title": "Aus Ihren Notizen eine Lektion machen",
+      "heading": "Aus Ihren Notizen eine Lektion machen",
+      "lead": "Fügen Sie Ihre Notizen zu einer Stunde ein, die Sie schon unterrichten. Oomba entwirft die Fragen, Sie prüfen jede Antwort, dann spielt Ihre Klasse.",
       "stepsLabel": "Schritte",
-      "step1": "1. Stunde einfügen",
+      "step1": "1. Notizen einfügen",
       "step2": "2. Fragen prüfen",
       "step3": "3. Spielen",
-      "pasteHeading": "Deine Stunde",
-      "textLabel": "Füge den Text deiner Stunde ein",
+      "pasteHeading": "Ihre Notizen",
+      "textLabel": "Notizen einfügen",
       "textHint": "Füge deine Notizen, einen Lesetext, ein Arbeitsblatt oder eine Foliengliederung ein…",
       "fileLabel": "Oder wähle eine Datei (PDF oder Text, bis 2 MB)",
       "levelLabel": "Klasse oder Niveau",
       "levelHint": "Zum Beispiel: 4. Klasse",
       "countLabel": "Wie viele Fragen",
-      "privacy": "Deine Stunde wird an unseren KI-Helfer geschickt, um die Fragen zu schreiben, und nicht gespeichert. Bitte lass Namen von Schülerinnen und Schülern und alles Persönliche weg.",
+      "privacy": "Ihre Notizen gehen an unseren KI-Helfer, damit er die Fragen schreibt, und werden nicht gespeichert. Bitte lassen Sie Namen von Kindern und alles Persönliche weg.",
       "go": "Fragen entwerfen",
-      "wait": "Deine Stunde wird gelesen und die Fragen werden geschrieben. Das dauert bis zu einer Minute.",
+      "wait": "Ihre Notizen werden gelesen und Fragen geschrieben. Das dauert bis zu einer Minute.",
       "checkHeading": "Prüfe jede Frage und jede Antwort",
-      "checkText": "Das ist ein erster Entwurf. Lies jede Frage, verbessere, was falsch oder unklar ist, und entferne, was du nicht möchtest. Unter jeder Frage siehst du die Stelle deiner Stunde, aus der sie stammt. Nichts erreicht die Klasse, bevor du speicherst.",
+      "checkText": "Das ist ein erster Entwurf. Lesen Sie jede Frage, korrigieren Sie Falsches oder Unklares und entfernen Sie, was Sie nicht wollen. Unter jeder Frage sehen Sie den Teil Ihrer Notizen, aus dem sie stammt. Nichts erreicht die Kinder, bevor Sie speichern.",
       "back": "Neu anfangen",
       "doneHeading": "Deine Fragen sind gespeichert",
       "doneText": "Wähle, wie deine Klasse sie nutzt.",
-      "host": "Jetzt ein Live-Spiel leiten",
+      "host": "Jetzt eine Live-Lektion leiten",
       "assignHeading": "Oder zum selbstständigen Bearbeiten aufgeben",
-      "assignText": "Es wird ein kurzes Quiz in den Stunden der Klasse, und die Ergebnisse landen in deinem Notenbuch.",
+      "assignText": "Daraus wird ein kurzes Quiz in den Unterrichtsplänen der Klasse, und die Punkte kommen in Ihr Notenbuch.",
       "classLabel": "Klasse",
       "dueLabel": "Fällig am (optional)",
       "assign": "Dieser Klasse aufgeben",
@@ -9332,18 +9422,22 @@
     },
     "wiz": {
       "modesTab": "Live-Spiele",
+      "modesTabForTeachers": "Live-Lektionen",
       "progress": "Schritt {n} von {total}",
       "back": "Zurück",
       "next": "Weiter",
       "change": "Ändern",
       "play": {
         "title": "Was wollt ihr spielen?",
-        "hint": "Wähle ein Spiel. Bevor der Raum aufgeht, kannst du alles noch ändern."
+        "hint": "Wähle ein Spiel. Bevor der Raum aufgeht, kannst du alles noch ändern.",
+        "hintForTeachers": "Wählen Sie eine Lektion. Sie können alles ändern, bevor der Raum öffnet."
       },
       "questions": {
         "title": "Welche Fragen?",
         "ownTitle": "Spiel einstellen",
-        "hint": "Wähle, was das Spiel fragt und wie lange es dauert."
+        "ownTitleForTeachers": "Die Lektion einrichten",
+        "hint": "Wähle, was das Spiel fragt und wie lange es dauert.",
+        "hintForTeachers": "Wählen Sie, was die Lektion fragt und wie lange sie dauert."
       },
       "who": {
         "title": "Wer spielt mit?",
@@ -9355,6 +9449,7 @@
       },
       "row": {
         "game": "Spiel",
+        "gameForTeachers": "Lektion",
         "questions": "Fragen",
         "who": "Wer darf mitspielen",
         "teams": "Teams"
@@ -9376,11 +9471,11 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: kostenlose Live-Quizspiele für Ihre Klasse",
+    "title": "Oomba Live: kostenlose Live-Quizlektionen für Ihre Klasse",
     "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung. Kostenlos für Lehrkräfte.",
     "kicker": "Oomba Live für Lehrkräfte",
-    "h1": "Live-Quizspiele, die Ihre ganze Klasse gemeinsam spielt",
-    "lead": "Zeigen Sie das Spiel an der Tafel. Die Schülerinnen und Schüler treten auf ihren eigenen Geräten mit einem 7-stelligen Code bei und beantworten Ihre Fragen um die Wette, in jedem Fach und auf jedem Niveau. Kostenlos, ohne Werbung, und außer dem Code müssen sie nichts eintippen.",
+    "h1": "Live-Quizlektionen, die Ihre ganze Klasse zusammen spielt",
+    "lead": "Bringen Sie die Lektion an die Tafel. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit und rasen durch Ihre Fragen, in jedem Fach, auf jedem Niveau. Kostenlos, ohne Werbung, und die Kinder tippen nur den Code.",
     "demo": {
       "h": "In einer Minute erklärt",
       "note": "Ein einminütiges Video mit Musik und Untertiteln im Bild: Eine Lehrkraft startet ein Quest Race in Naturwissenschaften, die Klasse tritt mit einem Code auf dem Handy bei und rennt durch die Fragen. Dann beschreibt ein Kind dem Builder ein Spiel, der es baut und zum Prüfen selbst spielt, und das Kind spielt es. Zum Schluss ein paar der Lernspiele."
@@ -9393,22 +9488,22 @@
       "languages": "{count} Sprachen"
     },
     "cta": {
-      "host": "Kostenloses Live-Spiel leiten",
+      "host": "Kostenlos eine Live-Lektion leiten",
       "how": "So funktioniert es",
       "join": "Einem Spiel beitreten? Code hier eingeben"
     },
     "how": {
       "h": "Von den Fragen zu den Ergebnissen in wenigen Minuten",
-      "lead": "Echte Ansichten aus einem Live-Spiel in einer Demo-Schule mit ausgedachten Namen.",
+      "lead": "Echte Bildschirme aus einer Live-Lektion in einer Demo-Schule mit erfundenen Namen.",
       "s1": {
-        "h": "Spiel und Fragen auswählen",
-        "p": "Wählen Sie Quest-Rennen, Fragen-Duell oder Denkbrett und dann die Fragen: die Fragenbank nach Fach und Alter (6 bis 14), Ihr eigenes Fragenset, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einer Ihrer Unterrichtseinheiten.",
-        "alt": "Der erste Schritt, um ein Live-Spiel zu starten, „Was möchtest du spielen?“: Quest Race, Question Battle und Brain Board, jeweils mit der passenden Spielerzahl."
+        "h": "Lektion und Fragen wählen",
+        "p": "Wählen Sie Quest Race oder Brain Board und dann die Fragen: die Fragensammlung nach Fach und Alter (6 bis 14), Ihr eigenes Set, eines, das eine Kollegin oder ein Kollege geteilt hat, oder die Fragen aus einem Ihrer Unterrichtspläne.",
+        "alt": "Der erste Schritt beim Leiten einer Live-Lektion, „Was möchtest du spielen?“: Quest Race, Question Battle und Brain Board, jeweils mit der passenden Spielerzahl."
       },
       "s2": {
         "h": "Den Code an der Tafel zeigen",
         "p": "Die Schülerinnen und Schüler öffnen auf ihrem Gerät die Beitrittsseite und geben den 7-stelligen Code ein oder scannen den QR-Code. Ihre Namen erscheinen, sobald sie beitreten.",
-        "alt": "Der Beamer-Bildschirm vor dem Spielstart: eine Zeichentrickfigur, gegen die die ganze Klasse spielt, ein großer 7-stelliger Code, ein QR-Code und wie viele schon beigetreten sind."
+        "alt": "Der Beamer-Bildschirm vor dem Start der Lektion: eine Comicfigur, gegen die die ganze Klasse spielt, ein großer 7-stelliger Code, ein QR-Code und wie viele Spieler schon da sind."
       },
       "s3": {
         "h": "In Sekunden dabei",
@@ -9464,15 +9559,15 @@
       "li3": "Ein Timer von 10, 20 oder 30 Sekunden pro Frage, und Sie können jederzeit überspringen oder pausieren.",
       "li4": "Bonuspunkte für Teamarbeit, Freundlichkeit und Einsatz.",
       "li5": "Mehr Zeit für Schülerinnen und Schüler, die sie brauchen.",
-      "li6": "Ein Co-Host kann das Spiel gemeinsam mit Ihnen leiten.",
-      "li7": "Ergebnisse nach Fragen und nach Schülerinnen und Schülern. Klassenspiele werden gespeichert und lassen sich als Tabelle herunterladen."
+      "li6": "Eine Co-Leitung kann die Lektion mit Ihnen führen.",
+      "li7": "Ergebnisse nach Frage und nach Kind. Lektionen mit der Klasse werden gespeichert und lassen sich als Tabelle herunterladen."
     },
     "safe": {
       "h": "Von Anfang an für Kinder gemacht",
       "li1": "Die Kinder können nur den Code eintippen: kein Chat, keine frei eingegebenen Namen, keine Kommentare.",
       "li2": "In einem offenen Raum bekommen alle einen freundlichen ausgedachten Spitznamen wie „Mutiger Otter“, nie einen echten Namen.",
       "li3": "Ein Klassenraum ist nur für Ihre eigenen angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch.",
-      "li4": "Codes verfallen, wenn das Spiel endet, und die Kinder können Ihnen alles mit einem Tippen melden.",
+      "li4": "Codes enden, wenn die Lektion endet, und die Kinder können Ihnen alles mit einem Tipp melden.",
       "link": "Mehr dazu auf unserer <a href=\"{safety}\">Sicherheitsseite</a>."
     },
     "more": {
@@ -9481,24 +9576,24 @@
       "link": "Oomba Academy für Lehrkräfte"
     },
     "start": {
-      "h": "Bereit für Ihr erstes Live-Spiel?",
+      "h": "Bereit für Ihre erste Live-Lektion?",
       "p": "Erstellen Sie ein kostenloses Erwachsenenkonto oder melden Sie sich mit Ihrem Schulkonto an. Wählen Sie ein Starterset, und in zwei Minuten kann es losgehen.",
-      "signedIn": "Sie sind angemeldet. Wählen Sie ein Spiel und öffnen Sie Ihren Raum.",
+      "signedIn": "Sie sind angemeldet. Wählen Sie eine Lektion und öffnen Sie Ihren Raum.",
       "kid": "Live-Spiele werden von Lehrkräften und anderen Erwachsenen geleitet. Frag deine Lehrkraft nach dem Code und tritt dann hier bei:",
       "pSchool": "Melden Sie sich mit Ihrem Schulkonto an oder holen Sie sich ein kostenloses Schulkonto für Ihre Klasse. Wählen Sie ein Starterset, und in zwei Minuten kann es losgehen."
     },
     "faq": {
       "h": "Häufige Fragen von Lehrkräften zu Oomba Live",
       "q1": "Ist Oomba Live kostenlos?",
-      "a1": "Ja. Live-Spiele leiten, die Starter-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle kostenlos und ohne Werbung.",
+      "a1": "Ja. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle kostenlos und ohne Werbung.",
       "q2": "Brauchen meine Schülerinnen und Schüler Konten?",
       "a2": "Nicht für einen offenen Raum: Die Kinder geben den Code ein und bekommen einen ausgedachten Spitznamen. In einem Klassenraum nutzen sie die Schulkonten, die Sie für sie angelegt haben, und ihre Punkte kommen in Ihr Notenbuch.",
       "q3": "Wie viele Kinder können mitspielen?",
       "a3": "Bis zu {max} in einem Klassenraum. Ein Raum für alle mit dem Code fasst bis zu {open} Spieler, wenn ein Elternteil oder ein anderer Erwachsener ihn leitet, und bis zu {max}, wenn eine Lehrkraft ihn leitet.",
       "q4": "Kann ich eigene Fragen verwenden?",
-      "a4": "Ja, in jedem Fach und auf jedem Niveau. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, fügen Sie eines aus einer Tabelle ein, lassen Sie die KI eines entwerfen, das Sie dann bearbeiten, oder machen Sie aus den Fragen einer Ihrer Unterrichtseinheiten ein Live-Quiz.",
+      "a4": "Ja, in jedem Fach und auf jedem Niveau. Schreiben Sie ein Set mit bis zu {items} Fragen mit je 2 bis 4 Antworten, fügen Sie eines aus einer Tabelle ein, lassen Sie die KI eines zum Bearbeiten entwerfen oder machen Sie aus den Fragen eines Ihrer Unterrichtspläne ein Live-Quiz.",
       "q5": "Was brauchen die Schülerinnen und Schüler?",
-      "a5": "Ein beliebiges Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen das Spiel von Ihrem eigenen Computer aus an der Tafel."
+      "a5": "Jedes Gerät mit aktuellem Browser: Chromebooks, Tablets, Laptops oder Handys. Nichts zu installieren. Sie zeigen die Lektion von Ihrem eigenen Computer aus an der Tafel."
     },
     "own": {
       "h": "Ihre Fragen, ganz nach Ihren Wünschen",
@@ -9507,7 +9602,7 @@
       "li2": "Fügen Sie ein ganzes Quiz aus einer Tabelle oder einem Dokument auf einmal ein.",
       "li3": "Beschreiben Sie ein Thema und eine Klassenstufe, und die KI entwirft die Fragen, die Sie dann prüfen und bearbeiten.",
       "li4": "Bis zu 100 Fragen pro Set. Teilen Sie Sets mit Lehrkräften Ihrer Schule, oder kopieren Sie deren Sets und passen Sie sie für sich an.",
-      "li5": "Lust auf eine andere Art von Spiel? Bauen Sie mit dem KI-Baumeister Ihr eigenes Quizspiel, und es lässt sich mit jedem Ihrer Fragensets live spielen."
+      "li5": "Sie möchten eine andere Art von Lektion? Bauen Sie mit dem KI-Baumeister Ihre eigene Quiz-Lektion, und sie läuft live mit jedem Ihrer Fragensets."
     }
   },
   "tts": {
@@ -10216,14 +10311,14 @@
       "li1": "Fertige Layouts für den Morgen, eine Unterrichtsstunde, Gruppenarbeit, Stillarbeit und eine Spielpause, oder du ziehst Widgets in dein eigenes.",
       "li2": "Timer, ein Namens-Zufallsgenerator, ein Gruppenmacher, ein Lautstärkemesser, eine Hilfe-Warteschlange und schnelle Abfragen.",
       "li3": "Mathe-Werkzeuge auf der großen Leinwand: Bruchstreifen, Zahlenstrahlen, Geobretter, Stellenwerte und mehr.",
-      "li4": "Hefte Widgets an jeden Schülerbildschirm oder schick der Klasse mit einem Tippen ein Spiel, eine Lektion oder einen Link.",
+      "li4": "Heften Sie Widgets an den Bildschirm jedes Kindes oder schicken Sie der Klasse mit einem Tipp eine Lektion, einen Unterrichtsplan oder einen Link.",
       "li5": "Ganz ohne KI. Kinder erscheinen mit ihren Oomba-Namen, und was ein Kind eintippt, bleibt auf seinem eigenen Bildschirm.",
       "shotAlt": "Ein Klassen-Dashboard am Beamer: die Uhr, das Ziel des Tages, der Stundenplan mit Mathe jetzt und Pause danach, Klassendienste und eine Stimmungsabfrage."
     },
     "meta": {
-      "title": "Klassen-Dashboards und Lernspiele für Lehrkräfte · Oomba Academy",
-      "description": "Ein Bildschirm für den Schultag, ein KI-Builder, der Lektionen zu Spielen macht, Live-Spiele und Spiele, die Kinder selbst bauen. 14 Tage gratis, ohne Karte.",
-      "imageAlt": "Oomba Academy für Lehrkräfte: ein Bildschirm für den Unterricht und Spiele, die hängen bleiben."
+      "title": "Klassen-Dashboards und interaktive Lektionen für Lehrkräfte · Oomba Academy",
+      "description": "Ein Bildschirm für Ihren Unterrichtstag, ein KI-Baumeister, der Ihre Unterrichtspläne in spielbare Lektionen verwandelt, Live-Lektionen für die Klasse und Spiele, die Ihre Kinder bauen. 14 Tage kostenlos, ohne Karte.",
+      "imageAlt": "Oomba Academy für Lehrkräfte: ein Bildschirm für Ihre Klasse und Lektionen, die hängen bleiben."
     },
     "nav": {
       "dashboards": "Dashboards",
@@ -10233,7 +10328,7 @@
       "how": "So funktioniert’s",
       "builder": "Baumeister",
       "courses": "Kurse",
-      "live": "Live-Spiele",
+      "live": "Live-Lektionen",
       "pricing": "Preise",
       "faq": "FAQ",
       "signIn": "Anmelden",
@@ -10246,45 +10341,45 @@
     },
     "hero": {
       "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
-      "h1": "Ein Bildschirm für deinen Unterricht. Spiele, die hängen bleiben.",
-      "lead": "Richte in einer Minute dein Klassen-Dashboard ein und leite den ganzen Tag damit. Mach mit dem KI-Builder aus jeder Lektion ein Spiel, spiel live am Beamer und lass deine Klasse eigene Spiele bauen.",
+      "h1": "Ein Bildschirm für deinen Unterricht. Lektionen, die hängen bleiben.",
+      "lead": "Richte dein Klassen-Dashboard in einer Minute ein und leite den ganzen Tag damit. Verwandle jeden Unterrichtsplan mit dem KI-Baumeister in eine spielbare Lektion, spiele live am Beamer und lass deine Kinder eigene Spiele bauen.",
       "cta": "14 Tage kostenlos testen",
       "how": "So funktioniert’s",
       "trustCard": "Keine Karte nötig",
       "trustCancel": "Jederzeit kündbar",
       "trustStudents": "Unbegrenzt viele Schüler",
       "cBuildTag": "KI-Builder",
-      "cBuild": "Deine Bruchrechen-Lektion ist jetzt ein Spiel",
-      "cLiveTag": "Live-Spiel",
+      "cBuild": "Dein Plan zu Brüchen ist jetzt eine spielbare Lektion",
+      "cLiveTag": "Live-Lektion",
       "cLive": "Deine Klasse steigt ein"
     },
     "facts": {
-      "games": "fertige Lernspiele",
+      "games": "fertige Lektionen",
       "courses": "komplette Kurse mit Stundenplänen",
       "languages": "Sprachen für Schüler und Lehrkräfte",
       "installs": "Installationen: läuft im Browser"
     },
     "demo": {
-      "label": "Illustration: Eine Unterrichtsstunde wird zum Spiel",
-      "lessonTag": "Deine Stunde",
+      "label": "Illustration: Ein Unterrichtsplan wird zur spielbaren Lektion",
+      "lessonTag": "Dein Unterrichtsplan",
       "lessonTitle": "Gleichwertige Brüche · Klasse 4",
       "lessonBody": "Die Kinder zeigen mit Pizzen, Streifen und Zahlenstrahlen, dass 1/2, 2/4 und 4/8 dieselbe Menge sind. Abschluss: drei kurze Kontrollfragen.",
       "file": "stunde-brueche.pdf",
       "builderTag": "KI-Baumeister",
-      "step1": "Liest deine Stunde",
+      "step1": "Dein Unterrichtsplan wird gelesen",
       "step2": "Entwirft die Level",
       "step3": "Testet auf Handy, Tablet und Computer",
       "step4": "Bereit zum Spielen",
-      "gameTag": "Dein Spiel",
+      "gameTag": "Deine Lektion",
       "gameMeta": "Bereit für live oder als Aufgabe",
       "host": "Live spielen",
       "assign": "Zuweisen",
-      "credit": "Spielbild aus Fraction Factory, einem der fertigen Spiele von Oomba."
+      "credit": "Grafik aus Fraction Factory, einer der fertigen Lektionen von Oomba."
     },
     "how": {
       "kicker": "So funktioniert’s",
       "h": "Dein ganzer Schultag an einem Ort",
-      "lead": "Fang mit dem Bildschirm an, der den ganzen Tag offen bleibt, und hol dann die Spiele dazu. Jeder Schritt funktioniert für sich, zusammen noch besser.",
+      "lead": "Fang mit dem Bildschirm an, den du den ganzen Tag offen hast, und hol dann die Lektionen dazu. Jeder Schritt funktioniert für sich, und zusammen noch besser.",
       "s1": {
         "h": "Klassen-Dashboard einrichten",
         "p": "Öffne deine Klasse, und sechs fertige Layouts warten schon. Zeig es am Beamer, und jedes Kind bekommt einen eigenen Bildschirm."
@@ -10294,8 +10389,8 @@
         "p": "Stimmungsabfrage, Timer, schnelle Abfragen, Hilfe-Warteschlange, Gruppen und Mathe-Werkzeuge, vom Morgenkreis bis zum Aufräumen. Layout wechseln mit einem Tippen."
       },
       "s3": {
-        "h": "Lektionen werden Spiele",
-        "p": "Füge eine Lektion ein oder lade ein PDF hoch. Der KI-Builder macht ein Spiel daraus, testet es selbst und behält jede Version."
+        "h": "Pläne in spielbare Lektionen verwandeln",
+        "p": "Füge einen Unterrichtsplan ein oder lade ein PDF hoch. Der KI-Baumeister macht daraus eine spielbare Lektion, testet sie und hebt jede Version auf."
       },
       "see": "Ansehen",
       "s4": {
@@ -10304,23 +10399,23 @@
       },
       "s5": {
         "h": "Kinder bauen selbst",
-        "p": "Füg einer Lektion einen Schritt „Ein Spiel bauen“ hinzu. Die Kinder entwerfen, testen und verbessern ein eigenes Spiel, dann spielt es die Klasse."
+        "p": "Füge einem Unterrichtsplan einen Schritt „Ein Spiel bauen“ hinzu. Die Kinder entwerfen, testen und verbessern ein eigenes Spiel, und dann spielen es die anderen."
       }
     },
     "builder": {
       "kicker": "Der KI-Baumeister",
-      "h": "Deine Stunde rein, ein echtes Spiel raus",
-      "lead": "Sprich mit dem Baumeister wie mit einer Assistenz, die zufällig Spiele baut. Er speichert jede Version, du kannst also immer zurück.",
+      "h": "Dein Unterrichtsplan rein, eine spielbare Lektion raus",
+      "lead": "Sprich mit dem Baumeister wie mit einer Unterrichtsassistenz, die zufällig Lektionen baut. Er hebt jede Version auf, damit du immer zurückkannst.",
       "you": "Du",
-      "msg": "Mach aus dieser Stunde ein Spiel für meine 4. Klasse. Zehn Minuten, drei Level, und am Ende die Kontrollfragen.",
+      "msg": "Mach aus diesem Plan eine spielbare Lektion für meine 4. Klasse. Zehn Minuten, drei Level, und am Ende die Fragen vom Exit-Ticket.",
       "bot": "Fertig! Version 1 steht: drei Level, das leichteste zuerst, mit den Kontrollfragen am Ende. Tippe auf Spielen, um es auszuprobieren.",
-      "li1": "Versteht Unterrichtstexte und die PDFs, Bilder und Textdateien, die du hochlädst",
+      "li1": "Versteht Unterrichtspläne, PDFs, Bilder und Textdateien, die du hochlädst",
       "li2": "Antwortet in deiner Sprache und in der jedes Kindes",
       "li3": "Testet jede Version in Handy-, Tablet- und Computergröße",
       "li4": "Privat, bis du es teilst: nur du, deine Klassen oder, nach Prüfung durch einen Menschen aus unserem Team, alle",
       "li5": "Auch Schüler können bauen: Ein Spiel beschreiben, testen und verbessern heißt planen, schreiben und Fehler suchen, ganz ohne Code",
-      "shotAlt": "Das Oomba-Studio: Links meldet der Baumeister-Chat, dass Version 2 fertig ist, rechts läuft das Spiel in einer Vorschau in Handygröße.",
-      "caption": "Das echte Studio: links der Baumeister, rechts dein Spiel."
+      "shotAlt": "Das Oomba Studio: Der Baumeister-Chat links sagt, dass Version 2 fertig ist, und rechts läuft die Lektion in einer Vorschau in Handygröße.",
+      "caption": "Das echte Studio: links der Baumeister, rechts deine Lektion."
     },
     "courses": {
       "kicker": "Fertige Kurse",
@@ -10344,15 +10439,15 @@
       "link": "Leitfaden für Lehrkräfte"
     },
     "live": {
-      "kicker": "Live-Klassenspiele",
+      "kicker": "Live-Lektionen für die Klasse",
       "h": "Bring den Beamer zum Leuchten",
       "lead": "Aufwärmrunden und Abschlussfragen, auf die sich deine Klasse wirklich freut. Die Kinder steigen mit einem 7-stelligen Code auf ihrem eigenen Gerät ein.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math und mehr",
+      "li1": "Quest Race, Brain Board, Would You Rather und mehr",
       "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
       "li3": "Punkte landen direkt in deiner Notenübersicht",
-      "li4": "Klassenspiele: nur Ihre angemeldeten Schülerinnen und Schüler. Gästespiele: sichere, erfundene Namen. Kein Chat und kein Freitext, in beiden",
-      "link": "So funktionieren Live-Spiele",
-      "shotAlt": "Die Lobby eines Live-Spiels Question Battle: Der große Bildschirm zeigt die Zeichentrickfigur, gegen die die Klasse spielt, den Spielcode und einen QR-Code."
+      "li4": "Klassenlektionen: nur deine angemeldeten Kinder. Gastlektionen: sichere, erfundene Namen. In beiden kein Chat und kein Tippen",
+      "link": "So funktionieren Live-Lektionen",
+      "shotAlt": "Eine Live-Lobby von Question Battle: Der große Bildschirm zeigt die Comicfigur, gegen die die Klasse spielt, den Beitrittscode und einen QR-Code."
     },
     "why": {
       "kicker": "Warum Spiele wirken",
@@ -10397,7 +10492,7 @@
       "devices": "Chromebooks, iPads, Laptops, Handys und die digitale Tafel, direkt im Browser. Nichts zu installieren.",
       "languages": "{count} Sprachen, darunter Spanisch, Arabisch, Portugiesisch und Französisch. Jedes Kind wählt seine eigene.",
       "voicesH": "Vorlesen",
-      "voices": "Natürliche KI-Stimmen lesen jedes offizielle Spiel vor."
+      "voices": "Natürliche KI-Stimmen lesen jede offizielle Lektion vor."
     },
     "pricing": {
       "kicker": "Preise",
@@ -10409,9 +10504,9 @@
         "priceShown": "{price} pro Jahr",
         "trial": "14 Tage gratis · keine Karte nötig",
         "li1": "Unbegrenzt viele Schüler, keine Gebühr pro Kind",
-        "li2": "300 KI-Spielbauten pro Tag für deine Klasse",
-        "li3": "Alle Kurse, über 30 fertige Spiele und Live-Klassenspiele",
-        "li4": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
+        "li2": "300 KI-Lektionsbauten am Tag für deine Klasse",
+        "li3": "Alle Kurse, über 30 fertige Lektionen und Live-Lektionen für die Klasse",
+        "li4": "Klassen, Unterrichtspläne, Fortschritt und das Notenbuch",
         "li5": "Jede Sprache, jedes Gerät",
         "cta": "Kostenlos testen",
         "plans": "Tarife und Preise ansehen",
@@ -10429,29 +10524,29 @@
         "form": "Schule einrichten",
         "subject": "Oomba Academy für unsere Schule"
       },
-      "leadFree": "Nie Gebühren pro Schüler. Das Wichtigste ist für jede Lehrkraft kostenlos, und das Lehrkraft-Abo bringt KI-Spielbauten für deine ganze Klasse.",
+      "leadFree": "Nie Gebühren pro Kind. Die Grundlagen sind für jede Lehrkraft kostenlos, und der Lehrkraft-Plan fügt KI-Lektionsbauten für deine ganze Klasse hinzu.",
       "free": {
         "name": "Kostenlos",
         "price": "Immer kostenlos",
-        "li1": "Alle Spiele und alle drei Kurse",
-        "li2": "Klassen, Unterrichtseinheiten, Fortschritt und Notenübersicht",
+        "li1": "Jede Lektion und alle drei Kurse",
+        "li2": "Klassen, Unterrichtspläne, Fortschritt und das Notenbuch",
         "li3": "Täglich kostenlose Builder-Nachrichten für dich und deine Schüler",
         "li4": "Schulkonten und Anmeldekarten zum Ausdrucken",
-        "liLive": "Live-Klassenspiele am Beamer"
+        "liLive": "Live-Lektionen für die Klasse am Beamer"
       }
     },
     "faq": {
       "h": "Fragen von Lehrkräften",
       "q1": "Was ist Oomba Academy?",
-      "a1": "Eine Plattform für spielbasiertes Lernen von der Vorschule bis Klasse 8. Lehrkräfte verwandeln ihre eigenen Stunden mit einem KI-Baumeister in interaktive Spiele, spielen Live-Klassenspiele und nutzen fertige Kurse in Mathe, Informatik und Sicherheit im Netz.",
+      "a1": "Eine interaktive Lernplattform für die Klassen K bis 8. Lehrkräfte verwandeln ihre eigenen Unterrichtspläne mit einem KI-Baumeister in spielbare Lektionen, leiten Live-Lektionen und nutzen fertige Kurse in Mathe, Informatik und Online-Sicherheit.",
       "q2": "Wie funktioniert der kostenlose Test?",
       "a2": "Starte einen 14-tägigen kostenlosen Test ohne Karte. Während des Tests ist alles aus dem Lehrkraft-Tarif dabei, und am Ende entscheidest du, ob du ein Abo abschließt.",
       "q3": "Zahle ich für jedes Kind?",
       "a3": "Nein. Ein Jahrespreis pro Lehrkraft deckt alle deine Schüler ab. Es gibt keine Gebühren pro Kind.",
-      "q4": "Was kann ich in ein Spiel verwandeln?",
-      "a4": "Fast jede Stunde: Füge den Text ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreib das Thema und was die Klasse üben soll. Der Baumeister nutzt dein Material als Vorlage und baut ein Spiel darum herum.",
+      "q4": "Was kann ich in eine Lektion verwandeln?",
+      "a4": "Fast jeden Unterrichtsplan: Füge den Text ein, lade ein PDF, ein Bild oder eine Textdatei hoch oder beschreibe das Thema und was deine Klasse üben soll. Der Baumeister nutzt dein Material als Vorlage und baut eine spielbare Lektion darum.",
       "q5": "Brauchen Schüler eine E-Mail-Adresse?",
-      "a5": "Nein. Du kannst Schulkonten für deine Klasse anlegen und Anmeldekarten drucken, ganz ohne E-Mail der Kinder. Und die kostenlosen Spiele kann jeder sofort spielen.",
+      "a5": "Nein. Du kannst Schulkonten für deine Klasse anlegen und Anmeldekarten drucken, ganz ohne E-Mail der Kinder. Alle können die kostenlosen Lektionen außerdem sofort spielen.",
       "q6": "Funktioniert es auf Chromebooks und iPads?",
       "a6": "Ja. Es läuft in jedem aktuellen Browser auf Chromebooks, iPads und anderen Tablets, Laptops, Handys und digitalen Tafeln, ohne Installation.",
       "q7": "Ist es sicher für meine Schüler?",
@@ -10460,7 +10555,7 @@
       "a8": "Ja. Schulen zahlen denselben Preis pro Lehrkraft und Jahr, per Rechnung oder Bestellschein. Schreib uns, und wir richten es ein.",
       "q9": "Welche Sprachen gibt es?",
       "a9": "{count} Sprachen, darunter Englisch, Spanisch, Portugiesisch, Französisch, Deutsch, Arabisch, Hebräisch und Japanisch. Jedes Kind wählt seine eigene, und der Baumeister antwortet darin.",
-      "a2free": "Starte eine 14-tägige kostenlose Testphase des Lehrkraft-Abos ohne Karte. Solange sie läuft, ist das ganze Abo enthalten, und am Ende entscheidest du, ob du abonnierst. Wenn nicht, enden nur die zusätzlichen KI-Spielbauten des Abos: Die Spiele, deine Klassen, Unterrichtseinheiten und der Fortschritt bleiben kostenlos, und nichts wird gelöscht."
+      "a2free": "Starte eine 14-tägige kostenlose Testphase des Lehrkraft-Plans ohne Karte. Alles im Plan ist enthalten, solange sie läuft, und danach entscheidest du, ob du abonnierst. Wenn nicht, enden nur die zusätzlichen KI-Bauten des Plans: Die Lektionen, deine Klassen, Unterrichtspläne und der Fortschritt bleiben kostenlos, und nichts wird gelöscht."
     },
     "final": {
       "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
@@ -10473,7 +10568,7 @@
       "cta": "Einfach spielen"
     },
     "footer": {
-      "tagline": "Lernspiele für Kinder von 5 bis 14 und ein KI-Baumeister, der Unterrichtsstunden in Spiele verwandelt.",
+      "tagline": "Interaktive Lektionen für 5- bis 14-Jährige und ein KI-Baumeister, der deine Pläne in spielbare Lektionen verwandelt.",
       "teachers": "Für Lehrkräfte",
       "product": "Entdecken",
       "about": "Über uns",
@@ -10495,9 +10590,9 @@
     "kids": {
       "kicker": "Kinder als Macher",
       "h": "Deine Klasse baut auch Spiele",
-      "lead": "Wer ein Spiel über ein Thema baut, muss es gut genug verstehen, um es zu erklären. Füg einer Lektion den Schritt „Ein Spiel bauen“ hinzu, und die Kinder beschreiben, testen und verbessern mit dem Builder ihr eigenes Spiel, ganz ohne Code.",
-      "li1": "Ein Schritt „Ein Spiel bauen“ in deinen Lektionen, mit der Idee, von der die Kinder ausgehen",
-      "li2": "Jedes Kind baut in seinem eigenen Studio, und du siehst den Fortschritt mit dem Rest der Lektion",
+      "lead": "Wer ein Spiel zu einem Thema baut, muss es gut genug verstehen, um es zu erklären. Füge einem Unterrichtsplan einen Schritt „Ein Spiel bauen“ hinzu, und deine Kinder beschreiben, testen und verbessern mit dem Baumeister ihr eigenes Spiel, ohne Code zu schreiben.",
+      "li1": "Ein Schritt „Ein Spiel bauen“ in deinen Unterrichtsplänen, mit der Idee, mit der die Kinder anfangen",
+      "li2": "Jedes Kind baut in seinem eigenen Studio, und du siehst seinen Fortschritt zusammen mit dem Rest des Unterrichtsplans",
       "li3": "Die Klasse spielt die Spiele der anderen: ein Wiederholungsspiel zum Wochenthema klappt prima",
       "li4": "Privat, bis es geteilt wird: mit der Klasse oder mit allen erst, nachdem jemand aus unserem Team es geprüft hat",
       "shotAlt": "Das Studio eines Kindes: Der Builder meldet, dass Version 2 fertig ist, und das Spiel läuft in einer Vorschau in Handygröße.",
@@ -10518,9 +10613,9 @@
     "focus": {
       "manipulatives": "virtuelle Mathe-Arbeitsmittel",
       "play": "Kreuzworträtsel, Mathespiele und Live-Spiele mit der Klasse, ohne Anmeldung.",
-      "freeLi1": "Alle fertigen Spiele, Rätsel und Werkzeuge für die Klasse",
-      "faqA1": "Eine Plattform zum Unterrichten von der Vorschule bis Klasse 8: ein Klassen-Dashboard für den ganzen Tag, virtuelle Mathe-Arbeitsmittel, maßstabsgetreue Figuren, Rätsel-Baukästen wie das Kreuzworträtsel, Live-Spiele mit der Klasse und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Stunden außerdem mit dem KI-Builder zu Klassenspielen machen.",
-      "demoCredit": "Spielbild aus {title}, einem der fertigen Spiele von Oomba."
+      "freeLi1": "Jede fertige Lektion, jedes Rätsel und jedes Unterrichtswerkzeug",
+      "faqA1": "Eine Unterrichtsplattform für die Klassen K bis 8: ein Klassen-Dashboard für den Tag, virtuelle Mathe-Materialien, maßstabsgetreue Figuren, Rätselbaukästen wie Crossword, Live-Lektionen und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Unterrichtspläne außerdem mit einem KI-Baumeister in spielbare Lektionen verwandeln.",
+      "demoCredit": "Grafik aus {title}, einer der fertigen Lektionen von Oomba."
     }
   },
   "teach": {
@@ -10528,18 +10623,18 @@
       "title": "{game} zuweisen",
       "pickClass": "Klasse",
       "submit": "Zuweisen",
-      "note": "Ihre Klasse bekommt eine Lektion mit einem Schritt, die dieses Spiel startet. Sie können sie später in der Lektionsbibliothek ändern.",
+      "note": "Ihre Klasse bekommt einen Unterrichtsplan mit einem Schritt, der diese Lektion startet. Sie können ihn später in der Bibliothek der Unterrichtspläne ändern.",
       "none": "Sie haben noch keine Klasse. Legen Sie zuerst im Klassenraum eine an.",
-      "liveOnly": "Das ist ein Live-Spiel für die Klasse: Starten Sie es auf dem großen Bildschirm, statt es zuzuweisen."
+      "liveOnly": "Das ist eine Live-Lektion für die Klasse: Starten Sie sie auf dem großen Bildschirm, statt sie zuzuweisen."
     },
     "home": {
       "hello": "Hallo, {name}",
       "classesN": "{count, plural, one {# Klasse} other {# Klassen}}",
       "waitingN": "{count, plural, one {# Antwort wartet} other {# Antworten warten}}",
       "caughtUp": "Alles erledigt",
+      "lessonFolder": "Lektionsordner",
       "openClass": "Klasse öffnen",
-      "openLive": "Live-Spiel öffnen",
-      "make": "Aus einer Stunde ein Spiel machen",
+      "openLive": "Live-Lektion öffnen",
       "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
       "allClasses": "Alle Klassen"
     },
@@ -10550,7 +10645,7 @@
       "steps": {
         "plan": {
           "name": "Planen",
-          "benefit": "Starte mit einer fertigen Lektion oder einem Thema und mach daraus ein Spiel, das deine Klasse spielen will."
+          "benefit": "Starten Sie mit einem fertigen Unterrichtsplan oder einem Thema und machen Sie daraus eine Lektion, die Ihre Klasse spielen will."
         },
         "play": {
           "name": "Spielen",
@@ -10562,35 +10657,35 @@
         },
         "feedback": {
           "name": "Rückmelden",
-          "benefit": "Lies jede Antwort und schreib eine Rückmeldung, die das Kind in seiner eigenen Lektion sieht."
+          "benefit": "Lesen Sie jede Antwort und schreiben Sie eine Rückmeldung, die das Kind in seinem eigenen Unterrichtsplan sieht."
         }
       },
       "tools": {
-        "builder": "Aus einer Lektion ein Spiel machen",
+        "builder": "Aus Ihren Notizen eine Lektion machen",
         "assign": "Einer Klasse aufgeben",
         "gradebook": "Notenübersicht",
         "gradebookCsv": "Notenübersicht mit CSV-Download",
         "standards": "Tab „Standards“",
         "review": "Antworten zum Lesen",
         "written": "Schriftliche Rückmeldung für die Kinder",
-        "library": "Lektionsbibliothek",
+        "library": "Bibliothek der Unterrichtspläne",
         "draftAi": "Mit KI entwerfen",
         "attention": "Wer Hilfe braucht, zuerst",
         "csv": "Herunterladen (CSV)",
-        "live": "Live-Spiel leiten"
+        "live": "Live-Lektion leiten"
       },
       "shots": {
         "gradebook": {
-          "alt": "Die Notenübersicht: Kinder untereinander, Lektionen nebeneinander, mit erledigten Schritten und Antworten zum Lesen",
+          "alt": "Das Notenbuch: Kinder an der Seite, Unterrichtspläne oben, mit erledigten Schritten und Antworten zum Lesen",
           "caption": "Notenübersicht: die ganze Klasse auf einen Blick, als CSV-Datei herunterladbar."
         },
         "attention": {
-          "alt": "Der Fortschritt einer Lektion, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, oben stehen",
-          "caption": "Zuerst, wer Aufmerksamkeit braucht: Antworten zum Lesen, Verspätetes und halb Fertiges oben."
+          "alt": "Fortschritt eines Unterrichtsplans, so sortiert, dass Kinder, die Aufmerksamkeit brauchen, zuerst kommen",
+          "caption": "Aufmerksamkeit zuerst: Antworten zum Lesen, verspätete Arbeiten und halb erledigte Unterrichtspläne oben."
         },
         "feedback": {
           "alt": "Die schriftliche Antwort eines Kindes mit dem Rückmeldefeld der Lehrkraft und dem Speichern-Knopf",
-          "caption": "Rückmelden: eine Notiz schreiben, speichern, und das Kind sieht sie in seiner Lektion."
+          "caption": "Rückmeldung: Notiz schreiben, speichern, und das Kind sieht sie in seinem Unterrichtsplan."
         },
         "standards": {
           "alt": "Der Tab Standards der Klasse: Common-Core-Mathematikstandards und wie weit jedes Kind gekommen ist",
@@ -10620,7 +10715,7 @@
   },
   "rubrics": {
     "title": "Bewertungsraster",
-    "intro": "Wiederverwendbare Bewertungsraster: Kriterien in den Zeilen, Stufen in den Spalten. Verknüpfen Sie ein Raster mit einer schriftlichen Antwort, einem gebauten Spiel oder einer ganzen Lektion und bewerten Sie jedes Kind mit einem Tipp auf eine Stufe.",
+    "intro": "Wiederverwendbare Bewertungsraster: Kriterien an der Seite, Stufen oben. Hängen Sie eines an eine schriftliche Antwort, ein Gebautes oder einen ganzen Unterrichtsplan und bewerten Sie jedes Kind mit einem Tipp auf eine Stufe.",
     "mine": "Meine Raster",
     "shared": "Vom Kollegium geteilt",
     "new": "Neues Raster",
@@ -10635,10 +10730,10 @@
     "levelsN": "{count, plural, one {# Stufe} other {# Stufen}}",
     "pointsN": "{count, plural, one {# Punkt} other {# Punkte}}",
     "maxPoints": "Von {points}",
-    "usedN": "{count, plural, one {In # Lektion verwendet} other {In # Lektionen verwendet}}",
+    "usedN": "{count, plural, one {In # Unterrichtsplan verwendet} other {In # Unterrichtsplänen verwendet}}",
     "usedIn": "Verwendet in",
-    "notUsed": "Noch mit keiner Lektion verknüpft. Verknüpfen Sie es bei einem Schritt einer Lektion oder in ihren Angaben.",
-    "wholeLesson": "Ganze Lektion",
+    "notUsed": "Noch an keinen Unterrichtsplan angehängt. Hängen Sie es über einen Schritt oder die Details eines Unterrichtsplans an.",
+    "wholeLesson": "Ganzer Unterrichtsplan",
     "stepsN": "{count, plural, one {# Schritt} other {# Schritte}}",
     "print": "Drucken",
     "printName": "Name:",
@@ -10656,7 +10751,7 @@
     "unsharedToast": "Wird nicht mehr geteilt",
     "delete": "Raster löschen",
     "deleteConfirm": "Das Raster {title} löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.",
-    "deleteUsedConfirm": "{count, plural, one {{title} ist mit # Lektion verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.} other {{title} ist mit # Lektionen verknüpft. Dort entfernen und das Raster löschen? Bereits vergebene Bewertungen bleiben, wie sie waren.}}",
+    "deleteUsedConfirm": "{count, plural, one {{title} hängt an # Unterrichtsplan. Abnehmen und das Raster löschen? Bereits vergebene Punkte bleiben, wie sie waren.} other {{title} hängt an # Unterrichtsplänen. Überall abnehmen und das Raster löschen? Bereits vergebene Punkte bleiben, wie sie waren.}}",
     "deletedToast": "Raster gelöscht",
     "levelNames": {
       "notYet": "Noch nicht",
@@ -10703,7 +10798,7 @@
     },
     "starters": {
       "title": "Startraster",
-      "intro": "Zu jedem Exit-Ticket einer CS-Quest-Lektion gehört ein Raster (Stufen 0 bis 3, auf Englisch). Fügen Sie eines Ihren Rastern hinzu, um es mit jeder Lektion zu nutzen, oder passen Sie es an.",
+      "intro": "Zu jedem Exit-Ticket einer CS-Quest-Lektion gibt es ein Bewertungsraster (Stufen 0 bis 3, auf Englisch). Übernehmen Sie eines in Ihre Raster, um es mit jedem Unterrichtsplan zu nutzen, oder passen Sie es an.",
       "add": "Zu meinen Rastern",
       "addFor": "{title} zu meinen Rastern hinzufügen",
       "added": "Zu Ihren Rastern hinzugefügt. Ändern Sie es nach Belieben.",
@@ -10711,9 +10806,9 @@
     },
     "attach": {
       "step": "Bewertungsraster",
-      "lesson": "Raster für die ganze Lektion",
-      "lessonTitle": "Raster für die ganze Lektion",
-      "lessonHint": "Bewerten Sie jedes Kind für die ganze Lektion auf ihrer Fortschrittsseite.",
+      "lesson": "Raster für den ganzen Unterrichtsplan",
+      "lessonTitle": "Raster für den ganzen Unterrichtsplan",
+      "lessonHint": "Bewerten Sie jedes Kind für den ganzen Unterrichtsplan auf dessen Fortschrittsseite.",
       "none": "Kein Raster",
       "hint": "Bewerten Sie damit die Antworten oder Spiele dieses Schritts.",
       "noneYet": "Sie haben noch keine Raster.",
@@ -10753,7 +10848,7 @@
       "rubricPoints": "Punkte sind eine Zahl von 0 bis 100.",
       "rubricName": "Geben Sie jedem Kriterium einen Namen.",
       "tooManyRubrics": "Sie haben die höchste Zahl an Rastern in dieser Schule. Löschen Sie eines, das Sie nicht mehr brauchen.",
-      "inUse": "{count, plural, one {Dieses Raster ist mit # Lektion verknüpft.} other {Dieses Raster ist mit # Lektionen verknüpft.}}",
+      "inUse": "{count, plural, one {Dieses Raster hängt an # Unterrichtsplan.} other {Dieses Raster hängt an # Unterrichtsplänen.}}",
       "task": "Sagen Sie, was die Kinder machen.",
       "aiFailed": "Die KI konnte gerade kein Raster entwerfen. Bitte versuchen Sie es in einer Minute noch einmal.",
       "pick": "Wählen Sie eines Ihrer eigenen Raster (das eines Kollegen erst kopieren)."
@@ -10769,7 +10864,7 @@
     "picker": "Standard-Rahmenwerk",
     "notice": "Common Core State Standards, verwendet unter der öffentlichen CCSS-Lizenz.",
     "class": {
-      "lead": "Welche Common-Core-Standards diese Klasse mit ihren zugewiesenen Lektionen, den Lernspielen darin, Live-Spielen und Kursen abdeckt, und wo jedes Kind steht. Berechnet aus bereits gespeicherter Arbeit: Es wird nichts Neues erfasst.",
+      "lead": "Welche Common-Core-Standards diese Klasse mit ihren zugewiesenen Unterrichtsplänen, den Lern-Lektionen darin, Live-Lektionen und Kursen abdeckt, und wo jedes Kind steht. Berechnet aus bereits gespeicherter Arbeit: Es wird nichts Neues erfasst.",
       "grade": "Klassenstufe",
       "covered": "Nur abgedeckte Standards",
       "allOf": "Alle Standards: {grade}",
@@ -10805,23 +10900,23 @@
     "rubricBest": "bestes {pct} % · {count} bewertet",
     "mine": "{right} von {answered} richtig",
     "src": {
-      "live": "Live-Spiele: {count}"
+      "live": "{count, plural, one {# Live-Lektion} other {# Live-Lektionen}}"
     },
     "legend": {
       "h": "So liest du es",
-      "sources": "Abgedeckt durch: die zugewiesenen Lektionen mit dem Standard (oder mit einem Schritt oder Lernspiel, das ihn übt), Live-Spiele, die danach gefragt haben (Tug of Math Live in seiner Klassenstufe, Fragensets, deren Fragen den Code tragen) und die Kurse, in denen deine Kinder sind.",
+      "sources": "Abgedeckt durch: die zugewiesenen Unterrichtspläne mit dem Standard (oder mit einem Schritt oder einer Lern-Lektion, die ihn übt), Live-Lektionen, die danach gefragt haben (Tug of Math Live in seiner Klassenstufe, Fragensets, deren Fragen den Code tragen) und die Kurse, in denen Ihre Kinder sind.",
       "practiced": "Geübt: Kinder, die eine Aktivität beendet haben, die den Standard übt. Das heißt, sie haben sie gemacht, nicht, dass sie ihn beherrschen.",
-      "checked": "Fragen: richtige Antworten von den beantworteten Fragen zum Standard (Lektions-Quiz, Live-Spiele, Number-Quest-Checks).",
+      "checked": "Fragen: richtige Antworten von den beantworteten Fragen zum Standard (Quiz in Unterrichtsplänen, Live-Lektionen, Number-Quest-Checks).",
       "rubric": "Bewertungsraster: Rasterpunkte zum Standard, als Anteil der Höchstpunktzahl. Erscheint, sobald Raster Common-Core-Standards tragen.",
       "meets": "Erreicht: Ein Kind erreicht einen Standard mit mindestens 80 % richtig bei 3 oder mehr Fragen oder mit mindestens zwei Dritteln der Rasterpunkte. Die Klasse erreicht ihn, wenn 80 % ihrer Kinder ihn erreichen.",
       "needs": "Genauer ansehen: Kinder, die 2 oder mehr Fragen zum Standard beantwortet und keine richtig haben. Nur Lehrkräfte sehen das.",
-      "games": "Spiele mit Leveln für mehrere Klassenstufen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) zählen nur für die Klassenstufe der Lektion als Übung oder für das Level, auf das der Schritt festgelegt ist. Bei einer Lektion ohne Klassenstufe erscheinen sie nur unter „Abgedeckt durch“.",
-      "live": "Live-Spiele wie Tug of Math Live speichern nicht, welche Frage zu welchem Standard gehörte. Darum werden die Antworten eines Kindes auf die Standards des Spiels aufgeteilt. Diese Zahlen sind Schätzungen.",
+      "games": "Lektionen mit Leveln für mehrere Klassenstufen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) zählen nur für die Klassenstufe des Unterrichtsplans als Übung oder für das Level, auf das der Schritt festgelegt ist. Bei einem Unterrichtsplan ohne Klassenstufe erscheinen sie nur unter „Abgedeckt durch“.",
+      "live": "Live-Lektionen wie Tug of Math Live speichern nicht, welche Frage zu welchem Standard gehörte. Darum werden die Antworten eines Kindes auf die Standards der Lektion aufgeteilt. Diese Zahlen sind Schätzungen.",
       "courses": "Number Quest zählt Arbeit mit einem Schulkonto oder seit das Kind dieser Klasse beigetreten ist. Ein einzelner Check (3 Fragen) reicht nicht, um einen Standard zu erfüllen."
     },
     "empty": {
       "title": "Noch keine Common-Core-Standards",
-      "text": "Versieh deine Lektionen mit Standards oder weise Lektionen mit Lernspielen wie Sum Racer, Fraction Factory oder Word Trail zu, dann erscheinen sie hier."
+      "text": "Versehen Sie Ihre Unterrichtspläne mit Standards oder weisen Sie Unterrichtspläne mit Lern-Lektionen wie Sum Racer, Fraction Factory oder Word Trail zu, dann erscheinen sie hier."
     },
     "csvCols": {
       "code": "Code",
@@ -10842,11 +10937,11 @@
     },
     "lesson": {
       "title": "Standards",
-      "lead": "Versieh diese Lektion oder einen ihrer Schritte mit den Common-Core-Standards, an denen sie arbeitet. Sie erscheinen im Reiter Standards jeder Klasse, der sie zugewiesen ist.",
-      "back": "Zurück zur Lektion",
+      "lead": "Versehen Sie diesen Unterrichtsplan oder einen seiner Schritte mit den Common-Core-Standards, an denen er arbeitet. Sie erscheinen im Tab Standards jeder Klasse, der er zugewiesen ist.",
+      "back": "Zurück zum Unterrichtsplan",
       "current": "Zugeordnete Standards",
       "none": "Noch keine Standards zugeordnet.",
-      "whole": "Ganze Lektion",
+      "whole": "Ganzer Unterrichtsplan",
       "stepN": "Schritt {n}: {title}",
       "remove": "Entfernen",
       "removeLabel": "{code} entfernen",
@@ -10870,13 +10965,13 @@
       "view": "Standards ansehen",
       "editorNone": "Noch keine Common-Core-Standards zugeordnet.",
       "onSteps": "Standards an Schritten: {count}",
-      "gameCodes": "{framework}-Standards, die dieses Spiel übt",
-      "gameNeedsGrade": "Dieses Spiel hat Level für mehrere Klassenstufen. Gib der Lektion eine Klassenstufe (oder lege den Schritt auf ein Level fest), damit seine Standards als geübt zählen."
+      "gameCodes": "{framework}-Standards, die diese Lektion übt",
+      "gameNeedsGrade": "Diese Lektion hat Level für mehrere Klassenstufen. Geben Sie dem Unterrichtsplan eine Klassenstufe (oder legen Sie den Schritt auf ein Level fest), damit seine Standards als Übung zählen."
     },
     "errors": {
       "badCode": "Das ist kein Common-Core-Code.",
-      "badStep": "Dieser Schritt gehört nicht zu dieser Lektion.",
-      "tooMany": "Eine Lektion kann bis zu 60 Standards haben.",
+      "badStep": "Dieser Schritt ist nicht in diesem Unterrichtsplan.",
+      "tooMany": "Ein Unterrichtsplan kann bis zu 60 Standards haben.",
       "badFramework": "Wähle Common Core Mathe oder Englisch."
     },
     "learn": {
@@ -10892,19 +10987,19 @@
       "what": {
         "courses": "diese Klasse mit einem deiner Classroom-Kurse verknüpfen",
         "roster": "seine Schülerinnen und Schüler holen, die sich mit Google anmelden",
-        "post": "Lektionen dort posten, mit einem Link hierher und dem Abgabedatum",
-        "grades": "die Note jedes Kindes für eine Lektion an Classroom senden (Abschlussnote oder die in Homeroom gewählten Punkte)"
+        "post": "dort Unterrichtspläne posten, mit einem Link hierher und dem Abgabedatum",
+        "grades": "die Note jedes Kindes für einen Unterrichtsplan an Classroom senden (Abschlussnote oder die in Homeroom gewählten Punkte)"
       },
       "button": "Google Classroom verbinden",
-      "privacy": "Nur du siehst diese Verbindung. Mit der Verbindung kann Oomba Academy deine Kurse und ihre Kinder lesen. Nur wenn du das Posten erlaubst, sendet es an Classroom, was du postest: Titel, Link und Abgabedatum einer Lektion, die Note jedes Kindes von 100 (Abschlussnote oder die in Homeroom gewählten Punkte), einen Themennamen und Ankündigungen, die du schreibst. Nie Namen, Antworten oder Spiele der Kinder.",
+      "privacy": "Nur Sie sehen diese Verbindung. Mit der Verbindung kann Oomba Academy Ihre Kurse und ihre Kinder lesen. Nur wenn Sie das Posten erlauben, sendet es an Classroom, was Sie posten: Titel, Link und Abgabedatum eines Unterrichtsplans, die Note jedes Kindes von 100 (Abschlussnote oder die in Homeroom gewählten Punkte), einen Themennamen und Ankündigungen, die Sie schreiben. Nie Namen, Antworten oder Spiele der Kinder.",
       "connectedAs": "Verbunden als {email}",
       "connectedHint": "Diese Verbindung gehört dir: Deine Kolleginnen und Kollegen verbinden ihre eigene.",
       "connectedToast": "Google Classroom ist verbunden.",
       "disconnect": "Trennen",
-      "disconnectConfirm": "Google Classroom trennen? Oomba Academy synchronisiert dann nicht mehr für dich und löscht seinen Schlüssel zu deinem Classroom. Schon gepostete Lektionen bleiben in Classroom.",
+      "disconnectConfirm": "Google Classroom trennen? Oomba Academy synchronisiert dann nicht mehr für Sie und löscht seinen Schlüssel zu Ihrem Classroom. Bereits gepostete Unterrichtspläne bleiben in Classroom.",
       "disconnected": "Google Classroom ist getrennt.",
       "reconnect": "Neu verbinden",
-      "later": "Lektionen, Noten und Ankündigungen posten kommt später, nur wenn du es erlaubst."
+      "later": "Unterrichtspläne, Noten und Ankündigungen posten kommt später, nur wenn Sie es erlauben."
     },
     "course": {
       "heading": "Verknüpfter Classroom-Kurs",
@@ -10915,7 +11010,7 @@
       "linked": "Verknüpft mit {course}.",
       "linkedTo": "Verknüpft mit {course}",
       "unlink": "Verknüpfung lösen",
-      "unlinkConfirm": "Verknüpfung mit {course} lösen? Kinder und Lektionen bleiben, wo sie sind.",
+      "unlinkConfirm": "{course} trennen? Kinder und Unterrichtspläne bleiben, wo sie sind.",
       "unlinked": "Verknüpfung gelöst.",
       "connectFirst": "Verbinde oben dein Google Classroom, um ihn zu synchronisieren.",
       "refresh": "Liste aktualisieren"
@@ -10941,8 +11036,8 @@
       "resultLeft": "{count, plural, one {# nicht mehr in Google Classroom} other {# nicht mehr in Google Classroom}}"
     },
     "post": {
-      "heading": "Lektionen in Classroom",
-      "text": "Eine Lektion posten erstellt in Classroom eine Aufgabe mit ihrem Titel, einem Link zur Lektion hier und ihrem Abgabedatum.",
+      "heading": "Unterrichtspläne in Classroom",
+      "text": "Einen Unterrichtsplan posten erstellt in Classroom eine Aufgabe mit seinem Titel, einem Link zum Unterrichtsplan hier und seinem Abgabedatum.",
       "button": "In Google Classroom posten",
       "also": "Auch in Google Classroom posten",
       "description": "Öffne diese Lektion auf Oomba Academy.",
@@ -10953,14 +11048,14 @@
       "noDue": "Kein Abgabedatum",
       "posted": "Gepostet",
       "open": "In Classroom öffnen",
-      "noLessons": "Noch keine Lektionen in dieser Klasse. Weise eine im Tab Lektionen zu.",
-      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet.",
-      "locked": "Um Lektionen zu posten, Noten zu senden und Material zu teilen, erlaube Oomba Academy das Posten in Classroom.",
+      "noLessons": "Noch keine Unterrichtspläne in dieser Klasse. Weisen Sie einen im Tab Unterrichtspläne zu.",
+      "doneScheduled": "In Google Classroom geplant: Die Kinder sehen es am {date}, wenn der Unterrichtsplan öffnet.",
+      "locked": "Um Unterrichtspläne zu posten, Noten zu senden und Materialien zu teilen, erlauben Sie Oomba Academy, in Classroom zu posten.",
       "someNot": "Einzelnen Schülern zugewiesen, deshalb nicht gepostet: In Google Classroom ginge sie an die ganze Klasse.",
       "somePosted": "Hier einzelnen Schülern zugewiesen. Vorher wurde sie in Google Classroom für die ganze Klasse gepostet; Noten gehen nur an die zugewiesenen Schüler."
     },
     "grades": {
-      "text": "Jede Lektion sendet die Note, nach der sie bewertet wird, von 100. Im Klassenbereich zugewiesene Lektionen senden eine Abschlussnote: den Anteil der erledigten Schritte, nicht die richtigen Antworten. Homeroom-Aufgaben senden, was du beim Austeilen gewählt hast: Punkte senden den Anteil richtiger Antworten in %, Abschluss die Abschlussnote, Ohne Bewertung sendet nichts. Wer noch nicht angefangen hat, wird ausgelassen.",
+      "text": "Jeder Unterrichtsplan sendet die Note, nach der er bewertet wird, von 100. In Classroom zugewiesene Unterrichtspläne senden eine Abschlussnote: den Anteil der erledigten Schritte des Unterrichtsplans, nicht die richtigen Antworten. Homeroom-Aufgaben senden, was Sie beim Austeilen gewählt haben: Punkte senden den Anteil richtiger Antworten in %, Abschluss die Abschlussnote, Ohne Bewertung sendet nichts. Wer noch nicht angefangen hat, wird ausgelassen.",
       "as": "Senden als",
       "draft": "Vorläufige Note (du gibst sie in Classroom zurück)",
       "assigned": "Zugewiesene Note",
@@ -10988,7 +11083,7 @@
         "link": "Kurs verknüpft",
         "unlink": "Verknüpfung gelöst",
         "roster": "Kinder importiert",
-        "post": "Lektion gepostet",
+        "post": "Unterrichtsplan gepostet",
         "grades": "Noten gesendet",
         "autoRoster": "Kinder aktualisiert (automatisch)",
         "autoGrades": "Noten gesendet (automatisch)",
@@ -11014,8 +11109,8 @@
       "googleDown": "Google Classroom hat nicht geantwortet. Bitte versuch es noch einmal.",
       "badRequest": "Google Classroom hat das nicht angenommen.",
       "tooMany": "Dieser Classroom-Kurs hat mehr als {max} Kinder.",
-      "alreadyPosted": "Diese Lektion ist schon in Google Classroom.",
-      "notPosted": "Poste diese Lektion zuerst in Google Classroom.",
+      "alreadyPosted": "Dieser Unterrichtsplan ist schon in Google Classroom.",
+      "notPosted": "Posten Sie diesen Unterrichtsplan zuerst in Google Classroom.",
       "badMode": "Wähle, wie die Noten gesendet werden.",
       "scopesMissing": "Setz bitte auf Googles Seite beide Häkchen (deine Kurse und ihre Kinder sehen): Oomba Academy braucht sie, um eine Klasse zu verknüpfen.",
       "noRefresh": "Google hat keinen Schlüssel geschickt, den wir behalten können. Bitte verbinde neu.",
@@ -11025,25 +11120,25 @@
       "tooManyTries": "Gerade zu viele Synchronisierungen. Versuch es in einer Stunde wieder.",
       "needsScope": "Oomba Academy darf das in deinem Classroom noch nicht. Nutze zuerst „Oomba Academy das Posten in Classroom erlauben“.",
       "noneAllowed": "Auf Googles Seite wurde nichts Neues erlaubt, also bleibt das Posten aus.",
-      "alreadyShared": "Diese Lektion ist schon als Material geteilt.",
+      "alreadyShared": "Dieser Unterrichtsplan ist schon als Material geteilt.",
       "notLeaver": "Dieses Kind steht nicht mehr auf der Liste.",
       "badTemplate": "Wähle, was du ankündigen willst.",
-      "noLiveGame": "Für diese Klasse ist gerade kein Live-Spiel offen.",
-      "pickLesson": "Wähle eine Lektion dieser Klasse.",
-      "lessonNotOpen": "Diese Lektion ist noch nicht offen.",
+      "noLiveGame": "Für diese Klasse ist gerade keine Live-Lektion offen.",
+      "pickLesson": "Wählen Sie einen Unterrichtsplan dieser Klasse.",
+      "lessonNotOpen": "Dieser Unterrichtsplan ist noch nicht offen.",
       "emptyNote": "Schreib zuerst deine Nachricht.",
       "tooLong": "Ankündigungen haben höchstens {max} Zeichen.",
       "hasName": "„{name}“ in deiner Nachricht ist auch der Name eines Kindes. Ankündigungen gehen an die ganze Klasse: Formuliere es bitte um oder nimm es heraus.",
       "tooManyAnnouncements": "Das sind schon 10 Ankündigungen in einer Stunde für diese Klasse. Warte bitte ein wenig.",
-      "someStudents": "Diese Lektion ist nur einzelnen Schülern zugewiesen, deshalb wird sie nicht in Google Classroom gepostet: Dort ginge sie an die ganze Klasse.",
+      "someStudents": "Dieser Unterrichtsplan ist nur einigen Kindern zugewiesen und wird darum nicht in Google Classroom gepostet: Dort ginge er an die ganze Klasse.",
       "notGraded": "Diese Aufgabe wird nicht bewertet, daher gehen keine Noten an Google Classroom."
     },
     "allow": {
       "heading": "Was Oomba Academy in deinem Classroom darf",
       "features": {
         "read": "Deine Kurse sehen und ihre Kinder holen",
-        "post": "Lektionen als Aufgaben posten und Noten senden",
-        "materials": "Lektionen als Material teilen",
+        "post": "Unterrichtspläne als Aufgaben posten und Noten senden",
+        "materials": "Unterrichtspläne als Materialien teilen",
         "announce": "Ankündigungen im Kurs-Stream posten",
         "topics": "Seine Beiträge unter einem Thema ablegen"
       },
@@ -11069,7 +11164,7 @@
       "roster": "Die Kinder alle 6 Stunden aus Classroom aktualisieren",
       "rosterHint": "Neue Kinder kommen dazu. Wer Classroom verlässt, steht oben, damit du entscheidest: Niemand wird von selbst entfernt.",
       "grades": "Noten automatisch senden",
-      "gradesHint": "Alle 30 Minuten gehen geänderte Noten an Classroom, für Lektionen, die von hier gepostet wurden (jede so, wie sie bewertet wird: Abschlussnote oder Punkte), bis 30 Tage nach jedem Fälligkeitsdatum.",
+      "gradesHint": "Alle 30 Minuten gehen geänderte Noten an Classroom, für Unterrichtspläne, die von hier gepostet wurden (jeweils so, wie sie bewertet werden: Abschlussnote oder Punkte), bis 30 Tage nach dem jeweiligen Abgabedatum.",
       "by": "Die Noten gehen über die Google-Classroom-Verbindung von {name}.",
       "save": "Speichern",
       "saved": "Gespeichert.",
@@ -11090,10 +11185,10 @@
       "hint": "Neue Beiträge landen in Classroom unter diesem Thema. Lass das Feld leer für den Standardnamen."
     },
     "material": {
-      "text": "Als Material teilen legt Titel und Link der Lektion in Classroom ab, ohne Note und ohne Abgabedatum.",
+      "text": "Als Material geteilt, kommen Titel und Link des Unterrichtsplans in Classroom, ohne Note und ohne Abgabedatum.",
       "button": "Als Material teilen",
       "done": "In Google Classroom als Material geteilt.",
-      "doneScheduled": "In Google Classroom als Material geplant: Die Kinder sehen es am {date}, wenn die Lektion öffnet.",
+      "doneScheduled": "In Google Classroom als Material geplant: Die Kinder sehen es am {date}, wenn der Unterrichtsplan öffnet.",
       "shared": "Als Material geteilt",
       "open": "Material öffnen"
     },
@@ -11107,11 +11202,11 @@
       "note": "Notiz hinzufügen (freiwillig)",
       "message": "Deine Nachricht",
       "send": "Im Stream posten",
-      "noLive": "Für diese Klasse ist gerade kein Live-Spiel offen. Starte eines und komm dann hierher zurück, oder nutze „In Classroom ankündigen“ auf dem Spielleiter-Bildschirm.",
-      "hostLive": "Live-Spiel starten",
-      "pickLesson": "Lektion",
-      "lessonTitle": "der Titel der Lektion",
-      "noLessons": "In dieser Klasse ist noch keine Lektion offen.",
+      "noLive": "Für diese Klasse ist gerade keine Live-Lektion offen. Leiten Sie eine und kommen Sie dann hierher zurück oder nutzen Sie „In Classroom ankündigen“ auf dem Leitungsbildschirm.",
+      "hostLive": "Live-Lektion leiten",
+      "pickLesson": "Unterrichtsplan",
+      "lessonTitle": "der Titel des Unterrichtsplans",
+      "noLessons": "Noch keine offenen Unterrichtspläne in dieser Klasse.",
       "fixed": {
         "live": "🎮 Ein Live-Spiel beginnt! Mach mit auf {url} mit dem Code {code}.",
         "lesson": "📚 Eine neue Lektion ist bereit: {title}\n{url}"
@@ -11127,7 +11222,7 @@
       "manage": "Classroom-Einstellungen",
       "name": "Google Classroom",
       "short": "Classroom",
-      "what": "Diese Klasse verknüpfen, ihre Schüler übernehmen und Lektionen und Noten posten."
+      "what": "Diese Klasse verknüpfen, ihre Kinder übernehmen und Unterrichtspläne und Noten posten."
     }
   },
   "digest": {
@@ -11170,7 +11265,7 @@
     },
     "me": {
       "heading": "Wöchentliche Klassenübersicht",
-      "text": "Einmal pro Woche schicken wir Ihnen Zahlen zu jeder Ihrer Klassen: fällige Lektionen, erledigte Arbeit, Antworten zum Durchsehen, wer noch nicht angefangen hat und Live-Spiele. Nie den Namen oder die Antwort eines Kindes.",
+      "text": "Einmal pro Woche schicken wir Ihnen Zahlen zu jeder Klasse, die Sie unterrichten: fällige Unterrichtspläne, erledigte Arbeiten, Antworten zum Durchsehen, Kinder, die noch nicht angefangen haben, und Live-Lektionen. Nie den Namen oder die Antwort eines Kindes.",
       "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen. Verbinden Sie Google auf dieser Seite, dann geht die Übersicht an diese Adresse.",
       "on": "Wöchentliche Übersicht per E-Mail",
       "day": "Tag",
@@ -11184,7 +11279,7 @@
     "page": {
       "link": "Übersicht dieser Woche",
       "title": "Übersicht dieser Woche",
-      "sub": "Jede Ihrer Klassen: die letzten 7 Tage und die Lektionen, die in den nächsten 7 fällig sind.",
+      "sub": "Jede Klasse, die Sie unterrichten: die letzten 7 Tage und die Unterrichtspläne, die in den nächsten 7 fällig sind.",
       "next": "Ihre Übersicht kommt jeden {when} per E-Mail.",
       "off": "Die wöchentliche Übersicht per E-Mail ist aus. Diese Seite können Sie trotzdem jederzeit ansehen.",
       "noAddress": "Wir haben noch keine E-Mail-Adresse von Ihnen, daher geht keine Übersicht raus. Verbinden Sie Google auf Ihrer Seite „Ich“.",
@@ -11196,7 +11291,7 @@
       "statDone": "Erledigt",
       "statToRead": "Durchsehen",
       "statNotStarted": "Nicht angefangen",
-      "statLive": "Live-Spiele",
+      "statLive": "Live-Lektionen",
       "dueHeading": "Diese Woche fällig",
       "finished": "{done} von {count} fertig",
       "toReadHeading": "Antworten zum Durchsehen",
@@ -11230,25 +11325,25 @@
       "score": "Punktzahl: erreichte von möglichen Punkten"
     },
     "names": {
-      "inGames": "Name in Spielen"
+      "inGames": "Name in Lektionen"
     },
     "help": {
-      "workDone": "Der Anteil der Schritte, die ein Kind in den geöffneten Lektionen erledigt hat. Richtige Antworten zählen hier nicht.",
-      "score": "Erreichte von möglichen Punkten: Quiz (1 Punkt pro Frage), Live-Spiele, die Sie für einen Lektionsschritt leiten (1 Punkt pro Frage, das beste Spiel), und Arbeiten, die Sie mit einem Bewertungsraster bewerten (dessen Punkte). Größere Arbeiten zählen mehr. Was nicht erledigt oder noch nicht bewertet ist, bleibt außen vor; ohne Bewertung steht dort –. Tippen Sie auf eine Punktzahl, um zu sehen, woraus sie sich ergibt.",
+      "workDone": "Der Anteil der Schritte, die ein Kind in den geöffneten Unterrichtsplänen erledigt hat. Richtige Antworten zählen hier nicht.",
+      "score": "Erreichte von möglichen Punkten: Quiz (1 Punkt pro Frage), Live-Lektionen, die Sie für einen Schritt eines Unterrichtsplans leiten (1 Punkt pro Frage, die beste Runde), und Arbeiten, die Sie mit einem Bewertungsraster bewerten (dessen Punkte). Größere Arbeiten zählen mehr. Was nicht erledigt oder noch nicht bewertet ist, bleibt außen vor; ohne Bewertung steht dort –. Tippen Sie auf eine Punktzahl, um zu sehen, woraus sie sich ergibt.",
       "late": "Arbeit, die nach dem Fälligkeitsdatum noch fehlt. „Verspätet erledigt“ heißt: nach dem Fälligkeitsdatum fertig geworden.",
-      "names": "Der graue Name unter dem Namen eines Kindes ist der Name, den es in Spielen und auf dem Klassenbildschirm hat."
+      "names": "Der graue Name unter dem Namen eines Kindes ist der Name, den es in Lektionen und auf dem Klassenbildschirm hat."
     },
     "live": {
-      "title": "Ergebnisse der Live-Spiele",
+      "title": "Ergebnisse der Live-Lektionen",
       "hint": "Richtige Antworten von den gestellten Fragen, für Kinder, die in dieser Klasse angemeldet sind. Gäste werden nie gespeichert.",
-      "linked": "Teil einer Lektion: zählt für die Punktzahl",
+      "linked": "Teil eines Unterrichtsplans: zählt zur Punktzahl",
       "keyRight": "richtige Antworten von den gestellten Fragen",
       "keyPlayed": "gespielt, nichts zu bewerten",
       "keyAbsent": "nicht gespielt"
     },
     "csv": {
       "points": "Punktzahl (Punkte)",
-      "lateCount": "Verspätete Lektionen",
+      "lateCount": "Verspätete Unterrichtspläne",
       "scoreCol": "{title} (Punktzahl %)",
       "helpedCol": "{title} (Antworten von der Lehrkraft gezeigt)",
       "lateCol": "{title} (verspätet)",
@@ -11259,7 +11354,7 @@
     "kind": {
       "quiz": "Quiz",
       "typing": "Tipp-Bestehensgrenze",
-      "live": "Live-Spiel",
+      "live": "Live-Lektion",
       "rubric": "Bewertungsraster",
       "marks": "Rasterpunkte"
     },
@@ -11267,28 +11362,28 @@
       "back": "Fortschritt",
       "printFull": "Vollen Namen drucken",
       "print": "Drucken",
-      "printHint": "Der Ausdruck zeigt nur den Vornamen, außer Sie setzen das Häkchen. Der Name aus den Spielen wird nie gedruckt.",
-      "lateLessons": "Verspätete Lektionen",
-      "lesson": "Lektion",
+      "printHint": "Ein Ausdruck zeigt nur den Vornamen, außer Sie setzen das Häkchen. Der Name aus den Lektionen wird nie gedruckt.",
+      "lateLessons": "Verspätete Unterrichtspläne",
+      "lesson": "Unterrichtsplan",
       "due": "Fällig",
       "late": "Überfällig",
       "scoreH": "Woraus sich die Punktzahl ergibt",
       "work": "Arbeit",
       "type": "Art",
       "points": "Punkte",
-      "none": "Noch ist nichts bewertet. Punkte kommen aus Quiz, aus Live-Spielen für einen Lektionsschritt und aus Arbeiten, die mit einem Bewertungsraster bewertet wurden.",
+      "none": "Noch ist nichts bewertet. Punkte kommen aus Quiz, aus Live-Lektionen für einen Schritt eines Unterrichtsplans und aus Arbeiten, die mit einem Bewertungsraster bewertet wurden.",
       "standardsLine": "{meets} erreicht · {developing} im Aufbau · {practiced} geübt",
       "standardsOpen": "Standards ansehen",
       "noStandards": "Noch keine Belege zu Standards.",
       "answers": "Neueste Antworten und Rückmeldungen",
       "feedback": "Rückmeldung der Lehrkraft",
       "noAnswers": "Noch keine schriftlichen Antworten.",
-      "noLive": "Noch keine Live-Spiele."
+      "noLive": "Noch keine Live-Lektionen."
     },
     "dash": {
       "showNames": "Namen aus der Klassenliste zeigen",
       "hideNames": "Namen aus der Klassenliste ausblenden",
-      "namesHint": "Zeigt neben dem Namen im Spiel den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Spielnamen."
+      "namesHint": "Zeigt neben dem Namen aus den Lektionen den Namen aus der Klassenliste, nur auf diesem Bildschirm. Der Klassenbildschirm behält die Namen aus den Lektionen."
     },
     "notAssigned": "Nicht zugewiesen",
     "grade": {
@@ -11303,21 +11398,21 @@
     }
   },
   "quickLive": {
-    "cta": "Jetzt ein Live-Spiel starten",
+    "cta": "Jetzt eine Live-Lektion leiten",
     "ctaNote": "Keine Schülerkonten nötig. Die Kinder treten mit einem Code bei und bekommen einen sicheren, erfundenen Namen.",
     "haveCode": "Spielcode erhalten? Beitreten",
     "join": "Einem Spiel beitreten",
     "host": {
-      "title": "Jetzt ein Live-Spiel starten",
-      "h": "Jetzt ein Live-Spiel starten",
-      "lead": "Lehrerkonto anlegen, Spiel wählen, und deine Klasse tritt mit einem Code bei. Keine Schülerkonten, keine E-Mail-Adresse, und es ist kostenlos.",
+      "title": "Jetzt eine Live-Lektion leiten",
+      "h": "Jetzt eine Live-Lektion leiten",
+      "lead": "Erstellen Sie ein Lehrkraft-Konto, wählen Sie eine Lektion, und Ihre Kinder machen mit einem Code mit. Keine Schülerkonten, keine E-Mail-Adresse, und es ist kostenlos.",
       "step1": "Leg dein Lehrerkonto an: drei Felder.",
-      "step2": "Wähle ein Spiel und die Fragen.",
+      "step2": "Wählen Sie eine Lektion und ihre Fragen.",
       "step3": "Zeig den Code an der Tafel. Die Kinder treten mit jedem Gerät bei."
     },
     "signup": {
       "h": "Dein Lehrerkonto",
-      "submit": "Konto anlegen und Spiel wählen",
+      "submit": "Konto erstellen und Lektion wählen",
       "privacy": "Wir speichern deinen Namen, deinen Benutzernamen und eine verschlüsselte Kopie deines Passworts. <a href=\"{privacy}\">Datenschutzerklärung</a>",
       "have": "Du hast schon ein Konto? <a href=\"{login}\">Anmelden</a>",
       "student": "Bist du Schülerin oder Schüler?",
@@ -11329,29 +11424,40 @@
     },
     "quick": {
       "title": "Schnelles Spiel",
+      "titleForTeachers": "Schnelle Lektion",
       "h": "Schnelles Spiel",
+      "hForTeachers": "Schnelle Lektion",
       "forClass": "Für {name}. Nur Schülerinnen und Schüler dieser Klasse können beitreten, mit ihrem eigenen Konto.",
       "open": "Alle mit dem Code können beitreten. Keine Schülerkonten: Alle bekommen einen sicheren, erfundenen Namen.",
       "hasOpen": "Du hast schon ein Spiel offen: {title}.",
+      "hasOpenForTeachers": "Sie haben schon eine Lektion offen: {title}.",
       "mode": "Spiel",
+      "modeForTeachers": "Lektion",
       "level": "Stufe",
       "subject": "Fach",
       "what": "{count} fertige Fragen, in jedem Spiel neue. Du drückst Start, wenn alle da sind.",
+      "whatForTeachers": "{count} fertige Fragen, jedes Mal neue. Sie drücken auf Start, wenn alle da sind.",
       "go": "Raum öffnen",
       "more": "Mehr Spiele und Einstellungen",
-      "recent": "Deine letzten Spiele"
+      "moreForTeachers": "Weitere Lektionen und Einstellungen",
+      "recent": "Deine letzten Spiele",
+      "recentForTeachers": "Ihre letzten Lektionen"
     },
     "results": {
       "h": "Das war ein Spiel mit Gästen.",
+      "hForTeachers": "Das war eine Gast-Lektion.",
       "now": "Die Spieler hatten keine Konten, deshalb kam nichts ins Notenbuch. Die Fragenübersicht auf dieser Seite bleibt gespeichert. Spielnamen und Punkte nicht: Du siehst sie hier nur ein paar Minuten.",
+      "nowForTeachers": "Die Spieler hatten keine Konten, darum kam nichts ins Notenbuch. Die Fragenübersicht auf dieser Seite bleibt. Die Namen der Spieler in der Lektion und ihre Punkte nicht: Sie sehen sie hier nur ein paar Minuten lang.",
       "saved": "Die Spieler hatten keine Konten, deshalb wurden keine Namen oder Punkte gespeichert und nichts kam ins Notenbuch. Die Fragenübersicht bleibt gespeichert.",
       "keep": "Klasse anlegen und Punkte behalten",
-      "keepHint": "Füg die Namen deiner Klasse ein und druck die Anmeldekarten. Dann werden die Punkte deiner Klassenspiele gespeichert."
+      "keepHint": "Füg die Namen deiner Klasse ein und druck die Anmeldekarten. Dann werden die Punkte deiner Klassenspiele gespeichert.",
+      "keepHintForTeachers": "Fügen Sie die Namen Ihrer Kinder ein und drucken Sie ihre Anmeldekarten. Punkte aus Ihren Klassenlektionen werden dann gespeichert."
     },
     "keep": {
       "title": "Klasse anlegen und Punkte behalten",
       "h": "Klasse anlegen und Punkte behalten",
       "lead": "Füg die Namen deiner Schülerinnen und Schüler ein. Jedes Kind bekommt eine Anmeldekarte. Ab dann werden die Punkte deiner Klassenspiele mit den Namen gespeichert, für dich.",
+      "leadForTeachers": "Fügen Sie die Namen Ihrer Kinder ein. Jedes Kind bekommt eine Anmeldekarte. Ab dann werden die Punkte Ihrer Klassenlektionen mit ihren Namen gespeichert, für Sie.",
       "names": "Namen der Schülerinnen und Schüler",
       "namesHint": "Ein Name pro Zeile. Vornamen reichen.",
       "go": "Klasse und Anmeldekarten anlegen",
@@ -11481,7 +11587,7 @@
       "heading": "Google Classroom verbinden?",
       "lead": "Das geht auch später in jeder Klasse.",
       "li1": "Übernimm deine Klassenlisten aus Google Classroom.",
-      "li2": "Stelle Lektionen als Aufgaben in Classroom ein.",
+      "li2": "Unterrichtspläne als Aufgaben in Classroom posten.",
       "li3": "Schicke Punkte zurück an Classroom.",
       "connect": "Google Classroom verbinden",
       "connected": "Google Classroom ist verbunden.",
@@ -13906,18 +14012,26 @@
     "more": "Mehr zu {name}",
     "delete": "Ordner löschen",
     "deleteConfirm": "Den Ordner „{name}“ löschen? Seine Spiele werden nicht gelöscht.",
+    "deleteConfirmForTeachers": "Den Ordner „{name}“ löschen? Seine Lektionen werden nicht gelöscht.",
     "emptyTitle": "Dieser Ordner ist leer",
     "emptyText": "Speichere Spiele hier mit 📁 In Ordner speichern, unter Bauen oder auf der Seite jedes Spiels.",
+    "emptyTextForTeachers": "Speichern Sie Lektionen hier mit 📁 In Ordner speichern, unter Bauen oder auf der Seite jeder Lektion.",
     "findOomba": "Oomba-Spiele finden",
+    "findOombaForTeachers": "Oomba-Lektionen finden",
     "oombaGame": "Oomba-Spiel",
+    "oombaGameForTeachers": "Oomba-Lektion",
     "myGame": "Mein Spiel",
+    "myGameForTeachers": "Meine Lektion",
     "assign": "Zuweisen",
     "removeGame": "Aus dem Ordner entfernen",
     "save": "In Ordner speichern",
     "oomba": {
       "title": "Oomba-Spiele",
+      "titleForTeachers": "Oomba-Lektionen",
       "search": "Oomba-Spiele suchen",
+      "searchForTeachers": "Oomba-Lektionen suchen",
       "none": "Keine Spiele gefunden. Probier ein anderes Fach oder eine andere Klasse.",
+      "noneForTeachers": "Keine Lektionen gefunden. Versuchen Sie ein anderes Fach oder eine andere Klassenstufe.",
       "live": "Live"
     },
     "pick": "Welcher Ordner?",
@@ -13925,6 +14039,7 @@
     "openFolder": "{folder} öffnen",
     "reorderHint": "Zum Sortieren ziehen (auf Handy oder Tablet erst gedrückt halten). Mit der Tastatur: Alt und die Pfeiltasten.",
     "dropHint": "Zieh ein Spiel auf einen Ordner, um es dort zu speichern.",
+    "dropHintForTeachers": "Ziehen Sie eine Lektion auf einen Ordner, um sie dort zu speichern.",
     "dropAsk": {
       "title": "{game} → {folder}",
       "move": "Hierher verschieben",
@@ -13937,27 +14052,38 @@
     "moved": "{name}: {n} von {total}",
     "saveTitle": "„{game}“ in einem Ordner speichern",
     "gamesN": "{count, plural, one {# Spiel} other {# Spiele}}",
+    "assignedItemsN": "{count, plural, one {# Eintrag} other {# Einträge}}",
+    "studentGamesN": "{count, plural, one {# Spiel} other {# Spiele}}",
+    "gamesNForTeachers": "{count, plural, one {# Lektion} other {# Lektionen}}",
     "saved": "In diesem Ordner",
     "addHere": "Hier hinzufügen",
     "none": "Du hast noch keine Ordner. Gib unten einem einen Namen.",
     "newWithGame": "Neuer Ordner mit diesem Spiel",
+    "newWithGameForTeachers": "Neuer Ordner mit dieser Lektion",
     "savedTo": "In {folder} gespeichert",
     "already": "Schon in {folder}",
-    "assignGame": "Ein Spiel zuweisen",
     "assignMine": "Aus meinen Spielen zuweisen",
+    "assignMineForTeachers": "Aus meinen Lektionen zuweisen",
     "assigned": "Zugewiesene Spiele",
+    "assignedForTeachers": "Zugewiesene Lektionen",
     "kindGame": "Spiel",
+    "kindGameForTeachers": "Lektion",
     "scores": "Punkte",
     "courses": "Fertige Kurse",
     "classEmpty": "Noch keine Spiele zugewiesen",
+    "classEmptyForTeachers": "Noch keine Lektionen zugewiesen",
     "classEmptyText": "Baue ein Spiel oder weise eines aus deinen Ordnern oder von Oomba zu.",
+    "classEmptyTextForTeachers": "Bauen Sie eine Lektion oder weisen Sie eine aus Ihren Ordnern oder den Oomba-Lektionen zu.",
     "myGamesFolders": "Meine Spiele und Ordner",
+    "myGamesFoldersForTeachers": "Lektionsordner",
     "assignNote": "Die Kinder sehen es auf ihrer Klassenseite. Ihre Punkte stehen im Reiter Zugewiesene Spiele der Klasse.",
+    "assignNoteForTeachers": "Die Kinder sehen sie auf ihrer Klassenseite. Ihre Punkte stehen im Tab Zugewiesene Lektionen der Klasse.",
     "errors": {
       "name": "Gib dem Ordner einen Namen.",
       "tooMany": "Du hast die höchste Zahl an Ordnern. Lösche zuerst einen.",
       "full": "Dieser Ordner ist voll.",
-      "publishFirst": "Veröffentliche dieses Spiel zuerst für deine Klasse oder deine Schule, damit die Kinder es spielen können."
+      "publishFirst": "Veröffentliche dieses Spiel zuerst für deine Klasse oder deine Schule, damit die Kinder es spielen können.",
+      "publishFirstForTeachers": "Veröffentlichen Sie diese Lektion zuerst für Ihre Klasse oder Schule, damit die Kinder sie spielen können."
     },
     "sharedTitle": "Von Kolleginnen und Kollegen geteilt",
     "by": "von {name}",
@@ -13965,37 +14091,51 @@
     "shareWith": "Mit {school} teilen",
     "sharedWithSchool": "Geteilt mit {school}",
     "shareNote": "Kolleginnen und Kollegen dort können diesen Ordner öffnen, seine Spiele spielen und zuweisen und ihn kopieren. Sie sehen nur Spiele, die sie öffnen dürfen: Veröffentliche deine eigenen Spiele für deine Schule.",
+    "shareNoteForTeachers": "Kolleginnen und Kollegen dort können diesen Ordner öffnen, seine Lektionen spielen und zuweisen und ihn kopieren. Sie sehen nur Lektionen, die sie öffnen dürfen: Veröffentlichen Sie Ihre eigenen Lektionen für Ihre Schule.",
     "unshare": "Nicht mehr teilen",
     "copy": "In meine Ordner kopieren",
     "sharedToast": "Mit deiner Schule geteilt",
     "unsharedToast": "Nicht mehr geteilt",
     "copied": "In deine Ordner kopiert",
     "buildNew": "Neues Spiel bauen",
+    "buildNewForTeachers": "Neue Lektion bauen",
     "progressEmptyText": "Weise im Reiter Spiele ein Spiel zu, dann siehst du hier, wie es bei jedem Kind läuft.",
+    "progressEmptyTextForTeachers": "Weisen Sie im Tab Lektionen eine Lektion zu, dann sehen Sie hier, wie es jedem Kind geht.",
     "studentEmptyText": "Deine Lehrkraft fügt hier Spiele hinzu.",
     "liveHistory": "Bisherige Live-Spiele",
+    "liveHistoryForTeachers": "Verlauf der Live-Lektionen",
     "liveHistoryNone": "Noch keine Live-Spiele mit dieser Klasse.",
+    "liveHistoryNoneForTeachers": "Noch keine Live-Lektionen mit dieser Klasse.",
     "allGames": "Alle meine Spiele",
+    "allGamesForTeachers": "Alle meine Lektionen",
     "assignedTo": "Zugewiesen an {class}",
     "studentShared": "Spiele von Schülerinnen und Schülern",
     "fromClass": "Aus unserer Klasse",
     "sideClass": "Spiele für diese Klasse",
+    "sideClassForTeachers": "Lektionen für diese Klasse",
     "assignTo": "An {class} zuweisen",
     "assignAll": "{count, plural, one {# Spiel zuweisen} other {Alle # zuweisen}}",
+    "assignAllForTeachers": "{count, plural, one {# Lektion zuweisen} other {Alle # zuweisen}}",
     "assignAllNote": "Jedes Spiel hier, das {class} spielen kann, wird mit diesem Fälligkeitstag zugewiesen. Spiele, die die Klasse schon hat, und Spiele, die erst eingerichtet werden müssen, werden übersprungen.",
+    "assignAllNoteForTeachers": "Jede Lektion hier, die {class} spielen kann, wird mit diesem Fälligkeitstag zugewiesen. Lektionen, die die Klasse schon hat, und Lektionen, die erst eingerichtet werden müssen, werden übersprungen.",
     "assignAllDone": "{count, plural, one {# Spiel an {class} zugewiesen} other {# Spiele an {class} zugewiesen}}",
+    "assignAllDoneForTeachers": "{count, plural, one {# Lektion {class} zugewiesen} other {# Lektionen {class} zugewiesen}}",
     "assignAllSkipped": "{count, plural, one {# übersprungen} other {# übersprungen}}",
     "assignAllNone": "Nichts Neues zuzuweisen: Diese Spiele sind schon in {class} oder müssen erst eingerichtet werden.",
+    "assignAllNoneForTeachers": "Nichts Neues zuzuweisen: Diese Lektionen sind schon in {class} oder müssen erst eingerichtet werden.",
     "assignedChip": "Zugewiesen",
     "assignedWhere": "Zugewiesene Spiele stehen unter „Zugewiesen an {class}“, mit ihren Fälligkeitstagen.",
+    "assignedWhereForTeachers": "Zugewiesene Lektionen stehen unter „{class} zugewiesen“, mit ihren Fälligkeitsdaten.",
     "saveAnother": "In einem anderen Ordner speichern",
     "moveUp": "Nach oben",
     "moveDown": "Nach unten",
     "sharedEmpty": "Hier gibt es noch keine Spiele, die du öffnen kannst.",
+    "sharedEmptyForTeachers": "Hier gibt es noch keine Lektionen, die Sie öffnen können.",
     "phone": {
       "assigned": "Zugewiesen",
       "library": "Meine Bibliothek",
       "assignedSub": "{count, plural, one {# Spiel, in der Reihenfolge, die die Schüler sehen} other {# Spiele, in der Reihenfolge, die die Schüler sehen}}",
+      "assignedSubForTeachers": "{count, plural, one {# Eintrag, in der Reihenfolge, in der die Kinder ihn sehen} other {# Einträge, in der Reihenfolge, in der die Kinder sie sehen}}",
       "addFromLibrary": "Aus der Bibliothek",
       "reorder": "Sortieren",
       "done": "Fertig",
@@ -14003,7 +14143,9 @@
       "up": "{name} nach oben",
       "down": "{name} nach unten",
       "libraryNote": "Sammlungen ordnen nur deine Spiele. Zuweisen kannst du darin.",
+      "libraryNoteForTeachers": "Sammlungen ordnen nur Ihre Lektionen. Weisen Sie aus einer Sammlung heraus zu.",
       "allSub": "Spiele, die du gebaut hast",
+      "allSubForTeachers": "Lektionen, die Sie gebaut haben",
       "sharedSub": "Mit deiner Schule geteilt",
       "newCollection": "Neue Sammlung",
       "collectionName": "Name der Sammlung",
@@ -14011,9 +14153,12 @@
       "byReadOnly": "von {name} · nur lesen",
       "studentsSub": "Von Schülern der {class}",
       "oomba": "Oomba-Spiele",
+      "oombaForTeachers": "Oomba-Lektionen",
       "oombaSub": "Alle Oomba-Spiele ansehen",
+      "oombaSubForTeachers": "Alle Oomba-Lektionen ansehen",
       "collectionEmpty": "Diese Sammlung ist noch leer",
-      "allEmpty": "Du hast noch kein Spiel gebaut."
+      "allEmpty": "Du hast noch kein Spiel gebaut.",
+      "allEmptyForTeachers": "Sie haben noch keine Lektion gebaut."
     }
   },
   "library": {
@@ -14637,7 +14782,7 @@
       },
       "showAnswers": "Antworten nach dem Abgabedatum zeigen",
       "showAnswersHint": "Standardmäßig aus. An: Nach dem Abgabedatum sieht jeder, der abgegeben hat, die Antworten und den Rechenweg.",
-      "showNeedsDue": "Gib dieser Lektion ein Abgabedatum, um die Antworten danach zu zeigen.",
+      "showNeedsDue": "Geben Sie diesem Unterrichtsplan ein Abgabedatum, um die Antworten danach zu zeigen.",
       "handedInCount": "Abgegeben: {done} von {total}",
       "questionN": "Frage {n}",
       "rightOf": "{right} von {total} richtig",
@@ -14656,7 +14801,7 @@
         "badDate": "Dieses Datum sieht nicht richtig aus.",
         "dueBeforeOpen": "Das Abgabedatum liegt vor dem Startdatum.",
         "needsDue": "Lege ein Abgabedatum fest, um die Antworten danach zu zeigen.",
-        "started": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstelle eine Kopie der Lektion, um sie zu ändern."
+        "started": "Schüler haben diesen Schritt begonnen, daher bleiben seine Fragen, wie sie sind. Erstellen Sie eine Kopie des Unterrichtsplans, um sie zu ändern."
       }
     },
     "terms": {
@@ -14689,7 +14834,7 @@
       "titleManip": "Arbeitsmittel",
       "headingFigures": "Figuren gehört zum Lehrkraft-Plan",
       "headingManip": "Die Arbeitsmittel gehören zum Lehrkraft-Plan",
-      "leadFigures": "Erstelle genaue Figuren für Mathe, Daten, Naturwissenschaften und Wirtschaft, mache daraus Arbeitsblätter und Tests und füge Figurenfragen in deine Lektionen ein.",
+      "leadFigures": "Erstellen Sie genaue Figuren für Mathe, Daten, Naturwissenschaften und Wirtschaft, machen Sie daraus Arbeitsblätter und Tests und fügen Sie Figurenfragen in Ihre Unterrichtspläne ein.",
       "leadManip": "Nutze virtuelle Arbeitsmittel an der Tafel, speichere Tafeln zum Teilen und leite Live-Sitzungen mit deinen Klassen.",
       "trial": "Teste das Lehrkraft-Plan {days} Tage kostenlos. Zum Start ist keine Karte nötig.",
       "kept": "Alles, was du schon zugewiesen hast, funktioniert für deine Schülerinnen und Schüler weiter.",
@@ -14713,9 +14858,9 @@
       "showHint": "Standardmäßig aus. An: Nach dem Abgabedatum sehen Schüler, die abgegeben haben, die Korrekturen und warum jede stimmt.",
       "snapshotNote": "Die Schüler bekommen diese Sammlung so, wie sie jetzt ist. Spätere Änderungen ändern nicht, was die Klasse bekommen hat. Die Ergebnisse gehen in den Fortschritt und das Notenbuch.",
       "submit": "Zuweisen",
-      "practiceHint": "Die Schüler spielen die Sammlung als Spiel, prüfen unterwegs und bekommen Tipps. Sie ist erledigt, wenn sie fertig sind.",
+      "practiceHint": "Die Schüler spielen die Sammlung als Lektion, prüfen unterwegs und bekommen Tipps. Sie ist erledigt, wenn sie fertig sind.",
       "chooseH": "Wie sollen die Schüler es machen?",
-      "gradeSub": "Sie machen es einmal in der Lektion. Es wird bewertet und kommt ins Notenbuch.",
+      "gradeSub": "Sie machen es einmal im Unterrichtsplan. Es wird bewertet und kommt ins Notenbuch.",
       "practiceH": "Üben",
       "practiceSub": "Sie spielen die Sammlung so oft sie wollen. Nichts wird bewertet.",
       "allowHints": "Tipps erlauben",
@@ -14779,7 +14924,7 @@
   "companion": {
     "settings": {
       "title": "Oomba, die Hilfe beim Unterrichten",
-      "text": "Lehrkräfte mit dem Lehrkraft-Plan können Oomba über eine Blase auf ihren Seiten nach Spielen, Büchern, Dashboard-Änderungen und Hilfe für den Unterricht fragen. Schülerinnen und Schüler sehen sie nie. Ihre Nachrichten, angehängter Text und Bilder gehen an unseren KI-Anbieter Anthropic, ohne die Namen der Schülerinnen und Schüler.",
+      "text": "Lehrkräfte mit dem Lehrkraft-Plan können Oomba über eine Blase auf ihren Seiten nach Lektionen, Büchern, Dashboard-Änderungen und Hilfe bei Unterrichtsplänen fragen. Schülerinnen und Schüler sehen sie nie. Ihre Nachrichten, angehängter Text und Bilder gehen an unseren KI-Anbieter Anthropic, ohne die Namen der Schülerinnen und Schüler.",
       "on": "Oomba für die Lehrkräfte dieser Schule",
       "onHint": "Aus: keine Oomba-Blase für Lehrkräfte dieser Schule.",
       "web": "Websuche",
@@ -15043,10 +15188,10 @@
     "panel": {
       "label": "Lehrerpult",
       "handOut": "Austeilen an",
-      "myLessons": "Meine Stunden",
-      "myGames": "Meine Spiele",
-      "noGames": "Spiele, die Sie bauen, erscheinen hier.",
-      "oomba": "Oomba-Spiele und -Werkzeuge",
+      "myLessons": "Meine Unterrichtspläne",
+      "myGames": "Meine Lektionen",
+      "noGames": "Lektionen, die Sie bauen, erscheinen hier.",
+      "oomba": "Oomba-Lektionen und -Werkzeuge",
       "manipulatives": "Arbeitsmittel",
       "figures": "Figuren",
       "reading": "Lesen",
@@ -15056,7 +15201,7 @@
       "note": "Notiz an die Klasse",
       "timer": "Timer",
       "board": "Tafelwerkzeuge",
-      "handOutHint": "Tippen Sie auf ein Spiel, dann auf einen Tisch, eine Gruppe oder Ganze Klasse. Oder ziehen Sie es dorthin.",
+      "handOutHint": "Tippen Sie auf eine Lektion, dann auf einen Tisch, eine Gruppe oder Ganze Klasse. Oder ziehen Sie sie dorthin.",
       "comingNext": "Kommt bald"
     },
     "errors": {
@@ -15075,8 +15220,8 @@
       "badAction": "Das hat nicht geklappt. Versuche es noch einmal.",
       "notLive": "Starte die Stunde zuerst mit „Alle ins Homeroom“.",
       "padFull": "Dein Block ist voll. Lösche ihn, um weiterzumalen.",
-      "pickGame": "Dieses Spiel kann nicht ausgeteilt werden. Wählen Sie ein anderes.",
-      "publishFirst": "Veröffentlichen Sie dieses Spiel zuerst, dann teilen Sie es aus.",
+      "pickGame": "Diese Lektion kann nicht ausgeteilt werden. Wählen Sie eine andere.",
+      "publishFirst": "Veröffentlichen Sie diese Lektion zuerst und teilen Sie sie dann aus.",
       "badDate": "Wählen Sie ein gültiges Fälligkeitsdatum.",
       "badTarget": "Ziehen Sie es auf einen Tisch, eine Gruppe oder Ganze Klasse.",
       "noStudents": "In dieser Klasse sind noch keine Schülerinnen und Schüler.",
@@ -15085,20 +15230,20 @@
       "badOrder": "Wählen Sie Der Reihe nach oder Beliebige Reihenfolge.",
       "badGrade": "Wählen Sie Punkte, Erledigt oder Ohne Bewertung.",
       "tooLong": "Hinweise dürfen höchstens 300 Zeichen lang sein.",
-      "alreadyOnDesk": "{count, plural, one {# dieser Tische hat dieses Spiel schon.} other {# dieser Tische haben dieses Spiel schon.}} Nehmen Sie es dort zuerst weg oder teilen Sie es den anderen aus.",
+      "alreadyOnDesk": "{count, plural, one {# dieser Tische hat diese Lektion schon.} other {# dieser Tische haben diese Lektion schon.}} Nehmen Sie sie dort zuerst weg oder teilen Sie sie den anderen aus.",
       "tooManyHandouts": "In dieser Klasse ist sehr viel ausgeteilt. Entfernen Sie zuerst ein paar alte Aufgaben.",
       "notOnDesk": "Diese Aufgabe liegt nicht auf diesem Tisch.",
-      "noLesson": "Diese Stunde ist nicht mehr in Ihren Stunden.",
-      "badGame": "Stunden gibt es vorerst für Arithmetic Lab, Algebra Builder und Kreuzworträtsel.",
-      "needTitle": "Geben Sie der Stunde einen Namen.",
+      "noLesson": "Dieser Unterrichtsplan ist nicht mehr bei Ihren Unterrichtsplänen.",
+      "badGame": "Unterrichtspläne lassen sich vorerst für Arithmetic Lab, Algebra Builder und Crossword bauen.",
+      "needTitle": "Geben Sie dem Unterrichtsplan einen Namen.",
       "titleLong": "Der Name darf höchstens 60 Zeichen lang sein.",
       "fewWords": "Ein Kreuzworträtsel braucht mindestens 3 Wörter.",
       "missingClue": "Jedes Wort braucht einen Hinweis.",
       "settings": "Diese Einstellungen konnten nicht gespeichert werden. Prüfen Sie sie und versuchen Sie es noch einmal.",
-      "setsFull": "Sie haben so viele Arbeitsblätter, wie dieses Spiel speichern kann. Löschen Sie zuerst einige unter „Meine Arbeitsblätter“ im Spiel.",
-      "tooManyLessons": "Sie haben so viele Stunden, wie Sie speichern können. Löschen Sie zuerst eine.",
-      "lessonGone": "Ein Arbeitsblatt dieser Stunde wurde gelöscht. Öffnen Sie die Stunde, speichern Sie sie noch einmal und teilen Sie sie dann aus.",
-      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diese Stunde schon.} other {# dieser Tische haben diese Stunde schon.}} Nehmen Sie sie dort zuerst weg oder geben Sie sie den anderen.",
+      "setsFull": "Sie haben so viele Arbeitsblätter, wie diese Lektion speichern kann. Löschen Sie zuerst einige unter „Meine Arbeitsblätter“ in der Lektion.",
+      "tooManyLessons": "Sie haben so viele Unterrichtspläne, wie Sie speichern können. Löschen Sie zuerst einen.",
+      "lessonGone": "Ein Arbeitsblatt dieses Unterrichtsplans wurde gelöscht. Öffnen Sie den Unterrichtsplan, speichern Sie ihn erneut und teilen Sie ihn dann aus.",
+      "lessonOnDesk": "{count, plural, one {# dieser Tische hat diesen Unterrichtsplan schon.} other {# dieser Tische haben diesen Unterrichtsplan schon.}} Nehmen Sie ihn dort zuerst weg oder geben Sie ihn den anderen.",
       "teamTooSmall": "Wählen Sie mindestens 2 Tische für ein Team.",
       "teamTooBig": "Ein Team hat höchstens 6 Kinder.",
       "alreadyInTeam": "Eines dieser Kinder sitzt schon an einem Teamtisch. Lösen Sie dieses Team zuerst auf.",
@@ -15221,12 +15366,12 @@
     "lessons": {
       "handedOut": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}.",
       "handedOutVersions": "{title} liegt auf {count, plural, one {# Tisch} other {# Tischen}}, mit einer Version für jede Gruppe.",
-      "saved": "Stunde gespeichert.",
-      "savedNew": "In „Meine Stunden“ gespeichert. Tippen Sie sie an und dann einen Tisch, um sie auszuteilen.",
+      "saved": "Unterrichtsplan gespeichert.",
+      "savedNew": "In Meine Unterrichtspläne gespeichert. Tippen Sie darauf und dann auf einen Tisch, um ihn auszuteilen.",
       "copyOf": "Kopie von {title}",
-      "duplicated": "Stunde kopiert.",
-      "deleted": "Stunde gelöscht.",
-      "untitled": "Neue Stunde",
+      "duplicated": "Unterrichtsplan kopiert.",
+      "deleted": "Unterrichtsplan gelöscht.",
+      "untitled": "Neuer Unterrichtsplan",
       "print": {
         "solve": "Löse nach x auf. Schreibe deine Schritte auf.",
         "multiply": "Multipliziere. Schreibe jede Antwort als einen Ausdruck.",
@@ -15258,9 +15403,9 @@
       "trend": "Tendenz",
       "tableLabel": "Klassenüberblick: Aufgaben und Ergebnisse",
       "kind": {
-        "lesson": "Stunde",
-        "game": "Spiel",
-        "mine": "Mein Spiel"
+        "lesson": "Unterrichtsplan",
+        "game": "Lektion",
+        "mine": "Meine Lektion"
       },
       "versions": "{count, plural, one {# Version} other {# Versionen}}",
       "gradedBy": {
@@ -15294,7 +15439,7 @@
       "keyTrend": "Tendenz aus den letzten 3 Punktwerten jedes Kindes: Braucht Unterstützung bei einem Schnitt unter 60 %, Wird besser, wenn der letzte 10 Punkte oder mehr über dem ersten liegt, sonst Gleichmäßig.",
       "more": "Das ganze Notenbuch, CSV, Standards, Bewertungsraster und Google Classroom stehen darunter, wie bisher.",
       "fullGradebook": "Ganzes Notenbuch",
-      "noHandouts": "In den letzten {weeks} Wochen wurde in Homeroom nichts ausgeteilt. Teilen Sie im Tab Homeroom ein Spiel oder eine Lektion aus.",
+      "noHandouts": "In den letzten {weeks} Wochen wurde in Homeroom nichts ausgeteilt. Teilen Sie im Tab Homeroom eine Lektion oder einen Unterrichtsplan aus.",
       "gcLinked": "Verknüpft mit „{course}“",
       "gcRoster": "Liste abgeglichen {when}",
       "gcRosterNever": "Liste noch nicht abgeglichen",

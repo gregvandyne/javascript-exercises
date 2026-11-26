@@ -4,7 +4,9 @@
     "titleHome": "Fun learning games for kids: play and build · Oomba Academy",
     "titleWith": "{title} · Oomba Academy",
     "description": "Free, fun learning games for kids aged 5 to 14. Play right in the browser, and build your own games with an AI Builder.",
+    "descriptionForTeachers": "Interactive lessons for ages 5 to 14 that run in the browser, a Classroom Dashboard for the whole day, and an AI Builder that makes lessons with you.",
     "skip": "Skip to the games",
+    "skipForTeachers": "Skip to the main content",
     "mainNav": "Main",
     "signIn": "Sign in",
     "meLabel": "Me: {name}",
@@ -18,7 +20,9 @@
     "badgeNew": "{count} new",
     "search": {
       "label": "Search games and builders",
-      "placeholder": "Search games or builders"
+      "labelForTeachers": "Search lessons and builders",
+      "placeholder": "Search games or builders",
+      "placeholderForTeachers": "Search lessons or builders"
     },
     "lang": {
       "title": "Language",
@@ -49,9 +53,11 @@
     },
     "build": {
       "ready": "Your game “{title}” is ready! <a href=\"{href}\">Open it</a>",
+      "readyForTeachers": "Your lesson “{title}” is ready! <a href=\"{href}\">Open it</a>",
       "question": "The Builder has a question about “{title}”. <a href=\"{href}\">Open it</a>",
       "stopped": "“{title}” stopped before it was finished. <a href=\"{href}\">Open it to carry on</a>",
-      "many": "Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>"
+      "many": "Some of your games have news from the Builder. <a href=\"{href}\">See My games</a>",
+      "manyForTeachers": "Some of your lessons have news from the Builder. <a href=\"{href}\">See your Lesson Folder</a>"
     },
     "shortPasswordGrownup": "Your password is shorter than {min} characters. Please <a href=\"{href}\">choose a longer one</a>."
   },
@@ -574,6 +580,7 @@
     },
     "empty": {
       "title": "No games yet",
+      "titleForTeachers": "No lessons yet",
       "action": "Build a game"
     },
     "intro": {
@@ -1527,14 +1534,19 @@
   },
   "build": {
     "title": "Build a game",
+    "titleForTeachers": "Build lessons",
     "hero": {
       "heading": "Make your own game by chatting!",
-      "text": "Tell the Builder your idea. It builds the game, and you can keep changing it."
+      "headingForTeachers": "Make a lesson by chatting!",
+      "text": "Tell the Builder your idea. It builds the game, and you can keep changing it.",
+      "textForTeachers": "Tell the Builder your idea. It builds the lesson, and you can keep changing it."
     },
     "newGame": "New game",
+    "newGameForTeachers": "New lesson",
     "updateWaiting": "Update waiting for review",
     "changed": "Changed {when}",
     "empty": "Tap “New game” to start one. Your games will show up here.",
+    "emptyForTeachers": "Tap “New lesson” to start one. Your lessons will show up here.",
     "rename": "Rename",
     "delete": "Delete",
     "status": {
@@ -2054,7 +2066,7 @@
         "label": "My desk (only you see what's on it)",
         "title": "My desk",
         "note": "Only you see this",
-        "empty": "Drop a game here to try it first.",
+        "empty": "Drop a lesson here to try it first.",
         "cardLabel": "{title}, on my desk",
         "play": "Play",
         "preview": "Preview",
@@ -2062,12 +2074,12 @@
         "handOut": "Hand out",
         "takeOff": "Take off my desk",
         "lead": "On your desk to try first. Students don't see it until you hand it out.",
-        "lessonLead": "On your desk. Preview opens the lesson's own problems. Students don't see it until you hand it out.",
+        "lessonLead": "On your desk. Preview opens the lesson plan's own problems. Students don't see it until you hand it out.",
         "toolLead": "On your desk to open any time. Handing out tools comes next.",
         "tapWhere": "Now tap a desk, a group, Whole class or My desk.",
         "tapMine": "Now tap My desk to keep it there.",
         "toolSoon": "Handing out tools comes next. Put it on My desk to open it from there.",
-        "pickFirst": "Pick a game on the left first, then tap My desk."
+        "pickFirst": "Pick a lesson on the left first, then tap My desk."
       },
       "wholeClass": "Whole class · {count}",
       "editGroups": "Groups",
@@ -2239,7 +2251,7 @@
       "endClass": "End class",
       "endConfirm": "End class for everyone? Desks and the teacher's area stay as they are.",
       "projector": "Open projector view",
-      "hostLive": "Host a live game",
+      "hostLive": "Host a live lesson",
       "started": "Class is live. Students see a prompt to go to their desks.",
       "bringing": "Everyone is looking at the teacher's area",
       "backToDesks": "Students are back at their desks",
@@ -2253,9 +2265,9 @@
         "cancel": "Cancel",
         "wholeClass": "Whole class",
         "emptyGroup": "Nobody is in that group yet.",
-        "pickFirst": "Pick a game on the left first, then tap here.",
+        "pickFirst": "Pick a lesson on the left first, then tap here.",
         "title": "{game} for {who}",
-        "eyebrow": "Game · free play",
+        "eyebrow": "Lesson · free play",
         "lead": "Students play freely. Add instructions if you want them to do something specific.",
         "instructions": "Instructions (optional)",
         "instructionsPh": "For example: Do 3 long divisions with remainders, then show one on your pad.",
@@ -2285,7 +2297,7 @@
         "removeOne": "Take off {name}'s desk",
         "removeAll": "Remove from every desk",
         "removeAllConfirm": "Remove {title} from every desk? Students' work is kept, and it comes back if you hand it out again.",
-        "lesson": "Lesson",
+        "lesson": "Lesson plan",
         "version": "Version: {name}",
         "gcAlso": "Also post to Google Classroom",
         "gcHint": "It goes to your linked Classroom class as an assignment, with the grade you chose here.",
@@ -2316,7 +2328,7 @@
         "commentPh": "For example: Great work on the remainders!",
         "sticker": "A sticker (optional)",
         "noSticker": "None",
-        "private": "Only this student sees it, on their desk and the lesson page.",
+        "private": "Only this student sees it, on their desk and the lesson plan's page.",
         "remove": "Remove"
       },
       "select": "Select",
@@ -2375,6 +2387,25 @@
           "off": "Off for this class"
         },
         "perStudent": "Turn it on or off for one student from their desk's menu (tap their name)."
+      },
+      "parents": {
+        "menu": "Parents' view",
+        "title": "Parents' view",
+        "on": "On",
+        "off": "Off",
+        "lead": "A grown-up whose family account on Oomba is linked to a student's own account sees a calm, read-only page of that student's work in this class. Accounts the school made can't be linked to a family yet.",
+        "sees": "They see",
+        "what": {
+          "handouts": "Their handouts: the title, your instructions, the dates, done or not yet, and the grade as you chose to show it",
+          "feedback": "Your comments and stickers on their work",
+          "reading": "Books read with the reading routine and the quiz result",
+          "notes": "Their notes in this class's tab of the notebook, drawings included"
+        },
+        "never": "They never see",
+        "neverList": "Other students, ranks or class comparisons, live class, hands, the hall pass, supports, attendance (only \"Missed while away\" on a handout) or the student's own notebook tabs.",
+        "modeOn": "On for this class",
+        "modeOff": "Off for this class",
+        "how": "Students are told in their notebook when a grown-up can see their class notes."
       }
     },
     "stories": {
@@ -2463,15 +2494,19 @@
     "build": {
       "gettingReady": "Getting ready…",
       "renameTitle": "Rename game",
+      "renameTitleForTeachers": "Rename lesson",
       "nameLabel": "Game name",
+      "nameLabelForTeachers": "Lesson name",
       "save": "Save",
       "renamed": "Name saved",
       "deleteTitle": "Delete this game?",
+      "deleteTitleForTeachers": "Delete this lesson?",
       "deleteText": "“{title}” will be gone for good. You can’t undo this.",
       "deleteLive": "Players won’t be able to find it anymore.",
       "keep": "Keep it",
       "deleteYes": "Delete",
-      "deleted": "Game deleted"
+      "deleted": "Game deleted",
+      "deletedForTeachers": "Lesson deleted"
     },
     "me": {
       "lookingGood": "Looking good!",
@@ -3041,6 +3076,7 @@
     },
     "live-sets": {
       "replaceOpen": "You already have a live game open. End it and open this one?",
+      "replaceOpenForTeachers": "You already have a live lesson open. End it and open this one?",
       "edit": "Edit",
       "new": "New question set",
       "title": "Title",
@@ -3104,9 +3140,10 @@
         "lobby": "It is still in the lobby.",
         "players": "{count, plural, =0 {No players are connected.} one {# player is connected.} other {# players are connected.}}",
         "back": "Go back to it",
-        "replace": "End it and open the new game"
+        "replace": "End it and open the new game",
+        "replaceForTeachers": "End it and open the new lesson"
       },
-      "why": "From your lesson:"
+      "why": "From your notes:"
     },
     "match": {
       "title": "Play {title} online",
@@ -3167,8 +3204,8 @@
       "pdfReady": "{name} is ready to send.",
       "textLoaded": "Loaded the text from {name}.",
       "fileKind": "Choose a PDF or a text file.",
-      "tooShort": "Paste a bit more of your lesson first (at least {n} characters).",
-      "draftedOf": "{n} of the {asked} questions you asked for were drafted: the rest didn’t pass the checks or your lesson didn’t have enough for them. Check each one.",
+      "tooShort": "Paste a bit more of your notes first (at least {n} characters).",
+      "draftedOf": "{n} of the {asked} questions you asked for were drafted: the rest didn’t pass the checks or your notes didn’t have enough for them. Check each one.",
       "drafted": "{n} questions drafted. Check each one.",
       "backConfirm": "Start again? The drafted questions on this page will be lost.",
       "assigned": "Assigned."
@@ -4749,11 +4786,11 @@
       "historyDelete": "Delete this chat",
       "historyDeleteAsk": "Delete this chat for good? It can't be brought back.",
       "historyDeleteOk": "Delete",
-      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a game, a book, a change to your dashboard or help with a lesson.",
+      "hello": "Hi! I'm Oomba, your teaching sidekick. Ask me for a lesson, a book, a change to your dashboard or help with a lesson plan.",
       "idea": {
         "game": {
-          "label": "Find a game",
-          "text": "Give me a game for 3rd grade fractions, about 10 minutes"
+          "label": "Find a lesson",
+          "text": "Give me a lesson for 3rd grade fractions, about 10 minutes"
         },
         "book": {
           "label": "Find a book",
@@ -4764,8 +4801,8 @@
           "text": "Add a 5 minute timer and class jobs to my dashboard"
         },
         "plan": {
-          "label": "Plan a lesson",
-          "text": "Help me plan a 30 minute lesson on "
+          "label": "Make a lesson plan",
+          "text": "Help me make a 30 minute lesson plan on "
         },
         "dashTimer": {
           "label": "Add a 5 minute timer",
@@ -4828,10 +4865,10 @@
         "explain": "Looked up how Oomba Academy works",
         "page": "Read this page",
         "dash": "Read your {q} layout ({n} widgets)",
-        "games": "Searched games: {q}",
+        "games": "Searched lessons: {q}",
         "books": "Searched the Story Library",
         "booksLevel": "Matched reading level {q}",
-        "lessons": "Searched lessons and worksheets",
+        "lessons": "Searched lesson plans and worksheets",
         "propose": "Got a change ready for you to check",
         "dashNo": "Couldn't plan that dashboard change",
         "brief": "Wrote a brief",
@@ -5031,8 +5068,8 @@
           "exit": "Exit check"
         },
         "everyoneElse": "Everyone else",
-        "lesson": "lesson",
-        "newLesson": "new lesson, made for you",
+        "lesson": "lesson plan",
+        "newLesson": "new lesson plan, made for you",
         "nowTag": "Now",
         "use": "Use this plan",
         "useStart": "Use and start",
@@ -5061,7 +5098,7 @@
         "notGiven": "{count, plural, one {# couldn't be handed out.} other {# couldn't be handed out.}}",
         "started": "Part 1 has started.",
         "fb": {
-          "start": "Here is a simple plan to start from, made from your lessons and games. Ask for changes, like \"make work time 20 minutes\".",
+          "start": "Here is a simple plan to start from, made from your lesson plans and lessons. Ask for changes, like \"make work time 20 minutes\".",
           "minutes": "Done. The minutes are changed on the new card.",
           "break": "Done. Here is a different brain break.",
           "saved": "Here is your saved plan \"{name}\" for this class."
@@ -5365,6 +5402,7 @@
       "ofStudent": "{name}'s notebook",
       "readOnly": "Read only. Students can't see that you opened it.",
       "teacherReads": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see the notes in your class tabs.",
       "format": "Formatting",
       "bold": "Bold",
       "list": "List",
@@ -5572,14 +5610,14 @@
       "close": "Close"
     },
     "homeroom-lessons": {
-      "build": "Build a lesson",
-      "editTitle": "Edit lesson",
-      "pickTitle": "Which game or tool?",
-      "pickLead": "Pick a game. You set exactly what students do, and the worksheet is made from it.",
+      "build": "Build a lesson plan",
+      "editTitle": "Edit lesson plan",
+      "pickTitle": "Which lesson or tool?",
+      "pickLead": "Pick a lesson. You set exactly what students do, and the worksheet is made from it.",
       "comingLater": "Coming later",
       "later": {
-        "quiz": "Class quizzes and word games",
-        "mine": "Games I built",
+        "quiz": "Class quizzes and word puzzles",
+        "mine": "Lessons I built",
         "atlas": "Atlas Quest",
         "sudoku": "Sudoku",
         "castle": "Castle Clash puzzles",
@@ -5587,7 +5625,7 @@
         "figures": "Figures",
         "reading": "Reading"
       },
-      "name": "Lesson name",
+      "name": "Lesson plan name",
       "namePh": "For example: Long division practice",
       "op": "Operation",
       "ops": {
@@ -5649,7 +5687,7 @@
       "versions": "A version for each group?",
       "versionsYes": "Yes, by group",
       "versionsNo": "One for everyone",
-      "versionsHint": "Each group starts from your lesson with a suggested change. Change anything.",
+      "versionsHint": "Each group starts from your lesson plan with a suggested change. Change anything.",
       "versionsOff": "Everyone gets the same worksheet.",
       "noGroups": "This class has no groups yet. Make groups first to add versions.",
       "editing": "Version for",
@@ -5672,13 +5710,13 @@
       "aiNothing": "Every word has a clue already.",
       "aiNeedWords": "Type some words first. Oomba writes a clue for each one.",
       "aiFailed": "Oomba couldn't write clues just now. Try again.",
-      "save": "Save to My lessons",
+      "save": "Save to My lesson plans",
       "cancel": "Cancel",
-      "needTitle": "Give the lesson a name.",
+      "needTitle": "Give the lesson plan a name.",
       "problemsN": "{count, plural, one {# problem} other {# problems}}",
       "wordsN": "{count, plural, one {# word} other {# words}}",
       "versionsN": "{count, plural, one {# version} other {# versions}}",
-      "empty": "Lessons you build show here.",
+      "empty": "Lesson plans you build show here.",
       "more": "More for {title}",
       "edit": "Edit",
       "duplicate": "Duplicate",
@@ -5688,14 +5726,14 @@
       "versionsFor": "Versions for {groups}",
       "printLead": "The worksheet prints with its class code, so students can also open it on Oomba.",
       "printWhich": "Which worksheet?",
-      "printLesson": "The lesson",
+      "printLesson": "The lesson plan",
       "printKey": "Add the answer key",
       "printGo": "Print",
-      "full": "You have {count} lessons, the most you can keep. Delete one first.",
-      "giveEyebrow": "Lesson",
+      "full": "You have {count} lesson plans, the most you can keep. Delete one first.",
+      "giveEyebrow": "Lesson plan",
       "giveTitle": "{lesson} for {who}",
       "versionsBy": "Versions by group",
-      "asBuilt": "The lesson as built",
+      "asBuilt": "The lesson plan as built",
       "scoreHint": "The gradebook shows the % right."
     },
     "homeroom-overview": {
@@ -5800,7 +5838,7 @@
         "nothing": "Nothing on their desk yet.",
         "stuckNote": "No step forward on this handout for {min} minutes.",
         "lastSeen": "Last seen {when}",
-        "whereGame": "In the game",
+        "whereGame": "In the lesson",
         "whereDesk": "At their desk",
         "activity": "last activity {when}",
         "on": "Working on",
@@ -5937,7 +5975,7 @@
         "simple": "Simpler wording",
         "simpleHint": "Shows the simpler wording you write for a handout",
         "big": "Bigger text",
-        "bigHint": "Larger text on the desk and over games"
+        "bigHint": "Larger text on the desk and over lessons"
       },
       "supports": "Supports",
       "supLead": "They apply to every handout on {name}'s desk. {name} sees them as helpful tools, never a label.",
@@ -5949,7 +5987,7 @@
       "noChat": "Oomba isn't here right now. Type the simpler wording yourself.",
       "askText": "Write simpler wording for the instructions of \"{title}\".",
       "simplerTitle": "Simpler wording: {title}",
-      "simplerLead": "Students with Simpler wording see this in place of the instructions, on their desk and over the game.",
+      "simplerLead": "Students with Simpler wording see this in place of the instructions, on their desk and over the lesson.",
       "original": "The instructions",
       "noOriginal": "This handout has no instructions yet. You can still write a short simpler version.",
       "simpler": "Simpler wording",
@@ -6205,6 +6243,7 @@
       "notesLead": "Write 3 short notes about {title}. They go in your notebook.",
       "saveNotes": "Save to my notebook",
       "notesPrivacy": "Your teacher can read your notebook.",
+      "parentsRead": "Your grown-up can see these notes too.",
       "noteEmpty": "Write all 3 notes first.",
       "doneTitle": "All done!",
       "doneLead": "You read {title}, did the quiz and wrote 3 notes.",
@@ -6266,7 +6305,8 @@
     "live": {
       "title": "Your teacher started a live game!",
       "join": "Join now",
-      "chip": "Live game now"
+      "chip": "Live game now",
+      "chipForTeachers": "Live lesson now"
     },
     "tab": {
       "todo": "To do",
@@ -6302,11 +6342,11 @@
       "noneAdmin": "You don't teach any classes yet",
       "noneAdminText": "Classes you teach show up here. All of {school}'s classes are under My school.",
       "makeGame": "Make a game",
+      "makeGameForTeachers": "Make a lesson",
       "plan": {
         "heading": "School plan · {school}"
       },
-      "tools": "Teaching tools",
-      "hostLive": "Host a live game"
+      "hostLive": "Host a live lesson"
     },
     "class": {
       "new": "New class",
@@ -6344,7 +6384,7 @@
       "removeConfirm": "Remove {name} from this class? Their work in this class is kept.",
       "noStudentsText": "Type their names below to make school accounts and login cards.",
       "details": "Class details",
-      "teachersText": "Co-teachers can run this class with you: lessons, students and progress.",
+      "teachersText": "Co-teachers can run this class with you: lessons, lesson plans, students and progress.",
       "removeTeacher": "Remove {name} from this class",
       "archiveTitle": "Archive this class",
       "archiveText": "Archived classes are hidden from students and move to Archived classes at the bottom of My classes. Everything is kept, and you can restore it any time.",
@@ -6381,6 +6421,7 @@
       "askNoAdmin": "{school} has no school admin yet. Ask the Oomba Academy team to appoint one; they can then add staff on the school's People tab.",
       "archivedToast": "{name} archived",
       "lessons": "Lessons",
+      "lessonsForTeachers": "Lesson plans",
       "lastActivity": "Last activity",
       "noActivity": "none yet",
       "noStudentsPick": "Pick students already at {school} below, or make new accounts and login cards for new students.",
@@ -6397,7 +6438,7 @@
       "declineConfirm": "Decline @{name}?",
       "inClass": "In this class",
       "otherAccounts": "Other school accounts",
-      "mergeHint": "Picking one merges it into @{name}: the school account stops working, and its classes and games move over.",
+      "mergeHint": "Picking one merges it into @{name}: the school account stops working, and its classes and lessons move over.",
       "mergeConfirm": "Merge @{account} into @{name}? @{account} stops working.",
       "approved": "@{name} joined the class"
     },
@@ -6411,7 +6452,7 @@
       "schoolAccount": "school account",
       "ownAccount": "own account",
       "addStaff": "Add a teacher or school admin",
-      "addStaffText": "Use their real name, as students and colleagues know them. School accounts follow the school's safety rules; staff who want to share games publicly should use their own account.",
+      "addStaffText": "Use their real name, as students and colleagues know them. School accounts follow the school's safety rules; staff who want to share lessons publicly should use their own account.",
       "realName": "Real name",
       "existing": "Their Oomba Academy name",
       "existingPlaceholder": "e.g. MsRivera",
@@ -6475,8 +6516,8 @@
       "chatHint": "School accounts chat only with classmates they have added as friends. Messages are filtered, and teachers and staff are never in the chat.",
       "timeZone": "Time zone",
       "timeZoneNone": "Not set (UTC)",
-      "timeZoneUnset": "Set your school's time zone so lessons open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
-      "timeZoneHint": "Lessons open at midnight and due dates end at midnight in this zone. It's {time} there now.",
+      "timeZoneUnset": "Set your school's time zone so lesson plans open at midnight and due dates end at midnight where you are. Until then, nobody is late until 36 hours after the due day starts.",
+      "timeZoneHint": "Lesson plans open at midnight and due dates end at midnight in this zone. It's {time} there now.",
       "groupSchool": "School",
       "groupClasses": "Classes and joining",
       "chatHintOff": "The default. School accounts can't chat with anyone. They can still play and build.",
@@ -6502,7 +6543,7 @@
       "later": "On a phone? These cards stay here for you (only you) for 24 hours: open them again from the class's Students tab on a school computer and print, or use your phone's Share › Print › Save as PDF.",
       "again": "{count, plural, one {Login card you made today: still here to print.} other {# login cards you made today: still here to print.}}",
       "open": "Open the cards",
-      "next": "Next: assign a first game"
+      "next": "Next: assign a first lesson"
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
@@ -6553,8 +6594,10 @@
     },
     "classTabs": {
       "lessons": "Lessons",
+      "lessonsForTeachers": "Lesson plans",
       "progress": "Progress",
       "games": "Games",
+      "gamesForTeachers": "Lessons",
       "students": "Students",
       "settings": "Settings",
       "standards": "Standards"
@@ -6858,6 +6901,7 @@
     "assignedN": "{count, plural, one {in # class} other {in # classes}}",
     "kinds": {
       "game": "Play a game",
+      "gameForTeachers": "Play a lesson",
       "build": "Build a game",
       "text": "Read or do",
       "question": "Answer a question",
@@ -6867,16 +6911,16 @@
       "proofread": "Proofreading"
     },
     "library": {
-      "title": "Lesson library",
-      "mine": "My lessons",
+      "title": "Lesson plan library",
+      "mine": "My lesson plans",
       "shared": "Shared by colleagues",
-      "top": "Lesson library",
+      "top": "Lesson plan library",
       "path": "Folders",
-      "newLesson": "New lesson",
-      "newLessonPlaceholder": "Lesson title, e.g. Fractions warm-up",
-      "empty": "No lessons here yet",
-      "emptyText": "Make a new lesson, let the AI draft one, or copy one a colleague shared.",
-      "find": "Find a lesson",
+      "newLesson": "New lesson plan",
+      "newLessonPlaceholder": "Lesson plan title, e.g. Fractions warm-up",
+      "empty": "No lesson plans here yet",
+      "emptyText": "Make a new lesson plan, let the AI draft one, or copy one a colleague shared.",
+      "find": "Find a lesson plan",
       "readyMade": "Ready-made",
       "numberQuest": "Number Quest (math, grades K–8)"
     },
@@ -6885,12 +6929,12 @@
       "new": "New folder",
       "newPlaceholder": "New folder, e.g. Fractions",
       "delete": "Delete folder",
-      "deleteConfirm": "Delete the folder {name}? The lessons and folders inside move up one level.",
+      "deleteConfirm": "Delete the folder {name}? The lesson plans and folders inside move up one level.",
       "hint": "Folders are only for you. Students never see them.",
-      "why": "Folders sort your own lesson library, and their lessons can go to any class. Units, on a class page, set the order students see."
+      "why": "Folders sort your own lesson plan library, and their lesson plans can go to any class. Units, on a class page, set the order students see."
     },
     "lesson": {
-      "title": "Lesson title",
+      "title": "Lesson plan title",
       "summary": "Summary",
       "objectives": "Learning objectives",
       "objectivesHint": "One objective per line",
@@ -6899,75 +6943,75 @@
       "share": "Share with my school",
       "sharedChip": "Shared",
       "duplicate": "Make a copy",
-      "delete": "Delete lesson",
-      "deleteConfirm": "Delete the lesson {name}? This can't be undone.",
-      "deleteAssignedConfirm": "Delete the lesson {name}? It will also be removed from {count, plural, one {# class} other {# classes}}. This can't be undone.",
+      "delete": "Delete lesson plan",
+      "deleteConfirm": "Delete the lesson plan {name}? This can't be undone.",
+      "deleteAssignedConfirm": "Delete the lesson plan {name}? It will also be removed from {count, plural, one {# class} other {# classes}}. This can't be undone.",
       "unshare": "Stop sharing",
       "sharedToast": "Shared with your school. Colleagues can now copy it.",
       "unsharedToast": "Not shared any more.",
       "sharedStatus": "Shared with your school",
       "editDetails": "Edit details",
       "copiedNotice": "This is your copy. Rename it in Edit details.",
-      "deleteWorkConfirm": "Delete the lesson {name}? {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone.",
-      "deleteLiveConfirm": "Delete the lesson {name}? It is in {count, plural, one {# class} other {# classes}}, and {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone. To keep their work, remove it from the class instead."
+      "deleteWorkConfirm": "Delete the lesson plan {name}? {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone.",
+      "deleteLiveConfirm": "Delete the lesson plan {name}? It is in {count, plural, one {# class} other {# classes}}, and {n, plural, one {# student's work} other {# students' work}} in it will be deleted. This can't be undone. To keep their work, remove it from the class instead."
     },
     "step": {
       "add": "Add a step",
       "addButton": "Add step",
       "kind": "Type",
       "title": "Step title (optional)",
-      "game": "Game",
-      "myGames": "My games",
+      "game": "Lesson",
+      "myGames": "My lessons",
       "schoolGames": "Shared in my school",
       "classGames": "Shared with my classes",
-      "siteGames": "Oomba Academy games",
+      "siteGames": "Oomba Academy lessons",
       "minutes": "Minutes",
       "edit": "Edit step",
       "delete": "Delete step",
       "deleteConfirm": "Delete this step?",
-      "notShared": "Your class can't open this game yet",
+      "notShared": "Your class can't open this lesson yet",
       "notSharedHint": "Share it with your school first, or open it in the Studio and press Publish.",
       "classOnly": "Only the classes it's shared with can play it",
-      "hiddenGame": "A game you can't open",
+      "hiddenGame": "A lesson you can't open",
       "shareGame": "Share with my school",
       "openStudio": "Open in the Studio",
-      "newGameIdea": "Your idea for the game",
+      "newGameIdea": "Your idea for the lesson",
       "newGamePlaceholder": "e.g. a quiz with 10 questions about fractions for grade 4",
       "newGameButton": "Open the Builder",
-      "newGameNote": "A game step is added to this lesson, and the Studio opens with your idea ready. Publish it to your school when it's done.",
+      "newGameNote": "A lesson step is added to this lesson plan, and the Studio opens with your idea ready. Publish it to your school when it's done.",
       "bodyText": "What students read or do",
       "bodyQuestion": "The question",
       "bodyBuild": "Idea students give the Builder",
       "bodyGame": "Instructions (optional)",
       "buildHint": "e.g. “a quiz with 8 questions about the planets”",
-      "newGameLink": "Make a new game for students to play",
+      "newGameLink": "Make a new lesson for students to play",
       "deleteWorkConfirm": "Delete this step? {n, plural, one {# student's work} other {# students' work}} on it will be deleted. This can't be undone.",
-      "liveGames": "Live class games (you host them)",
-      "otherGames": "More games",
+      "liveGames": "Live class lessons (you host them)",
+      "otherGames": "More lessons",
       "bodyFigures": "Instructions for students (optional)",
-      "figuresHint": "Next, the Figures builder opens: pick figures, set their numbers and answers, then Save to lesson.",
+      "figuresHint": "Next, the Figures builder opens: pick figures, set their numbers and answers, then Save to lesson plan.",
       "editFigures": "Edit questions",
       "printFigures": "Print",
       "figuresStarted": "Students have started this step, so its questions stay as they are.",
       "more": "More",
-      "figuresSaved": "Figure questions saved to the lesson."
+      "figuresSaved": "Figure questions saved to the lesson plan."
     },
     "ai": {
       "button": "Draft with AI",
-      "topic": "What is the lesson about?",
+      "topic": "What is the lesson plan about?",
       "topicPlaceholder": "e.g. The water cycle",
       "minutes": "Minutes",
-      "make": "Draft the lesson",
-      "note": "Claude drafts a lesson with steps and matching games. You can change everything before you use it.",
+      "make": "Draft the lesson plan",
+      "note": "Claude drafts a lesson plan with steps and matching lessons. You can change everything before you use it.",
       "done": "Here is your draft. Check every step and change anything you like.",
       "template": "The AI isn't available right now, so here's a simple template to start from. Change anything you like.",
       "check": {
-        "title": "Oomba checked the saved lesson. Not everything is as the AI wrote it:",
+        "title": "Oomba checked the saved lesson plan. Not everything is as the AI wrote it:",
         "steps": "{saved} of {planned} steps were saved.",
         "replaced": "{count, plural, one {# figure couldn’t be drawn as written, so a question from its generator is there instead.} other {# figures couldn’t be drawn as written, so questions from their generators are there instead.}}",
         "dropped": "{count, plural, one {# figure was left out: the app can’t draw it.} other {# figures were left out: the app can’t draw them.}}",
         "fixed": "{count, plural, one {# figure was drawn without a measure it works out itself.} other {# figures were drawn without a measure they work out themselves.}}",
-        "games": "{count, plural, one {# game step became a text step: that game isn’t one you can use.} other {# game steps became text steps: those games aren’t ones you can use.}}"
+        "games": "{count, plural, one {# lesson step became a text step: that lesson isn’t one you can use.} other {# lesson steps became text steps: those lessons aren’t ones you can use.}}"
       }
     },
     "assign": {
@@ -6977,12 +7021,12 @@
       "due": "Due on (optional)",
       "button": "Assign",
       "noClasses": "You don't teach a class in this school yet.",
-      "note": "Students see the lesson from the day it opens. Changes you make later show up for every class.",
+      "note": "Students see the lesson plan from the day it opens. Changes you make later show up for every class.",
       "done": "Assigned to {class}",
       "restored": "Assigned to {class} again. Students' earlier work is back.",
       "changeDates": "Change dates",
-      "allClasses": "This lesson is in all your classes.",
-      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lessons open and due dates end at midnight in {zone}.}}",
+      "allClasses": "This lesson plan is in all your classes.",
+      "zoneNote": "{zone, select, none {Days are counted in UTC and nobody is late until 36 hours after the due day starts. A school admin can set the school's time zone in Settings.} other {Lesson plans open and due dates end at midnight in {zone}.}}",
       "zoneUnset": "Due dates end at midnight UTC for now, because your school's time zone isn't set.",
       "zoneSet": "Set the time zone",
       "zoneAsk": "A school admin can set it in the school's Settings.",
@@ -6997,33 +7041,34 @@
       "noStudents": "This class has no students yet."
     },
     "class": {
-      "title": "Lessons",
-      "assign": "Assign a lesson",
-      "library": "Lesson library",
+      "title": "Lesson plans",
+      "kindPlan": "Lesson plan",
+      "assign": "Assign a lesson plan",
+      "library": "Lesson plan library",
       "unit": "Unit",
       "unitName": "Unit name",
       "newUnit": "New unit",
       "newUnitPlaceholder": "New unit, e.g. Fractions",
-      "emptyUnit": "No lessons in this unit yet.",
+      "emptyUnit": "No lesson plans in this unit yet.",
       "deleteUnit": "Delete unit",
-      "deleteUnitConfirm": "Delete the unit {name}? Its lessons stay in the class.",
+      "deleteUnitConfirm": "Delete the unit {name}? Its lesson plans stay in the class.",
       "opensOn": "Opens {date}",
       "dueOn": "Due {date}",
-      "editLesson": "Edit lesson",
+      "editLesson": "Edit lesson plan",
       "unassign": "Remove from class",
       "unassignConfirm": "Remove {name} from this class? Students won't see it any more. Their work is kept and comes back if you assign it again.",
-      "empty": "No lessons yet",
-      "emptyText": "Make a new lesson for this class, or let the AI draft one for you to check.",
-      "allIn": "All your lessons are in this class.",
-      "sharedHint": "Want a colleague's lesson? Make a copy of it from {tab} first.",
-      "unitHint": "Units group this class's lessons. Students see them.",
+      "empty": "No lesson plans yet",
+      "emptyText": "Make a new lesson plan for this class, or let the AI draft one for you to check.",
+      "allIn": "All your lesson plans are in this class.",
+      "sharedHint": "Want a colleague's lesson plan? Make a copy of it from {tab} first.",
+      "unitHint": "Units group this class's lesson plans. Students see them.",
       "doneOf": "{done} of {students} done",
       "toReview": "{count} to review",
       "dueToday": "Due today",
       "late": "Late",
       "removedGroup": "Removed from this class",
-      "readyMade": "Use a ready-made lesson",
-      "unitWhy": "Units group the lessons in this class, in the order students see them. Folders only sort your own lesson library.",
+      "readyMade": "Use a ready-made lesson plan",
+      "unitWhy": "Units group the lesson plans in this class, in the order students see them. Folders only sort your own lesson plan library.",
       "someStudents": "{count, plural, one {# student} other {# students}}"
     },
     "view": {
@@ -7035,7 +7080,7 @@
     "shared": {
       "copy": "Copy to my library",
       "empty": "Nothing shared by colleagues yet",
-      "emptyText": "Lessons other teachers share show up here. Lessons you share are marked 🏫 Shared in My lessons."
+      "emptyText": "Lesson plans other teachers share show up here. Lesson plans you share are marked 🏫 Shared in My lesson plans."
     },
     "template": {
       "warmup": "Warm-up",
@@ -7050,20 +7095,20 @@
     },
     "errors": {
       "notFound": "We couldn't find that, or you can't open it.",
-      "lessonTitle": "Give the lesson a title.",
+      "lessonTitle": "Give the lesson plan a title.",
       "folderName": "Give the folder a name.",
       "unitName": "Give the unit a name.",
       "folderLoop": "A folder can't go inside itself.",
       "stepKind": "Pick a type of step.",
-      "pickGame": "Pick a game for this step.",
+      "pickGame": "Pick a lesson for this step.",
       "buildPrompt": "Write the idea students will give the Builder.",
       "stepText": "Write the instructions for this step.",
-      "tooManySteps": "A lesson can have up to 40 steps.",
+      "tooManySteps": "A lesson plan can have up to 40 steps.",
       "badDate": "That date doesn't look right.",
-      "topic": "Type what the lesson is about.",
-      "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson yourself.",
+      "topic": "Type what the lesson plan is about.",
+      "aiFailed": "The AI couldn't draft this right now. Try again in a minute, or make the lesson plan yourself.",
       "questionText": "Write the question students will answer.",
-      "alreadyAssigned": "This lesson is already in {class}. Change its dates from the ⋯ menu on the class's Lessons tab.",
+      "alreadyAssigned": "This lesson plan is already in {class}. Change its dates from the ⋯ menu on the class's Lesson plans tab.",
       "pickStudents": "Check at least one student, or choose Whole class.",
       "notInClass": "Only students in this class can be picked."
     },
@@ -7167,18 +7212,18 @@
     },
     "gradebook": {
       "title": "Progress",
-      "text": "Steps each student has done in each lesson. Open a lesson to see scores and review answers.",
+      "text": "Steps each student has done in each lesson plan. Open a lesson plan to see scores and review answers.",
       "csv": "Download (CSV)",
       "overall": "Overall",
       "toRead": "{count, plural, one {# answer to review} other {# answers to review}}",
-      "noLessons": "No lessons yet",
-      "noLessonsText": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
+      "noLessons": "No lesson plans yet",
+      "noLessonsText": "Assign a lesson plan on the Lesson plans tab, and you'll see how each student is doing here.",
       "noStudents": "No students yet",
       "noStudentsText": "Add students on the Students tab, and their progress shows up here.",
       "toReviewList": "Answers to review:",
       "reviewLink": "{title} ({count})",
       "quizTitle": "Quiz score: {pct}% right",
-      "quizOverall": "Quiz score across lessons: {pct}%"
+      "quizOverall": "Quiz score across lesson plans: {pct}%"
     },
     "lesson": {
       "finished": "{done} of {total} students done",
@@ -7883,7 +7928,7 @@
       "print": {
         "title": "School plan: a page for your school's admin",
         "heading": "Oomba Academy school plan",
-        "intro": "A teacher at your school would like a school plan on Oomba Academy: learning games for ages 5 to 14, and a Builder where students make their own games. Here is what it costs and how to set it up.",
+        "intro": "A teacher at your school would like a school plan on Oomba Academy: interactive lessons for ages 5 to 14, and a Builder where students make their own games. Here is what it costs and how to set it up.",
         "printButton": "Print or save as PDF",
         "back": "Back to school plans",
         "cost": "What it costs",
@@ -8022,7 +8067,7 @@
       "imageAlt": "Oomba Academy: fun learning games for kids"
     },
     "teachers": {
-      "imageAlt": "Oomba Academy for teachers: fun, interactive learning games for the classroom"
+      "imageAlt": "Oomba Academy for teachers: fun, interactive lessons for the classroom"
     },
     "game": {
       "title": "{title}: free online {kind} for kids",
@@ -8051,11 +8096,11 @@
     }
   },
   "teachers": {
-    "title": "Fun interactive learning games for classrooms",
-    "description": "Ad-free learning games for ages 5 to 14 that run in any browser, Chromebooks too, plus math manipulatives, a Classroom Dashboard and an AI game Builder.",
+    "title": "Fun interactive lessons for classrooms",
+    "description": "Ad-free interactive lessons for ages 5 to 14 that run in any browser, Chromebooks too, plus math manipulatives, a Classroom Dashboard and an AI Builder.",
     "kicker": "🍎 For teachers",
-    "h1": "Fun, interactive learning games your class will ask for",
-    "lead": "Learning games, math manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "h1": "Fun, interactive lessons your class will ask for",
+    "lead": "Interactive lessons, math manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
     "badges": {
       "ads": "No ads",
       "browser": "Runs in any browser, Chromebooks too",
@@ -8064,10 +8109,10 @@
     },
     "cta": {
       "start": "Create a teacher account",
-      "try": "Try a game now, no sign-up"
+      "try": "Try a lesson now, no sign-up"
     },
     "subjects": {
-      "h": "Games by subject"
+      "h": "Lessons by subject"
     },
     "how": {
       "h": "How it works in your classroom",
@@ -8075,7 +8120,7 @@
       "s1": {
         "h": "Your classes in one place",
         "p": "Once your school is set up, your school admin adds teachers, and each teacher makes their classes on My classes.",
-        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live game, and the teaching loop card with Plan, Play, Check and Feedback."
+        "alt": "The Classroom home for Ms. Rivera: three classes and two answers waiting, buttons for this week’s summary and a live lesson, and the teaching loop card with Plan, Play, Check and Feedback."
       },
       "s2": {
         "h": "Students join with a code or login cards",
@@ -8084,19 +8129,19 @@
         "alt": "A class’s Students tab: one student, @StarGecko, asks to join with the class code, with a box for their real name and Approve and Decline buttons. Below it, the class list of 5 students and a button for new login cards."
       },
       "s3": {
-        "h": "Plan a lesson in steps",
-        "p": "Lessons mix short reading, a learning game, a build-a-game task and written questions. Assign one to a class with a due date.",
-        "alt": "The Steps list in the lesson editor: step 1, “Warm-up: slices of pizza”, and step 2, “Keep the bottom, add the top”, each with its text, its minutes and an Edit step button."
+        "h": "Make a lesson plan in steps",
+        "p": "Lesson plans mix short reading, a lesson to play, a build-a-game task and written questions. Assign one to a class with a due date.",
+        "alt": "The Steps list in the lesson plan editor: step 1, “Warm-up: slices of pizza”, and step 2, “Keep the bottom, add the top”, each with its text, its minutes and an Edit step button."
       },
       "s4": {
         "h": "Students play, build and answer",
-        "p": "Each student works through the lesson at their own pace on any device.",
-        "alt": "A student’s view of a lesson: the game step, Quick-math warm-up, is marked Done with a best score of 47 and a Play Sum Racer button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
+        "p": "Each student works through the lesson plan at their own pace on any device.",
+        "alt": "A student’s view of a lesson plan: the play step, Quick-math warm-up, is marked Done with a best score of 47 and a Play Sum Racer button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
       },
       "s5": {
         "h": "See progress and the gradebook",
-        "p": "The gradebook shows each student’s progress, game scores and written answers. Leave feedback, or download it as a CSV.",
-        "alt": "The class Progress tab: links to the courses and the live games history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson."
+        "p": "The gradebook shows each student’s progress, lesson scores and written answers. Leave feedback, or download it as a CSV.",
+        "alt": "The class Progress tab: links to the courses and the live lessons history, a Download (CSV) button, the answers waiting for review and the gradebook table with each student’s steps done in each lesson plan."
       },
       "s6": {
         "h": "Teach with the tools",
@@ -8115,8 +8160,8 @@
       "li1": "Classes with a class code: students who have their own account join with the code, and you approve them.",
       "li2": "No student email needed: you can make school accounts for a whole class and print their login cards.",
       "li3": "Sign in with Google for schools that use Google accounts and Chromebooks.",
-      "li4": "Lessons in steps: read something, play a game, build a game. You see each student's progress, scores and written answers.",
-      "li5": "Share a game with only your classes, so it stays inside your class."
+      "li4": "Lesson plans in steps: read something, play a lesson, build a game. You see each student's progress, scores and written answers.",
+      "li5": "Share a lesson with only your classes, so it stays inside your class."
     },
     "safe": {
       "h": "Safe by design",
@@ -8129,7 +8174,7 @@
     },
     "uses": {
       "h": "Ways to use it",
-      "p": "Teachers fit a game into the day wherever a few minutes of focused play helps:",
+      "p": "Teachers fit a lesson into the day wherever a few minutes of focused play helps:",
       "li1": "Warm-ups",
       "li2": "Brain breaks",
       "li3": "Early finishers",
@@ -8144,7 +8189,7 @@
     },
     "start": {
       "h": "Set up your school",
-      "p1": "Students can try any game straight away, without signing up.",
+      "p1": "Students can try any lesson straight away, without signing up.",
       "plans": "Want more for your classes? Try the Teacher plan free for {days} days, no card needed: unlimited students and {daily} AI builds a day for the class.",
       "email": "Email us to set up your school",
       "subject": "Setting up my school on Oomba Academy",
@@ -8153,7 +8198,7 @@
     "faq": {
       "h": "Questions teachers ask",
       "q1": "Is Oomba Academy free for teachers?",
-      "a1": "Yes. Playing, classes, lessons and progress are free, and every student account gets free Builder messages each day.",
+      "a1": "Yes. Playing, classes, lesson plans and progress are free, and every student account gets free Builder messages each day.",
       "q2": "Do students need an account or an email address to play?",
       "a2": "No. Anyone can play straight away. For your classes you can make school accounts without any email address and print login cards for them.",
       "q3": "Does it work on Chromebooks and school networks?",
@@ -8161,19 +8206,19 @@
       "q4": "How do you protect student privacy?",
       "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q5": "What ages and grades is it for?",
-      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
+      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Lessons such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
       "q6": "How do I add my class?",
       "a6": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
       "a6google": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
       "q7": "Can students make their own games? Who sees them?",
       "a7": "Yes. A new game is private to the student who made it. They can share it with their class, and a game for everyone is reviewed before anyone else can play it.",
       "q8": "Can I track progress and scores?",
-      "a8": "Yes. Lessons record each student’s progress, game scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson progress as a spreadsheet (CSV).",
+      "a8": "Yes. Lesson plans record each student’s progress, lesson scores and written answers. You see them on the class’s Progress tab, and can download each student’s lesson plan progress as a spreadsheet (CSV).",
       "q9": "Which languages are there?",
       "a9": "{count} languages, including Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognize their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q1paid": "Is Oomba Academy free for teachers?",
-      "a1paid": "Playing, classes, lessons, progress and Oomba Live are free, and every student gets free Builder messages each day. The optional Teacher plan adds a shared daily pool of AI builds for your classes, with unlimited students. Try it free for 14 days, no card needed. Prices are on the plans page."
+      "a1paid": "Playing, classes, lesson plans, progress and Oomba Live are free, and every student gets free Builder messages each day. The optional Teacher plan adds a shared daily pool of AI builds for your classes, with unlimited students. Try it free for 14 days, no card needed. Prices are on the plans page."
     },
     "setup": {
       "lead": "Tell us a little about your school. We'll set it up within 1 school day and reply to your email with what to do next.",
@@ -8198,11 +8243,11 @@
       "thanks": {
         "h": "Thank you! We've got your request.",
         "p1": "We'll set up your school within 1 school day (by the end of the next school day) and reply to the email you gave us, with your sign-in and what to do next.",
-        "p2": "While you wait, try a game with your class: students can play straight away, without signing up.",
+        "p2": "While you wait, try a lesson with your class: students can play straight away, without signing up.",
         "todayH": "Things you can do today, while you wait",
-        "todayLive": "<a href=\"{href}\">Host a live class game</a>: students join on any device with a code, no accounts needed.",
-        "todayPlay": "<a href=\"{href}\">Play a game with your class</a>: students can play straight away, without signing up.",
-        "todayHow": "<a href=\"{href}\">See how classes, login cards and lessons work</a>, so you're ready when your school is set up."
+        "todayLive": "<a href=\"{href}\">Host a live class lesson</a>: students join on any device with a code, no accounts needed.",
+        "todayPlay": "<a href=\"{href}\">Play a lesson with your class</a>: students can play straight away, without signing up.",
+        "todayHow": "<a href=\"{href}\">See how classes, login cards and lesson plans work</a>, so you're ready when your school is set up."
       },
       "errors": {
         "school": "Type your school's name (2 to 100 characters).",
@@ -8229,10 +8274,10 @@
       "signupCta": "Create my teacher account"
     },
     "live": {
-      "h": "Live class games",
-      "p1": "Run a live quiz race or any live-ready game on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions), Question Battle and Brain Board (a board of categories, easy to hard).",
-      "li2": "Use a starter question set, type a quick set, or turn a lesson's questions into a live quiz.",
+      "h": "Live class lessons",
+      "p1": "Run a live quiz race or any live-ready lesson on the projector. Students join on their own devices with a 7-digit code.",
+      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Brain Board (a board of categories, easy to hard).",
+      "li2": "Use a starter question set, type a quick set, or turn a lesson plan's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
     },
@@ -8559,9 +8604,9 @@
       "h": "Works with your Google Classroom",
       "lead": "Connect your Google Classroom in a few clicks. At first Oomba Academy can only see your classes and their students. It posts nothing until you allow posting.",
       "li1": "Import your roster in one click, and it refreshes itself every 6 hours. Students are matched by their Google account.",
-      "li2": "Post a lesson as a Classroom assignment, with its link and due date, or share it as a material.",
-      "li3": "Grades flow back to Classroom out of 100: a completion grade (the share of the lesson’s steps finished, not right answers), or for Homeroom handouts the grade you chose: the score, completion, or nothing for practice. Send them yourself, or turn on automatic grades.",
-      "li4": "Post to the class stream when a live game starts or a lesson is ready, in your own words.",
+      "li2": "Post a lesson plan as a Classroom assignment, with its link and due date, or share it as a material.",
+      "li3": "Grades flow back to Classroom out of 100: a completion grade (the share of the lesson plan’s steps finished, not right answers), or for Homeroom handouts the grade you chose: the score, completion, or nothing for practice. Send them yourself, or turn on automatic grades.",
+      "li4": "Post to the class stream when a live lesson starts or a lesson plan is ready, in your own words.",
       "li5": "Oomba Academy doesn’t ask Classroom for student emails, and never sends Google a student’s name, answers or games.",
       "note": "Assignments, materials, grades and announcements work once you allow posting, a separate step. Each teacher connects their own Google account, and your school’s Google admin may need to allow Oomba Academy first.",
       "privacy": "What goes to Google"
@@ -8600,7 +8645,7 @@
       "lead": "Real screens from a demo class: a math board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
       "board": {
         "h": "Math manipulatives with Oomba",
-        "p": "Base ten blocks, fraction pieces, clocks and more on one board. Tell Oomba the lesson, and it lays out the board for you.",
+        "p": "Base ten blocks, fraction pieces, clocks and more on one board. Tell Oomba what you're teaching, and it lays out the board for you.",
         "alt": "The Manipulatives on a laptop: four clocks at half past, each with an answer box, and Oomba’s chat beside the board saying it made the board.",
         "open": "Open the Manipulatives"
       },
@@ -8989,7 +9034,7 @@
         },
         "faq": {
           "q2": "Can my child play if they can’t read yet?",
-          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer and Tug of Math use numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
+          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer uses numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
           "q3": "Are the courses for this age?",
           "a3": "One is. Number Quest, our math course, starts in kindergarten: its Launchpad street is for kindergarten to grade 2, and its games read every instruction aloud. CS Quest and Cyber Defenders start in grade 3, at about age 8.",
           "q4": "Can a 6 year old use the AI Builder?",
@@ -9666,7 +9711,9 @@
     },
     "host": {
       "title": "Live game",
+      "titleForTeachers": "Live lesson",
       "code": "Game code",
+      "codeForTeachers": "Join code",
       "joinAt": "Go to {url} and type the code",
       "signInFirst": "Sign in first, then type the code.",
       "hideCode": "Hide code",
@@ -9681,7 +9728,9 @@
       "unlock": "Unlock room",
       "locked": "Room locked",
       "autoLock": "The room locks when the game starts.",
+      "autoLockForTeachers": "The room locks when the lesson starts.",
       "end": "End game",
+      "endForTeachers": "End lesson",
       "skipTurn": "Skip turn",
       "clear": "Clear drawing",
       "clearConfirm": "Clear the drawing on every screen?",
@@ -9690,18 +9739,23 @@
       "playToo": "Play too",
       "hidCount": "Players hiding this drawing: {count}",
       "endConfirm": "End the game for everyone?",
+      "endConfirmForTeachers": "End the lesson for everyone?",
       "remove": "Remove",
       "removeConfirm": "Remove this player from the game?",
+      "removeConfirmForTeachers": "Remove this player from the lesson?",
       "ready": "Ready",
       "late": "Joined after the start",
       "watching": "Watching the map",
       "offline": "Disconnected",
       "empty": "Nobody has joined yet.",
       "qrLabel": "QR code to join the game",
+      "qrLabelForTeachers": "QR code to join the lesson",
       "answers": "{count, plural, one {# answer} other {# answers}}",
       "players": "Players",
       "controls": "Game controls",
+      "controlsForTeachers": "Lesson controls",
       "reports": "A player reported something in this game. Please check that everything is OK.",
+      "reportsForTeachers": "A player reported something in this lesson. Please check that everything is OK.",
       "eyes": "Eyes up",
       "teacherView": "Teacher view",
       "soundOn": "Sound on",
@@ -9714,16 +9768,23 @@
     },
     "landing": {
       "title": "Host a live game",
+      "titleForTeachers": "Host a live lesson",
       "heading": "Host a live game",
+      "headingForTeachers": "Host a live lesson",
       "intro": "Pick a game, choose who can join, then open the room. Players go to {url} and type the code.",
+      "introForTeachers": "Pick a lesson, choose who can join, then open the room. Players go to {url} and type the code.",
       "modes": "Ready to play",
       "official": "Oomba Academy games",
+      "officialForTeachers": "Oomba Academy lessons",
       "mine": "My games",
+      "mineForTeachers": "My lessons",
       "shared": "Shared with my classes",
       "none": "No live-ready games here yet.",
+      "noneForTeachers": "No live-ready lessons here yet.",
       "usesQuestions": "Uses a question set",
       "questions": "Questions",
       "questionsLabel": "Question set (for quiz games)",
+      "questionsLabelForTeachers": "Question set (for quiz lessons)",
       "starters": "Starter sets",
       "mySets": "My question sets",
       "schoolSets": "Shared at my school",
@@ -9739,9 +9800,11 @@
       "openHint": "Guests get a made-up name from a safe list. Nobody can chat or type.",
       "open": "Open the room",
       "recent": "Recent live games",
+      "recentForTeachers": "Recent live lessons",
       "best": "Best for {min}–{max} players",
       "teamsAbove": "More than {n} players? Teams play best.",
-      "maxHint": "This game takes up to {max} players."
+      "maxHint": "This game takes up to {max} players.",
+      "maxHintForTeachers": "This lesson takes up to {max} players."
     },
     "mode": {
       "questRace": "Quest Race",
@@ -9922,6 +9985,7 @@
     },
     "results": {
       "title": "Live game results",
+      "titleForTeachers": "Live lesson results",
       "heading": "Results: {title}",
       "rank": "Place",
       "player": "Player",
@@ -9929,6 +9993,7 @@
       "correct": "Right answers",
       "scoredBy": "Scored by",
       "byGame": "the game",
+      "byGameForTeachers": "the lesson",
       "byLive": "Oomba Live",
       "questions": "Questions",
       "accuracy": "{right} of {answered} right",
@@ -9960,6 +10025,7 @@
       "stillHere": "{count, plural, one {# player still here} other {# players still here}}",
       "playAgainTeams": "Play again with these teams",
       "newGame": "New game",
+      "newGameForTeachers": "New lesson",
       "homework": "Assign as homework",
       "votes": "{count, plural, one {# vote} other {# votes}}",
       "classHeading": "The class",
@@ -9976,23 +10042,32 @@
       "school": "Shared at my school",
       "schoolHint": "Sets other teachers at your school shared. Make a copy to change one.",
       "copy": "Make a copy",
-      "fromLesson": "From my lesson"
+      "fromLesson": "From my notes"
     },
     "api": {
       "off": "Live games are switched off right now.",
+      "offForTeachers": "Live lessons are switched off right now.",
       "notHost": "Only teachers and grown-ups can host live games.",
       "notTeacher": "Pick one of your own classes.",
       "noFamily": "Set up your family first.",
       "notFound": "We can't find that game.",
+      "notFoundForTeachers": "We can't find that lesson.",
       "notPublished": "Publish the game first.",
+      "notPublishedForTeachers": "Publish the lesson first.",
       "notPublic": "Anyone with the code can only play public games. Pick your class or family instead.",
+      "notPublicForTeachers": "Anyone with the code can only play public lessons. Pick your class instead.",
       "notShared": "Share the game with this class or family first.",
+      "notSharedForTeachers": "Share the lesson with this class first.",
       "notReady": "This game isn't live-ready yet.",
+      "notReadyForTeachers": "This lesson isn't live-ready yet.",
       "noSet": "Pick a question set.",
       "setIncomplete": "Some questions still need their answers.",
       "busy": "Too many live games are running. Try again in a few minutes.",
+      "busyForTeachers": "Too many live lessons are running. Try again in a few minutes.",
       "hasOpen": "You already have a live game open. End it first, or go back to it.",
+      "hasOpenForTeachers": "You already have a live lesson open. End it first, or go back to it.",
       "mode": "Pick a game.",
+      "modeForTeachers": "Pick a lesson.",
       "audience": "Pick who can join.",
       "set": {
         "title": "Give the set a title.",
@@ -10002,7 +10077,7 @@
         "choices": "Question {n} needs 2 to 4 answers, with the right one chosen.",
         "sameChoice": "Question {n} has two answers that are the same.",
         "tooBig": "This set is too big.",
-        "noQuestions": "This lesson has no question steps.",
+        "noQuestions": "This lesson plan has no question steps.",
         "notFound": "We can't find that set.",
         "topic": "Type a topic first.",
         "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions.",
@@ -10013,25 +10088,33 @@
       "needTwo": "Two players are needed to start.",
       "tugTeams": "Tug of Math needs two teams, and teams are switched off on this site.",
       "teamsOff": "This game had no teams.",
+      "teamsOffForTeachers": "This lesson had no teams.",
       "againGone": "The players have left. Start a new game instead.",
+      "againGoneForTeachers": "The players have left. Start a new lesson instead.",
       "homeworkOff": "Homework from question sets is switched off.",
       "noClass": "Pick one of your classes.",
       "cohost": {
         "cohostRoom": "Co-hosts are for class and family games.",
+        "cohostRoomForTeachers": "Co-hosts are for class lessons.",
         "notEligible": "That person can't co-host this game.",
+        "notEligibleForTeachers": "That person can't co-host this lesson.",
         "full": "This game already has 3 co-hosts.",
+        "fullForTeachers": "This lesson already has 3 co-hosts.",
         "already": "That person is already invited or co-hosting.",
         "notCohost": "That person isn't a co-host of this game.",
+        "notCohostForTeachers": "That person isn't a co-host of this lesson.",
         "hasOpen": "That person is hosting another live game right now.",
+        "hasOpenForTeachers": "That person is hosting another live lesson right now.",
         "gone": "This invite has ended.",
         "self": "You're already the host."
       },
       "notForClass": "This game is for fun, not for class. Pick a quiz mode or one of your own games.",
+      "notForClassForTeachers": "This one is for fun, not for class. Pick a quiz mode or one of your own lessons.",
       "make": {
         "pdfBad": "That file can't be read. Choose a PDF of up to 2 MB.",
-        "lessonShort": "Paste a bit more of your lesson first (a paragraph or more).",
-        "lessonLong": "That lesson is too long. Paste one lesson at a time (up to 20,000 characters).",
-        "lessonThin": "There wasn't enough in that lesson to write questions from. Paste more of it and try again.",
+        "lessonShort": "Paste a bit more of your notes first (a paragraph or more).",
+        "lessonLong": "Those notes are too long. Paste the notes for one lesson at a time (up to 20,000 characters).",
+        "lessonThin": "There wasn't enough in those notes to write questions from. Paste more of them and try again.",
         "aiOff": "Drafting with AI isn't available right now. You can still type or paste your questions in My question sets.",
         "aiFailed": "The AI couldn't write questions this time. Try again in a moment."
       }
@@ -10184,8 +10267,9 @@
     },
     "entry": {
       "host": "Host a live game",
+      "hostForTeachers": "Host a live lesson",
       "hostLive": "Host live",
-      "quizLesson": "Quiz this lesson live",
+      "quizLesson": "Quiz this lesson plan live",
       "fromLesson": "Make a live quiz from these questions",
       "family": "Play live with your family or group",
       "familyText": "Start a game on a big screen. Everyone joins on their own device with a code. Nobody can chat or type.",
@@ -10196,6 +10280,7 @@
       "studioFixText": "Fix the live part of this game for Oomba Live so a teacher or grown-up can host it: {issue}.",
       "badge": "Live",
       "badgeLong": "Live class game",
+      "badgeLongForTeachers": "Live class lesson",
       "howJoin": "Your teacher shows a code on the board. Type it here to join.",
       "teacherHost": "Teacher? Host it live for your class",
       "solo": "Practice solo",
@@ -10211,7 +10296,8 @@
       "live_raw": "it talks to the page in a way that isn't allowed"
     },
     "panel": {
-      "title": "Live games"
+      "title": "Live games",
+      "titleForTeachers": "Live lessons"
     },
     "team": {
       "preset": {
@@ -10253,6 +10339,7 @@
       "shuffle": "Shuffle",
       "choose": "Players choose their team",
       "chooseHint": "Only before the game starts.",
+      "chooseHintForTeachers": "Only before the lesson starts.",
       "lock": "Lock teams",
       "unlock": "Unlock teams",
       "locked": "Teams are locked",
@@ -10263,6 +10350,7 @@
       "saved": "Teams saved.",
       "savedCount": "{count, plural, one {Saved teams for # student.} other {Saved teams for # students.}}",
       "notSaved": "No saved teams yet. The teams from your last live game with this class are saved here too.",
+      "notSavedForTeachers": "No saved teams yet. The teams from your last live lesson with this class are saved here too.",
       "moveHere": "Move here",
       "selectHint": "Drag a player onto a team, or select a player and then choose “Move here”.",
       "moved": "{name} → {team}",
@@ -10278,10 +10366,13 @@
       "madeFor": "Made for teams",
       "none": "Teams are off.",
       "editor": "Teams for live games",
-      "editorHint": "Make your table groups before the lesson. In a live game, “Use last teams” puts everyone back in them."
+      "editorForTeachers": "Teams for live lessons",
+      "editorHint": "Make your table groups before the lesson. In a live game, “Use last teams” puts everyone back in them.",
+      "editorHintForTeachers": "Make your table groups before class. In a live lesson, “Use last teams” puts everyone back in them."
     },
     "settings": {
       "title": "Game settings",
+      "titleForTeachers": "Lesson settings",
       "open": "Settings",
       "more": "More settings",
       "secs": "Time per question",
@@ -10301,8 +10392,10 @@
       "namesHidden": "No names on the big screen",
       "namesHint": "Your teacher view always shows your own students' names.",
       "sound": "Game sounds on the big screen",
+      "soundForTeachers": "Lesson sounds on the big screen",
       "emotes": "Emotes",
       "remembered": "Your choices are remembered for your next live game.",
+      "rememberedForTeachers": "Your choices are remembered for your next live lesson.",
       "reset": "Back to standard settings",
       "save": "Save",
       "voices": "Voices for reading aloud",
@@ -10397,6 +10490,7 @@
       "open": "Co-hosts",
       "title": "Co-hosts",
       "intro": "Another teacher at your school can help run this game from their own device, with the same game controls as you.",
+      "introForTeachers": "Another teacher at your school can help run this lesson from their own device, with the same lesson controls as you.",
       "introFamily": "Another grown-up in your family can help run this game from their own device.",
       "max": "Up to 3 co-hosts.",
       "gate": "Grown-ups' names show here. Check the class can't see your screen.",
@@ -10424,24 +10518,34 @@
       "link": "Link for your co-host",
       "linkHint": "They open it on their own device, signed in as themselves. It works only for the person you invited.",
       "full": "This game already has 3 co-hosts.",
+      "fullForTeachers": "This lesson already has 3 co-hosts.",
       "inviteTitle": "Co-host a live game",
+      "inviteTitleForTeachers": "Co-host a live lesson",
       "inviteText": "{name} invited you to co-host “{title}”.",
       "inviteFull": "You'll get the same game controls as the host and see student details.",
+      "inviteFullForTeachers": "You'll get the same lesson controls as the host and see student details.",
       "inviteLimited": "You'll get the same game controls as the host. Student details stay with the class's teachers.",
+      "inviteLimitedForTeachers": "You'll get the same lesson controls as the host. Student details stay with the class's teachers.",
       "accept": "Accept",
       "decline": "No thanks",
       "youCohost": "Co-host · {host} is the host",
       "youCohostShort": "You're co-hosting this game.",
+      "youCohostShortForTeachers": "You're co-hosting this lesson.",
       "youHost": "You're the host.",
       "roleHost": "Host",
       "roleCohost": "Co-host",
       "leave": "Stop co-hosting",
       "leaveConfirm": "Stop co-hosting this game?",
+      "leaveConfirmForTeachers": "Stop co-hosting this lesson?",
       "left": "You stopped co-hosting.",
       "removed": "You're no longer a co-host of this game.",
+      "removedForTeachers": "You're no longer a co-host of this lesson.",
       "endConfirm": "End the game for everyone? You're a co-host: this ends it for the host too.",
+      "endConfirmForTeachers": "End the lesson for everyone? You're a co-host: this ends it for the host too.",
       "projBusy": "The game is already on another screen. Use Teacher view to help run it.",
+      "projBusyForTeachers": "The lesson is already on another screen. Use Teacher view to help run it.",
       "projBack": "The host took the big screen back. Use Teacher view to help run the game.",
+      "projBackForTeachers": "The host took the big screen back. Use Teacher view to help run the lesson.",
       "landingInvite": "{name} invited you to co-host “{title}”.",
       "landingOn": "You're co-hosting “{title}”.",
       "openInvite": "See invite",
@@ -10454,14 +10558,18 @@
       "player": "a player",
       "log": {
         "title": "Who ran this game",
+        "titleForTeachers": "Who ran this lesson",
         "former": "A former co-host",
         "player": "a player",
         "team": "a team"
       },
       "act": {
         "start": "{name} started the game",
+        "startForTeachers": "{name} started the lesson",
         "pause": "{name} paused the game",
+        "pauseForTeachers": "{name} paused the lesson",
         "resume": "{name} resumed the game",
+        "resumeForTeachers": "{name} resumed the lesson",
         "next": "{name} moved on",
         "skip": "{name} skipped the question",
         "clear": "{name} cleared the drawing",
@@ -10469,6 +10577,7 @@
         "unlock": "{name} unlocked the room",
         "kick": "{name} removed {player}",
         "end": "{name} ended the game",
+        "endForTeachers": "{name} ended the lesson",
         "eyesOn": "{name} asked for eyes up",
         "eyesOff": "{name} ended eyes up",
         "say": "{name} sent a message",
@@ -10535,7 +10644,8 @@
       "level": "Level",
       "count": "Number of questions",
       "boardSubjects": "Board subjects (pick 2 to 6)",
-      "bankHint": "Fresh questions every game, written for each age group."
+      "bankHint": "Fresh questions every game, written for each age group.",
+      "bankHintForTeachers": "Fresh questions every round, written for each age group."
     },
     "wyrUi": {
       "legend": "Would You Rather? (Live)",
@@ -10570,6 +10680,7 @@
       "secs": "Drawing time",
       "secsN": "{n} seconds",
       "hint": "Everyone takes a turn to draw while the others guess. Players join with the code on their own device, wherever they are. Typed guesses go only to the game: the drawer sees a guess only when it is one of the game’s own words, and there is no chat.",
+      "hintForTeachers": "Everyone takes a turn to draw while the others guess. Players join with the code on their own device, wherever they are. Typed guesses go only to the lesson: the drawer sees a guess only when it is one of the lesson’s own words, and there is no chat.",
       "guess": "How players guess",
       "guessType": "Type on their keyboard",
       "guessTiles": "Letter tiles (easier)",
@@ -10618,31 +10729,31 @@
       "preset": "Set up from the lesson plan. You can still change anything."
     },
     "make": {
-      "title": "Turn your lesson into a game",
-      "heading": "Turn your lesson into a game",
-      "lead": "Paste a lesson you already teach. Oomba drafts the questions, you check every answer, then your class plays.",
+      "title": "Turn your notes into a lesson",
+      "heading": "Turn your notes into a lesson",
+      "lead": "Paste your notes from a lesson you already teach. Oomba drafts the questions, you check every answer, then your class plays.",
       "stepsLabel": "Steps",
-      "step1": "1. Paste your lesson",
+      "step1": "1. Paste your notes",
       "step2": "2. Check the questions",
       "step3": "3. Play it",
-      "pasteHeading": "Your lesson",
-      "textLabel": "Paste your lesson text",
+      "pasteHeading": "Your notes",
+      "textLabel": "Paste your notes",
       "textHint": "Paste your notes, a reading, a worksheet or a slide outline…",
       "fileLabel": "Or choose a file (PDF or text, up to 2 MB)",
       "levelLabel": "Grade or level",
       "levelHint": "For example: Grade 4",
       "countLabel": "How many questions",
-      "privacy": "Your lesson is sent to our AI helper to write the questions and is not kept. Please leave out students' names and anything personal.",
+      "privacy": "Your notes are sent to our AI helper to write the questions and are not kept. Please leave out students' names and anything personal.",
       "go": "Draft the questions",
-      "wait": "Reading your lesson and writing questions. This takes up to a minute.",
+      "wait": "Reading your notes and writing questions. This takes up to a minute.",
       "checkHeading": "Check every question and answer",
-      "checkText": "These are a first draft. Read each one, fix anything that is wrong or unclear, and remove what you don't want. Under each question you can see the part of your lesson it came from. Nothing reaches students until you save.",
+      "checkText": "These are a first draft. Read each one, fix anything that is wrong or unclear, and remove what you don't want. Under each question you can see the part of your notes it came from. Nothing reaches students until you save.",
       "back": "Start again",
       "doneHeading": "Your questions are saved",
       "doneText": "Choose how your class will use them.",
-      "host": "Host a live game now",
+      "host": "Host a live lesson now",
       "assignHeading": "Or assign it for students to do on their own",
-      "assignText": "It becomes a short quiz in the class's lessons, and the scores go to your gradebook.",
+      "assignText": "It becomes a short quiz in the class's lesson plans, and the scores go to your gradebook.",
       "classLabel": "Class",
       "dueLabel": "Due date (optional)",
       "assign": "Assign to this class",
@@ -10651,18 +10762,22 @@
     },
     "wiz": {
       "modesTab": "Live games",
+      "modesTabForTeachers": "Live lessons",
       "progress": "Step {n} of {total}",
       "back": "Back",
       "next": "Next",
       "change": "Change",
       "play": {
         "title": "What do you want to play?",
-        "hint": "Pick a game. You can change anything before the room opens."
+        "hint": "Pick a game. You can change anything before the room opens.",
+        "hintForTeachers": "Pick a lesson. You can change anything before the room opens."
       },
       "questions": {
         "title": "Which questions?",
         "ownTitle": "Set up the game",
-        "hint": "Choose what the game asks and how long it runs."
+        "ownTitleForTeachers": "Set up the lesson",
+        "hint": "Choose what the game asks and how long it runs.",
+        "hintForTeachers": "Choose what the lesson asks and how long it runs."
       },
       "who": {
         "title": "Who is playing?",
@@ -10674,6 +10789,7 @@
       },
       "row": {
         "game": "Game",
+        "gameForTeachers": "Lesson",
         "questions": "Questions",
         "who": "Who can join",
         "teams": "Teams"
@@ -10695,11 +10811,11 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: free live quiz games for your class",
+    "title": "Oomba Live: free live quiz lessons for your class",
     "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
     "kicker": "Oomba Live for teachers",
-    "h1": "Live quiz games your whole class plays together",
-    "lead": "Put the game on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "h1": "Live quiz lessons your whole class plays together",
+    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
     "demo": {
       "h": "See it in one minute",
       "note": "A one-minute video with music and captions on screen: a teacher starts a Quest Race in Science, students join on their phones with a code and race through the questions, then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, a few of the learning games."
@@ -10712,22 +10828,22 @@
       "languages": "{count} languages"
     },
     "cta": {
-      "host": "Host a free live game",
+      "host": "Host a free live lesson",
       "how": "See how it works",
       "join": "Joining a game? Type the code here"
     },
     "how": {
       "h": "From questions to results in a few minutes",
-      "lead": "Real screens from a live game in a demo school with made-up names.",
+      "lead": "Real screens from a live lesson in a demo school with made-up names.",
       "s1": {
-        "h": "Pick a game and your questions",
-        "p": "Choose Quest Race, Question Battle or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lessons.",
-        "alt": "The first step of hosting a live game, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
+        "h": "Pick a lesson and your questions",
+        "p": "Choose Quest Race or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lesson plans.",
+        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
       },
       "s2": {
         "h": "Show the code on the board",
         "p": "Students go to the join page on their device and type the 7-digit code, or scan the QR code. Their names appear as they join.",
-        "alt": "The projector screen before the game starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
+        "alt": "The projector screen before the lesson starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
       },
       "s3": {
         "h": "Students join in seconds",
@@ -10783,15 +10899,15 @@
       "li3": "A timer of 10, 20 or 30 seconds a question, and skip or pause any time.",
       "li4": "Bonus points for teamwork, kindness and effort.",
       "li5": "Extra time for students who need it.",
-      "li6": "A co-host can run the game with you.",
-      "li7": "Results by question and by student. Class games are saved and download as a spreadsheet."
+      "li6": "A co-host can run the lesson with you.",
+      "li7": "Results by question and by student. Class lessons are saved and download as a spreadsheet."
     },
     "safe": {
       "h": "Built for kids from the start",
       "li1": "Students can't type anything but the code: no chat, no free-text names, no comments.",
       "li2": "In an open room everyone gets a kind made-up nickname, like Brave Otter, never a real name.",
       "li3": "A class room is for your own signed-in students only, and their scores go into your gradebook.",
-      "li4": "Codes end when the game ends, and students can report anything to you with one tap.",
+      "li4": "Codes end when the lesson ends, and students can report anything to you with one tap.",
       "link": "Read more on our <a href=\"{safety}\">safety page</a>."
     },
     "more": {
@@ -10800,24 +10916,24 @@
       "link": "Oomba Academy for teachers"
     },
     "start": {
-      "h": "Ready for your first live game?",
+      "h": "Ready for your first live lesson?",
       "p": "Make a free grown-up account, or sign in with your school account. Pick a starter set and you can be playing in two minutes.",
-      "signedIn": "You're signed in. Pick a game and open your room.",
+      "signedIn": "You're signed in. Pick a lesson and open your room.",
       "kid": "Live games are hosted by teachers and other grown-ups. Ask your teacher for the code, then join here:",
       "pSchool": "Sign in with your school account, or get a free school account for your class. Pick a starter set and you can be playing in two minutes."
     },
     "faq": {
       "h": "Questions teachers ask about Oomba Live",
       "q1": "Is Oomba Live free?",
-      "a1": "Yes. Hosting live games, the starter question sets, your own sets and the results are all free, with no ads.",
+      "a1": "Yes. Hosting live lessons, the starter question sets, your own sets and the results are all free, with no ads.",
       "q2": "Do my students need accounts?",
       "a2": "Not for an open room: students type the code and get a made-up nickname. In a class room, they use the school accounts you made for them, and their scores go into your gradebook.",
       "q3": "How many students can play?",
       "a3": "Up to {max} in a class room. A room open to anyone with the code takes up to {open} players when a parent or other grown-up hosts it, and up to {max} when a teacher does.",
       "q4": "Can I use my own questions?",
-      "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lessons into a live quiz.",
+      "a4": "Yes, on any subject and at any level. Write a set of up to {items} questions with 2 to 4 answers each, paste one from a spreadsheet, let AI draft one for you to edit, or turn the questions from one of your lesson plans into a live quiz.",
       "q5": "What do students need?",
-      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the game on the board from your own computer."
+      "a5": "Any device with an up-to-date browser: Chromebooks, tablets, laptops or phones. Nothing to install. You show the lesson on the board from your own computer."
     },
     "own": {
       "h": "Your questions, your way",
@@ -10826,7 +10942,7 @@
       "li2": "Paste a whole quiz from a spreadsheet or a document in one go.",
       "li3": "Describe a topic and a grade, and AI drafts the questions for you to check and edit.",
       "li4": "Up to 100 questions in a set. Share sets with teachers at your school, or copy theirs and make them your own.",
-      "li5": "Want a different kind of game? Build your own quiz game with the AI Builder, and it plays live with any of your question sets."
+      "li5": "Want a different kind of lesson? Build your own quiz lesson with the AI Builder, and it plays live with any of your question sets."
     }
   },
   "tts": {
@@ -11203,7 +11319,7 @@
         "h": "Units and steps"
       },
       "games": {
-        "h": "The games"
+        "h": "The lessons"
       },
       "note": "The full standards map (CYBER.ORG and Common Sense, step by step) and the per-unit teacher notes are on the teacher page; the two print buttons above open them ready to print."
     },
@@ -11211,13 +11327,13 @@
       "title": "Assign {game}",
       "pickClass": "Class",
       "submit": "Assign",
-      "note": "Your class gets a one-step lesson that plays this game. You can change it later in the Lessons library.",
+      "note": "Your class gets a one-step lesson plan that plays this lesson. You can change it later in the Lesson plan library.",
       "none": "You have no classes yet. Make one in Classroom first.",
-      "liveOnly": "This is a live class game: host it on the big screen instead of assigning it.",
+      "liveOnly": "This is a live class lesson: host it on the big screen instead of assigning it.",
       "opens": "Students open: {what}",
       "set": "{count, plural, one {your question set (# question)} other {your question set (# questions)}}",
-      "pickFirst": "Make and save what your class will open in the game first (a problem, a question set or an activity). Then press Assign to a class there, so your students open it straight away.",
-      "openGame": "Open the game",
+      "pickFirst": "Make and save what your class will open in the lesson first (a problem, a question set or an activity). Then press Assign to a class there, so your students open it straight away.",
+      "openGame": "Open the lesson",
       "gcGrades": "Google Classroom gets a grade when a student finishes it: send grades from the class's Google Classroom page, or turn on automatic grades there."
     },
     "home": {
@@ -11225,9 +11341,9 @@
       "classesN": "{count, plural, one {# class} other {# classes}}",
       "waitingN": "{count, plural, one {# answer waiting} other {# answers waiting}}",
       "caughtUp": "All caught up",
+      "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
-      "openLive": "Open live game",
-      "make": "Turn a lesson into a game",
+      "openLive": "Open live lesson",
       "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
@@ -11238,7 +11354,7 @@
       "steps": {
         "plan": {
           "name": "Plan",
-          "benefit": "Start from a ready-made lesson or a topic, then turn it into a game your class will want to play."
+          "benefit": "Start from a ready-made lesson plan or a topic, then turn it into a lesson your class will want to play."
         },
         "play": {
           "name": "Play",
@@ -11250,35 +11366,35 @@
         },
         "feedback": {
           "name": "Feedback",
-          "benefit": "Read each answer and write feedback that the student sees on their own lesson."
+          "benefit": "Read each answer and write feedback that the student sees on their own lesson plan."
         }
       },
       "tools": {
-        "builder": "Turn a lesson into a game",
+        "builder": "Turn your notes into a lesson",
         "assign": "Assign to a class",
         "gradebook": "Gradebook",
         "gradebookCsv": "Gradebook with CSV download",
         "standards": "Standards tab",
         "review": "Answers to review",
         "written": "Written feedback students see",
-        "library": "Lesson library",
+        "library": "Lesson plan library",
         "draftAi": "Draft with AI",
         "attention": "Needs attention first",
         "csv": "Download (CSV)",
-        "live": "Host a live game"
+        "live": "Host a live lesson"
       },
       "shots": {
         "gradebook": {
-          "alt": "The gradebook: students down the side, lessons across the top, with steps done and answers to read",
+          "alt": "The gradebook: students down the side, lesson plans across the top, with steps done and answers to read",
           "caption": "Gradebook: the whole class at a glance, ready to download as a CSV file."
         },
         "attention": {
-          "alt": "One lesson's progress, sorted so the students who need attention come first",
-          "caption": "Needs attention first: answers to read, late work and half-done lessons on top."
+          "alt": "One lesson plan's progress, sorted so the students who need attention come first",
+          "caption": "Needs attention first: answers to read, late work and half-done lesson plans on top."
         },
         "feedback": {
           "alt": "A student's written answer with the teacher's feedback box and the save button",
-          "caption": "Feedback: write a note, save it, and the student sees it on their lesson."
+          "caption": "Feedback: write a note, save it, and the student sees it on their lesson plan."
         },
         "standards": {
           "alt": "The class Standards tab: Common Core math standards with how far each student has got",
@@ -11695,14 +11811,14 @@
       "li1": "Ready-made layouts for the morning, a lesson, group work, quiet work and a fun break, or drag widgets into your own.",
       "li2": "Timers, a random name picker, a group maker, a voice meter, a help queue and quick checks.",
       "li3": "Math tools on the big screen: fraction bars, number lines, geoboards, place value and more.",
-      "li4": "Pin widgets to every student's screen, or send the class a game, a lesson or a link in one tap.",
+      "li4": "Pin widgets to every student's screen, or send the class a lesson, a lesson plan or a link in one tap.",
       "li5": "No AI anywhere in it. Students show up by their Oomba names, and what a student types stays on their own screen.",
       "shotAlt": "A class dashboard on the projector: the clock, today's goal, the schedule with Math now and Recess next, class jobs and a mood check-in."
     },
     "meta": {
-      "title": "Class dashboards and learning games for teachers · Oomba Academy",
-      "description": "One screen to run your class day, an AI Builder that turns lessons into games, live class games, and games your students build. 14 days free, no card.",
-      "imageAlt": "Oomba Academy for teachers: one screen to run your class, and games to make learning stick."
+      "title": "Class dashboards and interactive lessons for teachers · Oomba Academy",
+      "description": "One screen to run your class day, an AI Builder that turns your lesson plans into playable lessons, live class lessons, and games your students build. 14 days free, no card.",
+      "imageAlt": "Oomba Academy for teachers: one screen to run your class, and lessons to make learning stick."
     },
     "nav": {
       "dashboards": "Dashboards",
@@ -11712,7 +11828,7 @@
       "how": "How it works",
       "builder": "Builder",
       "courses": "Courses",
-      "live": "Live games",
+      "live": "Live lessons",
       "pricing": "Pricing",
       "faq": "FAQ",
       "signIn": "Sign in",
@@ -11725,45 +11841,45 @@
     },
     "hero": {
       "kicker": "For teachers · grades K–8",
-      "h1": "One screen to run your class. Games to make it stick.",
-      "lead": "Set up your class dashboard in a minute and run the whole day from it. Turn any lesson into a game with the AI Builder, play live on the projector, and let your students build games of their own.",
+      "h1": "One screen to run your class. Lessons to make it stick.",
+      "lead": "Set up your class dashboard in a minute and run the whole day from it. Turn any lesson plan into a playable lesson with the AI Builder, play live on the projector, and let your students build games of their own.",
       "cta": "Start your free 14-day trial",
       "how": "See how it works",
       "trustCard": "No card needed",
       "trustCancel": "Cancel anytime",
       "trustStudents": "Unlimited students",
       "cBuildTag": "AI Builder",
-      "cBuild": "Your fractions lesson is now a game",
-      "cLiveTag": "Live game",
+      "cBuild": "Your fractions plan is now a playable lesson",
+      "cLiveTag": "Live lesson",
       "cLive": "Your class is joining"
     },
     "facts": {
-      "games": "ready-made learning games",
+      "games": "ready-made lessons",
       "courses": "full courses with lesson plans",
       "languages": "languages for students and teachers",
       "installs": "installs: it runs in the browser"
     },
     "demo": {
-      "label": "Illustration: a lesson becoming a game",
-      "lessonTag": "Your lesson",
+      "label": "Illustration: a lesson plan becoming a playable lesson",
+      "lessonTag": "Your lesson plan",
       "lessonTitle": "Equivalent fractions · Grade 4",
       "lessonBody": "Students show that 1/2, 2/4 and 4/8 name the same amount, with pizzas, bars and number lines. Exit ticket: three quick checks.",
       "file": "fractions-lesson.pdf",
       "builderTag": "AI Builder",
-      "step1": "Reading your lesson",
+      "step1": "Reading your lesson plan",
       "step2": "Designing the levels",
       "step3": "Playtesting on phone, tablet and desktop",
       "step4": "Ready to play",
-      "gameTag": "Your game",
+      "gameTag": "Your lesson",
       "gameMeta": "Ready to host live or assign",
       "host": "Host live",
       "assign": "Assign",
-      "credit": "Game art from Fraction Factory, one of Oomba’s ready-made games."
+      "credit": "Art from Fraction Factory, one of Oomba’s ready-made lessons."
     },
     "how": {
       "kicker": "How it works",
       "h": "Your whole class day, in one place",
-      "lead": "Start with the screen you keep open all day, then bring in the games. Each step works on its own, and they work even better together.",
+      "lead": "Start with the screen you keep open all day, then bring in the lessons. Each step works on its own, and they work even better together.",
       "s1": {
         "h": "Set up your class dashboard",
         "p": "Open your class and six ready-made layouts are waiting. Put it on the projector, and every student gets a screen of their own."
@@ -11773,8 +11889,8 @@
         "p": "Check-ins, timers, quick checks, the help queue, groups and math tools, from morning meeting to pack-up. Switch layouts in one tap."
       },
       "s3": {
-        "h": "Turn lessons into games",
-        "p": "Paste a lesson or upload a PDF. The AI Builder makes it a game, playtests it and keeps every version."
+        "h": "Turn your plans into playable lessons",
+        "p": "Paste a lesson plan or upload a PDF. The AI Builder makes it a playable lesson, playtests it and keeps every version."
       },
       "see": "See it",
       "s4": {
@@ -11783,23 +11899,23 @@
       },
       "s5": {
         "h": "Let your students build too",
-        "p": "Add a “Build a game” step to a lesson. Students design, test and fix a game of their own, then classmates play it."
+        "p": "Add a “Build a game” step to a lesson plan. Students design, test and fix a game of their own, then classmates play it."
       }
     },
     "builder": {
       "kicker": "The AI Builder",
-      "h": "Your lesson in, a real game out",
-      "lead": "Talk to the Builder like a teaching assistant who happens to make games. It keeps every version, so you can always go back.",
+      "h": "Your lesson plan in, a playable lesson out",
+      "lead": "Talk to the Builder like a teaching assistant who happens to make lessons. It keeps every version, so you can always go back.",
       "you": "You",
-      "msg": "Make a game from this lesson for my 4th graders. Ten minutes, three levels, and end with the exit ticket questions.",
+      "msg": "Make a playable lesson from this plan for my 4th graders. Ten minutes, three levels, and end with the exit ticket questions.",
       "bot": "Done! Version 1 is ready: three levels, easiest first, with the exit ticket at the end. Press Play to try it.",
-      "li1": "Understands lesson text, PDFs, pictures and text files you upload",
+      "li1": "Understands lesson plans, PDFs, pictures and text files you upload",
       "li2": "Answers in your language, and in each student’s",
       "li3": "Playtests every build on phone, tablet and desktop sizes",
       "li4": "Private until you share it: just you, your classes or, after a person on our team reviews it, everyone",
       "li5": "Students can build too: describing, testing and fixing a game is planning, writing and debugging, without code",
-      "shotAlt": "The Oomba Studio: the Builder chat on the left says version 2 is ready, and the game runs in a phone-sized preview on the right.",
-      "caption": "The real Studio: the Builder on the left, your game on the right."
+      "shotAlt": "The Oomba Studio: the Builder chat on the left says version 2 is ready, and the lesson runs in a phone-sized preview on the right.",
+      "caption": "The real Studio: the Builder on the left, your lesson on the right."
     },
     "courses": {
       "kicker": "Ready-made courses",
@@ -11823,15 +11939,15 @@
       "link": "Teacher guide"
     },
     "live": {
-      "kicker": "Live class games",
+      "kicker": "Live class lessons",
       "h": "Light up the projector",
       "lead": "Warm-ups and exit tickets your class actually looks forward to. Students join on their own devices with a 7-digit code.",
-      "li1": "Quest Race, Question Battle, Brain Board, Tug of Math and more",
+      "li1": "Quest Race, Brain Board, Would You Rather and more",
       "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
       "li3": "Scores go straight into your gradebook",
-      "li4": "Class games: your signed-in students only. Guest games: safe made-up names. No chat and no typing in either",
-      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the game code and a QR code.",
-      "link": "How live games work"
+      "li4": "Class lessons: your signed-in students only. Guest lessons: safe made-up names. No chat and no typing in either",
+      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the join code and a QR code.",
+      "link": "How live lessons work"
     },
     "why": {
       "kicker": "Why games work",
@@ -11876,7 +11992,7 @@
       "devices": "Chromebooks, iPads, laptops, phones and the classroom board, right in the browser. Nothing to install.",
       "languages": "{count} languages, including Spanish, Arabic, Portuguese and French. Each student picks their own.",
       "voicesH": "Read aloud",
-      "voices": "Natural AI voices read every official game aloud."
+      "voices": "Natural AI voices read every official lesson aloud."
     },
     "pricing": {
       "kicker": "Pricing",
@@ -11888,9 +12004,9 @@
         "priceShown": "{price} per year",
         "trial": "14 days free · no card needed",
         "li1": "Unlimited students, no per-student fees",
-        "li2": "300 AI game builds a day for your class",
-        "li3": "All courses, 30+ ready-made games and live class games",
-        "li4": "Classes, lessons, progress and the gradebook",
+        "li2": "300 AI lesson builds a day for your class",
+        "li3": "All courses, 30+ ready-made lessons and live class lessons",
+        "li4": "Classes, lesson plans, progress and the gradebook",
         "li5": "Every language, every device",
         "cta": "Start your free trial",
         "plans": "See plans & pricing",
@@ -11908,29 +12024,29 @@
         "form": "Set up your school",
         "subject": "Oomba Academy for our school"
       },
-      "leadFree": "No per-student fees, ever. The basics are free for every teacher, and the Teacher plan adds AI game builds for your whole class.",
+      "leadFree": "No per-student fees, ever. The basics are free for every teacher, and the Teacher plan adds AI lesson builds for your whole class.",
       "free": {
         "name": "Free",
         "price": "Always free",
-        "li1": "Every game and all three courses",
-        "li2": "Classes, lessons, progress and the gradebook",
+        "li1": "Every lesson and all three courses",
+        "li2": "Classes, lesson plans, progress and the gradebook",
         "li3": "Free daily Builder messages for you and your students",
         "li4": "School accounts and printable login cards",
-        "liLive": "Live class games on the projector"
+        "liLive": "Live class lessons on the projector"
       }
     },
     "faq": {
       "h": "Questions teachers ask",
       "q1": "What is Oomba Academy?",
-      "a1": "A game-based learning platform for grades K to 8. Teachers turn their own lessons into interactive games with an AI Builder, run live class games, and use ready-made courses in math, computer science and online safety.",
+      "a1": "An interactive learning platform for grades K to 8. Teachers turn their own lesson plans into playable lessons with an AI Builder, run live class lessons, and use ready-made courses in math, computer science and online safety.",
       "q2": "How does the free trial work?",
       "a2": "Start a 14-day free trial with no card. Everything in the Teacher plan is included while it runs, and when it ends you decide whether to subscribe.",
       "q3": "Do I pay for each student?",
       "a3": "No. One yearly price per teacher covers all of your students. There are no per-student fees.",
-      "q4": "What can I turn into a game?",
-      "a4": "Almost any lesson: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practice. The Builder uses your material as a reference and makes a game around it.",
+      "q4": "What can I turn into a lesson?",
+      "a4": "Almost any lesson plan: paste the text, upload a PDF, a picture or a text file, or describe the topic and what your class should practice. The Builder uses your material as a reference and makes a playable lesson around it.",
       "q5": "Do students need an email address?",
-      "a5": "No. You can make school accounts for your class and print login cards, with no student email needed. Anyone can also play the free games straight away.",
+      "a5": "No. You can make school accounts for your class and print login cards, with no student email needed. Anyone can also play the free lessons straight away.",
       "q6": "Does it work on Chromebooks and iPads?",
       "a6": "Yes. It runs in any up-to-date browser on Chromebooks, iPads and other tablets, laptops, phones and interactive boards, with nothing to install.",
       "q7": "Is it safe for my students?",
@@ -11939,7 +12055,7 @@
       "a8": "Yes. Schools pay the same price per teacher per year, by invoice or purchase order. Email us and we will set it up.",
       "q9": "Which languages are there?",
       "a9": "{count} languages, including English, Spanish, Portuguese, French, German, Arabic, Hebrew and Japanese. Each student picks their own, and the Builder answers in it.",
-      "a2free": "Start a 14-day free trial of the Teacher plan with no card. Everything in the plan is included while it runs, and when it ends you decide whether to subscribe. If you don’t, only the plan’s extra AI builds stop: the games, your classes, lessons and progress stay free, and nothing is deleted."
+      "a2free": "Start a 14-day free trial of the Teacher plan with no card. Everything in the plan is included while it runs, and when it ends you decide whether to subscribe. If you don’t, only the plan’s extra AI builds stop: the lessons, your classes, lesson plans and progress stay free, and nothing is deleted."
     },
     "final": {
       "h": "Your next lesson could be the one they ask to play again",
@@ -11952,7 +12068,7 @@
       "cta": "Just Play"
     },
     "footer": {
-      "tagline": "Learning games for ages 5 to 14, and an AI Builder that turns lessons into games.",
+      "tagline": "Interactive lessons for ages 5 to 14, and an AI Builder that turns your plans into playable lessons.",
       "teachers": "For teachers",
       "product": "Explore",
       "about": "About",
@@ -11974,9 +12090,9 @@
     "kids": {
       "kicker": "Students as makers",
       "h": "Your students build games too",
-      "lead": "To make a game about a topic, you have to understand it well enough to teach it. Add a “Build a game” step to any lesson, and your students describe, test and improve their own game with the Builder, without writing code.",
-      "li1": "A “Build a game” step in your lessons, with the idea students start from",
-      "li2": "Each student builds in their own Studio, and you see their progress with the rest of the lesson",
+      "lead": "To make a game about a topic, you have to understand it well enough to teach it. Add a “Build a game” step to any lesson plan, and your students describe, test and improve their own game with the Builder, without writing code.",
+      "li1": "A “Build a game” step in your lesson plans, with the idea students start from",
+      "li2": "Each student builds in their own Studio, and you see their progress with the rest of the lesson plan",
       "li3": "Classmates play each other’s games: a review game for this week’s topic works well",
       "li4": "Private until shared: with their class, or with everyone only after a person on our team reviews it",
       "shotAlt": "A student’s Studio: the Builder chat says version 2 is ready, and the student’s game runs in a phone-sized preview.",
@@ -11997,14 +12113,14 @@
     "focus": {
       "manipulatives": "virtual math manipulatives",
       "play": "Word puzzles, math games and live class games, with no sign-up.",
-      "freeLi1": "Every ready-made game, puzzle and classroom tool",
-      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class games and a Story Library. Teachers can also turn their own lessons into classroom games with an AI Builder.",
-      "demoCredit": "Game art from {title}, one of Oomba’s ready-made games."
+      "freeLi1": "Every ready-made lesson, puzzle and classroom tool",
+      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder.",
+      "demoCredit": "Art from {title}, one of Oomba’s ready-made lessons."
     }
   },
   "rubrics": {
     "title": "Rubrics",
-    "intro": "Reusable rubrics: criteria down the side, levels across the top. Attach one to a written answer, a build or a whole lesson, then score each student by tapping a level.",
+    "intro": "Reusable rubrics: criteria down the side, levels across the top. Attach one to a written answer, a build or a whole lesson plan, then score each student by tapping a level.",
     "mine": "My rubrics",
     "shared": "Shared by colleagues",
     "new": "New rubric",
@@ -12019,10 +12135,10 @@
     "levelsN": "{count, plural, one {# level} other {# levels}}",
     "pointsN": "{count, plural, one {# point} other {# points}}",
     "maxPoints": "Out of {points}",
-    "usedN": "{count, plural, one {Used in # lesson} other {Used in # lessons}}",
+    "usedN": "{count, plural, one {Used in # lesson plan} other {Used in # lesson plans}}",
     "usedIn": "Used in",
-    "notUsed": "Not attached to a lesson yet. Attach it from a lesson's step or its details.",
-    "wholeLesson": "Whole lesson",
+    "notUsed": "Not attached to a lesson plan yet. Attach it from a lesson plan's step or its details.",
+    "wholeLesson": "Whole lesson plan",
     "stepsN": "{count, plural, one {# step} other {# steps}}",
     "print": "Print",
     "printName": "Name:",
@@ -12040,7 +12156,7 @@
     "unsharedToast": "Not shared any more",
     "delete": "Delete rubric",
     "deleteConfirm": "Delete the rubric {title}? Scores already given keep what they showed.",
-    "deleteUsedConfirm": "{count, plural, one {{title} is attached to # lesson. Take it off and delete the rubric? Scores already given keep what they showed.} other {{title} is attached to # lessons. Take it off them and delete the rubric? Scores already given keep what they showed.}}",
+    "deleteUsedConfirm": "{count, plural, one {{title} is attached to # lesson plan. Take it off and delete the rubric? Scores already given keep what they showed.} other {{title} is attached to # lesson plans. Take it off them and delete the rubric? Scores already given keep what they showed.}}",
     "deletedToast": "Rubric deleted",
     "levelNames": {
       "notYet": "Not yet",
@@ -12087,7 +12203,7 @@
     },
     "starters": {
       "title": "Starter rubrics",
-      "intro": "Every CS Quest lesson's exit ticket comes with a rubric (levels 0 to 3, in English). Add one to your rubrics to use it with any lesson, or change it to fit.",
+      "intro": "Every CS Quest lesson's exit ticket comes with a rubric (levels 0 to 3, in English). Add one to your rubrics to use it with any lesson plan, or change it to fit.",
       "add": "Add to my rubrics",
       "addFor": "Add {title} to my rubrics",
       "added": "Added to your rubrics. Change it as you like.",
@@ -12095,9 +12211,9 @@
     },
     "attach": {
       "step": "Rubric",
-      "lesson": "Rubric for the whole lesson",
-      "lessonTitle": "Whole-lesson rubric",
-      "lessonHint": "Score each student on the whole lesson from its progress page.",
+      "lesson": "Rubric for the whole lesson plan",
+      "lessonTitle": "Whole lesson plan rubric",
+      "lessonHint": "Score each student on the whole lesson plan from its progress page.",
       "none": "No rubric",
       "hint": "Score the answers or builds for this step with it.",
       "noneYet": "You have no rubrics yet.",
@@ -12137,7 +12253,7 @@
       "rubricPoints": "Points are a number from 0 to 100.",
       "rubricName": "Give every criterion a name.",
       "tooManyRubrics": "You have the most rubrics allowed in this school. Delete one you no longer use.",
-      "inUse": "{count, plural, one {This rubric is attached to # lesson.} other {This rubric is attached to # lessons.}}",
+      "inUse": "{count, plural, one {This rubric is attached to # lesson plan.} other {This rubric is attached to # lesson plans.}}",
       "task": "Say what the students do.",
       "aiFailed": "The AI could not draft a rubric just now. Please try again in a minute.",
       "pick": "Pick one of your own rubrics (copy a colleague's first)."
@@ -12153,7 +12269,7 @@
     "picker": "Standards framework",
     "notice": "Common Core State Standards, used under the CCSS public license.",
     "class": {
-      "lead": "Which Common Core standards this class covers through its assigned lessons, the Learn games in them, live games and courses, and how each student is doing. Built from work already recorded: nothing new is collected.",
+      "lead": "Which Common Core standards this class covers through its assigned lesson plans, the Learn lessons in them, live lessons and courses, and how each student is doing. Built from work already recorded: nothing new is collected.",
       "grade": "Grade",
       "covered": "Covered standards only",
       "allOf": "Every {grade} standard",
@@ -12189,23 +12305,23 @@
     "rubricBest": "best {pct}% · {count} scored",
     "mine": "{right} of {answered} right",
     "src": {
-      "live": "{count, plural, one {# live game} other {# live games}}"
+      "live": "{count, plural, one {# live lesson} other {# live lessons}}"
     },
     "legend": {
       "h": "How to read it",
-      "sources": "Covered by: the assigned lessons tagged with the standard (or with a step or a Learn game that practices it), live games that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
+      "sources": "Covered by: the assigned lesson plans tagged with the standard (or with a step or a Learn lesson that practices it), live lessons that asked about it (Tug of Math Live at its grade, question sets whose questions carry the code) and the courses your students are in.",
       "practiced": "Practiced: students who finished an activity that practices the standard. It means they did it, not mastery.",
-      "checked": "Questions: right answers out of answered questions about the standard (lesson quizzes, live games, Number Quest checks).",
+      "checked": "Questions: right answers out of answered questions about the standard (lesson plan quizzes, live lessons, Number Quest checks).",
       "rubric": "Rubric: rubric scores on the standard, as a share of the top score. Shown once rubrics are tagged with Common Core standards.",
       "meets": "Meets: a student meets a standard with at least 80% right over 3 or more questions, or a rubric score of at least two thirds. The class meets it when 80% of its students do.",
       "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this.",
-      "games": "Games with levels for several grades (Sum Racer, Fraction Factory, Word Trail, Tug of Math) count as practice only for the lesson's grade, or for the level the step is locked to. For a lesson with no grade they show under Covered by only.",
-      "live": "Live games such as Tug of Math Live don't record which question was about which standard, so a student's answers are shared out across the game's standards. Those numbers are estimates.",
+      "games": "Lessons with levels for several grades (Sum Racer, Fraction Factory, Word Trail, Tug of Math) count as practice only for the lesson plan's grade, or for the level the step is locked to. For a lesson plan with no grade they show under Covered by only.",
+      "live": "Live lessons such as Tug of Math Live don't record which question was about which standard, so a student's answers are shared out across the lesson's standards. Those numbers are estimates.",
       "courses": "Number Quest counts work done with a school account, or since the student joined this class. One check (3 questions) alone is not enough to meet a standard."
     },
     "empty": {
       "title": "No Common Core standards yet",
-      "text": "Tag your lessons with standards, or assign lessons with Learn games like Sum Racer, Fraction Factory or Word Trail, and they show up here."
+      "text": "Tag your lesson plans with standards, or assign lesson plans with Learn lessons like Sum Racer, Fraction Factory or Word Trail, and they show up here."
     },
     "csvCols": {
       "code": "Code",
@@ -12226,11 +12342,11 @@
     },
     "lesson": {
       "title": "Standards",
-      "lead": "Tag this lesson, or one of its steps, with the Common Core standards it works on. They show up on the Standards tab of every class it is assigned to.",
-      "back": "Back to the lesson",
+      "lead": "Tag this lesson plan, or one of its steps, with the Common Core standards it works on. They show up on the Standards tab of every class it is assigned to.",
+      "back": "Back to the lesson plan",
       "current": "Tagged standards",
       "none": "No standards tagged yet.",
-      "whole": "Whole lesson",
+      "whole": "Whole lesson plan",
       "stepN": "Step {n}: {title}",
       "remove": "Remove",
       "removeLabel": "Remove {code}",
@@ -12254,13 +12370,13 @@
       "view": "See standards",
       "editorNone": "No Common Core standards tagged yet.",
       "onSteps": "{count, plural, one {# standard tagged on steps} other {# standards tagged on steps}}",
-      "gameCodes": "{framework} standards this game practices",
-      "gameNeedsGrade": "This game has levels for several grades. Give the lesson a grade (or lock the step to one level) to count its standards as practice."
+      "gameCodes": "{framework} standards this lesson practices",
+      "gameNeedsGrade": "This lesson has levels for several grades. Give the lesson plan a grade (or lock the step to one level) to count its standards as practice."
     },
     "errors": {
       "badCode": "That is not a Common Core code.",
-      "badStep": "That step is not in this lesson.",
-      "tooMany": "A lesson can have up to 60 standards.",
+      "badStep": "That step is not in this lesson plan.",
+      "tooMany": "A lesson plan can have up to 60 standards.",
       "badFramework": "Pick Common Core Math or ELA."
     },
     "learn": {
@@ -12276,19 +12392,19 @@
       "what": {
         "courses": "link this class to one of your Classroom classes",
         "roster": "bring its students in, so they sign in with Google",
-        "post": "post lessons there, with a link back here and the due date",
-        "grades": "send each student's lesson grade to Classroom (a completion grade, or the score you chose in Homeroom)"
+        "post": "post lesson plans there, with a link back here and the due date",
+        "grades": "send each student's lesson plan grade to Classroom (a completion grade, or the score you chose in Homeroom)"
       },
       "button": "Connect Google Classroom",
-      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson's title, link and due date, each student's grade out of 100 (a completion grade, or the score you chose in Homeroom), a topic name, and announcements you write. Never students' names, answers or games.",
+      "privacy": "Only you see this connection. Connecting lets Oomba Academy read your classes and their students. Only if you allow posting does it send Classroom what you post: a lesson plan's title, link and due date, each student's grade out of 100 (a completion grade, or the score you chose in Homeroom), a topic name, and announcements you write. Never students' names, answers or games.",
       "connectedAs": "Connected as {email}",
       "connectedHint": "This connection is yours: your co-teachers connect their own.",
       "connectedToast": "Google Classroom is connected.",
       "disconnect": "Disconnect",
-      "disconnectConfirm": "Disconnect Google Classroom? Oomba Academy will stop syncing for you and delete its key to your Classroom. Lessons already posted stay in Classroom.",
+      "disconnectConfirm": "Disconnect Google Classroom? Oomba Academy will stop syncing for you and delete its key to your Classroom. Lesson plans already posted stay in Classroom.",
       "disconnected": "Google Classroom is disconnected.",
       "reconnect": "Connect again",
-      "later": "Posting lessons, grades and announcements comes later, only if you allow it."
+      "later": "Posting lesson plans, grades and announcements comes later, only if you allow it."
     },
     "course": {
       "heading": "Linked Classroom class",
@@ -12299,7 +12415,7 @@
       "linked": "Linked to {course}.",
       "linkedTo": "Linked to {course}",
       "unlink": "Unlink",
-      "unlinkConfirm": "Unlink {course}? Students and lessons stay where they are.",
+      "unlinkConfirm": "Unlink {course}? Students and lesson plans stay where they are.",
       "unlinked": "Unlinked.",
       "connectFirst": "Connect your Google Classroom above to sync it.",
       "refresh": "Refresh the list"
@@ -12325,8 +12441,8 @@
       "resultLeft": "{count, plural, one {# no longer in Google Classroom} other {# no longer in Google Classroom}}"
     },
     "post": {
-      "heading": "Lessons in Classroom",
-      "text": "Posting a lesson makes an assignment in Classroom with its title, a link to the lesson here and its due date.",
+      "heading": "Lesson plans in Classroom",
+      "text": "Posting a lesson plan makes an assignment in Classroom with its title, a link to the lesson plan here and its due date.",
       "button": "Post to Google Classroom",
       "also": "Also post to Google Classroom",
       "description": "Open this lesson on Oomba Academy.",
@@ -12337,14 +12453,14 @@
       "noDue": "No due date",
       "posted": "Posted",
       "open": "Open in Classroom",
-      "noLessons": "No lessons in this class yet. Assign one on the Lessons tab.",
-      "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson opens.",
-      "locked": "To post lessons, send grades and share materials, allow Oomba Academy to post to Classroom.",
+      "noLessons": "No lesson plans in this class yet. Assign one on the Lesson plans tab.",
+      "doneScheduled": "Scheduled in Google Classroom: students see it on {date}, when the lesson plan opens.",
+      "locked": "To post lesson plans, send grades and share materials, allow Oomba Academy to post to Classroom.",
       "someNot": "Assigned to some students, so not posted: in Google Classroom it would go to the whole class.",
       "somePosted": "Assigned to some students here. It was posted to the whole class in Google Classroom before that, and grades go only to the students it's assigned to."
     },
     "grades": {
-      "text": "Each lesson sends the grade it is graded by, out of 100. Lessons assigned in Classroom send a completion grade: the share of the lesson's steps a student has done, not right answers. Homeroom handouts send what you chose when you handed them out: Score sends the % right, Completion the completion grade, and Not graded sends nothing. Students who haven't started are left out.",
+      "text": "Each lesson plan sends the grade it is graded by, out of 100. Lesson plans assigned in Classroom send a completion grade: the share of the lesson plan's steps a student has done, not right answers. Homeroom handouts send what you chose when you handed them out: Score sends the % right, Completion the completion grade, and Not graded sends nothing. Students who haven't started are left out.",
       "as": "Send as",
       "draft": "Draft grade (you return it in Classroom)",
       "assigned": "Assigned grade",
@@ -12372,7 +12488,7 @@
         "link": "Linked a class",
         "unlink": "Unlinked",
         "roster": "Imported students",
-        "post": "Posted a lesson",
+        "post": "Posted a lesson plan",
         "grades": "Sent grades",
         "autoRoster": "Updated students (automatic)",
         "autoGrades": "Sent grades (automatic)",
@@ -12398,8 +12514,8 @@
       "googleDown": "Google Classroom didn't answer. Please try again.",
       "badRequest": "Google Classroom didn't accept that.",
       "tooMany": "That Classroom class has more than {max} students.",
-      "alreadyPosted": "This lesson is already in Google Classroom.",
-      "notPosted": "Post this lesson to Google Classroom first.",
+      "alreadyPosted": "This lesson plan is already in Google Classroom.",
+      "notPosted": "Post this lesson plan to Google Classroom first.",
       "badMode": "Choose how to send the grades.",
       "scopesMissing": "Please check both boxes on Google's screen (see your classes and their students): Oomba Academy needs them to link a class.",
       "noRefresh": "Google didn't send a key we can keep. Please connect again.",
@@ -12409,25 +12525,25 @@
       "tooManyTries": "Too many syncs for now. Please try again in an hour.",
       "needsScope": "Oomba Academy isn't allowed to do this in your Classroom yet. Use “Allow Oomba Academy to post to Classroom” first.",
       "noneAllowed": "Nothing new was allowed on Google's screen, so posting stays off.",
-      "alreadyShared": "This lesson is already shared as a material.",
+      "alreadyShared": "This lesson plan is already shared as a material.",
       "notLeaver": "That student isn't on the list any more.",
       "badTemplate": "Choose what to announce.",
-      "noLiveGame": "No live game is open for this class right now.",
-      "pickLesson": "Choose a lesson of this class.",
-      "lessonNotOpen": "That lesson isn't open yet.",
+      "noLiveGame": "No live lesson is open for this class right now.",
+      "pickLesson": "Choose a lesson plan of this class.",
+      "lessonNotOpen": "That lesson plan isn't open yet.",
       "emptyNote": "Write your message first.",
       "tooLong": "Announcements can be at most {max} characters.",
       "hasName": "“{name}” in your message matches a student's name. Announcements go to the whole class, so please reword it or take it out.",
       "tooManyAnnouncements": "That's 10 announcements in an hour for this class. Please wait a little.",
-      "someStudents": "This lesson is assigned to some students, so it isn't posted to Google Classroom: there it would go to the whole class.",
+      "someStudents": "This lesson plan is assigned to some students, so it isn't posted to Google Classroom: there it would go to the whole class.",
       "notGraded": "This handout is not graded, so no grades go to Google Classroom."
     },
     "allow": {
       "heading": "What Oomba Academy may do in your Classroom",
       "features": {
         "read": "See your classes and bring in their students",
-        "post": "Post lessons as assignments and send grades",
-        "materials": "Share lessons as materials",
+        "post": "Post lesson plans as assignments and send grades",
+        "materials": "Share lesson plans as materials",
         "announce": "Post announcements to the class stream",
         "topics": "Put its posts under a topic"
       },
@@ -12453,7 +12569,7 @@
       "roster": "Update the students from Classroom every 6 hours",
       "rosterHint": "New students are added. Students who leave Classroom are listed above for you to remove: no one is removed on their own.",
       "grades": "Send grades automatically",
-      "gradesHint": "Every 30 minutes, grades that changed go to Classroom for lessons posted from here (each as it is graded: a completion grade, or the score), until 30 days after each due date.",
+      "gradesHint": "Every 30 minutes, grades that changed go to Classroom for lesson plans posted from here (each as it is graded: a completion grade, or the score), until 30 days after each due date.",
       "by": "Grades go with {name}'s Google Classroom connection.",
       "save": "Save",
       "saved": "Saved.",
@@ -12474,10 +12590,10 @@
       "hint": "New posts go under this topic in Classroom. Leave it empty to use the default."
     },
     "material": {
-      "text": "Sharing as a material puts the lesson's title and link in Classroom, with no grade and no due date.",
+      "text": "Sharing as a material puts the lesson plan's title and link in Classroom, with no grade and no due date.",
       "button": "Share as material",
       "done": "Shared to Google Classroom as a material.",
-      "doneScheduled": "Scheduled in Google Classroom as a material: students see it on {date}, when the lesson opens.",
+      "doneScheduled": "Scheduled in Google Classroom as a material: students see it on {date}, when the lesson plan opens.",
       "shared": "Shared as material",
       "open": "Open material"
     },
@@ -12491,11 +12607,11 @@
       "note": "Add a note (optional)",
       "message": "Your message",
       "send": "Post to the class stream",
-      "noLive": "No live game is open for this class right now. Host one, then come back here or use “Announce in Classroom” on the host screen.",
-      "hostLive": "Host a live game",
-      "pickLesson": "Lesson",
-      "lessonTitle": "the lesson's title",
-      "noLessons": "No open lessons in this class yet.",
+      "noLive": "No live lesson is open for this class right now. Host one, then come back here or use “Announce in Classroom” on the host screen.",
+      "hostLive": "Host a live lesson",
+      "pickLesson": "Lesson plan",
+      "lessonTitle": "the lesson plan's title",
+      "noLessons": "No open lesson plans in this class yet.",
       "fixed": {
         "live": "🎮 A live game is starting now! Join at {url} with the code {code}.",
         "lesson": "📚 A new lesson is ready: {title}\n{url}"
@@ -12511,7 +12627,7 @@
       "manage": "Classroom settings",
       "name": "Google Classroom",
       "short": "Classroom",
-      "what": "Link this class, bring in its students and post lessons and grades."
+      "what": "Link this class, bring in its students and post lesson plans and grades."
     }
   },
   "digest": {
@@ -12554,7 +12670,7 @@
     },
     "me": {
       "heading": "Weekly class summary",
-      "text": "Once a week we email you counts for each class you teach: lessons due, work done, answers to review, students who haven't started and live games. Never a student's name or answer.",
+      "text": "Once a week we email you counts for each class you teach: lesson plans due, work done, answers to review, students who haven't started and live lessons. Never a student's name or answer.",
       "noAddress": "We don't have an email address for you yet. Connect Google on this page and the summary goes to that address.",
       "on": "Email me the weekly summary",
       "day": "Day",
@@ -12568,7 +12684,7 @@
     "page": {
       "link": "This week's summary",
       "title": "This week's summary",
-      "sub": "Each class you teach: the last 7 days, and lessons due in the next 7.",
+      "sub": "Each class you teach: the last 7 days, and lesson plans due in the next 7.",
       "next": "Your summary email goes out every {when}.",
       "off": "The weekly summary email is off. You can still check this page any time.",
       "noAddress": "We don't have an email address for you yet, so no summary email goes out. Connect Google on your Me page.",
@@ -12580,7 +12696,7 @@
       "statDone": "Work done",
       "statToRead": "To review",
       "statNotStarted": "Not started",
-      "statLive": "Live games",
+      "statLive": "Live lessons",
       "dueHeading": "Due this week",
       "finished": "{done} of {count} finished",
       "toReadHeading": "Answers to review",
@@ -12614,25 +12730,25 @@
       "score": "score: points earned out of points possible"
     },
     "names": {
-      "inGames": "Name in games"
+      "inGames": "Name in lessons"
     },
     "help": {
-      "workDone": "The share of steps a student has finished in the lessons that are open. It does not look at right answers.",
-      "score": "Points earned out of points possible: quizzes (1 point a question), live games you host for a lesson step (1 point a question, the best game) and work you score with a rubric (its points). Bigger pieces of work count for more. Work that is not done or not scored yet is left out, so a student with nothing scored shows –. Tap a score to see what makes it up.",
+      "workDone": "The share of steps a student has finished in the lesson plans that are open. It does not look at right answers.",
+      "score": "Points earned out of points possible: quizzes (1 point a question), live lessons you host for a lesson plan step (1 point a question, the best round) and work you score with a rubric (its points). Bigger pieces of work count for more. Work that is not done or not scored yet is left out, so a student with nothing scored shows –. Tap a score to see what makes it up.",
       "late": "Work still missing after the due date. \"Done late\" means it was finished after the due date.",
-      "names": "The grey name under a student's name is the one they have in games and on the class screen."
+      "names": "The grey name under a student's name is the one they have in lessons and on the class screen."
     },
     "live": {
-      "title": "Live game results",
+      "title": "Live lesson results",
       "hint": "Right answers out of the questions asked, for students signed in to this class. Guests are never saved.",
-      "linked": "Part of a lesson: counts in the Score",
+      "linked": "Part of a lesson plan: counts in the Score",
       "keyRight": "right answers out of questions asked",
       "keyPlayed": "played, nothing to mark",
       "keyAbsent": "did not play"
     },
     "csv": {
       "points": "Score (points)",
-      "lateCount": "Late lessons",
+      "lateCount": "Late lesson plans",
       "scoreCol": "{title} (score %)",
       "helpedCol": "{title} (answers shown by the teacher)",
       "lateCol": "{title} (late)",
@@ -12643,7 +12759,7 @@
     "kind": {
       "quiz": "Quiz",
       "typing": "Typing pass mark",
-      "live": "Live game",
+      "live": "Live lesson",
       "rubric": "Rubric",
       "marks": "Rubric marks"
     },
@@ -12651,28 +12767,28 @@
       "back": "Progress",
       "printFull": "Print the full name",
       "print": "Print",
-      "printHint": "A print shows the first name only unless you tick the box. The name used in games is never printed.",
-      "lateLessons": "Late lessons",
-      "lesson": "Lesson",
+      "printHint": "A print shows the first name only unless you tick the box. The name used in lessons is never printed.",
+      "lateLessons": "Late lesson plans",
+      "lesson": "Lesson plan",
       "due": "Due",
       "late": "Late",
       "scoreH": "What makes up the score",
       "work": "Work",
       "type": "Type",
       "points": "Points",
-      "none": "Nothing is scored yet. Scores come from quizzes, live games hosted for a lesson step, and work scored with a rubric.",
+      "none": "Nothing is scored yet. Scores come from quizzes, live lessons hosted for a lesson plan step, and work scored with a rubric.",
       "standardsLine": "{meets} met · {developing} developing · {practiced} practiced",
       "standardsOpen": "See the standards",
       "noStandards": "No standards evidence yet.",
       "answers": "Recent answers and feedback",
       "feedback": "Teacher's feedback",
       "noAnswers": "No written answers yet.",
-      "noLive": "No live games yet."
+      "noLive": "No live lessons yet."
     },
     "dash": {
       "showNames": "Show class-list names",
       "hideNames": "Hide class-list names",
-      "namesHint": "Shows each student's class-list name beside their name in the game, on this screen only. The class screen keeps the game names."
+      "namesHint": "Shows each student's class-list name beside the name they use in lessons, on this screen only. The class screen keeps the names they use in lessons."
     },
     "notAssigned": "Not assigned",
     "grade": {
@@ -12687,21 +12803,21 @@
     }
   },
   "quickLive": {
-    "cta": "Host a live game now",
+    "cta": "Host a live lesson now",
     "ctaNote": "No student accounts needed. Students join with a code and get a safe made-up name.",
     "haveCode": "Have a game code? Join",
     "join": "Join a game",
     "host": {
-      "title": "Host a live game now",
-      "h": "Host a live game now",
-      "lead": "Make a teacher account, pick a game, and your students join with a code. No student accounts, no email address, and it is free.",
+      "title": "Host a live lesson now",
+      "h": "Host a live lesson now",
+      "lead": "Make a teacher account, pick a lesson, and your students join with a code. No student accounts, no email address, and it is free.",
       "step1": "Make your teacher account: three boxes.",
-      "step2": "Pick a game and its questions.",
+      "step2": "Pick a lesson and its questions.",
       "step3": "Put the code on the board. Students join on any device."
     },
     "signup": {
       "h": "Your teacher account",
-      "submit": "Make my account and pick a game",
+      "submit": "Make my account and pick a lesson",
       "privacy": "We keep your name, your username and a scrambled copy of your password. <a href=\"{privacy}\">Privacy Policy</a>",
       "have": "Already have an account? <a href=\"{login}\">Sign in</a>",
       "student": "Are you a student?",
@@ -12713,29 +12829,40 @@
     },
     "quick": {
       "title": "Quick game",
+      "titleForTeachers": "Quick lesson",
       "h": "Quick game",
+      "hForTeachers": "Quick lesson",
       "forClass": "For {name}. Only students of this class can join, signed in as themselves.",
       "open": "Anyone with the code can join. No student accounts: every player gets a safe made-up name.",
       "hasOpen": "You already have a game open: {title}.",
+      "hasOpenForTeachers": "You already have a lesson open: {title}.",
       "mode": "Game",
+      "modeForTeachers": "Lesson",
       "level": "Level",
       "subject": "Subject",
       "what": "{count} ready-made questions, new every game. You press Start when everyone is in.",
+      "whatForTeachers": "{count} ready-made questions, new every time. You press Start when everyone is in.",
       "go": "Open the room",
       "more": "More games and settings",
-      "recent": "Your last games"
+      "moreForTeachers": "More lessons and settings",
+      "recent": "Your last games",
+      "recentForTeachers": "Your last lessons"
     },
     "results": {
       "h": "This was a guest game.",
+      "hForTeachers": "This was a guest lesson.",
       "now": "Players had no accounts, so nothing went into a gradebook. The question review on this page is kept. The players' game names and scores are not: you can see them here for a few minutes only.",
+      "nowForTeachers": "Players had no accounts, so nothing went into a gradebook. The question review on this page is kept. The players' names in the lesson and their scores are not: you can see them here for a few minutes only.",
       "saved": "Players had no accounts, so no names or scores were kept and nothing went into a gradebook. The question review is kept.",
       "keep": "Make a class to keep scores",
-      "keepHint": "Paste your students' names and print their login cards. Scores from your class games are then saved."
+      "keepHint": "Paste your students' names and print their login cards. Scores from your class games are then saved.",
+      "keepHintForTeachers": "Paste your students' names and print their login cards. Scores from your class lessons are then saved."
     },
     "keep": {
       "title": "Make a class to keep scores",
       "h": "Make a class to keep scores",
       "lead": "Paste your students' names. Each student gets a login card. From then on, the scores of your class games are saved with their names, for you.",
+      "leadForTeachers": "Paste your students' names. Each student gets a login card. From then on, the scores of your class lessons are saved with their names, for you.",
       "names": "Students' names",
       "namesHint": "One name on each line. First names are enough.",
       "go": "Make the class and the login cards",
@@ -12865,7 +12992,7 @@
       "heading": "Connect Google Classroom?",
       "lead": "You can also do this later from any class.",
       "li1": "Bring in your class lists from Google Classroom.",
-      "li2": "Post lessons to Classroom as assignments.",
+      "li2": "Post lesson plans to Classroom as assignments.",
       "li3": "Send scores back to Classroom.",
       "connect": "Connect Google Classroom",
       "connected": "Google Classroom is connected.",
@@ -15290,18 +15417,26 @@
     "more": "More for {name}",
     "delete": "Delete folder",
     "deleteConfirm": "Delete the folder “{name}”? Its games are not deleted.",
+    "deleteConfirmForTeachers": "Delete the folder “{name}”? Its lessons are not deleted.",
     "emptyTitle": "This folder is empty",
     "emptyText": "Save games here with 📁 Save to folder, on Build or on any game's page.",
+    "emptyTextForTeachers": "Save lessons here with 📁 Save to folder, on Build or on any lesson's page.",
     "findOomba": "Find Oomba games",
+    "findOombaForTeachers": "Find Oomba lessons",
     "oombaGame": "Oomba game",
+    "oombaGameForTeachers": "Oomba lesson",
     "myGame": "My game",
+    "myGameForTeachers": "My lesson",
     "assign": "Assign",
     "removeGame": "Remove from folder",
     "save": "Save to folder",
     "oomba": {
       "title": "Oomba games",
+      "titleForTeachers": "Oomba lessons",
       "search": "Search Oomba games",
+      "searchForTeachers": "Search Oomba lessons",
       "none": "No games match. Try another subject or grade.",
+      "noneForTeachers": "No lessons match. Try another subject or grade.",
       "live": "Live"
     },
     "pick": "Which folder?",
@@ -15309,6 +15444,7 @@
     "openFolder": "Open {folder}",
     "reorderHint": "Drag to change the order (on a phone or tablet, press and hold first). With a keyboard: Alt and the arrow keys.",
     "dropHint": "Drag a game onto a folder to save it there.",
+    "dropHintForTeachers": "Drag a lesson onto a folder to save it there.",
     "dropAsk": {
       "title": "{game} → {folder}",
       "move": "Move here",
@@ -15321,27 +15457,38 @@
     "moved": "{name}: {n} of {total}",
     "saveTitle": "Save “{game}” to a folder",
     "gamesN": "{count, plural, one {# game} other {# games}}",
+    "assignedItemsN": "{count, plural, one {# item} other {# items}}",
+    "studentGamesN": "{count, plural, one {# game} other {# games}}",
+    "gamesNForTeachers": "{count, plural, one {# lesson} other {# lessons}}",
     "saved": "In this folder",
     "addHere": "Add here",
     "none": "You have no folders yet. Name one below.",
     "newWithGame": "New folder with this game",
+    "newWithGameForTeachers": "New folder with this lesson",
     "savedTo": "Saved to {folder}",
     "already": "Already in {folder}",
-    "assignGame": "Assign a game",
     "assignMine": "Assign from my games",
+    "assignMineForTeachers": "Assign from my lessons",
     "assigned": "Assigned games",
+    "assignedForTeachers": "Assigned lessons",
     "kindGame": "Game",
+    "kindGameForTeachers": "Lesson",
     "scores": "Scores",
     "courses": "Ready-made courses",
     "classEmpty": "No games assigned yet",
+    "classEmptyForTeachers": "No lessons assigned yet",
     "classEmptyText": "Build a game, or assign one from your folders or Oomba's games.",
+    "classEmptyTextForTeachers": "Build a lesson, or assign one from your folders or Oomba's lessons.",
     "myGamesFolders": "My games and folders",
+    "myGamesFoldersForTeachers": "Lesson Folder",
     "assignNote": "Students see it on their class page. Their scores are on the class's Assigned games tab.",
+    "assignNoteForTeachers": "Students see it on their class page. Their scores are on the class's Assigned lessons tab.",
     "errors": {
       "name": "Give the folder a name.",
       "tooMany": "You have the most folders allowed. Delete one first.",
       "full": "This folder is full.",
-      "publishFirst": "Publish this game first, for your class or your school, so students can play it."
+      "publishFirst": "Publish this game first, for your class or your school, so students can play it.",
+      "publishFirstForTeachers": "Publish this lesson first, for your class or your school, so students can play it."
     },
     "sharedTitle": "Shared by colleagues",
     "by": "by {name}",
@@ -15349,37 +15496,51 @@
     "shareWith": "Share with {school}",
     "sharedWithSchool": "Shared with {school}",
     "shareNote": "Colleagues there can open this folder, play and assign its games, and copy it. They only see games they can open: publish your own games for your school.",
+    "shareNoteForTeachers": "Colleagues there can open this folder, play and assign its lessons, and copy it. They only see lessons they can open: publish your own lessons for your school.",
     "unshare": "Stop sharing",
     "copy": "Copy to my folders",
     "sharedToast": "Shared with your school",
     "unsharedToast": "No longer shared",
     "copied": "Copied to your folders",
     "buildNew": "Build new game",
+    "buildNewForTeachers": "Build new lesson",
     "progressEmptyText": "Assign a game on the Games tab, and you'll see how each student is doing here.",
+    "progressEmptyTextForTeachers": "Assign a lesson on the Lessons tab, and you'll see how each student is doing here.",
     "studentEmptyText": "Your teacher will add games here.",
     "liveHistory": "Live games history",
+    "liveHistoryForTeachers": "Live lessons history",
     "liveHistoryNone": "No live games with this class yet.",
+    "liveHistoryNoneForTeachers": "No live lessons with this class yet.",
     "allGames": "All my games",
+    "allGamesForTeachers": "All my lessons",
     "assignedTo": "Assigned to {class}",
     "studentShared": "Games students shared",
     "fromClass": "From our class",
     "sideClass": "Games for this class",
+    "sideClassForTeachers": "Lessons for this class",
     "assignTo": "Assign to {class}",
     "assignAll": "{count, plural, one {Assign # game} other {Assign all #}}",
+    "assignAllForTeachers": "{count, plural, one {Assign # lesson} other {Assign all #}}",
     "assignAllNote": "Every game here that {class} can play is assigned with this due day. Games already in the class, and games that need setting up first, are skipped.",
+    "assignAllNoteForTeachers": "Every lesson here that {class} can play is assigned with this due day. Lessons already in the class, and lessons that need setting up first, are skipped.",
     "assignAllDone": "{count, plural, one {# game assigned to {class}} other {# games assigned to {class}}}",
+    "assignAllDoneForTeachers": "{count, plural, one {# lesson assigned to {class}} other {# lessons assigned to {class}}}",
     "assignAllSkipped": "{count, plural, one {# skipped} other {# skipped}}",
     "assignAllNone": "Nothing new to assign: these games are already in {class} or need setting up first.",
+    "assignAllNoneForTeachers": "Nothing new to assign: these lessons are already in {class} or need setting up first.",
     "assignedChip": "Assigned",
     "assignedWhere": "Assigned games are listed under “Assigned to {class}”, with their due dates.",
+    "assignedWhereForTeachers": "Assigned lessons are listed under “Assigned to {class}”, with their due dates.",
     "saveAnother": "Save to another folder",
     "moveUp": "Move up",
     "moveDown": "Move down",
     "sharedEmpty": "There are no games here that you can open yet.",
+    "sharedEmptyForTeachers": "There are no lessons here that you can open yet.",
     "phone": {
       "assigned": "Assigned",
       "library": "My library",
       "assignedSub": "{count, plural, one {# game, in the order students see it} other {# games, in the order students see them}}",
+      "assignedSubForTeachers": "{count, plural, one {# item, in the order students see it} other {# items, in the order students see them}}",
       "addFromLibrary": "Add from library",
       "reorder": "Reorder",
       "done": "Done",
@@ -15387,7 +15548,9 @@
       "up": "Move {name} up",
       "down": "Move {name} down",
       "libraryNote": "Collections only sort your games. Assign from inside one.",
+      "libraryNoteForTeachers": "Collections only sort your lessons. Assign from inside one.",
       "allSub": "Games you built",
+      "allSubForTeachers": "Lessons you built",
       "sharedSub": "Shared with your school",
       "newCollection": "New collection",
       "collectionName": "Collection name",
@@ -15395,9 +15558,12 @@
       "byReadOnly": "by {name} · read only",
       "studentsSub": "Made by {class} students",
       "oomba": "Oomba games",
+      "oombaForTeachers": "Oomba lessons",
       "oombaSub": "Browse every Oomba game",
+      "oombaSubForTeachers": "Browse every Oomba lesson",
       "collectionEmpty": "Nothing in this collection yet",
-      "allEmpty": "You haven't built a game yet."
+      "allEmpty": "You haven't built a game yet.",
+      "allEmptyForTeachers": "You haven't built a lesson yet."
     }
   },
   "library": {
@@ -16052,7 +16218,7 @@
       },
       "showAnswers": "Show answers after the due date",
       "showAnswersHint": "Off by default. On: once the due date is over, each student who handed in sees the answers and worked lines.",
-      "showNeedsDue": "Set a due date for this lesson to show answers after it.",
+      "showNeedsDue": "Set a due date for this lesson plan to show answers after it.",
       "handedInCount": "Handed in: {done} of {total}",
       "questionN": "Question {n}",
       "rightOf": "{right} of {total} right",
@@ -16071,7 +16237,7 @@
         "badDate": "That date doesn't look right.",
         "dueBeforeOpen": "The due date is before the open date.",
         "needsDue": "Set a due date to show the answers after it.",
-        "started": "Students have started this step, so its questions stay as they are. Make a copy of the lesson to change them."
+        "started": "Students have started this step, so its questions stay as they are. Make a copy of the lesson plan to change them."
       }
     },
     "terms": {
@@ -16104,7 +16270,7 @@
       "titleManip": "Manipulatives",
       "headingFigures": "Figures is part of the Teacher plan",
       "headingManip": "The Manipulatives are part of the Teacher plan",
-      "leadFigures": "Make exact figures for math, data, science and economics, build worksheets and tests from them, and add Figure questions to your lessons.",
+      "leadFigures": "Make exact figures for math, data, science and economics, build worksheets and tests from them, and add Figure questions to your lesson plans.",
       "leadManip": "Use virtual manipulatives on the board, save boards to share, and run live sessions with your classes.",
       "trial": "Try the Teacher plan free for {days} days. No card needed to start.",
       "kept": "Anything you already assigned keeps working for your students.",
@@ -16127,9 +16293,9 @@
       "showHint": "Off by default. On: once the due date is over, students who handed in see the fixes and why each one is right.",
       "snapshotNote": "Students get this set as it is now. Later edits don't change what the class was given. Results go to Progress and the gradebook.",
       "submit": "Assign",
-      "practiceHint": "Students play the set as a game, check as they go and get hints. It counts as done when they finish.",
+      "practiceHint": "Students play the set as a lesson, check as they go and get hints. It counts as done when they finish.",
       "chooseH": "How will students do it?",
-      "gradeSub": "Students do it once in the lesson. It is marked and goes to the gradebook.",
+      "gradeSub": "Students do it once in the lesson plan. It is marked and goes to the gradebook.",
       "practiceH": "Practice",
       "practiceSub": "Students play the set as often as they like. Nothing is graded.",
       "allowHints": "Allow hints",
@@ -16193,7 +16359,7 @@
   "companion": {
     "settings": {
       "title": "Oomba, the teaching companion",
-      "text": "Teachers with the Teacher plan can ask Oomba for games, books, dashboard changes and lesson help from a bubble on their pages. Students never see it. Their messages, attached text and pictures go to our AI provider, Anthropic, with students' names taken out.",
+      "text": "Teachers with the Teacher plan can ask Oomba for lessons, books, dashboard changes and lesson plan help from a bubble on their pages. Students never see it. Their messages, attached text and pictures go to our AI provider, Anthropic, with students' names taken out.",
       "on": "Oomba for this school's teachers",
       "onHint": "Off: no Oomba bubble for any teacher in this school.",
       "web": "Web search",
@@ -16471,10 +16637,10 @@
     "panel": {
       "label": "Teacher's desk",
       "handOut": "Hand out to",
-      "myLessons": "My lessons",
-      "myGames": "Games I built",
-      "noGames": "Games you build show here.",
-      "oomba": "Oomba games and tools",
+      "myLessons": "My lesson plans",
+      "myGames": "Lessons I built",
+      "noGames": "Lessons you build show here.",
+      "oomba": "Oomba lessons and tools",
       "manipulatives": "Manipulatives",
       "figures": "Figures",
       "reading": "Reading",
@@ -16484,7 +16650,7 @@
       "note": "Note to the class",
       "timer": "Timer",
       "board": "Board tools",
-      "handOutHint": "Tap a game, then a desk, a group or Whole class. Or drag it there.",
+      "handOutHint": "Tap a lesson, then a desk, a group or Whole class. Or drag it there.",
       "comingNext": "Coming next",
       "readAny": "Read any book",
       "chooseBook": "Choose a book"
@@ -16505,8 +16671,8 @@
       "badAction": "That didn't work. Try again.",
       "notLive": "Start class first with Everyone to Homeroom.",
       "padFull": "Your pad is full. Clear it to keep drawing.",
-      "pickGame": "That game can't be handed out. Pick another one.",
-      "publishFirst": "Publish this game first, then hand it out.",
+      "pickGame": "That lesson can't be handed out. Pick another one.",
+      "publishFirst": "Publish this lesson first, then hand it out.",
       "badDate": "Pick a real date for the due date.",
       "badTarget": "Drop it on a desk, a group or Whole class.",
       "noStudents": "This class has no students yet.",
@@ -16515,20 +16681,20 @@
       "badOrder": "Pick In order or Any order.",
       "badGrade": "Pick Score, Completion or Not graded.",
       "tooLong": "Instructions can be 300 characters at most.",
-      "alreadyOnDesk": "{count, plural, one {# of these desks already has this game.} other {# of these desks already have this game.}} Take it off there first, or hand it to the others.",
+      "alreadyOnDesk": "{count, plural, one {# of these desks already has this lesson.} other {# of these desks already have this lesson.}} Take it off there first, or hand it to the others.",
       "tooManyHandouts": "This class has a lot of handouts open. Remove some old ones first.",
       "notOnDesk": "That handout isn't on this desk.",
-      "noLesson": "That lesson isn't in your lessons anymore.",
-      "badGame": "Lessons can be built for Arithmetic Lab, Algebra Builder and Crossword for now.",
-      "needTitle": "Give the lesson a name.",
+      "noLesson": "That lesson plan isn't in your lesson plans anymore.",
+      "badGame": "Lesson plans can be built for Arithmetic Lab, Algebra Builder and Crossword for now.",
+      "needTitle": "Give the lesson plan a name.",
       "titleLong": "The name can be 60 characters at most.",
       "fewWords": "A crossword needs at least 3 words.",
       "missingClue": "Every word needs a clue.",
       "settings": "Those settings couldn't be saved. Check them and try again.",
-      "setsFull": "You have the most worksheets this game can keep. Delete some in the game's My worksheets first.",
-      "tooManyLessons": "You have the most lessons you can keep. Delete one first.",
-      "lessonGone": "A worksheet of this lesson was deleted. Open the lesson, save it again, then hand it out.",
-      "lessonOnDesk": "{count, plural, one {# of these desks already has this lesson.} other {# of these desks already have this lesson.}} Take it off there first, or hand it to the others.",
+      "setsFull": "You have the most worksheets this lesson can keep. Delete some in the lesson's My worksheets first.",
+      "tooManyLessons": "You have the most lesson plans you can keep. Delete one first.",
+      "lessonGone": "A worksheet of this lesson plan was deleted. Open the lesson plan, save it again, then hand it out.",
+      "lessonOnDesk": "{count, plural, one {# of these desks already has this lesson plan.} other {# of these desks already have this lesson plan.}} Take it off there first, or hand it to the others.",
       "teamTooSmall": "Pick at least 2 desks for a team.",
       "teamTooBig": "A team can have 6 students at most.",
       "alreadyInTeam": "One of those students is already at a team desk. Split that team first.",
@@ -16673,12 +16839,12 @@
     "lessons": {
       "handedOut": "{title} is on {count, plural, one {# desk} other {# desks}}.",
       "handedOutVersions": "{title} is on {count, plural, one {# desk} other {# desks}}, with a version for each group.",
-      "saved": "Lesson saved.",
-      "savedNew": "Saved to My lessons. Tap it, then a desk, to hand it out.",
+      "saved": "Lesson plan saved.",
+      "savedNew": "Saved to My lesson plans. Tap it, then a desk, to hand it out.",
       "copyOf": "Copy of {title}",
-      "duplicated": "Lesson copied.",
-      "deleted": "Lesson deleted.",
-      "untitled": "New lesson",
+      "duplicated": "Lesson plan copied.",
+      "deleted": "Lesson plan deleted.",
+      "untitled": "New lesson plan",
       "print": {
         "solve": "Solve for x. Show your steps.",
         "multiply": "Multiply. Write each answer as one expression.",
@@ -16710,9 +16876,9 @@
       "trend": "Trend",
       "tableLabel": "Class overview: handouts and results",
       "kind": {
-        "lesson": "Lesson",
-        "game": "Game",
-        "mine": "My game",
+        "lesson": "Lesson plan",
+        "game": "Lesson",
+        "mine": "My lesson",
         "reading": "Reading"
       },
       "versions": "{count, plural, one {# version} other {# versions}}",
@@ -16747,7 +16913,7 @@
       "keyTrend": "Trend, from each student's last 3 scores: Needs support when they average under 60%, Improving when the latest is 10 points or more above the first of them, otherwise Steady.",
       "more": "The full gradebook, CSV, standards, rubrics and Google Classroom are below, the same as before.",
       "fullGradebook": "Full gradebook",
-      "noHandouts": "Nothing handed out in Homeroom in the last {weeks} weeks. Hand out a game or a lesson from the Homeroom tab.",
+      "noHandouts": "Nothing handed out in Homeroom in the last {weeks} weeks. Hand out a lesson or a lesson plan from the Homeroom tab.",
       "gcLinked": "Linked to “{course}”",
       "gcRoster": "roster synced {when}",
       "gcRosterNever": "roster not synced yet",
@@ -16860,6 +17026,55 @@
     },
     "k2": {
       "saved": "K-2 desks saved"
+    },
+    "parents": {
+      "title": "{name}'s class work",
+      "heading": "{name}'s class work",
+      "lead": "What {name}'s teacher shares from Homeroom: handouts, the teacher's comments, books read and notes from the class's tab. Read only. Only {name}'s own work, never anyone else's.",
+      "open": "Class work",
+      "back": "Family",
+      "classes": "Classes",
+      "jump": "On this page",
+      "handouts": "Handouts",
+      "reading": "Reading",
+      "notes": "Class notes",
+      "classNotes": "Class notes",
+      "catchUp": "To catch up on",
+      "catchUpLead": "Given while {name} was away. They wait on the desk, with the teacher's words, until they are done.",
+      "missed": "Missed while away",
+      "given": "Given {date}",
+      "due": "Due {date}",
+      "done": "Done",
+      "notYet": "Not yet",
+      "instructions": "The teacher's instructions",
+      "fromTeacher": "From the teacher",
+      "stickerOnly": "A sticker for this work.",
+      "grade": {
+        "score": "Graded by score:",
+        "scoreLater": "Graded by score. The score shows once it is done.",
+        "scoreNone": "Graded by score: done, with nothing to score.",
+        "completion": "Graded by completion: done or not yet.",
+        "none": "Practice, not graded."
+      },
+      "pct": "{pct}% right",
+      "quiz": "Quiz: {right} of {total} right on the first try",
+      "step": {
+        "choose": "Picking a book",
+        "read": "Reading",
+        "quiz": "Quiz next",
+        "notes": "Notes next",
+        "done": "Read, quiz and notes done"
+      },
+      "notesLead": "The notes {name} wrote in this class's tab of their notebook. Their own tabs stay private.",
+      "updated": "Updated {date}",
+      "drawing": "{name}'s drawing",
+      "noHandouts": "No handouts yet.",
+      "noReading": "No books read with the class yet.",
+      "noNotes": "{name} hasn't written class notes yet.",
+      "none": "Nothing from school here yet. When {name}'s teacher uses Homeroom, their class work shows here.",
+      "foot": "Read only. The teacher can turn this view off for a class.",
+      "savedOn": "Parents' view on",
+      "savedOff": "Parents' view off"
     },
     "attendance": {
       "toast": {

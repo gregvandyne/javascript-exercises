@@ -144,13 +144,38 @@ export const tEn = makeT(DEFAULT_LOCALE);
 const tCache = new Map(CODES.map(c => [c, makeT(c)]));
 export const tFor = code => tCache.get(code) || tEn;
 
-/** Resolved raw messages for every key under the given prefixes (for the browser's <script id="i18n">). */
-export function clientStrings(code, prefixes = []) {
+// ---------------------------------------------------------------- teachers say lessons
+// docs/decisions.md "Teachers say lessons": a string that school staff and kids (or family grown-ups) share has a teacher
+// variant, the same key with TEACHER_SUFFIX (folders.allGames -> folders.allGamesForTeachers). School staff see the
+// variant wherever the key is used, on the server (req.t) and in the browser (the page's strings); everyone else sees
+// the key itself. Strings only teachers see are simply written with the teachers' words and need no variant.
+export const TEACHER_SUFFIX = 'ForTeachers';
+/** t for school staff: each key's teacher variant when it has one. */
+export function teacherT(t) {
+  if (!t || t.teacher) return t;
+  const code = t.locale;
+  const pick = key => (typeof key === 'string' && lookup(code, key + TEACHER_SUFFIX) !== undefined ? key + TEACHER_SUFFIX : key);
+  const out = (key, vars) => t(pick(key), vars);
+  Object.assign(out, t, { teacher: true, has: key => t.has(key), own: key => t.own(pick(key)) });
+  return out;
+}
+/** Switch a request to the teachers' words (req.t, res.locals.t, the shared view helpers' current().t and the page's
+ *  browser strings). Called for school staff by server/app.js. */
+export function useTeacherWords(req) {
+  if (!req || req.teacherWords) return;
+  req.t = teacherT(req.t || tEn); req.teacherWords = true;
+  if (req.res && req.res.locals) req.res.locals.t = req.t;
+  const store = als.getStore(); if (store) store.t = req.t;
+}
+
+/** Resolved raw messages for every key under the given prefixes (for the browser's <script id="i18n">). teacher: each
+ *  key's teacher variant in its place where there is one (useTeacherWords). */
+export function clientStrings(code, prefixes = [], { teacher = false } = {}) {
   const out = {};
   const en = dicts.get(DEFAULT_LOCALE) || {};
   for (const key of Object.keys(en)) {
     if (!prefixes.some(p => key === p || key.startsWith(p + '.'))) continue;
-    out[key] = lookup(code, key);
+    out[key] = (teacher && lookup(code, key + TEACHER_SUFFIX)) || lookup(code, key);
   }
   return out;
 }

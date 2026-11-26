@@ -51,10 +51,10 @@ test('no session (a first visit or a search engine): "/" is the teacher landing 
     assert.ok(isLanding(r.text), ua);
     assert.equal(r.text.match(/<h1\b/g).length, 1, 'one h1');
     assert.doesNotMatch(r.text, /lp-floats?\b|lp-bob/, 'no game covers floating round the hero (too distracting)');
-    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">One screen to run your class\. Games to make it stick\.<\/h1>/);
+    assert.match(r.text, /<h1 id="lp-h1" class="lp-h1">One screen to run your class\. Lessons to make it stick\.<\/h1>/);
     assert.match(r.text, /<meta name="robots" content="index, follow, max-image-preview:large">/);
     assert.match(r.text, new RegExp(`<link rel="canonical" href="${base}/">`));
-    assert.match(r.text, /<title>Class dashboards and learning games for teachers · Oomba Academy<\/title>/);
+    assert.match(r.text, /<title>Class dashboards and interactive lessons for teachers · Oomba Academy<\/title>/);
     assert.match(r.text, /<meta name="description" content="One screen to run your class day, [^"]{40,}">/);
     assert.match(r.text, /<meta property="og:image" content="[^"]+\/og\/landing\.jpg">/);
     assert.match(r.text, /<meta name="twitter:card" content="summary_large_image">/);
@@ -87,7 +87,7 @@ test('under the questions: a box each for /parents and /teachers, in their own w
   const doors = [...faq.matchAll(/<a class="lp-card lp-door rv" href="([^"]+)">([\s\S]*?)<\/a>/g)];
   assert.deepEqual(doors.map(m => m[1]), ['/parents', '/teachers']);
   assert.match(doors[0][2], /For parents[\s\S]*<h3>Fun learning games for kids 5–14, safe by design<\/h3>[\s\S]*No chat with strangers/);
-  assert.match(doors[1][2], /For teachers[\s\S]*<h3>Fun, interactive learning games your class will ask for<\/h3>[\s\S]*Sign in with Google/);
+  assert.match(doors[1][2], /For teachers[\s\S]*<h3>Fun, interactive lessons your class will ask for<\/h3>[\s\S]*Sign in with Google/);
   assert.ok(faq.indexOf('lp-faq') < faq.indexOf('lp-doors'), 'after the questions');
 });
 

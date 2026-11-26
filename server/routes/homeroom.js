@@ -61,6 +61,7 @@
 //                                              | { action: answer, i, c } | { action: notes, notes: { happened, word, think } }
 //   GET  /api/desk/:id/reading/:clid/quiz      the quiz's questions (never the answers; written once per book if needed)
 // K-2 mode, absent and at home (docs/decisions.md "Homeroom: K-2 mode, absent and at home"; services/homeroom-attendance.js):
+//   POST /api/homeroom/:id/parents             the parents' view on or off: { on: true | false } (step 4d)
 //   POST /api/homeroom/:id/k2                  the class's K-2 desks: { mode: '' (by grade) | on | off }, or one student's:
 //                                              { studentId, mode: '' (as the class) | on | off }
 //   POST /api/homeroom/:id/attendance          { studentId, status: absent | home | '' (here), tz } for today (a sub: /api/sub)
@@ -100,6 +101,7 @@ import * as NB from '../services/notebook.js';
 import * as HR from '../services/homeroom-reading.js';
 import { readingResultsPage } from './homeroom-reading.js';
 import * as AT from '../services/homeroom-attendance.js';
+import * as PV from '../services/homeroom-parents.js';
 
 export const router = Router();
 const STATUS = { notFound: 404, tooBig: 413, forbidden: 403 };
@@ -226,6 +228,8 @@ router.get('/class/:id/homeroom', (req, res) => {
       pulse: { stuckMin: HV.STUCK_MS / 60e3, passMin: HV.PASS_MIN, passMax: HV.PASS_MAX }, plan: HP.teacherView(c),
       // step 3c: the students' supports, and for the teacher the aides, sub links and "While you were out"
       // K-2 mode: the class's setting and each student's own (step 4c)
+      // the parents' view (step 4d): on unless the class's teachers turned it off
+      ...(aide ? {} : { parents: PV.parentsOn(c) }),
       k2: AT.classK2(c), k2Students: AT.studentModes(c.id), supports: SUP.supportsOf(c.id), simples: aide ? {} : Object.fromEntries(SUP.simplesOf(c.id)), simpleMax: SUP.SIMPLE_MAX, chat: !aide && hasModel(),
       ...(aide ? {} : { helpers: { aides: HA.listFor(c), subLinks: SB.linksOf(c), notes: SB.notesFor(c), noteMax: SB.NOTE_MAX, aidesMax: HA.AIDES_MAX } }) })}
     ${body}`,
@@ -278,6 +282,13 @@ router.post('/api/homeroom/:id/k2', rateLimit('homeroom-k2', 300, 3600e3), (req,
   const r = x.studentId ? AT.setStudentK2(req.user, c, String(x.studentId), mode) : AT.setClassK2(req.user, c, mode);
   if (!r.ok) return fail(req, res, r.code);
   res.json({ ok: true, k2: AT.classK2(c), k2Students: AT.studentModes(c.id), toast: req.t('homeroom.k2.saved') });
+});
+// The parents' view (step 4d; services/homeroom-parents.js): the class's teachers turn it on or off (never an aide: the
+// gate answers them 403).
+router.post('/api/homeroom/:id/parents', rateLimit('homeroom-parents-set', 300, 3600e3), (req, res) => {
+  const r = PV.setParents(req.user, req.homeroomClass, body(req).on);
+  if (!r.ok) return fail(req, res, r.code);
+  res.json({ ok: true, parents: r.parents, toast: req.t(r.parents ? 'homeroom.parents.savedOn' : 'homeroom.parents.savedOff') });
 });
 router.post('/api/homeroom/:id/attendance', rateLimit('homeroom-attendance', 1200, 3600e3), (req, res) => {
   const x = body(req), c = req.homeroomClass;
@@ -512,7 +523,8 @@ router.get('/api/desk/:id/state', rateLimit('homeroom-desk-state', 3000, 3600e3)
 const noteLabels = req => ({ ...Object.fromEntries(HR.NOTES.map(k => [k, req.t(`homeroom.reading.notes.${k}`)])), k2drew: req.t('homeroom.reading.notes.k2drew'),
   ...Object.fromEntries(HR.FEELS.map(k => [`feel.${k}`, req.t(`homeroom.reading.notes.feel.${k}`)])) });
 const rdFail = (req, res, r) => res.status(STATUS[r.code] || 400).json({ error: req.t(`homeroom.reading.errors.${r.code}`), code: r.code, ...(r.note ? { note: r.note } : {}) });
-const rdSend = (req, res, r) => (r.ok ? res.json(r) : rdFail(req, res, r));
+// parentsRead (step 4d): a linked grown-up sees the notes page, so the notes' privacy line says so
+const rdSend = (req, res, r) => (r.ok ? res.json(PV.grownupSees(req.user) ? { ...r, parentsRead: true } : r) : rdFail(req, res, r));
 router.get('/api/desk/:id/reading/:clid', rateLimit('homeroom-reading', 3000, 3600e3), (req, res) => rdSend(req, res, HR.view(req.user, req.homeroomClass, req.params.clid)));
 router.get('/api/desk/:id/reading/:clid/quiz', rateLimit('homeroom-reading-quiz', 300, 3600e3), async (req, res) => rdSend(req, res, await HR.quiz(req.user, req.homeroomClass, req.params.clid)));
 router.post('/api/desk/:id/reading/:clid', rateLimit('homeroom-reading', 3000, 3600e3), (req, res) => {

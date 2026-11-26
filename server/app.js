@@ -12,7 +12,8 @@ import { mayOpenCourses } from './services/game-focus.js';
 import { html } from './views/html.js';
 import { log } from './services/log.js';
 import { handler as health, lifecycle } from './services/health.js';
-import { middleware as i18n, tReq, tFor, pickLocale, readCookie, localeInfo, COOKIE as LANG_COOKIE } from './i18n/index.js';
+import { middleware as i18n, tReq, tFor, pickLocale, readCookie, localeInfo, COOKIE as LANG_COOKIE, useTeacherWords } from './i18n/index.js';
+import { isSchoolStaff } from './services/schools.js';
 import { frameSafeHeaders } from './services/frame.js';
 import { middleware as theme } from './theme.js';
 import { router as authRoutes } from './routes/auth.js';
@@ -70,6 +71,7 @@ import { router as homeroomRoutes } from './routes/homeroom.js';
 import { router as homeroomSigninRoutes } from './routes/homeroom-signin.js';
 import { router as homeroomSubRoutes } from './routes/homeroom-sub.js';
 import { router as notebookRoutes } from './routes/notebook.js';
+import { router as homeroomParentRoutes } from './routes/homeroom-parents.js';
 import { router as figuresRoutes } from './routes/figures.js';
 import { router as companionRoutes } from './routes/companion.js';
 import { router as passwordResetRoutes } from './routes/password-reset.js';
@@ -219,6 +221,8 @@ export function createApp() {
   app.use(handoffRoutes);   // before countVisits: hand-off hops are never counted as visits
   app.use(countVisits);
   app.use(i18n);
+  // Teachers say lessons (docs/decisions.md "Teachers say lessons"): school staff get the teacher variant of shared strings.
+  app.use((req, res, next) => { if (req.user && !req.user.is_guest && isSchoolStaff(req.user)) useTeacherWords(req); next(); });
   app.use(theme);
   // One-click unsubscribe (routes/email.js): a mail provider's POST comes from its own servers; the signed token is the check.
   app.use(emailRoutes);
@@ -236,7 +240,7 @@ export function createApp() {
   // Oomba Live before the Google routes: /join takes live codes and hands class codes on (routes/live.js).
   // LANDING HOOK (routes/landing.js): just before the home route, "/" with no session is the teacher landing page and
   // /play is today's guest home ("Just Play"). Everyone with a session gets the home route below, unchanged.
-  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, homeroomRoutes, homeroomSigninRoutes, homeroomSubRoutes, notebookRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
+  for (const r of [authRoutes, onboardingRoutes, passwordResetRoutes, familyRoutes, plansRoutes, teacherPlanRoutes, schoolBillingRoutes, quickLiveRoutes, liveRoutes, googleRoutes, gclassroomRoutes, landingRoutes, discoverRoutes, courseRoutes, parentRoutes, trustRoutes, compareRoutes, teacherRoutes, gameRoutes, matchRoutes, adminToolRoutes, buildSetupRoutes, studioRoutes, activityPanelRoutes, gameFolderRoutes, socialRoutes, chatRoutes, adminRoutes, ttsRoutes, teachLoopRoutes, dashRoutes, manipRoutes, homeroomRoutes, homeroomSigninRoutes, homeroomSubRoutes, notebookRoutes, homeroomParentRoutes, figuresRoutes, companionRoutes, staffInviteRoutes, schoolRoutes, standardsRoutes, csQuestRoutes, cyberRoutes, numberQuestRoutes, moveRoutes, storyRoutes, storybookRoutes, libraryRoutes, librarySuggestRoutes, progressRoutes, rubricRoutes, lessonRoutes, digestRoutes, infoRoutes, kitRoutes]) app.use(r);
 
   app.use('/api', (req, res) => res.status(404).json({ error: tReq(req)('errors.api.notFound') }));
   app.use((req, res) => notFound(req, res));

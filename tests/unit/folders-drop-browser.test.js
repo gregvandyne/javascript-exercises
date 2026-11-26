@@ -68,7 +68,7 @@ async function dragTo(page, from, to) {
 
 test('Find Oomba games: drop a game on my folder saves it there, once', { skip }, async () => {
   const { ctx, page, errors } = await open(ana, '/build?view=oomba');
-  assert.match(await page.textContent('.shelf-drophint'), /Drag a game onto a folder/);
+  assert.match(await page.textContent('.shelf-drophint'), /Drag a lesson onto a folder/);
   await page.evaluate(() => { window.__stay = 1; });
   const oid = await page.$eval('#shelf-main .oomba-game', el => el.dataset.id);
   const row = `#shelf-main .oomba-game[data-id="${oid}"] .mg-cover`;

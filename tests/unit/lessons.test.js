@@ -180,7 +180,7 @@ test('class Lessons tab and editor: one assignment per class, rows open progress
   const benLesson = L.createLesson(ben, oak.id, { title: 'Ben shared lesson' }).lesson; L.updateLesson(ben, benLesson.id, { shared: true });
   // a new class: the empty state is games (New game, Assign from my games, ready-made courses), no lesson tools
   let r = await as(ana)(`/class/${c5.id}`);
-  assert.match(r.text, /No games assigned yet/); assert.match(r.text, /href="\/build\/new"/);
+  assert.match(r.text, /No lessons assigned yet/); assert.match(r.text, /href="\/build\/new"/);
   assert.doesNotMatch(r.text, /\/teach\/lessons\?|<option value=/, 'no lesson library, no lesson picker');
   assert.equal((await as(ana)(`/api/classes/${c5.id}/lessons`, { method: 'POST', body: { lessonId: benLesson.id } })).status, 404);
   r = await as(ana)('/api/lessons', { method: 'POST', body: { schoolId: oak.id, title: 'From the class', classId: c5.id } });

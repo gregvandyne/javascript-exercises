@@ -12,7 +12,7 @@
 //
 // Who reads it: the student (read and write, only their own); a teacher of a class the student is in now (read only,
 // the whole notebook: the students are told at its top); nobody else. Aides, subs, other teachers, school admins and
-// parents get 403 (parents' view is a later step: the tab's kind is what makes "handout notes only" possible). No AI
+// parents get 403 here; a linked grown-up reads the class tabs only, through services/homeroom-parents.js (step 4d). No AI
 // ever reads it: nothing here is passed to services/companion.js or any model.
 //
 // Limits: a page's cleaned body at most PAGE_MAX characters, a student's notebook at most TOTAL_MAX characters in all,
@@ -25,6 +25,7 @@ import { accountKind } from '../auth.js';
 import * as S from './schools.js';
 import * as H from './homeroom.js';
 import * as AT from './homeroom-attendance.js';
+import { grownupSees } from './homeroom-parents.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = code => ({ ok: false, code });
@@ -175,7 +176,8 @@ export function mine(u) {
   if (!canUse(u)) return fail('notFound');
   ensure(u);
   // K-2 mode in a class of theirs: the notebook draws or types, with a simpler toolbar and no tabs to manage
-  return ok({ tabs: bookOf(u.id), used: used(u.id).n, limits: limits(), teacherReads: hasTeacher(u.id), ...(AT.k2Anywhere(u) ? { k2: true } : {}) });
+  // parentsRead: a linked grown-up sees the class tabs (services/homeroom-parents.js), so the top line says so too
+  return ok({ tabs: bookOf(u.id), used: used(u.id).n, limits: limits(), teacherReads: hasTeacher(u.id), ...(grownupSees(u) ? { parentsRead: true } : {}), ...(AT.k2Anywhere(u) ? { k2: true } : {}) });
 }
 /** A student's notebook for their teacher, read only (and audited: who read whose notebook, never what it says).
  *  -> { ok, tabs, student } | forbidden */

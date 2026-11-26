@@ -14524,6 +14524,36 @@ everyone else keeps the class page and its tiles exactly as before ("Action tile
   the class (My classes, All classes, the school) is left off: the switcher has the teacher's other classes and, as
   its last option, All classes (`/teach?all=1`). A Back link to a page of the same class (a lesson's gradebook) stays.
 - With the tiles gone the switch sits high on the first screen, clear of Oomba's chat button.
+- **Phones, later the same day** (owner): the class tabs (Games, Progress, Students, Settings) share the width evenly
+  (a column each, however many there are) with larger icons (30 px) over the label. The Connections chip is left out of
+  Classroom's bar under 640 px, and the Google Classroom button moved up from the foot of the Games tab to a
+  full-width button under Build new game and Find Oomba games (`.classquick-gc`; the foot copy is hidden there, so
+  there is one). Wider screens are unchanged.
+
+## Tug of Math and Question Battle taken off (25 Nov 2026)
+
+Owner: "Remove tug of war and question battle", hidden everywhere rather than deleted (their choice of the three
+offered: hide everywhere, delete completely, or only from Oomba Live).
+
+- **How** (`server/services/game-focus.js` `REMOVED_GAMES`, `removedGames`, `slugRemoved`): the two official games join
+  the hidden list of "Focus: teaching tools first" **whatever ARCADE says**, so every list that already leaves hidden
+  games out leaves these out (Learn, the class's Find Oomba games, search, the sitemap, the subject and age pages,
+  Oomba's game suggestions), their `/g` and `/play` pages say "not available right now", and their Oomba Live modes
+  (`battle`, `tug`) are not offered on `/live` (`modeOpen`). `POST /api/live/sessions` refuses a new room in either mode
+  (404) from any form or saved run, except for the platform admin and a class that has the game assigned, the same
+  exceptions as every hidden game. `/teachers/live` leaves their mode cards out.
+- **Quick game** (`/live/quick`) offered Question Battle and, with the arcade on, Quest Race; with both hidden it offers
+  **Brain Board** (`QUICK_MODES` gains `board`; its starter is a board of five bank subjects, the chosen one first).
+- The landing page's demo game (`demoGame`, ARCADE off) is Brain Board instead of Question Battle. Page copy that
+  named either game (`teachers.live.li1`, `teachersLive.how.s1.p`, `landing.live.li1`, `learn.ages.a5.faq.a2`) no
+  longer does, in every language.
+- **Nothing is deleted**: the games' rows, plays, saves, scores and live results stay; the code stays.
+  `REMOVED_GAMES` (env, comma separated) replaces the list and `REMOVED_GAMES=none` brings both back. Unit tests run
+  with `none` (they describe the code) except `tests/unit/removed-games.test.js`.
+- **Left as they are**: the marketing screenshots of Oomba Live (`scripts/how-shots.js` hosts a Question Battle room;
+  the live picker, lobby and play pictures on `/teachers/live` and the landing page) until they are re-shot, with alt
+  text that says what they show; the standards legend's mention of Tug of Math Live (its past runs still count);
+  CS Quest's warm-up and exit-ticket modes (the courses are hidden while COURSES is off).
 
 ## Homeroom: the notebook (25 Nov 2026)
 
@@ -14793,3 +14823,118 @@ students). Step 4c. Migration `0135_homeroom_k2_attendance`. Service: `services/
 The place value disks' palette shows each disk as a plain colored circle with its value written beside it, not inside:
 a long value (1,000,000) stretched the circle into an oval. A disk placed on the board is unchanged (its value inside),
 and the drag ghost still shows the value. Test: tests/unit/manip-disk-palette-browser.test.js.
+
+## Teachers say lessons (25 Nov 2026)
+
+The owner: "Let's change games to lessons throughout the app", for teachers only. On a teacher's pages a playable thing a
+teacher makes, assigns, hosts or hands out is a **lesson**, and today's step-by-step lessons (read, play and build steps,
+the lesson editor and library, Homeroom's lesson builder, the Lessons tabs, lesson rows in gradebooks) are **lesson
+plans**. Students and kids keep "game" everywhere they see it; parents keep their words. Only visible text changed: no
+URL, route, id, column, API field or CSS class.
+
+- **How**: a string only teachers see is rewritten. A string shared with students, kids or family grown-ups gets a
+  teacher variant, the same key with `ForTeachers` (`folders.allGames` and `folders.allGamesForTeachers`); school staff
+  see the variant wherever the key is used (`server/i18n/index.js` `teacherT` and `useTeacherWords`, switched on for
+  every request of school staff in `server/app.js`; the page's browser strings follow through `clientStrings(..., {
+  teacher })`). `build.titleStaff` became `build.titleForTeachers`. `npm run i18n:check` fails on a variant whose key is
+  gone, and counts a variant as used when its key is. Every locale has the same keys, with "lesson" and "lesson plan"
+  in its own words (Lektion / Unterrichtsplan, leçon / plan de cours, lección / plan de clase, aula / plano de aula,
+  lezione / piano di lezione, les / lesplan, урок / план урока, שיעור / מערך שיעור, درس / خطة درس, レッスン / 授業プラン, 課程 / 教案).
+- **Screens**: the teacher home and the teaching loop; the class page (its tabs are Lessons and Lesson plans; Build new
+  lesson, Find Oomba lessons, Assigned lessons, the Assigned list's count says "N items" because it holds both, and a
+  multi-step row says "Lesson plan · N steps"); Homeroom (Tap a lesson, My lesson plans, + Build a lesson plan, Lessons I
+  built, Oomba lessons and tools, the hand-out sheet's "Lesson · free play" and "Lesson plan", My desk, errors and toasts);
+  the Classroom view's overview; /build for staff (Build lessons, New lesson, All my lessons); the gradebook, progress,
+  rubrics, standards and Google Classroom pages; Oomba Live for teachers (Host a live lesson, the host page's Live lesson,
+  End lesson, Lesson settings and a **Join code**, the words the projector shows students, whose join page says "code");
+  the Oomba chat (its greeting, suggestions, steps, how-to steps and a sentence in its system prompt so its replies use
+  the same words); the site frame (skip link, search box, meta description, the Builder's news banner); and the teacher
+  marketing pages (/teachers, /teachers/live, the landing at "/", the quick live page, the school plan print).
+- **Turn your notes into a lesson**: /teach/make used "lesson" for the teacher's own teaching text. It is now "your
+  notes" ("Paste your notes"), and what Oomba makes is a lesson. On the landing, the Builder turns a lesson plan (an
+  uploaded plan, the word's everyday meaning) into a playable lesson.
+- **Still "game", on purpose**: a game a student built and shared (Games students shared and its count, a class's shared
+  games, the "Build a game" step); the Studio and the Builder chat (the kid Builder; a teacher's New lesson opens it);
+  what students read (Google Classroom announcements a teacher posts, every student page and live player page); family
+  hosting of live games (the base keys); the class dashboard (projected to students, unchanged); the courses' own parts
+  (CS Quest, Number Quest, Cyber Defenders); the Learn library; research and safety copy; /plans' shared copy; billing;
+  emails (the onboarding-email branch); legal pages; the Manipulatives (another session's). The full list, with every
+  changed string: the branch's changes list.
+- Tests: `tests/unit/teachers-say-lessons.test.js` (a teacher's /teach, class page, Homeroom panel and its browser
+  strings, /build and Live host page say "lesson" and have no "game" but the students' own; a student's desk, To do and
+  class page and a kid's /build keep "game"; the mechanism and every locale's variants), with the teacher-facing
+  assertions of the existing tests moved to the new words.
+
+## A simpler teacher home (25 Nov 2026)
+
+The owner crossed out every button on the teacher home (/teach) on his phone: "just have the three options on each
+class card (homeroom, classroom, dashboard). At the top just have one option: Lesson Folder." For teachers, games are
+now called lessons (students and kids keep "games"); this change only uses the new word in what it adds.
+
+- **Top**: hello, the class count and one button, Lesson Folder (📁, `/build`). This week's summary, Host a live game,
+  My games and folders, Turn a lesson into a game and Make a game are gone from the page. The teaching loop's card and
+  the staff invites are unchanged.
+- **Class cards**: the school, the class name, the student count and the status chips stay. Open class, Assign a game
+  and Host a live game are replaced by the class's views (routes/homeroom-views.js `cardViews`): Homeroom
+  (`/class/:id/homeroom`, only for a teacher who passes the Homeroom gate: the flag, HOMEROOM_USERS and the Teacher
+  plan, services/homeroom.js `canUseClass`), Classroom (`/class/:id`) and Dashboard (`/class/:id/dashboard`, the class's
+  own teacher). One row of equal buttons at every width; at 420px and narrower each is its icon over its name, so three
+  never wrap. The open-room note on other cards ("You already have a game open") went with the Host button; a class's
+  own card still has its Live game now chip, a link back to the room.
+- **Still reachable**: This week's summary at `/teach/summary` (the weekly email's link, and the button in the Me page's
+  summary settings); hosting from the Live tab and Homeroom's ⋯ menu; assigning from the Classroom view; making a game,
+  and the Lesson Folder, at `/build`; Turn a lesson into a game (`/teach/make`) from the Live tab's question sets. No route
+  was removed. The unused strings (teach.home.make, folders.assignGame, school.teach.tools) were dropped.
+- **Build lessons**: the `/build` heading says "Build lessons" to school staff (`build.titleStaff`) and still "Build a
+  game" to kids and students. The nav tab stays "Build". Left for the later app-wide teacher rename: the rest of the
+  /build page (New game, All my games, the Builder hero), Make a game on the Me page, the class page's Build new game,
+  the "Build a game" lesson step kind, landing and legal copy.
+- Tests: `tests/unit/teach-home-simple.test.js` (the one button; the gate: Homeroom for a gated teacher, not for one on
+  the list without the plan, not for one on neither, not with the flag off; the buttons open their views; the summary,
+  Live tab and /build reachable; the /build heading for staff and for a kid), with classroom-homes, quick-live,
+  nav-roles and teach-make updated to the new layout.
+
+## Homeroom: the parents' view (25 Nov 2026)
+
+Owner-approved spec: `docs/homeroom.md` ("The student desk": parents see handout notes, not personal tabs; build order
+step 4). Step 4d. Migration `0136_homeroom_parents` (one column). Service `services/homeroom-parents.js`, page
+`routes/homeroom-parents.js`, `public/css/homeroom-parents.css`.
+
+- **Who**: the existing family linking, unchanged (`services/family.js`): a grown-up account whose family has the child
+  **linked** (the child's code on /me, typed on /family/link, the child's Yes; or an account the family made). A pending
+  request is no link. Linking is for own kid accounts only (`isChildAccount`: never a school account the school made), so
+  a student whose account the school made has no parents' view; no new linking flow was added. Families must be on
+  (`familiesOn`, as every family page) and `HOMEROOM` on. Anyone else (a student, a teacher, an aide, a sub, another
+  family, the platform admin) gets the site's 404; signed out, the sign-in.
+- **Where**: the child's row on /family gets **Class work** when the child has a class to show; it opens
+  `/family/class/<token>` (the /family page's keyed token, never the child's id; the grown-up fence lets only this
+  address through). A class is shown when the child is a student there now, the class has Homeroom (one of its teachers
+  passes the gate) and the parents' view is on; a chip per class, `?class=` picks one (any other class: 404).
+- **What** (read only, phones first: one column of cards, two on wider screens): the child's own handouts
+  (`deskView`: title, the teacher's instructions, given and due dates, Done or Not yet, the grade as chosen: Score's % right
+  from `scores.js`, the gradebook's figure, "Graded by completion", or "Practice, not graded"); the teacher's comment and
+  sticker on finished work; **To catch up on**: handouts marked Missed while away (`markMissed`) and not done, first;
+  **Reading**: the books read with the routine, cover, step and the quiz's first-try result; **Class notes**: the child's
+  notebook pages in that class's tab only (kind 'class': Class notes, handout notes, reading notes), on the notebook's
+  lined paper, cleaned again when shown, K-2 drawings drawn as a picture. Empty pages are left out.
+- **Never**: own tabs; other students (no names, handouts, notes, counts or class figures); ranks or comparisons; live
+  status, hands, the hall pass; supports (the teacher's simpler wording is not used: `deskView` gives their own words);
+  version labels; attendance marks or history (only "Missed while away" on a handout). Each read is audited
+  (`homeroom.parents.read`, ids only). No AI reads any of it.
+- **The switch**: the ⋯ menu's **Parents' view** (a sheet saying what grown-ups see and never see, On / Off for this
+  class), `POST /api/homeroom/:id/parents { on }`, `homeroom_rooms.parents_view` (1 by default). The class's teachers only:
+  an aide 403, another teacher 404. Off hides the class at once (and the /family link when no class is left).
+- **Students are told**: the notebook's top line adds "Your grown-up can see the notes in your class tabs." and the
+  reading routine's notes add "Your grown-up can see these notes too." whenever a grown-up is linked and a class of theirs
+  is shown (`grownupSees`). Teachers and students are otherwise unaffected (the teacher still reads the whole notebook).
+- **Deleting**: nothing new to delete (a column on `homeroom_rooms`, which goes with the class); unlinking ends the view at
+  once.
+- Tests: `tests/unit/homeroom-parents.test.js` (what a linked grown-up sees; never own tabs, a classmate's name, handout or
+  notes, supports, attendance; refused to another family, a pending request, the child, a classmate, the teacher, the
+  admin, signed out, other classes, families off; the fence; the switch and who may use it; the /family link; the
+  notebook and reading lines) and `tests/unit/homeroom-parents-browser.test.js` (390, 820, 1366: the page, nothing
+  sideways, 44px chips and links, the sticker, the drawing; the /family link; the notebook's line; the ⋯ menu's switch).
+- **Open**: grown-ups of students whose account the school made (no family linking for school accounts yet); a parent's
+  view after a teacher's plan ends (it follows the Homeroom gate, so it goes with it); notifications to grown-ups; the
+  Classroom view's student reports are not shown to grown-ups; translations of the new strings (English now; the other
+  languages fall back to it).

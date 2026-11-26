@@ -121,7 +121,7 @@ const cleanBank = b => ({
   ...(Array.isArray(b.board) ? { board: b.board.filter(x => /^[a-z]{1,20}$/.test(String(x))).slice(0, 6) } : {}),
 });
 /** The "Quick game" pick (routes/quick-live.js): the mode and the question bank's subject and level, last used. */
-export const QUICK_MODES = ['battle', 'quest-race'];
+export const QUICK_MODES = ['battle', 'quest-race', 'board'];
 const cleanQuick = k => ({
   mode: QUICK_MODES.includes(k.mode) ? k.mode : QUICK_MODES[0],
   subject: /^[a-z]{1,20}$/.test(String(k.subject)) ? String(k.subject) : 'mixed',

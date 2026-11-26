@@ -1,6 +1,6 @@
 // The first tabs of school staff and students (docs/decisions.md "Play and Learn", part 2). The Classroom (/teach):
-// hello with the teacher's own roster name, each class card with what needs attention (the next lesson due, or All
-// caught up) and its buttons, New class, and nothing below the classes ("My classes, simpler": the school is on the Me
+// hello with the teacher's own roster name and one Lesson Folder button, each class card with what needs attention (the
+// next lesson due, or All caught up) and its views (docs/decisions.md "A simpler teacher home"), New class, and nothing below the classes ("My classes, simpler": the school is on the Me
 // page, courses, live games and brain breaks on Learn); one class opens that class directly. The Class
 // tab (/classes): one section per class with To do (due date, x of y done, the next step, Start), games from the class,
 // a picker with several classes, one live banner each, no classmates' names, no staff greeting and no prices.
@@ -51,14 +51,22 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   assert.match(card('Homes 4B'), /<span class="th-due-t">📚 <bdi>Word Hunt<\/bdi><\/span><span class="th-due-d">📅 Due /, 'the next lesson due: its title, the date on its own line');
   assert.doesNotMatch(card('Homes 4B'), /All caught up/);
   assert.match(card('Homes 5A'), /✅ All caught up/);
-  assert.match(card('Homes 4B'), new RegExp(`href="/class/${busy.id}#lessons">🎮 Assign a game`), 'games, not lessons');
-  assert.match(card('Homes 4B'), new RegExp(`href="/class/${busy.id}">Open class`));
+  // "A simpler teacher home": the card's buttons are the class's views (no Homeroom without the Homeroom gate); no Open
+  // class, Assign a game or Host a live game.
+  const views = c => [...card(c).matchAll(/<a class="btn btn-sm cc-view" href="([^"]+)" data-view="([^"]+)">[^<]*<span>([^<]+)<\/span><\/a>/g)].map(m => [m[1], m[2], m[3]]);
+  assert.deepEqual(views('Homes 4B'), [[`/class/${busy.id}`, 'classroom', 'Classroom'], [`/class/${busy.id}/dashboard`, 'dashboard', 'Dashboard']]);
+  assert.deepEqual(views('Homes 5A'), [[`/class/${quiet.id}`, 'classroom', 'Classroom'], [`/class/${quiet.id}/dashboard`, 'dashboard', 'Dashboard']]);
+  for (const gone of ['Assign a game', 'Open class', 'Host a live game', 'cc-live']) assert.ok(!card('Homes 4B').includes(gone), `gone from the card: ${gone}`);
   // Nothing below the classes any more: courses, live games and brain breaks are on Learn; Quick game is gone from the cards.
   for (const gone of ['id="teach-courses"', 'id="teach-live"', 'id="brain-breaks"', 'id="teach-all-games"', 'href="/learn">📚 Open Learn', 'data-quick=', '⚡ Quick game', 'class="panel schoolcard"', 'id="teacher-plan"']) assert.ok(!r.text.includes(gone), `gone: ${gone}`);
   assert.ok(r.text.indexOf('</section>', r.text.indexOf('id="my-classes"')) > r.text.lastIndexOf('class="panel classcard'), 'the classes end the page');
-  // The tools row: My games and folders (Build), Make for the live screen, Make a game.
-  const tools = r.text.slice(r.text.indexOf('class="row teachtools"'), r.text.indexOf('</nav>', r.text.indexOf('class="row teachtools"')));
-  assert.deepEqual([...tools.matchAll(/href="([^"]+)"/g)].map(m => m[1]), ['/build', '/teach/make', '/build']);
+  // One button at the top: Lesson Folder (/build). The tools row, This week's summary and Host a live game are gone.
+  const at = r.text.indexOf('class="pagehead th-head"'), top = r.text.slice(at, r.text.indexOf('class="panel tl tl-compact"', at));
+  assert.deepEqual([...top.matchAll(/<a class="btn[^"]*" href="([^"]+)"/g)].map(m => m[1]), ['/build']);
+  assert.match(top, /<a class="btn btn-primary" href="\/build" id="teach-folder">📁 Lesson Folder<\/a>/);
+  // (the teaching loop's card, on in this file, keeps its own step links)
+  const mine = top + r.text.slice(r.text.indexOf('id="my-classes"'));
+  for (const gone of ['teachtools', 'id="teach-summary"', 'id="teach-host"', 'id="teach-make"', 'My games and folders', 'Make a game']) assert.ok(!mine.includes(gone), `gone: ${gone}`);
   // + New class: a tile in the class grid, after the classes.
   const grid = r.text.slice(r.text.indexOf('class="classgrid th-classes"'), r.text.indexOf('</section>', r.text.indexOf('class="classgrid th-classes"')));
   assert.ok(grid.indexOf('<b>Homes 5A</b>') < grid.indexOf('class="th-newclass"') && grid.includes('id="nc-n"'), 'New class');
@@ -67,25 +75,21 @@ test('the Classroom: hello, class cards with what needs attention and their butt
   const h = await get('/teach', head); assert.equal(h.status, 200); assert.match(h.text, /Hello, Mrs Homeshead/); assert.doesNotMatch(h.text, /Manage Homes School|schoolcard/);
 });
 
-test('the Classroom while a class\'s live room is open: its host gets "Open live game" on every class card, never a second Host button', async () => {
-  const hostBtn = id => new RegExp(`href="/live\\?class=${id}">📡 Host a live game`);
+test('the Classroom while a class\'s live room is open: its card\'s chip leads back to it; no card has a Host button ("A simpler teacher home")', async () => {
+  const hostBtn = /href="\/live\?class=|cc-live|cc-elsewhere/;
+  const cards = text => text.slice(text.indexOf('id="my-classes"'));
   let r = await get('/teach', teacher);
-  assert.match(r.text, hostBtn(busy.id)); assert.match(r.text, hostBtn(quiet.id));
+  assert.doesNotMatch(cards(r.text), hostBtn);
   const items = [{ q: 'What is 2 + 3?', choices: ['5', '4', '6', '7'], answer: 0, secs: 30 }, { q: 'What is 6 + 1?', choices: ['7', '8', '5', '6'], answer: 0, secs: 30 }];
   const made = await post('/api/live/sessions', teacher, { pick: 'mode:battle', items, audience: 'class', classId: busy.id, replace: true });
   assert.equal(made.status, 200, JSON.stringify(made.json));
   r = await get('/teach', teacher);
-  assert.match(r.text, new RegExp(`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${made.json.sid}">📡 Open live game</a>`));
-  assert.doesNotMatch(r.text, hostBtn(busy.id), 'no second room for the class');
-  // A host has one room at a time: the other class's card leads back to the open room and says so (no second Host button).
-  assert.doesNotMatch(r.text, hostBtn(quiet.id), 'no Host button on the other class while a room is open');
-  assert.match(r.text, new RegExp(`<a class="btn btn-sm cc-live cc-live-other" href="/live/host/${made.json.sid}">📡 Open live game</a>`));
-  assert.match(r.text, new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${made.json.sid}">You already have a game open: [^<]+</p>`));
-  assert.equal([...r.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the other class\'s card');
+  assert.match(r.text, new RegExp(`<a class="chip-s good" href="/live/host/${made.json.sid}">📡 Live lesson now</a>`));
+  assert.equal([...r.text.matchAll(/Live lesson now/g)].length, 1, 'only on the card of the class the room is for');
+  assert.doesNotMatch(cards(r.text), hostBtn);
   LS.endSession(made.json.sid, 'ended');
   r = await get('/teach', teacher);
-  assert.match(r.text, hostBtn(busy.id), 'ended: Host a live game again'); assert.match(r.text, hostBtn(quiet.id), 'and on the other class');
-  assert.doesNotMatch(r.text, /cc-elsewhere|cc-live-other/);
+  assert.doesNotMatch(r.text, /Live lesson now/);
 });
 
 test('the School tab of a school\'s own admin has no back link (it is a first tab); the platform admin\'s has one to Schools', async () => {

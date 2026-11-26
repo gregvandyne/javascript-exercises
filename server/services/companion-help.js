@@ -8,7 +8,7 @@ import * as D from './dash.js';
 import { enabled as gcOn } from './gclassroom.js';
 import { liveOn } from './classlive-sessions.js';
 import { canHost } from './classlive-access.js';
-import { tFor } from '../i18n/index.js';
+import { tFor, teacherT } from '../i18n/index.js';
 
 /** The pages a step can link to. A path's :class is one of the teacher's classes, :school one of their schools. */
 export const PAGES = Object.freeze({
@@ -60,18 +60,18 @@ export const HELP = Object.freeze({
     step('Under {b:school.class.teachers}, pick a teacher from your school and tap {b:school.class.addTeacher}.'),
     step('Not at your school yet? Open {link} and send them an invite first.', 'inviteTeacher', 'Invite a teacher'),
   ] },
-  'assign-game': { title: 'Assign a game or lesson', need: 'class', steps: [
-    step('Open {link}.', 'classLessons', 'your class\'s Games tab'),
-    step('Tap {b:folders.findOomba} and pick a game or lesson.'),
+  'assign-game': { title: 'Assign a lesson', need: 'class', steps: [
+    step('Open {link}.', 'classLessons', 'your class\'s Lessons tab'),
+    step('Tap {b:folders.findOomba} and pick a lesson.'),
     step('Tap {b:lessons.assign.button}. You can set {b:lessons.assign.due}.'),
   ] },
   'due-dates': { title: 'Set or change a due date', need: 'class', steps: [
     step('Open {link}.', 'classAssigned', 'the lessons you assigned'),
     step('Open the lesson and set {b:lessons.assign.due}, then tap {b:lessons.assign.button}.'),
   ] },
-  'host-live': { title: 'Host a live game', when: 'live', steps: [
-    step('Open {link}.', 'live', 'Host a live game'),
-    step('Pick a game and your class, then start it.'),
+  'host-live': { title: 'Host a live lesson', when: 'live', steps: [
+    step('Open {link}.', 'live', 'Host a live lesson'),
+    step('Pick a lesson and your class, then start it.'),
     step('Students join with the code on the big screen.'),
   ] },
   progress: { title: 'See progress and the gradebook', need: 'class', go: 'progress', steps: [
@@ -129,7 +129,8 @@ export function howTo(u, task, { page = {}, lang = 'en', name = s => s } = {}) {
   const h = HELP[task];
   if (!h) return { error: `Unknown task. Tasks: ${TASKS.join(', ')}.` };
   if (h.when && !on(h.when, u)) return { error: 'That is not turned on for this account.' };
-  const t = tFor(lang);
+  // The button names as the teacher sees them (docs/decisions.md "Teachers say lessons").
+  const t = teacherT(tFor(lang));
   const place = placeOf(u, page);
   const links = new Set();
   const out = [];

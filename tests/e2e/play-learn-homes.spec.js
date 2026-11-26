@@ -78,14 +78,16 @@ test('a teacher lands on the Classroom (their one class opens directly): hello, 
   await expect(card.locator('.th-chips .chip-s').first()).toBeVisible();
   await expect(card.locator('.th-chips')).toContainText(/answers? to review|Due |All caught up/);
   const cls = (await card.locator('a.cc-link').getAttribute('href')).match(/\/class\/([^/?#]+)/)[1];
-  await expect(card.locator(`a[href="/class/${cls}#lessons"]`)).toContainText('Assign a game');
-  await expect(card.locator(`a.cc-live[href="/live?class=${cls}"]`)).toBeVisible();
+  // Its views ("A simpler teacher home"): Classroom and Dashboard (Homeroom only behind its gate, off here).
+  expect(await card.locator('a.cc-view').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual([`/class/${cls}`, `/class/${cls}/dashboard`]);
+  await expect(card.locator('a.cc-live')).toHaveCount(0);
   await expect(t.locator('#nc-n')).toHaveCount(1);   // New class is still here
   // Nothing below the classes (courses, live games and brain breaks are on Learn), and no Quick game on the cards.
   for (const gone of ['#teach-courses', '#teach-live', '#brain-breaks', '#teach-all-games', 'form.cc-quick', '.schoolcard', '#teacher-plan']) await expect(t.locator(gone)).toHaveCount(0);
-  // The tools row: Lesson library, Turn a lesson into a game (for those who may host) and Make a game. New class is a
-  // tile in the class grid.
-  expect(await t.locator('.teachtools a').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/build', '/teach/make', '/build']);
+  // One button at the top: Lesson Folder (/build); no tools row. New class is a tile in the class grid.
+  await expect(t.locator('.teachtools')).toHaveCount(0);
+  await expect(t.locator('#teach-folder')).toHaveAttribute('href', '/build');
+  await expect(t.locator('#teach-folder')).toContainText('Lesson Folder');
   await expect(t.locator('#my-classes .th-classes .th-newclass summary')).toBeVisible();
   expect(await t.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
   // A live room open for the class shows on its card (the host's own link to the room).

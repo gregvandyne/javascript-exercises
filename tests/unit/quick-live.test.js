@@ -164,7 +164,9 @@ test('the class card has no Quick game button any more ("My classes, simpler"); 
   S.updateClass ? S.updateClass(teacher, cls.id, { grade: '5' }) : q.run('UPDATE classrooms SET grade=? WHERE id=?', '5', cls.id);
   const home = await call('/teach?all=1', { user: teacher });
   assert.doesNotMatch(home.text, /<form class="cc-quick"|⚡ Quick game/, 'no Quick game on the class card');
-  assert.match(home.text, new RegExp(`href="/live\\?class=${cls.id}">📡 Host a live game`), 'Host a live game stays');
+  // "A simpler teacher home": the card's buttons are its views; hosting is the Live tab (and Homeroom's ⋯ menu)
+  assert.doesNotMatch(home.text, new RegExp(`href="/live\\?class=${cls.id}"`), 'no Host a live game on the card');
+  assert.match(home.text, /href="\/live"/, 'the Live tab is in the nav');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   const s = LS.get(r.json.sid);
@@ -190,7 +192,7 @@ test('a guest game\'s results: the host is told what is kept and offered "Make a
   LS.endSession(s.id, 'ended');
   const now = await call(`/live/results/${s.id}`, { user: teacher });
   assert.equal(now.status, 200);
-  assert.match(now.text, /id="lv-guest-note"/); assert.match(now.text, /This was a guest game\./); assert.match(now.text, /nothing went into a gradebook/);
+  assert.match(now.text, /id="lv-guest-note"/); assert.match(now.text, /This was a guest lesson\./); assert.match(now.text, /nothing went into a gradebook/);
   assert.match(now.text, /<a class="btn btn-primary btn-wrap" id="lv-keep-scores" href="\/teach\/keep-scores">/);
   // after the 10 minutes in memory: the saved run keeps the questions and counts, and no player
   const run = q.get('SELECT * FROM live_runs WHERE id=?', s.id);
@@ -257,7 +259,7 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   const L = await import('../../server/routes/landing.js');
   const home = await call('/');
   assert.match(home.text, /<a class="lp-btn lp-btn-spark lp-btn-big" href="\/teachers\/host" data-cta="host" id="lp-host-now">/);
-  assert.match(home.text, /Host a live game now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
+  assert.match(home.text, /Host a live lesson now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
   assert.doesNotMatch(visible(home.text), /\$\s?\d|\b119\b/, 'no price on "/"');
   assert.equal(L.HOST_NOW_URL, QL.HOST_URL);
   const t = await call('/teachers');
@@ -265,7 +267,7 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   assert.match((await call('/teachers', { user: teacher })).text, /href="\/live\/quick" id="host-now"/);
   assert.doesNotMatch((await call('/teachers', { user: kid })).text, /id="host-now"/, 'a child is not offered hosting');
   const tl = await call('/teachers/live');
-  assert.match(tl.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live game<\/a>/);
+  assert.match(tl.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live lesson<\/a>/);
   assert.doesNotMatch(tl.text, /grown-ups\/signup/, 'a teacher is never sent to the parent sign-up');
   // the landing's click counter knows the new button
   const c = await call('/landing/count/host', { method: 'POST', headers: { 'sec-fetch-site': 'same-origin', 'user-agent': 'Mozilla/5.0 Chrome/141.0' } });
@@ -302,23 +304,18 @@ test('a staff account\'s password: 12 characters is not enough when it is only d
   assert.equal((await signup({ password: 'purple-otter-1234' })).status, 200);
 });
 
-test('a room open for one class: the teacher\'s other class cards lead back to it and say so, and offer no second room', async () => {
+test('a room open for one class: its card says so and leads back to it; no card offers a room ("A simpler teacher home")', async () => {
   const other = S.createClass(teacher, school.id, { name: 'Tia 6C' }).class;
   let home = await call('/teach', { user: teacher });
-  assert.equal([...home.text.matchAll(/class="btn btn-sm cc-live" href="\/live\?class=/g)].length, 2, 'no room open: Host a live game on both cards');
+  assert.doesNotMatch(home.text, /cc-live|href="\/live\?class=/, 'no Host a live game on the cards');
   const r = await call('/api/live/quick', { method: 'POST', user: teacher, body: { classId: cls.id, last: '1' } });
   assert.equal(r.status, 200, r.text);
   home = await call('/teach', { user: teacher });
-  assert.doesNotMatch(home.text, /cc-live" href="\/live\?class=/, 'no card offers a second room');
-  assert.doesNotMatch(home.text, new RegExp(`cc-live" href="/live\\?class=${other.id}"`));
-  const back = [...home.text.matchAll(new RegExp(`<a class="btn btn-sm[^"]*cc-live[^"]*" href="/live/host/${r.json.sid}">`, 'g'))];
-  assert.equal(back.length, 2, 'both cards lead to the open room');
-  const note = home.text.match(new RegExp(`<p class="small muted cc-quick cc-elsewhere" data-room="${r.json.sid}">([^<]*)</p>`));
-  assert.ok(note, 'the other class\'s card says a game is open already'); assert.match(note[1], /You already have a game open/);
-  assert.equal([...home.text.matchAll(/cc-elsewhere/g)].length, 1, 'only on the card of the class the room is not for');
-  // another teacher's page is as it was: their own Host button, nothing about this room
+  assert.doesNotMatch(home.text, /cc-live|cc-elsewhere|href="\/live\?class=/, 'no card offers a room');
+  assert.equal([...home.text.matchAll(new RegExp(`<a class="chip-s good" href="/live/host/${r.json.sid}">`, 'g'))].length, 1, 'the class\'s own card leads back to its room');
+  // another teacher's page says nothing about this room
   const theirs = await call('/teach?all=1', { user: teacher2 });
-  assert.match(theirs.text, /class="btn btn-sm cc-live" href="\/live\?class=/); assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
+  assert.doesNotMatch(theirs.text, new RegExp(r.json.sid));
   LS.endSession(r.json.sid, 'ended');
   S.deleteClass(teacher, other.id);
 });

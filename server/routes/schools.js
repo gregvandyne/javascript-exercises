@@ -8,7 +8,7 @@ import crypto from 'node:crypto';
 import { html, raw } from '../views/html.js';
 import { ico } from '../views/icon.js';
 import { page, notFound, VERSION } from '../views/layout.js';
-import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, makeGameBtn, jumpNav, nameFilter } from '../views/components.js';
+import { avatar, emptyState, gradeLabel, BRAND, appMark, notYou, coverArt, cardGrid, jumpNav, nameFilter } from '../views/components.js';
 import { ADMIN_BODY, ADMIN_CSS } from '../views/admin-ui.js';
 import { requireUser, requireAdmin, getUserByName, accountKind, isRetiredName } from '../auth.js';
 import { rateLimit } from '../services/ratelimit.js';
@@ -34,7 +34,7 @@ import { cardsHook, classInvitesPanel, classGoogleJoin, googleRosterInfo, google
 import { gcRosterHint, gcLessonsButton } from './gclassroom.js';
 import { connectionsChip } from '../views/integrations.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
-import { liveOn, openForClass, hostSession } from '../services/classlive-sessions.js';
+import { liveOn, openForClass } from '../services/classlive-sessions.js';
 import * as TL from '../services/teach-loop.js';
 import { teacherLoop } from '../views/teacher-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
@@ -45,7 +45,7 @@ import { companionSettings } from '../views/companion-settings.js';
 import { openCount as openEmailInvites } from '../services/staff-email-invites.js';
 import { classBanner as manipBanner } from './manipulatives.js';
 import { deskLink, aidePanel } from './homeroom.js';
-import { markView } from './homeroom-views.js';
+import { markView, cardViews } from './homeroom-views.js';
 
 export const router = Router();
 const CSS = raw(`<link rel="stylesheet" href="/css/community.css?v=${VERSION}"><link rel="stylesheet" href="/css/schools.css?v=${VERSION}">`);
@@ -702,12 +702,14 @@ router.post('/api/schools/:id/members/:uid/not-staff', requireUser, (req, res) =
 export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
 
 // ================================================================ teachers: the Classroom tab (/teach)
-// docs/decisions.md "Play and Learn" and "My classes, simpler": a teacher's (and a school admin's) first tab. Hello and
-// what needs doing, the tools row, the teaching loop's card while it shows, then each class as a card with what needs
-// attention (requests, answers to read, the next lesson due, a live room that is open) and its buttons, New class as a
+// docs/decisions.md "Play and Learn", "My classes, simpler" and "A simpler teacher home": a teacher's (and a school
+// admin's) first tab. Hello and what needs doing with one button (Lesson Folder, /build), the teaching loop's card while
+// it shows, then each class as a card with what needs attention (requests, answers to read, the next lesson due, a live
+// room that is open) and the views it opens in (Homeroom, Classroom, Dashboard), New class as a
 // tile beside them, and the archived list. Nothing else: the school (My school) and the Teacher plan are on the Me page;
 // courses, live games and brain breaks are on the Learn tab. A teacher with exactly one class goes straight to it.
 const DAY_MS = 864e5;
+const VIEW_ICON = { homeroom: '🏠', classroom: '🍎', dashboard: '🖥️' };
 /** The soonest open lesson due in the next 7 days (not late yet), or null. */
 function nextDue(classId, t = Date.now()) {
   return L.classLessons(classId).filter(cl => cl.due_at && L.isOpen(cl, t) && ['today', 'upcoming'].includes(L.dueState(cl, t)) && cl.due_at - t < 7 * DAY_MS)
@@ -725,9 +727,6 @@ function classroomHome(req) {
   const wantNew = req.query.new === 'class';   // from "Make your first class": the New class form open and focused
   // Their own name (staff see real names; this is their own page).
   const name = S.staffName(u) || u.display_name || u.username;
-  // The room this teacher has open now, if any (a host has one room at a time): while it is open, no card offers a
-  // second one. The cards of other classes lead back to it and say which game it is.
-  const own = hostLive ? hostSession(u.id) : null, ownRoom = own && own.phase !== 'ended' ? own : null;
   const card = c => {
     const due = nextDue(c.id), room = liveOn() ? openForClass(c.id) : null;
     const mineRoom = room && room.phase !== 'ended' && room.host && (room.host.userId === u.id || (room.cohosts && room.cohosts.has(u.id)));
@@ -738,26 +737,22 @@ function classroomHome(req) {
       // The next lesson due: its title cut short on one line, the date on a line of its own.
       due ? html`<a class="chip-s th-due" href="/class/${c.id}"><span class="th-due-t">📚 <bdi>${due.title}</bdi></span><span class="th-due-d">📅 ${L.dueState(due) === 'today' ? t('lessons.class.dueToday') : t('lessons.class.dueOn', { date: req.fmt.day(due.due_at) })}</span></a>` : '',
     ].filter(Boolean);
-    // While a room is open for the class: its host gets back to it (never a second room); a co-teacher's room has the chip only.
-    const open = room && room.phase !== 'ended';
-    const liveBtn = !hostLive ? '' : mineRoom ? html`<a class="btn btn-sm btn-hot cc-live" href="/live/host/${room.id}">📡 ${t('teach.home.openLive')}</a>`
-      : open ? '' : ownRoom ? html`<a class="btn btn-sm cc-live cc-live-other" href="/live/host/${ownRoom.id}">📡 ${t('teach.home.openLive')}</a>`
-        : html`<a class="btn btn-sm cc-live" href="/live?class=${c.id}">📡 ${t('school.teach.hostLive')}</a>`;
-    const elsewhere = hostLive && !open && ownRoom ? html`<p class="small muted cc-quick cc-elsewhere" data-room="${ownRoom.id}">${t('quickLive.quick.hasOpen', { title: ownRoom.title })}</p>` : '';
+    // Its buttons: the class's views (docs/decisions.md "A simpler teacher home"), Homeroom only for a teacher Homeroom
+    // lets in. Hosting a live game is in the Live tab and Homeroom's ⋯ menu; assigning is in the Classroom view.
+    const views = cardViews(req, c);
     return html`<div class="panel classcard th-class">
       <span class="cc-school small muted">${c.school_name}</span><a class="cc-name cc-link" href="/class/${c.id}"><b>${c.name}</b></a>
       <span class="small">${[c.subject, gradeLabel(t, c.grade), t('school.class.studentsN', { count: c.students })].filter(Boolean).join(' · ')}</span>
       <span class="cc-meta th-chips">${chips.length ? chips : html`<span class="chip-s ok">✅ ${t('teach.home.caughtUp')}</span>`}</span>
-      <span class="cc-acts"><a class="btn btn-sm" href="/class/${c.id}">${t('teach.home.openClass')}</a><a class="btn btn-sm btn-primary" href="/class/${c.id}#lessons">🎮 ${t('folders.assignGame')}</a>${liveBtn}</span>${elsewhere}</div>`;
+      <nav class="cc-acts cc-views cc-views-${views.length}" aria-label="${t('homeroom.tabs.label')}: ${c.name}">${views.map(v => html`<a class="btn btn-sm cc-view" href="${v.href}" data-view="${v.k}">${ico(VIEW_ICON[v.k], { size: 18 })} <span>${t(`homeroom.tabs.${v.k}`)}</span></a>`)}</nav></div>`;
   };
   // The teaching loop (docs/decisions.md "The teaching loop"): the card until each step is done once (or it is hidden),
-  // then a small "How Oomba fits your week" link under the tools row.
+  // then a small "How Oomba fits your week" link under the heading.
   const loop = TL.loopState(u), showLoop = TL.showCard(loop);
   const summary = [t('teach.home.classesN', { count: mine.length }), answers ? t('teach.home.waitingN', { count: answers }) : ''].filter(Boolean).join(' · ');
   return html`
   <div class="pagehead th-head"><div><h1>👋 ${t('teach.home.hello', { name })}</h1><p class="muted th-sum">${summary}</p></div>
-    ${mine.length ? html`<a class="btn" href="/teach/summary" id="teach-summary">📬 ${t('digest.page.link')}</a>` : ''}${hostLive ? html`<a class="btn btn-hot" href="/live" id="teach-host">📡 ${t('school.teach.hostLive')}</a>` : ''}</div>
-  <nav class="row teachtools" aria-label="${t('school.teach.tools')}"><a class="btn btn-primary" href="/build">📁 ${t('folders.myGamesFolders')}</a>${hostLive ? html`<a class="btn" href="/teach/make" id="teach-make">✨ ${t('teach.home.make')}</a>` : ''}${makeGameBtn(t)}</nav>
+    <a class="btn btn-primary" href="/build" id="teach-folder">${ico('📁', { size: 20 })} ${t('teach.home.lessonFolder')}</a></div>
   ${showLoop ? teacherLoop(t, { variant: 'compact', links: TL.loopLinks(u), state: loop, live: hostLive }) : config.teachLoopCard ? html`<p class="tl-week"><a href="/teach/loop" id="teach-loop-link">🗓️ ${t('teach.loop.page.link')}</a></p>` : ''}
   ${req.query.welcome === 'school' && admins[0] ? html`<p class="notice good" role="status" id="school-ready">🏫 ${t('teach.home.schoolReady', { school: admins[0].name })}</p>` : ''}
   ${staffInvitesPanel(req)}
@@ -891,7 +886,11 @@ function classTiles(req, c, { host, dash, compact = false }) {
     staff && { href: `/class/${c.id}?tab=lessons&view=oomba`, emoji: '🦉', label: t('folders.findOomba') },
   ].filter(Boolean);
   if (!tiles.length) return '';
-  if (compact) return html`<div class="classquick">${tiles.map(x => html`<a class="btn btn-sm classquick-b" href="${x.href}">${ico(x.emoji, { size: 16 })} <span>${x.label}</span></a>`)}</div>`;
+  // Phones (compact): the Google Classroom button spans the row under the two (class-views.css hides the Games tab's copy).
+  if (compact) {
+    const gc = staff ? gcLessonsButton(req, c) : '';
+    return html`<div class="classquick">${tiles.map(x => html`<a class="btn btn-sm classquick-b" href="${x.href}">${ico(x.emoji, { size: 16 })} <span>${x.label}</span></a>`)}${gc ? html`<div class="classquick-gc">${gc}</div>` : ''}</div>`;
+  }
   return html`<div class="classtiles${tiles.length === 1 ? ' is-one' : ''}">${tiles.map(x => html`<a class="classtile${x.hot ? ' is-hot' : ''}" href="${x.href}"><span class="classtile-e">${ico(x.emoji, { size: 40 })}</span><span class="classtile-l">${x.label}</span></a>`)}</div>`;
 }
 export function classHeader(req, c, active) {

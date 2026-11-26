@@ -517,7 +517,7 @@ test('pricing copy: Teacher $119/year, 14-day trial, no card, unlimited students
   assert.doesNotMatch(teachers, /\$\d/);
   config.billingPublic = false;
   const off = decode((await call(null, '/teachers')).text);
-  assert.match(off, /Playing, classes, lessons and progress are free/); assert.doesNotMatch(off, /Teacher plan/);
+  assert.match(off, /Playing, classes, lesson plans and progress are free/); assert.doesNotMatch(off, /Teacher plan/);
   config.billingPublic = true;
   const terms = decode((await call(null, '/terms')).text);
   assert.match(terms, /priced <b>per teacher per year<\/b>, with no charge per student/);

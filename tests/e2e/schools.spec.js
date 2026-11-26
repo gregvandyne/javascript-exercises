@@ -62,12 +62,12 @@ test('school -> teacher -> class -> login cards -> own-account student joins wit
   await expect(kid.locator('main')).not.toContainText('Ana Silva');     // never classmates' real names
   await expect(kid.locator('.tabbar a[href="/classes"]')).toHaveCount(1);
   // The teacher's menu (docs/decisions.md "Teachers' top bar"): Classroom · Build · Live · Me; no School tab for a
-  // plain teacher, no Friends tab, and "Make a game" on My classes too.
+  // plain teacher, no Friends tab, and Lesson Folder (/build) on My classes ("A simpler teacher home").
   await teacher.setViewportSize({ width: 360, height: 760 });
   await teacher.goto('/teach?all=1');
   expect(await teacher.locator('.tabbar .tab').evaluateAll(l => l.map(a => a.getAttribute('href')))).toEqual(['/teach', '/build', '/live', '/me']);
   await expect(teacher.locator('.tabbar .tab[href="/teach"]')).toHaveAttribute('aria-current', 'page');
-  await expect(teacher.locator('main a[href="/build"]')).toContainText('Make a game');
+  await expect(teacher.locator('main a[href="/build"]')).toContainText('Lesson Folder');
   expect((await teacher.goto('/school')).status()).toBe(404);
   await tctx.close(); await sctx.close();
 });

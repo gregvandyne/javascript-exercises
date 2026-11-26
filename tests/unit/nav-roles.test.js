@@ -312,9 +312,11 @@ test('/school: one school -> its overview (setup checklist and classes); several
   assert.match((await get(null, '/school')).location || '', /^\/login/);
 });
 
-test('"Make a game" for staff: on My classes and on Me (they have no Build tab); not on a kid\'s Me', async () => {
-  const mk = /<a class="btn" href="\/build">🛠️ Make a game<\/a>/;
-  assert.match((await get(teacher, '/teach')).text, mk);
+test('"Make a lesson" for staff on Me (docs/decisions.md "Teachers say lessons"); My classes has Lesson Folder instead ("A simpler teacher home"); not on a kid\'s Me', async () => {
+  const mk = /<a class="btn" href="\/build">🛠️ Make a lesson<\/a>/;
+  const home = (await get(teacher, '/teach')).text;
+  assert.doesNotMatch(home, mk);
+  assert.match(home, /<a class="btn btn-primary" href="\/build" id="teach-folder">[\s\S]*?Lesson Folder<\/a>/);
   assert.match((await get(teacher, '/me')).text, mk);
   assert.match((await get(head, '/me')).text, mk);
   assert.doesNotMatch((await get(kid, '/me')).text, mk);

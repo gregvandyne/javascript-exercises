@@ -93,7 +93,7 @@ const oombaFits = (info, f) => !!info && (!f.subject || info.subject === f.subje
 /** One item in the left column: a link, its icon, name and count (the count read as "n games"). */
 function item(req, ctx, sel, it, { grip = false, drop = '' } = {}) {
   const on = it.key === sel.key;
-  return html`<a class="shelf-item${on ? ' is-on' : ''}" href="${it.href}" data-shelf-key="${it.key}"${on ? raw(' aria-current="true"') : ''}${grip ? raw(' data-grip') : ''}${drop ? html` data-drop-folder="${drop}"` : ''}>${icon(it.icon)}<span class="shelf-name" dir="auto">${it.name}</span>${it.count === undefined ? '' : html`<span class="n" aria-hidden="true">${it.count}</span><span class="sr-only">, ${req.t('folders.gamesN', { count: it.count })}</span>`}</a>`;
+  return html`<a class="shelf-item${on ? ' is-on' : ''}" href="${it.href}" data-shelf-key="${it.key}"${on ? raw(' aria-current="true"') : ''}${grip ? raw(' data-grip') : ''}${drop ? html` data-drop-folder="${drop}"` : ''}>${icon(it.icon)}<span class="shelf-name" dir="auto">${it.name}</span>${it.count === undefined ? '' : html`<span class="n" aria-hidden="true">${it.count}</span><span class="sr-only">, ${req.t(it.countKey || 'folders.gamesN', { count: it.count })}</span>`}</a>`;
 }
 
 /** The New folder box in the left column (a fold: its name and Create). On the class page it comes back to the class. */
@@ -131,7 +131,7 @@ function side(req, ctx, sel, mine, shared) {
       ${shared.length ? html`<p class="shelf-lab" id="shelf-lab-shared">${t('folders.sharedTitle')}</p>
       <ul class="shelf-group" aria-labelledby="shelf-lab-shared">${shared.map(f => html`<li>${item(req, ctx, sel, fItem(f))}</li>`)}</ul>` : ''}` : ''}
       ${ctx.kind === 'class' ? html`<p class="shelf-lab" id="shelf-lab-class">${t('folders.fromClass')}</p>
-      <ul class="shelf-group" aria-labelledby="shelf-lab-class"><li>${item(req, ctx, sel, { key: 'students', href: `${ctx.base}?view=students`, icon: 'students', name: t('folders.studentShared'), count: ctx.students.count })}</li></ul>` : ''}
+      <ul class="shelf-group" aria-labelledby="shelf-lab-class"><li>${item(req, ctx, sel, { key: 'students', href: `${ctx.base}?view=students`, icon: 'students', name: t('folders.studentShared'), count: ctx.students.count, countKey: 'folders.studentGamesN' })}</li></ul>` : ''}
     </nav>
     ${ctx.gc ? html`<div class="shelf-foot">${ctx.gc}</div>` : ''}
   </div>`;
@@ -317,9 +317,9 @@ function phonePicked(req, ctx, mine, shared) {
 }
 
 /** One row of the library list: icon, name, a line under it, the count and a chevron. */
-const libItem = (req, { href, emo, name, sub, count }) => html`<li><a class="lib-item" href="${href}"><span class="lib-ico" aria-hidden="true">${emo}</span>
+const libItem = (req, { href, emo, name, sub, count, countKey = 'folders.gamesN' }) => html`<li><a class="lib-item" href="${href}"><span class="lib-ico" aria-hidden="true">${emo}</span>
   <span class="lib-text"><span class="lib-name" dir="auto">${name}</span>${sub ? html`<span class="lib-sub">${sub}</span>` : ''}</span>
-  ${count === undefined ? '' : html`<span class="lib-n" aria-hidden="true">${count}</span><span class="sr-only">, ${req.t('folders.gamesN', { count })}</span>`}${CHEV}</a></li>`;
+  ${count === undefined ? '' : html`<span class="lib-n" aria-hidden="true">${count}</span><span class="sr-only">, ${req.t(countKey, { count })}</span>`}${CHEV}</a></li>`;
 
 /** The library list: All my games, one's collections, + New collection, then From others. */
 function libList(req, ctx, mine, shared, myGames) {
@@ -338,7 +338,7 @@ function libList(req, ctx, mine, shared, myGames) {
     <h3 class="lib-group" id="lib-others">${t('folders.phone.fromOthers')}</h3>
     <ul class="lib-items" aria-labelledby="lib-others">
       ${shared.map(f => libItem(req, { href: fHref(f), emo: '🤝', name: f.name, sub: t('folders.phone.byReadOnly', { name: f.owner_name || '' }), count: f.games }))}
-      ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count })}
+      ${libItem(req, { href: `${base}?view=students`, emo: '🎒', name: t('folders.studentShared'), sub: t('folders.phone.studentsSub', { class: c.name }), count: ctx.students.count, countKey: 'folders.studentGamesN' })}
       ${ctx.staff ? libItem(req, { href: `${base}?view=oomba`, emo: '🦉', name: t('folders.phone.oomba'), sub: t('folders.phone.oombaSub') }) : ''}
       ${ctx.staff ? libItem(req, { href: `/read?class=${c.id}`, emo: '📚', name: t('library.findStories'), sub: t('library.door.staff', { count: LIB.books().length }) }) : ''}
     </ul>`;

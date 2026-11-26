@@ -71,7 +71,7 @@ test('the switch: Assigned (n) and My library, Assigned by default, each a plain
 
 test('Assigned: title, subtitle, Add from library, Reorder, compact rows with due pill, done bar and ⋯; Google Classroom at the foot', async () => {
   const p = lib((await as(ana)(`/class/${cls.id}?view=assigned`)).text).html;
-  assert.match(p, /<h2 id="lib-h" dir="auto">Assigned to Ana 5C<\/h2><p>2 games, in the order students see them<\/p>/);
+  assert.match(p, /<h2 id="lib-h" dir="auto">Assigned to Ana 5C<\/h2><p>2 items, in the order students see them<\/p>/);
   assert.match(p, new RegExp(`href="/class/${cls.id}\\?view=library">\\+ Add from library</a>`));
   assert.match(p, new RegExp(`href="/class/${cls.id}\\?view=assigned&amp;reorder=1">↕ Reorder</a>`));
   const rows = [...p.matchAll(/<li class="lib-row" data-id="([^"]+)">([\s\S]*?)<\/li>/g)];
@@ -104,15 +104,15 @@ test('Reorder mode: 48px ↑/↓ buttons labelled for screen readers on each row
 
 test('My library: All my games, own collections (shared marked), New collection, From others with read-only colleagues, students, Oomba games, the Story Library', async () => {
   const p = lib((await as(ana)(`/class/${cls.id}?view=library`)).text).html;
-  assert.match(p, /<p>Collections only sort your games\. Assign from inside one\.<\/p>/);
+  assert.match(p, /<p>Collections only sort your lessons\. Assign from inside one\.<\/p>/);
   const items = [...p.matchAll(/<a class="lib-item" href="([^"]+)">[\s\S]*?<span class="lib-name" dir="auto">([^<]*)<\/span>(?:<span class="lib-sub">([^<]*)<\/span>)?/g)].map(m => [m[1].replace(/&amp;/g, '&'), m[2], m[3] || '']);
   assert.deepEqual(items, [
-    [`/class/${cls.id}?view=all`, 'All my games', 'Games you built'],
+    [`/class/${cls.id}?view=all`, 'All my lessons', 'Lessons you built'],
     [`/class/${cls.id}?folder=${fun.id}`, 'Fun Games', '🤝 Shared with your school'],
     [`/class/${cls.id}?folder=${spare.id}`, 'Spare', ''],
     [`/class/${cls.id}?folder=${benF.id}`, 'Spelling warm-ups', 'by Ben Patel · read only'],
     [`/class/${cls.id}?view=students`, 'Games students shared', 'Made by Ana 5C students'],
-    [`/class/${cls.id}?view=oomba`, 'Oomba games', 'Browse every Oomba game'],
+    [`/class/${cls.id}?view=oomba`, 'Oomba lessons', 'Browse every Oomba lesson'],
     // The Story Library (routes/library.js), with the class kept for Assign.
     [`/read?class=${cls.id}`, 'Story Library', `${LIB.books().length} leveled picture books with questions. Assign one to a class.`],
   ]);
@@ -130,7 +130,7 @@ test('inside a collection: back link, name and meta, ⋯ folder menu, Assign all
   assert.equal(p.view, 'folder');
   const h = p.html;
   assert.match(h, new RegExp(`<a class="lib-back" href="/class/${cls.id}\\?view=library">[\\s\\S]*?My library</a>`));
-  assert.match(h, /<h2 id="lib-h" dir="auto"><span aria-hidden="true">📁<\/span> Fun Games<\/h2><p dir="auto">2 games · 🤝 Shared with Oak Phone<\/p>/);
+  assert.match(h, /<h2 id="lib-h" dir="auto"><span aria-hidden="true">📁<\/span> Fun Games<\/h2><p dir="auto">2 lessons · 🤝 Shared with Oak Phone<\/p>/);
   assert.match(h, /id="lib-rn"/, 'the rename field of today\'s folder menu, with its own id');
   assert.match(h, new RegExp(`data-api="/api/game-folders/${fun.id}/delete"`));
   assert.match(h, /<summary class="btn">📌 Assign all 2<\/summary>/, 'Assign all');
@@ -156,7 +156,7 @@ test('inside a collection: back link, name and meta, ⋯ folder menu, Assign all
 
 test('a colleague\'s shared collection is read-only: no rename, delete, remove or reorder; copy and assign stay', async () => {
   const h = lib((await as(ana)(`/class/${cls.id}?folder=${benF.id}`)).text).html;
-  assert.match(h, /<span aria-hidden="true">🤝<\/span> Spelling warm-ups<\/h2><p dir="auto">2 games · by Ben Patel · read only<\/p>/);
+  assert.match(h, /<span aria-hidden="true">🤝<\/span> Spelling warm-ups<\/h2><p dir="auto">2 lessons · by Ben Patel · read only<\/p>/);
   assert.doesNotMatch(h, /lib-rn|game-folders\/[^"]+\/delete"|\/share"|reorder=1|\/order"|Remove from folder/);
   assert.match(h, new RegExp(`data-api="/api/game-folders/${benF.id}/copy"`));
   assert.match(h, /lib-toggle/, 'school staff can still assign from it');
