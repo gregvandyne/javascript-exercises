@@ -85,9 +85,9 @@ export const VERSUS = [
   { id: 'classroomscreen', rows: ['dashboard', 'routines'], adds: 'classScreen' },
   { id: 'brainingcamp', rows: ['manip', 'room', 'grades'], adds: 'mathTools' },
 ];
-/** The overview video behind the hero's play button. There is no Hub video yet: the class dashboard's is the closest
- *  existing one (the whole class day on one screen). Change it to the Hub's once that video is in public/video. */
-export const HERO_VIDEO = 'dashboard';
+/** The overview video behind the hero's play button ("Watch the 2-minute overview"): the Hub in 2 minutes
+ *  (scripts/hub-video.mjs), with its English captions as the player's track. It also leads the video strip. */
+export const HERO_VIDEO = 'hub';
 
 /** Clicks counted by the page's beacon (POST /landing/count/<cta>): funnel steps, a daily total each, nothing else. */
 const CTAS = new Map([['host', 'landing.host'], ['trial', 'landing.trial'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);
@@ -131,7 +131,8 @@ const joinNames = (req, names) => {
 const longDate = (req, ymd) => { try { return new Intl.DateTimeFormat(req.t.intl || req.locale || 'en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${ymd}T12:00:00Z`)); } catch { return ymd; } };
 const ARROW = raw('<span class="lp-arrow flip" aria-hidden="true">→</span>');
 
-/** The videos: the four tool videos (views/see-it.js) and the eighteen "How it works" videos of the manipulatives. */
+/** The videos: the Hub's overview and the four tool videos (views/see-it.js), and the eighteen "How it works" videos of
+ *  the manipulatives. */
 const manipVideos = () => MANIP_TOOLS.filter(x => TUTORIALS.has(x.slug)).map(x => ({ slug: x.slug, name: x.name, ...tutorialOf(x.slug) }));
 
 export function renderLanding(req, res) {

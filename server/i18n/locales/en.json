@@ -9192,6 +9192,10 @@
         "title": "Classroom Dashboard",
         "p": "Timers, jobs, check-ins and math tools for your whole class day, on one screen."
       },
+      "hub": {
+        "title": "The Hub in 2 minutes",
+        "p": "Hand out work, watch every desk live, answer raised hands and run the day plan, all from one board."
+      },
       "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
       "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
     },
@@ -12394,8 +12398,8 @@
       "trustCancel": "Cancel anytime",
       "trustStudents": "Unlimited students",
       "tour": "Take the tour",
-      "watch": "Watch the overview",
-      "watchSub": "Under a minute: the class dashboard",
+      "watch": "Watch the 2-minute overview",
+      "watchSub": "The Hub: your whole class on one board",
       "collageAlt": "Real screens from Oomba Academy: a class dashboard, fraction tiles on a math board, a worksheet with figures drawn to scale, the picture book library and a live class game."
     },
     "facts": {

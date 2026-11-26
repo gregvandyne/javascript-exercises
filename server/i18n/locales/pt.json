@@ -7798,6 +7798,10 @@
         "title": "Painel da turma",
         "p": "Timers, tarefas, check-ins e ferramentas de matemática para o dia todo da turma, em uma só tela."
       },
+      "hub": {
+        "title": "O Hub em 2 minutos",
+        "p": "Distribua tarefas, veja cada carteira ao vivo, responda às mãos levantadas e conduza o plano do dia, tudo num só quadro."
+      },
       "plan": "O painel da turma é grátis para toda turma. Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
       "testing": "O painel da turma é grátis para toda turma. As outras três ferramentas estão sendo testadas agora em algumas turmas."
     },
@@ -10821,8 +10825,8 @@
       "trustCancel": "Cancele quando quiser",
       "trustStudents": "Alunos ilimitados",
       "tour": "Faça o tour",
-      "watch": "Veja a apresentação",
-      "watchSub": "Menos de um minuto: o painel da turma",
+      "watch": "Veja a apresentação de 2 minutos",
+      "watchSub": "O Hub: a turma toda num só quadro",
       "collageAlt": "Telas reais da Oomba Academy: um painel da turma, barras de frações em um quadro de matemática, uma ficha com figuras em escala, a biblioteca de livros ilustrados e um jogo ao vivo da turma."
     },
     "facts": {

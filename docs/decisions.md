@@ -16145,11 +16145,15 @@ built from the approved mockup (variant B) with these decisions:
   polite live region. Back and Next keep the focus on themselves; a step picked in the stepper moves the focus to its
   heading. On phones the callout sits under the picture. Without script it is the list of all six steps. Only the Hub
   has a tour for now; tool tours are for later.
-- **Videos:** the four tool videos (views/see-it.js `readyVideos`) and the 18 How it works videos of the manipulatives,
-  each a link to its .mp4 that public/js/landing.js opens in one `<dialog>` with its poster and English captions (muted,
-  nothing loaded until opened; Escape, the × or a click outside closes it and the focus goes back). There is no Hub video
-  yet: `HERO_VIDEO` is the class dashboard's (under a minute), the closest to "the whole day on one screen"; the hero's
-  button says "Watch the overview".
+- **Videos:** the Hub's overview, the four tool videos (views/see-it.js `readyVideos`) and the 18 How it works videos of
+  the manipulatives, each a link to its .mp4 that public/js/landing.js opens in one `<dialog>` with its poster and English
+  captions (muted, nothing loaded until opened; Escape, the × or a click outside closes it and the focus goes back).
+  `HERO_VIDEO` is "The Hub in 2 minutes" (public/video/oomba-hub.*, made by scripts/hub-video.mjs: the real app on a
+  throwaway database, a made-up teacher and eight students with Oomba names whose desks are real pages, the Oomba chat
+  answered by a stand-in that calls the real tools, every step checked against the page; 1280 × 720 with the captions
+  in a cream bar under the app, no sound). The hero's button says "Watch the 2-minute overview", and the video leads
+  the strip. It is marked `overview` in VIDEOS, so the "a minute each" section of the tool videos on /teachers leaves
+  it out (its heading and plan note are about the four tools).
 
 Tests: tests/unit/teacher-landing.test.js (the page, its order, screenshots, Teacher plan lines, the tour and videos
 as sent), tests/unit/landing-tour-browser.test.js (the tour by mouse and keyboard, the phone layout, the video player),

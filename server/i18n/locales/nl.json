@@ -7797,6 +7797,10 @@
         "title": "Klasdashboard",
         "p": "Timers, klassentaken, check-ins en rekenhulpmiddelen voor de hele schooldag, op één scherm."
       },
+      "hub": {
+        "title": "De Hub in 2 minuten",
+        "p": "Werk uitdelen, elk tafeltje live zien, opgestoken handen beantwoorden en het dagplan volgen, allemaal vanaf één bord."
+      },
       "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
       "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
     },
@@ -10820,8 +10824,8 @@
       "trustCancel": "Altijd opzegbaar",
       "trustStudents": "Onbeperkt leerlingen",
       "tour": "Doe de rondleiding",
-      "watch": "Bekijk het overzicht",
-      "watchSub": "Korter dan een minuut: het klasdashboard",
+      "watch": "Bekijk het overzicht van 2 minuten",
+      "watchSub": "De Hub: je hele klas op één bord",
       "collageAlt": "Echte schermen uit Oomba Academy: een klasdashboard, breukstroken op een rekenbord, een werkblad met figuren op schaal, de prentenboekenbibliotheek en een live klassenspel."
     },
     "facts": {

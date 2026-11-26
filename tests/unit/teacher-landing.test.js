@@ -233,9 +233,12 @@ test('the page in order: hero, the five named products, in one place, the Hub, A
   const order = ['lp-h1', 'names-h', 'one', 'hub', 'ask', 'tools', 'side-by-side', 'tour', 'videos', 'safety', 'faq', 'final-h'];
   for (const id of order) assert.ok(at(id) > 0, id);
   for (let i = 1; i < order.length; i++) assert.ok(at(order[i - 1]) < at(order[i]), `${order[i - 1]} before ${order[i]}`);
-  // The hero is every tool (a collage of real screens), not the Hub; the Hub has its own section after it.
+  // The hero is every tool (a collage of real screens), not the Hub; the Hub has its own section after it. The one
+  // mention is the play button: the 2-minute overview is the Hub's video.
   const hero = s.slice(s.indexOf('<main'), at('names-h'));
-  assert.doesNotMatch(hero.replace(/<header[\s\S]*?<\/header>/, ''), /\bHub\b/, 'the first screen does not introduce the Hub');
+  const play = (hero.match(/<a class="lp-playbtn"[\s\S]*?<\/a>/) || [''])[0];
+  assert.match(play, /The Hub in 2 minutes/);
+  assert.doesNotMatch(hero.replace(/<header[\s\S]*?<\/header>/, '').replace(play, ''), /\bHub\b/, 'the first screen does not introduce the Hub');
   for (const n of ['tool-dash', 'tool-manip', 'tool-figures', 'tool-library', 'tool-brain-board']) assert.ok(hero.includes(`/img/landing/${n}-`), n);
   assert.match(hero, /<div class="lp-collage-in" role="img" aria-label="Real screens from Oomba Academy: [^"]+">/);
   assert.match(s, /<h2 id="hub-h">Run it all from the Hub\.<\/h2>/);
@@ -300,9 +303,10 @@ test('the tour and the videos as sent: six steps on real screens, hotspots, prog
   assert.match(tour, /role="progressbar" aria-label="The Hub tour" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1"/);
   assert.match(tour, /<p class="sr-only" aria-live="polite" data-tour-live><\/p>/);
   const vids = s.slice(s.indexOf('id="videos"'), s.indexOf('</section>', s.indexOf('id="videos"')));
-  assert.equal([...vids.matchAll(/class="lp-vid( lp-vid-big)?" href="\/video\/oomba-[a-z]+\.mp4"/g)].length, 4);
+  assert.equal([...vids.matchAll(/class="lp-vid( lp-vid-big)?" href="\/video\/oomba-[a-z]+\.mp4"/g)].length, 5);
   assert.match(vids, new RegExp(`class="lp-vid lp-vid-big" href="/video/oomba-${L.HERO_VIDEO}\\.mp4"`), 'the overview first');
   assert.equal([...vids.matchAll(/class="lp-how" href="\/video\/manip\/manip-[a-z-]+\.mp4" data-video="[^"]+" data-poster="\/video\/manip\/manip-[a-z-]+-poster\.jpg" data-vtt="\/video\/manip\/manip-[a-z-]+\.en\.vtt"/g)].length, 18);
-  // The hero's play button: the overview video (the class dashboard's until the Hub's is recorded).
-  assert.match(s, new RegExp(`<a class="lp-playbtn" href="/video/oomba-${L.HERO_VIDEO}\\.mp4" data-video=`));
+  // The hero's play button: the Hub in 2 minutes, with its captions as the player's track.
+  assert.equal(L.HERO_VIDEO, 'hub');
+  assert.match(s, /<a class="lp-playbtn" href="\/video\/oomba-hub\.mp4" data-video="\/video\/oomba-hub\.mp4" data-poster="\/video\/oomba-hub-poster\.jpg" data-vtt="\/video\/oomba-hub\.en\.vtt" data-title="The Hub in 2 minutes" aria-label="[^"]+"><i aria-hidden="true"><\/i><span>Watch the 2-minute overview<small>The Hub: your whole class on one board<\/small><\/span><\/a>/);
 });

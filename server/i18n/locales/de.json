@@ -7797,6 +7797,10 @@
         "title": "Klassen-Dashboard",
         "p": "Timer, Klassendienste, Stimmungsabfragen und Mathe-Werkzeuge für den ganzen Schultag, auf einem Bildschirm."
       },
+      "hub": {
+        "title": "Der Hub in 2 Minuten",
+        "p": "Aufgaben verteilen, jeden Platz live sehen, Meldungen beantworten und den Tagesplan steuern, alles auf einer Tafel."
+      },
       "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
       "testing": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die anderen drei Werkzeuge werden gerade in einigen Klassen erprobt."
     },
@@ -10820,8 +10824,8 @@
       "trustCancel": "Jederzeit kündbar",
       "trustStudents": "Unbegrenzt viele Schüler",
       "tour": "Tour starten",
-      "watch": "Überblick ansehen",
-      "watchSub": "Unter einer Minute: das Klassen-Dashboard",
+      "watch": "Die 2-Minuten-Übersicht ansehen",
+      "watchSub": "Der Hub: Ihre ganze Klasse auf einer Tafel",
       "collageAlt": "Echte Bildschirme aus Oomba Academy: ein Klassen-Dashboard, Bruchstreifen auf einem Mathe-Board, ein Arbeitsblatt mit maßstabsgetreuen Figuren, die Bilderbuch-Bibliothek und ein Live-Klassenspiel."
     },
     "facts": {
