@@ -162,7 +162,8 @@ export function slotsOf(sections, band, title) {
 function rolesIn(text) {
   const out = [];
   for (const m of String(text).matchAll(/(?:^|[.!?]\s+)([\p{L}'-]+) is (?:the|a|an) (adjective|noun|verb|adverb|pronoun|subject|article|conjunction|preposition)\b/gu)) out.push({ word: m[1], role: m[2] });
-  for (const m of String(text).matchAll(/(?:^|[.!?]\s+)((?:[Ww]ill )?[\p{L}'-]+) is (?:now|past|later)\b/gu)) out.push({ word: m[1], role: 'verb' });
+  // "Walked is past, but buys is present." -> both verbs
+  for (const m of String(text).matchAll(/(?:^|[.!?]\s+|,\s+(?:but|and)\s+)((?:[Ww]ill )?[\p{L}'-]+) is (?:now|past|present|later)\b/gu)) out.push({ word: m[1], role: 'verb' });
   // "But joins the two thoughts." -> a conjunction
   for (const m of String(text).matchAll(/(?:^|[.!?]\s+)([\p{L}'-]+) joins\b/gu)) out.push({ word: m[1], role: 'conjunction' });
   return out;
@@ -306,7 +307,9 @@ function beforeAfter(u, first, problems, where) {
   let marks = (u.then.marks || []).slice();
   if (c && c.length) marks = c.map(i => ({ i, role: /^\p{Ll}/u.test(Bt[i].t) ? 'lower' : 'capital' }));
   else if (g && g.length) marks = g.map(i => ({ i, role: 'comma' }));
-  for (const m of u.marks || []) if (!['capital', 'lower', 'comma', 'key'].includes(m.role) && A[m.i] && Bt[m.i] && A[m.i].t === Bt[m.i].t && !marks.some(x => x.i === m.i)) marks.push(m);
+  // A word job the before had marked goes to the same word in the after, or to the word that replaced it when the fix
+  // swaps one word for another ("buys" fixed to "bought" keeps its "verb" label).
+  for (const m of u.marks || []) if (!['capital', 'lower', 'comma', 'key'].includes(m.role) && A[m.i] && Bt[m.i] && (A[m.i].t === Bt[m.i].t || A.length === Bt.length) && !marks.some(x => x.i === m.i)) marks.push(m);
   if (/\bthe title is$/i.test(note)) {
     const right = titleCase(u.then.text.replace(/[.!?]$/, ''));
     if (`${right}${/[.!?]$/.test(u.then.text) ? u.then.text.slice(-1) : ''}` !== u.then.text) problems.push(`${where}: the title "${u.then.text}" is not capitalized by the title rules ("${right}")`);
