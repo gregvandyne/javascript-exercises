@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# new message} other {# new messages}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Free to play, free to build",
+      "tagline": "© Oomba Academy · Learn, play and build",
       "safety": "Safety",
       "parents": "For parents",
       "contact": "Contact us",
@@ -10085,6 +10085,7 @@
     "others": {
       "h": "Who else receives data",
       "li1": "Anthropic (Claude, the AI that makes games): a student’s Builder messages, pictures and files, to make the game and to check it is safe, without the student’s name or username. Chats between friends and lesson answers are never sent to the AI.",
+      "ask": "Anthropic (Claude, as above), for Ask Oomba, the chat on teachers’ own pages: the teacher’s messages and the earlier messages in the same chat, the text of a document or a picture they attach, and facts about the page they have open, such as a class’s grade, subject and number of students, a dashboard’s widgets, and their own worksheets, boards, lesson plans and handout titles. Students’ names, emails, phone numbers and links are taken out first. On the Hub’s Needs a look list, each student is only a placeholder like “Student A”, with the reason the app noted, such as minutes stuck or a quiz score. Students’ names and work are never sent, and students never see Ask Oomba. Web searches go to Anthropic’s web search, never with a name or a location. For speech to text and book pictures (Google’s Gemini API), see our <a href=\"{privacy}\">Privacy Policy</a>.",
       "li2": "Google, only if your school uses Sign in with Google or a teacher connects Google Classroom. Classroom reads class names and the linked class’s students’ Google ids and names. We send only what the teacher posts, such as a lesson link with its title and due date, and each student’s lesson score out of 100: never students’ names, answers, feedback or games.",
       "li3": "AI voices and speech to text, where they are switched on: our <a href=\"{privacy}\">Privacy Policy</a> says exactly what each one gets."
     },
@@ -11479,24 +11480,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: free live quiz lessons for your class",
-    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
+    "title": "Oomba Live: live quiz lessons for your class",
+    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads.",
     "kicker": "Oomba Live for teachers",
     "h1": "Live quiz lessons your whole class plays together",
-    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. No ads, and nothing for students to type but the code.",
     "demo": {
       "h": "See it in one minute",
       "note": "A one-minute video with music and captions on screen: a teacher starts a Quest Race in Science, students join on their phones with a code and race through the questions, then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, a few of the learning games."
     },
     "badges": {
-      "free": "Free for teachers",
       "ads": "No ads",
       "noAccounts": "No student accounts needed",
       "browser": "Any browser, Chromebooks too",
       "languages": "{count} languages"
     },
     "cta": {
-      "host": "Host a free live lesson",
+      "host": "Host a live lesson",
       "how": "See how it works",
       "join": "Joining a game? Type the code here"
     },
@@ -11580,7 +11580,7 @@
     },
     "more": {
       "h": "More than a quiz",
-      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper. One free account for your whole class.",
+      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper.",
       "link": "Oomba Academy for teachers"
     },
     "start": {

@@ -40,7 +40,7 @@
       "newMessages": "{count, plural, one {# nouveau message} other {# nouveaux messages}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Gratuit pour jouer, gratuit pour créer",
+      "tagline": "© Oomba Academy · Apprendre, jouer et créer",
       "safety": "Sécurité",
       "parents": "Pour les parents",
       "contact": "Nous contacter",
@@ -8670,6 +8670,7 @@
     "others": {
       "h": "Qui d’autre reçoit des données",
       "li1": "Anthropic (Claude, l’IA qui fabrique les jeux) : les messages, images et fichiers qu’un élève donne au Constructeur, pour fabriquer le jeu et vérifier qu’il est sûr, sans le nom ni l’identifiant de l’élève. Les discussions entre amis et les réponses aux leçons ne sont jamais envoyées à l’IA.",
+      "ask": "Anthropic (Claude, comme ci-dessus), pour Demander à Oomba, le chat des pages des enseignants : les messages de l’enseignant et les messages précédents du même chat, le texte d’un document ou une image qu’il joint, et des informations sur la page ouverte, comme le niveau, la matière et le nombre d’élèves d’une classe, les widgets d’un tableau de bord, et ses propres fiches, tableaux, plans de leçon et titres de consignes. Les noms des élèves, les e-mails, les numéros de téléphone et les liens sont retirés avant. Dans la liste À regarder du Hub, chaque élève n’est qu’un repère comme « Student A », avec la raison notée par l’application, par exemple des minutes bloqué ou un score de quiz. Les noms et le travail des élèves ne sont jamais envoyés, et les élèves ne voient jamais Demander à Oomba. Les recherches web passent par la recherche web d’Anthropic, jamais avec un nom ni un lieu. Pour la dictée vocale et les images des livres (l’API Gemini de Google), voir notre <a href=\"{privacy}\">Politique de confidentialité</a>.",
       "li2": "Google, seulement si votre école utilise la connexion avec Google ou si un enseignant connecte Google Classroom. Classroom lit les noms des classes, ainsi que les identifiants et noms Google des élèves de la classe liée. Nous n’envoyons que ce que l’enseignant publie, par exemple un lien vers la leçon avec son titre et sa date limite, et le score de chaque élève sur 100 : jamais les noms, réponses, retours ou jeux des élèves.",
       "li3": "Les voix IA et la dictée vocale, là où elles sont activées : notre <a href=\"{privacy}\">Politique de confidentialité</a> dit exactement ce que chacune reçoit."
     },
@@ -10064,24 +10065,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live : des leçons quiz en direct gratuites pour votre classe",
-    "description": "Lancez une course-quiz en direct au vidéoprojecteur. Les élèves rejoignent la partie sur n’importe quel appareil avec un code à 7 chiffres, sans compte, sans saisie et sans publicité. Gratuit pour les enseignants.",
+    "title": "Oomba Live : des leçons quiz en direct pour votre classe",
+    "description": "Lancez une course-quiz en direct au vidéoprojecteur. Les élèves rejoignent la partie sur n’importe quel appareil avec un code à 7 chiffres, sans compte, sans saisie et sans publicité.",
     "kicker": "Oomba Live pour les enseignants",
     "h1": "Des leçons quiz en direct que toute la classe joue ensemble",
-    "lead": "Mettez la leçon au tableau. Les élèves rejoignent sur leurs appareils avec un code à 7 chiffres et filent à travers vos questions, dans toutes les matières, à tous les niveaux. Gratuit, sans publicité, et les élèves ne tapent que le code.",
+    "lead": "Mettez la leçon au tableau. Les élèves rejoignent sur leurs appareils avec un code à 7 chiffres et filent à travers vos questions, dans toutes les matières, à tous les niveaux. Sans publicité, et les élèves ne tapent que le code.",
     "demo": {
       "h": "Tout voir en une minute",
       "note": "Une vidéo d’une minute, avec de la musique et les sous-titres à l’écran : un enseignant lance une Quest Race en sciences, les élèves rejoignent la partie sur leur téléphone avec un code et répondent aux questions. Puis un enfant décrit un jeu au Builder, qui le crée et y joue pour vérifier qu’il marche, et l’enfant y joue. Pour finir, quelques jeux éducatifs."
     },
     "badges": {
-      "free": "Gratuit pour les enseignants",
       "ads": "Sans publicité",
       "noAccounts": "Aucun compte élève nécessaire",
       "browser": "Tout navigateur, même sur Chromebook",
       "languages": "{count} langues"
     },
     "cta": {
-      "host": "Animer une leçon en direct gratuite",
+      "host": "Animer une leçon en direct",
       "how": "Voir comment ça marche",
       "join": "Rejoindre une partie ? Tapez le code ici"
     },
@@ -10165,7 +10165,7 @@
     },
     "more": {
       "h": "Plus qu’un quiz",
-      "p": "Oomba Live fait partie d’Oomba Academy, où les élèves jouent aussi à des jeux éducatifs et créent leurs propres jeux avec un assistant IA sûr. Un seul compte gratuit pour toute votre classe.",
+      "p": "Oomba Live fait partie d’Oomba Academy, où les élèves jouent aussi à des jeux éducatifs et créent leurs propres jeux avec un assistant IA sûr.",
       "link": "Oomba Academy pour les enseignants"
     },
     "start": {

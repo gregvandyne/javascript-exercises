@@ -488,7 +488,7 @@ router.get('/teachers/live', (req, res, next) => {
   // (Signed out: the three-field teacher sign-up and the Quick game chooser, routes/quick-live.js. It used to be the
   // parents' sign-up, which made a parent account for a teacher.)
   const hostHref = host ? '/live' : '/teachers/host';
-  const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
+  const badges = [['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
