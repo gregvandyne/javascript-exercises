@@ -13,13 +13,11 @@ import fs from 'node:fs';
 import { html, raw } from './html.js';
 import { ico } from './icon.js';
 import { tHtml } from '../i18n/index.js';
-import { plansOn } from '../services/teacher-tools.js';
 
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 /** The videos, in order. Adding one is one entry here, its three files in public/video/oomba-<id>.*, and its title and
- *  line under teachers.videos.<id> in the locale files. overview: the Hub's own videos, on the homepage's video strip but
- *  not in the "a minute each" section of the new tools on /teachers, whose heading and plan note are about the four tools
- *  below: the 60-second promo (scripts/hub-promo.mjs, behind the homepage's hero: routes/landing.js HERO_VIDEO) and the
+ *  line under teachers.videos.<id> in the locale files. overview: the Hub's own videos, on the homepage's video strip; in
+ *  the "a minute each" section on /teachers only the 60-second promo (seeIt promo), which its Hub card plays: the 60-second promo (scripts/hub-promo.mjs, behind the homepage's hero: routes/landing.js HERO_VIDEO) and the
  *  two-minute overview (scripts/hub-video.mjs). */
 export const VIDEOS = [
   { id: 'hub-promo', emoji: '🏫', overview: true },
@@ -43,11 +41,12 @@ const tx = (t, tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtm
  * cta: the call to action under the grid (markup, the page's own sign-up button). note: false leaves out the note (on
  * /teachers the new-tools section above says it). The note under the grid says who can use
  * the tools today: the Classroom Dashboard is free for every class's teacher (routes/dash.js, no plan); the Manipulatives,
- * their live rooms and Figures follow toolAccess: with paid plans on for everyone, "part of the Teacher plan"; off, only
- * the tester list may use them, so it says they are being tried out in a few classrooms.
+ * their live rooms and Figures are Teacher plan tools (toolAccess), said the homepage's way whether or not paid plans are
+ * on for everyone yet.
  */
-export function seeIt(req, { variant = 'page', cta = '', note = true } = {}) {
-  const list = readyVideos().filter(v => !v.overview);
+export function seeIt(req, { variant = 'page', cta = '', note = true, promo = false } = {}) {
+  // promo: the Hub's 60-second promo first (the homepage's hero video), for /teachers, whose Hub card plays it here.
+  const list = readyVideos().filter(v => !v.overview || (promo && v.id === 'hub-promo'));
   if (!list.length) return '';
   const t = req.t;
   const landing = variant === 'landing';
@@ -68,7 +67,7 @@ export function seeIt(req, { variant = 'page', cta = '', note = true } = {}) {
     ? html`<header class="lp-sec-head">${tx(t, 'p', 'teachers.videos.kicker', ' class="lp-eyebrow"')}${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}</header>`
     : html`${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}`;
   const grid = html`<ul class="pv-grid" data-n="${list.length}">${list.map(item)}</ul>
-    ${note ? tx(t, 'p', plansOn() ? 'teachers.videos.plan' : 'teachers.videos.testing', ` class="${landing ? 'lp-note ' : 'small muted '}pv-plan"`) : ''}
+    ${note ? tx(t, 'p', 'teachers.videos.plan', ` class="${landing ? 'lp-note ' : 'small muted '}pv-plan"`) : ''}
     ${cta ? html`<div class="${landing ? 'lp-ctas lp-ctas-c' : 'row'} pv-cta">${cta}</div>` : ''}`;
   return landing
     ? html`<section class="lp-sec pv pv-landing" id="see-it" aria-labelledby="see-it-h"><div class="lp-wrap">${head}${grid}</div></section>`

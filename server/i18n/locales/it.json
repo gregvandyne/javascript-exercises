@@ -7327,7 +7327,7 @@
     "title": "Piani e prezzi",
     "description": "I piani di Oomba Academy: Gratis, Basic, Famiglia, Insegnante e Scuola. Giocare a tutti i giochi è sempre gratis.",
     "heading": "Piani",
-    "intro": "Giocare a tutti i giochi è gratis, e anche creare con i messaggi gratuiti giornalieri al Costruttore. Un piano aggiunge messaggi extra al Costruttore ogni mese.",
+    "intro": "Giocare a tutti i giochi è gratis, e anche creare con i messaggi gratuiti giornalieri al Costruttore. Un piano famiglia aggiunge messaggi extra al Costruttore ogni mese, e il piano Insegnante aggiunge l’Hub, Chiedi a Oomba, i materiali manipolativi e Figures.",
     "interval": {
       "label": "Periodo di fatturazione",
       "month": "Mensile",
@@ -7404,7 +7404,7 @@
       "title": "Piani scuola",
       "description": "Oomba Academy per le scuole: il piano Insegnante per ciascuno dei tuoi insegnanti, un prezzo per insegnante all'anno, con carta o fattura.",
       "heading": "Oomba Academy per le scuole",
-      "intro": "Le scuole acquistano il piano Insegnante per i loro insegnanti: un prezzo per insegnante all'anno, con studenti illimitati e nessun costo per studente.",
+      "intro": "Le scuole acquistano il piano Insegnante per i loro insegnanti: l’Hub, Chiedi a Oomba, i materiali manipolativi e Figures, a un prezzo per insegnante all’anno, con studenti illimitati e nessun costo per studente.",
       "what": {
         "h": "Cosa riceve una scuola",
         "p1": "Gli amministratori della scuola vedono il piano e assegnano i posti agli insegnanti nella scheda Fatturazione della scuola. Le famiglie non vedono mai nulla della classe."
@@ -7460,7 +7460,8 @@
       "li3": "Vale per tutte le tue classi",
       "li4": "Disdetta in qualsiasi momento",
       "start": "Inizia la prova gratuita",
-      "manage": "Il mio piano Insegnante"
+      "manage": "Il mio piano Insegnante",
+      "li5": "L’Hub, Chiedi a Oomba, i materiali manipolativi e Figures"
     },
     "trial": {
       "title": "Piano Insegnante",
@@ -7607,7 +7608,7 @@
     "description": "Lezioni interattive senza pubblicità dai 5 ai 14 anni, in qualsiasi browser, anche su Chromebook, con materiali di matematica, una bacheca di classe e un Costruttore con IA.",
     "kicker": "🍎 Per gli insegnanti",
     "h1": "Lezioni interattive che la sua classe vorrà rifare",
-    "lead": "Lezioni interattive, materiali di matematica da usare dal vivo con la classe e una bacheca di classe per tutta la giornata, dai 5 ai 14 anni. Tutto funziona nel browser, anche su Chromebook, e la sua classe può creare i propri giochi con il nostro Costruttore con IA.",
+    "lead": "Giochi dal vivo, materiali di matematica, schede di lavoro, albi illustrati, dattilografia, geografia, una bacheca di classe e un assistente con IA, dai 5 ai 14 anni, con un solo accesso e un solo elenco della classe. Tutto funziona nel browser, anche su Chromebook.",
     "badges": {
       "ads": "Senza pubblicità",
       "browser": "Funziona in ogni browser, anche su Chromebook",
@@ -7783,7 +7784,7 @@
     "live": {
       "h": "Lezioni dal vivo per la classe",
       "p1": "Conduci una gara di quiz dal vivo o qualsiasi lezione pronta per il dal vivo al proiettore. Gli studenti entrano dai loro dispositivi con un codice di 7 cifre.",
-      "li1": "Modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande) e Tabellone Cervello (un tabellone di categorie, dal facile al difficile).",
+      "li1": "Tra le modalità incluse: Corsa delle missioni (una corsa su un’isola in 3D guidata dalle vostre domande), Tabellone Cervello (un tabellone di categorie, dal facile al difficile), Would You Rather, Atlas Quest e Doodle Hoot.",
       "li2": "Usa un set di partenza, scrivine uno veloce o trasforma le domande di un piano di lezione in un quiz dal vivo.",
       "li3": "Le stanze di classe sono solo per i vostri studenti con accesso effettuato, e i loro punti vanno nel vostro registro. Niente chat, niente scrittura, niente nomi scritti liberamente.",
       "more": "Veda come funziona Oomba Live"
@@ -7838,12 +7839,11 @@
         "title": "L’Hub in 2 minuti",
         "p": "Distribuisci il lavoro, guarda ogni banco in diretta, rispondi alle mani alzate e segui il piano del giorno, tutto da una sola bacheca."
       },
-      "plan": "La bacheca di classe è gratuita per ogni classe. I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante.",
-      "testing": "La bacheca di classe è gratuita per ogni classe. Gli altri tre strumenti sono ora in prova in alcune classi."
+      "plan": "La bacheca di classe è gratuita per ogni classe. I materiali manipolativi, le loro stanze dal vivo e Figure fanno parte del piano Insegnante."
     },
     "tools": {
       "h": "Novità per la sua classe",
-      "lead": "Schermate reali di una classe di prova: una lavagna di matematica che Oomba prepara con Lei, la stessa lavagna dal vivo sul dispositivo di ogni studente e una bacheca per tutta la giornata di classe.",
+      "lead": "Schermate reali di classi dimostrative con nomi inventati. Un solo accesso e un solo elenco della classe per tutto.",
       "board": {
         "h": "Materiali manipolativi di matematica con Oomba",
         "p": "Blocchi in base dieci, frazioni, orologi e altro su un’unica lavagna. Di’ a Oomba cosa stai insegnando e prepara la lavagna per te.",
@@ -7863,8 +7863,23 @@
         "open": "Apri Le mie classi"
       },
       "watch": "Guarda il video di un minuto",
-      "plan": "La bacheca di classe è inclusa in ogni classe. I materiali manipolativi e le loro stanze dal vivo fanno parte del piano Insegnante.",
-      "testing": "La bacheca di classe è inclusa in ogni classe. I materiali manipolativi e le loro stanze dal vivo sono ora in prova in alcune classi."
+      "plan": "La bacheca di classe è inclusa in ogni classe. L’Hub, i materiali manipolativi e le loro stanze dal vivo, Figures e Chiedi a Oomba sono disponibili con il piano Insegnante.",
+      "try": "Provalo",
+      "more": "Mostra tutti i {count} strumenti",
+      "less": "Mostra meno",
+      "atlas": {
+        "p": "Paesi, bandiere e capitali su un globo in 3D, e i 50 stati degli Stati Uniti e le province e i territori del Canada su mappe tutte loro. Crea i tuoi quiz di geografia e stampa cartine mute."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Scrivi o incolla un elenco, lascia che l’IA prepari le schede da un argomento, oppure carica una lezione in PDF o Word e l’IA sceglie i termini chiave. Gli studenti studiano con Gira, Impara, Abbina e Verifica.",
+        "alt": "Flashcards: una scheda sul sistema solare con il Sole, e i pulsanti Gira, Mescola, Stella e Leggi ad alta voce."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} argomenti di grammatica dalla scuola dell’infanzia al 12º anno, in fasce per le classi {bands}. Ognuno si padroneggia in tre livelli, con schede lette ad alta voce in K-2 e stanze di correzione di Mistake Hunt.",
+        "alt": "Grammar Lab: la pagina del corso con la sua immagine e le unità di K-2, ognuna con quanti argomenti sono stati fatti."
+      }
     }
   },
   "learn": {
@@ -8689,8 +8704,7 @@
       "notStated": "Non indicato"
     },
     "gate": {
-      "plan": "Piano Insegnante",
-      "testing": "In prova"
+      "plan": "Piano Insegnante"
     },
     "rows": {
       "games": {
@@ -15682,12 +15696,12 @@
       "pictures": "Immagini"
     },
     "grades": {
-      "k": "Infanzia/K",
       "1": "Classe 1",
       "2": "Classe 2",
       "3": "Classe 3",
       "45": "Classi 4-5",
-      "68": "Classi 6-8"
+      "68": "Classi 6-8",
+      "k": "Infanzia/K"
     },
     "lengths": {
       "short": "Breve",

@@ -30,6 +30,8 @@ export const LANDING_SHOTS = {
   'chat-plan': [440, 880], 'chat-point': [440, 880],
   'tool-manip': [640, 1280], 'tool-figures': [640, 1280], 'tool-crossword': [640, 1280], 'tool-mistake-hunt': [640, 1280], 'tool-library': [640, 1280],
   'tool-brain-board': [640, 1280], 'tool-build': [640, 1280], 'tool-dash': [640, 1280], 'tool-typing-zoo': [640, 1280], 'tool-atlas-quest': [640, 1280],
+  // /teachers only (routes/teachers.js TOOL_CARDS): Flashcards, and Grammar Lab (shown only while it is open to everyone).
+  'tool-flashcards': [640, 1280], 'tool-grammar-lab': [640, 1280],
 };
 
 if (!process.env.LANDING_SHOTS_CHILD) {
@@ -62,7 +64,7 @@ async function main() {
   const { importGame } = await import(R + 'scripts/import-game.js');
   const { seedOfficial } = await import(R + 'scripts/seed.js');
   const official = seedOfficial();
-  const SLUGS = ['brain-board', 'crossword', 'typing-zoo', 'atlas-quest', 'atlas-quest-live', 'mistake-hunt', 'word-hunt', 'doodle-hoot', 'sudoku', 'arithmetic-lab', 'algebra-builder', 'would-you-rather-live', 'popcorn-hush', 'castle-clash', 'word-peek'];
+  const SLUGS = ['brain-board', 'crossword', 'typing-zoo', 'atlas-quest', 'atlas-quest-live', 'mistake-hunt', 'word-hunt', 'doodle-hoot', 'sudoku', 'arithmetic-lab', 'algebra-builder', 'would-you-rather-live', 'popcorn-hush', 'castle-clash', 'word-peek', 'flashcards'];
   for (const s of SLUGS) if (!G.getGameBySlug(s) && fs.existsSync(`${R}seed-games/${s}.html`)) importGame(`${R}seed-games/${s}.html`, `${R}seed-games/${s}.json`, official.id);
   const gid = s => G.getGameBySlug(s).id;
 
@@ -239,7 +241,7 @@ async function main() {
   await run('tool-dash', async () => { const { ctx, page } = await open(`/class/${cls.id}/dashboard`, { time: MORNING }); await page.waitForTimeout(3000); await snap(page, 'tool-dash'); await ctx.close(); });
   await run('tool-library', async () => { const { ctx, page } = await open('/library'); await page.waitForTimeout(2500); await snap(page, 'tool-library'); await ctx.close(); });
   await run('tool-build', async () => { const { ctx, page } = await open('/build'); await page.waitForTimeout(1500); await page.locator('text=New lesson').first().click().catch(() => {}); await page.waitForTimeout(3000); await snap(page, 'tool-build'); await ctx.close(); });
-  for (const s of ['atlas-quest', 'typing-zoo', 'mistake-hunt', 'crossword', 'brain-board']) {
+  for (const s of ['atlas-quest', 'typing-zoo', 'mistake-hunt', 'crossword', 'brain-board', 'flashcards']) {
     await run('tool-' + s, async () => {
       const { ctx, page } = await open(`/g/${s}`);
       await page.waitForTimeout(1500);
@@ -247,6 +249,11 @@ async function main() {
       await page.waitForTimeout(6000);
       const fr = page.frames().find(f => f !== page.mainFrame() && /\/(play|g)\b|game/.test(f.url())) || page.frames()[1];
       if (fr && s === 'crossword') { await fr.locator('text=Try a sample puzzle').click().catch(() => {}); await page.waitForTimeout(2500); }
+      if (fr && s === 'flashcards') {   // a ready-made set open in Flip
+        await fr.locator('text=Ready-made sets').first().click().catch(() => {}); await page.waitForTimeout(1200);
+        await fr.locator('button, [role="button"]').filter({ hasText: /The solar system/ }).first().click().catch(() => {}); await page.waitForTimeout(1500);
+        await fr.locator('button, [role="button"]').filter({ hasText: /^\W*Flip/ }).first().click().catch(() => {}); await page.waitForTimeout(1500);
+      }
       if (fr && s === 'atlas-quest') {
         await fr.locator('text=Play').first().click().catch(() => {}); await page.waitForTimeout(800);
         for (let i = 0; i < 3; i++) { await fr.locator('text=Next').first().click().catch(() => {}); await page.waitForTimeout(400); }
@@ -256,6 +263,13 @@ async function main() {
       await ctx.close();
     });
   }
+  // Grammar Lab (off by default, GRAMMAR_LAB): opened for Ms. Lark for this one capture, then shut again.
+  await run('tool-grammar-lab', async () => {
+    const was = { on: config.grammarLab, users: [...config.grammarLabUsers] };
+    config.grammarLab = true; config.grammarLabUsers.push(T.username.toLowerCase());
+    try { const { ctx, page } = await open('/courses/grammar-lab'); await page.waitForTimeout(2500); await snap(page, 'tool-grammar-lab'); await ctx.close(); }
+    finally { config.grammarLab = was.on; config.grammarLabUsers.splice(0, Infinity, ...was.users); }
+  });
 
   await browser.close();
   server.closeAllConnections(); server.close();

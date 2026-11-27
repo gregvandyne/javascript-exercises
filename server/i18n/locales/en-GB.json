@@ -398,9 +398,8 @@
         "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
       }
     },
-    "lead": "Interactive lessons, maths manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "lead": "Live games, maths manipulatives, worksheets, picture books, typing, geography, a class dashboard and an AI helper for ages 5 to 14, with one login and one class list. It all runs in the browser, on Chromebooks too.",
     "tools": {
-      "lead": "Real screens from a demo class: a maths board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
       "board": {
         "h": "Maths manipulatives with Oomba"
       },

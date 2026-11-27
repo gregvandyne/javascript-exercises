@@ -93,14 +93,15 @@ test('the table: one word per cell (plus the gate tag); each need opens its deta
     cells.forEach((td, i) => {
       assert.match(td, /<span class="cmp-mark cmp-(yes|partial|no|notStated)">(?:<svg[^>]*aria-hidden="true"[\s\S]*?<\/svg>|<img[^>]*aria-hidden="true"[^>]*>)?<b>(Yes|Partial|No|Not stated)<\/b>/, 'a word, never color or an icon alone');
       const visible = text(`<td${td}`).trim();
-      assert.equal(visible, i === 0 ? (gated.has(id) ? 'Yes In testing' : 'Yes') : { yes: 'Yes', partial: 'Partial', notStated: 'Not stated' }[C.cellOf(id, C.COMPETITORS[i - 1].id).s], `${id}: only the word (and the tag)`);
+      assert.equal(visible, i === 0 ? (gated.has(id) ? 'Yes Teacher plan' : 'Yes') : { yes: 'Yes', partial: 'Partial', notStated: 'Not stated' }[C.cellOf(id, C.COMPETITORS[i - 1].id).s], `${id}: only the word (and the tag)`);
     });
     // Oomba's detail is the first line of the detail row.
     const det = detailOf(h, id); assert.ok(det, id);
     assert.match(text(det).replace(/ :/g, ":").trim(), /^Oomba: .{15,}/, `${id}: Oomba's detail`);
   }
   assert.ok(text(h).includes('Not stated means we did not find it on their public website.'));
-  assert.ok(!h.includes('Teacher plan</span>'));
+  assert.ok(h.includes('Teacher plan</span>'), 'the teaching tools say Teacher plan, as the homepage does, with paid plans on or off');
+  assert.ok(!h.includes('In testing'));
   const line = /<p class="cmp-line" id="notice">([\s\S]*?)<\/p>/.exec(h)[1];
   assert.match(text(line).replace(/ ([.;])/g, '$1').trim(), /^Last checked November 22, 2026\. Kahoot!, Classroomscreen and Brainingcamp are trademarks of their owners; Oomba is not affiliated with them\. Tell us if something changed\.$/);
   assert.match(line, /<a href="mailto:[^"]+">Tell us if something changed<\/a>/, 'the notice links the site contact address');

@@ -7327,7 +7327,7 @@
     "title": "Abonnementen en prijzen",
     "description": "Abonnementen van Oomba Academy: Gratis, Basic, Gezin, Leerkracht en School. Alle spellen spelen is altijd gratis.",
     "heading": "Abonnementen",
-    "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een abonnement geeft elke maand extra berichten aan de Bouwer.",
+    "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een gezinsabonnement geeft elke maand extra berichten aan de Bouwer, en het Leerkrachtabonnement voegt de Hub, Vraag het Oomba, de rekenmaterialen en Figures toe.",
     "interval": {
       "label": "Betaalperiode",
       "month": "Maandelijks",
@@ -7404,7 +7404,7 @@
       "title": "Schoolabonnementen",
       "description": "Oomba Academy voor scholen: het Leerkracht-abonnement voor elk van je leerkrachten, één prijs per leerkracht per jaar, met een kaart of op factuur.",
       "heading": "Oomba Academy voor scholen",
-      "intro": "Scholen kopen het Leerkracht-abonnement voor hun leerkrachten: één prijs per leerkracht per jaar, met onbeperkt leerlingen en geen kosten per leerling.",
+      "intro": "Scholen kopen het Leerkrachtabonnement voor hun leerkrachten: de Hub, Vraag het Oomba, de rekenmaterialen en Figures, voor één prijs per leerkracht per jaar, met onbeperkt leerlingen en geen kosten per leerling.",
       "what": {
         "h": "Wat een school krijgt",
         "p1": "Schoolbeheerders zien het abonnement en geven de plaatsen aan leerkrachten op het tabblad Facturering van de school. Gezinnen zien nooit iets uit de klas."
@@ -7460,7 +7460,8 @@
       "li3": "Geldt voor al je klassen",
       "li4": "Altijd opzegbaar",
       "start": "Gratis proberen",
-      "manage": "Mijn Leerkracht-abonnement"
+      "manage": "Mijn Leerkracht-abonnement",
+      "li5": "De Hub, Vraag het Oomba, de rekenmaterialen en Figures"
     },
     "trial": {
       "title": "Leerkracht-abonnement",
@@ -7607,7 +7608,7 @@
     "description": "Reclamevrije interactieve lessen voor 5 tot 14 jaar die in elke browser werken, ook op Chromebooks, plus rekenmaterialen, een klasdashboard en een AI-Bouwer.",
     "kicker": "🍎 Voor leerkrachten",
     "h1": "Leuke, interactieve lessen waar je klas om vraagt",
-    "lead": "Interactieve lessen, rekenmaterialen die je live met je klas gebruikt en een klasdashboard voor de hele dag, voor 5 tot 14 jaar. Alles werkt in de browser, ook op Chromebooks, en je klas kan met onze AI-Bouwer eigen spellen maken.",
+    "lead": "Live spellen, rekenmaterialen, werkbladen, prentenboeken, typen, aardrijkskunde, een klasdashboard en een AI-hulp voor 5 tot 14 jaar, met één login en één klassenlijst. Alles werkt in de browser, ook op Chromebooks.",
     "badges": {
       "ads": "Geen reclame",
       "browser": "Werkt in elke browser, ook op Chromebooks",
@@ -7783,7 +7784,7 @@
     "live": {
       "h": "Livelessen voor de klas",
       "p1": "Leid een live quizrace of elke live-klare les op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen) en Breinbord (een bord vol categorieën, van makkelijk naar moeilijk).",
+      "li1": "Kant-en-klare modi zijn onder meer Questrace (een race over een 3D-eiland, aangedreven door jouw vragen), Breinbord (een bord vol categorieën, van makkelijk naar moeilijk), Would You Rather, Atlas Quest en Doodle Hoot.",
       "li2": "Gebruik een startset, typ snel een set, of maak van de vragen in een lesplan een live quiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
@@ -7838,12 +7839,11 @@
         "title": "De Hub in 2 minuten",
         "p": "Werk uitdelen, elk tafeltje live zien, opgestoken handen beantwoorden en het dagplan volgen, allemaal vanaf één bord."
       },
-      "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
-      "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
+      "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement."
     },
     "tools": {
       "h": "Nieuw voor je klas",
-      "lead": "Echte schermen uit een demoklas: een rekenbord dat Oomba met je maakt, hetzelfde bord live op het apparaat van elke leerling, en een dashboard voor de hele schooldag.",
+      "lead": "Echte schermen uit demoklassen met verzonnen namen. Eén login en één klassenlijst voor alles.",
       "board": {
         "h": "Rekenmaterialen met Oomba",
         "p": "MAB-blokken, breukstukken, klokken en meer op één bord. Vertel Oomba wat je lesgeeft en het zet het bord voor je klaar.",
@@ -7863,8 +7863,23 @@
         "open": "Open Mijn klassen"
       },
       "watch": "Bekijk de video van een minuut",
-      "plan": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes horen bij het Leerkracht-abonnement.",
-      "testing": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes worden nu in een paar klassen uitgeprobeerd."
+      "plan": "Het klasdashboard hoort bij elke klas. De Hub, de rekenmaterialen en hun live ruimtes, Figures en Vraag het Oomba zijn beschikbaar met het Leerkrachtabonnement.",
+      "try": "Probeer het",
+      "more": "Alle {count} hulpmiddelen tonen",
+      "less": "Minder tonen",
+      "atlas": {
+        "p": "Landen, vlaggen en hoofdsteden op een 3D-wereldbol, en de 50 Amerikaanse staten en de provincies en territoria van Canada op eigen kaarten. Maak je eigen aardrijkskundequizzen en print blinde kaarten."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Typ of plak een lijst, laat AI kaarten maken bij een onderwerp, of upload een les als pdf- of Word-bestand en AI haalt de kernbegrippen eruit. Leerlingen oefenen met Omdraaien, Leren, Koppelen en Toets.",
+        "alt": "Flashcards: een kaart over het zonnestelsel met de zon, en Omdraaien, Schudden, Ster en Voorlezen."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} grammaticaonderwerpen van de kleuterklas tot groep 12, in fases voor de klassen {bands}. Elk onderwerp leer je in drie niveaus, met voorleeskaarten in K-2 en Mistake Hunt-ruimtes om te verbeteren.",
+        "alt": "Grammar Lab: de cursuspagina met de afbeelding en de eenheden van K-2, elk met hoeveel onderwerpen af zijn."
+      }
     }
   },
   "learn": {
@@ -8689,8 +8704,7 @@
       "notStated": "Niet vermeld"
     },
     "gate": {
-      "plan": "Leerkracht-abonnement",
-      "testing": "In test"
+      "plan": "Leerkracht-abonnement"
     },
     "rows": {
       "games": {
@@ -15682,12 +15696,12 @@
       "pictures": "Plaatjes"
     },
     "grades": {
-      "k": "Kleuters/K",
       "1": "Leerjaar 1",
       "2": "Leerjaar 2",
       "3": "Leerjaar 3",
       "45": "Leerjaar 4-5",
-      "68": "Leerjaar 6-8"
+      "68": "Leerjaar 6-8",
+      "k": "Kleuters/K"
     },
     "lengths": {
       "short": "Kort",

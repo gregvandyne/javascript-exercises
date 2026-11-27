@@ -8408,7 +8408,7 @@
     "title": "Plans and prices",
     "description": "Oomba Academy plans: Free, Basic, Family, Teacher and School. Playing every game is always free.",
     "heading": "Plans",
-    "intro": "Playing every game is free, and so is building with the free daily Builder messages. A plan adds extra Builder messages every month.",
+    "intro": "Playing every game is free, and so is building with the free daily Builder messages. A family plan adds extra Builder messages every month, and the Teacher plan adds the Hub, Ask Oomba, the Manipulatives and Figures.",
     "interval": {
       "label": "Billing period",
       "month": "Monthly",
@@ -8485,7 +8485,7 @@
       "title": "School plans",
       "description": "Oomba Academy for schools: the Teacher plan for each of your teachers, at one price per teacher a year, paid by card or invoice.",
       "heading": "Oomba Academy for schools",
-      "intro": "Schools buy the Teacher plan for their teachers: one price per teacher a year, with unlimited students and no per-student charge.",
+      "intro": "Schools buy the Teacher plan for their teachers: the Hub, Ask Oomba, the Manipulatives and Figures, at one price per teacher a year, with unlimited students and no per-student charge.",
       "what": {
         "h": "What a school gets",
         "p1": "School admins see the plan and give the seats to teachers on the school's Billing tab. Families never see anything from class."
@@ -8541,7 +8541,8 @@
       "li3": "Covers all your classes",
       "li4": "Cancel anytime",
       "start": "Start free trial",
-      "manage": "My Teacher plan"
+      "manage": "My Teacher plan",
+      "li5": "The Hub, Ask Oomba, the Manipulatives and Figures"
     },
     "trial": {
       "title": "Teacher plan",
@@ -8688,7 +8689,7 @@
     "description": "Ad-free interactive lessons for ages 5 to 14 that run in any browser, Chromebooks too, plus math manipulatives, a Classroom Dashboard and an AI Builder.",
     "kicker": "🍎 For teachers",
     "h1": "Fun, interactive lessons your class will ask for",
-    "lead": "Interactive lessons, math manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "lead": "Live games, math manipulatives, worksheets, picture books, typing, geography, a class dashboard and an AI helper for ages 5 to 14, with one login and one class list. It all runs in the browser, on Chromebooks too.",
     "badges": {
       "ads": "No ads",
       "browser": "Runs in any browser, Chromebooks too",
@@ -8864,7 +8865,7 @@
     "live": {
       "h": "Live class lessons",
       "p1": "Run a live quiz race or any live-ready lesson on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Brain Board (a board of categories, easy to hard).",
+      "li1": "Built-in modes include Quest Race (a 3D island race driven by your questions), Brain Board (a board of categories, easy to hard), Would You Rather, Atlas Quest and Doodle Hoot.",
       "li2": "Use a starter question set, type a quick set, or turn a lesson plan's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -9233,12 +9234,11 @@
         "title": "The Hub in 2 minutes",
         "p": "Hand out work, watch every desk live, answer raised hands and run the day plan, all from one board."
       },
-      "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
-      "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
+      "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan."
     },
     "tools": {
       "h": "New for your classroom",
-      "lead": "Real screens from a demo class: a math board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
+      "lead": "Real screens from demo classes with made-up names. One login and one class list for all of them.",
       "board": {
         "h": "Math manipulatives with Oomba",
         "p": "Base ten blocks, fraction pieces, clocks and more on one board. Tell Oomba what you're teaching, and it lays out the board for you.",
@@ -9258,8 +9258,23 @@
         "open": "Open My classes"
       },
       "watch": "Watch the one-minute video",
-      "plan": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are part of the Teacher plan.",
-      "testing": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are being tried out in a few classrooms now."
+      "plan": "The Classroom Dashboard comes with every class. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan.",
+      "try": "Try it",
+      "more": "Show all {count} tools",
+      "less": "Show fewer",
+      "atlas": {
+        "p": "Countries, flags and capitals on a 3D globe, and the 50 US states and Canada’s provinces and territories on maps of their own. Make your own geography quizzes and print blank maps."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Type or paste a list, let AI draft cards from a topic, or upload a lesson as a PDF or Word file and AI picks out the key terms. Students study with Flip, Learn, Match and Test.",
+        "alt": "Flashcards: a solar system card showing the Sun, with Flip, Shuffle, Star and Read aloud."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} grammar topics from kindergarten to grade 12, in bands for grades {bands}. Each is mastered in three levels, with read-aloud cards in K-2 and Mistake Hunt proofreading rooms.",
+        "alt": "Grammar Lab: the course page with its picture and the K-2 units, each with how many topics are done."
+      }
     }
   },
   "learn": {
@@ -10103,8 +10118,7 @@
       "notStated": "Not stated"
     },
     "gate": {
-      "plan": "Teacher plan",
-      "testing": "In testing"
+      "plan": "Teacher plan"
     },
     "rows": {
       "games": {
@@ -17211,12 +17225,12 @@
       "pictures": "Pictures"
     },
     "grades": {
-      "k": "K",
       "1": "Grade 1",
       "2": "Grade 2",
       "3": "Grade 3",
       "45": "Grades 4-5",
-      "68": "Grades 6-8"
+      "68": "Grades 6-8",
+      "k": "K"
     },
     "lengths": {
       "short": "Short",
