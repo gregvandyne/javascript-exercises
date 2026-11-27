@@ -16311,3 +16311,22 @@ to the teacher and to classmates.
   deleting, hiding, 404s for another class, a guest and signed out, the filter, pictures and links, the student's
   page) and `tests/unit/flashcards-share-browser.test.js` (390 and 1366 in Chromium: share, a classmate studies and
   copies it, the teacher hides it, it is gone for the classmate).
+
+## Grammar Lab beside NoRedInk, on /compare and "/" (27 Nov 2026)
+
+- **NoRedInk is named only while Grammar Lab is open to every visitor.** One helper, `grammarCompareOn()` in
+  server/routes/compare.js (`mayOpenGrammarLab(null)`: GRAMMAR_LAB on and '*' on GRAMMAR_LAB_USERS), decides every
+  NoRedInk and Grammar Lab mention on /compare and the homepage (routes/landing.js imports it). Turning Grammar Lab on
+  for everyone makes the comparison appear on its own; until then nothing links to a page a visitor would get a 404 on.
+  The name lives in compare.js (`GRAMMAR_RIVAL`) only; landing.js takes it from there; the locale files use `{name}`.
+- **/compare** gets "Grammar practice, side by side": Grammar Lab and NoRedInk, nine needs, the same marks and rows that
+  open as the main table, its own "read on" day (`GRAMMAR_CHECKED`, 2026-11-27) and a link to /courses/grammar-lab.
+  Grammar Lab says No where it is No: guided essay writing, feedback on student writing (by design the AI never reads
+  student work) and class assigning or reports (not yet). Its numbers come from its data (`grammarFacts`). No cost line:
+  NoRedInk has no per-teacher price. Sources: docs/compare-sources.md "NoRedInk" (to be confirmed word for word before
+  Grammar Lab opens).
+- **"/"** names six (NoRedInk in a fourth side-by-side card, two by two on wide screens, and in the trademark line), but
+  the "One subscription instead of five" strip keeps the five: Grammar Lab does not replace NoRedInk.
+- Tests: tests/unit/compare.test.js (five names on "/" with Grammar Lab closed or open to testers only, six when open to
+  everyone; the section's rows, sources and links; no other page names NoRedInk). Legal: docs/legal-review.md
+  "NoRedInk named beside Grammar Lab".

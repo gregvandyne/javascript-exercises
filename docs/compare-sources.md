@@ -152,3 +152,40 @@ Oomba cells are all Yes. Rows marked gated carry "Teacher plan" (paid plans on) 
 | Works on Chromebooks and phones | Runs in any up-to-date browser, with nothing to install. | no | teachers.faq.a3 "It runs in any up-to-date web browser, on Chromebooks, laptops, tablets ... with nothing to install."; parents.faq.a8 "... computers, Chromebooks, tablets and phones" |
 | Student privacy | No ads, no advertising or tracking cookies, and we never sell anyone's personal information. No student email needed. | no | teachers.safe.li1 "No ads, and no advertising or tracking cookies."; info.*.p5 "we don't sell anyone's personal information"; teachers.safe.li2 "We never ask students for an email address" |
 | A free option | Every game, your classes, lessons, the gradebook and the Classroom Dashboard are free. | no | teachers.free.lineOff "Always free: every game, your classes, lessons, progress and the gradebook"; the Classroom Dashboard free for every class |
+
+## NoRedInk (the grammar section, shown only while Grammar Lab is open to every visitor)
+
+Cells in `GRAMMAR_CELLS` (server/routes/compare.js), dated 2026-11-27 (`GRAMMAR_CHECKED`). No price is used: NoRedInk
+publishes no price for Premium (schools and districts ask its sales team for a quote) and no per-teacher price, so the
+section has no cost line.
+
+**How these were read, and what is still to do before Grammar Lab opens.** noredink.com could not be opened from the
+session that wrote the section (the host is not on the session's network allowlist). The quotes below come from
+NoRedInk's own pages as a web search returned them on 2026-11-27, not from the pages rendered in a browser as the other
+products' cells were. **Before GRAMMAR_LAB_USERS gets '*', someone must open each address below, confirm the words are
+on the page word for word, and fix or drop any that are not** (a dropped row becomes Not stated).
+
+| Row | Status | Address | Words |
+|---|---|---|---|
+| Grammar practice, one skill at a time | Yes | https://www.noredink.com/premium | "Premium gives schools full access to NoRedInk's 1,000s of skills exercises and writing prompts, guided composition tools, reporting features, originality detection, and AI-powered feedback tool." |
+| Mastery before moving on | Not stated | | (third-party reviews describe adaptive practice and mastery; no own-site words found) |
+| Grades covered | Yes | https://www.noredink.com/ | "building strong writers and critical thinkers in Grades 3–12" |
+| Read aloud for early readers | Not stated | | |
+| Proofreading passages | Not stated | | |
+| Guided essay writing | Yes | https://www.noredink.com/about/product | "Guided Drafts provide scaffolding to students throughout the writing cycle." |
+| Feedback on student writing | Yes | https://www.noredink.com/premium | (the Premium sentence above: "AI-powered feedback tool") |
+| Assign to a class, with class reports | Yes | https://www.noredink.com/premium | (the Premium sentence above: "reporting features") |
+| A free option | Yes | https://www.noredink.com/product/elementary-grades-3-5/ | "a new version of our free online writing curriculum that's designed specifically for elementary learners" |
+
+Other facts seen on 2026-11-27 and not used in a cell: NoRedInk serves grades 3 to 12 with a free version and Premium
+(Premium adds 1,000+ skills, 2,000+ quick-write prompts, 400+ Guided Draft prompts across 10+ genres, benchmark
+assessments, originality detection, AI feedback and LMS integrations); its pages say it is now part of IXL Learning.
+Pricing: no list price on noredink.com; aggregators (g2.com/products/noredink/pricing, xpay.sh) say pricing is by
+quote through sales. Earlier research (2026-11-26): albert.io/compare/albert-vs-noredink, softwareadvice.com.
+
+Grammar Lab's own cells (Yes or No) come from its code: seed-lessons/grammar-lab/topics.json (bands K-2, 3-5, 6-8; 70
+units; 175 topics; 41 Mistake Hunt rooms; every topic `levels: [4, 4, 4]`), services/grammar-lab-mastery.js (two right
+in a row ends a level; a wrong answer adds a question and shows the hint), services/grammar-lab.js (topics open in
+order; answers graded on the server; guests' mastery kept as pending wins until they sign in; `readsAloud` for the K-2
+band; Mistake Hunt rooms), routes/tts.js (ctx 'grammar' reads a K-2 card), routes/grammar-lab.js (no teacher, class or
+assignment routes), services/grammar-lab-access.js (no plan check: free).

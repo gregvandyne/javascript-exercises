@@ -10194,6 +10194,51 @@
     "detail": {
       "link": "Open their page",
       "notStated": "Not stated on their site"
+    },
+    "grammar": {
+      "h": "Grammar practice, side by side",
+      "lead": "Grammar Lab is Oomba's grammar course for grades {bands}: {topics} topics in {units} units. Here is what it covers, and what it does not.",
+      "caption": "What Grammar Lab and {name} offer for grammar and writing practice. Cells for {name} come from its own public website.",
+      "checked": "{name}'s cells come from its own public website, read on {date}.",
+      "try": "Open Grammar Lab",
+      "rows": {
+        "practice": {
+          "need": "Grammar practice, one skill at a time",
+          "oomba": "{topics} topics, each with a short teaching card and questions to answer: tap the right words, place commas and other marks, pick the right word or sentence, or type the sentence fixed. Our server checks every answer."
+        },
+        "mastery": {
+          "need": "Mastery before moving on",
+          "oomba": "Each topic has three levels. A level ends with two right answers in a row; a wrong answer shows a hint and adds a question. The next topic opens once this one is mastered."
+        },
+        "grades": {
+          "need": "Grades covered",
+          "oomba": "Kindergarten to grade 8, in three bands: {bands}."
+        },
+        "readAloud": {
+          "need": "Read aloud for early readers",
+          "oomba": "In grades K-2, every topic's teaching card can be read aloud."
+        },
+        "proofread": {
+          "need": "Proofreading passages",
+          "oomba": "{rooms} topics open a Mistake Hunt room: a passage with mistakes of that kind to find and fix."
+        },
+        "essays": {
+          "need": "Guided essay writing",
+          "oomba": "Not in Grammar Lab. Writing skills such as thesis statements, evidence and transitions are practiced as questions, not as essays."
+        },
+        "feedback": {
+          "need": "Feedback on student writing",
+          "oomba": "No. By design, Oomba's AI never reads student work, and Grammar Lab has no essays to give feedback on."
+        },
+        "classes": {
+          "need": "Assign to a class, with class reports",
+          "oomba": "Not yet. Each student sees their own progress in every unit and can look back at a mastered topic's questions."
+        },
+        "free": {
+          "need": "A free option",
+          "oomba": "Grammar Lab is free. Guests can practice without an account, and the topics they master are kept when they sign up."
+        }
+      }
     }
   },
   "connections": {
@@ -12775,7 +12820,9 @@
       "more": "See the full comparison",
       "liveGames": "Live games run inside the Hub: students at their desks get an invite and join with one tap, no code.",
       "classScreen": "{count} widgets, a screen for every student, points with reasons, and the Hub's desks one tab away.",
-      "mathTools": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks."
+      "mathTools": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks.",
+      "grammarUs": "What Oomba's Grammar Lab covers",
+      "grammar": "{topics} grammar topics for kindergarten to grade 8, each mastered in three levels, with read-aloud cards in K-2 and Mistake Hunt proofreading rooms. No essay writing or writing feedback: Oomba's AI never reads student work."
     },
     "tour": {
       "kicker": "Click-through tour",

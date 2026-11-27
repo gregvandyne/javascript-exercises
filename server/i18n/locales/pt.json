@@ -8781,6 +8781,51 @@
     "detail": {
       "link": "Abrir a página deles",
       "notStated": "Não informado no site deles"
+    },
+    "grammar": {
+      "h": "Prática de gramática, lado a lado",
+      "lead": "Grammar Lab é o curso de gramática da Oomba para os anos {bands}: {topics} tópicos em {units} unidades. Veja o que ele cobre e o que não cobre.",
+      "caption": "O que Grammar Lab e {name} oferecem para praticar gramática e escrita. As células de {name} vêm do seu próprio site público.",
+      "checked": "As células de {name} vêm do seu próprio site público, lido em {date}.",
+      "try": "Abrir Grammar Lab",
+      "rows": {
+        "practice": {
+          "need": "Prática de gramática, uma habilidade por vez",
+          "oomba": "{topics} tópicos, cada um com um cartão curto de explicação e perguntas: tocar nas palavras certas, colocar vírgulas e outros sinais, escolher a palavra ou a frase certa, ou digitar a frase corrigida. Nosso servidor confere cada resposta."
+        },
+        "mastery": {
+          "need": "Domínio antes de avançar",
+          "oomba": "Cada tópico tem três níveis. Um nível termina com duas respostas certas seguidas; uma resposta errada mostra uma dica e acrescenta uma pergunta. O próximo tópico abre quando este é dominado."
+        },
+        "grades": {
+          "need": "Anos atendidos",
+          "oomba": "Da educação infantil ao 8.º ano (K-8), em três faixas: {bands}."
+        },
+        "readAloud": {
+          "need": "Leitura em voz alta para os pequenos",
+          "oomba": "Em K-2, o cartão de explicação de cada tópico pode ser lido em voz alta."
+        },
+        "proofread": {
+          "need": "Textos para revisar",
+          "oomba": "{rooms} tópicos abrem uma sala do Mistake Hunt: um texto com erros desse tipo para encontrar e corrigir."
+        },
+        "essays": {
+          "need": "Redação guiada",
+          "oomba": "Não está no Grammar Lab. Habilidades de escrita como tese, evidências e conectivos são praticadas com perguntas, não com redações."
+        },
+        "feedback": {
+          "need": "Comentários sobre a escrita dos alunos",
+          "oomba": "Não. Por princípio, a IA da Oomba nunca lê o trabalho dos alunos, e o Grammar Lab não tem redações para comentar."
+        },
+        "classes": {
+          "need": "Atribuir a uma turma, com relatórios da turma",
+          "oomba": "Ainda não. Cada aluno vê o próprio progresso em cada unidade e pode rever as perguntas de um tópico dominado."
+        },
+        "free": {
+          "need": "Uma opção gratuita",
+          "oomba": "Grammar Lab é gratuito. Visitantes podem praticar sem conta, e os tópicos que dominam ficam salvos quando se cadastram."
+        }
+      }
     }
   },
   "connections": {
@@ -11202,7 +11247,9 @@
       "more": "Veja a comparação completa",
       "liveGames": "Os jogos ao vivo acontecem dentro do Hub: os alunos nas carteiras recebem um convite e entram com um toque, sem código.",
       "classScreen": "{count} widgets, uma tela para cada aluno, pontos com motivos e as carteiras do Hub a uma aba de distância.",
-      "mathTools": "{tools} manipuláveis e {tasks} tarefas do K ao 8º ano, além das fichas do Figures, o Oomba mudando o quadro quando você pede e cada ferramenta distribuída às carteiras do Hub."
+      "mathTools": "{tools} manipuláveis e {tasks} tarefas do K ao 8º ano, além das fichas do Figures, o Oomba mudando o quadro quando você pede e cada ferramenta distribuída às carteiras do Hub.",
+      "grammarUs": "O que o Grammar Lab da Oomba cobre",
+      "grammar": "{topics} tópicos de gramática da educação infantil ao 8.º ano, cada um dominado em três níveis, com cartões lidos em voz alta em K-2 e salas de revisão do Mistake Hunt. Sem redação nem comentários sobre a escrita: a IA da Oomba nunca lê o trabalho dos alunos."
     },
     "tour": {
       "kicker": "Tour interativo",

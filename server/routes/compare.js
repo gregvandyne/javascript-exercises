@@ -26,6 +26,8 @@ import { familiesOn } from '../services/family.js';
 import { plansOn } from '../services/teacher-tools.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { readyVideos } from '../views/see-it.js';
+import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
+import * as GLAB from '../services/grammar-lab.js';
 
 export const router = Router();
 export const PATH = '/compare';
@@ -119,14 +121,57 @@ export const CELLS = {
   },
 };
 
+// ------------------------------------------------------------------------------------------------- grammar practice
+// Grammar Lab beside NoRedInk (docs/decisions.md "Grammar Lab beside NoRedInk"). The owner's third name, shown only while
+// Grammar Lab is open to every visitor (grammarCompareOn): with the flag off, or open to testers only, neither /compare
+// nor "/" names NoRedInk or mentions Grammar Lab, so nothing advertises a page a visitor would get a 404 on.
+
+/** The one condition for every NoRedInk and Grammar Lab mention on /compare and "/" (routes/landing.js): Grammar Lab is
+ *  open to every visitor (GRAMMAR_LAB on with '*' on GRAMMAR_LAB_USERS), i.e. a visitor with no session may open it. */
+export const grammarCompareOn = () => mayOpenGrammarLab(null);
+
+/** The product the grammar section sets beside Grammar Lab, with its own public website. Never translated. */
+export const GRAMMAR_RIVAL = { id: 'noredink', name: 'NoRedInk', site: 'https://www.noredink.com/' };
+/** The day NoRedInk's pages were read for the grammar section (docs/compare-sources.md "NoRedInk"). */
+export const GRAMMAR_CHECKED = '2026-11-27';
+
+/** The grammar section's rows, by classroom need, with Grammar Lab's own status (from its code: services/grammar-lab*.js,
+ *  seed-lessons/grammar-lab/topics.json). Grammar Lab's No rows say what it does not do, by design or not yet. */
+export const GRAMMAR_ROWS = [
+  { id: 'practice', us: 'yes' }, { id: 'mastery', us: 'yes' }, { id: 'grades', us: 'yes' }, { id: 'readAloud', us: 'yes' },
+  { id: 'proofread', us: 'yes' }, { id: 'essays', us: 'no' }, { id: 'feedback', us: 'no' }, { id: 'classes', us: 'no' },
+  { id: 'free', us: 'yes' },
+];
+
+/** NoRedInk's cells, in the same shape as CELLS (a row left out is Not stated). */
+export const GRAMMAR_CELLS = (() => {
+  const premium = { url: 'https://www.noredink.com/premium', checked: GRAMMAR_CHECKED, quote: 'Premium gives schools full access to NoRedInk\'s 1,000s of skills exercises and writing prompts, guided composition tools, reporting features, originality detection, and AI-powered feedback tool.' };
+  return {
+    practice: { noredink: { s: 'yes', src: premium } },
+    grades: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/', checked: GRAMMAR_CHECKED, quote: 'building strong writers and critical thinkers in Grades 3–12' } } },
+    essays: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/about/product', checked: GRAMMAR_CHECKED, quote: 'Guided Drafts provide scaffolding to students throughout the writing cycle.' } } },
+    feedback: { noredink: { s: 'yes', src: premium } },
+    classes: { noredink: { s: 'yes', src: premium } },
+    free: { noredink: { s: 'yes', src: { url: 'https://www.noredink.com/product/elementary-grades-3-5/', checked: GRAMMAR_CHECKED, quote: 'a new version of our free online writing curriculum that\'s designed specifically for elementary learners' } } },
+  };
+})();
+
+/** Grammar Lab's numbers, from its data: { topics, units, rooms (topics with a Mistake Hunt room), bands: ['K-2', '3-5', '6-8'] }. */
+export function grammarFacts() {
+  const bands = GLAB.bands();
+  const units = [...new Set(bands.flatMap(b => b.pathways))].map(id => GLAB.pathway(id)).filter(Boolean);
+  const topics = [...new Set(units.flatMap(p => p.topics))];
+  return { topics: topics.length, units: units.length, rooms: topics.filter(id => GLAB.room(id)).length, bands: bands.map(b => b.grades) };
+}
+
 /** The cell for one row and product. */
 export const cellOf = (rowId, compId, cells = CELLS) => (cells[rowId] && cells[rowId][compId]) || { s: 'notStated' };
 
 /** The sources: one per distinct source (address and words), in table order (the collapsed Sources list). -> { list: [{ n, url, comp, checked,
  *  quote }], numOf(rowId, compId) -> n | 0 } */
-export function footnotes(cells = CELLS, rows = ROWS) {
+export function footnotes(cells = CELLS, rows = ROWS, comps = COMPETITORS) {
   const list = []; const byKey = new Map(); const key = src => `${src.url}\n${src.quote}`;
-  for (const r of rows) for (const c of COMPETITORS) {
+  for (const r of rows) for (const c of comps) {
     const cell = cellOf(r.id, c.id, cells);
     if (cell.s === 'notStated' || !cell.src) continue;
     if (!byKey.has(key(cell.src))) { byKey.set(key(cell.src), list.length + 1); list.push({ n: list.length + 1, url: cell.src.url, comp: c, checked: cell.src.checked, quote: cell.src.quote }); }
@@ -136,7 +181,11 @@ export function footnotes(cells = CELLS, rows = ROWS) {
 
 /** "Kahoot!, Classroomscreen and Brainingcamp" in the page's language. */
 // English as the owner wrote the notice ("A, B and C"); other languages join the names their own way.
-const namesList = req => { const names = COMPETITORS.map(c => c.name); if (/^en/.test(req.locale || DEFAULT_LOCALE)) return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`; try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(names); } catch { return names.join(', '); } };
+// With the grammar section on, NoRedInk joins the notice.
+const namesList = req => { const names = [...COMPETITORS, ...(grammarCompareOn() ? [GRAMMAR_RIVAL] : [])].map(c => c.name); if (/^en/.test(req.locale || DEFAULT_LOCALE)) return `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`; try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(names); } catch { return names.join(', '); } };
+
+/** A list in the page's language ("K-2, 3-5 and 6-8"). */
+const listOf = (req, items) => { if (/^en/.test(req.locale || DEFAULT_LOCALE)) return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`; try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
 
 /** A status mark and its one word (the word is always there: never color or an icon alone). */
 function mark(t, s) {
@@ -191,6 +240,10 @@ const CSS = raw(`<style>
 .cmp-sources{padding-inline-start:1.2em;overflow-wrap:anywhere}
 .cmp-sources li{margin-block:.5em}
 .cmp-quote{color:var(--text-2);font-size:.9rem}
+.cmp-table.cmp-narrow{min-width:0}
+.cmp-narrow .cmp-cell,.cmp-narrow .cmp-mark{white-space:normal}
+.cmp-narrow th[scope=row]{min-width:0}
+.cmp-try{margin-top:12px}
 </style>`);
 
 router.get(PATH, (req, res) => {
@@ -236,6 +289,43 @@ router.get(PATH, (req, res) => {
     </table></div>
     ${el(t, 'p', 'compare.table.legend', {}, ' class="cmp-legend"')}
     <p class="cmp-line" id="notice"${fb(t, 'compare.line')}>${tHtml(t, 'compare.line', { date: html`<time datetime="${COMPARE_CHECKED}">${dayOf(COMPARE_CHECKED)}</time>`, names: namesList(req), href: `mailto:${contactEmail()}` })}</p>`;
+  // The grammar section (only while Grammar Lab is open to every visitor): Grammar Lab beside NoRedInk, the same marks,
+  // the same rows that open, each NoRedInk cell with its quote, day and link.
+  const glOn = grammarCompareOn();
+  const glFacts = glOn ? grammarFacts() : null;
+  const glVars = glOn ? { ...glFacts, bands: listOf(req, glFacts.bands) } : {};
+  const glNotes = glOn ? footnotes(GRAMMAR_CELLS, GRAMMAR_ROWS, [GRAMMAR_RIVAL]) : { list: [] };
+  const glCell = r => cellOf(r.id, GRAMMAR_RIVAL.id, GRAMMAR_CELLS);
+  const grammar = glOn ? html`<section class="lp-sec" id="grammar" aria-labelledby="grammar-h">
+      ${el(t, 'h2', 'compare.grammar.h', {}, ' id="grammar-h"')}
+      ${el(t, 'p', 'compare.grammar.lead', glVars)}
+      <p class="cmp-open-hint">${el(t, 'span', 'compare.table.open')}</p>
+      <div class="cmp-scroll" role="region" aria-labelledby="grammar-h" tabindex="0">
+      <table class="cmp-table cmp-narrow">
+        <caption${fb(t, 'compare.grammar.caption')}>${t('compare.grammar.caption', { name: GRAMMAR_RIVAL.name })}</caption>
+        <thead><tr>
+          <th scope="col"${fb(t, 'compare.table.need')}>${t('compare.table.need')}</th>
+          <th scope="col" class="cmp-us">${t('grammarLab.title')}</th>
+          <th scope="col" lang="en" dir="ltr">${GRAMMAR_RIVAL.name}</th>
+        </tr></thead>
+        <tbody>${GRAMMAR_ROWS.map(r => {
+          const cell = glCell(r); const src = cell.s !== 'notStated' && cell.src;
+          return html`<tr id="row-gl-${r.id}" class="cmp-row">
+          <th scope="row" class="cmp-need"><button type="button" class="cmp-tog" aria-expanded="false" aria-controls="det-gl-${r.id}">${ico('⬇️', { size: 16 })}<span${fb(t, `compare.grammar.rows.${r.id}.need`)}>${t(`compare.grammar.rows.${r.id}.need`)}</span></button></th>
+          <td class="cmp-us"><span class="cmp-cell">${mark(t, r.us)}</span></td>
+          <td><span class="cmp-cell">${mark(t, cell.s)}</span></td>
+        </tr><tr class="cmp-det" id="det-gl-${r.id}" hidden><td colspan="3"><div class="cmp-det-in"><ul>
+          <li><b>Oomba</b>: ${tHtml(t, `compare.grammar.rows.${r.id}.oomba`, glVars)}</li>
+          ${src ? html`<li><b lang="en" dir="ltr">${GRAMMAR_RIVAL.name}</b> (${t(`compare.status.${cell.s}`)}): <q lang="en" dir="ltr">${src.quote}</q> <span class="muted">(${t('compare.sources.read', { date: dayOf(src.checked) })})</span> <a href="${src.url}" rel="noopener nofollow" target="_blank"${fb(t, 'compare.detail.link')}>${t('compare.detail.link')}</a></li>`
+            : html`<li class="cmp-det-ns"><b lang="en" dir="ltr">${GRAMMAR_RIVAL.name}</b>: ${el(t, 'span', 'compare.detail.notStated')}</li>`}
+        </ul></div></td></tr>`;
+        })}</tbody>
+      </table></div>
+      ${el(t, 'p', 'compare.table.legend', {}, ' class="cmp-legend"')}
+      <p class="cmp-line"${fb(t, 'compare.grammar.checked')}>${t('compare.grammar.checked', { name: GRAMMAR_RIVAL.name, date: dayOf(GRAMMAR_CHECKED) })}</p>
+      <p class="cmp-try"><a class="btn btn-ghost" href="/courses/grammar-lab"${fb(t, 'compare.grammar.try')}>${t('compare.grammar.try')}</a></p>
+    </section>` : '';
+  const srcCount = notes.list.length + glNotes.list.length;
   const why = [['🧮', 'l1'], ['🎨', 'l2'], ['🛡️', 'l3']];
   const cta = plans ? html`<a class="btn btn-primary btn-big" href="/trial">${t('plans.teacher.start')}</a>` : html`<a class="btn btn-primary btn-big" href="${lp(req, '/teachers')}#start">${t('teachers.cta.start')}</a>`;
   const crumbs = [[t('nav.home'), '/'], [t('nav.teachers'), '/teachers'], [t('compare.name'), PATH]];
@@ -250,17 +340,18 @@ router.get(PATH, (req, res) => {
       ${el(t, 'h2', 'compare.table.h', {}, ' id="table-h"')}
       ${table}
     </section>
+    ${grammar}
     <section class="lp-sec" id="why" aria-labelledby="why-h">
       ${el(t, 'h2', 'compare.why.h', {}, ' id="why-h"')}
       <ul class="cmp-why">${why.map(([e, k]) => html`<li${fb(t, `compare.why.${k}`)}>${ico(e, { size: 22 })}<span>${t(`compare.why.${k}`, vars)}</span></li>`)}</ul>
       <div class="row lp-cta">${cta}</div>
     </section>
     <details class="panel cmp-src" id="sources">
-      <summary${fb(t, 'compare.sources.summary')}>${t('compare.sources.summary', { count: notes.list.length })}</summary>
+      <summary${fb(t, 'compare.sources.summary')}>${t('compare.sources.summary', { count: srcCount })}</summary>
       ${el(t, 'p', 'compare.sources.how', { date: dayOf(COMPARE_CHECKED) })}
-      <ol class="cmp-sources">${notes.list.map(f => html`<li id="src-${f.n}"><span lang="en" dir="ltr">${f.comp.name}</span>: <a href="${f.url}" rel="noopener nofollow" dir="ltr">${f.url}</a> <span class="muted small">(${t('compare.sources.read', { date: dayOf(f.checked) })})</span><br><q class="cmp-quote" lang="en" dir="ltr">${f.quote}</q></li>`)}</ol>
+      <ol class="cmp-sources">${notes.list.map(f => html`<li id="src-${f.n}"><span lang="en" dir="ltr">${f.comp.name}</span>: <a href="${f.url}" rel="noopener nofollow" dir="ltr">${f.url}</a> <span class="muted small">(${t('compare.sources.read', { date: dayOf(f.checked) })})</span><br><q class="cmp-quote" lang="en" dir="ltr">${f.quote}</q></li>`)}${glNotes.list.map(f => html`<li id="src-gl-${f.n}"><span lang="en" dir="ltr">${f.comp.name}</span>: <a href="${f.url}" rel="noopener nofollow" dir="ltr">${f.url}</a> <span class="muted small">(${t('compare.sources.read', { date: dayOf(f.checked) })})</span><br><q class="cmp-quote" lang="en" dir="ltr">${f.quote}</q></li>`)}</ol>
       ${el(t, 'p', 'compare.sources.sites')}
-      <ul class="cmp-sources">${COMPETITORS.map(c => html`<li><span lang="en" dir="ltr">${c.name}</span>: <a href="${c.site}" rel="noopener nofollow" dir="ltr">${c.site}</a></li>`)}</ul>
+      <ul class="cmp-sources">${[...COMPETITORS, ...(glOn ? [GRAMMAR_RIVAL] : [])].map(c => html`<li><span lang="en" dir="ltr">${c.name}</span>: <a href="${c.site}" rel="noopener nofollow" dir="ltr">${c.site}</a></li>`)}</ul>
     </details>
     <ul class="chips lp-more">
       <li><a class="chip" href="${lp(req, '/teachers')}">${ico('🍎', { size: 18 })}${t('research.links.teachers')}</a></li>

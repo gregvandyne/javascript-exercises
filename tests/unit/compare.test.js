@@ -2,6 +2,8 @@
 // products"): the page renders and is indexable in every language, its table is real table markup with text labels,
 // every claim about another product has a source footnote to that product's own website, the three product names
 // appear nowhere else the site serves, prompts or tests, no prices, no em dashes, and its strings pass the i18n check.
+// The grammar section (Grammar Lab beside NoRedInk) and the homepage's sixth name appear only while Grammar Lab is open
+// to every visitor (compare.js grammarCompareOn).
 import './_setup.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -16,6 +18,7 @@ const { CODES, flatten } = await import('../../server/i18n/index.js');
 const { checkLocale, loadLocale } = await import('../../server/i18n/check.js');
 const { readyVideos } = await import('../../server/views/see-it.js');
 const { _reset: resetLimits } = await import('../../server/services/ratelimit.js');
+const { config } = await import('../../server/config.js');
 
 seed({ quiet: true });
 const ROOT = path.resolve(new URL('../..', import.meta.url).pathname);
@@ -26,10 +29,18 @@ test.beforeEach(() => resetLimits());
 const get = async p => { const r = await fetch(base + p, { redirect: 'manual' }); return { status: r.status, text: await r.text() }; };
 const main = h => h.slice(h.indexOf('<main'), h.indexOf('<footer'));
 const text = h => h.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ');
-const NAMES = /kahoot|classroomscreen|brainingcamp/i;
+const NAMES = /kahoot|classroomscreen|brainingcamp|noredink/i;
 /** The homepage's five (routes/landing.js NAMED): /compare's three plus two it only names. */
 const HOME_NAMES = ['Kahoot!', 'Classroomscreen', 'Blooket', 'Brainingcamp', 'Typing.com'];
-const ANY_NAME = /kahoot|classroomscreen|brainingcamp|blooket|typing\.com/i;
+const ANY_NAME = /kahoot|classroomscreen|brainingcamp|blooket|typing\.com|noredink/i;
+/** With Grammar Lab open to every visitor, the homepage's sixth (routes/compare.js GRAMMAR_RIVAL). */
+const HOME_NAMES_OPEN = [...HOME_NAMES, 'NoRedInk'];
+/** Run fn with Grammar Lab's flag set (on: GRAMMAR_LAB; users: GRAMMAR_LAB_USERS), then put it back as it was. */
+async function withGrammarLab(on, users, fn) {
+  const was = [config.grammarLab, config.grammarLabUsers];
+  config.grammarLab = on; config.grammarLabUsers = users;
+  try { return await fn(); } finally { [config.grammarLab, config.grammarLabUsers] = was; }
+}
 const PRICE = /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\bper (?:month|year|seat|student)\b|\/(?:month|mo|year|yr)\b|\bpric(?:e|es|ing)\b/i;
 const en = flatten(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/i18n/locales/en.json'), 'utf8')));
 const compareKeys = Object.keys(en).filter(k => k.startsWith('compare.'));
@@ -52,7 +63,7 @@ test('/compare: 200, indexable, one H1, canonical, breadcrumbs under Teachers, i
     const seg = c.toLowerCase(); const p = await get(`/${seg}/compare`);
     assert.equal(p.status, 200, `/${seg}/compare`);
     // Only the product names (never translated) and the quoted words from their websites are marked English.
-    const rest = main(p.text).replace(/<(th|span|b)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp)<\/\1>/g, '').replace(/<q( class="cmp-quote")? lang="en" dir="ltr">[^<]*<\/q>/g, '');
+    const rest = main(p.text).replace(/<(th|span|b)[^>]*lang="en" dir="ltr">(?:Kahoot!|Classroomscreen|Brainingcamp|NoRedInk)<\/\1>/g, '').replace(/<q( class="cmp-quote")? lang="en" dir="ltr">[^<]*<\/q>/g, '');
     assert.doesNotMatch(rest, /lang="en"/, `/${seg}/compare: every string translated`);
   }
 });
@@ -170,10 +181,11 @@ test('the names appear only on /compare and the homepage: no other file the site
   assert.deepEqual(L.NAMED, HOME_NAMES);
   assert.deepEqual(L.VERSUS.map(v => v.id), C.COMPETITORS.map(c => c.id));
   const src = fs.readFileSync(path.join(ROOT, 'server/routes/landing.js'), 'utf8');
-  assert.deepEqual([...new Set(src.match(new RegExp(ANY_NAME.source, 'gi')).map(m => m.toLowerCase()))].sort(), ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com'],
-    'routes/landing.js names no product beyond the five');
+  assert.deepEqual([...new Set(src.match(new RegExp(ANY_NAME.source, 'gi')).map(m => m.toLowerCase()))].sort(), ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'noredink', 'typing.com'],
+    'routes/landing.js names no product beyond the five, and NoRedInk only as the grammar card\'s id and in comments');
   const code = src.replace(/^\s*(\/\/|\*|\/\*\*).*$/gm, '');
   assert.equal((code.match(/Blooket|Typing\.com/g) || []).length, 2, 'in the code, Blooket and Typing.com are only in NAMED');
+  assert.ok(!/NoRedInk/.test(code), 'routes/landing.js takes the sixth name from compare.js (GRAMMAR_RIVAL), never spelled out in code');
   // The pages around them never name any of the five.
   for (const p of ['/teachers', '/research', '/compliance', '/safety', '/privacy', '/parents', '/learn', '/plans', '/teachers/live', '/search']) {
     const r = await get(p); if (r.status !== 200) continue; assert.doesNotMatch(r.text, ANY_NAME, p);
@@ -185,7 +197,8 @@ test('the homepage names exactly the five products, with the trademark line, and
   try {
     const h = (await get('/')).text;
     const found = [...new Set([...text(h).matchAll(new RegExp(ANY_NAME.source, 'gi'))].map(m => m[0].toLowerCase()))].sort();
-    assert.deepEqual(found, ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com']);
+    assert.deepEqual(found, ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com'], 'Grammar Lab closed: the five');
+    assert.doesNotMatch(h, /grammar-lab|Grammar Lab/, 'Grammar Lab closed: the homepage never mentions it');
     assert.ok(text(h).includes('One subscription instead of five: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com'), 'the strip');
     assert.ok(text(h).includes('Kahoot!, Classroomscreen, Blooket, Brainingcamp and Typing.com are trademarks of their owners. Oomba Academy is not affiliated with them.'), 'the trademark line');
     assert.doesNotMatch(h, /<img[^>]*(kahoot|classroomscreen|blooket|brainingcamp|typing\.com)/i, 'no logos');
@@ -206,6 +219,102 @@ test('the homepage names exactly the five products, with the trademark line, and
     });
     // Every other page stays free of the names (spot check of the app's signed-out pages).
     for (const p of ['/es/teachers', '/read']) { const r = await get(p); if (r.status === 200) assert.doesNotMatch(r.text, ANY_NAME, p); }
+  } finally { process.env.LANDING_AT_ROOT = '0'; }
+});
+
+test('Grammar Lab closed, or open to testers only: no NoRedInk and no Grammar Lab on /compare or "/"', async () => {
+  process.env.LANDING_AT_ROOT = '1';
+  try {
+    for (const [on, users] of [[false, []], [false, ['*']], [true, []], [true, ['someone']]]) {
+      await withGrammarLab(on, users, async () => {
+        assert.equal(C.grammarCompareOn(), false, `${on} ${users}`);
+        const cmp = (await get('/compare')).text;
+        assert.doesNotMatch(cmp, /noredink|grammar-lab|Grammar Lab|id="grammar"/i, `/compare with ${on} ${users}`);
+        const home = (await get('/')).text;
+        assert.doesNotMatch(home, /noredink|grammar-lab|Grammar Lab/i, `"/" with ${on} ${users}`);
+        assert.equal((home.match(/<article class="lp-card lp-vs-card">/g) || []).length, 3);
+      });
+    }
+  } finally { process.env.LANDING_AT_ROOT = '0'; }
+});
+
+test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedInk, sourced; "/" names six with a fourth card', async () => {
+  process.env.LANDING_AT_ROOT = '1';
+  try {
+    await withGrammarLab(true, ['*'], async () => {
+      assert.equal(C.grammarCompareOn(), true);
+      const facts = C.grammarFacts();
+      assert.deepEqual(facts.bands, ['K-2', '3-5', '6-8']);
+      assert.ok(facts.topics > 100 && facts.units > 20 && facts.rooms > 0, JSON.stringify(facts));
+      // /compare: the section, its rows that open, Grammar Lab's own Yes and No, NoRedInk's sourced cells.
+      const page = (await get('/compare')).text; const h = main(page);
+      const sec = /<section class="lp-sec" id="grammar"[\s\S]*?<\/section>/.exec(h);
+      assert.ok(sec, 'the grammar section');
+      const heads = [...sec[0].matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
+      assert.deepEqual(heads, ['Classroom need', 'Grammar Lab', 'NoRedInk']);
+      assert.ok(text(sec[0]).includes(`Grammar Lab is Oomba's grammar course for grades K-2, 3-5 and 6-8: ${facts.topics} topics in ${facts.units} units.`));
+      for (const r of C.GRAMMAR_ROWS) {
+        const row = new RegExp(`<tr id="row-gl-${r.id}" class="cmp-row">([\\s\\S]*?)</tr>`).exec(sec[0]);
+        assert.ok(row, r.id);
+        const cells = row[1].split('<td').slice(1).map(x => text(`<td${x}`).trim());
+        const cell = C.cellOf(r.id, 'noredink', C.GRAMMAR_CELLS);
+        assert.deepEqual(cells, [{ yes: 'Yes', no: 'No' }[r.us], { yes: 'Yes', partial: 'Partial', notStated: 'Not stated' }[cell.s]], r.id);
+        const det = new RegExp(`<tr class="cmp-det" id="det-gl-${r.id}" hidden><td colspan="3">([\\s\\S]*?)</td></tr>`).exec(sec[0]);
+        assert.ok(det, `${r.id}: its detail row`);
+        if (cell.s === 'notStated') { assert.ok(text(det[1]).includes('Not stated on their site')); continue; }
+        assert.ok(det[1].includes(`href="${cell.src.url}"`), `${r.id}: the link`);
+        assert.ok(text(det[1]).includes('read on November 27, 2026'), `${r.id}: the day`);
+      }
+      // Honest about what Grammar Lab does not do.
+      assert.ok(text(sec[0]).includes("By design, Oomba's AI never reads student work"));
+      assert.ok(C.GRAMMAR_ROWS.filter(r => r.us === 'no').map(r => r.id).includes('essays'));
+      // Every NoRedInk source is on its own website, and listed in the Sources.
+      for (const [rowId, byComp] of Object.entries(C.GRAMMAR_CELLS)) {
+        assert.ok(C.GRAMMAR_ROWS.some(r => r.id === rowId), rowId);
+        const cell = byComp.noredink; const u = new URL(cell.src.url);
+        assert.ok(u.protocol === 'https:' && (u.hostname === 'www.noredink.com' || u.hostname === 'noredink.com'), rowId);
+        assert.ok(cell.src.quote.length >= 8 && !/—/.test(cell.src.quote), rowId);
+        assert.equal(cell.src.checked, C.GRAMMAR_CHECKED);
+      }
+      const srcs = /<details class="panel cmp-src" id="sources">([\s\S]*?)<\/details>/.exec(h)[1];
+      const glList = C.footnotes(C.GRAMMAR_CELLS, C.GRAMMAR_ROWS, [C.GRAMMAR_RIVAL]).list;
+      assert.match(srcs, new RegExp(`\\((${C.footnotes(C.CELLS, rows()).list.length + glList.length})\\)</summary>`));
+      for (const f of glList) assert.ok(srcs.includes(`href="${f.url}"`), f.url);
+      // The notice names the four; no prices; the link goes to a page an anonymous visitor can open.
+      assert.match(text(/<p class="cmp-line" id="notice">([\s\S]*?)<\/p>/.exec(h)[1]), /Kahoot!, Classroomscreen, Brainingcamp and NoRedInk are trademarks of their owners/);
+      assert.doesNotMatch(text(h), PRICE);
+      assert.doesNotMatch(text(h), /—/);
+      assert.match(sec[0], /href="\/courses\/grammar-lab"/);
+      assert.equal((await get('/courses/grammar-lab')).status, 200, 'the link opens for a visitor with no session');
+      for (const c of CODES.filter(c => !c.startsWith('en'))) {
+        const p = await get(`/${c.toLowerCase()}/compare`);
+        assert.match(p.text, /id="grammar"/, c);
+      }
+      // "/": six names (the strip keeps the five), the trademark line with six, a fourth card quoting only /compare.
+      const home = (await get('/')).text;
+      const found = [...new Set([...text(home).matchAll(new RegExp(ANY_NAME.source, 'gi'))].map(m => m[0].toLowerCase()))].sort();
+      assert.deepEqual(found, ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'noredink', 'typing.com'], 'the six');
+      assert.ok(text(home).includes('One subscription instead of five: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com Pay'), 'the strip keeps the five');
+      assert.ok(text(home).includes('Kahoot!, Classroomscreen, Blooket, Brainingcamp, Typing.com and NoRedInk are trademarks of their owners.'), 'the trademark line');
+      const cards = [...home.matchAll(/<article class="lp-card lp-vs-card">([\s\S]*?)<\/article>/g)].map(m => m[1]);
+      assert.equal(cards.length, 4);
+      const card = cards[3];
+      assert.match(card, /<h3 lang="en" dir="ltr">NoRedInk<\/h3>/);
+      const esc = s => s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+      const quotes = [...card.matchAll(/<q lang="en" dir="ltr">([^<]*)<\/q> <a href="([^"]+)"/g)];
+      assert.ok(quotes.length >= 2);
+      const all = Object.values(C.GRAMMAR_CELLS).map(r => r.noredink.src);
+      for (const [, q, url] of quotes) assert.ok(all.some(s => esc(s.quote) === q && s.url === url), `"${q}" is a /compare quote`);
+      assert.match(text(card), /What Oomba's Grammar Lab covers/);
+      assert.match(text(card), new RegExp(`${facts.topics} grammar topics for kindergarten to grade 8`));
+      assert.match(text(card), /No essay writing or writing feedback/);
+      assert.match(text(card), /Source: noredink\.com, read on November 27, 2026/);
+      assert.doesNotMatch(text(main(home)), /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\/(?:month|mo|year|yr)\b/i, 'no amounts');
+      // Every other page still names none, Grammar Lab's own included.
+      for (const p of ['/teachers', '/research', '/plans', '/learn', '/courses/grammar-lab', '/es/teachers']) {
+        const r = await get(p); if (r.status === 200) assert.doesNotMatch(r.text, ANY_NAME, p);
+      }
+    });
   } finally { process.env.LANDING_AT_ROOT = '0'; }
 });
 
