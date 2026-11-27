@@ -4436,7 +4436,8 @@
       "boardOf": "{tool}のボード",
       "liveRoom": "ライブルーム",
       "greetLine": "この{tool}ボードでやりたい授業を教えてください。",
-      "greetLineHas": "{tool}ボードで変えたいことを教えてください。"
+      "greetLineHas": "{tool}ボードで変えたいことを教えてください。",
+      "notYet": "まだボードに入っていません。"
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4645,7 +4646,9 @@
         "book_repaint": "「{q}」の絵の描き直しを頼みました",
         "week": "週の計画を作成しました（{n} 日）",
         "needs": "「見てあげて」を確認 ({n})",
-        "needsNo": "「見てあげて」を開けませんでした"
+        "needsNo": "「見てあげて」を開けませんでした",
+        "assign": "確認用の課題を準備しました",
+        "assignNo": "出せませんでした"
       },
       "stepsSum": "{n}ステップ · {s}秒",
       "prog": {
@@ -4779,6 +4782,19 @@
         "denied": "この学校では、クラスを作れるのは学校の管理者だけです。",
         "done": "クラス「{name}」を作成しました。まだ生徒はいません。",
         "openDash": "ダッシュボードを開く"
+      },
+      "asg": {
+        "which": "どのクラスに出しますか？",
+        "ask": "「{title}」を{class}に出しますか？",
+        "all": "クラス全員",
+        "some": "{count}人の児童",
+        "due": "締め切り：{day}",
+        "assign": "出す",
+        "notNow": "今はしない",
+        "assigned": "出しました",
+        "declined": "出していません",
+        "done": "「{title}」を{class}に出しました。",
+        "open": "クラスのゲームを見る"
       },
       "book": {
         "adding": "本に追加中",

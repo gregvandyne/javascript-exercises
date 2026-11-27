@@ -98,8 +98,8 @@ function start() {
     // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L('asg.open'))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
@@ -366,6 +366,7 @@ function start() {
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
+    if (n.assign) parts.push(assignHtml(x, n.assign));
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     if (n.book) parts.push(bookHtml(x, n.book));
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
@@ -435,6 +436,15 @@ function start() {
     if (p.state !== 'open') return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(p.state === 'created' ? '✓' : '➖', 16)} ${esc(L(`cls.${p.state === 'created' ? 'created' : p.state === 'denied' ? 'denied' : 'declined'}`))}</p></div>`;
     return `<div class="oc-change oc-cls"><p>${ic('🏫', 20)} <b dir="auto">${esc(q)}</b></p>${p.school ? `<p class="oc-hsub">${esc(t('js.companion.cls.at', { school: p.school }))}</p>` : ''}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="create" data-turn="${esc(x.id)}">${ic('➕', 16)} ${esc(L('cls.create'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="createNo" data-turn="${esc(x.id)}">${esc(L('cls.notNow'))}</button></div></div>`;
   }
+  // Assign from the chat (services/companion.js assignPlan): "Assign <what> to <class>?" with Assign and Not now. Nothing
+  // is assigned until Assign; the change card after it is the assignment as saved, read back, with Undo.
+  const asgWho = (n, due) => [n ? t('js.companion.asg.some', { count: n }) : L('asg.all'), due ? t('js.companion.asg.due', { day: fmtDay(due) }) : ''].filter(Boolean).join(' · ');
+  const fmtDay = d => { const v = typeof d === 'number' ? new Date(d * 1000) : new Date(`${d}T12:00:00Z`); return Number.isFinite(v.getTime()) ? v.toLocaleDateString(document.documentElement.lang || undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''; };
+  function assignHtml(x, p) {
+    if (p.state !== 'open') return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(p.state === 'assigned' ? '✓' : '➖', 16)} ${esc(L(p.state === 'assigned' ? 'asg.assigned' : 'asg.declined'))}</p></div>`;
+    return `<div class="oc-change oc-cls"><p>${ic(p.kind === 'book' ? '📚' : '🎮', 20)} <b dir="auto">${esc(t('js.companion.asg.ask', { title: p.title, class: p.className }))}</b></p><p class="oc-hsub">${esc(asgWho(p.students.length, p.due))}</p><div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="assign" data-turn="${esc(x.id)}">${ic('✓', 16)} ${esc(L('asg.assign'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="assignNo" data-turn="${esc(x.id)}">${esc(L('asg.notNow'))}</button></div></div>`;
+  }
+  const assignDoneHtml = x => `<p>${ic('🎒', 18)} <b dir="auto">${esc(t('js.companion.asg.done', { title: x.change.title, class: x.change.className }))}</b></p><p class="oc-hsub">${esc(asgWho(x.change.students, x.change.due))}</p>`;
   // Beside its Undo: Open its dashboard (Go there, so the panel opens there too; a plain link once used).
   const openDashHtml = x => {
     const n = x.note && x.note.nav;

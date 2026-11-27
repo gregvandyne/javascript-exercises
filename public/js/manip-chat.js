@@ -54,7 +54,12 @@ function put(x) {
   const m = x.note.manip; if (!m || !m.state || !A) return;
   const snap = A.ctx.snapshot();
   // Checked work: a board the page could not put on is put back as it was, and the card says so (never "changed").
-  try { A.ctx.apply(typeof m.state === 'string' ? JSON.parse(m.state) : m.state, m.title); } catch { try { A.ctx.restore(snap); } catch { /* as it is */ } A.failed.add(x.id); rerender(); return; }
+  const want = typeof m.state === 'string' ? JSON.parse(m.state) : m.state;
+  try { A.ctx.apply(want, m.title); } catch { try { A.ctx.restore(snap); } catch { /* as it is */ } A.failed.add(x.id); rerender(); return; }
+  // Read back from the page: a board that asked for a change but reads exactly as before did not take it (put back, and
+  // the card says so). Only then does the server hear it is on the board (manipApplied), and the card say "updated".
+  const now = A.ctx.snapshot(), key = v => JSON.stringify(v);
+  if (key(now.state) === key(snap.state) && key(want) !== key(snap.state)) { try { A.ctx.restore(snap); } catch { /* as it is */ } A.failed.add(x.id); rerender(); return; }
   A.failed.delete(x.id);
   A.undo.set(x.id, snap); A.undone.delete(x.id);
   m.applied = true;
@@ -73,5 +78,7 @@ function card(x) {
   else if (canUndo && undone) action = `<button type="button" class="btn btn-sm" data-c="act" data-act="mredo" data-turn="${esc(x.id)}">${esc(t('js.manip-chat.redo'))}</button>`;
   else if (here && ch.state && !ch.applied) action = `<button type="button" class="btn btn-primary btn-sm" data-c="act" data-act="muse" data-turn="${esc(x.id)}">${esc(t('js.manip-chat.use'))}</button>`;
   if (A && A.failed.has(x.id)) return `<div class="oc-change"><div class="oc-verify" role="note"><p><b>${esc(t('js.manip-chat.notPut'))}</b></p></div></div>`;
+  // Not confirmed by a board page yet (another page, or before it was put on): never "updated".
+  if (!ch.applied && !canUndo && !undone) return `<div class="oc-change"><p><b>${esc(t('js.manip-chat.notYet'))}</b><br><span>${esc(what)}</span></p>${action}</div>`;
   return `<div class="oc-change${undone ? ' undone' : ''}"><p><b>${esc(undone ? t('js.manip-chat.undoneTitle') : t('js.manip-chat.changedTitle', { title: ch.title }))}</b>${undone ? '' : '<br>'}<span>${esc(undone ? '' : what)}${!undone && ch.capped ? ` ${esc(t('js.manip-chat.capped', { max: 12 }))}` : ''}</span></p>${action}</div>`;
 }

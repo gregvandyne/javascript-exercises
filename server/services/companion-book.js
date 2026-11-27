@@ -376,7 +376,7 @@ export function redrawPage(u, bookId, n, note) {
   const p = pageNumbered(SB.bookOf(row), Number(n));
   if (!p) return { error: 'No such page in this book.' };
   const r = Draw.redraw(u, row.id, `page:${p.id}`, note || '');
-  if (r.ok) return { done: true };
+  if (r.ok) return { queued: true, painted: false };
   const why = { off: 'This book\'s pictures are the teacher\'s own (or none): Oomba does not paint them.', nokey: 'The picture maker is not set up on this site.', resting: 'The picture maker is resting; try later.', limit: 'The teacher has used today\'s pictures.', notFound: 'That page shows the teacher\'s own picture or none.' }[r.code];
   return { error: why || 'Those words cannot be used for a picture.' };
 }
@@ -402,7 +402,7 @@ export function runOp(u, op, bookId, { title = '', lang = 'en', all = false } = 
   if (op === 'repaint') {
     const r = Draw.repaint(u, row.id, { all });
     if (!r.ok) return { error: { off: 'This book\'s pictures are the teacher\'s own (or none): Oomba does not paint them.', nokey: 'The picture maker is not set up on this site.', resting: 'The picture maker is resting; try later.', limit: 'The teacher has used today\'s pictures.', none: 'Every picture in this book is already painted.' }[r.code] || 'That did not work.' };
-    return { ok: true, ref: row.id, text: t(r.more ? 'storybook.books.repaintSome' : 'storybook.books.repainting', { count: r.queued, more: r.more }), result: { done: true, queued: r.queued, waitingForTomorrow: r.more } };
+    return { ok: true, ref: row.id, text: t(r.more ? 'storybook.books.repaintSome' : 'storybook.books.repainting', { count: r.queued, more: r.more }), result: { queued: r.queued, painted: 0, waitingForTomorrow: r.more, note: 'Queued, not painted yet: the book page shows each picture when it is ready. Say they are being painted, never that they are done.' } };
   }
   return { error: 'Unknown action.' };
 }
