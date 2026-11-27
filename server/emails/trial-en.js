@@ -17,6 +17,8 @@
 // update (Nov 2026): the whole sequence was checked against the app as it is after "Focus: teaching tools first",
 // "Classroom focus: the Builder without the kit", "Learn and Read" and "No public games" (docs/decisions.md). The Hub (once Homeroom) is
 // not mentioned anywhere: it is not launched (HOMEROOM plus HOMEROOM_USERS; privacy update and lawyer review first).
+// update (Nov 2026, welcome refresh): except in the welcome, and only for a teacher who can open the Hub today (the
+// `hub` feature: services/homeroom.js canUse), so it never promises the Hub to anyone it is not open to.
 
 // Owner's request (November 2026): offer a walkthrough call in #1, #2 and #5, and a short line in #3.
 const TOUR = "Want a quick tour? I'm happy to hop on a 15-minute call and walk you through the platform. Just reply with a couple of times that work.";
@@ -37,34 +39,47 @@ export default {
     welcome: {
       // update (Nov 2026): the owner's naming: for teachers a single game is now a "lesson" (multi-step Lessons are
       // "lesson plans"); students still see games. Was "Your first game" / "Paste a lesson, get a game ...".
-      subject: "You're in! Your first lesson takes 2 minutes",
-      preview: 'Paste what you already teach, get a lesson your class will beg to play.',
+      // update (Nov 2026, welcome refresh): what the product is today ("The one classroom tool for everything", the
+      // homepage): what to do first, in order: a class, the Hub, a handout, a manipulative, Ask Oomba. Each tool's line
+      // only when this teacher has it (features hub, tools, chat); without the Hub, the lesson-and-live path as before.
+      // Was "You're in! Your first lesson takes 2 minutes" / "Paste what you already teach, get a lesson your class will
+      // beg to play." and "The fastest way to see what Oomba can do:".
+      subject: "You're in! Here's what to do first",
+      preview: 'Your first ten minutes on Oomba Academy, step by step.',
       sign: 'full',
       blocks: [
         // update (Nov 2026): the trial starts by itself at sign-up now (no "Start free trial" step), so "is on" names
         // the Teacher plan and says there is nothing to set up.
-        { p: "Welcome to Oomba Academy! Your {trialDays}-day free trial of the Teacher plan is on, with nothing to set up. There's no card on file, so nothing happens unless you decide to stay." },
-        { p: 'The fastest way to see what Oomba can do:' },
+        { p: "Welcome to Oomba Academy, the one classroom tool for everything! Your {trialDays}-day free trial of the Teacher plan is on, with nothing to set up. There's no card on file, so nothing happens unless you decide to stay." },
+        { p: "Here's what to do first:" },
         { ol: [
           // update (Nov 2026): the sign-up's "Add your classes" step is required and comes before the trial starts, so
           // most trial teachers already have a class: they get "share the code" instead of "make a class". The class's
           // Students tab also makes school accounts with printable login cards from typed names.
           { li: "**Bring your students in:** your class is ready. Share its join code, or type your students' names to print login cards. No student emails needed.", when: 'hasClass' },
           { li: "**Make a class:** it takes a minute. Share its join code, or type your students' names to print login cards. No student emails needed.", unless: 'hasClass' },
+          // The Hub (welcome refresh): the class's shared board, when this teacher can open it.
+          { li: '**Open the Hub:** your shared class board, with a desk for every student. Tap a lesson, a live game or a math tool, then a desk, a group or the whole class to hand it out.', when: 'hub' },
           // update (Nov 2026): the Builder no longer turns a lesson into a game you can host live (its classroom games
           // are played on the board or on each device; "Classroom focus"). "Turn a lesson into a game" (/teach/make) is
           // the path that matches these words: paste or upload a lesson, Oomba drafts questions, you check them, then
           // "Host a live game now".
           // update (Nov 2026): "lesson" for a single game (the owner's naming); the step doesn't quote a button label.
-          "**Build a lesson from what you teach:** paste your notes, or upload them as a PDF. Oomba drafts the questions, and you check every answer before students see them.",
-          '**Host it live:** run it from your screen as a warm-up or exit ticket. Students join with a code on any device.',
+          { li: '**Build a lesson from what you teach:** paste your notes, or upload them as a PDF. Oomba drafts the questions, and you check every answer before students see them.', unless: 'hub' },
+          { li: '**Host it live:** run it from your screen as a warm-up or exit ticket. Students join with a code on any device.', unless: 'hub' },
+          { li: '**Try a manipulative:** fraction tiles, base ten blocks, geoboards and more. 18 tools and 300 K-8 tasks, each with a how-to video.', when: 'tools' },
+          { li: "**Ask Oomba:** tell it what you're teaching. It plans your day, makes a worksheet in Figures or sets up a math board, and you confirm anything that matters.", when: 'chat' },
         ] },
         { p: CLASSROOM, when: 'classroom' },
-        // update (Nov 2026): was /build (the Builder's own page); the steps above are /teach/make's.
-        { cta: { label: 'Build my first lesson →', path: '/teach/make' } },
+        // update (Nov 2026): was /build (the Builder's own page); the steps above are /teach/make's. With the Hub: My
+        // classes, where each class opens on its Hub.
+        { cta: { label: 'Open my classes →', path: '/teach' }, when: 'hub' },
+        { cta: { label: 'Build my first lesson →', path: '/teach/make' }, unless: 'hub' },
         // update (Nov 2026): what the trial opens. The Manipulatives and Figures are Teacher plan only, under Teaching
         // tools in the teacher's top bar ("Figures and the Manipulatives: Teacher plan only").
-        { p: 'Your trial also opens **Teaching tools** in your top bar: virtual math Manipulatives for the board or a live room with your class, and Figures for math and science worksheets.', when: 'tools' },
+        // update (welcome refresh): named as on the homepage, "available with the Teacher plan".
+        { p: 'The Manipulatives and Figures are available with the Teacher plan, so your trial opens them under **Teaching tools** in your top bar. Figures makes worksheets and tests from figures drawn to scale, with the answers worked out.', when: 'tools' },
+        { p: 'Every class also gets the Classroom Dashboard, free: timers, your schedule, class jobs and points for the projector.' },
         { tour: TOUR },
         { p: 'Questions? Just reply, it comes straight to me. For anything time-sensitive, email Greg@oomba.ai.' },
       ],

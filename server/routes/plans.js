@@ -150,7 +150,7 @@ router.get('/plans', on, async (req, res) => {
     card({ id: 'teacher', name: T('plans.teacher.name'), tagline: T('plans.teacher.tagline'),
       price: teacherPrice !== null ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(teacherPrice)}</span> <span class="per">${T('plans.teacher.per')}</span></p><p class="small muted plan-sub">${T('plans.teacher.trial', tv)}</p>`
         : html`<p class="plan-price"><span class="muted small">${T('plans.noPrice')}</span></p>`,
-      list: [T('plans.teacher.li1'), T('plans.teacher.li2', tv), T('plans.teacher.li3'), T('plans.teacher.li4')], button: teacherBtn, current: teacherOn }),
+      list: [T('plans.teacher.li5'), T('plans.teacher.li1'), T('plans.teacher.li2', tv), T('plans.teacher.li3'), T('plans.teacher.li4')], button: teacherBtn, current: teacherOn }),
     card({ id: 'school', name: T('plans.school.name'), tagline: T('plans.school.tagline'),
       price: prices && prices.school ? html`<p class="plan-price"><span class="amt" dir="ltr">${f.money(prices.school.year.unitAmount)}</span> <span class="per">${T('plans.school.per')}</span></p><p class="small muted plan-sub">${T('plans.school.min')}</p>`
         : html`<p class="plan-price"><span class="muted small">${T('plans.noPrice')}</span></p>`,

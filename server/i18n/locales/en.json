@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# new message} other {# new messages}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Free to play, free to build",
+      "tagline": "© Oomba Academy · Learn, play and build",
       "safety": "Safety",
       "parents": "For parents",
       "contact": "Contact us",
@@ -5609,7 +5609,7 @@
       "pictures": "Pictures",
       "undo": "Undo",
       "waitSecs": "Try again in {n} seconds.",
-      "welcome": "Welcome, {name}!"
+      "welcome": "You're in! Your desk is ready."
     },
     "homeroom-signin-panel": {
       "closed": "Sign-in is closed",
@@ -6911,7 +6911,9 @@
       "allDone": "All done! Nothing to do right now.",
       "more": "Done for today?",
       "pick": "Your classes"
-    }
+    },
+    "welcome": "You're in {name}! The games your teacher gives you show up here.",
+    "welcomeDesk": "You're in {name}! Tap My desk to see what your teacher hands out."
   },
   "school": {
     "nav": {},
@@ -7020,7 +7022,9 @@
       "lastActivity": "Last activity",
       "noActivity": "none yet",
       "noStudentsPick": "Pick students already at {school} below, or make new accounts and login cards for new students.",
-      "selectShown": "Select all shown"
+      "selectShown": "Select all shown",
+      "made": "{name} is ready. Add your students here, or share the class code with students who have their own account.",
+      "madeHub": "{name} is ready. Add your students here, then open the Hub and hand out your first lesson, live game or math tool."
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -7461,7 +7465,7 @@
         "someone": "A colleague",
         "hi": "Hello,",
         "intro": "{name} invited you to join {school} on Oomba Academy as {role}.",
-        "what": "Oomba Academy is a website where children learn by playing and making games, and teachers run their classes, lessons and live games.",
+        "what": "Oomba Academy is the one classroom tool for everything: live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper, with one login, one class list and one plan.",
         "button": "See the invite",
         "how": "Sign in, or create a teacher account, with this email address, then accept. The link works once, for {days} days.",
         "ignore": "Not expecting this? You can ignore this email. Nothing happens unless you accept.",
@@ -8417,7 +8421,7 @@
     "title": "Plans and prices",
     "description": "Oomba Academy plans: Free, Basic, Family, Teacher and School. Playing every game is always free.",
     "heading": "Plans",
-    "intro": "Playing every game is free, and so is building with the free daily Builder messages. A plan adds extra Builder messages every month.",
+    "intro": "Playing every game is free, and so is building with the free daily Builder messages. A family plan adds extra Builder messages every month, and the Teacher plan adds the Hub, Ask Oomba, the Manipulatives and Figures.",
     "interval": {
       "label": "Billing period",
       "month": "Monthly",
@@ -8494,7 +8498,7 @@
       "title": "School plans",
       "description": "Oomba Academy for schools: the Teacher plan for each of your teachers, at one price per teacher a year, paid by card or invoice.",
       "heading": "Oomba Academy for schools",
-      "intro": "Schools buy the Teacher plan for their teachers: one price per teacher a year, with unlimited students and no per-student charge.",
+      "intro": "Schools buy the Teacher plan for their teachers: the Hub, Ask Oomba, the Manipulatives and Figures, at one price per teacher a year, with unlimited students and no per-student charge.",
       "what": {
         "h": "What a school gets",
         "p1": "School admins see the plan and give the seats to teachers on the school's Billing tab. Families never see anything from class."
@@ -8550,7 +8554,8 @@
       "li3": "Covers all your classes",
       "li4": "Cancel anytime",
       "start": "Start free trial",
-      "manage": "My Teacher plan"
+      "manage": "My Teacher plan",
+      "li5": "The Hub, Ask Oomba, the Manipulatives and Figures"
     },
     "trial": {
       "title": "Teacher plan",
@@ -8697,7 +8702,7 @@
     "description": "Ad-free interactive lessons for ages 5 to 14 that run in any browser, Chromebooks too, plus math manipulatives, a Classroom Dashboard and an AI Builder.",
     "kicker": "🍎 For teachers",
     "h1": "Fun, interactive lessons your class will ask for",
-    "lead": "Interactive lessons, math manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "lead": "Live games, math manipulatives, worksheets, picture books, typing, geography, a class dashboard and an AI helper for ages 5 to 14, with one login and one class list. It all runs in the browser, on Chromebooks too.",
     "badges": {
       "ads": "No ads",
       "browser": "Runs in any browser, Chromebooks too",
@@ -8873,7 +8878,7 @@
     "live": {
       "h": "Live class lessons",
       "p1": "Run a live quiz race or any live-ready lesson on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes: Quest Race (a 3D island race driven by your questions) and Brain Board (a board of categories, easy to hard).",
+      "li1": "Built-in modes include Quest Race (a 3D island race driven by your questions), Brain Board (a board of categories, easy to hard), Would You Rather, Atlas Quest and Doodle Hoot.",
       "li2": "Use a starter question set, type a quick set, or turn a lesson plan's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -9242,12 +9247,11 @@
         "title": "The Hub in 2 minutes",
         "p": "Hand out work, watch every desk live, answer raised hands and run the day plan, all from one board."
       },
-      "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
-      "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
+      "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan."
     },
     "tools": {
       "h": "New for your classroom",
-      "lead": "Real screens from a demo class: a math board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
+      "lead": "Real screens from demo classes with made-up names. One login and one class list for all of them.",
       "board": {
         "h": "Math manipulatives with Oomba",
         "p": "Base ten blocks, fraction pieces, clocks and more on one board. Tell Oomba what you're teaching, and it lays out the board for you.",
@@ -9267,8 +9271,23 @@
         "open": "Open My classes"
       },
       "watch": "Watch the one-minute video",
-      "plan": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are part of the Teacher plan.",
-      "testing": "The Classroom Dashboard comes with every class. The Manipulatives and their live rooms are being tried out in a few classrooms now."
+      "plan": "The Classroom Dashboard comes with every class. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan.",
+      "try": "Try it",
+      "more": "Show all {count} tools",
+      "less": "Show fewer",
+      "atlas": {
+        "p": "Countries, flags and capitals on a 3D globe, and the 50 US states and Canada’s provinces and territories on maps of their own. Make your own geography quizzes and print blank maps."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Type or paste a list, let AI draft cards from a topic, or upload a lesson as a PDF or Word file and AI picks out the key terms. Students study with Flip, Learn, Match and Test.",
+        "alt": "Flashcards: a solar system card showing the Sun, with Flip, Shuffle, Star and Read aloud."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} grammar topics from kindergarten to grade 12, in bands for grades {bands}. Each is mastered in three levels, with read-aloud cards in K-2 and Mistake Hunt proofreading rooms.",
+        "alt": "Grammar Lab: the course page with its picture and the K-2 units, each with how many topics are done."
+      }
     }
   },
   "learn": {
@@ -10075,6 +10094,7 @@
     "others": {
       "h": "Who else receives data",
       "li1": "Anthropic (Claude, the AI that makes games): a student’s Builder messages, pictures and files, to make the game and to check it is safe, without the student’s name or username. Chats between friends and lesson answers are never sent to the AI.",
+      "ask": "Anthropic (Claude, as above), for Ask Oomba, the chat on teachers’ own pages: the teacher’s messages and the earlier messages in the same chat, the text of a document or a picture they attach, and facts about the page they have open, such as a class’s grade, subject and number of students, a dashboard’s widgets, and their own worksheets, boards, lesson plans and handout titles. Students’ names, emails, phone numbers and links are taken out first. On the Hub’s Needs a look list, each student is only a placeholder like “Student A”, with the reason the app noted, such as minutes stuck or a quiz score. Students’ names and work are never sent, and students never see Ask Oomba. Web searches go to Anthropic’s web search, never with a name or a location. For speech to text and book pictures (Google’s Gemini API), see our <a href=\"{privacy}\">Privacy Policy</a>.",
       "li2": "Google, only if your school uses Sign in with Google or a teacher connects Google Classroom. Classroom reads class names and the linked class’s students’ Google ids and names. We send only what the teacher posts, such as a lesson link with its title and due date, and each student’s lesson score out of 100: never students’ names, answers, feedback or games.",
       "li3": "AI voices and speech to text, where they are switched on: our <a href=\"{privacy}\">Privacy Policy</a> says exactly what each one gets."
     },
@@ -10112,8 +10132,7 @@
       "notStated": "Not stated"
     },
     "gate": {
-      "plan": "Teacher plan",
-      "testing": "In testing"
+      "plan": "Teacher plan"
     },
     "rows": {
       "games": {
@@ -11470,24 +11489,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: free live quiz lessons for your class",
-    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
+    "title": "Oomba Live: live quiz lessons for your class",
+    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads.",
     "kicker": "Oomba Live for teachers",
     "h1": "Live quiz lessons your whole class plays together",
-    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. No ads, and nothing for students to type but the code.",
     "demo": {
       "h": "See it in one minute",
       "note": "A one-minute video with music and captions on screen: a teacher starts a Quest Race in Science, students join on their phones with a code and race through the questions, then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, a few of the learning games."
     },
     "badges": {
-      "free": "Free for teachers",
       "ads": "No ads",
       "noAccounts": "No student accounts needed",
       "browser": "Any browser, Chromebooks too",
       "languages": "{count} languages"
     },
     "cta": {
-      "host": "Host a free live lesson",
+      "host": "Host a live lesson",
       "how": "See how it works",
       "join": "Joining a game? Type the code here"
     },
@@ -11571,7 +11589,7 @@
     },
     "more": {
       "h": "More than a quiz",
-      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper. One free account for your whole class.",
+      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper.",
       "link": "Oomba Academy for teachers"
     },
     "start": {
@@ -12003,7 +12021,7 @@
       "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
       "openLive": "Open live lesson",
-      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below and add your students, then open its Hub to hand out your first lesson. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
     "loop": {
@@ -13656,7 +13674,7 @@
       "step3": "Add your students: paste their names, one per line. Each one gets a printable login card.",
       "step4": "Check your school's rules on the Settings tab. Chat between students is off unless you turn it on.",
       "teachersH": "How your teachers start",
-      "teachersText": "Teachers sign in and land on their Classroom page. The quickest first win is a live game: tap \"Host a live game\", put the code on the board, and the class joins from any device. They can also turn a lesson they already teach into a quiz with \"Turn a lesson into a game\".",
+      "teachersText": "Teachers sign in and land on their Classroom page. Good first steps: open a class's Hub, hand out a lesson, a live game or a math tool to every desk, try a manipulative on the board, and ask Oomba to plan the day. The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan. The Classroom Dashboard is free for every class.",
       "google": "If your school uses Google Classroom, teachers can connect it from their class page to bring in their rosters and send grades back.",
       "help": "Questions? Just reply to this email. A real person answers, usually within one school day.",
       "bye": "Welcome aboard,",
@@ -17220,12 +17238,12 @@
       "pictures": "Pictures"
     },
     "grades": {
-      "k": "K",
       "1": "Grade 1",
       "2": "Grade 2",
       "3": "Grade 3",
       "45": "Grades 4-5",
-      "68": "Grades 6-8"
+      "68": "Grades 6-8",
+      "k": "K"
     },
     "lengths": {
       "short": "Short",

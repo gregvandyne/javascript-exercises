@@ -426,3 +426,23 @@ test('a teacher resetting a password also lifts the lock from wrong guesses', as
   const r = S.resetSchoolPassword(bt, birch.id, kid.id); assert.ok(r.ok);
   assert.equal(count(loginLockKey(kid.username)), 0);
 });
+
+test('welcomes: a class just made on My classes says what to do next; a student\'s first day in a class says where their work shows up', async () => {
+  // The teacher's own form: on to the Students tab with the welcome line, gone once the class has students.
+  const r = await as(rivera)('/api/classes', { method: 'POST', body: { schoolId: oak.id, name: 'Welcome Room' } });
+  assert.equal(r.status, 200, r.text); assert.match(r.json.redirect, /^\/class\/[\w-]+\?tab=students&made=1$/);
+  const page = await as(rivera)(r.json.redirect);
+  assert.match(page.text, /id="class-made"/); assert.match(page.text, /Welcome Room is ready\. Add your students here, or share the class code/);
+  assert.doesNotMatch(page.text, /the Hub/, 'the Hub only where it is open');
+  assert.doesNotMatch((await as(rivera)(r.json.redirect.replace('&made=1', ''))).text, /id="class-made"/);
+  const cid = r.json.redirect.split('/')[2].split('?')[0];
+  const pupil = S.createSchoolAccount(rivera, oak.id, { rosterName: 'Real Name Kid', grade: '4' }).user;
+  assert.equal(S.requestJoin(pupil, S.getClass(cid).join_code).state, 'joined');
+  assert.doesNotMatch((await as(rivera)(r.json.redirect)).text, /id="class-made"/, 'not once it has students');
+  // The student: "You're in" on their first day, with the class name only (never their real name), then no more.
+  const mine = await as(pupil)(`/class/${cid}`);
+  assert.match(mine.text, /id="class-welcome"/); assert.match(mine.text, /You&#39;re in Welcome Room! The games your teacher gives you show up here\.|You're in Welcome Room! The games your teacher gives you show up here\./);
+  assert.doesNotMatch(mine.text.match(/id="class-welcome"[^]*?<\/p>/)[0], /Real Name Kid/);
+  q.run('UPDATE class_members SET joined_at=? WHERE class_id=? AND user_id=?', Date.now() - 2 * 864e5, cid, pupil.id);
+  assert.doesNotMatch((await as(pupil)(`/class/${cid}`)).text, /id="class-welcome"/);
+});

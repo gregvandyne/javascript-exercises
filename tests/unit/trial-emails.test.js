@@ -61,7 +61,7 @@ async function call(cookie, path, { method = 'GET', body, headers = {} } = {}) {
 // ---------------------------------------------------------------- templates
 test('templates: every email renders with its approved subject and preview, no placeholder left, a text part, real links with UTM tags, the footer', () => {
   const want = {
-    welcome: ["You're in! Your first lesson takes 2 minutes", 'Paste what you already teach, get a lesson your class will beg to play.'],
+    welcome: ["You're in! Here's what to do first", 'Your first ten minutes on Oomba Academy, step by step.'],
     class: ['Your class is one code away', 'Students join in seconds, with no email addresses needed.'],
     ideas: ['3 easy wins for your week', 'A live warm-up, a hands-on lesson and a story to share.'],
     ending: ['Your trial ends in 3 days', 'Keep the Teacher plan for one simple yearly price.'],
@@ -112,7 +112,7 @@ test('templates: every email renders with its approved subject and preview, no p
     const m = T.renderTrial(step, { firstName: 'Sam', trialEnd: end, features });
     for (const part of [m.subject, m.preview, m.text]) {
       assert.doesNotMatch(part, /\u2014/, `${step}: no em dash`); assert.doesNotMatch(part, /\$\s?\d/, `${step}: no price`);
-      assert.doesNotMatch(part, /Homeroom|the Hub|notebook|sub link/i, `${step}: the Hub is not launched`);
+      assert.doesNotMatch(part, /Homeroom|the Hub|notebook|sub link/i, `${step}: the Hub only for a teacher who can open it (the hub feature)`);
     }
   }
   // The feature switches: a line about a feature is there only when it is on.
@@ -120,8 +120,15 @@ test('templates: every email renders with its approved subject and preview, no p
   assert.match(wl({}), /Make a class:/); assert.doesNotMatch(wl({}), /your class is ready/);
   assert.match(wl({ hasClass: true }), /Bring your students in:\*{0}.*your class is ready/); assert.doesNotMatch(wl({ hasClass: true }), /Make a class:/);
   assert.doesNotMatch(wl({}), /Google Classroom/); assert.match(wl({ classroom: true }), /Using Google Classroom\? Connect it from your class page/);
-  assert.doesNotMatch(wl({}), /Teaching tools|Manipulatives/); assert.match(wl({ tools: true }), /Teaching tools in your top bar: virtual math Manipulatives/);
+  assert.doesNotMatch(wl({}), /Teaching tools|Manipulatives|manipulative/); assert.match(wl({ tools: true }), /The Manipulatives and Figures are available with the Teacher plan, so your trial opens them under Teaching tools in your top bar/);
+  assert.match(wl({ tools: true }), /Try a manipulative: .*18 tools and 300 K-8 tasks/);
   assert.match(wl({}), /Build a lesson from what you teach:/); assert.match(wl({}), /\/teach\/make\?utm_/, 'the welcome CTA is Turn a lesson into a game');
+  // Welcome refresh (Nov 2026): what to do first, in order; the Hub and Ask Oomba only for a teacher who has them.
+  assert.doesNotMatch(wl({}), /Ask Oomba/); assert.match(wl({ chat: true }), /Ask Oomba: tell it what you're teaching/);
+  const hub = wl({ hasClass: true, tools: true, chat: true, hub: true });
+  assert.match(hub, /1\. Bring your students in:[\s\S]*2\. Open the Hub: your shared class board[\s\S]*3\. Try a manipulative:[\s\S]*4\. Ask Oomba:/);
+  assert.doesNotMatch(hub, /Build a lesson from what you teach|\/teach\/make/); assert.match(hub, /Open my classes: https:\/\/oomba\.ai\/teach\?utm_/);
+  assert.match(wl({}), /Classroom Dashboard, free/); assert.doesNotMatch(hub, /\u2014|\$\s?\d/);
   const id = f => T.renderTrial('ideas', { features: f }).text;
   assert.match(id({}), /Review day:/); assert.doesNotMatch(id({}), /Manipulatives|Ask Oomba/); assert.match(id({}), /Make Monday's warm-up: .*\/teach\/make\?/);
   assert.match(id(ALL), /Hands-on math:/); assert.doesNotMatch(id(ALL), /Review day:/); assert.match(id(ALL), /Ask Oomba, the chat/);
@@ -153,7 +160,7 @@ test('features: what the copy may promise is read from the app today (a class, G
   const keep = { googleClientId: config.googleClientId, googleClientSecret: config.googleClientSecret, googleClassroom: config.googleClassroom, billingPublic: config.billingPublic };
   try {
     Object.assign(config, { googleClientId: '', googleClientSecret: '', googleClassroom: false, billingPublic: false });
-    assert.deepEqual(N.featuresFor(t), { hasClass: false, classroom: false, tools: false, chat: false }, 'billing off in tests: no plan tools, no chat');
+    assert.deepEqual(N.featuresFor(t), { hasClass: false, classroom: false, tools: false, chat: false, hub: false }, 'billing off in tests: no plan tools, no chat, no Hub');
     assert.doesNotMatch(N.renderFor('welcome', t, null).text, /Manipulatives|Google Classroom/);
     assert.match(N.renderFor('welcome', t, null).text, /Make a class:/);
     assert.equal(S.createClass(t, school.id, { name: 'Room 9' }).ok, true);

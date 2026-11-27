@@ -3,7 +3,7 @@
 /terms, /refunds and /privacy (server/routes/info.js, text in `info.terms.*`, `info.refunds.*`, `info.privacy.*` and the
 reused `info.parents.*` sections) are on the site for everyone, also before `BILLING_PUBLIC`. They were made from the
 drafts terms.md, refunds.md and privacy-payments.md. The public text has no drafting markers; every marker from the
-drafts is listed here with what the page says today. **Last updated: 2026-11-20** (`LEGAL_UPDATED` in
+drafts is listed here with what the page says today. **Last updated: 2026-11-27** (`LEGAL_UPDATED` in
 server/routes/info.js; change it with every change to the text).
 
 ## Sign-off (2026-11-09)
@@ -709,6 +709,57 @@ account." Retention is unchanged: each past chat is deleted 60 days after it was
 with its files; at most 50 past chats are kept (the oldest go). Question for the lawyer: does keeping several past
 conversations (each with the placeholder-to-student mapping of its messages) need anything beyond the existing retention
 wording and the school terms?
+
+### Ask Oomba on /compliance "Who else receives data" (2026-11-27; owner request; LAWYER REVIEW PENDING)
+
+Addendum to the companion entries above; LEGAL_UPDATED moved to 2026-11-27 (and TRUST_UPDATED, the /compliance and
+/research date, to 2026-11-27). /compliance "Who else receives data" had only the Builder under Anthropic, so it did not
+say that Ask Oomba, the teachers' chat (services/companion.js), also sends data to Anthropic. New item
+`compliance.others.ask` (12 languages; en-GB reads the English), shown after the Anthropic item while `COMPANION` is on:
+
+- "Anthropic (Claude, as above), for Ask Oomba, the chat on teachers' own pages: the teacher's messages and the earlier
+  messages in the same chat, the text of a document or a picture they attach, and facts about the page they have open,
+  such as a class's grade, subject and number of students, a dashboard's widgets, and their own worksheets, boards,
+  lesson plans and handout titles. Students' names, emails, phone numbers and links are taken out first. On the Hub's
+  Needs a look list, each student is only a placeholder like "Student A", with the reason the app noted, such as minutes
+  stuck or a quiz score. Students' names and work are never sent, and students never see Ask Oomba. Web searches go to
+  Anthropic's web search, never with a name or a location. For speech to text and book pictures (Google's Gemini API),
+  see our Privacy Policy."
+
+What the code sends (traced 2026-11-27), all through the Anthropic SDK (builder/anthropic.js, `ANTHROPIC_API_KEY`, the
+SDK's default host api.anthropic.com; model `COMPANION_MODEL` or `BUILDER_MODEL`):
+
+- **The conversation** (companion.js `answer`, `messagesFor`): the system prompt (rules only: no teacher or school name),
+  the teacher's new message and the chat's earlier turns (the school's "messages sent to the AI", default 8). Every
+  teacher message is stored and sent after `tokenize` (builder/lesson.js `scrub`: roster, display and user names of the
+  teacher's students become "[student N]"; emails, phone numbers and links come out); the placeholder-to-account map
+  (`meta._who`) stays on the server.
+- **Attachments:** a document's extracted text (scrubbed, at most 10,000 characters, through the `readUpload` tool); a
+  picture (cleaned JPEG) goes twice: once to the picture check (`screenImage`: refused if it shows any person or private
+  details) and once with the message.
+- **Tool results** (`runTool`): `getPageContext` (page type; class id, name and subject scrubbed, grade, number of
+  students; a dashboard's widget types, sizes and number/switch/choice settings, never their text; a Figures worksheet's
+  questions; a manipulatives board's items; on the Hub, homeroom-plan.js `aiContext`: groups with head counts, the
+  teacher's lessons and games by title, recent handout titles with how many of the class finished, handout instructions
+  scrubbed, saved plan names); the searches over Oomba's own catalog; `findMyPages` (ids, scrubbed names, grades).
+- **Needs a look** (`needsLook`, homeroom-look.js `forAi`): each flagged student as "Student A", "Student B"..., with the
+  rule's reason and its numbers (minutes stuck, tries, handouts after due, right out of total on a reading quiz under 60
+  percent), whether the student has Hub supports and whether they work at home. No name, no account id, no answers or
+  work. This is pseudonymous progress information about individual students; the text says so ("a quiz score").
+- **Web search:** Anthropic's server web search tool (builder/search.js), queries screened and logged, no location.
+- **Not Anthropic:** the microphone goes to the STT_PROVIDER (OpenAI api.openai.com or ElevenLabs api.elevenlabs.io;
+  services/stt.js); book pictures made from the chat go to Google's Gemini API (generativelanguage.googleapis.com;
+  services/storybook-gemini.js). Both are already described on /privacy, so the item points there.
+
+Questions for the lawyer:
+
+1. Needs a look sends per-student, pseudonymous progress signals (a quiz score, minutes stuck, a "has supports" flag).
+   Is "never names or work" plus "a placeholder with the reason, such as a quiz score" an adequate description for
+   FERPA and the state laws, or should /privacy's companion section (which says "never students' names, answers or
+   work") name these signals too? The "has supports" flag in particular may count as sensitive.
+2. A teacher can attach a document or a picture of their choosing (a worksheet photo, for example); names on our
+   rosters are taken out, but the content is the teacher's choice. Is the in-app guidance enough, or does the item need
+   to say that attachments are sent as the teacher chooses them?
 
 ### Comparison page naming Kahoot!, Classroomscreen, Brainingcamp: lawyer review pending (2026-11-22)
 

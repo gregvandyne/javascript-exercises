@@ -49,20 +49,41 @@ test('/teachers: the removed sections are gone; the new tools lead, with real sc
   assert.match(hero, /src="\/img\/how\/tools-student-p-390\.webp"/, 'a student\'s live square on the phone');
   assert.match(hero, /<a class="btn btn-primary btn-big" href="\/trial">Start free trial<\/a>/, 'with paid plans on, the Teacher plan trial (it starts at sign-up, no card)');
   assert.match(hero, /<ul class="lp-badges"><li><span>No ads<\/span><\/li>/, 'plain chips, no "Free to start"');
-  // Right after the hero: the new tools, three cards, each a real screen with alt text and a line.
+  // Right after the hero: every tool, each a real screen with alt text and a line (six, then the rest under Show all).
   const after = m.slice(m.indexOf(hero) + hero.length).trimStart();
   assert.match(after, /^<section class="lp-sec tt" id="tools"/, 'the tools come straight after the hero');
   const tools = /<section class="lp-sec tt" id="tools"[\s\S]*?<\/section>/.exec(m)[0];
-  const shots = [...tools.matchAll(/<img src="\/img\/how\/([\w-]+)-d-1024\.webp"[^>]*alt="([^"]+)"/g)].map(x => [x[1], x[2]]);
-  assert.deepEqual(shots.map(x => x[0]), ['tools-board', 'tools-live', 'dash-teacher']);
+  const shots = [...tools.matchAll(/<img src="\/img\/(?:how|landing)\/([\w-]+?)(?:-d-1024|-640|-1200)\.webp"[^>]*alt="([^"]+)"/g)].map(x => [x[1], x[2]]);
+  assert.deepEqual(shots.map(x => x[0]), ['hub-light', 'tools-board', 'tools-live', 'dash-teacher', 'tool-figures', 'tool-brain-board', 'tool-library', 'tool-typing-zoo', 'tool-flashcards', 'tool-atlas-quest', 'tool-mistake-hunt']);
   assert.ok(shots.every(([, alt]) => alt.length > 40), 'each screen has real alt text');
-  assert.match(tools, /Math manipulatives with Oomba[\s\S]*Live manipulatives[\s\S]*Classroom Dashboard/);
+  assert.equal((tools.split('<details class="tt-more">')[0].match(/class="panel tt-card"/g) || []).length, 6, 'six before Show all');
+  assert.match(tools, /<summary class="btn"><span class="tt-more-o">Show all 11 tools<\/span>/);
+  assert.match(tools, /The Hub[\s\S]*Math manipulatives with Oomba[\s\S]*Live manipulatives[\s\S]*Classroom Dashboard/);
   assert.match(tools, /href="#see-it">Watch the one-minute video/, 'a visitor goes to the video');
-  assert.match(tools, /part of the Teacher plan/, 'the Manipulatives are not sold as free');
+  assert.match(tools, /Available with the <a href="\/plans">Teacher plan<\/a>/, 'the Teacher plan tools are not sold as free');
+  assert.doesNotMatch(tools, /Grammar Lab/, 'Grammar Lab only while it is open to every visitor');
   assert.doesNotMatch(tools, /\bfree\b/i);
   // The teaching loop: two screens side by side, the gradebook and the written feedback.
   const loop = /<section class="tl tl-page[\s\S]*?<\/section>/.exec(m)[0];
   assert.deepEqual([...loop.matchAll(/teach-loop\/(\w+)\.webp/g)].map(x => x[1]), ['gradebook', 'feedback']);
+});
+
+test('/teachers: the Grammar Lab card only while Grammar Lab is open to every visitor (the gate /compare uses), with its K-12 numbers', async () => {
+  const { config } = await import('../../server/config.js');
+  const { grammarFacts } = await import('../../server/routes/compare.js');
+  const was = { on: config.grammarLab, users: [...config.grammarLabUsers] };
+  const toolsOf = s => /<section class="lp-sec tt" id="tools"[\s\S]*?<\/section>/.exec(s)[0];
+  try {
+    config.grammarLab = true; config.grammarLabUsers.splice(0, Infinity, 'someone');
+    assert.doesNotMatch(toolsOf(await get('/teachers')), /Grammar Lab/, 'open to testers only: no card');
+    config.grammarLabUsers.splice(0, Infinity, '*');
+    const tools = toolsOf(await get('/teachers'));
+    const f = grammarFacts();
+    assert.match(tools, /<li class="panel tt-card" id="tool-grammar">[\s\S]*?\/img\/landing\/tool-grammar-lab-640\.webp/);
+    assert.ok(tools.includes(`${f.topics} grammar topics from kindergarten to grade 12, in bands for grades ${f.bands.slice(0, -1).join(', ')} and ${f.bands.at(-1)}.`));
+    assert.match(tools, /href="\/courses\/grammar-lab">Try it/);
+    assert.match(tools, /Show all 12 tools/);
+  } finally { config.grammarLab = was.on; config.grammarLabUsers.splice(0, Infinity, ...was.users); }
 });
 
 test('/teachers, school staff: each tool card opens the real page', async () => {
@@ -75,7 +96,9 @@ test('/teachers, school staff: each tool card opens the real page', async () => 
   let c = ''; auth.startSession({ append: (k, v) => { c = v.split(';')[0]; } }, tch.id);
   const s = await (await fetch(`${base}/teachers`, { headers: { accept: 'text/html', cookie: c } })).text();
   const tools = /<section class="lp-sec tt" id="tools"[\s\S]*?<\/section>/.exec(s)[0];
-  assert.deepEqual([...tools.matchAll(/<p class="tt-link"><a href="([^"]+)"/g)].map(x => x[1]), ['/manipulatives', '/manipulatives', '/teach']);
+  // The Hub (this teacher is not on its list) and Figures go to their videos; the games anyone may try to their own page.
+  assert.deepEqual([...tools.matchAll(/<p class="tt-link"><a href="([^"]+)"/g)].map(x => x[1]),
+    ['#see-it', '/manipulatives', '/manipulatives', '/teach', '#see-it', '/teachers/live', '/read', '/g/typing-zoo', '/g/flashcards', '/g/atlas-quest', '/g/mistake-hunt']);
 });
 
 test('/parents: no kicker, no game list, no "Pick by subject", no "free" in the hero or the title; four panels, none alone', async () => {

@@ -102,6 +102,23 @@ test('/compliance: facts from the Privacy Policy, no compliance claims, contact 
   for (const c of CODES) assert.ok(!JSON.stringify(locale(c)).includes('OWNER AND LAWYER'), c);
 });
 
+test('/compliance "Who else receives data": Ask Oomba (Anthropic) after the Builder item while COMPANION is on, in every language', async () => {
+  const { config } = await import('../../server/config.js');
+  const was = config.companion;
+  try {
+    config.companion = true;
+    const h = main((await get('/compliance')).text);
+    const others = h.slice(h.indexOf('id="others"'), h.indexOf('id="security"'));
+    const words = text(others);
+    assert.ok(words.indexOf('the AI that makes games') < words.indexOf('for Ask Oomba'), 'after the Builder item');
+    for (const s of ['Anthropic (Claude, as above), for Ask Oomba', 'Students’ names, emails, phone numbers and links are taken out first', 'Students’ names and work are never sent', 'Google’s Gemini API']) assert.ok(words.includes(s), s);
+    assert.match(others, /see our <a href="\/privacy">Privacy Policy<\/a>\./);
+    config.companion = false;
+    assert.ok(!text(main((await get('/compliance')).text)).includes('for Ask Oomba'), 'COMPANION off: no item');
+  } finally { config.companion = was; }
+  for (const c of CODES.filter(x => x !== 'en-GB')) { const v = locale(c).compliance.others.ask; assert.ok(v && v.includes('Anthropic') && v.includes('Student A') && v.includes('{privacy}'), c); assert.doesNotMatch(v, /\u2014/, c); }
+});
+
 test('footer links to /research and /compliance for grown-ups who teach and the signed-out, not for kids', async () => {
   const out = (await get('/teachers')).text;
   const foot = out.slice(out.lastIndexOf('<footer'));

@@ -16330,3 +16330,53 @@ to the teacher and to classmates.
 - Tests: tests/unit/compare.test.js (five names on "/" with Grammar Lab closed or open to testers only, six when open to
   everyone; the section's rows, sources and links; no other page names NoRedInk). Legal: docs/legal-review.md
   "NoRedInk named beside Grammar Lab".
+
+## Marketing pages in line with the new homepage (27 Nov 2026)
+
+The owner: bring every public marketing page in line with the homepage, and "/teachers should show everything we now
+offer teachers".
+- **/teachers "Every tool your class needs. In one place."** (was "New for your classroom", three cards): one card per
+  tool, each with a real screen: the Hub, Math manipulatives with Oomba, Live manipulatives, the Classroom Dashboard,
+  Figures, Live, then under "Show all 11 tools" Read, Typing Zoo, Flashcards, Atlas Quest and Mistake Hunt, and Grammar
+  Lab only while it is open to every visitor (compare.js `grammarCompareOn`, its numbers from `grammarFacts`). Six show
+  first (`TOOLS_PREVIEW`), the rest fold open like the homepage's manipulative videos. Where the homepage says the same
+  thing the card uses its words (landing.tools.*, landing.hub.*). Games link to their own page ("Try it"); the Hub,
+  Figures and the manipulatives to the one-minute videos, where the Hub's 60-second promo now leads (seeIt `promo`).
+- **Teacher plan wording everywhere, plans on or off:** the Hub, the Manipulatives and their rooms and Figures carry
+  "Available with the Teacher plan" (the homepage's landing.plan.on; a link to /plans only while that page is there),
+  the note under the cards says the Dashboard comes with every class and the rest with the Teacher plan, and /compare's
+  tag is always "Teacher plan". "Being tried out in a few classrooms" / "In testing" are gone (teachers.tools.testing,
+  teachers.videos.testing, compare.gate.testing). No amount anywhere but /plans.
+- **/teachers words:** the lead names the tools the homepage names (live games, manipulatives, worksheets, picture
+  books, typing, geography, the dashboard, the AI helper; one login, one class list), and the folded Live panel lists
+  every built-in mode on the page (Quest Race, Brain Board, Would You Rather, Atlas Quest, Doodle Hoot).
+- **/plans:** the Teacher card leads with "The Hub, Ask Oomba, the Manipulatives and Figures", and the intro and
+  /plans/schools say what the Teacher plan adds.
+- **Screens:** tools-board, tools-live and tools-student retaken (scripts/tools-shots.js: the current Manipulatives);
+  landing-shots.mjs makes tool-flashcards and tool-grammar-lab for the new cards.
+- /research's three study cards start level (`.trust-find>.panel+.panel`, the #671 fix).
+
+## Welcome messages match the product today (27 Nov 2026)
+
+Every welcome a kid, a student, a parent or a teacher gets now says what Oomba Academy is today ("The one classroom
+tool for everything", the homepage), each in its audience's words. Messages that live in the Hub's, sign-in's, Google's
+and the family onboarding's own files are left to that work.
+- **Kids and students** (the team's kid welcome, `services/team.js`): Learn (Typing Zoo, Sudoku, chess puzzles), Read
+  (picture books, Read to me) and Build, plus "In a class? Your teacher hands out work to your desk in the Hub" and live
+  games with a code. Never a price, a plan or chat between players; the only name is their own made-up one.
+- **A student's first day in a class** (`routes/schools.js` studentClass): "You're in {class}!" for the first day after
+  they join (by code or once their teacher says yes), pointing at My desk when the class has the Hub for them
+  (`classes.welcome`, `classes.welcomeDesk`). The class's name only.
+- **Parents** (the grown-up welcome): what their child can do, what the Family page shows (which children are linked;
+  a copy of anything the team writes to their child: nothing more, as /family's FAQ says), how safety works and the
+  Safety page (oomba.ai/safety). No plans.
+- **Teachers** (the teacher welcome, the trial's welcome email, the school welcome email, the staff invite email, and a
+  new class): what to do first, in order: make a class, open the Hub, hand something out, try a manipulative, ask
+  Oomba. The Hub, Ask Oomba, the Manipulatives and Figures are "available with the Teacher plan"; the Classroom
+  Dashboard is free for every class; no amounts (only /plans has those). The trial welcome names the Hub and Ask
+  Oomba only for a teacher who has them today (new email feature `hub`: `services/homeroom.js` canUse; `chat`), and
+  keeps the lesson-and-live path without the Hub. A class made on My classes opens with "{class} is ready. Add your
+  students here, then open the Hub ..." (`?made=1`, until it has students; `school.class.made`/`madeHub`).
+- **Greeted by name:** a teacher who sets up their own school gets the teachers' welcome after the name they typed is
+  saved (`setUpOwnSchool`), so it says "Hi Ms Rivera!", not their username.
+- The three team welcomes stay under the team message limit (1,000 characters).

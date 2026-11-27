@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
+      "tagline": "© Oomba Academy · Leren, spelen en bouwen",
       "safety": "Veiligheid",
       "parents": "Voor ouders",
       "contact": "Contact",
@@ -5149,7 +5149,7 @@
       "pictures": "Plaatjes",
       "undo": "Ongedaan maken",
       "waitSecs": "Probeer het over {n} seconden opnieuw.",
-      "welcome": "Welkom, {name}!"
+      "welcome": "Je bent binnen! Je tafel staat klaar."
     },
     "homeroom-signin-panel": {
       "closed": "Inloggen is gesloten",
@@ -5848,7 +5848,9 @@
       "allDone": "Alles klaar! Er is nu niets te doen.",
       "more": "Klaar voor vandaag?",
       "pick": "Je klassen"
-    }
+    },
+    "welcome": "Je zit in {name}! De games van je leerkracht verschijnen hier.",
+    "welcomeDesk": "Je zit in {name}! Tik op Mijn tafel om te zien wat je leerkracht uitdeelt."
   },
   "school": {
     "tabs": {
@@ -5956,7 +5958,9 @@
       "lastActivity": "Laatst actief",
       "noActivity": "nog niets",
       "noStudentsPick": "Kies hieronder leerlingen die al op {school} zitten, of maak accounts en inlogkaarten voor nieuwe leerlingen.",
-      "selectShown": "Alles selecteren wat zichtbaar is"
+      "selectShown": "Alles selecteren wat zichtbaar is",
+      "made": "{name} is klaar. Voeg hier je leerlingen toe, of deel de klascode met leerlingen die al een eigen account hebben.",
+      "madeHub": "{name} is klaar. Voeg hier je leerlingen toe, open dan de Hub en deel je eerste les, een live spel of een rekenhulpmiddel uit."
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -6397,7 +6401,7 @@
         "someone": "Een collega",
         "hi": "Hallo,",
         "intro": "{name} nodigt je uit om lid te worden van {school} op Oomba Academy als {role}.",
-        "what": "Oomba Academy is een website waar kinderen leren door games te spelen en te maken, en waar leerkrachten hun klassen, lessen en live games leiden.",
+        "what": "Oomba Academy is het ene klassenhulpmiddel voor alles: live spellen, rekenmateriaal, werkbladen, prentenboeken, een klasdashboard en een AI-helper. Eén login, één klassenlijst, één abonnement.",
         "button": "Uitnodiging bekijken",
         "how": "Log in, of maak een leerkrachtaccount, met dit e-mailadres en accepteer dan. De link werkt één keer, {days} dagen lang.",
         "ignore": "Had je dit niet verwacht? Je kunt deze e-mail negeren. Er gebeurt niets tenzij je accepteert.",
@@ -7336,7 +7340,7 @@
     "title": "Abonnementen en prijzen",
     "description": "Abonnementen van Oomba Academy: Gratis, Basic, Gezin, Leerkracht en School. Alle spellen spelen is altijd gratis.",
     "heading": "Abonnementen",
-    "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een abonnement geeft elke maand extra berichten aan de Bouwer.",
+    "intro": "Alle games spelen is gratis, en bouwen met de gratis dagelijkse berichten aan de Bouwer ook. Een gezinsabonnement geeft elke maand extra berichten aan de Bouwer, en het Leerkrachtabonnement voegt de Hub, Vraag het Oomba, de rekenmaterialen en Figures toe.",
     "interval": {
       "label": "Betaalperiode",
       "month": "Maandelijks",
@@ -7413,7 +7417,7 @@
       "title": "Schoolabonnementen",
       "description": "Oomba Academy voor scholen: het Leerkracht-abonnement voor elk van je leerkrachten, één prijs per leerkracht per jaar, met een kaart of op factuur.",
       "heading": "Oomba Academy voor scholen",
-      "intro": "Scholen kopen het Leerkracht-abonnement voor hun leerkrachten: één prijs per leerkracht per jaar, met onbeperkt leerlingen en geen kosten per leerling.",
+      "intro": "Scholen kopen het Leerkrachtabonnement voor hun leerkrachten: de Hub, Vraag het Oomba, de rekenmaterialen en Figures, voor één prijs per leerkracht per jaar, met onbeperkt leerlingen en geen kosten per leerling.",
       "what": {
         "h": "Wat een school krijgt",
         "p1": "Schoolbeheerders zien het abonnement en geven de plaatsen aan leerkrachten op het tabblad Facturering van de school. Gezinnen zien nooit iets uit de klas."
@@ -7469,7 +7473,8 @@
       "li3": "Geldt voor al je klassen",
       "li4": "Altijd opzegbaar",
       "start": "Gratis proberen",
-      "manage": "Mijn Leerkracht-abonnement"
+      "manage": "Mijn Leerkracht-abonnement",
+      "li5": "De Hub, Vraag het Oomba, de rekenmaterialen en Figures"
     },
     "trial": {
       "title": "Leerkracht-abonnement",
@@ -7616,7 +7621,7 @@
     "description": "Reclamevrije interactieve lessen voor 5 tot 14 jaar die in elke browser werken, ook op Chromebooks, plus rekenmaterialen, een klasdashboard en een AI-Bouwer.",
     "kicker": "🍎 Voor leerkrachten",
     "h1": "Leuke, interactieve lessen waar je klas om vraagt",
-    "lead": "Interactieve lessen, rekenmaterialen die je live met je klas gebruikt en een klasdashboard voor de hele dag, voor 5 tot 14 jaar. Alles werkt in de browser, ook op Chromebooks, en je klas kan met onze AI-Bouwer eigen spellen maken.",
+    "lead": "Live spellen, rekenmaterialen, werkbladen, prentenboeken, typen, aardrijkskunde, een klasdashboard en een AI-hulp voor 5 tot 14 jaar, met één login en één klassenlijst. Alles werkt in de browser, ook op Chromebooks.",
     "badges": {
       "ads": "Geen reclame",
       "browser": "Werkt in elke browser, ook op Chromebooks",
@@ -7792,7 +7797,7 @@
     "live": {
       "h": "Livelessen voor de klas",
       "p1": "Leid een live quizrace of elke live-klare les op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Kant-en-klare modi: Questrace (een race over een 3D-eiland, aangedreven door jouw vragen) en Breinbord (een bord vol categorieën, van makkelijk naar moeilijk).",
+      "li1": "Kant-en-klare modi zijn onder meer Questrace (een race over een 3D-eiland, aangedreven door jouw vragen), Breinbord (een bord vol categorieën, van makkelijk naar moeilijk), Would You Rather, Atlas Quest en Doodle Hoot.",
       "li2": "Gebruik een startset, typ snel een set, of maak van de vragen in een lesplan een live quiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
@@ -7847,12 +7852,11 @@
         "title": "De Hub in 2 minuten",
         "p": "Werk uitdelen, elk tafeltje live zien, opgestoken handen beantwoorden en het dagplan volgen, allemaal vanaf één bord."
       },
-      "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
-      "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
+      "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement."
     },
     "tools": {
       "h": "Nieuw voor je klas",
-      "lead": "Echte schermen uit een demoklas: een rekenbord dat Oomba met je maakt, hetzelfde bord live op het apparaat van elke leerling, en een dashboard voor de hele schooldag.",
+      "lead": "Echte schermen uit demoklassen met verzonnen namen. Eén login en één klassenlijst voor alles.",
       "board": {
         "h": "Rekenmaterialen met Oomba",
         "p": "MAB-blokken, breukstukken, klokken en meer op één bord. Vertel Oomba wat je lesgeeft en het zet het bord voor je klaar.",
@@ -7872,8 +7876,23 @@
         "open": "Open Mijn klassen"
       },
       "watch": "Bekijk de video van een minuut",
-      "plan": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes horen bij het Leerkracht-abonnement.",
-      "testing": "Het klasdashboard hoort bij elke klas. De rekenmaterialen en hun live ruimtes worden nu in een paar klassen uitgeprobeerd."
+      "plan": "Het klasdashboard hoort bij elke klas. De Hub, de rekenmaterialen en hun live ruimtes, Figures en Vraag het Oomba zijn beschikbaar met het Leerkrachtabonnement.",
+      "try": "Probeer het",
+      "more": "Alle {count} hulpmiddelen tonen",
+      "less": "Minder tonen",
+      "atlas": {
+        "p": "Landen, vlaggen en hoofdsteden op een 3D-wereldbol, en de 50 Amerikaanse staten en de provincies en territoria van Canada op eigen kaarten. Maak je eigen aardrijkskundequizzen en print blinde kaarten."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Typ of plak een lijst, laat AI kaarten maken bij een onderwerp, of upload een les als pdf- of Word-bestand en AI haalt de kernbegrippen eruit. Leerlingen oefenen met Omdraaien, Leren, Koppelen en Toets.",
+        "alt": "Flashcards: een kaart over het zonnestelsel met de zon, en Omdraaien, Schudden, Ster en Voorlezen."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} grammaticaonderwerpen van de kleuterklas tot groep 12, in fases voor de klassen {bands}. Elk onderwerp leer je in drie niveaus, met voorleeskaarten in K-2 en Mistake Hunt-ruimtes om te verbeteren.",
+        "alt": "Grammar Lab: de cursuspagina met de afbeelding en de eenheden van K-2, elk met hoeveel onderwerpen af zijn."
+      }
     }
   },
   "learn": {
@@ -8661,6 +8680,7 @@
     "others": {
       "h": "Wie er nog meer gegevens krijgt",
       "li1": "Anthropic (Claude, de AI die de spellen maakt): de berichten, plaatjes en bestanden die een leerling aan de Bouwer geeft, om het spel te maken en te controleren of het veilig is, zonder de naam of gebruikersnaam van de leerling. Chats tussen vrienden en antwoorden in lessen gaan nooit naar de AI.",
+      "ask": "Anthropic (Claude, zie hierboven), voor Vraag het Oomba, de chat op de pagina’s van leerkrachten: de berichten van de leerkracht en de eerdere berichten in dezelfde chat, de tekst van een bijgevoegd document of een bijgevoegde afbeelding, en gegevens over de geopende pagina, zoals de groep, het vak en het aantal leerlingen van een klas, de widgets van een dashboard en hun eigen werkbladen, borden, lesplannen en titels van opdrachten. Namen van leerlingen, e-mailadressen, telefoonnummers en links worden eerst verwijderd. Op de lijst Even kijken van de Hub is elke leerling alleen een plaatshouder zoals „Student A”, met de reden die de app noteerde, zoals minuten vastzitten of een quizscore. Namen en werk van leerlingen worden nooit verstuurd, en leerlingen zien Vraag het Oomba nooit. Zoekopdrachten op het web gaan naar de webzoekfunctie van Anthropic, nooit met een naam of een locatie. Voor spraak naar tekst en boekillustraties (de Gemini API van Google), zie ons <a href=\"{privacy}\">privacybeleid</a>.",
       "li2": "Google, alleen als je school Inloggen met Google gebruikt of een leerkracht Google Classroom koppelt. Classroom leest de namen van de klassen en de Google-id's en namen van de leerlingen in de gekoppelde klas. We sturen alleen wat de leerkracht plaatst, zoals een link naar de les met titel en inleverdatum, en de score van elke leerling op 100: nooit namen, antwoorden, feedback of spellen van leerlingen.",
       "li3": "AI-stemmen en spraak naar tekst, waar ze aanstaan: ons <a href=\"{privacy}\">privacybeleid</a> zegt precies wat elk ervan krijgt."
     },
@@ -8698,8 +8718,7 @@
       "notStated": "Niet vermeld"
     },
     "gate": {
-      "plan": "Leerkracht-abonnement",
-      "testing": "In test"
+      "plan": "Leerkracht-abonnement"
     },
     "rows": {
       "games": {
@@ -10056,24 +10075,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: gratis live quizlessen voor je klas",
-    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame. Gratis voor leerkrachten.",
+    "title": "Oomba Live: live quizlessen voor je klas",
+    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame.",
     "kicker": "Oomba Live voor leerkrachten",
     "h1": "Live quizlessen die je hele klas samen speelt",
-    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen typen alleen de code.",
+    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Zonder reclame, en leerlingen typen alleen de code.",
     "demo": {
       "h": "Bekijk het in één minuut",
       "note": "Een video van één minuut met muziek en ondertitels in beeld: een leraar start een Quest Race over natuurkunde, leerlingen doen mee op hun telefoon met een code en racen door de vragen. Daarna beschrijft een kind een spel aan de Builder, die het maakt en speelt om te controleren of het werkt, en het kind speelt het. Tot slot een paar van de leerspellen."
     },
     "badges": {
-      "free": "Gratis voor leerkrachten",
       "ads": "Geen reclame",
       "noAccounts": "Geen leerlingaccounts nodig",
       "browser": "Elke browser, ook op Chromebooks",
       "languages": "{count} talen"
     },
     "cta": {
-      "host": "Gratis een liveles leiden",
+      "host": "Een liveles leiden",
       "how": "Bekijk hoe het werkt",
       "join": "Doe je mee aan een spel? Typ hier de code"
     },
@@ -10157,7 +10175,7 @@
     },
     "more": {
       "h": "Meer dan een quiz",
-      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper. Eén gratis account voor je hele klas.",
+      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper.",
       "link": "Oomba Academy voor leerkrachten"
     },
     "start": {
@@ -11328,7 +11346,7 @@
       "lessonFolder": "Lessenmap",
       "openClass": "Klas openen",
       "openLive": "Liveles openen",
-      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg je leerlingen toe, open dan de Hub om je eerste les uit te delen. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
       "allClasses": "Alle klassen"
     },
     "loop": {
@@ -12177,7 +12195,7 @@
       "step3": "Voeg je leerlingen toe: plak hun namen, één per regel. Iedere leerling krijgt een inlogkaart om te printen.",
       "step4": "Bekijk de regels van je school op het tabblad Instellingen. Chatten tussen leerlingen staat uit, tenzij je het aanzet.",
       "teachersH": "Zo beginnen je leraren",
-      "teachersText": "Leraren loggen in en komen op hun pagina Klaslokaal. Het snelste eerste succes is een live spel: tik op \"Een live spel leiden\", zet de code op het bord en de klas doet mee vanaf elk apparaat. Ze kunnen ook een les die ze al geven omzetten in een quiz met \"Van een les een spel maken\".",
+      "teachersText": "Leerkrachten loggen in en komen op hun pagina Klaslokaal. Goede eerste stappen: open de Hub van een klas, deel een les, een live spel of een rekenhulpmiddel uit aan elke tafel, probeer rekenmateriaal op het bord en vraag Oomba om de dag te plannen. De Hub, Vraag het Oomba, het rekenmateriaal en Figures zijn beschikbaar met het Leerkrachtabonnement. Het klasdashboard is gratis voor elke klas.",
       "google": "Gebruikt je school Google Classroom? Dan kunnen leraren het koppelen vanaf de pagina van hun klas om hun klassenlijsten op te halen en cijfers terug te sturen.",
       "help": "Vragen? Beantwoord gewoon deze e-mail. Een echt mens antwoordt, meestal binnen één schooldag.",
       "bye": "Welkom aan boord,",
@@ -15691,12 +15709,12 @@
       "pictures": "Plaatjes"
     },
     "grades": {
-      "k": "Kleuters/K",
       "1": "Leerjaar 1",
       "2": "Leerjaar 2",
       "3": "Leerjaar 3",
       "45": "Leerjaar 4-5",
-      "68": "Leerjaar 6-8"
+      "68": "Leerjaar 6-8",
+      "k": "Kleuters/K"
     },
     "lengths": {
       "short": "Kort",

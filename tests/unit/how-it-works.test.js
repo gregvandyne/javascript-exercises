@@ -49,8 +49,8 @@ for (const page of ['parents', 'teachers']) {
     assert.ok(h.indexOf('id="how-it-works"') < h.indexOf(END), `before ${END}`);
     assert.ok(h.indexOf('class="lp-hero lp-hero-how"') < h.indexOf('id="how-it-works"'), 'after the hero');
     // Headings in order: the page's one h1, (on /parents: "See it in under a minute" and "What makes it safe", two h2s;
-    // on /teachers: the new tools, an h2 and three h3 cards), then this h2, then one h3 per step.
-    const before = page === 'parents' ? [1, 2, 2] : [1, 2, 3, 3, 3];
+    // on /teachers: every tool, an h2 and an h3 per card), then this h2, then one h3 per step.
+    const before = page === 'parents' ? [1, 2, 2] : [1, 2, ...[...h.matchAll(/class="panel tt-card"/g)].map(() => 3)];
     if (page === 'teachers') assert.ok(h.indexOf('id="tools"') < h.indexOf('id="how-it-works"'), 'the new tools come first');
     if (page === 'parents') {
       const at = s => h.indexOf(s);

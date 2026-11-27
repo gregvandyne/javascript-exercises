@@ -47,11 +47,15 @@ import { normId as stdNorm } from '../standards/ccss.js';
 import { codeChips, attribution as stdNotice } from '../views/standards.js';
 import { HUBS, hubBySlug, LEARNING, TEACHER_GAMES, HUB_FAQ, TEACHER_FAQ, HOME_TIPS, AGES, gradeBand, SUBJECTS, SHELF_INFO, shelfGrades, TWO_PLAYER } from '../learn.js';
 import { teacherLoop, PAIR } from '../views/teacher-loop.js';
-import { shotScheme } from '../views/shot.js';
+import { shotScheme, themedPicture } from '../views/shot.js';
+import { books } from '../services/library.js';
+import * as H from '../services/homeroom.js';
+import { KINDS as FIGURE_KINDS } from '../../public/js/figures-catalog.js';
+import { grammarCompareOn, grammarFacts } from './compare.js';
 import { loopLinks } from '../services/teach-loop.js';
 import { LOOP_CSS } from './teach-loop.js';
 import { seeIt, readyVideos } from '../views/see-it.js';
-import { plansOn, toolAccess } from '../services/teacher-tools.js';
+import { toolAccess } from '../services/teacher-tools.js';
 import { enabled as classroomOn } from '../services/gclassroom.js';
 
 export const router = Router();
@@ -295,34 +299,81 @@ function classroomSection(req) {
   </section>`;
 }
 
-/** The new teaching tools, right under the /teachers hero (docs/decisions.md "Teachers and Parents pages: lead with the
- *  new tools, no 'always free'"): a real screenshot of each (scripts/tools-shots.js, scripts/how-shots.js --only dash),
- *  a line, and a link. Someone who can open the tool goes to it (with paid plans on, school staff without the Teacher
- *  plan get the plan page at the same address: routes/figures.js planReply); anyone else goes to the tool's one-minute
- *  video lower on the page (views/see-it.js), or to nothing when the videos are missing. Who may use a tool is still teacher-tools.js toolAccess. */
+/** Every teaching tool, right under the /teachers hero (docs/decisions.md "Teachers and Parents pages: lead with the
+ *  new tools, no 'always free'", and the owner's "show everything we now offer teachers" of 27 Nov 2026): a real
+ *  screenshot of each (scripts/tools-shots.js, scripts/how-shots.js --only dash, and the homepage's tool shots from
+ *  scripts/landing-shots.mjs), a line, and a link. The first PREVIEW cards show; the rest fold open under "Show all", like
+ *  the homepage's manipulative videos. The words are the homepage's own where it says the same thing (landing.tools.*,
+ *  landing.hub.*), so the two pages never disagree.
+ *  Links: someone who can open a tool goes to it (with paid plans on, school staff without the Teacher plan get the plan
+ *  page at the same address: routes/figures.js planReply); anyone else goes to the tool's one-minute video lower on the
+ *  page (views/see-it.js), or to the game's own page for the games anyone may try. Who may use a tool is still
+ *  teacher-tools.js toolAccess and homeroom.js canUse.
+ *  plan: a Teacher plan tool (the Hub, the Manipulatives and their rooms, Figures), "Available with the Teacher plan"
+ *  under its card, as on the homepage, whether or not paid plans are on for everyone yet; the line links to /plans only
+ *  while that page is there. No amount here: prices are on /plans only.
+ *  Grammar Lab only while it is open to every visitor (compare.js grammarCompareOn, the gate /compare and "/" use). */
+const how = name => ({ src: `/img/how/${name}-d-1024.webp`, srcset: `/img/how/${name}-d-1024.webp 1024w, /img/how/${name}-d-2048.webp 2048w`, w: 1024, h: 640,
+  dark: fs.existsSync(new URL(`${name}-dark-d-1024.webp`, HOW_DIR)) ? `/img/how/${name}-dark-d-1024.webp 1024w, /img/how/${name}-dark-d-2048.webp 2048w` : null,
+  ok: () => howFiles(name).slice(2).every(f => fs.existsSync(new URL(f, HOW_DIR))) });
+const LANDING_DIR = new URL('../../public/img/landing/', import.meta.url);
+const shot = (name, darkName) => ({ src: `/img/landing/${name}-640.webp`, srcset: `/img/landing/${name}-640.webp 640w, /img/landing/${name}-1280.webp 1280w`, w: 640, h: 400,
+  dark: darkName && fs.existsSync(new URL(`${darkName}-1200.webp`, LANDING_DIR)) ? `/img/landing/${darkName}-1200.webp 1200w, /img/landing/${darkName}-2400.webp 2400w` : null,
+  ok: () => fs.existsSync(new URL(`${name}-640.webp`, LANDING_DIR)) && fs.existsSync(new URL(`${name}-1280.webp`, LANDING_DIR)) });
+// The hub's picture is 1200 x 750 (1.6, like the others): its own srcset.
+const hubShot = () => ({ ...shot('hub-light', 'hub-dark'), src: '/img/landing/hub-light-1200.webp', srcset: '/img/landing/hub-light-1200.webp 1200w, /img/landing/hub-light-2400.webp 2400w', w: 1200, h: 750,
+  ok: () => fs.existsSync(new URL('hub-light-1200.webp', LANDING_DIR)) });
+const bookCount = () => { const n = books().length; return n >= 100 ? `${Math.floor(n / 50) * 50}+` : String(n); };
+/** "A, B and C" in the page's language (the bands of Grammar Lab), English without the serial comma, as on "/". */
+const listOf = (req, items) => { if (/^en/.test(req.locale || 'en')) return items.length > 1 ? `${items.slice(0, -1).join(', ')} and ${items.at(-1)}` : items.join(''); try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(items); } catch { return items.join(', '); } };
+/** How many cards show before "Show all". */
+export const TOOLS_PREVIEW = 6;
+/** id, icon, picture, and the words: k (own keys under teachers.tools.<id>) or h/p/alt keys of the homepage's. */
 export const TOOL_CARDS = [
-  { id: 'board', icon: '🧮', shot: 'tools-board', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
-  { id: 'room', icon: '📡', shot: 'tools-live', staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
-  { id: 'dash', icon: '🖥️', shot: 'dash-teacher', staff: '/teach', can: u => isSchoolStaff(u) },
+  { id: 'hub', icon: '🏫', pic: hubShot(), h: 'landing.hub.kicker', p: 'landing.hub.lead', alt: 'landing.hub.shotAlt', plan: true, video: true,
+    staff: '/classes', open: 'teachers.tools.dash.open', can: u => H.canUse(u) },
+  { id: 'board', icon: '🧮', pic: how('tools-board'), plan: true, video: true, staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'room', icon: '📡', pic: how('tools-live'), plan: true, video: true, staff: '/manipulatives', can: u => !!toolAccess(u, config.manipulatives) },
+  { id: 'dash', icon: '🖥️', pic: how('dash-teacher'), video: true, staff: '/teach', can: u => isSchoolStaff(u) },
+  { id: 'figures', icon: '📐', pic: shot('tool-figures'), h: 'landing.tools.figures.h', p: 'landing.tools.figures.p', alt: 'landing.tools.figures.alt', plan: true, video: true,
+    vars: () => ({ count: FIGURE_KINDS.length }) },
+  { id: 'live', icon: '🎮', pic: shot('tool-brain-board'), h: 'landing.tools.live.h', p: 'landing.tools.live.p', alt: 'landing.tools.live.alt', show: () => liveOn(),
+    href: req => lp(req, '/teachers/live'), linkKey: 'teachers.live.more' },
+  { id: 'read', icon: '📚', pic: shot('tool-library'), h: 'landing.tools.read.h', p: 'landing.tools.read.p', alt: 'landing.tools.read.alt', vars: () => ({ count: bookCount() }), href: () => '/read' },
+  { id: 'typing', icon: '💻', pic: shot('tool-typing-zoo'), h: 'landing.tools.typing.h', p: 'landing.tools.typing.p', alt: 'landing.tools.typing.alt', game: 'typing-zoo' },
+  { id: 'flash', icon: '🗂️', pic: shot('tool-flashcards'), game: 'flashcards' },
+  { id: 'atlas', icon: '🗺️', pic: shot('tool-atlas-quest'), h: 'landing.tools.atlas.h', alt: 'landing.tools.atlas.alt', game: 'atlas-quest' },
+  { id: 'hunt', icon: '🔍', pic: shot('tool-mistake-hunt'), h: 'landing.tools.grammar.h', p: 'landing.tools.grammar.p', alt: 'landing.tools.grammar.alt', game: 'mistake-hunt' },
+  { id: 'grammar', icon: '✏️', pic: shot('tool-grammar-lab'), show: () => grammarCompareOn(), vars: req => { const f = grammarFacts(); return { topics: f.topics, bands: listOf(req, f.bands) }; }, href: () => '/courses/grammar-lab' },
 ];
 function toolsShowcase(req) {
   const t = req.t;
-  const cards = TOOL_CARDS.filter(c => howFiles(c.shot).slice(2).every(f => fs.existsSync(new URL(f, HOW_DIR))));
+  const scheme = shotScheme(req);
+  const cards = TOOL_CARDS.filter(c => (!c.show || c.show()) && c.pic.ok() && (!c.game || launchGame(c.game)));
   if (!cards.length) return '';
   const video = readyVideos().length ? '#see-it' : '';
+  const planLine = familiesOn(req) ? String(tHtml(t, 'landing.plan.on', { plans: '/plans' })) : String(tHtml(t, 'landing.plan.on', { plans: '/plans' })).replace(/<\/?a\b[^>]*>/g, '');
   const card = c => {
-    const k = `teachers.tools.${c.id}`, staff = !!req.user && c.can(req.user), href = staff ? c.staff : video;
-    return html`<li class="panel tt-card">
-      <figure class="tt-shot"><img src="/img/how/${c.shot}-d-1024.webp" srcset="/img/how/${c.shot}-d-1024.webp 1024w, /img/how/${c.shot}-d-2048.webp 2048w" sizes="(min-width: 1000px) 340px, (min-width: 700px) 46vw, 92vw" width="1024" height="640" alt="${t(`${k}.alt`)}" loading="lazy" decoding="async"></figure>
-      ${raw(`<h3 class="tt-h"${fb(t, `${k}.h`)}>`)}${ico(c.icon, { size: 20 })} ${t(`${k}.h`)}${raw('</h3>')}
-      ${el(t, 'p', `${k}.p`, {}, ' class="tt-p"')}
-      ${href ? html`<p class="tt-link"><a href="${href}">${t(staff ? `${k}.open` : 'teachers.tools.watch')} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
+    const k = `teachers.tools.${c.id}`, hk = c.h || `${k}.h`, pk = c.p || `${k}.p`, ak = c.alt || `${k}.alt`, vars = c.vars ? c.vars(req) : {};
+    const staff = !!req.user && !!c.can && c.can(req.user);
+    const href = staff ? c.staff : c.game ? keepLang(req, `/g/${c.game}`) : c.href ? c.href(req) : c.video ? video : '';
+    const label = staff ? t(c.open || `${k}.open`) : c.game || (c.href && !c.linkKey) ? t('teachers.tools.try') : c.linkKey ? t(c.linkKey) : t('teachers.tools.watch');
+    const img = { src: c.pic.src, srcset: c.pic.srcset, sizes: '(min-width: 1000px) 340px, (min-width: 700px) 46vw, 92vw', width: c.pic.w, height: c.pic.h, alt: t(ak), lazy: true, dark: c.pic.dark ? { srcset: c.pic.dark } : null };
+    return html`<li class="panel tt-card" id="tool-${c.id}">
+      <figure class="tt-shot">${raw(themedPicture({ scheme, img }))}</figure>
+      ${raw(`<h3 class="tt-h"${fb(t, hk)}>`)}${ico(c.icon, { size: 20 })} ${t(hk, vars)}${raw('</h3>')}
+      ${el(t, 'p', pk, vars, ' class="tt-p"')}
+      ${c.plan ? html`<p class="tt-plan"${fb(t, 'landing.plan.on')}>${raw(planLine)}</p>` : ''}
+      ${href ? html`<p class="tt-link"><a href="${href}">${label} <span class="flip" aria-hidden="true">→</span></a></p>` : ''}
     </li>`;
   };
+  const first = cards.slice(0, TOOLS_PREVIEW), rest = cards.slice(TOOLS_PREVIEW);
   return html`<section class="lp-sec tt" id="tools" aria-labelledby="tools-h">
-    ${el(t, 'h2', 'teachers.tools.h', {}, ' id="tools-h"')}${el(t, 'p', 'teachers.tools.lead', {}, ' class="tt-lead"')}
-    <ul class="plain tt-grid">${cards.map(card)}</ul>
-    ${el(t, 'p', plansOn() ? 'teachers.tools.plan' : 'teachers.tools.testing', {}, ' class="small muted tt-note"')}
+    ${el(t, 'h2', 'landing.tools.h', {}, ' id="tools-h"')}${el(t, 'p', 'teachers.tools.lead', {}, ' class="tt-lead"')}
+    <ul class="plain tt-grid">${first.map(card)}</ul>
+    ${rest.length ? html`<details class="tt-more"><summary class="btn"><span class="tt-more-o"${fb(t, 'teachers.tools.more')}>${t('teachers.tools.more', { count: cards.length })}</span><span class="tt-more-c"${fb(t, 'teachers.tools.less')}>${t('teachers.tools.less')}</span></summary>
+    <ul class="plain tt-grid">${rest.map(card)}</ul></details>` : ''}
+    ${el(t, 'p', 'teachers.tools.plan', {}, ' class="small muted tt-note"')}
   </section>`;
 }
 
@@ -381,7 +432,7 @@ router.get('/teachers', (req, res) => {
   ${toolsShowcase(req)}
   ${howSteps(req, 'teachers')}
   ${teacherLoop(t, { variant: 'page', cls: 'lp-sec', links: isSchoolStaff(req.user) ? loopLinks(req.user) : null, live: liveOn(), shotNames: PAIR, scheme: shotScheme(req) })}
-  ${seeIt(req, { note: false })}
+  ${seeIt(req, { note: false, promo: true })}
   ${classroomSection(req)}
 
   <div class="lp-cols">
@@ -440,7 +491,7 @@ router.get('/teachers/live', (req, res, next) => {
   // (Signed out: the three-field teacher sign-up and the Quick game chooser, routes/quick-live.js. It used to be the
   // parents' sign-up, which made a parent account for a teacher.)
   const hostHref = host ? '/live' : '/teachers/host';
-  const badges = [['✅', 'free'], ['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
+  const badges = [['🚫', 'ads'], ['🙅', 'noAccounts'], ['💻', 'browser'], ['🌍', 'languages']];
   const vars = { max: config.liveMaxPlayers, open: GROWNUP_OPEN_MAX, items: SET_LIMITS.items };
   const faq = faqBlock(req, [1, 2, 3, 4, 5].map(n => [`teachersLive.faq.q${n}`, `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars);
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).

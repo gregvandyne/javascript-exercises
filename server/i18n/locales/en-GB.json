@@ -280,7 +280,9 @@
       "lessons": "Lessons",
       "lessonsForTeachers": "Lesson plans",
       "lastActivity": "Last activity",
-      "noActivity": "none yet"
+      "noActivity": "none yet",
+      "made": "{name} is ready. Add your students here, or share the class code with students who have their own account.",
+      "madeHub": "{name} is ready. Add your students here, then open the Hub and hand out your first lesson, live game or maths tool."
     },
     "people": {
       "grade": "Year",
@@ -305,6 +307,11 @@
     },
     "joinStaff": {
       "cancelled": "This invite was cancelled. Ask the school if you think that's a mistake."
+    },
+    "emailInvite": {
+      "mail": {
+        "what": "Oomba Academy is the one classroom tool for everything: live games, maths manipulatives, worksheets, picture books, a class dashboard and an AI helper, with one login, one class list and one plan."
+      }
     }
   },
   "lessons": {
@@ -398,9 +405,8 @@
         "p": "Timers, jobs, check-ins and maths tools for your whole class day, on one screen."
       }
     },
-    "lead": "Interactive lessons, maths manipulatives you can run live with your class, and a Classroom Dashboard for the whole day, for ages 5 to 14. It all runs in the browser, on Chromebooks too, and your class can make its own games with our AI Builder.",
+    "lead": "Live games, maths manipulatives, worksheets, picture books, typing, geography, a class dashboard and an AI helper for ages 5 to 14, with one login and one class list. It all runs in the browser, on Chromebooks too.",
     "tools": {
-      "lead": "Real screens from a demo class: a maths board Oomba builds with you, the same board live on every student’s device, and a dashboard for the whole class day.",
       "board": {
         "h": "Maths manipulatives with Oomba"
       },
@@ -1239,5 +1245,14 @@
     "topic": {
       "again": "Practise again"
     }
+  },
+  "schoolWelcome": {
+    "email": {
+      "teachersText": "Teachers sign in and land on their Classroom page. Good first steps: open a class's Hub, hand out a lesson, a live game or a maths tool to every desk, try a manipulative on the board, and ask Oomba to plan the day. The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan. The Classroom Dashboard is free for every class."
+    }
+  },
+  "classes": {
+    "welcome": "You're in {name}! The games your teacher gives you show up here.",
+    "welcomeDesk": "You're in {name}! Tap My desk to see what your teacher hands out."
   }
 }

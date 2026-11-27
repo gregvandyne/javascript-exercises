@@ -16,6 +16,7 @@ import { page } from '../views/layout.js';
 import { tHtml, availableLocales, fmt, DEFAULT_LOCALE } from '../i18n/index.js';
 import { isPlatformAdmin } from '../services/schools.js';
 import { googleEnabled } from '../oidc.js';
+import { config } from '../config.js';
 import * as seo from '../seo.js';
 import { el, fb, lp, contactEmail } from './teachers.js';
 import { ico } from '../views/icon.js';
@@ -23,7 +24,7 @@ import { ico } from '../views/icon.js';
 export const router = Router();
 
 /** Last change to the text of these two pages (sitemap lastmod, "Updated" line). Change it with the text. */
-export const TRUST_UPDATED = '2026-11-10';
+export const TRUST_UPDATED = '2026-11-27';
 
 /** The three verified reviews (and only these). The percentiles in research.<key>.stat are where the average student
  *  in the game group lands among the comparison group, from the effect size with normally distributed scores
@@ -58,6 +59,7 @@ const list = (t, prefix, keys, vars) => html`<ul class="lp-list">${keys.map(k =>
 const CSS = raw(`<style>
 .trust-find{display:grid;gap:var(--gap,16px);grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));list-style:none;padding:0;margin:0}
 .trust-find>li{display:flex;flex-direction:column;gap:8px;margin:0}
+.trust-find>.panel+.panel{margin-top:0} /* the cards start level: no stacked-panel gap (app.css .panel + .panel), as .tt-grid in #671 */
 .trust-find h3{margin:0;font-size:1rem}
 .trust-big{font-size:clamp(1.25rem,1rem + 1.2vw,1.6rem);font-weight:800;line-height:1.2;margin:0}
 .trust-fine{font-size:.85rem;color:var(--muted);margin:0;overflow-wrap:anywhere}
@@ -142,7 +144,7 @@ router.get('/compliance', (req, res) => {
       ${sec('gdpr', [], { extra: html`${el(t, 'p', 'compliance.gdpr.p1', vars)}${el(t, 'p', 'compliance.gdpr.p2', vars)}${pending(req, 'gdpr')}` })}
       ${sec('dpa', [], { extra: html`${el(t, 'p', 'compliance.dpa.p1', vars)}${el(t, 'p', 'compliance.dpa.p2', vars)}${pending(req, 'dpa')}` })}
       ${sec('keep', ['li1', 'li2', 'li3'])}
-      ${sec('others', ['li1', ...(google ? ['li2'] : []), 'li3'])}
+      ${sec('others', ['li1', ...(config.companion ? ['ask'] : []), ...(google ? ['li2'] : []), 'li3'])}
       ${sec('security', ['li1', 'li2', ...(google ? ['li3'] : [])])}
     </div>
     <section class="panel" id="contact" aria-labelledby="contact-h">${el(t, 'h2', 'compliance.contact.h', {}, ' id="contact-h"')}${el(t, 'p', 'compliance.contact.p', vars)}</section>

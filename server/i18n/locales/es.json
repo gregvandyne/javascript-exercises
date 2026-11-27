@@ -40,7 +40,7 @@
       "newMessages": "{count, plural, one {# mensaje nuevo} other {# mensajes nuevos}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Gratis para jugar, gratis para crear",
+      "tagline": "© Oomba Academy · Aprende, juega y crea",
       "safety": "Seguridad",
       "parents": "Para las familias",
       "contact": "Contacto",
@@ -5148,7 +5148,7 @@
       "pictures": "Imágenes",
       "undo": "Deshacer",
       "waitSecs": "Inténtalo de nuevo en {n} segundos.",
-      "welcome": "¡Bienvenido, {name}!"
+      "welcome": "¡Ya entraste! Tu pupitre está listo."
     },
     "homeroom-signin-panel": {
       "closed": "El inicio de sesión está cerrado",
@@ -5847,7 +5847,9 @@
       "allDone": "¡Todo hecho! No hay nada pendiente ahora.",
       "more": "¿Terminaste por hoy?",
       "pick": "Tus clases"
-    }
+    },
+    "welcome": "¡Ya estás en {name}! Los juegos que te dé tu profe aparecen aquí.",
+    "welcomeDesk": "¡Ya estás en {name}! Toca Mi pupitre para ver lo que reparte tu profe."
   },
   "school": {
     "tabs": {
@@ -5955,7 +5957,9 @@
       "lastActivity": "Última actividad",
       "noActivity": "nada aún",
       "noStudentsPick": "Elige abajo estudiantes que ya están en {school}, o crea cuentas y tarjetas de acceso para estudiantes nuevos.",
-      "selectShown": "Seleccionar todos los visibles"
+      "selectShown": "Seleccionar todos los visibles",
+      "made": "{name} está lista. Agregue a sus estudiantes aquí o comparta el código de la clase con los estudiantes que ya tienen su propia cuenta.",
+      "madeHub": "{name} está lista. Agregue a sus estudiantes aquí, luego abra el Hub y reparta su primera lección, un juego en vivo o una herramienta de matemáticas."
     },
     "requests": {
       "title": "{count, plural, one {# estudiante quiere unirse} other {# estudiantes quieren unirse}}",
@@ -6396,7 +6400,7 @@
         "someone": "Un compañero",
         "hi": "Hola:",
         "intro": "{name} te invitó a unirte a {school} en Oomba Academy como {role}.",
-        "what": "Oomba Academy es un sitio web donde los niños aprenden jugando y creando juegos, y los docentes dirigen sus clases, lecciones y juegos en vivo.",
+        "what": "Oomba Academy es la única herramienta de clase para todo: juegos en vivo, manipulativos de matemáticas, fichas, libros ilustrados, un tablero de clase y un asistente de IA. Un inicio de sesión, una lista de clase, un plan.",
         "button": "Ver la invitación",
         "how": "Inicia sesión, o crea una cuenta de docente, con esta dirección de correo y luego acepta. El enlace funciona una vez, durante {days} días.",
         "ignore": "¿No lo esperabas? Puedes ignorar este correo. No pasa nada a menos que aceptes.",
@@ -7335,7 +7339,7 @@
     "title": "Planes y precios",
     "description": "Planes de Oomba Academy: Gratis, Basic, Familiar, Docente y Escolar. Jugar a todos los juegos siempre es gratis.",
     "heading": "Planes",
-    "intro": "Jugar a todos los juegos es gratis, y también crear con los mensajes gratis diarios para el Constructor. Un plan agrega mensajes extra para el Constructor cada mes.",
+    "intro": "Jugar a todos los juegos es gratis, y también crear con los mensajes gratis diarios para el Constructor. Un plan familiar agrega mensajes extra para el Constructor cada mes, y el plan Docente agrega el Hub, Pregúntale a Oomba, los manipulativos y Figures.",
     "interval": {
       "label": "Período de facturación",
       "month": "Mensual",
@@ -7412,7 +7416,7 @@
       "title": "Planes escolares",
       "description": "Oomba Academy para escuelas: el plan Docente para cada uno de sus docentes, un precio por docente al año, con tarjeta o factura.",
       "heading": "Oomba Academy para escuelas",
-      "intro": "Las escuelas compran el plan Docente para sus docentes: un precio por docente al año, con estudiantes ilimitados y sin cargo por estudiante.",
+      "intro": "Las escuelas compran el plan Docente para sus docentes: el Hub, Pregúntale a Oomba, los manipulativos y Figures, a un precio por docente al año, con estudiantes ilimitados y sin cargo por estudiante.",
       "what": {
         "h": "Qué recibe una escuela",
         "p1": "Los administradores de la escuela ven el plan y asignan los lugares a los docentes en la pestaña Facturación de la escuela. Las familias nunca ven nada de la clase."
@@ -7468,7 +7472,8 @@
       "li3": "Cubre todas sus clases",
       "li4": "Cancele cuando quiera",
       "start": "Empezar la prueba gratis",
-      "manage": "Mi plan Docente"
+      "manage": "Mi plan Docente",
+      "li5": "El Hub, Pregúntale a Oomba, los manipulativos y Figures"
     },
     "trial": {
       "title": "Plan Docente",
@@ -7615,7 +7620,7 @@
     "description": "Lecciones interactivas sin anuncios para niños de 5 a 14 años que funcionan en cualquier navegador, también en Chromebooks, más manipulativos de matemáticas, un panel de clase y un Constructor con IA.",
     "kicker": "🍎 Para docentes",
     "h1": "Lecciones divertidas e interactivas que su clase le va a pedir",
-    "lead": "Lecciones interactivas, manipulativos de matemáticas para usar en vivo con su clase y un panel de clase para todo el día, para niños de 5 a 14 años. Todo funciona en el navegador, también en Chromebooks, y su clase puede crear sus propios juegos con nuestro Constructor con IA.",
+    "lead": "Juegos en vivo, manipulativos de matemáticas, fichas de trabajo, libros ilustrados, mecanografía, geografía, un panel de clase y un asistente con IA, para niños de 5 a 14 años, con un solo inicio de sesión y una sola lista de clase. Todo funciona en el navegador, también en Chromebooks.",
     "badges": {
       "ads": "Sin anuncios",
       "browser": "Funciona en cualquier navegador, también en Chromebooks",
@@ -7791,7 +7796,7 @@
     "live": {
       "h": "Lecciones en vivo para la clase",
       "p1": "Dirija una carrera de preguntas en vivo o cualquier lección lista para el vivo en el proyector. Los alumnos se unen en sus dispositivos con un código de 7 dígitos.",
-      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas) y Tablero Cerebro (un tablero de categorías, de fácil a difícil).",
+      "li1": "Entre los modos incluidos están Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas), Tablero Cerebro (un tablero de categorías, de fácil a difícil), Would You Rather, Atlas Quest y Doodle Hoot.",
       "li2": "Use un conjunto de inicio, escriba uno rápido o convierta las preguntas de un plan de clase en un cuestionario en vivo.",
       "li3": "Las salas de clase son solo para tu alumnado con sesión iniciada, y sus puntos van a tu cuaderno de notas. Sin chat, sin escribir y sin nombres escritos a mano.",
       "more": "Vea cómo funciona Oomba Live"
@@ -7846,12 +7851,11 @@
         "title": "El Hub en 2 minutos",
         "p": "Reparte tareas, mira cada pupitre en directo, atiende las manos levantadas y sigue el plan del día, todo desde un solo tablero."
       },
-      "plan": "El panel de clase es gratis para cada clase. Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente.",
-      "testing": "El panel de clase es gratis para cada clase. Las otras tres herramientas se están probando ahora en algunas clases."
+      "plan": "El panel de clase es gratis para cada clase. Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente."
     },
     "tools": {
       "h": "Novedades para su aula",
-      "lead": "Pantallas reales de una clase de demostración: un tablero de matemáticas que Oomba arma con usted, el mismo tablero en vivo en el dispositivo de cada estudiante y un panel para todo el día de clase.",
+      "lead": "Pantallas reales de clases de demostración con nombres inventados. Un solo inicio de sesión y una sola lista de clase para todo.",
       "board": {
         "h": "Manipulativos de matemáticas con Oomba",
         "p": "Bloques de base diez, piezas de fracciones, relojes y más en un tablero. Dígale a Oomba qué está enseñando y le prepara el tablero.",
@@ -7871,8 +7875,23 @@
         "open": "Abrir Mis clases"
       },
       "watch": "Ver el video de un minuto",
-      "plan": "El panel de clase viene con cada clase. Los manipulativos y sus salas en vivo son parte del plan Docente.",
-      "testing": "El panel de clase viene con cada clase. Los manipulativos y sus salas en vivo se están probando ahora en algunas aulas."
+      "plan": "El panel de clase viene con cada clase. El Hub, los manipulativos y sus salas en vivo, Figures y Pregúntale a Oomba están disponibles con el plan Docente.",
+      "try": "Pruébelo",
+      "more": "Ver las {count} herramientas",
+      "less": "Ver menos",
+      "atlas": {
+        "p": "Países, banderas y capitales en un globo en 3D, y los 50 estados de EE. UU. y las provincias y territorios de Canadá en sus propios mapas. Cree sus propios cuestionarios de geografía e imprima mapas mudos."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Escriba o pegue una lista, deje que la IA prepare tarjetas a partir de un tema, o suba una lección en PDF o Word y la IA elige los términos clave. Los estudiantes estudian con Voltear, Aprender, Emparejar y Prueba.",
+        "alt": "Flashcards: una tarjeta del sistema solar con el Sol, y los botones Voltear, Mezclar, Estrella y Leer en voz alta."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} temas de gramática desde kínder hasta 12.º grado, en tramos para los grados {bands}. Cada uno se domina en tres niveles, con tarjetas leídas en voz alta en K-2 y salas de corrección de Mistake Hunt.",
+        "alt": "Grammar Lab: la página del curso con su imagen y las unidades de K-2, cada una con cuántos temas se han hecho."
+      }
     }
   },
   "learn": {
@@ -8660,6 +8679,7 @@
     "others": {
       "h": "Quién más recibe datos",
       "li1": "Anthropic (Claude, la IA que crea los juegos): los mensajes, imágenes y archivos que un estudiante da al Constructor, para crear el juego y comprobar que es seguro, sin el nombre ni el usuario del estudiante. Los chats entre amigos y las respuestas de las lecciones nunca se envían a la IA.",
+      "ask": "Anthropic (Claude, como arriba), para Pregúntale a Oomba, el chat de las páginas de los docentes: los mensajes del docente y los anteriores del mismo chat, el texto de un documento o una imagen que adjunte, y datos de la página que tiene abierta, como el grado, la materia y el número de estudiantes de una clase, los widgets de un panel y sus propias hojas de trabajo, tableros, planes de lección y títulos de tareas. Antes se quitan los nombres de los estudiantes, los correos, los teléfonos y los enlaces. En la lista Revisar del Hub, cada estudiante es solo un marcador como “Student A”, con el motivo que anotó la aplicación, como los minutos atascado o el resultado de un cuestionario. Nunca se envían los nombres ni el trabajo de los estudiantes, y los estudiantes nunca ven Pregúntale a Oomba. Las búsquedas web van a la búsqueda web de Anthropic, nunca con un nombre ni una ubicación. Para el dictado por voz y las imágenes de los libros (la API Gemini de Google), consulte nuestra <a href=\"{privacy}\">Política de privacidad</a>.",
       "li2": "Google, solo si tu escuela usa Iniciar sesión con Google o un docente conecta Google Classroom. Classroom lee los nombres de las clases y los identificadores y nombres de Google de los estudiantes de la clase vinculada. Solo enviamos lo que publica el docente, como un enlace a la lección con su título y fecha de entrega, y la puntuación de cada estudiante sobre 100: nunca nombres, respuestas, comentarios ni juegos de estudiantes.",
       "li3": "Las voces de IA y el dictado por voz, donde estén activados: nuestra <a href=\"{privacy}\">Política de privacidad</a> dice exactamente qué recibe cada uno."
     },
@@ -8697,8 +8717,7 @@
       "notStated": "No indicado"
     },
     "gate": {
-      "plan": "Plan Docente",
-      "testing": "En prueba"
+      "plan": "Plan Docente"
     },
     "rows": {
       "games": {
@@ -10055,24 +10074,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: lecciones de preguntas en vivo gratis para su clase",
-    "description": "Proyecte una carrera de preguntas en vivo. Sus estudiantes se unen desde cualquier dispositivo con un código de 7 cifras, sin cuentas, sin escribir y sin anuncios. Gratis para docentes.",
+    "title": "Oomba Live: lecciones de preguntas en vivo para su clase",
+    "description": "Proyecte una carrera de preguntas en vivo. Sus estudiantes se unen desde cualquier dispositivo con un código de 7 cifras, sin cuentas, sin escribir y sin anuncios.",
     "kicker": "Oomba Live para docentes",
     "h1": "Lecciones de preguntas en vivo que toda su clase juega a la vez",
-    "lead": "Ponga la lección en la pizarra. Los alumnos se unen en sus dispositivos con un código de 7 dígitos y compiten respondiendo sus preguntas, de cualquier materia y nivel. Gratis, sin anuncios, y los alumnos solo escriben el código.",
+    "lead": "Ponga la lección en la pizarra. Los alumnos se unen en sus dispositivos con un código de 7 dígitos y compiten respondiendo sus preguntas, de cualquier materia y nivel. Sin anuncios, y los alumnos solo escriben el código.",
     "demo": {
       "h": "Míralo en un minuto",
       "note": "Un vídeo de un minuto con música y subtítulos en pantalla: un docente inicia una Quest Race de Ciencias, los alumnos se unen desde el móvil con un código y responden las preguntas. Después, un niño le describe un juego al Builder, que lo crea y lo juega para comprobar que funciona, y el niño lo juega. Al final, algunos de los juegos educativos."
     },
     "badges": {
-      "free": "Gratis para docentes",
       "ads": "Sin anuncios",
       "noAccounts": "No hacen falta cuentas de estudiante",
       "browser": "Cualquier navegador, también Chromebooks",
       "languages": "{count} idiomas"
     },
     "cta": {
-      "host": "Dirigir una lección en vivo gratis",
+      "host": "Dirigir una lección en vivo",
       "how": "Vea cómo funciona",
       "join": "¿Unirse a un juego? Escriba el código aquí"
     },
@@ -10156,7 +10174,7 @@
     },
     "more": {
       "h": "Más que un juego de preguntas",
-      "p": "Oomba Live forma parte de Oomba Academy, donde los estudiantes también juegan a juegos educativos y crean sus propios juegos con un asistente de IA seguro. Una cuenta gratis para toda su clase.",
+      "p": "Oomba Live forma parte de Oomba Academy, donde los estudiantes también juegan a juegos educativos y crean sus propios juegos con un asistente de IA seguro.",
       "link": "Oomba Academy para docentes"
     },
     "start": {
@@ -11327,7 +11345,7 @@
       "lessonFolder": "Carpeta de lecciones",
       "openClass": "Abrir la clase",
       "openLive": "Abrir la lección en vivo",
-      "schoolReady": "{school} ya está listo y tú eres su administrador. Crea tu primera clase abajo y luego añade a tus alumnos. Revisaremos tu colegio en 1 día lectivo y te enviaremos una guía breve por correo.",
+      "schoolReady": "{school} está lista y tú eres su administrador escolar. Crea tu primera clase abajo y añade a tus alumnos; luego abre su Hub para repartir tu primera lección. Revisaremos tu escuela en 1 día escolar y te enviaremos una guía breve por correo.",
       "allClasses": "Todas las clases"
     },
     "loop": {
@@ -12176,7 +12194,7 @@
       "step3": "Añade a tus alumnos: pega sus nombres, uno por línea. Cada uno recibe una tarjeta de acceso para imprimir.",
       "step4": "Revisa las normas de tu colegio en la pestaña Configuración. El chat entre alumnos está desactivado salvo que lo actives.",
       "teachersH": "Cómo empiezan tus docentes",
-      "teachersText": "Los docentes inician sesión y llegan a su página Mi aula. El primer éxito más rápido es un juego en vivo: tocan «Dirigir un juego en vivo», ponen el código en la pizarra y la clase se une desde cualquier dispositivo. También pueden convertir una lección que ya enseñan en un cuestionario con «Convertir una lección en un juego».",
+      "teachersText": "Los docentes inician sesión y llegan a su página Mi aula. Buenos primeros pasos: abrir el Hub de una clase, repartir una lección, un juego en vivo o una herramienta de matemáticas a cada pupitre, probar un manipulativo en la pizarra y pedirle a Oomba que planifique el día. El Hub, Pregúntale a Oomba, los manipulativos y Figures están disponibles con el plan Docente. El tablero de clase es gratis para cada clase.",
       "google": "Si tu colegio usa Google Classroom, los docentes pueden conectarlo desde la página de su clase para traer sus listas de alumnos y devolver las calificaciones.",
       "help": "¿Preguntas? Responde a este correo. Te contesta una persona real, normalmente en un día lectivo.",
       "bye": "¡Bienvenido!",
@@ -15690,12 +15708,12 @@
       "pictures": "Dibujos"
     },
     "grades": {
-      "k": "Preescolar/K",
       "1": "1.er grado",
       "2": "2.º grado",
       "3": "3.er grado",
       "45": "4.º-5.º grado",
-      "68": "6.º-8.º grado"
+      "68": "6.º-8.º grado",
+      "k": "Preescolar/K"
     },
     "lengths": {
       "short": "Corto",

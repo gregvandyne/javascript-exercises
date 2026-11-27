@@ -13,8 +13,8 @@
 //   supporting words on their site; every other cell must carry a source, shown in its row's detail (the row opens: the
 //   quote, the day and a link to their page) and in the Sources list (collapsed at the end of the page).
 // Oomba's cells say only what is live: the Manipulatives, their live rooms, Figures, the AI drafting and Oomba, the
-// teaching companion, follow services/teacher-tools.js toolAccess, worded like the "See it in action" note
-// (views/see-it.js): "Teacher plan" while paid plans are on for everyone, "In testing" while only testers have them.
+// teaching companion, follow services/teacher-tools.js toolAccess, and carry "Teacher plan" as the homepage's "Available with
+// the Teacher plan" does, whether or not paid plans are on for everyone yet (the owner's call, routes/landing.js).
 import { Router } from 'express';
 import { html, raw } from '../views/html.js';
 import { page } from '../views/layout.js';
@@ -23,7 +23,6 @@ import { tHtml, availableLocales, fmt, DEFAULT_LOCALE } from '../i18n/index.js';
 import * as seo from '../seo.js';
 import { el, fb, lp, contactEmail } from './teachers.js';
 import { familiesOn } from '../services/family.js';
-import { plansOn } from '../services/teacher-tools.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import { readyVideos } from '../views/see-it.js';
 import { mayOpenGrammarLab } from '../services/grammar-lab-access.js';
@@ -49,7 +48,7 @@ export const COMPETITORS = [
 /** The cell statuses, in the order of the legend. Each has its mark (a Fluent icon) and always a text label. */
 export const STATUSES = { yes: '✅', partial: '🟡', no: '➖', notStated: '' };
 
-/** The rows, by classroom need, in order. gated: an Oomba teaching tool behind toolAccess (Teacher plan / In testing). */
+/** The rows, by classroom need, in order. gated: an Oomba teaching tool behind toolAccess (tagged Teacher plan). */
 export const ROWS = [
   { id: 'games' }, { id: 'build' }, { id: 'dashboard' }, { id: 'routines' }, { id: 'eyes' },
   { id: 'manip', gated: true }, { id: 'room', gated: true }, { id: 'regroup', gated: true }, { id: 'figures', gated: true },
@@ -248,7 +247,7 @@ const CSS = raw(`<style>
 
 router.get(PATH, (req, res) => {
   const t = req.t;
-  const gate = plansOn() ? 'compare.gate.plan' : 'compare.gate.testing';
+  const gate = 'compare.gate.plan';
   const plans = familiesOn(req);
   const vars = { count: availableLocales().length, plans: '/plans' };
   const rows = ROWS.filter(r => r.id !== 'videos' || readyVideos().length);
