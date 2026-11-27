@@ -26,6 +26,7 @@ import { config } from '../config.js';
 import { googleEnabled } from '../oidc.js';
 import { plansOn } from './teacher-tools.js';
 import { settingsFor as companionSettings } from './companion-settings.js';
+import { canUse as hubOpen } from './homeroom.js';
 export { TRIAL_STEPS };
 
 const H = 3600e3, DAY = 24 * H;
@@ -145,6 +146,7 @@ export function featuresFor(u) {
     classroom: googleEnabled() && !!config.googleClassroom,
     tools,
     chat: plansOn() && !!config.companion && chatOn,
+    hub: !!u?.id && (() => { try { return hubOpen(u); } catch { return false; } })(),
   };
 }
 /** The email for one row, rendered for its teacher. */

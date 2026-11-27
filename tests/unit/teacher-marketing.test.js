@@ -116,6 +116,27 @@ test('/teachers with paid plans off: no free line, no trial; the first button ma
   } finally { config.billingPublic = was; }
 });
 
+test('footer line: "Learn, play and build" on every page with the site footer, kids too, in every language; never a plan, price or "free"', async () => {
+  const kid = auth.createUser({ username: 'FootKid', password: 'a-long-password-1', displayName: 'Foot Kid' });
+  for (const [path, u] of [['/teachers', null], ['/teachers/live', null], ['/compliance', null], ['/me', kid]]) {
+    const s = (await get(path, u)).text, foot = s.slice(s.lastIndexOf('<footer class="foot">'));
+    assert.match(foot, /<span>© Oomba Academy · Learn, play and build<\/span>/, path);
+    assert.doesNotMatch(foot.slice(0, foot.indexOf('</span>')), /free|plan|price/i, path);
+  }
+  for (const [c, line] of [['es', 'Aprende, juega y crea'], ['de', 'Lernen, spielen und bauen'], ['ja', 'まなぶ、あそぶ、つくる'], ['he', 'לומדים, משחקים ובונים']]) assert.equal(makeT(c)('layout.footer.tagline'), `© Oomba Academy · ${line}`, c);
+});
+
+test('/teachers/live: no "free" claims (title, description, lead, badges, buttons); the way in is "Host a live lesson"', async () => {
+  const s = (await get('/teachers/live')).text;
+  const at = s.indexOf('<section class="lp-hero'), hero = s.slice(at, s.indexOf('</section>', at));
+  assert.ok(at > 0);
+  assert.match(s, /<title>Oomba Live: live quiz lessons for your class · Oomba Academy<\/title>/);
+  assert.match(s, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a live lesson<\/a>/);
+  assert.doesNotMatch(hero, /\bfree\b/i, 'hero: no free claim');
+  assert.doesNotMatch(s, /Free for teachers|Host a free live|free live quiz|One free account/i);
+  for (const c of ['es', 'fr', 'de', 'ja', 'zh-Hant']) { const t = makeT(c); assert.equal(t('teachersLive.badges.free'), 'teachersLive.badges.free', `${c}: the free badge is gone`); }
+});
+
 test('tagline: "Screen time you can feel good about" on "/" (footer) and /parents (under the heading), in every language', async () => {
   assert.match((await get('/')).text, /<div class="lp-foot-brand">[\s\S]*?<p class="lp-tagline">Screen time you can feel good about<\/p>/);
   const p = (await get('/parents')).text;

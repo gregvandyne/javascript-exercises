@@ -13,7 +13,7 @@ import { dueField, wireDue } from '/js/homeroom-due.js';
 const tm = (k, v) => t(`js.homeroom-multi.${k}`, v);
 const btn = (cls, attrs, label) => `<button type="button" class="${cls}" ${attrs}>${label}</button>`;
 /** What kind a card is: game, lesson (a lesson plan), task (practice), tool (a Manipulatives tool), reading, mine (My desk only). */
-export const kindOf = id => (id.startsWith('L:') ? 'lesson' : id.startsWith('T:task:') ? 'task' : id.startsWith('T:manip:') ? 'tool' : id.startsWith('R:') ? 'reading' : id.startsWith('T:') ? 'mine' : 'game');
+export const kindOf = id => (id.startsWith('L:') ? 'lesson' : id.startsWith('T:task:') ? 'task' : id.startsWith('T:gl:') ? 'grammar' : id.startsWith('T:manip:') ? 'tool' : id.startsWith('R:') ? 'reading' : id.startsWith('T:') ? 'mine' : 'game');
 const defaultGrade = k => (k === 'task' || k === 'lesson' ? 'score' : 'completion');
 
 /**
@@ -69,6 +69,7 @@ export function multiSelect(ctx) {
     if (k === 'tool') return { tool: x.id.slice(8), ...c };
     const g = { ...c, order: common.order, grade: per.grade || defaultGrade(k), ...common.due, gcPost: common.gcPost };
     if (k === 'task') return { task: x.id.slice(7), count: common.count, ...g };
+    if (k === 'grammar') return { grammar: x.id.slice(5), ...g };
     if (k === 'reading') return { reading: true, bookId: x.id.slice(2), ...g };
     if (k === 'lesson') return { lessonId: x.id.slice(2), to, order: common.order, grade: per.grade || 'score', ...common.due, gcPost: common.gcPost };
     return { gameId: x.id, ...g };

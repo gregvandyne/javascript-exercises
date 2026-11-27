@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
+      "tagline": "© Oomba Academy · Lernen, spielen und bauen",
       "safety": "Sicherheit",
       "parents": "Für Eltern",
       "contact": "Kontakt",
@@ -2079,6 +2079,11 @@
       "bigger": "Größere Schrift"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar-Lab-Einheit",
+        "lead": "Jedes Kind arbeitet die Themen der Einheit in Grammar Lab durch. Sie ist fertig, wenn jedes Thema gemeistert ist.",
+        "notMine": "Grammar-Lab-Einheiten kommen auf die Tische der Kinder."
+      },
       "my": {
         "label": "Mein Pult (nur Sie sehen, was darauf liegt)",
         "title": "Mein Pult",
@@ -5144,7 +5149,7 @@
       "pictures": "Bilder",
       "undo": "Rückgängig",
       "waitSecs": "Versuche es in {n} Sekunden noch einmal.",
-      "welcome": "Willkommen, {name}!"
+      "welcome": "Du bist drin! Dein Platz ist bereit."
     },
     "homeroom-signin-panel": {
       "closed": "Die Anmeldung ist geschlossen",
@@ -5159,6 +5164,8 @@
       "settings": "Anmeldung: Einstellungen und Karten"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} gemeistert",
+      "grammarRoom": "Grammar Lab · Korrekturraum",
       "deskOf": "{name} · Mein Platz",
       "empty": "Noch nichts auf deinem Platz",
       "emptyText": "Wenn deine Lehrkraft etwas austeilt, landet es hier.",
@@ -5737,6 +5744,7 @@
       "lead": "Sie kommen in dieser Reihenfolge auf die Tische. Jede behält ihre eigene Bewertung.",
       "toolBusy": "{tool} ist gerade auf den Tischen. Ein Anschauungsmaterial zur Zeit: Nehmen Sie es zuerst von allen Tischen.",
       "kind": {
+        "grammar": "Grammar-Lab-Einheit",
         "game": "Lektion",
         "lesson": "Unterrichtsplan",
         "task": "Übung",
@@ -5840,7 +5848,9 @@
       "allDone": "Alles erledigt! Gerade gibt es nichts zu tun.",
       "more": "Fertig für heute?",
       "pick": "Deine Klassen"
-    }
+    },
+    "welcome": "Du bist in {name}! Die Spiele von deiner Lehrkraft erscheinen hier.",
+    "welcomeDesk": "Du bist in {name}! Tippe auf Mein Platz, um zu sehen, was deine Lehrkraft austeilt."
   },
   "school": {
     "tabs": {
@@ -5948,7 +5958,9 @@
       "lastActivity": "Zuletzt aktiv",
       "noActivity": "noch nichts",
       "noStudentsPick": "Wähle unten Schüler, die schon an {school} sind, oder lege für neue Schüler Konten und Anmeldekarten an.",
-      "selectShown": "Alle angezeigten auswählen"
+      "selectShown": "Alle angezeigten auswählen",
+      "made": "{name} ist bereit. Fügen Sie hier Ihre Schüler hinzu oder geben Sie den Klassencode an Schüler, die schon ein eigenes Konto haben.",
+      "madeHub": "{name} ist bereit. Fügen Sie hier Ihre Schüler hinzu, öffnen Sie dann den Hub und teilen Sie Ihre erste Lektion, ein Live-Spiel oder ein Mathe-Werkzeug aus."
     },
     "requests": {
       "title": "{count, plural, one {# Schüler möchte beitreten} other {# Schüler möchten beitreten}}",
@@ -6389,7 +6401,7 @@
         "someone": "Eine Kollegin oder ein Kollege",
         "hi": "Hallo,",
         "intro": "{name} lädt dich ein, {school} bei Oomba Academy als {role} beizutreten.",
-        "what": "Oomba Academy ist eine Website, auf der Kinder lernen, indem sie Spiele spielen und selbst bauen, und Lehrkräfte ihre Klassen, Lektionen und Live-Spiele leiten.",
+        "what": "Oomba Academy ist das eine Werkzeug für alles im Unterricht: Live-Spiele, Mathe-Material, Arbeitsblätter, Bilderbücher, ein Klassen-Dashboard und ein KI-Helfer. Ein Login, eine Klassenliste, ein Plan.",
         "button": "Einladung ansehen",
         "how": "Melde dich mit dieser E-Mail-Adresse an oder erstelle damit ein Lehrkraft-Konto und nimm dann an. Der Link funktioniert einmal, {days} Tage lang.",
         "ignore": "Nicht erwartet? Du kannst diese E-Mail ignorieren. Es passiert nichts, solange du nicht annimmst.",
@@ -6423,6 +6435,7 @@
     "minutesN": "{count, plural, one {# Minute} other {# Minuten}}",
     "assignedN": "{count, plural, one {in # Klasse} other {in # Klassen}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Ein Spiel spielen",
       "gameForTeachers": "Eine Lektion spielen",
       "build": "Ein Spiel bauen",
@@ -8668,6 +8681,7 @@
     "others": {
       "h": "Wer sonst Daten bekommt",
       "li1": "Anthropic (Claude, die KI, die Spiele baut): die Nachrichten, Bilder und Dateien eines Kindes an den Baumeister, um das Spiel zu bauen und auf Sicherheit zu prüfen, ohne Namen oder Benutzernamen. Chats zwischen Freunden und Antworten in Lektionen gehen nie an die KI.",
+      "ask": "Anthropic (Claude, wie oben) für Frag Oomba, den Chat auf den eigenen Seiten von Lehrkräften: die Nachrichten der Lehrkraft und die früheren Nachrichten im selben Chat, der Text eines angehängten Dokuments oder ein angehängtes Bild und Angaben zur geöffneten Seite, etwa Klassenstufe, Fach und Zahl der Kinder einer Klasse, die Widgets eines Dashboards und eigene Arbeitsblätter, Boards, Unterrichtspläne und Titel von Aufgaben. Namen der Kinder, E-Mail-Adressen, Telefonnummern und Links werden vorher entfernt. In der Liste „Mal nachsehen“ im Hub ist jedes Kind nur ein Platzhalter wie „Student A“, mit dem Grund, den die App vermerkt hat, etwa Minuten ohne Weiterkommen oder ein Quizergebnis. Namen und Arbeiten der Kinder werden nie gesendet, und Kinder sehen Frag Oomba nie. Websuchen gehen an die Websuche von Anthropic, nie mit einem Namen oder Ort. Zu Spracherkennung und Buchbildern (die Gemini API von Google) siehe unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
       "li2": "Google, nur wenn deine Schule „Mit Google anmelden“ nutzt oder eine Lehrkraft Google Classroom verbindet. Classroom liest Kursnamen sowie die Google-IDs und Namen der Kinder im verknüpften Kurs. Wir senden nur, was die Lehrkraft veröffentlicht, etwa einen Link zur Lektion mit Titel und Fälligkeitsdatum, und die Punktzahl jedes Kindes von 100: nie Namen, Antworten, Feedback oder Spiele von Kindern.",
       "li3": "KI-Stimmen und Spracherkennung, wo sie eingeschaltet sind: Unsere <a href=\"{privacy}\">Datenschutzerklärung</a> sagt genau, was jeder Dienst bekommt."
     },
@@ -10062,24 +10076,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: kostenlose Live-Quizlektionen für Ihre Klasse",
-    "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung. Kostenlos für Lehrkräfte.",
+    "title": "Oomba Live: Live-Quizlektionen für Ihre Klasse",
+    "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung.",
     "kicker": "Oomba Live für Lehrkräfte",
     "h1": "Live-Quizlektionen, die Ihre ganze Klasse zusammen spielt",
-    "lead": "Bringen Sie die Lektion an die Tafel. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit und rasen durch Ihre Fragen, in jedem Fach, auf jedem Niveau. Kostenlos, ohne Werbung, und die Kinder tippen nur den Code.",
+    "lead": "Bringen Sie die Lektion an die Tafel. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit und rasen durch Ihre Fragen, in jedem Fach, auf jedem Niveau. Ohne Werbung, und die Kinder tippen nur den Code.",
     "demo": {
       "h": "In einer Minute erklärt",
       "note": "Ein einminütiges Video mit Musik und Untertiteln im Bild: Eine Lehrkraft startet ein Quest Race in Naturwissenschaften, die Klasse tritt mit einem Code auf dem Handy bei und rennt durch die Fragen. Dann beschreibt ein Kind dem Builder ein Spiel, der es baut und zum Prüfen selbst spielt, und das Kind spielt es. Zum Schluss ein paar der Lernspiele."
     },
     "badges": {
-      "free": "Kostenlos für Lehrkräfte",
       "ads": "Keine Werbung",
       "noAccounts": "Keine Schülerkonten nötig",
       "browser": "Jeder Browser, auch auf Chromebooks",
       "languages": "{count} Sprachen"
     },
     "cta": {
-      "host": "Kostenlos eine Live-Lektion leiten",
+      "host": "Eine Live-Lektion leiten",
       "how": "So funktioniert es",
       "join": "Einem Spiel beitreten? Code hier eingeben"
     },
@@ -10164,7 +10177,7 @@
     },
     "more": {
       "h": "Mehr als ein Quiz",
-      "p": "Oomba Live gehört zu Oomba Academy, wo die Kinder auch Lernspiele spielen und mit einem sicheren KI-Helfer eigene Spiele bauen. Ein kostenloses Konto für Ihre ganze Klasse.",
+      "p": "Oomba Live gehört zu Oomba Academy, wo die Kinder auch Lernspiele spielen und mit einem sicheren KI-Helfer eigene Spiele bauen.",
       "link": "Oomba Academy für Lehrkräfte"
     },
     "start": {
@@ -10176,8 +10189,8 @@
     },
     "faq": {
       "h": "Häufige Fragen von Lehrkräften zu Oomba Live",
-      "q1": "Ist Oomba Live kostenlos?",
-      "a1": "Ja. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle kostenlos und ohne Werbung.",
+      "q1": "Gibt es in Oomba Live Werbung?",
+      "a1": "Nein. Live-Lektionen leiten, die Start-Fragensets, Ihre eigenen Sets und die Ergebnisse sind alle ohne Werbung.",
       "q2": "Brauchen meine Schülerinnen und Schüler Konten?",
       "a2": "Nicht für einen offenen Raum: Die Kinder geben den Code ein und bekommen einen ausgedachten Spitznamen. In einem Klassenraum nutzen sie die Schulkonten, die Sie für sie angelegt haben, und ihre Punkte kommen in Ihr Notenbuch.",
       "q3": "Wie viele Kinder können mitspielen?",
@@ -11336,7 +11349,7 @@
       "lessonFolder": "Lektionsordner",
       "openClass": "Klasse öffnen",
       "openLive": "Live-Lektion öffnen",
-      "schoolReady": "{school} ist startklar, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge dann deine Kinder hinzu. Wir schauen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
+      "schoolReady": "{school} ist bereit, und du bist die Schuladministration. Lege unten deine erste Klasse an und füge deine Schülerinnen und Schüler hinzu, dann öffne ihren Hub, um deine erste Lektion auszuteilen. Wir sehen uns deine Schule innerhalb eines Schultags an und schicken dir eine kurze Anleitung per E-Mail.",
       "allClasses": "Alle Klassen"
     },
     "loop": {
@@ -12185,7 +12198,7 @@
       "step3": "Füge deine Schülerinnen und Schüler hinzu: Namen einfügen, einer pro Zeile. Jedes Kind bekommt eine Anmeldekarte zum Ausdrucken.",
       "step4": "Prüfe die Regeln deiner Schule im Tab Einstellungen. Der Chat zwischen Schülerinnen und Schülern ist aus, solange du ihn nicht einschaltest.",
       "teachersH": "So starten deine Lehrkräfte",
-      "teachersText": "Lehrkräfte melden sich an und landen auf ihrer Seite Klassenraum. Der schnellste erste Erfolg ist ein Live-Spiel: auf „Live-Spiel leiten“ tippen, den Code an die Tafel bringen, und die Klasse macht von jedem Gerät aus mit. Außerdem können sie mit „Aus einer Stunde ein Spiel machen“ eine Stunde, die sie schon unterrichten, in ein Quiz verwandeln.",
+      "teachersText": "Lehrkräfte melden sich an und landen auf ihrer Seite Klassenraum. Gute erste Schritte: den Hub einer Klasse öffnen, eine Lektion, ein Live-Spiel oder ein Mathe-Werkzeug an alle Plätze austeilen, ein Mathe-Material an der Tafel ausprobieren und Oomba den Tag planen lassen. Der Hub, Frag Oomba, das Mathe-Material und Figures sind im Lehrkräfte-Plan enthalten. Das Klassen-Dashboard ist für jede Klasse kostenlos.",
       "google": "Wenn deine Schule Google Classroom nutzt, können Lehrkräfte es auf der Seite ihrer Klasse verbinden, um ihre Klassenlisten zu übernehmen und Noten zurückzuschicken.",
       "help": "Fragen? Antworte einfach auf diese E-Mail. Ein echter Mensch antwortet, meist innerhalb eines Schultags.",
       "bye": "Herzlich willkommen,",
@@ -15906,6 +15919,7 @@
       "comingNext": "Kommt bald"
     },
     "errors": {
+      "noGrammar": "Grammar Lab ist für Ihr Konto nicht geöffnet.",
       "badStage": "Das kann nicht auf Ihr Pult.",
       "deskFull": "Ihr Pult ist voll. Nehmen Sie zuerst etwas herunter.",
       "notStaged": "Das liegt nicht mehr auf Ihrem Pult.",
@@ -16188,6 +16202,7 @@
       "liveLead": "Live für die ganze Klasse",
       "hostAny": "Live-Lektion starten",
       "kind": {
+        "grammar": "Grammar-Lab-Einheit",
         "live": "Live-Spiel",
         "liveSet": "Live-Quizset",
         "liveAny": "Quizze, Sets und mehr",
@@ -16237,6 +16252,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# Einheit} other {# Einheiten}}",
+    "place": {
+      "askTitle": "In welcher Klasse bist du?",
+      "askText": "Wir öffnen zuerst den Teil von Grammar Lab für deine Klasse. Du kannst trotzdem jeden Teil besuchen.",
+      "ask": "Deine Klasse",
+      "choose": "Wähle deine Klasse",
+      "go": "Meinen Teil zeigen",
+      "yours": "Deine Klassenstufen",
+      "other": "Andere Klassenstufen"
+    },
+    "assigned": {
+      "badge": "Von deiner Lehrkraft",
+      "lead": "Hier sind die Grammar-Lab-Aufgaben, die dir deine Lehrkraft gegeben hat."
+    },
+    "learn": {
+      "see": "Zum Kurs"
+    },
+    "step": {
+      "open": "In Grammar Lab öffnen",
+      "openRoom": "Den Korrekturraum öffnen",
+      "unitRule": "Fertig, wenn jedes Thema der Einheit gemeistert ist",
+      "topicRule": "Fertig, wenn das Thema gemeistert ist",
+      "roomRule": "Fertig, wenn du mindestens 80 % der Fehler findest"
+    },
+    "teach": {
+      "h1": "Grammar Lab für Ihre Klassen",
+      "lead": "Geben Sie einer Klasse, einer Gruppe oder einem Kind eine ganze Einheit, ein Thema oder einen Korrekturraum. Ein Thema ist fertig, wenn das Kind es meistert, eine Einheit, wenn jedes ihrer Themen gemeistert ist.",
+      "bands": "Klassenstufen",
+      "noClasses": "Legen Sie zuerst eine Klasse an, dann können Sie ihr Grammar-Lab-Lektionen geben.",
+      "newClass": "Klasse anlegen",
+      "assignUnit": "Einheit zuweisen",
+      "assignTopic": "Thema zuweisen",
+      "assignRoom": "Korrekturraum zuweisen",
+      "assignLabel": "{title} zuweisen",
+      "seeTopics": "Themen dieser Einheit",
+      "roomTitle": "Korrigieren: {topic}",
+      "dialogTitle": "{title} zuweisen",
+      "whatUnit": "Eine ganze Einheit. Sie ist fertig, wenn jedes ihrer Themen gemeistert ist.",
+      "whatTopic": "Ein Thema. Es ist fertig, wenn das Kind es meistert.",
+      "whatRoom": "Ein Korrekturraum. Er ist fertig, wenn das Kind mindestens 80 % der Fehler findet.",
+      "class": "Klasse",
+      "who": "Für wen",
+      "wholeClass": "Ganze Klasse",
+      "groups": "Eine Gruppe",
+      "oneStudent": "Ein Kind",
+      "due": "Fällig am (freiwillig)",
+      "dueHint": "Leer lassen für kein Fälligkeitsdatum.",
+      "cancel": "Abbrechen",
+      "assign": "Zuweisen",
+      "done": "{title} ist {class} zugewiesen.",
+      "errNoClass": "Wählen Sie eine Ihrer Klassen.",
+      "errDate": "Wählen Sie ein Datum oder lassen Sie das Feld leer.",
+      "errNoRoom": "Zu diesem Thema gibt es keinen Korrekturraum.",
+      "errAgain": "Das ist der Klasse schon zugewiesen.",
+      "errStudent": "Wählen Sie jemanden aus dieser Klasse.",
+      "mastered": "Gemeistert",
+      "level": "Stufe {level} von {levels}",
+      "levelKey": "In Arbeit (Stufe 1 von 3)",
+      "notStarted": "Nicht begonnen",
+      "roomPassed": "Korrekturraum geschafft",
+      "roomTried": "Korrekturraum versucht",
+      "gridTitle": "Fortschritt in Grammar Lab",
+      "gridLead": "Die Themen jedes Kindes in den Einheiten, die diese Klasse bekommen hat. Die Kinder stehen nach Namen, nie in einer Rangliste.",
+      "gridEmpty": "Dieser Klasse ist noch nichts aus Grammar Lab zugewiesen.",
+      "assignSome": "Grammar-Lab-Lektionen zuweisen",
+      "backProgress": "Zurück zum Fortschritt",
+      "backGrid": "Zurück zum Grammar-Lab-Fortschritt der Klasse",
+      "filterBand": "Klassenstufen",
+      "filterUnit": "Einheit",
+      "all": "Alle",
+      "show": "Anzeigen",
+      "noStudents": "Noch keine Kinder in dieser Klasse.",
+      "noneFit": "Keine Einheit passt zu diesen Filtern.",
+      "counts": "Kinder",
+      "count": "{mastered} gemeistert · {started} in Arbeit",
+      "studentTitle": "{name} in Grammar Lab",
+      "placeH": "Start-Klassenstufen",
+      "placeTeacher": "Klassen {grades}, von einer Lehrkraft gewählt.",
+      "placeGrade": "Klassen {grades}, nach der Klasse des Kindes ({grade}).",
+      "placeNone": "Noch keine Klasse bekannt. Das Kind wählt sie beim ersten Besuch.",
+      "placeSet": "Start-Klassenstufen festlegen",
+      "placeAuto": "Die Klasse des Kindes verwenden",
+      "placeSave": "Speichern",
+      "placeSaved": "Start-Klassenstufen gespeichert.",
+      "placeNote": "Ihre Wahl geht immer vor der Klasse des Kindes. Das Kind kann weiterhin jede Einheit öffnen.",
+      "colTopic": "Thema",
+      "colStatus": "Stand",
+      "colAttempts": "Versuche",
+      "colWrong": "Falsche Antworten",
+      "colRoom": "Korrekturraum",
+      "colLast": "Zuletzt aktiv",
+      "never": "Noch keine Aktivität",
+      "unitsGiven": "{count, plural, one {# Einheit zugewiesen} other {# Einheiten zugewiesen}}",
+      "progressLink": "Grammar-Lab-Fortschritt ansehen"
+    },
     "title": "Grammar Lab",
     "sub": "Grammatik und Schreiben, eine Fähigkeit nach der anderen",
     "band": "Klassen {grades}",
@@ -16246,6 +16356,7 @@
     "backTo": "Zurück zu {unit}",
     "noscript": "Diese Übung braucht eingeschaltetes JavaScript.",
     "topic": {
+      "off": "Noch nicht Teil deiner Aufgaben",
       "options": "Mehr zu {topic}",
       "card": "Lernkarte",
       "again": "Noch einmal üben",
@@ -16306,6 +16417,7 @@
       "cancel": "Abbrechen"
     },
     "done": {
+      "nextLabel": "Nächstes Thema",
       "heading": "Du hast {topic} gemeistert!",
       "back": "Zurück zu {unit}"
     },

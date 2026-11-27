@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# new message} other {# new messages}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Free to play, free to build",
+      "tagline": "© Oomba Academy · Learn, play and build",
       "safety": "Safety",
       "parents": "For parents",
       "contact": "Contact us",
@@ -2081,6 +2081,11 @@
       "bigger": "Bigger text"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab unit",
+        "lead": "Each student works through the unit's topics in Grammar Lab. It is done when every topic is mastered.",
+        "notMine": "Grammar Lab units go on students' desks."
+      },
       "my": {
         "label": "My desk (only you see what's on it)",
         "title": "My desk",
@@ -5604,7 +5609,7 @@
       "pictures": "Pictures",
       "undo": "Undo",
       "waitSecs": "Try again in {n} seconds.",
-      "welcome": "Welcome, {name}!"
+      "welcome": "You're in! Your desk is ready."
     },
     "homeroom-signin-panel": {
       "closed": "Sign-in is closed",
@@ -5687,6 +5692,8 @@
       }
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} mastered",
+      "grammarRoom": "Grammar Lab · proofread room",
       "deskOf": "{name} · My desk",
       "empty": "Nothing on your desk yet",
       "emptyText": "When your teacher hands something out, it lands here.",
@@ -6800,6 +6807,7 @@
       "lead": "They go on the desks in this order. Each keeps its own grading.",
       "toolBusy": "{tool} is on desks now. One Manipulatives tool at a time: take it off every desk first.",
       "kind": {
+        "grammar": "Grammar Lab unit",
         "game": "Lesson",
         "lesson": "Lesson plan",
         "task": "Practice",
@@ -6903,7 +6911,9 @@
       "allDone": "All done! Nothing to do right now.",
       "more": "Done for today?",
       "pick": "Your classes"
-    }
+    },
+    "welcome": "You're in {name}! The games your teacher gives you show up here.",
+    "welcomeDesk": "You're in {name}! Tap My desk to see what your teacher hands out."
   },
   "school": {
     "nav": {},
@@ -7012,7 +7022,9 @@
       "lastActivity": "Last activity",
       "noActivity": "none yet",
       "noStudentsPick": "Pick students already at {school} below, or make new accounts and login cards for new students.",
-      "selectShown": "Select all shown"
+      "selectShown": "Select all shown",
+      "made": "{name} is ready. Add your students here, or share the class code with students who have their own account.",
+      "madeHub": "{name} is ready. Add your students here, then open the Hub and hand out your first lesson, live game or math tool."
     },
     "requests": {
       "title": "{count, plural, one {# student wants to join} other {# students want to join}}",
@@ -7453,7 +7465,7 @@
         "someone": "A colleague",
         "hi": "Hello,",
         "intro": "{name} invited you to join {school} on Oomba Academy as {role}.",
-        "what": "Oomba Academy is a website where children learn by playing and making games, and teachers run their classes, lessons and live games.",
+        "what": "Oomba Academy is the one classroom tool for everything: live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper, with one login, one class list and one plan.",
         "button": "See the invite",
         "how": "Sign in, or create a teacher account, with this email address, then accept. The link works once, for {days} days.",
         "ignore": "Not expecting this? You can ignore this email. Nothing happens unless you accept.",
@@ -7487,6 +7499,7 @@
     "minutesN": "{count, plural, one {# minute} other {# minutes}}",
     "assignedN": "{count, plural, one {in # class} other {in # classes}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Play a game",
       "gameForTeachers": "Play a lesson",
       "build": "Build a game",
@@ -10082,6 +10095,7 @@
     "others": {
       "h": "Who else receives data",
       "li1": "Anthropic (Claude, the AI that makes games): a student’s Builder messages, pictures and files, to make the game and to check it is safe, without the student’s name or username. Chats between friends and lesson answers are never sent to the AI.",
+      "ask": "Anthropic (Claude, as above), for Ask Oomba, the chat on teachers’ own pages: the teacher’s messages and the earlier messages in the same chat, the text of a document or a picture they attach, and facts about the page they have open, such as a class’s grade, subject and number of students, a dashboard’s widgets, and their own worksheets, boards, lesson plans and handout titles. Students’ names, emails, phone numbers and links are taken out first. On the Hub’s Needs a look list, each student is only a placeholder like “Student A”, with the reason the app noted, such as minutes stuck or a quiz score. Students’ names and work are never sent, and students never see Ask Oomba. Web searches go to Anthropic’s web search, never with a name or a location. For speech to text and book pictures (Google’s Gemini API), see our <a href=\"{privacy}\">Privacy Policy</a>.",
       "li2": "Google, only if your school uses Sign in with Google or a teacher connects Google Classroom. Classroom reads class names and the linked class’s students’ Google ids and names. We send only what the teacher posts, such as a lesson link with its title and due date, and each student’s lesson score out of 100: never students’ names, answers, feedback or games.",
       "li3": "AI voices and speech to text, where they are switched on: our <a href=\"{privacy}\">Privacy Policy</a> says exactly what each one gets."
     },
@@ -11476,24 +11490,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: free live quiz lessons for your class",
-    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads. Free for teachers.",
+    "title": "Oomba Live: live quiz lessons for your class",
+    "description": "Put a live quiz race on the projector. Students join on any device with a 7-digit code, with no accounts, no typing and no ads.",
     "kicker": "Oomba Live for teachers",
     "h1": "Live quiz lessons your whole class plays together",
-    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. Free, with no ads, and nothing for students to type but the code.",
+    "lead": "Put the lesson on the board. Students join on their own devices with a 7-digit code and race through your questions, on any subject, at any level. No ads, and nothing for students to type but the code.",
     "demo": {
       "h": "See it in one minute",
       "note": "A one-minute video with music and captions on screen: a teacher starts a Quest Race in Science, students join on their phones with a code and race through the questions, then a child describes a game to the Builder, which makes it and plays it to check it works, and the child plays it. Last, a few of the learning games."
     },
     "badges": {
-      "free": "Free for teachers",
       "ads": "No ads",
       "noAccounts": "No student accounts needed",
       "browser": "Any browser, Chromebooks too",
       "languages": "{count} languages"
     },
     "cta": {
-      "host": "Host a free live lesson",
+      "host": "Host a live lesson",
       "how": "See how it works",
       "join": "Joining a game? Type the code here"
     },
@@ -11578,7 +11591,7 @@
     },
     "more": {
       "h": "More than a quiz",
-      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper. One free account for your whole class.",
+      "p": "Oomba Live is part of Oomba Academy, where students also play learning games and build their own games with a safe AI helper.",
       "link": "Oomba Academy for teachers"
     },
     "start": {
@@ -11590,8 +11603,8 @@
     },
     "faq": {
       "h": "Questions teachers ask about Oomba Live",
-      "q1": "Is Oomba Live free?",
-      "a1": "Yes. Hosting live lessons, the starter question sets, your own sets and the results are all free, with no ads.",
+      "q1": "Are there ads in Oomba Live?",
+      "a1": "No. Hosting live lessons, the starter question sets, your own sets and the results all come with no ads.",
       "q2": "Do my students need accounts?",
       "a2": "Not for an open room: students type the code and get a made-up nickname. In a class room, they use the school accounts you made for them, and their scores go into your gradebook.",
       "q3": "How many students can play?",
@@ -12010,7 +12023,7 @@
       "lessonFolder": "Lesson Folder",
       "openClass": "Open class",
       "openLive": "Open live lesson",
-      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below, then add your students. We'll look over your school within 1 school day and email you a short guide.",
+      "schoolReady": "{school} is ready, and you're its school admin. Make your first class below and add your students, then open its Hub to hand out your first lesson. We'll look over your school within 1 school day and email you a short guide.",
       "allClasses": "All classes"
     },
     "loop": {
@@ -13664,7 +13677,7 @@
       "step3": "Add your students: paste their names, one per line. Each one gets a printable login card.",
       "step4": "Check your school's rules on the Settings tab. Chat between students is off unless you turn it on.",
       "teachersH": "How your teachers start",
-      "teachersText": "Teachers sign in and land on their Classroom page. The quickest first win is a live game: tap \"Host a live game\", put the code on the board, and the class joins from any device. They can also turn a lesson they already teach into a quiz with \"Turn a lesson into a game\".",
+      "teachersText": "Teachers sign in and land on their Classroom page. Good first steps: open a class's Hub, hand out a lesson, a live game or a math tool to every desk, try a manipulative on the board, and ask Oomba to plan the day. The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan. The Classroom Dashboard is free for every class.",
       "google": "If your school uses Google Classroom, teachers can connect it from their class page to bring in their rosters and send grades back.",
       "help": "Questions? Just reply to this email. A real person answers, usually within one school day.",
       "bye": "Welcome aboard,",
@@ -17451,6 +17464,7 @@
       "chooseBook": "Choose a book"
     },
     "errors": {
+      "noGrammar": "Grammar Lab isn't open for your account.",
       "badStage": "That can't go on your desk.",
       "deskFull": "Your desk is full. Take something off first.",
       "notStaged": "That isn't on your desk anymore.",
@@ -17921,6 +17935,7 @@
       "liveLead": "Hosted live for the whole class",
       "hostAny": "Host a live lesson",
       "kind": {
+        "grammar": "Grammar Lab unit",
         "live": "Live game",
         "liveSet": "Live quiz set",
         "liveAny": "Quizzes, sets and more",
@@ -17981,6 +17996,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# unit} other {# units}}",
+    "place": {
+      "askTitle": "Which grade are you in?",
+      "askText": "We open the part of Grammar Lab for your grade first. You can still visit every part.",
+      "ask": "Your grade",
+      "choose": "Choose your grade",
+      "go": "Show my part",
+      "yours": "Your grades",
+      "other": "Other grades"
+    },
+    "assigned": {
+      "badge": "From your teacher",
+      "lead": "Here is the Grammar Lab work your teacher gave you."
+    },
+    "learn": {
+      "see": "See the course"
+    },
+    "step": {
+      "open": "Open in Grammar Lab",
+      "openRoom": "Open the proofread room",
+      "unitRule": "Done when every topic in the unit is mastered",
+      "topicRule": "Done when the topic is mastered",
+      "roomRule": "Done when you find at least 80% of the mistakes"
+    },
+    "teach": {
+      "h1": "Grammar Lab for your classes",
+      "lead": "Give a whole unit, one topic or a proofread room to a class, a group or one student. A topic is done when the student masters it, and a unit when every topic in it is mastered.",
+      "bands": "Grades",
+      "noClasses": "Make a class first, then you can give it Grammar Lab lessons.",
+      "newClass": "Make a class",
+      "assignUnit": "Assign unit",
+      "assignTopic": "Assign topic",
+      "assignRoom": "Assign proofread room",
+      "assignLabel": "Assign {title}",
+      "seeTopics": "Topics in this unit",
+      "roomTitle": "Proofread: {topic}",
+      "dialogTitle": "Assign {title}",
+      "whatUnit": "A whole unit. It is done when every topic in it is mastered.",
+      "whatTopic": "One topic. It is done when the student masters it.",
+      "whatRoom": "A proofread room. It is done when the student finds at least 80% of the mistakes.",
+      "class": "Class",
+      "who": "Who",
+      "wholeClass": "Whole class",
+      "groups": "A group",
+      "oneStudent": "One student",
+      "due": "Due date (optional)",
+      "dueHint": "Leave it empty for no due date.",
+      "cancel": "Cancel",
+      "assign": "Assign",
+      "done": "{title} is assigned to {class}.",
+      "errNoClass": "Choose one of your classes.",
+      "errDate": "Choose a date, or leave it empty.",
+      "errNoRoom": "This topic has no proofread room.",
+      "errAgain": "This is already assigned to the class.",
+      "errStudent": "Choose someone in this class.",
+      "mastered": "Mastered",
+      "level": "Level {level} of {levels}",
+      "levelKey": "In progress (level 1 of 3)",
+      "notStarted": "Not started",
+      "roomPassed": "Proofread room done",
+      "roomTried": "Proofread room tried",
+      "gridTitle": "Grammar Lab progress",
+      "gridLead": "Each student's topics in the units this class was given. Students are listed by name, never ranked.",
+      "gridEmpty": "Nothing from Grammar Lab is assigned to this class yet.",
+      "assignSome": "Assign Grammar Lab lessons",
+      "backProgress": "Back to Progress",
+      "backGrid": "Back to the class's Grammar Lab progress",
+      "filterBand": "Grades",
+      "filterUnit": "Unit",
+      "all": "All",
+      "show": "Show",
+      "noStudents": "No students in this class yet.",
+      "noneFit": "No units fit these filters.",
+      "counts": "Students",
+      "count": "{mastered} mastered · {started} in progress",
+      "studentTitle": "{name} in Grammar Lab",
+      "placeH": "Starting grades",
+      "placeTeacher": "Grades {grades}, set by a teacher.",
+      "placeGrade": "Grades {grades}, from the student's grade ({grade}).",
+      "placeNone": "No grade known yet. The student chooses one on their first visit.",
+      "placeSet": "Set the starting grades",
+      "placeAuto": "Use the student's grade",
+      "placeSave": "Save",
+      "placeSaved": "Starting grades saved.",
+      "placeNote": "Your choice always comes before the student's grade. The student can still open every unit.",
+      "colTopic": "Topic",
+      "colStatus": "Status",
+      "colAttempts": "Attempts",
+      "colWrong": "Wrong answers",
+      "colRoom": "Proofread room",
+      "colLast": "Last active",
+      "never": "No activity yet",
+      "unitsGiven": "{count, plural, one {# unit assigned} other {# units assigned}}",
+      "progressLink": "See Grammar Lab progress"
+    },
     "title": "Grammar Lab",
     "sub": "Grammar and writing, one skill at a time",
     "band": "Grades {grades}",
@@ -17990,6 +18100,7 @@
     "backTo": "Back to {unit}",
     "noscript": "This practice needs JavaScript turned on.",
     "topic": {
+      "off": "Not part of your work yet",
       "options": "More for {topic}",
       "card": "Teaching card",
       "again": "Practice again",
@@ -18050,6 +18161,7 @@
       "cancel": "Cancel"
     },
     "done": {
+      "nextLabel": "Next topic",
       "heading": "You mastered {topic}!",
       "back": "Back to {unit}"
     },

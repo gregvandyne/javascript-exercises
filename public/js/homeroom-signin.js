@@ -116,7 +116,7 @@ async function signIn(proof) {
   main.querySelector('.hs-step')?.classList.add('hs-busy');
   try {
     const r = await api('/api/hr/signin', { method: 'POST', body: { code: S.code, k: S.who.k, ...proof } });
-    main.innerHTML = `<section class="hs-step"><h1 class="hs-h">${iconHtml('🎒', { size: 40 })} ${esc(ts('welcome', { name: S.who.name }))}</h1></section>`;
+    main.innerHTML = `<section class="hs-step"><h1 class="hs-h">${iconHtml('🎒', { size: 40 })} ${esc(ts('welcome'))}</h1></section>`;
     location.href = r.redirect;
   } catch (e) {
     S.busy = false;

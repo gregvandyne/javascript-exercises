@@ -157,7 +157,7 @@ async function playLesson(page, tag, L) {
   await page.waitForSelector('#gl-done:not([hidden])');
   assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
   // The next topic, worked out now (never a mastered one), and the room.
-  assert.equal(await page.textContent('#gl-done-next'), `Next: ${L.next}`);
+  assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), `Next: ${L.next}`);
   assert.ok(await page.isVisible('#gl-done-room'));
   await page.waitForTimeout(2600);
   await shot(page, T, '07-mastered');

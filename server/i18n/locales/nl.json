@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
+      "tagline": "© Oomba Academy · Leren, spelen en bouwen",
       "safety": "Veiligheid",
       "parents": "Voor ouders",
       "contact": "Contact",
@@ -2079,6 +2079,11 @@
       "bigger": "Grotere tekst"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab-onderdeel",
+        "lead": "Elke leerling werkt de onderwerpen van het onderdeel door in Grammar Lab. Het is klaar als elk onderwerp beheerst is.",
+        "notMine": "Grammar Lab-onderdelen gaan naar de tafels van leerlingen."
+      },
       "my": {
         "label": "Mijn bureau (alleen jij ziet wat erop ligt)",
         "title": "Mijn bureau",
@@ -5144,7 +5149,7 @@
       "pictures": "Plaatjes",
       "undo": "Ongedaan maken",
       "waitSecs": "Probeer het over {n} seconden opnieuw.",
-      "welcome": "Welkom, {name}!"
+      "welcome": "Je bent binnen! Je tafel staat klaar."
     },
     "homeroom-signin-panel": {
       "closed": "Inloggen is gesloten",
@@ -5159,6 +5164,8 @@
       "settings": "Instellingen en inlogkaarten"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · {done}/{count} beheerst",
+      "grammarRoom": "Grammar Lab · nakijkkamer",
       "deskOf": "{name} · Mijn tafel",
       "empty": "Nog niets op je tafel",
       "emptyText": "Als je leraar iets uitdeelt, komt het hier.",
@@ -5737,6 +5744,7 @@
       "lead": "Ze komen in deze volgorde op de tafels. Elk houdt zijn eigen beoordeling.",
       "toolBusy": "{tool} staat nu op de tafels. Eén rekenmateriaal tegelijk: haal het eerst van alle tafels.",
       "kind": {
+        "grammar": "Grammar Lab-onderdeel",
         "game": "Les",
         "lesson": "Lesplan",
         "task": "Oefenen",
@@ -5840,7 +5848,9 @@
       "allDone": "Alles klaar! Er is nu niets te doen.",
       "more": "Klaar voor vandaag?",
       "pick": "Je klassen"
-    }
+    },
+    "welcome": "Je zit in {name}! De games van je leerkracht verschijnen hier.",
+    "welcomeDesk": "Je zit in {name}! Tik op Mijn tafel om te zien wat je leerkracht uitdeelt."
   },
   "school": {
     "tabs": {
@@ -5948,7 +5958,9 @@
       "lastActivity": "Laatst actief",
       "noActivity": "nog niets",
       "noStudentsPick": "Kies hieronder leerlingen die al op {school} zitten, of maak accounts en inlogkaarten voor nieuwe leerlingen.",
-      "selectShown": "Alles selecteren wat zichtbaar is"
+      "selectShown": "Alles selecteren wat zichtbaar is",
+      "made": "{name} is klaar. Voeg hier je leerlingen toe, of deel de klascode met leerlingen die al een eigen account hebben.",
+      "madeHub": "{name} is klaar. Voeg hier je leerlingen toe, open dan de Hub en deel je eerste les, een live spel of een rekenhulpmiddel uit."
     },
     "requests": {
       "title": "{count, plural, one {# leerling wil meedoen} other {# leerlingen willen meedoen}}",
@@ -6389,7 +6401,7 @@
         "someone": "Een collega",
         "hi": "Hallo,",
         "intro": "{name} nodigt je uit om lid te worden van {school} op Oomba Academy als {role}.",
-        "what": "Oomba Academy is een website waar kinderen leren door games te spelen en te maken, en waar leerkrachten hun klassen, lessen en live games leiden.",
+        "what": "Oomba Academy is het ene klassenhulpmiddel voor alles: live spellen, rekenmateriaal, werkbladen, prentenboeken, een klasdashboard en een AI-helper. Eén login, één klassenlijst, één abonnement.",
         "button": "Uitnodiging bekijken",
         "how": "Log in, of maak een leerkrachtaccount, met dit e-mailadres en accepteer dan. De link werkt één keer, {days} dagen lang.",
         "ignore": "Had je dit niet verwacht? Je kunt deze e-mail negeren. Er gebeurt niets tenzij je accepteert.",
@@ -6423,6 +6435,7 @@
     "minutesN": "{count, plural, one {# minuut} other {# minuten}}",
     "assignedN": "{count, plural, one {in # klas} other {in # klassen}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "Speel een game",
       "gameForTeachers": "Een les spelen",
       "build": "Bouw een game",
@@ -8668,6 +8681,7 @@
     "others": {
       "h": "Wie er nog meer gegevens krijgt",
       "li1": "Anthropic (Claude, de AI die de spellen maakt): de berichten, plaatjes en bestanden die een leerling aan de Bouwer geeft, om het spel te maken en te controleren of het veilig is, zonder de naam of gebruikersnaam van de leerling. Chats tussen vrienden en antwoorden in lessen gaan nooit naar de AI.",
+      "ask": "Anthropic (Claude, zie hierboven), voor Vraag het Oomba, de chat op de pagina’s van leerkrachten: de berichten van de leerkracht en de eerdere berichten in dezelfde chat, de tekst van een bijgevoegd document of een bijgevoegde afbeelding, en gegevens over de geopende pagina, zoals de groep, het vak en het aantal leerlingen van een klas, de widgets van een dashboard en hun eigen werkbladen, borden, lesplannen en titels van opdrachten. Namen van leerlingen, e-mailadressen, telefoonnummers en links worden eerst verwijderd. Op de lijst Even kijken van de Hub is elke leerling alleen een plaatshouder zoals „Student A”, met de reden die de app noteerde, zoals minuten vastzitten of een quizscore. Namen en werk van leerlingen worden nooit verstuurd, en leerlingen zien Vraag het Oomba nooit. Zoekopdrachten op het web gaan naar de webzoekfunctie van Anthropic, nooit met een naam of een locatie. Voor spraak naar tekst en boekillustraties (de Gemini API van Google), zie ons <a href=\"{privacy}\">privacybeleid</a>.",
       "li2": "Google, alleen als je school Inloggen met Google gebruikt of een leerkracht Google Classroom koppelt. Classroom leest de namen van de klassen en de Google-id's en namen van de leerlingen in de gekoppelde klas. We sturen alleen wat de leerkracht plaatst, zoals een link naar de les met titel en inleverdatum, en de score van elke leerling op 100: nooit namen, antwoorden, feedback of spellen van leerlingen.",
       "li3": "AI-stemmen en spraak naar tekst, waar ze aanstaan: ons <a href=\"{privacy}\">privacybeleid</a> zegt precies wat elk ervan krijgt."
     },
@@ -10062,24 +10076,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: gratis live quizlessen voor je klas",
-    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame. Gratis voor leerkrachten.",
+    "title": "Oomba Live: live quizlessen voor je klas",
+    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame.",
     "kicker": "Oomba Live voor leerkrachten",
     "h1": "Live quizlessen die je hele klas samen speelt",
-    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen typen alleen de code.",
+    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Zonder reclame, en leerlingen typen alleen de code.",
     "demo": {
       "h": "Bekijk het in één minuut",
       "note": "Een video van één minuut met muziek en ondertitels in beeld: een leraar start een Quest Race over natuurkunde, leerlingen doen mee op hun telefoon met een code en racen door de vragen. Daarna beschrijft een kind een spel aan de Builder, die het maakt en speelt om te controleren of het werkt, en het kind speelt het. Tot slot een paar van de leerspellen."
     },
     "badges": {
-      "free": "Gratis voor leerkrachten",
       "ads": "Geen reclame",
       "noAccounts": "Geen leerlingaccounts nodig",
       "browser": "Elke browser, ook op Chromebooks",
       "languages": "{count} talen"
     },
     "cta": {
-      "host": "Gratis een liveles leiden",
+      "host": "Een liveles leiden",
       "how": "Bekijk hoe het werkt",
       "join": "Doe je mee aan een spel? Typ hier de code"
     },
@@ -10164,7 +10177,7 @@
     },
     "more": {
       "h": "Meer dan een quiz",
-      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper. Eén gratis account voor je hele klas.",
+      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper.",
       "link": "Oomba Academy voor leerkrachten"
     },
     "start": {
@@ -10176,8 +10189,8 @@
     },
     "faq": {
       "h": "Vragen van leerkrachten over Oomba Live",
-      "q1": "Is Oomba Live gratis?",
-      "a1": "Ja. Livelessen leiden, de startsets, je eigen sets en de resultaten zijn allemaal gratis, zonder reclame.",
+      "q1": "Zit er reclame in Oomba Live?",
+      "a1": "Nee. Live lessen leiden, de startsets met vragen, je eigen sets en de resultaten zijn allemaal zonder reclame.",
       "q2": "Hebben mijn leerlingen een account nodig?",
       "a2": "Niet voor een open ruimte: leerlingen typen de code en krijgen een verzonnen bijnaam. In een klasruimte gebruiken ze de schoolaccounts die je voor ze hebt gemaakt, en hun scores gaan naar je cijferboek.",
       "q3": "Hoeveel leerlingen kunnen meedoen?",
@@ -11336,7 +11349,7 @@
       "lessonFolder": "Lessenmap",
       "openClass": "Klas openen",
       "openLive": "Liveles openen",
-      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg daarna je leerlingen toe. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
+      "schoolReady": "{school} staat klaar en jij bent de schoolbeheerder. Maak hieronder je eerste klas en voeg je leerlingen toe, open dan de Hub om je eerste les uit te delen. We bekijken je school binnen 1 schooldag en mailen je een korte handleiding.",
       "allClasses": "Alle klassen"
     },
     "loop": {
@@ -12185,7 +12198,7 @@
       "step3": "Voeg je leerlingen toe: plak hun namen, één per regel. Iedere leerling krijgt een inlogkaart om te printen.",
       "step4": "Bekijk de regels van je school op het tabblad Instellingen. Chatten tussen leerlingen staat uit, tenzij je het aanzet.",
       "teachersH": "Zo beginnen je leraren",
-      "teachersText": "Leraren loggen in en komen op hun pagina Klaslokaal. Het snelste eerste succes is een live spel: tik op \"Een live spel leiden\", zet de code op het bord en de klas doet mee vanaf elk apparaat. Ze kunnen ook een les die ze al geven omzetten in een quiz met \"Van een les een spel maken\".",
+      "teachersText": "Leerkrachten loggen in en komen op hun pagina Klaslokaal. Goede eerste stappen: open de Hub van een klas, deel een les, een live spel of een rekenhulpmiddel uit aan elke tafel, probeer rekenmateriaal op het bord en vraag Oomba om de dag te plannen. De Hub, Vraag het Oomba, het rekenmateriaal en Figures zijn beschikbaar met het Leerkrachtabonnement. Het klasdashboard is gratis voor elke klas.",
       "google": "Gebruikt je school Google Classroom? Dan kunnen leraren het koppelen vanaf de pagina van hun klas om hun klassenlijsten op te halen en cijfers terug te sturen.",
       "help": "Vragen? Beantwoord gewoon deze e-mail. Een echt mens antwoordt, meestal binnen één schooldag.",
       "bye": "Welkom aan boord,",
@@ -15906,6 +15919,7 @@
       "comingNext": "Binnenkort"
     },
     "errors": {
+      "noGrammar": "Grammar Lab is niet open voor je account.",
       "badStage": "Dat kan niet op je bureau.",
       "deskFull": "Je bureau is vol. Haal er eerst iets af.",
       "notStaged": "Dat ligt niet meer op je bureau.",
@@ -16188,6 +16202,7 @@
       "liveLead": "Live voor de hele klas",
       "hostAny": "Live-les starten",
       "kind": {
+        "grammar": "Grammar Lab-onderdeel",
         "live": "Live-spel",
         "liveSet": "Live-quizset",
         "liveAny": "Quizzen, sets en meer",
@@ -16237,6 +16252,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, one {# onderdeel} other {# onderdelen}}",
+    "place": {
+      "askTitle": "In welke groep zit je?",
+      "askText": "We openen eerst het deel van Grammar Lab voor jouw groep. Je kunt nog steeds elk deel bezoeken.",
+      "ask": "Jouw groep",
+      "choose": "Kies je groep",
+      "go": "Laat mijn deel zien",
+      "yours": "Jouw groepen",
+      "other": "Andere groepen"
+    },
+    "assigned": {
+      "badge": "Van je leerkracht",
+      "lead": "Dit is het Grammar Lab-werk dat je leerkracht je heeft gegeven."
+    },
+    "learn": {
+      "see": "Bekijk de cursus"
+    },
+    "step": {
+      "open": "Openen in Grammar Lab",
+      "openRoom": "Open de nakijkkamer",
+      "unitRule": "Klaar als elk onderwerp van het onderdeel beheerst is",
+      "topicRule": "Klaar als het onderwerp beheerst is",
+      "roomRule": "Klaar als je minstens 80% van de fouten vindt"
+    },
+    "teach": {
+      "h1": "Grammar Lab voor je klassen",
+      "lead": "Geef een heel onderdeel, één onderwerp of een nakijkkamer aan een klas, een groepje of één leerling. Een onderwerp is klaar als de leerling het beheerst, een onderdeel als elk onderwerp erin beheerst is.",
+      "bands": "Groepen",
+      "noClasses": "Maak eerst een klas, dan kun je die Grammar Lab-lessen geven.",
+      "newClass": "Maak een klas",
+      "assignUnit": "Onderdeel toewijzen",
+      "assignTopic": "Onderwerp toewijzen",
+      "assignRoom": "Nakijkkamer toewijzen",
+      "assignLabel": "{title} toewijzen",
+      "seeTopics": "Onderwerpen in dit onderdeel",
+      "roomTitle": "Nakijken: {topic}",
+      "dialogTitle": "{title} toewijzen",
+      "whatUnit": "Een heel onderdeel. Het is klaar als elk onderwerp erin beheerst is.",
+      "whatTopic": "Eén onderwerp. Het is klaar als de leerling het beheerst.",
+      "whatRoom": "Een nakijkkamer. Die is klaar als de leerling minstens 80% van de fouten vindt.",
+      "class": "Klas",
+      "who": "Voor wie",
+      "wholeClass": "Hele klas",
+      "groups": "Een groepje",
+      "oneStudent": "Eén leerling",
+      "due": "Inleverdatum (niet verplicht)",
+      "dueHint": "Laat leeg voor geen inleverdatum.",
+      "cancel": "Annuleren",
+      "assign": "Toewijzen",
+      "done": "{title} is toegewezen aan {class}.",
+      "errNoClass": "Kies een van je klassen.",
+      "errDate": "Kies een datum of laat het leeg.",
+      "errNoRoom": "Dit onderwerp heeft geen nakijkkamer.",
+      "errAgain": "Dit is al toegewezen aan de klas.",
+      "errStudent": "Kies iemand uit deze klas.",
+      "mastered": "Beheerst",
+      "level": "Niveau {level} van {levels}",
+      "levelKey": "Bezig (niveau 1 van 3)",
+      "notStarted": "Niet begonnen",
+      "roomPassed": "Nakijkkamer gehaald",
+      "roomTried": "Nakijkkamer geprobeerd",
+      "gridTitle": "Voortgang in Grammar Lab",
+      "gridLead": "De onderwerpen van elke leerling in de onderdelen die deze klas kreeg. Leerlingen staan op naam, nooit in een ranglijst.",
+      "gridEmpty": "Er is nog niets uit Grammar Lab aan deze klas toegewezen.",
+      "assignSome": "Grammar Lab-lessen toewijzen",
+      "backProgress": "Terug naar Voortgang",
+      "backGrid": "Terug naar de Grammar Lab-voortgang van de klas",
+      "filterBand": "Groepen",
+      "filterUnit": "Onderdeel",
+      "all": "Alle",
+      "show": "Tonen",
+      "noStudents": "Nog geen leerlingen in deze klas.",
+      "noneFit": "Geen onderdeel past bij deze filters.",
+      "counts": "Leerlingen",
+      "count": "{mastered} beheerst · {started} bezig",
+      "studentTitle": "{name} in Grammar Lab",
+      "placeH": "Startgroepen",
+      "placeTeacher": "Groepen {grades}, gekozen door een leerkracht.",
+      "placeGrade": "Groepen {grades}, volgens de groep van de leerling ({grade}).",
+      "placeNone": "Nog geen groep bekend. De leerling kiest die bij het eerste bezoek.",
+      "placeSet": "Startgroepen kiezen",
+      "placeAuto": "De groep van de leerling gebruiken",
+      "placeSave": "Opslaan",
+      "placeSaved": "Startgroepen opgeslagen.",
+      "placeNote": "Jouw keuze gaat altijd voor de groep van de leerling. De leerling kan nog steeds elk onderdeel openen.",
+      "colTopic": "Onderwerp",
+      "colStatus": "Stand",
+      "colAttempts": "Pogingen",
+      "colWrong": "Foute antwoorden",
+      "colRoom": "Nakijkkamer",
+      "colLast": "Laatst actief",
+      "never": "Nog geen activiteit",
+      "unitsGiven": "{count, plural, one {# onderdeel toegewezen} other {# onderdelen toegewezen}}",
+      "progressLink": "Bekijk de Grammar Lab-voortgang"
+    },
     "title": "Grammar Lab",
     "sub": "Grammatica en schrijven, één vaardigheid tegelijk",
     "band": "Groepen {grades}",
@@ -16246,6 +16356,7 @@
     "backTo": "Terug naar {unit}",
     "noscript": "Voor deze oefening moet JavaScript aan staan.",
     "topic": {
+      "off": "Nog geen deel van je werk",
       "options": "Meer bij {topic}",
       "card": "Leskaart",
       "again": "Nog een keer oefenen",
@@ -16306,6 +16417,7 @@
       "cancel": "Annuleren"
     },
     "done": {
+      "nextLabel": "Volgend onderwerp",
       "heading": "Je beheerst {topic}!",
       "back": "Terug naar {unit}"
     },

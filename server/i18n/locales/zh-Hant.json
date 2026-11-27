@@ -40,7 +40,7 @@
       "newMessages": "{count, plural, other {# 則新訊息}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · 免費玩、免費做",
+      "tagline": "© Oomba Academy · 學習、遊戲、創作",
       "safety": "安全",
       "parents": "給家長",
       "contact": "聯絡我們",
@@ -2078,6 +2078,11 @@
       "bigger": "文字變大"
     },
     "homeroom": {
+      "gl": {
+        "eyebrow": "Grammar Lab 單元",
+        "lead": "每位學生在 Grammar Lab 完成單元裡的主題。每個主題都精通後就完成。",
+        "notMine": "Grammar Lab 單元要放到學生的桌上。"
+      },
       "my": {
         "label": "我的桌子（只有你看得到上面的東西）",
         "title": "我的桌子",
@@ -5143,7 +5148,7 @@
       "pictures": "圖案",
       "undo": "復原",
       "waitSecs": "{n} 秒後再試一次。",
-      "welcome": "歡迎，{name}！"
+      "welcome": "你進來了！你的書桌準備好了。"
     },
     "homeroom-signin-panel": {
       "closed": "登入已關閉",
@@ -5158,6 +5163,8 @@
       "settings": "登入設定和登入卡"
     },
     "homeroom-desk": {
+      "grammarKind": "Grammar Lab · 已精通 {done}/{count}",
+      "grammarRoom": "Grammar Lab · 校對室",
       "deskOf": "{name} · 我的書桌",
       "empty": "你的書桌上還沒有東西",
       "emptyText": "老師發下東西時，會出現在這裡。",
@@ -5736,6 +5743,7 @@
       "lead": "會依這個順序放到座位，各自保留評分方式。",
       "toolBusy": "{tool} 正在座位上。一次只能一種教具：請先從所有座位移除。",
       "kind": {
+        "grammar": "Grammar Lab 單元",
         "game": "課程",
         "lesson": "教案",
         "task": "練習",
@@ -5839,7 +5847,9 @@
       "allDone": "全部完成！現在沒有要做的事。",
       "more": "今天做完了嗎？",
       "pick": "你的班級"
-    }
+    },
+    "welcome": "你加入 {name} 了！老師給你的遊戲會出現在這裡。",
+    "welcomeDesk": "你加入 {name} 了！點「我的書桌」，看看老師發了什麼。"
   },
   "school": {
     "tabs": {
@@ -5947,7 +5957,9 @@
       "lastActivity": "最近活動",
       "noActivity": "尚無",
       "noStudentsPick": "在下方挑選已經在 {school} 的學生，或為新學生建立帳號和登入卡。",
-      "selectShown": "全選目前顯示的"
+      "selectShown": "全選目前顯示的",
+      "made": "{name} 已準備好。在這裡加入你的學生，或把班級代碼分享給已有自己帳號的學生。",
+      "madeHub": "{name} 已準備好。先在這裡加入學生，再打開 Hub，發下第一堂課、即時遊戲或數學工具。"
     },
     "requests": {
       "title": "{count, plural, other {# 位學生想加入}}",
@@ -6388,7 +6400,7 @@
         "someone": "一位同事",
         "hi": "您好：",
         "intro": "{name} 邀請您以 {role} 身分加入 Oomba Academy 上的 {school}。",
-        "what": "Oomba Academy 是一個讓孩子透過玩遊戲和製作遊戲來學習的網站，教師可以在這裡帶領班級、課程和即時遊戲。",
+        "what": "Oomba Academy 是一個工具，搞定課堂上的一切：即時遊戲、數學教具、學習單、繪本、班級儀表板和 AI 助手。一個帳號、一份班級名單、一個方案。",
         "button": "查看邀請",
         "how": "請用這個電子郵件地址登入或建立教師帳號，然後接受邀請。連結可使用一次，有效 {days} 天。",
         "ignore": "沒有預期收到這封信嗎？您可以忽略它。除非您接受，否則不會有任何變化。",
@@ -6422,6 +6434,7 @@
     "minutesN": "{count, plural, other {# 分鐘}}",
     "assignedN": "{count, plural, other {已指派給 # 個班級}}",
     "kinds": {
+      "grammar": "Grammar Lab",
       "game": "玩遊戲",
       "gameForTeachers": "玩一個課程",
       "build": "做遊戲",
@@ -8667,6 +8680,7 @@
     "others": {
       "h": "還有誰會收到資料",
       "li1": "Anthropic（製作遊戲的 AI，Claude）：學生給小幫手的訊息、圖片和檔案，用來製作遊戲並檢查安全，不含學生的姓名或使用者名稱。朋友之間的聊天和課程作答絕不會送給 AI。",
+      "ask": "Anthropic（Claude，同上），用於問 Oomba（老師頁面上的聊天）：老師的訊息和同一個聊天中先前的訊息、老師附上的文件文字或圖片，以及所開頁面的資訊，例如班級的年級、科目和學生人數、儀表板的小工具，以及老師自己的學習單、白板、教案和作業標題。學生的名字、電子郵件、電話號碼和連結會先被移除。在 Hub 的「需要關心」清單中，每位學生只是像「Student A」這樣的代稱，附上應用程式記下的原因，例如卡住的分鐘數或測驗分數。學生的名字和作品絕不會送出，學生也永遠看不到問 Oomba。網路搜尋會送到 Anthropic 的網路搜尋，絕不含名字或地點。關於語音轉文字和書本圖片（Google 的 Gemini API），請見我們的<a href=\"{privacy}\">隱私權政策</a>。",
       "li2": "Google，只有在學校使用 Google 登入或老師連結 Google Classroom 時才會。Classroom 會讀取班級名稱，以及連結班級中學生的 Google ID 和姓名。我們只傳送老師發布的內容（例如附標題和截止日期的課程連結），以及每位學生滿分 100 的分數：絕不傳送學生的姓名、作答、回饋或遊戲。",
       "li3": "AI 語音和語音轉文字（在已開啟的地方）：我們的<a href=\"{privacy}\">隱私權政策</a>寫明了每一項會收到什麼。"
     },
@@ -10061,24 +10075,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live：給你班級的免費即時測驗課程",
-    "description": "把即時問答競賽投影到大螢幕上。學生用任何裝置輸入 7 位數代碼就能加入，不用帳號、不用打字、沒有廣告。老師免費使用。",
+    "title": "Oomba Live：給你班級的即時測驗課程",
+    "description": "把即時問答競賽投影到大螢幕上。學生用任何裝置輸入 7 位數代碼就能加入，不用帳號、不用打字、沒有廣告。",
     "kicker": "給老師的 Oomba Live",
     "h1": "全班一起玩的即時測驗課程",
-    "lead": "把課程投到白板上。學生用自己的裝置輸入 7 位數代碼加入，搶答你的題目，任何科目、任何程度都行。免費、無廣告，學生只要輸入代碼。",
+    "lead": "把課程投到白板上。學生用自己的裝置輸入 7 位數代碼加入，搶答你的題目，任何科目、任何程度都行。無廣告，學生只要輸入代碼。",
     "demo": {
       "h": "一分鐘看懂",
       "note": "一段一分鐘、有配樂、畫面上有字幕的影片：老師開始一場自然科學的 Quest Race，學生用手機輸入代碼加入並作答。接著，一個孩子向 Builder 描述一個遊戲，Builder 把它做出來並自己玩一遍確認能玩，然後孩子開始玩。最後介紹幾個學習遊戲。"
     },
     "badges": {
-      "free": "老師免費使用",
       "ads": "沒有廣告",
       "noAccounts": "學生不需要帳號",
       "browser": "任何瀏覽器都能用，Chromebook 也可以",
       "languages": "{count} 種語言"
     },
     "cta": {
-      "host": "免費主持即時課程",
+      "host": "主持即時課程",
       "how": "看看怎麼運作",
       "join": "要加入遊戲嗎？在這裡輸入代碼"
     },
@@ -10163,7 +10176,7 @@
     },
     "more": {
       "h": "不只是問答",
-      "p": "Oomba Live 是 Oomba Academy 的一部分，學生還可以在這裡玩學習遊戲，並在安全的 AI 小幫手協助下製作自己的遊戲。一個免費帳號就能給全班使用。",
+      "p": "Oomba Live 是 Oomba Academy 的一部分，學生還可以在這裡玩學習遊戲，並在安全的 AI 小幫手協助下製作自己的遊戲。",
       "link": "給老師的 Oomba Academy"
     },
     "start": {
@@ -10175,8 +10188,8 @@
     },
     "faq": {
       "h": "老師對 Oomba Live 的常見問題",
-      "q1": "Oomba Live 免費嗎？",
-      "a1": "是的。主持即時課程、入門題組、你自己的題組和結果全部免費，也沒有廣告。",
+      "q1": "Oomba Live 有廣告嗎？",
+      "a1": "沒有。主持直播課、入門題組、你自己的題組和結果，都沒有廣告。",
       "q2": "我的學生需要帳號嗎？",
       "a2": "開放房間不需要：學生輸入代碼後會得到一個虛構的暱稱。在班級房間裡，他們使用你為他們建立的學校帳號，分數會記入你的成績冊。",
       "q3": "可以有多少學生一起玩？",
@@ -11335,7 +11348,7 @@
       "lessonFolder": "課程資料夾",
       "openClass": "開啟班級",
       "openLive": "開啟即時課程",
-      "schoolReady": "{school} 已準備就緒，你是學校的管理員。請在下方建立第一個班級，再加入學生。我們會在一個上課日內查看你的學校，並寄給你一份簡短指南。",
+      "schoolReady": "{school} 已準備就緒，你是學校管理員。在下方建立你的第一個班級並加入學生，然後打開它的 Hub 發下你的第一堂課。我們會在 1 個上課日內審查你的學校，並寄給你一份簡短指南。",
       "allClasses": "所有班級"
     },
     "loop": {
@@ -12184,7 +12197,7 @@
       "step3": "加入學生：貼上姓名，一行一個。每位學生都會有一張可列印的登入卡。",
       "step4": "在「設定」分頁確認學校的規則。學生之間的聊天預設為關閉，除非您開啟。",
       "teachersH": "老師如何開始",
-      "teachersText": "老師登入後會進入「教室」頁面。最快的第一個成果是現場遊戲：點「主持即時遊戲」，把代碼投影到黑板上，全班就能用任何裝置加入。老師也可以用「把一堂課變成遊戲」，把平常教的課變成小測驗。",
+      "teachersText": "老師登入後會進入「教室」頁面。第一步可以這樣做：打開班級的 Hub，把一堂課、一個即時遊戲或一個數學工具發到每張書桌，在黑板上試試數學教具，再請 Oomba 規劃當天的課。Hub、問 Oomba、數學教具和 Figures 包含在教師方案中。班級儀表板對每個班級都免費。",
       "google": "如果學校使用 Google Classroom，老師可以在班級頁面連接，匯入學生名單並回傳成績。",
       "help": "有問題嗎？直接回覆這封信即可。真人會回覆您，通常在一個上課日內。",
       "bye": "歡迎加入！",
@@ -15905,6 +15918,7 @@
       "comingNext": "即將推出"
     },
     "errors": {
+      "noGrammar": "你的帳號還沒有開放 Grammar Lab。",
       "badStage": "這個不能放在你的桌子上。",
       "deskFull": "你的桌子滿了。請先拿走一些東西。",
       "notStaged": "這已經不在你的桌子上了。",
@@ -16187,6 +16201,7 @@
       "liveLead": "全班一起即時進行",
       "hostAny": "主持即時課程",
       "kind": {
+        "grammar": "Grammar Lab 單元",
         "live": "即時遊戲",
         "liveSet": "即時測驗題組",
         "liveAny": "測驗、題組等",
@@ -16236,6 +16251,101 @@
     }
   },
   "grammarLab": {
+    "unitsN": "{count, plural, other {# 個單元}}",
+    "place": {
+      "askTitle": "你讀幾年級？",
+      "askText": "我們會先打開你年級的 Grammar Lab。你還是可以看所有的部分。",
+      "ask": "你的年級",
+      "choose": "選擇年級",
+      "go": "顯示我的部分",
+      "yours": "你的年級",
+      "other": "其他年級"
+    },
+    "assigned": {
+      "badge": "老師給的",
+      "lead": "這是老師給你的 Grammar Lab 作業。"
+    },
+    "learn": {
+      "see": "查看課程"
+    },
+    "step": {
+      "open": "在 Grammar Lab 開啟",
+      "openRoom": "開啟校對室",
+      "unitRule": "單元裡每個主題都精通後完成",
+      "topicRule": "精通這個主題後完成",
+      "roomRule": "找到至少 80% 的錯誤後完成"
+    },
+    "teach": {
+      "h1": "給你班級的 Grammar Lab",
+      "lead": "把整個單元、一個主題或一間校對室交給一個班、一個小組或一位學生。學生精通主題時主題就完成，單元裡每個主題都精通時單元就完成。",
+      "bands": "年級",
+      "noClasses": "先建立一個班級，之後就能給它 Grammar Lab 課程。",
+      "newClass": "建立班級",
+      "assignUnit": "指派單元",
+      "assignTopic": "指派主題",
+      "assignRoom": "指派校對室",
+      "assignLabel": "指派 {title}",
+      "seeTopics": "這個單元的主題",
+      "roomTitle": "校對：{topic}",
+      "dialogTitle": "指派 {title}",
+      "whatUnit": "整個單元。每個主題都精通後完成。",
+      "whatTopic": "一個主題。學生精通後完成。",
+      "whatRoom": "一間校對室。學生找到至少 80% 的錯誤後完成。",
+      "class": "班級",
+      "who": "給誰",
+      "wholeClass": "全班",
+      "groups": "一個小組",
+      "oneStudent": "一位學生",
+      "due": "截止日期（可不填）",
+      "dueHint": "不設截止日期就留空。",
+      "cancel": "取消",
+      "assign": "指派",
+      "done": "已把 {title} 指派給 {class}。",
+      "errNoClass": "請選擇你的一個班級。",
+      "errDate": "請選日期，或留空。",
+      "errNoRoom": "這個主題沒有校對室。",
+      "errAgain": "這個已經指派給這個班了。",
+      "errStudent": "請選這個班裡的人。",
+      "mastered": "已精通",
+      "level": "第 {level} 關，共 {levels} 關",
+      "levelKey": "進行中（第 1 關，共 3 關）",
+      "notStarted": "還沒開始",
+      "roomPassed": "校對室已完成",
+      "roomTried": "試過校對室",
+      "gridTitle": "Grammar Lab 進度",
+      "gridLead": "這個班拿到的單元裡，每位學生的主題。學生依姓名列出，從不排名。",
+      "gridEmpty": "這個班還沒有任何 Grammar Lab 指派。",
+      "assignSome": "指派 Grammar Lab 課程",
+      "backProgress": "回到進度",
+      "backGrid": "回到全班的 Grammar Lab 進度",
+      "filterBand": "年級",
+      "filterUnit": "單元",
+      "all": "全部",
+      "show": "顯示",
+      "noStudents": "這個班還沒有學生。",
+      "noneFit": "沒有符合篩選的單元。",
+      "counts": "學生",
+      "count": "已精通 {mastered} · 進行中 {started}",
+      "studentTitle": "{name} 的 Grammar Lab",
+      "placeH": "起始年級",
+      "placeTeacher": "{grades} 年級，由老師選擇。",
+      "placeGrade": "{grades} 年級，依學生的年級（{grade}）。",
+      "placeNone": "還不知道年級。學生第一次來時自己選。",
+      "placeSet": "選擇起始年級",
+      "placeAuto": "使用學生的年級",
+      "placeSave": "儲存",
+      "placeSaved": "已儲存起始年級。",
+      "placeNote": "你的選擇永遠優先於學生的年級。學生還是可以打開每個單元。",
+      "colTopic": "主題",
+      "colStatus": "狀態",
+      "colAttempts": "嘗試次數",
+      "colWrong": "答錯",
+      "colRoom": "校對室",
+      "colLast": "最後活動",
+      "never": "還沒有活動",
+      "unitsGiven": "{count, plural, other {已指派 # 個單元}}",
+      "progressLink": "查看 Grammar Lab 進度"
+    },
     "title": "Grammar Lab",
     "sub": "文法與寫作，一次學一項",
     "band": "{grades} 年級",
@@ -16245,6 +16355,7 @@
     "backTo": "回到 {unit}",
     "noscript": "這個練習需要開啟 JavaScript。",
     "topic": {
+      "off": "還不是你的作業",
       "options": "{topic} 的更多選項",
       "card": "教學卡",
       "again": "再練習一次",
@@ -16305,6 +16416,7 @@
       "cancel": "取消"
     },
     "done": {
+      "nextLabel": "下一個主題",
       "heading": "你精通了 {topic}！",
       "back": "回到 {unit}"
     },

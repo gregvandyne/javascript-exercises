@@ -8,6 +8,8 @@
 // (<slug>-dark-p-390.webp ...; views/how.js shows those when the page is dark).
 //
 // Usage: npm run how-shots [-- --only parents|teachers|live|dash|tools] [-- --theme dark] [-- --keep]     (--keep leaves the temp data and PNGs)
+//        [-- --slug <slug>] writes only that step's pictures (e.g. --only teachers --slug teachers-gradebook)
+//        COURSES (1 or 0) is passed to the server; unset is off, as on the live site.
 //        HOW_PORT=5990 (the server; the fake Stripe for the family step uses HOW_PORT + 1)
 //        HOW_REAL_BUILDER=1 with ANTHROPIC_API_KEY set: the Builder step from Claude (not deterministic: check it by eye).
 // The tools group (the landing and /teachers): a live math room with every student's square, and a Figures worksheet
@@ -112,6 +114,7 @@ async function main() {
     BRB_DATA_DIR: DATA, PORT: String(PORT), ADMIN_USERNAME: 'admin', ADMIN_PASSWORD: crypto.randomBytes(12).toString('hex'),
     ANTHROPIC_API_KEY: realBuilder ? process.env.ANTHROPIC_API_KEY : '', BRB_MOCK_DELAY_MS: '0',
     BRB_SILENT: '1', TRUST_PROXY: '1', BRB_SNAPSHOTS: '0', CONTACT_EMAIL: 'help@example.com', BRB_ALL_LOCALES: '1',
+    COURSES: process.env.COURSES || '0',
     STRIPE_API_VERSION: '', STRIPE_TAX: '', STRIPE_LIVE_OK: '', STRIPE_WEBHOOK_SECRET_OLD: '', BILLING_PREVIEW_TOKEN: '',
   };
   // Paid-plan pages off: no Stripe at all (the live site today).
@@ -162,7 +165,8 @@ async function main() {
       made.push(...await familyShots(shooter));
     }
     await browser.close(); browser = null;
-    const files = await encodeAll(made, PNG);
+    const slug = args.includes('--slug') ? args[args.indexOf('--slug') + 1] : null;
+    const files = await encodeAll(slug ? made.filter(m => m.slug === slug) : made, PNG);
     report(files);
   } finally {
     if (browser) await browser.close().catch(() => {});

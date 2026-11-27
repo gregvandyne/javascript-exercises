@@ -49,6 +49,8 @@ import * as MT from './manip-tasks.js';
 import { toolOf } from '../../public/js/manip-data.js';
 import { taskOf } from '../../public/js/manip-tasks.js';
 import { unitOf } from '../../public/js/homeroom-lesson-make.js';
+import * as GLA from './grammar-lab-assign.js';
+import * as GL from './grammar-lab.js';
 
 const ok = (x = {}) => ({ ok: true, ...x });
 const fail = (code, x = {}) => ({ ok: false, code, ...x });
@@ -121,7 +123,7 @@ export function handable(u, g) {
 function rowsOf(classId) {
   return q.all(`SELECT h.class_lesson_id id, h.in_order, h.grade, h.target, h.created_at, h.hr_lesson hl, h.version, h.problems, h.batch, h.due_min, h.due_zone, cl.due_at, cl.opens_at, cl.lesson_id, s.id step_id, s.title, s.body, s.options, s.game_id, s.kind step_kind, COALESCE(s.story_id,'') story_id, s.items
       FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL
-      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story','manip')
+      JOIN lesson_steps s ON s.lesson_id=cl.lesson_id AND s.kind IN ('game','story','manip','grammar')
       WHERE h.class_id=? ORDER BY h.created_at, h.class_lesson_id`, classId);
 }
 /** Class lessons assigned to the class in Classroom (Assign on the class page, Assign from the Manipulatives page, a
@@ -136,8 +138,8 @@ function classRows(classId) {
       FROM class_lessons cl JOIN lessons l ON l.id=cl.lesson_id JOIN lesson_steps s ON s.id=(SELECT y.id FROM lesson_steps y WHERE y.lesson_id=cl.lesson_id ORDER BY y.position LIMIT 1)
       WHERE cl.class_id=? AND cl.removed_at IS NULL AND NOT EXISTS (SELECT 1 FROM homeroom_handouts h WHERE h.class_lesson_id=cl.id) ORDER BY cl.assigned_at, cl.id`, classId)
     .map(r => {
-      const one = r.nsteps === 1 && (r.step_kind === 'manip' || r.step_kind === 'game');
-      return { ...r, cls: true, grade: r.step_kind === 'manip' ? 'score' : 'completion', ...(one ? (r.step_kind === 'manip' ? { title: r.ltitle || r.title } : {}) : { page: true, title: r.ltitle || r.title, step_kind: 'page' }) };
+      const one = r.nsteps === 1 && (r.step_kind === 'manip' || r.step_kind === 'game' || r.step_kind === 'grammar');
+      return { ...r, cls: true, grade: r.step_kind === 'manip' ? 'score' : 'completion', ...(one ? (r.step_kind === 'manip' || r.step_kind === 'grammar' ? { title: r.ltitle || r.title } : {}) : { page: true, title: r.ltitle || r.title, step_kind: 'page' }) };
     });
 }
 /** Steps done per student on Classroom lessons of several steps: Map 'clId:userId' -> count. */
@@ -148,6 +150,18 @@ function stepsDone(rows) {
 /** A Classroom lesson of several steps on a desk: done when every step is, else how many steps are done. */
 const pageProg = (r, n) => ({ done: !!r.nsteps && n >= r.nsteps, pct: r.nsteps ? Math.min(r.nsteps && n >= r.nsteps ? 100 : 95, Math.round((100 * n) / r.nsteps)) : 0 });
 const PAGE_ICON = '📚';
+// Grammar Lab work (services/grammar-lab-assign.js): its card opens the course (a unit, a topic or a room; never framed,
+// like a lesson page), and how far along is the topics mastered of all (a room: passed or not), from the course itself.
+const GRAMMAR_ICON = '🔤';
+const grammarSnap = r => (r.step_kind === 'grammar' ? GLA.snapOf({ items: r.items }) : null);
+const grammarHref = snap => (snap.what === 'unit' ? `/courses/grammar-lab/${snap.band}/${snap.unit}` : snap.what === 'room' ? GL.roomHref(snap.unit, snap.topic, snap.band)
+  : `/courses/grammar-lab/${snap.band}/${snap.unit}/${snap.topic}`);
+function grammarProg(snap, userId, p) {
+  if (!snap) return { done: false, pct: 0, n: 0 };
+  const pr = GLA.progressFor({ id: userId }, snap);
+  const done = (!!p && p.status === 'done') || pr.mastered;
+  return { done, pct: done ? 100 : pr.total ? Math.min(95, Math.round((100 * pr.done) / pr.total)) : 0, n: pr.total, got: pr.done };
+}
 const READ_ICON = '📖';
 /** A Manipulatives practice set's part of a handout: { manip: { slug (the tool), tasks, n (questions) } } or {}. */
 function manipPart(r) {
@@ -212,7 +226,8 @@ export function boardView(c, locale = 'en', { assigned = true } = {}) {
   const rds = new Map(rows.filter(r => r.step_kind === 'story').map(r => [r.id, { stepId: r.step_id, storyId: r.story_id }])), infos = HR.infosOf(c.id, rds);
   const handouts = rows.map(r => {
     const g = r.game_id ? gameInfo(cache, r.game_id, locale) : null, who = picks.get(r.id);
-    return { id: r.id, title: titleOf(r, g), icon: r.page ? PAGE_ICON : r.step_kind === 'story' ? READ_ICON : r.step_kind === 'manip' ? manipIcon(r) : (g && g.icon) || '🎮', ...readingPart(r), ...manipPart(r), instructions: r.page ? '' : r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target || (who ? 'desk' : 'all'), ...dueFields(c, r),
+    return { id: r.id, title: titleOf(r, g), icon: r.page ? PAGE_ICON : r.step_kind === 'story' ? READ_ICON : r.step_kind === 'manip' ? manipIcon(r) : r.step_kind === 'grammar' ? GRAMMAR_ICON : (g && g.icon) || '🎮',
+      ...(r.step_kind === 'grammar' ? { grammar: true, n: (grammarSnap(r) || { topics: [] }).topics.length } : {}), ...readingPart(r), ...manipPart(r), instructions: r.page ? '' : r.body || '', inOrder: !!r.in_order, grade: r.grade, target: r.target || (who ? 'desk' : 'all'), ...dueFields(c, r),
       students: who ? ids.filter(id => who.has(id)).length : ids.length, at: r.created_at, ...lessonOf(r, g), ...(r.hl ? { version: r.version || '', batch: r.batch || '' } : {}), ...(r.cls ? { cls: true } : {}), ...(r.page ? { page: true, n: r.nsteps } : {}) };
   });
   const desks = {}, t = now(), dueBy = new Map(handouts.map(h => [h.id, h.dueBy])), excused = new Set(AT.missedPairs(c.id, t));
@@ -224,6 +239,7 @@ export function boardView(c, locale = 'en', { assigned = true } = {}) {
       // after due (the teacher's board only, said calmly): not finished past its due time, unless it was given while they
       // were absent ("Missed while you were out" is never after due by itself)
       if (r.page) { const pp = pageProg(r, stepsN.get(`${r.id}:${sid}`) || 0); return { id: r.id, inOrder: false, done: pp.done, pct: pp.pct, score: null, ...(!pp.done && !!by && t > by && !excused.has(`${sid}:${r.id}`) ? { late: true } : {}) }; }
+      if (r.step_kind === 'grammar') { const gp = grammarProg(grammarSnap(r), sid, p); return { id: r.id, inOrder: !!r.in_order, done: gp.done, pct: gp.pct, score: null, ...(!gp.done && !!by && t > by && !excused.has(`${sid}:${r.id}`) ? { late: true } : {}), ...(f ? { fb: f } : {}) }; }
       const late = !done && !!by && t > by && !excused.has(`${sid}:${r.id}`);
       return { id: r.id, inOrder: !!r.in_order, done, pct: rd ? HR.pctOfInfo(rd) : r.step_kind === 'manip' ? manipPct(p, r) : pctOf(p), score: p && p.score !== null && p.score !== undefined ? p.score : null, ...(late ? { late: true } : {}), ...(f ? { fb: f } : {}), ...(rd ? { rd } : {}),
         ...(r.step_kind === 'manip' ? { qs: { ...manipQs(p, r), ...(OP.has(c.id, sid, r.id) ? { opened: true } : {}) } } : {}) };
@@ -266,6 +282,12 @@ export function deskView(c, u, locale = 'en', { assigned = true } = {}) {
       const mp = manipPart(r).manip;
       return { id: r.id, title: titleOf(r, null), icon: manipIcon(r), instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready: !!mp, manip: true, n: mp ? mp.n : 0, tool: mp ? mp.slug : '',
         href: mp ? MT.hrefOf(r.id, r.step_id) : null, done: !!p && p.status === 'done', pct: manipPct(p, r), ...(p && p.status === 'done' && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
+    }
+    // Grammar Lab work (services/grammar-lab-assign.js): opens the course where the work is (never framed: page)
+    if (r.step_kind === 'grammar') {
+      const snap = grammarSnap(r), gp = grammarProg(snap, u.id, p);
+      return { id: r.id, title: titleOf(r, null), icon: GRAMMAR_ICON, instructions: r.body || '', inOrder: !!r.in_order, ...dueFields(c, r), ready: !!snap, page: true, grammar: true, what: snap ? snap.what : '',
+        n: gp.n, got: gp.got || 0, href: snap ? grammarHref(snap) : null, done: gp.done, pct: gp.pct, ...(gp.done && fb.get(`${r.id}:${u.id}`) ? { fb: fb.get(`${r.id}:${u.id}`) } : {}) };
     }
     const g = gameInfo(cache, r.game_id, locale), s = steps.get(r.step_id);
     const ready = !!s && !!s.game_slug && L.playableBy(s, c.school_id, c.id);
@@ -425,6 +447,33 @@ export function handOutTask(u, c, { tasks, count = 5, to, instructions = '', ord
     r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now(), r.n);
   setDue([r.classLesson.id], due);
   audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, tasks: pick.tasks, n: r.n, target: who.target, students: who.all.length, order, grade });
+  return ok({ classLesson: r.classLesson, title: r.title, n: r.n, students: who.all.length });
+}
+/**
+ * Hand out Grammar Lab work (a unit; services/grammar-lab-assign.js): { key ('<band>/<unit>'), to, instructions, order,
+ * grade, dueAt, dueTime, tz }. A class assignment like any handout (a 'grammar' lesson for exactly these students) and a
+ * homeroom_handouts row (problems: how many topics). Only a teacher Grammar Lab lets in.
+ * -> { ok, classLesson, title, n, students } | { ok: false, code }
+ */
+export function handOutGrammar(u, c, { key, to, instructions = '', order = 'in', grade = 'completion', dueAt = null, dueTime = null, tz = '' } = {}) {
+  if (!H.canUseClass(u, c)) return fail('notFound');
+  if (!GLA.canAssignTo(u, c)) return fail('noGrammar');
+  const due = dueOf({ dueAt, dueTime, tz }); if (!due.ok) return due;
+  if (!['in', 'any'].includes(order)) return fail('badOrder');
+  if (!GRADES.includes(grade)) return fail('badGrade');
+  if (typeof instructions !== 'string' || instructions.trim().length > INSTRUCTIONS_MAX) return fail('tooLong');
+  const text = cleanInstructions(instructions);
+  const bad = textProblem(text); if (bad) return fail(bad);
+  const m = /^(k-2|3-5|6-8|9-12)\/([a-z0-9]+(?:-[a-z0-9]+)*)$/.exec(String(key || ''));
+  if (!m) return fail('pickGame');
+  const who = studentsFor(c, to); if (!who.ok) return who;
+  if (openCount(c.id) >= HANDOUTS_MAX) return fail('tooManyHandouts');
+  const r = GLA.assign(u, { classId: c.id, what: 'unit', unit: m[2], band: m[1], students: who.students, dueAt: dueAt || null, body: text });
+  if (!r.ok) return r.code === 'noClass' ? fail('notFound') : r;
+  q.run('INSERT INTO homeroom_handouts(class_lesson_id, class_id, in_order, grade, target, created_by, created_at, problems) VALUES (?,?,?,?,?,?,?,?)',
+    r.classLesson.id, c.id, order === 'in' ? 1 : 0, grade, who.target, u.id, now(), r.n);
+  setDue([r.classLesson.id], due);
+  audit(u.id, 'homeroom.handout', c.id, { classLesson: r.classLesson.id, grammar: key, n: r.n, target: who.target, students: who.all.length, order, grade });
   return ok({ classLesson: r.classLesson, title: r.title, n: r.n, students: who.all.length });
 }
 export const handoutOf = (c, clId) => q.get(`SELECT h.*, cl.lesson_id FROM homeroom_handouts h JOIN class_lessons cl ON cl.id=h.class_lesson_id AND cl.removed_at IS NULL

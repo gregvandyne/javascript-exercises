@@ -164,7 +164,7 @@ async function playLesson(page, tag, L) {
   await page.waitForSelector('#gl-done:not([hidden])');
   assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
   // The next topic, worked out now in this band (never a mastered one), and the room where there is one.
-  assert.equal(await page.textContent('#gl-done-next'), 'Next: Identifying Adjectives');
+  assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), 'Next: Identifying Adjectives');
   assert.match(await page.getAttribute('#gl-done-next', 'href'), /^\/courses\/grammar-lab\/3-5\//);
   assert.equal(await page.isVisible('#gl-done-room'), L.room);
   await page.waitForTimeout(2600);
