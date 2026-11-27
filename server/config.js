@@ -417,6 +417,9 @@ export const config = {
   companionWebSearch: companionWebSearch.on,
   companionModel: process.env.COMPANION_MODEL || '',
   companionScreenModel: process.env.COMPANION_SCREEN_MODEL || process.env.BUILDER_SCREEN_MODEL || '',
+  // Oomba's background jobs (services/oomba-jobs.js): how many run at once for one teacher and in all; the rest wait.
+  oombaJobsPerTeacher: Math.min(10, Math.max(1, Math.floor(num(process.env.OOMBA_JOBS_PER_TEACHER, 3)))),
+  oombaJobsMax: Math.min(50, Math.max(1, Math.floor(num(process.env.OOMBA_JOBS_MAX, 6)))),
   liveMaxPlayers: Math.min(100, Math.max(2, Math.floor(num(process.env.LIVE_MAX_PLAYERS, 60)))),
   liveMaxSessions: Math.max(1, Math.floor(num(process.env.LIVE_MAX_SESSIONS, 60))),
   liveMaxSeats: Math.max(2, Math.floor(num(process.env.LIVE_MAX_SEATS, 2000))),

@@ -74,11 +74,13 @@ import * as NL from './homeroom-look.js';
 import * as CM from './companion-make.js';
 import * as LD from './lesson-draft.js';
 import * as AC from './companion-actions/index.js';
+import * as J from './oomba-jobs.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
-/** Test hooks: create(params) stands in for the AI; screenImage(buf) for the picture check. */
-export const hooks = { create: null, screenImage: null };
+/** Test hooks: create(params) stands in for the AI; screenImage(buf) for the picture check; tool(name, input) is awaited
+ *  before each tool call runs (tests see which run side by side). */
+export const hooks = { create: null, screenImage: null, tool: null };
 const DAY = 86400e3;
 const parse = (s, d) => { try { return JSON.parse(s); } catch { return d; } };
 const clip = C.clip;
@@ -1360,23 +1362,36 @@ export function runTool(name, input, ctx) {
       return { result: { kinds: cat.map(F.catalogLine), generators: gens.map(x => `- ${x.id} (figure ${x.kind}; grades ${x.grades.join(', ')}; ${x.type} answer): ${x.question}`), otherKinds: F.figureCatalog().map(k => k.id).filter(id => !cat.some(k => k.id === id)).slice(0, 60), note: 'A question where students plot a point on a number line: {"plot": {"from", "to", "step", "at", "label"}, "question"} (printed: the student draws the point; the answer key shows it; not checked online).' }, step: { k: 'kinds', n: cat.length } };
     }
     case 'makeBoard': {
-      if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'boardNo' } };
+      const asJob = jobMode(ctx);
+      if (ctx.out.made && !asJob) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'boardNo' } };
       const r = CM.boardPlan(u, i);
       if (r.error) { ctx.out.manipMiss = true; return { result: { made: false, error: r.error, ...(r.help ? { thisTool: r.help } : {}) }, step: { k: 'boardNo' } }; }
       // Checked work: saved in a dry run and read back; saved for real with the answer and read back again.
       const dry = VC.dryRun(() => CM.saveBoard(u, r.plan));
       if (!dry || !dry.ok) return { result: { made: false, error: 'The board could not be saved. Nothing was made.' }, step: { k: 'boardNo' } };
+      if (asJob) {
+        const jb = queueJob(ctx, 'board', { plan: r.plan }, r.plan.title);
+        if (jb.error) return { result: { made: false, error: jb.error }, step: { k: 'boardNo' } };
+        return { result: { started: true, made: false, title: r.plan.title, willHave: { board: r.back, items: r.plan.n }, notLanded: r.plan.dropped ? [{ items: r.plan.dropped, why: 'they failed this tool\'s checks' }] : [], note: JOB_STARTED }, step: { k: 'job', q: clip(r.plan.title, 40) } };
+      }
       ctx.out.made = { kind: 'board', plan: r.plan };
       return { result: { made: true, title: r.plan.title, landed: { board: r.back, items: r.plan.n }, notLanded: r.plan.dropped ? [{ items: r.plan.dropped, why: 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [], note: `${VC.NOTE} The board is saved in the teacher's My boards with your answer, and the card under it opens it. Say in one or two sentences what is on it, from landed.` }, step: { k: 'boardMade', n: r.plan.n } };
     }
     case 'makeWorksheet': {
-      if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'sheetNo' } };
+      const asJob = jobMode(ctx);
+      if (ctx.out.made && !asJob) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'sheetNo' } };
       const gate = formatGate(ctx);
       if (gate.out) return gate.out;
       const r = CM.sheetPlan(u, i, { lang: ctx.lang, facts: gate.facts });
       if (r.error) return { result: { made: false, error: r.error }, step: { k: 'sheetNo' } };
       sayAll(ctx, r.v);
       if (r.v.nothing) return { result: { made: false, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: 'Nothing was made: none of the questions can be put on a worksheet as sent. Say each reason under tellTeacher in one line and offer what can be drawn, or call makeWorksheet again now with questions that can be drawn.' }, step: { k: 'sheetNo' } };
+      if (asJob) {
+        const jb = queueJob(ctx, 'sheet', { plan: r.plan }, r.plan.title);
+        if (jb.error) return { result: { made: false, error: jb.error }, step: { k: 'sheetNo' } };
+        const { landed, ...rest } = FC.verifyResult(r.v, r.back);
+        return { result: { started: true, made: false, willHave: landed, ...rest, ...tellOf(r.v, ctx.lang), note: `${JOB_STARTED} Say each reason under tellTeacher in one line.` }, step: { k: 'job', q: clip(r.plan.title, 40) } };
+      }
       ctx.out.made = { kind: 'sheet', plan: r.plan, told: r.v };
       return { result: { made: true, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} The worksheet is made with your answer and the card under it opens it. Say what is on it from landed, and each reason under tellTeacher in one line.` }, step: { k: 'sheetMade', n: r.v.landed.filter(x => x.now).length } };
     }
@@ -1387,6 +1402,25 @@ export function runTool(name, input, ctx) {
 /** A line the app says itself, before Oomba's words (an empty class, one point at a time, a game turned off): once
  *  per kind in an answer. */
 function lead(ctx, text, kind) { (ctx.out.lead ||= []); if (!ctx.out.lead.some(x => x.kind === kind)) ctx.out.lead.push({ kind, text }); }
+// ---------------------------------------------------------------- background jobs (services/oomba-jobs.js)
+/** What the AI is told when a make became a job. */
+export const JOB_STARTED = 'Started: the card fills in when it is ready; say it is being made, never that it is done.';
+/** The makes that become jobs when an answer asks for several (each only makes a new thing the teacher owns). */
+export const MAKE_TOOLS = Object.freeze(['makeWorksheet', 'makeLesson', 'makeBoard']);
+/** Read-only tools: several in one model response run side by side (results kept in the response's order). */
+export const READ_ONLY_TOOLS = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'findMyPages', 'findLesson', 'findMyBooks', 'classProgress', 'needsLook', 'figuresKinds']);
+/** Does this make start a job? Only inside an answer (ctx.jobs) and when the answer makes more than one thing: several
+ *  makes in one model response, or a make after one was already made or started in this answer. */
+const jobMode = ctx => !!(ctx.jobs && (ctx.jobMode || ctx.out.made || (ctx.out.jobs || []).length));
+/** A job for this answer (created with Oomba's turn, in apply). -> { card } | { error } */
+function queueJob(ctx, kind, input, title) {
+  const list = (ctx.out.jobs ||= []);
+  if (list.length >= J.LIMITS.PER_ANSWER) return { error: `At most ${J.LIMITS.PER_ANSWER} things are made from one message: ask the teacher to send the rest in a new message. Nothing more was started.` };
+  if (J.liveCount(ctx.user.id) + list.length >= J.LIMITS.QUEUE_MAX) return { error: 'The teacher already has many things being made: ask them to send this again once some cards are done. Nothing more was started.' };
+  const card = J.cardOf(uid(14), kind, clip(cleanText(ctx.user, title, ctx.names), 120));
+  list.push({ ...card, input });
+  return { card };
+}
 /** The teacher's words this answer goes by: the message, the file attached to it, and the request a format question
  *  answered (companion-make.js formatAnswer). */
 const fileText = ctx => { const f = ctx.meta && ctx.meta.file ? ctx.files.find(x => x.id === ctx.meta.file.id && x.kind === 'doc') : null; return f ? String(f.text || '').slice(0, 4000) : ''; };
@@ -1464,8 +1498,8 @@ function reportTool(i, ctx) {
 /** makeLesson: the library's Draft with AI (services/lesson-draft.js), checked in a dry run and saved with the answer.
  *  The topic must be in the teacher's own words (never guessed from the chat), and only when they asked to build. */
 async function lessonTool(i, ctx) {
-  const u = ctx.user;
-  if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'lessonNo' } };
+  const u = ctx.user, asJob = jobMode(ctx);
+  if (ctx.out.made && !asJob) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'lessonNo' } };
   const topic = clip(cleanText(u, String(i.topic || ''), ctx.names), 120).replace(/\s+/g, ' ').trim();
   const words = `${ctx.text} ${fileText(ctx)}`;
   if (!topic || !CM.topicInWords(topic, words)) return { result: { error: 'The topic is not in the teacher\'s message. Ask them in one short question which topic and grade the lesson is for. Never guess a topic from earlier messages. Nothing was made.' }, step: { k: 'lessonAsk' } };
@@ -1475,6 +1509,12 @@ async function lessonTool(i, ctx) {
   const school = (pc && schools.find(x => x.id === pc.school_id)) || schools[0];
   if (!school) return { result: { error: 'The teacher has no school on Oomba, so a lesson cannot be saved. Nothing was made.' }, step: { k: 'lessonNo' } };
   const args = { topic, grade: gradeNum(i.grade) === null ? '' : gradeLabel(gradeNum(i.grade)), subject: clip(String(i.subject || ''), 40), minutes: Number(i.minutes) || 40 };
+  // Several makes in one answer: the draft (the slow AI part) and the save are a job; the card fills in when it is done.
+  if (asJob) {
+    const jb = queueJob(ctx, 'lesson', { schoolId: school.id, args, lang: ctx.lang }, topic);
+    if (jb.error) return { result: { made: false, error: jb.error }, step: { k: 'lessonNo' } };
+    return { result: { started: true, made: false, topic, note: JOB_STARTED }, step: { k: 'job', q: clip(topic, 40) } };
+  }
   let d;
   try { d = await LD.draft(u, school.id, { ...args, locale: ctx.lang, t: tFor(ctx.lang) }); } catch { return { result: { error: 'The lesson could not be drafted right now. Nothing was made.' }, step: { k: 'lessonNo' } }; }
   const dry = VC.dryRun(() => LD.save(u, school.id, d, { ...args, lang: ctx.lang }));
@@ -1731,7 +1771,7 @@ export function quickAnswer(user, text, meta, history = []) {
     // Something to assign is the newest answer's card (a lesson or book it found, or something it made), else ask.
     const lastOomba = [...(history || [])].reverse().find(x => x.role === 'oomba' && !x.failed);
     const n = lastOomba && lastOomba.note;
-    const has = n && ((n.cards || []).some(c => c && (c.kind === 'game' || c.kind === 'book')) || (n.made && !n.made.failed) || n.assign);
+    const has = n && ((n.cards || []).some(c => c && (c.kind === 'game' || c.kind === 'book')) || (n.made && !n.made.failed) || (n.jobs || []).some(j => j.made) || n.assign);
     if (!has) return done(t('js.companion.ask.assignWhat'));
   }
   return null;
@@ -1744,11 +1784,13 @@ export function guardReply(reply, ctx) {
   const t = tFor(ctx.lang);
   const fig = ctx.out.figures;
   const did = !!(ctx.out.made || (ctx.out.points || []).length || ctx.out.manip || ctx.out.later || ctx.out.bookChange || (fig && fig.told && fig.told.landed && fig.told.landed.length));
+  const jobs = (ctx.out.jobs || []).length;
   let out = String(reply || '');
-  if (!did && CM.claims(out)) {
+  // Jobs started: nothing of theirs is made yet, so no sentence may say it is (the cards say when it is).
+  if ((!did || jobs) && CM.claims(out)) {
     const r = CM.withoutClaims(out);
     const h = ctx.out.handoff;
-    out = [r.text, h ? t('js.companion.made.draftOnly', { title: h.title || t(`js.companion.hand.${h.tool}`), button: t(`js.companion.hand.open.${h.tool}`) }) : t('js.companion.made.notYet')].filter(Boolean).join(' ');
+    out = [r.text, jobs ? t('js.companion.job.started', { count: jobs }) : h ? t('js.companion.made.draftOnly', { title: h.title || t(`js.companion.hand.${h.tool}`), button: t(`js.companion.hand.open.${h.tool}`) }) : t('js.companion.made.notYet')].filter(Boolean).join(' ');
   }
   // A turned-off game is never "not on Oomba".
   if ((ctx.out.offTitles || []).length) out = out.split(/(?<=[.!?])\s+/).filter(x => !/couldn.?t find|could not find|can.?t find|isn.?t on Oomba|not on Oomba|doesn.?t exist|does not exist|no lesson called/i.test(x)).join(' ');
@@ -1780,7 +1822,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
   const file = meta && meta.file ? files.find(f => f.id === meta.file.id) : null;
   const image = file && file.kind === 'image' && file.bytes ? Buffer.from(file.bytes) : null;
-  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set(), history: history || [] };
+  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set(), history: history || [], jobs: true };
   // The page the teacher has open goes with the first call (what getPageContext gives), so most answers need no round
   // trip just to look (latency, 27 Nov 2026).
   // (Without the class's name: the AI gets a class's name only when it asks for the page with getPageContext.)
@@ -1826,12 +1868,27 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       msgs.push({ role: 'assistant', content: res.content });
       const results = [];
       const tt = Date.now();
-      for (const tu of uses) {
-        let r;
-        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? await runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+      // Several makes in one response: each becomes a job (the answer comes back at once; the cards fill in).
+      if (uses.filter(x => MAKE_TOOLS.includes(x.name)).length >= 2) ctx.jobMode = true;
+      const runOne = async tu => {
+        try {
+          if (hooks.tool) await hooks.tool(tu.name, tu.input);
+          return TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? await runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
+        } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); return { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+      };
+      // Read-only calls next to each other run side by side; a tool that writes or makes a card runs alone, in order.
+      const outs = [];
+      for (let k = 0; k < uses.length;) {
+        let e = k;
+        while (e < uses.length && READ_ONLY_TOOLS.includes(uses[e].name)) e++;
+        if (e > k) { outs.push(...await Promise.all(uses.slice(k, e).map(runOne))); k = e; continue; }
+        outs.push(await runOne(uses[k])); k++;
+      }
+      uses.forEach((tu, k) => {
+        const r = outs[k];
         if (r.step && !['unknown'].includes(r.step.k)) steps.push(r.step);
         results.push({ type: 'tool_result', tool_use_id: tu.id, content: JSON.stringify(r.result).slice(0, 20000) });
-      }
+      });
       perf.toolMs += Date.now() - tt;
       msgs.push({ role: 'user', content: results });
       // A book change: the book's own writer answers it (below), not another round of this loop.
@@ -1854,7 +1911,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   // A reply cut off twice may stop mid-sentence while earlier steps did land: the app's own words say where the truth is.
   if (cutShort) reply = `${reply.trim()}${reply.trim() ? '\n\n' : ''}My answer was cut short. The cards below show exactly what was done; anything not on them was not done.`;
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.action && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.action && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made && !(ctx.out.jobs || []).length) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
   const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, perf, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
     ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.assign ? { assign: ctx.out.assign } : {}), ...(ctx.out.action ? { action: ctx.out.action } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
@@ -1863,8 +1920,17 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
   return {
-    reply, apply: () => withLater(applyAll()),
+    reply, apply: () => withLater(withJobs(applyAll())),
   };
+  /** The jobs this answer started (several makes): created here, in the engine's transaction with Oomba's turn, each
+   *  with its card in the note; they start once it has committed (services/oomba-jobs.js). */
+  function withJobs(o) {
+    const list = ctx.out.jobs || []; if (!list.length) return o;
+    const chat = chatRow(user); if (!chat) return o;
+    J.enqueue(user.id, chat.id, turnId, list);
+    log('info', 'companion started jobs', { turn: turnId, jobs: list.length });
+    return { ...o, note: { ...(o.note || note), jobs: list.map(({ input, ...card }) => card) } };
+  }
   /** The change a tool checked in a dry run (ctx.out.later: a book's rename, copy or pictures, simpler wording), made for
    *  real here and read back: the card shows whether it landed, and the reply is corrected when it differs. */
   function withLater(o) {
@@ -1901,12 +1967,8 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       // exact board, worksheet or lesson; when it did not land, the app says so after Oomba's words.
       if (ctx.out.made) {
         const m = ctx.out.made;
-        let made = null;
-        if (m.kind === 'board') { const r = CM.saveBoard(user, m.plan); if (r.ok) made = { kind: 'board', id: r.board.id, title: r.board.title, tool: r.board.tool, n: m.plan.n, href: CM.boardHref(r.board.id) }; }
-        if (m.kind === 'sheet') { const r = CM.saveSheet(user, m.plan); if (r.ok) made = { kind: 'sheet', id: r.sheet.id, title: r.sheet.title, n: r.sheet.count, href: CM.sheetHref(r.sheet.id) }; }
-        if (m.kind === 'lesson') { const r = LD.save(user, m.schoolId, m.d, { ...m.args, lang }); if (r.ok) made = { kind: 'lesson', id: r.lesson.id, title: r.lesson.title, n: r.saved, href: `/teach/lessons/${encodeURIComponent(r.lesson.id)}?drafted=${m.d.ai ? 'ai' : 'template'}${r.chk ? `&chk=${r.chk}` : ''}` }; }
-        if (made) audit(user.id, 'companion.made', made.id, { kind: made.kind });
-        else log('warn', 'companion make did not land', { turn: turnId, kind: m.kind });
+        const made = saveMade(user, m, lang);
+        if (!made) log('warn', 'companion make did not land', { turn: turnId, kind: m.kind });
         const verify = made ? { ok: true, landed: 1, notLanded: [] } : { ok: false, landed: 0, notLanded: [{ code: 'gone' }] };
         return { note: { ...note, made: made || { kind: m.kind, failed: true } }, verify, ...(made ? {} : { correction: tFor(lang)('js.companion.made.failed') }) };
       }
@@ -1936,6 +1998,40 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
     }
   }
 }
+
+/** A make saved for real and read back (companion-make.js saveBoard / saveSheet, lesson-draft.js save): the card's
+ *  made, or null when it did not land. The same for a make in the answer and a make in a job. m: { kind, plan } or, for a
+ *  lesson, { kind, schoolId, d, args }. */
+function saveMade(user, m, lang) {
+  let made = null;
+  if (m.kind === 'board') { const r = CM.saveBoard(user, m.plan); if (r.ok) made = { kind: 'board', id: r.board.id, title: r.board.title, tool: r.board.tool, n: m.plan.n, href: CM.boardHref(r.board.id) }; }
+  if (m.kind === 'sheet') { const r = CM.saveSheet(user, m.plan); if (r.ok) made = { kind: 'sheet', id: r.sheet.id, title: r.sheet.title, n: r.sheet.count, href: CM.sheetHref(r.sheet.id) }; }
+  if (m.kind === 'lesson') { const r = LD.save(user, m.schoolId, m.d, { ...m.args, lang }); if (r.ok) made = { kind: 'lesson', id: r.lesson.id, title: r.lesson.title, n: r.saved, href: `/teach/lessons/${encodeURIComponent(r.lesson.id)}?drafted=${m.d.ai ? 'ai' : 'template'}${r.chk ? `&chk=${r.chk}` : ''}` }; }
+  if (made) audit(user.id, 'companion.made', made.id, { kind: made.kind });
+  return made;
+}
+// The companion's job kinds (services/oomba-jobs.js): the three makes, each only MAKING a new thing the teacher owns
+// (a worksheet, a lesson plan, a board). Nothing that changes a class is a job. Each saves with the same function as the
+// inline path, in the runner's transaction, and reads it back; the card gets the same made the inline path shows.
+const madeJob = (user, m, lang) => {
+  if (!companionFor(user)) return { ok: false, code: 'notAllowed' };
+  const made = saveMade(user, m, lang);
+  return made ? { ok: true, result: made, card: { made } } : { ok: false, code: 'gone' };
+};
+J.defineKind('sheet', { run: async (user, input) => ({ apply: () => madeJob(user, { kind: 'sheet', plan: input.plan }, (input.plan && input.plan.lang) || 'en') }) });
+J.defineKind('board', { run: async (user, input) => ({ apply: () => madeJob(user, { kind: 'board', plan: input.plan }, 'en') }) });
+J.defineKind('lesson', {
+  async run(user, input) {
+    if (!companionFor(user)) return { failed: 'notAllowed' };
+    // The AI budget, as every AI call here: spent for today or the month, the job ends with that reason.
+    const b = aiBudget.status();
+    if (!b.ok) return { failed: b.reason === 'daily' ? 'budgetDay' : 'budgetMonth' };
+    const lang = input.lang || 'en';
+    let d;
+    try { d = await LD.draft(user, input.schoolId, { ...input.args, locale: lang, t: tFor(lang) }); } catch { return { failed: 'ai' }; }
+    return { apply: () => madeJob(user, { kind: 'lesson', schoolId: input.schoolId, d, args: input.args }, lang) };
+  },
+});
 
 // ---------------------------------------------------------------- the surface
 export const surface = C.defineSurface({
@@ -2003,7 +2099,7 @@ export function prune(t = now()) {
   MC.prune(null, t);
   return n;
 }
-register('companion-retention', 3600e3, () => { C.prune(); }, { firstAfterMs: 11 * 60e3 });
+register('companion-retention', 3600e3, () => { C.prune(); J.prune(); }, { firstAfterMs: 11 * 60e3 });
 
 // ---------------------------------------------------------------- the routes' calls
 /** The conversation. peek: a page loading in the background, the bubble closed: endings are not marked as seen (so the
@@ -2117,6 +2213,12 @@ export function act(u, turnId, a, value = '') {
     return C.addTurn(u, SURFACE, KEY, { mark: { id: turn.id, fields: { note: { ...note, proposal: { ...p, state: 'applied' } } } }, apply: () => applyProposal(u, p), text: '' });
   }
   if (a === 'pick') return pickOne(u, row, turn, value);
+  // Try again on a failed job's card: the same job queued again, once (services/oomba-jobs.js retry).
+  if (a === 'jobRetry') {
+    const j = (note.jobs || []).find(x => x.id === String(value || ''));
+    if (!j || !J.retry(u.id, j.id)) return { ok: false, code: 'notFound' };
+    return C.current(u, SURFACE, KEY);
+  }
   if (/^plan[A-Z]/.test(a)) return planAct(u, row, turn, a, value);
   if (/^follow[A-Z]/.test(a)) return followAct(u, row, turn, a, value);
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
@@ -2487,5 +2589,5 @@ function markNote(u, row, turnId, note) {
   return C.current(u, SURFACE, KEY);
 }
 /** The account is deleted: the engine's forgetUser and the foreign keys take the rest (files go with their chats). */
-export function forgetUser(userId) { q.run('DELETE FROM oomba_files WHERE owner_id=?', userId); C.forgetUser(userId); }
+export function forgetUser(userId) { q.run('DELETE FROM oomba_files WHERE owner_id=?', userId); J.forgetUser(userId); C.forgetUser(userId); }
 export { C as engine };

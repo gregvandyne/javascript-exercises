@@ -16672,3 +16672,44 @@ teacher connected and allowed to post, the class linked, not for some students; 
 `renameBoard` (Undo renames back), `duplicateBoard` and `duplicateLesson` (Undo deletes the copy while it is as made),
 `deleteWorksheet`, `deleteBoard`, `deleteLesson` (risk delete; none of them has a restore, so no Undo and the card says
 so; deleteLesson's card counts its classes and the students with work in it).
+
+## Oomba runs several jobs at once (27 Nov 2026)
+
+The owner: "the Oomba chat can launch multiple agents at once". One message that asks for several slow things ("a
+fractions worksheet, a lesson plan on it and a number-line board") used to make them one after another inside the answer
+(and only one make per answer was allowed). Now each of them is a background job (services/oomba-jobs.js, table
+oomba_jobs, migration 0147) and the chat stays usable while they run.
+
+- **What runs as a job**: `makeWorksheet`, `makeLesson` and `makeBoard`, when one answer makes more than one thing
+  (several makes in one model response, or a make after one was already made or started in this answer). A make alone
+  runs inline exactly as before. The tool still checks its input at once (the worksheet's questions drawn and read back
+  in a dry run, the board built, the lesson's topic in the teacher's own words), and a refusal is said at once; only a
+  checked make is queued. The AI is told "Started: the card fills in when it is ready; say it is being made, never that
+  it is done.", and the server-side guard takes out any sentence claiming it is made ("They are being made now: the
+  cards below fill in when they are ready."). At most 6 jobs per answer and 12 waiting or running per teacher. Books
+  stay as they are (the book card already asks, then makes the book through its own queue after the teacher's tap).
+- **Where the work happens**: the jobs are created in the chat engine's transaction with Oomba's turn (so a failed
+  answer starts none) and start when it commits. Each job calls the same function the inline path uses
+  (companion-make.js saveSheet / saveBoard, lesson-draft.js draft then save), in the runner's own transaction, reads it
+  back, and writes its result into the job row and into the turn's card (note.jobs) atomically, only while that attempt
+  is still the job's current one. A lesson job's AI call checks the AI budget first (spent: the job ends failed,
+  "Oomba's AI has used up today's budget...") and counts against it like every other call.
+- **Caps**: up to 3 jobs per teacher at once (OOMBA_JOBS_PER_TEACHER) and 6 in all (OOMBA_JOBS_MAX); the rest wait,
+  oldest first.
+- **Restart**: single instance, like the chat engine. At boot `recover()` puts a running job back in the queue once; a
+  job that already ran twice ends failed ("Oomba restarted while making this"). Shutdown waits for running jobs within
+  its grace (they count as busy).
+- **The card**: "Making the worksheet..." with the chat's pulse while it runs; done: the same card the inline path shows
+  (Open the worksheet, lesson or board); failed: the reason in plain words and Try again, which queues the same job once
+  more. The panel polls every 1.5 s while any job is waiting or running (public/js/oomba-chat.js `working`).
+- **The chat stays usable**: a job is not a turn, so it never blocks a new message; the one-live-answer rule is
+  unchanged for answers themselves (and they are quick now, since the slow work moved to jobs).
+- **What still needs a tap**: jobs only MAKE new things the teacher owns. Anything that changes a class (assign, hand
+  out, points, `doAction`) is never a job: it stays a confirm card, done only on the teacher's tap. Only the three
+  make kinds are defined; any other kind is refused.
+- **Parallel reads**: read-only tool calls next to each other in one model response (search*, find*, getPageContext,
+  classProgress, needsLook, figuresKinds, explainOomba) run side by side; tools that write or make cards run alone, in
+  order; the tool results keep the response's order.
+- **Unchanged**: students' names never go to the AI (job inputs are what the tools already checked and scrubbed); the
+  messages-an-hour limit; the budget. Finished jobs are kept 7 days (the card keeps what was made); they go with the
+  chat and with the account. Tests: tests/unit/oomba-jobs.test.js.

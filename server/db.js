@@ -1648,6 +1648,19 @@ export const MIGRATIONS = [
   ['0146_grammar_lab_place', `
     CREATE TABLE IF NOT EXISTS grammar_lab_place (user_id TEXT PRIMARY KEY, grade INTEGER, grade_declared_at INTEGER,
       band TEXT, set_by TEXT, updated_at INTEGER NOT NULL);`],
+  // Oomba's background jobs (services/oomba-jobs.js; docs/decisions.md "Oomba runs several jobs at once"): one row per
+  // slow make an answer started (a worksheet, a lesson plan, a board), run apart from the answer. turn_id: the engine's
+  // turn (oomba_turns) that started it; kind and input: what to make, checked by the tool (never a student's name);
+  // state queued | running | done | failed; result: what was made (ids, title); error: a plain code; attempt: runs,
+  // restarts included; retried: Try again used. Goes with the chat and with the account.
+  ['0147_oomba_jobs', `
+    CREATE TABLE IF NOT EXISTS oomba_jobs (id TEXT PRIMARY KEY, owner_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      chat_id TEXT NOT NULL REFERENCES oomba_chats(id) ON DELETE CASCADE, turn_id TEXT, kind TEXT NOT NULL, input TEXT NOT NULL DEFAULT '{}',
+      title TEXT NOT NULL DEFAULT '', state TEXT NOT NULL DEFAULT 'queued', result TEXT, error TEXT, attempt INTEGER NOT NULL DEFAULT 0,
+      retried INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL, started_at INTEGER, ended_at INTEGER);
+    CREATE INDEX IF NOT EXISTS idx_oomba_jobs_state ON oomba_jobs(state, created_at);
+    CREATE INDEX IF NOT EXISTS idx_oomba_jobs_owner ON oomba_jobs(owner_id, state);
+    CREATE INDEX IF NOT EXISTS idx_oomba_jobs_chat ON oomba_jobs(chat_id);`],
 ];
 
 /** 0121 (exported for its test): an official game's slug from `from` to `to`. Nothing happens when no official game has

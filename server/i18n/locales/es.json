@@ -5266,6 +5266,35 @@
             "ended": "Se quitó «{title}» de las pantallas de {class}."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {Se está haciendo ahora: su tarjeta de abajo se completa cuando esté lista.} other {Se están haciendo ahora: las # tarjetas de abajo se completan cuando estén listas.}}",
+        "step": "Empecé a hacer {q}",
+        "retry": "Intentar de nuevo",
+        "kind": {
+          "sheet": "Hoja de trabajo",
+          "lesson": "Plan de clase",
+          "board": "Tablero"
+        },
+        "waiting": {
+          "sheet": "Esperando para hacer la hoja de trabajo…",
+          "lesson": "Esperando para hacer el plan de clase…",
+          "board": "Esperando para hacer el tablero…"
+        },
+        "making": {
+          "sheet": "Haciendo la hoja de trabajo…",
+          "lesson": "Haciendo el plan de clase…",
+          "board": "Haciendo el tablero…"
+        },
+        "fail": {
+          "budgetDay": "La IA de Oomba ya usó el presupuesto de hoy, así que esto no se hizo y no se guardó nada. Inténtalo de nuevo mañana.",
+          "budgetMonth": "La IA de Oomba ya usó el presupuesto de este mes, así que esto no se hizo y no se guardó nada.",
+          "ai": "La IA no pudo escribirlo ahora, así que no se guardó nada.",
+          "gone": "Al final no se pudo guardar, así que no se guardó nada.",
+          "restart": "Oomba se reinició mientras hacía esto, así que no se guardó nada.",
+          "notAllowed": "Esta cuenta no puede hacer esto ahora, así que no se guardó nada.",
+          "error": "Algo salió mal mientras se hacía esto, así que no se guardó nada."
+        }
       }
     },
     "companion-greet": {

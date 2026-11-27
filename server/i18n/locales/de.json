@@ -5267,6 +5267,35 @@
             "ended": "„{title}“ von den Bildschirmen von {class} genommen."
           }
         }
+      },
+      "job": {
+        "started": "{count, plural, one {Wird gerade erstellt: Die Karte unten füllt sich, sobald es fertig ist.} other {Werden gerade erstellt: Die # Karten unten füllen sich, sobald sie fertig sind.}}",
+        "step": "Mit {q} angefangen",
+        "retry": "Noch einmal versuchen",
+        "kind": {
+          "sheet": "Arbeitsblatt",
+          "lesson": "Unterrichtsplan",
+          "board": "Brett"
+        },
+        "waiting": {
+          "sheet": "Wartet darauf, das Arbeitsblatt zu erstellen…",
+          "lesson": "Wartet darauf, den Unterrichtsplan zu erstellen…",
+          "board": "Wartet darauf, das Brett zu erstellen…"
+        },
+        "making": {
+          "sheet": "Das Arbeitsblatt wird erstellt…",
+          "lesson": "Der Unterrichtsplan wird erstellt…",
+          "board": "Das Brett wird erstellt…"
+        },
+        "fail": {
+          "budgetDay": "Oombas KI hat das Budget für heute aufgebraucht, deshalb wurde das nicht erstellt und nichts gespeichert. Versuch es morgen noch einmal.",
+          "budgetMonth": "Oombas KI hat das Budget für diesen Monat aufgebraucht, deshalb wurde das nicht erstellt und nichts gespeichert.",
+          "ai": "Die KI konnte es gerade nicht schreiben, deshalb wurde nichts gespeichert.",
+          "gone": "Es konnte doch nicht gespeichert werden, deshalb wurde nichts gespeichert.",
+          "restart": "Oomba wurde neu gestartet, während das erstellt wurde, deshalb wurde nichts gespeichert.",
+          "notAllowed": "Dieses Konto kann das gerade nicht erstellen, deshalb wurde nichts gespeichert.",
+          "error": "Beim Erstellen ist etwas schiefgegangen, deshalb wurde nichts gespeichert."
+        }
       }
     },
     "companion-greet": {
