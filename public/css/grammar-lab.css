@@ -261,3 +261,4 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-mgap[aria-pressed="true"]::after{content:attr(data-mark)}
 .gl-asis[aria-pressed="true"]{background:var(--spark);color:var(--brand-ink);box-shadow:inset 0 -3px 0 var(--spark-press)}
 .gl-section-body{margin:4px 0 8px}
+.gl-title-w{font-style:italic}

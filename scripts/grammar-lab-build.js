@@ -50,6 +50,10 @@
 //           or a comma and a joining word that fits the hint's relation); 'dialogue' and 'quote' accept the fix as
 //           written (quotes straight or curly). The versions' wrong ones break a rule: a splice, the run-on itself, a
 //           missing capital; a missing comma, an end mark outside the marks, a small letter to start the quote.
+//   items   grades 6-8 (and up): a topic whose quiz mixes question shapes; each line is read by the first reader that
+//           knows its shape and keeps its own format (tap with phrases, capfix both ways, marks: punctuation chips,
+//           choice, passage, fix). The code and its rules are under "grades 6-8" below; pathways.json read.* holds a
+//           topic's notes for them (its independent check, pills, chips, fix kind, optional commas, "right as it is").
 // No option is ever pre-selected: the page opens every question with nothing chosen and Submit off.
 //
 // Mistake Hunt rooms (phase0.md): a topic whose pathways.json entry has room.kinds gets a passage built from its own
@@ -1326,7 +1330,10 @@ function readItems(lines, problems, where, def, notes) {
       if (it === false) return null;
       if (it) {
         if (it.format !== 'passage' && it.format !== 'tap' && r.hint.includes(it.right)) problems.push(`${at}: the hint gives the answer`);
-        return { n: r.n, ...it, hint: r.hint, ...(def.read && def.read.asIs && (it.format === 'marks' || it.format === 'fix') ? { asIs: true } : {}) };
+        // a book or movie title in the sentence is shown in italics (overrides { title })
+        const title = (notes[String(r.n)] || {}).title, titleAt = title ? placesOf(it.text, title) : null;
+        if (title && !titleAt) problems.push(`${at}: the title "${title}" is not in the sentence`);
+        return { n: r.n, ...it, hint: r.hint, ...(titleAt ? { titleAt } : {}), ...(def.read && def.read.asIs && (it.format === 'marks' || it.format === 'fix') ? { asIs: true } : {}) };
       }
     }
     problems.push(`${at}: no reader knows this item's shape: ${r.q.slice(0, 80)}`);

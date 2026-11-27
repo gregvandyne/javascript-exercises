@@ -81,7 +81,8 @@ async function cycleTo(page, it, k) {
 async function answer(page, topic, { wrong = false } = {}) {
   const t = GL.topic(topic), it = await itemOn(page, topic);
   assert.ok(await page.isDisabled('#gl-submit'), 'Submit is off until the student acts');
-  const k = wrong ? it.options.findIndex((_, i) => i !== it.answer[0]) : it.answer[0];
+  // a wrong version the student types (never the sentence as it stands: that leaves Submit off)
+  const k = wrong ? it.options.findIndex((o, i) => i !== it.answer[0] && o !== it.text) : it.answer[0];
   if (t.format === 'fix') {
     await page.fill('#gl-fix', wrong ? it.options[k] : it.right);
   } else if (t.format === 'passage') {

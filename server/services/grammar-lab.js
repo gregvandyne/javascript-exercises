@@ -164,13 +164,13 @@ export function questionFor(t, s) {
     // plain: the sentence itself, with no blank (sentence or fragment); cycle: press-to-cycle in the blank.
     return { ...base, before, after, options: it.options, whole: !!it.whole, italic: !!it.italic,
       ...(it.prompt ? { prompt: it.prompt } : {}), ...(it.plain ? { plain: true } : {}), ...(t.cycle || it.cycle ? { cycle: true } : {}),
-      ...(it.focus && it.focus.length ? { words: tokenize(it.text), focus: it.focus } : {}) };
+      ...(it.focus && it.focus.length ? { words: tokenize(it.text), focus: it.focus } : {}), ...(it.titleAt ? { titleAt: it.titleAt } : {}) };
   }
   // punctuation chips: the words without their marks, the marks as written, and the chip bank (never the marks wanted)
   if (kind === 'marks') return { ...base, words: it.words, start: it.start, chips: it.chips, ...(it.asIs ? { asIs: true } : {}) };
   // A fix: the sentence to fix in a box; once missed, the versions to press through (the right one among them, unsaid).
   if (kind === 'fix') return { ...base, text: it.text, ...(s.cur.missed ? { options: it.options } : {}), ...(it.asIs && !s.cur.missed ? { asIs: true } : {}) };
-  return { ...base, words: tokenize(it.text), need: it.answer.length, ...(f === 'capfix' ? { capfix: true } : {}), ...(it.focus && it.focus.length ? { focus: it.focus } : {}) };
+  return { ...base, words: tokenize(it.text), need: it.answer.length, ...(f === 'capfix' ? { capfix: true } : {}), ...(it.focus && it.focus.length ? { focus: it.focus } : {}), ...(it.titleAt ? { titleAt: it.titleAt } : {}) };
 }
 /** A list of distinct whole numbers below n, or null. */
 const places = (marked, n) => {
@@ -191,6 +191,7 @@ export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   if (marked === AS_IS && item.asIs && (kind === 'marks' || (kind === 'fix' && !missed))) {
     return (kind === 'fix' ? item.accept.some(a => normTyped(a) === normTyped(item.text)) : sameMarks(item.start, item.want) && !item.optional.length) ? 'right' : 'wrong';
   }
+  if (marked === AS_IS) return null;
   if (kind === 'marks') {
     // [[gap, mark]]: every needed mark in its gap, an optional one there or not, no other gap holding a mark
     if (!Array.isArray(marked) || marked.length > item.words.length) return null;

@@ -31250,7 +31250,11 @@
       2,
       3
      ],
-     "hint": "Ask whether the word names any one of a general kind, or one specific, named person, place, or thing."
+     "hint": "Ask whether the word names any one of a general kind, or one specific, named person, place, or thing.",
+     "titleAt": [
+      2,
+      3
+     ]
     },
     {
      "id": "common-proper-7",

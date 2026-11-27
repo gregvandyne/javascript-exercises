@@ -112,7 +112,15 @@ function renderQuestion() {
     box.append(q.before, cycleButton(q.options, false), q.after);
   } else if (q.kind === 'choice') {
     // pills about a sentence: the sentence, with the word the question names in bold
-    if (q.plain && q.words) q.words.forEach((w, i) => { if (i) box.append(' '); box.append(w.pre); const s = document.createElement(q.focus.includes(i) ? 'b' : 'span'); s.textContent = w.t; if (q.focus.includes(i)) s.className = 'gl-focus'; box.append(s, w.post); });
+    if (q.plain && q.words) q.words.forEach((w, i) => {
+      if (i) box.append(' ');
+      box.append(w.pre);
+      const s = document.createElement(q.focus.includes(i) ? 'b' : 'span'); s.textContent = w.t;
+      if (q.focus.includes(i)) s.className = 'gl-focus';
+      // a book or movie title stays in italics
+      if (q.titleAt && q.titleAt.includes(i)) s.classList.add('gl-title-w');
+      box.append(s, w.post);
+    });
     else if (q.plain) box.append(q.before);
     else if (!q.whole) {
       box.append(q.before);
@@ -142,7 +150,7 @@ function renderQuestion() {
         return;
       }
       const b = document.createElement('button');
-      b.type = 'button'; b.className = `gl-w${q.focus && q.focus.includes(i) ? ' gl-focus' : ''}`; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
+      b.type = 'button'; b.className = `gl-w${q.focus && q.focus.includes(i) ? ' gl-focus' : ''}${q.titleAt && q.titleAt.includes(i) ? ' gl-title-w' : ''}`; b.dataset.i = String(i); b.setAttribute('aria-pressed', 'false'); b.textContent = w.t;
       box.append(b);
       if (w.post) box.append(w.post);
     });
