@@ -182,12 +182,19 @@ test('mastery: a near miss changes nothing; a level whose last answers are not t
   assert.equal(M.summary(s).level, 2); assert.equal(M.summary(s).streak, 0, 'a new level starts with an empty streak');
 });
 
-test('mastery: a run longer than the items brings the missed ones back first, never the one just shown', () => {
+test('mastery: a missed item comes back later as a retry (two questions between), never right after it was missed', () => {
   const s = M.newRun({ levels: [4, 4, 4], items: 12, seed: 'd' });
   const missed = s.cur.item;
   play(s, ['wrong', 'right']);
-  for (let i = 0; i < 11; i++) M.answer(s, 'right');
-  assert.equal(s.cur.item, missed, 'the 13th question is the missed item again');
+  assert.notEqual(s.cur.item, missed, 'the next question is a fresh one');
+  play(s, ['right', 'right']);
+  assert.equal(s.cur.item, missed, 'the 4th question is the missed item again');
+  assert.equal(s.cur.retry, true, 'labeled as a retry');
+  assert.equal(GL.questionFor({ ...GL.topic(TOPIC) }, { ...s, cur: { ...s.cur, item: 0 } }).again, true, 'the page is told: "Try this one again"');
+  play(s, Array(10).fill('right'));
+  assert.equal(s.mastered, true);
+  // every item once, and the missed one twice: 13 questions
+  assert.equal(s.seq.length, 13); assert.equal(new Set(s.seq).size, 12);
 });
 
 // ------------------------------------------------------------------------------------------------- server grading
@@ -228,15 +235,17 @@ test('grading on the server: the page gets words and the ask, never an answer; r
   let last = null;
   for (let i = 0; i < 40 && !(last && last.mastered); i++) { last = (await post(`${API}/answer`, kid, { unit: UNIT, id: qn.id, marked: rightFor(qn) })).json; qn = last.question; }
   assert.equal(last.mastered, true);
-  // The unit has no more topics: the next one is the band's first open one not mastered, worked out now.
-  assert.deepEqual(last.closing, { answered: 13, next: { title: "Capitalizing People's Names and Dates", href: '/courses/grammar-lab/k-2/capital-letters/capitalizing-names-and-dates' }, win: 'mastered' });
+  // The next topic is the unit's next one (K-2 adverbs), worked out now; the counts say 12 plus 1 for the miss, and 12 of
+  // the 13 were right on the first try; the topic also counts in Kinds of Words.
+  assert.deepEqual(last.closing, { answered: 13, firstTry: 12, of: 13, base: 12, added: 1, also: ['Kinds of Words'],
+    next: { title: 'Identifying Adverbs', href: '/courses/grammar-lab/k-2/adjectives-and-adverbs/identifying-adverbs' }, win: 'mastered' });
   assert.ok(GL.masteredSet(kid).has(TOPIC));
   assert.ok(q.get("SELECT completed_at FROM course_progress WHERE user_id=? AND course='grammar-lab' AND step=?", kid.id, TOPIC).completed_at);
   // The unit shows the green check; the menu's three choices are open; look back lists the questions.
   const unit = await get(`/courses/grammar-lab/k-2/${UNIT}`, kid);
   assert.match(unit.text, /class="gl-tile gl-mastered" id="gl-topic-identifying-adjectives"/);
-  assert.match(unit.text, /aria-label="1 of 1 topics mastered"/);
-  assert.doesNotMatch(unit.text, /aria-disabled="true">Practice again/);
+  assert.match(unit.text, /aria-label="1 of 2 topics mastered"/);
+  assert.doesNotMatch(unit.text.slice(unit.text.indexOf('id="gl-topic-identifying-adjectives"'), unit.text.indexOf('id="gl-topic-identifying-adverbs"')), /aria-disabled="true">Practice again/);
   const back = await get(`/courses/grammar-lab/k-2/${UNIT}/${TOPIC}/review`, kid);
   assert.equal((back.text.match(/<li class="gl-(ok|fixed)">/g) || []).length, 13);
   // Practicing again starts a fresh run; mastery stays.
@@ -251,7 +260,7 @@ test('before mastery, only the teaching card is usable in the topic menu', async
   assert.match(unit.text, /<a class="gl-mi" role="menuitem" href="\/courses\/grammar-lab\/k-2\/adjectives-and-adverbs\/identifying-adjectives\/card">Teaching card<\/a>/);
   assert.match(unit.text, /aria-disabled="true">Practice again/);
   assert.match(unit.text, /aria-disabled="true">Look back at questions/);
-  assert.match(unit.text, /aria-label="0 of 1 topics mastered"/);
+  assert.match(unit.text, /aria-label="0 of 2 topics mastered"/);
 });
 
 // ------------------------------------------------------------------------------------------------- guests

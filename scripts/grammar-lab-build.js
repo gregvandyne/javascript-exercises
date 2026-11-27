@@ -2268,7 +2268,8 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
   const problems = [];
   const topics = {}, rooms = {};
   const bandOf = {};
-  for (const b of plan.bands) for (const p of b.pathways) for (const part of (plan.pathways[p] || { parts: [] }).parts) for (const id of part.topics) bandOf[id] = bandOf[id] || b.id;
+  // (a part with a band is only in that band's copy of a unit two bands share)
+  for (const b of plan.bands) for (const p of b.pathways) for (const part of (plan.pathways[p] || { parts: [] }).parts) if (!part.band || part.band === b.id) for (const id of part.topics) bandOf[id] = bandOf[id] || b.id;
   for (const [id, def] of Object.entries(plan.topics)) {
     const where = `${id} (${def.source.band} "${def.source.title}")`;
     const src = findTopic(sections, def.source.band, def.source.title, def.source.line || null);
@@ -2305,8 +2306,12 @@ export function buildTopics(md, plan, overrides = { topics: {} }) {
     lint(plan.pathways[p].title, problems, `pathway ${p}`);
     for (const part of plan.pathways[p].parts) {
       if (part.title) lint(part.title, problems, `pathway ${p} part`);
+      if (part.band && !plan.bands.some(x => x.id === part.band && x.pathways.includes(p))) problems.push(`pathway ${p}: a part for band "${part.band}", which does not use this unit`);
       for (const id of part.topics) if (!plan.topics[id]) problems.push(`pathway ${p}: no topic "${id}"`);
     }
+    const here = plan.pathways[p].parts.filter(x => !x.band || x.band === b.id).flatMap(x => x.topics);
+    if (new Set(here).size !== here.length) problems.push(`pathway ${p} in band ${b.id}: a topic is listed twice`);
+    if (!here.length) problems.push(`pathway ${p} in band ${b.id}: no topics`);
     for (const [id, mark] of Object.entries(plan.pathways[p].marks || {})) {
       if (!plan.pathways[p].parts.some(x => x.topics.includes(id))) problems.push(`pathway ${p}: a ${mark} mark on "${id}", which is not in it`);
       if (!['checkpoint', 'review'].includes(mark)) problems.push(`pathway ${p}: "${mark}" is not a checkpoint or review mark`);

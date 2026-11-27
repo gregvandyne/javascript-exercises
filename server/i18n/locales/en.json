@@ -6882,7 +6882,20 @@
       },
       "gapHolds": "{mark} after {word}",
       "mgap": "Space after {word}",
-      "wrongMarks": "Not quite. Look at the marks between the words again. Get two right in a row to finish this level."
+      "wrongMarks": "Not quite. Look at the marks between the words again. Get two right in a row to finish this level.",
+      "counterAdded": "{count, plural, one {+# for a miss} other {+# for misses}}",
+      "tryAgain": "Try this one again",
+      "seenBefore": "One you have seen before",
+      "notSent": "That answer did not go through. Check it and press Submit again.",
+      "resynced": "Picked up where you left off.",
+      "signedOut": "You were signed out. Your progress is saved.",
+      "signIn": "Sign in again",
+      "fixed": "Fixed it!",
+      "fixedNote": "First tries count toward your streak.",
+      "levelLonger": "This level took {n} questions instead of {base}: each miss adds one, and a level ends with two right in a row.",
+      "doneElsewhere": "You already finished this topic.",
+      "doneAdded": "That is {base} questions, plus {count, plural, one {# for a miss} other {# for misses}}.",
+      "firstTry": "{n} of {total} right on the first try"
     }
   },
   "favorites": {
@@ -18123,7 +18136,9 @@
       "started": "Keep going",
       "mastered": "Mastered",
       "pending": "Sign in to keep it",
-      "locked": "Master the one before first"
+      "locked": "Master the one before first",
+      "levelOf": "Level {level} of {levels}",
+      "also": "Also counts in: {units}"
     },
     "guest": {
       "title": "Sign in to keep your wins",
@@ -18135,9 +18150,10 @@
     },
     "welcome": {
       "heading": "Welcome to {topic}",
-      "text": "Keep answering until you show you have it. Get the last two right in a row to finish each level.",
       "go": "Let's go",
-      "skip": "Skip intro"
+      "skip": "Skip intro",
+      "rule": "Each level has {per} questions. Finish it with two right in a row. Only first-try answers count toward the streak.",
+      "count": "{total} questions, plus one for each miss."
     },
     "practice": {
       "tip": "How double-tap works",
@@ -18224,6 +18240,12 @@
       "passed": "Proofread room done",
       "locked": "Open the topic first",
       "back": "Back to {topic}"
+    },
+    "loading": "Getting your lesson ready",
+    "progress": {
+      "band": "{mastered} mastered · {started} in progress",
+      "unit": "{started} in progress",
+      "unitHead": "{mastered} of {total} mastered · {started} in progress"
     }
   }
 }

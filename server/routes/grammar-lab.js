@@ -5,12 +5,12 @@
 // (csrfCheck in app.js).
 import { Router } from 'express';
 import { page, notFound } from '../views/layout.js';
-import { createGuest, startSession, isGrownup } from '../auth.js';
+import { createGuest, startSession, isGrownup, endedUser } from '../auth.js';
 import { rateLimit, allow, ipOf, GUESTS_PER_IP_HOUR } from '../services/ratelimit.js';
 import { log } from '../services/log.js';
 import * as seo from '../seo.js';
 import * as GL from '../services/grammar-lab.js';
-import { mayOpenGrammarLab, GRAMMAR_LAB_PATH, reachOf, unitInReach } from '../services/grammar-lab-access.js';
+import { mayOpenGrammarLab, grammarLabOn, GRAMMAR_LAB_PATH, reachOf, unitInReach } from '../services/grammar-lab-access.js';
 import * as GLA from '../services/grammar-lab-assign.js';
 import { honourPendingWins } from './courses.js';
 import * as V from '../views/grammar-lab.js';
@@ -21,12 +21,20 @@ const ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 // The gate: nothing of Grammar Lab exists for a visitor the flag does not let in.
 router.use((req, res, next) => {
   if (!GRAMMAR_LAB_PATH.test(req.path) || mayOpenGrammarLab(req.user)) return next();
+  // (a sign-in that ended on this device, the flag on: sign in again and carry on, the run is kept on the account)
+  if (!req.user && grammarLabOn() && endedUser(req) !== null) {
+    return req.path.startsWith('/api/') ? res.status(401).json({ error: req.t('errors.api.signedOut'), signedOut: true })
+      : res.redirect(302, `/login?next=${encodeURIComponent(req.originalUrl)}&signedout=1`);
+  }
   return req.path.startsWith('/api/') ? res.status(404).json({ error: req.t('errors.api.notFound') }) : notFound(req, res);
 });
 
-/** A visitor without a session becomes a guest (like one tap on Play), so the quiz can run on the server. Browsers only. */
+/** A visitor without a session becomes a guest (like one tap on Play), so the quiz can run on the server. Browsers only.
+ *  Never when a sign-in just ended on this device (it timed out, or ended on another device): that player is sent to
+ *  sign in again and comes back to their own run, rather than starting over as a guest. */
 function ensureUser(req, res) {
   if (req.user) return req.user;
+  if (endedUser(req) !== null) return null;
   if (seo.isBot(req.headers['user-agent']) || !allow(`guestip:${ipOf(req)}`, GUESTS_PER_IP_HOUR, 3600e3)) return null;
   const guest = createGuest(); startSession(res, guest.id, req.headers['user-agent']); req.user = guest;
   return guest;
@@ -58,7 +66,7 @@ router.get('/courses/grammar-lab', (req, res) => {
   const open = asked || place.band;
   // A student who reaches only assigned work sees those units, in their bands.
   const list = GL.bands().map(b => ({ band: b, units: GL.pathwaysOf(b.id).filter(p => unitInReach(reach, p.id)).map(p => ({ p, prog: GL.unitProgress(u, p, reach), assigned: !reach.all })) }))
-    .filter(x => x.units.length);
+    .filter(x => x.units.length).map(x => ({ ...x, counts: GL.bandProgress(u, x.units) }));
   const pending = GL.pendingSet(u).size > 0;
   page(req, res, { title: t('grammarLab.title'), active: 'learn', head: V.HEAD, body: V.coursePage({ t, list, guest: guestOf(u), pending, open, place, all: reach.all, askGrade: reach.all && !open }),
     description: t('grammarLab.sub') });
@@ -85,6 +93,7 @@ router.get('/courses/grammar-lab/:band/:unit/:topic', (req, res) => {
   if (isGrownup(req.user)) return res.redirect(302, '/courses/grammar-lab');
   let x = loadTopic(req, res); if (!x) return;
   // A browser opening a topic with no session becomes a guest, so its quiz can run on the server.
+  if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && endedUser(req) !== null) return res.redirect(302, `/login?next=${encodeURIComponent(req.originalUrl)}&signedout=1`);
   if (!req.user && req.headers['sec-fetch-mode'] === 'navigate' && ensureUser(req, res)) x = loadTopic(req, res);
   const { p, tp, s } = x, t = req.t, u = req.user;
   honor(u);
@@ -100,8 +109,10 @@ router.get('/courses/grammar-lab/:band/:unit/:topic', (req, res) => {
     // The double-tap tip's demo sentence, in the page's language.
     tip: { before: t('grammarLab.tip.before'), word: t('grammarLab.glossaryWord.adjective'), after: t('grammarLab.tip.after'), def: t('grammarLab.tip.def'), replay: t('grammarLab.tip.replay') },
     unitTitle: p.title,
+    signedIn: !!(u && !u.is_guest),
+    login: `/login?next=${encodeURIComponent(V.topicHref(p, tp.id))}`,
   };
-  page(req, res, { title: `${tp.title} · ${t('grammarLab.title')}`, active: 'learn', mid: true, head: V.HEAD, bodyClass: 'gl-page',
+  page(req, res, { title: `${tp.title} · ${t('grammarLab.title')}`, active: 'learn', mid: true, head: V.PRACTICE_HEAD, bodyClass: 'gl-page',
     body: V.practicePage({ t, p, tp, data, guest: guestOf(u) }), scripts: ['/js/grammar-lab.js'] });
 });
 
@@ -129,13 +140,35 @@ function apiTopic(req, res, { forRoom = false } = {}) {
   const p = tp && typeof (req.body || {}).unit === 'string' && ID.test(req.body.unit) ? GL.unitFor(req.body.unit, req.body.band) : null;
   if (!tp || !p || !p.topics.includes(tp.id)) { res.status(404).json({ error: req.t('errors.api.notFound') }); return null; }
   const u = req.user;
-  if (!u || isGrownup(u)) { res.status(401).json({ error: req.t('errors.api.signInFirst') }); return null; }
+  if (!u || isGrownup(u)) { res.status(401).json({ error: req.t('errors.api.signInFirst'), ...(endedUser(req) !== null ? { signedOut: true } : {}) }); return null; }
   const reach = reachOf(u);
   const s = unitInReach(reach, p.id) ? GL.unitStates(u, p, reach).find(x => x.topic.id === tp.id) : null;
   // (a proofread room assigned on its own opens without its topic)
   if (!s || !(forRoom && s.room ? s.room.open : s.open)) { res.status(403).json({ error: req.t('errors.api.notFound') }); return null; }
   return { tp, p, u };
 }
+/** The mastery screen's facts: how many questions, how many right on the first try, the next topic (never a mastered
+ *  one), the room, and the other units this topic counts in. Worked out after the run is saved: a failure here never
+ *  loses the mastery (the next topic is then left out). */
+function closingOf(u, tp, p, sm, win) {
+  let next = null;
+  try { const nxt = GL.nextTopic(u, p, tp.id); next = nxt ? { title: nxt.topic.title, href: V.topicHref(nxt.unit, nxt.topic.id) } : null; } catch (e) { log('warn', 'grammar-lab next topic', { topic: tp.id, error: String(e && e.message) }); }
+  return { answered: sm.counter, firstTry: sm.firstTry, of: sm.answered, base: sm.base, added: sm.added, next, win,
+    also: GL.alsoIn(tp.id, p).map(x => x.title), ...(GL.room(tp.id) ? { room: GL.roomHref(p.id, tp.id, p.band) } : {}) };
+}
+/** Where this player's run stands now, for a page to pick up from (a try that failed, a stale page, a second device):
+ *  a run in progress -> { summary, question }; a mastered one -> { mastered, summary, closing }; none -> { none }. */
+function runState(u, tp, p) {
+  const run = GL.currentRun(u, tp.id);
+  if (run && !run.mastered && run.cur) return { summary: GL.summaryOf(run), question: GL.questionFor(tp, run) };
+  if (run && run.mastered) { const sm = GL.summaryOf(run); return { mastered: true, summary: sm, closing: closingOf(u, tp, p, sm, u.is_guest ? 'pending' : 'mastered') }; }
+  return { none: true };
+}
+/** The run as the server has it (the page re-syncs from this after any failed try). */
+router.post('/api/courses/grammar-lab/topic/:topic/state', ...api, (req, res) => {
+  const x = apiTopic(req, res); if (!x) return;
+  res.json(runState(x.u, x.tp, x.p));
+});
 /** Start a run (a run in progress is kept; again: true starts over). */
 router.post('/api/courses/grammar-lab/topic/:topic/start', ...api, (req, res) => {
   const x = apiTopic(req, res); if (!x) return;
@@ -151,16 +184,13 @@ router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) =
   const run = GL.currentRun(x.u, x.tp.id);
   // A try for a question that is no longer on screen (a second tab, a double send) changes nothing.
   const on = run && GL.questionFor(x.tp, run);
-  if (!on || on.id !== b.id) return res.status(409).json({ error: req.t('errors.api.badRequest'), summary: run ? GL.summaryOf(run) : null, question: on || null });
+  // (the page picks up from where the run is: its question, or the mastery screen when it was finished elsewhere)
+  if (!on || on.id !== b.id) return res.status(409).json({ error: req.t('errors.api.badRequest'), ...runState(x.u, x.tp, x.p) });
   const r = GL.answerRun(x.u, x.tp, b.marked);
   if (!r) return res.status(400).json({ error: req.t('errors.api.badRequest') });
   const out = { result: r.result, kind: r.kind, levelDone: r.levelDone, mastered: r.mastered, summary: r.summary, question: r.question, hint: r.hint };
-  if (r.mastered) {
-    // The next topic, worked out now: never a mastered one (this unit first, then the band's other units).
-    const nxt = GL.nextTopic(x.u, x.p, x.tp.id);
-    out.closing = { answered: r.summary.counter, next: nxt ? { title: nxt.topic.title, href: V.topicHref(nxt.unit, nxt.topic.id) } : null, win: r.win,
-      ...(GL.room(x.tp.id) ? { room: GL.roomHref(x.p.id, x.tp.id, x.p.band) } : {}) };
-  }
+  // The next topic, worked out now: never a mastered one (this unit first, then the band's other units).
+  if (r.mastered) out.closing = closingOf(x.u, x.tp, x.p, r.summary, r.win);
   res.json(out);
 });
 /** A Mistake Hunt room's fixes, from the game (public/js/play.js proofForGame): { unit, edits, handIn?, hint? }. Saved,

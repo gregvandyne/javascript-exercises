@@ -147,6 +147,18 @@
      "topics": [
       "identifying-adjectives"
      ]
+    },
+    {
+     "band": "k-2",
+     "topics": [
+      "identifying-adverbs"
+     ]
+    },
+    {
+     "band": "3-5",
+     "topics": [
+      "adverbs-how-when-where"
+     ]
     }
    ]
   },
@@ -1730,7 +1742,7 @@
     "tips": [
      {
       "text": "The yellow bus.",
-      "note": "Yellow tells about bus.",
+      "note": "Yellow tells about the bus.",
       "marks": [
        {
         "i": 1,
@@ -1857,6 +1869,316 @@
     }
    ]
   },
+  "identifying-adverbs": {
+   "id": "identifying-adverbs",
+   "title": "Identifying Adverbs",
+   "band": "k-2",
+   "format": "tap",
+   "ask": "Tap the adverb.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 37
+   },
+   "card": {
+    "definition": "An adverb is a word that tells about a verb. Some adverbs tell how something is done. Many of these adverbs end in -ly.",
+    "example": {
+     "text": "The puppy ate quickly.",
+     "note": "Quickly is the adverb. Ate is the verb it tells about.",
+     "marks": [
+      {
+       "i": 3,
+       "role": "adverb"
+      },
+      {
+       "i": 2,
+       "role": "verb"
+      }
+     ]
+    },
+    "how": "Quickly tells how the puppy ate.",
+    "tips": [
+     {
+      "text": "The bee buzzed loudly.",
+      "note": "Loudly tells how the bee buzzed.",
+      "marks": [
+       {
+        "i": 3,
+        "role": "adverb"
+       },
+       {
+        "i": 2,
+        "role": "verb"
+       }
+      ]
+     },
+     {
+      "text": "Nia hums softly.",
+      "note": "Softly tells how Nia hums.",
+      "marks": [
+       {
+        "i": 2,
+        "role": "adverb"
+       },
+       {
+        "i": 1,
+        "role": "verb"
+       }
+      ]
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "identifying-adverbs-1",
+     "text": "The cat slowly licked its paw.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells how the cat licked its paw."
+    },
+    {
+     "id": "identifying-adverbs-2",
+     "text": "Priya sang loudly at school.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells how Priya sang."
+    },
+    {
+     "id": "identifying-adverbs-3",
+     "text": "Softly, the kitten purred.",
+     "answer": [
+      0
+     ],
+     "hint": "Look for the word that tells how the kitten purred."
+    },
+    {
+     "id": "identifying-adverbs-4",
+     "text": "The dog wagged its tail happily.",
+     "answer": [
+      5
+     ],
+     "hint": "Look for the word that tells how the dog wagged its tail."
+    },
+    {
+     "id": "identifying-adverbs-5",
+     "text": "Mateo carefully carried the eggs.",
+     "answer": [
+      1
+     ],
+     "hint": "Look for the word that tells how Mateo carried the eggs."
+    },
+    {
+     "id": "identifying-adverbs-6",
+     "text": "Amara runs fast in the race.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells how Amara runs."
+    },
+    {
+     "id": "identifying-adverbs-7",
+     "text": "The baby clapped her hands gently.",
+     "answer": [
+      5
+     ],
+     "hint": "Look for the word that tells how the baby clapped her hands."
+    },
+    {
+     "id": "identifying-adverbs-8",
+     "text": "Kenji draws well.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells how Kenji draws."
+    },
+    {
+     "id": "identifying-adverbs-9",
+     "text": "Zoe neatly folded her shirt.",
+     "answer": [
+      1
+     ],
+     "hint": "Look for the word that tells how Zoe folded her shirt."
+    },
+    {
+     "id": "identifying-adverbs-10",
+     "text": "Quickly, the bear grabbed the fish.",
+     "answer": [
+      0
+     ],
+     "hint": "Look for the word that tells how the bear grabbed the fish."
+    },
+    {
+     "id": "identifying-adverbs-11",
+     "text": "The class waited quietly for lunch.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the word that tells how the class waited."
+    },
+    {
+     "id": "identifying-adverbs-12",
+     "text": "Lily kindly shared her snack with Omar.",
+     "answer": [
+      1
+     ],
+     "hint": "Look for the word that tells how Lily shared her snack."
+    }
+   ]
+  },
+  "adverbs-how-when-where": {
+   "id": "adverbs-how-when-where",
+   "title": "Adverbs That Tell How, When, and Where",
+   "band": "3-5",
+   "format": "tap",
+   "ask": "Tap the adverb.",
+   "levels": [
+    4,
+    4,
+    4
+   ],
+   "source": {
+    "line": 286
+   },
+   "card": {
+    "definition": "An adverb is a word that tells more about a verb. Many adverbs tell how, when, or where an action happens.",
+    "example": {
+     "text": "Nadia whispered softly to her baby brother.",
+     "note": "Softly is the adverb. It tells how Nadia whispered.",
+     "marks": [
+      {
+       "i": 2,
+       "role": "adverb"
+      }
+     ]
+    },
+    "how": "Ask how, when, or where about the verb. The word that answers is the adverb.",
+    "tips": [
+     {
+      "text": "We will swim tomorrow.",
+      "note": "Tomorrow tells when.",
+      "marks": [
+       {
+        "i": 3,
+        "role": "adverb"
+       }
+      ]
+     },
+     {
+      "text": "Dad waited downstairs.",
+      "note": "Downstairs tells where.",
+      "marks": [
+       {
+        "i": 2,
+        "role": "adverb"
+       }
+      ]
+     }
+    ]
+   },
+   "items": [
+    {
+     "id": "adverbs-how-when-where-1",
+     "text": "Tomas quietly closed the lid of the piano.",
+     "answer": [
+      1
+     ],
+     "hint": "Look for the word that tells how Tomas closed the lid."
+    },
+    {
+     "id": "adverbs-how-when-where-2",
+     "text": "Yesterday our class planted sunflower seeds in the garden.",
+     "answer": [
+      0
+     ],
+     "hint": "Look for the word that tells when the class planted the seeds."
+    },
+    {
+     "id": "adverbs-how-when-where-3",
+     "text": "The children played outside during recess.",
+     "answer": [
+      3
+     ],
+     "hint": "Look for the word that tells where the children played."
+    },
+    {
+     "id": "adverbs-how-when-where-4",
+     "text": "Grandma searched everywhere for her reading glasses.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells where Grandma searched."
+    },
+    {
+     "id": "adverbs-how-when-where-5",
+     "text": "Kwame carefully poured the lemonade into each cup.",
+     "answer": [
+      1
+     ],
+     "hint": "Look for the word that tells how Kwame poured the lemonade."
+    },
+    {
+     "id": "adverbs-how-when-where-6",
+     "text": "The new library books will arrive soon.",
+     "answer": [
+      6
+     ],
+     "hint": "Look for the word that tells when the books will arrive."
+    },
+    {
+     "id": "adverbs-how-when-where-7",
+     "text": "We visited the aquarium today with our cousins.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the word that tells when we visited the aquarium."
+    },
+    {
+     "id": "adverbs-how-when-where-8",
+     "text": "Mr. Haddad asked us to stack the chairs here.",
+     "answer": [
+      8
+     ],
+     "hint": "Look for the word that tells where we should stack the chairs."
+    },
+    {
+     "id": "adverbs-how-when-where-9",
+     "text": "The puppy proudly carried the stick across the yard.",
+     "answer": [
+      2
+     ],
+     "hint": "Look for the word that tells how the puppy carried the stick."
+    },
+    {
+     "id": "adverbs-how-when-where-10",
+     "text": "Jin finished her science project early.",
+     "answer": [
+      5
+     ],
+     "hint": "Look for the word that tells when Jin finished her project."
+    },
+    {
+     "id": "adverbs-how-when-where-11",
+     "text": "Cheerfully, Rafael greeted every guest at the party.",
+     "answer": [
+      0
+     ],
+     "hint": "Look for the word that tells how Rafael greeted the guests."
+    },
+    {
+     "id": "adverbs-how-when-where-12",
+     "text": "The kitten followed Ayesha upstairs after dinner.",
+     "answer": [
+      4
+     ],
+     "hint": "Look for the word that tells where the kitten followed Ayesha."
+    }
+   ]
+  },
   "capitalizing-names-and-dates": {
    "id": "capitalizing-names-and-dates",
    "title": "Capitalizing People's Names and Dates",
@@ -1869,7 +2191,7 @@
     4
    ],
    "source": {
-    "line": 39
+    "line": 61
    },
    "card": {
     "definition": "Names of people and names of days and months start with a big letter. A big letter is called a capital letter.",
@@ -2085,7 +2407,7 @@
     4
    ],
    "source": {
-    "line": 61
+    "line": 83
    },
    "choices": {
     "kind": "title"
@@ -2386,7 +2708,7 @@
     4
    ],
    "source": {
-    "line": 85
+    "line": 107
    },
    "card": {
     "definition": "When you list three or more things, put a comma between them. A comma is a small mark that tells the reader to pause.",
@@ -2583,7 +2905,7 @@
     4
    ],
    "source": {
-    "line": 107
+    "line": 129
    },
    "choices": {
     "kind": "comma"
@@ -2824,7 +3146,7 @@
     4
    ],
    "source": {
-    "line": 131
+    "line": 153
    },
    "choices": {
     "kind": "pair",
@@ -3053,7 +3375,7 @@
     4
    ],
    "source": {
-    "line": 155
+    "line": 177
    },
    "card": {
     "definition": "A noun is a word that names a person, a place, or a thing. A common noun names any person, place, or thing, not one special one.",
@@ -3214,7 +3536,7 @@
     4
    ],
    "source": {
-    "line": 177
+    "line": 199
    },
    "card": {
     "definition": "A verb is a word that tells what someone or something does. An action verb shows an action you can do.",
@@ -3363,7 +3685,7 @@
     4
    ],
    "source": {
-    "line": 209
+    "line": 231
    },
    "choices": {
     "kind": "tense"
@@ -3589,7 +3911,7 @@
     4
    ],
    "source": {
-    "line": 268
+    "line": 312
    },
    "choices": {
     "kind": "join"
@@ -3845,7 +4167,7 @@
     4
    ],
    "source": {
-    "line": 290
+    "line": 334
    },
    "choices": {
     "kind": "connect"
@@ -4096,7 +4418,7 @@
     4
    ],
    "source": {
-    "line": 446
+    "line": 490
    },
    "card": {
     "definition": "A coordinating conjunction is a small word that joins two words, phrases, or thoughts. The main ones are and, but, or, so, for, nor, and yet.",
@@ -4245,7 +4567,7 @@
     4
    ],
    "source": {
-    "line": 472
+    "line": 516
    },
    "card": {
     "sections": [
@@ -4499,7 +4821,7 @@
     4
    ],
    "source": {
-    "line": 497
+    "line": 541
    },
    "card": {
     "sections": [
@@ -4757,7 +5079,7 @@
     4
    ],
    "source": {
-    "line": 522
+    "line": 566
    },
    "fix": {
     "kind": "dialogue"
@@ -5014,7 +5336,7 @@
     4
    ],
    "source": {
-    "line": 544
+    "line": 588
    },
    "fix": {
     "kind": "quote"
@@ -5271,7 +5593,7 @@
     4
    ],
    "source": {
-    "line": 592
+    "line": 636
    },
    "choices": {
     "kind": "label",
@@ -5502,7 +5824,7 @@
     4
    ],
    "source": {
-    "line": 614
+    "line": 658
    },
    "fix": {
     "kind": "runon"
@@ -5807,7 +6129,7 @@
     4
    ],
    "source": {
-    "line": 682
+    "line": 726
    },
    "card": {
     "sections": [
@@ -6065,7 +6387,7 @@
     4
    ],
    "source": {
-    "line": 707
+    "line": 751
    },
    "choices": {
     "kind": "ab"
@@ -6316,7 +6638,7 @@
     4
    ],
    "source": {
-    "line": 762
+    "line": 806
    },
    "choices": {
     "kind": "given",
@@ -6515,7 +6837,7 @@
     4
    ],
    "source": {
-    "line": 784
+    "line": 828
    },
    "choices": {
     "kind": "shift",
@@ -6758,7 +7080,7 @@
     4
    ],
    "source": {
-    "line": 822
+    "line": 866
    },
    "card": {
     "definition": "In an active voice sentence, the subject does the action. The verb tells what the subject does.",
@@ -6933,7 +7255,7 @@
     4
    ],
    "source": {
-    "line": 844
+    "line": 888
    },
    "read": {
     "check": "voice"
@@ -7195,7 +7517,7 @@
     4
    ],
    "source": {
-    "line": 866
+    "line": 910
    },
    "card": {
     "definition": "To write in active voice, put the doer first, then the verb, then the receiver of the action.",
@@ -7524,7 +7846,7 @@
     4
    ],
    "source": {
-    "line": 888
+    "line": 932
    },
    "read": {
     "check": "voice"
@@ -7787,7 +8109,7 @@
     4
    ],
    "source": {
-    "line": 912
+    "line": 956
    },
    "card": {
     "definition": "An adjective is a word that describes a noun. It tells what kind, how many, or which one. To find the adjective, ask what it describes.",
@@ -7998,7 +8320,7 @@
     4
    ],
    "source": {
-    "line": 934
+    "line": 978
    },
    "read": {
     "answerHead": true
@@ -8169,7 +8491,7 @@
     4
    ],
    "source": {
-    "line": 956
+    "line": 1000
    },
    "read": {
     "check": "order"
@@ -8431,7 +8753,7 @@
     4
    ],
    "source": {
-    "line": 978
+    "line": 1022
    },
    "card": {
     "definition": "A comparative adjective compares two things. For most short adjectives, add er. For most longer adjectives, use more before the adjective.",
@@ -8706,7 +9028,7 @@
     4
    ],
    "source": {
-    "line": 1000
+    "line": 1044
    },
    "card": {
     "definition": "A superlative adjective compares three or more things and picks out the most. For most short adjectives, add est. For most longer adjectives, use most before the adjective.",
@@ -8981,7 +9303,7 @@
     4
    ],
    "source": {
-    "line": 1032
+    "line": 1076
    },
    "card": {
     "definition": "An adverb is a word that describes a verb, an adjective, or another adverb. It often tells how, when, where, or how much.",
@@ -9192,7 +9514,7 @@
     4
    ],
    "source": {
-    "line": 1054
+    "line": 1098
    },
    "read": {
     "check": "advkind"
@@ -9519,7 +9841,7 @@
     4
    ],
    "source": {
-    "line": 1076
+    "line": 1120
    },
    "read": {
     "check": "adjadv"
@@ -9824,7 +10146,7 @@
     4
    ],
    "source": {
-    "line": 1098
+    "line": 1142
    },
    "read": {
     "check": "adjadv"
@@ -10058,7 +10380,7 @@
     4
    ],
    "source": {
-    "line": 1128
+    "line": 1172
    },
    "card": {
     "definition": "Adverbs also have comparative and superlative forms. For most short adverbs, add er for two things and est for three or more. For most longer adverbs, use more and most.",
@@ -10336,7 +10658,7 @@
     4
    ],
    "source": {
-    "line": 1152
+    "line": 1196
    },
    "read": {
     "ruleWords": [
@@ -10517,7 +10839,7 @@
     4
    ],
    "source": {
-    "line": 1174
+    "line": 1218
    },
    "read": {
     "check": "a-an"
@@ -10755,7 +11077,7 @@
     4
    ],
    "source": {
-    "line": 1198
+    "line": 1242
    },
    "card": {
     "sections": [
@@ -11023,7 +11345,7 @@
     4
    ],
    "source": {
-    "line": 1219
+    "line": 1263
    },
    "card": {
     "sections": [
@@ -11288,7 +11610,7 @@
     4
    ],
    "source": {
-    "line": 1242
+    "line": 1286
    },
    "card": {
     "sections": [
@@ -11549,7 +11871,7 @@
     4
    ],
    "source": {
-    "line": 1263
+    "line": 1307
    },
    "card": {
     "sections": [
@@ -11793,7 +12115,7 @@
     4
    ],
    "source": {
-    "line": 1284
+    "line": 1328
    },
    "card": {
     "sections": [
@@ -12113,7 +12435,7 @@
     4
    ],
    "source": {
-    "line": 1305
+    "line": 1349
    },
    "card": {
     "sections": [
@@ -12398,7 +12720,7 @@
     4
    ],
    "source": {
-    "line": 1326
+    "line": 1370
    },
    "card": {
     "sections": [
@@ -12670,7 +12992,7 @@
     4
    ],
    "source": {
-    "line": 1349
+    "line": 1393
    },
    "card": {
     "sections": [
@@ -12953,7 +13275,7 @@
     4
    ],
    "source": {
-    "line": 1372
+    "line": 1416
    },
    "card": {
     "definition": "Coordinating conjunctions join two equal parts of a sentence, such as two words, two phrases, or two complete sentences. The seven are for, and, nor, but, or, yet, and so. The first letters spell FANBOYS.",
@@ -13128,7 +13450,7 @@
     4
    ],
    "source": {
-    "line": 1394
+    "line": 1438
    },
    "card": {
     "definition": "Each FANBOYS conjunction has a job. For gives a reason. And adds. Nor gives a negative choice. But shows a contrast. Or gives a choice. Yet shows a surprising contrast. So shows a result.",
@@ -13449,7 +13771,7 @@
     4
    ],
    "source": {
-    "line": 1416
+    "line": 1460
    },
    "read": {
     "asIs": true
@@ -14041,7 +14363,7 @@
     4
    ],
    "source": {
-    "line": 1438
+    "line": 1482
    },
    "read": {
     "fix": "splice",
@@ -14363,7 +14685,7 @@
     4
    ],
    "source": {
-    "line": 1460
+    "line": 1504
    },
    "card": {
     "definition": "Conjunctive adverbs connect ideas between sentences or clauses. Common ones are therefore, however, also, moreover, furthermore, meanwhile, otherwise, instead, and nevertheless.",
@@ -14533,7 +14855,7 @@
     4
    ],
    "source": {
-    "line": 1482
+    "line": 1526
    },
    "card": {
     "definition": "When a conjunctive adverb starts a sentence, put a comma after it. The conjunctive adverb links the new sentence to the one before it.",
@@ -15251,7 +15573,7 @@
     4
    ],
    "source": {
-    "line": 1504
+    "line": 1548
    },
    "read": {
     "chips": [
@@ -16055,7 +16377,7 @@
     4
    ],
    "source": {
-    "line": 1526
+    "line": 1570
    },
    "card": {
     "definition": "Subordinating conjunctions join a dependent clause to an independent clause. Common ones are since, when, although, because, if, and while. The group is wider, including after, before, unless, until, and though.",
@@ -16225,7 +16547,7 @@
     4
    ],
    "source": {
-    "line": 1548
+    "line": 1592
    },
    "card": {
     "definition": "When a dependent clause with a subordinating conjunction comes first, put a comma after the whole dependent clause, before the main clause starts.",
@@ -16902,7 +17224,7 @@
     4
    ],
    "source": {
-    "line": 1570
+    "line": 1614
    },
    "card": {
     "definition": "When a dependent clause with a subordinating conjunction comes after the main clause, no comma is needed. The sentence reads smoothly without one.",
@@ -17556,7 +17878,7 @@
     4
    ],
    "source": {
-    "line": 1594
+    "line": 1638
    },
    "read": {
     "check": "longshort"
@@ -17815,7 +18137,7 @@
     4
    ],
    "source": {
-    "line": 1616
+    "line": 1660
    },
    "read": {
     "check": "italics"
@@ -18087,7 +18409,7 @@
     4
    ],
    "source": {
-    "line": 1652
+    "line": 1696
    },
    "read": {
     "cycle": true
@@ -18327,7 +18649,7 @@
     4
    ],
    "source": {
-    "line": 1674
+    "line": 1718
    },
    "read": {
     "cycle": true
@@ -18603,7 +18925,7 @@
     4
    ],
    "source": {
-    "line": 1696
+    "line": 1740
    },
    "read": {
     "fix": "conj",
@@ -18911,7 +19233,7 @@
     4
    ],
    "source": {
-    "line": 1720
+    "line": 1764
    },
    "read": {
     "optional": [
@@ -19589,7 +19911,7 @@
     4
    ],
    "source": {
-    "line": 1742
+    "line": 1786
    },
    "read": {
     "asIs": true
@@ -20311,7 +20633,7 @@
     4
    ],
    "source": {
-    "line": 1766
+    "line": 1810
    },
    "read": {
     "asIs": true
@@ -21091,7 +21413,7 @@
     4
    ],
    "source": {
-    "line": 1788
+    "line": 1832
    },
    "read": {
     "optional": [
@@ -21830,7 +22152,7 @@
     4
    ],
    "source": {
-    "line": 1812
+    "line": 1856
    },
    "card": {
     "definition": "It's is short for it is or it has. Its shows that something belongs to it.",
@@ -22056,7 +22378,7 @@
     4
    ],
    "source": {
-    "line": 1838
+    "line": 1882
    },
    "card": {
     "definition": "To shows direction or purpose. Too means also, or more than enough. Two is the number 2.",
@@ -22304,7 +22626,7 @@
     4
    ],
    "source": {
-    "line": 1860
+    "line": 1904
    },
    "card": {
     "definition": "Know means to have information in your mind. No means not any, or the opposite of yes.",
@@ -22530,7 +22852,7 @@
     4
    ],
    "source": {
-    "line": 1882
+    "line": 1926
    },
    "read": {
     "fix": "spelling"
@@ -22809,7 +23131,7 @@
     4
    ],
    "source": {
-    "line": 1904
+    "line": 1948
    },
    "card": {
     "definition": "Their shows that something belongs to them. There points to a place, or starts a sentence about something existing. They're is short for they are.",
@@ -23057,7 +23379,7 @@
     4
    ],
    "source": {
-    "line": 1928
+    "line": 1972
    },
    "card": {
     "definition": "Knot is a fastening made by tying rope, string, or thread. Not makes a sentence negative.",
@@ -23283,7 +23605,7 @@
     4
    ],
    "source": {
-    "line": 1950
+    "line": 1994
    },
    "card": {
     "definition": "Who's is short for who is or who has. Whose shows that something belongs to someone.",
@@ -23509,7 +23831,7 @@
     4
    ],
    "source": {
-    "line": 1972
+    "line": 2016
    },
    "card": {
     "definition": "Right can mean correct, or the side opposite left. Write means to form letters and words on paper or a screen.",
@@ -23735,7 +24057,7 @@
     4
    ],
    "source": {
-    "line": 1994
+    "line": 2038
    },
    "card": {
     "definition": "Passed is the past tense of pass. It means to go by, to hand over, or to succeed. Past means time that has gone by, or a position beyond something.",
@@ -23966,7 +24288,7 @@
     4
    ],
    "source": {
-    "line": 2016
+    "line": 2060
    },
    "card": {
     "definition": "Into shows movement from outside to inside. In to is two words: in is part of the verb or place, and to starts a new phrase, often showing purpose.",
@@ -24191,7 +24513,7 @@
     4
    ],
    "source": {
-    "line": 2038
+    "line": 2082
    },
    "card": {
     "definition": "Desert is a dry place with little rain, or the verb meaning to leave or abandon. Dessert is a sweet food served after a meal.",
@@ -24417,7 +24739,7 @@
     4
    ],
    "source": {
-    "line": 2060
+    "line": 2104
    },
    "card": {
     "definition": "Because introduces a reason. Cause is a noun meaning something that makes something else happen, or a verb meaning to make something happen.",
@@ -24642,7 +24964,7 @@
     4
    ],
    "source": {
-    "line": 2082
+    "line": 2126
    },
    "card": {
     "definition": "Principal is the head of a school, or the main or most important thing. Principle is a rule, a belief, or a basic truth.",
@@ -24868,7 +25190,7 @@
     4
    ],
    "source": {
-    "line": 2106
+    "line": 2150
    },
    "read": {
     "cycle": true
@@ -25113,7 +25435,7 @@
     4
    ],
    "source": {
-    "line": 2128
+    "line": 2172
    },
    "card": {
     "definition": "Quiet means silent or calm. Quite means very, or completely.",
@@ -25339,7 +25661,7 @@
     4
    ],
    "source": {
-    "line": 2150
+    "line": 2194
    },
    "card": {
     "definition": "Morning is the early part of the day. Mourning is sadness after someone dies.",
@@ -25564,7 +25886,7 @@
     4
    ],
    "source": {
-    "line": 2172
+    "line": 2216
    },
    "card": {
     "definition": "Maybe is one word and means perhaps. May be is two words: may is a helping verb, and be is the main verb.",
@@ -25789,7 +26111,7 @@
     4
    ],
    "source": {
-    "line": 2194
+    "line": 2238
    },
    "card": {
     "definition": "Good is an adjective. It describes a noun. Well is an adverb. It describes a verb. Well can also be an adjective meaning healthy.",
@@ -26019,7 +26341,7 @@
     4
    ],
    "source": {
-    "line": 2216
+    "line": 2260
    },
    "card": {
     "definition": "Everyday is one word and means ordinary or normal. Every day is two words and means each day.",
@@ -26244,7 +26566,7 @@
     4
    ],
    "source": {
-    "line": 2238
+    "line": 2282
    },
    "card": {
     "definition": "Everyone is one word and means all the people. Every one is two words and means each single thing or person in a group.",
@@ -26469,7 +26791,7 @@
     4
    ],
    "source": {
-    "line": 2260
+    "line": 2304
    },
    "card": {
     "definition": "Anyone is one word and means any person at all. Any one is two words and means any single thing or person in a group.",
@@ -26694,7 +27016,7 @@
     4
    ],
    "source": {
-    "line": 2282
+    "line": 2326
    },
    "card": {
     "definition": "Affect is usually a verb. It means to change or influence something. Effect is usually a noun. It means the result of a change.",
@@ -26930,7 +27252,7 @@
     4
    ],
    "source": {
-    "line": 2304
+    "line": 2348
    },
    "card": {
     "definition": "Accept means to take or agree to something. Except means leaving something out, or apart from.",
@@ -27156,7 +27478,7 @@
     4
    ],
    "source": {
-    "line": 2342
+    "line": 2386
    },
    "card": {
     "definition": "The subject is who or what the sentence is about. It tells who does the action or who is described.",
@@ -27328,7 +27650,7 @@
     4
    ],
    "source": {
-    "line": 2364
+    "line": 2408
    },
    "read": {
     "ruleWords": [
@@ -27514,7 +27836,7 @@
     4
    ],
    "source": {
-    "line": 2386
+    "line": 2430
    },
    "card": {
     "definition": "The verb is the action word or the state of being in a sentence. It tells what the subject does or is.",
@@ -27689,7 +28011,7 @@
     4
    ],
    "source": {
-    "line": 2408
+    "line": 2452
    },
    "card": {
     "definition": "A direct object is the noun or pronoun that receives the action of the verb. It answers the question what or whom after the verb.",
@@ -27859,7 +28181,7 @@
     4
    ],
    "source": {
-    "line": 2430
+    "line": 2474
    },
    "card": {
     "definition": "A preposition is a word that shows the link between a noun or pronoun and another word in the sentence. Common prepositions are in, on, under, over, beside, behind, between, through, and with.",
@@ -28034,7 +28356,7 @@
     4
    ],
    "source": {
-    "line": 2486
+    "line": 2530
    },
    "read": {
     "check": "thought"
@@ -28303,7 +28625,7 @@
     4
    ],
    "source": {
-    "line": 2508
+    "line": 2552
    },
    "card": {
     "definition": "A dependent clause has a subject and a verb, but it cannot stand alone. It starts with a subordinating word such as because, when, although, if, or while, and it leaves you waiting for more.",
@@ -28509,7 +28831,7 @@
     4
    ],
    "source": {
-    "line": 2532
+    "line": 2576
    },
    "card": {
     "sections": [
@@ -28786,7 +29108,7 @@
     4
    ],
    "source": {
-    "line": 2555
+    "line": 2599
    },
    "read": {
     "check": "contraction"
@@ -29055,7 +29377,7 @@
     4
    ],
    "source": {
-    "line": 2585
+    "line": 2629
    },
    "read": {
     "fix": "apostrophe",
@@ -29349,7 +29671,7 @@
     4
    ],
    "source": {
-    "line": 2609
+    "line": 2653
    },
    "card": {
     "sections": [
@@ -29621,7 +29943,7 @@
     4
    ],
    "source": {
-    "line": 2658
+    "line": 2702
    },
    "card": {
     "definition": "When a quote starts a sentence, capitalize its first word. When a quote continues a sentence after words such as that, do not capitalize it unless it is a proper noun.",
@@ -29840,7 +30162,7 @@
     4
    ],
    "source": {
-    "line": 2680
+    "line": 2724
    },
    "card": {
     "definition": "When you introduce a quote with a verb such as said, asked, or shouted, put a comma before the quote. When you introduce it with that, do not use a comma.",
@@ -30444,7 +30766,7 @@
     4
    ],
    "source": {
-    "line": 2702
+    "line": 2746
    },
    "read": {
     "fix": "endmark",
@@ -30728,7 +31050,7 @@
     4
    ],
    "source": {
-    "line": 2724
+    "line": 2768
    },
    "read": {
     "chips": [
@@ -31316,7 +31638,7 @@
     4
    ],
    "source": {
-    "line": 2748
+    "line": 2792
    },
    "card": {
     "definition": "Formal language is polite and careful, and it fits school essays, letters to adults, and reports. Informal language is casual and fits friends, texts, and notes. Language is too formal or too informal when it does not fit the setting.",
@@ -31566,7 +31888,7 @@
     4
    ],
    "source": {
-    "line": 2772
+    "line": 2816
    },
    "card": {
     "definition": "A concrete noun names something you can see, touch, hear, smell, or taste. It names a real thing in the world.",
@@ -31742,7 +32064,7 @@
     4
    ],
    "source": {
-    "line": 2794
+    "line": 2838
    },
    "card": {
     "definition": "A common noun names a general person, place, thing, or idea. It does not name one specific thing, and it is not capitalized unless it starts a sentence.",
@@ -31919,7 +32241,7 @@
     4
    ],
    "source": {
-    "line": 2816
+    "line": 2860
    },
    "read": {
     "check": "commonproper"
@@ -32217,7 +32539,7 @@
     4
    ],
    "source": {
-    "line": 2842
+    "line": 2886
    },
    "card": {
     "definition": "Verbs change form to show time. Simple tenses show one time: past, present, or future. Progressive tenses show an action in progress, using a form of be plus ing. Perfect tenses show an action finished before another time, using a form of have plus a past participle.",
@@ -32557,7 +32879,7 @@
     4
    ],
    "source": {
-    "line": 3143
+    "line": 3187
    },
    "read": {
     "bare": "tap"
@@ -32718,7 +33040,7 @@
     4
    ],
    "source": {
-    "line": 3235
+    "line": 3279
    },
    "read": {
     "bare": "tap",
@@ -32897,7 +33219,7 @@
     4
    ],
    "source": {
-    "line": 3257
+    "line": 3301
    },
    "read": {
     "bare": "tap"
@@ -33067,7 +33389,7 @@
     4
    ],
    "source": {
-    "line": 3279
+    "line": 3323
    },
    "read": {
     "bare": "label",
@@ -33324,7 +33646,7 @@
     4
    ],
    "source": {
-    "line": 4784
+    "line": 4828
    },
    "card": {
     "sections": [
@@ -33582,7 +33904,7 @@
     4
    ],
    "source": {
-    "line": 3376
+    "line": 3420
    },
    "card": {
     "sections": [
@@ -33832,7 +34154,7 @@
     4
    ],
    "source": {
-    "line": 4826
+    "line": 4870
    },
    "card": {
     "sections": [
@@ -34090,7 +34412,7 @@
     4
    ],
    "source": {
-    "line": 4805
+    "line": 4849
    },
    "card": {
     "sections": [
@@ -34348,7 +34670,7 @@
     4
    ],
    "source": {
-    "line": 3444
+    "line": 3488
    },
    "read": {
     "bare": "citemark"
@@ -34617,7 +34939,7 @@
     4
    ],
    "source": {
-    "line": 3470
+    "line": 3514
    },
    "read": {
     "bare": "tap",
@@ -34806,7 +35128,7 @@
     4
    ],
    "source": {
-    "line": 3492
+    "line": 3536
    },
    "read": {
     "bare": "misplaced"
@@ -35009,7 +35331,7 @@
     4
    ],
    "source": {
-    "line": 3514
+    "line": 3558
    },
    "read": {
     "bare": "dangling"
@@ -35218,7 +35540,7 @@
     4
    ],
    "source": {
-    "line": 3536
+    "line": 3580
    },
    "read": {
     "bare": "movefix"
@@ -35523,7 +35845,7 @@
     4
    ],
    "source": {
-    "line": 3558
+    "line": 3602
    },
    "read": {
     "bare": "danglefix"
@@ -35818,7 +36140,7 @@
     4
    ],
    "source": {
-    "line": 3584
+    "line": 3628
    },
    "read": {
     "bare": "tap",
@@ -36080,7 +36402,7 @@
     4
    ],
    "source": {
-    "line": 3606
+    "line": 3650
    },
    "read": {
     "bare": "tap"
@@ -36274,7 +36596,7 @@
     4
    ],
    "source": {
-    "line": 3650
+    "line": 3694
    },
    "read": {
     "bare": "depfrag"
@@ -36569,7 +36891,7 @@
     4
    ],
    "source": {
-    "line": 3672
+    "line": 3716
    },
    "read": {
     "bare": "restrictive",
@@ -37366,7 +37688,7 @@
     4
    ],
    "source": {
-    "line": 3720
+    "line": 3764
    },
    "read": {
     "bare": "plural"
@@ -37618,7 +37940,7 @@
     4
    ],
    "source": {
-    "line": 3742
+    "line": 3786
    },
    "read": {
     "bare": "label",
@@ -37917,7 +38239,7 @@
     4
    ],
    "source": {
-    "line": 4470
+    "line": 4514
    },
    "card": {
     "definition": "To show that one person or thing owns something, add an apostrophe and an s to the end of the singular noun. For example, the dog's bone means the bone belongs to one dog.",
@@ -38212,7 +38534,7 @@
     4
    ],
    "source": {
-    "line": 4492
+    "line": 4536
    },
    "card": {
     "definition": "\"Others\" with no apostrophe is just a plural word meaning more people or things. \"Others'\" with an apostrophe after the s shows that a group of others owns something. \"Each other's\" shows that each person in a pair or group owns one of the things, as in \"They traded each other's snacks.\"",
@@ -38434,7 +38756,7 @@
     4
    ],
    "source": {
-    "line": 3808
+    "line": 3852
    },
    "read": {
     "bare": "label",
@@ -38691,7 +39013,7 @@
     4
    ],
    "source": {
-    "line": 3830
+    "line": 3874
    },
    "read": {
     "bare": "sharedfix"
@@ -38974,7 +39296,7 @@
     4
    ],
    "source": {
-    "line": 4514
+    "line": 4558
    },
    "card": {
     "definition": "To show that more than one owner owns something, first make the noun plural, then add an apostrophe after the s. For example, the dogs' bones means the bones belong to more than one dog.",
@@ -39281,7 +39603,7 @@
     4
    ],
    "source": {
-    "line": 3862
+    "line": 3906
    },
    "read": {
     "bare": "subjobj"
@@ -39473,7 +39795,7 @@
     4
    ],
    "source": {
-    "line": 3884
+    "line": 3928
    },
    "read": {
     "bare": "pair",
@@ -39727,7 +40049,7 @@
     4
    ],
    "source": {
-    "line": 3906
+    "line": 3950
    },
    "read": {
     "bare": "gerund"
@@ -39960,7 +40282,7 @@
     4
    ],
    "source": {
-    "line": 3928
+    "line": 3972
    },
    "read": {
     "bare": "reflexive",
@@ -40206,7 +40528,7 @@
     4
    ],
    "source": {
-    "line": 3978
+    "line": 4022
    },
    "read": {
     "bare": "agree"
@@ -40446,7 +40768,7 @@
     4
    ],
    "source": {
-    "line": 4000
+    "line": 4044
    },
    "read": {
     "bare": "indefinite"
@@ -40710,7 +41032,7 @@
     4
    ],
    "source": {
-    "line": 4150
+    "line": 4194
    },
    "read": {
     "asIs": true
@@ -40968,7 +41290,7 @@
     4
    ],
    "source": {
-    "line": 4172
+    "line": 4216
    },
    "read": {
     "asIs": true
@@ -41248,7 +41570,7 @@
     4
    ],
    "source": {
-    "line": 4194
+    "line": 4238
    },
    "read": {
     "asIs": true
@@ -41526,7 +41848,7 @@
     4
    ],
    "source": {
-    "line": 4216
+    "line": 4260
    },
    "read": {
     "asIs": true
@@ -41756,7 +42078,7 @@
     4
    ],
    "source": {
-    "line": 4238
+    "line": 4282
    },
    "read": {
     "asIs": true
@@ -42048,7 +42370,7 @@
     4
    ],
    "source": {
-    "line": 4260
+    "line": 4304
    },
    "read": {
     "asIs": true
@@ -42278,7 +42600,7 @@
     4
    ],
    "source": {
-    "line": 4288
+    "line": 4332
    },
    "read": {
     "asIs": true
@@ -42580,7 +42902,7 @@
     4
    ],
    "source": {
-    "line": 4310
+    "line": 4354
    },
    "read": {
     "asIs": true
@@ -42856,7 +43178,7 @@
     4
    ],
    "source": {
-    "line": 4332
+    "line": 4376
    },
    "read": {
     "asIs": true
@@ -43101,7 +43423,7 @@
     4
    ],
    "source": {
-    "line": 4358
+    "line": 4402
    },
    "read": {
     "asIs": true
@@ -43395,7 +43717,7 @@
     4
    ],
    "source": {
-    "line": 4380
+    "line": 4424
    },
    "read": {
     "asIs": true
@@ -43677,7 +43999,7 @@
     4
    ],
    "source": {
-    "line": 4402
+    "line": 4446
    },
    "read": {
     "asIs": true
@@ -43910,7 +44232,7 @@
     4
    ],
    "source": {
-    "line": 4424
+    "line": 4468
    },
    "read": {
     "asIs": true
@@ -44131,7 +44453,7 @@
     4
    ],
    "source": {
-    "line": 4446
+    "line": 4490
    },
    "read": {
     "asIs": true
@@ -44364,7 +44686,7 @@
     4
    ],
    "source": {
-    "line": 4538
+    "line": 4582
    },
    "card": {
     "definition": "The verb in a sentence must agree with its subject in number. A singular subject takes a singular verb, and a plural subject takes a plural verb.",
@@ -44608,7 +44930,7 @@
     4
    ],
    "source": {
-    "line": 4560
+    "line": 4604
    },
    "card": {
     "definition": "\"Doesn't\" is short for \"does not\" and goes with a singular subject. \"Don't\" is short for \"do not\" and goes with a plural subject, or with the words I and you.",
@@ -44852,7 +45174,7 @@
     4
    ],
    "source": {
-    "line": 4582
+    "line": 4626
    },
    "card": {
     "definition": "In a sentence that starts with here or there, the subject comes after the verb, so the verb must agree with the noun that follows it. In a question, the subject also comes after the helping verb, so the same rule applies.",
@@ -45107,7 +45429,7 @@
     4
    ],
    "source": {
-    "line": 4604
+    "line": 4648
    },
    "card": {
     "definition": "A compound subject joins two or more subjects with and. When the parts are joined by and, the subject is plural, so the verb is plural. When the parts name the same single person or thing, the subject stays singular.",
@@ -45329,7 +45651,7 @@
     4
    ],
    "source": {
-    "line": 4626
+    "line": 4670
    },
    "card": {
     "definition": "When two subjects are joined by or or nor, the verb agrees with the subject closest to it. This is the rule of the nearer subject.",
@@ -45581,7 +45903,7 @@
     4
    ],
    "source": {
-    "line": 4650
+    "line": 4694
    },
    "read": {
     "cycle": true
@@ -45840,7 +46162,7 @@
     4
    ],
    "source": {
-    "line": 4672
+    "line": 4716
    },
    "read": {
     "cycle": true
@@ -46077,7 +46399,7 @@
     4
    ],
    "source": {
-    "line": 4694
+    "line": 4738
    },
    "read": {
     "cycle": true
@@ -46336,7 +46658,7 @@
     4
    ],
    "source": {
-    "line": 4716
+    "line": 4760
    },
    "read": {
     "cycle": true
@@ -46581,7 +46903,7 @@
     4
    ],
    "source": {
-    "line": 4738
+    "line": 4782
    },
    "read": {
     "cycle": true
@@ -46826,7 +47148,7 @@
     4
    ],
    "source": {
-    "line": 4760
+    "line": 4804
    },
    "read": {
     "cycle": true
@@ -47071,7 +47393,7 @@
     4
    ],
    "source": {
-    "line": 4880
+    "line": 4924
    },
    "card": {
     "definition": "An antecedent is the noun a pronoun stands for. A pronoun is vague when the reader cannot tell which noun it stands for.",
@@ -47391,7 +47713,7 @@
     4
    ],
    "source": {
-    "line": 4902
+    "line": 4946
    },
    "card": {
     "definition": "When a pronoun could stand for more than one noun, fix the sentence by repeating the noun you mean or by rewriting the sentence so only one noun fits.",
@@ -47719,7 +48041,7 @@
     4
    ],
    "source": {
-    "line": 4926
+    "line": 4970
    },
    "card": {
     "definition": "The regular present tense shows an action that happens now or happens often. For most verbs, use the base form with I, you, we, and they, and add an s or es with he, she, and it.",
@@ -47959,7 +48281,7 @@
     4
    ],
    "source": {
-    "line": 4948
+    "line": 4992
    },
    "card": {
     "definition": "The regular past tense shows an action that already happened. For most verbs, add ed to the base form. If the verb ends in e, add only d. If it ends in a consonant plus y, change the y to i and add ed.",
@@ -48181,7 +48503,7 @@
     4
    ],
    "source": {
-    "line": 4970
+    "line": 5014
    },
    "card": {
     "definition": "The future tense shows an action that will happen later. Form it with will plus the base form of the verb. It never changes for different subjects.",
@@ -48403,7 +48725,7 @@
     4
    ],
    "source": {
-    "line": 5016
+    "line": 5060
    },
    "card": {
     "definition": "A present participle is a verb form ending in ing, like walking, reading, or swimming. It is used with a form of be to make a progressive tense.",
@@ -48681,7 +49003,7 @@
     4
    ],
    "source": {
-    "line": 5038
+    "line": 5082
    },
    "card": {
     "definition": "A progressive tense shows an action that is, was, or will be in progress. It is formed with a form of be plus a present participle, a verb ending in ing.",
@@ -48995,7 +49317,7 @@
     4
    ],
    "source": {
-    "line": 5060
+    "line": 5104
    },
    "card": {
     "definition": "A past participle is a verb form used with a form of have to make a perfect tense. For regular verbs, it ends in ed, like walked or played. For irregular verbs, it has a special form, like sung, written, or eaten.",
@@ -49273,7 +49595,7 @@
     4
    ],
    "source": {
-    "line": 5082
+    "line": 5126
    },
    "card": {
     "definition": "A perfect tense shows an action completed before another time. It is formed with a form of have plus a past participle. Has and have show the present perfect, had shows the past perfect, and will have shows the future perfect.",
@@ -49587,7 +49909,7 @@
     4
    ],
    "source": {
-    "line": 5110
+    "line": 5154
    },
    "read": {
     "check": "verbal"
@@ -49887,7 +50209,7 @@
     4
    ],
    "source": {
-    "line": 5154
+    "line": 5198
    },
    "read": {
     "verbals": true
@@ -50213,7 +50535,7 @@
     4
    ],
    "source": {
-    "line": 6938
+    "line": 6982
    },
    "read": {
     "bare": "words",
@@ -50491,7 +50813,7 @@
     4
    ],
    "source": {
-    "line": 6960
+    "line": 7004
    },
    "read": {
     "bare": "words",
@@ -50749,7 +51071,7 @@
     4
    ],
    "source": {
-    "line": 6982
+    "line": 7026
    },
    "read": {
     "bare": "words",
@@ -51007,7 +51329,7 @@
     4
    ],
    "source": {
-    "line": 7004
+    "line": 7048
    },
    "read": {
     "bare": "words",
@@ -51264,7 +51586,7 @@
     4
    ],
    "source": {
-    "line": 7026
+    "line": 7070
    },
    "read": {
     "bare": "words",
@@ -51517,7 +51839,7 @@
     4
    ],
    "source": {
-    "line": 7048
+    "line": 7092
    },
    "read": {
     "bare": "words",
@@ -51782,7 +52104,7 @@
     4
    ],
    "source": {
-    "line": 7070
+    "line": 7114
    },
    "read": {
     "bare": "words",
@@ -52047,7 +52369,7 @@
     4
    ],
    "source": {
-    "line": 7094
+    "line": 7138
    },
    "read": {
     "bare": "words",
@@ -52317,7 +52639,7 @@
     4
    ],
    "source": {
-    "line": 7116
+    "line": 7160
    },
    "read": {
     "bare": "words",
@@ -52587,7 +52909,7 @@
     4
    ],
    "source": {
-    "line": 7138
+    "line": 7182
    },
    "read": {
     "bare": "words",
@@ -52857,7 +53179,7 @@
     4
    ],
    "source": {
-    "line": 7160
+    "line": 7204
    },
    "read": {
     "bare": "words",
@@ -53127,7 +53449,7 @@
     4
    ],
    "source": {
-    "line": 7184
+    "line": 7228
    },
    "read": {
     "bare": "clausemark",
@@ -54159,7 +54481,7 @@
     4
    ],
    "source": {
-    "line": 7206
+    "line": 7250
    },
    "read": {
     "bare": "clausemark",
@@ -55294,7 +55616,7 @@
     4
    ],
    "source": {
-    "line": 7230
+    "line": 7274
    },
    "read": {
     "bare": "compound"
@@ -55488,7 +55810,7 @@
     4
    ],
    "source": {
-    "line": 7252
+    "line": 7296
    },
    "read": {
     "bare": "join",
@@ -55817,7 +56139,7 @@
     4
    ],
    "source": {
-    "line": 7274
+    "line": 7318
    },
    "read": {
     "bare": "join",
@@ -56123,7 +56445,7 @@
     4
    ],
    "source": {
-    "line": 7296
+    "line": 7340
    },
    "read": {
     "bare": "join",
@@ -56431,7 +56753,7 @@
     4
    ],
    "source": {
-    "line": 7318
+    "line": 7362
    },
    "read": {
     "bare": "join",
@@ -56751,7 +57073,7 @@
     4
    ],
    "source": {
-    "line": 7340
+    "line": 7384
    },
    "read": {
     "bare": "join",
@@ -57054,7 +57376,7 @@
     4
    ],
    "source": {
-    "line": 7386
+    "line": 7430
    },
    "read": {
     "bare": "cue",
@@ -57921,7 +58243,7 @@
     4
    ],
    "source": {
-    "line": 7410
+    "line": 7454
    },
    "read": {
     "bare": "parallel"
@@ -58179,7 +58501,7 @@
     4
    ],
    "source": {
-    "line": 7432
+    "line": 7476
    },
    "read": {
     "bare": "parallel",

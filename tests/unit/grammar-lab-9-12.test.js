@@ -267,7 +267,7 @@ test('playing 9-12 topics over the API: one wrong answer each, mastery shared wi
   }
   const ca = GL.unitStates(k2, GL.pathway('conjunctive-adverbs', '9-12'));
   assert.deepEqual(ca.map(s => [s.topic.id, s.mastered, s.open]), [['conj-adverbs-identify', true, true], ['conj-adverbs-start', false, true], ['conj-adverbs-middle', false, false]], 'the next one opens, the one after stays locked');
-  assert.deepEqual(GL.unitProgress(k2, GL.pathway('conjunctive-adverbs', '9-12')), { done: 1, total: 3 });
+  assert.deepEqual(GL.unitProgress(k2, GL.pathway('conjunctive-adverbs', '9-12')), { done: 1, total: 3, started: 0 });
   // and back: a 9-12 win shows in 6-8 (the Possessives unit's topic is the 6-8 one)
   const lp = await playTopic(k2, 'possessives', 'singular-possessives');
   assert.equal(lp.mastered, true);

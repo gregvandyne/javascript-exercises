@@ -5818,7 +5818,20 @@
       },
       "gapHolds": "{word} 後面的{mark}",
       "mgap": "{word} 後面的空格",
-      "wrongMarks": "還差一點。再看看字詞之間的標點。連續答對兩題就能完成這一關。"
+      "wrongMarks": "還差一點。再看看字詞之間的標點。連續答對兩題就能完成這一關。",
+      "counterAdded": "{count, plural, other {答錯加了 # 題}}",
+      "tryAgain": "再試一次這題",
+      "seenBefore": "這題你之前看過",
+      "notSent": "答案沒有送出。檢查一下，再按一次送出。",
+      "resynced": "從你上次停下的地方繼續。",
+      "signedOut": "你已經登出了。你的進度都有保存。",
+      "signIn": "重新登入",
+      "fixed": "改對了！",
+      "fixedNote": "只有第一次作答才算進連續答對。",
+      "levelLonger": "這一關有 {n} 題，而不是 {base} 題：每答錯一題就多加一題，連續答對兩題才能過關。",
+      "doneElsewhere": "你已經完成這個主題了。",
+      "doneAdded": "共 {base} 題，再加上答錯多出的 {count, plural, other {# 題}}。",
+      "firstTry": "第一次就答對：{n}／{total}"
     }
   },
   "favorites": {
@@ -16378,7 +16391,9 @@
       "started": "繼續",
       "mastered": "已精通",
       "pending": "登入就能保留",
-      "locked": "先精通前一個主題"
+      "locked": "先精通前一個主題",
+      "levelOf": "第 {level} 關，共 {levels} 關",
+      "also": "也算在：{units}"
     },
     "guest": {
       "title": "登入保留你的成果",
@@ -16390,9 +16405,10 @@
     },
     "welcome": {
       "heading": "歡迎來到 {topic}",
-      "text": "一直回答，直到你證明自己會了。最後兩題連續答對，就能完成每一關。",
       "go": "開始吧",
-      "skip": "略過介紹"
+      "skip": "略過介紹",
+      "rule": "每一關有 {per} 題。連續答對兩題就能過關。只有第一次就答對才算進連續答對。",
+      "count": "共 {total} 題，每答錯一題就多加一題。"
     },
     "practice": {
       "tip": "點兩下怎麼用",
@@ -16479,6 +16495,12 @@
       "passed": "校對房間完成",
       "locked": "先打開這個主題",
       "back": "回到{topic}"
+    },
+    "loading": "正在準備你的課程",
+    "progress": {
+      "band": "已精通 {mastered} · 進行中 {started}",
+      "unit": "進行中 {started}",
+      "unitHead": "已精通 {mastered}／{total} · 進行中 {started}"
     }
   }
 }

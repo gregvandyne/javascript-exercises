@@ -5819,7 +5819,20 @@
       },
       "gapHolds": "{mark} nach {word}",
       "mgap": "Lücke nach {word}",
-      "wrongMarks": "Noch nicht ganz. Schau dir die Zeichen zwischen den Wörtern noch einmal an. Zwei richtige Antworten hintereinander beenden diese Stufe."
+      "wrongMarks": "Noch nicht ganz. Schau dir die Zeichen zwischen den Wörtern noch einmal an. Zwei richtige Antworten hintereinander beenden diese Stufe.",
+      "counterAdded": "{count, plural, one {+# für einen Fehler} other {+# für Fehler}}",
+      "tryAgain": "Versuch diese noch einmal",
+      "seenBefore": "Diese kennst du schon",
+      "notSent": "Die Antwort kam nicht an. Prüfe sie und tippe noch einmal auf Abschicken.",
+      "resynced": "Es geht da weiter, wo du warst.",
+      "signedOut": "Du wurdest abgemeldet. Dein Fortschritt ist gespeichert.",
+      "signIn": "Wieder anmelden",
+      "fixed": "Verbessert!",
+      "fixedNote": "Nur der erste Versuch zählt für deine Serie.",
+      "levelLonger": "Dieses Level hatte {n} statt {base} Fragen: Jeder Fehler bringt eine dazu, und ein Level endet mit zwei richtigen hintereinander.",
+      "doneElsewhere": "Du hast dieses Thema schon geschafft.",
+      "doneAdded": "Das sind {base} Fragen, plus {count, plural, one {# für einen Fehler} other {# für Fehler}}.",
+      "firstTry": "{n} von {total} beim ersten Versuch richtig"
     }
   },
   "favorites": {
@@ -16379,7 +16392,9 @@
       "started": "Weitermachen",
       "mastered": "Gemeistert",
       "pending": "Melde dich an, um es zu behalten",
-      "locked": "Meistere zuerst das vorige"
+      "locked": "Meistere zuerst das vorige",
+      "levelOf": "Level {level} von {levels}",
+      "also": "Zählt auch in: {units}"
     },
     "guest": {
       "title": "Melde dich an, um deine Erfolge zu behalten",
@@ -16391,9 +16406,10 @@
     },
     "welcome": {
       "heading": "Willkommen bei {topic}",
-      "text": "Antworte weiter, bis du zeigst, dass du es kannst. Beantworte die letzten zwei richtig hintereinander, um jedes Level zu schaffen.",
       "go": "Los geht's",
-      "skip": "Intro überspringen"
+      "skip": "Intro überspringen",
+      "rule": "Jedes Level hat {per} Fragen. Du schaffst es mit zwei richtigen hintereinander. Nur Antworten beim ersten Versuch zählen für die Serie.",
+      "count": "{total} Fragen, plus eine für jeden Fehler."
     },
     "practice": {
       "tip": "So funktioniert doppeltes Tippen",
@@ -16480,6 +16496,12 @@
       "passed": "Korrekturraum geschafft",
       "locked": "Öffne zuerst das Thema",
       "back": "Zurück zu {topic}"
+    },
+    "loading": "Deine Lektion wird vorbereitet",
+    "progress": {
+      "band": "{mastered} gemeistert · {started} in Arbeit",
+      "unit": "{started} in Arbeit",
+      "unitHead": "{mastered} von {total} gemeistert · {started} in Arbeit"
     }
   }
 }

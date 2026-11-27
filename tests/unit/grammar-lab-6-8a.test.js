@@ -288,7 +288,7 @@ test('playing 6-8 topics over the API: one wrong answer in each format, mastery 
     assert.ok(st[at + 1].open, `${unit}: the next topic opens`);
   }
   // the ring is the live count
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('commas-for-formatting', '6-8')), { done: 1, total: 2 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('commas-for-formatting', '6-8')), { done: 1, total: 2, started: 0 });
   // a 6-8 topic with a K-2 or 3-5 title is its own topic (written for this band): mastering it leaves the other alone
   master(kid, 'common-nouns-6-8');
   assert.ok(!GL.masteredSet(kid).has('identifying-common-nouns'));

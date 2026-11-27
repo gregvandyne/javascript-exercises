@@ -502,6 +502,14 @@ body.playmode{background:#000;padding-bottom:0;overflow:hidden}
 .stage{position:fixed;top:52px;inset-inline:0;bottom:0;background:#000}
 .stage iframe,.studio-preview iframe{width:100%;height:100%;border:0;display:block;background:#fff}
 .stage:fullscreen,.stage.css-full{top:0}
+/* a Grammar Lab room (routes/games.js glRoom) is a lesson screen: its bar, stage and frame follow the theme, light or
+   dark, rather than the games' Ink chrome (the lesson flipped to black and back on the way in and out) */
+body.playmode.gl-roommode,.gl-roommode .stage,.gl-roommode .stage iframe{background:var(--bg)}
+.gl-roommode .playbar{background:var(--bar);color:var(--text);border-bottom-color:var(--line)}
+.gl-roommode .playbar .iconbtn{color:var(--text)}
+.gl-roommode .playbar .iconbtn:hover{background:var(--hover)}
+.gl-roommode .playbar .iconbtn[aria-pressed="true"],.gl-roommode .playbar .livecount{color:var(--link)}
+.gl-roommode .playbar :focus-visible{outline-color:var(--focus)}
 /* a game handed out from Homeroom with the teacher's instructions (routes/games.js): one yellow line over the game,
    tap it for all of it (the stage moves down by its height; full screen still covers everything) */
 .playnote{position:fixed;top:52px;inset-inline:0;z-index:9;background:#FFF4C7;color:#141414;border-bottom:2px solid #E8D88A}

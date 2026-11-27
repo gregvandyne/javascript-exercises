@@ -34,22 +34,31 @@ const COURSE = Object.freeze({ slug: SLUG });
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const FILE = path.join(ROOT, 'seed-lessons/grammar-lab/topics.json');
 
-let cache = null;
+let cache = null, usedIn = new Map();
 const data = () => (cache ||= JSON.parse(fs.readFileSync(FILE, 'utf8')));
-export const reload = () => { cache = null; };
+export const reload = () => { cache = null; usedIn = new Map(); };
+// Read once, off the first request's path: the first lesson after a start or a deploy opens as fast as any other.
+setImmediate(() => { try { data(); } catch { /* the first request reports it */ } });
 
 // ------------------------------------------------------------------------------------------------- the course
 export const bands = () => data().bands;
 export const band = id => data().bands.find(b => b.id === id) || null;
 export const topic = id => (Object.hasOwn(data().topics, id) ? data().topics[id] : null);
-/** A unit: { id, title, band, parts, topics: [ids in order], marks: { id: 'checkpoint' | 'review' } }, or null. */
+/** A unit: { id, title, band, parts, topics: [ids in order], marks: { id: 'checkpoint' | 'review' } }, or null. A unit
+ *  shared by two bands may have a part for one band only (part.band: the K-2 and 3-5 Adjectives and Adverbs each have
+ *  their own adverb topic). */
 export function pathway(id, bandId = null) {
   const p = Object.hasOwn(data().pathways, id) ? data().pathways[id] : null;
   const b = p && data().bands.find(x => x.pathways.includes(id) && (!bandId || x.id === bandId));
-  return p && b ? { id, title: p.title, band: b.id, parts: p.parts, topics: p.parts.flatMap(x => x.topics), marks: p.marks || {} } : null;
+  if (!p || !b) return null;
+  const parts = p.parts.filter(x => !x.band || x.band === b.id);
+  return { id, title: p.title, band: b.id, parts, topics: parts.flatMap(x => x.topics), marks: p.marks || {} };
 }
 /** Every unit that uses a topic (in every band): [unit]. */
-export const unitsWith = id => data().bands.flatMap(b => b.pathways.map(p => pathway(p, b.id)).filter(p => p && p.topics.includes(id)));
+export function unitsWith(id) {
+  if (!usedIn.has(id)) usedIn.set(id, data().bands.flatMap(b => b.pathways.map(p => pathway(p, b.id)).filter(p => p && p.topics.includes(id))));
+  return usedIn.get(id);
+}
 export const pathwaysOf = bandId => (band(bandId) ? band(bandId).pathways.map(id => pathway(id, bandId)) : []);
 const BAND_ID = /^(k-2|3-5|6-8|9-12)$/;
 /** A unit as a request names it: its id, and the band it was opened in when that is one of the unit's bands (a unit
@@ -86,7 +95,7 @@ const changed = (user, what) => { for (const fn of changeHandlers) { try { fn(us
  *  stays open); assigned says which topics are theirs to do. reach: the visitor's reach, when the caller has it. */
 export function unitStates(user, p, reach = reachOf(user)) {
   const done = masteredSet(user), pend = pendingSet(user), passed = roomPassedSet(user);
-  const started = new Set(user ? q.all('SELECT topic FROM grammar_lab_quiz WHERE user_id=?', user.id).map(r => r.topic) : []);
+  const runs = runLevels(user);
   const admin = !!user && user.role === 'admin';
   const partOf = new Map();
   for (const part of p.parts || []) if (part.title && part.topics.length) partOf.set(part.topics[0], part.title);
@@ -97,7 +106,8 @@ export function unitStates(user, p, reach = reachOf(user)) {
     // A guest's pending win opens the next topic for this sitting, as a guest's facts do in the other courses.
     const inOrder = reach.all || reach.units.has(p.id);
     const open = admin || mastered || pending || (inOrder && prev) || (!reach.all && reach.topics.has(id));
-    const s = { topic: t, mastered, pending, open, started: started.has(id),
+    const lv = runs.get(id);
+    const s = { topic: t, mastered, pending, open, started: runs.has(id), level: !mastered && lv && lv.live ? lv : null, also: alsoIn(id, p),
       assigned: reach.all ? null : reach.units.has(p.id) || reach.topics.has(id),
       part: partOf.get(id) || null, mark: (p.marks || {})[id] || null,
       room: room(id) ? { passed: passed.has(id), open: open || (!reach.all && reach.rooms.has(id)) } : null };
@@ -105,10 +115,34 @@ export function unitStates(user, p, reach = reachOf(user)) {
     return s;
   });
 }
-/** A unit's ring: { done, total } from the live topic states. */
+/** Each topic this player has a quiz run on: Map(topic id -> { live (a run in progress, not mastered), level, levels }). */
+function runLevels(user) {
+  const out = new Map();
+  if (!user) return out;
+  for (const r of q.all("SELECT topic, state FROM grammar_lab_quiz WHERE user_id=? AND topic NOT LIKE 'room:%'", user.id)) {
+    let st = null; try { st = JSON.parse(r.state); } catch { st = null; }
+    const levels = st && Array.isArray(st.levels) ? st.levels.length : 0;
+    out.set(r.topic, { live: !!(st && !st.mastered && levels), level: levels ? Math.min(st.level || 0, levels - 1) + 1 : 1, levels });
+  }
+  return out;
+}
+/** The other units that use this topic, by title, each once: mastering it here counts there too. With a unit: the other
+ *  units of that unit's band (a K-2 student is not told about a 3-5 unit). */
+export function alsoIn(id, p = null) {
+  const seen = new Set(p ? [p.title] : []), out = [];
+  for (const u of unitsWith(id)) if ((!p || u.band === p.band) && !seen.has(u.title)) { seen.add(u.title); out.push({ id: u.id, band: u.band, title: u.title }); }
+  return out;
+}
+/** A unit's ring: { done, total, started (in progress: a run going, not mastered) } from the live topic states. */
 export function unitProgress(user, p, reach = reachOf(user)) {
   const list = unitStates(user, p, reach);
-  return { done: list.filter(s => s.mastered).length, total: list.length };
+  return { done: list.filter(s => s.mastered).length, total: list.length, started: list.filter(s => !s.mastered && s.level).length };
+}
+/** A band's counts for the course page: distinct topics mastered and in progress across its units. */
+export function bandProgress(user, units) {
+  const mastered = new Set(), started = new Set();
+  for (const { p } of units) for (const s of unitStates(user, p)) { if (s.mastered) mastered.add(s.topic.id); else if (s.level) started.add(s.topic.id); }
+  return { mastered: mastered.size, started: started.size };
 }
 /** The next topic to master, live, never a mastered one (nor a guest's pending one, nor `afterId`): the first open one in
  *  this unit, else the first open one in the band's other units, in order. -> { ...state, unit } or null. */
@@ -141,7 +175,28 @@ onPendingWin(SLUG, (user, id) => {
 function readRun(user, id) {
   const r = user && q.get('SELECT state FROM grammar_lab_quiz WHERE user_id=? AND topic=?', user.id, id);
   if (!r) return null;
-  try { return JSON.parse(r.state); } catch { return null; }
+  let s; try { s = JSON.parse(r.state); } catch { return null; }
+  return id.startsWith(ROOM_PREFIX) ? s : fitRun(user, id, s);
+}
+/** A run kept across a change to its topic's items (a rebuild that added or took out items): its progress stays (level,
+ *  streak, counter, bar), and every item place it holds is one the topic has now. A question on screen whose item is
+ *  gone is swapped for one the run has not shown. -> the run (saved when it changed). */
+function fitRun(user, id, s) {
+  const t = topic(id);
+  if (!s || !t || s.mastered || !s.cur || !Array.isArray(s.levels)) return s;
+  const n = t.items.length;
+  if (s.items === n && s.cur.item < n) return s;
+  const ok = i => Number.isInteger(i) && i >= 0 && i < n;
+  s.items = n;
+  s.queue = (s.queue || []).filter(ok);
+  s.again = (s.again || []).filter(a => ok(a.item));
+  s.history = s.history.filter(h => ok(h.item));
+  s.seq = (s.seq || []).filter(ok);
+  const shown = new Set(s.seq);
+  for (let i = 0; i < n; i++) if (!shown.has(i) && !s.queue.includes(i)) s.queue.push(i);
+  if (!ok(s.cur.item)) s.cur = { item: s.queue.length ? s.queue.shift() : 0, missed: false };
+  saveRun(user, id, s);
+  return s;
 }
 function saveRun(user, id, s) {
   const t = now();
@@ -179,7 +234,8 @@ const formatOf = (t, it) => (it && it.format) || t.format;
 export function questionFor(t, s) {
   if (!s || !s.cur) return null;
   const it = t.items[s.cur.item], kind = kindOf(t, it), f = formatOf(t, it);
-  const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind };
+  // again: a missed question back for another try; seen: one answered right before (only when a run needs it)
+  const base = { id: it.id, n: s.presented, ask: it.ask || t.ask, kind, ...(s.cur.retry ? { again: true } : {}), ...(s.cur.seen ? { seen: true } : {}) };
   if (f === 'passage') return { ...base, before: '', after: '', options: it.options, whole: true, italic: false, passage: true };
   if (kind === 'choice') {
     const [before, after] = it.whole || it.plain ? [it.plain ? it.text : '', ''] : it.text.split('___');

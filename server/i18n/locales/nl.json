@@ -5819,7 +5819,20 @@
       },
       "gapHolds": "{mark} na {word}",
       "mgap": "Ruimte na {word}",
-      "wrongMarks": "Nog niet helemaal. Kijk nog eens naar de tekens tussen de woorden. Twee keer achter elkaar goed maakt dit level af."
+      "wrongMarks": "Nog niet helemaal. Kijk nog eens naar de tekens tussen de woorden. Twee keer achter elkaar goed maakt dit level af.",
+      "counterAdded": "{count, plural, one {+# voor een fout} other {+# voor fouten}}",
+      "tryAgain": "Probeer deze nog eens",
+      "seenBefore": "Deze heb je al eerder gezien",
+      "notSent": "Dat antwoord kwam niet aan. Kijk het na en druk nog eens op Versturen.",
+      "resynced": "We gaan verder waar je was.",
+      "signedOut": "Je bent uitgelogd. Je voortgang is bewaard.",
+      "signIn": "Opnieuw inloggen",
+      "fixed": "Verbeterd!",
+      "fixedNote": "Alleen je eerste poging telt mee voor je reeks.",
+      "levelLonger": "Dit level had {n} vragen in plaats van {base}: elke fout voegt er een toe, en een level eindigt met twee goed achter elkaar.",
+      "doneElsewhere": "Je hebt dit onderwerp al af.",
+      "doneAdded": "Dat zijn {base} vragen, plus {count, plural, one {# voor een fout} other {# voor fouten}}.",
+      "firstTry": "{n} van {total} in één keer goed"
     }
   },
   "favorites": {
@@ -16379,7 +16392,9 @@
       "started": "Verdergaan",
       "mastered": "Beheerst",
       "pending": "Log in om het te bewaren",
-      "locked": "Beheers eerst de vorige"
+      "locked": "Beheers eerst de vorige",
+      "levelOf": "Level {level} van {levels}",
+      "also": "Telt ook mee in: {units}"
     },
     "guest": {
       "title": "Log in om je successen te bewaren",
@@ -16391,9 +16406,10 @@
     },
     "welcome": {
       "heading": "Welkom bij {topic}",
-      "text": "Blijf antwoorden tot je laat zien dat je het kunt. Heb de laatste twee achter elkaar goed om elk level af te maken.",
       "go": "Daar gaan we",
-      "skip": "Intro overslaan"
+      "skip": "Intro overslaan",
+      "rule": "Elk level heeft {per} vragen. Je maakt het af met twee goed achter elkaar. Alleen antwoorden in één keer goed tellen mee voor je reeks.",
+      "count": "{total} vragen, plus één voor elke fout."
     },
     "practice": {
       "tip": "Hoe dubbeltikken werkt",
@@ -16480,6 +16496,12 @@
       "passed": "Verbeterkamer gehaald",
       "locked": "Open eerst het onderwerp",
       "back": "Terug naar {topic}"
+    },
+    "loading": "Je les wordt klaargezet",
+    "progress": {
+      "band": "{mastered} beheerst · {started} bezig",
+      "unit": "{started} bezig",
+      "unitHead": "{mastered} van {total} beheerst · {started} bezig"
     }
   }
 }
