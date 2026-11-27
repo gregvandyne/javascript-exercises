@@ -57,7 +57,7 @@ function exampleUnit(t, u, { italic = false, tag = 'p' } = {}) {
   const lead = u.lead ? html`<span class="gl-ex-lead">${u.lead}</span> ` : '';
   const thenNote = u.then && u.then.note ? html` <span class="gl-ex-note">${u.then.note}</span>` : '';
   const inner = u.fix && u.then
-    ? html`${lead}<span class="gl-ba gl-ba-before"><span class="gl-ba-sign" aria-hidden="true">✗</span><span class="sr-only">${t('grammarLab.card.before')}</span> <span class="gl-ba-text">${u.text}</span></span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}<span class="gl-ba gl-ba-after"><span class="gl-ba-sign" aria-hidden="true">✓</span><span class="sr-only">${t('grammarLab.card.after')}</span> <span class="gl-ex-text">${sent(u.then.text, u.then.marks)}</span></span>${thenNote}`
+    ? html`${lead}<span class="gl-ba gl-ba-before"><span class="gl-ba-sign" aria-hidden="true">✗</span><span class="sr-only">${t('grammarLab.card.before')}</span> <span class="gl-ba-text">${u.text}</span></span>${u.note && u.note !== 'becomes' ? html` <span class="gl-ex-note">${u.note}</span>` : ''}<span class="gl-ba gl-ba-after"><span class="gl-ba-sign" aria-hidden="true">✓</span><span class="sr-only">${t('grammarLab.card.after')}</span> <span class="gl-ex-text">${sent(u.then.text, u.then.marks)}</span></span>${thenNote}`
     : html`${lead}<span class="gl-ex-text">${sent(u.text, u.marks)}</span>${u.note ? html` <span class="gl-ex-note">${u.note}</span>` : ''}${u.then ? html` <span class="gl-ex-text gl-ex-then">${sent(u.then.text, u.then.marks)}</span>${thenNote}` : ''}`;
   const cls = u.fix && u.then ? 'gl-ex gl-ex-fix' : 'gl-ex';
   return tag === 'li' ? html`<li class="${cls}">${inner}</li>` : html`<p class="${cls}">${inner}</p>`;

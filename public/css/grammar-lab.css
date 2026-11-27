@@ -234,7 +234,7 @@ a.gl-mi:hover{background:var(--hover);text-decoration:none}
 .gl-ba-sign{display:inline-block;min-width:1.35em;margin-inline-end:.3em;border-radius:999px;font-size:.78em;font-weight:800;font-style:normal;line-height:1.35;text-align:center;vertical-align:.1em}
 .gl-ba-before .gl-ba-sign{color:var(--bad-ink);background:var(--bad-bg)}
 .gl-ba-after .gl-ba-sign{color:var(--ok);background:var(--ok-bg)}
-.gl-ba-before .gl-ba-text{font-weight:400;font-style:normal;color:var(--text-2)}
+.gl-ba-before .gl-ba-text{font-weight:400;font-style:normal;color:var(--text-2);text-decoration:line-through;text-decoration-thickness:2px;text-decoration-color:var(--bad-ink)}
 .gl-ba-after{display:block;margin:2px 0 0;text-wrap:balance}
 .gl-opt.gl-title,.gl-blank.gl-title,.gl-title .gl-mk{font-style:italic}
 
