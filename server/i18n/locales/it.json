@@ -5803,7 +5803,20 @@
       },
       "gapHolds": "{mark} dopo {word}",
       "mgap": "Spazio dopo {word}",
-      "wrongMarks": "Non ancora. Guarda di nuovo i segni tra le parole. Rispondi giusto due volte di fila per finire questo livello."
+      "wrongMarks": "Non ancora. Guarda di nuovo i segni tra le parole. Rispondi giusto due volte di fila per finire questo livello.",
+      "counterAdded": "{count, plural, one {+# per un errore} other {+# per gli errori}}",
+      "tryAgain": "Riprova questa",
+      "seenBefore": "Una che hai già visto",
+      "notSent": "La risposta non è arrivata. Controllala e premi di nuovo Invia.",
+      "resynced": "Riprendiamo da dove eri rimasto.",
+      "signedOut": "Sei stato disconnesso. I tuoi progressi sono salvati.",
+      "signIn": "Accedi di nuovo",
+      "fixed": "Corretto!",
+      "fixedNote": "Per la serie conta solo il primo tentativo.",
+      "levelLonger": "Questo livello ha avuto {n} domande invece di {base}: ogni errore ne aggiunge una, e un livello finisce con due giuste di fila.",
+      "doneElsewhere": "Hai già finito questo argomento.",
+      "doneAdded": "Sono {base} domande, più {count, plural, one {# per un errore} other {# per gli errori}}.",
+      "firstTry": "{n} su {total} giuste al primo tentativo"
     }
   },
   "favorites": {
@@ -16367,7 +16380,9 @@
       "started": "Continua",
       "mastered": "Padroneggiato",
       "pending": "Accedi per tenerlo",
-      "locked": "Prima padroneggia quello prima"
+      "locked": "Prima padroneggia quello prima",
+      "levelOf": "Livello {level} di {levels}",
+      "also": "Conta anche in: {units}"
     },
     "guest": {
       "title": "Accedi per tenere i tuoi successi",
@@ -16379,9 +16394,10 @@
     },
     "welcome": {
       "heading": "Benvenuto in {topic}",
-      "text": "Continua a rispondere finché non mostri che lo sai. Fai giuste le ultime due di fila per finire ogni livello.",
       "go": "Andiamo",
-      "skip": "Salta l'introduzione"
+      "skip": "Salta l'introduzione",
+      "rule": "Ogni livello ha {per} domande. Lo finisci con due giuste di fila. Contano per la serie solo le risposte al primo tentativo.",
+      "count": "{total} domande, più una per ogni errore."
     },
     "practice": {
       "tip": "Come funziona il doppio tocco",
@@ -16468,6 +16484,12 @@
       "passed": "Stanza di correzione fatta",
       "locked": "Apri prima l'argomento",
       "back": "Torna a {topic}"
+    },
+    "loading": "Sto preparando la tua lezione",
+    "progress": {
+      "band": "{mastered} padroneggiati · {started} in corso",
+      "unit": "{started} in corso",
+      "unitHead": "{mastered} su {total} padroneggiati · {started} in corso"
     }
   }
 }

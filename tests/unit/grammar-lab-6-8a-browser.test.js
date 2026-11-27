@@ -187,7 +187,7 @@ async function playLesson(page, box, tag, L) {
   }
   assert.equal(levels, 2);
   await page.waitForSelector('#gl-done:not([hidden])');
-  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
+  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions. That is 12 questions, plus 1 for a miss.');
   // the next topic, worked out now in this band (never a mastered one)
   if (L.next) assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), `Next: ${L.next}`);
   assert.match(await page.getAttribute('#gl-done-next', 'href'), /^\/courses\/grammar-lab\/6-8\//);

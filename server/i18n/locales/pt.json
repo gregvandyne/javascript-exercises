@@ -5803,7 +5803,20 @@
       },
       "gapHolds": "{mark} depois de {word}",
       "mgap": "Espaço depois de {word}",
-      "wrongMarks": "Quase. Olhe de novo os sinais entre as palavras. Acerte duas seguidas para terminar este nível."
+      "wrongMarks": "Quase. Olhe de novo os sinais entre as palavras. Acerte duas seguidas para terminar este nível.",
+      "counterAdded": "{count, plural, one {+# por um erro} other {+# por erros}}",
+      "tryAgain": "Tente esta de novo",
+      "seenBefore": "Uma que você já viu",
+      "notSent": "Essa resposta não chegou. Confira e toque em Enviar de novo.",
+      "resynced": "Continuamos de onde você parou.",
+      "signedOut": "Você saiu da conta. Seu progresso está salvo.",
+      "signIn": "Entrar de novo",
+      "fixed": "Corrigido!",
+      "fixedNote": "Só a primeira tentativa conta para a sua sequência.",
+      "levelLonger": "Este nível teve {n} perguntas em vez de {base}: cada erro soma uma, e um nível termina com duas certas seguidas.",
+      "doneElsewhere": "Você já terminou este tema.",
+      "doneAdded": "São {base} perguntas, mais {count, plural, one {# por um erro} other {# por erros}}.",
+      "firstTry": "{n} de {total} certas de primeira"
     }
   },
   "favorites": {
@@ -16368,7 +16381,9 @@
       "started": "Continuar",
       "mastered": "Dominado",
       "pending": "Entre para guardar",
-      "locked": "Domine o anterior primeiro"
+      "locked": "Domine o anterior primeiro",
+      "levelOf": "Nível {level} de {levels}",
+      "also": "Também conta em: {units}"
     },
     "guest": {
       "title": "Entre para guardar suas conquistas",
@@ -16380,9 +16395,10 @@
     },
     "welcome": {
       "heading": "Bem-vindo a {topic}",
-      "text": "Continue respondendo até mostrar que sabe. Acerte as duas últimas seguidas para terminar cada nível.",
       "go": "Vamos lá",
-      "skip": "Pular a introdução"
+      "skip": "Pular a introdução",
+      "rule": "Cada nível tem {per} perguntas. Termine com duas certas seguidas. Só as respostas de primeira contam para a sequência.",
+      "count": "{total} perguntas, mais uma para cada erro."
     },
     "practice": {
       "tip": "Como funciona o toque duplo",
@@ -16469,6 +16485,12 @@
       "passed": "Sala de revisão concluída",
       "locked": "Abra o tema primeiro",
       "back": "Voltar para {topic}"
+    },
+    "loading": "Preparando a sua lição",
+    "progress": {
+      "band": "{mastered} dominados · {started} em andamento",
+      "unit": "{started} em andamento",
+      "unitHead": "{mastered} de {total} dominados · {started} em andamento"
     }
   }
 }
