@@ -162,10 +162,13 @@ test('the landing at "/" has no teaching-loop section any more (docs/decisions.m
 test('/teachers: the same section; plain words for visitors, real links for staff', async () => {
   const out = (await get('/teachers')).text;
   const sec = out.slice(out.indexOf('id="teach-loop"'), out.indexOf('</section>', out.indexOf('id="teach-loop"')));
-  assert.match(out, /<section class="tl tl-page lp-sec" id="teach-loop"/);
+  // The teacher site's look (views/teacher-loop.js variant 'landing'; public/css/landing.css), not the app's panels.
+  assert.match(out, /<section class="lp-sec" id="teach-loop"/);
+  assert.match(sec, /<ol class="lp-loop"><li class="lp-card lp-loop-step" id="teach-loop-plan"/);
   assert.match(sec, /Gradebook with CSV download/);
   assert.doesNotMatch(sec, /href=/);
-  assert.match(out, /\/css\/teach-loop\.css/);
+  assert.match(out, /\/css\/landing\.css/);
+  assert.doesNotMatch(out, /\/css\/teach-loop\.css/);
   const staff = (await get('/teachers', teacher)).text;
   assert.match(staff.slice(staff.indexOf('id="teach-loop"')), new RegExp(`href="/class/${cls.id}/progress"`));
   const kidView = (await get('/teachers', kid)).text;

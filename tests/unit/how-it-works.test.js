@@ -38,7 +38,9 @@ const text = h => h.replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g
 const PRICE = /\$\s?\d|\d\.\d\d\b|\bUSD\b|€|£\s?\d|\/mo\b|a month\b|per (month|year)/i;
 const PROMISES = [/COPPA/i, /kidSAFE/i, /parental controls?/i, /\bmonitor/i, /\btrack/i];
 
-for (const page of ['parents', 'teachers']) {
+/** The section's opening tag: /parents keeps the app's steps; /teachers has the homepage's click-through tour. */
+const HOW = { parents: '<section class="lp-sec how" id="how-it-works"', teachers: '<section class="lp-sec lp-dots lp-alt" id="how-it-works"' };
+for (const page of ['parents']) {
   test(`/${page}: "How it works" comes right after the hero (on /parents, after the short video and the short safety section), with numbered steps and real screenshots`, async () => {
     const h = await get(`/${page}`);
     const sec = element(h, '<section class="lp-sec how" id="how-it-works"');
@@ -103,10 +105,45 @@ for (const page of ['parents', 'teachers']) {
     assert.match(h, /<script type="module" src="\/js\/how\.js\?v=[^"]+"><\/script>/);
   });
 
+}
+
+test('/teachers: "How it works" right after the tools, as the homepage\'s click-through tour: a step each, its real screen whole, light and dark', async () => {
+  const h = await get('/teachers');
+  const sec = element(h, HOW.teachers);
+  assert.ok(sec, 'the section is there');
+  assert.ok(h.indexOf('class="lp-hero') < h.indexOf('id="tools"') && h.indexOf('id="tools"') < h.indexOf('id="how-it-works"') && h.indexOf('id="how-it-works"') < h.indexOf('id="teach-loop"'), 'hero, tools, How it works, the loop');
+  assert.match(sec, /<p class="lp-eyebrow">How it works<\/p><h2 id="how-h">How it works in your classroom<\/h2>/);
+  assert.match(sec, /<div class="lp-card lp-tour" data-tour aria-label="How it works in your classroom" role="region">/);
+  const steps = [...sec.matchAll(/<li class="lp-tstep" id="how-(\d+)" data-step="(\d+)">/g)];
+  assert.equal(steps.length, STEPS.teachers.filter(s => !s.when).length, 'every step whose screen is on');
+  steps.forEach((m, i) => { assert.equal(+m[1], i + 1); assert.equal(+m[2], i); });
+  assert.equal((sec.match(/<button type="button" class="lp-step" data-go="\d+"/g) || []).length, steps.length, 'a stepper button each');
+  assert.equal((sec.match(/<h3 tabindex="-1">/g) || []).length, steps.length, 'one h3 per step');
+  // Every picture: the desktop capture, whole (no zoom), with its size and alt text; only the first one not lazy.
+  const imgs = [...sec.matchAll(/<img\b[^>]*>/g)].map(m => m[0]);
+  assert.equal(imgs.length, steps.length);
+  imgs.forEach((img, i) => {
+    assert.ok(attr(img, 'alt') && attr(img, 'alt').length > 30, `alt text: ${img}`);
+    assert.equal(attr(img, 'width'), '1024'); assert.equal(attr(img, 'height'), '640');
+    assert.equal(attr(img, 'loading'), i ? 'lazy' : undefined);
+  });
+  assert.equal((sec.match(/data-cam="50,50,100"/g) || []).length, steps.length);
+  assert.doesNotMatch(sec, /lp-ring/, 'nothing ringed: the whole screen');
+  for (const src of [...sec.matchAll(/\b(?:src|srcset)="([^"]+)"/g)].flatMap(m => m[1].split(',').map(x => x.trim().split(' ')[0]))) {
+    assert.match(src, /^\/img\/how\/[\w-]+-d-(1024|2048)\.webp$/, src);
+    assert.ok(fs.existsSync(path.join(ROOT, 'public', src)), `${src} exists`);
+  }
+  assert.match(sec, /<source data-scheme="dark"[^>]*srcset="\/img\/how\/teachers-classes-dark-d-1024\.webp 1024w/, 'the dark screens for a dark page');
+  // The homepage's script and styles; the app's how.css and how.js are not on the page.
+  assert.match(h, /\/css\/landing\.css/); assert.match(h, /\/js\/landing\.js/);
+  assert.doesNotMatch(h, /\/css\/how\.css|\/js\/how\.js/);
+});
+
+for (const page of ['parents', 'teachers']) {
   test(`/${page}: the words show no price and promise nothing the site doesn't do`, async () => {
     for (const on of [false, true]) {
       paid(on);
-      const sec = element(await get(`/${page}`), '<section class="lp-sec how" id="how-it-works"');
+      const sec = element(await get(`/${page}`), HOW[page]);
       const words = text(sec) + ' ' + [...sec.matchAll(/alt="([^"]*)"/g)].map(m => m[1]).join(' ');
       assert.doesNotMatch(words, PRICE);
       for (const re of PROMISES) assert.doesNotMatch(words, re);
@@ -159,7 +196,7 @@ test('right-to-left pages render the steps', async () => {
     assert.match(h, /id="how-it-works"/);
     // Translated: no English heading left in the walkthrough.
     assert.match(h, /<h2 id="how-h">/);
-    assert.doesNotMatch(element(h, '<section class="lp-sec how" id="how-it-works"'), /\slang="en"/);
+    assert.doesNotMatch(element(h, HOW[p.split('/')[2]]), /\slang="en"/);
   }
 });
 

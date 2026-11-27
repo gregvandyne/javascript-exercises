@@ -323,7 +323,7 @@ test('/teachers links to /compare once, calmly, and the link names no product', 
   const h = main((await get('/teachers')).text);
   assert.equal((h.match(/href="\/compare"/g) || []).length, 1);
   // In the folded "Ways to use it" panel, next to the research link (the cleanup moved it there from a line of its own).
-  assert.match(h, /<section class="panel" id="uses"[\s\S]*?<a href="\/research">[^<]+<\/a> · <a href="\/compare">How Oomba compares with other classroom tools<\/a><\/p>/);
+  assert.match(h, /<section class="lp-card lp-foldcard" id="uses"[\s\S]*?<a href="\/research">[^<]+<\/a> · <a href="\/compare">How Oomba compares with other classroom tools<\/a><\/p>/);
   const es = main((await get('/es/teachers')).text);
   assert.ok(es.includes('href="/es/compare"'));
 });

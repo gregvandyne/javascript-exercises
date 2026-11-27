@@ -52,18 +52,20 @@ for (const path of ['/teachers']) {
   test(`${path}: the "See it in action" section with the Hub's promo and the four videos`, async () => {
     const page = await get(path);
     assert.equal(page.status, 200);
-    const sec = (page.text.match(/<section class="lp-sec pv[^"]*" id="see-it"[\s\S]*?<\/section>/) || [])[0];
+    // The homepage's video strip (docs/decisions.md "Teachers pages in the homepage's design"): posters that play in the
+    // page's one player (public/js/landing.js), or open the file itself without script.
+    const sec = (page.text.match(/<section class="lp-sec lp-dots lp-alt" id="see-it"[\s\S]*?<\/section>/) || [])[0];
     assert.ok(sec, 'the section is on the page');
     assert.match(sec, /<h2 id="see-it-h">The new teaching tools, a minute each<\/h2>/);
-    assert.match(sec, /<ul class="pv-grid" data-n="5">/);
-    assert.equal((sec.match(/<video /g) || []).length, 5);
-    // The Hub's 60-second promo first (its card in the tools above links here); never the two-minute overview.
+    assert.match(sec, /<div class="lp-vids" data-n="5">/);
+    assert.equal((sec.match(/class="lp-vid[ "]/g) || []).length, 5);
+    assert.equal((sec.match(/<video /g) || []).length, 1, 'one player for them all');
+    assert.match(sec, /<video class="lp-vd-v" controls playsinline muted preload="none"/);
+    // The Hub's 60-second promo first (its card in the tools above plays it too); never the two-minute overview.
     assert.ok(sec.indexOf('oomba-hub-promo.mp4') > 0 && sec.indexOf('oomba-hub-promo.mp4') < sec.indexOf(`oomba-${ALL[0]}.mp4`));
     for (const id of ALL) {
-      assert.match(sec, new RegExp(`<video class="pv-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-${id}-poster\\.jpg" aria-labelledby="pv-${id}-h" aria-describedby="pv-${id}-p">`));
-      assert.match(sec, new RegExp(`<source src="/video/oomba-${id}\\.mp4" type="video/mp4">`));
-      assert.match(sec, new RegExp(`<track kind="captions" src="/video/oomba-${id}\\.en\\.vtt" srclang="en" label="English">`));
-      assert.match(sec, new RegExp(`id="pv-${id}-h"`));
+      assert.match(sec, new RegExp(`href="/video/oomba-${id}\\.mp4" data-video="/video/oomba-${id}\\.mp4" data-poster="/video/oomba-${id}-poster\\.jpg" data-vtt="/video/oomba-${id}\\.en\\.vtt"`), id);
+      assert.match(sec, new RegExp(`<img src="/video/oomba-${id}-poster\\.jpg" width="1280" height="720" alt="" loading="lazy"`), id);
     }
     assert.doesNotMatch(sec, /autoplay/);
     assert.doesNotMatch(sec, /oomba-hub\./, 'the two-minute overview is the homepage\'s, not one of the minute-each videos');
@@ -76,7 +78,7 @@ for (const path of ['/teachers']) {
     if (path === '/') assert.match(sec, /The Classroom Dashboard is free for every class\. The other three tools are being tried out in a few classrooms now\./);
     else {
       assert.doesNotMatch(sec, /pv-plan/);
-      assert.match(page.text, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\.<\/p>/);
+      assert.match(page.text, /<p class="lp-small lp-center tt-note">The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\.<\/p>/);
     }
     assert.doesNotMatch(sec, /Teacher plan/);
     assert.doesNotMatch(sec, /\$\d/);
@@ -105,7 +107,7 @@ test('in another language: translated words, English captions', async () => {
   const sec = (await get('/es/teachers')).text.match(/id="see-it"[\s\S]*?<\/section>/)[0];
   assert.match(sec, /Manipulativos matemáticos virtuales/);
   assert.match(sec, /Panel de clase/);
-  assert.match(sec, /srclang="en"/);
+  assert.match(sec, /data-vtt="\/video\/oomba-manipulatives\.en\.vtt"/, 'English captions');
   const gb = (await get('/en-GB/teachers'));
   if (gb.status === 200) { assert.match(gb.text, /Virtual Maths Manipulatives/); assert.match(gb.text, /maths tools for your whole class day/); }
 });

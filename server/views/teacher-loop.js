@@ -1,8 +1,8 @@
 // The teaching loop, Plan → Play → Check → Feedback (docs/decisions.md "The teaching loop"): one partial, three looks.
 //
-//   teacherLoop(t, { variant: 'landing' })  the section on the teacher landing at "/" (server/routes/landing.js), in the
-//                                           landing's own lp-* look (public/css/landing.css), with two screenshots (PAIR)
-//   teacherLoop(t, { variant: 'page' })     /teach/loop ("How Oomba fits your week") and /teachers, in the app's look
+//   teacherLoop(t, { variant: 'landing' })  /teachers, in the teacher site's lp-* look (public/css/landing.css), with two
+//                                           screenshots (PAIR); "/" shows only the screens (loopShots)
+//   teacherLoop(t, { variant: 'page' })     /teach/loop ("How Oomba fits your week"), in the app's look
 //                                           (public/css/teach-loop.css)
 //   teacherLoop(t, { variant: 'compact' })  the card near the top of the Classroom home (/teach) for new teachers: each
 //                                           step ticks itself off (services/teach-loop.js loopState), and it can be hidden
@@ -47,28 +47,31 @@ const img = (t, name, sizes, scheme = 'auto') => raw(themedPicture({ scheme,
 
 export function teacherLoop(t, opts = {}) {
   const { variant = 'page', links = null, state = null, live = true, shots = variant !== 'compact', shotNames = SHOTS.map(([n]) => n), cta = '', id = 'teach-loop', headingTag = 'h2', cls = '', scheme = 'auto' } = opts;
-  if (variant === 'landing') return landing(t, { live, cta, id, shots, scheme });
+  if (variant === 'landing') return landing(t, { live, cta, id, shots, scheme, links });
   if (variant === 'compact') return compact(t, { links, state, live, id });
   return pageLook(t, { links, state, live, shots, shotNames, id, headingTag, cls, scheme });
 }
 
 /** The landing's screenshot pair or grid: the named shots (default all), each with its caption. scheme: the landing's theme. */
 export const loopShots = (t, names = SHOTS.map(([n]) => n), scheme = 'auto') => html`<div class="lp-loop-shots">
-      ${names.map(name => html`<figure class="lp-device lp-loop-shot rv"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw', scheme)}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
+      ${names.map(name => html`<figure class="lp-device lp-loop-shot"><div class="lp-screen">${img(t, name, '(min-width: 1100px) 540px, (min-width: 760px) 46vw, 92vw', scheme)}</div><figcaption>${t(`teach.loop.shots.${name}.caption`)}</figcaption></figure>`)}
     </div>`;
 
-/** On the landing: numbered cards like "How it works", then the two screens (PAIR), then the trial button. */
-function landing(t, { live, cta, id, shots = true, scheme = 'auto' }) {
-  return html`<section class="lp-sec lp-loop" id="${id}" aria-labelledby="${id}-h">
+/** On the teacher site (/teachers, in the homepage's look: public/css/landing.css): four numbered cards, each step's tools
+ *  as chips (links to the real pages for staff: links), then the two screens (PAIR). */
+function landing(t, { live, cta, id, shots = true, scheme = 'auto', links = null }) {
+  const EDGE = ['var(--mint)', 'var(--spark)', '#3F8FCF', '#7A3FC4'];
+  const chip = k => { const href = links && links[k]; if (!href) return links && k === 'live' ? '' : html`<span class="lp-chip">${lpCheck}${plainName(t, k)}</span>`;
+    return html`<a class="lp-chip lp-chip-link" href="${href}">${toolName(t, k)}</a>${k === 'gradebook' && links.csv ? html`<a class="lp-chip lp-chip-link" href="${links.csv}" download>${ico('⬇️', { size: 16 })} ${t('teach.loop.tools.csv')}</a>` : ''}`; };
+  return html`<section class="lp-sec" id="${id}" aria-labelledby="${id}-h">
   <div class="lp-wrap">
-    <header class="lp-sec-head"><p class="lp-eyebrow">${t('teach.loop.kicker')}</p><h2 id="${id}-h">${t('teach.loop.h')}</h2><p>${t('teach.loop.lead')}</p></header>
-    <ol class="lp-loop-steps">
-      ${LOOP.map((s, i) => html`<li class="lp-card lp-step lp-loop-step rv"><span class="lp-step-n" aria-hidden="true">0${i + 1}</span><span class="lp-step-e" aria-hidden="true">${ico(s.emoji, { size: 32 })}</span>
-        <h3>${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
-        <ul class="lp-loop-tools">${toolsOf(s, live).map(k => html`<li>${lpCheck}<span>${plainName(t, k)}</span></li>`)}</ul></li>`)}
-    </ol>
+    <header class="lp-head"><p class="lp-eyebrow">${t('teach.loop.kicker')}</p><h2 id="${id}-h">${t('teach.loop.h')}</h2><p class="lp-sub">${t('teach.loop.lead')}</p></header>
+    ${links && links.makeClass ? html`<p class="lp-loop-make"><a class="lp-btn lp-btn-primary" href="${links.makeClass}">${ico('🍎', { size: 18 })} ${t('teach.loop.home.makeClass')}</a></p>` : links && links.askAdmin ? html`<p class="lp-small lp-loop-make">${t('teach.loop.home.askAdmin')}</p>` : ''}
+    <ol class="lp-loop">${LOOP.map((s, i) => html`<li class="lp-card lp-loop-step" id="${id}-${s.step}" style="--edge:${EDGE[i]}">
+        <h3><i aria-hidden="true">${i + 1}</i>${ico(s.emoji, { size: 28 })} ${t(`teach.loop.steps.${s.step}.name`)}</h3><p>${t(`teach.loop.steps.${s.step}.benefit`)}</p>
+        <p class="lp-meta">${toolsOf(s, live).map(chip)}</p></li>`)}</ol>
     ${shots ? loopShots(t, PAIR, scheme) : ''}
-    ${cta ? html`<div class="lp-ctas lp-ctas-c lp-loop-cta">${cta}</div>` : ''}
+    ${cta ? html`<div class="lp-ctas lp-loop-cta">${cta}</div>` : ''}
   </div>
 </section>`;
 }

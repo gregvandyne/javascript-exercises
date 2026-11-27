@@ -7680,7 +7680,8 @@
         "h": "Enseigner avec les outils",
         "p": "Demandez une fiche à Oomba dans le chat : il rédige les questions, Figures dessine chaque figure à l’échelle et calcule les réponses. Ou lancez une salle de maths en direct avec des manipulables virtuels.",
         "alt": "Le créateur de fiches Figures avec le chat d’Oomba ouvert à côté : une fiche intitulée Area and volume practice, sa première question avec un rectangle dessiné à l’échelle et la réponse 12 m², et la liste de ce qui a changé dans le chat."
-      }
+      },
+      "kicker": "Comment ça marche"
     },
     "build": {
       "h": "Créer pour apprendre",
@@ -10165,7 +10166,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Chacun touche le pays sur sa propre carte du monde : le pays, son drapeau, sa capitale ou ce qui le rend célèbre. Le grand écran montre où toute la classe a touché, et viser tout près rapporte aussi."
-      }
+      },
+      "kicker": "Jeux en direct"
     },
     "tools": {
       "h": "Les outils demandés par les enseignants",
@@ -10199,8 +10201,8 @@
     },
     "faq": {
       "h": "Les questions des enseignants sur Oomba Live",
-      "q1": "Oomba Live est-il gratuit ?",
-      "a1": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats sont tous gratuits, sans publicité.",
+      "q1": "Oomba Live est-il gratuit ?",
+      "a1": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats ne coûtent rien, pas plus que les cours prêts à l'emploi que vous pouvez enseigner et donner à vos élèves : {courses}. Le <a href=\"{plans}\">forfait Enseignant</a>, facultatif, ajoute les outils payants : le Hub, Demander à Oomba, les Manipulables et leurs salles en direct, Figures et une réserve quotidienne partagée de créations par IA.",
       "q2": "Mes élèves ont-ils besoin d’un compte ?",
       "a2": "Pas pour une salle ouverte : les élèves tapent le code et reçoivent un surnom inventé. Dans une salle de classe, ils utilisent les comptes école que vous avez créés pour eux, et leurs scores vont dans votre carnet de notes.",
       "q3": "Combien d’élèves peuvent jouer ?",
@@ -10208,7 +10210,8 @@
       "q4": "Puis-je utiliser mes propres questions ?",
       "a4": "Oui, dans toutes les matières et à tous les niveaux. Écrivez une série de {items} questions maximum avec 2 à 4 réponses chacune, collez-en une depuis un tableur, laissez l’IA en rédiger une à modifier, ou transformez les questions d’un de vos plans de cours en quiz en direct.",
       "q5": "De quoi les élèves ont-ils besoin ?",
-      "a5": "N’importe quel appareil avec un navigateur à jour : Chromebooks, tablettes, ordinateurs portables ou téléphones. Rien à installer. Vous affichez la leçon au tableau depuis votre ordinateur."
+      "a5": "N’importe quel appareil avec un navigateur à jour : Chromebooks, tablettes, ordinateurs portables ou téléphones. Rien à installer. Vous affichez la leçon au tableau depuis votre ordinateur.",
+      "a1NoCourses": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats ne coûtent rien. Le <a href=\"{plans}\">forfait Enseignant</a>, facultatif, ajoute les outils payants : le Hub, Demander à Oomba, les Manipulables et leurs salles en direct, Figures et une réserve quotidienne partagée de créations par IA."
     },
     "own": {
       "h": "Vos questions, à votre façon",
@@ -10934,7 +10937,8 @@
       "ask": "Demander à Oomba",
       "tour": "Visite",
       "videos": "Vidéos",
-      "compare": "Comparer"
+      "compare": "Comparer",
+      "signupShort": "S'inscrire"
     },
     "hero": {
       "kicker": "Pour les enseignants de la maternelle à la 4e",

@@ -157,7 +157,8 @@ test('structured data parses: Organization and WebSite, VideoGame + LearningReso
 
   const teach = (await get('/teachers')).text;
   const faq = ofType(teach, 'FAQPage')[0];
-  assert.equal(faq.mainEntity.length, (teach.match(/<h3>/g) || []).length, 'every question on the page is in the FAQ data');
+  const faqSec = /<section class="lp-sec lp-alt" id="faq"[\s\S]*?<\/section>/.exec(teach)[0];
+  assert.equal(faq.mainEntity.length, (faqSec.match(/<h3>/g) || []).length, 'every question on the page is in the FAQ data');
   for (const qn of faq.mainEntity) { assert.ok(qn.name.endsWith('?')); assert.ok(qn.acceptedAnswer.text.length > 20); assert.doesNotMatch(qn.acceptedAnswer.text, /<|\{/); }
   assert.equal(ofType(teach, 'BreadcrumbList')[0].itemListElement.length, 2);
   for (const h of HUBS) {
@@ -221,15 +222,16 @@ test('children\'s names never reach a signed-out page, and no leaderboard shows 
 test('teacher and subject pages: one H1, real launch games only, links in the menu and footer', async () => {
   const t = await get('/teachers');
   assert.equal((t.text.match(/<h1[\s>]/g) || []).length, 1);
-  assert.match(t.text, /<h1 id="lp-h1">Fun, interactive learning games your class will ask for<\/h1>/);
+  assert.match(t.text, /<h1 id="lp-h1" class="lp-h1">Fun, interactive lessons your class will ask for<\/h1>/);
   // The "Play to learn" game list is gone (docs/decisions.md "Teachers and Parents pages: lead with the new tools, no
   // 'always free'"): one launch game to try, never a game a child made.
   assert.match(t.text, /href="\/play\/sum-racer" rel="nofollow"/);
   assert.doesNotMatch(t.text, /class="lp-games"/);
   assert.ok(!t.text.includes(kidPublic.slug));
   assert.match(t.text, /<a class="btn btn-primary btn-big" href="\/signup\/for\/teacher" id="setup-signup"/, 'a working way to start: the teacher sign-up');
-  assert.match(t.text, /<a class="navlink" href="\/teachers"/, 'top menu, signed out');
-  assert.match(t.text, /<footer[\s\S]*href="\/teachers"/, 'footer, signed out');
+  // The teacher site's own header and footer (views/lp-shell.js): /teachers in its footer; the app's menu links it.
+  assert.match(t.text, /<footer class="lp-foot"[\s\S]*href="\/teachers"/, 'footer, signed out');
+  assert.match((await get('/learn')).text, /<a class="navlink" href="\/teachers"/, 'the app\'s top menu, signed out');
   const kidHome = await get('/', { cookie: cookieOf(kid) });
   assert.doesNotMatch(kidHome.text, /class="navlink" href="\/teachers"/, 'not in a child\'s menu');
   // Hidden games drop out of the pages.
@@ -349,7 +351,7 @@ test('structured data: no Software App fields without a rating; game pages show 
 
 test('/teachers: honest privacy wording with Sign in with Google, and a call to action that matches what happens', async () => {
   const plain = (await get('/teachers')).text;
-  assert.match(plain, /<a class="btn btn-primary btn-big" href="#start">Create a teacher account<\/a>/, 'billing off: the start panel, never "free"');
+  assert.match(plain, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/signup\/for\/teacher" data-cta="signup" id="main-cta">Create a teacher account<\/a>/, 'billing off: the teacher sign-up, never "free"');
   assert.doesNotMatch(plain, /Get a free school account/);
   assert.match(plain, /First, email us to set up your school/);
   assert.match(plain, /We never ask students for an email address/);
@@ -378,19 +380,39 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   const page = await get('/teachers/live');
   assert.equal(page.status, 200);
   assert.equal((page.text.match(/<h1/g) || []).length, 1);
-  assert.match(page.text, /Live quiz games your whole class plays together/);
+  assert.match(page.text, /<h1 id="lp-h1" class="lp-h1">Live quiz lessons your whole class plays together<\/h1>/);
   // Signed out: the short teacher sign-up that goes straight on to hosting (routes/quick-live.js), never the parents'
   // sign-up and never a bare sign-in page.
-  assert.match(page.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a live lesson<\/a>/, 'signed out: the teacher sign-up, then straight to hosting');
+  assert.match(page.text, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/teachers\/host" data-cta="host">[^<]+<span class="lp-arrow/, 'signed out: the teacher sign-up, then straight to hosting');
   assert.doesNotMatch(page.text, /grown-ups\/signup|href="\/login\?next=%2Flive"/);
   assert.match(page.text, /href="\/join"/);
   assert.match(page.text, /Up to 60 in a class room/);
+  // "Is Oomba Live free?", answered honestly: what costs nothing, what the Teacher plan adds; no amount, and a link to
+  // /plans only while paid plans are on for everyone.
+  const liveFaq = /<section class="lp-sec lp-alt" id="faq"[\s\S]*?<\/section>/.exec(page.text)[0];
+  assert.match(liveFaq, /<h3>Is Oomba Live free\?<\/h3>[\s\S]*?cost nothing[\s\S]*?The optional Teacher plan adds the paid tools: the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures/);
+  assert.doesNotMatch(liveFaq, /href="\/plans"|\$\s?\d/);
+  {
+    const { config } = await import('../../server/config.js');
+    const keep = { key: config.stripeApiKey, hook: config.stripeWebhookSecret, pub: config.billingPublic };
+    try {
+      Object.assign(config, { stripeApiKey: 'rk_test_fake', stripeWebhookSecret: 'whsec_fake_live', billingPublic: true });
+      const on = (await get('/teachers/live')).text;
+      assert.match(on, /The optional <a href="\/plans">Teacher plan<\/a> adds the paid tools/);
+      assert.doesNotMatch(on, /\$\s?\d|\b119\b/);
+    } finally { Object.assign(config, { stripeApiKey: keep.key, stripeWebhookSecret: keep.hook, billingPublic: keep.pub }); }
+  }
+  // No "free" for teachers anywhere above the questions: the hero, the header, the buttons, the badges.
+  const top = page.text.slice(0, page.text.indexOf('id="faq"')).replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
+  assert.doesNotMatch(top.replace(/free-text/g, ''), /\bfree\b/i);
   assert.match((await get('/teachers')).text, /href="\/teachers\/live"/);
   assert.match((await get('/sitemap.xml')).text, /\/teachers\/live<\/loc>/);
   assert.equal((await get('/es/teachers/live')).status, 200);
-  // The one-minute demo: a silent video with a poster, a captions track and a written description; its files are served.
-  assert.match(page.text, /<video class="lp-video" controls muted playsinline preload="none"[^>]*poster="\/video\/oomba-demo-poster\.jpg"[^>]*aria-describedby="demo-note"/);
-  assert.match(page.text, /<track kind="captions" src="\/video\/oomba-demo\.en\.vtt" srclang="en"/);
+  // The one-minute demo, under the hero's picture: a button that plays it in the page's player (poster, English
+  // captions; without script, the file itself), its written description beside it; its files are served.
+  assert.match(page.text, /<a class="lp-playbtn" href="\/video\/oomba-demo\.mp4" data-video="\/video\/oomba-demo\.mp4" data-poster="\/video\/oomba-demo-poster\.jpg" data-vtt="\/video\/oomba-demo\.en\.vtt"/);
+  assert.match(page.text, /<figure class="lp-devices" id="demo" aria-describedby="demo-note">/);
+  assert.match(page.text, /<dialog class="lp-vd" id="lp-vd"/, 'the player');
   assert.match(page.text, /id="demo-note"[^>]*>A one-minute video with music and captions on screen/);
   for (const f of ['/video/oomba-demo.mp4', '/video/oomba-demo-poster.jpg', '/video/oomba-demo.en.vtt']) assert.equal((await get(f)).status, 200, f);
   assert.match((await get('/es/teachers/live')).text, /Míralo en un minuto/);

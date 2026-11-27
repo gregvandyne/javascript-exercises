@@ -1,9 +1,9 @@
 // "See it in action": the short videos of the teaching tools (docs/decisions.md "Tool videos on the teacher pages"), one
 // partial in two looks, like views/teacher-loop.js:
 //
-//   seeIt(req, { variant: 'landing' })  the section on the teacher landing at "/" (routes/landing.js), lp-* look
-//                                       (public/css/landing.css)
-//   seeIt(req, { variant: 'page' })     /teachers (routes/teachers.js), the app's look (public/css/app.css)
+//   seeIt(req, { variant: 'landing' })  /teachers (routes/teachers.js), the teacher site's lp-* look (public/css/landing.css):
+//                                       the homepage's video strip, played in its player (videoLink, videoDialog)
+//   seeIt(req, { variant: 'page' })     the app's look (public/css/app.css): a <video> each
 //
 // The videos are the 720p web cuts in public/video (scripts/demo-video/README.md steps 6-7): no autoplay, muted until the
 // viewer turns the sound on, nothing loaded but the poster until Play, captions as a track (they are also burned in).
@@ -44,12 +44,35 @@ const tx = (t, tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtm
  * their live rooms and Figures are Teacher plan tools (toolAccess), said the homepage's way whether or not paid plans are
  * on for everyone yet.
  */
+/** A link that plays a video in the teacher site's player (public/js/landing.js, the <dialog> from videoDialog), or opens
+ *  the file itself without script. inner: the link's content (markup). */
+export const videoLink = (t, id, inner, cls, title = t(`teachers.videos.${id}.title`), attrs = '') => html`<a class="${cls}" href="/video/oomba-${id}.mp4" data-video="/video/oomba-${id}.mp4" data-poster="/video/oomba-${id}-poster.jpg" data-vtt="/video/oomba-${id}.en.vtt" data-title="${title}" aria-label="${t('landing.videos.play', { title })}"${raw(attrs)}>${inner}</a>`;
+/** The player every videoLink opens (one per page). */
+export const videoDialog = t => html`<dialog class="lp-vd" id="lp-vd" aria-labelledby="lp-vd-h">
+    <div class="lp-vd-in"><div class="lp-vd-top"><h2 id="lp-vd-h" class="lp-vd-h" lang="en" dir="ltr"></h2><button type="button" class="lp-vd-x" data-close aria-label="${t('landing.videos.close')}"><span aria-hidden="true">×</span></button></div>
+    <video class="lp-vd-v" controls playsinline muted preload="none" width="1280" height="720"></video></div>
+  </dialog>`;
+/** Is this tool's video ready (its three files there)? */
+export const videoReady = id => READY.some(v => v.id === id);
+
 export function seeIt(req, { variant = 'page', cta = '', note = true, promo = false } = {}) {
   // promo: the Hub's 60-second promo first (the homepage's hero video), for /teachers, whose Hub card plays it here.
   const list = readyVideos().filter(v => !v.overview || (promo && v.id === 'hub-promo'));
   if (!list.length) return '';
   const t = req.t;
   const landing = variant === 'landing';
+  // The teacher site (/teachers): the homepage's video strip, the first one big, each played in the page's player.
+  if (landing) {
+    const card = (v, i) => videoLink(t, v.id, html`<img src="/video/oomba-${v.id}-poster.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"><span class="lp-pb" aria-hidden="true"></span><span class="lp-vcap"><b${fb(t, `teachers.videos.${v.id}.title`)}>${t(`teachers.videos.${v.id}.title`)}</b>${tx(t, 'span', `teachers.videos.${v.id}.p`)}</span>`,
+      `lp-vid${i === 0 ? ' lp-vid-big' : ''}`, undefined, i === 0 && list.length > 4 ? ` style="grid-row:span ${list.length - 1}"` : '');
+    return html`<section class="lp-sec lp-dots lp-alt" id="see-it" aria-labelledby="see-it-h"><div class="lp-wrap">
+    <header class="lp-head">${tx(t, 'p', 'teachers.videos.kicker', ' class="lp-eyebrow"')}${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead', ' class="lp-sub"')}</header>
+    <div class="lp-vids" data-n="${list.length}">${list.map(card)}</div>
+    ${note ? tx(t, 'p', 'teachers.videos.plan', ' class="lp-small lp-center pv-plan"') : ''}
+    ${cta ? html`<div class="lp-ctas pv-cta">${cta}</div>` : ''}
+  </div>
+  ${videoDialog(t)}</section>`;
+  }
   const item = v => {
     const k = `teachers.videos.${v.id}`;
     return html`<li class="pv-item">
@@ -63,13 +86,9 @@ export function seeIt(req, { variant = 'page', cta = '', note = true, promo = fa
       </div>
     </li>`;
   };
-  const head = landing
-    ? html`<header class="lp-sec-head">${tx(t, 'p', 'teachers.videos.kicker', ' class="lp-eyebrow"')}${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}</header>`
-    : html`${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}`;
+  const head = html`${tx(t, 'h2', 'teachers.videos.h', ' id="see-it-h"')}${tx(t, 'p', 'teachers.videos.lead')}`;
   const grid = html`<ul class="pv-grid" data-n="${list.length}">${list.map(item)}</ul>
-    ${note ? tx(t, 'p', 'teachers.videos.plan', ` class="${landing ? 'lp-note ' : 'small muted '}pv-plan"`) : ''}
-    ${cta ? html`<div class="${landing ? 'lp-ctas lp-ctas-c' : 'row'} pv-cta">${cta}</div>` : ''}`;
-  return landing
-    ? html`<section class="lp-sec pv pv-landing" id="see-it" aria-labelledby="see-it-h"><div class="lp-wrap">${head}${grid}</div></section>`
-    : html`<section class="lp-sec pv" id="see-it" aria-labelledby="see-it-h">${head}${grid}</section>`;
+    ${note ? tx(t, 'p', 'teachers.videos.plan', ' class="small muted pv-plan"') : ''}
+    ${cta ? html`<div class="row pv-cta">${cta}</div>` : ''}`;
+  return html`<section class="lp-sec pv" id="see-it" aria-labelledby="see-it-h">${head}${grid}</section>`;
 }

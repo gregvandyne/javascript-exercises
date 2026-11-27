@@ -81,9 +81,12 @@ test('free and paid: no "always free" line on "/" or /teachers (the owner: "ever
     assert.doesNotMatch(s, AMOUNT, `${path}: no price amount (prices live on /plans only)`);
   }
   const tp = (await get('/teachers')).text;
-  assert.match(tp, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\.<\/p>/);
+  assert.match(tp, /<p class="lp-small lp-center tt-note">The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\.<\/p>/);
   // Each Teacher plan tool says so under its card, as on the homepage, with the link to /plans while that page is on.
-  assert.equal((section(tp, 'tools').match(/<p class="tt-plan">Available with the <a href="\/plans">Teacher plan<\/a><\/p>/g) || []).length, 4, 'the Hub, the board, the room and Figures');
+  assert.equal((section(tp, 'tools').match(/<p class="lp-plan">Available with the <a href="\/plans">Teacher plan<\/a><\/p>/g) || []).length, 4, 'the Hub, the board, the room and Figures');
+  // Paid plans on for everyone: the top bar's button and the hero's main button are the trial, in the same words.
+  assert.match(tp, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\?trial=1" data-cta="trial" aria-label="Start free trial">/);
+  assert.match(tp, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/signup\?trial=1" data-cta="trial" id="main-cta">Start free trial<\/a>/);
   assert.doesNotMatch(tp, /Free to start|free website|it(?:’|&#39;)s free|Get a free school account|Set up your school \(free\)/, '/teachers: no blanket free claims');
   assert.doesNotMatch((await get('/')).text, /are always free\. Try the Teacher plan/, '"/": the closing line is the trial, not "always free"');
   // "/" has no plan cards (docs/decisions.md "Homepage: the one classroom tool for everything"): it links to /plans, and
@@ -103,20 +106,27 @@ test('/teachers with paid plans off: no free line, no trial; the first button ma
     const s = (await get('/teachers')).text;
     assert.doesNotMatch(s, /lp-freeline|Always free/);
     assert.doesNotMatch(s, /The Teacher plan adds|href="\/trial"/);
-    assert.match(s, /<div class="row lp-cta">\s*<a class="btn btn-primary btn-big" href="#start">Create a teacher account<\/a>/);
+    // The hero's main button and the top bar's: the teacher sign-up, in the same words (views/lp-shell.js teacherCta).
+    assert.match(s, /<div class="lp-ctas"><a class="lp-btn lp-btn-primary lp-btn-big" href="\/signup\/for\/teacher" data-cta="signup" id="main-cta">Create a teacher account<\/a>/);
+    assert.match(s, /<a class="lp-btn lp-btn-primary lp-btn-sm" href="\/signup\/for\/teacher" data-cta="signup" aria-label="Create a teacher account">/);
     assert.match(s, /The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\./);
     assert.doesNotMatch(s, /being tried out/);
-    assert.match(section(s, 'tools'), /<p class="tt-plan">Available with the Teacher plan<\/p>/);
+    assert.match(section(s, 'tools'), /<p class="lp-plan">Available with the Teacher plan<\/p>/);
     assert.doesNotMatch(section(s, 'tools'), /href="\/plans"/);
   } finally { config.billingPublic = was; }
 });
 
 test('footer line: "Learn, play and build" on every page with the site footer, kids too, in every language; never a plan, price or "free"', async () => {
   const kid = auth.createUser({ username: 'FootKid', password: 'a-long-password-1', displayName: 'Foot Kid' });
-  for (const [path, u] of [['/teachers', null], ['/teachers/live', null], ['/compliance', null], ['/me', kid]]) {
+  for (const [path, u] of [['/compliance', null], ['/me', kid]]) {
     const s = (await get(path, u)).text, foot = s.slice(s.lastIndexOf('<footer class="foot">'));
     assert.match(foot, /<span>© Oomba Academy · Learn, play and build<\/span>/, path);
     assert.doesNotMatch(foot.slice(0, foot.indexOf('</span>')), /free|plan|price/i, path);
+  }
+  // The teacher site's own footer ("/", /teachers, /teachers/live: views/lp-shell.js) carries the same line.
+  for (const path of ['/', '/teachers', '/teachers/live']) {
+    const s = (await get(path)).text, foot = s.slice(s.lastIndexOf('<footer class="lp-foot">'));
+    assert.match(foot, /<p class="lp-copy">© Oomba Academy · Learn, play and build<\/p>/, path);
   }
   for (const [c, line] of [['es', 'Aprende, juega y crea'], ['de', 'Lernen, spielen und bauen'], ['ja', 'まなぶ、あそぶ、つくる'], ['he', 'לומדים, משחקים ובונים']]) assert.equal(makeT(c)('layout.footer.tagline'), `© Oomba Academy · ${line}`, c);
 });
@@ -126,7 +136,7 @@ test('/teachers/live: no "free" claims (title, description, lead, badges, button
   const at = s.indexOf('<section class="lp-hero'), hero = s.slice(at, s.indexOf('</section>', at));
   assert.ok(at > 0);
   assert.match(s, /<title>Oomba Live: live quiz lessons for your class · Oomba Academy<\/title>/);
-  assert.match(s, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a live lesson<\/a>/);
+  assert.match(s, /<a class="lp-btn lp-btn-primary lp-btn-big" href="\/teachers\/host" data-cta="host">Host a live lesson <span class="lp-arrow/);
   assert.doesNotMatch(hero, /\bfree\b/i, 'hero: no free claim');
   assert.doesNotMatch(s, /Free for teachers|Host a free live|free live quiz|One free account/i);
   for (const c of ['es', 'fr', 'de', 'ja', 'zh-Hant']) { const t = makeT(c); assert.equal(t('teachersLive.badges.free'), 'teachersLive.badges.free', `${c}: the free badge is gone`); }
@@ -157,6 +167,6 @@ test('teacher quotes: no quotes ship, so /teachers has no quotes section; only a
   assert.match(pv, /\[Owner: add a real teacher quote here, with the teacher(?:'|&#39;)s written permission\]/);
   // With real quotes (given here only to test the markup), the section shows them, escaped, in their own language.
   const html = String(T.quotesSection({ t: makeT('en'), query: {}, user: null }, [{ quote: 'Words <b>said</b>', name: 'A Teacher', role: 'Role', school: 'School', lang: 'es' }]));
-  assert.match(html, /<figure class="panel lp-quote" lang="es"><blockquote><p>Words &lt;b&gt;said&lt;\/b&gt;<\/p><\/blockquote>/);
+  assert.match(html, /<figure class="lp-card lp-quote" lang="es"><blockquote><p>Words &lt;b&gt;said&lt;\/b&gt;<\/p><\/blockquote>/);
   assert.match(html, /<b>A Teacher<\/b>, Role, School/);
 });
