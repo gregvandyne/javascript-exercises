@@ -125,7 +125,7 @@ for (const width of [390, 1366]) {
     await Promise.all([K.page.waitForURL(/\/courses\/grammar-lab\/k-2\/kinds-of-words/), K.page.click(card)]);
     await K.page.click('#gl-topic-identifying-common-nouns .gl-tile-main');
     await K.page.waitForSelector('#gl-welcome:not([hidden])');
-    await K.page.click('#gl-skip');
+    await K.page.click('#gl-skip'); await K.page.click('#gl-card-go');
     await K.page.waitForSelector('#gl-quiz:not([hidden])');
     await closeTip(K.page);
     await masterInPage(K.page, kid, 'identifying-common-nouns');
@@ -168,7 +168,7 @@ for (const dark of [false, true]) {
     const P = await pageAs(kid, { width: 390, dark });
     await P.page.goto(`${base}/courses/grammar-lab/k-2/adjectives-and-adverbs/identifying-adjectives`);
     await P.page.waitForSelector('#gl-welcome:not([hidden])');
-    await P.page.tap('#gl-skip');
+    await P.page.tap('#gl-skip'); await P.page.tap('#gl-card-go');
     await P.page.waitForSelector('#gl-tip[open]');
     await P.page.waitForTimeout(300);
     // After a tap the dialog holds the focus, not the button: no ring on a touch screen.
@@ -242,7 +242,7 @@ for (const width of [320, 390]) {
       const P = await pageAs(kid, { width });
       await P.page.goto(`${base}/courses/grammar-lab/${unit}/${topic}`);
       await P.page.waitForSelector('#gl-welcome:not([hidden])');
-      await P.page.click('#gl-skip');
+      await P.page.click('#gl-skip'); await P.page.click('#gl-card-go');
       await P.page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(P.page);
       // several questions of each format: answer right and check each one shown
@@ -268,7 +268,7 @@ test('the K-2 sentence "Ana wore a purple hat." keeps its period on the last wor
   const kid = auth.createUser({ username: `gltbana${++n}`, password: 'correct-horse-12' });
   const P = await pageAs(kid, { width: 390 });
   await P.page.goto(`${base}/courses/grammar-lab/k-2/adjectives-and-adverbs/identifying-adjectives`);
-  await P.page.click('#gl-skip'); await P.page.waitForSelector('#gl-quiz:not([hidden])'); await closeTip(P.page);
+  await P.page.click('#gl-skip'); await P.page.click('#gl-card-go'); await P.page.waitForSelector('#gl-quiz:not([hidden])'); await closeTip(P.page);
   // the page draws whatever question is on screen; this one is drawn by the page's own code path for a tap question
   const bad = await P.page.evaluate(lineCheck);
   assert.deepEqual(bad, []);

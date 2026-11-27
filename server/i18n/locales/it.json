@@ -16532,6 +16532,10 @@
       "listen": "Leggimelo",
       "stop": "Ferma",
       "practice": "Inizia a esercitarti",
+      "start": "Inizia le domande",
+      "skip": "Vai alle domande",
+      "lead": "Leggi la scheda, poi inizia le domande. Puoi riaprirla quando vuoi.",
+      "close": "Chiudi",
       "question": "Chiediti"
     },
     "review": {

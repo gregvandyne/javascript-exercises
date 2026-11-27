@@ -42,7 +42,7 @@ async function open(lang, { device = false } = {}) {
 async function toQuestion(page) {
   await page.goto(`${env.base}${UNIT}/${TOPIC}`);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-go');
+  await page.click('#gl-go'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await H.closeTip(page);
 }
@@ -124,4 +124,33 @@ test('a device set to its own voices shows no speaker button (no device voice in
     assert.ok(await page.isHidden('#gl-say'));
     assert.deepEqual(calls, []);
   } finally { await ctx.close(); }
+});
+
+test('the card step of the lesson reads the card aloud (K-2 and 3-5), and stops when the questions start', { timeout: 60_000 }, async t => {
+  if (env.skip) return t.skip(env.skip);
+  voices(['en']);
+  const { ctx, page, calls, errors } = await open('en');
+  try {
+    for (const [url, topic] of [[`${UNIT}/${TOPIC}`, TOPIC], ['/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs', 'identifying-action-verbs']]) {
+      await page.goto(`${env.base}${url}`);
+      await page.click('#gl-go');
+      await page.waitForSelector('#gl-cardstep:not([hidden]) #gl-listen:not([hidden])');
+      assert.equal((await page.textContent('#gl-listen .lbl')).trim(), 'Read it to me');
+      await page.click('#gl-listen');
+      await page.waitForFunction(() => document.querySelector('#gl-listen').getAttribute('aria-pressed') === 'true');
+      assert.deepEqual(calls.at(-1), { ctx: 'grammar', topic }, 'the server reads the card by its topic');
+      await H.shot(page, `voice-card-step-${topic}`);
+      await page.click('#gl-card-go');
+      await page.waitForSelector('#gl-quiz:not([hidden])');
+      assert.equal(await page.getAttribute('#gl-listen', 'aria-pressed'), 'false', 'stopped when the questions start');
+      await H.closeTip(page);
+    }
+    assert.equal(await page.evaluate(() => window.__said), 0, 'never the device voice');
+    // a 6-8 card step has no speaker
+    await page.goto(`${env.base}/courses/grammar-lab/6-8/active-and-passive-voice/active-voice-verbs`);
+    await page.click('#gl-go');
+    await page.waitForSelector('#gl-cardstep:not([hidden])');
+    assert.equal(await page.$('#gl-listen'), null);
+  } finally { await ctx.close(); }
+  assert.deepEqual(errors, []);
 });

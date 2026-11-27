@@ -145,7 +145,7 @@ async function playLesson(page, box, tag, L) {
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -238,7 +238,7 @@ test('the other 6-8 formats on a phone, dark, and a sound-alike Mistake Hunt roo
     for (const [unit, topic, key] of [['compound-and-complex', 'conj-adverbs-middle', 'semicolon'], ['parts-of-a-sentence-2', 'dependent-clauses', 'clause'],
       ['adjectives-vs-adverbs', 'adverb-or-adjective', 'pills'], ['claims-evidence-reasoning', 'claims-evidence-reasoning', 'passage'], ['active-and-passive-voice', 'active-voice-verbs', 'tap']]) {
       await page.goto(`${base}/courses/grammar-lab/6-8/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));

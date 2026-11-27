@@ -1,5 +1,6 @@
 // A Grammar Lab topic's practice (server/views/grammar-lab.js practicePage; routes/grammar-lab.js): the welcome screen
-// (doorway and greeting, with a skip), the first-visit double-tap tip, the quiz one question at a time (tap a word to
+// (doorway and greeting, with a skip), the teaching card as the lesson's next step (and, during the questions, in a sheet
+// over the lesson), the first-visit double-tap tip, the quiz one question at a time (tap a word to
 // mark it, tap again to clear it, Submit), the green "Correct!" confirmation, the calm wrong-answer notice with its
 // hint, the near-miss notice, the level-complete overlay and the mastery screen. The server grades every try and keeps
 // the counter, the streak and the bar (services/grammar-lab-mastery.js); this page only shows what it sends back.
@@ -24,7 +25,8 @@ import { mountWelcome, mountGreeting, mountMastery, mountTapTip } from '/js/gram
 const d = pageData();
 const base = `/api/courses/grammar-lab/topic/${d.topic}`;
 const TIP_KEY = 'gl:tip-seen';
-const screens = ['gl-loading', 'gl-welcome', 'gl-quiz', 'gl-done'];
+const screens = ['gl-loading', 'gl-welcome', 'gl-cardstep', 'gl-quiz', 'gl-done'];
+const CARD_KEY = `gl:card-seen:${d.topic}`;
 const reduced = () => typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 /** Bring an element fully into view, below the site's sticky top bar and above the bottom nav (the CSS scroll margins
  *  say how far), smoothly unless reduced motion is asked for. Nothing moves when it is already in view. */
@@ -55,7 +57,12 @@ const ready = () => {
 const scenes = {};
 const CORRECT = $('#gl-correct-t').textContent;
 
-const show = id => { for (const s of screens) $(`#${s}`).hidden = s !== id; $('#gl-meter').hidden = id === 'gl-welcome'; };
+const show = id => {
+  for (const s of screens) $(`#${s}`).hidden = s !== id;
+  $('#gl-meter').hidden = id === 'gl-welcome' || id === 'gl-cardstep';
+  // (on the card step the card is right there: no header button for it)
+  $('#gl-card-btn').hidden = id === 'gl-cardstep';
+};
 const stored = k => { try { return localStorage.getItem(k); } catch { return null; } };
 const store = (k, v) => { try { localStorage.setItem(k, v); } catch { /* storage off */ } };
 const norm = w => String(w || '').toLowerCase().replace(/[^\p{L}\p{N}'-]/gu, '');
@@ -513,38 +520,86 @@ function done(closing, { elsewhere = false } = {}) {
   $('#gl-done-h').focus();
 }
 
-// ---------------------------------------------------------------------------------------------- welcome and start
+// ---------------------------------------------------------------------------------------------- welcome, card, start
+// The lesson: the welcome (the rule and the counts) -> the teaching card, a step of its own ("Start the questions") ->
+// the questions. "Skip intro" skips the welcome to the card; a student who has read this card before (or mastered the
+// topic, or is playing it again) also gets a small "Skip to questions" at the top of it. A run in progress opens on its
+// question, never on the card again. During the questions the card opens in a sheet over the lesson (see below).
 function welcome() {
   show('gl-welcome');
   scene('door', $('#gl-door'), mountWelcome);
   scene('greet', $('#gl-greet'), mountGreeting);
 }
+/** The card goes where it is shown: the card step, or the sheet over the questions (one card, moved, not copied). */
+const putCard = slot => { const c = $('#gl-card'); if (c && c.parentElement !== slot) slot.appendChild(c); };
+function cardStep() {
+  for (const k of ['door', 'greet']) if (scenes[k]) { scenes[k].destroy(); delete scenes[k]; }
+  if ($('#gl-cardsheet').open) $('#gl-cardsheet').close();
+  putCard($('#gl-cardstep-slot'));
+  $('#gl-card-skip').hidden = !(stored(CARD_KEY) || d.mastered || d.again);
+  show('gl-cardstep');
+  const sec = $('#gl-cardstep');
+  window.scrollTo({ top: 0, behavior: 'auto' });
+  inView(sec, 'start');
+  // (the step's heading takes the focus, so a screen reader starts reading the card; no ring after a tap)
+  const h = $('#gl-cardstep-h');
+  h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true });
+}
+$('#gl-go').addEventListener('click', cardStep);
+$('#gl-skip').addEventListener('click', cardStep);
 let starting = false;
+const startBtns = () => [$('#gl-go'), $('#gl-skip'), $('#gl-card-go'), $('#gl-card-skip')];
 async function start() {
   if (starting) return;
   starting = true;
-  for (const b of [$('#gl-go'), $('#gl-skip')]) b.disabled = true;
+  if (say.btn) sayStop();
+  for (const b of startBtns()) b.disabled = true;
   for (const k of ['door', 'greet']) if (scenes[k]) { scenes[k].destroy(); delete scenes[k]; }
   let r;
   try { r = await api(`${base}/start`, { method: 'POST', body: { unit: d.unit, band: d.band, again: !!d.again } }); }
   catch (e) {
-    starting = false; for (const b of [$('#gl-go'), $('#gl-skip')]) b.disabled = false;
+    starting = false; for (const b of startBtns()) b.disabled = false;
     // (a sign-in that ended: sign in again, and the run is waiting on the account)
     if (e && (e.signedOut || (e.status === 401 && d.signedIn))) { location.href = d.login; return; }
     return toast(t('js.grammar-lab.wentWrong'), { bad: true });
   }
   starting = false;
+  for (const b of startBtns()) b.disabled = false;
   d.again = false;
+  store(CARD_KEY, '1');
   enter(r);
 }
 function enter(r) {
   summary = r.summary; question = r.question;
+  putCard($('#gl-sheet-body'));
   show('gl-quiz');
   renderQuestion();
   if (!stored(TIP_KEY)) openTip();
 }
-$('#gl-go').addEventListener('click', start);
-$('#gl-skip').addEventListener('click', start);
+$('#gl-card-go').addEventListener('click', start);
+$('#gl-card-skip').addEventListener('click', start);
+
+// ---------------------------------------------------------------------------------------------- the card sheet
+// "Teaching card" in the header opens the card over the lesson (a bottom sheet on a phone, a side panel on a wide
+// screen: public/css/grammar-lab.css .gl-sheet), so the question, the picks and the progress stay as they are. A modal
+// dialog: Escape, the close button or a tap outside closes it, and the focus goes back to the header button. Without
+// the script the button is a plain link to the card page.
+const sheet = $('#gl-cardsheet');
+$('#gl-card-btn').addEventListener('click', e => {
+  if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button) return;
+  e.preventDefault();
+  putCard($('#gl-sheet-body'));
+  hideMeaning();
+  sheet.showModal();
+  $('#gl-sheet-body').scrollTop = 0;
+  focusIn($('#gl-sheet-x'), sheet);
+});
+$('#gl-sheet-x').addEventListener('click', () => sheet.close());
+sheet.addEventListener('click', e => { if (e.target === sheet) sheet.close(); });
+sheet.addEventListener('close', () => {
+  if (say.btn && say.btn.id === 'gl-listen') sayStop();
+  const b = $('#gl-card-btn'); if (!b.hidden) b.focus({ preventScroll: true });
+});
 
 // ---------------------------------------------------------------------------------------------- the tip, levels, flag
 // Keyboard focus shows its ring (round the button's own shape: public/css/grammar-lab.css); after a tap or a click, a
@@ -627,7 +682,7 @@ function sayStop() {
 }
 if (d.listen) import('/js/tts.js').then(T => {
   if (T.voiceMode() !== 'ai') return;
-  for (const [sel, part] of [['#gl-say', 'question'], ['#gl-hint-say', 'hint']]) {
+  for (const [sel, part] of [['#gl-say', 'question'], ['#gl-hint-say', 'hint'], ['#gl-listen', 'card']]) {
     const b = $(sel);
     if (!b) continue;
     b.dataset.label = b.querySelector('.lbl').textContent;
@@ -635,14 +690,15 @@ if (d.listen) import('/js/tts.js').then(T => {
     b.addEventListener('click', async () => {
       if (say.btn === b) return sayStop();
       sayStop();
-      if (!question) return;
+      if (part !== 'card' && !question) return;
       // (inside the tap: an iPhone plays the audio only from an element first played in a tap)
       const audio = new Audio(SILENT);
       try { const p = audio.play(); if (p && p.catch) p.catch(() => {}); } catch { /* no audio */ }
       say = { btn: b, audio, url: null };
       b.setAttribute('aria-pressed', 'true'); b.querySelector('.lbl').textContent = d.listen.stop;
       try {
-        const blob = await T.ttsBlob({ ctx: 'grammar', topic: d.topic, unit: d.unit, band: d.band, part, id: question.id });
+        // (the card: the server reads the topic's card itself, as on the card page)
+        const blob = await T.ttsBlob(part === 'card' ? { ctx: 'grammar', topic: d.topic } : { ctx: 'grammar', topic: d.topic, unit: d.unit, band: d.band, part, id: question.id });
         if (say.audio !== audio) return;
         say.url = URL.createObjectURL(blob);
         audio.onended = () => { if (say.audio === audio) sayStop(); };

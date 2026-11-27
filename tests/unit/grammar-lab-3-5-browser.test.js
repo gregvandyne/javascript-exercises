@@ -119,7 +119,7 @@ async function playLesson(page, tag, L) {
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -241,7 +241,7 @@ test('the other 3-5 formats on a phone, dark: whole-sentence joins, sentence or 
     for (const [unit, topic, key] of [['building-sentences', 'complex-sentences', 'complex'], ['fixing-sentences', 'recognizing-fragments', 'fragment'],
       ['showing-not-telling', 'showing-with-actions', 'show'], ['quotes-and-dialogue', 'quotation-marks-in-dialogue', 'dialogue'], ['more-verbs-and-time', 'progressive-verbs', 'progressive']]) {
       await page.goto(`${base}/courses/grammar-lab/3-5/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));
