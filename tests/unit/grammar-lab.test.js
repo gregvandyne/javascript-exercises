@@ -201,7 +201,8 @@ test('grading on the server: the page gets words and the ask, never an answer; r
   await get(`/courses/grammar-lab/k-2/${UNIT}/${TOPIC}/card`, kid);
   let r = await post(`${API}/start`, kid, { unit: UNIT });
   assert.equal(r.status, 200);
-  assert.deepEqual(Object.keys(r.json.question).sort(), ['ask', 'id', 'n', 'need', 'words']);
+  assert.deepEqual(Object.keys(r.json.question).sort(), ['ask', 'id', 'kind', 'n', 'need', 'words']);
+  assert.equal(r.json.question.kind, 'tap');
   assert.equal(r.json.question.ask, 'Tap the adjective.');
   assert.deepEqual([r.json.summary.counter, r.json.summary.total], [1, 12]);
   assert.equal(GL.masteredSet(kid).size, 0);
@@ -226,7 +227,8 @@ test('grading on the server: the page gets words and the ask, never an answer; r
   let last = null;
   for (let i = 0; i < 40 && !(last && last.mastered); i++) { last = (await post(`${API}/answer`, kid, { unit: UNIT, id: qn.id, marked: rightFor(qn) })).json; qn = last.question; }
   assert.equal(last.mastered, true);
-  assert.deepEqual(last.closing, { answered: 13, next: null, win: 'mastered' });
+  // The unit has no more topics: the next one is the band's first open one not mastered, worked out now.
+  assert.deepEqual(last.closing, { answered: 13, next: { title: "Capitalizing People's Names and Dates", href: '/courses/grammar-lab/k-2/capital-letters/capitalizing-names-and-dates' }, win: 'mastered' });
   assert.ok(GL.masteredSet(kid).has(TOPIC));
   assert.ok(q.get("SELECT completed_at FROM course_progress WHERE user_id=? AND course='grammar-lab' AND step=?", kid.id, TOPIC).completed_at);
   // The unit shows the green check; the menu's three choices are open; look back lists the questions.

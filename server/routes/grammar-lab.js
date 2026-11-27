@@ -71,7 +71,7 @@ router.get('/courses/grammar-lab/:band/:unit/:topic', (req, res) => {
   const again = req.query.again === '1';
   const live = run && !run.mastered && !again;
   const data = {
-    topic: tp.id, unit: p.id, band: p.band, again, mastered: s.mastered,
+    topic: tp.id, unit: p.id, band: p.band, again, mastered: s.mastered, capfix: tp.format === 'capfix',
     // A run in progress goes straight back to its question; otherwise the welcome screen starts one.
     run: live ? { summary: GL.summaryOf(run), question: GL.questionFor(tp, run) } : null,
     glossary: Object.fromEntries(V.GLOSSARY.map(k => [k, { word: t(`grammarLab.glossaryWord.${k}`), def: t(`grammarLab.glossary.${k}`) }])),
@@ -130,10 +130,22 @@ router.post('/api/courses/grammar-lab/topic/:topic/answer', ...api, (req, res) =
   if (!r) return res.status(400).json({ error: req.t('errors.api.badRequest') });
   const out = { result: r.result, kind: r.kind, levelDone: r.levelDone, mastered: r.mastered, summary: r.summary, question: r.question, hint: r.hint };
   if (r.mastered) {
+    // The next topic, worked out now: never a mastered one (this unit first, then the band's other units).
     const nxt = GL.nextTopic(x.u, x.p, x.tp.id);
-    out.closing = { answered: r.summary.counter, next: nxt && nxt.open ? { title: nxt.topic.title, href: V.topicHref(x.p, nxt.topic.id) } : null, win: r.win };
+    out.closing = { answered: r.summary.counter, next: nxt ? { title: nxt.topic.title, href: V.topicHref(nxt.unit, nxt.topic.id) } : null, win: r.win,
+      ...(GL.room(x.tp.id) ? { room: GL.roomHref(x.p.id, x.tp.id) } : {}) };
   }
   res.json(out);
+});
+/** A Mistake Hunt room's fixes, from the game (public/js/play.js proofForGame): { unit, edits, handIn?, hint? }. Saved,
+ *  hinted or handed in and checked here (services/grammar-lab.js roomSave); the key never goes to the page before. */
+router.post('/api/courses/grammar-lab/topic/:topic/room', ...api, (req, res) => {
+  const x = apiTopic(req, res); if (!x) return;
+  if (!GL.room(x.tp.id)) return res.status(404).json({ error: req.t('errors.api.notFound') });
+  const b = req.body || {};
+  const r = GL.roomSave(x.u, x.tp.id, b.edits, { handIn: b.handIn === true, hint: Number.isInteger(b.hint) ? b.hint : null });
+  if (!r.ok) return res.status(r.code === 'notFound' ? 404 : r.code === 'handedIn' ? 409 : 400).json({ error: req.t('errors.api.badRequest'), code: r.code });
+  res.json({ view: r.view, ...('hint' in r ? { hint: r.hint } : {}), ...('passed' in r ? { passed: r.passed } : {}) });
 });
 /** "Report a problem" on a question: logged for the content team (no text is taken from the player). */
 router.post('/api/courses/grammar-lab/topic/:topic/flag', rateLimit('grammar-lab-flag', 10, 60e3), (req, res) => {
