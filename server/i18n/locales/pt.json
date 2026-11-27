@@ -11235,7 +11235,9 @@
       "lead": "Todo vídeo tem legendas, e o som fica desligado até você ligar.",
       "howH": "Como funciona, um vídeo por manipulável",
       "play": "Assistir ao vídeo: {title}",
-      "close": "Fechar o vídeo"
+      "close": "Fechar o vídeo",
+      "more": "Ver todos os {count} vídeos",
+      "less": "Ver menos"
     }
   },
   "teach": {

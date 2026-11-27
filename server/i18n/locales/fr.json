@@ -11233,7 +11233,9 @@
       "lead": "Chaque vidéo a des sous-titres, et le son reste coupé tant que vous ne l’activez pas.",
       "howH": "Comment ça marche, une vidéo par manipulable",
       "play": "Lire la vidéo : {title}",
-      "close": "Fermer la vidéo"
+      "close": "Fermer la vidéo",
+      "more": "Voir les {count} vidéos",
+      "less": "Voir moins"
     }
   },
   "teach": {

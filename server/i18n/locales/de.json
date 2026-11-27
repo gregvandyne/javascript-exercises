@@ -11234,7 +11234,9 @@
       "lead": "Jedes Video hat Untertitel, und der Ton bleibt aus, bis Sie ihn einschalten.",
       "howH": "So geht's, ein Video pro Mathe-Material",
       "play": "Video abspielen: {title}",
-      "close": "Video schließen"
+      "close": "Video schließen",
+      "more": "Alle {count} Videos zeigen",
+      "less": "Weniger zeigen"
     }
   },
   "teach": {
