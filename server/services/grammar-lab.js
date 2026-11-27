@@ -170,7 +170,7 @@ export function questionFor(t, s) {
   if (kind === 'marks') return { ...base, words: it.words, start: it.start, chips: it.chips, ...(it.asIs ? { asIs: true } : {}) };
   // A fix: the sentence to fix in a box; once missed, the versions to press through (the right one among them, unsaid).
   if (kind === 'fix') return { ...base, text: it.text, ...(s.cur.missed ? { options: it.options } : {}), ...(it.asIs && !s.cur.missed ? { asIs: true } : {}) };
-  return { ...base, words: tokenize(it.text), need: it.answer.length, ...(f === 'capfix' ? { capfix: true } : {}), ...(it.focus && it.focus.length ? { focus: it.focus } : {}), ...(it.titleAt ? { titleAt: it.titleAt } : {}) };
+  return { ...base, words: tokenize(it.text), need: it.answer.length, ...(f === 'capfix' ? { capfix: true } : {}), ...(it.asIs ? { asIs: true } : {}), ...(it.focus && it.focus.length ? { focus: it.focus } : {}), ...(it.titleAt ? { titleAt: it.titleAt } : {}) };
 }
 /** A list of distinct whole numbers below n, or null. */
 const places = (marked, n) => {
@@ -187,8 +187,9 @@ const places = (marked, n) => {
  *    choice: [the option picked]; right when it is a right one. */
 export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   const n = tokenize(item.text).length;
-  // "It's right as it is" (a topic with read.asIs): right when the sentence needs no fix
-  if (marked === AS_IS && item.asIs && (kind === 'marks' || (kind === 'fix' && !missed))) {
+  // "It's right as it is" (a topic with read.asIs): right when the sentence needs no fix (marks, a fix, capitalization)
+  if (marked === AS_IS && item.asIs && (kind === 'marks' || kind === 'tap' || (kind === 'fix' && !missed))) {
+    if (kind === 'tap') return item.answer.length ? 'wrong' : 'right';   // capitalization: no word to fix
     return (kind === 'fix' ? item.accept.some(a => normTyped(a) === normTyped(item.text)) : sameMarks(item.start, item.want) && !item.optional.length) ? 'right' : 'wrong';
   }
   if (marked === AS_IS) return null;
@@ -233,6 +234,8 @@ export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   }
   const set = places(marked, n);
   if (!set) return null;
+  // a sentence right as it is: any word tapped is wrong (not a near miss)
+  if (!item.answer.length) return 'wrong';
   // a phrase: its words, and any optional ones (an article) with them; another mention of the same person is right too
   const ways = [{ answer: item.answer, optional: item.optional || [] }, ...(item.alts || [])];
   if (ways.some(w => w.answer.every(i => set.has(i)) && [...set].every(i => w.answer.includes(i) || w.optional.includes(i)))) return 'right';

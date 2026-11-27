@@ -14,7 +14,7 @@ import { api, pageData, $, $$, t, toast } from '/js/app.js';
 // chosen when a question opens (a cycle opens on "Press to choose", never on an option), and Submit stays off until the
 // student acts (a fix box: until the sentence is changed). 'marks' (punctuation chips): each gap between words holds a
 // mark from the chip bank or none; the sentence opens with its marks as written. A topic may offer "It's right as it
-// is" (asIs) on its marks and fix questions, so a sentence with nothing to fix is asked like every other.
+// is" (asIs) on its marks, fix and capitalization questions, so a sentence with nothing to fix is asked like every other.
 import { mountWelcome, mountGreeting, mountMastery, mountTapTip } from '/js/grammar-lab-art.js';
 
 const d = pageData();
@@ -258,6 +258,8 @@ $('#gl-asis').addEventListener('click', () => {
     // the sentence goes back to how it was written
     if (question.kind === 'marks') { gapMarks = new Map(question.start || []); for (const g of $$('#gl-sentence .gl-mgap')) paintGap(g, question.words[+g.dataset.m].t); }
     if (typing()) fixBox().value = question.text;
+    // capitalization: no word stays marked
+    if (question.kind === 'tap') { marked.clear(); for (const w of $$('#gl-sentence .gl-w')) w.setAttribute('aria-pressed', 'false'); }
   }
   $('#gl-submit').disabled = !ready();
 });
@@ -294,6 +296,7 @@ $('#gl-sentence').addEventListener('click', e => {
   const i = +(b.dataset.i ?? b.dataset.g);
   if (marked.has(i)) marked.delete(i); else marked.add(i);
   b.setAttribute('aria-pressed', String(marked.has(i)));
+  keepAsIs(false);
   $('#gl-submit').disabled = !ready();
 });
 $('#gl-options').addEventListener('click', e => {
