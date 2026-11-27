@@ -3,13 +3,15 @@
 //   friends - the friend code card; typing a friend's code
 //   publish - the Studio's share sheet: Only me / Friends (no Everyone while PUBLIC_GAMES is off)
 // node scripts/demo-video/rec-safety.mjs land|port [only]
+// Wide: recorded in a window shaped like the band under the caption (1152 x 558 at 5/3, shown at 1920 x 930), so the
+// page is shown at a readable size with nothing shrunk.
 import { chromium } from 'playwright';
 import { launchOptions } from '../chromium.js';
 import { Capture, cursorInit, glide, setCursor } from './vc.mjs';
 import { B, login, sleep } from './lib.mjs';
 const orient = process.argv[2] || 'land', only = process.argv[3];
 const L = orient === 'land';
-const V = L ? { viewport: { width: 1440, height: 810 }, deviceScaleFactor: 4 / 3, out: [1920, 1080] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
+const V = L ? { viewport: { width: 1152, height: 558 }, deviceScaleFactor: 5 / 3, out: [1920, 930] } : { viewport: { width: 540, height: 960 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true, out: [1080, 1920] };
 const C = process.env.DEMO_CLIPS || '/tmp/claude-0/demo2/clips';
 const STUDIO = process.env.DEMO_STUDIO;   // a studio MayaMakes built (rec-builder.mjs makes a Category Board)
 if (!STUDIO && (!only || only === 'publish')) { console.error('Set DEMO_STUDIO to one of MayaMakes\'s studio ids.'); process.exit(1); }
@@ -38,6 +40,9 @@ await run('signup', async () => {
   await glide(cap, p, kid, { sec: 0.7, click: false });
   await Promise.all([p.waitForURL(u => /kid/.test(String(u))), kid.click()]);
   await p.waitForLoadState('networkidle').catch(() => {}); await sleep(200);
+  // the form opens at its fields (in the short window the page would scroll there anyway; the scroll happens before
+  // the first frame of this page)
+  await p.evaluate(() => { const f = document.querySelector('#username').closest('.field, label, div'); window.scrollTo({ top: Math.max(0, (f || document.querySelector('#username')).getBoundingClientRect().top + scrollY - 90), behavior: 'instant' }); });
   await cap.advance(400); await cursorInit(p);
   await cap.frames(8);
   await glide(cap, p, p.locator('#username'), { sec: 0.5, click: true });

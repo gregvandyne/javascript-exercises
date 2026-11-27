@@ -36,18 +36,23 @@ for (const [k, t] of Object.entries(PCAPS)) {
   await png(`p-cap-${k}-land`, 1920, 1080, `<div class="cap" style="top:34px;font-size:54px">${t}</div>`);
   await png(`p-cap-${k}-port`, 1080, 1920, `<div class="cap wrap" style="top:110px;font-size:62px">${t}</div>`);
 }
+// The hook. Wide: the lit globe turns on the left, the title stands on the right (no shade over the game). Tall: a big
+// title over the gameplay (dark bottom gradient).
+const hookLand = `<div style="position:absolute;left:1130px;right:70px;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;color:#141414">
+<div style="font-size:108px;font-weight:800;line-height:1.02;letter-spacing:-.025em">Screen time you can <span style="background:#FFD23F;border-radius:18px;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone">feel good about</span></div>
+<div style="font-size:48px;font-weight:700;margin-top:.55em;color:#1F9D63;line-height:1.12">Learning games kids love, and they can build their own.</div></div>`;
 const hook = (fs1, fs2, pad) => `<div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,20,20,0) 35%,rgba(20,20,20,.78) 100%)"></div>
 <div style="position:absolute;left:${pad}px;right:${pad}px;bottom:${pad}px;color:#FFFDF2">
 <div style="font-size:${fs1}px;font-weight:800;line-height:1;letter-spacing:-.02em;text-shadow:0 4px 18px rgba(0,0,0,.35)">Screen time you can<br><span style="color:#FFD23F">feel good about</span></div>
 <div style="font-size:${fs2}px;font-weight:650;margin-top:.45em;color:#DDF3E6">Learning games kids love, and they can build their own.</div></div>`;
-await png('p-hook-land', 1920, 1080, hook(128, 52, 90));
+await png('p-hook-land', 1920, 1080, hookLand);
 await png('p-hook-port', 1080, 1920, hook(112, 50, 70));
 const end = port => `<div style="position:absolute;inset:0;background:#FFFDF2"></div>
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:${port ? 56 : 40}px;padding:0 70px">
 <div class="logo" style="height:${port ? 150 : 130}px">${logo}</div>
 <div style="font-size:${port ? 82 : 78}px;font-weight:800;line-height:1.05;letter-spacing:-.02em;max-width:${port ? 940 : 1500}px">Screen time you can <span style="color:#1F9D63">feel good about.</span></div>
 <div style="display:flex;gap:22px;flex-wrap:wrap;justify-content:center;font-size:${port ? 44 : 42}px;font-weight:700">
-<span style="background:#66C792;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">Free to play · No ads</span>
+<span style="background:#66C792;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">No ads</span>
 <span style="background:#FFD23F;border:5px solid #141414;border-radius:999px;padding:.25em .9em;box-shadow:0 7px 0 #141414">oomba.ai/parents</span></div></div>`;
 await png('p-end-land', 1920, 1080, end(false), false);
 await png('p-end-port', 1080, 1920, end(true), false);

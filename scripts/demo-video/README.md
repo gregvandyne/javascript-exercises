@@ -37,16 +37,16 @@ The recording scripts launch the pre-installed Chromium (`scripts/chromium.js`: 
      level, an open room for guests in two teams, so phones join with a code and a made-up name), a phone joining, the
      teacher opening a tile, everyone answering and the team scores. Question Battle and Tug of Math are off the site
      (`server/services/game-focus.js`), so the video doesn't show them. A room left open by an earlier run is ended
-   - `node scripts/demo-video/rec-safety.mjs land` - sign-up with a made-up name, a friend code, the publish choices
+   - `DEMO_STUDIO=<id> node scripts/demo-video/rec-safety.mjs land` - sign-up with a made-up name, a friend code, the
+     publish choices, recorded in the band's shape like the games (the sign-up form opens at its fields)
 3. Captions and cards: `node scripts/demo-video/cards.mjs` (teacher) and `node scripts/demo-video/cards-parents.mjs`.
 4. Cut the silent masters: `node scripts/demo-video/assemble.mjs` (teacher, 16:9 only, into `/tmp/claude-0/demo/v2`)
-   and `node scripts/demo-video/assemble-parents.mjs land|port` (into `/tmp/claude-0/demo/parents`). Each writes
-   `timeline.json` (scene starts) and the captions (`.en.vtt`). The teacher cut keeps the UI readable at 720p: captions
+   and `node scripts/demo-video/assemble-parents.mjs` (parents, 16:9 only, into `/tmp/claude-0/demo/parents`). Each writes
+   `timeline.json` (scene starts) and the captions (`.en.vtt`). Both cuts keep the UI readable at 720p: captions
    sit in a strip at the top and the app plays in the band under them (never under a caption); the live room is
    cropped to the board (or the join code) beside the phone, the Builder to its chat and preview. Captions are one
    layer over the joined scenes, so two never cross-fade into each other, and the end card fades in from its own
-   color after the games fade to it. (The parents cut still uses the old clip shapes: re-check it before re-rendering
-   it from these clips.)
+   color after the last scene fades to it. The parents cut has no price and no "free" either (its end card says No ads).
 5. Music: `node scripts/demo-video/fit-music.mjs <teacher|parents> <track> [--start S] [--cut A,B] [--hit T]` writes the
    project's `music.wav`, exactly as long as the video with a 1.5 s fade out (`--hit T` puts the track's moment T, such as
    a downbeat, on the end card). `compose-music.py` makes the original synthesized track. Any third-party track needs
