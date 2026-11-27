@@ -264,6 +264,11 @@
         "pens": "Pen colours",
         "pen": "Pen colour {n}"
       }
+    },
+    "companion": {
+      "ask": {
+        "sheetTopic": "Happy to make one. What should the worksheet practise, and for which year or grade?"
+      }
     }
   },
   "favorites": {

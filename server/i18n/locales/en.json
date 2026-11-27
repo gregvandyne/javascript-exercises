@@ -4858,7 +4858,9 @@
         "notBuiltAny": "Nothing could be built with this tool’s settings.",
         "other": "Question {n} didn’t change.",
         "otherAny": "One change didn’t land.",
-        "swapped": "Question {n} couldn’t be drawn as asked, so a question from its figure’s generator is there instead."
+        "swapped": "Question {n} couldn’t be drawn as asked, so a question from its figure’s generator is there instead.",
+        "notAsked": "Question {n} stayed as it was: it wasn't what you asked for.",
+        "notAskedAny": "A question wasn't added: it wasn't what you asked for."
       },
       "undoneKept": "{count, plural, one {# thing you changed since was kept.} other {# things you changed since were kept.}}",
       "ideas": "Ideas",
@@ -5059,7 +5061,20 @@
         "needs": "Looked at Needs a look ({n})",
         "needsNo": "Couldn't open Needs a look",
         "assign": "Got an assignment ready for you to check",
-        "assignNo": "Couldn't assign that"
+        "assignNo": "Couldn't assign that",
+        "boardMade": "Made and checked a board ({n, plural, one {# item} other {# items}})",
+        "sheetMade": "Made and checked a worksheet ({n, plural, one {# question} other {# questions}})",
+        "sheetNo": "Couldn't make that worksheet",
+        "lessonMade": "Made and checked a lesson plan ({n, plural, one {# step} other {# steps}})",
+        "lessonNo": "Couldn't make that lesson",
+        "lessonAsk": "Asked for the topic",
+        "kinds": "Looked up what Figures can draw",
+        "find": "Looked for “{q}”",
+        "findNo": "Couldn't look that up",
+        "report": "Read the class's progress",
+        "reportNo": "Couldn't read that class's progress",
+        "pointEmpty": "Checked the class: no students yet",
+        "askBack": "Asked what you need"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5121,7 +5136,9 @@
         "help": "Help",
         "length": "Length",
         "fromPlan": "From your plan",
-        "filled": "Oomba filled in your brief. Check it, then press the button to make it."
+        "filled": "Oomba filled in your brief. Check it, then press the button to make it.",
+        "makeNow": "Make it now",
+        "makeText": "Make this now:"
       },
       "err": {
         "words": "Some words in your message aren't allowed. Change them and send it again.",
@@ -5184,7 +5201,11 @@
         "book": "Which book?"
       },
       "ask": {
-        "other": "Something else"
+        "other": "Something else",
+        "lessonTopic": "Happy to build one. What topic is it on, and for which grade?",
+        "sheetTopic": "Happy to make one. What should the worksheet practice, and for which grade?",
+        "boardTopic": "Happy to set one up. Which tool (for example base-ten blocks or a number line), and what should it show?",
+        "assignWhat": "Which lesson should I assign? Tell me its name, and the class if you have more than one."
       },
       "cls": {
         "default": "Test class",
@@ -5346,6 +5367,51 @@
         "reviewTitle": "Review",
         "reteachTitle": "Re-teach: {title}",
         "finishTitle": "Finish today's work"
+      },
+      "made": {
+        "notYet": "Nothing has been made yet.",
+        "draftOnly": "I drafted {title}. Press {button} to create it.",
+        "failed": "That wasn't made after all, so nothing was saved. Please try again.",
+        "board": "{n, plural, one {Made and checked: # item on the board} other {Made and checked: # items on the board}}",
+        "sheet": "{n, plural, one {Made and checked: # question} other {Made and checked: # questions}}",
+        "lesson": "{n, plural, one {Made and checked: # step} other {Made and checked: # steps}}",
+        "open": {
+          "board": "Open the board",
+          "sheet": "Open the worksheet",
+          "lesson": "Open the lesson"
+        },
+        "no": {
+          "board": "The board wasn't made. Nothing was saved.",
+          "sheet": "The worksheet wasn't made. Nothing was saved.",
+          "lesson": "The lesson wasn't made. Nothing was saved."
+        }
+      },
+      "pts": {
+        "empty": "{name} has no students yet, so no points can be given.",
+        "oneAtATime": "Points go one at a time, so this is 1 point, not {count}."
+      },
+      "rep": {
+        "empty": "{name} has no students yet, so there's no progress to report.",
+        "which": "Which class should the report be for?"
+      },
+      "find": {
+        "hidden": "{title} is on Oomba, but that game is turned off right now, so students can't play it.",
+        "hiddenFolder": "{title} is in your {folder} folder, but that game is turned off on Oomba right now, so students can't play it."
+      },
+      "fmt": {
+        "plotQ": "Figures can't check a point students plot online. What should I make?",
+        "plotPrint": "Printable: students draw each point (the answer key shows it)",
+        "plotRead": "Read the point (checked online)",
+        "columnsQ": "Figures can't draw column addition or a regrouping box. Should I build the worksheet with the closest figures instead?",
+        "closest": "Yes, use the closest figures",
+        "no": "Not now"
+      },
+      "why": {
+        "triangle": "{a} + {b} is less than {c}, so those sides can't make a triangle.",
+        "triangleEqual": "{a} + {b} equals {c}, so those sides lie flat and can't make a triangle.",
+        "pastEnd": "{v} is past the end of a {from} to {to} line, so the point can't go there.",
+        "other": "That figure can't be drawn: {what}.",
+        "notAsked": "Not put on: {what}."
       }
     },
     "companion-greet": {

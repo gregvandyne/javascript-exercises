@@ -4508,7 +4508,11 @@
       },
       "copy": "Copier",
       "copyFailed": "Impossible de copier. Sélectionnez le texte.",
-      "copied": "Copié"
+      "copied": "Copié",
+      "verify": {
+        "notAsked": "La question {n} est restée telle quelle : ce n'était pas ce que tu as demandé.",
+        "notAskedAny": "Une question n'a pas été ajoutée : ce n'était pas ce que tu as demandé."
+      }
     },
     "figures": {
       "needText": "Écris d’abord quelques mots pour Oomba.",
@@ -4648,7 +4652,20 @@
         "needs": "J’ai regardé À regarder ({n})",
         "needsNo": "Impossible d’ouvrir À regarder",
         "assign": "Une assignation est prête à vérifier",
-        "assignNo": "Impossible d’assigner cela"
+        "assignNo": "Impossible d’assigner cela",
+        "boardMade": "A créé et vérifié un tableau ({n, plural, one {# élément} other {# éléments}})",
+        "sheetMade": "A créé et vérifié une fiche ({n, plural, one {# question} other {# questions}})",
+        "sheetNo": "N'a pas pu créer cette fiche",
+        "lessonMade": "A créé et vérifié un plan de leçon ({n, plural, one {# étape} other {# étapes}})",
+        "lessonNo": "N'a pas pu créer cette leçon",
+        "lessonAsk": "A demandé le sujet",
+        "kinds": "A regardé ce que Figures peut dessiner",
+        "find": "A cherché « {q} »",
+        "findNo": "N'a pas pu chercher cela",
+        "report": "A lu les progrès de la classe",
+        "reportNo": "N'a pas pu lire les progrès de cette classe",
+        "pointEmpty": "A vérifié la classe : pas encore d'élèves",
+        "askBack": "A demandé ce qu'il te faut"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4710,7 +4727,9 @@
         "help": "Aide",
         "length": "Durée",
         "fromPlan": "De ta préparation",
-        "filled": "Oomba a rempli ta description. Vérifie-la, puis appuie sur le bouton pour le créer."
+        "filled": "Oomba a rempli ta description. Vérifie-la, puis appuie sur le bouton pour le créer.",
+        "makeNow": "Le créer maintenant",
+        "makeText": "Crée ceci maintenant :"
       },
       "err": {
         "words": "Certains mots de ton message ne sont pas autorisés. Modifie-les et renvoie-le.",
@@ -4767,7 +4786,11 @@
         "book": "Quel livre ?"
       },
       "ask": {
-        "other": "Autre chose"
+        "other": "Autre chose",
+        "lessonTopic": "Avec plaisir. Sur quel sujet, et pour quel niveau ?",
+        "sheetTopic": "Avec plaisir. Que doit travailler la fiche, et pour quel niveau ?",
+        "boardTopic": "Avec plaisir. Quel outil (par exemple des blocs base dix ou une droite graduée), et que doit-il montrer ?",
+        "assignWhat": "Quelle leçon dois-je donner ? Dis-moi son nom, et la classe si tu en as plusieurs."
       },
       "cls": {
         "default": "Classe test",
@@ -4885,6 +4908,51 @@
         "reviewTitle": "Révision",
         "reteachTitle": "Réexpliquer : {title}",
         "finishTitle": "Terminer le travail du jour"
+      },
+      "made": {
+        "notYet": "Rien n'a encore été créé.",
+        "draftOnly": "J'ai préparé un brouillon de {title}. Appuie sur {button} pour le créer.",
+        "failed": "Finalement, rien n'a été créé ni enregistré. Réessaie.",
+        "board": "{n, plural, one {Créé et vérifié : # élément sur le tableau} other {Créé et vérifié : # éléments sur le tableau}}",
+        "sheet": "{n, plural, one {Créée et vérifiée : # question} other {Créée et vérifiée : # questions}}",
+        "lesson": "{n, plural, one {Créée et vérifiée : # étape} other {Créée et vérifiée : # étapes}}",
+        "open": {
+          "board": "Ouvrir le tableau",
+          "sheet": "Ouvrir la fiche",
+          "lesson": "Ouvrir la leçon"
+        },
+        "no": {
+          "board": "Le tableau n'a pas été créé. Rien n'a été enregistré.",
+          "sheet": "La fiche n'a pas été créée. Rien n'a été enregistré.",
+          "lesson": "La leçon n'a pas été créée. Rien n'a été enregistré."
+        }
+      },
+      "pts": {
+        "empty": "{name} n'a pas encore d'élèves, donc aucun point ne peut être donné.",
+        "oneAtATime": "Les points se donnent un par un, donc c'est 1 point, pas {count}."
+      },
+      "rep": {
+        "empty": "{name} n'a pas encore d'élèves, donc il n'y a pas de progrès à résumer.",
+        "which": "Pour quelle classe veux-tu le bilan ?"
+      },
+      "find": {
+        "hidden": "{title} est sur Oomba, mais ce jeu est désactivé pour le moment, donc les élèves ne peuvent pas y jouer.",
+        "hiddenFolder": "{title} est dans ton dossier {folder}, mais ce jeu est désactivé sur Oomba pour le moment, donc les élèves ne peuvent pas y jouer."
+      },
+      "fmt": {
+        "plotQ": "Figures ne peut pas vérifier en ligne un point placé par les élèves. Que dois-je faire ?",
+        "plotPrint": "À imprimer : les élèves dessinent chaque point (le corrigé le montre)",
+        "plotRead": "Lire le point (vérifié en ligne)",
+        "columnsQ": "Figures ne peut pas dessiner d'addition posée ni de case de retenue. Dois-je faire la fiche avec les figures les plus proches ?",
+        "closest": "Oui, avec les figures les plus proches",
+        "no": "Pas maintenant"
+      },
+      "why": {
+        "triangle": "{a} + {b} est plus petit que {c}, donc ces côtés ne peuvent pas former un triangle.",
+        "triangleEqual": "{a} + {b} est égal à {c}, donc ces côtés restent à plat et ne forment pas de triangle.",
+        "pastEnd": "{v} est au-delà de la fin d'une droite de {from} à {to}, donc le point ne peut pas y aller.",
+        "other": "Cette figure ne peut pas être dessinée : {what}.",
+        "notAsked": "Pas ajoutée : {what}."
       }
     },
     "companion-greet": {

@@ -156,7 +156,7 @@ test('names never reach the AI: taken out of the message; a step or title on the
   try {
     const r = await say(boss, { text: 'Make it easier for Quinn please' });
     assert.equal(JSON.parse(q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", boss.id).turns).filter(t => t.role === 'me').at(-1).text, 'Make it easier for [student 1] please');
-    assert.equal((await say(boss, { text: 'x' })).json.code, 'brief');
+    assert.equal((await say(boss, { text: '  ' })).json.code, 'brief');
     await C.allSettled();
     const st = clockBoard(); st.__steps.push({ id: 's2', text: 'Bea goes first' });
     await say(boss, { text: 'Is this board ready?', board: { state: st, title: 'Clocks for Quinn' } }); await C.allSettled();

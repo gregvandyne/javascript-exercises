@@ -16485,3 +16485,73 @@ as a visitor, a parent, a student and a teacher (arcade off, as on the live site
   text step, and `swapHiddenDemoSteps` changes the existing demo lessons the same way on every start.
 - `tests/unit/removed-games.test.js` checks the words of every page above (English, German, Japanese) for a hidden
   game's name, and that both videos are off.
+
+## Oomba makes it, then reports what it checked (27 Nov 2026)
+
+The owner's live audit of the Oomba chat (Greg Test, class "4b math" with no students): "NOT seamless". The chat wrote
+briefs and asked the teacher to open a card and press a final button; it said "I set up a base-ten blocks board" when
+nothing existed (Open the Manipulatives only reloaded an empty page); Figures questions read a point instead of
+plotting one, on 0 to 2 lines with decimals, every answer B, and the title kept its old range; 10 points became 1 in
+silence for a class with no students; a progress report ended at "Couldn't find that page"; "Build a lesson" guessed a
+topic from the chat; "Sum Racer" was "not on Oomba" although it sits in the teacher's Fun Games folder; the live host
+room had no bubble; Send was greyed out for "Assign it".
+
+- **Made in the chat** (`services/companion-make.js`, tools in `services/companion.js`): `makeBoard` (a Manipulatives
+  board through the board's own checks, `manip-chat.js buildChange`, saved as Draft with AI saves one,
+  `manipulatives.js addRecent`: My boards), `makeWorksheet` (a Figures worksheet made and filled in one step through the
+  worksheet tool's checks, `figures-chat.js readAnswer`/`applyPlan`/`verifyPlan`; `figuresKinds` gives the kinds for a
+  topic so the full 36,000-character catalog is not in every prompt) and `makeLesson` (the library's Draft with AI,
+  moved to `services/lesson-draft.js` and shared with `routes/lessons.js`). Each runs in a dry run at the tool and is
+  read back; the real write comes with Oomba's answer and is read back again; the card ("Made and checked: 5
+  questions") opens that exact board (`/manipulatives#board/<id>`), worksheet or lesson. When it does not land, the
+  card and the app's own sentence say so. No Undo on these: they are new things the teacher deletes from their pages.
+- **The guard** (`guardReply`, `companion-make.js claims`): a sentence saying something was made, set up, replaced or
+  is ready stays only when a tool made or changed something in that answer; otherwise it is taken out and the app says
+  "Nothing has been made yet." A Builder hand-off (the only hand-off left: games and classroom activities) reads "I
+  drafted <title>. Press Open the Builder to create it." Older worksheet and board hand-off cards now say "Make it now"
+  and send the brief to the chat, which makes it.
+- **Figures quality**: the teacher's range ("from 0 to 10") and "whole numbers" are read from their words
+  (`requestFacts`) and a question that does not match is refused with why (`figures-chat.js factProblem`). Figures
+  cannot check a point students plot online: "plot" first shows a card (printable plot questions, read the point, or
+  not now) and nothing is built before the tap (`formatAsk`); printable plot questions are number lines with the point
+  hidden from the student (`hide: 'points'`, the answer key shows it). Column addition and regrouping (in the words or
+  an attached plan) ask the same way first. Oomba's own multiple-choice questions get their right option spread
+  (`spreadChoices`, when there are two or more). A title naming a range follows the number lines (`retitle`). A figure
+  that cannot be drawn is never swapped for another question, number questions included (the 25 Nov rule now covers
+  both), and its one-line reason ("1 + 2 is less than 10, so those sides can't make a triangle", `explainOf`,
+  `js.companion.why.*`) is added after Oomba's words when it left the numbers out.
+- **Empty class and points**: givePoint checks the roster before any choice card ("4b math has no students yet, so no
+  points can be given", with the add-students steps). The dashboard gives one point at a time; asked for N, the app
+  says "Points go one at a time, so this is 1 point, not N." first. A class can be named by its name.
+- **Progress report** (`classProgress`, `companion-make.js classReport`): counts only: each assignment's finished,
+  started, not started, late and answers to read; Needs a look by reason with students as "Student A"
+  (`homeroom-look.js forAi`, names put back in the browser from `note.who`); Grammar Lab topics mastered and started for
+  a teacher it lets in; courses begun. No names, no supports, no IEP data. An empty class says so.
+- **Asking**: a bare "Build a lesson/worksheet/board" or "Assign it" with nothing to point at is answered with one plain
+  question without the AI (`quickAnswer`). `makeLesson` refuses a topic that is not in the teacher's own words of that
+  message (or its attached file), and a request that only asked to find something.
+- **Finding** (`findLesson`): the teacher's game folders, the class's assigned lessons, the catalog and, while ARCADE is
+  off, the hidden games, named as turned off ("Sum Racer is in your Fun Games folder, but that game is turned off on
+  Oomba right now, so students can't play it.", said first by the app; a "couldn't find" sentence is taken out), with
+  the closest open lesson that shares a topic exactly (never Arithmetic Lab's "column addition" for "addition"). For a
+  teacher Grammar Lab lets in (`grammar-lab-access.js`), its units and topics, assigned with `assign` kind `grammar`
+  through `grammar-lab-assign.js assign`; anyone else: not available.
+- **The bubble**: in the live host room (`/live/host/<id>`, `companion: 'live'`) at the end of the room's top bar, so it
+  never covers the controls or the join code; hidden in full screen. The class Lessons tab has it (checked in a real
+  browser). **Owner decision:** it is left off Studio (`/studio/<id>`), which has its own "Chat with the Builder":
+  two chats on one page confused. Say if Studio should have Oomba too.
+- **Sending**: any non-empty message sends (the engine's minimum was 2 characters); Send is never greyed out; an empty
+  box only puts the focus back (no "Write a few words" warning); a second tap while one is on its way does nothing.
+- **Latency**: the page context goes with the first call (no getPageContext round trip just to look; the class's name
+  stays out unless asked), the request is cached (`cache_control`) so each further call of the tool loop reads the
+  tools, the system prompt and the turns so far from the cache, and each answer records its model calls, model time,
+  tool time and prompt sizes (`note.perf`, the "companion answered" log). Measured with the stand-in: a plain question
+  went from 2 model calls to 1; a board from 3 calls (plus the teacher's tap and the Manipulatives page's own AI draft)
+  to 2; a worksheet from about 3 calls, a tap and 2 or 3 more on the worksheet page to 3 in one answer. The server's
+  own work for a made board, worksheet or lesson is 70 to 410 ms; the rest of the 5 to 60 seconds is model time. The
+  tools grew from 18,705 to 26,425 characters (about 2,000 tokens, cached after the first call); the worksheet page's
+  rules stay about 51,000 characters (the full figure catalog: cached now, cut only with its own tests).
+- Tests: `tests/unit/companion-make.test.js` (13), `tests/unit/companion-places-browser.test.js` (4: live host room,
+  Lessons tab and Studio, short messages and a made board opened, a plotting worksheet; laptop and 390 px, light and
+  dark; `COMPANION_SHOTS=<dir>` saves pictures), and the existing companion tests updated where the old behavior was
+  the audit's complaint (a number question swapped silently, a one-letter message refused, the empty class's point).

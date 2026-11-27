@@ -338,7 +338,9 @@ function chatUi() {
     // old switch), and after "Describe what you need"; a lesson's figure questions start by hand, Oomba one tap away.
     start: () => (P.startAi || new URLSearchParams(location.search).get('ai') === '1' || (P.ai && !LESSON && empty() && window.matchMedia('(min-width: 900px)').matches) ? 'open' : 'closed'),
   });
-  BUS.whenChat(c => { chat = c; if (opener) opener.addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
+  // Drawn again once the chat is here: a worksheet Oomba is drafting says so at once ("Oomba is drafting your
+  // questions"), never "No questions yet" while the answer runs (the owner's live audit, 27 Nov 2026).
+  BUS.whenChat(c => { chat = c; draw(); if (opener) opener.addEventListener('click', () => c.setMode(c.state().mode === 'open' ? 'closed' : 'open')); });
 }
 async function boot() {
   shell();

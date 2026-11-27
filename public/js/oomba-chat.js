@@ -115,10 +115,14 @@ export function mountChat(o) {
   }
   async function send(raw, { retry = null } = {}) {
     const text = String(raw || '').trim();
+    // Any words send, even one ("Assign it", "Yes"): the owner's live audit saw Send greyed out for a two-word message
+    // and a false "Write a few words" warning. An empty box only puts the focus back; a second tap while one is
+    // on its way does nothing.
+    if (!text) { C.el.input.focus(); return; }
+    if (C.sending) return;
     showErr('');
-    if (text.length < 2) { showErr(t('js.oomba-chat.needText')); C.el.input.focus(); return; }
     if (C.chat.pending) { showErr(t('js.oomba-chat.err.chatBusy')); return; }
-    C.el.send.disabled = true;
+    C.sending = true;
     try {
       if (o.beforeSend) await o.beforeSend(text);   // the site companion: a page's own first step (a new worksheet is saved first)
       const url = o.url() || (o.ensure ? await o.ensure() : null);
@@ -132,7 +136,7 @@ export function mountChat(o) {
       const code = e.data && e.data.code;
       if (retry && !C.el.input.value.trim()) { C.el.input.value = text; autosize(); }
       showErr((o.errText && o.errText(code, e)) || (SEND_ERRORS.includes(code) ? t(`js.oomba-chat.err.${code}`) : e.status === 429 ? t('js.oomba-chat.err.slow') : e.message || t('js.oomba-chat.err.other')));
-    } finally { C.el.send.disabled = !!C.chat.pending; }
+    } finally { C.sending = false; }
   }
   async function undo(id, btn) {
     if (btn) btn.disabled = true;
@@ -180,7 +184,7 @@ export function mountChat(o) {
   }
   // Checked work (services/verify-change.js): what the app read back after writing. Shown in the app's own words, so
   // the card is true whatever Oomba said: what did not land (and why), and Try again.
-  const VERIFY_CODES = ['cannotDraw', 'noSuch', 'dropped', 'full', 'meanwhile', 'same', 'units', 'gone', 'filtered', 'notBuilt'];
+  const VERIFY_CODES = ['cannotDraw', 'notAsked', 'noSuch', 'dropped', 'full', 'meanwhile', 'same', 'units', 'gone', 'filtered', 'notBuilt'];
   function verifyLines(v) {
     const lines = (v.notLanded || []).map(m => t(`js.oomba-chat.verify.${VERIFY_CODES.includes(m.code) ? m.code : 'other'}${m.n ? '' : 'Any'}`, { n: m.n || 0, units: m.units || '', count: m.count || 0 }));
     for (const n of v.swapped || []) lines.push(t('js.oomba-chat.verify.swapped', { n }));
@@ -231,7 +235,6 @@ export function mountChat(o) {
     }
     log.innerHTML = parts.join('');
     C.el.input.placeholder = o.placeholder ? o.placeholder(C.chat) : '';
-    C.el.send.disabled = !!C.chat.pending;
     if (atEnd || C.chat.pending) scrollDown();
   }
 

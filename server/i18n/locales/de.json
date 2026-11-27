@@ -4509,7 +4509,11 @@
       },
       "copy": "Kopieren",
       "copyFailed": "Kopieren hat nicht geklappt. Markiere den Text stattdessen.",
-      "copied": "Kopiert"
+      "copied": "Kopiert",
+      "verify": {
+        "notAsked": "Frage {n} blieb, wie sie war: Das war nicht, was du wolltest.",
+        "notAskedAny": "Eine Frage wurde nicht hinzugefügt: Das war nicht, was du wolltest."
+      }
     },
     "figures": {
       "needText": "Schreib zuerst ein paar Worte für Oomba.",
@@ -4649,7 +4653,20 @@
         "needs": "Mal nachsehen angeschaut ({n})",
         "needsNo": "Mal nachsehen ließ sich nicht öffnen",
         "assign": "Eine Zuweisung zum Prüfen vorbereitet",
-        "assignNo": "Das ließ sich nicht zuweisen"
+        "assignNo": "Das ließ sich nicht zuweisen",
+        "boardMade": "Ein Brett erstellt und geprüft ({n, plural, one {# Element} other {# Elemente}})",
+        "sheetMade": "Ein Arbeitsblatt erstellt und geprüft ({n, plural, one {# Frage} other {# Fragen}})",
+        "sheetNo": "Dieses Arbeitsblatt ließ sich nicht erstellen",
+        "lessonMade": "Einen Unterrichtsplan erstellt und geprüft ({n, plural, one {# Schritt} other {# Schritte}})",
+        "lessonNo": "Diese Lektion ließ sich nicht erstellen",
+        "lessonAsk": "Nach dem Thema gefragt",
+        "kinds": "Nachgeschaut, was Figures zeichnen kann",
+        "find": "Nach „{q}“ gesucht",
+        "findNo": "Das ließ sich nicht suchen",
+        "report": "Den Fortschritt der Klasse gelesen",
+        "reportNo": "Den Fortschritt dieser Klasse nicht lesen können",
+        "pointEmpty": "Klasse geprüft: noch keine Schülerinnen und Schüler",
+        "askBack": "Gefragt, was du brauchst"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4711,7 +4728,9 @@
         "help": "Hilfe",
         "length": "Dauer",
         "fromPlan": "Aus deinem Plan",
-        "filled": "Oomba hat deine Beschreibung eingetragen. Prüf sie und drück dann den Knopf, um es zu erstellen."
+        "filled": "Oomba hat deine Beschreibung eingetragen. Prüf sie und drück dann den Knopf, um es zu erstellen.",
+        "makeNow": "Jetzt erstellen",
+        "makeText": "Erstelle das jetzt:"
       },
       "err": {
         "words": "Einige Wörter in deiner Nachricht sind nicht erlaubt. Ändere sie und schick sie noch einmal.",
@@ -4768,7 +4787,11 @@
         "book": "Welches Buch?"
       },
       "ask": {
-        "other": "Etwas anderes"
+        "other": "Etwas anderes",
+        "lessonTopic": "Gern. Zu welchem Thema, und für welche Klassenstufe?",
+        "sheetTopic": "Gern. Was soll das Arbeitsblatt üben, und für welche Klassenstufe?",
+        "boardTopic": "Gern. Welches Werkzeug (zum Beispiel Zehnersystem-Blöcke oder ein Zahlenstrahl), und was soll es zeigen?",
+        "assignWhat": "Welche Lektion soll ich zuweisen? Sag mir ihren Namen, und die Klasse, wenn du mehrere hast."
       },
       "cls": {
         "default": "Testklasse",
@@ -4886,6 +4909,51 @@
         "reviewTitle": "Wiederholung",
         "reteachTitle": "Noch einmal: {title}",
         "finishTitle": "Die Arbeit von heute fertig machen"
+      },
+      "made": {
+        "notYet": "Es wurde noch nichts erstellt.",
+        "draftOnly": "Ich habe einen Entwurf für {title} vorbereitet. Drück {button}, um ihn zu erstellen.",
+        "failed": "Das wurde doch nicht erstellt, also ist nichts gespeichert. Bitte versuch es noch einmal.",
+        "board": "{n, plural, one {Erstellt und geprüft: # Element auf dem Brett} other {Erstellt und geprüft: # Elemente auf dem Brett}}",
+        "sheet": "{n, plural, one {Erstellt und geprüft: # Frage} other {Erstellt und geprüft: # Fragen}}",
+        "lesson": "{n, plural, one {Erstellt und geprüft: # Schritt} other {Erstellt und geprüft: # Schritte}}",
+        "open": {
+          "board": "Brett öffnen",
+          "sheet": "Arbeitsblatt öffnen",
+          "lesson": "Lektion öffnen"
+        },
+        "no": {
+          "board": "Das Brett wurde nicht erstellt. Nichts wurde gespeichert.",
+          "sheet": "Das Arbeitsblatt wurde nicht erstellt. Nichts wurde gespeichert.",
+          "lesson": "Die Lektion wurde nicht erstellt. Nichts wurde gespeichert."
+        }
+      },
+      "pts": {
+        "empty": "{name} hat noch keine Schülerinnen und Schüler, also können keine Punkte vergeben werden.",
+        "oneAtATime": "Punkte gibt es einzeln, also ist das 1 Punkt, nicht {count}."
+      },
+      "rep": {
+        "empty": "{name} hat noch keine Schülerinnen und Schüler, also gibt es noch keinen Fortschritt.",
+        "which": "Für welche Klasse soll der Bericht sein?"
+      },
+      "find": {
+        "hidden": "{title} gibt es auf Oomba, aber dieses Spiel ist gerade ausgeschaltet, also können Schülerinnen und Schüler es nicht spielen.",
+        "hiddenFolder": "{title} ist in deinem Ordner {folder}, aber dieses Spiel ist auf Oomba gerade ausgeschaltet, also können Schülerinnen und Schüler es nicht spielen."
+      },
+      "fmt": {
+        "plotQ": "Figures kann einen Punkt, den Schülerinnen und Schüler eintragen, nicht online prüfen. Was soll ich erstellen?",
+        "plotPrint": "Zum Drucken: Sie zeichnen jeden Punkt ein (die Lösung zeigt ihn)",
+        "plotRead": "Den Punkt ablesen (online geprüft)",
+        "columnsQ": "Figures kann keine schriftliche Addition und kein Übertragsfeld zeichnen. Soll ich das Arbeitsblatt mit den passendsten Figuren erstellen?",
+        "closest": "Ja, mit den passendsten Figuren",
+        "no": "Jetzt nicht"
+      },
+      "why": {
+        "triangle": "{a} + {b} ist kleiner als {c}, also können diese Seiten kein Dreieck bilden.",
+        "triangleEqual": "{a} + {b} ist gleich {c}, also liegen diese Seiten flach und bilden kein Dreieck.",
+        "pastEnd": "{v} liegt hinter dem Ende eines Zahlenstrahls von {from} bis {to}, also kann der Punkt dort nicht hin.",
+        "other": "Diese Figur lässt sich nicht zeichnen: {what}.",
+        "notAsked": "Nicht hinzugefügt: {what}."
       }
     },
     "companion-greet": {

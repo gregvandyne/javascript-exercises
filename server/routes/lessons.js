@@ -19,7 +19,7 @@ import { taskOf as taskOfId } from '../../public/js/manip-tasks.js';
 import * as F from '../services/figures.js';
 import * as games from '../services/games.js';
 import { publish } from '../services/publish.js';
-import { draftLesson } from '../services/lesson-ai.js';
+import * as LD from '../services/lesson-draft.js';
 import * as P from '../services/progress.js';
 import { audit, q } from '../db.js';
 import { canHost as liveCanHost } from '../services/classlive-access.js';
@@ -182,26 +182,15 @@ router.post('/api/lessons/draft', requireUser, rateLimit('lesson-ai', 30, 3600e3
   const { schoolId, folderId, topic, grade, subject, minutes, classId } = b(req);
   if (!String(topic || '').trim()) return err(req, res, 'topic', 400, 'topic');
   if (!S.getSchool(schoolId) || !['admin', 'teacher'].includes(S.roleIn(req.user, schoolId))) return no(req, res);
-  const pick = L.gamesForPicker(req.user, schoolId);
-  const catalog = [...pick.school, ...pick.site].map(g => ({ ...g, ...(games.getGame(g.id) || {}) })).map(g => ({ id: g.id, title: g.title, description: g.description, tags: g.tags }));
   // A Figures tester's draft may have Figure steps: the figure catalog goes with the game catalog (the Figures gate).
-  const figures = figureSteps(req.user) ? F.figureCatalog() : [];
-  if (figures.length && F.namesIn(req.user, `${topic} ${subject || ''}`)) return res.status(400).json({ error: req.t('figures.errors.names'), field: 'topic' });
+  if (figureSteps(req.user) && F.namesIn(req.user, `${topic} ${subject || ''}`)) return res.status(400).json({ error: req.t('figures.errors.names'), field: 'topic' });
   let d;
-  try { d = await draftLesson({ topic, grade, subject, minutes: Math.max(10, Math.min(180, +minutes || 40)), locale: req.locale, t: req.t }, catalog, figures); }
+  try { d = await LD.draft(req.user, schoolId, { topic, grade, subject, minutes, locale: req.locale, t: req.t }); }
   catch { return err(req, res, 'aiFailed', 503); }
-  const r = L.createLesson(req.user, schoolId, { title: d.draft.title || topic, folderId: folderId || null, summary: d.draft.summary, subject: subject || d.draft.subject || '', grade: grade || d.draft.grade || '', objectives: d.draft.objectives });
+  // The same save as Oomba's makeLesson (services/lesson-draft.js): the lesson read back as saved.
+  const r = LD.save(req.user, schoolId, d, { topic, subject, grade, folderId, lang: req.locale });
   if (!r.ok) return err(req, res, r.code);
-  const planned = d.draft.steps || [];
-  for (const s of planned) {
-    if (s.kind === L.FIGURES_KIND) { FS.draftedStep(req.user, r.lesson.id, s, { lang: req.locale }); continue; }
-    L.addStep(req.user, r.lesson.id, { kind: s.kind, title: s.title, body: s.body, minutes: s.minutes, gameId: s.gameId || null });
-  }
-  // Checked work (docs/decisions.md "Builders check their work"): the lesson read back as saved, so the editor's note
-  // says what is really there: steps saved of planned, and what the checks did to the AI's figures and games.
-  const saved = L.steps(r.lesson.id).length, rep = d.report || null;
-  const chk = d.ai && rep ? [saved, planned.length, rep.figures.fixed, rep.figures.replaced, rep.figures.dropped, rep.gamesSwapped].join('.') : '';
-  audit(req.user.id, 'lesson.draft', r.lesson.id, { ai: d.ai, saved, planned: planned.length });
+  const chk = r.chk;
   const cid = classParam(req.user, classId, r.lesson.school_id);
   res.json({ ok: true, redirect: `/teach/lessons/${r.lesson.id}?drafted=${d.ai ? 'ai' : 'template'}${chk ? `&chk=${chk}` : ''}${cid ? `&class=${encodeURIComponent(cid)}` : ''}` });
 });

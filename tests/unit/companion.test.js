@@ -119,7 +119,11 @@ test('which pages: teacher pages, Figures and the Manipulatives, and the dashboa
   assert.deepEqual(companionPage(req(`/class/${cls.id}/dashboard`), { bare: true, companion: 'dash' }), { type: 'dashboard', classId: cls.id });
   assert.equal(companionPage(req(`/class/${cls.id}/dashboard`), { bare: true }), null, 'a bare page without the dashboard\'s opt-in');
   assert.deepEqual(companionPage(req('/read', { class: cls.id })), { type: 'library', classId: cls.id });
-  for (const p of ['/play/fraction-factory', '/live/play/abc', '/live/host/abc', '/teach/rubrics/x/print', '/figures/worksheets/abc/print', `/class/${cls.id}/lessons/l1`, '/number-quest/sorting-game']) assert.equal(companionPage(req(p)), null, p);
+  // The live host room has it (the owner's live audit, 27 Nov 2026), on its page's own opt-in; its sub-pages and Studio
+  // (its own "Chat with the Builder") do not.
+  assert.deepEqual(companionPage(req('/live/host/abc'), { bare: true, companion: 'live' }), { type: 'live' });
+  assert.equal(companionPage(req('/live/host/abc'), { bare: true }), null, 'a bare page without the room\'s opt-in');
+  for (const p of ['/play/fraction-factory', '/live/play/abc', '/live/host/abc/dash', '/studio/abc', '/teach/rubrics/x/print', '/figures/worksheets/abc/print', `/class/${cls.id}/lessons/l1`, '/number-quest/sorting-game']) assert.equal(companionPage(req(p)), null, p);
   // One chat everywhere: a Figures worksheet and the Manipulatives have the same bubble (their workflow is in it).
   assert.deepEqual(companionPage(req('/figures/worksheets/abc'), { scripts: ['/js/figures-sheet.js'] }), { type: 'figures-sheet', sheetId: 'abc' });
   assert.deepEqual(companionPage(req('/manipulatives'), { scripts: ['/js/manip.js'] }), { type: 'tools' });

@@ -402,7 +402,7 @@ router.get('/live/host/:sid', on, requireAnyAccount, (req, res) => {
   if (!role) return notFound(req, res);
   if (role === 'host') s.host.lang = req.locale; else s.cohosts.get(req.user.id).lang = req.locale;
   noStore(res);
-  page(req, res, { title: req.t('live.host.title'), bare: true, bodyClass: 'lv-body lv-projector', head: '<link rel="stylesheet" href="/css/live.css">',
+  page(req, res, { title: req.t('live.host.title'), bare: true, companion: 'live', bodyClass: 'lv-body lv-projector', head: '<link rel="stylesheet" href="/css/live.css">',
     body: V.hostBody(req, { s, origin: requestOrigin(req), token: LS.ctlToken(s, req.user.id), nicks: nicksFor(req.locale), classSignIn: s.audience !== 'open',
       teamsOn: LS.teamsOn(), hasLast: LS.teamsOn() && s.audience === 'class' && !!T.loadClassTeams(s.classId), ctl: ctlInfo(s, req.user),
       // Google Classroom (routes/gclassroom.js): the host of a class game can announce it in the linked Classroom stream.
