@@ -12,6 +12,10 @@ body.oc-hide #oc-root,body.oc-hide .oc-bubble{display:none!important}
 .dash-foot .oc-bubble{position:static;width:48px;height:48px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:4px}
 .dash-foot .oc-bubble .oc-mark{width:48px;height:48px}
 body.dash-page .oc{top:0}
+/* The live host room: the bubble ends the room's top bar, never over its controls or the join code. */
+.lv-bar .oc-bubble{position:static;width:44px;height:44px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:auto}
+.lv-bar .oc-bubble .oc-mark{width:44px;height:44px}
+body.lv-projector .oc{top:0}
 .dash-w.oc-hl{box-shadow:0 0 0 4px var(--spark),0 0 0 9px color-mix(in srgb,var(--spark) 40%,transparent);transition:box-shadow .3s}
 
 .oc-ctx{display:inline-flex;align-items:center;gap:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -70,6 +74,11 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-hand dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.84rem}
 .oc-hand dt{font-weight:800;color:var(--text-2)}
 .oc-hand dd{margin:0;overflow-wrap:anywhere}
+/* Made in the chat (a board, a worksheet, a lesson): checked, and its Open button. */
+.oc-made{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--good,#1F9D63) 45%,var(--line))}
+.oc-made h4{margin:0;font-size:.97rem;display:flex;align-items:center;gap:6px;overflow-wrap:anywhere}
+.oc-made-no{box-shadow:inset 0 0 0 2px var(--line)}
+.oc-made-no p{margin:0;display:flex;gap:6px;align-items:flex-start;font-size:.88rem}
 .oc-brief{font-size:.84rem;padding:8px 10px;border-radius:10px;background:var(--card-2);line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 
 /* The message box: attach, the microphone, web search and the note under it. */

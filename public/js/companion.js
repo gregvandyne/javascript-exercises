@@ -74,7 +74,9 @@ function start() {
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
     start: () => via('start') || 'closed',
-    bubbleHost: dash && !views ? document.getElementById('dash-foot') : null,
+    // The dashboard: at the end of its layout bar. The live host room: at the end of its top bar, so it never covers
+    // the room's controls or the join code (the owner's live audit, 27 Nov 2026); it hides in full screen (below).
+    bubbleHost: dash && !views ? document.getElementById('dash-foot') : PAGE.type === 'live' ? document.querySelector('.lv-host > .lv-bar') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
@@ -363,6 +365,7 @@ function start() {
     if (n.sources && n.sources.length) parts.push(webHtml(n.sources));
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
+    if (n.made) parts.push(madeHtml(n.made));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
@@ -398,10 +401,17 @@ function start() {
     const c = x.change; if (!c || c.kind !== 'dash') return '';
     return `<p><b>${esc(L('dash.done'))}</b></p>${(c.lines || []).map(lineHtml).join('')}${dash ? `<span class="oc-note">${esc(L('dash.highlighted'))}</span>` : `<a class="btn btn-sm" href="/class/${encodeURIComponent(c.classId)}/dashboard">${esc(L('dash.openDash'))}</a>`}`;
   }
+  /** Made in the chat (services/companion-make.js): what it is, checked, and the button that opens that exact board,
+   *  worksheet or lesson. A make that did not land says so (the reply says it too). */
+  function madeHtml(m) {
+    const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[m.kind] || '✨';
+    if (m.failed) return `<div class="oc-made oc-made-no" role="note"><p>${ic('⚠️', 16)} ${esc(L(`made.no.${m.kind}`))}</p></div>`;
+    return `<div class="oc-made" data-made="${esc(m.kind)}"><h4>${ic(ico, 18)} <span dir="auto">${esc(m.title || '')}</span></h4><p class="oc-hsub">${ic('✓', 14)} ${esc(t(`js.companion.made.${m.kind}`, { n: m.n || 0 }))}</p><div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(m.href)}" data-oc-made="${esc(m.id)}">${esc(L(`made.open.${m.kind}`))}</a></div></div>`;
+  }
   function handoffHtml(x, h) {
     const facts = [h.grade ? [L('hand.grade'), h.grade] : null, ...(h.facts || []).map(f => [L(`hand.${f.k}`), f.v])].filter(Boolean);
     return `<div class="oc-hand"><h4>${ic('🛠️', 18)} ${esc(h.title || L(`hand.${h.tool}`))}</h4>${h.title ? `<p class="oc-hsub">${esc(L(`hand.${h.tool}`))}</p>` : ''}${facts.length ? `<dl>${facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}<div class="oc-brief" dir="auto">${esc(h.brief)}</div>
-      <div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="handoff" data-turn="${esc(x.id)}">${esc(L(`hand.open.${h.tool}`))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="rebrief" data-turn="${esc(x.id)}">${esc(L('hand.change'))}</button></div></div>`;
+      <div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="handoff" data-turn="${esc(x.id)}">${esc(L(h.tool === 'builder' ? `hand.open.${h.tool}` : 'hand.makeNow'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="rebrief" data-turn="${esc(x.id)}">${esc(L('hand.change'))}</button></div></div>`;
   }
   // ---------------------------------------------------------------- points (docs/decisions.md "Points from the Oomba chat")
   const reasonIc = it => `<span class="oc-pic" aria-hidden="true">${ic(it.icon || '⭐', 22)}</span>`;
@@ -626,6 +636,8 @@ function start() {
       // A day plan's card: the board's plan pill follows (public/js/homeroom-plan.js listens).
       if (r && 'plan' in r) document.dispatchEvent(new CustomEvent('oomba:plan', { detail: { classId: r.classId, plan: r.plan } }));
       if (r && r.toast) toast(r.toast);
+      // An older card for a worksheet or a board (before Oomba made them itself): the chat makes it now, never an empty page.
+      if (act === 'handoff' && r.handoff && r.handoff.tool !== 'builder') { chat.took(r.chat || chat.state().chat); setTimeout(() => chat.send(`${L('hand.makeText')}\n${handoffText(r.handoff)}`), 0); return null; }
       if (act === 'handoff' && r.handoff) {
         store.set('oomba-handoff', JSON.stringify({ tool: r.handoff.tool, text: handoffText(r.handoff), at: Date.now() }));
         location.href = r.handoff.href;

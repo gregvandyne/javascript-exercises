@@ -4508,7 +4508,11 @@
       },
       "copy": "複製",
       "copyFailed": "無法複製，請改為選取文字。",
-      "copied": "已複製"
+      "copied": "已複製",
+      "verify": {
+        "notAsked": "第 {n} 題維持原樣:那不是你要求的。",
+        "notAskedAny": "有一題沒有加入:那不是你要求的。"
+      }
     },
     "figures": {
       "needText": "請先寫幾個字給 Oomba。",
@@ -4648,7 +4652,20 @@
         "needs": "看了「需要關心」({n})",
         "needsNo": "無法打開「需要關心」",
         "assign": "準備好指派讓你確認",
-        "assignNo": "無法指派"
+        "assignNo": "無法指派",
+        "boardMade": "建立並檢查了一塊板({n} 項)",
+        "sheetMade": "建立並檢查了一份學習單({n} 題)",
+        "sheetNo": "無法建立這份學習單",
+        "lessonMade": "建立並檢查了一份課程計畫({n} 個步驟)",
+        "lessonNo": "無法建立這一課",
+        "lessonAsk": "詢問了主題",
+        "kinds": "查看了 Figures 能畫什麼",
+        "find": "搜尋了「{q}」",
+        "findNo": "無法搜尋這個",
+        "report": "讀取了班級進度",
+        "reportNo": "無法讀取這個班級的進度",
+        "pointEmpty": "檢查了班級:還沒有學生",
+        "askBack": "詢問了你需要什麼"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4710,7 +4727,9 @@
         "help": "協助",
         "length": "時間",
         "fromPlan": "來自你的教案",
-        "filled": "Oomba 已填好你的說明。請檢查後按下按鈕來建立。"
+        "filled": "Oomba 已填好你的說明。請檢查後按下按鈕來建立。",
+        "makeNow": "現在建立",
+        "makeText": "現在建立這個:"
       },
       "err": {
         "words": "你的訊息裡有不允許的字詞。請修改後再送出。",
@@ -4767,7 +4786,11 @@
         "book": "哪一本書?"
       },
       "ask": {
-        "other": "其他"
+        "other": "其他",
+        "lessonTopic": "很樂意幫忙。主題是什麼?給幾年級?",
+        "sheetTopic": "很樂意幫忙。這份學習單要練習什麼?給幾年級?",
+        "boardTopic": "很樂意幫忙。要用哪個工具(例如十進位積木或數線),要顯示什麼?",
+        "assignWhat": "要指派哪一課?請告訴我名稱;如果有不只一個班級,也請說是哪一班。"
       },
       "cls": {
         "default": "測試班級",
@@ -4885,6 +4908,51 @@
         "reviewTitle": "複習",
         "reteachTitle": "再教一次:{title}",
         "finishTitle": "完成今天的作業"
+      },
+      "made": {
+        "notYet": "還沒有建立任何東西。",
+        "draftOnly": "我準備好了{title}的草稿。按「{button}」就會建立。",
+        "failed": "最後沒有建立成功,所以什麼都沒有儲存。請再試一次。",
+        "board": "{n, plural, other {已建立並檢查:板上有 # 項}}",
+        "sheet": "{n, plural, other {已建立並檢查:# 題}}",
+        "lesson": "{n, plural, other {已建立並檢查:# 個步驟}}",
+        "open": {
+          "board": "開啟這塊板",
+          "sheet": "開啟學習單",
+          "lesson": "開啟這一課"
+        },
+        "no": {
+          "board": "這塊板沒有建立。什麼都沒有儲存。",
+          "sheet": "學習單沒有建立。什麼都沒有儲存。",
+          "lesson": "這一課沒有建立。什麼都沒有儲存。"
+        }
+      },
+      "pts": {
+        "empty": "{name} 還沒有學生,所以無法給點數。",
+        "oneAtATime": "點數一次給一點,所以這是 1 點,不是 {count} 點。"
+      },
+      "rep": {
+        "empty": "{name} 還沒有學生,所以還沒有進度可以報告。",
+        "which": "報告要給哪一班?"
+      },
+      "find": {
+        "hidden": "{title} 在 Oomba 上,但這個遊戲目前已關閉,所以學生不能玩。",
+        "hiddenFolder": "{title} 在你的「{folder}」資料夾裡,但這個遊戲目前在 Oomba 上已關閉,所以學生不能玩。"
+      },
+      "fmt": {
+        "plotQ": "Figures 無法在線上檢查學生標出的點。要我做什麼?",
+        "plotPrint": "可列印:學生畫出每個點(解答會顯示)",
+        "plotRead": "讀出點的位置(線上檢查)",
+        "columnsQ": "Figures 無法畫出直式加法或進位格。要改用最接近的圖形來做學習單嗎?",
+        "closest": "好,用最接近的圖形",
+        "no": "先不要"
+      },
+      "why": {
+        "triangle": "{a} + {b} 小於 {c},所以這些邊無法組成三角形。",
+        "triangleEqual": "{a} + {b} 等於 {c},所以這些邊會平躺成一直線,無法組成三角形。",
+        "pastEnd": "{v} 超出了從 {from} 到 {to} 的數線終點,所以那個點放不上去。",
+        "other": "這個圖形無法畫出:{what}。",
+        "notAsked": "沒有加入:{what}。"
       }
     },
     "companion-greet": {

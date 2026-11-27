@@ -127,7 +127,7 @@ test('some students; several classes and none named: the app asks which; Not now
 
 test('refused: a live-only game, a game that needs the teacher\'s own questions, a class that is not theirs', async () => {
   const x = world();
-  const tryOne = async input => { const calls = standIn((p, i) => (i === 0 ? toolUse('assign', input) : 'No.')); await say(x, 'Assign it', { type: 'dashboard', classId: x.A.id }); return resultOf(calls); };
+  const tryOne = async input => { const calls = standIn((p, i) => (i === 0 ? toolUse('assign', input) : 'No.')); await say(x, 'Assign this game', { type: 'dashboard', classId: x.A.id }); return resultOf(calls); };
   assert.match((await tryOne({ kind: 'game', id: 'brain-board' })).error, /played live/);
   assert.match((await tryOne({ kind: 'game', id: 'crossword' })).error, /own questions first/);
   assert.match((await tryOne({ kind: 'game', id: 'word-hunt', classRef: 'Room 99' })).error, /not one of the teacher's classes/);
@@ -139,7 +139,9 @@ test('checked before telling the AI: a point that cannot land (an empty class) i
   const calls = standIn((p, i) => (i === 0 ? toolUse('givePoint', { target: 'class', reason: 'teamwork', classRef: x.B.id }) : 'Sorry.'));
   await say(x, 'Give Room 14 a point for teamwork', { type: 'dashboard', classId: x.B.id });
   const r = resultOf(calls);
-  assert.deepEqual(r.landed, []); assert.match(r.note, /Nothing was given/);
+  // The roster is checked first (the owner's live audit): an empty class is said at once, never a choice card.
+  assert.equal(r.given, 0); assert.match(r.error, /no students yet/);
+  assert.match((await lastBot(x.tc)).text, /has no students yet, so no points can be given/);
   assert.equal(D.classPoints(x.B).n || 0, 0);
 });
 

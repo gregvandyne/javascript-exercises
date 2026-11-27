@@ -4509,7 +4509,11 @@
       },
       "copy": "Kopiëren",
       "copyFailed": "Kopiëren lukte niet. Selecteer de tekst.",
-      "copied": "Gekopieerd"
+      "copied": "Gekopieerd",
+      "verify": {
+        "notAsked": "Vraag {n} bleef zoals hij was: het was niet wat je vroeg.",
+        "notAskedAny": "Een vraag is niet toegevoegd: het was niet wat je vroeg."
+      }
     },
     "figures": {
       "needText": "Schrijf eerst een paar woorden voor Oomba.",
@@ -4649,7 +4653,20 @@
         "needs": "Even kijken bekeken ({n})",
         "needsNo": "Kon Even kijken niet openen",
         "assign": "Een toewijzing klaargezet om te controleren",
-        "assignNo": "Dat kon niet worden toegewezen"
+        "assignNo": "Dat kon niet worden toegewezen",
+        "boardMade": "Een bord gemaakt en gecontroleerd ({n, plural, one {# onderdeel} other {# onderdelen}})",
+        "sheetMade": "Een werkblad gemaakt en gecontroleerd ({n, plural, one {# vraag} other {# vragen}})",
+        "sheetNo": "Dat werkblad kon niet gemaakt worden",
+        "lessonMade": "Een lesplan gemaakt en gecontroleerd ({n, plural, one {# stap} other {# stappen}})",
+        "lessonNo": "Die les kon niet gemaakt worden",
+        "lessonAsk": "Naar het onderwerp gevraagd",
+        "kinds": "Gekeken wat Figures kan tekenen",
+        "find": "Gezocht naar ‘{q}’",
+        "findNo": "Dat kon niet opgezocht worden",
+        "report": "De voortgang van de klas gelezen",
+        "reportNo": "De voortgang van die klas kon niet gelezen worden",
+        "pointEmpty": "De klas gecontroleerd: nog geen leerlingen",
+        "askBack": "Gevraagd wat je nodig hebt"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4711,7 +4728,9 @@
         "help": "Hulp",
         "length": "Duur",
         "fromPlan": "Uit je plan",
-        "filled": "Oomba heeft je beschrijving ingevuld. Controleer die en druk dan op de knop om het te maken."
+        "filled": "Oomba heeft je beschrijving ingevuld. Controleer die en druk dan op de knop om het te maken.",
+        "makeNow": "Nu maken",
+        "makeText": "Maak dit nu:"
       },
       "err": {
         "words": "Sommige woorden in je bericht zijn niet toegestaan. Pas ze aan en stuur het opnieuw.",
@@ -4768,7 +4787,11 @@
         "book": "Welk boek?"
       },
       "ask": {
-        "other": "Iets anders"
+        "other": "Iets anders",
+        "lessonTopic": "Graag. Over welk onderwerp, en voor welke groep?",
+        "sheetTopic": "Graag. Wat moet het werkblad oefenen, en voor welke groep?",
+        "boardTopic": "Graag. Welk hulpmiddel (bijvoorbeeld MAB-blokken of een getallenlijn), en wat moet het laten zien?",
+        "assignWhat": "Welke les moet ik toewijzen? Noem de naam, en de klas als je er meer dan één hebt."
       },
       "cls": {
         "default": "Testklas",
@@ -4886,6 +4909,51 @@
         "reviewTitle": "Herhaling",
         "reteachTitle": "Opnieuw uitleggen: {title}",
         "finishTitle": "Het werk van vandaag afmaken"
+      },
+      "made": {
+        "notYet": "Er is nog niets gemaakt.",
+        "draftOnly": "Ik heb een opzet voor {title} gemaakt. Druk op {button} om het te maken.",
+        "failed": "Het is toch niet gemaakt, dus er is niets bewaard. Probeer het nog eens.",
+        "board": "{n, plural, one {Gemaakt en gecontroleerd: # onderdeel op het bord} other {Gemaakt en gecontroleerd: # onderdelen op het bord}}",
+        "sheet": "{n, plural, one {Gemaakt en gecontroleerd: # vraag} other {Gemaakt en gecontroleerd: # vragen}}",
+        "lesson": "{n, plural, one {Gemaakt en gecontroleerd: # stap} other {Gemaakt en gecontroleerd: # stappen}}",
+        "open": {
+          "board": "Open het bord",
+          "sheet": "Open het werkblad",
+          "lesson": "Open de les"
+        },
+        "no": {
+          "board": "Het bord is niet gemaakt. Er is niets bewaard.",
+          "sheet": "Het werkblad is niet gemaakt. Er is niets bewaard.",
+          "lesson": "De les is niet gemaakt. Er is niets bewaard."
+        }
+      },
+      "pts": {
+        "empty": "{name} heeft nog geen leerlingen, dus er kunnen geen punten gegeven worden.",
+        "oneAtATime": "Punten gaan één voor één, dus dit is 1 punt, geen {count}."
+      },
+      "rep": {
+        "empty": "{name} heeft nog geen leerlingen, dus er is nog geen voortgang.",
+        "which": "Voor welke klas moet het overzicht zijn?"
+      },
+      "find": {
+        "hidden": "{title} staat op Oomba, maar dat spel staat nu uit, dus leerlingen kunnen het niet spelen.",
+        "hiddenFolder": "{title} staat in je map {folder}, maar dat spel staat nu uit op Oomba, dus leerlingen kunnen het niet spelen."
+      },
+      "fmt": {
+        "plotQ": "Figures kan een punt dat leerlingen zetten niet online nakijken. Wat zal ik maken?",
+        "plotPrint": "Om te printen: leerlingen tekenen elk punt (de antwoorden laten het zien)",
+        "plotRead": "Het punt aflezen (online nagekeken)",
+        "columnsQ": "Figures kan geen cijferend optellen of onthoudhokje tekenen. Zal ik het werkblad maken met de figuren die er het dichtst bij komen?",
+        "closest": "Ja, met de figuren die er het dichtst bij komen",
+        "no": "Nu niet"
+      },
+      "why": {
+        "triangle": "{a} + {b} is kleiner dan {c}, dus die zijden vormen geen driehoek.",
+        "triangleEqual": "{a} + {b} is gelijk aan {c}, dus die zijden liggen plat en vormen geen driehoek.",
+        "pastEnd": "{v} ligt voorbij het einde van een lijn van {from} tot {to}, dus het punt kan daar niet staan.",
+        "other": "Die figuur kan niet getekend worden: {what}.",
+        "notAsked": "Niet toegevoegd: {what}."
       }
     },
     "companion-greet": {

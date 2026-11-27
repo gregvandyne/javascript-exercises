@@ -156,7 +156,7 @@ export function messageRequest(u, sid, key, text) {
   const ctx = s.context(u, key); if (!ctx) return fail('notFound');
   let v = clip(text, s.textMax).replace(/\s+/g, ' ').trim();
   if (typeof s.clean === 'function') v = clip(s.clean(u, v, ctx), s.textMax).replace(/\s+/g, ' ').trim();
-  if (v.length < 2) return fail('brief');
+  if (!v) return fail('brief');   // one word sends ("Yes", "Assign it": the owner's live audit, 27 Nov 2026)
   const p = s.check(u, v, ctx); if (p) return fail(p);
   return ok({ s, ctx, text: v });
 }

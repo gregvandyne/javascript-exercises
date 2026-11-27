@@ -428,11 +428,16 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // bar), never on a print page or a student view of a lesson. One chat everywhere: a Figures worksheet and the
 // math boards have no panel of their own, the companion offers their workflow there (their page scripts register it:
 // public/js/oomba-bus.js). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
-const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
+// The live host room (/live/host/<id>) has it too (the owner's live audit, 27 Nov 2026: "missing in the live host
+// room"): its page asks for it (companion 'live'), the bubble sits at the bottom left there, clear of the room's
+// controls and the join code, and hides in full screen (public/js/companion.js). Its sub-pages (the teacher's phone
+// view) do not. Studio (/studio/<id>) has its own "Chat with the Builder" beside the game, so no Oomba bubble there:
+// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked").
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play|^\/studio(\/|$)/;
 const OWN_CHAT = [];
 /** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
 export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
-  if (companion === false || (bare && companion !== 'dash')) return null;
+  if (companion === false || (bare && companion !== 'dash' && companion !== 'live')) return null;
   const p = req.path || '';
   if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
   if (!companionFor(req.user)) return null;
