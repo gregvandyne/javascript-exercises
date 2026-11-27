@@ -276,7 +276,7 @@ addEventListener('message', e => {
     // lesson launch has somewhere to go back to, and only on a real tap (the retry rule): a game must
     // never be able to yank the student out of a session on its own.
     // (inside Homeroom's layer, public/js/homeroom-player.js: the layer closes instead)
-    case 'brb:back': if ((d.cstep || d.lesson) && d.backHref && tappedJustNow()) { if (d.embed && parent !== window) parent.postMessage({ type: 'hr:close' }, location.origin); else location.href = d.backHref; } break;
+    case 'brb:back': if ((d.cstep || d.lesson || d.glRoom) && d.backHref && tappedJustNow()) { if (d.embed && parent !== window) parent.postMessage({ type: 'hr:close' }, location.origin); else location.href = d.backHref; } break;
     case 'brb:fullscreen': m.on ? goFull() : fs.exit(); break;
     case 'brb:orientation': if (m.value.startsWith('landscape')) { $('#orient').classList.add('show'); orientDismissed = false; orientSync(); } break;
     // "Try again" on the 3D card: reload the page, which makes a fresh frame link and sends the sign-in cookie.
@@ -461,6 +461,14 @@ async function proofAiForGame(m) {
  *  passage index, when the teacher allowed hints) the server saves the fixes and answers the hint (it holds the key). */
 async function proofForGame(m) {
   const done = out => toFrame({ type: 'brb:proof-done', id: m.id, ...out });
+  // A Grammar Lab room (services/grammar-lab.js roomSave) hands in to Grammar Lab, which checks the fixes.
+  if (d.glRoom) {
+    try {
+      const hint = Number.isInteger(m.hint) ? { hint: m.hint } : {};
+      const r = await api(`/api/courses/grammar-lab/topic/${encodeURIComponent(d.glRoom.topic)}/room`, { method: 'POST', body: { unit: d.glRoom.unit, edits: m.edits, handIn: m.handIn === true, ...hint }, active: playing() });
+      return done({ view: r.view, ...('hint' in hint ? { hint: r.hint || null } : {}) });
+    } catch (e) { return done({ error: (e.data && e.data.code) || 'offline' }); }
+  }
   if (!d.lesson || !d.lesson.proof) return done({ error: 'notAllowed' });
   try {
     const hint = Number.isInteger(m.hint) ? { hint: m.hint } : {};

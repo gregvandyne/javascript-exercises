@@ -5780,7 +5780,10 @@
       "answered": "{count, plural, one {Du hast # Frage beantwortet.} other {Du hast # Fragen beantwortet.}}",
       "next": "Als Nächstes: {topic}",
       "flagSent": "Danke. Wir sehen es uns an.",
-      "wentWrong": "Etwas ist schiefgelaufen. Versuch es noch einmal."
+      "wentWrong": "Etwas ist schiefgelaufen. Versuch es noch einmal.",
+      "gap": "Komma nach {word}",
+      "blank": "Lücke",
+      "nearGaps": "Du hast zu viele Kommas gesetzt. Nimm die überzähligen weg und schick es noch einmal."
     }
   },
   "favorites": {
@@ -16251,7 +16254,9 @@
       "subject": "Subjekt",
       "article": "Artikel",
       "conjunction": "Konjunktion",
-      "preposition": "Präposition"
+      "preposition": "Präposition",
+      "capital": "Großbuchstabe",
+      "comma": "Komma"
     },
     "glossaryWord": {
       "adjective": "Adjektiv",
@@ -16260,6 +16265,16 @@
     "glossary": {
       "adjective": "ein Wort, das etwas über ein Nomen sagt: welche Art, wie viele oder welches",
       "noun": "ein Wort für eine Person, einen Ort, ein Tier oder eine Sache"
+    },
+    "mark": {
+      "checkpoint": "Kontrollpunkt",
+      "review": "Wiederholung"
+    },
+    "room": {
+      "open": "Korrekturraum",
+      "passed": "Korrekturraum geschafft",
+      "locked": "Öffne zuerst das Thema",
+      "back": "Zurück zu {topic}"
     }
   }
 }
