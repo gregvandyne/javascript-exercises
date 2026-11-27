@@ -1569,5 +1569,6 @@
   "compare.line": "One short line under the /compare table. {date} is the day the other products' websites were checked; {names} is the list of the three other products (product names, never translated, joined for your language by the site); keep the <a href=\"{href}\">...</a> around the words that ask people to tell us about a change.",
   "compare.detail.notStated": "In an opened /compare row, after a product name: we did not find this on that product's own website. Neutral, never negative.",
   "teachers.tools.board.alt": "Alt text for a real screenshot (made-up demo class). Describe what is on it, plainly.",
-  "teachers.tools.plan": "Says who can use the tools today, no prices. The Classroom Dashboard comes with every class; the Manipulatives and their live rooms need the Teacher plan. Never say they are free."
+  "teachers.tools.plan": "Says who can use the tools today, no prices. The Classroom Dashboard comes with every class; the Hub, the Manipulatives and their live rooms, Figures and Ask Oomba need the Teacher plan (the homepage says \"Available with the Teacher plan\"). Never say they are free.",
+  "teachers.tools.grammar.p": "Grammar Lab card on /teachers. {topics} is a number, {bands} a list of grade bands such as K-2, 3-5, 6-8 and 9-12. Grammar Lab and Mistake Hunt are product names: keep them in English."
 }

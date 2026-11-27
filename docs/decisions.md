@@ -16330,3 +16330,28 @@ to the teacher and to classmates.
 - Tests: tests/unit/compare.test.js (five names on "/" with Grammar Lab closed or open to testers only, six when open to
   everyone; the section's rows, sources and links; no other page names NoRedInk). Legal: docs/legal-review.md
   "NoRedInk named beside Grammar Lab".
+
+## Marketing pages in line with the new homepage (27 Nov 2026)
+
+The owner: bring every public marketing page in line with the homepage, and "/teachers should show everything we now
+offer teachers".
+- **/teachers "Every tool your class needs. In one place."** (was "New for your classroom", three cards): one card per
+  tool, each with a real screen: the Hub, Math manipulatives with Oomba, Live manipulatives, the Classroom Dashboard,
+  Figures, Live, then under "Show all 11 tools" Read, Typing Zoo, Flashcards, Atlas Quest and Mistake Hunt, and Grammar
+  Lab only while it is open to every visitor (compare.js `grammarCompareOn`, its numbers from `grammarFacts`). Six show
+  first (`TOOLS_PREVIEW`), the rest fold open like the homepage's manipulative videos. Where the homepage says the same
+  thing the card uses its words (landing.tools.*, landing.hub.*). Games link to their own page ("Try it"); the Hub,
+  Figures and the manipulatives to the one-minute videos, where the Hub's 60-second promo now leads (seeIt `promo`).
+- **Teacher plan wording everywhere, plans on or off:** the Hub, the Manipulatives and their rooms and Figures carry
+  "Available with the Teacher plan" (the homepage's landing.plan.on; a link to /plans only while that page is there),
+  the note under the cards says the Dashboard comes with every class and the rest with the Teacher plan, and /compare's
+  tag is always "Teacher plan". "Being tried out in a few classrooms" / "In testing" are gone (teachers.tools.testing,
+  teachers.videos.testing, compare.gate.testing). No amount anywhere but /plans.
+- **/teachers words:** the lead names the tools the homepage names (live games, manipulatives, worksheets, picture
+  books, typing, geography, the dashboard, the AI helper; one login, one class list), and the folded Live panel lists
+  every built-in mode on the page (Quest Race, Brain Board, Would You Rather, Atlas Quest, Doodle Hoot).
+- **/plans:** the Teacher card leads with "The Hub, Ask Oomba, the Manipulatives and Figures", and the intro and
+  /plans/schools say what the Teacher plan adds.
+- **Screens:** tools-board, tools-live and tools-student retaken (scripts/tools-shots.js: the current Manipulatives);
+  landing-shots.mjs makes tool-flashcards and tool-grammar-lab for the new cards.
+- /research's three study cards start level (`.trust-find>.panel+.panel`, the #671 fix).

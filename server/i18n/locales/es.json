@@ -7326,7 +7326,7 @@
     "title": "Planes y precios",
     "description": "Planes de Oomba Academy: Gratis, Basic, Familiar, Docente y Escolar. Jugar a todos los juegos siempre es gratis.",
     "heading": "Planes",
-    "intro": "Jugar a todos los juegos es gratis, y también crear con los mensajes gratis diarios para el Constructor. Un plan agrega mensajes extra para el Constructor cada mes.",
+    "intro": "Jugar a todos los juegos es gratis, y también crear con los mensajes gratis diarios para el Constructor. Un plan familiar agrega mensajes extra para el Constructor cada mes, y el plan Docente agrega el Hub, Pregúntale a Oomba, los manipulativos y Figures.",
     "interval": {
       "label": "Período de facturación",
       "month": "Mensual",
@@ -7403,7 +7403,7 @@
       "title": "Planes escolares",
       "description": "Oomba Academy para escuelas: el plan Docente para cada uno de sus docentes, un precio por docente al año, con tarjeta o factura.",
       "heading": "Oomba Academy para escuelas",
-      "intro": "Las escuelas compran el plan Docente para sus docentes: un precio por docente al año, con estudiantes ilimitados y sin cargo por estudiante.",
+      "intro": "Las escuelas compran el plan Docente para sus docentes: el Hub, Pregúntale a Oomba, los manipulativos y Figures, a un precio por docente al año, con estudiantes ilimitados y sin cargo por estudiante.",
       "what": {
         "h": "Qué recibe una escuela",
         "p1": "Los administradores de la escuela ven el plan y asignan los lugares a los docentes en la pestaña Facturación de la escuela. Las familias nunca ven nada de la clase."
@@ -7459,7 +7459,8 @@
       "li3": "Cubre todas sus clases",
       "li4": "Cancele cuando quiera",
       "start": "Empezar la prueba gratis",
-      "manage": "Mi plan Docente"
+      "manage": "Mi plan Docente",
+      "li5": "El Hub, Pregúntale a Oomba, los manipulativos y Figures"
     },
     "trial": {
       "title": "Plan Docente",
@@ -7606,7 +7607,7 @@
     "description": "Lecciones interactivas sin anuncios para niños de 5 a 14 años que funcionan en cualquier navegador, también en Chromebooks, más manipulativos de matemáticas, un panel de clase y un Constructor con IA.",
     "kicker": "🍎 Para docentes",
     "h1": "Lecciones divertidas e interactivas que su clase le va a pedir",
-    "lead": "Lecciones interactivas, manipulativos de matemáticas para usar en vivo con su clase y un panel de clase para todo el día, para niños de 5 a 14 años. Todo funciona en el navegador, también en Chromebooks, y su clase puede crear sus propios juegos con nuestro Constructor con IA.",
+    "lead": "Juegos en vivo, manipulativos de matemáticas, fichas de trabajo, libros ilustrados, mecanografía, geografía, un panel de clase y un asistente con IA, para niños de 5 a 14 años, con un solo inicio de sesión y una sola lista de clase. Todo funciona en el navegador, también en Chromebooks.",
     "badges": {
       "ads": "Sin anuncios",
       "browser": "Funciona en cualquier navegador, también en Chromebooks",
@@ -7782,7 +7783,7 @@
     "live": {
       "h": "Lecciones en vivo para la clase",
       "p1": "Dirija una carrera de preguntas en vivo o cualquier lección lista para el vivo en el proyector. Los alumnos se unen en sus dispositivos con un código de 7 dígitos.",
-      "li1": "Modos incluidos: Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas) y Tablero Cerebro (un tablero de categorías, de fácil a difícil).",
+      "li1": "Entre los modos incluidos están Carrera de misiones (una carrera por una isla en 3D movida por tus preguntas), Tablero Cerebro (un tablero de categorías, de fácil a difícil), Would You Rather, Atlas Quest y Doodle Hoot.",
       "li2": "Use un conjunto de inicio, escriba uno rápido o convierta las preguntas de un plan de clase en un cuestionario en vivo.",
       "li3": "Las salas de clase son solo para tu alumnado con sesión iniciada, y sus puntos van a tu cuaderno de notas. Sin chat, sin escribir y sin nombres escritos a mano.",
       "more": "Vea cómo funciona Oomba Live"
@@ -7837,12 +7838,11 @@
         "title": "El Hub en 2 minutos",
         "p": "Reparte tareas, mira cada pupitre en directo, atiende las manos levantadas y sigue el plan del día, todo desde un solo tablero."
       },
-      "plan": "El panel de clase es gratis para cada clase. Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente.",
-      "testing": "El panel de clase es gratis para cada clase. Las otras tres herramientas se están probando ahora en algunas clases."
+      "plan": "El panel de clase es gratis para cada clase. Los manipulativos, sus salas en vivo y Figuras son parte del plan Docente."
     },
     "tools": {
       "h": "Novedades para su aula",
-      "lead": "Pantallas reales de una clase de demostración: un tablero de matemáticas que Oomba arma con usted, el mismo tablero en vivo en el dispositivo de cada estudiante y un panel para todo el día de clase.",
+      "lead": "Pantallas reales de clases de demostración con nombres inventados. Un solo inicio de sesión y una sola lista de clase para todo.",
       "board": {
         "h": "Manipulativos de matemáticas con Oomba",
         "p": "Bloques de base diez, piezas de fracciones, relojes y más en un tablero. Dígale a Oomba qué está enseñando y le prepara el tablero.",
@@ -7862,8 +7862,23 @@
         "open": "Abrir Mis clases"
       },
       "watch": "Ver el video de un minuto",
-      "plan": "El panel de clase viene con cada clase. Los manipulativos y sus salas en vivo son parte del plan Docente.",
-      "testing": "El panel de clase viene con cada clase. Los manipulativos y sus salas en vivo se están probando ahora en algunas aulas."
+      "plan": "El panel de clase viene con cada clase. El Hub, los manipulativos y sus salas en vivo, Figures y Pregúntale a Oomba están disponibles con el plan Docente.",
+      "try": "Pruébelo",
+      "more": "Ver las {count} herramientas",
+      "less": "Ver menos",
+      "atlas": {
+        "p": "Países, banderas y capitales en un globo en 3D, y los 50 estados de EE. UU. y las provincias y territorios de Canadá en sus propios mapas. Cree sus propios cuestionarios de geografía e imprima mapas mudos."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Escriba o pegue una lista, deje que la IA prepare tarjetas a partir de un tema, o suba una lección en PDF o Word y la IA elige los términos clave. Los estudiantes estudian con Voltear, Aprender, Emparejar y Prueba.",
+        "alt": "Flashcards: una tarjeta del sistema solar con el Sol, y los botones Voltear, Mezclar, Estrella y Leer en voz alta."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} temas de gramática desde kínder hasta 12.º grado, en tramos para los grados {bands}. Cada uno se domina en tres niveles, con tarjetas leídas en voz alta en K-2 y salas de corrección de Mistake Hunt.",
+        "alt": "Grammar Lab: la página del curso con su imagen y las unidades de K-2, cada una con cuántos temas se han hecho."
+      }
     }
   },
   "learn": {
@@ -8688,8 +8703,7 @@
       "notStated": "No indicado"
     },
     "gate": {
-      "plan": "Plan Docente",
-      "testing": "En prueba"
+      "plan": "Plan Docente"
     },
     "rows": {
       "games": {
@@ -15681,12 +15695,12 @@
       "pictures": "Dibujos"
     },
     "grades": {
-      "k": "Preescolar/K",
       "1": "1.er grado",
       "2": "2.º grado",
       "3": "3.er grado",
       "45": "4.º-5.º grado",
-      "68": "6.º-8.º grado"
+      "68": "6.º-8.º grado",
+      "k": "Preescolar/K"
     },
     "lengths": {
       "short": "Corto",

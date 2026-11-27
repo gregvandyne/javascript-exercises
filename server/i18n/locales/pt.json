@@ -7328,7 +7328,7 @@
     "title": "Planos e preços",
     "description": "Planos da Oomba Academy: Grátis, Basic, Família, Professor e Escola. Jogar todos os jogos é sempre grátis.",
     "heading": "Planos",
-    "intro": "Jogar todos os jogos é grátis, e criar com as mensagens grátis diárias para o Construtor também. Um plano adiciona mensagens extras para o Construtor todo mês.",
+    "intro": "Jogar todos os jogos é grátis, e criar com as mensagens grátis diárias para o Construtor também. Um plano de família adiciona mensagens extras para o Construtor todo mês, e o plano Professor adiciona o Hub, Pergunte ao Oomba, os materiais manipuláveis e Figures.",
     "interval": {
       "label": "Período de cobrança",
       "month": "Mensal",
@@ -7405,7 +7405,7 @@
       "title": "Planos escolares",
       "description": "Oomba Academy para escolas: o plano Professor para cada um dos seus professores, um preço por professor ao ano, no cartão ou por fatura.",
       "heading": "Oomba Academy para escolas",
-      "intro": "As escolas compram o plano Professor para os seus professores: um preço por professor ao ano, com alunos ilimitados e sem cobrança por aluno.",
+      "intro": "As escolas compram o plano Professor para os seus professores: o Hub, Pergunte ao Oomba, os materiais manipuláveis e Figures, por um preço por professor ao ano, com alunos ilimitados e sem cobrança por aluno.",
       "what": {
         "h": "O que a escola recebe",
         "p1": "Os administradores da escola veem o plano e dão as vagas aos professores na aba Cobrança da escola. As famílias nunca veem nada da turma."
@@ -7461,7 +7461,8 @@
       "li3": "Vale para todas as suas turmas",
       "li4": "Cancele quando quiser",
       "start": "Começar o teste grátis",
-      "manage": "Meu plano Professor"
+      "manage": "Meu plano Professor",
+      "li5": "O Hub, Pergunte ao Oomba, os materiais manipuláveis e Figures"
     },
     "trial": {
       "title": "Plano Professor",
@@ -7608,7 +7609,7 @@
     "description": "Aulas interativas sem anúncios para 5 a 14 anos, em qualquer navegador, inclusive Chromebooks, com materiais manipuláveis de matemática, um painel da turma e um Construtor com IA.",
     "kicker": "🍎 Para professores",
     "h1": "Aulas divertidas e interativas que a turma vai pedir",
-    "lead": "Aulas interativas, materiais de matemática para usar ao vivo com a turma e um painel da turma para o dia todo, para 5 a 14 anos. Tudo roda no navegador, inclusive em Chromebooks, e a turma pode criar os próprios jogos com nosso Construtor com IA.",
+    "lead": "Jogos ao vivo, materiais de matemática, fichas de exercícios, livros ilustrados, digitação, geografia, um painel da turma e um assistente com IA, para 5 a 14 anos, com um só login e uma só lista da turma. Tudo roda no navegador, inclusive em Chromebooks.",
     "badges": {
       "ads": "Sem anúncios",
       "browser": "Funciona em qualquer navegador, até no Chromebook",
@@ -7784,7 +7785,7 @@
     "live": {
       "h": "Aulas ao vivo para a turma",
       "p1": "Conduza uma corrida de quiz ao vivo ou qualquer aula pronta para o ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Modos prontos: Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas) e Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil).",
+      "li1": "Entre os modos prontos estão Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas), Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil), Would You Rather, Atlas Quest e Doodle Hoot.",
       "li2": "Use um conjunto inicial, digite um rápido ou transforme as perguntas de um plano de aula num quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
@@ -7839,12 +7840,11 @@
         "title": "O Hub em 2 minutos",
         "p": "Distribua tarefas, veja cada carteira ao vivo, responda às mãos levantadas e conduza o plano do dia, tudo num só quadro."
       },
-      "plan": "O painel da turma é grátis para toda turma. Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor.",
-      "testing": "O painel da turma é grátis para toda turma. As outras três ferramentas estão sendo testadas agora em algumas turmas."
+      "plan": "O painel da turma é grátis para toda turma. Os materiais manipuláveis, suas salas ao vivo e Figuras fazem parte do plano Professor."
     },
     "tools": {
       "h": "Novidades para a sua turma",
-      "lead": "Telas reais de uma turma de demonstração: um quadro de matemática que a Oomba monta com você, o mesmo quadro ao vivo no aparelho de cada aluno e um painel para o dia todo da turma.",
+      "lead": "Telas reais de turmas de demonstração com nomes inventados. Um só login e uma só lista da turma para tudo.",
       "board": {
         "h": "Materiais manipuláveis de matemática com a Oomba",
         "p": "Blocos de base dez, peças de frações, relógios e mais num só quadro. Diga à Oomba o que está ensinando e ela monta o quadro para você.",
@@ -7864,8 +7864,23 @@
         "open": "Abrir Minhas turmas"
       },
       "watch": "Ver o vídeo de um minuto",
-      "plan": "O painel da turma vem com toda turma. Os materiais manipuláveis e suas salas ao vivo fazem parte do plano Professor.",
-      "testing": "O painel da turma vem com toda turma. Os materiais manipuláveis e suas salas ao vivo estão em teste em algumas turmas agora."
+      "plan": "O painel da turma vem com toda turma. O Hub, os materiais manipuláveis e suas salas ao vivo, Figures e Pergunte ao Oomba estão disponíveis com o plano Professor.",
+      "try": "Experimente",
+      "more": "Ver todas as {count} ferramentas",
+      "less": "Ver menos",
+      "atlas": {
+        "p": "Países, bandeiras e capitais num globo em 3D, e os 50 estados dos EUA e as províncias e territórios do Canadá em mapas próprios. Crie seus próprios quizzes de geografia e imprima mapas mudos."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Digite ou cole uma lista, deixe a IA criar cartões a partir de um tema, ou envie uma aula em PDF ou Word e a IA escolhe os termos principais. Os alunos estudam com Virar, Aprender, Combinar e Teste.",
+        "alt": "Flashcards: um cartão do sistema solar mostrando o Sol, com Virar, Embaralhar, Estrela e Ler em voz alta."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} tópicos de gramática da educação infantil ao 12.º ano, em faixas para os anos {bands}. Cada um é dominado em três níveis, com cartões lidos em voz alta no K-2 e salas de revisão do Mistake Hunt.",
+        "alt": "Grammar Lab: a página do curso com a imagem e as unidades do K-2, cada uma com quantos tópicos foram feitos."
+      }
     }
   },
   "learn": {
@@ -8690,8 +8705,7 @@
       "notStated": "Não informado"
     },
     "gate": {
-      "plan": "Plano Professor",
-      "testing": "Em teste"
+      "plan": "Plano Professor"
     },
     "rows": {
       "games": {
@@ -15683,12 +15697,12 @@
       "pictures": "Imagens"
     },
     "grades": {
-      "k": "Pré-escola/K",
       "1": "1º ano",
       "2": "2º ano",
       "3": "3º ano",
       "45": "4º-5º ano",
-      "68": "6º-8º ano"
+      "68": "6º-8º ano",
+      "k": "Pré-escola/K"
     },
     "lengths": {
       "short": "Curto",

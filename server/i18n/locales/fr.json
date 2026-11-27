@@ -7326,7 +7326,7 @@
     "title": "Offres et tarifs",
     "description": "Les formules d’Oomba Academy : Gratuit, Basic, Famille, Enseignant et École. Jouer à tous les jeux est toujours gratuit.",
     "heading": "Offres",
-    "intro": "Jouer à tous les jeux est gratuit, tout comme créer avec les messages gratuits du jour pour le Constructeur. Un abonnement ajoute des messages supplémentaires pour le Constructeur chaque mois.",
+    "intro": "Jouer à tous les jeux est gratuit, tout comme créer avec les messages gratuits du jour pour le Constructeur. Un abonnement famille ajoute des messages supplémentaires pour le Constructeur chaque mois, et le forfait Enseignant ajoute le Hub, Demander à Oomba, les manipulables et Figures.",
     "interval": {
       "label": "Période de facturation",
       "month": "Mensuel",
@@ -7403,7 +7403,7 @@
       "title": "Abonnements école",
       "description": "Oomba Academy pour les écoles : la formule Enseignant pour chacun de vos enseignants, un prix par enseignant et par an, payé par carte ou sur facture.",
       "heading": "Oomba Academy pour les écoles",
-      "intro": "Les écoles achètent la formule Enseignant pour leurs enseignants : un prix par enseignant et par an, avec des élèves illimités et aucun frais par élève.",
+      "intro": "Les écoles achètent le forfait Enseignant pour leurs enseignants : le Hub, Demander à Oomba, les manipulables et Figures, à un prix par enseignant et par an, avec des élèves illimités et aucun frais par élève.",
       "what": {
         "h": "Ce que reçoit une école",
         "p1": "Les administrateurs de l’école voient la formule et attribuent les places aux enseignants dans l’onglet Facturation de l’école. Les familles ne voient jamais rien de la classe."
@@ -7459,7 +7459,8 @@
       "li3": "Couvre toutes vos classes",
       "li4": "Résiliable à tout moment",
       "start": "Commencer l’essai gratuit",
-      "manage": "Ma formule Enseignant"
+      "manage": "Ma formule Enseignant",
+      "li5": "Le Hub, Demander à Oomba, les manipulables et Figures"
     },
     "trial": {
       "title": "Formule Enseignant",
@@ -7606,7 +7607,7 @@
     "description": "Des leçons interactives sans publicité pour les 5-14 ans, dans n’importe quel navigateur, Chromebooks compris, avec du matériel de maths, un tableau de bord de classe et un Constructeur IA.",
     "kicker": "🍎 Pour les enseignants",
     "h1": "Des leçons interactives que vos élèves vont réclamer",
-    "lead": "Des leçons interactives, du matériel de maths à utiliser en direct avec votre classe et un tableau de bord de classe pour toute la journée, pour les 5-14 ans. Tout fonctionne dans le navigateur, Chromebooks compris, et votre classe peut créer ses propres jeux avec notre Constructeur IA.",
+    "lead": "Des jeux en direct, du matériel de maths, des fiches d’exercices, des albums illustrés, la frappe au clavier, la géographie, un tableau de bord de classe et un assistant IA pour les 5-14 ans, avec une seule connexion et une seule liste de classe. Tout fonctionne dans le navigateur, Chromebooks compris.",
     "badges": {
       "ads": "Sans publicité",
       "browser": "Fonctionne dans tout navigateur, même sur Chromebook",
@@ -7782,7 +7783,7 @@
     "live": {
       "h": "Leçons en direct pour la classe",
       "p1": "Lancez une course de quiz en direct ou n’importe quelle leçon prête pour le direct au vidéoprojecteur. Les élèves rejoignent sur leurs appareils avec un code à 7 chiffres.",
-      "li1": "Modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions) et Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile).",
+      "li1": "Parmi les modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions), Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile), Would You Rather, Atlas Quest et Doodle Hoot.",
       "li2": "Utilisez une série de départ, tapez une série rapide, ou transformez les questions d’un plan de cours en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
@@ -7837,12 +7838,11 @@
         "title": "Le Hub en 2 minutes",
         "p": "Distribuez le travail, suivez chaque pupitre en direct, répondez aux mains levées et menez le plan de la journée, depuis un seul tableau."
       },
-      "plan": "Le tableau de bord de la classe est gratuit pour chaque classe. Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant.",
-      "testing": "Le tableau de bord de la classe est gratuit pour chaque classe. Les trois autres outils sont en cours d’essai dans quelques classes."
+      "plan": "Le tableau de bord de la classe est gratuit pour chaque classe. Les manipulables, leurs salles en direct et Figures font partie de la formule Enseignant."
     },
     "tools": {
       "h": "Nouveau pour votre classe",
-      "lead": "De vrais écrans d’une classe de démonstration : un tableau de maths qu’Oomba construit avec vous, le même tableau en direct sur l’appareil de chaque élève, et un tableau de bord pour toute la journée de classe.",
+      "lead": "De vrais écrans de classes de démonstration aux noms inventés. Une seule connexion et une seule liste de classe pour tout.",
       "board": {
         "h": "Les manipulables de maths avec Oomba",
         "p": "Blocs base dix, fractions, horloges et plus encore sur un seul tableau. Dites à Oomba ce que vous enseignez, et il prépare le tableau pour vous.",
@@ -7862,8 +7862,23 @@
         "open": "Ouvrir Mes classes"
       },
       "watch": "Voir la vidéo d’une minute",
-      "plan": "Le tableau de bord de la classe est inclus avec chaque classe. Les manipulables et leurs salles en direct font partie de la formule Enseignant.",
-      "testing": "Le tableau de bord de la classe est inclus avec chaque classe. Les manipulables et leurs salles en direct sont en test dans quelques classes."
+      "plan": "Le tableau de bord de la classe est inclus avec chaque classe. Le Hub, les manipulables et leurs salles en direct, Figures et Demander à Oomba sont disponibles avec le forfait Enseignant.",
+      "try": "L’essayer",
+      "more": "Voir les {count} outils",
+      "less": "Voir moins",
+      "atlas": {
+        "p": "Pays, drapeaux et capitales sur un globe en 3D, et les 50 États américains et les provinces et territoires du Canada sur leurs propres cartes. Créez vos quiz de géographie et imprimez des cartes muettes."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Tapez ou collez une liste, laissez l’IA préparer des cartes à partir d’un thème, ou importez une leçon en PDF ou Word et l’IA en tire les mots clés. Les élèves révisent avec Retourner, Apprendre, Associer et Test.",
+        "alt": "Flashcards : une carte du système solaire montrant le Soleil, avec Retourner, Mélanger, Étoile et Lire à voix haute."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} notions de grammaire de la maternelle à la 12e année, par niveaux pour les classes {bands}. Chacune se maîtrise en trois niveaux, avec des cartes lues à voix haute en K-2 et des salles de relecture Mistake Hunt.",
+        "alt": "Grammar Lab : la page du cours avec son image et les unités de K-2, chacune avec le nombre de notions faites."
+      }
     }
   },
   "learn": {
@@ -8688,8 +8703,7 @@
       "notStated": "Non indiqué"
     },
     "gate": {
-      "plan": "Formule Enseignant",
-      "testing": "En essai"
+      "plan": "Formule Enseignant"
     },
     "rows": {
       "games": {
@@ -15681,12 +15695,12 @@
       "pictures": "Images"
     },
     "grades": {
-      "k": "Maternelle",
       "1": "1re année",
       "2": "2e année",
       "3": "3e année",
       "45": "4e-5e année",
-      "68": "6e-8e année"
+      "68": "6e-8e année",
+      "k": "Maternelle"
     },
     "lengths": {
       "short": "Court",

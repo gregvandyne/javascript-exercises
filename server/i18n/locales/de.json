@@ -7327,7 +7327,7 @@
     "title": "Abos und Preise",
     "description": "Die Pläne von Oomba Academy: Kostenlos, Basic, Familie, Lehrkraft und Schule. Alle Spiele zu spielen ist immer kostenlos.",
     "heading": "Abos",
-    "intro": "Alle Spiele zu spielen ist kostenlos, und mit den kostenlosen täglichen Nachrichten an den Baumeister zu bauen auch. Ein Abo bringt jeden Monat zusätzliche Nachrichten an den Baumeister.",
+    "intro": "Alle Spiele zu spielen ist kostenlos, und mit den kostenlosen täglichen Nachrichten an den Baumeister zu bauen auch. Ein Familien-Abo bringt jeden Monat zusätzliche Nachrichten an den Baumeister, und der Lehrkräfte-Plan bringt den Hub, Frag Oomba, die Arbeitsmittel und Figures.",
     "interval": {
       "label": "Abrechnungszeitraum",
       "month": "Monatlich",
@@ -7404,7 +7404,7 @@
       "title": "Schulabos",
       "description": "Oomba Academy für Schulen: der Lehrkraft-Plan für jede deiner Lehrkräfte, ein Preis pro Lehrkraft und Jahr, per Karte oder Rechnung.",
       "heading": "Oomba Academy für Schulen",
-      "intro": "Schulen kaufen den Lehrkraft-Plan für ihre Lehrkräfte: ein Preis pro Lehrkraft und Jahr, unbegrenzt viele Schülerinnen und Schüler und keine Kosten pro Kind.",
+      "intro": "Schulen kaufen den Lehrkräfte-Plan für ihre Lehrkräfte: den Hub, Frag Oomba, die Arbeitsmittel und Figures, zu einem Preis pro Lehrkraft und Jahr, mit unbegrenzt vielen Schülerinnen und Schülern und ohne Kosten pro Kind.",
       "what": {
         "h": "Was eine Schule bekommt",
         "p1": "Schuladmins sehen den Plan und vergeben die Plätze an Lehrkräfte im Tab „Abrechnung“ der Schule. Familien sehen nie etwas aus dem Unterricht."
@@ -7460,7 +7460,8 @@
       "li3": "Gilt für alle deine Klassen",
       "li4": "Jederzeit kündbar",
       "start": "Kostenlos testen",
-      "manage": "Mein Lehrkraft-Plan"
+      "manage": "Mein Lehrkraft-Plan",
+      "li5": "Der Hub, Frag Oomba, die Arbeitsmittel und Figures"
     },
     "trial": {
       "title": "Lehrkraft-Plan",
@@ -7607,7 +7608,7 @@
     "description": "Werbefreie interaktive Lektionen für 5- bis 14-Jährige, die in jedem Browser laufen, auch auf Chromebooks, dazu Mathe-Materialien, ein Klassen-Dashboard und ein KI-Baumeister.",
     "kicker": "🍎 Für Lehrkräfte",
     "h1": "Interaktive Lektionen, die Ihre Klasse lieben wird",
-    "lead": "Interaktive Lektionen, Mathe-Materialien, die Sie live mit Ihrer Klasse nutzen, und ein Klassen-Dashboard für den ganzen Tag, für 5- bis 14-Jährige. Alles läuft im Browser, auch auf Chromebooks, und Ihre Klasse kann mit unserem KI-Baumeister eigene Spiele bauen.",
+    "lead": "Live-Spiele, Mathe-Arbeitsmittel, Arbeitsblätter, Bilderbücher, Tippen, Geografie, ein Klassen-Dashboard und eine KI-Hilfe für 5- bis 14-Jährige, mit einer Anmeldung und einer Klassenliste. Alles läuft im Browser, auch auf Chromebooks.",
     "badges": {
       "ads": "Keine Werbung",
       "browser": "Läuft in jedem Browser, auch auf Chromebooks",
@@ -7783,7 +7784,7 @@
     "live": {
       "h": "Live-Lektionen für die Klasse",
       "p1": "Leiten Sie ein Live-Quizrennen oder jede live-fähige Lektion am Beamer. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit.",
-      "li1": "Fertige Modi: Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen) und Denkbrett (ein Brett mit Kategorien, von leicht bis schwer).",
+      "li1": "Zu den fertigen Modi gehören Quest-Rennen (ein 3D-Inselrennen mit Ihren Fragen), Denkbrett (ein Brett mit Kategorien, von leicht bis schwer), Would You Rather, Atlas Quest und Doodle Hoot.",
       "li2": "Nutzen Sie ein Start-Fragenset, tippen Sie schnell eines ein oder machen Sie aus den Fragen eines Unterrichtsplans ein Live-Quiz.",
       "li3": "Klassenräume sind nur für Ihre angemeldeten Schülerinnen und Schüler, und ihre Punkte kommen in Ihr Notenbuch. Kein Chat, kein Tippen, keine frei eingegebenen Namen.",
       "more": "So funktioniert Oomba Live"
@@ -7838,12 +7839,11 @@
         "title": "Der Hub in 2 Minuten",
         "p": "Aufgaben verteilen, jeden Platz live sehen, Meldungen beantworten und den Tagesplan steuern, alles auf einer Tafel."
       },
-      "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
-      "testing": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die anderen drei Werkzeuge werden gerade in einigen Klassen erprobt."
+      "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan."
     },
     "tools": {
       "h": "Neu für Ihren Unterricht",
-      "lead": "Echte Bildschirme aus einer Demo-Klasse: eine Mathe-Tafel, die Oomba mit Ihnen baut, dieselbe Tafel live auf dem Gerät jedes Kindes und ein Dashboard für den ganzen Schultag.",
+      "lead": "Echte Bildschirme aus Demo-Klassen mit ausgedachten Namen. Eine Anmeldung und eine Klassenliste für alles.",
       "board": {
         "h": "Mathe-Arbeitsmittel mit Oomba",
         "p": "Zehnerblöcke, Bruchteile, Uhren und mehr auf einer Tafel. Sagen Sie Oomba, was Sie unterrichten, und es legt die Tafel für Sie an.",
@@ -7863,8 +7863,23 @@
         "open": "Meine Klassen öffnen"
       },
       "watch": "Das Video ansehen (eine Minute)",
-      "plan": "Das Klassen-Dashboard gehört zu jeder Klasse. Die Arbeitsmittel und ihre Live-Räume gehören zum Lehrkraft-Plan.",
-      "testing": "Das Klassen-Dashboard gehört zu jeder Klasse. Die Arbeitsmittel und ihre Live-Räume werden gerade in einigen Klassen erprobt."
+      "plan": "Das Klassen-Dashboard gehört zu jeder Klasse. Der Hub, die Arbeitsmittel und ihre Live-Räume, Figures und Frag Oomba sind im Lehrkräfte-Plan enthalten.",
+      "try": "Ausprobieren",
+      "more": "Alle {count} Werkzeuge zeigen",
+      "less": "Weniger zeigen",
+      "atlas": {
+        "p": "Länder, Flaggen und Hauptstädte auf einem 3D-Globus und die 50 US-Bundesstaaten sowie Kanadas Provinzen und Territorien auf eigenen Karten. Erstellen Sie eigene Geografie-Quizze und drucken Sie leere Karten."
+      },
+      "flash": {
+        "h": "Flashcards",
+        "p": "Tippen Sie eine Liste oder fügen Sie sie ein, lassen Sie die KI Karten zu einem Thema entwerfen, oder laden Sie eine Stunde als PDF oder Word-Datei hoch, und die KI sucht die wichtigsten Begriffe heraus. Die Kinder lernen mit Umdrehen, Lernen, Zuordnen und Test.",
+        "alt": "Flashcards: eine Karte zum Sonnensystem mit der Sonne, dazu Umdrehen, Mischen, Stern und Vorlesen."
+      },
+      "grammar": {
+        "h": "Grammar Lab",
+        "p": "{topics} Grammatikthemen vom Kindergarten bis Klasse 12, in Stufen für die Klassen {bands}. Jedes wird in drei Stufen gemeistert, mit Vorlesekarten für K-2 und Korrekturräumen mit Mistake Hunt.",
+        "alt": "Grammar Lab: die Kursseite mit ihrem Bild und den Einheiten für K-2, jede mit der Zahl der geschafften Themen."
+      }
     }
   },
   "learn": {
@@ -8689,8 +8704,7 @@
       "notStated": "Nicht angegeben"
     },
     "gate": {
-      "plan": "Lehrkraft-Plan",
-      "testing": "In Erprobung"
+      "plan": "Lehrkraft-Plan"
     },
     "rows": {
       "games": {
@@ -15682,12 +15696,12 @@
       "pictures": "Bilder"
     },
     "grades": {
-      "k": "Vorschule/K",
       "1": "Klasse 1",
       "2": "Klasse 2",
       "3": "Klasse 3",
       "45": "Klasse 4-5",
-      "68": "Klasse 6-8"
+      "68": "Klasse 6-8",
+      "k": "Vorschule/K"
     },
     "lengths": {
       "short": "Kurz",

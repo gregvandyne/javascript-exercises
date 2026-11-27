@@ -49,14 +49,16 @@ test('the overview and the four videos, their posters and captions are in public
 });
 
 for (const path of ['/teachers']) {
-  test(`${path}: the "See it in action" section with the four videos`, async () => {
+  test(`${path}: the "See it in action" section with the Hub's promo and the four videos`, async () => {
     const page = await get(path);
     assert.equal(page.status, 200);
     const sec = (page.text.match(/<section class="lp-sec pv[^"]*" id="see-it"[\s\S]*?<\/section>/) || [])[0];
     assert.ok(sec, 'the section is on the page');
     assert.match(sec, /<h2 id="see-it-h">The new teaching tools, a minute each<\/h2>/);
-    assert.match(sec, /<ul class="pv-grid" data-n="4">/);
-    assert.equal((sec.match(/<video /g) || []).length, 4);
+    assert.match(sec, /<ul class="pv-grid" data-n="5">/);
+    assert.equal((sec.match(/<video /g) || []).length, 5);
+    // The Hub's 60-second promo first (its card in the tools above links here); never the two-minute overview.
+    assert.ok(sec.indexOf('oomba-hub-promo.mp4') > 0 && sec.indexOf('oomba-hub-promo.mp4') < sec.indexOf(`oomba-${ALL[0]}.mp4`));
     for (const id of ALL) {
       assert.match(sec, new RegExp(`<video class="pv-video" controls muted playsinline preload="none" width="1280" height="720" poster="/video/oomba-${id}-poster\\.jpg" aria-labelledby="pv-${id}-h" aria-describedby="pv-${id}-p">`));
       assert.match(sec, new RegExp(`<source src="/video/oomba-${id}\\.mp4" type="video/mp4">`));
@@ -64,7 +66,7 @@ for (const path of ['/teachers']) {
       assert.match(sec, new RegExp(`id="pv-${id}-h"`));
     }
     assert.doesNotMatch(sec, /autoplay/);
-    assert.doesNotMatch(sec, /oomba-hub/, 'the overview is the homepage\'s, not one of the minute-each tool videos');
+    assert.doesNotMatch(sec, /oomba-hub\./, 'the two-minute overview is the homepage\'s, not one of the minute-each videos');
     assert.match(sec, /Virtual Math Manipulatives/);
     assert.match(sec, /Oomba Figures/);
     assert.match(sec, /Classroom Dashboard/);
@@ -74,7 +76,7 @@ for (const path of ['/teachers']) {
     if (path === '/') assert.match(sec, /The Classroom Dashboard is free for every class\. The other three tools are being tried out in a few classrooms now\./);
     else {
       assert.doesNotMatch(sec, /pv-plan/);
-      assert.match(page.text, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Manipulatives and their live rooms are being tried out in a few classrooms now\.<\/p>/);
+      assert.match(page.text, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Hub, the Manipulatives and their live rooms, Figures and Ask Oomba are available with the Teacher plan\.<\/p>/);
     }
     assert.doesNotMatch(sec, /Teacher plan/);
     assert.doesNotMatch(sec, /\$\d/);
