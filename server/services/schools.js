@@ -382,8 +382,10 @@ export function setUpOwnSchool(u, { name, school, tz = '' }) {
   return tx(() => {
     const s = createSchool(u, { name: school });
     if (!s.ok) return s;
-    addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
+    // The name first: becoming staff sends the teachers' welcome at once (onStaffJoin, services/team.js), and it greets
+    // them by this name ("Hi Ms Rivera!"), not by their username.
     q.run("UPDATE users SET display_name=?, signup_as='' WHERE id=?", clip(name, 60) || u.display_name, u.id);
+    addMember(u, s.school.id, u.id, 'admin', { rosterName: name });
     // Lessons open and due days end at midnight in the teacher's own time zone from day one.
     if (isZone(tz)) updateSchool(u, s.school.id, { settings: { timeZone: tz } });
     return ok({ school: getSchool(s.school.id) });

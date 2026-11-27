@@ -330,14 +330,21 @@ export const WELCOME_KEYS = { kid: 'team.welcome', grownup: 'team.welcome.grownu
 // update (Nov 2026): the three default welcomes no longer offer the courses (COURSES is off) or the arcade's math
 // racing, use the tab names of today (Learn, Read, Build), and say "lesson" for a teacher's single game (the owner's
 // naming). An admin-saved text on the Team inbox tab still wins over these.
+// update (Nov 2026, welcome refresh): each matches the product as the homepage describes it ("The one classroom tool for
+// everything"). Kids: what they can play, read and build, and their desk in the Hub when they are in a class; never a
+// price, a plan or chat between players. Parents: what their child can do, what they can see, and how safety works
+// (the Safety page). Teachers: what to do first (a class, the Hub, a handout, a manipulative, Ask Oomba), with the
+// Teacher plan's tools named as "available with the Teacher plan" and no prices (those are only on /plans).
 export const DEFAULT_WELCOME = `Hi {name}! 👋
 
-Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hi.
+Welcome to Oomba Academy! I'm Greg from the Oomba team, and I'm so glad you're here.
 
 Here are a few fun things to try:
-• Learn: games by topic, from math and words to geography and chess.
-• Read: picture books to read on your own or to have read to you.
-• Build: tap Build, tell the AI your idea, and it makes a game for you to play and share with friends.
+• Learn: games for math, words, typing and maps. Try Typing Zoo, Sudoku or chess puzzles.
+• Read: pick a picture book. Read it on your own, or tap Read to me.
+• Build: tap Build, tell the Builder your idea, and it makes a game for you to play.
+
+In a class? Your teacher hands out work to your desk in the Hub, and you can join live games like Brain Board with a code.
 
 Got a question, or something that felt confusing? Just write back here. I read every message!
 
@@ -347,23 +354,29 @@ export const DEFAULT_WELCOME_GROWNUP = `Hi {name}! 👋
 Welcome to Oomba Academy! I'm Greg from the Oomba team, and I wanted to say hello personally.
 
 A few things your family can try:
-• Learn: learning games by topic, from math and words to geography and chess.
-• Read: the Story Library, picture books by grade with Read to me and a few questions at the end.
-• Build: kids describe a game idea in their own words and our AI builder makes it, ready to play and share with friends.
+• Learn: learning games by topic, from math and words to typing (Typing Zoo) and geography (Atlas Quest).
+• Read: the picture-book library, with Read to me and a few questions at the end.
+• Build: your child describes a game idea in their own words, and our AI Builder makes it, ready to play.
 
-From your Family page you can add your kids or link the accounts they already have. If our team ever writes to your child, you get a copy.
+From your Family page you can add your kids or link the accounts they already have. It shows which children are linked to you, and if our team ever writes to your child, you get a copy.
 
-Is there anything I can help you get started with? Any questions about how it works or keeping kids safe? Just reply here. A real person reads every message, and I'd love to hear what you think, good or bad.
+Kids sign up with a made-up name and no email, every game is checked, and there are no ads. Our Safety page explains how we keep kids safe: oomba.ai/safety
+
+Any questions about how it works or keeping kids safe? Just reply here. A real person reads every message.
 
 Greg & the Oomba team`;
 export const DEFAULT_WELCOME_TEACHER = `Hi {name}! 👋
 
-Welcome to Oomba Academy! I'm Greg from the Oomba team, and I'm glad you're here.
+Welcome to Oomba Academy, the one classroom tool for everything! I'm Greg from the Oomba team, and I'm glad you're here.
 
-Here's what your class can do:
-• Build a lesson from what you already teach: paste your notes, check the questions Oomba drafts, then host it live as a warm-up or exit ticket.
-• A Class dashboard for your board, with a timer, your schedule, class jobs and points.
-• The Story Library: picture books by grade to read together or assign, and a book maker to make your own.
+Here's what to do first:
+• Make a class. Students join with its code or a printed login card, no emails needed.
+• Open the Hub, your class board with a desk for every student.
+• Hand something out: a lesson, a live game or a math tool, to one desk or the whole class.
+• Try a manipulative: 18 tools and 300 K-8 tasks, each with a how-to video.
+• Ask Oomba to plan your day or make a worksheet in Figures.
+
+The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan. The Classroom Dashboard is free for every class.
 
 Would a quick demo or a training session for you or your staff help? Reply here with a couple of times that work and I'll set it up.
 

@@ -15,7 +15,7 @@ const signIn = (u, opts) => auth.startSession(RES, u.id, 'test', opts);
 /** The team's messages to this person (all kinds, sent or unsent), oldest first. */
 const msgs = id => q.all('SELECT m.* FROM chat_messages m JOIN users u ON u.id=m.from_id WHERE m.to_id=? AND u.username=? ORDER BY m.created_at, m.rowid', id, auth.OFFICIAL);
 const welcomes = id => msgs(id).filter(m => m.kind === 'team' && !m.sent_by && m.status === 'ok');
-const KID = /Here are a few fun things to try/, PARENT = /A few things your family can try/, TEACHER = /Here's what your class can do/;
+const KID = /Here are a few fun things to try/, PARENT = /A few things your family can try/, TEACHER = /Here's what to do first/;
 const newSchool = () => S.createSchool(admin, { name: `Welcome School ${fresh()}` }).school;
 const grownupSignup = async (cookie = null, extra = {}) => {
   const name = `Wel${fresh()}`;
@@ -79,7 +79,7 @@ test('teachers: becoming a teacher or school admin sends the teachers\' welcome 
   // Teachers read it in their chat inbox.
   const inbox = await as(t1)('/api/chat');
   assert.ok(inbox.json.threads.some(x => x.team && x.unread >= 1));
-  assert.match((await as(t1)(`/chat/${auth.OFFICIAL}`)).text, /what your class can do/);
+  assert.match((await as(t1)(`/chat/${auth.OFFICIAL}`)).text, /what to do first/);
   // An account made 40 days ago becoming a teacher: nothing. A platform admin: nothing.
   const old = kid(`OldTeach${fresh()}`); q.run('UPDATE users SET created_at=? WHERE id=?', Date.now() - 40 * 86400e3, old.id);
   S.addMember(admin, s.id, old.id, 'teacher');
@@ -214,4 +214,24 @@ test('the backfill: kids welcomed before this change (audit team.welcome) are no
   assert.deepEqual({ ...q.get("SELECT state, message_id FROM team_welcomes WHERE user_id=? AND audience='kid'", k.id) }, { state: 'sent', message_id: 'm-old' });
   signIn(k);
   assert.equal(msgs(k.id).length, 0);
+});
+
+test('welcome refresh (Nov 2026): each default text matches the product today, fits a team message, and the teacher who sets up their own school is greeted by name', () => {
+  for (const [a, text] of Object.entries(team.DEFAULT_WELCOMES)) {
+    assert.ok(text.replace('{name}', 'Ms Alexandra').length <= team.MAX_TEAM_LEN, `${a}: fits a team message`);
+    assert.doesNotMatch(text, /—|Cuisenaire|Jeopardy|Miro|\bPro\b|\$\s?\d|price|upgrade|course/i, `${a}: house style`);
+  }
+  const kidText = team.DEFAULT_WELCOMES.kid;
+  // Kids are never sold to, and nothing suggests chatting with other players.
+  assert.doesNotMatch(kidText, /plan|buy|pay|free|friend|chat/i); assert.match(kidText, /Learn: [\s\S]*Read: [\s\S]*Build: /); assert.match(kidText, /your desk in the Hub/);
+  assert.match(team.DEFAULT_WELCOMES.grownup, /oomba\.ai\/safety/); assert.match(team.DEFAULT_WELCOMES.grownup, /Family page/); assert.doesNotMatch(team.DEFAULT_WELCOMES.grownup, /plan/i);
+  const tt = team.DEFAULT_WELCOMES.teacher;
+  assert.match(tt, /Make a class[\s\S]*Open the Hub[\s\S]*Hand something out[\s\S]*Try a manipulative[\s\S]*Ask Oomba/);
+  assert.match(tt, /The Hub, Ask Oomba, the Manipulatives and Figures are available with the Teacher plan\./);
+  assert.match(tt, /Greg@oomba\.ai/); assert.match(tt, /demo or a training session/);
+  // Their own school: the name they typed is in place before the teachers' welcome goes ("Hi Ms Rivera!", not the username).
+  const u = auth.createUser({ username: `RivT${fresh()}`, password: PW });
+  q.run("UPDATE users SET signup_as='teacher' WHERE id=?", u.id);
+  assert.equal(S.setUpOwnSchool(auth.getUser(u.id), { name: 'Ms Rivera', school: `Maple ${fresh()}` }).ok, true);
+  const w = welcomes(u.id); assert.equal(w.length, 1); assert.match(w[0].body, /^Hi Ms Rivera! 👋/); assert.match(w[0].body, TEACHER);
 });

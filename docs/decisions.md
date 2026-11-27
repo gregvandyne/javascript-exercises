@@ -16355,3 +16355,28 @@ offer teachers".
 - **Screens:** tools-board, tools-live and tools-student retaken (scripts/tools-shots.js: the current Manipulatives);
   landing-shots.mjs makes tool-flashcards and tool-grammar-lab for the new cards.
 - /research's three study cards start level (`.trust-find>.panel+.panel`, the #671 fix).
+
+## Welcome messages match the product today (27 Nov 2026)
+
+Every welcome a kid, a student, a parent or a teacher gets now says what Oomba Academy is today ("The one classroom
+tool for everything", the homepage), each in its audience's words. Messages that live in the Hub's, sign-in's, Google's
+and the family onboarding's own files are left to that work.
+- **Kids and students** (the team's kid welcome, `services/team.js`): Learn (Typing Zoo, Sudoku, chess puzzles), Read
+  (picture books, Read to me) and Build, plus "In a class? Your teacher hands out work to your desk in the Hub" and live
+  games with a code. Never a price, a plan or chat between players; the only name is their own made-up one.
+- **A student's first day in a class** (`routes/schools.js` studentClass): "You're in {class}!" for the first day after
+  they join (by code or once their teacher says yes), pointing at My desk when the class has the Hub for them
+  (`classes.welcome`, `classes.welcomeDesk`). The class's name only.
+- **Parents** (the grown-up welcome): what their child can do, what the Family page shows (which children are linked;
+  a copy of anything the team writes to their child: nothing more, as /family's FAQ says), how safety works and the
+  Safety page (oomba.ai/safety). No plans.
+- **Teachers** (the teacher welcome, the trial's welcome email, the school welcome email, the staff invite email, and a
+  new class): what to do first, in order: make a class, open the Hub, hand something out, try a manipulative, ask
+  Oomba. The Hub, Ask Oomba, the Manipulatives and Figures are "available with the Teacher plan"; the Classroom
+  Dashboard is free for every class; no amounts (only /plans has those). The trial welcome names the Hub and Ask
+  Oomba only for a teacher who has them today (new email feature `hub`: `services/homeroom.js` canUse; `chat`), and
+  keeps the lesson-and-live path without the Hub. A class made on My classes opens with "{class} is ready. Add your
+  students here, then open the Hub ..." (`?made=1`, until it has students; `school.class.made`/`madeHub`).
+- **Greeted by name:** a teacher who sets up their own school gets the teachers' welcome after the name they typed is
+  saved (`setUpOwnSchool`), so it says "Hi Ms Rivera!", not their username.
+- The three team welcomes stay under the team message limit (1,000 characters).
