@@ -7815,6 +7815,10 @@
         "title": "Klasdashboard",
         "p": "Timers, klassentaken, check-ins en rekenhulpmiddelen voor de hele schooldag, op één scherm."
       },
+      "hub": {
+        "title": "De Hub in 2 minuten",
+        "p": "Werk uitdelen, elk tafeltje live zien, opgestoken handen beantwoorden en het dagplan volgen, allemaal vanaf één bord."
+      },
       "plan": "Het klasdashboard is gratis voor elke klas. De manipulatieven, hun live ruimtes en Figuren horen bij het Leerkracht-abonnement.",
       "testing": "Het klasdashboard is gratis voor elke klas. De andere drie hulpmiddelen worden nu in een paar klassen uitgeprobeerd."
     },
@@ -10806,124 +10810,49 @@
     }
   },
   "landing": {
-    "dtour": {
-      "kicker": "Kant-en-klare indelingen",
-      "h": "Een indeling voor elk deel van de dag",
-      "lead": "Begin de ochtend, geef een les, begeleid groepswerk, kom tot rust bij stil werken en neem een speelpauze. Wissel met één tik, en de schermen van leerlingen volgen.",
-      "widgets": "{count} widgets om je eigen indeling te maken"
-    },
-    "dash": {
-      "kicker": "Nieuw: klasdashboards",
-      "h": "Eén scherm voor de hele schooldag",
-      "lead": "Zet een klasdashboard op het digibord: de klok, het rooster van vandaag, het doel van de dag en {count} widgets om uit te kiezen. Elke leerling krijgt ook een eigen scherm, met de widgets die jij vastzet.",
-      "li1": "Kant-en-klare indelingen voor de ochtend, een les, groepswerk, stil werken en een speelpauze, of sleep widgets naar je eigen indeling.",
-      "li2": "Timers, een namenkiezer, een groepjesmaker, een stemmeter, een hulprij en snelle checks.",
-      "li3": "Rekenmateriaal op het grote scherm: breukenstroken, getallenlijnen, geoborden, plaatswaarde en meer.",
-      "li4": "Zet widgets vast op het scherm van elke leerling, of stuur de klas met één tik een les, een lesplan of een link.",
-      "li5": "Nergens AI. Leerlingen staan er met hun Oomba-naam, en wat een leerling typt, blijft op het eigen scherm.",
-      "shotAlt": "Een klasdashboard op het digibord: de klok, het doel van de dag, het rooster met nu Rekenen en daarna Pauze, klassentaken en een gevoelscheck."
-    },
     "meta": {
-      "title": "Klasdashboards en interactieve lessen voor leerkrachten · Oomba Academy",
-      "description": "Eén scherm voor je lesdag, een AI-Bouwer die je lesplannen omzet in speelbare lessen, livelessen voor de klas en spellen die je leerlingen bouwen. 14 dagen gratis, zonder kaart.",
-      "imageAlt": "Oomba Academy voor leerkrachten: één scherm voor je klas, en lessen die blijven hangen."
+      "title": "Oomba Academy: het ene klassenhulpmiddel voor alles",
+      "description": "Live spellen, rekenmateriaal, werkbladen, prentenboeken, een klasdashboard en een AI-helper voor leerkrachten van groep 1 tot de tweede klas. Eén login, één klassenlijst, één abonnement.",
+      "imageAlt": "Oomba Academy: live spellen, rekenmateriaal, werkbladen, prentenboeken en een klasdashboard op één plek."
     },
     "nav": {
-      "dashboards": "Dashboards",
       "label": "Site voor leerkrachten",
       "home": "Oomba Academy home",
       "skip": "Naar de inhoud",
-      "how": "Zo werkt het",
-      "builder": "Bouwer",
-      "courses": "Cursussen",
       "live": "Livelessen",
-      "pricing": "Prijzen",
       "faq": "Vragen",
       "signIn": "Inloggen",
       "justPlay": "Gewoon spelen",
       "trial": "Gratis proberen",
       "trialShort": "Gratis proberen",
       "menu": "Menu",
-      "kids": "Leerlingen bouwen",
-      "tools": "Lestools"
+      "tools": "Lestools",
+      "hub": "De Hub",
+      "ask": "Vraag het Oomba",
+      "tour": "Rondleiding",
+      "videos": "Video’s",
+      "compare": "Vergelijken"
     },
     "hero": {
-      "kicker": "Voor leerkrachten · groep 2 tot en met de tweede klas",
-      "h1": "Eén scherm om je klas te leiden. Lessen die blijven hangen.",
-      "lead": "Zet je klasdashboard in een minuut klaar en leid er de hele dag mee. Maak van elk lesplan een speelbare les met de AI-Bouwer, speel live op het digibord en laat je leerlingen hun eigen spellen bouwen.",
-      "cta": "Start je gratis proef van 14 dagen",
-      "how": "Bekijk hoe het werkt",
+      "kicker": "Voor leerkrachten van groep 1 tot de tweede klas",
+      "h1": "Het ene klassenhulpmiddel voor alles.",
+      "lead": "Live spellen, rekenmateriaal, werkbladen, prentenboeken, een klasdashboard en een AI-helper. Eén login, één klassenlijst, één abonnement.",
+      "cta": "Gratis beginnen",
       "trustCard": "Geen creditcard nodig",
       "trustCancel": "Altijd opzegbaar",
       "trustStudents": "Onbeperkt leerlingen",
-      "cBuildTag": "AI-Builder",
-      "cBuild": "Je plan over breuken is nu een speelbare les",
-      "cLiveTag": "Liveles",
-      "cLive": "Je klas doet mee"
+      "tour": "Doe de rondleiding",
+      "watch": "Bekijk het overzicht van 2 minuten",
+      "watchSub": "De Hub: je hele klas op één bord",
+      "collageAlt": "Echte schermen uit Oomba Academy: een klasdashboard, breukstroken op een rekenbord, een werkblad met figuren op schaal, de prentenboekenbibliotheek en een live klassenspel."
     },
     "facts": {
-      "games": "kant-en-klare lessen",
-      "courses": "complete cursussen met lesplannen",
-      "languages": "talen voor leerlingen en leerkrachten",
-      "installs": "installaties: het werkt in de browser"
-    },
-    "demo": {
-      "label": "Illustratie: een lesplan wordt een speelbare les",
-      "lessonTag": "Je lesplan",
-      "lessonTitle": "Gelijkwaardige breuken · groep 6",
-      "lessonBody": "Leerlingen laten met pizza’s, stroken en getallenlijnen zien dat 1/2, 2/4 en 4/8 evenveel zijn. Exit ticket: drie korte vragen.",
-      "file": "les-breuken.pdf",
-      "builderTag": "AI-Bouwer",
-      "step1": "Je lesplan wordt gelezen",
-      "step2": "Ontwerpt de levels",
-      "step3": "Test op telefoon, tablet en computer",
-      "step4": "Klaar om te spelen",
-      "gameTag": "Je les",
-      "gameMeta": "Klaar om live te spelen of klaar te zetten",
-      "host": "Live spelen",
-      "assign": "Klaarzetten",
-      "credit": "Beelden uit Fraction Factory, een van de kant-en-klare lessen van Oomba."
-    },
-    "how": {
-      "kicker": "Zo werkt het",
-      "h": "Je hele schooldag op één plek",
-      "lead": "Begin met het scherm dat je de hele dag openhebt en haal dan de lessen erbij. Elke stap werkt op zichzelf, en samen nog beter.",
-      "s1": {
-        "h": "Zet je klasdashboard klaar",
-        "p": "Open je klas en zes kant-en-klare indelingen staan klaar. Zet het op het digibord, en elke leerling krijgt een eigen scherm."
-      },
-      "s2": {
-        "h": "Leid je dag ermee",
-        "p": "Gevoelscheck, timers, snelle checks, de hulprij, groepjes en rekenmateriaal, van de kring tot het opruimen. Wissel van indeling met één tik."
-      },
-      "s3": {
-        "h": "Maak van je plannen speelbare lessen",
-        "p": "Plak een lesplan of upload een pdf. De AI-Bouwer maakt er een speelbare les van, test hem en bewaart elke versie."
-      },
-      "see": "Bekijk het",
-      "s4": {
-        "h": "Speel live samen",
-        "p": "Warming-ups en exit tickets op het grote scherm. Leerlingen doen mee op hun eigen apparaat, en de scores gaan naar je cijferlijst."
-      },
-      "s5": {
-        "h": "Laat leerlingen ook bouwen",
-        "p": "Voeg een stap ‘Bouw een spel’ toe aan een lesplan. Leerlingen ontwerpen, testen en verbeteren hun eigen spel, en dan spelen klasgenoten het."
-      }
-    },
-    "builder": {
-      "kicker": "De AI-Bouwer",
-      "h": "Je lesplan erin, een speelbare les eruit",
-      "lead": "Praat met de Bouwer als met een onderwijsassistent die toevallig lessen maakt. Hij bewaart elke versie, dus je kunt altijd terug.",
-      "you": "Jij",
-      "msg": "Maak een speelbare les van dit plan voor mijn groep 6. Tien minuten, drie niveaus, en eindig met de vragen van het exitticket.",
-      "bot": "Klaar! Versie 1 staat klaar: drie levels, makkelijkste eerst, met het exit ticket aan het eind. Druk op Spelen om hem te proberen.",
-      "li1": "Begrijpt lesplannen, pdf’s, afbeeldingen en tekstbestanden die je uploadt",
-      "li2": "Antwoordt in jouw taal, en in die van elke leerling",
-      "li3": "Test elke versie op telefoon-, tablet- en computerformaat",
-      "li4": "Privé tot je hem deelt: alleen jij, je klassen of, nadat iemand van ons team hem heeft bekeken, iedereen",
-      "li5": "Leerlingen kunnen ook bouwen: een game beschrijven, testen en verbeteren is plannen, schrijven en debuggen, zonder code",
-      "shotAlt": "De Oomba Studio: de Bouwer-chat links zegt dat versie 2 klaar is, en rechts draait de les in een voorbeeld ter grootte van een telefoon.",
-      "caption": "De echte Studio: de Bouwer links, je les rechts."
+      "languages": "talen",
+      "manip": "virtueel rekenmateriaal",
+      "tasks": "oefentaken",
+      "figures": "soorten figuren",
+      "books": "prentenboeken",
+      "widgets": "dashboardwidgets"
     },
     "courses": {
       "kicker": "Kant-en-klare cursussen",
@@ -10946,101 +10875,42 @@
       },
       "link": "Handleiding voor leerkrachten"
     },
-    "live": {
-      "kicker": "Livelessen voor de klas",
-      "h": "Zet het digibord aan",
-      "lead": "Warming-ups en exit tickets waar je klas echt naar uitkijkt. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Quest Race, Brain Board, Would You Rather en meer",
-      "li2": "Gebruik een kant-en-klare vragenset, typ je eigen of laat AI een concept maken dat je aanpast",
-      "li3": "Scores komen direct in je cijferoverzicht",
-      "li4": "Klaslessen: alleen je ingelogde leerlingen. Gastlessen: veilige verzonnen namen. In geen van beide chat of typen",
-      "link": "Zo werken livelessen",
-      "shotAlt": "Een live wachtruimte van Question Battle: het grote scherm toont de tekenfilmfiguur waartegen de klas speelt, de deelnamecode en een QR-code."
-    },
-    "why": {
-      "kicker": "Waarom games werken",
-      "h": "Plezier is de route. Leren is het doel.",
-      "lead": "Goede leergames leunen op een paar goed onderzochte ideeën uit de leerwetenschap.",
-      "b1": {
-        "h": "Ophalen uit het geheugen",
-        "p": "Antwoorden om te winnen haalt kennis terug uit het geheugen, en iets ophalen is een van de betrouwbaarste manieren om het te onthouden."
-      },
-      "b2": {
-        "h": "Directe feedback",
-        "p": "Elk antwoord krijgt meteen een reactie, zodat fouten worden hersteld terwijl het denkwerk nog vers is."
-      },
-      "b3": {
-        "h": "Herhalen zonder druk",
-        "p": "‘Nog één rondje’ voelt als spelen, niet als een werkblad, dus leerlingen oefenen meer, zonder de druk van een cijfer."
-      },
-      "b4": {
-        "h": "Iedereen doet mee",
-        "p": "Een game geeft elke leerling een beurt, ook wie zelden een vinger opsteekt."
-      },
-      "b5": {
-        "h": "Maken is leren",
-        "p": "Wie een game over een onderwerp bouwt, moet het goed genoeg snappen om het aan een computer uit te leggen."
-      },
-      "sources": "Verder lezen"
-    },
     "safety": {
       "kicker": "Veiligheid en privacy",
-      "h": "Gemaakt voor de klas, veilig vanaf het ontwerp",
-      "lead": "Voor kinderen van 5 tot 14, met jouw klassen onder jouw controle.",
-      "li1": "Geen advertenties en geen advertentie- of trackingcookies",
-      "li2": "Leerlingen hebben nooit een e-mailadres nodig, en we vragen nooit naar leeftijd of adres",
-      "li3": "De echte naam van een leerling, als je die toevoegt, ziet alleen het personeel van je school",
-      "li4": "Jij keurt goed wie bij je klassen komt, en geen leerling kan chatten met vreemden",
-      "li5": "Elke game draait in een afgesloten sandbox, en iemand van ons team bekijkt elke game voordat die openbaar wordt",
-      "li6": "Wat leerlingen typen wordt gefilterd, en afbeeldingen die ze uploaden worden gecontroleerd en ontdaan van locatiegegevens",
-      "links": "Lees <a href=\"{safety}\">hoe we kinderen beschermen</a> en onze <a href=\"{privacy}\">privacyverklaring</a>."
-    },
-    "everywhere": {
-      "h": "Werkt waar je klas ook is",
-      "devices": "Chromebooks, iPads, laptops, telefoons en het digibord, gewoon in de browser. Niets te installeren.",
-      "languages": "{count} talen, waaronder Spaans, Arabisch, Portugees en Frans. Elke leerling kiest zijn eigen taal.",
-      "voicesH": "Voorlezen",
-      "voices": "Natuurlijke AI-stemmen lezen elke officiële les voor."
+      "h": "Gemaakt voor kinderen. Verkocht aan leerkrachten.",
+      "links": "Lees <a href=\"{safety}\">hoe we kinderen beschermen</a> en onze <a href=\"{privacy}\">privacyverklaring</a>.",
+      "c1": {
+        "h": "Nooit reclame",
+        "p": "Geen advertenties en geen trackingcookies."
+      },
+      "c2": {
+        "h": "Aan kinderen wordt nooit iets verkocht",
+        "p": "Leerlingen zien nooit abonnementen of prijzen."
+      },
+      "c3": {
+        "h": "Echte namen blijven privé",
+        "p": "Alleen het personeel van je school ziet de echte naam van een leerling. Nooit openbaar."
+      },
+      "c4": {
+        "h": "AI zonder namen",
+        "p": "Oomba krijgt nooit de naam van een leerling en praat nooit met leerlingen."
+      },
+      "c5": {
+        "h": "Geen ranglijsten",
+        "p": "Geen scoreborden. Punten en voortgang worden nooit gerangschikt."
+      },
+      "c6": {
+        "h": "Kijken is geen opnemen",
+        "p": "Live tafels worden nooit bewaard, en leerlingen weten dat je kunt meekijken."
+      }
     },
     "pricing": {
-      "kicker": "Prijzen",
-      "h": "Eén eenvoudige prijs per leerkracht. Alle leerlingen inbegrepen.",
-      "lead": "Nooit kosten per leerling. Probeer alles 14 dagen gratis.",
       "teacher": {
         "name": "Leerkracht",
-        "price": "Eén eenvoudige jaarprijs",
-        "priceShown": "{price} per jaar",
-        "trial": "14 dagen gratis · geen creditcard nodig",
-        "li1": "Onbeperkt leerlingen, geen kosten per leerling",
-        "li2": "300 AI-lesbouwsels per dag voor je klas",
-        "li3": "Alle cursussen, 30+ kant-en-klare lessen en livelessen voor de klas",
-        "li4": "Klassen, lesplannen, voortgang en het cijferoverzicht",
-        "li5": "Elke taal, elk apparaat",
-        "cta": "Start je gratis proef",
-        "plans": "Bekijk abonnementen en prijzen",
-        "plus": "Alles van Gratis, plus:"
+        "trial": "14 dagen gratis · geen creditcard nodig"
       },
       "schools": {
-        "name": "Scholen en besturen",
-        "price": "Dezelfde prijs per leerkracht",
-        "priceShown": "{price} per leerkracht per jaar",
-        "li1": "Elke leerkracht krijgt het volledige Leerkracht-abonnement",
-        "li2": "Betalen per factuur of inkooporder",
-        "li3": "Schoolaccounts en inlogkaarten om te printen",
-        "li4": "We helpen je je school in te richten",
-        "cta": "Neem contact op",
-        "form": "Richt je school in",
         "subject": "Oomba Academy voor onze school"
-      },
-      "leadFree": "Nooit kosten per leerling. De basis is gratis voor elke leerkracht, en het Leerkracht-abonnement voegt AI-lesbouwsels toe voor je hele klas.",
-      "free": {
-        "name": "Gratis",
-        "price": "Altijd gratis",
-        "li1": "Elke les en alle drie de cursussen",
-        "li2": "Klassen, lesplannen, voortgang en het cijferoverzicht",
-        "li3": "Elke dag gratis Builder-berichten voor jou en je leerlingen",
-        "li4": "Schoolaccounts en inlogkaarten om te printen",
-        "liLive": "Livelessen voor de klas op het digibord"
       }
     },
     "faq": {
@@ -11066,9 +10936,8 @@
       "a2free": "Start een gratis proefperiode van 14 dagen van het Leerkracht-abonnement, zonder kaart. Alles uit het abonnement is inbegrepen zolang die loopt, en daarna kies je of je een abonnement neemt. Zo niet, dan stoppen alleen de extra AI-bouwsels: de lessen, je klassen, lesplannen en voortgang blijven gratis, en er wordt niets verwijderd."
     },
     "final": {
-      "h": "Je volgende les kan de les zijn die ze nog een keer willen spelen",
-      "p": "14 dagen gratis. Geen creditcard, geen kosten per leerling.",
-      "cta": "Start je gratis proef van 14 dagen"
+      "h": "Geef de les van morgen vanuit de Hub.",
+      "p": "Richt je lokaal in een paar minuten in. Je leerlingen doen gratis mee."
     },
     "play": {
       "h": "Kom je spelen?",
@@ -11076,7 +10945,6 @@
       "cta": "Gewoon spelen"
     },
     "footer": {
-      "tagline": "Interactieve lessen voor 5 tot 14 jaar, en een AI-Bouwer die je plannen omzet in speelbare lessen.",
       "teachers": "Voor leerkrachten",
       "product": "Ontdek",
       "about": "Over ons",
@@ -11093,37 +10961,283 @@
       "theme": "Thema",
       "dark": "Donker",
       "light": "Licht",
-      "preferredSource": "Voeg Oomba toe als voorkeursbron in Google"
-    },
-    "kids": {
-      "kicker": "Leerlingen als makers",
-      "h": "Je leerlingen bouwen ook spellen",
-      "lead": "Om een spel over een onderwerp te maken, moet je het goed genoeg begrijpen om het uit te leggen. Voeg een stap ‘Bouw een spel’ toe aan elk lesplan, en je leerlingen beschrijven, testen en verbeteren hun eigen spel met de Bouwer, zonder code te schrijven.",
-      "li1": "Een stap ‘Bouw een spel’ in je lesplannen, met het idee waarmee leerlingen beginnen",
-      "li2": "Elke leerling bouwt in een eigen Studio, en je ziet de voortgang samen met de rest van het lesplan",
-      "li3": "Klasgenoten spelen elkaars spellen: een herhalingsspel over het onderwerp van de week werkt goed",
-      "li4": "Privé tot het gedeeld wordt: met de klas, of met iedereen pas nadat iemand van ons team het heeft bekeken",
-      "shotAlt": "De Studio van een leerling: de Builder meldt dat versie 2 klaar is, en het spel draait in een voorbeeld op telefoonformaat.",
-      "caption": "De Studio van een leerling: beschrijven, de Builder bouwt, zelf testen."
+      "preferredSource": "Voeg Oomba toe als voorkeursbron in Google",
+      "trademarks": "{names} zijn merken van hun eigenaren. Oomba Academy is niet aan hen verbonden."
     },
     "tools": {
-      "kicker": "Lestools",
-      "h": "Rekenen met je handen, met alle leerlingen tegelijk",
-      "lead": "Virtueel materiaal dat je leerlingen zelf verplaatsen, een live lokaal waar je het werk van iedereen op één scherm ziet, en Oomba om werkbladen met figuren op schaal op te stellen.",
-      "li1": "18 soorten virtueel materiaal, van MAB-blokken die je kunt inwisselen tot breukdelen en klokken",
-      "li2": "Live rekenlokalen: elke leerling bouwt in een eigen vak terwijl jij alle vakken op het bord ziet",
-      "li3": "Opgeslagen borden met deelcodes, en 300 kant-en-klare opdrachten voor groep 1 tot en met de tweede klas",
-      "li4": "Oomba, je lesassistent: beschrijf een werkblad en krijg exacte figuren met uitgewerkte antwoorden",
-      "shotAlt": "Een live sessie met MAB-blokken op het scherm van de leerkracht: bovenaan het deel van de leerkracht en daaronder de vakken van vier leerlingen, elk met honderdplaten en tienstaven in een plaatswaardekaart.",
-      "plan": "Het materiaal, de live lokalen, Figures en Oomba horen bij het Leerkrachtabonnement.",
-      "testing": "Het materiaal, de live lokalen, Figures en Oomba worden nu in een paar klassen uitgeprobeerd."
+      "h": "Wauw, het kan dit allemaal.",
+      "lead": "Elk hulpmiddel deel je uit aan tafels in de Hub, en Oomba kan de meeste aansturen.",
+      "manip": {
+        "h": "{count} soorten rekenmateriaal",
+        "p": "MAB-materiaal dat inwisselt, breukstroken, getallenstaven, geoborden, klokken en meer. {tasks} oefentaken voor groep 1 tot de tweede klas, en een Zo werkt het-video voor elk hulpmiddel.",
+        "alt": "Breukstroken op het rekenmateriaalbord: een geheel, helften, vierden en derden naast elkaar.",
+        "c1": "Live lokalen",
+        "c2": "{count} taken",
+        "c3": "{count} video’s"
+      },
+      "figures": {
+        "h": "Figures",
+        "p": "Werkbladen en toetsen met figuren op schaal: vormen, grafieken, getallenlijnen en schema’s voor natuurkunde en economie. {count} soorten, uitgewerkte antwoorden. Print het of geef het op.",
+        "alt": "Een Figures-werkblad over oppervlakte en hoeken: een rechthoek, een samengestelde figuur en een gradenboog, elk met het antwoord.",
+        "c1": "Werkbladen",
+        "c2": "Toetsen"
+      },
+      "games": {
+        "h": "Leerspellen",
+        "p": "Een kruiswoordpuzzel van je woordenlijst, Word Hunt, Word Peek, Sudoku, schaakpuzzels, Arithmetic Lab en Algebra Builder.",
+        "alt": "Een kruiswoordpuzzel met de omschrijvingen horizontaal en verticaal en de woordenlijst."
+      },
+      "grammar": {
+        "h": "Grammatica en nakijken",
+        "p": "Mistake Hunt stopt fouten in je eigen tekst, of kies uit 320 voorbeeldteksten voor groep 3 tot de tweede klas. Leerlingen vinden en verbeteren ze, en zien waarom.",
+        "alt": "Mistake Hunt: een tekstreeks maken, mijn werkbladen, een klascodevak en de voorbeeldteksten."
+      },
+      "read": {
+        "h": "Lezen",
+        "p": "{count} prentenboeken en klassiekers met Lees voor en vragen. Plus een boekenmaker voor je eigen prentenboeken.",
+        "alt": "De verhalenbibliotheek: prentenboeken per groep, elk met Lezen en Opgeven."
+      },
+      "live": {
+        "h": "Live",
+        "p": "Brain Board, Wat heb je liever, Atlas Quest en Doodle Hoot op elk apparaat. In de Hub doen leerlingen aan hun tafel met één tik mee.",
+        "alt": "Brain Board, een live categoriebordspel, met de code."
+      },
+      "build": {
+        "h": "Bouwer",
+        "p": "Beschrijf het of voeg je lesplan toe. Krijg een praktische les of een spel voor de hele klas, zoals een categoriebord, bingo of flitskaarten.",
+        "alt": "De Bouwer vraagt wat je maakt: een les of een klassenspel."
+      },
+      "dash": {
+        "h": "Dashboard",
+        "p": "Het scherm op het digibord voor de dag: {count} widgets, {layouts} kant-en-klare indelingen, punten met redenen en een scherm voor elke leerling.",
+        "alt": "Een klasdashboard: de klok, het doel van de dag, het rooster, de klassentaken en een stemmingscheck."
+      },
+      "typing": {
+        "h": "Typing Zoo",
+        "p": "40 lessen van F en J tot hele zinnen, toetsen op tijd, je eigen lessen en een slaaggrens. Er komt een dier uit het ei terwijl ze leren.",
+        "alt": "Typing Zoo: de lessen per toetsenbordrij en je eigen typlessen."
+      },
+      "atlas": {
+        "h": "Atlas Quest",
+        "p": "Draai een 3D-wereldbol en laat alle 195 landen oplichten: zoeken, vlaggen, hoofdsteden en cultuur. Maak je eigen aardrijkskundequizzen en print blinde kaarten.",
+        "alt": "Atlas Quest: een 3D-wereldbol naast de spelvormen."
+      }
     },
     "focus": {
-      "manipulatives": "virtuele rekenmaterialen",
       "play": "Kruiswoordpuzzels, rekengames en live klassengames, zonder aanmelden.",
-      "freeLi1": "Elke kant-en-klare les, puzzel en klashulpmiddel",
-      "faqA1": "Een lesplatform voor groep 1 tot de tweede klas: een klasdashboard voor de dag, virtuele rekenmaterialen, figuren op schaal, puzzelmakers zoals Crossword, livelessen en een verhalenbibliotheek. Leerkrachten kunnen met een AI-Bouwer ook van hun eigen lesplannen speelbare lessen maken.",
-      "demoCredit": "Beelden uit {title}, een van de kant-en-klare lessen van Oomba."
+      "faqA1": "Een lesplatform voor groep 1 tot de tweede klas: een klasdashboard voor de dag, virtuele rekenmaterialen, figuren op schaal, puzzelmakers zoals Crossword, livelessen en een verhalenbibliotheek. Leerkrachten kunnen met een AI-Bouwer ook van hun eigen lesplannen speelbare lessen maken."
+    },
+    "names": {
+      "lead": "Eén abonnement in plaats van vijf:",
+      "line": "Betaal voor één abonnement in plaats van vijf. <a href=\"{compare}\">Bekijk de vergelijking</a>"
+    },
+    "one": {
+      "kicker": "En nog veel meer",
+      "h": "Live spellen, een klasdashboard, rekenmateriaal en typen, op één plek.",
+      "lead": "Plus lezen, aardrijkskunde, grammatica en een spellenmaker. Eén login, één klassenlijst, en alles deel je uit vanuit de Hub.",
+      "live": {
+        "h": "Live quizspellen",
+        "p": "Categorieborden, Wat heb je liever, kaart- en tekenspellen op elk apparaat."
+      },
+      "dash": {
+        "h": "Dashboards voor het klasscherm",
+        "p": "Timers, een geluidsmeter, een willekeurige kiezer en {count} widgets."
+      },
+      "points": {
+        "h": "Gedragspunten",
+        "p": "Punten met 12 positieve redenen, voor één leerling of de hele klas."
+      },
+      "manip": {
+        "h": "Rekenmateriaal",
+        "p": "{tools} hulpmiddelen, {tasks} taken en live lokalen."
+      },
+      "figures": {
+        "h": "Werkbladmaker",
+        "p": "Figuren op schaal, met uitgewerkte antwoorden."
+      },
+      "typing": {
+        "h": "Typen oefenen",
+        "p": "40 lessen, toetsen op tijd en je eigen lessen."
+      },
+      "read": {
+        "h": "Leesbibliotheek",
+        "p": "Prentenboeken met Lees voor en vragen."
+      },
+      "geo": {
+        "h": "Aardrijkskundespellen",
+        "p": "Landen, vlaggen en hoofdsteden op een 3D-wereldbol."
+      },
+      "build": {
+        "h": "Spellenmaker",
+        "p": "Maak van een lesplan een spel."
+      },
+      "grammar": {
+        "h": "Grammatica oefenen",
+        "p": "Teksten om te verbeteren, gemaakt van je eigen tekst."
+      },
+      "foot": "Eén login. Eén klassenlijst. Eén abonnement per leerkracht.",
+      "footSub": "Leerlingen doen gratis mee. De abonnementen staan op de <a href=\"{plans}\">pagina Abonnementen</a>.",
+      "compare": "Bekijk de vergelijking"
+    },
+    "plan": {
+      "on": "Beschikbaar met het <a href=\"{plans}\">Leerkrachtabonnement</a>"
+    },
+    "hub": {
+      "kicker": "De Hub",
+      "h": "Regel alles vanuit de Hub.",
+      "lead": "Eén gedeeld klasbord: jouw deel vooraan en een tafel voor elke leerling, neergezet zoals je lokaal echt is. Deel lessen, live spellen en rekenhulpmiddelen uit en zie dan alle tafels tegelijk.",
+      "nowPill": "Nu",
+      "nowTitle": "Breuken op de getallenlijn",
+      "nowNext": "Hierna: Oefenen",
+      "shotAlt": "De Hub: het deel van de leerkracht met twee notities, Mijn tafel en 16 leerlingtafels in groepjes van vier, elk met waar die leerling aan werkt, en twee opgestoken handen.",
+      "f1": {
+        "h": "Deel alles uit",
+        "p": "Tik op een les, een live spel of een rekenhulpmiddel, dan op een tafel, een groep of de hele klas. Of sleep het erheen."
+      },
+      "f2": {
+        "h": "Zie elke tafel live",
+        "p": "Elke tafel laat zien wat die leerling open heeft. Tik erop om beter te kijken. Er wordt niets opgenomen."
+      },
+      "f3": {
+        "h": "Hulprij en wc-pasje",
+        "p": "Opgestoken handen komen op volgorde in de rij. Even kijken laat rustig zien wie misschien vastzit."
+      },
+      "f4": {
+        "h": "Een dagplan dat de tijd bijhoudt",
+        "p": "Dia’s, werktijd, een beweegpauze en een exitcheck, met Nu en Hierna op het digibord."
+      },
+      "f5": {
+        "h": "Punten, nooit ranglijsten",
+        "p": "Geef een punt voor samenwerken of vriendelijkheid. Leerlingen zien hun eigen punten, nooit een ranglijst."
+      },
+      "m1": {
+        "h": "Schriften",
+        "p": "Een schrift voor elke leerling. Leerlingen weten wie het kan zien."
+      },
+      "m2": {
+        "h": "Lezen aan de tafel",
+        "p": "Lezen, een quiz, drie notities. Je ziet op welke bladzijde ze zijn."
+      },
+      "m3": {
+        "h": "Assistenten en invallinks",
+        "p": "Een link voor één dag voor een invaller. Wat die doet, wordt vastgelegd."
+      },
+      "m4": {
+        "h": "Ondersteuning en tafels voor kleuters",
+        "p": "Extra tijd, voorlezen, eenvoudigere woorden en grotere letters."
+      }
+    },
+    "ask": {
+      "kicker": "Vraag het Oomba",
+      "h": "Zeg het, en het gebeurt.",
+      "lead": "Oomba is de chat op je leerkrachtpagina’s. Hij plant je dag, maakt werkbladen, verandert een rekenbord, maakt boeken en geeft punten. Jij bevestigt alles wat ertoe doet, en Ongedaan maken is één tik weg.",
+      "box": "Vraag om het plan voor vandaag of deze week",
+      "send": "Versturen",
+      "p1": {
+        "say": "Plan vandaag: breuken op de getallenlijn, ongeveer 35 minuten",
+        "then": "Een dagplankaart: dia’s, werktijd, een beweegpauze en een exitcheck. Dit plan gebruiken zet het op de tafels."
+      },
+      "p2": {
+        "say": "Plan deze week. Woensdag is een halve dag.",
+        "then": "Maandag tot vrijdag, elke dag een kort plan. Wissel dagen of kopieer het naar een andere klas."
+      },
+      "p3": {
+        "say": "Geef de hele klas een punt voor samenwerken",
+        "then": "Het punt is gegeven, met Ongedaan maken. Het staat op het dashboard en bij de eigen punten van de leerlingen."
+      },
+      "p4": {
+        "say": "Maak een werkblad over de oppervlakte van rechthoeken voor groep 6",
+        "then": "Figures opent met de opdracht ingevuld: vragen op schaal, uitgewerkte antwoorden."
+      },
+      "p5": {
+        "say": "Laat 3/4 en 6/8 zien met breukstroken",
+        "then": "Op een rekenmateriaalbord liggen de stukken er meteen."
+      },
+      "p6": {
+        "say": "Maak een prentenboek over de waterkringloop voor groep 4",
+        "then": "De boekenmaker schrijft het en schildert de plaatjes. Verander elke bladzijde door het te vragen."
+      },
+      "p7": {
+        "say": "Open het dashboard van lokaal 14 en zet er een timer van 5 minuten op",
+        "then": "Oomba biedt aan lokaal 14 te openen en het daar te doen, en laat dan de wijziging zien met Toepassen."
+      },
+      "p8": {
+        "say": "Wie heeft vandaag even aandacht nodig?",
+        "then": "Wie lijkt vast te zitten, handen die al even omhoog zijn, quizzen onder 60%. Namen staan alleen op jouw scherm."
+      },
+      "r1": "Oomba ziet nooit de namen van leerlingen",
+      "r2": "Oomba praat nooit met leerlingen",
+      "r3": "Er verandert niets zonder jouw tik of een Ongedaan maken",
+      "planAlt": "De Oomba-chat met een dagplankaart Breukendag: 8 minuten dia’s, 20 minuten werktijd, een beweegpauze van 3 minuten en een exitcheck van 5 minuten.",
+      "pointAlt": "De Oomba-chat: de hele klas kreeg een punt voor Samenwerken, met Ongedaan maken.",
+      "note": "Echte schermen: de Oomba-chat met een dagplankaart, daarna een punt voor de hele klas."
+    },
+    "vs": {
+      "kicker": "Naast elkaar",
+      "h": "Gebruik je er al een? Dit voegt Oomba toe.",
+      "lead": "Wat elk product zegt te doen, in eigen woorden van de eigen website, en wat Oomba op dezelfde plek toevoegt.",
+      "does": "Wat {name} doet",
+      "adds": "Wat Oomba hier toevoegt",
+      "source": "Bron: {site}, gelezen op {date}",
+      "more": "Bekijk de hele vergelijking",
+      "liveGames": "Live spellen draaien in de Hub: leerlingen aan hun tafel krijgen een uitnodiging en doen met één tik mee, zonder code.",
+      "classScreen": "{count} widgets, een scherm voor elke leerling, punten met redenen en de tafels van de Hub één tabblad verder.",
+      "mathTools": "{tools} soorten rekenmateriaal en {tasks} taken voor groep 1 tot de tweede klas, plus Figures-werkbladen, Oomba die het bord verandert als je het vraagt, en elk hulpmiddel uit te delen aan tafels in de Hub."
+    },
+    "tour": {
+      "kicker": "Klik-rondleiding",
+      "h": "Probeer de Hub voordat je je aanmeldt.",
+      "lead": "Een korte rondleiding op echte schermen. Tik op de gele stippen of druk op Volgende.",
+      "label": "De rondleiding door de Hub",
+      "stepOf": "Stap {n} van {total}",
+      "back": "Terug",
+      "next": "Volgende",
+      "again": "Opnieuw beginnen",
+      "note": "Echte schermen van de app met verzonnen leerlingen.",
+      "s1": {
+        "t": "Plaatsen indelen",
+        "h": "Net als je echte lokaal",
+        "p": "Kies rijen, groepjes van vier, een U of een kring, of sleep een tafel naar waar hij echt staat. Groepen houden hun kleur.",
+        "alt": "Plaatsen indelen in de Hub: rijen, groepjes van vier, U-vorm en kring, met de tafels in groepjes van vier."
+      },
+      "s2": {
+        "t": "Een les uitdelen",
+        "h": "Tik, dan een tafel",
+        "p": "Tik op een les, een spel of een rekenhulpmiddel, dan op een tafel, een groep of de hele klas. Of sleep het erheen.",
+        "alt": "Mistake Hunt gekozen in de Hub: tik nu op een tafel, een groep, Hele klas of Mijn tafel."
+      },
+      "s3": {
+        "t": "Elke tafel zien",
+        "h": "Elke tafel, live",
+        "p": "Elke tafel laat zien wat die leerling open heeft, hier Arithmetic Lab. Gestippelde tafels zijn er nog niet. Tik op een tafel om beter te kijken.",
+        "alt": "De Hub met elke tafel live: de meeste leerlingen spelen Arithmetic Lab, twee zijn er nog niet."
+      },
+      "s4": {
+        "t": "Handen beantwoorden",
+        "h": "Handen omhoog, op volgorde",
+        "p": "Een vraag en een hulpvraag, in de volgorde waarin ze kwamen. Beantwoord haalt ze weg. Het wc-pasje staat hier ook, nooit op het digibord.",
+        "alt": "Het paneel Handen omhoog: Cleo heeft een vraag, Gus heeft hulp nodig, en het wc-pasje."
+      },
+      "s5": {
+        "t": "Vraag het Oomba",
+        "h": "Plan het met Oomba",
+        "p": "Vraag om het plan voor vandaag. Oomba maakt er een kaart van, en er gaat niets naar de tafels tot je op Dit plan gebruiken tikt.",
+        "alt": "De Oomba-chat naast de Hub met een dagplankaart Breukendag en Dit plan gebruiken."
+      },
+      "s6": {
+        "t": "Les afronden",
+        "h": "Les afronden",
+        "p": "Les afronden toont een korte samenvatting en beëindigt de les. Wat niet af is, blijft als huiswerk op de tafels.",
+        "alt": "Les afronden in de Hub: een korte samenvatting, daarna is de les voorbij."
+      }
+    },
+    "videos": {
+      "kicker": "Zie het in actie",
+      "h": "Korte video’s op echte schermen.",
+      "lead": "Elke video heeft ondertitels, en het geluid blijft uit tot je het aanzet.",
+      "howH": "Zo werkt het, één video per soort rekenmateriaal",
+      "play": "Video afspelen: {title}",
+      "close": "Video sluiten"
     }
   },
   "teach": {

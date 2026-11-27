@@ -741,6 +741,34 @@ Questions for the lawyer:
    so when a check is overdue?
 4. Do the trademark notice and the "tell us if something changed" link need any change, for example a named contact
    for takedown or correction requests?
+### Homepage naming five products: Kahoot!, Classroomscreen, Blooket, Brainingcamp, Typing.com (2026-11-26; owner decision; LAWYER REVIEW PENDING)
+
+No legal page changed; LEGAL_UPDATED is unchanged. The teacher homepage at "/" (server/routes/landing.js) now names five
+other products, the owner's second exception to "never name other products" (docs/decisions.md "Homepage: the one
+classroom tool for everything"; the first is /compare above). What the page does:
+
+- A plain-text strip under the hero: "One subscription instead of five: Kahoot!, Classroomscreen, Blooket, Brainingcamp,
+  Typing.com". No logos, no look-alike branding, no prices (theirs or ours): the line under it is "Pay for one plan
+  instead of five. See how we compare", a link to /compare. A drafted line with an estimated yearly cost of buying them
+  separately was dropped because the prices were not verified.
+- Three side-by-side cards (Kahoot!, Classroomscreen, Brainingcamp): "What X does" shows only the exact words /compare
+  already quotes from that product's own website, each with a link to the page, and "Source: <site>, read on November
+  22, 2026" in small type; "What Oomba adds here" describes Oomba only. No card for Blooket or Typing.com, which have no
+  sourced facts.
+- The footer: "Kahoot!, Classroomscreen, Blooket, Brainingcamp and Typing.com are trademarks of their owners. Oomba
+  Academy is not affiliated with them."
+
+Questions for the lawyer (with the /compare questions above):
+
+1. Comparative advertising on the homepage: is "One subscription instead of five" with the five names, and the
+   side-by-side cards, fine under US law (nominative fair use, the Lanham Act) and, for EU and UK visitors, the
+   comparative-advertising rules (Directive 2006/114/EC; the UK's Business Protection from Misleading Marketing
+   Regulations 2008)? In particular, does "instead of five" imply Oomba replaces each product in full, and should it be
+   softened or qualified?
+2. Blooket and Typing.com are named without a sourced comparison. Is naming them in the strip alone acceptable, or
+   should each have a sourced line (as on /compare) or be left out?
+3. Is the trademark line enough, or should it also name a contact for corrections, as the /compare notice does?
+
 ### Book pictures: Google (Gemini API) as a processor (2026-11-23; LAWYER REVIEW PENDING)
 
 Addendum; LEGAL_UPDATED is 2026-11-23. The book maker (teachers only; docs/storybook-builder.md "Pictures") now has its

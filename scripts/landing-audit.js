@@ -1,6 +1,6 @@
 // The teacher landing page (server/routes/landing.js) in a real browser, at phone, tablet and desktop sizes, dark and
 // light: Largest Contentful Paint (and what it was), layout shift while loading and scrolling, sideways scrolling,
-// console errors, the parallax moving (and not moving with reduced motion), and the page bytes.
+// console errors, and the page bytes; with reduced motion, the tour's step change does not animate.
 //
 //   BASE=http://localhost:3000 node scripts/landing-audit.js        (the server must answer "/" with the landing:
 //                                                                    LANDING_AT_ROOT unset or 1, nobody signed in)
@@ -37,28 +37,26 @@ for (const theme of THEMES) for (const [width, height] of SIZES) {
   await page.goto(BASE + '/', { waitUntil: 'load' });
   await page.waitForTimeout(600);
   const lcp = await page.evaluate(() => window.__lcp);
-  // Scroll down the page the way a person does; the parallax layers must move, the layout must not.
-  const before = await page.evaluate(() => getComputedStyle(document.querySelector('.lp-s3')).transform);
+  // Scroll down the page the way a person does; the layout must not move.
   const H = await page.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y < H; y += Math.round(height * 0.8)) { await page.mouse.wheel(0, Math.round(height * 0.8)); await page.waitForTimeout(60); }
   await page.waitForTimeout(300);
-  const after = await page.evaluate(() => getComputedStyle(document.querySelector('.lp-s3')).transform);
   const r = await page.evaluate(() => ({ cls: window.__cls, sw: document.documentElement.scrollWidth, w: innerWidth }));
-  const row = { theme, size: `${width}x${height}`, lcpMs: lcp ? Math.round(lcp.t) : null, lcpEl: lcp && lcp.el, cls: +r.cls.toFixed(4), sideways: r.sw > r.w, parallax: before !== after, kb: Math.round(bytes / 1024), errors };
-  const fail = !lcp || lcp.t > 2500 || r.cls > 0.1 || row.sideways || errors.length || !row.parallax;
+  const row = { theme, size: `${width}x${height}`, lcpMs: lcp ? Math.round(lcp.t) : null, lcpEl: lcp && lcp.el, cls: +r.cls.toFixed(4), sideways: r.sw > r.w, kb: Math.round(bytes / 1024), errors };
+  const fail = !lcp || lcp.t > 2500 || r.cls > 0.1 || row.sideways || errors.length;
   if (fail) bad++;
   rows.push(row);
-  console.log(`${fail ? '✗' : '✓'} ${theme.padEnd(5)} ${row.size.padEnd(10)} LCP ${String(row.lcpMs).padStart(5)} ms (${row.lcpEl})  CLS ${row.cls}  sideways ${row.sideways}  parallax ${row.parallax}  ${row.kb} KB${errors.length ? '  ERRORS ' + errors.join(' | ') : ''}`);
+  console.log(`${fail ? '✗' : '✓'} ${theme.padEnd(5)} ${row.size.padEnd(10)} LCP ${String(row.lcpMs).padStart(5)} ms (${row.lcpEl})  CLS ${row.cls}  sideways ${row.sideways}  ${row.kb} KB${errors.length ? '  ERRORS ' + errors.join(' | ') : ''}`);
   await ctx.close();
 }
-// Reduced motion: nothing moves.
+// Reduced motion: the tour's step change does not animate.
 {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 }, reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto(BASE + '/', { waitUntil: 'load' });
   await page.mouse.wheel(0, 1600); await page.waitForTimeout(400);
-  const still = await page.evaluate(() => getComputedStyle(document.querySelector('.lp-s3')).transform === 'none' && document.querySelector('.lp-demo').dataset.stage === 'done');
-  console.log(`${still ? '✓' : '✗'} reduced motion: parallax and the hero loop stay still`);
+  const still = await page.evaluate(() => { const s = document.querySelector('.lp-tstep.on'); return !s || parseFloat(getComputedStyle(s).animationDuration) < 0.01; });
+  console.log(`${still ? '✓' : '✗'} reduced motion: the tour does not animate`);
   if (!still) bad++;
   await ctx.close();
 }

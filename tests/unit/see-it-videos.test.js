@@ -20,20 +20,28 @@ test.beforeEach(() => { process.env.LANDING_AT_ROOT = '1'; resetLimits(); });
 const get = async path => { const r = await fetch(base + path, { headers: { accept: 'text/html' } }); return { status: r.status, text: await r.text(), type: r.headers.get('content-type') }; };
 
 const ALL = ['manipulatives', 'figures', 'room', 'dashboard'];
+// The Hub in 2 minutes (scripts/hub-video.mjs): the homepage's overview, not one of the "a minute each" tool videos.
+const OVERVIEW = 'hub';
 
-test('the four videos, their posters and captions are in public/video and ready', () => {
-  for (const id of ALL) {
+test('the overview and the four videos, their posters and captions are in public/video and ready', () => {
+  for (const id of [OVERVIEW, ...ALL]) {
     for (const f of videoFiles(id)) assert.ok(fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)), f);
     const vtt = fs.readFileSync(new URL(`../../public/video/oomba-${id}.en.vtt`, import.meta.url), 'utf8');
     assert.match(vtt, /^WEBVTT\n/, `${id}: a WebVTT file`);
     assert.doesNotMatch(vtt, /\u2014/, `${id}: no em dashes in the captions`);
   }
-  assert.deepEqual(readyVideos().map(v => v.id), ALL);
+  assert.deepEqual(readyVideos().map(v => v.id), [OVERVIEW, ...ALL]);
+  assert.deepEqual(readyVideos().filter(v => v.overview).map(v => v.id), [OVERVIEW]);
+  // the overview: 1280 x 720 H.264 like the others, under about 8 MB, captions for each step and the end card
+  assert.ok(fs.statSync(new URL('../../public/video/oomba-hub.mp4', import.meta.url)).size < 8 * 1048576);
+  const cues = fs.readFileSync(new URL('../../public/video/oomba-hub.en.vtt', import.meta.url), 'utf8').split('\n\n').slice(1);
+  assert.ok(cues.length >= 15, `${cues.length} captions`);
+  assert.match(cues.at(-1), /The Hub\. Available with the Teacher plan\./);
   // A listed video without its files is left out, never an empty player.
   assert.ok(VIDEOS.every(v => readyVideos().includes(v) || !videoFiles(v.id).every(f => fs.existsSync(new URL(`../../public/video/${f}`, import.meta.url)))));
 });
 
-for (const path of ['/', '/teachers']) {
+for (const path of ['/teachers']) {
   test(`${path}: the "See it in action" section with the four videos`, async () => {
     const page = await get(path);
     assert.equal(page.status, 200);
@@ -49,6 +57,7 @@ for (const path of ['/', '/teachers']) {
       assert.match(sec, new RegExp(`id="pv-${id}-h"`));
     }
     assert.doesNotMatch(sec, /autoplay/);
+    assert.doesNotMatch(sec, /oomba-hub/, 'the overview is the homepage\'s, not one of the minute-each tool videos');
     assert.match(sec, /Virtual Math Manipulatives/);
     assert.match(sec, /Oomba Figures/);
     assert.match(sec, /Classroom Dashboard/);
@@ -70,6 +79,17 @@ for (const path of ['/', '/teachers']) {
     else assert.doesNotMatch(sec, /pv-cta/);
   });
 }
+
+test('/: the Hub overview first, then the same four videos in the homepage\'s own player (posters, captions, no autoplay), and no link into the tools', async () => {
+  const page = await get('/');
+  const sec = page.text.slice(page.text.indexOf('id="videos"'), page.text.indexOf('</section>', page.text.indexOf('id="videos"')));
+  assert.deepEqual([...sec.matchAll(/class="lp-vid[^"]*" href="\/video\/oomba-([a-z]+)\.mp4"/g)].map(m => m[1]), [OVERVIEW, ...ALL]);
+  assert.match(sec, /<b>The Hub in 2 minutes<\/b>/);
+  for (const id of [OVERVIEW, ...ALL]) assert.match(sec, new RegExp(`href="/video/oomba-${id}\\.mp4" data-video="/video/oomba-${id}\\.mp4" data-poster="/video/oomba-${id}-poster\\.jpg" data-vtt="/video/oomba-${id}\\.en\\.vtt"`), id);
+  assert.match(sec, /<video class="lp-vd-v" controls playsinline muted preload="none"/);
+  assert.doesNotMatch(sec, /autoplay|\$\d|\u2014/);
+  assert.doesNotMatch(sec, /href="\/(manipulatives|figures|dashboard|class\/)/);
+});
 
 test('in another language: translated words, English captions', async () => {
   const sec = (await get('/es/teachers')).text.match(/id="see-it"[\s\S]*?<\/section>/)[0];

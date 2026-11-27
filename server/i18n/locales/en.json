@@ -9210,6 +9210,10 @@
         "title": "Classroom Dashboard",
         "p": "Timers, jobs, check-ins and math tools for your whole class day, on one screen."
       },
+      "hub": {
+        "title": "The Hub in 2 minutes",
+        "p": "Hand out work, watch every desk live, answer raised hands and run the day plan, all from one board."
+      },
       "plan": "The Classroom Dashboard is free for every class. The Manipulatives, their live rooms and Figures are part of the Teacher plan.",
       "testing": "The Classroom Dashboard is free for every class. The other three tools are being tried out in a few classrooms now."
     },
@@ -12380,124 +12384,49 @@
     }
   },
   "landing": {
-    "dtour": {
-      "kicker": "Ready-made layouts",
-      "h": "A layout for every part of the day",
-      "lead": "Start the morning, teach a lesson, run group work, settle into quiet work and take a fun break. Switch in one tap, and students' screens follow.",
-      "widgets": "{count} widgets to build your own"
-    },
-    "dash": {
-      "kicker": "New: class dashboards",
-      "h": "One screen for the whole school day",
-      "lead": "Put a class dashboard on the projector: the clock, today’s schedule, your goal for the day and {count} widgets to choose from. Every student gets a screen of their own too, with the widgets you pin.",
-      "li1": "Ready-made layouts for the morning, a lesson, group work, quiet work and a fun break, or drag widgets into your own.",
-      "li2": "Timers, a random name picker, a group maker, a voice meter, a help queue and quick checks.",
-      "li3": "Math tools on the big screen: fraction bars, number lines, geoboards, place value and more.",
-      "li4": "Pin widgets to every student's screen, or send the class a lesson, a lesson plan or a link in one tap.",
-      "li5": "No AI anywhere in it. Students show up by their Oomba names, and what a student types stays on their own screen.",
-      "shotAlt": "A class dashboard on the projector: the clock, today's goal, the schedule with Math now and Recess next, class jobs and a mood check-in."
-    },
     "meta": {
-      "title": "Class dashboards and interactive lessons for teachers · Oomba Academy",
-      "description": "One screen to run your class day, an AI Builder that turns your lesson plans into playable lessons, live class lessons, and games your students build. 14 days free, no card.",
-      "imageAlt": "Oomba Academy for teachers: one screen to run your class, and lessons to make learning stick."
+      "title": "Oomba Academy: the one classroom tool for everything",
+      "description": "Live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper for K-8 teachers. One login, one class list, one plan.",
+      "imageAlt": "Oomba Academy: live games, math manipulatives, worksheets, picture books and a class dashboard in one place."
     },
     "nav": {
-      "dashboards": "Dashboards",
       "label": "Teacher site",
       "home": "Oomba Academy home",
       "skip": "Skip to content",
-      "how": "How it works",
-      "builder": "Builder",
-      "courses": "Courses",
       "live": "Live lessons",
-      "pricing": "Pricing",
       "faq": "FAQ",
       "signIn": "Sign in",
       "justPlay": "Just Play",
       "trial": "Start free trial",
       "trialShort": "Free trial",
       "menu": "Menu",
-      "kids": "Students build",
-      "tools": "Teaching tools"
+      "tools": "Teaching tools",
+      "hub": "The Hub",
+      "ask": "Ask Oomba",
+      "tour": "Tour",
+      "videos": "Videos",
+      "compare": "Compare"
     },
     "hero": {
-      "kicker": "For teachers · grades K–8",
-      "h1": "One screen to run your class. Lessons to make it stick.",
-      "lead": "Set up your class dashboard in a minute and run the whole day from it. Turn any lesson plan into a playable lesson with the AI Builder, play live on the projector, and let your students build games of their own.",
-      "cta": "Start your free 14-day trial",
-      "how": "See how it works",
+      "kicker": "For K-8 teachers",
+      "h1": "The one classroom tool for everything.",
+      "lead": "Live games, math manipulatives, worksheets, picture books, a class dashboard and an AI helper. One login, one class list, one plan.",
+      "cta": "Start free",
       "trustCard": "No card needed",
       "trustCancel": "Cancel anytime",
       "trustStudents": "Unlimited students",
-      "cBuildTag": "AI Builder",
-      "cBuild": "Your fractions plan is now a playable lesson",
-      "cLiveTag": "Live lesson",
-      "cLive": "Your class is joining"
+      "tour": "Take the tour",
+      "watch": "Watch the 2-minute overview",
+      "watchSub": "The Hub: your whole class on one board",
+      "collageAlt": "Real screens from Oomba Academy: a class dashboard, fraction tiles on a math board, a worksheet with figures drawn to scale, the picture book library and a live class game."
     },
     "facts": {
-      "games": "ready-made lessons",
-      "courses": "full courses with lesson plans",
-      "languages": "languages for students and teachers",
-      "installs": "installs: it runs in the browser"
-    },
-    "demo": {
-      "label": "Illustration: a lesson plan becoming a playable lesson",
-      "lessonTag": "Your lesson plan",
-      "lessonTitle": "Equivalent fractions · Grade 4",
-      "lessonBody": "Students show that 1/2, 2/4 and 4/8 name the same amount, with pizzas, bars and number lines. Exit ticket: three quick checks.",
-      "file": "fractions-lesson.pdf",
-      "builderTag": "AI Builder",
-      "step1": "Reading your lesson plan",
-      "step2": "Designing the levels",
-      "step3": "Playtesting on phone, tablet and desktop",
-      "step4": "Ready to play",
-      "gameTag": "Your lesson",
-      "gameMeta": "Ready to host live or assign",
-      "host": "Host live",
-      "assign": "Assign",
-      "credit": "Art from Fraction Factory, one of Oomba’s ready-made lessons."
-    },
-    "how": {
-      "kicker": "How it works",
-      "h": "Your whole class day, in one place",
-      "lead": "Start with the screen you keep open all day, then bring in the lessons. Each step works on its own, and they work even better together.",
-      "s1": {
-        "h": "Set up your class dashboard",
-        "p": "Open your class and six ready-made layouts are waiting. Put it on the projector, and every student gets a screen of their own."
-      },
-      "s2": {
-        "h": "Run your day from it",
-        "p": "Check-ins, timers, quick checks, the help queue, groups and math tools, from morning meeting to pack-up. Switch layouts in one tap."
-      },
-      "s3": {
-        "h": "Turn your plans into playable lessons",
-        "p": "Paste a lesson plan or upload a PDF. The AI Builder makes it a playable lesson, playtests it and keeps every version."
-      },
-      "see": "See it",
-      "s4": {
-        "h": "Play live together",
-        "p": "Warm-ups and exit tickets on the big screen. Students join on their own devices, and scores go to your gradebook."
-      },
-      "s5": {
-        "h": "Let your students build too",
-        "p": "Add a “Build a game” step to a lesson plan. Students design, test and fix a game of their own, then classmates play it."
-      }
-    },
-    "builder": {
-      "kicker": "The AI Builder",
-      "h": "Your lesson plan in, a playable lesson out",
-      "lead": "Talk to the Builder like a teaching assistant who happens to make lessons. It keeps every version, so you can always go back.",
-      "you": "You",
-      "msg": "Make a playable lesson from this plan for my 4th graders. Ten minutes, three levels, and end with the exit ticket questions.",
-      "bot": "Done! Version 1 is ready: three levels, easiest first, with the exit ticket at the end. Press Play to try it.",
-      "li1": "Understands lesson plans, PDFs, pictures and text files you upload",
-      "li2": "Answers in your language, and in each student’s",
-      "li3": "Playtests every build on phone, tablet and desktop sizes",
-      "li4": "Private until you share it: just you, your classes or, after a person on our team reviews it, everyone",
-      "li5": "Students can build too: describing, testing and fixing a game is planning, writing and debugging, without code",
-      "shotAlt": "The Oomba Studio: the Builder chat on the left says version 2 is ready, and the lesson runs in a phone-sized preview on the right.",
-      "caption": "The real Studio: the Builder on the left, your lesson on the right."
+      "languages": "languages",
+      "manip": "virtual manipulatives",
+      "tasks": "practice tasks",
+      "figures": "kinds of figures",
+      "books": "picture books",
+      "widgets": "dashboard widgets"
     },
     "courses": {
       "kicker": "Ready-made courses",
@@ -12520,101 +12449,42 @@
       },
       "link": "Teacher guide"
     },
-    "live": {
-      "kicker": "Live class lessons",
-      "h": "Light up the projector",
-      "lead": "Warm-ups and exit tickets your class actually looks forward to. Students join on their own devices with a 7-digit code.",
-      "li1": "Quest Race, Brain Board, Would You Rather and more",
-      "li2": "Use a starter question set, type your own, or let AI draft one for you to edit",
-      "li3": "Scores go straight into your gradebook",
-      "li4": "Class lessons: your signed-in students only. Guest lessons: safe made-up names. No chat and no typing in either",
-      "shotAlt": "A live Question Battle lobby: the big screen shows the cartoon character the class plays against, the join code and a QR code.",
-      "link": "How live lessons work"
-    },
-    "why": {
-      "kicker": "Why games work",
-      "h": "Fun is the delivery system. Learning is the point.",
-      "lead": "Good learning games lean on a few well-studied ideas from the science of learning.",
-      "b1": {
-        "h": "Retrieval practice",
-        "p": "Answering to win pulls knowledge back out of memory, and recalling something is one of the most reliable ways to make it stick."
-      },
-      "b2": {
-        "h": "Instant feedback",
-        "p": "Every answer gets a response in the moment, so mistakes are fixed while the thinking is still fresh."
-      },
-      "b3": {
-        "h": "Low-stakes repetition",
-        "p": "“One more round” feels like play, not a worksheet, so students practice more, without the weight of a grade."
-      },
-      "b4": {
-        "h": "Everyone takes part",
-        "p": "A game gives every student a turn, including the ones who rarely raise a hand."
-      },
-      "b5": {
-        "h": "Making is learning",
-        "p": "To build a game about a topic, students have to understand it well enough to teach it to a computer."
-      },
-      "sources": "Further reading"
-    },
     "safety": {
       "kicker": "Safety and privacy",
-      "h": "Built for classrooms, safe by design",
-      "lead": "Made for ages 5 to 14, with you in control of your classes.",
-      "li1": "No ads, and no advertising or tracking cookies",
-      "li2": "Students never need an email address, and we never ask their age or home address",
-      "li3": "A student’s real name, if you add one, is seen only by your school’s staff",
-      "li4": "You approve who joins your classes, and no student can chat with strangers",
-      "li5": "Every game runs in a locked sandbox, and a person on our team reviews any game before it goes public",
-      "li6": "What students type is filtered, and pictures they upload are checked and stripped of location data",
-      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>."
-    },
-    "everywhere": {
-      "h": "Works wherever your class is",
-      "devices": "Chromebooks, iPads, laptops, phones and the classroom board, right in the browser. Nothing to install.",
-      "languages": "{count} languages, including Spanish, Arabic, Portuguese and French. Each student picks their own.",
-      "voicesH": "Read aloud",
-      "voices": "Natural AI voices read every official lesson aloud."
+      "h": "Built for kids. Sold to teachers.",
+      "links": "Read <a href=\"{safety}\">how we keep kids safe</a> and our <a href=\"{privacy}\">privacy notice</a>.",
+      "c1": {
+        "h": "No ads, ever",
+        "p": "No advertising and no tracking cookies."
+      },
+      "c2": {
+        "h": "Kids are never sold to",
+        "p": "Students never see plans or prices."
+      },
+      "c3": {
+        "h": "Real names stay private",
+        "p": "Only your school's staff see a student's real name. Never public."
+      },
+      "c4": {
+        "h": "AI without names",
+        "p": "Oomba never gets a student's name, and never talks to students."
+      },
+      "c5": {
+        "h": "No rankings",
+        "p": "No leaderboards. Points and progress are never ranked."
+      },
+      "c6": {
+        "h": "Watching is not recording",
+        "p": "Live desks are never stored, and students are told you can see."
+      }
     },
     "pricing": {
-      "kicker": "Pricing",
-      "h": "One simple price per teacher. Every student included.",
-      "lead": "No per-student fees, ever. Try everything free for 14 days.",
       "teacher": {
         "name": "Teacher",
-        "price": "One simple yearly price",
-        "priceShown": "{price} per year",
-        "trial": "14 days free · no card needed",
-        "li1": "Unlimited students, no per-student fees",
-        "li2": "300 AI lesson builds a day for your class",
-        "li3": "All courses, 30+ ready-made lessons and live class lessons",
-        "li4": "Classes, lesson plans, progress and the gradebook",
-        "li5": "Every language, every device",
-        "cta": "Start your free trial",
-        "plans": "See plans & pricing",
-        "plus": "Everything in Free, plus:"
+        "trial": "14 days free · no card needed"
       },
       "schools": {
-        "name": "Schools & districts",
-        "price": "The same price per teacher",
-        "priceShown": "{price} per teacher per year",
-        "li1": "Every teacher gets the full Teacher plan",
-        "li2": "Pay by invoice or purchase order",
-        "li3": "School accounts and printable login cards",
-        "li4": "We help you set up your school",
-        "cta": "Talk to us",
-        "form": "Set up your school",
         "subject": "Oomba Academy for our school"
-      },
-      "leadFree": "No per-student fees, ever. The basics are free for every teacher, and the Teacher plan adds AI lesson builds for your whole class.",
-      "free": {
-        "name": "Free",
-        "price": "Always free",
-        "li1": "Every lesson and all three courses",
-        "li2": "Classes, lesson plans, progress and the gradebook",
-        "li3": "Free daily Builder messages for you and your students",
-        "li4": "School accounts and printable login cards",
-        "liLive": "Live class lessons on the projector"
       }
     },
     "faq": {
@@ -12640,9 +12510,8 @@
       "a2free": "Start a 14-day free trial of the Teacher plan with no card. Everything in the plan is included while it runs, and when it ends you decide whether to subscribe. If you don’t, only the plan’s extra AI builds stop: the lessons, your classes, lesson plans and progress stay free, and nothing is deleted."
     },
     "final": {
-      "h": "Your next lesson could be the one they ask to play again",
-      "p": "Start free for 14 days. No card, no per-student fees.",
-      "cta": "Start your free 14-day trial"
+      "h": "Run tomorrow's class from the Hub.",
+      "p": "Set up your room in a few minutes. Your students join free."
     },
     "play": {
       "h": "Here to play?",
@@ -12650,7 +12519,6 @@
       "cta": "Just Play"
     },
     "footer": {
-      "tagline": "Interactive lessons for ages 5 to 14, and an AI Builder that turns your plans into playable lessons.",
       "teachers": "For teachers",
       "product": "Explore",
       "about": "About",
@@ -12667,37 +12535,283 @@
       "theme": "Theme",
       "dark": "Dark",
       "light": "Light",
-      "preferredSource": "Add Oomba as a preferred source on Google"
-    },
-    "kids": {
-      "kicker": "Students as makers",
-      "h": "Your students build games too",
-      "lead": "To make a game about a topic, you have to understand it well enough to teach it. Add a “Build a game” step to any lesson plan, and your students describe, test and improve their own game with the Builder, without writing code.",
-      "li1": "A “Build a game” step in your lesson plans, with the idea students start from",
-      "li2": "Each student builds in their own Studio, and you see their progress with the rest of the lesson plan",
-      "li3": "Classmates play each other’s games: a review game for this week’s topic works well",
-      "li4": "Private until shared: with their class, or with everyone only after a person on our team reviews it",
-      "shotAlt": "A student’s Studio: the Builder chat says version 2 is ready, and the student’s game runs in a phone-sized preview.",
-      "caption": "A student’s Studio: they describe it, the Builder builds it, they test it."
+      "preferredSource": "Add Oomba as a preferred source on Google",
+      "trademarks": "{names} are trademarks of their owners. Oomba Academy is not affiliated with them."
     },
     "tools": {
-      "kicker": "Teaching tools",
-      "h": "Hands-on math, every student at once",
-      "lead": "Virtual manipulatives your students move themselves, a live room where you see everyone’s work on one screen, and Oomba to draft worksheets with figures drawn to scale.",
-      "li1": "18 virtual manipulatives, from base ten blocks that regroup to fraction pieces and clocks",
-      "li2": "Live math rooms: each student builds in their own square while you see every square on the board",
-      "li3": "Saved boards with share codes, and 300 ready-made tasks for grades K-8",
-      "li4": "Oomba, your teaching companion: describe a worksheet and get exact figures with the answers worked out",
-      "shotAlt": "A live Base Ten Blocks session on the teacher’s screen: the teacher’s area at the top and four students’ squares below, each with hundreds flats and tens rods in a place-value chart.",
-      "plan": "The Manipulatives, their live rooms, Figures and Oomba are part of the Teacher plan.",
-      "testing": "The Manipulatives, their live rooms, Figures and Oomba are being tried out in a few classrooms now."
+      "h": "Wow, it does all of this.",
+      "lead": "Every tool hands out to desks in the Hub, and Oomba can drive most of them.",
+      "manip": {
+        "h": "{count} Manipulatives",
+        "p": "Base ten blocks that regroup, fraction tiles, number rods, geoboards, clocks and more. {tasks} practice tasks for K-8, and a How it works video for every tool.",
+        "alt": "Fraction tiles on the Manipulatives board: a whole, halves, fourths and thirds lined up.",
+        "c1": "Live rooms",
+        "c2": "{count} tasks",
+        "c3": "{count} videos"
+      },
+      "figures": {
+        "h": "Figures",
+        "p": "Worksheets and tests from figures drawn to scale: shapes, graphs, number lines, plus science and economics diagrams. {count} kinds, answers worked out. Print it or assign it.",
+        "alt": "A Figures worksheet on area and angles: a rectangle, a composite shape and a protractor, each with its answer.",
+        "c1": "Worksheets",
+        "c2": "Tests"
+      },
+      "games": {
+        "h": "Learning games",
+        "p": "A crossword from your word list, Word Hunt, Word Peek, Sudoku, chess puzzles, Arithmetic Lab and Algebra Builder.",
+        "alt": "A crossword with its clues across and down, and the word bank."
+      },
+      "grammar": {
+        "h": "Grammar and proofreading",
+        "p": "Mistake Hunt plants mistakes in your own passage, or pick from 320 sample passages for grades 1 to 8. Students find and fix them, and see why.",
+        "alt": "Mistake Hunt: make a passage set, my worksheets, a class code box and the sample passages."
+      },
+      "read": {
+        "h": "Read",
+        "p": "{count} picture books and classics with Read to me and questions. Plus a book maker for your own picture books.",
+        "alt": "The Story Library: picture books by grade, each with Read and Assign."
+      },
+      "live": {
+        "h": "Live",
+        "p": "Brain Board, Would You Rather, Atlas Quest and Doodle Hoot on every device. In the Hub, students at their desks join with one tap.",
+        "alt": "Brain Board, a live category board game, with its join code."
+      },
+      "build": {
+        "h": "Builder",
+        "p": "Describe it or attach your lesson plan. Get a hands-on classroom lesson or a whole-room game like a category board, bingo or flashcards.",
+        "alt": "The Builder asking what you are making: a classroom lesson or a classroom game."
+      },
+      "dash": {
+        "h": "Dashboard",
+        "p": "The projector screen for the day: {count} widgets, {layouts} ready-made layouts, points with reasons, and a screen for every student.",
+        "alt": "A class dashboard: the clock, today's goal, the schedule, class jobs and a mood check-in."
+      },
+      "typing": {
+        "h": "Typing Zoo",
+        "p": "40 lessons from F and J to full sentences, timed tests, your own lessons and pass marks. A pet hatches as they learn.",
+        "alt": "Typing Zoo: the lessons by keyboard row and your own typing lessons."
+      },
+      "atlas": {
+        "h": "Atlas Quest",
+        "p": "Turn a 3D globe and light up all 195 countries: find it, flags, capitals and culture. Make your own geography quizzes and print blank maps.",
+        "alt": "Atlas Quest: a 3D globe beside the game modes."
+      }
     },
     "focus": {
-      "manipulatives": "virtual math manipulatives",
       "play": "Word puzzles, math games and live class games, with no sign-up.",
-      "freeLi1": "Every ready-made lesson, puzzle and classroom tool",
-      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder.",
-      "demoCredit": "Art from {title}, one of Oomba’s ready-made lessons."
+      "faqA1": "A teaching platform for grades K to 8: a class dashboard to run the day, virtual math manipulatives, figures drawn to scale, puzzle builders like Crossword, live class lessons and a Story Library. Teachers can also turn their own lesson plans into playable lessons with an AI Builder."
+    },
+    "names": {
+      "lead": "One subscription instead of five:",
+      "line": "Pay for one plan instead of five. <a href=\"{compare}\">See how we compare</a>"
+    },
+    "one": {
+      "kicker": "And much more",
+      "h": "Live games, a class dashboard, math manipulatives and typing, in one place.",
+      "lead": "Plus reading, geography, grammar and a game builder. One login, one class list, and everything hands out from the Hub.",
+      "live": {
+        "h": "Live quiz games",
+        "p": "Category boards, Would You Rather, map and drawing games on every device."
+      },
+      "dash": {
+        "h": "Class screen dashboards",
+        "p": "Timers, a noise meter, a random picker and {count} widgets."
+      },
+      "points": {
+        "h": "Behavior points",
+        "p": "Points with 12 positive reasons, for a student or the whole class."
+      },
+      "manip": {
+        "h": "Math manipulatives",
+        "p": "{tools} tools, {tasks} tasks and live rooms."
+      },
+      "figures": {
+        "h": "Worksheet makers",
+        "p": "Figures drawn to scale, with the answers worked out."
+      },
+      "typing": {
+        "h": "Typing practice",
+        "p": "40 lessons, timed tests and your own lessons."
+      },
+      "read": {
+        "h": "Reading library",
+        "p": "Picture books with Read to me and questions."
+      },
+      "geo": {
+        "h": "Geography games",
+        "p": "Countries, flags and capitals on a 3D globe."
+      },
+      "build": {
+        "h": "Game builder",
+        "p": "Turn a lesson plan into a game."
+      },
+      "grammar": {
+        "h": "Grammar practice",
+        "p": "Proofreading passages from your own text."
+      },
+      "foot": "One login. One class list. One plan per teacher.",
+      "footSub": "Students join free. Plans are on the <a href=\"{plans}\">Plans page</a>.",
+      "compare": "See how we compare"
+    },
+    "plan": {
+      "on": "Available with the <a href=\"{plans}\">Teacher plan</a>"
+    },
+    "hub": {
+      "kicker": "The Hub",
+      "h": "Run it all from the Hub.",
+      "lead": "One shared class board: your area at the front and a desk for every student, arranged the way your room really sits. Hand out lessons, live games and math tools, then see every desk at once.",
+      "nowPill": "Now",
+      "nowTitle": "Fractions on a number line",
+      "nowNext": "Next: Practice",
+      "shotAlt": "The Hub: the teacher's area with two notes, My desk, and 16 student desks in tables of four, each showing what that student is working on, with two hands up.",
+      "f1": {
+        "h": "Hand out anything",
+        "p": "Tap a lesson, a live game or a math tool, then a desk, a group or the whole class. Or drag it there."
+      },
+      "f2": {
+        "h": "Watch every desk live",
+        "p": "Each desk shows what that student has open. Tap one to look closer. Nothing is recorded."
+      },
+      "f3": {
+        "h": "Help queue and hall pass",
+        "p": "Raised hands line up in order. Needs a look tells you calmly who may be stuck."
+      },
+      "f4": {
+        "h": "A day plan that keeps time",
+        "p": "Slides, work time, a brain break and an exit check, with Now and Next on the projector."
+      },
+      "f5": {
+        "h": "Points, never rankings",
+        "p": "Give a point for teamwork or kindness. Students see their own, never a leaderboard."
+      },
+      "m1": {
+        "h": "Notebooks",
+        "p": "A notebook for every student. Students are told who can see it."
+      },
+      "m2": {
+        "h": "Reading from the desk",
+        "p": "Read, quiz, three notes. You see the page they are on."
+      },
+      "m3": {
+        "h": "Aides and sub links",
+        "p": "A one-day link for a sub. Their actions are logged."
+      },
+      "m4": {
+        "h": "Supports and K-2 desks",
+        "p": "Extra time, read aloud, simpler wording and bigger text."
+      }
+    },
+    "ask": {
+      "kicker": "Ask Oomba",
+      "h": "Say it, and it happens.",
+      "lead": "Oomba is the chat on your teacher pages. It plans your day, builds worksheets, changes a math board, makes books and gives points. You confirm anything that matters, and Undo is one tap away.",
+      "box": "Ask for today's or this week's plan",
+      "send": "Send",
+      "p1": {
+        "say": "Plan today: fractions on a number line, about 35 minutes",
+        "then": "A day plan card: slides, work time, a brain break and an exit check. Use this plan puts it on desks."
+      },
+      "p2": {
+        "say": "Plan this week. Wednesday is a half day.",
+        "then": "Monday to Friday, each a short day plan. Swap days or copy it to another class."
+      },
+      "p3": {
+        "say": "Give the whole class a point for teamwork",
+        "then": "The point is given, with Undo. It shows on the dashboard and on students' own points."
+      },
+      "p4": {
+        "say": "Make a worksheet on area of rectangles for grade 4",
+        "then": "Figures opens with the brief filled in: questions drawn to scale, answers worked out."
+      },
+      "p5": {
+        "say": "Show 3/4 and 6/8 with fraction tiles",
+        "then": "On a Manipulatives board, the pieces land on the board at once."
+      },
+      "p6": {
+        "say": "Make a picture book about the water cycle for grade 2",
+        "then": "The book maker writes it and paints the pictures. Change any page by asking."
+      },
+      "p7": {
+        "say": "Open my Room 14 dashboard and add a 5 minute timer",
+        "then": "Oomba offers to open Room 14 and do it there, then shows the change with Apply."
+      },
+      "p8": {
+        "say": "Who needs a look today?",
+        "then": "Who seems stuck, hands up a while, quizzes under 60%. Names appear only on your screen."
+      },
+      "r1": "Oomba never sees student names",
+      "r2": "Oomba never talks to students",
+      "r3": "Nothing changes without your tap or an Undo",
+      "planAlt": "The Oomba chat with a Fractions day plan card: 8 minutes of slides, 20 minutes of work time, a 3 minute brain break and a 5 minute exit check.",
+      "pointAlt": "The Oomba chat: the whole class got a point for Teamwork, with Undo.",
+      "note": "Real screens: the Oomba chat with a day plan card, then a point for the whole class."
+    },
+    "vs": {
+      "kicker": "Side by side",
+      "h": "Already use one of these? Here is what Oomba adds.",
+      "lead": "What each product says it does, in its own words from its own website, and what Oomba adds in the same spot.",
+      "does": "What {name} does",
+      "adds": "What Oomba adds here",
+      "source": "Source: {site}, read on {date}",
+      "more": "See the full comparison",
+      "liveGames": "Live games run inside the Hub: students at their desks get an invite and join with one tap, no code.",
+      "classScreen": "{count} widgets, a screen for every student, points with reasons, and the Hub's desks one tab away.",
+      "mathTools": "{tools} manipulatives and {tasks} K-8 tasks, plus Figures worksheets, Oomba changing the board when you ask, and every tool handing out to Hub desks."
+    },
+    "tour": {
+      "kicker": "Click-through tour",
+      "h": "Try the Hub before you sign up.",
+      "lead": "A short walkthrough on real screens. Tap the yellow dots, or press Next.",
+      "label": "The Hub tour",
+      "stepOf": "Step {n} of {total}",
+      "back": "Back",
+      "next": "Next",
+      "again": "Start again",
+      "note": "Real app screens with made-up students.",
+      "s1": {
+        "t": "Arrange seats",
+        "h": "Match your real room",
+        "p": "Pick rows, tables of four, a U or a circle, or drag a desk to where it really sits. Groups keep their colors.",
+        "alt": "Arrange seats in the Hub: rows, tables of four, U-shape and circle, with the desks in tables of four."
+      },
+      "s2": {
+        "t": "Hand out a lesson",
+        "h": "Tap, then a desk",
+        "p": "Tap a lesson, a game or a math tool, then a desk, a group or the whole class. Or drag it there.",
+        "alt": "Mistake Hunt picked in the Hub: now tap a desk, a group, Whole class or My desk."
+      },
+      "s3": {
+        "t": "Watch every desk",
+        "h": "Every desk, live",
+        "p": "Each desk shows what that student has open, here Arithmetic Lab. Dashed desks are not here yet. Tap a desk to look closer.",
+        "alt": "The Hub with every desk live: most students playing Arithmetic Lab, two not here yet."
+      },
+      "s4": {
+        "t": "Answer hands",
+        "h": "Hands up, in order",
+        "p": "A question and a help request, in the order they came. Answered clears them. The hall pass is here too, and never on the projector.",
+        "alt": "The Hands up panel: Cleo has a question, Gus needs help, and the hall pass."
+      },
+      "s5": {
+        "t": "Ask Oomba",
+        "h": "Plan it with Oomba",
+        "p": "Ask for today's plan. Oomba drafts it as a card, and nothing goes on desks until you tap Use this plan.",
+        "alt": "The Oomba chat beside the Hub with a Fractions day plan card and Use this plan."
+      },
+      "s6": {
+        "t": "Finish class",
+        "h": "Finish class",
+        "p": "Finish class shows a short summary and ends class. Unfinished handouts stay on desks as homework.",
+        "alt": "End class in the Hub: Finish class shows a short summary and ends class."
+      }
+    },
+    "videos": {
+      "kicker": "See it in action",
+      "h": "Short videos on real screens.",
+      "lead": "Every video has captions, and the sound stays off until you turn it on.",
+      "howH": "How it works, one video per manipulative",
+      "play": "Play the video: {title}",
+      "close": "Close the video"
     }
   },
   "rubrics": {

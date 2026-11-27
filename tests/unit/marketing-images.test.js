@@ -74,9 +74,9 @@ test('every <img> on the marketing pages has alt text, unless it is a decoration
   assert.deepEqual(bad, []);
 });
 
-test('the screenshots come in the page\'s theme: dark sources on the dark landing, light ones with Light picked, the device\'s own on /teachers', async () => {
+test('the screenshots come in the page\'s theme: the Hub\'s dark capture on the dark landing, light ones with Light picked, the device\'s own on /teachers', async () => {
   const dark = await get('/', 'dark');
-  assert.match(dark, /<source data-scheme="dark" data-media="" media="all"[^>]*srcset="\/img\/how\/dash-teacher-dark-d-1024\.webp/);
+  assert.match(dark, /<source data-scheme="dark" data-media="" media="all"[^>]*srcset="\/img\/landing\/hub-dark-1200\.webp/);
   const light = await get('/', 'light');
   assert.match(light, /<source data-scheme="dark" data-media="" media="not all"/);
   const auto = await get('/teachers');
