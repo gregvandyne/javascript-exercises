@@ -16485,6 +16485,7 @@ as a visitor, a parent, a student and a teacher (arcade off, as on the live site
   text step, and `swapHiddenDemoSteps` changes the existing demo lessons the same way on every start.
 - `tests/unit/removed-games.test.js` checks the words of every page above (English, German, Japanese) for a hidden
   game's name, and that both videos are off.
+
 ## Oomba makes it, then reports what it checked (27 Nov 2026)
 
 The owner's live audit of the Oomba chat (Greg Test, class "4b math" with no students): "NOT seamless". The chat wrote
