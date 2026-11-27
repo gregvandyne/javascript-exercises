@@ -5502,7 +5502,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "This takes it off the class. Students' work is kept."
+            "unassign": "This takes it off the class. Students' work is kept.",
+            "students": "Students will see this.",
+            "classroom": "This posts to Google Classroom: students there will see it.",
+            "deleteSheet": "This deletes the worksheet for good. Lessons already assigned keep their questions.",
+            "deleteBoard": "This deletes the board for good.",
+            "deleteLesson": "This deletes the lesson for good, with its assignments and the students' work in them."
           },
           "due": {
             "ask": "Change the dates of “{title}” in {class}?",
@@ -5514,6 +5519,68 @@
           "unassign": {
             "ask": "Take “{title}” off {class}?",
             "done": "Took “{title}” off {class}."
+          },
+          "seeWork": "See the work",
+          "lesson": {
+            "ask": "Assign the lesson “{title}” to {class}?",
+            "done": "Assigned the lesson “{title}” to {class}."
+          },
+          "sheet": {
+            "ask": "Assign the worksheet “{title}” to {class}?",
+            "done": "Assigned the worksheet “{title}” to {class}."
+          },
+          "practice": {
+            "ask": "Assign practice from the board “{title}” to {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# question} other {# questions}} of each task",
+            "done": "Assigned “{title}” to {class}: {count, plural, one {# question} other {# questions}}."
+          },
+          "unit": {
+            "ask": "Add the unit “{name}” to {class}?",
+            "done": "Added the unit “{name}” to {class}."
+          },
+          "renameUnit": {
+            "ask": "Rename the unit “{old}” in {class} to “{name}”?",
+            "done": "Renamed the unit to “{name}”."
+          },
+          "move": {
+            "up": "Move “{title}” up one place in {class}?",
+            "down": "Move “{title}” down one place in {class}?",
+            "movedUp": "Moved “{title}” up one place.",
+            "movedDown": "Moved “{title}” down one place."
+          },
+          "classroom": {
+            "ask": "Post “{title}” from {class} to Google Classroom?",
+            "course": "Classroom class: {course}",
+            "done": "Posted “{title}” to Google Classroom.",
+            "scheduled": "It stays a draft in Classroom until it opens on {day}.",
+            "pastDue": "The due day has passed, so it went without one.",
+            "open": "Open in Classroom",
+            "page": "Google Classroom page"
+          },
+          "made": {
+            "renameSheet": "Rename the worksheet “{old}” to “{title}”?",
+            "renamedSheet": "Renamed the worksheet to “{title}”.",
+            "deleteSheet": "Delete the worksheet “{title}”?",
+            "deletedSheet": "Deleted the worksheet “{title}”.",
+            "openSheet": "Open the worksheet",
+            "allSheets": "See my worksheets",
+            "renameBoard": "Rename the board “{old}” to “{title}”?",
+            "renamedBoard": "Renamed the board to “{title}”.",
+            "copyBoard": "Make a copy of the board “{title}”?",
+            "copiedBoard": "Made a copy: “{title}”.",
+            "deleteBoard": "Delete the board “{title}”?",
+            "deletedBoard": "Deleted the board “{title}”.",
+            "openBoard": "Open the board",
+            "allBoards": "See my boards",
+            "copyLesson": "Make a copy of the lesson “{title}”?",
+            "copiedLesson": "Made a copy: “{title}”.",
+            "deleteLesson": "Delete the lesson “{title}”?",
+            "inClasses": "{count, plural, one {It is assigned to # class.} other {It is assigned to # classes.}}",
+            "withWork": "{count, plural, one {# student has work in it.} other {# students have work in it.}}",
+            "deletedLesson": "Deleted the lesson “{title}”.",
+            "openLesson": "Open the lesson",
+            "allLessons": "See my lessons"
           }
         },
         "homeroom": {

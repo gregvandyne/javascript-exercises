@@ -5044,7 +5044,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "זה מוריד את זה מהכיתה. העבודות של התלמידים נשמרות."
+            "unassign": "זה מוריד את זה מהכיתה. העבודות של התלמידים נשמרות.",
+            "students": "התלמידים יראו את זה.",
+            "classroom": "זה מתפרסם ב־Google Classroom: התלמידים שם יראו את זה.",
+            "deleteSheet": "זה מוחק את דף העבודה לתמיד. שיעורים שכבר הוקצו שומרים את השאלות שלהם.",
+            "deleteBoard": "זה מוחק את הלוח לתמיד.",
+            "deleteLesson": "זה מוחק את השיעור לתמיד, עם ההקצאות שלו והעבודות של התלמידים בהן."
           },
           "due": {
             "ask": "לשנות את התאריכים של „{title}” ב־{class}?",
@@ -5056,6 +5061,68 @@
           "unassign": {
             "ask": "להוריד את „{title}” מ־{class}?",
             "done": "„{title}” הורד מ־{class}."
+          },
+          "seeWork": "לראות את העבודות",
+          "lesson": {
+            "ask": "להקצות את השיעור „{title}” ל־{class}?",
+            "done": "השיעור „{title}” הוקצה ל־{class}."
+          },
+          "sheet": {
+            "ask": "להקצות את דף העבודה „{title}” ל־{class}?",
+            "done": "דף העבודה „{title}” הוקצה ל־{class}."
+          },
+          "practice": {
+            "ask": "להקצות תרגול מהלוח „{title}” ל־{class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {שאלה אחת} other {# שאלות}} מכל משימה",
+            "done": "„{title}” הוקצה ל־{class}: {count, plural, one {שאלה אחת} other {# שאלות}}."
+          },
+          "unit": {
+            "ask": "להוסיף את היחידה „{name}” ל־{class}?",
+            "done": "היחידה „{name}” נוספה ל־{class}."
+          },
+          "renameUnit": {
+            "ask": "לשנות את שם היחידה „{old}” ב־{class} ל־„{name}”?",
+            "done": "שם היחידה עכשיו „{name}”."
+          },
+          "move": {
+            "up": "להזיז את „{title}” מקום אחד למעלה ב־{class}?",
+            "down": "להזיז את „{title}” מקום אחד למטה ב־{class}?",
+            "movedUp": "„{title}” עלה מקום אחד.",
+            "movedDown": "„{title}” ירד מקום אחד."
+          },
+          "classroom": {
+            "ask": "לפרסם את „{title}” מ־{class} ב־Google Classroom?",
+            "course": "כיתה ב־Classroom: {course}",
+            "done": "„{title}” פורסם ב־Google Classroom.",
+            "scheduled": "ב־Classroom זו טיוטה עד שהוא נפתח ב־{day}.",
+            "pastDue": "תאריך ההגשה כבר עבר, אז הוא פורסם בלי תאריך.",
+            "open": "לפתוח ב־Classroom",
+            "page": "דף Google Classroom"
+          },
+          "made": {
+            "renameSheet": "לשנות את שם דף העבודה „{old}” ל־„{title}”?",
+            "renamedSheet": "שם דף העבודה עכשיו „{title}”.",
+            "deleteSheet": "למחוק את דף העבודה „{title}”?",
+            "deletedSheet": "דף העבודה „{title}” נמחק.",
+            "openSheet": "לפתוח את דף העבודה",
+            "allSheets": "דפי העבודה שלי",
+            "renameBoard": "לשנות את שם הלוח „{old}” ל־„{title}”?",
+            "renamedBoard": "שם הלוח עכשיו „{title}”.",
+            "copyBoard": "ליצור עותק של הלוח „{title}”?",
+            "copiedBoard": "נוצר עותק: „{title}”.",
+            "deleteBoard": "למחוק את הלוח „{title}”?",
+            "deletedBoard": "הלוח „{title}” נמחק.",
+            "openBoard": "לפתוח את הלוח",
+            "allBoards": "הלוחות שלי",
+            "copyLesson": "ליצור עותק של השיעור „{title}”?",
+            "copiedLesson": "נוצר עותק: „{title}”.",
+            "deleteLesson": "למחוק את השיעור „{title}”?",
+            "inClasses": "{count, plural, one {הוא מוקצה לכיתה אחת.} other {הוא מוקצה ל־# כיתות.}}",
+            "withWork": "{count, plural, one {לתלמיד אחד יש בו עבודה.} other {ל־# תלמידים יש בו עבודה.}}",
+            "deletedLesson": "השיעור „{title}” נמחק.",
+            "openLesson": "לפתוח את השיעור",
+            "allLessons": "השיעורים שלי"
           }
         },
         "homeroom": {

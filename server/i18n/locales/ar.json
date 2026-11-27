@@ -5044,7 +5044,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "هذا يزيله من الفصل. تبقى أعمال الطلاب محفوظة."
+            "unassign": "هذا يزيله من الفصل. تبقى أعمال الطلاب محفوظة.",
+            "students": "سيرى الطلاب هذا.",
+            "classroom": "هذا يُنشر في Google Classroom: سيراه الطلاب هناك.",
+            "deleteSheet": "هذا يحذف ورقة العمل نهائيًا. تحتفظ الدروس المسندة من قبل بأسئلتها.",
+            "deleteBoard": "هذا يحذف اللوح نهائيًا.",
+            "deleteLesson": "هذا يحذف الدرس نهائيًا، مع إسناداته وأعمال الطلاب فيها."
           },
           "due": {
             "ask": "تغيير تواريخ «{title}» في {class}؟",
@@ -5056,6 +5061,68 @@
           "unassign": {
             "ask": "إزالة «{title}» من {class}؟",
             "done": "أُزيل «{title}» من {class}."
+          },
+          "seeWork": "عرض الأعمال",
+          "lesson": {
+            "ask": "إسناد الدرس «{title}» إلى {class}؟",
+            "done": "أُسند الدرس «{title}» إلى {class}."
+          },
+          "sheet": {
+            "ask": "إسناد ورقة العمل «{title}» إلى {class}؟",
+            "done": "أُسندت ورقة العمل «{title}» إلى {class}."
+          },
+          "practice": {
+            "ask": "إسناد تدريب من اللوح «{title}» إلى {class}؟",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, zero {لا أسئلة} one {سؤال واحد} two {سؤالان} few {# أسئلة} many {# سؤالًا} other {# سؤال}} لكل مهمة",
+            "done": "أُسند «{title}» إلى {class}: {count, plural, zero {لا أسئلة} one {سؤال واحد} two {سؤالان} few {# أسئلة} many {# سؤالًا} other {# سؤال}}."
+          },
+          "unit": {
+            "ask": "إضافة الوحدة «{name}» إلى {class}؟",
+            "done": "أُضيفت الوحدة «{name}» إلى {class}."
+          },
+          "renameUnit": {
+            "ask": "إعادة تسمية الوحدة «{old}» في {class} إلى «{name}»؟",
+            "done": "صار اسم الوحدة «{name}»."
+          },
+          "move": {
+            "up": "رفع «{title}» مكانًا واحدًا في {class}؟",
+            "down": "إنزال «{title}» مكانًا واحدًا في {class}؟",
+            "movedUp": "ارتفع «{title}» مكانًا واحدًا.",
+            "movedDown": "نزل «{title}» مكانًا واحدًا."
+          },
+          "classroom": {
+            "ask": "نشر «{title}» من {class} في Google Classroom؟",
+            "course": "فصل Classroom: {course}",
+            "done": "نُشر «{title}» في Google Classroom.",
+            "scheduled": "يبقى مسودة في Classroom حتى يُفتح في {day}.",
+            "pastDue": "فات موعد التسليم، فنُشر من دون موعد.",
+            "open": "فتح في Classroom",
+            "page": "صفحة Google Classroom"
+          },
+          "made": {
+            "renameSheet": "إعادة تسمية ورقة العمل «{old}» إلى «{title}»؟",
+            "renamedSheet": "صار اسم ورقة العمل «{title}».",
+            "deleteSheet": "حذف ورقة العمل «{title}»؟",
+            "deletedSheet": "حُذفت ورقة العمل «{title}».",
+            "openSheet": "فتح ورقة العمل",
+            "allSheets": "أوراق العمل الخاصة بي",
+            "renameBoard": "إعادة تسمية اللوح «{old}» إلى «{title}»؟",
+            "renamedBoard": "صار اسم اللوح «{title}».",
+            "copyBoard": "عمل نسخة من اللوح «{title}»؟",
+            "copiedBoard": "صُنعت نسخة: «{title}».",
+            "deleteBoard": "حذف اللوح «{title}»؟",
+            "deletedBoard": "حُذف اللوح «{title}».",
+            "openBoard": "فتح اللوح",
+            "allBoards": "ألواحي",
+            "copyLesson": "عمل نسخة من الدرس «{title}»؟",
+            "copiedLesson": "صُنعت نسخة: «{title}».",
+            "deleteLesson": "حذف الدرس «{title}»؟",
+            "inClasses": "{count, plural, zero {ليس مسندًا إلى أي فصل.} one {مسند إلى فصل واحد.} two {مسند إلى فصلين.} few {مسند إلى # فصول.} many {مسند إلى # فصلًا.} other {مسند إلى # فصل.}}",
+            "withWork": "{count, plural, zero {لا أعمال للطلاب فيه.} one {لطالب واحد عمل فيه.} two {لطالبين عمل فيه.} few {لـ# طلاب عمل فيه.} many {لـ# طالبًا عمل فيه.} other {لـ# طالب عمل فيه.}}",
+            "deletedLesson": "حُذف الدرس «{title}».",
+            "openLesson": "فتح الدرس",
+            "allLessons": "دروسي"
           }
         },
         "homeroom": {

@@ -5043,7 +5043,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "這會把它從班級移除。學生的作業會保留。"
+            "unassign": "這會把它從班級移除。學生的作業會保留。",
+            "students": "學生會看到這個。",
+            "classroom": "這會張貼到 Google Classroom：那裡的學生會看到。",
+            "deleteSheet": "這會永久刪除這份學習單。已經指派的課程會保留題目。",
+            "deleteBoard": "這會永久刪除這塊白板。",
+            "deleteLesson": "這會永久刪除這堂課，連同它的指派和學生在其中的作業。"
           },
           "due": {
             "ask": "要變更 {class} 中「{title}」的日期嗎？",
@@ -5055,6 +5060,68 @@
           "unassign": {
             "ask": "要把「{title}」從 {class} 移除嗎？",
             "done": "已把「{title}」從 {class} 移除。"
+          },
+          "seeWork": "查看作業",
+          "lesson": {
+            "ask": "要把課程「{title}」指派給 {class} 嗎？",
+            "done": "已把課程「{title}」指派給 {class}。"
+          },
+          "sheet": {
+            "ask": "要把學習單「{title}」指派給 {class} 嗎？",
+            "done": "已把學習單「{title}」指派給 {class}。"
+          },
+          "practice": {
+            "ask": "要把白板「{title}」的練習指派給 {class} 嗎？",
+            "tasks": "{tool}：{tasks}",
+            "count": "每項任務 {count} 題",
+            "done": "已把「{title}」指派給 {class}：{count} 題。"
+          },
+          "unit": {
+            "ask": "要在 {class} 加入單元「{name}」嗎？",
+            "done": "已在 {class} 加入單元「{name}」。"
+          },
+          "renameUnit": {
+            "ask": "要把 {class} 的單元「{old}」改名為「{name}」嗎？",
+            "done": "單元已改名為「{name}」。"
+          },
+          "move": {
+            "up": "要在 {class} 把「{title}」往上移一格嗎？",
+            "down": "要在 {class} 把「{title}」往下移一格嗎？",
+            "movedUp": "已把「{title}」往上移一格。",
+            "movedDown": "已把「{title}」往下移一格。"
+          },
+          "classroom": {
+            "ask": "要把 {class} 的「{title}」張貼到 Google Classroom 嗎？",
+            "course": "Classroom 課程：{course}",
+            "done": "已把「{title}」張貼到 Google Classroom。",
+            "scheduled": "在 {day} 開放前，它在 Classroom 中會是草稿。",
+            "pastDue": "繳交日已過，所以張貼時沒有繳交日。",
+            "open": "在 Classroom 開啟",
+            "page": "Google Classroom 頁面"
+          },
+          "made": {
+            "renameSheet": "要把學習單「{old}」改名為「{title}」嗎？",
+            "renamedSheet": "學習單已改名為「{title}」。",
+            "deleteSheet": "要刪除學習單「{title}」嗎？",
+            "deletedSheet": "已刪除學習單「{title}」。",
+            "openSheet": "開啟學習單",
+            "allSheets": "我的學習單",
+            "renameBoard": "要把白板「{old}」改名為「{title}」嗎？",
+            "renamedBoard": "白板已改名為「{title}」。",
+            "copyBoard": "要複製白板「{title}」嗎？",
+            "copiedBoard": "已複製：「{title}」。",
+            "deleteBoard": "要刪除白板「{title}」嗎？",
+            "deletedBoard": "已刪除白板「{title}」。",
+            "openBoard": "開啟白板",
+            "allBoards": "我的白板",
+            "copyLesson": "要複製課程「{title}」嗎？",
+            "copiedLesson": "已複製：「{title}」。",
+            "deleteLesson": "要刪除課程「{title}」嗎？",
+            "inClasses": "已指派給 {count} 個班級。",
+            "withWork": "有 {count} 位學生在其中有作業。",
+            "deletedLesson": "已刪除課程「{title}」。",
+            "openLesson": "開啟課程",
+            "allLessons": "我的課程"
           }
         },
         "homeroom": {

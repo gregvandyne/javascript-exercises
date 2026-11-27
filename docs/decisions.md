@@ -16656,3 +16656,19 @@ card and tap (assign, createClass, givePoint...). From here on every other teach
    (`boot()`, `world()`, `ask()`, `doIt()`, `undo()`, `refused()`, `sentToAi()`, `storedTurns()`): the card comes and
    nothing changes before the tap; the tap does it (assert the database); verify ok; Undo restores; the refusals end
    "Nothing was changed."; nothing private reaches the AI or the stored chat.
+5. **Outside the site** (risk `external`): an action that calls another service (Google Classroom) gives
+   `send(u, data) -> Promise<{ ok } | { ok: false, code }>`. Its dry run (before the card and on the tap) only checks the
+   page's rules and sends nothing; on Do it, `send()` is awaited once per card (services/companion.js actionAct,
+   `AC.sendAction`), then `run(u, data, value, { dry: false, sent })` reads the result back in the transaction. A call
+   that fails leaves the card "Not done" and writes nothing.
+
+**Assignments, lessons and made things** (`assignments.js`, `made.js`; strings under `js.companion.act.assignments.*`,
+area `assignments` for both): `assignLesson` (L.assign of one of the teacher's own lessons, days, some students; Undo
+unassigns), `assignWorksheet` (risk students; FS.assignWorksheet; Undo unassigns the class lesson it made),
+`assignBoard` (risk students; MT.assign: practice tasks of the board's tool, named by the teacher, a count each; Undo
+unassigns), `createUnit` (Undo deletes it while empty), `renameUnit` (Undo renames back), `reorderAssignment` (one
+place up or down; Undo the other way), `postToClassroom` (risk external; GC.postLesson only with Classroom on, the
+teacher connected and allowed to post, the class linked, not for some students; no Undo), `renameWorksheet` and
+`renameBoard` (Undo renames back), `duplicateBoard` and `duplicateLesson` (Undo deletes the copy while it is as made),
+`deleteWorksheet`, `deleteBoard`, `deleteLesson` (risk delete; none of them has a restore, so no Undo and the card says
+so; deleteLesson's card counts its classes and the students with work in it).

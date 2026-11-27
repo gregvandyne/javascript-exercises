@@ -5044,7 +5044,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Damit wird es aus der Klasse genommen. Die Arbeiten der Kinder bleiben erhalten."
+            "unassign": "Damit wird es aus der Klasse genommen. Die Arbeiten der Kinder bleiben erhalten.",
+            "students": "Die Kinder sehen das.",
+            "classroom": "Damit wird es in Google Classroom gepostet: Die Kinder dort sehen es.",
+            "deleteSheet": "Damit wird das Arbeitsblatt endgültig gelöscht. Schon zugewiesene Lektionen behalten ihre Aufgaben.",
+            "deleteBoard": "Damit wird die Tafel endgültig gelöscht.",
+            "deleteLesson": "Damit wird die Lektion endgültig gelöscht, mit ihren Zuweisungen und den Arbeiten der Kinder darin."
           },
           "due": {
             "ask": "Die Daten von „{title}“ in {class} ändern?",
@@ -5056,6 +5061,68 @@
           "unassign": {
             "ask": "„{title}“ aus {class} nehmen?",
             "done": "„{title}“ aus {class} genommen."
+          },
+          "seeWork": "Arbeiten ansehen",
+          "lesson": {
+            "ask": "Die Lektion „{title}“ {class} zuweisen?",
+            "done": "Die Lektion „{title}“ wurde {class} zugewiesen."
+          },
+          "sheet": {
+            "ask": "Das Arbeitsblatt „{title}“ {class} zuweisen?",
+            "done": "Das Arbeitsblatt „{title}“ wurde {class} zugewiesen."
+          },
+          "practice": {
+            "ask": "Übungen von der Tafel „{title}“ {class} zuweisen?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# Aufgabe} other {# Aufgaben}} pro Übung",
+            "done": "„{title}“ wurde {class} zugewiesen: {count, plural, one {# Aufgabe} other {# Aufgaben}}."
+          },
+          "unit": {
+            "ask": "Die Einheit „{name}“ zu {class} hinzufügen?",
+            "done": "Die Einheit „{name}“ wurde zu {class} hinzugefügt."
+          },
+          "renameUnit": {
+            "ask": "Die Einheit „{old}“ in {class} in „{name}“ umbenennen?",
+            "done": "Die Einheit heißt jetzt „{name}“."
+          },
+          "move": {
+            "up": "„{title}“ in {class} einen Platz nach oben schieben?",
+            "down": "„{title}“ in {class} einen Platz nach unten schieben?",
+            "movedUp": "„{title}“ ist einen Platz nach oben gerückt.",
+            "movedDown": "„{title}“ ist einen Platz nach unten gerückt."
+          },
+          "classroom": {
+            "ask": "„{title}“ aus {class} in Google Classroom posten?",
+            "course": "Classroom-Kurs: {course}",
+            "done": "„{title}“ wurde in Google Classroom gepostet.",
+            "scheduled": "In Classroom bleibt es ein Entwurf, bis es am {day} öffnet.",
+            "pastDue": "Der Abgabetag ist vorbei, deshalb ging es ohne Abgabetag.",
+            "open": "In Classroom öffnen",
+            "page": "Google-Classroom-Seite"
+          },
+          "made": {
+            "renameSheet": "Das Arbeitsblatt „{old}“ in „{title}“ umbenennen?",
+            "renamedSheet": "Das Arbeitsblatt heißt jetzt „{title}“.",
+            "deleteSheet": "Das Arbeitsblatt „{title}“ löschen?",
+            "deletedSheet": "Das Arbeitsblatt „{title}“ wurde gelöscht.",
+            "openSheet": "Arbeitsblatt öffnen",
+            "allSheets": "Meine Arbeitsblätter",
+            "renameBoard": "Die Tafel „{old}“ in „{title}“ umbenennen?",
+            "renamedBoard": "Die Tafel heißt jetzt „{title}“.",
+            "copyBoard": "Eine Kopie der Tafel „{title}“ machen?",
+            "copiedBoard": "Kopie gemacht: „{title}“.",
+            "deleteBoard": "Die Tafel „{title}“ löschen?",
+            "deletedBoard": "Die Tafel „{title}“ wurde gelöscht.",
+            "openBoard": "Tafel öffnen",
+            "allBoards": "Meine Tafeln",
+            "copyLesson": "Eine Kopie der Lektion „{title}“ machen?",
+            "copiedLesson": "Kopie gemacht: „{title}“.",
+            "deleteLesson": "Die Lektion „{title}“ löschen?",
+            "inClasses": "{count, plural, one {Sie ist # Klasse zugewiesen.} other {Sie ist # Klassen zugewiesen.}}",
+            "withWork": "{count, plural, one {# Kind hat darin gearbeitet.} other {# Kinder haben darin gearbeitet.}}",
+            "deletedLesson": "Die Lektion „{title}“ wurde gelöscht.",
+            "openLesson": "Lektion öffnen",
+            "allLessons": "Meine Lektionen"
           }
         },
         "homeroom": {

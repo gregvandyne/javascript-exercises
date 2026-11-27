@@ -5043,7 +5043,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Esto lo quita de la clase. Se conserva el trabajo de los estudiantes."
+            "unassign": "Esto lo quita de la clase. Se conserva el trabajo de los estudiantes.",
+            "students": "Los estudiantes lo verán.",
+            "classroom": "Esto publica en Google Classroom: los estudiantes de allí lo verán.",
+            "deleteSheet": "Esto borra la hoja de trabajo para siempre. Las lecciones ya asignadas conservan sus preguntas.",
+            "deleteBoard": "Esto borra el tablero para siempre.",
+            "deleteLesson": "Esto borra la lección para siempre, con sus asignaciones y el trabajo de los estudiantes en ellas."
           },
           "due": {
             "ask": "¿Cambiar las fechas de «{title}» en {class}?",
@@ -5055,6 +5060,68 @@
           "unassign": {
             "ask": "¿Quitar «{title}» de {class}?",
             "done": "Se quitó «{title}» de {class}."
+          },
+          "seeWork": "Ver el trabajo",
+          "lesson": {
+            "ask": "¿Asignar la lección «{title}» a {class}?",
+            "done": "Se asignó la lección «{title}» a {class}."
+          },
+          "sheet": {
+            "ask": "¿Asignar la hoja de trabajo «{title}» a {class}?",
+            "done": "Se asignó la hoja de trabajo «{title}» a {class}."
+          },
+          "practice": {
+            "ask": "¿Asignar práctica del tablero «{title}» a {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# pregunta} other {# preguntas}} de cada tarea",
+            "done": "Se asignó «{title}» a {class}: {count, plural, one {# pregunta} other {# preguntas}}."
+          },
+          "unit": {
+            "ask": "¿Añadir la unidad «{name}» a {class}?",
+            "done": "Se añadió la unidad «{name}» a {class}."
+          },
+          "renameUnit": {
+            "ask": "¿Cambiar el nombre de la unidad «{old}» de {class} a «{name}»?",
+            "done": "La unidad ahora se llama «{name}»."
+          },
+          "move": {
+            "up": "¿Subir «{title}» un lugar en {class}?",
+            "down": "¿Bajar «{title}» un lugar en {class}?",
+            "movedUp": "«{title}» subió un lugar.",
+            "movedDown": "«{title}» bajó un lugar."
+          },
+          "classroom": {
+            "ask": "¿Publicar «{title}» de {class} en Google Classroom?",
+            "course": "Clase de Classroom: {course}",
+            "done": "Se publicó «{title}» en Google Classroom.",
+            "scheduled": "Queda como borrador en Classroom hasta que se abra el {day}.",
+            "pastDue": "La fecha de entrega ya pasó, así que se publicó sin ella.",
+            "open": "Abrir en Classroom",
+            "page": "Página de Google Classroom"
+          },
+          "made": {
+            "renameSheet": "¿Cambiar el nombre de la hoja de trabajo «{old}» a «{title}»?",
+            "renamedSheet": "La hoja de trabajo ahora se llama «{title}».",
+            "deleteSheet": "¿Borrar la hoja de trabajo «{title}»?",
+            "deletedSheet": "Se borró la hoja de trabajo «{title}».",
+            "openSheet": "Abrir la hoja de trabajo",
+            "allSheets": "Ver mis hojas de trabajo",
+            "renameBoard": "¿Cambiar el nombre del tablero «{old}» a «{title}»?",
+            "renamedBoard": "El tablero ahora se llama «{title}».",
+            "copyBoard": "¿Hacer una copia del tablero «{title}»?",
+            "copiedBoard": "Copia hecha: «{title}».",
+            "deleteBoard": "¿Borrar el tablero «{title}»?",
+            "deletedBoard": "Se borró el tablero «{title}».",
+            "openBoard": "Abrir el tablero",
+            "allBoards": "Ver mis tableros",
+            "copyLesson": "¿Hacer una copia de la lección «{title}»?",
+            "copiedLesson": "Copia hecha: «{title}».",
+            "deleteLesson": "¿Borrar la lección «{title}»?",
+            "inClasses": "{count, plural, one {Está asignada a # clase.} other {Está asignada a # clases.}}",
+            "withWork": "{count, plural, one {# estudiante tiene trabajo en ella.} other {# estudiantes tienen trabajo en ella.}}",
+            "deletedLesson": "Se borró la lección «{title}».",
+            "openLesson": "Abrir la lección",
+            "allLessons": "Ver mis lecciones"
           }
         },
         "homeroom": {

@@ -5044,7 +5044,12 @@
         },
         "assignments": {
           "warn": {
-            "unassign": "Dit haalt het uit de klas. Het werk van de leerlingen blijft bewaard."
+            "unassign": "Dit haalt het uit de klas. Het werk van de leerlingen blijft bewaard.",
+            "students": "Leerlingen zien dit.",
+            "classroom": "Dit plaatst het in Google Classroom: de leerlingen daar zien het.",
+            "deleteSheet": "Dit verwijdert het werkblad voorgoed. Lessen die al zijn toegewezen houden hun vragen.",
+            "deleteBoard": "Dit verwijdert het bord voorgoed.",
+            "deleteLesson": "Dit verwijdert de les voorgoed, met de toewijzingen en het werk van de leerlingen daarin."
           },
           "due": {
             "ask": "De datums van ‘{title}’ in {class} wijzigen?",
@@ -5056,6 +5061,68 @@
           "unassign": {
             "ask": "‘{title}’ uit {class} halen?",
             "done": "‘{title}’ uit {class} gehaald."
+          },
+          "seeWork": "Bekijk het werk",
+          "lesson": {
+            "ask": "De les ‘{title}’ toewijzen aan {class}?",
+            "done": "De les ‘{title}’ is toegewezen aan {class}."
+          },
+          "sheet": {
+            "ask": "Het werkblad ‘{title}’ toewijzen aan {class}?",
+            "done": "Het werkblad ‘{title}’ is toegewezen aan {class}."
+          },
+          "practice": {
+            "ask": "Oefening van het bord ‘{title}’ toewijzen aan {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# vraag} other {# vragen}} per taak",
+            "done": "‘{title}’ is toegewezen aan {class}: {count, plural, one {# vraag} other {# vragen}}."
+          },
+          "unit": {
+            "ask": "De eenheid ‘{name}’ toevoegen aan {class}?",
+            "done": "De eenheid ‘{name}’ is toegevoegd aan {class}."
+          },
+          "renameUnit": {
+            "ask": "De eenheid ‘{old}’ in {class} hernoemen naar ‘{name}’?",
+            "done": "De eenheid heet nu ‘{name}’."
+          },
+          "move": {
+            "up": "‘{title}’ in {class} één plek omhoog zetten?",
+            "down": "‘{title}’ in {class} één plek omlaag zetten?",
+            "movedUp": "‘{title}’ staat één plek hoger.",
+            "movedDown": "‘{title}’ staat één plek lager."
+          },
+          "classroom": {
+            "ask": "‘{title}’ van {class} in Google Classroom plaatsen?",
+            "course": "Classroom-klas: {course}",
+            "done": "‘{title}’ is in Google Classroom geplaatst.",
+            "scheduled": "Het blijft een concept in Classroom tot het op {day} opengaat.",
+            "pastDue": "De inleverdatum is voorbij, dus het ging zonder datum.",
+            "open": "Openen in Classroom",
+            "page": "Google Classroom-pagina"
+          },
+          "made": {
+            "renameSheet": "Het werkblad ‘{old}’ hernoemen naar ‘{title}’?",
+            "renamedSheet": "Het werkblad heet nu ‘{title}’.",
+            "deleteSheet": "Het werkblad ‘{title}’ verwijderen?",
+            "deletedSheet": "Het werkblad ‘{title}’ is verwijderd.",
+            "openSheet": "Open het werkblad",
+            "allSheets": "Mijn werkbladen",
+            "renameBoard": "Het bord ‘{old}’ hernoemen naar ‘{title}’?",
+            "renamedBoard": "Het bord heet nu ‘{title}’.",
+            "copyBoard": "Een kopie maken van het bord ‘{title}’?",
+            "copiedBoard": "Kopie gemaakt: ‘{title}’.",
+            "deleteBoard": "Het bord ‘{title}’ verwijderen?",
+            "deletedBoard": "Het bord ‘{title}’ is verwijderd.",
+            "openBoard": "Open het bord",
+            "allBoards": "Mijn borden",
+            "copyLesson": "Een kopie maken van de les ‘{title}’?",
+            "copiedLesson": "Kopie gemaakt: ‘{title}’.",
+            "deleteLesson": "De les ‘{title}’ verwijderen?",
+            "inClasses": "{count, plural, one {Hij is toegewezen aan # klas.} other {Hij is toegewezen aan # klassen.}}",
+            "withWork": "{count, plural, one {# leerling heeft er werk in.} other {# leerlingen hebben er werk in.}}",
+            "deletedLesson": "De les ‘{title}’ is verwijderd.",
+            "openLesson": "Open de les",
+            "allLessons": "Mijn lessen"
           }
         },
         "homeroom": {
