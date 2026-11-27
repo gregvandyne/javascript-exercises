@@ -87,7 +87,7 @@ export const boardHref = id => `/manipulatives#board/${encodeURIComponent(id)}`;
 const NUM = '(-?\\d+(?:\\.\\d+)?)';
 /** The facts a worksheet request states, read from the teacher's words: { range: [a, b] | null, whole, plot, format }. */
 export function requestFacts(text) {
-  const s = String(text || '').toLowerCase().replace(/[–—]/g, '-');
+  const s = String(text || '').toLowerCase().replace(/[\u2013\u2014]/g, '-');
   let m = new RegExp(`\\bfrom\\s+${NUM}\\s+(?:to|through|-)\\s+${NUM}`).exec(s);
   if (!m && /\bline\b|\brange\b/.test(s)) m = new RegExp(`\\b${NUM}\\s*(?:to|through|-)\\s*${NUM}\\b`).exec(s);
   const range = m && +m[2] > +m[1] ? [+m[1], +m[2]] : null;
