@@ -5013,6 +5013,85 @@
             "ask": "Togliere «{title}» da {class}?",
             "done": "«{title}» tolto da {class}."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Questo va sui banchi degli studenti.",
+            "takeBack": "Questo lo toglie dai banchi degli studenti. Il loro lavoro resta.",
+            "live": "Questo cambia ciò che mostrano gli schermi degli studenti.",
+            "parents": "I genitori vedranno questa classe finché la vista genitori è attiva."
+          },
+          "who": "Studenti: {names}",
+          "openHub": "Apri lo Hub",
+          "att": {
+            "absent": "Segnare {count, plural, one {# studente} other {# studenti}} assente oggi in {class}?",
+            "home": "Segnare {count, plural, one {# studente} other {# studenti}} a casa oggi in {class}?",
+            "here": "Segnare {count, plural, one {# studente} other {# studenti}} presente oggi in {class}?",
+            "everyone": "Segnare tutti presenti oggi in {class}?",
+            "doneAbsent": "{count, plural, one {# studente segnato} other {# studenti segnati}} assente oggi.",
+            "doneHome": "{count, plural, one {# studente segnato} other {# studenti segnati}} a casa oggi.",
+            "doneHere": "{count, plural, one {# studente segnato} other {# studenti segnati}} presente oggi.",
+            "doneEveryone": "Tutti in {class} sono segnati presenti oggi."
+          },
+          "sup": {
+            "ask": "Cambiare i supporti di {name} in {class}?",
+            "done": "I supporti di {name} sono cambiati.",
+            "timeOff": "Nessun tempo in più",
+            "time150": "Tempo in più: 1,5 volte",
+            "time200": "Tempo in più: il doppio",
+            "read": "Lettura ad alta voce",
+            "simple": "Parole più semplici",
+            "big": "Testo più grande",
+            "none": "Nessun supporto"
+          },
+          "groups": {
+            "ask": "Fare {count, plural, one {# gruppo} other {# gruppi}} in {class}?",
+            "done": "{count, plural, one {Fatto # gruppo} other {Fatti # gruppi}} in {class}.",
+            "name": "Gruppo {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: ancora nessuno",
+            "rest": "{count, plural, one {# studente non è} other {# studenti non sono}} in nessun gruppo."
+          },
+          "hand": {
+            "ask": "Distribuire “{title}” a {who} in {class}?",
+            "done": "“{title}” distribuito a {who}.",
+            "everyone": "tutti i banchi",
+            "group": "il gruppo {group}"
+          },
+          "back": {
+            "askAll": "Togliere “{title}” da tutti i banchi in {class}?",
+            "askOne": "Togliere “{title}” dal banco di {name}?",
+            "doneAll": "“{title}” tolto da tutti i banchi.",
+            "doneOne": "“{title}” tolto dal banco di {name}."
+          },
+          "needs": {
+            "seen": "Segnare {name} come visto in Da guardare?",
+            "snooze": "Rimandare {name} in Da guardare fino al prossimo giorno di scuola?",
+            "seenDone": "{name} segnato come visto.",
+            "snoozeDone": "{name} rimandato al prossimo giorno di scuola.",
+            "rule": {
+              "stuck": "Bloccato su un’attività",
+              "hand": "Una mano alzata da un po’",
+              "ask": "Una domanda da casa in attesa",
+              "tries": "Diversi tentativi senza riuscirci",
+              "reading": "Un quiz di lettura sotto il 60 per cento",
+              "overdue": "Lavoro che si accumula dopo la scadenza"
+            }
+          },
+          "live": {
+            "start": "Iniziare la lezione dal vivo in {class}?",
+            "startLine": "Ogni banco viene chiamato allo Hub e l’accesso della classe si apre.",
+            "end": "Terminare la lezione dal vivo in {class}?",
+            "endLine": "L’accesso della classe si chiude e i dispositivi condivisi della classe vengono disconnessi.",
+            "started": "Lezione dal vivo iniziata in {class}.",
+            "ended": "Lezione dal vivo terminata in {class}."
+          },
+          "parents": {
+            "on": "Attivare la vista genitori di {class}?",
+            "off": "Disattivare la vista genitori di {class}?",
+            "onDone": "La vista genitori di {class} è attiva.",
+            "offDone": "La vista genitori di {class} è disattivata."
+          }
         }
       }
     },

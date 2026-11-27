@@ -5471,6 +5471,85 @@
             "ask": "Take “{title}” off {class}?",
             "done": "Took “{title}” off {class}."
           }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "This goes on students' desks.",
+            "takeBack": "This takes it off students' desks. Their work is kept.",
+            "live": "This changes what students' screens show.",
+            "parents": "Parents will see this class while the parents' view is on."
+          },
+          "who": "Students: {names}",
+          "openHub": "Open the Hub",
+          "att": {
+            "absent": "Mark {count, plural, one {# student} other {# students}} absent today in {class}?",
+            "home": "Mark {count, plural, one {# student} other {# students}} at home today in {class}?",
+            "here": "Mark {count, plural, one {# student} other {# students}} here today in {class}?",
+            "everyone": "Mark everyone in {class} here today?",
+            "doneAbsent": "Marked {count, plural, one {# student} other {# students}} absent today.",
+            "doneHome": "Marked {count, plural, one {# student} other {# students}} at home today.",
+            "doneHere": "Marked {count, plural, one {# student} other {# students}} here today.",
+            "doneEveryone": "Everyone in {class} is marked here today."
+          },
+          "sup": {
+            "ask": "Change the supports of {name} in {class}?",
+            "done": "Changed the supports of {name}.",
+            "timeOff": "No extra time",
+            "time150": "Extra time: 1.5 times",
+            "time200": "Extra time: double",
+            "read": "Read aloud",
+            "simple": "Simpler wording",
+            "big": "Bigger text",
+            "none": "No supports"
+          },
+          "groups": {
+            "ask": "Make {count, plural, one {# group} other {# groups}} in {class}?",
+            "done": "Made {count, plural, one {# group} other {# groups}} in {class}.",
+            "name": "Group {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: nobody yet",
+            "rest": "{count, plural, one {# student is} other {# students are}} in no group."
+          },
+          "hand": {
+            "ask": "Hand out “{title}” to {who} in {class}?",
+            "done": "Handed out “{title}” to {who}.",
+            "everyone": "every desk",
+            "group": "the group {group}"
+          },
+          "back": {
+            "askAll": "Take “{title}” off every desk in {class}?",
+            "askOne": "Take “{title}” off the desk of {name}?",
+            "doneAll": "Took “{title}” off every desk.",
+            "doneOne": "Took “{title}” off the desk of {name}."
+          },
+          "needs": {
+            "seen": "Mark {name} as seen on Needs a look?",
+            "snooze": "Snooze {name} on Needs a look until the next school day?",
+            "seenDone": "Marked {name} as seen.",
+            "snoozeDone": "Snoozed {name} until the next school day.",
+            "rule": {
+              "stuck": "Stuck on a handout",
+              "hand": "A hand up for a while",
+              "ask": "A question from home waiting",
+              "tries": "Several tries without getting there",
+              "reading": "A reading quiz under 60 percent",
+              "overdue": "Work piling up after due"
+            }
+          },
+          "live": {
+            "start": "Start live class in {class}?",
+            "startLine": "Every desk is asked to come to the Hub, and class sign-in opens.",
+            "end": "End live class in {class}?",
+            "endLine": "Class sign-in closes and the class's shared devices are signed out.",
+            "started": "Live class started in {class}.",
+            "ended": "Live class ended in {class}."
+          },
+          "parents": {
+            "on": "Turn on the parents' view of {class}?",
+            "off": "Turn off the parents' view of {class}?",
+            "onDone": "The parents' view of {class} is on.",
+            "offDone": "The parents' view of {class} is off."
+          }
         }
       }
     },
