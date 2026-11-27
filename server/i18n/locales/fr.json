@@ -5802,7 +5802,20 @@
       },
       "gapHolds": "{mark} après {word}",
       "mgap": "Espace après {word}",
-      "wrongMarks": "Pas tout à fait. Regarde encore les signes entre les mots. Réussis deux fois de suite pour finir ce niveau."
+      "wrongMarks": "Pas tout à fait. Regarde encore les signes entre les mots. Réussis deux fois de suite pour finir ce niveau.",
+      "counterAdded": "{count, plural, one {+# pour une erreur} other {+# pour des erreurs}}",
+      "tryAgain": "Réessaie celle-ci",
+      "seenBefore": "Une que tu as déjà vue",
+      "notSent": "Ta réponse n’est pas passée. Vérifie-la et appuie encore sur Valider.",
+      "resynced": "On reprend là où tu t’étais arrêté.",
+      "signedOut": "Tu as été déconnecté. Ta progression est enregistrée.",
+      "signIn": "Se reconnecter",
+      "fixed": "Corrigé !",
+      "fixedNote": "Seul le premier essai compte pour ta série.",
+      "levelLonger": "Ce niveau a eu {n} questions au lieu de {base} : chaque erreur en ajoute une, et un niveau se termine par deux bonnes réponses de suite.",
+      "doneElsewhere": "Tu as déjà terminé ce thème.",
+      "doneAdded": "Cela fait {base} questions, plus {count, plural, one {# pour une erreur} other {# pour des erreurs}}.",
+      "firstTry": "{n} sur {total} justes du premier coup"
     }
   },
   "favorites": {
@@ -16362,7 +16375,9 @@
       "started": "Continuer",
       "mastered": "Maîtrisé",
       "pending": "Connecte-toi pour le garder",
-      "locked": "Maîtrise d'abord le précédent"
+      "locked": "Maîtrise d'abord le précédent",
+      "levelOf": "Niveau {level} sur {levels}",
+      "also": "Compte aussi dans : {units}"
     },
     "guest": {
       "title": "Connecte-toi pour garder tes victoires",
@@ -16374,9 +16389,10 @@
     },
     "welcome": {
       "heading": "Bienvenue dans {topic}",
-      "text": "Continue à répondre jusqu'à montrer que tu sais. Réussis les deux dernières à la suite pour finir chaque niveau.",
       "go": "C'est parti",
-      "skip": "Passer l'intro"
+      "skip": "Passer l'intro",
+      "rule": "Chaque niveau a {per} questions. Termine-le avec deux bonnes réponses de suite. Seules les réponses du premier coup comptent pour la série.",
+      "count": "{total} questions, plus une pour chaque erreur."
     },
     "practice": {
       "tip": "Comment marche le double appui",
@@ -16463,6 +16479,12 @@
       "passed": "Salle de relecture réussie",
       "locked": "Ouvre d'abord le thème",
       "back": "Retour à {topic}"
+    },
+    "loading": "Préparation de ta leçon",
+    "progress": {
+      "band": "{mastered} maîtrisés · {started} en cours",
+      "unit": "{started} en cours",
+      "unitHead": "{mastered} sur {total} maîtrisés · {started} en cours"
     }
   }
 }

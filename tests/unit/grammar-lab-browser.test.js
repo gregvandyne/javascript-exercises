@@ -53,7 +53,7 @@ async function waitFlashGone(page) { await page.waitForSelector('#gl-correct', {
 async function playToMastery(page, tag, { guest = false } = {}) {
   // The course page: the K-2 band and its unit, with its ring; the unit opens from there.
   await page.goto(base + '/courses/grammar-lab');
-  assert.match(await page.textContent('#gl-unit-adjectives-and-adverbs'), /Adjectives and Adverbs\s*1 topic/);
+  assert.match(await page.textContent('#gl-unit-adjectives-and-adverbs'), /Adjectives and Adverbs\s*2 topics/);
   await shot(page, tag, '00-course');
   await noSideScroll(page, 'course');
   await page.click('#gl-unit-adjectives-and-adverbs');
@@ -94,24 +94,20 @@ async function playToMastery(page, tag, { guest = false } = {}) {
   await page.waitForSelector('#gl-bubble:not([hidden])');
   assert.match(await page.textContent('#gl-bubble'), /adjective.*tells about a noun/);
   await shot(page, tag, '07-double-tap');
-  await page.click('#gl-counter');
-  // A near miss: too many words.
+  await page.click('#gl-streak-t');
+  // One word to find: a tap moves the pick (a second word replaces the first; no "too many words" here).
   let text = await sentence(page), ans = answerFor(text);
   const other = tokenize(text).findIndex((_, i) => !ans.includes(i));
   await tap(page, [...ans, other]);
   assert.equal(await page.getAttribute(`#gl-sentence .gl-w[data-i="${other}"]`, 'aria-pressed'), 'true');
-  await page.click('#gl-submit');
-  await page.waitForSelector('#gl-notice.gl-notice-near:not([hidden])');
-  assert.match(await page.textContent('#gl-notice'), /too many words/);
-  assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12', 'a near miss is not counted');
-  assert.ok(await page.isHidden('#gl-hint-btn'), 'no hint after a near miss');
-  await shot(page, tag, '08-near-miss');
-  // A wrong answer: unpick the right word so only the wrong one stays marked.
-  await tap(page, ans);
+  assert.equal(await page.getAttribute(`#gl-sentence .gl-w[data-i="${ans[0]}"]`, 'aria-pressed'), 'false', 'the pick moved');
+  await shot(page, tag, '08-single-pick');
+  // A wrong answer: the picks clear, so the student starts fresh.
   await page.click('#gl-submit');
   await page.waitForSelector('#gl-notice.gl-notice-wrong:not([hidden])');
   assert.match(await page.textContent('#gl-notice'), /Not quite.*two right in a row/);
-  assert.equal(await page.getAttribute(`#gl-sentence .gl-w[data-i="${other}"]`, 'aria-pressed'), 'true', 'the wrong pick stays marked');
+  assert.equal(await page.locator('#gl-sentence .gl-w[aria-pressed="true"]').count(), 0, 'nothing stays picked after a wrong answer');
+  assert.ok(await page.isDisabled('#gl-submit'));
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 13', 'a wrong answer adds one question');
   assert.equal(await page.locator('#gl-streak .gl-pips i.on').count(), 0, 'the streak empties');
   await page.click('#gl-hint-btn');
@@ -123,7 +119,7 @@ async function playToMastery(page, tag, { guest = false } = {}) {
   await shot(page, tag, '09-wrong-hint');
   await noSideScroll(page, 'hint');
   // Fix it.
-  await tap(page, [other, ...ans]);
+  await tap(page, ans);
   await page.click('#gl-submit');
   await page.waitForSelector('#gl-correct:not([hidden])');
   await shot(page, tag, '10-correct');
@@ -150,7 +146,8 @@ async function playToMastery(page, tag, { guest = false } = {}) {
   await page.waitForSelector('#gl-done:not([hidden])');
   assert.match(await page.textContent('#gl-done-h'), /You mastered Identifying Adjectives!/);
   assert.match(await page.textContent('.gl-done-where'), /Adjectives and Adverbs · Identifying Adjectives/);
-  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
+  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions. That is 12 questions, plus 1 for a miss.');
+  assert.equal(await page.textContent('#gl-done-acc'), '12 of 13 right on the first try');
   assert.equal(await page.locator('#gl-bar .gl-seg-right').count(), 12);
   assert.equal(await page.locator('#gl-bar .gl-seg-missed').count(), 1);
   assert.equal(await page.isVisible('#gl-done-guest'), guest, 'the sign-in prompt for a guest only');

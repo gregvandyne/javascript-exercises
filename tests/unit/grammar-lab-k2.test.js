@@ -70,22 +70,23 @@ async function playTopic(u, unit, topic, { wrongFirst = false } = {}) {
 }
 
 // ------------------------------------------------------------------------------------------------- the build
-test('K-2 in full: 6 units, 11 topic slots, 9 topics (shared ones defined once), 12 items each, every source slot placed', () => {
+test('K-2 in full: 6 units, 12 topic slots, 10 topics (shared ones defined once), 12 items each, every source slot placed', () => {
   const { topics: all, rooms: allRooms, problems } = B.buildTopics(MD, PLAN, OVERRIDES);
   assert.deepEqual(problems, []);
   const topics = Object.fromEntries(K2_IDS.map(id => [id, all[id]]));
   const rooms = Object.fromEntries(Object.entries(allRooms).filter(([id]) => K2_IDS.includes(id)));
   const band = PLAN.bands.find(b => b.id === 'k-2');
   assert.equal(band.pathways.length, 6);
-  const slots = band.pathways.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics));
-  assert.equal(slots.length, 11);
-  assert.equal(new Set(slots).size, 9);
-  assert.equal(Object.keys(topics).length, 9);
+  // (a part with a band is only in that band's copy of the unit: Adjectives and Adverbs has its own adverb topic in each)
+  const slots = band.pathways.flatMap(p => PLAN.pathways[p].parts.filter(x => !x.band || x.band === 'k-2').flatMap(x => x.topics));
+  assert.equal(slots.length, 12);
+  assert.equal(new Set(slots).size, 10);
+  assert.equal(Object.keys(topics).length, 10);
   for (const t of Object.values(topics)) { assert.equal(t.items.length, 12, t.id); assert.equal(t.band, 'k-2'); assert.ok(t.card.definition && t.card.example && t.card.how && t.card.tips.length, `${t.id} card`); }
   // Every K-2 topic heading of the source, written in full or as "See ... above", is a topic in pathways.json.
   const sections = B.parseCourse(MD).filter(s => s.band === 'k-2');
   const srcTitles = sections.flatMap(s => s.pathways.flatMap(p => p.topics.map(t => t.title)));
-  assert.equal(srcTitles.length, 11, 'the source has 11 K-2 topic slots');
+  assert.equal(srcTitles.length, 12, 'the source has 12 K-2 topic slots');
   const byTitle = Object.fromEntries(K2_IDS.map(id => [PLAN.topics[id].source.title, PLAN.topics[id]]));
   for (const title of srcTitles) assert.ok(byTitle[title], `"${title}" is placed`);
   // The two shared topics are cross-references in the source and one id in every unit that uses them.
@@ -94,7 +95,7 @@ test('K-2 in full: 6 units, 11 topic slots, 9 topics (shared ones defined once),
   assert.deepEqual(k2Units('identifying-action-verbs'), ['kinds-of-words', 'verbs-and-time']);
   assert.deepEqual(k2Units('identifying-adjectives'), ['adjectives-and-adverbs', 'kinds-of-words']);
   assert.deepEqual(Object.fromEntries(Object.values(topics).map(t => [t.id, t.format])), {
-    'identifying-adjectives': 'tap', 'capitalizing-names-and-dates': 'capfix', 'capitalizing-titles': 'choice', 'commas-in-a-series': 'gaps',
+    'identifying-adjectives': 'tap', 'identifying-adverbs': 'tap', 'capitalizing-names-and-dates': 'capfix', 'capitalizing-titles': 'choice', 'commas-in-a-series': 'gaps',
     'commas-after-starting-phrases': 'choice', 'your-and-youre': 'choice', 'identifying-common-nouns': 'tap', 'identifying-action-verbs': 'tap', 'using-simple-tenses': 'choice' });
   assert.deepEqual(Object.keys(rooms).sort(), ['capitalizing-names-and-dates', 'capitalizing-titles', 'commas-in-a-series', 'your-and-youre']);
   // The committed topics.json is what the build makes now.
@@ -268,32 +269,32 @@ test('a shared topic mastered once shows mastered in every unit at once, opens w
   // Adjectives, shared by Adjectives and Adverbs and Kinds of Words: open in Kinds of Words now, mastered in both at once.
   master(kid, 'identifying-adjectives');
   for (const p of ['adjectives-and-adverbs', 'kinds-of-words']) assert.equal(GL.unitStates(kid, GL.pathway(p)).find(s => s.topic.id === 'identifying-adjectives').mastered, true, p);
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('kinds-of-words')), { done: 3, total: 3 });
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('adjectives-and-adverbs')), { done: 1, total: 1 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('kinds-of-words')), { done: 3, total: 3, started: 0 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('adjectives-and-adverbs')), { done: 1, total: 2, started: 0 });
 });
 
 test('locks within a unit; rings from live states; the next topic is worked out live and is never a mastered one', async () => {
   const kid = newKid();
   const cap = GL.pathway('capital-letters');
   assert.deepEqual(GL.unitStates(kid, cap).map(s => [s.topic.id, s.open, s.part]), [['capitalizing-names-and-dates', true, 'Names and Dates'], ['capitalizing-titles', false, 'Titles']]);
-  assert.deepEqual(GL.unitProgress(kid, cap), { done: 0, total: 2 });
+  assert.deepEqual(GL.unitProgress(kid, cap), { done: 0, total: 2, started: 0 });
   // The next topic: the first open one in this unit, else the band's next unit.
   assert.equal(GL.nextTopic(kid, cap).topic.id, 'capitalizing-names-and-dates');
   assert.equal(GL.nextTopic(kid, cap, 'capitalizing-names-and-dates').topic.id, 'identifying-adjectives', 'Titles is locked: the band\'s first open topic');
   master(kid, 'capitalizing-names-and-dates');
   assert.equal(GL.unitStates(kid, cap)[1].open, true);
-  assert.deepEqual(GL.unitProgress(kid, cap), { done: 1, total: 2 });
+  assert.deepEqual(GL.unitProgress(kid, cap), { done: 1, total: 2, started: 0 });
   assert.equal(GL.nextTopic(kid, cap).topic.id, 'capitalizing-titles');
   // Mastering the last of the unit: the suggestion moves to another unit, never back to a mastered topic.
   const last = await playTopic(kid, 'capital-letters', 'capitalizing-titles');
   assert.equal(last.closing.next.href, '/courses/grammar-lab/k-2/adjectives-and-adverbs/identifying-adjectives');
   master(kid, 'identifying-adjectives');
   const nxt = GL.nextTopic(kid, cap);
-  assert.equal(nxt.topic.id, 'commas-in-a-series'); assert.equal(nxt.unit.id, 'commas');
+  assert.equal(nxt.topic.id, 'identifying-adverbs', 'the band\'s first unit, its next topic'); assert.equal(nxt.unit.id, 'adjectives-and-adverbs');
   // Every K-2 topic mastered: there is no next topic, and no suggestion on the mastery screen.
   for (const id of Object.keys(PLAN.topics)) master(kid, id);
   assert.equal(GL.nextTopic(kid, cap), null);
-  for (const p of GL.pathwaysOf('k-2')) assert.deepEqual(GL.unitProgress(kid, p), { done: p.topics.length, total: p.topics.length }, p.id);
+  for (const p of GL.pathwaysOf('k-2')) assert.deepEqual(GL.unitProgress(kid, p), { done: p.topics.length, total: p.topics.length, started: 0 }, p.id);
   // The platform admin may open a locked topic (and still has to earn it).
   const boss = newKid('k2boss'); q.run("UPDATE users SET role='admin' WHERE id=?", boss.id);
   assert.equal(GL.unitStates({ ...boss, role: 'admin' }, cap)[1].open, true);

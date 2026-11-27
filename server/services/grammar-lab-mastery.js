@@ -10,8 +10,12 @@
 //   - The counter counts questions presented (each question once, however many tries). The bar has one segment per
 //     question in the topic's total; a segment fills (green) when its question is answered right, and a missed
 //     question's segment is marked as missed, never filled. Retries never count twice.
-// A new level starts with an empty streak. Items come in a seeded order; when a run needs more questions than the topic
-// has items, the missed ones come back first, never the one just shown.
+// A new level starts with an empty streak. Items come in a seeded order, each once. A missed item comes back later in
+// the run as "Try this one again" (owner, 2026-11-27): never right after it was missed (at least two other questions
+// in between while fresh ones remain), and two of them never back to back while a fresh item could go between. Once
+// every item has been shown, the missed ones come back again (never the one just shown). An item is never shown twice
+// otherwise: only when a run needs more questions than that allows (the topic's last item missed, say) does an item
+// answered right come back, least recently shown first, labeled as one seen before (cur.seen).
 import crypto from 'node:crypto';
 
 export const NEED_IN_A_ROW = 2;
@@ -32,26 +36,47 @@ export function seededOrder(seed, n) {
 /** A fresh run, with its first question presented. */
 export function newRun({ levels = DEFAULT_LEVELS, items, seed = 'run' }) {
   if (!Number.isInteger(items) || items < 1) throw new Error('newRun: no items');
-  const s = { v: 1, seed: String(seed), items, levels: levels.map(n => ({ quota: n, presented: 0 })), level: 0, streak: 0,
-    queue: seededOrder(`${seed}|0`, items), deal: 1, cur: null, history: [], presented: 0, mastered: false };
+  const s = { v: 2, seed: String(seed), items, levels: levels.map(n => ({ quota: n, presented: 0, base: n })), level: 0, streak: 0,
+    queue: seededOrder(`${seed}|0`, items), again: [], seq: [], deal: 1, cur: null, history: [], presented: 0, mastered: false };
   present(s);
   return s;
 }
-/** The next item: the queue's next; a new deal when it runs out (missed items first, not the one just shown). */
+/** Questions between a miss and its retry, at least (while fresh items remain). */
+export const RETRY_GAP = 2;
+/** The items shown so far, in order (a run from before v2 has only its history to go by). */
+const seqOf = s => (s.seq ||= s.history.map(h => h.item));
+/** The next item and how it is shown: { item, retry?, seen? }.
+ *  1. a missed item whose turn has come (RETRY_GAP questions after its miss), unless the last one was a retry too;
+ *  2. a fresh item (each item once, in the run's seeded order);
+ *  3. with no fresh item left: a missed item waiting for its retry, then any missed item (a second retry), least
+ *     recently shown first, never the one just shown;
+ *  4. only when nothing else can go: an item answered right, least recently shown first (seen: one from before). */
 function nextItem(s) {
-  if (!s.queue.length) {
-    const last = s.cur ? s.cur.item : -1;
-    const missed = [...new Set(s.history.filter(h => !h.ok).map(h => h.item))];
-    const rest = seededOrder(`${s.seed}|${s.deal++}`, s.items).filter(i => !missed.includes(i));
-    s.queue = [...missed, ...rest];
-    if (s.queue.length > 1 && s.queue[0] === last) s.queue.push(s.queue.shift());
-  }
-  return s.queue.shift();
+  const last = s.cur ? s.cur.item : -1, lastRetry = !!(s.cur && s.cur.retry), n = s.presented + 1;
+  s.again ||= [];
+  const take = a => { s.again.splice(s.again.indexOf(a), 1); return { item: a.item, retry: true }; };
+  const due = s.again.find(a => a.at <= n && a.item !== last);
+  if (due && !lastRetry) return take(due);
+  // (a run from before v2 refilled its queue with the missed items and a new deal: only fresh, never-shown items count)
+  const seen = new Set(seqOf(s));
+  while (s.queue.length && seen.has(s.queue[0])) s.queue.shift();
+  if (s.queue.length) return { item: s.queue.shift() };
+  const waiting = s.again.find(a => a.item !== last);
+  if (waiting) return take(waiting);
+  const lastShown = i => seqOf(s).lastIndexOf(i);
+  const byOldest = list => [...new Set(list)].filter(i => i !== last).sort((a, b) => lastShown(a) - lastShown(b));
+  const missed = byOldest(s.history.filter(h => !h.ok).map(h => h.item));
+  if (missed.length) return { item: missed[0], retry: true };
+  const right = byOldest(s.history.filter(h => h.ok).map(h => h.item));
+  if (right.length) return { item: right[0], seen: true };
+  return { item: last >= 0 ? last : 0, ...(last >= 0 ? { seen: true } : {}) };
 }
 function present(s) {
-  s.cur = { item: nextItem(s), missed: false };
+  const next = nextItem(s);
+  s.cur = { item: next.item, missed: false, ...(next.retry ? { retry: true } : {}), ...(next.seen ? { seen: true } : {}) };
   s.levels[s.level].presented++;
   s.presented++;
+  seqOf(s).push(next.item);
 }
 /** The topic's total questions as it stands (grows with wrong answers). */
 export const totalOf = s => s.levels.reduce((n, l) => n + l.quota, 0);
@@ -71,6 +96,8 @@ export function answer(s, result) {
     if (s.cur.missed) return { ...out, kind: 'again' };
     s.cur.missed = true; s.streak = 0; L.quota++;
     s.history.push({ item: s.cur.item, ok: false, level: s.level });
+    // it comes back later as "Try this one again" (nextItem)
+    (s.again ||= []).push({ item: s.cur.item, at: s.presented + RETRY_GAP + 1 });
     return out;
   }
   if (result !== 'right') throw new Error(`answer: unknown result ${result}`);
@@ -88,15 +115,22 @@ export function answer(s, result) {
   return out;
 }
 
-/** What the page shows, and nothing it could use to find an answer: the level, the streak, the counter and the bar. */
+/** The questions a level starts with (its quota before any miss). */
+const baseOf = (l, i) => (Number.isInteger(l.base) ? l.base : DEFAULT_LEVELS[i] || DEFAULT_LEVELS[0]);
+/** What the page shows, and nothing it could use to find an answer: the level, the streak, the counter and the bar.
+ *  base: the topic's questions before any miss (12 for 3 levels of 4); added: the questions misses added (total - base);
+ *  levelSize / levelBase: how many questions each level took so far and started with; firstTry: questions answered right
+ *  on the first try, of answered (each question once). */
 export function summary(s) {
-  const total = totalOf(s);
+  const total = totalOf(s), base = s.levels.reduce((n, l, i) => n + baseOf(l, i), 0);
   return {
     level: Math.min(s.level, s.levels.length - 1) + 1, levels: s.levels.length, need: NEED_IN_A_ROW,
     streak: s.mastered ? NEED_IN_A_ROW : s.streak,
     levelsDone: s.mastered ? s.levels.length : s.level,
-    counter: s.presented, total,
-    bar: Array.from({ length: total }, (_, i) => (s.history[i] ? (s.history[i].ok ? 'right' : 'missed') : 'empty')),
+    counter: s.presented, total, base, added: Math.max(0, total - base),
+    levelSize: s.levels.map(l => l.presented), levelBase: s.levels.map(baseOf),
+    firstTry: s.history.filter(h => h.ok).length, answered: s.history.length,
+    bar: Array.from({ length: total }, (_, i) => (s.history[i] ? (s.history[i].ok ? 'right' : 'missed') : i >= base ? 'added' : 'empty')),
     missed: !!(s.cur && s.cur.missed), mastered: s.mastered,
   };
 }

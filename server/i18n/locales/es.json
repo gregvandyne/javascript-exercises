@@ -5802,7 +5802,20 @@
       },
       "gapHolds": "{mark} después de {word}",
       "mgap": "Espacio después de {word}",
-      "wrongMarks": "Casi. Vuelve a mirar los signos entre las palabras. Acierta dos seguidas para terminar este nivel."
+      "wrongMarks": "Casi. Vuelve a mirar los signos entre las palabras. Acierta dos seguidas para terminar este nivel.",
+      "counterAdded": "{count, plural, one {+# por un fallo} other {+# por fallos}}",
+      "tryAgain": "Intenta esta otra vez",
+      "seenBefore": "Una que ya viste",
+      "notSent": "Esa respuesta no llegó. Revísala y pulsa Enviar otra vez.",
+      "resynced": "Seguimos donde lo dejaste.",
+      "signedOut": "Se cerró tu sesión. Tu progreso está guardado.",
+      "signIn": "Iniciar sesión otra vez",
+      "fixed": "¡Corregido!",
+      "fixedNote": "Solo el primer intento cuenta para tu racha.",
+      "levelLonger": "Este nivel tuvo {n} preguntas en vez de {base}: cada fallo suma una, y un nivel termina con dos aciertos seguidos.",
+      "doneElsewhere": "Ya terminaste este tema.",
+      "doneAdded": "Son {base} preguntas, más {count, plural, one {# por un fallo} other {# por fallos}}.",
+      "firstTry": "{n} de {total} bien al primer intento"
     }
   },
   "favorites": {
@@ -16362,7 +16375,9 @@
       "started": "Seguir",
       "mastered": "Dominado",
       "pending": "Inicia sesión para guardarlo",
-      "locked": "Domina primero el anterior"
+      "locked": "Domina primero el anterior",
+      "levelOf": "Nivel {level} de {levels}",
+      "also": "También cuenta en: {units}"
     },
     "guest": {
       "title": "Inicia sesión para guardar tus logros",
@@ -16374,9 +16389,10 @@
     },
     "welcome": {
       "heading": "Bienvenido a {topic}",
-      "text": "Sigue respondiendo hasta que demuestres que lo sabes. Acierta las dos últimas seguidas para terminar cada nivel.",
       "go": "¡Vamos!",
-      "skip": "Saltar la intro"
+      "skip": "Saltar la intro",
+      "rule": "Cada nivel tiene {per} preguntas. Termínalo con dos aciertos seguidos. Solo las respuestas al primer intento cuentan para la racha.",
+      "count": "{total} preguntas, más una por cada fallo."
     },
     "practice": {
       "tip": "Cómo funciona el doble toque",
@@ -16463,6 +16479,12 @@
       "passed": "Sala de corrección hecha",
       "locked": "Abre primero el tema",
       "back": "Volver a {topic}"
+    },
+    "loading": "Preparando tu lección",
+    "progress": {
+      "band": "{mastered} dominados · {started} en curso",
+      "unit": "{started} en curso",
+      "unitHead": "{mastered} de {total} dominados · {started} en curso"
     }
   }
 }
