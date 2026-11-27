@@ -31,17 +31,19 @@ export const topicHref = (p, id, what = '') => `${unitHref(p)}/${id}${what ? `/$
 const bandClass = b => `gl-band-${b}`;
 
 /** A sentence with some of its words color-coded by job (the worked example and tips). A 'comma' mark highlights the
- *  comma after its word; a 'key' mark highlights the word with no label. */
+ *  comma after its word; a 'key' mark highlights the word with no label. A mark is the highlighted word (.gl-mk-w) over
+ *  its label (.gl-mk-tag), both in the line's flow: the mark is as wide as the wider of the two, so a label never runs
+ *  into the next word's label or the next line (public/css/grammar-lab.css). */
 function marked(text, marks, t) {
   const by = new Map((marks || []).map(m => [m.i, m.role]));
   return tokenize(text).map((w, i) => {
     const role = by.get(i);
     if (role === 'comma') {
       const [c, ...rest] = w.post;
-      return html`${i ? ' ' : ''}<span class="gl-tok">${w.pre}${w.t}<span class="gl-mk gl-mk-comma">${c}<span class="gl-mk-tag">${t('grammarLab.roles.comma')}</span></span>${rest.join('')}</span>`;
+      return html`${i ? ' ' : ''}<span class="gl-tok">${w.pre}${w.t}<span class="gl-mk gl-mk-comma"><span class="gl-mk-w">${c}</span><span class="gl-mk-tag">${t('grammarLab.roles.comma')}</span></span>${rest.join('')}</span>`;
     }
-    const word = role === 'key' ? html`<span class="gl-mk gl-mk-key">${w.t}</span>`
-      : role ? html`<span class="gl-mk gl-mk-${role}">${w.t}<span class="gl-mk-tag">${t(`grammarLab.roles.${role}`)}</span></span>` : w.t;
+    const word = role === 'key' ? html`<span class="gl-mk gl-mk-key"><span class="gl-mk-w">${w.t}</span></span>`
+      : role ? html`<span class="gl-mk gl-mk-${role}"><span class="gl-mk-w">${w.t}</span><span class="gl-mk-tag">${t(`grammarLab.roles.${role}`)}</span></span>` : w.t;
     // (a word and its marks as one piece: a line never starts with a mark)
     return html`${i ? ' ' : ''}<span class="gl-tok">${w.pre}${word}${w.post}</span>`;
   });

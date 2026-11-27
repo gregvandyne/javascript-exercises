@@ -249,3 +249,57 @@ export async function playRoom(page, base, p, topic, { check = null, name = '' }
   if ((await page.evaluate(() => document.documentElement.lang)) === 'en') assert.match(await f.textContent('#mh'), /pass this room/);
   if (check) await check(page, f, `${name}-room-done`);
 }
+
+/**
+ * The teaching card's marked words, in the page: -> a list of problems ([] is good). Inside root (the card's body), the
+ * boxes of every word (each word of its text, from its glyphs), every mark (a colored highlight, a capital or a comma
+ * marker) and every label under a mark are compared: no two may overlap (a word inside its own mark is part of it), and
+ * none may stick out of the card sideways, out of the box it sits in, or be cut off. The page never scrolls sideways.
+ */
+export async function cardOverlaps(page, root = '.gl-card-body') {
+  return page.evaluate(sel => {
+    const out = [], de = document.documentElement, vw = de.clientWidth;
+    if (de.scrollWidth > vw + 1) out.push(`the page scrolls sideways (${de.scrollWidth} > ${vw})`);
+    const scopes = [...document.querySelectorAll(sel)].filter(e => !e.closest('[hidden]') && e.getBoundingClientRect().height > 0);
+    if (!scopes.length) return [`missing: ${sel}`];
+    const say = s => s.replace(/\s+/g, ' ').trim().slice(0, 30);
+    for (const scope of scopes) {
+      const sr = scope.getBoundingClientRect();
+      const boxes = [];
+      for (const m of scope.querySelectorAll('.gl-mk')) { const r = m.getBoundingClientRect(); boxes.push({ kind: 'mark', el: m, r, text: say(m.firstChild ? m.firstChild.textContent : '') }); }
+      for (const l of scope.querySelectorAll('.gl-mk-tag')) boxes.push({ kind: 'label', el: l, r: l.getBoundingClientRect(), text: say(l.textContent) });
+      const walk = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT);
+      for (let nd = walk.nextNode(); nd; nd = walk.nextNode()) {
+        const el = nd.parentElement;
+        if (!el || el.closest('.gl-mk-tag, .sr-only, [hidden]')) continue;
+        const re = /\S+/g; let m;
+        while ((m = re.exec(nd.textContent))) {
+          const rg = document.createRange(); rg.setStart(nd, m.index); rg.setEnd(nd, m.index + m[0].length);
+          for (const r of rg.getClientRects()) if (r.width > 0.5 && r.height > 0.5) boxes.push({ kind: 'word', el, r, text: m[0] });
+        }
+      }
+      const inside = (a, b) => a.el === b.el || a.el.contains(b.el) || b.el.contains(a.el);
+      const hit = (a, b) => Math.min(a.right, b.right) - Math.max(a.left, b.left) > 1 && Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top) > 1;
+      for (let i = 0; i < boxes.length; i++) {
+        const a = boxes[i];
+        if (a.r.right > sr.right + 1 || a.r.left < sr.left - 1) out.push(`${a.kind} "${a.text}" sticks out of the card sideways (${Math.round(a.r.left)} to ${Math.round(a.r.right)}, card ${Math.round(sr.left)} to ${Math.round(sr.right)})`);
+        if (a.kind === 'label') {
+          const holder = a.el.closest('.gl-example, .gl-tips, .gl-section, .gl-card-body');
+          const hr = holder.getBoundingClientRect();
+          if (a.r.bottom > hr.bottom + 1) out.push(`label "${a.text}" hangs out of the bottom of its box`);
+        }
+        for (let k = i + 1; k < boxes.length; k++) {
+          const b = boxes[k];
+          if (a.kind === 'word' && b.kind === 'word' && a.el === b.el) { if (hit(a.r, b.r)) out.push(`words overlap: "${a.text}" and "${b.text}"`); continue; }
+          if (inside(a, b)) continue;
+          if (hit(a.r, b.r)) out.push(`${a.kind} "${a.text}" overlaps ${b.kind} "${b.text}"`);
+        }
+      }
+      for (const e of scope.querySelectorAll('*')) {
+        const cs = getComputedStyle(e);
+        if (/hidden|clip|auto|scroll/.test(cs.overflowX + cs.overflowY) && (e.scrollWidth > e.clientWidth + 1 || e.scrollHeight > e.clientHeight + 1)) out.push(`cut off: ${e.className} ("${say(e.textContent)}")`);
+      }
+    }
+    return [...new Set(out)];
+  }, root);
+}
