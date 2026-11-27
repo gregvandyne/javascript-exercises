@@ -190,7 +190,9 @@ export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
   // "It's right as it is" (a topic with read.asIs): right when the sentence needs no fix (marks, a fix, capitalization)
   if (marked === AS_IS && item.asIs && (kind === 'marks' || kind === 'tap' || (kind === 'fix' && !missed))) {
     if (kind === 'tap') return item.answer.length ? 'wrong' : 'right';   // capitalization: no word to fix
-    return (kind === 'fix' ? item.accept.some(a => normTyped(a) === normTyped(item.text)) : sameMarks(item.start, item.want) && !item.optional.length) ? 'right' : 'wrong';
+    // marks: right when every needed mark is there as written and the rest are optional ones (a comma before a trailing
+    // "including" is taken with or without)
+    return (kind === 'fix' ? item.accept.some(a => normTyped(a) === normTyped(item.text)) : marksAsWritten(item)) ? 'right' : 'wrong';
   }
   if (marked === AS_IS) return null;
   if (kind === 'marks') {
@@ -244,6 +246,10 @@ export function grade(item, marked, kind = 'tap', { missed = false } = {}) {
 }
 /** The page's "It's right as it is". */
 export const AS_IS = 'as-is';
+const marksAsWritten = it => {
+  const s = new Map(it.start), w = new Map(it.want), o = new Map(it.optional);
+  return [...w].every(([g, m]) => s.get(g) === m) && [...s].every(([g, m]) => w.get(g) === m || o.get(g) === m);
+};
 const sameMarks = (a, b) => { const A = new Map(a), Bm = new Map(b); return A.size === Bm.size && [...A].every(([g, m]) => Bm.get(g) === m); };
 /** One try on the question on screen. -> { result, kind, levelDone, mastered, summary, question, hint, win } or null
  *  when there is no question to answer. win: 'mastered' (recorded) | 'pending' (a guest's, kept until sign-in). */
