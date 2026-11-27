@@ -20,6 +20,7 @@ import { toClipboard } from '/js/oomba-text.js';
 export const oombaMark = (size = 32, round = false) => `<svg class="oc-mark" width="${size}" height="${size}" viewBox="0 0 240 240" aria-hidden="true" focusable="false"><rect width="240" height="240" rx="${round ? 120 : 56}" fill="#FFD23F"/><g transform="${round ? 'translate(24 24) scale(.8)' : ''}"><g fill="none" stroke="#141414" stroke-width="30"><circle cx="66" cy="120" r="36"/><circle cx="178" cy="120" r="36"/></g><g fill="#141414"><circle cx="73" cy="114" r="13"/><circle cx="185" cy="114" r="13"/></g></g></svg>`;
 
 const POLL_MS = 2000;
+const JOB_POLL_MS = 1500;   // while a background job (services/oomba-jobs.js) is waiting or being made
 const FAILS = ['timeout', 'busy', 'resting', 'restart', 'error', 'names', 'words', 'personal', 'notFound'];
 const SEND_ERRORS = ['names', 'words', 'personal', 'brief', 'chatBusy', 'otherBusy', 'notFound', 'tooMany'];
 export const mmss = ms => { const s = Math.max(0, Math.round(ms / 1000)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
@@ -34,7 +35,8 @@ const wide = () => window.matchMedia('(min-width: 900px)').matches;
  *   ideas(chat) -> [{ label, text }], change(turn) -> html of "What changed", extra(turn, chat) -> html (buttons with
  *   data-c="act" data-act), onAct(act, turn) -> Promise, onAnswer(turn, chat): a new answer arrived (reload the page's data),
  *   onUndo(result, turnId): an undo came back, onMode(mode): the panel opened or closed, onQuote(null): the quote went (sent or
- *   removed), onSync(chat): a new copy of the conversation (a turn started or ended), start: 'open' | 'min' | 'closed',
+ *   removed), onSync(chat): a new copy of the conversation (a turn started or ended),
+ *   working(chat) -> bool: a background job of the surface is still on its way (the panel keeps asking, every 1.5 s), start: 'open' | 'min' | 'closed',
  *   and for the site companion (public/js/companion.js): headExtra / aboveRow / toolsStart / toolsEnd / foot (html in the
  *   header and the message box), body() -> more fields for each message, meExtra(turn) -> html above a sent message,
  *   format(text, turn) -> Oomba's words as html (escaped by the surface), errText(code) -> a send error's words,
@@ -97,7 +99,7 @@ export function mountChat(o) {
   function took(chat, { initial = false } = {}) {
     if (!chat) return;
     const before = new Set(C.chat.turns.map(x => x.id));
-    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter, x.note && x.note.pick && x.note.pick.need, x.note && Object.values(x.note).map(v => (v && typeof v === 'object' && !Array.isArray(v) ? [v.state || null, v.v || null, v.savedAs ? v.savedAs.name || v.savedAs.id || 1 : null] : null))]), chat.pending && [chat.pending.id, chat.pending.step]]);
+    const sig = JSON.stringify([(chat.turns || []).map(x => [x.id, x.change && x.change.undone, x.starter, x.note && x.note.pick && x.note.pick.need, x.note && Object.values(x.note).map(v => (v && typeof v === 'object' && !Array.isArray(v) ? [v.state || null, v.v || null, v.savedAs ? v.savedAs.name || v.savedAs.id || 1 : null] : null)), x.note && x.note.jobs && x.note.jobs.map(j => [j.id, j.state, j.retried || false])]), chat.pending && [chat.pending.id, chat.pending.step]]);
     if (chat.pending) C.skew = Date.now() - chat.pending.now;
     if (!initial && sig === C.sig) return;
     C.sig = sig;
@@ -107,8 +109,10 @@ export function mountChat(o) {
       if (C.mode !== 'open') C.unread = true;
       if (o.onAnswer) o.onAnswer(x, C.chat);
     }
-    if (C.chat.pending && !C.timer) { C.timer = setInterval(() => load(), POLL_MS); C.tick = setInterval(tickTime, 1000); }
-    if (!C.chat.pending && C.timer) { clearInterval(C.timer); clearInterval(C.tick); C.timer = null; C.tick = null; }
+    // Ask how it is going while an answer is on its way, or (faster) while a surface's background job is (o.working).
+    const want = C.chat.pending ? POLL_MS : o.working && o.working(C.chat) ? JOB_POLL_MS : 0;
+    if (C.timer && C.timerMs !== want) { clearInterval(C.timer); clearInterval(C.tick); C.timer = null; C.tick = null; }
+    if (want && !C.timer) { C.timer = setInterval(() => load(), want); C.timerMs = want; if (C.chat.pending) C.tick = setInterval(tickTime, 1000); }
     if (C.mode === 'min') setMode('min', { focus: false, user: false });
     render();
     if (o.onSync) o.onSync(C.chat);

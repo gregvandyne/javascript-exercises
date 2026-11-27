@@ -248,3 +248,4 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-fdone{display:flex;align-items:center;gap:6px;color:var(--muted);font-weight:700}
 .oc-fdone span{flex:1;min-width:0}
 .oc-fdone small{flex:none;padding:2px 8px;border-radius:999px;background:var(--card-2)}
+.oc-jobs{display:flex;flex-direction:column;gap:8px}
