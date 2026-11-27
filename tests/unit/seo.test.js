@@ -381,7 +381,7 @@ test('/teachers/live: the Oomba Live page for teachers, linked from /teachers, i
   assert.match(page.text, /Live quiz games your whole class plays together/);
   // Signed out: the short teacher sign-up that goes straight on to hosting (routes/quick-live.js), never the parents'
   // sign-up and never a bare sign-in page.
-  assert.match(page.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a free live game<\/a>/, 'signed out: the teacher sign-up, then straight to hosting');
+  assert.match(page.text, /<a class="btn btn-primary btn-big" href="\/teachers\/host">▶ Host a live lesson<\/a>/, 'signed out: the teacher sign-up, then straight to hosting');
   assert.doesNotMatch(page.text, /grown-ups\/signup|href="\/login\?next=%2Flive"/);
   assert.match(page.text, /href="\/join"/);
   assert.match(page.text, /Up to 60 in a class room/);

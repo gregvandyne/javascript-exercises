@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# neue Nachricht} other {# neue Nachrichten}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Kostenlos spielen, kostenlos bauen",
+      "tagline": "© Oomba Academy · Lernen, spielen und bauen",
       "safety": "Sicherheit",
       "parents": "Für Eltern",
       "contact": "Kontakt",
@@ -8667,6 +8667,7 @@
     "others": {
       "h": "Wer sonst Daten bekommt",
       "li1": "Anthropic (Claude, die KI, die Spiele baut): die Nachrichten, Bilder und Dateien eines Kindes an den Baumeister, um das Spiel zu bauen und auf Sicherheit zu prüfen, ohne Namen oder Benutzernamen. Chats zwischen Freunden und Antworten in Lektionen gehen nie an die KI.",
+      "ask": "Anthropic (Claude, wie oben) für Frag Oomba, den Chat auf den eigenen Seiten von Lehrkräften: die Nachrichten der Lehrkraft und die früheren Nachrichten im selben Chat, der Text eines angehängten Dokuments oder ein angehängtes Bild und Angaben zur geöffneten Seite, etwa Klassenstufe, Fach und Zahl der Kinder einer Klasse, die Widgets eines Dashboards und eigene Arbeitsblätter, Boards, Unterrichtspläne und Titel von Aufgaben. Namen der Kinder, E-Mail-Adressen, Telefonnummern und Links werden vorher entfernt. In der Liste „Mal nachsehen“ im Hub ist jedes Kind nur ein Platzhalter wie „Student A“, mit dem Grund, den die App vermerkt hat, etwa Minuten ohne Weiterkommen oder ein Quizergebnis. Namen und Arbeiten der Kinder werden nie gesendet, und Kinder sehen Frag Oomba nie. Websuchen gehen an die Websuche von Anthropic, nie mit einem Namen oder Ort. Zu Spracherkennung und Buchbildern (die Gemini API von Google) siehe unsere <a href=\"{privacy}\">Datenschutzerklärung</a>.",
       "li2": "Google, nur wenn deine Schule „Mit Google anmelden“ nutzt oder eine Lehrkraft Google Classroom verbindet. Classroom liest Kursnamen sowie die Google-IDs und Namen der Kinder im verknüpften Kurs. Wir senden nur, was die Lehrkraft veröffentlicht, etwa einen Link zur Lektion mit Titel und Fälligkeitsdatum, und die Punktzahl jedes Kindes von 100: nie Namen, Antworten, Feedback oder Spiele von Kindern.",
       "li3": "KI-Stimmen und Spracherkennung, wo sie eingeschaltet sind: Unsere <a href=\"{privacy}\">Datenschutzerklärung</a> sagt genau, was jeder Dienst bekommt."
     },
@@ -10061,24 +10062,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: kostenlose Live-Quizlektionen für Ihre Klasse",
-    "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung. Kostenlos für Lehrkräfte.",
+    "title": "Oomba Live: Live-Quizlektionen für Ihre Klasse",
+    "description": "Bringen Sie ein Live-Quizrennen auf den Beamer. Die Kinder treten auf jedem Gerät mit einem 7-stelligen Code bei, ohne Konten, ohne Tippen und ohne Werbung.",
     "kicker": "Oomba Live für Lehrkräfte",
     "h1": "Live-Quizlektionen, die Ihre ganze Klasse zusammen spielt",
-    "lead": "Bringen Sie die Lektion an die Tafel. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit und rasen durch Ihre Fragen, in jedem Fach, auf jedem Niveau. Kostenlos, ohne Werbung, und die Kinder tippen nur den Code.",
+    "lead": "Bringen Sie die Lektion an die Tafel. Die Kinder machen auf ihren eigenen Geräten mit einem 7-stelligen Code mit und rasen durch Ihre Fragen, in jedem Fach, auf jedem Niveau. Ohne Werbung, und die Kinder tippen nur den Code.",
     "demo": {
       "h": "In einer Minute erklärt",
       "note": "Ein einminütiges Video mit Musik und Untertiteln im Bild: Eine Lehrkraft startet ein Quest Race in Naturwissenschaften, die Klasse tritt mit einem Code auf dem Handy bei und rennt durch die Fragen. Dann beschreibt ein Kind dem Builder ein Spiel, der es baut und zum Prüfen selbst spielt, und das Kind spielt es. Zum Schluss ein paar der Lernspiele."
     },
     "badges": {
-      "free": "Kostenlos für Lehrkräfte",
       "ads": "Keine Werbung",
       "noAccounts": "Keine Schülerkonten nötig",
       "browser": "Jeder Browser, auch auf Chromebooks",
       "languages": "{count} Sprachen"
     },
     "cta": {
-      "host": "Kostenlos eine Live-Lektion leiten",
+      "host": "Eine Live-Lektion leiten",
       "how": "So funktioniert es",
       "join": "Einem Spiel beitreten? Code hier eingeben"
     },
@@ -10162,7 +10162,7 @@
     },
     "more": {
       "h": "Mehr als ein Quiz",
-      "p": "Oomba Live gehört zu Oomba Academy, wo die Kinder auch Lernspiele spielen und mit einem sicheren KI-Helfer eigene Spiele bauen. Ein kostenloses Konto für Ihre ganze Klasse.",
+      "p": "Oomba Live gehört zu Oomba Academy, wo die Kinder auch Lernspiele spielen und mit einem sicheren KI-Helfer eigene Spiele bauen.",
       "link": "Oomba Academy für Lehrkräfte"
     },
     "start": {

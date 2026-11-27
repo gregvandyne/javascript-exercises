@@ -41,7 +41,7 @@
       "newMessages": "{count, plural, one {# nieuw bericht} other {# nieuwe berichten}}"
     },
     "footer": {
-      "tagline": "© Oomba Academy · Gratis spelen, gratis bouwen",
+      "tagline": "© Oomba Academy · Leren, spelen en bouwen",
       "safety": "Veiligheid",
       "parents": "Voor ouders",
       "contact": "Contact",
@@ -8667,6 +8667,7 @@
     "others": {
       "h": "Wie er nog meer gegevens krijgt",
       "li1": "Anthropic (Claude, de AI die de spellen maakt): de berichten, plaatjes en bestanden die een leerling aan de Bouwer geeft, om het spel te maken en te controleren of het veilig is, zonder de naam of gebruikersnaam van de leerling. Chats tussen vrienden en antwoorden in lessen gaan nooit naar de AI.",
+      "ask": "Anthropic (Claude, zie hierboven), voor Vraag het Oomba, de chat op de pagina’s van leerkrachten: de berichten van de leerkracht en de eerdere berichten in dezelfde chat, de tekst van een bijgevoegd document of een bijgevoegde afbeelding, en gegevens over de geopende pagina, zoals de groep, het vak en het aantal leerlingen van een klas, de widgets van een dashboard en hun eigen werkbladen, borden, lesplannen en titels van opdrachten. Namen van leerlingen, e-mailadressen, telefoonnummers en links worden eerst verwijderd. Op de lijst Even kijken van de Hub is elke leerling alleen een plaatshouder zoals „Student A”, met de reden die de app noteerde, zoals minuten vastzitten of een quizscore. Namen en werk van leerlingen worden nooit verstuurd, en leerlingen zien Vraag het Oomba nooit. Zoekopdrachten op het web gaan naar de webzoekfunctie van Anthropic, nooit met een naam of een locatie. Voor spraak naar tekst en boekillustraties (de Gemini API van Google), zie ons <a href=\"{privacy}\">privacybeleid</a>.",
       "li2": "Google, alleen als je school Inloggen met Google gebruikt of een leerkracht Google Classroom koppelt. Classroom leest de namen van de klassen en de Google-id's en namen van de leerlingen in de gekoppelde klas. We sturen alleen wat de leerkracht plaatst, zoals een link naar de les met titel en inleverdatum, en de score van elke leerling op 100: nooit namen, antwoorden, feedback of spellen van leerlingen.",
       "li3": "AI-stemmen en spraak naar tekst, waar ze aanstaan: ons <a href=\"{privacy}\">privacybeleid</a> zegt precies wat elk ervan krijgt."
     },
@@ -10061,24 +10062,23 @@
     }
   },
   "teachersLive": {
-    "title": "Oomba Live: gratis live quizlessen voor je klas",
-    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame. Gratis voor leerkrachten.",
+    "title": "Oomba Live: live quizlessen voor je klas",
+    "description": "Zet een live quizrace op het digibord. Leerlingen doen mee op elk apparaat met een code van 7 cijfers, zonder accounts, zonder typen en zonder reclame.",
     "kicker": "Oomba Live voor leerkrachten",
     "h1": "Live quizlessen die je hele klas samen speelt",
-    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Gratis, zonder reclame, en leerlingen typen alleen de code.",
+    "lead": "Zet de les op het bord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers en racen door je vragen, in elk vak en op elk niveau. Zonder reclame, en leerlingen typen alleen de code.",
     "demo": {
       "h": "Bekijk het in één minuut",
       "note": "Een video van één minuut met muziek en ondertitels in beeld: een leraar start een Quest Race over natuurkunde, leerlingen doen mee op hun telefoon met een code en racen door de vragen. Daarna beschrijft een kind een spel aan de Builder, die het maakt en speelt om te controleren of het werkt, en het kind speelt het. Tot slot een paar van de leerspellen."
     },
     "badges": {
-      "free": "Gratis voor leerkrachten",
       "ads": "Geen reclame",
       "noAccounts": "Geen leerlingaccounts nodig",
       "browser": "Elke browser, ook op Chromebooks",
       "languages": "{count} talen"
     },
     "cta": {
-      "host": "Gratis een liveles leiden",
+      "host": "Een liveles leiden",
       "how": "Bekijk hoe het werkt",
       "join": "Doe je mee aan een spel? Typ hier de code"
     },
@@ -10162,7 +10162,7 @@
     },
     "more": {
       "h": "Meer dan een quiz",
-      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper. Eén gratis account voor je hele klas.",
+      "p": "Oomba Live hoort bij Oomba Academy, waar leerlingen ook leerspellen spelen en hun eigen spellen bouwen met een veilige AI-helper.",
       "link": "Oomba Academy voor leerkrachten"
     },
     "start": {
