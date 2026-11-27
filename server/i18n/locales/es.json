@@ -11236,7 +11236,9 @@
       "lead": "Cada video tiene subtítulos, y el sonido está apagado hasta que lo actives.",
       "howH": "Cómo funciona, un video por manipulativo",
       "play": "Ver el video: {title}",
-      "close": "Cerrar el video"
+      "close": "Cerrar el video",
+      "more": "Ver los {count} videos",
+      "less": "Ver menos"
     }
   },
   "teach": {

@@ -12811,7 +12811,9 @@
       "lead": "Every video has captions, and the sound stays off until you turn it on.",
       "howH": "How it works, one video per manipulative",
       "play": "Play the video: {title}",
-      "close": "Close the video"
+      "close": "Close the video",
+      "more": "Show all {count} videos",
+      "less": "Show fewer"
     }
   },
   "rubrics": {

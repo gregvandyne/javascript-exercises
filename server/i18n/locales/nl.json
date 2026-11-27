@@ -11237,7 +11237,9 @@
       "lead": "Elke video heeft ondertitels, en het geluid blijft uit tot je het aanzet.",
       "howH": "Zo werkt het, één video per soort rekenmateriaal",
       "play": "Video afspelen: {title}",
-      "close": "Video sluiten"
+      "close": "Video sluiten",
+      "more": "Alle {count} video's tonen",
+      "less": "Minder tonen"
     }
   },
   "teach": {

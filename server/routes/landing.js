@@ -133,7 +133,10 @@ const ARROW = raw('<span class="lp-arrow flip" aria-hidden="true">→</span>');
 
 /** The videos: the Hub's overview and the four tool videos (views/see-it.js), and the eighteen "How it works" videos of
  *  the manipulatives. */
-const manipVideos = () => MANIP_TOOLS.filter(x => TUTORIALS.has(x.slug)).map(x => ({ slug: x.slug, name: x.name, ...tutorialOf(x.slug) }));
+// How many manipulative videos the homepage shows before "Show all" (one row of six on a wide screen).
+const HOW_PREVIEW = 6;
+// In TUTORIALS order (the best-known tools first), so the preview leads with number lines and base ten blocks.
+const manipVideos = () => [...TUTORIALS].map(slug => MANIP_TOOLS.find(x => x.slug === slug)).filter(Boolean).map(x => ({ slug: x.slug, name: x.name, ...tutorialOf(x.slug) }));
 
 export function renderLanding(req, res) {
   const t = req.t;
@@ -368,13 +371,17 @@ export function renderLanding(req, res) {
   </div></section>` : '';
 
   // ---- 9. the videos: the tool videos (posters, captions; played in the page's player) and the 18 "How it works"
+  // The how-it-works row shows a preview; the rest of the manipulative videos fold open under "Show all".
+  const howLi = v => html`<li>${vlink({ src: v.mp4, poster: v.poster, vtt: v.vtt, title: v.name }, html`<img src="${v.poster}" width="640" height="360" alt="" loading="lazy" decoding="async"><span class="lp-pb lp-pb-sm" aria-hidden="true"></span><span class="lp-howname" lang="en" dir="ltr">${v.name}</span>`, 'lp-how')}</li>`;
   const vcard = (v, big) => vlink(toolVideo(v.id), html`<img src="/video/oomba-${v.id}-poster.jpg" width="1280" height="720" alt="" loading="lazy" decoding="async"><span class="lp-pb" aria-hidden="true"></span><span class="lp-vcap"><b${fb(`teachers.videos.${v.id}.title`)}>${vidTitle(v.id)}</b><span${fb(`teachers.videos.${v.id}.p`)}>${t(`teachers.videos.${v.id}.p`)}</span></span>`, `lp-vid${big ? ' lp-vid-big' : ''}`);
   const ordered = heroVideo ? [heroVideo, ...videos.filter(v => v !== heroVideo)] : videos;
   const videosSec = videos.length ? html`<section class="lp-sec lp-dots lp-alt" id="videos" aria-labelledby="videos-h"><div class="lp-wrap">
     <header class="lp-head">${T('p', 'landing.videos.kicker', ' class="lp-eyebrow"')}${T('h2', 'landing.videos.h', ' id="videos-h"')}${T('p', 'landing.videos.lead', ' class="lp-sub"')}</header>
     <div class="lp-vids">${ordered.map((v, i) => vcard(v, i === 0))}</div>
     ${tutorials.length ? html`${T('h3', 'landing.videos.howH', ' class="lp-howh"')}
-    <ul class="lp-howrow">${tutorials.map(v => html`<li>${vlink({ src: v.mp4, poster: v.poster, vtt: v.vtt, title: v.name }, html`<img src="${v.poster}" width="640" height="360" alt="" loading="lazy" decoding="async"><span class="lp-pb lp-pb-sm" aria-hidden="true"></span><span class="lp-howname" lang="en" dir="ltr">${v.name}</span>`, 'lp-how')}</li>`)}</ul>` : ''}
+    <ul class="lp-howrow">${tutorials.slice(0, HOW_PREVIEW).map(howLi)}</ul>${tutorials.length > HOW_PREVIEW ? html`
+    <details class="lp-howmore"><summary class="lp-btn lp-btn-ghost lp-btn-sm"><span class="lp-howmore-o"${fb('landing.videos.more')}>${t('landing.videos.more', { count: tutorials.length })}</span><span class="lp-howmore-c"${fb('landing.videos.less')}>${t('landing.videos.less')}</span></summary>
+    <ul class="lp-howrow">${tutorials.slice(HOW_PREVIEW).map(howLi)}</ul></details>` : ''}` : ''}
   </div>
   <dialog class="lp-vd" id="lp-vd" aria-labelledby="lp-vd-h">
     <div class="lp-vd-in"><div class="lp-vd-top"><h2 id="lp-vd-h" class="lp-vd-h" lang="en" dir="ltr"></h2><button type="button" class="lp-vd-x" data-close aria-label="${t('landing.videos.close')}"><span aria-hidden="true">×</span></button></div>
