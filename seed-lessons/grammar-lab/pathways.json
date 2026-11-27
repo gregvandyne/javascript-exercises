@@ -3,7 +3,8 @@
   "bands": [
     { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] },
     { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] },
-    { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8", "parts-of-speech-2", "parts-of-speech-3", "sentences-and-fragments", "subjects-and-verbs", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "plurals-and-possessives", "prepositional-phrases", "pronoun-case", "pronoun-agreement", "punctuating-fanboys", "punctuating-subordinators", "restrictive-clauses", "capitalization-1", "capitalization-2", "singular-plural-possessives", "agreement-1", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "simple-tenses", "perfect-progressive", "verbals"] }
+    { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8", "parts-of-speech-2", "parts-of-speech-3", "sentences-and-fragments", "subjects-and-verbs", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "plurals-and-possessives", "prepositional-phrases", "pronoun-case", "pronoun-agreement", "punctuating-fanboys", "punctuating-subordinators", "restrictive-clauses", "capitalization-1", "capitalization-2", "singular-plural-possessives", "agreement-1", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "simple-tenses", "perfect-progressive", "verbals"] },
+    { "id": "9-12", "grades": "9-12", "pathways": ["active-and-passive-voice", "claims-evidence-reasoning", "embedding-evidence", "transitions", "commas-for-clarity", "parts-of-a-sentence-2", "conclusions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "sentences-and-fragments", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "pronoun-agreement", "restrictive-clauses", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "verbals", "appositive-phrases", "compound-and-complex", "confused-words-4", "confused-words-5", "colons-and-semicolons", "hyphens", "lists", "parallel-structure", "conjunctions-all", "conjunctive-adverbs", "possessives"] }
   ],
   "pathways": {
     "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] },
@@ -103,7 +104,17 @@
     "vague-pronouns": { "title": "Vague Pronouns", "parts": [{ "topics": ["vague-antecedents", "fixing-vague-pronouns"] }] },
     "simple-tenses": { "title": "Verb Tense I: Simple Tenses", "parts": [{ "topics": ["present-tense", "past-tense", "future-tense"] }] },
     "perfect-progressive": { "title": "Verb Tense II: Perfect and Progressive Tenses", "parts": [{ "title": "Progressive Tenses", "topics": ["verb-tenses", "present-participles", "progressive-tenses"] }, { "title": "Perfect Tenses", "topics": ["past-participles", "perfect-tenses"] }] },
-    "verbals": { "title": "Verbals", "parts": [{ "topics": ["verb-tenses", "verb-or-verbal", "identifying-modifiers", "verbal-functions"] }], "marks": { "verbal-functions": "checkpoint" } }
+    "verbals": { "title": "Verbals", "parts": [{ "topics": ["verb-tenses", "verb-or-verbal", "identifying-modifiers", "verbal-functions"] }], "marks": { "verbal-functions": "checkpoint" } },
+    "appositive-phrases": {"title": "Appositive Phrases", "parts": [{"topics": ["appositive-refers"]}]},
+    "confused-words-4": {"title": "Sound-alike Words IV", "parts": [{"topics": ["cite-sight-site", "scene-seen", "advice-advise", "farther-further", "anyway-anyways", "altogether-all-together", "already-all-ready"]}]},
+    "confused-words-5": {"title": "Sound-alike Words V", "parts": [{"topics": ["prejudice-prejudiced", "later-latter", "bias-biased", "altar-alter"]}]},
+    "colons-and-semicolons": {"title": "Connecting Clauses with Colons and Semicolons", "parts": [{"topics": ["colons-semicolons", "conj-adverbs-clauses"]}]},
+    "hyphens": {"title": "Hyphens", "parts": [{"title": "Compound Nouns and Adjectives", "topics": ["compound-words", "hyphen-compound-nouns", "hyphen-compound-adjectives"]}, {"title": "Fractions", "topics": ["hyphen-fractions"]}, {"title": "Prefixes and Suffixes", "topics": ["hyphen-affixes"]}, {"title": "All Hyphens", "topics": ["hyphen-clarity"]}]},
+    "lists": {"title": "Lists", "parts": [{"topics": ["commas-series-6-8", "list-cue-words"]}]},
+    "parallel-structure": {"title": "Parallel Structure", "parts": [{"title": "Identifying Parallel Elements", "topics": ["parallel-identify"]}, {"title": "Matching Parallel Elements", "topics": ["parallel-match"]}]},
+    "conjunctions-all": {"title": "Punctuation with Conjunctions: All", "parts": [{"title": "Kinds of Conjunctions", "topics": ["fanboys-identify", "subordinating-identify", "conj-adverbs-identify"]}, {"title": "What Coordinating Conjunctions Do", "topics": ["fanboys-function"]}, {"title": "Punctuating Coordinating Conjunctions", "topics": ["fanboys-punctuate"]}, {"title": "Punctuating Subordinating Conjunctions", "topics": ["subordinating-start", "subordinating-middle"]}, {"title": "Punctuating Conjunctive Adverbs", "topics": ["conj-adverbs-start", "conj-adverbs-middle"]}], "marks": {"fanboys-punctuate": "checkpoint"}},
+    "conjunctive-adverbs": {"title": "Punctuation with Conjunctions: Conjunctive Adverbs", "parts": [{"title": "Conjunctive Adverbs", "topics": ["conj-adverbs-identify"]}, {"title": "Punctuating Conjunctive Adverbs", "topics": ["conj-adverbs-start", "conj-adverbs-middle"]}]},
+    "possessives": {"title": "Possessives", "parts": [{"topics": ["singular-possessives"]}]}
   },
   "topics": {
     "identifying-adjectives": {
@@ -1294,6 +1305,162 @@
       "ask": "What does the verbal in bold do?",
       "levels": [4, 4, 4],
       "read": { "verbals": true }
+    },
+    "cite-sight-site": {
+      "source": { "band": "9-12", "title": "\"Cite\" vs. \"Sight\" vs. \"Site\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["cite", "sight", "site"], "check": "cite-sight-site" }
+    },
+    "scene-seen": {
+      "source": { "band": "9-12", "title": "\"Scene\" vs. \"Seen\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["scene", "seen"], "check": "scene-seen" },
+      "room": { "kinds": ["us-homophone"], "words": ["scene", "seen"] }
+    },
+    "advice-advise": {
+      "source": { "band": "9-12", "title": "\"Advice\" vs. \"Advise\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["advice", "advise"], "check": "advice-advise" },
+      "room": { "kinds": ["us-confused"], "words": ["advice", "advise"] }
+    },
+    "farther-further": {
+      "source": { "band": "9-12", "title": "\"Farther\" vs. \"Further\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["farther", "further"], "check": "farther-further" }
+    },
+    "anyway-anyways": {
+      "source": { "band": "9-12", "title": "\"Anyway\" vs. \"Anyways\"" },
+      "format": "items",
+      "ask": "Choose the word that fits formal writing.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["anyway", "anyways"], "check": "anyway-anyways" }
+    },
+    "altogether-all-together": {
+      "source": { "band": "9-12", "title": "\"Altogether\" vs. \"All together\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["altogether", "all together"], "check": "altogether-all-together" }
+    },
+    "already-all-ready": {
+      "source": { "band": "9-12", "title": "\"Already\" vs. \"All ready\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["already", "all ready"], "check": "already-all-ready" }
+    },
+    "prejudice-prejudiced": {
+      "source": { "band": "9-12", "title": "\"Prejudice\" vs. \"Prejudiced\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["prejudice", "prejudiced"], "check": "prejudice-prejudiced", "cycle": true }
+    },
+    "later-latter": {
+      "source": { "band": "9-12", "title": "\"Later\" vs. \"Latter\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["later", "latter"], "check": "later-latter", "cycle": true }
+    },
+    "bias-biased": {
+      "source": { "band": "9-12", "title": "\"Biased\" vs. \"Bias\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["bias", "biased"], "check": "bias-biased", "cycle": true }
+    },
+    "altar-alter": {
+      "source": { "band": "9-12", "title": "\"Altar\" vs. \"Alter\"" },
+      "format": "items",
+      "ask": "Choose the word that fits.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "words", "words": ["altar", "alter"], "check": "altar-alter", "cycle": true }
+    },
+    "colons-semicolons": {
+      "source": { "band": "9-12", "title": "Connecting Clauses with Colons and Semicolons" },
+      "format": "items",
+      "ask": "Put a colon or a semicolon between the two parts.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "clausemark", "check": "colon", "chips": [":", ";", ","], "optional": ["series"] }
+    },
+    "conj-adverbs-clauses": {
+      "source": { "band": "9-12", "title": "Connecting Clauses with Conjunctive Adverbs 1" },
+      "format": "items",
+      "ask": "Put the marks around the conjunctive adverb.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "clausemark", "check": "conjadv", "chips": [";", ","] }
+    },
+    "compound-words": {
+      "source": { "band": "9-12", "title": "Identifying Compound Nouns and Adjectives" },
+      "format": "items",
+      "ask": "Tap the compound word.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "compound" }
+    },
+    "hyphen-compound-nouns": {
+      "source": { "band": "9-12", "title": "Hyphens in Compound Nouns" },
+      "format": "items",
+      "ask": "Choose the way the compound noun is written.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "join", "join": "noun", "cycle": true }
+    },
+    "hyphen-compound-adjectives": {
+      "source": { "band": "9-12", "title": "Hyphens in Compound Adjectives" },
+      "format": "items",
+      "ask": "Choose the compound adjective written the right way.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "join", "join": "adjective" }
+    },
+    "hyphen-fractions": {
+      "source": { "band": "9-12", "title": "Hyphens with Fractions" },
+      "format": "items",
+      "ask": "Choose the fraction written the right way.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "join", "join": "fraction" }
+    },
+    "hyphen-affixes": {
+      "source": { "band": "9-12", "title": "Hyphens with Prefixes and Suffixes 1" },
+      "format": "items",
+      "ask": "Choose the word joined the right way.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "join", "join": "affix", "cycle": true }
+    },
+    "hyphen-clarity": {
+      "source": { "band": "9-12", "title": "Hyphens for Clarity" },
+      "format": "items",
+      "ask": "Choose the words that say what the sentence means.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "join", "join": "clarity" }
+    },
+    "list-cue-words": {
+      "source": { "band": "9-12", "title": "Introducing Lists with Cue Words" },
+      "format": "items",
+      "ask": "Put the marks the list needs, or say it is right as it is.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "cue", "chips": [",", ":"], "optional": ["series", "trailing"], "asIs": true }
+    },
+    "parallel-identify": {
+      "source": { "band": "9-12", "title": "Identifying Parallel Elements 1" },
+      "format": "items",
+      "ask": "Which sentence has parallel elements?",
+      "levels": [4, 4, 4],
+      "read": { "bare": "parallel" }
+    },
+    "parallel-match": {
+      "source": { "band": "9-12", "title": "Matching Parallel Elements 1" },
+      "format": "items",
+      "ask": "Choose the words that match the other items.",
+      "levels": [4, 4, 4],
+      "read": { "bare": "parallel", "match": true, "cycle": true }
     }
   }
 }

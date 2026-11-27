@@ -106,7 +106,7 @@ test('6-8 part 1 in full: 27 units, 113 topic slots, 86 topics with 12 items eac
   // a topic used by several units is one id: mastering it counts in each
   assert.deepEqual(GL.unitsWith('fanboys-identify').map(p => p.id).slice(0, 3), ['compound-and-complex', 'choosing-conjunctions', 'parts-of-a-sentence-2'], 'and the units of part 2 after them');
   assert.deepEqual(GL.unitsWith('sentence-verb').map(p => p.id).slice(0, 3), ['parts-of-a-sentence-1', 'parts-of-a-sentence-2', 'parts-of-speech-6-8']);
-  assert.deepEqual(GL.unitsWith('a-and-an').map(p => p.id), ['articles', 'confused-words-1']);
+  assert.deepEqual(GL.unitsWith('a-and-an').filter(p => p.band === '6-8').map(p => p.id), ['articles', 'confused-words-1']);
   // checkpoints follow the topic list
   const marks = Object.assign({}, ...PART1.map(p => PLAN.pathways[p].marks || {}));
   assert.deepEqual(marks, { 'using-transitions': 'checkpoint', 'fanboys-punctuate': 'checkpoint', 'conclusion-jobs': 'checkpoint', counterargument: 'checkpoint', 'common-proper': 'checkpoint' });

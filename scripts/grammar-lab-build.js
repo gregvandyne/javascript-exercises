@@ -124,7 +124,8 @@ export function parseCourse(md) {
       pw = { title: m[1].trim(), topics: [] }; sec.pathways.push(pw); topic = null; mode = null;
       return;
     }
-    if ((m = /^### (?:Topic: |\d+\.\d+ )(.+)$/.exec(line))) {
+    // grades 9-12 write a topic as "### Title" (no "Topic: " and no number)
+    if ((m = /^### (?:Topic: |\d+\.\d+ )?(.+)$/.exec(line))) {
       if (!pw) { pw = { title: '', topics: [] }; sec.pathways.push(pw); }
       topic = { title: m[1].trim(), line: i + 1, ref: null, cardLines: [], quizLines: [] }; pw.topics.push(topic); mode = null;
       return;
@@ -135,6 +136,8 @@ export function parseCourse(md) {
     if (/^(\*\*Quiz\*\*|Quiz(?: \([^)]*\))?:)\s*$/i.test(line.trim())) { mode = 'quiz'; return; }
     if (!mode && /\bSee\b.+\babove\b/.test(line)) { topic.ref = line.trim(); return; }
     if (mode === 'card' && /^- /.test(line)) topic.cardLines.push({ text: line.slice(2).trim(), line: i + 1 });
+    // grades 9-12 write a card's fields with no "- " in front ("Definition: ...")
+    else if (mode === 'card' && /^(Definition|Worked example|How it works|Tip box): /.test(line)) topic.cardLines.push({ text: line.trim(), line: i + 1 });
     if (mode === 'quiz' && /^\d+\. /.test(line)) topic.quizLines.push({ text: line.trim(), line: i + 1 });
   });
   return sections;
@@ -217,6 +220,7 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
   };
   const definition = field('Definition'), worked = field('Worked example') || field('Example'), how = field('How it works') || field('Explanation'), tip = field('Tip box');
   for (const [k, v] of [['Definition', definition], ['Worked example', worked], ['How it works', how], ['Tip box', tip]]) if (!v) problems.push(`${where}: the teaching card has no ${k}`);
+  if (worked && !worked.includes('"') && /\bLabels: /.test(worked)) return plainCard(definition, worked, how, tip);
   const units = unitsOf(worked);
   let example = null;
   if (!units.length) problems.push(`${where}: the worked example has no quoted sentence`);
@@ -271,6 +275,23 @@ export function parseCard(cardLines, problems, where, format = 'tap', pair = nul
   if (tip && !tips.length && format === 'choice' && /^[A-Z][^"]+\.$/.test(tip)) tips.push({ text: tip, note: '', marks: [] });
   else if (tip && !tips.length) problems.push(`${where}: the tip box has no quoted example`);
   return { definition, example, how, tips };
+}
+
+/** A grades 9-12 card writes its examples with no quotes: "Worked example: Sentence. Labels: word, what it is; word,
+ *  what it is." and "Tip box: Sentence. Sentence." The labeled words are marked in the sentences that hold them, and the
+ *  labels are the example's note. "X becomes Y" is a fix example: the sentence before, then after. */
+function plainCard(definition, worked, how, tip) {
+  const [ex, labels = ''] = worked.split(/\s*\bLabels: /);
+  const parts = labels.replace(/\.$/, '').split(/;\s*/).filter(Boolean).map(x => { const bits = x.split(/,\s*/); return { keys: bits.slice(0, -1), what: bits[bits.length - 1] }; });
+  const keys = parts.flatMap(x => x.keys);
+  const marksOf = text => { const toks = tokenize(text); return keys.flatMap(k => { const at = findWords(toks, k); return at.length === 1 ? at[0].map(i => ({ i, role: 'key' })) : []; }).sort((a, b) => a.i - b.i); };
+  const note = parts.map(x => `${capFirst(x.keys.join(', '))}: ${x.what}.`).join(' ');
+  const unit = (text, n = '') => {
+    const b = /^(.+?) becomes (.+)$/.exec(text);
+    if (!b) return { text, note: n, marks: marksOf(text) };
+    return { text: b[1], note: 'becomes', marks: marksOf(b[1]), then: { text: b[2], note: n, marks: marksOf(b[2]) } };
+  };
+  return { definition, example: unit(ex.trim(), note), how, tips: sentencesOf(tip).map(t => unit(t)) };
 }
 
 // ------------------------------------------------------------------------------------------------- the rules for wrong options
@@ -1257,7 +1278,7 @@ function gapsOf(text) {
 const SHORT_OPENING = 4;
 /** A punctuation-chips item: the words, the marks as written (start) and as they must be (want), and the optional gaps:
  *  read.optional 'intro' (a comma after a short opening phrase with no verb), 'series' (the comma before the "and" or
- *  "or" that ends a list of three or more). */
+ *  "or" that ends a list of three or more), 'trailing' (the comma before a trailing "including" or "although"). */
 function marksItem(text, right, def, problems, at) {
   const A = gapsOf(text), Bg = gapsOf(right);
   if (A.length !== Bg.length || A.some((x, i) => x.w.t !== Bg[i].w.t || x.w.pre !== Bg[i].w.pre || x.w.post !== Bg[i].w.post)) { problems.push(`${at}: the fix changes more than the marks between words`); return false; }
@@ -1272,6 +1293,8 @@ function marksItem(text, right, def, problems, at) {
       if (PREPOSITIONS.has(lead[0]) && !lead.slice(1).some(w => isPast(w) || HELPERS.has(w))) return true;
     }
     if (opt.includes('series') && /^(and|or)$/i.test(Bg[g + 1].w.t) && want.filter(x => x[1] === ',' && x[0] < g).length >= 1) return true;
+    // a comma before a trailing "including" or "although" (content review: with or without)
+    if (opt.includes('trailing') && /^(including|although)$/i.test(Bg[g + 1].w.t)) return true;
     return false;
   });
   const need = want.filter(x => !optional.includes(x));
@@ -1750,7 +1773,10 @@ function checkItems2(it, chk) {
     case 'plural': chk(pluralOf(it.base) === right && wrong.every(o => o !== pluralOf(it.base)), `${at}: a wrong plural follows the -s and -es rule`); break;
     case 'participle': { const want = it.kind === 'present' ? ingOf(it.base) : ppOf(it.base); chk(right === want && wrong.every(o => o !== want), `${at}: a wrong option is the ${it.kind} participle`); break; }
     case 'tense3': chk(capFirst((tense3Of(it.text) || {}).name || '') === it.label, `${at}: the helping verbs do not make "${it.label}"`); break;
-    case 'possessive': chk(right.toLowerCase() === `${possessiveOf(it.owner)} ${it.thing}`.toLowerCase() && wrong.every(o => o.toLowerCase() !== right.toLowerCase()), `${at}: a wrong possessive is the right one`); break;
+    // a singular owner ending in s takes 's (James's) and the apostrophe alone (James') is accepted too (owner decision),
+    // so that form is never offered as a wrong option
+    case 'possessive': chk(right.toLowerCase() === `${possessiveOf(it.owner)} ${it.thing}`.toLowerCase() && wrong.every(o => o.toLowerCase() !== right.toLowerCase())
+      && !(/'s$/.test(possessiveOf(it.owner)) && /s$/.test(it.owner) && wrong.some(o => o.toLowerCase() === `${it.owner}' ${it.thing}`.toLowerCase())), `${at}: a wrong possessive is the right one`); break;
     case 'compound': { const subj = it.spot <= 2; chk(wrong.every(o => SUBJECT_PRONOUNS.has(norm(o)) !== subj) && SUBJECT_PRONOUNS.has(norm(right)) === subj, `${at}: the pronoun's form does not fit its place in the sentence`); break; }
     case 'gerund': chk(POSSESSIVE_DETERMINERS.has(norm(right)) && wrong.every(o => !POSSESSIVE_DETERMINERS.has(norm(o))), `${at}: a wrong option is a possessive before the gerund`); break;
     case 'reflexive': {
@@ -1806,6 +1832,268 @@ function checkItems2(it, chk) {
   if (it.rule === 'fix-vague') {
     chk(countOf(it.right, it.intended) > countOf(it.text, it.intended) || !countOf(it.right, it.pron), `${at}: the fix neither names "${it.intended}" again nor drops "${it.pron}"`);
     for (const o of it.options) if (o !== it.right) chk(o === it.text || countOf(o, it.other) > countOf(it.text, it.other), `${at}: wrong version "${o}" is not the sentence as it was or the other noun`);
+  }
+}
+
+// ------------------------------------------------------------------------------------------------- grades 9-12
+// The new 9-12 topics (sound-alike words IV and V, colons and semicolons, hyphens, list cue words, parallel structure).
+// Every line is written as only its sentence ("1. "The ___ of the film ..." Answer: scene."), so each topic's read.bare
+// names its reader. Every reader keeps a format already built: a choice in the blank (pills, or press-to-cycle with
+// read.cycle), whole sentences to choose from, highlight-the-word, and the punctuation chips. Every generated wrong
+// option has a rule name and a second, independent check in checkItems3.
+const VERB_SLOT = new Set(['to', 'will', 'may', 'can', 'could', 'should', 'must', 'would', 'please']);
+const BE_FORMS = new Set(['is', 'are', 'was', 'were', 'be', 'been']);
+const FARTHER_NEXT = new Set(['from', 'than', 'along', 'up', 'down', 'away', 'into', 'out', 'ahead', 'back']);
+const PLACE_PREPS = new Set(['at', 'in', 'on', 'for', 'to', 'with', 'by', 'from']);
+const NOT_A_NOUN = new Set(['because', 'before', 'in', 'toward', 'of', 'can', 'is', 'was', 'and', 'but', 'when', 'that']);
+/** The word of a sound-alike set a blank takes, by where it sits (read.check names the set). b: the words before the
+ *  blank, a: the words after it, both in lower case. These are the cards' own tests, written as rules: a verb after to,
+ *  will or can; seen after a form of have; the adjective before a noun or after a form of be; farther for a distance
+ *  (from, than, along); all together and all ready before at, in, for or to. */
+export const WORD_RULES = Object.freeze({
+  'cite-sight-site': (b, a) => (VERB_SLOT.has(b[b.length - 1]) ? 'cite' : a[0] === 'of' || b[b.length - 1] === 'first' ? 'sight' : 'site'),
+  'scene-seen': b => (b.slice(-3).some(w => ['have', 'has', 'had'].includes(w)) ? 'seen' : 'scene'),
+  'advice-advise': b => (VERB_SLOT.has(b[b.length - 1]) ? 'advise' : 'advice'),
+  'farther-further': (b, a) => (FARTHER_NEXT.has(a[0]) ? 'farther' : 'further'),
+  'anyway-anyways': () => 'anyway',
+  'altogether-all-together': (b, a) => (!b.length || (a.length && !PLACE_PREPS.has(a[0])) ? 'altogether' : 'all together'),
+  'already-all-ready': (b, a) => (!a.length || ['for', 'to', 'when'].includes(a[0]) ? 'all ready' : 'already'),
+  'prejudice-prejudiced': (b, a) => (adjSlot(b, a) ? 'prejudiced' : 'prejudice'),
+  'bias-biased': (b, a) => (adjSlot(b, a) ? 'biased' : 'bias'),
+  'later-latter': b => (b[b.length - 1] === 'the' ? 'latter' : 'later'),
+  'altar-alter': b => (VERB_SLOT.has(b[b.length - 1]) ? 'alter' : 'altar'),
+});
+function adjSlot(b, a) {
+  const last = b[b.length - 1];
+  return (ARTICLES.has(last) && a.length > 0 && !NOT_A_NOUN.has(a[0])) || BE_FORMS.has(last) || b[b.length - 3] === 'called';
+}
+/** The words around a blank, in lower case and without marks. */
+const around = text => { const [b, a = ''] = String(text).split('___'); return [lowWords(b), lowWords(a)]; };
+
+/** Compound nouns by their standard (dictionary) form: closed, hyphenated or open. */
+export const COMPOUND_NOUNS = Object.freeze({ 'mother in law': ['mother-in-law'], 'ice cream': ['ice cream'], 'tooth brush': ['toothbrush'], 'check in': ['check-in'],
+  'butter fly': ['butterfly'], 'sister in law': ['sister-in-law'], 'mail box': ['mailbox'], 'well being': ['well-being', 'wellbeing'], 'rain coat': ['raincoat'],
+  'follow up': ['follow-up'], 'bird house': ['birdhouse'], 'father in law': ['father-in-law'] });
+/** Closed compound nouns (one word made of two). */
+export const CLOSED_COMPOUNDS = Object.freeze(['firefighter', 'toothpaste', 'sunflower', 'lighthouse', 'mailbox', 'snowman', 'toothbrush', 'butterfly', 'raincoat', 'birdhouse', 'hairbrush', 'notebook']);
+/** Words a prefix makes that mean something else (recover: get well; re-cover: cover again), so the hyphen keeps "again". */
+export const CLARITY_WORDS = Object.freeze(['recover', 'resign', 'recreate', 'recollect', 'reform', 'release', 'remark']);
+const NUMBER_WORDS = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const FRACTION_PARTS = /^(half|halves|thirds?|quarters?|fourths?|fifths?|sixths?|sevenths?|eighths?|ninths?|tenths?)$/;
+/** A prefix and its root take a hyphen when the prefix ends with the vowel the root starts with, or the root starts with a
+ *  capital or a number; else they join closed. -> 'hyphen' | 'closed' (with re before e, both are standard US spellings). */
+export const affixJoin = (pre, root) => (/^[\p{Lu}\d]/u.test(root) || (/[aeiou]$/.test(pre) && pre.slice(-1) === root.charAt(0)) ? 'hyphen' : 'closed');
+/** The three ways to write words joined into one: open (spaces), hyphenated, and closed; for three or more words the
+ *  third way is the hyphens stopping one word short. */
+function joinForms(parts) {
+  const open = parts.join(' '), hyphen = parts.join('-');
+  const third = parts.length > 2 ? `${parts.slice(0, -1).join('-')} ${parts[parts.length - 1]}` : parts.join('');
+  return { open, hyphen, third };
+}
+
+/** Parallel structure: the form of each item a list (or "X to Y") joins: 'inf' (to read), 'ing', 'past', 'adj', 'noun'
+ *  or 'plain'. -> the forms, or null when the sentence joins no items. */
+const PARALLEL_ADJ = new Set(['smart', 'kind', 'honest', 'brave', 'loyal', 'long', 'detailed', 'interesting']);
+const PARALLEL_NOUN = new Set(['honesty', 'interest', 'laughter', 'defense']);
+const formOf = (head, inf) => (inf ? 'inf' : PARALLEL_ADJ.has(head) ? 'adj' : PARALLEL_NOUN.has(head) ? 'noun' : /ing$/.test(head) ? 'ing' : /ed$/.test(head) ? 'past' : 'plain');
+export function parallelForms(s) {
+  const t = body(s);
+  const pieces = t.split(/, /);
+  if (pieces.length < 3) {
+    const c = /\b(\w+) to (\w+)$/.exec(t);
+    return c ? [formOf(c[1].toLowerCase(), false), formOf(c[2].toLowerCase(), false)] : null;
+  }
+  return pieces.map((p, i) => {
+    const w = lowWords(p.replace(/^(and|or) /, ''));
+    if (i === 0) return formOf(w[w.length - 1], w[w.length - 2] === 'to');
+    return formOf(w[w.length > 1 && w[0] === 'to' ? 1 : 0], w[0] === 'to');
+  });
+}
+export const isParallel = s => { const f = parallelForms(s); return !!f && f.every(x => x === f[0]); };
+/** Where two versions of a sentence differ: { before, after (tokens), a, b (the words that differ, without the marks
+ *  after them) }. */
+function versionDiff(x, y) {
+  const A = tokenize(x), Bt = tokenize(y);
+  const same = (p, q) => p.t === q.t && p.post === q.post && p.pre === q.pre;
+  let i = 0; while (i < A.length && i < Bt.length && same(A[i], Bt[i])) i++;
+  let j = 0; while (j < A.length - i && j < Bt.length - i && same(A[A.length - 1 - j], Bt[Bt.length - 1 - j])) j++;
+  // one version only adds words ("graphs" / "to read graphs"): the last shared word is part of both items
+  while (j > 0 && (A.length - j === i || Bt.length - j === i)) j--;
+  const ma = A.slice(i, A.length - j), mb = Bt.slice(i, Bt.length - j);
+  if (!ma.length || !mb.length) return null;
+  const post = ma[ma.length - 1].post;
+  if (post !== mb[mb.length - 1].post) return null;
+  const bare = m => joinTokens(m.map((w, k) => (k === m.length - 1 ? { ...w, post: '' } : w)));
+  return { before: A.slice(0, i), after: A.slice(A.length - j), a: bare(ma), b: bare(mb), post };
+}
+/** Conjunctive adverbs (the card's list). */
+export const CONJ_ADVERBS = Object.freeze(['however', 'therefore', 'meanwhile', 'consequently', 'nevertheless', 'instead', 'furthermore', 'afterward', 'moreover', 'otherwise', 'also', 'then', 'still', 'thus']);
+/** A colon follows a clause that names what comes next (a number, a plan, a reason, a rule); else two related clauses
+ *  take a semicolon. */
+const SETUP = /\b(one|two|three|four|five|reason|rule|plan|goal|items|supplies|tool|things)\b/i;
+const LIST_CUES = ['for example', 'such as', 'including'];
+
+const BARE_912 = {
+  // a sound-alike set: the words of the set are the choices in the blank
+  words(r, def, problems, at) {
+    const text = doubleQuotes(r.text).replace(/___ ([,.!?])/g, '___$1'), ans = unq(r.a).replace(/\.$/, '');
+    if (!text.includes('___')) { problems.push(`${at}: no blank (___) in the sentence`); return false; }
+    const start = !text.split('___')[0].trim();
+    // the set's words in a fixed order per item (never always the same place for the same answer)
+    const options = seededShuffle(def.read.words.map(w => firstUp(w, start)), at);
+    const k = options.indexOf(ans);
+    if (k < 0) { problems.push(`${at}: the answer "${ans}" is not one of ${options.join(' / ')} as the sentence needs it`); return false; }
+    if (hintLeaks(r.hint, ans, options.filter(o => o !== ans))) problems.push(`${at}: the hint names the answer "${ans}" and not the other choices`);
+    const [b, a] = text.split('___');
+    return { format: 'choice', text, options, answer: [k], right: `${b}${ans}${a}`, rule: 'words', check: def.read.check };
+  },
+  // a blank between two clauses: the chips put back the colon or semicolon (and the comma after a conjunctive adverb)
+  clausemark(r, def, problems, at) {
+    const right = doubleQuotes(unq(r.a));
+    let text = doubleQuotes(r.text).replace(/ ___ /, ' ');
+    const adv = CONJ_ADVERBS.find(w => new RegExp(`; ${w},`, 'i').test(right));
+    if (def.read.check === 'conjadv') {
+      if (!adv) { problems.push(`${at}: the fix has no "; adverb," between its clauses`); return false; }
+      text = text.replace(new RegExp(`\\b(${adv}),`, 'i'), '$1');
+    }
+    const it = marksItem(text, right, def, problems, at);
+    return it && { ...it, rule: def.read.check, ...(adv ? { adverb: adv } : {}) };
+  },
+  // "Which word is a compound noun in this sentence: The firefighter checked the alarm?": tap it
+  compound(r, def, problems, at) {
+    const x = /^Which (word|phrase) is a compound (noun|adjective) in this sentence: (.+)\?$/.exec(r.text);
+    if (!x) { problems.push(`${at}: not "Which word is a compound noun in this sentence: ...?"`); return false; }
+    const text = `${x[3]}.`, ans = unq(r.a).replace(/\.$/, ''), places = placesOf(text, ans);
+    if (!places) { problems.push(`${at}: the answer "${ans}" is not in the sentence once`); return false; }
+    if (hintLeaks(r.hint, ans)) problems.push(`${at}: the hint names the answer "${ans}"`);
+    return { format: 'tap', text, ask: `Tap the compound ${x[2]}.`, answer: places, rule: 'compound-word', kind: x[2] };
+  },
+  // "Write the compound noun correctly: My (mother in law) visited us.": the ways to write the words in the blank
+  join(r, def, problems, at) {
+    const x = /^(.+?): (.*?)\(([^()]+)\)(.*)$/.exec(r.text);
+    if (!x) { problems.push(`${at}: no words in parentheses to join`); return false; }
+    const [, , before, inner, after] = x, kind = def.read.join, right = unq(r.a);
+    const parts = inner.split(/\s*\+\s*|\s+/);
+    const { open, hyphen, third } = joinForms(parts);
+    const start = !before.trim();
+    const forms = [hyphen, kind === 'affix' ? parts.join('') : third, open].map(o => firstUp(o, start));
+    const k = forms.findIndex(o => right === `${before}${o}${after}`);
+    if (k < 0) { problems.push(`${at}: the answer is not the sentence with one way of writing "${inner}"`); return false; }
+    const rights = [k];
+    // a compound noun with two standard spellings (well-being, wellbeing): either is right
+    if (kind === 'noun') rights.push(...forms.map((o, i) => i).filter(i => i !== k && (COMPOUND_NOUNS[parts.join(' ').toLowerCase()] || []).includes(forms[i].toLowerCase())));
+    // re before e: "re-enter" and "reenter" are both standard US spellings, so either is right
+    if (kind === 'affix' && /^re$/i.test(parts[0]) && /^e/.test(parts[1])) rights.push(...[0, 1].filter(i => i !== k));
+    const options = seededShuffle([...new Set(forms)], at);
+    const answer = rights.map(i => options.indexOf(forms[i])).sort((p, q) => p - q);
+    if (hintLeaks(r.hint, forms[k])) problems.push(`${at}: the hint names the answer "${forms[k]}"`);
+    return { format: 'choice', text: `${before}___${after}`, options, answer, right, rule: 'join', kind, parts,
+      ...(answer.length > 1 ? { multi: true } : {}), ...(def.read.cycle ? { cycle: true } : {}) };
+  },
+  // a list with a cue word: the chips (a comma, or a colon that never belongs after such as or including)
+  cue(r, def, problems, at) {
+    const x = /^Punctuate the list cue: (.+)$/.exec(r.text);
+    if (!x) { problems.push(`${at}: not "Punctuate the list cue: ..."`); return false; }
+    const it = marksItem(doubleQuotes(x[1]), doubleQuotes(unq(r.a)), def, problems, at);
+    return it && { ...it, rule: 'listcue' };
+  },
+  // "Which sentence has parallel elements: A, or B?": the two sentences
+  parallel(r, def, problems, at) {
+    const x = /^Which (sentence has parallel elements|revision is parallel): (.+?), or ([A-Z].+)\?$/.exec(r.text);
+    if (!x) { problems.push(`${at}: not "Which sentence has parallel elements: A, or B?"`); return false; }
+    const versions = [x[2], x[3]].map(v => (/[.!?]$/.test(v) ? v : `${v}.`)), right = unq(r.a);
+    const k = versions.indexOf(right);
+    if (k < 0) { problems.push(`${at}: the answer is not one of the two sentences`); return false; }
+    if (def.read.match) {
+      // the revision: the odd item is the blank, its forms the choices (the parallel one, the odd one, and one more form)
+      const d = versionDiff(versions[k], versions[1 - k]);
+      if (!d) { problems.push(`${at}: the two sentences do not differ in one item`); return false; }
+      const odd = d.b, fix = d.a, third = thirdForm(fix, odd);
+      const blank = `${joinTokens([...d.before, { t: '___', pre: '', post: d.post }])}${d.after.length ? ` ${joinTokens(d.after)}` : ''}`;
+      const options = seededShuffle([fix, odd, ...(third ? [third] : [])], at);
+      return { format: 'choice', text: blank, ask: 'Choose the words that match the other items.', options, answer: [options.indexOf(fix)], right, rule: 'parallel-match',
+        ...(def.read.cycle ? { cycle: true } : {}) };
+    }
+    return { format: 'choice', text: right, ask: 'Which sentence has parallel elements?', options: versions, answer: [k], right, whole: true, rule: 'parallel' };
+  },
+};
+/** One more form of a list item, by rule: an infinitive's -ing form or base, an -ing word's base, a past form's -ing. */
+function thirdForm(fix, odd) {
+  const w = fix.split(' ');
+  let base = null;
+  if (w[0] === 'to') base = w[1];
+  else if (/ing$/.test(w[0]) && /^to /.test(odd)) base = odd.split(' ')[1];
+  else if (/ed$/.test(w[0])) base = baseFromPast(w[0]);
+  if (!base) return null;
+  const rest = (w[0] === 'to' ? w.slice(2) : w.slice(1)).join(' ');
+  const cands = [ingOf(base), base, `to ${base}`].map(c => (rest ? `${c} ${rest}` : c));
+  return cands.find(c => c !== fix && c !== odd) || null;
+}
+Object.assign(BARE, BARE_912);
+
+/** The independent check of the 9-12 items (called from checkItems). */
+function checkItems3(it, chk) {
+  const at = it.id, right = it.options ? it.options[it.answer[0]] : null, wrong = it.options ? it.options.filter((_, i) => !it.answer.includes(i)) : [];
+  switch (it.rule) {
+    case 'words': {
+      const [b, a] = around(it.text), want = WORD_RULES[it.check] && WORD_RULES[it.check](b, a);
+      chk(!!want && norm(right) === want && wrong.every(o => norm(o) !== want), `${at}: the ${it.check} rule takes "${want}" here, not "${right}"`);
+      break;
+    }
+    case 'join': {
+      const rights = it.answer.map(i => it.options[i].toLowerCase());
+      const inner = it.parts.join(' ').toLowerCase();
+      let want;
+      if (it.kind === 'noun') want = COMPOUND_NOUNS[inner] || [];
+      else if (it.kind === 'adjective' || it.kind === 'fraction') want = [it.parts.join('-').toLowerCase()];
+      else if (it.kind === 'affix') {
+        const [pre, root] = it.parts;
+        want = [affixJoin(pre, root) === 'hyphen' ? `${pre}-${root}` : `${pre}${root}`].map(x => x.toLowerCase());
+        if (/^re$/i.test(pre) && /^e/.test(root)) want.push(`${pre}${root}`.toLowerCase());
+      } else if (it.kind === 'clarity') want = [it.parts.join('-').toLowerCase()];
+      if (it.kind === 'fraction') chk(NUMBER_WORDS.includes(it.parts[0].toLowerCase()) && FRACTION_PARTS.test(it.parts[1]), `${at}: "${inner}" is not a spelled-out fraction`);
+      if (it.kind === 'clarity' && it.parts[0].toLowerCase() === 're') chk(CLARITY_WORDS.includes(it.parts.join('').toLowerCase()), `${at}: "${it.parts.join('')}" is not a word with another meaning`);
+      chk(!!want && want[0] !== undefined && rights.every(o => want.includes(o)) && want.every(o => rights.includes(o)), `${at}: the ${it.kind} rule makes "${want}", not "${rights}"`);
+      for (const o of wrong) chk(!want || !want.includes(o.toLowerCase()), `${at}: wrong option "${o}" is the ${it.kind} rule's form`);
+      break;
+    }
+    case 'parallel': chk(isParallel(right) && wrong.every(o => !isParallel(o)), `${at}: the parallel rule disagrees`); break;
+    case 'parallel-match': {
+      const fill = o => it.text.replace('___', o);
+      chk(isParallel(fill(right)) && wrong.every(o => !isParallel(fill(o))), `${at}: a wrong form matches the other items, or the right one does not`);
+      break;
+    }
+    case 'compound-word': {
+      const w = it.answer.map(i => tokenize(it.text)[i].t).join(' ').toLowerCase();
+      chk(it.kind === 'noun' ? CLOSED_COMPOUNDS.includes(w) : /^[a-z]+(-[a-z]+)+$/.test(w) && it.answer[it.answer.length - 1] < tokenize(it.text).length - 1, `${at}: "${w}" is not a compound ${it.kind} by the rule`);
+      break;
+    }
+    case 'colon': {
+      const [g, mk] = it.want.find(([, m]) => m === ':' || m === ';') || [-1, ''];
+      const first = it.words.slice(0, g + 1).map(w => w.t).join(' ');
+      chk(mk === (SETUP.test(first) ? ':' : ';'), `${at}: the colon rule wants "${SETUP.test(first) ? ':' : ';'}" here`);
+      break;
+    }
+    case 'conjadv': {
+      const k = it.words.findIndex(w => norm(w.t) === it.adverb);
+      chk(k > 0 && it.want.length === 2 && it.want.some(([g, m]) => g === k - 1 && m === ';') && it.want.some(([g, m]) => g === k && m === ','), `${at}: not a semicolon before "${it.adverb}" and a comma after it`);
+      break;
+    }
+    case 'listcue': {
+      const toks = it.words.map(w => norm(w.t));
+      for (const cue of LIST_CUES) {
+        const c = cue.split(' '), k = toks.findIndex((_, i) => c.every((x, j) => toks[i + j] === x));
+        if (k < 0) continue;
+        const end = k + c.length - 1, all = [...it.want, ...it.optional];
+        const before = all.some(([g]) => g === k - 1), after = all.some(([g]) => g === end);
+        if (cue === 'for example') chk(it.want.some(([g, m]) => g === k - 1 && m === ',') && it.want.some(([g, m]) => g === end && m === ','), `${at}: "for example" takes a comma on each side`);
+        if (cue === 'such as') chk(!before && !after, `${at}: "such as" takes no mark before or after it`);
+        if (cue === 'including') chk(!after && !it.want.some(([g]) => g === k - 1), `${at}: the comma before "including" is optional and none goes after it`);
+      }
+      chk(!it.want.some(([, m]) => m === ':'), `${at}: a colon never goes in a list with a cue word`);
+      break;
+    }
+    default: break;
   }
 }
 
@@ -1918,6 +2206,7 @@ export function checkItems(topic) {
     }
     if (it.format === 'capfix') chk(it.answer.every((i, k) => tokenize(it.text)[i].t !== it.fixed[k] && norm(tokenize(it.text)[i].t) === norm(it.fixed[k])), `${at}: a tapped word does not change case`);
     checkItems2(it, chk);
+    checkItems3(it, chk);
   }
   return problems;
 }
@@ -1931,6 +2220,8 @@ const unitText = u => [u.lead, u.text, u.note, u.then && u.then.text, u.then && 
 
 // ------------------------------------------------------------------------------------------------- Mistake Hunt rooms
 const ROOM_SIZE = 8, ROOM_MISTAKES = 5, ROOM_MIN = 3, ROOM_PASS = 0.8;
+/** Grades 9-12 read longer passages: a 9-12 topic's room holds 12 of its sentences. */
+const ROOM_SIZE_912 = 12;
 /** A topic's room: its own right sentences (8 of them, in a fixed order), planted by Mistake Hunt's planter with only
  *  the topic's kinds and a fixed seed. titlesOnly: a capital is planted only inside a title (the kind would also take
  *  a person's name); words: a mistake is planted only on these words. -> { title, passages: [{ t, x, g, m }], need } or
@@ -1939,7 +2230,7 @@ export function buildRoom(topic, def, problems) {
   const P = proofCore();
   const kinds = def.room.kinds;
   for (const k of kinds) if (!P.BY[k]) { problems.push(`${topic.id} room: Mistake Hunt has no mistake kind "${k}"`); return null; }
-  const sentences = seededShuffle(topic.items.map(it => ({ s: it.right || it.text, it })), `room|${topic.id}`).slice(0, ROOM_SIZE);
+  const sentences = seededShuffle(topic.items.map(it => ({ s: it.right || it.text, it })), `room|${topic.id}`).slice(0, topic.band === '9-12' ? ROOM_SIZE_912 : ROOM_SIZE);
   const x = P.normText(sentences.map(o => o.s).join(' '));
   let avoid = [];
   if (def.room.titlesOnly) {

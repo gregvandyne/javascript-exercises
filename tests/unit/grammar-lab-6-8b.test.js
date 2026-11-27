@@ -42,6 +42,7 @@ let n = 0;
 const newKid = () => auth.createUser({ username: `g68b${Date.now() % 1e6}x${++n}`, password: 'correct-horse-12', displayName: 'Kid' });
 const master = (u, id) => q.run("INSERT OR REPLACE INTO course_progress(user_id, course, step, band, read_at, checked_at, check_score, played_at, completed_at) VALUES (?, 'grammar-lab', ?, '6-8', 1, 1, 0, NULL, 1)", u.id, id);
 const T = id => GL.topic(id);
+const units68 = id => GL.unitsWith(id).filter(p => p.band === '6-8').map(p => p.id);
 const item = id => T(id.replace(/-\d+$/, '')).items.find(it => it.id === id);
 const API = id => `/api/courses/grammar-lab/topic/${id}`;
 const wordsAt = it => it.answer.map(i => tokenize(it.text)[i].t).join(' ');
@@ -108,11 +109,12 @@ test('6-8 part 2 in full: 26 units, 114 topic slots, 93 topics (67 new, 26 from 
   assert.deepEqual(PART2.map(p => PLAN.pathways[p].parts.flatMap(x => x.topics).length), heads.map(h => +h[2]));
   // a topic written twice in the source is one topic, read from the place chosen
   assert.equal(PLAN.topics['restrictive-clauses'].source.line, 3672, 'Punctuating Restrictive and Nonrestrictive Clauses: the Phrases and Dependent Clauses one');
-  assert.deepEqual(GL.unitsWith('restrictive-clauses').map(p => p.id), ['phrases-and-clauses', 'restrictive-clauses']);
-  assert.deepEqual(GL.unitsWith('identifying-modifiers').map(p => p.id), ['modifiers', 'verbals']);
-  assert.deepEqual(GL.unitsWith('singular-possessives').map(p => p.id), ['plurals-and-possessives', 'singular-plural-possessives']);
-  assert.deepEqual(GL.unitsWith('redundant-wordy').map(p => p.id), ['introductions', 'thesis-statements', 'topic-sentences']);
-  assert.deepEqual(GL.unitsWith('cap-family-titles').map(p => p.id), ['capitalization-1', 'capitalization-2']);
+  // (the 9-12 band uses these units too: here, the 6-8 band's own)
+  assert.deepEqual(units68('restrictive-clauses'), ['phrases-and-clauses', 'restrictive-clauses']);
+  assert.deepEqual(units68('identifying-modifiers'), ['modifiers', 'verbals']);
+  assert.deepEqual(units68('singular-possessives'), ['plurals-and-possessives', 'singular-plural-possessives']);
+  assert.deepEqual(units68('redundant-wordy'), ['introductions', 'thesis-statements', 'topic-sentences']);
+  assert.deepEqual(units68('cap-family-titles'), ['capitalization-1', 'capitalization-2']);
   // Parts of Speech II is all part 1 topics
   assert.ok(topicsOf(['parts-of-speech-2']).every(id => P1.has(id)));
   // checkpoints follow the topic list
