@@ -16430,3 +16430,34 @@ and the family onboarding's own files are left to that work.
 - Tests: tests/unit/grammar-lab-polish.test.js, grammar-lab-voice-browser.test.js, grammar-lab-phone-browser.test.js
   (every band at 320 and 390 px, light and dark), grammar-lab-locale-browser.test.js (German and Arabic) and
   grammar-lab-playthrough-browser.test.js (one whole unit per band).
+
+## Oomba assigns, and checks its work (27 Nov 2026)
+
+Owner, after an outside audit of the Oomba chat (code side): it was right that Oomba never did platform tasks itself
+and that some changes were reported before they were checked. The owner chose: fix the checks, and let Oomba assign.
+
+- **Assign from the chat** (`services/companion.js` tool `assign`, `assignPlan`, `assignAct`, `undoAssign`): a game
+  (`searchGames` id) or a Story Library book (`searchBooks` id) for a class, the whole class or some students
+  (placeholders, each one student of that class), with an optional due day. The class is the one named, the page's, or
+  the teacher's only one; otherwise a which-class card (the teacher's tap comes back as their message). The plan is
+  checked in a dry run (`verify-change.js dryRun`) with the Assign pages' own services (`game-folders.js assignGame`,
+  `library.js assignStory`), so a live-only game, a game that needs the teacher's own questions first (its Assign
+  page), one already assigned or a bad date is refused before any card. The teacher sees "Assign <what> to <class>?"
+  with Assign and Not now; nothing is assigned until Assign. The tap assigns, reads the assignment back (open, in that
+  class, for exactly those students) and the card shows it with Undo (`lessons.js unassign`: students' work kept) and a
+  link to the class's games. Books go to the whole class only (as on the book's Assign page). Not posted to Google
+  Classroom from the chat. Not yet: a teacher's own lessons and course lessons (no tool lists them).
+- **Points** (`givePoint`): the award is written in a dry run and read back before the AI is told; a point that could
+  not land (an empty class, a student who left) comes back as not landed and the AI never says it was given. The real
+  award is still written with the answer and counted again (the card and the correction as before).
+- **Dashboard Apply** (`applyProposal`): a changed setting counts as landed only when it reads back with the value
+  asked (a value the dashboard clamped or refused is "One change didn't land"); a removed widget only when it is gone.
+- **New class** (`createAct`): read back as saved (its school, the teacher on it) before the card says it was made;
+  the card shows the saved name.
+- **Book rename / copy / paint again / redraw a picture, Simpler wording** (`ctx.out.later`, `withLater`): run in a dry
+  run at the tool (the AI is told what it would make), then made for real with the answer in the engine's transaction
+  and read back; a turn that fails after the tool leaves nothing changed. Pictures are reported as queued ("not painted
+  yet"), never done; the book page shows each when it is ready.
+- **Manipulatives boards** (`public/js/manip-chat.js put`): the page reads the board back after putting it on; a board
+  that asked for a change but reads exactly as before is put back and the card says it could not be put on. Until a
+  board page confirms (`manipApplied`, now with its time), the card says "Not on your board yet", never "updated".

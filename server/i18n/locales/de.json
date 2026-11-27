@@ -4437,7 +4437,8 @@
       "boardOf": "Brett {tool}",
       "liveRoom": "Live-Raum",
       "greetLine": "Sag mir, welche Stunde du auf diesem Brett {tool} möchtest.",
-      "greetLineHas": "Sag mir, was ich auf deinem Brett {tool} ändern soll."
+      "greetLineHas": "Sag mir, was ich auf deinem Brett {tool} ändern soll.",
+      "notYet": "Noch nicht auf deiner Tafel."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4646,7 +4647,9 @@
         "book_repaint": "„{q}“ zum neu Malen geschickt",
         "week": "Wochenplan entworfen ({n} Tage)",
         "needs": "Mal nachsehen angeschaut ({n})",
-        "needsNo": "Mal nachsehen ließ sich nicht öffnen"
+        "needsNo": "Mal nachsehen ließ sich nicht öffnen",
+        "assign": "Eine Zuweisung zum Prüfen vorbereitet",
+        "assignNo": "Das ließ sich nicht zuweisen"
       },
       "stepsSum": "{n, plural, one {# Schritt} other {# Schritte}} · {s} s",
       "prog": {
@@ -4780,6 +4783,19 @@
         "denied": "An deiner Schule können nur Schuladmins Klassen anlegen.",
         "done": "Die Klasse {name} ist angelegt. Sie hat noch keine Schüler.",
         "openDash": "Ihr Dashboard öffnen"
+      },
+      "asg": {
+        "which": "Für welche Klasse?",
+        "ask": "„{title}“ der Klasse {class} zuweisen?",
+        "all": "Die ganze Klasse",
+        "some": "{count, plural, one {# Kind} other {# Kinder}}",
+        "due": "Fällig am {day}",
+        "assign": "Zuweisen",
+        "notNow": "Nicht jetzt",
+        "assigned": "Zugewiesen",
+        "declined": "Nicht zugewiesen",
+        "done": "„{title}“ ist der Klasse {class} zugewiesen.",
+        "open": "Spiele der Klasse ansehen"
       },
       "book": {
         "adding": "Zu deinem Buch hinzufügen",
