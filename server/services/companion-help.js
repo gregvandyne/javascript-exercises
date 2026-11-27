@@ -45,7 +45,7 @@ export const HELP = Object.freeze({
     step('Open {link}.', 'class', 'your class'),
     step('Tap {b:dash.entry.teacher}.'),
   ] },
-  'add-students': { title: 'Add students and make their login cards', need: 'class', go: 'class', steps: [
+  'add-students': { title: 'Add students and make their login cards', need: 'class', go: 'class', action: 'addStudents', steps: [
     step('Open {link}.', 'classStudents', 'your class\'s Students tab'),
     step('Type the students\' names, one on each line, under {b:school.class.newAccounts}.'),
     step('Tap {b:school.class.createCards}, then print the cards.'),
@@ -65,7 +65,7 @@ export const HELP = Object.freeze({
     step('Tap {b:folders.findOomba} and pick a lesson.'),
     step('Tap {b:lessons.assign.button}. You can set {b:lessons.assign.due}.'),
   ] },
-  'due-dates': { title: 'Set or change a due date', need: 'class', steps: [
+  'due-dates': { title: 'Set or change a due date', need: 'class', action: 'changeDue', steps: [
     step('Open {link}.', 'classAssigned', 'the lessons you assigned'),
     step('Open the lesson and set {b:lessons.assign.due}, then tap {b:lessons.assign.button}.'),
   ] },

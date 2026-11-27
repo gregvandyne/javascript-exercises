@@ -34,6 +34,11 @@ body.lv-projector .oc{top:0}
 .oc-copy.done{color:var(--accent-press)}
 .oc-copied{font-size:.8rem;font-weight:700;color:var(--muted)}
 .oc-cls .oc-acts .btn .fx{margin-inline-end:2px}
+/* An action card (services/companion-actions/): the warning line and the box for names typed on the card. */
+.oc-act .oc-actwarn{color:var(--text)}
+.oc-actin{display:flex;flex-direction:column;gap:4px;margin:8px 0 0;font-size:.85rem;font-weight:700}
+.oc-actin textarea,.oc-actin input{width:100%;box-sizing:border-box;font:inherit;font-weight:400}
+.oc-actin small{color:var(--muted);font-weight:400}
 sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1px}
 
 /* The steps Oomba took. */

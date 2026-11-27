@@ -112,14 +112,11 @@ function keepCards(by, cards, { schoolId, classId = null, back = classId ? 'clas
   return k;
 }
 cardsHook.keep = keepCards; // Google sign-in removal prints a login card (routes/google.js)
+S.loginCards.keep = keepCards; // and Oomba's Add students card (services/companion-actions/classes.js)
 const card = (r, role = null) => ({ name: r.rosterName || r.user.display_name, username: r.username, password: r.password, role: role && role !== 'student' ? role : null });
 
 /** Typed names that exactly match a student who already has an account at the school (so we don't make a second one). */
-function sameNames(schoolId, names) {
-  const have = new Map();
-  for (const p of S.members(schoolId, 'student')) { const k = nameOf(p).toLowerCase(); if (!have.has(k)) have.set(k, p); }
-  return names.map(n => have.get(n.toLowerCase())).filter(Boolean);
-}
+const sameNames = S.sameNames;
 const sameNamesError = (req, s, matches) => req.t('school.errors.sameName', { count: matches.length, names: matches.map(p => `${nameOf(p)} (@${p.username})`).join(', '), school: s.name });
 
 // ================================================================ platform admin: Schools
@@ -699,8 +696,8 @@ router.post('/api/schools/:id/members/:uid/not-staff', requireUser, (req, res) =
   if (!r.ok) return err(req, res, r.code, r.code === 'notFound' ? 404 : 400);
   res.json({ ok: true, toast: req.t('school.people.notStaffDone', { name: r.user.username }) });
 });
-/** One name per line (or separated by commas/semicolons), at most 60 at a time. */
-export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
+/** One name per line (or separated by commas/semicolons), at most 60 at a time (services/schools.js). */
+export const parseNames = S.parseNames;
 
 // ================================================================ teachers: the Classroom tab (/teach)
 // docs/decisions.md "Play and Learn", "My classes, simpler" and "A simpler teacher home": a teacher's (and a school

@@ -4669,7 +4669,9 @@
         "report": "De voortgang van de klas gelezen",
         "reportNo": "De voortgang van die klas kon niet gelezen worden",
         "pointEmpty": "De klas gecontroleerd: nog geen leerlingen",
-        "askBack": "Gevraagd wat je nodig hebt"
+        "askBack": "Gevraagd wat je nodig hebt",
+        "action": "Klaargezet om te controleren",
+        "actionNo": "Dat lukte niet"
       },
       "stepsSum": "{n, plural, one {# stap} other {# stappen}} · {s} s",
       "prog": {
@@ -4957,6 +4959,314 @@
         "pastEnd": "{v} ligt voorbij het einde van een lijn van {from} tot {to}, dus het punt kan daar niet staan.",
         "other": "Die figuur kan niet getekend worden: {what}.",
         "notAsked": "Niet toegevoegd: {what}."
+      },
+      "act": {
+        "whichClass": "Voor welke klas?",
+        "do": "Doen",
+        "notNow": "Nu niet",
+        "done": "Klaar",
+        "declined": "Niet gedaan",
+        "failed": "Niet gedaan: er is niets veranderd",
+        "noUndo": "Dit kan niet ongedaan worden gemaakt vanuit de chat.",
+        "namesLabel": "Namen van de leerlingen, één per regel",
+        "namesHint": "De namen blijven hier: ze gaan niet naar de AI van Oomba.",
+        "namesFirst": "Typ eerst de namen.",
+        "nameLabel": "Naam op de klassenlijst",
+        "openClass": "Klas openen",
+        "why": {
+          "needText": "Typ eerst de namen.",
+          "tooMany": "Hoogstens 40 namen tegelijk.",
+          "sameNames": "{count, plural, one {# naam heeft} other {# namen hebben}} al een account op deze school: voeg ze toe met Bestaande leerlingen toevoegen op de klaspagina.",
+          "other": "Dat lukte niet, dus er is niets veranderd."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Dit maakt accounts voor kinderen.",
+            "password": "Het oude wachtwoord werkt meteen niet meer.",
+            "archive": "Dit archiveert de klas. Je kunt hem later terugzetten.",
+            "remove": "Dit haalt de leerling uit de klas. Account en werk blijven bewaard.",
+            "move": "De leerling verlaat deze klas. Account en werk blijven bewaard."
+          },
+          "add": {
+            "ask": "Leerlingen toevoegen aan {class}?",
+            "where": "Typ hieronder hun namen. Elke leerling krijgt een gebruikersnaam en een wachtwoord op een inlogkaart.",
+            "done": "{count, plural, one {# leerling} other {# leerlingen}} toegevoegd aan {class}.",
+            "cardsOnce": "Print de inlogkaarten nu: de wachtwoorden staan alleen daarop.",
+            "printCards": "Inlogkaarten printen"
+          },
+          "rename": {
+            "ask": "{class} wijzigen?",
+            "done": "{class} gewijzigd.",
+            "name": "Naam: {name}",
+            "grade": "Groep: {grade}",
+            "subject": "Vak: {subject}"
+          },
+          "code": {
+            "ask": "Een nieuwe deelnamecode maken voor {class}?",
+            "old": "De oude code werkt dan niet meer.",
+            "done": "De nieuwe deelnamecode voor {class} is {code}."
+          },
+          "archive": {
+            "ask": "{class} archiveren?",
+            "done": "{class} gearchiveerd."
+          },
+          "restore": {
+            "ask": "{class} terugzetten?",
+            "done": "{class} teruggezet."
+          },
+          "pw": {
+            "ask": "Een nieuw wachtwoord maken voor {name}?",
+            "done": "Nieuw wachtwoord gemaakt voor {name}.",
+            "cardOnce": "Print de inlogkaart nu: het wachtwoord staat alleen daarop.",
+            "printCard": "Inlogkaart printen"
+          },
+          "remove": {
+            "ask": "{name} uit {class} halen?",
+            "done": "{name} uit {class} gehaald."
+          },
+          "move": {
+            "ask": "{name} van {from} naar {to} verplaatsen?",
+            "done": "{name} zit nu in {to}."
+          },
+          "coteach": {
+            "ask": "{name} als leerkracht aan {class} toevoegen?",
+            "done": "{name} geeft nu les aan {class}."
+          },
+          "join": {
+            "ask": "{name} laten meedoen in {class}?",
+            "nameHint": "Controleer hieronder de naam voor de klassenlijst.",
+            "done": "{name} zit nu in {class}."
+          },
+          "decline": {
+            "ask": "Het verzoek van {name} voor {class} weigeren?",
+            "done": "Het verzoek voor {class} geweigerd."
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Dit haalt het uit de klas. Het werk van de leerlingen blijft bewaard.",
+            "students": "Leerlingen zien dit.",
+            "classroom": "Dit plaatst het in Google Classroom: de leerlingen daar zien het.",
+            "deleteSheet": "Dit verwijdert het werkblad voorgoed. Lessen die al zijn toegewezen houden hun vragen.",
+            "deleteBoard": "Dit verwijdert het bord voorgoed.",
+            "deleteLesson": "Dit verwijdert de les voorgoed, met de toewijzingen en het werk van de leerlingen daarin."
+          },
+          "due": {
+            "ask": "De datums van ‘{title}’ in {class} wijzigen?",
+            "done": "De datums van ‘{title}’ gewijzigd.",
+            "none": "Geen inleverdatum",
+            "opens": "Open vanaf {day}",
+            "opensNow": "Nu open"
+          },
+          "unassign": {
+            "ask": "‘{title}’ uit {class} halen?",
+            "done": "‘{title}’ uit {class} gehaald."
+          },
+          "seeWork": "Bekijk het werk",
+          "lesson": {
+            "ask": "De les ‘{title}’ toewijzen aan {class}?",
+            "done": "De les ‘{title}’ is toegewezen aan {class}."
+          },
+          "sheet": {
+            "ask": "Het werkblad ‘{title}’ toewijzen aan {class}?",
+            "done": "Het werkblad ‘{title}’ is toegewezen aan {class}."
+          },
+          "practice": {
+            "ask": "Oefening van het bord ‘{title}’ toewijzen aan {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# vraag} other {# vragen}} per taak",
+            "done": "‘{title}’ is toegewezen aan {class}: {count, plural, one {# vraag} other {# vragen}}."
+          },
+          "unit": {
+            "ask": "De eenheid ‘{name}’ toevoegen aan {class}?",
+            "done": "De eenheid ‘{name}’ is toegevoegd aan {class}."
+          },
+          "renameUnit": {
+            "ask": "De eenheid ‘{old}’ in {class} hernoemen naar ‘{name}’?",
+            "done": "De eenheid heet nu ‘{name}’."
+          },
+          "move": {
+            "up": "‘{title}’ in {class} één plek omhoog zetten?",
+            "down": "‘{title}’ in {class} één plek omlaag zetten?",
+            "movedUp": "‘{title}’ staat één plek hoger.",
+            "movedDown": "‘{title}’ staat één plek lager."
+          },
+          "classroom": {
+            "ask": "‘{title}’ van {class} in Google Classroom plaatsen?",
+            "course": "Classroom-klas: {course}",
+            "done": "‘{title}’ is in Google Classroom geplaatst.",
+            "scheduled": "Het blijft een concept in Classroom tot het op {day} opengaat.",
+            "pastDue": "De inleverdatum is voorbij, dus het ging zonder datum.",
+            "open": "Openen in Classroom",
+            "page": "Google Classroom-pagina"
+          },
+          "made": {
+            "renameSheet": "Het werkblad ‘{old}’ hernoemen naar ‘{title}’?",
+            "renamedSheet": "Het werkblad heet nu ‘{title}’.",
+            "deleteSheet": "Het werkblad ‘{title}’ verwijderen?",
+            "deletedSheet": "Het werkblad ‘{title}’ is verwijderd.",
+            "openSheet": "Open het werkblad",
+            "allSheets": "Mijn werkbladen",
+            "renameBoard": "Het bord ‘{old}’ hernoemen naar ‘{title}’?",
+            "renamedBoard": "Het bord heet nu ‘{title}’.",
+            "copyBoard": "Een kopie maken van het bord ‘{title}’?",
+            "copiedBoard": "Kopie gemaakt: ‘{title}’.",
+            "deleteBoard": "Het bord ‘{title}’ verwijderen?",
+            "deletedBoard": "Het bord ‘{title}’ is verwijderd.",
+            "openBoard": "Open het bord",
+            "allBoards": "Mijn borden",
+            "copyLesson": "Een kopie maken van de les ‘{title}’?",
+            "copiedLesson": "Kopie gemaakt: ‘{title}’.",
+            "deleteLesson": "De les ‘{title}’ verwijderen?",
+            "inClasses": "{count, plural, one {Hij is toegewezen aan # klas.} other {Hij is toegewezen aan # klassen.}}",
+            "withWork": "{count, plural, one {# leerling heeft er werk in.} other {# leerlingen hebben er werk in.}}",
+            "deletedLesson": "De les ‘{title}’ is verwijderd.",
+            "openLesson": "Open de les",
+            "allLessons": "Mijn lessen"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Dit komt op de tafels van de leerlingen.",
+            "takeBack": "Dit haalt het van de tafels van de leerlingen. Hun werk blijft bewaard.",
+            "live": "Dit verandert wat de schermen van de leerlingen tonen.",
+            "parents": "Ouders zien deze klas zolang de oudersweergave aan staat."
+          },
+          "who": "Leerlingen: {names}",
+          "openHub": "De Hub openen",
+          "att": {
+            "absent": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als afwezig noteren in {class}?",
+            "home": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als thuis noteren in {class}?",
+            "here": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als aanwezig noteren in {class}?",
+            "everyone": "Iedereen in {class} vandaag als aanwezig noteren?",
+            "doneAbsent": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als afwezig genoteerd.",
+            "doneHome": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als thuis genoteerd.",
+            "doneHere": "{count, plural, one {# leerling} other {# leerlingen}} vandaag als aanwezig genoteerd.",
+            "doneEveryone": "Iedereen in {class} staat vandaag als aanwezig."
+          },
+          "sup": {
+            "ask": "De hulp voor {name} in {class} aanpassen?",
+            "done": "De hulp voor {name} is aangepast.",
+            "timeOff": "Geen extra tijd",
+            "time150": "Extra tijd: 1,5 keer",
+            "time200": "Extra tijd: dubbel",
+            "read": "Voorlezen",
+            "simple": "Eenvoudiger woorden",
+            "big": "Grotere tekst",
+            "none": "Geen hulp"
+          },
+          "groups": {
+            "ask": "{count, plural, one {# groep} other {# groepen}} maken in {class}?",
+            "done": "{count, plural, one {# groep} other {# groepen}} gemaakt in {class}.",
+            "name": "Groep {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: nog niemand",
+            "rest": "{count, plural, one {# leerling zit} other {# leerlingen zitten}} in geen enkele groep."
+          },
+          "hand": {
+            "ask": "“{title}” uitdelen aan {who} in {class}?",
+            "done": "“{title}” uitgedeeld aan {who}.",
+            "everyone": "alle tafels",
+            "group": "de groep {group}"
+          },
+          "back": {
+            "askAll": "“{title}” van alle tafels halen in {class}?",
+            "askOne": "“{title}” van de tafel van {name} halen?",
+            "doneAll": "“{title}” van alle tafels gehaald.",
+            "doneOne": "“{title}” van de tafel van {name} gehaald."
+          },
+          "needs": {
+            "seen": "{name} bij Even kijken als gezien markeren?",
+            "snooze": "{name} bij Even kijken uitstellen tot de volgende schooldag?",
+            "seenDone": "{name} als gezien gemarkeerd.",
+            "snoozeDone": "{name} uitgesteld tot de volgende schooldag.",
+            "rule": {
+              "stuck": "Zit vast op een opdracht",
+              "hand": "Steekt al een tijdje een hand op",
+              "ask": "Een vraag van thuis wacht",
+              "tries": "Meerdere pogingen zonder dat het lukt",
+              "reading": "Een leesquiz onder 60 procent",
+              "overdue": "Werk stapelt zich op na de deadline"
+            }
+          },
+          "live": {
+            "start": "Live les starten in {class}?",
+            "startLine": "Elke tafel wordt naar de Hub geroepen en het inloggen van de klas gaat open.",
+            "end": "Live les stoppen in {class}?",
+            "endLine": "Het inloggen van de klas sluit en de gedeelde apparaten van de klas worden uitgelogd.",
+            "started": "Live les gestart in {class}.",
+            "ended": "Live les gestopt in {class}."
+          },
+          "parents": {
+            "on": "Oudersweergave van {class} aanzetten?",
+            "off": "Oudersweergave van {class} uitzetten?",
+            "onDone": "De oudersweergave van {class} staat aan.",
+            "offDone": "De oudersweergave van {class} staat uit."
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "Leerlingen zien dit: het spel gaat open voor de klas.",
+            "end": "Het spel stopt op elk scherm dat meedoet."
+          },
+          "host": {
+            "ask": "Een livespel starten voor {class}?",
+            "what": "{count, plural, one {# kant-en-klare vraag} other {# kant-en-klare vragen}} uit de vragenbank.",
+            "done": "Het livespel voor {class} is open: leerlingen doen mee via hun klaspagina.",
+            "open": "Het scherm voor de spelleider openen"
+          },
+          "end": {
+            "ask": "Het livespel “{title}” stoppen?",
+            "players": "{count, plural, =0 {Er doet nog niemand mee.} one {Er doet # speler mee.} other {Er doen # spelers mee.}}",
+            "done": "Het livespel “{title}” is gestopt.",
+            "results": "De uitslag bekijken"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Leerlingen zien dit op hun scherm.",
+            "off": "Het verdwijnt van de schermen van de leerlingen."
+          },
+          "timer": {
+            "startAsk": "De timer op het dashboard van {class} starten?",
+            "pauseAsk": "De timer op het dashboard van {class} pauzeren?",
+            "resetAsk": "De timer op het dashboard van {class} terugzetten?",
+            "startDone": "De timer op het dashboard van {class} loopt.",
+            "pauseDone": "De timer op het dashboard van {class} is gepauzeerd.",
+            "resetDone": "De timer op het dashboard van {class} is teruggezet.",
+            "minutes": "{count, plural, one {# minuut} other {# minuten}}"
+          },
+          "eyes": {
+            "onAsk": "Ogen naar voren aanzetten voor {class}?",
+            "offAsk": "Ogen naar voren uitzetten voor {class}?",
+            "lasts": "Het gaat na 3 minuten vanzelf uit.",
+            "onDone": "Ogen naar voren staat aan voor {class}.",
+            "offDone": "Ogen naar voren staat uit voor {class}."
+          },
+          "check": {
+            "ask": "Een snelle check sturen naar {class}?",
+            "done": "Snelle check gestuurd naar {class}.",
+            "thumbs": "Duim omhoog, opzij of omlaag",
+            "fist": "Vuist tot vijf",
+            "scale": "Een schaal van 1 tot 5",
+            "choice": "Keuzes: {options}",
+            "endAsk": "De snelle check op het dashboard van {class} stoppen?",
+            "ended": "De snelle check op het dashboard van {class} is gestopt."
+          },
+          "pick": {
+            "ask": "Willekeurig een leerling kiezen in {class}?",
+            "only": "Alleen jij ziet de naam, hier op deze kaart.",
+            "done": "Gekozen: {name}"
+          },
+          "push": {
+            "ask": "“{title}” naar de schermen van {class} sturen?",
+            "game": "Een spel",
+            "link": "Een link",
+            "done": "“{title}” naar de schermen van {class} gestuurd.",
+            "endAsk": "“{title}” van de schermen van {class} halen?",
+            "ended": "“{title}” van de schermen van {class} gehaald."
+          }
+        }
       }
     },
     "companion-greet": {

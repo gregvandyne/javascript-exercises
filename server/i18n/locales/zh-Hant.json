@@ -4668,7 +4668,9 @@
         "report": "讀取了班級進度",
         "reportNo": "無法讀取這個班級的進度",
         "pointEmpty": "檢查了班級:還沒有學生",
-        "askBack": "詢問了你需要什麼"
+        "askBack": "詢問了你需要什麼",
+        "action": "已準備好讓你確認",
+        "actionNo": "無法完成"
       },
       "stepsSum": "{n} 個步驟 · {s} 秒",
       "prog": {
@@ -4956,6 +4958,314 @@
         "pastEnd": "{v} 超出了從 {from} 到 {to} 的數線終點,所以那個點放不上去。",
         "other": "這個圖形無法畫出:{what}。",
         "notAsked": "沒有加入:{what}。"
+      },
+      "act": {
+        "whichClass": "要給哪個班級？",
+        "do": "執行",
+        "notNow": "先不要",
+        "done": "完成",
+        "declined": "未執行",
+        "failed": "未執行：沒有任何變更",
+        "noUndo": "這無法在聊天中復原。",
+        "namesLabel": "學生姓名，每行一個",
+        "namesHint": "姓名只留在這裡：不會傳給 Oomba 的 AI。",
+        "namesFirst": "請先輸入學生姓名。",
+        "nameLabel": "班級名單上的姓名",
+        "openClass": "開啟班級",
+        "why": {
+          "needText": "請先輸入學生姓名。",
+          "tooMany": "一次最多 40 個姓名。",
+          "sameNames": "有 {count} 個姓名在這所學校已有帳號：請在班級頁面用「加入現有學生」加入。",
+          "other": "無法完成，所以沒有任何變更。"
+        },
+        "classes": {
+          "warn": {
+            "accounts": "這會為孩子建立帳號。",
+            "password": "舊密碼會立刻失效。",
+            "archive": "這會封存班級。之後可以還原。",
+            "remove": "這會把學生移出班級。帳號和作業會保留。",
+            "move": "學生會離開這個班級。帳號和作業會保留。"
+          },
+          "add": {
+            "ask": "要把學生加入 {class} 嗎？",
+            "where": "在下方輸入他們的姓名。每位學生會在登入卡上拿到使用者名稱和密碼。",
+            "done": "已把 {count} 位學生加入 {class}。",
+            "cardsOnce": "請現在列印登入卡：密碼只印在卡上。",
+            "printCards": "列印登入卡"
+          },
+          "rename": {
+            "ask": "要變更 {class} 嗎？",
+            "done": "已變更 {class}。",
+            "name": "名稱：{name}",
+            "grade": "年級：{grade}",
+            "subject": "科目：{subject}"
+          },
+          "code": {
+            "ask": "要為 {class} 建立新的加入代碼嗎？",
+            "old": "舊代碼會失效。",
+            "done": "{class} 的新加入代碼是 {code}。"
+          },
+          "archive": {
+            "ask": "要封存 {class} 嗎？",
+            "done": "已封存 {class}。"
+          },
+          "restore": {
+            "ask": "要還原 {class} 嗎？",
+            "done": "已還原 {class}。"
+          },
+          "pw": {
+            "ask": "要為 {name} 建立新密碼嗎？",
+            "done": "已為 {name} 建立新密碼。",
+            "cardOnce": "請現在列印登入卡：密碼只在卡片上。",
+            "printCard": "列印登入卡"
+          },
+          "remove": {
+            "ask": "要把 {name} 移出 {class} 嗎？",
+            "done": "已把 {name} 移出 {class}。"
+          },
+          "move": {
+            "ask": "要把 {name} 從 {from} 移到 {to} 嗎？",
+            "done": "已把 {name} 移到 {to}。"
+          },
+          "coteach": {
+            "ask": "要把 {name} 加為 {class} 的老師嗎？",
+            "done": "{name} 現在是 {class} 的老師。"
+          },
+          "join": {
+            "ask": "要讓 {name} 加入 {class} 嗎？",
+            "nameHint": "請在下方確認班級名單上的姓名。",
+            "done": "{name} 已加入 {class}。"
+          },
+          "decline": {
+            "ask": "要拒絕 {name} 加入 {class} 的申請嗎？",
+            "done": "已拒絕加入 {class} 的申請。"
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "這會把它從班級移除。學生的作業會保留。",
+            "students": "學生會看到這個。",
+            "classroom": "這會張貼到 Google Classroom：那裡的學生會看到。",
+            "deleteSheet": "這會永久刪除這份學習單。已經指派的課程會保留題目。",
+            "deleteBoard": "這會永久刪除這塊白板。",
+            "deleteLesson": "這會永久刪除這堂課，連同它的指派和學生在其中的作業。"
+          },
+          "due": {
+            "ask": "要變更 {class} 中「{title}」的日期嗎？",
+            "done": "已變更「{title}」的日期。",
+            "none": "沒有繳交日",
+            "opens": "{day} 開放",
+            "opensNow": "現在開放"
+          },
+          "unassign": {
+            "ask": "要把「{title}」從 {class} 移除嗎？",
+            "done": "已把「{title}」從 {class} 移除。"
+          },
+          "seeWork": "查看作業",
+          "lesson": {
+            "ask": "要把課程「{title}」指派給 {class} 嗎？",
+            "done": "已把課程「{title}」指派給 {class}。"
+          },
+          "sheet": {
+            "ask": "要把學習單「{title}」指派給 {class} 嗎？",
+            "done": "已把學習單「{title}」指派給 {class}。"
+          },
+          "practice": {
+            "ask": "要把白板「{title}」的練習指派給 {class} 嗎？",
+            "tasks": "{tool}：{tasks}",
+            "count": "每項任務 {count} 題",
+            "done": "已把「{title}」指派給 {class}：{count} 題。"
+          },
+          "unit": {
+            "ask": "要在 {class} 加入單元「{name}」嗎？",
+            "done": "已在 {class} 加入單元「{name}」。"
+          },
+          "renameUnit": {
+            "ask": "要把 {class} 的單元「{old}」改名為「{name}」嗎？",
+            "done": "單元已改名為「{name}」。"
+          },
+          "move": {
+            "up": "要在 {class} 把「{title}」往上移一格嗎？",
+            "down": "要在 {class} 把「{title}」往下移一格嗎？",
+            "movedUp": "已把「{title}」往上移一格。",
+            "movedDown": "已把「{title}」往下移一格。"
+          },
+          "classroom": {
+            "ask": "要把 {class} 的「{title}」張貼到 Google Classroom 嗎？",
+            "course": "Classroom 課程：{course}",
+            "done": "已把「{title}」張貼到 Google Classroom。",
+            "scheduled": "在 {day} 開放前，它在 Classroom 中會是草稿。",
+            "pastDue": "繳交日已過，所以張貼時沒有繳交日。",
+            "open": "在 Classroom 開啟",
+            "page": "Google Classroom 頁面"
+          },
+          "made": {
+            "renameSheet": "要把學習單「{old}」改名為「{title}」嗎？",
+            "renamedSheet": "學習單已改名為「{title}」。",
+            "deleteSheet": "要刪除學習單「{title}」嗎？",
+            "deletedSheet": "已刪除學習單「{title}」。",
+            "openSheet": "開啟學習單",
+            "allSheets": "我的學習單",
+            "renameBoard": "要把白板「{old}」改名為「{title}」嗎？",
+            "renamedBoard": "白板已改名為「{title}」。",
+            "copyBoard": "要複製白板「{title}」嗎？",
+            "copiedBoard": "已複製：「{title}」。",
+            "deleteBoard": "要刪除白板「{title}」嗎？",
+            "deletedBoard": "已刪除白板「{title}」。",
+            "openBoard": "開啟白板",
+            "allBoards": "我的白板",
+            "copyLesson": "要複製課程「{title}」嗎？",
+            "copiedLesson": "已複製：「{title}」。",
+            "deleteLesson": "要刪除課程「{title}」嗎？",
+            "inClasses": "已指派給 {count} 個班級。",
+            "withWork": "有 {count} 位學生在其中有作業。",
+            "deletedLesson": "已刪除課程「{title}」。",
+            "openLesson": "開啟課程",
+            "allLessons": "我的課程"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "這會送到學生的桌面。",
+            "takeBack": "這會從學生的桌面拿走。學生的作業會保留。",
+            "live": "這會改變學生螢幕上顯示的內容。",
+            "parents": "家長檢視開啟時，家長會看到這個班級。"
+          },
+          "who": "學生：{names}",
+          "openHub": "開啟 Hub",
+          "att": {
+            "absent": "把 {class} 的 {count} 位學生標為今天缺席？",
+            "home": "把 {class} 的 {count} 位學生標為今天在家？",
+            "here": "把 {class} 的 {count} 位學生標為今天出席？",
+            "everyone": "把 {class} 的所有人標為今天出席？",
+            "doneAbsent": "已把 {count} 位學生標為今天缺席。",
+            "doneHome": "已把 {count} 位學生標為今天在家。",
+            "doneHere": "已把 {count} 位學生標為今天出席。",
+            "doneEveryone": "{class} 的所有人今天都已標為出席。"
+          },
+          "sup": {
+            "ask": "要更改 {class} 中 {name} 的支援嗎？",
+            "done": "已更改 {name} 的支援。",
+            "timeOff": "沒有延長時間",
+            "time150": "延長時間：1.5 倍",
+            "time200": "延長時間：兩倍",
+            "read": "朗讀",
+            "simple": "較簡單的用詞",
+            "big": "較大的文字",
+            "none": "沒有支援"
+          },
+          "groups": {
+            "ask": "要在 {class} 分成 {count} 組嗎？",
+            "done": "已在 {class} 分成 {count} 組。",
+            "name": "第 {n} 組",
+            "line": "{group}：{names}",
+            "empty": "{group}：還沒有人",
+            "rest": "有 {count} 位學生不在任何一組。"
+          },
+          "hand": {
+            "ask": "要在 {class} 把「{title}」發給{who}嗎？",
+            "done": "已把「{title}」發給{who}。",
+            "everyone": "每個桌面",
+            "group": "小組「{group}」"
+          },
+          "back": {
+            "askAll": "要從 {class} 的每個桌面拿走「{title}」嗎？",
+            "askOne": "要從 {name} 的桌面拿走「{title}」嗎？",
+            "doneAll": "已從每個桌面拿走「{title}」。",
+            "doneOne": "已從 {name} 的桌面拿走「{title}」。"
+          },
+          "needs": {
+            "seen": "要在「需要關心」把 {name} 標為已看過嗎？",
+            "snooze": "要在「需要關心」把 {name} 延後到下一個上學日嗎？",
+            "seenDone": "已把 {name} 標為已看過。",
+            "snoozeDone": "已把 {name} 延後到下一個上學日。",
+            "rule": {
+              "stuck": "卡在一份作業上",
+              "hand": "舉手一段時間了",
+              "ask": "在家提出的問題還在等",
+              "tries": "試了好幾次還沒做到",
+              "reading": "閱讀測驗低於百分之 60",
+              "overdue": "過了期限的作業越積越多"
+            }
+          },
+          "live": {
+            "start": "要在 {class} 開始即時上課嗎？",
+            "startLine": "每個桌面都會被叫到 Hub，班級登入也會開啟。",
+            "end": "要結束 {class} 的即時上課嗎？",
+            "endLine": "班級登入會關閉，班級共用的裝置會登出。",
+            "started": "已在 {class} 開始即時上課。",
+            "ended": "已結束 {class} 的即時上課。"
+          },
+          "parents": {
+            "on": "要開啟 {class} 的家長檢視嗎？",
+            "off": "要關閉 {class} 的家長檢視嗎？",
+            "onDone": "{class} 的家長檢視已開啟。",
+            "offDone": "{class} 的家長檢視已關閉。"
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "學生會看到這個：遊戲會為班級開啟。",
+            "end": "遊戲會在所有參與的畫面上結束。"
+          },
+          "host": {
+            "ask": "要為 {class} 開始即時遊戲嗎？",
+            "what": "來自題庫的 {count} 道現成題目。",
+            "done": "{class} 的即時遊戲已開啟：學生從班級頁面加入。",
+            "open": "開啟主持人畫面"
+          },
+          "end": {
+            "ask": "要結束即時遊戲「{title}」嗎？",
+            "players": "{count, plural, =0 {還沒有人加入。} other {有 # 位玩家在遊戲中。}}",
+            "done": "已結束即時遊戲「{title}」。",
+            "results": "查看結果"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "學生會在畫面上看到這個。",
+            "off": "這會從學生的畫面上移除。"
+          },
+          "timer": {
+            "startAsk": "要啟動 {class} 儀表板上的計時器嗎？",
+            "pauseAsk": "要暫停 {class} 儀表板上的計時器嗎？",
+            "resetAsk": "要重設 {class} 儀表板上的計時器嗎？",
+            "startDone": "{class} 儀表板上的計時器正在計時。",
+            "pauseDone": "已暫停 {class} 儀表板上的計時器。",
+            "resetDone": "已重設 {class} 儀表板上的計時器。",
+            "minutes": "{count} 分鐘"
+          },
+          "eyes": {
+            "onAsk": "要為 {class} 開啟「眼睛看前面」嗎？",
+            "offAsk": "要為 {class} 關閉「眼睛看前面」嗎？",
+            "lasts": "3 分鐘後會自動結束。",
+            "onDone": "{class} 的「眼睛看前面」已開啟。",
+            "offDone": "{class} 的「眼睛看前面」已關閉。"
+          },
+          "check": {
+            "ask": "要傳送快速檢核給 {class} 嗎？",
+            "done": "已傳送快速檢核給 {class}。",
+            "thumbs": "大拇指向上、向旁或向下",
+            "fist": "從拳頭到五根手指",
+            "scale": "1 到 5 的量表",
+            "choice": "選項：{options}",
+            "endAsk": "要結束 {class} 儀表板上的快速檢核嗎？",
+            "ended": "已結束 {class} 儀表板上的快速檢核。"
+          },
+          "pick": {
+            "ask": "要從 {class} 隨機抽一位學生嗎？",
+            "only": "只有你看得到名字，就在這張卡片上。",
+            "done": "抽到：{name}"
+          },
+          "push": {
+            "ask": "要把「{title}」傳到 {class} 的畫面嗎？",
+            "game": "遊戲",
+            "link": "連結",
+            "done": "已把「{title}」傳到 {class} 的畫面。",
+            "endAsk": "要把「{title}」從 {class} 的畫面移除嗎？",
+            "ended": "已把「{title}」從 {class} 的畫面移除。"
+          }
+        }
       }
     },
     "companion-greet": {

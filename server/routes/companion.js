@@ -61,8 +61,9 @@ router.post('/api/companion/chat/undo', may, rateLimit('companion-act', 300, 360
 router.post('/api/companion/chat/act', may, rateLimit('companion-act', 300, 3600e3), async (req, res) => {
   const b = body(req);
   const v = typeof b.pick === 'string' ? b.pick : typeof b.value === 'string' || typeof b.value === 'number' ? String(b.value) : '';
-  // (a follow-up's note to the class is the teacher's own words: up to its 300 characters)
-  const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, b.act === 'followNote' ? 300 : 64));
+  // (a follow-up's note to the class is the teacher's own words: up to its 300 characters; an action card's typed
+  // words, the new students' names of Add students, up to 2000: never sent to the AI)
+  const r = await CO.act(req.user, b.turnId, String(b.act || ''), v.slice(0, b.act === 'followNote' ? 300 : b.act === 'actionDo' ? 2000 : 64));
   return r.ok ? res.json({ ok: true, ...(r.chat ? { chat: shown(req, r.chat) } : {}), ...(r.handoff ? { handoff: r.handoff } : {}), ...(r.href ? { href: r.href } : {}), ...(r.text ? { text: r.text } : {}), ...('plan' in r ? { plan: r.plan, classId: r.classId } : {}), ...(r.toast ? { toast: r.toast } : {}), ...(r.preview ? { preview: r.preview } : {}) }) : fail(req, res, r);
 });
 // The page loaded: a request Oomba carried here (Go there) continues, once, on this exact page.
