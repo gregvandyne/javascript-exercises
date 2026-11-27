@@ -156,7 +156,7 @@ export const GRAMMAR_CELLS = (() => {
   };
 })();
 
-/** Grammar Lab's numbers, from its data: { topics, units, rooms (topics with a Mistake Hunt room), bands: ['K-2', '3-5', '6-8'] }. */
+/** Grammar Lab's numbers, from its data: { topics, units, rooms (topics with a Mistake Hunt room), bands: ['K-2', '3-5', '6-8', '9-12'] }. */
 export function grammarFacts() {
   const bands = GLAB.bands();
   const units = [...new Set(bands.flatMap(b => b.pathways))].map(id => GLAB.pathway(id)).filter(Boolean);

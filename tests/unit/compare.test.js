@@ -244,7 +244,7 @@ test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedI
     await withGrammarLab(true, ['*'], async () => {
       assert.equal(C.grammarCompareOn(), true);
       const facts = C.grammarFacts();
-      assert.deepEqual(facts.bands, ['K-2', '3-5', '6-8']);
+      assert.deepEqual(facts.bands, ['K-2', '3-5', '6-8', '9-12']);
       assert.ok(facts.topics > 100 && facts.units > 20 && facts.rooms > 0, JSON.stringify(facts));
       // /compare: the section, its rows that open, Grammar Lab's own Yes and No, NoRedInk's sourced cells.
       const page = (await get('/compare')).text; const h = main(page);
@@ -252,7 +252,7 @@ test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedI
       assert.ok(sec, 'the grammar section');
       const heads = [...sec[0].matchAll(/<th scope="col"[^>]*>([^<]*)<\/th>/g)].map(m => m[1]);
       assert.deepEqual(heads, ['Classroom need', 'Grammar Lab', 'NoRedInk']);
-      assert.ok(text(sec[0]).includes(`Grammar Lab is Oomba's grammar course for grades K-2, 3-5 and 6-8: ${facts.topics} topics in ${facts.units} units.`));
+      assert.ok(text(sec[0]).includes(`Grammar Lab is Oomba's grammar course for grades K-2, 3-5, 6-8 and 9-12: ${facts.topics} topics in ${facts.units} units.`));
       for (const r of C.GRAMMAR_ROWS) {
         const row = new RegExp(`<tr id="row-gl-${r.id}" class="cmp-row">([\\s\\S]*?)</tr>`).exec(sec[0]);
         assert.ok(row, r.id);
@@ -306,7 +306,7 @@ test('Grammar Lab open to every visitor: /compare sets Grammar Lab beside NoRedI
       const all = Object.values(C.GRAMMAR_CELLS).map(r => r.noredink.src);
       for (const [, q, url] of quotes) assert.ok(all.some(s => esc(s.quote) === q && s.url === url), `"${q}" is a /compare quote`);
       assert.match(text(card), /What Oomba's Grammar Lab covers/);
-      assert.match(text(card), new RegExp(`${facts.topics} grammar topics for kindergarten to grade 8`));
+      assert.match(text(card), new RegExp(`${facts.topics} grammar topics for kindergarten to grade 12`));
       assert.match(text(card), /No essay writing or writing feedback/);
       assert.match(text(card), /Source: noredink\.com, read on November 27, 2026/);
       assert.doesNotMatch(text(main(home)), /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\/(?:month|mo|year|yr)\b/i, 'no amounts');

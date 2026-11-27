@@ -8797,7 +8797,7 @@
         },
         "grades": {
           "need": "涵蓋的年級",
-          "oomba": "從幼兒園到八年級，分成三個階段：{bands}。"
+          "oomba": "從幼兒園到十二年級，分成四個階段：{bands}。"
         },
         "readAloud": {
           "need": "為低年級朗讀",
@@ -11247,7 +11247,7 @@
       "classScreen": "{count} 個小工具、每位學生自己的畫面、有理由的點數，而且 Hub 的桌子只差一個分頁。",
       "mathTools": "{tools} 種教具和幼兒園到八年級的 {tasks} 個任務，加上 Figures 學習單、你一開口就改白板的 Oomba，而且每個工具都能發到 Hub 的桌上。",
       "grammarUs": "Oomba 的 Grammar Lab 涵蓋什麼",
-      "grammar": "從幼兒園到八年級的 {topics} 個文法主題，每個主題分三關熟練，K-2 有朗讀的教學卡，還有 Mistake Hunt 校對房間。沒有作文寫作或寫作回饋：Oomba 的 AI 從不閱讀學生的作品。"
+      "grammar": "從幼兒園到十二年級的 {topics} 個文法主題，每個主題分三關熟練，K-2 有朗讀的教學卡，還有 Mistake Hunt 校對房間。沒有作文寫作或寫作回饋：Oomba 的 AI 從不閱讀學生的作品。"
     },
     "tour": {
       "kicker": "點選導覽",
