@@ -28,7 +28,7 @@ export const FUNNELS = Object.freeze([
   // The teacher landing page at "/" (routes/landing.js): signed-out views and its buttons' clicks (a beacon, POST
   // /landing/count/<cta>). Clicks, not a funnel: no "of step before".
   { key: 'landing', title: 'Teacher landing (signed out)', tally: true, steps: [
-    ['landing.view', 'Landing views'], ['landing.trial', 'Start free trial'], ['landing.play', 'Just Play'],
+    ['landing.view', 'Landing views'], ['landing.trial', 'Start free trial'], ['landing.signup', 'Create a teacher account'], ['landing.play', 'Just Play'],
     ['landing.how', 'See how it works'], ['landing.pricing', 'Plans & pricing'], ['landing.host', 'Host a live game now']] },
   // A first live game (routes/quick-live.js): the short teacher sign-up page, the accounts it made, the rooms the
   // "Quick game" chooser and the class cards' one tap opened. Totals, not a funnel of people.

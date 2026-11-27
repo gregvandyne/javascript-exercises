@@ -409,6 +409,17 @@ export function resetSchoolPassword(by, schoolId, userId) {
   audit(by.id, 'school.password_reset', schoolId, { user: u.id });
   return ok({ user: u, username: u.username, password });
 }
+/** Typed student names: one per line (or separated by commas/semicolons), at most 60 at a time. */
+export const parseNames = text => String(text || '').split(/[\n;,]+/).map(x => x.replace(/\s+/g, ' ').trim()).filter(Boolean).slice(0, 60);
+/** Typed names that exactly match a student who already has an account at the school (so we don't make a second one). */
+export function sameNames(schoolId, names) {
+  const have = new Map();
+  for (const p of members(schoolId, 'student')) { const k = (p.roster_name || p.display_name).toLowerCase(); if (!have.has(k)) have.set(k, p); }
+  return names.map(n => have.get(n.toLowerCase())).filter(Boolean);
+}
+/** The one-time login cards page's store (routes/schools.js keepCards, set when the routes load): keep(by, cards,
+ *  { schoolId, classId }) -> the key of /cards/<key>, for the teacher who made them only. */
+export const loginCards = { keep: null };
 
 // ---------------------------------------------------------------- classrooms
 const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

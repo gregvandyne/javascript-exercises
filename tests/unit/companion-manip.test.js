@@ -156,7 +156,7 @@ test('names never reach the AI: taken out of the message; a step or title on the
   try {
     const r = await say(boss, { text: 'Make it easier for Quinn please' });
     assert.equal(JSON.parse(q.get("SELECT turns FROM oomba_chats WHERE owner_id=? AND surface='companion'", boss.id).turns).filter(t => t.role === 'me').at(-1).text, 'Make it easier for [student 1] please');
-    assert.equal((await say(boss, { text: 'x' })).json.code, 'brief');
+    assert.equal((await say(boss, { text: '  ' })).json.code, 'brief');
     await C.allSettled();
     const st = clockBoard(); st.__steps.push({ id: 's2', text: 'Bea goes first' });
     await say(boss, { text: 'Is this board ready?', board: { state: st, title: 'Clocks for Quinn' } }); await C.allSettled();
@@ -218,5 +218,26 @@ test('routing on a board: "add 4 clocks" changes the board; an unrelated request
       assert.deepEqual(last.note.steps.map(s => s.k), [kind], words);
       assert.match(calls[0].system, /Use it only for requests about what is on this page/);
     }
+  } finally { await reset(boss); }
+});
+
+test('"clear the board": changeBoard with clear: true takes everything off (the tool says cleared); a board the page could not put on is said under the reply', async () => {
+  const { boss } = world();
+  const calls = standIn({ tool: 'changeBoard', input: { clear: true }, reply: 'Cleared! The board is empty now.' });
+  try {
+    await say(boss, { text: 'Clear the board' }); await C.allSettled();
+    const res = JSON.parse(calls[1].messages.at(-1).content[0].content);
+    assert.equal(res.applied, true); assert.equal(res.landed.cleared, true);
+    assert.match(calls[0].system.map ? calls[0].system.map(x => x.text || x).join('\n') : String(calls[0].system), /clear: true/, 'the board rules say how to clear');
+    let t = (await chatOf(boss)).turns[1];
+    assert.equal(t.note.manip.cleared, true); assert.equal(t.note.manip.n, 0);
+    const start = M.sanitizeDraft({ title: '', steps: [], items: [] }, 'clock').board;
+    assert.equal(JSON.parse(t.note.manip.state).objects.length, start.objects.length, 'the tool\'s start board: the half-hour clocks are gone');
+    // The page could not put it on: the server hears it once, the turn's words say so, the card stays failed.
+    assert.equal((await as(boss)('/api/companion/chat/act', { body: { turnId: t.id, act: 'manipFailed' } })).status, 200);
+    t = (await chatOf(boss)).turns[1];
+    assert.equal(t.note.manip.failed, true);
+    assert.match(t.text, /did not go on your board after all/);
+    assert.equal((await as(boss)('/api/companion/chat/act', { body: { turnId: t.id, act: 'manipFailed' } })).status, 404, 'only once');
   } finally { await reset(boss); }
 });

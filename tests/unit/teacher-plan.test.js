@@ -520,7 +520,7 @@ test('pricing copy: Teacher $119/year, 14-day trial, no card, unlimited students
   assert.match(off, /Playing, classes, lesson plans and progress are free/);
   // Off: no trial and no plan anywhere but the tool cards, which say "Available with the Teacher plan" as the homepage
   // does (the owner's call), without a link to the /plans page that is not there.
-  const offTools = (/<section class="lp-sec tt" id="tools"[\s\S]*?<\/section>/.exec(off) || [''])[0];
+  const offTools = (/<section class="lp-sec" id="tools"[\s\S]*?<\/section>/.exec(off) || [''])[0];
   assert.match(offTools, /Available with the Teacher plan/); assert.doesNotMatch(offTools, /href="\/plans"|href="\/trial"/);
   assert.doesNotMatch(off.replace(offTools, ''), /Teacher plan/);
   config.billingPublic = true;

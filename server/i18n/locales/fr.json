@@ -4436,7 +4436,8 @@
       "boardOf": "Plateau {tool}",
       "liveRoom": "Salle en direct",
       "greetLine": "Dis-moi quelle leçon tu veux sur ce plateau {tool}.",
-      "greetLineHas": "Dis-moi quoi changer sur ton plateau {tool}."
+      "greetLineHas": "Dis-moi quoi changer sur ton plateau {tool}.",
+      "notYet": "Pas encore sur votre tableau."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4507,7 +4508,11 @@
       },
       "copy": "Copier",
       "copyFailed": "Impossible de copier. Sélectionnez le texte.",
-      "copied": "Copié"
+      "copied": "Copié",
+      "verify": {
+        "notAsked": "La question {n} est restée telle quelle : ce n'était pas ce que tu as demandé.",
+        "notAskedAny": "Une question n'a pas été ajoutée : ce n'était pas ce que tu as demandé."
+      }
     },
     "figures": {
       "needText": "Écris d’abord quelques mots pour Oomba.",
@@ -4589,7 +4594,10 @@
         "tooLong": "C'était trop long. Parle une minute au maximum.",
         "tooFast": "Cela fait beaucoup d'enregistrements en une minute. Attends un instant.",
         "daily": "Tu ne peux plus parler pour aujourd'hui. Tu peux toujours écrire.",
-        "busy": "La parole n'est pas disponible pour l'instant. Tu peux toujours écrire."
+        "busy": "La parole n'est pas disponible pour l'instant. Tu peux toujours écrire.",
+        "lost": "Oomba n’a pas pu transformer ton enregistrement en mots. Il reste ici jusqu’à ce que tu le fermes.",
+        "retry": "Réessayer",
+        "dismiss": "Fermer"
       },
       "web": {
         "on": "Recherche web activée",
@@ -4645,7 +4653,24 @@
         "book_repaint": "Demandé à repeindre « {q} »",
         "week": "Plan de la semaine préparé ({n} jours)",
         "needs": "J’ai regardé À regarder ({n})",
-        "needsNo": "Impossible d’ouvrir À regarder"
+        "needsNo": "Impossible d’ouvrir À regarder",
+        "assign": "Une assignation est prête à vérifier",
+        "assignNo": "Impossible d’assigner cela",
+        "boardMade": "A créé et vérifié un tableau ({n, plural, one {# élément} other {# éléments}})",
+        "sheetMade": "A créé et vérifié une fiche ({n, plural, one {# question} other {# questions}})",
+        "sheetNo": "N'a pas pu créer cette fiche",
+        "lessonMade": "A créé et vérifié un plan de leçon ({n, plural, one {# étape} other {# étapes}})",
+        "lessonNo": "N'a pas pu créer cette leçon",
+        "lessonAsk": "A demandé le sujet",
+        "kinds": "A regardé ce que Figures peut dessiner",
+        "find": "A cherché « {q} »",
+        "findNo": "N'a pas pu chercher cela",
+        "report": "A lu les progrès de la classe",
+        "reportNo": "N'a pas pu lire les progrès de cette classe",
+        "pointEmpty": "A vérifié la classe : pas encore d'élèves",
+        "askBack": "A demandé ce qu'il te faut",
+        "action": "Préparé pour que tu vérifies",
+        "actionNo": "Impossible de le faire"
       },
       "stepsSum": "{n, plural, one {# étape} other {# étapes}} · {s} s",
       "prog": {
@@ -4707,7 +4732,9 @@
         "help": "Aide",
         "length": "Durée",
         "fromPlan": "De ta préparation",
-        "filled": "Oomba a rempli ta description. Vérifie-la, puis appuie sur le bouton pour le créer."
+        "filled": "Oomba a rempli ta description. Vérifie-la, puis appuie sur le bouton pour le créer.",
+        "makeNow": "Le créer maintenant",
+        "makeText": "Crée ceci maintenant :"
       },
       "err": {
         "words": "Certains mots de ton message ne sont pas autorisés. Modifie-les et renvoie-le.",
@@ -4764,7 +4791,11 @@
         "book": "Quel livre ?"
       },
       "ask": {
-        "other": "Autre chose"
+        "other": "Autre chose",
+        "lessonTopic": "Avec plaisir. Sur quel sujet, et pour quel niveau ?",
+        "sheetTopic": "Avec plaisir. Que doit travailler la fiche, et pour quel niveau ?",
+        "boardTopic": "Avec plaisir. Quel outil (par exemple des blocs base dix ou une droite graduée), et que doit-il montrer ?",
+        "assignWhat": "Quelle leçon dois-je donner ? Dis-moi son nom, et la classe si tu en as plusieurs."
       },
       "cls": {
         "default": "Classe test",
@@ -4779,6 +4810,19 @@
         "denied": "Dans votre école, seul un administrateur peut créer des classes.",
         "done": "La classe {name} est créée. Elle n’a pas encore d’élèves.",
         "openDash": "Ouvrir son tableau de bord"
+      },
+      "asg": {
+        "which": "Pour quelle classe ?",
+        "ask": "Assigner « {title} » à {class} ?",
+        "all": "Toute la classe",
+        "some": "{count, plural, one {# élève} other {# élèves}}",
+        "due": "À rendre le {day}",
+        "assign": "Assigner",
+        "notNow": "Pas maintenant",
+        "assigned": "Assigné",
+        "declined": "Non assigné",
+        "done": "« {title} » est assigné à {class}.",
+        "open": "Voir les jeux de la classe"
       },
       "book": {
         "adding": "Ajout à votre livre",
@@ -4869,6 +4913,359 @@
         "reviewTitle": "Révision",
         "reteachTitle": "Réexpliquer : {title}",
         "finishTitle": "Terminer le travail du jour"
+      },
+      "made": {
+        "notYet": "Rien n'a encore été créé.",
+        "draftOnly": "J'ai préparé un brouillon de {title}. Appuie sur {button} pour le créer.",
+        "failed": "Finalement, rien n'a été créé ni enregistré. Réessaie.",
+        "board": "{n, plural, one {Créé et vérifié : # élément sur le tableau} other {Créé et vérifié : # éléments sur le tableau}}",
+        "sheet": "{n, plural, one {Créée et vérifiée : # question} other {Créée et vérifiée : # questions}}",
+        "lesson": "{n, plural, one {Créée et vérifiée : # étape} other {Créée et vérifiée : # étapes}}",
+        "open": {
+          "board": "Ouvrir le tableau",
+          "sheet": "Ouvrir la fiche",
+          "lesson": "Ouvrir la leçon"
+        },
+        "no": {
+          "board": "Le tableau n'a pas été créé. Rien n'a été enregistré.",
+          "sheet": "La fiche n'a pas été créée. Rien n'a été enregistré.",
+          "lesson": "La leçon n'a pas été créée. Rien n'a été enregistré."
+        }
+      },
+      "pts": {
+        "empty": "{name} n'a pas encore d'élèves, donc aucun point ne peut être donné.",
+        "oneAtATime": "Les points se donnent un par un, donc c'est 1 point, pas {count}."
+      },
+      "rep": {
+        "empty": "{name} n'a pas encore d'élèves, donc il n'y a pas de progrès à résumer.",
+        "which": "Pour quelle classe veux-tu le bilan ?"
+      },
+      "find": {
+        "hidden": "{title} est sur Oomba, mais ce jeu est désactivé pour le moment, donc les élèves ne peuvent pas y jouer.",
+        "hiddenFolder": "{title} est dans ton dossier {folder}, mais ce jeu est désactivé sur Oomba pour le moment, donc les élèves ne peuvent pas y jouer."
+      },
+      "fmt": {
+        "plotQ": "Figures ne peut pas vérifier en ligne un point placé par les élèves. Que dois-je faire ?",
+        "plotPrint": "À imprimer : les élèves dessinent chaque point (le corrigé le montre)",
+        "plotRead": "Lire le point (vérifié en ligne)",
+        "columnsQ": "Figures ne peut pas dessiner d'addition posée ni de case de retenue. Dois-je faire la fiche avec les figures les plus proches ?",
+        "closest": "Oui, avec les figures les plus proches",
+        "no": "Pas maintenant"
+      },
+      "why": {
+        "triangle": "{a} + {b} est plus petit que {c}, donc ces côtés ne peuvent pas former un triangle.",
+        "triangleEqual": "{a} + {b} est égal à {c}, donc ces côtés restent à plat et ne forment pas de triangle.",
+        "pastEnd": "{v} est au-delà de la fin d'une droite de {from} à {to}, donc le point ne peut pas y aller.",
+        "other": "Cette figure ne peut pas être dessinée : {what}.",
+        "notAsked": "Pas ajoutée : {what}."
+      },
+      "act": {
+        "whichClass": "Pour quelle classe ?",
+        "do": "Le faire",
+        "notNow": "Pas maintenant",
+        "done": "Fait",
+        "declined": "Pas fait",
+        "failed": "Pas fait : rien n’a été changé",
+        "noUndo": "Cela ne peut pas être annulé depuis le chat.",
+        "namesLabel": "Noms des élèves, un par ligne",
+        "namesHint": "Les noms restent ici : ils ne sont pas envoyés à l’IA d’Oomba.",
+        "namesFirst": "Écris d’abord les noms des élèves.",
+        "nameLabel": "Nom sur la liste de la classe",
+        "openClass": "Ouvrir la classe",
+        "why": {
+          "needText": "Écris d’abord les noms des élèves.",
+          "tooMany": "40 noms au plus à la fois.",
+          "sameNames": "{count, plural, one {# nom a déjà} other {# noms ont déjà}} un compte dans cette école : ajoute-les avec Ajouter des élèves existants sur la page de la classe.",
+          "other": "Impossible de le faire, donc rien n’a été changé."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Cela crée des comptes pour des enfants.",
+            "password": "Son ancien mot de passe ne marche plus tout de suite.",
+            "archive": "Cela archive la classe. Tu pourras la restaurer plus tard.",
+            "remove": "Cela retire l’élève de la classe. Son compte et son travail sont conservés.",
+            "move": "L’élève quitte cette classe. Son compte et son travail sont conservés."
+          },
+          "add": {
+            "ask": "Ajouter des élèves à {class} ?",
+            "where": "Écris leurs noms ci-dessous. Chaque élève reçoit un identifiant et un mot de passe sur une carte de connexion.",
+            "done": "{count, plural, one {# élève ajouté} other {# élèves ajoutés}} à {class}.",
+            "cardsOnce": "Imprime les cartes de connexion maintenant : les mots de passe ne sont que sur elles.",
+            "printCards": "Imprimer les cartes de connexion"
+          },
+          "rename": {
+            "ask": "Modifier {class} ?",
+            "done": "{class} modifiée.",
+            "name": "Nom : {name}",
+            "grade": "Niveau : {grade}",
+            "subject": "Matière : {subject}"
+          },
+          "code": {
+            "ask": "Créer un nouveau code pour rejoindre {class} ?",
+            "old": "L’ancien code ne marchera plus.",
+            "done": "Le nouveau code pour rejoindre {class} est {code}."
+          },
+          "archive": {
+            "ask": "Archiver {class} ?",
+            "done": "{class} archivée."
+          },
+          "restore": {
+            "ask": "Restaurer {class} ?",
+            "done": "{class} restaurée."
+          },
+          "pw": {
+            "ask": "Créer un nouveau mot de passe pour {name} ?",
+            "done": "Nouveau mot de passe créé pour {name}.",
+            "cardOnce": "Imprime la carte de connexion maintenant : le mot de passe n’est que sur elle.",
+            "printCard": "Imprimer la carte de connexion"
+          },
+          "remove": {
+            "ask": "Retirer {name} de {class} ?",
+            "done": "{name} retiré de {class}."
+          },
+          "move": {
+            "ask": "Déplacer {name} de {from} vers {to} ?",
+            "done": "{name} est maintenant dans {to}."
+          },
+          "coteach": {
+            "ask": "Ajouter {name} comme enseignant de {class} ?",
+            "done": "{name} enseigne maintenant dans {class}."
+          },
+          "join": {
+            "ask": "Laisser {name} rejoindre {class} ?",
+            "nameHint": "Vérifie ci-dessous le nom pour la liste de la classe.",
+            "done": "{name} a rejoint {class}."
+          },
+          "decline": {
+            "ask": "Refuser la demande de {name} pour {class} ?",
+            "done": "Demande refusée pour {class}."
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Cela le retire de la classe. Le travail des élèves est conservé.",
+            "students": "Les élèves le verront.",
+            "classroom": "Cela publie dans Google Classroom : les élèves là-bas le verront.",
+            "deleteSheet": "Cela supprime la fiche pour de bon. Les leçons déjà données gardent leurs questions.",
+            "deleteBoard": "Cela supprime le tableau pour de bon.",
+            "deleteLesson": "Cela supprime la leçon pour de bon, avec ses devoirs et le travail des élèves dedans."
+          },
+          "due": {
+            "ask": "Changer les dates de « {title} » dans {class} ?",
+            "done": "Dates de « {title} » changées.",
+            "none": "Pas de date limite",
+            "opens": "Ouvre le {day}",
+            "opensNow": "Ouvert maintenant"
+          },
+          "unassign": {
+            "ask": "Retirer « {title} » de {class} ?",
+            "done": "« {title} » retiré de {class}."
+          },
+          "seeWork": "Voir le travail",
+          "lesson": {
+            "ask": "Donner la leçon « {title} » à {class} ?",
+            "done": "Leçon « {title} » donnée à {class}."
+          },
+          "sheet": {
+            "ask": "Donner la fiche « {title} » à {class} ?",
+            "done": "Fiche « {title} » donnée à {class}."
+          },
+          "practice": {
+            "ask": "Donner l’entraînement du tableau « {title} » à {class} ?",
+            "tasks": "{tool} : {tasks}",
+            "count": "{count, plural, one {# question} other {# questions}} par exercice",
+            "done": "« {title} » donné à {class} : {count, plural, one {# question} other {# questions}}."
+          },
+          "unit": {
+            "ask": "Ajouter le module « {name} » à {class} ?",
+            "done": "Module « {name} » ajouté à {class}."
+          },
+          "renameUnit": {
+            "ask": "Renommer le module « {old} » de {class} en « {name} » ?",
+            "done": "Le module s’appelle maintenant « {name} »."
+          },
+          "move": {
+            "up": "Monter « {title} » d’une place dans {class} ?",
+            "down": "Descendre « {title} » d’une place dans {class} ?",
+            "movedUp": "« {title} » est monté d’une place.",
+            "movedDown": "« {title} » est descendu d’une place."
+          },
+          "classroom": {
+            "ask": "Publier « {title} » de {class} dans Google Classroom ?",
+            "course": "Cours Classroom : {course}",
+            "done": "« {title} » publié dans Google Classroom.",
+            "scheduled": "Il reste un brouillon dans Classroom jusqu’à son ouverture le {day}.",
+            "pastDue": "La date de remise est passée, il est donc parti sans date.",
+            "open": "Ouvrir dans Classroom",
+            "page": "Page Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Renommer la fiche « {old} » en « {title} » ?",
+            "renamedSheet": "La fiche s’appelle maintenant « {title} ».",
+            "deleteSheet": "Supprimer la fiche « {title} » ?",
+            "deletedSheet": "Fiche « {title} » supprimée.",
+            "openSheet": "Ouvrir la fiche",
+            "allSheets": "Voir mes fiches",
+            "renameBoard": "Renommer le tableau « {old} » en « {title} » ?",
+            "renamedBoard": "Le tableau s’appelle maintenant « {title} ».",
+            "copyBoard": "Faire une copie du tableau « {title} » ?",
+            "copiedBoard": "Copie faite : « {title} ».",
+            "deleteBoard": "Supprimer le tableau « {title} » ?",
+            "deletedBoard": "Tableau « {title} » supprimé.",
+            "openBoard": "Ouvrir le tableau",
+            "allBoards": "Voir mes tableaux",
+            "copyLesson": "Faire une copie de la leçon « {title} » ?",
+            "copiedLesson": "Copie faite : « {title} ».",
+            "deleteLesson": "Supprimer la leçon « {title} » ?",
+            "inClasses": "{count, plural, one {Elle est donnée à # classe.} other {Elle est donnée à # classes.}}",
+            "withWork": "{count, plural, one {# élève y a du travail.} other {# élèves y ont du travail.}}",
+            "deletedLesson": "Leçon « {title} » supprimée.",
+            "openLesson": "Ouvrir la leçon",
+            "allLessons": "Voir mes leçons"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Cela va sur les bureaux des élèves.",
+            "takeBack": "Cela le retire des bureaux des élèves. Leur travail est conservé.",
+            "live": "Cela change ce que montrent les écrans des élèves.",
+            "parents": "Les parents verront cette classe tant que la vue des parents est activée."
+          },
+          "who": "Élèves : {names}",
+          "openHub": "Ouvrir le Hub",
+          "att": {
+            "absent": "Marquer {count, plural, one {# élève} other {# élèves}} absent aujourd’hui dans {class} ?",
+            "home": "Marquer {count, plural, one {# élève} other {# élèves}} à la maison aujourd’hui dans {class} ?",
+            "here": "Marquer {count, plural, one {# élève} other {# élèves}} présent aujourd’hui dans {class} ?",
+            "everyone": "Marquer tout le monde présent aujourd’hui dans {class} ?",
+            "doneAbsent": "{count, plural, one {# élève marqué} other {# élèves marqués}} absent aujourd’hui.",
+            "doneHome": "{count, plural, one {# élève marqué} other {# élèves marqués}} à la maison aujourd’hui.",
+            "doneHere": "{count, plural, one {# élève marqué} other {# élèves marqués}} présent aujourd’hui.",
+            "doneEveryone": "Tout le monde dans {class} est marqué présent aujourd’hui."
+          },
+          "sup": {
+            "ask": "Changer les aides de {name} dans {class} ?",
+            "done": "Les aides de {name} ont changé.",
+            "timeOff": "Pas de temps en plus",
+            "time150": "Temps en plus : 1,5 fois",
+            "time200": "Temps en plus : le double",
+            "read": "Lecture à voix haute",
+            "simple": "Mots plus simples",
+            "big": "Texte plus grand",
+            "none": "Aucune aide"
+          },
+          "groups": {
+            "ask": "Faire {count, plural, one {# groupe} other {# groupes}} dans {class} ?",
+            "done": "{count, plural, one {# groupe fait} other {# groupes faits}} dans {class}.",
+            "name": "Groupe {n}",
+            "line": "{group} : {names}",
+            "empty": "{group} : personne pour l’instant",
+            "rest": "{count, plural, one {# élève n’est} other {# élèves ne sont}} dans aucun groupe."
+          },
+          "hand": {
+            "ask": "Distribuer « {title} » à {who} dans {class} ?",
+            "done": "« {title} » distribué à {who}.",
+            "everyone": "tous les bureaux",
+            "group": "le groupe {group}"
+          },
+          "back": {
+            "askAll": "Retirer « {title} » de tous les bureaux dans {class} ?",
+            "askOne": "Retirer « {title} » du bureau de {name} ?",
+            "doneAll": "« {title} » retiré de tous les bureaux.",
+            "doneOne": "« {title} » retiré du bureau de {name}."
+          },
+          "needs": {
+            "seen": "Marquer {name} comme vu dans À regarder ?",
+            "snooze": "Mettre {name} de côté dans À regarder jusqu’au prochain jour de classe ?",
+            "seenDone": "{name} marqué comme vu.",
+            "snoozeDone": "{name} mis de côté jusqu’au prochain jour de classe.",
+            "rule": {
+              "stuck": "Bloqué sur un document",
+              "hand": "Une main levée depuis un moment",
+              "ask": "Une question de la maison en attente",
+              "tries": "Plusieurs essais sans y arriver",
+              "reading": "Un quiz de lecture sous 60 pour cent",
+              "overdue": "Du travail qui s’accumule après l’échéance"
+            }
+          },
+          "live": {
+            "start": "Commencer la classe en direct dans {class} ?",
+            "startLine": "Chaque bureau est invité à venir au Hub, et la connexion de la classe s’ouvre.",
+            "end": "Terminer la classe en direct dans {class} ?",
+            "endLine": "La connexion de la classe se ferme et les appareils partagés de la classe sont déconnectés.",
+            "started": "Classe en direct commencée dans {class}.",
+            "ended": "Classe en direct terminée dans {class}."
+          },
+          "parents": {
+            "on": "Activer la vue des parents de {class} ?",
+            "off": "Désactiver la vue des parents de {class} ?",
+            "onDone": "La vue des parents de {class} est activée.",
+            "offDone": "La vue des parents de {class} est désactivée."
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "Les élèves verront ceci : le jeu s’ouvre pour la classe.",
+            "end": "Le jeu se termine sur tous les écrans qui y participent."
+          },
+          "host": {
+            "ask": "Lancer un jeu en direct pour {class} ?",
+            "what": "{count, plural, one {# question prête} other {# questions prêtes}} de la banque de questions.",
+            "done": "Le jeu en direct de {class} est ouvert : les élèves le rejoignent depuis la page de leur classe.",
+            "open": "Ouvrir l’écran de l’animateur"
+          },
+          "end": {
+            "ask": "Terminer le jeu en direct « {title} » ?",
+            "players": "{count, plural, =0 {Personne n’a encore rejoint.} one {# joueur y participe.} other {# joueurs y participent.}}",
+            "done": "Le jeu en direct « {title} » est terminé.",
+            "results": "Voir les résultats"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Les élèves verront ceci sur leur écran.",
+            "off": "Cela disparaît de l’écran des élèves."
+          },
+          "timer": {
+            "startAsk": "Démarrer le minuteur du tableau de bord de {class} ?",
+            "pauseAsk": "Mettre en pause le minuteur du tableau de bord de {class} ?",
+            "resetAsk": "Remettre à zéro le minuteur du tableau de bord de {class} ?",
+            "startDone": "Le minuteur du tableau de bord de {class} tourne.",
+            "pauseDone": "Le minuteur du tableau de bord de {class} est en pause.",
+            "resetDone": "Le minuteur du tableau de bord de {class} est remis à zéro.",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "eyes": {
+            "onAsk": "Activer Les yeux vers l’avant pour {class} ?",
+            "offAsk": "Désactiver Les yeux vers l’avant pour {class} ?",
+            "lasts": "Cela s’arrête tout seul après 3 minutes.",
+            "onDone": "Les yeux vers l’avant est activé pour {class}.",
+            "offDone": "Les yeux vers l’avant est désactivé pour {class}."
+          },
+          "check": {
+            "ask": "Envoyer une vérification rapide à {class} ?",
+            "done": "Vérification rapide envoyée à {class}.",
+            "thumbs": "Pouce en haut, sur le côté ou en bas",
+            "fist": "Du poing à cinq",
+            "scale": "Une échelle de 1 à 5",
+            "choice": "Choix : {options}",
+            "endAsk": "Terminer la vérification rapide du tableau de bord de {class} ?",
+            "ended": "La vérification rapide du tableau de bord de {class} est terminée."
+          },
+          "pick": {
+            "ask": "Tirer un élève au sort dans {class} ?",
+            "only": "Toi seul vois le nom, ici sur cette carte.",
+            "done": "Élève tiré au sort : {name}"
+          },
+          "push": {
+            "ask": "Envoyer « {title} » sur les écrans de {class} ?",
+            "game": "Un jeu",
+            "link": "Un lien",
+            "done": "« {title} » envoyé sur les écrans de {class}.",
+            "endAsk": "Retirer « {title} » des écrans de {class} ?",
+            "ended": "« {title} » retiré des écrans de {class}."
+          }
+        }
       }
     },
     "companion-greet": {
@@ -5802,7 +6199,20 @@
       },
       "gapHolds": "{mark} après {word}",
       "mgap": "Espace après {word}",
-      "wrongMarks": "Pas tout à fait. Regarde encore les signes entre les mots. Réussis deux fois de suite pour finir ce niveau."
+      "wrongMarks": "Pas tout à fait. Regarde encore les signes entre les mots. Réussis deux fois de suite pour finir ce niveau.",
+      "counterAdded": "{count, plural, one {+# pour une erreur} other {+# pour des erreurs}}",
+      "tryAgain": "Réessaie celle-ci",
+      "seenBefore": "Une que tu as déjà vue",
+      "notSent": "Ta réponse n’est pas passée. Vérifie-la et appuie encore sur Valider.",
+      "resynced": "On reprend là où tu t’étais arrêté.",
+      "signedOut": "Tu as été déconnecté. Ta progression est enregistrée.",
+      "signIn": "Se reconnecter",
+      "fixed": "Corrigé !",
+      "fixedNote": "Seul le premier essai compte pour ta série.",
+      "levelLonger": "Ce niveau a eu {n} questions au lieu de {base} : chaque erreur en ajoute une, et un niveau se termine par deux bonnes réponses de suite.",
+      "doneElsewhere": "Tu as déjà terminé ce thème.",
+      "doneAdded": "Cela fait {base} questions, plus {count, plural, one {# pour une erreur} other {# pour des erreurs}}.",
+      "firstTry": "{n} sur {total} justes du premier coup"
     }
   },
   "favorites": {
@@ -7656,7 +8066,7 @@
       "s4": {
         "h": "Les élèves jouent, créent et répondent",
         "p": "Chaque élève avance dans le plan de cours à son rythme, sur n’importe quel appareil.",
-        "alt": "Ce que voit un élève dans un plan de cours : l’étape de jeu, Échauffement calcul mental, est marquée Fait avec un meilleur score de 47 et un bouton Jouer à Sum Racer. Viennent ensuite une étape de création avec un bouton Commencer à créer, puis une question écrite, le ticket de sortie."
+        "alt": "Ce que voit un élève d’un plan de cours : l’étape de jeu « Number-puzzle warm-up » est marquée Terminé, avec un meilleur score de 47 et un bouton Jouer à Sudoku. Viennent ensuite une étape de création de jeu avec le bouton Commencer à créer, puis une question écrite, le billet de sortie."
       },
       "s5": {
         "h": "Suivre la progression et le carnet de notes",
@@ -7667,7 +8077,8 @@
         "h": "Enseigner avec les outils",
         "p": "Demandez une fiche à Oomba dans le chat : il rédige les questions, Figures dessine chaque figure à l’échelle et calcule les réponses. Ou lancez une salle de maths en direct avec des manipulables virtuels.",
         "alt": "Le créateur de fiches Figures avec le chat d’Oomba ouvert à côté : une fiche intitulée Area and volume practice, sa première question avec un rectangle dessiné à l’échelle et la réponse 12 m², et la liste de ce qui a changé dans le chat."
-      }
+      },
+      "kicker": "Comment ça marche"
     },
     "build": {
       "h": "Créer pour apprendre",
@@ -7726,7 +8137,7 @@
       "q4": "Comment protégez-vous la vie privée des élèves ?",
       "a4": "Nous ne demandons jamais aux élèves leur adresse e-mail, leur âge ni leur adresse postale. Il n’y a ni publicité ni cookies de suivi, et le vrai nom d’un élève n’est visible que par le personnel de son école. Notre <a href=\"{href}\">politique de confidentialité</a> détaille exactement ce que nous conservons.",
       "q5": "Pour quels âges et quels niveaux ?",
-      "a5": "Oomba Academy est fait pour la maternelle jusqu’à la 4e, environ 5 à 14 ans. Des leçons comme Shark Plank et les premiers circuits de Sum Racer conviennent aux plus jeunes. Number Quest, le cours de maths, va de la maternelle à la 4e, et CS Quest et Cyber Defenders commencent en CE2.",
+      "a5": "Oomba Academy est fait pour la maternelle jusqu’à la 4e, environ 5 à 14 ans. Des jeux comme Word Hunt, qui lit un mot à voix haute quand on le touche, conviennent aux plus jeunes. Number Quest, le cours de maths, va de la maternelle à la 4e, et CS Quest et Cyber Defenders commencent en CE2.",
       "q6": "Comment ajouter ma classe ?",
       "a6": "D’abord, écrivez-nous pour inscrire votre école. Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion.",
       "a6google": "D’abord, écrivez-nous pour inscrire votre école. Ensuite, créez une classe et partagez son code de classe avec les élèves qui ont leur propre compte, ou créez des comptes école pour toute la classe et imprimez les cartes de connexion. Les écoles qui utilisent Google peuvent permettre aux élèves de se connecter avec Google.",
@@ -7796,7 +8207,7 @@
     "live": {
       "h": "Leçons en direct pour la classe",
       "p1": "Lancez une course de quiz en direct ou n’importe quelle leçon prête pour le direct au vidéoprojecteur. Les élèves rejoignent sur leurs appareils avec un code à 7 chiffres.",
-      "li1": "Parmi les modes intégrés : Course aux quêtes (une course sur une île en 3D portée par vos questions), Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile), Would You Rather, Atlas Quest et Doodle Hoot.",
+      "li1": "Parmi les modes intégrés : Plateau Cerveau (un plateau de catégories, du plus facile au plus difficile), Would You Rather, Atlas Quest et Doodle Hoot.",
       "li2": "Utilisez une série de départ, tapez une série rapide, ou transformez les questions d’un plan de cours en quiz en direct.",
       "li3": "Les salles de classe sont réservées à vos élèves connectés, et leurs scores vont dans votre carnet de notes. Pas de discussion, pas de saisie, pas de noms tapés librement.",
       "more": "Voir comment fonctionne Oomba Live"
@@ -7974,19 +8385,19 @@
         "title": "Jeux de lecture et d’orthographe en anglais",
         "description": "Mots mêlés, pendu et un mot du jour à deviner, en anglais, pour les 5-14 ans, avec des mots lus à voix haute. Gratuit, sans publicité, dans tout navigateur.",
         "h1": "Jeux de lecture et d’orthographe en anglais, des débutants aux plus avancés",
-        "lead": "Trois jeux de mots en anglais pour travailler l’orthographe et le vocabulaire. Shark Plank et Word Hunt lisent les mots à voix haute : ils conviennent aux lecteurs débutants. Word Peek est un mot du jour à deviner pour les élèves plus à l’aise.",
-        "tips": "Lancez un thème de Word Hunt en ouverture d’une séquence, résolvez ensemble le Mot du jour au tableau en commentant chaque essai, ou proposez Shark Plank aux élèves qui ont fini en avance.",
+        "lead": "Des jeux de mots pour l’orthographe et le vocabulaire. Word Hunt lit un mot à voix haute quand on le touche : il convient aux lecteurs débutants. Word Peek est une énigme de mots quotidienne pour les élèves sûrs de leur orthographe.",
+        "tips": "Utilisez un thème de Word Hunt pour lancer une séquence, ou résolvez ensemble le Daily Peek au tableau en commentant chaque essai.",
         "faq": {
           "q1": "Les jeux lisent-ils les mots à voix haute ?",
-          "a1": "Shark Plank lit chaque mot à voix haute, et dans Word Hunt les élèves peuvent toucher n’importe quel mot pour l’entendre.",
+          "a1": "Oui. Dans Word Hunt, les élèves peuvent toucher n’importe quel mot pour l’entendre lu à voix haute.",
           "q2": "Y a-t-il un défi du jour ?",
           "a2": "Oui. Word Hunt et Word Peek proposent chacun un nouveau défi chaque jour, et dans Word Peek un élève peut choisir un mot secret pour un ami.",
           "q3": "Puis-je utiliser ma propre liste de mots ?",
           "a3": "Pas encore dans ces jeux. Vous pouvez décrire au Constructeur un jeu d’orthographe avec vos mots, et il le créera pour votre classe.",
           "q4": "Quel jeu de mots convient au niveau de lecture de mon enfant ?",
-          "a4": "Shark Plank et Word Hunt lisent les mots à voix haute : ils conviennent aux enfants qui consolident encore leur lecture. Word Peek s’adresse à ceux qui sont déjà à l’aise en orthographe."
+          "a4": "Word Hunt lit les mots à voix haute : il convient aux enfants qui apprennent encore à lire. Word Peek s’adresse à ceux qui sont sûrs de leur orthographe."
         },
-        "home": "Faites du Mot du jour un rituel familial au petit-déjeuner en commentant chaque essai, ou laissez un plus jeune lecteur jouer à Shark Plank avec le son, pour que chaque mot soit lu à voix haute."
+        "home": "Faites du Daily Peek un rituel familial au petit-déjeuner en commentant chaque essai, ou laissez un plus jeune lecteur jouer à Word Hunt avec le son et toucher un mot pour l’entendre."
       },
       "strategy": {
         "name": "Jeux d’échecs et de stratégie",
@@ -7994,19 +8405,19 @@
         "title": "Jeux d’échecs et de stratégie gratuits pour enfants",
         "description": "Apprendre les échecs avec de courtes leçons et des énigmes, puis jouer contre un ami ou un robot. Aussi : puissance 4 et blocs qui tombent. Gratuit, 5-14 ans.",
         "h1": "Des jeux d’échecs et de stratégie qui font réfléchir",
-        "lead": "Les jeux de stratégie demandent aux élèves d’anticiper, de repérer des motifs et de prévoir ce que va faire l’adversaire. Castle Clash enseigne les échecs dès le premier coup. Drop Four et Brick Drop sont des parties rapides d’anticipation et de logique.",
-        "tips": "Lancez un club d’échecs en classe avec les leçons et les énigmes de Castle Clash, ou mettez deux élèves sur un même appareil pour une partie de Drop Four.",
+        "lead": "Les jeux de stratégie demandent d’anticiper, de repérer des motifs et de penser à ce que fera l’autre joueur. Castle Clash enseigne les échecs dès le premier coup, avec des leçons, des problèmes et un robot à affronter.",
+        "tips": "Lancez un club d’échecs avec les leçons et problèmes de Castle Clash, ou faites jouer deux élèves l’un contre l’autre sur un même appareil.",
         "faq": {
           "q1": "Un enfant peut-il apprendre les échecs à partir de zéro ?",
           "a1": "Oui. Castle Clash propose une courte leçon pour chaque pièce et 24 énigmes d’échec et mat, puis un robot à affronter sur quatre niveaux.",
           "q2": "Deux élèves peuvent-ils jouer sur le même appareil ?",
-          "a2": "Oui. Castle Clash et Drop Four ont tous les deux un mode à deux joueurs sur le même écran.",
+          "a2": "Oui. Castle Clash a un mode deux joueurs sur un seul écran.",
           "q3": "Le robot est-il difficile ?",
-          "a3": "Le robot de Castle Clash a quatre niveaux, et celui de Drop Four propose Facile, Normal et Difficile.",
+          "a3": "Le robot de Castle Clash a quatre niveaux, d’un début en douceur à un vrai défi.",
           "q4": "Puis-je apprendre les échecs en même temps que mon enfant ?",
           "a4": "Oui. Les leçons de Castle Clash commencent par le déplacement de chaque pièce : un adulte qui n’a jamais joué peut apprendre lui aussi, puis affronter son enfant sur le même écran."
         },
-        "home": "Apprenez les échecs ensemble : une leçon de Castle Clash par jour, puis une partie l’un contre l’autre sur un seul écran. Une partie de Drop Four tient dans cinq minutes de libre."
+        "home": "Apprenez les échecs ensemble : une leçon de Castle Clash par jour, puis une partie l’un contre l’autre sur un seul écran."
       },
       "music": {
         "name": "Jeux de musique",
@@ -8038,7 +8449,7 @@
           "q1": "Combien de temps doit durer une pause active ?",
           "a1": "Beaucoup d’enseignants prévoient 3 à 5 minutes. Ces jeux ont des manches courtes, il est donc facile de s’arrêter à l’heure.",
           "q2": "Toute la classe peut-elle jouer sur un seul écran ?",
-          "a2": "Oui. Affichez un jeu au tableau et jouez à tour de rôle. Beat Lanes et Swish Flick marchent très bien quand toute la classe encourage."
+          "a2": "Oui. Affichez un jeu au tableau et jouez chacun son tour, avec toute la classe qui encourage."
         }
       },
       "makeAGame": {
@@ -8159,9 +8570,9 @@
         },
         "faq": {
           "q2": "Les jeux sont-ils trop difficiles pour un enfant de 8 ans ?",
-          "a2": "Chacun commence en douceur. Sum Racer démarre avec les additions jusqu’à 10, le robot de Castle Clash a un niveau facile, et Shark Plank lit chaque mot à voix haute.",
+          "a2": "Chacun commence facilement. Le robot de Castle Clash a un niveau facile, et Word Hunt lit un mot à voix haute quand on le touche.",
           "q3": "Deux enfants peuvent-ils jouer sur le même appareil ?",
-          "a3": "Oui. Sum Racer, Castle Clash et Drop Four ont un mode à deux joueurs sur le même écran.",
+          "a3": "Oui. Castle Clash a un mode deux joueurs sur un seul écran, et Word Hunt propose une course où l’on se passe le téléphone.",
           "q4": "Un enfant de 8 ans peut-il utiliser le Constructeur IA ?",
           "a4": "Oui. Les enfants tapent leur idée : mieux vaut qu’ils sachent écrire une phrase ou deux, et un adulte à côté aide au début. Le Constructeur suit des règles fixes de sécurité pour les enfants."
         }
@@ -8190,9 +8601,9 @@
         },
         "faq": {
           "q2": "Les jeux sont-ils trop faciles pour un enfant de 10 ans ?",
-          "a2": "Non. Sum Racer va jusqu’à toutes les tables de multiplication et la division, Castle Clash propose 24 énigmes d’échec et mat, et Word Peek est un vrai défi quotidien.",
+          "a2": "Non. Castle Clash a 24 problèmes d’échec et mat, et Word Peek est un vrai défi quotidien.",
           "q3": "Mon enfant peut-il jouer avec un frère, une sœur ou un ami ?",
-          "a3": "Oui. Sum Racer et Castle Clash ont un mode à deux joueurs sur le même écran, et Word Hunt propose une course où l’on se passe le téléphone.",
+          "a3": "Oui. Castle Clash a un mode deux joueurs sur un seul écran, et Word Hunt propose une course où l’on se passe le téléphone.",
           "q4": "Le Constructeur IA est-il sans danger pour un enfant de 11 ans ?",
           "a4": "Le Constructeur ne fait que des jeux, et il suit des règles fixes de sécurité pour les enfants : pas de gore, pas de jeux d’argent, pas de vraies marques et pas de liens vers l’extérieur. <a href=\"{ai}\">Voir toutes les règles qu’il suit</a>. Les jeux restent privés jusqu’à ce que votre enfant les partage."
         }
@@ -8244,7 +8655,7 @@
         },
         "faq": {
           "q2": "Mon enfant peut-il jouer s’il ne sait pas encore lire ?",
-          "a2": "Pour certains jeux, oui. Word Trail et Shark Plank lisent chaque mot à voix haute, Word Hunt lit un mot quand on le touche, et Sum Racer utilise des nombres. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
+          "a2": "Pour certains jeux, oui. Word Hunt lit un mot à voix haute quand on le touche. Les menus et les consignes sont écrits, donc un adulte à côté aide au début.",
           "q3": "Les parcours sont-ils prévus pour cet âge ?",
           "a3": "L’un d’eux, oui. Number Quest, notre parcours de maths, commence en grande section : sa rue Launchpad va de la grande section au CE1, et ses jeux lisent chaque consigne à voix haute. CS Quest et Cyber Defenders commencent au CE2, vers 8 ans.",
           "q4": "Un enfant de 6 ans peut-il utiliser le Constructeur IA ?",
@@ -8344,7 +8755,7 @@
       "s2": {
         "h": "Jouer à des jeux éducatifs",
         "p": "Les jeux de maths, de lecture, de logique et de musique fonctionnent directement dans le navigateur, sur téléphone, tablette, Chromebook et ordinateur. Les enfants peuvent en essayer un sans s’inscrire.",
-        "alt": "Sum Racer, un jeu de course de calcul, en pleine course : des voitures de dessin animé sur une route, une addition et quatre grands boutons de réponse."
+        "alt": "Sudoku, un casse-tête de chiffres, en pleine partie : une petite grille 4×4 avec quelques chiffres remplis, et de grands boutons de chiffres avec Annuler, Effacer, Notes, Indice et Vérifier."
       },
       "s3": {
         "h": "Le décrire, y jouer, le modifier",
@@ -8421,7 +8832,7 @@
       "a1": "Oui. Tous les jeux sont gratuits, et chaque joueur qui a un compte (juste un nom inventé et un mot de passe) reçoit chaque jour des messages gratuits pour le Constructeur afin de créer ses propres jeux. Il n’y a pas de publicité et rien à acheter pour les enfants.",
       "a1paid": "Oui. Tous les jeux sont gratuits, et chaque joueur qui a un compte (juste un nom inventé et un mot de passe) reçoit chaque jour des messages gratuits pour le Constructeur. Les familles peuvent choisir un abonnement facultatif pour avoir des messages supplémentaires, et on ne demande jamais aux enfants de payer. <a href=\"{plans}\">Voir les offres</a>.",
       "q2": "Pour quels âges ?",
-      "a2": "Pour les enfants de la maternelle à la 4e, soit environ de 5 à 14 ans. Des jeux comme Shark Plank et les premiers circuits de Sum Racer conviennent aux plus jeunes.",
+      "a2": "Les enfants de la maternelle à la 4e, environ 5 à 14 ans. Des jeux comme Word Hunt, qui lit un mot à voix haute quand on le touche, conviennent aux plus jeunes.",
       "q3": "Mon enfant a-t-il besoin d’un compte ou d’une adresse e-mail ?",
       "a3": "Non. Tout le monde peut jouer tout de suite, sans inscription. Pour garder leurs jeux et leurs scores, les enfants peuvent créer un compte avec juste un nom inventé et un mot de passe. Nous ne demandons jamais d’adresse e-mail.",
       "q4": "Y a-t-il des publicités ou des achats intégrés ?",
@@ -10099,13 +10510,13 @@
       "lead": "De vrais écrans d’une leçon en direct dans une école de démonstration aux noms inventés.",
       "s1": {
         "h": "Choisissez une leçon et vos questions",
-        "p": "Choisissez Quest Race ou Brain Board, puis les questions : la banque de questions par matière et par âge (6 à 14 ans), votre propre série, une série partagée par un collègue, ou les questions d’un de vos plans de cours.",
-        "alt": "La première étape pour animer une leçon en direct, « À quoi veux-tu jouer ? » : Quest Race, Question Battle et Brain Board, chacun avec le nombre de joueurs qui lui convient."
+        "p": "Choisissez Brain Board, puis les questions : la banque de questions par matière et par âge (6 à 14 ans), votre propre série, une série partagée par un collègue, ou les questions d’un de vos plans de cours.",
+        "alt": "La première étape pour animer une leçon en direct, « À quoi veux-tu jouer ? » : Brain Board, Would You Rather (en direct) et Atlas Quest, chacun avec le nombre de joueurs qui lui convient."
       },
       "s2": {
         "h": "Affichez le code au tableau",
         "p": "Les élèves ouvrent la page pour rejoindre sur leur appareil et tapent le code à 7 chiffres, ou scannent le QR code. Leurs noms apparaissent à mesure qu’ils arrivent.",
-        "alt": "L’écran du vidéoprojecteur avant le début de la leçon : un personnage de dessin animé contre qui joue toute la classe, un grand code à 7 chiffres, un code QR et le nombre de joueurs arrivés."
+        "alt": "L’écran du projecteur avant le début de la leçon : la salle d’attente de Brain Board avec une carte pour chaque élève qui a rejoint, un grand code à 7 chiffres, un code QR et le nombre de joueurs arrivés."
       },
       "s3": {
         "h": "Les élèves rejoignent en quelques secondes",
@@ -10115,7 +10526,7 @@
       "s4": {
         "h": "Tout le monde répond en même temps",
         "p": "La question est au tableau et les boutons de réponse sont sur chaque appareil. Plus une bonne réponse arrive vite, plus elle rapporte de points.",
-        "alt": "Le téléphone d’un élève pendant une question : en haut, le personnage de dessin animé contre lequel la classe joue, puis la question et quatre boutons de réponse."
+        "alt": "L’écran d’un élève pendant une question : une question de sciences du Brain Board qui vaut 100 points, un minuteur et quatre boutons de réponse."
       },
       "s5": {
         "h": "Voyez qui sait quoi",
@@ -10152,7 +10563,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Chacun touche le pays sur sa propre carte du monde : le pays, son drapeau, sa capitale ou ce qui le rend célèbre. Le grand écran montre où toute la classe a touché, et viser tout près rapporte aussi."
-      }
+      },
+      "kicker": "Jeux en direct"
     },
     "tools": {
       "h": "Les outils demandés par les enseignants",
@@ -10186,8 +10598,8 @@
     },
     "faq": {
       "h": "Les questions des enseignants sur Oomba Live",
-      "q1": "Oomba Live est-il gratuit ?",
-      "a1": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats sont tous gratuits, sans publicité.",
+      "q1": "Oomba Live est-il gratuit ?",
+      "a1": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats ne coûtent rien, pas plus que les cours prêts à l'emploi que vous pouvez enseigner et donner à vos élèves : {courses}. Le <a href=\"{plans}\">forfait Enseignant</a>, facultatif, ajoute les outils payants : le Hub, Demander à Oomba, les Manipulables et leurs salles en direct, Figures et une réserve quotidienne partagée de créations par IA.",
       "q2": "Mes élèves ont-ils besoin d’un compte ?",
       "a2": "Pas pour une salle ouverte : les élèves tapent le code et reçoivent un surnom inventé. Dans une salle de classe, ils utilisent les comptes école que vous avez créés pour eux, et leurs scores vont dans votre carnet de notes.",
       "q3": "Combien d’élèves peuvent jouer ?",
@@ -10195,7 +10607,8 @@
       "q4": "Puis-je utiliser mes propres questions ?",
       "a4": "Oui, dans toutes les matières et à tous les niveaux. Écrivez une série de {items} questions maximum avec 2 à 4 réponses chacune, collez-en une depuis un tableur, laissez l’IA en rédiger une à modifier, ou transformez les questions d’un de vos plans de cours en quiz en direct.",
       "q5": "De quoi les élèves ont-ils besoin ?",
-      "a5": "N’importe quel appareil avec un navigateur à jour : Chromebooks, tablettes, ordinateurs portables ou téléphones. Rien à installer. Vous affichez la leçon au tableau depuis votre ordinateur."
+      "a5": "N’importe quel appareil avec un navigateur à jour : Chromebooks, tablettes, ordinateurs portables ou téléphones. Rien à installer. Vous affichez la leçon au tableau depuis votre ordinateur.",
+      "a1NoCourses": "Oui. Animer des leçons en direct, les séries de départ, vos propres séries et les résultats ne coûtent rien. Le <a href=\"{plans}\">forfait Enseignant</a>, facultatif, ajoute les outils payants : le Hub, Demander à Oomba, les Manipulables et leurs salles en direct, Figures et une réserve quotidienne partagée de créations par IA."
     },
     "own": {
       "h": "Vos questions, à votre façon",
@@ -10921,7 +11334,8 @@
       "ask": "Demander à Oomba",
       "tour": "Visite",
       "videos": "Vidéos",
-      "compare": "Comparer"
+      "compare": "Comparer",
+      "signupShort": "S'inscrire"
     },
     "hero": {
       "kicker": "Pour les enseignants de la maternelle à la 4e",
@@ -11620,13 +12034,13 @@
       "rubric": "Grille : notes de grille sur le standard, en part de la note maximale. Visibles quand des grilles portent des standards Common Core.",
       "meets": "Atteint : un élève atteint un standard avec au moins 80 % de bonnes réponses sur 3 questions ou plus, ou une note de grille d’au moins deux tiers. La classe l’atteint quand 80 % de ses élèves l’atteignent.",
       "needs": "À regarder : élèves qui ont répondu à 2 questions ou plus sur le standard sans aucune bonne réponse. Seuls les enseignants le voient.",
-      "games": "Les leçons avec des niveaux pour plusieurs classes (Sum Racer, Fraction Factory, Word Trail, Tug of Math) ne comptent comme entraînement que pour le niveau du plan de cours, ou pour le niveau auquel l’étape est fixée. Pour un plan de cours sans niveau, elles n’apparaissent que dans Couvert par.",
+      "games": "Les leçons avec des niveaux pour plusieurs classes comptent comme pratique seulement pour la classe du plan de cours, ou pour le niveau sur lequel l’étape est fixée. Pour un plan de cours sans classe, elles apparaissent seulement dans « Couvert par ».",
       "live": "Les leçons en direct comme Tug of Math Live n’enregistrent pas quelle question portait sur quel standard : les réponses d’un élève sont donc réparties sur les standards de la leçon. Ces chiffres sont des estimations.",
       "courses": "Number Quest compte le travail fait avec un compte d'école, ou depuis que l'élève a rejoint cette classe. Une seule vérification (3 questions) ne suffit pas pour atteindre un standard."
     },
     "empty": {
       "title": "Pas encore de standards Common Core",
-      "text": "Étiquetez vos plans de cours avec des standards, ou attribuez des plans de cours avec des leçons d’Apprendre comme Sum Racer, Fraction Factory ou Word Trail, et ils apparaîtront ici."
+      "text": "Étiquetez vos plans de cours avec des standards, ou assignez des plans de cours avec des leçons d’Apprendre qui en portent, et ils apparaîtront ici."
     },
     "csvCols": {
       "code": "Code",
@@ -16322,7 +16736,7 @@
       "noStudents": "Pas encore d'élèves dans cette classe.",
       "noneFit": "Aucune unité ne correspond à ces filtres.",
       "counts": "Élèves",
-      "count": "{mastered} maîtrisé · {started} en cours",
+      "count": "{mastered} maîtrisé · {started} en cours",
       "studentTitle": "{name} dans Grammar Lab",
       "placeH": "Niveaux de départ",
       "placeTeacher": "Niveaux {grades}, choisis par un enseignant.",
@@ -16362,7 +16776,9 @@
       "started": "Continuer",
       "mastered": "Maîtrisé",
       "pending": "Connecte-toi pour le garder",
-      "locked": "Maîtrise d'abord le précédent"
+      "locked": "Maîtrise d'abord le précédent",
+      "levelOf": "Niveau {level} sur {levels}",
+      "also": "Compte aussi dans : {units}"
     },
     "guest": {
       "title": "Connecte-toi pour garder tes victoires",
@@ -16374,9 +16790,10 @@
     },
     "welcome": {
       "heading": "Bienvenue dans {topic}",
-      "text": "Continue à répondre jusqu'à montrer que tu sais. Réussis les deux dernières à la suite pour finir chaque niveau.",
       "go": "C'est parti",
-      "skip": "Passer l'intro"
+      "skip": "Passer l'intro",
+      "rule": "Chaque niveau a {per} questions. Termine-le avec deux bonnes réponses de suite. Seules les réponses du premier coup comptent pour la série.",
+      "count": "{total} questions, plus une pour chaque erreur."
     },
     "practice": {
       "tip": "Comment marche le double appui",
@@ -16389,7 +16806,9 @@
       "levelNext": "Niveau suivant",
       "fixLabel": "Corrige la phrase ici",
       "chips": "Signes à placer",
-      "asIs": "C’est juste tel quel"
+      "asIs": "C’est juste tel quel",
+      "listen": "Lis-moi la question",
+      "listenHint": "Lis-moi l’indice"
     },
     "levels": {
       "heading": "Niveaux et maîtrise",
@@ -16425,6 +16844,10 @@
       "listen": "Lis-le-moi",
       "stop": "Arrêter",
       "practice": "Commencer l'entraînement",
+      "start": "Commencer les questions",
+      "skip": "Aller aux questions",
+      "lead": "Lis la fiche, puis commence les questions. Tu peux la rouvrir à tout moment.",
+      "close": "Fermer",
       "question": "Demande-toi"
     },
     "review": {
@@ -16463,6 +16886,12 @@
       "passed": "Salle de relecture réussie",
       "locked": "Ouvre d'abord le thème",
       "back": "Retour à {topic}"
+    },
+    "loading": "Préparation de ta leçon",
+    "progress": {
+      "band": "{mastered} maîtrisés · {started} en cours",
+      "unit": "{started} en cours",
+      "unitHead": "{mastered} sur {total} maîtrisés · {started} en cours"
     }
   }
 }

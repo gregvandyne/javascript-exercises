@@ -264,6 +264,11 @@
         "pens": "Pen colours",
         "pen": "Pen colour {n}"
       }
+    },
+    "companion": {
+      "ask": {
+        "sheetTopic": "Happy to make one. What should the worksheet practise, and for which year or grade?"
+      }
     }
   },
   "favorites": {
@@ -372,7 +377,7 @@
     },
     "faq": {
       "q5": "What ages and year groups is it for?",
-      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Lessons such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the maths course, runs from about age 5 to age 14, and CS Quest and Cyber Defenders start in Year 4.",
+      "a5": "Oomba Academy is made for ages 5 to 14, roughly Reception to Year 9. Games such as Word Hunt, which reads a word aloud when you tap it, suit the youngest players. Number Quest, the maths course, runs from about age 5 to age 14, and CS Quest and Cyber Defenders start in Year 4.",
       "a4google": "Students never type an email address, and we never ask for their age or home address. If your school uses Sign in with Google, we keep each student’s school Google email only to recognise their account. There are no ads and no tracking cookies. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep."
     },
     "setup": {
@@ -517,7 +522,7 @@
     "how": {
       "s2": {
         "p": "Maths, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
-        "alt": "Sum Racer, a maths racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+        "alt": "Sudoku, a number puzzle, in the middle of a game: a Tiny 4×4 grid with some numbers filled in, and big number buttons with Undo, Erase, Notes, Hint and Check."
       },
       "s1": {
         "alt": "The Oomba Academy sign-up page, step 1 of 2, “Make a free account”, with the made-up name PixelPanda typed in and a hidden password. It asks only for a fun name and a password."
@@ -688,13 +693,13 @@
     },
     "how": {
       "s1": {
-        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
+        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Brain Board, Would You Rather (Live) and Atlas Quest, each with how many players it suits."
       },
       "s2": {
-        "alt": "The projector screen before the lesson starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
+        "alt": "The projector screen before the lesson starts: the Brain Board lobby with a card for each student who joined, a big 7-digit code, a QR code and how many players have joined."
       },
       "s4": {
-        "alt": "A student’s phone during a question: the cartoon character the class plays against at the top, then the question and four answer buttons."
+        "alt": "A student’s screen during a question: a Science question from the Brain Board worth 100 points, a timer and four answer buttons."
       }
     }
   },

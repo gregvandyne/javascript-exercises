@@ -30,7 +30,7 @@ const ROOT = path.resolve(import.meta.dirname, '../..');
 const MD = fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/source/course.md'), 'utf8');
 const PLAN = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/pathways.json'), 'utf8'));
 const OVERRIDES = JSON.parse(fs.readFileSync(path.join(ROOT, 'seed-lessons/grammar-lab/overrides.json'), 'utf8'));
-const NEW = ['compound-sentences', 'complex-sentences', 'coordinating-conjunctions', 'evidence-for-informing', 'evidence-for-opinions', 'quotation-marks-in-dialogue',
+const NEW = ['adverbs-how-when-where', 'compound-sentences', 'complex-sentences', 'coordinating-conjunctions', 'evidence-for-informing', 'evidence-for-opinions', 'quotation-marks-in-dialogue',
   'quotation-marks-around-quotes', 'recognizing-fragments', 'avoiding-run-ons', 'evidence-that-supports', 'showing-with-actions', 'progressive-verbs', 'tense-shifts'];
 const SHARED = ['identifying-adjectives', 'capitalizing-names-and-dates', 'capitalizing-titles', 'commas-in-a-series', 'commas-after-starting-phrases', 'your-and-youre',
   'identifying-common-nouns', 'identifying-action-verbs', 'using-simple-tenses'];
@@ -76,20 +76,21 @@ async function playTopic(u, unit, topic, { wrongFirst = false, band = '3-5' } = 
 }
 
 // ------------------------------------------------------------------------------------------------- the build
-test('3-5 in full: 17 units, 27 topic slots, 22 topics (9 shared with K-2, defined once), 12 items each, every source slot placed', () => {
+test('3-5 in full: 17 units, 28 topic slots, 23 topics (9 shared with K-2, defined once), 12 items each, every source slot placed', () => {
   const { topics, rooms, problems } = B.buildTopics(MD, PLAN, OVERRIDES);
   assert.deepEqual(problems, []);
   const band = PLAN.bands.find(b => b.id === '3-5');
   assert.equal(band.pathways.length, 17);
-  const slots = band.pathways.flatMap(p => PLAN.pathways[p].parts.flatMap(x => x.topics));
-  assert.equal(slots.length, 27);
+  // (a part with a band is only in that band's copy of the unit: Adjectives and Adverbs has its own adverb topic in each)
+  const slots = band.pathways.flatMap(p => PLAN.pathways[p].parts.filter(x => !x.band || x.band === '3-5').flatMap(x => x.topics));
+  assert.equal(slots.length, 28);
   assert.deepEqual([...new Set(slots)].sort(), [...NEW, ...SHARED].sort());
   // The shared ones are K-2's own definitions (one id, one card, one quiz), not the 3-5 section's copies.
   for (const id of SHARED) { assert.equal(topics[id].band, 'k-2', id); assert.equal(PLAN.topics[id].source.band, 'k-2'); }
   for (const id of NEW) { const t = topics[id]; assert.equal(t.band, '3-5', id); assert.equal(t.items.length, 12, id); assert.equal(PLAN.topics[id].source.band, '3-5'); }
   // Every 3-5 topic heading of the source (in full or "See ... above") is placed: a new topic, or a shared K-2 one.
   const srcTitles = B.parseCourse(MD).filter(s => s.band === '3-5').flatMap(s => s.pathways.flatMap(p => p.topics.map(t => t.title)));
-  assert.equal(srcTitles.length, 27, 'the source has 27 topic slots in 3-5');
+  assert.equal(srcTitles.length, 28, 'the source has 28 topic slots in 3-5');
   const placed = new Set(Object.values(PLAN.topics).map(d => d.source.title));
   for (const title of srcTitles) assert.ok(placed.has(title), `"${title}" is placed`);
   // The shared slots are one id in every unit that uses them, in both bands.
@@ -98,10 +99,13 @@ test('3-5 in full: 17 units, 27 topic slots, 22 topics (9 shared with K-2, defin
   assert.deepEqual(units35('identifying-adjectives'), ['adjectives-and-adverbs', 'kinds-of-words']);
   assert.deepEqual(units35('capitalizing-titles'), ['capital-letters', 'titles']);
   assert.deepEqual(units35('coordinating-conjunctions'), ['joining-words', 'more-kinds-of-words']);
-  // Units K-2 already has are the same definition, reused (same topic list in both bands).
-  for (const p of ['adjectives-and-adverbs', 'capital-letters', 'commas', 'sound-alike-words', 'kinds-of-words', 'verbs-and-time']) assert.deepEqual(GL.pathway(p, '3-5').topics, GL.pathway(p, 'k-2').topics, p);
+  // Units K-2 already has are the same definition, reused (same topic list in both bands), but for Adjectives and
+  // Adverbs, whose second topic is each band's own adverb topic.
+  for (const p of ['capital-letters', 'commas', 'sound-alike-words', 'kinds-of-words', 'verbs-and-time']) assert.deepEqual(GL.pathway(p, '3-5').topics, GL.pathway(p, 'k-2').topics, p);
+  assert.deepEqual(GL.pathway('adjectives-and-adverbs', 'k-2').topics, ['identifying-adjectives', 'identifying-adverbs']);
+  assert.deepEqual(GL.pathway('adjectives-and-adverbs', '3-5').topics, ['identifying-adjectives', 'adverbs-how-when-where']);
   assert.deepEqual(Object.fromEntries(NEW.map(id => [id, topics[id].format + (topics[id].choices ? `:${topics[id].choices.kind}` : topics[id].fix ? `:${topics[id].fix.kind}` : '')])), {
-    'compound-sentences': 'choice:join', 'complex-sentences': 'choice:connect', 'coordinating-conjunctions': 'tap', 'evidence-for-informing': 'passage', 'evidence-for-opinions': 'passage',
+    'adverbs-how-when-where': 'tap', 'compound-sentences': 'choice:join', 'complex-sentences': 'choice:connect', 'coordinating-conjunctions': 'tap', 'evidence-for-informing': 'passage', 'evidence-for-opinions': 'passage',
     'quotation-marks-in-dialogue': 'fix:dialogue', 'quotation-marks-around-quotes': 'fix:quote', 'recognizing-fragments': 'choice:label', 'avoiding-run-ons': 'fix:runon',
     'evidence-that-supports': 'passage', 'showing-with-actions': 'choice:ab', 'progressive-verbs': 'choice:given', 'tense-shifts': 'choice:shift' });
   assert.deepEqual(Object.keys(rooms).filter(id => NEW.includes(id)).sort(), ['avoiding-run-ons', 'complex-sentences', 'compound-sentences', 'tense-shifts']);
@@ -277,7 +281,7 @@ test('a topic mastered in K-2 is mastered in 3-5 at once (and back): tiles, lock
   assert.match(course.text, /<section class="gl-bandsec gl-band-3-5"[\s\S]*?id="gl-unit-verbs-and-time">\s*<span class="gl-ring" role="img" aria-label="1 of 2 topics mastered"/);
   // A 3-5 topic mastered in a 3-5 unit counts in the other 3-5 unit that has it.
   await playTopic(kid, 'joining-words', 'coordinating-conjunctions');
-  assert.deepEqual(GL.unitProgress(kid, GL.pathway('more-kinds-of-words', '3-5')), { done: 1, total: 1 });
+  assert.deepEqual(GL.unitProgress(kid, GL.pathway('more-kinds-of-words', '3-5')), { done: 1, total: 1, started: 0 });
   // Mastered in 3-5, it is mastered in K-2 too (Titles has K-2's capitalizing-titles).
   const k2 = newKid(); master(k2, 'capitalizing-names-and-dates');
   await playTopic(k2, 'titles', 'capitalizing-titles');
@@ -291,12 +295,12 @@ test('a topic mastered in K-2 is mastered in 3-5 at once (and back): tiles, lock
   // A shared unit opened in 3-5 suggests within 3-5: its links keep the band.
   const shared = await get('/courses/grammar-lab/3-5/kinds-of-words', kid);
   assert.match(shared.text, /href="\/courses\/grammar-lab\/3-5\/kinds-of-words\/identifying-common-nouns"/);
-  // The review mark, and a K-2 card in a 3-5 unit is not read aloud there.
+  // The review mark; 3-5 is read aloud too (owner, 2026-11-27), a 9-12 topic is not.
   const verbs = await get('/courses/grammar-lab/3-5/more-verbs-and-time', kid);
   assert.match(verbs.text, /id="gl-topic-tense-shifts">[\s\S]*?Correcting Shifts in Verb Tense[\s\S]*?<span class="gl-badge gl-badge-review">Review<\/span>/);
-  assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', '3-5')), false);
+  assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', '3-5')), true);
   assert.equal(GL.readsAloud(T('identifying-adjectives'), GL.pathway('kinds-of-words', 'k-2')), true);
-  assert.equal(GL.readsAloud(T('compound-sentences')), false);
+  assert.equal(GL.readsAloud(T('compound-sentences')), true);
   // The writing card's three sections, with its highlighted sentences.
   master(kid, 'evidence-for-informing');
   const card = await get('/courses/grammar-lab/3-5/evidence-that-informs/evidence-for-informing/card', kid);

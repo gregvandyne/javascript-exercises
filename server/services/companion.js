@@ -44,7 +44,12 @@ import * as F from './figures.js';
 import { hasProfanity } from './textfilter.js';
 import * as CS from './companion-settings.js';
 import { GAMES_META } from './companion-games.js';
-import { gameHidden, coursesHidden } from './game-focus.js';
+import { gameHidden, coursesHidden, mayOpenHidden } from './game-focus.js';
+import * as GF from './game-folders.js';
+import * as GLA from './grammar-lab-assign.js';
+import * as GSETS from './game-sets.js';
+import * as LES from './lessons.js';
+import { liveGameOf } from '../live/live-games.js';
 import * as C from './oomba-chat.js';
 import { studentNames, namesFrom, scrub, screenLesson } from '../builder/lesson.js';
 import { allow } from './ratelimit.js';
@@ -66,6 +71,9 @@ import * as HW from './homeroom-week.js';
 import * as SUP from './homeroom-supports.js';
 import * as FU from './homeroom-follow.js';
 import * as NL from './homeroom-look.js';
+import * as CM from './companion-make.js';
+import * as LD from './lesson-draft.js';
+import * as AC from './companion-actions/index.js';
 
 export const SURFACE = 'companion';
 export const KEY = 'main';
@@ -252,12 +260,14 @@ const STOP = new Set(['a', 'an', 'the', 'and', 'or', 'for', 'of', 'to', 'in', 'o
 const termsOf = s => fold(s).split(' ').filter(w => w.length > 1 && !STOP.has(w) && !/^\d+$/.test(w));
 
 /** Official games that fit. -> [{ id, title, grades, subject, standards, minutes, live, summary }] (best first) */
-export function searchGames({ topic = '', grade = null, subject = '', standard = '', minutes = null, live = null } = {}) {
+/** user: a hidden game this teacher may still open (the platform admin, a class with it assigned: game-focus.js
+ *  mayOpenHidden) is found too, as assign allows it. */
+export function searchGames({ topic = '', grade = null, subject = '', standard = '', minutes = null, live = null } = {}, user = null) {
   const g = gradeNum(grade), terms = termsOf(`${topic} ${subject}`), std = String(standard || '').trim().toUpperCase();
   const out = [];
   for (const m of GAMES_META) {
     const row = games.getGameBySlug(m.slug);
-    if (!row || row.status !== 'published' || gameHidden(row)) continue;   // hidden while ARCADE is off (game-focus.js)
+    if (!row || row.status !== 'published' || (gameHidden(row) && !mayOpenHidden(user, row))) continue;   // hidden (game-focus.js)
     let score = 0;
     if (g !== null) { if (g < m.grades[0] - 1 || g > m.grades[1] + 1) continue; score += g >= m.grades[0] && g <= m.grades[1] ? 3 : 1; }
     if (std) { const hit = m.standards.some(x => x.toUpperCase().startsWith(std) || std.startsWith(x.toUpperCase())); if (hit) score += 4; }
@@ -411,7 +421,7 @@ export function applyProposal(u, p) {
   for (const o of p.ops) {
     if (o.op === 'set') {
       const w = widgets.find(x => x.id === o.id); if (!w) continue;
-      touched.push({ id: w.id, before: { ...w, s: { ...w.s } } });
+      touched.push({ id: w.id, before: { ...w, s: { ...w.s } }, want: { ...o.settings } });
       w.s = { ...w.s, ...o.settings };
     } else if (o.op === 'add') {
       const T = D.widgetType(o.type); if (!T) continue;
@@ -421,7 +431,7 @@ export function applyProposal(u, p) {
       touched.push({ id, before: null });
     } else if (o.op === 'remove') {
       const i = widgets.findIndex(x => x.id === o.id); if (i < 0) continue;
-      touched.push({ id: o.id, before: widgets[i], index: i });
+      touched.push({ id: o.id, before: widgets[i], index: i, gone: true });
       widgets.splice(i, 1);
     }
   }
@@ -431,8 +441,15 @@ export function applyProposal(u, p) {
   audit(u.id, 'companion.dash.apply', l.id, { classId: c.id, ops: p.ops.map(o => `${o.op}:${o.type}`) });
   // Checked work: the layout as saved. A widget removed or changed by hand since the card was made is not touched; the
   // card says how many of the planned changes did not land (the lines list what was planned).
-  const landed = touched.filter(x => (x.before === null ? after.has(x.id) : true)).length, missed = p.ops.length - landed;
-  const verify = { ok: missed === 0, landed, notLanded: missed > 0 ? [{ code: 'meanwhile', count: missed }] : [] };
+  // Each change is checked by its value as saved, not by the widget being there: an added widget is there, a removed one
+  // is gone, and a changed setting reads back as asked (a setting the dashboard clamped or refused counts as not landed).
+  const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+  const ok = x => (x.before === null ? after.has(x.id) : x.gone ? !after.has(x.id)
+    : !!after.get(x.id) && Object.entries(x.want || {}).every(([k, v]) => same(after.get(x.id).s[k], v)));
+  const good = touched.filter(ok), bad = touched.filter(x => !ok(x)).length;
+  const landed = good.length, skipped = Math.max(0, p.ops.length - touched.length);
+  const notLanded = [...(skipped ? [{ code: 'meanwhile', count: skipped }] : []), ...Array.from({ length: bad }, () => ({ code: 'other' }))];
+  const verify = { ok: !notLanded.length, landed, notLanded };
   return {
     verify,
     change: { kind: 'dash', classId: c.id, layoutId: l.id, lines: p.lines, ids: touched.map(x => x.id).filter(id => after.has(id)) },
@@ -462,7 +479,10 @@ export function undoProposal(u, data) {
 // Hand-offs: where a general build goes. The teacher opens it there with the brief filled in and presses its button.
 export const HANDOFF_TOOLS = Object.freeze(['builder', 'figures', 'manipulatives']);
 function handoffOf(u, page, input) {
-  const tool = HANDOFF_TOOLS.includes(input.tool) ? input.tool : 'builder';
+  // A worksheet and a board are made in the chat now (makeWorksheet, makeBoard: companion-make.js).
+  if (input.tool === 'figures') return { error: 'Make the worksheet yourself with makeWorksheet (figuresKinds first): it is made now, checked and opened from the card.' };
+  if (input.tool === 'manipulatives') return { error: 'Make the board yourself with makeBoard: it is made now, checked and opened from the card.' };
+  const tool = 'builder';
   const names = studentNames(u);
   const brief = clip(cleanText(u, input.brief, names), 1500).trim();
   if (brief.length < 10) return { error: 'Write a longer brief.' };
@@ -499,12 +519,7 @@ export function reasonOf(v) {
   return D.pointReason(k) || D.pointReason(k.replace(/[\s-]+/g, '')) || D.pointReason(k.replace(/\s+/g, '-')) || (Object.hasOwn(REASON_WORDS, k) ? REASON_WORDS[k] : '');
 }
 /** The students a placeholder stands for: this message's numbers first, then the conversation's. -> ids | null */
-function idsOfToken(ctx, target) {
-  const m = /^\s*\[?\s*student\s+(\d{1,3})\s*\]?\s*$/i.exec(String(target || ''));
-  if (!m) return null;
-  const mine = (ctx.meta && ctx.meta._who) || {};
-  return mine[m[1]] || ctx.who[m[1]] || null;
-}
+const idsOfToken = AC.idsOfToken;
 /** What to do with a givePoint call. -> { give: { classId, user, reason } } | { pick } | { error } */
 export function pointPlan(u, ctx, input) {
   const target = String(input.target || '').trim();
@@ -517,7 +532,7 @@ export function pointPlan(u, ctx, input) {
   // Which class: the one asked for, the page's, or the teacher's only class (for a student: the only one they are in).
   let classId = null, classes = [];
   const ref = String(input.classRef || '');
-  if (ref) { const c = mine.find(x => x.id === ref); if (!c) return { error: 'Not a class this teacher can give points in. Nothing was given.' }; classId = c.id; }
+  if (ref) { const c = mine.find(x => x.id === ref) || mine.find(x => fold(x.name) === fold(ref)) || (mine.filter(x => fold(x.name).includes(fold(ref))).length === 1 ? mine.find(x => fold(x.name).includes(fold(ref))) : null); if (!c) return { error: 'Not a class this teacher can give points in. Nothing was given.' }; classId = c.id; }
   else if (ctx.page.classId && mine.some(x => x.id === ctx.page.classId)) classId = ctx.page.classId;
   else {
     const list = cand ? mine.filter(c => D.studentsOf(c).some(k => cand.includes(k.id))) : mine;
@@ -623,6 +638,10 @@ export function dress(u, chat, t) {
       y = { ...y, note: n };
     }
     if (x.change && x.change.kind === 'book') y = { ...y, change: { ...x.change, lines: bookLines(x.change, t) } };
+    // An action's card and its change (services/companion-actions/): what it does, in the teacher's language, with the
+    // names, for this page only.
+    if (x.note && x.note.action) { const v = AC.cardView(u, x.note.action, t); y = { ...y, note: { ...y.note, action: v } }; }
+    if (x.change && x.change.kind === 'action') y = { ...y, change: AC.changeView(u, x.change, t) };
     // A day plan's card: what each part hands out, the groups' names, where the class's plan of today stands.
     if (x.note && x.note.plan) y = { ...y, note: { ...y.note, plan: HP.cardView(u, x.note.plan, t) } };
     // A week plan's card: Monday to Friday, each day's parts and what they hand out.
@@ -704,7 +723,7 @@ export function isOtherOption(o) {
   const k = squash(o);
   return !!k && (otherLabels.has(k) || (/^(something|anything)else/.test(k) && k.length <= 24));
 }
-export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice', 'howTo', 'createClass']);
+export const TOOL_NAMES = Object.freeze(['explainOomba', 'getPageContext', 'searchGames', 'searchBooks', 'searchLessons', 'proposeDashboardChange', 'startBuild', 'readUpload', 'givePoint', 'findMyPages', 'proposeNavigation', 'askChoice', 'howTo', 'createClass', 'assign', 'findLesson', 'classProgress', 'makeBoard', 'makeWorksheet', 'figuresKinds', 'makeLesson', 'doAction']);
 const str = (description, extra = {}) => ({ type: 'string', description, ...extra });
 const TOOLS_BASE = Object.freeze([
   { name: 'explainOomba', description: 'What Oomba Academy offers teachers and what you (Oomba) can and cannot do. Use it when the teacher asks how something on the site works.', input_schema: { type: 'object', properties: { topic: str('What they asked about, in a few words.') } } },
@@ -713,10 +732,10 @@ const TOOLS_BASE = Object.freeze([
   { name: 'searchBooks', description: 'Search the Story Library (free picture books with Read to me and 3 questions). It sorts books by US grade (K, 1, 2, 3, 4-5), not guided reading level: pass readingLevel (A to Z) and it maps it to grades.', input_schema: { type: 'object', properties: { words: str('Topic words, like "animals".'), grade: str('K or 1 to 5.'), readingLevel: str('A guided reading level A to Z, optional.') } } },
   { name: 'searchLessons', description: 'Search ready-made lessons (CS Quest), Figures worksheet generators (printable math and science questions with drawn figures) and dashboard layout templates.', input_schema: { type: 'object', properties: { topic: str('Topic words.'), grade: str('K or 1 to 12.') } } },
   { name: 'proposeDashboardChange', description: 'Propose a change to the class dashboard the teacher has open. Nothing changes until the teacher taps Apply on the card. Prefer changing a widget already on the layout over adding a second of the same type. There is no way to make a new kind of widget: if none fits, suggest existing widgets or a combination.', input_schema: { type: 'object', required: ['changes'], properties: { layoutId: str('The layout to change; the one on screen when left out.'), changes: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['set', 'add', 'remove'] }, widgetId: str('For set and remove.'), type: str('For add: a widget type from the library.'), settings: { type: 'object', description: 'Only number, switch and choice settings, like {"minutes": 5}.' }, allowDuplicate: { type: 'boolean' } } } } } } },
-  { name: 'startBuild', description: 'Prepare a hand-off card for a game or classroom activity made in the Builder, a printable worksheet in Figures, or a board in the Manipulatives. The teacher opens it with the brief filled in and presses the final button there. Never for a dashboard widget.', input_schema: { type: 'object', required: ['tool', 'brief'], properties: { tool: { type: 'string', enum: HANDOFF_TOOLS }, title: str('A short title.'), grade: str('K or 1 to 12.'), brief: str('What to make, in a few sentences, no names.'), practice: str('What students practice.'), help: str('How much help, like "Guided, then On my own".'), length: str('About how long.'), fromPlan: str('One thing from the teacher\'s lesson plan to keep in mind.') } } },
+  { name: 'startBuild', description: 'Prepare a hand-off card for a game or classroom activity made in the Builder (the Builder builds it from the brief after the teacher checks it there; it cannot be built from the chat). Nothing is made yet: say "I drafted a brief for <title>. Press Open the Builder to build it.", never that it is built or set up. Never for a worksheet (makeWorksheet), a board (makeBoard), a lesson plan (makeLesson) or a dashboard widget.', input_schema: { type: 'object', required: ['tool', 'brief'], properties: { tool: { type: 'string', enum: ['builder'] }, title: str('A short title.'), grade: str('K or 1 to 12.'), brief: str('What to make, in a few sentences, no names.'), practice: str('What students practice.'), help: str('How much help, like "Guided, then On my own".'), length: str('About how long.'), fromPlan: str('One thing from the teacher\'s lesson plan to keep in mind.') } } },
   { name: 'readUpload', description: 'Read the text of a document the teacher attached to this chat (by its file id). Names of students were already taken out.', input_schema: { type: 'object', required: ['fileId'], properties: { fileId: str('The file id.') } } },
-  { name: 'givePoint', description: `Give one dashboard point, for a reason, to one student or to the whole class, when the teacher asks for it ("give the whole class a point for teamwork", "give [student 1] a point for kindness"). The same point as on the class dashboard: the teacher sees a card with who got it and Undo. When the class, the student or the reason is not clear, the app shows the teacher a choice card and nothing is given until they tap. Reasons: ${D.POINT_REASONS.join(', ')} (close words are fine). Call it once for each student.`, input_schema: { type: 'object', required: ['target', 'reason'], properties: {
-    target: str('"class" for the whole class, or the student placeholder exactly as in the teacher\'s message, like "[student 1]".'), reason: str('What the point is for, like "teamwork".'), classRef: str('A class id from getPageContext, optional: the page\'s class (or the teacher\'s only class) when left out.') } } },
+  { name: 'givePoint', description: `Give one dashboard point (the dashboard gives one point at a time: when the teacher asks for several, pass count and the app says so first), for a reason, to one student or to the whole class, when the teacher asks for it ("give the whole class a point for teamwork", "give [student 1] a point for kindness"). The same point as on the class dashboard: the teacher sees a card with who got it and Undo. When the class, the student or the reason is not clear, the app shows the teacher a choice card and nothing is given until they tap. Reasons: ${D.POINT_REASONS.join(', ')} (close words are fine). Call it once for each student.`, input_schema: { type: 'object', required: ['target', 'reason'], properties: {
+    target: str('"class" for the whole class, or the student placeholder exactly as in the teacher\'s message, like "[student 1]".'), reason: str('What the point is for, like "teamwork".'), count: { type: 'integer', description: 'How many points the teacher asked for, when they said a number.' }, classRef: str('A class id from getPageContext, optional: the page\'s class (or the teacher\'s only class) when left out.') } } },
 ]);
 
 // The page tools: offered only on their own page (the teacher's own worksheet; a host's own board).
@@ -727,7 +746,16 @@ const TOOLS_MORE = [
   { name: 'proposeNavigation', description: 'When the request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), offer to open it and do the request there: the teacher sees "I\'ll open <page> and do this there" with Go there and Not now, and once that page opens the same request continues by itself. Never tell the teacher to go there and ask again. Leave id out when you do not know which one: the app asks the teacher to pick when there are several.', input_schema: { type: 'object', required: ['pageType'], properties: { pageType: { type: 'string', enum: NAV_TYPES }, id: str('The class, worksheet or board id (from findMyPages), when you know it.'), request: str('The teacher\'s request to carry out there, in their own words (when it was not their last message).') } } },
   { name: 'howTo', description: `How to do something on Oomba Academy that you cannot do yourself: the real steps, with links to the teacher's own pages and the buttons' real names. Show the steps as a numbered list exactly as given (links and bold kept; translate the plain words only). Tasks: ${H.TASKS.join(', ')}.`, input_schema: { type: 'object', required: ['task'], properties: { task: { type: 'string', enum: H.TASKS } } } },
   { name: 'createClass', description: 'Make a new class for the teacher (they are its teacher; no students are added). The teacher sees "Create class ...?" with Create and Not now; nothing is made until they tap Create, and Undo deletes it while it has no students. Use it when they ask for a class, a test class or a practice class. When they did not say a name, use "Test class" for a test or practice class.', input_schema: { type: 'object', properties: { name: str('The class name, short, no student names.'), grade: str('K or 1 to 12, optional.'), school: str('The school\'s name, only when the teacher is at more than one.') } } },
+  { name: 'assign', description: 'Assign a game, a Story Library book or (when findLesson lists Grammar Lab) a Grammar Lab unit or topic to one of the teacher\'s classes, to the whole class or to some of its students, optionally due on a day, when the teacher asks ("assign Word Hunt to 4B, due Friday", "give [student 1] and [student 2] the fractions game"). Use the id of a game from searchGames or a book from searchBooks (search first when you have none). The teacher sees "Assign ... to <class>?" with Assign and Not now: nothing is assigned until they tap Assign, and Undo takes it off the class again. When the teacher has several classes and did not say which, the app asks them.', input_schema: { type: 'object', required: ['kind', 'id'], properties: { kind: { type: 'string', enum: ['game', 'book', 'grammar'] }, id: str('The game\'s id (searchGames or findLesson), the book\'s id (searchBooks), or a Grammar Lab id (findLesson).'), classRef: str('The class: its id or its name as the teacher wrote it. Leave out to use the page\'s class or ask.'), students: { type: 'array', maxItems: 30, items: { type: 'string' }, description: 'Only for some students: the placeholders exactly as written, like [student 1]. Leave out for the whole class.' }, due: str('The due day as YYYY-MM-DD, only when the teacher gave one (work out the date from today).') } } },
+  { name: 'findLesson', description: 'Find a lesson the teacher names ("assign Sum Racer", "where is Identifying Adjectives"): their own game folders, the class\'s assigned lessons, Oomba\'s games (with games that are turned off right now) and, when the teacher has it, Grammar Lab units and topics. Use it whenever the teacher names a lesson, before saying it is not on Oomba. Its result says what to tell the teacher.', input_schema: { type: 'object', required: ['name'], properties: { name: str('The lesson\'s name as the teacher wrote it.'), classRef: str('A class id or name, optional.') } } },
+  { name: 'classProgress', description: 'A class\'s progress report, read only, in counts: each assignment (how many finished, started, not started, late, answers to read), Needs a look reasons, Grammar Lab and course progress where there is some. Students are placeholders like "Student A" (the page shows the names): never guess a name, never rank or compare students. Use it when the teacher asks how a class is doing or for a progress report.', input_schema: { type: 'object', properties: { classRef: str('The class id or name; the page\'s class (or the only one) when left out.') } } },
+  { name: 'makeBoard', description: `Make a Manipulatives board now (saved in the teacher's My boards; the card opens it). Use it for "set up a board showing 245", "a number line board for halves". The app checks every item with the tool's own rules and reads the board back: its result says what is on it (landed) or why nothing could be made. Only after it shows made: true, say what is on the board. If nothing could be made, say why in one line and offer the closest thing the tool can show. Tools (one item each):\n${CM.boardCatalog()}`, input_schema: { type: 'object', required: ['tool', 'items'], properties: { tool: { type: 'string', enum: CM.BOARD_TOOL_LIST }, title: str('A short title, under 60 characters.'), steps: { type: 'array', items: { type: 'string' }, description: '1 to 4 short steps for the students.' }, items: { type: 'array', items: { type: 'object' }, description: 'Items in the tool\'s own settings, like {"value": 245, "box": "none"} (box: "answer", "build" or "none").' } } } },
+  { name: 'makeWorksheet', description: 'Make a Figures worksheet or test now, with its questions, in one step (the card opens it). Use it from any page for "a worksheet with ...", or to turn an attached lesson plan into a worksheet: put the plan\'s own problems in items. Each item is {"gen": "<generator id>"} or a figure question of your own: {"kind", "question", "data", "answerType": "number", "answerKey"} or {"kind", "question", "data", "answerType": "choice", "choices", "correct"}; for a question where students plot a point on a number line: {"plot": {"from", "to", "step", "at", "label"}, "question"}. Call figuresKinds first for the kinds, their data fields and the generators (unless this answer already did). The app checks every question (drawn to scale, answers worked out, the range and number kind the teacher asked for) and reads the worksheet back; nothing that cannot be drawn is swapped for another question. Report only what is under landed, and say each reason under notLanded in one line.', input_schema: { type: 'object', required: ['title', 'items'], properties: { title: str('A short title that matches the questions (their range, their topic).'), grade: str('K or 1 to 12.'), purpose: { type: 'string', enum: ['worksheet', 'test'] }, units: { type: 'string', enum: FC.UNITS }, items: { type: 'array', maxItems: 12, items: { type: 'object' } } } } },
+  { name: 'figuresKinds', description: 'The Figures kinds (what each draws, its data fields, an example, its answerKey values) and the generators that fit a topic, for makeWorksheet. Read only.', input_schema: { type: 'object', required: ['topic'], properties: { topic: str('Topic words, like "number line" or "area of rectangles".'), grade: str('K or 1 to 12.') } } },
+  { name: 'makeLesson', description: 'Make a lesson plan now with the library\'s Draft with AI (saved in the teacher\'s lessons; the card opens it), when the teacher asks to build, make or draft a lesson on a topic. The topic and grade must be in the teacher\'s own words: when they did not say the topic, ask (never guess it from earlier messages). Not for finding a lesson: use findLesson.', input_schema: { type: 'object', required: ['topic'], properties: { topic: str('The topic in the teacher\'s words.'), grade: str('K or 1 to 12.'), subject: str('math, ela, science...'), minutes: { type: 'integer' } } } },
   { name: 'askChoice', description: 'Ask the teacher one short question with 2 to 5 tappable options (a decision or a missing detail: which class, which grade, which of two readings). Use it instead of asking a long question in words. The app adds "Something else" itself, so never include an option like it. Their tap comes back as their next message.', input_schema: { type: 'object', required: ['question', 'options'], properties: { question: str('One short question.'), options: { type: 'array', minItems: 2, maxItems: 5, items: { type: 'string' } } } } },
+  // Oomba does it (services/companion-actions/): one tool and one confirm card for every other teacher action.
+  { name: 'doAction', description: AC.toolDescription(), input_schema: AC.toolSchema() },
 ];
 export const TOOLS = Object.freeze([...TOOLS_BASE, ...TOOLS_MORE]);
 export const NAV_KEEP_MS = 10 * 60e3;   // a request carried to another page runs only within this
@@ -769,6 +797,135 @@ function classPlan(u, ctx, i) {
   if (!s) return { ask: { id: uid(10), question: tFor(ctx.lang)('js.companion.cls.whichSchool'), options: all.slice(0, 5).map(x => ({ label: cleanText(u, x.name, ctx.names) })), state: 'open' } };
   return { plan: { id: uid(10), schoolId: s.id, school: all.length > 1 ? cleanText(u, s.name, ctx.names) : '', name, grade: g === null ? '' : gradeLabel(g), state: 'open' } };
 }
+// ---------------------------------------------------------------- assign from the chat (docs/decisions.md "Oomba assigns")
+// The same services as the Assign pages: game-folders.js assignGame (a game; its checks: published, visible, not live-only,
+// not a game that opens at a teacher's set) and library.js assignStory (a Story Library book). The AI picks what and
+// for whom; the teacher's tap on the card assigns it, checked in a dry run first and read back after, with Undo
+// (lessons.js unassign: students' work is kept).
+const assignClassesOf = u => GF.assignClasses(u);
+const DUE_DAY = /^\d{4}-\d{2}-\d{2}$/;
+/** What a card would assign. -> { plan } | { ask } | { error } */
+export function assignPlan(u, ctx, i) {
+  if (!S.isSchoolStaff(u)) return { error: 'Only school staff assign. Nothing was assigned.' };
+  const kind = i.kind === 'book' ? 'book' : i.kind === 'grammar' ? 'grammar' : 'game';
+  let item = null, gl = null;
+  if (kind === 'grammar') {
+    // Grammar Lab (behind GRAMMAR_LAB): only for a teacher it lets in (grammar-lab-access.js); anyone else: not available.
+    if (!CM.mayGrammar(u)) return { error: 'Grammar Lab is not available for this account. Nothing was assigned.' };
+    const [what, unit, band, topic] = String(i.id || '').split(':');
+    const w = GLA_clean({ what, unit, band, topic });
+    if (!w) return { error: 'There is no Grammar Lab unit or topic with that id: find it first with findLesson. Nothing was assigned.' };
+    gl = w; item = { id: String(i.id), title: w.title };
+  } else if (kind === 'game') {
+    const seen = ctx.seen && ctx.seen.get(`game:${i.id}`);
+    const g = seen && seen.gameId ? games.getGame(seen.gameId) : games.getGameBySlug(String(i.id || '')) || games.getGame(String(i.id || ''));
+    if (!g || (gameHidden(g) && !mayOpenHidden(u, g))) return { error: 'There is no game with that id: search for it first. Nothing was assigned.' };
+    const lg = liveGameOf(g);
+    if (lg && !lg.play) return { error: 'That game is played live, with the teacher hosting: it cannot be assigned. Offer to open Live instead. Nothing was assigned.' };
+    if (g.source === 'seed' && GSETS.SET_GAMES.has(g.slug) && !GSETS.OPEN_SET_GAMES.has(g.slug)) return { error: `That game needs the teacher's own questions first: they assign it from its Assign page (/teach/assign?id=${g.id}). Nothing was assigned.` };
+    item = { id: g.id, title: games.localizeGame(g).title || g.title };
+  } else {
+    const b = LIB.getBook(String(i.id || ''));
+    if (!b) return { error: 'There is no book with that id: search for it first. Nothing was assigned.' };
+    item = { id: b.id, title: b.title };
+  }
+  const mine = assignClassesOf(u);
+  if (!mine.length) return { error: 'The teacher has no class to assign to. Nothing was assigned.' };
+  const ref = String(i.classRef || '').trim();
+  let c = null;
+  if (ref) c = mine.find(x => x.id === ref) || mine.find(x => fold(x.name) === fold(ref)) || null;
+  if (!c && ref) { const near = mine.filter(x => fold(x.name).includes(fold(ref))); if (near.length === 1) c = near[0]; }
+  if (!c && !ref && ctx.page.classId) c = mine.find(x => x.id === ctx.page.classId) || null;
+  if (!c && mine.length === 1) c = mine[0];
+  if (!c) {
+    if (ref && !mine.some(x => fold(x.name).includes(fold(ref)))) return { error: 'That is not one of the teacher\'s classes. Nothing was assigned.' };
+    return { ask: { id: uid(10), question: tFor(ctx.lang)('js.companion.asg.which'), options: mine.slice(0, 5).map(x => ({ label: cleanText(u, x.name, ctx.names) })), state: 'open' } };
+  }
+  // Some students: each placeholder must be one student of this class.
+  const students = [];
+  for (const tok of Array.isArray(i.students) ? i.students.slice(0, 30) : []) {
+    const ids = idsOfToken(ctx, tok);
+    if (!ids) return { error: 'That is not a student placeholder from the teacher\'s message (like [student 1]). Nothing was assigned.' };
+    const inClass = S.roster(c.id).filter(p => p.role === 'student' && ids.includes(p.id));
+    if (inClass.length !== 1) return { error: 'That student is not in this class (or the name fits more than one). Nothing was assigned: ask the teacher which student.' };
+    if (!students.includes(inClass[0].id)) students.push(inClass[0].id);
+  }
+  const due = DUE_DAY.test(String(i.due || '')) ? String(i.due) : '';
+  const plan = { id: uid(10), kind, itemId: item.id, title: cleanText(u, item.title, ctx.names), classId: c.id, className: cleanText(u, c.name, ctx.names), students, due, state: 'open', ...(gl ? { gl: { what: gl.what, unit: gl.unit, band: gl.band, topic: gl.topic || null } } : {}) };
+  const tried = VC.dryRun(() => runAssign(u, plan));
+  if (!tried.ok) return { error: assignWhy(tried.code) };
+  return { plan };
+}
+/** A Grammar Lab id from findLesson ("topic:<unit>:<band>:<topic>" or "unit:<unit>:<band>") checked: { what, unit,
+ *  band, topic, title } | null. */
+function GLA_clean({ what, unit, band, topic }) {
+  const w = GLA.cleanWhat({ what, unit, band: band || null, topic: topic || null });
+  return w.ok ? { what, unit: w.unit.id, band: w.unit.band, topic: w.topic ? w.topic.id || topic : null, title: GLA.titleFor(w) } : null;
+}
+const assignWhy = code => ({ alreadyAssigned: 'The class already has it assigned. Nothing was assigned.', badDate: 'That due day is not a date. Nothing was assigned.', publishFirst: 'That game is not shared with this class yet: the teacher publishes it first. Nothing was assigned.', someStudents: 'A book goes to the whole class: it cannot be assigned to only some students. Offer the whole class instead. Nothing was assigned.' }[code] || 'It could not be assigned. Nothing was assigned.');
+/** The assignment itself (the Assign pages' own services). -> { ok, classLesson } | { ok: false, code } */
+function runAssign(u, p) {
+  const dueAt = p.due || null;
+  if (p.kind === 'game') return GF.assignGame(u, p.classId, p.itemId, { dueAt, students: p.students });
+  if (p.kind === 'grammar') { if (!CM.mayGrammar(u)) return { ok: false, code: 'notFound' }; return CM.runGrammar(u, { ...p.gl, classId: p.classId, students: p.students, due: dueAt }); }
+  if (p.students.length) return { ok: false, code: 'someStudents' };
+  return LIB.assignStory(u, p.classId, p.itemId, { dueAt });
+}
+/** Assign on the card: assigned now, read back (the class's assignment as saved), with Undo. */
+function assignAct(u, row, turn, a) {
+  const p = turn.note.assign;
+  if (!p || p.state !== 'open') return { ok: false, code: 'notFound' };
+  if (a === 'assignNo') return markNote(u, row, turn.id, { ...turn.note, assign: { ...p, state: 'declined' } });
+  if (!allow(`asg-chat:${u.id}`, 120, 3600e3)) return { ok: false, code: 'slow' };
+  return C.addTurn(u, SURFACE, KEY, {
+    mark: { id: turn.id, fields: { note: { ...turn.note, assign: { ...p, state: 'assigned' } } } }, text: '',
+    apply: () => {
+      const r = runAssign(u, p);
+      if (!r.ok) return { code: r.code === 'notFound' ? 'notFound' : 'error', verify: { ok: false, landed: 0, notLanded: [{ code: 'gone' }] } };
+      // Checked work: the assignment read back as saved (open, in this class, for the students asked for).
+      const cl = q.get('SELECT id, class_id, due_at, removed_at FROM class_lessons WHERE id=?', r.classLesson.id);
+      const who = q.all('SELECT user_id FROM class_lesson_students WHERE class_lesson_id=?', r.classLesson.id).map(x => x.user_id);
+      const landed = !!cl && !cl.removed_at && cl.class_id === p.classId && who.length === p.students.length && p.students.every(x => who.includes(x));
+      audit(u.id, 'companion.assign', p.classId, { kind: p.kind, item: p.itemId, students: p.students.length, due: !!p.due });
+      if (!landed) return { code: 'error', verify: { ok: false, landed: 0, notLanded: [{ code: 'other' }] } };
+      return { verify: { ok: true, landed: 1, notLanded: [] }, change: { kind: 'assign', classId: p.classId, className: p.className, title: p.title, students: p.students.length, due: cl.due_at || null, clId: cl.id }, undo: { kind: 'assign', clId: cl.id } };
+    },
+  });
+}
+/** Do it on an action's card (services/companion-actions/): checked again in a dry run with what the teacher typed on
+ *  the card (new students' names: sent with the tap, never to the AI, never kept in the chat), then done with the same
+ *  service as the page's route in the engine's transaction, read back, with Undo where the action has one. A tap that
+ *  would not work changes nothing and the card says why. */
+function actionAct(u, row, turn, a, value) {
+  const p = turn.note.action;
+  if (!p || p.state !== 'open') return { ok: false, code: 'notFound' };
+  if (a === 'actionNo') return markNote(u, row, turn.id, { ...turn.note, action: { ...p, state: 'declined' } });
+  if (!allow(`act-chat:${u.id}`, 120, 3600e3)) return { ok: false, code: 'slow' };
+  const tried = AC.tryAction(u, p, value);
+  if (tried.fail === 'needText') return { ok: false, code: 'needText' };
+  if (tried.fail) return markNote(u, row, turn.id, { ...turn.note, action: { ...p, state: 'failed', why: tried.fail, ...(tried.count ? { count: tried.count } : {}) } });
+  const finish = sent => C.addTurn(u, SURFACE, KEY, {
+    mark: { id: turn.id, fields: { note: { ...turn.note, action: { ...p, state: 'done' } } } }, text: '',
+    apply: () => {
+      const r = AC.runAction(u, p, value, sent);
+      audit(u.id, 'companion.action', (p.data && p.data.classId) || '', { action: p.action, ok: !r.code });
+      return r;
+    },
+  });
+  // An action that posts outside the site (Google Classroom): the call is made now, awaited, and only then is the change
+  // written and read back; a call that did not work leaves the card "Not done" and nothing is changed here.
+  if (AC.sends(p)) {
+    return AC.sendAction(u, p).then(s => (s.ok ? finish(s.sent) : markNote(u, row, turn.id, { ...turn.note, action: { ...p, state: 'failed', why: 'other' } })));
+  }
+  return finish();
+}
+/** Undo: the assignment comes off the class (lessons.js unassign; students' work is kept). */
+function undoAssign(u, data) {
+  const cl = q.get('SELECT removed_at FROM class_lessons WHERE id=?', String(data.clId || ''));
+  if (!cl || cl.removed_at) return { ok: true, skipped: 1 };
+  const r = LES.unassign(u, data.clId);
+  return r.ok ? { ok: true, skipped: 0 } : { ok: false, code: 'notFound' };
+}
 /** Create on the card: made now, as My classes' New class makes it, with Undo (delete while it has no students) and a
  *  Go there card for its dashboard. */
 function createAct(u, row, turn, a) {
@@ -782,9 +939,13 @@ function createAct(u, row, turn, a) {
     apply: () => {
       const r = S.createClass(u, p.schoolId, { name: p.name, grade: p.grade });
       if (!r.ok) return { code: r.code === 'className' ? 'error' : r.code };
-      audit(u.id, 'companion.class.create', r.class.id, { school: p.schoolId });
-      const t = navTarget(u, 'dashboard', r.class.id);
-      return { change: { kind: 'class', classId: r.class.id, name: r.class.name, grade: r.class.grade || '' }, undo: { kind: 'class', classId: r.class.id }, ...(t ? { note: { nav: { ...navNote(t, ''), open: true } } } : {}) };
+      // Checked work: the class read back as saved (in the school asked for, with this teacher on it) before the card
+      // says it was made; its name and grade on the card are the saved ones (the name filter may have changed them).
+      const back = S.getClass(r.class.id);
+      if (!back || back.school_id !== p.schoolId || !S.classesOf(u.id, 'teacher').some(x => x.id === back.id)) return { code: 'error' };
+      audit(u.id, 'companion.class.create', back.id, { school: p.schoolId });
+      const t = navTarget(u, 'dashboard', back.id);
+      return { verify: { ok: true, landed: 1, notLanded: [] }, change: { kind: 'class', classId: back.id, name: back.name, grade: back.grade || '' }, undo: { kind: 'class', classId: back.id }, ...(t ? { note: { nav: { ...navNote(t, ''), open: true } } } : {}) };
     },
   });
 }
@@ -802,8 +963,8 @@ export const PAGE_TOOLS = Object.freeze({
   'figures-sheet': { name: 'editWorksheet', description: 'Draft or change the Figures worksheet or test the teacher has open (this page only). Only for requests about this worksheet\'s questions, title, grade or units. The change is made at once and the teacher can Undo it. Its result is the worksheet read back after the change (landed, notLanded with why): report only what landed.', input_schema: { type: 'object', required: ['edits'], properties: {
     title: { type: 'string' }, grade: { type: 'string' }, units: { type: 'string', enum: FC.UNITS },
     edits: { type: 'array', items: { type: 'object', required: ['op'], properties: { op: { type: 'string', enum: ['add', 'replace', 'remove'] }, n: { type: 'integer' }, after: { type: ['integer', 'null'] }, item: { type: 'object' } } } } } } },
-  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed.', input_schema: { type: 'object', required: ['items'], properties: {
-    title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
+  manip: { name: 'changeBoard', description: 'Change the Manipulatives board the teacher has open (this page only): the WHOLE new board as a draft. Only for requests about this board. The page puts it on the board at once and the teacher can Undo it. Its result is the board read back as the page will show it: report only what landed. To clear the board ("clear it", "start over", "empty the board"), send clear: true and nothing else.', input_schema: { type: 'object', properties: {
+    clear: { type: 'boolean', description: 'true: take everything off the board (items, steps and title). Nothing else is needed.' }, title: { type: 'string' }, steps: { type: 'array', items: { type: 'string' } }, items: { type: 'array', items: { type: 'object' } } } } },
 });
 // The day plan (docs/decisions.md "Homeroom: the day plan"; services/homeroom-plan.js): on a class's Homeroom only.
 const PLAN_PICK = { type: 'object', description: 'What it hands out: ONE of gameId (a game id from getPageContext or searchGames), lessonId (one of the teacher\'s lessons) or make (a new lesson: { slug: "arithmetic-lab", op: add | subtract | multiply | divide, title } or { slug: "algebra-builder", mode: solve | multiply | factor, title }).', properties: { gameId: str('A game id.'), lessonId: str('A lesson id.'), make: { type: 'object' } } };
@@ -849,8 +1010,8 @@ const BOOK_TOOLS = () => [BK.bookTool(), { name: 'findMyBooks', description: 'Th
 
 const EXPLAIN = [
   'Oomba Academy is a kid-safe site with learning games, a Story Library of free picture books, ready-made lessons (CS Quest, Number Quest), classes with assignments and progress, Oomba Live (host a game for the whole class), classroom dashboards with widgets for the projector, Figures (printable worksheets and tests with drawn figures), Math Manipulatives, Mistake Hunt and the AI Builder that makes games and classroom activities from a lesson.',
-  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; hand off a build to the Builder, Figures or the Manipulatives with a brief; make a book with the book maker (cards for its choices, a check of what will be sent, then Make my book) and change the teacher\'s books, new or old, with Undo.',
-  'You cannot: see students\' names, answers or work; add students or make their accounts; assign, grade or message students; invite people; change school settings; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap. For these, call howTo and give its steps.',
+  'You (Oomba) can: find games, books and lessons; change the teacher\'s class dashboard after they tap Apply (with Undo); give a dashboard point to a student or the whole class when the teacher asks (with Undo); make a new class after the teacher taps Create (with Undo while it is empty); assign a game or a Story Library book to a class or some of its students, with a due day, after the teacher taps Assign (with Undo); open the teacher\'s own pages (Go there); give real steps with links for anything else (howTo); read a lesson plan they attach (text only) or a picture without people; search the web when it is on, with sources; make a Manipulatives board, a Figures worksheet or test and a lesson plan themselves (checked, with a card that opens it); find a lesson by its name in the teacher\'s own folders and the class\'s assignments; write a class progress report in counts; hand off a game build to the Builder with a brief; make a book with the book maker (cards for its choices, a check of what will be sent, then Make my book) and change the teacher\'s books, new or old, with Undo; and do other teacher actions with doAction, after the teacher taps Do it on its card (its description lists them), such as adding new students to a class with their login cards (the teacher types the names on the card, never in the chat), changing a due day, taking an assignment off a class or renaming a class.',
+  'You cannot: see students\' names, answers or work; grade or message students; invite people; change school settings; make a new kind of dashboard widget; change the dashboard\'s layout without the teacher\'s tap. For these, call howTo and give its steps.',
   'Privacy: students\' names are taken out of messages and uploads (each name becomes a placeholder like [student 1], so a point can go to the right student without the name ever reaching the AI); audio from the microphone is never kept; a school admin can turn Oomba or its web search off and set how long chats are kept.',
 ].join('\n');
 
@@ -888,7 +1049,7 @@ export function runTool(name, input, ctx) {
       return { result: r, step: { k: r.dashboard ? 'dash' : 'page', n: r.dashboard ? r.dashboard.widgets.length : 0, q: r.dashboard ? r.dashboard.name : '' } };
     }
     case 'searchGames': {
-      const list = searchGames(i);
+      const list = searchGames(i, u);
       for (const g of list) ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g });
       ctx.lastList = list.map(g => `game:${g.id}`);
       return { result: { games: list.map(({ gameId, ...g }) => g) }, step: { k: 'games', n: list.length, q: [i.grade ? `grade ${i.grade}` : '', i.topic || i.subject || '', i.standard || ''].filter(Boolean).join(' · ').slice(0, 60) } };
@@ -927,14 +1088,29 @@ export function runTool(name, input, ctx) {
       if (ctx.out.figures || ctx.out.pick || (ctx.out.points || []).length >= MAX_POINTS_PER_ANSWER) return { result: { error: 'Not in this answer: ask the teacher to send that point in a new message. Nothing was given.' }, step: { k: 'pointNo' } };
       const r = pointPlan(u, ctx, i);
       if (r.error) return { result: { error: r.error }, step: { k: 'pointNo' } };
+      // The owner's live audit: an empty class is said at once, before any choice card, with how to add students.
+      const pcid = r.give ? r.give.classId : r.pick && r.pick.classId;
+      if (pcid && !D.studentsOf(S.getClass(pcid)).length) {
+        const pc0 = S.getClass(pcid), help = H.howTo(u, 'add-students', { page: { type: 'class', classId: pcid }, lang: ctx.lang });
+        for (const l of help.links || []) ctx.links.add(l);
+        lead(ctx, t('js.companion.pts.empty', { name: cleanText(u, pc0.name, ctx.names) }), 'empty');
+        return { result: { given: 0, error: 'The class has no students yet, so no point can be given. The app already said so first; add the steps to add students as a numbered list, links kept.', steps: (help.steps || []).map((x, k) => `${k + 1}. ${x}`) }, step: { k: 'pointEmpty' } };
+      }
+      // N points: the dashboard gives one point at a time, said first in the app's words (never 10 silently made 1).
+      if (Number(i.count) > 1) lead(ctx, t('js.companion.pts.oneAtATime', { count: Math.min(999, Math.round(Number(i.count))) }), 'count');
       if (r.pick) {
         ctx.out.pick = r.pick;
         return { result: { waitingForTeacher: true, choose: pickNeeds(r.pick), note: 'The teacher picks on the card in the chat. Nothing is given until they tap. Say so in a few words, never a name or a placeholder.' }, step: { k: 'pointPick' } };
       }
       if (!allow(`dash-points:${u.id}`, POINTS_PER_HOUR, 3600e3)) return { result: { error: 'Too many points this hour. Nothing was given.' }, step: { k: 'pointNo' } };
+      // Checked before the AI answers (verify-change.js): the award written in a dry run and read back. A point that
+      // could not be given now is never reported as given; the real award is written with the answer and counted again.
+      const pc = S.getClass(r.give.classId);
+      const dry = VC.dryRun(() => (mayPoint(u, pc) ? D.pointsAction(u, pc, { action: 'award', user: r.give.user || 'class', reason: r.give.reason }) : { error: 'notAllowed' }));
+      if (!dry || dry.error || !dry.award) return { result: { landed: [], notLanded: [{ why: dry && dry.error === 'nobody' ? 'the class has no students yet' : 'the class or student is not there for points' }], note: `Nothing was given. ${VC.NOTE}` }, step: { k: 'pointNo' } };
       (ctx.out.points ||= []).push(r.give);
-      const note = r.give.user === 'class' ? 'The whole class gets one point, given when you answer.' : 'One student (not the whole class) gets the point, given when you answer: speak of one student, not of everyone.';
-      return { result: { done: true, to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason, note: `${note} The card in the chat shows who got it, with Undo. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
+      const note = r.give.user === 'class' ? 'The whole class gets one point (checked: it can be given), saved with your answer.' : 'One student (not the whole class) gets the point (checked: it can be given), saved with your answer: speak of one student, not of everyone.';
+      return { result: { landed: [{ to: r.give.user === 'class' ? 'the whole class' : 'one student', reason: r.give.reason }], notLanded: [], note: `${note} The card in the chat shows who got it, with Undo; if it did not land after all, the app says so under your answer. In your answer, never write a name or a placeholder like [student 1].` }, step: { k: 'point', n: ctx.out.points.length } };
     }
     case 'findMyPages': {
       const kinds = i.kind && NAV_TYPES.includes(i.kind) ? [i.kind] : ['dashboard', 'figures-sheet', 'manip', ...(SB.canMake(u) ? ['book'] : [])];
@@ -969,7 +1145,25 @@ export function runTool(name, input, ctx) {
       const r = H.howTo(u, String(i.task || ''), { page: ctx.page, lang: ctx.lang });
       if (r.error) return { result: { error: r.error }, step: { k: 'howNo' } };
       for (const l of r.links) ctx.links.add(l);
-      return { result: { title: r.title, steps: r.steps.map((x, k) => `${k + 1}. ${x}`), ...(r.go ? { go: r.go, note: 'One page covers it: you may also call proposeNavigation with this pageType and id.' } : {}), ...(r.action === 'createClass' && !r.noSchool && !r.denied ? { note: 'You can make the class yourself with createClass.' } : {}) }, step: { k: 'howto' } };
+      return { result: { title: r.title, steps: r.steps.map((x, k) => `${k + 1}. ${x}`), ...(r.go ? { go: r.go, note: 'One page covers it: you may also call proposeNavigation with this pageType and id.' } : {}), ...(r.action === 'createClass' && !r.noSchool && !r.denied ? { note: 'You can make the class yourself with createClass.' } : {}), ...(r.action === 'assign' ? { note: 'You can assign it yourself: find the game or book (searchGames, searchBooks), then call assign; the teacher taps Assign on the card. Offer that first, and give these steps only if they want to do it by hand.' } : {}), ...(r.action && AC.actionIds().includes(r.action) ? { note: `You can do this yourself with doAction ${r.action}${r.action === 'addStudents' ? ' (the teacher types the names on the card, never in the chat)' : ''}: the teacher taps Do it on the card. Offer that first, and give these steps only if they want to do it by hand.` } : {}) }, step: { k: 'howto' } };
+    }
+    case 'assign': {
+      if (ctx.out.assign || ctx.out.ask) return { result: { error: 'One assignment per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'assignNo' } };
+      const r = assignPlan(u, ctx, i);
+      if (r.error) return { result: { error: r.error }, step: { k: 'assignNo' } };
+      if (r.ask) { ctx.out.ask = r.ask; return { result: { askedWhich: true, note: 'The teacher picks the class on the card. Ask in one short sentence; nothing is assigned yet.' }, step: { k: 'which' } }; }
+      ctx.out.assign = r.plan;
+      return { result: { waitingForTeacher: true, checked: true, title: r.plan.title, className: r.plan.className, students: r.plan.students.length ? `${r.plan.students.length} students` : 'the whole class', due: r.plan.due || null, note: 'Checked: this can be assigned. Nothing is assigned yet: the teacher sees Assign and Not now on a card. Say so in one short sentence, never that it is assigned.' }, step: { k: 'assign', q: clip(r.plan.title, 40) } };
+    }
+    // Oomba does it (services/companion-actions/): checked like the page's own route and in a dry run; a card, and
+    // nothing changes until the teacher taps Do it. One action per answer.
+    case 'doAction': {
+      if (ctx.out.action || ctx.out.ask) return { result: { error: 'One action per answer: ask the teacher to send the next one in a new message. Nothing was changed.' }, step: { k: 'actionNo' } };
+      const r = AC.planAction(u, ctx, i.action, i.params);
+      if (r.error) return { result: { error: r.error }, step: { k: 'actionNo' } };
+      if (r.ask) { ctx.out.ask = r.ask; return { result: { askedWhich: true, note: 'The teacher picks the class on the card. Ask in one short sentence; nothing is done yet.' }, step: { k: 'which' } }; }
+      ctx.out.action = r.plan;
+      return { result: { waitingForTeacher: true, checked: true, action: r.plan.action, what: r.ai, note: 'Checked: this can be done. Nothing is done yet: the teacher taps Do it on the card. Say so in one short sentence, never that it is done.' }, step: { k: 'action', q: r.plan.action } };
     }
     case 'createClass': {
       const r = classPlan(u, ctx, i);
@@ -990,38 +1184,47 @@ export function runTool(name, input, ctx) {
       // changes, read back as the page shows it, and THAT is the result; the real write comes with the reply.
       const prev = ctx.out.figures && ctx.out.figures.sheetId === w.id ? ctx.out.figures : null;
       const calls = prev ? prev.calls + 1 : 1;
+      const gate = formatGate(ctx);
+      if (gate.out) return gate.out;
       const r = VC.dryRun(() => {
         if (prev) FC.applyPlan(u, w, prev.plan, { first: prev.first });
         const items = F.itemsOf(w.id), before = FC.readBack(u, w);
         let plan;
-        try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, items); } catch { return { empty: true }; }
+        try { plan = FC.readAnswer({ reply: 'ok', ...i }, w, items, { facts: gate.facts }); } catch { return { empty: true }; }
         if (!plan.ops.length && !plan.title && !plan.grade && !plan.units) return { plan, v: FC.verifyPlan(plan, null, before, before), back: before };
-        const a = FC.applyPlan(u, w, plan, { first: false });
+        let a = FC.applyPlan(u, w, plan, { first: false });
+        // The title follows the number lines' range when it names one (the owner's audit: "Number Line 0 to 10" stayed).
+        const nt = plan.title ? '' : FC.retitle(F.ownWorksheet(u, w.id).title, F.itemsOf(w.id));
+        if (nt) { plan.title = nt; const a2 = FC.applyPlan(u, w, { ops: [], title: nt, grade: '', units: '' }, { first: false }); if (a2.change) a = { ...a, change: { ...(a.change || {}), title: nt } }; }
         const back = FC.readBack(u, w);
         return { plan, v: FC.verifyPlan(plan, a, before, back), back };
       });
       if (r.empty) return { result: { error: 'Nothing to change: give edits.' }, step: { k: 'editNo' } };
+      sayAll(ctx, r.v);
       const first = prev ? prev.first : F.itemsOf(w.id).length === 0;
       const merged = prev ? mergePlans(prev.plan, r.plan) : r.plan;
       if (r.v.nothing) {
         // Kept for the card (what did not land, and why); nothing new is written.
         ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told: prev ? prev.told : { landed: [] } };
-        return { result: { ...FC.verifyResult(r.v, r.back), note: `Nothing on the worksheet changed. ${VC.NOTE} You may call editWorksheet again now with data that can be drawn.` }, step: { k: 'editNo' } };
+        return { result: { ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `Nothing on the worksheet changed. ${VC.NOTE} Say each reason under tellTeacher in one line, and offer what can be drawn (or call editWorksheet again now with data that can be drawn). Never put another question in its place.` }, step: { k: 'editNo' } };
       }
       // What the AI is told landed for the whole answer (every call so far), to compare with the real write.
       const told = VC.dryRun(() => { const before = FC.readBack(u, w); const a = FC.applyPlan(u, w, merged, { first }); return FC.verifyPlan(merged, a, before, FC.readBack(u, w)); });
       ctx.out.figures = { sheetId: w.id, plan: merged, first, calls, told };
-      return { result: { ...FC.verifyResult(r.v, r.back), note: `${VC.NOTE} It is saved with your answer; the teacher can Undo it.` }, step: { k: 'edit', n: r.v.landed.length } };
+      return { result: { ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} It is saved with your answer; the teacher can Undo it.` }, step: { k: 'edit', n: r.v.landed.length } };
     }
     case 'changeBoard': {
       const b = ctx.page.type === 'manip' ? ctx.page.board : null;
       if (!b) return { result: { error: 'There is no board open on this page.' }, step: { k: 'boardNo' } };
-      const r = MC.buildChange(i, b.tool);
+      // "Clear the board": an empty draft is the tool's start board (manip-chat.js readAnswer).
+      const clearing = i.clear === true;
+      const r = MC.buildChange(clearing ? { title: '', steps: [], items: [] } : i, b.tool);
       if (!r.change) {
         ctx.out.manipMiss = true;
         return { result: { applied: false, landed: [], notLanded: [{ why: 'none of the items could be built with this tool\'s settings' }], note: `Nothing on the board changed. ${VC.NOTE}` }, step: { k: 'boardNo' } };
       }
-      ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change };
+      ctx.out.manip = { tool: b.tool, boardId: ctx.page.boardId || null, ...r.change, ...(clearing ? { cleared: true } : {}) };
+      if (clearing) return { result: { applied: true, landed: { cleared: true, board: MC.readBack(b.tool, r.change) }, notLanded: [], note: `The board is cleared when your answer arrives (everything taken off); the teacher can Undo it. Say it is cleared. ${VC.NOTE}` }, step: { k: 'board', n: 0 } };
       // Checked work: the board as the page will show it, built and read back here (the page puts this exact board on).
       const notLanded = [...(r.change.dropped ? [{ items: r.change.dropped, why: r.change.capped ? `at most ${MC.PRACTICE_MAX} items, and items that failed this tool's checks were left out` : 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [])];
       return { result: { applied: true, landed: { board: MC.readBack(b.tool, r.change), items: r.change.n, steps: r.change.steps }, notLanded, note: `${VC.NOTE} The page puts this board on when your answer arrives; the teacher can Undo it.` }, step: { k: 'board', n: r.change.n } };
@@ -1074,18 +1277,25 @@ export function runTool(name, input, ctx) {
         ctx.out.bookDelete = { id: uid(10), bookId: w.row.id, title: cleanText(u, w.row.title, ctx.names) || tFor(ctx.lang)('storybook.untitled'), state: 'open' };
         return { result: { waitingForTeacher: true, book: ctx.out.bookDelete.title, note: 'Nothing is deleted yet: the teacher sees Delete and Keep on a card. Say so in one short sentence.' }, step: { k: 'bookDelAsk', q: clip(ctx.out.bookDelete.title, 40) } };
       }
-      const r = BK.runOp(u, op, w.row.id, { title, lang: ctx.lang, all: i.all === true });
+      // Checked work (verify-change.js): run in a dry run and read back for the AI; the real change is made with the
+      // answer, in the engine's transaction, and read back again (laterRun below).
+      const args = { title, lang: ctx.lang, all: i.all === true }, bookId = w.row.id;
+      const r = VC.dryRun(() => BK.runOp(u, op, bookId, args));
       if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
-      ctx.out.bookOp = true; ctx.out.bookRef = r.ref;
-      return { result: r.result, step: { k: `book_${op}`, q: clip(cleanText(u, w.row.title, ctx.names), 40) } };
+      ctx.out.bookOp = true; ctx.out.bookRef = op === 'duplicate' ? null : r.ref;
+      ctx.out.later = { told: r.result, run: () => BK.runOp(u, op, bookId, args), ref: true };
+      return { result: { ...r.result, note: `${r.result.note ? `${r.result.note} ` : ''}Checked: this is what the change makes; it is saved with your answer.` }, step: { k: `book_${op}`, q: clip(cleanText(u, w.row.title, ctx.names), 40) } };
     }
     case 'redrawPicture': {
       if (!SB.canMake(u)) return { result: { error: 'Books are made by teachers only.' }, step: { k: 'bookNo' } };
       const id = i.bookId ? String(i.bookId) : ctx.page.type === 'book' ? ctx.page.bookId : '';
-      const r = BK.redrawPage(u, id, i.page, clip(cleanText(u, String(i.note || ''), ctx.names), 200));
+      const rn = clip(cleanText(u, String(i.note || ''), ctx.names), 200);
+      if (ctx.out.later) return { result: { error: 'One change of this kind per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'bookNo' } };
+      const r = VC.dryRun(() => BK.redrawPage(u, id, i.page, rn));
       if (r.error) return { result: { error: r.error }, step: { k: 'bookNo' } };
       ctx.out.bookRef = id;
-      return { result: { done: true, note: 'The picture is being painted again; the book page shows it when it is ready.' }, step: { k: 'redraw', n: Number(i.page) || 0 } };
+      ctx.out.later = { told: r, run: () => BK.redrawPage(u, id, i.page, rn) };
+      return { result: { ...r, note: 'Queued, not painted yet: the picture goes in the painting queue with your answer and the book page shows it when it is ready. Say it is being painted, never that it is done.' }, step: { k: 'redraw', n: Number(i.page) || 0 } };
     }
     // ---------------------------------------------------------------- the day plan (services/homeroom-plan.js)
     case 'draftDayPlan': case 'useSavedPlan': {
@@ -1131,12 +1341,146 @@ export function runTool(name, input, ctx) {
     case 'writeSimplerWording': {
       const c = ctx.page.type === 'homeroom' ? S.getClass(ctx.page.classId) : null;
       if (!c || !HR.canUseClass(u, c)) return { result: { error: 'Simpler wording is written on a class\'s Hub.' }, step: { k: 'simplerNo' } };
-      const r = SUP.setSimple(u, c, String(i.handoutId || ''), cleanText(u, String(i.text || '').slice(0, SUP.SIMPLE_MAX), ctx.names), { by: 'oomba' });
+      if (ctx.out.later) return { result: { error: 'One change of this kind per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'simplerNo' } };
+      const hid = String(i.handoutId || ''), words = cleanText(u, String(i.text || '').slice(0, SUP.SIMPLE_MAX), ctx.names);
+      // Checked work: written in a dry run and read back; saved for real with the answer (laterRun) and read back again.
+      const r = VC.dryRun(() => SUP.setSimple(u, c, hid, words, { by: 'oomba' }));
       if (!r.ok) return { result: { error: r.code === 'notFound' ? 'No handout of this class has that id.' : 'That wording could not be saved.' }, step: { k: 'simplerNo' } };
-      return { result: { saved: true, text: r.text, note: 'Students with Simpler wording see this on their desk and over the game. Say so in one sentence.' }, step: { k: 'simpler' } };
+      ctx.out.later = { told: { text: r.text }, run: () => { const x = SUP.setSimple(u, S.getClass(c.id), hid, words, { by: 'oomba' }); return x.ok ? { result: { text: x.text } } : { error: x.code }; }, wrap: true };
+      return { result: { landed: [{ text: r.text }], note: 'Checked: this is the wording as it will be saved, with your answer. Students with Simpler wording see this on their desk and over the game. Say so in one sentence.' }, step: { k: 'simpler' } };
     }
+    // ---------------------------------------------------------------- made in the chat (companion-make.js)
+    case 'findLesson': return findLessonTool(i, ctx);
+    case 'classProgress': return reportTool(i, ctx);
+    case 'figuresKinds': {
+      if (!F.canMake(u)) return { result: { error: 'Figures is not available for this account.' }, step: { k: 'sheetNo' } };
+      const want = F.topicKinds(`${i.topic || ''}`), g = gradeNum(i.grade);
+      const cat = F.figureCatalog().filter(k => (want.length ? want.includes(k.id) : k.subject === 'math') && (g === null || true)).slice(0, 8);
+      const gens = F.genCatalog({ grade: g === null ? '' : gradeLabel(g) }).filter(x => cat.some(k => k.id === x.kind)).slice(0, 12);
+      return { result: { kinds: cat.map(F.catalogLine), generators: gens.map(x => `- ${x.id} (figure ${x.kind}; grades ${x.grades.join(', ')}; ${x.type} answer): ${x.question}`), otherKinds: F.figureCatalog().map(k => k.id).filter(id => !cat.some(k => k.id === id)).slice(0, 60), note: 'A question where students plot a point on a number line: {"plot": {"from", "to", "step", "at", "label"}, "question"} (printed: the student draws the point; the answer key shows it; not checked online).' }, step: { k: 'kinds', n: cat.length } };
+    }
+    case 'makeBoard': {
+      if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'boardNo' } };
+      const r = CM.boardPlan(u, i);
+      if (r.error) { ctx.out.manipMiss = true; return { result: { made: false, error: r.error, ...(r.help ? { thisTool: r.help } : {}) }, step: { k: 'boardNo' } }; }
+      // Checked work: saved in a dry run and read back; saved for real with the answer and read back again.
+      const dry = VC.dryRun(() => CM.saveBoard(u, r.plan));
+      if (!dry || !dry.ok) return { result: { made: false, error: 'The board could not be saved. Nothing was made.' }, step: { k: 'boardNo' } };
+      ctx.out.made = { kind: 'board', plan: r.plan };
+      return { result: { made: true, title: r.plan.title, landed: { board: r.back, items: r.plan.n }, notLanded: r.plan.dropped ? [{ items: r.plan.dropped, why: 'they failed this tool\'s checks (a setting it does not have, a number out of range, or a repeat)' }] : [], note: `${VC.NOTE} The board is saved in the teacher's My boards with your answer, and the card under it opens it. Say in one or two sentences what is on it, from landed.` }, step: { k: 'boardMade', n: r.plan.n } };
+    }
+    case 'makeWorksheet': {
+      if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'sheetNo' } };
+      const gate = formatGate(ctx);
+      if (gate.out) return gate.out;
+      const r = CM.sheetPlan(u, i, { lang: ctx.lang, facts: gate.facts });
+      if (r.error) return { result: { made: false, error: r.error }, step: { k: 'sheetNo' } };
+      sayAll(ctx, r.v);
+      if (r.v.nothing) return { result: { made: false, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: 'Nothing was made: none of the questions can be put on a worksheet as sent. Say each reason under tellTeacher in one line and offer what can be drawn, or call makeWorksheet again now with questions that can be drawn.' }, step: { k: 'sheetNo' } };
+      ctx.out.made = { kind: 'sheet', plan: r.plan, told: r.v };
+      return { result: { made: true, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} The worksheet is made with your answer and the card under it opens it. Say what is on it from landed, and each reason under tellTeacher in one line.` }, step: { k: 'sheetMade', n: r.v.landed.filter(x => x.now).length } };
+    }
+    case 'makeLesson': return lessonTool(i, ctx);
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };
   }
+}
+/** A line the app says itself, before Oomba's words (an empty class, one point at a time, a game turned off): once
+ *  per kind in an answer. */
+function lead(ctx, text, kind) { (ctx.out.lead ||= []); if (!ctx.out.lead.some(x => x.kind === kind)) ctx.out.lead.push({ kind, text }); }
+/** The teacher's words this answer goes by: the message, the file attached to it, and the request a format question
+ *  answered (companion-make.js formatAnswer). */
+const fileText = ctx => { const f = ctx.meta && ctx.meta.file ? ctx.files.find(x => x.id === ctx.meta.file.id && x.kind === 'doc') : null; return f ? String(f.text || '').slice(0, 4000) : ''; };
+/** Plotted points and column addition first ask the teacher (before anything is built). -> { facts } | { out } */
+function formatGate(ctx) {
+  const fa = CM.formatAnswer(ctx.history || []);
+  const words = [ctx.text, fileText(ctx), fa ? fa.request : ''].join(' ');
+  const facts = CM.requestFacts(words);
+  const need = facts.plot ? 'plot' : facts.format === 'columns' ? 'columns' : null;
+  if (need && !(fa && fa.kind === need)) {
+    if (ctx.out.ask) return { out: { result: { error: 'Ask one thing at a time.' }, step: { k: 'askNo' } } };
+    ctx.out.ask = CM.formatAsk(need, ctx.lang, ctx.text);
+    return { out: { result: { made: false, askedFirst: true, question: ctx.out.ask.question, note: 'Nothing is made yet. Figures has no such format: the card asks the teacher what to make instead (the closest option first). Say the limit in one short sentence; do not repeat the options.' }, step: { k: 'which' } } };
+  }
+  if (fa && fa.chosen === (fa.kind === 'plot' ? 2 : 1)) return { out: { result: { error: 'The teacher chose Not now: make nothing and say so in a few words.' }, step: { k: 'sheetNo' } } };
+  return { facts: { ...facts, plotPrint: !!(fa && fa.kind === 'plot' && fa.chosen === 0) } };
+}
+/** The reasons questions were not put on, in one plain line each (js.companion.why.*), for the AI and the guard. */
+function tellOf(v, lang) {
+  const t = tFor(lang);
+  const lines = (v.notLanded || []).filter(x => x.say).map(x => t(`js.companion.why.${x.say.key}`, x.say));
+  return lines.length ? { tellTeacher: [...new Set(lines)] } : {};
+}
+function sayAll(ctx, v) {
+  for (const x of v.notLanded || []) if (x.say) (ctx.out.says ||= []).push({ ...x.say, text: tFor(ctx.lang)(`js.companion.why.${x.say.key}`, x.say) });
+}
+/** findLesson: the teacher's folders, the class's assigned lessons, the catalog (turned-off games named as such, with
+ *  the closest open lesson of the same topic), Grammar Lab for a teacher it lets in. */
+function findLessonTool(i, ctx) {
+  const u = ctx.user, t = tFor(ctx.lang);
+  const name0 = clip(cleanText(u, String(i.name || ''), ctx.names), 120).replace(/\s+/g, ' ').trim();
+  if (name0.length < 3) return { result: { error: 'Give the lesson\'s name.' }, step: { k: 'findNo' } };
+  const cls = CM.classOf(u, ctx.page, String(i.classRef || ''));
+  const f = CM.findByName(u, name0, { classId: cls.c ? cls.c.id : ctx.page.classId || null, names: ctx.names });
+  const want = fold(name0);
+  const catalog = searchGames({ topic: name0 }).filter(g => fold(g.title) === want || fold(g.title).includes(want) || want.includes(fold(g.title)));
+  for (const g of catalog) ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g });
+  const off = [...f.mine.filter(x => x.turnedOff), ...f.hidden];
+  const closest = [];
+  for (const x of off) {
+    lead(ctx, CM.hiddenLine(t, x), `off:${x.id}`);
+    (ctx.out.offTitles ||= []).push(x.title);
+    for (const c of CM.closestOpen(x.id)) { const g = searchGames({}).find(y => y.id === c.id) || null; if (g) { ctx.seen.set(`game:${g.id}`, { kind: 'game', ...g }); closest.push({ id: g.id, title: g.title, sameTopic: c.shared }); } }
+  }
+  for (const gl of f.grammarLab) ctx.seen.set(`gl:${glId(gl)}`, gl);
+  const found = catalog.length + f.mine.length + f.assigned.length + f.hidden.length + f.grammarLab.length;
+  if (found) ctx.out.found = true;
+  const note = off.length
+    ? `${off.map(x => x.title).join(', ')}: turned off on Oomba right now, so students cannot play it (the app says so first, in its own words; never say it does not exist). ${closest.length ? 'Offer the closest open lesson of the same topic as a card ([[game:<id>]]).' : 'No open lesson on Oomba shares its topic: say so, and offer to make a Figures worksheet or a Manipulatives board for it.'}`
+    : found ? 'Show what fits. To assign a Grammar Lab unit or topic, call assign with kind "grammar" and its id.' : 'Not found anywhere the teacher can reach. Say so plainly and offer to look for the topic instead, or to build a lesson if they want one (build only when they ask).';
+  return { result: { yourFolders: f.mine.map(({ id, ...x }) => x), assignedToClass: f.assigned, catalog: catalog.map(({ gameId, ...g }) => g), turnedOff: off.map(x => ({ title: x.title, ...(x.folder ? { folder: x.folder } : {}) })), closestOpen: closest, ...(CM.mayGrammar(u) ? { grammarLab: f.grammarLab.map(x => ({ id: glId(x), what: x.what, title: x.title, band: x.band })) } : {}), note }, step: { k: 'find', n: found, q: clip(name0, 40) } };
+}
+const glId = x => `${x.what}:${x.unit}:${x.band}${x.topic ? `:${x.topic}` : ''}`;
+/** classProgress: counts only, students as placeholders the page names (note.who), never supports. */
+function reportTool(i, ctx) {
+  const u = ctx.user, t = tFor(ctx.lang);
+  const r = CM.classOf(u, ctx.page, String(i.classRef || ''));
+  if (r.none) return { result: { error: 'The teacher has no class of their own yet.' }, step: { k: 'reportNo' } };
+  if (r.ask) {
+    if (ctx.out.ask) return { result: { error: 'Ask one thing at a time.' }, step: { k: 'reportNo' } };
+    ctx.out.ask = { id: uid(10), question: t('js.companion.rep.which'), options: r.ask.slice(0, 5).map(c => ({ label: cleanText(u, c.name, ctx.names) })), state: 'open' };
+    return { result: { askedWhich: true, note: 'The teacher picks the class on the card. Ask in one short sentence.' }, step: { k: 'which' } };
+  }
+  const c = r.c, rep = CM.classReport(u, c, { lang: ctx.lang, names: ctx.names });
+  if (!rep.students) {
+    const help = H.howTo(u, 'add-students', { page: { type: 'class', classId: c.id }, lang: ctx.lang });
+    for (const l of help.links || []) ctx.links.add(l);
+    lead(ctx, t('js.companion.rep.empty', { name: cleanText(u, c.name, ctx.names) }), 'empty');
+    return { result: { students: 0, note: 'The class has no students yet, so there is no progress to report. The app already said so first; give the steps to add students as a numbered list, links kept.', steps: (help.steps || []).map((x, k) => `${k + 1}. ${x}`) }, step: { k: 'report', n: 0 } };
+  }
+  const { who, ...shown } = rep;
+  if (Object.keys(who).length) ctx.out.who = { ...(ctx.out.who || {}), ...who };
+  return { result: { ...shown, note: 'Counts only. Write "Student A" and so on exactly as given (the page shows the teacher the names). No ranking, no comparing; a short summary and one or two next steps.' }, step: { k: 'report', n: rep.students } };
+}
+/** makeLesson: the library's Draft with AI (services/lesson-draft.js), checked in a dry run and saved with the answer.
+ *  The topic must be in the teacher's own words (never guessed from the chat), and only when they asked to build. */
+async function lessonTool(i, ctx) {
+  const u = ctx.user;
+  if (ctx.out.made) return { result: { error: 'One thing made per answer: ask the teacher to send the next one in a new message.' }, step: { k: 'lessonNo' } };
+  const topic = clip(cleanText(u, String(i.topic || ''), ctx.names), 120).replace(/\s+/g, ' ').trim();
+  const words = `${ctx.text} ${fileText(ctx)}`;
+  if (!topic || !CM.topicInWords(topic, words)) return { result: { error: 'The topic is not in the teacher\'s message. Ask them in one short question which topic and grade the lesson is for. Never guess a topic from earlier messages. Nothing was made.' }, step: { k: 'lessonAsk' } };
+  if (!CM.asksToBuild(words)) return { result: { error: 'The teacher asked to find a lesson, not to build one. Say what you found (or that it is not there) and offer to build one. Nothing was made.' }, step: { k: 'lessonNo' } };
+  const pc = ctx.page.classId ? S.getClass(ctx.page.classId) : null;
+  const schools = S.schoolsOf(u.id).filter(x => x.role === 'admin' || x.role === 'teacher');
+  const school = (pc && schools.find(x => x.id === pc.school_id)) || schools[0];
+  if (!school) return { result: { error: 'The teacher has no school on Oomba, so a lesson cannot be saved. Nothing was made.' }, step: { k: 'lessonNo' } };
+  const args = { topic, grade: gradeNum(i.grade) === null ? '' : gradeLabel(gradeNum(i.grade)), subject: clip(String(i.subject || ''), 40), minutes: Number(i.minutes) || 40 };
+  let d;
+  try { d = await LD.draft(u, school.id, { ...args, locale: ctx.lang, t: tFor(ctx.lang) }); } catch { return { result: { error: 'The lesson could not be drafted right now. Nothing was made.' }, step: { k: 'lessonNo' } }; }
+  const dry = VC.dryRun(() => LD.save(u, school.id, d, { ...args, lang: ctx.lang }));
+  if (!dry || !dry.ok) return { result: { error: 'The lesson could not be saved. Nothing was made.' }, step: { k: 'lessonNo' } };
+  ctx.out.made = { kind: 'lesson', schoolId: school.id, d, args };
+  return { result: { made: true, title: cleanText(u, d.draft.title || topic, ctx.names), steps: (d.draft.steps || []).map(s => ({ kind: s.kind, title: cleanText(u, s.title || '', ctx.names), minutes: s.minutes || null })), saved: dry.saved, planned: dry.planned, note: 'Checked: this lesson plan is saved in the teacher\'s lessons with your answer; the card opens it. Say what it covers in one or two sentences.' }, step: { k: 'lessonMade', n: dry.saved } };
 }
 /** Which of the teacher's own books a rename, duplicate, delete or paint-again means: bookId (checked: their own), the
  *  book of the page they are on, or their words (findMyBooks' matching). Several that fit: a choice card of their titles
@@ -1198,12 +1542,17 @@ function system(u, lang, page, settings) {
     // docs/decisions.md "Teachers say lessons": the words teachers see everywhere else on their pages.
     'Words: with teachers, call a single playable thing on Oomba (an Oomba game, a game the teacher built, a live class game, a handout) a "lesson", and a lesson with several steps (read, play, build steps) or a Hub lesson made in the lesson builder a "lesson plan". Call the class page where a teacher runs class (the "homeroom" page type) "the Hub", or "Hub" where a label is short (its tab, Everyone to the Hub); it used to be called Homeroom, so never say Homeroom to the teacher. Never say "game" for these to the teacher; tools and markers keep their own names ([[game:<id>]], searchGames). A game a student built is still a game.',
     'Students\' names are never sent to you: a placeholder like "[student 1]" stands where one was (the same number is the same student in this chat; a plain "[student]" is someone Oomba cannot give points to). Never ask for, guess or repeat a student\'s name, and never ask for students\' work, answers or photos of people.',
-    'Points: when the teacher asks to give a point to a student or the whole class, call givePoint (target "class" or the placeholder exactly as written, and the reason). The card in the chat shows who got it, with Undo, or a short choice when something is unclear. In your answer say it briefly ("Done!" or "Pick on the card"), never the placeholder. If the teacher named someone who is not a placeholder, that person is not one of their students: say so calmly and give nothing.',
-    'Use your tools before you answer: getPageContext to see where the teacher is, the search tools to find real things on Oomba. Only recommend games, books and lessons your tools returned. Mention one as a card by writing its marker on its own line: [[game:<id>]], [[book:<id>]], [[lesson:<id>]] or [[gen:<id>]]. At most four cards. Say why the best one fits (grade, standard, minutes).',
+    'Points: when the teacher asks to give a point to a student or the whole class, call givePoint (target "class" or the placeholder exactly as written, and the reason). The card in the chat shows who got it, with Undo, or a short choice when something is unclear. In your answer say it briefly ("Done!" only when the result shows it landed, or "Pick on the card"), never the placeholder. If the teacher named someone who is not a placeholder, that person is not one of their students: say so calmly and give nothing. The dashboard gives one point at a time: when the teacher asks for several, pass count (the app says so first). A class with no students gets no point: givePoint says so at once.',
+    'The page the teacher has open is in "The page now" below (getPageContext gives the same, and on a worksheet, board or Hub a little more). Use the search tools to find real things on Oomba. Only recommend games, books and lessons your tools returned. Mention one as a card by writing its marker on its own line: [[game:<id>]], [[book:<id>]], [[lesson:<id>]] or [[gen:<id>]]. At most four cards. Say why the best one fits (grade, standard, minutes).',
     'Changes: you never change the dashboard\'s layout yourself. For the dashboard call proposeDashboardChange; the teacher sees a card and taps Apply. Prefer changing a widget already on the layout (for example the timer\'s minutes) over adding a second one. There is no way to build a new kind of widget: if nothing fits, suggest existing widgets or a combination of them (a checklist, the scoreboard, a text widget...).',
-    'Builds: for a new game or classroom activity, a printable worksheet or a manipulatives board, call startBuild with a short brief; the teacher opens it and presses the final button. Offer an existing game first when one fits.',
+    'Make it yourself, then report what is checked: a Manipulatives board with makeBoard; a Figures worksheet or test with makeWorksheet (figuresKinds first; from an attached lesson plan, read it and put its own problems in the items, in one step); a lesson plan with makeLesson. Each is made with your answer and its card opens it. Only a game or classroom activity in the Builder is a hand-off (startBuild): say "I drafted a brief for <title>. Press Open the Builder to build it." Never write that something is made, set up, ready, replaced or done unless a tool result of this answer shows made: true or landed. Offer an existing lesson first when one fits.',
+    'Formats: Figures draws one figure per question and checks a number or a multiple-choice answer. It cannot check a point students plot online, and has no column addition or regrouping box. The app asks the teacher first when a request needs one (makeWorksheet says askedFirst); say the limit in one short sentence before anything is built. A figure that cannot be drawn (sides that make no triangle, a point past the end of the line) is never swapped for another question: say its one-line reason (tellTeacher) and offer one that can be drawn.',
+    'Finding and building are separate: when the teacher names a lesson ("assign Sum Racer"), call findLesson before anything else; never say a lesson is not on Oomba before it. A lesson that is turned off right now is named as turned off, with the closest open lesson of the same topic. Build only when the teacher asks to build; never make a lesson with the name of one you could not find.',
+    'Missing details: "build a lesson" with no topic, "assign it" with no clear lesson: ask in one short question in plain words (topic and grade; which lesson). Never guess from earlier messages, and offer only lessons a tool of this answer returned.',
+    'Progress: for how a class is doing or a progress report, call classProgress (counts only; students are placeholders like "Student A" the page names). A class with no students: say so and how to add them.',
     'Web search, when you have it: only for teaching questions Oomba\'s own tools cannot answer (methods, background facts). Short plain queries, never anything personal, never a person, a school or a town. Say the answer in your own words; the app shows the sources. Never write links or site names in your answer.',
     `Pages and limits: the teacher is on a "${page.type}" page. You may use at most ${settings.steps} tool steps for one answer.`,
+    ...(page.now ? [`The page now: ${page.now}`] : []),
     'Never pretend: if you could not find something on Oomba, say so.',
     VC.RULE,
     'Another page: when a request needs a page the teacher is not on (their class dashboard, a class, a Figures worksheet, a Manipulatives board), call proposeNavigation (findMyPages first when you need ids). Never tell the teacher to open it and ask again: the app opens it when they tap Go there and carries the request.',
@@ -1214,7 +1563,7 @@ function system(u, lang, page, settings) {
       'To rename a book call renameBook, to copy one duplicateBook, to paint again every picture that did not get painted repaintBook (all: true for every picture of the book), and to delete one deleteBook (it only shows a Delete / Keep card; the teacher decides there). Each finds the book as changeBook does.',
     ] : ['Books: the book maker is for teachers only. If asked, say so kindly.']),
     'Classes: when the teacher asks for a new class (a test class, a class to try the dashboard), call createClass; the card asks them to confirm. Ask the grade only when it matters to them.',
-    'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, assign, due dates, host live, progress, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',
+    'How-to: when the teacher asks how to do something, or asks for something you cannot do yourself (add students, print login cards, invite a co-teacher, host live, school settings, Google Classroom), call howTo and answer with its steps as a numbered list, keeping its links and bold labels exactly. Never invent a page, a link or a button name; links only from your tools. When one page covers it and the tool gives go, also call proposeNavigation for that page.',
     ...(page.rules ? [
       'Routing: this page has its own tool (below). Use it only for requests about what is on this page. Anything else (a book, a game, the dashboard, how the site works, a teaching question) is answered with the general tools, and the page is left as it is. When you cannot tell whether the teacher means this page or something else, ask one short question and change nothing.',
       page.rules,
@@ -1368,10 +1717,58 @@ export function planFallback(user, meta, text) {
   const card = HP.newCard(c, r, lang, { how: r.how, ...(r.savedFrom ? { from: r.savedFrom } : {}) });
   return { reply: t(`js.companion.plan.fb.${r.how}`, { name: r.savedFrom ? r.savedFrom.name : '' }), apply: () => ({ note: { steps: [{ k: r.how === 'saved' ? 'planSaved' : 'plan', n: r.plan.parts.length, q: clip(r.savedFrom ? r.savedFrom.name : r.plan.name, 40) }], ms: 0, cards: [], plan: card } }) };
 }
+/** A bare "build a lesson" or "assign it" with nothing to go on: one plain question, no AI, nothing guessed. -> an
+ *  answer | null */
+const BARE_BUILD = /^\s*(?:please\s+|can you\s+|could you\s+)?(?:build|make|create|draft)\s+(?:me\s+|us\s+)?(?:a|an|one|another)\s+(?:new\s+)?(?:custom\s+)?(lesson(?: plan)?|game|activity|worksheet|board)\s*(?:please|for me)?[.!?]*\s*$/i;
+const BARE_ASSIGN = /^\s*(?:please\s+)?assign\s+(?:it|this|that|them|one)\s*(?:please|now)?[.!?]*\s*$/i;
+export function quickAnswer(user, text, meta, history = []) {
+  if (meta && (meta.file || meta._bookFirst || meta._bookTarget)) return null;
+  const lang = (meta && meta.lang) || 'en', t = tFor(lang), w = String(text || '');
+  const done = reply => ({ reply, apply: () => ({ note: { steps: [{ k: 'askBack' }], ms: 0, cards: [] } }) });
+  const m = BARE_BUILD.exec(w);
+  if (m) return done(t(`js.companion.ask.${/worksheet/i.test(m[1]) ? 'sheetTopic' : /board/i.test(m[1]) ? 'boardTopic' : 'lessonTopic'}`));
+  if (BARE_ASSIGN.test(w)) {
+    // Something to assign is the newest answer's card (a lesson or book it found, or something it made), else ask.
+    const lastOomba = [...(history || [])].reverse().find(x => x.role === 'oomba' && !x.failed);
+    const n = lastOomba && lastOomba.note;
+    const has = n && ((n.cards || []).some(c => c && (c.kind === 'game' || c.kind === 'book')) || (n.made && !n.made.failed) || n.assign);
+    if (!has) return done(t('js.companion.ask.assignWhat'));
+  }
+  return null;
+}
+/** Oomba's words checked against what this answer really did (the server-side guard, companion-make.js claims): a
+ *  sentence saying something was made, set up or replaced stays only when a tool made or changed it in this answer;
+ *  the app's own lines go first (an empty class, one point at a time, a game turned off) and reasons a figure could not
+ *  be drawn are said when Oomba left them out. */
+export function guardReply(reply, ctx) {
+  const t = tFor(ctx.lang);
+  const fig = ctx.out.figures;
+  const did = !!(ctx.out.made || (ctx.out.points || []).length || ctx.out.manip || ctx.out.later || ctx.out.bookChange || (fig && fig.told && fig.told.landed && fig.told.landed.length));
+  let out = String(reply || '');
+  if (!did && CM.claims(out)) {
+    const r = CM.withoutClaims(out);
+    const h = ctx.out.handoff;
+    out = [r.text, h ? t('js.companion.made.draftOnly', { title: h.title || t(`js.companion.hand.${h.tool}`), button: t(`js.companion.hand.open.${h.tool}`) }) : t('js.companion.made.notYet')].filter(Boolean).join(' ');
+  }
+  // A turned-off game is never "not on Oomba".
+  if ((ctx.out.offTitles || []).length) out = out.split(/(?<=[.!?])\s+/).filter(x => !/couldn.?t find|could not find|can.?t find|isn.?t on Oomba|not on Oomba|doesn.?t exist|does not exist|no lesson called/i.test(x)).join(' ');
+  const lw = fold(out);
+  const leads = (ctx.out.lead || []).filter(x => !(x.kind.startsWith('off:') && (ctx.out.offTitles || []).some(tt => lw.includes(fold(tt)) && /turned off|off on oomba|isn.?t available|not available/i.test(out))) && !(x.kind === 'count' && /one (point )?at a time/i.test(out))).map(x => x.text);
+  // A figure that cannot be drawn: its one-line reason ("1 + 2 is less than 10, so those sides can't make a triangle")
+  // when Oomba's words leave out its numbers.
+  const numIn = v => new RegExp(`(^|[^0-9.])${String(v).replace('.', '\\.')}(?![0-9])`).test(out);
+  const plain = x => ['triangle', 'triangleEqual', 'pastEnd'].includes(x.key);
+  const sayLines = [...new Set((ctx.out.says || []).filter(x => plain(x) && !['a', 'b', 'c', 'v'].filter(k => x[k] !== undefined).every(k => numIn(x[k]))).map(x => x.text))];
+  return [...leads, out, ...sayLines].filter(Boolean).join(' ').replace(/\s+\n/g, '\n').trim();
+}
 async function answer({ user, text, meta, quote, history, step, turnId }) {
   // A book's first draft (Make my book) or a change the teacher picked the book for on a card: straight to the book's
   // own writer (the teacher's words are the request; nothing else to decide).
   if (meta && (meta._bookFirst || meta._bookTarget)) return bookAnswer(user, meta._bookFirst || meta._bookTarget, { text, history, step });
+  // Short requests with nothing to go on get a plain question at once, without the AI (the owner's live audit: "Build a
+  // lesson" guessed a topic from the chat; "Assign it" offered lessons from searches that had failed).
+  const quick = quickAnswer(user, text, meta, history);
+  if (quick) return quick;
   const client = aiClient();
   if (!client) return planFallback(user, meta, text) || { failed: 'resting' };
   const settings = limitsOf(user), lang = (meta && meta.lang) || 'en';
@@ -1383,7 +1780,11 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const files = row ? q.all('SELECT * FROM oomba_files WHERE chat_id=? ORDER BY created_at', row.id) : [];
   const file = meta && meta.file ? files.find(f => f.id === meta.file.id) : null;
   const image = file && file.kind === 'image' && file.bytes ? Buffer.from(file.bytes) : null;
-  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set() };
+  const ctx = { user, page, lang, names, files, seen: new Map(), out: {}, lastList: null, meta: meta || {}, who: chatWho(user, row), text, links: new Set(), history: history || [] };
+  // The page the teacher has open goes with the first call (what getPageContext gives), so most answers need no round
+  // trip just to look (latency, 27 Nov 2026).
+  // (Without the class's name: the AI gets a class's name only when it asks for the page with getPageContext.)
+  try { const pc = pageContext(user, page, { lang, names }); if (pc.class) delete pc.class.name; page.now = JSON.stringify(pc).slice(0, 6000); } catch { page.now = ''; }
   const web = { turnId, names: [...names.map(n => n.name), ...SR.namesOf(user)], searches: 0, queries: new Map(), found: new Map(), flagged: false };
   let useWeb = webOn(user, row) && !webBroken;
   const tools = () => (useWeb ? [...toolsFor(page, user), { ...SR.WEB_SEARCH_TOOL, max_uses: 3 }] : toolsFor(page, user));
@@ -1391,14 +1792,22 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   const steps = [];
   const model = config.companionModel || config.builderModel;
   const t0 = Date.now();
-  let res = null, cutOff = false;
+  // Where the time goes (the owner's audit: 5 to 60 seconds): model calls and their time, tool time, prompt sizes.
+  const perf = { calls: 0, modelMs: 0, toolMs: 0, sys: 0, tools: 0 };
+  const sys = system(user, lang, page, settings);
+  perf.sys = sys.length; perf.tools = JSON.stringify(tools()).length;
+  let res = null, cutOff = false, cutShort = false;
   try {
     for (let n = 0; ; n++) {
       const last = n >= settings.steps;
-      const params = { model, max_tokens: MAX_REPLY_TOKENS, system: system(user, lang, page, settings), tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
+      // cache_control: the tools, the system prompt and the turns so far are read from the cache on the next call of
+      // the same answer (one tool round trip costs only its new tokens).
+      const params = { model, max_tokens: MAX_REPLY_TOKENS, cache_control: { type: 'ephemeral' }, system: sys, tools: tools(), messages: msgs, ...(last ? { tool_choice: { type: 'none' } } : {}) };
+      const tc = Date.now(); perf.calls++;
       try { res = await callAi(client, params); } catch (e) {
         if (useWeb && SR.isToolRefusal(e)) { webBroken = String(e.message || 'refused').slice(0, 200); log('error', 'companion web search turned off', { reason: webBroken }); useWeb = false; res = await callAi(client, { ...params, tools: tools() }); } else throw e;
       }
+      perf.modelMs += Date.now() - tc;
       if (res && res.usage) aiBudget.recordUsage(res.model || model, res.usage);
       collectWeb(res.content, web);
       if (res.stop_reason === 'pause_turn' && !last) { msgs.push({ role: 'assistant', content: res.content }); continue; }
@@ -1408,6 +1817,7 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         log('warn', 'companion reply cut off', { turn: turnId, page: page.type, step: n });
         if (!last && !cutOff && msgs[msgs.length - 1].role === 'user') { cutOff = true; msgs.push(withNote(msgs.pop(), CUT_OFF_NOTE)); continue; }
         res = { ...res, content: (res.content || []).filter(b => b.type === 'text') };
+        cutShort = true;   // cut off a second time: the reply is partial; the note below says the cards are the truth
         break;
       }
       const uses = (res.content || []).filter(b => b.type === 'tool_use');
@@ -1415,12 +1825,14 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       step(2);
       msgs.push({ role: 'assistant', content: res.content });
       const results = [];
+      const tt = Date.now();
       for (const tu of uses) {
         let r;
-        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
+        try { r = TOOL_NAMES.includes(tu.name) || BOOK_TOOL_NAMES.includes(tu.name) || (page.type === 'homeroom' && PLAN_TOOL_NAMES.includes(tu.name)) || Object.values(PAGE_TOOLS).some(x => x.name === tu.name) ? await runTool(tu.name, tu.input, ctx) : { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } }; } catch (e) { log('warn', 'companion tool failed', { tool: tu.name, error: e.message }); r = { result: { error: 'That did not work.' }, step: { k: 'toolNo' } }; }
         if (r.step && !['unknown'].includes(r.step.k)) steps.push(r.step);
         results.push({ type: 'tool_result', tool_use_id: tu.id, content: JSON.stringify(r.result).slice(0, 20000) });
       }
+      perf.toolMs += Date.now() - tt;
       msgs.push({ role: 'user', content: results });
       // A book change: the book's own writer answers it (below), not another round of this loop.
       if (ctx.out.bookChange) break;
@@ -1438,18 +1850,36 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
   step(3);
   if (web.searches) steps.unshift({ k: web.flagged ? 'webNo' : 'web', n: web.searches });
   const fin = finalText(res && res.content, ctx, web);
-  let reply = cleanText(user, fin.text, names);
+  let reply = guardReply(cleanText(user, fin.text, names), ctx);
+  // A reply cut off twice may stop mid-sentence while earlier steps did land: the app's own words say where the truth is.
+  if (cutShort) reply = `${reply.trim()}${reply.trim() ? '\n\n' : ''}My answer was cut short. The cards below show exactly what was done; anything not on them was not done.`;
   const points = ctx.out.points || [];
-  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week) return { failed: 'error' };
+  if (!reply && !fin.cards.length && !ctx.out.proposal && !ctx.out.handoff && !ctx.out.figures && !ctx.out.manip && !ctx.out.manipMiss && !points.length && !ctx.out.pick && !ctx.out.assign && !ctx.out.action && !ctx.out.nav && !ctx.out.ask && !ctx.out.classNew && !ctx.out.book && !ctx.out.bookNone && !ctx.out.bookRef && !ctx.out.bookDelete && !ctx.out.plan && !ctx.out.week && !ctx.out.made) return { failed: 'error' };
   if (!SR.textOk(reply.replace(MD_LINK, '$1'))) { log('warn', 'companion reply held back', { turn: turnId }); return { failed: 'error' }; }
-  const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
-    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
+  const note = { steps: steps.slice(0, 16), ms: Date.now() - t0, perf, cards: fin.cards, ...(fin.sources.length ? { sources: fin.sources } : {}), ...(ctx.out.proposal ? { proposal: ctx.out.proposal } : {}), ...(ctx.out.handoff ? { handoff: ctx.out.handoff } : {}),
+    ...(ctx.out.manip ? { manip: ctx.out.manip } : {}), ...(ctx.out.pick ? { pick: ctx.out.pick, lang } : {}), ...(ctx.out.nav ? { nav: ctx.out.nav } : {}), ...(ctx.out.ask ? { ask: ctx.out.ask } : {}), ...(ctx.out.assign ? { assign: ctx.out.assign } : {}), ...(ctx.out.action ? { action: ctx.out.action } : {}), ...(ctx.out.classNew ? { classNew: ctx.out.classNew } : {}),
     ...(ctx.out.book ? { book: ctx.out.book } : {}), ...(ctx.out.bookNone ? { bookNone: true } : {}), ...(ctx.out.bookRef ? { bookRef: ctx.out.bookRef } : {}), ...(ctx.out.bookDelete ? { bookDelete: ctx.out.bookDelete } : {}), ...(ctx.out.plan ? { plan: ctx.out.plan } : {}), ...(ctx.out.week ? { week: ctx.out.week } : {}), ...(ctx.out.who ? { who: ctx.out.who } : {}) };
-  log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type });
+  log('info', 'companion answered', { turn: turnId, ms: note.ms, steps: steps.length, web: web.searches, page: page.type, calls: perf.calls, modelMs: perf.modelMs, toolMs: perf.toolMs, sys: perf.sys, tools: perf.tools });
   if (ctx.out.manip) audit(user.id, 'manip.chat', ctx.out.manip.tool, { changed: true });
   const fig = ctx.out.figures;
   return {
-    reply, apply: () => {
+    reply, apply: () => withLater(applyAll()),
+  };
+  /** The change a tool checked in a dry run (ctx.out.later: a book's rename, copy or pictures, simpler wording), made for
+   *  real here and read back: the card shows whether it landed, and the reply is corrected when it differs. */
+  function withLater(o) {
+    const lt = ctx.out.later; if (!lt) return o;
+    const r = lt.run(), okay = r && !r.error && r.ok !== false;
+    if (okay && lt.ref && r.ref) note.bookRef = r.ref;
+    const final = lt.wrap ? r.result : okay ? (r.result || r) : null;
+    const same = okay && JSON.stringify(lt.told) === JSON.stringify(final);
+    if (!okay) log('warn', 'companion change did not land', { turn: turnId });
+    const fix = !okay ? 'That did not change after all: it changed or went while I was working. Please try again.' : same ? '' : 'It landed a little differently from what I said: the card below shows what is there now.';
+    const verify = okay ? { ok: true, landed: 1, notLanded: [] } : { ok: false, landed: 0, notLanded: [{ code: 'gone' }] };
+    return { ...o, note: o.note || note, verify: o.verify && !o.verify.ok ? o.verify : verify, ...(fix || o.correction ? { correction: [o.correction, fix].filter(Boolean).join(' ') } : {}) };
+  }
+  function applyAll() {
+    {
       // A picture taken into a book being set up stays until Make my book (at most a day); any other goes now.
       if (image && file && !(ctx.out.book && ctx.out.book.pics.some(p => p.id === file.id))) dropBytes(file.id);
       if (ctx.out.book) {
@@ -1467,6 +1897,19 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
         const fix = got === points.length ? '' : got ? 'Not every point was given after all. The card below shows the ones that were.' : 'The point was not given after all: the class or student is not there anymore. Please try again.';
         return { note, ...(a || {}), verify, ...(fix ? { correction: fix } : {}) };
       }
+      // Made in the chat (companion-make.js): saved now, with the answer, and read back. The card's Open button opens that
+      // exact board, worksheet or lesson; when it did not land, the app says so after Oomba's words.
+      if (ctx.out.made) {
+        const m = ctx.out.made;
+        let made = null;
+        if (m.kind === 'board') { const r = CM.saveBoard(user, m.plan); if (r.ok) made = { kind: 'board', id: r.board.id, title: r.board.title, tool: r.board.tool, n: m.plan.n, href: CM.boardHref(r.board.id) }; }
+        if (m.kind === 'sheet') { const r = CM.saveSheet(user, m.plan); if (r.ok) made = { kind: 'sheet', id: r.sheet.id, title: r.sheet.title, n: r.sheet.count, href: CM.sheetHref(r.sheet.id) }; }
+        if (m.kind === 'lesson') { const r = LD.save(user, m.schoolId, m.d, { ...m.args, lang }); if (r.ok) made = { kind: 'lesson', id: r.lesson.id, title: r.lesson.title, n: r.saved, href: `/teach/lessons/${encodeURIComponent(r.lesson.id)}?drafted=${m.d.ai ? 'ai' : 'template'}${r.chk ? `&chk=${r.chk}` : ''}` }; }
+        if (made) audit(user.id, 'companion.made', made.id, { kind: made.kind });
+        else log('warn', 'companion make did not land', { turn: turnId, kind: m.kind });
+        const verify = made ? { ok: true, landed: 1, notLanded: [] } : { ok: false, landed: 0, notLanded: [{ code: 'gone' }] };
+        return { note: { ...note, made: made || { kind: m.kind, failed: true } }, verify, ...(made ? {} : { correction: tFor(lang)('js.companion.made.failed') }) };
+      }
       if (!fig) {
         // A board: built and read back at the tool; the card says what was left out (the page puts the board on).
         const m = ctx.out.manip;
@@ -1481,12 +1924,17 @@ async function answer({ user, text, meta, quote, history, step, turnId }) {
       const writes = fig.plan.ops.length || fig.plan.title || fig.plan.grade || fig.plan.units;
       const a = writes ? FC.applyPlan(user, w, fig.plan, { first: fig.first }) : {};
       const v = FC.verifyPlan(fig.plan, a, before, FC.readBack(user, w));
-      const verify = FC.verifyCard(v), fix = VC.correction(fig.told, v);
+      const verify = FC.verifyCard(v), changed = VC.correction(fig.told, v);
+      // A question swapped for one from its figure's generator is said in the app's own words under the reply, whatever
+      // the reply says (the card lists it too).
+      const sw = (verify && verify.swapped) || [];
+      const swapNote = sw.length ? `${sw.length === 1 ? `Question ${sw[0]} couldn't` : `Questions ${sw.join(', ')} couldn't`} be drawn as asked, so ${sw.length === 1 ? 'it is a question' : 'they are questions'} from the same kind of figure instead.` : '';
+      const fix = [changed, swapNote].filter(Boolean).join(' ');
       if (fix) log('warn', 'companion change landed other than told', { turn: turnId, told: fig.told.landed.length, landed: v.landed.length });
       if (a.code || !a.change) return { note, verify, ...(fix ? { correction: fix } : {}) };
       return { note, change: { kind: 'figures', sheetId: w.id, ...a.change }, undo: { kind: 'figures', sheetId: w.id, ...a.undo }, verify, ...(fix ? { correction: fix } : {}) };
-    },
-  };
+    }
+  }
 }
 
 // ---------------------------------------------------------------- the surface
@@ -1526,6 +1974,8 @@ export const surface = C.defineSurface({
     if (data && data.kind === 'figures') { const w = F.ownWorksheet(u, data.sheetId); return w ? FC.undoPlan(u, w, data) : { ok: false, code: 'notFound' }; }
     if (data && data.kind === 'point') return undoPoints(u, data);
     if (data && data.kind === 'class') return undoClass(u, data);
+    if (data && data.kind === 'assign') return undoAssign(u, data);
+    if (data && data.kind === 'action') return AC.undoAction(u, data);
     if (data && data.kind === 'book') return SB.undoChange(u, data.bookId, data);
     return undoProposal(u, data);
   },
@@ -1672,11 +2122,26 @@ export function act(u, turnId, a, value = '') {
   if (a === 'go' || a === 'notNow') return navAct(u, row, turn, a);
   if (a === 'askPick') return askPick(u, row, turn, value);
   if (a === 'create' || a === 'createNo') return createAct(u, row, turn, a);
+  if (a === 'assign' || a === 'assignNo') return assignAct(u, row, turn, a);
+  if (a === 'actionDo' || a === 'actionNo') return actionAct(u, row, turn, a, value);
   if (a === 'bookDelete' || a === 'bookKeep') return deleteAct(u, row, turn, a);
   if (/^book[A-Z]/.test(a)) return bookAct(u, row, turn, a, value);
+  // The page could not put the board on (or it read back unchanged): the turn says so under Oomba's words, whatever the
+  // reply said, and the card stays "could not be put on" after a refresh.
+  if (a === 'manipFailed') {
+    const m = note.manip; if (!m || m.applied || m.failed) return { ok: false, code: 'notFound' };
+    const fix = 'That board change did not go on your board after all, so the board is as it was. Please try again.';
+    db.transaction(() => {
+      const turns = parse(q.get('SELECT turns FROM oomba_chats WHERE id=?', row.id).turns, []);
+      const t = turns.find(x => x.id === turn.id);
+      if (t) { t.note = { ...note, manip: { ...m, failed: true, failedAt: Date.now() } }; if (!String(t.text || '').includes(fix)) t.text = `${String(t.text || '').trim()}\n\n${fix}`.trim(); }
+      q.run('UPDATE oomba_chats SET turns=? WHERE id=?', JSON.stringify(turns), row.id);
+    })();
+    return C.current(u, SURFACE, KEY);
+  }
   if (a === 'manipApplied') {
     const m = note.manip; if (!m) return { ok: false, code: 'notFound' };
-    return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true } });
+    return markNote(u, row, turn.id, { ...note, manip: { ...m, applied: true, appliedAt: Date.now() } });
   }
   if (a === 'handoff') {
     const h = note.handoff; if (!h) return { ok: false, code: 'notFound' };

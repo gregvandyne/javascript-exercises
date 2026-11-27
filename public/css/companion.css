@@ -12,6 +12,10 @@ body.oc-hide #oc-root,body.oc-hide .oc-bubble{display:none!important}
 .dash-foot .oc-bubble{position:static;width:48px;height:48px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:4px}
 .dash-foot .oc-bubble .oc-mark{width:48px;height:48px}
 body.dash-page .oc{top:0}
+/* The live host room: the bubble ends the room's top bar, never over its controls or the join code. */
+.lv-bar .oc-bubble{position:static;width:44px;height:44px;flex:none;box-shadow:0 3px 10px rgba(20,20,20,.18);margin-inline-start:auto}
+.lv-bar .oc-bubble .oc-mark{width:44px;height:44px}
+body.lv-projector .oc{top:0}
 .dash-w.oc-hl{box-shadow:0 0 0 4px var(--spark),0 0 0 9px color-mix(in srgb,var(--spark) 40%,transparent);transition:box-shadow .3s}
 
 .oc-ctx{display:inline-flex;align-items:center;gap:6px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -30,6 +34,11 @@ body.dash-page .oc{top:0}
 .oc-copy.done{color:var(--accent-press)}
 .oc-copied{font-size:.8rem;font-weight:700;color:var(--muted)}
 .oc-cls .oc-acts .btn .fx{margin-inline-end:2px}
+/* An action card (services/companion-actions/): the warning line and the box for names typed on the card. */
+.oc-act .oc-actwarn{color:var(--text)}
+.oc-actin{display:flex;flex-direction:column;gap:4px;margin:8px 0 0;font-size:.85rem;font-weight:700}
+.oc-actin textarea,.oc-actin input{width:100%;box-sizing:border-box;font:inherit;font-weight:400}
+.oc-actin small{color:var(--muted);font-weight:400}
 sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1px}
 
 /* The steps Oomba took. */
@@ -70,6 +79,11 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-hand dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;font-size:.84rem}
 .oc-hand dt{font-weight:800;color:var(--text-2)}
 .oc-hand dd{margin:0;overflow-wrap:anywhere}
+/* Made in the chat (a board, a worksheet, a lesson): checked, and its Open button. */
+.oc-made{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:14px;background:var(--card);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--good,#1F9D63) 45%,var(--line))}
+.oc-made h4{margin:0;font-size:.97rem;display:flex;align-items:center;gap:6px;overflow-wrap:anywhere}
+.oc-made-no{box-shadow:inset 0 0 0 2px var(--line)}
+.oc-made-no p{margin:0;display:flex;gap:6px;align-items:flex-start;font-size:.88rem}
 .oc-brief{font-size:.84rem;padding:8px 10px;border-radius:10px;background:var(--card-2);line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere}
 
 /* The message box: attach, the microphone, web search and the note under it. */
@@ -84,6 +98,8 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-ibtn[hidden]{display:none}
 .oc-ibtn:focus-visible,.oc-pill:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .oc-mic-on{background:var(--bad, #D93B3B)!important;border-radius:999px;box-shadow:0 0 0 6px color-mix(in srgb,var(--bad, #D93B3B) 25%,transparent)}
+.oc-lost{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:6px 0;padding:8px 10px;border-radius:12px;background:color-mix(in srgb,var(--warn, #F2B84B) 22%,var(--card, #fff));font-size:.9rem}
+.oc-lost>span{flex:1 1 180px}
 .oc-listen{display:flex;align-items:center;gap:8px;padding:6px 10px;border-radius:12px;background:var(--bad-bg);font-size:.86rem;font-weight:800;color:var(--text)}
 .oc-wave{display:inline-flex;gap:3px;align-items:center;height:18px}
 .oc-wave i{width:3px;border-radius:2px;background:var(--bad, #D93B3B)}
@@ -117,6 +133,8 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-navq{font-size:.86rem;color:var(--text-2);padding:6px 8px;border-radius:10px;background:var(--card-2);overflow-wrap:anywhere}
 .oc-askq{font-weight:700}
 .oc-ask .oc-pickb small{color:var(--muted);font-weight:600}
+/* A long option wraps inside the card (a phone never scrolls sideways). */
+.oc-ask .oc-pickb{max-width:100%;white-space:normal;text-align:start;height:auto;min-height:40px}
 /* The book maker in the chat (services/companion-book.js): one card that asks only what is missing, the teacher's own
    words ("Adding to your book" above the box), the check of exactly what will be sent with Edit, Make my book. */
 .oc-book{gap:8px}

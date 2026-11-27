@@ -80,7 +80,7 @@ test('the screenshots come in the page\'s theme: the Hub\'s dark capture on the 
   const light = await get('/', 'light');
   assert.match(light, /<source data-scheme="dark" data-media="" media="not all"/);
   const auto = await get('/teachers');
-  assert.match(auto, /<source data-scheme="dark" data-media="\(min-width:960px\)" media="\(prefers-color-scheme: dark\) and \(min-width:960px\)"/);
+  assert.match(auto, /<source data-scheme="dark" data-media="" media="\(prefers-color-scheme: dark\)"[^>]*srcset="\/img\/how\/teachers-classes-dark-d-1024\.webp/);
   assert.match(auto, /srcset="\/img\/teach-loop\/gradebook-dark\.webp\?v=\d+"/);
   assert.equal(darkMedia('auto', ''), '(prefers-color-scheme: dark)');
   assert.equal(darkMedia('dark', '(min-width:960px)'), '(min-width:960px)');

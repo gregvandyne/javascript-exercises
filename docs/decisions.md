@@ -16356,6 +16356,37 @@ offer teachers".
   landing-shots.mjs makes tool-flashcards and tool-grammar-lab for the new cards.
 - /research's three study cards start level (`.trust-find>.panel+.panel`, the #671 fix).
 
+## Teachers pages in the homepage's design (27 Nov 2026)
+
+The owner approved a mockup of /teachers and /teachers/live in the homepage's design and asked for it to be built.
+- **One shell for the teacher site** (server/views/lp-shell.js): "/", /teachers and /teachers/live share the homepage's
+  header, footer and page (public/css/landing.css, public/js/landing.js), not the app's layout. On /teachers and
+  /teachers/live the header's section links go to "/"'s sections (their own tools, videos and questions stay on the
+  page), a signed-in visitor gets Home instead of Sign in, and the footer has no trademark line: only "/" and /compare
+  name other products. The footer's grown-up links (research, compliance, terms, refunds, plans) follow the app
+  footer's rule (layout.js legalReader), and Plans & pricing shows only while /plans is there (familiesOn).
+- **One main button** (lp-shell.js `teacherCta`): the header's button and every hero's main button on all three pages
+  read "Start free trial" and go to the trial while paid plans are on for everyone (teacher-tools.js `plansOn`),
+  otherwise "Create a teacher account" to the teacher sign-up (/signup/for/teacher). The homepage's trust line keeps
+  "No card needed" and "Cancel anytime" for the trial only. Its clicks count as landing.trial or landing.signup.
+- **/teachers, in order:** the centered hero (the main button and Host a live lesson now, the tools' screens in one
+  collage with a student's phone and the Hub's video); every tool as the homepage's cards (six, then "Show all"), each
+  video link playing in the homepage's player; How it works as the homepage's click-through tour (views/how.js
+  `howTour`: every screen whole, light and dark); the teaching loop (teacher-loop.js variant 'landing'); the videos
+  (see-it.js variant 'landing'); Google Classroom while it is on; "And much more", the five folded cards; the questions;
+  the start block (the homepage's dark last call, with setupBlock unchanged inside; a form or thank-you sits on its own
+  light card). "Try a lesson now" moved from the hero to the start block.
+- **/teachers/live, in order:** the hero about live games on every device (the board's code, a phone joining with it, a
+  phone answering, beside the board and never over it, so its code, names and buttons stay whole; on a phone, under it; "See it in one minute" under the picture, never over the board); the modes as cards; How it works
+  (the tour); your own questions; the tools and the safety rules side by side; "More than a quiz" as the dark band; the
+  questions; the last call.
+- How it works on /parents keeps views/how.js `howSteps` and its script and styles.
+- **"Is Oomba Live free?" stays, answered honestly** (the owner): yes, hosting live lessons, the question sets, the results
+  and the ready-made courses (CS Quest, Number Quest, Cyber Defenders, while COURSES is on) cost nothing; the optional
+  Teacher plan adds the paid tools (the Hub, Ask Oomba, the Manipulatives and their live rooms, Figures, the shared
+  daily pool of AI builds: plans.teacher.li5, teacher-tools.js toolAccess). No amount; the words "Teacher plan" link to
+  /plans only while paid plans are on for everyone. No "free" anywhere else on /teachers/live for teachers: not in the
+  title, the hero, the header, the buttons or the badges.
 ## Welcome messages match the product today (27 Nov 2026)
 
 Every welcome a kid, a student, a parent or a teacher gets now says what Oomba Academy is today ("The one classroom
@@ -16380,3 +16411,264 @@ and the family onboarding's own files are left to that work.
 - **Greeted by name:** a teacher who sets up their own school gets the teachers' welcome after the name they typed is
   saved (`setUpOwnSchool`), so it says "Hi Ms Rivera!", not their username.
 - The three team welcomes stay under the team message limit (1,000 characters).
+
+## Grammar Lab Phase 4: translated around English lessons, and K-2 read-aloud (27 Nov 2026)
+
+- **The user interface is translated, the lessons stay English** (owner: "Keep the lessons in English, just translate
+  the UI"). Every Grammar Lab string (grammarLab.*, js.grammar-lab.*, its Hub and lesson-step strings) is in all 13
+  locales (en-GB only where British spelling differs). Course text (unit and topic names, cards, questions, hints, the
+  band covers' drawn sentences, a proofread room's title) is marked lang="en", so screen readers and voices read it as
+  English; a translated line with a name in it (`views/grammar-lab.js` tIn) marks just the name.
+- **K-2 read-aloud through the shared speak path only** (`POST /api/tts` ctx 'grammar'): the teaching card, the
+  question on screen (by its id: the line that asks, the sentence, the choices) and its hint once a wrong answer shows
+  it. The server reads the course text; the page never sends text, and nothing the student typed or their name is ever
+  read. Never the device's own voice.
+- **Gated by the English switch at /admin/voices**, whatever the page's language: the text is English, so it is read
+  with the English voice, as course slides, placement and Brain Breaks are. With the switch off (or TTS off) the page
+  has no speaker button and loads no voice code, and the server refuses the request. A device set to device voices (or
+  Data Saver) shows no button either. 3-5 and up are not read aloud (the build prompt asks for K-2).
+- Tests: tests/unit/grammar-lab-polish.test.js, grammar-lab-voice-browser.test.js, grammar-lab-phone-browser.test.js
+  (every band at 320 and 390 px, light and dark), grammar-lab-locale-browser.test.js (German and Arabic) and
+  grammar-lab-playthrough-browser.test.js (one whole unit per band).
+
+## Oomba assigns, and checks its work (27 Nov 2026)
+
+Owner, after an outside audit of the Oomba chat (code side): it was right that Oomba never did platform tasks itself
+and that some changes were reported before they were checked. The owner chose: fix the checks, and let Oomba assign.
+
+- **Assign from the chat** (`services/companion.js` tool `assign`, `assignPlan`, `assignAct`, `undoAssign`): a game
+  (`searchGames` id) or a Story Library book (`searchBooks` id) for a class, the whole class or some students
+  (placeholders, each one student of that class), with an optional due day. The class is the one named, the page's, or
+  the teacher's only one; otherwise a which-class card (the teacher's tap comes back as their message). The plan is
+  checked in a dry run (`verify-change.js dryRun`) with the Assign pages' own services (`game-folders.js assignGame`,
+  `library.js assignStory`), so a live-only game, a game that needs the teacher's own questions first (its Assign
+  page), one already assigned or a bad date is refused before any card. The teacher sees "Assign <what> to <class>?"
+  with Assign and Not now; nothing is assigned until Assign. The tap assigns, reads the assignment back (open, in that
+  class, for exactly those students) and the card shows it with Undo (`lessons.js unassign`: students' work kept) and a
+  link to the class's games. Books go to the whole class only (as on the book's Assign page). Not posted to Google
+  Classroom from the chat. Not yet: a teacher's own lessons and course lessons (no tool lists them).
+- **Points** (`givePoint`): the award is written in a dry run and read back before the AI is told; a point that could
+  not land (an empty class, a student who left) comes back as not landed and the AI never says it was given. The real
+  award is still written with the answer and counted again (the card and the correction as before).
+- **Dashboard Apply** (`applyProposal`): a changed setting counts as landed only when it reads back with the value
+  asked (a value the dashboard clamped or refused is "One change didn't land"); a removed widget only when it is gone.
+- **New class** (`createAct`): read back as saved (its school, the teacher on it) before the card says it was made;
+  the card shows the saved name.
+- **Book rename / copy / paint again / redraw a picture, Simpler wording** (`ctx.out.later`, `withLater`): run in a dry
+  run at the tool (the AI is told what it would make), then made for real with the answer in the engine's transaction
+  and read back; a turn that fails after the tool leaves nothing changed. Pictures are reported as queued ("not painted
+  yet"), never done; the book page shows each when it is ready.
+- **Manipulatives boards** (`public/js/manip-chat.js put`): the page reads the board back after putting it on; a board
+  that asked for a change but reads exactly as before is put back and the card says it could not be put on. Until a
+  board page confirms (`manipApplied`, now with its time), the card says "Not on your board yet", never "updated".
+
+## Hidden games hidden everywhere (27 Nov 2026)
+
+Owner: "Make sure all games like Sum Racer, Tug of Math etc are hidden everywhere." Lists already left hidden games out
+(`services/game-focus.js`); what still named them was words, pictures and the demo class. A crawl of every linked page
+as a visitor, a parent, a student and a teacher (arcade off, as on the live site) found them; now:
+
+- **Words** (all 13 languages): the age FAQs on /teachers and /parents, the open Learn pages (word games, strategy,
+  brain breaks, the three age pages), "Built-in modes" on /teachers, "Pick a lesson" on /teachers/live and the
+  standards page's help name only games on the site (Word Hunt, Word Peek, Castle Clash, Brain Board). Text on pages
+  that are themselves closed while the arcade is off (the math, music and computer-science Learn pages, the course
+  pages, a hidden game's own page) is unchanged: nobody can open them.
+- **/teachers/live mode cards**: every mode whose game is hidden is left out (`slugHidden`), so Quest Race goes too
+  (Question Battle and Tug of Math already did).
+- **Screenshots**: `scripts/how-shots.js` hosts a Brain Board (not a Question Battle) for the five Live steps and plays
+  Sudoku (not Sum Racer) for the parents' "play" step; the teachers' student step shows the demo lesson's Sudoku
+  warm-up. All re-taken, light and dark, with their alt text in every language.
+- **Demo videos**: the /teachers/live demo (a Quest Race) and the /parents video (Gulp City) were recorded with arcade
+  games, so they show only while ARCADE is on. Re-recording them is the way to bring them back with the arcade off.
+- **The demo school** (DEMO_TEACHER_PASSWORD, on the live site): its sample lessons had a Sum Racer warm-up and a Loop
+  Lab step, which its class could still open (an assigned game stays open). The seed now makes a Sudoku warm-up and a
+  text step, and `swapHiddenDemoSteps` changes the existing demo lessons the same way on every start.
+- `tests/unit/removed-games.test.js` checks the words of every page above (English, German, Japanese) for a hidden
+  game's name, and that both videos are off.
+
+## Oomba makes it, then reports what it checked (27 Nov 2026)
+
+The owner's live audit of the Oomba chat (Greg Test, class "4b math" with no students): "NOT seamless". The chat wrote
+briefs and asked the teacher to open a card and press a final button; it said "I set up a base-ten blocks board" when
+nothing existed (Open the Manipulatives only reloaded an empty page); Figures questions read a point instead of
+plotting one, on 0 to 2 lines with decimals, every answer B, and the title kept its old range; 10 points became 1 in
+silence for a class with no students; a progress report ended at "Couldn't find that page"; "Build a lesson" guessed a
+topic from the chat; "Sum Racer" was "not on Oomba" although it sits in the teacher's Fun Games folder; the live host
+room had no bubble; Send was greyed out for "Assign it".
+
+- **Made in the chat** (`services/companion-make.js`, tools in `services/companion.js`): `makeBoard` (a Manipulatives
+  board through the board's own checks, `manip-chat.js buildChange`, saved as Draft with AI saves one,
+  `manipulatives.js addRecent`: My boards), `makeWorksheet` (a Figures worksheet made and filled in one step through the
+  worksheet tool's checks, `figures-chat.js readAnswer`/`applyPlan`/`verifyPlan`; `figuresKinds` gives the kinds for a
+  topic so the full 36,000-character catalog is not in every prompt) and `makeLesson` (the library's Draft with AI,
+  moved to `services/lesson-draft.js` and shared with `routes/lessons.js`). Each runs in a dry run at the tool and is
+  read back; the real write comes with Oomba's answer and is read back again; the card ("Made and checked: 5
+  questions") opens that exact board (`/manipulatives#board/<id>`), worksheet or lesson. When it does not land, the
+  card and the app's own sentence say so. No Undo on these: they are new things the teacher deletes from their pages.
+- **The guard** (`guardReply`, `companion-make.js claims`): a sentence saying something was made, set up, replaced or
+  is ready stays only when a tool made or changed something in that answer; otherwise it is taken out and the app says
+  "Nothing has been made yet." A Builder hand-off (the only hand-off left: games and classroom activities) reads "I
+  drafted <title>. Press Open the Builder to create it." Older worksheet and board hand-off cards now say "Make it now"
+  and send the brief to the chat, which makes it.
+- **Figures quality**: the teacher's range ("from 0 to 10") and "whole numbers" are read from their words
+  (`requestFacts`) and a question that does not match is refused with why (`figures-chat.js factProblem`). Figures
+  cannot check a point students plot online: "plot" first shows a card (printable plot questions, read the point, or
+  not now) and nothing is built before the tap (`formatAsk`); printable plot questions are number lines with the point
+  hidden from the student (`hide: 'points'`, the answer key shows it). Column addition and regrouping (in the words or
+  an attached plan) ask the same way first. Oomba's own multiple-choice questions get their right option spread
+  (`spreadChoices`, when there are two or more). A title naming a range follows the number lines (`retitle`). A figure
+  that cannot be drawn is never swapped for another question, number questions included (the 25 Nov rule now covers
+  both), and its one-line reason ("1 + 2 is less than 10, so those sides can't make a triangle", `explainOf`,
+  `js.companion.why.*`) is added after Oomba's words when it left the numbers out.
+- **Empty class and points**: givePoint checks the roster before any choice card ("4b math has no students yet, so no
+  points can be given", with the add-students steps). The dashboard gives one point at a time; asked for N, the app
+  says "Points go one at a time, so this is 1 point, not N." first. A class can be named by its name.
+- **Progress report** (`classProgress`, `companion-make.js classReport`): counts only: each assignment's finished,
+  started, not started, late and answers to read; Needs a look by reason with students as "Student A"
+  (`homeroom-look.js forAi`, names put back in the browser from `note.who`); Grammar Lab topics mastered and started for
+  a teacher it lets in; courses begun. No names, no supports, no IEP data. An empty class says so.
+- **Asking**: a bare "Build a lesson/worksheet/board" or "Assign it" with nothing to point at is answered with one plain
+  question without the AI (`quickAnswer`). `makeLesson` refuses a topic that is not in the teacher's own words of that
+  message (or its attached file), and a request that only asked to find something.
+- **Finding** (`findLesson`): the teacher's game folders, the class's assigned lessons, the catalog and, while ARCADE is
+  off, the hidden games, named as turned off ("Sum Racer is in your Fun Games folder, but that game is turned off on
+  Oomba right now, so students can't play it.", said first by the app; a "couldn't find" sentence is taken out), with
+  the closest open lesson that shares a topic exactly (never Arithmetic Lab's "column addition" for "addition"). For a
+  teacher Grammar Lab lets in (`grammar-lab-access.js`), its units and topics, assigned with `assign` kind `grammar`
+  through `grammar-lab-assign.js assign`; anyone else: not available.
+- **The bubble**: in the live host room (`/live/host/<id>`, `companion: 'live'`) at the end of the room's top bar, so it
+  never covers the controls or the join code; hidden in full screen. The class Lessons tab has it (checked in a real
+  browser). **Owner decision:** it is left off Studio (`/studio/<id>`), which has its own "Chat with the Builder":
+  two chats on one page confused. Say if Studio should have Oomba too.
+- **Sending**: any non-empty message sends (the engine's minimum was 2 characters); Send is never greyed out; an empty
+  box only puts the focus back (no "Write a few words" warning); a second tap while one is on its way does nothing.
+- **Latency**: the page context goes with the first call (no getPageContext round trip just to look; the class's name
+  stays out unless asked), the request is cached (`cache_control`) so each further call of the tool loop reads the
+  tools, the system prompt and the turns so far from the cache, and each answer records its model calls, model time,
+  tool time and prompt sizes (`note.perf`, the "companion answered" log). Measured with the stand-in: a plain question
+  went from 2 model calls to 1; a board from 3 calls (plus the teacher's tap and the Manipulatives page's own AI draft)
+  to 2; a worksheet from about 3 calls, a tap and 2 or 3 more on the worksheet page to 3 in one answer. The server's
+  own work for a made board, worksheet or lesson is 70 to 410 ms; the rest of the 5 to 60 seconds is model time. The
+  tools grew from 18,705 to 26,425 characters (about 2,000 tokens, cached after the first call); the worksheet page's
+  rules stay about 51,000 characters (the full figure catalog: cached now, cut only with its own tests).
+- Tests: `tests/unit/companion-make.test.js` (13), `tests/unit/companion-places-browser.test.js` (4: live host room,
+  Lessons tab and Studio, short messages and a made board opened, a plotting worksheet; laptop and 390 px, light and
+  dark; `COMPANION_SHOTS=<dir>` saves pictures), and the existing companion tests updated where the old behavior was
+  the audit's complaint (a number question swapped silently, a one-letter message refused, the empty class's point).
+
+## Oomba chat: the second audit's open items (27 Nov 2026)
+
+What the round-2 audit listed and #686 had not covered:
+
+- **Clear a board**: `changeBoard` takes `clear: true` (the tool's start board); the board rules say so, and the tool
+  result says "cleared".
+- **A board the page could not put on**: the page tells the server (`manipFailed`, once); the turn's words get the
+  app's own line under Oomba's ("did not go on your board after all") and the card stays "could not be put on" after a
+  refresh.
+- **A Figures question swapped for its generator's** (only generator-made items swap now; the rest are rejected, #686):
+  a line under the reply names the questions, whatever the reply says.
+- **Search and assign agree**: `searchGames` finds a hidden game for a teacher who may open it (`mayOpenHidden`).
+- **A book for some students**: refused with the reason (a book goes to the whole class).
+- **Cut off twice**: the reply ends with "My answer was cut short. The cards below show exactly what was done".
+- **Voice**: when live words and the upload both fail, the clip stays in the page (never stored on the server) with
+  Try again and Dismiss.
+- **How-to "assign"** now tells the AI it can assign itself (find, then `assign`), steps only if the teacher wants to.
+
+## Oomba does it: one confirm card for any teacher action (27 Nov 2026)
+
+The owner: "ensure EVERYTHING can be done from the Oomba chat". Until now each thing Oomba could change had its own tool,
+card and tap (assign, createClass, givePoint...). From here on every other teacher action goes through ONE mechanism
+(`server/services/companion-actions/`), so a new action is one entry, not a new tool, card and act.
+
+- **One tool, `doAction { action, params }`** (services/companion.js). It never changes anything. The action's `plan()`
+  resolves everything (the class from `classRef`, the page's class or the teacher's only class; several and none named:
+  a which-class card; students only from `[student N]` placeholders), checks the same permissions as the page's own
+  route, and the change is run in a dry run (verify-change.js `dryRun`) before a card is shown. A refusal is plain
+  words for the AI ending "Nothing was changed." The AI is told: "Nothing is done yet: the teacher taps Do it on the
+  card. Say so in one short sentence, never that it is done." One action per answer.
+- **The card rule**: the card (`note.action`) says what will happen in the teacher's language, with a one-line warning
+  when the action makes accounts for children, deletes or takes something away, reaches students' screens or posts
+  outside the site (risk `child`, `delete`, `students`, `external`), and Do it / Not now. Only Do it (act `actionDo`)
+  changes anything: checked again in a dry run with what the teacher typed on the card (a failure leaves the card
+  "Not done" with the reason and changes nothing), then the SAME service as the page's route, in the engine's
+  transaction, read back (verify), with Undo where the action has one ("This can't be undone from the chat" otherwise).
+- **The privacy rule**: students' names never go to the AI. New names (Add students) are typed in a box on the card and
+  sent with the tap only (the act route takes up to 2000 characters for `actionDo`), never in a message, never kept in
+  the chat. Existing students are only placeholders. What a card or change shows (names, a join code, a login cards
+  link) is built by the action's `view()`/`doneView()` for the teacher's own page only (dress), never in a turn's words
+  or a tool result. New passwords are never in the chat: they go on the one-time login cards page (routes/schools.js
+  keepCards, reached through `S.loginCards.keep`), and the change links to it.
+- **The first actions** (the reference examples): `addStudents` (risk child; S.createSchoolAccount + S.addToClass, at
+  most 40 names, names the school already has are refused, login cards link; no Undo), `renameClass` (S.updateClass:
+  name, grade, subject; Undo), `changeDue` (L.updateAssignment: due and open day, or "none"; Undo), `unassign` (risk
+  delete; L.unassign, students' work kept; Undo is L.assign of the same lesson, which brings it back with its work).
+  How-to answers for add-students and due-dates now tell the AI it can do it with doAction.
+- **The Hub's actions** (`companion-actions/homeroom.js`, strings `js.companion.act.homeroom.*`): only on a class the
+  teacher may run the Hub for (H.canUseClass; the Hub off for them: refused with the reason). `takeAttendance` (AT.mark:
+  here, absent, at home, or everyone here; there is no Late; Undo restores the marks), `setSupport` (SUP.setSupport:
+  only what was asked changes; Undo), `makeGroups` (H.saveGroups: from placeholders or "N mixed groups"; Undo),
+  `handOut` (risk students; HO.handOut of an official, not hidden Oomba lesson or HL.handOutLesson of their own lesson
+  plan, to every desk, a group or one desk; Undo takes it back), `takeBack` (risk delete; HO.removeHandout, work kept;
+  Undo hands it out again with L.assign / L.setStudents), `needsSeen` / `needsSnooze` (NL.mark, by Needs a look's
+  "Student A"; Undo restores the student's marks), `startClass` (H.setLive, no dry run since live class has memory
+  state; Undo ends it), `endClass` (no Undo: it signs out shared devices), `parentsView` (PV.setParents; Undo). The AI
+  is told counts and what was asked: never a name, a student's work, their current supports, why they are on Needs a
+  look or who is absent. A class named that is not the teacher's is refused even when they have only one class
+  (whichClass no longer falls back to the only class when a name was given).
+- **Live games and the class dashboard** (`live.js`, `dashboard.js`). A live room is in memory, so `hostLive` and
+  `endLive` have `dry: false` and `check()`. `hostLive` (risk students) opens the same quick room as POST /api/live/quick:
+  the room-opening code moved to services/quick-live.js (`quickPlan`, `openQuick`), which the route and the action both
+  call; its modes are `quickModes()`, so a hidden game is never offered (Brain Board while Quest Race and Question Battle
+  are hidden). The change links the host page; Undo ends the room only while nobody has started it. `endLive` ends the
+  teacher's open room (LS.endSession, as the host page's End), no Undo. The dashboard's (routes/dash.js services, the
+  class's own teacher only): `startTimer` (optionally at some minutes) / `pauseTimer` / `resetTimer` (D.timerAction, the
+  timers of the layout on the teacher's screen, "timer 2" when there are several), `eyesUp` on or off (Undo puts it back),
+  `quickCheck` (Undo ends it) and `endCheck`, `pickName` (D.pickerAction: the name is only on the teacher's card, from the
+  student's id kept on the change; the AI is told only that one was picked), `pushToScreens` an official game that is not
+  hidden (game-focus.js gameHidden) or an approved link (Undo ends the push) and `endPush`. Params that two actions share
+  have one meaning (`title`), and no new param reuses an older one's name (`topic`, `checkKind`, `send`).
+
+### How to add an action
+
+1. **File**: put it in the area's file, `server/services/companion-actions/<area>.js` (classes, assignments, live,
+   dashboard, classroom...; a new area is a new file that `default`-exports an array, plus one `register(...)` line in
+   `index.js`). An area file imports only `./shared.js` (never `index.js`) and the services it calls.
+2. **Shape** (checked by `register`):
+   `{ id, area, risk: 'normal'|'child'|'delete'|'students'|'external', warn?, input?: 'list'|'one', undoable, label, params,
+   dry?, check?, sample?, plan, view, run, doneView, undo? }`
+   - `label`: one line for the AI (the doAction description lists `- id (params): label`); `params`: JSON-schema
+     properties (use `CLASS_REF`, `STUDENT`, `ASSIGNMENT`, `P()` from shared.js).
+   - `plan(u, ctx, params) -> { data, ai } | { ask } | { error }`: resolve with `whichClass`, `studentIn`,
+     `someStudents`, `assignmentIn`, `dayParam`; refuse with `no('Plain words.')`. `data` is kept on the card (ids, never
+     a name or a secret); `ai` is what the AI is told (use `clean()` on any text it reads).
+   - `run(u, data, value, { dry }) -> { ok: true, landed, done, undo? } | { ok: false, code, count? }`: call the route's
+     own service, then read the result back for `landed`. `done` is what the change card shows; `undo` is what `undo()`
+     gets. Anything outside the database (login cards, a live room in memory) only when `!dry`; an action whose state
+     is not in the database sets `dry: false` and gives `check(u, data) -> why | ''` instead of a dry run.
+   - `view(u, data, t) -> { title, lines, value? }` and `doneView(u, done, t) -> { lines, links: [{ href, label,
+     primary? }] }`: the teacher's own page only (names may be shown here). `undo(u, undoData) -> { ok: true, skipped }
+     | { ok: false, code }`: put back only what is still as Oomba left it.
+3. **Strings**: under your area's own block, `js.companion.act.<area>.*` (`.warn.<warn>` for the warning line), in every
+   locale file with real translations, no em dashes; `npm run -s i18n:check` and `npm run -s check-keys`. Shared words
+   (Do it, Not now, the why lines) are in `js.companion.act.*`; a new tap-time reason goes in `WHY` (index.js) and
+   `js.companion.act.why.*`. Add the action's icon to `ACT_ICON` in public/js/companion.js.
+4. **Test**: `tests/unit/companion-actions-<area>.test.js` with the harness `tests/unit/_companion-actions-harness.js`
+   (`boot()`, `world()`, `ask()`, `doIt()`, `undo()`, `refused()`, `sentToAi()`, `storedTurns()`): the card comes and
+   nothing changes before the tap; the tap does it (assert the database); verify ok; Undo restores; the refusals end
+   "Nothing was changed."; nothing private reaches the AI or the stored chat.
+5. **Outside the site** (risk `external`): an action that calls another service (Google Classroom) gives
+   `send(u, data) -> Promise<{ ok } | { ok: false, code }>`. Its dry run (before the card and on the tap) only checks the
+   page's rules and sends nothing; on Do it, `send()` is awaited once per card (services/companion.js actionAct,
+   `AC.sendAction`), then `run(u, data, value, { dry: false, sent })` reads the result back in the transaction. A call
+   that fails leaves the card "Not done" and writes nothing.
+
+**Assignments, lessons and made things** (`assignments.js`, `made.js`; strings under `js.companion.act.assignments.*`,
+area `assignments` for both): `assignLesson` (L.assign of one of the teacher's own lessons, days, some students; Undo
+unassigns), `assignWorksheet` (risk students; FS.assignWorksheet; Undo unassigns the class lesson it made),
+`assignBoard` (risk students; MT.assign: practice tasks of the board's tool, named by the teacher, a count each; Undo
+unassigns), `createUnit` (Undo deletes it while empty), `renameUnit` (Undo renames back), `reorderAssignment` (one
+place up or down; Undo the other way), `postToClassroom` (risk external; GC.postLesson only with Classroom on, the
+teacher connected and allowed to post, the class linked, not for some students; no Undo), `renameWorksheet` and
+`renameBoard` (Undo renames back), `duplicateBoard` and `duplicateLesson` (Undo deletes the copy while it is as made),
+`deleteWorksheet`, `deleteBoard`, `deleteLesson` (risk delete; none of them has a restore, so no Undo and the card says
+so; deleteLesson's card counts its classes and the students with work in it).

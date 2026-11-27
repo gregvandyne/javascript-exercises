@@ -113,12 +113,13 @@ async function playLesson(page, tag, L) {
   await shot(page, T, '01-unit');
   await noSideScroll(page, 'unit');
   await page.goto(base + topicUrl + '/card');
-  assert.equal(await page.isVisible('#gl-listen'), false, 'a 3-5 card is not read aloud');
+  // 3-5 cards are read aloud (owner, 2026-11-27); the voices are off in this test, so no button shows.
+  assert.equal(await page.isVisible('#gl-listen'), false, 'no listen button while the voices are off');
   await shot(page, T, '02-card');
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -162,7 +163,7 @@ async function playLesson(page, tag, L) {
   }
   assert.equal(levels, 2);
   await page.waitForSelector('#gl-done:not([hidden])');
-  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
+  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions. That is 12 questions, plus 1 for a miss.');
   // The next topic, worked out now in this band (never a mastered one), and the room where there is one.
   assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), 'Next: Identifying Adjectives');
   assert.match(await page.getAttribute('#gl-done-next', 'href'), /^\/courses\/grammar-lab\/3-5\//);
@@ -240,7 +241,7 @@ test('the other 3-5 formats on a phone, dark: whole-sentence joins, sentence or 
     for (const [unit, topic, key] of [['building-sentences', 'complex-sentences', 'complex'], ['fixing-sentences', 'recognizing-fragments', 'fragment'],
       ['showing-not-telling', 'showing-with-actions', 'show'], ['quotes-and-dialogue', 'quotation-marks-in-dialogue', 'dialogue'], ['more-verbs-and-time', 'progressive-verbs', 'progressive']]) {
       await page.goto(`${base}/courses/grammar-lab/3-5/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));

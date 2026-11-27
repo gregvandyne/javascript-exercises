@@ -168,6 +168,7 @@ test('a refine turn changes only what it names: 3 and 7 harder, inches everywher
 test('the AI\'s items are checked like a draft\'s: undrawable ones repaired, unknown kinds dropped, at most 12 added, remove', async () => {
   const { boss } = world();
   const id = await drafted(boss);
+  const before0 = F.itemsOf(id)[0];
   const lines = []; F.hooks.log = f => lines.push(f);
   standIn({ reply: 'Changed.', edits: [
     { op: 'replace', n: 1, item: { kind: 'triangle', question: 'Find CA.', data: { AB: 1, BC: 2, CA: 10 }, answerType: 'number', answerKey: 'sides.CA' } },
@@ -180,10 +181,14 @@ test('the AI\'s items are checked like a draft\'s: undrawable ones repaired, unk
     await C.allSettled();
     const items = F.itemsOf(id), last = (await chatOf(boss)).turns.at(-1);
     assert.equal(items.length, 7 + 12, 'one removed, twelve added (the most in one answer)');
-    assert.equal(items[0].kind, 'triangle'); assert.ok(items[0].gen, 'the undrawable triangle became a generator question');
+    // The owner's live audit (27 Nov 2026): an impossible figure is never silently swapped for another question, a
+    // number question included: question 1 stays as it was, and the reason is said in one line.
+    assert.equal(items[0].id, before0.id, 'question 1 stays as it was'); assert.equal(items[0].question, before0.question);
+    assert.ok(last.verify.notLanded.some(x => x.code === 'cannotDraw' && x.n === 1), 'the card says question 1 could not be drawn');
+    assert.match(last.text, /1 \+ 2 is less than 10, so those sides can't make a triangle/);
     assert.deepEqual(last.change.removed, [8]);
-    assert.equal(last.change.repaired, 1); assert.ok(last.change.dropped >= 3, 'the unknown kind and the adds past twelve');
-    assert.ok(lines.some(l => l.action === 'replaced by its generator'));
+    assert.equal(last.change.repaired, 0); assert.ok(last.change.dropped >= 3, 'the unknown kind and the adds past twelve');
+    assert.ok(lines.some(l => l.action === 'replaced by its generator'), 'the repair was tried and logged');
     assert.ok(lines.every(l => !/Mix it up/.test(JSON.stringify(l))), 'repairs never log the words');
   } finally { F.hooks.log = null; await reset(boss); }
 });
@@ -225,7 +230,7 @@ test('names and personal details never reach the AI: taken out before anything i
     assert.doesNotMatch(r.json.chat.turns.at(-1).text, /Quinn Marsh|\[student/, 'the page shows the current names, not the typed ones');
     await C.allSettled();
     assert.doesNotMatch(JSON.stringify(calls), /Quinn|Marsh|a@b\.co/);
-    assert.equal((await say(boss, id, { text: 'x' })).json.code, 'brief');
+    assert.equal((await say(boss, id, { text: '  ' })).json.code, 'brief');
     // A question the teacher typed with a student's name in it: the AI sees "(left out)".
     F.addItem(boss, id, rect(6, 4, 'area', 'Quinn Marsh measured this rug. What is its area?'));
     const c1 = standIn({ reply: 'ok' });

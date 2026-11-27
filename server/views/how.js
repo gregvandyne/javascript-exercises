@@ -119,3 +119,33 @@ export function howSteps(req, page) {
     </div>
   </section>`;
 }
+
+/**
+ * "How it works" on /teachers and /teachers/live, in the homepage's look: the click-through tour of "/" (public/js/landing.js
+ * startTour; public/css/landing.css .lp-tour), each step's real desktop screen shown whole (no zoom, no ring), its title
+ * and caption beside it. Without script it is the list of every step. The same steps and words as howSteps.
+ */
+export function howTour(req, page, { kicker = '', after = '' } = {}) {
+  const t = req.t; const k = `${page}.how`;
+  const list = howStepList(req, page);
+  if (!list.length) return '';
+  const scheme = shotScheme(req), n = list.length;
+  const T = (tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtml(t, key)}</${tag}>`);
+  const pic = (s, i) => { const dk = darkOf(s.slug); return raw(themedPicture({ scheme,
+    img: { src: `${IMG}${s.slug}-d-1024.webp`, srcset: srcset(s.slug, 'd', DESK), sizes: '(min-width: 1240px) 860px, (min-width: 1000px) 66vw, 92vw', width: 1024, height: 640, alt: t(`${k}.${s.n}.alt`), lazy: i > 0, type: 'image/webp', dark: dk && { srcset: srcset(dk, 'd', DESK) } } })); };
+  return html`<section class="lp-sec lp-dots lp-alt" id="how-it-works" aria-labelledby="how-h"><div class="lp-wrap">
+    <header class="lp-head">${kicker ? T('p', kicker, ' class="lp-eyebrow"') : ''}${T('h2', `${k}.h`, ' id="how-h"')}${T('p', `${k}.lead`, ' class="lp-sub"')}</header>
+    <div class="lp-card lp-tour" data-tour aria-label="${t(`${k}.h`)}" role="region">
+      <ol class="lp-steps">${list.map((s, i) => html`<li><button type="button" class="lp-step" data-go="${i}"${i === 0 ? raw(' aria-current="step"') : ''}><i aria-hidden="true">${i + 1}</i>${T('span', `${k}.${s.n}.h`)}</button></li>`)}</ol>
+      <p class="sr-only" aria-live="polite" data-tour-live></p>
+      <ol class="lp-tsteps">${list.map((s, i) => html`<li class="lp-tstep" id="how-${i + 1}" data-step="${i}">
+        <div class="lp-tstage lp-tstage-full"><div class="lp-tcam" data-cam="50,50,100" style="--cx:50;--cy:50;--w:100"><div class="lp-shot">${pic(s, i)}</div></div></div>
+        <div class="lp-tip">${raw(`<h3 tabindex="-1"${fb(t, `${k}.${s.n}.h`)}>${tHtml(t, `${k}.${s.n}.h`)}</h3>`)}${T('p', `${k}.${s.n}.${s.p ? s.p() : 'p'}`)}
+          <div class="lp-tipnav"><span${raw(fb(t, 'landing.tour.stepOf'))}>${t('landing.tour.stepOf', { n: i + 1, total: n })}</span><span class="lp-tipbtns" hidden><button type="button" class="lp-btn lp-btn-ghost lp-btn-xs" data-back${raw(fb(t, 'landing.tour.back'))}>${t('landing.tour.back')}</button><button type="button" class="lp-btn lp-btn-primary lp-btn-xs" data-next>${i === n - 1 ? t('landing.tour.again') : t('landing.tour.next')}</button></span></div>
+        </div>
+      </li>`)}</ol>
+      <div class="lp-tour-foot">${T('span', 'landing.tour.note', ' class="lp-small"')}<span class="lp-progress" role="progressbar" aria-label="${t(`${k}.h`)}" aria-valuemin="1" aria-valuemax="${n}" aria-valuenow="1"><i style="width:${(100 / n).toFixed(2)}%"></i></span></div>
+    </div>
+    ${after}
+  </div></section>`;
+}

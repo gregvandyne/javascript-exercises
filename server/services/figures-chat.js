@@ -77,17 +77,102 @@ export function workflowRules(u, w, items = F.itemsOf(w.id)) {
  *  "Which shape is this?" into "What is the area of the rectangle?" and lose its options (the owner's report, 25 Nov
  *  2026). It is rejected with the reason instead, so the AI can send it again with data that can be drawn.
  *  -> { item, repaired, dropped, fixed, status: 'ok' | 'fixed' | 'replaced' | 'rejected' | 'dropped', why?, left? } */
-function checkItem(raw, w) {
+function checkItem(raw, w, facts = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return { item: null, repaired: 0, dropped: 1, fixed: 0, status: 'dropped', why: 'not a question' };
-  const x = { ...raw };
+  const plot = plotOf(raw);
+  const x = plot ? plot.raw : { ...raw };
   if (x.data && typeof x.data === 'object') x.data = JSON.stringify(x.data);
+  if (facts.plotPrint && !plot) return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: 'the teacher chose plotting questions: send each as {"plot": {"from", "to", "step", "at", "label"}, "question"}' };
+  // A plotting question has no answer the app can work out (the student draws the point): checked as the page's own
+  // editor checks a question (cleanItem: the figure drawn truthfully), never repaired into another question.
+  if (plot) {
+    const c = F.cleanItem({ ...x, data: plot.raw.data }, undefined, w.lang);
+    if (!c.ok) return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: (c.problems || [c.code]).join('; '), say: explainOf('numberLine', plot.raw.data, `OF.check: ${(c.problems || []).join('; ')}`) };
+    const item = { ...c.item, hide: 'points', answer: plot.answer };
+    const off = factProblem(item, facts);
+    if (off) return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: off, say: { key: 'notAsked', what: off } };
+    return { item, repaired: 0, dropped: 0, fixed: 0, status: 'ok' };
+  }
   const r = typeof x.gen === 'string' && x.gen.trim()
     ? F.repairTestDraft([x], { max: 1, grade: '', lang: w.lang })
     : F.repairDraft([x], { max: 1, lang: w.lang });
   const nt = r.notes[0] || { action: r.items.length ? 'kept' : 'dropped' };
-  if (nt.action === 'replaced' && x.answerType === 'choice') return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: nt.why || 'the figure cannot be drawn' };
+  // The owner's live audit (27 Nov 2026): a question of Oomba's own whose figure cannot be drawn is never swapped for
+  // another question, multiple choice or number: it is not applied, with the reason in plain words (say), so the AI
+  // explains and offers what can be drawn.
+  if (nt.action === 'replaced' && !(typeof x.gen === 'string' && x.gen.trim())) {
+    const data = typeof x.data === 'string' ? (() => { try { return JSON.parse(x.data); } catch { return {}; } })() : x.data || {};
+    return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: nt.why || 'the figure cannot be drawn', say: explainOf(x.kind, data, nt.why) };
+  }
+  const item = r.items[0] || null;
+  const off = item ? factProblem(item, facts) : '';
+  if (off) return { item: null, repaired: 0, dropped: 0, fixed: 0, status: 'rejected', why: off, say: { key: 'notAsked', what: off } };
   const status = nt.action === 'kept' ? 'ok' : nt.action;
-  return { item: r.items[0] || null, repaired: r.repaired, dropped: r.dropped, fixed: r.fixed || 0, status, ...(nt.why ? { why: nt.why } : {}), ...(nt.left ? { left: nt.left } : {}) };
+  return { item, repaired: r.repaired, dropped: r.dropped, fixed: r.fixed || 0, status, ...(nt.why ? { why: nt.why } : {}), ...(nt.left ? { left: nt.left } : {}) };
+}
+// ---------------------------------------------------------------- what the teacher asked for (companion-make.js requestFacts)
+/** A plotting question: { plot: { from, to, step, at, label }, question } -> a number line with the point hidden from the
+ *  student (the answer key shows it), the student draws the point on the printed line. Figures has no way to check a
+ *  plotted point online, so the chat says so first (companion-make.js formatAsk). */
+function plotOf(raw) {
+  const p = raw && raw.plot && typeof raw.plot === 'object' ? raw.plot : null;
+  if (!p) return null;
+  const n = v => (Number.isFinite(+v) ? +v : null);
+  const from = n(p.from), to = n(p.to), step = n(p.step) || 1, at = n(p.at);
+  if (from === null || to === null || at === null) return null;
+  const label = /^[A-Z]$/.test(String(p.label || '')) ? String(p.label) : 'P';
+  return { raw: { kind: 'numberLine', question: clip(raw.question || `Plot point ${label} at ${at} on the number line.`, 300), data: { from, to, step, points: [{ at, label }] }, answerType: 'number', answerKey: '' }, answer: `${label} = ${at}` };
+}
+const isInt = v => Number.isFinite(+v) && Math.abs(+v - Math.round(+v)) < 1e-9;
+/** Why a checked question is not what the teacher asked for (the range of the line, whole numbers), or ''. */
+export function factProblem(it, facts = {}) {
+  if (!facts || it.kind !== 'numberLine') return '';
+  const d = it.data || {};
+  if (facts.range && (+d.from !== facts.range[0] || +d.to !== facts.range[1])) return `the line runs ${d.from} to ${d.to}, not ${facts.range[0]} to ${facts.range[1]} as the teacher asked`;
+  if (facts.whole) {
+    const pts = Array.isArray(d.points) ? d.points.map(x => x && x.at) : [];
+    const nums = it.answerType === 'choice' ? (it.choices || []).filter(c => Number.isFinite(+c)) : [];
+    if (!isInt(d.step ?? 1) || pts.some(v => !isInt(v)) || nums.some(v => !isInt(v))) return 'its numbers are not all whole numbers, as the teacher asked';
+  }
+  return '';
+}
+/** The reason a figure cannot be drawn, in one plain line's parts (the page's words: js.companion.why.*), or null. */
+export function explainOf(kind, data, why) {
+  const d = data || {}, w = String(why || '');
+  if (kind === 'triangle' && ['AB', 'BC', 'CA'].every(k => Number.isFinite(+d[k]))) {
+    const [a, b, c] = ['AB', 'BC', 'CA'].map(k => +d[k]).sort((x, y) => x - y);
+    if (a + b <= c) return { key: a + b === c ? 'triangleEqual' : 'triangle', a, b, c, sum: a + b };
+  }
+  const m = /(-?\d+(?:\.\d+)?) is past the end of the line \(the line runs from (-?\d+(?:\.\d+)?) to (-?\d+(?:\.\d+)?)/.exec(w);
+  if (m) return { key: 'pastEnd', v: +m[1], from: +m[2], to: +m[3] };
+  return w ? { key: 'other', what: clip(w.replace(/^OF\.check:\s*/, ''), 160) } : null;
+}
+/** The right option of Oomba's own multiple-choice questions moved so they are not all at the same letter (the owner's
+ *  audit: every answer was B). Only questions with options of their own (not a generator's, whose order its key
+ *  follows), and only when the plan has two or more of them. */
+export function spreadChoices(ops, rand = Math.random) {
+  const own = ops.filter(o => o.item && o.item.answerType === 'choice' && !o.item.gen && !String(o.item.answerKey || '').startsWith('gen:') && Number.isInteger(o.item.correct) && (o.item.choices || []).length >= 2);
+  if (own.length < 2) return ops;
+  const start = Math.floor(rand() * 6);
+  own.forEach((o, k) => {
+    const it = o.item, list = [...it.choices], right = list[it.correct];
+    const to = (start + k) % list.length;
+    list.splice(it.correct, 1); list.splice(to, 0, right);
+    o.item = { ...it, choices: list, correct: to, answer: F.choiceText(list, to) };
+  });
+  return ops;
+}
+/** The title's range ("Number Line 0 to 10") made to match the worksheet's number lines when they all run over one
+ *  other range now (the owner's audit: the title stayed 0 to 10 on a 0 to 1000 line). -> the new title or ''. */
+export function retitle(title, items) {
+  const re = /(-?\d+(?:\.\d+)?)(\s*(?:to|-|\u2013)\s*)(-?\d+(?:\.\d+)?)/;
+  const m = re.exec(String(title || ''));
+  if (!m) return '';
+  const ranges = [...new Set(items.filter(it => it.kind === 'numberLine' && it.data).map(it => `${+it.data.from}|${+it.data.to}`))];
+  if (ranges.length !== 1) return '';
+  const [a, b] = ranges[0].split('|');
+  if (a === String(+m[1]) && b === String(+m[3])) return '';
+  return S.cleanTitle(String(title).replace(re, `${a}${m[2]}${b}`), '');
 }
 /**
  * The model's answer made into a plan: { reply, title, grade, units, ops: [{ op, id?, after?, item? }], repaired, dropped,
@@ -96,7 +181,7 @@ function checkItem(raw, w) {
  * its kind's generator) | 'rejected' (not applied: the reason) | 'dropped' | 'noSuch' (no question n) | 'full'), so the
  * tool's result can say what landed and what didn't. Throws SyntaxError when there is neither a reply nor a change.
  */
-export function readAnswer(raw, w, items) {
+export function readAnswer(raw, w, items, { facts = {} } = {}) {
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new SyntaxError('not an answer');
   let reply = clip(raw.reply, 600).replace(/\s+/g, ' ').trim();
   if (reply && F.textProblem(reply)) reply = '';
@@ -104,20 +189,20 @@ export function readAnswer(raw, w, items) {
   const ops = [], report = []; let repaired = 0, dropped = 0, adds = 0;
   const room = () => Math.min(F.LIMITS.draftMax - adds, F.LIMITS.items - items.length - adds + ops.filter(o => o.op === 'remove').length);
   const seen = new Set();
-  const line = (k, e, c, at = -1) => ({ k, at, op: e.op, ...(e.op !== 'add' ? { n: Number.isInteger(+e.n) ? +e.n : null } : {}), status: c.status, ...(c.why ? { why: c.why } : {}), ...(c.left ? { left: c.left } : {}) });
+  const line = (k, e, c, at = -1) => ({ k, at, op: e.op, ...(e.op !== 'add' ? { n: Number.isInteger(+e.n) ? +e.n : null } : {}), status: c.status, ...(c.why ? { why: c.why } : {}), ...(c.left ? { left: c.left } : {}), ...(c.say ? { say: c.say } : {}) });
   for (const [k, e] of (Array.isArray(raw.edits) ? raw.edits : []).slice(0, F.LIMITS.items).entries()) {
     if (!e || typeof e !== 'object') continue;
     if (e.op === 'remove') { const id = idOf(e.n); if (id && !seen.has(id)) { seen.add(id); report.push(line(k, e, { status: 'ok' }, ops.length)); ops.push({ op: 'remove', id }); } else report.push(line(k, e, { status: 'noSuch' })); continue; }
     if (e.op === 'replace') {
       const id = idOf(e.n); if (!id || seen.has(id)) { report.push(line(k, e, { status: 'noSuch' })); continue; }
-      const c = checkItem(e.item, w); repaired += c.repaired; dropped += c.dropped;
+      const c = checkItem(e.item, w, facts); repaired += c.repaired; dropped += c.dropped;
       report.push(line(k, e, c, c.item ? ops.length : -1));
       if (c.item) { seen.add(id); ops.push({ op: 'replace', id, item: c.item }); }
       continue;
     }
     if (e.op === 'add') {
       if (room() <= 0) { dropped++; report.push(line(k, e, { status: 'full', why: `at most ${F.LIMITS.draftMax} added in one answer and ${F.LIMITS.items} on the sheet` })); continue; }
-      const c = checkItem(e.item, w); repaired += c.repaired; dropped += c.dropped;
+      const c = checkItem(e.item, w, facts); repaired += c.repaired; dropped += c.dropped;
       report.push(line(k, e, c, c.item ? ops.length : -1));
       if (!c.item) continue;
       const after = e.after === 0 || e.after === '0' ? 0 : idOf(e.after);
@@ -125,6 +210,7 @@ export function readAnswer(raw, w, items) {
       ops.push({ op: 'add', after: after === 0 ? 'start' : after || 'end', item: c.item, newId: F.newItemId() }); adds++;
     }
   }
+  spreadChoices(ops);
   const title = typeof raw.title === 'string' ? S.cleanTitle(raw.title, '') : '';
   const grade = raw.grade !== null && raw.grade !== undefined ? S.cleanGrade(String(raw.grade).toUpperCase() === 'K' ? 'K' : String(raw.grade)) : '';
   const units = UNITS.includes(raw.units) ? raw.units : '';
@@ -160,7 +246,7 @@ export function verifyPlan(plan, a, before, back) {
   for (const r of plan.report || []) {
     const o = r.at >= 0 ? plan.ops[r.at] : null;
     if (!o) {
-      if (r.status === 'rejected') miss('cannotDraw', r, `not changed: its figure cannot be drawn (${r.why})`);
+      if (r.status === 'rejected') { miss(r.say && r.say.key === 'notAsked' ? 'notAsked' : 'cannotDraw', r, r.say && r.say.key === 'notAsked' ? `not changed: ${r.why}` : `not changed: its figure cannot be drawn (${r.why})`); if (r.say) notLanded[notLanded.length - 1].say = r.say; }
       else if (r.status === 'noSuch') miss('noSuch', r, `there is no question ${r.n} (or it was named twice)`);
       else if (r.status === 'full') miss('full', r, `not added (${r.why})`);
       else miss('dropped', r, `left out (${r.why || 'not a question the app can draw'})`);

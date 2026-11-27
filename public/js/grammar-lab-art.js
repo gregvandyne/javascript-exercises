@@ -47,7 +47,9 @@ export function starPath(x, y, R, ratio = 0.48) {
   }
   return d + 'Z';
 }
-const wrap = (vb, inner, label) => `<svg viewBox="${vb}" ${label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true" focusable="false"'}><g ${ROUND}>${inner}</g></svg>`;
+/** A picture's svg. lang: the language of the words drawn in it (the band covers show English example sentences and their
+ *  grammar labels: course text, like the lessons, so English on every page). */
+const wrap = (vb, inner, label, lang = '') => `<svg viewBox="${vb}"${lang ? ` lang="${lang}"` : ''} ${label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true" focusable="false"'}><g ${ROUND}>${inner}</g></svg>`;
 
 // ---------------------------------------------------------------- Oomba, the course character (viewBox 0 0 340 340)
 // Geometry the animations rely on: the waving arm turns about its shoulder (268, 214); the hand is at (306, 144).
@@ -308,7 +310,7 @@ export const art = {
   doorway: label => wrap('0 0 480 320', doorwayArt(), label),
   masteryStars: label => wrap('0 0 480 320', masteryArt({ mode: 'image' }), label),
   doubleTapTip: (label, words) => wrap('0 0 480 320', tapTipArt(words), label),
-  cover: (band, label) => wrap('0 0 800 450', COVERS[band](), label),
+  cover: (band, label) => wrap('0 0 800 450', COVERS[band](), label, 'en'),
   card: label => wrap('0 0 360 480', cardArt(), label),
 };
 /** The picture files (public/img/grammar-lab/<name>.svg): name -> markup. */

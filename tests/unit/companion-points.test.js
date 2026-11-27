@@ -103,7 +103,7 @@ test('"give Maya a point for teamwork": the AI sees "[student 1]", never the nam
   for (const v of [x.maya.id, x.leo.id, x.maya.display_name, x.maya.username, 'Room 12 Owls']) assert.ok(!sent.includes(v), `never sent: ${v}`);
   assert.equal(calls[0].messages.at(-1).content, 'Give [student 1] a point for teamwork');
   assert.ok(calls[0].tools.some(t => t.name === 'givePoint'), 'a general tool');
-  assert.deepEqual(resultOf(calls), { done: true, to: 'one student', reason: 'teamwork', note: resultOf(calls).note });
+  assert.deepEqual(resultOf(calls), { landed: [{ to: 'one student', reason: 'teamwork' }], notLanded: [], note: resultOf(calls).note });
   // Given: Maya's teamwork point, remembered like the dashboard's.
   assert.deepEqual(mine(x.A, x.maya).r, { teamwork: 1 });
   assert.equal(mine(x.A, x.leo).mine, 0);
@@ -152,7 +152,7 @@ test('the whole class: one point for the class (never one each), close words rea
   await say(x, 'give the whole class a point for working together', { type: 'dashboard', classId: x.A.id });
   assert.deepEqual(D.classPoints(x.A), { n: 1, r: { teamwork: 1 } });
   assert.equal(D.pointsAll(x.A).total, 0, 'no student got one');
-  assert.equal(resultOf(calls).to, 'the whole class');
+  assert.equal(resultOf(calls).landed[0].to, 'the whole class');
   const bot = await lastBot(x.tc);
   assert.deepEqual(bot.change.items.map(i => [i.user, i.word]), [[null, 'Teamwork']]);
   // The student sees it in My points.

@@ -1,13 +1,17 @@
 {
-  "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title, its parts (each an ordered list of topic ids, with an optional part title; a topic opens when the one before it in the unit is mastered) and optional marks ({ topic id: 'checkpoint' | 'review' }). topics: each topic once, by id, however many units use it: where its text is in source/course.md (the band section and the topic heading), an optional display title, its quiz format (tap, capfix, gaps, choice with choices.kind, passage, or fix with fix.kind; choices.cycle shows a choice as press-to-cycle; items for a 6-8 topic, whose lines each keep their own format, with read: check (the independent rule for its wrong options and pills), labels, chips (punctuation marks), fix (the fix kind), optional (commas taken with or without: intro, series), asIs (offer the right-as-it-is choice), cycle, answerHead, ruleWords, and bare: the reader for a line written as only its sentence, with whole, focus and verbals), source.line when the source writes the topic twice, the line that asks the question, its levels (questions per level) and, for a topic with a Mistake Hunt room, the room's mistake kinds. scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
+  "_about": "Grammar Lab's own grouping, written by hand (see scripts/grammar-lab-build.js). bands: in order, each with its units (pathways) in order. pathways: a unit's title, its parts (each an ordered list of topic ids, with an optional part title and an optional band, for a part of a unit two bands share that only one band has (the K-2 and 3-5 Adjectives and Adverbs each have their own adverb topic); a topic opens when the one before it in the unit is mastered) and optional marks ({ topic id: 'checkpoint' | 'review' }). topics: each topic once, by id, however many units use it: where its text is in source/course.md (the band section and the topic heading), an optional display title, its quiz format (tap, capfix, gaps, choice with choices.kind, passage, or fix with fix.kind; choices.cycle shows a choice as press-to-cycle; items for a 6-8 topic, whose lines each keep their own format, with read: check (the independent rule for its wrong options and pills), labels, chips (punctuation marks), fix (the fix kind), optional (commas taken with or without: intro, series), asIs (offer the right-as-it-is choice), cycle, answerHead, ruleWords, and bare: the reader for a line written as only its sentence, with whole, focus and verbals), source.line when the source writes the topic twice, the line that asks the question, its levels (questions per level) and, for a topic with a Mistake Hunt room, the room's mistake kinds. scripts/grammar-lab-build.js reads this with source/course.md and writes topics.json.",
   "bands": [
     { "id": "k-2", "grades": "K-2", "readAloud": true, "pathways": ["adjectives-and-adverbs", "capital-letters", "commas", "sound-alike-words", "kinds-of-words", "verbs-and-time"] },
-    { "id": "3-5", "grades": "3-5", "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] },
+    { "id": "3-5", "grades": "3-5", "readAloud": true, "pathways": ["adjectives-and-adverbs", "building-sentences", "capital-letters", "titles", "commas", "sound-alike-words", "joining-words", "evidence-that-informs", "evidence-for-an-opinion", "quotes-and-dialogue", "fixing-sentences", "kinds-of-words", "more-kinds-of-words", "evidence-basics", "showing-not-telling", "verbs-and-time", "more-verbs-and-time"] },
     { "id": "6-8", "grades": "6-8", "pathways": ["active-and-passive-voice", "adjectives-6-8", "adjectives-vs-adverbs", "articles", "claims-evidence-reasoning", "embedding-evidence", "transitions", "compound-and-complex", "titles-of-works", "choosing-conjunctions", "commas-for-clarity", "commas-for-formatting", "confused-words-1", "confused-words-2", "confused-words-3", "comparatives-and-superlatives", "parts-of-a-sentence-1", "parts-of-a-sentence-2", "conclusions", "contractions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "parts-of-speech-6-8", "parts-of-speech-2", "parts-of-speech-3", "sentences-and-fragments", "subjects-and-verbs", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "plurals-and-possessives", "prepositional-phrases", "pronoun-case", "pronoun-agreement", "punctuating-fanboys", "punctuating-subordinators", "restrictive-clauses", "capitalization-1", "capitalization-2", "singular-plural-possessives", "agreement-1", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "simple-tenses", "perfect-progressive", "verbals"] },
     { "id": "9-12", "grades": "9-12", "pathways": ["active-and-passive-voice", "claims-evidence-reasoning", "embedding-evidence", "transitions", "commas-for-clarity", "parts-of-a-sentence-2", "conclusions", "counterarguments", "paraphrasing-and-citations", "quotes-in-your-sentences", "context-for-evidence", "embedding-quotations", "formal-and-informal", "sentences-and-fragments", "introductions", "mla-citations", "modifiers", "phrases-and-clauses", "pronoun-agreement", "restrictive-clauses", "agreement-2", "thesis-statements", "topic-sentences", "vague-pronouns", "verbals", "appositive-phrases", "compound-and-complex", "confused-words-4", "confused-words-5", "colons-and-semicolons", "hyphens", "lists", "parallel-structure", "conjunctions-all", "conjunctive-adverbs", "possessives"] }
   ],
   "pathways": {
-    "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [{ "topics": ["identifying-adjectives"] }] },
+    "adjectives-and-adverbs": { "title": "Adjectives and Adverbs", "parts": [
+      { "topics": ["identifying-adjectives"] },
+      { "band": "k-2", "topics": ["identifying-adverbs"] },
+      { "band": "3-5", "topics": ["adverbs-how-when-where"] }
+    ] },
     "capital-letters": { "title": "Capital Letters", "parts": [
       { "title": "Names and Dates", "topics": ["capitalizing-names-and-dates"] },
       { "title": "Titles", "topics": ["capitalizing-titles"] }
@@ -121,6 +125,18 @@
       "source": { "band": "k-2", "title": "Identifying Adjectives" },
       "format": "tap",
       "ask": "Tap the adjective.",
+      "levels": [4, 4, 4]
+    },
+    "identifying-adverbs": {
+      "source": { "band": "k-2", "title": "Identifying Adverbs" },
+      "format": "tap",
+      "ask": "Tap the adverb.",
+      "levels": [4, 4, 4]
+    },
+    "adverbs-how-when-where": {
+      "source": { "band": "3-5", "title": "Adverbs That Tell How, When, and Where" },
+      "format": "tap",
+      "ask": "Tap the adverb.",
       "levels": [4, 4, 4]
     },
     "capitalizing-names-and-dates": {
@@ -873,7 +889,7 @@
       "read": { "bare": "label", "labels": ["Sentence", "Fragment"], "check": "fragment68" }
     },
     "thesis-fact-opinion": {
-      "source": { "band": "6-8", "title": "Is the Thesis a Fact or Opinion?", "line": 4784 },
+      "source": { "band": "6-8", "title": "Is the Thesis a Fact or Opinion?", "line": 4828 },
       "format": "items",
       "ask": "Tap the sentence that does the job.",
       "levels": [4, 4, 4]
@@ -885,7 +901,7 @@
       "levels": [4, 4, 4]
     },
     "redundant-wordy": {
-      "source": { "band": "6-8", "title": "Recognizing Redundant, Unnecessary, and Wordy Phrases", "line": 4826 },
+      "source": { "band": "6-8", "title": "Recognizing Redundant, Unnecessary, and Wordy Phrases", "line": 4870 },
       "format": "items",
       "ask": "Tap the sentence that does the job.",
       "levels": [4, 4, 4]
@@ -904,7 +920,7 @@
       "read": { "bare": "citemark" }
     },
     "identifying-modifiers": {
-      "source": { "band": "6-8", "title": "Identifying Modifiers", "line": 3470 },
+      "source": { "band": "6-8", "title": "Identifying Modifiers", "line": 3514 },
       "format": "items",
       "ask": "Tap every word of the modifier.",
       "levels": [4, 4, 4],
@@ -960,7 +976,7 @@
       "read": { "bare": "depfrag" }
     },
     "restrictive-clauses": {
-      "source": { "band": "6-8", "title": "Punctuating Restrictive and Nonrestrictive Clauses", "line": 3672 },
+      "source": { "band": "6-8", "title": "Punctuating Restrictive and Nonrestrictive Clauses", "line": 3716 },
       "format": "items",
       "ask": "Put commas around the clause if it only adds detail, or say it is right as it is.",
       "levels": [4, 4, 4],
@@ -981,14 +997,14 @@
       "read": { "bare": "label", "labels": ["Plural", "Possessive"], "check": "pluralposs", "focus": "second" }
     },
     "singular-possessives": {
-      "source": { "band": "6-8", "title": "Forming Singular Possessives 1", "line": 4470 },
+      "source": { "band": "6-8", "title": "Forming Singular Possessives 1", "line": 4514 },
       "format": "items",
       "ask": "Choose the possessive.",
       "levels": [4, 4, 4],
       "room": { "kinds": ["pc-possessive"] }
     },
     "others-apostrophes": {
-      "source": { "band": "6-8", "title": "Apostrophes with \"Others,\" \"Others',\" and \"Each Other's\"", "line": 4492 },
+      "source": { "band": "6-8", "title": "Apostrophes with \"Others,\" \"Others',\" and \"Each Other's\"", "line": 4536 },
       "format": "items",
       "ask": "Choose the form that fits.",
       "levels": [4, 4, 4]

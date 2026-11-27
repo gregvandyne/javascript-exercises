@@ -132,7 +132,9 @@ test('the kid door scrolls down to the games by topic (#play), counted; a game i
     await Promise.all([page.waitForURL(/\/parents$/), page.locator('.door-parent').click()]);
     await page.goto('/');
     await Promise.all([page.waitForURL(/\/teachers$/), page.locator('.door-teacher').click()]);
-    // From another page, the top bar's Play now lands on the home page at #play (desktop; phones hide it).
+    // From another page of the app (/teachers has the teacher site's own top bar), the top bar's Play now lands on the
+    // home page at #play (desktop; phones hide it).
+    await page.goto('/parents');
     if (width > 820) {
       const b = page.waitForRequest(r => r.method() === 'POST' && new URL(r.url()).pathname === '/go/play');
       await Promise.all([page.waitForURL(u => u.pathname === '/' && u.hash === '#play'), page.locator('.topbar .playnow').click()]);
@@ -150,7 +152,7 @@ test('the kid door scrolls down to the games by topic (#play), counted; a game i
 test('Play now on a language page leads to that language\'s home page at #play', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   const page = await ctx.newPage();
-  await page.goto('/de/teachers');
+  await page.goto('/de/parents');
   await expect(page.locator('.topbar .playnow')).toHaveAttribute('href', '/de#play');
   await Promise.all([page.waitForURL(u => u.pathname === '/de' && u.hash === '#play'), page.locator('.topbar .playnow').click()]);
   await atPlay(page);

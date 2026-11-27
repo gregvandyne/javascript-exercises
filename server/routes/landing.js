@@ -36,10 +36,9 @@
 import fs from 'node:fs';
 import { Router } from 'express';
 import { html, raw, esc } from '../views/html.js';
-import { appMark, wordmark, BRAND, ICONS_V } from '../views/brand.js';
-import { VERSION } from '../views/layout.js';
-import { BAR_COLORS } from '../theme.js';
+import { BRAND } from '../views/brand.js';
 import { tHtml, localeInfo, availableLocales, DEFAULT_LOCALE } from '../i18n/index.js';
+import { TRIAL_URL, HOST_NOW_URL, ARROW, lpHeader, lpFooter, lpPage, ctaButton, teacherCta } from '../views/lp-shell.js';
 import * as seo from '../seo.js';
 import { liveOn } from '../services/classlive-sessions.js';
 import * as funnel from '../services/funnel.js';
@@ -59,18 +58,8 @@ import { TOOLS as MANIP_TOOLS, TUTORIALS, tutorialOf } from '../../public/js/man
 import { TASKS } from '../../public/js/manip-tasks.js';
 import { KINDS as FIGURE_KINDS } from '../../public/js/figures-catalog.js';
 
-/** Where "Just Play" goes: the games for kids, no sign-up. */
-export const JUST_PLAY_URL = '/learn';
-/** Every "Start free" (the Teacher plan's 14-day trial, no card): "Who's signing up?" first (the landing is for
- *  signed-out visitors only); "I'm a teacher" there keeps ?trial=1 through the teacher's steps, which end at /trial. */
-export const TRIAL_URL = '/signup?trial=1';
-/** "Host a live lesson now": the three-field teacher sign-up, then the Quick game chooser (routes/quick-live.js). */
-export const HOST_NOW_URL = '/teachers/host';
-/** Schools: invoices, purchase orders, more than a few teachers. */
-export const SALES_EMAIL = 'Greg@oomba.ai';
-// Google's preferred sources deeplink (Search Central, "Help your readers find your site through preferred sources"):
-// a reader who taps it can mark oomba.ai as a source they prefer in Google Search. A plain link, no Google script.
-export const PREFERRED_SOURCE_URL = 'https://www.google.com/preferences/source?q=oomba.ai';
+// The shared shell of the teacher site (views/lp-shell.js): the header, the footer, the page, the main call to action.
+export { JUST_PLAY_URL, TRIAL_URL, SIGNUP_URL, HOST_NOW_URL, SALES_EMAIL, PREFERRED_SOURCE_URL, teacherCta } from '../views/lp-shell.js';
 /** Show the Teacher plan's price in the landing's structured data. Off: prices live on /plans only. */
 export const LANDING_SHOW_PRICE = false;
 export const TEACHER_PRICE = { amount: '119', currency: 'USD', label: '$119' };
@@ -100,7 +89,7 @@ export const versusNow = () => (grammarCompareOn() ? [...VERSUS, VERSUS_GRAMMAR]
 export const HERO_VIDEO = 'hub-promo';
 
 /** Clicks counted by the page's beacon (POST /landing/count/<cta>): funnel steps, a daily total each, nothing else. */
-const CTAS = new Map([['host', 'landing.host'], ['trial', 'landing.trial'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);
+const CTAS = new Map([['host', 'landing.host'], ['trial', 'landing.trial'], ['signup', 'landing.signup'], ['play', 'landing.play'], ['pricing', 'landing.pricing'], ['how', 'landing.how']]);
 
 export const router = Router();
 
@@ -139,7 +128,6 @@ const joinNames = (req, names) => {
   try { return new Intl.ListFormat(req.t.intl || req.locale || 'en', { type: 'conjunction' }).format(names); } catch { return names.join(', '); }
 };
 const longDate = (req, ymd) => { try { return new Intl.DateTimeFormat(req.t.intl || req.locale || 'en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${ymd}T12:00:00Z`)); } catch { return ymd; } };
-const ARROW = raw('<span class="lp-arrow flip" aria-hidden="true">→</span>');
 
 /** The videos: the Hub's overview and the four tool videos (views/see-it.js), and the eighteen "How it works" videos of
  *  the manipulatives. */
@@ -162,8 +150,10 @@ export function renderLanding(req, res) {
   const description = seo.clip(t('landing.meta.description'), 160);
   const langs = seo.langsWithKey('landing.hero.h1');
   const faq = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => [t(`landing.faq.q${i}`), t(i === 1 && focus.coursesHidden() ? 'landing.focus.faqA1' : `landing.faq.a${i}${i === 2 ? 'free' : ''}`, { count })]);
-  const courseLinks = !focus.coursesHidden();
-  const trial = (label, { big = false, cls = 'lp-btn-primary' } = {}) => html`<a class="lp-btn ${cls}${big ? ' lp-btn-big' : ''}" href="${TRIAL_URL}" data-cta="trial">${label}</a>`;
+  // Every main button: "Start free trial" while paid plans are on for everyone, else "Create a teacher account"
+  // (views/lp-shell.js teacherCta), the same words as the top bar's.
+  const trial = (_label, { big = false, cls = 'lp-btn-primary' } = {}) => ctaButton(req, { big, cls });
+  const cta = teacherCta(req);
   /** The Teacher plan line on the Hub, Ask Oomba, the Manipulatives and Figures. */
   const planTag = () => TH('p', 'landing.plan.on', ' class="lp-plan"', { plans: '/plans' });
   const videos = readyVideos();
@@ -175,27 +165,8 @@ export function renderLanding(req, res) {
 
   if (req.method === 'GET' && countable(req)) funnel.bump('landing.view');
 
-  // ---- the top bar and the menu
-  const NAV = [['#hub', 'hub', true], ['#tools', 'tools', true], ['#ask', 'ask', true], ['#tour', 'tour', true], ...(videos.length ? [['#videos', 'videos', true]] : []), [lp('/compare'), 'compare', true], ['#faq', 'faq', false]];
-  const navLink = (href, key) => html`<a href="${href}"${fb(`landing.nav.${key}`)}>${t(`landing.nav.${key}`)}</a>`;
-  const header = html`<a class="lp-skip" href="#lp-main">${t('landing.nav.skip')}</a>
-<header class="lp-bar" id="lp-bar">
-  <a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a>
-  <nav class="lp-nav" aria-label="${t('landing.nav.label')}">
-    ${NAV.filter(([, , wide]) => wide).map(([href, key]) => navLink(href, key))}
-  </nav>
-  <div class="lp-actions">
-    <a class="lp-signin" href="/login">${t('landing.nav.signIn')}</a>
-    <a class="lp-btn lp-btn-primary lp-btn-sm" href="${TRIAL_URL}" data-cta="trial" aria-label="${t('landing.nav.trial')}"><span class="lp-long">${t('landing.nav.trial')}</span><span class="lp-short" aria-hidden="true">${t('landing.nav.trialShort')}</span></a>
-  </div>
-  <details class="lp-menu" id="lp-menu">
-    <summary class="lp-menu-btn" aria-label="${t('landing.nav.menu')}"><span class="lp-burger" aria-hidden="true"><i></i><i></i><i></i></span><span class="lp-menu-word"${fb('landing.nav.menu')}>${t('landing.nav.menu')}</span></summary>
-    <nav class="lp-menu-panel" aria-label="${t('landing.nav.label')}">
-      <ul>${NAV.map(([href, key]) => html`<li>${navLink(href, key)}</li>`)}</ul>
-      <div class="lp-menu-foot"><a class="lp-btn lp-btn-ghost" href="/login">${t('landing.nav.signIn')}</a><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a></div>
-    </nav>
-  </details>
-</header>`;
+  // ---- the top bar and the menu (views/lp-shell.js)
+  const header = lpHeader(req, { home: true, videos: videos.length > 0 });
 
   // ---- 1. the hero: every tool in one collage (real screens), the overview video, the numbers
   const tile = (name, key, cls, sizes) => html`<figure class="lp-tile ${cls}"><div class="lp-shot">${pic(name, { sizes, eager: true })}</div><figcaption${fb(key)}>${t(key)}</figcaption></figure>`;
@@ -209,7 +180,7 @@ export function renderLanding(req, res) {
         ${trial(t('landing.hero.cta'), { big: true })}
         <a class="lp-btn lp-btn-ghost lp-btn-big" href="#tour" data-cta="how"${fb('landing.hero.tour')}>${t('landing.hero.tour')}</a>
       </div>
-      <ul class="lp-trust"><li>${t('landing.hero.trustCard')}</li><li>${t('landing.hero.trustCancel')}</li><li>${t('landing.hero.trustStudents')}</li></ul>
+      <ul class="lp-trust">${cta.trial ? html`<li>${t('landing.hero.trustCard')}</li><li>${t('landing.hero.trustCancel')}</li>` : ''}<li>${t('landing.hero.trustStudents')}</li></ul>
     </div>
     <div class="lp-collage">
       <div class="lp-collage-in" role="img" aria-label="${t('landing.hero.collageAlt')}">
@@ -428,47 +399,7 @@ export function renderLanding(req, res) {
     <div class="lp-ctas">${trial(t('landing.hero.cta'), { big: true })}<a class="lp-btn lp-btn-onink lp-btn-big" href="#tour" data-cta="how"${fb('landing.hero.tour')}>${t('landing.hero.tour')}</a></div>
   </section>`;
 
-  const playBand = html`<section class="lp-play" id="play" aria-labelledby="play-h"><div class="lp-wrap lp-play-in"><h2 id="play-h">${ico('🎮', { size: 28 })} ${t('landing.play.h')}</h2><p>${t(focus.arcadeHidden() ? 'landing.focus.play' : 'landing.play.p')}</p><a class="lp-btn lp-btn-spark" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.play.cta')} ${ARROW}</a></div></section>`;
-  const others = availableLocales().filter(l => langs.includes(l.code));
-  const footer = html`<footer class="lp-foot">
-  ${playBand}
-  <div class="lp-wrap lp-foot-in">
-    <div class="lp-foot-brand"><a class="lp-logo" href="${lp('/')}" aria-label="${t('landing.nav.home')}">${appMark('lp-mark')}<span class="lp-word" dir="ltr" aria-hidden="true">${wordmark('lp-wordmark')}<span>Academy</span></span></a><p class="lp-tagline">${t('brand.tagline')}</p>
-      <a class="lp-btn lp-btn-ghost lp-btn-sm" href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')} ${ARROW}</a>
-      <a class="lp-pref" href="${PREFERRED_SOURCE_URL}" rel="noopener" data-cta="preferred-source">${ico('⭐', { size: 18 })}${t('landing.footer.preferredSource')}</a></div>
-    <nav aria-labelledby="ft-t"><h2 id="ft-t">${t('landing.footer.teachers')}</h2><ul>
-      <li><a href="${lp('/teachers')}">${t('landing.footer.guide')}</a></li>
-      ${courseLinks ? html`<li><a href="${lp('/teachers/cs-quest')}">${t('landing.courses.cs.name')}</a></li>
-      <li><a href="/teachers/number-quest">${t('landing.courses.nq.name')}</a></li>
-      <li><a href="/teachers/cyber-defenders">${t('landing.courses.cd.name')}</a></li>` : ''}
-      ${live ? html`<li><a href="${lp('/teachers/live')}">${t('landing.nav.live')}</a></li>` : ''}
-      <li><a href="/plans" data-cta="pricing">${t('landing.footer.plans')}</a></li>
-      <li><a href="${lp('/compare')}"${fb('landing.nav.compare')}>${t('landing.nav.compare')}</a></li>
-      <li><a href="${lp('/research')}">${t('research.footer')}</a></li>
-    </ul></nav>
-    <nav aria-labelledby="fe-t"><h2 id="fe-t">${t('landing.footer.product')}</h2><ul>
-      <li><a href="${JUST_PLAY_URL}" data-cta="play">${t('landing.nav.justPlay')}</a></li>
-      ${live ? html`<li><a href="/join"${fb('quickLive.join')}>${t('quickLive.join')}</a></li>` : ''}
-      <li><a href="${lp('/learn')}">${t('landing.footer.learn')}</a></li>
-      <li><a href="${lp('/parents')}">${t('landing.footer.parents')}</a></li>
-      <li><a href="${lp('/safety')}">${t('landing.footer.safety')}</a></li>
-      <li><a href="/login">${t('landing.nav.signIn')}</a></li>
-    </ul></nav>
-    <nav aria-labelledby="fa-t"><h2 id="fa-t">${t('landing.footer.about')}</h2><ul>
-      <li><a href="/privacy">${t('landing.footer.privacy')}</a></li>
-      <li><a href="${lp('/compliance')}">${t('compliance.footer')}</a></li>
-      <li><a href="/terms">${t('landing.footer.terms')}</a></li>
-      <li><a href="/refunds">${t('landing.footer.refunds')}</a></li>
-      <li><a href="mailto:${SALES_EMAIL}?subject=${encodeURIComponent(t('landing.pricing.schools.subject'))}">${t('landing.footer.contact')}</a></li>
-    </ul></nav>
-  </div>
-  <div class="lp-wrap lp-foot-base">
-    <nav class="lp-langs" aria-labelledby="fl-t"><h2 id="fl-t" class="sr-only">${t('landing.footer.languages')}</h2>${ico('🌐', { size: 18 })}${others.map(l => html`<a href="${seo.localeUrl('/', l.code)}" hreflang="${l.code}" lang="${l.code}"${l.code === locale ? raw(' aria-current="page"') : ''}>${l.name}</a>`)}</nav>
-    <p class="lp-theme"><span>${t('landing.footer.theme')}:</span> <a href="?theme=light" rel="nofollow"${theme === 'light' ? raw(' aria-current="true"') : ''}>${ico('☀️', { size: 18 })} ${t('landing.footer.light')}</a> <a href="?theme=dark" rel="nofollow"${theme === 'dark' ? raw(' aria-current="true"') : ''}>${ico('🌙', { size: 18 })} ${t('landing.footer.dark')}</a></p>
-    <p class="lp-copy">© ${new Date().getFullYear()} ${BRAND}</p>
-  </div>
-  <div class="lp-wrap">${TH('p', 'landing.footer.trademarks', ' class="lp-tm"', { names: joinNames(req, namedNow()) })}</div>
-</footer>`;
+  const footer = lpFooter(req, { path: '/', langs, trademarks: TH('p', 'landing.footer.trademarks', ' class="lp-tm"', { names: joinNames(req, namedNow()) }) });
 
   const jsonld = seo.graph([
     seo.organizationLd(req),
@@ -479,35 +410,10 @@ export function renderLanding(req, res) {
     seo.faqLd(faq.map(([q, a]) => [q, seo.plainText(a)])),
   ]);
 
-  const body = html`${header}<main id="lp-main">${hero}${names}${one}${hub}${ask}${tools}${classroom}${versus}${tour}${videosSec}${safety}${faqSec}${final}</main>${footer}`;
-  const head = seo.seoHead(req, { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, { title, description });
+  const main = html`${hero}${names}${one}${hub}${ask}${tools}${classroom}${versus}${tour}${videosSec}${safety}${faqSec}${final}`;
   // The first picture on the screen, fetched before the CSS is read (the collage's big screen).
   const lead = SHOTS['tool-dash'] ? `<link rel="preload" as="image" type="image/webp" href="/img/landing/tool-dash-${SHOTS['tool-dash'].w[0]}.webp" imagesrcset="${esc(shotSrcset('tool-dash'))}" imagesizes="(min-width: 1100px) 660px, 92vw" fetchpriority="high">` : '';
-  const themeMeta = theme === 'auto'
-    ? `<meta name="color-scheme" content="light dark">\n<meta name="theme-color" content="${BAR_COLORS.light}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="${BAR_COLORS.dark}" media="(prefers-color-scheme: dark)">`
-    : `<meta name="color-scheme" content="${theme}">\n<meta name="theme-color" content="${theme === 'light' ? BAR_COLORS.light : BAR_COLORS.dark}">`;
-  res.status(200).type('html').set('Vary', 'Cookie, Accept-Language').send(`<!doctype html>
-<html lang="${esc(locale)}" dir="${esc(info.dir)}"${theme === 'auto' ? '' : ` data-theme="${theme}"`} class="lp-html">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-${themeMeta}
-<title>${esc(title)}</title>
-<meta name="description" content="${esc(description)}">
-${head}
-<link rel="icon" href="/favicon.ico?v=${ICONS_V}" sizes="32x32">
-<link rel="icon" href="/icons/icon.svg?v=${ICONS_V}" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png?v=${ICONS_V}">
-<link rel="manifest" href="/manifest.webmanifest?v=${ICONS_V}">
-<link rel="preload" href="/fonts/bricolage-grotesque-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-${lead}
-<link rel="stylesheet" href="/css/landing.css?v=${VERSION}">
-</head>
-<body class="lp">
-${body}
-<script type="module" src="/js/landing.js?v=${VERSION}"></script>
-</body>
-</html>`);
+  lpPage(req, res, { title, description, seo: { index: true, path: '/', langs, image: '/og/landing.jpg', imageAlt: t('landing.meta.imageAlt'), jsonld: [jsonld] }, header, main, footer, head: lead });
 }
 
 /** The product as structured data. Following the game pages (docs/decisions.md "Search engines"), no

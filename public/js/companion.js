@@ -46,6 +46,7 @@ function start() {
   const views = !!document.getElementById('cv');
   let dash = PAGE.type === 'dashboard';
   const S = { file: null, sent: false, web: true, webAllowed: true, mic: null };
+  const actDrafts = new Map();   // an action card's typed box, by turn (below)
   const label = () => {
     const a = BUS.page(); if (a && a.label) { const x = a.label(); if (x) return String(x).slice(0, 60); }
     const h = document.querySelector(dash ? '.dash-class' : 'main h1');
@@ -74,7 +75,9 @@ function start() {
   const chat = mountChat({
     id: 'companion', url: () => '/api/companion/chat', getUrl: () => `/api/companion/chat${ref.chat && ref.chat.state().mode === 'open' ? '' : '?peek=1'}`, alwaysBubble: true,
     start: () => via('start') || 'closed',
-    bubbleHost: dash && !views ? document.getElementById('dash-foot') : null,
+    // The dashboard: at the end of its layout bar. The live host room: at the end of its top bar, so it never covers
+    // the room's controls or the join code (the owner's live audit, 27 Nov 2026); it hides in full screen (below).
+    bubbleHost: dash && !views ? document.getElementById('dash-foot') : PAGE.type === 'live' ? document.querySelector('.lv-host > .lv-bar') : null,
     subHtml: `<span class="oc-ctx"><i aria-hidden="true"></i>${esc(L('sees'))} <b id="oc-sees">${esc(label())}</b></span>`,
     headExtra: `<button type="button" class="oc-hbtn" id="oc-hist-btn" aria-label="${esc(L('history'))}" title="${esc(L('history'))}" aria-expanded="false" aria-controls="oc-hist">${ic('🕘', 20)}</button><button type="button" class="oc-hbtn" id="oc-new" aria-label="${esc(L('newChat'))}" title="${esc(L('newChat'))}">${ic('✏️', 20)}</button>`,
     aboveRow: '<div class="oc-bookmode" id="oc-bookmode" hidden></div><div class="oc-attach" id="oc-attach" hidden></div><div class="oc-listen" id="oc-listen" role="status" hidden></div>',
@@ -98,8 +101,8 @@ function start() {
     // Copy on each answer: its words as clean text (links as "words (address)", steps numbered).
     copyText: x => copyText(x.text, location.origin),
     note: x => noteHtml(x) + (via('note', x) || ''),
-    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
-    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
+    change: x => (x.change && x.change.kind === 'point' ? pointHtml(x) : x.change && x.change.kind === 'class' ? classDoneHtml(x) : x.change && x.change.kind === 'assign' ? assignDoneHtml(x) : x.change && x.change.kind === 'action' ? actionDoneHtml(x) : x.change && x.change.kind === 'dash' ? changeHtml(x) : x.change && x.change.kind === 'book' ? bookChangeHtml(x) : via('change', x) || changeHtml(x)),
+    changeLinks: x => (x.change && x.change.kind === 'class' ? openDashHtml(x) : x.change && x.change.kind === 'assign' ? `<a class="btn btn-sm oc-open" href="/class/${encodeURIComponent(x.change.classId)}?view=assigned">${ic('🎒', 16)} ${esc(L('asg.open'))}</a>` : x.change && x.change.kind === 'book' ? openBookHtml(x) : via('changeLinks', x) || ''),
     extra: (x, c) => via('extra', x, c) || '',
     onAct: async (act, turn, btn) => { const r = await via('onAct', act, turn, btn); return r === undefined ? onAct(act, turn, btn) : r; },
     onAnswer: (x, c) => { if (x.change && x.change.kind === 'dash') afterDash(x.change); if (x.change && x.change.kind === 'point') afterPoint(x.change); via('onAnswer', x, c); },
@@ -119,6 +122,8 @@ function start() {
   BUS.setChat(chat);
   BUS.onPage(() => { const b = document.getElementById('oc-sees'); if (b) b.textContent = label(); chat.render(); });
   const root = chat.root;
+  // What the teacher typed in an action card's box, kept while the panel redraws (never stored, never sent until Do it).
+  root.addEventListener('input', e => { const el = e.target.closest && e.target.closest('[id^="oc-act-"]'); if (el) actDrafts.set(el.id.slice(7), el.value); });
   const $ = id => document.getElementById(id);
 
   // ---------------------------------------------------------------- the flags: web search, the microphone
@@ -334,12 +339,29 @@ function start() {
     const blob = m.parts.length ? new Blob(m.parts, { type: (m.rec && m.rec.mimeType || 'audio/webm').split(';')[0] }) : null;
     m.parts = [];
     if (!m.upload || m.cancel || !blob) { box.classList.remove('interim'); box.readOnly = false; return; }
+    await upload(m, blob);
+  }
+  /** The clip, uploaded once to be turned into words. When that fails too (the live words failed already), the clip is
+   *  kept here in the page, never on the server, with Try again until the teacher dismisses it, so no words are lost. */
+  async function upload(m, blob) {
     try {
       const res = await fetch('/api/companion/transcribe', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': blob.type, 'X-Clip-Ms': String(Date.now() - m.t0), ...(m.live && m.live.liveId ? { 'X-Live-Id': m.live.liveId } : {}) }, body: blob });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || L('mic.failed'));
+      lostClip(null);
       setBox(joined(m.base, data.text || ''), false); box.focus();
-    } catch (e) { setBox(m.base, false); chat.showErr(e.message || L('mic.failed')); }
+    } catch { setBox(m.base, false); lostClip({ m, blob }); }
+  }
+  function lostClip(k) {
+    let el = document.getElementById('oc-lost');
+    if (!k) { if (el) el.remove(); return; }
+    if (!el) { el = document.createElement('div'); el.id = 'oc-lost'; el.className = 'oc-lost'; el.setAttribute('role', 'alert'); bar.after(el); }
+    el.innerHTML = `<span>${esc(L('mic.lost'))}</span><button type="button" class="btn btn-sm btn-primary" data-lost="retry">${esc(L('mic.retry'))}</button><button type="button" class="btn btn-sm" data-lost="drop">${esc(L('mic.dismiss'))}</button>`;
+    el.onclick = e => {
+      const b = e.target.closest('[data-lost]'); if (!b) return;
+      if (b.dataset.lost === 'drop') { lostClip(null); return; }
+      b.disabled = true; upload(k.m, k.blob);
+    };
   }
   function drawMic(m) {
     micBtn.classList.toggle('oc-mic-on', !!m);
@@ -363,9 +385,12 @@ function start() {
     if (n.sources && n.sources.length) parts.push(webHtml(n.sources));
     if (n.proposal) parts.push(proposalHtml(x, n.proposal));
     if (n.handoff) parts.push(handoffHtml(x, n.handoff));
+    if (n.made) parts.push(madeHtml(n.made));
     if (n.pick) parts.push(pickHtml(x, n.pick));
     if (n.ask) parts.push(askHtml(x, n.ask));
     if (n.classNew) parts.push(classHtml(x, n.classNew));
+    if (n.assign) parts.push(assignHtml(x, n.assign));
+    if (n.action) parts.push(actionHtml(x, n.action));
     if (n.nav && !n.nav.open) parts.push(navHtml(x, n.nav));
     if (n.book) parts.push(bookHtml(x, n.book));
     if (n.bookDelete) parts.push(bookDelHtml(x, n.bookDelete));
@@ -397,10 +422,17 @@ function start() {
     const c = x.change; if (!c || c.kind !== 'dash') return '';
     return `<p><b>${esc(L('dash.done'))}</b></p>${(c.lines || []).map(lineHtml).join('')}${dash ? `<span class="oc-note">${esc(L('dash.highlighted'))}</span>` : `<a class="btn btn-sm" href="/class/${encodeURIComponent(c.classId)}/dashboard">${esc(L('dash.openDash'))}</a>`}`;
   }
+  /** Made in the chat (services/companion-make.js): what it is, checked, and the button that opens that exact board,
+   *  worksheet or lesson. A make that did not land says so (the reply says it too). */
+  function madeHtml(m) {
+    const ico = { board: '🧮', sheet: '📐', lesson: '📝' }[m.kind] || '✨';
+    if (m.failed) return `<div class="oc-made oc-made-no" role="note"><p>${ic('⚠️', 16)} ${esc(L(`made.no.${m.kind}`))}</p></div>`;
+    return `<div class="oc-made" data-made="${esc(m.kind)}"><h4>${ic(ico, 18)} <span dir="auto">${esc(m.title || '')}</span></h4><p class="oc-hsub">${ic('✓', 14)} ${esc(t(`js.companion.made.${m.kind}`, { n: m.n || 0 }))}</p><div class="oc-acts"><a class="btn btn-sm btn-primary" href="${esc(m.href)}" data-oc-made="${esc(m.id)}">${esc(L(`made.open.${m.kind}`))}</a></div></div>`;
+  }
   function handoffHtml(x, h) {
     const facts = [h.grade ? [L('hand.grade'), h.grade] : null, ...(h.facts || []).map(f => [L(`hand.${f.k}`), f.v])].filter(Boolean);
     return `<div class="oc-hand"><h4>${ic('🛠️', 18)} ${esc(h.title || L(`hand.${h.tool}`))}</h4>${h.title ? `<p class="oc-hsub">${esc(L(`hand.${h.tool}`))}</p>` : ''}${facts.length ? `<dl>${facts.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>` : ''}<div class="oc-brief" dir="auto">${esc(h.brief)}</div>
-      <div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="handoff" data-turn="${esc(x.id)}">${esc(L(`hand.open.${h.tool}`))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="rebrief" data-turn="${esc(x.id)}">${esc(L('hand.change'))}</button></div></div>`;
+      <div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="handoff" data-turn="${esc(x.id)}">${esc(L(h.tool === 'builder' ? `hand.open.${h.tool}` : 'hand.makeNow'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="rebrief" data-turn="${esc(x.id)}">${esc(L('hand.change'))}</button></div></div>`;
   }
   // ---------------------------------------------------------------- points (docs/decisions.md "Points from the Oomba chat")
   const reasonIc = it => `<span class="oc-pic" aria-hidden="true">${ic(it.icon || '⭐', 22)}</span>`;
@@ -435,6 +467,33 @@ function start() {
     if (p.state !== 'open') return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(p.state === 'created' ? '✓' : '➖', 16)} ${esc(L(`cls.${p.state === 'created' ? 'created' : p.state === 'denied' ? 'denied' : 'declined'}`))}</p></div>`;
     return `<div class="oc-change oc-cls"><p>${ic('🏫', 20)} <b dir="auto">${esc(q)}</b></p>${p.school ? `<p class="oc-hsub">${esc(t('js.companion.cls.at', { school: p.school }))}</p>` : ''}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="create" data-turn="${esc(x.id)}">${ic('➕', 16)} ${esc(L('cls.create'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="createNo" data-turn="${esc(x.id)}">${esc(L('cls.notNow'))}</button></div></div>`;
   }
+  // Assign from the chat (services/companion.js assignPlan): "Assign <what> to <class>?" with Assign and Not now. Nothing
+  // is assigned until Assign; the change card after it is the assignment as saved, read back, with Undo.
+  const asgWho = (n, due) => [n ? t('js.companion.asg.some', { count: n }) : L('asg.all'), due ? t('js.companion.asg.due', { day: fmtDay(due) }) : ''].filter(Boolean).join(' · ');
+  const fmtDay = d => { const v = typeof d === 'number' ? new Date(d * 1000) : new Date(`${d}T12:00:00Z`); return Number.isFinite(v.getTime()) ? v.toLocaleDateString(document.documentElement.lang || undefined, { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) : ''; };
+  function assignHtml(x, p) {
+    if (p.state !== 'open') return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(p.state === 'assigned' ? '✓' : '➖', 16)} ${esc(L(p.state === 'assigned' ? 'asg.assigned' : 'asg.declined'))}</p></div>`;
+    return `<div class="oc-change oc-cls"><p>${ic(p.kind === 'book' ? '📚' : '🎮', 20)} <b dir="auto">${esc(t('js.companion.asg.ask', { title: p.title, class: p.className }))}</b></p><p class="oc-hsub">${esc(asgWho(p.students.length, p.due))}</p><div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="assign" data-turn="${esc(x.id)}">${ic('✓', 16)} ${esc(L('asg.assign'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="assignNo" data-turn="${esc(x.id)}">${esc(L('asg.notNow'))}</button></div></div>`;
+  }
+  const assignDoneHtml = x => `<p>${ic('🎒', 18)} <b dir="auto">${esc(t('js.companion.asg.done', { title: x.change.title, class: x.change.className }))}</b></p><p class="oc-hsub">${esc(asgWho(x.change.students, x.change.due))}</p>`;
+  // Oomba does it (services/companion-actions/): any other teacher action is one card, dressed by the server in the
+  // teacher's language with the names (for this page only): what will happen, a one-line warning for children's
+  // accounts, deletes, students' screens or posts outside the site, and Do it / Not now. Add students has a box for the
+  // names (sent with the tap only, never to Oomba's AI); a join request a box for the name on the class list.
+  // An action's icon (add one here with a new action; ✨ otherwise).
+  const ACT_ICON = { addStudents: '🧒', changeDue: '📅', unassign: '➖', renameClass: '✏️', newJoinCode: '🔑', archiveClass: '🗄️', restoreClass: '♻️', resetPassword: '🔒', removeStudent: '🚪', moveStudent: '🔀', addCoTeacher: '🧑‍🏫', approveJoin: '✅', declineJoin: '🚫', takeAttendance: '📋', setSupport: '🤝', makeGroups: '👥', handOut: '📤', takeBack: '↩️', needsSeen: '👀', needsSnooze: '⏰', startClass: '▶️', endClass: '⏹️', parentsView: '🏠', hostLive: '📡', endLive: '🏁', startTimer: '⏳', pauseTimer: '✋', resetTimer: '🔄', eyesUp: '👀', quickCheck: '👍', endCheck: '✅', pickName: '🙋', pushToScreens: '📤', endPush: '📥', assignLesson: '📚', assignWorksheet: '📐', assignBoard: '🧮', createUnit: '🗂️', renameUnit: '✏️', reorderAssignment: '⬆️', postToClassroom: '📤', renameWorksheet: '✏️', deleteWorksheet: '🗑️', renameBoard: '✏️', duplicateBoard: '📋', deleteBoard: '🗑️', duplicateLesson: '📋', deleteLesson: '🗑️' };
+  function actionHtml(x, p) {
+    if (!p) return '';
+    if (p.state !== 'open') {
+      const done = p.state === 'done';
+      return `<div class="oc-change oc-cls done"><p class="oc-state">${ic(done ? '✓' : p.state === 'failed' ? '⚠️' : '➖', 16)} ${esc(L(`act.${done ? 'done' : p.state === 'failed' ? 'failed' : 'declined'}`))}</p>${p.why ? `<p class="oc-hsub">${esc(p.why)}</p>` : ''}</div>`;
+    }
+    const id = esc(x.id);
+    const box = p.input === 'list' ? `<label class="oc-actin"><span>${esc(L('act.namesLabel'))}</span><textarea class="input" id="oc-act-${id}" rows="5" maxlength="2000" autocomplete="off" spellcheck="false" dir="auto">${esc(actDrafts.get(x.id) || '')}</textarea><small>${esc(L('act.namesHint'))}</small></label>`
+      : p.input === 'one' ? `<label class="oc-actin"><span>${esc(L('act.nameLabel'))}</span><input class="input" id="oc-act-${id}" maxlength="60" autocomplete="off" dir="auto" value="${esc(actDrafts.has(x.id) ? actDrafts.get(x.id) : p.value || '')}"></label>` : '';
+    return `<div class="oc-change oc-cls oc-act"><p>${ic(ACT_ICON[p.action] || '✨', 20)} <b dir="auto">${esc(p.title)}</b></p>${(p.lines || []).map(l => `<p class="oc-hsub" dir="auto">${esc(l)}</p>`).join('')}${p.warn ? `<p class="oc-hsub oc-actwarn">${ic('⚠️', 14)} ${esc(p.warn)}</p>` : ''}${p.undoable ? '' : `<p class="oc-hsub">${esc(L('act.noUndo'))}</p>`}${box}<div class="oc-acts"><button type="button" class="btn btn-sm btn-primary" data-c="act" data-act="actionDo" data-turn="${id}">${ic('✓', 16)} ${esc(L('act.do'))}</button><button type="button" class="btn btn-sm" data-c="act" data-act="actionNo" data-turn="${id}">${esc(L('act.notNow'))}</button></div></div>`;
+  }
+  const actionDoneHtml = x => { const c = x.change, [first, ...rest] = c.lines || []; return `<p>${ic(ACT_ICON[c.id] || '✓', 18)} <b dir="auto">${esc(first || L('act.done'))}</b></p>${rest.map(l => `<p class="oc-hsub" dir="auto">${esc(l)}</p>`).join('')}${(c.links || []).length ? `<div class="oc-acts">${c.links.map(k => `<a class="btn btn-sm${k.primary ? ' btn-primary' : ''} oc-open" href="${esc(k.href)}">${esc(k.label)}</a>`).join('')}</div>` : ''}`; };
   // Beside its Undo: Open its dashboard (Go there, so the panel opens there too; a plain link once used).
   const openDashHtml = x => {
     const n = x.note && x.note.nav;
@@ -586,6 +645,12 @@ function start() {
       if (!v || !v.trim()) return null;
       btn.dataset.v = v.trim().slice(0, 60);
     }
+    // An action card's box (Add students: the names; a join request: the name for the class list) goes with the tap only.
+    if (act === 'actionDo' && btn) {
+      const box = document.getElementById(`oc-act-${turn.id}`), p = turn.note && turn.note.action;
+      if (box && p && p.input === 'list' && !box.value.trim()) { box.focus(); chat.showErr(L('act.namesFirst')); return null; }
+      btn.dataset.v = box ? box.value.slice(0, 2000) : '';
+    }
     // Copying a plan or a week to another class: the preview first (what goes where there, groups it doesn't have).
     if ((act === 'planCopy' || act === 'planWeekCopy') && btn && btn.dataset.v) {
       try {
@@ -602,7 +667,7 @@ function start() {
     }
     if (act === 'rebrief') { const box = $('oc-in'); box.value = L('hand.changeText'); box.dispatchEvent(new Event('input')); box.focus(); return null; }
     try {
-      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
+      const r = await api('/api/companion/chat/act', { method: 'POST', body: { turnId: turn.id, act, ...(act === 'pick' && btn ? { pick: btn.dataset.v } : {}), ...((act === 'askPick' || act === 'actionDo' || /^(book|plan|follow)[A-Z]/.test(act)) && btn && btn.dataset.v !== undefined ? { value: btn.dataset.v } : {}) } });
       if (act === 'bookStart' && r.chat) { chat.took(r.chat); return null; }
       // A book deleted from the chat: its card on this page goes; on its own page, back to the books.
       if (act === 'bookDelete' && turn.note && turn.note.bookDelete) {
@@ -616,6 +681,8 @@ function start() {
       // A day plan's card: the board's plan pill follows (public/js/homeroom-plan.js listens).
       if (r && 'plan' in r) document.dispatchEvent(new CustomEvent('oomba:plan', { detail: { classId: r.classId, plan: r.plan } }));
       if (r && r.toast) toast(r.toast);
+      // An older card for a worksheet or a board (before Oomba made them itself): the chat makes it now, never an empty page.
+      if (act === 'handoff' && r.handoff && r.handoff.tool !== 'builder') { chat.took(r.chat || chat.state().chat); setTimeout(() => chat.send(`${L('hand.makeText')}\n${handoffText(r.handoff)}`), 0); return null; }
       if (act === 'handoff' && r.handoff) {
         store.set('oomba-handoff', JSON.stringify({ tool: r.handoff.tool, text: handoffText(r.handoff), at: Date.now() }));
         location.href = r.handoff.href;

@@ -48,9 +48,11 @@ test('structured data and language addresses work in the browser', async ({ page
   const errors = []; page.on('pageerror', e => errors.push(e.message)); page.on('console', m => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto('/g/sum-racer'); await page.goto('/learn/music-games');
   expect(errors).toEqual([]);
-  // The hero's call to action (billing is off in this run: "Create a teacher account") jumps to the "start" section.
+  // The hero's call to action (billing is off in this run: "Create a teacher account") opens the teacher sign-up, as the
+  // top bar's does; "Set up your school" jumps to the start section.
   await page.goto('/teachers');
-  await page.getByRole('link', { name: 'Create a teacher account' }).first().click();
+  await expect(page.locator('#main-cta')).toHaveAttribute('href', '/signup/for/teacher');
+  await page.locator('.lp-leader a[href="#start"]').click();
   await expect(page.locator('#start')).toBeInViewport();
   // /fr/g/sum-racer is French, without changing the visitor's saved language.
   await page.goto('/fr/g/sum-racer');

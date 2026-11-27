@@ -45,7 +45,7 @@ const grownup = () => { const u = auth.createUser({ username: `SrParent${++n}`, 
 const admin = () => auth.createUser({ username: `SrBoss${++n}`, password: 'rainbow-77', role: 'admin' });
 const good = (over = {}) => ({ school: 'Maple Street Elementary', role: 'teacher', email: 'Ms.Zorvath@maple.k12.example.org', students: '320', country: 'United States', ...over });
 const send = (u, body, opts = {}) => as(u)('/api/teachers/school-request', { method: 'POST', body, ...opts });
-const start = s => (/<section class="panel lp-start"[\s\S]*?<\/section>/.exec(s) || [''])[0];
+const start = s => (/<section class="lp-final lp-start"[\s\S]*?<\/section>/.exec(s) || [''])[0];
 
 test('/teachers: signed out (or a guest), "Set up your school" leads into the one sign-up; adults signed in get the request form; no prices', async () => {
   const r = await call(null, '/teachers');

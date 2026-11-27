@@ -22,7 +22,11 @@ if (dlg) {
     if (!b) return;
     opener = b;
     for (const k of ['what', 'unit', 'band', 'topic']) f.elements[k].value = b.dataset[k] || '';
-    dlg.querySelector('#glt-dialog-h').textContent = String(data.titleOf || '{title}').replace('{title}', b.dataset.title || '');
+    // the heading is in the page's language; the unit or topic name in it is course text, English (lang="en"; a room's
+    // title is already "Proofread: <topic>" in the teacher's language)
+    const h = dlg.querySelector('#glt-dialog-h'), [pre, post = ''] = String(data.titleOf || '{title}').split('{title}');
+    const name = document.createElement('span'); if (b.dataset.what !== 'room') name.lang = 'en'; name.dir = 'ltr'; name.textContent = b.dataset.title || '';
+    h.textContent = ''; h.append(pre, name, post);
     const what = dlg.querySelector('#glt-what'); what.textContent = what.dataset[b.dataset.what] || '';
     const err = f.querySelector('.form-err'); if (err) err.textContent = '';
     syncWho();

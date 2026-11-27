@@ -252,6 +252,9 @@ h3{font-size:17px;font-weight:700}
   .pbar{padding:0 10px}
   .boardWrap{border-radius:0;box-shadow:none}
   .side{width:auto;padding:0 12px}
+  /* On a phone the status line and the game buttons (Next, Hint, Retry) come right under the board, so the next
+     puzzle is one tap away without scrolling; the puzzle card, moves and typing box follow. */
+  .side>*{order:2}.side>.statusCard,.side>.rushCard{order:0}.side>.ctl{order:1}
   .moves{max-height:none;display:flex;flex-wrap:nowrap;overflow-x:auto;gap:2px;padding:6px;min-height:44px}
   .mrowM{display:flex;flex:none;background:none!important}
   .mrowM .n{padding:4px 2px 4px 6px}
@@ -492,6 +495,10 @@ const CONFIG = {
 // written by scripts/chess-puzzles.mjs (4160 Lichess puzzles, CC0): do not edit by hand
 const PZ_VER = "v1-hpamnjci";
 const PZ_BANDS = [600,800,1000,1200,1400,1600,1800,2000];
+/** How many puzzles of each theme pack the bank holds (all bands of PZ_VER; tests/unit/castle-clash.test.js checks it). */
+const PZ_THEME_TOTAL = {"mateIn1":336,"mateIn2":411,"mateIn3":311,"fork":451,"pin":349,"skewer":306,"hangingPiece":350,"discoveredAttack":375,"backRankMate":94,"promotion":305,"endgame":1920,"sacrifice":453,"deflection":396,"attraction":270,"trappedPiece":200};
+/** A theme's puzzles solved (each puzzle counts once: a rated puzzle is never served twice) and its total. */
+const themeDone = th => { const v = DATA.pz.themes[th] || [0, 0], total = PZ_THEME_TOTAL[th] | 0; return { n: Math.min(v[0] | 0, total), total, pct: total ? Math.round(100 * Math.min(v[0] | 0, total) / total) : 0 }; };
 const PZ_THEMES = ["mateIn1","mateIn2","mateIn3","mateIn4","fork","pin","skewer","hangingPiece","discoveredAttack","backRankMate","promotion","endgame","sacrifice","deflection","attraction","smotheredMate","doubleCheck","trappedPiece","kingsideAttack","quietMove","defensiveMove","clearance","interference","xRayAttack","capturingDefender","intermezzo","opening","middlegame","advancedPawn","mate"];
 const PZ_SRI = {"p600":"sha384-Tx5DkEHIMKUq1ZG452+KTv7ucLGehnkONgYuvO4goaFxZYRuoyuRDMv3+uUR0WFt","p800":"sha384-1eI47diTjVOuLlbEFrwpo/EChysAHB2S8dgvO65Ds9aWDhwd2VH364xU8Hllc1OB","p1000":"sha384-b7VDWtnY9hNz8k3zs8I09rOn6P7rORa3nFr1yVffCAaa712sFWpQEJA9Ejk4Wplw","p1200":"sha384-4ceSV76fWDqLaqIUXQTELLkfBLE/aOCVheXq3tRZYVYSTjLPlsqvlf9kOBMs8gyV","p1400":"sha384-ky1+9uActIYkcZnAoEw9QDkq93L5eQRgFZc6id8omGoxxRSqhyDtcVJ6EavuuEdV","p1600":"sha384-BIoPlqQjJPqS/VehqyeLGbmTOKmc1Lp3rAbyle3sa6Nqw51gqmdKmEu8az7VkKIO","p1800":"sha384-naNzHKc7iARsi/w66eYlWZ8zKVCv/fLZngVLauc0Jm4IiJMZZur69USmTllpOBPS","p2000":"sha384-XAcxC9/l7ut7XbeDatWHf8c23OhW6hK0w3ahxJMjPgxWeNaPoUSQyOAaMqUPKE7/"};
 // ==== PUZZLE PACKS END ====
@@ -6075,7 +6082,7 @@ function puzzleInfo() {
   $('#infoTask').textContent = G.puz.solved ? t('pz.solvedTask') : P.mateIn === 1 ? t('pz.find1') : (G.puz.left === 2 ? t('pz.find2') : t('pz.finish'));
   const row = $('#infoRow'); row.innerHTML = '';
   row.appendChild(chip(t('pz.path'), 'puzzle'));
-  row.appendChild(chip(t('chip.puz', { n: PUZZLES.filter((p, i) => DATA.puzzles[i]).length, total: PUZZLES.length }), DATA.puzzles[G.puz.i] ? 'star' : 'star-off'));
+  row.appendChild(chip(t('prog.of', { a: PUZZLES.filter((p, i) => DATA.puzzles[i]).length, b: PUZZLES.length }), DATA.puzzles[G.puz.i] ? 'star' : 'star-off'));
 }
 function puzzleAfterMove(entry) {
   const pz = G.puz, P = PUZZLES[pz.i];
@@ -6667,10 +6674,10 @@ function renderPuzzleHub() {
   $('#pzRushStat').textContent = (pz.rushBest ? t('rush.best', { n: pz.rushBest }) + ' · ' : '') + t('pz.rushSub');
   const grid = $('#packGrid'); grid.innerHTML = '';
   for (const th of CONFIG.packs) {
-    const v = pz.themes[th] || [0, 0], pct = v[1] ? Math.round(100 * v[0] / v[1]) : 0;
+    const { n, total, pct } = themeDone(th);
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pack'; b.dataset.theme = th;
     b.innerHTML = `<b></b><small></small><div class="bar"><i style="width:${pct ? Math.max(4, pct) : 0}%"></i></div>`;
-    b.querySelector('b').textContent = t('th.' + th); b.querySelector('small').textContent = v[1] ? t('prog.of', { a: v[0], b: v[1] }) : t('prog.none');
+    b.querySelector('b').textContent = t('th.' + th); b.querySelector('small').textContent = t('prog.of', { a: fmtN(n), b: fmtN(total) });
     b.addEventListener('click', () => nextPuzzle('theme', th));
     grid.appendChild(b);
   }
@@ -6686,7 +6693,7 @@ function renderPuzzleHub() {
     b.addEventListener('click', () => startPuzzle(i));
     g.appendChild(b);
   });
-  $('#puzSum').textContent = t('chip.puz', { n: PUZZLES.filter((p, i) => DATA.puzzles[i]).length, total: PUZZLES.length });
+  $('#puzSum').textContent = t('prog.of', { a: PUZZLES.filter((p, i) => DATA.puzzles[i]).length, b: PUZZLES.length });
 }
 function renderProgress() {
   const pz = DATA.pz, d = dayNum();
@@ -6717,12 +6724,12 @@ function renderProgress() {
     for (const [v, f] of [[hi, (P + 10) / H], [lo, (H - P) / H]]) { const sp = document.createElement('span'); sp.className = 'yl'; sp.textContent = fmtN(v); sp.style.top = `calc(${(f * 100).toFixed(1)}% - 9px)`; box.appendChild(sp); }
   }
   $('#progThemes').innerHTML = CONFIG.packs.map(th => {
-    const v = pz.themes[th] || [0, 0], pct = v[1] ? Math.round(100 * v[0] / v[1]) : 0;
-    return `<div class="mrow"><span>${escapeHTML(t('th.' + th))}</span><small>${v[1] ? escapeHTML(t('prog.of', { a: v[0], b: v[1] })) : escapeHTML(t('prog.none'))}</small><div class="bar"><i style="width:${pct ? Math.max(3, pct) : 0}%"></i></div></div>`;
+    const { n, total, pct } = themeDone(th);
+    return `<div class="mrow"><span>${escapeHTML(t('th.' + th))}</span><small>${escapeHTML(t('prog.of', { a: fmtN(n), b: fmtN(total) }))}</small><div class="bar"><i style="width:${pct ? Math.max(3, pct) : 0}%"></i></div></div>`;
   }).join('');
   $('#progWins').innerHTML = LEVELS.map(k => `<div class="stat"><span style="display:block;width:40px;height:40px;border-radius:10px;overflow:hidden;margin:0 auto 6px">${botFace(k)}</span><small>${escapeHTML(levelName(k))}</small><b>${fmtN(DATA.wins[k] | 0)}</b></div>`).join('');
   const n = PUZZLES.filter((p, i) => DATA.puzzles[i]).length;
-  $('#progPath').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:2px;color:#C99A00">${PUZZLES.map((p, i) => icon(DATA.puzzles[i] ? 'star' : 'star-off')).join('')}</div><p class="sub">${escapeHTML(t('chip.puz', { n, total: PUZZLES.length }))}</p>`;
+  $('#progPath').innerHTML = `<div style="display:flex;flex-wrap:wrap;gap:2px;color:#C99A00">${PUZZLES.map((p, i) => icon(DATA.puzzles[i] ? 'star' : 'star-off')).join('')}</div><p class="sub">${escapeHTML(t('prog.of', { a: n, b: PUZZLES.length }))}</p>`;
 }
 function renderSettings() {
   const box = $('#themePick'); box.innerHTML = '';

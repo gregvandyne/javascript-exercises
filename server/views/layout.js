@@ -3,7 +3,7 @@
 //   mid: true = a medium-width page (reading pages like lessons)
 //   active: 'home'|'play'|'search'|'learn'|'read'|'build'|'friends'|'me'|'plans'|'family'|'account'|'classes'|'school'|'live'|null
 //           (the tab it makes current: shellFor/currentTab)   back: href for the Back link on inner pages
-//   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page)
+//   scripts: ['/js/foo.js'] (ES modules)   bare: true = no nav/footer (play page); themedBar: a bare page whose bar follows the theme
 //   i18n: extra key prefixes to embed for the browser. Every page gets 'js.app' plus 'js.<name>' for each /js/<name>.js.
 //   seo: { index: true, path, langs, image, imageAlt, type, jsonld } to let search engines index the page (server/seo.js).
 //        Without it a page is noindex: new pages stay out of search results until they opt in.
@@ -282,7 +282,7 @@ function staffMenu(req, { name, badge, active, unread, tools = false }) {
  *  feature's routes (routes/homeroom.js), so this module imports none of them. */
 const everyPage = [];
 export const onEveryPage = fn => { if (!everyPage.includes(fn)) everyPage.push(fn); };
-export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false, companion = null } = {}) {
+export function layout(req, { title = '', active = null, body = '', scripts = [], head = '', back = null, backLabel = null, bodyClass = '', description = null, bare = false, themedBar = false, mid = false, i18n = [], seo = null, keyboard = false, signinPage = false, companion = null } = {}) {
   const t = tReq(req);
   const locale = req.locale || DEFAULT_LOCALE; const info = localeInfo(locale);
   const u = req.user;
@@ -386,7 +386,9 @@ export function layout(req, { title = '', active = null, body = '', scripts = []
   const theme = req.theme === 'light' || req.theme === 'dark' ? req.theme : null;
   // The browser's toolbar takes the top bar's colour: one value for a chosen theme, one per device scheme otherwise. The
   // play page's bar is Ink in both themes.
-  const themeColor = bare || theme ? `<meta name="theme-color" content="${BAR_COLORS[bare ? 'dark' : theme]}">`
+  // (themedBar: a bare page whose bar follows the theme, a Grammar Lab room)
+  const inkBar = bare && !themedBar;
+  const themeColor = inkBar || theme ? `<meta name="theme-color" content="${BAR_COLORS[inkBar ? 'dark' : theme]}">`
     : `<meta name="theme-color" content="${BAR_COLORS.light}" media="(prefers-color-scheme: light)">\n<meta name="theme-color" content="${BAR_COLORS.dark}" media="(prefers-color-scheme: dark)">`;
   const fullTitle = title ? t('layout.titleWith', { title }) : t('layout.titleHome');
   const desc = clip(description || t('layout.description'), 160);
@@ -426,11 +428,16 @@ ${scripts.map(s => `<script type="module" src="${esc(s)}?v=${VERSION}"></script>
 // bar), never on a print page or a student view of a lesson. One chat everywhere: a Figures worksheet and the
 // math boards have no panel of their own, the companion offers their workflow there (their page scripts register it:
 // public/js/oomba-bus.js). The dashboard hides it again in Projector and Eyes up (public/js/companion.js).
-const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|host|cohost)\/|^\/number-quest\/|^\/cs-quest\/play/;
+// The live host room (/live/host/<id>) has it too (the owner's live audit, 27 Nov 2026: "missing in the live host
+// room"): its page asks for it (companion 'live'), the bubble sits at the bottom left there, clear of the room's
+// controls and the join code, and hides in full screen (public/js/companion.js). Its sub-pages (the teacher's phone
+// view) do not. Studio (/studio/<id>) has its own "Chat with the Builder" beside the game, so no Oomba bubble there:
+// two chats on one page confused (docs/decisions.md "Oomba makes it, then reports what it checked").
+const NO_COMPANION = /(^|\/)print(\/|$)|^\/class\/[^/]+\/lessons\/|^\/play\/|^\/live\/(play|frame|cohost)\/|^\/live\/host\/[^/]+\/|^\/number-quest\/|^\/cs-quest\/play|^\/studio(\/|$)/;
 const OWN_CHAT = [];
 /** The page as the companion's first message describes it (checked again on the server: services/companion.js pageOf). */
 export function companionPage(req, { bare = false, companion = null, scripts = [] } = {}) {
-  if (companion === false || (bare && companion !== 'dash')) return null;
+  if (companion === false || (bare && companion !== 'dash' && companion !== 'live')) return null;
   const p = req.path || '';
   if (NO_COMPANION.test(p) || scripts.some(x => OWN_CHAT.includes(x))) return null;
   if (!companionFor(req.user)) return null;

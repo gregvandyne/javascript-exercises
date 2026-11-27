@@ -2533,7 +2533,7 @@ var I18N = {
     var top = el('div', 'ptop');
     if (R.graded) { if (B.back) top.appendChild(ibtn('back', t(R.view.glRoom ? 'glBack' : 'backLesson'), function () { flushSave(); B.back(); }, 'mh-play-back')); }
     else top.appendChild(ibtn('back', t(R.set.preview ? 'back' : 'home'), function () { if (R.set.preview && S.draft) showBuild(); else showHome(); }, 'mh-play-back'));
-    var ttl = el('div', 'grow'), h = el('h1', '', item.t || R.set.T || t('title')); h.dir = 'auto'; ttl.appendChild(h);
+    var ttl = el('div', 'grow'), h = el('h1', '', item.t || R.set.T || t('title')); h.dir = 'auto'; if (R.view && R.view.glRoom && (item.t || R.set.T)) h.lang = 'en'; ttl.appendChild(h);
     ttl.appendChild(el('span', 'muted small', t('playSub', { n: R.i + 1, of: n }) + (R.st[R.i] ? '' : ' · ' + t(tapHas('comma') ? 'tapHintGap' : 'tapHint'))));
     top.appendChild(ttl);
     // Print: the blank worksheet (never the student's fixes, never the answers)

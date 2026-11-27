@@ -269,7 +269,7 @@ function deskLists(req) {
   const figures = toolAccess(u, config.figures) === 'yes' ? [{ id: 'T:figures', icon: '📐', title: t('homeroom.panel.figures'), mineOnly: true }] : [];
   // Grammar Lab's units (behind GRAMMAR_LAB, for a teacher it lets in: services/grammar-lab-assign.js), by band: each
   // hands out like a Manipulatives task, a graded class assignment that is done when every topic in it is mastered.
-  const grammar = GLA.canAssignTo(u, req.homeroomClass) ? GLAB.bands().flatMap(b => GLAB.pathwaysOf(b.id).map(p => ({ id: `T:gl:${b.id}/${p.id}`, icon: '🔤', title: p.title, band: b.id,
+  const grammar = GLA.canAssignTo(u, req.homeroomClass) ? GLAB.bands().flatMap(b => GLAB.pathwaysOf(b.id).map(p => ({ id: `T:gl:${b.id}/${p.id}`, icon: '🔤', title: p.title, lang: 'en', band: b.id,
     grades: { from: b.id === 'k-2' ? 0 : Number(b.id.split('-')[0]), to: Number(b.id.split('-')[1]) }, sub: `grammar ${t('grammarLab.title')} ${t('grammarLab.band', { grades: b.grades })}`, n: p.topics.length }))) : [];
   return { mine, folders, shared, favorites, oomba, live, subjects, more, tools, tasks, figures, grammar };
 }
@@ -285,7 +285,7 @@ const searchText = (...parts) => parts.filter(Boolean).join(' ').toLowerCase();
 const row = (t, x, k, kindLine = '') => {
   const g = x.grades || null, data = raw(` class="hr-cc" data-k="${k}" data-q="${esc(searchText(x.title, x.sub))}"${x.subject ? ` data-subject="${esc(x.subject)}"` : ''}${g ? ` data-gf="${g.from}" data-gt="${g.to}"` : ''}`);
   const line = [kindLine, g ? gradeLabel(t, g) : ''].filter(Boolean).join(' · ');
-  const inner = html`<span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 28 })}</span><span class="hr-ctext"><span class="hr-itemt" dir="auto">${x.title}</span>${line ? html`<span class="hr-ckind">${line}</span>` : ''}</span>`;
+  const inner = html`<span class="hr-ico" aria-hidden="true">${ico(x.icon, { size: 28 })}</span><span class="hr-ctext"><span class="hr-itemt"${x.lang ? raw(` lang="${x.lang}"`) : ''} dir="auto">${x.title}</span>${line ? html`<span class="hr-ckind">${line}</span>` : ''}</span>`;
   if (x.door) return html`<li${data}><button type="button" class="hr-item hr-ccard hr-livecard" data-hrdoor="${x.door}" data-icon="${x.icon}">${inner}<span class="hr-ctag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></button></li>`;
   if (x.live) return html`<li${data}><button type="button" class="hr-item hr-ccard hr-livecard" data-hrlive="${x.live}" data-icon="${x.icon}">${inner}<span class="hr-ctag">${ico('📡', { size: 14 })} ${t('homeroom.catalog.hostLive')}</span></button></li>`;
   return html`<li${data}><button type="button" class="hr-item hr-give hr-ccard" data-hritem="${x.id}" data-icon="${x.icon}" aria-pressed="false">${inner}${x.mineOnly ? html`<span class="hr-ctag">${t('homeroom.catalog.myDeskOnly')}</span>` : ''}<span class="hr-ccheck" aria-hidden="true"></span></button></li>`;

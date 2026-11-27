@@ -117,7 +117,7 @@ async function playLesson(page, tag, L) {
   await noSideScroll(page, 'card');
   await page.goto(base + topicUrl);
   await page.waitForSelector('#gl-welcome:not([hidden])');
-  await page.click('#gl-skip');
+  await page.click('#gl-skip'); await page.click('#gl-card-go');
   await page.waitForSelector('#gl-quiz:not([hidden])');
   await closeTip(page);
   assert.equal(await page.textContent('#gl-counter'), 'Question 1 of 12');
@@ -155,7 +155,7 @@ async function playLesson(page, tag, L) {
   }
   assert.equal(levels, 2);
   await page.waitForSelector('#gl-done:not([hidden])');
-  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions.');
+  assert.equal(await page.textContent('#gl-done-n'), 'You answered 13 questions. That is 12 questions, plus 1 for a miss.');
   // The next topic, worked out now (never a mastered one), and the room.
   assert.equal(await page.getAttribute('#gl-done-next', 'aria-label'), `Next: ${L.next}`);
   assert.ok(await page.isVisible('#gl-done-room'));
@@ -242,7 +242,7 @@ test('the other K-2 formats on a phone, dark: the title choice in italics and th
       await shot(page, `390-dark-${key}`, '02-card');
       await noSideScroll(page, `${key} card`);
       await page.goto(`${base}/courses/grammar-lab/k-2/${unit}/${topic}`);
-      await page.click('#gl-skip');
+      await page.click('#gl-skip'); await page.click('#gl-card-go');
       await page.waitForSelector('#gl-quiz:not([hidden])');
       await closeTip(page);
       assert.ok(await page.isDisabled('#gl-submit'));

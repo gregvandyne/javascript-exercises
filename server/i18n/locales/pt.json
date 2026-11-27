@@ -4437,7 +4437,8 @@
       "boardOf": "Quadro de {tool}",
       "liveRoom": "Sala ao vivo",
       "greetLine": "Me diga a aula que você quer neste quadro de {tool}.",
-      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}."
+      "greetLineHas": "Me diga o que mudar no seu quadro de {tool}.",
+      "notYet": "Ainda não está no seu quadro."
     },
     "oomba-chat": {
       "title": "Oomba",
@@ -4508,7 +4509,11 @@
       },
       "copy": "Copiar",
       "copyFailed": "Não foi possível copiar. Selecione o texto.",
-      "copied": "Copiado"
+      "copied": "Copiado",
+      "verify": {
+        "notAsked": "A questão {n} ficou como estava: não era o que você pediu.",
+        "notAskedAny": "Uma questão não foi adicionada: não era o que você pediu."
+      }
     },
     "figures": {
       "needText": "Escreva algumas palavras para o Oomba primeiro.",
@@ -4590,7 +4595,10 @@
         "tooLong": "Ficou longo demais. Fale por até um minuto.",
         "tooFast": "São muitas gravações em um minuto. Espere um momento.",
         "daily": "Por hoje não dá para falar mais. Você ainda pode digitar.",
-        "busy": "Falar não está disponível agora. Você ainda pode digitar."
+        "busy": "Falar não está disponível agora. Você ainda pode digitar.",
+        "lost": "O Oomba não conseguiu transformar sua gravação em palavras. Ela fica aqui até você fechá-la.",
+        "retry": "Tentar de novo",
+        "dismiss": "Fechar"
       },
       "web": {
         "on": "Busca na web ligada",
@@ -4646,7 +4654,24 @@
         "book_repaint": "Pediu para pintar “{q}” de novo",
         "week": "Plano da semana preparado ({n} dias)",
         "needs": "Olhei Dar uma olhada ({n})",
-        "needsNo": "Não consegui abrir Dar uma olhada"
+        "needsNo": "Não consegui abrir Dar uma olhada",
+        "assign": "Preparei uma atribuição para você conferir",
+        "assignNo": "Não foi possível atribuir",
+        "boardMade": "Criou e conferiu um quadro ({n, plural, one {# item} other {# itens}})",
+        "sheetMade": "Criou e conferiu uma folha de atividades ({n, plural, one {# questão} other {# questões}})",
+        "sheetNo": "Não conseguiu criar essa folha de atividades",
+        "lessonMade": "Criou e conferiu um plano de aula ({n, plural, one {# etapa} other {# etapas}})",
+        "lessonNo": "Não conseguiu criar essa lição",
+        "lessonAsk": "Perguntou o assunto",
+        "kinds": "Viu o que o Figures consegue desenhar",
+        "find": "Procurou “{q}”",
+        "findNo": "Não conseguiu procurar isso",
+        "report": "Leu o progresso da turma",
+        "reportNo": "Não conseguiu ler o progresso dessa turma",
+        "pointEmpty": "Conferiu a turma: ainda sem alunos",
+        "askBack": "Perguntou o que você precisa",
+        "action": "Deixei pronto para você conferir",
+        "actionNo": "Não deu para fazer"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4708,7 +4733,9 @@
         "help": "Ajuda",
         "length": "Duração",
         "fromPlan": "Do seu plano",
-        "filled": "O Oomba preencheu sua descrição. Confira e depois toque no botão para criar."
+        "filled": "O Oomba preencheu sua descrição. Confira e depois toque no botão para criar.",
+        "makeNow": "Criar agora",
+        "makeText": "Crie isto agora:"
       },
       "err": {
         "words": "Algumas palavras da sua mensagem não são permitidas. Mude e envie de novo.",
@@ -4765,7 +4792,11 @@
         "book": "Qual livro?"
       },
       "ask": {
-        "other": "Outra coisa"
+        "other": "Outra coisa",
+        "lessonTopic": "Com prazer. Sobre qual assunto, e para qual ano?",
+        "sheetTopic": "Com prazer. O que a folha de atividades deve praticar, e para qual ano?",
+        "boardTopic": "Com prazer. Qual ferramenta (por exemplo, blocos de base dez ou uma reta numérica), e o que ela deve mostrar?",
+        "assignWhat": "Qual lição devo atribuir? Me diga o nome dela, e a turma se você tiver mais de uma."
       },
       "cls": {
         "default": "Turma de teste",
@@ -4780,6 +4811,19 @@
         "denied": "Na sua escola, só um administrador pode criar turmas.",
         "done": "Turma {name} criada. Ainda não tem alunos.",
         "openDash": "Abrir o painel dela"
+      },
+      "asg": {
+        "which": "Para qual turma?",
+        "ask": "Atribuir “{title}” a {class}?",
+        "all": "A turma toda",
+        "some": "{count, plural, one {# aluno} other {# alunos}}",
+        "due": "Prazo: {day}",
+        "assign": "Atribuir",
+        "notNow": "Agora não",
+        "assigned": "Atribuído",
+        "declined": "Não atribuído",
+        "done": "“{title}” atribuído a {class}.",
+        "open": "Ver os jogos da turma"
       },
       "book": {
         "adding": "Adicionando ao seu livro",
@@ -4870,6 +4914,359 @@
         "reviewTitle": "Revisão",
         "reteachTitle": "Explicar de novo: {title}",
         "finishTitle": "Terminar o trabalho de hoje"
+      },
+      "made": {
+        "notYet": "Nada foi criado ainda.",
+        "draftOnly": "Preparei um rascunho de {title}. Toque em {button} para criar.",
+        "failed": "No fim, não foi criado, então nada foi salvo. Tente de novo.",
+        "board": "{n, plural, one {Criado e conferido: # item no quadro} other {Criado e conferido: # itens no quadro}}",
+        "sheet": "{n, plural, one {Criada e conferida: # questão} other {Criada e conferida: # questões}}",
+        "lesson": "{n, plural, one {Criada e conferida: # etapa} other {Criada e conferida: # etapas}}",
+        "open": {
+          "board": "Abrir o quadro",
+          "sheet": "Abrir a folha de atividades",
+          "lesson": "Abrir a lição"
+        },
+        "no": {
+          "board": "O quadro não foi criado. Nada foi salvo.",
+          "sheet": "A folha de atividades não foi criada. Nada foi salvo.",
+          "lesson": "A lição não foi criada. Nada foi salvo."
+        }
+      },
+      "pts": {
+        "empty": "{name} ainda não tem alunos, então não é possível dar pontos.",
+        "oneAtATime": "Os pontos são dados um de cada vez, então isto é 1 ponto, não {count}."
+      },
+      "rep": {
+        "empty": "{name} ainda não tem alunos, então não há progresso para mostrar.",
+        "which": "De qual turma deve ser o relatório?"
+      },
+      "find": {
+        "hidden": "{title} está no Oomba, mas esse jogo está desativado agora, então os alunos não podem jogar.",
+        "hiddenFolder": "{title} está na sua pasta {folder}, mas esse jogo está desativado no Oomba agora, então os alunos não podem jogar."
+      },
+      "fmt": {
+        "plotQ": "O Figures não consegue conferir on-line um ponto marcado pelos alunos. O que devo fazer?",
+        "plotPrint": "Para imprimir: os alunos desenham cada ponto (o gabarito mostra)",
+        "plotRead": "Ler o ponto (conferido on-line)",
+        "columnsQ": "O Figures não desenha a conta armada nem a caixa de reagrupamento. Faço a folha com as figuras mais próximas?",
+        "closest": "Sim, use as figuras mais próximas",
+        "no": "Agora não"
+      },
+      "why": {
+        "triangle": "{a} + {b} é menor que {c}, então esses lados não formam um triângulo.",
+        "triangleEqual": "{a} + {b} é igual a {c}, então esses lados ficam retos e não formam um triângulo.",
+        "pastEnd": "{v} fica além do fim de uma reta de {from} a {to}, então o ponto não pode ficar ali.",
+        "other": "Essa figura não pode ser desenhada: {what}.",
+        "notAsked": "Não adicionada: {what}."
+      },
+      "act": {
+        "whichClass": "Para qual turma?",
+        "do": "Fazer",
+        "notNow": "Agora não",
+        "done": "Feito",
+        "declined": "Não feito",
+        "failed": "Não feito: nada foi alterado",
+        "noUndo": "Isso não pode ser desfeito pelo chat.",
+        "namesLabel": "Nomes dos alunos, um por linha",
+        "namesHint": "Os nomes ficam aqui: não são enviados à IA do Oomba.",
+        "namesFirst": "Digite os nomes primeiro.",
+        "nameLabel": "Nome na lista da turma",
+        "openClass": "Abrir a turma",
+        "why": {
+          "needText": "Digite os nomes primeiro.",
+          "tooMany": "No máximo 40 nomes de cada vez.",
+          "sameNames": "{count, plural, one {# nome já tem} other {# nomes já têm}} conta nesta escola: adicione com Adicionar alunos existentes na página da turma.",
+          "other": "Não deu para fazer, então nada foi alterado."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Isso cria contas para crianças.",
+            "password": "A senha antiga deixa de funcionar na hora.",
+            "archive": "Isso arquiva a turma. Você pode restaurá-la depois.",
+            "remove": "Isso tira o aluno da turma. A conta e os trabalhos são mantidos.",
+            "move": "O aluno sai desta turma. A conta e os trabalhos são mantidos."
+          },
+          "add": {
+            "ask": "Adicionar alunos a {class}?",
+            "where": "Digite os nomes abaixo. Cada aluno recebe um nome de usuário e uma senha num cartão de acesso.",
+            "done": "{count, plural, one {# aluno adicionado} other {# alunos adicionados}} a {class}.",
+            "cardsOnce": "Imprima os cartões de acesso agora: as senhas só aparecem neles.",
+            "printCards": "Imprimir cartões de acesso"
+          },
+          "rename": {
+            "ask": "Alterar {class}?",
+            "done": "{class} alterada.",
+            "name": "Nome: {name}",
+            "grade": "Ano: {grade}",
+            "subject": "Matéria: {subject}"
+          },
+          "code": {
+            "ask": "Criar um novo código de entrada para {class}?",
+            "old": "O código antigo deixa de funcionar.",
+            "done": "O novo código de entrada de {class} é {code}."
+          },
+          "archive": {
+            "ask": "Arquivar {class}?",
+            "done": "{class} arquivada."
+          },
+          "restore": {
+            "ask": "Restaurar {class}?",
+            "done": "{class} restaurada."
+          },
+          "pw": {
+            "ask": "Criar uma nova senha para {name}?",
+            "done": "Nova senha criada para {name}.",
+            "cardOnce": "Imprima o cartão de acesso agora: a senha só está nele.",
+            "printCard": "Imprimir o cartão de acesso"
+          },
+          "remove": {
+            "ask": "Tirar {name} de {class}?",
+            "done": "{name} saiu de {class}."
+          },
+          "move": {
+            "ask": "Mover {name} de {from} para {to}?",
+            "done": "{name} agora está em {to}."
+          },
+          "coteach": {
+            "ask": "Adicionar {name} como professor de {class}?",
+            "done": "{name} agora dá aula em {class}."
+          },
+          "join": {
+            "ask": "Deixar {name} entrar em {class}?",
+            "nameHint": "Confira abaixo o nome para a lista da turma.",
+            "done": "{name} entrou em {class}."
+          },
+          "decline": {
+            "ask": "Recusar o pedido de {name} para {class}?",
+            "done": "Pedido para {class} recusado."
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Isso tira da turma. O trabalho dos alunos é mantido.",
+            "students": "Os alunos vão ver isso.",
+            "classroom": "Isso publica no Google Classroom: os alunos de lá vão ver.",
+            "deleteSheet": "Isso apaga a folha de atividades para sempre. As aulas já atribuídas mantêm as perguntas.",
+            "deleteBoard": "Isso apaga o quadro para sempre.",
+            "deleteLesson": "Isso apaga a aula para sempre, com as atribuições e o trabalho dos alunos nelas."
+          },
+          "due": {
+            "ask": "Mudar as datas de “{title}” em {class}?",
+            "done": "Datas de “{title}” alteradas.",
+            "none": "Sem data de entrega",
+            "opens": "Abre em {day}",
+            "opensNow": "Aberto agora"
+          },
+          "unassign": {
+            "ask": "Tirar “{title}” de {class}?",
+            "done": "“{title}” saiu de {class}."
+          },
+          "seeWork": "Ver o trabalho",
+          "lesson": {
+            "ask": "Atribuir a aula “{title}” a {class}?",
+            "done": "A aula “{title}” foi atribuída a {class}."
+          },
+          "sheet": {
+            "ask": "Atribuir a folha de atividades “{title}” a {class}?",
+            "done": "A folha de atividades “{title}” foi atribuída a {class}."
+          },
+          "practice": {
+            "ask": "Atribuir prática do quadro “{title}” a {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# pergunta} other {# perguntas}} de cada tarefa",
+            "done": "“{title}” foi atribuído a {class}: {count, plural, one {# pergunta} other {# perguntas}}."
+          },
+          "unit": {
+            "ask": "Adicionar a unidade “{name}” a {class}?",
+            "done": "Unidade “{name}” adicionada a {class}."
+          },
+          "renameUnit": {
+            "ask": "Renomear a unidade “{old}” de {class} para “{name}”?",
+            "done": "A unidade agora se chama “{name}”."
+          },
+          "move": {
+            "up": "Subir “{title}” um lugar em {class}?",
+            "down": "Descer “{title}” um lugar em {class}?",
+            "movedUp": "“{title}” subiu um lugar.",
+            "movedDown": "“{title}” desceu um lugar."
+          },
+          "classroom": {
+            "ask": "Publicar “{title}” de {class} no Google Classroom?",
+            "course": "Turma do Classroom: {course}",
+            "done": "“{title}” foi publicado no Google Classroom.",
+            "scheduled": "Fica como rascunho no Classroom até abrir em {day}.",
+            "pastDue": "A data de entrega já passou, então foi sem data.",
+            "open": "Abrir no Classroom",
+            "page": "Página do Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Renomear a folha de atividades “{old}” para “{title}”?",
+            "renamedSheet": "A folha de atividades agora se chama “{title}”.",
+            "deleteSheet": "Apagar a folha de atividades “{title}”?",
+            "deletedSheet": "A folha de atividades “{title}” foi apagada.",
+            "openSheet": "Abrir a folha de atividades",
+            "allSheets": "Ver minhas folhas de atividades",
+            "renameBoard": "Renomear o quadro “{old}” para “{title}”?",
+            "renamedBoard": "O quadro agora se chama “{title}”.",
+            "copyBoard": "Fazer uma cópia do quadro “{title}”?",
+            "copiedBoard": "Cópia feita: “{title}”.",
+            "deleteBoard": "Apagar o quadro “{title}”?",
+            "deletedBoard": "O quadro “{title}” foi apagado.",
+            "openBoard": "Abrir o quadro",
+            "allBoards": "Ver meus quadros",
+            "copyLesson": "Fazer uma cópia da aula “{title}”?",
+            "copiedLesson": "Cópia feita: “{title}”.",
+            "deleteLesson": "Apagar a aula “{title}”?",
+            "inClasses": "{count, plural, one {Está atribuída a # turma.} other {Está atribuída a # turmas.}}",
+            "withWork": "{count, plural, one {# aluno tem trabalho nela.} other {# alunos têm trabalho nela.}}",
+            "deletedLesson": "A aula “{title}” foi apagada.",
+            "openLesson": "Abrir a aula",
+            "allLessons": "Ver minhas aulas"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Isto vai para as mesas dos alunos.",
+            "takeBack": "Isto tira das mesas dos alunos. O trabalho deles é mantido.",
+            "live": "Isto muda o que aparece nas telas dos alunos.",
+            "parents": "Os pais verão esta turma enquanto a visão dos pais estiver ligada."
+          },
+          "who": "Alunos: {names}",
+          "openHub": "Abrir o Hub",
+          "att": {
+            "absent": "Marcar {count, plural, one {# aluno} other {# alunos}} como ausente hoje em {class}?",
+            "home": "Marcar {count, plural, one {# aluno} other {# alunos}} como em casa hoje em {class}?",
+            "here": "Marcar {count, plural, one {# aluno} other {# alunos}} como presente hoje em {class}?",
+            "everyone": "Marcar todos de {class} como presentes hoje?",
+            "doneAbsent": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como ausente hoje.",
+            "doneHome": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como em casa hoje.",
+            "doneHere": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como presente hoje.",
+            "doneEveryone": "Todos de {class} estão marcados como presentes hoje."
+          },
+          "sup": {
+            "ask": "Mudar os apoios de {name} em {class}?",
+            "done": "Os apoios de {name} foram alterados.",
+            "timeOff": "Sem tempo extra",
+            "time150": "Tempo extra: 1,5 vez",
+            "time200": "Tempo extra: o dobro",
+            "read": "Leitura em voz alta",
+            "simple": "Palavras mais simples",
+            "big": "Texto maior",
+            "none": "Sem apoios"
+          },
+          "groups": {
+            "ask": "Fazer {count, plural, one {# grupo} other {# grupos}} em {class}?",
+            "done": "{count, plural, one {# grupo feito} other {# grupos feitos}} em {class}.",
+            "name": "Grupo {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: ninguém ainda",
+            "rest": "{count, plural, one {# aluno não está} other {# alunos não estão}} em nenhum grupo."
+          },
+          "hand": {
+            "ask": "Entregar “{title}” para {who} em {class}?",
+            "done": "“{title}” entregue para {who}.",
+            "everyone": "todas as mesas",
+            "group": "o grupo {group}"
+          },
+          "back": {
+            "askAll": "Tirar “{title}” de todas as mesas em {class}?",
+            "askOne": "Tirar “{title}” da mesa de {name}?",
+            "doneAll": "“{title}” foi tirado de todas as mesas.",
+            "doneOne": "“{title}” foi tirado da mesa de {name}."
+          },
+          "needs": {
+            "seen": "Marcar {name} como visto em Dar uma olhada?",
+            "snooze": "Adiar {name} em Dar uma olhada até o próximo dia de aula?",
+            "seenDone": "{name} marcado como visto.",
+            "snoozeDone": "{name} adiado até o próximo dia de aula.",
+            "rule": {
+              "stuck": "Travado em uma atividade",
+              "hand": "Mão levantada há um tempo",
+              "ask": "Uma pergunta de casa esperando",
+              "tries": "Várias tentativas sem conseguir",
+              "reading": "Um quiz de leitura abaixo de 60 por cento",
+              "overdue": "Trabalho acumulando depois do prazo"
+            }
+          },
+          "live": {
+            "start": "Começar a aula ao vivo em {class}?",
+            "startLine": "Todas as mesas são chamadas para o Hub, e o login da turma abre.",
+            "end": "Encerrar a aula ao vivo em {class}?",
+            "endLine": "O login da turma fecha e os aparelhos compartilhados da turma saem da conta.",
+            "started": "Aula ao vivo começou em {class}.",
+            "ended": "Aula ao vivo encerrada em {class}."
+          },
+          "parents": {
+            "on": "Ligar a visão dos pais de {class}?",
+            "off": "Desligar a visão dos pais de {class}?",
+            "onDone": "A visão dos pais de {class} está ligada.",
+            "offDone": "A visão dos pais de {class} está desligada."
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "Os alunos vão ver isso: o jogo abre para a turma.",
+            "end": "O jogo termina em todas as telas que estão nele."
+          },
+          "host": {
+            "ask": "Começar um jogo ao vivo para {class}?",
+            "what": "{count, plural, one {# pergunta pronta} other {# perguntas prontas}} do banco de perguntas.",
+            "done": "O jogo ao vivo de {class} está aberto: os alunos entram pela página da turma.",
+            "open": "Abrir a tela de quem conduz"
+          },
+          "end": {
+            "ask": "Encerrar o jogo ao vivo “{title}”?",
+            "players": "{count, plural, =0 {Ninguém entrou ainda.} one {Há # jogador.} other {Há # jogadores.}}",
+            "done": "O jogo ao vivo “{title}” foi encerrado.",
+            "results": "Ver os resultados"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Os alunos vão ver isso nas telas.",
+            "off": "Isso sai das telas dos alunos."
+          },
+          "timer": {
+            "startAsk": "Iniciar o timer no painel de {class}?",
+            "pauseAsk": "Pausar o timer no painel de {class}?",
+            "resetAsk": "Zerar o timer no painel de {class}?",
+            "startDone": "O timer no painel de {class} está correndo.",
+            "pauseDone": "O timer no painel de {class} foi pausado.",
+            "resetDone": "O timer no painel de {class} foi zerado.",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "eyes": {
+            "onAsk": "Ligar Olhos para a frente para {class}?",
+            "offAsk": "Desligar Olhos para a frente para {class}?",
+            "lasts": "Desliga sozinho depois de 3 minutos.",
+            "onDone": "Olhos para a frente está ligado para {class}.",
+            "offDone": "Olhos para a frente está desligado para {class}."
+          },
+          "check": {
+            "ask": "Enviar uma checagem rápida para {class}?",
+            "done": "Checagem rápida enviada para {class}.",
+            "thumbs": "Polegar para cima, de lado ou para baixo",
+            "fist": "Do punho ao cinco",
+            "scale": "Uma escala de 1 a 5",
+            "choice": "Opções: {options}",
+            "endAsk": "Encerrar a checagem rápida no painel de {class}?",
+            "ended": "A checagem rápida no painel de {class} foi encerrada."
+          },
+          "pick": {
+            "ask": "Sortear um aluno de {class}?",
+            "only": "Só você vê o nome, aqui neste cartão.",
+            "done": "Sorteado: {name}"
+          },
+          "push": {
+            "ask": "Enviar “{title}” para as telas de {class}?",
+            "game": "Um jogo",
+            "link": "Um link",
+            "done": "“{title}” enviado para as telas de {class}.",
+            "endAsk": "Tirar “{title}” das telas de {class}?",
+            "ended": "“{title}” saiu das telas de {class}."
+          }
+        }
       }
     },
     "companion-greet": {
@@ -5803,7 +6200,20 @@
       },
       "gapHolds": "{mark} depois de {word}",
       "mgap": "Espaço depois de {word}",
-      "wrongMarks": "Quase. Olhe de novo os sinais entre as palavras. Acerte duas seguidas para terminar este nível."
+      "wrongMarks": "Quase. Olhe de novo os sinais entre as palavras. Acerte duas seguidas para terminar este nível.",
+      "counterAdded": "{count, plural, one {+# por um erro} other {+# por erros}}",
+      "tryAgain": "Tente esta de novo",
+      "seenBefore": "Uma que você já viu",
+      "notSent": "Essa resposta não chegou. Confira e toque em Enviar de novo.",
+      "resynced": "Continuamos de onde você parou.",
+      "signedOut": "Você saiu da conta. Seu progresso está salvo.",
+      "signIn": "Entrar de novo",
+      "fixed": "Corrigido!",
+      "fixedNote": "Só a primeira tentativa conta para a sua sequência.",
+      "levelLonger": "Este nível teve {n} perguntas em vez de {base}: cada erro soma uma, e um nível termina com duas certas seguidas.",
+      "doneElsewhere": "Você já terminou este tema.",
+      "doneAdded": "São {base} perguntas, mais {count, plural, one {# por um erro} other {# por erros}}.",
+      "firstTry": "{n} de {total} certas de primeira"
     }
   },
   "favorites": {
@@ -7658,7 +8068,7 @@
       "s4": {
         "h": "Os alunos jogam, criam e respondem",
         "p": "Cada aluno avança pelo plano de aula no próprio ritmo, em qualquer aparelho.",
-        "alt": "A visão de um aluno de um plano de aula: o passo de jogo, Aquecimento de cálculo, está marcado como Feito com melhor pontuação 47 e um botão Jogar Sum Racer. Depois vêm um passo de criar um jogo com o botão Começar a criar e uma pergunta escrita, o bilhete de saída."
+        "alt": "O que um aluno vê de um plano de aula: o passo de jogo «Number-puzzle warm-up» está marcado como feito, com melhor pontuação 47 e um botão Jogar Sudoku. Depois vêm um passo de criar um jogo com o botão Começar a criar e uma pergunta escrita, o bilhete de saída."
       },
       "s5": {
         "h": "Veja o progresso e o boletim de notas",
@@ -7669,7 +8079,8 @@
         "h": "Ensine com as ferramentas",
         "p": "Peça uma folha de atividades ao Oomba no chat: ele escreve as questões, o Figures desenha cada figura em escala e calcula as respostas. Ou abra uma sala de matemática ao vivo com materiais manipuláveis virtuais.",
         "alt": "O criador de folhas do Figures com o chat do Oomba aberto ao lado: uma folha chamada Area and volume practice, a primeira questão com um retângulo desenhado em escala e a resposta 12 m², e a lista do que mudou no chat."
-      }
+      },
+      "kicker": "Como funciona"
     },
     "build": {
       "h": "Criar para aprender",
@@ -7728,7 +8139,7 @@
       "q4": "Como vocês protegem a privacidade dos alunos?",
       "a4": "Nunca pedimos e-mail, idade nem endereço aos alunos. Não há anúncios nem cookies de rastreamento, e o nome real de um aluno só é visto pela equipe da escola dele. A nossa <a href=\"{href}\">política de privacidade</a> lista exatamente o que guardamos.",
       "q5": "Para quais idades e anos escolares ela é indicada?",
-      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Aulas como Shark Plank e as primeiras pistas do Sum Racer servem para os menores. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
+      "a5": "A Oomba Academy é feita da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Jogos como Word Hunt, que lê uma palavra em voz alta quando você toca nela, servem para os menores. Number Quest, o curso de matemática, vai da educação infantil ao 8º ano, e CS Quest e Cyber Defenders começam no 3º ano.",
       "q6": "Como adiciono a minha turma?",
       "a6": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso.",
       "a6google": "Primeiro, escreva para nós para cadastrar a sua escola. Depois, crie uma turma e compartilhe o código da turma com os alunos que têm conta própria, ou crie contas da escola para a turma inteira e imprima os cartões de acesso. Escolas que usam o Google podem deixar os alunos entrarem com o login com o Google.",
@@ -7798,7 +8209,7 @@
     "live": {
       "h": "Aulas ao vivo para a turma",
       "p1": "Conduza uma corrida de quiz ao vivo ou qualquer aula pronta para o ao vivo no projetor. Os alunos entram nos próprios aparelhos com um código de 7 dígitos.",
-      "li1": "Entre os modos prontos estão Corrida de Missões (uma corrida por uma ilha em 3D movida pelas suas perguntas), Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil), Would You Rather, Atlas Quest e Doodle Hoot.",
+      "li1": "Entre os modos prontos estão Tabuleiro Cérebro (um tabuleiro de categorias, do fácil ao difícil), Would You Rather, Atlas Quest e Doodle Hoot.",
       "li2": "Use um conjunto inicial, digite um rápido ou transforme as perguntas de um plano de aula num quiz ao vivo.",
       "li3": "Salas de turma são só para seus alunos com conta conectada, e os pontos deles vão para o seu diário de notas. Sem chat, sem digitação, sem nomes digitados livremente.",
       "more": "Veja como o Oomba Live funciona"
@@ -7976,19 +8387,19 @@
         "title": "Jogos de inglês grátis: leitura e ortografia",
         "description": "Caça-palavras, jogo da forca e palavra do dia em inglês para 5 a 14 anos, com as palavras lidas em voz alta. Grátis, sem anúncios, em qualquer navegador.",
         "h1": "Jogos de leitura e ortografia em inglês para quem está aprendendo a ler",
-        "lead": "Três jogos de palavras em inglês que desenvolvem a ortografia e o vocabulário. Shark Plank e Word Hunt leem as palavras em voz alta, então servem para quem está começando a ler. Word Peek é um desafio diário para quem já escreve com confiança.",
-        "tips": "Use um tema do Word Hunt como aquecimento para um assunto, resolvam juntos a Palavra do dia do Word Peek na lousa conversando sobre cada palpite, ou deixe o Shark Plank para quem termina antes.",
+        "lead": "Jogos de palavras para ortografia e vocabulário. O Word Hunt lê uma palavra em voz alta quando você toca nela, então serve para quem está começando a ler. O Word Peek é um enigma diário de palavras para quem já escreve com segurança.",
+        "tips": "Use um tema do Word Hunt como aquecimento para um assunto, ou resolvam juntos o Daily Peek no quadro e conversem sobre cada palpite.",
         "faq": {
           "q1": "Os jogos leem as palavras em voz alta?",
-          "a1": "O Shark Plank lê cada palavra em voz alta, e no Word Hunt os alunos podem tocar em qualquer palavra para ouvi-la.",
+          "a1": "Sim. No Word Hunt os alunos podem tocar em qualquer palavra para ouvi-la em voz alta.",
           "q2": "Tem um desafio do dia?",
           "a2": "Sim. O Word Hunt e o Word Peek têm um desafio novo todo dia, e no Word Peek o aluno pode escolher uma palavra secreta para um amigo.",
           "q3": "Posso usar a minha própria lista de palavras?",
           "a3": "Ainda não nestes jogos. Você pode descrever para o Construtor um jogo de ortografia com as suas palavras, e ele cria um para a sua turma.",
           "q4": "Qual jogo de palavras em inglês combina com o nível de leitura do meu filho?",
-          "a4": "Shark Plank e Word Hunt leem as palavras em voz alta, então servem para quem ainda está aprendendo a ler em inglês. Word Peek é para quem já escreve as palavras com confiança."
+          "a4": "O Word Hunt lê as palavras em voz alta, então serve para crianças que ainda estão aprendendo a ler. O Word Peek é para quem já escreve com segurança."
         },
-        "home": "Faça da Palavra do dia um hábito da família no café da manhã e conversem sobre cada palpite, ou deixe uma criança menor jogar Shark Plank com o som ligado, para ouvir cada palavra em voz alta."
+        "home": "Façam do Daily Peek um hábito da família no café da manhã e conversem sobre cada palpite, ou deixe um leitor mais novo jogar Word Hunt com o som ligado e tocar em qualquer palavra para ouvi-la."
       },
       "strategy": {
         "name": "Jogos de xadrez e estratégia",
@@ -7996,19 +8407,19 @@
         "title": "Jogos de xadrez e estratégia grátis para crianças",
         "description": "Aprenda xadrez com lições curtas e desafios, depois jogue contra um amigo ou um robô. E ainda quatro em linha e blocos que caem, grátis para 5 a 14 anos.",
         "h1": "Jogos de xadrez e estratégia que desenvolvem o raciocínio",
-        "lead": "Jogos de estratégia pedem que os alunos planejem as jogadas, percebam padrões e pensem no que o outro jogador vai fazer. Castle Clash ensina xadrez desde o primeiro movimento. Drop Four e Brick Drop são jogos rápidos de planejamento e padrões.",
-        "tips": "Monte um clube de xadrez da turma com as lições e os desafios do Castle Clash, ou coloque dois alunos no mesmo aparelho para uma partida de Drop Four.",
+        "lead": "Jogos de estratégia pedem para planejar, perceber padrões e pensar no que o outro jogador vai fazer. O Castle Clash ensina xadrez desde o primeiro lance, com aulas, problemas e um robô para enfrentar.",
+        "tips": "Monte um clube de xadrez com as aulas e os problemas do Castle Clash, ou coloque dois alunos para jogar um contra o outro no mesmo aparelho.",
         "faq": {
           "q1": "As crianças conseguem aprender xadrez do zero?",
           "a1": "Sim. O Castle Clash tem uma lição curta para cada peça e 24 desafios de xeque-mate, e depois um robô para jogar em quatro níveis.",
           "q2": "Dois alunos podem jogar no mesmo aparelho?",
-          "a2": "Sim. O Castle Clash e o Drop Four têm modo para dois jogadores na mesma tela.",
+          "a2": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela.",
           "q3": "O robô é muito difícil?",
-          "a3": "O robô do Castle Clash tem quatro níveis, e o robô do Drop Four tem Fácil, Normal e Difícil.",
+          "a3": "O robô do Castle Clash tem quatro níveis, de um começo tranquilo a um desafio de verdade.",
           "q4": "Posso aprender xadrez junto com meu filho?",
           "a4": "Pode. As lições do Castle Clash começam pelo movimento de cada peça, então um adulto que nunca jogou também aprende e depois pode jogar contra a criança na mesma tela."
         },
-        "home": "Aprendam xadrez juntos: uma lição do Castle Clash por dia e depois uma partida um contra o outro na mesma tela. E o Drop Four cabe em qualquer cinco minutinhos livres."
+        "home": "Aprendam xadrez juntos: uma aula do Castle Clash por dia e depois uma partida um contra o outro na mesma tela."
       },
       "music": {
         "name": "Jogos de música",
@@ -8040,7 +8451,7 @@
           "q1": "Quanto tempo deve durar uma pausa?",
           "a1": "Muitos professores usam de 3 a 5 minutos. Estes jogos têm rodadas curtas, então é fácil parar na hora certa.",
           "q2": "A turma inteira pode jogar na mesma tela?",
-          "a2": "Sim. Coloque um jogo na lousa e revezem. Beat Lanes e Swish Flick funcionam muito bem com a turma torcendo junto."
+          "a2": "Sim. Coloque um jogo no quadro e revezem, com a turma toda torcendo."
         }
       },
       "makeAGame": {
@@ -8161,9 +8572,9 @@
         },
         "faq": {
           "q2": "Os jogos são difíceis demais para uma criança de 8 anos?",
-          "a2": "Cada um começa fácil. O Sum Racer começa com adição até 10, o robô do Castle Clash tem um nível fácil e o Shark Plank lê todas as palavras em voz alta.",
+          "a2": "Todos começam fáceis. O robô do Castle Clash tem um nível fácil, e o Word Hunt lê uma palavra em voz alta quando você toca nela.",
           "q3": "Duas crianças podem jogar no mesmo aparelho?",
-          "a3": "Sim. Sum Racer, Castle Clash e Drop Four têm modo para dois jogadores na mesma tela.",
+          "a3": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular.",
           "q4": "Uma criança de 8 anos consegue usar o Construtor com IA?",
           "a4": "Sim. A criança digita a ideia, então ajuda se ela já souber escrever uma ou duas frases, e um adulto por perto ajuda no começo. O Construtor segue regras fixas de segurança infantil."
         }
@@ -8192,9 +8603,9 @@
         },
         "faq": {
           "q2": "Os jogos são fáceis demais para uma criança de 10 anos?",
-          "a2": "Não. O Sum Racer vai até todas as tabuadas e a divisão, o Castle Clash tem 24 desafios de xeque-mate e o Word Peek é um desafio diário de verdade.",
+          "a2": "Não. O Castle Clash tem 24 problemas de xeque-mate, e o Word Peek é um desafio diário de verdade.",
           "q3": "Meu filho pode jogar com um irmão ou um amigo?",
-          "a3": "Sim. Sum Racer e Castle Clash têm modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular de mão em mão.",
+          "a3": "Sim. O Castle Clash tem um modo para dois jogadores na mesma tela, e o Word Hunt tem uma corrida passando o celular.",
           "q4": "O Construtor com IA é seguro para uma criança de 11 anos?",
           "a4": "O Construtor só cria jogos e segue regras fixas de segurança infantil, como nada de violência sangrenta, nada de apostas, nada de marcas reais e nada de links para fora. <a href=\"{ai}\">Veja todas as regras que ele segue</a>. Os jogos ficam privados até a criança compartilhar."
         }
@@ -8246,7 +8657,7 @@
         },
         "faq": {
           "q2": "Meu filho pode jogar se ainda não sabe ler?",
-          "a2": "Em alguns jogos, sim. Word Trail e Shark Plank leem cada palavra em voz alta, Word Hunt lê uma palavra quando você toca nela, e Sum Racer usa números. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
+          "a2": "Em alguns jogos, sim. O Word Hunt lê uma palavra em voz alta quando você toca nela. Os menus e as instruções são escritos, então um adulto por perto ajuda no começo.",
           "q3": "Os cursos são para esta idade?",
           "a3": "Um deles, sim. Number Quest, nosso curso de matemática, começa na educação infantil: a rua Launchpad vai da educação infantil ao 2º ano, e seus jogos leem cada instrução em voz alta. CS Quest e Cyber Defenders começam no 3º ano, por volta dos 8 anos.",
           "q4": "Uma criança de 6 anos pode usar o Construtor com IA?",
@@ -8346,7 +8757,7 @@
       "s2": {
         "h": "Jogue jogos educativos",
         "p": "Jogos de matemática, leitura, lógica e música funcionam direto no navegador, em celulares, tablets, Chromebooks e computadores. As crianças podem experimentar um sem se cadastrar.",
-        "alt": "Sum Racer, um jogo de corrida de matemática, no meio de uma corrida: carrinhos de desenho animado em uma estrada, uma pergunta de adição e quatro botões grandes de resposta."
+        "alt": "Sudoku, um quebra-cabeça de números, no meio de uma partida: uma pequena grade 4×4 com alguns números preenchidos e grandes botões de números com Desfazer, Apagar, Notas, Dica e Conferir."
       },
       "s3": {
         "h": "Descreva, jogue, mude",
@@ -8423,7 +8834,7 @@
       "a1": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias para criar os próprios jogos. Não há anúncios nem nada para a criança comprar.",
       "a1paid": "Sim. Todos os jogos são grátis, e todo jogador com conta (só um nome inventado e uma senha) recebe mensagens grátis para o Construtor todos os dias. As famílias podem escolher um plano opcional para ter mensagens extras para o Construtor, e as crianças nunca são convidadas a pagar. <a href=\"{plans}\">Ver os planos</a>.",
       "q2": "Para quais idades é indicado?",
-      "a2": "Crianças da educação infantil ao 8º ano, mais ou menos dos 5 aos 14 anos. Jogos como o Shark Plank e as primeiras pistas do Sum Racer servem para os mais novos.",
+      "a2": "Crianças da educação infantil ao 8º ano, de 5 a 14 anos mais ou menos. Jogos como Word Hunt, que lê uma palavra em voz alta quando você toca nela, servem para os menores.",
       "q3": "Meu filho precisa de conta ou de e-mail?",
       "a3": "Não. Qualquer pessoa pode jogar na hora, sem cadastro. Para guardar os jogos e as pontuações, a criança pode criar uma conta só com um nome inventado e uma senha. Nunca pedimos e-mail.",
       "q4": "Tem anúncios ou compras dentro do app?",
@@ -10101,13 +10512,13 @@
       "lead": "Telas reais de uma aula ao vivo numa escola de demonstração com nomes inventados.",
       "s1": {
         "h": "Escolha uma aula e suas perguntas",
-        "p": "Escolha Quest Race ou Brain Board e depois as perguntas: o banco por matéria e idade (6 a 14), seu próprio conjunto, um que um colega compartilhou ou as perguntas de um dos seus planos de aula.",
-        "alt": "O primeiro passo para conduzir uma aula ao vivo, “O que você quer jogar?”: Quest Race, Question Battle e Brain Board, cada um com quantos jogadores aceita."
+        "p": "Escolha Brain Board e depois as perguntas: o banco por matéria e idade (6 a 14), seu próprio conjunto, um que um colega compartilhou ou as perguntas de um dos seus planos de aula.",
+        "alt": "O primeiro passo para conduzir uma aula ao vivo, «O que você quer jogar?»: Brain Board, Would You Rather (ao vivo) e Atlas Quest, cada um com o número de jogadores ideal."
       },
       "s2": {
         "h": "Mostre o código na lousa",
         "p": "Os alunos abrem a página de entrada no aparelho e digitam o código de 7 dígitos, ou leem o QR code. Os nomes aparecem conforme eles entram.",
-        "alt": "A tela do projetor antes de a aula começar: um personagem de desenho contra quem a turma toda joga, um código grande de 7 dígitos, um QR code e quantos jogadores entraram."
+        "alt": "A tela do projetor antes de a aula começar: a sala de espera do Brain Board com um cartão para cada aluno que entrou, um código grande de 7 dígitos, um código QR e quantos jogadores entraram."
       },
       "s3": {
         "h": "Os alunos entram em segundos",
@@ -10117,7 +10528,7 @@
       "s4": {
         "h": "Todos respondem ao mesmo tempo",
         "p": "A pergunta fica na lousa e os botões de resposta, em cada aparelho. Quanto mais rápida a resposta certa, mais pontos ela vale.",
-        "alt": "O celular de um aluno durante uma pergunta: no alto, o personagem de desenho contra quem a turma joga; depois a pergunta e quatro botões de resposta."
+        "alt": "A tela de um aluno durante uma pergunta: uma pergunta de Ciências do Brain Board valendo 100 pontos, um cronômetro e quatro botões de resposta."
       },
       "s5": {
         "h": "Veja quem sabe o quê",
@@ -10154,7 +10565,8 @@
       "atlas": {
         "h": "Atlas Quest",
         "p": "Todos tocam o país no seu próprio mapa-múndi: o país, a bandeira, a capital ou aquilo pelo que é famoso. A tela grande mostra onde a turma toda tocou, e chegar perto também vale."
-      }
+      },
+      "kicker": "Jogos ao vivo"
     },
     "tools": {
       "h": "Ferramentas que os professores pediram",
@@ -10189,7 +10601,7 @@
     "faq": {
       "h": "Perguntas dos professores sobre o Oomba Live",
       "q1": "O Oomba Live é grátis?",
-      "a1": "Sim. Conduzir aulas ao vivo, os conjuntos iniciais, seus próprios conjuntos e os resultados são grátis e sem anúncios.",
+      "a1": "Sim. Conduzir aulas ao vivo, os conjuntos iniciais, os seus próprios conjuntos e os resultados não custam nada, e os cursos prontos que você pode ensinar e passar aos seus alunos também não: {courses}. O <a href=\"{plans}\">plano Professor</a> opcional acrescenta as ferramentas pagas: o Hub, Pergunte ao Oomba, os Manipuláveis e as suas salas ao vivo, Figures e uma cota diária compartilhada de criações com IA.",
       "q2": "Meus alunos precisam de conta?",
       "a2": "Não em uma sala aberta: os alunos digitam o código e recebem um apelido inventado. Em uma sala de turma, eles usam as contas da escola que você criou para eles, e a pontuação deles vai para o seu diário de notas.",
       "q3": "Quantos alunos podem jogar?",
@@ -10197,7 +10609,8 @@
       "q4": "Posso usar as minhas próprias perguntas?",
       "a4": "Sim, de qualquer matéria e nível. Escreva um conjunto de até {items} perguntas com 2 a 4 respostas cada, cole um de uma planilha, deixe a IA fazer um rascunho para você editar ou transforme as perguntas de um dos seus planos de aula num quiz ao vivo.",
       "q5": "Do que os alunos precisam?",
-      "a5": "Qualquer aparelho com navegador atualizado: Chromebooks, tablets, notebooks ou celulares. Nada para instalar. Você mostra a aula no quadro pelo seu computador."
+      "a5": "Qualquer aparelho com navegador atualizado: Chromebooks, tablets, notebooks ou celulares. Nada para instalar. Você mostra a aula no quadro pelo seu computador.",
+      "a1NoCourses": "Sim. Conduzir aulas ao vivo, os conjuntos iniciais, os seus próprios conjuntos e os resultados não custam nada. O <a href=\"{plans}\">plano Professor</a> opcional acrescenta as ferramentas pagas: o Hub, Pergunte ao Oomba, os Manipuláveis e as suas salas ao vivo, Figures e uma cota diária compartilhada de criações com IA."
     },
     "own": {
       "h": "Suas perguntas, do seu jeito",
@@ -10923,7 +11336,8 @@
       "ask": "Pergunte ao Oomba",
       "tour": "Tour",
       "videos": "Vídeos",
-      "compare": "Comparar"
+      "compare": "Comparar",
+      "signupShort": "Cadastre-se"
     },
     "hero": {
       "kicker": "Para professores do K ao 8º ano",
@@ -11622,13 +12036,13 @@
       "rubric": "Rubrica: pontuações de rubrica no padrão, como parte da pontuação máxima. Aparecem quando as rubricas levam padrões Common Core.",
       "meets": "Atingido: um estudante atinge um padrão com pelo menos 80% de acertos em 3 ou mais perguntas, ou uma pontuação de rubrica de pelo menos dois terços. A turma atinge quando 80% dos estudantes atingem.",
       "needs": "Precisa de atenção: estudantes que responderam 2 ou mais perguntas sobre o padrão e não acertaram nenhuma. Só professores veem isso.",
-      "games": "As aulas com níveis para vários anos (Sum Racer, Fraction Factory, Word Trail, Tug of Math) contam como prática só para o ano do plano de aula, ou para o nível em que o passo está fixado. Num plano de aula sem ano, elas aparecem só em Coberto por.",
+      "games": "Aulas com níveis para várias séries contam como prática só para a série do plano de aula, ou para o nível em que o passo está fixado. Num plano de aula sem série, aparecem só em «Coberto por».",
       "live": "As aulas ao vivo como Tug of Math Live não registram qual pergunta era de qual padrão, então as respostas de um aluno são divididas entre os padrões da aula. Esses números são estimativas.",
       "courses": "O Number Quest conta o trabalho feito com uma conta da escola, ou desde que o aluno entrou nesta turma. Uma única verificação (3 perguntas) não basta para atingir um padrão."
     },
     "empty": {
       "title": "Ainda não há padrões Common Core",
-      "text": "Marque seus planos de aula com padrões ou atribua planos de aula com aulas do Aprender como Sum Racer, Fraction Factory ou Word Trail, e eles aparecem aqui."
+      "text": "Marque seus planos de aula com padrões, ou atribua planos de aula com aulas de Aprender marcadas com eles, e eles aparecem aqui."
     },
     "csvCols": {
       "code": "Código",
@@ -16324,7 +16738,7 @@
       "noStudents": "Ainda não há alunos nesta turma.",
       "noneFit": "Nenhuma unidade corresponde a estes filtros.",
       "counts": "Alunos",
-      "count": "{mastered} dominado · {started} em andamento",
+      "count": "{mastered} dominado · {started} em andamento",
       "studentTitle": "{name} no Grammar Lab",
       "placeH": "Anos de início",
       "placeTeacher": "Anos {grades}, escolhido por um professor.",
@@ -16364,7 +16778,9 @@
       "started": "Continuar",
       "mastered": "Dominado",
       "pending": "Entre para guardar",
-      "locked": "Domine o anterior primeiro"
+      "locked": "Domine o anterior primeiro",
+      "levelOf": "Nível {level} de {levels}",
+      "also": "Também conta em: {units}"
     },
     "guest": {
       "title": "Entre para guardar suas conquistas",
@@ -16376,9 +16792,10 @@
     },
     "welcome": {
       "heading": "Bem-vindo a {topic}",
-      "text": "Continue respondendo até mostrar que sabe. Acerte as duas últimas seguidas para terminar cada nível.",
       "go": "Vamos lá",
-      "skip": "Pular a introdução"
+      "skip": "Pular a introdução",
+      "rule": "Cada nível tem {per} perguntas. Termine com duas certas seguidas. Só as respostas de primeira contam para a sequência.",
+      "count": "{total} perguntas, mais uma para cada erro."
     },
     "practice": {
       "tip": "Como funciona o toque duplo",
@@ -16391,7 +16808,9 @@
       "levelNext": "Próximo nível",
       "fixLabel": "Corrija a frase aqui",
       "chips": "Sinais para colocar",
-      "asIs": "Está certo assim"
+      "asIs": "Está certo assim",
+      "listen": "Leia a pergunta para mim",
+      "listenHint": "Leia a dica para mim"
     },
     "levels": {
       "heading": "Níveis e domínio",
@@ -16427,6 +16846,10 @@
       "listen": "Leia para mim",
       "stop": "Parar",
       "practice": "Começar a praticar",
+      "start": "Começar as perguntas",
+      "skip": "Ir para as perguntas",
+      "lead": "Leia a ficha e depois comece as perguntas. Você pode abri-la de novo quando quiser.",
+      "close": "Fechar",
       "question": "Pergunte a si mesmo"
     },
     "review": {
@@ -16465,6 +16888,12 @@
       "passed": "Sala de revisão concluída",
       "locked": "Abra o tema primeiro",
       "back": "Voltar para {topic}"
+    },
+    "loading": "Preparando a sua lição",
+    "progress": {
+      "band": "{mastered} dominados · {started} em andamento",
+      "unit": "{started} em andamento",
+      "unitHead": "{mastered} de {total} dominados · {started} em andamento"
     }
   }
 }

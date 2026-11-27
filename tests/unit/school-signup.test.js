@@ -40,7 +40,7 @@ const form = (over = {}) => ({ signup: '1', name: 'Roxana Gherghinis', school: '
 test('signed out: "Set up your school" leads into the one sign-up (no form of its own any more)', async () => {
   const r = await call(null, '/teachers');
   assert.equal(r.status, 200);
-  const start = (/<section class="panel lp-start" id="start"[\s\S]*?<\/section>/.exec(r.text) || [''])[0];
+  const start = (/<section class="lp-final lp-start" id="start"[\s\S]*?<\/section>/.exec(r.text) || [''])[0];
   assert.match(start, /Make your teacher account, then create or join your school and add your classes/);
   assert.match(start, /<a class="btn btn-primary btn-big" href="\/signup\/for\/teacher" id="setup-signup" rel="nofollow">Create my teacher account<\/a>/);
   assert.doesNotMatch(start, /name="username"|name="password"|data-api="\/api\/teachers\/school-request"/);
