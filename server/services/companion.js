@@ -1334,7 +1334,7 @@ export function runTool(name, input, ctx) {
       sayAll(ctx, r.v);
       if (r.v.nothing) return { result: { made: false, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: 'Nothing was made: none of the questions can be put on a worksheet as sent. Say each reason under tellTeacher in one line and offer what can be drawn, or call makeWorksheet again now with questions that can be drawn.' }, step: { k: 'sheetNo' } };
       ctx.out.made = { kind: 'sheet', plan: r.plan, told: r.v };
-      return { result: { made: true, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} The worksheet is made with your answer and the card under it opens it. Say what is on it from landed, and each reason under tellTeacher in one line.` }, step: { k: 'sheetMade', n: r.v.landed.length } };
+      return { result: { made: true, ...FC.verifyResult(r.v, r.back), ...tellOf(r.v, ctx.lang), note: `${VC.NOTE} The worksheet is made with your answer and the card under it opens it. Say what is on it from landed, and each reason under tellTeacher in one line.` }, step: { k: 'sheetMade', n: r.v.landed.filter(x => x.now).length } };
     }
     case 'makeLesson': return lessonTool(i, ctx);
     default: return { result: { error: 'Unknown tool.' }, step: { k: 'unknown' } };

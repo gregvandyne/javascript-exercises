@@ -126,6 +126,8 @@ sup.oc-c{font-size:.7rem;font-weight:800;color:var(--link);margin-inline-start:1
 .oc-navq{font-size:.86rem;color:var(--text-2);padding:6px 8px;border-radius:10px;background:var(--card-2);overflow-wrap:anywhere}
 .oc-askq{font-weight:700}
 .oc-ask .oc-pickb small{color:var(--muted);font-weight:600}
+/* A long option wraps inside the card (a phone never scrolls sideways). */
+.oc-ask .oc-pickb{max-width:100%;white-space:normal;text-align:start;height:auto;min-height:40px}
 /* The book maker in the chat (services/companion-book.js): one card that asks only what is missing, the teacher's own
    words ("Adding to your book" above the box), the check of exactly what will be sent with Edit, Make my book. */
 .oc-book{gap:8px}

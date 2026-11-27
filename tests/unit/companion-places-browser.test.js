@@ -163,3 +163,42 @@ test('"Assign it" sends with the Send button (never greyed out, no false warning
     }
   }
 });
+
+test('a plotting worksheet: the limit asked first on a card, then the worksheet made and opened from its card', { skip }, async () => {
+  const F = await import('../../server/services/figures.js');
+  for (const [vp, tag] of [[{ width: 1366, height: 860 }, 'desktop'], [{ width: 390, height: 844 }, 'phone']]) {
+    for (const scheme of ['light', 'dark']) {
+      CO.reset(teacher);
+      const plot = at => ({ plot: { from: 0, to: 10, step: 1, at, label: 'P' }, question: `Plot point P at ${at} on the number line.` });
+      CO.hooks.create = async p => {
+        const last = p.messages.at(-1), after = Array.isArray(last.content) && last.content.some(c => c.type === 'tool_result');
+        const words = JSON.stringify(p.messages);
+        if (after) return { stop_reason: 'end_turn', content: [{ type: 'text', text: /Printable/.test(words) ? 'I made 5 plotting questions on 0 to 10 lines. Students draw each point; the answer key shows it.' : 'Figures cannot check a plotted point online. Pick one on the card.' }] };
+        return { stop_reason: 'tool_use', content: [{ type: 'tool_use', id: 'tu_ws', name: 'makeWorksheet', input: { title: 'Plot on a Number Line 0 to 10', grade: '4', items: [2, 5, 7, 9, 4].map(plot) } }] };
+      };
+      const { ctx, page, errors } = await pageFor(vp, scheme);
+      await page.goto(`${BASE}/teach`);
+      await page.click('#oc-bubble');
+      await page.fill('#oc-in', 'Build a grade 4 worksheet with a number line from 0 to 10, 5 questions asking students to plot numbers.');
+      await page.click('#oc-send');
+      await page.waitForFunction(() => /can't check a point students plot online/.test(document.querySelector('#oc-log').textContent), null, { timeout: 20000 });
+      await shot(page, `plot-ask-${tag}-${scheme}`);
+      await page.click('text=Printable: students draw each point');
+      await page.waitForSelector('[data-oc-made]', { timeout: 20000 });
+      await shot(page, `plot-made-${tag}-${scheme}`);
+      const href = await page.$eval('[data-oc-made]', a => a.getAttribute('href'));
+      const id = href.split('/').pop();
+      assert.equal(F.itemsOf(id).length, 5);
+      if (tag === 'desktop' && scheme === 'light') {
+        await page.click('[data-oc-made]');
+        await page.waitForURL(u => u.pathname === `/figures/worksheets/${id}`);
+        await page.waitForSelector('.fg-item', { timeout: 15000 });
+        await shot(page, 'plot-worksheet-opened-desktop-light');
+      }
+      assert.deepEqual(errors, []);
+      CO.hooks.create = null;
+      await C.allSettled();
+      await ctx.close();
+    }
+  }
+});
