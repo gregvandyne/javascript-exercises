@@ -246,3 +246,22 @@ test('castle-clash: a 390 px phone has no sideways scroll on any screen, and the
     assert.deepEqual(errors, []);
   } finally { await ctx.close(); }
 });
+
+test('castle-clash: on a phone the game buttons (Next) sit right under the board, in view without scrolling', { skip, timeout: 90000 }, async () => {
+  for (const size of [{ width: 390, height: 844 }, { width: 375, height: 667 }]) {
+    const { ctx, frame, errors } = await open({ size });
+    try {
+      const inView = () => frame.evaluate(() => {
+        const b = document.getElementById('board').getBoundingClientRect(), c = document.getElementById('controls').getBoundingClientRect();
+        return { below: c.top >= b.bottom - 1, bottom: c.bottom, h: innerHeight, n: document.querySelectorAll('#controls button').length };
+      });
+      await T(frame, "T.skipAnimations(true); T.start({ mode: 'puzzle', puzzle: 3 }); return 1;");
+      let r = await inView();
+      assert.ok(r.n >= 4 && r.below && r.bottom <= r.h, `path puzzle at ${size.width}x${size.height}: ${JSON.stringify(r)}`);
+      await T(frame, "await T.lp.start({ kind: 'rated' }); return 1;");
+      r = await inView();
+      assert.ok(r.n >= 4 && r.below && r.bottom <= r.h, `rated puzzle at ${size.width}x${size.height}: ${JSON.stringify(r)}`);
+      assert.deepEqual(errors, []);
+    } finally { await ctx.close(); }
+  }
+});
