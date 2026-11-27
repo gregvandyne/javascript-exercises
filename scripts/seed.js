@@ -13,6 +13,7 @@ import { importGame } from './import-game.js';
 import * as schools from '../server/services/schools.js';
 import * as lessons from '../server/services/lessons.js';
 import { getGameBySlug } from '../server/services/games.js';
+import { slugHidden } from '../server/services/game-focus.js';
 import * as progress from '../server/services/progress.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -187,10 +188,32 @@ export function seedDemoTeacher(admin, say = () => {}) {
   // Sample lessons, only while the teacher's library is empty (so demo edits are kept).
   if (cls && !lessons.allLessonsOf(teacher.id, school.id).length) seedDemoLessons(teacher, school, cls);
   if (cls) seedDemoQuestions(teacher, school);
+  swapHiddenDemoSteps(teacher, school);
   if (cls) seedDemoProgress(teacher, cls);
   return { school, teacher, student };
 }
 
+// The sample lessons use only games that are on the site (services/game-focus.js): Sum Racer and Loop Lab are hidden
+// while the arcade is off, so the fractions warm-up is a Sudoku and the loops draft has a text step instead.
+const SUDOKU_WARMUP = { title: 'Number-puzzle warm-up', minutes: 8, body: 'Solve a Sudoku. Tell a partner one trick that helped you find a number.' };
+const LOOP_TEXT = { title: 'Spot the loop', minutes: 12, body: 'Think of a game or a song that repeats the same steps. Where does the repeat start, and how many times does it go round?' };
+/** Demo lessons made before that (on the live site's demo school): a game step on a hidden game becomes the Sudoku
+ *  warm-up (Sum Racer) or a text step (any other), in place, so the demo class never shows a hidden game. Runs on every
+ *  start; nothing to do once done. */
+export function swapHiddenDemoSteps(teacher, school) {
+  const sudoku = getBySlugPublished('sudoku');
+  for (const l of lessons.allLessonsOf(teacher.id, school.id)) {
+    for (const st of lessons.steps(l.id)) {
+      if (st.kind !== 'game' || !st.game_id) continue;
+      const g = q.get('SELECT slug, source FROM games WHERE id=?', st.game_id);
+      if (!g || g.source !== 'seed' || !slugHidden(g.slug)) continue;
+      if (g.slug === 'sum-racer' && sudoku) q.run('UPDATE lesson_steps SET game_id=?, title=?, body=? WHERE id=?', sudoku, SUDOKU_WARMUP.title, SUDOKU_WARMUP.body, st.id);
+      else if (g.slug === 'loop-lab') q.run("UPDATE lesson_steps SET kind='text', game_id=NULL, title=?, body=? WHERE id=?", LOOP_TEXT.title, LOOP_TEXT.body, st.id);
+      else q.run("UPDATE lesson_steps SET kind='text', game_id=NULL WHERE id=?", st.id);
+    }
+  }
+}
+const getBySlugPublished = slug => { const g = getGameBySlug(slug); return g && g.status === 'published' ? g.id : null; };
 export function seedDemoLessons(teacher, school, cls) {
   const game = slug => { const g = getGameBySlug(slug); return g && g.status === 'published' ? g.id : null; };
   const make = (folderId, l, steps) => {
@@ -207,7 +230,7 @@ export function seedDemoLessons(teacher, school, cls) {
   }, [
     { kind: 'text', title: 'Warm-up: slices of pizza', minutes: 5, body: 'A pizza is cut into 8 equal slices. You eat 3 slices and your friend eats 2.\n\nWhat fraction did you eat? What fraction did your friend eat? How much did you eat together? Draw the pizza and shade the slices.' },
     { kind: 'text', title: 'Keep the bottom, add the top', minutes: 10, body: 'The bottom number (the denominator) tells how many equal parts make a whole. The top number (the numerator) tells how many parts we have.\n\nWhen the bottom numbers match, the parts are the same size, so we just add the tops: 3/8 + 2/8 = 5/8.\n\nTry these: 1/4 + 2/4, 2/6 + 3/6, 3/10 + 4/10.' },
-    { kind: 'game', title: 'Quick-math warm-up', minutes: 8, gameId: game('sum-racer'), body: 'Play Sum Racer for a few rounds. Tell a partner one trick that helps you add fast.' },
+    { kind: 'game', ...SUDOKU_WARMUP, gameId: game('sudoku') },
     { kind: 'build', title: 'Build your fraction quiz', minutes: 15, body: 'a quiz with 8 questions about adding fractions with the same denominator, like 2/5 + 1/5, with a happy message for each right answer' },
     { kind: 'text', title: 'Wrap-up: swap and play', minutes: 4, body: 'Swap with a partner and play each other\'s quizzes. Finish this sentence in your notebook: When I add fractions with the same denominator, I add the ___ and keep the ___ the same.' },
   ]);
@@ -226,7 +249,7 @@ export function seedDemoLessons(teacher, school, cls) {
     summary: 'A first look at loops: doing something again and again.', objectives: 'Say what a loop does\nSpot a loop in a game',
   }, [
     { kind: 'text', title: 'Again and again', minutes: 5, body: 'Think of something you do again and again, like brushing your teeth or skipping rope. In code, a loop repeats steps for us.' },
-    { kind: 'game', title: 'Loop Lab', minutes: 12, gameId: game('loop-lab'), body: 'Play Loop Lab. Which level needed the biggest loop?' },
+    { kind: 'text', ...LOOP_TEXT },
   ]);
   const day = 86400000, iso = t => new Date(t).toISOString().slice(0, 10);
   const u1 = lessons.createUnit(teacher, cls.id, 'Fractions').unit;

@@ -7754,7 +7754,7 @@
       "s4": {
         "h": "Leerlingen spelen, bouwen en antwoorden",
         "p": "Elke leerling werkt het lesplan in eigen tempo door, op elk apparaat.",
-        "alt": "Wat een leerling ziet van een lesplan: de speelstap, Rekenopwarmer, staat op Klaar met een beste score van 47 en een knop Speel Sum Racer. Daarna komen een bouwstap met een knop Begin met bouwen en een geschreven vraag, het exitticket."
+        "alt": "Wat een leerling van een lesplan ziet: de speelstap ‘Number-puzzle warm-up’ staat op Klaar, met een beste score van 47 en een knop Sudoku spelen. Daarna komen een stap om een spel te bouwen met de knop Begin met bouwen, en een schriftelijke vraag, het exit-ticket."
       },
       "s5": {
         "h": "Bekijk de voortgang en het cijferoverzicht",
@@ -7825,7 +7825,7 @@
       "q4": "Hoe beschermen jullie de privacy van leerlingen?",
       "a4": "We vragen leerlingen nooit om een e-mailadres, leeftijd of woonadres. Er is geen reclame en er zijn geen trackingcookies, en de echte naam van een leerling is alleen zichtbaar voor medewerkers van de school. Onze <a href=\"{href}\">privacyverklaring</a> vermeldt precies wat we bewaren.",
       "q5": "Voor welke leeftijden en groepen is het?",
-      "a5": "Oomba Academy is gemaakt voor groep 1 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Lessen zoals Shark Plank en de eerste banen van Sum Racer passen bij de jongsten. Number Quest, de rekencursus, loopt van groep 1 tot de tweede klas, en CS Quest en Cyber Defenders beginnen in groep 5.",
+      "a5": "Oomba Academy is gemaakt voor groep 1 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Spellen zoals Word Hunt, dat een woord voorleest als je erop tikt, passen bij de jongsten. Number Quest, de rekencursus, loopt van groep 1 tot de tweede klas, en CS Quest en Cyber Defenders beginnen in groep 5.",
       "q6": "Hoe voeg ik mijn klas toe?",
       "a6": "Mail ons eerst om je school op te zetten. Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten.",
       "a6google": "Mail ons eerst om je school op te zetten. Maak daarna een klas aan en deel de klascode met leerlingen die een eigen account hebben, of maak schoolaccounts voor de hele klas en print inlogkaarten. Scholen die Google gebruiken, kunnen leerlingen laten inloggen met Google.",
@@ -7895,7 +7895,7 @@
     "live": {
       "h": "Livelessen voor de klas",
       "p1": "Leid een live quizrace of elke live-klare les op het digibord. Leerlingen doen mee op hun eigen apparaat met een code van 7 cijfers.",
-      "li1": "Kant-en-klare modi zijn onder meer Questrace (een race over een 3D-eiland, aangedreven door jouw vragen), Breinbord (een bord vol categorieën, van makkelijk naar moeilijk), Would You Rather, Atlas Quest en Doodle Hoot.",
+      "li1": "Kant-en-klare modi zijn onder meer Breinbord (een bord vol categorieën, van makkelijk naar moeilijk), Would You Rather, Atlas Quest en Doodle Hoot.",
       "li2": "Gebruik een startset, typ snel een set, of maak van de vragen in een lesplan een live quiz.",
       "li3": "Klasruimtes zijn alleen voor je ingelogde leerlingen, en hun scores gaan naar je cijferboek. Geen chat, geen typen, geen zelfgekozen namen.",
       "more": "Bekijk hoe Oomba Live werkt"
@@ -8073,19 +8073,19 @@
         "title": "Gratis Engelse woordspelletjes voor kinderen",
         "description": "Woordzoekers, galgje en een dagelijkse woordpuzzel om Engels te leren, voor 5 tot 14 jaar, met voorgelezen woorden. Gratis, zonder reclame, in de browser.",
         "h1": "Engelse woordspelletjes voor beginnende en gevorderde lezers",
-        "lead": "Drie Engelse woordspelletjes voor spelling en woordenschat. Shark Plank en Word Hunt lezen de woorden voor, dus ze zijn ook geschikt voor beginners. Word Peek is een dagelijkse woordpuzzel voor leerlingen die al goed kunnen spellen.",
-        "tips": "Gebruik een thema van Word Hunt als opwarmer voor een onderwerp, los samen het Woord van de dag op op het digibord en bespreek elke poging, of zet Shark Plank klaar voor snelle werkers.",
+        "lead": "Woordspellen voor spelling en woordenschat. Word Hunt leest een woord voor als je erop tikt, dus het past bij beginnende lezers. Word Peek is een dagelijkse woordpuzzel voor kinderen die al zeker spellen.",
+        "tips": "Gebruik een Word Hunt-thema als opwarmer voor een onderwerp, of los de Daily Peek samen op het bord op en praat over elke gok.",
         "faq": {
           "q1": "Lezen de games de woorden voor?",
-          "a1": "Shark Plank leest elk woord voor, en in Word Hunt kunnen leerlingen op elk woord tikken om het te horen.",
+          "a1": "Ja. In Word Hunt kunnen leerlingen op elk woord tikken om het voorgelezen te horen.",
           "q2": "Is er een puzzel van de dag?",
           "a2": "Ja. Word Hunt en Word Peek hebben elk een nieuwe puzzel van de dag, en in Word Peek kan een leerling een geheim woord opgeven voor een vriend.",
           "q3": "Kan ik mijn eigen woordenlijst gebruiken?",
           "a3": "In deze games nog niet. Je kunt de Bouwer een spellingsspel met jouw woorden beschrijven, en hij maakt er een voor je klas.",
           "q4": "Welk woordspelletje past bij het leesniveau van mijn kind?",
-          "a4": "Shark Plank en Word Hunt lezen de woorden voor, dus ze passen bij kinderen die nog leren lezen. Word Peek is voor kinderen die al goed kunnen spellen."
+          "a4": "Word Hunt leest woorden voor, dus het past bij kinderen die nog leren lezen. Word Peek is voor kinderen die al zeker spellen."
         },
-        "home": "Maak van het Woord van de dag een vast moment bij het ontbijt en bespreek samen elke poging, of laat een jongere lezer Shark Plank spelen met het geluid aan, zodat elk woord wordt voorgelezen."
+        "home": "Maak de Daily Peek een gezinsgewoonte bij het ontbijt en praat over elke gok, of laat een jongere lezer Word Hunt spelen met het geluid aan en op een woord tikken om het te horen."
       },
       "strategy": {
         "name": "Schaken en strategiespellen",
@@ -8093,19 +8093,19 @@
         "title": "Gratis schaken en strategiespellen voor kinderen",
         "description": "Leer schaken met korte lessen en puzzels en speel daarna tegen een vriend of een robot. Plus vier op een rij en blokkenpuzzels, gratis voor 5 tot 14 jaar.",
         "h1": "Schaken en strategiespellen die het denken trainen",
-        "lead": "Bij strategiespellen moeten leerlingen vooruitdenken, patronen zien en bedenken wat de ander gaat doen. Castle Clash leert schaken vanaf de eerste zet. Drop Four en Brick Drop zijn snelle spellen vol plannen en patronen.",
-        "tips": "Begin een schaakclub in de klas met de lessen en puzzels van Castle Clash, of zet twee leerlingen aan één apparaat voor een potje Drop Four.",
+        "lead": "Strategiespellen vragen leerlingen vooruit te denken, patronen te zien en na te denken over wat de ander gaat doen. Castle Clash leert schaken vanaf de eerste zet, met lessen, puzzels en een robot om tegen te spelen.",
+        "tips": "Start een schaakclub in de klas met de lessen en puzzels van Castle Clash, of laat twee leerlingen op één apparaat tegen elkaar spelen.",
         "faq": {
           "q1": "Kunnen kinderen schaken leren zonder voorkennis?",
           "a1": "Ja. Castle Clash heeft een korte les voor elk stuk en 24 schaakmatpuzzels, en daarna een robot om tegen te spelen op vier niveaus.",
           "q2": "Kunnen twee leerlingen op één apparaat spelen?",
-          "a2": "Ja. Castle Clash en Drop Four hebben allebei een modus voor twee spelers op één scherm.",
+          "a2": "Ja. Castle Clash heeft een modus voor twee spelers op één scherm.",
           "q3": "Hoe sterk is de robot?",
-          "a3": "De robot van Castle Clash heeft vier niveaus, en die van Drop Four heeft Makkelijk, Normaal en Moeilijk.",
+          "a3": "De robot van Castle Clash heeft vier niveaus, van een rustige start tot een echte uitdaging.",
           "q4": "Kan ik samen met mijn kind leren schaken?",
           "a4": "Ja. De lessen van Castle Clash beginnen bij hoe elk stuk beweegt, dus ook een volwassene die nog nooit heeft geschaakt kan het leren, en daarna op hetzelfde scherm tegen het kind spelen."
         },
-        "home": "Leer samen schaken: doe elke dag één les van Castle Clash en speel daarna tegen elkaar op één scherm. Een potje Drop Four past in elke vrije vijf minuten."
+        "home": "Leer samen schaken: elke dag één les in Castle Clash, en daarna tegen elkaar op één scherm."
       },
       "music": {
         "name": "Muziekspelletjes",
@@ -8137,7 +8137,7 @@
           "q1": "Hoe lang moet een breinpauze duren?",
           "a1": "Veel leerkrachten nemen 3 tot 5 minuten. Deze spelletjes hebben korte rondes, dus je stopt makkelijk op tijd.",
           "q2": "Kan de hele klas op één scherm spelen?",
-          "a2": "Ja. Zet een spelletje op het digibord en speel om de beurt. Beat Lanes en Swish Flick werken goed met een klas die meejuicht."
+          "a2": "Ja. Zet een spel op het bord en speel om de beurt, terwijl de klas aanmoedigt."
         }
       },
       "makeAGame": {
@@ -8258,9 +8258,9 @@
         },
         "faq": {
           "q2": "Zijn de spelletjes te moeilijk voor een kind van 8?",
-          "a2": "Elk spel begint makkelijk. Sum Racer start met plussommen tot 10, de robot van Castle Clash heeft een makkelijk niveau en Shark Plank leest elk woord voor.",
+          "a2": "Elk spel begint makkelijk. De robot van Castle Clash heeft een makkelijk niveau, en Word Hunt leest een woord voor als je erop tikt.",
           "q3": "Kunnen twee kinderen op één apparaat spelen?",
-          "a3": "Ja. Sum Racer, Castle Clash en Drop Four hebben een modus voor twee spelers op één scherm.",
+          "a3": "Ja. Castle Clash heeft een modus voor twee spelers op één scherm, en Word Hunt heeft een race waarbij je de telefoon doorgeeft.",
           "q4": "Kan een kind van 8 de AI-Bouwer gebruiken?",
           "a4": "Ja. Kinderen typen hun idee, dus het helpt als ze een zin of twee kunnen schrijven, en in het begin is het fijn als er een volwassene in de buurt is. De Bouwer volgt vaste regels voor kindveiligheid."
         }
@@ -8289,9 +8289,9 @@
         },
         "faq": {
           "q2": "Zijn de spelletjes te makkelijk voor een kind van 10?",
-          "a2": "Nee. Sum Racer gaat door tot alle tafels en delen, Castle Clash heeft 24 schaakmatpuzzels en Word Peek is elke dag een echte uitdaging.",
+          "a2": "Nee. Castle Clash heeft 24 schaakmatpuzzels, en Word Peek is elke dag een echte uitdaging.",
           "q3": "Kan mijn kind met een broer, zus of vriend spelen?",
-          "a3": "Ja. Sum Racer en Castle Clash hebben een modus voor twee spelers op één scherm, en Word Hunt heeft een race waarbij je de telefoon doorgeeft.",
+          "a3": "Ja. Castle Clash heeft een modus voor twee spelers op één scherm, en Word Hunt heeft een race waarbij je de telefoon doorgeeft.",
           "q4": "Is de AI-Bouwer veilig voor een kind van 11?",
           "a4": "De Bouwer maakt alleen games en volgt vaste regels voor kindveiligheid, zoals geen bloederige beelden, geen gokken, geen echte merken en geen links naar buiten. <a href=\"{ai}\">Bekijk alle regels die hij volgt</a>. Games blijven privé tot je kind ze deelt."
         }
@@ -8343,7 +8343,7 @@
         },
         "faq": {
           "q2": "Kan mijn kind spelen als het nog niet kan lezen?",
-          "a2": "Bij sommige spelletjes wel. Word Trail en Shark Plank lezen elk woord voor, Word Hunt leest een woord voor als je het aantikt, en Sum Racer werkt met getallen. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
+          "a2": "Bij sommige spelletjes wel. Word Hunt leest een woord voor als je erop tikt. Menu's en uitleg zijn geschreven, dus in het begin helpt een volwassene in de buurt.",
           "q3": "Zijn de cursussen voor deze leeftijd?",
           "a3": "Eén wel. Number Quest, onze rekencursus, begint in groep 2: de Launchpad-straat is voor groep 2 tot en met 4, en de spelletjes daar lezen elke opdracht voor. CS Quest en Cyber Defenders beginnen in groep 5, rond 8 jaar.",
           "q4": "Kan een kind van 6 de AI-Bouwer gebruiken?",
@@ -8443,7 +8443,7 @@
       "s2": {
         "h": "Leerspelletjes spelen",
         "p": "Spelletjes voor rekenen, lezen, logisch denken en muziek werken direct in de browser op telefoons, tablets, Chromebooks en computers. Kinderen kunnen er een proberen zonder account.",
-        "alt": "Sum Racer, een racespel met rekensommen, midden in een race: cartoonauto's op een weg, een plussom en vier grote antwoordknoppen."
+        "alt": "Sudoku, een getallenpuzzel, midden in een spel: een klein 4×4-rooster met een paar ingevulde getallen, en grote cijferknoppen met Ongedaan maken, Wissen, Notities, Hint en Controleren."
       },
       "s3": {
         "h": "Beschrijf het, speel het, verander het",
@@ -8520,7 +8520,7 @@
       "a1": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer om eigen games te maken. Er is geen reclame en er valt niets te kopen voor kinderen.",
       "a1paid": "Ja. Elk spel is gratis te spelen, en elke speler met een account (alleen een verzonnen naam en een wachtwoord) krijgt elke dag gratis berichten aan de Bouwer. Gezinnen kunnen kiezen voor een optioneel abonnement met extra berichten aan de Bouwer, en kinderen wordt nooit gevraagd om te betalen. <a href=\"{plans}\">Bekijk de abonnementen</a>.",
       "q2": "Voor welke leeftijden is het?",
-      "a2": "Voor kinderen van groep 2 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Spelletjes zoals Shark Plank en de eerste circuits van Sum Racer passen bij de jongsten.",
+      "a2": "Kinderen van groep 1 tot en met de tweede klas, ongeveer 5 tot 14 jaar. Spellen zoals Word Hunt, dat een woord voorleest als je erop tikt, passen bij de jongsten.",
       "q3": "Heeft mijn kind een account of e-mailadres nodig?",
       "a3": "Nee. Iedereen kan meteen spelen, zonder account. Om hun games en scores te bewaren, kunnen kinderen een account maken met alleen een verzonnen naam en een wachtwoord. We vragen nooit om een e-mailadres.",
       "q4": "Zijn er reclame of in-app-aankopen?",
@@ -10198,13 +10198,13 @@
       "lead": "Echte schermen van een liveles in een demoschool met verzonnen namen.",
       "s1": {
         "h": "Kies een les en je vragen",
-        "p": "Kies Quest Race of Brain Board en dan de vragen: de vragenbank per vak en leeftijd (6 tot 14), je eigen set, een set van een collega of de vragen uit een van je lesplannen.",
-        "alt": "De eerste stap van het leiden van een liveles, ‘Wat wil je spelen?’: Quest Race, Question Battle en Brain Board, elk met het aantal spelers dat erbij past."
+        "p": "Kies Brain Board en dan de vragen: de vragenbank per vak en leeftijd (6 tot 14), je eigen set, een set van een collega of de vragen uit een van je lesplannen.",
+        "alt": "De eerste stap om een live les te leiden, ‘Wat wil je spelen?’: Brain Board, Would You Rather (live) en Atlas Quest, elk met het aantal spelers dat erbij past."
       },
       "s2": {
         "h": "Laat de code op het bord zien",
         "p": "Leerlingen gaan op hun apparaat naar de meedoenpagina en typen de code van 7 cijfers, of scannen de QR-code. Hun namen verschijnen zodra ze meedoen.",
-        "alt": "Het digibordscherm voordat de les begint: een tekenfilmfiguur waartegen de hele klas speelt, een grote code van 7 cijfers, een QR-code en hoeveel spelers er al zijn."
+        "alt": "Het scherm van de beamer voordat de les begint: de lobby van Brain Board met een kaart voor elke leerling die meedoet, een grote code van 7 cijfers, een QR-code en hoeveel spelers er al zijn."
       },
       "s3": {
         "h": "Leerlingen doen binnen seconden mee",
@@ -10214,7 +10214,7 @@
       "s4": {
         "h": "Iedereen antwoordt tegelijk",
         "p": "De vraag staat op het bord en de antwoordknoppen staan op elk apparaat. Hoe sneller een goed antwoord, hoe meer punten.",
-        "alt": "De telefoon van een leerling tijdens een vraag: bovenaan de tekenfilmfiguur waartegen de klas speelt, dan de vraag en vier antwoordknoppen."
+        "alt": "Het scherm van een leerling tijdens een vraag: een natuurvraag van het Brain Board voor 100 punten, een timer en vier antwoordknoppen."
       },
       "s5": {
         "h": "Zie wie wat weet",
@@ -11722,13 +11722,13 @@
       "rubric": "Rubric: rubricscores op de standaard, als deel van de hoogste score. Zichtbaar zodra rubrics Common Core-standaarden dragen.",
       "meets": "Behaald: een leerling behaalt een standaard met minstens 80% goed bij 3 of meer vragen, of een rubricscore van minstens twee derde. De klas behaalt hem als 80% van de leerlingen hem behaalt.",
       "needs": "Even kijken: leerlingen die 2 of meer vragen over de standaard beantwoordden en er geen goed hadden. Alleen leraren zien dit.",
-      "games": "Lessen met niveaus voor meerdere groepen (Sum Racer, Fraction Factory, Word Trail, Tug of Math) tellen alleen als oefening voor de groep van het lesplan, of voor het niveau waarop de stap vastligt. Bij een lesplan zonder groep staan ze alleen onder Behandeld door.",
+      "games": "Lessen met levels voor meerdere groepen tellen alleen als oefening voor de groep van het lesplan, of voor het level waarop de stap vastgezet is. Bij een lesplan zonder groep staan ze alleen onder Gedekt door.",
       "live": "Livelessen zoals Tug of Math Live houden niet bij welke vraag bij welke standaard hoorde, dus de antwoorden van een leerling worden over de standaarden van de les verdeeld. Die getallen zijn schattingen.",
       "courses": "Number Quest telt werk gedaan met een schoolaccount, of sinds de leerling bij deze klas kwam. Eén check (3 vragen) is alleen niet genoeg om een standaard te halen."
     },
     "empty": {
       "title": "Nog geen Common Core-standaarden",
-      "text": "Label je lesplannen met standaarden, of wijs lesplannen toe met Leer-lessen zoals Sum Racer, Fraction Factory of Word Trail, en ze verschijnen hier."
+      "text": "Label je lesplannen met standaarden, of wijs lesplannen toe met Leer-lessen die ermee gelabeld zijn, dan verschijnen ze hier."
     },
     "csvCols": {
       "code": "Code",

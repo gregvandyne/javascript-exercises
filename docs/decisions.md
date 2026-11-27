@@ -16462,6 +16462,29 @@ and that some changes were reported before they were checked. The owner chose: f
   that asked for a change but reads exactly as before is put back and the card says it could not be put on. Until a
   board page confirms (`manipApplied`, now with its time), the card says "Not on your board yet", never "updated".
 
+## Hidden games hidden everywhere (27 Nov 2026)
+
+Owner: "Make sure all games like Sum Racer, Tug of Math etc are hidden everywhere." Lists already left hidden games out
+(`services/game-focus.js`); what still named them was words, pictures and the demo class. A crawl of every linked page
+as a visitor, a parent, a student and a teacher (arcade off, as on the live site) found them; now:
+
+- **Words** (all 13 languages): the age FAQs on /teachers and /parents, the open Learn pages (word games, strategy,
+  brain breaks, the three age pages), "Built-in modes" on /teachers, "Pick a lesson" on /teachers/live and the
+  standards page's help name only games on the site (Word Hunt, Word Peek, Castle Clash, Brain Board). Text on pages
+  that are themselves closed while the arcade is off (the math, music and computer-science Learn pages, the course
+  pages, a hidden game's own page) is unchanged: nobody can open them.
+- **/teachers/live mode cards**: every mode whose game is hidden is left out (`slugHidden`), so Quest Race goes too
+  (Question Battle and Tug of Math already did).
+- **Screenshots**: `scripts/how-shots.js` hosts a Brain Board (not a Question Battle) for the five Live steps and plays
+  Sudoku (not Sum Racer) for the parents' "play" step; the teachers' student step shows the demo lesson's Sudoku
+  warm-up. All re-taken, light and dark, with their alt text in every language.
+- **Demo videos**: the /teachers/live demo (a Quest Race) and the /parents video (Gulp City) were recorded with arcade
+  games, so they show only while ARCADE is on. Re-recording them is the way to bring them back with the arcade off.
+- **The demo school** (DEMO_TEACHER_PASSWORD, on the live site): its sample lessons had a Sum Racer warm-up and a Loop
+  Lab step, which its class could still open (an assigned game stays open). The seed now makes a Sudoku warm-up and a
+  text step, and `swapHiddenDemoSteps` changes the existing demo lessons the same way on every start.
+- `tests/unit/removed-games.test.js` checks the words of every page above (English, German, Japanese) for a hidden
+  game's name, and that both videos are off.
 ## Oomba makes it, then reports what it checked (27 Nov 2026)
 
 The owner's live audit of the Oomba chat (Greg Test, class "4b math" with no students): "NOT seamless". The chat wrote

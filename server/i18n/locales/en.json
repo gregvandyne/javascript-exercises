@@ -8833,7 +8833,7 @@
       "s4": {
         "h": "Students play, build and answer",
         "p": "Each student works through the lesson plan at their own pace on any device.",
-        "alt": "A student’s view of a lesson plan: the play step, Quick-math warm-up, is marked Done with a best score of 47 and a Play Sum Racer button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
+        "alt": "A student’s view of a lesson plan: the play step, Number-puzzle warm-up, is marked Done with a best score of 47 and a Play Sudoku button. Next come a build-a-game step with a Start building button, then a written question, the Exit ticket."
       },
       "s5": {
         "h": "See progress and the gradebook",
@@ -8904,7 +8904,7 @@
       "q4": "How do you protect student privacy?",
       "a4": "We never ask students for an email address, age or home address. There are no ads and no tracking cookies, and a student's real name is seen only by their school's staff. Our <a href=\"{href}\">privacy notice</a> lists exactly what we keep.",
       "q5": "What ages and grades is it for?",
-      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Lessons such as Shark Plank and the first Sum Racer tracks suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
+      "a5": "Oomba Academy is made for kindergarten to grade 8, about ages 5 to 14. Games such as Word Hunt, which reads a word aloud when you tap it, suit the youngest players. Number Quest, the math course, runs from kindergarten to grade 8, and CS Quest and Cyber Defenders start in grade 3.",
       "q6": "How do I add my class?",
       "a6": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards.",
       "a6google": "First, email us to set up your school. Then create a class and share its class code with students who have their own account, or make school accounts for the whole class and print login cards. Schools that use Google can let students sign in with Google.",
@@ -8974,7 +8974,7 @@
     "live": {
       "h": "Live class lessons",
       "p1": "Run a live quiz race or any live-ready lesson on the projector. Students join on their own devices with a 7-digit code.",
-      "li1": "Built-in modes include Quest Race (a 3D island race driven by your questions), Brain Board (a board of categories, easy to hard), Would You Rather, Atlas Quest and Doodle Hoot.",
+      "li1": "Built-in modes include Brain Board (a board of categories, easy to hard), Would You Rather, Atlas Quest and Doodle Hoot.",
       "li2": "Use a starter question set, type a quick set, or turn a lesson plan's questions into a live quiz.",
       "li3": "Class rooms are for your signed-in students only, and their scores go into your gradebook. No chat, no typing, no free-text names.",
       "more": "See how Oomba Live works"
@@ -9466,19 +9466,19 @@
         "title": "Free reading and spelling games for kids",
         "description": "Word searches, hangman and a daily word puzzle for ages 5 to 14, with words read aloud for early readers. Free, no ads, in any browser.",
         "h1": "Reading and spelling games for early and growing readers",
-        "lead": "Three word games that build spelling and vocabulary. Shark Plank and Word Hunt read words aloud, so they suit early readers. Word Peek is a daily word puzzle for confident spellers.",
-        "tips": "Use a Word Hunt theme as a warm-up for a topic, solve the Daily Peek together on the board and talk about each guess, or set Shark Plank for early finishers.",
+        "lead": "Word games that build spelling and vocabulary. Word Hunt reads a word aloud when you tap it, so it suits early readers. Word Peek is a daily word puzzle for confident spellers.",
+        "tips": "Use a Word Hunt theme as a warm-up for a topic, or solve the Daily Peek together on the board and talk about each guess.",
         "faq": {
           "q1": "Do the games read words aloud?",
-          "a1": "Shark Plank reads each word aloud, and in Word Hunt students can tap any word to hear it.",
+          "a1": "Yes. In Word Hunt students can tap any word to hear it read aloud.",
           "q2": "Is there a daily puzzle?",
           "a2": "Yes. Word Hunt and Word Peek each have a new daily puzzle, and in Word Peek a student can set a secret word for a friend.",
           "q3": "Can I use my own spelling list?",
           "a3": "Not in these games yet. You can describe a spelling game with your words to the Builder, and it will make one for your class.",
           "q4": "Which word game suits my child’s reading level?",
-          "a4": "Shark Plank and Word Hunt read words aloud, so they suit kids who are still building their reading. Word Peek is for confident spellers."
+          "a4": "Word Hunt reads words aloud, so it suits kids who are still building their reading. Word Peek is for confident spellers."
         },
-        "home": "Make the Daily Peek a family habit at breakfast and talk about each guess, or let a younger reader play Shark Plank with the sound on, so every word is read aloud."
+        "home": "Make the Daily Peek a family habit at breakfast and talk about each guess, or let a younger reader play Word Hunt with the sound on and tap any word to hear it."
       },
       "strategy": {
         "name": "Chess and strategy games",
@@ -9486,19 +9486,19 @@
         "title": "Free chess and strategy games for kids",
         "description": "Learn chess with short lessons and puzzles, then play a friend or a robot. Plus four in a row and falling-block puzzles, free for ages 5 to 14.",
         "h1": "Chess and strategy games that build thinking skills",
-        "lead": "Strategy games ask students to plan ahead, spot patterns and think about what the other player will do. Castle Clash teaches chess from the first move. Drop Four and Brick Drop are quick games of planning and patterns.",
-        "tips": "Run a class chess club with Castle Clash's lessons and puzzles, or pair students on one device for a game of Drop Four.",
+        "lead": "Strategy games ask students to plan ahead, spot patterns and think about what the other player will do. Castle Clash teaches chess from the first move, with lessons, puzzles and a robot to play.",
+        "tips": "Run a class chess club with Castle Clash's lessons and puzzles, or pair students on one device to play each other.",
         "faq": {
           "q1": "Can kids learn chess from scratch?",
           "a1": "Yes. Castle Clash has a short lesson for every piece and 24 checkmate puzzles, then a robot to play at four levels.",
           "q2": "Can two students play on one device?",
-          "a2": "Yes. Castle Clash and Drop Four both have a two-player mode on one screen.",
+          "a2": "Yes. Castle Clash has a two-player mode on one screen.",
           "q3": "How hard is the robot?",
-          "a3": "Castle Clash's robot has four levels, and Drop Four's robot has Easy, Normal and Hard.",
+          "a3": "Castle Clash's robot has four levels, from a gentle start to a real challenge.",
           "q4": "Can I learn chess alongside my child?",
           "a4": "Yes. Castle Clash’s lessons start with how each piece moves, so a grown-up who has never played can learn too, then play their child on the same screen."
         },
-        "home": "Learn chess together: do one Castle Clash lesson a day, then play each other on one screen. Drop Four fits into any spare five minutes."
+        "home": "Learn chess together: do one Castle Clash lesson a day, then play each other on one screen."
       },
       "music": {
         "name": "Music games",
@@ -9530,7 +9530,7 @@
           "q1": "How long should a brain break be?",
           "a1": "Many teachers use 3 to 5 minutes. These games have short rounds, so it is easy to stop on time.",
           "q2": "Can the whole class play on one screen?",
-          "a2": "Yes. Put a game on the board and take turns. Beat Lanes and Swish Flick work well with the class cheering along."
+          "a2": "Yes. Put a game on the board and take turns, with the class cheering along."
         }
       },
       "makeAGame": {
@@ -9670,9 +9670,9 @@
         },
         "faq": {
           "q2": "Are the games too hard for an 8 year old?",
-          "a2": "Each one starts easy. Sum Racer begins with adding to 10, Castle Clash’s robot has an easy level, and Shark Plank reads every word aloud.",
+          "a2": "Each one starts easy. Castle Clash’s robot has an easy level, and Word Hunt reads a word aloud when you tap it.",
           "q3": "Can two kids play on one device?",
-          "a3": "Yes. Sum Racer, Castle Clash and Drop Four have a two-player mode on one screen.",
+          "a3": "Yes. Castle Clash has a two-player mode on one screen, and Word Hunt has a pass-the-phone race.",
           "q4": "Can an 8 year old use the AI Builder?",
           "a4": "Yes. Kids type their idea, so it helps if they can write a sentence or two, and a grown-up nearby helps at first. The Builder follows fixed kid-safety rules."
         }
@@ -9701,9 +9701,9 @@
         },
         "faq": {
           "q2": "Are the games too easy for a 10 year old?",
-          "a2": "No. Sum Racer goes up to all the times tables and division, Castle Clash has 24 checkmate puzzles, and Word Peek is a real daily challenge.",
+          "a2": "No. Castle Clash has 24 checkmate puzzles, and Word Peek is a real daily challenge.",
           "q3": "Can my child play with a sibling or a friend?",
-          "a3": "Yes. Sum Racer and Castle Clash have a two-player mode on one screen, and Word Hunt has a pass-the-phone race.",
+          "a3": "Yes. Castle Clash has a two-player mode on one screen, and Word Hunt has a pass-the-phone race.",
           "q4": "Is the AI Builder safe for an 11 year old?",
           "a4": "The Builder only makes games, and it follows fixed kid-safety rules, such as no gore, no gambling, no real brands and no links out. <a href=\"{ai}\">See every rule it follows</a>. Games stay private until your child shares them."
         }
@@ -9755,7 +9755,7 @@
         },
         "faq": {
           "q2": "Can my child play if they can’t read yet?",
-          "a2": "Some games, yes. Word Trail and Shark Plank read every word aloud, Word Hunt reads a word when you tap it, and Sum Racer uses numbers. Menus and instructions are written, so a grown-up nearby helps at first.",
+          "a2": "Some games, yes. Word Hunt reads a word aloud when you tap it. Menus and instructions are written, so a grown-up nearby helps at first.",
           "q3": "Are the courses for this age?",
           "a3": "One is. Number Quest, our math course, starts in kindergarten: its Launchpad street is for kindergarten to grade 2, and its games read every instruction aloud. CS Quest and Cyber Defenders start in grade 3, at about age 8.",
           "q4": "Can a 6 year old use the AI Builder?",
@@ -9855,7 +9855,7 @@
       "s2": {
         "h": "Play learning games",
         "p": "Math, reading, logic and music games run right in the browser on phones, tablets, Chromebooks and computers. Kids can try one without signing up.",
-        "alt": "Sum Racer, a math racing game, in the middle of a race: cartoon cars on a road, an addition question and four big answer buttons."
+        "alt": "Sudoku, a number puzzle, in the middle of a game: a Tiny 4×4 grid with some numbers filled in, and big number buttons with Undo, Erase, Notes, Hint and Check."
       },
       "s3": {
         "h": "Describe it, play it, change it",
@@ -9932,7 +9932,7 @@
       "a1": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day to make their own games. There are no ads and nothing for kids to buy.",
       "a1paid": "Yes. Every game is free to play, and every player with an account (just a made-up name and a password) gets free Builder messages each day. Families can choose an optional plan for extra Builder messages, and kids are never asked to pay. <a href=\"{plans}\">See the plans</a>.",
       "q2": "What ages is it for?",
-      "a2": "Kids from kindergarten to grade 8, about ages 5 to 14. Games like Shark Plank and the first Sum Racer tracks suit the youngest players.",
+      "a2": "Kids from kindergarten to grade 8, about ages 5 to 14. Games like Word Hunt, which reads a word aloud when you tap it, suit the youngest players.",
       "q3": "Does my child need an account or an email address?",
       "a3": "No. Anyone can play straight away, without signing up. To keep their games and scores, kids can make an account with just a made-up name and a password. We never ask for an email address.",
       "q4": "Are there ads or in-app purchases?",
@@ -11610,13 +11610,13 @@
       "lead": "Real screens from a live lesson in a demo school with made-up names.",
       "s1": {
         "h": "Pick a lesson and your questions",
-        "p": "Choose Quest Race or Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lesson plans.",
-        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Quest Race, Question Battle and Brain Board, each with how many players it suits."
+        "p": "Choose Brain Board, then the questions: the question bank by subject and age (6 to 14), your own set, one a colleague shared, or the questions from one of your lesson plans.",
+        "alt": "The first step of hosting a live lesson, “What do you want to play?”: Brain Board, Would You Rather (Live) and Atlas Quest, each with how many players it suits."
       },
       "s2": {
         "h": "Show the code on the board",
         "p": "Students go to the join page on their device and type the 7-digit code, or scan the QR code. Their names appear as they join.",
-        "alt": "The projector screen before the lesson starts: a cartoon character the whole class plays against, a big 7-digit code, a QR code and how many players have joined."
+        "alt": "The projector screen before the lesson starts: the Brain Board lobby with a card for each student who joined, a big 7-digit code, a QR code and how many players have joined."
       },
       "s3": {
         "h": "Students join in seconds",
@@ -11626,7 +11626,7 @@
       "s4": {
         "h": "Everyone answers at once",
         "p": "The question is on the board and the answer buttons are on every device. Right answers score more the faster they come.",
-        "alt": "A student’s phone during a question: the cartoon character the class plays against at the top, then the question and four answer buttons."
+        "alt": "A student’s screen during a question: a Science question from the Brain Board worth 100 points, a timer and four answer buttons."
       },
       "s5": {
         "h": "See who knows what",
@@ -13199,13 +13199,13 @@
       "rubric": "Rubric: rubric scores on the standard, as a share of the top score. Shown once rubrics are tagged with Common Core standards.",
       "meets": "Meets: a student meets a standard with at least 80% right over 3 or more questions, or a rubric score of at least two thirds. The class meets it when 80% of its students do.",
       "needs": "Needs a look: students who answered 2 or more questions about the standard and got none right. Only teachers see this.",
-      "games": "Lessons with levels for several grades (Sum Racer, Fraction Factory, Word Trail, Tug of Math) count as practice only for the lesson plan's grade, or for the level the step is locked to. For a lesson plan with no grade they show under Covered by only.",
+      "games": "Lessons with levels for several grades count as practice only for the lesson plan's grade, or for the level the step is locked to. For a lesson plan with no grade they show under Covered by only.",
       "live": "Live lessons such as Tug of Math Live don't record which question was about which standard, so a student's answers are shared out across the lesson's standards. Those numbers are estimates.",
       "courses": "Number Quest counts work done with a school account, or since the student joined this class. One check (3 questions) alone is not enough to meet a standard."
     },
     "empty": {
       "title": "No Common Core standards yet",
-      "text": "Tag your lesson plans with standards, or assign lesson plans with Learn lessons like Sum Racer, Fraction Factory or Word Trail, and they show up here."
+      "text": "Tag your lesson plans with standards, or assign lesson plans with Learn lessons tagged with them, and they show up here."
     },
     "csvCols": {
       "code": "Code",

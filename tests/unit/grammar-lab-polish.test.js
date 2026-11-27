@@ -158,8 +158,9 @@ test('voices on (English switch): K-2 cards, questions and hints go through the 
     assert.match(practice, /id="gl-say"[^>]*hidden/);
     assert.match(practice, /id="gl-hint-say"[^>]*hidden/);
     assert.match(practice, /Frage vorlesen/, 'the button is in the page\'s language');
-    // not read aloud: a 3-5 topic, and a K-2 topic inside a 3-5 unit
-    for (const p of ['/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs', '/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs/card']) assert.doesNotMatch(await get(p, kid), /id="gl-say"|id="gl-listen"/, p);
+    // 3-5 is read aloud too (owner, 2026-11-27); 6-8 is not
+    assert.match(await get('/courses/grammar-lab/3-5/fixing-sentences/identifying-action-verbs/card', kid), /id="gl-listen"/);
+    for (const p of ['/courses/grammar-lab/6-8/active-and-passive-voice/active-voice-verbs', '/courses/grammar-lab/6-8/active-and-passive-voice/active-voice-verbs/card']) assert.doesNotMatch(await get(p, kid), /id="gl-say"|id="gl-listen"/, p);
 
     // The card: by topic id only.
     const c = await post('/api/tts', kid, { ctx: 'grammar', topic: K2.topic });

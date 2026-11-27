@@ -90,3 +90,24 @@ test('Oomba Live: neither mode is offered or can be opened; Quick game is Brain 
   assert.doesNotMatch(words(home.text), NAMES);
   assert.match(home.text, /Brain Board/);
 });
+
+// "Hidden everywhere" (owner, 27 Nov 2026): with the arcade off, no page a visitor, parent or teacher reads names a hidden
+// game in its words (pictures' alt text describes the picture; the screenshots were re-taken without them).
+test('no page names a hidden game: /, /teachers, /teachers/live, /parents, every open Learn page; the demo videos are off', async () => {
+  config.arcade = false; config.removedGames = null;
+  const hidden = [...FOCUS.HIDDEN_GAMES, ...FOCUS.removedGames()];
+  const names = hidden.map(s => (G.getGameBySlug(s) || {}).title).filter(Boolean).map(t => t.replace(/[?!]+$/, ''));
+  const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // "Would You Rather" alone is also the live mode (Would You Rather? (Live)), which is on the site.
+  const RE = new RegExp(`(?<![\\w-])(${names.filter(n => n !== 'Would You Rather').map(esc).join('|')})(?![\\w-])`);
+  const pages = ['/', '/teachers', '/teachers/live', '/parents', '/learn', ...FOCUS.openHubs(HUBS).map(h => `/learn/${h.slug}`), ...AGES.map(h => `/learn/${h.slug}`)];
+  for (const lang of ['', '/de', '/ja']) for (const p of pages) {
+    const r = await get(`${lang}${p === '/' ? '' : p}` || '/');
+    if (r.status !== 200) continue;
+    const text = words(r.text).replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ');
+    const m = RE.exec(text);
+    assert.equal(m, null, `${lang}${p} names ${m && m[1]}: …${m ? text.slice(Math.max(0, m.index - 80), m.index + 40) : ''}…`);
+  }
+  assert.doesNotMatch((await get('/parents')).text, /oomba-parents\.mp4/, 'the parents video (Gulp City in it) is off');
+  assert.doesNotMatch((await get('/teachers/live')).text, /oomba-demo\.mp4/, 'the live demo (a Quest Race in it) is off');
+});

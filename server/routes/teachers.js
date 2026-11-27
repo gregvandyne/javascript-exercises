@@ -66,7 +66,9 @@ const HOW_DIR = new URL('../../public/img/how/', import.meta.url);
 export const fsOg = slug => fs.existsSync(new URL(`${slug}.jpg`, OG_DIR));
 // The one-minute demo video on /teachers/live (public/video, made by recording the real app: docs/decisions.md).
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
-const hasDemo = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
+const demoFiles = fs.existsSync(new URL('oomba-demo.mp4', VIDEO_DIR)) && fs.existsSync(new URL('oomba-demo-poster.jpg', VIDEO_DIR));
+// The /teachers/live demo was recorded with a Quest Race in it: shown only while the arcade games are on the site.
+const hasDemo = () => demoFiles && !focus.arcadeHidden();
 /** The questions on /teachers/live, in order (teachersLive.faq.q<n>, a<n>). The first, "Is Oomba Live free?", answers
  *  honestly (the owner, 27 Nov 2026): hosting, the question sets, the results and the ready-made courses cost nothing;
  *  the Teacher plan adds the paid tools (plans.teacher.li5, teacher-tools.js toolAccess, homeroom.js canUse). No amount:
@@ -543,7 +545,7 @@ router.get('/teachers/live', (req, res, next) => {
   const faq = faqBlock(req, LIVE_FAQ.map(n => [`teachersLive.faq.q${n}`, n === 1 ? a1 : `teachersLive.faq.a${n}`]), 'teachersLive.faq.h', vars, { lp: true, unlink: plansOn() ? [] : [a1] });
   // Each mode says how many players it is made for (classlive-access.js CAPACITY, docs/live-capacity.md).
   const MODE_ID = { race: 'quest-race', battle: 'battle', board: 'board', wyr: 'wyr', atlas: 'atlas', tug: 'tug', doodle: 'doodle' };
-  const modes = [['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugRemoved(A_MODES[MODE_ID[k]]));
+  const modes = [['🏝️', 'race'], ['⚡', 'battle'], ['🌟', 'board'], ['🤔', 'wyr'], ['🌍', 'atlas'], ['🪢', 'tug'], ['🦉', 'doodle']].filter(([, k]) => !focus.slugHidden(A_MODES[MODE_ID[k]]));
   // Three cards a row; a last row of two takes half the width each.
   const span = i => (modes.length % 3 === 2 && i >= modes.length - 2 ? 'lp-s3' : 'lp-s2');
   const mode = ([emoji, k], i) => { const c = capacityFor({ mode: MODE_ID[k] });
@@ -558,12 +560,12 @@ router.get('/teachers/live', (req, res, next) => {
     img: { src: `/img/how/${slug}-p-390.webp`, srcset: `/img/how/${slug}-p-390.webp 390w, /img/how/${slug}-p-780.webp 780w`, sizes: '(min-width: 700px) 150px, 132px', width: 390, height: 844, alt: '', type: 'image/webp',
       dark: fs.existsSync(new URL(`${slug}-dark-p-390.webp`, HOW_DIR)) ? { srcset: `/img/how/${slug}-dark-p-390.webp 390w, /img/how/${slug}-dark-p-780.webp 780w` } : null } }))}</div>` : '');
   const board = how('live-lobby');
-  const devices = board.ok() ? html`<figure class="lp-devices" id="demo"${hasDemo ? raw(' aria-describedby="demo-note"') : ''}>
+  const devices = board.ok() ? html`<figure class="lp-devices" id="demo"${hasDemo() ? raw(' aria-describedby="demo-note"') : ''}>
       <div class="lp-devices-in" aria-hidden="true">
         <div class="lp-shot">${toolPic(req, { pic: board }, '(min-width: 1040px) 700px, (min-width: 700px) 66vw, 92vw', { lazy: false })}</div>
         ${phone('live-join', 'lp-phone-a')}${phone('live-play', 'lp-phone-b')}
       </div>
-      ${hasDemo ? html`<figcaption>${videoLink(t, 'demo', html`<i aria-hidden="true"></i><span${fb(t, 'teachersLive.demo.h')}>${t('teachersLive.demo.h')}</span>`, 'lp-playbtn', t('teachersLive.demo.h'))}
+      ${hasDemo() ? html`<figcaption>${videoLink(t, 'demo', html`<i aria-hidden="true"></i><span${fb(t, 'teachersLive.demo.h')}>${t('teachersLive.demo.h')}</span>`, 'lp-playbtn', t('teachersLive.demo.h'))}
       ${el(t, 'p', 'teachersLive.demo.note', {}, ' class="lp-small" id="demo-note"')}</figcaption>${videoDialog(t)}` : ''}
     </figure>` : '';
   const hero = html`<section class="lp-hero lp-dots" aria-labelledby="lp-h1"><div class="lp-wrap">
