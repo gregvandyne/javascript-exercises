@@ -4998,7 +4998,10 @@
         "tooLong": "That was too long. Speak for up to a minute.",
         "tooFast": "That's a lot of recordings in a minute. Wait a moment.",
         "daily": "That's all the speaking for today. You can still type.",
-        "busy": "Speaking isn't available right now. You can still type."
+        "busy": "Speaking isn't available right now. You can still type.",
+        "lost": "Oomba couldn't turn your recording into words. It is kept here until you dismiss it.",
+        "retry": "Try again",
+        "dismiss": "Dismiss"
       },
       "web": {
         "on": "Web search on",
@@ -5074,7 +5077,9 @@
         "report": "Read the class's progress",
         "reportNo": "Couldn't read that class's progress",
         "pointEmpty": "Checked the class: no students yet",
-        "askBack": "Asked what you need"
+        "askBack": "Asked what you need",
+        "action": "Got it ready for you to check",
+        "actionNo": "Couldn't do that"
       },
       "stepsSum": "{n, plural, one {# step} other {# steps}} · {s} s",
       "prog": {
@@ -5412,6 +5417,314 @@
         "pastEnd": "{v} is past the end of a {from} to {to} line, so the point can't go there.",
         "other": "That figure can't be drawn: {what}.",
         "notAsked": "Not put on: {what}."
+      },
+      "act": {
+        "whichClass": "Which class is it for?",
+        "do": "Do it",
+        "notNow": "Not now",
+        "done": "Done",
+        "declined": "Not done",
+        "failed": "Not done: nothing was changed",
+        "noUndo": "This can't be undone from the chat.",
+        "namesLabel": "Students' names, one on each line",
+        "namesHint": "The names stay here: they are not sent to Oomba's AI.",
+        "namesFirst": "Type the students' names first.",
+        "nameLabel": "Name on the class list",
+        "openClass": "Open the class",
+        "why": {
+          "needText": "Type the students' names first.",
+          "tooMany": "At most 40 names at a time.",
+          "sameNames": "{count, plural, one {# name already has} other {# names already have}} an account at this school: add them with Add existing students on the class page.",
+          "other": "It could not be done, so nothing was changed."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "This makes accounts for children.",
+            "password": "Their old password stops working at once.",
+            "archive": "This archives the class. You can restore it later.",
+            "remove": "This takes the student out of the class. Their account and work are kept.",
+            "move": "The student leaves this class. Their account and work are kept."
+          },
+          "add": {
+            "ask": "Add students to {class}?",
+            "where": "Type their names below. Each student gets a username and a password on a login card.",
+            "done": "Added {count, plural, one {# student} other {# students}} to {class}.",
+            "cardsOnce": "Print the login cards now: the passwords are only on them.",
+            "printCards": "Print login cards"
+          },
+          "rename": {
+            "ask": "Change {class}?",
+            "done": "Changed {class}.",
+            "name": "Name: {name}",
+            "grade": "Grade: {grade}",
+            "subject": "Subject: {subject}"
+          },
+          "code": {
+            "ask": "Make a new join code for {class}?",
+            "old": "The old code stops working.",
+            "done": "The new join code for {class} is {code}."
+          },
+          "archive": {
+            "ask": "Archive {class}?",
+            "done": "Archived {class}."
+          },
+          "restore": {
+            "ask": "Restore {class}?",
+            "done": "Restored {class}."
+          },
+          "pw": {
+            "ask": "Make a new password for {name}?",
+            "done": "Made a new password for {name}.",
+            "cardOnce": "Print the login card now: the password is only on it.",
+            "printCard": "Print the login card"
+          },
+          "remove": {
+            "ask": "Take {name} out of {class}?",
+            "done": "Took {name} out of {class}."
+          },
+          "move": {
+            "ask": "Move {name} from {from} to {to}?",
+            "done": "Moved {name} to {to}."
+          },
+          "coteach": {
+            "ask": "Add {name} as a teacher of {class}?",
+            "done": "{name} now teaches {class}."
+          },
+          "join": {
+            "ask": "Let {name} join {class}?",
+            "nameHint": "Check the name for the class list below.",
+            "done": "{name} joined {class}."
+          },
+          "decline": {
+            "ask": "Say no to {name} for {class}?",
+            "done": "Said no to the request for {class}."
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "This takes it off the class. Students' work is kept.",
+            "students": "Students will see this.",
+            "classroom": "This posts to Google Classroom: students there will see it.",
+            "deleteSheet": "This deletes the worksheet for good. Lessons already assigned keep their questions.",
+            "deleteBoard": "This deletes the board for good.",
+            "deleteLesson": "This deletes the lesson for good, with its assignments and the students' work in them."
+          },
+          "due": {
+            "ask": "Change the dates of “{title}” in {class}?",
+            "done": "Changed the dates of “{title}”.",
+            "none": "No due day",
+            "opens": "Opens {day}",
+            "opensNow": "Open now"
+          },
+          "unassign": {
+            "ask": "Take “{title}” off {class}?",
+            "done": "Took “{title}” off {class}."
+          },
+          "seeWork": "See the work",
+          "lesson": {
+            "ask": "Assign the lesson “{title}” to {class}?",
+            "done": "Assigned the lesson “{title}” to {class}."
+          },
+          "sheet": {
+            "ask": "Assign the worksheet “{title}” to {class}?",
+            "done": "Assigned the worksheet “{title}” to {class}."
+          },
+          "practice": {
+            "ask": "Assign practice from the board “{title}” to {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# question} other {# questions}} of each task",
+            "done": "Assigned “{title}” to {class}: {count, plural, one {# question} other {# questions}}."
+          },
+          "unit": {
+            "ask": "Add the unit “{name}” to {class}?",
+            "done": "Added the unit “{name}” to {class}."
+          },
+          "renameUnit": {
+            "ask": "Rename the unit “{old}” in {class} to “{name}”?",
+            "done": "Renamed the unit to “{name}”."
+          },
+          "move": {
+            "up": "Move “{title}” up one place in {class}?",
+            "down": "Move “{title}” down one place in {class}?",
+            "movedUp": "Moved “{title}” up one place.",
+            "movedDown": "Moved “{title}” down one place."
+          },
+          "classroom": {
+            "ask": "Post “{title}” from {class} to Google Classroom?",
+            "course": "Classroom class: {course}",
+            "done": "Posted “{title}” to Google Classroom.",
+            "scheduled": "It stays a draft in Classroom until it opens on {day}.",
+            "pastDue": "The due day has passed, so it went without one.",
+            "open": "Open in Classroom",
+            "page": "Google Classroom page"
+          },
+          "made": {
+            "renameSheet": "Rename the worksheet “{old}” to “{title}”?",
+            "renamedSheet": "Renamed the worksheet to “{title}”.",
+            "deleteSheet": "Delete the worksheet “{title}”?",
+            "deletedSheet": "Deleted the worksheet “{title}”.",
+            "openSheet": "Open the worksheet",
+            "allSheets": "See my worksheets",
+            "renameBoard": "Rename the board “{old}” to “{title}”?",
+            "renamedBoard": "Renamed the board to “{title}”.",
+            "copyBoard": "Make a copy of the board “{title}”?",
+            "copiedBoard": "Made a copy: “{title}”.",
+            "deleteBoard": "Delete the board “{title}”?",
+            "deletedBoard": "Deleted the board “{title}”.",
+            "openBoard": "Open the board",
+            "allBoards": "See my boards",
+            "copyLesson": "Make a copy of the lesson “{title}”?",
+            "copiedLesson": "Made a copy: “{title}”.",
+            "deleteLesson": "Delete the lesson “{title}”?",
+            "inClasses": "{count, plural, one {It is assigned to # class.} other {It is assigned to # classes.}}",
+            "withWork": "{count, plural, one {# student has work in it.} other {# students have work in it.}}",
+            "deletedLesson": "Deleted the lesson “{title}”.",
+            "openLesson": "Open the lesson",
+            "allLessons": "See my lessons"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "This goes on students' desks.",
+            "takeBack": "This takes it off students' desks. Their work is kept.",
+            "live": "This changes what students' screens show.",
+            "parents": "Parents will see this class while the parents' view is on."
+          },
+          "who": "Students: {names}",
+          "openHub": "Open the Hub",
+          "att": {
+            "absent": "Mark {count, plural, one {# student} other {# students}} absent today in {class}?",
+            "home": "Mark {count, plural, one {# student} other {# students}} at home today in {class}?",
+            "here": "Mark {count, plural, one {# student} other {# students}} here today in {class}?",
+            "everyone": "Mark everyone in {class} here today?",
+            "doneAbsent": "Marked {count, plural, one {# student} other {# students}} absent today.",
+            "doneHome": "Marked {count, plural, one {# student} other {# students}} at home today.",
+            "doneHere": "Marked {count, plural, one {# student} other {# students}} here today.",
+            "doneEveryone": "Everyone in {class} is marked here today."
+          },
+          "sup": {
+            "ask": "Change the supports of {name} in {class}?",
+            "done": "Changed the supports of {name}.",
+            "timeOff": "No extra time",
+            "time150": "Extra time: 1.5 times",
+            "time200": "Extra time: double",
+            "read": "Read aloud",
+            "simple": "Simpler wording",
+            "big": "Bigger text",
+            "none": "No supports"
+          },
+          "groups": {
+            "ask": "Make {count, plural, one {# group} other {# groups}} in {class}?",
+            "done": "Made {count, plural, one {# group} other {# groups}} in {class}.",
+            "name": "Group {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: nobody yet",
+            "rest": "{count, plural, one {# student is} other {# students are}} in no group."
+          },
+          "hand": {
+            "ask": "Hand out “{title}” to {who} in {class}?",
+            "done": "Handed out “{title}” to {who}.",
+            "everyone": "every desk",
+            "group": "the group {group}"
+          },
+          "back": {
+            "askAll": "Take “{title}” off every desk in {class}?",
+            "askOne": "Take “{title}” off the desk of {name}?",
+            "doneAll": "Took “{title}” off every desk.",
+            "doneOne": "Took “{title}” off the desk of {name}."
+          },
+          "needs": {
+            "seen": "Mark {name} as seen on Needs a look?",
+            "snooze": "Snooze {name} on Needs a look until the next school day?",
+            "seenDone": "Marked {name} as seen.",
+            "snoozeDone": "Snoozed {name} until the next school day.",
+            "rule": {
+              "stuck": "Stuck on a handout",
+              "hand": "A hand up for a while",
+              "ask": "A question from home waiting",
+              "tries": "Several tries without getting there",
+              "reading": "A reading quiz under 60 percent",
+              "overdue": "Work piling up after due"
+            }
+          },
+          "live": {
+            "start": "Start live class in {class}?",
+            "startLine": "Every desk is asked to come to the Hub, and class sign-in opens.",
+            "end": "End live class in {class}?",
+            "endLine": "Class sign-in closes and the class's shared devices are signed out.",
+            "started": "Live class started in {class}.",
+            "ended": "Live class ended in {class}."
+          },
+          "parents": {
+            "on": "Turn on the parents' view of {class}?",
+            "off": "Turn off the parents' view of {class}?",
+            "onDone": "The parents' view of {class} is on.",
+            "offDone": "The parents' view of {class} is off."
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "Students will see this: the game opens for the class.",
+            "end": "The game ends on every screen in it."
+          },
+          "host": {
+            "ask": "Start a live game for {class}?",
+            "what": "{count, plural, one {# ready question} other {# ready questions}} from the question bank.",
+            "done": "The live game for {class} is open: students join from their class page.",
+            "open": "Open the host screen"
+          },
+          "end": {
+            "ask": "End the live game “{title}”?",
+            "players": "{count, plural, =0 {Nobody has joined yet.} one {# player is in it.} other {# players are in it.}}",
+            "done": "Ended the live game “{title}”.",
+            "results": "See the results"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Students will see this on their screens.",
+            "off": "It goes from the students' screens."
+          },
+          "timer": {
+            "startAsk": "Start the timer on the {class} dashboard?",
+            "pauseAsk": "Pause the timer on the {class} dashboard?",
+            "resetAsk": "Reset the timer on the {class} dashboard?",
+            "startDone": "The timer on the {class} dashboard is running.",
+            "pauseDone": "Paused the timer on the {class} dashboard.",
+            "resetDone": "Reset the timer on the {class} dashboard.",
+            "minutes": "{count, plural, one {# minute} other {# minutes}}"
+          },
+          "eyes": {
+            "onAsk": "Turn on Eyes up for {class}?",
+            "offAsk": "Turn off Eyes up for {class}?",
+            "lasts": "It ends by itself after 3 minutes.",
+            "onDone": "Eyes up is on for {class}.",
+            "offDone": "Eyes up is off for {class}."
+          },
+          "check": {
+            "ask": "Send a quick check to {class}?",
+            "done": "Sent a quick check to {class}.",
+            "thumbs": "Thumbs up, sideways or down",
+            "fist": "Fist to five",
+            "scale": "A scale from 1 to 5",
+            "choice": "Choices: {options}",
+            "endAsk": "End the quick check on the {class} dashboard?",
+            "ended": "Ended the quick check on the {class} dashboard."
+          },
+          "pick": {
+            "ask": "Pick a student at random in {class}?",
+            "only": "Only you see the name, here on this card.",
+            "done": "Picked: {name}"
+          },
+          "push": {
+            "ask": "Send “{title}” to the screens of {class}?",
+            "game": "A game",
+            "link": "A link",
+            "done": "Sent “{title}” to the screens of {class}.",
+            "endAsk": "Take “{title}” off the screens of {class}?",
+            "ended": "Took “{title}” off the screens of {class}."
+          }
+        }
       }
     },
     "companion-greet": {

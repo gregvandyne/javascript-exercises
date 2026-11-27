@@ -4595,7 +4595,10 @@
         "tooLong": "Ficou longo demais. Fale por até um minuto.",
         "tooFast": "São muitas gravações em um minuto. Espere um momento.",
         "daily": "Por hoje não dá para falar mais. Você ainda pode digitar.",
-        "busy": "Falar não está disponível agora. Você ainda pode digitar."
+        "busy": "Falar não está disponível agora. Você ainda pode digitar.",
+        "lost": "O Oomba não conseguiu transformar sua gravação em palavras. Ela fica aqui até você fechá-la.",
+        "retry": "Tentar de novo",
+        "dismiss": "Fechar"
       },
       "web": {
         "on": "Busca na web ligada",
@@ -4666,7 +4669,9 @@
         "report": "Leu o progresso da turma",
         "reportNo": "Não conseguiu ler o progresso dessa turma",
         "pointEmpty": "Conferiu a turma: ainda sem alunos",
-        "askBack": "Perguntou o que você precisa"
+        "askBack": "Perguntou o que você precisa",
+        "action": "Deixei pronto para você conferir",
+        "actionNo": "Não deu para fazer"
       },
       "stepsSum": "{n, plural, one {# etapa} other {# etapas}} · {s} s",
       "prog": {
@@ -4954,6 +4959,314 @@
         "pastEnd": "{v} fica além do fim de uma reta de {from} a {to}, então o ponto não pode ficar ali.",
         "other": "Essa figura não pode ser desenhada: {what}.",
         "notAsked": "Não adicionada: {what}."
+      },
+      "act": {
+        "whichClass": "Para qual turma?",
+        "do": "Fazer",
+        "notNow": "Agora não",
+        "done": "Feito",
+        "declined": "Não feito",
+        "failed": "Não feito: nada foi alterado",
+        "noUndo": "Isso não pode ser desfeito pelo chat.",
+        "namesLabel": "Nomes dos alunos, um por linha",
+        "namesHint": "Os nomes ficam aqui: não são enviados à IA do Oomba.",
+        "namesFirst": "Digite os nomes primeiro.",
+        "nameLabel": "Nome na lista da turma",
+        "openClass": "Abrir a turma",
+        "why": {
+          "needText": "Digite os nomes primeiro.",
+          "tooMany": "No máximo 40 nomes de cada vez.",
+          "sameNames": "{count, plural, one {# nome já tem} other {# nomes já têm}} conta nesta escola: adicione com Adicionar alunos existentes na página da turma.",
+          "other": "Não deu para fazer, então nada foi alterado."
+        },
+        "classes": {
+          "warn": {
+            "accounts": "Isso cria contas para crianças.",
+            "password": "A senha antiga deixa de funcionar na hora.",
+            "archive": "Isso arquiva a turma. Você pode restaurá-la depois.",
+            "remove": "Isso tira o aluno da turma. A conta e os trabalhos são mantidos.",
+            "move": "O aluno sai desta turma. A conta e os trabalhos são mantidos."
+          },
+          "add": {
+            "ask": "Adicionar alunos a {class}?",
+            "where": "Digite os nomes abaixo. Cada aluno recebe um nome de usuário e uma senha num cartão de acesso.",
+            "done": "{count, plural, one {# aluno adicionado} other {# alunos adicionados}} a {class}.",
+            "cardsOnce": "Imprima os cartões de acesso agora: as senhas só aparecem neles.",
+            "printCards": "Imprimir cartões de acesso"
+          },
+          "rename": {
+            "ask": "Alterar {class}?",
+            "done": "{class} alterada.",
+            "name": "Nome: {name}",
+            "grade": "Ano: {grade}",
+            "subject": "Matéria: {subject}"
+          },
+          "code": {
+            "ask": "Criar um novo código de entrada para {class}?",
+            "old": "O código antigo deixa de funcionar.",
+            "done": "O novo código de entrada de {class} é {code}."
+          },
+          "archive": {
+            "ask": "Arquivar {class}?",
+            "done": "{class} arquivada."
+          },
+          "restore": {
+            "ask": "Restaurar {class}?",
+            "done": "{class} restaurada."
+          },
+          "pw": {
+            "ask": "Criar uma nova senha para {name}?",
+            "done": "Nova senha criada para {name}.",
+            "cardOnce": "Imprima o cartão de acesso agora: a senha só está nele.",
+            "printCard": "Imprimir o cartão de acesso"
+          },
+          "remove": {
+            "ask": "Tirar {name} de {class}?",
+            "done": "{name} saiu de {class}."
+          },
+          "move": {
+            "ask": "Mover {name} de {from} para {to}?",
+            "done": "{name} agora está em {to}."
+          },
+          "coteach": {
+            "ask": "Adicionar {name} como professor de {class}?",
+            "done": "{name} agora dá aula em {class}."
+          },
+          "join": {
+            "ask": "Deixar {name} entrar em {class}?",
+            "nameHint": "Confira abaixo o nome para a lista da turma.",
+            "done": "{name} entrou em {class}."
+          },
+          "decline": {
+            "ask": "Recusar o pedido de {name} para {class}?",
+            "done": "Pedido para {class} recusado."
+          }
+        },
+        "assignments": {
+          "warn": {
+            "unassign": "Isso tira da turma. O trabalho dos alunos é mantido.",
+            "students": "Os alunos vão ver isso.",
+            "classroom": "Isso publica no Google Classroom: os alunos de lá vão ver.",
+            "deleteSheet": "Isso apaga a folha de atividades para sempre. As aulas já atribuídas mantêm as perguntas.",
+            "deleteBoard": "Isso apaga o quadro para sempre.",
+            "deleteLesson": "Isso apaga a aula para sempre, com as atribuições e o trabalho dos alunos nelas."
+          },
+          "due": {
+            "ask": "Mudar as datas de “{title}” em {class}?",
+            "done": "Datas de “{title}” alteradas.",
+            "none": "Sem data de entrega",
+            "opens": "Abre em {day}",
+            "opensNow": "Aberto agora"
+          },
+          "unassign": {
+            "ask": "Tirar “{title}” de {class}?",
+            "done": "“{title}” saiu de {class}."
+          },
+          "seeWork": "Ver o trabalho",
+          "lesson": {
+            "ask": "Atribuir a aula “{title}” a {class}?",
+            "done": "A aula “{title}” foi atribuída a {class}."
+          },
+          "sheet": {
+            "ask": "Atribuir a folha de atividades “{title}” a {class}?",
+            "done": "A folha de atividades “{title}” foi atribuída a {class}."
+          },
+          "practice": {
+            "ask": "Atribuir prática do quadro “{title}” a {class}?",
+            "tasks": "{tool}: {tasks}",
+            "count": "{count, plural, one {# pergunta} other {# perguntas}} de cada tarefa",
+            "done": "“{title}” foi atribuído a {class}: {count, plural, one {# pergunta} other {# perguntas}}."
+          },
+          "unit": {
+            "ask": "Adicionar a unidade “{name}” a {class}?",
+            "done": "Unidade “{name}” adicionada a {class}."
+          },
+          "renameUnit": {
+            "ask": "Renomear a unidade “{old}” de {class} para “{name}”?",
+            "done": "A unidade agora se chama “{name}”."
+          },
+          "move": {
+            "up": "Subir “{title}” um lugar em {class}?",
+            "down": "Descer “{title}” um lugar em {class}?",
+            "movedUp": "“{title}” subiu um lugar.",
+            "movedDown": "“{title}” desceu um lugar."
+          },
+          "classroom": {
+            "ask": "Publicar “{title}” de {class} no Google Classroom?",
+            "course": "Turma do Classroom: {course}",
+            "done": "“{title}” foi publicado no Google Classroom.",
+            "scheduled": "Fica como rascunho no Classroom até abrir em {day}.",
+            "pastDue": "A data de entrega já passou, então foi sem data.",
+            "open": "Abrir no Classroom",
+            "page": "Página do Google Classroom"
+          },
+          "made": {
+            "renameSheet": "Renomear a folha de atividades “{old}” para “{title}”?",
+            "renamedSheet": "A folha de atividades agora se chama “{title}”.",
+            "deleteSheet": "Apagar a folha de atividades “{title}”?",
+            "deletedSheet": "A folha de atividades “{title}” foi apagada.",
+            "openSheet": "Abrir a folha de atividades",
+            "allSheets": "Ver minhas folhas de atividades",
+            "renameBoard": "Renomear o quadro “{old}” para “{title}”?",
+            "renamedBoard": "O quadro agora se chama “{title}”.",
+            "copyBoard": "Fazer uma cópia do quadro “{title}”?",
+            "copiedBoard": "Cópia feita: “{title}”.",
+            "deleteBoard": "Apagar o quadro “{title}”?",
+            "deletedBoard": "O quadro “{title}” foi apagado.",
+            "openBoard": "Abrir o quadro",
+            "allBoards": "Ver meus quadros",
+            "copyLesson": "Fazer uma cópia da aula “{title}”?",
+            "copiedLesson": "Cópia feita: “{title}”.",
+            "deleteLesson": "Apagar a aula “{title}”?",
+            "inClasses": "{count, plural, one {Está atribuída a # turma.} other {Está atribuída a # turmas.}}",
+            "withWork": "{count, plural, one {# aluno tem trabalho nela.} other {# alunos têm trabalho nela.}}",
+            "deletedLesson": "A aula “{title}” foi apagada.",
+            "openLesson": "Abrir a aula",
+            "allLessons": "Ver minhas aulas"
+          }
+        },
+        "homeroom": {
+          "warn": {
+            "screens": "Isto vai para as mesas dos alunos.",
+            "takeBack": "Isto tira das mesas dos alunos. O trabalho deles é mantido.",
+            "live": "Isto muda o que aparece nas telas dos alunos.",
+            "parents": "Os pais verão esta turma enquanto a visão dos pais estiver ligada."
+          },
+          "who": "Alunos: {names}",
+          "openHub": "Abrir o Hub",
+          "att": {
+            "absent": "Marcar {count, plural, one {# aluno} other {# alunos}} como ausente hoje em {class}?",
+            "home": "Marcar {count, plural, one {# aluno} other {# alunos}} como em casa hoje em {class}?",
+            "here": "Marcar {count, plural, one {# aluno} other {# alunos}} como presente hoje em {class}?",
+            "everyone": "Marcar todos de {class} como presentes hoje?",
+            "doneAbsent": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como ausente hoje.",
+            "doneHome": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como em casa hoje.",
+            "doneHere": "{count, plural, one {# aluno marcado} other {# alunos marcados}} como presente hoje.",
+            "doneEveryone": "Todos de {class} estão marcados como presentes hoje."
+          },
+          "sup": {
+            "ask": "Mudar os apoios de {name} em {class}?",
+            "done": "Os apoios de {name} foram alterados.",
+            "timeOff": "Sem tempo extra",
+            "time150": "Tempo extra: 1,5 vez",
+            "time200": "Tempo extra: o dobro",
+            "read": "Leitura em voz alta",
+            "simple": "Palavras mais simples",
+            "big": "Texto maior",
+            "none": "Sem apoios"
+          },
+          "groups": {
+            "ask": "Fazer {count, plural, one {# grupo} other {# grupos}} em {class}?",
+            "done": "{count, plural, one {# grupo feito} other {# grupos feitos}} em {class}.",
+            "name": "Grupo {n}",
+            "line": "{group}: {names}",
+            "empty": "{group}: ninguém ainda",
+            "rest": "{count, plural, one {# aluno não está} other {# alunos não estão}} em nenhum grupo."
+          },
+          "hand": {
+            "ask": "Entregar “{title}” para {who} em {class}?",
+            "done": "“{title}” entregue para {who}.",
+            "everyone": "todas as mesas",
+            "group": "o grupo {group}"
+          },
+          "back": {
+            "askAll": "Tirar “{title}” de todas as mesas em {class}?",
+            "askOne": "Tirar “{title}” da mesa de {name}?",
+            "doneAll": "“{title}” foi tirado de todas as mesas.",
+            "doneOne": "“{title}” foi tirado da mesa de {name}."
+          },
+          "needs": {
+            "seen": "Marcar {name} como visto em Dar uma olhada?",
+            "snooze": "Adiar {name} em Dar uma olhada até o próximo dia de aula?",
+            "seenDone": "{name} marcado como visto.",
+            "snoozeDone": "{name} adiado até o próximo dia de aula.",
+            "rule": {
+              "stuck": "Travado em uma atividade",
+              "hand": "Mão levantada há um tempo",
+              "ask": "Uma pergunta de casa esperando",
+              "tries": "Várias tentativas sem conseguir",
+              "reading": "Um quiz de leitura abaixo de 60 por cento",
+              "overdue": "Trabalho acumulando depois do prazo"
+            }
+          },
+          "live": {
+            "start": "Começar a aula ao vivo em {class}?",
+            "startLine": "Todas as mesas são chamadas para o Hub, e o login da turma abre.",
+            "end": "Encerrar a aula ao vivo em {class}?",
+            "endLine": "O login da turma fecha e os aparelhos compartilhados da turma saem da conta.",
+            "started": "Aula ao vivo começou em {class}.",
+            "ended": "Aula ao vivo encerrada em {class}."
+          },
+          "parents": {
+            "on": "Ligar a visão dos pais de {class}?",
+            "off": "Desligar a visão dos pais de {class}?",
+            "onDone": "A visão dos pais de {class} está ligada.",
+            "offDone": "A visão dos pais de {class} está desligada."
+          }
+        },
+        "live": {
+          "warn": {
+            "host": "Os alunos vão ver isso: o jogo abre para a turma.",
+            "end": "O jogo termina em todas as telas que estão nele."
+          },
+          "host": {
+            "ask": "Começar um jogo ao vivo para {class}?",
+            "what": "{count, plural, one {# pergunta pronta} other {# perguntas prontas}} do banco de perguntas.",
+            "done": "O jogo ao vivo de {class} está aberto: os alunos entram pela página da turma.",
+            "open": "Abrir a tela de quem conduz"
+          },
+          "end": {
+            "ask": "Encerrar o jogo ao vivo “{title}”?",
+            "players": "{count, plural, =0 {Ninguém entrou ainda.} one {Há # jogador.} other {Há # jogadores.}}",
+            "done": "O jogo ao vivo “{title}” foi encerrado.",
+            "results": "Ver os resultados"
+          }
+        },
+        "dashboard": {
+          "warn": {
+            "screens": "Os alunos vão ver isso nas telas.",
+            "off": "Isso sai das telas dos alunos."
+          },
+          "timer": {
+            "startAsk": "Iniciar o timer no painel de {class}?",
+            "pauseAsk": "Pausar o timer no painel de {class}?",
+            "resetAsk": "Zerar o timer no painel de {class}?",
+            "startDone": "O timer no painel de {class} está correndo.",
+            "pauseDone": "O timer no painel de {class} foi pausado.",
+            "resetDone": "O timer no painel de {class} foi zerado.",
+            "minutes": "{count, plural, one {# minuto} other {# minutos}}"
+          },
+          "eyes": {
+            "onAsk": "Ligar Olhos para a frente para {class}?",
+            "offAsk": "Desligar Olhos para a frente para {class}?",
+            "lasts": "Desliga sozinho depois de 3 minutos.",
+            "onDone": "Olhos para a frente está ligado para {class}.",
+            "offDone": "Olhos para a frente está desligado para {class}."
+          },
+          "check": {
+            "ask": "Enviar uma checagem rápida para {class}?",
+            "done": "Checagem rápida enviada para {class}.",
+            "thumbs": "Polegar para cima, de lado ou para baixo",
+            "fist": "Do punho ao cinco",
+            "scale": "Uma escala de 1 a 5",
+            "choice": "Opções: {options}",
+            "endAsk": "Encerrar a checagem rápida no painel de {class}?",
+            "ended": "A checagem rápida no painel de {class} foi encerrada."
+          },
+          "pick": {
+            "ask": "Sortear um aluno de {class}?",
+            "only": "Só você vê o nome, aqui neste cartão.",
+            "done": "Sorteado: {name}"
+          },
+          "push": {
+            "ask": "Enviar “{title}” para as telas de {class}?",
+            "game": "Um jogo",
+            "link": "Um link",
+            "done": "“{title}” enviado para as telas de {class}.",
+            "endAsk": "Tirar “{title}” das telas de {class}?",
+            "ended": "“{title}” saiu das telas de {class}."
+          }
+        }
       }
     },
     "companion-greet": {

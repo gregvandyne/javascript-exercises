@@ -24,52 +24,24 @@ import * as S from '../services/schools.js';
 import * as LS from '../services/classlive-sessions.js';
 import * as A from '../services/classlive-access.js';
 import * as R from '../services/classlive-results.js';
-import * as ST from '../services/classlive-settings.js';
 import * as funnel from '../services/funnel.js';
 import { cleanText } from '../services/textfilter.js';
 import { rateLimit, allow, count, ipOf, SIGNUP } from '../services/ratelimit.js';
-import { pickerFor, SUBJECTS, LEVELS } from '../live/bank/index.js';
+import { pickerFor } from '../live/bank/index.js';
 import { ico } from '../views/icon.js';
-import { slugHidden } from '../services/game-focus.js';
+import { QUICK_COUNT, MODE_KEY, quickModes, quickPick, quickPlan, openQuick } from '../services/quick-live.js';
+
+// The pick and the room-opening code live in services/quick-live.js (Oomba's hostLive action opens the same room).
+export { QUICK_COUNT, levelForGrade, quickPick, quickPlan, openQuick, pickLine } from '../services/quick-live.js';
 
 export const router = Router();
 export const HOST_URL = '/teachers/host';
 export const QUICK_URL = '/live/quick';
-/** How many questions a quick game asks. */
-export const QUICK_COUNT = 10;
 const on = (req, res, next) => (LS.liveOn() ? next() : next('router'));
 const HEAD = '<link rel="stylesheet" href="/css/quick-live.css">';
 const el = (t, tag, key, vars = {}, attrs = '') => raw(`<${tag}${attrs}${t.own(key) ? '' : ' lang="en" dir="ltr"'}>${tHtml(t, key, vars)}</${tag}>`);
 const clip = (v, n) => String(v ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, n);
 const MODE_ICON = { battle: '⚡', 'quest-race': '🏝️', board: '🌟' };
-/** The quick modes on offer: those whose game is not hidden (services/game-focus.js: Quest Race while ARCADE is off,
- *  Question Battle for good), so Brain Board is the quick game while both are. */
-const quickModes = () => ST.QUICK_MODES.filter(m => !slugHidden(A.MODES[m]));
-const MODE_KEY = { battle: 'battle', 'quest-race': 'questRace', board: 'board' };
-
-/** The question bank level that fits a class's grade ("3", "Grade 5", "K"); null when the grade says nothing. */
-export function levelForGrade(grade) {
-  const g = String(grade ?? '').trim();
-  if (/^(k|kg|kindergarten|pre-?k)$/i.test(g)) return 'a6';
-  const m = /\d{1,2}/.exec(g);
-  if (!m) return null;
-  const n = +m[0];
-  return n <= 1 ? 'a6' : n <= 3 ? 'a8' : n <= 5 ? 'a10' : n <= 12 ? 'a12' : null;
-}
-/** The quick pick for this host (and class): the last one used, else Question Battle, a bit of everything, the class's level. */
-export function quickPick(u, c = null) {
-  const last = (ST.loadPrefs(u.id) || {}).quick || null;
-  const p = last && quickModes().includes(last.mode) ? last : { ...(last || { subject: 'mixed', level: 'a8' }), mode: quickModes()[0] };
-  // A class's own grade wins over the level of the last game (which may have been another class's).
-  const level = (c && levelForGrade(c.grade)) || p.level;
-  return { mode: p.mode, subject: p.subject || 'mixed', level, remembered: !!last };
-}
-/** "Question Battle · Science · Ages 8–9" in the page's language. */
-export function pickLine(req, p) {
-  const bank = pickerFor(req.locale);
-  const subject = p.subject === 'mixed' ? bank.mixed : (bank.subjects.find(x => x.id === p.subject) || {}).name || bank.mixed;
-  return [req.t(`live.mode.${MODE_KEY[p.mode]}`), subject, (bank.levels.find(x => x.id === p.level) || {}).name].filter(Boolean).join(' · ');
-}
 const classFor = (u, id) => { const c = id ? S.getClass(String(id)) : null; return c && !c.archived_at && S.teaches(u, c.id) ? c : null; };
 
 // ---------------------------------------------------------------- /teachers/host: the way in
@@ -186,24 +158,13 @@ router.post('/api/live/quick', on, hostOnly, rateLimit('lv-new', 30, 3600e3), (r
   const t = req.t, u = req.user, b = req.body || {};
   const c = classFor(u, b.classId);
   if (b.classId && !c) return res.status(404).json({ error: t('errors.api.notFound') });
-  const base = quickPick(u, c);
-  // last=1 (a class card's one tap): the remembered pick as it is. Otherwise the form's fields, each checked.
-  const pick = b.last ? base : {
-    mode: quickModes().includes(b.mode) ? b.mode : base.mode,
-    subject: b.subject === 'mixed' || SUBJECTS.includes(String(b.subject)) ? String(b.subject) : base.subject,
-    level: LEVELS.includes(String(b.level)) ? String(b.level) : base.level,
-  };
-  // Brain Board's starter is a board of categories: the chosen subject first, then others to make five.
-  const starter = pick.mode === 'board' ? `bank:board:${pick.level}:${[...new Set([...(SUBJECTS.includes(pick.subject) ? [pick.subject] : []), ...SUBJECTS])].slice(0, 5).join('+')}`
-    : `bank:${pick.subject}:${pick.level}:${QUICK_COUNT}`;
-  const r = LS.createSession(u, { mode: pick.mode, audience: c ? 'class' : 'open', classId: c ? c.id : null, starter, lang: req.locale });
+  const r = openQuick(u, c, quickPlan(u, c, b), req.locale);
   if (!r.ok) {
     // A room is open already: back to it (a room with players in it is never ended by a tap somewhere else).
     if (r.code === 'hasOpen') { const old = LS.get(r.sid); return res.json({ ok: true, sid: r.sid, redirect: `/live/host/${r.sid}`, toast: t('quickLive.quick.hasOpen', { title: old ? old.title : '' }), already: true }); }
     const status = { off: 404, notHost: 404, notFound: 404, busy: 503 }[r.code] || 400;
     return res.status(status).json({ error: t(`live.api.${r.code}`), code: r.code });
   }
-  try { ST.saveQuickPref(u.id, pick); } catch { /* not important */ }
   funnel.bump('quick.room');
   res.json({ ok: true, sid: r.session.id, redirect: `/live/host/${r.session.id}` });
 });
