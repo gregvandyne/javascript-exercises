@@ -7797,6 +7797,10 @@
         "title": "Klassen-Dashboard",
         "p": "Timer, Klassendienste, Stimmungsabfragen und Mathe-Werkzeuge für den ganzen Schultag, auf einem Bildschirm."
       },
+      "hub": {
+        "title": "Der Hub in 2 Minuten",
+        "p": "Aufgaben verteilen, jeden Platz live sehen, Meldungen beantworten und den Tagesplan steuern, alles auf einer Tafel."
+      },
       "plan": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die Arbeitsmittel, ihre Live-Räume und Figuren gehören zum Lehrkraft-Plan.",
       "testing": "Das Klassen-Dashboard ist für jede Klasse kostenlos. Die anderen drei Werkzeuge werden gerade in einigen Klassen erprobt."
     },
@@ -10788,124 +10792,49 @@
     }
   },
   "landing": {
-    "dtour": {
-      "kicker": "Fertige Layouts",
-      "h": "Ein Layout für jeden Teil des Tages",
-      "lead": "Starte in den Morgen, unterrichte eine Stunde, leite Gruppenarbeit, komm in der Stillarbeit zur Ruhe und mach eine Spielpause. Mit einem Tippen wechseln, und die Bildschirme der Kinder folgen.",
-      "widgets": "{count} Widgets für dein eigenes Layout"
-    },
-    "dash": {
-      "kicker": "Neu: Klassen-Dashboards",
-      "h": "Ein Bildschirm für den ganzen Schultag",
-      "lead": "Zeig ein Klassen-Dashboard am Beamer: die Uhr, den Stundenplan, das Ziel des Tages und {count} Widgets zur Auswahl. Jedes Kind bekommt auch einen eigenen Bildschirm, mit den Widgets, die du anheftest.",
-      "li1": "Fertige Layouts für den Morgen, eine Unterrichtsstunde, Gruppenarbeit, Stillarbeit und eine Spielpause, oder du ziehst Widgets in dein eigenes.",
-      "li2": "Timer, ein Namens-Zufallsgenerator, ein Gruppenmacher, ein Lautstärkemesser, eine Hilfe-Warteschlange und schnelle Abfragen.",
-      "li3": "Mathe-Werkzeuge auf der großen Leinwand: Bruchstreifen, Zahlenstrahlen, Geobretter, Stellenwerte und mehr.",
-      "li4": "Heften Sie Widgets an den Bildschirm jedes Kindes oder schicken Sie der Klasse mit einem Tipp eine Lektion, einen Unterrichtsplan oder einen Link.",
-      "li5": "Ganz ohne KI. Kinder erscheinen mit ihren Oomba-Namen, und was ein Kind eintippt, bleibt auf seinem eigenen Bildschirm.",
-      "shotAlt": "Ein Klassen-Dashboard am Beamer: die Uhr, das Ziel des Tages, der Stundenplan mit Mathe jetzt und Pause danach, Klassendienste und eine Stimmungsabfrage."
-    },
     "meta": {
-      "title": "Klassen-Dashboards und interaktive Lektionen für Lehrkräfte · Oomba Academy",
-      "description": "Ein Bildschirm für Ihren Unterrichtstag, ein KI-Baumeister, der Ihre Unterrichtspläne in spielbare Lektionen verwandelt, Live-Lektionen für die Klasse und Spiele, die Ihre Kinder bauen. 14 Tage kostenlos, ohne Karte.",
-      "imageAlt": "Oomba Academy für Lehrkräfte: ein Bildschirm für Ihre Klasse und Lektionen, die hängen bleiben."
+      "title": "Oomba Academy: das eine Werkzeug für alles im Unterricht",
+      "description": "Live-Spiele, Mathe-Material, Arbeitsblätter, Bilderbücher, ein Klassen-Dashboard und ein KI-Helfer für Lehrkräfte der Klassen 1 bis 8. Ein Login, eine Klassenliste, ein Plan.",
+      "imageAlt": "Oomba Academy: Live-Spiele, Mathe-Material, Arbeitsblätter, Bilderbücher und ein Klassen-Dashboard an einem Ort."
     },
     "nav": {
-      "dashboards": "Dashboards",
       "label": "Seite für Lehrkräfte",
       "home": "Oomba Academy Startseite",
       "skip": "Zum Inhalt",
-      "how": "So funktioniert’s",
-      "builder": "Baumeister",
-      "courses": "Kurse",
       "live": "Live-Lektionen",
-      "pricing": "Preise",
       "faq": "FAQ",
       "signIn": "Anmelden",
       "justPlay": "Einfach spielen",
       "trial": "Gratis testen",
       "trialShort": "Gratis testen",
       "menu": "Menü",
-      "kids": "Kinder bauen",
-      "tools": "Unterrichtswerkzeuge"
+      "tools": "Unterrichtswerkzeuge",
+      "hub": "Der Hub",
+      "ask": "Frag Oomba",
+      "tour": "Tour",
+      "videos": "Videos",
+      "compare": "Vergleich"
     },
     "hero": {
-      "kicker": "Für Lehrkräfte · Vorschule bis Klasse 8",
-      "h1": "Ein Bildschirm für deinen Unterricht. Lektionen, die hängen bleiben.",
-      "lead": "Richte dein Klassen-Dashboard in einer Minute ein und leite den ganzen Tag damit. Verwandle jeden Unterrichtsplan mit dem KI-Baumeister in eine spielbare Lektion, spiele live am Beamer und lass deine Kinder eigene Spiele bauen.",
-      "cta": "14 Tage kostenlos testen",
-      "how": "So funktioniert’s",
+      "kicker": "Für Lehrkräfte vom Kindergarten bis Klasse 8",
+      "h1": "Das eine Werkzeug für alles im Unterricht.",
+      "lead": "Live-Spiele, Mathe-Material, Arbeitsblätter, Bilderbücher, ein Klassen-Dashboard und ein KI-Helfer. Ein Login, eine Klassenliste, ein Plan.",
+      "cta": "Kostenlos starten",
       "trustCard": "Keine Karte nötig",
       "trustCancel": "Jederzeit kündbar",
       "trustStudents": "Unbegrenzt viele Schüler",
-      "cBuildTag": "KI-Builder",
-      "cBuild": "Dein Plan zu Brüchen ist jetzt eine spielbare Lektion",
-      "cLiveTag": "Live-Lektion",
-      "cLive": "Deine Klasse steigt ein"
+      "tour": "Tour starten",
+      "watch": "Die 2-Minuten-Übersicht ansehen",
+      "watchSub": "Der Hub: Ihre ganze Klasse auf einer Tafel",
+      "collageAlt": "Echte Bildschirme aus Oomba Academy: ein Klassen-Dashboard, Bruchstreifen auf einem Mathe-Board, ein Arbeitsblatt mit maßstabsgetreuen Figuren, die Bilderbuch-Bibliothek und ein Live-Klassenspiel."
     },
     "facts": {
-      "games": "fertige Lektionen",
-      "courses": "komplette Kurse mit Stundenplänen",
-      "languages": "Sprachen für Schüler und Lehrkräfte",
-      "installs": "Installationen: läuft im Browser"
-    },
-    "demo": {
-      "label": "Illustration: Ein Unterrichtsplan wird zur spielbaren Lektion",
-      "lessonTag": "Dein Unterrichtsplan",
-      "lessonTitle": "Gleichwertige Brüche · Klasse 4",
-      "lessonBody": "Die Kinder zeigen mit Pizzen, Streifen und Zahlenstrahlen, dass 1/2, 2/4 und 4/8 dieselbe Menge sind. Abschluss: drei kurze Kontrollfragen.",
-      "file": "stunde-brueche.pdf",
-      "builderTag": "KI-Baumeister",
-      "step1": "Dein Unterrichtsplan wird gelesen",
-      "step2": "Entwirft die Level",
-      "step3": "Testet auf Handy, Tablet und Computer",
-      "step4": "Bereit zum Spielen",
-      "gameTag": "Deine Lektion",
-      "gameMeta": "Bereit für live oder als Aufgabe",
-      "host": "Live spielen",
-      "assign": "Zuweisen",
-      "credit": "Grafik aus Fraction Factory, einer der fertigen Lektionen von Oomba."
-    },
-    "how": {
-      "kicker": "So funktioniert’s",
-      "h": "Dein ganzer Schultag an einem Ort",
-      "lead": "Fang mit dem Bildschirm an, den du den ganzen Tag offen hast, und hol dann die Lektionen dazu. Jeder Schritt funktioniert für sich, und zusammen noch besser.",
-      "s1": {
-        "h": "Klassen-Dashboard einrichten",
-        "p": "Öffne deine Klasse, und sechs fertige Layouts warten schon. Zeig es am Beamer, und jedes Kind bekommt einen eigenen Bildschirm."
-      },
-      "s2": {
-        "h": "Den Tag damit leiten",
-        "p": "Stimmungsabfrage, Timer, schnelle Abfragen, Hilfe-Warteschlange, Gruppen und Mathe-Werkzeuge, vom Morgenkreis bis zum Aufräumen. Layout wechseln mit einem Tippen."
-      },
-      "s3": {
-        "h": "Pläne in spielbare Lektionen verwandeln",
-        "p": "Füge einen Unterrichtsplan ein oder lade ein PDF hoch. Der KI-Baumeister macht daraus eine spielbare Lektion, testet sie und hebt jede Version auf."
-      },
-      "see": "Ansehen",
-      "s4": {
-        "h": "Live zusammen spielen",
-        "p": "Aufwärmrunden und Abschlussfragen auf der großen Leinwand. Die Kinder spielen auf ihren eigenen Geräten mit, die Punkte landen im Notenbuch."
-      },
-      "s5": {
-        "h": "Kinder bauen selbst",
-        "p": "Füge einem Unterrichtsplan einen Schritt „Ein Spiel bauen“ hinzu. Die Kinder entwerfen, testen und verbessern ein eigenes Spiel, und dann spielen es die anderen."
-      }
-    },
-    "builder": {
-      "kicker": "Der KI-Baumeister",
-      "h": "Dein Unterrichtsplan rein, eine spielbare Lektion raus",
-      "lead": "Sprich mit dem Baumeister wie mit einer Unterrichtsassistenz, die zufällig Lektionen baut. Er hebt jede Version auf, damit du immer zurückkannst.",
-      "you": "Du",
-      "msg": "Mach aus diesem Plan eine spielbare Lektion für meine 4. Klasse. Zehn Minuten, drei Level, und am Ende die Fragen vom Exit-Ticket.",
-      "bot": "Fertig! Version 1 steht: drei Level, das leichteste zuerst, mit den Kontrollfragen am Ende. Tippe auf Spielen, um es auszuprobieren.",
-      "li1": "Versteht Unterrichtspläne, PDFs, Bilder und Textdateien, die du hochlädst",
-      "li2": "Antwortet in deiner Sprache und in der jedes Kindes",
-      "li3": "Testet jede Version in Handy-, Tablet- und Computergröße",
-      "li4": "Privat, bis du es teilst: nur du, deine Klassen oder, nach Prüfung durch einen Menschen aus unserem Team, alle",
-      "li5": "Auch Schüler können bauen: Ein Spiel beschreiben, testen und verbessern heißt planen, schreiben und Fehler suchen, ganz ohne Code",
-      "shotAlt": "Das Oomba Studio: Der Baumeister-Chat links sagt, dass Version 2 fertig ist, und rechts läuft die Lektion in einer Vorschau in Handygröße.",
-      "caption": "Das echte Studio: links der Baumeister, rechts deine Lektion."
+      "languages": "Sprachen",
+      "manip": "virtuelle Mathe-Materialien",
+      "tasks": "Übungsaufgaben",
+      "figures": "Arten von Figuren",
+      "books": "Bilderbücher",
+      "widgets": "Dashboard-Widgets"
     },
     "courses": {
       "kicker": "Fertige Kurse",
@@ -10928,101 +10857,42 @@
       },
       "link": "Leitfaden für Lehrkräfte"
     },
-    "live": {
-      "kicker": "Live-Lektionen für die Klasse",
-      "h": "Bring den Beamer zum Leuchten",
-      "lead": "Aufwärmrunden und Abschlussfragen, auf die sich deine Klasse wirklich freut. Die Kinder steigen mit einem 7-stelligen Code auf ihrem eigenen Gerät ein.",
-      "li1": "Quest Race, Brain Board, Would You Rather und mehr",
-      "li2": "Nimm einen fertigen Fragensatz, schreib deinen eigenen oder lass die KI einen Entwurf zum Bearbeiten machen",
-      "li3": "Punkte landen direkt in deiner Notenübersicht",
-      "li4": "Klassenlektionen: nur deine angemeldeten Kinder. Gastlektionen: sichere, erfundene Namen. In beiden kein Chat und kein Tippen",
-      "link": "So funktionieren Live-Lektionen",
-      "shotAlt": "Eine Live-Lobby von Question Battle: Der große Bildschirm zeigt die Comicfigur, gegen die die Klasse spielt, den Beitrittscode und einen QR-Code."
-    },
-    "why": {
-      "kicker": "Warum Spiele wirken",
-      "h": "Spaß ist der Weg. Lernen ist das Ziel.",
-      "lead": "Gute Lernspiele stützen sich auf ein paar gut erforschte Ideen aus der Lernforschung.",
-      "b1": {
-        "h": "Abrufen üben",
-        "p": "Wer antwortet, um zu gewinnen, holt Wissen aus dem Gedächtnis, und Erinnern ist einer der verlässlichsten Wege, damit etwas hängen bleibt."
-      },
-      "b2": {
-        "h": "Sofortige Rückmeldung",
-        "p": "Jede Antwort bekommt sofort eine Reaktion, so werden Fehler korrigiert, solange der Gedanke noch frisch ist."
-      },
-      "b3": {
-        "h": "Üben ohne Druck",
-        "p": "„Noch eine Runde“ fühlt sich nach Spiel an, nicht nach Arbeitsblatt, also üben die Kinder mehr, ohne das Gewicht einer Note."
-      },
-      "b4": {
-        "h": "Alle machen mit",
-        "p": "Ein Spiel gibt jedem Kind einen Zug, auch denen, die sich selten melden."
-      },
-      "b5": {
-        "h": "Bauen ist Lernen",
-        "p": "Wer ein Spiel zu einem Thema baut, muss es gut genug verstehen, um es einem Computer beizubringen."
-      },
-      "sources": "Zum Weiterlesen"
-    },
     "safety": {
       "kicker": "Sicherheit und Datenschutz",
-      "h": "Für die Schule gemacht, sicher von Grund auf",
-      "lead": "Für Kinder von 5 bis 14, und du behältst die Kontrolle über deine Klassen.",
-      "li1": "Keine Werbung und keine Werbe- oder Tracking-Cookies",
-      "li2": "Schüler brauchen nie eine E-Mail-Adresse, und wir fragen nie nach Alter oder Wohnadresse",
-      "li3": "Den echten Namen eines Kindes, falls du ihn einträgst, sieht nur das Personal deiner Schule",
-      "li4": "Du bestätigst, wer deinen Klassen beitritt, und kein Kind kann mit Fremden chatten",
-      "li5": "Jedes Spiel läuft in einer abgeschlossenen Sandbox, und ein Mensch aus unserem Team prüft jedes Spiel, bevor es öffentlich wird",
-      "li6": "Was Kinder tippen, wird gefiltert, und hochgeladene Bilder werden geprüft und von Standortdaten befreit",
-      "links": "Lies, <a href=\"{safety}\">wie wir Kinder schützen</a>, und unsere <a href=\"{privacy}\">Datenschutzhinweise</a>."
-    },
-    "everywhere": {
-      "h": "Funktioniert überall, wo deine Klasse ist",
-      "devices": "Chromebooks, iPads, Laptops, Handys und die digitale Tafel, direkt im Browser. Nichts zu installieren.",
-      "languages": "{count} Sprachen, darunter Spanisch, Arabisch, Portugiesisch und Französisch. Jedes Kind wählt seine eigene.",
-      "voicesH": "Vorlesen",
-      "voices": "Natürliche KI-Stimmen lesen jede offizielle Lektion vor."
+      "h": "Für Kinder gemacht. An Lehrkräfte verkauft.",
+      "links": "Lies, <a href=\"{safety}\">wie wir Kinder schützen</a>, und unsere <a href=\"{privacy}\">Datenschutzhinweise</a>.",
+      "c1": {
+        "h": "Keine Werbung, nie",
+        "p": "Keine Werbung und keine Tracking-Cookies."
+      },
+      "c2": {
+        "h": "Kindern wird nie etwas verkauft",
+        "p": "Kinder sehen nie Pläne oder Preise."
+      },
+      "c3": {
+        "h": "Echte Namen bleiben privat",
+        "p": "Nur das Personal Ihrer Schule sieht den echten Namen eines Kindes. Nie öffentlich."
+      },
+      "c4": {
+        "h": "KI ohne Namen",
+        "p": "Oomba bekommt nie den Namen eines Kindes und spricht nie mit Kindern."
+      },
+      "c5": {
+        "h": "Keine Ranglisten",
+        "p": "Keine Bestenlisten. Punkte und Fortschritt werden nie gereiht."
+      },
+      "c6": {
+        "h": "Zusehen ist nicht aufzeichnen",
+        "p": "Live-Plätze werden nie gespeichert, und die Kinder wissen, dass Sie zusehen können."
+      }
     },
     "pricing": {
-      "kicker": "Preise",
-      "h": "Ein einfacher Preis pro Lehrkraft. Alle Schüler inklusive.",
-      "lead": "Nie Gebühren pro Kind. Teste alles 14 Tage lang kostenlos.",
       "teacher": {
         "name": "Lehrkraft",
-        "price": "Ein einfacher Jahrespreis",
-        "priceShown": "{price} pro Jahr",
-        "trial": "14 Tage gratis · keine Karte nötig",
-        "li1": "Unbegrenzt viele Schüler, keine Gebühr pro Kind",
-        "li2": "300 KI-Lektionsbauten am Tag für deine Klasse",
-        "li3": "Alle Kurse, über 30 fertige Lektionen und Live-Lektionen für die Klasse",
-        "li4": "Klassen, Unterrichtspläne, Fortschritt und das Notenbuch",
-        "li5": "Jede Sprache, jedes Gerät",
-        "cta": "Kostenlos testen",
-        "plans": "Tarife und Preise ansehen",
-        "plus": "Alles aus Kostenlos, dazu:"
+        "trial": "14 Tage gratis · keine Karte nötig"
       },
       "schools": {
-        "name": "Schulen und Schulträger",
-        "price": "Derselbe Preis pro Lehrkraft",
-        "priceShown": "{price} pro Lehrkraft und Jahr",
-        "li1": "Jede Lehrkraft bekommt den vollen Lehrkraft-Tarif",
-        "li2": "Zahlung per Rechnung oder Bestellschein",
-        "li3": "Schulkonten und Anmeldekarten zum Ausdrucken",
-        "li4": "Wir helfen beim Einrichten deiner Schule",
-        "cta": "Schreib uns",
-        "form": "Schule einrichten",
         "subject": "Oomba Academy für unsere Schule"
-      },
-      "leadFree": "Nie Gebühren pro Kind. Die Grundlagen sind für jede Lehrkraft kostenlos, und der Lehrkraft-Plan fügt KI-Lektionsbauten für deine ganze Klasse hinzu.",
-      "free": {
-        "name": "Kostenlos",
-        "price": "Immer kostenlos",
-        "li1": "Jede Lektion und alle drei Kurse",
-        "li2": "Klassen, Unterrichtspläne, Fortschritt und das Notenbuch",
-        "li3": "Täglich kostenlose Builder-Nachrichten für dich und deine Schüler",
-        "li4": "Schulkonten und Anmeldekarten zum Ausdrucken",
-        "liLive": "Live-Lektionen für die Klasse am Beamer"
       }
     },
     "faq": {
@@ -11048,9 +10918,8 @@
       "a2free": "Starte eine 14-tägige kostenlose Testphase des Lehrkraft-Plans ohne Karte. Alles im Plan ist enthalten, solange sie läuft, und danach entscheidest du, ob du abonnierst. Wenn nicht, enden nur die zusätzlichen KI-Bauten des Plans: Die Lektionen, deine Klassen, Unterrichtspläne und der Fortschritt bleiben kostenlos, und nichts wird gelöscht."
     },
     "final": {
-      "h": "Deine nächste Stunde könnte die sein, die sie nochmal spielen wollen",
-      "p": "14 Tage kostenlos. Keine Karte, keine Gebühr pro Kind.",
-      "cta": "14 Tage kostenlos testen"
+      "h": "Steuern Sie die Stunde von morgen aus dem Hub.",
+      "p": "Richten Sie Ihren Raum in wenigen Minuten ein. Ihre Klasse macht kostenlos mit."
     },
     "play": {
       "h": "Nur zum Spielen hier?",
@@ -11058,7 +10927,6 @@
       "cta": "Einfach spielen"
     },
     "footer": {
-      "tagline": "Interaktive Lektionen für 5- bis 14-Jährige und ein KI-Baumeister, der deine Pläne in spielbare Lektionen verwandelt.",
       "teachers": "Für Lehrkräfte",
       "product": "Entdecken",
       "about": "Über uns",
@@ -11075,37 +10943,283 @@
       "theme": "Design",
       "dark": "Dunkel",
       "light": "Hell",
-      "preferredSource": "Oomba als bevorzugte Quelle bei Google hinzufügen"
-    },
-    "kids": {
-      "kicker": "Kinder als Macher",
-      "h": "Deine Klasse baut auch Spiele",
-      "lead": "Wer ein Spiel zu einem Thema baut, muss es gut genug verstehen, um es zu erklären. Füge einem Unterrichtsplan einen Schritt „Ein Spiel bauen“ hinzu, und deine Kinder beschreiben, testen und verbessern mit dem Baumeister ihr eigenes Spiel, ohne Code zu schreiben.",
-      "li1": "Ein Schritt „Ein Spiel bauen“ in deinen Unterrichtsplänen, mit der Idee, mit der die Kinder anfangen",
-      "li2": "Jedes Kind baut in seinem eigenen Studio, und du siehst seinen Fortschritt zusammen mit dem Rest des Unterrichtsplans",
-      "li3": "Die Klasse spielt die Spiele der anderen: ein Wiederholungsspiel zum Wochenthema klappt prima",
-      "li4": "Privat, bis es geteilt wird: mit der Klasse oder mit allen erst, nachdem jemand aus unserem Team es geprüft hat",
-      "shotAlt": "Das Studio eines Kindes: Der Builder meldet, dass Version 2 fertig ist, und das Spiel läuft in einer Vorschau in Handygröße.",
-      "caption": "Das Studio eines Kindes: beschreiben, der Builder baut, selbst testen."
+      "preferredSource": "Oomba als bevorzugte Quelle bei Google hinzufügen",
+      "trademarks": "{names} sind Marken ihrer jeweiligen Inhaber. Oomba Academy ist nicht mit ihnen verbunden."
     },
     "tools": {
-      "kicker": "Unterrichtswerkzeuge",
-      "h": "Mathe zum Anfassen, für alle Kinder gleichzeitig",
-      "lead": "Virtuelles Material, das deine Schülerinnen und Schüler selbst bewegen, ein Live-Raum, in dem du die Arbeit aller auf einem Bildschirm siehst, und Oomba, das Arbeitsblätter mit maßstabsgetreuen Figuren entwirft.",
-      "li1": "18 virtuelle Materialien, von Zehnersystem-Blöcken, die bündeln und entbündeln, bis zu Bruchteilen und Uhren",
-      "li2": "Live-Matheräume: Jedes Kind baut in seinem eigenen Feld, während du alle Felder an der Tafel siehst",
-      "li3": "Gespeicherte Tafeln mit Teilen-Codes und 300 fertige Aufgaben für die Klassen K bis 8",
-      "li4": "Oomba, dein Unterrichtsbegleiter: Beschreib ein Arbeitsblatt und bekomm exakte Figuren mit ausgerechneten Lösungen",
-      "shotAlt": "Eine Live-Sitzung mit Zehnersystem-Blöcken auf dem Bildschirm der Lehrkraft: oben der Bereich der Lehrkraft, darunter die Felder von vier Kindern, jedes mit Hunderterplatten und Zehnerstangen in einer Stellenwerttafel.",
-      "plan": "Das Material, seine Live-Räume, Figures und Oomba gehören zum Lehrkräfte-Plan.",
-      "testing": "Das Material, seine Live-Räume, Figures und Oomba werden gerade in einigen Klassen ausprobiert."
+      "h": "Wow, das kann es alles.",
+      "lead": "Jedes Werkzeug lässt sich im Hub an die Plätze verteilen, und Oomba kann die meisten steuern.",
+      "manip": {
+        "h": "{count} Mathe-Materialien",
+        "p": "Zehnersystem-Blöcke, die bündeln und entbündeln, Bruchstreifen, Zahlenstäbe, Geobretter, Uhren und mehr. {tasks} Übungsaufgaben für die Klassen 1 bis 8 und für jedes Werkzeug ein So-geht's-Video.",
+        "alt": "Bruchstreifen auf dem Mathe-Material-Board: ein Ganzes, Halbe, Viertel und Drittel nebeneinander.",
+        "c1": "Live-Räume",
+        "c2": "{count} Aufgaben",
+        "c3": "{count} Videos"
+      },
+      "figures": {
+        "h": "Figures",
+        "p": "Arbeitsblätter und Tests aus maßstabsgetreuen Figuren: Formen, Diagramme, Zahlenstrahlen sowie Grafiken aus Naturwissenschaft und Wirtschaft. {count} Arten, Lösungen ausgerechnet. Drucken oder zuweisen.",
+        "alt": "Ein Figures-Arbeitsblatt zu Flächen und Winkeln: ein Rechteck, eine zusammengesetzte Figur und ein Winkelmesser, jeweils mit Lösung.",
+        "c1": "Arbeitsblätter",
+        "c2": "Tests"
+      },
+      "games": {
+        "h": "Lernspiele",
+        "p": "Ein Kreuzworträtsel aus Ihrer Wortliste, Word Hunt, Word Peek, Sudoku, Schachaufgaben, Arithmetic Lab und Algebra Builder.",
+        "alt": "Ein Kreuzworträtsel mit Hinweisen waagerecht und senkrecht und der Wortliste."
+      },
+      "grammar": {
+        "h": "Grammatik und Korrekturlesen",
+        "p": "Mistake Hunt baut Fehler in Ihren eigenen Text ein, oder wählen Sie aus 320 Beispieltexten für die Klassen 1 bis 8. Die Kinder finden und korrigieren sie und sehen, warum.",
+        "alt": "Mistake Hunt: eine Textreihe erstellen, meine Arbeitsblätter, ein Klassencode-Feld und die Beispieltexte."
+      },
+      "read": {
+        "h": "Lesen",
+        "p": "{count} Bilderbücher und Klassiker mit Vorlesen und Fragen. Dazu ein Buchmacher für eigene Bilderbücher.",
+        "alt": "Die Geschichtenbibliothek: Bilderbücher nach Klasse, jedes mit Lesen und Zuweisen."
+      },
+      "live": {
+        "h": "Live",
+        "p": "Brain Board, Was wäre dir lieber, Atlas Quest und Doodle Hoot auf jedem Gerät. Im Hub machen die Kinder an ihrem Platz mit einem Tipp mit.",
+        "alt": "Brain Board, ein Live-Kategorie-Brettspiel, mit seinem Code."
+      },
+      "build": {
+        "h": "Baumeister",
+        "p": "Beschreiben Sie es oder hängen Sie Ihren Unterrichtsplan an. Sie bekommen eine praktische Unterrichtsstunde oder ein Spiel für die ganze Klasse, etwa ein Kategorie-Brett, Bingo oder Lernkarten.",
+        "alt": "Der Baumeister fragt, was Sie machen: eine Unterrichtsstunde oder ein Klassenspiel."
+      },
+      "dash": {
+        "h": "Dashboard",
+        "p": "Der Beamer-Bildschirm für den Tag: {count} Widgets, {layouts} fertige Layouts, Punkte mit Gründen und ein Bildschirm für jedes Kind.",
+        "alt": "Ein Klassen-Dashboard: die Uhr, das Tagesziel, der Stundenplan, Klassendienste und ein Stimmungsbarometer."
+      },
+      "typing": {
+        "h": "Typing Zoo",
+        "p": "40 Lektionen von F und J bis zu ganzen Sätzen, Tests auf Zeit, eigene Lektionen und Bestehensgrenzen. Beim Lernen schlüpft ein Haustier.",
+        "alt": "Typing Zoo: die Lektionen nach Tastaturreihe und eigene Tipplektionen."
+      },
+      "atlas": {
+        "h": "Atlas Quest",
+        "p": "Drehen Sie einen 3D-Globus und bringen Sie alle 195 Länder zum Leuchten: finden, Flaggen, Hauptstädte und Kultur. Eigene Erdkunde-Quizze erstellen und stumme Karten drucken.",
+        "alt": "Atlas Quest: ein 3D-Globus neben den Spielmodi."
+      }
     },
     "focus": {
-      "manipulatives": "virtuelle Mathe-Arbeitsmittel",
       "play": "Kreuzworträtsel, Mathespiele und Live-Spiele mit der Klasse, ohne Anmeldung.",
-      "freeLi1": "Jede fertige Lektion, jedes Rätsel und jedes Unterrichtswerkzeug",
-      "faqA1": "Eine Unterrichtsplattform für die Klassen K bis 8: ein Klassen-Dashboard für den Tag, virtuelle Mathe-Materialien, maßstabsgetreue Figuren, Rätselbaukästen wie Crossword, Live-Lektionen und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Unterrichtspläne außerdem mit einem KI-Baumeister in spielbare Lektionen verwandeln.",
-      "demoCredit": "Grafik aus {title}, einer der fertigen Lektionen von Oomba."
+      "faqA1": "Eine Unterrichtsplattform für die Klassen K bis 8: ein Klassen-Dashboard für den Tag, virtuelle Mathe-Materialien, maßstabsgetreue Figuren, Rätselbaukästen wie Crossword, Live-Lektionen und eine Geschichtenbibliothek. Lehrkräfte können ihre eigenen Unterrichtspläne außerdem mit einem KI-Baumeister in spielbare Lektionen verwandeln."
+    },
+    "names": {
+      "lead": "Ein Abo statt fünf:",
+      "line": "Ein Plan statt fünf. <a href=\"{compare}\">Zum Vergleich</a>"
+    },
+    "one": {
+      "kicker": "Und noch viel mehr",
+      "h": "Live-Spiele, ein Klassen-Dashboard, Mathe-Material und Tippen, an einem Ort.",
+      "lead": "Dazu Lesen, Erdkunde, Grammatik und ein Spiele-Baukasten. Ein Login, eine Klassenliste, und alles wird aus dem Hub verteilt.",
+      "live": {
+        "h": "Live-Quizspiele",
+        "p": "Kategorie-Bretter, Was wäre dir lieber, Karten- und Malspiele auf jedem Gerät."
+      },
+      "dash": {
+        "h": "Dashboards für den Klassenbildschirm",
+        "p": "Timer, Lautstärkemesser, Zufallsauswahl und {count} Widgets."
+      },
+      "points": {
+        "h": "Verhaltenspunkte",
+        "p": "Punkte mit 12 positiven Gründen, für ein Kind oder die ganze Klasse."
+      },
+      "manip": {
+        "h": "Mathe-Material",
+        "p": "{tools} Werkzeuge, {tasks} Aufgaben und Live-Räume."
+      },
+      "figures": {
+        "h": "Arbeitsblatt-Ersteller",
+        "p": "Maßstabsgetreue Figuren, mit ausgerechneten Lösungen."
+      },
+      "typing": {
+        "h": "Tippen üben",
+        "p": "40 Lektionen, Tests auf Zeit und eigene Lektionen."
+      },
+      "read": {
+        "h": "Lesebibliothek",
+        "p": "Bilderbücher mit Vorlesen und Fragen."
+      },
+      "geo": {
+        "h": "Erdkunde-Spiele",
+        "p": "Länder, Flaggen und Hauptstädte auf einem 3D-Globus."
+      },
+      "build": {
+        "h": "Spiele-Baukasten",
+        "p": "Aus einem Unterrichtsplan wird ein Spiel."
+      },
+      "grammar": {
+        "h": "Grammatik üben",
+        "p": "Korrekturtexte aus Ihren eigenen Texten."
+      },
+      "foot": "Ein Login. Eine Klassenliste. Ein Plan pro Lehrkraft.",
+      "footSub": "Schülerinnen und Schüler machen kostenlos mit. Die Pläne stehen auf der <a href=\"{plans}\">Seite Pläne</a>.",
+      "compare": "Zum Vergleich"
+    },
+    "plan": {
+      "on": "Im <a href=\"{plans}\">Lehrkräfte-Plan</a> enthalten"
+    },
+    "hub": {
+      "kicker": "Der Hub",
+      "h": "Steuern Sie alles aus dem Hub.",
+      "lead": "Ein gemeinsames Klassen-Board: Ihr Bereich vorne und ein Platz für jedes Kind, so angeordnet wie im echten Raum. Verteilen Sie Lektionen, Live-Spiele und Mathe-Werkzeuge und sehen Sie alle Plätze auf einmal.",
+      "nowPill": "Jetzt",
+      "nowTitle": "Brüche am Zahlenstrahl",
+      "nowNext": "Danach: Üben",
+      "shotAlt": "Der Hub: der Bereich der Lehrkraft mit zwei Notizen, Mein Platz und 16 Schülerplätze an Vierertischen, jeder zeigt, woran das Kind arbeitet, und zwei gemeldete Hände.",
+      "f1": {
+        "h": "Alles verteilen",
+        "p": "Tippen Sie eine Lektion, ein Live-Spiel oder ein Mathe-Werkzeug an, dann einen Platz, eine Gruppe oder die ganze Klasse. Oder ziehen Sie es dorthin."
+      },
+      "f2": {
+        "h": "Jeden Platz live sehen",
+        "p": "Jeder Platz zeigt, was das Kind geöffnet hat. Tippen Sie einen an, um genauer hinzusehen. Nichts wird aufgezeichnet."
+      },
+      "f3": {
+        "h": "Hilfe-Warteschlange und Toilettenpass",
+        "p": "Gemeldete Hände stehen der Reihe nach an. Braucht einen Blick zeigt ruhig, wer vielleicht feststeckt."
+      },
+      "f4": {
+        "h": "Ein Tagesplan, der die Zeit im Blick hat",
+        "p": "Folien, Arbeitszeit, eine Bewegungspause und ein Abschlusscheck, mit Jetzt und Danach am Beamer."
+      },
+      "f5": {
+        "h": "Punkte, nie Ranglisten",
+        "p": "Vergeben Sie einen Punkt für Teamarbeit oder Freundlichkeit. Kinder sehen ihre eigenen, nie eine Rangliste."
+      },
+      "m1": {
+        "h": "Hefte",
+        "p": "Ein Heft für jedes Kind. Die Kinder wissen, wer es sehen kann."
+      },
+      "m2": {
+        "h": "Lesen am Platz",
+        "p": "Lesen, ein Quiz, drei Notizen. Sie sehen, auf welcher Seite sie sind."
+      },
+      "m3": {
+        "h": "Hilfskräfte und Vertretungslinks",
+        "p": "Ein Link für einen Tag für die Vertretung. Ihre Aktionen werden protokolliert."
+      },
+      "m4": {
+        "h": "Hilfen und Plätze für die Kleinsten",
+        "p": "Mehr Zeit, Vorlesen, einfachere Sprache und größere Schrift."
+      }
+    },
+    "ask": {
+      "kicker": "Frag Oomba",
+      "h": "Sagen Sie es, und es passiert.",
+      "lead": "Oomba ist der Chat auf Ihren Lehrkräfte-Seiten. Er plant Ihren Tag, erstellt Arbeitsblätter, ändert ein Mathe-Board, macht Bücher und vergibt Punkte. Sie bestätigen alles Wichtige, und Rückgängig ist einen Tipp entfernt.",
+      "box": "Nach dem Plan für heute oder diese Woche fragen",
+      "send": "Senden",
+      "p1": {
+        "say": "Plane heute: Brüche am Zahlenstrahl, etwa 35 Minuten",
+        "then": "Eine Tagesplan-Karte: Folien, Arbeitszeit, eine Bewegungspause und ein Abschlusscheck. Diesen Plan nutzen bringt ihn auf die Plätze."
+      },
+      "p2": {
+        "say": "Plane diese Woche. Mittwoch ist ein halber Tag.",
+        "then": "Montag bis Freitag, jeder Tag mit einem kurzen Plan. Tage tauschen oder für eine andere Klasse kopieren."
+      },
+      "p3": {
+        "say": "Gib der ganzen Klasse einen Punkt für Teamarbeit",
+        "then": "Der Punkt wird vergeben, mit Rückgängig. Er erscheint auf dem Dashboard und bei den Punkten der Kinder."
+      },
+      "p4": {
+        "say": "Mach ein Arbeitsblatt zum Flächeninhalt von Rechtecken für Klasse 4",
+        "then": "Figures öffnet sich mit ausgefülltem Auftrag: maßstabsgetreue Aufgaben, ausgerechnete Lösungen."
+      },
+      "p5": {
+        "say": "Zeig 3/4 und 6/8 mit Bruchstreifen",
+        "then": "Auf einem Mathe-Material-Board liegen die Teile sofort bereit."
+      },
+      "p6": {
+        "say": "Mach ein Bilderbuch über den Wasserkreislauf für Klasse 2",
+        "then": "Der Buchmacher schreibt es und malt die Bilder. Jede Seite lässt sich auf Wunsch ändern."
+      },
+      "p7": {
+        "say": "Öffne das Dashboard von Raum 14 und füge einen 5-Minuten-Timer hinzu",
+        "then": "Oomba bietet an, Raum 14 zu öffnen und es dort zu tun, und zeigt dann die Änderung mit Übernehmen."
+      },
+      "p8": {
+        "say": "Wer braucht heute einen Blick?",
+        "then": "Wer festzustecken scheint, länger gemeldete Hände, Quizze unter 60 %. Namen erscheinen nur auf Ihrem Bildschirm."
+      },
+      "r1": "Oomba sieht nie die Namen der Kinder",
+      "r2": "Oomba spricht nie mit den Kindern",
+      "r3": "Nichts ändert sich ohne Ihren Tipp oder ein Rückgängig",
+      "planAlt": "Der Oomba-Chat mit einer Tagesplan-Karte Bruch-Tag: 8 Minuten Folien, 20 Minuten Arbeitszeit, 3 Minuten Bewegungspause und 5 Minuten Abschlusscheck.",
+      "pointAlt": "Der Oomba-Chat: Die ganze Klasse hat einen Punkt für Teamarbeit bekommen, mit Rückgängig.",
+      "note": "Echte Bildschirme: der Oomba-Chat mit einer Tagesplan-Karte und danach ein Punkt für die ganze Klasse."
+    },
+    "vs": {
+      "kicker": "Im Vergleich",
+      "h": "Sie nutzen schon eines davon? Das bringt Oomba dazu.",
+      "lead": "Was jedes Produkt laut eigener Website kann, in seinen eigenen Worten, und was Oomba an derselben Stelle dazubringt.",
+      "does": "Was {name} kann",
+      "adds": "Was Oomba hier dazubringt",
+      "source": "Quelle: {site}, gelesen am {date}",
+      "more": "Zum ganzen Vergleich",
+      "liveGames": "Live-Spiele laufen im Hub: Die Kinder an ihren Plätzen bekommen eine Einladung und machen mit einem Tipp mit, ohne Code.",
+      "classScreen": "{count} Widgets, ein Bildschirm für jedes Kind, Punkte mit Gründen und die Plätze des Hubs nur einen Tab entfernt.",
+      "mathTools": "{tools} Mathe-Materialien und {tasks} Aufgaben für die Klassen 1 bis 8, dazu Figures-Arbeitsblätter, Oomba, der das Board auf Wunsch ändert, und jedes Werkzeug lässt sich an die Plätze im Hub verteilen."
+    },
+    "tour": {
+      "kicker": "Zum Durchklicken",
+      "h": "Probieren Sie den Hub, bevor Sie sich anmelden.",
+      "lead": "Ein kurzer Rundgang auf echten Bildschirmen. Tippen Sie auf die gelben Punkte oder auf Weiter.",
+      "label": "Die Hub-Tour",
+      "stepOf": "Schritt {n} von {total}",
+      "back": "Zurück",
+      "next": "Weiter",
+      "again": "Noch einmal",
+      "note": "Echte Bildschirme der App mit erfundenen Kindern.",
+      "s1": {
+        "t": "Sitzplan einrichten",
+        "h": "Wie in Ihrem echten Raum",
+        "p": "Wählen Sie Reihen, Vierertische, ein U oder einen Kreis, oder ziehen Sie einen Platz dorthin, wo er wirklich steht. Gruppen behalten ihre Farben.",
+        "alt": "Sitzplan einrichten im Hub: Reihen, Vierertische, U-Form und Kreis, mit den Plätzen an Vierertischen."
+      },
+      "s2": {
+        "t": "Eine Lektion verteilen",
+        "h": "Antippen, dann ein Platz",
+        "p": "Tippen Sie eine Lektion, ein Spiel oder ein Mathe-Werkzeug an, dann einen Platz, eine Gruppe oder die ganze Klasse. Oder ziehen Sie es dorthin.",
+        "alt": "Mistake Hunt im Hub gewählt: jetzt einen Platz, eine Gruppe, Ganze Klasse oder Mein Platz antippen."
+      },
+      "s3": {
+        "t": "Jeden Platz sehen",
+        "h": "Jeder Platz, live",
+        "p": "Jeder Platz zeigt, was das Kind geöffnet hat, hier Arithmetic Lab. Gestrichelte Plätze sind noch nicht da. Tippen Sie einen Platz an, um genauer hinzusehen.",
+        "alt": "Der Hub mit jedem Platz live: Die meisten spielen Arithmetic Lab, zwei sind noch nicht da."
+      },
+      "s4": {
+        "t": "Auf Meldungen antworten",
+        "h": "Gemeldete Hände, der Reihe nach",
+        "p": "Eine Frage und eine Bitte um Hilfe, in der Reihenfolge, in der sie kamen. Beantwortet entfernt sie. Der Toilettenpass ist auch hier, nie am Beamer.",
+        "alt": "Das Fenster Gemeldete Hände: Cleo hat eine Frage, Gus braucht Hilfe, und der Toilettenpass."
+      },
+      "s5": {
+        "t": "Frag Oomba",
+        "h": "Mit Oomba planen",
+        "p": "Fragen Sie nach dem Plan für heute. Oomba entwirft ihn als Karte, und nichts kommt auf die Plätze, bevor Sie Diesen Plan nutzen antippen.",
+        "alt": "Der Oomba-Chat neben dem Hub mit einer Tagesplan-Karte Bruch-Tag und Diesen Plan nutzen."
+      },
+      "s6": {
+        "t": "Stunde beenden",
+        "h": "Stunde beenden",
+        "p": "Stunde beenden zeigt eine kurze Zusammenfassung und beendet die Stunde. Unfertiges bleibt als Hausaufgabe auf den Plätzen.",
+        "alt": "Stunde beenden im Hub: eine kurze Zusammenfassung, dann ist die Stunde vorbei."
+      }
+    },
+    "videos": {
+      "kicker": "In Aktion",
+      "h": "Kurze Videos auf echten Bildschirmen.",
+      "lead": "Jedes Video hat Untertitel, und der Ton bleibt aus, bis Sie ihn einschalten.",
+      "howH": "So geht's, ein Video pro Mathe-Material",
+      "play": "Video abspielen: {title}",
+      "close": "Video schließen"
     }
   },
   "teach": {

@@ -258,8 +258,8 @@ test('the doors: "/", /teachers and /teachers/live send teachers to the teacher 
   process.env.LANDING_AT_ROOT = '1';
   const L = await import('../../server/routes/landing.js');
   const home = await call('/');
-  assert.match(home.text, /<a class="lp-btn lp-btn-spark lp-btn-big" href="\/teachers\/host" data-cta="host" id="lp-host-now">/);
-  assert.match(home.text, /Host a live lesson now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
+  assert.match(home.text, /<a class="lp-btn lp-btn-spark lp-btn-sm" href="\/teachers\/host" data-cta="host" id="lp-host-now">/, 'in the Live card');
+  assert.match(home.text, /Host a live lesson now/); assert.match(home.text, /<a class="lp-btn lp-btn-ghost lp-btn-sm" href="\/join" id="lp-join">Have a game code\? Join<\/a>/);
   assert.doesNotMatch(visible(home.text), /\$\s?\d|\b119\b/, 'no price on "/"');
   assert.equal(L.HOST_NOW_URL, QL.HOST_URL);
   const t = await call('/teachers');

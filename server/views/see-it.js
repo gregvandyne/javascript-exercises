@@ -17,8 +17,11 @@ import { plansOn } from '../services/teacher-tools.js';
 
 const VIDEO_DIR = new URL('../../public/video/', import.meta.url);
 /** The videos, in order. Adding one is one entry here, its three files in public/video/oomba-<id>.*, and its title and
- *  line under teachers.videos.<id> in the locale files. */
+ *  line under teachers.videos.<id> in the locale files. overview: the two-minute overview of the Hub (scripts/hub-video.mjs),
+ *  on the homepage's video strip and behind its hero (routes/landing.js HERO_VIDEO) but not in the "a minute each"
+ *  section of the new tools on /teachers, whose heading and plan note are about the four tools below. */
 export const VIDEOS = [
+  { id: 'hub', emoji: '🏫', overview: true },
   { id: 'manipulatives', emoji: '🧮' },
   { id: 'figures', emoji: '📐' },
   { id: 'room', emoji: '📡' },
@@ -42,7 +45,7 @@ const tx = (t, tag, key, attrs = '') => raw(`<${tag}${attrs}${fb(t, key)}>${tHtm
  * the tester list may use them, so it says they are being tried out in a few classrooms.
  */
 export function seeIt(req, { variant = 'page', cta = '', note = true } = {}) {
-  const list = readyVideos();
+  const list = readyVideos().filter(v => !v.overview);
   if (!list.length) return '';
   const t = req.t;
   const landing = variant === 'landing';

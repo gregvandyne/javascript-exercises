@@ -65,18 +65,13 @@ test('Google Classroom: a section on "/" and on /teachers with the same words, o
   for (const path of ['/', '/teachers']) assert.equal(section((await get(path)).text, 'classroom'), '', `${path}: no section while Classroom is off`);
 });
 
-test('Google Classroom on "/": the gradebook and feedback screenshots sit under it, and the teaching loop shows none', async () => {
+test('Google Classroom on "/": the gradebook and feedback screenshots sit under it; with Classroom off, neither is on the page', async () => {
   const s = (await get('/')).text;
   const gc = section(s, 'classroom');
   for (const name of ['gradebook', 'feedback']) assert.match(gc, new RegExp(`<img src="/img/teach-loop/${name}\\.webp\\?v=\\d+" width="1280" height="800"`), name);
   assert.doesNotMatch(gc, /teach-loop\/attention\.webp/, 'not the Needs attention screen');
-  const at = s.indexOf('id="loop"');
-  assert.doesNotMatch(s.slice(at, s.indexOf('</section>', at)), /lp-loop-shots/, 'no screenshots in the loop section');
   config.googleClassroom = false;
-  const off = (await get('/')).text, o = off.indexOf('id="loop"');
-  const loop = off.slice(o, off.indexOf('</section>', o));
-  assert.match(loop, /lp-loop-shots/, 'Classroom off: the screenshots stay in the loop section');
-  assert.deepEqual([...loop.matchAll(/teach-loop\/(\w+)\.webp/g)].map(m => m[1]), ['gradebook', 'feedback'], 'two screens, side by side: the gradebook and the feedback');
+  assert.doesNotMatch((await get('/')).text, /teach-loop\/(gradebook|feedback)\.webp/, 'Classroom off: no Classroom screens on "/"');
 });
 
 test('free and paid: no "always free" line on "/" or /teachers (the owner: "everything isn\'t always free"); /teachers says which tools need the Teacher plan; no amount on either', async () => {
@@ -89,12 +84,11 @@ test('free and paid: no "always free" line on "/" or /teachers (the owner: "ever
   assert.match(tp, /<p class="small muted tt-note">The Classroom Dashboard comes with every class\. The Manipulatives and their live rooms are part of the Teacher plan\.<\/p>/);
   assert.doesNotMatch(tp, /Free to start|free website|it(?:’|&#39;)s free|Get a free school account|Set up your school \(free\)/, '/teachers: no blanket free claims');
   assert.doesNotMatch((await get('/')).text, /are always free\. Try the Teacher plan/, '"/": the closing line is the trial, not "always free"');
+  // "/" has no plan cards (docs/decisions.md "Homepage: the one classroom tool for everything"): it links to /plans, and
+  // the trial question still says what stays free.
   const s = (await get('/')).text;
-  const pricing = section(s, 'pricing');
-  assert.match(pricing, /<h3 id="plan-free">Free<\/h3>\s*<p class="lp-price">Always free<\/p>/, 'a Free card');
-  assert.match(pricing, /Everything in Free, plus:/);
-  const teacherCard = /<article[^>]*aria-labelledby="plan-teacher"[\s\S]*?<\/article>/.exec(pricing)[0];
-  assert.doesNotMatch(teacherCard, /Classes, lesson plans, progress and the gradebook|30\+ ready-made lessons and live class lessons|Every language, every device/, 'free things are not sold as Teacher plan features');
+  assert.equal(section(s, 'pricing'), '');
+  assert.match(s, /Plans are on the <a href="\/plans">Plans page<\/a>/);
   assert.match(s, /only the plan(?:’|&#39;)s extra AI builds stop: the lessons, your classes, lesson plans and progress stay free, and nothing is deleted/, 'the trial FAQ says what stays free');
   assert.doesNotMatch(s, /Try everything free for 14 days/, 'no hint that everything is paid after the trial');
   // /plans is where the amounts are (the fake Stripe has the Teacher price).

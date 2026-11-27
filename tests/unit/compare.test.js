@@ -27,6 +27,9 @@ const get = async p => { const r = await fetch(base + p, { redirect: 'manual' })
 const main = h => h.slice(h.indexOf('<main'), h.indexOf('<footer'));
 const text = h => h.replace(/<style[\s\S]*?<\/style>/g, '').replace(/<script[\s\S]*?<\/script>/g, '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/\s+/g, ' ');
 const NAMES = /kahoot|classroomscreen|brainingcamp/i;
+/** The homepage's five (routes/landing.js NAMED): /compare's three plus two it only names. */
+const HOME_NAMES = ['Kahoot!', 'Classroomscreen', 'Blooket', 'Brainingcamp', 'Typing.com'];
+const ANY_NAME = /kahoot|classroomscreen|brainingcamp|blooket|typing\.com/i;
 const PRICE = /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\bper (?:month|year|seat|student)\b|\/(?:month|mo|year|yr)\b|\bpric(?:e|es|ing)\b/i;
 const en = flatten(JSON.parse(fs.readFileSync(path.join(ROOT, 'server/i18n/locales/en.json'), 'utf8')));
 const compareKeys = Object.keys(en).filter(k => k.startsWith('compare.'));
@@ -147,8 +150,10 @@ test('every claim about another product has a source: in its row\'s detail and i
   assert.deepEqual(C.cellOf('free', 'kahoot', {}), { s: 'notStated' });
 });
 
-test('the three names appear only on /compare: no other file the site serves, prompts or tests, and no locale string', async () => {
-  const ALLOWED = new Set(['server/routes/compare.js', 'tests/unit/compare.test.js', 'tests/unit/compare-browser.test.js']);
+test('the names appear only on /compare and the homepage: no other file the site serves, prompts or tests, and no locale string', async () => {
+  // The two exceptions (docs/decisions.md): /compare names its three products; the homepage at "/" (routes/landing.js,
+  // NAMED) names exactly five, the three plus Blooket and Typing.com, as plain text with the trademark line.
+  const ALLOWED = new Set(['server/routes/compare.js', 'server/routes/landing.js', 'tests/unit/compare.test.js', 'tests/unit/compare-browser.test.js']);
   const TEXT = /\.(js|mjs|cjs|json|html|css|txt|md|svg|vtt|yaml|yml|csv|py|sh)$/i;
   const files = execFileSync('git', ['ls-files', '-z'], { cwd: ROOT, maxBuffer: 1 << 28 }).toString().split('\0').filter(Boolean);
   const scanned = files.filter(f => !f.startsWith('docs/') && TEXT.test(f) && !ALLOWED.has(f));
@@ -157,13 +162,51 @@ test('the three names appear only on /compare: no other file the site serves, pr
   for (const f of scanned) {
     const p = path.join(ROOT, f); let st; try { st = fs.statSync(p); } catch { continue; }
     if (!st.isFile() || st.size > 8e6) continue;
-    if (NAMES.test(fs.readFileSync(p, 'utf8'))) leaks.push(f);
+    if (ANY_NAME.test(fs.readFileSync(p, 'utf8'))) leaks.push(f);
   }
-  assert.deepEqual(leaks, [], 'the product names are only in routes/compare.js (docs/decisions.md: the one-page exception)');
-  // The pages around it never name them either.
-  for (const p of ['/teachers', '/research', '/compliance', '/safety', '/privacy', '/parents', '/learn']) {
-    const r = await get(p); assert.equal(r.status, 200, p); assert.doesNotMatch(r.text, NAMES, p);
+  assert.deepEqual(leaks, [], 'the product names are only in routes/compare.js and routes/landing.js (docs/decisions.md: the two exceptions)');
+  // routes/landing.js names exactly the five, in NAMED, and its three side-by-side cards are /compare's products.
+  const L = await import('../../server/routes/landing.js');
+  assert.deepEqual(L.NAMED, HOME_NAMES);
+  assert.deepEqual(L.VERSUS.map(v => v.id), C.COMPETITORS.map(c => c.id));
+  const src = fs.readFileSync(path.join(ROOT, 'server/routes/landing.js'), 'utf8');
+  assert.deepEqual([...new Set(src.match(new RegExp(ANY_NAME.source, 'gi')).map(m => m.toLowerCase()))].sort(), ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com'],
+    'routes/landing.js names no product beyond the five');
+  const code = src.replace(/^\s*(\/\/|\*|\/\*\*).*$/gm, '');
+  assert.equal((code.match(/Blooket|Typing\.com/g) || []).length, 2, 'in the code, Blooket and Typing.com are only in NAMED');
+  // The pages around them never name any of the five.
+  for (const p of ['/teachers', '/research', '/compliance', '/safety', '/privacy', '/parents', '/learn', '/plans', '/teachers/live', '/search']) {
+    const r = await get(p); if (r.status !== 200) continue; assert.doesNotMatch(r.text, ANY_NAME, p);
   }
+});
+
+test('the homepage names exactly the five products, with the trademark line, and quotes only what /compare quotes', async () => {
+  process.env.LANDING_AT_ROOT = '1';
+  try {
+    const h = (await get('/')).text;
+    const found = [...new Set([...text(h).matchAll(new RegExp(ANY_NAME.source, 'gi'))].map(m => m[0].toLowerCase()))].sort();
+    assert.deepEqual(found, ['blooket', 'brainingcamp', 'classroomscreen', 'kahoot', 'typing.com']);
+    assert.ok(text(h).includes('One subscription instead of five: Kahoot! Classroomscreen Blooket Brainingcamp Typing.com'), 'the strip');
+    assert.ok(text(h).includes('Kahoot!, Classroomscreen, Blooket, Brainingcamp and Typing.com are trademarks of their owners. Oomba Academy is not affiliated with them.'), 'the trademark line');
+    assert.doesNotMatch(h, /<img[^>]*(kahoot|classroomscreen|blooket|brainingcamp|typing\.com)/i, 'no logos');
+    // No amounts (the words "prices" and "per teacher per year" may appear, never a figure): "Pay for one plan instead of five" and a link to /compare.
+    assert.doesNotMatch(text(main(h)), /[$€£¥]\s?\d|\d\s?(?:USD|EUR|GBP|dollars?)\b|\/(?:month|mo|year|yr)\b/i, 'no amounts');
+    assert.match(h, /Pay for one plan instead of five\. <a href="\/compare">See how we compare<\/a>/);
+    // The side-by-side cards: each quote is one /compare shows for that product, with its address and the day it was read.
+    const cards = [...h.matchAll(/<article class="lp-card lp-vs-card">([\s\S]*?)<\/article>/g)].map(m => m[1]);
+    assert.equal(cards.length, 3);
+    const esc = s => s.replace(/&/g, '&amp;').replace(/'/g, '&#39;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    const allQuotes = Object.values(C.CELLS).flatMap(r => Object.entries(r)).filter(([, c]) => c.src);
+    cards.forEach((card, i) => {
+      const comp = C.COMPETITORS[i];
+      const quotes = [...card.matchAll(/<q lang="en" dir="ltr">([^<]*)<\/q> <a href="([^"]+)"/g)];
+      assert.ok(quotes.length >= 2, comp.id);
+      for (const [, q, url] of quotes) assert.ok(allQuotes.some(([id, c]) => id === comp.id && esc(c.src.quote) === q && c.src.url === url), `${comp.id}: "${q}" is a /compare quote with its own address`);
+      assert.match(text(card), /Source: [a-z.]+, read on November 22, 2026/);
+    });
+    // Every other page stays free of the names (spot check of the app's signed-out pages).
+    for (const p of ['/es/teachers', '/read']) { const r = await get(p); if (r.status === 200) assert.doesNotMatch(r.text, ANY_NAME, p); }
+  } finally { process.env.LANDING_AT_ROOT = '0'; }
 });
 
 test('/teachers links to /compare once, calmly, and the link names no product', async () => {
